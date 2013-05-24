@@ -6,5 +6,5 @@ Karoshi Server
 
 - **Website** www.linuxschools.com
 - **Maintainer** Paul Sharrad
-
+- **Maintainer** Artie Ball
 
