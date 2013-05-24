@@ -235,6 +235,7 @@ then
 MESSAGE=$ACCESS_ERROR1
 show_status
 fi
+
 #########################
 #Check data
 #########################
