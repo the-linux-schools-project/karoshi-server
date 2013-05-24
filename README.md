@@ -5,6 +5,6 @@ Karoshi Server
 
 
 - **Website** www.linuxschools.com
-- **Maintainter** Paul Sharrad
+- **Maintainer** Paul Sharrad
 
 
