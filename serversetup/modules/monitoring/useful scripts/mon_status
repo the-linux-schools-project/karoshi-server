@@ -1,0 +1,74 @@
+#!/bin/bash
+#Copyright (C) 2007  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aloughlin@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+#Create directory
+[ -d /opt/karoshi/server_network/mon ] || mkdir /opt/karoshi/server_network/mon
+#Get details from mon
+monshow --full > /opt/karoshi/server_network/mon/mon_data
+######################
+#Produce HTML Summary page
+######################
+echo '<html><head><title>MON - Karoshi Network Status: Summary View</title><link rel="stylesheet" href="/karoshi/style.css"></head>' > /opt/karoshi/server_network/mon/mon_summary.html
+echo '<body link="#173D9A" vlink="#173D9A" bgcolor="#F5EEFF" text="#336699">' >> /opt/karoshi/server_network/mon/mon_summary.html
+echo '<table border=0><tr><td><img src="/mon/logo.png" alt="[ logo]"></td><td><h1><font color=#336699>MON: Karoshi Network Status: Summary View</font></h1></td></tr></table><hr>' >> /opt/karoshi/server_network/mon/mon_summary.html
+#Create table
+echo '<table><tbody><tr><td>Host Group</td><td>Service</td><td>Last Checked</td><td>Next Checked</td></tr>' >> /opt/karoshi/server_network/mon/mon_summary.html
+#Process data file
+[ ! -f /opt/karoshi/server_network/mon/mon_data ] && exit
+LINE_COUNT=`cat /opt/karoshi/server_network/mon/mon_data | wc -l`
+COUNTER=7
+while [ $COUNTER -le $LINE_COUNT ]
+do
+LINE_DATA=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/server_network/mon/mon_data`
+GROUP_NAME=`echo $LINE_DATA | cut -d' ' -f2`
+SERVICE_NAME=`echo $LINE_DATA | cut -d' ' -f3`
+STATUS=`echo $LINE_DATA | cut -d' ' -f4`
+LAST_CHECK=`echo $LINE_DATA | cut -d' ' -f5`
+NEXT_CHECK=`echo $LINE_DATA | cut -d' ' -f6`
+ALERTS=`echo $LINE_DATA | cut -d' ' -f7`
+SUMMARY=`echo $LINE_DATA | cut -d' ' -f8`
+echo groupname: $GROUP_NAME service:$SERVICE_NAME status:$STATUS lastcheck:$LAST_CHECK nextcheck:$NEXT_CHECK alerts:$ALERTS summary:$SUMMARY
+##########################
+#Create html for service
+##########################
+#Image and groupname
+if [ `echo $STATUS'check' | grep -c FAIL` = 0 ]
+then
+#OK
+BGCOLOR=#00CC69
+FAILED_SERVICES=""
+echo '<tr><td><img alt="Service OK" src="/karoshi/images/warnings/service_ok.png">'$GROUP_NAME'</td>' >> /opt/karoshi/server_network/mon/mon_summary.html
+else
+#Failed
+BGCOLOR=#F72424
+FAILED_SERVICES=$SUMMARY
+echo '<tr><td><img alt="Service Failure" src="/karoshi/images/warnings/service_failure.png">'$GROUP_NAME'</font></td>' >> /opt/karoshi/server_network/mon/mon_summary.html
+fi
+#Service name Last Check and next check
+echo '<td bgcolor="'$BGCOLOR'">'$SERVICE_NAME $FAILED_SERVICES'</td><td bgcolor="'$BGCOLOR'">'$LAST_CHECK'</td><td bgcolor="'$BGCOLOR'">'$NEXT_CHECK'</td>' >> /opt/karoshi/server_network/mon/mon_summary.html
+echo '</tr>' >> /opt/karoshi/server_network/mon/mon_summary.html
+let COUNTER=$COUNTER+1
+done
+#end table
+echo '</tbody></table>' >> /opt/karoshi/server_network/mon/mon_summary.html
+#end html
+echo '</body></html>' >> /opt/karoshi/server_network/mon/mon_summary.html

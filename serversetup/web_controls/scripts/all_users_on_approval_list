@@ -1,0 +1,47 @@
+#!/bin/bash
+
+#Create folders for acceptable userlist
+if [ ! -d /opt/karoshi/acceptable_use_authorisations/pending ]
+then
+mkdir -p /opt/karoshi/acceptable_use_authorisations/pending
+chmod 0750 -R /opt/karoshi/acceptable_use_authorisations/
+chown -R root.apache_karoshi /opt/karoshi/acceptable_use_authorisations/
+fi
+
+#Create full list of users
+getent passwd | grep /home/users/ > /opt/karoshi/.tempdata/userlist.$$
+USERLISTCOUNT=`cat /opt/karoshi/.tempdata/userlist.$$ | wc -l`
+
+#Get grace time
+
+[ -f /opt/karoshi/acceptable_use_authorisations/grace_time ] && GRACETIME=`sed -n 1,1p /opt/karoshi/acceptable_use_authorisations/grace_time | tr -cd 0-9`
+[ $GRACETIME'null' =  null ] && GRACETIME=14
+
+COUNTER=1
+while [ $COUNTER -le $USERLISTCOUNT ]
+do
+
+USERNAME=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/.tempdata/userlist.$$ | cut -d: -f1`
+
+#Add user into the approval list
+echo Adding $USERNAME with grace time $GRACETIME
+echo $GRACETIME,N.A.,N.A.  > /opt/karoshi/acceptable_use_authorisations/pending/$USERNAME
+
+let COUNTER=$COUNTER+1
+done
+
+rm -f /opt/karoshi/.tempdata/userlist.$$
+##########################
+#Language
+##########################
+LANGCHOICE=englishuk
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/add_user ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/user/add_user
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+#############################
+#Generate page warning
+#############################
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add acceptable_use_authorisations /cgi-bin/admin/view_acceptable_use_authorisations_fm.cgi "$ACCEPTABLEUSEWARNINGMSG" webwarning1.gif
+
+exit

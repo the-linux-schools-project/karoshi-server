@@ -1,0 +1,4 @@
+#!/bin/bash
+#wakeonlaninstall
+RPMNAME=wakelan-1.1-2.i686.rpm
+rpm -iU /opt/karoshi/serversetup/xen/rpms/$RPMNAME 2>/dev/null

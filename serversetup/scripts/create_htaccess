@@ -1,0 +1,9 @@
+#!/bin/bash
+#create_htaccess
+source /opt/karoshi/serversetup/variables/tcpip
+echo '<'Limit GET'>' > .htaccess
+echo Order Deny,Allow >> .htaccess
+echo Deny from all >> .htaccess
+echo Allow from $SAMBA_ALLOWED >> .htaccess
+echo '<''/'Limit'>' >> .htaccess
+echo  >> .htaccess

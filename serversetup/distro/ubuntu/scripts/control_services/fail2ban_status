@@ -1,0 +1,8 @@
+#!/bin/bash
+FAIL2BANCOUNT=`ps -e | grep -c fail2ban-server`
+if [ $FAIL2BANCOUNT -gt 2 ]
+then
+exit 0
+else
+exit 1
+fi

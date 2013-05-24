@@ -1,0 +1,23 @@
+#!/bin/bash
+#default_login
+if test -f /etc/gdm/gdm.conf
+then
+sed -i 's/Include=installer/Include=karoshi/g' /etc/gdm/gdm.conf
+fi
+
+###################
+#Login Manager
+###################
+[ -e /usr/share/config/kdm/kdmrc_karoshi_backup ] || cp /usr/share/config/kdm/kdmrc /usr/share/config/kdm/kdmrc_karoshi_backup
+###################
+#Modify kdmrc to only show the karoshi user
+###################
+if test -f /usr/share/config/kdm/kdmrc
+then
+sed -i s/DefaultUser'='installer/DefaultUser'='karoshi/g /usr/share/config/kdm/kdmrc
+sed -i s/SelectedUsers'='installer/SelectedUsers'='karoshi/g /usr/share/config/kdm/kdmrc
+sed -i s/ShowUsers'='None/ShowUsers'='Selected/g /usr/share/config/kdm/kdmrc
+sed -i s/AutoLoginEnable'='true/AutoLoginEnable'='false/g /usr/share/config/kdm/kdmrc
+sed -i s/AutoLoginUser'='installer/AutoLoginUser'='karoshi/g /usr/share/config/kdm/kdmrc
+sed -i s/AutoLoginAgain'='true/AutoLoginAgain'='false/g /usr/share/config/kdm/kdmrc
+fi

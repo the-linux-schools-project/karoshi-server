@@ -1,0 +1,2 @@
+/^content-(type|disposition):.*name[[:space:]]*=.*\.(lnk|asd|hlp|ocx|reg|bat|c[ho]m|cmd|exe|dll|vxd|pif|scr|hta|jse?|sh[mbs]|vb[esx]|ws[fh]|wmf)/ REJECT Bad attachment file name extension: $2
+/^Received:/ HOLD

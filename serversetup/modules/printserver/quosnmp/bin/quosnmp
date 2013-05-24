@@ -1,0 +1,1421 @@
+#! /usr/bin/perl
+# quosnmp
+# Version 1.8.9 Final
+# A CUPS backend for print accounting and quota enforcement.
+#
+# Released by Marcus Lauer (marcus.lauer at nyu dot edu)
+# Available at http://quosnmp.sourceforge.net
+#
+# Copyright (C) 2007-2009 by Marcus Lauer (marcus.lauer at nyu dot edu) except 
+# where previous copyright is in effect.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+# USA.
+#
+# Development supported by the Center for Information Technology at New York 
+# University (NYU) and the Wilf Department of Politics at NYU.
+#
+# Based on accsnmp v1.02.20070124 by jeff hardy (hardyjm at potsdam dot edu)
+# The original header for accsnmp can be found below.
+# ############
+## accsnmp
+## v1.02.20070124
+## jeff hardy (hardyjm at potsdam dot edu)
+## backend wrapper hardware accounting for cups
+##
+## ############
+## Copyright 2007, Jeff Hardy (hardyjm at potsdam dot edu)
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+## USA.
+##
+## ###########
+
+
+## ###########
+##
+# --- The only setting which should be changed in this script is the path 
+# --- to the configuration file. Change other settings in this config file.
+
+my $CONFIG_FILE = "/etc/quosnmp/quosnmp.conf";
+
+##
+## ###########
+
+
+## ###########
+## Only experts should modify the code below this line.
+
+use strict;
+use Socket;
+#use Net::SNMP;
+#use Net::SMTP;
+use Sys::Hostname;
+use Time::HiRes;
+use File::Basename;
+use File::stat;
+use POSIX qw(:signal_h :errno_h :sys_wait_h);
+use Quosnmp qw(getUserPrintQuota getUserPagecount parseConfigFile readLockfile reportStatus setDefaultVars touchLockfile updateUserPagecount writeLockfile);
+
+
+##
+## ###########
+
+
+# Default settings for various system variables.  If you want to change 
+# one of these, change it in the configuration file (see above).
+my @JOB_BLACKLIST = ();
+my %EMAIL_LIST = ();
+my %VARS = ();
+
+&setDefaultVars( \%VARS );
+
+# Set a few more values in VARS which we now know.
+$VARS{CONFIG_FILE} = $CONFIG_FILE;
+$VARS{DEVICE_URI} = $ENV{DEVICE_URI};
+
+# It is possible for TMPDIR to be unset. Use /tmp in this case.
+if ( defined($ENV{TMPDIR}) && length($ENV{TMPDIR}) > 0 ) {
+	$VARS{TMPDIR} = $ENV{TMPDIR};
+}
+else {
+	$VARS{TMPDIR} = '/tmp';
+}
+
+$VARS{PRINTER} = $ENV{PRINTER};
+# This last one will eventually come from ARGV
+$VARS{JOB_NUMBER} = "none";
+
+
+## ###########
+## THE CORE OF QUOSNMP
+{
+	### CHECK IMPORTANT VARIABLES
+	if ( !defined($ARGV[0]) ) { # Device discovery mode.
+		print STDOUT "network quosnmp \"Unknown\" \"Accounted Printer (SNMP)\"\n";
+		exit 0;
+	}
+
+	# Check that an appropriate number of arguments was given.
+	if ( $#ARGV != 4 && $#ARGV != 5 ) {
+		print STDERR "ERROR: Usage: quosnmp job-id user title copies options [file]\n";
+		exit 1;
+	}
+
+	# Now that we got this far, let us name the arguments to keep our sanity!
+	my ( $jobID, $userName, $jobTitle, $copies, $printOptions, $printFile ) = @ARGV;
+
+	# Also set certain values in VARS
+	$VARS{JOB_NUMBER} = $ARGV[0];
+
+	# For simplicity, create an array of arguments to pass to cleanExit (if needed). The error message is always separate.
+	# These values are: printer IP address (0), printer port number (1), path to temporary print file (2), job id number (3), 
+	# username of person who sent print job (4), pagecount at start (5), path to lpq (6), last pagecount estimate (7).
+	my @cE = ( 0, 0, "", $jobID, $userName, -1, "", -1 );
+
+	# Look for a config file which overrides any variables set above.  The config file should be 
+	# parsed before any calls to &reportStatus (directly or via cleanExit).
+	my $configOK = &parseConfigFile( \%VARS, \@JOB_BLACKLIST, \%EMAIL_LIST );
+
+	if ( $configOK == 0 ) {
+		&cleanExit( @cE, "Could not open specified configuration file." );
+	}
+
+	# Now load Net::SNMP, but only if it is really needed.
+	if ( $VARS{PAGECOUNT_QUERY_METHOD} == 0 || $VARS{STATUS_QUERY_METHOD} == 0 || $VARS{PAGECOUNT_QUERY_METHOD} == 1 || $VARS{STATUS_QUERY_METHOD} == 1 ) {
+		eval { require Net::SNMP; Net::SNMP->import(); }; # In case of an error, make sure to skip SNMP method later.
+
+		# If SNMP was requested but Net::SNMP is unavailable, end the program.  If auto-detect was requested SNMP will simply be skipped in the auto-detection phase.
+		if ( $@ && ( $VARS{PAGECOUNT_QUERY_METHOD} == 1 || $VARS{STATUS_QUERY_METHOD} == 1 ) ) {
+			&cleanExit( @cE, "Could not load Net::SNMP, and the use of SNMP was specifically requested." );
+		}
+	}
+
+	# Also load Net::SMTP, but only if it is really needed.
+	if ( $VARS{OVER_QUOTA_NOTIFY} == 1 || $VARS{OVER_QUOTA_NOTIFY} == 2 ) {
+		eval { require Net::SMTP; Net::SMTP->import(); };
+
+		# If SMTP was requested but Net::SMTP is unavailable, report this and turn off e-mail notifications.
+		if ( $@ ) {
+			&reportStatus( 1, "Unable to load Net::SMTP. No e-mail notifications will be sent.", \%VARS );
+			$VARS{OVER_QUOTA_NOTIFY} = 0;
+		}
+	}
+
+	# Make sure a username was given.
+	if ( length($userName) < 1 ) {
+		&cleanExit( @cE, "No username for print job.  User must authenticate." );
+	}
+
+	# URI parsing must fit syntax or die
+	# Ex: quosnmp://lpd://192.168.xxx.xxx
+	# Also supported: quosnmp://hp:/net/HP_LaserJet_xxxx_Series?ip=192.168.xxx.xxx
+	$ENV{'DEVICE_URI'} =~ m#(\S+)://(\S+):/\S+?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\S?(\d{0,5})#;
+
+	my $wrapBackend = $1;
+	my $realBackend = $2;
+	my $printerIP = $3;
+	my $printerPort = $4;
+
+	unless ( defined($1) && defined($2) && defined($3) ) {
+		&cleanExit( @cE, "URI must be in format: quosnmp://<original URI>" );
+	}
+
+	# If there were no errors, assign new values to array of arguments for cleanExit.
+	$cE[0] = $printerIP;
+	$cE[1] = $printerPort;
+
+
+	### SET IMPORTANT VARIABLES
+	# This variable is used by the logging feature.
+	$VARS{START_TIME} = [localtime()];
+
+	# These lines set our decrementable timeout counters from the original values.
+	$VARS{HARD_TIMEOUT_COUNT} = $VARS{HARD_STALL_TIMEOUT};
+	$VARS{SOFT_TIMEOUT_COUNT} = $VARS{SOFT_STALL_TIMEOUT};
+
+
+	### SANITY CHECKS -- make sure that various files and directories actually exist and are usable.
+	### If not, fix the situation if possible.
+	my $LPQ = "$VARS{BINARY_DIRECTORY}/lpq";
+	my $CUPSENABLE = "$VARS{BINARY_DIRECTORY}/cupsenable";
+
+	foreach my $cupsBin ( "lpq", "cupsenable" ) {
+		if ( ! -e "$VARS{BINARY_DIRECTORY}/$cupsBin" ) {
+			my $newBinDir;
+
+			# Try looking in some other possible locations
+			foreach my $binDir ( "/bin", "/sbin", "/usr/bin", "/usr/sbin", "/usr/local/bin", "/usr/local/sbin", "/opt/sfw/cups/bin", "/opt/sfw/cups/sbin", "/usr/bsd", "/usr/bsd/bin", "/usr/bsd/sbin", "/opt/bsd", "/opt/bsd/bin", "/opt/bsd/sbin" ) {
+				if ( -e "$binDir/$cupsBin" ) {
+					$newBinDir = $binDir;
+					&reportStatus( 3, "Found $cupsBin in $binDir, not the configured directory $VARS{BINARY_DIRECTORY}", \%VARS );
+					last;
+				}
+			}
+
+			if ( !defined($newBinDir) && ( $cupsBin !~ m/^cupsenable$/ ) ) {
+				# "cupsenable" is not really vital, but we do need lpq _if_ LOCK_PRINTER is enabled.
+				if ( $VARS{LOCK_PRINTER} ) {
+					&cleanExit( @cE, "Could not find the \"$cupsBin\" program. Set BINARY_DIRECTORY appropriately in the config file." );
+				}
+			}
+			else {
+				if ( $newBinDir =~ m/^lpq$/ ) {
+					$LPQ = "$newBinDir/lpq";
+				}
+				elsif ( $newBinDir =~ m/^cupsenable$/ ) {
+					$CUPSENABLE = "$newBinDir/cupsenable";
+				}
+			}
+		}
+	}
+	$cE[6] = $LPQ;
+
+	if ( ! -e $VARS{ACCOUNTING_DIRECTORY} ) {
+		my $madeAccDir = mkdir($VARS{ACCOUNTING_DIRECTORY}, 0770);
+		my @userInfo = getpwnam("lp");
+		my $chownCount = chown( $userInfo[2], $userInfo[3], $VARS{ACCOUNTING_DIRECTORY} );
+	
+		if ( $madeAccDir && $chownCount > 0 ) {
+			&reportStatus( 1, "Just created the accounting directory.", \%VARS );
+		}
+		else {
+			&cleanExit( @cE, "The accounting directory does not exist, and quosnmp could not create it." );
+		}
+	}
+
+	if ( ! -w $VARS{ACCOUNTING_DIRECTORY} ) {
+		my $changedAccDir = chmod( 0770, $VARS{ACCOUNTING_DIRECTORY} );
+	
+		if ( $changedAccDir == 0 ) {
+			&cleanExit( @cE, "Quosnmp cannot write to the accounting directory and cannot make it writable." );
+		}
+	}
+
+	if ( ! -e $VARS{QUOTA_DIRECTORY} ) {
+		my $madeQuotaDir = mkdir($VARS{QUOTA_DIRECTORY}, 0770);
+		my @userInfo = getpwnam("lp");
+		my $chownCount = chown( $userInfo[2], $userInfo[3], $VARS{QUOTA_DIRECTORY} );
+	
+		if ( $madeQuotaDir && $chownCount > 0 ) {
+			&cleanExit( @cE, "The quota directory $VARS{QUOTA_DIRECTORY} was just created by quosnmp.  Now go set some quotas." );
+		}
+		else {
+			&cleanExit( @cE, "There is no quota directory and quosnmp could not make the necessary quota directory: $VARS{QUOTA_DIRECTORY}" );
+		}
+	}
+
+	if ( ! -r $VARS{QUOTA_DIRECTORY} ) {
+		my $changedQuotaDir = chmod( 0770, $VARS{QUOTA_DIRECTORY} );
+	
+		if ( $changedQuotaDir == 0 ) {
+			&cleanExit( @cE, "Quosnmp cannot read from the quota directory and cannot make it readable." );
+		}
+	}
+
+
+	### BEGIN REAL PRINT JOB PROCESSING
+	# Put a lockfile in place before doing anything which would affect the system (unless lockfiles have been disabled).
+	while ( $VARS{LOCK_PRINTER} ) { # Keep going until the printer is locked or HARD_STALL_TIMEOUT is reached.
+		if ( &lockPrinter( $printerIP, $printerPort, $jobID, $userName, $LPQ ) == 1 ) {
+			last;
+		}
+		else {
+			&reportStatus( 3, "Waiting $VARS{DISK_RETRY_PERIOD} seconds to retry locking printer.", \%VARS );
+
+			Time::HiRes::sleep($VARS{DISK_RETRY_PERIOD});
+
+			# If this job cannot get a lockfile the printer must be in use, so we send fake values which result in a reset of the soft counter only.
+			my %fakePrStatus;
+			$fakePrStatus{devStatus} = 4;
+			$fakePrStatus{priStatus} = 0;
+			$fakePrStatus{advStatus} = 0;
+
+			my $timeout = &decrementTimeoutCounters( $VARS{DISK_RETRY_PERIOD}, \%fakePrStatus ); # Approximate is okay for this loop.
+
+			# Check for whether the hard counter has been reached.
+			if ( $timeout == 2 ) {
+				&cleanExit( @cE, "Unable to lock the printer in the time allotted." );
+			}
+		}
+	}
+
+
+	### QUOTA CHECKS
+	if ( $VARS{ENFORCE_QUOTA} ) { # Test for various conditions in which the user is not allowed to print.
+		my $printQuota = &getUserPrintQuota( $userName, \%VARS );
+
+		# If no quota file was found at all, then exit.
+		if ( !defined($printQuota) ) {
+			&cleanExit( @cE, "Account ($userName) has an undefined quota and thus cannot print." );
+		}
+
+		# If the user is not permitted to print, then exit.
+		if ( $printQuota =~ m/^N$/ ) {
+			&cleanExit( @cE, "Account $userName is not permitted to print." );
+		}
+
+		my $userPagesPrinted = &getUserPagecount( $userName, \%VARS ); # Even if quota is unlimited, this is useful info.
+
+		unless ( $printQuota =~ m/^U$/ ) {
+			# If we could not get a pagecount but the user is allowed to print, that's really bad.
+			if ( !defined($userPagesPrinted) ) {
+				&cleanExit( @cE, "Unable to read current user pagecount from file." );
+			}
+
+			# If the user is over quota, then notify them (if so configured) and exit.
+			if ( $userPagesPrinted >= $printQuota ) {
+				if ( $VARS{OVER_QUOTA_NOTIFY} > 0 ) {
+					&sendOverQuotaNotification($userName);
+				}
+				&cleanExit( @cE, "Account ($userName) is at or over quota ($printQuota pages) and cannot print." );
+			}
+		}
+	}
+
+
+	### JOB BLACKLIST CHECK
+	if ( $#JOB_BLACKLIST > 0 ) {
+		my $blacklisted = &chkJobBlacklist($jobTitle,@JOB_BLACKLIST);
+		if ( $blacklisted == 1 ) {
+			# Job is blacklisted, so exit without printing anything.
+			&cleanExit( @cE, "Jobname ($jobTitle) is blacklisted from printing." );
+		}
+	}
+
+
+	### SPOOL JOB TO TEMP FILE
+	my $tempFile = "$VARS{TMPDIR}/$jobID-$userName-cupsjob$$";
+
+	if ( length($printFile) > 0 ) {
+		# If there is a file to print, only make a tempfile if we want to save the print job.
+		if ( $VARS{SAVE_JOBS} ) {
+			open( OUT, ">$tempFile" ) or &cleanExit( @cE , "Cannot write $tempFile: $!" );
+			open( FH, "<$printFile" ) or &cleanExit( @cE , "Cannot read $printFile: $!" );
+			flock( FH, 2 );
+			while ( <FH> ) {
+				print OUT "$_";
+			}
+			flock( FH, 8 );
+			close( FH );
+			close( OUT );
+			&reportStatus( 3, "Print job spooled to file $tempFile", \%VARS );
+		}
+		&reportStatus( 3, "Not spooling print job to a temporary file.", \%VARS );
+	}
+	else { # Have to spool to temp if data to print comes from STDIN.
+		open( OUT, ">$tempFile" ) or &cleanExit( @cE , "Cannot write $tempFile: $!" );
+		while ( <STDIN> ) {
+			print OUT "$_";
+		}
+		close( OUT );
+		&reportStatus( 3, "Print job from STDIN spooled to file $tempFile", \%VARS );
+	}
+
+	# Add tempfile value to array of arguments for cleanExit.
+	$cE[2] = $tempFile;
+
+
+	### FINAL PREPARATIONS
+	# NOTE: the next several lines are the guts of wrapping a CUPS backend
+	# 1) Pull the device URI from the environment and fix it by removing the wrapper
+	# 2) Tack this onto the front of the arg array to pass to the real backend
+	# Note: 1 and 2 are required as different backends find the device URI by
+	# different means.  LPD gets it from the arg, whereas IPP gets it from env.
+	# 3) If the job arrived via STDIN, tack printFile onto the end of the arg array
+	# This will happen on non-raw queues and needs to be checked, otherwise we
+	# will DOS the printer with a "zero byte" error.
+	# 4) Call the real backend with this new argument array
+
+	my $deviceURI = $ENV{DEVICE_URI};
+	$deviceURI =~ s#$wrapBackend://##;
+	$ENV{DEVICE_URI} = $deviceURI;
+
+	if ( length($printFile) == 0 ){
+		# The data to print came from STDIN, so print the tempfile created above.
+		$copies = 1;
+		$printFile = $tempFile;
+	}
+	my @argvNew = ( $deviceURI, $jobID, $userName, $jobTitle, $copies, $printOptions, $printFile);
+
+	# Mention in the error log that something is about to print something.
+	&reportStatus( 2, "User $userName is about to start printing.", \%VARS );
+
+
+	### PRINTING
+	# The outer loop ("RETRYJOBLOOP") is for retrying the print job when it fails.
+	RETRYJOBLOOP: until ( defined($VARS{EXITVAL}) && $VARS{EXITVAL} == 0 ) {
+		$SIG{'TERM'} = 'DEFAULT'; # Allow this job to be killed by lprm for now (but later in the loop this handler will be set to "IGNORE")
+		$SIG{'INT'} = 'DEFAULT'; # Likewise, later in the loop this handler will be set to "IGNORE".
+		$SIG{'QUIT'} = 'DEFAULT'; # Likewise, later in the loop this handler will be set to "IGNORE".
+
+		my %prStatus = ();
+		$prStatus{devStatus} = 0;
+		$prStatus{priStatus} = 0;
+		$prStatus{advStatus} = 0;
+		my $okToPrint;
+
+		# Do not start doing anything at all until the printer is idle.
+		my $idlePrinterLoopStart = Time::HiRes::time();
+
+		SENDJOBLOOP: until ( defined($okToPrint) ) {
+			&getPrinterStatus( $printerIP, \%prStatus );
+
+			# If the printer is idle or sleeping, send the print job.
+			if ( $prStatus{advStatus} == 7 ) {
+				# If the toner is low, check how quosnmp is configured.
+				if ( $VARS{PRINT_ON_LOW_TONER} == 1 ) {
+					&reportStatus( 3, "Sending print job despite low toner status.", \%VARS );
+					$okToPrint = 3;
+				}
+				else {
+					# Do not send the print job at all.
+					&cleanExit( @cE, "Low toner. Not sending print job.")
+				}
+			}
+			elsif ( $prStatus{devStatus} == 3 ) {
+				&reportStatus( 3, "Printer is ready to go. Sending print job.", \%VARS );
+				$okToPrint = 1;
+			}
+			elsif ( $prStatus{devStatus} == 2 ) {
+				&reportStatus( 3, "Printer is in powersave mode. Sending print job, which should wake it up.", \%VARS );
+				$okToPrint = 2;
+			}
+			elsif ( $prStatus{devStatus} == 1 ) {
+				# This state is actually undefined in RFC1759, but may mean that the printer can accept print jobs.
+				&reportStatus( 3, "Printer is in an unknown state. Sending print job anyway.", \%VARS );
+				$okToPrint = 4;
+			}
+			else {
+				# Otherwise (e.g. devStatus = 5, meaning "down") wait before doing anything else.
+				&reportStatus( 3, "Waiting for printer to become idle before sending this print job to the printer.", \%VARS );
+
+				Time::HiRes::sleep($VARS{NETWORK_POLLING_PERIOD});
+
+				# Decrement the timeout counters.
+				my $idlePrinterLoopTime = Time::HiRes::time() - $idlePrinterLoopStart;
+				$idlePrinterLoopStart = Time::HiRes::time(); # For the next cycle.
+
+				if ( $idlePrinterLoopTime <= 0 ) {
+					$idlePrinterLoopTime = $VARS{NETWORK_POLLING_PERIOD}; # In case someone or some-daemon sets the system time while we were sleeping.
+				}
+
+				my $timeout = &decrementTimeoutCounters( $idlePrinterLoopTime, \%prStatus );
+	
+				if ( $timeout == 1 ) {
+					&cleanExit( @cE, "Printer has not become idle so printing cannot start (soft timeout). ")
+				}
+				if ( $timeout == 2 ) {
+					&cleanExit( @cE, "Printer has not become idle so printing cannot start (hard timeout). ")
+				}
+			}
+		} # End of SENDJOBLOOP
+
+		# Get the pagecount just prior to printing. Note that if multiple CUPS printers use the 
+		# same physical printer, this can get messed up.  The use of lockfiles should prevent any such problems.
+		my $prePageCount = &getPrinterPagecount($printerIP);
+
+		if ( !defined($prePageCount) ) {
+			&cleanExit( @cE, "Could not retrieve printer\'s current page count." );
+		}
+		if ( $prePageCount == 0 ) {
+			&cleanExit( @cE, "Query of printer\'s pagecount returned 0, which is probably an error. If the printer really is brand-new, please print a test page first." );
+		}
+
+		# Add preliminary pagecount value to array of arguments for cleanExit.
+		$cE[5] = $prePageCount;
+
+		# SIGTERM is the signal which lprm sends. Once the backend has started the print job is heading to the printer, 
+		# so it will probably print no matter what we do.  To avoid problems with accounting, we will ignore this signal 
+		# for the rest of the script.  Also getting SIGINT just in case.  Note that SIGKILL still works if needed.
+		$SIG{'TERM'} = 'IGNORE';
+		$SIG{'INT'} = 'IGNORE';
+		$SIG{'QUIT'} = 'IGNORE';
+
+		my $pid;
+
+		# We're about to fork!  The child will run the backend and eventually return its exit value.
+		# The parent will poll the printer looking for when it starts printing.
+		my $forkLoopStart = Time::HiRes::time();
+		FORKPROCLOOP: until ( defined($pid) ) {
+			my $forkLoopStart = Time::HiRes::time();
+
+			$pid = open( PRINTER_POLL, "-|" );
+
+			unless ( defined($pid) ) {
+				&reportStatus( 3, "Waiting $VARS{DISK_RETRY_PERIOD} seconds to retry forking off backend process.", \%VARS );
+
+				Time::HiRes::sleep($VARS{DISK_RETRY_PERIOD});
+
+				# Decrement the timeout counters.
+				my $forkLoopTime = Time::HiRes::time() - $forkLoopStart;
+				$forkLoopStart = Time::HiRes::time(); # For the next cycle.
+
+				if ( $forkLoopTime <= 0 ) {
+					$forkLoopTime = $VARS{DISK_RETRY_PERIOD}; # In case someone or some-daemon sets the system time while we were sleeping.
+				}
+
+				my $timeout = &decrementTimeoutCounters( $VARS{DISK_RETRY_PERIOD}, \%prStatus );
+
+				if ( $timeout == 1 ) {
+					&cleanExit( @cE, "Unable to fork. Quosnmp will not work properly (soft timeout)." );
+				}
+				if ( $timeout == 2 ) {
+					&cleanExit( @cE, "Unable to fork. Quosnmp will not work properly (hard timeout)." );
+				}
+			}
+		} # End of FORKPROCLOOP
+
+		&reportStatus( 3, "Pid $pid reporting for duty!", \%VARS ); # The two processes will report different (and inaccurate) PIDs.
+
+		if ( $pid == 0 ) { # The child process.
+			$SIG{'TERM'} = 'DEFAULT'; # Allow this process to be killed. Quosnmp can handle this scenario.
+			$SIG{'INT'} = 'DEFAULT'; # Likewise.
+			$SIG{'QUIT'} = 'DEFAULT'; # Likewise.
+
+			&reportStatus( 2, "Sending print job to $realBackend backend.", \%VARS );
+
+			# Override arg0
+			my $exitVal = system {"$VARS{BACKEND_DIRECTORY}/$realBackend"} @argvNew;
+			# Make sure that exit code is sent out immediately.
+			select(STDOUT);
+			local $| = 1;
+			print STDOUT $exitVal;
+			exit;
+		}
+		elsif ( $pid > 0 ) { # The parent process.
+			$VARS{SOFT_TIMEOUT_COUNT} = $VARS{SOFT_STALL_TIMEOUT}; # Reset this counter since things are now progressing.
+
+			my $loopStart = Time::HiRes::time();
+			my $loopTime;
+			my $waitCount = 0;
+			my $printingStage = 0;
+			my $tryCounter = 1;
+
+			# Wait for both the printer to be idle (having formerly printed) and the child process (the backend) to report having completed.
+			PRINTINGLOOP: until ( $printingStage == 2 && defined($VARS{EXITVAL}) ) {
+				# Keep track of the page count in case printing gets interrupted (e.g. power outage, job canceled halfway through).
+				if ( $VARS{MONITOR_PAGECOUNT} == 1 ) {
+					$cE[7] = &getPrinterPagecount($printerIP);
+				}
+
+				# Get the printer status and watch for a status of "printing" followed by an inactive status.
+				&getPrinterStatus( $printerIP, \%prStatus );
+
+				if ( $prStatus{devStatus} == 4 && $printingStage == 0 ) {
+					$printingStage = 1; # Stage 1 is when the printer is printing.
+				}
+				elsif ( $prStatus{devStatus} == 3 && $printingStage == 1 ) {
+					$printingStage = 2; # Stage 2 is when the printer has become idle again.
+				}
+
+				# Query the child process for the status of the backend.
+				unless ( defined($VARS{EXITVAL}) ) {
+					waitpid($pid, &WNOHANG|&WUNTRACED);
+
+					if ( WIFSTOPPED($?) ) {
+						$VARS{EXITVAL} = WSTOPSIG($?) + 0x0100; # VARS{EXITVAL} will ultimately be "1".
+					}
+					if ( WIFSIGNALED($?) ) {
+						$VARS{EXITVAL} = WTERMSIG($?) + 0x0100; # Reset below if backend terminated normally.
+					}
+					if ( WIFEXITED($?) ) {
+						$VARS{EXITVAL} = <PRINTER_POLL>; # Catches all normal terminations, even if the other WIF macros apply.
+					}
+
+					# If we just got a value for VARS{EXITVAL}, report the value and make sure it's not an error code.
+					if ( defined($VARS{EXITVAL}) ) {
+						my $formattedval = sprintf "0x%04X",$VARS{EXITVAL};
+						&reportStatus( 3, "Raw exit value of backend is $formattedval.", \%VARS );
+						$VARS{EXITVAL} >>= 8; # Turns VARS{EXITVAL} into just the backend exit value.
+						&reportStatus( 2, "Backend has finished sending off the print job.", \%VARS );
+
+						if ( $VARS{EXITVAL} != 0 ) { # A nonzero positive exit code represents an error.  Negative exit codes do not exist in the CUPS spec.
+							# For some exit values, we really need to take some action.
+							if ( $VARS{EXITVAL} == 5 ) {
+								# If some job attributes are not supported, just exit. This job ain't goin' nowhere.
+								&cleanExit( @cE, "Backend failed with exit code $VARS{EXITVAL}." );
+							}
+							if ( $VARS{EXITVAL} == 4 ) {
+								# Print queue has been stopped. Restart it before trying the job again.
+								if ( -e "$CUPSENABLE" ) {
+									system("$CUPSENABLE","$ENV{'PRINTER'}");
+									sleep(1);
+								}
+							}
+
+							my $totalTries = $VARS{BACKEND_RETRIES} + 1;
+							&reportStatus( 2, "Temporary backend failure -- Backend exit code $VARS{EXITVAL} (try $tryCounter of $totalTries).", \%VARS );
+	
+							$tryCounter++;
+							if ( $tryCounter > $VARS{BACKEND_RETRIES} ) {
+								&cleanExit( @cE, "Backend failed with exit code $VARS{EXITVAL} after $totalTries tries." );
+							}
+
+							undef($VARS{EXITVAL}); # The next pass through the loop will generate a new VARS{EXITVAL}.
+						}
+					}
+				}
+
+				# Update the lockfile so that other quosnmp processes have proof that this one is still going.
+				&touchLockfile( \%VARS );
+
+				# If there have been no errors and we went through the above code quickly, wait a bit.
+				$loopTime = Time::HiRes::time() - $loopStart;
+				if ( $loopTime < $VARS{NETWORK_POLLING_PERIOD} ) {
+					Time::HiRes::sleep($VARS{NETWORK_POLLING_PERIOD} - $loopTime); # Wait by as close to NETWORK_POLLING_PERIOD seconds as possible.
+				}
+
+				# Now make sure that we haven't hit a timeout.
+				$loopTime = Time::HiRes::time() - $loopStart;
+				if ( $loopTime <= 0 ) {
+					$loopTime = $VARS{NETWORK_POLLING_PERIOD}; # In case someone or some-daemon sets the system time a microsecond before. :)
+				}
+				$loopStart = Time::HiRes::time(); # For the next cycle.
+
+				# Decrement the timeout counters and make sure we haven't hit a timeout.
+				my $timeout = &decrementTimeoutCounters( $loopTime, \%prStatus );
+
+				if ( $timeout == 1 ) {
+					&cleanExit( @cE, "Backend cannot complete the print job (soft timeout). ")
+				}
+				if ( $timeout == 2 ) {
+					&cleanExit( @cE, "Backend cannot complete the print job (hard timeout). ")
+				}
+
+				&reportStatus( 3, "End of print loop. Stage: $printingStage, Dev: $prStatus{devStatus}, Pri: $prStatus{priStatus}, Adv: $prStatus{advStatus}", \%VARS );
+			} # End of PRINTINGLOOP
+
+			# Get the pagecount immediately.
+			$cE[7] = &getPrinterPagecount($printerIP);
+			&reportStatus( 3, "The current attempt to print this job has finished.", \%VARS );
+		} # End of the "if" statement which distinguishes the two forked processes.
+
+		close( PRINTER_POLL ); # The child process must have exited if we escaped the above loop, so we can close this now.
+	} # End of RETRYJOBLOOP
+
+	&reportStatus( 2, "The print job has finished printing.", \%VARS );
+
+
+	### ACCOUNTING
+	if ( $cE[7] == -1 ) {
+		# Note: This is very bad. The print job went through, but the pagecount was never queried successfully.
+		&reportStatus( 1, "Unable to query page count after printing. Job will not be accounted, which is the whole point of using quosnmp, isn\'t it?", \%VARS );
+	}
+
+	&doAccounting( $userName, $cE[5], $cE[7], $VARS{EXITVAL} );
+
+	# If the user has just gone over quota, then notify them (if configured to do so) and exit.
+	if ( $VARS{ENFORCE_QUOTA} && $VARS{OVER_QUOTA_NOTIFY} > 0 ) {
+		&reportStatus( 3, "Checking whether $userName has exceeded their print quota.", \%VARS );
+
+		# Get the quota again in case it was changed while this print job was pending/printing.
+		my $currentPrintQuota = &getUserPrintQuota( $userName, \%VARS );
+
+		# If the print quota is undefined or non-numeric, just skip this.  If it is "U" then the user is not 
+		# over quota.  Otherwise the quota must have just been changed and will be applied in the future.
+		if ( defined($currentPrintQuota) && $currentPrintQuota !~ m/^N$/ && $currentPrintQuota !~ m/^U$/ ) {
+			my $userPagesPrinted = &getUserPagecount( $userName, \%VARS );
+
+			# If the user just now exceeded their quota, send a message.
+			if ( $userPagesPrinted >= $currentPrintQuota ) {
+				&sendOverQuotaNotification($userName);
+			}
+		}
+	}
+
+	### CLEANUP/EXIT
+	# Remove lockfile if their use was requested (which is the default).
+	if ( $VARS{LOCK_PRINTER} ) {
+		&unlockPrinter( $printerIP, $printerPort, $jobID, $LPQ );
+	}
+
+	unless ( $VARS{SAVE_JOBS} ) {
+		my $tempfileDeleted = unlink($tempFile);
+
+		if ( $tempfileDeleted == 0 ) {
+			&reportStatus( 1, "Unable to delete tempfile $tempFile", \%VARS );
+		}
+	}
+
+	exit($VARS{EXITVAL}); # Return the same exit value as the real backend.
+}
+
+## End of main function.
+## ###########
+
+
+
+### SUPPORT FUNCTIONS
+sub cleanExit {
+	# Args: printer address, printer port, tempfile, jobid, username, pagecount, error message to print
+	# Returns: nothing, deletes job and re-enables queue (queue name pulled from environment)
+	# NOTE: This should only be called from within the main loop.  If called prior to the 
+	# creation of a lockfile or after its regular removal, "0" should be passed as the first 
+	# argument, and preferably the second as well.
+
+	my ( $printerIP, $printerPort, $tempFile, $jobID, $username, $prePageCount, $lpqCommand, $lastPageCount, $errorMsg ) = @_;
+
+	# Report an error message.
+	if ( length($errorMsg) > 0 ) {
+		&reportStatus( 0, $errorMsg, \%VARS ); # Note that this is the only type 0 (or "fatal") error in the script.
+	}
+
+	if ( &hasPrinter($printerIP,$printerPort,$jobID) == 1 ) {
+		if ( defined($prePageCount) && $prePageCount != -1 ) {
+			# If we have the pre-page count and the printer is locked, then, we can still do accounting.
+			my $postPageCount = &getPrinterPagecount($printerIP);
+
+			if ( defined($postPageCount) ) {
+				# Only use this value if we actually got a result from getPrinterPagecount.
+				&doAccounting( $username, $prePageCount, $postPageCount );
+			}
+			elsif ( $lastPageCount > -1 ) {
+				# Only use this value if it has at some point been queried successfully (-1 is the default, and real value must be positive).
+				&reportStatus( 2, "Using the most recent (not necessarily current) printer pagecount to estimate pages printed.", \%VARS );
+				&doAccounting( $username, $prePageCount, $lastPageCount );
+			}
+		}
+
+		# Now unlock the printer.
+		if ( $printerIP != 0 ) { # If printerIP == 0 then this was called before the lockfile was created.
+			if ( $VARS{LOCK_PRINTER} ) {
+				&unlockPrinter( $printerIP, $printerPort, $jobID, $lpqCommand );
+			}
+		}
+	}
+
+	# Remove the temporary print file if it has been created and if we're not saving them.
+	if ( (!$VARS{SAVE_JOBS}) && length($tempFile) > 0 ) {
+		my $tempfileDeleted = unlink($tempFile);
+
+		if ( $tempfileDeleted == 0 ) {
+			&reportStatus( 1, "Unable to delete tempfile $tempFile.", \%VARS );
+		}
+	}
+
+	exit 1;
+}
+
+
+sub chkJobBlacklist{
+	# Args: jobname, blacklist
+	# Returns: 1 if job is blacklisted, 0 otherwise.
+	# This is not terribly safe, but can be terribly handy
+
+	my $jobName = shift;
+	my @jobBlacklist = @_;
+
+	foreach my $blackJob ( @JOB_BLACKLIST ) {
+		&reportStatus( 3, "Checking whether \"$jobName\" matches blacklist entry \"$blackJob\".", \%VARS );
+
+		if ( $blackJob =~ /^$jobName$/ ) {
+			return(1);
+		}
+	}
+
+	return(0);
+}
+
+
+sub doAccounting {
+	# Args: username, starting pages, final pages
+	# Returns: pages printed (or "undef" on an error)
+	# Results: Logs to page_log and writes to user file in accounting directory
+
+	my ( $userName, $prePageCount, $postPageCount ) = @_;
+
+	# Do not do accounting if we do not have all of the necessary info! Implicitly a lack of username is also controlled here.
+	unless ( $prePageCount && $postPageCount ) { # Any defined/nonempty/nonzero value is fine.
+		&reportStatus( 1, "Accounting failed. Pagecount from both before and after printing is needed.", \%VARS );
+		return; # Returns "undef".
+	}
+
+	# Delta of our pagecounts
+	my $pagesPrinted = $postPageCount - $prePageCount;
+
+	# Give a discount for header pages
+	if ( $VARS{HEADER_DISCOUNT} > 0 ) {
+	        $pagesPrinted = $pagesPrinted - $VARS{HEADER_DISCOUNT};
+	        if ( $pagesPrinted < 0 ) {
+	                $pagesPrinted = 0;
+	        }
+	}
+
+	$pagesPrinted = $pagesPrinted * $VARS{PAGE_MULTIPLIER};
+
+	# Update print total.
+	my $updateWorked = &updateUserPagecount( $userName, $pagesPrinted, \%VARS );
+
+	if ( $updateWorked == 1 ) {
+		if ( $VARS{HEADER_DISCOUNT} > 0 ) {
+			&reportStatus( 2, "User $userName printed $pagesPrinted pages (plus $VARS{HEADER_DISCOUNT} pages of headers/footers).", \%VARS );
+		}
+		else {
+			&reportStatus( 2, "User $userName printed $pagesPrinted pages.", \%VARS );
+		}
+
+		# Write out the page log.
+		&writePageLog( $prePageCount, $postPageCount, $pagesPrinted );
+
+		# Return the number of pages printed.
+		return($pagesPrinted);
+	}
+	else {
+		# Since cleanExit calls doAccounting, doAccounting had better not call cleanExit!
+		&reportStatus( 1, "Accounting failed. This print job was not accounted for.", \%VARS );
+		return; # Returns "undef".
+	}
+}
+
+
+sub getPrinterPagecount {
+	# Args: printer ip
+	# Returns: current pagecount of printer (or undef if this cannot be determined)
+
+	my $printerIP = $_[0];
+
+	my $pagecount;
+	my $autoDetectOn = 0;
+
+	if ( $VARS{PAGECOUNT_QUERY_METHOD} == 3 ) {
+		$pagecount = &tcpGet($printerIP,"\%\!PS-Adobe-3.0\n\%\%EndComments\nstatusdict\nbegin\npagecount ==\nend\nflush\n\%\%EOF");
+	}
+	elsif ( $VARS{PAGECOUNT_QUERY_METHOD} == 2 ) {
+		$pagecount = &tcpGet($printerIP,"\x1B%-12345X\@PJL INFO PAGECOUNT\r\n\x1B%-12345X");
+	}
+	elsif ( $VARS{PAGECOUNT_QUERY_METHOD} == 1 ) {
+		$pagecount = &snmpGet($printerIP,"1.3.6.1.2.1.43.10.2.1.4.1.1");
+	}
+	else {
+		$autoDetectOn = 1;
+
+		# Try each method in turn, and use the first one which returns a plausible value this time and in the future.
+		foreach my $pqmethod ( "1", "2", "3" ) {
+			# Make sure Net::SNMP is loaded before trying SNMP.
+			if ( $pqmethod == 1 ) {
+				# &snmp_dispatcher is exported by Net::SNMP. If it is not defined, don't try SNMP.
+				if ( !defined(&snmp_dispatcher) ) {
+					next;
+				}
+			}
+
+			$VARS{PAGECOUNT_QUERY_METHOD} = $pqmethod;
+			$pagecount = getPrinterPagecount($printerIP);
+
+			if ( $pagecount =~ m/^\d+$/ ) {
+				last;
+			}
+			undef($pagecount);
+			# If no method works, then we will ultimately return "undef" which will trigger an exit with error.
+		}
+	}
+
+	if ( $autoDetectOn == 1 ) {
+		my @methods = ("SNMP","PJL","PostScript");
+		&reportStatus( 3, "Auto-detect has selected $methods[$VARS{PAGECOUNT_QUERY_METHOD}-1] method for acquiring page count.", \%VARS );
+	}
+
+	# Report and then return the pagecount.
+	&reportStatus( 3, "Current printer lifetime pagecount is $pagecount pages.", \%VARS );
+	return($pagecount);
+}
+
+
+sub getPrinterStatus {
+	# Args: printer ip
+	# Returns: current status of printer as a code based on standard SNMP codes (and converted for non-SNMP methods).
+	#   Codes: 0=unknown, 1=printer unusable, 2=standby/powersave, 3=idle, 4=printing, 5=warmup, 6=paper jam, 7=low toner, 8=out of paper
+
+	my ( $printerIP, $prStatus_Ref ) = @_;
+
+	my $statusCode;
+	my $printerStatus;
+	my $deviceStatus;
+	my $autoDetectOn = 0;
+
+	if ( $VARS{STATUS_QUERY_METHOD} == 2 ) {
+		my $tempPrStatus = &tcpGet($printerIP,"\x1B%-12345X\@PJL INFO STATUS\r\n\x1B%-12345X");
+
+		&reportStatus( 3, "Printer returned device status:\n$tempPrStatus", \%VARS );
+
+		$statusCode = &convertPJLtoQC($tempPrStatus);
+
+		# Unfortunately the dev/pri/adv distinction is SNMP-centric. These codes are less meaningful when using PJL.
+		# We will not set the priStatus at all, and will only set the advStatus in certain cases.
+		$$prStatus_Ref{devStatus} = $statusCode;
+
+		if ( $statusCode >= 6 ) {
+			$$prStatus_Ref{advStatus} = $statusCode;
+		}
+	}
+	elsif ( $VARS{STATUS_QUERY_METHOD} == 1 ) {
+		$$prStatus_Ref{devStatus} = &snmpGet($printerIP,"1.3.6.1.2.1.25.3.5.1.1.1");
+		$$prStatus_Ref{priStatus} = &snmpGet($printerIP,"1.3.6.1.2.1.25.3.2.1.5.1");
+
+		&reportStatus( 3, "Printer returned device status $$prStatus_Ref{devStatus}, printer status $$prStatus_Ref{priStatus}.", \%VARS );
+		$statusCode = 1;
+
+		if ( $VARS{HP_ADVANCED_STATUS} ) {
+			# Get more information. Note that these values are only known to work with some HP printers/print servers.
+			my $lowToner = &snmpGet($printerIP,".1.3.6.1.4.1.11.2.3.9.1.1.2.10.0");
+
+			if ( defined($lowToner) ) {
+				if ( $lowToner == 1 ) { $$prStatus_Ref{advStatus} = 7; } # In my opinion the lowest priority of these error conditions.
+
+				if ( $lowToner == 1 || $lowToner == 0 ) { # If the first check returned an invalid value, skip the rest.
+					my $paperOut = &snmpGet($printerIP,".1.3.6.1.4.1.11.2.3.9.1.1.2.8.0");
+					if ( $paperOut == 1 ) {
+						$$prStatus_Ref{advStatus} = 8;
+					}
+					my $paperJam = &snmpGet($printerIP,".1.3.6.1.4.1.11.2.3.9.1.1.2.9.0");
+					if ( $paperJam == 1 ) {
+						$$prStatus_Ref{advStatus} = 6;
+					}
+				}
+			}
+			else {
+				$VARS{HP_ADVANCED_STATUS} = 0; # If we're not getting SNMP responses to these queries, turn this off.
+			}
+		}
+	}
+	else {
+		foreach my $sqmethod ( "1", "2" ) {
+			# Make sure Net::SNMP is loaded before trying SNMP.
+			if ( $sqmethod == 1 ) {
+				# &snmp_dispatcher is exported by Net::SNMP. If it is not defined, don't try SNMP.
+				if ( !defined(&snmp_dispatcher) ) {
+					next;
+				}
+			}
+
+			$autoDetectOn = 1;
+
+			# Try each method in turn, and use the first one which returns a plausible value this time and in the future.
+			$VARS{STATUS_QUERY_METHOD} = $sqmethod;
+			$statusCode = getPrinterStatus( $printerIP, $prStatus_Ref );
+
+			if ( $statusCode =~ m/^\d$/ ) {
+				last;
+			}
+			undef($statusCode);
+			# If no method works, then we will ultimately return "undef" which will trigger an exit with error.
+		}
+	}
+
+	if ( $autoDetectOn == 1 ) {
+		my @methods = ("SNMP","PJL");
+		&reportStatus( 3, "Auto-detect has selected $methods[$VARS{STATUS_QUERY_METHOD}-1] method for acquiring printer status info.", \%VARS );
+	}
+
+	return($statusCode);
+}
+
+
+sub snmpGet {
+	# Args: printer ip, oid
+	# Returns: value of SNMP query. JobID needed only for exiting script cleanly if this fails.
+
+	my ( $ip, $oid ) = @_;
+
+	my $returnVal;
+
+	# Creating the session should always succeed
+	my ($session, $error) = Net::SNMP->session(
+		-hostname	=> $ip,
+		-version	=> 'snmpv1', # Or 'snmpv2c' or 'snmpv3' as required.
+		-community	=> $VARS{SNMP_COMMUNITY},
+		-timeout	=> 2, # A guess, but 2 seconds should do the trick on any modern network.
+		-retries	=> 1 # More than this and you have a hardware problem somewhere.
+	);
+	# Paranoid check
+	if ( !defined($session) ) {
+		&reportStatus( 1, "SNMP session creation error: $error", \%VARS );
+		return ($returnVal);
+	}
+
+	# The get request will loop until the timeout is reached
+	my $result;
+	my $err;
+
+	eval{
+		until ( defined($result) ) {
+			$result = $session->get_request( -varbindlist => [$oid] );
+	        	$err = $session->error;
+		}
+	};
+	if ( $@ =~ /SNMP ERROR/ ) {
+		&reportStatus( 1, "SNMP Error: $err", \%VARS );
+		return ($returnVal);
+	}
+	# Paranoid check.  This is spurious because the eval loop won't let this happen.
+	if ( !defined($result) ) {
+		my $err = $session->error;
+		$session->close;
+		&reportStatus( 1, "SNMP Error: $err", \%VARS );
+		return ($returnVal);
+	}
+
+	$returnVal = $result->{$oid}; # Returns undef if $result is undefined.
+	$session->close;
+	return($returnVal);
+}
+
+
+sub tcpGet {
+	# Args: printer ip, command
+	# Returns: Value of query (undef on error);
+
+	my ( $ip, $command ) = @_;
+
+	my $remainingTries = 2; # Was formerly configurable.
+	my $response;
+
+	my $proto = getprotobyname('tcp');
+	my $iaddr = inet_aton($ip);
+	my $paddr = sockaddr_in($VARS{TCP_QUERY_PORT},$iaddr);
+
+	while ( $remainingTries > 0 ) {
+		my $errorcode = 0;
+		socket(REMOTE, PF_INET, SOCK_STREAM, $proto) or $errorcode = 1;
+
+		if ( $errorcode < 1 ) {
+			connect(REMOTE, $paddr) or $errorcode = 2;
+		}
+		if ( $errorcode < 1 ) {
+			send(REMOTE,$command,0) or $errorcode = 3; # Will set $! on error.
+		}
+		if ( $errorcode < 1 ) {
+			recv(REMOTE,$response,1000,0) # What we want is within the first 30 bytes or so.
+		}
+		shutdown(REMOTE,2);
+
+		if ( $errorcode == 0 ) {
+			last;
+		}
+		else {
+			&reportStatus( 3, "TCP session creation error. Internal errorcode $errorcode. Retrying.", \%VARS );
+			$remainingTries--;
+		}
+	}
+
+	return($response);
+}
+
+
+sub convertPJLtoQC {
+	# Args: PJL response
+	# Returns: Quosnmp internal Code equivalent (based loosely on SNMP hrPrinterStatus codes)
+
+	my $response = $_[0];
+
+	if ( !defined($response) ) {
+		return; # When the one argument is undef, return undef.
+	}
+
+	my $translation = 0; # Which means "unknown" and is the default.
+
+	# We just want the 5-digit code in the second line of the PJL response.
+	$response =~ m/^\@PJL INFO.+\nCODE=(\d{5}?)/m;
+	my $responseCode = $1;
+	# See HP publication "Printer Job Language Technical Reference Manual" (bpl13208.pdf)
+	# Quosnmp uses these codes: 0=unknown, 1=printer unusable, 2=standby/powersave, 3=idle, 4=printing, 5=warmup, 6=paper jam, 7=low toner, 8=out of paper
+	if ($responseCode =~ /10001$/) { $translation = 3; }
+	if ($responseCode =~ /10002$/) { $translation = 3; }
+	if ($responseCode =~ /10003$/) { $translation = 5; }
+	if ($responseCode =~ /10004$/) { $translation = 5; }
+	if ($responseCode =~ /10006$/) { $translation = 7; }
+	if ($responseCode =~ /10013$/) { $translation = 5; }
+	if ($responseCode =~ /10016$/) { $translation = 5; }
+	if ($responseCode =~ /10023$/) { $translation = 4; }
+	if ($responseCode =~ /10027$/) { $translation = 6; }
+	if ($responseCode =~ /11\d{3}$/) { $translation = 8; }
+	if ($responseCode =~ /12\d{3}$/) { $translation = 8; }
+	if ($responseCode =~ /35078$/) { $translation = 2; }
+	if ($responseCode =~ /40\d{3}$/) { $translation = 1; }
+	if ($responseCode =~ /40022$/) { $translation = 6; }
+	if ($responseCode =~ /40038$/) { $translation = 7; }
+	# All other PJL codes will be translated to "0".
+
+	&reportStatus( 3, "PJL code $responseCode translated to $translation", \%VARS );
+	return($translation);
+}
+
+
+sub lockPrinter {
+	# Arguments: printer IP, printer port, job ID number, username, path to the "lpq" command
+	# Returns: 1 on successful creation of lockfile, 0 on failure
+
+	my ( $printerIP, $printerPort, $jobID, $userName, $lpqCommand ) = @_;
+
+	# If we are not using lockfiles, do not create a lockfile.
+	if ( ! $VARS{LOCK_PRINTER} ) {
+		return(0);
+	}
+
+	$VARS{LOCKFILE} = my $lockfile = $VARS{TMPDIR} . "/" . $printerIP . ":" . $printerPort . "\.lock";
+
+	&reportStatus( 3, "Trying to lock the printer by creating lockfile $lockfile", \%VARS );
+
+	# Now check to see whether there is already a lockfile.
+	my $lockfilePresent = 0;
+
+	if ( -e $lockfile ) {
+		$lockfilePresent = &unlockPrinter( $printerIP, $printerPort, $jobID, $lpqCommand ); # Try clearing the lockfile.
+	}
+
+	# If there is no lockfile, then create it.
+	if ( $lockfilePresent == 0 ) {
+		my $wroteLockfile = &writeLockfile( $lockfile, $jobID, $userName, \%VARS );
+
+		if ( $wroteLockfile == 1 ) {
+			&reportStatus( 2, "Printer has been locked.", \%VARS );
+			return(1);
+		}
+	}
+
+	# If something went wrong.
+	&reportStatus( 3, "Unable to lock the printer.", \%VARS );
+	return(0);
+}
+
+
+sub unlockPrinter {
+	# Arguments: path to lpq
+	# Returns: 1 if lockfile is still present (e.g. failure), 0 if it has been removed.
+
+	my ( $printerIP, $printerPort, $jobID, $lpqCommand ) = @_;
+
+	# If we are not using lockfiles, we do not need to lock anything.
+	if ( ! $VARS{LOCK_PRINTER} ) {
+		return(0);
+	}
+
+	my $lockfile = $VARS{LOCKFILE};
+	if ( ! -e $lockfile ) {
+		return(0); # In theory we should never get here, since we only unlock the printer if we tried to lock it previously.
+	}
+
+	&reportStatus( 3, "Trying to unlock the printer by removing lockfile $lockfile", \%VARS );
+
+	# If this is the exact process which locked the printer, then we can simply remove the lockfile.
+	if ( &hasPrinter( $printerIP, $printerPort, $jobID ) == 1 ) {
+		unlink($lockfile) or return(1);
+		&reportStatus( 3, "Printer has been unlocked (same job).", \%VARS );
+		return(0);
+	}
+
+	# Otherwise, run various checks to determine whether we should remove the lockfile.
+	my ( $lockingJob, $lockingPID, $lockingUser ) = &readLockfile( $lockfile, \%VARS );
+
+	# Remove the lockfile if it is not valid.
+	if ( !defined($lockingJob) || !defined($lockingPID) || !defined($lockingUser) ) {
+		unlink($lockfile) or return(1);
+		&reportStatus( 1, "Found an empty, unreadable, or corrupt lockfile. It was removed.", \%VARS );
+		return(0);
+	}
+
+	&reportStatus( 2, "The printer is currently locked by job $lockingJob, PID $lockingPID, sent by user \"$lockingUser\".", \%VARS );
+
+	# If the locking print job is still active, do not unlock the printer.
+	open( LPQIN, "$lpqCommand -a | " );
+	while ( my $printJob = <LPQIN> ) {
+		my @entries = split( /\W+/, $printJob );
+
+		# Check each job ID (header lines will be skipped) against the locking job ID.
+		if ( $entries[2] =~ m/^\d+$/ ) { # The job ID has an index of 2.
+			if ( $lockingJob == $entries[2] ) {
+				close( LPQIN );
+				&reportStatus( 3, "The print job which currently has a lock on the printer (job $lockingJob) is still running, so the printer will remain locked.", \%VARS );
+				return(1);
+			}
+		}
+	}
+	close( LPQIN );
+
+	# If the locking PID is still active and is a quosnmp process, do not unlock the printer.
+	my $backendName = basename($0);
+	open ( PSIN, "ps | grep $backendName | " ); # quosnmp processes only, of course.
+
+	while ( my $quosnmpProc = <PSIN> ) {
+		$quosnmpProc =~ s/^\s+//; # Remember that some processes have fewer digits!
+		my @entries = split ( /\W+/, $quosnmpProc );
+		&reportStatus( 3, "Found candidate quosnmp process $entries[0].", \%VARS );
+
+		# Check for a process with the same process ID as the locking job.
+		if ( $entries[0] =~ m/^\d+$/ ) { # Just to be sure we're looking at the right column.
+			if ( $lockingPID == $entries[0] ) {
+				close ( PSIN );
+				&reportStatus( 3, "A quosnmp process with the same PID as the one which locked the printer (PID $lockingPID) is still running, so the printer will remain locked.", \%VARS );
+				return(1);
+			}
+		}
+	}
+	close ( PSIN );
+
+	# If the lockfile has been updated recently, do not remove it.
+	my $lockfileTime = stat($lockfile)->mtime;
+	my $currentTime = time();
+	my $thresholdTime = $lockfileTime + (3 * $VARS{NETWORK_POLLING_PERIOD}); # Three printer polling periods should be enough of a buffer.
+
+	if ( $currentTime < $lockfileTime ) {
+		&reportStatus( 3, "The lockfile has been updated within the last $thresholdTime seconds, so it will not be removed yet.", \%VARS );
+		return(1);
+	}
+
+	# If we get here, then the printjob referred to in the lockfile has presumably completed.
+	my $lockfileDeleted = unlink($lockfile);
+
+	if ( $lockfileDeleted == 1 ) {
+		&reportStatus( 1, "Printer has been unlocked (different job). This probably means that a previous print job died unexpectedly.", \%VARS );
+		return(0);
+	}
+	else {
+		&reportStatus( 3, "Printer could not be unlocked.", \%VARS );
+		return(1);
+	}
+}
+
+
+sub hasPrinter {
+	# Arguments: printer IP, printer port, job ID number
+	# Returns: 1 if this instance of quosnmp has locked the printer, 0 otherwise
+
+	my ( $printerIP, $printerPort, $jobID ) = @_;
+
+	my $lockfile = $VARS{TMPDIR} . "/" . $printerIP . ":" . $printerPort . "\.lock";
+
+	# Get the jobID of the print job which locked the printer.
+	my ( $lockingJob, $lockingPID, $lockingUser ) = &readLockfile( $lockfile, \%VARS );
+
+	# Return "1" on a match, "0" on no match.
+	if ( defined($lockingJob) && $jobID == $lockingJob ) {
+		return(1);
+	}
+	else {
+		return(0);
+	}
+}
+
+
+sub sendOverQuotaNotification {
+	# Arguments: username
+	# Returns: 1 on success, 0 on failure
+	# Results: sends notification (currently e-mail only) to user about exceeding quota
+
+	my $userName = $_[0];
+
+	if ( $VARS{OVER_QUOTA_NOTIFY} == 1 ) { # Local e-mail method.  Very simple.
+		my $result = &sendOverQuotaEmail( "localhost", $userName );
+
+		if ( $result == 1 ) {
+			&reportStatus( 2, "Sent a local e-mail to $userName about exceeding their print quota.", \%VARS );
+		}
+		else {
+			&reportStatus( 2, "Failed to send a local e-mail to $userName about exceeding their print quota.", \%VARS );
+		}
+		return($result);
+	}
+	elsif ( $VARS{OVER_QUOTA_NOTIFY} == 2 ) { # Remote e-mail method.
+		my $emailAddress = $EMAIL_LIST{$userName};
+		my $wildcardAddress = $EMAIL_LIST{'*'};
+
+		if ( defined($emailAddress) || defined($wildcardAddress) ) {
+			if ( !defined($emailAddress) ) {
+				$emailAddress = $userName . "@" . $wildcardAddress;
+			}
+
+			my $result = &sendOverQuotaEmail( $VARS{SMTP_SERVER}, $emailAddress );
+
+			if ( $result == 1 ) {
+				&reportStatus( 2, "Sent an e-mail to $userName \(at $emailAddress\) about exceeding their print quota.", \%VARS );
+			}
+			else {
+				&reportStatus( 1, "Failed to send an e-mail to $userName \(at $emailAddress\) about exceeding their print quota.", \%VARS );
+			}
+			return($result);
+		}
+		else {
+			&reportStatus( 2, "Cannot find an e-mail address for user $userName so no over-quota e-mail was sent.", \%VARS );
+		}
+	}
+}
+
+
+sub sendOverQuotaEmail {
+	# Args: SMTP server, recipient email, message
+	# Returns: 1 on success, 0 on failure
+	# Results: sends e-mail to user about exceeding quota
+
+	my ( $mailServer, $emailAddress ) = @_;
+
+	my $hostname = hostname();
+
+	my $smtp = Net::SMTP->new("$mailServer");
+
+	if ( !defined($smtp) ) {
+		return(0);
+	}
+
+	$smtp->mail("root\@$hostname") or return(0);
+	$smtp->to("$emailAddress") or return(0);
+	$smtp->data() or return(0);
+	$smtp->datasend("To: $emailAddress\n") or return(0);
+	$smtp->datasend("From: Print Server <root\@$hostname>\n") or return(0);
+	$smtp->datasend("Subject: You are over your print quota.\n") or return(0);
+	$smtp->datasend("\n") or return(0);
+	$smtp->datasend("$VARS{OVER_QUOTA_EMAIL_MESSAGE}") or return(0);
+	$smtp->dataend();
+	$smtp->quit;
+
+	return(1);
+}
+
+
+sub writePageLog {
+	# Args: Pages printed
+	# Returns: 1 on success, 0 on failure
+	# Results: Writes out a record of the printout to the page log.
+
+	my ( $prePageCount, $postPageCount, $totalPages ) = @_;
+
+	if ( $VARS{PAGE_LOG} ) {
+		&reportStatus( 3, "Preparing to write page log to $VARS{PAGE_LOG_FILE}", \%VARS );
+
+		my $fileWasOpened = 0;
+		open( LOG_FH, ">>$VARS{PAGE_LOG_FILE}" ) and $fileWasOpened = 1;
+
+		if ( $fileWasOpened == 0 ) {
+			# File permissions might be the problem.
+			my @userInfo = getpwnam("lp");
+			chown( $userInfo[2], $userInfo[3], $VARS{PAGE_LOG_FILE} );
+			chmod( 0600, $VARS{PAGE_LOG_FILE} );
+			# Try again.
+			open( LOG_FH, ">>$VARS{PAGE_LOG_FILE}" ) and $fileWasOpened = 1;
+		}
+
+		if ( $fileWasOpened == 1 ) {
+			my @st = @{$VARS{START_TIME}}; # This just makes the code easier to read.
+
+			flock( LOG_FH, 2 ); # Only allow one "chunk" of log data to be written at a time!
+			my $currentFH = select( LOG_FH );
+			local $| = 1;
+			select( $currentFH );
+
+			seek( LOG_FH, 0, 2 );
+			printf LOG_FH "%04d-%02d-%02d\t%02d:%02d:%02d\t",$st[5]+1900,$st[4]+1,$st[3],$st[2],$st[1],$st[0];
+			print LOG_FH "$VARS{'PRINTER'}\t$ARGV[0]\t$ARGV[1]\t$ARGV[2]\t$ARGV[3]\t$VARS{EXITVAL}\t$prePageCount\t$postPageCount\t$totalPages\t$VARS{HEADER_DISCOUNT}\n";
+
+			flock( LOG_FH, 8 );
+			close( LOG_FH );
+			&reportStatus( 3, "Successfully wrote page log to $VARS{PAGE_LOG_FILE}", \%VARS );
+		}
+		else {
+			&reportStatus( 1, "Could not write to page log.", \%VARS );
+		}
+	}
+}
+
+
+sub decrementTimeoutCounters {
+	# Args: time which has elapsed, printer status.
+	# Returns: 0 if timeout counters are not exceeded, 1 if soft counter is exceeded, 2 if hard counter is exceeded.
+
+	my ( $timeIncrement, $prStatus_Ref ) = @_;
+
+	# Decrement the "hard" timeout counter.
+	$VARS{HARD_TIMEOUT_COUNT} = $VARS{HARD_TIMEOUT_COUNT} - $timeIncrement;
+
+	# Decrement or reset the "soft" timeout counter depending on the printer status code which was returned.
+	if ( $$prStatus_Ref{devStatus} == 4 ) {
+		# Since the printer is printing, and thus is not stalled, reset $VARS{SOFT_TIMEOUT_COUNT}.
+		$VARS{SOFT_TIMEOUT_COUNT} = $VARS{SOFT_STALL_TIMEOUT};
+	}
+	elsif ( $$prStatus_Ref{devStatus} == 5) {
+		# Since the printer is warming up, and thus is not stalled, reset $VARS{SOFT_TIMEOUT_COUNT}.
+		$VARS{SOFT_TIMEOUT_COUNT} = $VARS{SOFT_STALL_TIMEOUT};
+	}
+	elsif ( $$prStatus_Ref{devStatus} == 1 || $$prStatus_Ref{advStatus} == 6 || $$prStatus_Ref{advStatus} == 8 ) {
+		# The printer really is stalled, but for sake of accurate accounting we want to 
+		# avoid the soft timeout if possible.  Reset $VARS{SOFT_TIMEOUT_COUNT}.
+		$VARS{SOFT_TIMEOUT_COUNT} = $VARS{SOFT_STALL_TIMEOUT};
+	}
+	else {
+		# In all other cases (e.g. printer unreachable) we start decrementing $VARS{SOFT_TIMEOUT_COUNT}.
+		$VARS{SOFT_TIMEOUT_COUNT} = $VARS{SOFT_TIMEOUT_COUNT} - $timeIncrement;
+	}
+
+	# Check the hard timeout first.
+	if ( $VARS{HARD_STALL_TIMEOUT} > 0 && $VARS{HARD_TIMEOUT_COUNT} <= 0 ) {
+		return(2);
+	}
+	if ( $VARS{SOFT_STALL_TIMEOUT} > 0 && $VARS{SOFT_TIMEOUT_COUNT} <= 0 ) {
+		return(1);
+	}
+
+	return(0);
+}

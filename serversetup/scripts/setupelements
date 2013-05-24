@@ -1,0 +1,125 @@
+#!/bin/bash
+#sslcertificate
+#Copyright (C) 2006  The karoshi Team
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contact either at mpsharrad@karoshi.org.uk or jharris@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+[ -d $HOME/.tempdata ] || mkdir $HOME/.tempdata
+source /opt/karoshi/serversetup/variables/language
+source /opt/karoshi/serversetup/variables/xdialog
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/language/$LANGCHOICE/setupelements
+
+function messagebox {
+Xdialog --wrap --title "$TITLE" \
+--icon $ICON --rc-file $RCFILE --msgbox "$MESSAGE" 16 50
+case $? in
+0)
+	exit;;
+255)
+	exit;;
+esac
+}
+
+if ! test -e /opt/karoshi/serversetup/setuplog
+then
+MESSAGE=$ERRORMSG1
+messagebox
+fi
+
+######################
+#Produce a list of scripts that have run
+######################
+
+function generateelementlist {
+NOOFELEMENTS=`wc -l /opt/karoshi/serversetup/setuplog | cut -d " " -f1`
+if [ $NOOFELEMENTS = 0 ]
+then
+MESSAGE=$ERRORMSG1
+messagebox
+fi
+echo '#!/bin/bash' > /opt/karoshi/runelement
+echo Xdialog --wrap --icon $ICON --rc-file $RCFILE --title '"'$TITLE'"' --wizard --backtitle '"'$TITLE'"' --help '"'$HELP1'"' --cancel-label '"'$QUIT'"' --radiolist '"'$OPENINGMSG'"' 42 65 1 '\' >> /opt/karoshi/runelement
+
+COUNTER=1
+while [  $COUNTER -le $NOOFELEMENTS ]; do
+	SCRIPTNAME=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/serversetup/setuplog | cut -d: -f2`
+	echo '"'$SCRIPTNAME'"' '"''"' '"'off'"' '\' >> /opt/karoshi/runelement
+	let COUNTER=COUNTER+1
+	done
+echo 2'>'$HOME/.tempdata/runchoice >> /opt/karoshi/runelement
+echo retval='$?' >> /opt/karoshi/runelement
+echo 'case' '$'retval 'in' >> /opt/karoshi/runelement
+echo '0)' >> /opt/karoshi/runelement
+echo 'exit 103'';;' >> /opt/karoshi/runelement
+echo '1)' >> /opt/karoshi/runelement
+echo 'exit 101'';;' >> /opt/karoshi/runelement
+echo '3)' >> /opt/karoshi/runelement
+echo 'exit 100'';;' >> /opt/karoshi/runelement
+echo '255)' >> /opt/karoshi/runelement
+echo 'exit 101'';;' >> /opt/karoshi/runelement
+echo 'esac' >> /opt/karoshi/runelement
+echo RUNCHOICE='`'cat $HOME/.tempdata/runchoice'`' >> /opt/karoshi/runelement
+chmod 0700 /opt/karoshi/runelement
+rm -f $HOME/.tempdata/msipackages
+}
+function runscript {
+/opt/karoshi/runelement
+LISTSTATUS=`echo $?`
+RUNCHOICE=`cat $HOME/.tempdata/runchoice`
+rm -f $HOME/.tempdata/runchoice
+rm -f /opt/karoshi/runelement
+if [ $LISTSTATUS = 103 ]
+then
+#Ask to run the script
+DIALOG=${DIALOG=Xdialog}
+
+$DIALOG --title "$TITLE" --clear \
+        --wrap --icon $ICON --rc-file $RCFILE --yesno "$RUNCHOICE: \n\n$CONFIRMMSG1" 16 50
+
+case $? in
+  0)
+   CHOICE=go;;
+  1)
+    CHOICE=x;;
+  255)
+    CHOICE=x;;
+esac
+if [ $CHOICE = go ]
+then
+#Get path of script to run
+SCRIPTLINENO=`grep -n "$RUNCHOICE" /opt/karoshi/serversetup/setuplog | cut -d: -f1`
+SCRIPTPATH=`sed -n $SCRIPTLINENO,$SCRIPTLINENO'p' /opt/karoshi/serversetup/setuplog | cut -d: -f3`
+#Run script
+$SCRIPTPATH
+fi
+else
+exit $LISTSTATUS
+fi
+}
+
+LISTSTATUS=0
+while [ $LISTSTATUS != 101 ]
+do
+generateelementlist
+runscript
+done
+
+
+
+
+

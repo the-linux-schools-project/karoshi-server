@@ -1,0 +1,217 @@
+#!/bin/bash
+#Copyright (C) 2009  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+
+##########################
+#Section Control
+##########################
+source /opt/karoshi/server_network/menusettings
+
+#Website: http://www.karoshi.org.uk
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
+echo '<img src="/images/small_logo.png" alt="logo" align="top"> <font style="font-weight: bold;" size="+2">Web Management '$SCHOOL_NAME'</font> <small><small>
+'$VERSION' : 130523-1141
+</small></small>'
+
+echo '<div id="navbar"><span class="preload1"></span>
+<span class="preload2"></span>
+
+<ul id="nav">
+	<li class="top"><a href="/cgi-bin/tech/redirect.cgi" class="top_link"><span>Home</span></a></li>
+	<li class="top"><a href="/cgi-bin/tech/helpdesk_add_fm.cgi" id="helpdesk" class="top_link"><span class="down">'$HELPDESKSMSG'</span></a>
+		<ul class="sub">
+			<li><a href="/cgi-bin/tech/helpdesk_add_fm.cgi">'$HELPDESKADDMSG'</a></li>
+			<li><a href="/cgi-bin/tech/helpdesk_view_fm.cgi">'$HELPDESKVIEWMSG'</a></li>
+		</ul>
+	</li>
+	<li class="top"><a href="/cgi-bin/tech/change_password_fm.cgi" id="menu" class="top_link"><span class="down">'$USERMSG'</span></a>
+		<ul class="sub">'
+
+if [ $ADDUSERCTRL = yes ]
+then
+echo '			<li><a href="/cgi-bin/tech/add_user_fm.cgi">'$ADDUSERMSG'</a></li>'
+fi
+
+echo '			<li class="mid"><a href="/cgi-bin/tech/change_password_fm.cgi" class="fly">'$MODUSERSMSG'</a>
+					<ul>
+						<li><a href="/cgi-bin/tech/change_password_fm.cgi">'$CHANGEPASSMSG'</a></li>
+						<li><a href="/cgi-bin/tech/reset_password_fm.cgi">'$RESETPASSMSG'</a></li>
+						<li class="mid"><a href="/cgi-bin/tech/view_acceptable_use_authorisations_fm.cgi" class="fly">'$ACCEPTABLEUSEMSG'</a>
+						      <ul>
+						      <li><a href="/cgi-bin/tech/view_acceptable_use_authorisations_fm.cgi">'$VIEWTRIALAUTHMSG'</a></li>
+						      <li><a href="/cgi-bin/tech/view_approved_users_fm.cgi">'$VIEWAUTHORISEDMSG'</a></li>
+						      </ul>
+						 </li>
+						<li><a href="/cgi-bin/tech/ban_user_account.cgi">'$BANUSERMSG'</a></li>
+						<li><a href="/cgi-bin/tech/banned_users_view_fm.cgi">'$VIEWBANUSERMSG'</a></li>
+						<li><a href="/cgi-bin/tech/change_username_fm.cgi">'$CHANGEUSERNAMEMSG'</a></li>
+						<li class="mid"><a href="/cgi-bin/tech/user_image_upload_fm.cgi" class="fly">'$USERIMAGEMSG'</a>
+						<ul>
+							<li><a href="/cgi-bin/tech/user_image_upload_fm.cgi">'$USERIMAGEMSG'</a></li>
+							<li><a href="/cgi-bin/tech/user_image_bulk_upload_fm.cgi">'$BULKUSERUPLOADMSG'</a></li>
+						</ul>
+						</li>
+					</ul>
+			</li>
+			<li><a href="/cgi-bin/tech/change_primary_group_fm.cgi" class="fly">'$GROUPSMSG'</a>
+					<ul>
+						<li><a href="/cgi-bin/tech/change_primary_group_fm.cgi">'$CHANGEPRIGRPMSG'</a></li>
+						<li><a href="/cgi-bin/tech/groups_change_fm.cgi">'$CHANGESECGRPMSG'</a></li>
+					</ul>
+			</li>
+			<li><a href="/cgi-bin/tech/lockout_reset_fm.cgi">'$LOCKOUTRESETMSG'</a></li>
+
+			<li><a href="/cgi-bin/tech/change_username_fm.cgi">'$CHANGEUSERNAMEMSG'</a></li>	
+
+			<li><a href="/cgi-bin/tech/incident_log_add.cgi">'$RECINCMSG'</a></li>
+			<li><a href="/cgi-bin/tech/incident_log_view_fm.cgi">'$VIEWLOGSMSG'</a></li>
+		</ul>
+	</li>
+	<li class="top"><a href="/cgi-bin/tech/remote_management_change_password_fm.cgi" id="System" class="top_link"><span class="down">'$SYSTEMMSG'</span></a>
+		<ul class="sub">
+			<li class="mid"><a href="/cgi-bin/tech/remote_management_change_password_fm.cgi" class="fly">'$KAROSHIMSG'</a>
+					<ul>
+						<li><a href="/cgi-bin/tech/remote_management_change_password_fm.cgi">'$CHANGEREMOTEPASSWORDS'</a></li>
+						<li><a href="/cgi-bin/tech/remote_management_change_language.cgi">'$CHANGELANG'</a></li>
+						<li><a href="/cgi-bin/tech/remote_management_change_theme.cgi">'$CHANGETHEME'</a></li>
+						<li><a href="/cgi-bin/tech/set_default_page_fm.cgi">'$SETDEFAULTPAGE'</a></li>
+					</ul>
+			</li>
+		</ul>
+	</li>
+
+
+	<li class="top"><a href="/cgi-bin/tech/asset_register_view.cgi" id="infrastucture" class="top_link"><span class="down">'$INFRASTRUCTURESMSG'</span></a>
+		<ul class="sub">
+			<li><a href="/cgi-bin/tech/asset_register_view.cgi">'$ASSETREGISTER'</a></li>'
+#Monitoring
+if [ $MONITORINGCTRL = yes ]
+then
+echo '			<li><a href="/cgi-bin/tech/mon_status.cgi">'$MONNSG'</a></li>'
+fi
+echo '			</ul>
+	</li>
+
+
+
+	<li class="top"><a href="/cgi-bin/tech/domain_information.cgi" id="Client" class="top_link"><span class="down">'$CLIENTMSG'</span></a>
+		<ul class="sub">
+			<li><a href="/cgi-bin/tech/domain_information.cgi">'$DOMAININFO'</a></li>'
+
+#OCS Inventory
+if [ $OCSCTRL = yes ]
+then
+echo '			<li><a href="/cgi-bin/tech/ocs.cgi" target="_blank">'$OCS'</a></li>'
+fi
+echo '			<li class="mid"><a href="/cgi-bin/tech/generate_classroom_lists_csv_upload_fm.cgi" class="fly">'$CLASSROOMMANAGEMENT'</a>
+					<ul>
+						<li><a href="/cgi-bin/tech/generate_classroom_lists_csv_upload_fm.cgi">'$GENERATECSVMSG'</a></li>
+						<li><a href="/cgi-bin/tech/generate_classroom_lists_asset_register_fm.cgi">'$GENERATEASSETRESGMSG'</a></li>
+						<li><a href="/cgi-bin/tech/generate_classroom_lists_asset_register_fm.cgi">'$GENERATEKEYSMSG'</a></li>
+					</ul>
+			</li>'
+#Distribution server
+if [ $DISTROCTRL = yes ]
+then
+echo '			<li><a href="/cgi-bin/tech/client_boot_controls_fm.cgi">'$CLIENTBOOTCONTROLS'</a></li>'
+fi
+echo '		</ul>
+	</li>'
+
+#Printers
+if [ $PRINTERCTRL = yes ]
+then
+echo '	<li class="top"><a href="/cgi-bin/tech/printers.cgi" id="Printer" class="top_link"><span class="down">'$PRINTERMSG'</span></a>
+		<ul class="sub">
+			<li><a href="/cgi-bin/tech/printers.cgi">'$VIEWQUEUES'</a></li>
+			<li class="mid"><a href="/cgi-bin/admin/printer_accounting_status_fm.cgi" class="fly">'$PRINTERACCOUNTING'</a>
+					<ul>
+					<li><a href="/cgi-bin/tech/printer_accounting_view_user_usage_fm.cgi">'$USERPRINTERUSAGE'</a></li>
+					<li><a href="/cgi-bin/tech/printer_accounting_view_group_usage_fm.cgi">'$GROUPPRINTERUSAGE'</a></li>
+					<li><a href="/cgi-bin/tech/printer_accounting_add_user_limit_fm.cgi">'$ADDUSERPRINTERLIMIT'</a></li>
+					<li><a href="/cgi-bin/tech/printer_accounting_user_limits_fm.cgi">'$USERPRINTERLIMITS'</a></li>
+					<li><a href="/cgi-bin/tech/printer_accounting_group_limits_fm.cgi">'$ACCOUNTINGGROUPLIMITS'</a></li>
+					</ul>
+			</li>
+		</ul>
+	</li>'
+fi
+
+#Internet
+if [ $INTERNETCTRL = yes ]
+then
+echo '	<li class="top"><a href="/cgi-bin/tech/activate_internet_changes_fm.cgi" id="Internet" class="top_link"><span class="down">Internet</span></a>
+		<ul class="sub">
+<li class="mid"><a href="/cgi-bin/tech/dg_view_banned_users_fm.cgi" class="fly">'$VIEWMSG'</a>
+					<ul>
+						<li><a href="/cgi-bin/tech/dg_view_banned_users_fm.cgi">'$VIEWBANNEDUSERS'</a></li>
+						<li><a href="/cgi-bin/tech/dg_view_allowed_sites_fm.cgi">'$VIEWALLOWEDSITES'</a></li>
+						<li><a href="/cgi-bin/admin/dg_view_ssl_allowed_sites_fm.cgi">'$VIEWSSLALLOWEDSITES'</a></li>
+						<li><a href="/cgi-bin/tech/dg_view_part_allowed_sites_fm.cgi">'$VIEWPALLOWEDSITES'</a></li>
+						<li><a href="/cgi-bin/tech/dg_view_banned_sites_fm.cgi">'$VIEWBANNEDSITES'</a></li>
+						<li><a href="/cgi-bin/tech/dg_view_part_banned_sites_fm.cgi">'$VIEWPBANNEDSITES'</a></li>
+						<li><a href="/cgi-bin/tech/dg_view_wildcard_bans_fm.cgi">'$VIEWWCARDBANS'</a></li>
+						<li><a href="/cgi-bin/tech/dg_view_user_logs_fm.cgi">'$VIEWUSERLOGS'</a></li>
+						<li><a href="/cgi-bin/tech/dg_view_user_usage_fm.cgi">'$VIEWUSERUSAGE'</a></li>
+						<li><a href="/cgi-bin/tech/dg_view_global_usage_fm.cgi">'$VIEWINTERNETUSAGE'</a></li>
+						<li><a href="/cgi-bin/tech/dg_view_site_logs_fm.cgi">'$VIEWSITELOGS'</a></li>
+						<li><a href="/cgi-bin/tech/dg_view_computer_logs_fm.cgi">'$VIEWCOMPUTERLOGS'</a></li>
+						<li><a href="/cgi-bin/tech/dg_view_top_sites_fm.cgi">'$VIEWTOPSITES'</a></li>
+					</ul>
+			</li>
+			<li class="mid"><a href="/cgi-bin/tech/dg_banned_sites_fm.cgi" class="fly">'$BANMSG'</a>
+					<ul>
+						<li><a href="/cgi-bin/tech/dg_ban_user.cgi">'$BANUSER'</a></li>
+						<li><a href="/cgi-bin/tech/dg_banned_sites_fm.cgi">'$ADDBANNESITES'</a></li>
+						<li><a href="/cgi-bin/tech/dg_part_banned_sites_fm.cgi">'$ADDPBANNEDSITES'</a></li>
+						<li><a href="/cgi-bin/tech/dg_wildcard_ban_fm.cgi">'$WCARDBAN'</a></li>
+						<li><a href="/cgi-bin/tech/dg_ban_location_fm.cgi">'$BANLOCATION'</a></li>
+					</ul>
+			</li>
+			<li class="mid"><a href="/cgi-bin/tech/dg_allowed_sites_fm.cgi" class="fly">'$ALLOWMSG'</a>
+					<ul>
+						<li><a href="/cgi-bin/tech/dg_allowed_sites_fm.cgi">'$ADDALLOWEDSITES'</a></li>
+						<li><a href="/cgi-bin/tech/dg_ssl_allowed_sites_fm.cgi">'$ADDSSLALLOWEDSITES'</a></li>
+						<li><a href="/cgi-bin/tech/dg_part_allowed_sites_fm.cgi">'$ADDPALLOWEDSITES'</a></li>
+						<li><a href="/cgi-bin/tech/dg_allow_location_fm.cgi">'$ALLOWLOCATION'</a></li>
+					</ul>
+			</li>
+			<li><a href="/cgi-bin/tech/dg_media_controls_fm.cgi">'$MEDIACONTROLS'</a></li>
+			<li><a href="/cgi-bin/admin/dg_room_controls_fm.cgi">'$ROOMCONTROLS'</a></li>
+			<li><a href="/cgi-bin/tech/activate_internet_changes_fm.cgi">'$ACTIVATECHANGES'</a></li>
+		</ul>
+	</li>'
+fi
+#Web
+if [ $WEBCTRL = yes ]
+then
+echo '	<li class="top"><a href="/cgi-bin/tech/web_management_upload_files_fm.cgi" id="Web" class="top_link"><span class="down">Web</span></a>
+		<ul class="sub">
+			<li><a href="/cgi-bin/tech/web_management_upload_files_fm.cgi">'$UPLOADFILES'</a></li>
+			<li><a href="/cgi-bin/tech/web_management_view_files_choose_server_fm.cgi">'$VIEWDELETEFILES'</a></li>
+			<li><a href="/cgi-bin/tech/web_management_create_folder_fm.cgi">'$CREATEFOLDER'</a></li>
+			<li><a href="/cgi-bin/tech/web_management_delete_folder_choose_server_fm.cgi">'$DELETEFOLDER'</a></li>
+		</ul>
+	</li>'
+fi
+echo '</ul></div>'

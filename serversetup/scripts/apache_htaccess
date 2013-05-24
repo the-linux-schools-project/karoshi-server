@@ -1,0 +1,63 @@
+#!/bin/bash
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/extra_server/software
+RESTART=no
+DIRCOUNT=`grep -c /var/www/html/internal $HTTPDCONFPATH`
+if [ $DIRCOUNT = 0 ]
+then
+echo '<'Directory '"'/var/www/html/internal'"''>' >> $HTTPDCONFPATH
+echo AllowOverride Limit >> $HTTPDCONFPATH
+echo '<'/Directory'>' >> $HTTPDCONFPATH
+RESTART=yes
+fi
+
+DIRCOUNT=`grep -c /var/www/html/joomla $HTTPDCONFPATH`
+if [ $DIRCOUNT = 0 ]
+then
+echo '<'Directory '"'/var/www/html/joomla'"''>' >> $HTTPDCONFPATH
+echo AllowOverride Limit >> $HTTPDCONFPATH
+echo '<'/Directory'>' >> $HTTPDCONFPATH
+RESTART=yes
+fi
+
+DIRCOUNT=`grep -c /var/www/html/squirrelmail $HTTPDCONFPATH`
+if [ $DIRCOUNT = 0 ]
+then
+echo '<'Directory '"'/var/www/html/squirrelmail'"''>' >> $HTTPDCONFPATH
+echo AllowOverride Limit >> $HTTPDCONFPATH
+echo '<'/Directory'>' >> $HTTPDCONFPATH
+RESTART=yes
+fi
+
+DIRCOUNT=`grep -c /var/www/html/moodle $HTTPDCONFPATH`
+if [ $DIRCOUNT = 0 ]
+then
+echo '<'Directory '"'/var/www/html/moodle'"''>' >> $HTTPDCONFPATH
+echo AllowOverride Limit >> $HTTPDCONFPATH
+echo '<'/Directory'>' >> $HTTPDCONFPATH
+RESTART=yes
+fi
+
+DIRCOUNT=`grep -c /var/www/html/egroupware $HTTPDCONFPATH`
+if [ $DIRCOUNT = 0 ]
+then
+echo '<'Directory '"'/var/www/html/egroupware'"''>' >> $HTTPDCONFPATH
+echo AllowOverride All >> $HTTPDCONFPATH
+echo '<'/Directory'>' >> $HTTPDCONFPATH
+RESTART=yes
+fi
+
+DIRCOUNT=`grep -c /var/www/html/elgg $HTTPDCONFPATH`
+if [ $DIRCOUNT = 0 ]
+then
+echo '<'Directory '"'/var/www/html/elgg'"''>' >> $HTTPDCONFPATH
+echo AllowOverride All >> $HTTPDCONFPATH
+echo '<'/Directory'>' >> $HTTPDCONFPATH
+RESTART=yes
+fi
+
+if [ $RESTART = yes ]
+then
+/etc/init.d/$APACHEVER stop
+/etc/init.d/$APACHEVER start
+fi

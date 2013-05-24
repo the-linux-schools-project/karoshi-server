@@ -1,0 +1,9 @@
+#
+# Shorewall version 4 - Rules File
+#
+# /etc/shorewall/rules
+####################################################################################################
+#ACTION  SOURCE		DEST      	PROTO	DEST    SOURCE	   ORIGINAL	RATE		USER/
+#                       	        	PORT    PORT(S)    DEST		LIMIT		GROUP
+ACCEPT	net	fw	icmp	8	-	-	10/sec:10	-
+#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE

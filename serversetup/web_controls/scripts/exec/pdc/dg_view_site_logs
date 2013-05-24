@@ -1,0 +1,266 @@
+#!/bin/bash
+#Copyright (C) 2008 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dg_view_site_logs_cgi
+then
+echo `date`: dg_view_site_logs - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/dg_view_site_logs_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_site_logs.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $dg_view_site_logs_cgi'check' ]
+then
+echo `date`: dg_view_site_logs - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/dg_view_site_logs_cgi
+then
+echo `date`: dg_view_site_logs - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/tech_checksums/dg_view_site_logs_cgi
+MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/dg_view_site_logs.cgi | cut -d' ' -f1`
+[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+if [ $MD5SUM2'check' != $dg_view_site_logs_cgi'check' ]
+then
+echo `date`: dg_view_site_logs - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: dg_view_site_logs - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: dg_view_site_logs - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+SEARCH=`echo "$DATA" | cut -s -d: -f4`
+DAY=`echo "$DATA" | cut -s -d: -f5`
+MONTH=`echo "$DATA" | cut -s -d: -f6`
+YEAR=`echo "$DATA" | cut -s -d: -f7`
+MOBILE=`echo "$DATA" | cut -s -d: -f8`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: dg_view_site_logs - Not called by dg_view_site_logs.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: dg_view_site_logs - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: dg_view_site_logs - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SEARCH'null' = null ]
+then
+echo `date`: dg_view_site_logs - Blank alphabet by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ $DAY'null' = null ]
+then
+echo `date`: dg_view_site_logs - Blank day by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ $MONTH'null' = null ]
+then
+echo `date`: dg_view_site_logs - Blank month by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ $YEAR'null' = null ]
+then
+echo `date`: dg_view_site_logs - Blank year by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: dg_view_site_logs - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+echo `date`: dg_view_site_logs - Viewing logs "for" $DAY-$MONTH-$YEAR - $SEARCH by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#View logs
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+TABLECLASS=standard
+[ $MOBILE = yes ] && TABLECLASS=mobilestandard
+
+#Get squid server name
+[ ! -f /opt/karoshi/server_network/proxyserver ] && exit 101
+PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+
+if [ $PROXYSERVER != $HOSTNAME ]
+then
+ssh -x -o PasswordAuthentication=no $PROXYSERVER '
+#Check to see if a log for this day exists on the date given
+
+if [ ! -d /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/allowed ] && [ ! -d /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/denied ]
+then
+exit 102
+fi
+SEARCH1=`echo "'$SEARCH'" | tr 'A-Z' 'a-z'`
+
+#Create table
+echo \<table class=\"'$TABLECLASS'\" style=\"text-align: left\; \" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>
+echo "<tbody>"
+#Generate list of sites to choose from
+SHOWSUBMIT=no
+ls /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/denied/$SEARCH1* 1>/dev/null 2>/dev/null
+if [ `echo $?` = 0 ]
+then
+SHOWSUBMIT=yes
+SITECOUNT=1
+for WEBSITE in /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/denied/$SEARCH1*
+do
+WEBSITE2=`basename "$WEBSITE" | sed "s/.tar.gz$//g"`
+if [ $SITECOUNT = 1 ]
+then
+echo \<tr\>
+fi
+echo \<td\>\<img class=\"images\" alt=\"\" src=\"/images/warnings/internet_denied.png\"\>\</td\>\<td\>\<input name=\"_WEBSITE_\" value=\""$WEBSITE2"\" type=\"radio\"\>\</td\>\<td\>"$WEBSITE2"\</td\>
+[ $SITECOUNT -gt 3 ] && echo \</tr\>
+let SITECOUNT=$SITECOUNT+1
+[ $SITECOUNT -gt 3 ] && SITECOUNT=1
+done
+fi
+
+ls /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/allowed/$SEARCH1* 1>/dev/null 2>/dev/null
+if [ `echo $?` = 0 ]
+then
+SHOWSUBMIT=yes
+SITECOUNT=1
+for WEBSITE in /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/allowed/$SEARCH1*
+do
+WEBSITE2=`basename "$WEBSITE" | sed "s/.tar.gz$//g"`
+if [ $SITECOUNT = 1 ]
+then
+echo \<tr\>
+fi
+echo \<td\>\<img class=\"images\" alt=\"\" src=\"/images/warnings/internet_allowed.png\"\>\</td\>\<td\>\<input name=\"_WEBSITE_\" value=\""$WEBSITE2"\" type=\"radio\"\>\</td\>\<td\>"$WEBSITE2"\</td\>
+[ $SITECOUNT -gt 3 ] && echo \</tr\>
+let SITECOUNT=$SITECOUNT+1
+[ $SITECOUNT -gt 3 ] && SITECOUNT=1
+done
+fi
+
+echo \</tbody\>\</table\>
+#Show submit box if search results are positive
+if [ $SHOWSUBMIT = yes ]
+then
+echo \<br\>\<input value=\"'$SUBMITMSG'\" type=\"submit\"\>
+else
+exit 103
+fi
+
+'
+SSHSTATUS=`echo $?`
+[ $SSHSTATUS = 102 ] && exit 102
+[ $SSHSTATUS = 103 ] && exit 103
+else
+#Check to see if a log for this day exists on the date given
+
+if [ ! -d /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/allowed ] && [ ! -d /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/denied ]
+then
+exit 102
+fi
+SEARCH1=`echo "$SEARCH" | tr 'A-Z' 'a-z'`
+
+#Create table
+echo \<table class=\"$TABLECLASS\" style=\"text-align: left\; \" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>
+echo "<tbody>"
+#Generate list of denied sites to choose from
+SHOWSUBMIT=no
+ls /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/denied/$SEARCH1* 1>/dev/null 2>/dev/null
+if [ `echo $?` = 0 ]
+then
+SHOWSUBMIT=yes
+SITECOUNT=1
+for WEBSITE in /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/denied/$SEARCH1*
+do
+WEBSITE2=`basename "$WEBSITE" | sed "s/.tar.gz$//g"`
+if [ $SITECOUNT = 1 ]
+then
+echo \<tr\>
+fi
+echo \<td\>\<img class=\"images\" alt=\"\" src=\"/images/warnings/internet_denied.png\"\>\</td\>\<td\>\<input name=\"_WEBSITE_\" value=\""$WEBSITE2"\" type=\"radio\"\>\</td\>\<td\>"$WEBSITE2"\</td\>
+[ $SITECOUNT -gt 3 ] && echo \</tr\>
+let SITECOUNT=$SITECOUNT+1
+[ $SITECOUNT -gt 3 ] && SITECOUNT=1
+done
+fi
+
+#Generate list of allowed sites to choose from
+ls /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/allowed/$SEARCH1* 1>/dev/null 2>/dev/null
+if [ `echo $?` = 0 ]
+then
+SHOWSUBMIT=yes
+SITECOUNT=1
+for WEBSITE in /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/allowed/$SEARCH1*
+do
+WEBSITE2=`basename "$WEBSITE" | sed "s/.tar.gz$//g"`
+if [ $SITECOUNT = 1 ]
+then
+echo \<tr\>
+fi
+echo \<td\>\<img class=\"images\" alt=\"\" src=\"/images/warnings/internet_allowed.png\"\>\</td\>\<td\>\<input name=\"_WEBSITE_\" value=\""$WEBSITE2"\" type=\"radio\"\>\</td\>\<td\>"$WEBSITE2"\</td\>
+[ $SITECOUNT -gt 3 ] && echo \</tr\>
+let SITECOUNT=$SITECOUNT+1
+[ $SITECOUNT -gt 3 ] && SITECOUNT=1
+done
+fi
+echo \</tbody\>\</table\>
+#Show submit box if search results are positive
+if [ $SHOWSUBMIT = yes ]
+then
+echo \<br\>\<input value=\"$SUBMITMSG\" type=\"submit\"\>
+else
+exit 103
+fi
+fi
+exit

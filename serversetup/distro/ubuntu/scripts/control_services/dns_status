@@ -1,0 +1,19 @@
+#!/bin/bash
+SAMBAVER=samba
+[ -f /usr/local/sbin/samba ] && SAMBAVER=samba4
+if [ $SAMBAVER = samba ]
+then
+if [ `ps -e | grep -w -c dnsmasq` -gt 0 ]
+then
+exit 0
+else
+exit 1
+fi
+else
+if [ `ps -e | grep -w -c samba` -gt 0 ]
+then
+exit 0
+else
+exit 1
+fi
+fi

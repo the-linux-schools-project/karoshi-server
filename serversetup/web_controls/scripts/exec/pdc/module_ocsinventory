@@ -1,0 +1,237 @@
+#!/bin/bash
+#Copyright (C) 2009 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/module_ocsinventory_cgi
+then
+echo `date`: module_ocsinventory - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/module_ocsinventory_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_ocsinventory.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $module_ocsinventory_cgi'check' ]
+then
+echo `date`: module_ocsinventory - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: module_ocsinventory - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-%'`
+if [ $DATA'null' = null ]
+then
+echo `date`: module_ocsinventory - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: module_ocsinventory - Not called by module_ocsinventory.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: module_ocsinventory - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: module_ocsinventory - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: module_ocsinventory - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $SERVERNAME'null' = null ]
+then
+echo `date`: module_ocsinventory - Blank OCS server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+echo `date`: setupocs on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/ocsinventory/setupocs ] || LANGCHOICE=englishuk
+source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/ocsinventory/setupocs
+
+
+#Add apache_karoshi to the apache group so that sessions work in php
+#usermod -G apache_karoshi,apache apache_karoshi
+
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+source /opt/karoshi/serversetup/variables/tcpip
+
+#####################
+#Install ocs
+#####################
+echo '<b>'$TITLE' - '$SERVERNAME'</b><br><br>'
+
+PDCIP=`net lookup $HOSTNAME`
+
+if [ $SERVERNAME = $HOSTNAME ]
+then
+#Check to see if ocs is already installed
+if [ -d /var/www/html_karoshi/admin/ocs ]
+then
+echo `date`: module_ocsinventory - ocs is already installed on $OCS_SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo $OCSINSTERROR
+exit
+fi
+#Install OCS
+echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PDCIP: | /opt/karoshi/serversetup/modules/ocsinventory/setupocs
+fi
+
+if [ $SERVERNAME != $HOSTNAME ]
+then
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+#Check to see if ocs is already installed
+if [ -d /var/www/html/moodle ]
+then
+echo '$OCSINSTERROR'
+exit 101
+fi
+[ ! -d /opt/karoshi/serversetup/language/'$LANGCHOICE'/modules ] && mkdir -p /opt/karoshi/serversetup/language/'$LANGCHOICE'/modules
+[ ! -d /opt/karoshi/serversetup/modules/ ] && mkdir -p /opt/karoshi/serversetup/modules/
+'
+if [ `echo $?` = 101 ]
+then
+echo `date`: module_ocsinventory - OCS is already installed on $OCS_SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+#Copy in language files
+scp -p -r /opt/karoshi/serversetup/language/$LANGCHOICE/modules/ocsinventory root@$SERVERNAME:/opt/karoshi/serversetup/language/$LANGCHOICE/modules/ 1> /dev/null
+#Copy in module
+scp -p -r /opt/karoshi/serversetup/modules/ocsinventory root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
+scp -p -r /opt/karoshi/serversetup/distro/pclinuxos/modules/ocsinventory root@$SERVERNAME:/opt/karoshi/serversetup/distro/pclinuxos/modules/ 1> /dev/null
+scp -p -r /opt/karoshi/serversetup/distro/ubuntu/modules/ocsinventory root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/modules/ 1> /dev/null
+#Install ocs
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+#Allow PDC to connect to remote mysql
+echo "<li>"'$MYSQLTCPMSG'"</li>"
+
+if [ -f /etc/my.cf ]
+then
+sed -i "s/skip-networking/#skip-networking/g" /etc/my.cnf
+fi
+
+if [ `grep -c 0.0.0.0 /etc/mysql/my.cnf` = 0 ]
+then
+sed -i "s/127.0.0.1/0.0.0.0/g" /etc/mysql/my.cnf
+#Restart mysql
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/'$DISTROCHOICE'/scripts/control_services/mysql_stop
+sleep 1
+/opt/karoshi/serversetup/distro/'$DISTROCHOICE'/scripts/control_services/mysql_start
+fi
+
+#Setup OCS
+echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PDCIP:' | /opt/karoshi/serversetup/modules/ocsinventory/setupocs
+#####################################
+#Ensure that mysql port are open in shorewall
+#####################################
+MODCHECK=`grep -c -w 3306 /etc/shorewall/rules`
+if [ $MODCHECK = 0 ]
+then
+echo "<br>"'$SHOREWALLMSG'
+LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
+sed -i $LINENUM"c"\ACCEPT"	"net:'$PDCIP'"	"fw"	"tcp"	"3306"	"-"#"mysql /etc/shorewall/rules
+echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+fi
+MODCHECK2=`grep -c -w 80 /etc/shorewall/rules`
+if [ $MODCHECK2 = 0 ]
+then
+echo "<br>"'$SHOREWALLMSG2'
+LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
+sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"80"	"-"#"apache /etc/shorewall/rules
+echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+fi
+######################
+#Restart shorewall
+######################
+if [ $MODCHECK = 0 ] || [ $MODCHECK2 = 0 ] 
+then
+echo "<br>"'$RESTARTSWMSG'"<br>"
+/etc/init.d/'$SHOREWALLVER' stop 1>/dev/null
+/etc/init.d/'$SHOREWALLVER' start 1>/dev/null
+fi
+'
+fi
+
+
+[ -d /var/www/html_karoshi/admin/ocs ] && rm -f -R /var/www/html_karoshi/admin/ocs
+[ -d /var/www/html_karoshi/tech/ocs ] && rm -f -R /var/www/html_karoshi/tech/ocs
+
+#Add files to web management
+if [ $SERVERNAME = $HOSTNAME ]
+then
+cp -f -R /usr/share/ocsinventory-reports/ocsreports /var/www/html_karoshi/admin/ocs
+else
+scp -p -r root@$SERVERNAME:/usr/share/ocsinventory-reports/ocsreports/ /var/www/html_karoshi/admin/ocs 1> /dev/null
+#Edit host path
+sed -i 's/localhost/'$SERVERNAME'.internal/g' /var/www/html_karoshi/admin/ocs/dbconfig.inc.php
+sed -i 's/ocs/ocs2/g' /var/www/html_karoshi/admin/ocs/dbconfig.inc.php
+fi
+cp -f -R /var/www/html_karoshi/admin/ocs /var/www/html_karoshi/tech/ocs
+chown -R root.apache_karoshi /var/www/html_karoshi/admin/ocs
+chmod -R 0440 /var/www/html_karoshi/admin/ocs
+chmod -R u+X,g+X /var/www/html_karoshi/admin/ocs
+
+chown -R root.apache_karoshi /var/www/html_karoshi/tech/ocs
+chmod -R 0440 /var/www/html_karoshi/tech/ocs
+chmod -R u+X,g+X /var/www/html_karoshi/tech/ocs
+#Create completed info file
+[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
+echo '<a href="/admin/ocs/" target="_blank">OCSInventory</a><br>' > /opt/karoshi/server_network/servers/$SERVERNAME/ocsserver
+echo Client Path: http://$SERVERNAME.internal/ocsinventory"<br>" >> /opt/karoshi/server_network/servers/$SERVERNAME/ocsserver
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
+echo $SERVERNAME > /opt/karoshi/server_network/ocs_server
+
+#Modify web management menus
+sed -i 's/OCSCTRL=no/OCSCTRL=yes/g' /opt/karoshi/server_network/menusettings
+
+echo '<br><br><b>'$COMPLETEDMSG'</b><br>'
+
+exit

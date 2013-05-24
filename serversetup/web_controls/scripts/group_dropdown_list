@@ -1,0 +1,53 @@
+#!/bin/bash
+
+#Get correct guest group depending on the samba version
+
+GUESTGROUP=guests
+[ -f /usr/local/sbin/samba ] && GUESTGROUP=guestusers
+
+YEAR=`date +%Y`
+let STARTYEAR=$YEAR-11
+let ENDYEAR=$YEAR+2
+
+source /opt/karoshi/web_controls/group_dropdown_def
+echo '
+        <select name="_GROUP_" style="width: 200px;">
+	<option></option>'
+
+
+#Show list of student groups
+
+
+while [ $STARTYEAR -lt $ENDYEAR ]
+do
+eval LABEL=\$YR${STARTYEAR}
+echo '<option value="yr'$STARTYEAR'">yr'$STARTYEAR' : '$LABEL'</option>'
+let STARTYEAR=$STARTYEAR+1
+done 
+
+echo '  <option value="'$GUESTGROUP'">guests : '"$GUESTS"'</option>
+        <option value="staff">staff : '"$STAFF"'</option>
+	<option value="staff2">staff2 : '"$STAFF2"'</option>
+	<option value="staff3">staff3 : '"$STAFF3"'</option>
+	<option value="staff4">staff4 : '"$STAFF4"'</option>
+        <option value="nonteachingstaff">nonteachingstaff : '"$NONTEACHINGSTAFF"'</option>
+        <option value="officestaff">officestaff : '"$OFFICESTAFF"'</option>
+        <option value="studentstaff">studentstaff : '"$STUDENTSTAFF"'</option>
+        <option value="guardians">guardians : '"$GUARDIANS"'</option>
+        <option value="tech">tech : '"$TECH"'</option>
+        <option value="itadmin">itadmin : '"$ITADMIN"'</option>'
+
+#Show extra options
+
+if [ -d /opt/karoshi/server_network/group_information/optional_groups/ ]
+then
+for OPTGROUPS in /opt/karoshi/server_network/group_information/optional_groups/*
+do
+OPTGROUP=`basename $OPTGROUPS`
+eval LABEL=\$OPT${OPTGROUP}
+echo '<option value="'$OPTGROUP'">'$OPTGROUP' : '"$LABEL"'</option>'
+done
+fi
+echo '</select>'
+exit
+

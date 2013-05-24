@@ -1,0 +1,318 @@
+#!/bin/bash
+#Copyright (C) 2010 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_access_cgi
+then
+echo `date`: remote_management_access - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_access_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_access.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $remote_management_access_cgi'check' ]
+then
+echo `date`: remote_management_access - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/remote_management_access_cgi
+then
+echo `date`: remote_management_access - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/tech_checksums/remote_management_access_cgi
+MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/remote_management_access.cgi | cut -d' ' -f1`
+[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+if [ $MD5SUM2'check' != $remote_management_access_cgi'check' ]
+then
+echo `date`: remote_management_access - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: remote_management_access - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: remote_management_access - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+ACTION=`echo "$DATA" | cut -s -d: -f4`
+USER=`echo "$DATA" | cut -s -d: -f5`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: remote_management_access - Not called by remote_management_access.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: remote_management_access - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: remote_management_access - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $ACTION'null' = null ]
+then
+echo `date`: remote_management_access - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $USER'null' = null ]
+then
+echo `date`: remote_management_access - Blank user by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: remote_management_access - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+
+#Gen random string
+function create_string {
+ALPHABET=( A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z 1 2 3 4 5 6 7 8 9 0 . / + - _ ,)
+RANGE=`echo ${#ALPHABET[@]}`
+C1=$RANDOM
+let "C1 %= $RANGE"
+C2=$RANDOM
+let "C2 %= $RANGE"
+C3=$RANDOM
+let "C3 %= $RANGE"
+C4=$RANDOM
+let "C4 %= $RANGE"
+C5=$RANDOM
+let "C5 %= $RANGE"
+C6=$RANDOM
+let "C6 %= $RANGE"
+C7=$RANDOM
+let "C7 %= $RANGE"
+C8=$RANDOM
+let "C8 %= $RANGE"
+C9=$RANDOM
+let "C9 %= $RANGE"
+C10=$RANDOM
+let "C10 %= $RANGE"
+C11=$RANDOM
+let "C11 %= $RANGE"
+C12=$RANDOM
+let "C12 %= $RANGE"
+C13=$RANDOM
+let "C13 %= $RANGE"
+C14=$RANDOM
+let "C14 %= $RANGE"
+C15=$RANDOM
+let "C15 %= $RANGE"
+C16=$RANDOM
+let "C16 %= $RANGE"
+C17=$RANDOM
+let "C17 %= $RANGE"
+C18=$RANDOM
+let "C18 %= $RANGE"
+C19=$RANDOM
+let "C19 %= $RANGE"
+C20=$RANDOM
+let "C20 %= $RANGE"
+C21=$RANDOM
+let "C21 %= $RANGE"
+C22=$RANDOM
+let "C22 %= $RANGE"
+C23=$RANDOM
+let "C23 %= $RANGE"
+C24=$RANDOM
+let "C24 %= $RANGE"
+C25=$RANDOM
+let "C25 %= $RANGE"
+C1=${ALPHABET[C1]}
+C2=${ALPHABET[C2]}
+C3=${ALPHABET[C3]}
+C4=${ALPHABET[C4]}
+C5=${ALPHABET[C5]}
+C6=${ALPHABET[C6]}
+C7=${ALPHABET[C7]}
+C8=${ALPHABET[C8]}
+C9=${ALPHABET[C9]}
+C10=${ALPHABET[C10]}
+C11=${ALPHABET[C11]}
+C12=${ALPHABET[C12]}
+C13=${ALPHABET[C13]}
+C14=${ALPHABET[C14]}
+C15=${ALPHABET[C15]}
+C16=${ALPHABET[C16]}
+C17=${ALPHABET[C17]}
+C18=${ALPHABET[C18]}
+C19=${ALPHABET[C19]}
+C20=${ALPHABET[C20]}
+C21=${ALPHABET[C21]}
+C22=${ALPHABET[C22]}
+C23=${ALPHABET[C23]}
+C24=${ALPHABET[C24]}
+C25=${ALPHABET[C25]}
+UNIQUE_STRING=`echo $C1$C2$C3$C4$C5$C6$C7$C8$C9$C10$C11$C12$C13$C14$C15$C16$C17$C18$C19$C20$C21$C22$C23$C24$C25`
+}
+
+
+
+##########################
+#Create client certificate
+##########################
+if [ $ACTION = CREATECERT ]
+then
+#Check that the user is a primary admin
+USERLEVEL=`grep ^$REMOTE_USER /opt/karoshi/web_controls/remote_management_users | sed -n 1,1p | cut -d: -f6`
+USERLEVEL=`echo 20$USERLEVEL`
+if [ $USERLEVEL != 201 ]
+then
+echo `date`: remote_management_access - incorrect admin level when trying to create client certificate "for" $USER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+echo `date`: remote_management_access - creating client certificate "for" $USER  by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+if [ ! -d /opt/karoshi/server_network/ssl/web_management/client_certs/$USER ]
+then
+mkdir -p /opt/karoshi/server_network/ssl/web_management/client_certs/$USER
+chmod 0750 /opt/karoshi/server_network/ssl/web_management/client_certs/$USER
+chown root.apache_karoshi /opt/karoshi/server_network/ssl/web_management/client_certs/$USER
+fi
+
+if [ ! -f /opt/karoshi/server_network/ssl/web_management/client_certs/$USER/client_cert_$USER.p12 ]
+then
+echo "<b>"$CREATECERTMSG - $USER"</b><br><b>"
+#Set permissions
+touch /opt/karoshi/server_network/ssl/web_management/client_certs/$USER/client_cert_$USER.p12
+touch /opt/karoshi/server_network/ssl/web_management/client_certs/$USER/client_cert_pass_$USER
+touch /opt/karoshi/server_network/ssl/web_management/client_certs/$USER/client_web_management.key
+touch /opt/karoshi/server_network/ssl/web_management/client_certs/$USER/client_web_management.csr
+touch /opt/karoshi/server_network/ssl/web_management/client_certs/$USER/client_web_management.crt
+chmod 0600 /opt/karoshi/server_network/ssl/web_management/client_certs/$USER/client_cert_$USER.p12
+chmod 0600 /opt/karoshi/server_network/ssl/web_management/client_certs/$USER/client_cert_pass_$USER
+chmod 0600 /opt/karoshi/server_network/ssl/web_management/client_certs/$USER/client_web_management.key
+chmod 0600 /opt/karoshi/server_network/ssl/web_management/client_certs/$USER/client_web_management.csr
+chmod 0600 /opt/karoshi/server_network/ssl/web_management/client_certs/$USER/client_web_management.crt
+#Get unique ref
+if [ ! -f /opt/karoshi/server_network/ssl/web_management/unique_ref ]
+then
+echo $ERRORMSG6
+exit 101
+fi
+UNIQUE_REF=`sed -n 1,1p /opt/karoshi/server_network/ssl/web_management/unique_ref`
+
+create_string
+KEYPASS=$UNIQUE_STRING
+
+#Create cert
+
+#Create client key
+openssl genrsa -des3 -passout pass:$UNIQUE_REF -out /opt/karoshi/server_network/ssl/web_management/client_certs/$USER/client_web_management.key 4096
+
+#Create client csr
+echo
+#openssl req -new -key client_web_management.key -out client_web_management.csr
+
+COUNTRY=`sed -n 1,1p /opt/karoshi/serversetup/variables/ssldata_web_management`
+STATE=`sed -n 2,2p /opt/karoshi/serversetup/variables/ssldata_web_management`
+CITY=`sed -n 3,3p /opt/karoshi/serversetup/variables/ssldata_web_management`
+NAME=`sed -n 4,4p /opt/karoshi/serversetup/variables/ssldata_web_management`
+LOCALNAME=`sed -n 5,5p /opt/karoshi/serversetup/variables/ssldata_web_management`
+SERVERNAME=`sed -n 6,6p /opt/karoshi/serversetup/variables/ssldata_web_management`
+EMAILADDRESS=`sed -n 7,7p /opt/karoshi/serversetup/variables/ssldata_web_management`
+
+echo [ req ] > /opt/karoshi/.tempdata/openssl_cnf.$$
+echo ' 'default_bits'           '= 4096 >> /opt/karoshi/.tempdata/openssl_cnf.$$
+echo ' 'distinguished_name'     '= req_distinguished_name >> /opt/karoshi/.tempdata/openssl_cnf.$$
+echo ' 'prompt'                 '= no >> /opt/karoshi/.tempdata/openssl_cnf.$$
+echo  >> /opt/karoshi/.tempdata/openssl_cnf.$$
+echo [ req_distinguished_name ] >> /opt/karoshi/.tempdata/openssl_cnf.$$
+echo ' 'C'                      '= $COUNTRY >> /opt/karoshi/.tempdata/openssl_cnf.$$
+echo ' 'ST'                     '= $STATE >> /opt/karoshi/.tempdata/openssl_cnf.$$
+echo ' 'L'                      '= $CITY >> /opt/karoshi/.tempdata/openssl_cnf.$$
+echo ' 'O'                      '= $NAME >> /opt/karoshi/.tempdata/openssl_cnf.$$
+echo ' 'OU'                     '= $LOCALNAME >> /opt/karoshi/.tempdata/openssl_cnf.$$
+echo ' 'CN'                     '= $NAME >> /opt/karoshi/.tempdata/openssl_cnf.$$
+echo ' 'emailAddress'           '= $EMAILADDRESS >> /opt/karoshi/.tempdata/openssl_cnf.$$
+echo [ req_attributes ] >> /opt/karoshi/.tempdata/openssl_cnf.$$
+echo challengePassword'              '= karoshi >> /opt/karoshi/.tempdata/openssl_cnf.$$
+echo companyName'                    '= Karoshi Web Management >> /opt/karoshi/.tempdata/openssl_cnf.$$
+
+
+echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\n"$LOCALNAME"\n"$SERVERNAME"\n"$EMAILADDRESS"\n""\n\n"$UNIQUE_REF"\n"Karoshi Web Management"\n" | openssl req -new -config /opt/karoshi/.tempdata/openssl_cnf.$$ -passin pass:$UNIQUE_REF -key /opt/karoshi/server_network/ssl/web_management/client_certs/$USER/client_web_management.key -out /opt/karoshi/server_network/ssl/web_management/client_certs/$USER/client_web_management.csr
+
+rm -f /opt/karoshi/.tempdata/openssl_cnf.$$
+
+openssl x509 -req -in /opt/karoshi/server_network/ssl/web_management/client_certs/$USER/client_web_management.csr -out /opt/karoshi/server_network/ssl/web_management/client_certs/$USER/client_web_management.crt -sha1 -CA /etc/ssl/apache/server_web_management.crt -CAkey /etc/ssl/apache/server_web_management.key -CAcreateserial -days 3650
+
+openssl pkcs12 -passin pass:$UNIQUE_REF -passout pass:$KEYPASS -export -in /opt/karoshi/server_network/ssl/web_management/client_certs/$USER/client_web_management.crt -inkey /opt/karoshi/server_network/ssl/web_management/client_certs/$USER/client_web_management.key -name "Karoshi Web Management" -out /opt/karoshi/server_network/ssl/web_management/client_certs/$USER/client_cert_$USER.p12
+echo $KEYPASS > /opt/karoshi/server_network/ssl/web_management/client_certs/$USER/client_cert_pass_$USER
+else
+echo $ERRORMSG6
+exit 101
+fi
+fi
+
+if [ $ACTION = SHOWDETAILS ]
+then
+echo "<b>"$USER"</b><br><br>"
+
+
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition","attachment;filename=temp.csv");
+
+
+echo '<Content-Type:application/octet-stream><br>'  
+echo '<Content-Disposition: attachment; filename=client_cert_'$USER'.p12><br><br>' 
+echo '@' 
+
+
+
+
+cat /opt/karoshi/server_network/ssl/web_management/client_certs/$USER/client_cert_$USER.p12
+
+
+
+fi
+
+
+
+
+

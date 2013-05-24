@@ -1,0 +1,109 @@
+#!/bin/bash
+#Copyright (C) 2011 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/ksso_icon_upload2_cgi
+then
+echo `date`: ksso_icon_upload - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/ksso_icon_upload2_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ksso_icon_upload2.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $ksso_icon_upload2_cgi'check' ]
+then
+echo `date`: ksso_icon_upload - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: ksso_icon_upload - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: ksso_icon_upload - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: ksso_icon_upload - Not called by ksso_icon_upload.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: ksso_icon_upload - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: ksso_icon_upload - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: ksso_icon_upload - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+#Check that only one file has been uploaded
+if [ `ls -1 /var/www/karoshi/ksso_icons/* | wc -l` -gt 1 ]
+then
+echo `date`: ksso_icon_upload - more than one file has been uploaded. >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+#Get icon name
+ICON=`ls -1 /var/www/karoshi/ksso_icons`
+
+#Check that the icon is a graphic
+FILEDATA=`file /var/www/karoshi/ksso_icons/$ICON`
+if [ `echo $FILEDATA | grep -w -c PNG` -gt 0 ] || [ `echo $FILEDATA | grep -w -c GIF` -gt 0 ] || [ `echo $FILEDATA | grep -w -c JPEG` -gt 0 ]
+then
+#Copy in icon
+cp -f /var/www/karoshi/ksso_icons/$ICON /opt/karoshi/serversetup/modules/ksso/images/icons/
+else
+echo `date`: ksso_icon_upload - icorrect data type. >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+exit
+
+

@@ -1,0 +1,9 @@
+#!/bin/bash
+#Start usermin on boot
+chkconfig usermin off
+[ -f /opt/karoshi/start_on_boot/karoshi_services ] || touch /opt/karoshi/start_on_boot/karoshi_services
+[ `grep -c -w usermin /opt/karoshi/start_on_boot/karoshi_services` = 0 ] && echo usermin,1 >> /opt/karoshi/start_on_boot/karoshi_services
+
+
+
+

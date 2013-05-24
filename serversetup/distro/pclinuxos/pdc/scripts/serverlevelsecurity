@@ -1,0 +1,11 @@
+#!/bin/bash
+#serverlevelsecurity
+cp -f /opt/karoshi/serversetup/xen/msec/perm.local /etc/security/msec/
+cp -f /opt/karoshi/serversetup/xen/msec/level.local /etc/security/msec/
+#Remove sshd from /etc/security/msec/server.4
+if test -f /etc/security/msec/server.4
+then
+sed -i 's/sshd//g' /etc/security/msec/server.4
+sed -i '/^$/d' /etc/security/msec/server.4
+fi
+msec 4

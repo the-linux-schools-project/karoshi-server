@@ -1,0 +1,8 @@
+#!/bin/bash
+#xinetd
+source /opt/karoshi/serversetup/variables/distroe
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/joshua/software
+
+xterm -geometry 100x20 -bg white -fg black -e yum -y install $XINETDVER
+
+

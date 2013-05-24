@@ -1,0 +1,440 @@
+#!/bin/bash
+#Copyright (C) 2007  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/modify_groups_cgi
+then
+echo `date`: modify_groups - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/modify_groups_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/modify_groups.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $modify_groups_cgi'check' ]
+then
+echo `date`: modify_groups - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: modify_groups - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+'`
+if [ $DATA'null' = null ]
+then
+echo `date`: modify_groups - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+OPTIONCHOICE=`echo "$DATA" | cut -s -d: -f4`
+PRIMARYGROUP=`echo "$DATA" | cut -s -d: -f5`
+NEWPASSWORD=`echo "$DATA" | cut -s -d: -f6`
+EXCEPTIONLIST=`echo "$DATA" | cut -s -d: -f7`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: modify_groups - Not called by modify_groups.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: modify_groups - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: modify_groups - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $OPTIONCHOICE'null' = null ]
+then
+echo `date`: modify_groups - Blank optionchoice by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ $PRIMARYGROUP'null' = null ]
+then
+echo `date`: modify_groups - Blank group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $OPTIONCHOICE = changepasswords ]
+then
+if [ $NEWPASSWORD'null' = null ]
+then
+echo `date`: modify_groups - Blank password by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: modify_groups - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+############################
+#Language
+############################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/modify_groups ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/user/modify_groups
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+#########################
+#Get a list of users for the chosen group
+#########################
+[ $PRIMARYGROUP = tech ] && PRIMARYGROUP=techstaff
+[ $PRIMARYGROUP = itadmin ] && PRIMARYGROUP=itadminstaff
+
+USERLIST=( `getent passwd | grep /$PRIMARYGROUP/ | cut -d: -f1` )
+
+
+#Scroll the page
+echo "    <script type = \"text/javascript\" >
+
+    var x;
+    function autoscroll(){
+    self.scrollBy(0,x)
+    }
+
+    function playautoscroll(){
+    x = 5;
+    setInterval('autoscroll()',0.01);
+    stop();}
+
+    function onetozero(){
+    x=0;
+    }
+
+    function stop(){
+    setTimeout (\"onetozero()\",600000000);
+    }
+    window.onload=playautoscroll
+
+    </script>"
+
+#########################
+#Enable or disable users
+#########################
+if [ $OPTIONCHOICE = enable ]
+then
+ACTION=e
+ACTIONLANG=enabling
+fi
+
+if [ $OPTIONCHOICE = disable ]
+then
+ACTION=d
+ACTIONLANG=disabling
+fi
+
+if [ $OPTIONCHOICE = enable ] || [ $OPTIONCHOICE = disable ]
+then
+COUNTER=0
+while [ $COUNTER -lt ${#USERLIST[@]} ]
+do
+USERNAME=`echo ${USERLIST[$COUNTER]}`
+echo `date`: modify_groups - $ACTIONLANG $USERNAME from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo $ACTIONLANG $USERNAME '<br>'
+smbpasswd -$ACTION $USERNAME 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+#Federated ldap servers
+if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
+then
+if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
+then
+for FEDERATED_LDAP_SERVER in /opt/karoshi/server_network/federated_ldap_servers/*
+do
+FEDERATED_LDAP_SERVER=`basename $FEDERATED_LDAP_SERVER`
+ssh -x $FEDERATED_LDAP_SERVER '
+smbpasswd -'$ACTION' '$USERNAME'
+'
+done
+fi
+fi
+
+let COUNTER=$COUNTER+1
+done
+exit
+fi
+
+#######################
+#Change passwords
+#######################
+if [ $OPTIONCHOICE = changepasswords ]
+then
+COUNTER=0
+while [ $COUNTER -lt ${#USERLIST[@]} ]
+do
+if [ `echo $EXCEPTIONLIST | grep -c -w $USERNAME` = 0 ]
+then
+echo `date`: modify_groups - Changed password "for" $USERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+USERNAME=`echo ${USERLIST[$COUNTER]}`
+echo Changed password "for" $USERNAME on $HOSTNAME '<br>'
+samba-tool user setpassword $USERNAME --newpassword=$NEWPASSWORD 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+########################
+#Change the password on federated ldap servers
+########################
+if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
+then
+if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
+then
+for FEDERATED_LDAP_SERVER in /opt/karoshi/server_network/federated_ldap_servers/*
+do
+FEDERATED_LDAP_SERVER=`basename $FEDERATED_LDAP_SERVER`
+echo Changed password "for" $USERNAME on $FEDERATED_LDAP_SERVER '<br>'
+ssh -x $FEDERATED_LDAP_SERVER '
+samba-tool user setpassword '$USERNAME' --newpassword='$NEWPASSWORD' 1>/dev/null
+'
+done
+fi
+fi
+
+########################
+#Export ldif data if this server is a federated server
+########################
+if [ -f /opt/karoshi/server_network/servers/$HOSTNAME/federated_server ]
+then
+if [ ! -d /opt/karoshi/server_network/password_sync ]
+then
+mkdir -p /opt/karoshi/server_network/password_sync
+chmod 0700 /opt/karoshi/server_network/password_sync
+fi
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+touch /opt/karoshi/server_network/password_sync/$USERNAME.ldif
+chmod 0600 /opt/karoshi/server_network/password_sync/$USERNAME.ldif
+ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" uid=$USERNAME | grep -e ^dn: > /opt/karoshi/server_network/password_sync/$USERNAME.ldif
+echo changetype: modify >> /opt/karoshi/server_network/password_sync/$USERNAME.ldif
+echo replace: sambaLMPassword >> /opt/karoshi/server_network/password_sync/$USERNAME.ldif
+ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" uid=$USERNAME | grep -e sambaLMPassword: >> /opt/karoshi/server_network/password_sync/$USERNAME.ldif
+echo - >> /opt/karoshi/server_network/password_sync/$USERNAME.ldif
+echo replace: sambaNTPassword >> /opt/karoshi/server_network/password_sync/$USERNAME.ldif
+ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" uid=$USERNAME | grep -e sambaNTPassword: >> /opt/karoshi/server_network/password_sync/$USERNAME.ldif
+echo - >> /opt/karoshi/server_network/password_sync/$USERNAME.ldif
+echo replace: sambaPwdLastSet >> /opt/karoshi/server_network/password_sync/$USERNAME.ldif
+ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" uid=$USERNAME | grep -e sambaPwdLastSet: >> /opt/karoshi/server_network/password_sync/$USERNAME.ldif
+echo - >> /opt/karoshi/server_network/password_sync/$USERNAME.ldif
+echo replace: userPassword >> /opt/karoshi/server_network/password_sync/$USERNAME.ldif
+ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" uid=$USERNAME | grep -e userPassword: >> /opt/karoshi/server_network/password_sync/$USERNAME.ldif
+echo - >> /opt/karoshi/server_network/password_sync/$USERNAME.ldif
+fi
+
+let COUNTER=$COUNTER+1
+fi
+done
+exit
+fi
+#Reset passwords
+if [ $OPTIONCHOICE = resetpasswords ]
+then
+echo '<b>'$RESETPASSMSG'</b><br><br>'
+COUNTER=0
+while [ $COUNTER -lt ${#USERLIST[@]} ]
+do
+if [ `echo $EXCEPTIONLIST | grep -c -w $USERNAME` = 0 ]
+then
+echo `date`: modify_groups - Reset password "for" $USERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+PASSWORD=`echo $RANDOM`
+USERNAME=`echo ${USERLIST[$COUNTER]}`
+samba-tool user setpassword $USERNAME --newpassword=$PASSWORD 1>/dev/null
+
+#Reset Passwords on federated ldap servers
+if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
+then
+if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
+then
+for FEDERATED_LDAP_SERVER in /opt/karoshi/server_network/federated_ldap_servers/*
+do
+FEDERATED_LDAP_SERVER=`basename $FEDERATED_LDAP_SERVER`
+ssh -x $FEDERATED_LDAP_SERVER '
+
+echo `date`: modify_groups \(federated mode\) - Reseting password for '$USERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+samba-tool user setpassword '$USERNAME' --newpassword='$PASSWORD' 1>/dev/null
+
+#Change password on any federated slave ldap servers.
+if [ -d /opt/karoshi/server_network/slave_ldap_servers/ ]
+then
+if [ `ls -1 /opt/karoshi/server_network/slave_ldap_servers/ | wc -l` -gt 0 ]
+then
+for SLAVELDAPSERVERS in /opt/karoshi/server_network/slave_ldap_servers/*
+do
+SLAVELDAPSERVER=`basename $SLAVELDAPSERVERS`
+
+echo `date`: modify_groups \(federated mode\) - Reseting password on $SLAVELDAPSERVER for '$USERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+ssh -x -o PasswordAuthentication=no $SLAVELDAPSERVER "
+samba-tool user setpassword '$USERNAME' --newpassword='$PASSWORD' 1>/dev/null
+"
+done
+fi
+fi
+'
+done
+fi
+fi
+
+#########################
+#Delete users
+#########################
+if [ $OPTIONCHOICE = deleteaccounts ]
+then
+source /opt/karoshi/server_network/group_information/$PRIMARYGROUP
+
+if [ $SERVER = $HOSTNAME ]
+then
+DELETEHOMEDIR=-r
+else
+DELETEHOMEDIR=
+fi
+COUNTER=0
+while [ $COUNTER -lt ${#USERLIST[@]} ]
+do
+USERNAME=`echo ${USERLIST[$COUNTER]}`
+if [ `echo $EXCEPTIONLIST | grep -c -w $USERNAME` = 0 ]
+then
+echo `date`: modify_groups - deleting $USERNAME from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo Deleting $USERNAME '<br>'
+
+#######################
+#Delete user image
+#######################
+[ -f /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg ] && rm -f /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg
+
+samba-tool user delete $USERNAME 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+if [ -d /home/applications/profiles/$USERNAME ]
+then
+rm -d -R -f /home/applications/profiles/$USERNAME
+samba-tool group delete $USERNAME 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+#Delete logon script
+[ -f /var/lib/samba/netlogon/windows_settings/drives/$USERNAME.kix ] && rm -f /var/lib/samba/netlogon/windows_settings/drives/$USERNAME.kix
+#Delete security settings
+[ -f /var/lib/samba/netlogon/windows_settings/security/$USERNAME.kix ] && rm -f /var/lib/samba/netlogon/windows_settings/security/$USERNAME.kix
+
+#######################
+#Delete the home folder
+#######################
+source /opt/karoshi/server_network/group_information/$PRIMARYGROUP
+
+if [ $HOMEPATH'null' != null ] && [ $USERNAME'null' != null ] && [ $SERVER != $HOSTNAME ]
+then
+ssh -x $SERVER 'rm -f -R '$HOMEPATH''/''$USERNAME'' 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+[ -d $HOMEPATH/$USERNAME ] && rm -f -R $HOMEPATH/$USERNAME
+
+#Delete folder on mail server
+if [ -f /opt/karoshi/server_network/emailserver ]
+then
+EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+if [ $EMAILSERVER != $HOSTNAME ]
+then 
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+[ -d /home/users/email/'$USERNAME' ] && rm -f /home/users/email/'$USERNAME'
+'
+else
+[ -d /home/users/email/'$USERNAME' ] && rm -f /home/users/email/'$USERNAME'
+fi
+fi
+
+#######################
+#Delete the account on any federated ldap servers
+#######################
+FEDERATED_LDAP_SERVERS=no
+if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
+then
+if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` ]
+then
+FEDERATED_LDAP_SERVERS=yes
+fi
+fi
+
+if [ $FEDERATED_LDAP_SERVERS = yes ]
+then
+for FEDERATEDLDAPSERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
+do
+FEDERATEDLDAPSERVER=`basename $FEDERATEDLDAPSERVERS`
+
+echo `date`: modify_groups \(federated mode\) - deleting $USERNAME on $FEDERATEDLDAPSERVER from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+ssh -x -o PasswordAuthentication=no $FEDERATEDLDAPSERVER '
+if [ -d /home/applications/profiles/'$USERNAME' ]
+then
+#Delete profile if using a roaming profile
+rm -d -R -f /home/applications/profiles/'$USERNAME'
+samba-tool group delete '$USERNAME' 1>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE' 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+fi
+#Delete home folder from file server
+source /opt/karoshi/server_network/group_information/'$PRIMARYGROUP'
+if [ -d /opt/karoshi/server_network/servers/$SERVER ] && [ $SERVER != $HOSTNAME ]
+then
+ssh -x -o PasswordAuthentication=no $SERVER "rm -f -R '$HOMEPATH'/'$USERNAME'" 1>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE' 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+fi
+#Delete logon script
+[ -f /var/lib/samba/netlogon/windows_settings/drives/'$USERNAME'.kix ] && rm -f /var/lib/samba/netlogon/windows_settings/drives/'$USERNAME'.kix
+#Delete security settings
+[ -f /var/lib/samba/netlogon/windows_settings/security/'$USERNAME'.kix ] && rm -f /var/lib/samba/netlogon/windows_settings/security/'$USERNAME'.kix
+#Delete group information
+[ -f /opt/karoshi/server_network/group_information/'$USERNAME' ] && rm -f /opt/karoshi/server_network/group_information/'$USERNAME'
+#Delete user from ldap
+samba-tool user delete '$USERNAME'
+#Delete home folder
+[ -d '$HOMEPATH''/''$USERNAME' ] && rm -f -R '$HOMEPATH''/''$USERNAME'
+#Delete email folder
+[ -d /home/users/email/'$USERNAME' ] && rm -f /home/users/email/'$USERNAME'
+
+
+' 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+done
+fi
+let COUNTER=$COUNTER+1
+fi
+done
+
+
+#Rebuild primarygroups.txt (windows 7 fix)
+[ -f /var/lib/samba/netlogon/primarygroups.txt ] && rm -f /var/lib/samba/netlogon/primarygroups.txt
+for USERDETAILS in `getent passwd | grep /home/users/`
+do
+KAROSHIUSER=`echo $USERDETAILS | cut -d: -f1 | sed 's/,//g'`
+PRIGROUP=`id -g -n $KAROSHIUSER`
+echo $KAROSHIUSER,$PRIGROUP >> /var/lib/samba/netlogon/primarygroups.txt
+done
+
+exit
+fi
+exit

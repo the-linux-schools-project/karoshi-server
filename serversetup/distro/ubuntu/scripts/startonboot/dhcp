@@ -1,0 +1,22 @@
+#!/bin/bash
+#Start dhcp on boot
+
+
+#Check which dhcp server we are using
+if [ `grep -c ^conf-dir=/etc/dnsmasq.d /etc/dnsmasq.conf` -gt 0 ]
+then
+#Using dnsmasq
+DHCPSERVICE=dnsmasq
+else
+#Using dhcp3-server
+DHCPSERVICE=dhcp3-server
+fi
+
+
+if [ -f /opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status ]
+then
+/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status $DHCPSERVICE on 1>/dev/null 2>/dev/null
+else
+chkconfig -f $DHCPSERVICE on 1>/dev/null 2>/dev/null
+fi
+

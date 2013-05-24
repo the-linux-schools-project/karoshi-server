@@ -1,0 +1,57 @@
+#!/bin/bash
+#archive_internet_logs
+#Copyright (C) 2006  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contact either at mpsharrad@karoshi.org.uk or jharris@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+[ -d /home/internetdata/rawinternetlogs ] || mkdir /home/internetdata/rawinternetlogs
+chmod 0640 /home/internetdata/rawinternetlogs
+chmod u+X,g+X -R /home/internetdata/rawinternetlogs
+chown -R root.itadmin /home/internetdata/rawinternetlogs
+
+############################
+#Move logs to home area
+############################
+[ ! -f /home/internetdata/rawinternetlogs/squid_access.log10 ] || rm -f /home/internetdata/rawinternetlogs/squid_access.log10
+[ ! -f /home/internetdata/rawinternetlogs/squid_access.log9 ] || mv /home/internetdata/rawinternetlogs/squid_access.log9 /home/internetdata/rawinternetlogs/squid_access.log10
+[ ! -f /home/internetdata/rawinternetlogs/squid_access.log8 ] || mv /home/internetdata/rawinternetlogs/squid_access.log8 /home/internetdata/rawinternetlogs/squid_access.log9
+[ ! -f /home/internetdata/rawinternetlogs/squid_access.log7 ] || mv /home/internetdata/rawinternetlogs/squid_access.log7 /home/internetdata/rawinternetlogs/squid_access.log8
+[ ! -f /home/internetdata/rawinternetlogs/squid_access.log6 ] || mv /home/internetdata/rawinternetlogs/squid_access.log6 /home/internetdata/rawinternetlogs/squid_access.log7
+[ ! -f /home/internetdata/rawinternetlogs/squid_access.log5 ] || mv /home/internetdata/rawinternetlogs/squid_access.log5 /home/internetdata/rawinternetlogs/squid_access.log6
+[ ! -f /home/internetdata/rawinternetlogs/squid_access.log4 ] || mv /home/internetdata/rawinternetlogs/squid_access.log4 /home/internetdata/rawinternetlogs/squid_access.log5
+[ ! -f /home/internetdata/rawinternetlogs/squid_access.log3 ] || mv /home/internetdata/rawinternetlogs/squid_access.log3 /home/internetdata/rawinternetlogs/squid_access.log4
+[ ! -f /home/internetdata/rawinternetlogs/squid_access.log2 ] || mv /home/internetdata/rawinternetlogs/squid_access.log2 /home/internetdata/rawinternetlogs/squid_access.log3
+[ ! -f /home/internetdata/rawinternetlogs/squid_access.log1 ] || mv /home/internetdata/rawinternetlogs/squid_access.log1 /home/internetdata/rawinternetlogs/squid_access.log2
+cp /var/log/squid/access.log /home/internetdata/rawinternetlogs/squid_access.log1
+
+[ ! -f /home/internetdata/rawinternetlogs/dg_access.log10 ] || rm -f /home/internetdata/rawinternetlogs/dg_access.log10
+[ ! -f /home/internetdata/rawinternetlogs/dg_access.log9 ] || mv /home/internetdata/rawinternetlogs/dg_access.log9 /home/internetdata/rawinternetlogs/dg_access.log10
+[ ! -f /home/internetdata/rawinternetlogs/dg_access.log8 ] || mv /home/internetdata/rawinternetlogs/dg_access.log8 /home/internetdata/rawinternetlogs/dg_access.log9
+[ ! -f /home/internetdata/rawinternetlogs/dg_access.log7 ] || mv /home/internetdata/rawinternetlogs/dg_access.log7 /home/internetdata/rawinternetlogs/dg_access.log8
+[ ! -f /home/internetdata/rawinternetlogs/dg_access.log6 ] || mv /home/internetdata/rawinternetlogs/dg_access.log6 /home/internetdata/rawinternetlogs/dg_access.log7
+[ ! -f /home/internetdata/rawinternetlogs/dg_access.log5 ] || mv /home/internetdata/rawinternetlogs/dg_access.log5 /home/internetdata/rawinternetlogs/dg_access.log6
+[ ! -f /home/internetdata/rawinternetlogs/dg_access.log4 ] || mv /home/internetdata/rawinternetlogs/dg_access.log4 /home/internetdata/rawinternetlogs/dg_access.log5
+[ ! -f /home/internetdata/rawinternetlogs/dg_access.log3 ] || mv /home/internetdata/rawinternetlogs/dg_access.log3 /home/internetdata/rawinternetlogs/dg_access.log4
+[ ! -f /home/internetdata/rawinternetlogs/dg_access.log2 ] || mv /home/internetdata/rawinternetlogs/dg_access.log2 /home/internetdata/rawinternetlogs/dg_access.log3
+[ ! -f /home/internetdata/rawinternetlogs/dg_access.log1 ] || mv /home/internetdata/rawinternetlogs/dg_access.log1 /home/internetdata/rawinternetlogs/dg_access.log2
+cp /var/log/dansguardian/access.log /home/internetdata/rawinternetlogs/dg_access.log1
+
+############################
+#Clear logs
+############################
+echo > /var/log/squid/access.log
+echo > /var/log/dansguardian/access.log

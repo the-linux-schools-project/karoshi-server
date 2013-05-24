@@ -1,0 +1,34 @@
+#!/bin/bash
+#xinetdinstall
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/software
+
+echo Installing $XINETDVER >> /opt/karoshi/serversetup/install_log
+echo apt-get install -y $XINETDVER 1'>>'$HOME/.tempdata/output 2'>>'/opt/karoshi/serversetup/install_log > $HOME/.tempdata/installsoftware
+
+chmod 0700 $HOME/.tempdata/installsoftware
+
+source /opt/karoshi/serversetup/variables/xdialog
+[ ! -f $HOME/.tempdata/output ] || rm -f $HOME/.tempdata/output
+touch $HOME/.tempdata/output
+function getxdialogpid {
+XDIALOGPID=`ps -C Xdialog -o pid= -o command= | grep Karoshi_Install_Software | sed 's/ //g' |cut -dX -f1`
+}
+function installsoftware {
+$HOME/.tempdata/installsoftware
+getxdialogpid
+if [ $XDIALOGPID'null' != null ]
+then
+kill $XDIALOGPID
+fi
+}
+installsoftware | Xdialog --wrap --icon $ICON --rc-file $RCFILE --no-ok --no-cancel --title "Karoshi_Install_Software" --tailbox $HOME/.tempdata/output 12 50
+case $? in
+0)
+;;
+1)
+;;
+255)
+;;
+esac
+rm -f $HOME/.tempdata/installsoftware

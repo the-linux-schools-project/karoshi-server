@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>User Quotas</title>
+
+</head>
+
+<body>
+<form action="/cgi-bin/karoshi/admin/user_quotas.cgi" method="post"><span style="font-weight: bold;">User
+Quotas<span style="font-weight: bold;"></span></span><br>
+<br>
+<table style="text-align: left; width: 760px; height: 417px;" border="0" cellpadding="2" cellspacing="2">
+<tbody>
+<tr>
+<td colspan="2" rowspan="1" style="background-color: rgb(204, 204, 204);">View
+partitions with quotas enabled</td>
+<td style="background-color: rgb(204, 204, 204);"><input name="_QACTION_" value="viewquotapartitions" type="radio"></td>
+<td colspan="6" rowspan="1" style="background-color: rgb(255, 204, 204);">Enable
+Quotas on partitions</td>
+<td style="background-color: rgb(255, 204, 204);"><input name="_QACTION_" value="enablequotapartitions" type="radio"></td>
+</tr>
+<tr>
+<td colspan="2" rowspan="1" style="background-color: rgb(204, 204, 204);">View
+Quota Usage<input name="_QACTION_" value="viewquotausage" type="radio"></td>
+<td style="background-color: rgb(204, 204, 204);"></td>
+<td colspan="6" rowspan="1" style="background-color: rgb(255, 204, 204);">View
+Over Quota Usage</td>
+<td style="background-color: rgb(255, 204, 204);"><input name="_QACTION_" value="viewoverquotausage" type="radio"></td>
+</tr>
+<tr>
+<td colspan="10" rowspan="1"></td>
+</tr>
+<tr>
+<td colspan="2" rowspan="1" style="background-color: rgb(204, 255, 255);">Apply
+quota settings to a&nbsp;user or group of users</td>
+<td style="background-color: rgb(204, 255, 255);"><input checked="checked" name="_QACTION_" value="applyquotas" type="radio"></td>
+<td colspan="5" rowspan="1" style="background-color: rgb(204, 255, 255);">Size</td>
+<td style="background-color: rgb(204, 255, 255);">
+<select name="_SIZE_"><option value="0">No Quota</option><option value="100">100 mb</option><option selected="selected" value="200">200 mb</option><option value="300">300 mb</option><option value="400">400 mb</option><option value="500">500 mb</option><option value="750">750 mb</option><option value="1000">1 gb</option><option value="1500">1.5 gb</option><option value="2000">2.0 gb</option><option value="3000">3.0 gb</option><option value="4000">4.0 gb</option></select>
+</td>
+<td style="background-color: rgb(204, 255, 255);"></td>
+</tr>
+<tr>
+<td style="background-color: rgb(204, 255, 255);">Username</td>
+<td style="background-color: rgb(204, 255, 255);"><input name="_USERNAME_" size="20" type="text"></td>
+<td style="background-color: rgb(204, 255, 255);"></td>
+<td style="background-color: rgb(204, 255, 255);">Size&nbsp;&nbsp;&nbsp;</td>
+<td style="background-color: rgb(204, 255, 255);">mb</td>
+<td style="background-color: rgb(204, 255, 255);"><input checked="checked" name="_UNIT_" value="mb" type="radio"></td>
+<td style="background-color: rgb(204, 255, 255);">gb</td>
+<td style="background-color: rgb(204, 255, 255);"><input name="_UNIT_" value="gb" type="radio"></td>
+<td style="background-color: rgb(204, 255, 255);"><input value="200" maxlength="10" name="_FREESIZE_" size="10"></td>
+<td style="background-color: rgb(204, 255, 255);"></td>
+</tr>
+<tr><td style="background-color: rgb(204, 255, 255);" colspan="2" rowspan="1"></td><td style="background-color: rgb(204, 255, 255);"></td><td style="background-color: rgb(204, 255, 255);" colspan="5" rowspan="1">Max Files</td><td style="background-color: rgb(204, 255, 255);"><input value="1000" maxlength="10" name="_MAXFILES_" size="10"></td><td style="background-color: rgb(204, 255, 255);"></td></tr><tr><td style="background-color: rgb(204, 255, 255);" colspan="10" rowspan="1"></td></tr><tr>
+<td colspan="2" rowspan="1" style="background-color: rgb(204, 255, 255);">2000 <br>
+</td>
+<td style="background-color: rgb(204, 255, 255);"><input name="_GROUP_" value="yr2000" type="checkbox">
+</td>
+<td colspan="6" rowspan="1" style="background-color: rgb(204, 255, 255);">Staff</td>
+<td style="background-color: rgb(204, 255, 255);"><input name="_GROUP_" value="staff" type="checkbox"></td>
+</tr>
+<tr>
+<td colspan="2" rowspan="1" style="background-color: rgb(204, 255, 255);">2001 <br>
+</td>
+<td style="background-color: rgb(204, 255, 255);"><input name="_GROUP_" value="yr2001" type="checkbox"></td>
+<td colspan="6" rowspan="1" style="background-color: rgb(204, 255, 255);">Office
+Staff</td>
+<td style="background-color: rgb(204, 255, 255);"><input name="_GROUP_" value="officestaff" type="checkbox"></td>
+</tr>
+<tr>
+<td colspan="2" rowspan="1" style="background-color: rgb(204, 255, 255);">2002 <br>
+</td>
+<td style="background-color: rgb(204, 255, 255);"><input name="_GROUP_" value="yr2002" type="checkbox">
+</td>
+<td colspan="6" rowspan="1" style="background-color: rgb(204, 255, 255);">Student
+Staff</td>
+<td style="background-color: rgb(204, 255, 255);"><input name="_GROUP_" value="studentstaff" type="checkbox"></td>
+</tr>
+<tr>
+<td colspan="2" rowspan="1" style="background-color: rgb(204, 255, 255);">2003 <br>
+</td>
+<td style="background-color: rgb(204, 255, 255);"><input name="_GROUP_" value="yr2003" type="checkbox">
+</td>
+<td colspan="6" rowspan="1" style="background-color: rgb(204, 255, 255);">Guests</td>
+<td style="background-color: rgb(204, 255, 255);"><input name="_GROUP_" value="guests" type="checkbox"></td>
+</tr>
+<tr>
+<td colspan="2" rowspan="1" style="background-color: rgb(204, 255, 255);">2004 <br>
+</td>
+<td style="background-color: rgb(204, 255, 255);"><input name="_GROUP_" value="yr2004" type="checkbox">
+</td>
+<td colspan="6" rowspan="1" style="background-color: rgb(204, 255, 255);">ITadmin</td>
+<td style="background-color: rgb(204, 255, 255);"><input name="_GROUP_" value="itadmin" type="checkbox"></td>
+</tr>
+<tr>
+<td colspan="2" rowspan="1" style="background-color: rgb(204, 255, 255);">2005 <br>
+</td>
+<td style="background-color: rgb(204, 255, 255);"><input name="_GROUP_" value="yr2005" type="checkbox"></td>
+<td colspan="6" rowspan="1" style="background-color: rgb(204, 255, 255);"></td>
+<td style="background-color: rgb(204, 255, 255);"><br></td>
+</tr>
+<tr>
+<td colspan="2" rowspan="1" style="background-color: rgb(204, 255, 255);">2006 <br>
+</td>
+<td style="background-color: rgb(204, 255, 255);"><input name="_GROUP_" value="yr2006" type="checkbox"></td>
+<td colspan="6" rowspan="1" style="background-color: rgb(204, 255, 255);"></td>
+<td style="background-color: rgb(204, 255, 255);"></td>
+</tr>
+<tr>
+<td colspan="2" rowspan="1" style="background-color: rgb(204, 255, 255);">2007 <br>
+</td>
+<td style="background-color: rgb(204, 255, 255);"><input name="_GROUP_" value="yr2007" type="checkbox"></td>
+<td colspan="6" rowspan="1" style="background-color: rgb(204, 255, 255);"></td>
+<td style="background-color: rgb(204, 255, 255);"></td>
+</tr>
+<tr>
+<td colspan="2" rowspan="1" style="background-color: rgb(204, 255, 255);">2008 <br>
+</td>
+<td style="background-color: rgb(204, 255, 255);"><input name="_GROUP_" value="yr2008" type="checkbox"></td>
+<td colspan="6" rowspan="1" style="background-color: rgb(204, 255, 255);"></td>
+<td style="background-color: rgb(204, 255, 255);"></td>
+</tr>
+<tr>
+<td colspan="2" rowspan="1" style="background-color: rgb(204, 255, 255);">2009 <br>
+</td>
+<td style="background-color: rgb(204, 255, 255);"><input name="_GROUP_" value="yr2009" type="checkbox"></td>
+<td colspan="6" rowspan="1" style="background-color: rgb(204, 255, 255);"></td>
+<td style="background-color: rgb(204, 255, 255);"></td>
+</tr>
+<tr>
+<td colspan="2" rowspan="1" style="background-color: rgb(204, 255, 255);">2010 <br>
+</td>
+<td style="background-color: rgb(204, 255, 255);"><input name="_GROUP_" value="yr2010" type="checkbox"></td>
+<td colspan="6" rowspan="1" style="background-color: rgb(204, 255, 255);"></td>
+<td style="background-color: rgb(204, 255, 255);"></td>
+</tr>
+</tbody>
+</table>
+<br>
+<table style="text-align: left; width: 180px; height: 33px;" border="0" cellpadding="2" cellspacing="2">
+<tbody>
+<tr>
+<td><input value="Submit" type="submit"></td>
+<td><input value="Reset" type="reset"></td>
+</tr>
+</tbody>
+</table>
+</form>
+<br>
+</body></html>

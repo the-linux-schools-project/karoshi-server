@@ -1,0 +1,27 @@
+#!/bin/bash
+#softwareinstall
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/remotemanagement/remotemanagementsoftware
+source $HOME/.tempdata/vncresolution
+konsole --schema=BlackOnWhite.schema -e apt-get install -y $VNCSOFTWARE
+cp /etc/vnc.conf /etc/vncbackup.conf
+cp /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/remotemanagement/vnc.conf /etc/
+if [ $VNCRES'null' = null ]
+then
+VNCRES=1024-768
+fi
+if [ $VNCRES = 1024-768 ]
+then
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/remotemanagement/vncserver /etc/init.d/
+chmod 0755 /etc/init.d/vncserver
+else
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/remotemanagement/1280/vncserver /etc/init.d/
+chmod 0755 /etc/init.d/vncserver
+fi
+[ -d /etc/sysconfig ] || mkdir /etc/sysconfig
+
+###########################
+#Make vnc run at startup
+###########################
+cp -f /opt/karoshi/serversetup/remotemanagement/S99vncstart /etc/rc2.d/
+chmod 0700 /etc/rc2.d/S99vncstart

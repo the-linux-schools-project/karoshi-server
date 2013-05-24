@@ -1,0 +1,105 @@
+#!/bin/bash
+
+#Show usage
+function show_usage {
+echo -e "\nUsage:\n\nrandom \"string length\" type\n\nstring length (1-100)\n\ntype (1-4)\n\ntype 1 - numbers\ntype 2 - alpha numeric chars lower case\ntype 3 - alpha numeric chars\ntype 4 - alpha numeric + special chars\n"
+exit
+}
+
+
+#Variables
+CHARCOUNT=`echo $1 | tr -cd '0-9'`
+[ $CHARCOUNT'null' = null ] && show_usage
+[ $CHARCOUNT -lt 1 ] && show_usage
+[ $CHARCOUNT -gt 100 ] && show_usage
+RANDTYPE=`echo $2 | tr -cd '0-9'`
+[ $RANDTYPE'null' = null ] && show_usage
+[ $RANDTYPE -lt 1 ] && show_usage
+[ $RANDTYPE -gt 4 ] && show_usage
+
+#Check help
+[ `echo $1 | tr -cd 'a-z0-9-'` = help ] && show_usage
+
+
+function generate_random_number1 {
+#Numbers only
+#Generate a number between 48 and 57
+NUMBER=0   #initialize
+FLOOR=48
+RANGE=57
+while [ "$NUMBER" -le $FLOOR ]
+do
+NUMBER=$RANDOM
+let "NUMBER %= $RANGE"
+done
+CHAR=`printf "\x$(printf %x $NUMBER)"`
+}
+
+function generate_random_number2 {
+#Alpha numeric chars only - lower case
+#Generate a number between 48 and 122
+#48-57 numbers, 65 - 90 caps, 97 - 122 lower case 
+NUMBER=0   #initialize
+FLOOR=48
+RANGE=122
+while [ "$NUMBER" -le $FLOOR ]
+do
+NUMBER=$RANDOM
+let "NUMBER %= $RANGE"
+[ 57 -lt $NUMBER -a $NUMBER -lt 97 ] && NUMBER=0
+done
+CHAR=`printf "\x$(printf %x $NUMBER)"`
+}
+
+
+function generate_random_number3 {
+#Alpha numeric chars only
+#Generate a number between 48 and 122
+#48-57 numbers, 65 - 90 caps, 97 - 122 lower case 
+NUMBER=0   #initialize
+FLOOR=48
+RANGE=122
+while [ "$NUMBER" -le $FLOOR ]
+do
+NUMBER=$RANDOM
+let "NUMBER %= $RANGE"
+[ 57 -lt $NUMBER -a $NUMBER -lt 65 ] && NUMBER=0
+[ 90 -lt $NUMBER -a $NUMBER -lt 97 ] && NUMBER=0
+done
+CHAR=`printf "\x$(printf %x $NUMBER)"`
+}
+
+function generate_random_number4 {
+#Alpha numeric and special chars
+#ASCII start 32 end 126
+#Unwanted chars 39' 34" 92\
+
+NUMBER=0   #initialize
+FLOOR=32
+RANGE=126
+while [ "$NUMBER" -le $FLOOR ]
+do
+NUMBER=$RANDOM
+let "NUMBER %= $RANGE"
+[ $NUMBER = 34 ] && NUMBER=0
+[ $NUMBER = 39 ] && NUMBER=0
+[ $NUMBER = 92 ] && NUMBER=0
+done
+CHAR=`printf "\x$(printf %x $NUMBER)"`
+}
+
+#Generate random string
+COUNTER=1
+while [ $COUNTER -le $CHARCOUNT ]
+do
+#Get random number and convert to char
+[ $RANDTYPE = 1 ] && generate_random_number1
+[ $RANDTYPE = 2 ] && generate_random_number2
+[ $RANDTYPE = 3 ] && generate_random_number3
+[ $RANDTYPE = 4 ] && generate_random_number4
+RANDOMSTRING="$RANDOMSTRING$CHAR"
+let COUNTER=$COUNTER+1
+done
+echo "$RANDOMSTRING"
+exit
+

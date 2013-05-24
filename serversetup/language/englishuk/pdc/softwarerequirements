@@ -1,0 +1,17 @@
+#Language file for xen softwarerequirements
+TITLE="Software Requirements for Xen"
+TOPMSG="You will need to install the following software on Xen"
+NTPMSG1=ntp
+NTPMSG2="Allows you to synchronise the time with the IPCop firewall"
+YPSERVMSG1=YPServ
+YPSERVMSG2="Synchronises the users and groups with the other servers"
+SAMBAMSG1="Samba"
+SAMBAMSG2="Samba Client, Samba Common, Samba Server, Samba Swat"
+SWALLMSG1=Shorewall
+SWALLMSG2="Provides a firewall for this server ensuring that only the essential ports are open"
+DHCPMSG1="Dhcp-Server"
+DHCPMSG2="Provides TCP/IP numbers for client computers if needed"
+WEBMINMSG1="Webmin 1.150 or later"
+WEBMINMSG2="Optional: This is for remote usermanagement. Please make sure that you change the \n root password frequently to avoid su problems with the custom commands."
+INSTALLED=installed
+NOTINSTALLED="not installed"

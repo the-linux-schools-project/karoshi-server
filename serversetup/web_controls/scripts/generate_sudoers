@@ -1,0 +1,50 @@
+#!/bin/bash
+#Backup sudoers file
+[ -d /etc/sudoers_backup ] || mkdir /etc/sudoers_backup
+chmod 0700 /etc/sudoers_backup
+BACKUP_NAME=`date | sed 's/ /_/g'`
+mv /etc/sudoers /etc/sudoers_backup/$BACKUP_NAME
+#Assign file list to an array
+COUNTER=1
+for FILE_NAME in /opt/karoshi/web_controls/exec/*;
+do
+FILE_LIST[$COUNTER]=$FILE_NAME
+let COUNTER=$COUNTER+1
+done
+ARRAY_COUNT=`echo ${#FILE_LIST[@]}`
+#Generate sudoers file for karoshi cgi scripts
+echo '# sudoers file.' > /etc/sudoers
+echo 'Defaults secure_path="/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin"' >> /etc/sudoers
+echo '##########################' >> /etc/sudoers
+echo '# User alias specification' >> /etc/sudoers
+echo '##########################' >> /etc/sudoers
+echo 'User_Alias ROOTNOPASSWD = karoshi' >> /etc/sudoers
+echo 'User_Alias ROOTNOPASSWD2 = apache_karoshi' >> /etc/sudoers
+echo '##########################' >> /etc/sudoers
+echo '# Cmnd alias specification' >> /etc/sudoers
+echo '##########################' >> /etc/sudoers
+echo 'Cmnd_Alias KAROSHIUTILS = /opt/karoshi/karoshimanagement/' >> /etc/sudoers
+echo -n 'Cmnd_Alias KAROSHI_WEB_UTILS = ' >> /etc/sudoers
+COUNTER=1
+while [ $COUNTER -le $ARRAY_COUNT ]
+do
+echo -n ${FILE_LIST[$COUNTER]} >> /etc/sudoers
+if [ $COUNTER -lt $ARRAY_COUNT ]
+then
+echo -n ', ' >> /etc/sudoers
+fi
+let COUNTER=$COUNTER+1
+done
+echo >> /etc/sudoers
+echo '##########################' >> /etc/sudoers
+echo '# User privilege specification' >> /etc/sudoers
+echo '##########################' >> /etc/sudoers
+echo '# Members of the admin group may gain root privileges' >> /etc/sudoers
+echo '%admin ALL=(ALL) ALL' >> /etc/sudoers
+echo  >> /etc/sudoers
+echo 'root	ALL=(ALL) ALL' >> /etc/sudoers
+echo 'ROOTNOPASSWD ALL= NOPASSWD: KAROSHIUTILS' >> /etc/sudoers
+echo 'ROOTNOPASSWD2 ALL= NOPASSWD: KAROSHI_WEB_UTILS' >> /etc/sudoers
+echo  >> /etc/sudoers
+chmod 0440 /etc/sudoers
+

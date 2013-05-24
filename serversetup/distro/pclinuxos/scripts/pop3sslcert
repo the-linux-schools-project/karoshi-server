@@ -1,0 +1,28 @@
+#!/bin/bash
+#####################
+#Generate SSl certificate for ipop3d
+#####################
+cd /etc/ssl/imap
+if [ -f /opt/karoshi/serversetup/variables/ssldata ]
+then
+#file is present
+COUNTRY=`sed -n 1,1p /opt/karoshi/serversetup/variables/ssldata`
+STATE=`sed -n 2,2p /opt/karoshi/serversetup/variables/ssldata`
+CITY=`sed -n 3,3p /opt/karoshi/serversetup/variables/ssldata`
+NAME=`sed -n 4,4p /opt/karoshi/serversetup/variables/ssldata`
+LOCALNAME=`sed -n 5,5p /opt/karoshi/serversetup/variables/ssldata`
+SERVERNAME=`sed -n 6,6p /opt/karoshi/serversetup/variables/ssldata`
+EMAILADDRESS=`sed -n 7,7p /opt/karoshi/serversetup/variables/ssldata`
+
+echo -e "$COUNTRY\n$STATE\n$CITY\n$NAME\n$LOCALNAME\n$SERVERNAME\n$EMAILADDRESS\n" | openssl req -new -x509 -days 730 -nodes -out ipop3sd.pem -keyout ipop3sd.pem 
+
+else
+#file is not there so ask for data
+xterm -geometry 100x20 -bg white -fg black -e openssl req -new -x509 -days 730 -nodes -out ipop3sd.pem -keyout ipop3sd.pem
+fi
+
+
+
+
+
+

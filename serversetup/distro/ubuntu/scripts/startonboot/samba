@@ -1,0 +1,15 @@
+#!/bin/bash
+#Start samba on boot
+
+#Check which version of samba we are using
+SAMBAVER=samba
+[ -f /usr/local/sbin/samba ] && SAMBAVER=samba4
+
+
+if [ -f /opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status ]
+then
+/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status $SAMBAVER on 1>/dev/null 2>/dev/null
+else
+chkconfig -f $SAMBAVER on 1>/dev/null 2>/dev/null
+fi
+

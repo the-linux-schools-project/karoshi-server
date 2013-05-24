@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<RDF:RDF xmlns:NC="http://home.netscape.com/NC-rdf#"
+         xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <RDF:Description RDF:about="chrome://browser/content/pref/pref-privacy.xul">
+    <NC:persist RDF:resource="chrome://browser/content/pref/pref-privacy.xul#formfill"/>
+    <NC:persist RDF:resource="chrome://browser/content/pref/pref-privacy.xul#history"/>
+    <NC:persist RDF:resource="chrome://browser/content/pref/pref-privacy.xul#passwords"/>
+    <NC:persist RDF:resource="chrome://browser/content/pref/pref-privacy.xul#downloads"/>
+    <NC:persist RDF:resource="chrome://browser/content/pref/pref-privacy.xul#cookies"/>
+    <NC:persist RDF:resource="chrome://browser/content/pref/pref-privacy.xul#cache"/>
+  </RDF:Description>
+  <RDF:Description RDF:about="chrome://browser/content/pref/pref-privacy.xul#cache"
+                   open="true" />
+  <RDF:Description RDF:about="chrome://browser/content/browser.xul#sidebar-title"
+                   value="" />
+  <RDF:Description RDF:about="chrome://browser/content/pref/pref-privacy.xul#passwords"
+                   open="false" />
+  <RDF:Description RDF:about="chrome://browser/content/pref/pref-privacy.xul#history"
+                   open="false" />
+  <RDF:Description RDF:about="chrome://browser/content/browser.xul#search-proxy-button"
+                   src="file:///C:/PROGRA~1/MOZILL~1/searchplugins/google.gif" />
+  <RDF:Description RDF:about="chrome://browser/content/browser.xul#main-window"
+                   width="994"
+                   height="730"
+                   sizemode="normal"
+                   screenX="4"
+                   screenY="4" />
+  <RDF:Description RDF:about="chrome://browser/content/pref/pref-privacy.xul#downloads"
+                   open="false" />
+  <RDF:Description RDF:about="chrome://mozapps/content/downloads/downloads.xul">
+    <NC:persist RDF:resource="chrome://mozapps/content/downloads/downloads.xul#downloadManager"/>
+  </RDF:Description>
+  <RDF:Description RDF:about="chrome://mozapps/content/downloads/downloads.xul#downloadManager"
+                   width="400"
+                   height="300"
+                   screenX="179"
+                   screenY="28" />
+  <RDF:Description RDF:about="chrome://browser/content/pref/pref-privacy.xul#cookies"
+                   open="false" />
+  <RDF:Description RDF:about="chrome://browser/content/browser.xul">
+    <NC:persist RDF:resource="chrome://browser/content/browser.xul#main-window"/>
+    <NC:persist RDF:resource="chrome://browser/content/browser.xul#search-bar"/>
+    <NC:persist RDF:resource="chrome://browser/content/browser.xul#search-proxy-button"/>
+    <NC:persist RDF:resource="chrome://browser/content/browser.xul#sidebar-box"/>
+    <NC:persist RDF:resource="chrome://browser/content/browser.xul#sidebar-title"/>
+  </RDF:Description>
+  <RDF:Description RDF:about="chrome://browser/content/browser.xul#search-bar"
+                   searchengine="engine://C%3A%5CPROGRA%7E1%5CMOZILL%7E1%5Csearchplugins%5Cgoogle.src"
+                   autocompletesearchparam="q" />
+  <RDF:Description RDF:about="chrome://browser/content/pref/pref-privacy.xul#formfill"
+                   open="false" />
+</RDF:RDF>

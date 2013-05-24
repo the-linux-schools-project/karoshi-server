@@ -1,0 +1,15 @@
+TITLE="Setup Reverse Proxy"
+WARNINGMSG="WARNING this will overwrite any current installation."
+CONTINUE=Continue
+OPENINGMSG="The reverse proxy allows incoming web traffic to be redirected to other servers on your network."
+OPENINGMSG2="Setting up Reverse Proxy"
+INSTALLMSG="Checking for modules"
+HELPMSG1="The reverse proxy allows incoming web traffic to be redirected to other servers on your network. The redirect is based on the trailing slash and folder name after the end of the domain of your site. Web sites to be redirected are added in on the web management ( web - add reverse proxy )."
+COMPLETEDMSG="Setup Reverse Proxy Completed"
+SHOREWALLMSG="Modifying shorewall rules to allow port 3306."
+SHOREWALLMSG2="Modifying shorewall rules to allow port 80."
+RESTARTSWMSG="Restarting shorewall"
+ERRORMSG1="The servername cannot be blank."
+ERRORMSG2="You cannot setup a reverse proxy on the main server."
+ROLE="Reverse Proxy Server"
+

@@ -1,0 +1,33 @@
+#!/bin/bash
+#Exit codes
+#110 no data passed to script
+#111 user is a member of a student group
+#112 user is not a member of the above groups
+LOG_DATE=`date +%F`
+read -t 1 -s DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\n-+'`
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+USERTOCHECK=`echo "$DATA" | cut -s -d: -f3`
+USERTOCHECK=`echo $USERTOCHECK | tr -cd 'A-Za-z0-9\._:\n-+'`
+if [ `echo $USERTOCHECK'null' | sed 's/ //g'` = null ]
+then 
+echo `date`: check_student - No data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 110
+fi
+MYPRIGROUP=`id -g -n "$USERTOCHECK"`
+PRIGROUP=`id -g -n "$USERTOCHECK"`
+STUDENTCOUNTER=2000
+COUNTER=0
+while [ $STUDENTCOUNTER -le 2040 ]
+do
+ALLOWD_GROUPS[$COUNTER]=`echo yr$STUDENTCOUNTER`
+let COUNTER=$COUNTER+1
+let STUDENTCOUNTER=$STUDENTCOUNTER+1
+done
+if [ `echo ${ALLOWD_GROUPS[@]:0} | grep -c -w $PRIGROUP` = 1 ]
+then
+exit 111
+fi
+echo `date`: check_staff - $USERTOCHECK is not a student by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 112

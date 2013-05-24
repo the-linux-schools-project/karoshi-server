@@ -1,0 +1,48 @@
+#!/bin/bash
+
+#This compiles and installs samba4 to the provisioning stage.
+
+DOINSTALL=no
+[ `echo $1'install'` = forceinstall ] && DOINSTALL=yes
+if [ ! -f /usr/local/sbin/samba ]
+then
+DOINSTALL=yes
+else
+echo samba4 is already installed - use force to recompile.
+fi
+######################
+#Install samba 4
+######################
+if [ $DOINSTALL = yes ]
+then
+#Get number of cpu cores
+CORES=`cat /proc/cpuinfo | grep "cpu cores" | head -n 1 | sed "s@.*: \(.*\)@\1@"`
+[ `echo $CORES'null'` = null ] && CORES=1
+let THREADS=$CORES*2
+
+#Install dependencies
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/samba4deps
+
+cd /opt/karoshi/serversetup/all/samba4
+SAMBAARCHIVE=`ls samba-*.tar.gz`
+INSTALLDIR=`echo $SAMBAARCHIVE | sed 's/.tar.gz//g'`
+[ -d /opt/karoshi/serversetup/all/samba4/$INSTALLDIR ] && rm -f -R /opt/karoshi/serversetup/all/samba4/$INSTALLDIR
+#Extracting samba
+tar -xvf $SAMBAARCHIVE 
+cd $INSTALLDIR
+
+#Configure
+#./configure --prefix=/usr/local --with-ads --enable-fhs --sysconfdir=/etc --localstatedir=/var
+./configure --enable-cups --with-ads --prefix=/usr/local --enable-fhs --sysconfdir=/etc --localstatedir=/var
+#Make
+make -j $THREADS
+#Install
+make install
+fi
+
+
+#Copy in samba 4 startup script
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/samba4 /etc/init.d
+chmod 0755 /etc/init.d/samba4
+

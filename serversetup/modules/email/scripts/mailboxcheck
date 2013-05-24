@@ -1,0 +1,193 @@
+#!/bin/bash
+#mailboxcheck
+#Program to monitor the karoshi system mailbox sizes
+#Copyright (C) 2007 Paul Sharrad
+
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contact either at mpsharrad@karoshi.org.uk or jharris@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+[ -d /opt/karoshi/postfixdata ] || mkdir /opt/karoshi/postfixdata/
+[ -d /opt/karoshi/postfixdata/warning_messages ] || mkdir /opt/karoshi/postfixdata/warning_messages
+touch /opt/karoshi/postfixdata/quota_warnings
+chmod 0755 /opt/karoshi/postfixdata/
+if [ -f /opt/karoshi/postfixdata/mailboxcheck_settings ]
+then
+chmod 0600 /opt/karoshi/postfixdata/mailboxcheck_settings
+source /opt/karoshi/postfixdata/mailboxcheck_settings
+else
+exit
+fi
+
+
+################################
+#Get size limit of inbox from postfix configuration
+################################
+MBOXLIMIT=`grep ^"mailbox_size_limit =" /etc/postfix/main.cf | sed -n 1,1p | cut -d"=" -f2 | sed "s/ //g"`
+[ $MBOXLIMIT'null' = null ] && exit
+#Convert to kilobytes
+let MBOXLIMIT=$MBOXLIMIT/1024
+#LIMITS
+let LIMIT1=$MBOXLIMIT*$THRESHOLD1/100
+let LIMIT2=$MBOXLIMIT*$THRESHOLD2/100
+let LIMIT3=$MBOXLIMIT*$THRESHOLD3/100
+let LIMIT4=$MBOXLIMIT*$THRESHOLD4/100
+#############################
+#Check if this script has already been run today
+#############################
+CURRENT_DATE=`date +%d-%m-%y`
+FIRST_RUN=yes
+if [ -f /opt/karoshi/postfixdata/mailboxcheck_last_run ]
+then
+LAST_DATE=`sed -n 1,1p /opt/karoshi/postfixdata/mailboxcheck_last_run | cut -d: -f1`
+if [ $LAST_DATE = $CURRENT_DATE ]
+then
+FIRST_RUN=no
+fi
+fi
+#############################
+#Record date and time of run
+#############################
+echo `date +%d-%m-%y:%T` > /opt/karoshi/postfixdata/mailboxcheck_last_run
+#############################
+#Get mail domain from postfix configuration
+#############################
+EMAILDOMAIN=`grep ^mydomain /etc/postfix/main.cf | cut -d'=' -f2 | sed 's/ //g'`
+if [ `echo $EMAILDOMAIN | grep -c ^mail.` = 1 ]
+then
+EMAILDOMAIN=`echo $EMAILDOMAIN | sed 's/mail.//'`
+fi
+
+function mailwarning {
+#Log warning
+SEND_EMAIL=yes
+#Check if user has already been listed in quota_warnings
+USERCOUNT=`grep -c ^$USERNAME, /opt/karoshi/postfixdata/quota_warnings`
+if [ $USERCOUNT -gt 0 ]
+then
+#Get previous data
+USERDATA=`grep ^$USERNAME, /opt/karoshi/postfixdata/quota_warnings`
+CURRENT_INTERVAL=`echo $USERDATA | cut -d, -f4`
+CURRENT_LEVEL=`echo $USERDATA | cut -d, -f2`
+#Remove entry from list
+sed -i /^$USERNAME,/d /opt/karoshi/postfixdata/quota_warnings
+#User has taken no action so still on the same level
+if [ $CURRENT_LEVEL = $LEVEL ]
+then
+#decrease interval if this is the first mail check of the day
+if [ $FIRST_RUN = yes ]
+then
+let CURRENT_INTERVAL=$CURRENT_INTERVAL-1
+fi
+if [ $CURRENT_INTERVAL != 0 ]
+then
+INTERVAL=$CURRENT_INTERVAL
+SEND_EMAIL=no
+fi
+fi
+fi
+#Convert mailbox size to megabytes for recording in the log
+MAILBOXSIZE=`echo "scale=1; $MAILBOXSIZE/1024" | bc -l`
+#Write data back to quota_warnings
+echo $USERNAME,$LEVEL,$MAILBOXSIZE,$INTERVAL >> /opt/karoshi/postfixdata/quota_warnings
+###########################
+#Send email message
+###########################
+if [ $SEND_EMAIL = yes ]
+then
+su - karoshi -c 'mail -s "E-mail housekeeping - Warning mailbox is over '$PERCENT'%" '$USERNAME@$EMAILDOMAIN' < '$WARNING_PATH''
+#Warn email admin if level4
+if [ $LEVEL = 4 ]
+then
+su - karoshi -c 'echo '$USERNAME': Inbox is over '$PERCENT'% | mail -s "E-mail housekeeping - '$USERNAME': Warning mailbox is over '$PERCENT'%" '$ADMIN_EMAIL@$EMAILDOMAIN''
+fi
+fi
+}
+
+###############################
+# Make sure that /var/spool/mail is not empty
+###############################
+if [ "$(ls -A $MAILSPOOL)" ]
+then
+echo "Checking $MAILSPOOL"
+else
+echo "$MAILSPOOL is empty so exiting."
+exit
+fi 
+##########################
+#Run Mail Checks
+##########################
+
+for MAILBOX in $MAILSPOOL/*
+do
+USERNAME=`basename $MAILBOX`
+if [ `echo $USERNAME | grep -c .lock` = 0 ]
+then
+MAILBOXSIZE=`du -ak $MAILBOX | cut -f1`
+if [ $MAILBOXSIZE -gt $LIMIT4 ]
+then
+echo $USERNAME: Inbox is over $THRESHOLD4%.
+LEVEL=4
+INTERVAL=$INTERVAL4
+PERCENT=$THRESHOLD4
+WARNING_PATH=/opt/karoshi/postfixdata/warning_messages/level4
+mailwarning
+elif [ $MAILBOXSIZE -gt $LIMIT3 ]
+then
+LEVEL=3
+INTERVAL=$INTERVAL3
+PERCENT=$THRESHOLD3
+WARNING_PATH=/opt/karoshi/postfixdata/warning_messages/level3
+echo $USERNAME: Inbox is over $THRESHOLD3%.
+mailwarning
+elif [ $MAILBOXSIZE -gt $LIMIT2 ]
+then
+LEVEL=2
+INTERVAL=$INTERVAL2
+PERCENT=$THRESHOLD2
+WARNING_PATH=/opt/karoshi/postfixdata/warning_messages/level2
+echo $USERNAME: Inbox is over $THRESHOLD2%.
+mailwarning
+elif [ $MAILBOXSIZE -gt $LIMIT1 ]
+then
+LEVEL=1
+INTERVAL=$INTERVAL1
+PERCENT=$THRESHOLD1
+WARNING_PATH=/opt/karoshi/postfixdata/warning_messages/level1
+echo $USERNAME: Inbox is over $THRESHOLD1%.
+mailwarning
+fi
+fi
+done
+###########################
+#Check list and remove users whose mail has fallen below quota
+###########################
+LINE_COUNT=`cat /opt/karoshi/postfixdata/quota_warnings | wc -l`
+COUNTER=1
+while [ $COUNTER -le $LINE_COUNT ]
+do
+DATA_ENTRY=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/postfixdata/quota_warnings`
+USERNAME=`echo $DATA_ENTRY | cut -d, -f1`
+#Check if user is below bottom threshold
+MAILBOXSIZE=`du -ak $MAILSPOOL/$USERNAME | cut -f1`
+if [ $MAILBOXSIZE -le $LIMIT1 ]
+then
+sed -i /^$USERNAME,/d /opt/karoshi/postfixdata/quota_warnings
+fi
+let COUNTER=$COUNTER+1
+done
+exit

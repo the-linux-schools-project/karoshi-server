@@ -1,0 +1,48 @@
+#!/bin/bash
+
+#Notes %I ipaddress %a client os %m machine name %S share name
+#Input data %u %I $a %m %S
+
+LOGGING=yes
+TODAY=`date +%d-%m-%Y`
+ACCESS_TIME=`date +%H:%M:%S`
+
+if [ $LOGGING = yes ]
+then
+######################
+#Make log folder if it does not exist
+######################
+[ ! -d /opt/karoshi/logs/connections/$TODAY/users ] && mkdir -p /opt/karoshi/logs/connections/$TODAY/users
+[ ! -d /opt/karoshi/logs/connections/$TODAY/tcpip ] && mkdir -p /opt/karoshi/logs/connections/$TODAY/tcpip
+[ ! -d /opt/karoshi/logs/connections/$TODAY/shares ] && mkdir -p /opt/karoshi/logs/connections/$TODAY/shares
+[ ! -d /opt/karoshi/logs/connections/$TODAY/machines ] && mkdir -p /opt/karoshi/logs/connections/$TODAY/machines
+
+######################
+#Icons
+######################
+#User
+ICON1="/images/submenus/user/adduser.png"
+#TCIPIP
+ICON2="/images/submenus/system/tcpip.png"
+#Machine name
+ICON4="/images/submenus/system/computer.png"
+#Share name
+ICON5="/images/submenus/system/samba_share.png"
+
+#Append Time, machine name, ipadddress, sharename to user log
+echo '<tr><td style="vertical-align: top;">'$ACCESS_TIME'</td><td><form action="samba_logs_machine.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_'DATE_$TODAY'_MACHINE_'$4'_" type="image" class="images" src="'$ICON4'" value=""><span>View log - '$4'</span></a></form></td><td style="vertical-align: top;">'$4'</td><td><form action="samba_logs_ip.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_'DATE_$TODAY'_TCPIP_'$2'_" type="image" class="images" src="'$ICON2'" value=""><span>View log - '$2'</span></a></form></td><td style="vertical-align: top;">'$2'</td><td><form action="samba_logs_share.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_'DATE_$TODAY'_SHARE_'$5'_" type="image" class="images" src="'$ICON5'" value=""><span>View log - '$5'</span></a></form></td><td style="vertical-align: top;">'$5'</td></tr>' >> /opt/karoshi/logs/connections/$TODAY/users/$1
+
+#Append Time, username, machine name, ipaddress to share log
+echo '<tr><td style="vertical-align: top;">'$ACCESS_TIME'</td><td><form action="samba_logs_user.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_'DATE_$TODAY'_USER_'$1'_" type="image" class="images" src="'$ICON1'" value=""><span>View log - '$1'</span></a></form></td><td style="vertical-align: top;">'$1'</td><td><form action="samba_logs_machine.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_'DATE_$TODAY'_MACHINE_'$4'_" type="image" class="images" src="'$ICON4'" value=""><span>View log - '$4'</span></a></form></td><td style="vertical-align: top;">'$4'</td><td><form action="samba_logs_ip.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_'DATE_$TODAY'_TCPIP_'$2'_" type="image" class="images" src="'$ICON2'" value=""><span>View log - '$2'</span></a></form></td><td style="vertical-align: top;">'$2'</td></tr>' >> /opt/karoshi/logs/connections/$TODAY/shares/$5
+
+#Append Time, username, machine name, sharename, to tcpip log
+echo '<tr><td style="vertical-align: top;">'$ACCESS_TIME'</td><td><form action="samba_logs_user.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_'DATE_$TODAY'_USER_'$1'_" type="image" class="images" src="'$ICON1'" value=""><span>View log - '$1'</span></a></form></td><td style="vertical-align: top;">'$1'</td><td><form action="samba_logs_machine.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_'DATE_$TODAY'_MACHINE_'$4'_" type="image" class="images" src="'$ICON4'" value=""><span>View log - '$4'</span></a></form></td><td style="vertical-align: top;">'$4'</td><td><form action="samba_logs_share.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_'DATE_$TODAY'_SHARE_'$5'_" type="image" class="images" src="'$ICON5'" value=""><span>View log - '$5'</span></a></form></td><td style="vertical-align: top;">'$5'</td></tr>' >> /opt/karoshi/logs/connections/$TODAY/tcpip/$2
+
+#Append Time, username, sharename, tcpip to machine log
+echo '<tr><td style="vertical-align: top;">'$ACCESS_TIME'</td><td><form action="samba_logs_user.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_'DATE_$TODAY'_USER_'$1'_" type="image" class="images" src="'$ICON1'" value=""><span>View log - '$1'</span></a></form></td><td style="vertical-align: top;">'$1'</td><td><form action="samba_logs_share.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_'DATE_$TODAY'_SHARE_'$5'_" type="image" class="images" src="'$ICON5'" value=""><span>View log - '$5'</span></a></form></td><td style="vertical-align: top;">'$5'</td><td><form action="samba_logs_ip.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_'DATE_$TODAY'_TCPIP_'$2'_" type="image" class="images" src="'$ICON2'" value=""><span>View log - '$2'</span></a></form></td><td style="vertical-align: top;">'$2'</td></tr>' >> /opt/karoshi/logs/connections/$TODAY/machines/$4
+fi
+######################
+#Create auth file for username logged onto ipadddess
+######################
+#echo $1 on share $5 >> /opt/karoshi/server_network/proxy_auth/$2
+exit

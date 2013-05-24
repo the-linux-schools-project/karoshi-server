@@ -1,0 +1,63 @@
+
+Starting OCS Inventory NG Management server setup on 2009-10-15-16-17-02
+from folder /opt/karoshi/serversetup/modules/ocs
+Storing log in file /opt/karoshi/serversetup/modules/ocs/ocs_server_setup.log
+
+============================================================
+Checking OCS Inventory NG Management Server requirements...
+============================================================
+Checking for database server properties
+MySQL client distribution version 5.0.
+Computer seems to be running MySQL 4.1 or higher
+Database server is running on host localhost
+Database server is running on port 3306
+Checking for Apache web server daemon
+Found Apache daemon /usr/sbin/httpd
+Using Apache daemon /usr/sbin/httpd
+Checking for Apache main configuration file
+Found Apache HTTPD_ROOT /etc/httpd
+Found Apache SERVER_CONFIG_FILE conf/httpd.conf
+Found Apache main configuration file /etc/httpd/conf/httpd.conf
+Using Apache main configuration file /etc/httpd/conf/httpd.conf
+Checking for Apache user account
+Found Apache user account apache
+Using Apache user account apache
+Checking for Apache group
+Found Apache user group apache
+Using Apache user group apache
+Checking for Apache Include configuration directory
+Redhat compliant Apache Include configuration directory conf.d/
+Found Apache Include configuration directory /etc/httpd/conf.d/
+Using Apache Include configuration directory /etc/httpd/conf.d/
+Checking for PERL Interpreter
+Found PERL Intrepreter at </usr/bin/perl>
+Using PERL Intrepreter /usr/bin/perl
+
+============================================================
+Installing Communication server
+============================================================
+Checking for Make utility
+Make utility found at </usr/bin/make>
+Checking for Apache mod_perl version 1.99_22 or higher
+mod_perl 1.99_22 or higher is available
+Using mod_perl version 1.99_22 or higher
+Checking for Communication server log directory
+Using /var/log/ocsinventory-server as Communication server log directory
+Entering Apache sub directory
+Checking for DBI PERL module
+PERL module DBI is available
+Checking for Apache::DBI PERL module
+PERL module Apache::DBI is available
+Checking for DBD::mysql PERL module
+PERL module DBD::mysql is available
+Checking for Compress::Zlib PERL module
+PERL module Compress::Zlib is available
+Checking for XML::Simple PERL module
+PERL module XML::Simple is available
+Checking for Net::IP PERL module
+PERL module Net::IP is available
+Checking for SOAP::Lite PERL module
+PERL module SOAP::Lite is available
+Checking for XML::Entities PERL module
+PERL module XML::Entities is available
+Configuring Communication server (perl Makefile.PL)

@@ -1,0 +1,25 @@
+#!/bin/bash
+#This script fudges the problem with smbldap-useradd -w not joining client machines to the domain
+#Uses oldstyle adduser which add entry to ldap but also adds entry in /etc/passwd
+#Add the machine account
+MACHINENAME=`echo $1`
+LOG_DATE=`date +%F`
+LOGPATH=/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+[ $LOG_DATE'null' = null ] && exit
+
+#Exit if machine name is blank
+if [ "$MACHINENAME"'null' = null ]
+then
+echo `date`: ldap_add_machine - Blank machine name >> $LOGPATH
+exit
+fi
+#Log attempt
+function add_machine {
+echo `date`: ldap_add_machine - adding "$MACHINENAME" >> $LOGPATH
+#/usr/sbin/adduser -n -g machines -c Machine -d /dev/null -s /bin/false "$MACHINENAME"
+/usr/sbin/useradd -g 515 -c Machine -d /dev/null -s /bin/false "$MACHINENAME"
+}
+
+add_machine
+/opt/karoshi/"useful scripts"/ldap_delete_local_machine_account "$MACHINENAME" &
+exit

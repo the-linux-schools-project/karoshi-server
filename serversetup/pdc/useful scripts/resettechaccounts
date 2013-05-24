@@ -1,0 +1,61 @@
+#!/bin/bash
+#Change samba password on all tech accounts
+#Copyright (C) 2004  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contact either at mpsharrad@karoshi.org.uk or jharris@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+#Clear log area
+[ -f /opt/karoshi/logs/tech_passwords ] && rm -f /opt/karoshi/logs/tech_passwords
+touch /opt/karoshi/logs/tech_passwords
+chmod 0600 /opt/karoshi/logs/tech_passwords
+
+function random_password {
+PASSCHOICE=( A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y x 1 2 3 4 5 6 7 8 9 0 )
+
+RANGE=`echo ${#PASSCHOICE[@]}`
+let RANGE=$RANGE-1 
+
+COUNTER=1
+while [ $COUNTER -le 6 ]
+do
+ARRAYCHOICE=$RANDOM
+let "ARRAYCHOICE %= $RANGE"
+RANDPASSWORD[$COUNTER]=`echo ${PASSCHOICE[$ARRAYCHOICE]} `
+let COUNTER=COUNTER+1
+done
+PASSWORD=`echo ${RANDPASSWORD[@]:0} | sed 's/ //g'`
+}
+
+for TECHUSERS in `getent passwd | grep /home/users/techstaff/tech`
+do
+TECHUSER=`basename $TECHUSERS`
+#Get random password
+random_password
+#Change password
+echo -e $PASSWORD"\n"$PASSWORD|smbpasswd -s $TECHUSER
+#Notify administrators and techs of password
+echo $TECHUSER ':' $PASSWORD >> /opt/karoshi/logs/tech_passwords
+done
+
+#Add date to log
+echo >> /opt/karoshi/logs/tech_passwords
+echo Guest passwords last changed at':' >> /opt/karoshi/logs/tech_passwords
+date >> /opt/karoshi/logs/tech_passwords
+exit
+
+

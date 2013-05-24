@@ -1,0 +1,214 @@
+#! /usr/bin/perl
+# quosnmp installer
+# Version 1.8.1 Final
+# A CUPS backend for print accounting and quota enforcement.
+#
+# Released by Marcus Lauer (marcus.lauer at nyu dot edu)
+# Available at http://quosnmp.sourceforge.net
+#
+# Copyright (C) 2009 by Marcus Lauer (marcus.lauer at nyu dot edu) 
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+# USA.
+#
+# Development supported by the Center for Information Technology at New York
+# University (NYU) and the Wilf Department of Politics at NYU.
+#
+
+use strict;
+use warnings;
+use File::Copy;
+
+
+{ ## Main function
+	# Set some default values and set up some arrays we'll need later.
+	my @SourceFiles = ( "quosnmp", "quosnmp-util", "Quosnmp.pm", "quosnmp.conf" );
+	my @TargetDirs = ( "/usr/lib/cups/backend", "/usr/local/sbin", "/usr/lib/perl5/site_perl", "/etc/quosnmp" );
+	my @Sources = ( "none", "none", "none", "none" );
+	my @Targets = ( "none", "none", "none", "none" );
+	my @FilePermissions = ( 0750, 0750, 0644, 0644 );
+
+	# First, make sure that the target for the perl module is in @INC.
+	my $match = 0;
+	my $bestGuess;
+	foreach my $perlPath ( @INC ) {
+		if ( $TargetDirs[2] =~ m/^$perlPath$/ ) {
+			$match = 1;
+			last;
+		}
+		elsif ( $perlPath =~ m/site_perl$/ ) {
+			$bestGuess = $perlPath;
+		}
+	}
+
+	# If the standard target directory for the perl module is not in @INC, set the target to a directory which is.
+	if ( $match == 0 ) {
+		if ( defined($bestGuess) ) {
+			$TargetDirs[2] = $bestGuess;
+		}
+		else {
+			$TargetDirs[2] = $INC[0]; # A very lazy guess, but hey, we tried. :)
+		}
+	}
+
+	# Find quosnmp, quosnmp-util and quosnmp.conf
+	my @sourceDirs = ('.','..');
+
+	foreach my $sourceDir ( @sourceDirs ) {
+		if ( -e "$sourceDir/bin" ) {
+			my @filesInCurrentDir = &getFilesInDir("$sourceDir/bin/");
+
+			for ( my $counter = 0; $counter <= $#filesInCurrentDir; $counter++ ) {
+				if ( $filesInCurrentDir[$counter] =~ m/^$SourceFiles[0]$/ ) {
+					$Sources[0] = "$sourceDir/bin/$SourceFiles[0]";
+				}
+				if ( $filesInCurrentDir[$counter] =~ m/^$SourceFiles[1]$/ ) {
+					$Sources[1] = "$sourceDir/bin/$SourceFiles[1]";
+				}
+			}
+		}
+
+		if ( -e "$sourceDir/lib" ) {
+			my @filesInCurrentDir = &getFilesInDir("$sourceDir/lib/");
+
+			for ( my $counter = 0; $counter <= $#filesInCurrentDir; $counter++ ) {
+				if ( $filesInCurrentDir[$counter] =~ m/^$SourceFiles[2]$/ ) {
+					$Sources[2] = "$sourceDir/lib/$SourceFiles[2]";
+				}
+			}
+		}
+
+		if ( -e "$sourceDir/etc" ) {
+			my @filesInCurrentDir = &getFilesInDir("$sourceDir/etc/");
+
+			for ( my $counter = 0; $counter <= $#filesInCurrentDir; $counter++ ) {
+				if ( $filesInCurrentDir[$counter] =~ m/^$SourceFiles[3]$/ ) {
+					$Sources[3] = "$sourceDir/etc/$SourceFiles[3]";
+				}
+			}
+		}
+	}
+
+	# If we could not find any of the necessary files, ask the user for their locations.
+	for ( my $counter = 0; $counter <= 3; $counter++ ) {
+		my $valid = 0;
+		while ( $valid == 0 ) {
+			if ( $Sources[$counter] =~ m/^none$/ ) {
+				print STDOUT "* Please enter the full path to the $SourceFiles[$counter] file to install:\n";
+				my $answer = <>;
+				chomp($answer);
+
+				if ( -e $answer && $answer =~ m/$SourceFiles[$counter]$/ ) {
+					$Sources[$counter] = $answer;
+					$valid = 1;
+					last;
+				}
+			}
+			else {
+				$valid = 1;
+				last;
+			}
+			print STDERR "  Sorry, I cannot find that file.\n"
+		}
+#		print STDOUT "  Found $Sources[$counter]\n";
+	}
+	print STDOUT "\n";
+
+	# Ask the user where to put each file.
+	for ( my $counter = 0; $counter <= 3; $counter++ ) {
+		my $valid = 0;
+
+		while ( $valid == 0 ) {
+			if ( $Targets[$counter] =~ m/^none$/ ) {
+				print STDOUT "Where should we put the \"$SourceFiles[$counter]\" file?\n(default: $TargetDirs[$counter])\n";
+				my $answer = <>;
+				chomp($answer);
+
+				# If they just hit Enter, set this to the default.
+				if ( length($answer) == 0 ) {
+					$answer = $TargetDirs[$counter];
+				}
+
+				# If the answer is a writable directory, use it.
+				if ( -d $answer && -w $answer ) {
+					$Targets[$counter] = $answer . "/" . $SourceFiles[$counter];
+					$valid = 1;
+					last;
+				}
+			} else {
+				$valid = 1;
+				last;
+			}
+			print STDERR "* That directory is not usable/does not exist/cannot be written to.\n";
+		}
+		print STDOUT "$SourceFiles[$counter] file will be copied to $Targets[$counter]\n\n";
+	}
+
+	# Now do all the file work.
+	for ( my $counter = 0; $counter <= 3; $counter++ ) {
+		my $overwrite = 0;
+		my $answer;
+
+		if ( -e $Sources[$counter] ) {
+			print STDOUT "Are you sure that you want to overwrite $Targets[$counter] [y/N]? ";
+			my $answer = <>;
+
+			if ( $answer =~ m/^[Yy]/ ) {
+				$overwrite = 1;
+			}
+		}
+
+		if ( $overwrite == 1 ) {
+			copy($Sources[$counter],$Targets[$counter]) or die("Unable to copy file from $Sources[$counter] to $Targets[$counter]");
+			chown ((getpwnam("root"))[2], (getpwnam("lp"))[3], $Targets[$counter]);
+			chmod ($FilePermissions[$counter], $Targets[$counter]);
+			print STDOUT "Copied $Sources[$counter] to $Targets[$counter]\n\n";
+		}
+	}
+
+	# Any Linux distro with SELINUX enabled will probably need to have some contexts changed.
+	# Since I cannot figure out how to make this actually happen using the "system" command, 
+	# I will just print out a message if the system has the "chcon" binary on it.
+	my @ContextCommand = "CHCONPATH=`which chcon 2> /dev/null`; if [ -n \"\$CHCONPATH\" ]; then echo \"\n* If your system uses SELINUX, then you may have to run these commands:\n\n\$CHCONPATH -u system_u $Targets[0]\n\$CHCONPATH -u system_u $Targets[1]\n\$CHCONPATH -u system_u $Targets[2]\n\$CHCONPATH -u system_u $Targets[3]\n\"; fi";
+	system(@ContextCommand);
+
+	# Print out some information which the user should know.
+	print STDOUT "    If quosnmp is configured so that your accounting and quota data \n";
+	print STDOUT "are being stored in text files (currently the default and only option), \n";
+	print STDOUT "the directories in which those text files will be stored will be \n";
+	print STDOUT "created by quosnmp or quosnmp-util the first time they are needed. \n";
+	print STDOUT "If you want to choose the location for these files, modify the \n";
+	print STDOUT "ACCOUNTING_DIRECTORY and QUOTA_DIRECTORY lines in quosnmp.conf.\n";
+	print STDOUT "\n";
+	print STDOUT "    To enable quosnmp for a printer, edit the printers.conf file in \n";
+	print STDOUT "the cups config directory.  Add \"quosnmp://\" to the DeviceURI for \n";
+	print STDOUT "each printer which you want quosnmp to manage.  For example:\n";
+	print STDOUT "\n";
+	print STDOUT "DeviceURI socket://print.example.com\n";
+	print STDOUT "  should be changed to...\n";
+	print STDOUT "DeviceURI quosnmp://socket://print.example.com\n";
+	print STDOUT "\n";
+}
+## End of main function
+
+sub getFilesInDir {
+	my $dirName = $_[0];
+
+	opendir(DH,$dirName);
+	my @filesInCurrentDir = readdir(DH);
+	closedir(DH);
+
+	return(@filesInCurrentDir);
+}

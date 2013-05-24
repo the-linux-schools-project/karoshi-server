@@ -1,0 +1,92 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: set_domains1 - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: set_domains1 - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+
+echo `date`: set_domains1 - Getting data "for" $REMOTE_USER at $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/web/set_domains ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/web/set_domains
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+#Get moodle domain
+if [ -f /var/www/html/moodle/config.php ]
+then
+MOODLEDOMAIN=`grep wwwroot /var/www/html/moodle/config.php | cut -d\' -f2 | sed "s/\/moodle$//g" | sed "s/^http:\/\///g"`
+fi
+
+if [ -f /opt/karoshi/serversetup/variables/ssh/colossus'ssh' ]
+then
+MOODLEDOMAIN=`ssh -x -o PasswordAuthentication=no $SERVER grep wwwroot /var/www/html/moodle/config.php | cut -d\' -f2 | sed "s/\/moodle$//g" | sed "s/^http:\/\///g"`
+fi
+
+if [ -f /opt/karoshi/serversetup/variables/ssh/cassandra'ssh' ]
+then
+MOODLEDOMAIN=`ssh -x -o PasswordAuthentication=no $SERVER grep wwwroot /var/www/html/moodle/config.php | cut -d\' -f2 | sed "s/\/moodle$//g" | sed "s/^http:\/\///g"`
+fi
+
+echo '<table class="standard" style="text-align: left; height: 20px;" border="0" cellpadding="2" cellspacing="2">
+<tbody><tr><td style="width: 200px;"><b>'$SERVICEMSG'</b></td><td><b>'$DOMAINMSG'</b></td><td></td><td>'$SUBFOLDERMSG'</td></tr>
+<tr><td style="width: 200px;">
+'$MOODLEDOMAINMSG'</td>
+        <td><input tabindex= "1" name="_MOODLEDOMAIN_" size="35" type="text" value="'$MOODLEDOMAIN'"></td><td>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png" /><span>'$MOODLEDOMAINHELP'</span></a>
+      </td><td>moodle</td></tr>
+    </tbody>
+  </table><br><br>'
+
+exit 101
+
+
+
+
+
+
+############################
+#Create user on orac or joshua
+############################
+if [ -f /opt/karoshi/serversetup/variables/ssh/$SERVER'ssh' ]
+then
+ssh -x -o PasswordAuthentication=no $SERVER 'mkdir -p '$HOMEPATH''/''$NEWUSERNAME' ; chmod 0700 '$HOMEPATH''/''$NEWUSERNAME' ; chown '$NEWUSERNAME':'$PRIMARYGROUP' '$HOMEPATH''/''$NEWUSERNAME''
+fi

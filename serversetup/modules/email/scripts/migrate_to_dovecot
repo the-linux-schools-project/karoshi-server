@@ -1,0 +1,49 @@
+#!/bin/bash
+
+#Create top level folder
+
+[ ! -d /home/users/email/ ] && mkdir -p /home/users/email
+
+#Create mail folders for all users
+for KAROSHIUSER in `getent passwd | sed 's/ //g'`
+do
+USERID=`echo $KAROSHIUSER | cut -d: -f3`
+USERPATH=`echo $KAROSHIUSER | cut -d: -f6`
+[ $USERID'null' = null ] && USERID=100
+if [ $USERID -gt 1000 ]
+then
+echo -e "\nProcessing $KAROSHIUSER\n"
+#Create email folder
+if [ ! -d /home/users/email/$KAROSHIUSER ]
+then
+echo -e "creating /home/users/email/$KAROSHIUSER"
+mkdir /home/users/email/$KAROSHIUSER
+chmod 0700 /home/users/email/$KAROSHIUSER
+chown $KAROSHIUSER /home/users/email/$KAROSHIUSER
+fi
+#Migrate inbox
+if [ -f /var/spool/mail/$KAROSHIUSER
+then
+echo Migrating inbox
+doveadmin mailbox create -u $KAROSHIUSER -s cur 2>>/opt/karoshi/logs/dovecot_migration.$$
+mb2md -s path_to_mbox_file -d /home/users/email/$KAROSHIUSER/.cur 2>>/opt/karoshi/logs/dovecot_migration.$$
+fi
+#Migrate any other mainboxes
+if [ -d $USERPATH/Mail
+then
+if [ `ls -1 $USERPATH/Mail | wc -l` -gt 0 ]
+then
+for MAILBOXES in $USERPATH/Mail/*
+do
+MAILBOX=`basename $MAILBOXES`
+echo Migrating $MAILBOX
+doveadmin mailbox create -u $KAROSHIUSER -s $MAILBOX 2>>/opt/karoshi/logs/dovecot_migration.$$
+mb2md -s $USERPATH/Mail/$MAILBOX -d /home/users/email/$KAROSHIUSER /.$MAILBOX 2>>/opt/karoshi/logs/dovecot_migration.$$
+chown $KAROSHIUSER -R  /home/users/email/username/.$MAILBOX
+done 
+fi
+fi
+fi
+done
+exit
+

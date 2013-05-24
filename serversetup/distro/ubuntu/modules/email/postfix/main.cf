@@ -1,0 +1,48 @@
+# See /usr/share/postfix/main.cf.dist for a commented, more complete version
+
+#smtpd_banner = $myhostname ESMTP $mail_name (Ubuntu)
+smtpd_banner = $myhostname ESMTP
+biff = no
+
+# Uncomment the next line to generate "delayed mail" warnings
+#delay_warning_time = 4h
+
+myhostname = testdomain.com
+mydomain = testdomain.com
+myorigin = $mydomain
+masquerade_domains = test.com
+alias_maps = hash:/etc/postfix/aliases
+alias_database = hash:/etc/postfix/aliases
+myorigin = /etc/mailname
+mydestination = $mydomain, $myhostname, localhost.$mydomain,
+relayhost = 
+mynetworks = 127.0.0.1
+message_size_limit = 31457280
+mailbox_size_limit = 524288000
+recipient_delimiter = 
+#smptd_recipient_limit = 150
+inet_interfaces = all
+delay_warning_time = 4h
+#smtp-filter_destination_concurrency_limit = 2
+#lmtp-filter_destination_concurrency_limit = 2
+#smptd_helo_required = yes
+disable_vrfy_command = yes
+smtpd_client_restrictions = check_client_access hash:/etc/postfix/access
+header_checks = regexp:/etc/postfix/header_checks
+mail_spool_directory = /home/users/email/
+
+smtpd_sasl_type = dovecot
+smtpd_sasl_path = private/auth
+smtpd_sasl_auth_enable = yes
+smtpd_recipient_restrictions = permit_mynetworks, permit_sasl_authenticated, reject_unauth_destination
+
+smtpd_tls_security_level = may
+smtpd_tls_key_file = /etc/ssl/mail/postfix.key
+smtpd_tls_cert_file = /etc/ssl/mail/postfix.pem
+smtpd_tls_CAfile = /etc/ssl/root-ca/cacert.pem
+smtpd_tls_loglevel = 1
+smtpd_tls_session_cache_timeout = 3600s
+smtpd_tls_session_cache_database = btree:/var/spool/postfix/smtpd_tls_cache
+tls_random_source = dev:/dev/urandom
+smtpd_tls_auth_only = no
+

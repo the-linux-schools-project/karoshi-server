@@ -1,0 +1,13 @@
+#!/bin/bash
+
+#Check which version of samba is being used - samba4 provides dns services in which case dnsmasq will only be doing dhcp.
+
+SAMBAVER=samba
+[ -f /usr/local/sbin/samba ] && SAMBAVER=samba4
+
+if [ $SAMBAVER = samba ]
+then
+service dnsmasq start
+else
+service samba4 start
+fi

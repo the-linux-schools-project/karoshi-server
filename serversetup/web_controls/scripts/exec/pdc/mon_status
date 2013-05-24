@@ -1,0 +1,157 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/mon_status_cgi
+then
+echo `date`: mon_status - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/mon_status_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/mon_status.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $mon_status_cgi'check' ]
+then
+echo `date`: mon_status - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/mon_status_cgi
+then
+echo `date`: mon_status - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/tech_checksums/mon_status_cgi
+MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/mon_status.cgi | cut -d' ' -f1`
+[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+if [ $MD5SUM2'check' != $mon_status_cgi'check' ]
+then
+echo `date`: mon_status - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 1 ]
+then
+echo `date`: mon_status - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo $* | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | cut -s -d: -f3`
+MOBILE=`echo $* | cut -s -d: -f4`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: mon_status - Not called by mon_status.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: mon_status - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: mon_status - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: mon_status - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/mon_status ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/system/mon_status
+
+MONDATAPATH=/opt/karoshi/server_network/mon/mon_data
+########################
+#Show mon status
+########################
+WIDTH1=110
+WIDTH2=55
+
+#echo `date`: mon_status - viewing from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+[ -d /opt/karoshi/server_network/mon ] || mkdir /opt/karoshi/server_network/mon
+if [ -f /opt/karoshi/server_network/monitoringserver ]
+then
+MONITORING_SERVER=`sed -n 1,1p /opt/karoshi/server_network/monitoringserver`
+else
+exit 102
+fi
+
+
+if [ $MOBILE != yes ]
+then
+TABLECLASS=mon
+#Create table
+echo '<br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="1" cellspacing="1"><tbody><tr><td style="vertical-align: top; text-align: left; width: '$WIDTH1'px;"><b>Host Group</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>ping</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>smb</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>http</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>https</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>pop3</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>pop3s</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>imap</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>imaps</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>smtp</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>dg</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>dns</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>cups</b></td></tr>'
+else
+TABLECLASS=mobilestandard
+#Create table
+echo '<br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="1" cellspacing="1"><tbody><tr><td style="vertical-align: top; text-align: left; width: '$WIDTH1'px;"><b>Host Group</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;">'$STATUSMSG'</td></tr>'
+fi
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $MONITORING_SERVER '
+if [ -f  /opt/karoshi/server_network/mon/mon_data_html ]
+then
+if [ '$MOBILE' = yes ]
+then
+cat /opt/karoshi/server_network/mon/mon_mobile_data_html
+else
+cat /opt/karoshi/server_network/mon/mon_data_html
+fi
+else
+echo "<tr><td>No Data</td></tr></tbody></table>"
+fi
+'
+
+#Show disabled monitors
+
+if [ -d /opt/karoshi/server_network/mon/monitors_disabled ]
+then
+if [ `ls -1 /opt/karoshi/server_network/mon/monitors_disabled | wc -l` -gt 0 ]
+then
+
+echo '<br><br><table class="mon" style="text-align: left;" border="0" cellpadding="1" cellspacing="1"><tbody><tr><td style="width: '$WIDTH1'px;"><b>Host Group</b></td><td style="width: '$WIDTH2'px;"></td></tr>'
+
+for MONITORNAME in /opt/karoshi/server_network/mon/monitors_disabled/*
+do
+GROUP_NAME=`basename $MONITORNAME`
+
+echo '<tr><td>'$GROUP_NAME'</td><td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_enable_disable.cgi" name="monitors" method="post"><a class="info" href="javascript:void(0)"><input name="_MONITOR_'$GROUP_NAME'_" type="image" class="images" src="/images/submenus/system/disable_monitor.png" value=""><span>Enable - '$GROUP_NAME'</span></a></form></td></tr>'
+done
+echo "</tbody></table>"
+fi
+fi
+exit
+

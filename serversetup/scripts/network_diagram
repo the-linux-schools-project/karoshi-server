@@ -1,0 +1,12 @@
+#!/bin/bash
+source /opt/karoshi/serversetup/variables/xdialog
+source /opt/karoshi/serversetup/variables/language
+source /opt/karoshi/serversetup/language/$LANGCHOICE/serverselection
+Xdialog --title "$TITLE $VERSION" \
+--icon /opt/karoshi/serversetup/"Important Information"/"Server network diagram.xpm" --rc-file $RCFILE --msgbox "" 46 116
+case $ in
+0)
+	;;
+255)
+	;;
+esac

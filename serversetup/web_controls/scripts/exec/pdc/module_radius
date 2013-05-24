@@ -1,0 +1,155 @@
+#!/bin/bash
+#Copyright (C) 2010 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/module_radius_cgi
+then
+echo `date`: module_radius - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/module_radius_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_radius.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $module_radius_cgi'check' ]
+then
+echo `date`: module_radius - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: module_radius - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: module_radius - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: module_radius - Not called by module_radius.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: module_radius - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: module_radius - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVERNAME'null' = null ]
+then
+echo `date`: module_radius - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+
+echo `date`: module_radius - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/serversetup/language/$LANGCHOICE/modules/radius/setupradiusserver ] || LANGCHOICE=englishuk
+source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/radius/setupradiusserver
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+
+#Check that the server is running ubuntu
+if [ `uname -a | grep -c Ubuntu` = 0 ]
+then
+echo This module currently only works with ubuntu."<br><br>"
+uname -a"<br><br>"
+sleep 10
+exit
+fi
+
+###########################
+#Check that software is installed
+###########################
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/radius/software
+
+#Clear any sample clients
+echo > /etc/freeradius/clients.conf
+
+#Start service
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/radius_start
+#Start on boot
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/radius
+###########################
+#Open shorewall ports
+###########################
+RESTART_SHOREWALL=no
+MODCHECK=`grep -c -w \#radius_server_rule /etc/shorewall/rules`
+if [ $MODCHECK = 0 ]
+then
+RESTART_SHOREWALL=yes
+echo ''$SHOREWALLMSG - udp 1812,1813'<br><br>'
+LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'udp'	'1812,1813'	'-'#'radius_server_rule /etc/shorewall/rules
+echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+fi
+
+######################
+#Restart shorewall
+######################
+if [ $RESTART_SHOREWALL = yes ]
+then
+echo $RESTARTSWMSG'<br><br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
+echo '<br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
+echo '<br><br>'
+fi
+
+#Add role information
+[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
+echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/radiusserver
+echo $SERVERNAME > /opt/karoshi/server_network/radius_server
+sed -i 's/RADIUSCTRL=no/RADIUSCTRL=yes/g' /opt/karoshi/server_network/menusettings
+
+exit
+
+

@@ -1,0 +1,720 @@
+#!/usr/bin/perl
+# quosnmp-util
+# Version 1.8.5 Final
+#
+# A utility for querying and setting quotas enforced by the quosnmp 
+#  backend for CUPS.
+#
+# Released by Marcus Lauer (marcus.lauer at nyu dot edu)
+# Available at http://quosnmp.sourceforge.net
+#
+# Copyright (C) 2007-2009 by Marcus Lauer (marcus.lauer at nyu dot edu)
+#
+# Development supported by the Center for Information Technology at New 
+# York University (NYU) and the Wilf Department of Politics at NYU.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+# USA.
+#
+########
+# About quosnmp-util:
+#
+#    Quosnmp-util is a utility written in Perl which can query and 
+# modify the quota files used by quosnmp.  It can report and set 
+# quotas for a particular user or group, or the default quota.
+# Quosnmp-util actually reads the quosnmp script to get values for 
+# certain variables.
+#
+# Format of quota file:
+#
+# * Quotas can be simple numbers ("500") or adjustments ("+250", "-100").
+# * Timestamps (optional) are of the format CCYYMMDDhhmm.
+# * Associated quota and timestamp have comma between them.
+# * One quota or adjustment,timestamp pair per line.
+#
+# Example:
+# 500,200912250300
+# +250,200910011200
+# -100,200911010630
+#
+#     In this example, the user has a quota of 500 pages until December 
+# 25th, 2009 at 3am.  However, this will be increased by 250 pages until 
+# October 1st, 2009 at noon and also decreased by 100 pages until 
+# November 1st, 2009 at 6:30am.  Thus prior to a certain time on October 
+# 1st the user's quota is 650 pages, from 3am on October 1st to noon on 
+# November 1st it is 400 pages, and from then to December 25th at 3am it 
+# is 500 pages.  After December 25th at 3am the user has no quota and 
+# cannot print!
+#
+#     For users for whom more than one quota applies:
+#
+# * The user-specific quota _always_ has first priority
+# * The applicable group which gives the highest quota has second 
+# priority, e.g. will be used if no user quota is found.
+# * The default quota _always_ has the lowest priority.  It will only 
+# be used if no other quota is found.
+#
+# Note however that _all_ quota adjustments are summed together.
+#
+#    A quota of "U" allows unlimited printing, while a quota of "N" 
+# disallows all printing.  If the user has no quota files at all, not 
+# even a default quota, then this is treated as "N".
+#
+#    Note that requests to set the quota for a user or group will 
+# always succeed.  If no quota file exists for that user or group a 
+# new one will be created.  Unfortunately, if the quota directory is 
+# not detected correctly then a new quota file will be created in  
+# the wrong directory and not used.
+
+
+
+## ###########
+##
+# --- Default locations of configuration information.
+
+# Set the path to the config file here. You can also override this with the -C option.
+my $CONFIG_FILE = "/etc/quosnmp/quosnmp.conf";
+
+
+## ###########
+## Only experts should modify the code below this line.
+
+use strict;
+use warnings;
+use File::Basename;
+use File::Path;
+use Quosnmp qw(checkTimestampExpiration getUserPagecount getUserPrintQuota parseConfigFile readQuotaFile reportStatus setDefaultVars updateUserPagecount validQuota writeDataFile);
+
+
+# We need to predefine these just like in quosnmp itself so that parseConfigFile can be used.  
+# A couple of values are either unique to quosnmp-util (e.g. CONFIG_FILE_HAS_BEEN_READ) or set 
+# differently by default (e.g. DISK_RETRY_PERIOD).
+my @JOB_BLACKLIST = ();
+my %EMAIL_LIST = ();
+my %VARS = ();
+
+&setDefaultVars( \%VARS );
+
+# Set a few more values in VARS which we already know or want to change from the default.
+$VARS{CONFIG_FILE} = $CONFIG_FILE;
+$VARS{DISK_RETRY_PERIOD} = 0; # This interactive program should feel interactive.
+$VARS{PRINTER} = "";
+$VARS{JOB_NUMBER} = "none";
+$VARS{QUIET_MODE} = 1;
+
+
+### Main function
+if ( scalar(@ARGV) < 1 ) {
+	&printHelp(); # No arguments given, print help
+}
+
+# Parse the config file if possible, but if this fails don't worry just yet (the -C option may have been used).
+&rereadConfig;
+
+# Scan the arguments for a -L, which should be applied even if out of order.
+for ( my $counter = 0; $counter <= $#ARGV; $counter++ ) {
+	if ( $ARGV[$counter] =~ /^-L$/ ) {
+		$VARS{ERROR_LOG} = 1; # Even if logging is turned off in the config file, it has been requested.
+		$VARS{QUIET_MODE} = 2; # Silence STDERR, but still log.
+
+		if ( defined($ARGV[$counter+1]) && $ARGV[$counter+1] =~ /^[0123]$/ ) {
+			$VARS{DEBUG_LEVEL} = $ARGV[$counter+1];
+		}
+		else {
+			$VARS{DEBUG_LEVEL} = 3; # The default when -L is used.
+		}
+	}
+}
+
+# Main loop
+my $argcount = 0;
+while ( $argcount <= $#ARGV ) {
+	my $argument = $ARGV[$argcount];
+	my $lastresult;
+
+	if ($argument =~ /^-h$/) {
+		&printHelp();
+	} # Note that we exit this script directly from printHelp
+	elsif ($argument =~ /^-C$/) {
+		if ( defined($ARGV[$argcount+1]) && -e $ARGV[$argcount+1] ) {
+			$VARS{CONFIG_FILE} = $ARGV[$argcount+1];
+			&rereadConfig;
+
+			$argcount++;
+		}
+		else {
+			&exitScript("Cannot find the quosnmp.conf file specified after -C");
+		}
+	}
+	elsif ($argument =~ /^-L$/) {
+		# The effect of using this argument has already been applied.  Just skip it and its optional argument.
+		# We do need to increment "argcount" properly, though.
+		if ( defined($ARGV[$argcount+1]) && $ARGV[$argcount+1] =~ /^[0123]$/ ) {
+			$argcount++;
+		}
+	}
+	elsif ($argument =~ /^-P$/) {
+		if ( defined($ARGV[$argcount+1] ) ) {
+			$VARS{PRINTER} = $ARGV[$argcount+1];
+			# Reload the config file in the context of the new printer.
+			&rereadConfig;
+			$argcount++;
+		}
+		else {
+			&exitScript("No printer specified after -P");
+		}
+	}
+	elsif ($argument =~ /^-d$/) {
+		$lastresult = &getSimpleQuota("DEFAULT",0);
+	}
+	elsif ($argument =~ /^-u$/) {
+		if ( defined($ARGV[$argcount+1]) ) {
+			$lastresult = &getSimpleQuota($ARGV[$argcount+1],2);
+			$argcount++;
+		}
+		else {
+			&exitScript("No username specified after -u");
+		}
+	}
+	elsif ($argument =~ /^-g$/) {
+		if ( defined($ARGV[$argcount+1]) ) {
+			$lastresult = &getSimpleQuota($ARGV[$argcount+1],1);
+			$argcount++;
+		}
+		else {
+			&exitScript("No group specified after -g");
+		}
+	}
+	elsif ($argument =~ /^-q$/) {
+		if ( defined($ARGV[$argcount+1]) ) {
+			$lastresult = &getUserPrintQuota( $ARGV[$argcount+1], \%VARS );
+			$argcount++;
+		}
+		else {
+			&exitScript("No username specified after -q");
+		}
+	}
+	elsif ($argument =~ /^-c$/) {
+		if ( defined($ARGV[$argcount+1]) ) {
+			$lastresult = &getUserPagecount( $ARGV[$argcount+1], \%VARS );
+			$argcount++;
+		}
+		else {
+			&exitScript("No username specified after -c");
+		}
+	}
+	elsif ($argument =~ /^-a$/) {
+		if ( defined($ARGV[$argcount+1]) ) {
+			$lastresult = $VARS{ACCOUNTING_DIRECTORY} . "/" . $ARGV[$argcount+1];
+
+			if ( ! -e $lastresult ) {
+				&exitScript("File not found: $lastresult");
+			}
+
+			$argcount++;
+		}
+		else {
+			&exitScript("No username specified after -a");
+		}
+	}
+	elsif ($argument =~ /^-D$/) {
+		if ( defined($ARGV[$argcount+1]) ) {
+			if ( &validQuota($ARGV[$argcount+1]) ) {
+				&setQuota("DEFAULT",0,$ARGV[$argcount+1]);
+				$argcount++;
+			}
+			else {
+				&exitScript("Invalid quota given after -D");
+			}
+		}
+		else {
+			&exitScript("No quota given after -D");
+		}
+	}
+	elsif ($argument =~ /^-U$/) {
+		if ( defined($ARGV[$argcount+1]) && defined($ARGV[$argcount+2]) ) {
+			if ( &validQuota($ARGV[$argcount+2]) ) {
+				&setQuota($ARGV[$argcount+1],2,$ARGV[$argcount+2]);
+				$argcount++; $argcount++;
+			}
+			else {
+				&exitScript("Invalid quota given after -U");
+			}
+		}
+		else {
+			&exitScript("Missing arguments to -U");
+		}
+	}
+	elsif ($argument =~ /^-G$/) {
+		if ( defined($ARGV[$argcount+1]) && defined($ARGV[$argcount+2]) ) {
+			if ( &validQuota($ARGV[$argcount+2]) ) {
+				&setQuota($ARGV[$argcount+1],1,$ARGV[$argcount+2]);
+				$argcount++; $argcount++;
+			}
+			else {
+				&exitScript("Invalid quota given after -G");
+			}
+		}
+		else {
+			&exitScript("Missing arguments to -G");
+		}
+	}
+	elsif ($argument =~ /^-DD$/) {
+		if ( defined($ARGV[$argcount+1]) ) {
+			if ( &validQuota($ARGV[$argcount+1]) ) {
+				&setQuota("DEFAULT",3,$ARGV[$argcount+1]);
+				$argcount++;
+			}
+			else {
+				&exitScript("Invalid quota given after -DD");
+			}
+		}
+		else {
+			&exitScript("No quota given after -DD");
+		}
+	}
+	elsif ($argument =~ /^-UU$/) {
+		if ( defined($ARGV[$argcount+1]) && defined($ARGV[$argcount+2]) ) {
+			if ( &validQuota($ARGV[$argcount+2]) ) {
+				&setQuota($ARGV[$argcount+1],5,$ARGV[$argcount+2]);
+				$argcount++; $argcount++;
+			}
+			else {
+				&exitScript("Invalid quota given after -UU");
+			}
+		}
+		else {
+			&exitScript("Missing arguments to -UU");
+		}
+	}
+	elsif ($argument =~ /^-GG$/) {
+		if ( defined($ARGV[$argcount+1]) && defined($ARGV[$argcount+2]) ) {
+			if ( &validQuota($ARGV[$argcount+2]) ) {
+				&setQuota($ARGV[$argcount+1],4,$ARGV[$argcount+2]);
+				$argcount++; $argcount++;
+			}
+			else {
+				&exitScript("Invalid quota given after -GG");
+			}
+		}
+		else {
+			&exitScript("Missing arguments to -GG");
+		}
+	}
+	elsif ($argument =~ /^-T$/) {
+		if ( defined($ARGV[$argcount+1]) ) {
+			&removeQuota($ARGV[$argcount+1],1);
+			$argcount++;
+		}
+		else {
+			&exitScript("Missing argument to -T");
+		}
+	}
+	elsif ($argument =~ /^-F$/) {
+		if ( defined($ARGV[$argcount+1]) ) {
+			&removeQuota($ARGV[$argcount+1],0);
+			$argcount++;
+		}
+		else {
+			&exitScript("Missing argument to -F");
+		}
+	}
+	elsif ($argument =~ /^-Z$/) {
+		if ( defined($ARGV[$argcount+1]) ) {
+			&subtractQuota($ARGV[$argcount+1]);
+			$argcount++;
+		}
+		else {
+			&exitScript("Missing argument to -Z");
+		}
+	}
+	elsif ($argument =~ /^-RR$/) {
+		&resetAccounting;
+	}
+	elsif ($argument =~ /^-XX$/) {
+		&expireOldQuotas;
+	}
+	else {
+		&exitScript("Unknown argument \"$argument\". Exiting.");
+	}
+
+	if ( defined($lastresult) ) {
+		&reportStatus( 2, $lastresult, \%VARS );
+		print STDOUT "$lastresult\n";
+		undef($lastresult);
+	}
+
+	$argcount++; # Go on to processing the next argument.
+}
+
+&exitScript(undef);
+
+
+### Subfunctions defined below this line.
+sub printHelp {
+	# Arguments: none.
+	# Result: Print the help info and exit (via exitScript function).
+
+	print STDOUT ("\n");
+	print STDOUT ("quosnmp-util -- A utility for querying, setting, and removing quotas enforced\n");
+	print STDOUT ("                by the quosnmp backend for CUPS\n");
+	print STDOUT ("\n");
+	print STDOUT ("Arguments:\n");
+	print STDOUT ("  -h             -- Print out this help text, then exit.\n");
+	print STDOUT ("\n");
+	print STDOUT ("  -C path        -- Full path to quosnmp.conf, including filename.\n");
+	print STDOUT ("                    (default: /etc/quosnmp/quosnmp.conf)\n");
+	print STDOUT ("  -P printer     -- The name of the printer to which the specified changes \n");
+	print STDOUT ("                    apply (e.g. if per-printer quotas are in use).\n");
+	print STDOUT ("                    * Note: all of the above arguments should appear prior to \n");
+	print STDOUT ("                      any of the arguments below on the command line.\n");
+	print STDOUT ("\n");
+	print STDOUT ("  -d             -- Get the default quota.\n");
+	print STDOUT ("  -u user        -- Get a defined user quota \(only\) for user \"username\".\n");
+	print STDOUT ("  -g group       -- Get a defined group quota \(only\) for group \"groupname\".\n");
+	print STDOUT ("  -q name        -- Get the quota for user \"name\". Whichever quota is \n");
+	print STDOUT ("                    applicable (user, group, or default) will be returned.\n");
+	print STDOUT ("\n");
+	print STDOUT ("  -c user        -- Return a user's current page count.\n");
+	print STDOUT ("  -a user        -- Return a user's accounting file name, including full path.\n");
+	print STDOUT ("\n");
+	print STDOUT ("  -D quota       -- Set default quota.\n");
+	print STDOUT ("  -U user quota  -- Define or set a user quota for user \"username\".\n");
+	print STDOUT ("  -G group quota -- Define or set a group quota for group \"groupname\".\n");
+	print STDOUT ("\n");
+	print STDOUT ("  -DD quota      -- Add on to the default quota.\n");
+	print STDOUT ("  -UU user quota -- Add on to a user quota for user \"username\".\n");
+	print STDOUT ("  -GG group quota - Add on to a group quota for group \"groupname\".\n");
+	print STDOUT ("\n");
+	print STDOUT ("  -T username    -- Undefine (remove) the user quota for user \"username\".\n");
+	print STDOUT ("  -F groupname   -- Undefine (remove) the group quota for group \"groupname\".\n");
+	print STDOUT ("  -Z username    -- Subtract current quota from pagecount for user \"user\".\n");
+	print STDOUT ("\n");
+	print STDOUT ("  -L [level]     -- Turn on logging. Optional \"level\" argument uses the\n");
+	print STDOUT ("                    same values as the DEBUG_LEVEL config option. Default\n");
+	print STDOUT ("                    is 3 (debug) which will log all error messages.\n");
+	print STDOUT ("\n");
+	print STDOUT ("                    * The functions below are DANGEROUS!!! Be careful!!!\n");
+	print STDOUT ("  -RR            -- Reset all accounting information. Requires confirmation.\n");
+	print STDOUT ("  -XX            -- Expire all old quotas. Requires confirmation.\n");
+	print STDOUT ("\n");
+
+	&exitScript(undef);
+}
+
+
+sub resetAccounting {
+	# Results: sets the page count in all accounting files to "0".
+
+	# It's really nasty to call this by accident, so confirmation is required.
+	# Use a trick (e.g. echo "y" | quosnmp-util -RR) to script this, e.g. for cron.
+
+	print STDOUT "Are you sure you want to reset all of the accounting information? (y/N)\n";
+	my $areyousure = getc;
+
+	if ( $areyousure =~ m/^[yY]/ ) {
+		my $accountingDir = $VARS{ACCOUNTING_DIRECTORY};
+
+		if ( length($accountingDir) > 0 && -e $accountingDir ) {
+			opendir( DH, $accountingDir );
+			my @accFiles = readdir(DH);
+			closedir( DH );
+
+			foreach my $eachfile ( @accFiles ) {
+				if ( $eachfile !~ m/^\.+$/ ) {
+					&writeDataFile( 0, "$accountingDir/$eachfile", 0 ) or &exitScript("Could not write to $accountingDir/$eachfile");
+					&reportStatus( 2, "File $accountingDir/$eachfile has been reset.", \%VARS );
+				}
+			}
+		}
+	}
+}
+
+
+sub expireOldQuotas {
+	# Results: removes all expired quotas from all quota files
+
+	# It's really nasty to call this by accident, so confirmation is required.
+	# Use a trick (e.g. echo "y" | quosnmp-util -XX) to script this, e.g. for cron.
+
+	print STDOUT "Are you sure you want to expire all old quotas? (y/N)\n";
+	my $areyousure = getc;
+
+	if ( $areyousure =~ m/^[yY]/ ) {
+		my $quotaDir = $VARS{QUOTA_DIRECTORY};
+
+		if ( length($quotaDir) > 0 && -e $quotaDir ) {
+			opendir( DH, $quotaDir );
+			my @quotaFiles = readdir(DH);
+			closedir( DH );
+
+			foreach my $eachfile ( @quotaFiles ) {
+				if ( $eachfile =~ m/_quota$/ ) {
+					my $fullFilename = $quotaDir . "/" . $eachfile;
+					# Read all of the quotas into an array.
+					open( FH, $fullFilename ) or &exitScript( "Could not read $fullFilename" );
+
+					flock( FH, 2 );
+					my @fileArray = <FH>;
+					flock( FH, 8 );
+					close( FH );
+
+					# Remove the existing quota file
+					unlink($fullFilename) or &exitScript("Could not erase $fullFilename");
+
+					# Test each line, write the good ones back.
+					&reportStatus( 2, "Rewriting quota file $fullFilename", \%VARS );
+
+					for (my $counter = 0; $counter <= $#fileArray; $counter++) {
+						my $quota = $fileArray[$counter];
+						chomp($quota);
+
+						( my $quotapart, my $timestamp ) = split( /,/, $quota, 2 );
+
+						if ( !defined($quotapart) || length($quotapart) == 0 ) {
+							# Do nothing, this is an empty line.
+						}
+						elsif ( !defined($timestamp) || ( &checkTimestampExpiration( $timestamp, \%VARS ) == 0 ) ) {
+							&writeDataFile( 1, $fullFilename, $quota ) or &exitScript("Could not write to $fullFilename");
+							&reportStatus( 2, "Kept quota: $quota", \%VARS );
+						}
+						else {
+							&reportStatus( 2, "Expired quota: $quota", \%VARS );
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+
+sub getSimpleQuota {
+	# Arguments: user/groupname (or blank), condition, current printer
+	# Possible return values:
+	# U     Unlimited printing allowed (includes "no quota directory found").
+	# N     Printing not allowed (includes "no quota files found").
+	# n     Quota is n pages.
+	# undef No quota found.
+
+	my ( $target, $condition ) = @_;
+
+	my $quotaDirectory = $VARS{QUOTA_DIRECTORY};
+
+	# Check to make sure an actual directory was found.
+	if ( !defined($quotaDirectory) ) {
+		return("U"); # Presumably the admin does not want quotas?
+	}
+
+	my $quota; # Undefined is the default return value for when no quota is found.
+	my $adjustment;
+	my $quotaFile;
+
+	if ( $condition == 0 ) {
+		$quotaFile = $quotaDirectory . "/print_quota";
+	}
+	elsif ( $condition == 1 ) {
+		$quotaFile = $quotaDirectory . "/" . $target . "_group_quota";
+	}
+	elsif ( $condition == 2 ) {
+		$quotaFile = $quotaDirectory . "/" . $target . "_user_quota";
+	}
+	else {
+		&exitScript("Unknown condition argument to getSimpleQuota.");
+	}
+
+	# The meat of the function. Read in the quota file.
+	($quota, $adjustment) = &readQuotaFile( $quotaFile, \%VARS );
+
+	my $finalQuota; # If no quota or adjustment was found, undef will be returned.
+
+	if ( !defined($quota) && defined($adjustment) ) {
+		# In this simple case, the adjustment ends up adjusting a quota of 0 and thus equals the quota.
+		$finalQuota = 0 + $adjustment;
+	}
+	elsif ( defined($quota) ) {
+		if ( defined($quota) && $quota =~ m/^[UN]$/ ) {
+			# Ignore the adjustment! It will just screw things up.
+			$finalQuota = $quota;
+		}
+		elsif ( defined($quota) && defined($adjustment) ) {
+			$finalQuota = $quota + $adjustment;
+		}
+		else { # The only remaining case is that just a numerical quota was found.
+			$finalQuota = $quota;
+		}
+	}
+
+	return($finalQuota);
+}
+
+
+sub removeQuota {
+	# Arguments: name of user/group, condition (e.g. are they a user or group), current printer
+
+	my ( $target, $condition ) = @_;
+
+	my $quotafile = "";
+	my $userorgrouptype = "";
+
+	if ( $condition == 0 ) {
+		$userorgrouptype = "group";
+	}
+	elsif ( $condition == 1 ) {
+		$userorgrouptype = "user";
+	}
+
+	$quotafile = $VARS{QUOTA_DIRECTORY} . "/" . $target . "_" . $userorgrouptype . "_quota";
+
+	if ( ! -e $quotafile ) {
+		&reportStatus( 1, "Quota file for $userorgrouptype $target not found.", \%VARS );
+	}
+	else {
+		my $quotafileDeleted = unlink($quotafile);
+
+		if ( $quotafileDeleted == 1 ) {
+			&reportStatus( 2, "Quota for $userorgrouptype $target removed.", \%VARS );
+		}
+		else {
+			&exitScript("Quota for $userorgrouptype $target _not_ removed.");
+		}
+	}
+}
+
+
+sub setQuota {
+	# Arguments: user/groupname, condition, quota value, current printer
+	# Result: quota file is created/updated to reflect these values.
+
+        my ( $userorgroupname, $condition, $quota ) = @_;
+
+	# Validate the quota to make sure we're setting a meaningful value.
+	unless ( &validQuota($quota) ) {
+		&exitScript("This is not a valid quota: $quota");
+	}
+
+	# Now set the quota.
+	my $quotadir = $VARS{QUOTA_DIRECTORY};
+	my $quotaFile = "";
+
+	if ( $condition == 0 || $condition == 3 ) {
+		$quotaFile = $quotadir . "/print_quota";
+	}
+	elsif ( $condition == 1 || $condition == 4 ) {
+		$quotaFile = $quotadir . "/" . $userorgroupname . "_group_quota";
+	}
+	elsif ( $condition == 2 || $condition == 5 ) {
+		$quotaFile = $quotadir . "/" . $userorgroupname . "_user_quota";
+	}
+
+	# Create the quota directory if required.
+	if ( ! -e $quotadir ) {
+		mkdir($quotadir, 0770);
+		my @userInfo = getpwnam("lp");
+		chown ( $userInfo[2], $userInfo[3], "$quotadir" );
+	}
+
+	# Now write the data to the quota file.
+	if ( $condition == 0 || $condition == 1 || $condition == 2 ) {
+		# Overwrite all of the data in the file.
+		&writeDataFile(0,"$quotaFile","$quota") or &exitScript("Could not write quota to quota file $quotaFile");
+	}
+	else {
+		# Append to the file.
+		&writeDataFile(1,"$quotaFile","$quota") or &exitScript("Could not add quota to quota file $quotaFile");
+	}
+
+	# Be sure that its permissions are set correctly!
+	if ( $condition == 0 ) {
+		chmod (0644,"$quotaFile");
+	}
+	elsif ( $condition == 1 ) {
+		chown ((getpwnam("lp"))[2],(getgrnam($userorgroupname))[2],"$quotaFile"); # userorgroupname is a group
+		chmod (0640,"$quotaFile");
+	}
+	elsif ( $condition == 2 ) {
+		chown ((getpwnam("lp"))[2],(getpwnam($userorgroupname))[3],"$quotaFile"); # userorgroupname is a user
+		chmod (0640,"$quotaFile");
+	}
+
+	my ( $quotaPart, $timestampPart ) = split( /,/, $quota, 2 );
+
+	if ( $quotaPart =~ m/^U$/ ) {
+		&reportStatus( 2, "Quota set to UNLIMITED for $userorgroupname", \%VARS );
+	}
+	elsif ( $quotaPart =~ m/^N$/ ) {
+		&reportStatus( 2, "Quota set to NOT ALLOWED for $userorgroupname", \%VARS );
+	}
+	else {
+		&reportStatus( 2, "Quota of $quotaPart set for $userorgroupname", \%VARS );
+	}
+}
+
+
+sub subtractQuota {
+	# Arguments: username, current printer
+	# Result: subtracts the user's quota from their current pagecount.
+
+	my $username = $_[0];
+
+	# Get the quota and pagecount and calculate the new pagecount.
+	my $userQuota = &getUserPrintQuota( $username, \%VARS );
+
+	if ( defined($userQuota) ) {
+		$userQuota = -$userQuota;
+	}
+	else {
+		&exitScript("Could not get quota for user $username, so their quota will not be updated");
+	}
+
+	# Write the offset to the accounting file.
+	&updateUserPagecount( $username, $userQuota, \%VARS ) or &exitScript("Could not update pagecount of $VARS{ACCOUNTING_DIRECTORY}/$username");
+
+	my $newPageCount = &getUserPagecount( $username, \%VARS );
+
+	&reportStatus( 2, "New pagecount for user $username is $newPageCount pages.", \%VARS );
+}
+
+
+sub rereadConfig {
+	# Returns: return value of parseConfigFile
+	# Results: config file is read, then a few values which should not be changed in quosnmp-util are set back to their original state.
+
+	# A few values should not change.
+	my $oldERROR_LOG = $VARS{ERROR_LOG};
+	my $oldDEBUG_LEVEL = $VARS{DEBUG_LEVEL};
+	my $oldDISK_RETRY_PERIOD = $VARS{DISK_RETRY_PERIOD};
+
+	my $configOK = &parseConfigFile( \%VARS, \@JOB_BLACKLIST, \%EMAIL_LIST );
+
+	# Restore those values which should not change.
+	$VARS{ERROR_LOG} = $oldERROR_LOG;
+	$VARS{DEBUG_LEVEL} = $oldDEBUG_LEVEL;
+	$VARS{DISK_RETRY_PERIOD} = $oldDISK_RETRY_PERIOD;
+
+	return($configOK);
+}
+
+
+sub exitScript {
+	# Arguments: error message (optional)
+
+	my $errorMsg = $_[0];
+
+	if ( defined($errorMsg) ) {
+		&reportStatus( 0, $errorMsg, \%VARS );
+	}
+	exit;
+}

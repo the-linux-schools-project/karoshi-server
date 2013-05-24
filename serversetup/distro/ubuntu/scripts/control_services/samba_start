@@ -1,0 +1,7 @@
+#!/bin/bash
+#Check which version of samba we are using
+SAMBAVER=samba
+[ -f /usr/local/sbin/samba ] && SAMBAVER=samba4
+
+service $SAMBAVER start
+

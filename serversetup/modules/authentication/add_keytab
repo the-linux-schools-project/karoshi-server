@@ -1,0 +1,114 @@
+#!/bin/bash
+
+########################
+#Get variables
+########################
+LOG_DATE=`date +%F`
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: add_keytab - incorrect number of arguments."<br>"
+exit 101
+fi
+read -t 3 DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/'`
+
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+KEYNAME=`echo "$DATA" | cut -s -d: -f5`
+SERVICENAME=`echo "$DATA" | cut -s -d: -f6`
+SPN_NAME=`echo "$DATA" | cut -s -d: -f7`
+SERVICEUSER=`echo "$DATA" | cut -s -d: -f8`
+
+if [ -z "$REMOTE_USER" ]
+then
+echo `date`: add_keytab - Blank remote user."<br>"
+echo `date`: add_keytab - Blank remote user from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+sleep 2
+exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+echo `date`: add_keytab - Blank remote tcpip address."<br>"
+echo `date`: add_keytab - Blank remote tcpip address by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+sleep 2
+exit 101
+fi
+if [ -z "$SERVERNAME" ]
+then
+echo `date`: add_keytab - Blank servername"<br>"
+echo `date`: add_keytab - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+sleep 2
+exit 101
+fi
+if [ -z "$KEYNAME" ]
+then
+echo `date`: add_keytab - Blank keyname."<br>"
+echo `date`: add_keytab - Blank keyname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+sleep 2
+exit 101
+fi
+
+if [ -z "$SERVICENAME" ]
+then
+echo `date`: add_keytab - Blank servicename."<br>"
+echo `date`: add_keytab - Blank servicename by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+sleep 2
+exit 101
+fi
+
+if [ -z "$SPN_NAME" ]
+then
+echo `date`: add_keytab - Blank spn name."<br>"
+echo `date`: add_keytab - Blank spn name by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+sleep 2
+exit 101
+fi
+
+echo `date`: add_keytab "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+source /opt/karoshi/server_network/domain_information/domain_name
+
+#Check if karoshi-krb5 user exits
+getent passwd karoshi-krb5 1>/dev/null
+if [ `echo $?` != 0 ]
+then 
+#Add user to samba4 ldap
+samba-tool user add karoshi-krb5 --userou='CN=karoshi,CN=other,CN=Users'  --use-username-as-cn --random-password 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#Modify useraccountcontrol
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+echo -e "dn: CN=karoshi-krb5,CN=karoshi,CN=other,CN=Users,$LDAPBASE
+changetype: modify
+replace: userAccountControl
+userAccountControl: 66112
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>> /opt/karoshi/serversetup/install_log
+fi
+
+#Add service principle
+samba-tool spn add $KEYNAME/$SPN_NAME karoshi-krb5
+
+#Export keytab
+[ ! -d opt/karoshi/.tempdata ] && mkdir -p /opt/karoshi/.tempdata
+samba-tool domain exportkeytab /opt/karoshi/.tempdata/$KEYNAME.keytab.$$ --principal=$KEYNAME/$SPN_NAME
+
+#Copy keytab to server
+if [ $SERVERNAME = $HOSTNAME ]
+then
+[ ! -d /etc/keytabs ] && mkdir -p /etc/keytabs
+touch /etc/keytabs/$SERVICENAME.keytab
+chmod 0400 /etc/keytabs/$SERVICENAME.keytab
+chown $SERVICEUSER /etc/keytabs/$SERVICENAME.keytab
+cp /opt/karoshi/.tempdata/$KEYNAME.keytab.$$ /etc/keytabs/$SERVICENAME.keytab
+else
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+[ ! -d /etc/keytabs ] && mkdir -p /etc/keytabs
+touch /etc/keytabs/'$SERVICENAME'.keytab
+chmod 0400 /etc/keytabs/'$SERVICENAME'.keytab
+chown '$SERVICEUSER' /etc/keytabs/'$SERVICENAME'.keytab
+'
+scp /opt/karoshi/.tempdata/$KEYNAME.keytab.$$ root@$SERVERNAME:"/etc/keytabs/'$SERVICENAME'.keytab"
+fi
+#Delete keytab file
+rm -f /opt/karoshi/.tempdata/$KEYNAME.keytab.$$

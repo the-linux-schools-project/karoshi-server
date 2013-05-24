@@ -1,0 +1,73 @@
+#!/bin/bash
+COPYPATH=/opt/karoshi/serversetup/distro/ubuntu/pdc/configfiles/karoshi_web_management
+#Create apache_karoshi user and group
+if [ `grep -c apache_karoshi /etc/group` = 0 ]
+then
+groupadd apache_karoshi
+groupmod -g 998 apache_karoshi
+fi
+if [ `grep -c apache_karoshi /etc/passwd` = 0 ]
+then
+useradd -u 998 -g apache_karoshi -d /var/www -c "system user for apache_karoshi" -K PASS_MAX_DAYS=-1 -s /bin/sh -M apache_karoshi
+fi
+#Copy in init.d startup script
+cp -f $COPYPATH/apache2_karoshi /etc/init.d/
+chmod 0744 /etc/init.d/apache2_karoshi
+#Copy in apache configuration files
+[ ! -d /etc/apache2/sites-karoshi-enabled ] && mkdir -p /etc/apache2/sites-karoshi-enabled
+cp -f $COPYPATH/karoshi-global-ssl /etc/apache2/sites-karoshi-enabled/
+cp -f $COPYPATH/karoshi-local-ssl /etc/apache2/sites-karoshi-enabled/
+cp -f $COPYPATH/karoshi-local-no-ssl /etc/apache2/sites-karoshi-enabled/
+cp -f $COPYPATH/ports_karoshi.conf /etc/apache2/
+cp -f $COPYPATH/envvars_karoshi /etc/apache2/
+cp -f $COPYPATH/apache2ctl_karoshi /usr/sbin
+cp -f $COPYPATH/apache2_karoshi.conf /etc/apache2
+
+[ ! -f /usr/sbin/apache2_karoshi ] && ln -s /usr/sbin/apache2 /usr/sbin/apache2_karoshi
+
+#Make sure that apache starts on boot
+/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/apache_karoshi
+
+#Make conf.d_karoshi
+mkdir -p /etc/apache2/conf.d_karoshi
+cp /etc/apache2/conf.d/security /etc/apache2/conf.d_karoshi/
+
+#Make mods enabled
+#cp -f -R /opt/karoshi/serversetup/distro/ubuntu/pdc/configfiles/karoshi_web_management/mods-enabled_karoshi /etc/apache2/
+cp -f -R /etc/apache2/mods-enabled /etc/apache2/mods-enabled_karoshi
+
+#Enable ssl
+[ ! -f /etc/apache2/mods-enabled_karoshi/ssl.conf ] && ln -s /etc/apache2/mods-available/ssl.conf /etc/apache2/mods-enabled_karoshi/ssl.conf
+[ ! -f /etc/apache2/mods-enabled_karoshi/ssl.load ] && ln -s /etc/apache2/mods-available/ssl.load /etc/apache2/mods-enabled_karoshi/ssl.load
+#a2enmod ssl
+
+#Make sure that apache can authenticate with ldap for the web management
+[ ! -f /etc/apache2/mods-enabled_karoshi/authnz_ldap.load ] && ln -s /etc/apache2/mods-available/authnz_ldap.load /etc/apache2/mods-enabled_karoshi/authnz_ldap.load
+
+
+#Create apache 2 run folder
+[ ! -d /var/run/apache2 ] && mkdir -p /var/run/apache2
+
+#Modify logrotate to reload apache2_karoshi
+if [ -f /etc/logrotate.d/apache2 ]
+then
+echo "/var/log/apache2/*.log {" > /etc/logrotate.d/apache2
+echo "	weekly" >> /etc/logrotate.d/apache2
+echo "	missingok" >> /etc/logrotate.d/apache2
+echo "	rotate 52" >> /etc/logrotate.d/apache2
+echo "	compress" >> /etc/logrotate.d/apache2
+echo "	delaycompress" >> /etc/logrotate.d/apache2
+echo "	notifempty" >> /etc/logrotate.d/apache2
+echo "	create 640 root adm" >> /etc/logrotate.d/apache2
+echo "	sharedscripts" >> /etc/logrotate.d/apache2
+echo "	postrotate" >> /etc/logrotate.d/apache2
+echo "		/etc/init.d/apache2 reload > /dev/null" >> /etc/logrotate.d/apache2
+echo "		/etc/init.d/apache2_karoshi reload >/dev/null" >> /etc/logrotate.d/apache2
+echo "	endscript" >> /etc/logrotate.d/apache2
+echo "}" >> /etc/logrotate.d/apache2
+fi
+
+#Start httpd_karoshi if it is not running
+[ `ps -e | grep -c apache2_karoshi` = 0 ] && service apache2_karoshi start
+exit
+

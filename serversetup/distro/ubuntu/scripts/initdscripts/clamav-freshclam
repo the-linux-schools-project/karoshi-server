@@ -1,0 +1,310 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:          clamav-freshclam
+# Required-Start:    $remote_fs $syslog
+# Should-Start:      clamav-daemon
+# Required-Stop:     $remote_fs $syslog
+# Should-Stop:       
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: ClamAV virus database updater
+# Description:       Clam AntiVirus virus database updater
+### END INIT INFO
+
+DAEMON=/usr/bin/freshclam
+NAME=freshclam
+DESC="ClamAV virus database updater"
+[ -x $DAEMON ] || exit 0
+
+CLAMAV_CONF_FILE=/etc/clamav/clamd.conf
+FRESHCLAM_CONF_FILE=/etc/clamav/freshclam.conf
+PIDFILE=/var/run/clamav/freshclam.pid
+[ -f /var/lib/clamav/interface ] && INTERFACE=`cat /var/lib/clamav/interface`
+
+status_of_proc () {
+    local pidfile daemon name status
+
+    pidfile=
+    OPTIND=1
+    while getopts p: opt ; do
+        case "$opt" in
+            p)  pidfile="$OPTARG";;
+        esac
+    done
+    shift $(($OPTIND - 1))
+
+    if [ -n "$pidfile" ]; then
+        pidfile="-p $pidfile"
+    fi
+    daemon="$1"
+    name="$2"
+
+    status="0"
+    pidofproc $pidfile $daemon >/dev/null || status="$?"
+    if [ "$status" = 0 ]; then
+        log_success_msg "$name is running"
+        return 0
+    else
+        log_failure_msg "$name is not running"
+        return $status
+    fi
+}
+
+to_lower()
+{
+  word="$1"
+  lcword=$(echo "$word" | tr A-Z a-z)
+  echo "$lcword"
+}
+
+is_true()
+{
+  var="$1"
+  lcvar=$(to_lower "$var")
+  [ 'true' = "$lcvar" ] || [ 'yes' = "$lcvar" ] || [ 1 = "$lcvar" ]
+  return $?
+}
+
+is_false()
+{
+  var="$1"
+  lcvar=$(to_lower "$var")
+  [ 'false' = "$lcvar" ] || [ 'no' = "$lcvar" ] || [ 0 = "$lcvar" ]
+  return $?
+}
+
+ucf_cleanup()
+{
+  # This only does something if I've fucked up before
+  # Not entirely impossible :(
+
+  configfile=$1
+
+  if [ `grep "$configfile" /var/lib/ucf/hashfile | wc -l` -gt 1 ]; then
+    grep -v "$configfile" /var/lib/ucf/hashfile > /var/lib/ucf/hashfile.tmp
+    grep "$configfile" /var/lib/ucf/hashfile | tail -n 1  >> /var/lib/ucf/hashfile.tmp
+    mv /var/lib/ucf/hashfile.tmp /var/lib/ucf/hashfile
+  fi
+}
+
+add_to_ucf()
+{
+  configfile=$1
+  ucffile=$2
+
+  if ! grep -q "$configfile" /var/lib/ucf/hashfile; then
+    md5sum $configfile >> /var/lib/ucf/hashfile
+    cp $configfile $ucffile
+  fi
+}
+
+ucf_upgrade_check()
+{
+  configfile=$1
+  sourcefile=$2
+  ucffile=$3
+
+  if [ -f "$configfile" ]; then
+    add_to_ucf $configfile $ucffile
+    ucf --three-way --debconf-ok "$sourcefile" "$configfile"
+  else
+    [ -d /var/lib/ucf/cache ] || mkdir -p /var/lib/ucf/cache
+    cp $sourcefile $configfile
+    add_to_ucf $configfile $ucffile
+  fi
+}
+
+slurp_config()
+{
+  CLAMAVCONF="$1"
+  
+  if [ -e "$CLAMAVCONF" ]; then
+    for variable in `egrep -v '^[[:space:]]*(#|$)' "$CLAMAVCONF" | awk '{print $1}'`; do
+      if [ "$variable" = 'DatabaseMirror' ]; then
+        if [ -z "$DatabaseMirror" ]; then
+          for i in `grep ^$variable $CLAMAVCONF | awk '{print $2}'`; do
+            value="$i $value"
+          done
+        else
+          continue
+        fi
+      elif [ "$variable" = 'IncludePUA' ]; then
+        if [ -z "$IncludePUA" ]; then
+          for i in `grep ^$variable $CLAMAVCONF | awk '{print $2}'`; do
+            value="$i $value"
+          done
+        else
+          continue
+        fi
+      elif [ "$variable" = 'ExcludePUA' ]; then
+        if [ -z "$ExcludePUA" ]; then
+          for i in `grep ^$variable $CLAMAVCONF | awk '{print $2}'`; do
+            value="$i $value"
+          done
+        else
+          continue
+        fi
+      elif [ "$variable" = 'VirusEvent' ] || [ "$variable" = 'OnUpdateExecute' ] || [ "$variable" = 'OnErrorExecute' ]; then
+        value=`grep ^$variable $CLAMAVCONF | head -n1 | sed -e s/$variable\ //`
+      else
+        value=`grep ^$variable $CLAMAVCONF | head -n1 | awk '{print $2}'`
+      fi
+      if [ -z "$value" ]; then 
+        export "$variable"="true"
+      elif [ "$value" != "$variable" ]; then
+        export "$variable"="$value"
+      else
+        export "$variable"="true"
+      fi
+      unset value
+    done
+  fi
+}
+
+make_dir()
+{
+  DIR=$1
+  if [ -d "$DIR" ]; then
+    return 0;
+  fi
+  [ -n "$User" ] || User=clamav
+  mkdir -p -m 0755 "$DIR"
+  chown "$User" "$DIR"
+}
+
+
+
+. /lib/lsb/init-functions
+
+slurp_config "$FRESHCLAM_CONF_FILE"
+
+[ -n "$PidFile" ] && PIDFILE="$PidFile"
+[ -n "$DataBaseDirectory" ] || DataBaseDirectory=/var/run/clamav
+
+make_dir "$DataBaseDirectory"
+make_dir $(dirname "$PidFile")
+
+if [ -f "$PIDFILE" ]; then
+  PID=`pidofproc -p $PIDFILE $DAEMON`
+  RUNNING=$?
+else
+  PID=`pidofproc $DAEMON`
+  RUNNING=$?
+fi
+
+handle_iface()
+{
+  OPTIND=1
+  if  [ "$1" = "stop" ] && [ "$RUNNING" != 0 ]; then
+    return 1
+  elif [ "$1" = "start" ] && [ "$RUNNING" = 0 ]; then
+    return 1
+  else
+    return 0
+  fi
+  
+  IS_UP=0
+  MATCH=0
+  for inet in $INTERFACE; do
+    route | grep -q "$inet" && IS_UP=`expr "$IS_UP" + 1`
+    [ "$inet" = "$IFACE" ] && MATCH=1
+  done
+  
+  if [ -n "$INTERFACE" ]; then         # Want if-up.d handling
+    if [ -n "$IFACE" ]; then           # Called by if-up.d - for us
+      if [ "$MATCH" = '1' ]; then      # IFACE is ours 
+        if [ "$IS_UP" = '1' ]; then    # and is only one up
+          return 0
+        else                           # Either not up, or others are up
+          return 1
+        fi
+      else                             # IFACE is not ours
+        return 1
+      fi
+    else                               # Not called by if-up.d && $1='(stop|start)'
+      return 1
+    fi
+  else                                 # No if-up.d handling - just return
+    return 0
+  fi
+}
+
+handle_iface $1 || exit 0
+
+[ -z "$UpdateLogFile" ] && UpdateLogFile=/var/log/clamav/freshclam.log
+[ -z "$DatabaseDirectory" ] && DatabaseDirectory=/var/lib/clamav/
+[ -n "$DatabaseOwner" ] || DatabaseOwner=clamav
+
+case "$1" in
+  no-daemon)
+  su "$DatabaseOwner" -p -s /bin/sh -c "freshclam -l $UpdateLogFile --datadir $DatabaseDirectory"
+  ;;
+  start)
+  OPTIND=1
+  log_daemon_msg "Starting $DESC" "$NAME"
+  # If user wants it run from cron, we only accept no-daemon and stop
+  if [ -f /etc/cron.d/clamav-freshclam ]; then
+    log_warning_msg "Not starting $NAME - cron option selected"
+    log_warning_msg "Run the init script with the 'no-daemon' option"
+    log_end_msg 255
+    exit 0
+  fi
+  start-stop-daemon --start -o -c "$DatabaseOwner" --exec $DAEMON -- -d --quiet
+  log_end_msg $?
+  ;;
+  stop)
+  OPTIND=1
+  log_daemon_msg "Stopping $DESC" "$NAME"
+  if [ -n "$PID" ]; then
+    kill -15 -"$PID"
+    ret=$?
+    sleep 1
+    if kill -0 "$PID" 2>/dev/null; then
+      ret=$?
+      log_progress_msg "Waiting . "
+      cnt=0
+      while kill -0 "$PID" 2>/dev/null; do
+        ret=$?
+        cnt=`expr "$cnt" + 1`
+        if [ "$cnt" -gt 15 ]; then
+          kill -9 "$PID"
+          ret=$?
+          break
+        fi
+        sleep 2
+        log_progress_msg ". "
+      done
+    fi
+  else
+    killproc -p $PIDFILE $DAEMON
+    ret=$?
+  fi
+  log_end_msg $ret
+  ;;
+  restart|force-reload)
+  $0 stop
+  $0 start
+  ;;
+  reload-log)
+  OPTIND=1
+  log_daemon_msg "Reloading $DESC" "$NAME"
+  if [ "$RUNNING" = 0 ] && [ -n "$PID" ]; then
+    kill -HUP $PID
+  fi
+  log_end_msg $?
+  ;;
+  skip)
+  ;;
+  status)
+  status_of_proc "$DAEMON" "$NAME"
+  exit $?
+  ;;
+  *)
+  log_failure_msg "Usage: $0 {no-daemon|start|stop|restart|force-reload|reload-log|skip|status}" >&2
+  exit 1
+  ;;
+esac
+
+exit 0
+

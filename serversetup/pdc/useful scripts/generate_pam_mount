@@ -1,0 +1,65 @@
+#!/bin/bash
+
+#Add in drive mount options
+function get_pri_group_number {
+if [ $SAMBAVER = samba ]
+then
+PRIGROUPNUM=`net groupmap list sid=$PRI_GROUP | cut -d- -f8 | tr -cd '0-9'`
+let PRIGROUPNUM=$PRIGROUPNUM+10000
+else
+PRIGROUPNUM=`getent group $PRI_GROUP | cut -d: -f3`
+fi
+}
+
+###########################
+#Create /var/lib/samba/netlogon/linuxclient/$FILENAME
+###########################
+
+function create_file {
+#Create header
+[ ! -d /var/lib/samba/netlogon/linuxclient ] && mkdir -p /var/lib/samba/netlogon/linuxclient
+cat /opt/karoshi/serversetup/pdc/linuxclient/pam_mount/pam_mount_header_xml > /var/lib/samba/netlogon/linuxclient/$FILENAME
+
+echo '<volume options="'$OPTIONS',dir_mode=0700" mountpoint="~/network/subjects" path="subjects" server="'$HOSTNAME'" uid="1000-5000000" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/$FILENAME
+#Itadmin share
+PRI_GROUP=itadmin
+get_pri_group_number
+echo '<volume options="'$OPTIONS',dir_mode=0700" mountpoint="~/network/itadmin" path="itadmin" server="'$HOSTNAME'" gid="'$PRIGROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/$FILENAME
+#Staffshare
+PRI_GROUP=staff
+get_pri_group_number
+echo '<volume options="'$OPTIONS',dir_mode=0700" mountpoint="~/network/staffshare" path="staffshare" server="'$HOSTNAME'" gid="'$PRIGROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/$FILENAME
+PRI_GROUP=officestaff
+get_pri_group_number
+echo '<volume options="'$OPTIONS',dir_mode=0700" mountpoint="~/network/staffshare" path="staffshare" server="'$HOSTNAME'" gid="'$PRIGROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/$FILENAME
+PRI_GROUP=itadmin
+get_pri_group_number
+echo '<volume options="'$OPTIONS',dir_mode=0700" mountpoint="~/network/staffshare" path="staffshare" server="'$HOSTNAME'" gid="'$PRIGROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/$FILENAME
+#Officeshare
+PRI_GROUP=officestaff
+get_pri_group_number
+echo '<volume options="'$OPTIONS',dir_mode=0700" mountpoint="~/network/officeshare" path="officeshare" server="'$HOSTNAME'" gid="'$PRIGROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/$FILENAME
+#Home shares
+for PRI_GROUPS in /opt/karoshi/server_network/group_information/*
+do
+PRI_GROUP=`basename $PRI_GROUPS`
+source /opt/karoshi/server_network/group_information/$PRI_GROUP
+get_pri_group_number
+echo '<volume options="'$OPTIONS',dir_mode=0700" mountpoint="~/network/home" path="%(USER)" server="'$SERVER'" gid="'$PRIGROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/$FILENAME
+done
+echo -e '\n</pam_mount>' >> /var/lib/samba/netlogon/linuxclient/$FILENAME
+}
+
+#Detect which version of samba we are using
+SAMBAVER=samba
+OPTIONS="sec=ntlmv2"
+FILENAME=pam_mount.conf.xml
+[ -f /usr/local/sbin/samba ] && SAMBAVER=samba4
+
+#Create standard file
+create_file
+#Create extra file for kerberos enabled clients and samba4 server
+OPTIONS="sec=krb5,cruid=%(USERUID)"
+FILENAME=pam_mount.conf.xml.krb5
+create_file
+

@@ -1,0 +1,147 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/user_image_process_cgi
+then
+echo `date`: user_image_process - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/user_image_process_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/user_image_process.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $user_image_process_cgi'check' ]
+then
+echo `date`: user_image_process - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/user_image_process_cgi
+then
+echo `date`: user_image_process - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/tech_checksums/user_image_process_cgi
+MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/user_image_process.cgi | cut -d' ' -f1`
+[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+if [ $MD5SUM2'check' != $user_image_process_cgi'check' ]
+then
+echo `date`: user_image_process - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: user_image_upload - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: user_image_upload - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+IMAGEFILE=`echo "$DATA" | cut -s -d: -f4`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: user_image_upload - Not called by user_image_upload.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: user_image_upload - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: user_image_upload - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $IMAGEFILE'null' = null ]
+then
+echo `date`: user_image_upload - Blank imagefile by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: user_image_upload - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+#echo `date`: user_image_upload - Username does not exist by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#Check to see if image matches a username
+IMAGESTYLE=notset
+FILENAME_NO_EXT=`echo $IMAGEFILE | sed 's/.jpg//g'| sed 's/ /space/g'`
+id -g $FILENAME_NO_EXT 1>/dev/null
+if [ `echo $?` = 0 ]
+then
+USERNAME=$FILENAME_NO_EXT
+IMAGESTYLE=usernamematch
+fi
+#Check to see if image matches an enrollment number
+if [ $IMAGESTYLE = notset ]
+then
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+USERNAME=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" employeeNumber=$FILENAME_NO_EXT | grep ^uid: | sed 's/uid: //g'`
+[ $USERNAME'null' != null ] && IMAGESTYLE=enrollmentmatch
+fi
+[ $IMAGESTYLE = notset ] && exit 103
+
+
+
+if [ -f /var/www/karoshi/user_image_upload/$IMAGEFILE ]
+then
+PRIMARYGROUP=`id -g -n $USERNAME`
+if [ ! -d /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/ ]
+then
+mkdir -p /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/
+chmod 0770 /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/
+chown root.apache_karoshi /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/
+fi
+echo `date`: user_image_upload - $IMAGEFILE for user $USERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+cp -f /var/www/karoshi/user_image_upload/$IMAGEFILE /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg
+chown root.apache_karoshi /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg
+chmod 0440 /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg
+rm -f -R /var/www/karoshi/user_image_upload
+else
+echo `date`: user_image_upload - upload error for $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+exit

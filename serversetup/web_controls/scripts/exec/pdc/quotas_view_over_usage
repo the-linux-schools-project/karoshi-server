@@ -1,0 +1,215 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/quotas_view_over_usage_cgi
+then
+echo `date`: quotas_view_over_usage - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/quotas_view_over_usage_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/quotas_view_over_usage.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $quotas_view_over_usage_cgi'check' ]
+then
+echo `date`: quotas_view_over_usage - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: quotas_view_over_usage - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+'`
+if [ $DATA'null' = null ]
+then
+echo `date`: quotas_view_over_usage - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+USERNAME=`echo "$DATA" | cut -s -d: -f4`
+PRIMARYGROUP=`echo "$DATA" | cut -s -d: -f5`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: quotas_view_over_usage - Not called by quotas_view_over_usage.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: quotas_view_over_usage - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: quotas_view_over_usage - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+#Check to see that USER and GROUP are not blank
+if [ $PRIMARYGROUP'null' = null ] && [ $USERNAME'null' = null ] 
+then
+echo `date`: quotas_view_over_usage - Blank username and group by $REMOTE_USER from $REMOTE_ADDR  >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: quotas_view_over_usage - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+echo `date`: quotas_view_over_usage - viewing by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/file/quotas_view_usage ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/file/quotas_view_usage
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+#Check for federated servers
+FEDERATED_SERVERS=no
+if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
+then
+if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
+then
+FEDERATED_SERVERS=yes
+fi
+fi
+
+if [ $USERNAME'null' != null ]
+then
+SEARCH="$USERNAME"
+PRIMARYGROUP=`id -g -n $USERNAME`
+else
+SEARCH="$PRIMARYGROUP"
+fi
+
+source /opt/karoshi/server_network/group_information/$PRIMARYGROUP
+
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: 110px;"><b>Username</b></td><td style="width: 80px;"><b>Server</b></tb><td style="width: 160px;"><b>Homepath</b></td><td>Blocks</td><td><b>Used</b></td><td><b>Size Quota</b></td><td><b>Size Limit</b></td><td><b>File count</b></td><td><b>File Quota</b></td><td><b>File limit</b></td></tr>'
+#File servers
+if [ $SERVER = $HOSTNAME ]
+then
+for NETWORKUSER in `getent passwd | grep -w $SEARCH | cut -d: -f1`
+do
+QUOTADATA=`quota -vusi $NETWORKUSER | sed -n 3,3p`
+if [ `echo "$QUOTADATA" | grep -c "*"` -gt 0 ]
+then
+HOMEPATH=`getent passwd $NETWORKUSER | cut -d: -f6`
+USEDSIZE=`du -hs $HOMEPATH | sed "s/\t/ /g" | cut -d" " -f1`
+BLOCKS=`echo $QUOTADATA | cut -d" " -f2`
+SIZEQUOTA=`echo $QUOTADATA | cut -d" " -f3`
+SIZELIMIT=`echo $QUOTADATA | cut -d" " -f4`
+FILECOUNT=`echo $QUOTADATA | cut -d" " -f6`
+FILEQUOTA=`echo $QUOTADATA | cut -d" " -f7`
+FILELIMIT=`echo $QUOTADATA | cut -d" " -f8`
+
+echo "<tr><td>$NETWORKUSER</td><td>$HOSTNAME</td><td>$HOMEPATH</td><td>$BLOCKS</td><td>$USEDSIZE</td><td>$SIZEQUOTA</td><td>$SIZELIMIT</td><td>$FILECOUNT</td><td>$FILEQUOTA</td><td>$FILELIMIT</td></tr>"
+fi
+done
+else
+ssh -x -o PasswordAuthentication=no $SERVER '
+for NETWORKUSER in `getent passwd | grep -w '$SEARCH' | cut -d: -f1`
+do
+QUOTADATA=`quota -vusi $NETWORKUSER | sed -n 3,3p`
+if [ `echo "$QUOTADATA" | grep -c "*"` -gt 0 ]
+then
+HOMEPATH=`getent passwd $NETWORKUSER | cut -d: -f6`
+USEDSIZE=`du -hs $HOMEPATH | sed "s/\t/ /g" | cut -d" " -f1`
+BLOCKS=`echo $QUOTADATA | cut -d" " -f2`
+SIZEQUOTA=`echo $QUOTADATA | cut -d" " -f3`
+SIZELIMIT=`echo $QUOTADATA | cut -d" " -f4`
+FILECOUNT=`echo $QUOTADATA | cut -d" " -f6`
+FILEQUOTA=`echo $QUOTADATA | cut -d" " -f7`
+FILELIMIT=`echo $QUOTADATA | cut -d" " -f8`
+echo "<tr><td>$NETWORKUSER</td><td>$HOSTNAME</td><td>$HOMEPATH</td><td>$BLOCKS</td><td>$USEDSIZE</td><td>$SIZEQUOTA</td><td>$SIZELIMIT</td><td>$FILECOUNT</td><td>$FILEQUOTA</td><td>$FILELIMIT</td></tr>"
+fi
+done
+'
+fi
+
+#Check federated servers
+if [ $FEDERATED_SERVERS = yes ]
+then
+for FEDERATED_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
+do
+FEDERATED_SERVER=`basename $FEDERATED_SERVERS`
+ssh -x -o PasswordAuthentication=no $FEDERATED_SERVER '
+source /opt/karoshi/server_network/group_information/'$PRIMARYGROUP'
+if [ $SERVER = $HOSTNAME ]
+then
+for NETWORKUSER in `getent passwd | grep -w '$SEARCH' | cut -d: -f1`
+do
+QUOTADATA=`quota -vusi $NETWORKUSER | sed -n 3,3p`
+if [ `echo "$QUOTADATA" | grep -c "*"` -gt 0 ]
+then
+HOMEPATH=`getent passwd $NETWORKUSER | cut -d: -f6`
+USEDSIZE=`du -hs $HOMEPATH | sed "s/\t/ /g" | cut -d" " -f1`
+BLOCKS=`echo $QUOTADATA | cut -d" " -f2`
+SIZEQUOTA=`echo $QUOTADATA | cut -d" " -f3`
+SIZELIMIT=`echo $QUOTADATA | cut -d" " -f4`
+FILECOUNT=`echo $QUOTADATA | cut -d" " -f6`
+FILEQUOTA=`echo $QUOTADATA | cut -d" " -f7`
+FILELIMIT=`echo $QUOTADATA | cut -d" " -f8`
+
+echo "<tr><td>$NETWORKUSER</td><td>$HOSTNAME</td><td>$HOMEPATH</td><td>$BLOCKS</td><td>$USEDSIZE</td><td>$SIZEQUOTA</td><td>$SIZELIMIT</td><td>$FILECOUNT</td><td>$FILEQUOTA</td><td>$FILELIMIT</td></tr>"
+fi
+done
+else
+#Check federated slave server
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '\''
+for NETWORKUSER in `getent passwd | grep -w '$SEARCH' | cut -d: -f1`
+do
+QUOTADATA=`quota -vusi $NETWORKUSER | sed -n 3,3p`
+if [ `echo "$QUOTADATA" | grep -c "*"` -gt 0 ]
+then
+HOMEPATH=`getent passwd $NETWORKUSER | cut -d: -f6`
+USEDSIZE=`du -hs $HOMEPATH | sed "s/\t/ /g" | cut -d" " -f1`
+BLOCKS=`echo $QUOTADATA | cut -d" " -f2`
+SIZEQUOTA=`echo $QUOTADATA | cut -d" " -f3`
+SIZELIMIT=`echo $QUOTADATA | cut -d" " -f4`
+FILECOUNT=`echo $QUOTADATA | cut -d" " -f6`
+FILEQUOTA=`echo $QUOTADATA | cut -d" " -f7`
+FILELIMIT=`echo $QUOTADATA | cut -d" " -f8`
+
+echo "<tr><td>$NETWORKUSER</td><td>$HOSTNAME</td><td>$HOMEPATH</td><td>$BLOCKS</td><td>$USEDSIZE</td><td>$SIZEQUOTA</td><td>$SIZELIMIT</td><td>$FILECOUNT</td><td>$FILEQUOTA</td><td>$FILELIMIT</td></tr>"
+done
+fi
+'\''
+fi
+'
+done
+fi
+echo "</tbody></table"
+exit
+

@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>View E-Mail Aliases</title>
+  <link rel="stylesheet" href="/karoshi/style.css">
+</head>
+<body>
+<div id="menubox">
+<iframe src="karoshi_template/menu.html" name="main" marginwidth="0" marginheight="0" frameborder="0" height="150" scrolling="no" width="950"></iframe>
+</div>
+<div id="submenubox">
+<iframe src="karoshi_template/email.html" name="submenu" marginwidth="0" marginheight="0" height="430" scrolling="no" width="220"></iframe>
+</div>
+<form action="/cgi-bin/karoshi/admin/email_view_aliases.cgi" name="selectedusers" method="post">
+  <div id="actionbox"><b>View E-Mail Aliases</b><br>
+  <br>
+  <table class="standard" style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
+    <tbody>
+      <tr>
+        <td><input name="_ALPHABET_" value="A" checked="checked" type="radio">A</td>
+        <td><input name="_ALPHABET_" value="B" type="radio">B</td>
+        <td><input name="_ALPHABET_" value="C" type="radio">C</td>
+        <td><input name="_ALPHABET_" value="D" type="radio">D</td>
+        <td><input name="_ALPHABET_" value="E" type="radio">E</td>
+        <td><input name="_ALPHABET_" value="F" type="radio">F</td>
+        <td><input name="_ALPHABET_" value="G" type="radio">G</td>
+        <td><input name="_ALPHABET_" value="H" type="radio">H</td>
+        <td><input name="_ALPHABET_" value="I" type="radio">I</td>
+        <td><input name="_ALPHABET_" value="J" type="radio">J</td>
+        <td><input name="_ALPHABET_" value="K" type="radio">K</td>
+        <td><input name="_ALPHABET_" value="L" type="radio">L</td>
+      </tr>
+      <tr>
+        <td><input name="_ALPHABET_" value="M" type="radio">M</td>
+        <td><input name="_ALPHABET_" value="N" type="radio">N</td>
+        <td><input name="_ALPHABET_" value="O" type="radio">O</td>
+        <td><input name="_ALPHABET_" value="P" type="radio">P</td>
+        <td><input name="_ALPHABET_" value="Q" type="radio">Q</td>
+        <td><input name="_ALPHABET_" value="R" type="radio">R</td>
+        <td><input name="_ALPHABET_" value="S" type="radio">S</td>
+        <td><input name="_ALPHABET_" value="T" type="radio">T</td>
+        <td><input name="_ALPHABET_" value="U" type="radio">U</td>
+        <td><input name="_ALPHABET_" value="V" type="radio">V</td>
+        <td><input name="_ALPHABET_" value="W" type="radio">W</td>
+        <td><input name="_ALPHABET_" value="X" type="radio">X</td>
+      </tr>
+      <tr>
+        <td><input name="_ALPHABET_" value="Y" type="radio">Y</td>
+        <td><input name="_ALPHABET_" value="Z" type="radio">Z</td>
+        <td><input name="_ALPHABET_" value="0" type="radio">0</td>
+        <td><input name="_ALPHABET_" value="1" type="radio">1</td>
+        <td><input name="_ALPHABET_" value="2" type="radio">2</td>
+        <td><input name="_ALPHABET_" value="3" type="radio">3</td>
+        <td><input name="_ALPHABET_" value="4" type="radio">4</td>
+        <td><input name="_ALPHABET_" value="5" type="radio">5</td>
+        <td><input name="_ALPHABET_" value="6" type="radio">6</td>
+        <td><input name="_ALPHABET_" value="7" type="radio">7</td>
+        <td><input name="_ALPHABET_" value="8" type="radio">8</td>
+        <td><input name="_ALPHABET_" value="9" type="radio">9</td>
+      </tr>
+      <tr>
+        <td><input name="_ALPHABET_" value="ALL" type="radio">All</td>
+<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/karoshi/images/help/info.png" /><span>Choose ALL to display all aliases or choose a letter to display aliases to the corresponding usernames.</span></a></td>
+      </tr>
+    </tbody>
+  </table>
+  <br>
+  </div>
+  <div id="submitbox"> <input value="Submit" type="submit"> </div>
+  <div id="resetbox"> <input value="Reset" type="reset"> </div>
+</form>
+</body>
+</html>

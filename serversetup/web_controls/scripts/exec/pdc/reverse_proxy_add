@@ -1,0 +1,155 @@
+#!/bin/bash
+#Copyright (C) 2010 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/reverse_proxy_add_cgi
+then
+echo `date`: reverse_proxy_add - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/reverse_proxy_add_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/reverse_proxy_add.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $reverse_proxy_add_cgi'check' ]
+then
+echo `date`: reverse_proxy_add - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: reverse_proxy_add - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: reverse_proxy_add - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+TARGET=`echo "$DATA" | cut -s -d: -f4 | sed 's/^http//g' | tr -cd 'A-Za-z0-9'`
+#TARGET2=`echo $TARGET | sed 's/%3A//g' | sed 's/%2F/\//g' | sed 's/\/\///g'`
+DESTINATION=`echo "$DATA" | cut -s -d: -f5`
+DESTINATION=`echo $DESTINATION | sed 's/%3A/:/g' | sed 's/%2F/\//g'`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: reverse_proxy_add - Not called by reverse_proxy_add.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: reverse_proxy_add - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: reverse_proxy_add - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $TARGET'null' = null ]
+then
+echo `date`: reverse_proxy_add - Blank TARGET by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $DESTINATION'null' = null ]
+then
+echo `date`: reverse_proxy_add - Blank DESTINATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: reverse_proxy_add - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+##########################
+#Language
+##########################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/web/reverse_proxy_add ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/web/reverse_proxy_add
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+
+#Get reverse proxy server
+PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/reverseproxyserver | sed 's/ //g'`
+if [ $PROXYSERVER'null' = null ]
+then
+echo `date`: reverse_proxy_add - Blank proxy server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+#Add the proxy information information
+echo `date`: reverse_proxy_add - $TARGETMSG : $TARGET $DESTINATIONMSG : $DESTINATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+[ ! -d /opt/karoshi/server_network/reverseproxy/sites ] && mkdir -p /opt/karoshi/server_network/reverseproxy/sites
+
+if [ $TARGET = webrootdir ]
+then
+TARGET2=""
+else
+TARGET2=$TARGET
+fi
+
+echo 'location /'$TARGET2' {'  > /opt/karoshi/server_network/reverseproxy/sites/$TARGET
+echo 'root /var/www/html;' >> /opt/karoshi/server_network/reverseproxy/sites/$TARGET
+echo 'proxy_set_header X-Forwarded-Host $host;' >> /opt/karoshi/server_network/reverseproxy/sites/$TARGET
+echo 'proxy_set_header X-Forwarded-Server $host;' >> /opt/karoshi/server_network/reverseproxy/sites/$TARGET
+echo 'proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;' >> /opt/karoshi/server_network/reverseproxy/sites/$TARGET
+echo 'proxy_pass '$DESTINATION'/'$TARGET2';' >> /opt/karoshi/server_network/reverseproxy/sites/$TARGET
+echo '}' >> /opt/karoshi/server_network/reverseproxy/sites/$TARGET
+echo >> /opt/karoshi/server_network/reverseproxy/sites/$TARGET
+
+#Generate proxysites
+cat /opt/karoshi/server_network/reverseproxy/sites/* > /opt/karoshi/server_network/reverseproxy/proxysites
+
+#Copy proxysites to /etc/nginx
+
+scp /opt/karoshi/server_network/reverseproxy/proxysites root@$PROXYSERVER:"/etc/nginx/"
+
+ssh -x -o PasswordAuthentication=no $PROXYSERVER '
+#Reload nginx
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nginx_reload
+'
+exit
+

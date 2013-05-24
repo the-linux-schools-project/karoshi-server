@@ -1,0 +1,39 @@
+#!/bin/bash
+#sendreturn
+
+############################
+#Variables
+############################
+CDROMPATH=( notassigned notassigned notassigned notassigned notassigned notassigned notassigned )
+
+[ -e /mnt/cdrom ] && CDROMPATH[0]=/mnt/cdrom
+[ -e /mnt/cdrom2 ] && CDROMPATH[1]=/mnt/cdrom2
+[ -e /media/cdrom ] && CDROMPATH[2]=/media/cdrom
+[ -e /media/cdrom2 ] && CDROMPATH[3]=/media/cdrom2
+[ -e /media/dvd ] && CDROMPATH[4]=/media/dvd
+[ -e /media/cdrecorder ] && CDROMPATH[5]=/media/cdrecorder
+[ -e /media/dvdrecorder ] && CDROMPATH[6]=/media/dvdrecorder
+
+
+sleep 0.1
+echo -e "\n"
+COUNTER=0
+ARRAYVAR=0
+         while [ $COUNTER -lt 1000000 ]; do
+CDROMVAR=`echo ${CDROMPATH[$ARRAYVAR]}`
+if [ $CDROMVAR != notassigned ]
+then
+sleep 1
+MOUNTSTATUS=`dir -l $CDROMVAR | wc -l`
+if [ $MOUNTSTATUS -gt 1 ]
+then
+echo -e "\n"
+fi
+fi
+         let COUNTER=COUNTER+1
+         let ARRAYVAR=ARRAYVAR+1
+if [ $ARRAYVAR = 7 ]
+then
+ARRAYVAR=0
+fi
+         done

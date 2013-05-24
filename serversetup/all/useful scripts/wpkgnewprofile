@@ -1,0 +1,83 @@
+#!/bin/bash
+#wpkgnewprofile
+#Copyright (C) 2006 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contact either at mpsharrad@karoshi.org.uk or jharris@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+source /opt/karoshi/serversetup/variables/language
+source /opt/karoshi/serversetup/variables/xdialog
+source /opt/karoshi/serversetup/language/$LANGCHOICE/all/wpkgnewprofile
+
+DIALOG=${DIALOG=Xdialog}
+tempfile=`tempfile 2>/dev/null` || tempfile=$HOME/.tempdata/newprofile
+#trap "rm -f $tempfile" 0 1 2 5 15
+
+$DIALOG --title "$TITLE" --clear \
+        --wrap --icon $ICON --rc-file $RCFILE --inputbox "$OPENINGMSG" 16 50 2> $HOME/.tempdata/newprofile
+
+retval=$?
+
+case $retval in
+  0)
+    ;;
+  1)
+    exit;;
+  255)
+    exit;;
+esac
+NEWPROFILE=`sed 's/ /_/g' $HOME/.tempdata/newprofile | tr 'A-Z' 'a-z'`
+rm -f $HOME/.tempdata/newprofile 2>/dev/null
+#####################
+#Confirm wpkg profile name choice
+#####################
+
+DIALOG=${DIALOG=Xdialog}
+
+$DIALOG --title "$TITLE" --clear \
+        --icon $ICON --wrap --rc-file $RCFILE --yesno "$NEWPROFILE\n\n$CONFIRMMSG" 16 50
+
+case $? in
+  0)
+   CHOICE=go;;
+  1)
+    CHOICE=x;;
+  255)
+    CHOICE=x;;
+esac
+
+if [ $CHOICE = go ]
+then
+mkdir /home/wpkg/software/msi/$NEWPROFILE
+chmod 0664 /home/wpkg/software/msi/$NEWPROFILE
+chmod u+X,g+X,o+X /home/wpkg/software/msi/$NEWPROFILE
+chown root.itadmin /home/wpkg/software/msi/$NEWPROFILE
+mkdir /home/wpkg/profile/$NEWPROFILE
+touch /home/wpkg/profile/$NEWPROFILE/hosts.xml
+else
+COMPLETEDMSG=$CANCELLEDMSG
+fi
+################
+#Show completed message
+################
+Xdialog --title "$TITLE" \
+--wrap --icon $ICON --rc-file $RCFILE --infobox "$NEWPROFILE\n\n$COMPLETEDMSG" 16 50 3000
+case $ in
+0)
+	;;
+255)
+	;;
+esac

@@ -1,0 +1,16 @@
+#Banned URLs based on Regular Expressions
+#
+# E.g. 'sex' would block sex.com and middlesex.com etc
+
+#Banned URLs based on Regular Expressions
+#
+#These have been taken from www.squidguard.org
+
+(adultsight|adultsite|adultsonly|adultweb|blowjob|bondage|centerfold|cumshot|cyberlust|cybercore|hardcore|incest|masturbat|obscene|pedophil|pedofil|playmate|pornstar|sexdream|showgirl|softcore|striptease)
+(^|[-\?+=&/_])(big|cyber|hard|huge|mega|small|soft|super|tiny)?(anal|babe|bharath|boob|breast|busen|busty|clit|cum|cunt|dick|fetish|fuck|hooter|lez|lust|naked|nude|oral|orgy|porn|porno|pupper|pussy|rotten|sex|shit|smutpump|teen|tit|topp?les|xxx)s?([-\?+=&/_]|$)
+(^|[\?+=&/])(girls|babes)([\?+=&/]|$)
+
+#Use this to block web counters:
+#(adlog.php|cnt.cgi|count.cgi|count.dat|count.jsp|count.pl|count.php|counter.cgi|counter.js|counter.pl|countlink.cgi|fpcount.exe|logitpro.cgi|rcounter.dll|track.pl|w_counter.js)
+#Contributed by proxy@barendse.to
+

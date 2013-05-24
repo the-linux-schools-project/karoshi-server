@@ -1,0 +1,469 @@
+#!/bin/bash
+#Copyright (C) 2010 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/software_raid_create2_cgi
+then
+echo `date`: software_raid_create2 - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/software_raid_create2_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/software_raid_create2.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $software_raid_create2_cgi'check' ]
+then
+echo `date`: software_raid_create2 - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: software_raid_create2 - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9:._,/'`
+if [ $DATA'null' = null ]
+then
+echo `date`: software_raid_create2 - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+SERVERTYPE=`echo "$DATA" | cut -s -d: -f5`
+SERVERMASTER=`echo "$DATA" | cut -s -d: -f6`
+ACTION=`echo "$DATA" | cut -s -d: -f7`
+RAIDTYPE=`echo "$DATA" | cut -s -d: -f8`
+DRIVELIST=`echo "$DATA" | cut -s -d: -f9`
+MOUNTPOINT=`echo "$DATA" | cut -s -d: -f10`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: software_raid_create2 - Not called by software_raid_create2.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: software_raid_create2 - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: software_raid_create2 - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVERNAME'null' = null ]
+then
+echo `date`: software_raid_create2 - Blank server >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVERTYPE'null' = null ]
+then
+echo `date`: software_raid_create2 - Blank servertype >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVERTYPE = federatedslave ]
+then
+if [ $SERVERMASTER'null' = null ]
+then
+echo `date`: software_raid_create2 - Blank servermaster >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+fi
+if [ $RAIDTYPE'null' = null ]
+then
+echo `date`: software_raid_create2 - Blank raidtype >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $RAIDTYPE != restore ]
+then
+if [ $DRIVELIST'null' = null ]
+then
+echo `date`: software_raid_create2 - Blank drives >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+fi
+if [ $MOUNTPOINT'null' = null ]
+then
+echo `date`: software_raid_create2 - Blank mountpoint >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: software_raid_create2 - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+echo `date`: software_raid_create2 - servername $SERVERNAME servertype $SERVERTYPE raidtype $RAIDTYPE drivelist $DRIVELIST mountpoint $MOUNTPOINT by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+RAIDNAME=/dev/md0
+
+##########################
+#Language
+##########################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/software_raid ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/system/software_raid
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+if [ $SERVERNAME = $HOSTNAME ]
+then
+
+#Make sure that the server will boot with a degraded array.
+[ -f /etc/initramfs-tools/conf.d/mdadm ] && sed -i "s/BOOT_DEGRADED=false/BOOT_DEGRADED=true/g" /etc/initramfs-tools/conf.d/mdadm 
+
+if [ $RAIDTYPE != restore ]
+then
+if [ $RAIDTYPE = raid5 ]
+then
+LEVEL=5
+else
+LEVEL=1
+fi
+
+DRIVES=( `echo $DRIVELIST | sed "s/,/ /g"` )
+DRIVES_COUNT=${#DRIVES[@]}
+
+#Create software raid partitioned drives
+COUNTER=0
+while [ $COUNTER -lt $DRIVES_COUNT ]
+do
+DRIVE=${DRIVES[$COUNTER]}
+parted -s $DRIVE mklabel gpt
+mdadm --stop --scan 
+parted -s $DRIVE mkpart primary 0 100%
+mdadm --stop --scan
+parted -s $DRIVE set 1 raid on
+mdadm --stop --scan 
+PARTITIONS=`echo $PARTITIONS $DRIVE"1"`
+echo DRIVE is $DRIVE"<br>"
+let COUNTER=$COUNTER+1
+done
+
+echo Creating $RAIDNAME using $PARTITIONS"<br>"
+
+mdadm --create $RAIDNAME --run --level=$LEVEL --raid-devices=$DRIVES_COUNT $PARTITIONS
+mdadm --detail --scan >> /etc/mdadm/mdadm.conf
+echo Formating $RAIDNAME"<br>"
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+mkfs.ext4 $RAIDNAME
+echo "</pre>"
+#Write data to fstab
+RAIDUUID=`blkid $RAIDNAME | cut -d" " -f2`
+if [ $RAIDUUID"null" != null ]
+then
+if [ `grep -c $RAIDUUID /etc/fstab` = 0 ]
+then
+echo \#Software raid >> /etc/fstab
+echo "$RAIDUUID    $MOUNTPOINT    ext4   defaults,errors=remount-ro 0 1" >> /etc/fstab
+fi
+fi
+
+if [ ! -d $MOUNTPOINT ]
+then
+#Create folder
+mkdir -p $MOUNTPOINT
+else
+#copy data
+mkdir -p $MOUNTPOINT.$$
+echo "<b>"$COPYDATAMSG"</b><br><br>"
+sleep 1
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+mount $RAIDNAME $MOUNTPOINT.$$
+rsync --timeout=30 --verbose --dirs --recursive --links --compress --delete --backup --times --perms --executability --owner --group -o $MOUNTPOINT/ $MOUNTPOINT.$$/
+umount $RAIDNAME
+echo "</pre>"
+rm -f -R $MOUNTPOINT.$$
+fi
+#Mount drive
+mount $RAIDNAME $MOUNTPOINT
+else
+#######################
+#Restore existing raid array
+#######################
+
+#Fire up the array
+mdadm --assemble --scan 1>/dev/null 2>/dev/null
+#Get the raid info
+RAIDINFO=`mdadm --detail --scan`
+if [ `echo $RAIDINFO'null' | sed "s/ //g"` != null ]
+then
+
+RAIDNAME=`echo $RAIDINFO | cut -d" " -f2`
+RAIDUUID=`blkid $RAIDNAME | cut -d" " -f2`
+
+#Write info to mdadm.conf
+mdadm --detail --scan > /etc/mdadm/mdadm.conf
+#Write data to fstab
+if [ $RAIDUUID"null" != null ]
+then
+if [ `grep -c $RAIDUUID /etc/fstab` = 0 ]
+then
+echo \#Software raid >> /etc/fstab
+echo "$RAIDUUID    $MOUNTPOINT    ext4   defaults,errors=remount-ro 0 1" >> /etc/fstab
+#Mount drive
+[ ! -d $MOUNTPOINT ] && mkdir -p $MOUNTPOINT
+mount $RAIDNAME $MOUNTPOINT
+
+#Make sure that BOOT_DEGRADED=true 
+sed -i "s/BOOT_DEGRADED=false/BOOT_DEGRADED=true/g" /etc/initramfs-tools/conf.d/mdadm
+
+fi
+fi
+fi
+fi
+
+fi
+
+if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ] && [ $SERVERNAME != $HOSTNAME ]
+then
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+
+#Make sure that the server will boot with a degraded array.
+[ -f /etc/initramfs-tools/conf.d/mdadm ] && sed -i "s/BOOT_DEGRADED=false/BOOT_DEGRADED=true/g" /etc/initramfs-tools/conf.d/mdadm 
+
+if [ '$RAIDTYPE' != restore ]
+then
+if [ '$RAIDTYPE' = raid5 ]
+then
+LEVEL=5
+else
+LEVEL=1
+fi
+
+DRIVES=( `echo '$DRIVELIST' | sed "s/,/ /g"` )
+DRIVES_COUNT=${#DRIVES[@]}
+
+#Create software raid partitioned drives
+COUNTER=0
+while [ $COUNTER -lt $DRIVES_COUNT ]
+do
+DRIVE=${DRIVES[$COUNTER]}
+parted -s $DRIVE mklabel gpt
+mdadm --stop --scan 
+parted -s $DRIVE mkpart primary 0 100%
+mdadm --stop --scan
+parted -s $DRIVE set 1 raid on
+mdadm --stop --scan 
+PARTITIONS=`echo $PARTITIONS $DRIVE"1"`
+echo DRIVE is $DRIVE"<br>"
+let COUNTER=$COUNTER+1
+done
+
+echo Creating '$RAIDNAME' using $PARTITIONS"<br>"
+
+mdadm --create '$RAIDNAME' --run --level=$LEVEL --raid-devices=$DRIVES_COUNT $PARTITIONS
+mdadm --detail --scan >> /etc/mdadm/mdadm.conf
+echo Formating '$RAIDNAME'"<br>"
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+mkfs.ext4 '$RAIDNAME'
+echo "</pre>"
+#Write data to fstab
+RAIDUUID=`blkid '$RAIDNAME' | cut -d" " -f2`
+if [ $RAIDUUID"null" != null ]
+then
+if [ `grep -c $RAIDUUID /etc/fstab` = 0 ]
+then
+echo \#Software raid >> /etc/fstab
+echo "$RAIDUUID       '$MOUNTPOINT'               ext4    defaults,errors=remount-ro 0       1" >> /etc/fstab
+fi
+fi
+
+if [ ! -d '$MOUNTPOINT' ]
+then
+#Create folder
+mkdir -p '$MOUNTPOINT'
+else
+#copy data
+mkdir -p '$MOUNTPOINT'.'$$'
+echo "<b>"'$COPYDATAMSG'"</b><br><br>"
+sleep 1
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+mount '$RAIDNAME' '$MOUNTPOINT'.'$$'
+rsync --timeout=30 --verbose --dirs --recursive --links --compress --delete --backup --times --perms --executability --owner --group -o '$MOUNTPOINT'/ '$MOUNTPOINT'.'$$'/
+umount '$RAIDNAME'
+echo "</pre>"
+rm -f -R '$MOUNTPOINT'.'$$'
+fi
+#Mount drive
+mount '$RAIDNAME' '$MOUNTPOINT'
+else
+#######################
+#Restore existing raid array
+#######################
+
+#Fire up the array
+mdadm --assemble --scan 1>/dev/null 2>/dev/null
+#Get the raid info
+RAIDINFO=`mdadm --detail --scan`
+if [ `echo $RAIDINFO"null" | sed "s/ //g"` != null ]
+then
+
+RAIDNAME=`echo $RAIDINFO | cut -d" " -f2`
+RAIDUUID=`blkid $RAIDNAME | cut -d" " -f2`
+
+#Write info to mdadm.conf
+mdadm --detail --scan > /etc/mdadm/mdadm.conf
+#Write data to fstab
+if [ $RAIDUUID"null" != null ]
+then
+if [ `grep -c $RAIDUUID /etc/fstab` = 0 ]
+then
+echo \#Software raid >> /etc/fstab
+echo "$RAIDUUID    '$MOUNTPOINT'    ext4   defaults,errors=remount-ro 0 1" >> /etc/fstab
+#Mount drive
+[ ! -d $MOUNTPOINT ] && mkdir -p '$MOUNTPOINT'
+mount $RAIDNAME '$MOUNTPOINT'
+fi
+fi
+fi
+fi
+'
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+echo `date`: software_raid_create2 \(federated mode\) - servername '$SERVERNAME' servertype '$SERVERTYPE' raidtype '$RAIDTYPE' drivelist '$DRIVELIST' mountpoint '$MOUNTPOINT' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
+#Make sure that the server will boot with a degraded array.
+[ -f /etc/initramfs-tools/conf.d/mdadm ] && sed -i "s/BOOT_DEGRADED=false/BOOT_DEGRADED=true/g" /etc/initramfs-tools/conf.d/mdadm 
+
+if [ '$RAIDTYPE' != restore ]
+then
+if [ '$RAIDTYPE' = raid5 ]
+then
+LEVEL=5
+else
+LEVEL=1
+fi
+
+DRIVES=( `echo '$DRIVELIST' | sed "s/,/ /g"` )
+DRIVES_COUNT=${#DRIVES[@]}
+
+#Create software raid partitioned drives
+COUNTER=0
+while [ $COUNTER -lt $DRIVES_COUNT ]
+do
+DRIVE=${DRIVES[$COUNTER]}
+parted -s $DRIVE mklabel gpt
+mdadm --stop --scan 
+parted -s $DRIVE mkpart primary 0 100%
+mdadm --stop --scan
+parted -s $DRIVE set 1 raid on
+mdadm --stop --scan 
+PARTITIONS=`echo $PARTITIONS $DRIVE"1"`
+echo DRIVE is $DRIVE"<br>"
+let COUNTER=$COUNTER+1
+done
+
+echo Creating '$RAIDNAME' using $PARTITIONS"<br>"
+
+mdadm --create '$RAIDNAME' --run --level=$LEVEL --raid-devices=$DRIVES_COUNT $PARTITIONS
+mdadm --detail --scan >> /etc/mdadm/mdadm.conf
+echo Formating '$RAIDNAME'"<br>"
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+mkfs.ext4 '$RAIDNAME'
+echo "</pre>"
+#Write data to fstab
+RAIDUUID=`blkid '$RAIDNAME' | cut -d" " -f2`
+if [ $RAIDUUID"null" != null ]
+then
+if [ `grep -c $RAIDUUID /etc/fstab` = 0 ]
+then
+echo \#Software raid >> /etc/fstab
+echo "$RAIDUUID       '$MOUNTPOINT'               ext4    defaults,errors=remount-ro 0       1" >> /etc/fstab
+fi
+fi
+
+if [ ! -d '$MOUNTPOINT' ]
+then
+#Create folder
+mkdir -p '$MOUNTPOINT'
+else
+#copy data
+mkdir -p '$MOUNTPOINT'.'$$'
+echo "<b>"'$COPYDATAMSG'"</b><br><br>"
+sleep 1
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+mount '$RAIDNAME' '$MOUNTPOINT'.'$$'
+rsync --timeout=30 --verbose --dirs --recursive --links --compress --delete --backup --times --perms --executability --owner --group -o '$MOUNTPOINT'/ '$MOUNTPOINT'.'$$'/
+umount '$RAIDNAME'
+echo "</pre>"
+rm -f -R '$MOUNTPOINT'.'$$'
+fi
+#Mount drive
+mount '$RAIDNAME' '$MOUNTPOINT'
+else
+#######################
+#Restore existing raid array
+#######################
+
+#Fire up the array
+mdadm --assemble --scan 1>/dev/null 2>/dev/null
+#Get the raid info
+RAIDINFO=`mdadm --detail --scan`
+if [ `echo $RAIDINFO"null" | sed "s/ //g"` != null ]
+then
+
+RAIDNAME=`echo $RAIDINFO | cut -d" " -f2`
+RAIDUUID=`blkid $RAIDNAME | cut -d" " -f2`
+
+#Write info to mdadm.conf
+mdadm --detail --scan > /etc/mdadm/mdadm.conf
+#Write data to fstab
+if [ $RAIDUUID"null" != null ]
+then
+if [ `grep -c $RAIDUUID /etc/fstab` = 0 ]
+then
+echo \#Software raid >> /etc/fstab
+echo "$RAIDUUID    '$MOUNTPOINT'    ext4   defaults,errors=remount-ro 0 1" >> /etc/fstab
+#Mount drive
+[ ! -d $MOUNTPOINT ] && mkdir -p '$MOUNTPOINT'
+mount $RAIDNAME '$MOUNTPOINT'
+fi
+fi
+fi
+fi
+'\''
+'
+fi
+
+exit
+

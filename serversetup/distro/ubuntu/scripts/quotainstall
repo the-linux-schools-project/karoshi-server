@@ -1,0 +1,10 @@
+#!/bin/bash
+#softwareinstall
+echo installing quota >> /opt/karoshi/serversetup/install_log
+
+echo apt-get install -y quota 2'>>'/opt/karoshi/serversetup/install_log > $HOME/.tempdata/installsoftware
+
+chmod 0700 $HOME/.tempdata/installsoftware
+
+konsole --schema=BlackOnWhite.schema -e $HOME/.tempdata/installsoftware
+rm -f $HOME/.tempdata/installsoftware

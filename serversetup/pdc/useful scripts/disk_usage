@@ -1,0 +1,324 @@
+#!/bin/bash
+#Copyright (C) 2008 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http:/www.karoshi.org.uk
+LOG_DATE=`date +%F`
+SMARTWARNMSG="Smart Warning"
+DISKWARNMSG="Disk Warning"
+RAIDWARNMSG="Raid Warning"
+BAD_SECTOR_WARN=10
+
+if [ ! -d /opt/karoshi/web_controls/warnings ]
+then
+mkdir -p /opt/karoshi/web_controls/warnings/messages
+chmod 0750 /opt/karoshi/web_controls/warnings
+chmod 0750 /opt/karoshi/web_controls/warnings/messages
+chown root.apache_karoshi /opt/karoshi/web_controls/warnings
+chown root.apache_karoshi /opt/karoshi/web_controls/warnings/messages
+fi
+
+function warning_alert {
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add disk_usage /cgi-bin/admin/view_disk_usage_logs_fm.cgi "$ERRORALERT" webwarning2.gif
+}
+
+function warning_alert2 {
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add raid_warning /cgi-bin/admin/disk_information_fm.cgi "$ERRORALERT" webwarning2.gif
+}
+
+function warning_alert3 {
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add smart_warning /cgi-bin/admin/disk_information_fm.cgi "$ERRORALERT" webwarning2.gif
+}
+
+#####################################
+#Clear any previous update warning messages
+#####################################
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete disk_usage
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete raid_warning
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete smart_warning
+
+function check_smart_data {
+SMARTWARN=no
+if [ $SERVER = $HOSTNAME ]
+then
+
+#Check to see if mdadm is installed
+UPDATEREPOS=yes
+RELOADPAGE=no
+which mdadm 1>/dev/null
+if [ `echo $?` != 0 ]
+then
+RELOADPAGE=yes
+apt-get update
+UPDATEREPOS=no
+apt-get install -y mdadm
+fi
+
+#Check to see if smartmontools are installed
+which smartctl 1>/dev/null
+if [ `echo $?` != 0 ]
+then
+RELOADPAGE=yes
+if [ $UPDATEREPOS = yes ]
+then
+UPDATEREPOS=no
+apt-get update
+fi
+apt-get install -y smartmontools
+fi
+
+
+ALL_DRIVES=( `parted -l -s | grep Disk | sed "s/Error: //g" | sed "s/Disk //g" | grep /dev/sd | cut -d: -f1 | tr -cd "A-Za-z0-9/\n "` )
+
+for DRIVE in ${ALL_DRIVES[@]:0}
+do
+if [ `smartctl -l error /dev/$DRIVE | grep -c ^Error` -ge $BAD_SECTOR_WARN ]
+then
+SMARTWARN=yes
+fi
+smartctl -Hc /dev/$DRIVE
+SMARTRESULT=`echo $?`
+[ $SMARTRESULT = 24 ] && SMARTWARN=yes
+
+#Check for pending sector count and hard drive temp
+EXTRASMARTINFO=`smartctl -a $DRIVE`
+PENDINGSECTORS=`echo -e "$EXTRASMARTINFO" | grep Current_Pending_Sector | sed "s/ * / /g" | cut -d" " -f10`
+DISKTEMP=`echo -e "$EXTRASMARTINFO" | grep Temperature_Celsius | sed "s/ * / /g" | cut -d" " -f10`
+[ $PENDINGSECTORS -gt 0 ] && SMARTWARN=yes
+[ $DISKTEMP -gt 50 ] && COLOUR=SMARTWARN=yes
+#[ $SMARTRESULT = 2 ] && SMARTWARN=yes
+done
+
+else
+ssh -x -o PasswordAuthentication=no $SERVER '
+
+#Check to see if mdadm is installed
+UPDATEREPOS=yes
+RELOADPAGE=no
+which mdadm 1>/dev/null
+if [ `echo $?` != 0 ]
+then
+RELOADPAGE=yes
+apt-get update
+echo "</pre>"
+UPDATEREPOS=no
+apt-get install -y mdadm
+fi
+
+#Check to see if smartmontools are installed
+which smartctl 1>/dev/null
+if [ `echo $?` != 0 ]
+then
+RELOADPAGE=yes
+if [ $UPDATEREPOS = yes ]
+then
+UPDATEREPOS=no
+apt-get update
+fi
+apt-get install -y smartmontools
+fi
+
+ALL_DRIVES=( `parted -l -s | grep Disk | sed "s/Error: //g" | sed "s/Disk //g" | grep /dev/sd | cut -d: -f1 | tr -cd "A-Za-z0-9/\n "` )
+for DRIVE in ${ALL_DRIVES[@]:0}
+do
+if [ `smartctl -l error /dev/$DRIVE | grep -c ^Error` -ge '$BAD_SECTOR_WARN' ]
+then
+exit 105
+fi
+smartctl -Hc /dev/$DRIVE
+SMARTRESULT=`echo $?`
+[ $SMARTRESULT = 24 ] && exit 105
+#[ $SMARTRESULT = 2 ] && exit 105
+
+#Check for pending sector count and hard drive temp
+EXTRASMARTINFO=`smartctl -a $DRIVE`
+PENDINGSECTORS=`echo -e "$EXTRASMARTINFO" | grep Current_Pending_Sector | sed "s/ * / /g" | cut -d" " -f10`
+DISKTEMP=`echo -e "$EXTRASMARTINFO" | grep Temperature_Celsius | sed "s/ * / /g" | cut -d" " -f10`
+[ $PENDINGSECTORS -gt 0 ] && exit 105
+[ $DISKTEMP -gt 50 ] && exit 105
+
+done
+'
+[ `echo $?` = 105 ] && SMARTWARN=yes
+fi
+
+if [ $SMARTWARN = yes ]
+then
+ERRORALERT=`echo "$SERVER - $SMARTWARNMSG"`
+warning_alert3
+fi
+}
+
+function record_disk_usage {
+########################
+#Record disk usage
+########################
+echo checking $SERVER
+DISKWARN=no
+RAIDWARN=no
+if [ $SERVER = $HOSTNAME ]
+then
+[ ! -d /opt/karoshi/logs/disk_usage/$LOG_DATE ] && mkdir -p /opt/karoshi/logs/disk_usage/$LOG_DATE
+sleep 4 ; killall df 2>/dev/null | df -h -l > /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage.$$
+#Convert data to a table
+
+#Replace spaces
+sed -i "s/ * / /g" /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage.$$
+#Process data
+LINE_COUNT=`wc -l /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage.$$ | cut -d' ' -f1`
+COUNTER=1
+echo \<b\>$SERVER `date`\</b\>\<br\> > /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
+echo \<table class=\"standard\" style=\"text-align: left\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>\<tbody\> >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
+while [ $COUNTER -le $LINE_COUNT ]
+do
+LINEDATA=`sed -n $COUNTER,$COUNTER"p" /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage.$$`
+if [ $COUNTER = 1 ]
+then
+LINEDATA=`echo "$LINEDATA" | sed "s/Mounted On/Mounted-On/g" | sed "s/^/\<tr\>\<td\>/g" | sed "s/ /\<\/td\>\<td\>/g" | sed "s/$/\<\/td\>\<\/tr\>/"`
+echo $LINEDATA >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
+else
+USAGE=`echo $LINEDATA | cut -d' ' -f5 | sed "s/\%//g"`
+#Colour code data red for 90% or over
+if [ $USAGE -ge 90 ]
+then
+LINEDATA=`echo "$LINEDATA" | sed "s/ /\<\/span\>\<\/td\>\<td\>\<span style=\"color: rgb\(255, 0, 0\)\; font-weight: bold\;\"\>/g" | sed "s/^/\<tr\>\<td\>\<span style=\"color: rgb\(255, 0, 0\)\; font-weight: bold\;\"\>/g" | sed "s/$/\<\/span\>\<\/td\>\<\/tr\>/"`
+echo $LINEDATA >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
+[ `echo $LINEDATA | grep -c /media` = 0 ] && DISKWARN=yes
+#Colour code data orange for 70% or over
+elif [ $USAGE -ge 70 ]
+then
+LINEDATA=`echo "$LINEDATA" | sed "s/ /\<\/span\>\<\/td\>\<td\>\<span style=\"color: rgb\(255, 153, 0\)\; font-weight: bold\;\"\>/g" | sed "s/^/\<tr\>\<td\>\<span style=\"color: rgb\(255, 153, 0\)\; font-weight: bold\;\"\>/g" | sed "s/$/\<\/span\>\<\/td\>\<\/tr\>/"`
+echo $LINEDATA >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
+else
+LINEDATA=`echo "$LINEDATA" | sed "s/^/\<tr\>\<td\>/g" | sed "s/ /\<\/td\>\<td\>/g" | sed "s/$/\<\/td\>\<\/tr\>/"`
+echo "$LINEDATA" >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
+fi
+fi
+let COUNTER=$COUNTER+1
+done
+echo \</tbody\>\</table\> >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
+rm -f /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage.$$
+#Check software raid status
+if [ `grep -c ^"#Software raid" /etc/fstab` != 0 ]
+then
+
+#Get raid info
+RAID_UUID=`cat /etc/fstab | grep -A 1 "#Software raid" | sed -n 2,2p | cut -d\" -f2`
+RAID_DEVICE=`blkid | grep $RAID_UUID | cut -d: -f1`
+
+mdadm --detail --test $RAID_DEVICE >> /opt/karoshi/logs/disk_usage/$LOG_DATE/raid_status
+RAIDSTATUS=`echo $?`
+[ $RAIDSTATUS != 0 ] && RAIDWARN=yes
+fi
+else
+if [ -d /opt/karoshi/server_network/servers/$SERVER ]
+then
+ssh -x -o PasswordAuthentication=no $SERVER '
+[ ! -d /opt/karoshi/logs/disk_usage/'$LOG_DATE' ] && mkdir -p /opt/karoshi/logs/disk_usage/'$LOG_DATE'
+sleep 4 ; killall df 2>/dev/null | df -h -l > /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage.$$
+#Convert data to a table
+DISKWARN=no
+#Replace spaces
+sed -i "s/ * / /g" /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage.$$
+#Process data
+LINE_COUNT=`wc -l /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage.$$ | cut -d" " -f1`
+COUNTER=1
+echo \<b\>'$SERVER' `date`\</b\>\<br\> > /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
+echo \<table class=\"standard\" style=\"text-align: left\; height: 91px\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>\<tbody\> >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
+while [ $COUNTER -le $LINE_COUNT ]
+do
+LINEDATA=`sed -n $COUNTER,$COUNTER"p" /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage.$$`
+if [ $COUNTER = 1 ]
+then
+LINEDATA=`echo "$LINEDATA" | sed "s/Mounted On/Mounted-On/g" | sed "s/^/\<tr\>\<td\>/g" | sed "s/ /\<\/td\>\<td\>/g" | sed "s/$/\<\/td\>\<\/tr\>/"`
+echo $LINEDATA >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
+else
+USAGE=`echo $LINEDATA | cut -d" " -f5 | sed "s/\%//g"`
+#Colour code data red for 90% or over
+if [ $USAGE -ge 90 ]
+then
+LINEDATA=`echo "$LINEDATA" | sed "s/ /\<\/span\>\<\/td\>\<td\>\<span style=\"color: rgb\(255, 0, 0\)\; font-weight: bold\;\"\>/g" | sed "s/^/\<tr\>\<td\>\<span style=\"color: rgb\(255, 0, 0\)\; font-weight: bold\;\"\>/g" | sed "s/$/\<\/span\>\<\/td\>\<\/tr\>/"`
+echo $LINEDATA >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
+[ `echo $LINEDATA | grep -c /media` = 0 ] && DISKWARN=yes
+#Colour code data orange for 70% or over
+elif [ $USAGE -ge 70 ]
+then
+LINEDATA=`echo "$LINEDATA" | sed "s/ /\<\/span\>\<\/td\>\<td\>\<span style=\"color: rgb\(255, 153, 0\)\; font-weight: bold\;\"\>/g" | sed "s/^/\<tr\>\<td\>\<span style=\"color: rgb\(255, 153, 0\)\; font-weight: bold\;\"\>/g" | sed "s/$/\<\/span\>\<\/td\>\<\/tr\>/"`
+echo $LINEDATA >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
+else
+LINEDATA=`echo "$LINEDATA" | sed "s/^/\<tr\>\<td\>/g" | sed "s/ /\<\/td\>\<td\>/g" | sed "s/$/\<\/td\>\<\/tr\>/"`
+echo "$LINEDATA" >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
+fi
+fi
+let COUNTER=$COUNTER+1
+done
+echo \</tbody\>\</table\> >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
+rm -f /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage.$$
+[ $DISKWARN = yes ] && exit 101
+'
+
+[ `echo $?` = 101 ] && DISKWARN=yes
+
+ssh -x -o PasswordAuthentication=no $SERVER '
+#Check software raid status
+RAIDWARN=no
+if [ `grep -c ^"#Software raid" /etc/fstab` != 0 ]
+then
+
+#Get raid info
+RAID_UUID=`cat /etc/fstab | grep -A 1 "#Software raid" | sed -n 2,2p | cut -d\" -f2`
+RAID_DEVICE=`blkid | grep $RAID_UUID | cut -d: -f1`
+
+mdadm --detail --test $RAID_DEVICE >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/raid_status
+RAIDSTATUS=`echo $?`
+[ $RAIDSTATUS != 0 ] && RAIDWARN=yes
+fi
+[ $RAIDWARN = yes ] && exit 102
+'
+[ `echo $?` = 102 ] && RAIDWARN=yes
+else
+echo SSH not enabled "for" $SERVER
+fi
+fi
+#Warn if over 90% usage
+if [ $DISKWARN = yes ]
+then
+ERRORALERT=`echo "$SERVER - $DISKWARNMSG"`
+warning_alert
+
+fi
+#Warn if raid fail
+if [ $RAIDWARN = yes ]
+then
+ERRORALERT=`echo "$SERVER - $RAIDWARNMSG"`
+warning_alert2
+fi
+}
+
+SERVERS=( `ls -1 /opt/karoshi/server_network/servers/` )
+SERVER_COUNT=`echo ${#SERVERS[@]}`
+SERVER_COUNTER=0
+while [ $SERVER_COUNTER -lt $SERVER_COUNT ]
+do
+SERVER=`echo ${SERVERS[$SERVER_COUNTER]}`
+record_disk_usage
+check_smart_data
+let SERVER_COUNTER=$SERVER_COUNTER+1
+done

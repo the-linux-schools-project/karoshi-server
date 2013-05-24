@@ -1,0 +1,111 @@
+#!/bin/bash
+#Copyright (C) 2007  The karoshi Team
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 1 ]
+then
+echo `date`: exam_accounts_enable_disable - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo $* | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | cut -s -d: -f3`
+EXAMSTATUS=`echo $* | cut -s -d: -f4`
+EXCEPTIONLIST=`echo $* | cut -s -d: -f5`
+
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/exam_accounts_enable_disable_cgi
+then
+echo `date`: exam_accounts_enable_disable - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/exam_accounts_enable_disable_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/exam_accounts_enable_disable.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $exam_accounts_enable_disable_cgi'check' ]
+then
+echo `date`: exam_accounts_enable_disable - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: exam_accounts_enable_disable - Not called by exam_accounts_enable_disable.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: exam_accounts_enable_disable - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: exam_accounts_enable_disable - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $EXAMSTATUS'user' != enableuser ] && [ $EXAMSTATUS'user' != disableuser ]
+then
+echo `date`: exam_accounts_enable_disable - incorrect option by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: exam_accounts_enable_disable - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+#######################
+#Change status of all the exam accounts
+#######################
+if [ $EXAMSTATUS = enable ]
+then
+ACTION=allow
+ACTIONLANG=enabling
+else
+ACTION=deny
+ACTIONLANG=disabling
+fi
+echo `date`: exam_accounts_enable_disable - $ACTIONLANG all exam accounts from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+EXAMACCOUNTS=`ls -1 /home/users/exams/ | wc -l`
+COUNTER=1
+while [ $COUNTER -le $EXAMACCOUNTS ]
+do
+if [ `echo $EXCEPTIONLIST | grep -c -w exam$COUNTER` = 0 ]
+then 
+echo $ACTIONLANG exam$COUNTER '<br>'
+samba-tool $ACTION exam$COUNTER 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+let COUNTER=COUNTER+1
+done
+SUCCESS_STATUS=`echo $?`
+exit $SUCCESS_STATUS

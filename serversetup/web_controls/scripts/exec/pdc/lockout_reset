@@ -1,0 +1,130 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/staff_checksums/lockout_reset_cgi
+then
+echo `date`: lockout_reset - No Staff MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/staff_checksums/lockout_reset_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/staff/lockout_reset.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $lockout_reset_cgi'check' ]
+then
+echo `date`: lockout_reset - Incorrect Staff MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/lockout_reset_cgi
+then
+echo `date`: lockout_reset - No Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/lockout_reset_cgi
+MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/admin/lockout_reset.cgi | cut -d' ' -f1`
+[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+if [ $MD5SUM2'check' != $lockout_reset_cgi'check' ]
+then
+echo `date`: lockout_reset - Incorrect Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/lockout_reset_cgi
+then
+echo `date`: lockout_reset - No Tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/tech_checksums/lockout_reset_cgi
+MD5SUM3=`md5sum /var/www/cgi-bin_karoshi/tech/lockout_reset.cgi | cut -d' ' -f1`
+[ $MD5SUM3'null' = null ] && MD5SUM3=not_set
+if [ $MD5SUM3'check' != $lockout_reset_cgi'check' ]
+then
+echo `date`: lockout_reset - Incorrect Tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: lockout_reset - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+USERNAME=`echo "$DATA" | cut -s -d: -f4`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ] && [ $REMOTE_MD5'check' != $MD5SUM3'check' ]
+then
+echo `date`: lockout_reset - Not called by lockout_reset.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: lockout_reset - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: lockout_reset - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $USERNAME'null' = null ]
+then
+echo `date`: lockout_reset - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+
+echo `date`: lockout_reset - Resetting $USERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+#smbldap-usermod -L $USERNAME
+#smbldap-usermod -U $USERNAME
+
+
+
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE`
+DNENTRY=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" uid=$USERNAME | grep ^dn:`
+
+echo $DNENTRY > /opt/karoshi/.tempdata/lockoutreset.$$
+echo changetype: modify >> /opt/karoshi/.tempdata/lockoutreset.$$
+echo replace: sambaBadPasswordCount >> /opt/karoshi/.tempdata/lockoutreset.$$
+echo sambaBadPasswordCount: 0 >> /opt/karoshi/.tempdata/lockoutreset.$$
+echo - >> /opt/karoshi/.tempdata/lockoutreset.$$
+#Modify ldap
+ldapmodify -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" -f /opt/karoshi/.tempdata/lockoutreset.$$ 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+MODSTATUS=`echo $?`
+rm -f /opt/karoshi/.tempdata/lockoutreset.$$
+smbpasswd -e $USERNAME
+exit $MODSTATUS
+exit

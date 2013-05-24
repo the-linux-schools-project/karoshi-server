@@ -1,0 +1,84 @@
+#!/bin/bash
+#configurenetwork
+KAROSHISERVER=$1
+TCPIPNUMBER=$2
+NETMASK=$3
+NAMESERVER=$4
+GATEWAY=$5
+SERVERTYPE=$6
+
+source /opt/karoshi/serversetup/variables/language
+source /opt/karoshi/serversetup/language/$LANGCHOICE/all/configurenetwork
+####################
+#detect network interface
+####################
+NETWORKINTFS=( eth0 eth1 eth2 lan0 lan1 lan2 )
+NETWORKINTFSNO=`echo ${#NETWORKINTFS[@]}`
+COUNTER=0
+while [ $COUNTER -lt $NETWORKINTFSNO ]
+do
+NETWORKINT=`echo ${NETWORKINTFS[$COUNTER]}`
+NETWORKINTCHECK=`ifconfig -a | grep -c -w $NETWORKINT`
+if [ $NETWORKINTCHECK -gt 0 ]
+then
+COUNTER=$NETWORKINTFSNO
+fi
+let COUNTER=COUNTER+1
+done
+
+####################
+#Set Nameserver
+####################
+function setnetwork {
+echo nameserver $NAMESERVER > /etc/resolv.conf
+echo nameserver 8.8.8.8 >> /etc/resolv.conf
+echo nameserver 8.8.4.4 >> /etc/resolv.conf
+####################
+#Set TCP/IP
+####################
+echo auto lo > /etc/network/interfaces
+echo iface lo inet loopback  >> /etc/network/interfaces
+echo auto $NETWORKINT >> /etc/network/interfaces
+echo iface $NETWORKINT inet static >> /etc/network/interfaces
+echo '	'address $TCPIPNUMBER >> /etc/network/interfaces
+echo '	'netmask $NETMASK >> /etc/network/interfaces
+echo '	'gateway $GATEWAY >> /etc/network/interfaces
+echo '	'dns-nameservers $NAMESERVER >> /etc/network/interfaces
+
+[ ! -d /var/lib/samba/netlogon/domain_information ] && mkdir -p /var/lib/samba/netlogon/domain_information
+echo $NETMASK > /var/lib/samba/netlogon/domain_information/netmask
+echo $GATEWAY > /var/lib/samba/netlogon/domain_information/gateway
+
+ifdown $NETWORKINT
+ifup $NETWORKINT
+}
+setnetwork
+#Check DNS
+ping -c 1 $NAMESERVER
+if [ `echo $?` = 1 ]
+then
+#Show warning message
+yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=4 --text="$WARNINGMSG1: $NAMESERVER\n\n$WARNINGMSG2" --no-buttons
+#Change DNS if default is not available
+NAMESERVER=$TCPIPNUMBER
+setnetwork
+fi
+
+killall dhclient
+
+#Warn about reboot
+yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=4 --text="$REBOOTMSG" --no-buttons
+
+#Set Computer name
+echo $KAROSHISERVER > /etc/hostname
+hostname $KAROSHISERVER
+
+#Auto run setup again on login
+sed -i "s/serverselection/standardsetup/g" /opt/karoshi/karoshi_user/karoshi_setup
+ln -s /opt/karoshi/serversetup/$SERVERTYPE/scripts/standardsetup /opt/karoshi/serversetup/standardsetup
+
+#Reboot to sort out name change problem
+sleep 1
+shutdown -r now
+
+

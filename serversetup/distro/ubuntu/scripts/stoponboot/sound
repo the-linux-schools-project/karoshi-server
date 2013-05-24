@@ -1,0 +1,4 @@
+#!/bin/bash
+#Start ypbind on boot
+chkconfig -f sound off 2>/dev/null
+chkconfig -f alsa off 2>/dev/null

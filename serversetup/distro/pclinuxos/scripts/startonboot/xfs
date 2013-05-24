@@ -1,0 +1,6 @@
+#!/bin/bash
+#Start cups on boot
+[ -f /opt/karoshi/start_on_boot/karoshi_services ] || touch /opt/karoshi/start_on_boot/karoshi_services
+[ `grep -c -w xfs /opt/karoshi/start_on_boot/karoshi_services` = 0 ] && echo xfs,3 >> /opt/karoshi/start_on_boot/karoshi_services
+
+

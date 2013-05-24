@@ -1,0 +1,61 @@
+#!/bin/bash
+#mailboxwarn
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contact either at mpsharrad@karoshi.org.uk or jharris@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+[ -d /opt/karoshi/postfixdata ] || mkdir /opt/karoshi/postfixdata/
+[ -d /opt/karoshi/postfixdata/warning_messages ] || mkdir /opt/karoshi/postfixdata/warning_messages
+chmod 0755 /opt/karoshi/postfixdata/
+if [ -f /opt/karoshi/postfixdata/mailboxcheck_settings ]
+then
+chmod 0600 /opt/karoshi/postfixdata/mailboxcheck_settings
+source /opt/karoshi/postfixdata/mailboxcheck_settings
+else
+exit
+fi
+#############################
+#Get mail domain from postfix configuration
+#############################
+EMAILDOMAIN=`grep ^mydomain /etc/postfix/main.cf | cut -d'=' -f2 | sed 's/ //g'`
+if [ `echo $EMAILDOMAIN | grep -c ^mail.` = 1 ]
+then
+EMAILDOMAIN=`echo $EMAILDOMAIN | sed 's/mail.//'`
+fi
+
+###########################
+#Send email message
+###########################
+MAILCOUNT=1
+for MAILBOX in $MAILSPOOL/*
+do
+USERNAME=`basename $MAILBOX`
+if [ `echo $USERNAME | grep -c .lock` = 0 ]
+then
+WARNING_PATH=/opt/karoshi/postfixdata/warning_messages/tidy_mailboxes
+su - karoshi -c 'mail -s "E-mail housekeeping" '$USERNAME@$EMAILDOMAIN' < '$WARNING_PATH''
+let MAILCOUNT=$MAILCOUNT+1
+#Slow down sending of mail
+if [ $MAILCOUNT = 16 ]
+then
+sleep 3
+MAILCOUNT=1
+fi
+fi
+done
+exit

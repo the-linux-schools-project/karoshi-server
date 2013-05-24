@@ -1,0 +1,320 @@
+#!/bin/bash
+#Copyright (C) 2011 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/update_server_proxy_settings_cgi
+then
+echo `date`: update_server_proxy_settings - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/update_server_proxy_settings_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/update_server_proxy_settings.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $update_server_proxy_settings_cgi'check' ]
+then
+echo `date`: update_server_proxy_settings - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: update_server_proxy_settings - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: update_server_proxy_settings - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+SERVERTYPE=`echo "$DATA" | cut -s -d: -f5`
+SERVERMASTER=`echo "$DATA" | cut -s -d: -f6`
+TCPIP=`echo "$DATA" | cut -s -d: -f7`
+PORT=`echo "$DATA" | cut -s -d: -f8`
+USERNAME=`echo "$DATA" | cut -s -d: -f9`
+PASSWORD=`echo "$DATA" | cut -s -d: -f10`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: update_server_proxy_settings - Not called by update_server_proxy_settings.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: update_server_proxy_settings - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: update_server_proxy_settings - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: update_server_proxy_settings - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+echo `date`: update_server_proxy_settings configured "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+if [ ! -d /opt/karoshi/server_network/upstream_proxy_settings ]
+then
+mkdir -p /opt/karoshi/server_network/upstream_proxy_settings
+chmod 0750 /opt/karoshi/server_network/upstream_proxy_settings
+chown root.apache_karoshi /opt/karoshi/server_network/upstream_proxy_settings
+fi
+echo TCPIP=$TCPIP > /opt/karoshi/server_network/upstream_proxy_settings/$SERVERNAME
+echo PORT=$PORT >> /opt/karoshi/server_network/upstream_proxy_settings/$SERVERNAME
+echo USERNAME=$USERNAME >> /opt/karoshi/server_network/upstream_proxy_settings/$SERVERNAME
+echo PASSWORD=$PASSWORD >> /opt/karoshi/server_network/upstream_proxy_settings/$SERVERNAME
+
+
+DIRECT_ACCESS=no
+if [ $PORT'null' = null ] || [ $TCPIP'null' = null ]
+then
+DIRECT_ACCESS=yes
+fi
+
+USE_AUTH=yes
+if [ "$USERNAME"'null' = null ] || [ "$PASSWORD"'null' = null ]
+then
+USE_AUTH=no
+fi
+
+if [ $SERVERNAME = $HOSTNAME ]
+then
+########################
+#Configure wget to use proxy server
+########################
+#Create wgetrc
+[ -f $HOME/.wgetrc ] && rm -f $HOME/.wgetrc
+touch $HOME/.wgetrc
+chmod 0600 $HOME/.wgetrc
+
+if [ $DIRECT_ACCESS = no ]
+then
+echo 'http_proxy = http://'$TCPIP:$PORT'' > $HOME/.wgetrc
+echo no_proxy=localhost,127.0.0.1 >> $HOME/.wgetrc
+if [ $USE_AUTH = yes ]
+then
+echo 'http_user = "'$USERNAME'"' >> $HOME/.wgetrc
+echo 'http_password = "'$PASSWORD'"' >> $HOME/.wgetrc
+fi
+fi
+########################
+#Configure synaptic to use proxy server
+########################
+#Delete out proxy information from the file
+grep -Ev 'httpProxyUser|httpProxyPass|useProxy|httpProxy|httpProxyPort|};' $HOME/.synaptic/synaptic.conf > $HOME/.synaptic/synaptic.conf2
+rm -f $HOME/.synaptic/synaptic.conf
+
+
+mv $HOME/.synaptic/synaptic.conf2 $HOME/.synaptic/synaptic.conf
+
+chmod 0700 $HOME/.synaptic/
+chmod 0600 $HOME/.synaptic/synaptic.conf
+
+if [ $USE_AUTH = yes ]
+then
+echo httpProxyUser \"$USERNAME\"\; >> $HOME/.synaptic/synaptic.conf
+echo httpProxyPass \"$PASSWORD\"\; >> $HOME/.synaptic/synaptic.conf
+fi
+if [ $DIRECT_ACCESS = no ]
+then
+echo useProxy \"1\"\; >> $HOME/.synaptic/synaptic.conf
+echo httpProxy \"$TCPIP\"\; >> $HOME/.synaptic/synaptic.conf
+echo httpProxyPort \"$PORT\"\; >> $HOME/.synaptic/synaptic.conf
+fi
+echo \}\; >> $HOME/.synaptic/synaptic.conf
+#Delete empty lines
+sed -i '/^$/d' $HOME/.synaptic/synaptic.conf
+echo >> $HOME/.synaptic/synaptic.conf
+########################
+#Configure apt to use proxy server
+########################
+[ -f /etc/apt/apt.conf.d/02proxy ] && rm -f /etc/apt/apt.conf.d/02proxy
+if [ $DIRECT_ACCESS = no ]
+then
+if [ $USE_AUTH = yes ]
+then
+echo Acquire::http::Proxy \"http\:\/\/$USERNAME:$PASSWORD@$TCPIP\:$PORT\"\; > /etc/apt/apt.conf.d/02proxy
+else
+echo Acquire::http::Proxy \"http\:\/\/$TCPIP\:$PORT\"\; > /etc/apt/apt.conf.d/02proxy
+fi
+fi
+fi
+
+if [ $SERVERNAME != $HOSTNAME ]
+then
+if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: update_server_proxy_settings \(federated mode\) configured "for" '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+########################
+#Configure wget to use proxy server
+########################
+#Create wgetrc
+[ -f $HOME/.wgetrc ] && rm -f $HOME/.wgetrc
+touch $HOME/.wgetrc
+chmod 0600 $HOME/.wgetrc
+
+if [ '$DIRECT_ACCESS' = no ]
+then
+echo "http_proxy = http://'$TCPIP:$PORT'" > $HOME/.wgetrc
+echo no_proxy=localhost,127.0.0.1 >> $HOME/.wgetrc
+if [ '$USE_AUTH' = yes ]
+then
+echo http_user = "'$USERNAME'" >> $HOME/.wgetrc
+echo http_password = "'$PASSWORD'" >> $HOME/.wgetrc
+fi
+fi
+########################
+#Configure synaptic to use proxy server
+########################
+#Delete out proxy information from the file
+grep -Ev "httpProxyUser|httpProxyPass|useProxy|httpProxy|httpProxyPort|};" $HOME/.synaptic/synaptic.conf > $HOME/.synaptic/synaptic.conf2
+rm -f $HOME/.synaptic/synaptic.conf
+mv $HOME/.synaptic/synaptic.conf2 $HOME/.synaptic/synaptic.conf
+
+chmod 0700 $HOME/.synaptic/
+chmod 0600 $HOME/.synaptic/synaptic.conf
+
+if [ '$USE_AUTH' = yes ]
+then
+echo httpProxyUser \"'$USERNAME'\"\; >> $HOME/.synaptic/synaptic.conf
+echo httpProxyPass \"'$PASSWORD'\"\; >> $HOME/.synaptic/synaptic.conf
+fi
+if [ '$DIRECT_ACCESS' = no ]
+then
+echo useProxy \"1\"\; >> $HOME/.synaptic/synaptic.conf
+echo httpProxy \"'$TCPIP'\"\; >> $HOME/.synaptic/synaptic.conf
+echo httpProxyPort \"'$PORT'\"\; >> $HOME/.synaptic/synaptic.conf
+fi
+echo \}\; >> $HOME/.synaptic/synaptic.conf
+#Delete empty lines
+sed -i "/^$/d" $HOME/.synaptic/synaptic.conf
+echo >> $HOME/.synaptic/synaptic.conf
+########################
+#Configure apt to use proxy server
+########################
+[ -f /etc/apt/apt.conf.d/02proxy ] && rm -f /etc/apt/apt.conf.d/02proxy
+if [ '$DIRECT_ACCESS' = no ]
+then
+if [ '$USE_AUTH' = yes ]
+then
+echo Acquire::http::Proxy \"http\:\/\/'$USERNAME':"'$PASSWORD'"@'$TCPIP'\:'$PORT'\"\; > /etc/apt/apt.conf.d/02proxy
+else
+echo Acquire::http::Proxy \"http\:\/\/'$TCPIP'\:'$PORT'\"\; > /etc/apt/apt.conf.d/02proxy
+fi
+fi
+'
+fi
+fi
+
+if [ $SERVERNAME != $HOSTNAME ]
+then
+if [ $SERVERTYPE = federatedslave ]
+then
+ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3  $SERVERMASTER '
+echo `date`: update_server_proxy_settings \(federated mode\) configured "for" '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
+########################
+#Configure wget to use proxy server
+########################
+#Create wgetrc
+[ -f $HOME/.wgetrc ] && rm -f $HOME/.wgetrc
+touch $HOME/.wgetrc
+chmod 0600 $HOME/.wgetrc
+
+if [ '$DIRECT_ACCESS' = no ]
+then
+echo "http_proxy = http://'$TCPIP:$PORT'" > $HOME/.wgetrc
+echo no_proxy=localhost,127.0.0.1 >> $HOME/.wgetrc
+if [ '$USE_AUTH' = yes ]
+then
+echo http_user = "'$USERNAME'" >> $HOME/.wgetrc
+echo http_password = "'$PASSWORD'" >> $HOME/.wgetrc
+fi
+fi
+########################
+#Configure synaptic to use proxy server
+########################
+#Delete out proxy information from the file
+grep -Ev "httpProxyUser|httpProxyPass|useProxy|httpProxy|httpProxyPort|};" $HOME/.synaptic/synaptic.conf > $HOME/.synaptic/synaptic.conf2
+rm -f $HOME/.synaptic/synaptic.conf
+mv $HOME/.synaptic/synaptic.conf2 $HOME/.synaptic/synaptic.conf
+
+chmod 0700 $HOME/.synaptic/
+chmod 0600 $HOME/.synaptic/synaptic.conf
+
+if [ '$USE_AUTH' = yes ]
+then
+echo httpProxyUser \"'$USERNAME'\"\; >> $HOME/.synaptic/synaptic.conf
+echo httpProxyPass \"'$PASSWORD'\"\; >> $HOME/.synaptic/synaptic.conf
+fi
+if [ '$DIRECT_ACCESS' = no ]
+then
+echo useProxy \"1\"\; >> $HOME/.synaptic/synaptic.conf
+echo httpProxy \"'$TCPIP'\"\; >> $HOME/.synaptic/synaptic.conf
+echo httpProxyPort \"'$PORT'\"\; >> $HOME/.synaptic/synaptic.conf
+fi
+echo \}\; >> $HOME/.synaptic/synaptic.conf
+#Delete empty lines
+sed -i "/^$/d" $HOME/.synaptic/synaptic.conf
+echo >> $HOME/.synaptic/synaptic.conf
+########################
+#Configure apt to use proxy server
+########################
+[ -f /etc/apt/apt.conf.d/02proxy ] && rm -f /etc/apt/apt.conf.d/02proxy
+if [ '$DIRECT_ACCESS' = no ]
+then
+if [ '$USE_AUTH' = yes ]
+then
+echo Acquire::http::Proxy \"http\:\/\/'$USERNAME':"'$PASSWORD'"@'$TCPIP'\:'$PORT'\"\; > /etc/apt/apt.conf.d/02proxy
+else
+echo Acquire::http::Proxy \"http\:\/\/'$TCPIP'\:'$PORT'\"\; > /etc/apt/apt.conf.d/02proxy
+fi
+fi
+'\''
+'
+fi
+fi
+
+exit
+

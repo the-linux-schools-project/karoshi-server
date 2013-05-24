@@ -1,0 +1,65 @@
+Installation instructions for quosnmp v1.8.0
+
+    There is an install script in the /bin directory of the quosnmp 
+distribution.  I would recommend using it to install the various files to 
+their correct locations.
+
+    For a manual installation, copy at least these files:
+
+bin/quosnmp to /usr/lib/cups/backend (the CUPS backend directory)
+bin/quosnmp-util to /usr/local/sbin (or another program directory)
+lib/Quosnmp.pm to /usr/lib/perl/site_perl (or any directory in the perl path)
+etc/quosnmp.conf to /etc/quosnmp (create this if needed)
+
+    Following that, you must still perform these steps to get quosnmp 
+working with your printers:
+
+Step 1: Modify the variables near the top of the quosnmp file to suit your 
+        needs.  Alternately, edit the path to the configuration file (which 
+        is also specified at the top of the quosnmp file) and then edit the 
+        configuration file to suit your needs.  Note that the defaults will 
+        be fine for more simple setups.
+
+Step 2: Create the quota and accounting directories with appropriate 
+        permissions.  At the least, user "lp" should have rwx permissions to 
+        both directories.  Note that quosnmp will try to do this for you the 
+        first time it needs those directories, but it can fail due to 
+        permissions errors (e.g. if the next higher-level directory is 
+        not writable by the CUPS user, usually "lp").
+
+Step 3: In your printers.conf file, add "quosnmp://" to the beginning of any 
+        URI for a printer which you want to have accounted.  Thus for example
+
+    socket://192.168.1.1:9100
+
+would become
+
+    quosnmp://socket://192.168.1.1:9100
+
+Step 4: Restart CUPS.
+
+Step 5: Set the desired quotas, in particular the default quota.  Quosnmp-util 
+        is one convenient way to do this.
+
+    These steps are all you need to do to get print accounting working.  To 
+support print quota enforcement you have to set at least the default quota.  
+Otherwise the default (no quota file found) is treated as a quota of zero pages 
+and no users will be able to print at all.
+
+    The default quota, in pages, will be whatever number is contained in a file 
+called "print_quota" in the page accounting directory.  Per-user and per-group 
+quotas are set similarly, with files with names like: <user>_print_quota or 
+<group>_print_quota.  Quotas must be positive numbers except for the special 
+value "U", which means "unlimited" printing and "N" which means "printing not 
+allowed".
+
+    Quotas are just a total page limit, not a per-month or per-anything limit.  
+To enforce periodic quotas, use a separate script to reduce your users' page 
+counts by the amount of their quota every period.  A sample script along these 
+lines can be found in the /opt directory of the quosnmp distribution.
+
+    More details about how quosnmp works can be found in the quosnmp script 
+itself.  In particular there is a large block of comments near the top of the 
+script which may be worth reading if you are an advanced user or are thinking 
+about customizing quosnmp.
+

@@ -1,0 +1,93 @@
+#!/bin/bash
+
+case $1 in
+add)
+	if [ $# -ne 4 ]; then
+		echo "Usage: $0 add [ip-addr] [subnet-mask] [hostname]"
+		exit 1
+	fi
+	op=add
+	;;
+remove)
+	if [ $# -ne 4 ]; then
+		echo "Usage: $0 remove [ip-addr] [subnet-mask] [hostname]"
+		exit 1
+	fi
+	op=remove
+	;;
+*)
+	echo "Usage: $0 <add|remove> [ip-addr] [subnet-mask] [hostname]"
+	exit 1
+	;;
+esac
+
+ips=( ${2//./ } )
+subs=( ${3//./ } )
+[ $op == add ] && host="$4"
+
+#Read Administrator password for samba-tool
+read -r pass < /etc/ldap.secret
+err=$?
+if [ $err -ne 0 ]; then
+	echo "[CRITICAL] Cannot read /etc/ldap.secret!" >&2
+	exit 1
+fi
+
+if [ "${subs[0]}" == 255 ]; then
+	if [ "${subs[1]}" == 255 ]; then
+		if [ "${subs[2]}" == 255 ]; then
+			hostEntry="${ips[3]}"
+			zoneName="$zoneName${ips[2]}."
+		else
+			hostEntry="${ips[3]}.${ips[2]}"
+		fi
+		zoneName="$zoneName${ips[1]}."
+	else
+		hostEntry="${ips[3]}.${ips[2]}.${ips[1]}"
+	fi
+	zoneName="$zoneName${ips[0]}."
+else
+	hostEntry="${ips[3]}.${ips[2]}.${ips[1]}.${ips[0]}"
+fi
+zoneName="${zoneName}in-addr.arpa"
+
+#Debug statements
+#echo "$zoneName"
+#echo "$hostEntry"
+#echo "$host"
+#exit
+
+#Query for zone
+samba-tool dns zoneinfo localhost $zoneName -U Administrator --password="$pass" &>/dev/null
+zoneExists=$?
+
+recordExists=1
+#Query for PTR record
+if [ $zoneExists -eq 0 ]; then
+	samba-tool dns query localhost $zoneName $hostEntry PTR -U Administrator --password="$pass" &>/dev/null
+	recordExists=$?
+fi
+
+case $op in
+add)
+	if [ $zoneExists -ne 0 ]; then
+		samba-tool dns zonecreate localhost $zoneName -U Administrator --password="$pass"
+		service samba4 restart
+		#Wait for port 135 on localhost to be available
+		while ! (exec 6<>/dev/tcp/127.0.0.1/135) &>/dev/null; do
+			sleep 1
+		done
+	fi
+
+	if [ $recordExists -ne 0 ]; then
+		samba-tool dns add localhost $zoneName $hostEntry PTR $host -U Administrator --password="$pass"
+	else
+		echo "PTR Record already exists" >&2
+	fi
+	;;
+remove)
+	if [ $recordExists -eq 0 ]; then
+		samba-tool dns delete localhost $zoneName $hostEntry PTR $host -U Administrator --password="$pass"
+	fi
+	;;
+esac

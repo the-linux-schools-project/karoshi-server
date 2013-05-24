@@ -1,0 +1,149 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/windows_client_background_select_cgi
+then
+echo `date`: windows_client_background_select - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/windows_client_background_select_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/windows_client_background_select.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $windows_client_background_select_cgi'check' ]
+then
+echo `date`: windows_client_background_select - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 1 ]
+then
+echo `date`: windows_client_background_select - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo $* | cut -s -d: -f1 | tr -cd 'A-Za-z0-9\._:\-'`
+REMOTE_ADDR=`echo $* | cut -s -d: -f2 | tr -cd 'A-Za-z0-9\._:\-'`
+REMOTE_MD5=`echo $* | cut -s -d: -f3 | tr -cd 'A-Za-z0-9\._:\-'`
+FILENAME=`echo $* | cut -s -d: -f4 | tr -cd 'A-Za-z0-9\._:\-'`
+PRIGROUP=( `echo $* | cut -s -d: -f5- | sed 's/:/ /g'` )
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: windows_client_background_select - Not called by windows_client_background_select.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: windows_client_background_select - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: windows_client_background_select - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: windows_client_background_select - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $FILENAME'null' = null ]
+then
+echo `date`: windows_client_background_select - No filename by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+#Check that filename is a .bmp
+if [ `echo $FILENAME | grep -c '\<bmp\>'` != 1 ]
+then
+echo `date`: windows_client_background_select - Background is not in correct format by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+#Check that profile with this filename exists
+if [ ! -f /var/www/karoshi/win_background_upload/$FILENAME ]
+then
+echo `date`: windows_client_background_select - The background does not exist by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $PRIGROUP'null' = null ]
+then
+echo `date`: windows_client_background_select - Blank primary group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+#######################
+#Move file
+#######################
+mkdir -p /opt/karoshi/.tempdata/win_background_upload.$$
+cp /var/www/karoshi/win_background_upload/$FILENAME /opt/karoshi/.tempdata/win_background_upload.$$/$FILENAME
+rm -f -R /var/www/karoshi/win_background_upload/
+############################
+#Language
+############################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/windows_background_upload ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/client/windows_background_upload
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+if [ ! -d /home/applications/backgrounds ]
+then
+mkdir /home/applications/backgrounds
+chown root.itadmin /home/applications/backgrounds
+chmod 0775 /home/applications/backgrounds
+fi
+FILENAME2=`echo $FILENAME | sed 's/SPACECORRECT/ /g'`
+#######################
+#Copy background to chosen groups
+#######################
+GROUPCOUNT=`echo ${#PRIGROUP[@]}`
+COUNTER=0
+while [ $COUNTER -lt $GROUPCOUNT ]
+do
+CURRENTGROUP=`echo ${PRIGROUP[$COUNTER]}`
+
+#Log event
+echo `date`: windows_client_background_select - copying $FILENAME2 to $CURRENTGROUP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo $COPYMSG : $CURRENTGROUP'<br><br>'
+
+cp -f /opt/karoshi/.tempdata/win_background_upload.$$/$FILENAME /home/applications/backgrounds/$CURRENTGROUP.bmp
+chown root.itadmin /home/applications/backgrounds/$CURRENTGROUP.bmp
+chmod 0664 /home/applications/backgrounds/$CURRENTGROUP.bmp
+
+let COUNTER=$COUNTER+1
+done
+#Remove temp folder
+rm -f -R /opt/karoshi/.tempdata/win_background_upload.$$
+exit

@@ -1,0 +1,39 @@
+# These are only the parameters changed from a default install
+# see /etc/postfix/main.cf.dist for a commented, fuller version of this file.
+
+# These are changed by postfix install script
+readme_directory = /usr/share/doc/postfix-2.3.3/README_FILES
+sample_directory = /usr/share/doc/postfix-2.1.5/samples
+html_directory = /usr/share/doc/postfix-2.3.3/html
+sendmail_path = /usr/sbin/sendmail.postfix
+setgid_group = postdrop
+queue_directory = /var/spool/postfix
+command_directory = /usr/sbin
+manpage_directory = /usr/share/man
+daemon_directory = /usr/lib/postfix
+mail_owner = postfix
+newaliases_path = /usr/bin/newaliases
+mailq_path = /usr/bin/mailq
+myhostname = mail.test.com
+mydomain = test.com
+myorigin = $mydomain
+masquerade_domains = test.com
+message_size_limit = 20971520
+mailbox_size_limit = 104857600
+
+smptd_recipient_limit = 150
+inet_interfaces = all
+mydestination = $mydomain, $myhostname, localhost.$mydomain, 
+#inet_interfaces = 10.0.0.12, localhost
+#mynetworks_style = host
+mynetworks = 192.168.0.0/24 , 127.0.0.1 , 172.30.0.0/16
+delay_warning_time = 4h
+smtpd_banner = $myhostname ESMTP $mail_name ($mail_version) (Mandrivalinux)
+unknown_local_recipient_reject_code = 450
+smtp-filter_destination_concurrency_limit = 2
+lmtp-filter_destination_concurrency_limit = 2
+smtpd_sasl_path = /etc/postfix/sasl:/usr/lib/sasl2
+smptd_helo_required = yes
+header_checks = regexp:/etc/postfix/header_checks
+disable_vrfy_command = yes
+smtpd_client_restrictions = check_client_access hash:/etc/postfix/access

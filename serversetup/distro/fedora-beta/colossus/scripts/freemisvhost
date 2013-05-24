@@ -1,0 +1,18 @@
+#!/bin/bash
+#freemisvhost
+FREEMISDOMAIN=`cat /opt/karoshi/serversetup/variables/freemisdomain`
+FREEMISDOMAIN2=`sed 's/www.//g' /opt/karoshi/serversetup/variables/freemisdomain`
+echo '<'VirtualHost '*':80'>' >> /etc/httpd/conf/vhosts/Vhosts.conf
+echo ServerAdmin webmaster@nbhs.freemis.net >> /etc/httpd/conf/vhosts/Vhosts.conf
+echo DocumentRoot /var/www/rails/freemis/public/ >> /etc/httpd/conf/vhosts/Vhosts.conf
+echo ServerName $FREEMISDOMAIN2 >> /etc/httpd/conf/vhosts/Vhosts.conf
+echo ServerAlias $FREEMISDOMAIN >> /etc/httpd/conf/vhosts/Vhosts.conf
+echo '<'Directory '"'/var/www/rails/freemis/public/'"''>' >> /etc/httpd/conf/vhosts/Vhosts.conf
+echo Options ExecCGI FollowSymLinks >> /etc/httpd/conf/vhosts/Vhosts.conf
+echo RewriteEngine On >> /etc/httpd/conf/vhosts/Vhosts.conf
+echo AddHandler cgi-script .cgi >> /etc/httpd/conf/vhosts/Vhosts.conf
+echo AllowOverride all >> /etc/httpd/conf/vhosts/Vhosts.conf
+echo Order allow,deny >> /etc/httpd/conf/vhosts/Vhosts.conf
+echo Allow from all >> /etc/httpd/conf/vhosts/Vhosts.conf
+echo '<'/Directory'>' >> /etc/httpd/conf/vhosts/Vhosts.conf
+echo '<'/VirtualHost'>' >> /etc/httpd/conf/vhosts/Vhosts.conf

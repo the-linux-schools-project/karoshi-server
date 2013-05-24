@@ -1,0 +1,281 @@
+#!/bin/bash
+
+#Copyright (C) 2012 Robin McCorkell
+#Original Copyright (C) 2006  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted either at mpsharrad@karoshi.org.uk or rmccorkell@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+source /opt/karoshi/linuxclientsetup/utilities/common
+
+####################
+#Refresh client information
+####################
+unset LOCATION
+unset PRINTSERVER
+unset PROXYSERVER
+unset CLIENTSHUTDOWNTIME
+unset IDLESHUTDOWNTIME
+unset MAILSERVER
+IFS=$'\n'
+[ -f /tmp/netlogon/clients/$CLIENTMAC ] && read -r -d $'\0' _ _ LOCATION _ < /tmp/netlogon/clients/$CLIENTMAC
+[ -f /tmp/netlogon/domain_information/print_server ] && read -r -d $'\0' PRINTSERVER _ < /tmp/netlogon/domain_information/print_server
+[ -f /tmp/netlogon/domain_information/proxy_server ] && read -r -d $'\0' PROXYSERVER _ < /tmp/netlogon/domain_information/proxy_server
+[ -f /tmp/netlogon/domain_information/clientshutdowntime ] && read -r -d $'\0' CLIENTSHUTDOWNTIME _ < /tmp/netlogon/domain_information/clientshutdowntime
+[ -f /tmp/netlogon/domain_information/idletime ] && read -r -d $'\0' IDLESHUTDOWNTIME _ < /tmp/netlogon/domain_information/idletime
+[ -f /tmp/netlogon/domain_information/mail_server ] && MAILSERVER=true
+unset IFS
+
+####################
+#Set apt settings through proxy
+####################
+if [ "$PROXYSERVER" ]; then
+	echo "Acquire::http::Proxy 'http://$PROXYSERVER.$DNSSUFFIX:3142/apt-cacher/';" > /etc/apt/apt.conf.d/01proxy
+fi
+
+####################
+#Domain specific stuff
+####################
+rm -f /etc/security/pam_mount.conf.xml
+case "$DOMAINTYPE" in
+samba4)
+	[ -f /tmp/netlogon/linuxclient/pam_mount.conf.xml.krb5 ] && cp -f /tmp/netlogon/linuxclient/pam_mount.conf.xml.krb5 /etc/security/pam_mount.conf.xml
+	;;
+samba4_winbind)
+	[ -f /tmp/netlogon/linuxclient/pam_mount.conf.xml.krb5 ] && cp -f /tmp/netlogon/linuxclient/pam_mount.conf.xml.krb5 /etc/security/pam_mount.conf.xml
+	#Clear cache
+	rm -rf /var/cache/samba/*
+	;;
+samba3)
+	[ -f /tmp/netlogon/linuxclient/pam_mount.conf.xml ] && cp -f /tmp/netlogon/linuxclient/pam_mount.conf.xml /etc/security/pam_mount.conf.xml
+	#Clear cache
+	rm -rf /var/cache/samba/*
+	;;
+*)
+	echo "Warning! Unrecognized domain type $DOMAINTYPE"
+	;;
+esac
+
+#################
+#Home areas
+#################
+#tmpfs auto mount
+#[ -f /etc/security/pam_mount.conf.xml ] && sed -i "0,/[[:blank:]]*<volume/s@@<volume options=\"size=100m,uid=%(USERUID),gid=%(USERGID),mode=0700\" mountpoint=\"~\" uid=\"1000-50000\" fstype=\"tmpfs\" />\n<volume@" /etc/security/pam_mount.conf.xml
+
+#Clear home areas
+rm -rf --one-file-system /home/*
+
+####################
+#Copy configuration
+####################
+[ -d /tmp/netlogon/linuxclient/$LINUX_VERSION/configuration/ ] && [ "$(ls -A /tmp/netlogon/linuxclient/$LINUX_VERSION/configuration/)" ] && cp -rf /tmp/netlogon/linuxclient/$LINUX_VERSION/configuration/* /
+[ -d /tmp/netlogon/linuxclient/$LINUX_VERSION/admin_skel/ ] && cp -rf /tmp/netlogon/linuxclient/$LINUX_VERSION/admin_skel/ /opt/karoshi/linuxclientsetup/
+#Do skel (properly)
+if [ -f /tmp/netlogon/linuxclient/$LINUX_VERSION/skel.tar.gz ]; then
+	[ -e /etc/skel ] && rm -rf /etc/skel
+	tar -x -C /etc -f /tmp/netlogon/linuxclient/$LINUX_VERSION/skel.tar.gz
+fi
+#/etc/skel should be readable by all, and directories should be 755
+chown -R root:root /etc/skel
+chmod -R +r /etc/skel
+find /etc/skel -type d -print0 | xargs -0 chmod 755
+
+#Version agnostic configuration
+#Background images
+[ -f /tmp/netlogon/linuxclient/background.png ] && cp -f /tmp/netlogon/linuxclient/background.png /opt/karoshi/linuxclientsetup/images/
+[ -f /tmp/netlogon/linuxclient/login_background.png ] && cp -f /tmp/netlogon/linuxclient/login_background.png /opt/karoshi/linuxclientsetup/images/
+
+#Clipboard sites for later on
+[ -f /opt/karoshi/linuxclientsetup/allow_clipboard_sites ] && rm -f /opt/karoshi/linuxclientsetup/allow_clipboard_sites
+[ -f /tmp/netlogon/domain_information/allow_clipboard_sites ] && cp /tmp/netlogon/domain_information/allow_clipboard_sites /opt/karoshi/linuxclientsetup/
+
+#Copy domain CA certificate
+[ -f /opt/karoshi/linuxclientsetup/cacert.pem ] && rm -f /opt/karoshi/linuxclientsetup/cacert.pem
+[ -f /tmp/netlogon/domain_information/cacert.pem ] && cp /tmp/netlogon/domain_information/cacert.pem /opt/karoshi/linuxclientsetup
+
+#Static ARPs
+[ -f /tmp/netlogon/domain_information/static_arps ] && arp -f /tmp/netlogon/domain_information/static_arps
+
+##########################
+#Update the upstart scripts
+##########################
+[ -f /tmp/netlogon/linuxclient/$LINUX_VERSION/utilities/karoshi-update.conf ] && cp -f /tmp/netlogon/linuxclient/$LINUX_VERSION/utilities/karoshi-update.conf /opt/karoshi/linuxclientsetup/utilities/
+[ -f /tmp/netlogon/linuxclient/$LINUX_VERSION/utilities/karoshi-idle-shutdown.conf ] && cp -f /tmp/netlogon/linuxclient/$LINUX_VERSION/utilities/karoshi-idle-shutdown.conf /opt/karoshi/linuxclientsetup/utilities/
+
+###########################
+#Create cronjob to shut computer down
+###########################
+if [ "$CLIENTSHUTDOWNTIME" ]; then
+	echo Setting auto shutdown time at $CLIENTSHUTDOWNTIME
+	HOURS=`cut -d: -f1 <<< "$SHUTDOWNTIME"`
+	MINUTES=`cut -d: -f2 <<< "$SHUTDOWNTIME"`
+
+	if [ "$HOURS" ] && [ "$MINUTES" ]
+	then
+		echo "SHELL=/bin/bash
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+MAILTO=\"\"
+HOME=/
+
+$MINUTES $HOURS * * * /opt/karoshi/linuxclientsetup/scripts/clientshutdown" > /opt/karoshi/linuxclientsetup/clientshutdowntime.cron
+		crontab /opt/karoshi/linuxclientsetup/clientshutdowntime.cron
+		rm -f /opt/karoshi/linuxclientsetup/clientshutdowntime.cron
+	fi
+fi
+
+###########################
+#Kill Procs
+###########################
+rm -f /opt/karoshi/killprocs
+[ -f /tmp/netlogon/linuxclient/$LINUX_VERSION/utilities/killprocs ] && cp -f /tmp/netlogon/linuxclient/$LINUX_VERSION/utilities/killprocs /opt/karoshi/
+rm -f /opt/karoshi/killprocscron.cron
+[ -f /tmp/netlogon/linuxclient/$LINUX_VERSION/utilities/killprocscron.cron ] && cp -f /tmp/netlogon/linuxclient/$LINUX_VERSION/utilities/killprocscron.cron /opt/karoshi/
+
+#Create cronjob to run killprocs
+if [ -f /opt/karoshi/killprocscron.cron ]; then
+	echo Setting killprocs crontab
+	crontab /opt/karoshi/killprocscron.cron
+fi
+
+###########################
+#Update acceptable_use
+###########################
+[ -f /tmp/netlogon/linuxclient/acceptable_use.txt ] && cp -f /tmp/netlogon/linuxclient/acceptable_use.txt /opt/karoshi/linuxclientsetup/
+[ -f /opt/karoshi/acceptable_use.txt ] && chmod 0644 /opt/karoshi/acceptable_use.txt
+
+###########################
+#Update desktop icons for groups
+###########################
+rm -rf /opt/karoshi/linuxclientsetup/desktop_icons/*
+[ -d /tmp/netlogon/linuxclient/$LINUX_VERSION/desktop_icons ] && cp -rf /tmp/netlogon/linuxclient/$LINUX_VERSION/desktop_icons /opt/karoshi/linuxclientsetup/
+if [ -d /opt/karoshi/linuxclientsetup/desktop_icons ]; then
+	chmod -R 0644 /opt/karoshi/linuxclientsetup/desktop_icons
+	chmod -R u+X,g+X,o+X /opt/karoshi/linuxclientsetup/desktop_icons
+	while read file; do
+		filename="$(tr '[:upper:] ' '[:lower:]-' <<< "$(basename "$file")")"
+		mv "$file" "`dirname "$file"`/karoshi-$filename"
+	done < <(find /opt/karoshi/linuxclientsetup/desktop_icons/ -name "*.desktop" -and -not -name "karoshi-*.desktop")
+fi
+
+############################
+#Printers
+############################
+#Turn off cups browsing
+if [ `grep -c "Browsing Off" /etc/cups/cupsd.conf` -eq 0 ]
+then
+	echo "Browsing Off
+BrowseInterval 0" >> /etc/cups/cupsd.conf
+fi
+
+#Assign printers depending on the location
+if [ "$LOCATION" ]; then
+	#Remove all printers
+	while read -r PRINTER _; do
+		if [ "`lpstat -v $PRINTER | grep 'smb:\|ipp:'`" ]; then
+			echo Removing $PRINTER
+			lpadmin -x $PRINTER
+		fi
+	done < <(lpstat -a)
+	
+	#Add printers
+	if [ "$PRINTSERVER" ] && [ -f /tmp/netlogon/printers.txt ]; then
+		ALLPRINTERS=`grep $LOCATION /tmp/netlogon/printers.txt`
+		if [ "$ALLPRINTERS" ]; then
+			NO_OF_PRINTERS=`cut -d, -f2 <<< "$ALLPRINTERS"`
+			DEFAULT_PRINTER=`cut -d, -f$(( NO_OF_PRINTERS + 3 )) <<< "$ALLPRINTERS"`
+			COUNTER=1
+			for (( i = 3; i < NO_OF_PRINTERS + 3; ++i )); do
+				PRINTER=`cut -d, -f$i <<< "$ALLPRINTERS"`
+				echo Adding printer $PRINTER
+				if [ "$DOMAINTYPE" == samba3 ]; then
+					lpadmin -p $PRINTER -v smb://$PRINTSERVER/$PRINTER -L "$LOCATION" -D "$PRINTER" -E
+				else
+					lpadmin -p $PRINTER -v ksmb://$PRINTSERVER/$PRINTER -L "$LOCATION" -D "$PRINTER" -E
+				fi
+				#Copy PPD
+				[ -f /tmp/netlogon/linuxclient/printer_drivers/$PRINTER.ppd ] && cp -f /tmp/netlogon/linuxclient/printer_drivers/$PRINTER.ppd /etc/cups/ppd/
+			done
+			lpadmin -d $DEFAULT_PRINTER
+		fi
+	fi
+fi
+
+############################
+#Update client
+############################
+#Use update var so that apt-get only updates once
+APT_UPDATED=false
+#Only run if flag file is present
+if [ -f /tmp/netlogon/linuxclient/$LINUX_VERSION/enable_updates ]
+then
+	echo Updating Software
+	apt-get update
+	APT_UPDATED=true
+	apt-get -y upgrade
+fi
+
+############################
+#Install and remove software
+############################
+#Only run if flag file is present
+if [ -f /tmp/netlogon/linuxclient/$LINUX_VERSION/enable_software_install ]
+then
+	#Install software
+	if [ -f /tmp/netlogon/linuxclient/$LINUX_VERSION/install_list ]
+	then
+		#Only run apt-get update if it has not already run
+		! $APT_UPDATED && apt-get update
+		INSTALL_LIST=`sed 's/ //g' /tmp/netlogon/linuxclient/$LINUX_VERSION/install_list`
+		CHECK_LIST=`wc -l /tmp/netlogon/linuxclient/$LINUX_VERSION/install_list`
+		if [ $CHECK_LIST -ne 0 ]
+		then
+			apt-get -y install --no-upgrade $INSTALL_LIST
+			[ $? -eq 0 ] && cat /tmp/netlogon/linuxclient/$LINUX_VERSION/install_list >> /opt/karoshi/linuxclient/installed_software
+		fi
+	fi
+	
+	#Remove software
+	if [ -f /tmp/netlogon/linuxclient/$LINUX_VERSION/remove_list ]
+	then
+		REMOVE_LIST=`sed 's/ //g' /tmp/netlogon/linuxclient/$LINUX_VERSION/remove_list`
+		CHECK_LIST=`wc -l /tmp/netlogon/linuxclient/$LINUX_VERSION/remove_list`
+		if [ $CHECK_LIST -ne 0 ]
+		then
+			echo Removing Software
+			apt-get -y remove $REMOVE_LIST
+		fi
+	fi
+fi
+
+##########################
+#Miscellaneous things
+##########################
+
+#Restrict cron and at to root
+echo root > /etc/cron.allow
+echo root > /etc/at.allow
+
+#Enable trim support in fstab
+for DEVICE in /dev/sd*; do
+	DEVICEUUID=`blkid $DEVICE | sed 's@.*UUID="\([^"]*\)".*@\1@'`
+	if [ "$DEVICEUUID" ] && [ "`hdparm -I $DEVICE | grep TRIM`" ]; then
+		sed -i "/swap\|discard,noatime/!s@\(UUID=$DEVICEUUID[[:blank:]]\+[^[:blank:]]\+[[:blank:]]\+[^[:blank:]]\+[[:blank:]]\+[^[:blank:]]\+\)@\1,discard,noatime@" /etc/fstab
+	fi
+done
+
+#Write new variables to file
+updateVariables

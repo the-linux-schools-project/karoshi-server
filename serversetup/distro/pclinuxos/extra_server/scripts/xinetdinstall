@@ -1,0 +1,14 @@
+#!/bin/bash
+#xinetd
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/orac/software
+echo installing $XINETDVER >> /opt/karoshi/serversetup/install_log
+
+echo apt-get install -y $XINETDVER 2'>>'/opt/karoshi/serversetup/install_log > $HOME/.tempdata/installsoftware
+
+chmod 0700 $HOME/.tempdata/installsoftware
+
+xterm -geometry 100x20 -bg white -fg black -e $HOME/.tempdata/installsoftware
+rm -f $HOME/.tempdata/installsoftware
+
+xterm -geometry 100x20 -bg white -fg black -e urpmi --force $XINETDVER

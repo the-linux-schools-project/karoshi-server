@@ -1,0 +1,16 @@
+#!/bin/bash
+
+if [ -d /etc/squid3 ]
+then
+SQUID=squid3
+else
+SQUID=squid
+fi
+
+if [ `ps -e | grep -w -c $SQUID` -gt 0 ]
+then
+exit 0
+else
+exit 1
+fi
+

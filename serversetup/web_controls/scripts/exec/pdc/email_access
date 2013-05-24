@@ -1,0 +1,308 @@
+#!/bin/bash
+#Copyright (C) 2012 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/email_access_cgi
+then
+echo `date`: email_access - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/email_access_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $email_access_cgi'check' ]
+then
+echo `date`: email_access - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: email_access - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: email_access - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+EMAILUSER=`echo "$DATA" | cut -s -d: -f4`
+GROUP=`echo "$DATA" | cut -s -d: -f5`
+ACTION=`echo "$DATA" | cut -s -d: -f6`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: email_access - Not called by email_access.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: email_access - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: email_access - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $EMAILUSER'null' = null ] && [ $GROUP'null' = null ]
+then
+echo `date`: email_access - Blank emailuser or group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $ACTION'null' = null ]
+then
+echo `date`: email_access - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: email_access - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+[ ! -d /opt/karoshi/server_network/offline_servers ] && mkdir -p /opt/karoshi/server_network/offline_servers
+
+##########################
+#Language
+##########################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_access ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_access
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+if [ $EMAILUSER'null' != null ]
+then
+MODE=user
+else
+MODE=group
+fi
+
+
+#Get email server details
+if [ ! -f /opt/karoshi/server_network/emailserver ]
+then
+echo `date`: email_access - No email server has been declared by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+if [ ! -f /opt/karoshi/server_network/emaildomain ]
+then
+echo `date`: email_access - No email domain has been declared by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+EMAILDOMAIN=`sed -n 1,1p /opt/karoshi/server_network/emaildomain`
+
+#Flag group has not having email for add user and bulk user creation
+if [ $MODE = group ]
+then
+[ ! -d /opt/karoshi/server_network/email_restrictions ] && mkdir -p /opt/karoshi/server_network/email_restrictions
+
+
+if [ $ACTION = deny ]
+then
+touch /opt/karoshi/server_network/email_restrictions/$GROUP
+else
+[ -f /opt/karoshi/server_network/email_restrictions/$GROUP ] && rm -f /opt/karoshi/server_network/email_restrictions/$GROUP
+fi
+#Get path of home areas
+[ -f /opt/karoshi/server_network/group_information/$GROUP ] && source /opt/karoshi/server_network/group_information/$GROUP
+if [ $HOMEPATH'null' = null ]
+then
+echo `date`: email_access - blank homepath by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+fi
+
+echo `date`: email_access - action $ACTION group $GROUP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+if [ $EMAILSERVER = $HOSTNAME ]
+then 
+function email_access {
+
+if [ $ACTION = deny ]
+then
+echo Banning $EMAILUSER"<br>"
+#Ban receiving emails
+if [ `grep -c ^$EMAILUSER@ /etc/postfix/deny_receiving` = 0 ]
+then
+echo $EMAILUSER@$EMAILDOMAIN REJECT >> /etc/postfix/deny_receiving
+fi
+#Ban sending emails
+if [ `grep -c ^$EMAILUSER@ /etc/postfix/deny_sending` = 0 ]
+then
+echo $EMAILUSER@$EMAILDOMAIN allowed_only >> /etc/postfix/deny_sending
+fi
+fi
+if [ $ACTION = allow ]
+then
+echo Allowing $EMAILUSER"<br>"
+#Allow receiving emails
+if [ `grep -c ^$EMAILUSER@ /etc/postfix/deny_receiving` -gt 0 ]
+then
+#Get line number
+LINENUMBER=`grep -n ^$EMAILUSER@ /etc/postfix/deny_receiving | cut -d: -f1`
+#Delete line
+sed -i $LINENUMBER'd' /etc/postfix/deny_receiving
+fi
+#Allow sending emails
+if [ `grep -c ^$EMAILUSER@ /etc/postfix/deny_sending` -gt 0 ]
+then
+#Get line number
+LINENUMBER=`grep -n ^$EMAILUSER@ /etc/postfix/deny_sending | cut -d: -f1`
+#Delete line
+sed -i $LINENUMBER'd' /etc/postfix/deny_sending
+fi
+fi
+}
+
+#Make sure files exist
+[ ! -f /etc/postfix/deny_receiving ] && touch /etc/postfix/deny_receiving
+[ ! -f /etc/postfix/deny_sending ] && touch /etc/postfix/deny_sending
+
+if [ $MODE = user ]
+then
+email_access
+else
+if [ -d $HOMEPATH ]
+then
+if [ `ls -1 $HOMEPATH | wc -l` -gt 0 ]
+then
+for USERS in $HOMEPATH/*
+do
+EMAILUSER=`basename $USERS`
+email_access
+done
+fi
+fi
+fi
+#Get rid of blank lines
+sed -i "/^$/d" /etc/postfix/deny_receiving
+sed -i "/^$/d" /etc/postfix/deny_sending
+
+#Make sure rules are accessed in main.cf
+if [ `grep -c ^smtpd_recipient_restrictions /etc/postfix/main.cf` = 0 ]
+then
+echo "smtpd_recipient_restrictions = check_recipient_access hash:/etc/postfix/deny_receiving check_sender_access hash:/etc/postfix/deny_sending permit_sasl_authenticated permit_mynetworks reject_unauth_destination" >> /etc/postfix/main.cf
+fi
+
+#Reload postfix
+postmap hash:/etc/postfix/deny_receiving
+postmap hash:/etc/postfix/deny_sending
+service postfix reload
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+function email_access {
+if [ '$ACTION' = deny ]
+then
+echo Banning $EMAILUSER"<br>"
+#Ban receiving emails
+if [ `grep -c  ^$EMAILUSER@ /etc/postfix/deny_receiving` = 0 ]
+then
+echo $EMAILUSER@'$EMAILDOMAIN' REJECT >> /etc/postfix/deny_receiving
+fi
+#Ban sending emails
+if [ `grep -c ^$EMAILUSER@ /etc/postfix/deny_sending` = 0 ]
+then
+echo $EMAILUSER@'$EMAILDOMAIN' allowed_only >> /etc/postfix/deny_sending
+fi
+fi
+if [ '$ACTION' = allow ]
+then
+echo Allowing $EMAILUSER"<br>"
+#Allow receiving emails
+if [ `grep -c ^$EMAILUSER@ /etc/postfix/deny_receiving` -gt 0 ]
+then
+#Get line number
+LINENUMBER=`grep -n ^$EMAILUSER@ /etc/postfix/deny_receiving | cut -d: -f1`
+#Delete line
+sed -i $LINENUMBER\d /etc/postfix/deny_receiving
+fi
+#Allow sending emails
+if [ `grep -c ^$EMAILUSER@ /etc/postfix/deny_sending` -gt 0 ]
+then
+#Get line number
+LINENUMBER=`grep -n ^$EMAILUSER@ /etc/postfix/deny_sending | cut -d: -f1`
+#Delete line
+sed -i $LINENUMBER\d /etc/postfix/deny_sending
+fi
+fi
+}
+
+#Make sure files exist
+[ ! -f /etc/postfix/deny_receiving ] && touch /etc/postfix/deny_receiving
+[ ! -f /etc/postfix/deny_sending ] && touch /etc/postfix/deny_sending
+
+if [ '$MODE' = user ]
+then
+EMAILUSER='$EMAILUSER'
+email_access
+else
+
+if [ -d '$HOMEPATH' ]
+then
+if [ `ls -1 '$HOMEPATH' | wc -l` -gt 0 ]
+then
+for USERS in '$HOMEPATH'/*
+do
+EMAILUSER=`basename $USERS`
+email_access
+done
+fi
+fi
+fi
+
+#Get rid of blank lines
+sed -i "/^$/d" /etc/postfix/deny_receiving
+sed -i "/^$/d" /etc/postfix/deny_sending
+
+#Make sure rules are accessed in main.cf
+if [ `grep -c ^smtpd_recipient_restrictions /etc/postfix/main.cf` = 0 ]
+then
+echo "smtpd_recipient_restrictions = check_recipient_access hash:/etc/postfix/deny_receiving check_sender_access hash:/etc/postfix/deny_sending permit_sasl_authenticated permit_mynetworks reject_unauth_destination" >> /etc/postfix/main.cf
+fi
+
+#Reload postfix
+postmap hash:/etc/postfix/deny_receiving
+postmap hash:/etc/postfix/deny_sending
+service postfix reload
+'
+fi
+

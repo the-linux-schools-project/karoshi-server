@@ -1,0 +1,205 @@
+#!/bin/bash
+#setuprubycas
+#Copyright (C) 2010 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+########################
+#Get variables
+########################
+LOG_DATE=`date +%F`
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: setuprubycas - incorrect number of arguments"<br>"
+echo `date`: setuprubycas - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+read -t 3 DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/'`
+
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+LDAPSERVER=`echo "$DATA" | cut -s -d: -f4`
+LDAPIP=`echo "$DATA" | cut -s -d: -f5`
+LOG_DATE=`date +%F`
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: setuprubycas - Blank remote user"<br>"
+echo `date`: setuprubycas - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: setuprubycas - Blank remote tcpip address"<br>"
+echo `date`: setuprubycas - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $LDAPSERVER'null' = null ]
+then
+echo `date`: setuprubycas - Blank LDAP server"<br>"
+exit 101
+fi
+if [ $LDAPIP'null' = null ]
+then
+echo `date`: setuprubycas - Blank LDAP TPCIP"<br>"
+exit 101
+fi
+
+[ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
+[ -d /var/www/html ] || mkdir -p /var/www/html
+[ ! -e /opt/karoshi/.tempdata/mysqlpasswordstatus ] || rm -f /opt/karoshi/.tempdata/mysqlpasswordstatus
+
+LANGCHOICE=englishuk
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/rubycas/setuprubycas ] || LANGCHOICE=englishuk
+source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/rubycas/setuprubycas
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+
+#######################
+#Apply certificate
+#######################
+if [ ! -f /etc/ssl/apache/server.crt ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
+fi
+
+#############################
+#Check for missing software
+#############################
+if [ -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/rubycas/software ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/rubycas/software
+fi
+
+#############################
+#Ensure that apache, and  mysql are running on boot
+#############################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mysql
+
+function passgen {
+PASSCHOICE=( A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y x 1 2 3 4 5 6 7 8 9 0 )
+
+RANGE=`echo ${#PASSCHOICE[@]}`
+let RANGE=$RANGE-1 
+
+COUNTER=1
+while [ $COUNTER -le 16 ]
+do
+ARRAYCHOICE=$RANDOM
+let "ARRAYCHOICE %= $RANGE"
+PASSWORD[$COUNTER]=`echo ${PASSCHOICE[$ARRAYCHOICE]} `
+let COUNTER=COUNTER+1
+done
+}
+
+#####################
+#Create rubycas mysql password for the new database
+#####################
+echo '<li>'$MYSQLMSG'</li><br>'
+#Get random password
+passgen
+
+RUBYCASPASS=`echo ${PASSWORD[@]:0} | sed 's/ //g'`
+
+#############################
+#Make sure that we know the root mysql password
+#############################
+
+/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
+#Get root mysql password
+MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
+
+###########################
+#make sure that mysql and apache are running
+###########################
+MYSQLSTATUS=`ps -e | grep -c -w $MYSQLDVER`
+APACHESTATUS=`ps -e | grep -c -w $APACHEVER`
+if [ $MYSQLSTATUS = 0 ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start
+echo "<br><br>"
+fi
+if [ $APACHESTATUS = 0 ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
+echo "<br><br>"
+fi
+
+#############################
+#create and pipe in the database
+#############################
+
+mysqladmin -f --password=$MYSQLPASS drop rubycas 1>/dev/null 2>/dev/null
+sleep 1
+mysqladmin --password=$MYSQLPASS create rubycas
+sleep 1
+
+echo GRANT ALL PRIVILEGES ON rubycas.\* TO "'"casuser"'"@"'"localhost"'" IDENTIFIED BY "'"$RUBYCASPASS"'"';' > /opt/karoshi/.tempdata/mysqlperms.sql
+echo ALTER DATABASE rubycas DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci';' >> /opt/karoshi/.tempdata/mysqlperms.sql
+mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/mysqlperms.sql
+rm -f /opt/karoshi/.tempdata/mysqlperms.sql
+
+#Set database password in config file
+sed -i "s/CHANGETHISPASSWORD/$RUBYCASPASS/g" /etc/rubycas-server/config.yml
+#Set ldap server in config file
+sed -i "s/CHANGETHISLDAPSERVER/$LDAPIP/g" /etc/rubycas-server/config.yml
+
+###########################
+#Open shorewall ports
+###########################
+RESTART_SHOREWALL=no
+MODCHECK=`grep -c -w \#cas_rule /etc/shorewall/rules`
+if [ $MODCHECK = 0 ]
+then
+RESTART_SHOREWALL=yes
+echo ''$SHOREWALLMSG - tcp 444'<br><br>'
+LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'444'	'-'#'cas_rule /etc/shorewall/rules
+echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+fi
+
+#######################
+#Restart apache
+#######################
+echo "<li>"$RESTARTAPACHEMSG'</li><br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop
+echo '<br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
+echo '<br><br>'
+######################
+#Restart shorewall
+######################
+if [ $RESTART_SHOREWALL = yes ]
+then
+echo "<li>"$RESTARTSWMSG'</li><br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
+echo '<br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
+echo '<br><br>'
+fi
+###########################
+#Show completed message
+###########################
+echo '<li>'$ACCESSMSG - '<a href="https://'$HOSTNAME':444" target="_blank">https://'$HOSTNAME':444</a></li><br><br>'
+exit

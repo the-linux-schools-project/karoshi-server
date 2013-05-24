@@ -1,0 +1,256 @@
+#!/bin/bash
+#setupksso
+#Copyright (C) 2011  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#aloughlin@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+########################
+#Get variables
+########################
+LOG_DATE=`date +%F`
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: setupmoodle - incorrect number of arguments"<br>"
+exit 101
+fi
+read -t 3 DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/'`
+
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: setupmoodle - Blank remote user"<br>"
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: setupmoodle - Blank remote tcpip address"<br>"
+exit 101
+fi
+
+[ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
+[ -d /var/www/html ] || mkdir -p /var/www/html
+[ ! -e /opt/karoshi/.tempdata/mysqlpasswordstatus ] || rm -f /opt/karoshi/.tempdata/mysqlpasswordstatus
+
+
+LANGCHOICE=englishuk
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/ksso/setupksso ] || LANGCHOICE=englishuk
+source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/ksso/setupksso
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/variables/tcpip
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+
+#############################
+#Ensure that apache and mysql are running on boot
+#############################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mysql
+
+#####################
+#Install Ksso
+#####################
+echo '<b>'$TITLE' - '$HOSTNAME'</b><br><br>'
+
+#######################
+#Apply certificate
+#######################
+if [ ! -f /etc/ssl/apache/server.crt ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
+fi
+
+#####################
+#Create moodle mysql password for the new database
+#####################
+echo '<li>'$MYSQLMSG'</li><br>'
+RANGE=61
+COUNTER=1
+while [ $COUNTER -lt 16 ]
+do
+row[$COUNTER]=$RANDOM
+let "row[$COUNTER] %= $RANGE"
+while [ ${row[$COUNTER]} = 0 ]
+do
+row[$COUNTER]=$RANDOM
+let "row[$COUNTER] %= $RANGE"
+done
+CHARACTER[$COUNTER]=`sed -n ${row[$COUNTER]},1p /opt/karoshi/serversetup/pdc/"useful scripts"/.alphabet`
+
+let COUNTER=COUNTER+1
+
+done
+
+KSSOPASS=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
+
+#############################
+#Make sure that we know the root mysql password
+#############################
+
+/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
+#Get root mysql password
+MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
+
+echo the password is $MYSQLPASS
+
+###########################
+#make sure that mysql and apache are running
+###########################
+MYSQLSTATUS=`ps -e | grep -c $MYSQLDVER`
+APACHESTATUS=`ps -e | grep -c $APACHEVER`
+if [ $MYSQLSTATUS = 0 ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start
+fi
+if [ $APACHESTATUS = 0 ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
+fi
+
+#############################
+#create and pipe in the database
+#############################
+
+mysqladmin -f --password=$MYSQLPASS drop ksso 1>/dev/null 2>/dev/null
+sleep 1
+mysqladmin --password=$MYSQLPASS create ksso
+sleep 1
+mysql --password=$MYSQLPASS ksso < /opt/karoshi/serversetup/modules/ksso/ksso.sql
+echo GRANT ALL PRIVILEGES ON ksso.\* TO "'"ksso_user"'"@"'"localhost"'" IDENTIFIED BY "'"$KSSOPASS"'"';' > /opt/karoshi/.tempdata/mysqlperms.sql
+echo ALTER DATABASE ksso DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci';' >> /opt/karoshi/.tempdata/mysqlperms.sql
+mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/mysqlperms.sql
+rm -f /opt/karoshi/.tempdata/mysqlperms.sql
+
+#Create config file
+[ ! -d /opt/karoshi/server_network/ksso ] && mkdir -p /opt/karoshi/server_network/ksso ]
+touch /opt/karoshi/server_network/ksso/config
+chmod 0640 /opt/karoshi/server_network/ksso/config
+chown root.$APACHEGROUP /opt/karoshi/server_network/ksso/config
+echo "MYSQLUSERNAME=ksso_user" > /opt/karoshi/server_network/ksso/config
+echo "MYSQLPASS=$KSSOPASS" >> /opt/karoshi/server_network/ksso/config
+
+
+###########################
+#Copy in ksso
+###########################
+echo '<li>'$INSTALLKSSOMSG'</li><br>'
+
+CGIPATH=/var/www/cgi-bin/
+HTMLPATH=/var/www/html/
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+[ ! -d $CGIPATH/ksso/ ] && mkdir -p $CGIPATH/ksso/
+cp -f /opt/karoshi/serversetup/modules/ksso/cgi/* $CGIPATH/ksso/
+chmod 0750 -R $CGIPATH/ksso/
+chown root.$APACHEGROUP -R $CGIPATH/ksso/
+
+[ ! -d $HTMLPATH/ksso ] && mkdir -p $HTMLPATH/ksso
+cp -f -R /opt/karoshi/serversetup/modules/ksso/images/ $HTMLPATH/ksso
+cp -f -R /opt/karoshi/serversetup/modules/ksso/html/* $HTMLPATH/ksso
+
+chmod 0640 -R $HTMLPATH/ksso
+chmod u+X,g+X -R $HTMLPATH/ksso
+chown root.$APACHEGROUP -R $HTMLPATH/ksso
+
+echo "echo" \""</body></html>"\" >> $CGIPATH/ksso/ksso_connect.cgi
+echo "echo '</div></div></body></html>'" >> $CGIPATH/ksso/ksso_menu.cgi
+
+#####################################
+#Ensure that apache ports are open in shorewall
+#####################################
+MODCHECK=`grep -c -w 80 /etc/shorewall/rules`
+MODCHECK2=`grep -c -w 443 /etc/shorewall/rules`
+
+MOD_SHOREWALL=no
+if [ $MODCHECK = 0 ]
+then
+MOD_SHOREWALL=yes
+PORTS="80"
+fi
+
+if [ $MODCHECK2 = 0 ]
+then
+MOD_SHOREWALL=yes
+PORTS="443"
+fi
+
+if [ $MODCHECK = 0 ] && [ $MODCHECK2 = 0 ]
+then
+MOD_SHOREWALL=yes
+PORTS="80,443"
+fi
+
+if [ $MOD_SHOREWALL = yes ]
+then
+echo '<br>'$SHOREWALLMSG
+LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'apacherule /etc/shorewall/rules
+echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+fi
+
+
+
+######################
+#Restart shorewall
+######################
+if [ $MOD_SHOREWALL = yes ]
+then
+echo '<br>'$RESTARTSWMSG
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+fi
+#################################
+#Make sure that mysql and apache are running
+#################################
+MYSQLSTATUS=`ps -e | grep -c -w $MYSQLDVER`
+if [ $MYSQLSTATUS = 0 ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start
+fi
+APACHESTATUS=`ps -e | grep -c -w $APACHEVER`
+if [ $APACHESTATUS = 0 ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
+fi
+
+#Create gnupg folder for gpg
+if [ ! -d /var/www/.gnupg ]
+then
+mkdir /var/www/.gnupg
+chown apache_karoshi /var/www/.gnupg
+chmod 0700 /var/www/.gnupg
+fi
+
+#Schedule table tidy up
+[ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
+echo '0' '23' '*' '*' '0' /opt/karoshi/serversetup/modules/ksso/tidydb > /opt/karoshi/cronjobs/jobs/ksso_tidydb.cron
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
+echo '<br>'
+
+###########################
+#Show completed message
+###########################
+echo '<br>'$ACCESSMSG - '<a href="http://'$HOSTNAME'/cgi-bin/ksso/ksso_menu.cgi" target="_blank">http://'$HOSTNAME'/cgi-bin/ksso/ksso_menu.cgi</a>'
+echo '<br><br><b>'$COMPLETEDMSG'</b><br><br>'
+exit

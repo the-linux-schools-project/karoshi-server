@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Lists host names and associated profile. This file can be edited
+     directly, or even created automatically depending on your
+     environment. 
+     
+     For more info, see http://wpkg.org/index.php/Category:Documentation
+     
+     -->
+
+<wpkg>
+
+    <host name="hostname" profile-id="custom" />
+
+
+<!-- This one will match all hosts that were not matched before.
+     For more info on regexp matching, see the documentation on http://wpkg.org/index.php/Regular_expression_support -->
+
+    <host name=".+" profile-id="other" />
+
+</wpkg>

@@ -1,0 +1,29 @@
+#!/bin/bash
+#Check that the required authentication flag has been set for an additional server
+
+LOG_DATE=`date +%F`
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: check_auth - incorrect number of arguments."<br>"
+exit 101
+fi
+read -t 3 DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/'`
+
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+AUTHTYPE=`echo "$DATA" | cut -s -d: -f5`
+
+[ $AUTHTYPE = users ] && SEARCHTYPE=$SERVERNAME
+[ $AUTHTYPE = members ] && SEARCHTYPE=domain
+
+AUTHFLAGS=`find /opt/karoshi/server_network/zones -name $SERVERNAME`
+if [ `echo $AUTHFLAGS | grep -c $SEARCHTYPE` -gt 0 ]
+then
+exit 0
+else
+exit 101
+fi

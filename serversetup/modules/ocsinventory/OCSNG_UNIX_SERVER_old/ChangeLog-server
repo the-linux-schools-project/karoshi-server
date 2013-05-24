@@ -1,0 +1,3030 @@
+2010-02-04  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	unix right: add the exec flag
+
+2010-01-30  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	quote HARDWARE/TYPE
+
+2010-01-26  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	save SOFTWARE/FROM
+
+2010-01-18  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	SQL quote for all the hardware fields
+
+2010-01-18  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	SQL syntax fix. Duplicate 'WHERE'
+	
+	Thanks axil_76.
+
+2010-01-12  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	decrease OCS_OPT_GROUPS_CACHE_* from one day to 10 minutes
+
+2009-11-20  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	bzr https access is broken?
+
+2009-11-20  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	prepare 1.3 beta3 release
+
+2009-11-08  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	fix: Computer with ASSETTAG are not inventoried 
+
+2009-11-08  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	ASSETTAG is in BIOS, not HARDWARE.
+
+2009-11-06  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	merge
+
+2009-11-06  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	merge with the stable branch
+
+2009-11-06  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	merge minor changes from trunk
+
+2009-11-06  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	refersh the ChangeLog for 1.3beta2
+
+2009-11-06  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	Reset the default settings so install.php will be correctly loaded
+
+2009-11-06  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	correctly retrieve Apache user/group on Debian
+
+2009-11-06  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	adjust the MANIFEST so Makefile.PL can be called from Apache
+
+2009-11-06  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	script to prepare a release from LP
+
+2009-11-06  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	minor fixes
+
+2009-11-03  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	chmod +x setup.sh
+
+2009-11-03  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	1.3 beta1
+
+2009-11-03  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	fix the ASSETTAG<>HARDWARE_ID SELECT query
+
+2009-11-03  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	restore a missing commat
+
+2009-11-03  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	merge from 1.03 branch
+
+2009-11-03  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	merge from stable branch
+
+2009-11-06  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	merge
+
+2009-11-02  Pascal DANEK  <pascal@ocsinventory-ng.org>
+
+	Fixed legacy mode groups computing logging event.
+	Reporting 0 computers added in case of legacy mode
+
+2009-11-02  Pascal DANEK  <pascal@ocsinventory-ng.org>
+
+	Fixed legacy mode groups computing logging event.
+	Reporting 0 computers added in case of legacy mode
+
+2009-10-30  Pascal DANEK  <pascal@ocsinventory-ng.org>
+
+	Added groups support for new multicriteria search in ocsreports
+
+2009-10-30  Pascal DANEK  <pascal@ocsinventory-ng.org>
+
+	Added groups support for new multicriteria search in ocsreports
+
+2009-10-09  Pascal DANEK  <pascal@ocsinventory-ng.org>
+
+	Updated MANIFEST regarding to directories tree changes
+
+2009-10-09  Pascal DANEK  <pascal@ocsinventory-ng.org>
+
+	Updated MANIFEST regarding to directories tree changes
+
+2009-09-28  Pascal DANEK  <pascal@ocsinventory-ng.org>
+
+	networks.VIRTUALDEV: allow the user to know whether a network device is virtual or physical
+
+2009-09-28  Pascal DANEK  <pascal@ocsinventory-ng.org>
+
+	networks.VIRTUALDEV helps user to know wether a network iface is a physical device or a virtual one
+
+2009-09-26  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	add NETWORKS/VIRTUALDEV
+
+2009-09-16  Pascal DANEK  <pascal@ocsinventory-ng.org>
+
+	Gonéri Le Bouder 2009-09-14 move ASSETTAG from hardware to bios
+
+2009-09-16  Pascal DANEK  <pascal@ocsinventory-ng.org>
+
+	Gonéri Le Bouder 2009-09-14 move ASSETTAG from hardware to bios
+
+2009-09-15  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	duplicated ASSETTAG: fix SQL request
+
+2009-09-14  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	move ASSETTAG from hardware to bios
+
+2009-11-03  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	save HARDWARE/UUID
+
+2009-10-30  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	avoid err 500 if ACCOUNTINFO is not found for a given inventory
+
+2009-09-11  Pascal DANEK  <pascal@ocsinventory-ng.org>
+
+	DTD updates
+
+2009-09-11  Pascal DANEK  <pascal@ocsinventory-ng.org>
+
+	DTD updates
+
+2009-09-11  David Olivier  <adadov@adadov.net>
+
+	Complete prolog_request.dtd
+
+2009-09-11  David Olivier  <adadov@adadov.net>
+
+	Correcting field names in prolog_reply.dtd
+
+2009-09-11  David Olivier  <adadov@adadov.net>
+
+	Correcting prolog_request.dtd to correct field order
+
+2009-09-11  David Olivier  <adadov@adadov.net>
+
+	Modifying DTDs to become strict and fonctional
+
+2009-09-11  David Olivier  <adadov@adadov.net>
+
+	Formatting and correcting inventory-request.dtd
+
+2009-09-11  David Olivier  <adadov@adadov.net>
+
+	One space missing
+
+2009-09-11  David Olivier  <adadov@adadov.net>
+
+	Correcting many mistakes in inventory_request.dtd
+
+2009-09-11  David Olivier  <adadov@adadov.net>
+
+	Correcting PRINTERS in DTD
+
+2009-09-11  David Olivier  <adadov@adadov.net>
+
+	Adding DESCRIPTION for PRINTERS in DTD
+
+2009-09-11  David Olivier  <adadov@adadov.net>
+
+	Adding DESCRIPTION for PRINTERS in DTD
+
+2009-09-09  Pascal DANEK  <pascal@ocsinventory-ng.org>
+
+	Added printers.DESCRIPTION
+
+2009-09-09  Pascal DANEK  <pascal@ocsinventory-ng.org>
+
+	Changelog for printers.DESCRIPTION
+
+2009-09-09  Pascal DANEK  <pascal@ocsinventory-ng.org>
+
+	Added printers.DESCRIPTION (Thx to Adadov)
+
+2009-09-09  David Olivier  <adadov@adadov.net>
+
+	Adding DESCRIPTION field for printers table in Map.pm
+
+2009-09-08  Pascal DANEK  <pascal@ocsinventory-ng.org>
+
+	Added OCS_OPT_ACCEPT_TAG_UPDATE_FROM_CLIENT from trunk
+
+2009-09-08  Pascal DANEK  <pascal@ocsinventory-ng.org>
+
+	Added OCS_OPT_ACCEPT_TAG_UPDATE_FROM_CLIENT (Goneri Le Bouder)
+
+2009-09-07  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	add OCS_OPT_ACCEPT_TAG_UPDATE_FROM_CLIENT support
+
+2009-09-07  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	drop the exec flag
+
+2009-09-07  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	drop the exec right on Apache/Ocsinventory.pm
+
+2009-09-04  Pascal DANEK  <pascal@ocsinventory-ng.org>
+
+	Use of hardware.UUID and hardware.ASSETTAG in duplicates detection process
+
+2009-09-04  Pascal DANEK  <pascal@ocsinventory-ng.org>
+
+	Use of hardware.UUID and hardware.ASSETTAG in duplicates detection process
+
+2009-09-04  Pascal DANEK  <pascal@ocsinventory-ng.org>
+
+	Duplicates management: 
+	=> remove the device from dynamic groups
+	=> keep the static groups membership
+
+2009-09-04  Pascal DANEK  <pascal@ocsinventory-ng.org>
+
+	Adding fallback value to NULL macaddress
+
+2009-09-03  Pascal DANEK  <pascal@ocsinventory-ng.org>
+
+	Moved "binutils"  and "etc" directory to /
+
+2009-09-03  serpent  <serpent@snakebase2>
+
+	Removed ocsreports from ocsinventory-server project
+
+2009-09-02  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	fix bug : export file works now
+	tx to zefox
+
+2009-09-02  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	fix UTF-8 bug, 
+	create a blacklist of word : don't see on edit list.
+	tx to zefox... 
+
+2009-09-02  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	fix bug for language update
+	tx to zefox for helping to make OCSinventoryNg better :-)
+
+2009-09-02  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	fix bug for sql group query
+	tx to Kd for helping to make OCSinventoryNg better :-)
+
+2009-09-02  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	add lbl before select field
+
+2009-09-02  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	fix bug for ipdiscover
+	tx to zefox for helping to make OCSinventoryNg better :-)
+
+2009-09-01  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	use the new $pages_refs array
+
+2009-09-01  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	Changing references for all pages
+	to use the new $pages_refs array
+
+2009-09-01  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	fix warning when install.php is execute.
+
+2009-09-01  Guillaume Protet  <guillaume.protet@mortheres.info>
+
+	Adding a new array named $pages_refs in require/function_index.php for pages references
+	Adding PAG_INDEX in require/function_index.php
+	Changing cases in index.php to use the new $pages_refs array
+	Changing references for menus to use the new $pages_refs array
+
+2009-09-01  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	code clean up
+
+2009-08-31  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	feature: you can update the language file when you use GUI
+	Language files are json format and stock in database
+	http://sourceforge.net/tracker/?func=detail&aid=2776296&group_id=58373&atid=487495
+
+2009-08-31  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	fix bug (require don't works)...
+	Thx to Zefox
+
+2009-08-31  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	update french language.
+	tx to Daniel COLLIGNON for this contrib
+
+2009-08-31  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	fix bugs, new blacklist page, code clean up
+
+2009-08-29  Guillaume Protet  <guillaume.protet@mortheres.info>
+
+	Add a new require/function_index.php page
+	Create a new array to index icons
+	Copy some functions from old index.php file
+
+2009-08-29  Guillaume Protet  <guillaume.protet@mortheres.info>
+
+	Adding require to require/function_index.php page
+	Changing 'multi' name and pages references
+	Use the new array (given in require/function_index.php page) to place icons.
+	Optimizing indent in some parts of the file
+
+2009-08-29  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	fix bug:
+	AUTODUPLICATELVL can be 0
+	graphic stat works now
+
+2009-08-28  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	fix: add label
+
+2009-08-28  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	code clean
+
+2009-08-28  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	feature: possibility to change GUI mode.
+	=> DEBUG mode 
+	=> LANGUAGE mode
+	=> MAINTENANCE mode
+
+2009-08-28  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	feature: when you clic on icons menu, 
+	all table cache is reseted
+
+2009-08-27  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	The SOAP service is now able to share data with engine in +w mode by the use of ::System::_lock()
+
+2009-08-27  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	update table name : TAGS=> tags
+
+2009-08-27  Guillaume Protet  <guillaume.protet@mortheres.info>
+
+	Commiting the right index.php !! sorry for inconvenience !!!
+
+2009-08-27  Guillaume Protet  <guillaume.protet@mortheres.info>
+
+	Moving users icons to the right place. Modify the "If" structure related to a more standard one.
+
+2009-08-27  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Added tables to Map.pm
+
+2009-08-27  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Delete computers using SOAP service (Fix)
+
+2009-08-27  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Delete computers using SOAP service (Fix)
+
+2009-08-27  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	fix language bug
+
+2009-08-27  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	fix bug : ocsweb.tag => ocsweb.tags
+
+2009-08-26  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	fix multisearch bug
+
+2009-08-26  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	fix language bug
+
+2009-08-26  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Delete computers using SOAP service
+
+2009-08-26  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Removing netmap from Map.pm
+
+2009-08-26  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	fix bug on new ipdiscover.
+
+2009-08-26  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	* itmgmt_comments support
+	* Netmap is not a delOnReplace section
+	* Cleanup in duplicates
+
+2009-08-26  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	* itmgmt_comments support
+	* Netmap is not a delOnReplace section
+	* Cleanup in duplicates
+
+2009-08-25  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	update password for admin to md5
+
+2009-08-25  Guillaume Protet  <guillaume.protet@mortheres.info>
+
+	Correcting mistake in debug line 5008.
+
+2009-08-25  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	add new table itmgmt_comments
+
+2009-08-25  Guillaume Protet  <guillaume.protet@mortheres.info>
+
+	Adding missing lines from 1001 to 1009.
+
+2009-08-25  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	unix format
+
+2009-08-25  Guillaume Protet  <guillaume.protet@mortheres.info>
+
+	Adding missing lines from 817 to 1000. Adding DEBUG mode lines.
+
+2009-08-25  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	use text file and fix bugs:
+	- default language is english when the word doen't find 
+	- fix the server's group redistribution number
+	- you don't need escape quote anymore on register key
+	- use UTF-8 on tele_stats.php
+
+2009-08-25  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	tx to zefox for the language file correction
+
+2009-08-25  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	affect packet on groups
+
+2009-08-25  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	(gend)fix
+
+2009-08-23  Guillaume Protet  <guillaume.protet@mortheres.info>
+
+	Use english word by default if it's was not found in the current language text file.
+
+2009-08-22  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	use text file
+
+2009-08-22  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	admin tags for users
+
+2009-08-21  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	add field in groups table
+
+2009-08-21  Guillaume Protet  <guillaume.protet@mortheres.info>
+
+	Deleting first line on every language text files that is not needed now.
+
+2009-08-21  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	fix language bug
+
+2009-08-21  Guillaume Protet  <guillaume.protet@mortheres.info>
+
+	Converting french.txt, spanish.txt and slovanian.txt to UTF-8 .
+
+2009-08-21  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	utf-8 compatibility
+
+2009-08-21  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	update => not use $_SERVER for directory of logs
+
+2009-08-21  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	update => not use $_SERVER for directory of plugins, language, etc. 
+
+2009-08-20  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	function to add users (admin users)
+
+2009-08-20  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	fix bug with language file
+
+2009-08-20  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	patch for the install
+
+2009-08-20  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Download: Added ERR_ALREADY_IN_HISTORY status code (package affected but already in history)
+
+2009-08-19  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	add image missing next commit
+
+2009-08-19  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	files missing with next commit
+
+2009-08-18  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	new version of GUI with ldap, plugins, new search, etc.
+	THIS VERSION IN DEVELOPMENTAL STAGE
+	USE THIS VERSION ONLY FOR DEV
+
+2009-08-18  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	test
+
+2009-08-18  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	reset for new version
+
+2009-08-18  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	correct sql bug (journallog) for mysql 5
+
+2009-08-18  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	IPSRC support
+
+2009-08-18  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	IPSRC support
+
+2009-08-18  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	ASSETTAG and DNS support in hardware special section
+
+2009-08-18  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	
+
+2009-08-18  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	DRIVES/CREATEDATE support
+
+2009-08-17  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Added ASSETTAG support
+
+2009-08-17  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Added DNS informations
+
+2009-07-29  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	Avoid errror if the XML has no IPDISOCVER whereas the was suppose to
+	do a scan
+
+2009-07-06  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Changelogs update
+
+2009-07-03  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Fixed CRLF issues on windows using OCS_OPT_GENERATE_OCS_FILES
+
+2009-07-01  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Mobile devices support
+	https://sourceforge.net/tracker/index.php?func=detail&aid=2810746&group_id=58373&atid=487495
+
+2009-06-30  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Fixed a filter (fallback) issue
+	https://sourceforge.net/tracker/index.php?func=detail&aid=2129983&group_id=58373&atid=487492
+
+2009-06-29  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	DB schema changes support 2/2
+
+2009-06-29  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Fix an unicode support bug
+
+2009-06-29  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Unicode support
+
+2009-06-29  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	fix this bug
+	Software - Double quotes / Strange characters - ID: 2800950
+
+2009-06-26  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	New DB schema support 1/2
+
+2009-06-24  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Added DEFAULTGATEWAY support
+
+2009-06-24  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	fix Serious security bug in tele_activate.php - ID: 2797878
+	bug tracker sourceforge
+	tx to Jonas Jochum
+
+2009-06-23  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	add "color: black;" in CSS file
+	bug: tracker 2620218
+	tx to kikoun
+
+2009-06-23  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	
+
+2009-06-23  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	add PDA/SMARTPHONE detail
+	+ fix for Blacklist's bug: tracker 2810846
+
+2009-06-23  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Converted CHECKSUM from signed INT to unsigned BIGINT
+
+2009-06-23  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Update of Changes
+
+2009-06-22  Philippe Libat  <philippe.libat@free.fr>
+
+	module virtualization
+
+2009-06-22  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	use the language file instead of hard-coded values
+	http://forums.ocsinventory-ng.org/viewtopic.php?id=4507
+	thx to bug_reporter
+
+2009-06-22  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	Thanks M. Andreas MORODER.
+
+2009-06-10  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Removed debugging statement
+
+2009-06-10  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Dynamic CHECKSUM_MAX_VALUE in Constant.pm
+	No more declaration in Map.pm
+
+2009-05-29  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Fix Debian Bug report logs #529344 - Same error message for username or password error
+
+2009-05-26  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Patch from Julien Leroy, unable to store registry query
+
+2009-05-25  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	update russian translation, thanks Khalidov Magomed
+
+2009-05-14  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Specify path to favicon
+
+2009-05-14  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Bug fix: https://sourceforge.net/tracker/?func=detail&atid=487492&aid=2787130&group_id=58373
+
+2009-05-12  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	thx to Nico Leidecker
+	(sql injection and Unauthenticated Arbitrary File Read)
+
+2009-05-10  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	typo (s/Vesion/Version)
+
+2009-04-26  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	fix a syntax error
+	
+	Thanks commgraf
+	http://forums.ocsinventory-ng.org/viewtopic.php?id=4103
+
+2009-04-17  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Display field computer type in BIOS
+
+2009-04-17  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Removed RC from version field
+
+2009-04-15  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	typo in filename
+
+2009-04-14  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	typo in filename
+
+2009-04-14  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Obsolete field ETIME set to NULL because of mysql STRICT MODE
+
+2009-04-14  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	FLOOD_IP_CACHE_TIME was managed in minutes. Switch it to seconds.
+
+2009-04-14  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Rename of ocsinventory-local to ocsinventory-injector
+
+2009-04-14  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	FIxed inventory filter and moved download history to post_inventory hook
+
+2009-04-14  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Added TYPE field to BIOS
+
+2009-04-02  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	fix sql injection
+
+2009-04-02  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	fix log out bug
+
+2009-03-28  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	fix bug: every identification goes to index.php
+
+2009-03-18  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	Bugs item #2691996, was opened at 2009-03-18 16:15 on sourceforge
+	Correct 2 bugs : Test is_writable(".") => is_writable($IPD_DIR).
+	thanks to Waldemar Chrzan
+
+2009-03-05  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	fix for stat bug (telediff)
+
+2009-03-02  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	correction BUG => no computor for the login
+
+2009-03-02  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	correction bug => when ladmin connect to groups.php   
+
+2009-02-25  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	add a missing require
+	
+	Fatal error: Class 'FichierConf' not found in .../ocsreports/preferences.php on line 82
+	('fichierConf.class.php');^M
+
+2009-02-25  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	fix some shorttags
+
+2009-02-25  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	fix some func call to avoid pass-by-ref warnings (Remi Collet)
+	
+	- Call-time pass-by-reference has been deprecated in
+	/usr/share/ocsinventory-reports/ocsreports/multicrite
+	re.php
+	
+	-  in_array() expects parameter 2 to be array, null given in
+	/usr/share/ocsinventory-reports/ocsreports/multic
+	ritere.php on line 642
+
+2009-02-25  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	drop some ereg* function (Remi Collet)
+
+2009-02-09  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	reverse the XML clean up patchs
+
+2009-01-27  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	prune a duplicated line
+
+2009-01-22  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	more robust session clean up
+	
+	Thanks Gorn14
+	
+	http://forums.ocsinventory-ng.org/viewtopic.php?id=3315
+
+2009-01-21  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	accept .xml inventory too
+
+2009-01-21  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	fix some short tag (<?)
+	
+	See:
+	http://forums.ocsinventory-ng.org/viewtopic.php?id=3225
+
+2009-01-14  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	correct bug with redistrib servers
+
+2009-01-12  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	Remove non printable char from XML stream
+
+2009-01-08  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	Clean the XML up before reading it
+
+2009-01-08  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	add a missing space
+
+2009-01-08  Gonéri Le Bouder  <goneri@rulezlan.org>
+
+	avoid a warning if SESSION[OPT] is undef
+
+2008-12-04  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Fix: Inventory::Update::AccountInfo not in the scope when calling _accountinfo()
+
+2008-12-04  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Fix: Inventory::Update::AccountInfo not in the scope when calling _accountinfo()
+
+2008-10-30  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+
+2008-10-30  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Handling the trailing '/' in deploy feature
+
+2008-10-30  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Fix a typo (Thanks to Remi COLLET)
+
+2008-10-16  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Add Remi collet install.php patch, and set php and images files non executable (chmod -x)
+
+2008-10-11  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	RC3 fix
+
+2008-10-09  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	show 1.02 RC3
+
+2008-10-09  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	correct bug with manual activate when file does'nt exist
+
+2008-10-02  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	- compatibility for IE. New dico version
+	- RC3 version
+
+2008-09-26  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	- compatibility for IE
+	- RC3 version
+
+2008-09-26  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	- compatibility for IE
+	- RC3 version
+
+2008-09-26  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	- compatibility for IE
+	- RC3 version
+
+2008-09-22  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Don't perform diff check if section mask is 0
+
+2008-09-18  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Remove specific settings for PHP4, remove short_open_tag setting
+
+2008-09-12  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	Internet Explorer compatibility
+
+2008-09-12  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	Internet Explorer compatibility
+
+2008-09-01  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	correct bug item #2086480 ($l was forgotten on function fin_tab)
+	thank to Ruben Moretti.
+
+2008-07-25  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	for RC3 by pchamorro. Tx!!!
+
+2008-07-15  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	update
+
+2008-07-10  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	use language file.
+	by PASSERO
+
+2008-07-10  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	correct MO=>MB and Mhz => MHz
+	Tx to PASSERO.
+
+2008-07-08  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	correct MO=>MB
+	and change all italian.txt
+	PASSERO contribution.
+
+2008-06-25  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Wes patches: hdd and memory serials handling
+	Darwin deployment handling
+
+2008-06-18  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	delete eclipse file
+
+2008-06-18  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	Correct for Rc3
+
+2008-06-14  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Changed text in ligne 981 (static files will be copied later in this directory)
+
+2008-06-14  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Move console PHP static files from /usr/share/ocsinventory-server to /usr/share/ocsinventory-reports
+	Move console PHP variable files from /var/lib/ocsinventory-server to /var/lib/ocsinventory-reports
+
+2008-06-11  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Fix default for groups table (fix the groups computing)
+
+2008-06-05  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	correction by Inferno: bug with '
+
+2008-05-07  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	correct javascript bug and warning
+
+2008-05-01  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Update to version 5001, as database upgrade to this version
+
+2008-04-26  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Fix small bug when using ipdiscover-util.pl with FHS compliant directory into /var/lib/ocsinventory-server/ipd
+
+2008-04-26  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Add copyleft statement
+
+2008-04-25  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	update for RC2
+
+2008-04-25  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	new for RC2
+
+2008-04-25  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	RC2 - correct bug on config page
+
+2008-04-24  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	Del link "sdfdfsdfs"
+
+2008-04-15  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2008-04-15  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Fix the duplicate error in packages history (download)
+
+2008-04-11  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	correction BUG
+
+2008-04-05  Emmanuel Guillory  <emmanuel.guillory@free.fr>
+
+	*** empty log message ***
+
+2008-04-04  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	DEL eclipse file
+
+2008-04-04  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	FOR RC2
+
+2008-03-27  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Bug fix : Inventory cache was not feed if !INVENTORY_WRITE_DIFF && section->multi
+
+2008-03-27  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Bugs fixes
+
+2008-03-26  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Fix bug in apache config file path
+
+2008-03-25  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	add filter on field
+
+2008-03-20  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	DEL FILE
+
+2008-03-20  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	RC2
+
+2008-03-17  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	add fields for console configuration
+
+2008-03-17  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	correction: use CACHE MODE or not
+
+2008-03-17  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	Add new page
+
+2008-03-17  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	New page: some data when you connect
+
+2008-03-17  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	Correction for use CACHE MODE or not
+
+2008-03-17  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	TEXT for the console.php
+
+2008-03-13  Erwan Goalou  <erwan.goalou@gmail.com>
+
+	optimize page loading
+
+2008-03-05  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Remove php memory limit to 16 MB, because defaulton distro is now set to 128 MB
+
+2008-03-05  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Cosmetic enhancement ;-)
+
+2008-03-04  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Set admin console setup FHS compliant
+
+2008-03-04  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Add usefull php values (not working on some distro)
+
+2008-03-04  Emmanuel Guillory  <emmanuel.guillory@free.fr>
+
+	*** empty log message ***
+
+2008-03-04  Emmanuel Guillory  <emmanuel.guillory@free.fr>
+
+	*** empty log message ***
+
+2008-03-04  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Text update for max package deployement size
+
+2008-03-04  Emmanuel Guillory  <emmanuel.guillory@free.fr>
+
+	*** empty log message ***
+
+2008-03-04  Emmanuel Guillory  <emmanuel.guillory@free.fr>
+
+	*** empty log message ***
+
+2008-03-04  Emmanuel Guillory  <emmanuel.guillory@free.fr>
+
+	*** empty log message ***
+
+2008-03-04  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2008-03-04  Emmanuel Guillory  <emmanuel.guillory@free.fr>
+
+	*** empty log message ***
+
+2008-03-04  Emmanuel Guillory  <emmanuel.guillory@free.fr>
+
+	*** empty log message ***
+
+2008-03-04  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Updates for new console ocsreports
+
+2008-03-04  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Configuration file sample for ocsreports
+
+2008-03-04  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	PRE 1.02 RC
+
+2008-03-04  Emmanuel Guillory  <emmanuel.guillory@free.fr>
+
+	*** empty log message ***
+
+2008-03-03  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	typo
+
+2008-03-03  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	PRE 1.02 RC
+
+2008-03-03  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	PRE 1.02 RC
+
+2008-03-03  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Important fix
+
+2008-03-03  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	PRE 1.02 RC
+
+2008-03-03  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	PRE 1.02 RC
+
+2008-03-03  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	PRE 1.02 RC
+
+2008-03-03  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	UNLOCK even if "INSERT" statement failed
+
+2008-03-03  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	"LOCK tables" before computing inventory cache
+
+2008-03-03  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	PRE 1.02 RC1
+
+2008-03-03  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Select the DB_SL only if "select" or "show" statement
+
+2008-03-03  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	PRE 1.02 RC1
+
+2008-03-01  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Fixed Apache::BAD_REQUEST is not numeric
+
+2008-02-29  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Fixed ambigous ID
+
+2008-02-29  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	PRE 1.02 RC
+
+2008-02-29  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Try to setup an option when invalid (??)
+	Added INVENTORY_CACHE_KEEP
+	Adjusted INVENTORY_CACHE_REVALIDATE filter
+	Added inventory cache deletion on the fly
+	Errors in write_diff now generate exception
+
+2008-02-29  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	removed INVENTORY_CACHE_REVALIDATE from GUI
+
+2008-02-28  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	PRE 1.02 RC
+
+2008-02-28  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	PRE 1.02 RC
+
+2008-02-28  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	PRE 1.02 RC
+
+2008-02-28  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	PRE 1.02 RC
+
+2008-02-28  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	PRE 1.02 RC
+
+2008-02-28  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	PRE 1.02 RC
+
+2008-02-28  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	The default ip is now based on REMOTE_ADDR (or HTTP_X_FORWARDED_FOR)
+
+2008-02-28  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	PRE 1.02 RC
+
+2008-02-28  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Adding warning if priv mods conf file doesn't exist
+
+2008-02-28  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	PRE 1.02 RC
+
+2008-02-27  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Remove PDF guide, replaced by online wiki
+
+2008-02-27  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Setup update for 1.02 release
+
+2008-02-27  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	PRE 1.02 RC
+
+2008-02-27  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	PRE 1.02 RC
+
+2008-02-27  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	PRE 1.02 RC
+
+2008-02-27  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	PRE 1.02 RC
+
+2008-02-27  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added old_deviceid log
+
+2008-02-27  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	PRE 1.02 RC 1
+
+2008-02-27  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added fallback field's attribute (Map)
+	Fixed a bug with WRITE_DIFF
+
+2008-02-27  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	PRE 1.02 RC1
+
+2008-02-26  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Minor changes
+
+2008-02-25  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Minor changes
+
+2008-02-25  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Minor changes
+
+2008-02-25  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Minor changes
+
+2008-02-25  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Log improvement
+
+2008-02-23  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2008-02-23  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added OCS_OPT_COMPRESS_TRY_OTHERS
+
+2008-02-23  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added Notify new ip handling
+
+2008-02-23  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Typo fix
+
+2008-02-23  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Fix a bug in accountinfos handling
+	Adding verbosity if no accountinfos are sent
+
+2008-02-23  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added logs when using compression method diffeernt than raw zlib
+
+2008-02-23  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Set hasChanged to 1 for each section if INVENTORY_DIFF is off
+
+2008-02-23  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Removed charset directives
+
+2008-02-22  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Adding sessions
+
+2008-02-22  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added prolog_conntrack to ocsbase.sql
+	Added local view for "all soft" report
+
+2008-02-22  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added GUI secttion in general config
+	Added settable directory for package creation and ipdiscover cache handling (analyze, ipdiscover-util.pl)
+
+2008-02-22  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added SESSION (prolog=>post_inventory)
+	Added -path to ipdiscover-util
+	Fixed the "reuse lock" feature from system.pm (get the lock)
+	Added parameters:
+	SESSION*
+	INVENTORY_SESSION_ONLY
+
+2008-02-22  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Setup updates for 1.02 release
+
+2008-02-22  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added error
+	Added REVALIDATE*=0 handling
+	Added error 523
+	A few fixes and logs
+
+2008-02-22  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	css fixes
+	Removed scrollbar from subtable
+
+2008-02-22  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Bug fix
+	Added setting creation if it doesn't exist
+
+2008-02-22  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added OCS_OPT_NOT_OVERLOADED
+	Removed inventory cache checking if section has not changed since last inventory
+
+2008-02-21  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	PRE 1.02RC
+
+2008-02-21  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	PRE 1.02 RC
+
+2008-02-21  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added some logs
+
+2008-02-18  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2008-02-18  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Do not close log file if LOGLEVEL is Off
+
+2008-02-18  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Do not handle 'no auto' sections (in addition to delOnReplace)
+
+2008-02-18  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2008-02-18  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Web service fixes and improvements
+	Completed soap-client.README
+
+2008-02-18  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added an example to analyse ocs logs
+
+2008-02-18  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Now by default, logging is done in activity.log
+
+2008-02-18  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2008-02-18  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added the use of REVALIDATE_FROM
+	The date displayed in GUI is now the real group computation date
+
+2008-02-18  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Removed references to Apache::Ocsinventory::OPTIONS
+
+2008-02-18  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Removed default option (now useless with Apache::Ocsinventory::System::Config)
+	Removed Update.pm module
+
+2008-02-18  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2008-02-18  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Adding some README, module reorg, web site update...
+
+2008-02-16  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Mysql: limit<>LIMIT ???
+
+2008-02-16  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2008-02-16  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added priv_mods_conf_file template (setup.sh)
+
+2008-02-16  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	"eval" the private extensions loader
+
+2008-02-16  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Adding verbosity to soap service dependencies
+
+2008-02-16  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added a warning in apache error logs if XML::Entities is not available
+
+2008-02-16  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added xml entities decoding for additionnal methods
+
+2008-02-16  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added (re??) slave database support for engine (groups use it)
+
+2008-02-14  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	A first example of soap client
+
+2008-02-14  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added private extensions support (minimal)
+
+2008-02-14  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added Ipdiscover functions
+
+2008-02-14  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2008-02-14  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added getting ipdiscover results to web service
+	Added netmap strucutre in Map
+	Added WEB service setting WEB_SERVICE_RESULTS_LIMIT
+
+2008-02-14  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2008-02-14  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Update
+
+2008-02-13  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2008-02-13  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	New settings handling system
+
+2008-02-13  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	New settings handling
+
+2008-02-13  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Web service upgrade
+
+2008-02-13  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Bug fix
+
+2008-02-13  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	New config handling
+
+2008-02-12  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Fixed a bug with WRITE_DIFF deletions
+
+2008-02-12  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Bug fix
+
+2008-02-12  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2008-02-12  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2008-02-12  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	bug fix
+
+2008-02-12  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added WRITE_DIFF support
+
+2008-02-12  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Indentation
+
+2008-02-12  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Indent correction
+
+2008-02-12  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Bug fix with package name
+
+2008-02-12  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2008-02-12  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	added DB Slave support from within the engine
+	Rename Options => Capacities
+
+2008-02-12  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Problem with intermediate version of mod_perl
+
+2008-02-12  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Rename Options => Capacities
+
+2008-02-12  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Rename Options=>Capacities
+
+2008-02-11  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2008-02-11  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	PRE 1.02
+	See Changes file for improvements
+
+2008-02-11  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Adding file
+
+2008-02-11  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2008-02-04  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Updating log format
+
+2008-02-04  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Fix
+
+2008-02-04  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2008-02-02  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added specific parameters handling
+	Added prolog_freq specific parameter support (computer and groups)
+	Added software deployment specific setting support (computer and groups)
+
+2008-02-02  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2008-02-01  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Fix a log event
+
+2008-02-01  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Debian patch
+
+2008-02-01  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Check the clear text request
+
+2008-02-01  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added clear text communication
+
+2008-01-22  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Pre RC1
+
+2007-12-26  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	diff prod
+
+2007-12-17  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Patch proposal from Remi Collet : enable the "lastdate" synchronization to GLPI
+
+2007-12-17  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added \Q and \E modifiers to regexp
+
+2007-11-20  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2007-11-14  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2007-11-09  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Template handling improvements
+
+2007-11-08  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Handling distribution servers
+
+2007-10-30  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Unified unix agent Ipdiscover handling
+
+2007-09-19  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2007-08-20  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	=> Erwan : revoir le clean des doublons - voir avec moi
+
+2007-08-04  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Slovenian translation by Iztok.osredkar@guest.arnes.si
+
+2007-07-27  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2007-07-26  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2007-07-26  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2007-07-26  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Fixes
+
+2007-07-23  Pierre Lemmet  <plemmet@gmail.com>
+
+	- removed bogus dbconfig
+
+2007-07-23  Pierre Lemmet  <plemmet@gmail.com>
+
+	4500 GUI
+	- Groups management
+	- Local users with restricted views available
+	- Query optimizations (cache etc)
+	- Many bug fixes
+	- Many improvements (software version search etc)
+
+2007-07-22  Pierre Lemmet  <plemmet@gmail.com>
+
+	4500 GUI
+	- Groups management
+	- Local users with restricted views available
+	- Query optimizations (cache etc)
+	- Many bug fixes
+	- Many improvements (software version search etc)
+
+2007-07-21  Pierre Lemmet  <plemmet@gmail.com>
+
+	test
+
+2007-07-09  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added GROUPS_CACHE_OFFSET option
+
+2007-06-15  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2007-06-15  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added "trusted computers" feature
+
+2007-06-15  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added OCS_OPT_IPDISCOVER_BETTER_THRESHOLD option
+
+2007-06-15  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2007-06-15  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Bug fix
+
+2007-06-15  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Adding possibility to not overwrite .ocs file (multi server feature)
+
+2007-06-15  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added duplicates handling by lastdate
+
+2007-06-15  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added OCS_OPT_OCS_FILES_OVERWRITE option
+
+2007-06-15  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added Groups.pm
+
+2007-06-12  Pierre Lemmet  <plemmet@gmail.com>
+
+	Added cache
+	Fixed timestamp bug
+
+2007-06-12  Pierre Lemmet  <plemmet@gmail.com>
+
+	*** empty log message ***
+
+2007-06-01  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Fix groups stability
+
+2007-05-31  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Remove UNIX_TIMESTAMP type for groups(CREATE_TIME)
+
+2007-05-30  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Typo
+
+2007-05-30  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Bug fix with download_trace_event
+
+2007-05-23  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Bug fix
+
+2007-05-15  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added SPEED
+
+2007-05-15  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added cache cleaning memory
+	Added offset when computing groups
+	Fixed few bugs
+
+2007-05-14  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added cache fields on inventory
+	Fixed few bugs on groups
+	Added auto generated code based on Map.pm
+
+2007-05-14  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Remove commit instead of unlock
+
+2007-05-14  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Updating groups membership in another way
+
+2007-05-10  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added SSTATE field to hardware section
+
+2007-05-09  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added some cache (softwares.name, registry.regvalue)
+
+2007-04-18  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Added common serial and macaddresses blacklist in database
+
+2007-04-17  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added Security State field
+
+2007-04-17  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added NO_POSTPONE handling
+
+2007-04-17  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added SSL stuff
+	Added option to speed up ipdiscover elections on new install
+	Added security level setting
+
+2007-03-29  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Fix checking content bug
+	Removed compressing features, has noÃ§w, ocs engine can handle few inflating algorythm
+	Change debug to verbose and change log content
+	Add handling "."as  default
+	Few changes
+	Change file name Ocsinventory_local becomes ocsinventory-local.pl
+
+2007-03-24  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added export .ocs file feature
+	Enable multi ocs server (via local import)
+
+2007-03-20  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added multi compression support
+
+2007-03-02  Pierre Lemmet  <plemmet@gmail.com>
+
+	- Fixed defined DEFAULT LANGUAGE bug
+
+2007-03-01  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Fix a bug with group and new device
+
+2007-03-01  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added DBI config using ocsinventory.conf (mysql_socket is now settable)
+
+2007-02-28  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added better dbi handling for cache test
+
+2007-02-28  Pierre Lemmet  <plemmet@gmail.com>
+
+	- Fixed registry not in search
+
+2007-02-26  Pierre Lemmet  <plemmet@gmail.com>
+
+	- Fixed sorting bug in stats computer details
+	- Fixed error count in download available page
+
+2007-02-22  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Updated version to 1.02
+
+2007-02-22  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Addded ipdiscover groups support
+
+2007-02-22  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added package list control
+
+2007-02-22  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added software deployment groups support
+	Few optimizations
+	FBetter error handling
+
+2007-02-22  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added dynamic and static groups support
+
+2007-02-20  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added indexes to devices table
+
+2007-02-20  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added some generic mac address to blacklist
+
+2007-02-20  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added (re) xml parser options in the definitive way (1.01 compatible)
+
+2007-02-20  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added gzip inflating support
+
+2007-02-19  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Adding groups to core
+
+2007-02-16  Pierre Lemmet  <plemmet@gmail.com>
+
+	1.01
+	
+	stats improvements
+
+2007-02-15  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Fixed severe performance issue with XML parser
+
+2007-02-14  Pierre Lemmet  <plemmet@gmail.com>
+
+	Pre v1.01
+
+2007-02-14  Pierre Lemmet  <plemmet@gmail.com>
+
+	Pre v1.01
+
+2007-02-08  Pierre Lemmet  <plemmet@gmail.com>
+
+	*** empty log message ***
+
+2007-02-08  Pierre Lemmet  <plemmet@gmail.com>
+
+	*** empty log message ***
+
+2007-02-08  Pierre Lemmet  <plemmet@gmail.com>
+
+	*** empty log message ***
+
+2007-02-08  Pierre Lemmet  <plemmet@gmail.com>
+
+	v1.01
+
+2007-02-06  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	i
+	Loading Interface for better performances
+
+2007-01-28  Pierre Lemmet  <plemmet@gmail.com>
+
+	release 1.0
+
+2007-01-27  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Update deployment web pages description for 1.0 final
+
+2007-01-27  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Mass processing bug fixed
+
+2007-01-26  Pierre Lemmet  <plemmet@gmail.com>
+
+	release 1.0
+
+2007-01-26  Pierre Lemmet  <plemmet@gmail.com>
+
+	Pre release 1.0
+
+2007-01-23  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Add Vista compatible in notes
+
+2007-01-23  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Last updates for 1.0 final. Updated Important notes, and some minor fixes
+
+2007-01-20  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Updates from Rafael Dewes,lines 387, 533, 552 and 570
+
+2007-01-19  Pierre Lemmet  <plemmet@gmail.com>
+
+	Pre OCS 1.0
+
+2007-01-19  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added reusing locks after OCS_OPT_LOCK_REUSE_TIME
+
+2007-01-19  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Default LOCK_REUSE_TIME to 1 hour
+
+2007-01-19  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added reusing locks after OCS_OPT_LOCK_REUSE_TIME
+
+2007-01-19  Pierre Lemmet  <plemmet@gmail.com>
+
+	New italian translation
+
+2007-01-19  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	519 code => Filter.pm
+
+2007-01-19  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Bug fix
+
+2007-01-18  Pierre Lemmet  <plemmet@gmail.com>
+
+	Brazilian translation update
+	Hungarian flag update
+
+2007-01-17  Pierre Lemmet  <plemmet@gmail.com>
+
+	Charset fixed + new translations
+
+2007-01-17  Pierre Lemmet  <plemmet@gmail.com>
+
+	Deleting useless pictures
+
+2007-01-16  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Bug fix
+
+2007-01-15  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added "ip_flood" filter
+
+2007-01-08  Pierre Lemmet  <plemmet@gmail.com>
+
+	Fixed double utf8 decoding bug
+
+2007-01-05  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Add user confirmation for PERL interpreter location (to allow using other PERL interpreter than the system one, for those using LAMPP for example)
+
+2007-01-05  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Replace use of ED editor by perl calls to replace string in files
+
+2007-01-03  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Add check for SOAP::Lite module to use OCS SOAP Interface. Add new 1.0 final modules
+
+2007-01-03  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Add SETUP_LOG variable to specify setup log file. Add check for SOAP::Lite module to use OCS SOAP Interface. Minor bug fixes
+
+2006-12-29  Pierre Lemmet  <plemmet@gmail.com>
+
+	Fixed drop table tag bug
+
+2006-12-29  Pierre Lemmet  <plemmet@gmail.com>
+
+	Fixed tag search problem
+
+2006-12-21  Pierre Lemmet  <plemmet@gmail.com>
+
+	PRE OCS V1.0 FINALE
+
+2006-12-20  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Fixed case sensitive bug
+
+2006-12-20  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Fixed typo
+
+2006-12-20  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Fixed typo
+
+2006-12-20  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added vista and WIN2003 to ipdiscover OS
+
+2006-12-18  Pierre Lemmet  <plemmet@gmail.com>
+
+	Added CVS header
+
+2006-12-13  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Fixed a bug with the duplicates MAC detection
+
+2006-12-12  Pierre Lemmet  <plemmet@gmail.com>
+
+	Fixed download history table creation problem
+
+2006-12-12  Pierre Lemmet  <plemmet@gmail.com>
+
+	- CVS header tidying
+
+2006-12-12  Pierre Lemmet  <plemmet@gmail.com>
+
+	- Added CVS header
+
+2006-12-11  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	RC3-1 update
+
+2006-12-10  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added download duplicate callback
+
+2006-12-10  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added packages history handling
+	Added download_history table
+
+2006-12-08  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added ipdiscovery latency
+
+2006-12-05  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Added user domain to inventory
+
+2006-11-29  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Updates by David Nalley
+
+2006-11-21  Emmanuel Guillory  <emmanuel.guillory@free.fr>
+
+	size ok
+
+2006-11-21  Emmanuel Guillory  <emmanuel.guillory@free.fr>
+
+	Size error
+
+2006-11-20  Pierre Lemmet  <plemmet@gmail.com>
+
+	- Fixed search with registry and software bug
+
+2006-11-20  Pierre Lemmet  <plemmet@gmail.com>
+
+	- Added client and package uploading interface
+
+2006-11-04  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Remove WEB_SERVICE_ENABLED insert option
+
+2006-11-04  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Fix bug line 263, replace name='NOTIFY_CAN_DELAY' by id='NEED_DONE_ACTION'
+
+2006-11-04  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Add turkish language
+
+2006-10-30  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Changed history handling
+	Addded NAME and TAG to META
+	Added reset to checkum
+	Added dico_soft handler when querying a computer
+	Added version suffix to every published methods
+	Minor changes
+
+2006-10-30  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	process system users like Inventory.pm
+
+2006-10-26  Pierre Lemmet  <plemmet@gmail.com>
+
+	Fixed WEB_SERVICE_ENABLED update Bug
+
+2006-10-26  Pierre Lemmet  <plemmet@gmail.com>
+
+	GUI VERSION updated
+
+2006-10-24  Pierre Lemmet  <plemmet@gmail.com>
+
+	changelog update
+
+2006-10-24  Pierre Lemmet  <plemmet@gmail.com>
+
+	Not needed
+
+2006-10-24  Pierre Lemmet  <plemmet@gmail.com>
+
+	- Removed debugging output when deleting computers
+
+2006-10-24  Pierre Lemmet  <plemmet@gmail.com>
+
+	- Added registry key column when searching registry
+	- Added "exactly" in registry searching
+	- Added monitor manufacturer searching
+	- Added monitor caption searching
+	- Added 3 lines in each language file (must be tranlated)
+	- Fixed search problem with registry
+	- Fixed search auto deployment success problem
+
+2006-10-18  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Keeping userid with duplicates
+	Fix a bug with Example module
+
+2006-10-17  Pierre Lemmet  <plemmet@gmail.com>
+
+	Added WEB_SERVICE_ENABLED On/Off button
+
+2006-10-17  Pierre Lemmet  <plemmet@gmail.com>
+
+	- Added russian translation
+	- Added charset support (must be line number 0 in language.txt file)
+
+2006-10-16  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added trace_deleted access to web service
+
+2006-10-12  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added WEB_SERVICE_ENABLED option
+	Removed "use constant" pragma from begin
+
+2006-10-11  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Change owner of OCS_LOG_DIRECTORY (/var/log/ocsinventory-NG) from root to Apache account, to prevent Mandriva msec setting it read only for Apache web server
+
+2006-10-09  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Do not update USERID if current is SYSTEM or LOCALSYSTEM
+
+2006-10-09  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added accountinfo in get_computers_V1 web service function (INVENTORY only)
+
+2006-10-09  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Web service:
+	=> set/read a config parameter
+	=> get a dico_soft element
+
+2006-10-04  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added dtd for get_computers_V1()
+	Added <ASKING_FOR/> tag to select type of data requested
+	Few minor changes
+
+2006-10-04  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added <BEGIN/> tag to request
+	Few changes and comments
+
+2006-10-03  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Removing debugging statement
+
+2006-10-03  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added database specific fields in <HARDWARE /> section
+
+2006-10-03  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Quoted sql strings
+
+2006-10-03  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	web service .conf update
+
+2006-10-03  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	First version of ocs web service
+
+2006-10-02  Pierre Lemmet  <plemmet@gmail.com>
+
+	Fixed "back" problem with package affectation
+
+2006-09-20  Pierre Lemmet  <plemmet@gmail.com>
+
+	*** empty log message ***
+
+2006-09-20  Pierre Lemmet  <plemmet@gmail.com>
+
+	- Fixed computer details page name
+	- Fixed memory bug in computer details
+	- Fixed space problem in preferences.php
+	- Added blank picture
+
+2006-09-18  Pierre Lemmet  <plemmet@gmail.com>
+
+	Added orphan removing code to installer.
+
+2006-09-12  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Add files
+
+2006-09-12  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added Example.pm server module to help people to create their own. It acts as documentation
+	Added skeleton of Filter.pm, to filter request received by ocs server (avoid flood, attacks, implement organisation filters...)
+
+2006-09-12  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added preinventory hook
+
+2006-09-03  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Fixed speliing mistake in portuguese
+
+2006-09-03  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Show column NAME into storage to fix bug ID 1549890, show column VOLUMN into Drives, update last field name to Path into softwares
+
+2006-08-29  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Goneri patch
+
+2006-08-09  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Add check for ED editor
+
+2006-08-02  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Add write Apache group write permission to file ocsreports/dbconfig.inc.php, if it exists
+
+2006-08-01  Pierre Lemmet  <plemmet@gmail.com>
+
+	corrected md5_file problem
+	corrected return problems when setting custom frequency manually
+	corrected mismatch bug when creating packages ( store => command )
+	don't test if file are downloadable if there is no fragment
+
+2006-07-27  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	iCVS: ----------------------------------------------------------------------
+	Now try to identify the right activated package fordownload event: notification
+
+2006-07-20  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Fix call to md5_file for being PHP 4 compliant
+
+2006-07-20  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Replace $HTTP_POST_FILES by $_FILES to be PHP 4.1 or higher compliant, including PHP 5+
+
+2006-07-05  Pierre Lemmet  <plemmet@gmail.com>
+
+	*** empty log message ***
+
+2006-07-05  Pierre Lemmet  <plemmet@gmail.com>
+
+	*** empty log message ***
+
+2006-07-03  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Create directory /download in administration console with write access to apache web server
+
+2006-06-30  Pierre Lemmet  <plemmet@gmail.com>
+
+	*** empty log message ***
+
+2006-06-30  Pierre Lemmet  <plemmet@gmail.com>
+
+	Pre RC3
+
+2006-06-30  Pierre Lemmet  <plemmet@gmail.com>
+
+	Pre RC3
+
+2006-06-30  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Default values adjusted
+
+2006-06-30  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2006-06-29  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Add variable for /etc/logrotate.d directory, fix some bugs under RH AS 2.1
+
+2006-06-19  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added windprodkey feature
+
+2006-06-14  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Removed reference to deviceid in devices table
+	Added ipdiscover forced by admin (per computer)
+	Added ipdiscover refused by admin (per computer)
+
+2006-06-13  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Frequency was computed with LASTCOME instead of LASTDATE
+
+2006-06-08  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2006-06-05  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Add detection af required perl modules in Communication and Administration server setup
+
+2006-06-02  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Updated download location mechanism
+
+2006-05-30  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Fixed a registry duplicate bug
+
+2006-05-22  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Few changes
+
+2006-05-05  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Updated download table
+	Updates PROLOG_FREQ default value
+
+2006-04-26  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added INVENTORY_TRANSACTION switch
+
+2006-04-25  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added ID error catching in _context
+
+2006-04-25  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Fixed registry bug
+
+2006-04-15  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Update to rotate logs daily
+
+2006-04-13  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Transaction optimized (locks)
+
+2006-04-12  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added PROLOG_FREQ
+
+2006-04-12  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Fixed over/better error processing
+
+2006-04-12  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	...
+
+2006-04-12  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Fixed get DEVICEID in inventory inventory phase
+	Fixed tag error in ipdiscover election (SUBNET->IPSUBNET)
+	Removed IPADDRESS and IPSUBNET field in network_devices
+
+2006-04-11  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Modified network_devices
+
+2006-04-11  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added x-forwarded-for
+	Added retrieving of network devices
+
+2006-04-06  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	ocsbase.sql updated
+
+2006-04-06  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Fixed problem with download_message and lock
+	Added download server notification
+
+2006-04-05  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Download implemented
+	Optimized Inventory (diff => checksum)
+	ocsbase.sql now retrieves NETWORK_DEVICES and put it in network_devices
+
+2006-03-29  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Update README for new setup procedure
+
+2006-03-27  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Everybody at home !
+
+2006-03-27  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added download config keys and download tables
+
+2006-03-25  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	Added cycle latency
+
+2006-03-24  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Fixed a few bugs
+	Updated database script
+	Added Download module
+	Added changes for download on ocsbase.sql
+	Added Options in ocsinventory.conf
+
+2006-03-20  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Update for Communication server log rotation, and configuration file comments and default values
+
+2006-03-19  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	OCS Inventory NG 1.0 RC3 New setup
+
+2006-03-19  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	OCS Inventory NG 1.0 RC3 New directory structure
+
+2006-03-19  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Database mdp removed from apache env
+	Bug with ipdiscover evaluation fixed
+	Constants and Modperl wrappers are now in teir own packages
+
+2006-03-17  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added name field in netmap
+	Fixed bug with duplucates and a few bugs related to database schemas
+
+2006-03-16  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Continuation of server update
+	Now compatible with the new database schemas
+	A few optimizations
+
+2006-03-14  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Remove FOREIGN KEYS from ocsbase (will wait customized install script)
+	Continuation of server update
+
+2006-03-13  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Typo
+
+2006-03-13  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Changing cvs structure
+	New perl module installer
+	New apache ocsinventory.conf
+	Modperl implementations are now hidden in wrappers (see Modperl1 and 2, under Server)
+	First version with ocs pluggable modules capability (Only server-side at this moment)
+	Added foreign keys when updating database
+	THE FOREIGN KEYS CONSTRAINT ARE NOT YET HANDLED
+	DO NOT USE ocsbase.sql FOR THE MOMENT
+
+2006-03-09  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added download option
+
+2006-03-09  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added options in ocsbase.sql
+
+2006-03-09  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	Update for polish language automatic detection in function getBrowserLang
+
+2006-03-07  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Polish translation added
+	Thanks to Marcin Urban.
+
+2006-03-07  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	INNODB and many sql optimizations
+	Bug with duplicates when old computer has checksum NULL fixed
+
+2006-03-03  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2006-02-27  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Migration from MyISAM to INNODB, to avoid waiting queue on big organization.
+
+2006-02-23  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	GetBrowserLang corrigé
+
+2006-02-16  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	GUI to 4014
+
+2006-02-15  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	update GUI to 4013
+
+2006-02-15  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Modify headers for cpu and memories computer details
+
+2006-02-15  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	line 340 duplicated
+
+2006-02-14  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Added keeping old QUALITY,FIDELITY and CHECKSUM in duplicates
+
+2006-02-14  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Trace deleted/duplicates in GUI
+	Update language files
+
+2006-02-10  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Bug with defalut language fixed
+
+2006-02-10  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Implement the trace_deleted feature (keep trace of deleted and equivalent on duplicates)
+	Essentially for GLPI purpose
+
+2006-02-09  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	verification old_device == device
+
+2006-02-09  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Implementation des flags changement de configuration (hash)
+
+2006-02-08  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	portuguese translation added
+	
+	Thanks to Nuno Rua.
+
+2006-02-08  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Ocsinventory.pm: optimisation _hardware
+	ocsbase.sql: modifications base pour stockage des flags de diff
+	
+	Ocsinventory.pm:  _hardware optimization
+	ocsbase.sql: database update to manage the computer's changes flags
+
+2006-01-27  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	*** empty log message ***
+
+2006-01-24  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Update 4012 ver
+
+2006-01-23  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Traduction anglaise du dictionnaire
+	Ajout de la langue italienne
+	
+	English dictionnary translation
+	Italian language added
+	
+	Thanks to Franco Malerba
+
+2006-01-23  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Some forgotten Debugging code removed
+
+2006-01-23  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	correction requete SQL
+
+2006-01-23  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	4011 commit
+
+2006-01-19  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	RC2
+
+2006-01-17  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Update sql script
+
+2006-01-17  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Remove warning mode
+
+2006-01-17  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	MAJ GUI 4011
+
+2006-01-13  Pascal Danek  <pascal@ocsinventory-ng.org>
+
+	
+	Bug with binary->ascii translation for netmask fixed
+	
+	Bug de traduction du masque binaire en ascii corrigé
+
+2005-12-13  Didier Liroulet  <didier@ocsinventory-ng.org>
+
+	OCS Inventory 1.0 RC1 (2005-12-10)
+

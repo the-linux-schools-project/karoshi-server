@@ -1,0 +1,270 @@
+#!/bin/bash
+#Copyright (C) 2012 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dg_room_controls_cgi
+then
+echo `date`: dg_room_controls - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/dg_room_controls2_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_room_controls2.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $dg_room_controls2_cgi'check' ]
+then
+echo `date`: dg_room_controls - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/dg_room_controls2_cgi
+then
+echo `date`: dg_room_controls - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/tech_checksums/dg_room_controls2_cgi
+MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/dg_room_controls2.cgi | cut -d' ' -f1`
+[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+if [ $MD5SUM2'check' != $dg_room_controls2_cgi'check' ]
+then
+echo `date`: dg_room_controls - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/staff_checksums/dg_room_controls2_cgi
+then
+echo `date`: dg_room_controls - No staff MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/staff_checksums/dg_room_controls2_cgi
+MD5SUM3=`md5sum /var/www/cgi-bin_karoshi/staff/dg_room_controls2.cgi | cut -d' ' -f1`
+[ $MD5SUM3'null' = null ] && MD5SUM3=not_set
+if [ $MD5SUM3'check' != $dg_room_controls2_cgi'check' ]
+then
+echo `date`: dg_room_controls - Incorrect staff MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: dg_room_controls - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: dg_room_controls - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+LOCATION=`echo "$DATA" | cut -s -d: -f4`
+ACTION=`echo "$DATA" | cut -s -d: -f5`
+ASSET=`echo "$DATA" | cut -s -d: -f6`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ] && [ $REMOTE_MD5'check' != $MD5SUM3'check' ]
+then
+echo `date`: dg_room_controls - Not called by dg_room_controls.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: dg_room_controls - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: dg_room_controls - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $LOCATION'null' = null ]
+then
+echo `date`: dg_room_controls - Blank location by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $ACTION'null' = null ]
+then
+echo `date`: dg_room_controls - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $ASSET'null' = null ]
+then
+echo `date`: dg_room_controls - Blank asset by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+echo `date`: dg_room_controls - action: $ACTION asset: $ASSET location: $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+
+PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+
+[ ! -d /opt/karoshi/server_network/internet_room_controls/$LOCATION ] && mkdir -p /opt/karoshi/server_network/internet_room_controls/$LOCATION
+
+
+function get_asset_info {
+source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
+}
+
+function allowasset {
+get_asset_info
+if [ $PROXYSERVER = $HOSTNAME ]
+then
+#Allow tcpip
+if [ $TCPIP1"null" != null ]
+then
+RULECOUNT=`iptables -nL dynamic | grep -c -w $TCPIP1`
+if [ $RULECOUNT -gt 0 ]
+then
+iptables -D dynamic -p tcp --dport 3128 -s $TCPIP1 -j DROP
+fi
+fi
+#Allow mac1
+if [ $MAC1"null" != null ]
+then
+RULECOUNT=`iptables -nL dynamic | grep -i -c -w $MAC1`
+if [ $RULECOUNT -gt 0 ]
+then
+iptables -D dynamic -p tcp --dport 3128 -m mac --mac-source $MAC1 -j DROP
+fi
+fi
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
+#Allow tcpip
+if [ '$TCPIP1'"null" != null ]
+then
+RULECOUNT=`iptables -nL dynamic | grep -c -w '$TCPIP1'`
+if [ $RULECOUNT -gt 0 ]
+then
+iptables -D dynamic -p tcp --dport 3128 -s '$TCPIP1' -j DROP
+fi
+fi
+#Allow mac1
+if [ '$MAC1'"null" != null ]
+then
+RULECOUNT=`iptables -nL dynamic | grep -i -c -w '$MAC1'`
+if [ $RULECOUNT -gt 0 ]
+then
+iptables -D dynamic -p tcp --dport 3128 -m mac --mac-source '$MAC1' -j DROP
+fi
+fi
+'
+fi
+[ -f /opt/karoshi/server_network/internet_room_controls/$LOCATION/$ASSET ] && rm -f /opt/karoshi/server_network/internet_room_controls/$LOCATION/$ASSET
+}
+
+function denyasset {
+get_asset_info
+
+if [ $PROXYSERVER = $HOSTNAME ]
+then
+BAN_FLAG=no
+#Ban mac1
+if [ $MAC1"null" != null ]
+then
+RULECOUNT=`iptables -nL dynamic | grep -i -c -w $MAC1`
+if [ $RULECOUNT = 0 ]
+then
+iptables -A dynamic -p tcp --dport 3128 -m mac --mac-source $MAC1 -j DROP
+BAN_FLAG=yes
+fi
+fi
+#Ban TCPIP if we dont have the mac address
+if [ $TCPIP1"null" != null ] && [ $BAN_FLAG = no ]
+then
+RULECOUNT=`iptables -nL dynamic | grep -c -w $TCPIP1`
+if [ $RULECOUNT = 0 ]
+then
+iptables -A dynamic -p tcp --dport 3128 -s $TCPIP1 -j DROP
+BAN_FLAG=yes
+fi
+fi
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
+BAN_FLAG=no
+#Ban mac1
+if [ '$MAC1'"null" != null ]
+then
+RULECOUNT=`iptables -nL dynamic | grep -i -c -w '$MAC1'`
+if [ $RULECOUNT = 0 ]
+then
+iptables -A dynamic -p tcp --dport 3128 -m mac --mac-source '$MAC1' -j DROP
+BAN_FLAG=yes
+fi
+fi
+#Ban TCPIP if we dont have the mac address
+if [ '$TCPIP1'"null" != null ] && [ $BAN_FLAG = no ]
+then
+RULECOUNT=`iptables -nL dynamic | grep -c -w '$TCPIP1'`
+if [ $RULECOUNT = 0 ]
+then
+iptables -A dynamic -p tcp --dport 3128 -s '$TCPIP1' -j DROP
+BAN_FLAG=yes
+fi
+fi
+'
+fi
+touch /opt/karoshi/server_network/internet_room_controls/$LOCATION/$ASSET
+}
+
+if [ $ACTION = deny ]
+then
+denyasset
+fi
+
+if [ $ACTION = allow ]
+then
+allowasset
+fi
+
+if [ $ACTION = allowall ] || [ $ACTION = denyall ]
+then
+if [ -d /opt/karoshi/asset_register/locations/$LOCATION ]
+then
+if [ `ls -1 /opt/karoshi/asset_register/locations/$LOCATION | wc -l` -gt 0 ]
+then
+for ASSETS in /opt/karoshi/asset_register/locations/$LOCATION/*
+do
+ASSET=`basename $ASSETS`
+if [ $ACTION = allowall ]
+then
+allowasset
+else
+denyasset
+fi
+done
+fi
+fi
+fi
+
+
+

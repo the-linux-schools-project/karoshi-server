@@ -1,0 +1,35 @@
+#!/bin/bash
+#configure_external_network
+source /etc/sysconfig/network
+source /opt/karoshi/serversetup/variables/external_network_card
+####################
+#Set Computer name and gateway
+####################
+echo HOSTNAME=$HOSTNAME > /etc/sysconfig/network
+echo NETWORKING=yes >> /etc/sysconfig/network
+echo GATEWAY=$GATEWAY >> /etc/sysconfig/network
+echo GATEWAYDEV=$DEVICE >> /etc/sysconfig/network
+echo NISDOMAIN=linuxgridnis >> /etc/sysconfig/network
+####################
+#Set Nameserver
+####################
+echo nameserver $nameserver > /etc/resolv.conf
+####################
+#Set TCP/IP
+####################
+echo DEVICE=$DEVICE > /etc/sysconfig/network-scripts/ifcfg-$DEVICE
+echo BOOTPROTO=static >> /etc/sysconfig/network-scripts/ifcfg-$DEVICE
+echo IPADDR=$IPADDR >> /etc/sysconfig/network-scripts/ifcfg-$DEVICE
+echo NETMASK=$NETMASK >> /etc/sysconfig/network-scripts/ifcfg-$DEVICE
+#echo BROADCAST=${!BROADCAST} >> /etc/sysconfig/network-scripts/ifcfg-$DEVICE
+echo ONBOOT=yes >> /etc/sysconfig/network-scripts/ifcfg-$DEVICE
+echo METRIC=10 >> /etc/sysconfig/network-scripts/ifcfg-$DEVICE
+echo MII_NOT_SUPPORTED=no >> /etc/sysconfig/network-scripts/ifcfg-$DEVICE
+echo USERCTL=no >> /etc/sysconfig/network-scripts/ifcfg-$DEVICE
+###################
+#Change TCP/IP
+###################
+ifdown $DEVICE
+ifup $DEVICE
+
+

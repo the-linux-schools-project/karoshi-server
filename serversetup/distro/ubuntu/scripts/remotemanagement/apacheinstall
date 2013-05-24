@@ -1,0 +1,28 @@
+#!/bin/bash
+#apacheinstall
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/remotemanagement/remotemanagementsoftware
+DEBCONF_DB_FALLBACK=File{/opt/karoshi/serversetup/distro/$DISTROCHOICE/colossus/configfiles/debconf/postfixinstall.conf}
+
+[ ! -f $HOME/.tempdata/output ] || rm -f $HOME/.tempdata/output
+touch $HOME/.tempdata/output
+function getxdialogpid {
+XDIALOGPID=`ps -C Xdialog -o pid= -o command= | grep Karoshi_Install_Software | sed 's/ //g' |cut -dX -f1`
+}
+function installsoftware {
+apt-get install -y $APACHESOFTWARE 1>>$HOME/.tempdata/output
+getxdialogpid
+if [ $XDIALOGPID'null' != null ]
+then
+kill $XDIALOGPID
+fi
+}
+installsoftware | Xdialog --wrap --icon $ICON --rc-file $RCFILE --no-ok --no-cancel --title "Karoshi_Install_Software" --tailbox $HOME/.tempdata/output 12 50
+case $? in
+0)
+;;
+1)
+;;
+255)
+;;
+esac

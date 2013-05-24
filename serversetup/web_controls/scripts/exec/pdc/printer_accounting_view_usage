@@ -1,0 +1,289 @@
+#!/bin/bash
+#Copyright (C) 2011 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/printer_accounting_view_usage_cgi
+then
+echo `date`: printer_accounting_view_usage - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/printer_accounting_view_usage_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printer_accounting_view_usage.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $printer_accounting_view_usage_cgi'check' ]
+then
+echo `date`: printer_accounting_view_usage - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/printer_accounting_view_usage_cgi
+then
+echo `date`: printer_accounting_view_usage - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/tech_checksums/printer_accounting_view_usage_cgi
+MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/printer_accounting_view_usage.cgi | cut -d' ' -f1`
+[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+if [ $MD5SUM2'check' != $printer_accounting_view_usage_cgi'check' ]
+then
+echo `date`: printer_accounting_view_usage - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: printer_accounting_view_usage - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: printer_accounting_view_usage - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+NAME=`echo "$DATA" | cut -s -d: -f4`
+TYPE=`echo "$DATA" | cut -s -d: -f5`
+MONTH=`echo "$DATA" | cut -s -d: -f6`
+YEAR=`echo "$DATA" | cut -s -d: -f7`
+MOBILE=`echo "$DATA" | cut -s -d: -f8`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: printer_accounting_view_usage - Not called by printer_accounting_view_usage.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: printer_accounting_view_usage - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: printer_accounting_view_usage - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: printer_accounting_view_usage - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+echo `date`: printer_accounting_view_usage "for" $NAME $MONTH $YEAR by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printer_accounting ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printer_accounting
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+ICON1=/images/submenus/printer/edit_printer_limits.png
+PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/printserver`
+
+PRIMARYGROUP=$NAME
+if [ $TYPE = user ]
+then
+PRIMARYGROUP=`id -g -n $NAME`
+LIMIT="-"
+[ -f /opt/karoshi/server_network/printer_accounting/quotas/$NAME'_'user_quota ] && LIMIT=`sed -n 1,1p /opt/karoshi/server_network/printer_accounting/quotas/$NAME'_'user_quota | tr -cd 0-9`
+GROUPLIMIT=`sed -n 1,1p /opt/karoshi/server_network/printer_accounting/quotas/$PRIMARYGROUP'_'group_quota | tr -cd 0-9`
+fi
+
+WIDTH1=180
+TABLECLASS=standard
+if [ $MOBILE = yes ]
+then
+WIDTH1=85
+TABLECLASS=mobilestandard
+fi
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: '$WIDTH1'px;"><b>'$USERNAMEMSG'</b></td><td><b>'$YEARMSG'</b></td><td><b>'$MONTHMSG'</b></td><td><b>'$TOTALMSG'</b></td></tr>'
+
+if [ $PRINTSERVER = $HOSTNAME ] && [ $TYPE = user ]
+then
+if [ $MONTH = all ]
+then
+if [ -f /opt/karoshi/server_network/printer_accounting/usage/$NAME ]
+then
+grep ^$YEAR, /opt/karoshi/server_network/printer_accounting/usage/$NAME | cut -d, -f1-3 | sed "s/^/<tr><td>$NAME<\/td><td>/g" | sed "s/,/<\/td><td>/g" | sed "s/$/<\/td><\/tr>/g"
+TOTALUSAGE=`sed -n 1,1p /opt/karoshi/server_network/printer_accounting/accounting/$NAME | tr -cd 0-9`
+
+echo "<tr><td style=\"vertical-align: top; height: 15px;\"></td></tr>
+<tr><td style=\"vertical-align: top; \"><b>$USERLIMITMSG</b></td><td></td><td></td><td style=\"vertical-align: top; \">$LIMIT</td>
+<td style=\"vertical-align: top; \">
+<form name=\"myform\" action=\"printer_accounting_edit_limits_fm.cgi\" method=\"post\">
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_NAME_$NAME"_"TYPE_user_LIMIT"_"$LIMIT"_"TOTAL_$TOTALUSAGE"_"GROUPLIMIT_$GROUPLIMIT"_"\" type="image" class="images" src=\"$ICON1\" value=\"\"><span>$EDITLIMITMSG2</span></a></form></td>
+</tr>
+<tr><td style=\"vertical-align: top; \"><b>$GROUPLIMITMSG</b></td><td></td><td></td><td style=\"vertical-align: top; \">$GROUPLIMIT</td>
+<td style=\"vertical-align: top; \">
+<form name=\"myform\" action=\"printer_accounting_edit_limits_fm.cgi\" method=\"post\">
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_NAME_$PRIMARYGROUP"_"TYPE_group_LIMIT"_"$GROUPLIMIT"_"\" type="image" class="images" src=\"$ICON1\" value=\"\"><span>$EDITLIMITMSG3</span></a></form></td>
+</tr>
+<tr><td><b>$TOTALMSG</b></td><td></td><td></td><td><b>$TOTALUSAGE</b></td></tr>
+"
+
+else
+echo "<tr><td>"$ERRORMSG9"</td></tr>"
+fi
+else
+if [ -f /opt/karoshi/server_network/printer_accounting/usage/$NAME ]
+then
+TOTALUSAGE=`sed -n 1,1p /opt/karoshi/server_network/printer_accounting/accounting/$NAME | tr -cd 0-9`
+grep ^$YEAR,$MONTH, /opt/karoshi/server_network/printer_accounting/usage/$NAME | cut -d, -f1-3 | sed "s/^/<tr><td>$NAME<\/td><td>/g" | sed "s/,/<\/td><td>/g" | sed "s/$/<\/td><\/tr>/g"
+echo "<tr><td style=\"vertical-align: top; height: 15px;\"></td></tr>
+<tr><td style=\"vertical-align: top; \"><b>$USERLIMITMSG</b></td><td></td><td></td><td style=\"vertical-align: top; \">$LIMIT</td>
+<td style=\"vertical-align: top; \">
+<form name=\"myform\" action=\"printer_accounting_edit_limits_fm.cgi\" method=\"post\">
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_NAME_$NAME"_"TYPE_user_LIMIT"_"$LIMIT"_"TOTAL_$TOTALUSAGE"_"GROUPLIMIT_$GROUPLIMIT"_"\" type="image" class="images" src=\"$ICON1\" value=\"\"><span>$EDITLIMITMSG2</span></a></form></td>
+</tr>
+<tr><td style=\"vertical-align: top; \"><b>$GROUPLIMITMSG</b></td><td></td><td></td><td style=\"vertical-align: top; \">$GROUPLIMIT</td>
+<td style=\"vertical-align: top; \">
+<form name=\"myform\" action=\"printer_accounting_edit_limits_fm.cgi\" method=\"post\">
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_NAME_$PRIMARYGROUP"_"TYPE_group_LIMIT"_"$GROUPLIMIT"_"\" type="image" class="images" src=\"$ICON1\" value=\"\"><span>$EDITLIMITMSG2</span></a></form></td>
+</tr>
+<tr><td><b>$TOTALMSG</b></td><td></td><td></td><td><b>$TOTALUSAGE</b></td></tr>"
+else
+echo "<tr><td>"$ERRORMSG9"</td></tr>"
+fi
+fi
+fi
+
+if [ $PRINTSERVER = $HOSTNAME ] && [ $TYPE = group ]
+then
+if [ $MONTH = all ]
+then
+for USERNAME in `getent group $NAME | sed "s/,/ /g"`
+do
+if [ -f /opt/karoshi/server_network/printer_accounting/usage/$USERNAME ]
+then
+grep ^$YEAR, /opt/karoshi/server_network/printer_accounting/usage/$USERNAME | cut -d, -f1-3 | sed "s/^/<tr><td>$USERNAME<\/td><td>/g" | sed "s/,/<\/td><td>/g" | sed "s/$/<\/td><\/tr>/g"
+fi
+done
+else
+for USERNAME in `getent group $NAME | sed "s/,/ /g"`
+do
+if [ -f /opt/karoshi/server_network/printer_accounting/usage/$USERNAME ]
+then
+grep ^$YEAR,$MONTH, /opt/karoshi/server_network/printer_accounting/usage/$USERNAME | cut -d, -f1-3 | sed "s/^/<tr><td>$USERNAME<\/td><td>/g" | sed "s/,/<\/td><td>/g" | sed "s/$/<\/td><\/tr>/g"
+fi
+done
+fi
+fi
+
+
+
+if [ $PRINTSERVER != $HOSTNAME ] && [ $TYPE = user ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PRINTSERVER '
+if [ '$MONTH' = all ]
+then
+if [ -f /opt/karoshi/server_network/printer_accounting/usage/'$NAME' ]
+then
+grep ^'$YEAR', /opt/karoshi/server_network/printer_accounting/usage/'$NAME' | cut -d, -f1-3 | sed "s/^/<tr><td>'$NAME'<\/td><td>/g" | sed "s/,/<\/td><td>/g" | sed "s/$/<\/td><\/tr>/g"
+TOTALUSAGE=`sed -n 1,1p /opt/karoshi/server_network/printer_accounting/accounting/'$NAME' | tr -cd 0-9`
+
+echo "<tr><td style=\"vertical-align: top; height: 15px;\"></td></tr>
+<tr><td style=\"vertical-align: top; \"><b>'$USERLIMITMSG'</b></td><td></td><td></td><td style=\"vertical-align: top; \">'$LIMIT'</td>
+<td style=\"vertical-align: top; \">
+<form name=\"myform\" action=\"printer_accounting_edit_limits_fm.cgi\" method=\"post\">
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_NAME_'$NAME'"_"TYPE_user_LIMIT"_"'$LIMIT'"_"TOTAL_$TOTALUSAGE"_"GROUPLIMIT_'$GROUPLIMIT'"_"\" type="image" class="images" src=\"'$ICON1'\" value=\"\"><span>'$EDITLIMITMSG2'</span></a></form></td>
+</tr>
+<tr><td style=\"vertical-align: top; \"><b>'$GROUPLIMITMSG'</b></td><td></td><td></td><td style=\"vertical-align: top; \">'$GROUPLIMIT'</td>
+<td style=\"vertical-align: top; \">
+<form name=\"myform\" action=\"printer_accounting_edit_limits_fm.cgi\" method=\"post\">
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_NAME_'$PRIMARYGROUP'"_"TYPE_group_LIMIT"_"'$GROUPLIMIT'"_"\" type="image" class="images" src=\"'$ICON1'\" value=\"\"><span>'$EDITLIMITMSG3'</span></a></form></td>
+</tr>
+<tr><td><b>'$TOTALMSG'</b></td><td></td><td></td><td><b>$TOTALUSAGE</b></td></tr>"
+
+else
+
+echo "<tr><td>"'$ERRORMSG9'"</td></tr>"
+fi
+else
+if [ -f /opt/karoshi/server_network/printer_accounting/usage/'$NAME' ]
+then
+TOTALUSAGE=`sed -n 1,1p /opt/karoshi/server_network/printer_accounting/accounting/'$NAME' | tr -cd 0-9`
+grep ^'$YEAR','$MONTH', /opt/karoshi/server_network/printer_accounting/usage/'$NAME' | cut -d, -f1-3 | sed "s/^/<tr><td>'$NAME'<\/td><td>/g" | sed "s/,/<\/td><td>/g" | sed "s/$/<\/td><\/tr>/g"
+TOTALUSAGE=`sed -n 1,1p /opt/karoshi/server_network/printer_accounting/accounting/'$NAME' | tr -cd 0-9`
+
+echo "<tr><td style=\"vertical-align: top; height: 15px;\"></td></tr>
+<tr><td style=\"vertical-align: top; \"><b>'$USERLIMITMSG'</b></td><td></td><td></td><td style=\"vertical-align: top; \">'$LIMIT'</td>
+<td style=\"vertical-align: top; \">
+<form name=\"myform\" action=\"printer_accounting_edit_limits_fm.cgi\" method=\"post\">
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_NAME_'$NAME'"_"TYPE_user_LIMIT"_"'$LIMIT'"_"TOTAL_$TOTALUSAGE"_"GROUPLIMIT_'$GROUPLIMIT'"_"\" type="image" class="images" src=\"'$ICON1'\" value=\"\"><span>'$EDITLIMITMSG2'</span></a></form></td>
+</tr>
+<tr><td style=\"vertical-align: top; \"><b>'$GROUPLIMITMSG'</b></td><td></td><td></td><td style=\"vertical-align: top; \">'$GROUPLIMIT'</td>
+<td style=\"vertical-align: top; \">
+<form name=\"myform\" action=\"printer_accounting_edit_limits_fm.cgi\" method=\"post\">
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_NAME_'$PRIMARYGROUP'"_"TYPE_group_LIMIT"_"'$GROUPLIMIT'"_"\" type="image" class="images" src=\"'$ICON1'\" value=\"\"><span>'$EDITLIMITMSG3'</span></a></form></td>
+</tr>
+<tr><td><b>'$TOTALMSG'</b></td><td></td><td></td><td><b>$TOTALUSAGE</b></td></tr>"
+
+
+else
+echo "<tr><td>"'$ERRORMSG9'"</td></tr>"
+fi
+fi
+'
+fi
+
+if [ $PRINTSERVER != $HOSTNAME ] && [ $TYPE = group ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PRINTSERVER '
+if [ '$MONTH' = all ]
+then
+for USERNAME in `getent group '$NAME' | sed "s/,/ /g"`
+do
+if [ -f /opt/karoshi/server_network/printer_accounting/usage/$USERNAME ]
+then
+grep ^'$YEAR', /opt/karoshi/server_network/printer_accounting/usage/$USERNAME | cut -d, -f1-3 | sed "s/^/<tr><td>$USERNAME<\/td><td>/g" | sed "s/,/<\/td><td>/g" | sed "s/$/<\/td><\/tr>/g"
+fi
+done
+else
+for USERNAME in `getent group '$NAME' | sed "s/,/ /g"`
+do
+if [ -f /opt/karoshi/server_network/printer_accounting/usage/$USERNAME ]
+then
+grep ^'$YEAR','$MONTH', /opt/karoshi/server_network/printer_accounting/usage/$USERNAME | cut -d, -f1-3 | sed "s/^/<tr><td>$USERNAME<\/td><td>/g" | sed "s/,/<\/td><td>/g" | sed "s/$/<\/td><\/tr>/g"
+fi
+done
+fi
+'
+fi
+echo "</tbody></table>"
+exit
+
+

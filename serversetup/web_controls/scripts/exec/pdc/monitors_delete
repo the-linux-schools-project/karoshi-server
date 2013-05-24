@@ -1,0 +1,144 @@
+#!/bin/bash
+#Copyright (C) 2007  The karoshi Team
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/monitors_delete_cgi
+then
+echo `date`: monitors_delete - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/monitors_delete_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/monitors_delete.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set1
+if [ $MD5SUM'check' != $monitors_delete_cgi'check' ]
+then
+echo `date`: monitors_delete - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: add_user - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-%'`
+if [ $DATA'null' = null ]
+then
+echo `date`: add_user - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+MONITOR=`echo "$DATA" | cut -s -d: -f4 | sed 's/+/_/g'`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: monitors_delete - Not called by monitors_delete.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: monitors_delete - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: monitors_delete - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: monitors_delete - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $MONITOR'null' = null ]
+then
+echo `date`: monitors_delete - Blank monitor by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+#Exit if no monitoring server has been set up.
+[ ! -f /opt/karoshi/server_network/monitoringserver ] && exit 103
+#Delete monitor
+MONITOR=`echo $MONITOR | sed 's/%25%25%25%25%25/_/g'`
+echo `date`: monitors_delete - Deleting $MONITOR by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+[ -f /opt/karoshi/server_network/mon/monitors/$MONITOR ] && rm -f /opt/karoshi/server_network/mon/monitors/$MONITOR
+[ -f /opt/karoshi/server_network/mon/monitors_disabled/$MONITOR ] && rm -f /opt/karoshi/server_network/mon/monitors_disabled/$MONITOR
+
+###############################
+#Make mon.cf file
+###############################
+if [ ! -f /opt/karoshi/server_network/mon/global ]
+then
+#Make mon global file
+######################
+# global options
+######################
+echo 'cfbasedir   = /etc/mon' > /opt/karoshi/server_network/mon/global
+echo 'pidfile     = /var/run/mon/mon.pid' >> /opt/karoshi/server_network/mon/global
+echo 'statedir    = /var/lib/mon/state.d' >> /opt/karoshi/server_network/mon/global
+echo 'logdir      = /var/lib/mon/log.d' >> /opt/karoshi/server_network/mon/global
+echo 'dtlogfile   = /var/lib/mon/log.d/downtime.log' >> /opt/karoshi/server_network/mon/global
+echo 'alertdir    = /usr/lib/mon/alert.d' >> /opt/karoshi/server_network/mon/global
+echo 'mondir      = /usr/lib/mon/mon.d' >> /opt/karoshi/server_network/mon/global
+echo 'maxprocs    = 20' >> /opt/karoshi/server_network/mon/global
+echo 'histlength  = 100' >> /opt/karoshi/server_network/mon/global
+echo 'randstart   = 60s' >> /opt/karoshi/server_network/mon/global
+echo 'authtype    = pam' >> /opt/karoshi/server_network/mon/global
+echo 'userfile    = /etc/mon/userfile' >> /opt/karoshi/server_network/mon/global
+echo 'dtlogging   = yes' >> /opt/karoshi/server_network/mon/global
+echo  >> /opt/karoshi/server_network/mon/global
+fi
+cat /opt/karoshi/server_network/mon/global /opt/karoshi/server_network/mon/monitors/* > /opt/karoshi/server_network/mon/mon.cf 2>/dev/null
+###############################
+#Transfer mon.cf to the monitoring server
+###############################
+MONITORING_SERVER=`sed -n 1,1p /opt/karoshi/server_network/monitoringserver`
+scp -o PasswordAuthentication=no -o ConnectTimeout=3 /opt/karoshi/server_network/mon/mon.cf root@$MONITORING_SERVER:/etc/mon/ 2>&1
+###############################
+#Restart Mon
+###############################
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $MONITORING_SERVER '
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_stop 1>/dev/null
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_start 1>/dev/null
+'
+exit
+

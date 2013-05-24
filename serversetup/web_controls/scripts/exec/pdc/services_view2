@@ -1,0 +1,205 @@
+#!/bin/bash
+#Copyright (C) 2011 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/services_view2_cgi
+then
+echo `date`: services_view2 - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/services_view2_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/services_view2.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $services_view2_cgi'check' ]
+then
+echo `date`: services_view2 - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: services_view2 - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: services_view2 - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -d: -f3`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+SERVERTYPE=`echo "$DATA" | cut -s -d: -f5`
+SERVERMASTER=`echo "$DATA" | cut -s -d: -f6`
+ACTION=`echo "$DATA" | cut -s -d: -f7`
+SERVICE=`echo "$DATA" | cut -s -d: -f8`
+
+if [ `echo $SERVERNAME | grep -c showallservers` -gt 0 ]
+then
+SERVERNAME2=allservers
+else
+SERVERNAME2=$SERVERNAME
+fi
+
+SERVERNAME=`echo $SERVERNAME | sed 's/showallservers//g'`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: services_view2 - Not called by services_view2.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: services_view2 - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: services_view2 - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVERNAME'null' = null ]
+then
+echo `date`: services_view2 - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVERTYPE'null' = null ]
+then
+echo `date`: services_view2 - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVICE'null' = null ]
+then
+echo `date`: services_view2 - Blank service by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVERTYPE = federatedslave ]
+then
+if [ $SERVERMASTER'null' = null ]
+then
+echo `date`: services_view2 - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: services_view2 - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+echo `date`: services_view2 $SERVERNAME $SERVICE $ACTION - by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+############################
+#Language
+############################
+LANGCHOICE=englishuk
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/services ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/system/services
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+source /opt/karoshi/serversetup/variables/distro
+
+function redirect {
+echo "<form action=\"services_view.cgi\" method=\"post\" id=\"servicesview\">
+<input type=\"hidden\" name=\"_SERVERNAME_$SERVERNAME2"_"SERVERTYPE_$SERVERTYPE"_"SERVERMASTER_$SERVERMASTER"_"\" value=\"\">
+</form>
+<script language=\"JavaScript\" type=\"text/javascript\">
+document.getElementById('servicesview').submit();
+</script>"
+exit
+}
+
+
+if [ $SERVERNAME = $HOSTNAME ]
+then
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/$SERVICE"_"$ACTION
+
+if [ $ACTION = start ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/$SERVICE
+fi
+if [ $ACTION = stop ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/$SERVICE
+fi
+
+redirect
+fi
+
+if [ $SERVERNAME != $HOSTNAME ]
+then
+if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
+then
+ssh -x -o PasswordAuthentication=no -o ConnectTimeout=4 $SERVERNAME '
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/'$SERVICE'"_"'$ACTION'
+
+if [ '$ACTION' = start ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/'$SERVICE'
+fi
+if [ '$ACTION' = stop ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/'$SERVICE'
+fi
+'
+redirect
+fi
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+ssh -x -o PasswordAuthentication=no -o ConnectTimeout=4 $SERVERMASTER '
+ssh -x -o PasswordAuthentication=no -o ConnectTimeout=4 '$SERVERNAME' '\''
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/'$SERVICE'"_"'$ACTION'
+
+if [ '$ACTION' = start ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/'$SERVICE'
+fi
+if [ '$ACTION' = stop ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/'$SERVICE'
+fi
+'\''
+'
+redirect
+fi
+exit
+

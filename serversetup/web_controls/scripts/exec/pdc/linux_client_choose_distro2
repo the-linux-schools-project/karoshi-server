@@ -1,0 +1,368 @@
+#!/bin/bash
+#Copyright (C) 2011 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/linux_client_choose_distro_cgi
+then
+echo `date`: linux_client_choose_distro - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/linux_client_choose_distro_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/linux_client_choose_distro.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $linux_client_choose_distro_cgi'check' ]
+then
+echo `date`: linux_client_choose_distro - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: linux_client_choose_distro - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: linux_client_choose_distro - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+DISTROCHOICE=`echo "$DATA" | cut -s -d: -f4`
+CONTROL=`echo "$DATA" | cut -s -d: -f5`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: linux_client_choose_distro - Not called by linux_client_choose_distro.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: linux_client_choose_distro - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: linux_client_choose_distro - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $DISTROCHOICE'null' = null ]
+then
+echo `date`: linux_client_choose_distro - Blank distribution choice by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: linux_client_choose_distro - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+##########################
+#Language
+##########################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/linux_client_upload_distro ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/client/linux_client_upload_distro
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+#Get distribution server
+DISTRIBUTIONSERVER=`sed -n 1,1p /opt/karoshi/server_network/distribution_server`
+#Get Distro server ip
+DISTROSERVERIP=`net lookup $DISTRIBUTIONSERVER`
+DISTROFOLDER=`echo $DISTROCHOICE | sed 's/.iso//g'`
+
+if [ $CONTROL = copy ]
+then
+
+#Copy iso to /home/distributions/iso
+#Mount iso
+
+[ ! -d /home/distributions/linux_iso ] && mkdir -p /home/distributions/linux_iso
+
+[ -f /home/distributions/linux_iso/"$DISTROCHOICE" ] && rm -f /home/distributions/linux_iso/"$DISTROCHOICE"
+ln -s /home/itadminshare/distributions/linux/"$DISTROCHOICE" /home/distributions/linux_iso/"$DISTROCHOICE"
+#Get distribution server
+
+if [ $DISTRIBUTIONSERVER = $HOSTNAME ]
+then
+
+[ ! -d /media/iso.$$ ] && mkdir -p /media/iso.$$
+[ -d /home/distributions/linux_distro/$DISTROFOLDER ] && rm -f -R /home/distributions/linux_distro/$DISTROFOLDER
+mkdir -p /home/distributions/linux_distro/$DISTROFOLDER
+#Mount iso
+echo "<li>"$DISTRIBUTIONSERVER - $MOUNTISOMSG"</li><br>"
+mount /home/distributions/linux_iso/"$DISTROCHOICE" /media/iso.$$ -o loop
+#Copy files
+echo "<li>"$DISTRIBUTIONSERVER - $COPYFILESMSG"</li>"
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+cp -v -a /media/iso.$$/* /home/distributions/linux_distro/$DISTROFOLDER
+cp -v -a -f -R /media/iso.$$/.disk /home/distributions/linux_distro/$DISTROFOLDER
+echo "</pre>"
+#Unmount iso
+echo "<li>"$DISTRIBUTIONSERVER - $UNMOUNTISOMSG"</li><br>"
+umount /media/iso.$$
+rm -f -R /media/iso.$$
+#Copy out files
+echo "<li>"$DISTRIBUTIONSERVER - $COPYOUTFILESMSG"</li>"
+
+[ -d /home/tftpboot/images/$DISTROFOLDER/ ] && rm -f -R /home/tftpboot/images/$DISTROFOLDER/
+mkdir -p /home/tftpboot/images/$DISTROFOLDER/
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+cp -v -f /home/distributions/linux_distro/$DISTROFOLDER/casper/initrd.* /home/tftpboot/images/$DISTROFOLDER/
+cp -v -f /home/distributions/linux_distro/$DISTROFOLDER/casper/vmlinuz /home/tftpboot/images/$DISTROFOLDER/
+[ ! -f /home/tftpboot/preseed.cfg ] && cp /opt/karoshi/serversetup/modules/distributionserver/tftpboot/images/ubuntu/preseed.cfg /home/tftpboot/
+cp -v -f /home/tftpboot/preseed.cfg /home/distributions/linux_distro/$DISTROFOLDER/casper/
+
+
+
+echo "</pre>"
+
+#Find which initrd
+INITRDNAME=`ls /home/tftpboot/images/$DISTROFOLDER/initrd.* | sed -n 1,1p`
+if [ `echo $INITRDNAME | grep -c initrd.lz` -gt 0 ]
+then
+INITRD=initrd.lz
+else
+INITRD=initrd.gz
+fi
+
+
+[ ! -f /home/tftpboot/default_iso ] && echo DEFAULTIMAGE=notset > /home/tftpboot/default_iso
+if [ $DEFAULTISO = yes ]
+then
+echo DEFAULTIMAGE=\"$DISTROFOLDER\" > /home/tftpboot/default_iso
+fi
+source /home/tftpboot/default_iso
+
+#Create boot entry
+[ ! -d /home/tftpboot/menus ] && mkdir -p /home/tftpboot/menus
+
+echo 'LABEL '$DISTROFOLDER'' > /home/tftpboot/menus/$DISTROFOLDER
+echo '	MENU LABEL ^'$DISTROFOLDER'' >> /home/tftpboot/menus/$DISTROFOLDER
+echo '	KERNEL images/'$DISTROFOLDER'/vmlinuz' >> /home/tftpboot/menus/$DISTROFOLDER
+echo '	append	boot=casper automatic-ubiquity netboot=nfs nfsroot='$DISTROSERVERIP':/home/distributions/linux_distro/'$DISTROFOLDER' initrd=images/'$DISTROFOLDER'/'$INITRD' file=/cdrom/casper/preseed.cfg priority=critical ip=dhcp  --' >> /home/tftpboot/menus/$DISTROFOLDER	
+
+
+TIMEOUT=10
+[ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 1 ] && TIMEOUT=200
+
+[ -f /home/tftpboot/imagelist.cfg ] && rm -f /home/tftpboot/imagelist.cfg
+for MENUITEMS in /home/tftpboot/menus/*
+do
+MENUITEM=`basename $MENUITEMS`
+cat /home/tftpboot/menus/$MENUITEM >> /home/tftpboot/imagelist.cfg
+if [ $DEFAULTIMAGE = $MENUITEM ]
+then
+echo '	menu default' >> /home/tftpboot/imagelist.cfg
+fi
+echo >> /home/tftpboot/imagelist.cfg
+done
+
+#Restart nfs server
+echo "<li>"$DISTRIBUTIONSERVER - $RESTARTNFSMSG"</li><br>"
+source /opt/karoshi/serversetup/variables/distro
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_start
+echo "</pre>"
+else
+scp /opt/karoshi/serversetup/modules/distributionserver/tftpboot/images/ubuntu/preseed.cfg root@$DISTRIBUTIONSERVER:"/opt/karoshi/serversetup/modules/distributionserver/tftpboot/images/ubuntu/preseed.cfg"
+ssh -x -o PasswordAuthentication=no $DISTRIBUTIONSERVER '
+[ ! -d /home/distributions/linux_iso ] && mkdir -p /home/distributions/linux_iso
+[ -f /home/distributions/linux_iso/"'$DISTROCHOICE'" ] && rm -f /home/distributions/linux_iso/"'$DISTROCHOICE'"
+'
+echo "<li>"$COPYISOMSG $HOSTNAME $TOMSG $DISTRIBUTIONSERVER"</li><br>"
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+rsync -avL /home/distributions/linux_iso/"$DISTROCHOICE" root@$DISTRIBUTIONSERVER:"/home/distributions/linux_iso/" 2>&1
+
+echo "</pre>"
+ssh -x -o PasswordAuthentication=no $DISTRIBUTIONSERVER '
+[ ! -d /media/iso.'$$' ] && mkdir -p /media/iso.'$$'
+[ -d /home/distributions/linux_distro/'$DISTROFOLDER' ] && rm -f -R /home/distributions/linux_distro/'$DISTROFOLDER'
+mkdir -p /home/distributions/linux_distro/'$DISTROFOLDER'
+#Mount iso
+echo "<li>"'$DISTRIBUTIONSERVER' - '$MOUNTISOMSG'"</li><br>"
+mount /home/distributions/linux_iso/"'$DISTROCHOICE'" /media/iso.'$$' -o loop
+#Copy files
+echo "<li>"'$DISTRIBUTIONSERVER' - '$COPYFILESMSG'"</li>"
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+cp -v -a /media/iso.'$$'/* /home/distributions/linux_distro/'$DISTROFOLDER'
+cp -v -a -f -R /media/iso.'$$'/.disk /home/distributions/linux_distro/'$DISTROFOLDER'
+echo "</pre>"
+#Unmount iso
+echo "<li>"'$DISTRIBUTIONSERVER' - '$UNMOUNTISOMSG'"</li><br>"
+umount /media/iso.'$$'
+rm -f -R /media/iso.'$$'
+#Copy out files
+echo "<li>"'$DISTRIBUTIONSERVER' - '$COPYOUTFILESMSG'"</li>"
+
+[ -d /home/tftpboot/images/'$DISTROFOLDER'/ ] && rm -f -R /home/tftpboot/images/'$DISTROFOLDER'/
+mkdir -p /home/tftpboot/images/'$DISTROFOLDER'/
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+cp -v -f /home/distributions/linux_distro/'$DISTROFOLDER'/casper/initrd.* /home/tftpboot/images/'$DISTROFOLDER'/
+cp -v -f /home/distributions/linux_distro/'$DISTROFOLDER'/casper/vmlinuz /home/tftpboot/images/'$DISTROFOLDER'/
+[ ! -f /home/tftpboot/preseed.cfg ] && cp /opt/karoshi/serversetup/modules/distributionserver/tftpboot/images/ubuntu/preseed.cfg /home/tftpboot/
+cp -v -f /home/tftpboot/preseed.cfg cp -v -f /home/tftpboot/preseed.cfg /home/distributions/linux_distro/'$DISTROFOLDER'/casper/
+echo "</pre>"
+
+#Find which initrd
+INITRDNAME=`ls /home/tftpboot/images/'$DISTROFOLDER'/initrd.* | sed -n 1,1p`
+if [ `echo $INITRDNAME | grep -c initrd.lz` -gt 0 ]
+then
+INITRD=initrd.lz
+else
+INITRD=initrd.gz
+fi
+
+[ ! -f /home/tftpboot/default_iso ] && echo DEFAULTIMAGE=notset > /home/tftpboot/default_iso
+if [ '$DEFAULTISO' = yes ]
+then
+echo DEFAULTIMAGE=\"'$DISTROFOLDER'\" > /home/tftpboot/default_iso
+fi
+source /home/tftpboot/default_iso
+
+#Create boot entry
+[ ! -d /home/tftpboot/menus ] && mkdir -p /home/tftpboot/menus
+
+echo "LABEL '$DISTROFOLDER'" > /home/tftpboot/menus/'$DISTROFOLDER'
+echo "	MENU LABEL ^'$DISTROFOLDER'" >> /home/tftpboot/menus/'$DISTROFOLDER'
+echo "	KERNEL images/'$DISTROFOLDER'/vmlinuz" >> /home/tftpboot/menus/'$DISTROFOLDER'
+echo "	append	boot=casper automatic-ubiquity netboot=nfs nfsroot='$DISTROSERVERIP':/home/distributions/linux_distro/'$DISTROFOLDER' initrd=images/'$DISTROFOLDER'/$INITRD file=/cdrom/casper/preseed.cfg priority=critical ip=dhcp  --" >> /home/tftpboot/menus/'$DISTROFOLDER'
+
+TIMEOUT=10
+[ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 1 ] && TIMEOUT=200
+
+[ -f /home/tftpboot/imagelist.cfg ] && rm -f /home/tftpboot/imagelist.cfg
+for MENUITEMS in /home/tftpboot/menus/*
+do
+MENUITEM=`basename $MENUITEMS`
+cat /home/tftpboot/menus/$MENUITEM >> /home/tftpboot/imagelist.cfg
+if [ $DEFAULTIMAGE = $MENUITEM ]
+then
+echo "	menu default" >> /home/tftpboot/imagelist.cfg
+fi
+echo >> /home/tftpboot/imagelist.cfg
+done
+
+#Restart nfs server
+echo "<li>"'$DISTRIBUTIONSERVER' - '$RESTARTNFSMSG'"</li><br>"
+source /opt/karoshi/serversetup/variables/distro
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_start
+echo "</pre>"
+'
+
+fi
+fi
+
+if [ $CONTROL = delete ]
+then
+#Delete iso from itadmin
+#[ -e /home/itadminshare/distributions/linux/"$DISTROCHOICE" ] && rm -f /home/itadminshare/distributions/linux/"$DISTROCHOICE"
+#Delete symlink
+[ -e /home/distributions/linux_iso/"$DISTROCHOICE" ] && rm -f /home/distributions/linux_iso/"$DISTROCHOICE"
+
+if [ $$DISTRIBUTIONSERVER = $HOSTNAME ]
+then
+[ -d /home/tftpboot/images/$DISTROFOLDER/ ] && rm -f -R /home/tftpboot/images/$DISTROFOLDER/
+[ -e /home/tftpboot/menus/$DISTROFOLDER ] && rm -f /home/tftpboot/menus/$DISTROFOLDER
+
+TIMEOUT=10
+[ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 1 ] && TIMEOUT=200
+
+[ -f /home/tftpboot/imagelist.cfg ] && rm -f /home/tftpboot/imagelist.cfg
+for MENUITEMS in /home/tftpboot/menus/*
+do
+MENUITEM=`basename $MENUITEMS`
+cat /home/tftpboot/menus/$MENUITEM >> /home/tftpboot/imagelist.cfg
+if [ $DEFAULTIMAGE = $MENUITEM ]
+then
+echo '	menu default' >> /home/tftpboot/imagelist.cfg
+fi
+echo >> /home/tftpboot/imagelist.cfg
+done
+
+#Restart nfs server
+echo "<li>"$DISTRIBUTIONSERVER - $RESTARTNFSMSG"</li><br>"
+source /opt/karoshi/serversetup/variables/distro
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_start
+echo "</pre>"
+
+else
+ssh -x -o PasswordAuthentication=no $DISTRIBUTIONSERVER '
+[ -e /home/distributions/linux_iso/"'$DISTROCHOICE'" ] && rm -f /home/distributions/linux_iso/"'$DISTROCHOICE'"
+[ -d /home/tftpboot/images/'$DISTROFOLDER'/ ] && rm -f -R /home/tftpboot/images/'$DISTROFOLDER'/
+[ -e /home/tftpboot/menus/'$DISTROFOLDER' ] && rm -f  /home/tftpboot/menus/'$DISTROFOLDER'
+
+TIMEOUT=10
+[ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 1 ] && TIMEOUT=200
+
+[ -f /home/tftpboot/imagelist.cfg ] && rm -f /home/tftpboot/imagelist.cfg
+for MENUITEMS in /home/tftpboot/menus/*
+do
+MENUITEM=`basename $MENUITEMS`
+cat /home/tftpboot/menus/$MENUITEM >> /home/tftpboot/imagelist.cfg
+if [ $DEFAULTIMAGE = $MENUITEM ]
+then
+echo "	menu default" >> /home/tftpboot/imagelist.cfg
+fi
+echo >> /home/tftpboot/imagelist.cfg
+done
+
+#Restart nfs server
+echo "<li>"'$DISTRIBUTIONSERVER' - '$RESTARTNFSMSG'"</li><br>"
+source /opt/karoshi/serversetup/variables/distro
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_start
+echo "</pre>"
+'
+fi
+
+fi
+
+exit
+

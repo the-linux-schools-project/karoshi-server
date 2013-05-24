@@ -1,0 +1,129 @@
+#!/bin/bash
+#tidystudentfiles
+#
+#Scans users areas for specified files and deletes them.
+#
+#Copyright (C) 2007  Artie Ball
+#Copyright (C) 2007  The karoshi Team
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+[ -d /opt/karoshi/logs ] || mkdir /opt/karoshi/logs
+TIDYFILELIST=/opt/karoshi/serversetup/variables/tidyfileslist
+REPORTFILE=/opt/karoshi/logs/tidyfileslog
+DELETEDFILES=/opt/karoshi/logs/tidyfilesdeletelog
+DIRSTU=/home/users/students
+DELETECOUNT=0
+DELETELOGINTRO=yes
+
+
+#Check for list of files to delete
+if [ ! -f /opt/karoshi/serversetup/variables/tidyfileslist ]
+then
+echo No files have been entered in the tidy files list > $REPORTFILE
+exit
+fi
+
+#Check if log files need to be rotated
+if test -f /opt/karoshi/logs/tidyfileslog
+then
+LOGSIZE=`wc -c /opt/karoshi/logs/tidyfileslog | cut -d" " -f1`
+if [ $LOGSIZE -gt 512000 ]
+then
+[ -f /opt/karoshi/logs/tidyfileslog4 ] && rm -f /opt/karoshi/logs/tidyfileslog4
+[ -f /opt/karoshi/logs/tidyfileslog3 ] && mv /opt/karoshi/logs/tidyfileslog3 /opt/karoshi/logs/tidyfileslog4
+[ -f /opt/karoshi/logs/tidyfileslog2 ] && mv /opt/karoshi/logs/tidyfileslog2 /opt/karoshi/logs/tidyfileslog3
+[ -f /opt/karoshi/logs/tidyfileslog1 ] && mv /opt/karoshi/logs/tidyfileslog1 /opt/karoshi/logs/tidyfileslog2
+mv /opt/karoshi/logs/tidyfileslog /opt/karoshi/logs/tidyfileslog1
+fi
+fi
+
+if test -f /opt/karoshi/logs/tidyfilesdeletelog
+then
+LOGSIZE=`wc -c /opt/karoshi/logs/tidyfilesdeletelog | cut -d" " -f1`
+if [ $LOGSIZE -gt 512000 ]
+then
+[ -f /opt/karoshi/logs/tidyfilesdeletelog4 ] && rm -f /opt/karoshi/logs/tidyfilesdeletelog4
+[ -f /opt/karoshi/logs/tidyfilesdeletelog3 ] && mv /opt/karoshi/logs/tidyfilesdeletelog3 /opt/karoshi/logs/tidyfilesdeletelog4
+[ -f /opt/karoshi/logs/tidyfilesdeletelog2 ] && mv /opt/karoshi/logs/tidyfilesdeletelog2 /opt/karoshi/logs/tidyfilesdeletelog3
+[ -f /opt/karoshi/logs/tidyfilesdeletelog1 ] && mv /opt/karoshi/logs/tidyfilesdeletelog1 /opt/karoshi/logs/tidyfilesdeletelog2
+mv /opt/karoshi/logs/tidyfilesdeletelog /opt/karoshi/logs/tidyfilesdeletelog1
+fi
+fi
+#Add start message to log file
+MESSAGE="Run started at: $(date)"
+echo --------------------------------------------------------------------------- >> $REPORTFILE
+echo $MESSAGE >> $REPORTFILE
+echo --------------------------------------------------------------------------- >> $REPORTFILE
+#make sure that tidystudent files is not disabled
+if [ -f /opt/karoshi/serversetup/variables/stop_tidy_files ]
+then
+echo Tidy files is disabled >> $REPORTFILE
+exit
+fi
+TIDY_FILE_LENGTH=`cat /opt/karoshi/serversetup/variables/tidyfileslist | wc -l`
+for X in $DIRSTU
+do
+COUNTER=1
+while [ $COUNTER -le $TIDY_FILE_LENGTH ]
+do
+REMOVE_FILE=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/serversetup/variables/tidyfileslist`
+if [ `echo $REMOVE_FILE'null' | sed 's/ //g'` != null ]
+then
+#find $X -iname "$REMOVE_FILE" -print0 | xargs -0 rm -f ; let SWFCOUNT=$SWFCOUNT+1
+find $X -iname "$REMOVE_FILE"
+echo Checking for $REMOVE_FILE
+REMOVE_PATH=( `find $X -iname "$REMOVE_FILE" | sed 's/ /^^^^/g'` )
+REMOVE_PATH_COUNT=`echo ${#REMOVE_PATH[@]}`
+if [ $REMOVE_PATH_COUNT -gt 0 ]
+then
+REMOVE_COUNTER=0
+while [ $REMOVE_COUNTER -lt $REMOVE_PATH_COUNT ]
+do
+USER_REMOVE_PATH=`echo ${REMOVE_PATH[$REMOVE_COUNTER]} | sed 's/\^\^\^\^/ /g'`
+if [ `echo $USER_REMOVE_PATH'null' | sed 's/ //g'` != null ]
+then
+echo remove path is "$USER_REMOVE_PATH"
+rm -fv "$USER_REMOVE_PATH"
+echo $USER_REMOVE_PATH >> $DELETEDFILES
+let DELETECOUNT=$DELETECOUNT+1
+fi
+let REMOVE_COUNTER=$REMOVE_COUNTER+1
+done
+if [ $DELETELOGINTRO = yes ]
+then
+#Add date entry to deleted files log
+echo --------------------------------------------------------------------------- >> $DELETEDFILES
+date >> $DELETEDFILES
+echo --------------------------------------------------------------------------- >> $DELETEDFILES
+DELETELOGINTRO=no
+fi
+#Add in log entry for the deleted file
+fi
+fi
+let COUNTER=$COUNTER+1
+done
+done
+echo No of files deleted:$DELETECOUNT >> $REPORTFILE
+echo Extra swf files found: >> $REPORTFILE
+#find $DIRSTU -iname *.swf -print0 | xargs -0 -I % basename % | sort | uniq >> $REPORTFILE
+find $DIRSTU -iname *.swf | sort | uniq >> $REPORTFILE
+MESSAGE="Run ended at: $(date)"
+echo $MESSAGE >> $REPORTFILE

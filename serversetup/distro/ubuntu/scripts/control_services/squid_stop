@@ -1,0 +1,7 @@
+#!/bin/bash
+if [ -d /etc/squid3 ]
+then
+service squid3 stop
+else
+service squid stop
+fi

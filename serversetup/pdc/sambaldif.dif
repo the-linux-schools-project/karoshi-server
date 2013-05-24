@@ -1,0 +1,49 @@
+# Organization for Samba Base
+dn: dc=karoshi,dc=org
+objectclass: dcObject
+objectclass: organization
+dc: karoshi
+o: karoshi Org Network
+description: The Samba-3 Network LDAP Example
+# Organizational Role for Directory Management
+dn: cn=Manager,dc=karoshi,dc=org
+objectclass: organizationalRole
+cn: Manager
+description: Directory Manager
+# Setting up container for users
+dn: ou=People,dc=karoshi,dc=org
+objectclass: top
+objectclass: organizationalUnit
+ou: People
+# Setting up admin handle for People OU
+dn: cn=admin,ou=People,dc=karoshi,dc=org
+cn: admin
+objectclass: top
+objectclass: organizationalRole
+objectclass: simpleSecurityObject
+userPassword: {SSHA}REPLACE_PASSWORD
+# Setting up container for groups
+dn: ou=Groups,dc=karoshi,dc=org
+objectclass: top
+objectclass: organizationalUnit
+ou: Groups
+# Setting up admin handle for Groups OU
+dn: cn=admin,ou=Groups,dc=karoshi,dc=org
+cn: admin
+objectclass: top
+objectclass: organizationalRole
+objectclass: simpleSecurityObject
+userPassword: {SSHA}REPLACE_PASSWORD
+# Setting up container for computers
+dn: ou=Computers,dc=karoshi,dc=org
+objectclass: top
+objectclass: organizationalUnit
+ou: Computers
+Section 10.4. Password Backends clxi
+# Setting up admin handle for Computers OU
+dn: cn=admin,ou=Computers,dc=karoshi,dc=org
+cn: admin
+objectclass: top
+objectclass: organizationalRole
+objectclass: simpleSecurityObject
+userPassword: {SSHA}REPLACE_PASSWORD

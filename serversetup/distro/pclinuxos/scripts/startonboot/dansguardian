@@ -1,0 +1,8 @@
+#!/bin/bash
+#Start dansguardian on boot
+chkconfig dansguardian off
+[ -f /opt/karoshi/start_on_boot/karoshi_services ] || touch /opt/karoshi/start_on_boot/karoshi_services
+[ `grep -c -w dansguardian /opt/karoshi/start_on_boot/karoshi_services` = 0 ] && echo dansguardian,1 >> /opt/karoshi/start_on_boot/karoshi_services
+
+
+

@@ -1,0 +1,231 @@
+#!/bin/bash
+#Copyright (C) 2010 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/ups_delete_cgi
+then
+echo `date`: ups_delete - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/ups_delete_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ups_delete.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $ups_delete_cgi'check' ]
+then
+echo `date`: ups_delete - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: ups_delete - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\-+'`
+if [ $DATA'null' = null ]
+then
+echo `date`: ups_delete - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+SERVER=`echo "$DATA" | cut -s -d: -f4`
+SERVERTYPE=`echo "$DATA" | cut -s -d: -f5`
+SERVERMASTER=`echo "$DATA" | cut -s -d: -f6`
+UPSMODEL=`echo "$DATA" | cut -s -d: -f7`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: ups_delete - Not called by ups_delete.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: ups_delete - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: ups_delete - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $SERVER'null' = null ]
+then
+echo `date`: ups_delete - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $SERVERTYPE'null' = null ]
+then
+echo `date`: ups_delete - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $SERVERTYPE = SLAVE ] || [ $SERVERTYPE = DEVICE ]
+then
+if [ $SERVERMASTER'null' = null ]
+then
+echo `date`: ups_delete - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+fi
+
+if [ $UPSMODEL'null' = null ]
+then
+echo `date`: ups_delete - Blank upsmodel by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: ups_delete - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+echo `date`: ups_delete $UPSMODEL on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+if [ $SERVERTYPE = DEVICE ]
+then
+if [ -f /opt/karoshi/server_network/ups/master/$SERVERMASTER/extra_devices/$SERVER ]
+then
+rm -f /opt/karoshi/server_network/ups/master/$SERVERMASTER/extra_devices/$SERVER
+#Delete extra_devices folder if empty
+[ `ls -1 /opt/karoshi/server_network/ups/master/$SERVERMASTER/extra_devices | wc -l` = 0 ] && rm -f -R /opt/karoshi/server_network/ups/master/$SERVERMASTER/extra_devices
+exit
+fi
+fi
+
+if [ $SERVERTYPE = MASTER ]
+then
+########################
+#Delete config file
+########################
+[ -f /opt/karoshi/server_network/ups/master/$SERVER/drivers/"$UPSMODEL" ] && rm -f /opt/karoshi/server_network/ups/master/$SERVER/drivers/"$UPSMODEL"
+########################
+#Build config file
+########################
+if [ `ls -1 /opt/karoshi/server_network/ups/master/$SERVER/drivers/ | wc -l` = 0 ]
+then
+UPS=no
+rm -f -R /opt/karoshi/server_network/ups/master/$SERVER/
+echo > /opt/karoshi/server_network/ups/master/$SERVER/ups.conf
+else
+UPS=yes
+cat /opt/karoshi/server_network/ups/master/$SERVER/drivers/* > /opt/karoshi/server_network/ups/master/$SERVER/ups.conf
+fi
+
+if [ $SERVER = $HOSTNAME ]
+then
+cp -f /opt/karoshi/server_network/ups/master/$SERVER/ups.conf /etc/nut/
+else
+scp /opt/karoshi/server_network/ups/master/$SERVER/ups.conf root@$SERVER:"/etc/nut/"
+fi
+
+########################
+# Restart Nut
+########################
+echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+if [ $SERVER = $HOSTNAME ]
+then
+/etc/init.d/nut stop
+sleep 1
+if [ $UPS = yes ]
+then
+/etc/init.d/nut start
+else
+chkconfig -f nut off 1>/dev/null 2>/dev/null
+fi
+else
+ssh -x -o PasswordAuthentication=no $SERVER '
+/etc/init.d/nut stop
+sleep 1
+if [ '$UPS' = yes ]
+then
+/etc/init.d/nut start
+else
+chkconfig -f nut off 1>/dev/null 2>/dev/null
+fi
+' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+echo '</pre>'
+fi
+ 
+if [ $SERVERTYPE = SLAVE ]
+then
+#Delete user file
+[ -f /opt/karoshi/server_network/ups/slave/$SERVERMASTER/users/$SERVER ] && rm -f /opt/karoshi/server_network/ups/slave/$SERVERMASTER/users/$SERVER
+
+if [ `ls /opt/karoshi/server_network/ups/slave/$SERVERMASTER/users/ | wc -l` = 0 ]
+then
+rm -f -R /opt/karoshi/server_network/ups/slave/$SERVERMASTER/
+fi
+
+#Rebuild master user file
+cat /opt/karoshi/server_network/ups/master/$SERVERMASTER/users/* > /opt/karoshi/server_network/ups/master/$SERVERMASTER/upsd.users
+cat /opt/karoshi/server_network/ups/slave/$SERVERMASTER/users/* >> /opt/karoshi/server_network/ups/master/$SERVERMASTER/upsd.users
+#Stop nut on slave server
+if [ $SERVER = $HOSTNAME ]
+then
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/nut
+service nut stop
+chkconfig -f nut off
+else
+ssh -x -o PasswordAuthentication=no $SERVER '
+service nut stop
+chkconfig -f nut off
+'
+fi
+#Remove information from the servermaster
+if [ $SERVERMASTER = $HOSTNAME ]
+then
+touch /etc/nut/upsd.users
+chmod 0600 /etc/nut/upsd.users
+cp -f /opt/karoshi/server_network/ups/master/$SERVERMASTER/upsd.users /etc/nut/
+service mon restart
+else
+ssh -x -o PasswordAuthentication=no $SERVERMASTER '
+touch /etc/nut/upsd.users
+chmod 0600 /etc/nut/upsd.users
+'
+scp /opt/karoshi/server_network/ups/master/$SERVERMASTER/upsd.users root@$SERVERMASTER:"/etc/nut/"
+ssh -x -o PasswordAuthentication=no $SERVERMASTER '
+service mon restart
+'
+fi
+
+fi
+exit
+

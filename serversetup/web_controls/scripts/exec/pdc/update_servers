@@ -1,0 +1,331 @@
+#!/bin/bash
+#Copyright (C) 2007  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/update_servers_cgi
+then
+echo `date`: update_servers - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/update_servers_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/update_servers.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $update_servers_cgi'check' ]
+then
+echo `date`: update_servers - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: update_servers - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: update_servers - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+DAY=`echo "$DATA" | cut -s -d: -f4`
+HOURS=`echo "$DATA" | cut -s -d: -f5`
+MINUTES=`echo "$DATA" | cut -s -d: -f6`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f7`
+SERVERTYPE=`echo "$DATA" | cut -s -d: -f8`
+SERVERMASTER=`echo "$DATA" | cut -s -d: -f9`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: update_servers - Not called by update_servers.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: update_servers - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: update_servers - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: update_servers - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $DAY'null' = null ]
+then
+echo `date`: update_servers - Blank day by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $HOURS'null' = null ]
+then
+echo `date`: update_servers - Blank hours by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $MINUTES'null' = null ]
+then
+echo `date`: update_servers - Blank hours by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $SERVERNAME'null' = null ]
+then
+echo `date`: update_servers - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $SERVERTYPE'null' = null ]
+then
+echo `date`: update_servers - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+if [ $SERVERMASTER'null' = null ]
+then
+echo `date`: update_servers - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+fi
+if [ $DAY != never ]
+then
+echo `date`: update_server - enabling updates "for" $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+else
+echo `date`: update_server - disabling updates "for" $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+
+LANGCHOICE=englishuk
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/update_servers ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/system/update_servers
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+function recordtime {
+FOLDER=servers
+[ $SERVERTYPE = federated ] && FOLDER=federated_servers/$SERVERNAME
+[ $SERVERTYPE = federatedslave ] && FOLDER=federated_servers/$SERVERMASTER
+
+[ ! -d /opt/karoshi/server_network/upgrade_schedules/$FOLDER ] && mkdir -p /opt/karoshi/server_network/upgrade_schedules/$FOLDER
+
+#Add in time information
+if [ $DAY != never ]
+then
+[ $DAY = 1 ] && DAY2=$MONMSG
+[ $DAY = 2 ] && DAY2=$TUESMSG
+[ $DAY = 3 ] && DAY2=$WEDMSG
+[ $DAY = 4 ] && DAY2=$THURSMSG
+[ $DAY = 5 ] && DAY2=$FRIMSG
+[ $DAY = 6 ] && DAY2=$SATMSG
+[ $DAY = 7 ] && DAY2=$SUNMSG
+[ $DAY = 8 ] && DAY2=$EVERYDAYMSG
+
+echo "$UPGRADESCHEDULEMSG<br>$DAY2 - $HOURS:$MINUTES<br><br>" > /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME
+else
+[ -f /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME ] && rm -f /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME
+fi
+[ $DAY = 8 ] && DAY=1-7
+}
+
+function scheduleupdate {
+
+#Schedule update on this server
+if [ $SERVERNAME = $HOSTNAME ]
+then
+if [ $DAY != never ]
+then
+[ ! -d /opt/karoshi/cronjobs/jobs ] && mkdir -p /opt/karoshi/cronjobs/jobs
+echo $MINUTES $HOURS '*' '*' $DAY /opt/karoshi/serversetup/all/scripts/updateserver > /opt/karoshi/cronjobs/jobs/updateserver.cron
+else
+[ -f /opt/karoshi/cronjobs/jobs/updateserver.cron ] && rm -f /opt/karoshi/cronjobs/jobs/updateserver.cron
+fi
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+fi
+
+#Schedule update on network and federated servers
+if [ $SERVERNAME != $HOSTNAME ]
+then
+if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
+then
+if [ $DAY != never ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+[ ! -d /opt/karoshi/cronjobs/jobs ] && mkdir -p /opt/karoshi/cronjobs/jobs
+echo '$MINUTES' '$HOURS' "*" "*" '$DAY' /opt/karoshi/serversetup/all/scripts/updateserver > /opt/karoshi/cronjobs/jobs/updateserver.cron
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+'
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+[ -f /opt/karoshi/cronjobs/jobs/updateserver.cron ] && rm -f /opt/karoshi/cronjobs/jobs/updateserver.cron
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+'
+fi
+fi
+fi
+
+#Schedule update on federated slave servers
+if [ $SERVERTYPE = federatedslave ]
+then
+if [ $DAY != never ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+echo `date`: update_server \(federated mode\) - enabling updates for '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
+[ ! -d /opt/karoshi/cronjobs/jobs ] && mkdir -p /opt/karoshi/cronjobs/jobs
+echo '$MINUTES' '$HOURS' "*" "*" '$DAY' /opt/karoshi/serversetup/all/scripts/updateserver > /opt/karoshi/cronjobs/jobs/updateserver.cron
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+'\''
+'
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+echo `date`: update_server \(federated mode\) - disabling updates for '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
+[ -f /opt/karoshi/cronjobs/jobs/updateserver.cron ] && rm -f /opt/karoshi/cronjobs/jobs/updateserver.cron
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+'\''
+'
+fi
+fi
+}
+
+function copyscripts {
+#Copy update scripts to other servers
+if [ $SERVERNAME != $HOSTNAME ]
+then
+if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
+then
+scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/updateserver" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
+scp "/opt/karoshi/serversetup/all/scripts/updateserver" root@$SERVERNAME:"/opt/karoshi/serversetup/all/scripts/"
+scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
+scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
+scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
+scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
+fi
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/updateserver" root@$SERVERMASTER:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
+scp "/opt/karoshi/serversetup/all/scripts/updateserver" root@$SERVERMASTER:"/opt/karoshi/serversetup/all/scripts/"
+scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts" root@$SERVERMASTER:"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
+scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services" root@$SERVERMASTER:"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
+scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot" root@$SERVERMASTER:"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
+scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot" root@$SERVERMASTER:"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/updateserver" root@'$SERVERNAME':"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
+scp "/opt/karoshi/serversetup/all/scripts/updateserver" root@'$SERVERNAME':"/opt/karoshi/serversetup/all/scripts/"
+scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts" root@'$SERVERNAME':"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
+scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services" root@'$SERVERNAME':"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
+scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot" root@'$SERVERNAME':"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
+scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot" root@'$SERVERNAME':"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
+'
+fi
+}
+
+#Schedule update for individual computers
+if [ $SERVERNAME != all ]
+then
+recordtime
+scheduleupdate
+copyscripts
+fi
+
+#Auto schedule
+if [ $SERVERNAME = all ]
+then
+#Auto schedule network servers
+if [ $SERVERTYPE = network ]
+then
+for SERVERS in /opt/karoshi/server_network/servers/*
+do
+SERVERNAME=`basename $SERVERS`
+if [ $DAY != never ]
+then
+echo '<li>'Scheduling $SERVERNAME:  Time $HOURS:$MINUTES'</li>'
+else
+echo '<li>'$SERVERNAME:  Disabling update'</li>'
+fi
+recordtime
+scheduleupdate
+copyscripts
+
+let MINUTES=$MINUTES+10
+if [ $MINUTES -ge 60 ]
+then
+MINUTES=00
+let HOURS=$HOURS+1
+[ $HOURS -ge 24 ] && HOURS=00
+fi
+done
+fi
+
+if [ $SERVERTYPE = federated ]
+then
+for SERVERNAMES in /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/*
+do
+SERVERNAME=`basename $SERVERNAMES`
+[ $SERVERNAME != $SERVERMASTER ] && SERVERTYPE=federatedslave
+if [ $DAY != never ]
+then
+echo '<li>'Scheduling $SERVERNAME: Servermaster $SERVERMASTER Servertype $SERVERTYPE Time $HOURS:$MINUTES'</li>'
+else
+echo '<li>'$SERVERNAME': Disabling update</li>'
+fi
+recordtime
+scheduleupdate
+copyscripts
+SERVERTYPE=federated
+let MINUTES=$MINUTES+10
+if [ $MINUTES -ge 60 ]
+then
+MINUTES=00
+let HOURS=$HOURS+1
+[ $HOURS -ge 24 ] && HOURS=00
+fi
+done
+fi
+
+
+#sleep 5
+fi
+
+

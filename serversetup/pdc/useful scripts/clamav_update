@@ -1,0 +1,83 @@
+#!/bin/bash
+#clamav_update
+#Copyright (C) 2007  Paul Sharrad
+#Copyright (C) 2007  The karoshi Team
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+########################
+#Make log area
+########################
+[ -d /opt/karoshi/clamav_log/ ] || mkdir /opt/karoshi/clamav_log/
+[ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
+########################
+#Rotate log files
+########################
+if test -f /opt/karoshi/clamav_log/update_log
+then
+LOGSIZE=`wc -c /opt/karoshi/clamav_log/update_log | cut -d" " -f1`
+if [ $LOGSIZE -gt 512000 ]
+then
+[ -f /opt/karoshi/clamav_log/update_log4 ] && rm -f /opt/karoshi/clamav_log/update_log4
+[ -f /opt/karoshi/clamav_log/update_log3 ] && mv /opt/karoshi/clamav_log/update_log3 /opt/karoshi/clamav_log/update_log4
+[ -f /opt/karoshi/clamav_log/update_log2 ] && mv /opt/karoshi/clamav_log/update_log2 /opt/karoshi/clamav_log/update_log3
+[ -f /opt/karoshi/clamav_log/update_log1 ] && mv /opt/karoshi/clamav_log/update_log1 /opt/karoshi/clamav_log/update_log2
+mv /opt/karoshi/clamav_log/update_log /opt/karoshi/clamav_log/update_log1
+fi
+fi
+if test -f /opt/karoshi/clamav_log/update_details
+then
+LOGSIZE=`wc -c /opt/karoshi/clamav_log/update_details | cut -d" " -f1`
+if [ $LOGSIZE -gt 512000 ]
+then
+[ -f /opt/karoshi/clamav_log/update_details4 ] && rm -f /opt/karoshi/clamav_log/update_details4
+[ -f /opt/karoshi/clamav_log/update_details3 ] && mv /opt/karoshi/clamav_log/update_details3 /opt/karoshi/clamav_log/update_details4
+[ -f /opt/karoshi/clamav_log/update_details2 ] && mv /opt/karoshi/clamav_log/update_details2 /opt/karoshi/clamav_log/update_details3
+[ -f /opt/karoshi/clamav_log/update_details1 ] && mv /opt/karoshi/clamav_log/update_details1 /opt/karoshi/clamav_log/update_details2
+mv /opt/karoshi/clamav_log/update_details /opt/karoshi/clamav_log/update_details1
+fi
+fi
+########################
+#Get clamav update files
+########################
+echo `date` >> /opt/karoshi/clamav_log/update_details
+echo Updating ClamAV > /opt/karoshi/.tempdata/update_details_temp
+echo >> /opt/karoshi/.tempdata/update_details_temp
+sleep 0.5
+wget -m -t 5 -P/var/www/html -i /opt/karoshi/"useful scripts"/clamav_url 2>> /opt/karoshi/.tempdata/update_details_temp
+#Check for errors
+if [ `grep -c ERROR /opt/karoshi/.tempdata/update_details_temp` = 0 ]
+then
+echo update success
+#Log successful update
+echo `date` >> /opt/karoshi/clamav_log/update_log
+echo Clamav updated successfully >> /opt/karoshi/clamav_log/update_log
+#link data files to the top html directory
+ln -f -s /var/www/html/database.clamav.net/daily.cvd /var/www/html/daily.cvd
+ln -f -s /var/www/html/database.clamav.net/main.cvd /var/www/html/main.cvd
+else
+#Log update failure
+echo `date` >> /opt/karoshi/clamav_log/update_log
+echo Clamav update error. Please see the update_details file. >> /opt/karoshi/clamav_log/update_log
+fi
+cat /opt/karoshi/.tempdata/update_details_temp >> /opt/karoshi/clamav_log/update_details
+echo ---------------------------------------------------------- >> /opt/karoshi/clamav_log/update_details
+echo ---------------------------------------------------------- >> /opt/karoshi/clamav_log/update_log
+exit

@@ -1,0 +1,103 @@
+#!/bin/bash
+
+#####################
+#Set user permissions
+#################### 
+
+HOMEPATH[1]=/home/users/staff
+HOMEPATH[2]=/home/users/itadminstaff
+HOMEPATH[3]=/home/users/officestaff
+HOMEPATH[4]=/home/users/techstaff
+HOMEPATH[5]=/home/users/exams
+HOMEPATH[6]=/home/users/guests
+HOMEPATH[7]=/home/users/nonteachingstaff
+HOMEPATH[8]=/home/users/studentstaff
+HOMEPATH[9]=/home/users/techstaff
+HOMEPATH[10]=/home/users/students/yr1999
+HOMEPATH[11]=/home/users/students/yr2000
+HOMEPATH[12]=/home/users/students/yr2001
+HOMEPATH[13]=/home/users/students/yr2002
+HOMEPATH[14]=/home/users/students/yr2003
+HOMEPATH[15]=/home/users/students/yr2004
+HOMEPATH[16]=/home/users/students/yr2005
+HOMEPATH[17]=/home/users/students/yr2006
+HOMEPATH[18]=/home/users/students/yr2007
+HOMEPATH[19]=/home/users/students/yr2008
+HOMEPATH[20]=/home/users/students/yr2009
+HOMEPATH[21]=/home/users/students/yr2010
+HOMEPATH[22]=/home/users/students/yr2011
+HOMEPATH[23]=/home/users/students/yr2012
+
+
+COUNTER=1
+ARRAYCOUNT=`echo ${#HOMEPATH[@]}`
+sleep 0.5
+while [ $COUNTER -le $ARRAYCOUNT ]
+do
+FOLDERHOMEPATH=${HOMEPATH[$COUNTER]}
+echo -e "Processing $FOLDERHOMEPATH"
+if [ -d $FOLDERHOMEPATH ]
+then
+FOLDERCOUNT=`ls -1 $FOLDERHOMEPATH | wc -l`
+echo -e "Number of users - $FOLDERCOUNT\n"
+sleep 1
+if [ $FOLDERCOUNT != 0 ]
+then
+for FOLDERS in $FOLDERHOMEPATH/*
+do
+USERNAME=`basename $FOLDERS`
+echo Username - $USERNAME
+echo Home folder - $FOLDERS
+if [ `echo $FOLDERS | grep -c /home/users` = 1 ]
+then
+chown -R $USERNAME $FOLDERS
+else
+echo
+echo WARNING - Error code 411c for $USERNAME
+echo with folder $FOLDERS
+echo
+echo Press the enter key to continue
+read pause
+fi
+STATUS=`echo $?`
+if [ $STATUS != 0 ]
+then
+echo
+echo WARNING - Error code 411b for $USERNAME
+echo with folder $FOLDERS
+echo
+echo Press the enter key to continue
+read pause
+fi
+echo
+done
+fi
+fi
+echo -e "_________________________________________\n"
+let COUNTER=$COUNTER+1
+done
+
+exit
+
+#crap version
+
+getent passwd > /opt/karoshi/.tempdata/userdata.$$
+COUNTER=1
+USERCOUNT=`cat /opt/karoshi/.tempdata/userdata.$$ | wc -l`
+while [ $COUNTER -le $USERCOUNT ]
+do
+USERINFO=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/.tempdata/userdata.$$`
+USERNAME=`echo $USERINFO | cut -d: -f1`
+USERHOMEPATH=`echo $USERINFO | cut -d: -f6`
+USERID=`echo $USERINFO | cut -d: -f3`
+if [ $USERID -gt 6000 ] && [ `echo $USERHOMEPATH | grep -c /home/users` -gt 0 ] && [ -d $USERHOMEPATH ]
+then
+echo Setting permissions for $USERNAME
+echo Home path - $USERHOMEPATH
+chown -R $USERNAME $USERHOMEPATH
+fi
+let COUNTER=$COUNTER+1
+done
+rm -f /opt/karoshi/.tempdata/userdata.$$
+echo Completed
+exit

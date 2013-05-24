@@ -1,0 +1,59 @@
+#!/bin/bash
+#apache2config
+cd /etc/ssl/apache
+rm -f server.crt
+rm -f server.key
+if [ -f /opt/karoshi/serversetup/variables/ssldata ]
+then
+#file is present
+COUNTRY=`sed -n 1,1p /opt/karoshi/serversetup/variables/ssldata`
+STATE=`sed -n 2,2p /opt/karoshi/serversetup/variables/ssldata`
+CITY=`sed -n 3,3p /opt/karoshi/serversetup/variables/ssldata`
+NAME=`sed -n 4,4p /opt/karoshi/serversetup/variables/ssldata`
+LOCALNAME=`sed -n 5,5p /opt/karoshi/serversetup/variables/ssldata`
+SERVERNAME=`sed -n 6,6p /opt/karoshi/serversetup/variables/ssldata`
+EMAILADDRESS=`sed -n 7,7p /opt/karoshi/serversetup/variables/ssldata`   
+
+echo -e "$COUNTRY\n$STATE\n$CITY\n$NAME\n$LOCALNAME\n$SERVERNAME\n$EMAILADDRESS\n" | openssl req -new -x509 -days 730 -nodes -out server.crt -keyout server.key
+
+else
+#file is not there so ask for data
+/usr/lib/ssl/apache2-mod_ssl/gentestcrt.sh
+fi
+
+#######################
+#allow htaccess in certain folders
+#######################
+DIRCOUNT=`grep -c /var/www/html/internal $HTTPDCONFPATH`
+if [ $DIRCOUNT = 0 ]
+then
+echo '<'Directory '"'/var/www/html/internal'"''>' >> $HTTPDCONFPATH
+echo AllowOverride Limit >> $HTTPDCONFPATH
+echo '<'/Directory'>' >> $HTTPDCONFPATH 
+fi
+
+DIRCOUNT=`grep -c /var/www/html/squirrelmail $HTTPDCONFPATH`
+if [ $DIRCOUNT = 0 ]
+then
+echo '<'Directory '"'/var/www/html/squirrelmail'"''>' >> $HTTPDCONFPATH
+echo AllowOverride Limit >> $HTTPDCONFPATH
+echo '<'/Directory'>' >> $HTTPDCONFPATH 
+fi
+
+DIRCOUNT=`grep -c /var/www/html/moodle $HTTPDCONFPATH`
+if [ $DIRCOUNT = 0 ]
+then
+echo '<'Directory '"'/var/www/html/moodle'"''>' >> $HTTPDCONFPATH
+echo AllowOverride Limit >> $HTTPDCONFPATH
+echo '<'/Directory'>' >> $HTTPDCONFPATH 
+fi
+
+DIRCOUNT=`grep -c /var/www/html/egroupware $HTTPDCONFPATH`
+if [ $DIRCOUNT = 0 ]
+then
+echo '<'Directory '"'/var/www/html/egroupware'"''>' >> $HTTPDCONFPATH
+echo AllowOverride All >> $HTTPDCONFPATH
+echo '<'/Directory'>' >> $HTTPDCONFPATH 
+fi
+
+/etc/init.d/httpd restart

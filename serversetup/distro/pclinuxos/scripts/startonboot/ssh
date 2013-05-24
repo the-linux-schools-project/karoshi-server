@@ -1,0 +1,5 @@
+#!/bin/bash
+#Start ssh on boot
+chkconfig sshd off
+[ -f /opt/karoshi/start_on_boot/karoshi_services ] || touch /opt/karoshi/start_on_boot/karoshi_services
+[ `grep -c -w sshd /opt/karoshi/start_on_boot/karoshi_services` = 0 ] && echo sshd,3 >> /opt/karoshi/start_on_boot/karoshi_services

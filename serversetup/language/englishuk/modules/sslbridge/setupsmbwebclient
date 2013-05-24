@@ -1,0 +1,13 @@
+#Language file for setup_sslbridge
+TITLE="Setup smbwebclient"
+HELPMSG1="This will allow users to access their files from home. Access is via a web browser and allows users to view, upload and download files."
+ACCESSMSG="Smbwebclient can be accessed from the following address"
+FIREWALLHELP="You will need to add a port forwarding rule to your firewall for users to be able to access SSLBridge over the internet."
+COMPLETEDMSG="Setup smbwebclient completed."
+SHOREWALLMSG="Modifying shorewall rules to allow port 20000."
+RESTARTSWMSG="Restarting shorewall"
+SMBPERMMSG="Setting samba mount permissions to allow non root mount."
+VIRTUALSERVERMSG="Configuring apache to run a virtual server on port 20000."
+RESTARTAPACHEMSG="Restarting apache."
+EXTRACTMSG="Extracting files and setting permissions."
+

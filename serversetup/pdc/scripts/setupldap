@@ -1,0 +1,409 @@
+#!/bin/bash
+#setupldap
+#Copyright (C) 2008 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aloughlin@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+#########################
+#Add log entry
+#########################
+echo '##############'setupldap'##############' >> /opt/karoshi/serversetup/install_log
+date >> /opt/karoshi/serversetup/install_log
+touch /opt/karoshi/serversetup/setuplog
+if [ `grep -c "$TITLE" /opt/karoshi/serversetup/setuplog` = 0 ]
+then
+echo setupldap:$TITLE:/opt/karoshi/serversetup/pdc/scripts/setupldap >> /opt/karoshi/serversetup/setuplog
+chmod 0600 /opt/karoshi/serversetup/setuplog
+fi
+
+[ -d /opt/karoshi/.tempdata/ ] || mkdir /opt/karoshi/.tempdata/
+
+[ -e /opt/karoshi/serversetup/variables/language ] || /opt/karoshi/serversetup/changelanguage
+[ -e /opt/karoshi/serversetup/variables/distro ] || /opt/karoshi/serversetup/changedistro
+
+source /opt/karoshi/serversetup/variables/language
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/software
+source /opt/karoshi/serversetup/variables/years
+source /opt/karoshi/serversetup/language/$LANGCHOICE/pdc/setupldap
+source /opt/karoshi/server_network/domain_information/domain_name
+
+#Section flags
+ADDDEFAULTGROUPS=yes
+DO_GROUPMAPS=no
+IMPORTUSERS=yes
+IMPORTMACHINES=yes
+
+#Get domain password
+if test -f /opt/karoshi/serversetup/variables/initial_password.gpg
+then
+grep -w root /etc/shadow | cut -d: -f2 | gpg --no-tty --passphrase-fd 0 /opt/karoshi/serversetup/variables/initial_password.gpg
+LDAPPASS=`cat /opt/karoshi/serversetup/variables/initial_password`
+
+rm -f /opt/karoshi/serversetup/variables/initial_password
+fi
+
+#Make sure service runs at boot
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/ldap
+
+#Add in shadowmax parameter
+[ ! -d /opt/karoshi/server_network/ldap_settings ] && mkdir -p /opt/karoshi/server_network/ldap_settings
+echo 3650 > /opt/karoshi/server_network/ldap_settings/shadowmax
+
+#Make sure samba.schema is there
+if [ -d /etc/ldap/schema ]
+then
+if [ ! -f /etc/ldap/schema/samba.schema ]
+then
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/ldap/samba.schema /etc/ldap/schema/
+chmod 0644 /etc/ldap/schema/samba.schema
+fi
+fi
+
+#Start ldap if not running
+[ `ps -e | grep -c ldap` = 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ldap_start
+
+while [ $LDAPPASS'null' = null ]
+do
+DATA=`yad --image="/opt/karoshi/serversetup/essentials/smalllogo2.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title="$TITLE" --width 400 --wrap --text "$LDAPPASSWDMSG" --field="$LDAPPASSWDMSG2":H`
+LDAPPASS=`echo $DATA | cut -d"|" -f1`
+
+done
+
+ENCRYPTEDPASS=`slappasswd -s $LDAPPASS`
+
+#Encryted password cannot contain / because of sed below
+COUNTER=1
+while [ `echo $ENCRYPTEDPASS | grep -c /` -gt 0 ]
+do
+ENCRYPTEDPASS=`slappasswd -s $LDAPPASS`
+let COUNTER=$COUNTER+1
+[ $COUNTER = 100 ] && break
+done
+
+##############################
+#Configure LDAP
+##############################
+function configure_ldap {
+#Copy in slapd.conf
+echo Copying in slapd.conf,slapd_karoshi.access.conf and ldap.conf
+echo 
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/configfiles/slapd.conf $LDAPPATH
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/configfiles/etc_openldap_ldap.conf $LDAPPATH/ldap.conf
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/configfiles/slapd_karoshi.access.conf $LDAPPATH
+
+echo "_______________________________________________________"
+echo 
+#Edit slapd.conf with new password
+echo Editing slapd.conf
+echo 
+#This doesnt work with a / in the password
+sed -i 's/CHANGETHIS/'$ENCRYPTEDPASS'/g' $LDAPPATH/slapd.conf
+echo "_______________________________________________________"
+echo 
+#Apply changes
+echo restarting ldap
+echo
+service $LDAPVER stop 1>/dev/null 2>/dev/null
+
+if [ -d $LDAPPATH/slapd.d ]
+then
+[ -d $LDAPPATH/slapd.$$ ] && rm -f -R $LDAPPATH/slapd.$$
+mv $LDAPPATH/slapd.d $LDAPPATH/slapd.$$
+mkdir $LDAPPATH/slapd.d
+slaptest -f $LDAPPATH/slapd.conf -F $LDAPPATH/slapd.d
+chown -R openldap:openldap $LDAPPATH/slapd.d
+rm -f /var/lib/ldap/*
+#rm -f -R $LDAPPATH/slapd.d
+fi
+service $LDAPVER start 1>/dev/null 2>/dev/null
+echo "_______________________________________________________"
+echo
+
+#Copy in new smb.conf
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/configfiles/smb_ldap.conf /etc/samba/smb.conf
+sed -i 's/CHANGEHOSTNAME/'$HOSTNAME'/g' /etc/samba/smb.conf
+sed -i 's/CHANGETHISDOMAINNAME/'$SAMBADOMAIN'/g' /etc/samba/smb.conf
+#restart samba
+echo Restarting samba
+echo
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
+echo "_______________________________________________________"
+echo 
+echo Setting samba root ldap password
+echo
+smbpasswd -w $LDAPPASS
+echo "_______________________________________________________"
+echo 
+#Copy in smbldaptools.conf
+echo Copying in smbldaptools.conf
+echo
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/configfiles/smbldap.conf /etc/smbldap-tools/
+sed -i "s/changethisdomain/$SAMBADOMAINlcase/g" /etc/smbldap-tools/smbldap.conf
+#Edit smbldaptools.conf
+echo "_______________________________________________________"
+echo 
+echo editing smbldaptools.conf
+echo 
+SIDID=`net getlocalsid | cut -d' ' -f6`
+SIDLINENO=`grep -n ^SID= /etc/smbldap-tools/smbldap.conf | cut -d: -f1`
+sed -i $SIDLINENO'c'\SID=\""$SIDID"\" /etc/smbldap-tools/smbldap.conf
+#Copy in smbldap_bind.conf
+echo Copying in smbldap_bind.conf
+echo 
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/configfiles/smbldap_bind.conf /etc/smbldap-tools/
+echo "_______________________________________________________"
+echo 
+#Edit smbldap_bind.conf
+echo editing smbldap_bind.conf
+echo 
+PASSLINENO=`grep -n ^masterPw= /etc/smbldap-tools/smbldap_bind.conf | cut -d: -f1`
+sed -i $PASSLINENO'c'\masterPw=\""$LDAPPASS"\" /etc/smbldap-tools/smbldap_bind.conf
+echo "_______________________________________________________"
+echo 
+#Set permissions
+chmod 0644 /etc/smbldap-tools/smbldap.conf
+chmod 0600 /etc/smbldap-tools/smbldap_bind.conf
+
+#Populate ldap with existing users and groups - ldap root password set to random password
+#Change this to be the domain password
+
+LDAPROOTPASS=$LDAPPASS
+echo Populating ldap databases
+echo 
+echo -e ""$LDAPROOTPASS"\n"$LDAPROOTPASS"" | smbldap-populate -u 500 -g 500 
+echo "_______________________________________________________"
+echo
+
+#Change ldap userid start number
+
+echo dn: sambaDomainName=$SAMBADOMAINlcase,dc=karoshi,dc=local > /opt/karoshi/.tempdata/uidstartnumber.$$
+echo changetype: modify >> /opt/karoshi/.tempdata/uidstartnumber.$$
+echo replace: uidNumber >> /opt/karoshi/.tempdata/uidstartnumber.$$
+echo uidNumber: 5001 >> /opt/karoshi/.tempdata/uidstartnumber.$$
+echo - >> /opt/karoshi/.tempdata/uidstartnumber.$$
+echo replace: gidNumber >> /opt/karoshi/.tempdata/uidstartnumber.$$
+echo gidNumber: 5001 >> /opt/karoshi/.tempdata/uidstartnumber.$$
+echo - >> /opt/karoshi/.tempdata/uidstartnumber.$$
+
+ldapmodify -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPROOTPASS -f /opt/karoshi/.tempdata/uidstartnumber.$$
+rm -f /opt/karoshi/.tempdata/uidstartnumber.$$
+
+
+}
+
+function add_default_groups {
+#Import ldif files
+service $LDAPVER stop
+sed "s/S-1-5-21-1563395597-2327927142-1296001331/$SIDID/g" /opt/karoshi/serversetup/all/configfiles/ldap/groups.ldif > /opt/karoshi/.tempdata/groups.ldif
+slapadd -c -l /opt/karoshi/.tempdata/groups.ldif
+rm -f /opt/karoshi/.tempdata/groups.ldif
+}
+
+function do_groupmaps {
+###############################
+#Do groupmaps
+###############################
+if [ $DO_GROUPMAPS = yes ]
+then
+net groupmap cleanup
+net groupmap add rid=512 ntgroup="Domain Admins" unixgroup=tech
+net groupmap modify ntgroup="Domain Admins" unixgroup=tech type=domain
+net groupmap add ntgroup="guests" unixgroup=guests
+net groupmap add ntgroup="exams" unixgroup=exams
+net groupmap add ntgroup="staff" unixgroup=staff
+net groupmap add ntgroup="itadmin" unixgroup=itadmin
+net groupmap add ntgroup="officestaff" unixgroup=officestaff
+net groupmap add ntgroup="nonteachingstaff" unixgroup=nonteachingstaff
+net groupmap add ntgroup="studentstaff" unixgroup=studentstaff
+net groupmap add ntgroup="smt" unixgroup=smt
+net groupmap add ntgroup="bursar" unixgroup=bursar
+net groupmap add ntgroup="pupiloffice" unixgroup=pupiloffice
+
+COUNTER=$STARTYEAR
+         while [  $COUNTER -le $ENDYEAR ]; do
+             net groupmap add ntgroup="yr$COUNTER" unixgroup=yr$COUNTER
+             let COUNTER=COUNTER+1
+         done
+fi
+}
+
+
+function create_users {
+#Import ldif files
+sed "s/S-1-5-21-1563395597-2327927142-1296001331/$SIDID/g" /opt/karoshi/serversetup/all/configfiles/ldap/personnel.ldif > /opt/karoshi/.tempdata/personnel.ldif
+sed "s/S-1-5-21-1563395597-2327927142-1296001331/$SIDID/g" /opt/karoshi/serversetup/all/configfiles/ldap/students.ldif > /opt/karoshi/.tempdata/students.ldif
+sed "s/S-1-5-21-1563395597-2327927142-1296001331/$SIDID/g" /opt/karoshi/serversetup/all/configfiles/ldap/other.ldif > /opt/karoshi/.tempdata/other.ldif
+slapadd -c -l /opt/karoshi/.tempdata/personnel.ldif
+slapadd -c -l /opt/karoshi/.tempdata/students.ldif
+slapadd -c -l /opt/karoshi/.tempdata/other.ldif
+#Make sure that permissions are correct in the ldap folder
+chown $LDAPUSER.$LDAPUSER -R /var/lib/ldap
+#Start ldap
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ldap_start
+sleep 1
+GUESTACCOUNTS=30
+TECHACCOUNTS=4
+EXAMACCOUNTS=40
+TRAININGACCOUNTS=30
+
+#Create tech user accounts
+COUNTER=1
+while [  $COUNTER -le $TECHACCOUNTS ]; do
+[ -d /home/users/techstaff/tech$COUNTER ] || mkdir /home/users/techstaff/tech$COUNTER
+chmod 0600 -R /home/users/techstaff/tech$COUNTER
+chmod u+X -R /home/users/techstaff/tech$COUNTER
+chown tech$COUNTER.tech -R /home/users/techstaff/tech$COUNTER
+smbldap-usermod --shadowMax 3650 tech$COUNTER 1>/dev/null
+let COUNTER=COUNTER+1
+done
+#Create guest accounts
+COUNTER=1
+while [  $COUNTER -le $GUESTACCOUNTS ]; do
+#GUESTPASSWORD=`echo $RANDOM`
+#echo -e "$GUESTPASSWORD""\n""$GUESTPASSWORD" | smbldap-passwd guest$COUNTER 1>/dev/null
+[ -d /home/users/guests/guest$COUNTER ] || mkdir /home/users/guests/guest$COUNTER
+chmod 0600 -R /home/users/guests/guest$COUNTER
+chmod u+X -R /home/users/guests/guest$COUNTER
+chown guest$COUNTER.guests -R /home/users/guests/guest$COUNTER
+smbldap-usermod --shadowMax 3650 guest$COUNTER 1>/dev/null
+let COUNTER=COUNTER+1
+done
+#Create training accounts
+COUNTER=1
+while [  $COUNTER -le $TRAININGACCOUNTS ]; do
+echo $ADDUSERMSG - training$COUNTER
+#TRAINPASSWORD=`echo $RANDOM`
+#echo -e "$TRAINPASSWORD""\n""$TRAINPASSWORD" | smbldap-passwd training$COUNTER 1>/dev/null
+[ -d /home/users/guests/training$COUNTER ] || mkdir /home/users/guests/training$COUNTER
+chmod 0600 -R /home/users/guests/training$COUNTER
+chmod u+X -R /home/users/guests/training$COUNTER
+chown training$COUNTER.guests -R /home/users/guests/training$COUNTER
+smbldap-usermod --shadowMax 3650 training$COUNTER 1>/dev/null
+let COUNTER=COUNTER+1
+done
+#Create exam accounts
+COUNTER=1
+while [  $COUNTER -le $EXAMACCOUNTS ]; do
+echo $ADDUSERMSG - exam$COUNTER
+#EXAMPASSWORD=`echo $RANDOM`
+#echo -e "$EXAMPASSWORD""\n""$EXAMPASSWORD" | smbldap-passwd exam$COUNTER 1>/dev/null
+[ -d /home/users/exams/exam$COUNTER ] || mkdir /home/users/exams/exam$COUNTER
+chmod 0600 -R /home/users/exams/exam$COUNTER
+chmod u+X -R /home/users/exams/exam$COUNTER
+chown exam$COUNTER.exams -R /home/users/exams/exam$COUNTER
+smbldap-usermod --shadowMax 3650 exam$COUNTER 1>/dev/null
+let COUNTER=COUNTER+1
+done
+#Create profileuser
+echo $ADDUSERMSG - profileuser
+#PROFILEPASSWORD=`echo $RANDOM`
+#echo -e "$PROFILEPASSWORD""\n""$PROFILEPASSWORD" | smbldap-passwd profileuser 1>/dev/null
+[ -d /home/users/profileuser ] || mkdir /home/users/profileuser
+chmod 0600 -R /home/users/profileuser
+chmod u+X -R /home/users/profileuser
+chown profileuser.profileuser -R /home/users/profileuser
+chown -R profileuser /home/applications/profiles/profileuser
+smbldap-usermod --shadowMax 3650 profileuser 1>/dev/null
+
+#Add users to the domain admins group
+smbldap-usermod profileuser -G 512
+smbldap-usermod tech1 -G 512
+smbldap-usermod tech2 -G 512
+smbldap-usermod tech3 -G 512
+smbldap-usermod tech4 -G 512
+
+}
+
+#!/bin/sh
+function show_info {
+yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --tail --no-buttons --text-info
+}
+function getyadpid {
+echo $TITLE - $COMPLETEDMSG
+sleep 2
+YADPID=`ps aux | grep yad | grep '\--tail' | sed 's/ * / /g' | cut -d' ' -f2`
+}
+
+function this_server_ldap {
+############################
+#Configure this server to use LDAP for authentication
+############################
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/configfiles/nsswitch.conf /etc/
+[ -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/configfiles/system-auth ] && cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/configfiles/system-auth /etc/pam.d/
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/configfiles/etc_ldap.conf /etc/ldap.conf
+
+touch /etc/ldap.secret
+chmod 0600 /etc/ldap.secret
+echo $LDAPPASS > /etc/ldap.secret
+}
+
+########################
+#Run functions
+########################
+function run_functions {
+configure_ldap
+add_default_groups
+#do_groupmaps
+this_server_ldap
+create_users
+#Set lockout
+pdbedit -P "bad lockout attempt" -C 10 1>/dev/null 2>> /opt/karoshi/serversetup/install_log
+pdbedit -P "lockout duration" -C 3 1>/dev/null 2>> /opt/karoshi/serversetup/install_log
+getyadpid
+if [ $YADPID'null' != null ]
+then
+kill $YADPID
+fi
+}
+run_functions 2>> /opt/karoshi/serversetup/install_log | show_info
+
+#Delete tempfiles
+rm -f /etc/password_import
+rm -f /etc/samba/smbpassword_import
+rm -f /opt/karoshi/.tempdata/ldapstatus
+#Set karoshi user password for ldap
+echo -e "$LDAPPASS""\n""$LDAPPASS" | smbldap-passwd karoshi 1>/dev/null
+#Delete ldif files
+rm -f -R /opt/karoshi/.tempdata/ldap
+echo ldapenabled > /opt/karoshi/serversetup/variables/ldapstatus
+
+########################
+#Create primarygroups.txt - windows 7 workaround for kix
+########################
+[ -f /var/lib/samba/netlogon/primarygroups.txt ] && rm -f /var/lib/samba/netlogon/primarygroups.txt
+for USERDETAILS in `getent passwd | grep /home/users/`
+do
+KAROSHIUSER=`echo $USERDETAILS | cut -d: -f1 | sed 's/,//g'`
+PRIGROUP=`id -g -n $KAROSHIUSER`
+echo $KAROSHIUSER,$PRIGROUP >> /var/lib/samba/netlogon/primarygroups.txt
+done
+
+
+
+##########################################
+#Restart sure that samba is running
+##########################################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 2>> /opt/karoshi/serversetup/install_log
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 2>> /opt/karoshi/serversetup/install_log
+exit

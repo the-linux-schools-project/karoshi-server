@@ -1,0 +1,1034 @@
+#!/bin/bash
+#setup_web_controls
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+###########################
+#Check for interactive mode
+###########################
+if [ `echo $1 | tr -cd 'A-Za-z0-9'`null = null ]
+then
+INTERACTIVE_MODE=no
+else
+if [ `echo $1 | tr -cd 'A-Za-z0-9'` = interactive ]
+then
+INTERACTIVE_MODE=yes
+else
+INTERACTIVE_MODE=no
+fi
+fi
+
+#Check to see which version of samba we are using
+SAMBAVER=samba3
+[ -f /usr/local/sbin/samba ] && SAMBAVER=samba4
+
+#########################
+#Add log entry
+#########################
+echo '##############'setup_web_controls'##############' >> /opt/karoshi/serversetup/install_log
+
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+source /opt/karoshi/server_network/domain_information/domain_name
+###########################
+#Demo mode - disables some functions
+###########################
+#Disabled functions: change_management_passwords,custom_command,remote_management_add,remote_management_change_password,remote_management_delete
+#remote_management_edit,remote_management_edit2,remote_management_restrict,shutdown
+DEMO_MODE=no
+###########################
+#Configure apache_karoshi
+###########################
+
+#Create certificate
+if [ $SAMBAVER = samba4 ]
+then
+if [ ! -f /etc/ssl/webmanagement/server_web_management.key ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert_web_management
+fi
+fi
+#Configure a separate apache to run on ports 50001 and 50002 with user apache_karoshi
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/scripts/configure_karoshi_web_management
+#Get School Name
+[ -f /opt/karoshi/server_network/web_controls/institute_name ] && SCHOOL_NAME=`sed -n 1,1p /opt/karoshi/server_network/web_controls/institute_name`
+#Add school name to language file
+NAMELINENO=`grep -n ^SCHOOL_NAME= /opt/karoshi/serversetup/web_controls/language/englishuk/menus/menu | cut -d: -f1`
+sed -i $NAMELINENO'c'\SCHOOL_NAME=\""$SCHOOL_NAME"\" /opt/karoshi/serversetup/web_controls/language/englishuk/menus/menu
+
+KAROSHI_SERVER=`hostname`
+
+#Language
+TITLE="Setup Linux Schools Web Management"
+PLEASE=Please
+WAIT=Wait
+STATUSMSG1="Copying web management files"
+EMAILGMSG="Enter in your email domain."
+EMAILHELP="This is email used to form the email address for each user which is stored in the LDAP database."
+COMPLETEDMSG="Completed"
+CONNECTIONMSG1="The web management tools can be accessed from:"
+CONNECTIONMSG2="https://pdc.internal:50001 - internal access"
+CONNECTIONMSG3="https://pdc.internal:50002 - external access"
+CONNECTIONMSG4="Port 50002 needs a client certificate available in the itadmin share."
+DEMOWARNMSG="WARNING - Web Management is in DEMO mode."
+IMPORTANTMSG="IMPORTANT - Web Management Access."
+CREATEUSERMSG="You will need to create a web management user to administer the server network."
+USERNAMEMSG="Username"
+PASSWORDMSG="Password"
+CONFIRMMSG="Confirm"
+ERRORMSG1="The username cannot be blank."
+ERRORMSG2="The password cannot be blank."
+ERRORMSG3="The passwords do not match."
+
+#Create root ssh folder
+if [ ! -d /root/.ssh ]
+then
+mkdir /root/.ssh
+chmod 0700 /root/.ssh
+fi
+###########################
+#Ask for email domain - needed for ldap user creation
+###########################
+#Get mail domain
+if [ -f /opt/karoshi/serversetup/variables/maildomain ]
+then
+EMAILDOMAIN2=`sed -n 1,1p /opt/karoshi/serversetup/variables/maildomain`
+else
+EMAILDOMAIN2=emaildomain.com
+if [ $INTERACTIVE_MODE = yes ]
+then
+DATA=`--title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 300 --form --field="$EMAILGMSG"`
+EMAILDOMAIN=`echo $DATA | cut -d"|" -f1`
+
+EMAILDOMAIN=`echo $EMAILDOMAIN | sed 's/ //g'`
+[ $EMAILDOMAIN'null' != null ] && echo $EMAILDOMAIN > /opt/karoshi/serversetup/variables/maildomain
+fi
+fi
+
+[ ! -d /opt/karoshi/server_network/ups ] && mkdir -p /opt/karoshi/server_network/ups
+cp -f /opt/karoshi/serversetup/"Important Information"/ups-model-information.csv /opt/karoshi/server_network/ups/
+
+[ ! -d /opt/karoshi/server_network/servers ] && mkdir -p /opt/karoshi/server_network/servers
+[ ! -d /opt/karoshi/server_network/servers/$HOSTNAME ] && mkdir -p /opt/karoshi/server_network/servers/$HOSTNAME
+
+
+[ ! -d /opt/karoshi/server_network/dansguardian/media_controls ] && mkdir -p /opt/karoshi/server_network/dansguardian/media_controls
+chown root.apache_karoshi /opt/karoshi/server_network/dansguardian/media_controls
+chmod 0770 /opt/karoshi/server_network/dansguardian/media_controls
+
+#############################
+#make group file information for web managemserver_network logon information
+#############################
+source /opt/karoshi/serversetup/variables/years
+[ ! -d /opt/karoshi/server_network/group_information ] && mkdir -p /opt/karoshi/server_network/group_information
+
+function install_web_management {
+#Back up user images if they exist
+if [ -d /var/www/html_karoshi/images/user_images ]
+then
+mv /var/www/html_karoshi/images/user_images /var/www/user_images.$$
+fi
+
+#Move /var/www/html_karoshi/admin/ocs
+[ -d /var/www/html_karoshi/admin/ocs ] && mv /var/www/html_karoshi/admin/ocs /var/www/ocs.$$
+
+#Delete folders
+[ -d /var/www/cgi-bin_karoshi/ ] && rm -f -R  /var/www/cgi-bin_karoshi/
+[ -d /var/www/html_karoshi/ ] && rm -f -R /var/www/html_karoshi/
+[ -d /opt/karoshi/web_controls/exec ] && rm -f -R /opt/karoshi/web_controls/exec
+[ -d /var/www/cgi-bin/karoshi/ ] && rm -f -R  /var/www/cgi-bin/karoshi/
+
+#Create folders
+[ -d /var/www/cgi-bin_karoshi/ ] || mkdir /var/www/cgi-bin_karoshi/
+[ -d /var/www/html_karoshi/ ] || mkdir /var/www/html_karoshi/
+[ -d /var/www/cgi-bin_karoshi/admin ] || mkdir /var/www/cgi-bin_karoshi/admin
+[ -d /var/www/cgi-bin_karoshi/tech ] || mkdir /var/www/cgi-bin_karoshi/tech
+[ -d /var/www/cgi-bin_karoshi/staff ] || mkdir /var/www/cgi-bin_karoshi/staff
+[ -d /var/www/cgi-bin_karoshi/all ] || mkdir /var/www/cgi-bin_karoshi/all
+[ -d /var/www/html_karoshi/ ] || mkdir /var/www/html_karoshi/
+[ -d /var/www/html_karoshi/admin ] || mkdir /var/www/html_karoshi/admin
+[ -d /var/www/html_karoshi/tech ] || mkdir /var/www/html_karoshi/tech
+[ -d /var/www/html_karoshi/staff ] || mkdir /var/www/html_karoshi/staff
+[ -d /var/www/html_karoshi/all ] || mkdir /var/www/html_karoshi/all
+[ -d /opt/karoshi/web_controls ] || mkdir /opt/karoshi/web_controls
+[ -d /opt/karoshi/web_controls/exec ] || mkdir /opt/karoshi/web_controls/exec
+[ -d /opt/karoshi/web_controls/user_prefs ] || mkdir /opt/karoshi/web_controls/user_prefs
+[ -d /opt/karoshi/logs/karoshi_web_management ] || mkdir -p /opt/karoshi/logs/karoshi_web_management
+[ -d /var/www/ocs.$$ ] && mv /var/www/ocs.$$ /var/www/html_karoshi/admin/ocs
+
+chmod 0600 -R /opt/karoshi/logs
+chmod u+X -R /opt/karoshi/logs
+chown -R root:root /opt/karoshi/logs
+#Copy in files
+cp -f -R /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/* /var/www/cgi-bin_karoshi/admin/
+if [ $SAMBAVER = samba4 ]
+then
+cp -f -R /opt/karoshi/serversetup/web_controls/cgi/pdc/admin_samba4/* /var/www/cgi-bin_karoshi/admin/
+fi
+cp -f -R /opt/karoshi/serversetup/web_controls/cgi/pdc/tech/* /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/images/favicon.ico /var/www/html_karoshi/
+chmod 0440 /var/www/html_karoshi/favicon.ico
+chown root:apache_karoshi /var/www/html_karoshi/favicon.ico
+chown root:root /var/www
+chmod 0755 /var/www
+chmod 0755 /opt/karoshi/serversetup/all/
+#########################
+#Features for staff
+#########################
+
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_room_controls_fm.cgi /var/www/cgi-bin_karoshi/staff/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_room_controls.cgi /var/www/cgi-bin_karoshi/staff/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_room_controls2.cgi /var/www/cgi-bin_karoshi/staff/
+
+cp -f /opt/karoshi/serversetup/web_controls/html/pdc/staff/index.html /var/www/html_karoshi/staff/
+
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/staff/mobile_menu.cgi /var/www/cgi-bin_karoshi/staff/
+
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/staff/dg_view_student_user_logs.cgi /var/www/cgi-bin_karoshi/staff/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/staff/dg_view_student_user_logs_fm.cgi /var/www/cgi-bin_karoshi/staff/
+
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/staff/request_new_users_fm.cgi /var/www/cgi-bin_karoshi/staff/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/staff/request_new_users.cgi /var/www/cgi-bin_karoshi/staff/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/staff/request_delete_users_fm.cgi /var/www/cgi-bin_karoshi/staff/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/staff/request_delete_users.cgi /var/www/cgi-bin_karoshi/staff/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/staff/change_student_password.cgi /var/www/cgi-bin_karoshi/staff/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/staff/change_student_password_fm.cgi /var/www/cgi-bin_karoshi/staff/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/staff/reset_student_password_fm.cgi /var/www/cgi-bin_karoshi/staff/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/staff/reset_student_password.cgi /var/www/cgi-bin_karoshi/staff/
+
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/staff/helpdesk_add_fm.cgi /var/www/cgi-bin_karoshi/staff/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/staff/helpdesk_add.cgi /var/www/cgi-bin_karoshi/staff/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/staff/helpdesk_view_fm.cgi /var/www/cgi-bin_karoshi/staff/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/staff/helpdesk_action_fm.cgi /var/www/cgi-bin_karoshi/staff/
+
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/staff/lockout_reset.cgi /var/www/cgi-bin_karoshi/staff/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/staff/lockout_reset_fm.cgi /var/www/cgi-bin_karoshi/staff/
+
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/staff/printers.cgi /var/www/cgi-bin_karoshi/staff/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/staff/printers_control.cgi /var/www/cgi-bin_karoshi/staff/
+
+cp -f -R /opt/karoshi/serversetup/web_controls/cgi/pdc/all/* /var/www/cgi-bin_karoshi/all/
+
+
+
+#Create keytab for the web management
+if [ $SAMBAVER = samba4 ]
+then
+echo "root:127.0.0.1:-:$HOSTNAME:HTTP:webmanagement:manage.$REALM:apache_karoshi:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
+fi
+######################
+#Htaccess files
+######################
+cp -f /opt/karoshi/serversetup/web_controls/htaccess/admin/.htaccess /var/www/cgi-bin_karoshi/admin/
+cp -f /opt/karoshi/serversetup/web_controls/htaccess/tech/.htaccess /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/htaccess/staff/.htaccess /var/www/cgi-bin_karoshi/staff/
+cp -f /opt/karoshi/serversetup/web_controls/htaccess/all/.htaccess /var/www/cgi-bin_karoshi/all/
+cp -f /opt/karoshi/serversetup/web_controls/htaccess/admin/.htaccess /var/www/html_karoshi/admin/
+cp -f /opt/karoshi/serversetup/web_controls/htaccess/tech/.htaccess /var/www/html_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/htaccess/staff/.htaccess /var/www/html_karoshi/staff/
+cp -f /opt/karoshi/serversetup/web_controls/htaccess/all/.htaccess /var/www/html_karoshi/
+cp -f /opt/karoshi/serversetup/web_controls/htaccess/all/.htaccess /var/www/html_karoshi/all/
+
+
+
+#Get the realm information
+if [ $SAMBAVER = samba4 ]
+then
+source /opt/karoshi/server_network/domain_information/domain_name
+
+#Get staff group id
+STAFFGID=`getent group staff | cut -d: -f3`
+
+#Create htaccess files for staff
+echo -e "
+
+Order deny,allow
+Deny from All
+AuthName \"Karoshi Web Control\"
+
+AuthType Kerberos
+Krb5Keytab /etc/keytabs/webmanagement.keytab
+KrbMethodNegotiate on
+KrbMethodK5Passwd on
+KrbAuthoritative on
+KrbLocalUserMapping on
+
+#AuthType Basic
+#AuthBasicProvider ldap
+#AuthzLDAPAuthoritative on
+AuthLDAPUrl ldap://127.0.0.1/CN=personnel,CN=Users,$LDAPBASE?CN
+
+Require valid-user
+
+Require ldap-group CN=staff,CN=Users,$LDAPBASE
+Require ldap-attribute primaryGroupID=$STAFFGID
+Satisfy any
+
+ErrorDocument 401 \"<html><meta http-equiv=\\\"refresh\\\" content=\\\"0;url=/cgi-bin/access_denied.cgi\\\"></html>\"
+ErrorDocument 403 \"<html><meta http-equiv=\\\"refresh\\\" content=\\\"0;url=/cgi-bin/access_forbidden.cgi\\\"></html>\"
+
+" > /var/www/cgi-bin_karoshi/staff/.htaccess
+cp /var/www/cgi-bin_karoshi/staff/.htaccess /var/www/html_karoshi/staff/
+fi
+
+#################################
+#Copy in tech html scripts
+#################################
+cp -f /opt/karoshi/serversetup/web_controls/html/pdc/admin/index.html /var/www/html_karoshi/tech/
+#Replace admin with tech paths
+for HTMLPAGE in /var/www/html_karoshi/tech/*;
+do
+if [ $HTMLPAGE != /var/www/html_karoshi/tech/karoshi_template ]
+then
+sed -i 's/\/cgi-bin\/admin/\/cgi-bin\/tech/g' $HTMLPAGE
+fi
+done
+#################################
+#Copy in tech cgi scripts
+#################################
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/redirect.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/set_default_page.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/samba_logs_ip_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/samba_logs_ip.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/samba_logs_share_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/samba_logs_share.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/samba_logs_user_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/samba_logs_user.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/samba_logs_machine_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/samba_logs_machine.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/add_user_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/add_user.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/change_password_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/change_password.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/change_primary_group_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/change_primary_group.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/change_username_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/change_username.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/domain_information.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/groups_change_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/groups_change.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/printers_control.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_room_controls_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_room_controls.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_room_controls2.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/helpdesk_view_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/helpdesk_add_fm.cgi /var/www/cgi-bin_karoshi/tech/
+
+
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/printer_accounting_view_logs_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/printer_accounting_view_logs.cgi /var/www/cgi-bin_karoshi/tech/
+
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/printer_accounting_status_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/printer_accounting_status.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/printer_accounting_add_user_limit_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/printer_accounting_edit_limits.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/printer_accounting_group_limits_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/printer_accounting_view_usage.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/printer_accounting_view_user_usage_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/printer_accounting_user_limits_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/printer_accounting_edit_limits_fm.cgi /var/www/cgi-bin_karoshi/tech/
+
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/printer_accounting_view_group_usage_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/printers_control.cgi /var/www/cgi-bin_karoshi/tech/
+
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/reset_password_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/reset_password.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/remote_management_access_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/remote_management_access.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/remote_management_change_password_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/remote_management_change_password.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/remote_management_change_language.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/remote_management_change_language2.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/remote_management_change_theme.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/remote_management_change_theme2.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_part_allowed_sites.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_banned_sites_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_banned_sites.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_gen_logs_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_allowed_sites_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_allowed_sites.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_ssl_allowed_sites_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_ssl_allowed_sites.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_gen_logs.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_media_controls_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_media_controls.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_part_banned_sites_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_part_banned_sites.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_part_allowed_sites_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_part_allowed_sites.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/activate_internet_changes_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/activate_internet_changes.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_global_usage_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_global_usage.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_user_usage_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_user_usage.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_banned_sites_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_banned_sites.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_banned_sites2.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_allowed_sites_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_allowed_sites.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_allowed_sites2.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_ssl_allowed_sites_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_ssl_allowed_sites.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_ssl_allowed_sites2.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_part_banned_sites_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_part_banned_sites.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_part_banned_sites2.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_part_allowed_sites_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_part_allowed_sites.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_part_allowed_sites2.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_user_logs_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_user_logs.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_computer_logs_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_computer_logs.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_site_logs_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_site_logs.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_site_logs2.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_top_sites_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_top_sites.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_ban_user.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_ban_user2.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_banned_users_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_banned_users.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_banned_users2.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_wildcard_ban_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_wildcard_ban.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_wildcard_bans_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_wildcard_bans.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_view_wildcard_bans2.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/incident_log_add.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/incident_log_add2.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/incident_log_view.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/incident_log_view_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/ban_user_account.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/ban_user_account2.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/banned_users_view_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/banned_users_view.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/banned_users_view2.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/mon_status.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/asset_register_view.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/client_boot_controls_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/client_boot_controls.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/client_boot_controls2.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/web_management_upload_files_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/web_management_upload_files.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/web_management_upload_files_choose_server_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/web_management_upload_files_select_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/web_management_upload_files_select.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/web_management_view_files_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/web_management_view_files.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/web_management_view_files_choose_server_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/web_management_delete_files.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/web_management_create_folder_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/web_management_create_folder.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/web_management_delete_folder_choose_server_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/web_management_delete_folder_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/web_management_delete_folder.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/logout.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/remote_management_change_timeout_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/remote_management_change_timeout.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/generate_classroom_lists_asset_register_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/generate_classroom_lists_asset_register.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/lockout_reset.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/lockout_reset_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/view_acceptable_use_authorisations_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/view_acceptable_use_authorisations.cgi /var/www/cgi-bin_karoshi/tech/
+
+
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/generate_classroom_lists_csv_upload_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/generate_classroom_lists_csv_upload.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/generate_classroom_lists_csv_process.cgi /var/www/cgi-bin_karoshi/tech/
+
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/user_image_upload_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/user_image_upload.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/user_image_process.cgi /var/www/cgi-bin_karoshi/tech/
+
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/user_image_bulk_upload_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/user_image_bulk_upload.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/user_image_bulk_process.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/bulk_user_creation_import_enrollment_numbers.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/bulk_user_creation_import_enrollment_numbers_fm.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/bulk_user_creation_import_enrollment_numbers_process.cgi /var/www/cgi-bin_karoshi/tech/
+
+#Replace admin with tech paths
+for CGISCRIPT in /var/www/cgi-bin_karoshi/tech/*;
+do
+sed -i 's/\/cgi-bin\/admin/\/cgi-bin\/tech/g' $CGISCRIPT
+sed -i 's/generate_navbar_admin/generate_navbar_tech/g' $CGISCRIPT
+done
+for CGISCRIPT in /var/www/cgi-bin_karoshi/tech/*;
+do
+sed -i 's/\/opt\/karoshi\/web_controls\/web_access_admin/\/opt\/karoshi\/web_controls\/web_access_tech/g' $CGISCRIPT
+done
+
+#Replace admin with staff paths
+for CGISCRIPT in /var/www/cgi-bin_karoshi/staff/*;
+do
+sed -i 's/\/cgi-bin\/admin/\/cgi-bin\/staff/g' $CGISCRIPT
+sed -i 's/generate_navbar_admin/generate_navbar_staff/g' $CGISCRIPT
+done
+for CGISCRIPT in /var/www/cgi-bin_karoshi/tech/*;
+do
+sed -i 's/\/opt\/karoshi\/web_controls\/web_access_admin/\/opt\/karoshi\/web_controls\/web_access_staff/g' $CGISCRIPT
+done
+
+#main menu
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/menu.cgi /var/www/cgi-bin_karoshi/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/blank.cgi /var/www/cgi-bin_karoshi/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/access_denied.cgi /var/www/cgi-bin_karoshi/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/access_forbidden.cgi /var/www/cgi-bin_karoshi/
+
+chmod -R 0550 /var/www/cgi-bin_karoshi/
+chown -R root:apache_karoshi /var/www/cgi-bin_karoshi/
+
+cp -f -R /opt/karoshi/serversetup/web_controls/html/pdc/index.html /var/www/html_karoshi/
+cp -f -R /opt/karoshi/serversetup/web_controls/html/pdc/style.css /var/www/html_karoshi/
+cp -f -R /opt/karoshi/serversetup/web_controls/html/pdc/admin/* /var/www/html_karoshi/admin/
+cp -f -R /opt/karoshi/serversetup/web_controls/html/pdc/all/* /var/www/html_karoshi/all/
+cp -f -R /opt/karoshi/serversetup/web_controls/images /var/www/html_karoshi/
+cp -f -R /opt/karoshi/serversetup/web_controls/html/pdc/css /var/www/html_karoshi/
+
+if [ $SAMBAVER = samba4 ]
+then
+rm /var/www/html_karoshi/all/js/ldap.php
+mv /var/www/html_karoshi/all/js/ldap_samba4.php /var/www/html_karoshi/all/js/ldap.php
+sed -i 's/LDAPBASE/'$LDAPBASE'/g' /var/www/html_karoshi/all/js/ldap.php
+fi
+
+if [ -f /opt/karoshi/web_controls/web_admin_restrictions ]
+then
+RESTRICT_COUNT=`cat /opt/karoshi/web_controls/web_admin_restrictions | wc -l`
+COUNTER=1
+if [ $RESTRICT_COUNT -gt 0 ]
+then
+echo Order deny,allow  >> /var/www/html_karoshi/admin/.htaccess
+echo Deny from all >> /var/www/html_karoshi/admin/.htaccess
+echo Order deny,allow  >> /var/www/cgi-bin_karoshi/admin/.htaccess
+echo Deny from all >> /var/www/cgi-bin_karoshi/admin/.htaccess
+while [ $COUNTER -le $RESTRICT_COUNT ]
+do
+TCPIPENTRY=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/web_controls/web_admin_restrictions | cut -d: -f1`
+echo Allow from $TCPIPENTRY >> /var/www/html_karoshi/.htaccess
+echo Allow from $TCPIPENTRY >> /var/www/html_karoshi/admin/.htaccess
+echo Allow from $TCPIPENTRY >> /var/www/cgi-bin_karoshi/admin/.htaccess
+let COUNTER=$COUNTER+1
+done
+fi
+fi
+
+if [ -f /opt/karoshi/web_controls/web_tech_restrictions ]
+then
+RESTRICT_COUNT=`cat /opt/karoshi/web_controls/web_tech_restrictions | wc -l`
+COUNTER=1
+if [ $RESTRICT_COUNT -gt 0 ]
+then
+echo Order deny,allow  >> /var/www/html_karoshi/tech/.htaccess
+echo Deny from all >> /var/www/html_karoshi/tech/.htaccess
+echo Order deny,allow  >> /var/www/cgi-bin_karoshi/tech/.htaccess
+echo Deny from all >> /var/www/cgi-bin_karoshi/tech/.htaccess
+while [ $COUNTER -le $RESTRICT_COUNT ]
+do
+TCPIPENTRY=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/web_controls/web_tech_restrictions | cut -d: -f1`
+echo Allow from $TCPIPENTRY >> /var/www/html_karoshi/.htaccess
+echo Allow from $TCPIPENTRY >> /var/www/html_karoshi/tech/.htaccess
+echo Allow from $TCPIPENTRY >> /var/www/cgi-bin_karoshi/tech/.htaccess
+let COUNTER=$COUNTER+1
+done
+fi
+fi
+
+#Copy in backed up user images if they exist
+if [ -d /var/www/user_images.$$ ]
+then
+mv /var/www/user_images.$$ /var/www/html_karoshi/images/user_images
+fi
+
+chmod 0440 -R /var/www/html_karoshi/
+chmod u+X,g+X -R /var/www/html_karoshi/
+chown -R root:apache_karoshi /var/www/html_karoshi/
+
+[ -f /opt/karoshi/web_controls/group_dropdown_def ] && mv /opt/karoshi/web_controls/group_dropdown_def /opt/karoshi/web_controls/group_dropdown_def.$$
+cp -f /opt/karoshi/serversetup/web_controls/scripts/* /opt/karoshi/web_controls/ 2>/dev/null
+[ -f /opt/karoshi/web_controls/group_dropdown_def.$$ ] && mv -f /opt/karoshi/web_controls/group_dropdown_def.$$ /opt/karoshi/web_controls/group_dropdown_def
+cp -f -R /opt/karoshi/serversetup/web_controls/scripts/exec/pdc/* /opt/karoshi/web_controls/exec/
+[ $DEMO_MODE = yes ] && cp -f -R /opt/karoshi/serversetup/web_controls/scripts/exec/pdc_demo/* /opt/karoshi/web_controls/exec/
+
+[ $SAMBAVER = samba4 ] && cp -f -R /opt/karoshi/serversetup/web_controls/scripts/exec/pdc_samba4/* /opt/karoshi/web_controls/exec/
+
+cp -f /opt/karoshi/serversetup/web_controls/allowed_custom_commands /opt/karoshi/web_controls
+cp -f -R /opt/karoshi/serversetup/web_controls/language /opt/karoshi/web_controls/
+chmod 0755 /opt/karoshi/web_controls
+chmod 0700 /opt/karoshi/web_controls/rotate_log
+chmod 0700 /opt/karoshi/web_controls/generate_md5sums
+chmod 0600 /opt/karoshi/web_controls/allowed_custom_commands
+chmod -R 0700 /opt/karoshi/web_controls/exec
+chmod -R 0640 /opt/karoshi/web_controls/language
+chmod -R u+X,g+X /opt/karoshi/web_controls/language
+chown -R root:apache_karoshi /opt/karoshi/web_controls/language
+chmod -R 0640 /opt/karoshi/web_controls/user_prefs
+chmod -R u+X,g+X /opt/karoshi/web_controls/user_prefs
+chown -R root:apache_karoshi /opt/karoshi/web_controls/user_prefs
+#Change perms on variables folder
+chmod 0644 -R /opt/karoshi/serversetup/variables/
+chmod u+X,g+X,o+X -R /opt/karoshi/serversetup/variables/
+#Generate md5checksums
+/opt/karoshi/web_controls/generate_md5sums
+}
+
+##############################
+#Display progress box
+##############################
+WAITTIME=1
+if [ $INTERACTIVE_MODE = yes ]
+then
+install_web_management
+else
+install_web_management |
+(
+echo "10%" ; sleep $WAITTIME
+echo "20%" ; sleep $WAITTIME
+echo "30%" ; sleep $WAITTIME
+echo "40%" ; sleep $WAITTIME
+echo "50%" ; sleep $WAITTIME
+echo "60%" ; sleep $WAITTIME
+echo "70%" ; sleep $WAITTIME
+echo "80%" ; sleep $WAITTIME
+echo "90%" ; sleep $WAITTIME
+echo "100%" ; sleep $WAITTIME
+)
+fi
+
+touch /opt/karoshi/web_controls/web_access_tech
+chmod 0640 /opt/karoshi/web_controls/web_access_tech
+chown root:apache_karoshi /opt/karoshi/web_controls/web_access_tech
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ]
+then
+CREATE_MANAGEMENT_USER=yes
+else
+CREATE_MANAGEMENT_USER=no
+fi
+
+if [ $INTERACTIVE_MODE != yes ]
+then
+CREATE_MANAGEMENT_USER=no
+fi
+
+touch /opt/karoshi/web_controls/web_access_admin
+chmod 0640 /opt/karoshi/web_controls/web_access_admin
+chown root:apache_karoshi /opt/karoshi/web_controls/web_access_admin
+
+###########################
+#Create admin htpassword file for web management access
+###########################
+if [ $CREATE_MANAGEMENT_USER = yes ]
+then
+#Get details for new web management user.
+function get_new_user {
+DATA=`yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo3.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --form --text "$CREATEUSERMSG" --field="$USERNAMEMSG" --field="$PASSWORDMSG:H" --field="$CONFIRMMSG:H" --button=Ok`
+NEWUSERNAME=`echo $DATA | cut -d"|" -f1`
+NEWUSERPASSWORD=`echo $DATA | cut -d"|" -f2`
+CHECKUSERPASSWORD=`echo $DATA | cut -d"|" -f3`
+}
+
+function check_user_details {
+DETAILCHECK=ok
+if [ $NEWUSERNAME'null' = null ]
+then
+DETAILCHECK=error
+yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo3.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=3  --text="$ERRORMSG1" --no-buttons
+elif [ $NEWUSERPASSWORD'null' = null ] || [ $CHECKUSERPASSWORD'null' = null ]
+then
+DETAILCHECK=error
+yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo3.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=3 --text="$ERRORMSG2" --no-buttons
+elif [ $NEWUSERPASSWORD != $CHECKUSERPASSWORD ]
+then
+DETAILCHECK=error
+yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo3.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=3 --text="$ERRORMSG3" --no-buttons
+fi
+}
+
+get_new_user
+check_user_details
+while [  $DETAILCHECK = error ]
+do
+get_new_user
+check_user_details
+done
+
+htpasswd -b /opt/karoshi/web_controls/web_access_admin $NEWUSERNAME $NEWUSERPASSWORD
+echo DEFAULTPAGE=setup_wizard.cgi > /opt/karoshi/web_controls/user_prefs/$NEWUSERNAME
+chown apache_karoshi /opt/karoshi/web_controls/user_prefs/$NEWUSERNAME
+
+###########################
+#Add data to admin list
+###########################
+[ ! -f /opt/karoshi/web_controls/remote_management_users ] && ( touch /opt/karoshi/web_controls/remote_management_users ; chmod 0600 /opt/karoshi/web_controls/remote_management_users )
+#Check the remote management user does not already exist.
+if [ `cut -d: -f1 /opt/karoshi/web_controls/remote_management_users | grep -c -w $NEWUSERNAME` = 0 ]
+then
+echo $NEWUSERNAME:::Network_Manager:yes:1 >> /opt/karoshi/web_controls/remote_management_users
+fi
+fi
+
+#Generate sudo
+[ -f /etc/sudoers_karoshi_web_backup ] || cp /etc/sudoers /etc/sudoers_karoshi_web_backup
+#cp -f /opt/karoshi/serversetup/all/configfiles/sudoers2 /etc/sudoers
+/opt/karoshi/serversetup/web_controls/scripts/generate_sudoers
+
+#####################################
+#Ensure that apache_karoshi ports 50001 and 50002 are open in shorewall
+#####################################
+MODCHECK=`grep -c -w 50001,50002 /etc/shorewall/rules`
+
+if [ $MODCHECK = 0 ]
+then
+LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'50001,50002'	'-'#'webmanagementrule /etc/shorewall/rules
+echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+fi
+######################
+#Restart shorewall
+######################
+if [ $MODCHECK = 0 ]
+then
+/etc/init.d/$SHOREWALLVER restart
+fi
+
+######################
+#Create folders for helpdesk
+######################
+if [ ! -d /opt/karoshi/helpdesk ]
+then
+mkdir /opt/karoshi/helpdesk
+chmod 0750 /opt/karoshi/helpdesk
+chown apache_karoshi.apache_karoshi /opt/karoshi/helpdesk
+fi
+
+######################
+#Schedule web log rotation
+######################
+[ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
+
+#Modify job names
+[ -f /opt/karoshi/cronjobs/jobs/backupschedule.cron ] && mv -f /opt/karoshi/cronjobs/jobs/backupschedule.cron /opt/karoshi/cronjobs/jobs/backup_servers_master.cron
+[ -f /opt/karoshi/cronjobs/jobs/generate_server_stats.cron ] && mv -f /opt/karoshi/cronjobs/jobs/generate_server_stats.cron /opt/karoshi/cronjobs/jobs/statistics.cron
+######################
+#Schedule check karoshi updates
+######################
+let MINUTES=$(($RANDOM%59))
+let HOURS=$(($RANDOM%24))
+echo $MINUTES $HOURS '*' '*' 1-7 /opt/karoshi/web_controls/exec/update_karoshi_get_list > /opt/karoshi/cronjobs/jobs/update_karoshi_get_list.cron
+######################
+#Schedule increment user bans
+######################
+echo 35 23 '*' '*' 1-7 /opt/karoshi/web_controls/increment_user_internet_bans > /opt/karoshi/cronjobs/jobs/increment_user_internet_bans.cron
+echo 25 23 '*' '*' 1-7 /opt/karoshi/web_controls/increment_user_account_bans > /opt/karoshi/cronjobs/jobs/increment_user_account_bans.cron
+######################
+#Schedule statistics generation
+######################
+echo 0 0 '*' '*' 1-7 /opt/karoshi/web_controls/statistics > /opt/karoshi/cronjobs/jobs/statistics.cron
+######################
+#Schedule disk checks
+######################
+echo 0 7 '*' '*' 1-7 /opt/karoshi/\"useful scripts\"/disk_usage > /opt/karoshi/cronjobs/jobs/disk_usage.cron
+######################
+#Schedule reboot check
+######################
+echo 0 8 '*' '*' 1-7 /opt/karoshi/serversetup/all/scripts/check_reboot > /opt/karoshi/cronjobs/jobs/check_reboot.cron
+######################
+#Schedule acceptable use authorisations
+######################
+[ ! -d /opt/karoshi/"useful scripts" ] && mkdir -p /opt/karoshi/"useful scripts"
+cp -f /opt/karoshi/serversetup/pdc/"useful scripts"/acceptable_use_authorisations /opt/karoshi/"useful scripts"/
+echo 0 8 '*' '*' 1-7 /opt/karoshi/\"useful scripts\"/acceptable_use_authorisations > /opt/karoshi/cronjobs/jobs/acceptable_use_authorisations.cron
+#Schedule add_user_offile_servers
+echo 0 6 '*' '*' 1-7 /opt/karoshi/web_controls/exec/offline_servers > /opt/karoshi/cronjobs/jobs/offline_servers.cron
+
+#Create folders for offline server flag files
+[ ! -d /opt/karoshi/server_network/offline_servers/delete_users ] && mkdir -p /opt/karoshi/server_network/offline_servers/delete_users
+[ ! -d /opt/karoshi/server_network/offline_servers/add_users ] && mkdir -p /opt/karoshi/server_network/offline_servers/add_users
+
+######################
+#Enable new backup
+######################
+[ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
+echo 0 20 '*' '*' 1-5  /opt/karoshi/serversetup/all/'"'useful scripts'"'/backup_servers/backup_servers_master > /opt/karoshi/cronjobs/jobs/backup_servers_master.cron
+
+######################
+#Refresh cron jobs
+######################
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
+
+######################
+#Ensure that samba root  can connect to netlogon share
+######################
+#Get line number of start of netlogon share+1
+if [ -f /etc/samba/smb.conf ]
+then
+NETLOGONLINENUMBER=`grep -n "path = /var/lib/samba/netlogon" /etc/samba/smb.conf | cut -d: -f1`
+let NETLOGONLINENUMBER=$NETLOGONLINENUMBER+1
+if [ `sed -n $NETLOGONLINENUMBER,$NETLOGONLINENUMBER'p' /etc/samba/smb.conf | grep -c "invalid users = root"` != 0 ]
+then
+#backup smb.conf
+echo "Modifying smb.conf to allow root to gain read only access to the netlogon share."
+echo /etc/samba/smb.conf has been backed up to /etc/samba/smb$$.conf
+cp -f /etc/samba/smb.conf /etc/samba/smb$$.conf
+sed -i $NETLOGONLINENUMBER'd' /etc/samba/smb.conf
+echo Restarting samba
+service smb restart
+fi
+fi
+#Start httpd_karoshi if it is not running
+#[ `ps -e | grep -c httpd_karoshi` = 0 ] && service httpd_karoshi start
+#Create folder for file uploads
+[ -d /var/www/karoshi ] || mkdir /var/www/karoshi
+chown apache_karoshi /var/www/karoshi
+chmod 0700 /var/www/karoshi
+#########################
+#Extract phpldapadmin
+#########################
+cd /var/www/html_karoshi/admin
+tar -xf /opt/karoshi/serversetup/web_controls/phpldapadmin/phpldapadmin.tar.gz
+#Copy in correct config.cfg for samba4
+if [ $SAMBAVER = samba4 ]
+then
+cp /opt/karoshi/serversetup/web_controls/phpldapadmin/samba4/config.php /var/www/html_karoshi/admin/phpldapadmin/config/config.php
+#Change path for correct realm
+sed -i 's/CHANGETHISBASE/'$LDAPBASE'/g' /var/www/html_karoshi/admin/phpldapadmin/config/config.php
+else
+cp /opt/karoshi/serversetup/web_controls/phpldapadmin/samba3/config.php /var/www/html_karoshi/admin/phpldapadmin/config/config.php
+fi
+#Set permissions on phpldapadmin
+chown root:apache_karoshi -R /var/www/html_karoshi/admin/phpldapadmin
+chmod 0440 -R /var/www/html_karoshi/admin/phpldapadmin
+chmod u+X,g+X -R /var/www/html_karoshi/admin/phpldapadmin
+
+#Create temp folder
+if [ ! -d /var/www/html_karoshi/.tempdata/ ]
+then
+mkdir /var/www/html_karoshi/.tempdata/
+chmod 0700 /var/www/html_karoshi/.tempdata/
+chown apache_karoshi /var/www/html_karoshi/.tempdata/
+fi
+
+cp -f /opt/karoshi/serversetup/web_controls/scripts/detect_mobile_browser /opt/karoshi/web_controls
+chmod 0750 /opt/karoshi/web_controls/generate_navbar_admin
+cp -f /opt/karoshi/serversetup/web_controls/scripts/generate_navbar_admin /opt/karoshi/web_controls
+chmod 0750 /opt/karoshi/web_controls/generate_navbar_admin
+chown root:apache_karoshi /opt/karoshi/web_controls/generate_navbar_admin
+cp -f /opt/karoshi/serversetup/web_controls/scripts/generate_navbar_admin_mobile /opt/karoshi/web_controls
+chmod 0750 /opt/karoshi/web_controls/generate_navbar_admin_mobile
+chown root:apache_karoshi /opt/karoshi/web_controls/generate_navbar_admin_mobile
+cp -f /opt/karoshi/serversetup/web_controls/scripts/generate_navbar_tech_mobile /opt/karoshi/web_controls
+chmod 0750 /opt/karoshi/web_controls/generate_navbar_tech_mobile
+chown root:apache_karoshi /opt/karoshi/web_controls/generate_navbar_tech_mobile
+cp -f /opt/karoshi/serversetup/web_controls/scripts/generate_navbar_staff_mobile /opt/karoshi/web_controls
+chmod 0750 /opt/karoshi/web_controls/generate_navbar_staff_mobile
+chown root:apache_karoshi /opt/karoshi/web_controls/generate_navbar_staff_mobile
+cp -f /opt/karoshi/serversetup/web_controls/scripts/generate_navbar_all_mobile /opt/karoshi/web_controls
+chmod 0750 /opt/karoshi/web_controls/generate_navbar_all_mobile
+chown root:apache_karoshi /opt/karoshi/web_controls/generate_navbar_all_mobile
+cp -f /opt/karoshi/serversetup/web_controls/scripts/generate_navbar_top /opt/karoshi/web_controls
+chmod 0750 /opt/karoshi/web_controls/generate_navbar_top
+chown root:apache_karoshi /opt/karoshi/web_controls/generate_navbar_top
+cp -f /opt/karoshi/serversetup/web_controls/scripts/generate_navbar_tech /opt/karoshi/web_controls
+chmod 0750 /opt/karoshi/web_controls/generate_navbar_tech
+chown root:apache_karoshi /opt/karoshi/web_controls/generate_navbar_tech
+cp -f /opt/karoshi/serversetup/web_controls/scripts/generate_navbar_all /opt/karoshi/web_controls
+chmod 0750 /opt/karoshi/web_controls/generate_navbar_all
+chown root:apache_karoshi /opt/karoshi/web_controls/generate_navbar_all
+cp -f /opt/karoshi/serversetup/web_controls/scripts/generate_navbar_staff /opt/karoshi/web_controls
+chmod 0750 /opt/karoshi/web_controls/generate_navbar_staff
+chown root:apache_karoshi /opt/karoshi/web_controls/generate_navbar_staff
+
+###########################
+#Add role
+###########################
+[ ! -d /opt/karoshi/server_network/servers/$HOSTNAME ] && mkdir -p /opt/karoshi/server_network/servers/$HOSTNAME
+echo "Primary Domain Controller<br>" > /opt/karoshi/server_network/servers/$HOSTNAME/1pdc
+echo "File Server<br>" > /opt/karoshi/server_network/servers/$HOSTNAME/fileserver
+echo "Ldap Server<br>" > /opt/karoshi/server_network/servers/$HOSTNAME/ldapserver
+
+[ -f /opt/karoshi/server_network/servers/$HOSTNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$HOSTNAME/no_role
+
+############################
+#Configure Menus
+############################
+
+ADDUSERCTRL=yes
+[ -f /opt/karoshi/server_network/servers/$HOSTNAME/federated_server ] && ADDUSERCTRL=no
+
+BACKUPCTRL=no
+[ -d /opt/karoshi/server_network/backup_servers/servers ] && BACKUPCTRL=yes
+
+DHCPCTRL=no
+[ -f /opt/karoshi/server_network/dhcpserver ] && DHCPCTRL=yes
+
+DISTROCTRL=no
+[ -f /opt/karoshi/server_network/distribution_server ] && DISTROCTRL=yes
+
+EMAILCTRL=no
+[ -f /opt/karoshi/server_network/emailserver ] && EMAILCTRL=yes
+
+FEDERATEDCTL=no
+if [ -d /opt/karoshi/server_network/federated_ldap_servers ]
+then
+if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers | wc -l` -gt 0 ]
+then
+FEDERATEDCTL=yes
+fi
+fi
+
+INTERNETCTRL=no
+[ -f /opt/karoshi/server_network/proxyserver ] && INTERNETCTRL=yes
+
+KSSOCTRL=no
+[ -f /opt/karoshi/server_network/kssoserver ] && KSSOCTRL=yes
+
+MONITORINGCTRL=no
+[ -f /opt/karoshi/server_network/monitoringserver ] && MONITORINGCTRL=yes
+
+MOODLECTRL=no
+
+OCSCTRL=no
+[ -f /opt/karoshi/server_network/ocs_server ] && OCSCTRL=yes
+
+PRINTERCTRL=no
+[ -f /opt/karoshi/server_network/printserver ] && PRINTERCTRL=yes
+
+RADIUSCTRL=no
+[ -f /opt/karoshi/server_network/radius_server ] && RADIUSCTRL=yes
+
+REVERSEPROXYCTRL=no
+[ -f /opt/karoshi/server_network/reverseproxyserver ] && REVERSEPROXYCTRL=yes
+
+WEBCTRL=no
+if [ -d /opt/karoshi/server_network/webservers ]
+then
+if [ `ls -1 /opt/karoshi/server_network/webservers | wc -l` -gt 0 ]
+then
+WEBCTRL=yes
+fi
+fi
+
+echo ADDUSERCTRL=$ADDUSERCTRL > /opt/karoshi/server_network/menusettings
+echo BACKUPCTRL=$BACKUPCTRL >> /opt/karoshi/server_network/menusettings
+echo DHCPCTRL=$DHCPCTRL >> /opt/karoshi/server_network/menusettings
+echo DISTROCTRL=$DISTROCTRL >> /opt/karoshi/server_network/menusettings
+echo EMAILCTRL=$EMAILCTRL >> /opt/karoshi/server_network/menusettings
+echo FEDERATEDCTL=$FEDERATEDCTL >> /opt/karoshi/server_network/menusettings
+echo INTERNETCTRL=$INTERNETCTRL >> /opt/karoshi/server_network/menusettings
+echo KSSOCTRL=$KSSOCTRL >> /opt/karoshi/server_network/menusettings
+echo MONITORINGCTRL=$MONITORINGCTRL >> /opt/karoshi/server_network/menusettings
+echo MOODLECTRL=$MOODLECTRL >> /opt/karoshi/server_network/menusettings
+echo OCSCTRL=$OCSCTRL >> /opt/karoshi/server_network/menusettings
+echo PRINTERCTRL=$PRINTERCTRL >> /opt/karoshi/server_network/menusettings
+echo RADIUSCTRL=$RADIUSCTRL >> /opt/karoshi/server_network/menusettings
+echo REVERSEPROXYCTRL=$REVERSEPROXYCTRL >> /opt/karoshi/server_network/menusettings
+echo WEBCTRL=$WEBCTRL >> /opt/karoshi/server_network/menusettings
+
+###########################
+#Check for updates
+###########################
+if [ ! -d /opt/karoshi/updates ]
+then
+[ ! -d /opt/karoshi/logs/karoshi_updates ] && mkdir -p /opt/karoshi/logs/karoshi_updates
+chmod 0700 /opt/karoshi/logs/karoshi_updates
+[ `ls -1 /opt/karoshi/serversetup/updates/ | wc -l` -gt 0 ] && cp -f /opt/karoshi/serversetup/updates/* /opt/karoshi/logs/karoshi_updates/
+/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/update_karoshi_get_list
+fi
+
+###########################
+#Create setup_wizard variables file
+###########################
+if [ ! -d /opt/karoshi/server_network/web_controls ]
+then
+mkdir -p /opt/karoshi/server_network/web_controls
+chown root:apache_karoshi /opt/karoshi/server_network/web_controls
+chmod 0750 /opt/karoshi/server_network/web_controls
+fi
+touch /opt/karoshi/server_network/web_controls/setup_wizard
+chown apache_karoshi /opt/karoshi/server_network/web_controls/setup_wizard
+
+###########################
+#Create password settings
+###########################
+if [ ! -d /opt/karoshi/server_network/security ]
+then
+mkdir -p /opt/karoshi/server_network/security
+fi
+
+if [ ! -f /opt/karoshi/server_network/security/password_settings ]
+then
+echo STAFF_CHARS_AND_NUMBERS=no > /opt/karoshi/server_network/security/password_settings
+echo STAFF_UPPER_AND_LOWER_CASE=no >> /opt/karoshi/server_network/security/password_settings
+echo STAFF_MINPASSLENGTH=6 >> /opt/karoshi/server_network/security/password_settings
+echo STUDENT_CHARS_AND_NUMBERS=no >> /opt/karoshi/server_network/security/password_settings
+echo STUDENT_UPPER_AND_LOWER_CASE=no >> /opt/karoshi/server_network/security/password_settings
+echo STUDENT_MINPASSLENGTH=4 >> /opt/karoshi/server_network/security/password_settings
+fi
+
+############################
+#Configure fail2ban
+############################
+
+if [ ! -d /etc/fail2ban ]
+then
+if [ -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/scripts/fail2baninstall ]
+then
+echo "<li>"Installing fail2ban"</li>"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/scripts/fail2baninstall
+fi
+fi
+
+if [ -d /etc/fail2ban ]
+then
+[ ! -d /opt/karoshi/server_network/security/fail2ban ] && mkdir -p /opt/karoshi/server_network/security/fail2ban
+[ ! -f /opt/karoshi/server_network/security/fail2ban/web_management ] && cp -f /opt/karoshi/serversetup/all/fail2ban/web_management /opt/karoshi/server_network/security/fail2ban/
+cat /opt/karoshi/server_network/security/fail2ban/* > /etc/fail2ban/jail.local
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_start
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_restart
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/fail2ban
+fi
+
+#Link in linux client backgrounds
+[ ! -d /var/lib/samba/netlogon/linuxclient/backgrounds ] && mkdir -p /var/lib/samba/netlogon/linuxclient/backgrounds
+[ ! -d /var/www/html_karoshi/images/linuxclient ] && mkdir -p /var/www/html_karoshi/images/linuxclient
+ln -s /var/lib/samba/netlogon/linuxclient/backgrounds /var/www/html_karoshi/images/linuxclient/backgrounds
+
+#Add in dns record for manage.realm
+if [ $SAMBAVER = samba4 ]
+then
+TCPIP=`net lookup $HOSTNAME`
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+samba-tool dns query 127.0.0.1 $REALM manage.$REALM CNAME --username=Administrator --password=$LDAPPASS 2>/dev/null
+if [ `echo $?` != 0 ]
+then
+samba-tool dns add 127.0.0.1 $REALM manage.$REALM A $TCPIP --username=Administrator --password=$LDAPPASS
+fi
+fi
+############################
+#Display completed message
+############################
+echo -e "$CONNECTIONMSG1\n\n$CONNECTIONMSG2\n$CONNECTIONMSG3\n\n$CONNECTIONMSG4\n\n"
+exit
+

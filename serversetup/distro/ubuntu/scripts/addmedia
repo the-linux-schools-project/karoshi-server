@@ -1,0 +1,220 @@
+#!/bin/bash
+#addmedia
+[ -d $HOME/.tempdata ] || mkdir $HOME/.tempdata
+source /opt/karoshi/serversetup/variables/language
+source /opt/karoshi/serversetup/language/$LANGCHOICE/addmedia
+source /opt/karoshi/serversetup/variables/xdialog
+source /opt/karoshi/serversetup/variables/distro
+
+########################
+#Display cancelled box when called
+########################
+
+function CANCELLEDBOX {
+Xdialog --title "$TITLE" \
+--icon $ICON --rc-file $RCFILE --msgbox "$TITLE \n\n$CANCELLEDMSG" 16 50
+case $ in
+0)
+	exit;;
+255)
+	exit;;
+esac
+}
+
+
+###########################
+#Display opening message
+###########################
+DIALOG=${DIALOG=Xdialog}
+
+$DIALOG --title "$TITLE" --clear \
+        --wrap --icon $ICON --rc-file $RCFILE --ok-label $CONTINUEMSG --cancel-label $EXITMSG --yesno "$OPENINGMSG1" 16 50
+
+case $? in
+  0)
+   CHOICE=go;;
+  1)
+    CHOICE=x;;
+  255)
+    CHOICE=x;;
+esac
+
+if [ $CHOICE = x ]
+then
+CANCELLEDBOX
+exit
+fi
+
+########################
+#Generate list of source files
+########################
+dir --format=single-column /opt/karoshi/serversetup/distro/$DISTROCHOICE/mirrorsources > $HOME/.tempdata/profilestemp
+sed 's/ //g' $HOME/.tempdata/profilestemp | sed 's/[\]//g' > $HOME/.tempdata/profilestempnospaces
+wc -l $HOME/.tempdata/profilestemp > $HOME/.tempdata/numberofprofiles
+NUMBEROFPROFILES=`cut $HOME/.tempdata/numberofprofiles -d' ' -f1`
+rm -f $HOME/.tempdata/profiles
+COUNTER=1
+         while [  $COUNTER -le $NUMBEROFPROFILES ]; do
+	 
+	 PROFILE=`sed -n $COUNTER,$COUNTER'p' $HOME/.tempdata/profilestempnospaces`
+             echo $PROFILE . off >> $HOME/.tempdata/profiles
+             let COUNTER=COUNTER+1
+         done
+PROFILES=`cat $HOME/.tempdata/profiles`
+rm -f $HOME/.tempdata/numberofprofiles
+rm -f $HOME/.tempdata/profiles
+rm -f $HOME/.tempdata/profilestemp
+rm -f $HOME/.tempdata/profilestempnospaces
+
+###########################
+#Create checklist box for selection
+###########################
+DIALOG=${DIALOG=Xdialog}
+tempfile=`tempfile 2>/dev/null` || tempfile=$HOME/.tempdata/sourcename
+trap "rm -f $tempfile" 0 1 2 5 15
+
+$DIALOG --wrap --icon $ICON --rc-file $RCFILE --backtitle "$TITLE" \
+        --title "$TITLE" --clear \
+        --radiolist "$CHECKLISTMSG" 40 61 5 \
+        $PROFILES 2> $HOME/.tempdata/sourcename
+
+retval=$?
+
+choice=`cat $HOME/.tempdata/sourcename`
+MEDIAFILE=$choice
+case $retval in
+  0)
+    CHOICE=go;;
+  1)
+    CHOICE=stop;;
+  255)
+    CHOICE=stop;;
+esac
+rm -f $HOME/.tempdata/sourcename
+
+
+#####################
+#Show cancelled msg if chosen
+#####################
+if [ $CHOICE = stop ]
+then
+CANCELLEDBOX
+exit
+fi
+
+#####################
+#Get list of sources from config file
+#####################
+DIALOG=${DIALOG=Xdialog}
+tempfile=`tempfile 2>/dev/null` || tempfile=$HOME/.tempdata/setupchoice
+trap "rm -f $tempfile" 0 1 2 5 15
+cut -d' ' -f 2 /opt/karoshi/serversetup/distro/$DISTROCHOICE/mirrorsources/$choice > $HOME/.tempdata/menulist
+cut -d' ' -f 1 /opt/karoshi/serversetup/distro/$DISTROCHOICE/mirrorsources/$choice > $HOME/.tempdata/sourcelist1
+cut -f 3 /opt/karoshi/serversetup/distro/$DISTROCHOICE/mirrorsources/$choice > $HOME/.tempdata/sourcelist2
+NUMBEROFLINES=`cat $HOME/.tempdata/menulist | wc -l`
+
+COUNTER=1
+STATUS=on
+         while [  $COUNTER -le $NUMBEROFLINES ]; do
+
+	 LINE=`sed -n $COUNTER,$COUNTER'p' $HOME/.tempdata/menulist`
+	DEBCHECK=`echo $LINE | grep -c debian`
+	if [ $DEBCHECK -ge 1 ]
+	then
+	STATUS=off
+	else
+	STATUS=on
+	fi
+	LINE2=`sed -n $COUNTER,$COUNTER'p' $HOME/.tempdata/sourcelist1`
+             echo $COUNTER:$LINE-- $LINE2 $STATUS >> $HOME/.tempdata/menulist2
+             let COUNTER=COUNTER+1
+         done
+
+menulist=`cat $HOME/.tempdata/menulist2`
+
+######################
+#Show list of sources
+######################
+$DIALOG --icon $ICON --rc-file $RCFILE --backtitle "$TITLE" \
+        --title "$TITLE" --clear \
+        --cancel-label Quit --checklist "$CHOOSEMEDIAMSG2" 50 85 5 \
+	$menulist 2> $HOME/.tempdata/setupchoice
+	 
+retval=$?
+
+choice=`cat $tempfile`
+case $retval in
+  0)
+    CHOICE=go;;
+  1)
+    CHOICE=stop;;
+  255)
+    CHOICE=stop;;
+esac
+
+rm -f $HOME/.tempdata/menulist
+rm -f $HOME/.tempdata/menulist2
+
+if [ $CHOICE = stop ]
+then
+CANCELLEDBOX
+rm -f $HOME/.tempdata/sourcelist1
+rm -f $HOME/.tempdata/sourcelist2
+exit
+fi
+
+SOURCECHOICE=`cat $HOME/.tempdata/setupchoice`
+
+
+
+
+PROFILELIST=`sed 's/--[/]/ /g' $HOME/.tempdata/setupchoice | sed 's/--/ /g' `
+rm -f $HOME/.tempdata/profilechoice
+PROFILENAMES=( $PROFILELIST )
+NUMBEROFSELECTEDPROFILES=`echo ${#PROFILENAMES[@]}`
+
+
+COUNTER=0
+         while [  $COUNTER -lt $NUMBEROFSELECTEDPROFILES ]; do
+	 PROFILENAME=${PROFILENAMES[$COUNTER]}
+	 LINENUMBER=`echo $PROFILENAME | cut -d: -f1`
+#############
+#get line from sources file
+#############
+MEDIASOURCE=`sed -n  $LINENUMBER,$LINENUMBER'p'  /opt/karoshi/serversetup/distro/$DISTROCHOICE/mirrorsources/$MEDIAFILE`
+#############
+#Check to see if duplicate exists in apt file
+#############
+MEDIACHECK=`grep -c -x "$MEDIASOURCE" /etc/apt/sources.list`
+#############
+#If entry is not in file then add it
+#############
+if [ $MEDIACHECK = 0 ]
+then
+echo  $MEDIASOURCE >> /etc/apt/sources.list
+fi
+             let COUNTER=COUNTER+1
+         done
+rm -f $HOME/.tempdata/setupchoice 2>/dev/nul
+#############
+#Updata media sources
+#############
+konsole --schema=BlackOnWhite.schema -e apt-get update
+#############
+#Show lines without comments from sources.list
+#############
+COMPLETEDLIST=`grep -v '#' /etc/apt/sources.list | sed '/^$/d' `
+
+#######################
+#Show completed messsage
+#######################
+Xdialog --title "$TITLE" \
+--wrap --icon $ICON --rc-file $RCFILE --infobox "$COMPLETEDMSG1 \n\n $MEDIAURLMSG1: \n$COMPLETEDLIST" 30 80 3000
+case $ in
+0)
+	exit;;
+255)
+	exit;;
+esac
+exit
+  

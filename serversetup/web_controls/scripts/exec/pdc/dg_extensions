@@ -1,0 +1,749 @@
+#!/bin/bash
+#Copyright (C) 2011 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dg_extensions_cgi
+then
+echo `date`: dg_extensions - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/dg_extensions_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_extensions.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $dg_extensions_cgi'check' ]
+then
+echo `date`: dg_extensions - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: dg_extensions - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9_.:'`
+if [ $DATA'null' = null ]
+then
+echo `date`: dg_extensions - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: dg_extensions - Not called by dg_extensions.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: dg_extensions - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: dg_extensions - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: dg_extensions - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+STUDENT_ADE=deny
+STAFF_ADE=deny
+STUDENT_ADP=deny
+STAFF_ADP=deny
+STUDENT_ASX=deny
+STAFF_ASX=deny
+STUDENT_BAS=deny
+STAFF_BAS=deny
+STUDENT_BAT=deny
+STAFF_BAT=deny
+STUDENT_CAB=deny
+STAFF_CAB=deny
+STUDENT_CHM=deny
+STAFF_CHM=deny
+STUDENT_CMD=deny
+STAFF_CMD=deny
+STUDENT_COM=deny
+STAFF_COM=deny
+STUDENT_CPL=deny
+STAFF_CPL=deny
+STUDENT_CRT=deny
+STAFF_CRT=deny
+STUDENT_DLL=deny
+STAFF_DLL=deny
+STUDENT_EXE=deny
+STAFF_EXE=deny
+STUDENT_HLP=deny
+STAFF_HLP=deny
+STUDENT_INI=deny
+STAFF_INI=deny
+STUDENT_HTA=deny
+STAFF_HTA=deny
+STUDENT_INF=deny
+STAFF_INF=deny
+STUDENT_INS=deny
+STAFF_INS=deny
+STUDENT_ISP=deny
+STAFF_ISP=deny
+STUDENT_JS=deny
+STAFF_JS=deny
+STUDENT_JSE=deny
+STAFF_JSE=deny
+STUDENT_LNK=deny
+STAFF_LNK=deny
+STUDENT_MDA=deny
+STAFF_MDA=deny
+STUDENT_MDB=deny
+STAFF_MDB=deny
+STUDENT_MDE=deny
+STAFF_MDE=deny
+STUDENT_MDT=deny
+STAFF_MDT=deny
+STUDENT_MDW=deny
+STAFF_MDW=deny
+STUDENT_MDZ=deny
+STAFF_MDZ=deny
+STUDENT_MSC=deny
+STAFF_MSC=deny
+STUDENT_MSI=deny
+STAFF_MSI=deny
+STUDENT_MSP=deny
+STAFF_MSP=deny
+STUDENT_MST=deny
+STAFF_MST=deny
+STUDENT_PCD=deny
+STAFF_PCD=deny
+STUDENT_PIF=deny
+STAFF_PIF=deny
+STUDENT_PRF=deny
+STAFF_PRF=deny
+STUDENT_REG=deny
+STAFF_REG=deny
+STUDENT_SCF=deny
+STAFF_SCF=deny
+STUDENT_SCR=deny
+STAFF_SCR=deny
+STUDENT_SCT=deny
+STAFF_SCT=deny
+STUDENT_SH=deny
+STAFF_SH=deny
+STUDENT_SHS=deny
+STAFF_SHS=deny
+STUDENT_SHB=deny
+STAFF_SHB=deny
+STUDENT_SYS=deny
+STAFF_SYS=deny
+STUDENT_URL=deny
+STAFF_URL=deny
+STUDENT_VB=deny
+STAFF_VB=deny
+STUDENT_VBE=deny
+STAFF_VBE=deny
+STUDENT_VBS=deny
+STAFF_VBS=deny
+STUDENT_VXD=deny
+STAFF_VXD=deny
+STUDENT_WSF=deny
+STAFF_WSF=deny
+STUDENT_WSH=deny
+STAFF_WSH=deny
+STUDENT_OTF=deny
+STAFF_OTF=deny
+STUDENT_OPS=deny
+STAFF_OPS=deny
+STUDENT_DOC=deny
+STAFF_DOC=deny
+STUDENT_XLS=deny
+STAFF_XLS=deny
+STUDENT_GZ=deny
+STAFF_GZ=deny
+STUDENT_TAR=deny
+STAFF_TAR=deny
+STUDENT_ZIP=deny
+STAFF_ZIP=deny
+STUDENT_TGZ=deny
+STAFF_TGZ=deny
+STUDENT_BZ2=deny
+STAFF_BZ2=deny
+STUDENT_CDR=deny
+STAFF_CDR=deny
+STUDENT_DMG=deny
+STAFF_DMG=deny
+STUDENT_SMI=deny
+STAFF_SMI=deny
+STUDENT_SIT=deny
+STAFF_SIT=deny
+STUDENT_SEA=deny
+STAFF_SEA=deny
+STUDENT_BIN=deny
+STAFF_BIN=deny
+STUDENT_HQX=deny
+STAFF_HQX=deny
+STUDENT_RAR=deny
+STAFF_RAR=deny
+STUDENT_MP3=deny
+STAFF_MP3=deny
+STUDENT_MPEG=deny
+STAFF_MPEG=deny
+STUDENT_MPG=deny
+STAFF_MPG=deny
+STUDENT_AVI=deny
+STAFF_AVI=deny
+STUDENT_ASF=deny
+STAFF_ASF=deny
+STUDENT_ISO=deny
+STAFF_ISO=deny
+STUDENT_OGG=deny
+STAFF_OGG=deny
+STUDENT_WMF=deny
+STAFF_WMF=deny
+STUDENT_CUE=deny
+STAFF_CUE=deny
+STUDENT_WSC=deny
+STAFF_WSC=deny
+
+######################
+#Process data
+######################
+
+
+[ `echo $DATA | grep -c students_ade_` -gt 0 ] && STUDENT_ADE=allow
+[ `echo $DATA | grep -c staff_ade_` -gt 0 ] && STAFF_ADE=allow
+[ `echo $DATA | grep -c students_adp_` -gt 0 ] && STUDENT_ADP=allow
+[ `echo $DATA | grep -c staff_adp_` -gt 0 ] && STAFF_ADP=allow
+[ `echo $DATA | grep -c students_asx_` -gt 0 ] && STUDENT_ASX=allow
+[ `echo $DATA | grep -c staff_asx_` -gt 0 ] && STAFF_ASX=allow
+[ `echo $DATA | grep -c students_bas_` -gt 0 ] && STUDENT_BAS=allow
+[ `echo $DATA | grep -c staff_bas_` -gt 0 ] && STAFF_BAS=allow
+[ `echo $DATA | grep -c students_bat_` -gt 0 ] && STUDENT_BAT=allow
+[ `echo $DATA | grep -c staff_bat_` -gt 0 ] && STAFF_BAT=allow
+[ `echo $DATA | grep -c students_cab_` -gt 0 ] && STUDENT_CAB=allow
+[ `echo $DATA | grep -c staff_cab_` -gt 0 ] && STAFF_CAB=allow
+[ `echo $DATA | grep -c students_chm_` -gt 0 ] && STUDENT_CHM=allow
+[ `echo $DATA | grep -c staff_chm_` -gt 0 ] && STAFF_CHM=allow
+[ `echo $DATA | grep -c students_cmd_` -gt 0 ] && STUDENT_CMD=allow
+[ `echo $DATA | grep -c staff_cmd_` -gt 0 ] && STAFF_CMD=allow
+[ `echo $DATA | grep -c students_com_` -gt 0 ] && STUDENT_COM=allow
+[ `echo $DATA | grep -c staff_com_` -gt 0 ] && STAFF_COM=allow
+[ `echo $DATA | grep -c students_cpl_` -gt 0 ] && STUDENT_CPL=allow
+[ `echo $DATA | grep -c staff_cpl_` -gt 0 ] && STAFF_CPL=allow
+[ `echo $DATA | grep -c students_crt_` -gt 0 ] && STUDENT_CRT=allow
+[ `echo $DATA | grep -c staff_crt_` -gt 0 ] && STAFF_CRT=allow
+[ `echo $DATA | grep -c students_dll_` -gt 0 ] && STUDENT_DLL=allow
+[ `echo $DATA | grep -c staff_dll_` -gt 0 ] && STAFF_DLL=allow
+[ `echo $DATA | grep -c students_exe_` -gt 0 ] && STUDENT_EXE=allow
+[ `echo $DATA | grep -c staff_exe_` -gt 0 ] && STAFF_EXE=allow
+[ `echo $DATA | grep -c students_hlp_` -gt 0 ] && STUDENT_HLP=allow
+[ `echo $DATA | grep -c staff_hlp_` -gt 0 ] && STAFF_HLP=allow
+[ `echo $DATA | grep -c students_ini_` -gt 0 ] && STUDENT_INI=allow
+[ `echo $DATA | grep -c staff_ini_` -gt 0 ] && STAFF_INI=allow
+[ `echo $DATA | grep -c students_hta_` -gt 0 ] && STUDENT_HTA=allow
+[ `echo $DATA | grep -c staff_hta_` -gt 0 ] && STAFF_HTA=allow
+[ `echo $DATA | grep -c students_inf_` -gt 0 ] && STUDENT_INF=allow
+[ `echo $DATA | grep -c staff_inf_` -gt 0 ] && STAFF_INF=allow
+[ `echo $DATA | grep -c students_ins_` -gt 0 ] && STUDENT_INS=allow
+[ `echo $DATA | grep -c staff_ins_` -gt 0 ] && STAFF_INS=allow
+[ `echo $DATA | grep -c students_isp_` -gt 0 ] && STUDENT_ISP=allow
+[ `echo $DATA | grep -c staff_isp` -gt 0 ] && STAFF_ISP=allow
+[ `echo $DATA | grep -c students_js_` -gt 0 ] && STUDENT_JS=allow
+[ `echo $DATA | grep -c staff_js_` -gt 0 ] && STAFF_JS=allow
+[ `echo $DATA | grep -c students_jse_` -gt 0 ] && STUDENT_JSE=allow
+[ `echo $DATA | grep -c staff_jse_` -gt 0 ] && STAFF_JSE=allow
+[ `echo $DATA | grep -c students_lnk_` -gt 0 ] && STUDENT_LNK=allow
+[ `echo $DATA | grep -c staff_lnk_` -gt 0 ] && STAFF_LNK=allow
+[ `echo $DATA | grep -c students_mda_` -gt 0 ] && STUDENT_MDA=allow
+[ `echo $DATA | grep -c staff_mda_` -gt 0 ] && STAFF_MDA=allow
+[ `echo $DATA | grep -c students_mdb_` -gt 0 ] && STUDENT_MDB=allow
+[ `echo $DATA | grep -c staff_mdb_` -gt 0 ] && STAFF_MDB=allow
+[ `echo $DATA | grep -c students_mde_` -gt 0 ] && STUDENT_MDE=allow
+[ `echo $DATA | grep -c staff_mde_` -gt 0 ] && STAFF_MDE=allow
+[ `echo $DATA | grep -c students_mdt_` -gt 0 ] && STUDENT_MDT=allow
+[ `echo $DATA | grep -c staff_mdt_` -gt 0 ] && STAFF_MDT=allow
+[ `echo $DATA | grep -c students_mdw_` -gt 0 ] && STUDENT_MDW=allow
+[ `echo $DATA | grep -c staff_mdw_` -gt 0 ] && STAFF_MDW=allow
+[ `echo $DATA | grep -c students_mdz_` -gt 0 ] && STUDENT_MDZ=allow
+[ `echo $DATA | grep -c staff_mdz_` -gt 0 ] && STAFF_MDZ=allow
+[ `echo $DATA | grep -c students_msc_` -gt 0 ] && STUDENT_MSC=allow
+[ `echo $DATA | grep -c staff_msc_` -gt 0 ] && STAFF_MSC=allow
+[ `echo $DATA | grep -c students_msi_` -gt 0 ] && STUDENT_MSI=allow
+[ `echo $DATA | grep -c staff_msi_` -gt 0 ] && STAFF_MSI=allow
+[ `echo $DATA | grep -c students_msp_` -gt 0 ] && STUDENT_MSP=allow
+[ `echo $DATA | grep -c staff_msp_` -gt 0 ] && STAFF_MSP=allow
+[ `echo $DATA | grep -c students_mst_` -gt 0 ] && STUDENT_MST=allow
+[ `echo $DATA | grep -c staff_mst_` -gt 0 ] && STAFF_MST=allow
+[ `echo $DATA | grep -c students_pcd_` -gt 0 ] && STUDENT_PCD=allow
+[ `echo $DATA | grep -c staff_pcd_` -gt 0 ] && STAFF_PCD=allow
+[ `echo $DATA | grep -c students_pif_` -gt 0 ] && STUDENT_PIF=allow
+[ `echo $DATA | grep -c staff_pif_` -gt 0 ] && STAFF_PIF=allow
+[ `echo $DATA | grep -c students_prf_` -gt 0 ] && STUDENT_PRF=allow
+[ `echo $DATA | grep -c staff_prf_` -gt 0 ] && STAFF_PRF=allow
+[ `echo $DATA | grep -c students_reg_` -gt 0 ] && STUDENT_REG=allow
+[ `echo $DATA | grep -c staff_reg_` -gt 0 ] && STAFF_REG=allow
+[ `echo $DATA | grep -c students_scf_` -gt 0 ] && STUDENT_SCF=allow
+[ `echo $DATA | grep -c staff_scf_` -gt 0 ] && STAFF_SCF=allow
+[ `echo $DATA | grep -c students_scr_` -gt 0 ] && STUDENT_SCR=allow
+[ `echo $DATA | grep -c staff_scr_` -gt 0 ] && STAFF_SCR=allow
+[ `echo $DATA | grep -c students_sct_` -gt 0 ] && STUDENT_SCT=allow
+[ `echo $DATA | grep -c staff_sct_` -gt 0 ] && STAFF_SCT=allow
+[ `echo $DATA | grep -c students_sh_` -gt 0 ] && STUDENT_SH=allow
+[ `echo $DATA | grep -c staff_sh_` -gt 0 ] && STAFF_SH=allow
+[ `echo $DATA | grep -c students_shs_` -gt 0 ] && STUDENT_SHS=allow
+[ `echo $DATA | grep -c staff_shs_` -gt 0 ] && STAFF_SHS=allow
+[ `echo $DATA | grep -c students_shb_` -gt 0 ] && STUDENT_SHB=allow
+[ `echo $DATA | grep -c staff_shb_` -gt 0 ] && STAFF_SHB=allow
+[ `echo $DATA | grep -c students_sys_` -gt 0 ] && STUDENT_SYS=allow
+[ `echo $DATA | grep -c staff_sys_` -gt 0 ] && STAFF_SYS=allow
+[ `echo $DATA | grep -c students_url_` -gt 0 ] && STUDENT_URL=allow
+[ `echo $DATA | grep -c staff_url_` -gt 0 ] && STAFF_URL=allow
+[ `echo $DATA | grep -c students_vb_` -gt 0 ] && STUDENT_VB=allow
+[ `echo $DATA | grep -c staff_vb_` -gt 0 ] && STAFF_VB=allow
+[ `echo $DATA | grep -c students_vbe_` -gt 0 ] && STUDENT_VBE=allow
+[ `echo $DATA | grep -c staff_vbe_` -gt 0 ] && STAFF_VBE=allow
+[ `echo $DATA | grep -c students_vxd_` -gt 0 ] && STUDENT_VXD=allow
+[ `echo $DATA | grep -c staff_vxd_` -gt 0 ] && STAFF_VXD=allow
+[ `echo $DATA | grep -c students_wsf_` -gt 0 ] && STUDENT_WSF=allow
+[ `echo $DATA | grep -c staff_wsf_` -gt 0 ] && STAFF_WSF=allow
+[ `echo $DATA | grep -c students_wsh_` -gt 0 ] && STUDENT_WSH=allow
+[ `echo $DATA | grep -c staff_wsh_` -gt 0 ] && STAFF_WSH=allow
+[ `echo $DATA | grep -c students_otf_` -gt 0 ] && STUDENT_OTF=allow
+[ `echo $DATA | grep -c staff_otf_` -gt 0 ] && STAFF_OTF=allow
+[ `echo $DATA | grep -c students_ops_` -gt 0 ] && STUDENT_OPS=allow
+[ `echo $DATA | grep -c staff_ops_` -gt 0 ] && STAFF_OPS=allow
+[ `echo $DATA | grep -c students_doc_` -gt 0 ] && STUDENT_DOC=allow
+[ `echo $DATA | grep -c staff_doc_` -gt 0 ] && STAFF_DOC=allow
+[ `echo $DATA | grep -c students_xls_` -gt 0 ] && STUDENT_XLS=allow
+[ `echo $DATA | grep -c staff_xls_` -gt 0 ] && STAFF_XLS=allow
+[ `echo $DATA | grep -c students_gz_` -gt 0 ] && STUDENT_GZ=allow
+[ `echo $DATA | grep -c staff_gz_` -gt 0 ] && STAFF_GZ=allow
+[ `echo $DATA | grep -c students_tar_` -gt 0 ] && STUDENT_TAR=allow
+[ `echo $DATA | grep -c staff_tar_` -gt 0 ] && STAFF_TAR=allow
+[ `echo $DATA | grep -c students_zip_` -gt 0 ] && STUDENT_ZIP=allow
+[ `echo $DATA | grep -c staff_zip_` -gt 0 ] && STAFF_ZIP=allow
+[ `echo $DATA | grep -c students_tgz_` -gt 0 ] && STUDENT_TGZ=allow
+[ `echo $DATA | grep -c staff_tgz_` -gt 0 ] && STAFF_TGZ=allow
+[ `echo $DATA | grep -c students_bz2_` -gt 0 ] && STUDENT_BZ2=allow
+[ `echo $DATA | grep -c staff_bz2_` -gt 0 ] && STAFF_BZ2=allow
+[ `echo $DATA | grep -c students_cdr_` -gt 0 ] && STUDENT_CDR=allow
+[ `echo $DATA | grep -c staff_cdr_` -gt 0 ] && STAFF_CDR=allow
+[ `echo $DATA | grep -c students_dmg_` -gt 0 ] && STUDENT_DMG=allow
+[ `echo $DATA | grep -c staff_dmg_` -gt 0 ] && STAFF_DMG=allow
+[ `echo $DATA | grep -c students_smi_` -gt 0 ] && STUDENT_SMI=allow
+[ `echo $DATA | grep -c staff_smi_` -gt 0 ] && STAFF_SMI=allow
+[ `echo $DATA | grep -c students_sit_` -gt 0 ] && STUDENT_SIT=allow
+[ `echo $DATA | grep -c staff_sit_` -gt 0 ] && STAFF_SIT=allow
+[ `echo $DATA | grep -c students_sea_` -gt 0 ] && STUDENT_SEA=allow
+[ `echo $DATA | grep -c staff_sea_` -gt 0 ] && STAFF_SEA=allow
+[ `echo $DATA | grep -c students_bin_` -gt 0 ] && STUDENT_BIN=allow
+[ `echo $DATA | grep -c staff_bin_` -gt 0 ] && STAFF_BIN=allow
+[ `echo $DATA | grep -c students_hqx_` -gt 0 ] && STUDENT_HQX=allow
+[ `echo $DATA | grep -c staff_hqx_` -gt 0 ] && STAFF_HQX=allow
+[ `echo $DATA | grep -c students_rar_` -gt 0 ] && STUDENT_RAR=allow
+[ `echo $DATA | grep -c staff_rar_` -gt 0 ] && STAFF_RAR=allow
+[ `echo $DATA | grep -c students_mp3_` -gt 0 ] && STUDENT_MP3=allow
+[ `echo $DATA | grep -c staff_mp3_` -gt 0 ] && STAFF_MP3=allow
+[ `echo $DATA | grep -c students_mpeg_` -gt 0 ] && STUDENT_MPEG=allow
+[ `echo $DATA | grep -c staff_mpeg_` -gt 0 ] && STAFF_MPEG=allow
+[ `echo $DATA | grep -c students_mpg_` -gt 0 ] && STUDENT_MPG=allow
+[ `echo $DATA | grep -c staff_mpg_` -gt 0 ] && STAFF_MPG=allow
+[ `echo $DATA | grep -c students_avi_` -gt 0 ] && STUDENT_AVI=allow
+[ `echo $DATA | grep -c staff_avi_` -gt 0 ] && STAFF_AVI=allow
+[ `echo $DATA | grep -c students_asf_` -gt 0 ] && STUDENT_ASF=allow
+[ `echo $DATA | grep -c staff_asf_` -gt 0 ] && STAFF_ASF=allow
+[ `echo $DATA | grep -c students_iso_` -gt 0 ] && STUDENT_ISO=allow
+[ `echo $DATA | grep -c staff_iso_` -gt 0 ] && STAFF_ISO=allow
+[ `echo $DATA | grep -c students_ogg_` -gt 0 ] && STUDENT_OGG=allow
+[ `echo $DATA | grep -c staff_ogg_` -gt 0 ] && STAFF_OGG=allow
+[ `echo $DATA | grep -c students_wmf_` -gt 0 ] && STUDENT_WMF=allow
+[ `echo $DATA | grep -c staff_wmf_` -gt 0 ] && STAFF_WMF=allow
+[ `echo $DATA | grep -c students_cue_` -gt 0 ] && STUDENT_CUE=allow
+[ `echo $DATA | grep -c staff_cue_` -gt 0 ] && STAFF_CUE=allow
+[ `echo $DATA | grep -c students_wsc_` -gt 0 ] && STUDENT_WSC=allow
+[ `echo $DATA | grep -c staff_wsc_` -gt 0 ] && STAFF_WSC=allow
+[ `echo $DATA | grep -c students_vbs_` -gt 0 ] && STUDENT_VBS=allow
+[ `echo $DATA | grep -c staff_vbs_` -gt 0 ] && STAFF_VBS=allow
+
+
+##########################
+#Write data to variables file
+##########################
+
+echo -e "STUDENT_ADE=$STUDENT_ADE
+STAFF_ADE=$STAFF_ADE
+STUDENT_ADP=$STUDENT_ADP
+STAFF_ADP=$STAFF_ADP
+STUDENT_ASX=$STUDENT_ASX
+STAFF_ASX=$STAFF_ASX
+STUDENT_BAS=$STUDENT_BAS
+STAFF_BAS=$STAFF_BAS
+STUDENT_BAT=$STUDENT_BAT
+STAFF_BAT=$STAFF_BAT
+STUDENT_CAB=$STUDENT_CAB
+STAFF_CAB=$STAFF_CAB
+STUDENT_CHM=$STUDENT_CHM
+STAFF_CHM=$STAFF_CHM
+STUDENT_CMD=$STUDENT_CMD
+STAFF_CMD=$STAFF_CMD
+STUDENT_COM=$STUDENT_COM
+STAFF_COM=$STAFF_COM
+STUDENT_CPL=$STUDENT_CPL
+STAFF_CPL=$STAFF_CPL
+STUDENT_CRT=$STUDENT_CRT
+STAFF_CRT=$STAFF_CRT
+STUDENT_DLL=$STUDENT_DLL
+STAFF_DLL=$STAFF_DLL
+STUDENT_EXE=$STUDENT_EXE
+STAFF_EXE=$STAFF_EXE
+STUDENT_HLP=$STUDENT_HLP
+STAFF_HLP=$STAFF_HLP
+STUDENT_INI=$STUDENT_INI
+STAFF_INI=$STAFF_INI
+STUDENT_HTA=$STUDENT_HTA
+STAFF_HTA=$STAFF_HTA
+STUDENT_INF=$STUDENT_INF
+STAFF_INF=$STAFF_INF
+STUDENT_INS=$STUDENT_INS
+STAFF_INS=$STAFF_INS
+STUDENT_ISP=$STUDENT_ISP
+STAFF_ISP=$STAFF_ISP
+STUDENT_JS=$STUDENT_JS
+STAFF_JS=$STAFF_JS
+STUDENT_JSE=$STUDENT_JSE
+STAFF_JSE=$STAFF_JSE
+STUDENT_LNK=$STUDENT_LNK
+STAFF_LNK=$STAFF_LNK
+STUDENT_MDA=$STUDENT_MDA
+STAFF_MDA=$STAFF_MDA
+STUDENT_MDB=$STUDENT_MDB
+STAFF_MDB=$STAFF_MDB
+STUDENT_MDE=$STUDENT_MDE
+STAFF_MDE=$STAFF_MDE
+STUDENT_MDT=$STUDENT_MDT
+STAFF_MDT=$STAFF_MDT
+STUDENT_MDW=$STUDENT_MDW
+STAFF_MDW=$STAFF_MDW
+STUDENT_MDZ=$STUDENT_MDZ
+STAFF_MDZ=$STAFF_MDZ
+STUDENT_MSC=$STUDENT_MSC
+STAFF_MSC=$STAFF_MSC
+STUDENT_MSI=$STUDENT_MSI
+STAFF_MSI=$STAFF_MSI
+STUDENT_MSP=$STUDENT_MSP
+STAFF_MSP=$STAFF_MSP
+STUDENT_MST=$STUDENT_MST
+STAFF_MST=$STAFF_MST
+STUDENT_PCD=$STUDENT_PCD
+STAFF_PCD=$STAFF_PCD
+STUDENT_PIF=$STUDENT_PIF
+STAFF_PIF=$STAFF_PIF
+STUDENT_PRF=$STUDENT_PRF
+STAFF_PRF=$STAFF_PRF
+STUDENT_REG=$STUDENT_REG
+STAFF_REG=$STAFF_REG
+STUDENT_SCF=$STUDENT_SCF
+STAFF_SCF=$STAFF_SCF
+STUDENT_SCR=$STUDENT_SCR
+STAFF_SCR=$STAFF_SCR
+STUDENT_SCT=$STUDENT_SCT
+STAFF_SCT=$STAFF_SCT
+STUDENT_SH=$STUDENT_SH
+STAFF_SH=$STAFF_SH
+STUDENT_SHS=$STUDENT_SHS
+STAFF_SHS=$STAFF_SHS
+STUDENT_SHB=$STUDENT_SHB
+STAFF_SHB=$STAFF_SHB
+STUDENT_SYS=$STUDENT_SYS
+STAFF_SYS=$STAFF_SYS
+STUDENT_URL=$STUDENT_URL
+STAFF_URL=$STAFF_URL
+STUDENT_VB=$STUDENT_VB
+STAFF_VB=$STAFF_VB
+STUDENT_VBE=$STUDENT_VBE
+STAFF_VBE=$STAFF_VBE
+STUDENT_VXD=$STUDENT_VXD
+STAFF_VXD=$STAFF_VXD
+STUDENT_WSF=$STUDENT_WSF
+STAFF_WSF=$STAFF_WSF
+STUDENT_WSH=$STUDENT_WSH
+STAFF_WSH=$STAFF_WSH
+STUDENT_OTF=$STUDENT_OTF
+STAFF_OTF=$STAFF_OTF
+STUDENT_OPS=$STUDENT_OPS
+STAFF_OPS=$STAFF_OPS
+STUDENT_DOC=$STUDENT_DOC
+STAFF_DOC=$STAFF_DOC
+STUDENT_XLS=$STUDENT_XLS
+STAFF_XLS=$STAFF_XLS
+STUDENT_GZ=$STUDENT_GZ
+STAFF_GZ=$STAFF_GZ
+STUDENT_TAR=$STUDENT_TAR
+STAFF_TAR=$STAFF_TAR
+STUDENT_ZIP=$STUDENT_ZIP
+STAFF_ZIP=$STAFF_ZIP
+STUDENT_TGZ=$STUDENT_TGZ
+STAFF_TGZ=$STAFF_TGZ
+STUDENT_BZ2=$STUDENT_BZ2
+STAFF_BZ2=$STAFF_BZ2
+STUDENT_CDR=$STUDENT_CDR
+STAFF_CDR=$STAFF_CDR
+STUDENT_DMG=$STUDENT_DMG
+STAFF_DMG=$STAFF_DMG
+STUDENT_SMI=$STUDENT_SMI
+STAFF_SMI=$STAFF_SMI
+STUDENT_SIT=$STUDENT_SIT
+STAFF_SIT=$STAFF_SIT
+STUDENT_SEA=$STUDENT_SEA
+STAFF_SEA=$STAFF_SEA
+STUDENT_BIN=$STUDENT_BIN
+STAFF_BIN=$STAFF_BIN
+STUDENT_HQX=$STUDENT_HQX
+STAFF_HQX=$STAFF_HQX
+STUDENT_RAR=$STUDENT_RAR
+STAFF_RAR=$STAFF_RAR
+STUDENT_MP3=$STUDENT_MP3
+STAFF_MP3=$STAFF_MP3
+STUDENT_MPEG=$STUDENT_MPEG
+STAFF_MPEG=$STAFF_MPEG
+STUDENT_MPG=$STUDENT_MPG
+STAFF_MPG=$STAFF_MPG
+STUDENT_AVI=$STUDENT_AVI
+STAFF_AVI=$STAFF_AVI
+STUDENT_ASF=$STUDENT_ASF
+STAFF_ASF=$STAFF_ASF
+STUDENT_ISO=$STUDENT_ISO
+STAFF_ISO=$STAFF_ISO
+STUDENT_OGG=$STUDENT_OGG
+STAFF_OGG=$STAFF_OGG
+STUDENT_WMF=$STUDENT_WMF
+STAFF_WMF=$STAFF_WMF
+STUDENT_CUE=$STUDENT_CUE
+STAFF_CUE=$STAFF_CUE
+STUDENT_WSC=$STUDENT_WSC
+STAFF_WSC=$STAFF_WSC
+STUDENT_VBS=$STUDENT_VBS
+STAFF_VBS=$STAFF_VBS" > /opt/karoshi/server_network/dansguardian/allowed_file_extensions
+
+#Write config files
+[ -f /opt/karoshi/server_network/dansguardian/students_bannedextensionlist ] && rm -f /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ -f /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist ] && rm -f /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+touch /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+touch /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+
+[ $STUDENT_ADE = deny ] && echo .ade >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_ADE = deny ] && echo .ade >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_ADP = deny ] && echo .adp >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_ADP = deny ] && echo .adp >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_ASX = deny ] && echo .asx >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_ASX = deny ] && echo .asx >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_BAS = deny ] && echo .bas >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_BAS = deny ] && echo .bas >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_BAT = deny ] && echo .bat >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_BAT = deny ] && echo .bat >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_CAB = deny ] && echo .cab >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_CAB = deny ] && echo .cab >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_CHM = deny ] && echo .chm >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_CHM = deny ] && echo .chm >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_CMD = deny ] && echo .cmd >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_CMD = deny ] && echo .cmd >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_COM = deny ] && echo .com >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_COM = deny ] && echo .com >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_CPL = deny ] && echo .cpl >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_CPL = deny ] && echo .cpl >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_CRT = deny ] && echo .crt >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_CRT = deny ] && echo .crt >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_DLL = deny ] && echo .dll >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_DLL = deny ] && echo .dll >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_EXE = deny ] && echo .exe >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_EXE = deny ] && echo .exe >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_HLP = deny ] && echo .hlp >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_HLP = deny ] && echo .hlp >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_INI = deny ] && echo .ini >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_INI = deny ] && echo .ini >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_HTA = deny ] && echo .hta >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_HTA = deny ] && echo .hta >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_INF = deny ] && echo .inf >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_INF = deny ] && echo .inf >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_INS = deny ] && echo .ins >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_INS = deny ] && echo .ins >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_ISP = deny ] && echo .isp >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_ISP = deny ] && echo .isp >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_JS = deny ] && echo .js >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_JS = deny ] && echo .js >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_JSE = deny ] && echo .jse >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_JSE = deny ] && echo .jse >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_LNK = deny ] && echo .lnk >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_LNK = deny ] && echo .lnk >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_MDA = deny ] && echo .mda >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_MDA = deny ] && echo .mda >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_MDB = deny ] && echo .mdb >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_MDB = deny ] && echo .mdb >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_MDE = deny ] && echo .mde >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_MDE = deny ] && echo .mde >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_MDT = deny ] && echo .mdt >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_MDT = deny ] && echo .mdt >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_MDW = deny ] && echo .mdw >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_MDW = deny ] && echo .mdw >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_MDZ = deny ] && echo .mdz >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_MDZ = deny ] && echo .mdz >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_MSC = deny ] && echo .msc >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_MSC = deny ] && echo .msc >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_MSI = deny ] && echo .msi >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_MSI = deny ] && echo .msi >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_MSP = deny ] && echo .msp >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_MSP = deny ] && echo .msp >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_MST = deny ] && echo .mst >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_MST = deny ] && echo .mst >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_PCD = deny ] && echo .pcd >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_PCD = deny ] && echo .pcd >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_PIF = deny ] && echo .pif >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_PIF = deny ] && echo .pif >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_PRF = deny ] && echo .prf >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_PRF = deny ] && echo .prf >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_REG = deny ] && echo .reg >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_REG = deny ] && echo .reg >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_SCF = deny ] && echo .scf >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_SCF = deny ] && echo .scf >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_SCR = deny ] && echo .scr >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_SCR = deny ] && echo .scr >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_SCT = deny ] && echo .sct >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_SCT = deny ] && echo .sct >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_SH = deny ] && echo .sh >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_SH = deny ] && echo .sh >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_SHS = deny ] && echo .shs >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_SHS = deny ] && echo .shs >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_SHB = deny ] && echo .shb >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_SHB = deny ] && echo .shb >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_SYS = deny ] && echo .sys >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_SYS = deny ] && echo .sys >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_URL = deny ] && echo .url >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_URL = deny ] && echo .url >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_VB = deny ] && echo .vb >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_VB = deny ] && echo .vb >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_VBE = deny ] && echo .vbe >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_VBE = deny ] && echo .vbe >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_VXD = deny ] && echo .vxd >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_VXD = deny ] && echo .vxd >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_WSF = deny ] && echo .wsf >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_WSF = deny ] && echo .wsf >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_WSH = deny ] && echo .wsh >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_WSH = deny ] && echo .wsh >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_OTF = deny ] && echo .otf >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_OTF = deny ] && echo .otf >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_OPS = deny ] && echo .ops >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_OPS = deny ] && echo .ops >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_DOC = deny ] && echo .doc >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_DOC = deny ] && echo .doc >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_XLS = deny ] && echo .xls >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_XLS = deny ] && echo .xls >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_GZ = deny ] && echo .gz >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_GZ = deny ] && echo .gz >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_TAR = deny ] && echo .tar >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_TAR = deny ] && echo .tar >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_ZIP = deny ] && echo .zip >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_ZIP = deny ] && echo .zip >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_TGZ = deny ] && echo .tgz >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_TGZ = deny ] && echo .tgz >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_BZ2 = deny ] && echo .bz2 >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_BZ2 = deny ] && echo .bz2 >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_CDR = deny ] && echo .cdr >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_CDR = deny ] && echo .cdr >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_DMG = deny ] && echo .dmg >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_DMG = deny ] && echo .dmg >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_SMI = deny ] && echo .smi >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_SMI = deny ] && echo .smi >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_SIT = deny ] && echo .sit >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_SIT = deny ] && echo .sit >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_SEA = deny ] && echo .sea >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_SEA = deny ] && echo .sea >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_BIN = deny ] && echo .bin >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_BIN = deny ] && echo .bin >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_HQX = deny ] && echo .hqx >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_HQX = deny ] && echo .hqx >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_RAR = deny ] && echo .rar >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_RAR = deny ] && echo .rar >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_MP3 = deny ] && echo .mp3 >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_MP3 = deny ] && echo .mp3 >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_MPEG = deny ] && echo .mpeg >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_MPEG = deny ] && echo .mpeg >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_MPG = deny ] && echo .mpg >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_MPG = deny ] && echo .mpg >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_AVI = deny ] && echo .avi >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_AVI = deny ] && echo .avi >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_ASF = deny ] && echo .asf >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_ASF = deny ] && echo .asf >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_ISO = deny ] && echo .iso >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_ISO = deny ] && echo .iso >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_OGG = deny ] && echo .ogg >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_OGG = deny ] && echo .ogg >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_WMF = deny ] && echo .wmf >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_WMF = deny ] && echo .wmf >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_CUE = deny ] && echo .cue >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_CUE = deny ] && echo .cue >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_WSC = deny ] && echo .wsc >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_WSC = deny ] && echo .wsc >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+[ $STUDENT_VBS = deny ] && echo .vbs >> /opt/karoshi/server_network/dansguardian/students_bannedextensionlist
+[ $STAFF_VBS = deny ] && echo .vbs >> /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
+
+#Copy config files to the proxy server and restart dansguardian
+PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+if [ $PROXYSERVER = $HOSTNAME ]
+then
+cp -f /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist /etc/dansguardian/staff_rules/bannedextensionlist
+cp -f /opt/karoshi/server_network/dansguardian/students_bannedextensionlist /etc/dansguardian/student_rules/bannedextensionlist
+source /opt/karoshi/serversetup/variables/distro
+echo Restarting Dansguardian"<br><br>"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dansguardian_stop
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dansguardian_start
+else
+scp /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist root@$PROXYSERVER:"/etc/dansguardian/staff_rules/bannedextensionlist"
+scp /opt/karoshi/server_network/dansguardian/students_bannedextensionlist root@$PROXYSERVER:"/etc/dansguardian/student_rules/bannedextensionlist"
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
+source /opt/karoshi/serversetup/variables/distro
+echo Restarting Dansguardian"<br><br>"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dansguardian_stop
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dansguardian_start
+'
+fi
+
+
+exit
+
+

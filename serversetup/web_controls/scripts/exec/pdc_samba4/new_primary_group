@@ -1,0 +1,205 @@
+#!/bin/bash
+#Copyright (C) 2011  The karoshi Team
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/new_primary_group_cgi
+then
+echo `date`: new_primary_group - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/new_primary_group_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/new_primary_group.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $new_primary_group_cgi'check' ]
+then
+echo `date`: new_primary_group - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 1 ]
+then
+echo `date`: new_primary_group - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo $* | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | cut -s -d: -f3`
+NEWPRIGROUP=`echo $* | cut -s -d: -f4`
+PROFILE=`echo $* | cut -s -d: -f5`
+HOMESERVER=`echo $* | cut -s -d: -f6`
+CATEGORY=`echo $* | cut -s -d: -f7`
+SECGROUP=`echo $* | cut -s -d: -f8`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: new_primary_group - Not called by delete_user.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: new_primary_group - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: new_primary_group - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $NEWPRIGROUP'null' = null ]
+then
+echo `date`: new_primary_group - Blank group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $PROFILE'null' = null ]
+then
+echo `date`: new_primary_group - Blank profile by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $HOMESERVER'null' = null ]
+then
+echo `date`: new_primary_group - Blank home server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $CATEGORY'null' = null ]
+then
+echo `date`: new_primary_group - Blank home server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: new_primary_group - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Check for federated servers
+########################
+FAILED_SERVER=no
+SLAVE_LDAP_SERVERS=no
+if [ -d /opt/karoshi/server_network/slave_ldap_servers/ ]
+then
+if [ `ls -1 /opt/karoshi/server_network/slave_ldap_servers/ | wc -l` -gt 0 ]
+then
+SLAVE_LDAP_SERVERS=yes
+fi
+fi
+
+FEDERATED_LDAP_SERVERS=no
+if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
+then
+if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
+then
+FEDERATED_LDAP_SERVERS=yes
+fi
+fi
+
+#######################
+#Add the group
+#######################
+echo `date`: new_primary_group - addding group $NEWPRIGROUP from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+[ ! -d /opt/karoshi/server_network/group_information/optional_groups ] && mkdir -p /opt/karoshi/server_network/group_information/optional_groups
+
+touch /opt/karoshi/server_network/group_information/optional_groups/$NEWPRIGROUP
+
+#Get samba 4 database password
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+source /opt/karoshi/server_network/domain_information/domain_name
+
+samba-tool group add $NEWPRIGROUP
+echo
+GIDNUMBER=`getent group $NEWPRIGROUP | cut -d: -f3`
+echo -e "dn: CN=$NEWPRIGROUP,CN=Users,$LDAPBASE
+changetype: modify
+add: objectclass
+objectclass: posixgroup
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
+
+echo -e "dn: CN=$NEWPRIGROUP,CN=Users,$LDAPBASE
+changetype: modify
+add: gidnumber
+gidnumber: $GIDNUMBER
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
+
+
+#Create a subcontainer for users of the group
+
+
+NAME="$NEWPRIGROUP"
+DESC="$NEWPRIGROUP"
+LDAPPATH="CN=$NEWPRIGROUP,CN=$CATEGORY,CN=Users,$LDAPBASE"
+
+echo -e "version: 1
+
+# Entry 1: $LDAPPATH
+dn: $LDAPPATH
+cn: $NAME
+description: $DESC
+distinguishedname: $LDAPPATH
+instancetype: 4
+name: $NAME
+objectcategory: CN=Container,CN=Schema,CN=Configuration,$LDAPBASE
+objectclass: top
+objectclass: container
+showinadvancedviewonly: FALSE
+systemflags: -1946157056
+usnchanged: 3372
+usncreated: 3371
+whenchanged: 20121120112708.0Z
+whencreated: 20121120112708.0Z" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
+
+##########################
+#Copy profile and background
+##########################
+#Main server
+if [ ! -d /home/applications/profiles/$NEWPRIGROUP ]
+then
+cp -f -R /home/applications/profiles/$PROFILE /home/applications/profiles/$NEWPRIGROUP 
+chmod 0644 /home/applications/profiles/$NEWPRIGROUP
+chmod u+X,g+X,o+X /home/applications/profiles/$NEWPRIGROUP
+fi
+[ -f /home/applications/backgrounds/$PROFILE.bmp ] && cp -f /home/applications/backgrounds/$PROFILE.bmp /home/applications/backgrounds/$NEWPRIGROUP.bmp
+
+##########################
+#Create data files
+##########################
+[ -e /var/lib/samba/netlogon/windows_settings/drives/$PROFILE.kix ] && cp -f /var/lib/samba/netlogon/windows_settings/drives/$PROFILE.kix /var/lib/samba/netlogon/windows_settings/drives/$NEWPRIGROUP.kix
+[ -e /var/lib/samba/netlogon/windows_settings/security/$PROFILE.kix ] && cp -f /var/lib/samba/netlogon/windows_settings/security/$PROFILE.kix /var/lib/samba/netlogon/windows_settings/security/$NEWPRIGROUP.kix
+[ `grep -c $NEWPRIGROUP /var/lib/samba/netlogon/groups.txt` = 0 ] && echo $NEWPRIGROUP,$HOMESERVER >> /var/lib/samba/netlogon/groups.txt
+echo SERVER=$HOMESERVER > /opt/karoshi/server_network/group_information/$NEWPRIGROUP
+echo HOMEPATH=/home/users/$CATEGORY/$PRIGROUP >> /opt/karoshi/server_network/group_information/$NEWPRIGROUP
+echo SUBUNIT=$CATEGORY >> /opt/karoshi/server_network/group_information/$NEWPRIGROUP
+echo SECONDARYGROUP=$SECGROUP >> /opt/karoshi/server_network/group_information/$NEWPRIGROUP
+echo YEARSUFFIX=$YEARSUFFIX >> /opt/karoshi/server_network/group_information/$NEWPRIGROUP
+
+exit
+

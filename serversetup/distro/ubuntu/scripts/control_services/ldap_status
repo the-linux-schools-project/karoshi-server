@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#Check which version of samba we are using
+SERVICE=slapd
+[ -f /usr/local/sbin/samba ] && SERVICE=samba
+
+if [ `ps -e | grep -w -c $SERVICE` -gt 0 ]
+then
+exit 0
+else
+exit 1
+fi

@@ -1,0 +1,92 @@
+#! /bin/bash
+
+QUOUTIL=`/usr/bin/which quosnmp-util`
+if [ -z "$QUOUTIL" ]
+then
+  QUOUTIL="/usr/local/sbin/quosnmp-util"
+fi
+
+ROOTFILE=`$QUOUTIL -a nobody`
+FILEROOT=`dirname $ROOTFILE`
+SMBUSERS=`pdbedit -L | cut -d ':' -f 1 | grep -v '\$$' | sort | uniq`
+
+TESTMODE=0
+if (( $TESTMODE != 1 ))
+then
+
+# Due to a weird error I got once, only do the backup if there is a small (<10MB) amount of data.
+# If there is anywhere near this amount of data, then the right thing is not being copied!
+SIZEOF=`du -s /${FILEROOT}/ | cut -f 1`
+
+if (( $SIZEOF < 10000 ))
+then
+  if [ ! -d "/${FILEROOT}.bak" ]
+  then
+    if [ -e "/${FILEROOT}.bak" ]
+    then
+      rm -f "/${FILEROOT}.bak"
+    fi
+    mkdir /${FILEROOT}.bak
+  fi
+  rsync -a --delete -q /${FILEROOT}/ /${FILEROOT}.bak/
+fi
+
+# First, make sure that accounting files exist for all Samba users.
+for eachuser in $SMBUSERS
+do
+  if [ ! -e ${FILEROOT}/${eachuser} ]
+  then
+    echo -n "0" > ${FILEROOT}/${eachuser}
+    chown lp:${eachuser} ${FILEROOT}/${eachuser}
+    chmod 0640 ${FILEROOT}/${eachuser}
+  fi
+done
+
+# Make sure that accounting files exist only for Samba users.
+for eachfile in `ls $FILEROOT | grep -v print_quota`
+do
+  # This will return "Username not found" to stderr, leaving stdout empty.
+  USERINFO=`pdbedit -L -u $eachfile`
+  if [ -z "$USERINFO" ]
+  then
+    rm -f ${FILEROOT}/${eachfile}
+  fi
+done
+
+fi # End of TESTMODE
+
+# Now find and reset everyone's quota
+for eachuser in $SMBUSERS
+do
+  CURRENTPRINTING=`$QUOUTIL -c $eachuser`
+  CURRENTQUOTA=`$QUOUTIL -q $eachuser`
+  ACCOUNTINGFILE=`$QUOUTIL -a $eachuser`
+
+  if [[ $CURRENTQUOTA =~ "U" ]]
+  then
+    NEWPRINTING=0
+  elif [[ $CURRENTQUOTA =~ "N" ]]
+  then
+    NEWPRINTING=0
+  else
+    NEWPRINTING=$(( $CURRENTPRINTING - $CURRENTQUOTA ))
+  fi
+
+  # Quotas roll over most months, but not every third month.
+  MONTH=`date +%b`
+  case $MONTH in
+    'Jan' | 'Apr' | 'Jul' | 'Oct')
+      if (( $NEWPRINTING < 0 ))
+      then
+        NEWPRINTING=0
+      fi
+    ;;
+  esac
+
+  if (( $TESTMODE != 1 ))
+  then
+    echo $NEWPRINTING > $ACCOUNTINGFILE
+  fi
+
+  echo "Pagecount changed from $CURRENTPRINTING to $NEWPRINTING for user $eachuser"
+done

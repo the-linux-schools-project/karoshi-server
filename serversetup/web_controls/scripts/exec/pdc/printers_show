@@ -1,0 +1,143 @@
+#!/bin/bash
+#Copyright (C) 2007  The karoshi Team
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+############################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/printers_assign_fm_cgi
+then
+echo `date`: printers_show - No MD5Checksum "for" printers_assign_fm >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/printers_assign_fm_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printers_assign_fm.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $printers_assign_fm_cgi'check' ]
+then
+echo `date`: printers_show - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: printers_show - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+'`
+if [ $DATA'null' = null ]
+then
+echo `date`: printers_show - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: printers_show - Not called by printers_show.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: printers_show - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ ! -f /opt/karoshi/server_network/print_server ]
+then
+echo `date`: printers - no print server has been set up. >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: printers_show - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: printers_show - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printers_assign ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printers_assign
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+####################
+#Show the printers
+####################
+
+PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/print_server`
+if [ $PRINTSERVER != $HOSTNAME ]
+then
+ssh -x -o PasswordAuthentication=no $PRINTSERVER '
+#Show available printers
+PRINTERSARRAY=( `lpstat -a | cut -d" " -f1 | sed "s/Paused//g"` )
+ARRAYCOUNT=${#PRINTERSARRAY[@]}
+if [ $ARRAYCOUNT = 0 ]
+then
+echo '$ERRORMSG3'\<br\>
+exit 101
+fi
+echo \<table class=\"standard\" style=\"text-align: left\;\"\>\<tbody\>\<tr\>\<td style=\"width: 200px\;\"\>\<b\>'$PRINTERMSG':\</b\>\</td\>\<td\>'$SELECTPRINTERMSG'\</td\>\<td\>\</tr\>
+COUNTER=0
+while [ $COUNTER -lt $ARRAYCOUNT ]
+do
+echo \<tr\>\<td\>${PRINTERSARRAY[$COUNTER]}\</td\>\<td\>\<input name=\"_PRINTER_\" value=\"${PRINTERSARRAY[$COUNTER]}\"\ type=\"checkbox\"\>\</td\>\</tr\>
+let COUNTER=$COUNTER+1
+done
+echo \</tbody\>\</table\>\<input value=\"'$SUBMITMSG'\" type=\"submit\"\> \<input value=\"'$RESETMSG'\" type=\"reset\"\>
+fi
+'
+STATUS=`echo $?`
+exit $STATUS
+else
+#Show available printers
+PRINTERSARRAY=( `lpstat -a | cut -d' ' -f1 | sed "s/Paused//g"` )
+ARRAYCOUNT=${#PRINTERSARRAY[@]}
+if [ $ARRAYCOUNT = 0 ]
+then
+echo $ERRORMSG3\<br\>
+exit 101
+fi
+echo \<table class=\"standard\" style=\"text-align: left\;\"\>\<tbody\>\<tr\>\<td style=\"width: 200px\;\"\>\<b\>$PRINTERMSG:\</b\>\</td\>\<td\>$SELECTPRINTERMSG\</td\>\<td\>\</tr\>
+COUNTER=0
+while [ $COUNTER -lt $ARRAYCOUNT ]
+do
+echo \<tr\>\<td\>${PRINTERSARRAY[$COUNTER]}\</td\>\<td\>\<input name=\"_PRINTER_\" value=\"${PRINTERSARRAY[$COUNTER]}\"\ type=\"checkbox\"\>\</td\>\</tr\>
+let COUNTER=$COUNTER+1
+done
+echo \</tbody\>\</table\>\<input value=\"$SUBMITMSG\" type=\"submit\"\> \<input value=\"$RESETMSG\" type=\"reset\"\>
+fi
+exit

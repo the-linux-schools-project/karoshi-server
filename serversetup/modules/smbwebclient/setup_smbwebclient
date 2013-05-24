@@ -1,0 +1,189 @@
+#!/bin/bash
+#setupsmbwebclient
+#Copyright (C) 2009  The karoshi Team
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+########################
+#Get variables
+########################
+LOG_DATE=`date +%F`
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: setupfileserver - incorrect number of arguments."<br>"
+exit 101
+fi
+read -t 3 DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/'`
+
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+PDCSERVER=`echo "$DATA" | cut -s -d: -f4`
+PDCIP=`echo "$DATA" | cut -s -d: -f5`
+SAMBA_DOMAIN=`echo "$DATA" | cut -s -d: -f6`
+
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: setupfileserver - Blank remote user."<br>"
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: setupfileserver - Blank remote tcpip address."<br>"
+exit 101
+fi
+
+if [ $PDCSERVER'null' = null ]
+then
+echo `date`: setupfileserver - Blank PDC."<br>"
+exit 101
+fi
+
+
+if [ $PDCSERVER != $HOSTNAME ]
+then
+if [ $PDCIP'null' = null ]
+then
+echo `date`: setupfileserver - Blank TCPIP."<br>"
+exit 101
+fi
+
+#Check to see that we can ping the PDC
+ping -c 2 $PDCIP 1>/dev/null
+if [  echo $? != 0 ]
+then
+echo `date` : setupfileserver - $PINGFAIL."<br>"
+exit 101
+fi
+fi
+
+APACHEGROUP=apache
+LANGCHOICE=englishuk
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/smbwebclient/setupsmbwebclient ] || LANGCHOICE=englishuk
+source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/smbwebclient/setupsmbwebclient
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/variables/tcpip
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+
+#################################
+#Ensure that apache starts on boot
+#################################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
+
+#######################
+#Apply certificate
+#######################
+if [ ! -f /etc/ssl/apache/server.crt ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
+fi
+
+
+echo '<b>'$TITLE' - '$HOSTNAME'</b><br><br>'
+
+#####################################
+#Extract in smbwebclient and set permisions
+#####################################
+echo '<br>'$EXTRACTMSG
+
+[ -d /var/www/html/smbwebclient ] || rm -f -R /var/www/html/smbwebclient
+
+cd /var/www/html/
+tar -xzf /opt/karoshi/serversetup/modules/smbwebclient/smbwebclient.tar.gz
+
+chmod 0440 -R /var/www/html/smbwebclient
+chmod u+X,g+X -R /var/www/html/smbwebclient
+chown root.$APACHEGROUP -R /var/www/html/smbwebclient
+
+#################################
+#Configure ldap for smbwebclient
+#################################
+sed -i 's/XEN/'$PDCSERVER'/g' /var/www/html/smbwebclient/config/config.php
+sed -i 's/CHANGETHISDOMAIN/'$SAMBA_DOMAIN'/g' /var/www/html/smbwebclient/ldapauth.php
+if [ $PDCSERVER != $HOSTNAME ]
+then
+if [ `grep -c $PDCSERVER.internal /etc/hosts` = 0 ]
+then
+echo $PDCIP'		'$PDCSERVER $PDCSERVER.internal > /etc/hosts
+fi
+fi
+#####################################
+#Ensure that apache ports are open in shorewall
+#####################################
+MODCHECK=`grep -c -w 50000 /etc/shorewall/rules`
+
+if [ $MODCHECK = 0 ]
+then
+echo '<br>'$SHOREWALLMSG
+LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'50000'	'-'#'smbwebclientrule /etc/shorewall/rules
+echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+fi
+######################
+#Restart shorewall
+######################
+if [ $MODCHECK = 0 ]
+then
+echo '<br>'$RESTARTSWMSG
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+fi
+
+#########################
+#Create temp folder
+#########################
+
+if [ ! -d /var/www/smbwebclient-data ]
+then
+mkdir /var/www/smbwebclient-data
+chmod 0660 /var/www/smbwebclient-data
+chmod u+X,g+X /var/www/smbwebclient-data
+chown root.$APACHEGROUP /var/www/smbwebclient-data
+fi
+#################################
+#Allow non root users to use smbmount and smbumount
+#################################
+echo '<br>'$SMBPERMMSG
+chmod u+s /usr/bin/smbmnt
+chmod u+s /usr/bin/smbumount
+#################################
+#Configure virtual server on port 50000 for smbwebclient
+#################################
+echo '<br>'$VIRTUALSERVERMSG
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/smbwebclientvhost
+#################################
+#Restart apache
+#################################
+echo '<br>'$RESTARTAPACHEMSG'<br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop
+echo '<br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 2>/dev/null
+echo '<br>'
+
+###########################
+#Show completed message
+###########################
+echo '<br><br>'$ACCESSMSG - '<a href="https://'$HOSTNAME':50000" target="_blank">https://'$HOSTNAME':50000</a>'
+echo '<br><br>'$FIREWALLHELP
+echo '<br><br><b>'$COMPLETEDMSG'</b>'
+exit

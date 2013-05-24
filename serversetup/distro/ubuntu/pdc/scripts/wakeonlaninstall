@@ -1,0 +1,6 @@
+#!/bin/bash
+#wakeonlaninstall
+
+WAKLANVER=wakelan_1.1-3_i386.deb
+echo installing $WAKLANVER >> /opt/karoshi/serversetup/install_log
+dpkg --install /opt/karoshi/serversetup/xen/debs/$WAKLANVER 2>&1 >> /opt/karoshi/serversetup/install_log

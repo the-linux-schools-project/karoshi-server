@@ -1,0 +1,306 @@
+#!/bin/bash
+#Copyright (C) 2009 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+[ -d /home/staffshare/student_grades/ ] && rm -f -R /home/staffshare/student_grades/
+
+########################
+#Date of report
+########################
+DAY=`date +%d`
+MONTH=`date +%m`
+YEAR=`date +%y`
+LOG_DATE=`date +%F`
+########################
+#Language
+########################
+TITLE="Moodle Grade Report Summary"
+TITLE2="Moodle Grade Report"
+TITLE3="Moodle Course Grade Report"
+CATEGORYMSG="Category"
+COURSENAMEMSG="Course Name"
+ASSIGNMENTMSG="Assignment"
+GRADEMSG="Grade"
+MAXGRADEMSG="Max"
+COMMENTMSG="Comment"
+REPORTGENMSG="Report generated on"
+USERNAMEMSG="Username"
+FIRSTNAMEMSG="First Name"
+LASTNAMEMSG="Last Name"
+########################
+#Colours
+########################
+TABLE_HEADER_BACKGROUND="0, 90, 156"
+TABLE_HEADER_TEXT="white"
+BACKGROUND_COLOUR="white"
+TEXT_COLOUR="0, 0, 0"
+
+########################
+#Rename folders to labels
+########################
+function rename_folders {
+source /opt/karoshi/web_controls/group_dropdown_def
+FOLDERCOUNTER=2000
+while [ $FOLDERCOUNTER -lt 2050 ]
+do
+#Check to see if student folder exists
+if [ -d /home/staffshare/student_grades/yr$FOLDERCOUNTER ]
+then
+#Rename student folder to label name
+ENTRYYEAR=`echo YR$FOLDERCOUNTER`
+if [ ! -d /home/staffshare/student_grades/"${!ENTRYYEAR}" ]
+then
+mv /home/staffshare/student_grades/yr$FOLDERCOUNTER /home/staffshare/student_grades/"${!ENTRYYEAR}"
+fi
+fi
+let FOLDERCOUNTER=$FOLDERCOUNTER+1
+done
+}
+
+
+########################
+#Get server to run export
+########################
+MOODLESERVER=this_server
+[ -f /opt/karoshi/serversetup/variables/ssh/colossusssh ] && MOODLESERVER=colossus
+[ -f /opt/karoshi/serversetup/variables/ssh/cassandrassh ] && MOODLESERVER=cassandra
+
+if [ -d /opt/karoshi/logs/karoshi_web_management/ ]
+then
+echo `date`: moodle_export_grades - starting "export" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+
+if [ $MOODLESERVER != this_server ]
+then
+#Ensure that this script is on the correct server
+scp "/opt/karoshi/useful scripts/moodle_export_grades" root@$MOODLESERVER:"/opt/karoshi/useful\ scripts/"
+#Run script
+ssh -x -o PasswordAuthentication=no $MOODLESERVER '
+/opt/karoshi/"useful scripts"/moodle_export_grades
+#archive grades ready to copy back to xen
+cd /home/staffshare
+tar -czf student_grades.tar.gz student_grades
+'
+#Copy archived grades back and extract
+[ -f /home/staffshare/student_grades.tar.gz ] && rm -f /home/staffshare/student_grades.tar.gz
+scp root@$MOODLESERVER:/home/staffshare/student_grades.tar.gz /home/staffshare/
+cd /home/staffshare/
+tar -xvf student_grades.tar.gz
+rename_folders
+if [ -d /opt/karoshi/logs/karoshi_web_management/ ]
+then
+echo `date`: moodle_export_grades - completing "export" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+exit
+fi
+
+########################
+#Get moodle password
+########################
+MOODLEPASS=`cat /var/www/html/moodle/config.php | grep ^\\$CFG-\>dbpass | cut -d\' -f2`
+
+if [ `echo $MOODLEPASS'null' | sed 's/ //g'` = null ]
+then
+echo No moodle password found - exiting now...
+exit
+fi
+
+function PROCESS_RAW_GRADES {
+if [ ! -d /home/staffshare/student_grades/$STUDENT_PRI_GROUP/$STUDENTUSERNAME ]
+then
+mkdir -p /home/staffshare/student_grades/$STUDENT_PRI_GROUP/$STUDENTUSERNAME
+chmod 0550 /home/staffshare/student_grades/$STUDENT_PRI_GROUP/$STUDENTUSERNAME
+chown root.staff /home/staffshare/student_grades/$STUDENT_PRI_GROUP/$STUDENTUSERNAME
+fi
+
+RAW_GRADE_COUNTER=2
+while [ $RAW_GRADE_COUNTER -le $RAW_GRADE_LENGTH ]
+do
+RAW_GRADE_DATA=`sed -n $RAW_GRADE_COUNTER,$RAW_GRADE_COUNTER'p' /home/staffshare/student_grades/raw_data/$STUDENT_PRI_GROUP/$STUDENTUSERNAME | sed 's/.00000//g'`
+FIRSTNAME=`echo "$RAW_GRADE_DATA" | cut -s -f2`
+LASTNAME=`echo "$RAW_GRADE_DATA" | cut -s -f3`
+ITEMNAME=`echo "$RAW_GRADE_DATA" | cut -s -f4`
+GRADE=`echo "$RAW_GRADE_DATA" | cut -s -f5`
+GRADEMAX=`echo "$RAW_GRADE_DATA" | cut -s -f6`
+FEEDBACK=`echo "$RAW_GRADE_DATA" | cut -s -f7`
+SCALEID=`echo "$RAW_GRADE_DATA" | cut -s -f8`
+COURSENAME=`echo "$RAW_GRADE_DATA" | cut -s -f9`
+CATEGORY=`echo "$RAW_GRADE_DATA" | cut -s -f10`
+##########################
+#Get Scale
+##########################
+if [ $SCALEID != NULL ] && [ $SCALEID'null' != null ] && [ $GRADE != NULL ]
+then
+GRADE=`echo ${SCALEARRAY[$SCALEID]} | cut -d, -f$GRADE`
+GRADEMAX=`echo ${SCALEARRAY[$SCALEID]} | cut -d, -f$GRADEMAX`
+fi
+
+[ `echo $FEEDBACK | sed 's/ //g'` = NULL ] && FEEDBACK=N.A.
+
+#Create summary report
+if [ $RAW_GRADE_COUNTER = 2 ]
+then
+echo '<html><Head><title>'$FIRSTNAME' '$LASTNAME' - '$TITLE'</title></head><body style="color: rgb('$TEXT_COLOUR'); background-color: '$BACKGROUND_COLOUR';">
+<b>'$FIRSTNAME' '$LASTNAME' - '$TITLE'</b><br><br>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2"><tbody><tr>
+<td style="background-color: rgb('$TABLE_HEADER_BACKGROUND'); color: '$TABLE_HEADER_TEXT';">'$CATEGORYMSG'</td>
+<td style="background-color: rgb('$TABLE_HEADER_BACKGROUND'); color: '$TABLE_HEADER_TEXT';">'$COURSENAMEMSG'</td>
+<td style="background-color: rgb('$TABLE_HEADER_BACKGROUND'); color: '$TABLE_HEADER_TEXT';">'$ASSIGNMENTMSG'</td>
+<td style="background-color: rgb('$TABLE_HEADER_BACKGROUND'); color: '$TABLE_HEADER_TEXT';">'$GRADEMSG'</td>
+<td style="background-color: rgb('$TABLE_HEADER_BACKGROUND'); color: '$TABLE_HEADER_TEXT';">'$MAXGRADEMSG'</td>
+<td style="background-color: rgb('$TABLE_HEADER_BACKGROUND'); color: '$TABLE_HEADER_TEXT';">'$COMMENTMSG'</td></tr> ' > /home/staffshare/student_grades/$STUDENT_PRI_GROUP/$STUDENTUSERNAME/summary_$STUDENTUSERNAME.html
+fi
+
+[ `echo "$GRADE"null | sed 's/ //g'` = null ] && GRADE=NULL
+if [ `echo "$GRADE" | sed 's/ //g'` != NULL ]
+then
+#Add to summary report
+echo '<tr><td>'$CATEGORY'</td><td>'$COURSENAME'</td><td>'$ITEMNAME'</td><td>'$GRADE'</td><td>'$GRADEMAX'</td><td>'$FEEDBACK'</td></tr>' >> /home/staffshare/student_grades/$STUDENT_PRI_GROUP/$STUDENTUSERNAME/summary_$STUDENTUSERNAME.html
+#Add to student subject report
+if [ ! -f /home/staffshare/student_grades/$STUDENT_PRI_GROUP/$STUDENTUSERNAME/"$CATEGORY"_"$COURSENAME"_$STUDENTUSERNAME.html ]
+then
+echo '<html><Head><title>'$FIRSTNAME' '$LASTNAME' - '$TITLE2'</title></head><body style="color: rgb('$TEXT_COLOUR'); background-color: '$BACKGROUND_COLOUR';">
+<b>'$FIRSTNAME' '$LASTNAME' - '$TITLE2'</b><br><br>
+
+<table style="text-align: left; wifth: 550px;" border="0" cellpading="2" cellspacing="2"><tbody><tr>
+<td style="width: 180px;"><b>'$COURSENAMEMSG'</b></td><td style="width: 350px;">'"$COURSENAME"'</td></tr>
+<tr><td style="width: 180px;"><b>'$CATEGORYMSG'</b></td><td style="width: 350px;">'"$CATEGORY"'</td></tr></tbody></table><br>
+
+<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<td style="background-color: rgb('$TABLE_HEADER_BACKGROUND'); color: '$TABLE_HEADER_TEXT';">'$ASSIGNMENTMSG'</td>
+<td style="background-color: rgb('$TABLE_HEADER_BACKGROUND'); color: '$TABLE_HEADER_TEXT';">'$GRADEMSG'</td>
+<td style="background-color: rgb('$TABLE_HEADER_BACKGROUND'); color: '$TABLE_HEADER_TEXT';">'$MAXGRADEMSG'</td>
+<td style="background-color: rgb('$TABLE_HEADER_BACKGROUND'); color: '$TABLE_HEADER_TEXT';">'$COMMENTMSG'</td></tr> ' > /home/staffshare/student_grades/$STUDENT_PRI_GROUP/$STUDENTUSERNAME/"$CATEGORY"_"$COURSENAME"_$STUDENTUSERNAME.html
+fi
+echo '<tr><td>'$ITEMNAME'</td><td>'$GRADE'</td><td>'$GRADEMAX'</td><td>'$FEEDBACK'</td></tr>' >> /home/staffshare/student_grades/$STUDENT_PRI_GROUP/$STUDENTUSERNAME/"$CATEGORY"_"$COURSENAME"_$STUDENTUSERNAME.html
+#Add to subject report
+if [ ! -d /home/staffshare/student_grades/"$CATEGORY" ]
+then
+mkdir -p /home/staffshare/student_grades/"$CATEGORY"
+chmod 0550 /home/staffshare/student_grades/"$CATEGORY"
+chown root.staff /home/staffshare/student_grades/"$CATEGORY"
+fi
+if [ ! -f /home/staffshare/student_grades/"$CATEGORY"/"$COURSENAME".html ]
+then
+
+echo '<html><Head><title>'$FIRSTNAME' '$LASTNAME' - '$TITLE3'</title></head><body style="color: rgb('$TEXT_COLOUR'); background-color: '$BACKGROUND_COLOUR';">
+<b>'$TITLE3'</b><br><br>
+<table style="text-align: left; wifth: 550px;" border="0" cellpading="2" cellspacing="2"><tbody><tr>
+<td style="width: 180px;"><b>'$COURSENAMEMSG'</b></td><td style="width: 350px;">'"$COURSENAME"'</td></tr>
+<tr><td style="width: 180px;"><b>'$CATEGORYMSG'</b></td><td style="width: 350px;">'"$CATEGORY"'</td></tr></tbody></table><br>
+
+<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<td style="background-color: rgb('$TABLE_HEADER_BACKGROUND'); color: '$TABLE_HEADER_TEXT';">'$FIRSTNAMEMSG'</td>
+<td style="background-color: rgb('$TABLE_HEADER_BACKGROUND'); color: '$TABLE_HEADER_TEXT';">'$LASTNAMEMSG'</td>
+<td style="background-color: rgb('$TABLE_HEADER_BACKGROUND'); color: '$TABLE_HEADER_TEXT';">'$ASSIGNMENTMSG'</td>
+<td style="background-color: rgb('$TABLE_HEADER_BACKGROUND'); color: '$TABLE_HEADER_TEXT';">'$GRADEMSG'</td>
+<td style="background-color: rgb('$TABLE_HEADER_BACKGROUND'); color: '$TABLE_HEADER_TEXT';">'$MAXGRADEMSG'</td>
+<td style="background-color: rgb('$TABLE_HEADER_BACKGROUND'); color: '$TABLE_HEADER_TEXT';">'$COMMENTMSG'</td></tr> ' >> /home/staffshare/student_grades/"$CATEGORY"/"$COURSENAME".html
+fi
+echo '<tr><td>'$FIRSTNAME'</td><td>'$LASTNAME'</td><td>'$ITEMNAME'</td><td>'$GRADE'</td><td>'$GRADEMAX'</td><td>'$FEEDBACK'</td></tr>' >> /home/staffshare/student_grades/"$CATEGORY"/"$COURSENAME".html
+fi
+
+#End table on subject report
+if [ $RAW_GRADE_COUNTER = $RAW_GRADE_LENGTH ]
+then
+echo '</tbody></table><br><b>'$REPORTGENMSG': '$DAY'-'$MONTH'-'$YEAR'</b><br>' >> /home/staffshare/student_grades/$STUDENT_PRI_GROUP/$STUDENTUSERNAME/summary_$STUDENTUSERNAME.html
+fi
+
+let RAW_GRADE_COUNTER=$RAW_GRADE_COUNTER+1
+done
+}
+
+function QUERY_MOODLE_GRADES {
+
+if [ ! -d /home/staffshare/student_grades/raw_data/$STUDENT_PRI_GROUP ]
+then
+mkdir -p /home/staffshare/student_grades/raw_data/$STUDENT_PRI_GROUP
+chmod 0550 /home/staffshare/student_grades/raw_data/$STUDENT_PRI_GROUP
+chown root.staff /home/staffshare/student_grades/raw_data/$STUDENT_PRI_GROUP
+fi
+
+mysql --user=moodle_user --password=$MOODLEPASS --database=moodle >> /home/staffshare/student_grades/raw_data/$STUDENT_PRI_GROUP/$STUDENTUSERNAME <<QUERY_INPUT
+select mdl_user.username, mdl_user.firstname, mdl_user.lastname, mdl_grade_items.itemname, mdl_grade_grades.rawgrade, mdl_grade_grades.rawgrademax, mdl_grade_grades.feedback, mdl_grade_items.scaleid, mdl_course.fullname, mdl_course_categories.name from mdl_grade_grades, mdl_grade_items, mdl_user, mdl_course, mdl_course_categories where ( mdl_grade_grades.itemid = mdl_grade_items.id ) and ( mdl_grade_grades.userid = mdl_user.id ) and ( mdl_grade_items.courseid = mdl_course.id ) and ( mdl_course.category = mdl_course_categories.id ) and ( mdl_user.username = "$STUDENTUSERNAME" );
+QUERY_INPUT
+RAW_GRADE_LENGTH=`cat /home/staffshare/student_grades/raw_data/$STUDENT_PRI_GROUP/$STUDENTUSERNAME | wc -l`
+[ $RAW_GRADE_LENGTH -gt 0 ] && PROCESS_RAW_GRADES
+}
+########################
+#Get moodle scales
+########################
+mysql --user=moodle_user --password=$MOODLEPASS --database=moodle >> /opt/karoshi/.tempdata/moodle_scales.$$ <<QUERY_INPUT
+select id, name, scale from mdl_scale;
+QUERY_INPUT
+SCALECOUNT=`cat /opt/karoshi/.tempdata/moodle_scales.$$ | wc -l`
+SCALECOUNTER=2
+while [ $SCALECOUNTER -le $SCALECOUNT ]
+do
+SCALEDATA=`sed -n $SCALECOUNTER,$SCALECOUNTER'p' /opt/karoshi/.tempdata/moodle_scales.$$`
+SCALEID=`echo "$SCALEDATA" | cut -s -f1`
+
+if [ $SCALEID'null' != null ]
+then
+SCALE=`echo "$SCALEDATA" | cut -s -f3`
+
+SCALEARRAY[$SCALEID]=`echo "$SCALE"`
+
+fi
+#SCALEARRAY
+
+let SCALECOUNTER=$SCALECOUNTER+1
+done
+
+#echo ${SCALEARRAY[1]}
+#echo ${SCALEARRAY[2]}
+#echo ${SCALEARRAY[3]}
+#echo ${SCALEARRAY[4]}
+#echo ${SCALEARRAY[5]}
+
+########################
+#Get list of student users
+########################
+getent passwd | grep /home/users/students | cut -s -d: -f1 > /opt/karoshi/.tempdata/studentuserlist.$$
+
+STUDENTCOUNT=`cat /opt/karoshi/.tempdata/studentuserlist.$$ | wc -l`
+
+STUDENTCOUNTER=1
+while [ $STUDENTCOUNTER -le $STUDENTCOUNT ]
+do
+STUDENTUSERNAME=`sed -n $STUDENTCOUNTER,$STUDENTCOUNTER'p' /opt/karoshi/.tempdata/studentuserlist.$$`
+if [ $STUDENTUSERNAME'null' != null ]
+then
+echo Processing $STUDENTUSERNAME
+STUDENT_PRI_GROUP=`id -g -n $STUDENTUSERNAME`
+QUERY_MOODLE_GRADES
+fi
+let STUDENTCOUNTER=$STUDENTCOUNTER+1
+done
+rm -f /opt/karoshi/.tempdata/studentuserlist.$$
+rm -f /opt/karoshi/.tempdata/moodle_scales.$$
+rm -f -R /home/staffshare/student_grades/raw_data
+if [ -d /opt/karoshi/logs/karoshi_web_management/ ]
+then
+rename_folders
+echo `date`: moodle_export_grades - completing "export" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+
+exit

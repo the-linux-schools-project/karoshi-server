@@ -1,0 +1,209 @@
+#!/bin/bash
+#Copyright (C) 2008 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dg_view_user_logs_cgi
+then
+echo `date`: dg_view_user_logs - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/dg_view_user_logs_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_user_logs.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $dg_view_user_logs_cgi'check' ]
+then
+echo `date`: dg_view_user_logs - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/dg_view_user_logs_cgi
+then
+echo `date`: dg_view_user_logs - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/tech_checksums/dg_view_user_logs_cgi
+MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/dg_view_user_logs.cgi | cut -d' ' -f1`
+[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+if [ $MD5SUM2'check' != $dg_view_user_logs_cgi'check' ]
+then
+echo `date`: dg_view_user_logs - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: dg_view_user_logs - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: dg_view_user_logs - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+USERNAME=`echo "$DATA" | cut -s -d: -f4`
+DAY=`echo "$DATA" | cut -s -d: -f5`
+MONTH=`echo "$DATA" | cut -s -d: -f6`
+YEAR=`echo "$DATA" | cut -s -d: -f7`
+DETAILED=`echo "$DATA" | cut -s -d: -f8`
+MOBILE=`echo "$DATA" | cut -s -d: -f9`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: dg_view_user_logs - Not called by dg_view_user_logs.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: dg_view_user_logs - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: dg_view_user_logs - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $USERNAME'null' = null ]
+then
+echo `date`: dg_view_user_logs - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ $DAY'null' = null ]
+then
+echo `date`: dg_view_user_logs - Blank day by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ $MONTH'null' = null ]
+then
+echo `date`: dg_view_user_logs - Blank month by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ $YEAR'null' = null ]
+then
+echo `date`: dg_view_user_logs - Blank year by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $DETAILED'null' = null ]
+then
+echo `date`: dg_view_user_logs - Blank detail by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $DETAILED != yes ] && [ $DETAILED != no ]
+then
+echo `date`: dg_view_user_logs - Incorrect detail value by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: dg_view_user_logs - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+echo `date`: dg_view_user_logs - Viewing logs "for" $USERNAME $DAY-$MONTH-$YEAR by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#View logs
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+TABLECLASS=standard
+[ $MOBILE = yes ] && TABLECLASS=mobilestandard
+
+#Set detailed path
+
+if [ $DETAILED = yes ]
+then
+USERS=users_detailed
+DETAIL_ICON=normal_logs.png
+DETAILED2=no
+DETAILEDLOGSMSG=$DETAILEDLOGSMSG2
+else
+USERS=users
+DETAIL_ICON=detailed_logs.png
+DETAILED2=yes
+DETAILEDLOGSMSG=$DETAILEDLOGSMSG1
+fi
+
+
+#Get squid server name
+[ ! -f /opt/karoshi/server_network/proxyserver ] && exit 101
+PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+
+if [ $PROXYSERVER != $HOSTNAME ]
+then
+ssh -x -o PasswordAuthentication=no $PROXYSERVER '
+#Check to see if a log for this user exists on the date given
+LOGTYPE=NOTSET
+[ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$USERS'/'$USERNAME' ] && LOGTYPE=text
+[ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$USERS'/'$USERNAME'.tar.gz ] && LOGTYPE=archive
+[ $LOGTYPE = NOTSET ] && exit 102
+#Create table header
+echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\">"\<b\>'$TITLE' '$USERNAME' '$DAY'-'$MONTH'-'$YEAR'\<\/b\>"</td><td style=\"vertical-align: top; width: 25px;\">"\<form action=\"dg_ban_user.cgi\" method=\"post\" target=\"_blank\"\>\<a class=\"info\" href=\"javascript:void\(0\)\"\>\<input name=\"_STUDENTS_'$USERNAME'"_"\" type=\"image\" class=\"images\" src=\"/images/submenus/internet/ban_user.png\" value=\"\"\>\<span\>'$BANMSG'\</span\>\</a\>\</form\>"</td><td style=\"vertical-align: top; width: 25px;\">"\<form action=\"dg_view_user_logs.cgi\" method=\"post\" target=\"_top\"\>\<a class=\"info\" href=\"javascript:void\(0\)\"\>\<input name=\"_USERNAME_'$USERNAME'"_"DATE_'$DAY'-'$MONTH'-'$YEAR'"_"DETAILED_'$DETAILED2'"_"\" type=\"image\" class=\"images\" src=\"/images/submenus/internet/'$DETAIL_ICON'\" value=\"\"\>\<span\>'$DETAILEDLOGSMSG'\</span\>\</a\>\</form\>"</td><td style=\"vertical-align: top; width: 25px;\">"\<form action=\"dg_view_user_usage.cgi\" method=\"post\" target=\"_top\"\>\<a class=\"info\" href=\"javascript:void\(0\)\"\>\<input name=\"_USERNAME_'$USERNAME'"_"\" type=\"image\" class=\"images\" src=\"/images/submenus/internet/user_usage.png\" value=\"\"\>\<span\>'$VIEWUSAGEMSG'\</span\>\</a\>\</form\>"</td></tr></tbody></table>"\<br\>
+echo \<table class=\"'$TABLECLASS'\" style=\"text-align: left\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>\<tbody\>
+echo \<tr\>\<td style\=\"width: 60px\;\"\>\<b\>'$FILTERMSG'\<\/b\>\</td\>\<td style\=\"width: 90px\;\"\>\<b\>'$TIMEMSG'\<\/b\>\</td\>\<td\>\<td style\=\"width: 120px\;\"\>\<b\>'$COMPIP'\<\/b\>\</td\>\<td\>\</td\>\<td\>\<b\>'$WEBURL'\<\/b\>\</td\>\</tr\>
+if [ $LOGTYPE = text ]
+then
+cat /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$USERS'/'$USERNAME'
+else
+tar -xzOf /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$USERS'/'$USERNAME'.tar.gz
+fi
+#end table
+echo \<\/tbody\>\<\/table\>\<br\>
+'
+[ `echo $?` = 102 ] && exit 102
+else
+#Check to see if a log for this user exists on the date given
+LOGTYPE=NOTSET
+[ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME ] && LOGTYPE=text
+[ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME.tar.gz ] && LOGTYPE=archive
+[ $LOGTYPE = NOTSET ] && exit 102
+#Create table header
+echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\">"\<b\>$TITLE $USERNAME $DAY-$MONTH-$YEAR\<\/b\>"</td><td style=\"vertical-align: top; width: 25px;\">"\<form action=\"dg_ban_user.cgi\" method=\"post\" target=\"_blank\"\>\<a class=\"info\" href=\"javascript:void\(0\)\"\>\<input name=\"_STUDENTS_$USERNAME"_"\" type=\"image\" class=\"images\" src=\"/images/submenus/internet/ban_user.png\" value=\"\"\>\<span\>$BANMSG\</span\>\</a\>\</form\>"</td><td style=\"vertical-align: top; width: 25px;\">"\<form action=\"dg_view_user_logs.cgi\" method=\"post\" target=\"_top\"\>\<a class=\"info\" href=\"javascript:void\(0\)\"\>\<input name=\"_USERNAME_$USERNAME"_"DATE_$DAY-$MONTH-$YEAR"_"DETAILED_$DETAILED2"_"\" type=\"image\" class=\"images\" src=\"/images/submenus/internet/$DETAIL_ICON\" value=\"\"\>\<span\>$DETAILEDLOGSMSG\</span\>\</a\>\</form\>"</td><td style=\"vertical-align: top; width: 25px;\">"\<form action=\"dg_view_user_usage.cgi\" method=\"post\" target=\"_top\"\>\<a class=\"info\" href=\"javascript:void\(0\)\"\>\<input name=\"_USERNAME_$USERNAME"_"\" type=\"image\" class=\"images\" src=\"/images/submenus/internet/user_usage.png\" value=\"\"\>\<span\>$VIEWUSAGEMSG\</span\>\</a\>\</form\>"</td></tr></tbody></table>"\<br\>
+echo \<table class=\"$TABLECLASS\" style=\"text-align: left\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>\<tbody\>
+echo \<tr\>\<td style\=\"width: 60px\;\"\>\<b\>$FILTERMSG\<\/b\>\</td\>\<td style\=\"width: 90px\;\"\>\<b\>$TIMEMSG\<\/b\>\</td\>\<td\>\</td\>\<td style\=\"width: 120px\;\"\>\<b\>$COMPIP\<\/b\>\</td\>\<td\>\</td\>\<td\>\<b\>$WEBURL\<\/b\>\</td\>\</tr\>
+if [ $LOGTYPE = text ]
+then
+cat /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME
+else
+tar -xzOf /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME.tar.gz
+fi
+#end table
+echo \<\/tbody\>\<\/table\>\<br\>
+fi
+exit

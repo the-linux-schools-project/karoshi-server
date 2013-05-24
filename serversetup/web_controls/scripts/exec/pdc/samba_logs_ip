@@ -1,0 +1,154 @@
+#!/bin/bash
+#Copyright (C) 2010 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/samba_logs_ip_cgi
+then
+echo `date`: samba_logs_ip - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/samba_logs_ip_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/samba_logs_ip.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $samba_logs_ip_cgi'check' ]
+then
+echo `date`: samba_logs_ip - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/samba_logs_ip_cgi
+then
+echo `date`: samba_logs_ip - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/tech_checksums/samba_logs_ip_cgi
+MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/samba_logs_ip.cgi | cut -d' ' -f1`
+[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+if [ $MD5SUM2'check' != $samba_logs_ip_cgi'check' ]
+then
+echo `date`: samba_logs_ip - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: samba_logs_ip - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: samba_logs_ip - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+TCPIP=`echo "$DATA" | cut -s -d: -f4`
+DAY=`echo "$DATA" | cut -s -d: -f5`
+MONTH=`echo "$DATA" | cut -s -d: -f6`
+YEAR=`echo "$DATA" | cut -s -d: -f7`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: samba_logs_ip - Not called by samba_logs_ip.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: samba_logs_ip - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: samba_logs_ip - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $TCPIP'null' = null ]
+then
+echo `date`: samba_logs_ip - Blank tcpip by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ $DAY'null' = null ]
+then
+echo `date`: samba_logs_ip - Blank day by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ $MONTH'null' = null ]
+then
+echo `date`: samba_logs_ip - Blank month by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ $YEAR'null' = null ]
+then
+echo `date`: samba_logs_ip - Blank year by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: samba_logs_ip - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+echo `date`: samba_logs_ip - Viewing logs "for" $MACHINE $DAY-$MONTH-$YEAR by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#View logs
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/samba_view_logs ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/system/samba_view_logs
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+
+
+
+#Check to see if a log for this tcpip exists on the date given
+LOGTYPE=NOTSET
+[ -f /opt/karoshi/logs/connections/$DAY-$MONTH-$YEAR/tcpip/$TCPIP ] && LOGTYPE=text
+[ -f /opt/karoshi/logs/connections/$DAY-$MONTH-$YEAR/tcpip/$TCPIP.tar.gz ] && LOGTYPE=archive
+[ $LOGTYPE = NOTSET ] && exit 102
+#Create table header
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td style="vertical-align: top;"><b>'$TITLE4' '$MACHINE' '$DAY'-'$MONTH'-'$YEAR'</b></td></tr></tbody></table><br>'
+
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>'
+echo '<tr><td style="width: 120px;"><b>'$TIMEMSG'</b></td><td style="width: 20px;"></td><td style="width: 120px;"><b>'$USERNAMEMSG'</b></td><td style="width: 20px;"></td><td style="width: 120px;"><b>'$COMPUTERMSG'</b></td><td style="width: 20px;"></td><td><b>'$SHAREMSG'</b></td></tr>'
+if [ $LOGTYPE = text ]
+then
+cat /opt/karoshi/logs/connections/$DAY-$MONTH-$YEAR/tcpip/$TCPIP
+else
+tar -xzOf /opt/karoshi/logs/connections/$DAY-$MONTH-$YEAR/tcpip/$TCPIP.tar.gz
+fi
+#end table
+echo \<\/tbody\>\<\/table\>\<br\>
+exit

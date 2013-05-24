@@ -1,0 +1,399 @@
+#!/bin/bash
+#Copyright (C) 2011  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dnsview_cgi
+then
+echo `date`: dnsview - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/dnsview_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dnsview.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $dnsview_cgi'check' ]
+then
+echo `date`: dnsview - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: dnsview - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-+'`
+if [ $DATA'null' = null ]
+then
+echo `date`: dnsview - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+SERVERTYPE=`echo "$DATA" | cut -s -d: -f5`
+ACTION=`echo "$DATA" | cut -s -d: -f6`
+LINENUMBER=`echo "$DATA" | cut -s -d: -f7`
+TCPIP=`echo "$DATA" | cut -s -d: -f8`
+DNSDATA2=`echo "$DATA" | cut -s -d: -f9`
+MOBILE=`echo "$DATA" | cut -s -d: -f10`
+########################
+#Check data
+########################
+
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: dnsview - Not called by dnsview.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+then
+echo `date`: dnsview - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+echo `date`: dnsview - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z "$SERVERNAME" ]
+then
+echo `date`: dnsview - Blank servername entry by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z "$SERVERTYPE" ]
+then
+echo `date`: dnsview - Blank servertype entry by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z "$ACTION" ]
+then
+echo `date`: dnsview - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z "$LINENUMBER" ]
+then
+echo `date`: dnsview - Blank line number by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+echo `date`: dnsview - viewing /etc/hosts on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+############################
+#Language
+############################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+TIMEOUT=300
+NOTIMEOUT=127.0.0.1
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/dns ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/system/dns
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+MONITORSERVER=no
+[ -f /opt/karoshi/server_network/monitoringserver ] && MONITORSERVER=yes
+ICON1=/images/submenus/system/edit.png
+ICON2=/images/submenus/system/delete.png
+ICON3=/images/submenus/monitoring/custom_monitors.png
+
+
+WIDTH1=100
+WIDTH2=180
+TABLECLASS=standard
+if [ $MOBILE = yes ]
+then
+WIDTH1=50
+WIDTH2=100
+TABLECLASS=mobilestandard
+EDITMSG=""
+DELETEMSG=""
+MONITORMSG=""
+fi
+#########################
+#View /etc/hosts
+#########################
+
+if [ $ACTION = view ]
+then
+if [ $SERVERNAME = $HOSTNAME ]
+then
+COUNTER=1
+LINECOUNT=`cat /etc/hosts | wc -l`
+
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="vertical-align: top; width: '$WIDTH1'px;"><b>'$TCPIPNUMMSG'</b></td><td style="vertical-align: top; width: '$WIDTH2'px;"><b>'$DNSENTRYMSG'</b></td><td><b>'$EDITMSG'</b></td><td><b>'$DELETEMSG'</b></td>'
+
+[ $MONITORSERVER = yes ] && echo '<td><b>'$MONITORMSG'</b></td>'
+echo '</tr>'
+
+while [ $COUNTER -le $LINECOUNT ]
+do
+DNSDATA=`sed -n $COUNTER,$COUNTER'p' /etc/hosts`
+TCPIP=`echo $DNSDATA | cut -d' ' -f1`
+DNSDATA2=`echo $DNSDATA | cut -d' ' -f2-`
+
+[ $TCPIP'null' = null ] && TCPIP=DONTDISPLAY
+
+[ ${TCPIP:0:1} = \# ] && TCPIP=DONTDISPLAY
+
+if [ $TCPIP != DONTDISPLAY ]
+then 
+echo "
+<tr><td style=\"vertical-align: top;\">$TCPIP</td><td style=\"vertical-align: top;\">$DNSDATA2</td>
+<td><form action=\"/cgi-bin/admin/dnsview.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$SERVERNAME"_"SERVERTYPE_$SERVERTYPE"_"ACTION_edit_LINENUMBER_$COUNTER"_"_TCPIP_$TCPIP"_"DNSDATA2_$DNSDATA2"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$EDITMSG<br>$TCPIP<br>$DNSDATA2</span></a></form></td>
+<td><form action=\"/cgi-bin/admin/dnsview.cgi\" method="post"><a class="info" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$SERVERNAME"_"SERVERTYPE_$SERVERTYPE"_"ACTION_delete_LINENUMBER_$COUNTER"_"\" type=\"image\" class=\"images\" src=\"$ICON2\" value=\"\"><span>$DELETEMSG<br>$TCPIP<br>$DNSDATA2</span></a></form></td>"
+
+if [ $MONITORSERVER = yes ]
+then
+echo "<td><form action=\"/cgi-bin/admin/monitors_add_fm.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_NAME_$DNSDATA2"_"TCPIP_$TCPIP"_"\" type=\"image\" class=\"images\" src=\"$ICON3\" value=\"\"><span>$MONITORMSG<br>$TCPIP<br>$DNSDATA2</span></a></form></td>"
+fi
+
+echo "</tr>"
+fi
+
+let COUNTER=$COUNTER+1
+done
+echo "</tbody></table>"
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+COUNTER=1
+LINECOUNT=`cat /etc/hosts | wc -l`
+
+echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+<tr><td><b>'$TCPIPNUMMSG'</b></td><td><b>'$DNSENTRYMSG'</b></td><td><b>'$EDITMSG'</b></td><td><b>'$DELETEMSG'</b></td><td><b>'$MONITORMSG'</b></td></tr>"
+
+while [ $COUNTER -le $LINECOUNT ]
+do
+DNSDATA=`sed -n $COUNTER,$COUNTER"p" /etc/hosts`
+TCPIP=`echo $DNSDATA | cut -d" " -f1`
+DNSDATA2=`echo $DNSDATA | cut -d" " -f2-`
+
+[ $TCPIP"null" = null ] && TCPIP=DONTDISPLAY
+
+[ ${TCPIP:0:1} = \# ] && TCPIP=DONTDISPLAY
+
+if [ $TCPIP != DONTDISPLAY ]
+then 
+echo "
+<tr><td style=\"vertical-align: top;\">$TCPIP</td><td style=\"vertical-align: top;\">$DNSDATA2</td>
+<td><form action=\"/cgi-bin/admin/dnsview.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_'$SERVERNAME'"_"SERVERTYPE_'$SERVERTYPE'"_"ACTION_edit_LINENUMBER_$COUNTER"_"_TCPIP_$TCPIP"_"DNSDATA2_$DNSDATA2"_"\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$EDITMSG'<br>$TCPIP<br>$DNSDATA2</span></a></form></td>
+<td><form action=\"/cgi-bin/admin/dnsview.cgi\" method="post"><a class="info" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_'$SERVERNAME'"_"SERVERTYPE_'$SERVERTYPE'"_"ACTION_delete_LINENUMBER_$COUNTER"_"\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>'$DELETEMSG'<br>$TCPIP<br>$DNSDATA2</span></a></form></td>"
+
+if [ '$MONITORSERVER' = yes ]
+then
+echo "<td><form action=\"/cgi-bin/admin/monitors_add_fm.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_NAME_$DNSDATA2"_"TCPIP_$TCPIP"_"\" type=\"image\" class=\"images\" src=\"'$ICON3'\" value=\"\"><span>'$MONITORMSG'<br>$TCPIP<br>$DNSDATA2</span></a></form></td>"
+fi
+
+echo "</tr>"
+fi
+
+let COUNTER=$COUNTER+1
+done
+echo "</tbody></table>"
+'
+fi
+fi
+
+#########################
+#Delete entry
+#########################
+if [ $ACTION = delete ]
+then
+if [ $SERVERNAME = $HOSTNAME ]
+then
+echo `date`: dnsview - deleting line $LINENUMBER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+#Delete entry in samba4 dns
+DNSDATA=`sed -n $LINENUMBER,$LINENUMBER'p' /etc/hosts`
+TCPIPNUMBER=`echo $DNSDATA | cut -d" " -f1`
+DNSENTRY=`echo $DNSDATA | cut -d" " -f2`
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+source /opt/karoshi/server_network/domain_information/domain_name
+echo `date`: dnsview - checking "if" $DNSENTRY is "in" the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool dns query 127.0.0.1 $REALM $DNSENTRY A --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+if [ `echo $?` = 0 ]
+then
+echo `date`: dnsview - deleting $DNSENTRY $TCPIPNUMBER from the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool dns delete 127.0.0.1 $REALM $DNSENTRY A $TCPIPNUMBER --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+
+#Delete line
+sed -i $LINENUMBER"d" /etc/hosts
+#Remove empty lines
+sed -i "/^$/d" /etc/hosts
+#Sort entries
+cat /etc/hosts | sort > /etc/hosts.$$
+rm -f /etc/hosts
+mv /etc/hosts.$$ /etc/hosts
+
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+echo `date`: dnsview \(federated mode\) - deleting line '$LINENUMBER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+#Delete entry in samba4 dns
+DNSDATA=`sed -n '$LINENUMBER','$LINENUMBER'p /etc/hosts`
+TCPIPNUMBER=`echo $DNSDATA | cut -d" " -f1`
+DNSENTRY=`echo $DNSDATA | cut -d" " -f2`
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+source /opt/karoshi/server_network/domain_information/domain_name
+echo `date`: dnsview - checking "if" $DNSENTRY is "in" the dns records by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+samba-tool dns query 127.0.0.1 '$REALM' $DNSENTRY A --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE' 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+if [ `echo $?` = 0 ]
+then
+echo `date`: dnsview - deleting $DNSENTRY $TCPIPNUMBER from the dns records by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+samba-tool dns delete 127.0.0.1 '$REALM' $DNSENTRY A $TCPIPNUMBER --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE' 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+fi
+#Delete line
+sed -i '$LINENUMBER'"d" /etc/hosts
+#Remove empty lines
+sed -i "/^$/d" /etc/hosts
+#Sort entries
+cat /etc/hosts | sort > /etc/hosts.'$$'
+rm -f /etc/hosts
+mv /etc/hosts.'$$' /etc/hosts
+#Restart dnsmasq
+source /opt/karoshi/serversetup/variables/distro
+'
+fi
+fi
+
+#########################
+#Edit entry
+#########################
+if [ $ACTION = edit ]
+then
+DNSDATA2=`echo $DNSDATA2 | sed "s/+/ /g"`
+SERVERICON="/images/submenus/system/computer.png"
+echo "<form action=\"/cgi-bin/admin/dnsview.cgi\" method=\"post\"><table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+<tbody>
+<tr><td style=\"width: 180px;\">$TCPIPNUMMSG</td><td><input tabindex= \"1\" name=\"_TCPIP_\" value=\"$TCPIP\" style=\"width: 200px;\" size=\"20\" type=\"text\"></td><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$HELPMSG6</span></a></td></tr>
+<tr><td>$DNSENTRYMSG</td><td><input tabindex= \"2\" name=\"_ACTION_reallyedit_LINENUMBER_$LINENUMBER"_"DNSDATA2_\" value=\"$DNSDATA2\" size=\"20\" style=\"width: 200px;\" type=\"text\"></td><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$HELPMSG7<br><br>$HELPMSG8:<br>newserver newserver.internal</span></a></td></tr>
+</tbody></table>
+
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERACTION_reallyedit_SERVERTYPE_network_SERVERNAME_$SERVERNAME"_"\" type=\"image\" class=\"images\" src=\"$SERVERICON\" value=\"\"><span>$SERVERNAME</span></a><br>$SERVERNAME
+</form>
+"
+fi
+
+if [ $ACTION = reallyedit ]
+then
+if [ $SERVERNAME = $HOSTNAME ]
+then
+
+DNSDATA2=`echo $DNSDATA2 | sed "s/+/ /g"`
+
+
+#Delete entry in samba4 dns
+DNSDATA=`sed -n $LINENUMBER,$LINENUMBER'p' /etc/hosts`
+TCPIPNUMBER=`echo $DNSDATA | cut -d" " -f1`
+DNSENTRY=`echo $DNSDATA | cut -d" " -f2`
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+source /opt/karoshi/server_network/domain_information/domain_name
+echo `date`: dnsview - checking "if" $DNSENTRY is "in" the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool dns query 127.0.0.1 $REALM $DNSENTRY A --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+if [ `echo $?` = 0 ]
+then
+echo `date`: dnsview - deleting $DNSENTRY $TCPIPNUMBER from the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool dns delete 127.0.0.1 $REALM $DNSENTRY A $TCPIPNUMBER --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+
+
+#Add revised entry to samba4 dns
+DNSENTRY=`echo $DNSDATA2 | cut -d" " -f1`
+echo `date`: dnsview - checking "if" $DNSENTRY is "in" the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool dns query 127.0.0.1 $REALM $DNSENTRY A --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+if [ `echo $?` != 0 ]
+then
+echo `date`: dnsview - adding $DNSENTRY $TCPIP to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool dns add 127.0.0.1 $REALM $DNSENTRY A $TCPIP --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+
+
+echo `date`: dnsview - deleting line $LINENUMBER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#Delete line
+sed -i $LINENUMBER"d" /etc/hosts
+#Remove empty lines
+sed -i "/^$/d" /etc/hosts
+#Add line to the end of the file
+echo `date`: dnsview - adding $TCPIP"		"$DNSDATA2 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo $TCPIP"		"$DNSDATA2 >> /etc/hosts
+#Sort entries
+cat /etc/hosts | sort > /etc/hosts.$$
+rm -f /etc/hosts
+mv /etc/hosts.$$ /etc/hosts
+
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+DNSDATA2=`echo '$DNSDATA2' | sed "s/+/ /g"`
+
+#Delete entry in samba4 dns
+DNSDATA=`sed -n '$LINENUMBER','$LINENUMBER'p /etc/hosts`
+TCPIPNUMBER=`echo $DNSDATA | cut -d" " -f1`
+DNSENTRY=`echo $DNSDATA | cut -d" " -f2`
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+source /opt/karoshi/server_network/domain_information/domain_name
+echo `date`: dnsview - checking "if" $DNSENTRY is "in" the dns records by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+samba-tool dns query 127.0.0.1 '$REALM' $DNSENTRY A --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE' 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+if [ `echo $?` = 0 ]
+then
+echo `date`: dnsview - deleting $DNSENTRY $TCPIPNUMBER from the dns records by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+samba-tool dns delete 127.0.0.1 '$REALM' $DNSENTRY A $TCPIPNUMBER --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE' 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+fi
+
+
+#Add revised entry to samba4 dns
+DNSENTRY=`echo '$DNSDATA2' | cut -d" " -f1`
+echo `date`: dnsview - checking "if" $DNSENTRY is "in" the dns records by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+samba-tool dns query 127.0.0.1 '$REALM' $DNSENTRY A --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE' 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+if [ `echo $?` != 0 ]
+then
+echo `date`: dnsview - adding $DNSENTRY $TCPIP to the dns records by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+samba-tool dns add 127.0.0.1 '$REALM' $DNSENTRY A $TCPIP --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE' 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+fi
+
+echo `date`: dnsview \(federated mode\) - deleting line '$LINENUMBER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+#Delete line
+sed -i '$LINENUMBER'"d" /etc/hosts
+#Remove empty lines
+sed -i "/^$/d" /etc/hosts
+#Add line to the end of the file
+echo `date`: dnsview \(federated mode\) - adding '$TCPIP'"		"'$DNSDATA2' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+echo '$TCPIP'"		"$DNSDATA2 >> /etc/hosts
+#Sort entries
+cat /etc/hosts | sort > /etc/hosts.'$$'
+rm -f /etc/hosts
+mv /etc/hosts.'$$' /etc/hosts
+'
+fi
+fi
+exit
+

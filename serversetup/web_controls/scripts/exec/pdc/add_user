@@ -1,0 +1,654 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/add_user_cgi
+then
+echo `date`: add_user - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/add_user_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/add_user.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $add_user_cgi'check' ]
+then
+echo `date`: add_user - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/add_user_cgi
+then
+echo `date`: add_user - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/tech_checksums/add_user_cgi
+MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/add_user.cgi | cut -d' ' -f1`
+[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+if [ $MD5SUM2'check' != $add_user_cgi'check' ]
+then
+echo `date`: add_user - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /var/www/cgi-bin_karoshi/admin/bulk_user_creation_create.cgi
+then
+echo `date`: add_user - No admin bulk user creation MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/bulk_user_creation_create_cgi
+MD5SUM3=`md5sum /var/www/cgi-bin_karoshi/admin/bulk_user_creation_create.cgi | cut -d' ' -f1`
+[ $MD5SUM3'null' = null ] && MD5SUM3=not_set
+if [ $MD5SUM3'check' != $bulk_user_creation_create_cgi'check' ]
+then
+echo `date`: add_user - Incorrect admin bulk user creation MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: add_user - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: add_user - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+FIRSTNAME=`echo "$DATA" | cut -s -d: -f4`
+SURNAME=`echo "$DATA" | cut -s -d: -f5`
+NEWUSERNAME=`echo "$DATA" | cut -s -d: -f6`
+NEWUSERPASSWORD=`echo "$DATA" | cut -s -d: -f7`
+PRIMARYGROUP=`echo "$DATA" | cut -s -d: -f8`
+USERNAMESTYLE=`echo "$DATA" | cut -s -d: -f9`
+ENROLLMENTNUMBER=`echo "$DATA" | cut -s -d: -f10`
+REQUESTFILE=`echo "$DATA" | cut -s -d: -f11`
+BULKUSERCREATION=`echo "$DATA" | cut -s -d: -f12`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ] && [ $REMOTE_MD5'check' != $MD5SUM3'check' ]
+then
+echo `date`: add_user - Not called by add_user.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: add_user - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: add_user - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $FIRSTNAME'null' = null ]
+then
+echo `date`: add_user - Blank firstname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SURNAME'null' = null ]
+then
+echo `date`: add_user - Blank surname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $NEWUSERNAME'null' = null ]
+then
+echo `date`: add_user - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $NEWUSERPASSWORD'null' = null ]
+then
+echo `date`: add_user - Blank password by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $PRIMARYGROUP'null' = null ]
+then
+echo `date`: add_user - Blank group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ ! -f /opt/karoshi/server_network/group_information/$PRIMARYGROUP ]
+then
+echo `date`: add_user - no primary group information 'for' $PRIMARYGROUP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $USERNAMESTYLE'null' = null ]
+then
+echo `date`: add_user - Blank usernamestyle by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $USERNAMESTYLE != userstyleS1 ] && [ $USERNAMESTYLE != userstyleS2 ] && [ $USERNAMESTYLE != userstyleS3 ] && [ $USERNAMESTYLE != userstyleS4 ] && [ $USERNAMESTYLE != userstyleS5 ] && [ $USERNAMESTYLE != userstyleS6 ] && [ $USERNAMESTYLE != userstyleS7 ] && [ $USERNAMESTYLE != userstyleS8 ] && [ $USERNAMESTYLE != userstyleS9 ]
+then
+echo `date`: add_user - Incorrect usernamestyle by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: add_user - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+[ ! -d /opt/karoshi/server_network/offline_servers ] && mkdir -p /opt/karoshi/server_network/offline_servers
+
+##########################
+#Language
+##########################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/add_user ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/user/add_user
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+########################
+#Get server and home path for new user
+########################
+SECONDARYGROUP=""
+source /opt/karoshi/server_network/group_information/$PRIMARYGROUP
+GROUPLIST=$SECONDARYGROUP
+echo `date`: add_user - creating $NEWUSERNAME, Primary group: $PRIMARYGROUP from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+########################
+#Check for federated servers
+########################
+FAILED_SERVER=no
+SLAVE_LDAP_SERVERS=no
+if [ -d /opt/karoshi/server_network/slave_ldap_servers/ ]
+then
+if [ `ls -1 /opt/karoshi/server_network/slave_ldap_servers/ | wc -l` -gt 0 ]
+then
+SLAVE_LDAP_SERVERS=yes
+fi
+fi
+
+FEDERATED_LDAP_SERVERS=no
+if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
+then
+if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
+then
+FEDERATED_LDAP_SERVERS=yes
+fi
+fi
+
+#######################
+#Check all servers are up before creating the user
+#######################
+#Check slave ldap servers
+if [ $SLAVE_LDAP_SERVERS = yes ]
+then
+for SLAVELDAPSERVERS in /opt/karoshi/server_network/slave_ldap_servers/*
+do
+SLAVELDAPSERVER=`basename $SLAVELDAPSERVERS`
+SSHSTATUS=0
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SLAVELDAPSERVER ls 1>/dev/null
+SSHSTATUS=`echo $?`
+if [ $SSHSTATUS != 0 ]
+then
+echo `date`: add_user - $NEWUSERNAME ssh failure on $SLAVELDAPSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo $SLAVELDAPSERVER,slaveldapserver >> /opt/karoshi/server_network/offline_servers/$NEWUSERNAME
+FAILED_SERVER=yes
+FAILEDSERVERLIST=$FAILEDSERVERLIST,$SLAVELDAPSERVER
+fi
+done
+fi
+
+
+#Check federated servers
+if [ $FEDERATED_LDAP_SERVERS = yes ]
+then
+for FEDERATEDLDAPSERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
+do
+FEDERATEDLDAPSERVER=`basename $FEDERATEDLDAPSERVERS`
+SSHSTATUS=0
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3  $FEDERATEDLDAPSERVER '
+#Check to see if the users home area should be on a separate file server in this area.
+source /opt/karoshi/server_network/group_information/'$PRIMARYGROUP'
+if [ -d /opt/karoshi/server_network/servers/$SERVER ] && [ $SERVER != $HOSTNAME ]
+then
+ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER ls 1>/dev/null
+SSHSTATUS=`echo $?`
+if [ $SSHSTATUS != 0 ]
+then
+exit 106
+fi
+fi
+'
+SSHSTATUS=`echo $?`
+if [ $SSHSTATUS != 0 ]
+then
+if [ $SSHSTATUS = 106 ]
+then
+echo `date`: add_user - $NEWUSERNAME ssh failure on a file server connected from $FEDERATEDLDAPSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo $FEDERATEDLDAPSERVER,federatedldapserver >> /opt/karoshi/server_network/offline_servers/$NEWUSERNAME
+FAILED_SERVER=yes
+else
+echo `date`: add_user - $NEWUSERNAME ssh failure on $FEDERATEDLDAPSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo $FEDERATEDLDAPSERVER,federatedldapserver >> /opt/karoshi/server_network/offline_servers/$NEWUSERNAME
+FAILED_SERVER=yes
+FAILEDSERVERLIST=$FAILEDSERVERLIST,$FEDERATEDLDAPSERVER
+fi
+fi
+done
+fi
+
+#Check file server is up for user's home area
+if [ -d /opt/karoshi/server_network/servers/$SERVER ] && [ $SERVER != $HOSTNAME ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3  $SERVER ls 1>/dev/null
+SSHSTATUS=`echo $?`
+if [ $SSHSTATUS != 0 ]
+then
+echo `date`: add_user - $NEWUSERNAME ssh failure on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo $SERVER,fileserver >> /opt/karoshi/server_network/offline_servers/$NEWUSERNAME
+FAILED_SERVER=yes
+FAILEDSERVERLIST=$FAILEDSERVERLIST,$SERVER
+fi
+fi
+
+########################
+#Get mail domain
+########################
+if [ -f /opt/karoshi/server_network/emaildomain ]
+then
+EMAILDOMAIN=`sed -n 1,1p /opt/karoshi/server_network/emaildomain`
+else
+EMAILDOMAIN=notset
+fi
+
+######################
+#Create User
+######################
+
+PRIMARYGROUPID=`getent group | grep -w ^$PRIMARYGROUP | cut -d: -f3 | sed -n 1,1p`
+[ $PRIMARYGROUPID'null' = null ] && exit 101
+
+if [ $PRIMARYGROUP = itadmin ] || [ $PRIMARYGROUP = tech ]
+then
+SECONDARYGROUP=`echo $SECONDARYGROUP,Domain Admins`
+fi
+
+#############################
+#Make sure first name and surname is capitalised
+#############################
+FIRST_CHAR=`echo ${FIRSTNAME:0:1} | tr 'a-z' 'A-Z'`
+FIRSTNAME=`echo $FIRST_CHAR${FIRSTNAME:1}`
+
+FIRST_CHAR=`echo ${SURNAME:0:1} | tr 'a-z' 'A-Z'`
+SURNAME=`echo $FIRST_CHAR${SURNAME:1}`
+
+if [ `echo "$SECONDARYGROUP"null | sed 's/ //g'` != null ] 
+then
+karoshildap-useradd -a -g $PRIMARYGROUPID -G "$SECONDARYGROUP" -d $HOMEPATH'/'$NEWUSERNAME -c $NEWUSERNAME -N $FIRSTNAME -S $SURNAME $NEWUSERNAME 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+else
+karoshildap-useradd -a -g $PRIMARYGROUPID -d $HOMEPATH'/'$NEWUSERNAME -c $NEWUSERNAME -N $FIRSTNAME -S $SURNAME $NEWUSERNAME 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+
+CREATE_USER_STATUS=`echo $?`
+#######################
+#Set user password
+#######################
+echo -e "$NEWUSERPASSWORD""\n""$NEWUSERPASSWORD" | smbldap-passwd $NEWUSERNAME 1>/dev/null 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#######################
+#Set shadowMax
+#######################
+[ -f /opt/karoshi/server_network/ldap_settings/shadowmax ] && SHADOWMAX=`sed -n 1,1p /opt/karoshi/server_network/ldap_settings/shadowmax | tr -cd '0-9'`
+[ $SHADOWMAX'null' = null ] && SHADOWMAX=3650
+smbldap-usermod --shadowMax $SHADOWMAX $NEWUSERNAME 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+######################
+#Set E-Mail domain
+######################
+smbldap-usermod -M $NEWUSERNAME@$EMAILDOMAIN $NEWUSERNAME 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+######################
+#Move user to the correct sub organisation unit
+######################
+[ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
+#Get database password
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+#Create ldif for new user
+[ -f /opt/karoshi/.tempdata/$NEWUSERNAME.$$.ldif ] && rm -f /opt/karoshi/.tempdata/$NEWUSERNAME.$$.ldif
+touch /opt/karoshi/.tempdata/$NEWUSERNAME.$$.ldif
+chmod 0600 /opt/karoshi/.tempdata/$NEWUSERNAME.$$.ldif
+ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" uid=$NEWUSERNAME > /opt/karoshi/.tempdata/$NEWUSERNAME.$$.ldif
+#Modify ldif file with correct sub organisation unit
+sed -i 's/ou=People,dc=karoshi,dc=local/ou='$PRIMARYGROUP',ou='$SUBUNIT',ou=People,dc=karoshi,dc=local/g' /opt/karoshi/.tempdata/$NEWUSERNAME.$$.ldif
+if [ $ENROLLMENTNUMBER'null' != null ]
+then
+DUPLICATECOUNT=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" employeeNumber=$ENROLLMENTNUMBER | grep -c employeeNumber`
+if [ $DUPLICATECOUNT = 1 ]
+then
+#Append enrollmentNumber to ldif file
+LINENUMBER=`grep -n userPassword: /opt/karoshi/.tempdata/$NEWUSERNAME.$$.ldif | cut -d: -f1`
+let LINENUMBER=$LINENUMBER+1
+sed -i ''$LINENUMBER' a\employeeNumber: '$ENROLLMENTNUMBER'' /opt/karoshi/.tempdata/$NEWUSERNAME.$$.ldif
+else
+DUPLICATEENROLLUSER=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" employeeNumber=$ENROLLMENTNUMBER | grep ^uid: | sed 's/uid: //g'`
+echo `date`: add_user - Duplicate enrollment number used by $DUPLICATEENROLLUSER when creating $NEWUSERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+CREATE_USER_STATUS=103
+fi
+fi
+#Delete user entry from the top organisation unit
+ldapdelete -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS uid=$NEWUSERNAME,ou=People,dc=karoshi,dc=local
+#Import user ldif file to correct sub organisation unit
+ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS -f /opt/karoshi/.tempdata/$NEWUSERNAME.$$.ldif 1>/dev/null 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+#Add details to primarygroup.txt - workaround for windows 7 bug not getting primary group correctly causing kixtart login scripts to fail.
+echo $NEWUSERNAME,$PRIMARYGROUP >> /var/lib/samba/netlogon/primarygroups.txt
+
+#Allow new user to join clients to the domain if they are a member of the itadmin or tech groups
+if [ $PRIMARYGROUP = itadmin ] || [ $PRIMARYGROUP = tech ]
+then
+echo `date`: add_user - allowing $NEWUSERNAME to "join" clients to the domain by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#Get domain name
+SAMBADOMAIN=`grep -w "workgroup = " /etc/samba/smb.conf | cut -d= -f2 | sed "s/ //g"`
+net rpc rights grant -U $NEWUSERNAME%$NEWUSERPASSWORD "$SAMBADOMAIN\Domain Admins" SeMachineAccountPrivilege \
+SePrintOperatorPrivilege SeAddUsersPrivilege SeDiskOperatorPrivilege SeRemoteShutdownPrivilege 1>/dev/null
+fi
+
+##########################
+#Add in acceptable use notification
+##########################
+if [ ! -d /opt/karoshi/acceptable_use_authorisations/pending ]
+then
+mkdir -p /opt/karoshi/acceptable_use_authorisations/pending
+chmod 0750 -R /opt/karoshi/acceptable_use_authorisations/
+chown -R root:apache_karoshi /opt/karoshi/acceptable_use_authorisations/
+fi
+#Check to see if grace time has been disabled
+GRACE_TIME=yes
+[ -f /opt/karoshi/acceptable_use_authorisations/grace_time_disabled ] && GRACE_TIME=no
+if [ $GRACE_TIME = yes ]
+then
+#Get default grace time
+[ -f /opt/karoshi/acceptable_use_authorisations/grace_time ] && GRACE_TIMER=`sed -n 1,1p /opt/karoshi/acceptable_use_authorisations/grace_time | tr -cd 0-9`
+[ $GRACE_TIMER'null' = null ] && GRACE_TIMER=14
+#Add acceptable use
+echo $GRACE_TIMER,$REMOTE_USER,`date +%d-%m-%Y` > /opt/karoshi/acceptable_use_authorisations/pending/$NEWUSERNAME
+fi
+
+#Get group membership list
+GROUPLIST=`groups $NEWUSERNAME | cut -d: -f2 | sed "s/^ //g" | sed "s/ /,/g" | sed "s/Domain,Admins/Domain Admins/g"`
+
+if [ $SERVER = $HOSTNAME ]
+then
+######################
+#Create Mail Folders
+######################
+/opt/karoshi/"useful scripts"/createmailfolders
+mkdir -p $HOMEPATH/$NEWUSERNAME/Mail
+cp /opt/karoshi/.tempdata/INBOX.* $HOMEPATH/$NEWUSERNAME/Mail/
+cp /opt/karoshi/.tempdata/.mailboxlist $HOMEPATH/$NEWUSERNAME/
+chown -R $NEWUSERNAME:$PRIMARYGROUP $HOMEPATH/$NEWUSERNAME/
+chmod -R 0600 $HOMEPATH/$NEWUSERNAME/
+chmod u+X -R $HOMEPATH/$NEWUSERNAME/
+fi
+############################
+#Create user home area on extra fileserver
+############################
+if [ -d /opt/karoshi/server_network/servers/$SERVER ] && [ $SERVER != $HOSTNAME ]
+then
+if [ `echo $FAILEDSERVERLIST | grep -c $SERVER` = 0 ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER 'mkdir -p '$HOMEPATH''/''$NEWUSERNAME' ; chmod 0700 '$HOMEPATH''/''$NEWUSERNAME' ; chown '$NEWUSERNAME':'$PRIMARYGROUP' '$HOMEPATH''/''$NEWUSERNAME''
+fi
+fi
+############################
+#Create user on slave ldap servers
+############################
+
+if [ $SLAVE_LDAP_SERVERS = yes ]
+then
+for SLAVELDAPSERVERS in /opt/karoshi/server_network/slave_ldap_servers/*
+do
+SLAVELDAPSERVER=`basename $SLAVELDAPSERVERS`
+if [ `echo $FAILEDSERVERLIST | grep -c $SLAVELDAPSERVER` = 0 ]
+then
+######################
+#Export ldif file to add to the slave server
+######################
+echo `date`: add_user - exporting $NEWUSERNAME to $SLAVELDAPSERVER from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+scp /opt/karoshi/.tempdata/$NEWUSERNAME.$$.ldif root@$SLAVELDAPSERVER:"/opt/karoshi/.tempdata/" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SLAVELDAPSERVER '
+######################
+#Import user to slave ldap server
+######################
+[ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+#Import user ldif file to correct sub organisation unit
+ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS -f /opt/karoshi/.tempdata/'$NEWUSERNAME'.'$$'.ldif 1>/dev/null
+#Delete ldif file
+rm -f /opt/karoshi/.tempdata/'$NEWUSERNAME'.'$$'.ldif
+mkdir -p '$HOMEPATH'/'$NEWUSERNAME'/Mail ; /opt/karoshi/"useful scripts"/createmailfolders ; cp /opt/karoshi/.tempdata/INBOX.* '$HOMEPATH'/'$NEWUSERNAME'/Mail/ ; cp /opt/karoshi/.tempdata/.mailboxlist '$HOMEPATH'/'$NEWUSERNAME' ; chown -R '$NEWUSERNAME:$PRIMARYGROUP' '$HOMEPATH'/'$NEWUSERNAME'/ ; chmod -R 0600 '$HOMEPATH'/'$NEWUSERNAME'/ ; chmod u+X '-R $HOMEPATH'/'$NEWUSERNAME'/
+' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+done
+fi
+
+############################
+#Create user on federated ldap servers
+############################
+if [ $FEDERATED_LDAP_SERVERS = yes ]
+then
+
+SAMBADOMAIN=`grep "workgroup ="  /etc/samba/smb.conf | cut -d= -f2 | sed "s/ //g"`
+MASTERSID=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" sambaDomainName=$SAMBADOMAIN | grep ^sambaSID | cut -d: -f2 | sed "s/ //g"`
+
+for FEDERATEDLDAPSERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
+do
+FEDERATEDLDAPSERVER=`basename $FEDERATEDLDAPSERVERS`
+if [ `echo $FAILEDSERVERLIST | grep -c $FEDERATEDLDAPSERVER` = 0 ]
+then
+######################
+#Export ldif file to add to the federated server
+######################
+echo `date`: add_user \(federated mode\) - exporting $NEWUSERNAME to $FEDERATEDLDAPSERVER from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+scp /opt/karoshi/.tempdata/$NEWUSERNAME.$$.ldif root@$FEDERATEDLDAPSERVER:"/opt/karoshi/.tempdata/" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+SAMBASID=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $FEDERATEDLDAPSERVER '
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+SAMBADOMAIN=`grep "workgroup ="  /etc/samba/smb.conf | cut -d= -f2 | sed "s/ //g"`
+ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" sambaDomainName=$SAMBADOMAIN | grep ^sambaSID | cut -d: -f2 | sed "s/ //g"
+')
+
+if [ `echo $?` != 0 ]
+then
+echo `date`: add_user \(federated mode\) $NEWUSERNAME ssh failure on $FEDERATEDLDAPSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo $FEDERATEDLDAPSERVER,federatedldapserver >> /opt/karoshi/server_network/offline_servers/$NEWUSERNAME
+FAILED_SERVER=yes
+FAILEDSERVERLIST=$FAILEDSERVERLIST,$FEDERATEDLDAPSERVER
+else
+echo `date`: add_user \(federated mode\) obtained domain sambasid: $SAMBASID "for" $NEWUSERNAME on $FEDERATEDLDAPSERVER from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $FEDERATEDLDAPSERVER '
+######################
+#Import user to federated ldap server
+######################
+echo `date`: add_user \(federated mode\) - creating '$NEWUSERNAME', Primary group: '$PRIMARYGROUP' from '$REMOTE_ADDR' by '$REMOTE_USER' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+[ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
+/opt/karoshi/"useful scripts"/createmailfolders
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+#Modify ldif file with correct samba sid
+sed -i "s/'$MASTERSID'/'$SAMBASID'/g" /opt/karoshi/.tempdata/'$NEWUSERNAME'.'$$'.ldif
+#Import user ldif file to correct sub organisation unit
+ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS -f /opt/karoshi/.tempdata/'$NEWUSERNAME'.'$$'.ldif 1>/dev/null
+mkdir -p '$HOMEPATH'/'$NEWUSERNAME'/Mail
+/opt/karoshi/"useful scripts"/createmailfolders
+cp /opt/karoshi/.tempdata/INBOX.* '$HOMEPATH'/'$NEWUSERNAME'/Mail/
+cp /opt/karoshi/.tempdata/.mailboxlist '$HOMEPATH'/'$NEWUSERNAME'
+chown -R '$NEWUSERNAME:$PRIMARYGROUP' '$HOMEPATH'/'$NEWUSERNAME'/
+chmod -R 0600 '$HOMEPATH'/'$NEWUSERNAME'/
+chmod u+X -R '$HOMEPATH'/'$NEWUSERNAME'/
+#Add user to correct groups.
+smbldap-usermod -G "'$GROUPLIST'" '$NEWUSERNAME'
+#Create user home area on extra fileserver
+source /opt/karoshi/server_network/group_information/'$PRIMARYGROUP'
+if [ -d /opt/karoshi/server_network/servers/$SERVER ] && [ $SERVER != $HOSTNAME ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER "mkdir -p '$HOMEPATH'/'$NEWUSERNAME' ; chmod 0700 '$HOMEPATH'/'$NEWUSERNAME' ; chown '$NEWUSERNAME':'$PRIMARYGROUP' '$HOMEPATH'/'$NEWUSERNAME'"
+fi
+
+#Allow new user to join clients to the domain if they are a member of the itadmin group
+if [ '$PRIMARYGROUP' = itadmin ]
+then
+echo `date`: add_user \(federated mode\) - allowing '$NEWUSERNAME' to "join" clients to the domain by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+#Get domain name
+SAMBADOMAIN=`grep -w "workgroup = " /etc/samba/smb.conf | cut -d= -f2 | sed "s/ //g"`
+net rpc rights grant -U '$NEWUSERNAME'%'$NEWUSERPASSWORD' "$SAMBADOMAIN\Domain Admins" SeMachineAccountPrivilege \
+SePrintOperatorPrivilege SeAddUsersPrivilege SeDiskOperatorPrivilege SeRemoteShutdownPrivilege 1>/dev/null
+fi
+
+#Import user to any federated slave ldap servers
+if [ -d /opt/karoshi/server_network/slave_ldap_servers ]
+then
+if [ `ls -1 /opt/karoshi/server_network/slave_ldap_servers/ | wc -l` -gt 0 ]
+then
+for SLAVELDAPSERVERS in /opt/karoshi/server_network/slave_ldap_servers/*
+do
+SLAVELDAPSERVER=`basename $SLAVELDAPSERVERS`
+echo `date`: add_user \(federated mode\) - exporting '$NEWUSERNAME' to $SLAVELDAPSERVER from '$REMOTE_ADDR' by '$REMOTE_USER' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+scp /opt/karoshi/.tempdata/'$NEWUSERNAME'.'$$'.ldif root@$SLAVELDAPSERVER:"/opt/karoshi/.tempdata/" 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SLAVELDAPSERVER "
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+#Import user ldif file to correct sub organisation unit
+ldapadd -x -D \"cn=admin,dc=karoshi,dc=local\" -w $LDAPPASS -f /opt/karoshi/.tempdata/'$NEWUSERNAME'.'$$'.ldif 1>/dev/null
+#Delete ldif file
+rm -f /opt/karoshi/.tempdata/'$NEWUSERNAME'.'$$'.ldif
+mkdir -p '$HOMEPATH'/'$NEWUSERNAME'/Mail ; /opt/karoshi/"useful scripts"/createmailfolders ; cp /opt/karoshi/.tempdata/INBOX.* '$HOMEPATH'/'$NEWUSERNAME'/Mail/ ; cp /opt/karoshi/.tempdata/.mailboxlist '$HOMEPATH'/'$NEWUSERNAME' ; chown -R '$NEWUSERNAME:$PRIMARYGROUP' '$HOMEPATH'/'$NEWUSERNAME'/ ; chmod -R 0600 '$HOMEPATH'/'$NEWUSERNAME'/ ; chmod u+X '-R $HOMEPATH'/'$NEWUSERNAME'/
+" 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+
+done
+fi
+fi
+
+#Delete ldif file
+rm -f /opt/karoshi/.tempdata/'$NEWUSERNAME'.'$$'.ldif
+#Add details to primarygroup.txt - workaround for windows 7 bug not getting primary group correctly causing kixtart login scripts to fail.
+echo '$NEWUSERNAME','$PRIMARYGROUP' >> /var/lib/samba/netlogon/primarygroups.txt
+' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+fi
+done
+fi
+
+###########################
+#Create email folder on email server
+###########################
+if [ -f /opt/karoshi/server_network/emailserver ]
+then
+EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+if [ $EMAILSERVER != $HOSTNAME ]
+then 
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+[ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
+mkdir /home/users/email/'$NEWUSERNAME'
+chown '$NEWUSERNAME' /home/users/email/'$NEWUSERNAME'
+chmod 0700 /home/users/email/'$NEWUSERNAME'
+'
+SSHSTATUS=`echo $?`
+if [ $SSHSTATUS != 0 ]
+then
+echo `date`: add_user - $NEWUSERNAME ssh failure on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo $SERVER,emailserver >> /opt/karoshi/server_network/offline_servers/add_users/$NEWUSERNAME
+FAILED_SERVER=yes
+FAILEDSERVERLIST=$FAILEDSERVERLIST,$SERVER
+fi
+else
+[ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
+mkdir /home/users/email/$NEWUSERNAME
+chown $NEWUSERNAME /home/users/email/$NEWUSERNAME
+chmod 0700 /home/users/email/$NEWUSERNAME
+fi
+fi
+
+
+#Delete ldif file
+rm -f /opt/karoshi/.tempdata/$NEWUSERNAME.$$.ldif
+
+#Delete request file if this user has been requested by a member of staff
+if [ $REQUESTFILE'null' != null ]
+then
+if [ -f /opt/karoshi/user_requests/new_users/$REQUESTFILE ]
+then
+rm -f /opt/karoshi/user_requests/new_users/$REQUESTFILE
+NEWUSERCOUNT=`ls -1 /opt/karoshi/user_requests/new_users/ | wc -l`
+if [ $NEWUSERCOUNT = 0 ]
+then
+#Update warnings
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete request_new_users
+fi
+fi
+fi
+if [ $GRACE_TIME = yes ]
+then
+#############################
+#Generate page warning
+#############################
+
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add acceptable_use_authorisations /cgi-bin/admin/view_acceptable_use_authorisations_fm.cgi "$ACCEPTABLEUSEWARNINGMSG" webwarning1.gif
+fi
+
+if [ $BULKUSERCREATION'null' != null ]
+then
+if [ ! -d /opt/karoshi/bulk_user_creation/$PRIMARYGROUP ]
+then
+mkdir -p /opt/karoshi/bulk_user_creation/$PRIMARYGROUP
+chmod 0700 /opt/karoshi/bulk_user_creation/$PRIMARYGROUP
+fi
+echo >> /opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt
+echo $FIRSTNAME $SURNAME >> /opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt
+echo Username: $NEWUSERNAME Password: $NEWUSERPASSWORD >> /opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt
+echo >> /opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt
+echo ----------------------------------------------------- >> /opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt
+fi
+
+#Show servers that are offline
+
+
+if [ $FAILED_SERVER = yes ]
+then
+FAILEDSERVERLIST=`echo $FAILEDSERVERLIST | sed 's/^,//g' | sed 's/,/, /g'`
+MESSAGE="The following servers were not online:\n\n$FAILEDSERVERLIST\n\nThe system will automatically attempt to repair this problem at 6.00 am every morning."
+echo '<script type="text/javascript">'
+echo 'alert("'$MESSAGE'");'
+echo '</script>'
+echo "</body></html>"
+fi
+
+#Ban email use if needed
+if [ -f /opt/karoshi/server_network/email_restrictions/$PRIMARYGROUP ]
+then
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$NEWUSERNAME:$PRIMARYGROUP:deny:" | sudo -H /opt/karoshi/web_controls/exec/email_access
+fi
+
+exit $CREATE_USER_STATUS

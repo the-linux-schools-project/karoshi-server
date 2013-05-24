@@ -1,0 +1,107 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/wake_on_lan_add_cgi
+then
+echo `date`: wake_on_lan_add - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/wake_on_lan_add_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/wake_on_lan_add.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $wake_on_lan_add_cgi'check' ]
+then
+echo `date`: wake_on_lan_add - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 1 ]
+then
+echo `date`: wake_on_lan_add - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo $* | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | cut -s -d: -f3`
+HOUR=`echo $* | cut -s -d: -f4`
+MINUTES=`echo $* | cut -s -d: -f5`
+LOCATION=`echo $* | cut -s -d: -f6`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: wake_on_lan_add - Not called by wake_on_lan_add.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: wake_on_lan_add - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: wake_on_lan_add - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $HOUR'null' = null ]
+then
+echo `date`: wake_on_lan_add - Blank hour by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ $MINUTES'null' = null ]
+then
+echo `date`: wake_on_lan_add - Blank minutes by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ $LOCATION'null' = null ]
+then
+echo `date`: wake_on_lan_add - Blank location by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: wake_on_lan_add - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+#######################
+#Schedule wake on lan
+#######################
+[ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
+[ -d /opt/karoshi/cronjobs/wake_on_lan ] || mkdir /opt/karoshi/cronjobs/wake_on_lan
+echo `date`: wake_on_lan_add - Scheduling $LOCATION for $HOUR:$MINUTES by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+echo $MINUTES $HOUR '*' '*' 1-5 /opt/karoshi/'"'useful scripts'"'/wol $LOCATION: > /opt/karoshi/cronjobs/wake_on_lan/$LOCATION.cron
+cat /opt/karoshi/cronjobs/wake_on_lan/* > /opt/karoshi/cronjobs/jobs/wake_on_lan.cron
+#######################
+#Refresh cronjobs
+#######################
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null 2>/dev/null
+exit

@@ -1,0 +1,659 @@
+#!/bin/bash
+#setupldap
+#Copyright (C) 2008 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aloughlin@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+#Add log entry
+#########################
+echo '##############'setupldap'##############' >> /opt/karoshi/serversetup/install_log
+date >> /opt/karoshi/serversetup/install_log
+touch /opt/karoshi/serversetup/setuplog
+if [ `grep -c "$TITLE" /opt/karoshi/serversetup/setuplog` = 0 ]
+then
+echo setupldap:$TITLE:/opt/karoshi/serversetup/pdc/scripts/setupldap >> /opt/karoshi/serversetup/setuplog
+chmod 0600 /opt/karoshi/serversetup/setuplog
+fi
+
+[ -d /opt/karoshi/.tempdata/ ] || mkdir /opt/karoshi/.tempdata/
+
+[ -e /opt/karoshi/serversetup/variables/language ] || /opt/karoshi/serversetup/changelanguage
+[ -e /opt/karoshi/serversetup/variables/distro ] || /opt/karoshi/serversetup/changedistro
+
+source /opt/karoshi/serversetup/variables/language
+source /opt/karoshi/serversetup/variables/xdialog
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/software
+source /opt/karoshi/serversetup/variables/years
+source /opt/karoshi/serversetup/language/$LANGCHOICE/pdc/setupldap
+
+#Section flags
+ADDDEFAULTGROUPS=yes
+DO_GROUPMAPS=yes
+IMPORTUSERS=yes
+IMPORTMACHINES=yes
+
+#Get domain password
+if test -f /opt/karoshi/serversetup/variables/initial_password.gpg
+then
+grep -w root /etc/shadow | cut -d: -f2 | gpg --no-tty --passphrase-fd 0 /opt/karoshi/serversetup/variables/initial_password.gpg
+LDAPPASS=`cat /opt/karoshi/serversetup/variables/initial_password`
+rm -f /opt/karoshi/serversetup/variables/initial_password
+fi
+
+#Make sure service runs at boot
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/ldap
+#Start ldap if not running
+[ `ps -e | grep -c ldap` = 0 ] && service ldap start
+
+while [ $LDAPPASS'null' = null ]
+do
+LDAPPASS=`Xdialog --title "$TITLE" --clear \
+       --wrap --icon $ICON --rc-file $RCFILE --password --inputbox "$LDAPPASSWDMSG" 16 50 2>&1` 
+
+retval=$?
+
+case $retval in
+  0)
+    ;;
+  1)
+    exit;;
+  255)
+    exit;;
+esac
+done
+ENCRYPTEDPASS=`slappasswd -s $LDAPPASS`
+
+
+##############################
+#Configure LDAP
+##############################
+function configure_ldap {
+#Copy in slapd.conf
+echo Copying in slapd.conf,slapd_karoshi.access.conf and ldap.conf
+echo 
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/configfiles/slapd.conf $LDAPPATH
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/configfiles/etc_openldap_ldap.conf $LDAPPATH/ldap.conf
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/configfiles/slapd_karoshi.access.conf $LDAPPATH
+echo "_______________________________________________________________________________"
+echo 
+#Edit slapd.conf with new password
+echo Editing slapd.conf
+echo 
+PASSWORDLINENO=`grep -n ^rootpw /etc/openldap/slapd.conf | cut -d: -f1`
+sed -i $PASSWORDLINENO'c'\rootpw'     '$ENCRYPTEDPASS /etc/openldap/slapd.conf
+echo "_______________________________________________________________________________"
+echo 
+#Apply changes
+echo restarting ldap
+echo
+service ldap restart
+echo "_______________________________________________________________________________"
+echo
+#Copy in new smb.conf
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/configfiles/smb_ldap.conf /etc/samba/smb.conf
+#restart samba
+echo Restarting samba
+echo
+/etc/init.d/$SMBVER stop
+sleep 1
+/etc/init.d/$SMBVER start
+echo "_______________________________________________________________________________"
+echo 
+echo Setting samba root ldap password
+echo
+smbpasswd -w $LDAPPASS
+echo "_______________________________________________________________________________"
+echo 
+#Copy in smbldaptools.conf
+echo Copying in smbldaptools.conf
+echo
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/configfiles/smbldap.conf /etc/smbldap-tools/
+#Edit smbldaptools.conf
+echo "_______________________________________________________________________________"
+echo 
+echo editing smbldaptools.conf
+echo 
+SIDID=`net getlocalsid | cut -d' ' -f6`
+SIDLINENO=`grep -n ^SID= /etc/smbldap-tools/smbldap.conf | cut -d: -f1`
+sed -i $SIDLINENO'c'\SID=\""$SIDID"\" /etc/smbldap-tools/smbldap.conf
+#Copy in smbldap_bind.conf
+echo Copying in smbldap_bind.conf
+echo 
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/configfiles/smbldap_bind.conf /etc/smbldap-tools/
+echo "_______________________________________________________________________________"
+echo 
+#Edit smbldap_bind.conf
+echo editing smbldap_bind.conf
+echo 
+PASSLINENO=`grep -n ^masterPw= /etc/smbldap-tools/smbldap_bind.conf | cut -d: -f1`
+sed -i $PASSLINENO'c'\masterPw=\""$LDAPPASS"\" /etc/smbldap-tools/smbldap_bind.conf
+echo "_______________________________________________________________________________"
+echo 
+#Set permissions
+chmod 0644 /etc/smbldap-tools/smbldap.conf
+chmod 0600 /etc/smbldap-tools/smbldap_bind.conf
+
+#Populate ldap with existing users and groups - ldap root password set to random password
+#Change this to be the domain password
+LDAPROOTPASS=$LDAPPASS
+echo Populating ldap databases
+echo 
+echo -e ""$LDAPROOTPASS"\n"$LDAPROOTPASS"" | smbldap-populate -u 500 -g 500 
+echo "_______________________________________________________________________________"
+echo
+#Change ldap userid start number
+echo -e "dn: sambaDomainName=linuxgrid,dc=karoshi,dc=local\nuidNumber: 1001" | ldapmodify -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPROOTPASS
+}
+
+function add_default_groups {
+###############################
+#Add default groups
+###############################
+if [ $ADDDEFAULTGROUPS = yes ]
+then
+echo Adding Default Karoshi groups
+#Add default karoshi groups
+#Make Groups
+COUNTER=$STARTYEAR
+SSID=4997
+while [  $COUNTER -le $ENDYEAR ]; do
+echo Adding group yr$COUNTER
+smbldap-groupadd -g $COUNTER -r $SSID -o yr$COUNTER
+let SSID=$SSID+2
+#smbldap-groupmod -r $COUNTER yr$COUNTER
+let COUNTER=COUNTER+1
+done
+echo Adding group karoshi
+smbldap-groupadd -g 999 -o karoshi
+#smbldap-groupmod -r 999 karoshi
+echo Adding group staff
+smbldap-groupadd -g 1000 -r 3001 -o staff
+#smbldap-groupmod -r 1000 staff
+echo Adding group nonteachingstaff
+smbldap-groupadd -g 1001 -r 3003 -o nonteachingstaff
+#smbldap-groupmod -r 1001 nonteachingstaff
+echo Adding group studentstaff
+smbldap-groupadd -g 1002 -r 3005 -o studentstaff
+#smbldap-groupmod -r 1002 studentstaff
+echo Adding group guests
+smbldap-groupadd -g 1003 -r 3007 -o guests
+#smbldap-groupmod -r 1003 guests
+echo Adding group exams
+smbldap-groupadd -g 1004 -r 3009 -o exams
+echo Adding group itadmin
+smbldap-groupadd -g 1005 -r 3011 -o itadmin
+#smbldap-groupmod -r 1005 itadmin
+echo Adding group tech
+smbldap-groupadd -g 1006 -o tech
+smbldap-groupmod -r 512 tech
+echo Adding group officestaff
+smbldap-groupadd -g 1007 -r 3015 -o officestaff
+#smbldap-groupmod -r 1007 officestaff
+echo Adding group profileuser
+smbldap-groupadd -g 1008 -o profileuser
+smbldap-groupmod -r 1008 profileuser
+echo Adding group work_exp
+smbldap-groupadd -g 1009 -o work_exp
+smbldap-groupmod -r 1009 work_exp
+echo Adding group art
+smbldap-groupadd -g 1010 -o art
+echo Adding group business
+smbldap-groupadd -g 1011 -o business
+smbldap-groupmod -r 1011 business
+echo Adding group careers
+smbldap-groupadd -g 1012 -o careers
+smbldap-groupmod -r 1012 careers
+echo Adding group childcare
+smbldap-groupadd -g 1013 -o childcare
+smbldap-groupmod -r 1013 childcare
+echo Adding group citizenship
+smbldap-groupadd -g 1014 -o citizenship
+smbldap-groupmod -r 1014 citizenship
+echo Adding group drama
+smbldap-groupadd -g 1015 -o drama
+smbldap-groupmod -r 1015 drama
+echo Adding group english
+smbldap-groupadd -g 1016 -o english
+smbldap-groupmod -r 1016 english
+echo Adding group french
+smbldap-groupadd -g 1017 -o french
+smbldap-groupmod -r 1017 french
+echo Adding group geography
+smbldap-groupadd -g 1018 -o geography
+smbldap-groupmod -r 1018 geography
+echo Adding group german
+smbldap-groupadd -g 1019 -o german
+smbldap-groupmod -r 1019 german
+echo Adding group health_and_soc
+smbldap-groupadd -g 1020 -o health_and_soc
+smbldap-groupmod -r 1020 health_and_soc
+echo Adding group history
+smbldap-groupadd -g 1021 -o history
+smbldap-groupmod -r 1021 history
+echo Adding group ict
+smbldap-groupadd -g 1022 -o ict
+smbldap-groupmod -r 1022 ict
+echo Adding group leisure_and_t
+smbldap-groupadd -g 1023 -o leisure_and_t
+smbldap-groupmod -r 1023 leisure_and_t
+echo Adding group literacy
+smbldap-groupadd -g 1024 -o literacy
+smbldap-groupmod -r 1024 literacy
+echo Adding group mathematics
+smbldap-groupadd -g 1025 -o mathematics
+smbldap-groupmod -r 1025 mathematics
+echo Adding group media
+smbldap-groupadd -g 1026 -o media
+smbldap-groupmod -r 1026 media
+echo Adding group mediatemp
+smbldap-groupadd -g 1027 -o mediatemp
+smbldap-groupmod -r 1027 mediatemp
+echo Adding group music
+smbldap-groupadd -g 1028 -o music
+smbldap-groupmod -r 1028 music
+echo Adding group olc
+smbldap-groupadd -g 1029 -o olc
+smbldap-groupmod -r 1029 olc
+echo Adding group physical_edu
+smbldap-groupadd -g 1030 -o physical_edu
+smbldap-groupmod -r 1030 physical_edu
+echo Adding group science
+smbldap-groupadd -g 1031 -o science
+smbldap-groupmod -r 1031 science
+echo Adding group spanish
+smbldap-groupadd -g 1032 -o spanish
+smbldap-groupmod -r 1032 spanish
+echo Adding group technology
+smbldap-groupadd -g 1033 -o technology
+smbldap-groupmod -r 1033 technology
+echo Adding group temparea
+smbldap-groupadd -g 1034 -o temparea
+smbldap-groupmod -r 1034 temparea
+echo Adding group bursar
+smbldap-groupadd -g 1035 -r 3071 -o bursar
+#smbldap-groupmod -r 1035 bursar
+echo Adding group smt
+smbldap-groupadd -g 1036 -r 3073 -o smt
+#smbldap-groupmod -r 1036 smt
+echo Adding group pupiloffice
+smbldap-groupadd -g 1037 -r 3075 -o pupiloffice
+#smbldap-groupmod -r 1037 pupiloffice
+echo Adding group governers
+smbldap-groupadd -g 1038 -o governers
+smbldap-groupmod -r 1038 governers
+echo Adding group publications
+smbldap-groupadd -g 1039 -o publications
+smbldap-groupmod -r 1039 publications
+echo Adding group studentpublications
+smbldap-groupadd -g 1040 -o studentpublications
+smbldap-groupmod -r 1040 studentpublications
+echo "_______________________________________________________________________________"
+echo
+fi
+}
+
+function do_groupmaps {
+###############################
+#Do groupmaps
+###############################
+if [ $DO_GROUPMAPS = yes ]
+then
+net groupmap cleanup
+net groupmap add rid=512 ntgroup="Domain Admins" unixgroup=tech
+net groupmap modify ntgroup="Domain Admins" unixgroup=tech type=domain
+net groupmap add ntgroup="guests" unixgroup=guests
+net groupmap add ntgroup="exams" unixgroup=exams
+net groupmap add ntgroup="staff" unixgroup=staff
+net groupmap add ntgroup="itadmin" unixgroup=itadmin
+net groupmap add ntgroup="officestaff" unixgroup=officestaff
+net groupmap add ntgroup="nonteachingstaff" unixgroup=nonteachingstaff
+net groupmap add ntgroup="studentstaff" unixgroup=studentstaff
+net groupmap add ntgroup="smt" unixgroup=smt
+net groupmap add ntgroup="bursar" unixgroup=bursar
+net groupmap add ntgroup="pupiloffice" unixgroup=pupiloffice
+
+COUNTER=$STARTYEAR
+         while [  $COUNTER -le $ENDYEAR ]; do
+             net groupmap add ntgroup="yr$COUNTER" unixgroup=yr$COUNTER
+             let COUNTER=COUNTER+1
+         done
+fi
+}
+
+function create_sub_container_ldif {
+echo dn: ou=$SUBUNIT,ou=People,dc=karoshi,dc=local > $SUBNUNITLDIFPATH
+echo objectClass: organizationalUnit >> $SUBNUNITLDIFPATH
+echo objectClass: top >> $SUBNUNITLDIFPATH
+echo ou: $SUBUNIT >> $SUBNUNITLDIFPATH
+}
+
+function create_sub_containers {
+[ -d /opt/karoshi/.tempdata/ldap/import_sub_units ] || mkdir -p /opt/karoshi/.tempdata/ldap/import_sub_units
+COUNTER=$STARTYEAR
+#Create organisational units for students
+while [  $COUNTER -le $ENDYEAR ]; do
+SUBUNIT=yr$COUNTER
+echo $CREATEORGUNITMSG - $SUBUNIT
+SUBNUNITLDIFPATH=/opt/karoshi/.tempdata/ldap/import_sub_units/yr$COUNTER.ldif
+create_sub_container_ldif
+ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPROOTPASS -f $SUBNUNITLDIFPATH
+let COUNTER=COUNTER+1
+done
+#Create organisational units for staff
+#karoshi
+SUBUNIT=karoshi
+echo $CREATEORGUNITMSG - $SUBUNIT
+SUBNUNITLDIFPATH=/opt/karoshi/.tempdata/ldap/import_sub_units/itadmin.ldif
+create_sub_container_ldif
+ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPROOTPASS -f $SUBNUNITLDIFPATH
+#itadmin
+SUBUNIT=itadmin
+echo $CREATEORGUNITMSG - $SUBUNIT
+SUBNUNITLDIFPATH=/opt/karoshi/.tempdata/ldap/import_sub_units/itadmin.ldif
+create_sub_container_ldif
+ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPROOTPASS -f $SUBNUNITLDIFPATH
+#tech
+SUBUNIT=tech
+echo $CREATEORGUNITMSG - $SUBUNIT
+SUBNUNITLDIFPATH=/opt/karoshi/.tempdata/ldap/import_sub_units/tech.ldif
+create_sub_container_ldif
+ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPROOTPASS -f $SUBNUNITLDIFPATH
+#staff
+SUBUNIT=staff
+echo $CREATEORGUNITMSG - $SUBUNIT
+SUBNUNITLDIFPATH=/opt/karoshi/.tempdata/ldap/import_sub_units/staff.ldif
+create_sub_container_ldif
+ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPROOTPASS -f $SUBNUNITLDIFPATH
+#officestaff
+SUBUNIT=officestaff
+echo $CREATEORGUNITMSG - $SUBUNIT
+SUBNUNITLDIFPATH=/opt/karoshi/.tempdata/ldap/import_sub_units/officestaff.ldif
+create_sub_container_ldif
+ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPROOTPASS -f $SUBNUNITLDIFPATH
+#profileuser
+SUBUNIT=profileuser
+echo $CREATEORGUNITMSG - $SUBUNIT
+SUBNUNITLDIFPATH=/opt/karoshi/.tempdata/ldap/import_sub_units/profileuser.ldif
+create_sub_container_ldif
+ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPROOTPASS -f $SUBNUNITLDIFPATH
+#studentstaff
+SUBUNIT=studentstaff
+echo $CREATEORGUNITMSG - $SUBUNIT
+SUBNUNITLDIFPATH=/opt/karoshi/.tempdata/ldap/import_sub_units/studentstaff.ldif
+create_sub_container_ldif
+ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPROOTPASS -f $SUBNUNITLDIFPATH
+#nonteachingstaff
+SUBUNIT=nonteachingstaff
+echo $CREATEORGUNITMSG - $SUBUNIT
+SUBNUNITLDIFPATH=/opt/karoshi/.tempdata/ldap/import_sub_units/nonteachingstaff.ldif
+create_sub_container_ldif
+ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPROOTPASS -f $SUBNUNITLDIFPATH
+#guests
+SUBUNIT=guests
+echo $CREATEORGUNITMSG - $SUBUNIT
+SUBNUNITLDIFPATH=/opt/karoshi/.tempdata/ldap/import_sub_units/guests.ldif
+create_sub_container_ldif
+ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPROOTPASS -f $SUBNUNITLDIFPATH
+#exams
+SUBUNIT=exams
+echo $CREATEORGUNITMSG - $SUBUNIT
+SUBNUNITLDIFPATH=/opt/karoshi/.tempdata/ldap/import_sub_units/exams.ldif
+create_sub_container_ldif
+ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPROOTPASS -f $SUBNUNITLDIFPATH
+#nogroup
+SUBUNIT=nogroup
+echo $CREATEORGUNITMSG - $SUBUNIT
+SUBNUNITLDIFPATH=/opt/karoshi/.tempdata/ldap/import_sub_units/exams.ldif
+create_sub_container_ldif
+ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPROOTPASS -f $SUBNUNITLDIFPATH
+}
+
+function import_users {
+############################
+#Import users from /etc/passwd
+############################
+cp -f /etc/passwd /etc/password_import
+cp -f /etc/samba/smbpasswd /etc/samba/smbpassword_import
+SIDID=`net getlocalsid | cut -d' ' -f6`
+USERCOUNT=`cat /etc/password_import | wc -l`
+COUNTER=1
+while [ $COUNTER -le $USERCOUNT ]
+do
+USERDATA=`sed -n $COUNTER,$COUNTER'p' /etc/password_import`
+USERNAME=`echo $USERDATA | cut -d: -f1`
+
+USERID=`echo $USERDATA | cut -d: -f3`
+let USERID=$USERID+6000
+GROUPID=`echo $USERDATA | cut -d: -f4`
+COMMENT=`echo $USERDATA | cut -d: -f5`
+HOMEPATH=`echo $USERDATA | cut -d: -f6`
+USERSHELL=`echo $USERDATA | cut -d: -f7`
+PASSWORDSET=`date +%s`
+SAMBALMPASSWORD=`cat /etc/samba/smbpassword_import | grep -i ^$USERNAME: | cut -d: -f3`
+SAMBANTPASSWORD=`cat /etc/samba/smbpassword_import | grep -i ^$USERNAME: | cut -d: -f4`
+PRIGROUPNAME=`grep -w $GROUPID /etc/group | cut -d: -f1`
+#Set samba passwords if not set
+[ $SAMBALMPASSWORD'null' = null ] && SAMBALMPASSWORD=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+[ $SAMBANTPASSWORD'null' = null ] && SAMBANTPASSWORD=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+#if [ $USERID -ge 500 ] && [ $USERNAME != installer ] && [ $USERNAME != nobody ] && [ $USERNAME != apache_karoshi ]
+if [ $USERID -ge 500 ] && [ $USERNAME != installer ] && [ $USERNAME != apache_karoshi ]
+then
+if [ `echo $COMMENT | grep -c Machine` = 0 ]
+then
+echo Creating ldif file for user account: $USERNAME
+echo uid:$USERID gid:$GROUPID gecos:$COMMENT homepath:$HOMEPATH shell:$USERSHELL
+echo "_______________________________________________________________________________"
+#Create ldif file
+[ -d /opt/karoshi/.tempdata/ldap/import_users ] || mkdir -p /opt/karoshi/.tempdata/ldap/import_users
+echo dn: uid=$USERNAME,ou=$PRIGROUPNAME,ou=People,dc=karoshi,dc=local > /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo objectClass: top >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo objectClass: person >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo objectClass: organizationalPerson >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo objectClass: inetOrgPerson >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo objectClass: posixAccount >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo objectClass: shadowAccount >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo objectClass: sambaSamAccount >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo objectClass: inetLocalMailRecipient >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo cn: $USERNAME >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo sn: $USERNAME >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo givenName: $USERNAME >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo uid: $USERNAME >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo uidNumber: $USERID >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo gidNumber: $GROUPID >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo homeDirectory: $HOMEPATH >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo loginShell: $USERSHELL >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo gecos: $COMMENT >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo sambaLogonTime: 0 >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo sambaLogoffTime: 0 >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo sambaKickoffTime: 0 >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo sambaPwdCanChange: 0 >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo sambaPwdMustChange: 0 >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo displayName: $USERNAME >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo sambaSID: $SIDID-$USERID >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo sambaPrimaryGroupSID: $SIDID-$GROUPID >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo mailLocalAddress: $USERNAME >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+#echo mail: $USERNAME@example.com >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo sambaPasswordHistory: 0000000000000000000000000000000000000000000000000000000000000000 >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo sambaLMPassword: $SAMBALMPASSWORD >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo 'sambaAcctFlags: [UX         ]' >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo sambaNTPassword: $SAMBANTPASSWORD >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+echo sambaPwdLastSet: $PASSWORDSET >> /opt/karoshi/.tempdata/ldap/import_users/$USERNAME.ldif
+else
+echo Creating ldif file for Machine account: $USERNAME
+echo uid:$USERID gid:$GROUPID gecos:$COMMENT homepath:$HOMEPATH shell:$USERSHELL
+echo "_______________________________________________________________________________"
+#Create ldif file
+[ -d /opt/karoshi/.tempdata/ldap/import_machines ] || mkdir -p /opt/karoshi/.tempdata/ldap/import_machines
+USERNAMECAPS=`echo $USERNAME | tr 'a-z' 'A-Z'`
+echo dn: uid=$USERNAME,ou=Hosts,dc=karoshi,dc=local > /opt/karoshi/.tempdata/ldap/import_machines/$USERNAME.ldif
+echo objectClass: top >> /opt/karoshi/.tempdata/ldap/import_machines/$USERNAME.ldif
+echo objectClass: account >> /opt/karoshi/.tempdata/ldap/import_machines/$USERNAME.ldif
+echo objectClass: posixAccount >> /opt/karoshi/.tempdata/ldap/import_machines/$USERNAME.ldif
+echo objectClass: sambaSamAccount >> /opt/karoshi/.tempdata/ldap/import_machines/$USERNAME.ldif
+echo cn: $USERNAME >> /opt/karoshi/.tempdata/ldap/import_machines/$USERNAME.ldif
+echo uid: $USERNAME >> /opt/karoshi/.tempdata/ldap/import_machines/$USERNAME.ldif
+echo uidNumber: $USERID >> /opt/karoshi/.tempdata/ldap/import_machines/$USERNAME.ldif
+echo gidNumber: 515 >> /opt/karoshi/.tempdata/ldap/import_machines/$USERNAME.ldif
+echo homeDirectory: /dev/null >> /opt/karoshi/.tempdata/ldap/import_machines/$USERNAME.ldif
+echo loginShell: /bin/false >> /opt/karoshi/.tempdata/ldap/import_machines/$USERNAME.ldif
+echo description: Computer >> /opt/karoshi/.tempdata/ldap/import_machines/$USERNAME.ldif
+echo gecos: Computer >> /opt/karoshi/.tempdata/ldap/import_machines/$USERNAME.ldif
+echo sambaSID: $SIDID-$USERID >> /opt/karoshi/.tempdata/ldap/import_machines/$USERNAME.ldif
+echo displayName: $USERNAMECAPS >> /opt/karoshi/.tempdata/ldap/import_machines/$USERNAME.ldif
+echo 'sambaAcctFlags: [W          ]' >> /opt/karoshi/.tempdata/ldap/import_machines/$USERNAME.ldif
+echo sambaNTPassword: $SAMBANTPASSWORD >> /opt/karoshi/.tempdata/ldap/import_machines/$USERNAME.ldif
+echo sambaPwdLastSet: $PASSWORDSET
+fi
+fi
+let COUNTER=$COUNTER+1
+done
+################################
+#Import user accounts to ldap
+################################
+
+#Check that there are user ldif files
+[ `ls -1 /opt/karoshi/.tempdata/ldap/import_users/ | wc -l` = 0 ] && IMPORTUSERS=no
+if [ $IMPORTUSERS = yes ]
+then
+for USERLDIF in /opt/karoshi/.tempdata/ldap/import_users/*
+do
+LDIF_FILENAME=`basename $USERLDIF`
+USERNAME=`echo $LDIF_FILENAME | sed 's/.ldif//g'`
+echo Importing ldif file: $LDIF_FILENAME
+ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPROOTPASS -f $USERLDIF
+LDAPADDSTATUS=`echo $?`
+#Add user to supplementary groups
+#Get Supplementary groups for the user
+SUPPGROUPS=`id -G $USERNAME | cut -s -d' ' -f2- | sed 's/ /,/g'`
+if [ $SUPPGROUPS'null' != null ]
+then
+echo Adding $USERNAME to supplementary gids: $SUPPGROUPS
+smbldap-usermod -G $SUPPGROUPS $USERNAME
+fi
+#Delete user from /etc/passwd
+if [ $LDAPADDSTATUS = 0 ] && [ $USERNAME != karoshi ]
+then
+userdel $USERNAME
+else
+sleep 5
+fi
+echo "_______________________________________________________________________________"
+done
+fi
+################################
+#Import machine accounts to ldap
+################################
+if [ ! -d /opt/karoshi/.tempdata/ldap/import_machines/ ]
+then
+IMPORTMACHINES=no
+else
+[ `ls -1 /opt/karoshi/.tempdata/ldap/import_machines/ | wc -l` = 0 ] && IMPORTMACHINES=no
+fi
+if [ $IMPORTMACHINES = yes ]
+then
+for MACHINELDIF in /opt/karoshi/.tempdata/ldap/import_machines/*
+do
+LDIF_FILENAME=`basename $MACHINELDIF`
+USERNAME=`echo $LDIF_FILENAME | sed 's/.ldif//g'`
+echo Importing ldif file: $LDIF_FILENAME
+ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPROOTPASS -f $MACHINELDIF 2>> /opt/karoshi/serversetup/install_log
+LDAPADDSTATUS=`echo $?`
+#Delete machine from /etc/passwd
+if [ $LDAPADDSTATUS = 0 ]
+then
+userdel $USERNAME
+else
+sleep 5
+fi
+echo "_______________________________________________________________________________"
+done
+fi
+}
+
+#!/bin/sh
+function show_info {
+Xdialog --icon $ICON --rc-file $RCFILE --title "$TITLE" --no-cancel --no-ok --tailbox /opt/karoshi/.tempdata/ldapstatus 20 85
+
+case $? in
+  0)
+;;
+  1)
+;;
+  255)
+;;
+esac
+}
+function getxdialogpid {
+echo $TITLE - $COMPLETEDMSG
+sleep 2
+XDIALOGPID=`ps -C Xdialog -o pid= -o command= | grep /opt/karoshi/.tempdata/ldapstatus | sed 's/ //g' | cut -dX -f1`
+}
+########################
+#Run functions
+########################
+function run_functions {
+configure_ldap
+add_default_groups
+create_sub_containers
+do_groupmaps
+import_users
+#Set lockout
+pdbedit -P "bad lockout attempt" -C 5 1>/dev/null 2>> /opt/karoshi/serversetup/install_log
+pdbedit -P "lockout duration" -C 3 1>/dev/null 2>> /opt/karoshi/serversetup/install_log
+getxdialogpid
+if [ $XDIALOGPID'null' != null ]
+then
+kill $XDIALOGPID
+fi
+}
+run_functions
+############################
+#Configure this server to use LDAP for authentication
+############################
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/configfiles/nsswitch.conf /etc/
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/configfiles/system-auth /etc/pam.d/
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/configfiles/etc_ldap.conf /etc/ldap.conf
+
+touch /etc/ldap.secret
+chmod 0600 /etc/ldap.secret
+echo $LDAPPASS > /etc/ldap.secret
+
+#Delete tempfiles
+rm -f /etc/password_import
+rm -f /etc/samba/smbpassword_import
+rm -f /opt/karoshi/.tempdata/ldapstatus
+#Set karoshi user password for ldap
+echo -e "$LDAPPASS""\n""$LDAPPASS" | smbldap-passwd karoshi 1>/dev/null
+#Delete ldif files
+rm -f -R /opt/karoshi/.tempdata/ldap
+echo ldapenabled > /opt/karoshi/serversetup/variables/ldapstatus
+##########################################
+#Make sure that samba is running
+##########################################
+if [ `ps -e | grep -c -w smbd` = 0 ] || [ `ps -e | grep -c -w nmbd` = 0 ]
+then
+/etc/init.d/$SMBVER stop 2>> /opt/karoshi/serversetup/install_log
+sleep 1
+/etc/init.d/$SMBVER start 2>> /opt/karoshi/serversetup/install_log
+fi
+exit

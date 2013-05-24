@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Available package database.
+
+     This is a list of all packages that can be deployed to workstations.
+     
+     Each package has the following attributes:
+     
+        id          A unique identifier representing the package. Should be
+                    short and to the point.
+                
+        name        Longer textual description of the package. This should be
+                    the full product name.
+                
+        revision    User created integer to represent the "version" of the
+                    specific package. Should be incremented when creating a new
+                    release.
+                    
+        reboot      If "true" system reboots when done installing, removing or
+                    upgrading the package.
+                    
+        priority    Specifies a numeric value that determines in what order a
+                    package will be installed.
+                    
+    The following additional elements can or must be included within a package:
+    
+        depends     Specifies that this package depends on another package and
+                    optionally version. Either that package must be installed or
+                    must be installable.
+    
+        install     Contains command(s) to be run when the package is to be
+                    installed.
+                    
+        remove      Contains command(s) to be run when the package is to be
+                    removed.
+                    
+        upgrade     Contains commands(s) to be run when the package is already
+                    installed, but the new revision number is greater than the
+                    old revision number.
+                    
+        env         Sets an environmental variable to the specified value 
+		    (not yet implemented).
+                    
+    THIS IS A SAMPLE FILE
+    
+    For more info, see http://wpkg.org/index.php/Category:Documentation
+                    
+-->
+
+<packages>
+
+    <package
+        id="wpkg1"
+        name="Windows Packager sample 1"
+        revision="1"
+        reboot="false"
+        priority="0">
+        
+        <!--
+	Three check conditions: "registry" (checks the registry), "file" (checks for a presence of a file)
+	and "uninstall" - checks in Software Add/Remove.
+	This means: if the "registry" condition is not met (i.e., the specified registry entry doesn't exist),
+	or, "file" condition is not met (i.e., that file doesn't exist), or, "uninstall" condition is not met
+	(i.e., software is not listed in Software Add/Remove), WPKG will try to execute "install cmd".
+	After it's executed, WPKG will check the exit code (should be 0 in this example) *and* verify all the checks.
+	If *any* of the checks is not met, software is considered *not* installed.
+	So enter these values carefully!
+	Remember that you don't have to specify all three check conditions, usually one of them is enough:
+	if the software you are about to install will show up in Software Add/Remove, it is sufficient to specify just
+	"uninstall" check.	
+        -->
+        
+        <check type="registry" condition="exists" path="HKLM\Software\wpkg\full\key\not\part\of\it" />
+        <check type="file" condition="exists" path="C:\wpkg\wpkg.bat" />
+	<check type="uninstall" condition="exists" path="WPKG 0.6-test1" />
+        
+        <install cmd='msiexec /i (path to msi)'>
+            <exit code="0" />
+        </install>
+        
+        <remove  cmd='msiexec /x (path to msi)' />
+        
+        <upgrade cmd='msiexec /i (path to msi)' />
+        
+    </package>
+
+    <package
+        id="wpkg2"
+        name="Windows Packager sample 2"
+        revision="1"
+        reboot="false"
+        priority="0">
+
+	<!-- One profile can depend on other profiles -->	
+        <depends package-id="some-library" />
+    
+        
+        <!--
+	No check conditions; script will be executed *each time* wpkg.js is called - each time PC is booted.
+        -->
+        
+        
+        <install cmd='\\server\path\script.bat' />
+        
+    </package>
+
+    <package
+        id="wpkg3"
+        name="Windows Packager sample 3"
+        revision="1"
+        reboot="false"
+        priority="1">
+        <!--
+	The higher the priority, the earlier the package will be installed. In our case, in profile "administration",
+	"wpkg3" would be installed first (because priority 1 > priority 0), then "wpkg1", because it has the same
+	priority as "wpkg2", but is higher on the list.
+        -->
+
+        
+        <!--
+	Checks in Software Add/Remove only.
+        -->
+	<check type="uninstall" condition="exists" path="Sample Package Software 1.6" />
+        
+        
+        <install cmd='\\server\packages\software\package.exe /quiet /install'>
+            <exit code="0" />
+        </install>
+        
+        <remove  cmd='\\server\packages\software\package.exe /quiet /uninstall' />
+        
+        <upgrade cmd='' />
+
+        
+    </package>
+
+    <package
+	id="time"
+	name="Time Synchonization"
+	revision="1"
+	reboot="false"
+	priority="100"
+	notify="false"
+	execute="always">
+
+	<!--
+	notify="false" - does not notify the user (with "true" user would be notified)
+	execute="always" - always executes "install cmd" - sets time in this example
+	execute="once" - executes only once, and never again
+	-->
+
+	<install cmd="net time \\timeserver /set /yes" />
+
+    </package>
+												      
+
+
+</packages>

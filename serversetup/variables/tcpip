@@ -1,0 +1,41 @@
+###################################
+#Important
+###################################
+#Karoshi has only been tested using these TCPIP numbers. Change these at your own risk.
+#If you do change these numbers you will need to make sure that you make the same changes on every karoshi server that you install.
+#If you get any errors after changing these numbers here are some files to check
+#/etc/shorewall/rules
+#/etc/smb.conf
+#/etc/hosts
+#/etc/hosts.allow
+###################################
+#Internal Zone - General Settings
+###################################
+GATEWAY1=172.30.0.1		# Firewall internal card
+NAMESERVER1=172.30.0.1		# Normally provided by firewall
+NAMESERVER3=172.30.0.2		# Failsafe setting if no nameserver is available on NAMESERVER1
+NETMASK1=255.255.0.0		# Netmask of the internal zone
+SUBNET=172.30.0.0/255.255.0.0	# Subnet for the internal zone
+#BROADCAST1=172.30.255.255	# Broadcast for the internal zone
+SAMBA_ALLOWED=172.30.		# Allowed connections to samba
+DHCPBASE=172.30.0.0		# Base for the DHCP server
+DHCP_LOWER=172.30.200.200	# Default range for DHCP
+DHCP2_HIGHER=172.30.254.254	# End of default range for the dhcp server
+SERVERRANGE1=172.30.0		#
+SAMBADOMAIN=linuxgrid		# Samba domain name
+###################################
+#Internal Zone - Servers
+###################################
+MCP=172.30.0.1 #Firewall Internal Network card 
+NTPSERVER=172.30.0.1		# Time service source for servers
+PDC=172.30.0.2			# PDC
+###################################
+#DMZ - General Settings
+###################################
+NETMASK2=255.255.255.0		# DMZ netmask
+GATEWAY2=192.168.0.1		# DMZ gateway
+NAMESERVER2=192.168.0.1		# DNS
+#BROADCAST2=192.168.0.255	# Broadcast
+SUBNET2=172.30.0.0/16		# Subnet
+
+

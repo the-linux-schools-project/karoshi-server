@@ -1,0 +1,214 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dg_view_part_banned_sites_cgi
+then
+echo `date`: dg_view_part_banned_sites - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/dg_view_part_banned_sites_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_part_banned_sites.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $dg_view_part_banned_sites_cgi'check' ]
+then
+echo `date`: dg_view_part_banned_sites - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/dg_view_part_banned_sites_cgi
+then
+echo `date`: dg_view_part_banned_sites - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/tech_checksums/dg_view_part_banned_sites_cgi
+MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/dg_view_part_banned_sites.cgi | cut -d' ' -f1`
+[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+if [ $MD5SUM2'check' != $dg_view_part_banned_sites_cgi'check' ]
+then
+echo `date`: dg_view_part_banned_sites - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 1 ]
+then
+echo `date`: dg_view_part_banned_sites - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo $* | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | cut -s -d: -f3`
+ALPHABET=`echo $* | cut -s -d: -f4`
+GROUP=`echo $* | cut -s -d: -f5`
+ALPHABET2=`echo $ALPHABET | tr 'A-Z' 'a-z'`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: dg_view_part_banned_sites - Not called by dg_view_part_banned_sites.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: dg_view_part_banned_sites - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: dg_view_part_banned_sites - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: dg_view_part_banned_sites - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $ALPHABET'null' = null ]
+then
+echo `date`: dg_view_part_banned_sites - No letter chosen by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $GROUP'null' = null ]
+then
+echo `date`: dg_view_part_banned_sites  - No group chosen by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+############################
+#Language
+############################
+LANGCHOICE=englishuk
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_part_banned_sites ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_part_banned_sites
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+echo `date`: dg_view_part_banned_sites - viewing banned sites "for" the letter $ALPHABET by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+if [ $GROUP = staff ]
+then
+FILTERPATH=/etc/dansguardian/staff_rules/bannedurllist_staff
+else
+FILTERPATH=/etc/dansguardian/student_rules/bannedurllist_students
+fi
+
+echo '<input value="Submit" type="submit">'
+echo '<input value="Reset" type="reset">'
+echo '<'input type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedsites"'", "'"_SITENAME_"'", true')'';''"' value='"'Select all'"''>'
+
+#Get squid server name
+[ ! -f /opt/karoshi/server_network/proxyserver ] && exit 101
+PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+
+if [ $PROXYSERVER != $HOSTNAME ]
+then
+ssh -x -o PasswordAuthentication=no $PROXYSERVER '
+[ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
+chmod 0700 /opt/karoshi/.tempdata
+if [ '$ALPHABET' = ALL ]
+then
+cat '$FILTERPATH' > /opt/karoshi/.tempdata/bannedurllist.$$
+else
+grep ^'$ALPHABET' '$FILTERPATH' > /opt/karoshi/.tempdata/bannedurllist.$$
+if [ '$ALPHABET' != '$ALPHABET2' ]
+then
+grep ^'$ALPHABET2' '$FILTERPATH' >> /opt/karoshi/.tempdata/bannedurllist.$$
+fi
+fi
+SITECOUNT=`cat /opt/karoshi/.tempdata/bannedurllist.$$ | wc -l`
+COUNTER=1
+if [ $SITECOUNT -gt 0 ]
+then
+#Show table of sites
+echo "<"table class=\"standard\" style=\"text-align: left";" width: 800px";" \" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"">"
+echo "<tbody>"
+echo "<tr><td" style=\"width: 250px";"\""><b>"'$SITEMSG'"</b></td><td><b>"'$DELETEMSG'"</b></td></tr>"
+while [ $COUNTER -le $SITECOUNT ]
+do
+SITEDATA=`sed -n $COUNTER,$COUNTER"p" /opt/karoshi/.tempdata/bannedurllist.$$`
+SITENAME=`echo $SITEDATA | cut -d, -f1`
+echo "<tr><td>"$SITENAME"</td><td>""<"input name="_SITENAME_" value="$SITENAME" type="checkbox""></td></tr>"
+let COUNTER=$COUNTER+1
+done
+echo "</tbody>"
+echo "</table>"
+rm -f /opt/karoshi/.tempdata/bannedurllist.$$
+else
+rm -f /opt/karoshi/.tempdata/bannedurllist.$$
+exit 101
+fi
+'
+else
+[ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
+chmod 0700 /opt/karoshi/.tempdata
+if [ $ALPHABET = ALL ]
+then
+cat $FILTERPATH > /opt/karoshi/.tempdata/bannedurllist.$$
+else
+grep ^$ALPHABET $FILTERPATH > /opt/karoshi/.tempdata/bannedurllist.$$
+if [ $ALPHABET != $ALPHABET2 ]
+then
+grep ^$ALPHABET2 $FILTERPATH >> /opt/karoshi/.tempdata/bannedurllist.$$
+fi
+fi
+SITECOUNT=`cat /opt/karoshi/.tempdata/bannedurllist.$$ | wc -l`
+COUNTER=1
+if [ $SITECOUNT -gt 0 ]
+then
+#Show table of sites
+echo "<table class="standard" style="text-align: left';' width: 800px';' height: 100px';'" border="0" cellpadding="2" cellspacing="2">"
+echo "<tbody>"
+echo "<tr><td" style='"width: 250px;"'"><b>"$SITEMSG"</b></td><td><b>"$DELETEMSG"</b></td></tr>"
+while [ $COUNTER -le $SITECOUNT ]
+do
+SITEDATA=`sed -n $COUNTER,$COUNTER"p" /opt/karoshi/.tempdata/bannedurllist.$$`
+SITENAME=`echo $SITEDATA | cut -d, -f1`
+echo "<tr><td>"$SITENAME"</td><td>""<"input name='"'_SITENAME_'"' value='"'$SITENAME'"' type='"'checkbox'"'"></td></tr>"
+let COUNTER=$COUNTER+1
+done
+echo "</tbody>"
+echo "</table>"
+rm -f /opt/karoshi/.tempdata/bannedurllist.$$
+else
+rm -f /opt/karoshi/.tempdata/bannedurllist.$$
+exit 101
+fi
+fi
+
+echo '<input value="Submit" type="submit">'
+echo '<input value="Reset" type="reset">'
+echo '<'input type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedsites"'", "'"_SITENAME_"'", true')'';''"' value='"'Select all'"''>'
+exit

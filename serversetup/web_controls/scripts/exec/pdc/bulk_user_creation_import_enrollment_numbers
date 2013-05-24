@@ -1,0 +1,245 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/bulk_user_creation_import_enrollment_numbers_cgi
+then
+echo `date`: bulk_user_creation_import_enrollment_numbers - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/bulk_user_creation_import_enrollment_numbers_process_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/bulk_user_creation_import_enrollment_numbers_process.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $bulk_user_creation_import_enrollment_numbers_process_cgi'check' ]
+then
+echo `date`: bulk_user_creation_import_enrollment_numbers - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/bulk_user_creation_import_enrollment_numbers_process_cgi
+then
+echo `date`: bulk_user_creation_import_enrollment_numbers - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/tech_checksums/bulk_user_creation_import_enrollment_numbers_process_cgi
+MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/bulk_user_creation_import_enrollment_numbers_process.cgi | cut -d' ' -f1`
+[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+if [ $MD5SUM2'check' != $bulk_user_creation_import_enrollment_numbers_process_cgi'check' ]
+then
+echo `date`: bulk_user_creation_import_enrollment_numbers - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: bulk_user_creation_import_enrollment_numbers - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: bulk_user_creation_import_enrollment_numbers - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+CSVMD5=`echo "$DATA" | cut -s -d: -f4`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: bulk_user_creation_import_enrollment_numbers - Not called by bulk_user_creation_import_enrollment_numbers.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: bulk_user_creation_import_enrollment_numbers - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: bulk_user_creation_import_enrollment_numbers - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $CSVMD5'null' = null ]
+then
+echo `date`: bulk_user_creation_import_enrollment_numbers - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: bulk_user_creation_import_enrollment_numbers - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ ! -f /var/www/karoshi/bulk_user_creation_enrollment_numbers/karoshi_enrollmentnumbers.csv ]
+then
+echo `date`: bulk_user_creation_import_enrollment_numbers - No CSV file by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+CSVMD52=`md5sum /var/www/karoshi/bulk_user_creation_enrollment_numbers/karoshi_enrollmentnumbers.csv | cut -d' ' -f1`
+if [ $CSVMD5 != $CSVMD52 ]
+then
+echo `date`: bulk_user_creation_import_enrollment_numbers - Incorrect MD5sum "for" the CSV file by $REMOTE_USER from $REMOTE_ADDR>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/bulk_user_creation ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/user/bulk_user_creation
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+echo `date`: bulk_user_creation_import_enrollment_numbers - by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+
+#Process CSV file
+CSVFILE_LINES=`cat /var/www/karoshi/bulk_user_creation_enrollment_numbers/karoshi_enrollmentnumbers.csv | wc -l`
+COUNTER=1
+while [ $COUNTER -le $CSVFILE_LINES ]
+do
+USERNAME=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation_enrollment_numbers/karoshi_enrollmentnumbers.csv | cut -s -d, -f1 | tr -cd 'A-Za-z0-9-.'`
+ENROLLMENTNUMBER=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation_enrollment_numbers/karoshi_enrollmentnumbers.csv | cut -s -d, -f2 | tr -cd 'A-Za-z0-9-.'`
+echo $USERNAME - $ENROLLMENTNUMBER'<br>'
+ADD_ENROLLMENT=yes
+if [ $USERNAME'null' = null ] || [ $ENROLLMENTNUMBER'null' = null ]
+then
+echo Error on line $COUNTER'<br>'
+ADD_ENROLLMENT=no
+fi
+
+#Check that user exists
+getent passwd $USERNAME 1>/dev/null
+USEREXISTCHECK=`echo $?`
+if [ $USEREXISTCHECK != 0 ]
+then
+echo $USERNOTEXIST'<br>'
+ADD_ENROLLMENT=no
+fi
+
+#Check that enrollment number is not already used
+DUPLICATECOUNT=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" employeeNumber=$ENROLLMENTNUMBER | grep -c employeeNumber`
+if [ $DUPLICATECOUNT != 1 ]
+then
+DUPLICATEENROLLUSER=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" employeeNumber=$ENROLLMENTNUMBER | grep ^uid: | sed 's/uid: //g'`
+echo `date`: bulk_user_creation_import_enrollment_numbers - Duplicate enrollment number used by $DUPLICATEENROLLUSER when creating $NEWUSERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo $DUPLICATEENROLLNO $DUPLICATEENROLLUSER'<br>'
+ADD_ENROLLMENT=no
+fi
+
+if [ $ADD_ENROLLMENT = yes ]
+then
+echo `date`: bulk_user_creation_import_enrollment_numbers - $USERNAME : $ENROLLMENTNUMBER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+USERDN=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" uid=$USERNAME | grep ^dn:`
+
+ENROLLMENTCHECK=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" uid=$USERNAME | grep -c employeeNumber:`
+
+echo $USERDN > /opt/karoshi/.tempdata/import_enrollment_numbers.$$
+echo changetype: modify >> /opt/karoshi/.tempdata/import_enrollment_numbers.$$
+
+if [ $ENROLLMENTCHECK = 0 ]
+then
+echo add: employeeNumber >> /opt/karoshi/.tempdata/import_enrollment_numbers.$$
+else
+echo replace: employeeNumber >> /opt/karoshi/.tempdata/import_enrollment_numbers.$$
+fi
+echo employeeNumber: $ENROLLMENTNUMBER >> /opt/karoshi/.tempdata/import_enrollment_numbers.$$
+echo - >> /opt/karoshi/.tempdata/import_enrollment_numbers.$$
+ldapmodify -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" -f /opt/karoshi/.tempdata/import_enrollment_numbers.$$ 1>/dev/null
+
+############################
+#Add enrollment number on slave ldap servers
+############################
+if [ -d /opt/karoshi/server_network/slave_ldap_servers ]
+then
+if [ `ls -1 /opt/karoshi/server_network/slave_ldap_servers/ | wc -l` -gt 0 ]
+then
+for SLAVE_LDAP_SERVER in /opt/karoshi/server_network/slave_ldap_servers/*
+do
+SLAVE_LDAP_SERVER=`basename $SLAVE_LDAP_SERVER`
+echo `date`: bulk_user_creation_import_enrollment_numbers - $USERNAME : $ENROLLMENTNUMBER on $SLAVE_LDAP_SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+scp /opt/karoshi/.tempdata/import_enrollment_numbers.$$ root@$SLAVE_LDAP_SERVER:"/opt/karoshi/.tempdata/"
+ssh -x -o PasswordAuthentication=no $SLAVE_LDAP_SERVER '
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+ldapmodify -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" -f /opt/karoshi/.tempdata/import_enrollment_numbers.'$$' 1>/dev/null
+rm -f /opt/karoshi/.tempdata/import_enrollment_numbers.'$$'
+'
+done
+fi
+fi
+
+############################
+#Add enrollment number on federated ldap servers
+############################
+if [ -d /opt/karoshi/server_network/federated_ldap_servers ]
+then
+if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
+then
+for FEDERATED_LDAP_SERVER in /opt/karoshi/server_network/federated_ldap_servers/*
+do
+FEDERATED_LDAP_SERVER=`basename $FEDERATED_LDAP_SERVER`
+echo `date`: bulk_user_creation_import_enrollment_numbers \(federated mode\) - $USERNAME : $ENROLLMENTNUMBER on $FEDERATED_LDAP_SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+scp /opt/karoshi/.tempdata/import_enrollment_numbers.$$ root@$FEDERATED_LDAP_SERVER:"/opt/karoshi/.tempdata/"
+ssh -x -o PasswordAuthentication=no $FEDERATED_LDAP_SERVER '
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+ldapmodify -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" -f /opt/karoshi/.tempdata/import_enrollment_numbers.'$$' 1>/dev/null
+
+#Set enrollment number on any federated slave ldap servers
+if [ -d /opt/karoshi/server_network/slave_ldap_servers ]
+then
+if [ `ls -1 /opt/karoshi/server_network/slave_ldap_servers/ | wc -l` -gt 0 ]
+then
+for SLAVELDAPSERVERS in /opt/karoshi/server_network/slave_ldap_servers/*
+do
+SLAVELDAPSERVER=`basename $SLAVELDAPSERVERS`
+echo `date`: bulk_user_creation_import_enrollment_numbers \(federated mode\) - '$USERNAME' : '$ENROLLMENTNUMBER' on $SLAVELDAPSERVER by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+scp /opt/karoshi/.tempdata/import_enrollment_numbers.'$$' root@$SLAVELDAPSERVER:"/opt/karoshi/.tempdata/"
+ssh -x -o PasswordAuthentication=no $SLAVELDAPSERVER "
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+ldapmodify -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" -f /opt/karoshi/.tempdata/import_enrollment_numbers.'$$' 1>/dev/null
+rm -f /opt/karoshi/.tempdata/import_enrollment_numbers.'$$'
+"
+done
+fi
+fi
+
+rm -f /opt/karoshi/.tempdata/import_enrollment_numbers.'$$'
+'
+done
+fi
+fi
+
+[ -f /opt/karoshi/.tempdata/import_enrollment_numbers.$$ ] && rm -f /opt/karoshi/.tempdata/import_enrollment_numbers.$$
+echo $ENROLLMENTNUMADD'<br>'
+fi
+let COUNTER=$COUNTER+1
+done
+
+echo '<br>'$TITLE3 - $COMPLETEMSG'<br>'

@@ -1,0 +1,103 @@
+#!/bin/bash
+#softwarerequirements
+#Copyright (C) 2004  Paul Sharrad
+#Copyright (C) 2005  The karoshi Team
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aloughlin@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+[ -e /opt/karoshi/serversetup/variables/language ] || /opt/karoshi/serversetup/changelanguage
+[ -e /opt/karoshi/serversetup/variables/distro ] || /opt/karoshi/serversetup/changedistro
+
+source /opt/karoshi/serversetup/variables/language
+source /opt/karoshi/serversetup/variables/xdialog
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/language/$LANGCHOICE/pdc/softwarerequirements
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/software
+##############################
+#Check to see if the software has been installed
+##############################
+if test -f /etc/init.d/$NTPVER
+then
+NTPSTATUS=$INSTALLED
+clear
+else
+NTPSTATUS=$NOTINSTALLED
+fi
+if test -f /etc/init.d/$SMBVER
+then
+SMBSTATUS=$INSTALLED
+clear
+else
+SMBSTATUS=$NOTINSTALLED
+fi
+
+if test -f /etc/init.d/$YPSERVVER
+then
+YPSTATUS=$INSTALLED
+clear
+else
+YPSTATUS=$NOTINSTALLED
+fi
+
+if test -f /etc/init.d/$SHOREWALLVER
+then
+SHOREWALLSTATUS=$INSTALLED
+clear
+else
+SHOREWALLSTATUS=$NOTINSTALLED
+fi
+
+if test -f /etc/init.d/$DHCPVER
+then
+DHCPSTATUS=$INSTALLED
+clear
+else
+DHCPSTATUS=$NOTINSTALLED
+fi
+
+if test -f /etc/init.d/$PORTMAPVER
+then
+PORTMAPSTATUS=$INSTALLED
+clear
+else
+PORTMAPSTATUS=$NOTINSTALLED
+fi
+
+if test -f /etc/init.d/$WEBMINVER
+then
+WEBMINSTATUS=$INSTALLED
+clear
+else
+WEBMINSTATUS=$NOTINSTALLED
+fi
+
+##############################
+#Display software required
+##############################
+Xdialog --title "$TITLE" \
+--icon $ICON --rc-file $RCFILE --no-cancel --msgbox  "$TOPMSG: \n\n $NTPMSG1: $NTPSTATUS \n $NTPMSG2 \n\n $YPSERVMSG1: $YPSTATUS \n $YPSERVMSG2 \n\n $SAMBAMSG1: $SMBSTATUS \n $SAMBAMSG2 \n\n $DHCPMSG1: $DHCPSTATUS \n $DHCPMSG2 \n\n $SWALLMSG1: $SHOREWALLSTATUS \n $SWALLMSG2 \n\n $WEBMINMSG1: $WEBMINSTATUS \n $WEBMINMSG2" 40 90
+case $ in
+0)
+	;;
+255)
+	;;
+esac
+exit

@@ -1,0 +1,173 @@
+#!/bin/bash
+#Copyright (C) 2007  The karoshi Team
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+############################
+#Language
+############################
+LANGCHOICE=englishuk
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printers_delete ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printers_delete
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/printers_delete2_cgi
+then
+echo `date`: printers_delete - No MD5Checksum "for" printers_delete2 >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/printers_delete2_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printers_delete2.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $printers_delete2_cgi'check' ]
+then
+echo `date`: printers_delete - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 1 ]
+then
+echo `date`: printers_delete - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+REMOTE_USER=`echo $* | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | cut -s -d: -f3`
+PRINTERNAME=`echo $* | cut -s -d: -f4 | sed 's/123456789/_/g'`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: printers_delete - Not called by printers_delete.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: printers_delete - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: printers_delete - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+#Check to see that PRINTERNAME is not blank
+if [ $PRINTERNAME'null' = null ]
+then
+echo `date`: printers_delete - Blank Printername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: printers_delete - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+function sortprinterstxt {
+###################
+#Sort printers.txt
+##################
+STARTLINENO=`grep -n ^--start-- /var/lib/samba/netlogon/printers.txt | cut -d: -f1`
+NOOFLINES=`cat /var/lib/samba/netlogon/printers.txt | wc -l`
+let PRINTERSSTARTNO=$STARTLINENO+1
+sed -n 1,$STARTLINENO'p' /var/lib/samba/netlogon/printers.txt > /var/lib/samba/netlogon/printers_header.txt
+sed -n $PRINTERSSTARTNO,$NOOFLINES'p' /var/lib/samba/netlogon/printers.txt > /var/lib/samba/netlogon/printers_data.txt
+cat /var/lib/samba/netlogon/printers_header.txt > /var/lib/samba/netlogon/printers.txt
+sort /var/lib/samba/netlogon/printers_data.txt >> /var/lib/samba/netlogon/printers.txt
+rm -f /var/lib/samba/netlogon/printers_header.txt
+rm -f /var/lib/samba/netlogon/printers_data.txt
+}
+
+####################
+#Delete the print queue
+####################
+
+PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/print_server`
+#Check to see that PRINTSERVER is not blank
+if [ $PRINTSERVER'null' = null ]
+then
+echo `date`: printers_delete - no Print Server has been setup by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+echo `date`: printers_delete - Deleting $PRINTERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+if [ $PRINTSERVER != $HOSTNAME ]
+then
+ssh -x -o PasswordAuthentication=no $PRINTSERVER '
+lpadmin -x '$PRINTERNAME'
+' 2>&1
+else
+lpadmin -x $PRINTERNAME 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+####################
+#Modify printers.txt
+####################
+COUNTER=`grep -n ^--start-- /var/lib/samba/netlogon/printers.txt | cut -d: -f1`
+NOOFLINES=`cat /var/lib/samba/netlogon/printers.txt | wc -l`
+
+while [ $COUNTER -le $NOOFLINES ]
+do
+DATAENTRY=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/printers.txt | grep -w $PRINTERNAME`
+if [ $DATAENTRY'null' != null ]
+then
+PRINTERCOUNT=`echo $DATAENTRY | cut -d, -f2`
+#If there is more than one printer allocated to a location get the data
+if [ $PRINTERCOUNT -gt 1 ]
+then
+LOCATION=`echo $DATAENTRY | cut -d, -f1`
+let DEFAULTPCOUNT=$PRINTERCOUNT+3
+DEFAULTPRINTER=`echo $DATAENTRY | cut -d, -f$DEFAULTPCOUNT | sed 's/'$PRINTERNAME'//g'`
+[ $DEFAULTPRINTER'null' = null ] && DEFAULTPRINTER=`echo $DATAENTRY | cut -d, -f3`
+let LASTPCOUNT=$PRINTERCOUNT+2
+PRINTERS=`echo $DATAENTRY | cut -d, -f3-$LASTPCOUNT | sed 's/'$PRINTERNAME'//g'`
+#Create new entry in tempfile
+let PRINTERCOUNT=$PRINTERCOUNT-1
+echo $LOCATION,$PRINTERCOUNT,$PRINTERS,$DEFAULTPRINTER | sed 's/,,/,/g' >> /var/lib/samba/netlogon/printers2.txt
+fi
+#Delete line from current file
+sed -i $COUNTER'd' /var/lib/samba/netlogon/printers.txt
+fi
+let COUNTER=$COUNTER+1
+done
+#Delete all empty lines
+sed -i '/^$/d' /var/lib/samba/netlogon/printers.txt
+#Add in revised printer entries
+if [ -f /var/lib/samba/netlogon/printers2.txt ]
+then
+cat /var/lib/samba/netlogon/printers2.txt >> /var/lib/samba/netlogon/printers.txt
+rm -f /var/lib/samba/netlogon/printers2.txt
+fi
+sortprinterstxt
+exit

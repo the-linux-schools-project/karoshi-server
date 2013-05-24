@@ -1,0 +1,226 @@
+#!/bin/bash
+#Copyright (C) 2008 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/generate_classroom_lists_csv_process_cgi
+then
+echo `date`: generate_classroom_lists_csv_process_cgi - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/generate_classroom_lists_csv_process_cgi
+MD5SUM1=`md5sum /var/www/cgi-bin_karoshi/admin/generate_classroom_lists_csv_process.cgi | cut -d' ' -f1`
+[ $MD5SUM1'null' = null ] && MD5SUM1=not_set
+if [ $MD5SUM1'check' != $generate_classroom_lists_csv_process_cgi'check' ]
+then
+echo `date`: generate_classroom_lists_csv - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/generate_classroom_lists_csv_process_cgi
+then
+echo `date`: generate_classroom_lists_csv_process_cgi - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/tech_checksums/generate_classroom_lists_csv_process_cgi
+MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/generate_classroom_lists_csv_process.cgi | cut -d' ' -f1`
+[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+if [ $MD5SUM2'check' != $generate_classroom_lists_csv_process_cgi'check' ]
+then
+echo `date`: generate_classroom_lists_csv - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: generate_classroom_lists_csv - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: generate_classroom_lists_csv - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+MD5SUMCSV=`echo "$DATA" | cut -s -d: -f4`
+PROCESSNUMBER=`echo "$DATA" | cut -s -d: -f5`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM1'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: generate_classroom_lists_csv - Not called by generate_classroom_lists_csv.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: generate_classroom_lists_csv - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: generate_classroom_lists_csv - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $MD5SUMCSV'null' = null ]
+then
+echo `date`: generate_classroom_lists_csv - Blank csv md5sum by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ $PROCESSNUMBER'null' = null ]
+then
+echo `date`: generate_classroom_lists_csv - Blank csvfile by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: generate_classroom_lists_csv - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+#Check that csv file exists
+if [ ! -f /var/www/karoshi/classroom_lists/processed_data.$PROCESSNUMBER ]
+then
+echo `date`: generate_classroom_lists_csv - no data file by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+#Check that csv file has correct md5sum
+MD5SUMCSV2=`md5sum /var/www/karoshi/classroom_lists/processed_data.$PROCESSNUMBER | cut -d' ' -f1`
+if [ $MD5SUMCSV'check' != $MD5SUMCSV2'check' ]
+then
+echo `date`: generate_classroom_lists_csv - no data file by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+#
+#Process the file
+echo `date`: generate_classroom_lists_csv by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+#Delete existing config files
+rm -f -R /home/staffshare/italc/rooms/
+rm -f -R /home/staffshare/italc/room_data/
+rm -f -R /home/staffshare/italc/config_data/
+mkdir -p /home/staffshare/italc/rooms/
+mkdir -p /home/staffshare/italc/room_data
+mkdir -p /home/staffshare/italc/config_data
+chown root.staff /home/staffshare/italc/rooms/
+chown root.staff /home/staffshare/italc/room_data/
+chown root.staff /home/staffshare/italc/config_data/
+#Create room config file header
+function create_room_config_header {
+echo '<globalclientconfig version="1.0.9" >' > /home/staffshare/italc/rooms/$LOCATION.xml
+echo '  <body>' >> /home/staffshare/italc/rooms/$LOCATION.xml
+echo '    <classroom name="'$LOCATION'" >' >> /home/staffshare/italc/rooms/$LOCATION.xml
+}
+#Create room config file footer
+function create_room_config_footer {
+echo '   </classroom>' >> /home/staffshare/italc/rooms/$LOCATION.xml
+echo '  </body>' >> /home/staffshare/italc/rooms/$LOCATION.xml
+echo '</globalclientconfig>' >> /home/staffshare/italc/rooms/$LOCATION.xml
+}
+#Create room personal config file header
+function create_personal_config_header {
+echo '<?xml version="1.0"?>
+<!DOCTYPE italc-config-file>
+<personalconfig version="1.0.9" >
+  <head>
+    <globalsettings opened-tab="2" demoquality="0" icononlymode="0" defaultdomain="" role="1" client-update-interval="5" wincfg="AAAA/wAAAAD9AAAAAAAABAAAAAKZAAAABAAAAAQAAAAIAAAACPwAAAABAAAAAgAAAAEAAAAWAG0AYQBpAG4AdABvAG8AbABiAGEAcgEAAAAAAAAEAAAAAAAAAAAA" notooltips="0" win-height="719" win-x="0" ismaximized="1" win-y="0" clientdoubleclickaction="0" win-width="1024" showUserColumn="1" toolbarcfg="Power on computers#Remote logon" />
+  </head>
+  <body>'  > /home/staffshare/italc/rooms/$LOCATION'config'.xml
+echo '    <classroom name="'$LOCATION'" >' >> /home/staffshare/italc/rooms/$LOCATION'config'.xml
+}
+#Create room personal config file footer
+function create_personal_config_footer {
+echo '   </classroom>' >> /home/staffshare/italc/rooms/$LOCATION'config'.xml
+echo ' </body>' >> /home/staffshare/italc/rooms/$LOCATION'config'.xml
+echo '</personalconfig>' >> /home/staffshare/italc/rooms/$LOCATION'config'.xml
+}
+
+#Create config files
+COUNTER=1
+YCOUNTER=1
+XAXIS=1
+YAXIS=1
+LOCATION_PREVIOUS="not_set"
+LIST_SIZE=`cat /var/www/karoshi/classroom_lists/processed_data.$PROCESSNUMBER | wc -l`
+
+while [ $COUNTER -le $LIST_SIZE ]
+do
+LINEDATA=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/classroom_lists/processed_data.$PROCESSNUMBER`
+LOCATION=`echo $LINEDATA | cut -d, -f1`
+STATUS=`echo $LINEDATA | cut -d, -f2`
+CLIENTNAME=`echo $LINEDATA | cut -d, -f3`
+TCIPIP=`echo $LINEDATA | cut -d, -f4`
+CLIENTID=`echo $TCIPIP | sed 's/\.//g'`
+MAC=`echo $LINEDATA | cut -d, -f5`
+if [ $LOCATION != $LOCATION_PREVIOUS ]
+then
+YCOUNTER=1
+XAXIS=1
+YAXIS=1
+fi
+#Add to config data file
+echo \<client hostname\=\"$TCIPIP\" mac\=\"$MAC\" type=\"0\" id\=\"$CLIENTID\" name\=\"$CLIENTNAME\" \/\> >> /home/staffshare/italc/room_data/$LOCATION
+
+echo \<client w\=\"124\" x\=\"$XAXIS\" y\=\"$YAXIS\" h\=\"93\" visible\=\"yes\" id\=\"$CLIENTID\" \/\> >> /home/staffshare/italc/config_data/$LOCATION
+let XAXIS=$XAXIS+126
+let YCOUNTER=$YCOUNTER+1
+[ $XAXIS -gt 505 ] && XAXIS=1
+if [ $YCOUNTER -gt 5 ]
+then
+let YAXIS=$YAXIS+95
+YCOUNTER=1
+fi
+LOCATION_PREVIOUS=$LOCATION
+let COUNTER=$COUNTER+1
+done
+
+
+for LOCATIONPATH in /home/staffshare/italc/room_data/*
+do
+LOCATION=`basename $LOCATIONPATH`
+create_room_config_header
+cat $LOCATIONPATH >> /home/staffshare/italc/rooms/$LOCATION.xml
+create_room_config_footer
+done
+
+for LOCATIONPATH in /home/staffshare/italc/config_data/*
+do
+LOCATION=`basename $LOCATIONPATH`
+create_personal_config_header
+cat $LOCATIONPATH >> /home/staffshare/italc/rooms/$LOCATION'config'.xml
+create_personal_config_footer
+done
+exit

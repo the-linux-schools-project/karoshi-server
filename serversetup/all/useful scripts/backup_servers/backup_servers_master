@@ -1,0 +1,87 @@
+#!/bin/bash
+LOG_DATE=`date +%F`
+#Make log folder
+[ ! -d /opt/karoshi/logs/backup_servers/$LOG_DATE ] && mkdir -p /opt/karoshi/logs/backup_servers/$LOG_DATE
+if [ ! -d /opt/karoshi/backup_servers ]
+then
+mkdir -p /opt/karoshi/backup_servers
+chmod 0755 /opt/karoshi/backup_servers
+fi
+
+if [ ! -d /opt/karoshi/server_network/backup_servers/backup_settings/ ]
+then
+echo No Servers have been configured to backup.
+exit
+fi
+
+if [ `ls -1 /opt/karoshi/server_network/backup_servers/backup_settings/ | wc -l` = 0 ]
+then
+echo No Servers have been configured to backup.
+exit
+fi
+
+for KAROSHI_SERVERS in /opt/karoshi/server_network/backup_servers/backup_settings/*
+do
+KAROSHI_SERVER=`basename $KAROSHI_SERVERS`
+#############################
+#Backup Servers
+#############################
+echo Backing up $KAROSHI_SERVER
+if [ -f /opt/karoshi/server_network/backup_servers/stop_backup_$KAROSHI_SERVER ]
+then
+echo `date` - Backups are disabled "for" $KAROSHI_SERVER >> /opt/karoshi/logs/backup_servers/$LOG_DATE/master_backup_log
+else
+echo `date` - Backing up $KAROSHI_SERVER >> /opt/karoshi/logs/backup_servers/$LOG_DATE/master_backup_log
+
+#Do backup
+if [ $KAROSHI_SERVER != $HOSTNAME ]
+then
+#Copy in configuration file
+
+ssh -x -o PasswordAuthentication=no $KAROSHI_SERVER '
+[ ! -d /opt/karoshi/server_network/backup_servers/backup_settings/ ] && mkdir -p /opt/karoshi/server_network/backup_servers/backup_settings/
+'
+echo Copying backup configuration data to $KAROSHI_SERVER
+scp -r /opt/karoshi/server_network/backup_servers/backup_settings/$KAROSHI_SERVER root@$KAROSHI_SERVER:"/opt/karoshi/server_network/backup_servers/backup_settings/"
+
+#Copy in backup script
+echo Copying backup backup script to $KAROSHI_SERVER
+scp "/opt/karoshi/serversetup/all/useful scripts/backup_servers/backup_servers" root@$KAROSHI_SERVER:"/opt/karoshi/serversetup/all/useful\ scripts/backup_servers/"
+
+#Do backup on the server
+SLAVELDAPSERVER=no
+[ -f /opt/karoshi/server_network/slave_ldap_servers/$KAROSHI_SERVER ] && SLAVELDAPSERVER=yes
+ssh -x -o PasswordAuthentication=no $KAROSHI_SERVER '
+if [ '$SLAVELDAPSERVER' = yes ]
+then
+#Backup LDAP if this is a slave ldap server.
+if [ ! -d /opt/karoshi/server_network/ldap/ ]
+then
+mkdir -p /opt/karoshi/server_network/ldap/
+chmod 0700 /opt/karoshi/server_network/ldap/
+fi
+touch /opt/karoshi/server_network/ldap/master.ldif
+chmod 0600 /opt/karoshi/server_network/ldap/master.ldif
+slapcat -s "dc=karoshi,dc=local" -l /opt/karoshi/server_network/ldap/master.ldif
+fi
+#Backup folders
+/opt/karoshi/serversetup/all/"useful scripts"/backup_servers/backup_servers
+' 2>> /opt/karoshi/logs/backup_servers/$LOG_DATE/master_backup_errors
+else
+#Backup LDAP
+if [ ! -d /opt/karoshi/server_network/ldap/ ]
+then
+mkdir -p /opt/karoshi/server_network/ldap/
+chmod 0700 /opt/karoshi/server_network/ldap/
+fi
+touch /opt/karoshi/server_network/ldap/master.ldif
+chmod 0600 /opt/karoshi/server_network/ldap/master.ldif
+slapcat -s "dc=karoshi,dc=local" -l /opt/karoshi/server_network/ldap/master.ldif
+#Backup folders
+/opt/karoshi/serversetup/all/"useful scripts"/backup_servers/backup_servers
+fi
+echo `date` - Completed $KAROSHI_SERVER - Please check "for" any errors >> /opt/karoshi/logs/backup_servers/$LOG_DATE/master_backup_log
+fi
+done
+exit
+

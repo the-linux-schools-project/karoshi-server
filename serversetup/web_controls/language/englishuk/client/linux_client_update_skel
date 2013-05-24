@@ -1,0 +1,9 @@
+#Language file for: linux_client_update_skel
+TITLE="Linux Client Update Skel and Kiosk Archives"
+CHOOSEVERSION="Linux Version"
+VERSIONHELP="Please choose the linux version you want to view."
+UPDATESKELHELP="This will archive the skel and kiosk folders stored in /var/lib/samba/netlogon /linuxclient/LINUXVERSION/. The tar achives are downloaded by the linux clients each time they boot up."
+COMPLETEDMSG="The skel and kiosk directories have been archived for client download."
+ERRORMSG1="The linux version must not be blank."
+ERRORMSG2="There was a problem updating the skel archive. Please check the Karoshi web management logs."
+ERRORMSG7="You have no linux client configurations."

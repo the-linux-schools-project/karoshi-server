@@ -1,0 +1,5 @@
+#!/bin/bash
+#squidconfig
+sed 's/cache_effective_user squid/cache_effective_user proxy/g' /etc/squid/squid.conf | sed 's/cache_effective_group squid/cache_effective_group proxy/g' > /etc/squid/squid.conf2
+rm -f /etc/squid/squid.conf
+mv /etc/squid/squid.conf2 /etc/squid/squid.conf

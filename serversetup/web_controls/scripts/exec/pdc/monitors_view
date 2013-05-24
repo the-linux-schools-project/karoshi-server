@@ -1,0 +1,127 @@
+#!/bin/bash
+#Copyright (C) 2007  The karoshi Team
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+
+
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/monitors_view_cgi
+then
+echo `date`: monitors_view - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/monitors_view_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/monitors_view.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $monitors_view_cgi'check' ]
+then
+echo `date`: monitors_view - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 1 ]
+then
+echo `date`: monitors_view - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo $* | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | cut -s -d: -f3`
+ALPHABET=`echo $* | cut -s -d: -f4`
+ALPHABET2=`echo $ALPHABET | tr 'A-Z' 'a-z'`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: monitors_view - Not called by monitors_view.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: monitors_view - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: monitors_view - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: monitors_view - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/monitors_view ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/system/monitors_view
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+echo `date`: monitors_view - viewing custom monitors by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+[ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
+[ -d /opt/karoshi/server_network/mon/monitors ] || mkdir -p /opt/karoshi/server_network/mon/monitors
+chmod 0700 /opt/karoshi/.tempdata
+
+#Create list of custom monitors
+
+ls -1 /opt/karoshi/server_network/mon/monitors/ > /opt/karoshi/.tempdata/monitor_list.$$
+
+MONITORCOUNT=`cat /opt/karoshi/.tempdata/monitor_list.$$ | wc -l`
+COUNTER=1
+if [ $MONITORCOUNT -gt 0 ]
+then
+#Show table of sites
+echo '<table class="standard" style="text-align: left; width: 800px; height: 100px;" border="0" cellpadding="2" cellspacing="2">'
+echo "<tbody>"
+echo "<tr><td" style='"width: 180px;"'"><b>"$MONITORMSG"</b></td><td><b>"$EDITMSG"</b></td><td><b>"$DELETEMSG"</b></td><td>"'<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>'"</td></tr>"
+while [ $COUNTER -le $MONITORCOUNT ]
+do
+MONITORDATA=`sed -n $COUNTER,$COUNTER"p" /opt/karoshi/.tempdata/monitor_list.$$`
+MONITORNAME=`echo $MONITORDATA | cut -d, -f1`
+FILTERGROUPS=`echo $MONITORDATA | cut -d, -f2`
+MONITOR_SERVICES=`grep service /opt/karoshi/server_network/mon/monitors/$MONITORNAME | sed 's/service//g' |sed 's/$/<br>/g'`
+SERVICE_TCPIPS=`sed -n 4,4p /opt/karoshi/server_network/mon/monitors/$MONITORNAME | cut -d' ' -f3-`
+MONITORNAME=`echo $MONITORNAME | sed 's/_/ /g'`
+
+
+echo '<tr><td>'$MONITORNAME'</td><td><a class="info" href="javascript:void(0)"><input name="_MONITOR_'$MONITORNAME'_MONITORACTION_edit_" type="image" class="images" src="/images/submenus/system/edit.png" value="_MONITOR_'$MONITORNAME'_MONITORACTION_edit_"><span>'$EDITMSG' - '$MONITORNAME'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="_MONITOR_'$MONITORNAME'_MONITORACTION_delete_" type="image" class="images" src="/images/submenus/system/delete.png" value="_MONITOR_'$MONITORNAME'_MONITORACTION_delete_"><span>'$DELETEMSG' - '$MONITORNAME'</span></a></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$TCPIPS_MONITORED:'<br>'$SERVICE_TCPIPS'<br>'$MONITOREDMSG:'<br>'$MONITOR_SERVICES'</span></a></td></tr>'
+let COUNTER=$COUNTER+1
+done
+echo "</tbody>"
+echo "</table>"
+rm -f /opt/karoshi/.tempdata/monitor_list.$$
+else
+rm -f /opt/karoshi/.tempdata/monitor_list.$$
+exit 101
+fi
+exit

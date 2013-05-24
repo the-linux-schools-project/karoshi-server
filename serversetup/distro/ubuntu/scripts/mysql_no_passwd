@@ -1,0 +1,5 @@
+#!/bin/bash
+#
+# Start MySQL with no passwords 
+/usr/bin/mysqld_safe --skip-grant-tables > /dev/null 2>&1 &
+

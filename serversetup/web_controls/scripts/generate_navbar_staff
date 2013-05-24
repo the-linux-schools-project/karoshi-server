@@ -1,0 +1,72 @@
+#!/bin/bash
+#Copyright (C) 2009  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+
+##########################
+#Section Control
+##########################
+source /opt/karoshi/server_network/menusettings
+
+#Website: http://www.karoshi.org.uk
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
+echo '<img src="/images/small_logo.png" alt="logo" align="top"> <font style="font-weight: bold;" size="+2">Web Management '$SCHOOL_NAME'</font> <small><small>
+'$VERSION' : 130523-1141
+</small></small>'
+
+echo '<div id="navbar"><span class="preload1"></span>
+<span class="preload2"></span>
+
+<ul id="nav">
+	<li class="top"><a href="/cgi-bin/menu.cgi" class="top_link"><span>Home</span></a></li>
+	<li class="top"><a href="/cgi-bin/staff/helpdesk_add_fm.cgi" id="helpdesk" class="top_link"><span class="down">'$HELPDESKSMSG'</span></a>
+		<ul class="sub">
+			<li><a href="/cgi-bin/staff/helpdesk_add_fm.cgi">'$HELPDESKADDMSG'</a></li>
+			<li><a href="/cgi-bin/staff/helpdesk_view_fm.cgi">'$HELPDESKVIEWMSG'</a></li>
+		</ul>
+	</li>
+	<li class="top"><a href="/cgi-bin/staff/change_student_password_fm.cgi" id="menu" class="top_link"><span class="down">'$USERMSG'</span></a>
+		<ul class="sub">
+			<li><a href="/cgi-bin/staff/change_student_password_fm.cgi">'$CHANGEPASSMSG'</a></li>
+			<li><a href="/cgi-bin/staff/reset_student_password_fm.cgi">'$RESETPASSMSG'</a></li>
+			<li><a href="/cgi-bin/staff/lockout_reset_fm.cgi">'$LOCKOUTRESETMSG'</a></li>
+			<li><a href="/cgi-bin/staff/request_new_users_fm.cgi">'$REQUESTNEWUSERSMSG'</a></li>
+			<li><a href="/cgi-bin/staff/request_delete_users_fm.cgi">'$REQUESTDELETEUSERSMSG'</a></li>
+		</ul>
+	</li>
+'
+#Printers
+if [ $PRINTERCTRL = yes ]
+then
+echo '	<li class="top"><a href="/cgi-bin/staff/printers.cgi" class="top_link"><span>'$PRINTERMSG'</span></a></li>'
+fi
+#Internet
+if [ $INTERNETCTRL = yes ]
+then
+echo '	<li class="top"><a href="/cgi-bin/staff/dg_view_student_user_logs_fm.cgi" id="Internet" class="top_link"><span class="down">Internet</span></a>
+		<ul class="sub">
+			<li><a href="/cgi-bin/staff/dg_room_controls_fm.cgi">'$ROOMCONTROLS'</a></li>
+			<li><a href="/cgi-bin/staff/dg_view_student_user_logs_fm.cgi">'$VIEWLOGS'</a></li>
+		</ul>
+	</li>'
+fi
+echo '</ul></div>'

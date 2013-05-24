@@ -1,0 +1,149 @@
+######################
+# global options
+######################
+cfbasedir   = /etc/mon 
+pidfile     = /var/run/mon/mon.pid
+statedir    = /var/lib/mon/state.d
+logdir      = /var/lib/mon/log.d
+dtlogfile   = /var/lib/mon/log.d/downtime.log
+alertdir    = /usr/lib/mon/alert.d
+mondir      = /usr/lib/mon/mon.d
+maxprocs    = 20
+histlength  = 100
+randstart   = 60s
+authtype    = pam
+userfile    = /etc/mon/userfile
+dtlogging   = yes
+
+######################
+#Monitor Network connections on all servers
+######################
+hostgroup Karoshi_Servers_Connectivity
+
+watch Karoshi_Servers_Connectivity
+	service ping
+		description Network Connection
+		interval 2m
+		monitor ping.monitor
+		period wd {Sun-Sat}
+			alert file.alert -d /var/www/html/mon/events ping.log
+			upalert file.alert -d /var/www/html/mon/events ping.log
+			alertevery 120m
+
+######################
+#Monitor Samba
+######################
+hostgroup Karoshi_Samba_Servers
+
+watch Karoshi_Samba_Servers
+	service samba
+		description Samba Service
+		interval 2m
+		monitor tcp.monitor -p 139
+		period wd {Sun-Sat}
+			alert file.alert -d /var/www/html/mon/events samba.log
+			upalert file.alert -d /var/www/html/mon/events samba.log
+			alertevery 120m
+
+######################
+#Monitor Apache
+######################
+hostgroup Karoshi_Web
+
+watch Karoshi_Web
+	service http
+		description Apache Webserver
+		interval 4m
+		monitor http.monitor
+		allow_empty_group
+		period wd {Sun-Sat}
+			alert file.alert -d /var/www/html/mon/events apache.log
+			upalert file.alert -d /var/www/html/mon/events apache.log
+			alertevery 120m
+	service https
+		description Secure Apache Webserver
+		interval 4m
+		monitor http.monitor -p 443
+		allow_empty_group
+		period wd {Sun-Sat}
+			alert file.alert -d /var/www/html/mon/events apache.log
+			upalert file.alert -d /var/www/html/mon/events apache.log
+			alertevery 120m
+
+######################
+#Monitor imap and pop3
+######################
+hostgroup Karoshi_E-Mail
+
+watch Karoshi_E-Mail
+	service imap
+		description UW Imap
+		interval 5m
+		monitor tcp.monitor -p 143
+		period wd {Sun-Sat}
+			alert file.alert -d /var/www/html/mon/events mail.log
+			upalert file.alert -d /var/www/html/mon/events mail.log
+			alertevery 120m
+	service imaps
+		description UW Imap over SSL
+		interval 5m
+		monitor tcp.monitor -p 993
+		period wd {Sun-Sat}
+			alert file.alert -d /var/www/html/mon/events mail.log
+			upalert file.alert -d /var/www/html/mon/events mail.log
+			alertevery 120m
+	service pop
+		description Pop3
+		interval 5m
+		monitor pop3.monitor
+		period wd {Sun-Sat}
+			alert file.alert -d /var/www/html/mon/events mail.log
+			upalert file.alert -d /var/www/html/mon/events mail.log
+			alertevery 120m
+	service pop3s
+		description Secure Pop3
+		interval 5m
+		monitor pop3.monitor -p 995
+		period wd {Sun-Sat}
+			alert file.alert -d /var/www/html/mon/events mail.log
+			upalert file.alert -d /var/www/html/mon/events mail.log
+			alertevery 120m
+	service smtp
+		description Simple Mail Transfer Protocol
+		interval 5m
+		monitor smtp.monitor
+		period wd {Sun-Sat}
+			alert file.alert -d /var/www/html/mon/events mail.log
+			upalert file.alert -d /var/www/html/mon/events mail.log
+			alertevery 120m
+
+######################
+#Monitor internal DNS
+######################
+hostgroup Karoshi_Internal_DNS
+
+watch Karoshi_Internal_DNS
+	service dns
+		description Internal DNS
+		interval 10m
+		monitor tcp.monitor -p 53
+		period wd {Sun-Sat}
+			alert file.alert -d /var/www/html/mon/events dns.log
+			upalert file.alert -d /var/www/html/mon/events dns.log
+			alertevery 120m
+
+######################
+#Monitor DansGuardian
+######################
+hostgroup Karoshi_Internet_Filter
+
+watch Karoshi_Internet_Filter
+	service Dans_Guardian
+		description Dans Guardian Internet Filtering
+		interval 5m
+		monitor tcp.monitor -p 3128
+		period wd {Sun-Sat}
+			alert file.alert -d /var/www/html/mon/events dansguardian.log
+			upalert file.alert -d /var/www/html/mon/events dansguardian.log
+			alertevery 120m
+

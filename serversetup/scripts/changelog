@@ -1,0 +1,13 @@
+#!/bin/bash
+source /opt/karoshi/serversetup/variables/xdialog
+source /opt/karoshi/serversetup/variables/language
+source /opt/karoshi/serversetup/language/$LANGCHOICE/serverselection
+CHANGES=/opt/karoshi/serversetup/"Important Information"/changes
+Xdialog --title "$TITLE $VERSION" \
+--icon $ICON --rc-file $RCFILE --no-cancel --wrap --text "$CHANGES" 46 84
+case $ in
+0)
+	;;
+255)
+	;;
+esac

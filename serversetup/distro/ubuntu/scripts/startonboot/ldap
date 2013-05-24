@@ -1,0 +1,12 @@
+#!/bin/bash
+#Start ldap on boot
+SERVICE=slapd
+[ -f /usr/local/sbin/samba ] && SERVICE=samba4
+
+if [ -f /opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status ]
+then
+/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status $SERVICE on 1>/dev/null 2>/dev/null
+else
+chkconfig -f $SERVICE on 1>/dev/null 2>/dev/null
+fi
+

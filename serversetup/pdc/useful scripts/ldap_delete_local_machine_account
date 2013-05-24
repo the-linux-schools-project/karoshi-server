@@ -1,0 +1,17 @@
+#!/bin/bash
+MACHINENAME=`echo $1`
+LOG_DATE=`date +%F`
+LOGPATH=/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+sleep 1
+if [ $MACHINENAME'null' = null ]
+then
+echo `date`: ldap_delete_machine - Blank machine name >> $LOGPATH
+exit
+fi
+#Delete machine account from /etc/passwd
+MACHINE_ID=`id -u $MACHINENAME`
+[ $MACHINE_ID'null' = null ] && exit
+if [ `cat /etc/passwd | cut -d: -f3 | grep -c -w $MACHINE_ID` -gt 0 ]
+then
+userdel $MACHINENAME
+fi

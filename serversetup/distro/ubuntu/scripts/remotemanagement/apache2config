@@ -1,0 +1,33 @@
+#!/bin/bash
+#apache2config
+source /opt/karoshi/serversetup/variables/distro
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/colossus/configfiles/apache/default /etc/apache2/sites-available
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/colossus/configfiles/apache/ssl /etc/apache2/sites-available
+ln -s /etc/apache2/sites-available/ssl /etc/apache2/sites-enabled/000-ssl
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/colossus/configfiles/apache/ports.conf /etc/apache2/
+
+[ -d /var/www/html ] || mkdir /var/www/html
+chown -c root.root /var/www/html
+chmod 0755 /var/www/html
+
+if [ -f /opt/karoshi/serversetup/variables/ssldata ]
+then
+#file is present
+COUNTRY=`sed -n 1,1p /opt/karoshi/serversetup/variables/ssldata`
+STATE=`sed -n 2,2p /opt/karoshi/serversetup/variables/ssldata`
+CITY=`sed -n 3,3p /opt/karoshi/serversetup/variables/ssldata`
+NAME=`sed -n 4,4p /opt/karoshi/serversetup/variables/ssldata`
+LOCALNAME=`sed -n 5,5p /opt/karoshi/serversetup/variables/ssldata`
+SERVERNAME=`sed -n 6,6p /opt/karoshi/serversetup/variables/ssldata`
+EMAILADDRESS=`sed -n 7,7p /opt/karoshi/serversetup/variables/ssldata`
+
+cd /etc/ssl/certs
+echo -e "$COUNTRY\n$STATE\n$CITY\n$NAME\n$LOCALNAME\n$SERVERNAME\n$EMAILADDRESS\n" | apache2-ssl-certificate --force    
+
+else
+#file is not there so ask for data
+konsole --schema=BlackOnWhite.schema -e apache2-ssl-certificate --force
+fi
+
+/etc/init.d/apache2 stop
+/etc/init.d/apache2 start

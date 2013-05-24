@@ -1,0 +1,58 @@
+#!/bin/bash
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/variables/language
+source /opt/karoshi/serversetup/language/$LANGCHOICE/standardsetup
+#baseinstallorac
+BASEINSTALLPATH=/opt/karoshi/serversetup/extra_server/scripts
+KAROSHILOG=/opt/karoshi/serversetup/install_log
+
+#Set timezone in php.ini
+[ -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/set_php_timezone ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/set_php_timezone
+
+#Delete samba config file
+rm -f /etc/samba/smb.conf
+
+function checkstatus {
+EXITSTATUS=`echo $?`
+if [ $EXITSTATUS = 101 ]
+then
+yad --title "$TITLE $VERSION" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --text="$ERRORMSG1" --timeout=3 --no-buttons
+exit
+fi
+if [ $EXITSTATUS = 103 ]
+then
+exit
+fi
+}
+
+function do_setup {
+echo "1"
+echo "# $NETWORKCHECK"
+$BASEINSTALLPATH/checknetwork 1>>$KAROSHILOG 2>>$KAROSHILOG
+checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
+echo "28"
+echo "# $SETUP $SHOREWALL"
+$BASEINSTALLPATH/setupshorewall 1>>$KAROSHILOG 2>>$KAROSHILOG
+checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
+echo "56"
+echo "# $SETUP $NTP"
+$BASEINSTALLPATH/setupntp 1>>$KAROSHILOG 2>>$KAROSHILOG
+checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
+echo "84"
+echo "# $SETUP $SSH"
+$BASEINSTALLPATH/setupssh 1>>$KAROSHILOG 2>>$KAROSHILOG
+checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
+echo "100"
+$BASEINSTALLPATH/setupkaroshidesktop 1>>$KAROSHILOG 2>>$KAROSHILOG
+#Kill status bar
+killall yad
+}
+
+do_setup | yad --title "$TITLE2" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --geometry=400x100+0+0 --no-buttons --text "Extra Server Setup\n\n\n$STATUS" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --progress
+
+#Remove extra ubiquity software that is now not needed
+apt-get -y autoremove
+#Create initial disk usage report
+/opt/karoshi/serversetup/all/"useful scripts"/disk_usage
+exit
+

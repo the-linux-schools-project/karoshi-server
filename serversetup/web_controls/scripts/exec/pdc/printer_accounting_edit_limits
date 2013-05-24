@@ -1,0 +1,178 @@
+#!/bin/bash
+#Copyright (C) 2011 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/printer_accounting_edit_limits_cgi
+then
+echo `date`: printer_accounting_edit_limits - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/printer_accounting_edit_limits_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printer_accounting_edit_limits.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $printer_accounting_edit_limits_cgi'check' ]
+then
+echo `date`: printer_accounting_edit_limits - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/printer_accounting_edit_limits_cgi
+then
+echo `date`: printer_accounting_edit_limits - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/tech_checksums/printer_accounting_edit_limits_cgi
+MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/printer_accounting_edit_limits.cgi | cut -d' ' -f1`
+[ $MD5SUM2'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM2'check' != $printer_accounting_edit_limits_cgi'check' ]
+then
+echo `date`: printer_accounting_edit_limits - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: printer_accounting_edit_limits - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: printer_accounting_edit_limits - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+NAME=`echo "$DATA" | cut -s -d: -f4`
+TYPE=`echo "$DATA" | cut -s -d: -f5`
+LIMIT=`echo "$DATA" | cut -s -d: -f6`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: printer_accounting_edit_limits - Not called by printer_accounting_edit_limits.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: printer_accounting_edit_limits - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: printer_accounting_edit_limits - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $NAME'null' = null ]
+then
+echo `date`: printer_accounting_edit_limits - Blank name by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $TYPE'null' = null ]
+then
+echo `date`: printer_accounting_edit_limits - Blank type by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $LIMIT'null' = null ]
+then
+echo `date`: printer_accounting_edit_limits - Blank limit by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: printer_accounting_edit_limits - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $TYPE = userdelete ]
+then
+echo `date`: printer_accounting_edit_limits - $NAME user limit deleted by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+else
+echo `date`: printer_accounting_edit_limits - $PRINTER accounting set limit to $LIMIT on $NAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printer_accounting ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printer_accounting
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+
+PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/printserver`
+
+if [ $TYPE = user ]
+then
+if [ -f /opt/karoshi/server_network/printer_accounting/quotas/$NAME"_"user_quota ]
+then
+CURRENT_LIMIT=`sed -n 1,1p /opt/karoshi/server_network/printer_accounting/quotas/$NAME"_"user_quota | tr -cd 0-9`
+let LIMIT=$CURRENT_LIMIT+$LIMIT
+else
+PRIMARYGROUP=`id -g -n $NAME`
+GROUP_LIMIT=`sed -n 1,1p /opt/karoshi/server_network/printer_accounting/quotas/$PRIMARYGROUP"_"group_quota | tr -cd 0-9`
+echo pri group is $PRIMARYGROUP > /tmp/printerdata
+echo group limit is $GROUP_LIMIT >> /tmp/printerdata
+let LIMIT=$GROUP_LIMIT+$LIMIT
+fi
+echo $LIMIT > /opt/karoshi/server_network/printer_accounting/quotas/$NAME"_"user_quota
+fi
+
+if [ $TYPE = group ]
+then 
+echo $LIMIT > /opt/karoshi/server_network/printer_accounting/quotas/$NAME"_"$TYPE"_"quota
+fi
+
+if [ $TYPE = userdelete ]
+then
+rm -f /opt/karoshi/server_network/printer_accounting/quotas/$NAME"_"user_quota
+fi
+
+if [ $PRINTSERVER != $HOSTNAME ]
+then
+scp -r /opt/karoshi/server_network/printer_accounting/quotas/ root@$PRINTSERVER:"/opt/karoshi/server_network/printer_accounting/"
+fi
+
+if [ $TYPE = user ]
+then
+YEAR=`date +%Y`
+echo "<form action=\"printer_accounting_view_usage.cgi\" method=\"post\" id=\"myform\">
+<input type=\"hidden\" name=\"_TYPE_user_NAME_$NAME"_"MONTH_all_YEAR_$YEAR"_"\" value=\"\" />
+</form>
+<script language=\"JavaScript\" type=\"text/javascript\">
+<!--
+document.getElementById('myform').submit();
+//-->
+</script>"
+fi
+
+exit
+
+

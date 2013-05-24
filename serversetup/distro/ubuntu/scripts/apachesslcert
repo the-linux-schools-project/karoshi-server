@@ -1,0 +1,137 @@
+#!/bin/bash
+#apache2config
+LOG_DATE=`date +%F`
+
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/server_network/domain_information/domain_name
+
+#Assign variables
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+exit 101
+fi
+
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+SERVER=`echo "$DATA" | cut -s -d: -f3`
+DOMAIN=`echo "$DATA" | cut -s -d: -f4`
+
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: apachesslcert - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: apachesslcert - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVER'null' = null ]
+then
+echo `date`: apachesslcert - Blank remote server from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $DOMAIN'null' = null ]
+then
+echo `date`: apachesslcert - Blank domain from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+echo `date`: apachesslcert - creating a certificate "for" $DOMAIN from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+COUNTRY=`echo $LANG | cut -d_ -f2 | cut -d. -f1`
+STATE=`cat /etc/timezone | cut -d/ -f1`
+CITY=`cat /etc/timezone | cut -d/ -f2`
+NAME=$HOSTNAME
+LOCALNAME=$DOMAIN
+SERVERNAME=$DOMAIN
+EMAILADDRESS=administrator@$REALM
+
+rm -f /etc/ssl/root-ca/index.txt
+touch /etc/ssl/root-ca/index.txt
+
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+
+#Revoke the existing certificate.
+[ -d /etc/ssl/apache/$DOMAIN.pem ] && openssl ca -revoke $DOMAIN.pem -passin pass:$LDAPPASS
+
+#Clear existing keys
+[ ! -d /etc/ssl/apache ] && mkdir /etc/ssl/apache
+[ -f /etc/ssl/apache/$DOMAIN.key ] && rm -f /etc/ssl/apache/$DOMAIN.key
+[ -f /etc/ssl/apache/$DOMAIN.pem ] && rm -f /etc/ssl/apache/$DOMAIN.pem
+[ -f /etc/ssl/apache/$DOMAIN.req ] && rm -f /etc/ssl/apache/$DOMAIN.req
+
+cd /etc/ssl/apache
+#Create host certificate
+echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\n"$DOMAIN"\n"$DOMAIN"\n"$EMAILADDRESS"\n"webserver"\n" | openssl req -newkey rsa:4096 -days 3650 -keyout $DOMAIN.key -nodes -out $DOMAIN.req
+
+chmod 0600 /etc/ssl/apache/$DOMAIN.key
+chmod 0600 /etc/ssl/apache/$DOMAIN.req
+
+#Create client pem
+openssl ca -passin pass:$LDAPPASS -days 3650 -batch -out $DOMAIN.pem -infiles $DOMAIN.req 
+
+chmod 0600 /etc/ssl/apache/$DOMAIN.pem
+
+if [ $SERVER = $HOSTNAME ]
+then
+#Make sure that ssl is enabled
+a2enmod ssl 1>/dev/null
+#Copy in ssl config file
+cp -f /opt/karoshi/serversetup/distro/ubuntu/all/configfiles/apache/default-ssl /etc/apache2/sites-enabled/
+#Point config file at the correct certificate
+sed -i "s/server./$DOMAIN./g" /etc/apache2/sites-enabled/default-ssl
+
+#Check which web server to restart
+if [ `ls /etc/rc2.d | grep -c nginx` -gt 0 ]
+then
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nginx_stop
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nginx_start
+fi
+
+if [ `ls /etc/rc2.d | grep -c apache2` -gt 0 ]
+then
+echo "<li>"Restartimg apache to apply the ssl certificate"</li>"
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_stop
+echo "<br>"
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_start
+echo "<br>"
+fi
+
+else
+#Make sure /etc/ssl/apache exists on the remote server
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+[ ! -d /etc/ssl/apache ] && mkdir -p /etc/ssl/apache
+'
+#Copy certificates to the correct server
+scp /etc/ssl/apache/$DOMAIN.key root@$SERVER:"/etc/ssl/apache/" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+scp /etc/ssl/apache/$DOMAIN.pem root@$SERVER:"/etc/ssl/apache/" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+#Make sure that ssl is enabled
+a2enmod ssl 1>/dev/null
+#Copy in ssl config file
+cp -f /opt/karoshi/serversetup/distro/ubuntu/all/configfiles/apache/default-ssl /etc/apache2/sites-enabled/
+#Point config file at the correct certificate
+sed -i "s/server./'$DOMAIN'./g" /etc/apache2/sites-enabled/default-ssl
+
+#Check which web server to restart
+if [ `ls /etc/rc2.d | grep -c nginx` -gt 0 ]
+then
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nginx_stop
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nginx_start
+fi
+
+if [ `ls /etc/rc2.d | grep -c apache2` -gt 0 ]
+then
+echo "<li>"Restartimg apache to apply the ssl certificate"</li>"
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_stop
+echo "<br>"
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_start
+echo "<br>"
+fi
+'
+fi
+

@@ -1,0 +1,15 @@
+#!/bin/bash
+#xinetdinstall
+
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/xen/software
+echo installing $XINETDVER >> /opt/karoshi/serversetup/install_log
+echo /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/sendreturn '|' '('urpmi --force $XINETDVER 2'>>'/opt/karoshi/serversetup/install_log ';' killall sendreturn')'  > $HOME/.tempdata/installsoftware
+
+echo apt-get install -y $XINETDVER 2'>>'/opt/karoshi/serversetup/install_log > $HOME/.tempdata/installsoftware
+
+chmod 0700 $HOME/.tempdata/installsoftware
+
+xterm -geometry 100x20 -bg white -fg black -e $HOME/.tempdata/installsoftware
+rm -f $HOME/.tempdata/installsoftware
+

@@ -1,0 +1,99 @@
+#!/bin/bash
+#serverselection
+#Copyright (C) 2005 The karoshi Team
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aloughlin@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+source /opt/karoshi/serversetup/variables/version
+[ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
+source /opt/karoshi/serversetup/variables/distro
+if [ -e /opt/karoshi/serversetup/variables/language ]
+then
+source /opt/karoshi/serversetup/variables/language
+source /opt/karoshi/serversetup/language/$LANGCHOICE/serverselection
+
+else
+source /opt/karoshi/serversetup/language/englishuk/serverselection
+echo LANGCHOICE=englishuk > /opt/karoshi/serversetup/variables/language
+fi
+
+#############################
+#check to see if root user
+#############################
+USERSTATUS=`id -u`
+if [ $USERSTATUS != 0 ]
+then
+konsole -e sh /opt/karoshi/serversetup/essentials/rootwarningserversetup
+exit
+fi
+
+#############################
+#Check to see if the distro has been installed
+#############################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/install_distro
+#Exit if this was running live
+[ `echo $?` = 101 ] && exit
+
+############################
+#View the full agreement
+############################
+yad --title "$TITLE $VERSION" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --text "\n$LICENCECONFIRM\n\n\n" --text-info --show-uri --geometry=650x700 --name="notes" --filename="/opt/karoshi/serversetup/GPLv2.0" --title="Confirm Licence" --generic --button="Disagree:1" --button="Agree:0"
+STATUS=`echo $?`
+[ $STATUS = 0 ] && LICENCE=yes
+[ $STATUS = 1 ] && LICENCE=no
+
+if [ $LICENCE = yes ]
+then
+ACCEPTDATE=`date`
+echo GPL_Karoshi_Licence_Accepted > /opt/karoshi/serversetup/variables/acceptlicence
+echo $ACCEPTDATE >> /opt/karoshi/serversetup/variables/acceptlicence
+else
+yad --title "$TITLE $VERSION" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --text="$CANCELLEDMSG" --timeout=3 --no-buttons
+exit
+fi
+
+
+SELECTCHOICE=$(yad --wrap --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --width 300 --entry --title "$TITLE" \
+    --image="/opt/karoshi/serversetup/essentials/smalllogo.png" \
+    --button=Ok \
+    --text "$SERVERCHOICEMSG\n\n" \
+    --entry-text \
+    "Setup the main server" "Setup an extra server")
+[ `echo $?` != 0 ] && exit
+SELECTCHOICE=`echo $SELECTCHOICE | tr -cd 'A-Za-z'`
+echo $SELECTCHOICE
+
+
+#Setup cronjobs common to all servers
+[ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
+echo 0 0 '*' '*' 1 'echo' '>' /var/spool/mail/karoshi > /opt/karoshi/cronjobs/jobs/tidyrootmail.cron
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
+
+
+if [ $SELECTCHOICE = Setupthemainserver ]
+then
+/opt/karoshi/serversetup/pdc/scripts/standardsetup
+fi
+
+if [ $SELECTCHOICE = Setupanextraserver ]
+then
+/opt/karoshi/serversetup/extra_server/scripts/standardsetup
+fi
+
+exit

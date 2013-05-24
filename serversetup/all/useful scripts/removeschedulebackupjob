@@ -1,0 +1,150 @@
+#!/bin/bash
+#removeschedulebackupjob
+#Copyright (C) 2004  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contact either at mpsharrad@karoshi.org.uk or jharris@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+[ -d $HOME/.tempdata ] || mkdir $HOME/.tempdata
+[ -d /opt/tarbackup/backupjobs ] || mkdir -p /opt/tarbackup/backupjobs
+[ -d /opt/tarbackup/disabledbackupjobs ] || mkdir /opt/tarbackup/disabledbackupjobs
+source /opt/karoshi/serversetup/variables/language
+source /opt/karoshi/serversetup/variables/xdialog
+source /opt/karoshi/serversetup/language/$LANGCHOICE/all/removeschedulebackupjob
+
+####################################
+#Generate list of current backup jobs
+####################################
+dir --format=single-column /opt/tarbackup/backupjobs > $HOME/.tempdata/currentbackupjobstemp
+dir --format=single-column /opt/tarbackup/disabledbackupjobs >> $HOME/.tempdata/currentbackupjobstemp
+wc -l $HOME/.tempdata/currentbackupjobstemp > $HOME/.tempdata/numberofbackupjobs
+
+NUMBEROFBACKUPJOBS=`cut $HOME/.tempdata/numberofbackupjobs -d' ' -f1`
+rm -f $HOME/.tempdata/currentbackupjobs
+COUNTER=1
+         while [  $COUNTER -le $NUMBEROFBACKUPJOBS ]; do
+	 
+	 JOBNAME=`sed -n $COUNTER,$COUNTER'p' $HOME/.tempdata/currentbackupjobstemp`
+             echo $JOBNAME . >> $HOME/.tempdata/currentbackupjobs
+             let COUNTER=COUNTER+1
+         done
+CURRENTBACKUPJOBS=`cat $HOME/.tempdata/currentbackupjobs`
+rm -f $HOME/.tempdata/numberofbackupjobs
+rm -f $HOME/.tempdata/currentbackupjobs
+rm -f $HOME/.tempdata/currentbackupjobstemp
+#################################
+#Check for enabled backups
+#################################
+if [ $NUMBEROFBACKUPJOBS = 0 ]
+then
+Xdialog --title "$TITLE" \
+--icon $ICON --rc-file $RCFILE --msgbox "$ERRORMSG1" 16 50
+case $ in
+0)
+	;;
+255)
+	;;
+esac
+exit
+fi
+
+###################################
+#Create list box for selection
+###################################
+DIALOG=${DIALOG=Xdialog}
+tempfile=`tempfile 2>/dev/null` || tempfile=$HOME/.tempdata/backupjobname
+trap "rm -f $tempfile" 0 1 2 5 15
+
+$DIALOG --icon $ICON --rc-file $RCFILE --backtitle "$TITLE" \
+        --wizard --cancel-label $QUIT --title "$TITLE" --clear \
+        --menu "$OPENINGMSG" 40 55 5 \
+        $CURRENTBACKUPJOBS 2> $HOME/.tempdata/backupjobname
+
+retval=$?
+
+case $retval in
+  0)
+    ;;
+  1)
+    exit 101;;
+  3)
+    exit 100;;
+  255)
+    exit 101;;
+esac
+BACKUPJOBNAME=`cat $HOME/.tempdata/backupjobname`
+rm -f $HOME/.tempdata/backupjobname 2>/dev/null
+####################################
+#Comfirm job to be deleted
+####################################
+$DIALOG --title "$TITLE" --clear \
+        --icon $ICON --rc-file $RCFILE --yesno "$BACKUPJOBNAME: \n\n $CONFIRMMSG1" 16 50
+
+case $? in
+  0)
+    ;;
+  1)
+    CHOICE=x;;
+  255)
+    CHOICE=x;;
+esac
+if [ $CHOICE = x ]
+then
+clear
+#########################
+#Confirm no change made
+########################
+Xdialog --title "$TITLE" \
+--icon $ICON --rc-file $RCFILE --msgbox "$BACKUPJOBNAME: \n\n $CANCELLEDMSSG" 16 50
+case $ in
+0)
+	exit;;
+255)
+	exit;;
+esac
+exit
+else
+clear
+fi
+###################################
+#Remove backup job
+###################################
+rm -f /opt/karoshi/cronjobs/backups/backup$BACKUPJOBNAME'.cron' 2>/dev/null
+rm -f /opt/karoshi/cronjobs/disabledbackups/backup$BACKUPJOBNAME'.cron' 2>/dev/null
+rm -f /opt/tarbackup/$BACKUPJOBNAME 2>/dev/null
+rm -f /opt/tarbackup/backupjobs/$BACKUPJOBNAME 2>/dev/null
+rm -f /opt/tarbackup/disabledbackupjobs/$BACKUPJOBNAME 2>/dev/null
+cat /opt/karoshi/cronjobs/backups/* > /opt/karoshi/cronjobs/backupschedule.cron
+echo SHELL=/bin/bash > /opt/karoshi/cronjobs/masterschedule.cron
+echo PATH=/sbin:/bin:/usr/sbin:/usr/bin >> /opt/karoshi/cronjobs/masterschedule.cron
+echo MAILTO='"''"' >> /opt/karoshi/cronjobs/masterschedule.cron
+echo HOME=/ >> /opt/karoshi/cronjobs/masterschedule.cron
+cat /opt/karoshi/cronjobs/backupschedule.cron /opt/karoshi/cronjobs/*jobs.cron /opt/karoshi/cronjobs/wakelan.cron >> /opt/karoshi/cronjobs/masterschedule.cron
+crontab -r
+crontab /opt/karoshi/cronjobs/masterschedule.cron 
+###################################
+#Display completed message
+###################################
+Xdialog --title "$TITLE" \
+--icon $ICON --rc-file $RCFILE --msgbox "$BACKUPJOBNAME: \n\n $COMPLETEDMSG" 16 50
+case $ in
+0)
+	;;
+255)
+	;;
+esac
+exit

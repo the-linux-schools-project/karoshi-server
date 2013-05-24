@@ -1,0 +1,191 @@
+#!/bin/bash
+#Copyright (C) 2011 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/linux_client_choose_distro_fm_cgi
+then
+echo `date`: linux_client_choose_distro - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/linux_client_choose_distro_fm_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/linux_client_choose_distro_fm.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $linux_client_choose_distro_fm_cgi'check' ]
+then
+echo `date`: linux_client_choose_distro - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: linux_client_choose_distro - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: linux_client_choose_distro - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ] && [ $REMOTE_MD5'check' != $MD5SUM3'check' ]
+then
+echo `date`: linux_client_choose_distro - Not called by linux_client_choose_distro.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: linux_client_choose_distro - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: linux_client_choose_distro - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: linux_client_choose_distro - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+##########################
+#Language
+##########################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/linux_client_upload_distro ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/client/linux_client_upload_distro
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+#Make sure the folders exist
+
+if [ ! -d /home/itadminshare/distributions/linux ]
+then
+mkdir /home/itadminshare/distributions/linux
+chown root.itadmin /home/itadminshare/distributions/linux
+chmod 0770 /home/itadminshare/distributions/linux
+fi
+
+if [ ! -d /home/itadminshare/distributions/windows ]
+then
+mkdir /home/itadminshare/distributions/windows
+chown root.itadmin /home/itadminshare/distributions/windows
+chmod 0770 /home/itadminshare/distributions/windows
+fi
+
+#Check there are some iso images to choose from
+
+if [ ! -d /home/itadminshare/distributions/linux ]
+then
+echo /home/itadminshare/distributions/linux/ - $ERRORMSG1
+fi
+
+echo "<b>$ITADMINSHAREMSG</b><br><br>"
+if [ `ls -1 /home/itadminshare/distributions/linux/ | wc -l` -gt 0 ]
+then
+#Show list of distros in itadminshare
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<tbody>'
+
+for ISOIMAGES in /home/itadminshare/distributions/linux/*.iso
+do
+ISOIMAGE=`basename "$ISOIMAGES"`
+
+echo '<tr><td style="width: 280px; vertical-align: top;">'$ISOIMAGE'</td><td style="vertical-align: top;">
+<a class="info" href="javascript:void(0)"><input name="___DISTROCHOICE___'$ISOIMAGE'___CONTROL___copy___" type="image" class="images" src="/images/submenus/client/copy_iso.png" value=""><span>'$ISOIMAGE' - '$HELPMSG5'</span></a>
+</td></tr>
+'
+done
+echo '</tbody></table>'
+else
+echo "$NOISOIMAGES<br>"
+fi
+
+#Show a list of distributions on the distribution server
+DISTROSERVER=`sed -n 1,1p /opt/karoshi/server_network/distribution_server`
+
+echo "<br><br><b>$DISTROSERVERISOMSG</b><br><br>"
+
+
+if [ $DISTROSERVER = $HOSTNAME ]
+then
+
+if [ `ls -1 /home/distributions/linux_iso/*.iso | wc -l` -gt 0 ]
+then
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<tbody>'
+for ISOIMAGES in /home/distributions/linux_iso/*.iso
+do
+ISOIMAGE=`basename "$ISOIMAGES"`
+
+echo "<tr><td style=\"width: 180px; vertical-align: top;\">$ISOIMAGE</td>
+<td style=\"vertical-align: top;\">
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"___DISTROCHOICE___'$ISOIMAGE'___CONTROL___delete___\" type=\"image\" class=\"images\" src=\"/images/submenus/client/delete_iso.png\" value=""><span>$ISOIMAGE - '$HELPMSG6'</span></a>
+</td></tr>
+"
+done
+else
+echo "$NOISOIMAGES<br>"
+fi
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3  $DISTROSERVER '
+
+if [ `ls -1 /home/distributions/linux_iso/*.iso | wc -l` -gt 0 ]
+then
+echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+<tbody>"
+
+for ISOIMAGES in /home/distributions/linux_iso/*.iso
+do
+ISOIMAGE=`basename "$ISOIMAGES"`
+echo "<tr><td style=\"width: 180px; vertical-align: top;\">$ISOIMAGE</td>
+<td style=\"vertical-align: top;\">
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"___DISTROCHOICE___${ISOIMAGE}___CONTROL___delete___\" type=\"image\" class=\"images\" src=\"/images/submenus/client/delete_iso.png\" value=""><span>$ISOIMAGE - '$HELPMSG6'</span></a>
+</td></tr>
+"
+done
+else
+echo "<br>'$NOISOIMAGES'<br>"
+fi
+'
+fi
+echo "</tbody></table>"
+exit
+

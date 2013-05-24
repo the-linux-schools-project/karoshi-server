@@ -1,0 +1,18 @@
+#!/bin/bash
+######################
+#Modify shorewall rules for second interface
+######################
+MODCHECK=`grep -c -w karoshi_dual_interface_support /etc/shorewall/rules`
+if [ $MODCHECK = 0 ]
+then
+LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+sed -i $LINENUM'c'\#karoshi_dual_interface_support /etc/shorewall/rules
+cat /opt/karoshi/serversetup/all/dual_interface/shorewall/extrarulesfile >> /etc/shorewall/rules
+echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+cp -f /opt/karoshi/serversetup/all/dual_interface/shorewall/interfaces /etc/shorewall
+cp -f /opt/karoshi/serversetup/all/dual_interface/shorewall/policy /etc/shorewall
+cp -f /opt/karoshi/serversetup/all/dual_interface/shorewall/zones /etc/shorewall
+/etc/init.d/shorewall stop
+/etc/init.d/shorewall start
+fi 
+

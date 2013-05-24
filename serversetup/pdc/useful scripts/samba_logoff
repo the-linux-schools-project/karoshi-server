@@ -1,0 +1,8 @@
+#!/bin/bash
+
+#Notes %I ipaddress %a client os %m machine name
+#Imput data %u %I $a %m
+
+#Delete auth file
+rm -f /opt/karoshi/server_network/proxy_auth/$2
+exit

@@ -1,0 +1,93 @@
+#!/bin/bash
+#Copyright (C) 2007  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+#####################
+#Get location to wake up
+#####################
+LOCATION=`echo $* | cut -s -d: -f1 | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $LOCATION'null' = null ]
+then
+echo `date`: wol - Called with no location. >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+#####################
+#Check that location exists in asset register
+#####################
+if [ ! -d /opt/karoshi/asset_register/locations/$LOCATION ]
+then
+echo `date`: wol - $LOCATION does not exist in the asset register. >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 102
+fi
+#####################
+#Log folder
+#####################
+if [ ! -d /opt/karoshi/logs/wake_on_lan/$LOCATION ]
+then
+mkdir -p /opt/karoshi/logs/wake_on_lan/$LOCATION
+chmod 0700 /opt/karoshi/logs/wake_on_lan
+chmod 0700 /opt/karoshi/logs/wake_on_lan/$LOCATION
+fi
+touch /opt/karoshi/logs/wake_on_lan/$LOCATION/$LOG_DATE
+chmod 0600 /opt/karoshi/logs/wake_on_lan/$LOCATION/$LOG_DATE
+#####################
+#Check that location is enabled
+#####################
+if [ -f /opt/karoshi/cronjobs/wake_on_lan_status/$LOCATION ]
+then
+echo `date`: wol - $LOCATION is disabled "for" wake on lan.  >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+#####################
+#Wake up any assets with mac addresses
+#####################
+echo `date`: wol - Waking up $LOCATION.  >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#Asset types to wake up
+ASSET_TYPES=( 1 2 3 4 5 6 9 10 )
+ASSET_TYPE_COUNT=${#ASSET_TYPES[@]}
+COUNTER=0
+while [ $COUNTER -lt $ASSET_TYPE_COUNT ]
+do
+ASSET_TYPE=${ASSET_TYPES[$COUNTER]}
+if [ -d /opt/karoshi/asset_register/locations/$LOCATION/$ASSET_TYPE ]
+then
+if [ `ls -1 /opt/karoshi/asset_register/locations/$LOCATION/$ASSET_TYPE/ | wc -l` -gt 0 ]
+then
+for ASSET in /opt/karoshi/asset_register/locations/$LOCATION/$ASSET_TYPE/*
+do
+#Get mac address of asset
+MACADDRESS=`sed -n 5,5p $ASSET | cut -d: -f2- | sed 's/ //g'`
+#Check to see if mac address is valid
+if [ `echo $MACADDRESS | sed 's/:/\n/g'  | sed /^$/d | wc -l` = 6 ]
+then
+#Send wakeonlan
+echo `date +%T` $MACADDRESS >> /opt/karoshi/logs/wake_on_lan/$LOCATION/$LOG_DATE
+wakelan $MACADDRESS
+fi
+#Delay to avoid power surges
+sleep 1
+done
+fi
+fi
+let COUNTER=$COUNTER+1
+done
+exit

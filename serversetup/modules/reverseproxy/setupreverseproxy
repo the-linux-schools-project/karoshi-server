@@ -1,0 +1,108 @@
+#!/bin/bash
+#setupreverseproxy
+#Copyright (C) 2009  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#aloughlin@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+########################
+#Get variables
+########################
+LOG_DATE=`date +%F`
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: setupreverseproxy - incorrect number of arguments"<br>"
+exit 101
+fi
+read -t 3 DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/'`
+
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: setupreverseproxy - Blank remote user"<br>"
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: setupreverseproxy - Blank remote tcpip address"<br>"
+exit 101
+fi
+
+[ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
+[ -d /var/www/html ] || mkdir -p /var/www/html
+
+LANGCHOICE=englishuk
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/reverseproxy/setupreverseproxy ] || LANGCHOICE=englishuk
+source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/reverseproxy/setupreverseproxy
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/variables/tcpip
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+
+###########################
+#Make sure apache is not running
+###########################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/apache
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop
+
+##########################
+#Install nginx
+##########################
+echo '<li>'$INSTALLMSG'</li><br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/reverseproxy/software
+
+###########################
+#Ensure that nginx is running on boot
+###########################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nginx
+
+##########################
+#Copy in config files
+##########################
+echo '<li>'$OPENINGMSG2'</li><br>'
+cp -f /opt/karoshi/serversetup/modules/reverseproxy/default /etc/nginx/sites-available
+touch /etc/nginx/proxysites
+
+#########################
+#Apply certificate (nginx is using the same cert as for apache)
+#########################
+if [ ! -f /etc/ssl/apache/server.crt ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
+fi
+
+###########################
+#Restart nginx
+###########################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nginx_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nginx_start
+###########################
+#Ensure that nginx is running on boot
+###########################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nginx
+###########################
+#Show completed message
+###########################
+echo '<br><li>'$COMPLETEDMSG'</li><br>'
+exit

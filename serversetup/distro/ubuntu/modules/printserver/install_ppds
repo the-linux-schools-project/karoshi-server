@@ -1,0 +1,12 @@
+#!/bin/bash
+echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+echo "<li>"Updating repository"</li><br>"
+apt-get update
+echo "<li>"Installing hpijs ppd files"</li><br>"
+apt-get install -y openprinting-ppd
+apt-get install -y hpijs-ppds
+apt-get install -y printer-driver-hpijs
+apt-get install -y hplip-data
+apt-get install -y printer-driver-foo2zjs
+echo "</pre><br>"
+

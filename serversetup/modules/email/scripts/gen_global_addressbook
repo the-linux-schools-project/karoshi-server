@@ -1,0 +1,104 @@
+#!/bin/bash
+#Copyright (C) 2010 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#
+#Website: http://www.karoshi.org.uk
+
+MAXBYTES=4096
+
+#Check to see that squirrelmail is installed on this server
+if [ ! -f /var/www/html/squirrelmail/config/config.php ]
+then
+echo squirrelmail is not installed on this server. Exiting now...
+exit
+fi
+
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+
+#delete global addressbook
+[ -f /var/www/global_address_book ] && rm -f /var/www/global_address_book
+touch /var/www/global_address_book
+chown root.$APACHEGROUP /var/www/global_address_book
+chmod 0640 /var/www/global_address_book
+
+#Get database password
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+if [ $LDAPPASS'null' = null ]
+then
+echo Blank Ldap password. Exiting now...
+exit
+fi
+
+function gen_email_group {
+
+LISTCOUNT=${#EMAILARRAY[@]}
+COUNTER=0
+COUNTER2=1
+while [ $COUNTER -lt $LISTCOUNT ]
+do
+EMAIL=${EMAILARRAY[$COUNTER]}
+
+if [ $COUNTER2 != $LISTCOUNT ]
+then
+EMAILARRAY[$COUNTER]="$EMAIL , "
+fi
+EMAIL=${EMAILARRAY[$COUNTER]}
+let COUNTER=$COUNTER+1
+let COUNTER2=$COUNTER2+1
+done
+if [ $LISTCOUNT -gt 0 ]
+then
+#Only add entry if the byte count is less that MAXBYTES
+BYTECOUNT=`echo $PRI_GROUP"|$PRI_GROUP||"${EMAILARRAY[@]:0}"|" | wc -c`
+
+[ $BYTECOUNT -lt $MAXBYTES ] && echo $PRI_GROUP"|$PRI_GROUP||"${EMAILARRAY[@]:0}"|" >> /var/www/global_address_book
+fi
+}
+
+#Staff
+EMAILARRAY=( `ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" -b "ou=staff,ou=personnel,ou=People,dc=karoshi,dc=local" uid | grep ^uid | sed "s/^uid: //g"` )
+PRI_GROUP=Staff
+gen_email_group
+#Officestaff
+EMAILARRAY=( `ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" -b "ou=officestaff,ou=personnel,ou=People,dc=karoshi,dc=local" uid | grep ^uid | sed "s/^uid: //g"` )
+PRI_GROUP=Office_staff
+gen_email_group
+#Nonteachingstaff
+EMAILARRAY=( `ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" -b "ou=nonteachingstaff,ou=personnel,ou=People,dc=karoshi,dc=local" uid | grep ^uid | sed "s/^uid: //g"` )
+PRI_GROUP=nonteachingstaff
+gen_email_group
+#governors
+EMAILARRAY=( `ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" -b "ou=governors,ou=personnel,ou=People,dc=karoshi,dc=local" uid | grep ^uid | sed "s/^uid: //g"` )
+PRI_GROUP=governors
+gen_email_group
+#itadmin
+EMAILARRAY=( `ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" -b "ou=itadmin,ou=personnel,ou=People,dc=karoshi,dc=local" uid | grep ^uid | sed "s/^uid: //g"` )
+PRI_GROUP=itadmin
+gen_email_group
+
+
+#YEAR=2003
+#ENDYEAR=2050
+#while [ $YEAR -lt $ENDYEAR ]
+#do
+#EMAILARRAY=( `ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" -b "ou=yr$YEAR,ou=students,ou=People,dc=karoshi,dc=local" uid | grep ^uid | sed "s/^uid: //g"` )
+#PRI_GROUP=yr$YEAR
+#gen_email_group
+#let YEAR=$YEAR+1
+#done
+
+

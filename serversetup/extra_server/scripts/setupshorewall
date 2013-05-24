@@ -1,0 +1,88 @@
+#!/bin/bash
+#setupshorewall
+#Copyright (C) 2004  Paul Sharrad
+#Copyright (C) 2005  The karoshi Team
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aloughlin@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+[ -d $HOME/.tempdata ] || mkdir $HOME/.tempdata
+
+[ -e /opt/karoshi/serversetup/variables/language ] || /opt/karoshi/serversetup/changelanguage
+[ -e /opt/karoshi/serversetup/variables/distro ] || /opt/karoshi/serversetup/changedistro
+
+source /opt/karoshi/serversetup/variables/language
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/language/$LANGCHOICE/extra_server/setupshorewall
+source /opt/karoshi/serversetup/language/$LANGCHOICE/softwareinstall
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/extra_server/software
+
+#########################
+#Add log entry
+#########################
+echo '##############'setupshorewall'##############' >> /opt/karoshi/serversetup/install_log
+date >> /opt/karoshi/serversetup/install_log
+touch /opt/karoshi/serversetup/setuplog
+if [ `grep -c "$TITLE" /opt/karoshi/serversetup/setuplog` = 0 ]
+then
+echo setupshorewall:$TITLE:/opt/karoshi/serversetup/extra_server/scripts/setupshorewall >> /opt/karoshi/serversetup/setuplog
+chmod 0600 /opt/karoshi/serversetup/setuplog
+fi
+######################
+#Final ssh Install check
+######################
+if ! test -f /etc/init.d/$SSHVER
+then
+echo /etc/init.d/$SSHVER does not exist >> /opt/karoshi/serversetup/install_log
+yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=4 --text="$SHOREWALLVER $NOTINSTALLED" --no-buttons
+exit 101
+fi
+
+#############################
+#Ensure that shorewall is running on boot
+#############################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/shorewall
+
+#########################
+#Setup and start shorewall
+#########################
+cd /etc
+rm -R -f /etc/shorewall
+tar -xvzf /opt/karoshi/serversetup/all/shorewall/shorewall.tar.gz
+cp -f /opt/karoshi/serversetup/extra_server/shorewall/rules /etc/shorewall/
+#########################
+#Make sure that shorewall will start
+#########################
+if [ -e /etc/default/shorewall ]
+then
+sed 's/startup=0/startup=1/g' /etc/default/shorewall > /etc/default/shorewall2
+rm -f /etc/default/shorewall
+mv /etc/default/shorewall2 /etc/default/shorewall
+fi
+#########################
+#Run distro specific to check if eth0 should be changed
+#########################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/shorewallconfig
+#########################
+#Start shorewall
+#########################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
+exit
+

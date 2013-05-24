@@ -1,0 +1,5 @@
+/var/log/watch_dhcp {
+    postrotate
+	/sbin/service watch_dhcp restart
+    endscript
+}

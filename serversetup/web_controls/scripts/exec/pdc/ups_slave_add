@@ -1,0 +1,310 @@
+#!/bin/bash
+#Copyright (C) 2010 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/ups_slave_add_cgi
+then
+echo `date`: ups_slave_add - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/ups_slave_add_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ups_slave_add.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $ups_slave_add_cgi'check' ]
+then
+echo `date`: ups_slave_add - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: ups_slave_add - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\-+'`
+if [ $DATA'null' = null ]
+then
+echo `date`: ups_slave_add - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+UPSSERVER=`echo "$DATA" | cut -s -d: -f4 | sed 's/%2C/,/g'`
+UPSMODEL=`echo $UPSSERVER | cut -d, -f2`
+UPSSERVER=`echo $UPSSERVER | cut -d, -f1`
+SERVER=`echo "$DATA" | cut -s -d: -f5`
+UPSSERVERTCPIP=`net lookup $UPSSERVER`
+SERVERTPCIP=`net lookup $SERVER`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: ups_slave_add - Not called by ups_slave_add.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: ups_slave_add - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: ups_slave_add - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $UPSSERVERTCPIP'null' = null ]
+then
+echo `date`: ups_slave_add - Blank ups server tcpip server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVERTPCIP'null' = null ]
+then
+echo `date`: ups_slave_add - Blank server tcpip server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $UPSSERVER'null' = null ]
+then
+echo `date`: ups_slave_add - Blank ups server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVER'null' = null ]
+then
+echo `date`: ups_slave_add - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: ups_slave_add - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+#echo UPSSERVER is $UPSSERVER"<br>"
+#echo server is $SERVER"<br>"
+#echo upsmodel is $UPSMODEL"<br>"
+#sleep 5
+
+echo `date`: ups_slave_add - adding $UPSMODEL on $UPSSERVER to $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/ups ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/system/ups
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+########################
+#Modify master configuration upsd.users
+########################
+
+RANGE=61
+COUNTER=1
+while [ $COUNTER -lt 16 ]
+do
+row[$COUNTER]=$RANDOM
+let "row[$COUNTER] %= $RANGE"
+while [ ${row[$COUNTER]} = 0 ]
+do
+row[$COUNTER]=$RANDOM
+let "row[$COUNTER] %= $RANGE"
+done
+CHARACTER[$COUNTER]=`sed -n ${row[$COUNTER]},1p /opt/karoshi/serversetup/pdc/"useful scripts"/.alphabet`
+
+let COUNTER=COUNTER+1
+
+done
+
+RANDOMPASSWORD=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
+if [ ! -d /opt/karoshi/server_network/ups/slave/$UPSSERVER/users ]
+then
+mkdir -p /opt/karoshi/server_network/ups/slave/$UPSSERVER/users
+chmod 0700 /opt/karoshi/server_network/ups/slave/$UPSSERVER/users
+fi
+echo "[$SERVER]" > /opt/karoshi/server_network/ups/slave/$UPSSERVER/users/$SERVER
+echo '   'password = $RANDOMPASSWORD >> /opt/karoshi/server_network/ups/slave/$UPSSERVER/users/$SERVER
+#echo '   'allowfrom = localhost >> /opt/karoshi/server_network/ups/master/$SERVER/users/$SERVER
+echo '   'upsmon slave >> /opt/karoshi/server_network/ups/slave/$UPSSERVER/users/$SERVER
+echo >> /opt/karoshi/server_network/ups/slave/$UPSSERVER/users/$SERVER
+
+touch /opt/karoshi/server_network/ups/master/$UPSSERVER/upsd.users
+chmod 0600 /opt/karoshi/server_network/ups/master/$UPSSERVER/upsd.users
+cat /opt/karoshi/server_network/ups/master/$UPSSERVER/users/* > /opt/karoshi/server_network/ups/master/$UPSSERVER/upsd.users
+cat /opt/karoshi/server_network/ups/slave/$UPSSERVER/users/* >> /opt/karoshi/server_network/ups/master/$UPSSERVER/upsd.users
+
+if [ $UPSSERVER = $HOSTNAME ]
+then
+touch /etc/nut/upsd.users
+chmod 0600 /etc/nut/upsd.users
+cp -f /opt/karoshi/server_network/ups/master/$UPSSERVER/upsd.users /etc/nut/
+else
+ssh -x -o PasswordAuthentication=no $UPSSERVER '
+touch /etc/nut/upsd.users
+chmod 0600 /etc/nut/upsd.users
+'
+scp /opt/karoshi/server_network/ups/master/$UPSSERVER/upsd.users root@$UPSSERVER:"/etc/nut/"
+fi
+
+########################
+#Modify shorewall to allow 3493 tcp
+########################
+
+if [ $UPSSERVER = $HOSTNAME ]
+then
+MODCHECK=`grep -c UPS_rule_$SERVER /etc/shorewall/rules`
+RESTART_SHOREWALL=no
+if [ $MODCHECK = 0 ]
+then
+RESTART_SHOREWALL=yes
+echo ''$SHOREWALLMSG - tcp 3493"<br><br>"
+
+LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
+sed -i $LINENUM"c"\ACCEPT"	"net:$SERVERTPCIP"	"fw"	"tcp"	"3493"	"-"#"UPS_rule_$SERVER /etc/shorewall/rules
+echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+fi
+######################
+#Restart shorewall
+######################
+if [ $RESTART_SHOREWALL = yes ]
+then
+echo "<br>"$RESTARTSWMSG
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
+echo "<br><br>"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
+echo "<br><br>"
+fi
+else
+ssh -x -o PasswordAuthentication=no $UPSSERVER '
+MODCHECK=`grep -c UPS_rule_'$SERVER' /etc/shorewall/rules`
+RESTART_SHOREWALL=no
+if [ $MODCHECK = 0 ]
+then
+RESTART_SHOREWALL=yes
+echo '''$SHOREWALLMSG' - tcp 3493"<br><br>"
+
+LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
+sed -i $LINENUM"c"\ACCEPT"	"net:'$SERVERTPCIP'"	"fw"	"tcp"	"3493"	"-"#"UPS_rule_'$SERVER' /etc/shorewall/rules
+echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+fi
+######################
+#Restart shorewall
+######################
+if [ $RESTART_SHOREWALL = yes ]
+then
+echo "<br>"'$RESTARTSWMSG'
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
+echo "<br><br>"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
+echo "<br><br>"
+fi
+'
+fi
+
+########################
+# Restart nut on UPS server
+########################
+if [ $UPSSERVER = $HOSTNAME ]
+then
+/etc/init.d/nut stop
+sleep 1
+/etc/init.d/nut start
+#source /opt/karoshi/serversetup/variables/distro
+#/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nut
+chkconfig -f nut on 1>/dev/null 2>/dev/null
+else
+ssh -x -o PasswordAuthentication=no $UPSSERVER '
+/etc/init.d/nut stop
+sleep 1
+/etc/init.d/nut start
+#source /opt/karoshi/serversetup/variables/distro
+#/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nut
+chkconfig -f nut on 1>/dev/null 2>/dev/null
+'
+fi
+
+########################
+# /etc/nut/nut.conf on UPS slave
+########################
+if [ $SERVER = $HOSTNAME ]
+then
+echo MODE=netclient > /etc/nut/nut.conf
+echo >> /etc/nut/nut.conf
+else
+ssh -x -o PasswordAuthentication=no $SERVER '
+echo MODE=netclient > /etc/nut/nut.conf
+echo >> /etc/nut/nut.conf
+'
+fi
+########################
+# Create upsmon.conf on UPS slave
+########################
+if [ $SERVER = $HOSTNAME ]
+then
+touch /etc/nut/upsmon.conf
+chmod 0640 /etc/nut/upsmon.conf
+chown root.nut /etc/nut/upsmon.conf
+echo password $RANDOMPASSWORD
+echo MONITOR $UPSMODEL@$UPSSERVERTCPIP 1 $SERVER $RANDOMPASSWORD slave > /etc/nut/upsmon.conf
+else
+ssh -x -o PasswordAuthentication=no $SERVER '
+touch /etc/nut/upsmon.conf
+chmod 0640 /etc/nut/upsmon.conf
+chown root.nut /etc/nut/upsmon.conf
+echo MONITOR '$UPSMODEL'@'$UPSSERVERTCPIP' 1 '$SERVER' '$RANDOMPASSWORD' slave > /etc/nut/upsmon.conf
+'
+fi
+
+########################
+# start nut on UPS slave
+########################
+if [ $SERVER = $HOSTNAME ]
+then
+/etc/init.d/nut stop
+sleep 1
+/etc/init.d/nut start
+#source /opt/karoshi/serversetup/variables/distro
+#/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nut
+chkconfig -f nut on 1>/dev/null 2>/dev/null
+else
+ssh -x -o PasswordAuthentication=no $SERVER '
+/etc/init.d/nut stop
+sleep 1
+/etc/init.d/nut start
+#source /opt/karoshi/serversetup/variables/distro
+#/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nut
+chkconfig -f nut on 1>/dev/null 2>/dev/null
+'
+fi
+
+exit
+

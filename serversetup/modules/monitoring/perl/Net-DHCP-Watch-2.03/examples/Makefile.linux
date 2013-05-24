@@ -1,0 +1,34 @@
+#
+# Install watch_dhcp service in a linux box
+#
+SBIN:=/usr/local/sbin
+INITD:=/etc/rc.d/init.d
+CHKCONFIG:=/sbin/chkconfig
+LOGROTATE:=/etc/logrotate.d
+LOG:=/var/log/watch_dhcp
+INSTALL:=/usr/bin/install
+TOUCH:=/bin/touch
+CHMOD:=/bin/chmod
+#
+# 
+#
+DAEMON:=watch_dhcp
+INIT:=watch_dhcp.init.d
+ROTATE:=watch_dhcp.logrotate
+#
+#
+#
+.PHONY: install
+.SILENT:
+#
+#
+#
+install:
+	$(INSTALL) --mode=700 $(DAEMON).pl $(SBIN)
+	$(INSTALL) --mode=700 $(INIT)   $(INITD)/$(DAEMON)
+	$(INSTALL) --mode=600 $(ROTATE) $(LOGROTATE)/$(DAEMON)
+	$(TOUCH)     $(LOG)
+	$(CHMOD) 600 $(LOG)
+	$(CHKCONFIG) --add $(DAEMON)
+	$(CHKCONFIG) $(DAEMON) on
+	/bin/echo "Issue \`service $(DAEMON) start' to start $(DAEMON)."

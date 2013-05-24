@@ -1,0 +1,8 @@
+#!/bin/bash
+#Nisdomain Config
+source /opt/karoshi/serversetup/variables/tcpip
+DOMAINCOUNT=`grep -c NISDOMAIN=$YPDOMAIN /etc/sysconfig/network`
+if [ $DOMAINCOUNT -le 0 ]
+then
+echo NISDOMAIN=$YPDOMAIN >> /etc/sysconfig/network
+fi

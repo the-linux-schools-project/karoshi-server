@@ -1,0 +1,21 @@
+#!/bin/bash
+#sslbridgevhost
+if [ `grep -c -w sslbridge /etc/httpd/conf/httpd.conf` = 0 ]
+then
+echo >> /etc/httpd/conf/httpd.conf
+echo '#########################' >> /etc/httpd/conf/httpd.conf
+echo '#'SSlBridge Virtual host >> /etc/httpd/conf/httpd.conf
+echo '#########################' >> /etc/httpd/conf/httpd.conf
+echo Listen 0.0.0.0:20000 >> /etc/httpd/conf/httpd.conf
+echo '<'VirtualHost '*':20000'>' >> /etc/httpd/conf/httpd.conf
+echo ServerAdmin webmaster@dummy-host.example.com >> /etc/httpd/conf/httpd.conf
+echo SSLEngine on >> /etc/httpd/conf/httpd.conf
+echo SSLCertificateFile /etc/ssl/apache/server.crt >> /etc/httpd/conf/httpd.conf
+echo SSLCertificateKeyFile /etc/ssl/apache/server.key >> /etc/httpd/conf/httpd.conf
+echo DocumentRoot /var/www/html/sslbridge >> /etc/httpd/conf/httpd.conf
+echo ServerName dummy-host.example.com >> /etc/httpd/conf/httpd.conf
+echo ErrorLog /var/log/httpd/dummy-host.example.com-error_log >> /etc/httpd/conf/httpd.conf
+echo CustomLog /var/log/httpd/dummy-host.example.com-access_log common >> /etc/httpd/conf/httpd.conf
+echo '<'/VirtualHost'>' >> /etc/httpd/conf/httpd.conf
+service httpd restart
+fi

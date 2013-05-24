@@ -1,0 +1,5 @@
+#Youtube_safesearch
+
+"cookie:(.*)PREF=[^&]*?\;"->"Cookie:$1"
+"cookie:(.*)$"->"Cookie:$1; PREF=f2=8000000;"
+

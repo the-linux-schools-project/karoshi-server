@@ -1,0 +1,78 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 1 ]
+then
+echo `date`: web_management_create_folder_list - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo $* | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | cut -s -d: -f3`
+WEBSERVER=`echo $* | cut -s -d: -f4`
+########################
+#Check data
+########################
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: web_management_create_folder_list - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: web_management_create_folder_list - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $WEBSERVER'null' = null ]
+then
+echo `date`: web_management_create_folder_list - Blank web server by $REMOTE_USER from $REMOTE_ADDRESS >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: web_management_create_folder_list - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+
+########################
+#Create folder list
+########################
+echo `date`: web_management_create_folder_list by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+if [ $WEBSERVER != $HOSTNAME ]
+then
+ssh -x -o PasswordAuthentication=no $WEBSERVER '
+[ ! -d /var/www/html/webfiles/default ] && mkdir -p /var/www/html/webfiles/default
+ls -1 /var/www/html/webfiles | sed "s/^/<option>/"g | sed "s/\///g" | sed "s/$/<\/option>/g"
+'
+else
+[ ! -d /var/www/html/webfiles/default ] && mkdir -p /var/www/html/webfiles/default
+ls -1 /var/www/html/webfiles | sed "s/^/<option>/"g | sed "s/\///g" | sed "s/$/<\/option>/g"
+fi
+exit

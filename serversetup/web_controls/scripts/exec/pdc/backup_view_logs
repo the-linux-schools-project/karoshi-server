@@ -1,0 +1,161 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+
+
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/backup_view_logs_cgi
+then
+echo `date`: backup_view_logs - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/backup_view_logs_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_view_logs.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $backup_view_logs_cgi'check' ]
+then
+echo `date`: backup_view_logs - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: backup_view_logs - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+'`
+if [ $DATA'null' = null ]
+then
+echo `date`: backup_view_logs - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+DAY=`echo "$DATA" | cut -s -d: -f4`
+MONTH=`echo "$DATA" | cut -s -d: -f5`
+YEAR=`echo "$DATA" | cut -s -d: -f6`
+KAROSHI_SERVER=`echo "$DATA" | cut -s -d: -f7`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: backup_view_logs - Not called by backup_view_logs.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: backup_view_logs - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: backup_view_logs - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $DAY'null' = null ]
+then
+echo `date`: backup_view_logs - Blank day by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $MONTH'null' = null ]
+then
+echo `date`: backup_view_logs - Blank month by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $YEAR'null' = null ]
+then
+echo `date`: backup_view_logs - Blank year by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $KAROSHI_SERVER'null' = null ]
+then
+echo `date`: backup_view_logs - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: backup_view_logs - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+LOG_DATE=`echo $YEAR-$MONTH-$DAY`
+############################
+#Language
+############################
+LANGCHOICE=englishuk
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/backup_view_logs ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/system/backup_view_logs
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+[ -d /opt/karoshi/backup_server/ ] || ( mkdir /opt/karoshi/backup_server/ ; chmod 0700 /opt/karoshi/backup_server/ )
+
+function view_logs_pdc {
+#View logs
+if [ -f /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log ]
+then
+echo '<PRE STYLE="font-size: small; font-family:'Arial, Times, Georgia, Times New Roman, Times, serif'">'
+cat /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+echo "</pre>"
+else
+echo '<br>'$VIEWMSG5'<br>'
+fi
+}
+
+function view_logs_other_servers {
+#View logs
+echo '<PRE STYLE="font-size: small; font-family:'Arial, Times, Georgia, Times New Roman, Times, serif'">'
+ssh -x -o PasswordAuthentication=no $KAROSHI_SERVER '
+#View logs
+if [ -f /opt/karoshi/logs/backup_servers/'$LOG_DATE'/backup_log ]
+then
+cat /opt/karoshi/logs/backup_servers/'$LOG_DATE'/backup_log
+else
+echo '$VIEWMSG5'\<br\>
+fi
+' 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "</pre>"
+}
+
+echo `date`: backup_view_logs - $KAROSHI_SERVER : view logs by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo '<span style="font-weight: bold;">'$KAROSHI_SERVER: $VIEWLOGMSG1 $DAY-$MONTH-$YEAR'</span><br>'
+if [ $KAROSHI_SERVER = $HOSTNAME ]
+then
+view_logs_pdc
+else
+#ssh to other servers to view the logs
+view_logs_other_servers
+fi
+
+
+exit
+

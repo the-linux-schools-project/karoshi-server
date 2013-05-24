@@ -1,0 +1,8 @@
+#!/bin/bash
+#Search for embedded files
+
+#.doc
+#find /home -iname *.doc | grep 
+#find /home -iname *.doc -print0
+find /home/users/students -iname *.doc -print0 | xargs -0 grep -c -l '.swf' > /opt/karoshi/logs/embedded_files
+find /home/users/students -iname *.xls -print0 | xargs -0 grep -c -l '.swf' >> /opt/karoshi/logs/embedded_files

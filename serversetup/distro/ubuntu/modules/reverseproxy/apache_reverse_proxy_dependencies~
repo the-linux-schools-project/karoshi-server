@@ -1,0 +1,19 @@
+#!/bin/bash
+#softwareinstall
+#Check for software
+INSTALL_DEPS=no
+rpm -q apache-mod_proxy 1>/dev/null
+[ `echo $?` != 0 ] && INSTALL_DEPS=yes
+rpm -q apache-mod_proxy_html 1>/dev/null
+[ `echo $?` != 0 ] && INSTALL_DEPS=yes
+
+if [ $INSTALL_DEPS = yes ]
+then
+echo Updating repository list
+echo
+apt-get update
+echo Installing apache-mod_proxy apache-mod_proxy_html apache-mod_php
+echo 
+apt-get install -y apache-mod_proxy apache-mod_proxy_html
+echo
+fi

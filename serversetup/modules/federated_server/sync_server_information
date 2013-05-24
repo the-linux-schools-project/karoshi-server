@@ -1,0 +1,16 @@
+#!/bin/bash
+if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
+then
+if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
+then
+for FEDERATED_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
+do
+FEDERATED_SERVER=`basename $FEDERATED_SERVERS`
+echo $FEDERATED_SERVER
+[ -f /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER ] && rm -f /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER
+[ ! -d /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/ ] && mkdir -p /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/
+scp -r root@$FEDERATED_SERVER:/opt/karoshi/server_network/servers/ /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/
+done
+fi
+fi
+

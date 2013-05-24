@@ -1,0 +1,18 @@
+#!/bin/bash
+#softwareinstall
+#Check for software
+INSTALL_DEPS=no
+dpkg -S libmime-lite-perl 1>/dev/null
+[ `echo $?` != 0 ] && INSTALL_DEPS=yes
+dpkg -S libfile-type-perl 1>/dev/null
+[ `echo $?` != 0 ] && INSTALL_DEPS=yes
+
+if [ $INSTALL_DEPS = yes ]
+then
+echo "<li>"Updating repository list"</li><br>"
+apt-get update
+echo "<li>"Installing libmime-lite-perl"</li><br>"
+apt-get install -y libmime-lite-perl libfile-type-perl
+echo "<br>"
+fi
+

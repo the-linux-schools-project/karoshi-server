@@ -1,0 +1,194 @@
+#!/bin/bash
+#Copyright (C) 2011 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/bulk_email_process_cgi
+then
+echo `date`: bulk_email_process - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/bulk_email_process_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/bulk_email_process.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $bulk_email_process_cgi'check' ]
+then
+echo `date`: bulk_email_process - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: bulk_email_process - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._: \-+'`
+if [ `echo $DATA'null' | sed 's/ //g'` = null ]
+then
+echo `date`: bulk_email_process - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+CSVMD5=`echo "$DATA" | cut -s -d: -f4`
+CSVFILE=`echo "$DATA" | cut -s -d: -f5`
+MOBILE=`echo "$DATA" | cut -s -d: -f6`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: bulk_email_process - Not called by bulk_email_process.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: bulk_email_process - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: bulk_email_process - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $CSVMD5'null' = null ]
+then
+echo `date`: bulk_email_process - Blank csv md5 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ `echo $CSVFILE'null' | sed 's/ //g'` = null ]
+then
+echo `date`: bulk_email_process - Blank csvfile by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ ! -f /opt/karoshi/server_network/emailserver ]
+then
+echo `date`: bulk_email_process - no email server "for" $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: bulk_email_process - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+##########################
+#Language
+##########################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/email/bulk_email_users ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/email/bulk_email_users
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+#Check to see that the file exists
+if [ ! -f /var/www/karoshi/bulk_email/"$CSVFILE" ]
+then
+echo `date`: bulk_email_process - "$CSVFILE" does not exist "for" $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+#Check to see that the md5 sum is correct for the csvfile
+MD5SUM=`md5sum /var/www/karoshi/bulk_email/"$CSVFILE" | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $CSVMD5'check' ]
+then
+echo `date`: bulk_email_process - Incorrect csv MD5Checksum by $REMOTE_USER from $REMOTE_ADDR>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+
+#Generate navigation bar
+if [ $MOBILE = no ]
+then
+WIDTH=180
+else
+WIDTH=100
+fi
+
+#Clear special chars from the csv file.
+
+cat /var/www/karoshi/bulk_email/"$CSVFILE" | tr -cd 'A-Za-z0-9\.,_@: \-+\n' > /var/www/karoshi/bulk_email/csvtemp.$$
+rm -f /var/www/karoshi/bulk_email/"$CSVFILE"
+mv /var/www/karoshi/bulk_email/csvtemp.$$ /var/www/karoshi/bulk_email/"$CSVFILE"
+
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+
+#Process CSV file
+CSVFILE_LINES=`cat /var/www/karoshi/bulk_email/"$CSVFILE" | wc -l`
+
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: '$WIDTH'px;"><b>'$EMAILRECIPIENTMSG'</b></td><td style="width: '$WIDTH'px;"><b>'$SENDERMSG'</b></td><td style="width: '$WIDTH'px;"><b>'$SUBJECTMSG'</b></td></tr>'
+
+#Get email server
+EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+
+COUNTER=1
+while [ $COUNTER -le $CSVFILE_LINES ]
+do
+EMAILADDRESS=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_email/"$CSVFILE" | cut -s -d, -f1 | sed 's/ //g'`
+ENROLLMENTNUMBER=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_email/"$CSVFILE" | cut -s -d, -f2 | sed 's/ //g'`
+SENDER=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_email/"$CSVFILE" | cut -s -d, -f3 | sed 's/ //g'`
+SUBJECT=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_email/"$CSVFILE" | cut -s -d, -f4`
+MESSAGE=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_email/"$CSVFILE" | cut -s -d, -f5-`
+
+#Check to see if email address is not blank
+
+if [ $EMAILADDRESS'null' = null ]
+then 
+if [ $ENROLLMENTNUMBER'null' != null ]
+then
+#Lookup username to send email address to using enrollment number
+EMAILADDRESS=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" employeeNumber=$ENROLLMENTNUMBER | grep ^uid: | cut -d: -f2`
+fi
+fi
+
+echo '<tr><td>'$EMAILADDRESS'</td><td>'$SENDER'</td><td>'$SUBJECT'</td><td></tr>'
+
+#ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" uid=$NEWUSERNAME > /opt/karoshi/.tempdata/$NEWUSERNAME.$$.ldif
+
+#Log email
+echo `date`: bulk_email_process - sending to $EMAILADDRESS from $SENDER via $EMAILSERVER by $REMOTE_USER from $REMOTE_ADDR>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+#Send email
+/opt/karoshi/serversetup/modules/monitoring/mon/alerts/smtp-cli --verbose --host="$EMAILSERVER" --from "$SENDER" --to "$EMAILADDRESS" --subject "$SUBJECT" --body-plain "$MESSAGE" 1>/dev/null 2>/dev/null
+
+let COUNTER=$COUNTER+1
+done
+echo "</tbody></table>"
+rm -f /var/www/karoshi/bulk_email/"$CSVFILE"
+exit
+
+

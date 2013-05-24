@@ -1,0 +1,191 @@
+#!/bin/bash
+#setupocs
+#Copyright (C) 2009  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#aloughlin@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+########################
+#Get variables
+########################
+LOG_DATE=`date +%F`
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: setupocs - incorrect number of arguments"<br>"
+exit 101
+fi
+read -t 3 DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/'`
+
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+PDCIP=`echo "$DATA" | cut -s -d: -f4`
+
+
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: setupocs - Blank remote user"<br>"
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: setupocs - Blank remote tcpip address"<br>"
+exit 101
+fi
+
+[ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
+[ -d /var/www/html ] || mkdir -p /var/www/html
+[ ! -e /opt/karoshi/.tempdata/mysqlpasswordstatus ] || rm -f /opt/karoshi/.tempdata/mysqlpasswordstatus
+
+
+LANGCHOICE=englishuk
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/ocsinventory/setupocs ] || LANGCHOICE=englishuk
+source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/ocsinventory/setupocs
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/variables/tcpip
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+
+#############################
+#Ensure that apache and mysql are running on boot
+#############################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mysql
+
+#####################
+#Install software for OCS
+#####################
+echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/ocsinventory/ocs_dependencies
+echo '</pre>'
+#####################
+#Create OCS mysql password for the new database
+#####################
+echo '<li>'$MYSQLMSG'</li><br>'
+RANGE=61
+COUNTER=1
+while [ $COUNTER -lt 16 ]
+do
+row[$COUNTER]=$RANDOM
+let "row[$COUNTER] %= $RANGE"
+while [ ${row[$COUNTER]} = 0 ]
+do
+row[$COUNTER]=$RANDOM
+let "row[$COUNTER] %= $RANGE"
+done
+CHARACTER[$COUNTER]=`sed -n ${row[$COUNTER]},1p /opt/karoshi/serversetup/pdc/"useful scripts"/.alphabet`
+
+let COUNTER=COUNTER+1
+
+done
+
+OCSPASS=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
+
+#############################
+#Make sure that we know the root mysql password
+#############################
+
+/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
+#Get root mysql password
+MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
+
+#############################
+#create and pipe in the database
+#############################
+
+mysqladmin -f --password=$MYSQLPASS drop ocsweb 1>/dev/null 2>/dev/null
+sleep 1
+mysqladmin --password=$MYSQLPASS create ocsweb
+sleep 1
+mysql --password=$MYSQLPASS ocsweb < /opt/karoshi/serversetup/modules/ocsinventory/ocsweb.sql
+echo GRANT ALL PRIVILEGES ON ocsweb.\* TO "'"ocs"'"@"'"localhost"'" IDENTIFIED BY "'"$OCSPASS"'"';' > /opt/karoshi/.tempdata/mysqlperms.sql
+echo GRANT ALL PRIVILEGES ON ocsweb.\* TO "'"ocs2"'"@"'"$PDCIP"'" IDENTIFIED BY "'"$OCSPASS"'"';' >> /opt/karoshi/.tempdata/mysqlperms.sql
+echo ALTER DATABASE ocsweb DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci';' >> /opt/karoshi/.tempdata/mysqlperms.sql
+mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/mysqlperms.sql
+rm -f /opt/karoshi/.tempdata/mysqlperms.sql
+
+###########################
+#make sure that mysql and apache are running
+###########################
+MYSQLSTATUS=`ps -e | grep -c $MYSQLDVER`
+APACHESTATUS=`ps -e | grep -c $APACHEVER`
+if [ $MYSQLSTATUS = 0 ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start
+fi
+if [ $APACHESTATUS = 0 ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
+fi
+##########################
+#Run OCS installation script
+##########################
+echo '<li>'$OCSINSTALLMSG'</li><br>'
+
+echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+cd /opt/karoshi/serversetup/modules/ocsinventory/OCSNG_UNIX_SERVER/ 
+./setup.sh 1>/dev/null
+echo '</pre>'
+#Change password in z-ocsinventory-server.conf
+if [ -f /etc/httpd/conf.d/z-ocsinventory-server.conf ]
+then
+sed -i 's/PerlSetVar OCS_DB_PWD ocs/PerlSetVar OCS_DB_PWD '$OCSPASS'/g' /etc/httpd/conf.d/z-ocsinventory-server.conf
+fi
+if [ -f /etc/apache2/conf.d/z-ocsinventory-server.conf ]
+then
+sed -i 's/PerlSetVar OCS_DB_PWD ocs/PerlSetVar OCS_DB_PWD '$OCSPASS'/g' /etc/apache2/conf.d/z-ocsinventory-server.conf
+fi
+
+#Create dbconfig.inc.php
+echo '<?php' > /usr/share/ocsinventory-reports/ocsreports/dbconfig.inc.php
+echo 'define("DB_NAME", "ocsweb");' >> /usr/share/ocsinventory-reports/ocsreports/dbconfig.inc.php
+echo 'define("SERVER_READ","localhost");' >> /usr/share/ocsinventory-reports/ocsreports/dbconfig.inc.php
+echo 'define("SERVER_WRITE","localhost");' >> /usr/share/ocsinventory-reports/ocsreports/dbconfig.inc.php
+echo 'define("COMPTE_BASE","ocs");' >> /usr/share/ocsinventory-reports/ocsreports/dbconfig.inc.php
+echo 'define("PSWD_BASE","'$OCSPASS'");' >> /usr/share/ocsinventory-reports/ocsreports/dbconfig.inc.php
+echo '?>' >> /usr/share/ocsinventory-reports/ocsreports/dbconfig.inc.php
+
+#Make sure install.php is deleted
+[ -f /usr/share/ocsinventory-reports/ocsreports/install.php ] && rm -f /usr/share/ocsinventory-reports/ocsreports/install.php
+
+#################################
+#Make sure that mysql is running
+#################################
+MYSQLSTATUS=`ps -e | grep -c -w $MYSQLDVER`
+if [ $MYSQLSTATUS = 0 ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start
+fi
+
+#################################
+#Restart apache
+#################################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
+###########################
+#Show completed message
+###########################
+echo '<br><br>'$ACCESSMSG - '<a href="/admin/ocs/" target="_blank">/admin/ocs</a><br>'
+echo '<br>'$ACCESSMSG2:admin - $PASSWORDMSG: ocs
+echo '<br>'Clients: http://$HOSTNAME.internal/ocsinventory
+echo '<br>'
+
+exit

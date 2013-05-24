@@ -1,0 +1,1178 @@
+FUTURE VERSIONS?
+? Better error handling in backend loop (handle exit codes 1-3).
+? Move from Net::SNMP to plain Socket.
+? POD documentation.
+? Extend advanced "other" SNMP queries to non-HP printers.
+? Local printer support.
+? Packages (RPM/DEB/etc.)
+? Support for storing pagecounts and quotas in a database
+
+2011-05-09   quosnmp 1.8.9 Final
+* No changes from RC1.
+
+2011-04-28   quosnmp 1.8.9 release candidate 1
+* No changes from beta 1.
+
+2011-04-20   quosnmp 1.8.9 beta 2
+* Fixed a bug whereby group quotas were not found in the 
+  new post-printing quota check.
+* Added DEBUG level logfile message for when quota is 
+  checked post-printing.
+
+2011-04-20   quosnmp 1.8.9 beta 1
+* quosnmp now checks whether the user is over quota after 
+  their print job has been accounted and will send out an 
+  over quota e-mail at that time if so configured.
+
+2011-01-24   quosnmp 1.8.8 Final
+* No changes from release candidate 1.
+
+2011-01-19   quosnmp 1.8.8 release candidate 1
+* No changes from beta 2.
+
+2011-01-13   quosnmp 1.8.8 beta 2
+* JOB_BLACKLIST tests are now skipped when the blacklist is 
+  empty.
+
+2011-01-11   quosnmp 1.8.8 beta 1
+* Set a default value for the temporary directory.  In some 
+  cases ENV{TMPDIR} is empty.  In this case, use /tmp.
+* Make every reference to ENV{TMPDIR} point to the stored 
+  value in VARS{TMPDIR} instead.
+
+2010-10-20   quosnmp 1.8.7 Final
+* No changes from release candidate 1.
+
+2010-10-12   quosnmp 1.8.7 release candidate 1
+* Fixed bug in one call to decrementTimeoutCounters.
+
+2010-10-04   quosnmp 1.8.7 beta 1
+* Some comment changes, no code changes.
+
+2010-09-27   quosnmp 1.8.7 alpha
+* Found that print jobs were not being sent when the printer 
+  was in certain idle states.  Print jobs will now be sent 
+  when devStatus = 1.
+
+2010-09-13   quosnmp 1.8.6 Final
+* No changes from RC1.
+
+2010-09-07   quosnmp 1.8.6 release candidate 1
+* No longer set priStatus when using PJL.
+
+2010-08-31   quosnmp 1.8.6 beta 1
+* Fixed logic bug which prevented PRINT_ON_LOW_TONER from 
+  working.
+
+2010-08-16   quosnmp 1.8.6 alpha
+* PRINT_ON_LOW_TONER still not working right.  Changed code to 
+  store printerStatus, deviceStatus, and the result of any 
+  extra SNMP queries separately and to consider them
+  independently.
+* Changed comments in config file to note that PJL and 
+  PRINT_ON_LOW_TONER are probably incompatible (more testing 
+  needed to be sure).
+
+2010-07-23   quosnmp 1.8.5 Final
+* Updated quosnmplibtest.pl
+
+2010-07-06   quosnmp 1.8.5 release candidate 1
+* No changes from beta 1.
+
+2010-07-01   quosnmp 1.8.5 beta 1
+* Fixed bug in PRINT_ON_LOW_TONER functionality which prevented 
+  it from working!
+
+2010-06-22   quosnmp 1.8.5 alpha
+* lockPrinter and unlockPrinter now explicitly check the value 
+  of the LOCK_PRINTER configuration variable to determine 
+  whether they should continue.
+* Added a separate check of LOCK_PRINTER before running 
+  unlockPrinter in the cleanExit function.
+* If lpq cannot be found, script only exits if LOCK_PRINTER 
+  is enabled (as this is the only function which needs it).
+* Net:SNMP is only required if either the status or pagecount 
+  checking method is set to SNMP (e.g. only if it is needed).
+  If either of these is set to auto-detect then SNMP will be 
+  not be used (it will be skipped in testing).
+* Net:SMTP is only required if an e-mail based notification 
+  method has been enabled.
+* Some tweaks to PJL code which should make it more reliable.
+
+2010-05-04   quosnmp 1.8.4 Final
+* No changes from release candidate 1
+
+2010-04-15   quosnmp 1.8.4 release candidate 1
+* No changes from beta 2
+
+2010-04-06   quosnmp 1.8.4 beta 2
+* Reduced the amount of time unlockPrinter will wait to remove 
+  a lockfile based on its timestamp.
+
+2010-04-05   quosnmp 1.8.4 beta 1
+* Added config variable UPDATE_LOCKFILE_TIMESTAMP to control 
+  whether touchLockfile should update the lockfile timestamp.
+* Changed how $| is scoped when it is set to 1 in the code.
+
+2010-03-24   quosnmp 1.8.4 alpha
+* Added touchLockfile function to keep updating the timestamps 
+  on the lockfile while quosnmp is polling the printer.
+* unlockPrinter now checks the timestamp on the lockfile and 
+  does not remove lockfiles which have been updated recently 
+  unless they are owned by that particular quosnmp process.
+* Whitespace reformatting to make functions more consistent 
+  in appearance.
+
+2010-03-11   quosnmp 1.8.3 Final
+* No changes from release candidate 2.
+
+2010-03-04   quosnmp 1.8.3 release candidate 2
+* No changes from beta 4.
+
+2010-02-25   quosnmp 1.8.3 beta 4
+* Removed PID check in hasPrinter.
+* Removed code which could unlink lockfiles in some odd cases. 
+  Have decided to stick with the print job number as the gold 
+  standard for determining whether we can remove a lockfile.
+* Reworded one annoying error message.
+
+2010-02-19   quosnmp 1.8.3 beta 3
+* Going back to beta status.
+* New "PRINT_ON_LOW_TONER" setting for whether to continue 
+  printing when the printer reports a low-toner message.
+
+2010-02-18   quosnmp 1.8.3 release candidate 1
+* A device/printer status of 3/1 (queried by SNMP) is now 
+  interpreted as "toner low".
+* Fixed dumb typo in sample quosnmp.conf.
+
+2010-02-09   quosnmp 1.8.3 beta 2
+* Printing loop now ends when first "idle" status is detected, 
+  instead of waiting for three consecutive idle statuses.
+* Pagecount is collected sooner after printing ends.
+* Changed some unclear error messages.
+
+2010-02-02   quosnmp 1.8.3 beta 1
+* Made convertPJLtoSNMP function a little easier to read.
+* Changed name of convertPJLtoSNMP to convertPJLtoQC.
+* Clarified some comments in convertPJLtoQC.
+* Created function convertSNMPtoQC to isolate the code which 
+  maps from hrDeviceStatus and hrPrinterStatus to the internal 
+  Quosnmp Code for the status of the printer.
+
+2010-01-28   quosnmp 1.8.3 alpha 2
+* Rearranged printer status codes.
+* Added "unknown" printer status code.
+* Mapped more PJL responses to printer status codes.
+* Added an extra debug message for when printer returns a 
+  warning or error code.
+
+2010-01-27   quosnmp 1.8.3 alpha 1
+* Added a new category of printer status: in standby (aka 
+  powersave) mode.
+* Print jobs are now sent to printer when it is in standby mode.
+  This fixes a bug whereby printers which are not awakened by 
+  the various queries being sent by quosnmp would never be sent 
+  a print job.  This can occur with printers attached to external 
+  print servers, for example.
+
+2009-12-14   quosnmp 1.8.2 Final
+* No changes from release candidate 1.
+
+2009-12-08   quosnmp 1.8.2 release candidate 1
+* Added new debug messages around changes to writeLockFile.
+
+2009-12-04   quosnmp 1.8.2 beta 1
+* Clarification of new comments.
+
+2009-11-25   quosnmp 1.8.2 alpha
+* All writes to files which may be shared by multiple processes 
+  are now unbuffered.
+* writeLockfile now immediately checks that the correct data is 
+  in the lockfile by calling readLockfile.
+
+2009-11-09   quosnmp 1.8.1 Final
+* No changes from release candidate 1
+
+2009-11-09   quosnmp 1.8.1 release candidate 1
+* Fixed quosnmplibtest.pl so that it properly tests the functions 
+  setDefaultVars and writeLockfile, which have been modified in 
+  recent versions of quosnmp.
+* Updated README and some code comments.
+
+2009-11-02   quosnmp 1.8.1 beta 2
+* Fixed typo in install script.
+* In storing START_TIME in VARS hash, merged two lines of code 
+  into one.
+
+2009-11-02   quosnmp 1.8.1 beta 1
+* Debug message for writing lockfile now mentions the PID which 
+  was written to the lockfile.
+* Had "soft timeout" and "hard timeout" mixed up in some debug 
+  messages.  This has been fixed.
+* Changed default HARD_STALL_TIMEOUT to 0 (disabled) because the 
+  few accounting errors which I have been seeing come from this 
+  timeout being hit too often (e.g. overnight when someone cues 
+  up a dozen jobs and there is no paper).
+
+2009-10-28   quosnmp 1.8.1 alpha
+* Quosnmp now checks that the printer is idle before it calls 
+  the CUPS backend to start a print job.
+* New function decrementTimeoutCounters decrements the hard and 
+  soft timeout counters and checks whether a timeout has occurred.
+
+2009-09-22   quosnmp 1.8.0 Final
+* No changes from release candidate 4.
+
+2009-09-17   quosnmp 1.8.0 release candidate 4
+* Now the handler for SIGTERM in quosnmp is set to "IGNORE" as 
+  soon as the backend starts.
+* Moved the signal trap for "IGNORE" to an earlier point in the 
+  script.
+* Fixed a bug in the pid-checking lockfile code. The output of 
+  "ps" was not being parsed properly.
+* Added an extra DEBUG level error message related to the above.
+
+2009-09-11   quosnmp 1.8.0 release candidate 3
+* Fixed a bug in the return value of unlockPrinter in one case.
+* Went from using -e test to return value of "unlink" to determine 
+  when certain files are deleted by quosnmp or quosnmp-util.
+
+2009-09-10   quosnmp 1.8.0 beta 6
+* Wildcard specifications in the EMAIL_LIST work again.
+* Got rid of an asterisk in the webpage which is returned by both 
+  get_quota.pl and get_quota.php.  It was completely unnecessary.
+* Error log message about failing to send an e-mail when a user is 
+  over quota is now an ERROR level message (rather than INFO).
+* We no longer exit the PRINTINGLOOP when the backend returns an 
+  error.  We now keep waiting until the printer stops printing 
+  so as to do accounting after any leftover printing has finished.
+* New function writePageLog which is used to write out the page log. 
+  It is called by doAccounting.  This means that writing out the 
+  page log is no longer part of the main script.
+
+2009-09-09   quosnmp 1.8.0 beta 5
+* Bumped back down to beta status.
+* Lockfile now stores the PID of the quosnmp process as well as 
+  the print job number and the username.  This PID value is now used 
+  in the logic which determines whether one quosnmp process can 
+  remove the lockfile of another.
+
+2009-09-04   quosnmp 1.8.0 release candidate 2
+* Got number of arguments in @cE right.  After removing the path to 
+  lprm argument previously, I forgot to get rid of it when setting 
+  the default values for this array.
+* Changed the text of one error message in quosnmp.
+
+2009-09-04   quosnmp 1.8.0 release candidate 1
+* No changes from beta 4
+
+2009-09-03   quosnmp 1.8.0 beta 4
+* Fixed bug in optional reset_print_quotas script whereby newly 
+  created accounting files would have wrong ownership and file 
+  permissions.
+
+2009-09-01   quosnmp 1.8.0 beta 3
+* Quosnmp now tries to set the permissions on unwritable quota 
+  directories to 0770 instead of 0700. This should not affect 
+  any quosnmp functionality, but it is consistent with the permissions 
+  set when the directory is created from scratch.
+
+2009-08-27   quosnmp 1.8.0 beta 2
+* Added signal handler to avoid killing quosnmp at an inconvenient 
+  time.  SIGTERM (sent by lprm) now affects quosnmp prior to the 
+  real backend starting, affects the backend once it is started
+  (quosnmp kills it) and is ignored after the backend terminates 
+  (e.g. during the accounting phase).
+* Removed all mention of lprm from quosnmp. It has not been
+  necessary or useful for a while now.
+* Made some changes to variable names.
+
+2009-08-25   quosnmp 1.8.0 beta 1
+* Changed loglevel of "current printer lifetime pagecount" message 
+  from INFO to DEBUG.
+
+2009-08-25   quosnmp 1.8.0 alpha
+* By default, quosnmp now checks the pagecount every time it queries 
+  the printer status during a print job.
+* Created MONITOR_PAGECOUNT configuration variable to control whether 
+  quosnmp checks the pagecount every time it queries the printer 
+  status.
+* The usual comment cleanups. Finally documented @cE.
+
+2009-08-14   quosnmp 1.7.5 Final
+* No changes from release candidate 1
+
+2009-08-10   quosnmp 1.7.5 release candidate 1
+* Changed some of the text printed out by the install script.
+* No other changes.
+
+2009-08-07   quosnmp 1.7.5 beta 3
+* Updated quosnmplibtest.pl to test setDefaultVars.
+
+2009-08-06   quosnmp 1.7.5 beta 2
+* Fixed a bug in quosnmp-util whereby I forgot to set default values 
+  for VARS using the new setDefaultVars function!
+* Changed some inaccurate text in the help section of quosnmp-util.
+
+2009-08-04   quosnmp 1.7.5 beta 1
+* A small change to make sure that newly-created files have the 
+  appropriate permissions for use with print_quota.vbs (and possibly 
+  other applications, but for normal use of quosnmp this change is 
+  not necessary).
+* Added a comment to print_quota.vbs which explains the need for 
+  setting very specific permissions on the accounting files to make 
+  it work properly.
+* Created get_quota.pl, which is like get_quota.php but in perl.  
+  It uses Quosnmp.pm instead of reimplementing those functions (as I 
+  had to do in get_quota.php).  Why didn't I do that in the first 
+  place?
+* Created new function "setDefaultVars" to set the VARS hash to a 
+  standard set of default values.
+* Updated some comments in Quosnmp.pm which were no longer accurate.
+
+2009-05-29   quosnmp 1.7.4 Final
+* No changes from release candidate 2.
+
+2009-05-28   quosnmp 1.7.4 release candidate 2
+* Brought back print_quota.vbs.  Not that get_quota.php doesn't work, 
+  but some people might have a use for this.
+* Added a bit more documentation to get_quota.php
+
+2009-05-27   quosnmp 1.7.4 release candidate 1
+* Fixed bug in error message output by quosnmp-util
+
+2009-05-18   quosnmp 1.7.4 beta 1
+* Changed rereadConfig to store several values before reading config 
+  file, then replacing them afterwards.
+* Removed a now-obsolete variable from VARS in quosnmp-util.
+* More error logging occurs when quosnmp-util is called with the -XX 
+  argument. Also, blank lines are now removed by this command.
+* Removed getOverallQuota function, as it became really nothing more 
+  than a call to getUserPrintQuota.
+* Removed getAccountingInfo as it was little more than a call to 
+  getUserPagecount in one mode, and a string concatentation in the other
+  mode.
+
+2009-05-15   quosnmp 1.7.4 alpha
+* Continued major reworking of internals of Quosnmp.pm, quosnmp 
+  and quosnmp-util.
+* Added logging feature to quosnmp-util. This became easy with 
+  the recent reworking.
+* Fixed various bugs in quosnmp-util and Quosnmp.pm.
+* Moved argument counter incrementing from end of functions to 
+  immediately after the next argument is used in quosnmp-util.
+* Added more calls to reportStatus to quosnmp-util and changed 
+  most existing print statements to use reportStatus.
+* It is no longer an error to try to subtract a quota of "U" or 
+  "N" from a user's pagecount. It doesn't do anything, but it's 
+  not an error.
+* Changed the permissions which are automatically set on any newly 
+  created directories or logfiles. They are now owned by lp:lp rather 
+  than root:lp. Also, logfiles are no longer group-writable. 
+
+2009-05-14   quosnmp 1.7.3 Final
+* No changes from release candidate 1.
+
+2009-05-12   quosnmp 1.7.3 release candidate 1
+* No changes from beta 2
+
+2009-05-11   quosnmp 1.7.3 beta 2
+* Added more debug messages to Quosnmp.pm.
+* Rewrote validTimestamp to fix a bug which by chance was not 
+  affecting anything, but this was just dumb luck.
+* validTimestamp now returns "0" (not valid) when testing an 
+  empty timestamp. Other functions in Quosnmp.pm have been 
+  adjusted accordingly.
+
+2009-05-07   quosnmp 1.7.3 beta 1
+* Added more tests to quosnmplibtest.pl.
+* Bugfixes, warnings, existence tests added to various parts 
+  of Quosnmp.pm.
+
+2009-05-06   quosnmp 1.7.3 alpha
+* Made most global variables into items in a hash rather than 
+  distinct variables.
+* Added same hash to quosnmp-util, though with a few extra 
+  values which are not found in quosnmp.
+* Quosnmp-util no longer looks for configuration info in the 
+  quosnmp function, only in the quosnmp.conf file.
+* Removed -S option from quosnmp-util since it no longer 
+  reads the quosnmp script for its configuration info.
+* Changed syntax for how a few arguments are read in by the 
+  subfunctions which receive them.
+* Modified parseConfigFile to make it a standalone function. 
+  It has been moved to Quosnmp.pl
+* Minor changes to whitespace (hopefully making the code more 
+  readable).
+* Fixed a couple of comments.
+* Added quosnmplibtest.pl to SVN repository.  This is only 
+  useful for software developers, and probably will not be 
+  included in any release.
+
+2009-04-27   quosnmp 1.7.2 Final
+* No changes from release candidate 1.
+
+2009-04-24   quosnmp 1.7.2 release candidate 1
+* No changes from beta 1.
+
+2009-04-23   quosnmp 1.7.2 beta 1
+* That BIG BUG was not fixed.  This is a second attempt.  The 
+  real problem was that the array of cleanExit arguments was 
+  being passed the wrong value for the pre-printing pagecount 
+  of the printer.
+* Fixed small bug in debug messages related to lockfile 
+  creation.
+
+2009-04-20   quosnmp 1.7.1 Final
+* No changes from release candidate 1.
+
+2009-04-17   quosnmp 1.7.1 release candidate 1
+* Minor changes to comments.
+
+2009-04-14   quosnmp 1.7.1 beta 1
+* Moved readLockfile and writeLockfile to Quosnmp.pm.
+* Both readLockfile and writeLockfile print out some basic 
+  debug information now.
+* BIG BUGFIX: doAccounting now fails unless it is passed 
+  pagecounts from both before and after printing.
+* Many other checks to avoid having doAccounting called with 
+  a missing value or a -1 (a "filler" value) for prePageCount.
+* Fixed info message when backend fails so that it reports 
+  the correct number of times running the backend will be 
+  tried.
+
+2009-04-13   quosnmp 1.7.1 alpha
+* Created readLockfile function for reading in lockfiles.
+* Created writeLockfile function for writing lockfiles.
+* Lockfiles now contain the username as well as the jobid of 
+  the job which has locked the printer.
+* A printer pagecount of "0" is now considered to be an error.
+  Aside from brand new printers, this is always an error.  
+  While brand new printers can have this value, you should 
+  really print a test page first.
+* When removing old quotas, quosnmp-util now removes any file 
+  which no longer contains any unexpired quotas.
+* Moved one "INFO" message which was never being triggered 
+  to a spot where it will be triggered.
+* Locking more file opens with flock.
+* Restructuring of several while loops to make code less 
+  nested.
+* Normalized syntax of open/close/flock/seek commands.
+
+2009-04-13   quosnmp 1.7.0 Final
+* No changes from release candidate 1.
+
+2009-04-09   quosnmp 1.7.0 release candidate 1
+* No changes from beta 2.
+
+2009-04-08   quosnmp 1.7.0 beta 2
+* Install script now prints out a bit more information about 
+  what needs to be done to get quosnmp working.
+
+2009-04-08   quosnmp 1.6.4 Final
+* Fixed one major bug in quota determination code (the same 
+  one which was fixed in 1.7.0 beta 1).
+
+2009-04-07   quosnmp 1.7.0 beta 1
+* Fixed bug whereby if "U" or "N" group quota was in the 
+  first group quota file found, it could be overridden by 
+  another group quota.
+
+2009-04-06   quosnmp 1.7.0 alpha
+* Removed any code which treated quotas of "0" or "-1" as 
+  special.  They used to mean "cannot print" and "unlimited 
+  quota" but they have been replaced by "N" and "U".
+
+2009-04-06   quosnmp 1.6.3 Final
+* No changes from release candidate 1.
+
+2009-04-03   quosnmp 1.6.3 release candidate 1
+* One unused line removed from get_quota.php
+
+2009-03-31   quosnmp 1.6.3 beta 1
+* Try to automatically fix some file permissions problems 
+  related to the error and page log files.
+* Added more debug messages.
+* Fixed backend retry debug message which gave inaccurate info.
+* Moved from using "enable" to "cupsenable" when re-enabling 
+  a stopped printer.
+* Check for existence of various binaries when quosnmp starts.
+* Now does something like an "auto-detection" of the location of 
+  vital CUPS binaries (lpq, lprm, cupsenable).
+* Quosnmp now exits when CUPS returns a backend exit code of 5 
+  (job canceled due to unsupported attributes). I will assume 
+  that the offending attributes won't be changed/removed in the 
+  middle of a print job.
+
+2009-03-30   quosnmp 1.6.2 final
+* Fixed major stupid bug in Quosnmp.pm such that quotas without 
+  timestamps could not be set.
+
+2009-03-27   quosnmp 1.6.1 final
+* No changes from release candidate 1.
+
+2009-03-24   quosnmp 1.6.1 release candidate 1
+* No changes from beta 3.
+
+2009-03-23   quosnmp 1.6.1 beta 3
+* Shortened default DISK_RETRY_PERIOD.
+* Changed the debug message for when DISK_RETRY_PERIOD is set  
+  in the config file to something more appropriate.
+* Made tests in parseConfigFile more precise.
+* Removed a pointless debug message.
+* Dealt with major bug whereby debug info was not printed 
+  during parsing of config file.
+* Added a line to print out debug info in chkJobBlacklist.
+
+2009-03-19   quosnmp 1.6.1 beta 2
+* Fixed bug whereby new files created with an append command 
+  (e.g. quosnmp-util -GG, -DD, -UU) had a blank line at the 
+  beginning of the file (harmless, but annoying).
+* Changed default over-quota e-mail message to something a 
+  bit more informative. 
+* Changed an inaccurate comment in chkJobBlacklist function.
+* Many global variables are now passed directly to the 
+  function which requires them in quosnmp.
+
+2009-03-18   quosnmp 1.6.1 beta 1
+* Made "do not overwrite existing files" the default option in 
+  the installer script.
+* Fixed bug in argument checks at the start of quosnmp.
+* Fixed bug in reporting of which file contains the quota being 
+  utilized.
+
+2009-03-17   quosnmp 1.6.1 alpha
+* Installer script now asks for verification before overwriting 
+  any existing files (such as quosnmp.conf...).
+* Added validTimestamp function to check in a very simple way 
+  whether a valid date/time was given in the timestamp.
+* Added two arguments to cleanExit so that it no longer needs 
+  access to the @ARGV global.
+* Moved most arguments to cleanExit to an array "@cE".  In 
+  doing so several minor bugs whereby less info was logged than 
+  was available have been eliminated.
+* Renamed "getPrintQuota" to "getUserPrintQuota".
+* Renamed "quosnmpWrite" to "writeDataFile".
+* Alphabetised exported functions in Quosnmp.pm.
+* Removed descriptions of global variables in quosnmp.  This is 
+  the beginning of the end for as many globals as I can manage 
+  to eliminate.
+
+2009-03-13   quosnmp 1.6.0 Final
+* No changes from RC1.
+
+2009-03-11   quosnmp 1.6.0 release candidate 1
+* Changed one variable name in Quosnmp.pm.
+* Changed some comments in the installer.
+
+2009-03-10   quosnmp 1.6.0 beta 4
+* Small change to the text output of get_quota.php.
+
+2009-03-09   quosnmp 1.6.0 beta 3
+* More argument checks in quosnmp-util.
+* Changed format of function names in quosnmp-util to match those 
+  in the rest of the code.
+* Moved simple_write to Quosnmp.pm.  Changed function name to 
+  quosnmpWrite.
+* Moved validate_quota to Quosnmp.pm.  Changed function name to 
+  validQuota.
+* Slightly optimized the tests used to find special quota values 
+  in various places in the code.
+* Changed return values of updateUserPagecount to something more 
+  standard: 1 on success, 0 on failure.
+* Moved pagecount query outside of check for unlimited quota. 
+  This way the pagecount can appear in the logs even if a user 
+  has an unlimited quota.
+* Changed return value of getUserPagecount from 0 to undefined 
+  in the case where the accounting file does not exist.
+* Used validQuota function to replace a test in setQuota.
+
+2009-03-06   quosnmp 1.6.0 beta 2
+* Removed print_quota.vbs script.  It does not support the new 
+  quota file format, and anyway it had some annoying limitations 
+  which could be improved upon.
+* Added get_quota.php script.  This is designed to run as a web 
+  app in a php-enabled web server.  When finished, it should 
+  return the user's quota in the form of a webpage.  May be the 
+  start of something bigger.
+* More argument checks in quosnmp-util.
+
+2009-03-02   quosnmp 1.6.0 beta 1
+* Decided previous beta 1 should have been called alpha.
+* Got rid of all "shift"s.
+* Added comments and legal notice to installer script.
+* Changes to comments in quosnmp script.  Mostly minor, but in 
+  particular removed a line about how administrator would not want 
+  to change any of the default settings, which in some cases (e.g. 
+  the outgoing mail server) is blatantly incorrect.
+
+2009-02-26   quosnmp 1.6.0 alpha
+* Defined new quota file syntax.  Quotas can be plain numbers or 
+  "adjustments", which are numbers preceded by +/- and which are 
+  additive.  In addition, both quotas and adjustments can have 
+  expiration dates.  These are represented by times in CCYYMMDDhhmm 
+  format.  The quota and timestamp are separated by a comma.
+* Moved several functions into a perl module (Quosnmp.pm).
+* Changed several function calls to eliminate reliance on global 
+  variables for functions moved to module.
+* Major redesign of quosnmp-util.  Note that quosnmp-util now 
+  returns "undef" when no quota is found when querying default, 
+  user or group quotas.
+* Added an installation script.
+* -XX (expiration) option to quosnmp-util is tested and working.
+* Extra argument checks in quosnmp-util.  This will definitely be 
+  an ongoing project.
+* Changed simple_write function to test for quota files using the 
+  old format and convert them to the new format.
+
+2009-02-24   quosnmp 1.5.3 Final
+* Minor changes to comments.
+
+2009-02-23   quosnmp 1.5.3 release candidate 1
+* No changes from beta 2.
+
+2009-02-18   quosnmp 1.5.3 beta 2
+* Moved config file parsing code to an earlier point in the script 
+  so that debug settings can apply to more of the script.
+* Updated some debug error messages to make them more clear.
+
+2009-02-18   quosnmp 1.5.3 beta 1
+* Now possible to use Yes/No, True/False, and On/Off as well as 
+  1/0 for certain values in config file.
+* Fixed a bug whereby "Ending an EMAIL_LIST" debug info was printed 
+  too many times.
+* Fixed a bug in the "Ignoring line which applies to printer" error 
+  message whereby an unwanted newline was present.
+
+2009-02-13   quosnmp 1.5.2 Final
+* Updated reset_print_quotas script.
+
+2009-02-10   quosnmp 1.5.2 release candidate 1
+* Added name of current printer to one error message in the 
+  parseConfigFile function.
+* Tweaked how quosnmp-util sets permissions on newly created quota 
+  files.  In particular, made the default quota file 644, not 640, 
+  and fixed a bug whereby group quota files were set with the wrong 
+  group permissions.
+
+2009-02-10   quosnmp 1.5.2 beta 4
+* Reordered some of the initial lines of the script which test for 
+  various requirements (e.g. that a username was given).
+* In parseConfigFile function, set currentPrinter to 0 (temporarily 
+  stopping the script from looking for new printer settings) as soon 
+  as emailHeader is set to 1.
+* Better comments in parseConfigFile.
+
+2009-02-09   quosnmp 1.5.2 beta 3
+* In various places in quosnmp and quosnmp-util, these scripts will 
+  now explicitly set the ownership of newly-created files and 
+  directories to appropriate values.
+
+2009-01-27   quosnmp 1.5.2 beta 2
+* Change isBoolean function to makeBoolean, which converts all "true" 
+  and "false" type values to a 1 or 0.
+* Actually use ERROR_LOG variable!  It is now possible to turn off 
+  error logging.
+* Change various tests of the form "$VALUE == 1" to simply "$VALUE" 
+  when $VALUE should be a boolean.
+
+2009-01-14   quosnmp 1.5.2 beta 1
+* Bugfixes to config file reading code. Boolean values should now be 
+  categorized correctly.
+* Quosnmp will now check for the existence of the quota and accounting 
+  directories prior to running a print job and will create any missing 
+  directories.
+* Quosnmp will now check the permissions of the quota and accounting 
+  directories prior to running a print job and will try to repair any 
+  problematic permissions.
+* Quosnmp-util will also create the quota and accounting directories if 
+  they do not exist and are required to complete a command successfully.
+
+2008-11-26   quosnmp 1.5.1 Final
+* No changes from RC2.
+
+2008-11-17   quosnmp 1.5.1 release candidate 2
+* Changed quosnmp-util so that functions which print error messages do not 
+  return a value (which would otherwise itself be printed).
+
+2008-11-12   quosnmp 1.5.1 release candidate 1
+* No changes from beta 2.
+
+2008-11-06   quosnmp 1.5.1 beta 2
+* No changes to quosnmp.
+* Bugfixes in quosnmp-util.
+* Removed -I option from quosnmp-util.  Now that we can easily have different 
+  settings for different printers, something more complicated like a setup 
+  "wizard" is really in order.
+
+2008-10-21   quosnmp 1.5.1 beta 1
+* No changes to quosnmp.
+* Support for config file (introduced in 1.5.0) added to quosnmp-util.
+* New quosnmp-util functions:
+  -Z to subtract quota from page count for user.
+  -C to specify location of quosnmp.conf
+  -P to specify which printer is associated with the changes being made.
+* The get_quosnmp_var function in quosnmp-util can now check the quosnmp 
+  config file (if any) for variables.
+
+2008-10-07   quosnmp 1.5.1 alpha
+* Internal changes to quosnmp and quosnmp-util so that the letters "U" and "N" 
+  are used to represent unlimited quotas and non-existent (zero) quotas.  The 
+  old values of "-1" and "0" respectively are still supported.
+
+2008-10-03   quosnmp 1.5.0 Final
+* Final release
+
+2008-09-29   quosnmp 1.5.0 release candidate 3
+* Made page log print out the name of the printer rather than the IP address.
+  IP addresses can be shared by multiple printers!
+
+2008-09-25   quosnmp 1.5.0 release candidate 2
+* Removed changes to locking code which were added in previous beta.  I figured 
+  out how to fix the problem in CUPS, and while this code was not useless the 
+  file locking as it currently exists should do the trick.
+* Fixed stupid bug which made quosnmp slow.  Always check for the existence of 
+  a file before trying to open it...
+
+2008-09-23   quosnmp 1.5.0 beta 2
+* Going back to beta to add new bugfixes.
+* Changed locking code so that jobs will not remove a lockfile if a job with a 
+  lower Job ID is still in the queue for that printer.  This will allow jobs to 
+  print in the order submitted in the case in which multiple jobs become 
+  "Active" simultaneously (due to a CUPS bug?).  Unfortunately this will also 
+  make it possible for one job (the one with the lowest Job ID) to potentially 
+  stall the rest of them.
+* No longer enable (a la "cupsenable") the printer when exiting the script.  It 
+  turns out this can cause problems!
+
+2008-09-23   quosnmp 1.5.0 RC 1
+* Changes to documentation, that's about it.
+
+2008-09-18   quosnmp 1.5.0 beta 1
+* Exit on error reading config file.
+* Made tcpGet function return an error on all error conditions not just socket 
+  creation errors.
+* Made coding style more consistent.
+
+2008-09-16   quosnmp 1.5.0 alpha 2
+* Changed some errors from INFO to DEBUG or vice-versa.  Also cleared up 
+  definition of each in README file.
+* Made changes which should make printer locking more immune to race conditions.
+
+2008-09-12   quosnmp 1.5.0 alpha 1
+* New configuration file (default /etc/quosnmp/quosnmp.conf).  Use of config 
+  file is optional.
+* New function parseConfigFile for reading configuration file.
+* Variable SPECIAL_PRINTERS removed.
+* New PAGE_MULTIPLIER variable which keeps track of the page count multiplier 
+  for the current printer.  Previously this would have been determined from 
+  the file in SPECIAL_PRINTERS.
+* Variable EMAIL_LIST changed from a file path to a Perl list.  Values in this 
+  list will probably be parsed from config file.
+* New function isBoolean to determine whether valid boolean argument was given 
+  in config file.
+* Removed checking of soft timeout counter during lockfile setting.  If the 
+  printer cannot be unlocked, there is a live print job and the soft timeout 
+  should not be triggered.
+
+2008-08-15   quosnmp 1.4.0 Final
+* No changes from RC1. 
+
+2008-08-14   quosnmp 1.4.0 RC 1
+* Added a new debug line to convertPJLtoSNMP.
+* Cleaned up some comments.
+
+2008-08-11   quosnmp 1.4.0 Beta 1
+* Change the tests which determine whether we should skip some 
+  SNMP queries which may be HP-specific.
+* Added NETWORK_POLLING_PERIOD variable to allow the frequency 
+  of network polling of the printer to be controlled.  Comment 
+  includes a stern warning not to modify this lightly!
+* Added DISK_RETRY_PERIOD variable to allow the frequency of 
+  retrying disk-related actions on the local system to be 
+  controlled.
+* Added extra debug message with information on which method 
+  was chosen by pagecount/printer status method auto-detect 
+  code.
+* Renamed BACKEND_ATTEMPTS to BACKEND_RETRIES.
+
+2008-08-08   quosnmp 1.4.0 Alpha 2
+* Back out change from previous alpha whereby minimums 
+  mentioned in comments were enforced.
+* Changed comments to recommend minimums, not imply that they 
+  are enforced.
+* Got rid of some network configuration options which people 
+  probably shouldn't be playing with anyway.  If they want to 
+  change 'em, they can edit the code.
+* Made network polling loop sleep for a shorter time when the 
+  rest of the loop took a long time to complete (e.g. due to a 
+  network timeout).
+
+2008-08-08   quosnmp 1.4.0 Alpha
+* New auto-detect option for setting method of pagecount and/or 
+  printer status queries.
+* Enforce some minimums mentioned in the comments for the user-
+  adjustable parameters.
+* Let code attempt HP-specific queries by default.
+* Moved some code from tcpGet to convertPJLtoSNMP function.
+* Changed some comments for clarity and/or accuracy.
+
+2008-08-06   quosnmp 1.3.3 Final
+* Minor formatting tweaks.
+* Changed one variable name (to OVER_QUOTA_EMAIL_MESSAGE)
+* Added COPYING file to tarball.
+
+2008-05-05   quosnmp 1.3.2 Final
+* No changes from RC1.
+
+2008-05-01   quosnmp 1.3.2 RC 1
+* Avoiding hubris, changed one test from >0 to !=0.
+
+2008-04-29   quosnmp 1.3.2 Beta 1
+* Fixed up bug in printer polling section whereby printer status 
+  was ignored.
+* Named main loops in printer polling section.
+* Optimized some excessively long comments.
+
+2008-04-28   quosnmp 1.3.2 Alpha 2
+* Major change to printer polling section of main loop.  A large 
+  chunk of redundant code was removed.
+
+2008-04-28   quosnmp 1.3.2 Alpha
+* Moved unlocking of printer (under non-error circumstances) to 
+  after printer accounting completed.
+* Added hilarious new debug messages, mundane new debug messages, 
+  more code comments.
+
+2008-04-21   quosnmp 1.3.1 Final
+* No changes from RC1.
+
+2008-04-18   quosnmp 1.3.1 RC 1
+* No changes from beta 2.
+
+2008-04-17   quosnmp 1.3.1 beta 2
+* Rewrote a couple of error messages for greater clarity.
+
+2008-04-17   quosnmp 1.3.1 beta 1
+* Made sure that every test of "TimeoutCounter" variables included a 
+  check to determine whether they were enabled at all.
+* Moved check for lockfile to the earliest possible point in the 
+  script, before the blacklist/quota checks.
+* Replaced several ARGV references in subfunctions with variables 
+  explicitly passed by the calling function.
+
+2008-04-17   quosnmp 1.3.1 Alpha
+* Created distinct "hard" and "soft" timeout settings.
+* Removed all "alarm" calls as it turns out the "sleep" function may 
+  mess with these.
+
+2008-01-31   quosnmp 1.3.0 Final
+* Added notice about development of quosnmp and quosnmp-util being 
+  supported by my employer.
+
+2008-01-31   quosnmp 1.3.0 RC2
+* No changes from RC1.
+
+2008-01-29   quosnmp 1.3.0 RC1
+* Removed useless sanity check.  Second-guessing the user is a bad 
+  idea, and surely the CUPS backend can report errors too.
+* Made the message which is sent in an over-quota e-mail into a 
+  global variable so that users can easily customize it.
+
+2008-01-24   quosnmp 1.3.0 beta 3
+* Removed all "system" calls from quosnmp-util
+* Removed a few "system" calls from quosnmp
+* Switch to Net::SMTP for sending e-mail
+* Modified quosnmp-util to create emails.txt and printers.txt 
+  and associated directory in /etc.
+* Minor tweaks to quosnmp.
+
+2008-01-23   quosnmp 1.3.0 beta 2
+* Added INFO level log event when an e-mail about exceeding one's 
+  quota is sent to a user.
+* Moved "Some comments on the structure of the code" section to the 
+  README file (where it should have been in the first place).
+* Removed -M and -N options from quosnmp-util. The user can just 
+  enter "-1" as the quota for unlimited printing.
+* Updated quosnmp-util help info to reflect the previous change.
+
+2008-01-23   quosnmp 1.3.0 beta 1
+* Finally decided to take advantage of the global variables which 
+  were already in the script. Fewer arguments are now passed to 
+  subfunctions.
+* Changed one lingering reference to "accounting" subfunction to 
+  "doAccounting".
+* Made a small change to the help info in quosnmp-util.
+
+2008-01-23   quosnmp 1.2.3 Final
+* One minor bugfix from 1.2.2
+
+2008-01-22   quosnmp 1.3.0 Alpha
+* Added notification hook for when print job exceeds quota.  The 
+  corresponding notification function(s) have yet to be written. :)
+* Wrote function for sending mail to local users.
+* Wrote function for sending mail to a remote user. Requires a text 
+  file containing some e-mail mappings.
+* Look for special text files in /etc/quosnmp by default.
+
+2007-09-12   quosnmp 1.2.2 Final
+* No changes from RC1.
+
+2007-09-12   quosnmp 1.2.2 RC1
+* More small tweaks to status messages.
+
+2007-09-12   quosnmp 1.2.2 beta 3
+* A group quota of "0" (printing not allowed) no longer overrides 
+  higher quota values.  Undoes change made in beta 1.  Upon further 
+  consideration, I can see advantages to both approaches, so I'm 
+  setting this back to the way it was in 1.2.1.
+* More small tweaks to status messages.
+
+2007-09-11   quosnmp 1.2.2 beta 2
+* Changed from simple toggle for logging debugging info to a finer 
+  "debug levels" system.
+* Clarified the group quota tests in getPrintQuota.
+
+2007-09-11   quosnmp 1.2.2 beta 1
+* More small tweaks to status messages.
+* Fixed major bug in acquiring group quota.
+* A group quota of "0" (printing not allowed) now overrides higher 
+  quota values.
+
+2007-09-11   quosnmp 1.2.2 Alpha
+* If user has no pagecount file but is allowed to print, create the 
+  pagecount file and put a value of "0" in it.
+* Made updateUserPagecount function a little bit cleaner.
+* Added and/or moved around a bunch of ERROR and INFO messages.
+* Reorganized and clarified ERROR messages in quota checking section.
+* Created new "DEBUG" class of error messages which go in logfiles if 
+  DEBUG is set to "1", but never to STDERR.
+
+2007-09-06   quosnmp 1.2.1 Final
+* Turned "unable to lock printer" message in lockPrinter function into 
+  an INFO message.
+* Added extra hash to each line of the original header of accsnmp (on 
+  which quosnmp is based).
+
+2007-08-31   quosnmp 1.2.1 beta 1
+* Added WUNTRACED to backend loop so that backend processes which are
+  stopped or killed by signals can be detected.
+* Changed the text of a few more "INFO" messages.
+
+2007-08-27   quosnmp 1.2.1 Alpha
+* Added a couple more "INFO" lines which are printed and/or logged as 
+  quosnmp runs.
+* Changed other the text of other "INFO" messages.
+* Made some stylistic changes.
+* Skip later parts of TCP-based printer query if earlier stages failed 
+  (just retry instead).
+* Removed one very misleading comment.
+* Put in a real (working) test for parsing of command URI.
+
+2007-08-22   quosnmp 1.2.0 Final
+* No changes from RC3.
+
+2007-08-22   quosnmp 1.2.0 RC3
+* Retry fork once every five seconds rather than every second.
+* Fixed bug in code which deletes temporary job file.
+* Temporary job file is now deleted on error (function cleanExit) unless 
+  configured to save jobs.
+* Use "8" rather than "2" as code for out of paper error.
+* Add HP_ADVANCED_STATUS variable.  SNMP queries for out of paper/
+  low toner/paper jam only work with HP printers for now, so they are 
+  off by default but can be turned on by setting this to "1".
+
+2007-08-21   quosnmp 1.2.0 RC2
+* Of the three snmp requests to get more detailed information when snmp 
+  status code 1 is returned, only do the last two if the first returns 
+  a meaningful value.
+* Decided to just use temporary directory for lockfiles rather than a 
+  special lockfile directory.
+* Moved "use" statements below configurable variables.
+* Changed all configurable variables to all-caps.
+* Modified quosnmp-util to look for these new all-caps variables.
+* In quosnmp-util, use existing functions to get accounting/quota directories 
+  to eliminate redundant code.
+
+2007-08-20   quosnmp 1.2.0 RC1
+* Added STRICT_TIMEOUT switch just in case someone wants to avoid script 
+  hangs more than they want to avoid inaccurate accounting when a printer 
+  stalls.
+* Fixed some minor syntactic complaints (reported by perl -w) in quosnmp 
+  and quosnmp-util.
+
+2007-08-16   quosnmp 1.2.0 beta 6
+* Script now exits printer polling loop on idle code only.  Other codes 
+  may represent errors (e.g. out of paper) and not the end of printing.
+* Added several new printer status codes representing specific errors.
+* Added extra SNMP queries to get more detailed printer status in 
+  case of status==other (PJL already returns this information).
+* Accounting is skipped if page count could not be queried after printing.
+* Explicitly undefine exitval variable when backend has a nonzero return 
+  value.
+
+2007-08-16   quosnmp 1.2.0 beta 5
+* Minor reorganization of backend polling loop.
+* Rearranged order of events in cleanExit.
+
+2007-08-16   quosnmp 1.2.0 beta 4
+* Added test for whether current job has locked a printer to manageLockfile.
+* Broke manageLockfile into three functions.
+* Caused printer stall alarm to reset itself whenever the printer reports 
+  that it is printing something.
+* Whoa Nelly... made the call to the real CUPS backend part of a child 
+  process and made the parent process poll the printer while the child 
+  is running.  This should deal with a large class of corner cases which 
+  were not dealt with before.
+
+2007-08-15   quosnmp 1.2.0 beta 3
+* Put "&" character in front of subroutines (not mandatory, but "proper").
+* Now printer status is collected for the first time just after the backend 
+  runs.  This is an attempt to deal with a bug involving printers which 
+  are in powersave mode when the job comes in.
+* Created new info messages which report the state of the backend.
+* Added new info messages to lockfile management function.
+* Changed printer status polling delay back to 2s (from 0.5s) because of 
+  the large amount of logging associated with a 0.5s delay when debugging 
+  is enabled.
+* Moved some accounting stuff at the end of the main loop to the 
+  accounting subfunction.
+* Made cleanExit call accounting in certain cases (printer is locked and 
+  prePageCount was successfully queried).
+* Changed several function names.
+* Removed loop from printer lockfile creation function.  The main function 
+  now loops to call this until the file is created.
+
+2007-08-14   quosnmp 1.2.0 beta 2
+* Moved argument check outside of main loop.
+* Changed "lockfile could not be deleted" message from ERROR to INFO.
+* Adjusted how info messages are reported during printing.
+
+2007-08-14   quosnmp 1.2.0 beta 1
+* Removed pagecount/printer status commands from "global" variables.
+  They're just embedded in the code now.
+* Changed some variable names.
+* Added error reports to the "CLEANUP/EXIT" part of the script.
+
+2007-08-13   quosnmp 1.2.0 Alpha
+* Changed INFO messages to use logError function.
+* Replaced debug function with special debug-on-exit data dump to logs.
+* Cleaned up getPrintQuota function.
+* Added retry loop to readPrintQuota function.
+* Merged chkPrinterColor into accounting subroutine.
+
+2007-08-10   quosnmp 1.1.0 Final
+* Changed a few variable names.
+
+2007-08-09   quosnmp 1.1.0 RC5
+* Major accounting bug (new to 1.1.0 series) squashed.
+* Small change to messages printed during lockfile creation.
+
+2007-08-06   quosnmp 1.1.0 RC4
+* Added code to allow quosnmp to remove a lockfile if the job whose number 
+  is listed in the lockfile has completed.  A call to "lpq -a" is used to 
+  get the currently active job numbers.
+* Added quosnmp "home page" to comments section of quosnmp and quosnmp-util.
+
+2007-08-02   quosnmp 1.1.0 RC3
+* Added some extra comments.
+* Small changes to timing of lockfile creation.
+* Fixed bug in error log which prevented time from printing out.
+* Created function to standardize error logging.
+* Moved lockfile control to a separate function.
+
+2007-08-01   quosnmp 1.1.0 RC2
+* Made cleanExit function remove lockfile (if any).
+* Removed excess newlines from error log messages.
+* Added section about program design in the comments at the top of the 
+  script.
+
+2007-07-31   quosnmp 1.1.0 RC1
+* Changed printer status polling delay from 2s to 0.5s. This is the "extra" 
+  delay between polling attempts, so 2s seemed a bit excessive.
+* Stylistic changes, mostly removing !$VAR type tests.
+
+2007-07-31   quosnmp 1.1.0 beta 3
+* Return an info message when CUPS backend returns non-zero exit value
+  (reflecting a temporary failure).
+* Put "selector" code for page count and printer status requests into 
+  subfunctions.
+* Added optional lockfiles for locking a particular physical printer 
+  (an ip address/port combination) from other copies of quosnmp. This can 
+  be an issue if multiple CUPS printers refer to the same physical printer.
+* Switched back from calling "cupsenable" to calling "enable" since the 
+  former name is not used in OS X (why not?)
+* Made location of "enable" and "lprm" configurable.
+
+2007-07-30   quosnmp 1.1.0 beta 2
+* Removed JOB_BLACKLIST variable.  Blacklisting is turned on if array of 
+  jobs to blacklist is not empty.
+* Made job blacklisting a bit more precise.
+* Fixed PostScript query for pagecount by changing tcpGet to use regular 
+  Perl socket routines (moved from IO::Socket to just Socket).
+* Adjusted ConvertPJLtoSNMP to convert complete PJL response, not just 
+  the code number.
+* Fixed small bug in backend loop (number of attempts was counted wrong).
+* Added some (hopefully) smarter error handling to backend retry loop.
+* Remove queue name from cleanExit arguments since it was just being 
+  pulled from the environment anyway.
+
+2007-07-25   quosnmp 1.1.0 beta 1
+* Added support for acquiring page counts using either PJL or PostScript 
+  commands sent to port 9100 (configurable).
+* Added support for acquiring printer status using PLJ commands sent to 
+  port 9100 (configurable).
+* Shortened default timeouts.
+* Updating pagecount (reading current pagecount and writing new pagecount) are 
+  now done in a single function with all I/O protected by a file lock.
+* Added explicit retries to file open operations (whether this is useful or 
+  not is a good question, but better safe than sorry).
+
+2007-07-27   quosnmp 1.0.2 Final
+* Fixed bug whereby specifying exactly one for BACKEND_ATTEMPTS always
+  caused script to exit at that point (after sending print job, but
+  before doing any accounting).
+
+2007-07-19   quosnmp 1.0.1 Final
+* Fixed simple but nasty bug which prevented per-user quotas from working.
+
+2007-07-18   quosnmp 1.0.1 RC2
+* Removal of a line of non-functional code.
+
+2007-07-16   quosnmp 1.0.1 RC1
+* No changes from beta 3.
+
+2007-07-03   quosnmp 1.0.1 beta 3
+* Refactoring of some code in quosnmp-util.
+* Small stylistic changes, like making "1" (not "0") the "success" return 
+  value for subfunctions.
+
+2007-07-02   quosnmp 1.0.1 beta 2
+* Added -R option to quosnmp-util.
+
+2007-07-02   quosnmp 1.0.1 beta 1
+* Minor syntax cleanups to quosnmp -- no new functionality.
+* Quosnmp-util actually checks the return values of its subfunctions for 
+  errors now (wow!).
+* Quosnmp-util no longer exits immediately after a -I argument, so that 
+  for example the default quota can be set with the same command which 
+  initializes the print quota system.
+* When using quosnmp-util with -I, the script now checks for the existence 
+  of the directories and files which it is supposed to create before doing 
+  anything.  If it finds all of them already exist, then it skips that 
+  argument.
+
+2007-06-22   quosnmp 1.0.0 Final
+* More complete README file.
+* Added -a and -c options to quosnmp-util.
+
+2007-06-08   quosnmp 1.0.0 RC3
+* In RC2 when group quotas were detected, the first one found was applied.  
+  This was changed so that all quotas for all groups to which a user belongs 
+  are checked and the most lenient group quota is applied.  Note that user 
+  quotas completely override group quotas, so I believe any of the odd cases 
+  which could be a problem with this new algorithm can be worked around using 
+  per-user quotas.
+* Added more comments, including a description of each sub-function of 
+  quosnmp-util.

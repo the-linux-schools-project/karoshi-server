@@ -1,0 +1,110 @@
+#!/bin/bash
+#This script will backup all of the karoshi servers to sal using rsync. Backups will be stored in /home/backups/SERVERNAME/foldername
+LOG_DATE=`date +%F`
+
+#Make log folder
+[ ! -d /opt/karoshi/logs/backup_servers/$LOG_DATE ] && mkdir -p /opt/karoshi/logs/backup_servers/$LOG_DATE
+#Get server data
+THIS_SERVER=`hostname`
+#Check that server data exists for this server
+if [ ! -f /opt/karoshi/server_network/backup_servers/backup_settings/$THIS_SERVER/backup_folders ]
+then
+echo `date`: backup_servers - no server backup folder information.
+echo `date`: backup_servers - no server backup folder information. >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+exit
+fi
+if [ ! -f /opt/karoshi/server_network/backup_servers/backup_settings/$THIS_SERVER/backupserver ]
+then
+echo `date`: backup_servers - no server backup folder information.
+echo `date`: backup_servers - no server backup folder information. >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+exit
+fi
+#Get server to backup to
+BACKUP_SERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/$THIS_SERVER/backupserver | sed 's/ //g'`
+
+if [ $BACKUP_SERVER'null' = null ]
+then
+echo `date`: backup_servers - backup server not set.
+echo `date`: backup_servers - backup server not set. >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+exit
+fi
+
+#Check that ssh is enabled for the backup server
+ssh -o PasswordAuthentication=no -o ConnectTimeout=5 $BACKUP_SERVER ls 1>/dev/null
+SSHSTATUS=`echo $?`
+if [ $SSHSTATUS != 0 ]
+then
+echo `date`: backup_servers - ssh connection failed "for" $BACKUP_SERVER.
+echo `date`: backup_servers - ssh connection failed "for" $BACKUP_SERVER. >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+exit
+fi
+
+#backup folder
+function backup_folder {
+echo `date`: `hostname` backup_servers - $BACKUPNAME - started >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+echo `date`: `hostname` backup_servers - $BACKUPNAME - started
+YESTERDAY=`date -d "-1 day" +"%Y-%m-%d"`
+ssh -x -o PasswordAuthentication=no $BACKUP_SERVER '
+
+#Delete oldest backup
+OLDEST_BACKUP=`date -d "-'$BACKUPDEPTH' day" +"%Y-%m-%d"`
+[ -d /home/backups/'$THIS_SERVER'/'$BACKUPNAME'/$OLDEST_BACKUP/ ] && rm -f -R /home/backups/'$THIS_SERVER'/'$BACKUPNAME'/$OLDEST_BACKUP
+
+#Create current backup folder
+[ ! -d /home/backups/'$THIS_SERVER'/'"$BACKUPNAME"'/current ] && mkdir -p /home/backups/'$THIS_SERVER'/'"$BACKUPNAME"'/current
+chmod 0700 /home/backups/'$THIS_SERVER'/'"$BACKUPNAME"'/current
+
+echo '$LOG_DATE' > /home/backups/'$THIS_SERVER'/'"$BACKUPNAME"'/backup_information
+date +%T >> /home/backups/'$THIS_SERVER'/'"$BACKUPNAME"'/backup_information
+echo '$THIS_SERVER' >> /home/backups/'$THIS_SERVER'/'"$BACKUPNAME"'/backup_information
+echo '$BACKUPPATH' >> /home/backups/'$THIS_SERVER'/'"$BACKUPNAME"'/backup_information
+' 2>> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+#Do rsync backup
+rsync --timeout=30 --verbose --dirs --recursive --links --compress --backup-dir=/home/backups/$THIS_SERVER/"$BACKUPNAME"/$YESTERDAY --delete --backup --times --perms --executability --owner --group -o "$BACKUPPATH" $BACKUP_SERVER:/home/backups/$THIS_SERVER/"$BACKUPNAME"/current 2>> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+echo `date`: backup_servers - $BACKUPNAME - finished. >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+}
+
+#Get backup paths
+function get_backup_paths {
+COUNTER=1
+BACKUPCOUNT=`cat /opt/karoshi/server_network/backup_servers/backup_settings/$THIS_SERVER/backup_folders | wc -l`
+while [ $COUNTER -le $BACKUPCOUNT ]
+do
+BACKUPPATHDATA=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/server_network/backup_servers/backup_settings/$THIS_SERVER/backup_folders`
+BACKUPPATH=`echo $BACKUPPATHDATA | cut -d, -f1`
+BACKUPNAME=`echo $BACKUPPATHDATA | cut -d, -f2`
+BACKUPDEPTH=`echo $BACKUPPATHDATA | cut -d, -f3 | tr -cd '0-9\n'`
+
+DO_BACKUP=yes
+
+#Check data
+if [ `echo $BACKUPPATH'null' | sed 's/ //g'` = null ]
+then
+echo `date`: backup_servers - no backup path. >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+DO_BACKUP=no
+fi
+if [ `echo $BACKUPNAME'null' | sed 's/ //g'` = null ]
+then
+echo `date`: backup_servers - no backup name. >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+DO_BACKUP=no
+fi
+if [ `echo $BACKUPDEPTH'null' | sed 's/ //g'` = null ]
+then
+echo `date`: backup_servers - no backup duration. >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+DO_BACKUP=no
+fi
+#Check backup path exists
+if [ ! -d "$BACKUPPATH" ]
+then
+DO_BACKUP=no
+fi
+
+if [ $DO_BACKUP = yes ]
+then
+backup_folder
+fi
+let COUNTER=$COUNTER+1
+done
+}
+get_backup_paths
+exit

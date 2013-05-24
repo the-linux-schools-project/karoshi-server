@@ -1,0 +1,8 @@
+#!/bin/bash
+UPTIMECOUNT=`ps -e | grep -c karoshi-uptime`
+if [ $UPTIMECOUNT -gt 2 ]
+then
+exit 0
+else
+exit 1
+fi

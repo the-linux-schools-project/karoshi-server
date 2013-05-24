@@ -1,0 +1,10 @@
+#!/bin/bash
+#softwareinstall
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/remotemanagement/remotemanagementsoftware
+echo /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/sendreturn '|' '('urpmi --force $APACHESOFTWARE 2'>>'/opt/karoshi/serversetup/install_log ';' killall sendreturn')'  > $HOME/.tempdata/installsoftware
+
+chmod 0700 $HOME/.tempdata/installsoftware
+
+xterm -geometry 100x20 -bg white -fg black -e $HOME/.tempdata/installsoftware
+rm -f $HOME/.tempdata/installsoftware

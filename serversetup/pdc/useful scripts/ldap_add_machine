@@ -1,0 +1,36 @@
+#!/bin/bash
+#Add the machine account
+MACHINENAME=`echo $1`
+LOG_DATE=`date +%F`
+LOGPATH=/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+[ $LOG_DATE'null' = null ] && exit
+
+#Exit if machine name is blank
+if [ "$MACHINENAME"'null' = null ]
+then
+echo `date`: ldap_add_machine - Blank machine name >> $LOGPATH
+exit
+fi
+#Log attempt
+echo `date`: ldap_add_machine - adding "$MACHINENAME" >> $LOGPATH
+
+#Set sambaNextRid to be one minus the uidNumber in sambaDomainName=CHANGETHISDOMAINNAME this will result in the sambarid and uidNumber matching for the machine
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+UIDNUMBER=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" sambaDomainName=CHANGETHISDOMAINNAME | grep ^uidNumber | cut -d: -f2 | sed 's/ //g'`
+let UIDNUMBER=$UIDNUMBER-1
+echo -e "dn: sambaDomainName=CHANGETHISDOMAINNAME,dc=karoshi,dc=local
+changetype: modify
+replace: sambanextrid
+sambanextrid: $UIDNUMBER
+" | ldapmodify -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS 
+
+#Now add the machine to the domain
+/usr/sbin/karoshildap-useradd -w -g 515 -c Machine -d /dev/null -s /bin/false "$MACHINENAME"
+#The machine account is now created in ldap as a full posix account but for some reason the ldap useradd command gives an error back to the client.
+#Add machine again just so that the client gets a nice ok message. Using useradd on its own would not create a posix account.
+/usr/sbin/useradd -g 515 -c Machine -d /dev/null -s /bin/false "$MACHINENAME"
+#Unfortunately useradd also creates an entry in /etc/passwd which is a bit messy so lets delete it.
+/opt/karoshi/"useful scripts"/ldap_delete_local_machine_account "$MACHINENAME" &
+
+exit
+

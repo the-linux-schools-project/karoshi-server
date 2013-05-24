@@ -1,0 +1,91 @@
+#!/bin/bash
+#Copyright (C) 2010  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+#############################
+#Check to see if any email contacts have been added.
+#############################
+
+[ ! -d /opt/karoshi/server_network/mon/email_alerts/ ] && exit
+[ `ls -1 /opt/karoshi/server_network/mon/email_alerts/ | wc -l` = 0 ] && exit
+
+DATA=`echo $* | tr -cd 'A-Za-z0-9.:'`
+
+END_POINT=6
+#Assign SERVICE
+COUNTER=1
+while [ $COUNTER -le $END_POINT ]
+do
+DATAHEADER=`echo $DATA | cut -s -d: -f$COUNTER`
+if [ `echo $DATAHEADER'check'` = SERVICEcheck ]
+then
+let COUNTER=$COUNTER+1
+SERVICE=`echo $DATA | cut -s -d: -f$COUNTER`
+break
+fi
+let COUNTER=$COUNTER+1
+done
+
+#Assign LOGNAME
+COUNTER=1
+while [ $COUNTER -le $END_POINT ]
+do
+DATAHEADER=`echo $DATA | cut -s -d: -f$COUNTER`
+if [ `echo $DATAHEADER'check'` = LOGNAMEcheck ]
+then
+let COUNTER=$COUNTER+1
+LOGNAME=`echo $DATA | cut -s -d: -f$COUNTER`
+break
+fi
+let COUNTER=$COUNTER+1
+done
+
+#Assign GROUP
+COUNTER=1
+while [ $COUNTER -le $END_POINT ]
+do
+DATAHEADER=`echo $DATA | cut -s -d: -f$COUNTER`
+if [ `echo $DATAHEADER'check'` = GROUPcheck ]
+then
+let COUNTER=$COUNTER+1
+GROUP=`echo $DATA | cut -s -d: -f$COUNTER`
+break
+fi
+let COUNTER=$COUNTER+1
+done
+
+if [ `echo $SERVICE'null' | sed 's/ //g'` != null ]
+then
+EMAILMESSAGE=`echo $SERVICE failure on $GROUP.`
+else
+EMAILMESSAGE="Please check the Karoshi Monitoring in the web management."
+fi
+
+for EMAILCONTACT in /opt/karoshi/server_network/mon/email_alerts/*
+do
+EMAILCONTACT=`basename $EMAILCONTACT`
+source /opt/karoshi/server_network/mon/email_alerts/$EMAILCONTACT
+/opt/karoshi/server_network/mon/smtp-cli --verbose --host="$EMAILSERVER" --from "$SENDER" --to "$EMAILADDRESS" --subject "Karoshi Network Monitoring" --body-plain "$EMAILMESSAGE"
+
+done
+rm -f /opt/karoshi/server_network/mon/messages/email_message.$$
+exit

@@ -1,0 +1,327 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/module_email_cgi
+then
+echo `date`: module_email - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/module_email_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_email.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $module_email_cgi'check' ]
+then
+echo `date`: module_email - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: module_email - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-%'`
+if [ $DATA'null' = null ]
+then
+echo `date`: module_email - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+DOMAINPATH=`echo "$DATA" | cut -s -d: -f4 | sed 's/%3A/:/g' | sed 's/%2F/\//g'`
+COPYEMAIL=`echo "$DATA" | cut -s -d: -f5`
+[ $COPYEMAIL'null' = null ] && COPYEMAIL=no
+SERVERNAME=`echo "$DATA" | cut -s -d: -f6`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: module_email - Not called by module_email.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: module_email - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: module_email - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $DOMAINPATH'null' = null ]
+then
+echo `date`: module_email - Blank domain by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ $SERVERNAME'null' = null ]
+then
+echo `date`: module_email - Blank domain by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: module_email - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+echo `date`: setupemail "for" $DOMAINPATH on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/email/setupemail ] || LANGCHOICE=englishuk
+source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/email/setupemail
+
+#########################
+#Configure ldap
+#########################
+CONFIGURE_LDAP=yes
+
+if [ -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME ] || [ $SERVERNAME = $HOSTNAME ]
+then
+CONFIGURE_LDAP=no
+fi
+
+#########################
+#Ldap user check
+#########################
+if [ $SERVERNAME != $HOSTNAME ] && [ $CONFIGURE_LDAP != yes ]
+then
+PDCUSERCOUNT=`getent passwd | grep -c :/home/users/`
+
+SERVERUSERCOUNT=`ssh -x -o PasswordAuthentication=no $SERVERNAME '
+getent passwd | grep -c :/home/users/
+'
+`
+[ $PDCUSERCOUNT != $SERVERUSERCOUNT ] && CONFIGURE_LDAP=yes
+fi
+
+if [ $CONFIGURE_LDAP = yes ]
+then
+#Transfer ldap information to the slave ldap server
+#Copy in /etc/ldap.secret
+scp -p /etc/ldap.secret root@$SERVERNAME:/etc/ 1> /dev/null
+#Copy in ldap module
+scp -p -r /opt/karoshi/serversetup/modules/ldap root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
+scp -p -r /opt/karoshi/serversetup/distro/ubuntu/extra_server/software root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/extra_server/ 1> /dev/null
+scp -p -r /opt/karoshi/serversetup/distro/pclinuxos/extra_server/software root@$SERVERNAME:/opt/karoshi/serversetup/distro/pclinuxos/extra_server/ 1> /dev/null
+
+
+[ -f /opt/karoshi/.tempdata/master.ldif ] && rm -f /opt/karoshi/.tempdata/master.ldif
+touch /opt/karoshi/.tempdata/master.ldif
+chown root.root /opt/karoshi/.tempdata/master.ldif
+chmod 0600 /opt/karoshi/.tempdata/master.ldif
+slapcat -s "ou=People,dc=karoshi,dc=local" -l /opt/karoshi/.tempdata/master.ldif
+scp /opt/karoshi/.tempdata/master.ldif root@$SERVERNAME:"/opt/karoshi/.tempdata/"
+scp /opt/karoshi/server_network/domain_information/domain_name root@$SERVERNAME:"/opt/karoshi/.tempdata/"
+rm -f /opt/karoshi/.tempdata/master.ldif
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+/opt/karoshi/serversetup/modules/ldap/setupslaveldapserver
+'
+[ ! -d /opt/karoshi/server_network/slave_ldap_servers ] && mkdir -p /opt/karoshi/server_network/slave_ldap_servers
+touch /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME
+fi
+
+#Guess server tcpip
+SERVERTCPIP=`grep -w $SERVERNAME /etc/hosts | sed -n 1,1p | cut -f1`
+
+#Remove http from start of domainpath
+DOMAINPATH=`echo $DOMAINPATH | sed 's/^http:\/\///g'`
+
+#Remove www from start of domainpath
+DOMAINPATH=`echo $DOMAINPATH | sed 's/^www.\/\///g'`
+
+#########################
+#Install new mail system
+#########################
+
+if [ $SERVERNAME = $HOSTNAME ] 
+then
+#Install email
+echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DOMAINPATH | /opt/karoshi/serversetup/modules/email/setupemail
+fi
+
+if [ $SERVERNAME != $HOSTNAME ]
+then
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+
+[ ! -d /opt/karoshi/serversetup/language/'$LANGCHOICE'/modules ] && mkdir -p /opt/karoshi/serversetup/language/'$LANGCHOICE'/modules
+[ ! -d /opt/karoshi/serversetup/modules/ ] && mkdir -p /opt/karoshi/serversetup/modules/
+'
+#Copy in language files
+scp -p -r /opt/karoshi/serversetup/language/$LANGCHOICE/modules/email root@$SERVERNAME:/opt/karoshi/serversetup/language/$LANGCHOICE/modules/ 1> /dev/null
+#Copy in module
+scp -p -r /opt/karoshi/serversetup/modules/email root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
+#Copy in distro files 
+scp -p -r /opt/karoshi/serversetup/distro/ubuntu/modules/mailscanner root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/modules/ 1> /dev/null
+scp -p -r /opt/karoshi/serversetup/distro/ubuntu/modules/email root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/modules/ 1> /dev/null
+scp -p -r /opt/karoshi/serversetup/distro/ubuntu/modules/postfix root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/modules/ 1> /dev/null
+#Install email
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DOMAINPATH' | /opt/karoshi/serversetup/modules/email/setupemail
+'
+fi
+
+
+function mount_servers {
+if [ ! -d /opt/karoshi/server_network/server_mount ]
+then
+mkdir -p /opt/karoshi/server_network/server_mount
+chmod 0700 /opt/karoshi/server_network/server_mount
+fi
+if [ ! -d /opt/karoshi/server_network/server_mount/$CURRENTMAILSERVER ] && [ $CURRENTMAILSERVER != $HOSTNAME ]
+then
+mkdir /opt/karoshi/server_network/server_mount/$CURRENTMAILSERVER
+chmod 0700 /opt/karoshi/server_network/server_mount/$CURRENTMAILSERVER
+fi
+
+if [ ! -d /opt/karoshi/server_network/server_mount/$NEWMAILSERVER ] && [ $NEWMAILSERVER != $HOSTNAME ]
+then
+mkdir /opt/karoshi/server_network/server_mount/$NEWMAILSERVER
+chmod 0700 /opt/karoshi/server_network/server_mount/$NEWMAILSERVER
+fi
+#Mount drives
+if [ $CURRENTMAILSERVER != $HOSTNAME ]
+then
+sshfs root@$CURRENTMAILSERVER:/ /opt/karoshi/server_network/server_mount/$CURRENTMAILSERVER 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+[ `echo $?` != 0 ] && exit 101
+fi
+
+if [ $NEWMAILSERVER != $HOSTNAME ]
+then
+sshfs root@$NEWMAILSERVER:/ /opt/karoshi/server_network/server_mount/$NEWMAILSERVER 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+if [ `echo $?` != 0 ]
+then
+[ $CURRENTMAILSERVER != $HOSTNAME ] && umount /opt/karoshi/server_network/server_mount/$CURRENTMAILSERVER
+exit 101
+fi
+[ ! -d /opt/karoshi/server_network/server_mount/$NEWMAILSERVER$DESTFOLDERPATH/$PRIGROUP ] && mkdir -p /opt/karoshi/server_network/server_mount/$NEWMAILSERVER$DESTFOLDERPATH/$PRIGROUP
+fi
+}
+
+function unmount_servers {
+[ $CURRENTMAILSERVER != $HOSTNAME ] && umount /opt/karoshi/server_network/server_mount/$CURRENTMAILSERVER
+[ $NEWMAILSERVER != $HOSTNAME ] && umount /opt/karoshi/server_network/server_mount/$NEWMAILSERVER
+}
+
+##############################
+#Migrate existing mail system not completed yet
+##############################
+if [ $COPYEMAIL = yes222 ]
+then
+#Copy email to the new server
+CURRENTMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+NEWMAILSERVER=$SERVERNAME
+
+
+#Copy E-Mail from this server to new server
+if [ $CURRENTMAILSERVER = $HOSTNAME ]
+then
+mount_servers
+
+#Copy /var/spool/mail
+[ -d /var/spool/mail ] && cp -f -p -r -v /var/spool/mail /opt/karoshi/server_network/server_mount/$NEWMAILSERVER/var/spool/
+#Copy mail in home folders
+[ -d /home ] && cp -f -p -r -v /home /opt/karoshi/server_network/server_mount/$NEWMAILSERVER/
+
+unmount_servers
+
+fi
+
+#Copy E-mail back to this server
+if [ $NEWMAILSERVER=$HOSTNAME ]
+then
+
+mount_servers
+
+#Copy /var/spool/mail
+[ -d /opt/karoshi/server_network/server_mount/$NEWMAILSERVER/var/spool/mail ] && cp -f -p -r -v /opt/karoshi/server_network/server_mount/$CURRENTMAILSERVER/var/spool/mail /var/spool/
+#Copy mail in home folders
+[ -d /opt/karoshi/server_network/server_mount/$NEWMAILSERVER/home ] && cp -f -p -r -v /opt/karoshi/server_network/server_mount/$CURRENTMAILSERVER/home /
+
+unmount_servers
+fi
+
+#Copy E-mail from between remote servers
+if [ $NEWMAILSERVER != $HOSTNAME ] && [ $CURRENTMAILSERVER != $HOSTNAME ]
+then
+
+
+mount_servers
+
+#Copy /var/spool/mail
+[ -d /opt/karoshi/server_network/server_mount/$CURRENTMAILSERVER/var/spool/mail ] && cp -f -p -r -v /opt/karoshi/server_network/server_mount/$CURRENTMAILSERVER/var/spool/mail /opt/karoshi/server_network/server_mount/$NEWMAILSERVER/var/spool/
+#Copy mail in home folders
+[ -d /opt/karoshi/server_network/server_mount/$CURRENTMAILSERVER/home ] && cp -f -p -r -v /opt/karoshi/server_network/server_mount/$CURRENTMAILSERVER/home /opt/karoshi/server_network/server_mount/$NEWMAILSERVER/
+
+unmount_servers
+fi
+fi
+
+#Add domain entry to dns
+if [ `grep -c $DOMAINPATH /etc/hosts` = 0 ]
+then
+echo $SERVERTCPIP'	''	'$DOMAINPATH >> /etc/hosts
+fi
+#Restart dns server
+
+/etc/init.d/$DNSMASQVER stop 1>/dev/null 2>/dev/null
+/etc/init.d/$DNSMASQVER start 1>/dev/null 2>/dev/null
+#Create completed info file
+
+[ ! -d /opt/karoshi/modules/email ] && mkdir -p /opt/karoshi/modules/email
+echo '<a href="http://www.squirrelmail.org" target="_blank"><img style="border: 0px solid ;" alt="" src="/images/help/info.png"></a>' > /opt/karoshi/modules/email/weblink
+echo '<a href="http://www.egroupware.org" target="_blank"><img style="border: 0px solid ;" alt="" src="/images/help/info.png"></a>' >> /opt/karoshi/modules/email/weblink
+echo '<b>'Server'</b>': $EMAILSERVER > /opt/karoshi/modules/email/installed_information
+echo '<b>'Domain'</b>': $DOMAINPATH >> /opt/karoshi/modules/email/installed_information
+
+echo $DOMAINPATH >  /opt/karoshi/serversetup/variables/emaildomain
+
+
+#Add role information
+[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
+echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/emailserver
+echo '<a href="http://'$DOMAINPATH'/squirrelmail" target="_blank">http://'$DOMAINPATH'/squirrelmail</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/emailserver
+echo '<a href="http://'$DOMAINPATH'/egroupware" target="_blank">http://'$DOMAINPATH'/egroupware</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/emailserver
+echo $DOMAINPATH > /opt/karoshi/server_network/emaildomain
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
+echo $ROLE2"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver
+echo $ROLE3"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/ldapserver
+echo $ROLE4"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/fileserver
+echo $SERVERNAME > /opt/karoshi/server_network/emailserver
+echo $DOMAINPATH > /opt/karoshi/server_network/emaildomain
+[ ! -d /opt/karoshi/server_network/webservers/ ] && mkdir -p /opt/karoshi/server_network/webservers
+echo $SERVERNAME > /opt/karoshi/server_network/webservers/$SERVERNAME
+sed -i 's/WEBCTRL=no/WEBCTRL=yes/g' /opt/karoshi/server_network/menusettings
+sed -i 's/EMAILCTRL=no/EMAILCTRL=yes/g' /opt/karoshi/server_network/menusettings
+exit
+

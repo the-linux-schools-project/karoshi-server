@@ -1,0 +1,304 @@
+#!/bin/bash
+#
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dg_media_controls_cgi
+then
+echo `date`: dg_media_controls - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/dg_media_controls_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_media_controls.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $dg_media_controls_cgi'check' ]
+then
+echo `date`: dg_media_controls - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/dg_media_controls_cgi
+then
+echo `date`: dg_media_controls - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/tech_checksums/dg_media_controls_cgi
+MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/dg_media_controls.cgi | cut -d' ' -f1`
+[ $MD5SUM2'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM2'check' != $dg_media_controls_cgi'check' ]
+then
+echo `date`: dg_media_controls - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: dg_media_controls - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: dg_media_controls - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+MEDIAFILTER=`echo "$DATA" | cut -s -d: -f4`
+GROUP=`echo "$DATA" | cut -s -d: -f5`
+ACTION=`echo "$DATA" | cut -s -d: -f6`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: dg_media_controls - Not called by dg_media_controls.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: dg_media_controls - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: dg_media_controls - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $MEDIAFILTER'null' = null ]
+then
+echo `date`: dg_media_controls - Blank firstname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $GROUP'null' = null ]
+then
+echo `date`: dg_media_controls - Blank surname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $ACTION'null' = null ]
+then
+echo `date`: dg_media_controls - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: dg_media_controls - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+echo `date`: dg_media_controls - action - $ACTION , group - $GROUP , mediafilter - $MEDIAFILTER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+
+if [ $ACTION == BAN ] && [ $GROUP == student ]
+then
+touch /opt/karoshi/server_network/dansguardian/media_controls/no_student_flash	
+fi
+
+if [ $ACTION == BAN ] && [ $GROUP == staff ]
+then
+touch /opt/karoshi/server_network/dansguardian/media_controls/no_staff_flash	
+fi
+
+if [ $ACTION == ALLOW ] && [ $GROUP == student ]
+then
+rm -f /opt/karoshi/server_network/dansguardian/media_controls/no_student_flash	
+fi
+
+if [ $ACTION == ALLOW ] && [ $GROUP == staff ]
+then
+rm -f /opt/karoshi/server_network/dansguardian/media_controls/no_staff_flash	
+fi
+
+####################
+##Set file location
+####################
+Config_location=/etc/dansguardian/
+
+if [ "$PROXYSERVER" == "$HOSTNAME" ]									
+then
+
+if [ $MEDIAFILTER == flash ] && [ $GROUP == student ] && [ $ACTION == BAN ]; then						
+###################################
+## If flash is allready banned EOF
+###################################
+
+		if [ `grep -w -c ^'#FLASHBAN' $Config_location/student_rules/bannedmimetypelist` -gt 0 ]
+		then
+		echo "Flash already banned"
+		exit 
+		fi													 
+###################################
+##Adds ban lines to file
+###################################
+		echo "#FLASHBAN" >> $Config_location/student_rules/bannedmimetypelist
+		echo application/x-shockwave-flash >> $Config_location/student_rules/bannedmimetypelist
+                echo application/x-shockwave-flash2-preview >> $Config_location/student_rules/bannedmimetypelist
+                echo application/futuresplash >> $Config_location/student_rules/bannedmimetypelist
+                echo image/vnd.rn-realflash >> $Config_location/student_rules/bannedmimetypelist
+                echo flv-application/octet-stream >> $Config_location/student_rules/bannedmimetypelist
+                echo video/x-flv >> $Config_location/student_rules/bannedmimetypelist
+		echo "#FLASHBAN_EOP" >> $Config_location/student_rules/bannedmimetypelist
+fi
+
+if [ $MEDIAFILTER == flash ] && [ $GROUP == student ] && [ $ACTION == ALLOW ]; then
+
+FlashBan_Location_start=`grep -w -n ^'#FLASHBAN' $Config_location/student_rules/bannedmimetypelist | cut -d: -f1`
+FlashBan_Location_end=`grep -n ^'#FLASHBAN_EOP' $Config_location/student_rules/bannedmimetypelist | cut -d: -f1`
+
+		sed -i "$FlashBan_Location_start","$FlashBan_Location_end"'d' "$Config_location/student_rules/bannedmimetypelist"
+fi														
+
+if [ $MEDIAFILTER == flash ] && [ $GROUP == staff ] && [ $ACTION == BAN ]; then
+
+###################################
+## If flash is allready banned EOF
+###################################
+		if [ `grep -w -c ^'#FLASHBAN' $Config_location/staff_rules/bannedmimetypelist` -gt 0 ]
+		then
+		echo "Flash already banned"
+		exit 
+		fi
+###################################
+##Adds ban lines to file
+###################################
+		echo "#FLASHBAN" >> $Config_location/staff_rules/bannedmimetypelist
+		echo application/x-shockwave-flash >> $Config_location/staff_rules/bannedmimetypelist
+                echo application/x-shockwave-flash2-preview >> $Config_location/staff_rules/bannedmimetypelist
+                echo application/futuresplash >> $Config_location/staff_rules/bannedmimetypelist
+                echo image/vnd.rn-realflash >> $Config_location/staff_rules/bannedmimetypelist
+                echo flv-application/octet-stream >> $Config_location/staff_rules/bannedmimetypelist
+                echo video/x-flv >> $Config_location/staff_rules/bannedmimetypelist
+		echo "#FLASHBAN_EOP" >> $Config_location/staff_rules/bannedmimetypelist
+fi
+
+if [ $MEDIAFILTER == flash ] && [ $GROUP == staff ] && [ $ACTION == ALLOW ]; then
+
+FlashBan_Location_start=`grep -w -n ^'#FLASHBAN' $Config_location/staff_rules/bannedmimetypelist | cut -d: -f1`
+FlashBan_Location_end=`grep -n ^'#FLASHBAN_EOP' $Config_location/staff_rules/bannedmimetypelist | cut -d: -f1`
+
+sed -i "$FlashBan_Location_start","$FlashBan_Location_end"'d' "$Config_location/staff_rules/bannedmimetypelist"
+fi
+
+#Restart dansguardian
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dansguardian_stop 2> /dev/null
+sleep 0.5
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dansguardian_start 2> /dev/null
+
+else
+
+ssh -x -o PasswordAuthentication=no $PROXYSERVER '
+####################
+##Set file location
+####################
+
+if [ '$MEDIAFILTER' == flash ] && [ '$GROUP' == student ] && [ '$ACTION' == BAN ]; then
+
+###################################
+## If flash is allready banned EOF
+###################################
+
+		if [ `grep -w -c ^"#FLASHBAN" '$Config_location'/student_rules/bannedmimetypelist` -gt 0 ]
+		then
+		echo "Flash already banned"
+		exit 
+		fi	
+###################################
+##Adds ban lines to file
+###################################
+		echo "#FLASHBAN" >> '$Config_location'/student_rules/bannedmimetypelist
+		echo application/x-shockwave-flash >> '$Config_location'/student_rules/bannedmimetypelist
+                echo application/x-shockwave-flash2-preview >> '$Config_location'/student_rules/bannedmimetypelist
+                echo application/futuresplash >> '$Config_location'/student_rules/bannedmimetypelist
+                echo image/vnd.rn-realflash >> '$Config_location'/student_rules/bannedmimetypelist
+                echo flv-application/octet-stream >> '$Config_location'/student_rules/bannedmimetypelist
+                echo video/x-flv >> '$Config_location'/student_rules/bannedmimetypelist
+		echo "#FLASHBAN_EOP" >> '$Config_location'/student_rules/bannedmimetypelist
+fi
+
+if [ '$MEDIAFILTER' == flash ] && [ '$GROUP' == student ] && [ '$ACTION' == ALLOW ]; then
+
+###################################
+## Get location of 
+###################################
+FlashBan_Location_start=`grep -w -n ^"#FLASHBAN" '$Config_location'/student_rules/bannedmimetypelist | cut -d: -f1`
+FlashBan_Location_end=`grep -n ^"#FLASHBAN_EOP" '$Config_location'/student_rules/bannedmimetypelist | cut -d: -f1`
+
+
+		sed -i "$FlashBan_Location_start","$FlashBan_Location_end""d" "'$Config_location'/student_rules/bannedmimetypelist"
+fi
+
+if [ '$MEDIAFILTER' == flash ] && [ '$GROUP' == staff ] && [ '$ACTION' == BAN ]; then
+###################################
+## If flash is allready banned EOF
+###################################
+		if [ `grep -w -c ^"#FLASHBAN" '$Config_location'/staff_rules/bannedmimetypelist` -gt 0 ]
+		then
+		echo "Flash already banned"
+		exit 
+		fi	
+###################################
+##Adds ban lines to file
+###################################
+		echo "#FLASHBAN" >> '$Config_location'/staff_rules/bannedmimetypelist
+		echo application/x-shockwave-flash >> '$Config_location'/staff_rules/bannedmimetypelist
+                echo application/x-shockwave-flash2-preview >> '$Config_location'/staff_rules/bannedmimetypelist
+                echo application/futuresplash >> '$Config_location'/staff_rules/bannedmimetypelist
+                echo image/vnd.rn-realflash >> '$Config_location'/staff_rules/bannedmimetypelist
+                echo flv-application/octet-stream >> '$Config_location'/staff_rules/bannedmimetypelist
+                echo video/x-flv >> '$Config_location'/staff_rules/bannedmimetypelist
+		echo "#FLASHBAN_EOP" >> '$Config_location'/staff_rules/bannedmimetypelist
+
+fi
+
+if [ '$MEDIAFILTER' == flash ] && [ '$GROUP' == staff ] && [ '$ACTION' == ALLOW ]; then
+
+###################################
+## Get location of 
+###################################
+FlashBan_Location_start=`grep -w -n ^"#FLASHBAN" '$Config_location'/staff_rules/bannedmimetypelist | cut -d: -f1`
+FlashBan_Location_end=`grep -n ^"#FLASHBAN_EOP" '$Config_location'/staff_rules/bannedmimetypelist | cut -d: -f1`
+
+		sed -i "$FlashBan_Location_start","$FlashBan_Location_end""d" "'$Config_location'/staff_rules/bannedmimetypelist"
+fi
+
+#Restart dansguardian
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dansguardian_stop 2> /dev/null
+sleep 0.5
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dansguardian_start 2> /dev/null
+
+'
+fi
+

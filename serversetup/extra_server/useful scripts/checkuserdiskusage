@@ -1,0 +1,115 @@
+#!/bin/bash
+#Copyright (C) 2005  The Karoshi Team
+[ -d $HOME/.tempdata ] || mkdir $HOME/.tempdata
+source /opt/karoshi/serversetup/variables/language
+source /opt/karoshi/serversetup/variables/years
+source /opt/karoshi/serversetup/variables/xdialog
+source /opt/karoshi/serversetup/language/$LANGCHOICE/all/checkuserdiskusage
+
+ENDYEAR=$(($STARTYEAR+14))
+rm -f /tmp/dirlog
+touch /tmp/dirlog
+###########################
+#Check if STARTYEAR is even
+###########################
+let YEARCHECK=STARTYEAR/2
+let YEARCHECK=YEARCHECK*2
+if [ $YEARCHECK = $STARTYEAR ]
+then
+clear
+else
+let STARTYEAR=STARTYEAR+1
+clear
+fi
+########################
+#Get selection for checking
+########################
+function diskselection {
+######################
+#Generate array of student primary groups
+######################
+COUNTER=$STARTYEAR
+         while [  $COUNTER -le $ENDYEAR ]; do
+             STUDENTGROUPLIST[$COUNTER]=yr$COUNTER' 'Student_Access
+             let COUNTER=COUNTER+2
+         done
+	 NUMBEROFSTUDENTPROFILES=`echo ${#STUDENTGROUPLIST[@]}`	
+######################
+#Show list box of Primary Groups
+######################
+DIALOG=${DIALOG=Xdialog}
+tempfile=`tempfile 2>/dev/null` || tempfile=$HOME/.tempdata/primarygroup
+trap "rm -f $tempfile" 0 1 2 5 15
+
+$DIALOG --wrap --icon $ICON --rc-file $RCFILE --backtitle "$TITLE" \
+        --cancel-label "$QUIT" --title "$TITLE" --clear \
+        $WIZARD --menu "$CHOICEMSG" 40 55 5 \
+	${STUDENTGROUPLIST[@]} 2> $HOME/.tempdata/primarygroup
+
+retval=$?
+
+case $retval in
+  0)
+    ;;
+  1)
+    exit 101;;
+  3)
+    exit 100;;
+  255)
+    exit 101;;
+esac
+PRIMARYGROUP=`cat $HOME/.tempdata/primarygroup`
+rm -f $HOME/.tempdata/primarygroup 2>/dev/null
+}
+
+########################
+#Show tailbox of  user directory sizes
+########################
+function showdirectorysizes {
+touch /tmp/dirlog
+sleep 1
+Xdialog --title "$TITLE" --backtitle "$TITLE" --icon $ICON --rc-file $RCFILE --no-cancel --tailbox /tmp/dirlog 40 64
+
+case $? in
+  0)
+    ;;
+  1)
+    exit;;
+  255)
+     exit;;
+esac
+}
+########################
+#Get directory sizes
+########################
+function getdirsizes {
+if [ $PRIMARYGROUP = guests ]
+then
+du -s -h /home/users/guests/* >>/tmp/dirlog
+else
+if [ $PRIMARYGROUP = itadmin ]
+then
+du -s -h /home/users/itadminstaff/* >>/tmp/dirlog
+else
+if [ $PRIMARYGROUP = staff ]
+then
+du -s -h /home/users/staff/* >>/tmp/dirlog
+else
+if [ $PRIMARYGROUP = tech ]
+then
+du -s -h /home/users/techstaff/* >>/tmp/dirlog
+else
+du -s -h /home/users/students/$PRIMARYGROUP/* >>/tmp/dirlog
+fi
+fi
+fi
+fi
+}
+#getdirsizes | showdirectorysizes
+GETUSAGE=yes
+while [ $GETUSAGE = yes ]
+do
+diskselection
+showdirectorysizes | getdirsizes
+rm -f /tmp/dirlog
+done

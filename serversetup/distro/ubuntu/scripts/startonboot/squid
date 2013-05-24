@@ -1,0 +1,17 @@
+#!/bin/bash
+#Start squid on boot
+
+if [ -d /etc/squid3 ]
+then
+SQUID=squid3
+else
+SQUID=squid
+fi
+
+if [ -f /opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status ]
+then
+/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status $SQUID on 1>/dev/null 2>/dev/null
+else
+chkconfig -f $SQUID on 1>/dev/null 2>/dev/null
+fi
+

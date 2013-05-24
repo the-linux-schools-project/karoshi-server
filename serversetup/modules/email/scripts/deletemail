@@ -1,0 +1,177 @@
+#!/bin/bash
+#deletetrashmail
+#Copyright (C) 2005  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contact either at mpsharrad@karoshi.org.uk or jharris@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+[ ! -d /opt/karoshi/.tempdata ] && mkdir /opt/karoshi/.tempdata
+source /opt/karoshi/serversetup/variables/language
+source /opt/karoshi/serversetup/variables/years
+source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/email/deletemail
+
+####################
+#Variables
+####################
+STUDENTPATH=/home/users/students
+STAFFPATH=/home/users/staff
+ITADMINPATH=/home/users/itadminstaff
+GUESTSPATH=/home/users/guests
+TECHPATH=/home/users/techstaff
+OFFICEPATH=/home/users/officestaff
+STUDENTSTAFFPATH=/home/users/studentstaff
+NONTEACHINGSTAFFPATH=/home/users/nonteachingstaff
+GUARDIANSPATH=/home/users/guardians
+###################
+#Create list of Trash files to delete
+###################
+if [ -d $STAFFPATH ]
+then
+find $STAFFPATH -mindepth 2 -maxdepth 3 -type f -name INBOX.Drafts > /opt/karoshi/.tempdata/inboxtrash
+find $STAFFPATH -mindepth 2 -maxdepth 3 -type f -name INBOX.Sent >> /opt/karoshi/.tempdata/inboxtrash
+find $STAFFPATH -mindepth 2 -maxdepth 3 -type f -name INBOX.Trash >> /opt/karoshi/.tempdata/inboxtrash
+find $STAFFPATH -mindepth 2 -maxdepth 3 -type f -name Drafts >> /opt/karoshi/.tempdata/inboxtrash
+find $STAFFPATH -mindepth 2 -maxdepth 3 -type f -name Sent >> /opt/karoshi/.tempdata/inboxtrash
+find $STAFFPATH -mindepth 2 -maxdepth 3 -type f -name Trash >> /opt/karoshi/.tempdata/inboxtrash
+fi
+
+if [ -d $ITADMINPATH ]
+then
+find $ITADMINPATH -mindepth 2 -maxdepth 3 -type f -name INBOX.Drafts >> /opt/karoshi/.tempdata/inboxtrash
+find $ITADMINPATH -mindepth 2 -maxdepth 3 -type f -name INBOX.Sent >> /opt/karoshi/.tempdata/inboxtrash
+find $ITADMINPATH -mindepth 2 -maxdepth 3 -type f -name INBOX.Trash >> /opt/karoshi/.tempdata/inboxtrash
+find $ITADMINPATH -mindepth 2 -maxdepth 3 -type f -name Drafts >> /opt/karoshi/.tempdata/inboxtrash
+find $ITADMINPATH -mindepth 2 -maxdepth 3 -type f -name Sent >> /opt/karoshi/.tempdata/inboxtrash
+find $ITADMINPATH -mindepth 2 -maxdepth 3 -type f -name Trash >> /opt/karoshi/.tempdata/inboxtrash
+fi
+
+if [ -d $GUESTSPATH ]
+then
+find $GUESTSPATH -mindepth 2 -maxdepth 3 -type f -name INBOX.Drafts >> /opt/karoshi/.tempdata/inboxtrash
+find $GUESTSPATH -mindepth 2 -maxdepth 3 -type f -name INBOX.Sent >> /opt/karoshi/.tempdata/inboxtrash
+find $GUESTSPATH -mindepth 2 -maxdepth 3 -type f -name INBOX.Trash >> /opt/karoshi/.tempdata/inboxtrash
+find $GUESTSPATH -mindepth 2 -maxdepth 3 -type f -name Drafts >> /opt/karoshi/.tempdata/inboxtrash
+find $GUESTSPATH -mindepth 2 -maxdepth 3 -type f -name Sent >> /opt/karoshi/.tempdata/inboxtrash
+find $GUESTSPATH -mindepth 2 -maxdepth 3 -type f -name Trash >> /opt/karoshi/.tempdata/inboxtrash
+fi
+
+if [ -d $TECHPATH ]
+then
+find $TECHPATH -mindepth 2 -maxdepth 3 -type f -name INBOX.Drafts >> /opt/karoshi/.tempdata/inboxtrash
+find $TECHPATH -mindepth 2 -maxdepth 3 -type f -name INBOX.Sent >> /opt/karoshi/.tempdata/inboxtrash
+find $TECHPATH -mindepth 2 -maxdepth 3 -type f -name INBOX.Trash >> /opt/karoshi/.tempdata/inboxtrash
+find $TECHPATH -mindepth 2 -maxdepth 3 -type f -name Drafts >> /opt/karoshi/.tempdata/inboxtrash
+find $TECHPATH -mindepth 2 -maxdepth 3 -type f -name Sent >> /opt/karoshi/.tempdata/inboxtrash
+find $TECHPATH -mindepth 2 -maxdepth 3 -type f -name Trash >> /opt/karoshi/.tempdata/inboxtrash
+fi
+
+if [ -d $OFFICEPATH ]
+then
+find $OFFICEPATH -mindepth 2 -maxdepth 3 -type f -name INBOX.Drafts >> /opt/karoshi/.tempdata/inboxtrash
+find $OFFICEPATH -mindepth 2 -maxdepth 3 -type f -name INBOX.Sent >> /opt/karoshi/.tempdata/inboxtrash
+find $OFFICEPATH -mindepth 2 -maxdepth 3 -type f -name INBOX.Trash >> /opt/karoshi/.tempdata/inboxtrash
+find $OFFICEPATH -mindepth 2 -maxdepth 3 -type f -name Drafts >> /opt/karoshi/.tempdata/inboxtrash
+find $OFFICEPATH -mindepth 2 -maxdepth 3 -type f -name Sent >> /opt/karoshi/.tempdata/inboxtrash
+find $OFFICEPATH -mindepth 2 -maxdepth 3 -type f -name Trash >> /opt/karoshi/.tempdata/inboxtrash
+fi
+
+if [ -d $STUDENTSTAFFPATH ]
+then
+find $STUDENTSTAFFPATH -mindepth 2 -maxdepth 3 -type f -name INBOX.Drafts >> /opt/karoshi/.tempdata/inboxtrash
+find $STUDENTSTAFFPATH -mindepth 2 -maxdepth 3 -type f -name INBOX.Sent >> /opt/karoshi/.tempdata/inboxtrash
+find $STUDENTSTAFFPATH -mindepth 2 -maxdepth 3 -type f -name INBOX.Trash >> /opt/karoshi/.tempdata/inboxtrash
+find $STUDENTSTAFFPATH -mindepth 2 -maxdepth 3 -type f -name Drafts >> /opt/karoshi/.tempdata/inboxtrash
+find $STUDENTSTAFFPATH -mindepth 2 -maxdepth 3 -type f -name Sent >> /opt/karoshi/.tempdata/inboxtrash
+find $STUDENTSTAFFPATH -mindepth 2 -maxdepth 3 -type f -name Trash >> /opt/karoshi/.tempdata/inboxtrash
+fi
+
+if [ -d $NONTEACHINGSTAFFPATH ]
+then
+find $NONTEACHINGSTAFFPATH -mindepth 2 -maxdepth 3 -type f -name INBOX.Drafts >> /opt/karoshi/.tempdata/inboxtrash
+find $NONTEACHINGSTAFFPATH -mindepth 2 -maxdepth 3 -type f -name INBOX.Sent >> /opt/karoshi/.tempdata/inboxtrash
+find $NONTEACHINGSTAFFPATH -mindepth 2 -maxdepth 3 -type f -name INBOX.Trash >> /opt/karoshi/.tempdata/inboxtrash
+find $NONTEACHINGSTAFFPATH -mindepth 2 -maxdepth 3 -type f -name Drafts >> /opt/karoshi/.tempdata/inboxtrash
+find $NONTEACHINGSTAFFPATH -mindepth 2 -maxdepth 3 -type f -name Sent >> /opt/karoshi/.tempdata/inboxtrash
+find $NONTEACHINGSTAFFPATH -mindepth 2 -maxdepth 3 -type f -name Trash >> /opt/karoshi/.tempdata/inboxtrash
+fi
+
+if [ -d $GUARDIANS ]
+then
+find $GUARDIANS -mindepth 2 -maxdepth 3 -type f -name INBOX.Drafts >> /opt/karoshi/.tempdata/inboxtrash
+find $GUARDIANS -mindepth 2 -maxdepth 3 -type f -name INBOX.Sent >> /opt/karoshi/.tempdata/inboxtrash
+find $GUARDIANS -mindepth 2 -maxdepth 3 -type f -name INBOX.Trash >> /opt/karoshi/.tempdata/inboxtrash
+find $GUARDIANS -mindepth 2 -maxdepth 3 -type f -name Drafts >> /opt/karoshi/.tempdata/inboxtrash
+find $GUARDIANS -mindepth 2 -maxdepth 3 -type f -name Sent >> /opt/karoshi/.tempdata/inboxtrash
+find $GUARDIANS -mindepth 2 -maxdepth 3 -type f -name Trash >> /opt/karoshi/.tempdata/inboxtrash
+fi
+
+COUNTER=$STARTYEAR
+         while [  $COUNTER -le $ENDYEAR ]; do
+if [ -d $STUDENTPATH/yr$COUNTER ]
+then
+find $STUDENTPATH/yr$COUNTER -mindepth 2 -maxdepth 3 -type f -name INBOX.Drafts >> /opt/karoshi/.tempdata/inboxtrash
+find $STUDENTPATH/yr$COUNTER -mindepth 2 -maxdepth 3 -type f -name INBOX.Sent >> /opt/karoshi/.tempdata/inboxtrash
+find $STUDENTPATH/yr$COUNTER -mindepth 2 -maxdepth 3 -type f -name INBOX.Trash >> /opt/karoshi/.tempdata/inboxtrash
+find $STUDENTPATH/yr$COUNTER -mindepth 2 -maxdepth 3 -type f -name Drafts >> /opt/karoshi/.tempdata/inboxtrash
+find $STUDENTPATH/yr$COUNTER -mindepth 2 -maxdepth 3 -type f -name Sent >> /opt/karoshi/.tempdata/inboxtrash
+find $STUDENTPATH/yr$COUNTER -mindepth 2 -maxdepth 3 -type f -name Trash >> /opt/karoshi/.tempdata/inboxtrash
+fi
+let COUNTER=COUNTER+1
+done
+
+#################
+#Generate message
+#################
+DAYOFMONTH=`date +%d`
+DAY=`date +%a`
+DAYNUMBER=`date +%e`
+MONTH=`date +%h`
+YEAR=`date +%Y`
+HOURTIME=`date +%H`
+MINS=`date +%M`
+SECS=`date +%S`
+echo From MAILER-DAEMON $DAY $MONTH' '$DAYNUMBER $HOURTIME:$MINS:$SECS $YEAR > /opt/karoshi/.tempdata/trashmessage
+echo Date: $DAYOFMONTH $MONTH $YEAR $HOURTIME:$MINS:$SECS '+'0100 >> /opt/karoshi/.tempdata/trashmessage
+echo From: Mail System Internal Data '<'MAILER-DAEMON'@'colossus'>' >> /opt/karoshi/.tempdata/trashmessage
+echo Subject: $SUBJECTMSG -- FOLDER INTERNAL DATA >> /opt/karoshi/.tempdata/trashmessage
+echo X-IMAP: >> /opt/karoshi/.tempdata/trashmessage
+echo Status: RO >> /opt/karoshi/.tempdata/trashmessage
+echo >> /opt/karoshi/.tempdata/trashmessage
+echo $BODYMSG1 >> /opt/karoshi/.tempdata/trashmessage
+echo >> /opt/karoshi/.tempdata/trashmessage
+echo $BODYMSG2 >> /opt/karoshi/.tempdata/trashmessage
+echo >> /opt/karoshi/.tempdata/trashmessage
+echo $BODYMSG3 >> /opt/karoshi/.tempdata/trashmessage
+echo $BODYMSG4 >> /opt/karoshi/.tempdata/trashmessage
+echo >> /opt/karoshi/.tempdata/trashmessage
+
+#################
+#Check how many lines in file and create script to copy in standard message
+#################
+NUMBEROFLINES=`cat /opt/karoshi/.tempdata/inboxtrash | wc -l`
+rm -f /opt/karoshi/.tempdata/trashdelete 2>/dev/null
+COUNTER=1
+         while [  $COUNTER -le $NUMBEROFLINES ]; do
+	 TRASHPATH=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/.tempdata/inboxtrash`
+             echo cat /opt/karoshi/.tempdata/trashmessage '>' $TRASHPATH >> /opt/karoshi/.tempdata/trashdelete
+	     let COUNTER=COUNTER+1 
+         done
+chmod 0700 /opt/karoshi/.tempdata/trashdelete
+/opt/karoshi/.tempdata/trashdelete
+rm -f /opt/karoshi/.tempdata/trashdelete
+rm -f /opt/karoshi/.tempdata/inboxtrash
+rm -f /opt/karoshi/.tempdata/trashmessage
+exit

@@ -1,0 +1,173 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/exam_accounts_create_cgi
+then
+echo `date`: exam_accounts_create - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/exam_accounts_create_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/exam_accounts_create.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $exam_accounts_create_cgi'check' ]
+then
+echo `date`: exam_accounts_create - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 1 ]
+then
+echo `date`: exam_accounts_create - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo $* | cut -s -d: -f1 | tr -cd 'A-Za-z0-9\._:\-'`
+REMOTE_ADDR=`echo $* | cut -s -d: -f2 | tr -cd 'A-Za-z0-9\._:\-'`
+REMOTE_MD5=`echo $* | cut -s -d: -f3 | tr -cd 'A-Za-z0-9\._:\-'`
+NEWEXAMS=`echo $* | cut -s -d: -f4 | tr -cd 'A-Za-z0-9\._:\-'`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: exam_accounts_create - Not called by exam_accounts_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: exam_accounts_create - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: exam_accounts_create - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $NEWEXAMS'null' = null ]
+then
+echo `date`: exam_accounts_create - Blank newexams by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: exam_accounts_create - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+############################
+#Language
+############################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/exam_accounts_create ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/user/exam_accounts_create
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+source /opt/karoshi/server_network/domain_information/domain_name
+
+#Create default mail boxes
+/opt/karoshi/"useful scripts"/createmailfolders
+#Get current number of exam accounts
+COUNTER=`ls -1 /home/users/exams/ | wc -l`
+let EXAMSTOTAL=$COUNTER+$NEWEXAMS
+let COUNTER=$COUNTER+1
+echo '<table class="standard" style="text-align: left; width: 600px;" border="0" cellpadding="2" cellspacing="2"><tbody>'
+echo '<tr><td style="width: 300px;"><b>'$CREATINGMSG'</b></td><td style="width: 300px;"><b>'$HOMEPATHMSG'</b></td></tr>'
+
+
+
+while [ $COUNTER -le $EXAMSTOTAL ]
+do
+########################
+#Add the exam accounts
+########################
+#Assign random password for each new exam account
+EXAMPASSWORD=$RANDOM
+echo '<tr><td>'exam$COUNTER'</td><td>'/home/users/exam$COUNTER'</td></tr>'
+
+#Add user to samba4 ldap
+samba-tool user add exam$COUNTER --userou='CN=exams,CN=other,CN=Users' --script-path=logon.bat --surname=exam$COUNTER --given-name=exam$COUNTER --use-username-as-cn  --random-password --mail-address=exam$COUNTER@$EMAILDOMAIN 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+
+#Get uid and primary gid for the new user
+PRIGROUPID=`getent group exams | cut -d: -f3`
+UIDNUMBER=`getent passwd exam$COUNTER | cut -d: -f3`
+
+#Change primarygroupid and add unixhomedirectory - have to use ldapmodify at this time since samba-tool does not seem to have this option!
+#This is hideous why cant samba4 ldap do this all in one go??
+echo -e "dn: CN=exam$COUNTER,CN=exams,CN=other,CN=Users,$LDAPBASE
+changetype: modify
+add: objectclass
+objectclass: posixaccount
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+echo -e "dn: CN=exam$COUNTER,CN=exams,CN=other,CN=Users,$LDAPBASE
+changetype: modify
+add: uidnumber
+uidnumber: $UIDNUMBER
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+echo -e "dn: CN=exam$COUNTER,CN=exams,CN=other,CN=Users,$LDAPBASE
+changetype: modify
+add: gidnumber
+gidnumber: $PRIGROUPID
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+echo -e "dn: CN=exam$COUNTER,CN=exams,CN=other,CN=Users,$LDAPBASE
+changetype: modify
+replace: primaryGroupID
+primaryGroupID: $PRIGROUPID
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+#echo -e "dn: CN=exam$COUNTER,CN=exams,CN=other,CN=Users,$LDAPBASE
+#changetype: modify
+#add: loginshell
+#loginshell: /bin/bash
+#-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+echo -e "dn: CN=exam$COUNTER,CN=exams,CN=other,CN=Users,$LDAPBASE
+changetype: modify
+add: unixhomedirectory
+unixhomedirectory: /home/users/exams/exam$COUNTER
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+
+#Create mail folder
+mkdir -p /home/users/exams/exam$COUNTER/Mail
+cp /opt/karoshi/.tempdata/INBOX.* /home/users/exams/exam$COUNTER/Mail/
+cp /opt/karoshi/.tempdata/.mailboxlist /home/users/exams/exam$COUNTER/
+#Set permissions
+chown -R exam$COUNTER:exams /home/users/exams/exam$COUNTER
+chmod -R 0600 /home/users/exams/exam$COUNTER
+chmod u+X -R /home/users/exams/exam$COUNTER
+let COUNTER=$COUNTER+1
+done
+echo '</tbody></table>'
+
+exit

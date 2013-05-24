@@ -1,0 +1,163 @@
+#!/bin/bash
+#Copyright (C) 2010 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_name_cgi
+then
+echo `date`: remote_management_name - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_name_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_name.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $remote_management_name_cgi'check' ]
+then
+echo `date`: remote_management_name - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: remote_management_name - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-+'`
+if [ $DATA'null' = null ]
+then
+echo `date`: remote_management_name - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+NAME=`echo "$DATA" | cut -s -d: -f4`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f5`
+SERVERTYPE=`echo "$DATA" | cut -s -d: -f6`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: remote_management_name - Not called by remote_management_name.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: remote_management_name - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: remote_management_name - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $NAME'null' = null ]
+then
+echo `date`: remote_management_name - Blank name by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ $SERVERNAME'null' = null ]
+then
+echo `date`: remote_management_name - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ $SERVERTYPE'null' = null ]
+then
+echo `date`: remote_management_name - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: remote_management_name - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+NAME=`echo $NAME | sed 's/+/ /g' | sed 's/27//g'`
+echo `date`: remote_management_name - changed to "$NAME" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_name ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_name
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+if [ ! -d /opt/karoshi/server_network/web_controls ]
+then
+mkdir -p /opt/karoshi/server_network/web_controls
+chmod 0750 /opt/karoshi/server_network/
+chmod 0750 /opt/karoshi/server_network/web_controls
+chown root.apache_karoshi /opt/karoshi/server_network
+chown root.apache_karoshi /opt/karoshi/server_network/web_controls
+fi
+
+
+if [ $SERVERTYPE = network ]
+then
+[ ! -f /opt/karoshi/server_network/info ] && echo > /opt/karoshi/server_network/info
+sed -i 1cLOCATION_NAME=\""$NAME"\" /opt/karoshi/server_network/info
+echo "$NAME" > /opt/karoshi/server_network/web_controls/institute_name
+
+#Add name to language files
+for LANGUAGE in /opt/karoshi/web_controls/language/*
+do
+LANGCHOICE=`basename $LANGUAGE`
+NAMELINENO=`grep -n ^SCHOOL_NAME= /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu | cut -d: -f1`
+sed -i $NAMELINENO'c'\SCHOOL_NAME=\""$NAME"\" /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
+done
+
+#Change the name on the monitoring server
+if [ -f /opt/karoshi/server_network/monitoringserver ]
+then
+MONITORING_SERVER=`sed -n 1,1p /opt/karoshi/server_network/monitoringserver`
+ssh -x -o PasswordAuthentication=no $MONITORING_SERVER '
+for LANGUAGE in /opt/karoshi/web_controls/language/*
+do
+LANGCHOICE=`basename $LANGUAGE`
+NAMELINENO=`grep -n ^SCHOOL_NAME= /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu | cut -d: -f1`
+sed -i $NAMELINENO"c"\SCHOOL_NAME=\""'$NAME'"\" /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
+done
+'
+fi
+fi
+
+#Change the name for federated servers
+if [ $SERVERTYPE = federated ]
+then
+[ ! -d /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME
+[ ! -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/info ] && echo > /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/info
+sed -i 1cLOCATION_NAME=\""$NAME"\" /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/info
+fi
+exit
+
+
+

@@ -1,0 +1,99 @@
+#!/bin/bash
+#Copyright (C) 2009 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/request_new_users_delete_cgi
+then
+echo `date`: request_new_users_delete - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/request_new_users_delete_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/request_new_users_delete.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $request_new_users_delete_cgi'check' ]
+then
+echo `date`: request_new_users_delete - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: request_new_users_delete - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: request_new_users_delete - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+REQUESTFILE=`echo "$DATA" | cut -s -d: -f4`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo the remote md5 is $REMOTE_MD5 
+echo `date`: request_new_users_delete - Not called by request_new_users_delete.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REQUESTFILE'null' = null ]
+then
+echo `date`: request_new_users_delete - Blank requestfile  by $REMOTE_USER from $REMOTE_ADDR  >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: request_new_users_delete - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+#Do something with the data!
+
+if [ ! -d /opt/karoshi/user_requests/new_users ]
+then
+mkdir -p /opt/karoshi/user_requests/new_users ]
+chmod 0750 /opt/karoshi/user_requests/new_users
+chown root.apache_karoshi /opt/karoshi/user_requests/new_users
+fi
+
+[ -f /opt/karoshi/user_requests/new_users/$REQUESTFILE ] && rm -f /opt/karoshi/user_requests/new_users/$REQUESTFILE
+
+#Activate warning banner
+if [ `ls -1 /opt/karoshi/user_requests/new_users/ | wc -l` = 0 ]
+then
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete request_new_users
+fi
+exit

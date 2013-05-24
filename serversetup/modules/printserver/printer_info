@@ -1,0 +1,226 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+VIEWMODE=notset
+[ $1'check' = admincheck ] && VIEWMODE=admin
+[ $1'check' = techcheck ] && VIEWMODE=tech
+[ $1'check' = staffcheck ] && VIEWMODE=staff
+
+[ $VIEWMODE = admin ] && LOCATIONDATA=`echo "$2" | sed 's/123SPACE123/\\n/g'`
+[ $VIEWMODE = tech ] && LOCATIONDATA=`echo "$2" | sed 's/123SPACE123/\\n/g'`
+[ $VIEWMODE = staff ] && LOCATIONDATA=`echo "$2" | sed 's/123SPACE123/\\n/g'`
+
+MOBILE=$3
+[ $MOBILE'null' = null ] && MOBILE=no
+
+TABLECLASS=headings
+WIDTH1=180
+WIDTH2=60
+
+if [ $MOBILE = yes ]
+then
+TABLECLASS=mobileheadings
+WIDTH1=100
+WIDTH2=30
+echo '<div id="mobileactionbox">'
+fi
+##########################
+#Language
+##########################
+LANGCHOICE=englishuk
+[ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
+[ -f /opt/karoshi/serversetup/web_controls/language/$LANGCHOICE/printer/printers ] || LANGCHOICE=englishuk
+source /opt/karoshi/serversetup/web_controls/language/$LANGCHOICE/printer/printers
+#Get status off print queues 5 array entries per printer
+PRINTER_INFO=( `lpc status all | sed 's/ /_/g' | grep -v printer_is` )
+PRINTER_INFO_COUNT=${#PRINTER_INFO[@]}
+let PRINTER_COUNT=$PRINTER_INFO_COUNT/5
+
+echo '<form action="printers_control.cgi" method="post">'
+
+function get_queue_info {
+QUEUE_LIST=( `lpstat -o $PRINTER_NAME | tr -s ' ' | sed 's/ /:/g' | grep -w $PRINTER_NAME` )
+#QUEUE_LIST=( `lpstat -o $PRINTER_NAME | tr -s ' ' | sed 's/ /:/g'` )
+QUEUE_LIST_COUNT=`echo ${#QUEUE_LIST[@]}`
+
+#Show printer jobs if there are any
+if [ $QUEUE_LIST_COUNT -gt 0 ]
+then
+#Show legend
+if [ $MOBILE = yes ]
+then
+echo '<table class="mobilestandard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+echo '<td style="width: 60px;"><b>'$USERNAMEMSG'</b></td>'
+echo '<td style="width: 60px;"><b>'$TIMEMSG'</b></td>'
+echo '<td style="width: 40px;"><b>'$DATEMSG'</b></td>'
+echo '</tr>'
+else
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+echo '<td colspan="2" style="width: 90px;"><b>'$JOB_COUNT'</b></td>'
+echo '<td style="width: 70px;"><b>'$JOB_ID_MSG'</b></td>'
+echo '<td style="width: 100px;"><b>'$USERNAMEMSG'</b></td>'
+echo '<td style="width: 80px;"><b>'$SIZEMSG' (KB)</b></td>'
+echo '<td style="width: 110px;"><b>'$TIMEMSG'</b></td>'
+echo '<td style="width: 90px;"><b>'$DATEMSG'</b></td>'
+echo '</tr>'
+fi
+QUEUE_COUNTER=0
+while [ $QUEUE_COUNTER -lt $QUEUE_LIST_COUNT ]
+do
+JOB_INFO=`echo ${QUEUE_LIST[$QUEUE_COUNTER]}`
+#Get info on print job
+PRINT_ID=`echo $JOB_INFO | cut -d: -f1 | cut -d- -f2`
+PRINT_JOB_OWNER=`echo $JOB_INFO | cut -d: -f2`
+JOB_SIZE=`echo $JOB_INFO | cut -d: -f3`
+let JOB_SIZE=$JOB_SIZE/1024
+DATE_DAY1=`echo $JOB_INFO | cut -d: -f4`
+DATE_MONTH=`echo $JOB_INFO | cut -d: -f5`
+DATE_DAY2=`echo $JOB_INFO | cut -d: -f6`
+DATE_TIME=`echo $JOB_INFO | cut -d: -f7-9`
+DATE_YEAR=`echo $JOB_INFO | cut -d: -f10`
+let QUEUE_COUNTER2=$QUEUE_COUNTER+1
+#Show print job information
+#echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+if [ $MOBILE = yes ]
+then
+echo '<td>'$PRINT_JOB_OWNER'</td>'
+echo '<td>'$DATE_TIME'</td>'
+echo '<td>'$DATE_DAY1 $DATE_DAY2 $DATE_MONTH'</td>'
+else
+echo '<tr>'
+echo '<td style="width: 20px;">'$QUEUE_COUNTER2 :'</td>'
+echo '<td style="width: 70px;">'$QUEUE_LIST_COUNT'</td>'
+echo '<td style="width: 70px;">'$PRINT_ID'</td>'
+echo '<td style="width: 100px;">'$PRINT_JOB_OWNER'</td>'
+echo '<td style="width: 80px;">'$JOB_SIZE'</td>'
+echo '<td style="width: 110px;">'$DATE_TIME'</td>'
+echo '<td style="width: 90px;">'$DATE_DAY1 $DATE_DAY2 $DATE_MONTH'</td>'
+
+echo '<td><a class="info" href="javascript:void(0)"><input name="_jobid_'$PRINT_ID'_" type="image" class="images" src="/images/submenus/printer/delete_job.png" value=""><span>Delete Job</span></a></td>'
+fi
+#echo '</tr></tbody></table>'
+echo '</tr>'
+let QUEUE_COUNTER=$QUEUE_COUNTER+1
+done
+echo '</tbody></table>'
+fi
+}
+
+#Process Printer data
+PRINTER_COUNTER=0
+while [ $PRINTER_COUNTER -lt $PRINTER_INFO_COUNT ]
+do
+PRINTER_NAME=`echo ${PRINTER_INFO[$PRINTER_COUNTER]} | sed 's/://g'`
+let ARRAY_ENTRY=$PRINTER_COUNTER+1
+QUEUE_STATUS=`echo ${PRINTER_INFO[$ARRAY_ENTRY]} | sed 's/_/ /g'`
+let ARRAY_ENTRY=$PRINTER_COUNTER+2
+PRINTING_STATUS=`echo ${PRINTER_INFO[$ARRAY_ENTRY]} | sed 's/_/ /g'`
+let ARRAY_ENTRY=$PRINTER_COUNTER+3
+QUEUE_COUNT=`echo ${PRINTER_INFO[$ARRAY_ENTRY]} | tr -cd '0-9'`
+PRINTER_LOCATION_ICON=/images/submenus/printer/printer_assigned.png
+
+if [ `echo $PRINTING_STATUS | grep -c enabled` -gt 0 ]
+then
+PRINTER_ICON=/images/help/printer_spool.png
+PRINTER_STATUS=0
+else
+PRINTER_ICON=/images/help/printer_spool_off.png
+PRINTER_LOCATION_ICON=/images/submenus/printer/printer_assigned_off.png
+PRINTER_STATUS=1
+fi
+
+if [ $VIEWMODE = admin ] || [ $VIEWMODE = tech ]
+then
+#Get printer destination
+PRINTER_DEST=`lpstat -v $PRINTER_NAME | cut -d: -f2-`
+#Get ppd information
+if [ -f /etc/cups/ppd/$PRINTER_NAME.ppd ]
+then
+PPDNICKNAME=`grep ^*NickName: /etc/cups/ppd/$PRINTER_NAME.ppd | cut -d' ' -f2- | sed 's/"//g'`
+PPDSET=yes
+else
+PPDNICKNAME=$PPDINFOMSG2
+PPDSET=no
+PRINTER_ICON=/images/help/printer_info_no_ppd.png
+fi
+fi
+
+[ $QUEUE_COUNT'null' = null ] && QUEUE_COUNT=0
+#Show information for each printer
+echo '
+<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
+<tbody><tr><td style="width: '$WIDTH1'px;"><b>'$PRINTER_NAME'</b></td>
+<td style="width: '$WIDTH2'px;">'
+if [ $VIEWMODE = admin ]
+then
+echo '<a class="info" href="javascript:void(0)"><input name="_'$PRINTER_NAME'_setppd_" type="image" class="images" src="'$PRINTER_ICON'" value=""><span>'$PRINTER_STATE_MSG'<br>'$JOBS_MSG: $QUEUE_COUNT'<br>' $ACCEPTING_JOBS_MSG: $QUEUE_STATUS'<br>'$PRINTER_STATE_MSG : $PRINTING_STATUS'<br>'$PRINTER_DEST'<br>'$PPDNICKNAME'</span></a></td>'
+else
+echo '<a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$PRINTER_ICON'" /><span>'$PRINTER_STATE_MSG'<br>'$JOBS_MSG: $QUEUE_COUNT'<br>' $ACCEPTING_JOBS_MSG: $QUEUE_STATUS'<br>'$PRINTER_STATE_MSG : $PRINTING_STATUS'<br>'$PRINTER_DEST'<br>'$PPDNICKNAME'</span></a></td>'
+fi
+
+#Show printer location
+PRINTER_LOCATIONS=`echo -e "$LOCATIONDATA" | grep -w $PRINTER_NAME | cut -d, -f1`
+if [ `echo $PRINTER_LOCATIONS'null' | sed 's/ //g'` = null ]
+then
+PRINTER_LOCATIONS="$PRINTERASSIGNEDMSG2"
+PRINTER_LOCATION_ICON=/images/submenus/printer/printer_unassigned.png
+fi
+
+if [ $VIEWMODE = admin ]
+then
+echo '
+<td style="width: '$WIDTH2'px;"><a class="info" href="javascript:void(0)"><input class="images" name="_'$PRINTER_NAME'_setlocation_" type="image" src="'$PRINTER_LOCATION_ICON'" value=""><span>'$PRINTERASSIGNEDMSG':<br>'$PRINTER_LOCATIONS'</span></a></td>'
+else
+echo '
+<td style="width: '$WIDTH2'px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$PRINTER_LOCATION_ICON'" /><span>'$PRINTERASSIGNEDMSG':<br>'$PRINTER_LOCATIONS'</span></a></td>'
+fi
+if [ $PRINTER_STATUS = 1 ]
+then
+echo '
+<td style="width: '$WIDTH2'px;"><a class="info" href="javascript:void(0)"><input name="_'$PRINTER_NAME'_enable_" type="image" class="images" src="/images/submenus/printer/disable_printer.png" value=""><span>Enable Printer Queue</span></a></td>
+<td style="width: '$WIDTH2';"><img alt="spacer" src="/images/submenus/printer/spacer.png"></td>'
+else
+echo '
+<td style="width: '$WIDTH2'px;"><a class="info" href="javascript:void(0)"><input class="images" name="_'$PRINTER_NAME'_disable_" type="image" src="/images/submenus/printer/enable_printer.png" value=""><span>Disable Printer Queue</span></a></td>
+<td style="width: '$WIDTH2'px;"><a class="info" href="javascript:void(0)"><input class="images" name="_'$PRINTER_NAME'_test_" type="image" src="/images/submenus/printer/test_printer.png" value=""><span>Test Printer Queue</span></a></td>
+'
+fi
+
+#Show clear queue icon
+if [ $QUEUE_COUNT -gt 0 ]
+then
+echo '
+<td style="width: '$WIDTH2'px;"><a class="info" href="javascript:void(0)"><input class="images" name="_'$PRINTER_NAME'_clearqueue_" type="image" src="/images/submenus/printer/clear_queue.png" value=""><span>Clear Printer Queue</span></a></td>'
+else
+echo '<td style="width: '$WIDTH2'px;"><img alt="spacer" src="/images/submenus/printer/spacer.png"></td>'
+fi
+
+echo '</tr></tbody></table>'
+
+[ $QUEUE_COUNT -gt 0 ] && get_queue_info
+echo "<br>"
+let PRINTER_COUNTER=$PRINTER_COUNTER+5
+done
+
+echo '</form>'
+
+exit

@@ -1,0 +1,89 @@
+#!/bin/bash
+#dg_increment_user_internet_bans
+#Copyright (C) 2007  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contact either at mpsharrad@karoshi.org.uk or jharris@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+#Check that there are users to ban
+BANCOUNT=`ls -1 /opt/karoshi/logs/banned_user_internet_durations/ | wc -l`
+[ $BANCOUNT = 0 ] && exit
+
+############################
+#Allow user
+############################
+function allow_user {
+echo `date`: dg_increment_user_internet_bans - allowing $BANNEDUSER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+[ ! -f /opt/karoshi/server_network/proxyserver ] && exit
+
+PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+
+if [ $PROXYSERVER != $HOSTNAME ]
+then
+ssh -x -o PasswordAuthentication=no $PROXYSERVER '
+#Get line number of site
+USERLINENUMBER=`grep -n ^'$BANNEDUSER' /etc/squid/badusers.list | cut -d: -f1`
+if [ $USERLINENUMBER"null" != null ]
+then
+sed -i $USERLINENUMBER"d" /etc/squid/badusers.list
+fi
+#Remove blank lines
+sed -i "/^$/d" /etc/squid/badusers.list
+#Make sure that list is not empty
+SITECOUNT=`cat /etc/squid/badusers.list | wc -l`
+if [ $SITECOUNT = 0 ]
+then
+echo sampleuser > /etc/squid/badusers.list
+fi
+'
+else
+#Get line number of username
+USERLINENUMBER=`grep -n ^$BANNEDUSER /etc/squid/badusers.list | cut -d: -f1`
+if [ $USERLINENUMBER"null" != null ]
+then
+sed -i $USERLINENUMBER"d" /etc/squid/badusers.list
+fi
+#Remove blank lines
+sed -i '/^$/d' /etc/squid/badusers.list
+#Make sure that list is not empty
+USERCOUNT=`cat /etc/squid/badusers.list | wc -l`
+if [ $USERCOUNT = 0 ]
+then
+echo sampleuser > /etc/squid/badusers.list
+fi
+fi
+}
+
+############################
+#Increment user ban lengths
+############################
+for BANNEDUSERPATH in /opt/karoshi/logs/banned_user_internet_durations/*
+do
+BAN_DURATION=`sed -n 1,1p $BANNEDUSERPATH |  tr -cd '0-9\n'`
+let BAN_DURATION=$BAN_DURATION-1
+if [ $BAN_DURATION -lt 1 ]
+then
+BANNEDUSER=`basename $BANNEDUSERPATH`
+#Allow User
+allow_user
+rm -f $BANNEDUSERPATH
+else
+echo $BAN_DURATION > $BANNEDUSERPATH
+fi
+done

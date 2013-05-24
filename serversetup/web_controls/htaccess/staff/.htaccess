@@ -1,0 +1,16 @@
+
+ErrorDocument 401 /cgi-bin/access_denied.cgi
+ErrorDocument 403 /cgi-bin/access_forbidden.cgi
+
+Order deny,allow
+Deny from All
+AuthName "Karoshi Web Control"
+AuthType Basic
+AuthBasicProvider ldap
+AuthzLDAPAuthoritative on
+AuthLDAPUrl ldap://127.0.0.1/ou=personnel,ou=People,dc=karoshi,dc=local?uid
+Require valid-user
+Satisfy any
+
+
+

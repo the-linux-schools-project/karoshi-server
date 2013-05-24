@@ -1,0 +1,192 @@
+#!/bin/bash
+#Copyright (C) 2008 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dg_view_top_sites_cgi
+then
+echo `date`: dg_view_top_sites - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/dg_view_top_sites_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_top_sites.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $dg_view_top_sites_cgi'check' ]
+then
+echo `date`: dg_view_top_sites - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/dg_view_top_sites_cgi
+then
+echo `date`: dg_view_top_sites - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/tech_checksums/dg_view_top_sites_cgi
+MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/dg_view_top_sites.cgi | cut -d' ' -f1`
+[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+if [ $MD5SUM2'check' != $dg_view_top_sites_cgi'check' ]
+then
+echo `date`: dg_view_top_sites - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: dg_view_top_sites - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+
+if [ $DATA'null' = null ]
+then
+echo `date`: dg_view_top_sites - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+DAY=`echo "$DATA" | cut -s -d: -f4`
+MONTH=`echo "$DATA" | cut -s -d: -f5`
+YEAR=`echo "$DATA" | cut -s -d: -f6`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: dg_view_top_sites - Not called by dg_view_top_sites.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: dg_view_top_sites - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: dg_view_top_sites - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $DAY'null' = null ]
+then
+echo `date`: dg_view_top_sites - Blank day by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ $MONTH'null' = null ]
+then
+echo `date`: dg_view_top_sites - Blank month by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ $YEAR'null' = null ]
+then
+echo `date`: dg_view_top_sites - Blank year by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: dg_view_top_sites - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+echo `date`: dg_view_top_sites - Viewing logs "for" $DAY-$MONTH-$YEAR by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#View logs
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+ICON2="/images/submenus/internet/site_log.png"
+
+#Get squid server name
+[ ! -f /opt/karoshi/server_network/proxyserver ] && exit 101
+PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+
+if [ $PROXYSERVER != $HOSTNAME ]
+then
+ssh -x -o PasswordAuthentication=no $PROXYSERVER '
+#Check to see if a log for this day exists on the date given
+
+[ ! -d /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/allowed ] && exit 102
+#Show sites
+SITEARRAY=( `ls -S /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/allowed | sed -n 1,100p` )
+SITEARRAY_COUNT=`echo ${#SITEARRAY[@]}`
+COUNTER=0
+echo \<table class=\"standard\"\>\<tbody\>
+while [ $COUNTER -lt $SITEARRAY_COUNT ]
+do
+let DISPLAY_COUNT1=$COUNTER+1
+SITE1=`basename ${SITEARRAY[$COUNTER]} | sed "s/.tar.gz$//g"`
+let COUNTER=$COUNTER+1
+let DISPLAY_COUNT2=$COUNTER+1
+SITE2=`basename ${SITEARRAY[$COUNTER]} | sed "s/.tar.gz$//g"`
+if [ $SITE2"null" != null ]
+then
+echo "<tr><td style=\"vertical-align: top;\">$DISPLAY_COUNT1</td><td style=\"vertical-align: top;\"><form action=\"dg_view_site_logs2.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_LOGDATE_'$DAY'-'$MONTH'-'$YEAR'_WEBSITE_$SITE1\_\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>View log - $SITE1</span></a></form></td><td style=\"vertical-align: top;\">$SITE1</td><td style=\"vertical-align: top;\">$DISPLAY_COUNT2</td><td><form action=\"dg_view_site_logs2.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_LOGDATE_'$DAY'-'$MONTH'-'$YEAR'_WEBSITE_$SITE2"_"\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>View log - $SITE2</span></a></form></td><td style=\"vertical-align: top;\">$SITE2</td></tr>"
+else
+echo "<tr><td style=\"vertical-align: top;\">$DISPLAY_COUNT1</td><td><form action=\"dg_view_site_logs2.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_LOGDATE_'$DAY'-'$MONTH'-'$YEAR'_WEBSITE_$SITE1"_"\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>View log - $SITE1</span></a></form></td><td style=\"vertical-align: top;\">$SITE1</td></tr>"
+fi
+let COUNTER=$COUNTER+1
+done
+echo \</tbody\>\</table\>\<br\>
+'
+SSHSTATUS=`echo $?`
+[ $SSHSTATUS = 102 ] && exit 102
+else
+#Check to see if a log for this day exists on the date given
+if [ ! -d /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/allowed ]
+then
+exit 102
+fi
+#Show sites
+SITEARRAY=( `ls -S /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/allowed/ | sed -n 1,100p` )
+SITEARRAY_COUNT=`echo ${#SITEARRAY[@]}`
+COUNTER=0
+echo "<table class=\"standard\"><tbody>"
+while [ $COUNTER -lt $SITEARRAY_COUNT ]
+do
+let DISPLAY_COUNT1=$COUNTER+1
+SITE1=`basename ${SITEARRAY[$COUNTER]} | sed "s/.tar.gz$//g"`
+let COUNTER=$COUNTER+1
+let DISPLAY_COUNT2=$COUNTER+1
+SITE2=`basename ${SITEARRAY[$COUNTER]} | sed "s/.tar.gz$//g"`
+if [ $SITE2"null" != null ]
+then
+echo "<tr><td style=\"vertical-align: top;\">$DISPLAY_COUNT1</td><td style=\"vertical-align: top;\"><form action=\"dg_view_site_logs2.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_LOGDATE_$DAY-$MONTH-$YEAR"_WEBSITE_"$SITE1\_\" type=\"image\" class=\"images\" src=\"$ICON2\" value=\"\"><span>View log - $SITE1</span></a></form></td><td style=\"vertical-align: top;\">$SITE1</td><td style=\"vertical-align: top;\">$DISPLAY_COUNT2</td><td><form action=\"dg_view_site_logs2.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_LOGDATE_$DAY-$MONTH-$YEAR"_"WEBSITE_$SITE2"_"\" type=\"image\" class=\"images\" src=\"$ICON2\" value=\"\"><span>View log - $SITE2</span></a></form></td><td style=\"vertical-align: top;\">$SITE2</td></tr>"
+else
+echo "<tr><td style=\"vertical-align: top;\">$DISPLAY_COUNT1</td><td><form action=\"dg_view_site_logs2.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_LOGDATE_$DAY-$MONTH-$YEAR"_"WEBSITE_$SITE1"_"\" type=\"image\" class=\"images\" src=\"$ICON2\" value=\"\"><span>View log - $SITE1</span></a></form></td><td style=\"vertical-align: top;\">$SITE1</td></tr>"
+fi
+let COUNTER=$COUNTER+1
+done
+echo \</tbody\>\</table\>\<br\>
+fi
+exit

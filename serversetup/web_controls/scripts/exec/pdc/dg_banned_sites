@@ -1,0 +1,171 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dg_banned_sites_cgi
+then
+echo `date`: dg_banned_sites - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/dg_banned_sites_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_banned_sites.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $dg_banned_sites_cgi'check' ]
+then
+echo `date`: dg_banned_sites - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/dg_banned_sites_cgi
+then
+echo `date`: dg_banned_sites - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/tech_checksums/dg_banned_sites_cgi
+MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/dg_banned_sites.cgi | cut -d' ' -f1`
+[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+if [ $MD5SUM2'check' != $dg_banned_sites_cgi'check' ]
+then
+echo `date`: dg_banned_sites - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 1 ]
+then
+echo `date`: dg_banned_sites - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo $* | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | cut -s -d: -f3`
+WEBADDRESS=`echo $* | cut -s -d: -f4`
+FILTERGROUP=( `echo $* | cut -s -d: -f5- | sed 's/:/ /g'` )
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: dg_banned_sites - Not called by dg_banned_sites.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: dg_banned_sites - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: dg_banned_sites - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: dg_banned_sites - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $WEBADDRESS'null' = null ]
+then
+echo `date`: dg_banned_sites - Blank webaddress by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $FILTERGROUP'null' = null ]
+then
+echo `date`: dg_banned_sites - Blank filtergroup by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+WEBADDRESS=`echo $WEBADDRESS | sed 's/%3A/:/g'`
+WEBADDRESS=`echo $WEBADDRESS | sed 's/%2F/\//g'`
+
+echo `date`: dg_banned_sites - adding $WEBADDRESS by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+#Get squid server name
+[ ! -f /opt/karoshi/server_network/proxyserver ] && exit 101
+PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+
+if [ $PROXYSERVER != $HOSTNAME ]
+then
+ssh -x -o PasswordAuthentication=no $PROXYSERVER '
+#Add address to list
+touch /etc/dansguardian/staff_rules/bannedsites_staff
+touch /etc/dansguardian/student_rules/bannedsites_students
+
+if [ `echo '${FILTERGROUP[@]:0}' | grep -c Students` -gt 0 ]
+then
+#Add address to student list
+echo '$WEBADDRESS' >> /etc/dansguardian/student_rules/bannedsites_students
+sort --unique /etc/dansguardian/student_rules/bannedsites_students > /etc/dansguardian/student_rules/bannedsites_students1
+rm -f /etc/dansguardian/student_rules/bannedsites_students
+mv /etc/dansguardian/student_rules/bannedsites_students1 /etc/dansguardian/student_rules/bannedsites_students
+sed -i "/^$/d" /etc/dansguardian/student_rules/bannedsites_students
+fi
+
+if [ `echo '${FILTERGROUP[@]:0}' | grep -c Staff` -gt 0 ]
+then
+#Add address to staff list
+echo '$WEBADDRESS' >> /etc/dansguardian/staff_rules/bannedsites_staff
+sort --unique /etc/dansguardian/staff_rules/bannedsites_staff > /etc/dansguardian/staff_rules/bannedsites_staff1
+rm -f /etc/dansguardian/staff_rules/bannedsites_staff
+mv /etc/dansguardian/staff_rules/bannedsites_staff1 /etc/dansguardian/staff_rules/bannedsites_staff
+sed -i "/^$/d" /etc/dansguardian/staff_rules/bannedsites_staff
+fi
+touch /etc/dansguardian/activate_changes
+'
+else
+#Add address to list
+touch /etc/dansguardian/staff_rules/bannedsites_staff
+touch /etc/dansguardian/student_rules/bannedsites_students
+
+if [ `echo ${FILTERGROUP[@]:0} | grep -c Students` -gt 0 ]
+then
+#Add address to student list
+echo $WEBADDRESS >> /etc/dansguardian/student_rules/bannedsites_students
+sort --unique /etc/dansguardian/student_rules/bannedsites_students > /etc/dansguardian/student_rules/bannedsites_students1
+rm -f /etc/dansguardian/student_rules/bannedsites_students
+mv /etc/dansguardian/student_rules/bannedsites_students1 /etc/dansguardian/student_rules/bannedsites_students
+sed -i "/^$/d" /etc/dansguardian/student_rules/bannedsites_students
+fi
+
+if [ `echo ${FILTERGROUP[@]:0} | grep -c Staff` -gt 0 ]
+then
+#Add address to staff list
+echo $WEBADDRESS >> /etc/dansguardian/staff_rules/bannedsites_staff
+sort --unique /etc/dansguardian/staff_rules/bannedsites_staff > /etc/dansguardian/staff_rules/bannedsites_staff1
+rm -f /etc/dansguardian/staff_rules/bannedsites_staff
+mv /etc/dansguardian/staff_rules/bannedsites_staff1 /etc/dansguardian/staff_rules/bannedsites_staff
+sed -i "/^$/d" /etc/dansguardian/staff_rules/bannedsites_staff
+fi
+touch /etc/dansguardian/activate_changes
+fi
+exit

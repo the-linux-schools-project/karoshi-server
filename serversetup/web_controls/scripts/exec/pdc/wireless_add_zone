@@ -1,0 +1,137 @@
+#!/bin/bash
+#Copyright (C) 2009 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/wireless_add_zone_cgi
+then
+echo `date`: wireless_add_zone - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/wireless_add_zone_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/wireless_add_zone.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $wireless_add_zone_cgi'check' ]
+then
+echo `date`: wireless_add_zone - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: wireless_add_zone - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: wireless_add_zone - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+CLIENTNAME=`echo "$DATA" | cut -s -d: -f4`
+TCPIP=`echo "$DATA" | cut -s -d: -f5`
+WPAKEY=`echo "$DATA" | cut -s -d: -f6`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: wireless_add_zone - Not called by wireless_add_zone.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: wireless_add_zone - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: wireless_add_zone - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ "$CLIENTNAME"'null' = null ]
+then
+echo `date`: wireless_add_zone - Blank clientname key by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ "$TCPIP"'null' = null ]
+then
+echo `date`: wireless_add_zone - Blank tcpip range by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ "$WPAKEY"'null' = null ]
+then
+echo `date`: wireless_add_zone - Blank secret key by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: wireless_add_zone - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Convert special characters back
+########################
+#                                 space                      !              #                      $                &               (                 )                  +                   =               % (must be last) 
+WPAKEY=`echo $WPAKEY | sed 's/+/ /g' | sed 's/%21/!/g' | sed 's/%23/#/g' |  sed 's/%24/$/g' | sed 's/%26/\&/g' |  sed 's/%28/(/g' | sed 's/%29/)/g' | sed 's/%2B/+/g' | sed 's/%3D/=/g' | sed 's/%25/%/g'`
+
+TCPIP=`echo $TCPIP | sed 's/%2/\//g'`
+CLIENTNAME=`echo $CLIENTNAME | sed 's/+/-/g'`
+
+########################
+#Add the key
+########################
+echo `date`: wireless_add_zone - $CLIENTNAME added by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+if [ ! -d /opt/karoshi/wireless_network/access ]
+then
+mkdir -p /opt/karoshi/wireless_network/access
+chmod 0755 /opt/karoshi/wireless_network
+chmod 0700 /opt/karoshi/wireless_network/access
+fi
+
+echo 'client '$TCPIP' {' > /opt/karoshi/wireless_network/access/$CLIENTNAME.txt
+chmod 0600 /opt/karoshi/wireless_network/access/$CLIENTNAME.txt
+echo '	secret		= '$WPAKEY'' >> /opt/karoshi/wireless_network/access/$CLIENTNAME.txt
+echo '	shortname	= '$CLIENTNAME'' >> /opt/karoshi/wireless_network/access/$CLIENTNAME.txt
+echo '}' >> /opt/karoshi/wireless_network/access/$CLIENTNAME.txt
+
+if [ `ls -1 /opt/karoshi/wireless_network/access/ | wc -l` -ge 1 ]
+then
+cat /opt/karoshi/wireless_network/access/*.txt > /etc/raddb/clients.conf
+else
+echo > /etc/raddb/clients.conf
+fi
+exit

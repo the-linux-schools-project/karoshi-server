@@ -1,0 +1,147 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/email_quota_messages2_cgi
+then
+echo `date`: email_quota_messages2 - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/email_quota_messages2_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_quota_messages2.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $email_quota_messages2_cgi'check' ]
+then
+echo `date`: email_quota_messages_apply - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 1 ]
+then
+echo `date`: email_quota_messages_apply - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$*" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$*" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$*" | cut -s -d: -f3`
+LEVEL1=`echo "$*" | cut -s -d: -f4`
+LEVEL2=`echo "$*" | cut -s -d: -f5`
+LEVEL3=`echo "$*" | cut -s -d: -f6`
+LEVEL4=`echo "$*" | cut -s -d: -f7`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: email_quota_messages_apply - Not called by email_quota_messages_apply.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: email_quota_messages_apply - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: email_quota_messages_apply - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ "$LEVEL1"'null' = null ]
+then
+echo `date`: email_quota_messages_apply - Blank level1 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ "$LEVEL2"'null' = null ]
+then
+echo `date`: email_quota_messages_apply - Blank level2 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ "$LEVEL3"'null' = null ]
+then
+echo `date`: email_quota_messages_apply - Blank level3 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ "$LEVEL4"'null' = null ]
+then
+echo `date`: email_quota_messages_apply - Blank level4 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: email_quota_messages_apply - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+echo `date`: email_quota_messages_apply - by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+###########################
+#Conver special characters
+###########################
+
+LEVEL1=`echo "$LEVEL1" | sed 's/%2C/,/g' | sed 's/+/ /g' | sed 's/%2C/,/g' | sed 's/%0D%0A/\\\n/g' | sed 's/%25/%/g'`
+LEVEL2=`echo "$LEVEL2" | sed 's/%2C/,/g' | sed 's/+/ /g' | sed 's/%2C/,/g' | sed 's/%0D%0A/\\\n/g' | sed 's/%25/%/g'`
+LEVEL3=`echo "$LEVEL3" | sed 's/%2C/,/g' | sed 's/+/ /g' | sed 's/%2C/,/g' | sed 's/%0D%0A/\\\n/g' | sed 's/%25/%/g'`
+LEVEL4=`echo "$LEVEL4" | sed 's/%2C/,/g' | sed 's/+/ /g' | sed 's/%2C/,/g' | sed 's/%0D%0A/\\\n/g' | sed 's/%25/%/g'`
+#%2C ,
+#%OD%OA line return 
+#+ space
+
+############################
+#Write level files
+############################
+EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+
+if [ `echo $EMAILSERVER'null' | sed 's/ //g'` = null ] 
+then
+echo `date`: email_over_quota_report - blank email server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+
+if [ $EMAILSERVER != $HOSTNAME ]
+then
+ssh -x -o PasswordAuthentication=no $EMAILSERVER '
+echo -n -e "'$LEVEL1'" > /opt/karoshi/postfixdata/warning_messages/level1
+echo -n -e "'$LEVEL2'" > /opt/karoshi/postfixdata/warning_messages/level2
+echo -n -e "'$LEVEL3'" > /opt/karoshi/postfixdata/warning_messages/level3
+echo -n -e "'$LEVEL4'" > /opt/karoshi/postfixdata/warning_messages/level4
+'
+fi
+
+if [ ! -d /opt/karoshi/postfixdata/warning_messages ]
+then
+mkdir -p /opt/karoshi/postfixdata/warning_messages
+chmod 0755 /opt/karoshi/postfixdata
+chmod 0755 /opt/karoshi/postfixdata/warning_messages
+fi
+echo -n -e "$LEVEL1" > /opt/karoshi/postfixdata/warning_messages/level1
+echo -n -e "$LEVEL2" > /opt/karoshi/postfixdata/warning_messages/level2
+echo -n -e "$LEVEL3" > /opt/karoshi/postfixdata/warning_messages/level3
+echo -n -e "$LEVEL4" > /opt/karoshi/postfixdata/warning_messages/level4
+
+exit

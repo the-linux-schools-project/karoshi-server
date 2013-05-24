@@ -1,0 +1,47 @@
+#! /bin/sh
+# Multiple VNC Servers added by Max Gaukler
+VNCNAME=`sed -n 1,1p /etc/sysconfig/vncservers | cut -d: -f2 | sed s'/"//g'`
+export USER="$VNCNAME"
+export PATH="/usr/local/bin:/usr/bin:/bin:/usr/bin/X11:/var/run/vncserver"
+NAME="vncserver"
+#VNCPARAMS: set your parameters here:
+VNCPARAMS[1]="-name Karoshi -geometry 1024x768"
+# uncomment (remove #) for multiple servers:
+# VNCPARAMS[2]="-name asjdafjxcd"
+# VNCPARAMS[3]="-name asddsfdsf"
+# and so on...
+
+start()
+{
+        for ((num=1; $num <= ${#VNCPARAMS[*]}; num=$num+1));
+        do
+                su $USER -c "vncserver ${VNCPARAMS[$num]} :$num"
+        done
+}
+stop()
+{
+        for ((num=1; $num <= ${#VNCPARAMS[*]}; num=$num+1));
+        do
+                su $USER -c "vncserver -clean -kill :$num"
+        done
+}
+case "$1" in
+    start)
+        echo -n "Starting Xvnc servers: "
+        start
+        ;;
+    stop)
+        echo -n "Stopping Xvnc "
+        stop
+        ;;
+    restart)
+        echo -n "Restarting Xvnc "
+        stop
+        start
+        ;;
+    *)
+        echo "Usage: /etc/init.d/$NAME {start|stop|restart}"
+        exit 1
+        ;;
+esac
+exit 0

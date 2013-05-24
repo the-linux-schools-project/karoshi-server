@@ -1,0 +1,284 @@
+#!/bin/bash
+#Copyright (C) 2009 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dhcp_cgi
+then
+echo `date`: dhcp - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/dhcp_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dhcp.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $dhcp_cgi'check' ]
+then
+echo `date`: dhcp - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: dhcp - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: dhcp - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+NEWDOMAINNAMESERVER=`echo "$DATA" | cut -s -d: -f4`
+NEWNETBIOSSERVER=`echo "$DATA" | cut -s -d: -f5`
+NEWROUTER=`echo "$DATA" | cut -s -d: -f6`
+NEWSUBNET=`echo "$DATA" | cut -s -d: -f7`
+NEWSUBNETMASK=`echo "$DATA" | cut -s -d: -f8`
+NEWSTARTADDRESS=`echo "$DATA" | cut -s -d: -f9`
+NEWENDADDRESS=`echo "$DATA" | cut -s -d: -f10`
+NEWDEFAULTLEASETIME=`echo "$DATA" | cut -s -d: -f11`
+NEWMAXLEASETIME=`echo "$DATA" | cut -s -d: -f12`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: dhcp - Not called by dhcp.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: dhcp - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: dhcp - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $NEWDOMAINNAMESERVER'null' = null ]
+then
+echo `date`: dhcp - Blank domain server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $NEWNETBIOSSERVER'null' = null ]
+then
+echo `date`: dhcp - Blank netbios server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $NEWROUTER'null' = null ]
+then
+echo `date`: dhcp - Blank router by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $NEWSUBNET'null' = null ]
+then
+echo `date`: dhcp - Blank subnet by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $NEWSUBNETMASK'null' = null ]
+then
+echo `date`: dhcp - Blank subnet mask by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $NEWSTARTADDRESS'null' = null ]
+then
+echo `date`: dhcp - Blank range 1 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $NEWENDADDRESS'null' = null ]
+then
+echo `date`: dhcp - Blank range 2 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $NEWDEFAULTLEASETIME'null' = null ]
+then
+echo `date`: dhcp - Blank default lease time by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $NEWMAXLEASETIME'null' = null ]
+then
+echo `date`: dhcp - Blank max lease time by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+##########################
+#Language
+##########################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/dhcp ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/system/dhcp
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+#Check which dhcp server we are using
+DHCPSERVER=dhcp3-server
+[ `grep -c ^conf-dir=/etc/dnsmasq.d /etc/dnsmasq.conf` -gt 0 ] && DHCPSERVER=dnsmasq
+
+#########################
+#Write data to /opt/karoshi/server_network/dhcp/dhcp_settings
+#########################
+if [ ! -d /opt/karoshi/server_network/dhcp ]
+then
+mkdir -p /opt/karoshi/server_network/dhcp
+chown root.apache_karoshi /opt/karoshi/server_network/dhcp
+chmod 0750 /opt/karoshi/server_network/dhcp
+fi
+
+if [ ! -f /opt/karoshi/server_network/dhcp/dhcp_settings ]
+then
+touch /opt/karoshi/server_network/dhcp/dhcp_settings
+chown root.apache_karoshi /opt/karoshi/server_network/dhcp/dhcp_settings
+chmod 0640 /opt/karoshi/server_network/dhcp/dhcp_settings
+fi
+
+if [ ! -f /opt/karoshi/server_network/dhcp/dhcp_extra_settings ]
+then
+touch /opt/karoshi/server_network/dhcp/dhcp_extra_settings
+chown root.apache_karoshi /opt/karoshi/server_network/dhcp/dhcp_extra_settings
+chmod 0640 /opt/karoshi/server_network/dhcp/dhcp_extra_settings
+fi
+
+echo DOMAINNAMESERVER=$NEWDOMAINNAMESERVER > /opt/karoshi/server_network/dhcp/dhcp_settings
+echo NETBIOSSERVER=$NEWNETBIOSSERVER >> /opt/karoshi/server_network/dhcp/dhcp_settings
+echo ROUTER=$NEWROUTER >> /opt/karoshi/server_network/dhcp/dhcp_settings
+echo SUBNET=$NEWSUBNET >> /opt/karoshi/server_network/dhcp/dhcp_settings
+echo SUBNETMASK=$NEWSUBNETMASK >> /opt/karoshi/server_network/dhcp/dhcp_settings
+echo STARTADDRESS=$NEWSTARTADDRESS >> /opt/karoshi/server_network/dhcp/dhcp_settings
+echo ENDADDRESS=$NEWENDADDRESS >> /opt/karoshi/server_network/dhcp/dhcp_settings
+echo DEFAULTLEASETIME=$NEWDEFAULTLEASETIME >> /opt/karoshi/server_network/dhcp/dhcp_settings
+echo MAXLEASETIME=$NEWMAXLEASETIME >> /opt/karoshi/server_network/dhcp/dhcp_settings
+
+source /opt/karoshi/server_network/dhcp/dhcp_settings
+
+if [ $DHCPSERVER = dhcp3-server ]
+then
+
+#Create dhcpd.conf
+
+DHCPCONFPATH=/etc/dhcpd.conf
+[ -f /etc/dhcp3/dhcpd.conf ] && DHCPCONFPATH=/etc/dhcp3/dhcpd.conf
+
+echo 'authoritative;' > $DHCPCONFPATH
+echo '	option domain-name-servers '$NEWDOMAINNAMESERVER';' >> $DHCPCONFPATH
+echo '	option routers '$NEWROUTER';' >> $DHCPCONFPATH
+echo '	option subnet-mask '$NEWSUBNETMASK';' >> $DHCPCONFPATH
+echo >> $DHCPCONFPATH
+echo 'subnet '$NEWSUBNET' netmask '$NEWSUBNETMASK' {' >> $DHCPCONFPATH
+echo '	option netbios-name-servers '$NEWNETBIOSSERVER';' >> $DHCPCONFPATH
+echo '	option netbios-node-type 8;' >> $DHCPCONFPATH
+echo '	option domain-name-servers '$NEWDOMAINNAMESERVER';' >> $DHCPCONFPATH
+echo '	option routers '$NEWROUTER';' >> $DHCPCONFPATH
+echo '	option subnet-mask '$NEWSUBNETMASK';' >> $DHCPCONFPATH
+echo '	range dynamic-bootp '$NEWSTARTADDRESS' '$NEWENDADDRESS';' >> $DHCPCONFPATH
+echo '	default-lease-time '$NEWDEFAULTLEASETIME';' >> $DHCPCONFPATH
+echo '	max-lease-time '$NEWMAXLEASETIME';' >> $DHCPCONFPATH
+echo '}' >> $DHCPCONFPATH
+echo >> $DHCPCONFPATH
+echo >> $DHCPCONFPATH
+
+cat /opt/karoshi/server_network/dhcp/dhcp_extra_settings >> $DHCPCONFPATH
+
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/software
+
+#Restart DHCP
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_stop 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_start 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+[ `echo $?` != 0 ] && exit 101
+#Start DHCP on boot
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/dhcp
+
+#Make sure that dhcp server will run if the server reboots - problem on ubuntu 10.04
+if [ `grep -c post-up /etc/network/interfaces` = 0 ]
+then
+echo post-up /etc/init.d/dhcp3-server start >> /etc/network/interfaces
+echo pre-down /etc/init.d/dhcp3-server stop >> /etc/network/interfaces
+fi
+fi
+
+if [ $DHCPSERVER = dnsmasq ]
+then
+source /opt/karoshi/serversetup/variables/distro
+let NEWDEFAULTLEASETIME=$NEWDEFAULTLEASETIME/60/60
+echo dhcp-authoritative > /etc/dnsmasq.d/dhcp-settings
+echo dhcp-range=$NEWSTARTADDRESS,$NEWENDADDRESS,$NEWSUBNETMASK,$NEWDEFAULTLEASETIME'h' >> /etc/dnsmasq.d/dhcp-settings
+echo dhcp-option=option:router,$NEWROUTER >> /etc/dnsmasq.d/dhcp-settings
+echo dhcp-option=19,0 >> /etc/dnsmasq.d/dhcp-settings
+echo dhcp-option=44,0.0.0.0 >> /etc/dnsmasq.d/dhcp-settings
+echo dhcp-option=45,0.0.0.0 >> /etc/dnsmasq.d/dhcp-settings
+echo dhcp-option=46,8 >> /etc/dnsmasq.d/dhcp-settings
+echo dhcp-option=vendor:MSFT,2,1i >> /etc/dnsmasq.d/dhcp-settings
+
+#open udp ports 67 and 68 on shorewall
+MODCHECK=`grep -c -w dhcp_rule /etc/shorewall/rules`
+RESTART_SHOREWALL=no
+if [ $MODCHECK = 0 ]
+then
+RESTART_SHOREWALL=yes
+echo ''$SHOREWALLMSG - udp 67,68'<br><br>'
+LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'udp'	'67,68'	'-'#'dhcp_rule /etc/shorewall/rules
+echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+fi
+
+#Start DHCP on boot
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/dhcp
+
+######################
+#Restart shorewall
+######################
+if [ $RESTART_SHOREWALL = yes ]
+then
+echo '<br>'$RESTARTSWMSG
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
+echo '<br><br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
+echo '<br><br>'
+fi
+
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dns_stop 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dns_start 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+
+#Add role information
+echo "DHCP Server<br>" > /opt/karoshi/server_network/servers/$HOSTNAME/dhcpserver
+echo $HOSTNAME > /opt/karoshi/server_network/dhcpserver
+sed -i 's/DHCPCTRL=no/DHCPCTRL=yes/g' /opt/karoshi/server_network/menusettings
+
+exit
+

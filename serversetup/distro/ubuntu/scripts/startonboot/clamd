@@ -1,0 +1,4 @@
+#!/bin/bash
+#Start clamav-daemon on boot
+chkconfig -f clamav-daemon on 2>/dev/null
+

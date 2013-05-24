@@ -1,0 +1,224 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/quotas_view_partitions_cgi
+then
+echo `date`: quotas_view_partitions - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/quotas_view_partitions_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/quotas_view_partitions.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $quotas_view_partitions_cgi'check' ]
+then
+echo `date`: quotas_view_partitions - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: quotas_view_partitions - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+'`
+if [ $DATA'null' = null ]
+then
+echo `date`: quotas_view_partitions - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: quotas_view_partitions - Not called by quotas_view_partitions.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: quotas_view_partitions - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: quotas_view_partitions - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: quotas_view_partitions - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+echo `date`: quotas_view_partitions - Viewing by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/file/quotas_view_partitions ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/file/quotas_view_partitions
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+#Check for quotas on home partition
+
+ADDSERVERICON=/images/warnings/server.png
+
+if [ -f /opt/karoshi/server_network/info ]
+then
+source /opt/karoshi/server_network/info
+LOCATION_NAME="- $LOCATION_NAME"
+fi
+
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="6"><tbody><tr><td style="vertical-align: top;"><img src='"$ADDSERVERICON"'></td><td style="vertical-align: top;"><b>'$MYSERVERSMSG' '$LOCATION_NAME'</b></td></tr></tbody></table>'
+
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;">
+<tr><td style="vertical-align: top; width: 120px; height: 40px;"><b>'$SERVERMSG'</b></td><td style="vertical-align: top; width: 80px;"><b>'$SERVERIPMSG'</b></td><td style="vertical-align: top; width: 320px;"><b>'$ROLESMSG'</b></td><td style="vertical-align: top; width: 80px;"><b>'$STATUSMSG'</b></td></tr>
+'
+
+#Check main server
+QUOTAICON=/images/submenus/file/quotas_disabled.png
+SERVERIP=`cat /etc/hosts | grep -w $HOSTNAME | cut -f1`
+QUOTASTATUS=off
+if [ `grep -c ,usrquota" " /etc/fstab` != 0 ]
+then
+QUOTAICON=/images/submenus/file/quotas_enabled.png
+QUOTASTATUS=on
+fi
+echo "<tr><td style=\"vertical-align: top;\">$HOSTNAME</td><td style=\"vertical-align: top;\">$SERVERIP</td><td>"
+[ -d /opt/karoshi/server_network/servers/$HOSTNAME ] && cat /opt/karoshi/server_network/servers/$HOSTNAME/*
+if [ $QUOTASTATUS = on ]
+then
+echo "</td><td style=\"vertical-align: top;\"><img src=\"$QUOTAICON\" alt=\"quota status\"></td></tr>"
+else
+echo "</td><td style=\"vertical-align: top;\"><form action=\"/cgi-bin/admin/quotas_enable.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERTYPE_network_SERVERNAME_$HOSTNAME"_"\" type=\"image\" class=\"images\" src=\"$QUOTAICON\" value=\"\"><span>$HOSTNAME - $ENABLE_QUOTASMSG</span></a></form></td></tr>"
+fi
+#Check slave servers
+for SERVERS in /opt/karoshi/server_network/servers/*
+do
+SERVER=`basename $SERVERS`
+if [ $SERVER != $HOSTNAME ]
+then
+[ -d /opt/karoshi/server_network/servers/$SERVER ] && SERVERROLES=`cat /opt/karoshi/server_network/servers/$SERVER/*`
+ssh -o PasswordAuthentication=no -o ConnectTimeout=2  $SERVER '
+QUOTAICON=/images/submenus/file/quotas_disabled.png
+SERVERIP=`cat /etc/hosts | grep -w $HOSTNAME | cut -f1`
+QUOTASTATUS=off
+if [ `grep -c ,usrquota" " /etc/fstab` != 0 ]
+then
+QUOTAICON=/images/submenus/file/quotas_enabled.png
+QUOTASTATUS=on
+fi
+echo "<tr><td style=\"vertical-align: top;\">$HOSTNAME</td><td style=\"vertical-align: top;\">$SERVERIP</td><td>'$SERVERROLES'"
+if [ $QUOTASTATUS = on ]
+then
+echo "</td><td style=\"vertical-align: top;\"><img src=\"$QUOTAICON\" alt=\"quota status\"></td></tr>"
+else
+echo "</td><td style=\"vertical-align: top;\"><form action=\"/cgi-bin/admin/quotas_enable.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERTYPE_network_SERVERNAME_'$SERVER'_\" type=\"image\" class=\"images\" src=\"$QUOTAICON\" value=\"\"><span>'$SERVER' - '$ENABLE_QUOTASMSG'</span></a></form></td></tr>"
+fi
+'
+fi
+done
+echo "</tbody></table>"
+
+
+#Check federated servers
+
+#Show federated servers
+if [ -d /opt/karoshi/server_network/federated_ldap_servers ]
+then
+if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
+then
+
+for FEDERATED_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
+do
+FEDERATED_SERVER=`basename $FEDERATED_SERVERS`
+
+LOCATION_NAME=""
+if [ -f /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/info ]
+then
+source /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/info
+LOCATION_NAME="- $LOCATION_NAME"
+fi
+
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="6"><tbody><tr><td style="vertical-align: top;"><img src='"$ADDSERVERICON"'></td><td style="vertical-align: top;"><b>'$FEDERATEDSERVERSMSG' '$LOCATION_NAME'</b></td></tr></tbody></table>'
+
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;">
+<tr><td style="vertical-align: top; width: 120px; height: 40px;"><b>'$SERVERMSG'</b></td><td style="vertical-align: top; width: 80px;"><b>'$SERVERIPMSG'</b></td><td style="vertical-align: top; width: 320px;"><b>'$ROLESMSG'</b></td><td style="vertical-align: top; width: 80px;"><b>'$STATUSMSG'</b></td></tr>'
+
+ssh -o PasswordAuthentication=no -o ConnectTimeout=2  $FEDERATED_SERVER '
+QUOTAICON=/images/submenus/file/quotas_disabled.png
+SERVERIP=`cat /etc/hosts | grep -w $HOSTNAME | cut -f1`
+QUOTASTATUS=off
+if [ `grep -c ,usrquota" " /etc/fstab` != 0 ]
+then
+QUOTAICON=/images/submenus/file/quotas_enabled.png
+QUOTASTATUS=on
+fi
+echo "<tr><td style=\"vertical-align: top;\">$HOSTNAME</td><td style=\"vertical-align: top;\">$SERVERIP</td><td>"
+[ -d /opt/karoshi/server_network/servers/'$FEDERATED_SERVER' ] &&  cat /opt/karoshi/server_network/servers/'$FEDERATED_SERVER'/*
+if [ $QUOTASTATUS = on ]
+then
+echo "</td><td style=\"vertical-align: top;\"><img src=\"$QUOTAICON\" alt=\"quota status\"></td></tr>"
+else
+echo "</td><td style=\"vertical-align: top;\"><form action=\"/cgi-bin/admin/quotas_enable.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERTYPE_federated_SERVERNAME_'$FEDERATED_SERVER'_\" type=\"image\" class=\"images\" src=\"$QUOTAICON\" value=\"\"><span>'$FEDERATED_SERVER' - '$ENABLE_QUOTASMSG'</span></a></form></td></tr>"
+fi
+#Check federated slave servers
+for SERVERS in /opt/karoshi/server_network/servers/*
+do
+SERVER=`basename $SERVERS`
+if [ $SERVER != $HOSTNAME ]
+then
+[ -d /opt/karoshi/server_network/servers/$SERVER ] && SERVERROLES=`cat /opt/karoshi/server_network/servers/$SERVER/*`
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '\''
+QUOTAICON=/images/submenus/file/quotas_disabled.png
+SERVERIP=`cat /etc/hosts | grep -w $HOSTNAME | cut -f1`
+QUOTASTATUS=off
+if [ `grep -c ,usrquota" " /etc/fstab` != 0 ]
+then
+QUOTAICON=/images/submenus/file/quotas_enabled.png
+QUOTASTATUS=on
+fi
+echo "<tr><td style=\"vertical-align: top;\">$HOSTNAME</td><td style=\"vertical-align: top;\">$SERVERIP</td><td>'\''$SERVERROLES'\''"
+if [ $QUOTASTATUS = on ]
+then
+echo "</td><td style=\"vertical-align: top;\"><img src=\"$QUOTAICON\" alt=\"quota status\"></td></tr>"
+else
+echo "</td><td style=\"vertical-align: top;\"><form action=\"/cgi-bin/admin/quotas_enable.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERTYPE_federatedslave_SERVERMASTER_'$FEDERATED_SERVER'_SERVERNAME_'\''$SERVER'\''_\" type=\"image\" class=\"images\" src=\"$QUOTAICON\" value=\"\"><span>'\''$SERVER'\'' - '$ENABLE_QUOTASMSG'</span></a></form></td></tr>"
+fi
+'\''
+fi
+done
+'
+echo '</tbody></table>'
+done
+fi
+fi
+exit
+

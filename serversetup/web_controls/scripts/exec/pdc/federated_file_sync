@@ -1,0 +1,130 @@
+#!/bin/bash
+#Copyright (C) 2011 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/federated_file_sync_cgi
+then
+echo `date`: federated_file_sync - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/federated_file_sync_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/federated_file_sync.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $federated_file_sync_cgi'check' ]
+then
+echo `date`: federated_file_sync - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: federated_file_sync - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-+'`
+if [ $DATA'null' = null ]
+then
+echo `date`: federated_file_sync - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+GROUP=`echo "$DATA" | cut -s -d: -f4 | sed 's/UNDERSCORE/_/g'`
+ACTION=`echo "$DATA" | cut -s -d: -f5`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: federated_file_sync - Not called by federated_file_sync.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: federated_file_sync - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: federated_file_sync - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $GROUP'null' = null ]
+then
+echo `date`: federated_file_sync - Blank group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $ACTION'null' = null ]
+then
+echo `date`: federated_file_sync - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: federated_file_sync - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+[ ! -d /opt/karoshi/server_network/federated_file_sync ] && mkdir /opt/karoshi/server_network/federated_file_sync
+
+GROUP=`echo $GROUP | sed 's/+/ /g'`
+
+if [ $ACTION = "sync" ]
+then
+[ ! -d /opt/karoshi/server_network/federated_file_sync ] && mkdir -p /opt/karoshi/server_network/federated_file_sync
+echo `date`: federated_file_sync - enabling "sync for" "$GROUP"  by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+touch /opt/karoshi/server_network/federated_file_sync/"$GROUP"
+fi
+
+if [ $ACTION = nosync ]
+then
+[ ! -d /opt/karoshi/server_network/federated_file_sync ] && mkdir -p /opt/karoshi/server_network/federated_file_sync
+echo `date`: federated_file_sync - disabling "sync for" "$GROUP"  by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+[ -f /opt/karoshi/server_network/federated_file_sync/"$GROUP" ] && rm -f /opt/karoshi/server_network/federated_file_sync/"$GROUP"
+fi
+
+if [ $ACTION = customadd ]
+then
+echo `date`: federated_file_sync - enabling "sync for" "$GROUP"  by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+[ ! -d /opt/karoshi/server_network/federated_file_sync_custom ] && mkdir -p /opt/karoshi/server_network/federated_file_sync_custom
+touch /opt/karoshi/server_network/federated_file_sync_custom/"$GROUP"
+fi
+
+if [ $ACTION = customdelete ]
+then
+echo `date`: federated_file_sync - disabling "sync for" "$GROUP"  by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+[ ! -d /opt/karoshi/server_network/federated_file_sync_custom ] && mkdir -p /opt/karoshi/server_network/federated_file_sync_custom
+[  -f /opt/karoshi/server_network/federated_file_sync_custom/"$GROUP" ] && rm -f /opt/karoshi/server_network/federated_file_sync_custom/"$GROUP"
+fi
+exit

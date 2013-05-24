@@ -1,0 +1,158 @@
+#!/bin/bash
+#Copyright (C) 2007  The karoshi Team
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/custom_command_cgi
+then
+echo `date`: custom_command - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/custom_command_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/custom_command.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $custom_command_cgi'check' ]
+then
+echo `date`: custom_command - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 1 ]
+then
+echo `date`: custom_command - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo $* | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | cut -s -d: -f3`
+CUSTOMCOMMAND=`echo $* | cut -s -d: -f4`
+SERVERNAME=`echo $* | cut -s -d: -f5`
+CUSTOMCOMMAND=`echo $CUSTOMCOMMAND | sed 's/%2F/\//g' |  sed 's/+/ /g' | sed 's/%2B/+/g' | sed 's/%..//g'`
+CUSTOMCOMMAND=`echo $CUSTOMCOMMAND | sed 's/ping/ping -c4/g'`
+CUSTOMCOMMAND=`echo $CUSTOMCOMMAND | sed 's/top/top -b -n 1 /g'`
+
+SERVERTYPE=`echo $* | cut -s -d: -f6`
+SERVERMASTER=`echo $* | cut -s -d: -f7`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: custom_command - Not called by custom_command.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+then
+echo `date`: custom_command - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: custom_command - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: custom_command - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $SERVERNAME'null' = null ]
+then
+echo `date`: custom_command - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $SERVERTYPE'null' = null ]
+then
+echo `date`: custom_command - Blank server type by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $SERVERTYPE != network ] && [ $SERVERTYPE != federated ] && [ $SERVERTYPE != federatedslave ]
+then
+echo `date`: custom_command - Incorrect servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+if [ $SERVERMASTER'null' = null ]
+then
+echo `date`: custom_command - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+fi
+
+############################
+#Language
+############################
+LANGCHOICE=englishuk
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/custom_command ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/system/custom_command
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+###########################
+#Only run custom commands in the allowed list
+###########################
+[ ! -f /opt/karoshi/web_controls/allowed_custom_commands ] && ( touch /opt/karoshi/web_controls/allowed_custom_commands ; chmod 0600 /opt/karoshi/web_controls/allowed_custom_commands )
+CUSTOMCOMMAND1=`echo "$CUSTOMCOMMAND" | cut -d' ' -f1`
+if [ `grep -c -w $CUSTOMCOMMAND1 /opt/karoshi/web_controls/allowed_custom_commands` = 0 ]
+then
+echo `date`: custom_command - "$CUSTOMCOMMAND1" is not in the allowed list by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 102
+fi
+###########################
+#Run custom command
+###########################
+
+
+echo `date`: custom_command - running "$CUSTOMCOMMAND" "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+if [ $SERVERNAME = $HOSTNAME ]
+then
+$CUSTOMCOMMAND 2>&1 | sed 's/$/\<br\>/g'
+fi
+#SSH to all other servers for command
+if [ $SERVERNAME != $HOSTNAME ]
+then
+if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
+then
+ssh -x -o PasswordAuthentication=no -o ConnectTimeout=4 $SERVERNAME $CUSTOMCOMMAND 2>&1 | sed 's/$/\<br\>/g'
+else
+ssh -x -o PasswordAuthentication=no -o ConnectTimeout=4 $SERVERMASTER '
+ssh -x -o PasswordAuthentication=no -o ConnectTimeout=4 '$SERVERNAME' '\''
+'$CUSTOMCOMMAND' 2>&1 | sed "s/$/\<br\>/g"
+'\''
+'
+
+fi
+fi
+exit

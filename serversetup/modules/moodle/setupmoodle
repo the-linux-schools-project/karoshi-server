@@ -1,0 +1,304 @@
+#!/bin/bash
+#setuponlineclassroom
+#Copyright (C) 2004  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#aloughlin@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+########################
+#Get variables
+########################
+LOG_DATE=`date +%F`
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: setupmoodle - incorrect number of arguments"<br>"
+exit 101
+fi
+read -t 3 DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/'`
+
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+MOODLEDOMAIN=`echo "$DATA" | cut -s -d: -f4-`
+
+if [ -z "$REMOTE_USER" ]
+then
+echo `date`: setupmoodle - Blank remote user"<br>"
+exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+echo `date`: setupmoodle - Blank remote tcpip address"<br>"
+exit 101
+fi
+if [ -z "$MOODLEDOMAIN" ]
+then
+echo `date`: setupmoodle - Blank moodle domain"<br>"
+exit 101
+fi
+
+[ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
+[ -d /var/www/html ] || mkdir -p /var/www/html
+[ ! -e /opt/karoshi/.tempdata/mysqlpasswordstatus ] || rm -f /opt/karoshi/.tempdata/mysqlpasswordstatus
+
+
+LANGCHOICE=englishuk
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/moodle/setupmoodle ] || LANGCHOICE=englishuk
+source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/moodle/setupmoodle
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/variables/tcpip
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+
+#############################
+#Ensure that apache and mysql are running on boot
+#############################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mysql
+
+#####################
+#Apache moodle kerberos support
+#####################
+RESTARTAPACHE=no
+if [ `grep -c "#moodle-kerberos-support" /etc/apache2/sites-enabled/000-default` = 0 ]
+then
+#Remove last line
+sed -i 's/<\/VirtualHost>//g' /etc/apache2/sites-enabled/000-default
+
+
+#Add in kerberos
+echo -e '	#moodle-kerberos-support
+	<Directory /var/www/html/moodle/auth/ldap/>
+		<Files ntlmsso_magic.php>
+			AuthName "Moodle"
+			AuthType Kerberos
+			Krb5Keytab /etc/keytabs/moodle.keytab
+			KrbMethodNegotiate on
+			KrbMethodK5Passwd off
+			KrbAuthoritative on
+			require valid-user
+		</Files>
+	</Directory>' >> /etc/apache2/sites-enabled/000-default
+echo "</VirtualHost>" >> /etc/apache2/sites-enabled/000-default
+RESTARTAPACHE=yes
+fi
+
+if [ `grep -c "#moodle-kerberos-support" /etc/apache2/sites-enabled/default-ssl` = 0 ]
+then
+#Remove last lines
+sed -i 's/<\/VirtualHost>//g' /etc/apache2/sites-enabled/default-ssl
+sed -i 's/<\/IfModule>//g' /etc/apache2/sites-enabled/default-ssl
+
+#Add in kerberos
+echo -e '	#moodle-kerberos-support
+	<Directory /var/www/html/moodle/auth/ldap/>
+		<Files ntlmsso_magic.php>
+			AuthName "Moodle"
+			AuthType Kerberos
+			Krb5Keytab /etc/keytabs/moodle.keytab
+			KrbMethodNegotiate on
+			KrbMethodK5Passwd off
+			KrbAuthoritative on
+			require valid-user
+		</Files>
+	</Directory>' >> /etc/apache2/sites-enabled/default-ssl
+echo "</VirtualHost>" >> /etc/apache2/sites-enabled/default-ssl
+echo "</IfModule>" >> /etc/apache2/sites-enabled/default-ssl
+RESTARTAPACHE=yes
+fi
+
+if [ $RESTARTAPACHE = yes ]
+then
+#Restart apache
+echo "<li>"Restarting apache to apply kerberos support"</li>"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop
+echo "<br>"
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
+echo "<br>"
+fi
+
+#####################
+#Create moodle mysql password for the new database
+#####################
+echo '<li>'$MYSQLMSG'</li><br>'
+RANGE=61
+COUNTER=1
+while [ $COUNTER -lt 16 ]
+do
+row[$COUNTER]=$RANDOM
+let "row[$COUNTER] %= $RANGE"
+while [ ${row[$COUNTER]} = 0 ]
+do
+row[$COUNTER]=$RANDOM
+let "row[$COUNTER] %= $RANGE"
+done
+CHARACTER[$COUNTER]=`sed -n ${row[$COUNTER]},1p /opt/karoshi/serversetup/pdc/"useful scripts"/.alphabet`
+let COUNTER=COUNTER+1
+done
+
+MOODLEPASS=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
+
+#############################
+#Make sure that we know the root mysql password
+#############################
+
+/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
+#Get root mysql password
+MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
+
+#############################
+#create and pipe in the database
+#############################
+
+mysqladmin -f --password=$MYSQLPASS drop moodle 1>/dev/null 2>/dev/null
+sleep 1
+mysqladmin --password=$MYSQLPASS create moodle
+sleep 1
+mysql --password=$MYSQLPASS moodle < /opt/karoshi/serversetup/modules/moodle/moodle.sql
+echo GRANT ALL PRIVILEGES ON moodle.\* TO "'"moodle_user"'"@"'"localhost"'" IDENTIFIED BY "'"$MOODLEPASS"'"';' > /opt/karoshi/.tempdata/mysqlperms.sql
+echo ALTER DATABASE moodle DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci';' >> /opt/karoshi/.tempdata/mysqlperms.sql
+mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/mysqlperms.sql
+rm -f /opt/karoshi/.tempdata/mysqlperms.sql
+
+###########################
+#make sure that mysql and apache are running
+###########################
+MYSQLSTATUS=`ps -e | grep -c $MYSQLDVER`
+APACHESTATUS=`ps -e | grep -c $APACHEVER`
+if [ $MYSQLSTATUS = 0 ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start
+fi
+if [ $APACHESTATUS = 0 ]
+then
+echo "<li>"Apache was not running"</li"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
+echo "<br>"
+fi
+
+##########################
+#Copy in files for online classroom
+##########################
+
+###########################
+#Extract moodle
+###########################
+cd /var/www/html/
+echo '<li>'$EXTRACTMOODLEMSG'</li><br>'
+[ -d /var/www/html/moodle ] && rm -f -R /var/www/html/moodle
+tar -xzf /opt/karoshi/serversetup/modules/moodle/moodle.tar.gz
+cp -f -R /opt/karoshi/serversetup/modules/moodle/moodle-data /var/www
+echo '<li>'$SETMOODLEPERMS'</li><br>'
+chmod 0440 -R /var/www/html/moodle
+chmod u+X,g+X -R /var/www/html/moodle
+chmod 0600 -R /var/www/moodle-data
+chmod u+X -R /var/www/moodle-data
+chown -R root.$APACHEGROUP /var/www/html/moodle
+chown -R $APACHEUSER.$APACHEGROUP /var/www/moodle-data
+
+################################
+#Modifying config.php for moodle
+################################
+PASSWORDLINENO=`grep -n ^'$'CFG-'>'dbpass /var/www/html/moodle/config.php | cut -d: -f1`
+sed $PASSWORDLINENO'c'\$CFG-">"dbpass"    "=" ""'"$MOODLEPASS"'"";" /var/www/html/moodle/config.php > /var/www/html/moodle/configtemp.php
+rm -f /var/www/html/moodle/config.php
+mv /var/www/html/moodle/configtemp.php /var/www/html/moodle/config.php
+
+DOMAINLINENO=`grep -n ^'$'CFG-'>'wwwroot /var/www/html/moodle/config.php | cut -d: -f1`
+sed $DOMAINLINENO'c'\$CFG-">"wwwroot"    "=" ""'"http://$MOODLEDOMAIN/moodle"'"";" /var/www/html/moodle/config.php > /var/www/html/moodle/configtemp.php
+rm -f /var/www/html/moodle/config.php
+mv /var/www/html/moodle/configtemp.php /var/www/html/moodle/config.php
+
+##############################
+#Schedule a refresh job for moodle
+##############################
+[ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
+echo '*'/5 '*' '*' '*' '*' lynx -dump http://localhost/moodle/admin/cron.php '>' /dev/null > /opt/karoshi/cronjobs/jobs/refresh_moodle.cron
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
+echo '<br>'
+
+#####################################
+#Ensure that apache ports are open in shorewall
+#####################################
+MODCHECK=`grep -c -w 80 /etc/shorewall/rules`
+MODCHECK2=`grep -c -w 443 /etc/shorewall/rules`
+
+MOD_SHOREWALL=no
+if [ $MODCHECK = 0 ]
+then
+MOD_SHOREWALL=yes
+PORTS="80"
+fi
+
+if [ $MODCHECK2 = 0 ]
+then
+MOD_SHOREWALL=yes
+PORTS="443"
+fi
+
+if [ $MODCHECK = 0 ] && [ $MODCHECK2 = 0 ]
+then
+MOD_SHOREWALL=yes
+PORTS="80,443"
+fi
+
+if [ $MOD_SHOREWALL = yes ]
+then
+echo '<br>'$SHOREWALLMSG
+LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'apacherule /etc/shorewall/rules
+echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+fi
+
+#Copy in export grades
+cp -f /opt/karoshi/serversetup/modules/moodle/moodle_export_grades /opt/karoshi/"useful scripts"/
+chmod 0700 /opt/karoshi/"useful scripts"/moodle_export_grades
+
+######################
+#Restart shorewall
+######################
+if [ $MOD_SHOREWALL = yes ]
+then
+echo '<br>'$RESTARTSWMSG
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+fi
+#################################
+#Make sure that mysql and apache are running
+#################################
+MYSQLSTATUS=`ps -e | grep -c -w $MYSQLDVER`
+if [ $MYSQLSTATUS = 0 ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start
+fi
+APACHESTATUS=`ps -e | grep -c -w $APACHEVER`
+if [ $APACHESTATUS = 0 ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
+fi
+###########################
+#Show completed message
+###########################
+echo '<br>'$ACCESSMSG - '<a href="http://'$MOODLEDOMAIN'/moodle" target="_blank">'$MOODLEDOMAIN'/moodle</a>'
+echo '<br>'$ACCESSMSG2:admin - $PASSWORDMSG: 154732
+echo '<br><br><b>'$COMPLETEDMSG'</b><br><br>'
+exit

@@ -1,0 +1,4 @@
+#!/bin/bash
+#Start shorewall on boot
+[ -f /opt/karoshi/start_on_boot/karoshi_services ] || touch /opt/karoshi/start_on_boot/karoshi_services
+[ `grep -c -w shorewall /opt/karoshi/start_on_boot/karoshi_services` = 0 ] && echo shorewall,3 >> /opt/karoshi/start_on_boot/karoshi_services

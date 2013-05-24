@@ -1,0 +1,178 @@
+#!/bin/bash
+#Copyright (C) 2010  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+#Language
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/windows_servers_add_cgi
+then
+echo `date`: windows_servers_add - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/windows_servers_add_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/windows_servers_add.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $windows_servers_add_cgi'check' ]
+then
+echo `date`: windows_servers_add - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 1 ]
+then
+echo `date`: windows_servers_add - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo $* | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | cut -s -d: -f3`
+SERVERNAME=`echo $* | cut -s -d: -f4`
+PASSWORD=`echo $* | cut -s -d: -f5`
+TCPIPNUMBER=`echo $* | cut -s -d: -f6`
+ADMINUSER=`echo $* | cut -s -d: -f7`
+ROLE=`echo $* | cut -s -d: -f8`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: windows_servers_add - Not called by windows_servers_add.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: windows_servers_add - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: windows_servers_add - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVERNAME'null' = null ]
+then
+echo `date`: windows_servers_add - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $PASSWORD'null' = null ]
+then
+echo `date`: windows_servers_add - Blank password by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $ADMINUSER'null' = null ]
+then
+echo `date`: windows_servers_add - Blank adminuser by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: windows_servers_add - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+############################
+#Language
+############################
+LANGCHOICE=englishuk
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/windows_servers_add ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/system/windows_servers_add
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+############################
+#Check connection details
+############################
+net rpc info -W "" -I $TCPIPNUMBER -U $ADMINUSER%$PASSWORD 1>/dev/null
+STATUSCHECK=`echo $?`
+
+if [ $STATUSCHECK != 0 ]
+then
+exit 102
+fi
+
+echo `date`: windows_servers_add - adding $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+if [ ! -d /opt/karoshi/server_network/windows_servers ]
+then
+mkdir -p /opt/karoshi/server_network/windows_servers
+chmod 0750 /opt/karoshi/server_network/windows_servers
+chown root.apache_karoshi /opt/karoshi/server_network/windows_servers
+fi
+
+if [ ! -d /opt/karoshi/server_network/windows_servers/$SERVERNAME ]
+then
+mkdir -p /opt/karoshi/server_network/windows_servers/$SERVERNAME
+chmod 0750 /opt/karoshi/server_network/windows_servers/$SERVERNAME
+chown root.apache_karoshi /opt/karoshi/server_network/windows_servers/$SERVERNAME
+fi
+
+##############################
+#Add role and ip details
+##############################
+ROLE=`echo $ROLE | sed 's/+/ /g' | sed 's/%2F/\//g' | sed 's/%22//g' | sed 's/%28/(/g' | sed 's/%29/)/g'`
+echo "$ROLE" > /opt/karoshi/server_network/windows_servers/$SERVERNAME/role
+echo $TCPIPNUMBER > /opt/karoshi/server_network/windows_servers/$SERVERNAME/tcpip
+##############################
+#Encrypt username and password details
+##############################
+
+
+[ -f /opt/karoshi/server_network/windows_servers/$SERVERNAME/connection_details.gpg ] && rm -f /opt/karoshi/server_network/windows_servers/$SERVERNAME/connection_details.gpg
+[ -f /opt/karoshi/server_network/windows_servers/$SERVERNAME/connection_details ] && rm -f /opt/karoshi/server_network/windows_servers/$SERVERNAME/connection_details ]
+touch /opt/karoshi/server_network/windows_servers/$SERVERNAME/connection_details
+chmod 0600 /opt/karoshi/server_network/windows_servers/$SERVERNAME/connection_details
+echo $ADMINUSER,$PASSWORD > /opt/karoshi/server_network/windows_servers/$SERVERNAME/connection_details
+
+if [ ! -f /opt/karoshi/server_network/windows_servers/.key ]
+then
+touch /opt/karoshi/server_network/windows_servers/.key
+chmod 0600 /opt/karoshi/server_network/windows_servers/.key
+
+ALPHABET=( A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z 1 2 3 4 5 6 7 8 9 0 )
+
+RANGE=61
+COUNTER=0
+while [ $COUNTER -lt 20 ]
+do
+RAND=$RANDOM
+
+let "RAND %= $RANGE"
+
+RANDPASS=$RANDPASS${ALPHABET[$RAND]}  
+
+let COUNTER=$COUNTER+1
+done
+echo $RANDPASS > /opt/karoshi/server_network/windows_servers/.key
+fi
+
+sed -n 1,1p /opt/karoshi/server_network/windows_servers/.key | gpg --no-tty --passphrase-fd 0 -c /opt/karoshi/server_network/windows_servers/$SERVERNAME/connection_details
+rm -f /opt/karoshi/server_network/windows_servers/$SERVERNAME/connection_details
+touch /opt/karoshi/server_network/windows_servers/$SERVERNAME/connection_details.gpg
+chmod 0600 /opt/karoshi/server_network/windows_servers/$SERVERNAME/connection_details.gpg
+exit
+

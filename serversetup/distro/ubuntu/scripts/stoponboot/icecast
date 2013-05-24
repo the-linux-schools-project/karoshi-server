@@ -1,0 +1,9 @@
+#!/bin/bash
+#Stop icecast2 on boot
+if [ -f /opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status ]
+then
+/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status icecast2 off 1>/dev/null 2>/dev/null
+else
+chkconfig -f icecast2 off 1>/dev/null 2>/dev/null
+fi
+

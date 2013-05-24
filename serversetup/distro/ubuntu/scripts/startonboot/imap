@@ -1,0 +1,4 @@
+#!/bin/bash
+#Start postfix on boot
+chkconfig -f imap on
+chkconfig -f imaps on

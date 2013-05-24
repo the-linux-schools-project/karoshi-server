@@ -1,0 +1,51 @@
+#!/bin/bash
+
+#Clear Trash folder
+[ -d ~/.local/share/Trash ] && rm -rf ~/.local/share/Trash
+
+[ -d ~/network/home ] || exit
+#Everything below this point requires ~/network/home to exist
+
+#####################
+#Backup configuration
+#####################
+function checkAndList {
+	if [ -e ~/"$1" ]; then list=( "${list[@]}" "$1" ); fi
+}
+
+#Create archive in ~/network/home/.configuration.tar.gz
+[ -f ~/network/home/.configuration.tar.gz ] && rm ~/network/home/.configuration.tar.gz
+
+list=( )
+#Populate list with all hidden folders, with some exceptions
+while read -d $'\0' -r file ; do
+	checkAndList "${file##~/}"
+done < <(find ~ -mindepth 1 -maxdepth 1 -xdev -not '(' -name '.mozilla' -o -name '.cache' -o -name '.thumbnails' -o -name '.Xauthority' -o -name '.ICEauthority' -o -name '.xsession-errors' -o -name '.pulse*' -o -name '.gvfs' -o -name '.dbus' -o -name '.gtk-bookmarks' -o -name '.VirtualBox' -o -name '.rednotebook' ')' -name '.*' -print0)
+
+if which firefox >/dev/null && [ -d ~/.mozilla/firefox ]; then
+	firefox_profile=`sed -n '0,/^Path=/s/^Path=//p' ~/.mozilla/firefox/profiles.ini`
+	if [[ "$firefox_profile" ]] && [ -d ~/.mozilla/firefox/"$firefox_profile" ]; then
+		checkAndList .mozilla/firefox/"$firefox_profile"/places.sqlite
+	fi
+fi
+if which thunderbird >/dev/null && [ -d ~/.thunderbird ]; then
+	thunderbird_profile=`sed -n '0,/^Path=/s/^Path=//p' ~/.thunderbird/profiles.ini`
+	if [[ "$thunderbird_profile" ]] && [ -d ~/.thunderbird/"$thunderbird_profile" ]; then
+		checkAndList .thunderbird/"$thunderbird_profile"/calendar-data/
+		checkAndList .thunderbird/"$thunderbird_profile"/places.sqlite
+	fi
+fi
+
+[[ "${list[@]}" ]] && tar -cz --one-file-system --exclude='karoshi-*.desktop' -C ~ -f ~/network/home/.configuration.tar.gz "${list[@]}"
+
+#####################
+#Backup desktop files
+#####################
+list=( )
+while read -d $'\0' -r file ; do
+	checkAndList "${file##~/}"
+done < <(find ~/Desktop -mindepth 1 -maxdepth 1 -not -name "karoshi-*.desktop" -and -size -1024c -print0)
+
+#Create archive in ~/network/home/.desktop-icons.tar.gz
+[ -f ~/network/home/.desktop-icons.tar.gz ] && rm ~/network/home/.desktop-icons.tar.gz
+[[ "${list[@]}" ]] && tar -cz --one-file-system -C ~ -f ~/network/home/.desktop-icons.tar.gz "${list[@]}"

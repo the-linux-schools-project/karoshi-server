@@ -1,0 +1,946 @@
+;Copyright (C) 2006  Artie Ball
+;Copyright (C) 2006  The karoshi Team
+;This program is free software; you can redistribute it and/or
+;modify it under the terms of the GNU General Public License
+;as published by the Free Software Foundation; either version 2
+;of the License, or (at your option) any later version.
+;
+;This program is distributed in the hope that it will be useful,
+;but WITHOUT ANY WARRANTY; without even the implied warranty of
+;MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;GNU General Public License for more details.
+;
+;You should have received a copy of the GNU General Public License
+;along with this program; if not, write to the Free Software
+;Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+;
+;The Karoshi Team can be contacted at: 
+;mpsharrad@karoshi.org.uk
+;jharris@karoshi.org.uk
+;aball@karoshi.org.uk
+;aloughlin@karoshi.org.uk
+;
+;Website: http://www.karoshi.org.uk 
+;****************************************************************************************************
+;  Edited 09/08/06 By RTB	-	Modified SetPrintersLSR() Funtion
+;****************************************************************************************************
+
+;DEBUG ON
+
+;****************************************************************************************************
+;  Set Break
+;****************************************************************************************************
+;Break Off
+Break On
+
+
+;****************************************************************************************************
+;  Global Variables
+;****************************************************************************************************
+Global $time
+Global $UpdateSoftware[0]
+Global $DebugMessages[0]
+
+;****************************************************************************************************
+;  Common Variables
+;****************************************************************************************************
+$TRUE 		= 1
+$FALSE 		= 0
+$logonspeed="300" ; 100 - quick 300 - medium 600 - slow
+$dologging="ON"
+$verfile = "c:\kix\sversion.ini"
+$scriptver="1.00"
+$lserver="\\CHANGETHISHOSTNAME"
+$printserver="CHANGETHISHOSTNAME"
+$simsdrive="s:"
+$logginglocation="\\CHANGETHISHOSTNAME\logging"
+$fileLocation="\\CHANGETHISHOSTNAME\applications\news"
+$groupsfile="\\CHANGETHISHOSTNAME\netlogon\groups.txt"
+$printersfile="\\CHANGETHISHOSTNAME\netlogon\printers.txt"
+$userorg="LINUXGRID"
+$KixDir="C:\Kix"
+$mydocs="g:\"
+$homedrive="g:"
+$homepage="http://CHANGETHISHOSTNAME.internal/webwarning"
+$itadminwpaper="itadminwpaper.bmp"
+$officestaffwpaper="officestaffwpaper.bmp"
+$staffwpaper="staffwpaper.bmp"
+$studentwpaper="studentwpaper.bmp"
+$techwpaper="techwpaper.bmp"
+$guestwpaper="guestwpaper.bmp"
+$examswpaper="examswpaper.bmp"
+
+
+;****************************************************************************************************
+;Set varables for Registry Locations
+;****************************************************************************************************
+$mroot="HKEY_LOCAL_MACHINE\"
+$curoot="HKEY_CURRENT_USER\"
+$sproot="HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Policies\"
+$run="HKEY_CURRENT_USER\Software\microsoft\windows\CurrentVersion\run"
+$key="HKEY_CURRENT_USER\software\microsoft\Windows\CurrentVersion\Internet Settings"
+$keyis="HKEY_LOCAL_MACHINE\config\0001\software\microsoft\Windows\CurrentVersion\Internet Settings"
+
+;****************************************************************************************************
+;Set variables for user
+;****************************************************************************************************
+$username=lcase(@userid)
+$pgroup=@PrimaryGroup
+
+
+;****************************************************************************************************
+;Get & Set Workstation Information - Location and SIMS
+;****************************************************************************************************
+$location=ReadValue("HKEY_LOCAL_MACHINE\Software\karoshi","location")
+IF @error<>0
+	MESSAGEBOX("This workstation is not configured for location specific functionality. Contact the system administrator.","No location Name Present",16)
+ENDIF
+$issimsws=ReadValue("HKEY_LOCAL_MACHINE\Software\karoshi","issimsws")
+
+
+;****************************************************************************************************
+;  Default Settings
+;****************************************************************************************************
+$os=""
+$os_type=""
+$os_service_pack=""
+$progressstep=3
+$sleeptime=0
+$numerrors=0
+$Updates=0
+$RunUpdates=$False
+$tmpdir=ExpandEnvironmentVars("%tmp%")
+$systemdrive=ExpandEnvironmentVars("%systemdrive%")
+$windir=ExpandEnvironmentVars("%windir%")
+$comspec=ExpandEnvironmentVars("%comspec%")
+$NumMessages=0
+$DebugMessages[$NumMessages]="-BEGIN--------------------------"
+
+;****************************************************************************************************
+; Internet Explorer Proxy and Homepage
+;****************************************************************************************************
+$ret=writevalue($key,"ProxyServer","172.30.0.5:3128","REG_SZ")
+$ret=writevalue($keyis,"ProxyServer","172.30.0.5:3128","REG_SZ")
+$ret=delvalue($key,"ProxyEnable")
+$ret=delvalue($keyis,"ProxyEnable")
+$ret=writevalue($key,"ProxyEnable","1","REG_DWORD")
+$ret=writevalue($keyis,"ProxyEnable","1","REG_DWORD")
+$key=$curoot+"Software\Microsoft\Internet Explorer\Main"
+$ret=writevalue($key,"Start Page",$homepage,"REG_SZ")
+
+
+
+;****************************************************************************************************
+;  Main Application
+;****************************************************************************************************
+
+;Who has logged on?
+DBGMessage( "Info", "Logged On User: "+$username)
+
+DrawForms()
+
+CheckScriptVer()
+
+;FirstRunToday()
+
+OperatingSystem()  
+$OSBox.Text=SubStr($os,1,22)
+
+ShowNews()
+
+SyncTime()
+
+DropAllShares()
+
+ConnectDrives()
+
+RedirectFolders()
+
+SetDTWallpaper()
+
+SetDesktopSecurity()
+
+SetPrintersLSR()
+
+IF $dologging = "ON"
+	WriteLogFile()
+ENDIF
+
+While $ProgressBar.Value < 100
+	Progress("Finalizing",20)
+Loop
+
+Exit 1
+
+;***********************************************************************
+;**
+;**  Functions
+;**
+;***********************************************************************
+;**  Draw the Form
+;***********************************************************************
+Function DrawForms()
+
+; Form
+	$Form = CreateObject("Kixtart.Form")
+	;$Form.FormBorderStyle = FixedSingle
+	$Form.Caption = "Karoshi Login Script"
+	$Form.MaximizeBox = "False"
+	$Form.MinimizeBox = "False"
+	$Form.ControlBox = "False"
+	$Form.Resizable = 0
+	$Form.Width = 500
+	$Form.Height = 400
+	If $DebugFlag=$True
+		$Form.Left=(1024 / 2) - (500 / 2)
+		$Form.Top=(768  / 2) - (400 /2 )	
+	Else
+		$Form.Center
+	EndIf
+	; ClockTimer
+		$Timer = $Form.Timer($logonspeed,0,0,15,15)
+		$Timer.OnTimer = "UpdateClock()"
+
+; Logo
+	$Logo=$Form.PictureBox
+	$Logo.Left=5
+	$Logo.Top=5
+	$Logo.Width=483
+	$Logo.Height=50
+	$Logo.Picture="\\CHANGETHISHOSTNAME\netlogon\logo.bmp"
+
+; Info Frame 
+	$InfoFrame = $Form.Frame("Information",5,55,240,140)
+	
+	$OSLbl = $InfoFrame.Label("Os", 5, 15, 115, 15)
+	$OSBox = $InfoFrame.TextBox("", 120, 15, 115, 15)
+	$OSBox.BackColor=$Form.BackColor
+	$OSBox.Enabled=0
+	$UserIdLbl = $InfoFrame.Label("UserId", 5, 30, 115, 15)
+	$UserIdBox = $InfoFrame.TextBox($username, 120, 30, 115, 15)
+	$UserIdBox.BackColor=$Form.BackColor
+	$UserIdBox.Enabled=0
+	$FullNameLbl = $InfoFrame.Label("Full Name", 5, 45, 115, 15)
+	$FullNameBox = $InfoFrame.TextBox(@FULLNAME, 120, 45, 115, 15)
+	$FullNameBox.BackColor=$Form.BackColor
+	$FullNameBox.Enabled=0
+	$PrivilegeLbl = $InfoFrame.Label("Privilege", 5, 60, 115, 15)
+	$PrivilegeBox = $InfoFrame.TextBox($pgroup, 120, 60, 115, 15)
+	$PrivilegeBox.BackColor=$Form.BackColor
+	$PrivilegeBox.Enabled=0
+	$WorkStnLbl = $InfoFrame.Label("Workstation", 5, 75, 115, 15)
+	$WorkStnBox = $InfoFrame.TextBox(@WKSTA, 120, 75, 115, 15)
+	$WorkStnBox.BackColor=$Form.BackColor
+	$WorkStnBox.Enabled=0
+	$DomainLbl = $InfoFrame.Label("Domain", 5, 90, 115, 15)
+	$DomainBox = $InfoFrame.TextBox(@DOMAIN, 120, 90, 115, 15)
+	$DomainBox.BackColor=$Form.BackColor
+	$DomainBox.Enabled=0
+	$ServerLbl = $InfoFrame.Label("Server", 5, 105, 115, 15)
+	$ServerBox = $InfoFrame.TextBox($lserver, 120, 105, 115, 15)
+	$ServerBox.BackColor=$Form.BackColor
+	$ServerBox.Enabled=0
+	$MemberLbl = $InfoFrame.Label("Group Member", 5, 120, 115, 15)
+	$MemberBox = $InfoFrame.TextBox($pgroup, 120, 120, 115, 15)
+	$MemberBox.BackColor=$Form.BackColor
+	$MemberBox.Enabled=0
+
+; Action Frame
+	$ActionFrame = $Form.Frame("Actions",250,55,240,140)
+	
+	$NewsRadioButton = $ActionFrame.RadioButton("Get News", 5, 15, 230, 15)
+	$TimeRadioButton = $ActionFrame.RadioButton("Set Time", 5, 30, 230, 15)
+	$DropSharesRadioButton = $ActionFrame.RadioButton("Drop All Shares", 5, 45, 230, 15)
+	$SharesRadioButton = $ActionFrame.RadioButton("Connect Drives", 5, 60, 230, 15)
+	$RedirectRadioButton = $ActionFrame.RadioButton("Redirect Folders", 5, 75, 230, 15)
+	$SecurityRadioButton = $ActionFrame.RadioButton("Desktop Settings", 5, 90, 230, 15)			
+	$PrintersRadioButton = $ActionFrame.RadioButton("Connect Printers", 5, 105, 230, 15)			
+	$WriteLogFileRadioButton = $ActionFrame.RadioButton("Write Logfile", 5, 120, 230, 15)			
+
+; Logging Frame
+	$NewsFrame = $Form.Frame("Information",5,195,485,150)
+	$NewsTextBox = $NewsFrame.TextBox("",5,15,475,130)
+	$NewsTextBox.BackColor = $Form.BackColor
+	$NewsTextBox.MultiLine=1
+	$NewsTextBox.Enable=0
+	$NewsTextBox.Text=""
+	$NewsTextBox.ScrollBars=2
+	$NewsTextBox.Wordwrap=1
+
+; Progress Bar
+	$ProgressTextBox= $Form.TextBox
+	$ProgressTextBox.Left=5
+	$ProgressTextBox.Top=350
+	$ProgressTextBox.Width=200
+	$ProgressTextBox.Height=20
+	$ProgressTextBox.Enable=0
+	$ProgressTextBox.BackColor = $Form.BackColor	
+	
+	$ProgressBar = $Form.ProgressBar
+	$ProgressBar.Left=210
+	$ProgressBar.Top=350
+	$ProgressBar.Width=220
+	$ProgressBar.Height=20
+	$ProgressBar.Style = 1
+
+; Clock
+	$CurrentTime=@Time
+	$Clock = $Form.TextBox("",435,350,55,20)
+	$Clock.Alignment=2
+	$Clock.Enabled=0
+	$Clock.BackColor=$Form.BackColor
+
+$Form.Show
+; DebugForm
+If $DebugFlag=$True
+	$DbgForm = CreateObject("Kixtart.Form")	
+	$DbgForm.Caption = "DebugBox"
+	$DbgForm.Width = 260
+	$DbgForm.Height = 500
+	$DbgForm.Left=1024 -260
+	$DbgFOrm.Top=768 - 550
+	
+	$DbgTextBox=$DbgForm.TextBox()
+	$DbgTextBox.Left=5
+	$DbgTextBox.Top=5
+	$DbgTextBox.Width=245
+	$DbgTextBox.Height=465
+	$DbgTextBox.MultiLine=1
+	$DbgTextBox.Enable=0
+	$DbgTextBox.Text=""
+	$DbgTextBox.ScrollBars=2
+	$DbgTextBox.Wordwrap=1	
+	
+	$CurrentX=0
+	$CurrentY=0
+	$DbgForm.Show
+EndIf	
+
+EndFunction
+
+;***********************************************************************
+;**  Update the clock
+;***********************************************************************
+Function UpdateClock()
+	If @Time<>$time
+		$Clock.Text=@Time
+		$time=@time
+	EndIf
+EndFunction
+
+;***********************************************************************
+;**  Retrieve News File
+;***********************************************************************
+Function ShowNews()
+	$NewsRadioButton.Value=1
+	Progress( "Retrieving News")
+	If Open(1, $fileLocation + "\news.txt") = 0
+		$NewsLine = ReadLine(1)
+		While @ERROR=0
+			$NewsTextBox.Text=$NewsTextBox.Text + $NewsLine + Chr(13) + Chr(10)
+			$NewsLine = ReadLine(1)
+		Loop
+		If Close (1) <> 0
+			DbgMessage("Error","News File could not be closed", @SError)
+		EndIf
+	Else
+		DbgMessage("Debug","No News")
+	EndIf
+	$NewsRadioButton.Value=0
+	$NewsRadioButton.Enabled =0
+EndFunction
+
+;***********************************************************************
+;**  Syncronize the local system time with the logon server.  
+;**  The PDC server syncronizes with NTP server 
+;***********************************************************************
+Function SyncTime()
+	$TimeRadioButton.Value=1
+	DBGMessage ("Info", "Syncing Time:" )
+	Progress( "Syncing Time")
+;	If $NT_Mode="yes"
+		SetTime $lserver
+		If @ERROR<>0
+			DBGMessage ("Error", "- Error Finding Time Server : " + $lserver )
+		Else
+			DbgMessage("Info","- Synchronized time with : " + $lserver)
+		EndIf
+;	EndIf
+	$TimeRadioButton.Value=0
+	$TimeRadioButton.Enabled =0
+EndFunction
+
+;***********************************************************************
+;** Check Script Version
+;***********************************************************************
+Function CheckScriptVer()
+	Progress( "Checking script version")
+	IF EXIST($verfile)
+		$rc = Open(1,$verfile)
+		$ver = Readline(1)
+		$rc = Close(1)
+		IF $ver = $scriptver
+			DbgMessage("Info","Script version is current")
+		ELSE
+			UpdateSystem()
+		ENDIF
+	ELSE
+		$rc = Open(1,$verfile,5)
+		$rc = Writeline(1,$scriptver)
+		$rc = Close(1)
+		DbgMessage("Info","Script Version File Created")
+	ENDIF
+EndFunction
+
+;***********************************************************************
+;** Update System
+;***********************************************************************
+Function UpdateSystem()
+	Progress( "Updating System")
+	DEL $verfile /c
+	$rc = Open(1,$verfile,5)
+	$rc = Writeline(1,$scriptver)
+	$rc = Close(1)
+	DbgMessage("Info","System Updated")
+EndFunction
+
+
+;***********************************************************************
+;**  First time the computer has run today?
+;***********************************************************************
+Function FirstRunToday()
+	Progress( "Checking if first run today")
+	If Exist($logginglocation + "\" + @Wksta + ".log")
+		$FileDate=Left(GetFileTime ($logginglocation + "\" + @Wksta + ".log"),10)
+		IF $FileDate<>@Date
+			DbgMessage("Info","Computer First Run Today")
+		ELSE
+			; To be determined
+		ENDIF
+	ELSE
+		DbgMessage("Info","Computer First Run Today")
+	ENDIF
+EndFunction
+
+
+
+;****************************************************************************************************
+;  Drop all shares
+;****************************************************************************************************
+Function DropAllShares()
+	$DropSharesRadioButton.Value=1
+	Progress( "Dropping All Shares")
+	USE * /DELETE
+	IF @ERROR<>0
+		DBGMessage ("Error","Dropping All Shares:")
+	ELSE
+		DbgMessage("Info","Dropping All Shares:")
+	ENDIF
+	$DropSharesRadioButton.Value=0
+	$DropSharesRadioButton.Enabled =0	
+EndFunction
+
+
+;***********************************************************************
+;**  Connecting Drives
+;***********************************************************************
+Function ConnectDrives()
+	$SharesRadioButton.Value=1
+	Progress( "Connecting Drives")
+	DbgMessage("Info","Connecting Drives:")
+	ConnectHomeDrive()
+	ConnectGroupDrives()
+	$SharesRadioButton.Value=0
+	$SharesRadioButton.Enabled =0	
+EndFunction
+
+
+;***********************************************************************
+;**  Connecting Home Drive
+;***********************************************************************
+Function ConnectHomeDrive()
+	IF Open(1,$groupsfile) = 0
+		$gspair = ReadLine(1)
+			WHILE (@ERROR = 0) AND ($pgroup <> $group)
+				$marker = INSTR($gspair,",")
+				$group = LEFT($gspair,$marker-1)
+				$homesrvr = SUBSTR($gspair, $marker+1)
+	    			$gspair = ReadLine(1)
+			LOOP
+	$res = Close (1)
+	ELSE
+		BEEP
+		DBGMessage ("error","Groups file not opened, error code: [" + @ERROR + "]")
+	ENDIF
+
+	$homeloc="\\"+$homesrvr+"\"+$username
+	ConnectShare("g:, $homeloc")
+
+	IF EXIST("g:\favourites") = 0
+	md g:\favourites
+	ENDIF
+EndFunction
+
+
+;****************************************************************************************************
+; Redirect Folders
+;****************************************************************************************************
+Function RedirectFolders()
+	
+	$mydocs=$homedrive + "\"
+	$fav=$homedrive + "\favourites"
+	$recent=$homedrive + "\appdata\recent"
+
+	;IF EXIST("g:\appdata") = 0
+	;md g:\appdata
+	;ENDIF	
+
+	IF EXIST($recent) = 0
+	md $recent
+	ENDIF
+
+	IF EXIST($fav) = 0
+	md $fav
+	ENDIF
+
+	$RedirectRadioButton.Value=1
+	Progress( "Redirecting Folders")
+	; Redirect My Documents to home drive folder
+	$key="HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders"
+	IF (WriteValue($key,"Personal",$mydocs,"REG_SZ") <> 0)
+	DbgMessage("Error","Could not redirect My Documents")
+	ELSE
+	$ret=writevalue($keyexp,"NoFavoritesMenu","1","REG_DWORD")
+	DbgMessage("Info","Redirected My Documents")
+	ENDIF
+
+	; Redirect Favourites to home drive folder
+	$key="HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders"
+	IF (WriteValue($key,"Favorites",$fav,"REG_SZ") <> 0)
+	DbgMessage("Error","Could not redirect Favourites")
+	ELSE
+	DbgMessage("Info","Redirected Favourites")
+	ENDIF
+
+	; Redirect Recent Docs to home drive folder
+	$key="HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders"
+	IF (WriteValue($key,"Recent",$recent,"REG_SZ") <> 0)
+	DbgMessage("Error","Could not redirect Recent Docs")
+	ELSE
+	DbgMessage("Info","Redirected Recent Docs")
+	ENDIF
+
+	$RedirectRadioButton.Value=0
+	$RedirectRadioButton.Enabled =0	
+EndFunction
+
+;***********************************************************************
+;**  Connect GroupShares to Drives Format: "Drive Letter:, \\Server\Sharename"
+;***********************************************************************
+Function ConnectGroupDrives()
+	SELECT
+		CASE $pgroup = "exams"
+			;No extra drives required
+		CASE $pgroup = "guests"
+			ConnectShare("r:, \\CHANGETHISHOSTNAME\subjects")
+			;ConnectShare("t:, \\CHANGETHISHOSTNAME\temp")
+			;ConnectShare("m:, \\novac\media")
+		CASE $pgroup = "itadmin"
+			ConnectShare("r:, \\CHANGETHISHOSTNAME\subjects")
+			ConnectShare("t:, \\CHANGETHISHOSTNAME\temp")
+			;ConnectShare("h:, \\CHANGETHISHOSTNAME\multimedia")
+			ConnectShare("k:, \\CHANGETHISHOSTNAME\staffshare")
+			ConnectShare("j:, \\CHANGETHISHOSTNAME\applications")
+			ConnectShare("i:, \\CHANGETHISHOSTNAME\itadmin")
+			;ConnectShare("v:, \\orac\programs")
+			;ConnectShare("w:, \\joshua\programs")
+			;ConnectShare("n:, \\hal\internetdata")
+			;ConnectShare("q:, \\novac\apps")
+			;ConnectShare("m:, \\novac\media")
+			IF $issimsws = "YES"
+				ConnectShare("$simsdrive, \\sentinal\simsshare")
+			ENDIF
+		CASE $pgroup = "nonteachingstaff"
+			ConnectShare("j:, \\CHANGETHISHOSTNAME\applications")
+			ConnectShare("r:, \\CHANGETHISHOSTNAME\subjects")
+			;ConnectShare("t:, \\CHANGETHISHOSTNAME\temp")
+			;ConnectShare("m:, \\novac\media")
+		CASE $pgroup = "officestaff"
+			ConnectShare("k:, \\CHANGETHISHOSTNAME\staffshare")
+			ConnectShare("o:, \\CHANGETHISHOSTNAME\officeshare")
+			;ConnectShare("t:, \\CHANGETHISHOSTNAME\temp")
+			;ConnectShare("q:, \\novac\apps")
+			IF $issimsws = "YES"
+				ConnectShare("$simsdrive, \\simsserver\simsshare")
+			ENDIF
+		CASE $pgroup= "profileuser"
+			ConnectShare("j:, \\CHANGETHISHOSTNAME\applications")
+			ConnectShare("r:, \\CHANGETHISHOSTNAME\subjects")
+			ConnectShare("k:, \\CHANGETHISHOSTNAME\staffshare")
+			;ConnectShare("t:, \\CHANGETHISHOSTNAME\temp")
+			;ConnectShare("m:, \\novac\media")
+		CASE $pgroup = "staff"
+			ConnectShare("r:, \\CHANGETHISHOSTNAME\subjects")
+			ConnectShare("k:, \\CHANGETHISHOSTNAME\staffshare")
+			;ConnectShare("t:, \\CHANGETHISHOSTNAME\temp")
+			;ConnectShare("q:, \\novac\apps")
+			;ConnectShare("m:, \\novac\media")
+			IF $issimsws = "YES"
+				ConnectShare("$simsdrive, \\sentinal\simsshare")
+			ENDIF
+		CASE $pgroup = "studentstaff"
+			ConnectShare("r:, \\CHANGETHISHOSTNAME\subjects")
+			;ConnectShare("t:, \\CHANGETHISHOSTNAME\temp")
+			;ConnectShare("m:, \\novac\media")
+		CASE $pgroup = "Domain Admins"
+			ConnectShare("r:, \\CHANGETHISHOSTNAME\subjects")
+			ConnectShare("t:, \\CHANGETHISHOSTNAME\temp")
+			;ConnectShare("h:, \\hal\multimedia")
+			ConnectShare("j:, \\CHANGETHISHOSTNAME\applications")
+			;ConnectShare("v:, \\CHANGETHISHOSTNAME\programs")
+			;ConnectShare("w:, \\joshua\programs")
+			;ConnectShare("q:, \\novac\apps")
+			;ConnectShare("m:, \\novac\media")
+		CASE 1 ;default - Students
+			ConnectShare("r:, \\CHANGETHISHOSTNAME\subjects")
+			;ConnectShare("t:, \\CHANGETHISHOSTNAME\temp")
+			;ConnectShare("m:, \\novac\media")
+	ENDSELECT
+EndFunction
+
+;***********************************************************************
+;**  Set Wallpaper
+;***********************************************************************
+Function SetDTWallpaper()
+	Progress( "Setting Wallpaper")	
+	SELECT
+		CASE $pgroup = "exams"
+			$res = SetWallpaper("\\CHANGETHISHOSTNAME\applications\backgrounds\"+$examswpaper,1)
+		CASE $pgroup = "guests"
+			$res = SetWallpaper("\\CHANGETHISHOSTNAME\applications\backgrounds\"+$guestwpaper,1)
+		CASE $pgroup = "itadmin"
+			$res = SetWallpaper("\\CHANGETHISHOSTNAME\applications\backgrounds\"+$itadminwpaper,1)
+		CASE $pgroup = "nonteachingstaff"
+			$res = SetWallpaper("\\CHANGETHISHOSTNAME\applications\backgrounds\"+$studentwpaper,1)
+		CASE $pgroup = "officestaff"
+			$res = SetWallpaper("\\CHANGETHISHOSTNAME\applications\backgrounds\"+$officestaffwpaper,1)
+		CASE $pgroup= "profileuser"
+			$res = SetWallpaper("\\CHANGETHISHOSTNAME\applications\backgrounds\"+$profileuserwpaper,1)
+		CASE $pgroup = "staff"
+			$res = SetWallpaper("\\CHANGETHISHOSTNAME\applications\backgrounds\"+$staffwpaper,1)
+		CASE $pgroup = "studentstaff"
+			$res = SetWallpaper("\\CHANGETHISHOSTNAME\applications\backgrounds\"+$studentwpaper,1)
+		CASE $pgroup = "Domain Admins"
+			$res = SetWallpaper("\\CHANGETHISHOSTNAME\applications\backgrounds\"+$techwpaper,1)
+		CASE 1 ;default - Students
+			$res = SetWallpaper("\\CHANGETHISHOSTNAME\applications\backgrounds\"+$studentwpaper,1)
+	ENDSELECT
+	IF @ERROR<>0
+		DBGMessage ("Error","Setting Wallpaper")
+	ELSE
+		DbgMessage("Info","Setting Wallpaper")
+	ENDIF
+EndFunction
+
+;***********************************************************************
+;**  Set Desktop Security Format: call "$lserver\netlogon\groupname.kix"
+;***********************************************************************
+Function SetDesktopSecurity()
+	$SecurityRadioButton.Value=1
+	Progress( "Setting Desktop Security")
+	SELECT
+		CASE $pgroup = "exams"
+			CALL "$lserver\netlogon\examdtsec.kix"
+		CASE $pgroup = "guests"
+			CALL "$lserver\netlogon\guestdtsec.kix"
+		CASE $pgroup = "itadmin"
+			CALL "$lserver\netlogon\itadmindtsec.kix"
+		CASE $pgroup = "nonteachingstaff"
+			CALL "$lserver\netlogon\studentdtsec.kix"
+		CASE $pgroup = "officestaff"
+			CALL "$lserver\netlogon\officestaffdtsec.kix"
+		CASE $pgroup= "profileuser"
+			;To be set as required
+		CASE $pgroup = "staff"
+			CALL "$lserver\netlogon\staffdtsec.kix"
+		CASE $pgroup = "studentstaff"
+			CALL "$lserver\netlogon\studentdtsec.kix"
+		CASE $pgroup = "Domain Admins"
+			CALL "$lserver\netlogon\techdtsec.kix"
+		CASE 1 ;default - Students
+			CALL "$lserver\netlogon\studentdtsec.kix"
+	ENDSELECT
+	IF @ERROR<>0
+		DBGMessage ("Error","Setting Desktop Security")
+	ELSE
+		DBGMessage("Info","Setting Desktop Security")
+	ENDIF
+	$SecurityRadioButton.Value=0
+	$SecurityRadioButton.Enabled=0
+EndFunction
+
+
+
+;***********************************************************************
+;**  Connect Shares
+;***********************************************************************
+Function ConnectShare( $DriveDefinition)
+	$DriveLetter=SubStr($DriveDefinition,1,InStr($DriveDefinition,",")-1)
+	$DriveDefinition=Ltrim(Rtrim(SubStr($DriveDefinition,InStr($DriveDefinition,",")+1)))
+	$Share=Ltrim(Rtrim(SubStr($DriveDefinition,InStr($DriveDefinition,",")+1)))
+	If ($NT_mode = "no") 
+		DelKey("HKEY_CURRENT_USER\Network\Persistent\" + $DriveLetter)
+	EndIf
+	Progress( "Connecting " + $DriveLetter + " to " + $Share)
+	DbgMessage("Info","- Connecting " + $DriveLetter + " on " + $Share)
+	Use $DriveLetter $Share
+	If @ERROR <> 0
+		DBGMessage ( "Error","- Connecting " + $DriveLetter + " on " + $Share )
+	EndIf
+EndFunction 
+
+;***********************************************************************
+;**  Update Progress Bar
+;***********************************************************************
+Function Progress($ProgressText,optional $Step)
+	If $Step=""
+		$Step=$progressstep
+	EndIf
+	$ProgressTextBox.Text=$ProgressText
+	If $ProgressBar.Value + $Step < 101
+		$ProgressBar.Value=$ProgressBar.Value+$Step
+		If $DebugFlag = $TRUE		 
+			Sleep $sleeptime
+		EndIf
+	Else
+		$ProgressBar.Value=100
+	EndIf
+	$=Execute($Form.DoEvents())
+EndFunction
+
+;***********************************************************************
+;**  Function: DBGMessage
+;**  Usage: DBGMessage( "Debug", "This is a debug Message" ) 
+;**  DebugType : Info, Debug, Error
+;***********************************************************************
+Function DBGMessage($DebugType, $DebugMessage, Optional $SError)
+	Select
+		Case $DebugLevel="Error"
+			If $DebugType="Info" OR $DebugType="Debug"
+				Return
+			EndIf
+		Case $DebugLevel="Info"
+			If $DebugType="Debug"
+				Return
+			EndIf
+	EndSelect
+	
+	If $DebugType="Error"
+		$numerrors=$numerrors+1
+	EndIf
+	$NumMessages=$NumMessages + 1
+	ReDim Preserve $DebugMessages[$NumMessages]
+	
+	$DebugTime="" + @Date + " - " + @Time +" >"
+	$DebugText=$DebugType + " : " + $DebugMessage
+	If $SError<>""
+		 $DebugText=$DebugText + " | Additional Info: @SERROR"
+	EndIf
+	
+	$DebugMessages[$NumMessages]=$DebugTime + $DebugText
+	If $DebugFlag = $TRUE		 
+		$DbgTextBox.Text=$DbgTextBox.Text + $DebugText + @CRLF
+		Sleep $sleeptime
+	EndIf		
+EndFunction
+
+;***********************************************************************
+;**  Write Log File
+;***********************************************************************
+Function WriteLogFile()
+	; Display DebugMessage
+	$WriteLogFileRadioButton.Value=1
+	Progress( "Writing Logfile")
+	$LogFile=$logginglocation + "\" + @Wksta + ".log"
+	If Exist($LogFile)
+		If GetFileSize($LogFile) > 512 * 1024
+			Del($LogFile)
+		EndIf
+	EndIf
+	
+	$NumMessages=$NumMessages + 1
+	ReDim PRESERVE $DebugMessages[$NumMessages]
+	$DebugMessages[$NumMessages]="-END----------------------------"
+	
+	If Open(1, $LogFile,5) = 0
+		For $x=0 to $NumMessages
+			If WriteLine(1, $DebugMessages[$x] + @CRLF)<>0
+				DbgMessage("Error","DebugLine could not be written")
+			EndIf
+		Next
+		If Close(1)<>0
+			DbgMessage("Error","Log File could not be closed")
+		EndIf
+	Else
+		DbgMessage("Debug","Log file could not be written")
+	EndIf
+	$WriteLogFileRadioButton.Value=0
+	$WriteLogFileRadioButton.Enabled =0
+EndFunction
+
+;***********************************************************************
+;**  Determine OS version with service pack
+;***********************************************************************
+Function OperatingSystem() 
+	DbgMessage("Info","Checking Operating System")
+	Progress("Checking Operating System")
+	
+	If (@inwin = 1)
+		$NT_mode="yes"
+	Else
+		$NT_mode="no"
+	EndIf
+	
+	$os=""
+	$os_dos=@dos
+	$os_product=ReadValue("HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\ProductOptions","ProductType")
+	$os_productSuite=ReadValue("HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\ProductOptions","ProductSuite")
+	$os_service_pack=""
+	$os_subversion=ReadValue("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion","SubVersionNumber")
+	Select
+		Case ($NT_mode = "yes") AND ($os_product <> "WinNT") AND ($os_dos = "5.1") AND (InStr($os_productSuite,"Terminal Server") <> 0)
+			$os="XP_Terminal_Server"
+		Case ($NT_mode = "yes") AND ($os_product <> "WinNT") AND ($os_dos = "5.1") ; - Windows XP Server
+			$os="XP_Server"
+		Case ($NT_mode = "yes") AND ($os_product = "WinNT") AND ($os_dos = "5.1")  ; - Windows XP Professional
+			$os="XP_Professional"
+		Case ($NT_mode = "yes") AND ($os_product <> "WinNT") AND ($os_dos = "5.0") AND (InStr($os_productSuite,"Terminal Server") <> 0)
+			$os="W2K_Terminal_Server"
+		Case ($NT_mode = "yes") AND ($os_product <> "WinNT") AND ($os_dos = "5.0") ; - Windows 2000 -
+			$os="W2K_Server"
+		Case ($NT_mode = "yes") AND ($os_product = "WinNT") AND ($os_dos = "5.0")
+			$os="W2K_Professional"
+		Case ($NT_mode = "yes") AND ($os_product = "LANMANNT")                     ; - Windows NT -
+			$os="NT4_Domain_Controller"
+		Case ($NT_mode = "yes") AND ($os_product = "ServerNT") AND (InStr($os_productSuite,"Terminal Server") <> 0)
+			$os="NT4_Terminal_Server"
+		Case ($NT_mode = "yes") AND ($os_product = "ServerNT")
+			$os="NT4_Member_Server"
+		Case ($NT_mode = "yes") AND ($os_product = "WinNT")
+			$os="NT4"
+		Case ($NT_mode <> "yes") AND (@dos = "4.90")
+			$os="ME"
+		Case ($NT_mode <> "yes") AND ($os_dos = "4.10") AND (InStr(Lcase($os_subversion),"c") <> 0) ; - Windows 98 -
+			$os="W98c"
+		Case ($NT_mode <> "yes") AND ($os_dos = "4.10") AND (InStr(Lcase($os_subversion),"b") <> 0)
+			$os="W98b"
+		Case ($NT_mode <> "yes") AND ($os_dos = "4.10") AND (InStr(Lcase($os_subversion),"a") <> 0)
+			$os="W98a"
+		Case ($NT_mode <> "yes") AND ($os_dos = "4.10")
+			$os="W98"
+		Case ($NT_mode <> "yes") AND ($os_dos = "4.0") AND (InStr(Lcase($os_subversion),"c") <> 0) ; - Windows 95 -
+			$os="W95c"
+		Case ($NT_mode <> "yes") AND ($os_dos = "4.0") AND (InStr(Lcase($os_subversion),"b") <> 0)
+			$os="W95b"
+		Case ($NT_mode <> "yes") AND ($os_dos = "4.0") AND (InStr(Lcase($os_subversion),"a") <> 0)
+			$os="W95a"
+		Case ($NT_mode <> "yes") AND ($os_dos = "4.0")
+			$os="W95"
+		Case 1
+			$os="???" ; - undetermined -
+	EndSelect
+	;
+	$os_service_pack=""
+	Select
+		Case ($NT_mode = "yes") AND ($os_dos = "5.1") ; - Windows XP
+			$os_service_pack=ReadValue("HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion","BuildLab")
+			If (Len($os_service_pack) <> 0)
+				$os=SubStr($os,1,3)+"_"+Ltrim(Rtrim($os_service_pack))
+				$os_service_pack=Ltrim(Rtrim($os_service_pack))
+			EndIf
+		Case ($NT_mode = "yes") AND ($os_dos <> "5.1") ; Windows NT4 + W2K
+			$os_service_pack=ReadValue("HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion","CSDVersion")
+			If (Len($os_service_pack) <> 0)
+				$os=SubStr($os,1,3)+"_"+SubStr($os_service_pack,Len($os_service_pack),1)
+				$os_service_pack=Ltrim(Rtrim($os_service_pack))
+			EndIf
+	Case 1
+	; Windows 95, 98 + ME
+	EndSelect
+	;
+	$os_type=""
+	$os_dos=@dos
+	Select
+		Case ($NT_mode = "yes") AND ($os_dos = "5.1")   ; - Windows XP -
+			$os_type="XP"
+		Case ($NT_mode = "yes") AND ($os_dos = "5.0")   ; - Windows 2000 -
+			$os_type="W2K"
+		Case ($NT_mode = "yes")                         ; - Windows NT -
+			$os_type="NT4"
+		Case ($NT_mode <> "yes") AND ($os_dos = "4.90") ; - Windows ME -
+			$os_type="ME"
+		Case ($NT_mode <> "yes") AND ($os_dos = "4.10") ; - Windows 98 -
+			$os_type="W98"
+		Case ($NT_mode <> "yes") AND ($os_dos = "4.0")  ; - Windows 95 -
+			$os_type="W95"
+		Case 1
+			$os_type="???" ; - undetermined -
+	EndSelect
+	$os_type=Ltrim(Rtrim(SubStr($os_type+"   ",1,3)))
+EndFunction
+
+
+;****************************************************************************************************
+; Set Printers and Location Specific Requirements
+;****************************************************************************************************
+Function SetPrintersLSR() 
+	Progress( "Connecting Printers")
+	DbgMessage("Info","Connecting Printers")	
+	$PrintersRadioButton.Value=1
+	DIM $prn[10]
+
+	IF $location = "nogroup" OR $location = ""
+		DbgMessage("Info","No Printers Declared")
+		RETURN
+	ELSE
+		IF Open(1,$printersfile) = 0
+			; Skip comments
+			WHILE $startflag <> "--Start--"
+				$startflag = ReadLine(1)
+			LOOP
+			; Read Data
+			$prndef = ReadLine(1)
+				WHILE (@ERROR = 0) AND ($location <> $room)
+					$room = LEFT($prndef,INSTR($prndef,",")-1)
+					IF $room = $location
+						$temp = SUBSTR($prndef,LEN($room)+2)
+						$numprn = LEFT($temp,INSTR($temp,",")-1)
+						$temp = SUBSTR($temp,LEN($numprn)+2)
+						FOR $x = 1 to $numprn
+						$prn[$x] = LEFT($temp,INSTR($temp,",")-1)
+						IF ADDPRINTERCONNECTION ("\\$printserver\" + $prn[$x]) <> 0
+							DbgMessage("Error","Printer " + $prn[$x] + " not connected, error code: [" + @ERROR + "]")
+						ENDIF
+						$temp = SUBSTR($temp,LEN($prn[$x])+2)
+						NEXT
+						; Set default Printer
+						$defprn = $temp
+						IF SETDEFAULTPRINTER("\\$printserver\" + $defprn) <> 0
+							DbgMessage("Error","Default Printer not set, error code: [" + @ERROR + "]")	
+						ENDIF
+					ENDIF
+			    		$prndef = ReadLine(1)
+				LOOP
+			IF $room = ""
+			DbgMessage("Info","No Printers Declared")
+			ENDIF
+			$rc = Close (1)
+		ELSE
+			DbgMessage("Error","Printers file not opened, error code: [" + @ERROR + "]")
+		ENDIF
+	ENDIF
+	$PrintersRadioButton.Value=0
+	$PrintersRadioButton.Enabled =0	
+EndFunction
+
+

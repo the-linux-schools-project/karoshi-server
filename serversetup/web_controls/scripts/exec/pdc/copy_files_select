@@ -1,0 +1,141 @@
+#!/bin/bash
+#Copyright (C) 2007  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/copy_files_select_cgi
+then
+echo `date`: copy_files_select - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/copy_files_select_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/copy_files_select.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $copy_files_select_cgi'check' ]
+then
+echo `date`: copy_files_select - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Rotate event_log
+########################
+/opt/karoshi/web_controls/rotate_log
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: copy_files_select - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+'`
+if [ $DATA'null' = null ]
+then
+echo `date`: copy_files_select - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+GROUP=`echo "$DATA" | cut -s -d: -f4`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: copy_files_select - Not called by copy_files_select.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: copy_files_select - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: copy_files_select - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: add_user - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $GROUP'null' = null ]
+then
+echo `date`: copy_files_select - incorrect data input by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if test -f /opt/karoshi/web_controls/allowed_clients
+then
+if [ `grep -c -w $REMOTE_ADDR /opt/karoshi/web_controls/allowed_clients` = 0 ]
+then
+echo `date`: copy_files_select - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+fi
+
+########################
+#Copy the data
+########################
+echo `date`: copy_files_select - Copying data to group $GROUP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+if [ $GROUP = staff ] || [ $GROUP = officestaff ] || [ $GROUP = itadmin ] || [ $GROUP = tech ] || [ $GROUP = guests ]
+then
+TARGETDIR=/home/users/$GROUP
+[ $GROUP = itadmin ] && TARGETDIR=/home/users/itadminstaff
+else
+TARGETDIR=/home/users/students/$GROUP
+fi
+#Check to see that group folder exists
+if [ ! -d $TARGETDIR ]
+then
+echo `date`: copy_files_select - $GROUP folder does not exist to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+#Check to see that sub folders exist
+if [ `dir --format=single-column $TARGETDIR/ | wc -l` = 0 ]
+then
+echo `date`: copy_files_select - $GROUP: no sub folders exist to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+SOURCEDIR=/var/www/karoshi/web_upload
+COPYDIR=`date +%d-%m-%y`
+for usr in $TARGETDIR/*;
+do
+TGTUSER=`basename $usr`
+echo "Processing User Folder: " $TGTUSER '<br>'
+# Note following variable $THISFILE is in "". This takes care of spaces in the variable
+[ -d $usr/$COPYDIR ] || mkdir $usr/$COPYDIR
+cp -f -v -R "$SOURCEDIR"/* $usr/$COPYDIR
+echo '<br>'
+chown -v -R $TGTUSER.$TGTGROUP $usr/$COPYDIR
+chmod -R 0600 $usr/$COPYDIR
+chmod -R u+X $usr/$COPYDIR
+done
+#Delete uploaded files
+rm -f -R /var/www/karoshi/web_upload
+exit

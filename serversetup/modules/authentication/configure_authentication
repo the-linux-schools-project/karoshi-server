@@ -1,0 +1,477 @@
+#!/bin/bash
+#configure_authentication
+#Copyright (C) 2012  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+
+LANGCHOICE=englishuk
+source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/authentication/authentication
+########################
+#Get variables
+########################
+LOG_DATE=`date +%F`
+[ ! -d /opt/karoshi/logs/karoshi_web_management ] && mkdir -p /opt/karoshi/logs/karoshi_web_management
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: configure_authentication - incorrect number of arguments."<br>"
+exit 101
+fi
+read -t 3 DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/'`
+
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+AUTHTYPE=`echo "$DATA" | cut -s -d: -f5`
+ZONE=`echo "$DATA" | cut -s -d: -f6`
+
+if [ -z "$REMOTE_USER" ]
+then
+echo `date`: configure_authentication - Blank remote user."<br>"
+echo `date`: configure_authentication - Blank remote user from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+sleep 2
+exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+echo `date`: configure_authentication - Blank remote tcpip address."<br>"
+echo `date`: configure_authentication - Blank remote tcpip address by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+sleep 2
+exit 101
+fi
+if [ -z "$SERVERNAME" ]
+then
+echo `date`: configure_authentication - Blank servername."<br>"
+echo `date`: configure_authentication - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+sleep 2
+exit 101
+fi
+if [ -z "$AUTHTYPE" ]
+then
+echo `date`: configure_authentication - Blank authtype."<br>"
+echo `date`: configure_authentication - Blank authtype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+sleep 2
+exit 101
+fi
+
+if [ -z "$ZONE" ]
+then
+echo `date`: configure_authentication - Blank zone."<br>"
+echo `date`: configure_authentication - Blank zone by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+sleep 2
+exit 101
+fi
+
+#Delete any existing auth flag files
+[ ! -d /opt/karoshi/server_network/zones ] && mkdir -p /opt/karoshi/server_network/zones
+for SERVERFLAG in `find /opt/karoshi/server_network/zones -name $SERVERNAME`
+do
+[ -f "$SERVERFLAG" ] && rm -f "$SERVERFLAG"
+done
+
+echo `date`: configure_authentication authtype $AUTHTYPE - "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+source /opt/karoshi/server_network/domain_information/domain_name
+
+function karoshiadminuser {
+#Make sure karoshiadmin user exists
+getent passwd karoshiadmin 1>/dev/null
+if [ `echo $?` != 0 ]
+then
+#Get samba 4 database password
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+#Add karoshiadmin to samba4 ldap
+samba-tool user add karoshiadmin --userou='CN=itadmin,CN=personnel,CN=Users' --home-directory=/home/users/itadmin/karoshiadmin --surname=admin --given-name=karoshi --use-username-as-cn --random-password 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#Add karoshiadmin to the Domain Admins group
+samba-tool group addmembers "Domain Admins" karoshiadmin  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#Get primarygroupid for users group
+PRIGROUPID=`wbinfo -n "Domain Admins" | cut -d- -f8 | cut -d" " -f 1`
+#Change primarygroupid of karoshiadmin - have to use ldapmodify at this time since samba-tool does not seem to have this option!
+echo -e "dn: CN=karoshiadmin,CN=itadmin,CN=personnel,CN=Users,$REALM
+changetype: modify
+replace: primaryGroupID
+primaryGroupID: $PRIGROUPID
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,DC=$SAMBADOMAIN,DC=internal" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+
+#Generate random password for karoshiadmin user
+PASSCHOICE=( A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y x 1 2 3 4 5 6 7 8 9 0 )
+
+RANGE=`echo ${#PASSCHOICE[@]}`
+let RANGE=$RANGE-1 
+
+COUNTER=1
+while [ $COUNTER -le 16 ]
+do
+ARRAYCHOICE=$RANDOM
+let "ARRAYCHOICE %= $RANGE"
+RANDPASSWORD[$COUNTER]=`echo ${PASSCHOICE[$ARRAYCHOICE]} `
+let COUNTER=COUNTER+1
+done
+PASSWORD=`echo ${RANDPASSWORD[@]:0} | sed 's/ //g'`
+
+#Change karoshiadmin password 
+samba-tool user setpassword karoshiadmin --newpassword=$PASSWORD 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+#Get samba domain
+SAMBADOMAIN=`cat /etc/samba/smb.conf | grep workgroup | sed -n 1,1p | sed 's/ //g' | cut -d'=' -f2`
+
+#allow karoshiadmin to join clients to the domain
+echo `date`: configure_authentication - allowing karoshiadmin to "join" clients to the domain by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+net rpc rights grant -U karoshiadmin%$PASSWORD "$SAMBADOMAIN\Domain Admins" SeMachineAccountPrivilege \
+SePrintOperatorPrivilege SeAddUsersPrivilege SeDiskOperatorPrivilege SeRemoteShutdownPrivilege 1>/dev/null
+}
+
+
+function configure_samba4 {
+#Set Join type
+JOINTYPE=member
+SERVERROLE="domain member"
+if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
+then
+JOINTYPE=DC
+SERVERROLE="active directory domain controller"
+fi
+
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+source /opt/karoshi/serversetup/variables/distro
+echo "<b>'$JOINDOMAINMSG'</b><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+
+#Join the domain
+if [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ]
+then
+[ -f /usr/local/sbin/samba_disabled ] && mv /usr/local/sbin/samba_disabled /usr/local/sbin/samba
+[ -f /etc/samba/smb.conf ] && rm -f /etc/samba/smb.conf
+samba-tool domain join '$REALM' '$JOINTYPE' --server='$HOSTNAME' --username=karoshiadmin --password='$PASSWORD' --realm='$SAMBADOMAIN'.'$REALM'
+JOINDOMAINSTATUS=`echo $?`
+if [ $JOINDOMAINSTATUS != 0 ]
+then
+echo '$ERRORMSG1'"<br><br>"
+exit 101
+fi
+echo "</pre><br><br>"
+sleep 2
+
+#Get forwarding dns server
+DNSFORWARD=`grep dns-nameservers /etc/network/interfaces | cut -d" " -f2 | sed -n 1,1p`
+
+#Create simple smb.conf
+echo -e "# Global parameters
+[global]
+	workgroup = '$SAMBADOMAIN'
+	realm = '$REALM'
+	netbios name = '$HOSTNAME'
+	server role = '$SERVERROLE'
+	dns forwarder = $DNSFORWARD
+	idmap_ldb:use rfc2307 = yes
+	acl:search=false
+
+" > /etc/samba/smb.conf
+fi
+
+if [ '$AUTHTYPE' = member ]
+then
+
+#Using smbd and nmbd instead of samba
+
+#Create smb.conf
+echo -e "#karoshi_member_server
+
+# Global parameters
+[global]
+
+	workgroup = '$SAMBADOMAIN'
+	security = ADS
+	realm = '$REALM'
+	encrypt passwords = yes
+
+" > /etc/samba/smb.conf
+
+#Join the domain
+net ads join -U karoshiadmin%'$PASSWORD'
+JOINDOMAINSTATUS=`echo $?`
+if [ $JOINDOMAINSTATUS != 0 ]
+then
+exit 101
+fi
+fi
+
+#Check firewall rules for adc, rodc and domain member
+MODCHECK=`grep -c -w auth_rule /etc/shorewall/rules`
+if [ $MODCHECK = 0 ]
+then
+echo "Adding shorewall ports - tcp '$TCPPORTS' udp '$UDPPORTS'<br><br>"
+LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
+sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"'$TCPPORTS'"	"-"#"auth_rule /etc/shorewall/rules
+echo ACCEPT"	"net"	"fw"	"udp"	"'$UDPPORTS'"	"-"#"auth_rule >> /etc/shorewall/rules
+echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+
+#Restart shorewall
+echo "<br>"Restarting Shorewall
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
+echo "<br><br>"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
+echo "<br><br>"
+fi
+
+#Stop samba
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 2>/dev/null
+sleep 1
+#start samba
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
+#Make sure samba runs on boot
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/samba
+'
+#Exit if the server did not join the domain
+if [ `echo $?` = 101 ]
+then
+echo $ERRORMSG1"<br><br>"
+sleep 4
+exit 101
+fi
+
+#Add role information
+[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
+
+#Remove any current flag information for domain roles
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1domainmember ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/1domainmember
+[ -f /opt/karoshi/server_network/zones/$ZONE/domain_members/$SERVERNAME ] && rm -f /opt/karoshi/server_network/zones/$ZONE/domain_members/$SERVERNAME
+[ -f /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/$SERVERNAME
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc
+
+#Authtypes adc rodc member users none
+if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ] 
+then
+DCROLE="Additional domain controller"
+[ $AUTHTYPE = rodc ] && DCROLE="Read only domain controller"
+
+echo $DCROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/1dc
+[ ! -d /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/
+echo $AUTHTYPE > /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/$SERVERNAME
+else
+echo Domain member"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/1domainmember
+[ ! -d /opt/karoshi/server_network/zones/$ZONE/domain_members/ ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/domain_members
+touch /opt/karoshi/server_network/zones/$ZONE/domain_members/$SERVERNAME
+fi
+}
+
+function configure_nslcd {
+
+#Get pdc ipnumber
+PDCIP=`net lookup $HOSTNAME`
+
+if [ $SERVERNAME = $HOSTNAME ]
+then
+
+source /opt/karoshi/serversetup/variables/distro
+cp /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/configfiles/nsswitch.conf /etc/
+
+#Create nslcd.conf
+echo uid nslcd > /etc/nslcd.conf
+echo gid nslcd >> /etc/nslcd.conf
+echo uri ldapi://%2fvar%2flib%2fsamba%2fprivate%2fldapi/ >> /etc/nslcd.conf
+echo base CN=Users,$LDAPBASE >> /etc/nslcd.conf
+#Not needed for anonymous bind
+#echo binddn cn=nslcd-server,cn=karoshi,cn=other,cn=Users,$LDAPBASE >> /etc/nslcd.conf
+#echo bindpw $LDAPPASS >> /etc/nslcd.conf
+echo >> /etc/nslcd.conf
+echo nss_min_uid 1000 >> /etc/nslcd.conf
+echo pam_authz_search \(!\(userAccountControl:1.2.840.113556.1.4.803:=2\)\) >> /etc/nslcd.conf
+echo filter passwd \(\&\(objectClass=user\)\(!\(objectClass=computer\)\)\) >> /etc/nslcd.conf
+echo map passwd uid sAMAccountName >> /etc/nslcd.conf
+echo map passwd uidNumber objectSid:$DOMAINSID >> /etc/nslcd.conf
+echo map passwd gidNumber primaryGroupID >> /etc/nslcd.conf
+echo map passwd homeDirectory \"\${unixHomeDirectory:-/home/\$sAMAccountName}\" >> /etc/nslcd.conf
+echo map passwd loginShell \"\${loginShell:-/bin/bash}\" >> /etc/nslcd.conf
+echo filter shadow \(\&\(objectClass=user\)\(!\(objectClass=computer\)\)\) >> /etc/nslcd.conf
+echo map shadow uid sAMAccountName >> /etc/nslcd.conf
+echo map shadow shadowLastChange pwdLastSet >> /etc/nslcd.conf
+echo filter group \(objectClass=group\) >> /etc/nslcd.conf
+echo map group cn sAMAccountName >> /etc/nslcd.conf
+echo map group gidNumber objectSid:$DOMAINSID >> /etc/nslcd.conf
+
+source /opt/karoshi/serversetup/variables/distro
+#Stop nslcd
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nslcd_stop 1>/dev/null
+#Start nslcd
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nslcd_start 1>/dev/null
+
+#Set nslcd to start on boot
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nslcd
+fi
+
+if [ $SERVERNAME != $HOSTNAME ]
+then
+
+#Decide which krb server to use
+
+#Authtypes adc rodc member users none 
+[ $AUTHTYPE = adc ] && KRBSERVER=$SERVERNAME
+[ $AUTHTYPE = rodc ] && KRBSERVER=$SERVERNAME
+
+if [ $AUTHTYPE = member ] || [ $AUTHTYPE = users ]
+then
+if [ $ZONE = internal ]
+then
+KRBSERVER=$HOSTNAME
+else
+#Check to see if there is an adc in the zone to use
+if [ -d /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ ]
+then
+if [ `ls -1 /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ | wc -l` -gt 0 ]
+then
+KRBSERVER=`ls -1 /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ | sed -n 1,1p`
+else
+KRBSERVER=$HOSTNAME
+fi
+fi
+fi
+fi
+
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+echo "<b>'$CONFIGUREAUTHMSG'</b><br><br>"
+
+echo "<li>"Checking to see that the PDC can be contacted on ports: '$PORTCHECK'"</li><br>"
+SCANRESULT=`nmap '$PDCIP' -p '$PORTCHECK' -PN`
+for PORT in `echo '$PORTCHECK' | sed "s/,/ /g"`
+do
+echo Checking $PORT"<br>"
+[ `echo $SCANRESULT | grep -c "$PORT/tcp"` = 0 ] && exit $PORT
+done
+
+source /opt/karoshi/serversetup/variables/distro
+
+#Create domain_name file
+if [ ! -d /opt/karoshi/server_network/domain_information/ ]
+then
+mkdir -p /opt/karoshi/server_network/domain_information/
+fi
+echo SAMBADOMAIN=\"'$SAMBADOMAIN'\" > /opt/karoshi/server_network/domain_information/domain_name
+echo SAMBADOMAINCAPS=\"'$SAMBADOMAINCAPS'\" >> /opt/karoshi/server_network/domain_information/domain_name
+echo WEBADDRESS=\"'$WEBADDRESS'\" >> /opt/karoshi/server_network/domain_information/domain_name
+echo REALM=\"'$WEBADDRESS'\" >> /opt/karoshi/server_network/domain_information/domain_name
+echo REALMCAPS=\"'$REALMCAPS'\" >> /opt/karoshi/server_network/domain_information/domain_name
+echo LDAPBASE=\"'$LDAPBASE'\" >> /opt/karoshi/server_network/domain_information/domain_name
+echo DOMAINSID=\"'$DOMAINSID'\" >> /opt/karoshi/server_network/domain_information/domain_name
+
+if [ '$ZONE' = internal ]
+then
+#Setup resolv.conf
+echo domain '$REALM' > /etc/resolv.conf
+echo nameserver '$PDCIP' >> /etc/resolv.conf
+fi
+
+#Set up krb5
+echo "[libdefaults]" > /etc/krb5.conf
+echo  "dns_lookup_realm = false" >> /etc/krb5.conf
+echo  "dns_lookup_kdc = true" >> /etc/krb5.conf
+echo >> /etc/krb5.conf
+echo  "default_realm = '$REALMCAPS'" >> /etc/krb5.conf
+echo "[realms]" >> /etc/krb5.conf
+echo "'$REALMCAPS' = {" >> /etc/krb5.conf
+echo "	kdc = '$KRBSERVER'.'$REALM'" >> /etc/krb5.conf
+echo "}" >> /etc/krb5.conf
+
+#Modify nsswitch 
+cp /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/configfiles/nsswitch.conf /etc/
+
+#Create nslcd.conf
+echo uid nslcd > /etc/nslcd.conf
+echo gid nslcd >> /etc/nslcd.conf
+if [ '$AUTHTYPE' = rodc ] || [ '$AUTHTYPE' = adc ]
+then
+echo uri ldapi://%2fvar%2flib%2fsamba%2fprivate%2fldapi/ >> /etc/nslcd.conf
+else
+echo uri ldap://'$KRBSERVER'.'$REALM' >> /etc/nslcd.conf
+fi
+echo base CN=Users,'$LDAPBASE' >> /etc/nslcd.conf
+#Not needed for anonymous bind
+#echo binddn cn=nslcd-server,cn=karoshi,cn=other,cn=Users,'$LDAPBASE' >> /etc/nslcd.conf
+#echo bindpw '$LDAPPASS' >> /etc/nslcd.conf
+echo >> /etc/nslcd.conf
+echo nss_min_uid 1000 >> /etc/nslcd.conf
+echo pam_authz_search \(!\(userAccountControl:1.2.840.113556.1.4.803:=2\)\) >> /tmp/nslcd.conf
+echo filter passwd \(\&\(objectClass=user\)\(!\(objectClass=computer\)\)\) >> /etc/nslcd.conf
+echo map passwd uid sAMAccountName >> /etc/nslcd.conf
+echo map passwd uidNumber objectSid:'$DOMAINSID' >> /etc/nslcd.conf
+echo map passwd gidNumber primaryGroupID >> /etc/nslcd.conf
+echo map passwd homeDirectory \"\${unixHomeDirectory:-/home/\$sAMAccountName}\" >> /etc/nslcd.conf
+echo map passwd loginShell \"\${loginShell:-/bin/bash}\" >> /etc/nslcd.conf
+echo filter shadow \(\&\(objectClass=user\)\(!\(objectClass=computer\)\)\) >> /etc/nslcd.conf
+echo map shadow uid sAMAccountName >> /etc/nslcd.conf
+echo map shadow shadowLastChange pwdLastSet >> /etc/nslcd.conf
+echo filter group \(objectClass=group\) >> /etc/nslcd.conf
+echo map group cn sAMAccountName >> /etc/nslcd.conf
+echo map group gidNumber objectSid:'$DOMAINSID' >> /etc/nslcd.conf
+#Stop nslcd
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nslcd_stop 1>/dev/null
+#Start nslcd
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nslcd_start 1>/dev/null
+echo "<br><br>"
+#Set nslcd to start on boot
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nslcd
+'
+EXITCHECK=`echo $?`
+
+if [ $EXITCHECK != 0 ]
+then
+echo `date`: configure_authentication - Error connecting to $PDCIP on port $EXITCHECK "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo '<li>'$CONNECTIONERRORMSG -  $PDCIP: $EXITCHECK '</li><br>'
+sleep 4
+exit $EXITCHECK
+fi
+fi
+
+#Add nslcd flag
+[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
+echo $NSLCDCLIENTMSG"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/nslcd
+[ ! -d /opt/karoshi/server_network/zones/$ZONE/ldap_clients/ ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/ldap_clients
+echo ldap_server=$PDCIP > /opt/karoshi/server_network/zones/$ZONE/ldap_clients/$SERVERNAME
+
+}
+
+#Set ports to check and open in shorewall
+
+PORTCHECK=53,88,389
+TCPPORTS=139,445
+UDPPORTS=137,138,445
+
+if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
+then
+PORTCHECK=53,88,123,135,137,138,139,389,445,464,636,1024,1100,3268
+TCPPORTS=53,88,123,135,137,138,139,389,445,464,636,1024:1100,3268
+UPDPORTS=53,88,123,135,137,138,139,389,445,464,636,1024:1100,3268
+fi
+
+#run functions Authtypes adc rodc member users none
+if [ $AUTHTYPE != none ]
+then
+echo `date`: configure_authentication - configuring nslcd "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+configure_nslcd
+fi
+if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ] || [ $AUTHTYPE = member ]
+then
+karoshiadminuser
+echo `date`: configure_authentication - configuring samba4 $AUTHTYPE "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+configure_samba4
+fi
+
+#Add server zone info
+[ ! -d /opt/karoshi/server_network/zones/$ZONE/servers ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/servers
+touch /opt/karoshi/server_network/zones/$ZONE/servers/$SERVERNAME
+

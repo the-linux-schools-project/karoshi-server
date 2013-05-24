@@ -1,0 +1,57 @@
+#!/bin/bash
+
+#Copyright (C) 2011  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#aloughlin@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+
+MONTH=`date +%b`
+YEAR=`date +%Y`
+
+#Check to see if there is any data to process
+[ ! -d /opt/karoshi/server_network/printer_accounting/accounting/ ] && exit
+[ `ls -1 /opt/karoshi/server_network/printer_accounting/accounting/ | wc -l` = 0 ] && exit
+
+[ ! -d /opt/karoshi/server_network/printer_accounting/usage/ ] && mkdir -p /opt/karoshi/server_network/printer_accounting/usage/
+
+#Create data at end of the month for usage
+for NAMES in /opt/karoshi/server_network/printer_accounting/accounting/*
+do
+NAME=`basename $NAMES`
+
+touch /opt/karoshi/server_network/printer_accounting/usage/$NAME
+PRINTER_USAGE=`sed -n 1,1p /opt/karoshi/server_network/printer_accounting/accounting/$NAME | tr -cd '0-9'`
+if [ `grep -c ^$YEAR,$MONTH /opt/karoshi/server_network/printer_accounting/usage/$NAME` = 0 ]
+then
+LAST_MONTH_USAGE=`tail -n 1 /opt/karoshi/server_network/printer_accounting/usage/$NAME | cut -d, -f3 | tr -cd '0-9'`
+[ $LAST_MONTH_USAGE'null' = null ] && LAST_MONTH_USAGE=0
+let PRINTER_USAGE=$PRINTER_USAGE-$LAST_MONTH_USAGE
+echo $YEAR,$MONTH,$PRINTER_USAGE,$LAST_MONTH_USAGE >> /opt/karoshi/server_network/printer_accounting/usage/$NAME
+else
+THIS_MONTH_USAGE_DATA=`tail -n 1 /opt/karoshi/server_network/printer_accounting/usage/$NAME`
+THIS_MONTH_USAGE=`echo $THIS_MONTH_USAGE_DATA | cut -d, -f3`
+LAST_MONTH_TOTAL=`echo $THIS_MONTH_USAGE_DATA | cut -d, -f4`
+let THIS_MONTH_USAGE_UPDATED=$PRINTER_USAGE-$LAST_MONTH_TOTAL
+sed -i 's/'$THIS_MONTH_USAGE_DATA'/'$YEAR','$MONTH','$THIS_MONTH_USAGE_UPDATED','$LAST_MONTH_TOTAL'/g' /opt/karoshi/server_network/printer_accounting/usage/$NAME
+fi
+done
+

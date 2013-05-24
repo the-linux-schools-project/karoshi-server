@@ -1,0 +1,399 @@
+#!/bin/bash
+#Copyright (C) 2008 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/cron_edit_cgi
+then
+echo `date`: cron_edit - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/cron_edit_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/cron_edit.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $cron_edit_cgi'check' ]
+then
+echo `date`: cron_edit - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: cron_edit - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: cron_edit - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+SERVERTYPE=`echo "$DATA" | cut -s -d: -f5`
+SERVERMASTER=`echo "$DATA" | cut -s -d: -f6`
+ACTION=`echo "$DATA" | cut -s -d: -f7`
+JOBNAME=`echo "$DATA" | cut -s -d: -f8 | sed 's/UNDERSCORE/_/g'`
+MOBILE=`echo "$DATA" | cut -s -d: -f9`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: cron_edit - Not called by cron_edit.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: cron_edit - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: cron_edit - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $JOBNAME'null' = null ]
+then
+echo `date`: cron_edit - Blank jobname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $ACTION'null' = null ]
+then
+echo `date`: cron_edit - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVERNAME'null' = null ]
+then
+echo `date`: cron_edit - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVERTYPE'null' = null ]
+then
+echo `date`: cron_edit - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $SERVERTYPE != network ] && [ $SERVERTYPE != federated ] && [ $SERVERTYPE != federatedslave ]
+then
+echo `date`: cron_edit - Incorrect servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+if [ $SERVERMASTER'null' = null ]
+then
+echo `date`: cron_edit - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: cron_edit - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/cron ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/system/cron
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+########################
+#Edit the cron job
+########################
+
+
+
+if [ $ACTION = DELETE ]
+then
+echo `date`: cron_edit - deleting $JOBNAME on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+if [ $SERVERNAME = $HOSTNAME ]
+then
+if [ -f /opt/karoshi/cronjobs/jobs/$JOBNAME.cron ]
+then
+rm -f /opt/karoshi/cronjobs/jobs/$JOBNAME.cron
+/opt/karoshi/"useful scripts"/refreshcronjobs 1>/dev/null
+exit 102
+fi
+fi
+
+
+if [ $SERVERNAME != $HOSTNAME ] && [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: cron_edit \(federated mode\) - deleting '$JOBNAME' on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+if [ -f /opt/karoshi/cronjobs/jobs/'$JOBNAME'.cron ]
+then
+rm -f /opt/karoshi/cronjobs/jobs/'$JOBNAME'.cron
+/opt/karoshi/"useful scripts"/refreshcronjobs 1>/dev/null
+fi
+'
+exit 102
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+echo `date`: cron_edit \(federated mode\) - deleting '$JOBNAME' on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
+if [ -f /opt/karoshi/cronjobs/jobs/'$JOBNAME'.cron ]
+then
+rm -f /opt/karoshi/cronjobs/jobs/'$JOBNAME'.cron
+/opt/karoshi/"useful scripts"/refreshcronjobs 1>/dev/null
+fi
+'\''
+'
+exit 102
+fi
+fi
+
+
+if [ $ACTION = EDIT ]
+then
+#Feed job information to cron_add
+
+#Get data for form
+if [ $SERVERNAME = $HOSTNAME ]
+then
+#cat /opt/karoshi/cronjobs/jobs/$JOBNAME.cron
+CRONDATA=`cat /opt/karoshi/cronjobs/jobs/$JOBNAME.cron`
+fi
+if [ $SERVERNAME != $HOSTNAME ] && [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
+then
+CRONDATA=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+cat /opt/karoshi/cronjobs/jobs/'$JOBNAME'.cron
+'`
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+CRONDATA=`ssh -x -o PasswordAuthentication=no $SERVERMASTER '
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
+cat /opt/karoshi/cronjobs/jobs/'$JOBNAME'.cron
+'\''
+'`
+fi
+
+
+MINS=`echo "$CRONDATA" | cut -d' ' -f1`
+HOUR=`echo "$CRONDATA" | cut -d' ' -f2`
+DAY=`echo "$CRONDATA" | cut -d' ' -f3`
+MONTH=`echo "$CRONDATA" | cut -d' ' -f4`
+WEEKDAY=`echo "$CRONDATA" | cut -d' ' -f5`
+COMMAND=`echo "$CRONDATA" | cut -d' ' -f6- | sed 's/\"//g'`
+
+#Make a form for the data
+
+#Show back button for mobiles
+if [ $MOBILE = yes ]
+then
+echo '<div style="float: left" id="my_menu" class="sdmenu">
+	<div class="expanded">
+	<span>'$TITLE3'</span>
+<a href="/cgi-bin/admin/cron_view_fm.cgi">'$SERVERNAME'</a>
+</div></div><div id="mobileactionbox">
+'
+else
+echo '<b>'$TITLE3'</b><br><br>'
+fi
+
+TABLECLASS=standard
+[ $MOBILE = yes ] && TABLECLASS=mobilestandard
+
+echo '<form action="/cgi-bin/admin/cron_add.cgi" name="selectservers" method="post">
+  <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+    <tbody>
+      <tr>
+        <td style="width: 180px;">
+'$MINUTEMSG'</td>
+<td><select name="___MINUTES___" style="width: 200px;">
+<option value="'$MINS'" selected="selected">'$MINS'</option>
+<option value="0">0</option>
+<option value="5">5</option>
+<option value="10">10</option>
+<option value="15">15</option>
+<option value="20">20</option>
+<option value="25">25</option>
+<option value="30">30</option>
+<option value="35">35</option>
+<option value="40">40</option>
+<option value="45">45</option>
+<option value="50">50</option>
+<option value="55">55</option>
+<option value="*">'$EVERYMINUTEMSG'</option>
+<option value="*/5">'$EVERYMSG' 5 '$MINUTESMSG'</option>
+<option value="*/10">'$EVERYMSG' 10 '$MINUTESMSG'</option>
+<option value="*/15">'$EVERYMSG' 15 '$MINUTESMSG'</option>
+<option value="*/20">'$EVERYMSG' 20 '$MINUTESMSG'</option>
+<option value="*/30">'$EVERYMSG' 30 '$MINUTESMSG'</option>
+</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'"$MINUTEHELP"'</span></a>
+      </td></tr>
+<tr><td>'$HOURMSG'</td>
+<td><select name="___HOUR___" style="width: 200px;">
+<option value="'$HOUR'" selected="selected">'$HOUR'</option>
+<option value="*">'$EVERYHOURMSG'</option>
+<option>0</option>
+<option>1</option>
+<option>2</option>
+<option>3</option>
+<option>4</option>
+<option>5</option>
+<option>6</option>
+<option>7</option>
+<option>8</option>
+<option>9</option>
+<option>10</option>
+<option>11</option>
+<option>12</option>
+<option>13</option>
+<option>14</option>
+<option>15</option>
+<option>16</option>
+<option>17</option>
+<option>18</option>
+<option>19</option>
+<option>20</option>
+<option>21</option>
+<option>22</option>
+<option>23</option>
+</select></td>
+<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'"$HOURHELP"'</span></a>
+      </td></tr>
+<tr><td>'$DAYMSG'</td>
+<td><select name="___DAY___" style="width: 200px;">
+
+<option value="*">'$EVERYDAYMSG'</option>
+<option value="'$DAY'" selected="selected">'$DAY'</option>
+<option>0</option>
+<option>1</option>
+<option>2</option>
+<option>3</option>
+<option>4</option>
+<option>5</option>
+<option>6</option>
+<option>7</option>
+<option>8</option>
+<option>9</option>
+<option>10</option>
+<option>11</option>
+<option>12</option>
+<option>13</option>
+<option>14</option>
+<option>15</option>
+<option>16</option>
+<option>17</option>
+<option>18</option>
+<option>19</option>
+<option>20</option>
+<option>21</option>
+<option>22</option>
+<option>24</option>
+<option>25</option>
+<option>26</option>
+<option>27</option>
+<option>28</option>
+<option>29</option>
+<option>30</option>
+<option>31</option>
+</select></td>
+<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'"$DAYHELP"'</span></a></td></tr>
+<tr><td>'$MONTHMSG'</td>
+<td><select name="___MONTH___" style="width: 200px;">
+<option value="'$MONTH'" selected="selected">'$MONTH'</option>
+<option value="*">'$EVERYMONTHMSG'</option>
+<option>0</option>
+<option>1</option>
+<option>2</option>
+<option>3</option>
+<option>4</option>
+<option>5</option>
+<option>6</option>
+<option>7</option>
+<option>8</option>
+<option>9</option>
+<option>10</option>
+<option>11</option>
+<option>12</option>
+</select></td>
+<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'"$MONTHHELP"'</span></a></td></tr>
+<tr><td>'$DAYOFWEEKMSG'</td>
+<td><select name="___DOFW___" style="width: 200px;">
+<option value="'$WEEKDAY'" selected="selected">'$WEEKDAY'</option>
+<option value="1-7">'$EVERYDAYMSG'</option>
+<option value="1-5">'$WORKINGWEEKMSG'</option>
+<option value="6-7">'$WEEKENDMSG'</option>
+<option value="1-3-5">'$MONDAY'-'$WEDNESDAY'-'$FRIDAY'</option>
+<option value="1">'$MONDAY'</option>
+<option value="2">'$TUESDAY'</option>
+<option value="3">'$WEDNESDAY'</option>
+<option value="4">'$THURSDAY'</option>
+<option value="5">'$FRIDAY'</option>
+<option value="6">'$SATURDAY'</option>
+<option value="7">'$SUNDAY'</option>
+</select></td>
+<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'"$DOFWHELP"'</span></a>
+</td></tr></tbody></table>'
+
+if [ $MOBILE = no ]
+then
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+    <tbody>
+      <tr>
+        <td style="width: 180px;">
+<tr><td>'$COMMANDMSG'</td><td>'$COMMAND'</td></tr>
+<tr><td>'$SERVERMSG'</td><td>'$SERVERNAME'</td></tr>
+</tbody></table>
+
+<input name="___SERVERTYPE___'$SERVERTYPE'___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'______COMMAND___'$COMMAND'___" value="" type="hidden">'
+else
+echo '<small><br>'$COMMANDMSG'<br>'$COMMAND'<br><br>'$SERVERMSG'<br>'$SERVERNAME'</small><br><br>'
+fi
+
+if [ $MOBILE = no ]
+then
+echo '</div><div id="submitbox">'
+fi
+
+echo '<input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset">
+</div></form></body></html>
+'
+fi
+exit
+
+
+
+
+

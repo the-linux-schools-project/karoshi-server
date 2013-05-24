@@ -1,0 +1,83 @@
+#!/bin/bash
+LOG_DATE=`date +%F`
+LANGCHOICE=englishuk
+ALL_APPLIED=yes
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/update_karoshi_get_list ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/system/update_karoshi_get_list
+source /opt/karoshi/serversetup/variables/version
+source /opt/karoshi/serversetup/variables/updatesource
+
+########################
+#Create html list
+########################
+echo '<table class="standard" style="text-align: left; width: 100%;" border="0"
+ cellpadding="2" cellspacing="2"
+><tbody><tr><td><b>'$APPLIED'</b></td><td><b>'$DESCRIPTION'</b></td><td><b>'$APPLY'</b></td><td><b>'$PATCHNAME'</b></td><td><b>'$MD5SUM'</b></td><td><b>'$SERVERS'</b></td></tr>' > /opt/karoshi/updates/updatelist.html
+
+echo '<table class="standard" style="text-align: left; width: 100%;" border="0"
+ cellpadding="2" cellspacing="2"
+><tbody><tr><td><b>'$APPLIED'</b></td><td><b>'$DESCRIPTION'</b></td><td><b>'$APPLY'</b></td><td><b>'$PATCHNAME'</b></td><td><b>'$MD5SUM'</b></td><td><b>'$SERVERS'</b></td></tr>' > /opt/karoshi/updates/updatelist_all.html
+
+COUNTER=1
+COUNTER2=0
+COUNTER3=0
+APPLYFLAG=no
+#Check to see if updates have been applied
+[ ! -f /opt/karoshi/updates/updatelist ] && exit
+UPDATELIST_LENGTH=`cat /opt/karoshi/updates/updatelist | wc -l`
+while [ $COUNTER -le $UPDATELIST_LENGTH ]
+do
+DATA="`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/updates/updatelist`"
+PATCHNAME=`echo "$DATA" | cut -f1`
+MD5SUM=`echo "$DATA" | cut -f2`
+SERVERS=`echo "$DATA" | cut -f3`
+DESCRIPTION=`echo "$DATA" | cut -f4`
+#Check if patch has been applied
+if [ -f /opt/karoshi/logs/karoshi_updates/$PATCHNAME ]
+then
+echo '<tr><td><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/warnings/karoshi_update_applied.png"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$DESCRIPTION'</span></a></td><td></td><td>'$PATCHNAME'</td><td>'$MD5SUM'</td><td>'$SERVERS'</td></tr>' >> /opt/karoshi/updates/updatelist_all.html
+let COUNTER2=$COUNTER2+1
+else
+ALL_APPLIED=no
+
+if [ $APPLYFLAG = no ]
+then
+echo '<tr><td><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/warnings/karoshi_update_not_applied.png"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$DESCRIPTION'</span></a></td><td>
+<a class="info" href="javascript:void(0)"><input name="_PATCHNAME_'$PATCHNAME'_" type="image" class="images" src="/images/submenus/system/apply_karoshi_update.png" value=""><span>'$APPLY'<br>'$PATCHNAME'</span></a>
+</td><td>'$PATCHNAME'</td>
+<td>'$MD5SUM'</td><td>'$SERVERS'</td></tr>' >> /opt/karoshi/updates/updatelist_all.html
+
+echo '<tr><td><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/warnings/karoshi_update_not_applied.png"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$DESCRIPTION'</span></a></td><td>
+<a class="info" href="javascript:void(0)"><input name="_PATCHNAME_'$PATCHNAME'_" type="image" class="images" src="/images/submenus/system/apply_karoshi_update.png" value=""><span>'$APPLY'<br>'$PATCHNAME'</span></a>
+</td><td>'$PATCHNAME'</td><td>'$MD5SUM'</td><td>'$SERVERS'</td></tr>' >> /opt/karoshi/updates/updatelist.html
+APPLYFLAG=yes
+else
+echo '<tr><td><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/warnings/karoshi_update_not_applied.png"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$DESCRIPTION'</span></a></td><td></td><td>'$PATCHNAME'</td><td>'$MD5SUM'</td><td>'$SERVERS'</td></tr>' >> /opt/karoshi/updates/updatelist_all.html
+
+echo '<tr><td><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/warnings/karoshi_update_not_applied.png"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$DESCRIPTION'</span></a></td><td></td><td>'$PATCHNAME'</td><td>'$MD5SUM'</td><td>'$SERVERS'</td></tr>' >> /opt/karoshi/updates/updatelist.html
+fi
+let COUNTER2=$COUNTER2+1
+let COUNTER3=$COUNTER3+1
+fi
+
+let COUNTER=$COUNTER+1
+done
+echo '</tbody></table>' >> /opt/karoshi/updates/updatelist.html
+echo '</tbody></table>' >> /opt/karoshi/updates/updatelist_all.html
+
+[ $COUNTER2 = 0 ] && rm -f /opt/karoshi/updates/updatelist_all.html
+[ $COUNTER3 = 0 ] && rm -f /opt/karoshi/updates/updatelist.html
+
+#############################
+#Generate page warning
+#############################
+if [ $ALL_APPLIED != yes ]
+then
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add karoshi_updates /cgi-bin/admin/update_karoshi_fm.cgi "$WARNINGMSG" webwarning1.gif
+else
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete karoshi_updates
+fi
+
+exit
+
+

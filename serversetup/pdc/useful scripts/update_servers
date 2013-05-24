@@ -1,0 +1,106 @@
+#!/bin/bash
+#update_client_skel
+#Copyright (C) 2008  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contact either at mpsharrad@karoshi.org.uk or jharris@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LANGCHOICE=englishuk
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/update_servers ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/system/update_servers
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+DATE=`date +%d-%m-%Y`
+
+function warning_alert {
+
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add update_servers /cgi-bin/admin/update_servers_view_logs_fm.cgi "$ERRORALERT" webwarning2.gif
+}
+
+#####################################
+#Clear any previous update warning messages
+#####################################
+
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete update_servers
+#####################################
+#Update PDC
+#####################################
+[ -d /opt/karoshi/logs/updates ] || mkdir -p /opt/karoshi/logs/updates
+chmod 0700 /opt/karoshi/logs/updates
+echo $HOSTNAME scheduled update - `date` > /opt/karoshi/logs/updates/$DATE
+echo >> /opt/karoshi/logs/updates/$DATE
+echo Updating repository list - `date` >> /opt/karoshi/logs/updates/$DATE
+echo >> /opt/karoshi/logs/updates/$DATE
+apt-get update 1>> /opt/karoshi/logs/updates/$DATE 2>> /opt/karoshi/logs/updates/$DATE
+if [ `echo $?` != 0 ]
+then
+ERRORALERT=`echo $TITLE - $HOSTNAME : $ERRORMSG5 $UPDATELOGCHECK`
+warning_alert
+update_alerts
+fi
+echo >> /opt/karoshi/logs/updates/$DATE
+echo Updating server - `date` >> /opt/karoshi/logs/updates/$DATE
+echo >> /opt/karoshi/logs/updates/$DATE
+apt-get -y dist-upgrade 1>> /opt/karoshi/logs/updates/$DATE 2>> /opt/karoshi/logs/updates/$DATE
+if [ `echo $?` != 0 ]
+then
+ERRORALERT=`echo $TITLE - $HOSTNAME : $ERRORMSG5 $UPDATELOGCHECK`
+warning_alert
+update_alerts
+fi
+echo >> /opt/karoshi/logs/updates/$DATE
+echo $HOSTNAME scheduled update complete -`date` >> /opt/karoshi/logs/updates/$DATE
+echo __________________________________________________________________________ >> /opt/karoshi/logs/updates/$DATE
+#Make sure that all services are running in /opt/karoshi/start_on_boot/karoshi_services
+/opt/karoshi/serversetup/scripts/start_karoshi_services
+#####################################
+#Update all other karoshi ssh enabled servers
+#####################################
+for KAROSHISERVER in /opt/karoshi/server_network/servers/*
+do
+KAROSHISERVER=`basename KAROSHISERVER`
+if [ $KAROSHISERVER != $HOSTNAME ]
+then
+ssh -x -o PasswordAuthentication=no $SERVER '
+[ -d /opt/karoshi/logs/updates ] || mkdir -p /opt/karoshi/logs/updates
+chmod 0700 /opt/karoshi/logs/updates
+echo '$SERVER' scheduled update - `date` > /opt/karoshi/logs/updates/'$DATE'
+echo >> /opt/karoshi/logs/updates/'$DATE'
+echo Updating repository list - `date` >> /opt/karoshi/logs/updates/'$DATE'
+echo >> /opt/karoshi/logs/updates/'$DATE'
+apt-get update 1>> /opt/karoshi/logs/updates/'$DATE' 2>> /opt/karoshi/logs/updates/'$DATE'
+[ `echo $?` != 0 ] && EXITCODE=101
+echo >> /opt/karoshi/logs/updates/'$DATE'
+echo Updating server - `date` >> /opt/karoshi/logs/updates/'$DATE'
+echo >> /opt/karoshi/logs/updates/'$DATE'
+apt-get -y dist-upgrade 1>> /opt/karoshi/logs/updates/'$DATE' 2>> /opt/karoshi/logs/updates/'$DATE'
+[ `echo $?` != 0 ] && EXITCODE=101
+echo >> /opt/karoshi/logs/updates/'$DATE'
+echo '$SERVER' scheduled update complete -`date` >> /opt/karoshi/logs/updates/'$DATE'
+echo __________________________________________________________________________ >> /opt/karoshi/logs/updates/'$DATE'
+#Make sure that all services are running in /opt/karoshi/start_on_boot/karoshi_services
+/opt/karoshi/serversetup/scripts/start_karoshi_services
+exit $EXITCODE
+'
+if [ `echo $?` = 101 ]
+then
+ERRORALERT=`echo $TITLE - $SERVER : $ERRORMSG6 $UPDATELOGCHECK`
+warning_alert
+fi
+fi
+done
+
+exit

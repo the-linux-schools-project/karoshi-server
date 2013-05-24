@@ -1,0 +1,8 @@
+#!/bin/bash
+source /opt/karoshi/serversetup/variables/language
+source /opt/karoshi/serversetup/language/$LANGCHOICE/colossus/setupmailscanner
+cd /opt/karoshi/serversetup/colossus/mailscanner/
+echo $COMPILEMSG
+echo $RETURNMSG
+read pause
+./install.sh 

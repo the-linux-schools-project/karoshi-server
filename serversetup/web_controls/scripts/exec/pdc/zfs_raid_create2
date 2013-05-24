@@ -1,0 +1,371 @@
+#!/bin/bash
+#Copyright (C) 2010 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/zfs_raid_create2_cgi
+then
+echo `date`: zfs_raid_create2 - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/zfs_raid_create2_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/zfs_raid_create2.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $zfs_raid_create2_cgi'check' ]
+then
+echo `date`: zfs_raid_create2 - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: zfs_raid_create2 - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9:._,/'`
+if [ $DATA'null' = null ]
+then
+echo `date`: zfs_raid_create2 - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+SERVERTYPE=`echo "$DATA" | cut -s -d: -f5`
+SERVERMASTER=`echo "$DATA" | cut -s -d: -f6`
+ACTION=`echo "$DATA" | cut -s -d: -f7`
+PARITY=`echo "$DATA" | cut -s -d: -f8`
+DRIVELIST=`echo "$DATA" | cut -s -d: -f9`
+SPAREDRIVELIST=`echo "$DATA" | cut -s -d: -f10`
+MOUNTPOINT=`echo "$DATA" | cut -s -d: -f11`
+CREATETYPE=`echo "$DATA" | cut -s -d: -f12`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: zfs_raid_create2 - Not called by zfs_raid_create2.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: zfs_raid_create2 - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: zfs_raid_create2 - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVERNAME'null' = null ]
+then
+echo `date`: zfs_raid_create2 - Blank server >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVERTYPE'null' = null ]
+then
+echo `date`: zfs_raid_create2 - Blank servertype >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVERTYPE = federatedslave ]
+then
+if [ $SERVERMASTER'null' = null ]
+then
+echo `date`: zfs_raid_create2 - Blank servermaster >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+fi
+
+if [ $CREATETYPE'null' = null ]
+then
+echo `date`: zfs_raid_create2 - Blank createtype >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $CREATETYPE != restore ] && [ $CREATETYPE != create ] && [ $CREATETYPE != reuse ]
+then
+echo `date`: zfs_raid_create2 - incorrect createtype >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $CREATETYPE = create ]
+then
+
+if [ $PARITY'null' = null ]
+then
+echo `date`: zfs_raid_create2 - Blank parity >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $DRIVELIST'null' = null ]
+then
+echo `date`: zfs_raid_create2 - Blank drives >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $MOUNTPOINT'null' = null ]
+then
+echo `date`: zfs_raid_create2 - Blank mountpoint >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: zfs_raid_create2 - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+
+[ $CREATETYPE = create ] && echo `date`: zfs_raid_create2 - servername $SERVERNAME servertype $SERVERTYPE parity $PARITY drivelist $DRIVELIST $SPAREDRIVELIST mountpoint $MOUNTPOINT by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+[ $CREATETYPE = restore ] && echo `date`: zfs_raid_create2 - restoring zfs raid by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+[ $CREATETYPE = reuse ] && echo `date`: zfs_raid_create2 - reusing drives "for" a new zfs raid by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+
+##########################
+#Language
+##########################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/software_raid ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/system/software_raid
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+if [ $SERVERNAME = $HOSTNAME ]
+then
+
+if [ $CREATETYPE = create ]
+then
+DRIVELIST=`echo $DRIVELIST | sed "s/,/ /g"`
+#Create the zfs raid
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+echo "<li>Creating ZFS raid z$PARITY</li>"
+
+if [ ! -z $SPAREDRIVELIST ]
+then
+SPAREDRIVELIST=`echo $SPAREDRIVELIST | sed "s/,/ /g"`
+zpool create -o ashift=12 -f -m $MOUNTPOINT.$$ $HOSTNAME-data raidz$PARITY $DRIVELIST spare $SPAREDRIVELIST
+else
+zpool create -o ashift=12 -f -m $MOUNTPOINT.$$ $HOSTNAME-data raidz$PARITY $DRIVELIST
+fi
+
+#Check zfs raid has been created
+zpool status $HOSTNAME-data
+if [ `echo $?` != 0 ]
+then
+echo ZFS Raid not created"<br>"
+sleep 3
+exit 101
+fi
+
+#Copy data to new array
+if [ -d $MOUNTMOUNT ]
+then
+echo "<br><li>"$COPYDATAMSG"</b></li>"
+sleep 2
+rsync --timeout=30 --verbose --dirs --recursive --links --compress --delete --backup --times --perms --executability --owner --group -o $MOUNTPOINT/ $MOUNTPOINT.$$/
+fi
+
+#Remove any existing partitions from fstab
+if [ `grep -c -w $MOUNTPOINT /etc/fstab` -gt 0 ]
+then
+#Umount the partition
+echo "<li>"Un mounting existing partition on $MOUNTPOINT"</li>"
+umount $MOUNTPOINT
+
+#Backup /etc/fstab
+echo "<li>"Backing up fstab"</li>"
+cp /etc/fstab /etc/fstab-backup.$$
+
+#Remove entry from fstab
+LINENO=`grep -n $MOUNTPOINT /etc/fstab`
+sed -i $LINENO"d" /etc/fstab
+fi
+
+#Remove exiting folder
+if [ -d $MOUNTPOINT ]
+then
+mv $MOUNTPOINT $MOUNTPOINT.$$
+fi
+
+#Mount zfs raid to the correct path
+echo "<li>"Mounting ZFS raid on $MOUNTPOINT"</li>"
+[ -d $MOUNTPOINT ] && rm -f R $MOUNTPOINT
+mkdir $MOUNTPOINT
+zfs set mountpoint=$MOUNTPOINT $HOSTNAME-data
+zfs mount $HOSTNAME-data
+echo "</pre>"
+fi
+
+
+#Restore existing zfs raid
+if [ $CREATETYPE = restore ]
+then
+zpool import -f $HOSTNAME-data
+fi
+
+#Reuse existing zfs raid
+if [ $CREATETYPE = reuse ]
+then
+echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/zfs_raid_create.cgi\" target=\"_top\" name = \"frm\">
+<input type=\"hidden\" name=\"_SERVERNAME_\" value=\"$SERVERNAME\">
+<input type=\"hidden\" name=\"_SERVERTYPE_\" value=\"$SERVERTYPE\">
+<input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"$SERVERMASTER\">
+<input type=\"hidden\" name=\"_CREATETYPE_\" value=\"reuse\">
+</form>
+<script>
+document.frm.submit();
+</script><form>
+"
+fi
+
+#Add cron job for zpool scrub
+[ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
+echo 0 0 '*' '*' 0,2,4 zpool scrub $HOSTNAME-data > /opt/karoshi/cronjobs/jobs/zpool_scrub.cron
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
+echo "<br>"
+
+fi
+
+if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ] && [ $SERVERNAME != $HOSTNAME ]
+then
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+
+if [ '$CREATETYPE' = create ]
+then
+DRIVELIST=`echo '$DRIVELIST' | sed "s/,/ /g"`
+#Create the zfs raid
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+echo "<li>Creating ZFS raid z'$PARITY'</li>"
+
+if [ ! -z '$SPAREDRIVELIST' ]
+then
+SPAREDRIVELIST=`echo '$SPAREDRIVELIST' | sed "s/,/ /g"`
+zpool create -o ashift=12 -f -m '$MOUNTPOINT'.$$ $HOSTNAME-data raidz'$PARITY' $DRIVELIST spare $SPAREDRIVELIST
+else
+zpool create -o ashift=12 -f -m '$MOUNTPOINT'.$$ $HOSTNAME-data raidz'$PARITY' $DRIVELIST
+fi
+
+#Check zfs raid has been created
+zpool status $HOSTNAME-data
+if [ `echo $?` != 0 ]
+then
+echo ZFS Raid not created"<br>"
+sleep 3
+exit 101
+fi
+
+#Copy data to new array
+if [ -d '$MOUNTMOUNT' ]
+then
+echo "<br><li>"'$COPYDATAMSG'"</b></li>"
+sleep 2
+rsync --timeout=30 --verbose --dirs --recursive --links --compress --delete --backup --times --perms --executability --owner --group -o '$MOUNTPOINT'/ '$MOUNTPOINT'.$$/
+fi
+
+#Remove any existing partitions from fstab
+if [ `grep -c -w '$MOUNTPOINT' /etc/fstab` -gt 0 ]
+then
+#Umount the partition
+echo "<li>"Un mounting existing partition on '$MOUNTPOINT'"</li>"
+umount '$MOUNTPOINT'
+
+#Backup /etc/fstab
+echo "<li>"Backing up fstab"</li>"
+cp /etc/fstab /etc/fstab-backup.$$
+
+#Remove entry from fstab
+LINENO=`grep -n '$MOUNTPOINT' /etc/fstab`
+sed -i $LINENO"d" /etc/fstab
+fi
+
+#Remove exiting folder
+if [ -d '$MOUNTPOINT' ]
+then
+mv '$MOUNTPOINT' '$MOUNTPOINT'.$$
+fi
+
+#Mount zfs raid to the correct path
+echo "<li>"Mounting ZFS raid on '$MOUNTPOINT'"</li>"
+[ -d '$MOUNTPOINT' ] && rm -f -R '$MOUNTPOINT'
+mkdir '$MOUNTPOINT'
+zfs set mountpoint='$MOUNTPOINT' $HOSTNAME-data
+zfs mount $HOSTNAME-data
+echo "</pre>"
+fi
+
+#Restore existing zfs raid
+if [ '$CREATETYPE' = restore ]
+then
+zpool import -f $HOSTNAME-data
+fi
+
+#Reuse existing zfs raid
+if [ '$CREATETYPE' = reuse ]
+then
+echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/zfs_raid_create.cgi\" target=\"_top\" name = \"frm\">
+<input type=\"hidden\" name=\"_SERVERNAME_\" value=\"'$SERVERNAME'\">
+<input type=\"hidden\" name=\"_SERVERTYPE_\" value=\"'$SERVERTYPE'\">
+<input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"'$SERVERMASTER'\">
+<input type=\"hidden\" name=\"_CREATETYPE_\" value=\"reuse\">
+</form>
+<script>
+document.frm.submit();
+</script><form>
+"
+fi
+
+#Add cron job for zpool scrub
+[ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
+echo 0 0 "*" "*" 0,2,4 zpool scrub $HOSTNAME-data > /opt/karoshi/cronjobs/jobs/zpool_scrub.cron
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
+echo "<br>"
+'
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+echo `date`: zfs_raid_create2 \(federated mode\) - servername '$SERVERNAME' servertype '$SERVERTYPE' raidtype '$RAIDTYPE' drivelist '$DRIVELIST' mountpoint '$MOUNTPOINT' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
+
+echo in ssh2
+'\''
+'
+fi
+
+exit
+

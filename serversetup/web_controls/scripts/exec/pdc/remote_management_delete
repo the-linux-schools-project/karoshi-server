@@ -1,0 +1,119 @@
+#!/bin/bash
+#Copyright (C) 2007  The karoshi Team
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_process_cgi
+then
+echo `date`: remote_management_process - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_process_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_process.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $remote_management_process_cgi'check' ]
+then
+echo `date`: remote_management_delete - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 1 ]
+then
+echo `date`: remote_management_delete - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo $* | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | cut -s -d: -f3`
+DELETEUSER=`echo $* | cut -s -d: -f4`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'number' != $MD5SUM'number' ]
+then
+echo `date`: remote_management_delete - Not called by remote_management_delete.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: remote_management_delete - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: remote_management_delete - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $DELETEUSER'null' = null ]
+then
+echo `date`: remote_management_delete - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: remote_management_delete - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+[ ! -f /opt/karoshi/web_controls/remote_management_users ] && ( touch /opt/karoshi/web_controls/remote_management_users ; chmod 0600 /opt/karoshi/web_controls/remote_management_users )
+if [ `grep -c ^$DELETEUSER: /opt/karoshi/web_controls/remote_management_users` = 0 ]
+then
+echo `date`: remote_management_delete - $DELETEUSER: no such user by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 102
+fi
+#Check that user is a primary admin
+PRISTATUS=`grep $REMOTE_USER: /opt/karoshi/web_controls/remote_management_users | cut -d: -f5`
+if [ $PRISTATUS'null' = null ]
+then
+PRISTATUS=no
+fi
+if [ $PRISTATUS != yes ]
+then
+echo `date`: remote_management_add - Not a primary admin for $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 104
+fi
+#Delete user
+echo `date`: remote_management_delete - deleting $DELETEUSER from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#Delete user from remote_management_users
+USER_LINE=`grep -n ^$DELETEUSER: /opt/karoshi/web_controls/remote_management_users | cut -d: -f1`
+if [ $USER_LINE'null' = null ]
+then
+exit 103
+fi
+sed -i $USER_LINE'd' /opt/karoshi/web_controls/remote_management_users
+#Delete user from htpasswd file
+if [ `grep -c ^$DELETEUSER: /opt/karoshi/web_controls/web_access_admin` -gt 0 ]
+then
+htpasswd -D /opt/karoshi/web_controls/web_access_admin $DELETEUSER 2>/dev/null
+fi
+if [ `grep -c ^$DELETEUSER: /opt/karoshi/web_controls/web_access_tech` -gt 0 ]
+then
+htpasswd -D /opt/karoshi/web_controls/web_access_tech $DELETEUSER 2>/dev/null
+fi
+#Delete user prefs
+[ -f /opt/karoshi/web_controls/user_prefs/$DELETEUSER ] && rm -f /opt/karoshi/web_controls/user_prefs/$DELETEUSER
+exit

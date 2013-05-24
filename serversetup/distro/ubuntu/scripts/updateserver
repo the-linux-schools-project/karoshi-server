@@ -1,0 +1,296 @@
+#!/bin/bash
+#upgradeserver
+#Copyright (C) 2012  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contact either at mpsharrad@karoshi.org.uk or jharris@karoshi.org.uk
+#
+#Website: http://www.linuxschools.com
+
+LOG_DATE=`date +%F`
+
+#Check install type
+INSTALLTYPE=scheduled
+
+#Make Log folder
+if [ ! -d /opt/karoshi/logs/server_upgrades/ ]
+then
+mkdir -p /opt/karoshi/logs/server_upgrades/
+chmod 0700 /opt/karoshi/logs/server_upgrades/
+fi
+
+#Check to see if this server should have ssh - need to make sure this is running.
+
+SSHSERVICE=yes
+if [ -d /opt/karoshi/web_controls ]
+then
+#This server is the main server and may not need ssh so fall back to normal check.
+SSHSERVICE=no
+if [ -f /opt/karoshi/server_network/servers/$HOSTNAME/federated_server ]
+then
+#This server is a federated server and must have ssh.
+SSHSERVICE=yes
+fi
+fi
+
+##########################
+#SysV - much more reliable for starting, stopping, checking if services are running than upstart.
+##########################
+function sysvsupport {
+#Copy startup scripts back into /etc/init.d
+
+[ -L /etc/init.d/apache2 ] && rm -f /etc/init.d/apache2
+[ -L /etc/init.d/clamav-freshclam ] && rm -f /etc/init.d/clamav-freshclam
+[ -L /etc/init.d/cups ] && rm -f /etc/init.d/cups
+[ -L /etc/init.d/dansguardian ] && rm -f /etc/init.d/dansguardian
+[ -L /etc/init.d/dhcp3-server ] && rm -f /etc/init.d/dhcp3-server
+[ -L /etc/init.d/dnsmasq ] && rm -f /etc/init.d/dnsmasq
+[ -L /etc/init.d/mailscanner ] && rm -f /etc/init.d/mailscanner
+[ -L /etc/init.d/mon ] && rm -f /etc/init.d/mon
+[ -L /etc/init.d/mysql ] && rm -f /etc/init.d/mysql
+[ -L /etc/init.d/postfix ] && rm -f /etc/init.d/postfix
+[ -L /etc/init.d/portmap ] && rm -f /etc/init.d/portmap
+[ -L /etc/init.d/rpcbind ] && rm -f /etc/init.d/rpcbind
+[ -L /etc/init.d/rsync ] && rm -f /etc/init.d/rsync
+[ -L /etc/init.d/samba ] && rm -f /etc/init.d/samba
+[ -L /etc/init.d/shorewall ] && rm -f /etc/init.d/shorewall
+[ -L /etc/init.d/slapd ] && rm -f /etc/init.d/slapd
+[ -L /etc/init.d/spamassassin ] && rm -f /etc/init.d/spamassassin
+[ -L /etc/init.d/squid ] && rm -f /etc/init.d/squid
+[ -L /etc/init.d/squid3 ] && rm -f /etc/init.d/squid3
+[ -L /etc/init.d/ssh ] && rm -f /etc/init.d/ssh
+[ -L /etc/init.d/tftpd-hpa ] && rm -f /etc/init.d/tftpd-hpa
+[ -L /etc/init.d/xinetd ] && rm -f /etc/init.d/xinetd
+[ -L /etc/init.d/dovecot ] && rm -f /etc/init.d/dovecot
+[ -L /etc/init.d/vsftpd ] && rm -f /etc/init.d/vsftpd
+
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/apache2 /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/clamav-freshclam /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/cups /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/dansguardian /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/dhcp3-server /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/dnsmasq /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/mailscanner /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/mon /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/mysql /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/postfix /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/rsync /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/samba /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/shorewall /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/slapd /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/spamassassin /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/squid /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/squid3 /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/ssh /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/tftpd-hpa /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/xinetd /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/dovecot /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/vsftpd /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/portmap /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/rpcbind /etc/init.d/
+
+#Make sure no scripts have been added to /etc/init for upstart.
+[ `ls /etc/init/mysql* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/mysql*
+[ `ls /etc/init/smbd* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/smbd*
+[ `ls /etc/init/nmbd* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/nmbd*
+[ `ls /etc/init/squid* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/squid*
+[ `ls /etc/init/ssh* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/ssh*
+[ `ls /etc/init/tftpd-hpa* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/tftpd-hpa*
+[ `ls /etc/init/xinetd* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/xinetd*
+[ `ls /etc/init/dovecot* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/dovecot*
+[ `ls /etc/init/vsftpd* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/vsftpd*
+[ `ls /etc/init/portmap* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/portmap*
+[ `ls /etc/init/rpcbind* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/rpcbind*
+#May need to add more to this list.
+}
+
+#Make sure we are using sysv scripts before we check which services should still be running after the update.
+sysvsupport
+
+######################
+#Check to see if a service should be running after the update.
+######################
+function check_status {
+STATUS=off
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$SERVICENAME"_"status
+[ `echo $?` = 0 ] && STATUS=on
+
+
+#Make sure status is correct for ssh
+if [ $SERVICENAME = ssh ]
+then
+if [ $SSHSERVICE = yes ]
+then
+STATUS=on
+fi
+fi
+STATUS_ARRAY[$COUNTER]=$STATUS
+echo -e "$SERVICENAME $STATUS" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
+}
+
+#######################
+#Check which services should be running on this server.
+#######################
+SERVICE_ARRAY=( apache aptcacherng apache_karoshi cron cups dansguardian dhcp dns mailscanner mon mysql nfs nginx postfix portmap proftpd rpcbind samba squid nut ssh tftpd xinetd )
+echo -e "$HOSTNAME: `date` - Checking which services are currently set to run on boot.\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
+COUNTER=0
+ARRAY_COUNT=${#SERVICE_ARRAY[@]}
+while [ $COUNTER -lt $ARRAY_COUNT ]
+do
+SERVICENAME=${SERVICE_ARRAY[$COUNTER]}
+check_status
+let COUNTER=$COUNTER+1
+done
+echo -e "_________________________________________________\n" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
+
+
+#######################
+#Make sure we keep config files
+#######################
+echo 'Dpkg::Options {' > /etc/apt/apt.conf.d/local
+echo '   "--force-confdef";' >> /etc/apt/apt.conf.d/local
+echo '   "--force-confold";' >> /etc/apt/apt.conf.d/local
+echo '}' >> /etc/apt/apt.conf.d/local
+#######################
+#Refresh package list
+#######################
+echo Refreshing Package Lists
+echo -e "$HOSTNAME: `date` - Refreshing Package Lists\n" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
+apt-get update | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+echo -e "_________________________________________________\n" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
+
+#######################
+#Stop cron or apache from being upgraded which stops the script from completing the upgrade
+#######################
+if [ $INSTALLTYPE = scheduled ]
+then
+echo Holding Cron from updating
+echo cron hold | dpkg --set-selections
+echo apache2 install | dpkg --set-selections
+else
+echo Holding Apache2 from updating
+echo apache2 hold | dpkg --set-selections
+echo cron install | dpkg --set-selections
+fi
+#######################
+#Remove any init.d scripts that would stop an update from taking place!
+#######################
+[ -f /etc/init.d/cups ] && rm -f /etc/init.d/cups
+#######################
+#Check if update would be successful
+#######################
+echo -e "Checking that the upgrade will be successfull.\n" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
+apt-get -s dist-upgrade >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
+if [ `echo $?` != 0 ]
+then
+echo -e "Apt-get is reporting an upgrade problem. Upgrade NOT carried out.\n" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
+sysvsupport
+exit
+fi
+echo -e "_________________________________________________\n" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
+#######################
+#Make sure that update-notifier-common is installed
+#######################
+UPDATEINSTALLCHECK=`dpkg -l | grep ^ii | grep -c update-notifier-common`
+
+[ $UPDATEINSTALLCHECK = 0 ] && apt-get install -y update-notifier-common
+#######################
+#Do upgrade
+#######################
+echo Upgrading the server
+echo -e "\n$HOSTNAME: `date` - Upgrading the server\n\n" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
+#apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+echo -e "\n$HOSTNAME: `date` - Upgrade completed\n\n" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
+echo -e "_________________________________________________\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
+
+#######################
+#Make sure that only the correct services are running.
+#######################
+function controlservices {
+
+#Check if the service is running.
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$SERVICENAME"_"status
+SERVICESTATUS=`echo $?`
+
+#Make sure services are stopped if they were not running before the update.
+if [ $STATUS = off ]
+then
+[ $SERVICESTATUS = 0 ] && /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$SERVICENAME"_"stop
+/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/$SERVICENAME
+fi
+#Make sure services are started if they were running before the update.
+if [ $STATUS = on ]
+then
+[ $SERVICESTATUS = 1 ] && /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$SERVICENAME"_"start
+/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/$SERVICENAME
+fi
+
+#Make sure ssh is running
+if [ $SERVICENAME = ssh ]
+then
+if [ $SSHSERVICE = yes ]
+then
+if [ `ps -e | grep -c sshd` = 0 ]
+then
+echo starting ssh >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ssh_start
+/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/ssh
+fi
+fi
+fi
+}
+
+echo -e "$HOSTNAME: `date` - Setting services to run on boot.\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
+COUNTER=0
+while [ $COUNTER -lt $ARRAY_COUNT ]
+do
+STATUS=${STATUS_ARRAY[$COUNTER]}
+SERVICENAME=${SERVICE_ARRAY[$COUNTER]}
+echo Setting $SERVICENAME $STATUS
+echo -e "$SERVICENAME $STATUS" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
+controlservices
+let COUNTER=$COUNTER+1
+done
+echo -e "_________________________________________________\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
+
+#Check sysv
+sysvsupport
+
+#######################
+#Check to see if server needs a reboot.
+#######################
+if [ -f /var/run/reboot-required ]
+then
+echo "A reboot is required."
+echo -e "$HOSTNAME: `date` - A reboot is required, rebooting now.\nA reboot has not occurred unless there is a reboot entry below this." >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
+#Add in script to record reboot time
+echo '#!/bin/bash' > /etc/rc2.d/S99recordreboot
+echo 'echo -e "$HOSTNAME: `date` - This server has now rebooted.\n" >>/opt/karoshi/logs/server_upgrades/'$LOG_DATE'' >> /etc/rc2.d/S99recordreboot
+echo 'rm -f /etc/rc2.d/S99recordreboot' >> /etc/rc2.d/S99recordreboot
+chmod 0700 /etc/rc2.d/S99recordreboot
+#Let any services restart and stabilise
+sleep 30
+#Check if kexec is installed
+if [ -e /etc/init.d/kexec ]
+then
+#Load kernel into memory before rebooting
+kexec -l /vmlinuz --initrd=/initrd.img --reuse-cmdline
+fi
+shutdown -r now 1>> /opt/karoshi/logs/server_upgrades/$LOG_DATE 2>> /opt/karoshi/logs/server_upgrades/$LOG_DATE
+exit
+fi
+exit
+

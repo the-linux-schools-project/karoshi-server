@@ -1,0 +1,23 @@
+#!/bin/bash
+#MonitorCheck
+[ ! -f /opt/karoshi/server_network/monitoring_server ] && exit
+MONITORING_SERVER=`sed -n 1,1p /opt/karoshi/server_network/monitoring_server`
+ssh -x -o PasswordAuthentication=no $MONITORING_SERVER '
+[ ! -f /opt/karoshi/server_network/mon/mon_data ] && monshow --full > /opt/karoshi/server_network/mon/mon_data
+COUNT=`grep -c -w FAIL /opt/karoshi/server_network/mon/mon_data`
+[ $COUNT != 0 ] && exit 101
+'
+STATUS=`echo $?`
+
+#Create web management warning
+ERRORALERT="Monitoring System Failure Alert"
+if [ $STATUS = 101 ]
+then
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add monitoring /cgi-bin/admin/mon_status.cgi "$ERRORALERT" webwarning2.gif
+else
+if [ -f /opt/karoshi/web_controls/warnings/messages/monitoring ]
+then
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete monitoring
+fi
+fi
+

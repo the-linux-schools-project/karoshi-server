@@ -1,0 +1,250 @@
+README for quosnmp v1.8.9
+
+--- About quosnmp ---
+
+    Quosnmp is a perl script which works with the Common UNIX Printing System 
+(CUPS) to track printer usage, enforce printing quotas, and perform other 
+useful tasks such as logging.  It works by tricking CUPS into thinking that it 
+is a printing backend.  When quosnmp is used, rather than sending print jobs 
+directly to a real backend ("socket", "lpd", "ipp" or similar), CUPS sends 
+them to quosnmp.  Quosnmp does some job management and accounting prior to 
+printing, sends the job on to the next processing step (the real CUPS backend), 
+monitors the printer while the print job is running, then does some post-
+printing job management and accounting, and then exits.  One might say that it 
+acts as a "wrapper" around a standard CUPS backend like ipp or socket.
+
+    The major limitation of quosnmp is that it only works with networked 
+printers which support either SNMP or PJL.  Most networked printers and print 
+servers support at least SNMP version 1, and PJL support is common even on 
+networked printers which do not support SNMP (e.g. the HP LaserJet 1022n).
+What quosnmp does not (currently) support is printers connected to local ports 
+such as parallel, serial, or USB ports.  Thus if you want to hook up some 
+printers to a computer and make that your print server, quosnmp won't do what 
+you want.  Instead it is useful in situations where the printers are connected 
+to a network, e.g. because they and the server are all in different rooms.
+
+    Using quosnmp is is possible to:
+
+* Just do print accounting (quotas are optional)
+* Assign and enforce per-user and per-group quotas
+* Give users and groups an unlimited quota or prevent them from printing at all
+* Assign quotas which automatically expire after a specified period of time
+* Account differently for special (e.g. color) printers
+* Have a single overall quota, per-printer quotas, or a combination of these
+* Notify users by e-mail when they are over quota
+* Block print jobs by name
+* Record more detailed equivalents of the CUPS page_log and error_log
+
+--- Requirements ---
+
+    To use quosnmp you must have:
+
+* CUPS, any relatively new version (tested with 1.2.x and 1.3.x).
+* Perl, any relatively new version (tested with v5.8.x).
+* A network printer or print server which supports SNMP or PJL.
+   (Note that in my testing I have encountered a model of printer which 
+    "supports" PJL but which does not work properly with PJL.  SNMP is 
+    more reliable and should be preferred.)
+* Net::SNMP, a Perl module for SNMP support which can be found at 
+  http://net-snmp.sourceforge.net/
+   (If you configure quosnmp to use PJL only then you don't need this.)
+* An operating system which works with the Perl POSIX module.
+   (RedHat Enterprise Linux 4 and 5 definitely work. I suspect that all UNIX-
+    like operating systems will work.)
+
+--- What's New in Version 1.8.9 ---
+
+    In version 1.8.9 the user's print quota is checked against their current 
+pagecount both before and after printing each job (or more accurately, just 
+after accounting for the job).  If quosnmp is configured to send e-mail 
+notifications when users are over quota then users will receive an over quota 
+e-mail immediately following the completion of the print job which takes them 
+over quota.
+
+    Previously, quotas were only checked at the beginning of a print job.  
+This means that users had to try (and fail) to print a job before they were 
+notified of being over quota.  Now they will be notified as soon as they are 
+over their quota.
+
+--- How it works ---
+
+    Quosnmp's accounting procedure operates by requesting the current page 
+count from a printer just before sending a print job to that printer.  After 
+the printer has finished the print job, quosnmp requests the page count again.  
+This information is then used to calculate how many pages were printed.  During 
+the printing process quosnmp reserves the printer so that no other print jobs 
+will be printed and so as to keep its print accounting accurate.
+
+    Each user's print total is stored in a text file in a directory which is 
+specified in the quosnmp script.  These files contain a single value, the 
+number of pages which that user has printed so far.  When a user tries to 
+print something, the number in this file is compared to the user's print quota. 
+When the user completes a new print job this file is updated.
+
+    Print quotas are also stored in text files.  The file which contains the 
+default quota is called "print_quota" and is stored in a separate directory 
+(though optionally it can be the same directory as the user files).  Per-user 
+and per-group quota files can be found in the same directory as "print_quota" 
+with names like <username>_user_quota or <groupname>_group_quota.  Prior to 
+printing a job, quosnmp tries to find the appropriate quota file for a 
+particular user and determines their print quota.
+
+    A user may have several quotas, and they can be absolute quotas (e.g. 500 
+pages) or adjustments (e.g. +500 pages, or 500 pages more than what they would 
+otherwise have).  For absolute quota values, "User" quota files have priority 
+over "group" quota files, which then have priority over the default quota 
+file.  The situation is different for adjustments.  All adjustments from all 
+applicable files (user, various groups, default) are summed and included in 
+the user's print quota.  Each quota file may contain multiple quotas, and each 
+quota (both absolute and adjustments) may have an expiration date associated 
+with it.
+
+    Quosnmp determines the user's current print quota and compares it to their 
+print count.  If the print count is higher than the quota, or if the quota is 
+"N" (no printing allowed), then the print job is cancelled.  Note that the 
+size of the print job is not a factor in determining whether the job will be 
+cancelled, mainly because it is not calculated until after the print job is 
+completed.  If the user has a pagecount which is one page less than their 
+quota, the job will go through.  It will also be accounted as usual, so feel 
+free to bill them for the extra pages or count those pages against their quota 
+for the following week/month/etc.
+
+--- The quosnmp Configuration File --
+
+    The quosnmp configuration file is intended to have the same format as the 
+configuration file for Samba.  It consists mostly of variable-value pairs such 
+as these:
+
+ENFORCE_QUOTA = 1
+SAVE_JOBS = 0
+
+The comments in the configuration file should explain what these options mean. 
+If the comments are unclear, please tell the developers!
+
+    The configuration file can be split into sections by using section markers, 
+which are section names within square brackets:
+
+[Printer1]
+ENFORCE_QUOTA = 1
+
+[Printer2]
+ENFORCE_QUOTA = 0
+
+    Any variables specified before the first section marker are applied to all 
+printers.  Any variables below a section marker are applied to the printer 
+with the same name (in CUPS) as the section marker immediately above.
+
+    Anything after the first hash sign ("#") on a line is considered to be a 
+comment and will be ignored.  Comments can appear in the same line as a 
+variable or divider.  Thus the following is okay:
+
+# One printer is good, one isn't, so users can print to the bad one for free
+[Printer1] # The good printer
+ENFORCE_QUOTA = 1
+
+[Printer2]
+ENFORCE_QUOTA = 0 # The bad printer
+
+*** Per-printer settings in quosnmp.conf
+
+    Any variable which is set at the top of the quosnmp.conf file will be 
+applied to any printer which uses quosnmp.  However, it is possible to set 
+variables on a per-printer basis as well.  To do this, just create a section 
+in quosnmp.conf with the same name as the printer (e.g. [TestPrinter]) and 
+put any desired variable-value pairs in this section.
+
+    For example, sometimes it makes sense to have some printers "count" more 
+than others.  More toner (or more expensive toner) may be used in printing a 
+color page than a black-and-white page, for example.  Quosnmp handles this 
+with a variable called PAGE_MULTIPLIER which can be set in the quosnmp.conf 
+file.  Set this value higher than "1" for color printers or printers with 
+special paper or what have you.  For a printer called "ColorPrinter" the 
+quosnmp.conf file might include a few lines like this:
+
+[ColorPrinter]
+PAGE_MULTIPLIER = 3
+
+*** Notifying users via e-mail if they are over quota
+
+    Quosnmp supports two methods of notifying users when they try to print 
+something despite being over quota.  One method involves sending a local e-mail 
+on the print server to the user with the same username as the one who requested 
+the print job.  This probably will not be useful most of the time, but it was 
+very easy to implement.  To enable this feature, simply set OVER_QUOTA_NOTIFY 
+to "1".
+
+    The more advanced method of notifying users is to send an e-mail to an 
+Internet e-mail address.  To turn this on you must set OVER_QUOTA_NOTIFY to 
+"2".  In addition, you should create an [EMAIL_LIST] section in quosnmp.conf . 
+The format of this section is as follows:
+
+alice:alice.a.aaronson@example.com
+bob:bob.b.babble@hotmail.com
+carol:cc6789@gmail.com
+dan:dantheman@example.com
+eva:eva@example.com
+
+    This is fairly straightforward.  Put one username per line followed by a 
+colon and the user's e-mail address.  Don't put any spaces or tabs or other 
+separators on any of the lines (though quosnmp should handle excess spaces).
+
+    In the case where many users have accounts of the form username@server 
+where their e-mail username matches their printing username, you might want to 
+use the following syntax:
+
+*:example.com
+
+This "wildcard" syntax means to take all usernames which do not have a specific 
+match in the file and set their e-mail address to username@whatever follows the 
+colon.  Thus the following does the same thing as the example above:
+
+*:example.com
+bob:bb12345@hotmail.com
+carol:cc6789@gmail.com
+
+    In case you're wondering, it does not matter on which line the wildcard 
+appears.  Bob and Carol will still get their warning e-mails.
+
+*** Log levels
+
+    Logging is fairly simple.  Every message sent to the logging function 
+"reportStatus" sends a "severity code" as well.  This code is just a number 
+from zero to three.  The error levels are somewhat arbitrary and are described 
+as follows:
+
+Level 0: FATAL_ERROR -- quosnmp will fail to print the print job
+Level 1: ERROR -- something bad happened but the print job went through
+Level 2: INFO -- anything notable but harmless (e.g. retrieving a quota)
+Level 3: DEBUG -- information which would only be useful to a programmer
+
+    When you set the variable DEBUG_LEVEL in quosnmp to any numeric value it 
+will cause all messages with a severity code lower than or equal to that value 
+to be printed to the system log.  In addition, a code of "3" means that some 
+extra information will be dumped to the error log in the case of a crash.
+
+--- Some general comments on the structure of the quosnmp "source code" ---
+
+     The main body of this code (the stuff in "MAIN") does not need to loop or 
+turn back on itself, although there are some smaller loops within it, in 
+particular the printer monitoring loop. For the most part it is just a series 
+of procedures which perl runs one after the other. Each procedure either runs 
+to completion or calls a subfunction named "cleanExit" to quit (this is the 
+only acceptable way to leave the main body of the script). Note however that 
+by setting BACKEND_ATTEMPTS to a negative number _and_ setting the two 
+STALL_TIMEOUT variables to zero, the function can literally never exit if the 
+backend insists on failing (so don't do that!)
+
+    The MAIN part of the script calls several subfunctions, some of which may 
+be found in the quosnmp script, others of which are found in the module 
+Quosnmp.pm.  These subfunctions do not call "exit" or "die" or "cleanExit". 
+They all terminate by returning some value. Thus they always return to the 
+main loop which often (though not always) checks for, and may exit on, return 
+values which signify an error.
+
+    Subfunctions which query the state of something (a printer, quota, or 
+accounting total) return either the queried value or "undef". Functions which 
+work with files return "1" on success and "0" on failure (breaking with shell 
+conventions). Functions which fall in the category of "match argument against 
+a list" also return "1" on a match or "0" if there is no match. The accounting 
+functions return the number of pages accounted or "undef".
+

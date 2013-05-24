@@ -1,0 +1,275 @@
+#!/bin/bash
+#Copyright (C) 2007  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+############################
+#Language
+############################
+LANGCHOICE=englishuk
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/asset_register ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/client/asset_register
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/client_boot_controls_cgi
+then
+echo `date`: client_boot_controls - No Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/client_boot_controls_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/client_boot_controls.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $client_boot_controls_cgi'check' ]
+then
+echo `date`: client_boot_controls - Incorrect Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/client_boot_controls_cgi
+then
+echo `date`: client_boot_controls - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/tech_checksums/client_boot_controls_cgi
+MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/client_boot_controls.cgi | cut -d' ' -f1`
+[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+if [ $MD5SUM2'check' != $client_boot_controls_cgi'check' ]
+then
+echo `date`: client_boot_controls - Incorrect Tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 1 ]
+then
+echo `date`: client_boot_controls - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo $* | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | cut -s -d: -f3`
+LOCATION=`echo $* | cut -s -d: -f4`
+SEARCH=`echo $* | cut -s -d: -f5`
+MOBILE=`echo $* | cut -s -d: -f6`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: client_boot_controls - Not called by client_boot_controls.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: client_boot_controls - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: client_boot_controls - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $LOCATION'null' = null ]
+then
+echo `date`: client_boot_controls - Blank asset type by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: client_boot_controls - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $MOBILE = no ]
+then
+ICON1=/images/submenus/client/install.png
+ICON2=/images/submenus/client/memtest.png
+ICON3=/images/submenus/client/normal.png
+ICON4=/images/submenus/client/wakeup.png
+else
+ICON1=/images/submenus/client/installm.png
+ICON2=/images/submenus/client/memtestm.png
+ICON3=/images/submenus/client/normalm.png
+ICON4=/images/submenus/client/wakeupm.png
+fi
+
+if [ ! -d /opt/karoshi/asset_register/network_install/ ]
+then
+mkdir -p /opt/karoshi/asset_register/network_install/install
+mkdir -p /opt/karoshi/asset_register/network_install/memtest
+chmod -R 0750 /opt/karoshi/asset_register/network_install/
+chown -R root.apache_karoshi /opt/karoshi/asset_register/network_install/
+fi
+
+TABLECLASS=standard
+[ $MOBILE = yes ] && TABLECLASS=mobilestandard
+
+if [ $SEARCH'null' = null ]
+then
+if [ -d /opt/karoshi/asset_register/locations/$LOCATION/ ]
+then
+if [ `ls -1 /opt/karoshi/asset_register/locations/$LOCATION/ | wc -l` -gt 0 ]
+then
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<tbody><tr><td style="width: 60px;"><b>'$ASSETNUMBERMSG'</b></td>'
+
+if [ $MOBILE = no ]
+then
+echo '<td style="width: 120px;"><b>'$MACADDRESS'</b></td><td style="width: 120px;"><b>'$TCPIP'</b></td>'
+fi
+echo "<td><b>$BOOTSTATUSMSG</b></td></tr>"
+for ASSETS in "/opt/karoshi/asset_register/locations/$LOCATION/"*
+do
+ASSET=`basename $ASSETS`
+source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
+
+#Check current boot status
+if [ -f /opt/karoshi/asset_register/network_install/install/$ASSET ]
+then
+BOOTSTATUS=install
+else
+if [ -f /opt/karoshi/asset_register/network_install/memtest/$ASSET ]
+then
+BOOTSTATUS=memtest
+else
+BOOTSTATUS=normal
+fi
+fi
+
+if [ $ASSETTYPE = 1 ] || [ $ASSETTYPE = 2 ] || [ $ASSETTYPE = 3 ] || [ $ASSETTYPE = 4 ] || [ $ASSETTYPE = 5 ] || [ $ASSETTYPE = 6 ]
+then
+if [ $MOBILE = no ]
+then
+if [ $BOOTSTATUS = install ]
+then
+echo '<tr><td><FONT COLOR="#11BE26"><b>'$ASSET'</b></font></td><td><FONT COLOR="#11BE26"><b>'$MAC1'</b></font></td><td><FONT COLOR="#11BE26"><b>'$TCPIP1'</b></font></td>'
+else
+echo '<tr><td>'$ASSET'</td><td>'$MAC1'</td><td>'$TCPIP1'</td>'
+fi
+else
+if [ $BOOTSTATUS = install ]
+then
+echo '<tr><td><FONT COLOR="#11BE26"><b>'$ASSET'</b></font></td>'
+else
+echo '<tr><td>'$ASSET'</td>'
+fi
+fi
+
+if [ $BOOTSTATUS = normal ]
+then
+echo '<td style="width: 100px;">'$NORMALBOOT'</td><td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_install_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON1'" value=""><span>'$NETWORKINSTALLMSG'</span></a></td>'
+fi
+
+if [ $BOOTSTATUS = memtest ]
+then
+echo '<td style="width: 100px;">'$MEMTEST'</td><td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_install_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON1'" value=""><span>'$NETWORKINSTALLMSG'</span></a></td><td style="width: 20px;"></td>
+
+<td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_normal_ASSET_'$ASSET'_TCPIP_'$TCPIP'_MACADDRESS_'$MACADDRESS'_" type="image" class="images" src="'$ICON3'" value=""><span>'$NORMALBOOT'</span></a></td>'
+fi
+
+if [ $BOOTSTATUS = install ]
+then
+echo '<td style="width: 100px;"><FONT COLOR="#11BE26"><b>'$NETWORKINSTALLMSG'</b></font></td><td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_normal_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON3'" value=""><span>'$NORMALBOOT'</span></a></td>'
+fi
+
+echo '<td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_wakeonlan_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON4'" value=""><span>'$WAKEONLANMSG'</span></a></td></tr>'
+fi
+done
+echo '</tbody></table><br>'
+else
+echo $NO_ASSETSMSG'<br><br>'
+fi
+else
+echo $NO_ASSETSMSG'<br><br>'
+fi
+
+else
+
+#Search
+
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<tbody><tr><td style="width: 60px;"><b>'$ASSETNUMBERMSG'</b></td>'
+
+if [ $MOBILE = no ]
+then
+echo '<td style="width: 120px;"><b>'$MACADDRESS'</b></td><td style="width: 120px;"><b>'$TCPIP'</b></td>'
+fi
+echo "<td><b>$BOOTSTATUSMSG</b></td></tr>"
+
+for ASSETS in `grep -l -R $SEARCH /opt/karoshi/asset_register/locations/*`
+do
+ASSET=`basename $ASSETS`
+source $ASSETS
+LOCATION=`echo $ASSETS | cut -d"/" -f6`
+
+if [ $ASSETTYPE = 1 ] || [ $ASSETTYPE = 2 ] || [ $ASSETTYPE = 3 ] || [ $ASSETTYPE = 4 ] || [ $ASSETTYPE = 5 ] || [ $ASSETTYPE = 6 ]
+then
+if [ $MOBILE = no ]
+then
+echo '<tr><td>'$ASSET'</td><td>'$MAC1'</td><td>'$TCPIP1'</td>'
+else
+echo '<tr><td>'$ASSET'</td>'
+fi
+#Check current boot status
+if [ -f /opt/karoshi/asset_register/network_install/install/$ASSET ]
+then
+BOOTSTATUS=install
+else
+if [ -f /opt/karoshi/asset_register/network_install/memtest/$ASSET ]
+then
+BOOTSTATUS=memtest
+else
+BOOTSTATUS=normal
+fi
+fi
+
+if [ $BOOTSTATUS = normal ]
+then
+echo '<td style="width: 100px;">'$NORMALBOOT'</td><td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_install_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON1'" value=""><span>'$NETWORKINSTALLMSG'</span></a></td>'
+fi
+
+if [ $BOOTSTATUS = memtest ]
+then
+echo '<td style="width: 100px;">'$MEMTEST'</td><td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_install_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON1'" value=""><span>'$NETWORKINSTALLMSG'</span></a></td><td style="width: 20px;"></td>
+
+<td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_normal_ASSET_'$ASSET'_TCPIP_'$TCPIP'_MACADDRESS_'$MACADDRESS'_" type="image" class="images" src="'$ICON3'" value=""><span>'$NORMALBOOT'</span></a></td>'
+fi
+
+if [ $BOOTSTATUS = install ]
+then
+echo '<td style="width: 100px;">'$NETWORKINSTALLMSG'</td><td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_normal_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON3'" value=""><span>'$NORMALBOOT'</span></a></td>'
+fi
+
+echo '<td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_wakeonlan_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON4'" value=""><span>'$WAKEONLANMSG'</span></a></td></tr>'
+fi
+done
+echo '</tbody></table><br>'
+
+
+fi
+
+exit

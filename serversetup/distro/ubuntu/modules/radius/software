@@ -1,0 +1,46 @@
+#!/bin/bash
+#softwareinstall
+#Check for software
+INSTALL_DEPS=no
+INSTALLRADIUS=no
+INSTALLRADIUSLDAP=no
+
+dpkg -S freeradius 1>/dev/null
+if [ `echo $?` != 0 ]
+then
+INSTALLRADIUS=yes
+INSTALL_DEPS=yes
+fi
+
+dpkg -S freeradius-ldap 1>/dev/null
+if [ `echo $?` != 0 ]
+then
+INSTALLRADIUSLDAP=yes
+INSTALL_DEPS=yes
+fi
+
+if [ $INSTALL_DEPS = yes ]
+then
+echo "<li>"Updating repository list"</li><br>"
+echo
+apt-get update
+fi
+
+if [ $INSTALLRADIUS = yes ]
+then
+echo "<li>"Installing freeradius"</li><br>"
+echo 
+apt-get install -y freeradius
+echo
+fi
+
+if [ $INSTALLRADIUSLDAP = yes ]
+then
+echo "<li>"Installing freeradius-ldap"</li><br>"
+echo 
+apt-get install -y freeradius-ldap
+echo
+fi
+
+cp -f /opt/karoshi/serversetup/distro/ubuntu/modules/radius/freeradius/modules/ldap /etc/freeradius/modules/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/modules/radius/freeradius/sites-available/default /etc/freeradius/sites-available/

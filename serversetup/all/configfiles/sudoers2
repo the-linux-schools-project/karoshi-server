@@ -1,0 +1,17 @@
+# sudoers file.
+##########################
+# User alias specification
+##########################
+User_Alias ROOTNOPASSWD = karoshi
+User_Alias ROOTNOPASSWD2 = apache
+##########################
+# Cmnd alias specification
+##########################
+Cmnd_Alias KAROSHIUTILS = /opt/karoshi/karoshimanagement/
+Cmnd_Alias KAROSHI_WEB_UTILS = /opt/karoshi/web_controls/exec/
+##########################
+# User privilege specification
+##########################
+root	ALL=(ALL) ALL
+ROOTNOPASSWD ALL= NOPASSWD: KAROSHIUTILS
+ROOTNOPASSWD2 ALL= NOPASSWD: KAROSHI_WEB_UTILS

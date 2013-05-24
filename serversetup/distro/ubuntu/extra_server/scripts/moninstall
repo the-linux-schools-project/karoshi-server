@@ -1,0 +1,8 @@
+#!/bin/bash
+#softwareinstall
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/extra_server/software
+echo installing $MONSOFTWARE >> /opt/karoshi/serversetup/install_log
+
+apt-get install -y $MONSOFTWARE
+

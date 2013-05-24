@@ -1,0 +1,16 @@
+#Language file for setup_sslbridge
+TITLE="Setup Home Access"
+HELPMSG1="This will allow users to access their files from home. Access is via a web browser and allows users to view, upload and download files to their home areas."
+ACCESSMSG="smbwebclient can be accessed from the following address"
+FIREWALLHELP="You will need to add a port forwarding rule to your firewall for users to be able to access smbwebclient over the internet."
+COMPLETEDMSG="Setup smbwebclient completed."
+SHOREWALLMSG="Modifying shorewall rules to allow port 50000."
+RESTARTSWMSG="Restarting shorewall"
+SMBPERMMSG="Setting samba mount permissions to allow non root mount."
+VIRTUALSERVERMSG="Configuring apache to run a virtual server on port 50000."
+RESTARTAPACHEMSG="Restarting apache."
+EXTRACTMSG="Extracting files and setting permissions."
+ERRORMSG1="The server name cannot be blank."
+ROLE="Home Access Server"
+ROLE2="Apache Web Server"
+

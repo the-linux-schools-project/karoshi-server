@@ -1,0 +1,1822 @@
+#!/bin/bash
+#Copyright (C) 2009 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/file_manager_cgi
+then
+echo `date`: file_manager - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/file_manager_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/file_manager.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $file_manager_cgi'check' ]
+then
+echo `date`: file_manager - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: file_manager - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._,:\-+/%'`
+#echo $DATA"<br>"
+if [ $DATA'null' = null ]
+then
+echo `date`: file_manager - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+MOBILE=`echo "$DATA" | cut -s -d: -f4`
+SERVER=`echo "$DATA" | cut -s -d: -f5`
+SERVERTYPE=`echo "$DATA" | cut -s -d: -f6`
+SERVERMASTER=`echo "$DATA" | cut -s -d: -f7`
+LOCATION=`echo "$DATA" | cut -s -d: -f8`
+FILENAME=`echo "$DATA" | cut -s -d: -f9`
+ACTION=`echo "$DATA" | cut -s -d: -f10`
+PERMISSIONS=`echo "$DATA" | cut -s -d: -f11`
+ITEMMOVE=`echo "$DATA" | cut -s -d: -f14 | sed "s/_/Z%%%%%Z/g"`
+NEWFOLDER=`echo "$DATA" | cut -s -d: -f15`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: file_manager - Not called by file_manager.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: file_manager - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: file_manager - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $LOCATION'null' = null ]
+then
+LOCATION=""
+fi
+
+if [ $SERVER'null' = null ]
+then
+SERVER=notset
+fi
+
+if [ $ACTION'null' = null ]
+then
+ACTION=notset
+fi
+
+if [ $ACTION != ENTER ] && [ $ACTION != DELETE ] && [ $ACTION != REALLYDELETE ] && [ $ACTION != SETPERMS ] && [ $ACTION != REALLYSETPERMS ] && [ $ACTION != MOVE ] && [ $ACTION != REALLYMOVE ] && [ $ACTION != REALLYCOPY ] && [ $ACTION != CANCELCOPY ] && [ $ACTION != RENAME ] && [ $ACTION != REALLYRENAME ] && [ $ACTION != EDIT ] && [ $ACTION != REALLYEDIT ] && [ $ACTION != CREATEDIR ] && [ $ACTION != REALLYCREATEDIR ] && [ $ACTION != CREATEFILE ] && [ $ACTION != REALLYCREATEFILE ] && [ $ACTION != RESTORE ] && [ $ACTION != REALLYRESTORE ] && [ $ACTION != notset ]
+then
+echo `date`: file_manager - incorrect action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: file_manager - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/file/file_manager ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/file/file_manager
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+TABLECLASS=standard
+[ $MOBILE = yes ] && TABLECLASS=mobilestandard
+
+#Show server choice
+if [ $SERVER = notset ]
+then
+
+SERVERCOUNTER=1
+ROWCOUNT=6
+[ $MOBILE = yes ] && ROWCOUNT=3
+WIDTH=90
+[ $MOBILE = yes ] && WIDTH=70
+SERVERICON="/images/submenus/system/computer.png"
+SERVERICON2="/images/submenus/system/all_computers.png"
+if [ -f /opt/karoshi/server_network/info ]
+then
+source /opt/karoshi/server_network/info
+LOCATION_NAME="- $LOCATION_NAME"
+fi
+echo '<br><br><b>'$MYSERVERSMSG' '$LOCATION_NAME'</b><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+
+for KAROSHI_SERVER in /opt/karoshi/server_network/servers/*
+do
+KAROSHI_SERVER=`basename "$KAROSHI_SERVER"`
+
+echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_SERVER_'$KAROSHI_SERVER'_ACTION_ENTER_" type="image" class="images" src="/images/submenus/file/server.png" value=""><span>'$KAROSHI_SERVER'<br><br>'
+cat /opt/karoshi/server_network/servers/$KAROSHI_SERVER/* | sed '/<a href/c'"&nbsp"
+echo '</span></a><br>'$KAROSHI_SERVER'</td>'
+
+[ $SERVERCOUNTER = $ROWCOUNT ] && echo '</tr><tr>'
+let SERVERCOUNTER=$SERVERCOUNTER+1
+[ $SERVERCOUNTER -gt $ROWCOUNT ] && SERVERCOUNTER=1
+done
+echo '</tr></tbody></table><br>'
+
+
+#Show list of federated servers
+if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
+then
+if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
+then
+for FEDERATED_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
+do
+FEDERATED_SERVER=`basename $FEDERATED_SERVERS`
+if [ -f /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/info ]
+then
+source /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/info
+LOCATION_NAME="- $LOCATION_NAME"
+fi
+echo '<b>'$FEDERATEDSERVERSMSG' '$LOCATION_NAME'</b><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_federated_SERVER_'$FEDERATED_SERVER'_ACTION_ENTER_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$FEDERATED_SERVER'<br><br>'
+cat /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/$FEDERATED_SERVER/* | sed '/<a href/c'"&nbsp"
+echo '</span></a><br>'$FEDERATED_SERVER'</td>'
+SERVERCOUNTER2=2
+for FEDERATED_SLAVE_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/*
+do
+FEDERATED_SLAVE_SERVER=`basename $FEDERATED_SLAVE_SERVERS`
+
+if [ $FEDERATED_SLAVE_SERVER != $FEDERATED_SERVER ]
+then
+echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_federatedslave_SERVERMASTER_'$FEDERATED_SERVER'_SERVER_'$FEDERATED_SLAVE_SERVER'_ACTION_ENTER_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$FEDERATED_SLAVE_SERVER'<br><br>'
+cat /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/$FEDERATED_SLAVE_SERVER/* | sed '/<a href/c'"&nbsp"
+echo '</span></a><br>'$FEDERATED_SLAVE_SERVER'</td>'
+[ $SERVERCOUNTER2 = $ROWCOUNT ] && echo '</tr><tr>'
+let SERVERCOUNTER2=$SERVERCOUNTER2+1
+[ $SERVERCOUNTER2 -gt $ROWCOUNT ] && SERVERCOUNTER2=1
+fi
+done
+echo '</tr></tbody></table><br>'
+done
+fi
+fi
+
+
+
+
+fi
+
+#This list is used to declare areas that cannot me deleted or moved
+LOCATION_LIST="/ /bin /boot /dev /etc /media /mnt /home /home/applications /home/itadminshare /home/staffshare /home/subjects /home/officeshare /home/users /home/users/guests /home/users/exams /home/users/profileuser /home/users/nonteachingstaff /home/users/studentstaff /home/users/staff /home/users/students /home/users/itadminstaff /home/users/officestaff /home/users/techstaff /initrd /lib /root /opt /opt/karoshi /opt/karoshi/serversetup /opt/karoshi/karoshi_user /usr /usr/bin /proc /sbin /sys /var /var/www /var/www/html /var/www/html_karoshi /var/www/cgi-bin /var/www/cgi-bin_karoshi"
+#This list is used to recursivly declare areas that cannot me deleted or moved
+LOCATION_LIST2=( /opt/karoshi/logs /opt/karoshi/web_management /var/www/cgi-bin_karoshi )
+
+#icons
+ICON2=/images/submenus/file/show_info.png
+ICON3=/images/submenus/file/rename.png
+ICON4=/images/submenus/file/copy.png
+ICON5=/images/submenus/file/delete.png
+ICON6=/images/submenus/file/up.png
+ICON7=/images/submenus/file/home.png
+ICON8=/images/submenus/file/stop.png
+ICON9=/images/submenus/file/move.png
+ICON10=/images/submenus/file/edit.png
+ICON11=/images/submenus/file/newfolder.png
+ICON12=/images/submenus/file/restore.png
+ICON13=/images/submenus/file/reload.png
+ICON14=/images/submenus/file/create.png
+
+function check_recursive {
+ENTER=yes
+[ `echo $LOCATION_LIST | grep -c -w "$FILE"` -gt 0 ] && ENTER=no
+COUNTER=0
+LOCATIONLIST2COUNT=${#LOCATION_LIST2[@]}
+while [ $COUNTER -lt $LOCATIONLIST2COUNT ]
+do
+LOCATION_ENTRY=${LOCATION_LIST2[$COUNTER]}
+[ `echo $FILE | grep -c $LOCATION_ENTRY` -gt 0 ] && ENTER=no
+let COUNTER=$COUNTER+1
+done
+}
+
+function show_directory {
+
+if [ "$LOCATION""null" != null ]
+then
+convert_special_chars
+LOCATION=`echo "$LOCATION" | sed 's/+/ /g'`
+LOCATIONFOLDER=`basename "$LOCATION"`
+LASTLOCATION=`echo "$LOCATION" | sed "s/\/$LOCATIONFOLDER$//g" | sed "s/_/Z%%%%%Z/g"`
+LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
+fi
+
+echo '<b>'$LOCATION'</b>'
+
+if [ "$ITEMMOVE"'null' != null ]
+then
+convert_special_chars2
+ITEMMOVE2=`echo $ITEMMOVE | sed "s/Z%%%%%Z/_/g"`
+
+#Check to see that item is not on the protected list
+MOVECHECK=yes
+#Check that file is not in a banned path
+if [ `echo ${LOCATION_LIST[@]:0} | grep -c -w "$ITEMMOVE2"` -gt 0 ]
+then
+MOVECHECK=no
+fi
+for PATHCHECK in `echo ${LOCATION_LIST2[@]:0}`
+do
+if [ `echo "$ITEMMOVE2" | grep -c $PATHCHECK` -gt 0 ]
+then
+MOVECHECK=no
+fi
+done
+
+if [ $MOVECHECK = yes ]
+then
+echo '<br><input name="_ITEMMOVE_" value="'$ITEMMOVE'" type="hidden">'
+
+echo ''$ITEMMOVE2' - '$MOVEMSG2' <input type="image" src="'$ICON9'" name="_ACTION_REALLYMOVE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_ITEMMOVE_'$ITEMMOVE'_LOCATION_'$LOCATION2'_" value="">'
+echo ''$COPYMSG2' <input type="image" src="'$ICON4'" name="_ACTION_REALLYCOPY_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_ITEMMOVE_'$ITEMMOVE'_LOCATION_'$LOCATION2'_" value="">'
+echo ''$CANCELMSG' <input type="image" src="'$ICON8'" name="_ACTION_CANCELCOPY_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" value="">'
+else
+echo "<br><br>"$ERRORMSG11"<br>"
+fi
+fi
+
+echo '<br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><col width=22><col width=22><col width=22><col width=22><col width=22><tbody>
+<tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_" type="image" class="images" src="'$ICON7'" value=""><span>'$TOPDIRMSG'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LASTLOCATION'_" type="image" class="images" src="'$ICON6'" value=""><span>'$UPMSG'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_CREATEDIR_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" type="image" class="images" src="'$ICON11'" value=""><span>'$NEWDIRMSG'</span></a></td>
+<td><a class="info" href="javascript:void(0)"><input name="_ACTION_CREATEFILE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" type="image" class="images" src="'$ICON14'" value=""><span>'$NEWFILEMSG'</span></a></td>
+<td><a class="info" href="javascript:void(0)"><input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" type="image" class="images" src="'$ICON13'" value=""><span>'$RELOADMSG'</span></a></td>
+</tr>
+'
+
+#Log Browse Actions
+echo `date`: file_manager - browsing  "$LOCATION" on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+if [ $SERVER = $HOSTNAME ]
+then
+if [ `ls -1 -a "$LOCATION"/ | wc -l` -gt 2 ]
+then
+GLOBIGNORE=yes
+for FILE in "$LOCATION"/*
+do
+FILENAME=`basename "$FILE"`
+#FILEINFO=`ls -l -h -d "$FILE"`
+#PERMS=`echo $FILEINFO | cut -d" " -f1`
+#OWNER=`echo $FILEINFO | cut -d" " -f3-4`
+#SIZE=`echo $FILEINFO | cut -d" " -f5`
+#LASTMOD=`echo $FILEINFO | cut -d" " -f6-8`
+FILE2=`echo "$FILE" | sed "s/_/Z%%%%%Z/g"`
+LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
+
+ICON1=/images/submenus/file/file.png
+FILEACTION=DOWNLOAD
+if [ -d "$FILE" ]
+then
+ICON1=/images/submenus/file/folder.png
+FILEACTION=ENTER
+fi
+echo '<tr>'
+
+
+echo '
+<td><a class="info" href="javascript:void(0)"><input name="_ACTION_RENAME_SERVERTYPE_'$SERVERTYPE'_SERVER_'$SERVER'_LOCATION_'$FILE2'_" type="image" class="images" src="'$ICON3'" value=""><span>'$RENAMEMSG'<br>'$FILENAME'</span></a></td>
+<td><a class="info" href="javascript:void(0)"><input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVER_'$HOSTNAME'_ITEMMOVE_'$FILE2'_LOCATION_'$LOCATION2'_" type="image" class="images" src="'$ICON4'" value=""><span>'$MOVEMSG'<br>'$FILENAME'</span></a></td>
+<td><a class="info" href="javascript:void(0)"><input name="_ACTION_DELETE_SERVERTYPE_'$SERVERTYPE'_SERVER_'$HOSTNAME'_LOCATION_'$FILE2'_" type="image" class="images" src="'$ICON5'" value=""><span>'$DELETEMSG'<br>'$FILENAME'</span></a></td>
+'
+
+
+echo '<td><a class="info" href="javascript:void(0)"><input name="_ACTION_SETPERMS_SERVERTYPE_'$SERVERTYPE'_SERVER_'$HOSTNAME'_LOCATION_'$FILE2'_" type="image" class="images" src="'$ICON2'" value=""><span>'$PROPERTIESMSG'<br>'$FILENAME'</span></a></td><td>'
+
+
+if [ $FILEACTION = ENTER ]
+then
+echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVER_'$HOSTNAME'_LOCATION_'$FILE2'_" type="image" class="images" src="'$ICON1'" value=""><span>Enter<br>'$FILENAME'<br></span></a>'
+else
+echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_EDIT_SERVERTYPE_'$SERVERTYPE'_SERVER_'$HOSTNAME'_LOCATION_'$FILE2'_" type="image" class="images" src="'$ICON10'" value=""><span>'$EDITMSG'<br>'$FILENAME'</span></a>'
+fi
+echo '</td><td>'$FILENAME'</td></tr>'
+done
+fi
+fi
+if [ $SERVERTYPE = network ] && [ $SERVER != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+
+if [ `ls -1 -a "'$LOCATION'"/ | wc -l` -gt 2 ]
+then
+GLOBIGNORE=yes
+SHOWRESTORE=no
+if [ `echo '$LOCATION' | grep -c /home/backups` -gt 0 ]
+then
+if [ `echo '$LOCATION' | sed "s/\//\n/g" | wc -l` -gt 5 ]
+then
+SHOWRESTORE=yes
+fi
+fi
+
+for FILE in "'$LOCATION'"/*
+do
+FILENAME=`basename "$FILE"`
+#FILEINFO=`ls -l -h -d "$FILE"`
+#PERMS=`echo $FILEINFO | cut -d" " -f1`
+#OWNER=`echo $FILEINFO | cut -d" " -f3-4`
+#SIZE=`echo $FILEINFO | cut -d" " -f5`
+#LASTMOD=`echo $FILEINFO | cut -d" " -f6-8`
+FILE2=`echo "$FILE" | sed "s/_/Z%%%%%Z/g"`
+LOCATION2=`echo "'$LOCATION'" | sed "s/_/Z%%%%%Z/g"`
+
+ICON1=/images/submenus/file/file.png
+FILEACTION=DOWNLOAD
+if [ -d "$FILE" ]
+then
+ICON1=/images/submenus/file/folder.png
+FILEACTION=ENTER
+fi
+echo "<tr>"
+
+echo "<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_RENAME_SERVERTYPE_'$SERVERTYPE'_SERVER_'$SERVER'"_"LOCATION_$FILE2"_"\" type=\"image\" class=\"images\" src=\"'$ICON3'\" value=\"\"><span>'$RENAMEMSG'<br>$FILENAME</span></a></td>
+<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVER_'$SERVER'"_"ITEMMOVE_$FILE2"_"LOCATION_$LOCATION2"_"\" type=\"image\" class=\"images\" src=\"'$ICON4'\" value=\"'$SERVER'_MOVE_$FILE\"><span>'$MOVEMSG'<br>$FILENAME</span></a></td>
+<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_DELETE_SERVERTYPE_'$SERVERTYPE'_SERVER_'$SERVER'"_"LOCATION_$FILE2"_"\" type=\"image\" class=\"images\" src=\"'$ICON5'\" value=\"\"><span>'$DELETEMSG'<br>$FILENAME</span></a></td>"
+
+
+echo "<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_SETPERMS_SERVERTYPE_'$SERVERTYPE'_SERVER_'$SERVER'"_"LOCATION_$FILE2"_"\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>'$PROPERTIESMSG'<br>$FILENAME</span></a></td><td>"
+
+if [ $FILEACTION = ENTER ]
+then
+echo "<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVER_'$SERVER'_LOCATION_$FILE2"_"\" type="image" class=\"images\" src=\"$ICON1\" value=\"\"><span>Enter<br>$FILENAME</span></a>"
+else
+echo "<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_EDIT_SERVERTYPE_'$SERVERTYPE'_SERVER_'$SERVER'_LOCATION_$FILE2"_"\" type="image" class=\"images\" src=\"'$ICON10'\" value=\"\"><span>'$EDITMSG'<br>$FILENAME</span></a>"
+fi
+[ $SHOWRESTORE = yes ] && echo "</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_RESTORE_SERVERTYPE_'$SERVERTYPE'_SERVER_'$SERVER'_LOCATION_$FILE2"_"\" type="image" class=\"images\" src=\"'$ICON12'\" value=\"\"><span>Restore<br>$FILENAME</span></a>"
+
+echo "</td><td>$FILENAME</td></tr>"
+done
+fi
+'
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVER' '\''
+
+if [ `ls -1 -a "'$LOCATION'"/ | wc -l` -gt 2 ]
+then
+GLOBIGNORE=yes
+SHOWRESTORE=no
+if [ `echo '$LOCATION' | grep -c /home/backups` -gt 0 ]
+then
+if [ `echo '$LOCATION' | sed "s/\//\n/g" | wc -l` -gt 5 ]
+then
+SHOWRESTORE=yes
+fi
+fi
+
+for FILE in "'$LOCATION'"/*
+do
+FILENAME=`basename "$FILE"`
+#FILEINFO=`ls -l -h -d "$FILE"`
+#PERMS=`echo $FILEINFO | cut -d" " -f1`
+#OWNER=`echo $FILEINFO | cut -d" " -f3-4`
+#SIZE=`echo $FILEINFO | cut -d" " -f5`
+#LASTMOD=`echo $FILEINFO | cut -d" " -f6-8`
+FILE2=`echo "$FILE" | sed "s/_/Z%%%%%Z/g"`
+LOCATION2=`echo "'$LOCATION'" | sed "s/_/Z%%%%%Z/g"`
+
+ICON1=/images/submenus/file/file.png
+FILEACTION=DOWNLOAD
+if [ -d "$FILE" ]
+then
+ICON1=/images/submenus/file/folder.png
+FILEACTION=ENTER
+fi
+echo "<tr>"
+
+echo "<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_RENAME_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'"_"LOCATION_$FILE2"_"\" type=\"image\" class=\"images\" src=\"'$ICON3'\" value=\"\"><span>'$RENAMEMSG'<br>$FILENAME</span></a></td>
+<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'"_"ITEMMOVE_$FILE2"_"LOCATION_$LOCATION2"_"\" type=\"image\" class=\"images\" src=\"'$ICON4'\" value=\"'$SERVER'_MOVE_$FILE\"><span>'$MOVEMSG'<br>$FILENAME</span></a></td>
+<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_DELETE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'"_"LOCATION_$FILE2"_"\" type=\"image\" class=\"images\" src=\"'$ICON5'\" value=\"\"><span>'$DELETEMSG'<br>$FILENAME</span></a></td>"
+
+echo "<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_SETPERMS_SERVERTYPE_'$SERVERTYPE'_SERVER_'$SERVER'"_"LOCATION_$FILE2"_"\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>'$PROPERTIESMSG'<br>$FILENAME</span></a></td><td>"
+
+if [ $FILEACTION = ENTER ]
+then
+echo "<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVER_'$SERVER'_LOCATION_$FILE2"_"\" type="image" class=\"images\" src=\"$ICON1\" value=\"\"><span>Enter<br>$FILENAME</span></a>"
+else
+echo "<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_EDIT_SERVERTYPE_'$SERVERTYPE'_SERVER_'$SERVER'_LOCATION_$FILE2"_"\" type="image" class=\"images\" src=\"'$ICON10'\" value=\"\"><span>'$EDITMSG'<br>$FILENAME</span></a>"
+fi
+[ $SHOWRESTORE = yes ] && echo "</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_RESTORE_SERVERTYPE_'$SERVERTYPE'_SERVER_'$SERVER'_LOCATION_$FILE2"_"\" type="image" class=\"images\" src=\"'$ICON12'\" value=\"\"><span>Restore<br>$FILENAME</span></a>"
+echo "</td><td>$FILENAME</td></tr>"
+done
+fi
+'\''
+'
+fi
+echo '</tbody></table>'
+}
+
+function convert_special_chars {
+LOCATION=`echo "$LOCATION" |  sed 's/+/ /g' | sed 's/%21/!/g' | sed 's/%25/%/g' | sed 's/%5E/^/g' | sed 's/%28/(/g' | sed 's/%29/)/g' | sed 's/%7E/~/g' | sed 's/%23/#/g' | sed 's/%40/@/g' | sed 's/%7B/{/g'  | sed 's/%7D/}/g' | sed 's/%3E/>/g' | sed 's/%3C/</g' | sed 's/%C2%AC/¬/g' | sed 's/%7C/|/g' | sed 's/%2C/,/g' | sed 's/%3B/;/g' | sed 's/%3A/:/g' | sed 's/%3D/=/g' | sed 's/%2B/+/g' | sed 's/%3F/?/g' | sed 's/%26/\&/g'`
+}
+
+function convert_special_chars2 {
+ITEMMOVE=`echo "$ITEMMOVE" |  sed 's/%2F/\//g' | sed 's/+/ /g' | sed 's/%21/!/g' | sed 's/%25/%/g' | sed 's/%5E/^/g' | sed 's/%28/(/g' | sed 's/%29/)/g' | sed 's/%7E/~/g' | sed 's/%23/#/g' | sed 's/%40/@/g' | sed 's/%7B/{/g'  | sed 's/%7D/}/g' | sed 's/%3E/>/g' | sed 's/%3C/</g' | sed 's/%C2%AC/¬/g' | sed 's/%7C/|/g' | sed 's/%2C/,/g' | sed 's/%3B/;/g' | sed 's/%3A/:/g' | sed 's/%3D/=/g' | sed 's/%2B/+/g' | sed 's/%3F/?/g' | sed 's/%26/\&/g'`
+}
+
+function convert_special_chars3 {
+TEXTCONTENT=`echo "$TEXTCONTENT" |  sed 's/%2F/\//g' | sed 's/+/ /g' | sed 's/%21/!/g' | sed 's/%25/%/g' | sed 's/%5E/^/g' | sed 's/%28/(/g' | sed 's/%29/)/g' | sed 's/%7E/~/g' | sed 's/%23/#/g' | sed 's/%40/@/g' | sed 's/%7B/{/g'  | sed 's/%7D/}/g' | sed 's/%3E/>/g' | sed 's/%3C/</g' | sed 's/%C2%AC/¬/g' | sed 's/%7C/|/g' | sed 's/%2C/,/g' | sed 's/%3B/;/g' | sed 's/%3A/:/g' | sed 's/%3D/=/g' | sed 's/%2B/+/g' | sed 's/%3F/?/g' | sed 's/%5B/[/g' | sed 's/%5D/]/g' | sed 's/REPLACEUNDERSCORE/_/g' | sed 's/%99/*/g' | sed 's/%24/$/g' | sed 's/%26/\&/g'`
+}
+
+
+function really_delete_item {
+if [ $LOCATION'null' = null ]
+then
+echo `date`: file_manager - blank location by "for" $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ `echo ${LOCATION_LIST[@]:0} | grep -c -w "$LOCATION"` -gt 0 ]
+then
+echo $ERRORMSG2'<br>'
+echo '<A HREF="javascript:history.go(-2)"> <IMG SRC="/images/submenus/file/back.gif" BORDER="0"></A>'
+else
+#Delete the item
+convert_special_chars
+LOCATIONFOLDER=`basename "$LOCATION"`
+LASTLOCATION=`echo "$LOCATION" | sed "s/\/$LOCATIONFOLDER//g"`
+echo `date`: file_manager - deleting "$LOCATION" from $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+if [ $SERVER = $HOSTNAME ]
+then
+rm -f -R "$LOCATION"
+fi
+if [ $SERVERTYPE = network ] && [ $SERVER != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - deleting "'$LOCATION'" from '$SERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+rm -f -R "'$LOCATION'"
+'
+fi
+if [ $SERVERTYPE = federatedslave ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+echo `date`: file_manager \(federated mode\) - deleting "'$LOCATION'" from '$SERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVER' '\''
+rm -f -R "'$LOCATION'"
+'\''
+'
+fi
+
+
+LOCATION="$LASTLOCATION"
+show_directory
+fi
+
+}
+
+function delete_item {
+#Check to see that item is not on the protected list
+DELETECHECK=yes
+#Check that file is not in a banned path
+if [ `echo ${LOCATION_LIST[@]:0} | grep -c -w "$LOCATION"` -gt 0 ]
+then
+DELETECHECK=no
+EDITERRORMSG="$ERRORMSG9" 
+fi
+for PATHCHECK in `echo ${LOCATION_LIST2[@]:0}`
+do
+if [ `echo "$LOCATION" | grep -c $PATHCHECK` -gt 0 ]
+then
+DELETECHECK=no
+EDITERRORMSG="$ERRORMSG9" 
+fi
+done
+
+if [ $DELETECHECK = no ]
+then
+echo "<br><br><a href=\"javascript:history.go(-1)\"> <img src=\"/images/submenus/file/back.gif\" alt=\"back\" border=\"0\"></a><br><br>"$ERRORMSG2
+else
+#Confirm delete of item.
+convert_special_chars
+LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
+echo $DELETEMSG $LOCATION'<br><br>'$CONFIRMDELETEMSG'<br><br>'
+echo '<input type="image" src="/images/submenus/file/delete.gif" name="_ACTION_REALLYDELETE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" value="">'
+echo '<a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" alt="back" border="0"></a>'
+fi
+}
+
+function really_set_perms {
+
+if [ "$LOCATION"'null' = null ]
+then
+echo `date`: file_manager - blank location by "for" $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+
+OWNER=`echo "$DATA" | cut -s -d: -f12`
+GROUP=`echo "$DATA" | cut -s -d: -f13`
+
+#Work out permission numbers
+USERDIGIT=0
+GROUPDIGIT=0
+OTHERDIGIT=0
+SETUID="no"
+SETGID="no"
+SETSTICKY="no"
+SETRECURSIVE="no"
+SETEXECRECURSIVE="no"
+
+[ `echo $PERMISSIONS | grep -c -w USERREAD` = 1 ] && let USERDIGIT=$USERDIGIT+4
+[ `echo $PERMISSIONS | grep -c -w USERWRITE` = 1 ] && let USERDIGIT=$USERDIGIT+2
+[ `echo $PERMISSIONS | grep -c -w USEREXEC` = 1 ] && let USERDIGIT=$USERDIGIT+1
+
+[ `echo $PERMISSIONS | grep -c -w GROUPREAD` = 1 ] && let GROUPDIGIT=$GROUPDIGIT+4
+[ `echo $PERMISSIONS | grep -c -w GROUPWRITE` = 1 ] && let GROUPDIGIT=$GROUPDIGIT+2
+[ `echo $PERMISSIONS | grep -c -w GROUPEXEC` = 1 ] && let GROUPDIGIT=$GROUPDIGIT+1
+
+[ `echo $PERMISSIONS | grep -c -w OTHERREAD` = 1 ] && let OTHERDIGIT=$OTHERDIGIT+4
+[ `echo $PERMISSIONS | grep -c -w OTHERWRITE` = 1 ] && let OTHERDIGIT=$OTHERDIGIT+2
+[ `echo $PERMISSIONS | grep -c -w OTHEREXEC` = 1 ] && let OTHERDIGIT=$OTHERDIGIT+1
+
+[ `echo $PERMISSIONS | grep -c -w SETUID` = 1 ] && SETUID=yes
+[ `echo $PERMISSIONS | grep -c -w SETGID` = 1 ] && SETGID=yes
+[ `echo $PERMISSIONS | grep -c -w STICKY` = 1 ] && SETSTICKY=yes
+[ `echo $PERMISSIONS | grep -c -w RECURSIVE` = 1 ] && SETRECURSIVE="-R"
+[ `echo $PERMISSIONS | grep -c -w EXECRECURSE` = 1 ] && SETEXECRECURSIVE="yes"
+
+OCTALPERMS=`echo $USERDIGIT$GROUPDIGIT$OTHERDIGIT`
+convert_special_chars
+echo `date`: file_manager - setting ownership of "$LOCATION" to $OWNER $GROUP from $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#change ownership
+[ $SETRECURSIVE = -R ] && SETRECURSIVE2=-R
+if [ $SERVER = $HOSTNAME ]
+then
+chown $SETRECURSIVE2 $OWNER:$GROUP "$LOCATION"
+fi
+
+if [ $SERVERTYPE = network ] && [ $SERVER != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - setting ownership of "'$LOCATION'" to '$OWNER' '$GROUP' from '$SERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+chown -R '$SETRECURSIVE2' '$OWNER':'$GROUP' "'$LOCATION'"
+'
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+echo `date`: file_manager \(federated mode\) - setting ownership of "'$LOCATION'" to '$OWNER' '$GROUP' from '$SERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVER' '\''
+chown -R '$SETRECURSIVE2' '$OWNER':'$GROUP' "'$LOCATION'"
+'\''
+'
+fi
+
+
+#Change file permissions
+echo `date`: file_manager - setting permissions of "$LOCATION" to $OCTALPERMS from $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#Apply permissions
+if [ $SERVER = $HOSTNAME ]
+then
+chmod $OCTALPERMS "$LOCATION"
+fi
+
+if [ $SERVERTYPE = network ] && [ $SERVER != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - setting permissions of "'$LOCATION'" to '$OCTALPERMS' from '$SERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+chmod '$OCTALPERMS' "'$LOCATION'"
+'
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+echo `date`: file_manager \(federated mode\) - setting permissions of "'$LOCATION'" to '$OCTALPERMS' from '$SERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVER' '\''
+chmod '$OCTALPERMS' "'$LOCATION'"
+'\''
+'
+fi
+
+#Apply non exec permissions to sub files
+if [ $SETRECURSIVE = "-R" ] && [ $SETEXECRECURSIVE != yes ]
+then
+[ $USERDIGIT = 7 ] && let USERDIGIT=$USERDIGIT-1
+[ $USERDIGIT = 5 ] && let USERDIGIT=$USERDIGIT-1
+[ $GROUPDIGIT = 7 ] && let GROUPDIGIT=$GROUPDIGIT-1
+[ $GROUPDIGIT = 5 ] && let GROUPDIGIT=$GROUPDIGIT-1
+[ $OTHERDIGIT = 7 ] && let OTHERDIGIT=$OTHERDIGIT-1
+[ $OTHERDIGIT = 5 ] && let OTHERDIGIT=$OTHERDIGIT-1
+OCTALPERMS=`echo $USERDIGIT$GROUPDIGIT$OTHERDIGIT`
+if [ $SERVER = $HOSTNAME ]
+then
+chmod $OCTALPERMS -R "$LOCATION"/*
+[ $USERDIGIT = 6 ] && chmod u+X -R "$LOCATION"/*
+[ $USERDIGIT = 4 ] && chmod u+X -R "$LOCATION"/*
+[ $GROUPDIGIT = 6 ] && chmod g+X -R "$LOCATION"/*
+[ $GROUPDIGIT = 4 ] && chmod g+X -R "$LOCATION"/*
+[ $OTHERDIGIT = 6 ] && chmod o+X -R "$LOCATION"/*
+[ $OTHERDIGIT = 4 ] && chmod o+X -R "$LOCATION"/*
+fi
+if [ $SERVERTYPE = network ] && [ $SERVER != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+chmod '$OCTALPERMS' -R "'$LOCATION'"/*
+[ '$USERDIGIT' = 6 ] && chmod u+X -R "'$LOCATION'"/*
+[ '$USERDIGIT' = 4 ] && chmod u+X -R "'$LOCATION'"/*
+[ '$GROUPDIGIT' = 6 ] && chmod g+X -R "'$LOCATION'"/*
+[ '$GROUPDIGIT' = 4 ] && chmod g+X -R "'$LOCATION'"/*
+[ '$OTHERDIGIT' = 6 ] && chmod o+X -R "'$LOCATION'"/*
+[ '$OTHERDIGIT' = 4 ] && chmod o+X -R "'$LOCATION'"/*
+'
+fi
+if [ $SERVERTYPE = federatedslave ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVER' '\''
+chmod '$OCTALPERMS' -R "'$LOCATION'"/*
+[ '$USERDIGIT' = 6 ] && chmod u+X -R "'$LOCATION'"/*
+[ '$USERDIGIT' = 4 ] && chmod u+X -R "'$LOCATION'"/*
+[ '$GROUPDIGIT' = 6 ] && chmod g+X -R "'$LOCATION'"/*
+[ '$GROUPDIGIT' = 4 ] && chmod g+X -R "'$LOCATION'"/*
+[ '$OTHERDIGIT' = 6 ] && chmod o+X -R "'$LOCATION'"/*
+[ '$OTHERDIGIT' = 4 ] && chmod o+X -R "'$LOCATION'"/*
+'\''
+'
+fi
+fi
+#Apply same permissions to sub files and directories
+if [ $SETRECURSIVE = "-R" ] && [ $SETEXECRECURSIVE = yes ]
+then
+if [ $SERVER = $HOSTNAME ]
+then
+chmod $OCTALPERMS -R "$LOCATION"/*
+fi
+if [ $SERVERTYPE = network ] && [ $SERVER != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+chmod '$OCTALPERMS' -R "'$LOCATION'"/*
+'
+fi
+if [ $SERVERTYPE = federatedslave ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVER' '\''
+chmod '$OCTALPERMS' -R "'$LOCATION'"/*
+'\''
+'
+fi
+fi
+
+#Apply userid
+if [ $SETUID = yes ]
+then
+
+if [ $SERVER = $HOSTNAME ]
+then
+chmod +s $SETRECURSIVE2 "$LOCATION"
+fi
+
+if [ $SERVERTYPE = network ] && [ $SERVER != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+chmod +s '$SETRECURSIVE2' "'$LOCATION'"
+'
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVER' '\''
+chmod +s '$SETRECURSIVE2' "'$LOCATION'"
+'\''
+'
+fi
+fi
+
+#Apply groupid
+if [ $SETGID = yes ]
+then
+if [ $SERVER = $HOSTNAME ]
+then
+chmod g+s $SETRECURSIVE2 "$LOCATION"
+fi
+
+if [ $SERVERTYPE = network ] && [ $SERVER != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+chmod g+s '$SETRECURSIVE2' "'$LOCATION'"
+'
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVER' '\''
+chmod g+s '$SETRECURSIVE2' "'$LOCATION'"
+'\''
+'
+fi
+fi
+
+#Apply sticky
+if [ $SETSTICKY = yes ]
+then
+if [ $SERVER = $HOSTNAME ]
+then
+chmod +t $SETRECURSIVE2 "$LOCATION"
+fi
+
+if [ $SERVERTYPE = network ] && [ $SERVER != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+chmod +t '$SETRECURSIVE2' "'$LOCATION'"
+'
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVER' '\''
+chmod +t '$SETRECURSIVE2' "'$LOCATION'"
+'\''
+'
+fi
+fi
+
+LOCATIONFOLDER=`basename "$LOCATION"`
+LOCATION=`echo "$LOCATION" | sed "s/\/$LOCATIONFOLDER//g"`
+show_directory
+}
+
+function set_perms {
+convert_special_chars
+echo $SETPERMSMSG - "$LOCATION""<br><br><br>"
+#Get ownership details
+
+LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
+echo '<input name="_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_ACTION_REALLYSETPERMS_" value="" type="hidden">'
+
+if [ $SERVER = $HOSTNAME ]
+then
+OWNER=`ls -d -l "$LOCATION" | cut -d" " -f3`
+GROUP=`ls -d -l "$LOCATION" | cut -d" " -f4`
+#Get current permissions of the item
+CURRENT_PERMS=`ls -d -l "$LOCATION" | cut -d" " -f1`
+#Get size
+ITEMSIZE=`du -h -s "$LOCATION" | cut -f1`
+#Get file info
+ITEMTYPE=`file "$LOCATION" | cut -d: -f2`
+#Basename
+SHORTNAME=`basename "$LOCATION"`
+#Last modified
+LASTMOD=`stat -c %y "$LOCATION" | cut -d. -f1`
+#Last accessed
+LASTACC=`stat -c %x "$LOCATION" | cut -d. -f1`
+
+echo "<b>$BASICINFOMSG</b><br><br><table class=\"standard\" style=\"text-align: left; \" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+<tbody>
+<tr><td style=\"width: 120px;\">$NAMEMSG</td><td>$SHORTNAME</td></tr>
+<tr><td>$PATHMSG</td><td>$LOCATION</td></tr>
+<tr><td>$SIZEMSG</td><td>$ITEMSIZE</td></tr>
+<tr><td>$TYPEMSG</td><td>$ITEMTYPE</td></tr>
+<tr><td>$LASTACCMSG</td><td>$LASTACC</td></tr>
+<tr><td>$LASTMODMSG</td><td>$LASTMOD</td></tr>
+</tbody></table><br>
+"
+
+echo "<b>$OWNERSHIPMSG</b><br><br><table class=\"standard\" style=\"text-align: left; \" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+<tbody>
+<tr><td style=\"width: 120px;\">$USERMSG</td><td><input tabindex= \"1\" name=\"_OWNER_\" value=\"$OWNER\" size=\"20\" type=\"text\"></td></tr>
+<tr><td>$GROUPMSG</td><td><input tabindex= \"2\" name=\"_GROUP_\" value=\"$GROUP\" size=\"20\" type=\"text\"></td><td></td></tr>
+</tbody></table><br>
+"
+echo '<b>'$PERMISSIONSMSG"</b><br><br>"
+
+
+DIRECTORY=no
+[ ${CURRENT_PERMS:0:1} = d ] && DIRECTORY=yes
+[ ${CURRENT_PERMS:1:1} = r ] && USERREAD="checked=checked"
+[ ${CURRENT_PERMS:2:1} = w ] && USERWRITE="checked=checked"
+[ ${CURRENT_PERMS:3:1} = x ] && USEREXEC="checked=checked"
+[ ${CURRENT_PERMS:3:1} = s ] && USEREXEC="checked=checked"
+[ ${CURRENT_PERMS:3:1} = s ] && SETUID="checked=checked"
+
+[ ${CURRENT_PERMS:4:1} = r ] && GROUPREAD="checked=checked"
+[ ${CURRENT_PERMS:5:1} = w ] && GROUPWRITE="checked=checked"
+[ ${CURRENT_PERMS:6:1} = x ] && GROUPEXEC="checked=checked"
+[ ${CURRENT_PERMS:6:1} = s ] && GROUPEXEC="checked=checked"
+[ ${CURRENT_PERMS:6:1} = s ] && SETGID="checked=checked"
+
+[ ${CURRENT_PERMS:7:1} = r ] && OTHERREAD="checked=checked"
+[ ${CURRENT_PERMS:8:1} = w ] && OTHERWRITE="checked=checked"
+[ ${CURRENT_PERMS:9:1} = x ] && OTHEREXEC="checked=checked"
+[ ${CURRENT_PERMS:9:1} = t ] && OTHEREXEC="checked=checked"
+[ ${CURRENT_PERMS:9:1} = t ] && STICKY="checked=checked"
+EXECENTERMSG=$ENTERMSG
+[ $DIRECTORY = no ] && EXECENTERMSG=$EXECMSG
+#Show ownership
+echo "<table class=\"standard\" style=\"text-align: left; width: 400px;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+<tr><td style=\"width: 120px;\"></td><td>$READMSG</td><td>$WRITEMSG</td><td>$EXECENTERMSG</td><td>$SPECIALMSG</td></tr>
+<tr><td>$USERMSG</td><td><input name=\"_USERREAD_\" $USERREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_USERWRITE_\" $USERWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_USEREXEC_\" $USEREXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_SETUID_\" $SETUID value=\"1\" type=\"checkbox\"></td><td>$SETUIDMSG</td></tr>
+<tr><td>$GROUPMSG</td><td><input name=\"_GROUPREAD_\" $GROUPREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_GROUPWRITE_\" $GROUPWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_GROUPEXEC_\" $GROUPEXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_SETGID_\" $SETGID value=\"1\" type=\"checkbox\"></td><td>$SETGIDMSG</td></tr>
+<tr><td>$OTHERMSG</td><td><input name=\"_OTHERREAD_\" $OTHERREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_OTHERWRITE_\" $OTHERWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_OTHEREXEC_\" $OTHEREXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_STICKY_\" $STICKY value=\"1\" type=\"checkbox\"></td><td>$STICKYMSG</td></tr></tbody></table><br>"
+
+#Show recursive options if the item is a directory
+if [ $DIRECTORY = yes ]
+then
+echo "<table class=\"standard\" style=\"text-align: left; width: 400px;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>"
+echo "<tr><td style=\"width: 120px;\">$RECURSEMSG</td><td><input name=\"_RECURSIVE_\" value=\"1\" type=\"checkbox\"></td></tr>"
+echo "<tr><td>$EXECMSG2</td><td><input name=\"_EXECRECURSE_\" value=\"1\" type=\"checkbox\"></td></tr></tbody></table>"
+fi
+fi
+
+if [ $SERVERTYPE = network ] && [ $SERVER != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+OWNER=`ls -d -l "'$LOCATION'" | cut -d" " -f3`
+GROUP=`ls -d -l "'$LOCATION'" | cut -d" " -f4`
+CURRENT_PERMS=`ls -d -l "'$LOCATION'" | cut -d" " -f1`
+
+#Get size
+ITEMSIZE=`du -h -s "'$LOCATION'" | cut -f1`
+#Get file info
+ITEMTYPE=`file "'$LOCATION'" | cut -d: -f2`
+#Basename
+SHORTNAME=`basename "'$LOCATION'"`
+#Last modified
+LASTMOD=`stat -c %y "'$LOCATION'" | cut -d. -f1`
+#Last accessed
+LASTACC=`stat -c %x "'$LOCATION'" | cut -d. -f1`
+
+echo "<b>'$BASICINFOMSG'</b><br><br><table class=\"standard\" style=\"text-align: left; \" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+<tbody>
+<tr><td style=\"width: 120px;\">'$NAMEMSG'</td><td>$SHORTNAME</td></tr>
+<tr><td>'$PATHMSG'</td><td>'$LOCATION'</td></tr>
+<tr><td>'$SIZEMSG'</td><td>$ITEMSIZE</td></tr>
+<tr><td>'$TYPEMSG'</td><td>$ITEMTYPE</td></tr>
+<tr><td>'$LASTACCMSG'</td><td>$LASTACC</td></tr>
+<tr><td>'$LASTMODMSG'</td><td>$LASTMOD</td></tr>
+</tbody></table><br>
+"
+
+#Show ownership
+echo "<table class=\"standard\" style=\"text-align: left; \" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+<tbody>
+<tr><td style=\"width: 120px;\">'$USERMSG'</td><td><input tabindex= \"1\" name=\"_OWNER_\" value=\"$OWNER\" size=\"20\" type=\"text\"></td></tr>
+<tr><td>'$GROUPMSG'</td><td><input tabindex= \"2\" name=\"_GROUP_\" value=\"$GROUP\" size=\"20\" type=\"text\"></td><td></td></tr>
+</tbody></table><br>
+"
+echo '$PERMISSIONSMSG'"<br><br>"
+#Get current permissions of the item
+
+
+DIRECTORY=no
+[ ${CURRENT_PERMS:0:1} = d ] && DIRECTORY=yes
+[ ${CURRENT_PERMS:1:1} = r ] && USERREAD="checked=checked"
+[ ${CURRENT_PERMS:2:1} = w ] && USERWRITE="checked=checked"
+[ ${CURRENT_PERMS:3:1} = x ] && USEREXEC="checked=checked"
+[ ${CURRENT_PERMS:3:1} = s ] && USEREXEC="checked=checked"
+[ ${CURRENT_PERMS:3:1} = s ] && SETUID="checked=checked"
+
+[ ${CURRENT_PERMS:4:1} = r ] && GROUPREAD="checked=checked"
+[ ${CURRENT_PERMS:5:1} = w ] && GROUPWRITE="checked=checked"
+[ ${CURRENT_PERMS:6:1} = x ] && GROUPEXEC="checked=checked"
+[ ${CURRENT_PERMS:6:1} = s ] && GROUPEXEC="checked=checked"
+[ ${CURRENT_PERMS:6:1} = s ] && SETGID="checked=checked"
+
+[ ${CURRENT_PERMS:7:1} = r ] && OTHERREAD="checked=checked"
+[ ${CURRENT_PERMS:8:1} = w ] && OTHERWRITE="checked=checked"
+[ ${CURRENT_PERMS:9:1} = x ] && OTHEREXEC="checked=checked"
+[ ${CURRENT_PERMS:9:1} = t ] && OTHEREXEC="checked=checked"
+[ ${CURRENT_PERMS:9:1} = t ] && STICKY="checked=checked"
+EXECENTERMSG='$ENTERMSG'
+[ $DIRECTORY = no ] && EXECENTERMSG='$EXECMSG'
+
+echo "<table class=\"standard\" style=\"text-align: left; width: 400px;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+<tr><td style=\"width: 120px;\"></td><td>'$READMSG'</td><td>'$WRITEMSG'</td><td>$EXECENTERMSG</td><td>'$SPECIALMSG'</td></tr>
+<tr><td>'$USERMSG'</td><td><input name=\"_USERREAD_\" $USERREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_USERWRITE_\" $USERWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_USEREXEC_\" $USEREXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_SETUID_\" $SETUID value=\"1\" type=\"checkbox\"></td><td>$SETUIDMSG</td></tr>
+<tr><td>'$GROUPMSG'</td><td><input name=\"_GROUPREAD_\" $GROUPREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_GROUPWRITE_\" $GROUPWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_GROUPEXEC_\" $GROUPEXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_SETGID_\" $SETGID value=\"1\" type=\"checkbox\"></td><td>$SETGIDMSG</td></tr>
+<tr><td>'$OTHERMSG'</td><td><input name=\"_OTHERREAD_\" $OTHERREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_OTHERWRITE_\" $OTHERWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_OTHEREXEC_\" $OTHEREXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_STICKY_\" $STICKY value=\"1\" type=\"checkbox\"></td><td>$STICKYMSG</td></tr></tbody></table><br><br>"
+
+#Show recursive options if the item is a directory
+if [ $DIRECTORY = yes ]
+then
+echo "<table class=\"standard\" style=\"text-align: left; width: 400px;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>"
+echo "<tr><td style=\"width: 120px;\">'$RECURSEMSG'</td><td><input name=\"_RECURSIVE_\" value=\"1\" type=\"checkbox\"></td></tr>"
+echo "<tr><td>'$EXECMSG2'</td><td><input name=\"_EXECRECURSE_\" value=\"1\" type=\"checkbox\"></td></tr></tbody></table>"
+fi
+'
+fi
+
+
+if [ $SERVERTYPE = federatedslave ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVER' '\''
+OWNER=`ls -d -l "'$LOCATION'" | cut -d" " -f3`
+GROUP=`ls -d -l "'$LOCATION'" | cut -d" " -f4`
+#Get current permissions of the item
+CURRENT_PERMS=`ls -d -l "'$LOCATION'" | cut -d" " -f1`
+
+#Get size
+ITEMSIZE=`du -h -s "'$LOCATION'" | cut -f1`
+#Get file info
+ITEMTYPE=`file "'$LOCATION'" | cut -d: -f2`
+#Basename
+SHORTNAME=`basename "'$LOCATION'"`
+#Last modified
+LASTMOD=`stat -c %y "'$LOCATION'" | cut -d. -f1`
+#Last accessed
+LASTACC=`stat -c %x "'$LOCATION'" | cut -d. -f1`
+
+echo "<b>Basic Information</b><br><br><table class=\"standard\" style=\"text-align: left; \" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+<tbody>
+<tr><td style=\"width: 120px;\">'$NAMEMSG'</td><td>$SHORTNAME</td></tr>
+<tr><td>Path</td><td>$LOCATION</td></tr>
+<tr><td>Size</td><td>$ITEMSIZE</td></tr>
+<tr><td>Type</td><td>$ITEMTYPE</td></tr>
+<tr><td>Last accessed</td><td>$LASTACC</td></tr>
+<tr><td>Last modified</td><td>$LASTMOD</td></tr>
+</tbody></table><br>
+"
+
+#Show ownership
+echo "<table class=\"standard\" style=\"text-align: left; \" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+<tbody>
+<tr><td style=\"width: 120px;\">'$USERMSG'</td><td><input tabindex= \"1\" name=\"_OWNER_\" value=\"$OWNER\" size=\"20\" type=\"text\"></td></tr>
+<tr><td>'$GROUPMSG'</td><td><input tabindex= \"2\" name=\"_GROUP_\" value=\"$GROUP\" size=\"20\" type=\"text\"></td><td></td></tr>
+</tbody></table><br>
+"
+echo '$PERMISSIONSMSG'"<br><br>"
+
+DIRECTORY=no
+[ ${CURRENT_PERMS:0:1} = d ] && DIRECTORY=yes
+[ ${CURRENT_PERMS:1:1} = r ] && USERREAD="checked=checked"
+[ ${CURRENT_PERMS:2:1} = w ] && USERWRITE="checked=checked"
+[ ${CURRENT_PERMS:3:1} = x ] && USEREXEC="checked=checked"
+[ ${CURRENT_PERMS:3:1} = s ] && USEREXEC="checked=checked"
+[ ${CURRENT_PERMS:3:1} = s ] && SETUID="checked=checked"
+
+[ ${CURRENT_PERMS:4:1} = r ] && GROUPREAD="checked=checked"
+[ ${CURRENT_PERMS:5:1} = w ] && GROUPWRITE="checked=checked"
+[ ${CURRENT_PERMS:6:1} = x ] && GROUPEXEC="checked=checked"
+[ ${CURRENT_PERMS:6:1} = s ] && GROUPEXEC="checked=checked"
+[ ${CURRENT_PERMS:6:1} = s ] && SETGID="checked=checked"
+
+[ ${CURRENT_PERMS:7:1} = r ] && OTHERREAD="checked=checked"
+[ ${CURRENT_PERMS:8:1} = w ] && OTHERWRITE="checked=checked"
+[ ${CURRENT_PERMS:9:1} = x ] && OTHEREXEC="checked=checked"
+[ ${CURRENT_PERMS:9:1} = t ] && OTHEREXEC="checked=checked"
+[ ${CURRENT_PERMS:9:1} = t ] && STICKY="checked=checked"
+EXECENTERMSG='$ENTERMSG'
+[ $DIRECTORY = no ] && EXECENTERMSG='$EXECMSG'
+
+echo "<table class=\"standard\" style=\"text-align: left; width: 400px;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+<tr><td style=\"width: 120px;\"></td><td>'$READMSG'</td><td>'$WRITEMSG'</td><td>$EXECENTERMSG</td><td>'$SPECIALMSG'</td></tr>
+<tr><td>'$USERMSG'</td><td><input name=\"_USERREAD_\" $USERREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_USERWRITE_\" $USERWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_USEREXEC_\" $USEREXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_SETUID_\" $SETUID value=\"1\" type=\"checkbox\"></td><td>$SETUIDMSG</td></tr>
+<tr><td>'$GROUPMSG'</td><td><input name=\"_GROUPREAD_\" $GROUPREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_GROUPWRITE_\" $GROUPWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_GROUPEXEC_\" $GROUPEXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_SETGID_\" $SETGID value=\"1\" type=\"checkbox\"></td><td>$SETGIDMSG</td></tr>
+<tr><td>'$OTHERMSG'</td><td><input name=\"_OTHERREAD_\" $OTHERREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_OTHERWRITE_\" $OTHERWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_OTHEREXEC_\" $OTHEREXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_STICKY_\" $STICKY value=\"1\" type=\"checkbox\"></td><td>$STICKYMSG</td></tr></tbody></table><br><br>"
+
+#Show recursive options if the item is a directory
+if [ $DIRECTORY = yes ]
+then
+echo "<table class=\"standard\" style=\"text-align: left; width: 400px;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>"
+echo "<tr><td style=\"width: 120px;\">'$RECURSEMSG'</td><td><input name=\"_RECURSIVE_\" value=\"1\" type=\"checkbox\"></td></tr>"
+echo "<tr><td>'$EXECMSG2'</td><td><input name=\"_EXECRECURSE_\" value=\"1\" type=\"checkbox\"></td></tr></tbody></table>"
+fi
+'\''
+'
+fi
+
+echo '<br><input src="/images/submenus/file/go.gif" name="_" type="image" value="">'
+echo '<a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" alt="back" border="0"></A>'
+}
+
+
+function really_move_item {
+convert_special_chars
+convert_special_chars2
+ITEMMOVE=`echo $ITEMMOVE| sed "s/Z%%%%%Z/_/g"`
+
+echo `date`: file_manager - moving "$ITEMMOVE" to "$LOCATION" on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+if [ $SERVER = $HOSTNAME ]
+then
+EXISTCHECK=go
+FILETOCOPY=`basename "$ITEMMOVE"`
+while [ $EXISTCHECK = go ]
+do
+if [ -f "$LOCATION"/"$FILETOCOPY" ]
+then
+FILETOCOPY=`echo "$FILETOCOPY"new`
+else
+EXISTCHECK=stop
+fi
+done
+
+[ -d "$LOCATION/" ] && mv -f "$ITEMMOVE" "$LOCATION"/"$FILETOCOPY"
+fi
+
+if [ $SERVERTYPE = network ] && [ $SERVER != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - moving "'$ITEMMOVE'" to "'$LOCATION'" on '$SERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+EXISTCHECK=go
+ITEMMOVE=`echo '$ITEMMOVE'`
+FILETOCOPY=`basename "$ITEMMOVE"`
+while [ $EXISTCHECK = go ]
+do
+if [ -f "'$LOCATION'"/"$FILETOCOPY" ]
+then
+FILETOCOPY=`echo "$FILETOCOPY"new`
+else
+EXISTCHECK=stop
+fi
+done
+[ -d "'$LOCATION'" ] && mv -f "$ITEMMOVE" "'$LOCATION'"/"$FILETOCOPY"
+'
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+echo `date`: file_manager \(federated mode\) - moving "'$ITEMMOVE'" to "'$LOCATION'" on '$SERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVER' '\''
+EXISTCHECK=go
+ITEMMOVE=`echo '$ITEMMOVE'`
+FILETOCOPY=`basename "$ITEMMOVE"`
+while [ $EXISTCHECK = go ]
+do
+if [ -f "'$LOCATION'"/"$FILETOCOPY" ]
+then
+FILETOCOPY=`echo "$FILETOCOPY"new`
+else
+EXISTCHECK=stop
+fi
+done
+[ -d "'$LOCATION'" ] && mv -f "$ITEMMOVE" "'$LOCATION'"/"$FILETOCOPY"
+'\''
+'
+fi
+
+ITEMMOVE=""
+#Display location
+show_directory
+}
+
+function really_copy_item {
+convert_special_chars
+convert_special_chars2
+ITEMMOVE=`echo $ITEMMOVE| sed "s/Z%%%%%Z/_/g"`
+
+#Copy item
+echo `date`: file_manager - copying "$ITEMMOVE" to "$LOCATION" on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+if [ $SERVER = $HOSTNAME ]
+then
+EXISTCHECK=go
+FILETOCOPY=`basename "$ITEMMOVE"`
+while [ $EXISTCHECK = go ]
+do
+if [ -e "$LOCATION"/"$FILETOCOPY" ]
+then
+FILETOCOPY=`echo "$FILETOCOPY"new`
+else
+EXISTCHECK=stop
+fi
+done
+if [ -d "$LOCATION/" ]
+then
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+cp -v -f -R "$ITEMMOVE" "$LOCATION"/$FILETOCOPY
+echo "</pre>"
+fi
+fi
+
+if [ $SERVERTYPE = network ] && [ $SERVER != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - copying "'$ITEMMOVE'" to "'$LOCATION'" on '$SERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+EXISTCHECK=go
+ITEMMOVE=`echo '$ITEMMOVE'`
+FILETOCOPY=`basename "$ITEMMOVE"`
+while [ $EXISTCHECK = go ]
+do
+if [ -e "'$LOCATION'"/"$FILETOCOPY" ]
+then
+FILETOCOPY=`echo "$FILETOCOPY"new`
+else
+EXISTCHECK=stop
+fi
+done
+if [ -d "'$LOCATION'" ] 
+then
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+cp -v -f -R "$ITEMMOVE" "'$LOCATION'"/"$FILETOCOPY"
+echo "</pre>"
+fi
+'
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+echo `date`: file_manager \(federated mode\) - copying "'$ITEMMOVE'" to "'$LOCATION'" on '$SERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVER' '\''
+EXISTCHECK=go
+ITEMMOVE=`echo '$ITEMMOVE'`
+FILETOCOPY=`basename "$ITEMMOVE"`
+while [ $EXISTCHECK = go ]
+do
+if [ -e "'$LOCATION'"/"$FILETOCOPY" ]
+then
+FILETOCOPY=`echo "$FILETOCOPY"new`
+else
+EXISTCHECK=stop
+fi
+done
+if [ -d "'$LOCATION'" ]
+then
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+cp -v -f -R "$ITEMMOVE" "'$LOCATION'"/"$FILETOCOPY"
+echo "</pre>"
+fi
+'\''
+'
+fi
+
+ITEMMOVE=""
+#Display location
+show_directory
+}
+
+function move_item2b {
+convert_special_chars
+LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
+ITEMTOCOPY=$LOCATION
+FILENAME=`basename "$LOCATION"`
+LOCATION=`echo "$LOCATION" | sed "s/\/$FILENAME$//g"`
+
+#Check to see that item is not on the protected list
+MOVECHECK=yes
+
+#Check that file is not in a banned path
+if [ `echo ${LOCATION_LIST[@]:0} | grep -c -w "$ITEMTOCOPY"` -gt 0 ]
+then
+MOVECHECK=no
+fi
+for PATHCHECK in `echo ${LOCATION_LIST2[@]:0}`
+do
+if [ `echo "$ITEMTOCOPY" | grep -c $PATHCHECK` -gt 0 ]
+then
+MOVECHECK=no 
+fi
+done
+
+if [ $MOVECHECK = yes ]
+then
+echo "$ITEMTOCOPY2" - $MOVEMSG2 '<input type="image" src="'$ICON9'" name="_ACTION_REALLYMOVE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_ITEMMOVE_'$ITEMTOCOPY'_" value="">'
+echo $COPYMSG2 '<input type="image" src="'$ICON4'" name="_ACTION_REALLYCOPY_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_ITEMMOVE_'$ITEMTOCOPY'_" value="">'
+echo $CANCELMSG '<input type="image" src="'$ICON8'" name="_ACTION_CANCELCOPY_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" value=""><br>'
+else
+echo $ERRORMSG11"<br>"
+fi
+#Browse to directory to move to
+show_directory
+}
+
+function cancel_copy_item {
+ITEMMOVE=""
+show_directory
+}
+
+function really_rename_item {
+
+LOCATION=`echo "$LOCATION" | sed 's/NEWNAME/:/g'`
+
+#Rename the item
+convert_special_chars
+CURRENTNAME=`basename "$LOCATION"`
+CURRENTLOCATION=`echo "$LOCATION" | sed "s/\/$CURRENTNAME$//g"`
+
+
+NEWNAME="$NEWFOLDER"
+
+ITEMMOVE="$NEWNAME"
+convert_special_chars2
+NEWNAME="$ITEMMOVE"
+ITEMMOVE=""
+
+#Rename the item
+echo `date`: file_manager - renaming "$LOCATION" to "$NEWNAME" on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+if [ $SERVER = $HOSTNAME ]
+then
+if [ -e "$LOCATION" ]
+then
+if [ ! -e "$CURRENTLOCATION/$NEWNAME" ]
+then
+mv -f "$LOCATION" "$CURRENTLOCATION/$NEWNAME"
+else
+echo "$ERRORMSG7<br><br><A HREF=\"javascript:history.go(-1)\"> <IMG SRC=\"/images/submenus/file/back.gif\" BORDER=\"0\"></A>"
+exit
+fi
+fi
+fi
+
+if [ $SERVERTYPE = network ] && [ $SERVER != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - renaming "'$LOCATION'" to "'$NEWNAME'" on '$SERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+if [ -e "'$LOCATION'" ]
+then
+if [ ! -e "'$CURRENTLOCATION'/'$NEWNAME'" ]
+then
+mv -f "'$LOCATION'" "'$CURRENTLOCATION'/'$NEWNAME'"
+else
+echo "'$ERRORMSG7'<br><br><A HREF=\"javascript:history.go(-1)\"> <IMG SRC=\"/images/submenus/file/back.gif\" BORDER=\"0\"></A>"
+exit 100
+fi
+fi
+'
+[ `echo $?` = 100 ] && exit
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+echo `date`: file_manager \(federated mode\) - renaming "'$LOCATION'" to "'$NEWNAME'" on '$SERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVER' '\''
+if [ -e "'$LOCATION'" ]
+then
+if [ ! -e "'$CURRENTLOCATION'/'$NEWNAME'" ]
+then
+mv -f "'$LOCATION'" "'$CURRENTLOCATION'/'$NEWNAME'"
+else
+echo "'$ERRORMSG7'<br><br><A HREF=\"javascript:history.go(-1)\"> <IMG SRC=\"/images/submenus/file/back.gif\" BORDER=\"0\"></A>"
+exit 100
+fi
+fi
+'\''
+[ `echo $?` = 100 ] && exit 100
+'
+[ `echo $?` = 100 ] && exit
+fi
+
+
+#Go to current directory
+LOCATION="$CURRENTLOCATION"
+show_directory
+}
+
+function rename_item {
+#Check to see that item is not on the protected list
+RENAMECHECK=yes
+#Check that file is not in a banned path
+if [ `echo ${LOCATION_LIST[@]:0} | grep -c -w "$LOCATION"` -gt 0 ]
+then
+RENAMECHECK=no
+fi
+for PATHCHECK in `echo ${LOCATION_LIST2[@]:0}`
+do
+if [ `echo "$LOCATION" | grep -c $PATHCHECK` -gt 0 ]
+then
+RENAMECHECK=no 
+fi
+done
+
+if [ $RENAMECHECK = no ]
+then
+echo "<br><br><a href=\"javascript:history.go(-1)\"> <img src=\"/images/submenus/file/back.gif\" alt=\"back\" border=\"0\"></a><br><br>"$ERRORMSG10
+else
+#Confirm rename of item.
+convert_special_chars
+RENAMEFILE=`basename "$LOCATION"`
+LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
+echo '<b>'$RENAMEMSG'</b>' $LOCATION'<br><br>'
+echo '<input type="image" src="/images/submenus/file/go.gif" name="_ACTION_REALLYRENAME_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" value="">'
+echo '<a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" alt="back" border="0"></a><br><br>'
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: 180px;">'$CURRENTNAMEMSG'</td><td>'$RENAMEFILE'<td></tr>
+<tr><td>'$NEWNAMEMSG'</td><td><input name="_NEWFOLDER_" type="text" size="20" value="'$RENAMEFILE'"></td></tr></tbody></table>'
+fi
+}
+
+function really_edit_item {
+TEXTCONTENT=`echo "$DATA" | cut -s -d: -f16`
+convert_special_chars
+#echo location is "$LOCATION"'<br>'
+convert_special_chars3
+#echo text content is "$TEXTCONTENT"'<br>'
+
+echo `date`: file_manager - editing "$LOCATION" on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+if [ $SERVER = $HOSTNAME ]
+then
+if [ -f "$LOCATION" ]
+then
+echo -e "$TEXTCONTENT" | sed 's/%0D%0A/\n/g' > "$LOCATION"
+#replace speech marks
+sed -i 's/%22/"/g' "$LOCATION"
+#replace tabs
+sed -i 's/%09/\t/g' "$LOCATION"
+#Replace quotation marks
+sed -i "s/%27/'/g" "$LOCATION"
+#Replace `
+sed -i "s/%60/\`/g" "$LOCATION"
+#Replace back slash
+sed -i "s/%5C/\\\/g" "$LOCATION"
+fi
+fi
+
+if [ $SERVERTYPE = network ] && [ $SERVER != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+then
+echo -e "$TEXTCONTENT" | sed 's/%0D%0A/\n/g' > "/opt/karoshi/.tempdata/file_edit.$$"
+#replace speech marks
+sed -i 's/%22/"/g' "/opt/karoshi/.tempdata/file_edit.$$"
+#replace tabs
+sed -i 's/%09/\t/g' "/opt/karoshi/.tempdata/file_edit.$$"
+#Replace quotation marks
+sed -i "s/%27/'/g" "/opt/karoshi/.tempdata/file_edit.$$"
+#Replace `
+sed -i "s/%60/\`/g" "/opt/karoshi/.tempdata/file_edit.$$"
+#Replace back slash
+sed -i "s/%5C/\\\/g" "/opt/karoshi/.tempdata/file_edit.$$"
+#cat file back to correct server
+LOCATION2=`echo $LOCATION | sed 's/ /\\\ /g'`
+cat /opt/karoshi/.tempdata/file_edit.$$ | ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER 'cat - > '$LOCATION2''
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - editing "'$LOCATION'" on '$SERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+'
+rm -f /opt/karoshi/.tempdata/file_edit.$$
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+echo -e "$TEXTCONTENT" | sed 's/%0D%0A/\n/g' > "/opt/karoshi/.tempdata/file_edit.$$"
+#replace speech marks
+sed -i 's/%22/"/g' "/opt/karoshi/.tempdata/file_edit.$$"
+#replace tabs
+sed -i 's/%09/\t/g' "/opt/karoshi/.tempdata/file_edit.$$"
+#Replace quotation marks
+sed -i "s/%27/'/g" "/opt/karoshi/.tempdata/file_edit.$$"
+#Replace `
+sed -i "s/%60/\`/g" "/opt/karoshi/.tempdata/file_edit.$$"
+#Replace back slash
+sed -i "s/%5C/\\\/g" "/opt/karoshi/.tempdata/file_edit.$$"
+#cat file back to correct server
+LOCATION2=`echo $LOCATION | sed 's/ /\\\ /g'`
+cat /opt/karoshi/.tempdata/file_edit.$$ | ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER 'cat - > /opt/karoshi/.tempdata/file_edit.'$$''
+
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - editing "'$LOCATION'" on '$SERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+cat /opt/karoshi/.tempdata/file_edit.'$$' | ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVER' '\''cat - > '$LOCATION2''\''
+rm -f /opt/karoshi/.tempdata/file_edit.'$$'
+'
+rm -f /opt/karoshi/.tempdata/file_edit.$$
+fi
+
+
+LOCATIONITEM=`basename "$LOCATION"`
+LOCATION=`echo "$LOCATION" | sed "s/\/$LOCATIONITEM//g"`
+#Go to current directory
+show_directory
+}
+
+function edit_item {
+convert_special_chars
+LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
+echo $EDITMSG $LOCATION'<br><br>'
+
+#Get data from text file
+echo `date`: file_manager - viewing "$LOCATION" on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+EDITERRORMSG="$ERRORMSG8"
+if [ $SERVER = $HOSTNAME ]
+then
+EDITCHECK=ok
+#Check that file is not in a banned edit path
+for PATHCHECK in `echo ${LOCATION_LIST2[@]:0}`
+do
+if [ `echo "$LOCATION" | grep -c $PATHCHECK` -gt 0 ]
+then
+EDITCHECK=no
+EDITERRORMSG="$ERRORMSG9" 
+fi
+done
+
+FILETYPEDATA=`file "$LOCATION"`
+if [ `echo "$FILETYPEDATA" | grep -c ASCII` -gt 0 ] || [ `echo "$FILETYPEDATA" | grep -c Bourne-Again` -gt 0 ] || [ `echo "$FILETYPEDATA" | grep -c PHP` -gt 0 ] || [ `echo "$FILETYPEDATA" | grep -c XML` -gt 0 ] && [ $EDITCHECK = ok ]
+then
+echo "<input type=\"image\" src=\"/images/submenus/file/go.gif\" name=\"_ACTION_REALLYEDIT_SERVERTYPE_$SERVERTYPE"_"SERVERMASTER_$SERVERMASTER"_"SERVER_$SERVER"_"LOCATION_$LOCATION2"_"\" value=\"\"><a href=\"javascript:history.go(-1)\"> <img src=\"/images/submenus/file/back.gif\" alt=\"back\" border=\"0\"></a><br><br><textarea cols=\"95\" rows=\"28\" name=\"_TEXTDATA_\">"
+echo "`cat "$LOCATION"`</textarea>"
+else
+echo "<a href=\"javascript:history.go(-1)\"> <img src=\"/images/submenus/file/back.gif\" alt=\"back\" border=\"0\"></a><br><br>"$EDITERRORMSG
+fi
+fi
+if [ $SERVERTYPE = network ] && [ $SERVER != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+
+EDITCHECK=ok
+#Check that file is not in a banned edit path
+for PATHCHECK in `echo '${LOCATION_LIST2[@]:0}'`
+do
+if [ `echo "'$LOCATION'" | grep -c $PATHCHECK` -gt 0 ]
+then
+EDITCHECK=no
+EDITERRORMSG="'$ERRORMSG9'" 
+fi
+done
+
+FILETYPEDATA=`file "'$LOCATION'"`
+if [ `echo "$FILETYPEDATA" | grep -c ASCII` -gt 0 ] || [ `echo "$FILETYPEDATA" | grep -c Bourne-Again` -gt 0 ] || [ `echo "$FILETYPEDATA" | grep -c PHP` -gt 0 ] || [ `echo "$FILETYPEDATA" | grep -c XML` -gt 0 ] && [ $EDITCHECK = ok ]
+then
+echo "<input type=\"image\" src=\"/images/submenus/file/go.gif\" name=\"_ACTION_REALLYEDIT_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_\" value=\"\"><a href=\"javascript:history.go(-1)\"> <img src=\"/images/submenus/file/back.gif\" alt=\"back\" border=\"0\"></a><br><br><textarea cols=\"95\" rows=\"28\" name=\"_TEXTDATA_\">"
+[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - viewing "'$LOCATION'" on '$SERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+echo "`cat "'$LOCATION'"`</textarea>"
+else
+echo "<a href=\"javascript:history.go(-1)\"> <img src=\"/images/submenus/file/back.gif\" alt=\"back\" border=\"0\"></a><br><br>"'$EDITERRORMSG'
+fi
+'
+fi
+if [ $SERVERTYPE = federatedslave ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+echo `date`: file_manager \(federated mode\) - viewing "'$LOCATION'" on '$SERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVER' '\''
+EDITCHECK=ok
+#Check that file is not in a banned edit path
+for PATHCHECK in `echo '${LOCATION_LIST2[@]:0}'`
+do
+if [ `echo "'$LOCATION'" | grep -c $PATHCHECK` -gt 0 ]
+then
+EDITCHECK=no
+EDITERRORMSG="'$ERRORMSG9'"
+fi
+done
+FILETYPEDATA=`file "'$LOCATION'"`
+if [ `echo "$FILETYPEDATA" | grep -c ASCII` -gt 0 ] || [ `echo "$FILETYPEDATA" | grep -c Bourne-Again` -gt 0 ] || [ `echo "$FILETYPEDATA" | grep -c PHP` -gt 0 ] || [ `echo "$FILETYPEDATA" | grep -c XML` -gt 0 ] && [ $EDITCHECK = ok ]
+then
+echo "<input type=\"image\" src=\"/images/submenus/file/go.gif\" name=\"_ACTION_REALLYEDIT_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_\" value=\"\"><a href=\"javascript:history.go(-1)\"> <img src=\"/images/submenus/file/back.gif\" alt=\"back\" border=\"0\"></a><br><br><textarea cols=\"95\" rows=\"28\" name=\"_TEXTDATA_\">"
+echo "`cat "'$LOCATION'"`</textarea>"
+else
+echo "<a href=\"javascript:history.go(-1)\"> <img src=\"/images/submenus/file/back.gif\" alt=\"back\" border=\"0\"></a><br><br>"'$EDITERRORMSG'
+fi
+'\''
+'
+fi
+
+}
+
+function really_create_dir {
+
+if [ $LOCATION'null' != null ] && [ $NEWFOLDER'null' != null ]
+then
+
+convert_special_chars
+ITEMMOVE="$NEWFOLDER"
+convert_special_chars2
+NEWFOLDER="$ITEMMOVE"
+ITEMMOVE=""
+LOCATION=`echo "$LOCATION" | sed 's/+/ /g'`
+#Create new folder
+echo `date`: file_manager - creating "$LOCATION"/"$NEWFOLDER" on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+if [ $SERVER = $HOSTNAME ]
+then
+if [ ! -e "$LOCATION"/"$NEWFOLDER" ]
+then
+mkdir "$LOCATION"/"$NEWFOLDER"
+else
+echo "$ERRORMSG7<br><br><A HREF=\"javascript:history.go(-1)\"> <IMG SRC=\"/images/submenus/file/back.gif\" BORDER=\"0\"></A>"
+exit
+fi
+fi
+
+if [ $SERVERTYPE = network ] && [ $SERVER != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - creating "'$LOCATION'"/"'$NEWFOLDER'" on '$SERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+if [ ! -e "'$LOCATION'"/"'$NEWFOLDER'" ]
+then
+mkdir "'$LOCATION'"/"'$NEWFOLDER'"
+else
+echo "'$ERRORMSG7'<br><br><A HREF=\"javascript:history.go(-1)\"> <IMG SRC=\"/images/submenus/file/back.gif\" BORDER=\"0\"></A>"
+exit 100
+fi
+'
+[ `echo $?` = 100 ] && exit
+fi
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+echo `date`: file_manager \(federated mode\) - creating "'$LOCATION'"/"'$NEWFOLDER'" on '$SERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVER' '\''
+if [ ! -e "'$LOCATION'"/"'$NEWFOLDER'" ]
+then
+mkdir "'$LOCATION'"/"'$NEWFOLDER'"
+else
+echo "'$ERRORMSG7'<br><br><A HREF=\"javascript:history.go(-1)\"> <IMG SRC=\"/images/submenus/file/back.gif\" BORDER=\"0\"></A>"
+exit 100
+fi
+'\''
+[ `echo $?` = 100 ] && exit 100
+'
+[ `echo $?` = 100 ] && exit
+fi
+
+
+convert_special_chars
+show_directory
+}
+
+function create_dir {
+[ $LOCATION'null' = null ] && LOCATION=/
+LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
+convert_special_chars
+echo '<b>'$CREATEFOLDERMSG'</b><br><br><input type="image" src="/images/submenus/file/go.gif" name="_ACTION_REALLYCREATEDIR_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" value=""><A HREF="javascript:history.go(-1)"> <IMG SRC="/images/submenus/file/back.gif" BORDER="0"></A><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: 180px;">'$CURRENTLOCATIONMSG'</td><td>'$LOCATION'<td></tr>
+<tr><td>'$NEWFOLDERMSG'</td><td><input name="_NEWFOLDER_" type="text" size="20"></td></tr></tbody></table><br>'
+}
+
+function really_create_file {
+
+if [ $LOCATION'null' != null ] && [ $NEWFOLDER'null' != null ]
+then
+
+convert_special_chars
+ITEMMOVE="$NEWFOLDER"
+convert_special_chars2
+NEWFOLDER="$ITEMMOVE"
+ITEMMOVE=""
+LOCATION=`echo "$LOCATION" | sed 's/+/ /g'`
+#Create new folder
+echo `date`: file_manager - creating "$LOCATION"/"$NEWFOLDER" on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+if [ $SERVER = $HOSTNAME ]
+then
+if [ ! -e "$LOCATION"/"$NEWFOLDER" ]
+then
+echo -e "\n" > "$LOCATION"/"$NEWFOLDER"
+else
+echo "$ERRORMSG7<br><br><A HREF=\"javascript:history.go(-1)\"> <IMG SRC=\"/images/submenus/file/back.gif\" BORDER=\"0\"></A>"
+exit
+fi
+fi
+
+if [ $SERVERTYPE = network ] && [ $SERVER != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - creating "'$LOCATION'"/"'$NEWFOLDER'" on '$SERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+if [ ! -e "'$LOCATION'"/"'$NEWFOLDER'" ]
+then
+echo -e "\n" > "'$LOCATION'"/"'$NEWFOLDER'"
+else
+echo "'$ERRORMSG7'<br><br><A HREF=\"javascript:history.go(-1)\"> <IMG SRC=\"/images/submenus/file/back.gif\" BORDER=\"0\"></A>"
+exit 100
+fi
+'
+[ `echo $?` = 100 ] && exit
+fi
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+echo `date`: file_manager \(federated mode\) - creating "'$LOCATION'"/"'$NEWFOLDER'" on '$SERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVER' '\''
+if [ ! -e "'$LOCATION'"/"'$NEWFOLDER'" ]
+then
+echo -e "\n" > "'$LOCATION'"/"'$NEWFOLDER'"
+else
+echo "'$ERRORMSG7'<br><br><A HREF=\"javascript:history.go(-1)\"> <IMG SRC=\"/images/submenus/file/back.gif\" BORDER=\"0\"></A>"
+exit 100
+fi
+'\''
+[ `echo $?` = 100 ] && exit 100
+'
+[ `echo $?` = 100 ] && exit
+fi
+
+convert_special_chars
+show_directory
+}
+
+
+
+function create_file {
+[ $LOCATION'null' = null ] && LOCATION=/
+LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
+convert_special_chars
+echo '<b>'$CREATEFOLDERMSG'</b><br><br><input type="image" src="/images/submenus/file/go.gif" name="_ACTION_REALLYCREATEFILE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" value=""><A HREF="javascript:history.go(-1)"> <IMG SRC="/images/submenus/file/back.gif" BORDER="0"></A><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: 180px;">'$CURRENTLOCATIONMSG'</td><td>'$LOCATION'<td></tr>
+<tr><td>'$NEWFILEMSG'</td><td><input name="_NEWFOLDER_" type="text" size="20"></td></tr></tbody></table><br>'
+}
+
+function restore_check_info {
+
+ENABLE_RESTORE=yes
+if [ `echo $BACKUPINFO'null' | sed 's/ //g'` = null ]
+then
+ENABLE_RESTORE=no
+fi
+
+if [ `echo "$RESTOREPATH"null | sed 's/ //g'` = null ]
+then
+echo '<br>'$RESTOREERRORMSG3'<br><br>'
+ENABLE_RESTORE=no
+fi
+}
+
+
+function restore_item {
+#Confirm restore of item.
+convert_special_chars
+#Get backup details
+RESTOREPATH=`echo $LOCATION | cut -d/ -f7-`
+RESTOREPATH=`echo /$RESTOREPATH`
+DEPTHCOUNT=`echo -e "$RESTOREPATH" | sed 's/\//\n/g' | wc -l`
+let DEPTHCOUNT=$DEPTHCOUNT-1
+
+if [ $DEPTHCOUNT -gt 0 ]
+then
+RESTOREPATH=`echo $RESTOREPATH | cut -d/ -f1-$DEPTHCOUNT`
+else
+RESTOREPATH=""
+fi
+LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
+LOCATIONFOLDER=`echo $LOCATION | cut -d/ -f6-`
+RESTORESERVER=`echo $LOCATION | cut -d/ -f4`
+[ `echo $RESTORESERVER'null' | sed 's/ //g'` = null ] && RESTORESERVER=notset
+BACKUPNAME=`echo $LOCATION | cut -d/ -f5`
+[ `echo $BACKUPNAME'null' | sed 's/ //g'` = null ] && BACKUPNAME=notset
+BACKUPINFOPATH=/home/backups/$RESTORESERVER/$BACKUPNAME/backup_information
+#Read info file
+BACKUPINFO=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+[ -f "'$BACKUPINFOPATH'" ] && cat '$BACKUPINFOPATH'
+'`
+
+TOPRESTOREPATH=`echo -e "$BACKUPINFO" | sed -n 4,4p`
+TOPRESTOREPATH2=`basename "$TOPRESTOREPATH"`
+TOPRESTOREPATH=`echo "$TOPRESTOREPATH" | sed "s/\/$TOPRESTOREPATH2$//g"`
+RESTOREPATH=`echo "$TOPRESTOREPATH$RESTOREPATH"`
+
+#Check info
+restore_check_info
+if [ $ENABLE_RESTORE = yes ]
+then
+echo '<table class="'$TABLECLASS'" style="text-align: left; height: 91px;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: 180px;">'$RESTOREMSG'</td><td>'$LOCATIONFOLDER'</td></tr>
+<tr><td>'$RESTOREPATHMSG'</td><td>'$RESTOREPATH'</td></tr>
+<tr><td>'$RESTORESERVERMSG'</td><td>'$RESTORESERVER'</td></tr>
+</tbody></table>
+<br>'$CONFIRMRESTOREMSG'<br><br>
+<input type="image" src="/images/submenus/file/go.gif" name="_ACTION_REALLYRESTORE_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" value="">'
+else
+echo '<br><br>'
+fi
+echo '<a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" alt="back" border="0"></a>'
+}
+
+function really_restore_item {
+if [ $LOCATION'null' = null ]
+then
+echo `date`: file_manager - blank location by "for" $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+#Restore the item
+convert_special_chars
+LOCATIONFOLDER2=`basename "$LOCATION"`
+LASTLOCATION=`echo "$LOCATION" | sed "s/\/$LOCATIONFOLDER2$//g"`
+
+CURRENTLOCATION=`echo $LOCATION | cut -d/ -f1-6`
+RESTOREPATH=`echo $LOCATION | cut -d/ -f7-`
+RESTOREPATH=`echo /$RESTOREPATH`
+
+DEPTHCOUNT=`echo -e "$RESTOREPATH" | sed 's/\//\n/g' | wc -l`
+let DEPTHCOUNT=$DEPTHCOUNT-1
+
+if [ $DEPTHCOUNT -gt 0 ]
+then
+RESTOREPATH=`echo $RESTOREPATH | cut -d/ -f1-$DEPTHCOUNT`
+else
+RESTOREPATH=""
+fi
+LOCATIONFOLDER=`echo $LOCATION | cut -d/ -f6-`
+RESTORESERVER=`echo $LOCATION | cut -d/ -f4`
+[ `echo $RESTORESERVER'null' | sed 's/ //g'` = null ] && RESTORESERVER=notset
+BACKUPNAME=`echo $LOCATION | cut -d/ -f5`
+[ `echo $BACKUPNAME'null' | sed 's/ //g'` = null ] && BACKUPNAME=notset
+BACKUPINFOPATH=/home/backups/$RESTORESERVER/$BACKUPNAME/backup_information
+#Read info file
+BACKUPINFO=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+[ -f "'$BACKUPINFOPATH'" ] && cat '$BACKUPINFOPATH'
+'`
+
+TOPRESTOREPATH=`echo -e "$BACKUPINFO" | sed -n 4,4p`
+TOPRESTOREPATH2=`basename "$TOPRESTOREPATH"`
+TOPRESTOREPATH=`echo "$TOPRESTOREPATH" | sed "s/\/$TOPRESTOREPATH2$//g"`
+RESTOREPATH=`echo "$TOPRESTOREPATH$RESTOREPATH"`
+
+#Convert underscores
+LOCATION=`echo "$LOCATION" | sed "s/Z%%%%%Z/_/g"`
+RESTOREPATH=`echo "$RESTOREPATH" | sed "s/Z%%%%%Z/_/g"`
+
+echo `date`: file_manager - restoring "$LOCATIONFOLDER" from $SERVER to $RESTORESERVER $RESTOREPATH by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+echo '<table class="'$TABLECLASS'" style="text-align: left; height: 91px;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: 180px;">'$RESTOREMSG'</td><td>'$LOCATIONFOLDER'</td></tr>
+<tr><td>'$RESTOREPATHMSG'</td><td>'$RESTOREPATH'</td></tr>
+<tr><td>'$RESTORESERVERMSG'</td><td>'$RESTORESERVER'</td></tr>
+</tbody></table>
+<br>'$RESTORINGMSG'<br><br>'
+
+restore_check_info
+echo '<PRE STYLE="font-size: small; font-family:'Arial, Times, Georgia, Times New Roman, Times, serif'">'
+if [ $ENABLE_RESTORE = yes ]
+then
+#Sort out spaces for rsync
+LOCATION=`echo "$LOCATION" | sed 's/ /\\\ /g'`
+#RESTOREPATH=`echo "$RESTOREPATH" | sed 's/ /\\\ /g'`
+
+#echo 'rsync --dirs --recursive --compress --times --progress --perms --executability --owner --group root@'$SERVER':"'$LOCATION'" "'$RESTOREPATH'"'
+
+if [ $RESTORESERVER = $HOSTNAME ]
+then
+echo Restoring "$LOCATION" to $HOSTNAME
+#echo restorepath "$RESTOREPATH"
+#echo 'rsync --dirs --recursive --compress --times --progress --perms --executability --owner --group root@'$SERVER':"'$LOCATION'" "'$RESTOREPATH'"'
+#create restore path if it does not exist
+[ ! -d $RESTOREPATH ] && mkdir -p $RESTOREPATH
+rsync --timeout=30 --dirs --recursive --compress --times --progress --perms --executability --owner --group root@$SERVER:"$LOCATION" "$RESTOREPATH"/
+
+else
+echo Restoring "$LOCATION" to $RESTORESERVER
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $RESTORESERVER '
+#create restore path if it does not exist
+[ ! -d '$RESTOREPATH' ] && mkdir -p '$RESTOREPATH'
+rsync --timeout=30 --dirs --recursive --compress --times --progress --perms --executability --owner --group root@'$SERVER':"'$LOCATION'" "'$RESTOREPATH'"/
+'
+fi
+echo '</pre>'
+fi
+echo '<br>'$RESTORECOMPLETEMSG'<br><br>'
+echo '<input type="image" src="/images/submenus/file/back.gif" name="_SERVERTYPE_network_ACTION_ENTER_SERVER_'$SERVER'_LOCATION_'$LASTLOCATION'_" value="">'
+}
+
+
+[ $ACTION = ENTER ] && show_directory #converted to federated_mode
+[ $ACTION = DELETE ] && delete_item #converted to federated_mode
+[ $ACTION = REALLYDELETE ] && really_delete_item #converted to federated_mode
+[ $ACTION = SETPERMS ] && set_perms #converted to federated_mode
+[ $ACTION = REALLYSETPERMS ] && really_set_perms #converted to federated_mode
+[ $ACTION = MOVE ] && move_item #converted to federated_mode
+[ $ACTION = REALLYMOVE ] && really_move_item #converted to federated_mode
+[ $ACTION = REALLYCOPY ] && really_copy_item #converted to federated_mode
+[ $ACTION = CANCELCOPY ] && cancel_copy_item #converted to federated_mode
+[ $ACTION = RENAME ] && rename_item #converted to federated_mode
+[ $ACTION = REALLYRENAME ] && really_rename_item #converted to federated_mode
+[ $ACTION = EDIT ] && edit_item #converted to federated_mode
+[ $ACTION = REALLYEDIT ] && really_edit_item #converted to federated_mode
+[ $ACTION = CREATEDIR ] && create_dir #converted to federated_mode
+[ $ACTION = REALLYCREATEDIR ] && really_create_dir #converted to federated_mode
+[ $ACTION = RESTORE ] && restore_item
+[ $ACTION = REALLYRESTORE ] && really_restore_item
+[ $ACTION = CREATEFILE ] && create_file
+[ $ACTION = REALLYCREATEFILE ] && really_create_file
+exit

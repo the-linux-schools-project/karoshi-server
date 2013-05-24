@@ -1,0 +1,148 @@
+#!/bin/bash
+#Generate md5 sums for karoshi cgi scripts
+[ -d /opt/karoshi/web_controls/checksums ] && rm -f -R /opt/karoshi/web_controls/checksums
+mkdir /opt/karoshi/web_controls/checksums
+mkdir /opt/karoshi/web_controls/checksums/admin_checksums
+mkdir /opt/karoshi/web_controls/checksums/tech_checksums
+mkdir /opt/karoshi/web_controls/checksums/staff_checksums
+mkdir /opt/karoshi/web_controls/checksums/all_checksums
+chmod 0600 -R /opt/karoshi/web_controls/checksums
+chmod u+X -R /opt/karoshi/web_controls/checksums
+chown root.root -R /opt/karoshi/web_controls/checksums
+[ -d /var/www/checksums ] && rm -f -R /var/www/checksums
+
+ALPHABET=( A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z 1 2 3 4 5 6 7 8 9 0 . / + - _ ,)
+RANGE=`echo ${#ALPHABET[@]}`
+
+#Generate unique number for each cgi script
+function create_id {
+C1=$RANDOM
+let "C1 %= $RANGE"
+C2=$RANDOM
+let "C2 %= $RANGE"
+C3=$RANDOM
+let "C3 %= $RANGE"
+C4=$RANDOM
+let "C4 %= $RANGE"
+C5=$RANDOM
+let "C5 %= $RANGE"
+C6=$RANDOM
+let "C6 %= $RANGE"
+C7=$RANDOM
+let "C7 %= $RANGE"
+C8=$RANDOM
+let "C8 %= $RANGE"
+C9=$RANDOM
+let "C9 %= $RANGE"
+C10=$RANDOM
+let "C10 %= $RANGE"
+C11=$RANDOM
+let "C11 %= $RANGE"
+C12=$RANDOM
+let "C12 %= $RANGE"
+C13=$RANDOM
+let "C13 %= $RANGE"
+C14=$RANDOM
+let "C14 %= $RANGE"
+C15=$RANDOM
+let "C15 %= $RANGE"
+C16=$RANDOM
+let "C16 %= $RANGE"
+C17=$RANDOM
+let "C17 %= $RANGE"
+C18=$RANDOM
+let "C18 %= $RANGE"
+C19=$RANDOM
+let "C19 %= $RANGE"
+C20=$RANDOM
+let "C20 %= $RANGE"
+C21=$RANDOM
+let "C21 %= $RANGE"
+C22=$RANDOM
+let "C22 %= $RANGE"
+C23=$RANDOM
+let "C23 %= $RANGE"
+C24=$RANDOM
+let "C24 %= $RANGE"
+C25=$RANDOM
+let "C25 %= $RANGE"
+C1=${ALPHABET[C1]}
+C2=${ALPHABET[C2]}
+C3=${ALPHABET[C3]}
+C4=${ALPHABET[C4]}
+C5=${ALPHABET[C5]}
+C6=${ALPHABET[C6]}
+C7=${ALPHABET[C7]}
+C8=${ALPHABET[C8]}
+C9=${ALPHABET[C9]}
+C10=${ALPHABET[C10]}
+C11=${ALPHABET[C11]}
+C12=${ALPHABET[C12]}
+C13=${ALPHABET[C13]}
+C14=${ALPHABET[C14]}
+C15=${ALPHABET[C15]}
+C16=${ALPHABET[C16]}
+C17=${ALPHABET[C17]}
+C18=${ALPHABET[C18]}
+C19=${ALPHABET[C19]}
+C20=${ALPHABET[C20]}
+C21=${ALPHABET[C21]}
+C22=${ALPHABET[C22]}
+C23=${ALPHABET[C23]}
+C24=${ALPHABET[C24]}
+C25=${ALPHABET[C25]}
+UNIQUE_REF="$C1$C2$C3$C4$C5$C6$C7$C8$C9$C10$C11$C12$C13$C14$C15$C16$C17$C18$C19$C20$C21$C22$C23$C24$C25"
+}
+
+for CGISCRIPT in /var/www/cgi-bin_karoshi/admin/*;
+do
+create_id
+echo >> $CGISCRIPT
+echo "########################" >> $CGISCRIPT
+echo "#"Unique key >> $CGISCRIPT
+echo "########################" >> $CGISCRIPT
+echo "#""$UNIQUE_REF" >> $CGISCRIPT
+SCRIPTNAME=`basename $CGISCRIPT | sed 's/\./_/g' | sed 's/ /_/g'`
+MD5SUM=`md5sum $CGISCRIPT | cut -d' ' -f1`
+echo $SCRIPTNAME=$MD5SUM > /opt/karoshi/web_controls/checksums/admin_checksums/$SCRIPTNAME
+chmod 0400 /opt/karoshi/web_controls/checksums/admin_checksums/$SCRIPTNAME
+done
+for CGISCRIPT in /var/www/cgi-bin_karoshi/tech/*;
+do
+create_id
+echo >> $CGISCRIPT
+echo "########################" >> $CGISCRIPT
+echo "#"Unique key >> $CGISCRIPT
+echo "########################" >> $CGISCRIPT
+echo "#""$UNIQUE_REF" >> $CGISCRIPT
+SCRIPTNAME=`basename $CGISCRIPT | sed 's/\./_/g' | sed 's/ /_/g'`
+MD5SUM=`md5sum $CGISCRIPT | cut -d' ' -f1`
+echo $SCRIPTNAME=$MD5SUM > /opt/karoshi/web_controls/checksums/tech_checksums/$SCRIPTNAME
+chmod 0400 /opt/karoshi/web_controls/checksums/tech_checksums/$SCRIPTNAM
+done
+for CGISCRIPT in /var/www/cgi-bin_karoshi/staff/*;
+do
+create_id
+echo >> $CGISCRIPT
+echo "########################" >> $CGISCRIPT
+echo "#"Unique key >> $CGISCRIPT
+echo "########################" >> $CGISCRIPT
+echo "#""$UNIQUE_REF" >> $CGISCRIPT
+SCRIPTNAME=`basename $CGISCRIPT | sed 's/\./_/g' | sed 's/ /_/g'`
+MD5SUM=`md5sum $CGISCRIPT | cut -d' ' -f1`
+echo $SCRIPTNAME=$MD5SUM > /opt/karoshi/web_controls/checksums/staff_checksums/$SCRIPTNAME
+chmod 0400 /opt/karoshi/web_controls/checksums/staff_checksums/$SCRIPTNAME
+done
+for CGISCRIPT in /var/www/cgi-bin_karoshi/all/*;
+do
+create_id
+echo >> $CGISCRIPT
+echo "########################" >> $CGISCRIPT
+echo "#"Unique key >> $CGISCRIPT
+echo "########################" >> $CGISCRIPT
+echo "#""$UNIQUE_REF" >> $CGISCRIPT
+SCRIPTNAME=`basename $CGISCRIPT | sed 's/\./_/g' | sed 's/ /_/g'`
+MD5SUM=`md5sum $CGISCRIPT | cut -d' ' -f1`
+echo $SCRIPTNAME=$MD5SUM > /opt/karoshi/web_controls/checksums/all_checksums/$SCRIPTNAME
+chmod 0400 /opt/karoshi/web_controls/checksums/all_checksums/$SCRIPTNAME
+done

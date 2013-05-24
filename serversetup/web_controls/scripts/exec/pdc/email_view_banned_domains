@@ -1,0 +1,149 @@
+#!/bin/bash
+#Copyright (C) 2011 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/email_view_banned_domains_fm_cgi
+then
+echo `date`: email_view_banned_domains_fm - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/email_view_banned_domains_fm_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_view_banned_domains_fm.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $email_view_banned_domains_fm_cgi'check' ]
+then
+echo `date`: email_view_banned_domains_fm - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: email_view_banned_domains_fm - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: email_view_banned_domains_fm - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: email_view_banned_domains_fm - Not called by email_view_banned_domains_fm.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: email_view_banned_domains_fm - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: email_view_banned_domains_fm - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+echo `date`: email_view_banned_domains_fm - by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+############################
+#Language
+############################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+TIMEOUT=300
+NOTIMEOUT=127.0.0.1
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_banned_domains ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_banned_domains
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+ICON1=/images/submenus/email/email_delete.png
+
+
+EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+
+if [ $EMAILSERVER = $HOSTNAME ]
+then
+
+EMAILARRAY=( `cat /etc/postfix/access | cut -f1` )
+EMAILARRAYCOUNT=${#EMAILARRAY[@]} 
+
+echo  "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+<tbody>
+<tr><td style=\"width: 180px;\"><b>$EMAILDOMAINMSG</b></td><td><b>$DELETEMSG</b></td></tr>"
+
+COUNTER=0
+while [ $COUNTER -lt $EMAILARRAYCOUNT ]
+do
+echo "<tr><td>"${EMAILARRAY[$COUNTER]}"</td><td>
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_DELETE_DOMAIN_${EMAILARRAY[$COUNTER]}"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$DELETEMSG - ${EMAILARRAY[$COUNTER]}</span></a>
+</td></tr>"
+let COUNTER=$COUNTER+1
+done
+
+echo "</tbody></table>"
+
+else
+
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+
+EMAILARRAY=( `cat /etc/postfix/access | cut -f1` )
+EMAILARRAYCOUNT=${#EMAILARRAY[@]} 
+
+echo  "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+<tbody>
+<tr><td style=\"width: 180px;\"><b>'$EMAILDOMAINMSG'</b></td><td><b>'$DELETEMSG'</b></td></tr>"
+
+COUNTER=0
+while [ $COUNTER -lt $EMAILARRAYCOUNT ]
+do
+echo "<tr><td>"${EMAILARRAY[$COUNTER]}"</td><td>
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_DELETE_DOMAIN_${EMAILARRAY[$COUNTER]}"_"\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$DELETEMSG' - ${EMAILARRAY[$COUNTER]}</span></a>
+</td></tr>"
+let COUNTER=$COUNTER+1
+done
+
+echo "</tbody></table>"
+
+'
+fi
+
+
+exit
+
+

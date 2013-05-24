@@ -1,0 +1,24 @@
+#!/bin/bash
+#Exit codes
+#110 no data passed to script
+#111 user is a member of staff, itadmin, officestaff, or tech groups
+#112 user is not a member of the above groups
+LOG_DATE=`date +%F`
+read -t 1 -s DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\n-+'`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f1`
+USERTOCHECK=`echo "$DATA" | cut -s -d: -f2`
+USERTOCHECK=`echo $USERTOCHECK | tr -cd 'A-Za-z0-9\._:\n-+'`
+if [ `echo $USERTOCHECK'null' | sed 's/ //g'` = null ]
+then
+echo `date`: check_staff - No data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 110
+fi
+MYPRIGROUP=`id -g -n "$USERTOCHECK"`
+if [ $MYPRIGROUP = staff ] || [ $MYPRIGROUP = officestaff ] || [ $MYPRIGROUP = itadmin ] || [ $MYPRIGROUP = tech ]
+then
+#User is a member of staff
+exit 111
+fi
+echo `date`: check_staff - $REMOTE_USER is not a member of staff from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 112

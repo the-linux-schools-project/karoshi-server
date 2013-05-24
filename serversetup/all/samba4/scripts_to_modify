@@ -1,0 +1,28 @@
+Web Management
+
+/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/add_user - done apart from federated servers
+/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/add_user_offline_servers - done needs testing.
+/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/change_management_passwords - done needs testing.
+/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/change_my_password  - done apart from federated servers
+/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/change_password - done apart from federated servers - needs testing to see if the password needs changing on slave ldap servers.
+/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/change_primary_group - difficult - cannot move ldap entry to correct place in the user tree. Maybe have to delete and re-create the user like change primary group.
+/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/change_student_password - done apart from federated servers - needs testing to see if the password needs changing on slave ldap servers.
+/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/change_username ??
+/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/default_user_settings
+/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/delete_user - done apart from federated servers
+/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/exam_accounts_change_passwords - done
+/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/exam_accounts_create - done - needs testing.
+/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/exam_accounts_reset_passwords - done
+/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/group_membership2 - modified but checking needed for samba-tool output.
+/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/groups_change
+/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/lockout_reset
+/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/modify_groups - done needs testing
+/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/module_federation_control
+/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/module_fileserver - done
+/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/module_printserver - done
+/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/new_group - done needs testing
+/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/new_primary_group - done needs testing
+/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/printers_restart_samba - done
+/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/reset_password - done apart from federated servers - needs testing to see if the password needs changing on slave ldap servers.
+/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/windows_client_allow_roaming_profile
+

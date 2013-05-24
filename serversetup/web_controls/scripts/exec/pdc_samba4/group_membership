@@ -1,0 +1,147 @@
+#!/bin/bash
+#Copyright (C) 2012 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/group_membership_cgi
+then
+echo `date`: group_membership - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/group_membership_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/group_membership.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $group_membership_cgi'check' ]
+then
+echo `date`: group_membership - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: group_membership - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-' | sed 's/REPLACEUNDERSCORE/_/g'`
+if [ $DATA'null' = null ]
+then
+echo `date`: group_membership - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+USERNAME=`echo "$DATA" | cut -s -d: -f4`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: group_membership - Not called by group_membership.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: group_membership - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: group_membership - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $USERNAME'null' = null ]
+then
+echo `date`: group_membership - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: group_membership - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+echo `date`: group_membership - showing group information "for" $USERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+ICON1=/images/submenus/user/group_yes.png
+ICON2=/images/submenus/user/group_no.png
+
+function check_group_membership {
+if [ `echo "$CURRENTGROUPS" | grep -c -w "$GROUPNAME"` -gt 0 ]
+then
+[ $USERGROUPS = yes ] && echo '<tr><td>'$GROUPNAME'</td><td>'$GROUPID'</td><td><input type="image" src="'$ICON1'" name="___ACTION___REMOVE___GROUP___'$GROUPNAME'___USERNAME___'$USERNAME'___" value=""></td></tr>'
+else
+[ $AVAILABLEGROUPS = yes ] && echo '<tr><td>'$GROUPNAME'</td><td>'$GROUPID'</td><td><input type="image" src="'$ICON2'" name="___ACTION___ADD___GROUP___'$GROUPNAME'___USERNAME___'$USERNAME'___" value=""></td></tr>'
+fi
+}
+
+#Language
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/group_membership ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/user/group_membership
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+#Get existing group information
+CURRENTGROUPS=`id -G -n $USERNAME`
+echo '<form action="/cgi-bin/admin/group_membership2.cgi" method="post">'
+echo  '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<tbody><tr><td style="width: 180px;"><b>'$GROUPNAMEMSG'</b></td><td><b>'$GROUPIDMSG'</b></td><td><b>'$STATUSMSG'</b></td></tr>'
+#Get database password
+GROUPLIST=( `samba-tool group list | sed 's/ /____/g' | sort`
+#GROUPLIST=( `ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" objectclass=posixGroup | grep ^cn: | cut -d' ' -f2-| sed 's/ /____/g' | sort` )
+GROUPCOUNT=${#GROUPLIST[@]}  
+
+function check_groups {
+COUNTER=0
+while [ $COUNTER -lt $GROUPCOUNT ]
+do
+GROUPNAME=`echo ${GROUPLIST[$COUNTER]} | sed 's/____/ /g'`
+GROUPID=`getent group "$GROUPNAME" | cut -d: -f3`
+if [ $GROUPID -ge 1000 ] || [ $GROUPID = 512 ]
+then
+check_group_membership
+fi
+let COUNTER=$COUNTER+1
+done
+}
+USERGROUPS=yes
+AVAILABLEGROUPS=no
+check_groups
+USERGROUPS=no
+AVAILABLEGROUPS=yes
+check_groups
+echo '</tbody></table></form>'
+exit

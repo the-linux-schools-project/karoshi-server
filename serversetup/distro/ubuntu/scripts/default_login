@@ -1,0 +1,11 @@
+#!/bin/bash
+#default_login
+if test -f /etc/gdm/custom.conf
+then
+sed -i 's/true/false/g' /etc/gdm/custom.conf
+fi
+
+if [ -f /etc/lightdm/lightdm.conf ]
+then
+sed -i 's/karoshi//g' /etc/lightdm/lightdm.conf
+fi

@@ -1,0 +1,170 @@
+#!/bin/bash
+#Copyright (C) 2007  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+########################
+#Required input variables
+########################
+#  _LEVEL1_
+#  _LEVEL2_
+#  _LEVEL3_
+#  _LEVEL4_
+############################
+#Language
+############################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_quota_messages ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_quota_messages
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+############################
+#Show page
+############################
+echo "Content-type: text/html"
+echo ""
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"><link rel="stylesheet" href="/css/'$STYLESHEET'"></head><body>'
+#########################
+#Get data input
+#########################
+TCPIP_ADDR=$REMOTE_ADDR
+DATA=`cat | tr -cd 'A-Za-z0-9\._:\+%'`
+#########################
+#Assign data to variables
+#########################
+END_POINT=8
+#Assign LEVEL1
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+if [ `echo $DATAHEADER'check'` = LEVEL1check ]
+then
+let COUNTER=$COUNTER+1
+LEVEL1=`echo $DATA | cut -s -d'_' -f$COUNTER`
+break
+fi
+let COUNTER=$COUNTER+1
+done
+#Assign LEVEL2
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+if [ `echo $DATAHEADER'check'` = LEVEL2check ]
+then
+let COUNTER=$COUNTER+1
+LEVEL2=`echo $DATA | cut -s -d'_' -f$COUNTER`
+break
+fi
+let COUNTER=$COUNTER+1
+done
+#Assign LEVEL3
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+if [ `echo $DATAHEADER'check'` = LEVEL3check ]
+then
+let COUNTER=$COUNTER+1
+LEVEL3=`echo $DATA | cut -s -d'_' -f$COUNTER`
+break
+fi
+let COUNTER=$COUNTER+1
+done
+#Assign LEVEL4
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+if [ `echo $DATAHEADER'check'` = LEVEL4check ]
+then
+let COUNTER=$COUNTER+1
+LEVEL4=`echo $DATA | cut -s -d'_' -f$COUNTER`
+break
+fi
+let COUNTER=$COUNTER+1
+done
+
+function show_status {
+echo '<SCRIPT language="Javascript">'
+echo 'alert("'$MESSAGE'")';
+echo '</script>'
+echo "</body></html>"
+exit
+}
+#########################
+#Check https access
+#########################
+if [ https_$HTTPS != https_on ]
+then
+export MESSAGE=$HTTPS_ERROR
+show_status
+fi
+#########################
+#Check user accessing this script
+#########################
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+then
+MESSAGE=$ACCESS_ERROR1
+show_status
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+MESSAGE=$ACCESS_ERROR1
+show_status
+fi
+#########################
+#Check data
+#########################
+#Check to see that LEVEL1 is not blank
+if [ $LEVEL1'null' = null ]
+then
+MESSAGE=$ERRORMSG1
+show_status
+fi
+#Check to see that LEVEL2 is not blank
+if [ $LEVEL2'null' = null ]
+then
+MESSAGE=$ERRORMSG2
+show_status
+fi
+#Check to see that LEVEL3 is not blank
+if [ $LEVEL3'null' = null ]
+then
+MESSAGE=$ERRORMSG3
+show_status
+fi
+#Check to see that LEVEL4 is not blank
+if [ $LEVEL4'null' = null ]
+then
+MESSAGE=$ERRORMSG4
+show_status
+fi
+
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_quota_messages2.cgi | cut -d' ' -f1`
+#Apply changes
+sudo -H /opt/karoshi/web_controls/exec/email_quota_messages_apply $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LEVEL1:$LEVEL2:$LEVEL3:$LEVEL4
+EXEC_STATUS=`echo $?`
+MESSAGE=$COMPLETEDMSG
+show_status

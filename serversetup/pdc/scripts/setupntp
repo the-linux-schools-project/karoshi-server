@@ -1,0 +1,91 @@
+#!/bin/bash
+#setupntp
+#Copyright (C) 2004  Paul Sharrad
+#Copyright (C) 2005  The karoshi Team
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aloughlin@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+[ -d $HOME/.tempdata ] || mkdir $HOME/.tempdata
+
+[ -e /opt/karoshi/serversetup/variables/language ] || /opt/karoshi/serversetup/changelanguage
+[ -e /opt/karoshi/serversetup/variables/distro ] || /opt/karoshi/serversetup/changedistro
+
+source /opt/karoshi/serversetup/variables/language
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/variables/tcpip
+source /opt/karoshi/serversetup/language/$LANGCHOICE/pdc/setupntp
+source /opt/karoshi/serversetup/language/$LANGCHOICE/softwareinstall
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/software
+NTPSERVERIP=$NTPSERVER
+
+#########################
+#Add log entry
+#########################
+touch /opt/karoshi/serversetup/setuplog
+echo '##############'setupntp'##############' >> /opt/karoshi/serversetup/install_log
+date >> /opt/karoshi/serversetup/install_log
+if [ `grep -c "$TITLE" /opt/karoshi/serversetup/setuplog` = 0 ]
+then
+echo setupntp:$TITLE:/opt/karoshi/serversetup/pdc/scripts/setupntp >> /opt/karoshi/serversetup/setuplog
+chmod 0600 /opt/karoshi/serversetup/setuplog
+fi
+
+######################
+#Final ntp Install check
+######################
+
+if ! test -f /etc/init.d/$NTPVER
+then
+echo /etc/init.d/$NTPVER does not exist >> /opt/karoshi/serversetup/install_log
+yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=4 --image=dialog-question --text="$NTPVER $NOTINSTALLED" --no-buttons
+exit 101
+fi
+
+#############################
+#Ensure that NTP is running on boot
+##############################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/ntp
+
+#echo Setting up NTP service to get the time from the IPCop firewall on $NTPSERVERIP
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_stop 1> /dev/null
+
+#echo Creating ntp configuration file
+rm -f /etc/ntp.conf
+###############################
+#create ntp.conf
+###############################
+echo server	127.127.1.0 > /etc/ntp.conf
+echo fudge	127.127.1.0 stratum 10	>> /etc/ntp.conf
+echo server 0.pool.ntp.org >> /etc/ntp.conf
+echo server 1.pool.ntp.org >> /etc/ntp.conf
+echo server 2.pool.ntp.org >> /etc/ntp.conf
+echo server pool.ntp.org >> /etc/ntp.conf
+echo driftfile /etc/ntp/drift >> /etc/ntp.conf
+echo broadcastdelay	0.008 >> /etc/ntp.conf
+
+###############################
+#Do initial time syncronisation
+###############################
+ntpdate -t 1 $NTPSERVERIP
+NTPSYNCSTATUS=`echo $?`
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_start
+exit
+

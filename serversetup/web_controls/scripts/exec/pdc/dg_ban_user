@@ -1,0 +1,222 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+BANERRORMSG1="This user is already banned."
+DURATIONMSG="Internet ban duration"
+DAYSMSG=Days
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dg_ban_user2_cgi
+then
+echo `date`: dg_ban_user2 - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/dg_ban_user2_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_ban_user2.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $dg_ban_user2_cgi'check' ]
+then
+echo `date`: dg_ban_user2 - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/dg_ban_user2_cgi
+then
+echo `date`: dg_ban_user2 - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/tech_checksums/dg_ban_user2_cgi
+MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/dg_ban_user2.cgi | cut -d' ' -f1`
+[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+if [ $MD5SUM2'check' != $dg_ban_user2_cgi'check' ]
+then
+echo `date`: dg_ban_user - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 1 ]
+then
+echo `date`: dg_ban_user - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo $* | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | cut -s -d: -f3`
+DAY=`echo $* | cut -s -d: -f4`
+MONTH=`echo $* | cut -s -d: -f5`
+YEAR=`echo $* | cut -s -d: -f6`
+HOUR=`echo $* | cut -s -d: -f7`
+MINUTES=`echo $* | cut -s -d: -f8`
+INCIDENT=`echo $* | cut -s -d: -f9`
+ACTIONTAKEN=`echo $* | cut -s -d: -f10`
+STUDENTS=`echo $* | cut -s -d: -f11`
+BANLENGTH=`echo $* | cut -s -d: -f12`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: dg_ban_user - Not called by dg_ban_user2.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: dg_ban_user - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: dg_ban_user - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $DAY'null' = null ]
+then
+echo `date`: dg_ban_user - Blank day by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ $MONTH'null' = null ]
+then
+echo `date`: dg_ban_user - Blank month by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $YEAR'null' = null ]
+then
+echo `date`: dg_ban_user - Blank year by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $HOUR'null' = null ]
+then
+echo `date`: dg_ban_user - Blank hour by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $MINUTES'null' = null ]
+then
+echo `date`: dg_ban_user - Blank minutes by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $INCIDENT'null' = null ]
+then
+echo `date`: dg_ban_user - Blank incident by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $ACTIONTAKEN'null' = null ]
+then
+echo `date`: dg_ban_user - Blank incident by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $STUDENTS'null' = null ]
+then
+echo `date`: dg_ban_user - Blank students by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: dg_ban_user - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Create log file
+########################
+[ -d /opt/karoshi/logs/incident_logs ] || mkdir -p /opt/karoshi/logs/incident_logs
+[ -d /opt/karoshi/logs/banned_user_internet_durations/ ] || mkdir -p /opt/karoshi/logs/banned_user_internet_durations/
+chmod -R 0600 /opt/karoshi/logs
+chmod -R u+X /opt/karoshi/logs
+chown -R root.root /opt/karoshi/logs
+########################
+#Add incident to log files
+########################
+INCIDENT=`echo $INCIDENT | sed 's/+/ /g'`
+ACTIONTAKEN=`echo $ACTIONTAKEN | sed 's/+/ /g'`
+STUDENTS=`echo $STUDENTS | sed 's/+/ /g'`
+STUDENT_ARRAY=( `echo $STUDENTS` )
+STUDENT_ARRAY_COUNT=`echo ${#STUDENT_ARRAY[@]}`
+COUNTER=0
+while [ $COUNTER -le $STUDENT_ARRAY_COUNT ]
+do
+USERNAME=`echo ${STUDENT_ARRAY[$COUNTER]}`
+if [ $USERNAME'null' != null ]
+then
+if [ $BANLENGTH'null' != null ]
+then
+echo `date | sed 's/:/-/g'`:$DAY:$MONTH:$YEAR:$HOUR:$MINUTES:$INCIDENT:$ACTIONTAKEN $DURATIONMSG $BANLENGTH $DAYSMSG:$STUDENTS >> /opt/karoshi/logs/incident_logs/$USERNAME
+else
+echo `date | sed 's/:/-/g'`:$DAY:$MONTH:$YEAR:$HOUR:$MINUTES:$INCIDENT:$ACTIONTAKEN:$STUDENTS >> /opt/karoshi/logs/incident_logs/$USERNAME
+fi
+########################
+#Ban the user
+########################
+if [ $BANLENGTH'null' != null ]
+then
+echo `date`: dg_ban_user - $USERNAME banned "for" $BANLENGTH days by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo $BANLENGTH > /opt/karoshi/logs/banned_user_internet_durations/$USERNAME
+else
+echo `date`: dg_ban_user - $USERNAME banned by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+#Get squid server name
+[ ! -f /opt/karoshi/server_network/proxyserver ] && exit 101
+PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+
+if [ $PROXYSERVER != $HOSTNAME ]
+then
+ssh -x -o PasswordAuthentication=no $PROXYSERVER '
+touch /etc/squid/badusers.list
+USERCOUNT=`grep -c -w ^'$USERNAME' /etc/squid/badusers.list`
+if [ $USERCOUNT = 0 ]
+then
+echo '$USERNAME' >> /etc/squid/badusers.list
+sort /etc/squid/badusers.list > /etc/squid/badusers.list1
+rm -f /etc/squid/badusers.list
+mv /etc/squid/badusers.list1 /etc/squid/badusers.list
+touch /etc/dansguardian/activate_changes
+else
+exit 101
+fi
+'
+scp  root@$PROXYSERVER:"/etc/squid/badusers.list" /etc/squid/
+else
+touch /etc/squid/badusers.list
+USERCOUNT=`grep -c -w ^$USERNAME /etc/squid/badusers.list`
+if [ $USERCOUNT = 0 ]
+then
+echo $USERNAME >> /etc/squid/badusers.list
+sort /etc/squid/badusers.list > /etc/squid/badusers.list1
+rm -f /etc/squid/badusers.list
+mv /etc/squid/badusers.list1 /etc/squid/badusers.list
+touch /etc/dansguardian/activate_changes
+else
+MESSAGE=`echo $USERNAME: $BANERRORMSG1`
+echo '<SCRIPT language="Javascript">'
+echo 'alert("'$MESSAGE'")';
+echo '</script>'
+fi
+fi
+
+fi
+let COUNTER=$COUNTER+1
+done
+exit

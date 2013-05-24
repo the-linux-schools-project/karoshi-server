@@ -1,0 +1,349 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/default_user_settings_fm_cgi
+then
+echo `date`: default_user_settings - No form MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/default_user_settings_fm_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/default_user_settings_fm.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $default_user_settings_fm_cgi'check' ]
+then
+echo `date`: default_user_settings - Incorrect form MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/default_user_settings_cgi
+then
+echo `date`: default_user_settings - No cgi MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/default_user_settings_cgi
+MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/admin/default_user_settings.cgi | cut -d' ' -f1`
+[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+if [ $MD5SUM2'check' != $default_user_settings_cgi'check' ]
+then
+echo `date`: default_user_settings - Incorrect cgi MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: default_user_settings - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+ACTION=`echo "$DATA" | cut -s -d: -f4`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: default_user_settings - Not called by default_user_settings.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: default_user_settings - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: default_user_settings - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $ACTION'null' = null ]
+then
+echo `date`: default_user_settings - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+
+if [ $ACTION != GETDATA ] && [ $ACTION != SETDATA ]
+then
+echo `date`: default_user_settings - Incorrect action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+DOMAINNAME=`cat /etc/samba/smb.conf | sed 's/ //g' | sed 's/\t//g' | grep ^workgroup= | cut -d= -f2`
+
+
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/default_user_settings ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/user/add_user
+source /opt/karoshi/web_controls/language/$LANGCHOICE/user/default_user_settings
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+#Get default username style
+if [ -f /opt/karoshi/server_network/default_username_style ]
+then
+source /opt/karoshi/server_network/default_username_style
+[ $DEFAULTSTYLE = 1 ] && SELECT1='selected="selected"'
+[ $DEFAULTSTYLE = 2 ] && SELECT2='selected="selected"'
+[ $DEFAULTSTYLE = 3 ] && SELECT3='selected="selected"'
+[ $DEFAULTSTYLE = 4 ] && SELECT4='selected="selected"'
+[ $DEFAULTSTYLE = 5 ] && SELECT5='selected="selected"'
+[ $DEFAULTSTYLE = 6 ] && SELECT6='selected="selected"'
+[ $DEFAULTSTYLE = 7 ] && SELECT7='selected="selected"'
+[ $DEFAULTSTYLE = 8 ] && SELECT8='selected="selected"'
+[ $DEFAULTSTYLE = 9 ] && SELECT9='selected="selected"'
+else
+SELECT1='selected="selected"'
+fi
+
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+if [ $ACTION = GETDATA ]
+then
+
+#Query ldap for the data
+LOCKOUTTHRESHOLD=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" sambaDomainName=$DOMAINNAME | grep ^sambaLockoutThreshold | sed 's/ //g' | cut -d: -f2`
+LOCKOUTDURATION=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" sambaDomainName=$DOMAINNAME | grep ^sambaLockoutDuration | sed 's/ //g' | cut -d: -f2`
+LOCKOUTOBS=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" sambaDomainName=$DOMAINNAME | grep ^sambaLockoutObservationWindow | sed 's/ //g' | cut -d: -f2`
+
+#Get shadowmax global setting
+[ -f /opt/karoshi/server_network/ldap_settings/shadowmax ] && SHADOWMAX=`sed -n 1,1p /opt/karoshi/server_network/ldap_settings/shadowmax | tr -cd '0-9'`
+[ $SHADOWMAX'null' = null ] && SHADOWMAX=3650
+#Show table for data choice
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+    <tbody>
+      <tr>
+        <td style="width: 180px;">
+'$LOCKOUTDURATIONMSG'</td>
+        <td><input tabindex= "1" name="_LOCKOUTDURATION_" maxlength="3" size="3" type="text" value="'$LOCKOUTDURATION'"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
+
+      </td></tr>
+      <tr>
+        <td>
+'$LOCKOUTTHRESHOLDMSG'</td>
+        <td><input tabindex= "1" name="_LOCKOUTTHRESHOLD_" maxlength="3" size="3" type="text" value="'$LOCKOUTTHRESHOLD'"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a>
+      </td></tr>
+      <tr>
+        <td>
+'$LOCKOUTOBSMSG'</td>
+        <td><input tabindex= "2" name="_LOCKOUTOBS_" maxlength="3" size="3" type="text" value="'$LOCKOUTOBS'"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a>
+      </td></tr>
+ <tr>
+        <td>
+'$SHADOWMAXSMSG'</td>
+        <td><input tabindex= "2" name="_SHADOWMAX_" maxlength="4" size="3" type="text" value="'$SHADOWMAX'"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG4'</span></a>
+      </td></tr>
+<tr><td>'$USERSTYLEMSG'</td>
+
+<td>
+        <select name="_USERNAMESTYLE_" style="width: 200px;" onClick="rewriteselect();">
+        <option value="userstyleS1" '$SELECT1'>'$STYLE1MSG': '$STYLE1MSGEX'</option>
+        <option value="userstyleS2" '$SELECT2'>'$STYLE2MSG': '$STYLE2MSGEX'</option>
+        <option value="userstyleS3" '$SELECT3'>'$STYLE3MSG': '$STYLE3MSGEX'</option>
+        <option value="userstyleS4" '$SELECT4'>'$STYLE4MSG': '$STYLE4MSGEX'</option>
+        <option value="userstyleS5" '$SELECT5'>'$STYLE5MSG': '$STYLE5MSGEX'</option>
+        <option value="userstyleS6" '$SELECT6'>'$STYLE6MSG': '$STYLE6MSGEX'</option>
+        <option value="userstyleS7" '$SELECT7'>'$STYLE7MSG': '$STYLE7MSGEX'</option>
+        <option value="userstyleS8" '$SELECT8'>'$STYLE8MSG': '$STYLE8MSGEX'</option>
+        <option value="userstyleS9" '$SELECT9'>'$STYLE9MSG': '$STYLE9MSGEX'</option>
+	</select></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG5'</span></a></td>
+</tr>
+    </tbody>
+  </table>'
+fi
+if [ $ACTION = SETDATA ]
+then
+
+DNENTRY=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" sambaDomainName=$DOMAINNAME | grep ^dn:`
+LOCKOUTDURATION=`echo "$DATA" | cut -s -d: -f5`
+LOCKOUTTHRESHOLD=`echo "$DATA" | cut -s -d: -f6`
+LOCKOUTOBS=`echo "$DATA" | cut -s -d: -f7`
+SHADOWMAX=`echo "$DATA" | cut -s -d: -f8`
+USERNAMESTYLE=`echo "$DATA" | cut -s -d: -f9`
+
+if [ $LOCKOUTDURATION'null' = null ]
+then
+echo `date`: default_user_settings - Blank lockout duration by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $LOCKOUTTHRESHOLD'null' = null ]
+then
+echo `date`: default_user_settings - Blank lockout threshold by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $LOCKOUTOBS'null' = null ]
+then
+echo `date`: default_user_settings - Blank lockout observation window by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $SHADOWMAX'null' = null ]
+then
+echo `date`: default_user_settings - Blank shadowmax by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $USERNAMESTYLE'null' = null ]
+then
+echo `date`: default_user_settings - Blank usernamestyle by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+
+echo `date`: default_user_settings - sambaLockoutDuration: $LOCKOUTDURATION sambaLockoutThreshold: $LOCKOUTTHRESHOLD sambaLockoutObservationWindow: $LOCKOUTOBS shadowmax: $SHADOWMAX usernamestyle: $USERNAMESTYLE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#Modify ldap
+echo $DNENTRY > /opt/karoshi/.tempdata/lockoutinfo.$$
+echo changetype: modify >> /opt/karoshi/.tempdata/lockoutinfo.$$
+echo replace: sambaLockoutDuration >> /opt/karoshi/.tempdata/lockoutinfo.$$
+echo sambaLockoutDuration: $LOCKOUTDURATION >> /opt/karoshi/.tempdata/lockoutinfo.$$
+echo - >> /opt/karoshi/.tempdata/lockoutinfo.$$
+echo replace: sambaLockoutThreshold >> /opt/karoshi/.tempdata/lockoutinfo.$$
+echo sambaLockoutThreshold: $LOCKOUTTHRESHOLD >> /opt/karoshi/.tempdata/lockoutinfo.$$
+echo - >> /opt/karoshi/.tempdata/lockoutinfo.$$
+echo replace: sambaLockoutObservationWindow >> /opt/karoshi/.tempdata/lockoutinfo.$$
+echo sambaLockoutObservationWindow: $LOCKOUTOBS >> /opt/karoshi/.tempdata/lockoutinfo.$$
+echo - >> /opt/karoshi/.tempdata/lockoutinfo.$$
+
+ldapmodify -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" -f /opt/karoshi/.tempdata/lockoutinfo.$$ 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+MODSTATUS=`echo $?`
+rm -f /opt/karoshi/.tempdata/lockoutinfo.$$
+
+#Get current shadowmax
+[ -f /opt/karoshi/server_network/ldap_settings/shadowmax ] && CURRENTSHADOWMAX=`sed -n 1,1p /opt/karoshi/server_network/ldap_settings/shadowmax | tr -cd '0-9'`
+[ $CURRENTSHADOWMAX'null' = null ] && CURRENTSHADOWMAX=3650
+
+#Change shadowmax for all users if it has changed
+if [ $CURRENTSHADOWMAX != $SHADOWMAX ]
+then
+echo $SHADOWMAX > /opt/karoshi/server_network/ldap_settings/shadowmax
+#Backup /etc/smbldap-tools/smbldap.conf
+cp -f /etc/smbldap-tools/smbldap.conf /etc/smbldap-tools/smbldap.conf.$$
+#Change defaultMaxPasswordAge in /etc/smbldap-tools/smbldap.conf
+MAXPASSLINENO=`grep -n ^defaultMaxPasswordAge /etc/smbldap-tools/smbldap.conf | cut -d: -f1`
+sed -i $MAXPASSLINENO'c'defaultMaxPasswordAge=\"$SHADOWMAX\" /etc/smbldap-tools/smbldap.conf
+
+chmod 0640 /opt/karoshi/server_network/ldap_settings/shadowmax
+chown root.apache_karoshi /opt/karoshi/server_network/ldap_settings/shadowmax
+echo "<br><li>"$HOSTNAME - $SETSHADOWMAXMSG1"</li><br>"
+sleep 1
+#Get database password
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+let SHADOWMAXSECONDS=$SHADOWMAX*24*60*60
+NEWMAXAGE=`perl -e 'print time+'$SHADOWMAXSECONDS';'`
+for LDAPUSER in `getent passwd | grep /home/users | cut -d: -f1`
+do
+echo $LDAPUSER - $SETSHADOWMAXMSG2 $SHADOWMAX"<br>"
+smbldap-usermod --shadowMax $SHADOWMAX $LDAPUSER
+#Modify defaultMaxPasswordAge
+echo $LDAPUSER - $MAXPASSWORDAGEMSG $NEWMAXAGE"<br>"
+LDAPIDENT=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" uid=$LDAPUSER | grep dn:`
+#Create ldif with modified sambaPwdMustChange
+echo $LDAPIDENT > /opt/karoshi/.tempdata/$LDAPUSER.$$.ldif
+echo changetype: modify >> /opt/karoshi/.tempdata/$LDAPUSER.$$.ldif
+echo replace: sambaPwdMustChange >> /opt/karoshi/.tempdata/$LDAPUSER.$$.ldif
+echo sambaPwdMustChange: $NEWMAXAGE >> /opt/karoshi/.tempdata/$LDAPUSER.$$.ldif
+echo - >> $LDAPUSER.$$.ldif
+ldapmodify -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" -f /opt/karoshi/.tempdata/$LDAPUSER.$$.ldif 1>/dev/null
+rm -f /opt/karoshi/.tempdata/$LDAPUSER.$$.ldif
+
+done
+
+#Set shadowmax on all slave ldap servers
+SLAVE_LDAP_SERVERS=no
+if [ -d /opt/karoshi/server_network/slave_ldap_servers/ ]
+then
+if [ `ls -1 /opt/karoshi/server_network/slave_ldap_servers/ | wc -l` -gt 0 ]
+then
+SLAVE_LDAP_SERVERS=yes
+fi
+fi
+
+if [ $SLAVE_LDAP_SERVERS = yes ]
+then
+for SLAVELDAPSERVERS in /opt/karoshi/server_network/slave_ldap_servers/*
+do
+SLAVELDAPSERVER=`basename $SLAVELDAPSERVERS`
+ssh -x -o PasswordAuthentication=no $SLAVELDAPSERVER '
+echo "<br><li>"$HOSTNAME - '$SETSHADOWMAXMSG1'"</li><br>"
+sleep 1
+
+#Backup /etc/smbldap-tools/smbldap.conf
+cp -f /etc/smbldap-tools/smbldap.conf /etc/smbldap-tools/smbldap.conf.$$
+#Change defaultMaxPasswordAge in /etc/smbldap-tools/smbldap.conf
+MAXPASSLINENO=`grep -n ^defaultMaxPasswordAge /etc/smbldap-tools/smbldap.conf | cut -d: -f1`
+sed -i $MAXPASSLINENO"c"defaultMaxPasswordAge=\"'$SHADOWMAX'\" /etc/smbldap-tools/smbldap.conf
+
+#Get database password
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+
+
+for LDAPUSER in `getent passwd | grep /home/users | cut -d: -f1`
+do
+echo $LDAPUSER - '$SETSHADOWMAXMSG2' '$SHADOWMAX'"<br>"
+smbldap-usermod --shadowMax '$SHADOWMAX' $LDAPUSER
+echo $LDAPUSER - '$MAXPASSWORDAGEMSG' '$NEWMAXAGE'"<br>"
+#Modify defaultMaxPasswordAge
+
+LDAPIDENT=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" uid=$LDAPUSER | grep dn:`
+#Create ldif with modified sambaPwdMustChange
+echo $LDAPIDENT > /opt/karoshi/.tempdata/$LDAPUSER.$$.ldif
+echo changetype: modify >> /opt/karoshi/.tempdata/$LDAPUSER.$$.ldif
+echo replace: sambaPwdMustChange >> /opt/karoshi/.tempdata/$LDAPUSER.$$.ldif
+echo sambaPwdMustChange: '$NEWMAXAGE' >> /opt/karoshi/.tempdata/$LDAPUSER.$$.ldif
+echo - >> $LDAPUSER.$$.ldif
+ldapmodify -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" -f /opt/karoshi/.tempdata/$LDAPUSER.$$.ldif 1>/dev/null
+rm -f /opt/karoshi/.tempdata/$LDAPUSER.$$.ldif
+done
+'
+done
+fi
+
+fi
+#Set username style
+[ $USERNAMESTYLE = userstyleS1 ] && USERNAMESTYLE=1
+[ $USERNAMESTYLE = userstyleS2 ] && USERNAMESTYLE=2
+[ $$USERNAMESTYLE = userstyleS3 ] && USERNAMESTYLE=3
+[ $USERNAMESTYLE = userstyleS4 ] && USERNAMESTYLE=4
+[ $USERNAMESTYLE = userstyleS5 ] && USERNAMESTYLE=5
+[ $USERNAMESTYLE = userstyleS6 ] && USERNAMESTYLE=6
+[ $USERNAMESTYLE = userstyleS7 ] && USERNAMESTYLE=7
+[ $USERNAMESTYLE = userstyleS8 ] && USERNAMESTYLE=8
+[ $USERNAMESTYLE = userstyleS9 ] && USERNAMESTYLE=9
+echo DEFAULTSTYLE=$USERNAMESTYLE > /opt/karoshi/server_network/default_username_style
+
+exit $MODSTATUS
+fi
+exit

@@ -1,0 +1,7 @@
+#!/bin/bash
+#Start ypbind on boot
+chkconfig  portmap off
+chkconfig ypbind off
+[ -f /opt/karoshi/start_on_boot/karoshi_services ] || touch /opt/karoshi/start_on_boot/karoshi_services
+[ `grep -c -w portmap /opt/karoshi/start_on_boot/karoshi_services` = 0 ] && echo portmap,3 >> /opt/karoshi/start_on_boot/karoshi_services
+[ `grep -c -w ypbind /opt/karoshi/start_on_boot/karoshi_services` = 0 ] && echo ypbind,1 >> /opt/karoshi/start_on_boot/karoshi_services

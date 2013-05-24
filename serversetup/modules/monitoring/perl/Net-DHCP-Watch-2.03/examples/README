@@ -1,0 +1,41 @@
+
+watch_dhcp.pl: monitor a remote DHCP server and launch a local server
+when needed.
+
+Usage: watch_dhcp.pl [--server=server] [--client=client] [--ether=ether]
+	[--timeout=timeout] [--sleep=sleep] [--wait=wait]
+	[--start=start] [--stop=stop]
+	[--scopy=scopy_from] [--copy-files=conf,file,list]
+	[--ident=ident]
+ server:  DHCP server name or IP.
+ client:  Local IP address.
+ ether:   Local ethernet address.
+ timeout: Timeout for network operations.
+ sleep:   Interval between monitoring.
+ try:     Number of successive (bad/ok) tries before taking action (start/stop).
+ start:   Command to start the local DHCP daemon.
+ stop:    Command to stop  the local DHCP daemon.
+ copy:    If set, indicates a user@host to secure-copy DHCP server files from (defaults to false, i.e. do not copy and needs ssh(1) and scp(1)).
+ files:   List of files that need to be copied (defaults: /etc/dhcpd.conf,/var/state/dhcp/dhcpd.leases).
+ ident:   SSH Identity to use with scp (default: ${HOME}/.ssh/dhcp-identity.
+
+All options have reasonable values on a UNIX/Linux machine.
+
+ Notes:
+
+   .- This script will fail if remote DHCP server contains
+unresolvable server names in its configuration.
+
+.- It uses secure shell (ssh and scp) to update configuration files.
+
+.- The machine that is running the test MUST BE a KNOWN client of the
+remote DHCP server.
+
+.- The files Makefile.linux, watch_dhcp.init.d, watch_dhcp.logrotate
+can be used to install this exemple as a service. Just issue the
+following command (as root):
+
+	make -f Makefile.linux
+
+The makefile is suited for RedHat Linux box. Inspect the Makefile and
+change commands and directories as needed four your machine.

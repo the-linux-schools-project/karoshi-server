@@ -1,0 +1,297 @@
+#!/bin/bash
+#setupsquid
+#Copyright (C) 2004  Paul Sharrad
+#
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contact at 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+
+########################
+#Get variables
+########################
+LOG_DATE=`date +%F`
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: setupfileserver - incorrect number of arguments."<br>"
+exit 101
+fi
+read -t 3 DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/'`
+
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+PDCSERVER=`echo "$DATA" | cut -s -d: -f4`
+PDCIP=`echo "$DATA" | cut -s -d: -f5`
+AUTHTYPE=`echo "$DATA" | cut -s -d: -f6`
+PASSWORD=`echo "$DATA" | cut -s -d: -f7`
+
+source /opt/karoshi/serversetup/variables/language
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/squid/setupsquid
+source /opt/karoshi/serversetup/language/$LANGCHOICE/softwareinstall
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/extra_server/software
+
+echo '<b>'$TITLE - $HOSTNAME'</b><br><br>'
+
+if [ -z "$REMOTE_USER" ]
+then
+echo `date`: setupsquid - Blank remote user."<br>"
+exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+echo `date`: setupsquid - Blank remote tcpip address."<br>"
+exit 101
+fi
+
+if [ -z "$PDCSERVER" ]
+then
+echo `date`: setupsquid - Blank PDC."<br>"
+exit 101
+fi
+
+if [ $PDCSERVER != $HOSTNAME ]
+then
+if [ -z "$PDCIP" ]
+then
+echo `date`: setupsquid - Blank TCPIP."<br>"
+exit 101
+fi
+fi
+
+#############################
+#Get squid version
+#############################
+SQUIDVER=squid
+[ -d /etc/squid3 ] && SQUIDVER=squid3
+#############################
+#Ensure that squid and dansguardian are running on boot
+#############################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/squid
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/dansguardian
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/aptcacherng
+
+mkdir /home/multimedia 2>/dev/null
+mkdir /home/internetdata 2>/dev/null
+mkdir /home/internetdata/internetlogs 2>/dev/null
+chown -R root.staff /home/internetdata 2>/dev/null
+chown -R root.itadmin /home/multimedia 2>/dev/null
+chmod 0750 -R /home/internetdata 2>/dev/null
+chmod 0775 /home/multimedia 2>/dev/null
+
+#########################
+#Add log entry
+#########################
+echo '##############'setupsquid'##############' >> /opt/karoshi/serversetup/install_log
+date >> /opt/karoshi/serversetup/install_log
+touch /opt/karoshi/serversetup/setuplog
+if [ `grep -c "$TITLE" /opt/karoshi/serversetup/setuplog` = 0 ]
+then
+echo setupsquidinternetproxyserver:$TITLE:/opt/karoshi/serversetup/hal/scripts/setupsquidinternetproxyserver >> /opt/karoshi/serversetup/setuplog
+chmod 0600 /opt/karoshi/serversetup/setuplog
+fi
+
+###########################
+#Check to see if ssl data is present and run sslcertificatedata if not
+###########################
+[ -f /opt/karoshi/serversetup/variables/ssldata ] || ( /opt/karoshi/serversetup/scripts/sslcertificatedata ; /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert )
+
+#########################
+#Stopping Squid and Apache if they are running
+#########################
+
+
+DANSTATUS=`ps -e | grep -c -w $DANSGUARDIANVER`
+if [ $DANSTATUS != 0 ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dansguardian_stop
+echo '<br>'
+fi
+
+APACHESTATUS=`ps -e | grep -c -w $$APACHEVER`
+if [ $APACHESTATUS != 0 ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop
+echo '<br>'
+fi
+
+SQUIDSTATUS=`ps -e | grep -c -w $SQUIDVER`
+if [ $SQUIDSTATUS != 0 ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_stop
+echo '<br>'
+fi
+
+#Configure squid to use a different krb5
+[ -d /etc/default ] && echo export KRB5_KTNAME=/etc/keytabs/squid.keytab > /etc/default/squid3
+
+#########################
+#Copying in files
+#########################
+
+
+cp -f -R  /opt/karoshi/serversetup/modules/squid/squidfiles/squid/* /etc/squid
+
+[ -f /var/www/html/index.html ] && mv /var/www/html/index.html /var/www/html/index.html.$$
+cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/webwarning.htm /var/www/html/index.html
+
+if [ $SQUIDVER = squid3 ]
+then
+cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/squid3/squid.conf /etc/squid/
+cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/errors/en/* /usr/share/squid3/errors/en/
+else
+cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/errors/en/* /usr/share/squid/errors/en/
+fi
+
+if [ ! -d /var/lib/dansguardian ]
+then
+mkdir /var/lib/dansguardian
+mkdir /var/lib/dansguardian/tmp
+chown -R root.dansguardian /var/lib/dansguardian
+chmod 0775 -R /var/lib/dansguardian
+fi
+
+#Create msntauth.conf
+source /opt/karoshi/server_network/domain_information/domain_name
+echo server' '$PDCSERVER'	'$PDCSERVER'	'$REALM > /etc/squid/msntauth.conf
+
+#########################
+#Modify squid.conf with correct information for the pdc
+#########################
+
+sed -i 's/SERVERNAME/'$HOSTNAME'/g' /etc/squid/squid.conf
+sed -i 's/REALM/'$REALM'/g' /etc/squid/squid.conf
+sed -i 's/LDAPBASE/'$LDAPBASE'/g' /etc/squid/squid.conf
+#########################
+#Add PDC ip to /etc/hosts
+#########################
+if [ $PDCSERVER != $HOSTNAME ]
+then
+if [ `grep -c $PDCSERVER.internal /etc/hosts` = 0 ]
+then
+echo $PDCIP'	''	'$PDCSERVER $PDCSERVER.internal >> /etc/hosts
+fi
+fi
+#########################
+#Configure effective user for squid to run as
+#########################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/extra_server/scripts/squidconfig
+#########################
+#Copy in Dansguardian files
+#########################
+
+cp -f -R /opt/karoshi/serversetup/modules/squid/dansguardian /etc
+cd /etc/dansguardian/
+tar -xvzf /opt/karoshi/serversetup/modules/squid/dansguardian/blacklists_archive.tar.gz 1>/dev/null
+
+
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/squid_start
+echo '<br>'
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/dansguardian_start
+echo '<br>'
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_start
+echo '<br>'
+
+#########################
+#Scheduling loggging
+#########################
+cp -f /opt/karoshi/serversetup/modules/squid/scripts/internet_log_gen /opt/karoshi/"useful scripts"/
+cp -f /opt/karoshi/serversetup/modules/squid/scripts/archive_internet_logs /opt/karoshi/"useful scripts"/
+cp -f /opt/karoshi/serversetup/modules/squid/scripts/dgupdatefilterlist /opt/karoshi/"useful scripts"/
+cp -f /opt/karoshi/serversetup/modules/squid/scripts/internet_log_compress /opt/karoshi/"useful scripts"/
+cp -f /opt/karoshi/serversetup/modules/squid/scripts/activate_filter_changes /opt/karoshi/"useful scripts"/
+#Modify dgupdatefilterlist with pdc ip
+if [ $LDAPSTATUS != slave_ldap_server ] && [ $PDCSERVER != $HOSTNAME ]
+then
+sed -i 's/127.0.0.1/'$PDCIP'/g' /opt/karoshi/"useful scripts"/dgupdatefilterlist
+fi
+
+[ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
+
+echo 58 23 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/archive_internet_logs > /opt/karoshi/cronjobs/jobs/archive_internet_logs.cron
+echo 50 23 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/dgupdatefilterlist > /opt/karoshi/cronjobs/jobs/dgupdatefilterlist.cron
+echo 55 23 '*' '*' '*' /etc/init.d/dansguardian restart > /opt/karoshi/cronjobs/jobs/restart_dansguardian.cron
+echo '*'/5 '*' '*' '*' '*' "nice -n 20" /opt/karoshi/'"'useful scripts'"'/internet_log_gen > /opt/karoshi/cronjobs/jobs/internet_log_gen.cron
+echo 0 22 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/activate_filter_changes > /opt/karoshi/cronjobs/jobs/activate_filter_changes.cron
+echo 0 5 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/internet_log_compress > /opt/karoshi/cronjobs/jobs/internet_log_compress.cron
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+
+#############################
+#Get staff list for filter 3
+#############################
+/opt/karoshi/"useful scripts"/dgupdatefilterlist
+############################
+#Check that Squid and Dansguardian are running
+############################
+SQUIDSTATUS=`ps -e | grep -c $SQUIDVER`
+if [ $SQUIDSTATUS = 0 ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_start
+fi
+DANSGUARDIANSTATUS=`ps -e | grep -c $DANSGUARDIANVER`
+if [ $DANSGUARDIANSTATUS = 0 ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dansguardian_start
+fi
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/aptcacherng_start
+###########################
+#Open shorewall ports for dansguardian
+###########################
+
+MODCHECK=`grep -c -w squid_proxy_rule /etc/shorewall/rules`
+RESTART_SHOREWALL=no
+if [ $MODCHECK = 0 ]
+then
+RESTART_SHOREWALL=yes
+echo '<br>'$SHOREWALLMSG - tcp 3128,3142 udp 3128,3142'<br><br>'
+LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'3128,3142'	'-'#'squid_proxy_rule /etc/shorewall/rules
+echo ACCEPT'	'net'	'fw'	'udp'	'3128,4142'	'-'#'squid_proxy_rule >> /etc/shorewall/rules
+echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+fi
+
+MODCHECK=`grep -c -w apache_web_server /etc/shorewall/rules`
+
+if [ $MODCHECK = 0 ]
+then
+RESTART_SHOREWALL=yes
+echo ''$SHOREWALLMSG - tcp 80 udp 443'<br><br>'
+LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'80,443'	'-'#'apache_web_server /etc/shorewall/rules
+echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+fi
+
+######################
+#Restart shorewall
+######################
+if [ $RESTART_SHOREWALL = yes ]
+then
+echo '<br>'$RESTARTSWMSG
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
+echo '<br><br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
+echo '<br><br>'
+fi
+
+exit
+

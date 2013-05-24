@@ -1,0 +1,1 @@
+user_pref("browser.bookmarks.file","g:\favourites\bookmarks");

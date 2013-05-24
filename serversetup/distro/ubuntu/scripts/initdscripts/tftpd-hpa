@@ -1,0 +1,87 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:		tftp-hpa
+# Required-Start:	$local_fs $remote_fs $syslog $network
+# Required-Stop:	$local_fs $remote_fs $syslog $network
+# Default-Start:	2 3 4 5
+# Default-Stop:		1
+# Short-Description:	HPA's tftp client
+# Description:		tftp server to allow booting clients which support
+#			the PXE protocol.
+### END INIT INFO
+
+PATH="/sbin:/bin:/usr/sbin:/usr/bin"
+DAEMON="/usr/sbin/in.tftpd"
+
+test -x "${DAEMON}" || exit 0
+
+NAME="in.tftpd"
+DESC="HPA's tftpd"
+PIDFILE="/var/run/tftpd-hpa.pid"
+DEFAULTS="/etc/default/tftpd-hpa"
+
+# Include tftpd-hpa-server defaults if available
+if [ -r "${DEFAULTS}" ]
+then
+	. "${DEFAULTS}"
+fi
+
+set -e
+
+. /lib/lsb/init-functions
+
+do_start()
+{
+	if [ ! -d "${TFTP_DIRECTORY}" ]
+	then
+		echo "${TFTP_DIRECTORY} missing, aborting."
+		exit 1
+	fi
+
+	start-stop-daemon --start --quiet --oknodo --exec ${DAEMON} -- \
+		--listen  --user ${TFTP_USERNAME} --address ${TFTP_ADDRESS} \
+		${TFTP_OPTIONS} ${TFTP_DIRECTORY}
+}
+
+do_stop ()
+{
+	start-stop-daemon --stop --quiet --oknodo --name ${NAME}
+}
+do_reload ()
+{
+	start-stop-daemon --stop --quiet --oknodo --name ${NAME} --signal 1
+}
+
+case "${1}" in
+	start)
+		log_daemon_msg "Starting ${DESC}" "${NAME}"
+		do_start
+		log_end_msg ${?}
+		;;
+
+	stop)
+		log_daemon_msg "Stopping ${DESC}" "${NAME}"
+		do_stop
+		log_end_msg ${?}
+		;;
+
+	restart|force-reload)
+		log_daemon_msg "Restarting ${DESC}" "${NAME}"
+		do_stop
+		sleep 1
+		do_start
+		log_end_msg ${?}
+		;;
+
+	status)
+		status_of_proc ${DAEMON} ${NAME}
+		;;
+
+	*)
+		echo "Usage: ${0} {start|stop|restart|force-reload|status}" >&2
+		exit 1
+		;;
+esac
+
+exit 0

@@ -1,0 +1,137 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/web_management_create_folder_cgi
+then
+echo `date`: web_management_create_folder - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/web_management_create_folder_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/web_management_create_folder.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $web_management_create_folder_cgi'check' ]
+then
+echo `date`: web_management_create_folder - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/web_management_create_folder_cgi
+then
+echo `date`: web_management_create_folder - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/tech_checksums/web_management_create_folder_cgi
+MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/web_management_create_folder.cgi | cut -d' ' -f1`
+[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+if [ $MD5SUM2'check' != $web_management_create_folder_cgi'check' ]
+then
+echo `date`: web_management_create_folder - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 1 ]
+then
+echo `date`: web_management_create_folder - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+DATA=`echo $* | tr -cd 'A-Za-z0-9\:_\+-'`
+REMOTE_USER=`echo $DATA | cut -s -d: -f1`
+REMOTE_ADDR=`echo $DATA | cut -s -d: -f2`
+REMOTE_MD5=`echo $DATA | cut -s -d: -f3`
+WEBSERVER=`echo $DATA | cut -s -d: -f4`
+NEWFOLDER=`echo $DATA | cut -s -d: -f5 | sed 's/UNDERSCORE/_/g' | sed 's/+/_/g'`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: web_management_create_folder - Not called by web_management_create_folder.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: web_management_create_folder - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: web_management_create_folder - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $WEBSERVER'null' = null ]
+then
+echo `date`: web_management_create_folder - Blank webserver by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ $NEWFOLDER'null' = null ]
+then
+echo `date`: web_management_create_folder - Blank new folder by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: web_management_create_folder - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Create the new folder
+########################
+echo `date`: web_management_create_folder - creating $NEWFOLDER on $WEBSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+if [ $WEBSERVER != $HOSTNAME ]
+then
+ssh -x -o PasswordAuthentication=no $WEBSERVER '
+
+if [ ! -d /var/www/html/webfiles/'$NEWFOLDER' ]
+then
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+mkdir -p /var/www/html/webfiles/'$NEWFOLDER'
+chown root.$APACHEGROUP /var/www/html/webfiles/'$NEWFOLDER'
+chmod 0750 /var/www/html/webfiles/'$NEWFOLDER'
+else
+exit 102
+fi
+'
+[ `echo $?` = 102 ] && exit 102
+else
+if [ ! -d /var/www/html/webfiles/$NEWFOLDER ]
+then
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+mkdir -p /var/www/html/webfiles/$NEWFOLDER
+chown root.$APACHEGROUP /var/www/html/webfiles/$NEWFOLDER
+chmod 0750 /var/www/html/webfiles/$NEWFOLDER
+else
+exit 102
+fi
+fi
+exit
+

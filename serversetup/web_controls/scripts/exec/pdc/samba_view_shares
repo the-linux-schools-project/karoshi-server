@@ -1,0 +1,425 @@
+#!/bin/bash
+#Copyright (C) 2012 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/samba_view_shares_cgi
+then
+echo `date`: samba_view_shares - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/samba_view_shares_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/samba_view_shares.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $samba_view_shares_cgi'check' ]
+then
+echo `date`: samba_view_shares - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: samba_view_shares - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-+'`
+if [ $DATA'null' = null ]
+then
+echo `date`: samba_view_shares - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+SERVERTYPE=`echo "$DATA" | cut -s -d: -f5`
+SERVERMASTER=`echo "$DATA" | cut -s -d: -f6`
+ACTION=`echo "$DATA" | cut -s -d: -f7`
+SHARE=`echo "$DATA" | cut -s -d: -f8`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: samba_view_shares - Not called by samba_view_shares.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: samba_view_shares - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: samba_view_shares - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVERNAME'null' = null ]
+then
+echo `date`: samba_view_shares - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVERTYPE'null' = null ]
+then
+echo `date`: samba_view_shares - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVERTYPE = federatedslave ]
+then
+if [ $SERVERMASTER'null' = null ]
+then
+echo `date`: samba_view_shares - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+fi
+if [ $ACTION'null' = null ]
+then
+echo `date`: samba_view_shares - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $SHARE'null' = null ]
+then
+echo `date`: samba_view_shares - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: samba_view_shares - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+##########################
+#Language
+##########################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/samba_shares ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/system/samba_shares
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+SHARE=`echo $SHARE | sed 's/+/ /g'`
+
+echo `date`: samba_view_shares -  Server: $SERVERNAME Share: $SHARE Action: $ACTION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+
+if [ $SERVERNAME = $HOSTNAME ]
+then
+if [ $ACTION = enable ]
+then
+#Add include line to smb.conf
+if [ `grep -c $SERVERNAME/"$SHARE".conf /etc/samba/smb.conf` = 0 ]
+then
+echo  >> /etc/samba/smb.conf
+echo include = /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$SHARE".conf >> /etc/samba/smb.conf
+fi
+fi
+if [ $ACTION = disable ] || [ $ACTION = delete ]
+then
+#Remove include line to smb.conf
+if [ `grep -c "$SERVERNAME/$SHARE.conf" /etc/samba/smb.conf` != 0 ]
+then
+sed -i "\/$SERVERNAME\/$SHARE.conf/d" /etc/samba/smb.conf
+
+fi
+fi
+
+#Restart samba
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
+
+fi
+
+
+#Sort out info files
+if [ $ACTION = enable ]
+then
+[ -f /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$SHARE".disabled ] && rm -f /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$SHARE".disabled
+fi
+
+if [ $ACTION = disable ]
+then
+touch /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$SHARE".disabled
+fi
+
+if [ $ACTION = delete ]
+then
+[ -f /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$SHARE".disabled ] && rm -f /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$SHARE".disabled
+[ -f /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$SHARE".info ] && rm -f /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$SHARE".info
+[ -f /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$SHARE".conf ] && rm -f /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$SHARE".conf
+fi
+
+exit
+
+if [ $SERVERNAME = $HOSTNAME ]
+then
+#Make sure that the folder does not already exist
+if [ -d /home/$FOLDERNAME ]
+then
+exit 102
+else
+#Add details to smb.conf
+if [ `grep -c "path = /home/$FOLDERNAME" /etc/samba/smb.conf` != 0 ]
+then
+exit 103
+else
+#Create folder
+mkdir "/home/$FOLDERNAME"
+#Set ownership
+chown root:$GROUP "/home/$FOLDERNAME"
+#Work out permissions
+CREATEMASK=064
+DIRMASK=075
+OTHERMASK=0
+OTHERDIRMASK=0
+if [ $GROUPPERMS = fullaccess ]
+then
+CREATEMASK=066
+DIRMASK=077
+fi
+if [ $OTHERSPERMS = readonly ]
+then
+OTHERMASK=4
+OTHERDIRMASK=5
+fi
+if [ $OTHERSPERMS = fullaccess ]
+then
+OTHERMASK=6
+OTHERDIRMASK=7
+fi
+#Set permissions
+chmod $DIRMASK$OTHERDIRMASK "/home/$FOLDERNAME"
+
+#Add data to custom smb.conf
+[ ! -d /opt/karoshi/server_network/extra_network_shares/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/extra_network_shares/$SERVERNAME
+echo "[$FOLDERNAME]" > /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
+echo "	path = \"/home/$FOLDERNAME\"" >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
+echo "	force group = +$GROUP" >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
+echo "	invalid users = root" >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
+echo "	read only = No" >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
+echo "	create mask =" $CREATEMASK$OTHERMASK >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
+echo "	directory mask =" $DIRMASK$OTHERDIRMASK >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
+echo "	browseable = Yes" >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
+echo >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
+#Add include line to smb.conf
+if [ `grep -c $SERVERNAME/"$FOLDERNAME".conf` = 0 ]
+then
+echo  >> /etc/samba/smb.conf
+echo include = /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf >> /etc/samba/smb.conf
+#Restart samba
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
+fi
+fi
+fi
+fi
+
+
+if [ $SERVERTYPE = network ] && [ $SERVERNAME != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+#Make sure that the folder does not already exist
+if [ -d /home/'$FOLDERNAME' ]
+then
+exit 102
+else
+#Add details to smb.conf
+if [ `grep -c "path = /home/'$FOLDERNAME'" /etc/samba/smb.conf` != 0 ]
+then
+exit 103
+else
+#Create folder
+mkdir "/home/'$FOLDERNAME'"
+#Set ownership
+chown root:'$GROUP' "/home/'$FOLDERNAME'"
+#Work out permissions
+CREATEMASK=064
+DIRMASK=075
+OTHERMASK=0
+OTHERDIRMASK=0
+if [ $GROUPPERMS = fullaccess ]
+then
+CREATEMASK=066
+DIRMASK=077
+fi
+if [ $OTHERSPERMS = readonly ]
+then
+OTHERMASK=4
+OTHERDIRMASK=5
+fi
+if [ $OTHERSPERMS = fullaccess ]
+then
+OTHERMASK=6
+OTHERDIRMASK=7
+fi
+chmod $DIRMASK$OTHERDIRMASK "/home/'$FOLDERNAME'"
+
+#Add data to custom smb.conf
+[ ! -d /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME' ] && mkdir -p /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'
+echo "['$FOLDERNAME']" > /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
+echo "	path = \"/home/'$FOLDERNAME'\"" >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
+echo "	force group = +'$GROUP'" >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
+echo "	invalid users = root" >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
+echo "	read only = No" >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
+echo "	create mask =" $CREATEMASK$OTHERMASK >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
+echo "	directory mask =" $DIRMASK$OTHERDIRMASK >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
+echo "	browseable = Yes" >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
+echo >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
+#Add include to smb.conf
+if [ `grep -c '$SERVERNAME'/"'$FOLDERNAME'".conf` = 0 ]
+then
+echo  >> /etc/samba/smb.conf
+echo include = /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf >> /etc/samba/smb.conf
+#Restart samba
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
+fi
+fi
+fi
+'
+EXITSTATUS=`echo $?`
+
+if [ $EXITSTATUS = 0 ]
+then
+#Add data to custom smb.conf
+[ ! -d /opt/karoshi/server_network/extra_network_shares/$SERVERNAME ] && mkdir /opt/karoshi/server_network/extra_network_shares/$SERVERNAME
+echo "[$FOLDERNAME]" > /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
+echo "	path = \"/home/$FOLDERNAME\"" >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
+echo "	force group = +$GROUP" >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
+echo "	invalid users = root" >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
+echo "	read only = No" >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
+echo "	create mask =" $CREATEMASK$OTHERMASK >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
+echo "	directory mask =" $DIRMASK$OTHERDIRMASK >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
+echo "	browseable = Yes" >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
+echo >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
+fi
+exit $EXITSTATUS
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
+#Make sure that the folder does not already exist
+if [ -d /home/'$FOLDERNAME' ]
+then
+exit 102
+else
+#Add details to smb.conf
+if [ `grep -c "path = /home/'$FOLDERNAME'" /etc/samba/smb.conf` != 0 ]
+then
+exit 103
+else
+#Create folder
+mkdir "/home/'$FOLDERNAME'"
+#Set ownership
+chown root:'$GROUP' "/home/'$FOLDERNAME'"
+#Work out permissions
+CREATEMASK=064
+DIRMASK=075
+OTHERMASK=0
+OTHERDIRMASK=0
+if [ $GROUPPERMS = fullaccess ]
+then
+CREATEMASK=066
+DIRMASK=077
+fi
+if [ $OTHERSPERMS = readonly ]
+then
+OTHERMASK=4
+OTHERDIRMASK=5
+fi
+if [ $OTHERSPERMS = fullaccess ]
+then
+OTHERMASK=6
+OTHERDIRMASK=7
+fi
+chmod $DIRMASK$OTHERDIRMASK "/home/'$FOLDERNAME'"
+
+#Add data to custom smb.conf
+[ ! -d /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME' ] && mkdir -p /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'
+echo "['$FOLDERNAME']" > /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
+echo "	path = \"/home/'$FOLDERNAME'\"" >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
+echo "	force group = +'$GROUP'" >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
+echo "	invalid users = root" >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
+echo "	read only = No" >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
+echo "	create mask =" $CREATEMASK$OTHERMASK >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
+echo "	directory mask =" $DIRMASK$OTHERDIRMASK >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
+echo "	browseable = Yes" >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
+echo >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
+#Add include to smb.conf
+if [ `grep -c '$SERVERNAME'/"'$FOLDERNAME'".conf` = 0 ]
+then
+echo  >> /etc/samba/smb.conf
+echo include = /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf >> /etc/samba/smb.conf
+#Restart samba
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
+fi
+fi
+fi
+'\''
+EXITSTATUS=`echo $?`
+exit $EXITSTATUS
+'
+EXITSTATUS=`echo $?`
+if [ $EXITSTATUS = 0 ]
+then
+#Add data to custom smb.conf
+[ ! -d /opt/karoshi/server_network/extra_network_shares/$SERVERNAME ] && mkdir /opt/karoshi/server_network/extra_network_shares/$SERVERNAME
+echo "[$FOLDERNAME]" > /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
+echo "	path = \"/home/$FOLDERNAME\"" >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
+echo "	force group = +$GROUP" >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
+echo "	invalid users = root" >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
+echo "	read only = No" >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
+echo "	create mask =" $CREATEMASK$OTHERMASK >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
+echo "	directory mask =" $DIRMASK$OTHERDIRMASK >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
+echo "	browseable = Yes" >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
+echo >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
+fi
+
+#Add server information
+echo SERVERTYPE=$SERVERTYPE > /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".info
+echo SERVERMASTER=$SERVERMASTER >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".info
+exit $EXITSTATUS
+fi
+

@@ -1,0 +1,66 @@
+#!/bin/bash
+MYSQLPASS=lockit
+
+#Check if database has already been set up
+
+#Create database
+echo "create database karoshi_network;" | mysql -uroot -p$MYSQLPASS
+
+#Create servers table
+echo -e "create table servers ( server_id INT NOT NULL AUTO_INCREMENT, server varchar(20) NOT NULL, zone INT NOT NULL, network_type INT NOT NULL, auth_type INT NOT NULL, roles varchar(20), backup_server varchar(20), PRIMARY KEY ( server_id ) );" | mysql -uroot -p$MYSQLPASS -h127.0.0.1 karoshi_network
+
+#Create auth_types table
+echo -e "create table auth_types ( auth_id INT NOT NULL AUTO_INCREMENT, auth_type varchar(20) NOT NULL, PRIMARY KEY ( auth_id ) );" | mysql -uroot -p$MYSQLPASS -h127.0.0.1 karoshi_network
+
+echo "INSERT INTO auth_types (auth_type) VALUES('PDC' );
+INSERT INTO auth_types (auth_type) VALUES('ADC' );
+INSERT INTO auth_types (auth_type) VALUES('RODC' );
+INSERT INTO auth_types (auth_type) VALUES('Domain_Member' );
+INSERT INTO auth_types (auth_type) VALUES('users+groups' );
+INSERT INTO auth_types (auth_type) VALUES('none' );
+" | mysql -uroot -p$MYSQLPASS -h127.0.0.1 karoshi_network
+
+#Create zone_types table
+echo -e "create table zone_types ( zone_id INT NOT NULL AUTO_INCREMENT, zone_type varchar(20) NOT NULL, PRIMARY KEY ( zone_id ) );" | mysql -uroot -p$MYSQLPASS -h127.0.0.1 karoshi_network
+
+echo "INSERT INTO zone_types (zone_type) VALUES('Internal' );
+INSERT INTO zone_types (zone_type) VALUES('DMZ' );
+INSERT INTO zone_types (zone_type) VALUES('External' );
+" | mysql -uroot -p$MYSQLPASS -h127.0.0.1 karoshi_network
+
+#Create role_types table
+echo -e "create table role_types ( role_id INT NOT NULL AUTO_INCREMENT, role_type varchar(22) NOT NULL, PRIMARY KEY ( role_id ) );" | mysql -uroot -p$MYSQLPASS -h127.0.0.1 karoshi_network
+
+echo "INSERT INTO role_types (role_type) VALUES('PDC' );
+INSERT INTO role_types (role_type) VALUES('DHCP Server' );
+INSERT INTO role_types (role_type) VALUES('File Server' );
+INSERT INTO role_types (role_type) VALUES('Web Server' );
+INSERT INTO role_types (role_type) VALUES('Moodle Server' );
+INSERT INTO role_types (role_type) VALUES('Print Server' );
+INSERT INTO role_types (role_type) VALUES('Backup Server' );
+INSERT INTO role_types (role_type) VALUES('Home Access Server' );
+INSERT INTO role_types (role_type) VALUES('Monitoring Server' );
+INSERT INTO role_types (role_type) VALUES('File Server' );
+INSERT INTO role_types (role_type) VALUES('E-Mail Server' );
+INSERT INTO role_types (role_type) VALUES('Reverse Proxy Server' );
+INSERT INTO role_types (role_type) VALUES('Internet Proxy Server' );
+
+" | mysql -uroot -p$MYSQLPASS -h127.0.0.1 karoshi_network
+
+exit 
+
+
+INSERT INTO tablename (col1, col2) VALUES('data1', 'data2' ) 
+
+mysql> CREATE TABLE tutorials_tbl(
+   -> tutorial_id INT NOT NULL AUTO_INCREMENT,
+   -> tutorial_title VARCHAR(100) NOT NULL,
+   -> tutorial_author VARCHAR(40) NOT NULL,
+   -> submission_date DATE,
+   -> PRIMARY KEY ( tutorial_id )
+   -> );
+
+
+echo "SELECT encryptedpass from userdata WHERE sessionname = '$SESSIONNAME';" | mysql -u$MYSQLUSERNAME -p$MYSQLPASS -h127.0.0.1
+
+echo "INSERT INTO userdata (sessionname,encryptedpass) VALUES ('$SESSIONNAME','$ENCRYPTEDPASS');" | mysql -u$MYSQLUSERNAME -p$MYSQLPASS -h127.0.0.1 ksso

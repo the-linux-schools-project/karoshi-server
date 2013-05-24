@@ -1,0 +1,131 @@
+#!/bin/bash
+#Copyright (C) 2009 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/email_change_domain_ldap_cgi
+then
+echo `date`: email_change_domain_ldap - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/email_change_domain_ldap_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_change_domain_ldap.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $email_change_domain_ldap_cgi'check' ]
+then
+echo `date`: email_change_domain_ldap - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: email_change_domain_ldap - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: email_change_domain_ldap - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+EMAILDOMAIN=`echo "$DATA" | cut -s -d: -f4`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: email_change_domain_ldap - Not called by email_change_domain_ldap.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: email_change_domain_ldap - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: email_change_domain_ldap - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $EMAILDOMAIN'null' = null ]
+then
+echo `date`: email_change_domain_ldap - Blank emaildomain by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+EMAILDOMAIN=`echo $EMAILDOMAIN | sed 's/www.//g' | sed 's/http3A2F2F//g'`
+echo `date`: email_change_domain_ldap - setting ldap email domain to $EMAILDOMAIN "for" all users by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+echo $EMAILDOMAIN > /opt/karoshi/server_network/emaildomain
+
+#############################
+#Change mail entry for all ldap users on the PDC
+#############################
+#Create list of users
+getent passwd > /opt/karoshi/.tempdata/userlist.$$
+
+#Get database password
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+
+echo "<b>"$HOSTNAME"</b><br>"
+
+#Process userlist
+USERCOUNT=`cat /opt/karoshi/.tempdata/userlist.$$ | wc -l`
+COUNTER=1
+while [ $COUNTER -le $USERCOUNT ]
+do
+USERDATA=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/.tempdata/userlist.$$`
+USERNAME=`echo $USERDATA | cut -d: -f1`
+USERPATH=`echo $USERDATA | cut -d: -f6`
+
+if [ `echo $USERPATH | grep -c /home/users/` = 1 ]
+then
+echo "<br>"$USERNAME - $USERNAME@$EMAILDOMAIN"<br>"
+LDAPIDENT=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" uid=$USERNAME | grep dn:`
+
+#Create ldif with modified mail
+
+echo $LDAPIDENT > /opt/karoshi/.tempdata/mail$USERNAME.$$.ldif
+echo changetype: modify >> /opt/karoshi/.tempdata/mail$USERNAME.$$.ldif
+echo replace: mail >> /opt/karoshi/.tempdata/mail$USERNAME.$$.ldif
+echo mail: $USERNAME@$EMAILDOMAIN >> /opt/karoshi/.tempdata/mail$USERNAME.$$.ldif
+echo - >> mail$USERNAME.$$.ldif
+ldapmodify -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" -f /opt/karoshi/.tempdata/mail$USERNAME.$$.ldif 1>/dev/null
+rm -f /opt/karoshi/.tempdata/mail$USERNAME.$$.ldif
+fi
+let COUNTER=$COUNTER+1
+done
+rm -f /opt/karoshi/.tempdata/userlist.$$
+echo '<br><br>'
+echo '<b>'$COMPLETEDMSG'</b>'
+exit

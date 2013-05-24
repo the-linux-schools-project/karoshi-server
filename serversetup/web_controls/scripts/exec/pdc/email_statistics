@@ -1,0 +1,236 @@
+#!/bin/bash
+#Copyright (C) 2012  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/email_statistics_cgi
+then
+echo `date`: email_statistics - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/email_statistics_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_statistics.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $email_statistics_cgi'check' ]
+then
+echo `date`: email_statistics - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 1 ]
+then
+echo `date`: email_statistics - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo $* | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | cut -s -d: -f3`
+LOGVIEW=`echo $* | cut -s -d: -f4`
+DAY=`echo $* | cut -s -d: -f5`
+MONTH=`echo $* | cut -s -d: -f6`
+YEAR=`echo $* | cut -s -d: -f7`
+SERVERNAME=`echo $* | cut -s -d: -f8`
+SERVERTYPE=`echo $* | cut -s -d: -f9`
+SERVERMASTER=`echo $* | cut -s -d: -f10`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: email_statistics - Not called by email_statistics.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: email_statistics - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: email_statistics - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: email_statistics - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $LOGVIEW'null' = null ]
+then
+echo `date`: email_statistics - Blank log view >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $DAY'null' = null ]
+then
+echo `date`: email_statistics - Blank day >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $MONTH'null' = null ]
+then
+echo `date`: email_statistics - Blank month>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $YEAR'null' = null ]
+then
+echo `date`: email_statistics - Blank year >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $SERVERNAME'null' = null ]
+then
+echo `date`: email_statistics - Blank servername >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVERTYPE'null' = null ]
+then
+echo `date`: email_statistics - Blank servertype >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVERTYPE = federatedslave ]
+then
+if [ $SERVERMASTER'null' = null ]
+then
+echo `date`: email_statistics - Blank servermaster >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+fi
+
+echo `date`: email_statistics "for" $SERVERNAME on $DAY-$MONTH-$YEAR from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+#echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">'
+#This server
+if [ $SERVERNAME = $HOSTNAME ]
+then
+#Get todays logs
+if [ $LOGVIEW = today ]
+then
+[ ! -f /opt/karoshi/logs/postfixstats/$YEAR-$MONTH-$DAY ] && exit 101
+cat /opt/karoshi/logs/postfixstats/$YEAR-$MONTH-$DAY
+fi
+#Get the logs for the month
+if [ $LOGVIEW = month ]
+then
+LOG_LIST=( `ls -1 /opt/karoshi/logs/postfixstats/ | grep $YEAR'[-]'$MONTH'[-]'` )
+LOG_LIST_COUNT=`echo ${#LOG_LIST[@]}`
+COUNTER=0
+while [ $COUNTER -lt $LOG_LIST_COUNT ]
+do
+LOG_FILE_NAME=`echo ${LOG_LIST[$COUNTER]}`
+cat /opt/karoshi/logs/postfixstats/$LOG_FILE_NAME
+if [ `echo $?` != 0 ]
+then
+exit 102
+fi
+let COUNTER=$COUNTER+1
+done
+fi
+fi
+#Slave and federated servers
+if [ $SERVERNAME != $HOSTNAME ]
+then
+if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
+then
+#Get todays logs
+if [ $LOGVIEW = today ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+[ ! -f /opt/karoshi/logs/postfixstats/'$YEAR'-'$MONTH'-'$DAY' ] && exit 101
+cat /opt/karoshi/logs/postfixstats/'$YEAR'-'$MONTH'-'$DAY'
+'
+[ `echo $?` = 101 ] && exit 101
+fi
+#Get the logs for the month
+if [ $LOGVIEW = month ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+LOG_LIST=( `ls -1 /opt/karoshi/logs/postfixstats/ | grep '$YEAR'"[-]"'$MONTH'"[-]"` )
+LOG_LIST_COUNT=`echo ${#LOG_LIST[@]}`
+COUNTER=0
+while [ $COUNTER -lt $LOG_LIST_COUNT ]
+do
+LOG_FILE_NAME=`echo ${LOG_LIST[$COUNTER]}`
+cat /opt/karoshi/logs/postfixstats/$LOG_FILE_NAME
+if [ `echo $?` != 0 ]
+then
+exit 102
+fi
+let COUNTER=$COUNTER+1
+done
+'
+[ `echo $?` = 102 ] && exit 102
+fi
+fi
+fi
+
+#Federated slave servers
+if [ $SERVERTYPE = federatedslave ]
+then
+#Get todays logs
+if [ $LOGVIEW = today ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
+[ ! -f /opt/karoshi/logs/postfixstats/'$YEAR'-'$MONTH'-'$DAY' ] && exit 101
+cat /opt/karoshi/logs/postfixstats/'$YEAR'-'$MONTH'-'$DAY'
+'\''
+[ `echo $?` = 101 ] && exit 101
+'
+[ `echo $?` = 101 ] && exit 101
+fi
+#Get the logs for the month
+if [ $LOGVIEW = month ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
+LOG_LIST=( `ls -1 /opt/karoshi/logs/postfixstats/ | grep '$YEAR'"[-]"'$MONTH'"[-]"` )
+LOG_LIST_COUNT=`echo ${#LOG_LIST[@]}`
+COUNTER=0
+while [ $COUNTER -lt $LOG_LIST_COUNT ]
+do
+LOG_FILE_NAME=`echo ${LOG_LIST[$COUNTER]}`
+cat /opt/karoshi/logs/postfixstats/$LOG_FILE_NAME
+if [ `echo $?` != 0 ]
+then
+exit 102
+fi
+let COUNTER=$COUNTER+1
+done
+'\''
+[ `echo $?` = 102 ] && exit 102
+'
+[ `echo $?` = 102 ] && exit 102
+fi
+fi
+
+echo '</pre>'
+#echo '</tbody></table>'
+
+
+exit
+

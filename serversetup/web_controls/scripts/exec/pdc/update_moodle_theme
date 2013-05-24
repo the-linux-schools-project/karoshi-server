@@ -1,0 +1,185 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/update_moodle_theme_process1_cgi
+then
+echo `date`: update_moodle_theme - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/update_moodle_theme_process1_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/update_moodle_theme_process1.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set1
+if [ $MD5SUM'check' != $update_moodle_theme_process1_cgi'check' ]
+then
+echo `date`: update_moodle_theme - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: update_moodle_theme - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: update_moodle_theme - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+ARCHIVEMD5=`echo "$DATA" | cut -s -d: -f4`
+ARCHIVENAME=`echo "$DATA" | cut -s -d: -f5`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: update_moodle_theme - Not called by update_moodle_theme.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: update_moodle_theme - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: update_moodle_theme - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $ARCHIVEMD5'null' = null ]
+then
+echo `date`: update_moodle_theme - Blank archive MD5 >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $ARCHIVENAME'null' = null ]
+then
+echo `date`: update_moodle_theme - Blank archive name >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: update_moodle_theme - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+echo `date`: update_moodle_theme - using archive "$ARCHIVENAME" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+############################
+#Language
+############################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/update_moodle_theme ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/system/update_moodle_theme
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/colossus/software
+
+function show_warning_message {
+echo -e '<img src="/images/warnings/service_failure.png">' $MESSAGE'<br><br>'
+sleep 1
+}
+
+function show_message {
+echo -e '<img src="/images/warnings/service_ok.png">' $MESSAGE'<br><br>'
+sleep 1
+}
+MOODLESERVER=xen
+#Check that a version of moodle is installed
+if [ -f /opt/karoshi/serversetup/variables/ssh/colossusssh ]
+then
+MOODLESERVER=colossus
+fi
+
+if [ -f /opt/karoshi/serversetup/variables/ssh/cassandrassh ]
+then
+MOODLESERVER=cassandra
+fi
+
+if [ $MOODLESERVER != xen ]
+then
+ssh -x -o PasswordAuthentication=no $MOODLESERVER '
+if [ ! -d /var/www/html/moodle ]
+then
+exit 102
+fi
+'
+if [ `echo $?` = 102 ]
+then
+exit 102
+fi
+else
+if [ ! -d /var/www/html/moodle ]
+then
+exit 102
+fi
+fi
+
+################################
+#Copy archive to the correct place
+################################
+if [ $MOODLESERVER != xen ]
+then
+scp /var/www/karoshi/moodle_theme/"$ARCHIVENAME" root@$MOODLESERVER:/var/www/html/moodle/theme/
+else
+cp -f /var/www/karoshi/moodle_theme/"$ARCHIVENAME" /var/www/html/moodle/theme/
+fi
+
+###############################
+#Extract moodle theme
+###############################
+if [ $MOODLESERVER != xen ]
+then
+ssh -x -o PasswordAuthentication=no $MOODLESERVER '
+cd /var/www/html/moodle/theme/
+unzip -o "'$ARCHIVENAME'" 1>/dev/null
+rm -f /var/www/html/moodle/theme/"'$ARCHIVENAME'"
+chmod 0440 -R /var/www/html/moodle/theme
+chmod u+X,g+X -R /var/www/html/moodle/theme
+chown -R root.'$APACHEGROUP' /var/www/html/moodle/theme
+'
+else
+cd /var/www/html/moodle/theme/ 
+unzip -o "$ARCHIVENAME" 1>/dev/null
+rm -f /var/www/html/moodle/theme/"$ARCHIVENAME"
+chmod 0440 -R /var/www/html/moodle/theme
+chmod u+X,g+X -R /var/www/html/moodle/theme
+chown -R root.$APACHEGROUP /var/www/html/moodle/theme
+fi
+exit

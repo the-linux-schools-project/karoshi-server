@@ -1,0 +1,119 @@
+body {
+	font-family: Verdana, Geneva, Arial, helvetica, sans-serif;
+	margin: 0px;
+	text-align: center;
+	font-weight: normal;
+}
+
+#page {
+	position:relative;
+	width:1000px;
+	margin-top: 0;
+	margin-right: auto;
+	margin-bottom: 0;
+	margin-left: auto;
+}
+
+
+#logonbox {
+	position: absolute;
+	width: 500px;
+	top: 150px;
+	background-image: url(images/logon_box.jpg);
+	height: 400px;
+	background-repeat: no-repeat;
+	left: 260px;
+}
+#linksbox {
+	position: absolute;
+	width: 500px;
+	top: 150px;
+	background-image: url(images/linksbox.jpg);
+	height: 400px;
+	background-repeat: no-repeat;
+	left: 260px;
+}
+#linksbox2 {
+	position: absolute;
+	width: 1000px;
+	top: 270px;
+	height: 400px;
+	background-repeat: no-repeat;
+	left: 250px;
+}
+#headerbox {
+	position: absolute;
+	height: 80px;
+	width: 100%;
+	left: 0px;
+	top: 0px;
+	background-image: url(images/bngd_header.jpg);
+}
+
+#headertextbox {
+	background-image: url(images/header_text.png);
+	height: 61px;
+	width: 534px;
+	position: absolute;
+	left: 240px;
+	top: 10px;
+}
+
+#contentbox {
+	position: absolute;
+	height: 80px;
+	width: 100%;
+	left: 0px;
+	top: 0px;
+	background-image: url(images/bngd_header.jpg);
+}
+
+#logonboxusr {
+	position: absolute;
+	left: 210px;
+	top: 177px;
+	height: auto;
+	width: 180px;
+}
+.btnSubmit {
+	font-size: 16px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-weight: bold;
+}
+
+#logonboxpwd {
+	position: absolute;
+	left: 210px;
+	top: 211px;
+	height: auto;
+	width: 180px;
+}
+#logonboxbtn {
+	position: absolute;
+	left: 310px;
+	top: 270px;
+	height: auto;
+}
+
+.logonboxinput  {
+	color:#000000;
+	background-color: #FFFF99;
+	width: 180px;
+	border: thin ridge #999999;
+}
+
+#logoutbox {
+	position: absolute;
+	height: auto;
+	width: 200px;
+	left: 760px;
+	top: 75px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	border-top-style: none;
+	border-right-style: none;
+	border-bottom-style: none;
+	border-left-style: none;
+	color: #15135e;
+	text-align: right;
+}

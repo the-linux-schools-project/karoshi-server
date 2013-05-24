@@ -1,0 +1,147 @@
+#!/bin/bash
+#Copyright (C) 2012 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dg_reset_room_controls_cgi
+then
+echo `date`: dg_reset_room_controls - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/dg_reset_room_controls_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_reset_room_controls.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $dg_reset_room_controls_cgi'check' ]
+then
+echo `date`: dg_reset_room_controls - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: dg_reset_room_controls - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-%'`
+if [ $DATA'null' = null ]
+then
+echo `date`: dg_reset_room_controls - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+ACTION=`echo "$DATA" | cut -s -d: -f4`
+HOURS=`echo "$DATA" | cut -s -d: -f5`
+MINUTES=`echo "$DATA" | cut -s -d: -f6`
+TIME=`echo "$DATA" | cut -s -d: -f7`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] 
+then
+echo `date`: dg_reset_room_controls - Not called by dg_reset_room_controls.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: dg_reset_room_controls - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: dg_reset_room_controls - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $ACTION'null' = null ]
+then
+echo `date`: dg_reset_room_controls - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $ACTION = add ]
+then
+if [ $HOURS'null' = null ]
+then
+echo `date`: dg_reset_room_controls - Blank hours by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $MINUTES'null' = null ]
+then
+echo `date`: dg_reset_room_controls - Blank minutes by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: dg_reset_room_controls - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $ACTION = add ]
+then
+echo `date`: dg_reset_room_controls - adding room reset at $HOURS:$MINUTES by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+[ ! -d /opt/karoshi/server_network/internet_room_controls_reset ] && mkdir -p /opt/karoshi/server_network/internet_room_controls_reset
+touch /opt/karoshi/server_network/internet_room_controls_reset/$HOURS:$MINUTES
+fi
+
+if [ $ACTION = delete ]
+then
+TIME=`echo $TIME | sed 's/%3A/:/g'`
+echo `date`: dg_reset_room_controls - deleting room reset scheduled "for" $TIME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+[ -f /opt/karoshi/server_network/internet_room_controls_reset/"$TIME" ] && rm -f /opt/karoshi/server_network/internet_room_controls_reset/"$TIME"
+fi
+
+#Create array of times for reset
+RESETARRAY=( `ls -1 /opt/karoshi/server_network/internet_room_controls_reset/` )
+RESETARRAYCOUNT=${#RESETARRAY[@]}
+
+
+#Schedule revised reset times
+[ ! -d /opt/karoshi/cronjobs/jobs ] && mkdir -p /opt/karoshi/cronjobs/jobs
+[ -f /opt/karoshi/cronjobs/jobs/reset_room_controls.cron ] && rm -f /opt/karoshi/cronjobs/jobs/reset_room_controls.cron
+
+if [ $RESETARRAYCOUNT -gt 0 ]
+then
+COUNTER=0
+while [ $COUNTER -lt $RESETARRAYCOUNT ]
+do
+RESETTIME=${RESETARRAY[$COUNTER]}
+MINUTES=`echo $RESETTIME | cut -d: -f2`
+HOURS=`echo $RESETTIME | cut -d: -f1`
+echo $MINUTES $HOURS "*" "*" "*" /opt/karoshi/web_controls/exec/dg_reset_rooms >> /opt/karoshi/cronjobs/jobs/reset_room_controls.cron
+let COUNTER=$COUNTER+1
+done
+fi
+
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+exit
+

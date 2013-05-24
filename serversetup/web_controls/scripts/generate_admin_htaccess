@@ -1,0 +1,10 @@
+#!/bin/bash
+AuthType Basic
+SSLRequireSSL
+AuthName "Karoshi Web Control"
+AuthUserFile /opt/karoshi/web_controls/web_access_admin
+Require user tech1
+Require user mpsharrad
+
+ AuthGroupFile /home/domain/public_html/membersonly/.htgroup
+      require group member-users

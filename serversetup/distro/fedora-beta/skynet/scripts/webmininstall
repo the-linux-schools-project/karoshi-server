@@ -1,0 +1,7 @@
+#!/bin/bash
+#softwareinstall
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/skynet/software
+
+xterm -geometry 100x20 -bg white -fg black -e yum -y install $WEBMINVER
+

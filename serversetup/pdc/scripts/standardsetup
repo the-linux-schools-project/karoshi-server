@@ -1,0 +1,65 @@
+#!/bin/bash
+source /opt/karoshi/serversetup/variables/choice
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/variables/language
+source /opt/karoshi/serversetup/language/$LANGCHOICE/standardsetup
+#baseinstallpdc
+BASEINSTALLPATH=/opt/karoshi/serversetup/pdc/scripts
+BASEINSTALLPATH2=/opt/karoshi/serversetup/web_controls
+KAROSHILOG=/opt/karoshi/serversetup/install_log
+
+#Set timezone in php.ini
+[ -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/set_php_timezone ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/set_php_timezone
+
+function checkstatus {
+EXITSTATUS=`echo $?`
+if [ $EXITSTATUS = 101 ]
+then
+yad --title "$TITLE $VERSION" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --text="$ERRORMSG1" --timeout=3 --no-buttons
+exit
+fi
+if [ $EXITSTATUS = 103 ]
+then
+exit 103
+fi
+}
+
+function do_setup {
+echo "1"
+echo "# $NETWORKCHECK"
+$BASEINSTALLPATH/checknetwork 1>>$KAROSHILOG 2>>$KAROSHILOG
+checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
+echo "17"
+echo "# $SETUP $SHOREWALL"
+$BASEINSTALLPATH/setupshorewall 1>>$KAROSHILOG 2>>$KAROSHILOG
+checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
+echo "34"
+echo "# $SETUP $NTP"
+$BASEINSTALLPATH/setupntp 1>>$KAROSHILOG 2>>$KAROSHILOG
+checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
+echo "51"
+echo "# $SETUP $SAMBA"
+$BASEINSTALLPATH/setupsamba 1>>$KAROSHILOG 2>>$KAROSHILOG
+checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
+echo "68"
+echo "# $SETUP $ROOTCA"
+$BASEINSTALLPATH/setup_root-ca 1>>$KAROSHILOG 2>>$KAROSHILOG
+checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
+echo "85"
+echo "# $SETUP $WEBCONTROLS"
+$BASEINSTALLPATH2/setup_web_controls interactive 1>>$KAROSHILOG 2>>$KAROSHILOG
+checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
+echo "100"
+$BASEINSTALLPATH/setupkaroshidesktop 1>>$KAROSHILOG 2>>$KAROSHILOG
+#Kill status bar
+killall yad
+}
+
+do_setup | yad --title "$TITLE" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --geometry=400x100+0+10 --no-buttons --text "Main Server Setup\n\n\n$STATUS" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --progress
+
+#Remove extra ubiquity software that is now not needed
+apt-get -y autoremove
+
+#Create initial disk usage report
+/opt/karoshi/serversetup/all/"useful scripts"/disk_usage
+exit

@@ -1,0 +1,14 @@
+#!/bin/bash
+#Exit codes
+#110 no data passed to script
+#111 user does not exist
+#112 user exists
+read -t 1 -s DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\n\-+'`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f1`
+USERTOCHECK=`echo "$DATA" | cut -s -d: -f2`
+USERTOCHECK=`echo $USERTOCHECK | tr -cd 'A-Za-z0-9\._:\n\-+'`
+[ `echo $USERTOCHECK'null' | sed 's/ //g'` = null ] && exit 110
+id -u "$USERTOCHECK" 1>/dev/null 2>/dev/null
+[ `echo $?` != 0 ] && exit 111 
+exit 112

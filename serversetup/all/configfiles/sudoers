@@ -1,0 +1,18 @@
+# sudoers file.
+##########################
+# User alias specification
+##########################
+User_Alias ROOTNOPASSWD = karoshi
+##########################
+# Cmnd alias specification
+##########################
+Cmnd_Alias KAROSHIUTILS = /opt/karoshi/karoshimanagement/
+##########################
+# User privilege specification
+##########################
+# Members of the admin group may gain root privileges
+%admin ALL=(ALL) ALL
+
+root	ALL=(ALL) ALL
+ROOTNOPASSWD ALL= NOPASSWD: KAROSHIUTILS
+

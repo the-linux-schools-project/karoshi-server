@@ -1,0 +1,145 @@
+#!/bin/bash
+#Copyright (C) 2007  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/email_view_aliases_cgi
+then
+echo `date`: email_view_aliases - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/email_view_aliases_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_view_aliases.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $email_view_aliases_cgi'check' ]
+then
+echo `date`: email_view_aliases - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 1 ]
+then
+echo `date`: email_view_aliases - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo $* | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | cut -s -d: -f3`
+ALPHABET=`echo $* | cut -s -d: -f4`
+ALPHABET2=`echo $ALPHABET | tr 'A-Z' 'a-z'`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: email_view_aliases - Not called by email_view_aliases.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: email_view_aliases - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: email_view_aliases - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: email_view_aliases - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $ALPHABET'null' = null ]
+then
+echo `date`: email_view_aliases - No letter chosen by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+echo `date`: email_view_aliases - viewing banned users in category $ALPHABET by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+############################
+#Language
+############################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_view_aliases ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_view_aliases
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+[ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
+chmod 0700 /opt/karoshi/.tempdata
+[ -d /etc/postfix ] || mkdir /etc/postfix
+
+EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+
+if [ $EMAILSERVER != $HOSTNAME ]
+then
+#Copy in aliases list from email server to pdc
+scp  root@$EMAILSERVER:"/etc/postfix/aliases" /etc/postfix/
+fi
+
+if [ $ALPHABET = ALL ]
+then
+grep -v ^"#" /etc/postfix/aliases | sed /^$/d > /opt/karoshi/.tempdata/aliases.$$
+else
+grep ^$ALPHABET /etc/postfix/aliases | sed /^$/d > /opt/karoshi/.tempdata/aliases.$$
+if [ $ALPHABET != $ALPHABET2 ]
+then
+grep ^$ALPHABET2 /etc/postfix/aliases | sed /^$/d >> /opt/karoshi/.tempdata/aliases.$$
+fi
+fi
+USERCOUNT=`cat /opt/karoshi/.tempdata/aliases.$$ | wc -l`
+COUNTER=1
+if [ $USERCOUNT -gt 0 ]
+then
+#Show table of sites
+echo "<table class="standard" style="text-align: left';' width: 800px';' height: 100px';'" border="0" cellpadding="2" cellspacing="2">"
+echo "<tbody>"
+echo "<tr><td" style='"width: 250px;"'"><b>"$USERNAMEMSG"</b></td><td" style='"width: 70px;"' "><b>"$ALIASMSG"</b></td><td><b>$DELETEMSG</b></td></tr>"
+while [ $COUNTER -le $USERCOUNT ]
+do
+USERDATA=`sed -n $COUNTER,$COUNTER"p" /opt/karoshi/.tempdata/aliases.$$`
+USERNAME=`echo $USERDATA | cut -d: -f2 | sed 's/ //g'`
+ALIASNAME=`echo $USERDATA | cut -d: -f1`
+echo "<tr><td>"$USERNAME"</td><td>$ALIASNAME</td><td>""<"input name='"'_DELETE_'"' value='"'$ALIASNAME'"' type='"'checkbox'"'"></td></tr>"
+let COUNTER=$COUNTER+1
+done
+echo "</tbody>"
+echo "</table>"
+rm -f /opt/karoshi/.tempdata/aliases.$$
+else
+rm -f /opt/karoshi/.tempdata/aliases.$$
+exit 101
+fi
+exit

@@ -1,0 +1,11 @@
+#!/bin/bash
+#softwareinstall
+
+WAVPLAYVERSION=wavplay-1.4-9.i586.rpm
+
+WAVPLAYCHECK=`rpm -q wavplay | cut -d' ' -f1 |grep -c wavplay`
+
+if [ $WAVPLAYCHECK = 0 ]
+then
+rpm -iv /opt/karoshi/serversetup/tranquillity/rpms/$WAVPLAYVERSION
+fi

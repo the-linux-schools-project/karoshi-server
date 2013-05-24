@@ -1,0 +1,242 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/quotas_enable_cgi
+then
+echo `date`: quotas_enable - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/quotas_enable_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/quotas_enable.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $quotas_enable_cgi'check' ]
+then
+echo `date`: quotas_enable - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: quotas_enable - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: quotas_enable - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+SERVERTYPE=`echo "$DATA" | cut -s -d: -f5`
+SERVERMASTER=`echo "$DATA" | cut -s -d: -f6`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: quotas_enable - Not called by quotas_enable.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: quotas_enable - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: quotas_enable - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVERNAME'null' = null ]
+then
+echo `date`: quotas_enable - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $SERVERTYPE'null' = null ]
+then
+echo `date`: quotas_enable - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: quotas_enable - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+echo `date`: quotas_enable - Enabling quotas on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/file/quotas_enable ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/file/quotas_enable
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+#Enable quotas for home partition
+if [ $SERVERNAME = $HOSTNAME ]
+then
+#Check how many times the home partition is listed in fstab
+if [ `grep -n -v "#" /etc/fstab | grep -c /home` = 0 ]
+then
+exit 102
+fi
+if [ `grep -n -v "#" /etc/fstab | grep -c /home` -gt 1 ]
+then
+exit 103
+fi
+#Get line number for /home entry in fstab
+
+LINENUMBER=`grep -n -v "#" /etc/fstab | grep /home | cut -d: -f1`
+LINEENTRY=`sed -n $LINENUMBER,$LINENUMBER'p' /etc/fstab`
+#Check that quotas are not already enabled for /home
+if [ `echo $LINEENTRY | grep -c ,usrquota ` != 0 ]
+then
+exit 104
+fi
+FSTABENTRY1=`echo $LINEENTRY | cut -d' ' -f1`
+FSTABENTRY2=`echo $LINEENTRY | cut -d' ' -f2`
+FSTABENTRY3=`echo $LINEENTRY | cut -d' ' -f3`
+FSTABENTRY4=`echo $LINEENTRY | cut -d' ' -f4`
+FSTABENTRY5=`echo $LINEENTRY | cut -d' ' -f5`
+FSTABENTRY6=`echo $LINEENTRY | cut -d' ' -f6`
+FSTABNEW=`echo $FSTABENTRY1 $FSTABENTRY2 $FSTABENTRY3 $FSTABENTRY4,usrquota $FSTABENTRY5 $FSTABENTRY6`
+#Backup fstab
+cp /etc/fstab /etc/fstab_karoshi_backup.$$
+#Modify Fstab
+sed -i $LINENUMBER"c"\\"$FSTABNEW" /etc/fstab
+#remount partition
+mount -o remount /home
+#Turn on quotas
+echo $SERVERNAME - $ENABLEQUOTAMSG\<br\>\<br\>
+quotacheck -mfcug /home
+quotaon /home
+#Create cron job to schedule auto update of quotas
+echo 0 5 "*" "*" 1,3,5 \( quotaoff /home \; quotacheck /home -gum \; quotaon /home \) > /opt/karoshi/cronjobs/jobs/update_quotas.cron
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
+fi
+
+if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ] && [ $SERVERNAME != $HOSTNAME ]
+then
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+#Check how many times the home partition is listed in fstab
+if [ `grep -n -v "#" /etc/fstab | grep -c /home` = 0 ]
+then
+exit 102
+fi
+if [ `grep -n -v "#" /etc/fstab | grep -c /home` -gt 1 ]
+then
+exit 103
+fi
+#Get line number for /home entry in fstab
+LINENUMBER=`grep -n -v "#" /etc/fstab | grep /home | cut -d: -f1`
+LINEENTRY=`sed -n $LINENUMBER,$LINENUMBER"p" /etc/fstab`
+#Check that quotas are not already enabled for /home
+if [ `echo $LINEENTRY | grep -c ,usrquota ` != 0 ]
+then
+exit 104
+fi
+FSTABENTRY1=`echo $LINEENTRY | cut -d" " -f1`
+FSTABENTRY2=`echo $LINEENTRY | cut -d" " -f2`
+FSTABENTRY3=`echo $LINEENTRY | cut -d" " -f3`
+FSTABENTRY4=`echo $LINEENTRY | cut -d" " -f4`
+FSTABENTRY5=`echo $LINEENTRY | cut -d" " -f5`
+FSTABENTRY6=`echo $LINEENTRY | cut -d" " -f6`
+FSTABNEW=`echo $FSTABENTRY1 $FSTABENTRY2 $FSTABENTRY3 $FSTABENTRY4,usrquota $FSTABENTRY5 $FSTABENTRY6`
+#Backup fstab
+cp /etc/fstab /etc/fstab_karoshi_backup.$$
+#Modify Fstab
+sed -i $LINENUMBER"c"\\"$FSTABNEW" /etc/fstab
+#remount partition
+mount -o remount /home
+#Turn on quotas
+echo '$SERVERNAME' - '$ENABLEQUOTAMSG'\<br\>\<br\>
+quotacheck -mfcug /home
+quotaon /home
+#Create cron job to schedule auto update of quotas
+echo 0 5 "*" "*" 1,3,5 \( quotaoff /home \; quotacheck /home -gum \; quotaon /home \) > /opt/karoshi/cronjobs/jobs/update_quotas.cron
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
+'
+QUOTASTATUS=`echo $?`
+exit $QUOTASTATUS
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
+#Check how many times the home partition is listed in fstab
+if [ `grep -n -v "#" /etc/fstab | grep -c /home` = 0 ]
+then
+exit 102
+fi
+if [ `grep -n -v "#" /etc/fstab | grep -c /home` -gt 1 ]
+then
+exit 103
+fi
+#Get line number for /home entry in fstab
+LINENUMBER=`grep -n -v "#" /etc/fstab | grep /home | cut -d: -f1`
+LINEENTRY=`sed -n $LINENUMBER,$LINENUMBER"p" /etc/fstab`
+#Check that quotas are not already enabled for /home
+if [ `echo $LINEENTRY | grep -c ,usrquota ` != 0 ]
+then
+exit 104
+fi
+FSTABENTRY1=`echo $LINEENTRY | cut -d" " -f1`
+FSTABENTRY2=`echo $LINEENTRY | cut -d" " -f2`
+FSTABENTRY3=`echo $LINEENTRY | cut -d" " -f3`
+FSTABENTRY4=`echo $LINEENTRY | cut -d" " -f4`
+FSTABENTRY5=`echo $LINEENTRY | cut -d" " -f5`
+FSTABENTRY6=`echo $LINEENTRY | cut -d" " -f6`
+FSTABNEW=`echo $FSTABENTRY1 $FSTABENTRY2 $FSTABENTRY3 $FSTABENTRY4,usrquota $FSTABENTRY5 $FSTABENTRY6`
+#Backup fstab
+cp /etc/fstab /etc/fstab_karoshi_backup.$$
+#Modify Fstab
+sed -i $LINENUMBER"c"\\"$FSTABNEW" /etc/fstab
+#remount partition
+mount -o remount /home
+#Turn on quotas
+echo '$ENABLEQUOTAMSG'\<br\>\<br\>
+quotacheck -mfcug /home
+quotaon /home
+#Create cron job to schedule auto update of quotas
+echo 0 5 "*" "*" 1,3,5 \( quotaoff /home \; quotacheck /home -gum \; quotaon /home \) > /opt/karoshi/cronjobs/jobs/update_quotas.cron
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
+'\''
+QUOTASTATUS=`echo $?`
+exit $QUOTASTATUS
+'
+QUOTASTATUS=`echo $?`
+exit $QUOTASTATUS
+fi
+
+exit

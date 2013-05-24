@@ -1,0 +1,103 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          mon
+# Required-Start:    $syslog
+# Required-Stop:     $syslog
+# Should-Start:      $local_fs
+# Should-Stop:       $local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: monitor hosts/services/whatever and alert about problems
+# Description:       "mon" is a tool for monitoring the availability of services.
+### END INIT INFO
+
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+USER=mon
+GROUP=mon
+NAME=mon
+DESC="monitor daemon"
+DAEMON=/usr/sbin/mon
+PIDFILE="/var/run/mon/mon.pid"
+
+# Define LSB log_* functions.
+# Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
+. /lib/lsb/init-functions
+
+
+test -x $DAEMON || exit 0
+
+# Include mon defaults if available
+if [ -f /etc/default/mon ] ; then
+	. /etc/default/mon
+fi
+
+
+#
+# Read /etc/default/mon settings
+#
+if [ $ENABLED != "yes" ] ; then
+	log_warning_msg "mon is disabled by /etc/default/mon directive (ENABLE=\"$ENABLED\")"
+	exit 0
+fi
+
+
+set -e
+
+case "$1" in
+  start)
+        # If /var/run/mon doesn't exist, recreate it.
+        if [ ! -d `dirname $PIDFILE` ]; then
+            mkdir -p `dirname $PIDFILE`
+            chown mon:root `dirname $PIDFILE`
+            chmod 755 `dirname $PIDFILE`
+        fi
+	echo -n "Starting $DESC: "
+	start-stop-daemon --start --quiet --pidfile $PIDFILE --chuid $USER --group $GROUP --exec $DAEMON -- $DAEMON_OPTS
+	echo "$NAME."
+	;;
+  stop)
+	echo -n "Stopping $DESC: "
+	start-stop-daemon --stop --quiet --pidfile $PIDFILE 
+	echo "$NAME."
+	;;
+  #reload)
+	#
+	#	If the daemon can reload its config files on the fly
+	#	for example by sending it SIGHUP, do it here.
+	#
+	#	If the daemon responds to changes in its config file
+	#	directly anyway, make this a do-nothing entry.
+	#
+	# echo "Reloading $DESC configuration files."
+	# start-stop-daemon --stop --signal 1 --quiet --pidfile \
+	#	$PIDFILE --exec $DAEMON
+  #;;
+  force-reload)
+	#
+	#	If the "reload" option is implemented, move the "force-reload"
+	#	option to the "reload" entry above. If not, "force-reload" is
+	#	just the same as "restart" except that it does nothing if the
+	#   daemon isn't already running.
+	# check wether $DAEMON is running. If so, restart
+	start-stop-daemon --stop --test --quiet --pidfile \
+		$PIDFILE --exec $DAEMON \
+	&& $0 restart \
+	|| exit 0
+	;;
+  restart)
+    echo -n "Restarting $DESC: "
+	start-stop-daemon --stop --quiet --pidfile $PIDFILE 
+	sleep 1
+	start-stop-daemon --start --quiet --pidfile $PIDFILE --chuid $USER --group $GROUP --exec $DAEMON -- $DAEMON_OPTS
+	echo "$NAME."
+	;;
+  *)
+	N=/etc/init.d/$NAME
+	# echo "Usage: $N {start|stop|restart|reload|force-reload}" >&2
+	echo "Usage: $N {start|stop|restart|force-reload}" >&2
+	exit 1
+	;;
+esac
+
+exit 0

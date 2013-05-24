@@ -1,0 +1,120 @@
+#!/bin/bash
+#Copyright (C) 2007  The karoshi Team
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+
+SSHWARNMSG="SSH is not enabled for this server."
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/printers_cgi
+then
+echo `date`: printers - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/printers_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printers.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $printers_cgi'check' ]
+then
+echo `date`: printers - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/printers_cgi
+then
+echo `date`: printers - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/tech_checksums/printers_cgi
+MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/printers.cgi | cut -d' ' -f1`
+[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+if [ $MD5SUM2'check' != $printers_cgi'check' ]
+then
+echo `date`: printers - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 1 ]
+then
+echo `date`: printers - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo $* | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | cut -s -d: -f3`
+MOBILE=`echo $* | cut -s -d: -f4`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: printers - Not called by printers.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: printers - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ ! -f /opt/karoshi/server_network/print_server ]
+then
+echo `date`: printers - no print server has been set up. >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: printers - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: printers - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+#Get Printer location data
+STARTLINENO=`grep -n ^--start-- /var/lib/samba/netlogon/printers.txt | cut -d: -f1`
+let STARTLINENO=$STARTLINENO+1
+
+NOOFLINES=`cat /var/lib/samba/netlogon/printers.txt | wc -l`
+LOCATIONDATA=`sed -n $STARTLINENO,$NOOFLINES'p' /var/lib/samba/netlogon/printers.txt`
+LOCATIONDATA=`echo $LOCATIONDATA | sed 's/ /123SPACE123/g'`
+
+####################
+#Show printers
+####################
+PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/print_server`
+if [ $PRINTSERVER = $HOSTNAME ]
+then
+/opt/karoshi/"useful scripts"/printer_info admin $LOCATIONDATA $MOBILE
+else
+ssh -x -o PasswordAuthentication=no $PRINTSERVER '/opt/karoshi/"useful scripts"/printer_info admin '$LOCATIONDATA' '$MOBILE'' 2>&1
+fi

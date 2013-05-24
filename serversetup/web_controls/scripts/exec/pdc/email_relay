@@ -1,0 +1,145 @@
+#!/bin/bash
+#Copyright (C) 2007  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/email_relay2_cgi
+then
+echo `date`: email_relay - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/email_relay2_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_relay2.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $email_relay2_cgi'check' ]
+then
+echo `date`: email_relay - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 1 ]
+then
+echo `date`: email_relay - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo $* | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | cut -s -d: -f3`
+RELAY=`echo $* | cut -s -d: -f4`
+RADDRESS=`echo $* | cut -s -d: -f5`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: email_relay - Not called by email_relay.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: email_relay - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: email_relay - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $RELAY'null' = null ]
+then
+echo `date`: email_relay - Blank relay option by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ $RELAY != direct ] && [ $RELAY != relay ]
+then
+echo `date`: email_relay - Incorrect relay option by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ $RELAY = relay ]
+then
+if [ $RADDRESS'null' = null ]
+then
+echo `date`: email_relay - Blank relay address by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: email_relay - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $RELAY = relay ]
+then
+echo `date`: email_relay - relaying mail to $RADDRESS by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+else
+echo `date`: email_relay - sending mail out directly by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+############################
+#Apply relay settings
+############################
+EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+
+if [ `echo $EMAILSERVER'null' | sed 's/ //g'` = null ] 
+then
+echo `date`: email_over_quota_report - blank email server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+
+if [ $EMAILSERVER != $HOSTNAME ]
+then
+ssh -x -o PasswordAuthentication=no $EMAILSERVER '
+#Remove all relay host lines
+sed -i /^relayhost/d /etc/postfix/main.cf
+if [ '$RELAY' = relay ]
+then
+#Add in replay parameter if it does not exist
+echo relayhost = '$RADDRESS' >> /etc/postfix/main.cf
+fi
+#Restart MailScanner
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mailscanner_stop 1>/dev/null 2>/dev/null
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mailscanner_start 1>/dev/null 2>/dev/null
+'
+else
+#Remove all relay host lines
+sed -i /^relayhost/d /etc/postfix/main.cf
+if [ $RELAY = relay ]
+then
+#Add in relay parameter if it does not exist
+echo relayhost = '['$RADDRESS']' >> /etc/postfix/main.cf
+fi
+#Restart MailScanner
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mailscanner_stop 1>/dev/null 2>/dev/null
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mailscanner_start 1>/dev/null 2>/dev/null
+fi

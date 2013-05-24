@@ -1,0 +1,189 @@
+#!/bin/bash
+#setupmonitoring
+#Copyright (C) 2009  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aloughlin@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+[ -d $HOME/.tempdata ] || mkdir $HOME/.tempdata
+
+[ -e /opt/karoshi/serversetup/variables/language ] || /opt/karoshi/serversetup/changelanguage
+[ -e /opt/karoshi/serversetup/variables/distro ] || /opt/karoshi/serversetup/changedistro
+
+source /opt/karoshi/serversetup/variables/language
+source /opt/karoshi/serversetup/variables/xdialog
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/variables/tcpip
+source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/monitoring/setupmonitoring
+source /opt/karoshi/serversetup/language/$LANGCHOICE/softwareinstall
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/extra_server/software
+
+#########################
+#Add log entry
+#########################
+touch /opt/karoshi/serversetup/setuplog
+echo '##############'setupmonitoring'##############' >> /opt/karoshi/serversetup/install_log
+date >> /opt/karoshi/serversetup/install_log
+if [ `grep -c "$TITLE" /opt/karoshi/serversetup/setuplog` = 0 ]
+then
+echo setupmonitoring:$TITLE://opt/karoshi/serversetup/extra_server/scripts/setupmonitoring >> /opt/karoshi/serversetup/setuplog
+chmod 0600 /opt/karoshi/serversetup/setuplog
+fi
+
+#############################
+#Check for missing software
+#############################
+if [ -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/monitoring/software ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/monitoring/software
+fi
+
+#############################
+#Ensure that apache and mon are running on boot
+##############################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mon
+
+#############################
+#Copy in config files for mon
+#############################
+
+echo '<b>'$TITLE'</b><br><br>'$CONFIGUREMONMSG
+[ -d /var/www/html/mon/ ] || ( mkdir -p /var/www/html/mon/ ; chmod 0755 -R /var/www/html/mon/ )
+[ -d /opt/karoshi/server_network/mon/events ] || ( mkdir -p /opt/karoshi/server_network/mon/events ; chmod 0755 -R /opt/karoshi/server_network/mon ; chown mon /opt/karoshi/server_network/mon/events )
+[ -d /opt/karoshi/server_network/mon/messages ] || ( mkdir -p /opt/karoshi/server_network/mon/messages ; chmod 0755 -R /opt/karoshi/server_network/mon ; chown mon /opt/karoshi/server_network/mon/messages )
+
+if [ ! -d /var/www/cgi-bin ]
+then
+mkdir p /var/www/cgi-bin
+chown root.$APACHEGROUP /var/www/cgi-bin
+chmod 0550 /var/www/cgi-bin
+fi
+
+[ ! -d /opt/karoshi/"useful scripts" ] && mkdir -p /opt/karoshi/"useful scripts"
+[ ! -d /opt/karoshi/server_network/mon ] && mkdir -p /opt/karoshi/server_network/mon
+
+cp -f /opt/karoshi/serversetup/modules/monitoring/mon/index.html /var/www/html/
+cp -f /opt/karoshi/serversetup/modules/monitoring/mon/logo.png /var/www/html/mon/
+cp -f /opt/karoshi/serversetup/modules/monitoring/mon/mon.cgi /var/www/cgi-bin/
+cp -f -R /opt/karoshi/serversetup/modules/monitoring/mon/admin /var/www/cgi-bin/
+
+[ ! -d /opt/karoshi/web_controls ] && mkdir /opt/karoshi/web_controls
+cp -f /opt/karoshi/serversetup/modules/monitoring/"useful scripts"/gen_status "/opt/karoshi/useful scripts/"
+cp -f -R "/opt/karoshi/serversetup/web_controls/html/pdc/css/" "/var/www/html/"
+cp -f -R "/opt/karoshi/serversetup/web_controls/images" "/var/www/html/"
+cp -f -R "/opt/karoshi/serversetup/web_controls/language/" "/opt/karoshi/web_controls/"
+cp -f "/opt/karoshi/serversetup/web_controls/scripts/generate_navbar_mon" "/opt/karoshi/web_controls/"
+
+cp -f /opt/karoshi/serversetup/modules/monitoring/mon/alerts/smtp-cli /opt/karoshi/server_network/mon/
+cp -f /opt/karoshi/serversetup/modules/monitoring/mon/alerts/send_mail.alert /usr/lib/mon/alert.d/
+
+chown root.$APACHEGROUP -R /var/www/html/css
+chown root.$APACHEGROUP /opt/karoshi/web_controls/generate_navbar_mon
+chmod 0750 /opt/karoshi/web_controls/generate_navbar_mon
+chown root.$APACHEGROUP /var/www/cgi-bin/mon.cgi
+chmod 0750 /var/www/cgi-bin/mon.cgi
+chown root.$APACHEGROUP -R /var/www/cgi-bin/admin
+chmod 0750 /var/www/cgi-bin/admin/monitors_view_logs.cgi
+chmod 0750 /var/www/cgi-bin/admin/monitors_enable_disable.cgi
+
+[ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
+echo "*" "*" "*" "*" "*" /opt/karoshi/\"useful scripts\"/gen_status > /opt/karoshi/cronjobs/jobs/gen_status.cron
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+
+[ -e /etc/mon/mon_backup.cf ] || cp -f /etc/mon/mon.cf /etc/mon/mon_backup.cf
+
+chmod 0644 /var/www/html/index.html
+chmod 0644 /var/www/html/mon/logo.png
+chmod 0755 /var/www/cgi-bin/mon.cgi
+chmod 0644 /etc/mon/mon.cf
+chmod 0755 /usr/lib/mon/alert.d/*
+
+touch /etc/mon/userfile
+
+cat /opt/karoshi/serversetup/modules/monitoring/mon/global /opt/karoshi/server_network/mon/monitors/* > /etc/mon/mon.cf
+
+#############################
+#Ensure that apache, mon are running
+##############################
+
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_stop 1>/dev/null
+sleep 1
+echo '<br><br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_start
+echo '<br><br>'
+APACHESTATUS=`ps -e | grep -c -w $APACHEVER`
+if [ $APACHESTATUS = 0 ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
+fi
+
+############################
+#Add Desktop Icon
+############################
+echo '[Desktop Entry]' > /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop
+echo 'Comment=Network Monitoring' >> /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop
+echo 'Comment[en_US]=Network Monitoring' >> /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop
+echo 'Encoding=UTF-8' >> /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop
+echo 'Exec=firefox http://127.0.0.1/cgi-bin/mon.cgi' >> /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop
+echo 'GenericName=Monitoring' >> /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop
+echo 'GenericName[en_US]=Monitoring' >> /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop
+echo 'Icon=/opt/karoshi/serversetup/essentials/smalllogo.xpm' >> /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop
+echo 'MimeType=' >> /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop
+echo 'Name=Monitoring' >> /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop
+echo 'Name[en_US]=Monitoring' >> /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop
+echo 'StartupNotify=false' >> /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop
+echo 'Terminal=false' >> /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop
+echo 'Type=Application' >> /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop
+chown karoshi /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop
+chmod 0755 /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop
+
+##########################
+#Disable screensaver and Power Management
+##########################
+xset s 0 0
+xset -dpms
+
+if [ -d /opt/karoshi/karoshi_user/.config/autostart ]
+then
+echo xset s 0 0 > /opt/karoshi/karoshi_user/.no_screensaver
+echo xset -dpms >> /opt/karoshi/karoshi_user/.no_screensaver
+chown karoshi /opt/karoshi/karoshi_user/.no_screensaver
+chmod 0700 /opt/karoshi/karoshi_user/.no_screensaver
+#Create icon in autostart
+echo "#!/usr/bin/env xdg-open" > /opt/karoshi/karoshi_user/.config/autostart/no_screensaver.desktop
+echo >> /opt/karoshi/karoshi_user/.config/autostart/no_screensaver.desktop
+echo "[Desktop Entry]" >> /opt/karoshi/karoshi_user/.config/autostart/no_screensaver.desktop
+echo "Version=1.0" >> /opt/karoshi/karoshi_user/.config/autostart/no_screensaver.desktop
+echo "Type=Application" >> /opt/karoshi/karoshi_user/.config/autostart/no_screensaver.desktop
+echo "Terminal=false" >> /opt/karoshi/karoshi_user/.config/autostart/no_screensaver.desktop
+echo "Icon[en_GB]=gnome-panel-launcher" >> /opt/karoshi/karoshi_user/.config/autostart/no_screensaver.desktop
+echo "Name[en_GB]=No_Screensaver" >> /opt/karoshi/karoshi_user/.config/autostart/no_screensaver.desktop
+echo "Exec=/opt/karoshi/karoshi_user/.no_screensaver" >> /opt/karoshi/karoshi_user/.config/autostart/no_screensaver.desktop
+echo "Name=No_Screensaver" >> /opt/karoshi/karoshi_user/.config/autostart/no_screensaver.desktop
+echo "Icon=gnome-panel-launcher" >> /opt/karoshi/karoshi_user/.config/autostart/no_screensaver.desktop
+chown karoshi /opt/karoshi/karoshi_user/.config/autostart/no_screensaver.desktop
+chmod 0700 /opt/karoshi/karoshi_user/.config/autostart/no_screensaver.desktop
+
+su karoshi -c 'gconftool-2 --type bool --set /apps/gnome-screensaver/idle_activation_enabled "false"'
+fi
+exit
+
+

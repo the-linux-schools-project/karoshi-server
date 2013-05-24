@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<RDF:RDF xmlns:c="http://www.mozilla.org/rdf/chrome#"
+         xmlns:NC="http://home.netscape.com/NC-rdf#"
+         xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <RDF:Description RDF:about="urn:mozilla:package:global">
+    <c:selectedSkin RDF:resource="urn:mozilla:skin:classic/1.0:global"/>
+  </RDF:Description>
+  <RDF:Description RDF:about="urn:mozilla:package:pippki">
+    <c:selectedLocale RDF:resource="urn:mozilla:locale:en-US:pippki"/>
+  </RDF:Description>
+  <RDF:Description RDF:about="urn:mozilla:package:browser-region">
+    <c:selectedLocale RDF:resource="urn:mozilla:locale:US:browser-region"/>
+  </RDF:Description>
+  <RDF:Description RDF:about="urn:mozilla:package:global-region">
+    <c:selectedLocale RDF:resource="urn:mozilla:locale:US:global-region"/>
+  </RDF:Description>
+  <RDF:Description RDF:about="urn:mozilla:package:browser">
+    <c:selectedSkin RDF:resource="urn:mozilla:skin:classic/1.0:browser"/>
+  </RDF:Description>
+  <RDF:Description RDF:about="urn:mozilla:package:mozapps">
+    <c:selectedLocale RDF:resource="urn:mozilla:locale:en-US:mozapps"/>
+    <c:selectedSkin RDF:resource="urn:mozilla:skin:classic/1.0:mozapps"/>
+  </RDF:Description>
+  <RDF:Description RDF:about="urn:mozilla:package:passwordmgr">
+    <c:selectedLocale RDF:resource="urn:mozilla:locale:en-US:passwordmgr"/>
+  </RDF:Description>
+  <RDF:Description RDF:about="urn:mozilla:package:communicator">
+    <c:selectedSkin RDF:resource="urn:mozilla:skin:classic/1.0:communicator"/>
+  </RDF:Description>
+  <RDF:Description RDF:about="urn:mozilla:package:help">
+    <c:selectedSkin RDF:resource="urn:mozilla:skin:classic/1.0:help"/>
+  </RDF:Description>
+  <RDF:Description RDF:about="urn:mozilla:package:necko">
+    <c:selectedLocale RDF:resource="urn:mozilla:locale:en-US:necko"/>
+  </RDF:Description>
+  <RDF:Description RDF:about="urn:mozilla:package:pipnss">
+    <c:selectedLocale RDF:resource="urn:mozilla:locale:en-US:pipnss"/>
+  </RDF:Description>
+</RDF:RDF>

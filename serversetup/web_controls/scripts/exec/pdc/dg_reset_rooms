@@ -1,0 +1,39 @@
+#!/bin/bash
+#Copyright (C) 2012 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+echo `date`: dg_reset_rooms - flushing iptables dynamic ruleset on $PROXYSERVER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#Clear all of the room control flags
+[ -d /opt/karoshi/server_network/internet_room_controls/ ] && rm -f -R /opt/karoshi/server_network/internet_room_controls/ 
+
+#Clear iptables rules
+if [ $PROXYSERVER = $HOSTNAME ]
+then
+iptables --flush dynamic
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3  $PROXYSERVER '
+iptables --flush dynamic
+'
+fi
+exit
+

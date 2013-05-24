@@ -1,0 +1,158 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/incident_log_view_cgi
+then
+echo `date`: incident_log_view - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/incident_log_view_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/incident_log_view.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $incident_log_view_cgi'check' ]
+then
+echo `date`: incident_log_view - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/incident_log_view_cgi
+then
+echo `date`: incident_log_view - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/tech_checksums/incident_log_view_cgi
+MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/incident_log_view.cgi | cut -d' ' -f1`
+[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+if [ $MD5SUM2'check' != $incident_log_view_cgi'check' ]
+then
+echo `date`: incident_log_view - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 1 ]
+then
+echo `date`: incident_log_view - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo $* | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | cut -s -d: -f3`
+ALPHABET=`echo $* | cut -s -d: -f4`
+ALPHABET2=`echo $ALPHABET | tr 'A-Z' 'a-z'`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: incident_log_view - Not called by incident_log_view.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: incident_log_view - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: incident_log_view - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: incident_log_view - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $ALPHABET'null' = null ]
+then
+echo `date`: incident_log_view - No letter chosen by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+echo `date`: incident_log_view - viewing incident log for the letter $ALPHABET by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+[ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
+chmod 0700 /opt/karoshi/.tempdata
+
+if [ $ALPHABET = ALL ]
+then
+cat /opt/karoshi/logs/incident_logs/* > /opt/karoshi/.tempdata/incident_log.$$ 2>/dev/null
+else
+#Get line numbers of matching records
+cat /opt/karoshi/logs/incident_logs/$ALPHABET* > /opt/karoshi/.tempdata/incident_log.$$ 2>/dev/null
+if [ $ALPHABET != $ALPHABET2 ]
+then
+cat /opt/karoshi/logs/incident_logs/$ALPHABET2* >> /opt/karoshi/.tempdata/incident_log.$$ 2>/dev/null
+fi
+fi
+############################
+#Language
+############################
+LANGCHOICE=englishuk
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/incident_log ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/user/incident_log
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+############################
+#Show page
+############################
+LOGCOUNT=`cat /opt/karoshi/.tempdata/incident_log.$$ | wc -l`
+COUNTER=1
+if [ $LOGCOUNT -gt 0 ]
+then
+#Show table of sites
+echo "<table class="standard" style="text-align: left';' width: 1000px';' height: 100px';'" border="0" cellpadding="2" cellspacing="2">"
+echo "<tbody>"
+echo "<tr><td" style='"width: 70px;"'"><b>"$DATEMSG2"</b></td><td" style='"width: 45px;"'"><b>"$TIMEMSG"</b></td><td><b>"$INCIDENTMSG"</b></td><td><b>"$ACTIONMSG"</b></td><td><b>"$USERSMSG"</b></td></tr>"
+while [ $COUNTER -le $LOGCOUNT ]
+do
+LOGDATA=`sed -n $COUNTER,$COUNTER"p" /opt/karoshi/.tempdata/incident_log.$$`
+
+DATE=`echo $LOGDATA | cut -d: -f2-4`
+TIME=`echo $LOGDATA | cut -d: -f5-6`
+INCIDENT=`echo $LOGDATA | cut -d: -f7`
+ACTION=`echo $LOGDATA | cut -d: -f8`
+USERS=`echo $LOGDATA | cut -d: -f9`
+echo "<tr><td" style='"width: 70px;"'">"$DATE"</td><td" style='"width: 45px;"'">"$TIME"</td><td>"$INCIDENT"</td><td>"$ACTION"</td><td>"$USERS"</td></tr>"
+let COUNTER=$COUNTER+1
+done
+echo "</tbody>"
+echo "</table>"
+rm -f /opt/karoshi/.tempdata/incident_log.$$
+else
+echo $ERRORMSG14'<br>'
+rm -f /opt/karoshi/.tempdata/incident_log.$$
+exit 101
+fi
+exit

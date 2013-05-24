@@ -1,0 +1,6 @@
+#!/bin/bash
+#pam_smb_install
+
+PAM_SMB=pam-smb_1.1.7-6_i386.deb
+echo installing $PAM_SMB >> /opt/karoshi/serversetup/install_log
+dpkg --install /opt/karoshi/serversetup/xen/debs/$PAM_SMB 2>&1 >> /opt/karoshi/serversetup/install_log

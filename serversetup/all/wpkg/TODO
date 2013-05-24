@@ -1,0 +1,49 @@
+- Help fix existing bugs on http://bugs.wpkg.org
+
+
+- Make IP-based profiles:
+
+    <host ip="192.168.2.5" profile-id="profile01" />
+    
+    <host ip="192.168.2-6.5-126" profile-id="profile02" />
+
+Hostname-based profiles should have precedence over IP-based profiles (or should IPs be more important?).
+Or make it configurable:
+
+    <host order="hostname,ip" />
+
+
+- Make possible to use additional config files (something like "include hosts-custom.xml" would
+  include this additional .xml files, or "include hosts\*" would include all files in hosts folder)
+  
+  
+- Make possible installing and uninstalling on a certain date (like "installdate = 23.07.2005", "uninstalldate = 01.02.2006")
+
+
+- Write a client-side installer for WPKG.
+  It should have the following features:
+  
+  1) command line for "silent" installation:
+    
+    - ability to specify credentials under which "cscript \\path\to\wpkg.js" will be executed
+    - ability to specify the path to wpkg.js
+    - no checks performed (like in GUI - below)
+    
+    Examples:
+    
+    wpkg-install.exe --user Administrator --pass s3crEt --path \\server\wpkg
+    wpkg-install.exe --user Administrator --pass s3crEt --path \\192.168.111.200\wpkg
+    wpkg-install.exe --user Administrator --pass s3crEt --path P:\wpkg
+    
+
+  2) GUI:
+  
+    - it should check, if cscript (needed to run wpkg.js) is available in the system (if it isn't notify the user)
+    - it should ask for the path to wpkg.js, and credentials
+    - the installer should support many languages, defined in language.lang file (like en.lang, de.lang, pl.lang etc.)
+      New languages should be easily added by just copying a new language file to a directory with the installer.
+    
+  Any takers? :)
+
+
+- Complete the web interface... use LDAP for that... ideas?

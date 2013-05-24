@@ -1,0 +1,6 @@
+#!/bin/bash
+#Start mailscanner on boot
+chkconfig MailScanner off
+[ -f /opt/karoshi/start_on_boot/karoshi_services ] || touch /opt/karoshi/start_on_boot/karoshi_services
+[ `grep -c -w MailScanner /opt/karoshi/start_on_boot/karoshi_services` = 0 ] && echo MailScanner,1 >> /opt/karoshi/start_on_boot/karoshi_services
+

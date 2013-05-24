@@ -1,0 +1,256 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/software
+
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/ntp2_cgi
+then
+echo `date`: ntp2 - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/ntp2_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ntp2.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $ntp2_cgi'check' ]
+then
+echo `date`: ntp - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 1 ]
+then
+echo `date`: ntp - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo $* | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | cut -s -d: -f3`
+NTPSERVER=`echo $* | cut -s -d: -f4`
+SERVERNAME=`echo $* | cut -s -d: -f5`
+SERVERTYPE=`echo $* | cut -s -d: -f6`
+SERVERMASTER=`echo $* | cut -s -d: -f7`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: ntp - Not called by ntp.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: ntp - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: ntp - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: ntp - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $SERVERNAME'null' = null ]
+then
+echo `date`: ntp - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $NTPSERVER'null' = null ]
+then
+echo `date`: ntp - Blank ntp server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $SERVERTYPE'null' = null ]
+then
+echo `date`: ntp - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+if [ $SERVERMASTER'null' = null ]
+then
+echo `date`: ntp - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+fi
+
+############################
+#Language
+############################
+LANGCHOICE=englishuk
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/ntp ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/system/ntp
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+###########################
+#Apply settings
+###########################
+
+echo `date`: ntp - Setting $SERVERNAME to $NTPSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+echo '<table class="headings" style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="0">'
+echo '<tbody><tr><td>'
+echo '<span style="font-weight: bold;">'$SERVERNAME'</span></td>'
+echo '</tr></tbody></table>'
+source /opt/karoshi/serversetup/variables/distro
+#pdc
+if [ $SERVERNAME = $HOSTNAME ]
+then
+echo $HOSTNAME - $STOPNTP"<br><br>"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_stop 1> /dev/null
+#Ensure drift file is created
+if [ ! -d /etc/ntp/ ]
+then
+mkdir -p /etc/ntp/
+chown ntp /etc/ntp/
+fi
+if [ ! -f /etc/ntp/drift ]
+then
+touch /etc/ntp/drift
+chown ntp /etc/ntp/drift
+fi
+
+#create ntp.conf
+#echo server	127.127.1.0 > /etc/ntp.conf
+#echo fudge	127.127.1.0 stratum 10	>> /etc/ntp.conf
+echo server	$NTPSERVER	prefer > /etc/ntp.conf
+echo driftfile /etc/ntp/drift >> /etc/ntp.conf
+echo multicastclient >> /etc/ntp.conf
+echo broadcastdelay	0.008 >> /etc/ntp.conf
+echo authenticate no >> /etc/ntp.conf
+#Do initial time syncronisation
+echo $SYNCNTP"<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+ntpdate -t 3 $NTPSERVER 2>/dev/null
+echo "</pre><br>"$HOSTNAME - $STARTNTP"<br><br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_start 2>/dev/null
+echo "</pre>"
+#Ensure that NTP is running on boot
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/ntp
+#Show ntp status
+echo $NTPSTATUS"<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+ntpq -p 2>/dev/null
+echo \</pre\>\<br\>
+fi
+
+if [ $SERVERNAME != $HOSTNAME ] && [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: ntp \(federated mode\) - Setting '$SERVERNAME' to '$NTPSERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+source /opt/karoshi/serversetup/variables/distro
+echo $HOSTNAME - '$STOPNTP'"<br><br>"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_stop 1> /dev/null
+#Ensure drift file is created
+if [ ! -d /etc/ntp/ ]
+then
+mkdir -p /etc/ntp/
+chown ntp /etc/ntp/
+fi
+if [ ! -f /etc/ntp/drift ]
+then
+touch /etc/ntp/drift
+chown ntp /etc/ntp/drift
+fi
+#create ntp.conf
+#echo server	127.127.1.0 > /etc/ntp.conf
+#echo fudge	127.127.1.0 stratum 10	>> /etc/ntp.conf
+echo server	'$NTPSERVER'	prefer > /etc/ntp.conf
+echo driftfile /etc/ntp/drift >> /etc/ntp.conf
+echo multicastclient >> /etc/ntp.conf
+echo broadcastdelay	0.008 >> /etc/ntp.conf
+echo authenticate no >> /etc/ntp.conf
+#Do initial time syncronisation
+echo '$SYNCNTP'"<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+ntpdate -t 3 '$NTPSERVER' 2>/dev/null
+echo "</pre><br>"$HOSTNAME - '$STARTNTP'"<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_start 2>/dev/null
+echo "</pre>"
+#Ensure that NTP is running on boot
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/ntp
+echo '$NTPSTATUS'"<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+ntpq -p 2>/dev/null
+echo \</pre\>\<br\>
+'
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER PasswordAuthentication=no '
+echo `date`: ntp \(federated mode\) - Setting '$SERVERNAME' to '$NTPSERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
+source /opt/karoshi/serversetup/variables/distro
+echo $HOSTNAME - '$STOPNTP'"<br><br>"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_stop 1> /dev/null
+#Ensure drift file is created
+if [ ! -d /etc/ntp/ ]
+then
+mkdir -p /etc/ntp/
+chown ntp /etc/ntp/
+fi
+if [ ! -f /etc/ntp/drift ]
+then
+touch /etc/ntp/drift
+chown ntp /etc/ntp/drift
+fi
+#create ntp.conf
+#echo server	127.127.1.0 > /etc/ntp.conf
+#echo fudge	127.127.1.0 stratum 10	>> /etc/ntp.conf
+echo server	'$NTPSERVER'	prefer > /etc/ntp.conf
+echo driftfile /etc/ntp/drift >> /etc/ntp.conf
+echo multicastclient >> /etc/ntp.conf
+echo broadcastdelay	0.008 >> /etc/ntp.conf
+echo authenticate no >> /etc/ntp.conf
+#Do initial time syncronisation
+echo '$SYNCNTP'"<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+ntpdate -t 3 '$NTPSERVER' 2>/dev/null
+echo "</pre><br>"$HOSTNAME - '$STARTNTP'"<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_start 2>/dev/null
+echo "</pre>"
+#Ensure that NTP is running on boot
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/ntp
+echo '$NTPSTATUS'"<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+ntpq -p 2>/dev/null
+echo \</pre\>\<br\>
+'\''
+'
+fi
+
+
+

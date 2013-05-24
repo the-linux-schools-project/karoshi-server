@@ -1,0 +1,19 @@
+Windows Packager
+Simple package distribution utility for Windows
+
+This program is used to push/pull software packages, such as Service Packs, hotfixes, or program installations from a central server to a number of workstations.
+
+Package definations are stored in packages.xml, profile definations in profiles.xml.
+
+A package is a software entity that can be installed and removed by running a series of command lines. All of those commands must be successful, either by returning a zero exit code, or by returning an exit code listed for the command.
+
+The system keeps track of what versions of what packages are currently installed and what version are available in order to decide weither to install, remove, or upgrade a package.
+
+Profiles denote a certain "class" of workstations, such as departments. Profiles can depend on other profiles, the end result being they inherit all the dependent packages.
+
+Installation consists of copying the wpkg.js, packages.xml, profiles.xml and hosts.xml files to a centralized folder on a file server. The administrator would then define his packages in packages.xml, and then define his profile structure in profiles.xml. Each workstation would need to be configured to run the wpkg command in order to install/update/remove packages from itself.
+
+Logs are reported to the Windows Event Log. These can be retrieved in anyway appropiate for the network.
+
+
+For installation instructions, documentation and additional info, visit http://wpkg.org

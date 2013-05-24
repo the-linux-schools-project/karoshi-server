@@ -1,0 +1,282 @@
+#!/bin/bash
+#configure_external_interface
+#Copyright (C) 2005  The karoshi Team
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aloughlin@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+[ -d $HOME/.tempdata ] || mkdir $HOME/.tempdata
+[ -e /opt/karoshi/serversetup/variables/language ] || /opt/karoshi/serversetup/changelanguage
+[ -e /opt/karoshi/serversetup/variables/distro ] || /opt/karoshi/serversetup/changedistro
+
+source /opt/karoshi/serversetup/variables/language
+source /opt/karoshi/serversetup/language/$LANGCHOICE/all/configure_external_interface
+source /opt/karoshi/serversetup/variables/xdialog
+source /opt/karoshi/serversetup/variables/distro
+#source /opt/karoshi/serversetup/language/$LANGCHOICE/extrafileserver/checknetwork
+source /opt/karoshi/serversetup/variables/tcpip
+[ -f /opt/karoshi/serversetup/variables/external_network_card ] && source /opt/karoshi/serversetup/variables/external_network_card
+######################
+#Opening Message
+######################
+
+Xdialog --wrap --title "$TITLE" --clear \
+        --icon $ICON --rc-file $RCFILE --yesno "$OPENINGMSG" 16 50
+
+case $? in
+  0)
+   CHOICE=go;;
+  1)
+    CHOICE=x;;
+  255)
+    CHOICE=x;;
+esac
+if [ $CHOICE = x ]
+then
+exit
+fi
+
+function tcpipcheck {
+#Check tcpip number has no non numeric characters
+CHARCHECK=`echo $DATA_ENTRY | grep -c [^0-9.' ']`
+#Check that tcpip number has max of 3 numbers between dots
+NUMCHECK=`echo $DATA_ENTRY | grep -c '[0-9]''[0-9]''[0-9]''[0-9]'`
+if [ $DATA_ENTRY'null' = null ]
+then
+NUMCHECK=1
+fi
+}
+
+##########################
+#Cancelled message
+##########################
+function cancelledbox {
+#########################
+#Confirm no change made
+#########################
+Xdialog --title "$TITLE" \
+--icon $ICON --rc-file $RCFILE --msgbox "$TITLE\n\n$NETWORKEXIT" 16 50
+case $ in
+0)
+	CHOICE=x;;
+255)
+	CHOICE=x;;
+esac
+echo network_configure_off > /opt/karoshi/serversetup/variables/network_configure_off
+CHOICE=x
+}
+
+function getipnumber {
+#########################
+#Ask for IPnumber of the server
+#########################
+
+TCPIPNUMBER=`Xdialog --title "$TITLE" --clear \
+        --wrap --no-cancel --icon $ICON --rc-file $RCFILE --inputbox "$TCPIPMSG1:" 16 50 2>&1`
+
+retval=$?
+
+case $retval in
+  0)
+    CHOICE=go;;
+  1)
+    CHOICE=x;;
+  255)
+    CHOICE=x;;
+esac
+TCPIPNUMBER=`echo $TCPIPNUMBER | sed 's/ //g'`
+}
+
+function get_external_netmask {
+#########################
+#Ask for external netmask
+#########################
+
+EXT_NETMASK=`Xdialog --title "$TITLE" --clear \
+        --wrap --no-cancel --icon $ICON --rc-file $RCFILE --inputbox "$EXTNETMASKMSG1:" 16 50 2>&1`
+
+retval=$?
+
+case $retval in
+  0)
+    CHOICE=go;;
+  1)
+    CHOICE=x;;
+  255)
+    CHOICE=x;;
+esac
+EXT_NETMASK=`echo $EXT_NETMASK | sed 's/ //g'`
+}
+
+
+function get_external_dns {
+#########################
+#Ask for the external dns number
+#########################
+
+EXT_DNS=`Xdialog --title "$TITLE" --clear \
+        --wrap --no-cancel --icon $ICON --rc-file $RCFILE --inputbox "$EXTDNSMSG1:" 16 50 2>&1`
+
+retval=$?
+
+case $retval in
+  0)
+    CHOICE=go;;
+  1)
+    CHOICE=x;;
+  255)
+    CHOICE=x;;
+esac
+EXT_DNS=`echo $EXT_DNS | sed 's/ //g'`
+}
+
+function get_gateway {
+#########################
+#Ask for external gateway
+#########################
+
+EXT_GATEWAY=`Xdialog --title "$TITLE" --clear \
+        --wrap --no-cancel --icon $ICON --rc-file $RCFILE --inputbox "$EXTGATEWAYMSG1:" 16 50 2>&1`
+
+retval=$?
+
+case $retval in
+  0)
+    CHOICE=go;;
+  1)
+    CHOICE=x;;
+  255)
+    CHOICE=x;;
+esac
+EXT_GATEWAY=`echo $EXT_GATEWAY | sed 's/ //g'`
+}
+
+
+function displaynetworkdata {
+
+Xdialog --title "$TITLE" \
+--wrap --icon $ICON --rc-file $RCFILE --ok-label $OK --cancel-label $CANCEL --wizard --yesno "$NETWORKSET: \n\n TCPIP Number: $TCPIPNUMBER \n Netmask: $EXT_NETMASK \n Nameserver: $EXT_DNS \n Gateway: $EXT_GATEWAY" 20 50
+
+retval=$?
+
+case $retval in
+  0)
+    CHOICE=commit;;
+  1)
+    CHOICE=x;;
+  3)
+    CHOICE=go;;
+  255)
+    CHOICE=x;;
+esac
+}
+
+CHOICE=go
+while [ $CHOICE = go ]
+do
+#Get tcpip number
+TCPIPSTATUS=not_set
+TCPIPMSG1=`echo $TCPIPMSG`
+while [ $CHOICE = go ] && [ $TCPIPSTATUS = not_set ]
+do
+getipnumber
+DATA_ENTRY=$TCPIPNUMBER
+tcpipcheck
+if [ $CHARCHECK = 0 ] && [ $NUMCHECK = 0 ]
+then
+TCPIPSTATUS=set
+else
+TCPIPMSG1=`echo $ERRORMSG - $TCPIPMSG`
+fi
+done
+#Get netmask
+NETMASKSTATUS=not_set
+EXTNETMASKMSG1=`echo $EXTNETMASKMSG`
+while [ $CHOICE = go ] && [ $NETMASKSTATUS = not_set ]
+do
+get_external_netmask
+DATA_ENTRY=$EXT_NETMASK
+tcpipcheck
+if [ $CHARCHECK = 0 ] && [ $NUMCHECK = 0 ]
+then
+NETMASKSTATUS=set
+else
+EXTNETMASKMSG1=`echo $ERRORMSG - $EXTNETMASKMSG`
+fi
+done
+#Get dns
+DNSSTATUS=not_set
+EXTDNSMSG1=`echo $EXTDNSMSG`
+while [ $CHOICE = go ] && [ $DNSSTATUS = not_set ]
+do
+get_external_dns
+DATA_ENTRY=$EXT_DNS
+tcpipcheck
+if [ $CHARCHECK = 0 ] && [ $NUMCHECK = 0 ]
+then
+DNSSTATUS=set
+else
+EXTDNSMSG1=`echo $ERRORMSG - $EXTDNSMSG`
+fi
+done
+#Get gateway
+GATEWAYSTATUS=not_set
+EXTGATEWAYMSG1=`echo $EXTGATEWAYMSG`
+while [ $CHOICE = go ] && [ $GATEWAYSTATUS = not_set ]
+do
+get_gateway
+DATA_ENTRY=$EXT_GATEWAY
+tcpipcheck
+if [ $CHARCHECK = 0 ] && [ $NUMCHECK = 0 ]
+then
+GATEWAYSTATUS=set
+else
+EXTGATEWAYMSG1=`echo $ERRORMSG - $EXTGATEWAYMSG`
+fi
+done
+
+if [ $CHOICE = go ]
+then
+displaynetworkdata
+fi
+done
+
+if [ $CHOICE = x ] 
+then
+cancelledbox
+exit
+fi
+
+#########################
+#Write settings to variable file
+#########################
+echo DEVICE=$DEVICE > /opt/karoshi/serversetup/variables/external_network_card
+echo IPADDR=$TCPIPNUMBER >> /opt/karoshi/serversetup/variables/external_network_card
+echo NETMASK=$EXT_NETMASK >> /opt/karoshi/serversetup/variables/external_network_card
+echo nameserver=$EXT_DNS >> /opt/karoshi/serversetup/variables/external_network_card
+echo GATEWAY=$EXT_GATEWAY >> /opt/karoshi/serversetup/variables/external_network_card
+#########################
+#Apply changes
+#########################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/configure_external_network
+#########################
+#Modify Shorewall
+#########################
+/opt/karoshi/serversetup/all/dual_interface/modify_shorewall

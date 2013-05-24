@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- System profile database.
+
+     Lists profiles available to the systems. A profile represents a certain
+     selection of packages from the packages database. Profiles can depend on
+     other profiles, the end result being the sum of all required packages.
+     
+     THIS IS A SAMPLE FILE
+     
+     For more info, see http://wpkg.org/index.php/Category:Documentation
+
+-->
+
+<profiles>
+
+    <profile id="default">
+            <package package-id="wpkg2" />
+    </profile>
+  
+    <profile id="custom">
+        <depends profile-id="default" />
+        <depends profile-id="basement" />
+        <package package-id="wpkg1" />
+    </profile>
+
+    <profile id="basement">
+        <package package-id="wpkg3" />
+    </profile>
+
+    <profile id="administration">
+        <package package-id="wpkg1" />
+        <package package-id="wpkg2" />
+        <package package-id="wpkg3" />
+    </profile>
+
+
+
+</profiles>

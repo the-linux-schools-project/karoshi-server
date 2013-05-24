@@ -1,0 +1,184 @@
+#!/bin/bash
+#Copyright (C) 2011 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/find_student_files_cgi
+then
+echo `date`: find_student_files - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/find_student_files_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/find_student_files.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $find_student_files_cgi'check' ]
+then
+echo `date`: find_student_files - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: find_student_files - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: find_student_files - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+FILENAME=`echo "$DATA" | cut -s -d: -f4`
+OPTION=`echo "$DATA" | cut -s -d: -f5`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f6`
+SERVERTYPE=`echo "$DATA" | cut -s -d: -f7`
+SERVERMASTER=`echo "$DATA" | cut -s -d: -f8`
+MOBILE=`echo "$DATA" | cut -s -d: -f9`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: find_student_files - Not called by find_student_files.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: find_student_files - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: find_student_files - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $FILENAME'null' = null ]
+then
+echo `date`: find_student_files - Blank filename by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+
+if [ $OPTION'null' = null ]
+then
+echo `date`: find_student_files - Blank option by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ "$SERVERNAME"'null' = null ]
+then
+echo `date`: find_student_files - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ "$SERVERTYPE"'null' = null ]
+then
+echo `date`: find_student_files - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVERTYPE = federatedslave ]
+then
+if [ "$SERVERMASTER"'null' = null ]
+then
+echo `date`: find_student_files - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: find_student_files - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+echo `date`: find_student_files - $FILENAME on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+WIDTH=180
+[ $MOBILE = yes ] && WIDTH=90
+
+########################
+#Language
+########################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/file/find_student_files ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/file/find_student_files
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: '$WIDTH'px;"><b>'$SERVERMSG'</b></td><td>'$SERVERNAME'</td></tr>
+<tr><td><b>'$SEARCHMSG'</b></td><td>'$FILENAME'</td></tr></tbody></table>
+'
+echo '<pre style=font-family:Arial, Times, Georgia, "Times New Roman", Times, serif>'
+if [ $SERVERNAME = $HOSTNAME ]
+then
+if [ $OPTION = delete ]
+then
+find /home/users/students -name ''$FILENAME''
+find /home/users/students -name ''$FILENAME'' -exec rm -rf {} \;
+else
+find /home/users/students -name ''$FILENAME''
+fi
+fi
+
+if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
+then
+ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+if [ $OPTION = delete ]
+then
+find /home/users/students -name "'$FILENAME'"
+find /home/users/students -name "'$FILENAME'" -exec rm -rf {} \;
+else
+find /home/users/students -name "'$FILENAME'"
+fi
+'
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3  $SERVERMASTER '
+ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
+if [ $OPTION = delete ]
+then
+find /home/users/students -name "'$FILENAME'"
+find /home/users/students -name "'$FILENAME'" -exec rm -rf {} \;
+else
+find /home/users/students -name "'$FILENAME'"
+fi
+'\''
+'
+fi
+
+echo '</pre>'
+exit
+

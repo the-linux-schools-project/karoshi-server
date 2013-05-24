@@ -1,0 +1,149 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+
+COUNTRYCODEMSG="Two digit Country Code"
+STATEMSG="State or Province name"
+CITYMSG="City or town"
+SCHOOLMSG="School Name"
+DEPTNAMEMSG="Department Name"
+COMMONNAMEMSG="Common name (URL)"
+EMAILMSG="Email contact address"
+
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/apply_ssl_certificate_cgi
+then
+echo `date`: view_ssl_data - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/apply_ssl_certificate_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/apply_ssl_certificate.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $apply_ssl_certificate_cgi'check' ]
+then
+echo `date`: view_ssl_data - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: view_ssl_data - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\-\n-+'`
+
+if [ $DATA'null' = null ]
+then
+echo `date`: view_ssl_data - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+SERVER=`echo "$DATA" | cut -s -d: -f4`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: view_ssl_data - Not called by view_ssl_data.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: view_ssl_data - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: view_ssl_data - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVER'null' = null ]
+then
+echo `date`: view_ssl_data - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: view_ssl_data - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+echo `date`: view_ssl_data "for" $SERVER - by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#Get ssl data
+[ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
+if [ $SERVER = $HOSTNAME ]
+then
+if test -f /opt/karoshi/serversetup/variables/ssldata
+then
+cp -f /opt/karoshi/serversetup/variables/ssldata /opt/karoshi/.tempdata/ssldata.$$
+fi
+else
+if [ $SERVER = webmanagement ]
+then
+cp -f /opt/karoshi/serversetup/variables/ssldata_web_management /opt/karoshi/.tempdata/ssldata.$$
+else
+if [ -d /opt/karoshi/server_network/servers/$SERVER ]
+then
+scp  root@$SERVER:"/opt/karoshi/serversetup/variables/ssldata" /opt/karoshi/.tempdata/ssldata.$$ 2>/dev/null
+else
+exit 102
+fi
+fi
+fi
+
+CHOICE=go
+COUNTRYCODE=GB
+STATE=County
+LOCALITY=City
+ORGANISATIONNAME=School
+UNITNAME=ICT_Dept
+COMMONNAME=$HOSTNAME
+CONTACTEMAIL=email
+if [ -f /opt/karoshi/.tempdata/ssldata.$$ ]
+then
+COUNTRYCODE=`sed -n 1,1p /opt/karoshi/.tempdata/ssldata.$$`
+STATE=`sed -n 2,2p /opt/karoshi/.tempdata/ssldata.$$`
+LOCALITY=`sed -n 3,3p /opt/karoshi/.tempdata/ssldata.$$`
+ORGANISATIONNAME=`sed -n 4,4p /opt/karoshi/.tempdata/ssldata.$$`
+UNITNAME=`sed -n 5,5p /opt/karoshi/.tempdata/ssldata.$$`
+COMMONNAME=`sed -n 6,6p /opt/karoshi/.tempdata/ssldata.$$`
+CONTACTEMAIL=`sed -n 7,7p /opt/karoshi/.tempdata/ssldata.$$`
+fi
+echo '<table class="standard"><tbody>'
+echo '<tr><td>'$COUNTRYCODEMSG'</td><td><input tabindex= "1" value="'$COUNTRYCODE'" name="___COUNTRYCODE___" maxlength="2" size="40" type="text"></td></tr>'
+echo '<tr><td>'$STATEMSG'</td><td><input tabindex= "2" value="'$STATE'" name="___STATE___" size="40" type="text"></td></tr>'
+echo '<tr><td>'$CITYMSG'</td><td><input tabindex= "3" value="'$LOCALITY'" name="___LOCALITY___" size="40" type="text"></td></tr>'
+echo '<tr><td>'$SCHOOLMSG'</td><td><input tabindex= "4" value="'$ORGANISATIONNAME'" name="___INSTITUTENAME___" size="40" type="text"></td></tr>'
+echo '<tr><td>'$DEPTNAMEMSG'</td><td><input tabindex= "5" value="'$UNITNAME'" name="___DEPARTMENT___" size="40" type="text"></td></tr>'
+echo '<tr><td>'$COMMONNAMEMSG'</td><td><input tabindex= "6" value="'$COMMONNAME'" name="___COMMONNAME___" size="40" type="text"></td></tr>'
+echo '<tr><td>'$EMAILMSG'</td><td><input tabindex= "7" value="'$CONTACTEMAIL'" name="___EMAIL___" size="40" type="text"></td></tr>'
+echo '</tbody></table>'
+rm -f /opt/karoshi/.tempdata/ssldata.$$
+exit

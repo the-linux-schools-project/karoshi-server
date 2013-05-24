@@ -1,0 +1,5 @@
+#!/bin/bash
+#Start dns on boot
+chkconfig dnsmasq off
+[ -f /opt/karoshi/start_on_boot/karoshi_services ] || touch /opt/karoshi/start_on_boot/karoshi_services
+[ `grep -c -w dnsmasq /opt/karoshi/start_on_boot/karoshi_services` = 0 ] && echo dnsmasq,1 >> /opt/karoshi/start_on_boot/karoshi_services

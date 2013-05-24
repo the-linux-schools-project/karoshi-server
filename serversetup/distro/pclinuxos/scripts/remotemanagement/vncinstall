@@ -1,0 +1,34 @@
+#!/bin/bash
+#softwareinstall
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/remotemanagement/remotemanagementsoftware
+
+SOFTWARECHECK=`rpm -q $VNCSOFTWARE | cut -d- -f1`
+
+if [ "$SOFTWARECHECK" != tightvnc ]
+then
+echo apt-get install -y $VNCSOFTWARE 2'>>'/opt/karoshi/serversetup/install_log > $HOME/.tempdata/installsoftware
+
+chmod 0700 $HOME/.tempdata/installsoftware
+
+xterm -geometry 100x20 -bg white -fg black -e $HOME/.tempdata/installsoftware
+rm -f $HOME/.tempdata/installsoftware
+
+###########################
+#Make vnc run at startup
+###########################
+cp -f /opt/karoshi/serversetup/remotemanagement/S99vncstart /etc/rc5.d/
+chmod 0700 /etc/rc5.d/S99vncstart
+fi
+###########################
+#Modify vncstartup/etc/init.d/vncserver
+###########################
+if [ ! -e /etc/init.d/vncserverbackup ]
+then
+cp /etc/init.d/vncserver /etc/init.d/vncserverbackup
+sed 's/\&\& vncserver/\&\& vncserver ${ARGS}/g' /etc/init.d/vncserver > /etc/init.d/vncserver2
+rm -f /etc/init.d/vncserver
+mv /etc/init.d/vncserver2 /etc/init.d/vncserver
+chmod 0700 /etc/init.d/vncserver
+fi
+

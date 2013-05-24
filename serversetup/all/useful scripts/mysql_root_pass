@@ -1,0 +1,172 @@
+#!/bin/bash
+
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+
+######################
+#Generate random password
+######################
+
+function gen_rand_pass {
+ALPHABET=( A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z 1 2 3 4 5 6 7 8 9 0 )
+
+RANGE=61
+COUNTER=0
+while [ $COUNTER -lt 20 ]
+do
+RAND=$RANDOM
+
+let "RAND %= $RANGE"
+
+RANDPASS=$RANDPASS${ALPHABET[$RAND]}  
+
+let COUNTER=$COUNTER+1
+done
+}
+
+function start_mysql {
+
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start
+
+#Make sure the mysql database is started
+STARTCOUNT=0
+while [ $STARTCOUNT -lt 50 ]
+do
+
+MYSQLSTATUS=`ps -e | grep -c $MYSQLDVER`
+if [ $MYSQLSTATUS = 0 ]
+then
+sleep 1
+else
+STARTCOUNT=50
+fi
+sleep 1
+let STARTCOUNT=$STARTCOUNT+1
+done
+
+}
+
+
+######################
+#Create mysql gpg key
+######################
+
+if [ ! -d /opt/karoshi/server_network/mysql ]
+then
+mkdir -p /opt/karoshi/server_network/mysql
+chmod 0700 /opt/karoshi/server_network/mysql
+fi
+
+if [ ! -f /opt/karoshi/server_network/mysql/.key ]
+then
+touch /opt/karoshi/server_network/mysql/.key
+chmod 0600 /opt/karoshi/server_network/mysql/.key
+gen_rand_pass
+echo $RANDPASS > /opt/karoshi/server_network/mysql/.key
+fi
+
+######################
+#Create and encrypt mysql password
+######################
+
+if [ ! -f /opt/karoshi/server_network/mysql/mysql_password.gpg ]
+then
+gen_rand_pass
+touch /opt/karoshi/server_network/mysql/mysql_password
+chmod 0600 /opt/karoshi/server_network/mysql/mysql_password
+echo $RANDPASS > /opt/karoshi/server_network/mysql/mysql_password
+sed -n 1,1p /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -c /opt/karoshi/server_network/mysql/mysql_password
+rm -f /opt/karoshi/server_network/mysql/mysql_password
+chmod 0600 /opt/karoshi/server_network/mysql/mysql_password.gpg
+fi
+
+######################
+#Check that mysql is running
+######################
+mysqladmin ping 2>/dev/null
+RUNSTATUS=`echo $?`
+[ $RUNSTATUS != 0 ] && start_mysql
+######################
+#Check that we can connect with the root password
+######################
+
+ROOTMYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
+mysqladmin --password="$ROOTMYSQLPASS" status 1>/dev/null 2>/dev/null
+LOGINSTATUS=`echo $?`
+
+if [ $LOGINSTATUS != 0 ]
+then
+#Check if this is the first time that mysql has been used and the password is still karoshi
+mysqladmin --password="karoshi" status 1>/dev/null 2>/dev/null
+LOGINSTATUS=`echo $?`
+if [ $LOGINSTATUS = 0 ]
+then
+#Change mysql password to random password
+mysqladmin -u root -pkaroshi password ''$ROOTMYSQLPASS''
+mysqladmin --password="$ROOTMYSQLPASS" status 1>/dev/null 2>/dev/null
+LOGINSTATUS=`echo $?`
+fi
+fi
+
+######################
+#Change root mysql password if password does not work
+######################
+
+if [ $LOGINSTATUS != 0 ]
+then
+#Stop the mysql database
+MYSQLSTATUS=`ps -e | grep -c $MYSQLDVER`
+if [ $MYSQLSTATUS != 0 ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_stop
+fi
+#Start with -skip-grant-tables
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/mysql_no_passwd
+sleep 2
+#Make sure the mysql database is started
+STARTCOUNT=0
+while [ $STARTCOUNT -lt 50 ]
+do
+
+MYSQLSTATUS=`ps -e | grep -c $MYSQLDVER`
+if [ $MYSQLSTATUS = 0 ]
+then
+sleep 1
+else
+STARTCOUNT=50
+fi
+sleep 1
+let STARTCOUNT=$STARTCOUNT+1
+done
+#mysqladmin -h localhost -u root password ''$MYSQLPASS''
+echo use mysql\; > /opt/karoshi/.tempdata/setmysqlpass.sql
+echo UPDATE user SET Password=PASSWORD\(\'$ROOTMYSQLPASS\'\) WHERE User=\'root\'\; >> /opt/karoshi/.tempdata/setmysqlpass.sql
+echo FLUSH PRIVILEGES\; >> /opt/karoshi/.tempdata/setmysqlpass.sql
+mysql < /opt/karoshi/.tempdata/setmysqlpass.sql
+rm -f /opt/karoshi/.tempdata/setmysqlpass.sql
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_stop
+sleep 1
+
+#Make sure the mysql database is stopped
+STOPCOUNT=0
+while [ $STOPCOUNT -lt 50 ]
+do
+
+MYSQLSTATUS=`ps -e | grep -c $MYSQLDVER`
+if [ $MYSQLSTATUS != 0 ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_stop
+else
+STOPCOUNT=50
+fi
+sleep 1
+let STOPCOUNT=$STOPCOUNT+1
+done
+
+start_mysql
+
+fi
+
+
+
+

@@ -1,0 +1,94 @@
+#!/bin/bash
+#apacheinstall
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/extra_server/software
+DEBCONF_DB_FALLBACK=File{/opt/karoshi/serversetup/distro/$DISTROCHOICE/colossus/configfiles/debconf/postfixinstall.conf}
+
+##################
+#Set debconf to high
+##################
+DEBCONFLINENO=`grep -n Name:' 'debconf/priority /var/cache/debconf/config.dat | cut -d: -f1`
+let DEBCONFLINENO2=$DEBCONFLINENO+2
+sed $DEBCONFLINENO2'c'\Value:' 'high /var/cache/debconf/config.dat > /var/cache/debconf/config1.dat
+mv -f /var/cache/debconf/config.dat /var/cache/debconf/configbackup1.dat
+mv /var/cache/debconf/config1.dat /var/cache/debconf/config.dat
+
+#add deb http://packages.dotdeb.org stable all
+DOTDEBCHECK=`grep -c packages.dotdeb /etc/apt/sources.list`
+if [ $DOTDEBCHECK = 0 ]
+then
+echo deb http://packages.dotdeb.org stable all >> /etc/apt/sources.list
+fi
+
+echo Installing $APACHESOFTWARE >> /opt/karoshi/serversetup/install_log
+echo apt-get update ';' apt-get install -y --force-yes $APACHESOFTWARE 1'>>'$HOME/.tempdata/output 2'>>'/opt/karoshi/serversetup/install_log > $HOME/.tempdata/installsoftware
+
+chmod 0700 $HOME/.tempdata/installsoftware
+
+source /opt/karoshi/serversetup/variables/xdialog
+[ ! -f $HOME/.tempdata/output ] || rm -f $HOME/.tempdata/output
+touch $HOME/.tempdata/output
+function getxdialogpid {
+XDIALOGPID=`ps -C Xdialog -o pid= -o command= | grep Karoshi_Install_Software | sed 's/ //g' |cut -dX -f1`
+}
+function installsoftware {
+$HOME/.tempdata/installsoftware
+getxdialogpid
+if [ $XDIALOGPID'null' != null ]
+then
+kill $XDIALOGPID
+fi
+}
+installsoftware | Xdialog --wrap --icon $ICON --rc-file $RCFILE --no-ok --no-cancel --title "Karoshi_Install_Software" --tailbox $HOME/.tempdata/output 12 50
+case $? in
+0)
+;;
+1)
+;;
+255)
+;;
+esac
+rm -f $HOME/.tempdata/installsoftware
+
+
+#Remove dotdeb
+sed 's/deb http:\/\/packages.dotdeb.org stable all/#/g' /etc/apt/sources.list > /etc/apt/sources.list2
+rm -f /etc/apt/sources.list
+mv /etc/apt/sources.list2 /etc/apt/sources.list
+konsole --schema=BlackOnWhite.schema -e apt-get update
+
+#######################
+#allow htaccess in certain folders
+#######################
+DIRCOUNT=`grep -c /var/www/html/internal $HTTPDCONFPATH`
+if [ $DIRCOUNT = 0 ]
+then
+echo '<'Directory '"'/var/www/html/internal'"''>' >> $HTTPDCONFPATH
+echo AllowOverride Limit >> $HTTPDCONFPATH
+echo '<'/Directory'>' >> $HTTPDCONFPATH 
+fi
+
+DIRCOUNT=`grep -c /var/www/html/squirrelmail $HTTPDCONFPATH`
+if [ $DIRCOUNT = 0 ]
+then
+echo '<'Directory '"'/var/www/html/squirrelmail'"''>' >> $HTTPDCONFPATH
+echo AllowOverride Limit >> $HTTPDCONFPATH
+echo '<'/Directory'>' >> $HTTPDCONFPATH 
+fi
+
+DIRCOUNT=`grep -c /var/www/html/moodle $HTTPDCONFPATH`
+if [ $DIRCOUNT = 0 ]
+then
+echo '<'Directory '"'/var/www/html/moodle'"''>' >> $HTTPDCONFPATH
+echo AllowOverride Limit >> $HTTPDCONFPATH
+echo '<'/Directory'>' >> $HTTPDCONFPATH 
+/etc/init.d/$APACHEVER restart
+fi
+
+if [ $DIRCOUNT = 0 ]
+then
+echo '<'Directory '"'/var/www/html/egroupware'"''>' >> $HTTPDCONFPATH
+echo AllowOverride All >> $HTTPDCONFPATH
+echo '<'/Directory'>' >> $HTTPDCONFPATH 
+fi
+

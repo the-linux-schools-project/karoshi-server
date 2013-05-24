@@ -1,0 +1,278 @@
+#!/bin/bash
+#Copyright (C) 2009 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/orders_create_cgi
+then
+echo `date`: orders_create - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/orders_create_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/orders_create.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $orders_create_cgi'check' ]
+then
+echo `date`: orders_create - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: orders_create - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._: \-'`
+if [ `echo $DATA'null' | sed 's/ //g'` = null ]
+then
+echo `date`: orders_create - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+DEPARTMENT=`echo "$DATA" | cut -s -d: -f4`
+DATE=`echo "$DATA" | cut -s -d: -f5`
+SUPPLIER=`echo "$DATA" | cut -s -d: -f6`
+BHOLDER=`echo "$DATA" | cut -s -d: -f7`
+ORDERREF=`echo "$DATA" | cut -s -d: -f8`
+
+REF1=`echo "$DATA" | cut -s -d: -f9`
+QUANTITY1=`echo "$DATA" | cut -s -d: -f10 | tr -cd '0-9'`
+DESC1=`echo "$DATA" | cut -s -d: -f11`
+PPU1=`echo "$DATA" | cut -s -d: -f12 | tr -cd '0-9\.'`
+TOTAL1=`echo "$DATA" | cut -s -d: -f13 | tr -cd '0-9\.'`
+
+REF2=`echo "$DATA" | cut -s -d: -f14`
+QUANTITY2=`echo "$DATA" | cut -s -d: -f15 | tr -cd '0-9'`
+DESC2=`echo "$DATA" | cut -s -d: -f16`
+PPU2=`echo "$DATA" | cut -s -d: -f17 | tr -cd '0-9\.'`
+TOTAL2=`echo "$DATA" | cut -s -d: -f18 | tr -cd '0-9\.'`
+
+REF3=`echo "$DATA" | cut -s -d: -f19`
+QUANTITY3=`echo "$DATA" | cut -s -d: -f20 | tr -cd '0-9'`
+DESC3=`echo "$DATA" | cut -s -d: -f21`
+PPU3=`echo "$DATA" | cut -s -d: -f22 | tr -cd '0-9\.'`
+TOTAL3=`echo "$DATA" | cut -s -d: -f23 | tr -cd '0-9\.'`
+
+REF4=`echo "$DATA" | cut -s -d: -f24`
+QUANTITY4=`echo "$DATA" | cut -s -d: -f25 | tr -cd '0-9'`
+DESC4=`echo "$DATA" | cut -s -d: -f26`
+PPU4=`echo "$DATA" | cut -s -d: -f27 | tr -cd '0-9\.'`
+TOTAL4=`echo "$DATA" | cut -s -d: -f28 | tr -cd '0-9\.'`
+
+REF5=`echo "$DATA" | cut -s -d: -f29`
+QUANTITY5=`echo "$DATA" | cut -s -d: -f30 | tr -cd '0-9'`
+DESC5=`echo "$DATA" | cut -s -d: -f31`
+PPU5=`echo "$DATA" | cut -s -d: -f32 | tr -cd '0-9\.'`
+TOTAL5=`echo "$DATA" | cut -s -d: -f33 | tr -cd '0-9\.'`
+
+REF6=`echo "$DATA" | cut -s -d: -f34`
+QUANTITY6=`echo "$DATA" | cut -s -d: -f35 | tr -cd '0-9'`
+DESC6=`echo "$DATA" | cut -s -d: -f36`
+PPU6=`echo "$DATA" | cut -s -d: -f37 | tr -cd '0-9\.'`
+TOTAL6=`echo "$DATA" | cut -s -d: -f38 | tr -cd '0-9\.'`
+
+REF7=`echo "$DATA" | cut -s -d: -f39`
+QUANTITY7=`echo "$DATA" | cut -s -d: -f40 | tr -cd '0-9'`
+DESC7=`echo "$DATA" | cut -s -d: -f41`
+PPU7=`echo "$DATA" | cut -s -d: -f42 | tr -cd '0-9\.'`
+TOTAL7=`echo "$DATA" | cut -s -d: -f43 | tr -cd '0-9\.'`
+
+REF8=`echo "$DATA" | cut -s -d: -f44`
+QUANTITY8=`echo "$DATA" | cut -s -d: -f45 | tr -cd '0-9'`
+DESC8=`echo "$DATA" | cut -s -d: -f46`
+PPU8=`echo "$DATA" | cut -s -d: -f47 | tr -cd '0-9\.'`
+TOTAL8=`echo "$DATA" | cut -s -d: -f48 | tr -cd '0-9\.'`
+
+REF9=`echo "$DATA" | cut -s -d: -f49`
+QUANTITY9=`echo "$DATA" | cut -s -d: -f50 | tr -cd '0-9'`
+DESC9=`echo "$DATA" | cut -s -d: -f51`
+PPU9=`echo "$DATA" | cut -s -d: -f52 | tr -cd '0-9\.'`
+TOTAL9=`echo "$DATA" | cut -s -d: -f53 | tr -cd '0-9\.'`
+
+REF10=`echo "$DATA" | cut -s -d: -f54`
+QUANTITY10=`echo "$DATA" | cut -s -d: -f55 | tr -cd '0-9'`
+DESC10=`echo "$DATA" | cut -s -d: -f56`
+PPU10=`echo "$DATA" | cut -s -d: -f57 | tr -cd '0-9\.'`
+TOTAL10=`echo "$DATA" | cut -s -d: -f58 | tr -cd '0-9\.'`
+
+REF11=`echo "$DATA" | cut -s -d: -f59`
+QUANTITY11=`echo "$DATA" | cut -s -d: -f60 | tr -cd '0-9'`
+DESC11=`echo "$DATA" | cut -s -d: -f61`
+PPU11=`echo "$DATA" | cut -s -d: -f62 | tr -cd '0-9\.'`
+TOTAL11=`echo "$DATA" | cut -s -d: -f63 | tr -cd '0-9\.'`
+
+REF12=`echo "$DATA" | cut -s -d: -f64`
+QUANTITY12=`echo "$DATA" | cut -s -d: -f65 | tr -cd '0-9'`
+DESC12=`echo "$DATA" | cut -s -d: -f66`
+PPU12=`echo "$DATA" | cut -s -d: -f67 | tr -cd '0-9\.'`
+TOTAL12=`echo "$DATA" | cut -s -d: -f68 | tr -cd '0-9\.'`
+
+REF13=`echo "$DATA" | cut -s -d: -f69`
+QUANTITY13=`echo "$DATA" | cut -s -d: -f70 | tr -cd '0-9'`
+DESC13=`echo "$DATA" | cut -s -d: -f71`
+PPU13=`echo "$DATA" | cut -s -d: -f72 | tr -cd '0-9\.'`
+TOTAL13=`echo "$DATA" | cut -s -d: -f73 | tr -cd '0-9\.'`
+
+REF14=`echo "$DATA" | cut -s -d: -f74`
+QUANTITY14=`echo "$DATA" | cut -s -d: -f75 | tr -cd '0-9'`
+DESC14=`echo "$DATA" | cut -s -d: -f76`
+PPU14=`echo "$DATA" | cut -s -d: -f77 | tr -cd '0-9\.'`
+TOTAL14=`echo "$DATA" | cut -s -d: -f78 | tr -cd '0-9\.'`
+
+REF15=`echo "$DATA" | cut -s -d: -f79`
+QUANTITY15=`echo "$DATA" | cut -s -d: -f80 | tr -cd '0-9'`
+DESC15=`echo "$DATA" | cut -s -d: -f81`
+PPU15=`echo "$DATA" | cut -s -d: -f82 | tr -cd '0-9\.'`
+TOTAL15=`echo "$DATA" | cut -s -d: -f83 | tr -cd '0-9\.'`
+
+SUBTOTAL=`echo "$DATA" | cut -s -d: -f84 | tr -cd '0-9\.'`
+PANDP=`echo "$DATA" | cut -s -d: -f85 | tr -cd '0-9\.'`
+GRANDTOTAL=`echo "$DATA" | cut -s -d: -f86 | tr -cd '0-9\.'`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: orders_create - Not called by orders_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: orders_create - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: orders_create - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: orders_create - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+#Check to see that the ORDERREF is not blank
+if [ `echo $ORDERREF'null' | sed 's/ //g;'` = null ]
+then
+echo `date`: orders_create - Blank order ref >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+#Check to see that department is not blank
+if [ `echo $DEPARTMENT'null' | sed 's/ //g'` = null ]
+then
+echo `date`: orders_create - Blank Department >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+#Check to see that supplier is not blank
+if [ `echo $SUPPLIER'null' | sed 's/ //g'` = null ]
+then
+echo `date`: orders_create - Blank supplier >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+#Check to see that the date is not blank
+if [ $DATE'null' = null ]
+then
+echo `date`: orders_create - Blank date >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+#Check to see that the BHOLDER is not blank
+if [ `echo $BHOLDER'null' | sed 's/ //g'` = null ]
+then
+echo `date`: orders_create - Blank budget holder >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+#Check to see that the SUBTOTAL is not blank
+if [ $SUBTOTAL'null' = null ]
+then
+echo `date`: orders_create - Blank subtotal >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+#Check to see that the GRANDTOTAL is not blank
+if [ $GRANDTOTAL'null' = null ]
+then
+echo `date`: orders_create - Blank total >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+
+if [ ! -d /opt/karoshi/orders ]
+then
+mkdir -p /opt/karoshi/orders
+chmod 0700 /opt/karoshi/orders
+chown root.httpd_karoshi /opt/karoshi/orders
+fi
+if [ ! -d /opt/karoshi/orders/pending ]
+then
+mkdir -p /opt/karoshi/orders/pending
+chmod 0700 /opt/karoshi/orders/pending
+chown root.httpd_karoshi /opt/karoshi/orders/pending
+fi
+
+if [ -f /opt/karoshi/orders/pending/$ORDERREF ]
+then
+echo `date`: orders_create - This order already exists >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+echo `date`: orders_create - Adding order $ORDERREF to the pending section by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+echo orderref,date,department,date,supplier,budgetholder,subtotal,p+p,grandtotal,web management user > /opt/karoshi/orders/pending/$ORDERREF
+echo $ORDERREF,$DATE,$DEPARTMENT,$SUPPLIER,$BHOLDER,$SUBTOTAL,$PANDP,$GRANDTOTAL,$REMOTE_USER >> /opt/karoshi/orders/pending/$ORDERREF
+echo >> /opt/karoshi/orders/pending/$ORDERREF
+echo reference,quantity,description,unit price,total price >> /opt/karoshi/orders/pending/$ORDERREF
+echo $REF1,$QUANTITY1,$DESC1,$PPU1,$TOTAL1 >> /opt/karoshi/orders/pending/$ORDERREF
+echo $REF2,$QUANTITY2,$DESC2,$PPU2,$TOTAL2 >> /opt/karoshi/orders/pending/$ORDERREF
+echo $REF3,$QUANTITY3,$DESC3,$PPU3,$TOTAL3 >> /opt/karoshi/orders/pending/$ORDERREF
+echo $REF4,$QUANTITY4,$DESC4,$PPU4,$TOTAL4 >> /opt/karoshi/orders/pending/$ORDERREF
+echo $REF5,$QUANTITY5,$DESC5,$PPU5,$TOTAL5 >> /opt/karoshi/orders/pending/$ORDERREF
+echo $REF6,$QUANTITY6,$DESC6,$PPU6,$TOTAL6 >> /opt/karoshi/orders/pending/$ORDERREF
+echo $REF7,$QUANTITY7,$DESC7,$PPU7,$TOTAL7 >> /opt/karoshi/orders/pending/$ORDERREF
+echo $REF8,$QUANTITY8,$DESC8,$PPU8,$TOTAL8 >> /opt/karoshi/orders/pending/$ORDERREF
+echo $REF9,$QUANTITY9,$DESC9,$PPU9,$TOTAL9 >> /opt/karoshi/orders/pending/$ORDERREF
+echo $REF10,$QUANTITY10,$DESC10,$PPU10,$TOTAL10 >> /opt/karoshi/orders/pending/$ORDERREF
+echo $REF11,$QUANTITY11,$DESC11,$PPU11,$TOTAL11 >> /opt/karoshi/orders/pending/$ORDERREF
+echo $REF12,$QUANTITY12,$DESC12,$PPU12,$TOTAL12 >> /opt/karoshi/orders/pending/$ORDERREF
+echo $REF13,$QUANTITY13,$DESC13,$PPU13,$TOTAL13 >> /opt/karoshi/orders/pending/$ORDERREF
+echo $REF14,$QUANTITY14,$DESC14,$PPU14,$TOTAL14 >> /opt/karoshi/orders/pending/$ORDERREF
+echo $REF15,$QUANTITY15,$DESC15,$PPU15,$TOTAL15 >> /opt/karoshi/orders/pending/$ORDERREF
+exit
+
+

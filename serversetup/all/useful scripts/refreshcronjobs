@@ -1,0 +1,41 @@
+#!/bin/bash
+#refreshcronjobs
+#
+#Modifies the cronjobs after you have manualy edited the cron files
+#
+#Copyright (C) 2007  Artie Ball
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contact either at mpsharrad@karoshi.org.uk or jharris@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+#
+[ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
+chmod 0600 -R /opt/karoshi/cronjobs
+chmod u+X -R /opt/karoshi/cronjobs
+echo SHELL=/bin/bash > /opt/karoshi/cronjobs/masterschedule.cron
+echo PATH=/sbin:/bin:/usr/sbin:/usr/bin >> /opt/karoshi/cronjobs/masterschedule.cron
+echo MAILTO='"''"' >> /opt/karoshi/cronjobs/masterschedule.cron
+echo HOME=/ >> /opt/karoshi/cronjobs/masterschedule.cron
+CRONSTATUS=`ls /opt/karoshi/cronjobs/jobs/ | wc -l`
+crontab -r
+if [ $CRONSTATUS != 0 ]
+then
+cat /opt/karoshi/cronjobs/jobs/*.cron >> /opt/karoshi/cronjobs/masterschedule.cron
+crontab /opt/karoshi/cronjobs/masterschedule.cron
+echo Cron Jobs have been updated.
+else
+echo There are no files in /opt/karoshi/cronjobs/jobs to add to the masterschedule.
+fi

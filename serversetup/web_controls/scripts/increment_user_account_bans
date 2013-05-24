@@ -1,0 +1,50 @@
+#!/bin/bash
+#dg_increment_user_internet_bans
+#Copyright (C) 2007  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contact either at mpsharrad@karoshi.org.uk or jharris@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+#Check that there are users to ban
+BANCOUNT=`ls -1 /opt/karoshi/logs/banned_user_account_durations/ | wc -l`
+[ $BANCOUNT = 0 ] && exit
+############################
+#Allow user
+############################
+function enable_user {
+echo `date`: increment_user_account_bans - allowing $BANNEDUSER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+smbpasswd -e $BANNEDUSER 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+}
+
+############################
+#Increment user ban lengths
+############################
+for BANNEDUSERPATH in /opt/karoshi/logs/banned_user_account_durations/*
+do
+BAN_DURATION=`sed -n 1,1p $BANNEDUSERPATH |  tr -cd '0-9\n'`
+let BAN_DURATION=$BAN_DURATION-1
+if [ $BAN_DURATION -lt 1 ]
+then
+BANNEDUSER=`basename $BANNEDUSERPATH`
+#Allow User
+enable_user
+rm -f $BANNEDUSERPATH
+else
+echo $BAN_DURATION > $BANNEDUSERPATH
+fi
+done

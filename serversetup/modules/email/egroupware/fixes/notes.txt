@@ -1,0 +1,37 @@
+##############################
+#File alterations
+############################## 
+egroupware/phpgwapi/inc/class.accounts.inc.php - modified around line 649 account_firstname and account_lastname so that an email user does not have "New User" in their mail name.
+
+
+#################################################################
+egroupware/felamimail/inc/class.ajaxfelamimail.inc.php - modified to allow creation and modification of imap mail folders.
+
+Changes:
+
+bug reported when i create imap folder on felamimail Click to flag this post
+
+by moebius Sep 13, 2007; 11:27am :: Rate this Message: (use ratings to moderate[?])
+
+Reply | Reply to Author | Show Only this Message
+I reported et bug when i create or rename folder in felamimail
+the new folder isn't transfert to xajaxfelamimail
+
+the converter doesn't work in line 74 in /egroupware/felamimail/inc/class.ajaxfelamimail.inc.php
+                       // $newSubFolder = $GLOBALS['egw']->translation->convert($_newSubFolder, $this->charset, 'UTF7-IMAP');
+replace by :
+$newSubfolder = $_newSubFolder;
+
+same things for the function which rename imap folder inthe line 691
+
+///                      $folderName = $GLOBALS['egw']->translation->convert($_folderName, $this->charset, 'UTF7-IMAP');
+replace by :
+  $folderName = $_folderName;
+  //      $parentFolder = $this->_decodeEntityFolderName($_parentFolder);
+replace by          
+             $parentFolder = $_parentFolder;
+
+
+ and it works fine now. 
+
+####################################################################

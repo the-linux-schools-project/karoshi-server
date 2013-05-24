@@ -1,0 +1,186 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/email_quota_settings2_cgi
+then
+echo `date`: email_quota_settings_apply - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/email_quota_settings2_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_quota_settings2.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $email_quota_settings2_cgi'check' ]
+then
+echo `date`: email_quota_settings2 - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 1 ]
+then
+echo `date`: email_quota_settings_apply - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$*" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$*" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$*" | cut -s -d: -f3`
+ADMIN_EMAIL=`echo "$*" | cut -s -d: -f4`
+MAILSPOOL=`echo "$*" | cut -s -d: -f5 | sed 's/%2F/\//g'`
+THRESHOLD1=`echo "$*" | cut -s -d: -f6`
+THRESHOLD2=`echo "$*" | cut -s -d: -f7`
+THRESHOLD3=`echo "$*" | cut -s -d: -f8`
+THRESHOLD4=`echo "$*" | cut -s -d: -f9`
+INTERVAL1=`echo "$*" | cut -s -d: -f10`
+INTERVAL2=`echo "$*" | cut -s -d: -f11`
+INTERVAL3=`echo "$*" | cut -s -d: -f12`
+INTERVAL4=`echo "$*" | cut -s -d: -f13`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: email_quota_settings_apply - Not called by email_quota_settings2.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: email_quota_settings_apply - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: email_quota_settings_apply - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $ADMIN_EMAIL'null' = null ]
+then
+echo `date`: email_quota_settings_apply - Blank admin email >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $MAILSPOOL'null' = null ]
+then
+echo `date`: email_quota_settings_apply - Blank spool directory >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $THRESHOLD1'null' = null ]
+then
+echo `date`: email_quota_settings_apply - Blank threshold1 >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $THRESHOLD2'null' = null ]
+then
+echo `date`: email_quota_settings_apply - Blank threshold2 >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $THRESHOLD3'null' = null ]
+then
+echo `date`: email_quota_settings_apply - Blank threshold3 >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $THRESHOLD4'null' = null ]
+then
+echo `date`: email_quota_settings_apply - Blank threshold4 >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $INTERVAL1'null' = null ]
+then
+echo `date`: email_quota_settings_apply - Blank interval1 >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $INTERVAL2'null' = null ]
+then
+echo `date`: email_quota_settings_apply - Blank interval2 >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $INTERVAL3'null' = null ]
+then
+echo `date`: email_quota_settings_apply - Blank interval3 >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $INTERVAL4'null' = null ]
+then
+echo `date`: email_quota_settings_apply - Blank interval4 >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: email_quota_settings_apply - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+############################
+#Apply settings
+############################
+echo `date`: email_quota_settings_apply - by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+
+if [ `echo $EMAILSERVER'null' | sed 's/ //g'` = null ] 
+then
+echo `date`: email_over_quota_report - blank email server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+
+if [ $EMAILSERVER != $HOSTNAME ]
+then
+ssh -x -o PasswordAuthentication=no $EMAILSERVER '
+echo "#!/bin/bash" > /opt/karoshi/postfixdata/mailboxcheck_settings
+echo "#Settings" >> /opt/karoshi/postfixdata/mailboxcheck_settings
+echo "ADMIN_EMAIL='$ADMIN_EMAIL'" >> /opt/karoshi/postfixdata/mailboxcheck_settings
+echo "MAILSPOOL='$MAILSPOOL'" >> /opt/karoshi/postfixdata/mailboxcheck_settings
+echo "#Warning thresholds in percent" >> /opt/karoshi/postfixdata/mailboxcheck_settings
+echo "THRESHOLD1='$THRESHOLD1'" >> /opt/karoshi/postfixdata/mailboxcheck_settings
+echo "THRESHOLD2='$THRESHOLD2'" >> /opt/karoshi/postfixdata/mailboxcheck_settings
+echo "THRESHOLD3='$THRESHOLD3'" >> /opt/karoshi/postfixdata/mailboxcheck_settings
+echo "THRESHOLD4='$THRESHOLD4'" >> /opt/karoshi/postfixdata/mailboxcheck_settings
+echo "#Warning intervals in days" >> /opt/karoshi/postfixdata/mailboxcheck_settings
+echo "INTERVAL1='$INTERVAL1'" >> /opt/karoshi/postfixdata/mailboxcheck_settings
+echo "INTERVAL2='$INTERVAL2'" >> /opt/karoshi/postfixdata/mailboxcheck_settings
+echo "INTERVAL3='$INTERVAL3'" >> /opt/karoshi/postfixdata/mailboxcheck_settings
+echo "INTERVAL4='$INTERVAL4'" >> /opt/karoshi/postfixdata/mailboxcheck_settings
+'
+else
+echo "#!/bin/bash" > /opt/karoshi/postfixdata/mailboxcheck_settings
+echo "#Settings" >> /opt/karoshi/postfixdata/mailboxcheck_settings
+echo "ADMIN_EMAIL=$ADMIN_EMAIL" >> /opt/karoshi/postfixdata/mailboxcheck_settings
+echo "MAILSPOOL=$MAILSPOOL" >> /opt/karoshi/postfixdata/mailboxcheck_settings
+echo "#Warning thresholds in percent" >> /opt/karoshi/postfixdata/mailboxcheck_settings
+echo "THRESHOLD1=$THRESHOLD1" >> /opt/karoshi/postfixdata/mailboxcheck_settings
+echo "THRESHOLD2=$THRESHOLD2" >> /opt/karoshi/postfixdata/mailboxcheck_settings
+echo "THRESHOLD3=$THRESHOLD3" >> /opt/karoshi/postfixdata/mailboxcheck_settings
+echo "THRESHOLD4=$THRESHOLD4" >> /opt/karoshi/postfixdata/mailboxcheck_settings
+echo "#Warning intervals in days" >> /opt/karoshi/postfixdata/mailboxcheck_settings
+echo "INTERVAL1=$INTERVAL1" >> /opt/karoshi/postfixdata/mailboxcheck_settings
+echo "INTERVAL2=$INTERVAL2" >> /opt/karoshi/postfixdata/mailboxcheck_settings
+echo "INTERVAL3=$INTERVAL3" >> /opt/karoshi/postfixdata/mailboxcheck_settings
+echo "INTERVAL4=$INTERVAL4" >> /opt/karoshi/postfixdata/mailboxcheck_settings
+fi
+exit
+

@@ -1,0 +1,103 @@
+#!/bin/bash
+LOG_DATE=`date +%F`
+#Create folders
+if [ ! -d /opt/karoshi/acceptable_use_authorisations/pending ]
+then
+mkdir -p /opt/karoshi/acceptable_use_authorisations/pending
+chmod -R 0750 /opt/karoshi/acceptable_use_authorisations
+chown -R root.apache_karoshi /opt/karoshi/acceptable_use_authorisations
+fi
+
+#Check if there are any users pending
+[ `ls -1 /opt/karoshi/acceptable_use_authorisations/pending | wc -l` = 0 ] && exit
+
+#Process list
+for PENDING_USER in /opt/karoshi/acceptable_use_authorisations/pending/*
+do
+PENDING_USERNAME=`basename $PENDING_USER`
+
+
+
+#Get creation data
+PENDING_USER_DATA=`sed -n 1,1p /opt/karoshi/acceptable_use_authorisations/pending/$PENDING_USERNAME`
+USER_GRACE_TIME=`echo $PENDING_USER_DATA | cut -d, -f1 | tr -cd 0-9`
+USER_CREATOR=`echo $PENDING_USER_DATA | cut -d, -f2`
+CREATION_DATE=`echo $PENDING_USER_DATA | cut -d, -f3`
+
+[ $USER_GRACE_TIME'null' = null ] && USER_GRACE_TIME=0
+
+if [ $USER_GRACE_TIME != 0 ]
+then
+let USER_GRACE_TIME=$USER_GRACE_TIME-1
+echo $USER_GRACE_TIME,$USER_CREATOR,$CREATION_DATE > /opt/karoshi/acceptable_use_authorisations/pending/$PENDING_USERNAME
+fi
+if [ $USER_GRACE_TIME = 0 ]
+then
+#Suspend user
+echo `date`: acceptable_use_authorisations - suspending $PENDING_USERNAME >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+smbpasswd -d $PENDING_USERNAME
+#Change password
+PASSWORD=`echo $RANDOM`
+echo -e "$PASSWORD""\n""$PASSWORD" | smbldap-passwd $USERNAME 1>/dev/null 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+#Change passwords on slave ldap servers
+
+if [ -d /opt/karoshi/server_network/slave_ldap_servers/  ]
+then
+if [ `ls -1 /opt/karoshi/server_network/slave_ldap_servers/ | wc -l` -gt 0 ]
+then
+for SLAVELDAPSERVERS in /opt/karoshi/server_network/slave_ldap_servers/*
+do
+SLAVELDAPSERVER=`basename $SLAVELDAPSERVERS`
+echo `date`: change_password - Changing password 'for' $USERNAME on $SLAVELDAPSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+ssh -x -o PasswordAuthentication=no $SLAVELDAPSERVER '
+echo -e "'$PASSWORD'""\n""'$PASSWORD'" | smbldap-passwd '$USERNAME' 1>/dev/null
+' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+done
+fi
+fi
+
+#Change the password on federated servers
+########################
+#Change the password on federated ldap servers
+########################
+if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
+then
+if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
+then
+for FEDERATEDLDAPSERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
+do
+FEDERATEDLDAPSERVER=`basename $FEDERATEDLDAPSERVERS`
+echo `date`: change_password \(federated mode\) - Changing password 'for' $USERNAME on $FEDERATEDLDAPSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+ssh -x -o PasswordAuthentication=no $FEDERATEDLDAPSERVER '
+
+echo `date`: change_password \(federated mode\) - Changing password for '$USERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+
+echo -e "'$PASSWORD'""\n""'$PASSWORD'" | smbldap-passwd '$USERNAME' 1>/dev/null
+
+#Change password on any federated slave ldap servers.
+if [ -d /opt/karoshi/server_network/slave_ldap_servers/ ]
+then
+if [ `ls -1 /opt/karoshi/server_network/slave_ldap_servers/ | wc -l` -gt 0 ]
+then
+for SLAVELDAPSERVERS in /opt/karoshi/server_network/slave_ldap_servers/*
+do
+SLAVELDAPSERVER=`basename $SLAVELDAPSERVERS`
+
+echo `date`: change_password \(federated mode\) - Changing password on $SLAVELDAPSERVER for '$USERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+ssh -x -o PasswordAuthentication=no $SLAVELDAPSERVER "
+echo -e \"'$PASSWORD'\"\"\n\"\"'$PASSWORD'\" | smbldap-passwd '$USERNAME' 1>/dev/null
+"
+done
+fi
+fi
+
+' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+done
+fi
+fi
+
+fi
+done  
+exit

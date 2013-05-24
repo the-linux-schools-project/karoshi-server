@@ -1,0 +1,17 @@
+#Content modifying Regular Expressions
+#
+# The format is: "extended regular expression"->"replacement straight string"
+# E.g. "shit"->"censored" would replace all occurances of shit in any case.
+# Far more complicated matches are possible.  See other sources for examples
+# of extended regular expressions.
+
+# These are just some examples.  If you write any, for example, to
+# remove popups etc, please send them to author at dansguardian.org.
+
+#"<script language.*open\(.*script>"->"<!-- its gone -->"
+#"fuck|cunt|shit|arse"->"**censored**"
+
+#remove popups by AFN 2004/2/28
+#"<html>"->"<script language='javascript'>fwo=window.open;function NO(url,nam,atr){return(this.window);}window.open=NO;</script><html>"
+#"=[ ]*?window\.open[ ]*?\("->"=fwo("
+#"<html>"->"<script language='javascript'>function NO(url,nam,atr){return(this.window);}window.open=NO;</script><html>"

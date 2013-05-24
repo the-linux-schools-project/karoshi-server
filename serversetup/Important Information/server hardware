@@ -1,0 +1,26 @@
+This project is designed to be used in schools so fancy SCSI raid systems with hot swap drives are not going to get a look in.
+
+Here is an example of the type of hardware we have used (Please see details on the website: www.karoshi.org.uk for a full description)
+
+Xen Primary Domain Controller
+
+Case: Entry Level Server 430W ATX236WWSPLUS
+Case fan Quiet 8cm Case Fan
+CPUAthlon XP 2600+ 512Kb
+CPU CoolerVolcano 11+ Xaser XP 3400+
+MotherboardSoA VIA KT400 ATX
+Memory512MB 184Pin DIMM PC3200
+Hard Disk DriveDeskstar 7K250 60GB
+2* Hard Disk DriveDeskstar 7K250 160GB
+CDROM16xDVD 52r 52w 32rw
+Network CardPro/1000 MT Desktop Adaptor
+Video CardGeForce 2 MX 400 64MB AGP
+KeyboardSlim Keyboard PS/2
+Mouse
+Monitor17 0.25 PureFlat MPR-II34SDW
+
+
+Total627.39
+
+The two larger hard drives are software raided together in a raid0 configuration to give around 300Gb of space. The other hard drive is for the operating system.
+Raid0 has no backup if one of the drives should fail so having a backup would be useful, which is why we have the backup server(sal) with 500gb of storage. This should be located as far away from the server room as possible in a secure area so that in the event of a fire in the server room you will still have your backup.  

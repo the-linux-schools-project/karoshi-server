@@ -1,0 +1,77 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides: inetd
+# Required-Start: $local_fs $remote_fs
+# Required-Stop: $local_fs $remote_fs
+# Should-Start: $syslog
+# Should-Stop: $syslog
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Start or stop the xinetd daemon.
+### END INIT INFO
+
+# clear poisonned environment
+unset TMPDIR
+
+NAME=xinetd
+DAEMON=/usr/sbin/$NAME
+PIDFILE=/var/run/$NAME.pid
+
+test -x "$DAEMON" || exit 0
+
+test -e /etc/default/$NAME && . /etc/default/$NAME
+case "$INETD_COMPAT" in
+[Yy]*)
+XINETD_OPTS="$XINETD_OPTS -inetd_compat"
+if perl -MSocket -e 'exit (!socket($sock, AF_INET6, SOCK_STREAM, 0))'; then
+XINETD_OPTS="$XINETD_OPTS -inetd_ipv6"
+fi
+;;
+esac
+
+. /lib/lsb/init-functions
+
+checkportmap () {
+if grep "^[^ *#]" /etc/xinetd.conf | grep -q 'rpc/'; then
+if ! rpcinfo -u localhost portmapper >/dev/null 2>&1; then
+echo
+echo "WARNING: portmapper inactive - RPC services unavailable!"
+echo " Commenting out or removing the RPC services from"
+echo " the /etc/xinetd.conf file will remove this message."
+echo
+fi
+fi
+}
+
+case "$1" in
+start)
+checkportmap
+log_daemon_msg "Starting internet superserver" "$NAME"
+start-stop-daemon --start --quiet --background --exec "$DAEMON" -- \
+-pidfile "$PIDFILE" $XINETD_OPTS
+log_end_msg $?
+;;
+stop)
+log_daemon_msg "Stopping internet superserver" "$NAME"
+start-stop-daemon --stop --signal 3 --quiet --oknodo --exec "$DAEMON"
+log_end_msg $?
+;;
+reload)
+log_daemon_msg "Reloading internet superserver configuration" "$NAME"
+start-stop-daemon --stop --signal 1 --quiet --oknodo --exec "$DAEMON"
+log_end_msg $?
+;;
+restart|force-reload)
+$0 stop
+$0 start
+;;
+status)
+status_of_proc -p "$PIDFILE" "$DAEMON" xinetd && exit 0 || exit $?
+;;
+*)
+echo "Usage: /etc/init.d/xinetd {start|stop|reload|force-reload|restart|status}"
+exit 1
+;;
+esac
+
+exit 0

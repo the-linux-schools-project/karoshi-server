@@ -1,0 +1,252 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/linux_client_upload_distro2_cgi
+then
+echo `date`: linux_client_upload_distro - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/linux_client_upload_distro2_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/linux_client_upload_distro2.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $linux_client_upload_distro2_cgi'check' ]
+then
+echo `date`: linux_client_upload_distro - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: linux_client_upload_distro - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: linux_client_upload_distro - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: linux_client_upload_distro - Not called by linux_client_upload_distro.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: linux_client_upload_distro - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: linux_client_upload_distro - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: linux_client_upload_distro - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+#Check that an iso has been uploaded
+if [ ! -d /var/www/karoshi/linuxiso ]
+then
+echo `date`: linux_client_upload_distro - no iso has been uploaded by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `ls -1 /var/www/karoshi/linuxiso | wc -l` -gt 1 ]
+then
+echo `date`: linux_client_upload_distro - multiple files have been uploaded by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+
+if [ `ls -1 /var/www/karoshi/linuxiso | grep -c .iso` = 0 ]
+then
+echo `date`: linux_client_upload_distro - no iso has been uploaded by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/linux_client_upload_distro ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/client/linux_client_upload_distro
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+ISONAME=`ls -1 /var/www/karoshi/linuxiso | sed -n 1,1p`
+
+#Make sure iso folder exists
+if [ ! -d /home/itadminshare/distributions/linux ]
+then
+mkdir -p /home/itadminshare/distributions/linux
+chown root.itadmin /home/itadminshare/distributions/linux
+chmod 0770 /home/itadminshare/distributions/linux
+chown root.itadmin /home/itadminshare/distributions
+chmod 0750 /home/itadminshare/distributions
+fi
+
+if [ ! -d /home/itadminshare/distributions/windows ]
+then
+mkdir -p /home/itadminshare/distributions/windows
+chown root.itadmin /home/itadminshare/distributions/windows
+chmod 0770 /home/itadminshare/distributions/windows
+chown root.itadmin /home/itadminshare/distributions
+chmod 0750 /home/itadminshare/distributions
+fi
+
+#Copy iso to /home/distributions/iso
+#Mount iso
+[ ! -d /home/distributions/linux_iso ] && mkdir -p /home/distributions/linux_iso
+
+echo "<li>"$COPYISOMSG2 /home/itadminshare/distributions/linux/"</li><br>"
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+cp -v -f /var/www/karoshi/linuxiso/"$ISONAME" /home/itadminshare/distributions/linux/
+echo "</pre>"
+ln -s /home/itadminshare/distributions/linux/"$ISONAME" /home/distributions/linux_iso/linux_pxe_client.iso
+#Remove upload folder
+rm -f -R /var/www/karoshi/linuxiso
+
+#Get distribution server
+DISTRIBUTIONSERVER=`sed -n 1,1p /opt/karoshi/server_network/distribution_server`
+if [ $DISTRIBUTIONSERVER = $HOSTNAME ]
+then
+
+[ ! -d /media/iso ] && mkdir -p /media/iso
+[ ! -d /home/distributions/linux_distro/ ] && mkdir -p /home/distributions/linux_distro/
+#Mount iso
+echo "<li>"$DISTRIBUTIONSERVER - $MOUNTISOMSG"</li><br>"
+mount /home/distributions/linux_iso/linux_pxe_client.iso /media/iso -o loop
+#Copy files
+echo "<li>"$DISTRIBUTIONSERVER - $COPYFILESMSG"</li>"
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+cp -v -a /media/iso/* /home/distributions/linux_distro/
+cp -v -a -f -R /media/iso/.disk /home/distributions/linux_distro/
+echo "</pre>"
+#Unmount iso
+echo "<li>"$DISTRIBUTIONSERVER - $UNMOUNTISOMSG"</li><br>"
+umount /media/iso
+#Copy out files
+echo "<li>"$DISTRIBUTIONSERVER - $COPYOUTFILESMSG"</li>"
+rm -f /home/tftpboot/images/ubuntu/initrd.*
+[ -f /home/tftpboot/images/ubuntu/vmlinuz ] && rm -f /home/tftpboot/images/ubuntu/vmlinuz
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+cp -v -f /home/distributions/linux_distro/casper/initrd.* /home/tftpboot/images/ubuntu/
+cp -v -f /home/distributions/linux_distro/casper/vmlinuz /home/tftpboot/images/ubuntu/
+echo "</pre>"
+#Find which initrd
+INITRDNAME=`ls /home/tftpboot/images/ubuntu/initrd.* | sed -n 1,1p`
+if [ `echo $INITRDNAME | grep -c initrd.lz` -gt 0 ]
+then
+sed -i "s/initrd.gz/initrd.lz/g" /home/tftpboot/pxelinux.cfg/default
+else
+sed -i "s/initrd.lz/initrd.gz/g" /home/tftpboot/pxelinux.cfg/default
+fi
+
+#Restart nfs server
+echo "<li>"$DISTRIBUTIONSERVER - $RESTARTNFSMSG"</li><br>"
+source /opt/karoshi/serversetup/variables/distro
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_start
+echo "</pre>"
+else
+
+ssh -x -o PasswordAuthentication=no $DISTRIBUTIONSERVER '
+[ -d /home/distributions/linux_iso ] && rm -f -R /home/distributions/linux_iso
+mkdir -p /home/distributions/linux_iso
+'
+echo "<li>"$COPYISOMSG $HOSTNAME $TOMSG $DISTRIBUTIONSERVER"</li><br>"
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+rsync -avL /home/distributions/linux_iso/linux_pxe_client.iso root@$DISTRIBUTIONSERVER:"/home/distributions/linux_iso/"
+echo "</pre>"
+rm -f /home/distributions/linux_iso/linux_pxe_client.iso
+
+ssh -x -o PasswordAuthentication=no $DISTRIBUTIONSERVER '
+
+[ ! -d /media/iso ] && mkdir -p /media/iso
+[ ! -d /home/distributions/linux_distro/ ] && mkdir -p /home/distributions/linux_distro/
+#Mount iso
+echo "<li>"'$DISTRIBUTIONSERVER - $MOUNTISOMSG'"</li><br>"
+mount /home/distributions/linux_iso/linux_pxe_client.iso /media/iso -o loop
+#Copy files
+echo "<li>"'$DISTRIBUTIONSERVER - $COPYFILESMSG'"</li>"
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+cp -v -a /media/iso/* /home/distributions/linux_distro/
+cp -v -a -f -R /media/iso/.disk /home/distributions/linux_distro/
+echo "</pre>"
+#Unmount iso
+echo "<li>"'$DISTRIBUTIONSERVER - $UNMOUNTISOMSG'"</li><br>"
+umount /media/iso
+#Copy out files
+echo "<li>"'$DISTRIBUTIONSERVER - $COPYOUTFILESMSG'"</li>"
+rm -f /home/tftpboot/images/ubuntu/initrd.*
+[ -f /home/tftpboot/images/ubuntu/vmlinuz ] && rm -f /home/tftpboot/images/ubuntu/vmlinuz
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+cp -v -f /home/distributions/linux_distro/casper/initrd.* /home/tftpboot/images/ubuntu/
+cp -v -f /home/distributions/linux_distro/casper/vmlinuz /home/tftpboot/images/ubuntu/
+echo "</pre>"
+#Find which initrd
+INITRDNAME=`ls /home/tftpboot/images/ubuntu/initrd.* | sed -n 1,1p`
+if [ `echo $INITRDNAME | grep -c initrd.lz` -gt 0 ]
+then
+sed -i "s/initrd.gz/initrd.lz/g" /home/tftpboot/pxelinux.cfg/default
+else
+sed -i "s/initrd.lz/initrd.gz/g" /home/tftpboot/pxelinux.cfg/default
+fi
+#Restart nfs server
+echo "<li>"'$DISTRIBUTIONSERVER - $RESTARTNFSMSG'"</li><br>"
+source /opt/karoshi/serversetup/variables/distro
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_start
+echo "</pre>"
+'
+
+fi
+
+exit
+
+
+
+

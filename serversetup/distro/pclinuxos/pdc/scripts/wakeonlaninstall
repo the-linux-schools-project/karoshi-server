@@ -1,0 +1,5 @@
+#!/bin/bash
+#wakeonlaninstall
+RPMNAME=wakelan-1.1-2.i686.rpm
+echo installing $RPMNAME >> /opt/karoshi/serversetup/install_log
+rpm -iU /opt/karoshi/serversetup/xen/rpms/$RPMNAME 2>>/opt/karoshi/serversetup/install_log

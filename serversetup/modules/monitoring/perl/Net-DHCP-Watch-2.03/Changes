@@ -1,0 +1,38 @@
+Revision history for Perl extension Net::DHCP::Watch.
+
+0.01  Tue Apr 10 18:37:31 2001
+	- original version; created by h2xs 1.19
+
+1.02  2001/04/17 13:32:46
+	- Added alarm(2) timeout.
+
+1.05  2001/04/20 11:14:00
+	- Example script modifyied to accept parameters and created README.
+	- Test for alarm(2) to support Win32 (and others?) platforms.
+
+1.06  2001/04/23
+        - The example script has been corrected to avoid local port conflicts.
+
+1.07  2001/04/24
+	- The example can use secure copy to download DHCP server files.
+
+1.08  2001/05/10
+	- The status method opens and closes the socket.
+	- Documented the need to be a known client of the server.
+
+1.09  2002/03/01
+	- The example includes files for installation as service in a Linux
+box.
+
+2.00 2002/10/01
+	- Now we use unicast DHCPINFORM to allow monitoring on different
+networks.
+
+2.01 2002/10/08
+	- New packet change: unicast DHCPREQUEST.
+
+2.02 2003/06/06
+	- Corrected typo error in POD. Use of Test::More in tests.
+
+2.03 2003/10/28
+	- UDP Socket forces the IP address given as 'client' host.

@@ -1,0 +1,318 @@
+#!/bin/bash
+#sslcertificatedata
+#Copyright (C) 2006  The karoshi Team
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contact either at mpsharrad@karoshi.org.uk or jharris@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+[ -d $HOME/.tempdata ] || mkdir $HOME/.tempdata
+source /opt/karoshi/serversetup/variables/language
+source /opt/karoshi/serversetup/variables/xdialog
+source /opt/karoshi/serversetup/variables/years
+source /opt/karoshi/serversetup/language/$LANGCHOICE/sslcertificatedata
+echo go > $HOME/.tempdata/sslstop 
+CHOICE=go
+COUNTRYCODE2=GB
+STATE=County
+LOCALITY=City
+ORGANISATIONNAME=School
+UNITNAME=ICT_Dept
+COMMONNAME=$HOSTNAME
+CONTACTEMAIL=email
+#####################
+#Show current data and ask if it needs to be changed
+#####################
+if test -f /opt/karoshi/serversetup/variables/ssldata
+then
+COUNTRYCODE2=`sed -n 1,1p /opt/karoshi/serversetup/variables/ssldata`
+STATE=`sed -n 2,2p /opt/karoshi/serversetup/variables/ssldata`
+LOCALITY=`sed -n 3,3p /opt/karoshi/serversetup/variables/ssldata`
+ORGANISATIONNAME=`sed -n 4,4p /opt/karoshi/serversetup/variables/ssldata`
+UNITNAME=`sed -n 5,5p /opt/karoshi/serversetup/variables/ssldata`
+COMMONNAME=`sed -n 6,6p /opt/karoshi/serversetup/variables/ssldata`
+CONTACTEMAIL=`sed -n 7,7p /opt/karoshi/serversetup/variables/ssldata`
+
+Xdialog --title "$TITLE" --clear \
+        --icon $ICON --rc-file $RCFILE --yesno "$CONFIRMMSG\n\n$COUNTRYMSG2: $COUNTRYCODE2\n$STATEMSG2: $STATE\n$LOCALITYMSG2: $LOCALITY\n$ORGANISTATIONMSG2: $ORGANISATIONNAME\n$UNITMSG2: $UNITNAME\n$COMMONNAMEMSG2:$COMMONNAME\n$EMAILMSG2: $CONTACTEMAIL" 16 70
+
+case $? in
+  0)
+   CHOICE=stop;;
+  1)
+    CHOICE=go;;
+  255)
+    CHOICE=go;;
+esac
+if [ $CHOICE = stop ]
+then 
+Xdialog --title "$TITLE" \
+--wrap --icon $ICON --rc-file $RCFILE --infobox "$TITLE\n\n$COMPLETEDMSG" 16 50 2000
+case $ in
+0)
+	exit;;
+255)
+	exit;;
+esac
+exit
+fi
+fi
+
+function getdetails {
+BLANKERROR=no
+if [ $CHOICE = go ]
+then
+######################
+#Display opening message and get countrycode
+######################
+
+COUNTRYCODE=`Xdialog --title "$TITLE" --clear \
+        --wrap --icon $ICON --rc-file $RCFILE --inputbox "$OPENINGMSG\n\n$COUNTRYMSG" 16 50 $COUNTRYCODE2 2>&1`
+
+retval=$?
+
+case $retval in
+  0)
+    CHOICE=go;COMPLETE=no;;
+  1)
+    CHOICE=stop;COMPLETE=no;;
+  255)
+    CHOICE=stop;COMPLETE=no;;
+esac
+COUNTRYCODE=`echo $COUNTRYCODE | sed 's/ //g' | tr 'a-z' 'A-Z'`
+if [ -n "$COUNTRYCODE" ]
+then
+COUNTRYCODE2=`echo ${COUNTRYCODE:0:2}`
+fi
+fi
+######################
+#Get state or province name
+######################
+if [ $CHOICE = go ]
+then
+
+STATECHOICE=`Xdialog --title "$TITLE" --clear \
+        --wrap --icon $ICON --rc-file $RCFILE --inputbox "$STATEMSG" 16 50 $STATE 2>&1`
+
+retval=$?
+
+case $retval in
+  0)
+    CHOICE=go;COMPLETE=no;;
+  1)
+    CHOICE=stop;COMPLETE=no;;
+  255)
+    CHOICE=stop;COMPLETE=no;;
+esac
+STATECHOICE=`echo $STATECHOICE | sed 's/ /_/g'`
+if [ -n "$STATECHOICE" ]
+then
+STATE=$STATECHOICE
+fi
+fi
+######################
+#Get locality
+######################
+if [ $CHOICE = go ]
+then
+
+LOCALITYCHOICE=`Xdialog --title "$TITLE" --clear \
+        --wrap --icon $ICON --rc-file $RCFILE --inputbox "$LOCALITYMSG" 16 50 $LOCALITY 2>&1`
+
+retval=$?
+
+case $retval in
+  0)
+    CHOICE=go;COMPLETE=no;;
+  1)
+    CHOICE=stop;COMPLETE=no;;
+  255)
+    CHOICE=stop;COMPLETE=no;;
+esac
+LOCALITYCHOICE=`echo $LOCALITYCHOICE | sed 's/ /_/g'`
+if [ -n "$LOCALITYCHOICE" ]
+then
+LOCALITY=$LOCALITYCHOICE
+fi
+fi
+######################
+#Get organisation name
+######################
+if [ $CHOICE = go ]
+then
+
+ORGANISATIONNAMECHOICE=`Xdialog --title "$TITLE" --clear \
+        --wrap --icon $ICON --rc-file $RCFILE --inputbox "$ORGANISTATIONMSG" 16 50 $ORGANISATIONNAME 2>&1`
+
+retval=$?
+
+case $retval in
+  0)
+    CHOICE=go;COMPLETE=no;;
+  1)
+    CHOICE=stop;COMPLETE=no;;
+  255)
+    CHOICE=stop;COMPLETE=no;;
+esac
+ORGANISATIONNAMECHOICE=`echo $ORGANISATIONNAMECHOICE | sed 's/ /_/g'`
+if [ -n "$ORGANISATIONNAMECHOICE" ]
+then
+ORGANISATIONNAME=$ORGANISATIONNAMECHOICE
+fi
+fi
+
+######################
+#Get organisation unit name
+######################
+if [ $CHOICE = go ]
+then
+
+UNITNAMECHOICE=`Xdialog --title "$TITLE" --clear \
+        --wrap --icon $ICON --rc-file $RCFILE --inputbox "$ORGANISTATIONUNITMSG" 16 50 $UNITNAME 2>&1`
+
+retval=$?
+
+case $retval in
+  0)
+    CHOICE=go;COMPLETE=no;;
+  1)
+    CHOICE=stop;COMPLETE=no;;
+  255)
+    CHOICE=stop;COMPLETE=no;;
+esac
+UNITNAMECHOICE=`echo $UNITNAMECHOICE | sed 's/ /_/g'`
+if [ -n "$UNITNAMECHOICE" ]
+then
+UNITNAME=$UNITNAMECHOICE
+fi
+fi
+
+########################
+#Get Commonname
+########################
+COMMONNAME=$HOSTNAME
+if [ $CHOICE = go ]
+then
+
+COMMONNAMECHOICE=`Xdialog --title "$TITLE" --clear \
+        --wrap --icon $ICON --rc-file $RCFILE --inputbox "$COMMONNAMEMSG" 16 50 $COMMONNAME 2>&1`
+
+retval=$?
+
+case $retval in
+  0)
+    CHOICE=go;COMPLETE=no;;
+  1)
+    CHOICE=stop;COMPLETE=no;;
+  255)
+    CHOICE=stop;COMPLETE=no;;
+esac
+COMMONNAMECHOICE=`echo $COMMONNAMECHOICE | sed 's/ /_/g'`
+if [ -n "$COMMONNAMECHOICE" ]
+then
+COMMONNAME=$COMMONNAMECHOICE
+fi
+fi
+
+######################
+#Get contact email address
+######################
+if [ $CHOICE = go ]
+then
+
+CONTACTEMAILCHOICE=`Xdialog --title "$TITLE" --clear \
+        --wrap --icon $ICON --rc-file $RCFILE --inputbox "$EMAILMSG" 16 50 $CONTACTEMAIL 2>&1`
+
+retval=$?
+
+case $retval in
+  0)
+    CHOICE=go;COMPLETE=no;;
+  1)
+    CHOICE=stop;COMPLETE=no;;
+  255)
+    CHOICE=stop;COMPLETE=no;;
+esac
+CONTACTEMAILCHOICE=`echo $CONTACTEMAILCHOICE | sed 's/ //g'`
+if [ -n "$CONTACTEMAILCHOICE" ]
+then
+CONTACTEMAIL=$CONTACTEMAILCHOICE
+fi
+fi
+}
+
+function showcancelledmsg {
+#########################
+#Show cancelled message
+#########################
+if [ $CHOICE = stop ]
+then
+echo stop > $HOME/.tempdata/sslstop 
+Xdialog --title "$TITLE" \
+--icon $ICON --rc-file $RCFILE --msgbox "$TITLE\n\n$CANCELLEDMSG" 16 50
+case $ in
+0)
+	exit;;
+255)
+	exit;;
+esac
+exit
+fi
+}
+
+function displaydetails {
+#########################
+#Display details
+########################
+if [ $CHOICE = go ]
+then
+
+Xdialog --title "$TITLE" --clear \
+        --icon $ICON --rc-file $RCFILE --yesno "$CONFIRMMSG\n\n$COUNTRYMSG2: $COUNTRYCODE2\n$STATEMSG2: $STATE\n$LOCALITYMSG2: $LOCALITY\n$ORGANISTATIONMSG2: $ORGANISATIONNAME\n$UNITMSG2: $UNITNAME\n$COMMONNAMEMSG2:$COMMONNAME\n$EMAILMSG2: $CONTACTEMAIL" 16 70
+
+case $? in
+  0)
+   CHOICE=stop;COMPLETE=yes;;
+  1)
+    CHOICE=go;COMPLETE=no;;
+  255)
+    CHOICE=go;COMPLETE=no;;
+esac
+fi
+}
+
+while [ $CHOICE = go ]
+do
+getdetails
+displaydetails
+done
+
+if [ $COMPLETE = no ]
+then
+showcancelledmsg
+exit
+fi
+
+if [ $COMPLETE = yes ]
+then
+echo $COUNTRYCODE2 > /opt/karoshi/serversetup/variables/ssldata
+echo $STATE >> /opt/karoshi/serversetup/variables/ssldata
+echo $LOCALITY >> /opt/karoshi/serversetup/variables/ssldata
+echo $ORGANISATIONNAME >> /opt/karoshi/serversetup/variables/ssldata
+echo $UNITNAME >> /opt/karoshi/serversetup/variables/ssldata
+echo $COMMONNAME >> /opt/karoshi/serversetup/variables/ssldata
+echo $CONTACTEMAIL >> /opt/karoshi/serversetup/variables/ssldata
+fi
+exit

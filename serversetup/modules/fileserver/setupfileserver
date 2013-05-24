@@ -1,0 +1,175 @@
+#!/bin/bash
+#setupfileserver
+#Copyright (C) 2009  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#aloughlin@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+########################
+#Get variables
+########################
+LOG_DATE=`date +%F`
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: setupfileserver - incorrect number of arguments."<br>"
+exit 101
+fi
+read -t 3 DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/'`
+
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+ROOTPASSWORD=`echo "$DATA" | cut -s -d: -f4`
+PDCSERVER=`echo "$DATA" | cut -s -d: -f5`
+PDCIP=`echo "$DATA" | cut -s -d: -f6`
+
+if [ -z "$REMOTE_USER" ]
+then
+echo `date`: setupfileserver - Blank remote user."<br>"
+exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+echo `date`: setupfileserver - Blank remote tcpip address."<br>"
+exit 101
+fi
+if [ -z "$ROOTPASSWORD" ]
+then
+echo `date`: setupfileserver - Blank root password."<br>"
+exit 101
+fi
+
+if [ -z "$PDCSERVER" ]
+then
+echo `date`: setupfileserver - Blank PDC."<br>"
+exit 101
+fi
+
+if [ -z "$PDCIP" ]
+then
+echo `date`: setupfileserver - Blank TCPIP."<br>"
+exit 101
+fi
+
+#Check to see that we can ping the PDC
+ping -c 2 $PDCIP 1>/dev/null
+if [ `echo $?` != 0 ]
+then
+echo `date` : setupfileserver - Cannot ping the PDC."<br>"
+exit 101
+fi
+
+LANGCHOICE=englishuk
+[ ! -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/fileserver/setupfileserver ] && LANGCHOICE=englishuk
+source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/fileserver/setupfileserver
+
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+source /opt/karoshi/server_network/domain_information/domain_name
+
+######################
+#Final samba Install check
+######################
+if ! test -f /etc/init.d/$SMBVER
+then
+echo /etc/init.d/$SMBVER does not exist >> /opt/karoshi/serversetup/install_log
+echo $SAMBANOTINSTALLED'<br><br>'
+exit 101
+fi
+
+#############################
+#Ensure that samba is running on boot
+#############################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/samba
+######################
+#Setup Samba
+######################
+echo '<b>'$TITLE - $HOSTNAME'</b><br><br>'
+
+###########################
+#Open shorewall ports for samba
+###########################
+MODCHECK=`grep -c -w samba_fileserver_rule /etc/shorewall/rules`
+if [ $MODCHECK = 0 ]
+then
+echo ''$SHOREWALLMSG - tcp 139,445 udp 137,138,445'<br><br>'
+LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'53,88,123,135,137,138,139,389,445,464,636,1024:1100,3268'	'-'#'samba_fileserver_rule /etc/shorewall/rules
+echo ACCEPT'	'net'	'fw'	'udp'	'53,88,123,137,138,139,389,445,464,636,1024:1100'	'-'#'samba_fileserver_rule >> /etc/shorewall/rules
+echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+fi
+
+######################
+#Restart shorewall
+######################
+if [ $MODCHECK = 0 ]
+then
+echo '<br>'$RESTARTSWMSG
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
+echo '<br><br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
+echo '<br><br>'
+fi
+
+#Server should already be joined to the domain for with the authentication module
+
+#Add in homes share to smb.conf
+
+if [ `grep -c homes /etc/samba/smb.conf` = 0 ]
+then
+echo -e '
+[homes]
+	comment = Home Directories
+	invalid users = root
+	read only = No
+	browseable = No
+	veto files = /*.exe/*.msi/*.mp3/*.wma/*.ram/*.mov/*.mpg/*.mpeg/*.bat/*.lnk/*.zip/"Folder Settings"/desktop.ini/
+' >> /etc/samba/smb.conf
+fi
+#Stop samba
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop
+sleep 1
+echo "<br>"
+#start samba
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
+echo "<br>"
+#Create the folders
+chmod 0755 /home
+chown root.root /home
+
+[ -d /home/users/students ] || mkdir -p /home/users/students
+[ -d /home/programs ] || mkdir /home/programs
+[ -d /home/programs/programs ] || mkdir /home/programs/programs
+#Note this would be done better with acl support
+chown -c root.tech /home/programs 1>/dev/null
+chown -c root.itadmin -R /home/programs/programs 1>/dev/null
+chmod 0750 /home/programs
+chmod 0775 /home/programs/programs
+
+[ -d /home/remastersys ] && rm -f -R /home/remastersys
+
+###########################
+#Show completed message
+###########################
+echo '<br><br><b>'$COMPLETEDMSG'</b>'
+sleep 2
+exit
+

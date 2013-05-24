@@ -1,0 +1,131 @@
+#!/bin/bash
+#Copyright (C) 2010 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/radius_add_access_pt_cgi
+then
+echo `date`: radius_add_access_pt - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/radius_add_access_pt_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/radius_add_access_pt.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $radius_add_access_pt_cgi'check' ]
+then
+echo `date`: radius_add_access_pt - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: radius_add_access_pt - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-%+'`
+if [ $DATA'null' = null ]
+then
+echo `date`: radius_add_access_pt - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+TCPIP=`echo "$DATA" | cut -s -d: -f4 | sed 's/%2/\//g'`
+SHORTNAME=`echo "$DATA" | cut -s -d: -f5 | sed 's/+/ /g'`
+SECRETKEY=`echo "$DATA" | cut -s -d: -f6`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: radius_add_access_pt - Not called by radius_add_access_pt.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: radius_add_access_pt - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: radius_add_access_pt - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $TCPIP'null' = null ]
+then
+echo `date`: radius_add_access_pt - Blank tcpip by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SHORTNAME'null' = null ]
+then
+echo `date`: radius_add_access_pt - Blank shortname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SECRETKEY'null' = null ]
+then
+echo `date`: radius_add_access_pt - Blank secretkey by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: radius_add_access_pt - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+echo `date`: radius_add_access_pt - adding "$SHORTNAME" on $TCPIP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+if [ ! -d /opt/karoshi/server_network/radius/wireless_access_points ]
+then
+mkdir -p /opt/karoshi/server_network/radius/wireless_access_points
+chown root.root /opt/karoshi/server_network/radius/wireless_access_points
+chmod 0700 /opt/karoshi/server_network/radius/wireless_access_points
+fi
+
+echo client "$TCPIP" '{' > /opt/karoshi/server_network/radius/wireless_access_points/"$SHORTNAME" 
+echo '        'secret'          '= "$SECRETKEY" >> /opt/karoshi/server_network/radius/wireless_access_points/"$SHORTNAME"
+echo '        'shortname'       '= "$SHORTNAME" >> /opt/karoshi/server_network/radius/wireless_access_points/"$SHORTNAME"
+echo '}' >> /opt/karoshi/server_network/radius/wireless_access_points/"$SHORTNAME"
+echo >> /opt/karoshi/server_network/radius/wireless_access_points/"$SHORTNAME"
+cat /opt/karoshi/server_network/radius/wireless_access_points/* > /etc/freeradius/clients.conf
+
+#Reload radius
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/radius_stop
+echo "<br>"
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/radius_start
+echo "<br>"
+exit
+

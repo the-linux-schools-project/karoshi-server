@@ -1,0 +1,12 @@
+#!/bin/bash
+#softwareinstall
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/colossus/software
+
+CLAMAVSTATUS=`rpm -q clamav| cut -d- -f1`
+if [ $CLAMAVSTATUS != clamav ]
+then
+
+xterm -geometry 100x20 -bg white -fg black -e yum -y install $CLAMAVSOFTWARE
+
+fi

@@ -1,0 +1,5 @@
+#!/bin/bash
+#Start mysql on boot
+chkconfig mysqld off
+[ -f /opt/karoshi/start_on_boot/karoshi_services ] || touch /opt/karoshi/start_on_boot/karoshi_services
+[ `grep -c -w mysqld /opt/karoshi/start_on_boot/karoshi_services` = 0 ] && echo mysqld,1 >> /opt/karoshi/start_on_boot/karoshi_services

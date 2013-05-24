@@ -1,0 +1,126 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/exam_accounts_archive_cgi
+then
+echo `date`: exam_accounts_archive - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/exam_accounts_archive_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/exam_accounts_archive.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $exam_accounts_archive_cgi'check' ]
+then
+echo `date`: exam_accounts_archive - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 1 ]
+then
+echo `date`: exam_accounts_archive - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo $* | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | cut -s -d: -f3`
+EXCEPTIONLIST=`echo $* | cut -s -d: -f4`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: exam_accounts_archive - Not called by exam_accounts_archive.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: exam_accounts_archive - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: exam_accounts_archive - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: exam_accounts_archive - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Archive the exam accounts to /home/staffshare/examfiles/todays date
+########################
+
+if [ ! -d /home/staffshare ]
+then
+mkdir /home/staffshare
+chmod 0750 /home/staffshare
+chown root.staff /home/staffshare
+fi
+
+if [ ! -d /home/staffshare/examfiles ]
+then
+mkdir /home/staffshare/examfiles
+chmod 0750 /home/staffshare/examfiles
+chown root.itadmin /home/staffshare/examfiles
+fi
+DAY=`date +%d`
+MONTH=`date +%b`
+TIME=`date +%T`
+YEAR=`date +%Y`
+ARCHIVEFOLDER=`echo $DAY'_'$MONTH'_'$YEAR'_'$TIME | sed 's/:/_/g'`
+echo `date`: exam_accounts_archive - Archiving all exam accounts by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: exam_accounts_archive - Archive path: /home/staffshare/examfiles/$ARCHIVEFOLDER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+mkdir /home/staffshare/examfiles/$ARCHIVEFOLDER
+chown root.itadmin /home/staffshare/examfiles/$ARCHIVEFOLDER
+chmod 0640 /home/staffshare/examfiles/$ARCHIVEFOLDER
+chmod u+X,g+X /home/staffshare/examfiles/$ARCHIVEFOLDER
+EXAMACCOUNTS=`ls -1 /home/users/exams/ | wc -l`
+COUNTER=1
+while [ $COUNTER -le $EXAMACCOUNTS ]
+do
+if [ `echo $EXCEPTIONLIST | grep -c -w exam$COUNTER` = 0 ]
+then 
+echo Archiving exam$COUNTER '<br>'
+cp -f -R /home/users/exams/exam$COUNTER /home/staffshare/examfiles/$ARCHIVEFOLDER/
+echo Clearing exam$COUNTER '<br>''<br>'
+rm -d -R -f /home/users/exams/exam$COUNTER
+mkdir /home/users/exams/exam$COUNTER
+chmod 0700 /home/users/exams/exam$COUNTER
+chown exam$COUNTER.exams /home/users/exams/exam$COUNTER
+fi
+
+let COUNTER=COUNTER+1
+done
+chown -R root.itadmin /home/staffshare/examfiles/$ARCHIVEFOLDER
+chmod -R 0640 /home/staffshare/examfiles/$ARCHIVEFOLDER
+chmod -R u+X,g+X /home/staffshare/examfiles/$ARCHIVEFOLDER
+exit

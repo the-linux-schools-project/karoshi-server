@@ -1,0 +1,27 @@
+NTPVER=ntp
+SMBVER=samba
+SAMBASOFTWARE="samba smbfs smbclient swat libpam-smbpass"
+SHOREWALLVER=shorewall
+SHOREWALLSOFTWARE="shorewall-common shorewall-perl"
+WEBMINVER=webmin
+WEBMINSOFTWARE="webmin webmin-core"
+WEBBROWSER=mozilla-firefox
+XINETDVER=xinetd
+PORTMAPVER=portmap
+YPSERVVER=nis
+DHCPVER=dhcp3-server
+DHCPSOFTWARE=dhcp3-server
+NTPSTATUSCMD="ntpq -p"
+DNSMASQVER=dnsmasq
+KILLKDE=gnome-session
+WAKEONLANVER=wakelan
+LDAPPATH=/etc/openldap/
+LDAPSCHEMAPATH=/usr/share/openldap/schema/
+LDAPCONTROLPATH=/etc/init.d/ldap
+LDAPINDEXGEN="slapindex -f /etc/openldap/slapd.conf"
+LDAPVER=slapd
+LDAPUSER=openldap
+LDAPSOFTWARE="slapd migrationtools smbldap-tools libnss-ldap libpam-ldap"
+LDAPPATH="/etc/ldap"
+APTCACHENG="apt-cacher-ng"
+

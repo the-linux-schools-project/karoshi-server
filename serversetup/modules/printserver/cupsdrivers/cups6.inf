@@ -1,0 +1,43 @@
+;
+; "$Id: cups6.inf,v 1.1 2005/06/16 20:42:20 mike Exp $"
+;
+; INF file for CUPS driver for Windows
+;
+; Copyright 2001-2005 by Easy Software Products
+;
+
+
+[Version]
+Signature="$Windows NT$"
+Provider=Easy Software Products
+LayoutFile=ntprint.inf
+ClassGUID={4D36E979-E325-11CE-BFC1-08002BE10318}
+Class=Printer
+DriverVer=06/16/2005
+
+[Manufacturer]
+"Easy Software Products"
+
+[Easy Software Products]
+"CUPS Test Driver v6" = CUPS6.PS
+
+[CUPS6.PS]
+CopyFiles=@CUPS6.PPD
+CopyFiles=@CUPS6.INI
+CopyFiles=@CUPSPS6.DLL
+CopyFiles=@CUPSUI6.DLL
+DataSection=PSCRIPT_DATA
+DataFile=CUPS6.PPD
+Include=NTPRINT.INF
+Needs=PSCRIPT.OEM
+
+[DestinationDirs]
+DefaultDestDir=66000
+
+[ControlFlags]
+ExcludeFromSelect = 2369
+
+
+;
+; End of "$Id: cups6.inf,v 1.1 2005/06/16 20:42:20 mike Exp $".
+;

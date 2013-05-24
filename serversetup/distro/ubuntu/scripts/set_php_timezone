@@ -1,0 +1,11 @@
+#!/bin/bash
+
+#Get current timezone from /etc/timezone
+TIMEZONE=`sed -n 1,1p /etc/timezone`
+TIMEZONE=`echo $TIMEZONE | sed 's/\//\\//g'`
+
+#Get line
+TIMEZONELINE=`grep -n ^date.timezone /etc/php5/apache2/php.ini | cut -d: -f1`
+[ $TIMEZONELINE'null' = null ] && exit 
+sed -i $TIMEZONELINE'c'date.timezone" "=" ""$TIMEZONE" /etc/php5/apache2/php.ini
+

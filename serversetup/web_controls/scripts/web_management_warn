@@ -1,0 +1,52 @@
+#!/bin/bash
+
+if [ ! -d /opt/karoshi/web_controls/warnings ]
+then
+mkdir -p /opt/karoshi/web_controls/warnings/messages
+chmod 0750 /opt/karoshi/web_controls/warnings
+chmod 0750 /opt/karoshi/web_controls/warnings/messages
+chown root.apache_karoshi /opt/karoshi/web_controls/warnings
+chown root.apache_karoshi /opt/karoshi/web_controls/warnings/messages
+fi
+
+DATA=`echo $1\|$2\|$3\|$4\|$5 | tr -cd 'a-zA-Z0-9._\-/ |'`
+ACTION=`echo $DATA | cut -d"|" -f1 | sed 's/ //g'`
+NAME=`echo $DATA | cut -d"|" -f2 | sed 's/ //g'`
+LINK=`echo $DATA | cut -d"|" -f3 | sed 's/ //g'`
+DESCRIPTION=`echo $DATA | cut -d"|" -f4`
+IMAGE=`echo $DATA | cut -d"|" -f5 | sed 's/ //g'`
+
+[ -z "$ACTION" ] && exit 101
+[ -z "$NAME" ] && exit 101
+
+if [ $ACTION = add ]
+then
+if [ -z "$IMAGE" ]
+then
+echo no image "set" - exiting now.
+exit 102
+fi
+fi
+
+if [ $ACTION = add ]
+then
+[ ! -d /opt/karoshi/web_controls/warnings/messages ] && mkdir -p /opt/karoshi/web_controls/warnings/messages
+echo '<a class="info" target="_blank" href="'$LINK'"><img class="images" alt="" src="/images/warnings/'$IMAGE'"><span>'$DESCRIPTION'</span></a>' >> /opt/karoshi/web_controls/warnings/messages/$NAME
+fi
+
+if [ $ACTION = delete ]
+then
+[ -f /opt/karoshi/web_controls/warnings/messages/$NAME ] && rm -f /opt/karoshi/web_controls/warnings/messages/$NAME
+fi
+
+#Update warnings
+ALERT_COUNT=`ls -1 /opt/karoshi/web_controls/warnings/messages/ | wc -l`
+if [ $ALERT_COUNT -gt 0 ]
+then
+cat /opt/karoshi/web_controls/warnings/messages/* > /opt/karoshi/web_controls/warnings/summary.txt
+chmod 0640 /opt/karoshi/web_controls/warnings/summary.txt
+chown root.apache_karoshi /opt/karoshi/web_controls/warnings/summary.txt
+else
+[ -f /opt/karoshi/web_controls/warnings/summary.txt ] && rm -f /opt/karoshi/web_controls/warnings/summary.txt
+fi
+

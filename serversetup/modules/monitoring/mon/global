@@ -1,0 +1,17 @@
+######################
+# global options
+######################
+cfbasedir   = /etc/mon 
+pidfile     = /var/run/mon/mon.pid
+statedir    = /var/lib/mon/state.d
+logdir      = /var/lib/mon/log.d
+dtlogfile   = /var/lib/mon/log.d/downtime.log
+alertdir    = /usr/lib/mon/alert.d
+mondir      = /usr/lib/mon/mon.d
+maxprocs    = 20
+histlength  = 100
+randstart   = 60s
+authtype    = pam
+userfile    = /etc/mon/userfile
+dtlogging   = yes
+

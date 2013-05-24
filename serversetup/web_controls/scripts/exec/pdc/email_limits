@@ -1,0 +1,143 @@
+#!/bin/bash
+#Copyright (C) 2007  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/email_limits2_cgi
+then
+echo `date`: email_limits - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/email_limits2_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_limits2.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $email_limits2_cgi'check' ]
+then
+echo `date`: email_limits - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 1 ]
+then
+echo `date`: email_limits - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo $* | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | cut -s -d: -f3`
+MESSAGESIZE=`echo $* | cut -s -d: -f4`
+MAILBOXSIZE=`echo $* | cut -s -d: -f5`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: email_limits - Not called by email_limits.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: email_limits - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: email_limits - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $MESSAGESIZE'null' = null ]
+then
+echo `date`: email_limits - Blank message size by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ $MAILBOXSIZE'null' = null ]
+then
+echo `date`: email_limits - Blank mailbox size by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: email_limits - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+############################
+#Convert numbers to bytes
+############################
+let MESSAGESIZEBYTES=$MESSAGESIZE*1024*1024
+let MAILBOXSIZEBYTES=$MAILBOXSIZE*1024*1024
+############################
+#Add log entry
+############################
+echo `date`: email_limits - message_size_limit set to $MESSAGESIZEBYTES'bytes' '('$MESSAGESIZE'MB'')' by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: email_limits - mailbox_size_limit set to $MAILBOXSIZEBYTES'bytes' '('$MAILBOXSIZE'MB'')' by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+############################
+#Apply settings
+############################
+EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+
+if [ `echo $EMAILSERVER'null' | sed 's/ //g'` = null ] 
+then
+echo `date`: email_over_quota_report - blank email server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $EMAILSERVER != $HOSTNAME ]
+then
+ssh -x -o PasswordAuthentication=no $EMAILSERVER '
+#Remove all message_size_limit lines
+sed -i /^message_size_limit/d /etc/postfix/main.cf
+#Remove all mailbox_size_limit lines
+sed -i /^mailbox_size_limit/d /etc/postfix/main.cf
+
+#Add in message_size_limit
+echo message_size_limit = '$MESSAGESIZEBYTES' >> /etc/postfix/main.cf
+#Add in mailbox_size_limit
+echo mailbox_size_limit = '$MAILBOXSIZEBYTES' >> /etc/postfix/main.cf
+#Restart MailScanner
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mailscanner_stop 1>/dev/null 2>/dev/null
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mailscanner_start 1>/dev/null 2>/dev/null
+'
+else
+#Remove all message_size_limit lines
+sed -i /^message_size_limit/d /etc/postfix/main.cf
+#Remove all mailbox_size_limit lines
+sed -i /^mailbox_size_limit/d /etc/postfix/main.cf
+
+#Add in message_size_limit
+echo message_size_limit = $MESSAGESIZEBYTES >> /etc/postfix/main.cf
+#Add in mailbox_size_limit
+echo mailbox_size_limit = $MAILBOXSIZEBYTES >> /etc/postfix/main.cf
+#Restart MailScanner
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mailscanner_stop 1>/dev/null 2>/dev/null
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mailscanner_start 1>/dev/null 2>/dev/null
+fi

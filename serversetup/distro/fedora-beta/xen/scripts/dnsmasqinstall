@@ -1,0 +1,4 @@
+#!/bin/bash
+#dnsmasqinstall
+RPMNAME=dnsmasq-2.15-1mdk.i586.rpm
+rpm -iU /opt/karoshi/serversetup/xen/rpms/$RPMNAME 2>/dev/null

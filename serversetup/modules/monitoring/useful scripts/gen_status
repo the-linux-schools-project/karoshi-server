@@ -1,0 +1,363 @@
+#!/bin/bash
+[ ! -d /opt/karoshi/server_network/mon ] && mkdir -p /opt/karoshi/server_network/mon
+LAST_CHECKMSG="Last check"
+NEXT_CHECKMSG="Next check"
+
+#Get raw data from mon
+MON_DATA=`monshow --full`
+
+MON_DATA_FAILS=`echo -e "$MON_DATA" | grep -w FAIL | sed 's/ * /,/g'`
+MON_DATA_UNTESTED=`echo -e "$MON_DATA" | grep -w untested | sed 's/ * /,/g'`
+MON_DATA_PASSES=`echo -e "$MON_DATA" | grep -v -w FAIL | grep -v -w untested`
+
+#Get date
+echo -e "$MON_DATA_PASSES" | grep -w time: > /opt/karoshi/server_network/mon/mon_data_temp
+MON_DATA_PASSES=`echo -e "$MON_DATA_PASSES" | sed 's/ * /,/g'`
+
+#Get list of all groups
+GROUP_LIST_ARRAY=( `grep -w watch /etc/mon/mon.cf | sed 's/watch//g' | sed 's/\t//g'` )
+GROUP_LIST_COUNT=${#GROUP_LIST_ARRAY[@]}
+
+#Get list of all failed services
+echo FAILURES >> /opt/karoshi/server_network/mon/mon_data_temp
+COUNTER=0
+while [ $COUNTER -lt $GROUP_LIST_COUNT ]
+do
+GROUP_NAME=${GROUP_LIST_ARRAY[$COUNTER]}
+echo -e "$MON_DATA_FAILS" | grep -w $GROUP_NAME >> /opt/karoshi/server_network/mon/mon_data_temp
+let COUNTER=$COUNTER+1
+done
+
+#Get list of all untested services
+echo UNTESTED >> /opt/karoshi/server_network/mon/mon_data_temp
+COUNTER=0
+while [ $COUNTER -lt $GROUP_LIST_COUNT ]
+do
+GROUP_NAME=${GROUP_LIST_ARRAY[$COUNTER]}
+echo -e "$MON_DATA_UNTESTED" | grep -w $GROUP_NAME >> /opt/karoshi/server_network/mon/mon_data_temp
+let COUNTER=$COUNTER+1
+done
+
+#Get list of all passed services
+echo PASSED >> /opt/karoshi/server_network/mon/mon_data_temp
+COUNTER=0
+while [ $COUNTER -lt $GROUP_LIST_COUNT ]
+do
+GROUP_NAME=${GROUP_LIST_ARRAY[$COUNTER]}
+echo -e "$MON_DATA_PASSES" | grep -w $GROUP_NAME >> /opt/karoshi/server_network/mon/mon_data_temp
+let COUNTER=$COUNTER+1
+done
+echo COMPLETED >> /opt/karoshi/server_network/mon/mon_data_temp
+cp -f /opt/karoshi/server_network/mon/mon_data_temp /opt/karoshi/server_network/mon/mon_data
+
+[ -f /opt/karoshi/server_network/mon/mon_data_html_temp ] && rm -f /opt/karoshi/server_network/mon/mon_data_html_temp 
+[ -f /opt/karoshi/server_network/mon/mon_mobile_data_html_temp ] && rm -f /opt/karoshi/server_network/mon/mon_mobile_data_html_temp
+
+MONDATA=`cat /opt/karoshi/server_network/mon/mon_data`
+GEN_DATE=`echo -e "$MONDATA" | sed -n 1,1p | cut -d: -f2-`
+
+function set_status {
+##########################
+#Set status for each monitor type
+##########################
+SUMMARY_LAST=$SUMMARY
+if [ $SERVICE_NAME = ping ]
+then
+PING_LAST_CHECK=$LAST_CHECK
+PING_NEXT_CHECK=$NEXT_CHECK
+PINGSTATUS=pass
+if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
+then
+PINGSTATUS=fail
+fi
+[ `echo 'check'$STATUS | grep -c untested` -gt 0 ] && PINGSTATUS=untested
+fi
+if [ $SERVICE_NAME = samba ]
+then
+SAMBA_LAST_CHECK=$LAST_CHECK
+SAMBA_NEXT_CHECK=$NEXT_CHECK
+SAMBASTATUS=pass
+if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
+then
+SAMBASTATUS=fail 
+fi
+[ `echo 'check'$STATUS | grep -c untested` -gt 0 ] && SAMBASTATUS=untested
+fi
+if [ $SERVICE_NAME = dns ]
+then
+DNS_LAST_CHECK=$LAST_CHECK
+DNS_NEXT_CHECK=$NEXT_CHECK
+DNSSTATUS=pass
+if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
+then
+DNSSTATUS=fail
+fi
+[ `echo 'check'$STATUS | grep -c untested` -gt 0 ] && DNSSTATUS=untested 
+fi
+if [ $SERVICE_NAME = cups ]
+then
+CUPS_LAST_CHECK=$LAST_CHECK
+CUPS_NEXT_CHECK=$NEXT_CHECK
+CUPSSTATUS=pass
+if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
+then
+CUPSSTATUS=fail
+fi
+[ `echo 'check'$STATUS | grep -c untested` -gt 0 ] && CUPSSTATUS=untested 
+fi
+if [ $SERVICE_NAME = imap ]
+then
+IMAP_LAST_CHECK=$LAST_CHECK
+IMAP_NEXT_CHECK=$NEXT_CHECK
+IMAPSTATUS=pass
+if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
+then
+IMAPSTATUS=fail
+fi
+[ `echo 'check'$STATUS | grep -c untested` -gt 0 ] && IMAPSTATUS=untested
+fi
+if [ $SERVICE_NAME = imaps ]
+then
+IMAPS_LAST_CHECK=$LAST_CHECK
+IMAPS_NEXT_CHECK=$NEXT_CHECK
+IMAPSSTATUS=pass
+if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
+then
+IMAPSSTATUS=fail
+fi
+[ `echo 'check'$STATUS | grep -c untested` -gt 0 ] && IMAPSTATUS=untested
+fi
+if [ $SERVICE_NAME = pop ]
+then
+POP3_LAST_CHECK=$LAST_CHECK
+POP3_NEXT_CHECK=$NEXT_CHECK
+POP3STATUS=pass
+if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
+then
+POP3STATUS=fail
+fi
+[ `echo 'check'$STATUS | grep -c untested` -gt 0 ] && POP3STATUS=untested 
+fi
+if [ $SERVICE_NAME = pop3s ]
+then
+POP3S_LAST_CHECK=$LAST_CHECK
+POP3S_CHECK=$NEXT_CHECK
+POP3SSTATUS=pass
+if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
+then
+POP3SSTATUS=fail
+fi
+[ `echo 'check'$STATUS | grep -c untested` -gt 0 ] && POP3SSTATUS=untested 
+fi
+if [ $SERVICE_NAME = http ]
+then
+HTTP_LAST_CHECK=$LAST_CHECK
+HTTP_NEXT_CHECK=$NEXT_CHECK
+HTTPSTATUS=pass
+if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ] 
+then
+HTTPSTATUS=fail
+fi
+[ `echo 'check'$STATUS | grep -c untested` -gt 0 ] && HTTPSTATUS=untested 
+fi
+if [ $SERVICE_NAME = https ]
+then
+HTTPS_LAST_CHECK=$LAST_CHECK
+HTTPS_NEXT_CHECK=$NEXT_CHECK
+HTTPSSTATUS=pass
+if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
+then
+HTTPSSTATUS=fail
+fi
+[ `echo 'check'$STATUS | grep -c untested` -gt 0 ] && HTTPSSTATUS=untested 
+fi
+if [ $SERVICE_NAME = smtp ]
+then
+SMPT_LAST_CHECK=$LAST_CHECK
+SMPT_NEXT_CHECK=$NEXT_CHECK
+SMTPSTATUS=pass
+if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
+then
+SMTPSTATUS=fail
+fi
+[ `echo 'check'$STATUS | grep -c untested` -gt 0 ] && SMTPSTATUS=untested
+fi
+if [ $SERVICE_NAME = dansguardian ]
+then
+DG_LAST_CHECK=$LAST_CHECK
+DG_NEXT_CHECK=$NEXT_CHECK
+DGSTATUS=pass
+if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
+then
+DGSTATUS=fail
+fi
+[ `echo 'check'$STATUS | grep -c untested` -gt 0 ] && DGSTATUS=untested 
+fi
+}
+
+function show_data {
+#Show status
+echo '<tr><td style="vertical-align: top;">'$GROUP_NAME'</td><td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_enable_disable.cgi" name="monitors" method="post"><a class="info" href="javascript:void(0)"><input name="_MONITOR_'$GROUP_NAME'_" type="image" class="images" src="/images/submenus/system/enable_monitor.png" value=""><span>Disable - '$GROUP_NAME'</span></a></form></td>'  >> /opt/karoshi/server_network/mon/mon_data_html_temp
+
+if [ $PINGSTATUS != not_set ]
+then
+echo '<td><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post"><a class="info" href="javascript:void(0)"><input name="_GROUPNAME_'$GROUP_NAME'_SERVICE_ping_" type="image" class="images" src="/images/warnings/'$ICON'" value=""><span>'$GROUP_NAME' '$SUMMARY_LAST'<br><br>'$LAST_CHECKMSG': '$PING_LAST_CHECK'<br><br>'$NEXT_CHECKMSG': '$PING_NEXT_CHECK'</span></a></form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
+else
+echo '<td></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
+fi
+
+if [ $SAMBASTATUS != not_set ]
+then
+echo '<td><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post"><a class="info" href="javascript:void(0)"><input name="_GROUPNAME_'$GROUP_NAME'_SERVICE_samba_" type="image" class="images" src="/images/warnings/'$ICON'" value=""><span>'$GROUP_NAME' '$SUMMARY_LAST'<br><br>'$LAST_CHECKMSG': '$SAMBA_LAST_CHECK'<br><br>'$NEXT_CHECKMSG': '$SAMBA_NEXT_CHECK'</span></a></form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
+else
+echo '<td></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
+fi
+
+if [ $HTTPSTATUS != not_set ]
+then
+echo '<td><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post"><a class="info" href="javascript:void(0)"><input name="_GROUPNAME_'$GROUP_NAME'_SERVICE_http_" type="image" class="images" src="/images/warnings/'$ICON'" value=""><span>'$GROUP_NAME' '$SUMMARY_LAST'<br><br>'$LAST_CHECKMSG': '$HTTP_LAST_CHECK'<br><br>'$NEXT_CHECKMSG': '$HTTP_NEXT_CHECK'</span></a></form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
+else
+echo '<td></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
+fi
+
+if [ $HTTPSSTATUS != not_set ]
+then
+echo '<td><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post"><a class="info" href="javascript:void(0)"><input name="_GROUPNAME_'$GROUP_NAME'_SERVICE_https_" type="image" class="images" src="/images/warnings/'$ICON'" value=""><span>'$GROUP_NAME' '$SUMMARY_LAST'<br><br>'$LAST_CHECKMSG': '$HTTPS_LAST_CHECK'<br><br>'$NEXT_CHECKMSG': '$HTTPS_NEXT_CHECK'</span></a></form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
+else
+echo '<td></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
+fi
+
+if [ $POP3STATUS != not_set ]
+then
+echo '<td><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post"><a class="info" href="javascript:void(0)"><input name="_GROUPNAME_'$GROUP_NAME'_SERVICE_pop3_" type="image" class="images" src="/images/warnings/'$ICON'" value=""><span>'$LAST_CHECKMSG': '$POP3_LAST_CHECK'<br><br>'$NEXT_CHECKMSG': '$POP3_NEXT_CHECK'</span></a></form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
+else
+echo '<td></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
+fi
+
+if [ $POP3SSTATUS != not_set ]
+then
+echo '<td><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post"><a class="info" href="javascript:void(0)"><input name="_GROUPNAME_'$GROUP_NAME'_SERVICE_pop3s_" type="image" class="images" src="/images/warnings/'$ICON'" value=""><span>'$LAST_CHECKMSG': '$POP3S_LAST_CHECK'<br><br>'$NEXT_CHECKMSG': '$POP3S_NEXT_CHECK'</span></a></form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
+else
+echo '<td></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
+fi
+
+if [ $IMAPSTATUS != not_set ]
+then
+echo '<td><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post"><a class="info" href="javascript:void(0)"><input name="_GROUPNAME_'$GROUP_NAME'_SERVICE_imap_" type="image" class="images" src="/images/warnings/'$ICON'" value=""><span>'$GROUP_NAME' '$SUMMARY_LAST'<br><br>'$LAST_CHECKMSG': '$IMAP_LAST_CHECK'<br><br>'$NEXT_CHECKMSG': '$IMAP_NEXT_CHECK'</span></a></form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
+else
+echo '<td></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
+fi
+
+if [ $IMAPSSTATUS != not_set ]
+then
+echo '<td><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post"><a class="info" href="javascript:void(0)"><input name="_GROUPNAME_'$GROUP_NAME'_SERVICE_imaps_" type="image" class="images" src="/images/warnings/'$ICON'" value=""><span>'$GROUP_NAME' '$SUMMARY_LAST'<br><br>'$LAST_CHECKMSG': '$IMAPS_LAST_CHECK'<br><br>'$NEXT_CHECKMSG': '$IMAPS_NEXT_CHECK'</span></a></form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
+else
+echo '<td></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
+fi
+
+if [ $SMTPSTATUS != not_set ]
+then
+echo '<td><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post"><a class="info" href="javascript:void(0)"><input name="_GROUPNAME_'$GROUP_NAME'_SERVICE_smtp_" type="image" class="images" src="/images/warnings/'$ICON'" value=""><span>'$GROUP_NAME' '$SUMMARY_LAST'<br><br>'$LAST_CHECKMSG': '$SMTP_LAST_CHECK'<br><br>'$NEXT_CHECKMSG': '$SMTP_NEXT_CHECK'</span></a></form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
+else
+echo '<td></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
+fi
+
+if [ $DGSTATUS != not_set ]
+then
+echo '<td><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post"><a class="info" href="javascript:void(0)"><input name="_GROUPNAME_'$GROUP_NAME'_SERVICE_dg_" type="image" class="images" src="/images/warnings/'$ICON'" value=""><span>'$GROUP_NAME' '$SUMMARY_LAST'<br><br>'$LAST_CHECKMSG': '$DG_LAST_CHECK'<br><br>'$NEXT_CHECKMSG': '$DG_NEXT_CHECK'</span></a></form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
+else
+echo '<td></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
+fi
+
+if [ $DNSSTATUS != not_set ]
+then
+echo '<td><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post"><a class="info" href="javascript:void(0)"><input name="_GROUPNAME_'$GROUP_NAME'_SERVICE_dns_" type="image" class="images" src="/images/warnings/'$ICON'" value=""><span>'$LAST_CHECKMSG': '$DNS_LAST_CHECK'<br><br>'$NEXT_CHECKMSG': '$DNS_NEXT_CHECK'</span></a></form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
+else
+echo '<td></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
+fi
+
+if [ $CUPSSTATUS != not_set ]
+then
+echo '<td><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post"><a class="info" href="javascript:void(0)"><input name="_GROUPNAME_'$GROUP_NAME'_SERVICE_cups_" type="image" class="images" src="/images/warnings/'$ICON'" value=""><span>'$LAST_CHECKMSG': '$CUPS_LAST_CHECK'<br><br>'$NEXT_CHECKMSG': '$CUPS_NEXT_CHECK'</span></a></form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
+else
+echo '<td></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
+fi
+echo "</tr>" >> /opt/karoshi/server_network/mon/mon_data_html_temp
+
+#Mobile view
+echo '<tr><td style="vertical-align: top;">'$GROUP_NAME'</td><td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_enable_disable.cgi" name="monitors" method="post"><a class="info" href="javascript:void(0)"><input name="_MONITOR_'$GROUP_NAME'_" type="image" class="images" src="/images/submenus/system/enable_monitor.png" value=""><span>Disable - '$GROUP_NAME'</span></a></form></td>'  >> /opt/karoshi/server_network/mon/mon_mobile_data_html_temp
+
+echo '<td><a class="info" href="javascript:void(0)"><input name="_GROUPNAME_'$GROUP_NAME'_" type="image" class="images" src="/images/warnings/'$ICON'" value=""><span>'$FAILURELIST'</span></a></td></tr>' >> /opt/karoshi/server_network/mon/mon_mobile_data_html_temp
+}
+
+function reset_status {
+PINGSTATUS=not_set
+SAMBASTATUS=not_set
+DNSSTATUS=not_set
+IMAPSTATUS=not_set
+IMAPSSTATUS=not_set
+POP3STATUS=not_set
+POP3SSTATUS=not_set
+HTTPSTATUS=not_set
+HTTPSSTATUS=not_set
+SMTPSTATUS=not_set
+DGSTATUS=not_set
+CUPSSTATUS=not_set
+
+}
+
+reset_status
+
+#Process data file
+LINE_COUNT=`echo -e "$MONDATA" | wc -l`
+let LINE_COUNT=$LINE_COUNT-1
+COUNTER=3
+COUNTER2=4
+GROUP_NAME="non_set"
+GROUP_NAME_LAST="non_set"
+GROUP_NAME_NO_SPACES="non_set"
+
+ICON=red.gif
+while [ $COUNTER -le $LINE_COUNT ]
+do
+LINE_DATA=`echo -e "$MONDATA" | sed -n $COUNTER,$COUNTER'p'`
+GROUP_NAME=`echo $LINE_DATA | cut -d, -f2`
+GROUP_NAME_NEXT=`echo -e "$MONDATA" | sed -n $COUNTER2,$COUNTER2'p' | cut -d, -f2`
+[ $GROUP_NAME = UNTESTED ] && ICON=orange.gif
+[ $GROUP_NAME = PASSED ] && ICON=green.gif
+
+SERVICE_NAME=`echo $LINE_DATA | cut -d, -f3`
+STATUS=`echo $LINE_DATA | cut -d, -f4`
+LAST_CHECK=`echo $LINE_DATA | cut -d, -f5`
+NEXT_CHECK=`echo $LINE_DATA | cut -d, -f6`
+ALERTS=`echo $LINE_DATA | cut -d, -f7`
+SUMMARY=`echo $LINE_DATA | cut -d, -f8-`
+
+if [ $STATUS = FAIL ]
+then
+FAILURELIST=`echo "$FAILURELIST $SERVICE_NAME"`
+else
+FAILURELIST="All systems online"
+fi
+set_status
+
+if [ $GROUP_NAME != $GROUP_NAME_NEXT ] && [ $GROUP_NAME != UNTESTED ] && [ $GROUP_NAME != PASSED ]
+then
+show_data
+reset_status
+fi
+let COUNTER=$COUNTER+1
+let COUNTER2=$COUNTER2+1
+done
+
+
+echo "</tbody></table><br>$GEN_DATE" >> /opt/karoshi/server_network/mon/mon_data_html_temp
+echo "</tbody></table><br>$GEN_DATE" >> /opt/karoshi/server_network/mon/mon_mobile_data_html_temp
+
+cp -f /opt/karoshi/server_network/mon/mon_data_html_temp /opt/karoshi/server_network/mon/mon_data_html
+cp -f /opt/karoshi/server_network/mon/mon_mobile_data_html_temp /opt/karoshi/server_network/mon/mon_mobile_data_html
+
+exit
+
+
+

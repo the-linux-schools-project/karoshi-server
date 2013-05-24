@@ -1,0 +1,7 @@
+#!/bin/bash
+#Start cups on boot
+chkconfig cups off
+[ -f /opt/karoshi/start_on_boot/karoshi_services ] || touch /opt/karoshi/start_on_boot/karoshi_services
+[ `grep -c -w cups /opt/karoshi/start_on_boot/karoshi_services` = 0 ] && echo cups,1 >> /opt/karoshi/start_on_boot/karoshi_services
+
+

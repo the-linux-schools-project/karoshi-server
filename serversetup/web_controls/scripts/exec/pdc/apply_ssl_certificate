@@ -1,0 +1,225 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/apply_ssl_certificate2_cgi
+then
+echo `date`: apply_ssl_certificate - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/apply_ssl_certificate2_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/apply_ssl_certificate2.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $apply_ssl_certificate2_cgi'check' ]
+then
+echo `date`: apply_ssl_certificate - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: apply_ssl_certificate - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\-\n-+@'`
+if [ $DATA'null' = null ]
+then
+echo `date`: apply_ssl_certificate - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+SERVER=`echo "$DATA" | cut -s -d: -f4`
+COUNTRYCODE=`echo "$DATA" | cut -s -d: -f5`
+STATE=`echo "$DATA" | cut -s -d: -f6`
+LOCALITY=`echo "$DATA" | cut -s -d: -f7`
+INSTITUTENAME=`echo "$DATA" | cut -s -d: -f8`
+DEPARTMENT=`echo "$DATA" | cut -s -d: -f9`
+COMMONNAME=`echo "$DATA" | cut -s -d: -f10`
+EMAIL=`echo "$DATA" | cut -s -d: -f11`
+EMAILCERT=`echo "$DATA" | cut -s -d: -f12`
+WEBCERT=`echo "$DATA" | cut -s -d: -f13`
+CERTTYPE=`echo "$DATA" | cut -s -d: -f14`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: apply_ssl_certificate - Not called by apply_ssl_certificate.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: apply_ssl_certificate - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: apply_ssl_certificate - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ "$SERVER"'null' = null ]
+then
+echo `date`: apply_ssl_certificate - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ "$COUNTRYCODE"'null' = null ]
+then
+echo `date`: apply_ssl_certificate - Blank countrycode by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ "$STATE"'null' = null ]
+then
+echo `date`: apply_ssl_certificate - Blank state by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ "$LOCALITY"'null' = null ]
+then
+echo `date`: apply_ssl_certificate - Blank locality by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ "$INSTITUTENAME"'null' = null ]
+then
+echo `date`: apply_ssl_certificate - Blank institute name by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ "$DEPARTMENT"'null' = null ]
+then
+echo `date`: apply_ssl_certificate - Blank department by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ "$COMMONNAME"'null' = null ]
+then
+echo `date`: apply_ssl_certificate - Blank commonname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ "$EMAIL"'null' = null ]
+then
+echo `date`: apply_ssl_certificate - Blank e-mail by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ "$WEBCERT"'null' = null ]
+then
+echo `date`: apply_ssl_certificate - Blank WEBCERT by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ "$EMAILCERT"'null' = null ]
+then
+echo `date`: apply_ssl_certificate - Blank EMAILCERT by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ "$CERTTYPE"'null' = null ]
+then
+echo `date`: apply_ssl_certificate - Blank CERTTYPE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: apply_ssl_certificate - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+echo `date`: apply_ssl_certificate - applying self signed certificate "for" $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+if [ $SERVER = $HOSTNAME ]
+then
+#Write certificate data to /opt/karoshi/serversetup/variables/ssldata
+echo "$COUNTRYCODE" > /opt/karoshi/serversetup/variables/ssldata
+echo "$STATE" >> /opt/karoshi/serversetup/variables/ssldata
+echo "$LOCALITY" >> /opt/karoshi/serversetup/variables/ssldata
+echo "$INSTITUTENAME" >> /opt/karoshi/serversetup/variables/ssldata
+echo "$DEPARTMENT" >> /opt/karoshi/serversetup/variables/ssldata
+echo "$COMMONNAME" >> /opt/karoshi/serversetup/variables/ssldata
+echo "$EMAIL" >> /opt/karoshi/serversetup/variables/ssldata
+
+#Apply self sign certificate
+source /opt/karoshi/serversetup/variables/distro
+if [ $WEBCERT = yes ] && [ $CERTTYPE = selfsign ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert 1>/dev/null 2>/dev/null &
+fi
+#Apply commercial certificate
+if [ $WEBCERT = yes ] && [ $CERTTYPE = commercial ]
+then
+echo "<pre>"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/commercial_ssl_cert/1_rsa_key 12345 
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/commercial_ssl_cert/2_rsa_key 12345
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/commercial_ssl_cert/3_cert_sign_request 12345 "$COUNTRYCODE" "$STATE" "$LOCALITY" "$INSTITUTENAME" "$DEPARTMENT" "$COMMONNAME" "$EMAIL" 12345
+echo "</pre>"
+fi
+
+if [ $EMAILCERT = yes ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/pop3sslcert 1>/dev/null 2>/dev/null &
+fi
+else
+if [ $SERVER = webmanagement ]
+then
+echo "$COUNTRYCODE" > /opt/karoshi/serversetup/variables/ssldata_web_management
+echo "$STATE" >> /opt/karoshi/serversetup/variables/ssldata_web_management
+echo "$LOCALITY" >> /opt/karoshi/serversetup/variables/ssldata_web_management
+echo "$INSTITUTENAME" >> /opt/karoshi/serversetup/variables/ssldata_web_management
+echo "$DEPARTMENT" >> /opt/karoshi/serversetup/variables/ssldata_web_management
+echo "$COMMONNAME" >> /opt/karoshi/serversetup/variables/ssldata_web_management
+echo "$EMAIL" >> /opt/karoshi/serversetup/variables/ssldata_web_management
+#Apply certificate
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert_web_management 1>/dev/null 2>/dev/null &
+else
+if [ -d /opt/karoshi/server_network/servers/$SERVER ] && [ $SERVER != hostname ]
+then
+ssh -x -o PasswordAuthentication=no $SERVER '
+#Write certificate data to /opt/karoshi/serversetup/variables/ssldata
+echo '"$COUNTRYCODE"' > /opt/karoshi/serversetup/variables/ssldata
+echo '"$STATE"' >> /opt/karoshi/serversetup/variables/ssldata
+echo '"$LOCALITY"' >> /opt/karoshi/serversetup/variables/ssldata
+echo '"$INSTITUTENAME"' >> /opt/karoshi/serversetup/variables/ssldata
+echo '"$DEPARTMENT"' >> /opt/karoshi/serversetup/variables/ssldata
+echo '"$COMMONNAME"' >> /opt/karoshi/serversetup/variables/ssldata
+echo '"$EMAIL"' >> /opt/karoshi/serversetup/variables/ssldata
+#Apply certificate
+source /opt/karoshi/serversetup/variables/distro
+if [ '$WEBCERT' = yes ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert 1>/dev/null 2>/dev/null &
+
+fi
+if [ '$EMAILCERT' = yes ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/pop3sslcert 1>/dev/null 2>/dev/null &
+fi
+'
+else
+exit 102
+fi
+fi
+fi
+exit

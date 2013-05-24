@@ -1,0 +1,32 @@
+#!/bin/bash
+#softwareinstall
+#Check for software
+INSTALL_DEPS=no
+INSTALL_ICECAST=no
+
+dpkg -S icecast2 1>/dev/null
+if [ `echo $?` != 0 ]
+then
+INSTALL_ICECAST=yes
+INSTALL_DEPS=yes
+fi
+
+if [ $INSTALL_DEPS = yes ]
+then
+echo "<li>"Updating repository list"</li><br>"
+echo
+apt-get update
+fi
+
+if [ $INSTALL_ICECAST = yes ]
+then
+echo "<li>"Installing icecast2"</li><br>"
+echo 
+apt-get install -y icecast2
+echo
+chkconfig -y icecast2 on 1>/dev/null 2>/dev/null
+fi
+
+#Enable icecast2 in /etc/default/
+sed -i 's/ENABLE=false/ENABLE=true/g' /etc/default/icecast2
+

@@ -1,0 +1,165 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/software_raid_show_disks_cgi
+then
+echo `date`: software_raid_show_disks - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/software_raid_show_disks_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/software_raid_show_disks.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $software_raid_show_disks_cgi'check' ]
+then
+echo `date`: software_raid_show_disks - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: software_raid_show_disks - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: software_raid_show_disks - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+SERVER=`echo "$DATA" | cut -s -d: -f4`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: software_raid_show_disks - Not called by software_raid_show_disks.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: software_raid_show_disks - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: software_raid_show_disks - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVER'null' = null ]
+then
+echo `date`: software_raid_show_disks - Blank server >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: software_raid_show_disks - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+##########################
+#Language
+##########################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/software_raid ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/system/software_raid
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+echo software raid inc "<br>"
+
+#Get list of all drives
+ALL_DRIVES=( `parted -l | sed "s/Error: //g" | sed "s/Disk //g" | grep /dev/sd | cut -d: -f1 | tr -cd "A-Za-z0-9/ "` )
+ALL_DRIVES_COUNT=${#ALL_DRIVES[@]}
+
+#Show raid options
+
+
+
+
+#Get list of all unmounted drives and display properties
+COUNTER=0
+SHOW_MENU=yes
+while [ $COUNTER -lt $ALL_DRIVES_COUNT ]
+do
+DRIVE=${ALL_DRIVES[$COUNTER]}
+if [ `mount | grep -c $DRIVE` = 0 ]
+then
+#Get drive information
+DISKSIZE=`df -h $DRIVE | sed 's/ * / /g' | cut -d" " -f4 | sed -n 2,2p`
+DRIVE_STATUS=ok
+SMART_INFO=`smartctl -Hc /dev/$DRIVE`
+
+DISKICON=hdd.png
+if [ `echo $?` = 24 ]
+then
+#Drive failing
+DRIVE_STATUS=fail
+DISKICON=hdd_fail.png
+fi
+
+if [ $SHOW_MENU = yes ]
+then
+echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+<tbody>
+<tr><td>"$RAIDTYPEMSG"</td><td>"$RAIDNAMEMSG"</td></tr>
+<tr><td>
+<select name=\"_RAIDTYPE_\" style=\"width: 185px;\">
+<option value=\"raid1\">Raid 1</option>
+<option value=\"raid5\">Raid 5</option>
+</select>
+</td><td>
+<select name=\"_RAIDNAME_\" style=\"width: 185px;\">
+<option value=\"raid1\">/dev/md0</option>
+<option value=\"raid5\">/dev/md1</option>
+<option value=\"raid5\">/dev/md2</option>
+</select>
+</td></tr></tbody</table>"
+echo "<br><br>"
+SHOW_MENU=no
+fi
+
+#Show drive information
+if [ $DRIVE_STATUS = ok ]
+then
+echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+<tbody><tr><td><img src=\"/images/submenus/system/$DISKICON\" alt=\"some_text\"> </td><td>"$DRIVE"</td><td>"$DISKSIZE"</td><td>"DISK OPTIONS"</td></tr>"
+fi
+fi
+let COUNTER=$COUNTER+1
+done
+exit
+

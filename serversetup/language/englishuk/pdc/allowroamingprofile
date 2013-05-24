@@ -1,0 +1,13 @@
+#Language file for xen allowroamingprofile
+TITLE="Allow Roaming Profile"
+OPENINGMSG="This will allow a user to have a roaming profile \n\n WARNING This is not recommended by the Karoshi team at all. Mandatory profiles give a corporate image and are small and efficient in size. Roaming profiles can get very large which will slow down logon times. \n\n Continue?"
+CANCELLEDMSG1="Allow roaming profile cancelled"
+USRMSG="Please enter the name of a user that you would like to allow a roaming profile for"
+ERRORMSG1="This user does not exist"
+ERRORMSG2="Not changing groups for root"
+CONFIRMMSG="Are you sure you want to give this user roaming profile capability?"
+COMPLETEDMSG="This user now has roaming profile capability"
+HELP1="The logon script and the profile for windows clients is determined by the primary group of the user on the authentication server."
+HELP2="This utility will put the user into a primary group with the same name as the user. It will then create a profile for this user which the user can then modify. A logon script will also be created specifically for this user."
+HELP3="Logon scripts are stored in /var/lib/samba/netlogon/"
+HELP4="Profiles are stored in /home/applications/profiles/"

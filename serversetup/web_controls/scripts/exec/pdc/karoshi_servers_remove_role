@@ -1,0 +1,804 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/karoshi_servers_remove_role_cgi
+then
+echo `date`: karoshi_servers_remove_role - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/karoshi_servers_remove_role_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/karoshi_servers_remove_role.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $karoshi_servers_remove_role_cgi'check' ]
+then
+echo `date`: karoshi_servers_remove_role - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: karoshi_servers_remove_role - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-%'`
+if [ $DATA'null' = null ]
+then
+echo `date`: karoshi_servers_remove_role - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+MODULE=`echo "$DATA" | cut -s -d: -f5 | sed 's/%2B/+/g'`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: karoshi_servers_remove_role - Not called by karoshi_servers_remove_role.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: karoshi_servers_remove_role - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: karoshi_servers_remove_role - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVERNAME'null' = null ]
+then
+echo `date`: karoshi_servers_remove_role - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $MODULE'null' = null ]
+then
+echo `date`: karoshi_servers_remove_role - Blank module by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: karoshi_servers_remove_role - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+##########################
+#Language
+##########################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/karoshi_servers_add_role ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/system/karoshi_servers_add_role
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+
+echo `date`: karoshi_servers_remove_role - removing $MODULE on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+function completed {
+################################
+#Show completed message
+################################
+if [ $MODULE != REMOVESERVER ] && [ $MODULE != federated_server ]
+then
+if [ `ls -1 /opt/karoshi/server_network/servers/$SERVERNAME/ | wc -l` = 0 ]
+then
+[ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && echo No Role > /opt/karoshi/server_network/servers/$SERVERNAME/no_role
+fi
+fi
+
+echo "<li>"$SERVERNAME: $REMOVECOMPLETED"</li><br>"
+sleep 5
+exit
+}
+
+##########################
+#apachereverseproxyserver
+#Unflags this server as an Apache reverse proxy server. Disables proxy module and restarts apache.
+##########################
+if [ $MODULE = apachereverseproxyserver ]
+then
+#Remove any listed reverse proxies
+[  -d /opt/karoshi/server_network/reverseproxy/sites ] && rm -f /opt/karoshi/server_network/reverseproxy/sites
+
+if [ $SERVERNAME = $HOSTNAME ]
+then
+APACHECONFIG=/etc/httpd/conf/httpd.conf
+APACHEPATH=/etc/httpd
+if [ -f /etc/apache2/apache2.conf ]
+then
+APACHECONFIG=/etc/apache2/apache2.conf
+APACHEPATH=/etc/apache2
+fi
+echo > $APACHEPATH/conf/reverseproxyrules.conf
+#Restart apache
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop
+sleep 0.5
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
+else
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+APACHECONFIG=/etc/httpd/conf/httpd.conf
+APACHEPATH=/etc/httpd
+if [ -f /etc/apache2/apache2.conf ]
+then
+APACHECONFIG=/etc/apache2/apache2.conf
+APACHEPATH=/etc/apache2
+fi
+echo > $APACHEPATH/conf/reverseproxyrules.conf
+#Restart apache
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop
+sleep 0.5
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
+'
+fi
+echo "<li>"$SERVERNAME: $REVERSEPROXYMSG - $UNFLAGMSG"</li><br>"
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/apachereverseproxyserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/apachereverseproxyserver
+completed
+fi
+
+##########################
+#apacheserver
+#Unflags this server as an Apache server.
+##########################
+if [ $MODULE = apacheserver ]
+then
+echo "<li>"$SERVERNAME: $WEBSERVERMSG - $UNFLAGMSG"</li><br>"
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver
+completed
+fi
+
+##########################
+#Distributionserver
+#Unflags this server as a distributionserver.
+##########################
+if [ $MODULE = distributionserver ]
+then
+echo "<li>"$SERVERNAME: $DISTRIBUTIONSERVERMSG - $UNFLAGMSG"</li><br>"
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/distributionserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/distributionserver
+completed
+fi
+
+
+##########################
+#Federated Server
+#Unflags this server as a federated_server.
+##########################
+if [ $MODULE = federated_server ]
+then
+echo "<li>"$SERVERNAME: $FEDERATIONSERVERREMOVEMSG"</li><br>"
+
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+#Remove federated server flag
+[ -f /opt/karoshi/server_network/servers/'$SERVERNAME'/federated_server ] && rm -f /opt/karoshi/server_network/servers/'$SERVERNAME'/federated_server
+#Delete any ldif files waiting to be synced
+[ -d /opt/karoshi/server_network/password_sync ] && rm -f -R /opt/karoshi/server_network/password_sync
+#Change web management menus to show user creation
+sed -i 's/ADDUSERCTRL=no/ADDUSERCTRL=yes/g' /opt/karoshi/web_controls/generate_navbar_admin
+sed -i 's/ADDUSERCTRL=no/ADDUSERCTRL=yes/g' /opt/karoshi/web_controls/generate_navbar_tech
+'
+#Remove password sync cron job
+if [ -f /opt/karoshi/cronjobs/jobs/federated_password_sync.cron ]
+then
+rm -f /opt/karoshi/cronjobs/jobs/federated_password_sync.cron
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
+echo "<br><br>"
+fi
+
+#Unflag server
+echo "<li>"$SERVERNAME: $FEDERATIONCONTROLMSG - $UNFLAGMSG"</li><br>"
+[ -d /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME ] && rm -f -R /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME
+completed
+fi
+
+##########################
+#backupserver
+#Unflags this server as a backup server. Stops all backups to this server.
+##########################
+if [ $MODULE = backupserver ]
+then
+#Unflag backup server
+echo "<li>"$SERVERNAME: $BACKUPSERVERMSG - $UNFLAGMSG"</li><br>"
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/backupserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/backupserver
+[ -f /opt/karoshi/server_network/backup_servers/servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/backup_servers/servers/$SERVERNAME
+#Check to see if any other servers are backing up to this server
+if [ -d /opt/karoshi/server_network/backup_servers/backup_settings/ ]
+then
+if [ `grep -l -w $SERVERNAME -R /opt/karoshi/server_network/backup_servers/backup_settings/* | wc -l` -gt 0 ]
+then
+for BACKUP_CLIENTS in `grep -l -w $SERVERNAME -R /opt/karoshi/server_network/backup_servers/backup_settings`
+do
+BACKUP_CLIENT=`echo $BACKUP_CLIENTS | cut -d/ -f7`
+rm -f $BACKUP_CLIENTS
+echo "<li>"$BACKUP_CLIENT: $BACKUPDISABLEDMSG"</li><br>"
+echo `date`: karoshi_servers_remove_role - $BACKUP_CLIENT backup disabled by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+done
+fi
+fi
+completed
+fi
+
+
+##########################
+#Home Access 
+#Unflags this server as a Home Access Server. Deletes the home access files.
+##########################
+if [ $MODULE = homeaccess ]
+then
+
+if [ $SERVERNAME = $HOSTNAME ]
+then
+[ -d /var/www/smbwebclient-data ] && rm -f -R /var/www/smbwebclient-data
+[ -d /var/www/html/smbwebclient ] && rm -f -R /var/www/html/smbwebclient
+
+else
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+[ -d /var/www/smbwebclient-data ] && rm -f -R /var/www/smbwebclient-data
+[ -d /var/www/html/smbwebclient ] && rm -f -R /var/www/html/smbwebclient
+'
+fi
+echo "<li>"$SERVERNAME: $HOMEACCESSSERVERMSG - $UNFLAGMSG"</li><br>"
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/homeaccess ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/homeaccess
+[ -f /opt/karoshi/server_network/homeaccess ] && rm -f /opt/karoshi/server_network/homeaccess
+completed
+fi
+
+##########################
+#CAS_server
+#Unflags this server as a CAS single sign on server. Removes the cas link in /var/www/html and deletes the cas database.
+##########################
+if [ $MODULE = casserver ]
+then
+
+if [ $SERVERNAME = $HOSTNAME ]
+then
+#Get root mysql password
+/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
+MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
+mysqladmin -f --password=$MYSQLPASS drop rubycas 1>/dev/null 2>/dev/null
+
+[ -L /var/www/html/cas ] && rm -f /var/www/html/cas
+
+else
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+#Get root mysql password
+/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
+MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
+mysqladmin -f --password=$MYSQLPASS drop rubycas 1>/dev/null 2>/dev/null
+
+[ -L /var/www/html/cas ] && rm -f /var/www/html/cas
+'
+fi
+
+echo "<li>"$SERVERNAME: $CASSERVERMSG - $UNFLAGMSG"</li><br>"
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/casserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/casserver
+[ -f /opt/karoshi/server_network/casserver ] && rm -f /opt/karoshi/server_network/casserver
+completed
+fi
+
+
+##########################
+#dhcp_server
+#Unflags this server as a DHCP server. Stops the dhcp service from running on this server.
+##########################
+if [ $MODULE = dhcp_server ]
+then
+echo "<li>"$SERVERNAME: $DHCPSERVERMSG - $UNFLAGMSG"</li><br>"
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/dhcp_server ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/dhcp_server
+[ -f /opt/karoshi/server_network/dhcp_server ] && rm -f /opt/karoshi/server_network/dhcp_server
+#Stop dhcpd
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/dhcp
+#Remove dhcp item from the web management menu
+sed -i 's/DHCPCTRL=yes/DHCPCTRL=no/g' /opt/karoshi/web_controls/generate_navbar_admin
+completed
+fi
+
+##########################
+#emailserver
+#Unflags this server as an E-Mail server. Removes Squirrelmail and egroupware, and stops Mailscanner from running on the server.
+##########################
+if [ $MODULE = emailserver ]
+then
+if [ $SERVERNAME = $HOSTNAME ]
+then
+echo "<li>"$SERVERNAME: $SQUIRRELREMOVE"</li><br>"
+[ -d /var/www/html/squirrelmail ] && rm -f -R /var/www/html/squirrelmail
+[ -d /var/www/squirrelmail-attachments ] && rm -f -R /var/www/squirrelmail-attachments
+[ -d /var/www/squirrelmail-data ] && rm -f -R /var/www/squirrelmail-datacalendar_data
+[ -d /var/www/squirrelmail-datacalendar_data ] && rm -f -R /var/www/squirrelmail-datacalendar_data
+[ -f /var/www/global_address_book ] && rm -f /var/www/global_address_book
+echo "<li>"$SERVERNAME: $EGROUPWAREREMOVE"</li><br>"
+[ -d /var/www/html/egroupware ] && rm -f -R /var/www/html/egroupware
+[ -d /var/www/egroupware-files ] && rm -f -R /var/www/egroupware-files
+
+[ -f /opt/karoshi/cronjobs/jobs/delete_mail.cron ] && rm -f /opt/karoshi/cronjobs/jobs/delete_mail.cron
+[ -f /opt/karoshi/cronjobs/jobs/globaladdressbook.cron ] && rm -f /opt/karoshi/cronjobs/jobs/globaladdressbook.cron
+[ -f /opt/karoshi/cronjobs/jobs/mailboxcheck.cron ] && rm -f /opt/karoshi/cronjobs/jobs/mailboxcheck.cron
+[ -f /opt/karoshi/cronjobs/jobs/mailboxwarn.cron ] && rm -f /opt/karoshi/cronjobs/jobs/mailboxwarn.cron
+[ -f /opt/karoshi/cronjobs/jobs/postfixstats.cron ] && rm -f /opt/karoshi/cronjobs/jobs/postfixstats.cron
+[ -f /opt/karoshi/cronjobs/jobs/tidyrootmail.cron ] && rm -f /opt/karoshi/cronjobs/jobs/tidyrootmail.cron
+[ -f /opt/karoshi/cronjobs/jobs/tidy_squirrelmail_attachments.cron ] && rm -f /opt/karoshi/cronjobs/jobs/tidy_squirrelmail_attachments.cron
+
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mailscanner_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/mailscanner
+
+#Get root mysql password
+/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
+MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
+mysqladmin -f --password=$MYSQLPASS drop egroupware 1>/dev/null 2>/dev/null
+else
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+source /opt/karoshi/serversetup/variables/distro
+echo "<li>"'$SERVERNAME': '$SQUIRRELREMOVE'"</li><br>"
+[ -d /var/www/html/squirrelmail ] && rm -f -R /var/www/html/squirrelmail
+[ -d /var/www/squirrelmail-attachments ] && rm -f -R /var/www/squirrelmail-attachments
+[ -d /var/www/squirrelmail-data ] && rm -f -R /var/www/squirrelmail-data
+[ -d /var/www/squirrelmail-datacalendar_data ] && rm -f -R /var/www/squirrelmail-datacalendar_data
+[ -f /var/www/global_address_book ] && rm -f /var/www/global_address_book
+echo "<li>"'$SERVERNAME': '$EGROUPWAREREMOVE'"</li><br>"
+[ -d /var/www/html/egroupware ] && rm -f -R /var/www/html/egroupware
+[ -d /var/www/egroupware-files ] && rm -f -R /var/www/egroupware-files
+
+[ -f /opt/karoshi/cronjobs/jobs/delete_mail.cron ] && rm -f /opt/karoshi/cronjobs/jobs/delete_mail.cron
+[ -f /opt/karoshi/cronjobs/jobs/globaladdressbook.cron ] && rm -f /opt/karoshi/cronjobs/jobs/globaladdressbook.cron
+[ -f /opt/karoshi/cronjobs/jobs/mailboxcheck.cron ] && rm -f /opt/karoshi/cronjobs/jobs/mailboxcheck.cron
+[ -f /opt/karoshi/cronjobs/jobs/mailboxwarn.cron ] && rm -f /opt/karoshi/cronjobs/jobs/mailboxwarn.cron
+[ -f /opt/karoshi/cronjobs/jobs/postfixstats.cron ] && rm -f /opt/karoshi/cronjobs/jobs/postfixstats.cron
+[ -f /opt/karoshi/cronjobs/jobs/tidyrootmail.cron ] && rm -f /opt/karoshi/cronjobs/jobs/tidyrootmail.cron
+[ -f /opt/karoshi/cronjobs/jobs/tidy_squirrelmail_attachments.cron ] && rm -f /opt/karoshi/cronjobs/jobs/tidy_squirrelmail_attachments.cron
+
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mailscanner_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/mailscanner
+/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
+#Get root mysql password
+MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
+mysqladmin -f --password=$MYSQLPASS drop egroupware 1>/dev/null 2>/dev/null
+'
+fi
+
+#Unflag server
+echo "<li>"$SERVERNAME: $EMAILSERVERMSG - $UNFLAGMSG"</li><br>"
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver
+[ -f /opt/karoshi/server_network/emailserver ] && rm -f /opt/karoshi/server_network/emailserver
+completed
+fi
+
+
+##########################
+#joomlaserver
+#Unflags this server from using joomla. Deletes all joomla files and the joomla database.
+##########################
+
+if [ $MODULE = joomlaserver ]
+then
+echo "<li>"$SERVERNAME: $JOOMLAREMOVE"</li><br>"
+if [ $SERVERNAME = $HOSTNAME ]
+then
+[ -d /var/www/html/joomla ] && rm -f -R /var/www/html/joomla
+/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
+#Get root mysql password
+MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
+mysqladmin -f --password=$MYSQLPASS drop joomla 1>/dev/null 2>/dev/null
+else
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+[ -d /var/www/html/joomla ] && rm -f -R /var/www/html/joomla
+/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
+#Get root mysql password
+MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
+mysqladmin -f --password=$MYSQLPASS drop joomla 1>/dev/null 2>/dev/null
+'
+fi
+#Unflag server
+echo "<li>"$SERVERNAME: $JOOMLAMSG - $UNFLAGMSG"</li><br>"
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/joomlaserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/joomlaserver
+completed
+fi
+
+##########################
+#radioserver
+#Unflags this server from using joomla. Deletes all joomla files and the joomla database.
+##########################
+
+if [ $MODULE = radioserver ]
+then
+echo "<li>"$SERVERNAME: $RADIOREMOVE"</li><br>"
+if [ $SERVERNAME = $HOSTNAME ]
+then
+#Stop icecast server
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/icecast_stop
+#Stop icecast server from running on boot
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/icecast 2>/dev/null
+else
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+#Stop icecast server
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/icecast_stop
+#Stop icecast server from running on boot
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/icecast 2>/dev/null
+'
+fi
+#Unflag server
+echo "<li>"$SERVERNAME: $RADIOSERVERMSG - $UNFLAGMSG"</li><br>"
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/radioserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/radioserver
+[ -f /opt/karoshi/server_network/radioserver ] && rm -f /opt/karoshi/server_network/radioserver
+completed
+fi
+
+##########################
+#radioserver
+#Unflags this server from using joomla. Deletes all joomla files and the joomla database.
+##########################
+
+if [ $MODULE = remote_ssh ]
+then
+echo "<li>"$SERVERNAME: $SSHACCESSREMOVE"</li><br>"
+#Change firewall rules to stop ssh access
+MODCHECK=`grep -c pdc_ssh_rule /etc/shorewall/rules`
+if [ $MODCHECK != 0 ]
+then
+LINENUM=`grep -n '#pdc_ssh_rule' /etc/shorewall/rules | cut -d: -f1`
+sed -i $LINENUM'd' /etc/shorewall/rules
+#Restart shorewall
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
+sleep 0.5
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
+fi
+#Unflag server
+echo "<li>"$SERVERNAME: $SSHACCESSMSG - $UNFLAGMSG"</li><br>"
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/remote_ssh ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/remote_ssh
+completed
+fi
+
+
+##########################
+#moodleserver
+#Unflags this server as a moodle server. Deletes all moodle files and the moodle database.
+##########################
+
+if [ $MODULE = moodleserver ]
+then
+echo "<li>"$SERVERNAME: $MOODLEREMOVE"</li><br>"
+if [ $SERVERNAME = $HOSTNAME ]
+then
+[ -d /var/www/html/moodle ] && rm -f -R /var/www/html/moodle
+[ -d /var/www/moodle-data ] && rm -f -R /var/www/moodle-data
+
+[ -f /opt/karoshi/cronjobs/jobs/refresh_moodle.cron ] && rm -f /opt/karoshi/cronjobs/jobs/refresh_moodle.cron
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+
+/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
+#Get root mysql password
+MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
+mysqladmin -f --password=$MYSQLPASS drop moodle 1>/dev/null 2>/dev/null
+else
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+[ -d /var/www/html/moodle ] && rm -f -R /var/www/html/moodle
+[ -d /var/www/moodle-data ] && rm -f -R /var/www/moodle-data
+
+[ -f /opt/karoshi/cronjobs/jobs/refresh_moodle.cron ] && rm -f /opt/karoshi/cronjobs/jobs/refresh_moodle.cron
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+
+/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
+#Get root mysql password
+MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
+mysqladmin -f --password=$MYSQLPASS drop moodle 1>/dev/null 2>/dev/null
+'
+fi
+#Unflag server
+echo "<li>"$SERVERNAME: $MOODLESERVERMSG - $UNFLAGMSG"</li><br>"
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/moodleserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/moodleserver
+[ -f /opt/karoshi/server_network/moodleserver ] && rm -f /opt/karoshi/server_network/moodleserver
+completed
+fi
+
+##########################
+#ocsserver
+#Unflags this server as an OCS server. Deletes all OCS files and the OCS database.
+##########################
+
+if [ $MODULE = ocsserver ]
+then
+echo "<li>"$SERVERNAME: $OCSREMOVE"</li><br>"
+
+[ -d /var/www/html_karoshi/admin/ocs ] && rm -f -R /var/www/html_karoshi/admin/ocs
+[ -d /var/www/html_karoshi/tech/ocs ] && rm -f -R /var/www/html_karoshi/tech/ocs
+
+if [ $SERVERNAME = $HOSTNAME ]
+then
+[ -d /usr/share/ocsinventory-reports ] && rm -f -R /usr/share/ocsinventory-reports
+[ -f /etc/httpd/conf.d/z-ocsinventory-server.conf ] && em -f /etc/httpd/conf.d/z-ocsinventory-server.conf
+[ -f /etc/httpd/conf.d/ocsinventory-reports.conf ] && em -f /etc/httpd/conf.d/ocsinventory-reports.conf
+[ -f /etc/apache2/conf.d/z-ocsinventory-server.conf ] && rm -f /etc/apache2/conf.d/z-ocsinventory-server.conf
+[ -f /etc/apache2/conf.d/ocsinventory-reports.conf ] && rm -f /etc/apache2/conf.d/ocsinventory-reports.conf
+
+/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
+#Get root mysql password
+MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
+mysqladmin -f --password=$MYSQLPASS drop ocsweb 1>/dev/null 2>/dev/null
+#Restart apache
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null
+sleep 0.5
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
+else
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+[ -d /usr/share/ocsinventory-reports ] && rm -f -R /usr/share/ocsinventory-reports
+[ -f /etc/httpd/conf.d/z-ocsinventory-server.conf ] && em -f /etc/httpd/conf.d/z-ocsinventory-server.conf
+[ -f /etc/httpd/conf.d/ocsinventory-reports.conf ] && em -f /etc/httpd/conf.d/ocsinventory-reports.conf
+[ -f /etc/apache2/conf.d/z-ocsinventory-server.conf ] && rm -f /etc/apache2/conf.d/z-ocsinventory-server.conf
+[ -f /etc/apache2/conf.d/ocsinventory-reports.conf ] && rm -f /etc/apache2/conf.d/ocsinventory-reports.conf
+/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
+#Get root mysql password
+MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
+mysqladmin -f --password=$MYSQLPASS drop ocsweb 1>/dev/null 2>/dev/null
+#Restart apache
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null
+sleep 0.5
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
+'
+fi
+#Unflag server
+echo "<li>"$SERVERNAME: $OCSSERVERMSG - $UNFLAGMSG"</li><br>"
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/ocsserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/ocsserver
+[ -f /opt/karoshi/server_network/ocs_server ] && rm -f /opt/karoshi/server_network/ocs_server
+#Remove ocs item from the web management menu
+sed -i 's/OCSCTRL=yes/OCSCTRL=no/g' /opt/karoshi/web_controls/generate_navbar_admin
+completed
+fi
+
+##########################
+#printserver
+#Unflags this server as a print server.Stops cups on the server.
+##########################
+
+if [ $MODULE = printserver ]
+then
+echo "<li>"$SERVERNAME: $PRINTREMOVE"</li><br>"
+if [ $SERVERNAME = $HOSTNAME ]
+then
+#Stop Cups
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/cups_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/cups
+else
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+#Stop Cups
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/cups_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/cups
+'
+fi
+#Unflag server
+echo "<li>"$SERVERNAME: $PRINTSERVERMSG - $UNFLAGMSG"</li><br>"
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/printserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/printserver
+[ -f /opt/karoshi/server_network/printserver ] && rm -f /opt/karoshi/server_network/printserver
+
+#Remove printing item from the web management menu
+sed -i 's/PRINTERCTRL=yes/PRINTERCTRL=no/g' /opt/karoshi/web_controls/generate_navbar_admin
+sed -i 's/PRINTERCTRL=yes/PRINTERCTRL=no/g' /opt/karoshi/web_controls/generate_navbar_tech
+sed -i 's/PRINTERCTRL=yes/PRINTERCTRL=no/g' /opt/karoshi/web_controls/generate_navbar_staff
+completed
+fi
+
+##########################
+#squid
+#Unflags this server as an Internet Proxy server. Stops squid and dansguardian from running on the server.
+##########################
+if [ $MODULE = squid ]
+then
+echo "<li>"$SERVERNAME: $SQUIDREMOVE"</li><br>"
+if [ $SERVERNAME = $HOSTNAME ]
+then
+#Stop squid and dansguardian
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dansguardian_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/squid
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/dansguardian
+
+[ -f /opt/karoshi/cronjobs/jobs/restart_dansguardian.cron ] && rm -f /opt/karoshi/cronjobs/jobs/restart_dansguardian.cron
+[ -f /opt/karoshi/cronjobs/jobs/internet_log_gen.cron ] && rm -f /opt/karoshi/cronjobs/jobs/internet_log_gen.cron
+[ -f /opt/karoshi/cronjobs/jobs/internet_log_compress.cron ] && rm -f /opt/karoshi/cronjobs/jobs/internet_log_compress.cron
+[ -f /opt/karoshi/cronjobs/jobs/dgupdatefilterlist.cron ] && rm -f /opt/karoshi/cronjobs/jobs/dgupdatefilterlist.cron
+[ -f /opt/karoshi/cronjobs/jobs/archive_internet_logs.cron ] && rm -f /opt/karoshi/cronjobs/jobs/archive_internet_logs.cron
+
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+
+else
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+#Stop squid and dansguardian
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dansguardian_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/squid
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/dansguardian
+
+[ -f /opt/karoshi/cronjobs/jobs/restart_dansguardian.cron ] && rm -f /opt/karoshi/cronjobs/jobs/restart_dansguardian.cron
+[ -f /opt/karoshi/cronjobs/jobs/internet_log_gen.cron ] && rm -f /opt/karoshi/cronjobs/jobs/internet_log_gen.cron
+[ -f /opt/karoshi/cronjobs/jobs/internet_log_compress.cron ] && rm -f /opt/karoshi/cronjobs/jobs/internet_log_compress.cron
+[ -f /opt/karoshi/cronjobs/jobs/dgupdatefilterlist.cron ] && rm -f /opt/karoshi/cronjobs/jobs/dgupdatefilterlist.cron
+[ -f /opt/karoshi/cronjobs/jobs/archive_internet_logs.cron ] && rm -f /opt/karoshi/cronjobs/jobs/archive_internet_logs.cron
+
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+'
+fi
+#Unflag server
+echo "<li>"$SERVERNAME: $SQUIDSERVERMSG - $UNFLAGMSG"</li><br>"
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/squid ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/squid
+[ -f /opt/karoshi/server_network/proxyserver ] && rm -f /opt/karoshi/server_network/proxyserver
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/apt-cacher-ng ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/apt-cacher-ng
+completed
+fi
+
+##########################
+#monitoring
+#Unflags this server as a monitor server. Stops mon from running.
+##########################
+if [ $MODULE = monitoring ]
+then
+echo "<li>"$SERVERNAME: $MONREMOVE"</li><br>"
+if [ $SERVERNAME = $HOSTNAME ]
+then
+#Stop mon
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/mon
+
+[ -f /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop ] && rm -f /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop
+
+[ -f /opt/karoshi/cronjobs/jobs/gen_status.cron ] && rm -f /opt/karoshi/cronjobs/jobs/gen_status.cron
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+
+else
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/mon
+
+[ -f /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop ] && rm -f /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop
+
+[ -f /opt/karoshi/cronjobs/jobs/gen_status.cron ] && rm -f /opt/karoshi/cronjobs/jobs/gen_status.cron
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+
+'
+fi
+#Unflag server
+echo "<li>"$SERVERNAME: $MONITORSERVERMSG - $UNFLAGMSG"</li><br>"
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/monitoring ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/monitoring
+[ -f /opt/karoshi/server_network/monitoringserver ] && rm -f /opt/karoshi/server_network/monitoringserver
+
+#Remove mon entry from the web management
+sed -i 's/MONITORINGCTRL=yes/MONITORINGCTRL=no/g' /opt/karoshi/web_controls/generate_navbar_admin
+sed -i 's/MONITORINGCTRL=yes/MONITORINGCTRL=no/g' /opt/karoshi/web_controls/generate_navbar_tech
+completed
+fi
+
+##########################
+#fileserver
+#Unflags this server as a file server. Re-maps any groups using this server back to the main server.
+##########################
+if [ $MODULE = fileserver ]
+then
+echo "<li>"$SERVERNAME: $FILESERVREMOVE"</li><br>"
+
+#Change group information
+for GROUPFILES in /opt/karoshi/server_network/group_information/*
+do
+GROUPFILE=`basename $GROUPFILES`
+sed -i 's/'$SERVERNAME'/'$HOSTNAME'/g' /opt/karoshi/server_network/group_information/$GROUPFILE
+done
+#Change drive mapping
+sed -i 's/'$SERVERNAME'/'$HOSTNAME'/g' /var/lib/samba/netlogon/groups.txt
+
+#Unflag server
+echo "<li>"$SERVERNAME: $FILESERVERMSG - $UNFLAGMSG"</li><br>"
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/fileserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/fileserver
+completed
+fi
+
+
+if [ $MODULE = REMOVESERVER ]
+then
+echo "<li>"$SERVERNAME: $SERVERREMOVE"</li><br>"
+
+#Change group information
+for GROUPFILES in /opt/karoshi/server_network/group_information/*
+do
+GROUPFILE=`basename $GROUPFILES`
+sed -i 's/'$SERVERNAME'/'$HOSTNAME'/g' /opt/karoshi/server_network/group_information/$GROUPFILE
+done
+#Change drive mapping
+sed -i 's/'$SERVERNAME'/'$HOSTNAME'/g' /var/lib/samba/netlogon/groups.txt
+
+#Unflag server
+echo "<li>"$SERVERNAME: $UNFLAGMSG"</li><br>"
+[ -d /opt/karoshi/server_network/servers/$SERVERNAME ] && rm -f -R /opt/karoshi/server_network/servers/$SERVERNAME
+[ -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME
+[ -f /opt/karoshi/server_network/ldap_clients/$SERVERNAME ] && rm -f /opt/karoshi/server_network/ldap_clients/$SERVERNAME
+#Remove backup server
+[ -f /opt/karoshi/server_network/backup_servers/servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/backup_servers/servers/$SERVERNAME
+#Check to see if any other servers are backing up to this server
+if [ -d /opt/karoshi/server_network/backup_servers/backup_settings/ ]
+then
+if [ `grep -l -w $SERVERNAME -R /opt/karoshi/server_network/backup_servers/backup_settings/* | wc -l` -gt 0 ]
+then
+for BACKUP_CLIENTS in `grep -l -w $SERVERNAME -R /opt/karoshi/server_network/backup_servers/backup_settings`
+do
+BACKUP_CLIENT=`echo $BACKUP_CLIENTS | cut -d/ -f7`
+rm -f $BACKUP_CLIENTS
+echo "<li>"$BACKUP_CLIENT: $BACKUPDISABLEDMSG"</li><br>"
+echo `date`: karoshi_servers_remove_role - $BACKUP_CLIENT backup disabled by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+done
+fi
+fi
+completed
+fi
+##########################
+#ldapserver
+#Unflags this server as a slave ldap server. Stops ldap from running and turns of ldap authentication on the server.
+##########################
+if [ $MODULE = ldapserver ]
+then
+echo "<li>"$SERVERNAME: $LDAPREMOVE"</li><br>"
+
+#Unflag server
+echo "<li>"$SERVERNAME: $UNFLAGMSG"</li><br>"
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/ldapserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/ldapserver
+[ -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME
+
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ldap_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/ldap
+sed -i "s/files ldap/files/g" /etc/nsswitch.conf
+'
+completed
+fi
+
+#Unflag server
+echo "<li>"$SERVERNAME: $UNFLAGMSG"</li><br>"
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/$MODULE ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/$MODULE
+
+completed
+

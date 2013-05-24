@@ -1,0 +1,17 @@
+#!/bin/bash
+#softwareinstall
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/remotemanagement/remotemanagementsoftware
+
+#######################
+#allow htaccess in certain folders
+#######################
+
+DIRCOUNT=`grep -c /var/www/html/vnc $HTTPDCONFPATH`
+if [ $DIRCOUNT = 0 ]
+then
+echo '<'Directory '"'/var/www/html/vnc'"''>' >> $HTTPDCONFPATH
+echo AllowOverride Limit >> $HTTPDCONFPATH
+echo '<'/Directory'>' >> $HTTPDCONFPATH
+/etc/init.d/$APACHEVER restart
+fi

@@ -1,0 +1,120 @@
+#!/bin/bash
+#Copyright (C) 2007  The karoshi Team
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_process_cgi
+then
+echo `date`: remote_management_process - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_process_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_process.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $remote_management_process_cgi'check' ]
+then
+echo `date`: remote_management_process - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 1 ]
+then
+echo `date`: remote_management_edit2 - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo $* | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | cut -s -d: -f3`
+USERNAME=`echo $* | cut -s -d: -f4`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: remote_management_edit2 - Not called by remote_management_process.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: remote_management_edit2 - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: remote_management_edit2 - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: remote_management_edit2 - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+[ ! -f /opt/karoshi/web_controls/remote_management_users ] && ( touch /opt/karoshi/web_controls/remote_management_users ; chmod 0600 /opt/karoshi/web_controls/remote_management_users )
+
+if [ `grep -c ^$USERNAME: /opt/karoshi/web_controls/remote_management_users` != 1 ]
+then
+echo `date`: remote_management_edit2 - $USERNAME does not exist "for" $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+REMOTE_USER_LINE=`grep -n ^$USERNAME: /opt/karoshi/web_controls/remote_management_users | cut -d: -f1`
+
+REMOTE_USER_DATA=`sed -n $REMOTE_USER_LINE,$REMOTE_USER_LINE'p' /opt/karoshi/web_controls/remote_management_users`
+FORENAME=`echo $REMOTE_USER_DATA | cut -d: -f2`
+SURNAME=`echo $REMOTE_USER_DATA | cut -d: -f3`
+JOBTITLE=`echo $REMOTE_USER_DATA | cut -d: -f4`
+PRIADMIN=`echo $REMOTE_USER_DATA | cut -d: -f5`
+ADMINLEVEL=`echo $REMOTE_USER_DATA | cut -d: -f6`
+CHECKED=""
+if [ $PRIADMIN'null' != null ]
+then
+if [ $PRIADMIN = yes ]
+then
+CHECKED=checked'=''"'checked'"'
+fi
+fi
+if [ $TCPIPRESTRICTION'null' = null ]
+then
+TCPIPRESTRICTION=$NOMSG
+fi
+echo '<b>Edit a Remote Management User</b><br><br>'
+echo '<input type="hidden" name="____USERNAME____" value="'$USERNAME'">'
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+echo '<td style="width: 180px;">Username</td>'
+echo '<td>'$USERNAME'</td></tr>'
+echo '<tr><td>Job Title</td>'
+echo '<td><input value="'$JOBTITLE'" name="____JOBTITLE____" size="20"></td></tr>'
+echo '<tr><td>Forename</td><td><input name="____FORENAME____" value="'$FORENAME'" size="20"></td></tr>'
+echo '<tr><td>Surname</td><td><input name="____SURNAME____" value="'$SURNAME'" size="20"></td></tr>'
+echo '<tr><td>Password</td><td><input name="____PASSWORD1____" size="20" type="password"></td></tr>'
+echo '<tr><td>Confirm</td><td><input name="____PASSWORD2____" size="20" type="password"></td></tr>'
+echo '<tr><td>Access Level</td><td><select name="____PRIMARYADMIN____"><option>'$ADMINLEVEL'</option><option>1</option><option>2</option><option>3</option></select></td></tr>'
+echo '</tbody></table>'
+
+exit

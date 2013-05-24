@@ -1,0 +1,105 @@
+#!/bin/bash
+#setupssh
+#Copyright (C) 2004  Paul Sharrad
+#Copyright (C) 2005  The karoshi Team
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aloughlin@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+[ -d $HOME/.tempdata ] || mkdir $HOME/.tempdata
+source /opt/karoshi/serversetup/variables/language
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/variables/tcpip
+source /opt/karoshi/serversetup/language/$LANGCHOICE/extra_server/setupssh
+source /opt/karoshi/serversetup/language/$LANGCHOICE/softwareinstall
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/extra_server/software
+
+#########################
+#Add log entry
+#########################
+echo '##############'setupssh'##############' >> /opt/karoshi/serversetup/install_log
+date >> /opt/karoshi/serversetup/install_log
+touch /opt/karoshi/serversetup/setuplog
+if [ `grep -c "$TITLE" /opt/karoshi/serversetup/setuplog` = 0 ]
+then
+echo setupssh:$TITLE:/opt/karoshi/serversetup/extra_server/scripts/setupssh >> /opt/karoshi/serversetup/setuplog
+chmod 0600 /opt/karoshi/serversetup/setuplog
+fi
+
+#Create ssh folder
+[ ! -d /root/.ssh ] && mkdir /root/.ssh
+chmod 0700 /root/.ssh
+
+#############################
+#copy in config file
+#############################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ssh_stop
+mv /etc/ssh/sshd_config /etc/ssh/sshd_configbackup
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/extra_server/configfiles/sshd_config /etc/ssh/
+sleep .5
+#Generate keys
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/extra_server/scripts/generate_ssh_keys
+
+#Check that timeout has been set
+TIMEOUTSTATUS=`grep -c '#''   'ConnectTimeout' '0 /etc/ssh/ssh_config`
+if [ $TIMEOUTSTATUS != 0 ]
+then
+sed -i 's/#   ConnectTimeout 0/ConnectTimeout 4/g' /etc/ssh/ssh_config
+fi
+#Check that StrictHostkeychecking is set to no
+HOSTKEYSTATUS=`grep -c '#''   'StrictHostKeyChecking' 'ask /etc/ssh/ssh_config`
+if [ $HOSTKEYSTATUS != 0 ]
+then
+sed -i 's/#   StrictHostKeyChecking ask/StrictHostKeyChecking no/g' /etc/ssh/ssh_config
+fi
+
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ssh_start
+
+#############################
+#Ensure that ssh is running on boot
+#############################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/ssh
+
+######################
+#Open port on shorewall for the pdc only
+######################
+MODCHECK=`grep -c ACCEPT'	'net:$PDC'	'fw'	'tcp'	'22'	'- /etc/shorewall/rules`
+if [ $MODCHECK = 0 ]
+then
+LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+sed $LINENUM'c'\ACCEPT'	'net:$PDC'	'fw'	'tcp'	'22'	'-'#'pdc_ssh_rule /etc/shorewall/rules > /etc/shorewall/rulestemp
+rm -f /etc/shorewall/rules
+mv /etc/shorewall/rulestemp /etc/shorewall/rules
+echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+######################
+#Restart shorewall
+######################
+/etc/init.d/$SHOREWALLVER restart 
+fi
+
+######################
+#Add ssh line to hosts.allow
+######################
+MODCHECK=`grep -c sshd':' /etc/hosts.allow`
+if [ $MODCHECK = 0 ]
+then
+echo sshd: 127.0.0.1 , $PDC >> /etc/hosts.allow
+fi
+exit
+

@@ -1,0 +1,186 @@
+#!/bin/bash
+#Copyright (C) 2010 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/windows_machine_commands_cgi
+then
+echo `date`: windows_machine_commands - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/windows_machine_commands_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/windows_machine_commands.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $windows_machine_commands_cgi'check' ]
+then
+echo `date`: windows_machine_commands - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: windows_machine_commands - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\+%-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: windows_machine_commands - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+SERVER=`echo "$DATA" | cut -s -d: -f4`
+COMMAND=`echo "$DATA" | cut -s -d: -f5`
+OPTIONS=`echo "$DATA" | cut -s -d: -f6`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: windows_machine_commands - Not called by windows_machine_commands.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: windows_machine_commands - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: windows_machine_commands - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVER'null' = null ]
+then
+echo `date`: windows_machine_commands - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $COMMAND'null' = null ]
+then
+echo `date`: windows_machine_commands - Blank command by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: windows_machine_commands - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+echo `date`: windows_machine_commands - running $COMMAND $OPTIONS user $USERNAME on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+
+#Run the command
+function windows_commands {
+#Shutdown
+if [ $COMMAND = shutdown ]
+then
+net rpc shutdown -C "Remote Shutdown" -f -I $TCPIP -W "" -U "$ADMINUSER"%"$PASSWORD" 2>&1
+fi
+
+#Restart
+if [ $COMMAND = restart ]
+then
+
+net rpc shutdown -C "Remote Restart" -f -r -I $TCPIP -W "" -U "$ADMINUSER"%"$PASSWORD" 2>&1
+fi
+
+#Abort shutdown
+if [ $COMMAND = abortshutdown ]
+then
+net rpc abortshutdown -I $TCPIP -W "" -U "$ADMINUSER"%"$PASSWORD" 2>&1
+fi
+
+#startservice
+if [ $COMMAND = startservice ]
+then
+net rpc service start "$OPTIONS" -W "" -I $TCPIP -U "$ADMINUSER"%"$PASSWORD" 2>&1
+fi
+
+#stopservice
+if [ $COMMAND = stopservice ]
+then
+net rpc service stop "$OPTIONS" -W "" -I $TCPIP -U "$ADMINUSER"%"$PASSWORD" 2>&1
+fi
+
+#servicestatus
+if [ $COMMAND = servicestatus ]
+then
+net rpc service status "$OPTIONS" -W "" -I $TCPIP -U "$ADMINUSER"%"$PASSWORD" 2>&1
+fi
+
+#showprinters
+if [ $COMMAND = showprinters ]
+then
+net rpc printer -W "" -I $TCPIP -U "$ADMINUSER"%"$PASSWORD" 2>&1
+fi
+
+#showshares
+if [ $COMMAND = showshares ]
+then
+net rpc share -W "" -I $TCPIP -U "$ADMINUSER"%"$PASSWORD" 2>&1
+fi
+
+#showfiles
+if [ $COMMAND = showfiles ]
+then
+net rpc file -W "" -I $TCPIP -U "$ADMINUSER"%"$PASSWORD" 2>&1
+fi
+}
+
+function get_server_info {
+TCPIP=`sed -n 1,1p /opt/karoshi/server_network/windows_servers/$SERVER/tcpip`
+
+WINDUSERDETAILS=`cat /opt/karoshi/server_network/windows_servers/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/windows_servers/$SERVER/connection_details.gpg 2>/dev/null`
+ADMINUSER=`echo $WINDUSERDETAILS | cut -d, -f1`
+PASSWORD=`echo $WINDUSERDETAILS | cut -d, -f2`
+}
+
+if [ $SERVER != allservers ]
+then
+echo '<b>'$SERVER'</b><br>'
+get_server_info
+windows_commands
+else
+for SERVERS in /opt/karoshi/server_network/windows_servers/*
+do
+SERVER=`basename $SERVERS`
+echo '<b>'$SERVER'</b><br>'
+get_server_info
+windows_commands
+done
+fi
+
+echo '</pre>'
+exit
+

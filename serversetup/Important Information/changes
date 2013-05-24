@@ -1,0 +1,570 @@
+############################
+#Changes for Project V6.0
+############################
+
+All user data is now stored in ldap.
+
+Karoshi web management added allowing administration of the Karoshi servers through a web browser. The web management is accessed from https://172.30.0.2:2001 for internal access or https://172.30.0.2:3001 for external access using a client key which has to be imported into the web browser. This has involved a complete re-write of all of the Karoshi administration tools.
+
+Karoshi modules have been added to the system section of the web management. This makes the standard setup faster and means that the servers only use the features needed. Current modules are moodle, joomla, email, and sslbridge.
+
+############################
+#Changes for Project V5.1.3
+############################
+
+Remastered on the latest version of PCLinuxOS
+
+Cronjobs now stored in /opt/karoshi/cronjobs/jobs with file extension .cron . Script provided to merge all files.cron in jobs folder to /opt/karoshi/cronjobs/masterschedule.cron. An icon to karoshi cron controls has been added into the karoshi system management area.
+
+Copyfilestoall added. This allows you to copy files to a group of users. Please use with care.
+
+Tidystudentfiles added. This is a provision that allows you to delete named files from all student accounts. This can be scheduled to run every day.
+
+Clamwin support provided for windows clients with data files updated on PDC via a daily cronjob.
+
+SSlbridge web file access added to allow users to get access to their files via a web browser through an ssl connection.
+
+Joomla upgraded to 1.0.12
+
+Websitebaker updated to 2.6.5
+
+Egroupware upgraded to 1.2.106-2
+
+Squirrelmail upgraded to 1.4.9a
+
+Moodle upgraded to 1.7.2
+
+Main control panels changed to use ruby so that all features can be seen at a glance.
+
+Desktop independance gained by changing from konsole to xterm and adding a distro variable for the filemanager.
+
+Network Configure scripts changed to check to see if default DNS server is up. If not the DNS defaults to either the server's own IP or the PDC's ip.
+
+karoshi user - home path changed to /opt/karoshi/karoshi_user
+
+Supplementary Groups
+
+By default all new users created apart from officestaff and itadmin do not belong to any supplementary groups. This mainly affects the temparea.
+
+Network backups
+
+The new version has changes so that:
+
+Backups are kept in current, father, grandfather, and greatgrandfather folders to simplify rotation.
+
+The script backs up a server in one go without having to schedule loads of different scripts like before. This should give higher capacity since all of the archives are being created back to back.
+
+No need to change backup script at the start of a new academic year as the script does it automatically. The start of the academic year and the total duration of schooling in years is set at initial setup.
+
+It automatically detects if it is a user area that is being backed up and if so creates individual compressed backup archives for each user in that group.
+
+Two log files are kept, one contains times of all backups including individual times for each user archive created and if it was a full or incremental backup. The other file is an error file for any tar or network errors that might occur. The log files are automatically rotated if they get too big.
+
+Quota support added. This can be applied to either individual users or groups of users. Quotas are assigned on a per server basis.
+
+Linux Client startup scripts modified. Printer setup, software install, system config is now in a separate file rather than one big file. These scripts are updated from the PDC at client startup.
+
+LTSP servers DNS setting changed to default to 172.30.0.2 instead of 172.30.0.1. If DNS is not available on 172.30.0.1 to LTSP servers then LTSP clients do not function correctly (clients get a grey box when they boot up).
+
+Hal - Setup internet fixed so that console box does not appear unless squid is already running, and it also closes correcty without manual intervention.
+
+Trailing newline fixed in httpd.conf. This caused apache to stop running if remote management was setup.
+
+Karoshi extraction from cd improved to stop problems when overwriting an extisting setup. This would fail if a folder on the older version had become a file of the same name in the newer version.
+
+Bulk user creation - now offers two formats for usernames
+the karoshi default first-initial surname yearofentry and surname first-initial yearofentry
+eg
+jjones06
+jonesj06
+
+Xen edit DHCP changed to edit /opt/karoshi/serversetup/distro/$DISTROCHOICE/xen/configfiles/dhcpd.conf. This ensures that any extras added via the ltsp controls are not lost.
+
+############################
+#Changes for Project V5.1.2
+############################
+
+Added ltsp support for up to 100 ltsp servers. By default these use tcpip numbers 172.30.1.1 to 172.30.1.100. LTSP001 is the default ltsp server for the network. Clients can be assigned to LTSP002 to LTSP100 by adding mac addresses in the client menu on the PDC. Mac addresses can also be auto detected from the dhcp logs. The client ltsp mac addresses are assigned to logical groups which can then be assigned to the actual LTSP servers. There is also an option to transfer mac addresses to different groups.
+
+Colossus - Egroupware added. This can be accessed from http://colossus/egroupware
+
+Hal - Dansguardian now has two filter groups - students and staff. The staff filtering by default is more relaxed. The filter scripts have been altered to support these groups so that sites can be banned for either or both groups.
+Hal - SOS Helpdesk added - thanks Andrew.
+
+Cron scripts fixed so that cron jobs run correctly. Karoshi patch feature added which gets patches from the karoshi website.
+
+Backup setup now has an auto option that creates and schedules all standard backup areas for the server the script is running on.
+
+Xen Client Management now split into three sections - all, Linux, and Windows. Linux client section now has client software install list and ability to change the mirrors for the clients.
+setuponlineclassroom, setupjoomla, setupwebsite, setupwebsitebakermrbs install scripts modified so that if the mysql password has not been set it does not prompt you for a password.
+
+Colossus mail setup fixed (If it was setup using with a domain name starting with mail. postfix main.cf was incorrectly edited with mail.mail.)
+Hal now has seperate filtering for students and staff.
+############################
+#Changes for Project V5.1.1
+############################
+New server added - tranquillity. This server carries out monitoring of all the other servers to check that systems are running using mon. Data is displayed via apache.
+
+Current monitoring: ping, samba, http, https, imap, imaps, pop, pops, smtp, dansguardian, dns
+Current alarms: File and audible alarms.
+Future alarms: Mon can do email and sms messages. This will be investigated for future versions.
+
+KS3 testing server allocated an ip and name (Vincent 172.30.0.15)
+
+Network diagram altered to show Tranquillity and Vincent.
+
+############################
+#Changes for Project V5.1
+############################
+
+PCLinuxOS remastered with all software and Karoshi pre-installed
+
+Kixstart printing support added for laptops.
+
+Rejoin domain function added. This allows a server to be rejoined to the domain in the unlikely event that there is a problem with the machine account.
+
+Add Internet connection feature added so that karoshi can be run using its standard IP numbers and also use an internet connection in a different range.
+
+Single server option added that allows all servers to be run from xen
+
+Support for joomla added
+
+Setup Colossus modified with a choice of websites to install
+
+Initial support for pclinuxos added
+
+Skynet Printing can now be controlled from xen via ssh.
+
+Printing for windows clients is now automated with cupaddsmb on skynet or xen. Drivers are created automatically and installed and mapped via kixtart. 
+
+Install is now logged to /opt/karoshi/install_log
+
+Individual scripts from the standard setup can now be re-run
+
+SSH Timeout set to 4
+
+Login scripts now run using kixtart which also sets permisions on the windows clients
+
+CDROM path detection changed so that it detects any CDROM path
+
+Bulk User Creation improved with MD5 checks and ability to create users on Colossus if ssh is enabled.
+
+Colossus and Cassandra moodle upgraded to version 1.6
+
+Setup remote management
+Extra checks added to data input for tcpip and mac address entry.
+
+Four files added to /usr/bin which can be run in a console with kde for bug tracking.
+karoshihelp - show the commands below
+karoshi - runs karoshimanagement
+karoshisetup shows the karoshi setup menu for the installed server
+karoshiserver shows the global karoshi setup menu
+
+Karoshi installer now corrects problems if a user called karoshi has already been created.
+
+New server added.
+Cassandra is designed to run moodle only, and takes the load off colossus for large schools. Cassandra authenticates all users and passwords from colossus.
+
+Karoshi install path changed to /opt/karoshi
+
+No need to login as root to install Karoshi. Standard setup is done using any user. Extra features are installed from the karoshi management user.
+
+Update karoshi Tools feature added to allow easy updating of Karoshi scripts.
+
+Serversetup can now be run from the Karoshi Management user.
+
+Website Baker and mrbs (room booking) install script added. Website Baker is pre setup with users for each subject department and these users only have the permissions to modify their own departmental web pages. Mrbs uses the website baker database for authentication but this can eb changed in the config file if needed. 
+
+Features setup of the Karoshi installation can now be done as the Karoshi management user.
+
+Remote Management now has choice of resolutions - 1280-1024 is optimum.
+
+Xen now has option to do printing. If Printer Management is picked from the main menu then it will install cups if not already installed and add a printer share to the samba configuration file if it doesnt already exist.
+
+setup samba scripts now use exit codes to detect if they have been successful.
+
+smb.conf bug fixed on xen
+
+Support for kanotix added
+
+Wake on lan. Wakelan scripts modifed to give a 2 second delay on starting up each computer per room to avoid power surges.
+
+Karoshi management script now adds path command to solve path problem when using sudo.
+
+Installer changed so that disto is asked before xdialog is installed. This was due to debian and kubuntu needing different xdialog versions.
+
+Shutdown facility added to all servers. Allows you to shutdown the server with an optional time delay.
+
+Remote windows software installation via wpkg
+
+wpkg support added. Scripts search for msi files and auto create config files for wpkg. This only supports the default wpkg profile at the moment. Wpkg profile support will be added later.
+This can be run on any Karoshi server. The script will setup wpkg if needed including adding an extra share to the samba config. The wpkg share is acccessible by the itadmin group and the local administrator user of the windows client. The administrator user has read only guest access to the share. N.B. It is inportant that a user called administrator does not exist on the karoshi network otherwise the windows client will not be able to connect without using a password.
+
+All servers - Backup Setup - This now logs each archive in its own text file rather than one big log file for each backup. This makes it much easier to know which archive a users work is in.
+
+Karoshi Management User now uses sudo no excuses for logging in as root.
+
+Remote Management - Icons tidied. Script altered so that shorewall only restarts if tcp or mac restrictions are changed.
+
+Xen-Icons tidied up - Scripts created to index each set of functions rather than relying on icons.
+
+Xen -addnewuser and changepassword - now prompt if usessh has not been setup.
+
+xen - examaccounts. Permission bug fixed on /home/users/exams folder which stopped exam accounts accessing this area. NB This only affected Karoshi systems older than v5.0.1 that had upgraded to this version. New installs of v5.0.1 would not have this problem. Exam archive folder creation changed in /home/staffshare/examfiles/ so that colons are not used in the name. This was causing problems on windows clients which were treating the name like an 8.3 file system with a ~. The logic has also been improved so that cancel buttons now return to the main menu rather than closing the program.
+
+############################
+#Changes for Project V5.0.1
+############################
+Extrafileserver - Incorrect language on software installation fixed.
+Remotemanagement - Fixed shorewall bug - this only affected admins deciding not to restrict vnc to a tcpip number or mac address.
+############################
+#Changes for Project V5.0.1.RC.3
+############################
+Colossus setupsquirrelmail and setuponlineclassroom added to the standard setup.
+setuponlineclassroom now runs change mysql password script if the root mysql password is not set.
+Change email/elearning password added to the windows and linux desktop. This was supposed to be running the new change password utility but this is not working on the 64bit mandriva distro.
+
+############################
+#Changes for Project V5.0.1.RC.2
+############################
+Setupcolossus - changemysqlpassword bug fixed - Was trying to run a non existent script.
+Help button added to setupsquirrelmail pop3 section.
+
+Change password utility added to colossus so that users dont have to use usermin to change passwords. This can be accessed from http://colossus.internal/cgi-bin/changepassword.cgi
+
+############################
+#Changes for Project V5.0.1.RC.1
+############################
+Serverselection now shows the karoshi version.
+colossus setupsamba fixed - two xdialog typos in infoboxes.
+Change mysql password entry added for colossus in features setup.
+Most "useful scripts" for xen now have help buttons.
+
+############################
+#Changes for Project V5.0.1
+############################
+
+New Feature - remote management for all servers
+
+This requires apache to be running on the servers and lets a client computer manage it through a standard web browser provided java is installed. Remote management can be restricted to certain ip numbers or mac addresses.
+
+All scripts now get TPCPIP numbers and subnet from serversetup/variables/tcpip
+
+Installation simplified with a standard setup
+
+FreeMIS 
+New feature - FreeMIS is a MIS for schools for reports and targeting. (Kubuntu only so far - working on the Mandriva version at the moment)
+
+Xen
+
+Installation creates 120 exam accounts with random passwords. Accounts are also disabled by the script, and nust be enabled before being used.
+
+Wemin password change - now changes passwords on Colossus if ssh is enabled.
+Need to modify usercreation on webmin so that xen webmin uses ssh to colossus to create the user on there.
+
+Bug fix on changesupplementary groups wasnt working on Kubuntu. Second bug with grep fixed using -w option.
+
+Colossus
+Bug fix on password change script incorrect variable caused the users password not to be changed.
+
+############################
+#Changes for Project V5.0
+############################
+
+New features include:
+
+Karoshi V5
+
+Framework for multiple distribution support implemented.
+Scripts for installing vital applications added.
+Support for Debian, Kubuntu and Suse added.
+Update server icon on desktop.
+
+Bulk user creation now converts data to lower case and properly checks for duplicate usernames.
+
+Xen
+
+"User and Group Management" Check logs feature added. This will search the logs for you for given usernames and dates.
+
+Setupdns now asks for domain name for correct operation with moodle.
+
+Orac
+
+SSH support from xen
+
+Joshua
+
+SSH support from xen
+
+Colossus
+Email is squirrelmail,postfix,imap, clamav, spamassassin combination
+Mailscanner added for clamav and spamassassin support
+Email now includes pop3 support if desired. Allows port 110 on local addresses and port 995 from anywhere.
+SSH allowed from xen so that when a user is created on xen it is also created on colossus
+Latest Openbiblio
+Moodle upgraded to latest stable 1.5 version. Setup now asks for domain name for correct theme and https support.
+
+############################
+#Changes for Project V4.2.3
+############################
+
+Distribution Server
+
+Distribution server setup added. Recommended to use Skynet if you have it. This uses FTP server on skynet with a user called ghost. You will also need the G4L iso to image the clients. Please see the documentation at www.karoshi.org.uk.
+
+Xen
+Some Icons in "User and Group Management" renamed to keep icons together. 
+
+Colossus
+Squirrelmail updated to version 1.4.5 from 1.4.5CVS
+PHP Nuke upgraded to version 7.7
+
+############################
+#Changes for Project V4.2.2
+############################
+All server setup scripts now check to see that the server has been named correctly.
+
+Xen
+
+Correct files are now copied in for the linux client depending on whether orac and joshua are used or not.
+Add new user and bulk user creation now share same data file for group information to help with the addition of new servers should the need arise. Start year and end year are now generated from the current date so never need to be changed.
+New script added that adds in the details for a new server should you need one.
+New script added that lets you change a group to use another server.
+New script added that lets you add a user to Novac for Media Studies.
+New script added that lets you add a new year group to the system. By default karoshi installs enough groups to last 30 years. 
+
+Change Supplementary group re-written to display groups with a checklist box.
+TCPIP entries added for Novac.
+New group added called mediatemp for use with Novac.
+
+Novac
+
+New setup for an optional file server added called Novac. This is intended to be used as a server for the Media Studies subject for the storage of multimedia work. There is now an icon on xen that will add a user to this server so that they can save their work on it.
+
+Extrafileserver
+
+This new setup lets you set up an extra file server should you be in a very large school that needs more storage and speed. Use "Add new file server" and "Assign group to a server" on xen to enable your server.
+
+Network Diagram
+
+Network Diagram changed to show details for Novac. 
+
+############################
+#Changes for Project V4.2.1
+############################
+
+xen
+
+New utility added to allow a user account to be modifed to a roaming profile rather than a mandatory profile.
+Delete utility now checks if a user has a roaming profile and tidies up extra files.
+
+smb.conf modified to allow files to be saved with the correct group information.
+
+Modify Username and Modify path to user area removed. These were rarely used functions and the first one caused a problem with passwd and smbpasswd files going out of sync.
+
+Orac, Joshua, Hal, Skynet
+
+Samba setup script modified to improve reliability when joining to the domain during the setup process. (Thanks to Lee Rodgers)
+
+############################
+#Changes for Project V4.2
+############################
+Communigate Pro E-mail service replaced with Squirrelmail and postfix combination.
+Colossus Scripts changed to remove any references to Communigate.
+
+Xen
+
+New primary groups to intended to integrate sims or a similar system into karoshi. The staff group is intented to give access to the sims share.
+New groups:
+officestaff - Used by office staff to access sims by being also being a member of the group staff
+studentstaff - No access to sims or staffshare
+nonteachingstaff - No access to sims or staffshare
+
+new folders created for officestaff, studentstaff , nonteachingstaff in /home/users
+new folder called officeshare created in /home for access by officestaff group members only
+new folder called officetemparea created in /home/temp/ for use as a temparea for access by office staff group members only.
+
+Profiles created for the above primary groups
+Login scripts created for the above primary groups and drive letters altered on all scripts so that drive s will be sims drive.
+
+Folder added for linuxclient data for xen
+
+setupypserver modified to check that portmap is installed and checks that it is started before trying to start ypserv.
+
+############################
+#Changes for Project V4.1.1
+############################
+A user called karoshi is now added to all servers. This lets you use the karoshi management tools without having to be logged in as root all the time.
+
+All servers now have an icon to change the root password. This is needed if the karoshi user is used because the root password will expire if not changed reasonably regulary and this stops the the karoshi user from being able to su to root.
+
+New group added called simsstaff for use by sims users. This enables them to have a seperate desktop from teaching staff if needed.
+Xen - addnewuser modified to stop all the potential groups being displayed. Now displays startyear+14 groups.. Also now lets a user be created with a primary group called simsstaff.
+Colossus - addnewuser modified to stop all the potential groups being displayed. Now displays startyear+14 groups..
+
+Checkdiskusage now checks the startyear variable and adjusts for even or odd start years for orac and joshua.
+
+############################
+Changes for Project V4.1
+############################
+Provision for language support added
+Installation script now will install from /media/cdrom as well as /mnt/cdrom
+Warning message is now displayed for non root users
+Scripts using mysql now cater for new startup using /etc/init.d/mysqld as well as /etc/init.d/mysql
+Hal - Webmin internet access controls now a new version that actually works - documentation to follow
+Hal - Help desk - bug removed that stopped users from logging in.
+Softwarerequirements scripts now show if software is installed
+Backup provision bugs removed (This was causing old backups to not be deleted) 
+Setup Server icon now appears on the desktop
+
+############################
+Changes for Project V4.0.1
+############################
+Webmin setup for Xen is back with a few new features
+User accounts can now be enabled and disabled on the xen desktop rather than having to change their password
+Not done yet NIS setup for xen changed to cure 1024 character bug for large supplementary group sizes (This did not affect any current karoshi setup but could have posed a problem at some point)
+############################
+Changes for Project V4.0
+############################
+Web caching feature added to Hal using wget
+Script added to hal to re copying squid error messages after a squid update
+Setup Servers now checks if Xdialog is installed so that no problems occur when installing from the tar.gz instead of the iso.
+############################
+Changes for Project V4.0 RC4
+############################
+Change password script and add new user script for xen and colossus will now loop instead of quitting if a password mismatch occurs
+Colossus setup website, online classroom and library system now make sure that apache and mysql are running
+Colossus Generate SSL certificate fixed
+Colossus PHP Nuke Website language and access denied error fixed
+Backup Setup directory exclusion removed to stop serious error in script
+Connect and disconnect backup server scripts dialog box sizes altered to fit text
+Squid proxy controls for Hal changed to xdialog
+############################
+Changes for Project V4.0 RC3
+############################
+All servers now using new installer for configuration
+Create folders script for each server now merged with setup samba
+A "software required" page has been added for each server
+Backup Schedule now has a working delete backup facility
+############################
+Changes for Project V4.0 RC2
+############################
+
+Installer for internet logging fixed on hal
+
+New installer for configuring servers no use of konqueror anymore
+
+New installation using compressed files for the iso, why did I not think of this before?????
+
+Manual Wake on Lan now checks if any jobs have been created.
+
+All usernames are now converted to lower case to avoid problems in the user management scripts for xen and colossus 
+
+Very minor bug fixed for wake on lan. Schedule Wake on lan was opening a console window.
+
+Script added to allow the domain name of the site to be added to the online classroom so that SSL can be used on login.
+
+Hal setup files completed
+Samba installation now checks to ensure that the linuxgrid is joined successfully
+
+############################
+Changes for Project V4.0 RC1
+############################
+PhpNuke website upgraded to version7.5
+Moodle now on V1.4.3 (December release) to fix security problems
+
+Scripts converted to xdialog for xen and colossus
+
+BackupSetup and Wakeonlan provision improved on xen
+############################
+Changes for Project V3.0
+############################
+New features
+
+Serversetup for Sal (This setup can be used to create additional backup servers)
+
+This is the backup server which should be placed as far away from your main servers as possible in a secure location
+Scripts setup:
+ntp
+Time synchronised with ipcop firewall
+Samba
+Creates backup accounts (xenbackup, oracbackup, joshuabackup, halbackup, skynetbackup)
+Only allows servers to connect with backup user accounts
+All TCPIP numbers denied apart from server TCPIP numbers
+All users denied apart from the accounts listed above
+
+rootdesktop
+Gives useful icons and scripts for sal
+
+Shorewall
+Shorewall is configured to allow samba
+
+Security Level
+Sets msec for correct security permissions on /home/serverbackups
+
+All servers
+
+Backupsetup
+
+Updated to create icons for manually running backup scripts and searching backup archives.
+Scripts are now scheduled automatically with cron
+Icons are created to allow scripts to be re scheduled or deleted from the schedule
+Backups can be disabled
+Scripts now run for the first time without having to adjust the day in each script
+Archives now created with a .tar extension
+
+Cron scheduling
+
+All jobs are now scheduled from /root/cronjobs/masterschedule.cron
+This file should not be edited since it is auto generated by the backup scripts
+Other jobs can be scheduled in /root/cronjobs/$Servernamejobs.cron
+Changes to this file can be activated by clicking on Refresh Scheduled jobs in Backup Controls
+The backup script creates a cron file for each backup in /root/cronjobs/backups/backup$scriptname.cron
+These are automatically concatentated to together to produce /root/cronjobs/backupschedule.cron
+/root/cronjobs/backupschedule.cron and /root/cronjobs/$Servernamejobs.cron are concatenated together to produce /root/cronjobs/masterschedule.cron
+
+Hal or Colossus
+
+Help desk
+This uses Help Center Live and lets users chat to the support staff online about problems or log problems using a ticket system.
+
+Colossus
+
+Library system using OpenBiblio
+
+Xen
+Wake on lan schedular to wake up client computers. This has the same features as the backupscript and ties into the same structure for scheduling jobs. You will need to install wakelan to use this function.
+
+
+Changes for Project V2.5.3
+
+All Servers:
+Log level = 2 added to all smb.conf files so that connection failures are logged with usernames
+
+Changes for Project V2.5.2
+Xen
+Reset user password now creates a random password (6 characters alpha numeric)
+Add new user script now has option for creating a random password
+Add new user script is now generated from create addnewuser script which is scaleable with the start and end years defined at the top of the script.
+
+Can be added to V2.5.1 by applying the new root desktop 
+
+Hal
+Now supports the latest version of Dansguardian so not sure if it will work on mandrake 10 since I had problems with my laptop.
+The script will now prompt you to ask if you are using the later version.
+Sarg internet logs are now generated from dansguardian instead of squid. Logs now show the username and ipnumber for access denied sites.
+Squid logging problem now resolved if you still want to use squid for logs.
+
+Colossus
+Same new features as xen. Can be added to V2.5.1 by applying the new root desktop
+Usermin port put back to its default of 20000
+Moodle online classroom logins now use apache ssl on port 443
+Moodle version is now 1.4.3
+Latest version of usermin now supported
+
+All servers:
+Script for setting security levels to higher
+Colossus can only be set on high at the moment due to problems with usermin not running.
+deadtime = 15 added to all smb.conf files to disconnect clients not using the connections. xp and 2k will auto reconnect. Deadtime will only disconnect if no files are open on that share for the user.
+
+

@@ -1,0 +1,149 @@
+#!/bin/bash
+[ ! -d /opt/karoshi/logs/federated_file_sync ] && mkdir -p /opt/karoshi/logs/federated_file_sync
+LOG_DATE=`date +%F`
+MANDATORY_SYNC=yes
+ROAMING_SYNC=yes
+CUSTOM_SYNC=yes
+DO_SYNC=yes
+FEDERATED_SERVER_COUNT=`ls -1 /opt/karoshi/server_network/federated_ldap_servers | wc -l`
+#Check there are federated servers to sync
+[ ! -d /opt/karoshi/server_network/federated_ldap_servers ] && DO_SYNC=no
+[ $FEDERATED_SERVER_COUNT = 0 ] && DO_SYNC=no
+if [ $DO_SYNC = no ]
+then
+echo No federated servers to sync. Exiting now...
+exit
+fi
+
+#Check if there are roaming profile users to sync
+if [ ! -f /opt/karoshi/server_network/windows_roaming_profile_users ]
+then
+ROAMING_SYNC=no
+else
+[ `cat /opt/karoshi/server_network/windows_roaming_profile_users | wc -l` = 0 ] && ROAMING_SYNC=no
+fi
+#Check that there are mandatory groups to sync
+if [ ! -d /opt/karoshi/server_network/federated_file_sync ]
+then
+MANDATORY_SYNC=no
+else
+[ `ls -1 /opt/karoshi/server_network/federated_file_sync | wc -l` = 0 ] && MANDATORY_SYNC=no
+fi
+
+#Check that there are custom folders to sync
+if [ ! -d /opt/karoshi/server_network/federated_file_sync_custom ]
+then
+CUSTOM_SYNC=no
+else
+[ `ls -1 /opt/karoshi/server_network/federated_file_sync_custom | wc -l` = 0 ] && CUSTOM_SYNC=no
+fi
+
+#Check that unison is installed
+which unison 1>/dev/null
+if [ `echo $?` != 0 ]
+then
+apt-get update
+apt-get install -y unison
+fi
+
+
+function synchronise_files {
+for FEDERATED_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
+do
+FEDERATED_SERVER=`basename $FEDERATED_SERVERS`
+echo $FEDERATED_SERVER
+#Check that unison is installed on the federated server
+ssh -o PasswordAuthentication=no -o ConnectTimeout=2  $FEDERATED_SERVER '
+which unison
+if [ `echo $?` != 0 ]
+then
+apt-get update
+apt-get install -y unison
+fi
+'
+if [ `echo $?` != 0 ]
+then
+echo `date` SSH problem with $FEDERATED_SERVER >>/opt/karoshi/logs/federated_file_sync/$LOG_DATE
+break
+fi
+
+#Sync chosen mandatory groups
+if [ $MANDATORY_SYNC = yes ]
+then
+#Get groups to sync
+for SYNC_GROUPS in /opt/karoshi/server_network/federated_file_sync/*
+do
+SYNC_GROUP=`basename $SYNC_GROUPS`
+if [ $SYNC_GROUP != subjects ] && [ $SYNC_GROUP != staffshare ]
+then
+#Get path to home areas
+if [ ! -f /opt/karoshi/server_network/group_information/$SYNC_GROUP ]
+then
+echo $SYNC_GROUP - no group information. >>/opt/karoshi/logs/federated_file_sync/$LOG_DATE
+break
+fi
+source /opt/karoshi/server_network/group_information/$SYNC_GROUP
+else
+HOMEPATH=/home/$SYNC_GROUP
+fi
+
+if [ -d $HOMEPATH ]
+then
+echo "-----------------------------"
+echo -e "Syncing $HOMEPATH"
+echo "-----------------------------"
+
+echo `date` syncing $FEDERATED_SERVER $HOMEPATH >>/opt/karoshi/logs/federated_file_sync/$LOG_DATE
+unison -owner -group -batch $HOMEPATH ssh://$FEDERATED_SERVER//$HOMEPATH 2>>/opt/karoshi/logs/federated_file_sync/$LOG_DATE
+fi
+done
+fi
+
+#Sync roaming profile users
+if [ $ROAMING_SYNC = yes ]
+then
+for ROAMING_USER in `cat /opt/karoshi/server_network/windows_roaming_profile_users`
+do
+echo $ROAMING_USER
+
+if [ ! -f /opt/karoshi/server_network/group_information/$ROAMING_USER ]
+then
+echo $ROAMING_USER - no group information. >>/opt/karoshi/logs/federated_file_sync/$LOG_DATE
+break
+fi
+source /opt/karoshi/server_network/group_information/$ROAMING_USER
+echo `date` syncing $FEDERATED_SERVER $ROAMING_USER >>/opt/karoshi/logs/federated_file_sync/$LOG_DATE
+unison -owner -group -batch $HOMEPATH/$ROAMING_USER ssh://$FEDERATED_SERVER//$HOMEPATH/$ROAMING_USER 2>>/opt/karoshi/logs/federated_file_sync/$LOG_DATE
+unison -owner -group -batch /home/applications/profiles/$ROAMING_USER ssh://$FEDERATED_SERVER//home/applications/profiles/$ROAMING_USER 2>>/opt/karoshi/logs/federated_file_sync/$LOG_DATE
+done 
+fi
+
+
+#Sync custom folders
+if [ $CUSTOM_SYNC = yes ]
+then
+for CUSTOMFOLDERS in /opt/karoshi/server_network/federated_file_sync_custom/*
+do
+CUSTOMFOLDERS=`echo $CUSTOMFOLDERS | sed 's/ /THISISASPACE/g'`
+CUSTOMFOLDER=`basename $CUSTOMFOLDERS`
+CUSTOMFOLDER=`echo $CUSTOMFOLDER | sed 's/THISISASPACE/ /g'`
+echo `date` syncing $FEDERATED_SERVER "$CUSTOMFOLDER" >>/opt/karoshi/logs/federated_file_sync/$LOG_DATE
+echo "-----------------------------"
+echo -e "Syncing $CUSTOMFOLDER"
+echo "-----------------------------"
+unison -owner -group -batch /home/"$CUSTOMFOLDER" ssh://$FEDERATED_SERVER//home/"$CUSTOMFOLDER" 2>>/opt/karoshi/logs/federated_file_sync/$LOG_DATE
+done
+fi
+done
+}
+
+#Sync files once if there is only one federated server
+synchronise_files
+#Sync twice if there are more servers
+if [ $FEDERATED_SERVER_COUNT -gt 1 ]
+then
+synchronise_files
+fi
+
+exit
+

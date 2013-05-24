@@ -1,0 +1,5 @@
+#!/bin/bash
+#Start nfs on boot
+chkconfig nfs off
+[ -f /opt/karoshi/start_on_boot/karoshi_services ] || touch /opt/karoshi/start_on_boot/karoshi_services
+[ `grep -c -w nfs /opt/karoshi/start_on_boot/karoshi_services` = 0 ] && echo nfs,1 >> /opt/karoshi/start_on_boot/karoshi_services

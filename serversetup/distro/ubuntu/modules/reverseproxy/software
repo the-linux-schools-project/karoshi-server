@@ -1,0 +1,29 @@
+#!/bin/bash
+#softwareinstall
+#Check for software
+
+UPDATEREPOSITORY=yes
+
+function update_repository {
+echo "<li>"Updating repository list"</li><br>"
+echo
+echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+apt-get update
+echo '</pre>'
+}
+
+dpkg -S nginx 1>/dev/null
+if [ `echo $?` != 0 ]
+then
+[ $UPDATEREPOSITORY = yes ] && update_repository
+UPDATEREPOSITORY=no
+echo "<li>"Installing nginx"</li><br>"
+echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+apt-get install -y nginx
+echo '</pre>'
+fi
+
+
+exit
+
+

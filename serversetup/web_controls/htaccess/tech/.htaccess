@@ -1,0 +1,7 @@
+AuthType Basic
+SSLRequireSSL
+ErrorDocument 401 /cgi-bin/access_denied.cgi
+ErrorDocument 403 /cgi-bin/access_forbidden.cgi
+AuthName "Karoshi Web Control"
+AuthUserFile /opt/karoshi/web_controls/web_access_tech
+require valid-user

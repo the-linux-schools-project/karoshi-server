@@ -1,0 +1,111 @@
+#!/bin/bash
+#checknetwork
+#Copyright (C) 2005  The karoshi Team
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+[ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
+#Only run network setup once
+if [ -f /opt/karoshi/.tempdata/network_set ]
+then
+rm -f /opt/karoshi/.tempdata/network_set
+exit
+fi
+
+source /opt/karoshi/serversetup/variables/language
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/language/$LANGCHOICE/extra_server/checknetwork
+source /opt/karoshi/serversetup/variables/tcpip
+
+function getnetworksettings {
+
+DATA=`yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --form --title="Network Settings" --field="Server name" --field="TCPIP" --field="Netmask" --field="Name Server" --field="Gateway" --field="PDC TCPIP" --button="gtk-ok"`
+
+NAMECUSTOM=`echo $DATA | cut -d"|" -f1 | tr -cd 'A-Za-z1-9-' | sed 's/^-//g' | sed 's/-$//g'`
+TCPIPCUSTOM=`echo $DATA | cut -d"|" -f2 | tr -cd '0-9./n'`
+NETMASKCUSTOM=`echo $DATA | cut -d"|" -f3 | tr -cd '0-9./n'`
+NAMESERVERCUSTOM=`echo $DATA | cut -d"|" -f4 | tr -cd '0-9./n'`
+GATEWAYCUSTOM=`echo $DATA | cut -d"|" -f5 | tr -cd '0-9./n'`
+TCPIPPDCCUSTOM=`echo $DATA | cut -d"|" -f6 | tr -cd '0-9./n'`
+}
+
+
+function confirmchoice {
+DATA=`yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 \
+    --text "$NETWORKSET \n\n Server Name: $NAMECUSTOM \n TCPIP: $TCPIPCUSTOM \n Netmask: $NETMASKCUSTOM \n Nameserver: $NAMESERVERCUSTOM \n Gateway: $GATEWAYCUSTOM \n PDC TCPIP: $TCPIPPDCCUSTOM"`
+CHOICE=`echo $?`
+[ $CHOICE = 0 ] && CHOICE=commit
+[ $CHOICE = 1 ] && CHOICE=configure
+}
+
+function check_tcpip {
+#Check dots
+if [ `echo $IPDATA | sed 's/\./\n /g'  | sed /^$/d | wc -l` != 4 ]
+then
+INPUTCHECK=fail
+fi
+#Check that no number is greater than 255
+HIGHESTNUMBER=`echo $IPDATA | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p`
+if [ $HIGHESTNUMBER -gt 255 ]
+then
+INPUTCHECK=fail
+fi
+}
+
+function inputwarning {
+yad --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --text="$ERRORMSG1"
+}
+
+CHOICE=configure
+while [ $CHOICE = configure ]
+do
+getnetworksettings
+INPUTCHECK=ok
+IPDATA=$TCPIPCUSTOM
+check_tcpip
+IPDATA=$NETMASKCUSTOM
+check_tcpip
+IPDATA=$GATEWAYCUSTOM
+check_tcpip
+IPDATA=$TCPIPPDCCUSTOM
+check_tcpip
+if [ $INPUTCHECK = ok ]
+then
+confirmchoice
+else
+inputwarning
+fi
+done
+
+#Change tcpip variables
+sed -i 's/'$PDC'\t/'$TCPIPPDCCUSTOM'\t/g' /opt/karoshi/serversetup/variables/tcpip
+sed -i 's/'$NETMASK1'\t/'$NETMASKCUSTOM'\t/g' /opt/karoshi/serversetup/variables/tcpip
+sed -i 's/'$NAMESERVER1'\t/'$NAMESERVERCUSTOM'\t/g' /opt/karoshi/serversetup/variables/tcpip
+sed -i 's/'$GATEWAY1'\t/'$GATEWAYCUSTOM'\t/g' /opt/karoshi/serversetup/variables/tcpip
+
+[ -e /opt/karoshi/serversetup/variables/language ] || /opt/karoshi/serversetup/changelanguage
+[ -e /opt/karoshi/serversetup/variables/distro ] || /opt/karoshi/serversetup/changedistro
+
+touch /opt/karoshi/.tempdata/network_set
+
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/configurenetwork $NAMECUSTOM $TCPIPCUSTOM $NETMASKCUSTOM $NAMESERVERCUSTOM $GATEWAYCUSTOM extra_server
+
+exit 103
+
