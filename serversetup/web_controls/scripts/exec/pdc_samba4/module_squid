@@ -97,6 +97,10 @@ source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/squid/setupsquid
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
+source /opt/karoshi/server_network/domain_information/domain_name
+
+#Create keytab for squid
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:HTTP:squid:$SERVERNAME.$REALM:proxy:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
 
 PDCIP=`net lookup $HOSTNAME`
 LDAPSTATUS=notset
@@ -123,10 +127,6 @@ scp -p -r /opt/karoshi/serversetup/modules/squid root@$SERVERNAME:/opt/karoshi/s
 #########################
 #Run module
 #########################
-source /opt/karoshi/server_network/domain_information/domain_name
-
-#Create keytab for squid
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:HTTP:squid:$SERVERNAME.$REALM:proxy:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
 
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$HOSTNAME:$PDCIP:$AUTHTYPE:$PASSWORD:' | /opt/karoshi/serversetup/modules/squid/setupsquid
@@ -266,6 +266,7 @@ fi
 done
 
 #Create info file for linux clients proxy server
-echo $PROXYSERVER > /var/lib/samba/netlogon/linuxclient/domain_information/proxy_server
+echo $PROXYSERVER > /var/lib/samba/netlogon/domain_information/proxy_server
+$SERVERNAME
 exit
 

@@ -277,7 +277,7 @@ RAID_DISK=`echo /dev/${RAID_DISKS[$COUNTER]}`
 #Get disk status
 DISKSTATUS=$ACTIVEMSG
 [ `echo -e "$ZPOOLSTATUS" | grep ${RAID_DISKS[$COUNTER]} | grep -c OFFLINE` -gt 0 ] && DISKSTATUS=$OFFLINEMSG
-[ `echo -e "$ZPOOLSTATUS" | grep ${RAID_DISKS[$COUNTER]} | grep -c SPARE` -gt 0 ] && DISKSTATUS=$SPAREMSG
+[ `echo -e "$ZPOOLSTATUS" | grep ${RAID_DISKS[$COUNTER]} | grep -c AVAIL` -gt 0 ] && DISKSTATUS=$SPAREMSG
 ICON=$ICON3
 DRIVE=$RAID_DISK
 get_drive_info
@@ -439,7 +439,7 @@ RAID_DISK=`echo /dev/${RAID_DISKS[$COUNTER]}`
 #Get disk status
 DISKSTATUS='$ACTIVEMSG'
 [ `echo -e "$ZPOOLSTATUS" | grep ${RAID_DISKS[$COUNTER]} | grep -c OFFLINE` -gt 0 ] && DISKSTATUS='$OFFLINEMSG'
-[ `echo -e "$ZPOOLSTATUS" | grep ${RAID_DISKS[$COUNTER]} | grep -c SPARE` -gt 0 ] && DISKSTATUS='$SPAREMSG'
+[ `echo -e "$ZPOOLSTATUS" | grep ${RAID_DISKS[$COUNTER]} | grep -c AVAIL` -gt 0 ] && DISKSTATUS='$SPAREMSG'
 ICON=$ICON3
 DRIVE=$RAID_DISK
 get_drive_info

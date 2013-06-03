@@ -81,16 +81,8 @@ echo '<li>'$INSTALLMSG'</li><br>'
 #Copy in config files
 ##########################
 echo '<li>'$OPENINGMSG2'</li><br>'
-cp -f /opt/karoshi/serversetup/modules/reverseproxy/default /etc/nginx/sites-available
-touch /etc/nginx/proxysites
 
-#########################
-#Apply certificate (nginx is using the same cert as for apache)
-#########################
-if [ ! -f /etc/ssl/apache/server.crt ]
-then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
-fi
+touch /etc/nginx/proxysites
 
 ###########################
 #Restart nginx
