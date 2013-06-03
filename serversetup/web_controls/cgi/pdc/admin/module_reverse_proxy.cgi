@@ -110,8 +110,7 @@ fi
 echo '<b>'$TITLE - $SERVERNAME"</b><br><br>"
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_reverse_proxy.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME" | sudo -H /opt/karoshi/web_controls/exec/module_reverse_proxy
-echo '</div>
-</form>
-</body>
-</html>'
+MESSAGE=$COMPLETEDMSG
+show_status
+echo '</div></form></body></html>'
 exit

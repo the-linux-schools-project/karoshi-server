@@ -167,11 +167,7 @@ echo "<br>"'$RESTARTSWMSG'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
-'
 
-
-#Setup reverse Proxy
-ssh -x -o PasswordAuthentication=no $WEBSERVER '
 #Copy in config files
 cp -f /opt/karoshi/serversetup/modules/reverseproxy/default /etc/nginx/sites-available
 
@@ -179,7 +175,41 @@ cp -f /opt/karoshi/serversetup/modules/reverseproxy/default /etc/nginx/sites-ava
 sed -i "s/\/etc\/ssl\/apache\/server.crt;/\/etc\/ssl\/apache\/'$REALM'.pem;/g" /etc/nginx/sites-available/default
 sed -i "s/\/etc\/ssl\/apache\/server.key;/\/etc\/ssl\/apache\/'$REALM'.key;/g" /etc/nginx/sites-available/default
 
-echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:' | /opt/karoshi/serversetup/modules/reverseproxy/setupreverseproxy
+source /opt/karoshi/serversetup/variables/distro
+
+###########################
+#Make sure apache is not running
+###########################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/apache
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop
+
+##########################
+#Install nginx
+##########################
+echo "<li>"'$INSTALLMSG'"</li><br>"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/reverseproxy/software
+
+###########################
+#Ensure that nginx is running on boot
+###########################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nginx
+
+touch /etc/nginx/proxysites
+
+###########################
+#Restart nginx
+###########################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nginx_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nginx_start
+###########################
+#Ensure that nginx is running on boot
+###########################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nginx
+
+###########################
+#Show completed message
+###########################
+echo "<br><li>'$COMPLETEDMSG'</li><br>"
 '
 
 #########################
