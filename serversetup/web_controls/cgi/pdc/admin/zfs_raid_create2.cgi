@@ -178,7 +178,7 @@ exit
 
 function control_raid {
 echo '
-<form METHOD=POST ACTION="/cgi-bin/admin/zfs_raid_create_fm.cgi" target="_top" name = "frm">
+<form METHOD=POST ACTION="/cgi-bin/admin/zfs_raid_control.cgi" target="_top" name = "frm">
 <input type="hidden" name="_SERVERNAME_" value="'$SERVERNAME'">
 <input type="hidden" name="_SERVERTYPE_" value="'$SERVERTYPE'">
 <input type="hidden" name="_SERVERMASTER_" value="'$SERVERMASTER'">
