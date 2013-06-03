@@ -36,15 +36,19 @@ chown root.apache_karoshi /opt/karoshi/web_controls/warnings/messages
 fi
 
 function warning_alert {
-/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add disk_usage /cgi-bin/admin/view_disk_usage_logs_fm.cgi "$ERRORALERT" webwarning2.gif
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add disk_usage_$SERVER /cgi-bin/admin/view_disk_usage_logs_fm.cgi "$ERRORALERT" webwarning2.gif
 }
 
 function warning_alert2 {
-/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add raid_warning /cgi-bin/admin/disk_information_fm.cgi "$ERRORALERT" webwarning2.gif
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add raid_warning_$SERVER /cgi-bin/admin/disk_information_fm.cgi "$ERRORALERT" webwarning2.gif
 }
 
 function warning_alert3 {
-/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add smart_warning /cgi-bin/admin/disk_information_fm.cgi "$ERRORALERT" webwarning2.gif
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add smart_warning_$SERVER /cgi-bin/admin/disk_information_fm.cgi "$ERRORALERT" webwarning2.gif
+}
+
+function warning_alert4 {
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add zfs_raid_warning_$SERVER /cgi-bin/admin/zfs_raid_control_fm.cgi "$ERRORALERT" webwarning2.gif
 }
 
 #####################################
@@ -173,6 +177,7 @@ function record_disk_usage {
 echo checking $SERVER
 DISKWARN=no
 RAIDWARN=no
+ZFSWARN=no
 if [ $SERVER = $HOSTNAME ]
 then
 [ ! -d /opt/karoshi/logs/disk_usage/$LOG_DATE ] && mkdir -p /opt/karoshi/logs/disk_usage/$LOG_DATE
@@ -226,6 +231,15 @@ RAID_DEVICE=`blkid | grep $RAID_UUID | cut -d: -f1`
 mdadm --detail --test $RAID_DEVICE >> /opt/karoshi/logs/disk_usage/$LOG_DATE/raid_status
 RAIDSTATUS=`echo $?`
 [ $RAIDSTATUS != 0 ] && RAIDWARN=yes
+fi
+
+#Get zfs raid status
+if [ `zpool status | grep -c $HOSTNAME-data` -gt 0 ]
+then
+if [ `zpool status $HOSTNAME-data | grep -c DEGRADED` -gt 0 ]
+then
+ZFSWARN=yes
+fi
 fi
 else
 if [ -d /opt/karoshi/server_network/servers/$SERVER ]
@@ -309,6 +323,12 @@ if [ $RAIDWARN = yes ]
 then
 ERRORALERT=`echo "$SERVER - $RAIDWARNMSG"`
 warning_alert2
+fi
+#Warn if zfs fail
+if [ $ZFSWARN = yes ]
+then
+ERRORALERT=`echo "$SERVER - ZFS Failure"`
+warning_alert4
 fi
 }
 

@@ -31,7 +31,7 @@ fi
 if [ $ACTION = add ]
 then
 [ ! -d /opt/karoshi/web_controls/warnings/messages ] && mkdir -p /opt/karoshi/web_controls/warnings/messages
-echo '<a class="info" target="_blank" href="'$LINK'"><img class="images" alt="" src="/images/warnings/'$IMAGE'"><span>'$DESCRIPTION'</span></a>' >> /opt/karoshi/web_controls/warnings/messages/$NAME
+echo '<a class="info" target="_blank" href="'$LINK'"><img class="images" alt="" src="/images/warnings/'$IMAGE'"><span>'$DESCRIPTION'</span></a>' > /opt/karoshi/web_controls/warnings/messages/$NAME
 fi
 
 if [ $ACTION = delete ]

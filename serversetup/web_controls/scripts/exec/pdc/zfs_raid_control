@@ -1,0 +1,465 @@
+#!/bin/bash
+#Copyright (C) 2010 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/zfs_raid_control_cgi
+then
+echo `date`: zfs_raid_control - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/zfs_raid_control_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/zfs_raid_control.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $zfs_raid_control_cgi'check' ]
+then
+echo `date`: zfs_raid_control - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: zfs_raid_control - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: zfs_raid_control - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+SERVERTYPE=`echo "$DATA" | cut -s -d: -f5`
+SERVERMASTER=`echo "$DATA" | cut -s -d: -f6`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: zfs_raid_control - Not called by zfs_raid_control.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: zfs_raid_control - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: zfs_raid_control - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVERNAME'null' = null ]
+then
+echo `date`: software_raid_create - Blank server >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $SERVERTYPE'null' = null ]
+then
+echo `date`: software_raid_create - Blank servertype >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+if [ $SERVERMASTER'null' = null ]
+then
+echo `date`: software_raid_create - Blank servermaster >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+fi
+
+
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: zfs_raid_control - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+##########################
+#Language
+##########################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/software_raid ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/system/software_raid
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+ICON1=/images/submenus/system/hdd_add.png
+ICON2=/images/submenus/system/hdd_add_spare.png
+ICON3=/images/submenus/system/hdd_remove.png
+ICON4=/images/submenus/system/hdd_fail.png
+
+
+
+if [ $SERVERNAME = $HOSTNAME ]
+then
+
+#Check that a zfs raid has been set up on this server
+
+if [ `zpool status | grep -c $HOSTNAME-data` = 0 ]
+then
+echo $ERRORMSG18
+exit
+fi
+
+#Get list of all drives
+ALL_DRIVES=( `parted -l -s | grep Disk | sed "s/Error: //g" | sed "s/Disk //g" | grep /dev/sd | cut -d: -f1 | tr -cd "A-Za-z0-9/\n "` )
+ALL_DRIVES_COUNT=${#ALL_DRIVES[@]}
+
+#Get a list of active drives in the array
+RAID_DISKS=( `zpool status $HOSTNAME-data | grep "ONLINE\|SPARE\|OFFLINE" | sed "s/\\t//g" | sed "s/^ * //g" | cut -d" " -f1 | grep -v "replacing\|state:\|$HOSTNAME-data\|raidz"` )
+RAID_DISKS_COUNT=`echo ${#RAID_DISKS[@]}`
+
+
+function get_drive_info {
+#Get drive information
+#Get drive information
+
+SMARTINFO=`smartctl -i $DRIVE | tr -cd "A-Za-z0-9:=,/\n "`
+CAPACITYBYTES=`echo -e "$SMARTINFO" | grep ^User | sed "s/ * / /g" | cut -d" " -f3 | tr -cd "0-9"`
+#Convert capacity to gigabytes
+CAPACITY=`echo "scale=0; $CAPACITYBYTES/1024/1024/1024" | bc`
+DRIVESCALE=GB
+if [ $CAPACITY -gt 1000 ]
+then
+#Covert capacity to terabytes
+CAPACITY=`echo "scale=2; $CAPACITY/1024" | bc`
+DRIVESCALE=TB
+fi
+
+DISKSIZE=`echo $CAPACITY$DRIVESCALE`
+DRIVE_STATUS=ok
+smartctl -H $DRIVE 1>/dev/null 2>/dev/null
+SMARTSTATUS=`echo $?`
+HDDATA=`hdparm -i $DRIVE | grep SerialNo= | sed "s/,/\n/g"`
+MAKER=`echo -e "$HDDATA" | grep Model= | cut -d= -f2`
+DRIVE_SN=`echo -e "$HDDATA" | grep SerialNo= | cut -d= -f2`
+
+DISKICON=hdd.png
+if [ $SMARTSTATUS = 24 ]
+then
+#Drive failing
+DRIVE_STATUS=fail
+DISKICON=hdd_fail.png
+fi
+}
+
+#Get list of all unmounted drives and display properties
+COUNTER=0
+SHOW_MENU=yes
+SHOW_SUBMIT=no
+echo "<input type=\"hidden\" name=\"_SERVERNAME_\" value=\"$SERVERNAME\">"
+echo "<input type=\"hidden\" name=\"_SERVERTYPE_\" value=\"$SERVERTYPE\">"
+echo "<input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"$SERVERMASTER\">"
+while [ $COUNTER -lt $ALL_DRIVES_COUNT ]
+do
+DRIVE=${ALL_DRIVES[$COUNTER]}
+DRIVE_SHORT=`echo $DRIVE | sed "s/\/dev\///g"` 
+if [ `mount | grep -c $DRIVE` = 0 ] && [ `zpool status | grep -c $DRIVE_SHORT` = 0 ]
+then
+get_drive_info
+
+if [ $SHOW_MENU = yes ]
+then
+echo "<b>$AVAILABLEMSG</b><br><br><table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+<tbody>"
+SHOW_MENU=no
+SHOW_SUBMIT=yes
+fi
+
+#Show drive information
+if [ $DRIVE_STATUS = ok ]
+then
+echo "<tr><td style=\"width: 180px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>"
+
+#Create list of drives in array to replace
+echo "<select name=\"select\"><option value=\"_ACTION_addspare_DRIVE_$DRIVE"_"DRIVE2_notset"_"\">$ADD_SPAREDISKMSG</option>"
+
+RAIDCOUNTER=0
+while [ $RAIDCOUNTER -lt $RAID_DISKS_COUNT ]
+do
+RAID_DISK=`echo /dev/${RAID_DISKS[$RAIDCOUNTER]}`
+echo "<option value=\"_ACTION_replace_DRIVE_$DRIVE"_"DRIVE2_$RAID_DISK"_"\">$REPLACEDISKMSG - $RAID_DISK</option>"
+let RAIDCOUNTER=$RAIDCOUNTER+1
+done
+
+echo "</select></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"submit\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$ADD_DISKMSG</span></a></td></tr>"
+else
+echo "<tr><td style=\"width: 180px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td></tr>"
+fi
+fi
+let COUNTER=$COUNTER+1
+done
+
+if [ $SHOW_SUBMIT = yes ]
+then
+echo "</tbody></table><br><br>"
+fi
+
+#Show raid information
+
+ZPOOLINFO=`zpool list $HOSTNAME-data | sed -n 2,2p | sed "s/ * / /g"`
+ZPOOLSTATUS=`zpool status $HOSTNAME-data`
+RAID_SIZE=`echo -e $ZPOOLINFO | cut -d" " -f2`
+RAID_STATE=`echo -e $ZPOOLINFO | cut -d" " -f7`
+SCANINFORMATION=`echo -e "$ZPOOLSTATUS" | grep scan: | cut -d: -f2`
+RAID_TYPE=`zpool status | grep raidz | tr -cd "A-Za-z0-9- " | sed "s/^ * //g" | cut -d" " -f1`
+
+echo "<b>"$RAIDINFOMSG"</b><br><br>"
+echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+<tr><td style=\"width: 180px;\">$RAIDNAMEMSG</td><td>$HOSTNAME-data</td></tr>
+<tr><td>$RAIDTYPEMSG</td><td>$RAID_TYPE</td></tr>
+<tr><td>$RAIDSIZEMSG</td><td>$RAID_SIZE</td></tr>
+<tr><td>$RAIDSTATEMSG</td><td>$RAID_STATE</td></tr>
+<tr><td valign=\"top\">$SCANINFOMSG</td><td>$SCANINFORMATION</td></tr>
+"
+
+
+STATUSSTARTLINE=`echo -e "$ZPOOLSTATUS" | grep -n -w status: | cut -d: -f1`
+if [ ! -z $STATUSSTARTLINE ]
+then
+ACTIONSTARTLINE=`echo -e "$ZPOOLSTATUS" | grep -n -w action: | cut -d: -f1`
+if [ $ACTIONSTARTLINE ]
+then
+let STATUSENDLINE=$ACTIONSTARTLINE-1
+SCANSTARTLINE=`echo -e "$ZPOOLSTATUS" | grep -n -w scan: | cut -d: -f1`
+if [ ! -z $SCANSTARTLINE ]
+then
+let ACTIONENDLINE=$SCANSTARTLINE-1
+#Show extra data on zfs raid
+RAID_STATUS=`echo -e "$ZPOOLSTATUS" | sed -n $STATUSSTARTLINE,$STATUSENDLINE"p" | sed "s/^status: //g"`
+RAID_ACTION=`echo -e "$ZPOOLSTATUS" | sed -n $ACTIONSTARTLINE,$ACTIONENDLINE"p" | sed "s/^action: //g"`
+echo "<tr><td valign=\"top\">$RAIDSTATUSMSG</td><td>$RAID_STATUS</td></tr>"
+echo "<tr><td valign=\"top\">$RAIDACTIONMSG</td><td>$RAID_ACTION</td></tr>"
+fi
+fi
+fi
+
+COUNTER=0
+while [ $COUNTER -lt $RAID_DISKS_COUNT ]
+do
+RAID_DISK=`echo /dev/${RAID_DISKS[$COUNTER]}`
+#Get disk status
+DISKSTATUS=$ACTIVEMSG
+[ `echo -e "$ZPOOLSTATUS" | grep ${RAID_DISKS[$COUNTER]} | grep -c OFFLINE` -gt 0 ] && DISKSTATUS=$OFFLINEMSG
+[ `echo -e "$ZPOOLSTATUS" | grep ${RAID_DISKS[$COUNTER]} | grep -c SPARE` -gt 0 ] && DISKSTATUS=$SPAREMSG
+ICON=$ICON3
+DRIVE=$RAID_DISK
+get_drive_info
+echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a>"$RAID_DISK - $DISKSTATUS"</td><td>$MAKER $DRIVE_SN</td></tr>"
+let COUNTER=$COUNTER+1
+done
+echo "</tbody></table><br>"
+fi
+
+if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ] && [ $SERVERNAME != $HOSTNAME ]
+then
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+
+#Check that a zfs raid has been set up on this server
+
+if [ `zpool status | grep -c $HOSTNAME-data` = 0 ]
+then
+echo '$ERRORMSG18'
+exit
+fi
+
+#Get list of all drives
+ALL_DRIVES=( `parted -l -s | grep Disk | sed "s/Error: //g" | sed "s/Disk //g" | grep /dev/sd | cut -d: -f1 | tr -cd "A-Za-z0-9/\n "` )
+ALL_DRIVES_COUNT=${#ALL_DRIVES[@]}
+
+#Get a list of active drives in the array
+RAID_DISKS=( `zpool status $HOSTNAME-data | grep "ONLINE\|SPARE\|OFFLINE" | sed "s/\\t//g" | sed "s/^ * //g" | cut -d" " -f1 | grep -v "replacing\|state:\|$HOSTNAME-data\|raidz"` )
+RAID_DISKS_COUNT=`echo ${#RAID_DISKS[@]}`
+
+
+function get_drive_info {
+#Get drive information
+#Get drive information
+
+SMARTINFO=`smartctl -i $DRIVE | tr -cd "A-Za-z0-9:=,/\n "`
+CAPACITYBYTES=`echo -e "$SMARTINFO" | grep ^User | sed "s/ * / /g" | cut -d" " -f3 | tr -cd "0-9"`
+#Convert capacity to gigabytes
+CAPACITY=`echo "scale=0; $CAPACITYBYTES/1024/1024/1024" | bc`
+DRIVESCALE=GB
+if [ $CAPACITY -gt 1000 ]
+then
+#Covert capacity to terabytes
+CAPACITY=`echo "scale=2; $CAPACITY/1024" | bc`
+DRIVESCALE=TB
+fi
+
+DISKSIZE=`echo $CAPACITY$DRIVESCALE`
+DRIVE_STATUS=ok
+smartctl -H $DRIVE 1>/dev/null 2>/dev/null
+SMARTSTATUS=`echo $?`
+HDDATA=`hdparm -i $DRIVE | grep SerialNo= | sed "s/,/\n/g"`
+MAKER=`echo -e "$HDDATA" | grep Model= | cut -d= -f2`
+DRIVE_SN=`echo -e "$HDDATA" | grep SerialNo= | cut -d= -f2`
+
+DISKICON=hdd.png
+if [ $SMARTSTATUS = 24 ]
+then
+#Drive failing
+DRIVE_STATUS=fail
+DISKICON=hdd_fail.png
+fi
+}
+
+#Get list of all unmounted drives and display properties
+COUNTER=0
+SHOW_MENU=yes
+SHOW_SUBMIT=no
+echo "<input type=\"hidden\" name=\"_SERVERNAME_\" value=\"'$SERVERNAME'\">"
+echo "<input type=\"hidden\" name=\"_SERVERTYPE_\" value=\"'$SERVERTYPE'\">"
+echo "<input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"'$SERVERMASTER'\">"
+while [ $COUNTER -lt $ALL_DRIVES_COUNT ]
+do
+DRIVE=${ALL_DRIVES[$COUNTER]}
+DRIVE_SHORT=`echo $DRIVE | sed "s/\/dev\///g"` 
+if [ `mount | grep -c $DRIVE` = 0 ] && [ `zpool status | grep -c $DRIVE_SHORT` = 0 ]
+then
+get_drive_info
+
+if [ $SHOW_MENU = yes ]
+then
+echo "<b>'$AVAILABLEMSG'</b><br><br><table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+<tbody>"
+SHOW_MENU=no
+SHOW_SUBMIT=yes
+fi
+
+#Show drive information
+if [ $DRIVE_STATUS = ok ]
+then
+echo "<tr><td style=\"width: 180px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>"
+
+#Create list of drives in array to replace
+echo "<select name=\"select\"><option value=\"_ACTION_addspare_DRIVE_$DRIVE"_"DRIVE2_notset"_"\">'$ADD_SPAREDISKMSG'</option>"
+
+RAIDCOUNTER=0
+while [ $RAIDCOUNTER -lt $RAID_DISKS_COUNT ]
+do
+RAID_DISK=`echo /dev/${RAID_DISKS[$RAIDCOUNTER]}`
+echo "<option value=\"_ACTION_replace_DRIVE_$DRIVE"_"DRIVE2_$RAID_DISK"_"\">'$REPLACEDISKMSG' - $RAID_DISK</option>"
+let RAIDCOUNTER=$RAIDCOUNTER+1
+done
+
+echo "</select></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"submit\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$ADD_DISKMSG'</span></a></td></tr>"
+else
+echo "<tr><td style=\"width: 180px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td></tr>"
+fi
+fi
+let COUNTER=$COUNTER+1
+done
+
+if [ $SHOW_SUBMIT = yes ]
+then
+echo "</tbody></table><br><br>"
+fi
+
+#Show raid information
+
+ZPOOLINFO=`zpool list $HOSTNAME-data | sed -n 2,2p | sed "s/ * / /g"`
+ZPOOLSTATUS=`zpool status $HOSTNAME-data`
+RAID_SIZE=`echo -e $ZPOOLINFO | cut -d" " -f2`
+RAID_STATE=`echo -e $ZPOOLINFO | cut -d" " -f7`
+SCANINFORMATION=`echo -e "$ZPOOLSTATUS" | grep scan: | cut -d: -f2`
+RAID_TYPE=`zpool status | grep raidz | tr -cd "A-Za-z0-9- " | sed "s/^ * //g" | cut -d" " -f1`
+
+echo "<b>"'$RAIDINFOMSG'"</b><br><br>"
+echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+<tr><td style=\"width: 180px;\">'$RAIDNAMEMSG'</td><td>$HOSTNAME-data</td></tr>
+<tr><td>'$RAIDTYPEMSG'</td><td>$RAID_TYPE</td></tr>
+<tr><td>'$RAIDSIZEMSG'</td><td>$RAID_SIZE</td></tr>
+<tr><td>'$RAIDSTATEMSG'</td><td>$RAID_STATE</td></tr>
+<tr><td valign=\"top\">'$SCANINFOMSG'</td><td>$SCANINFORMATION</td></tr>
+"
+
+
+STATUSSTARTLINE=`echo -e "$ZPOOLSTATUS" | grep -n -w status: | cut -d: -f1`
+if [ ! -z $STATUSSTARTLINE ]
+then
+ACTIONSTARTLINE=`echo -e "$ZPOOLSTATUS" | grep -n -w action: | cut -d: -f1`
+if [ $ACTIONSTARTLINE ]
+then
+let STATUSENDLINE=$ACTIONSTARTLINE-1
+SCANSTARTLINE=`echo -e "$ZPOOLSTATUS" | grep -n -w scan: | cut -d: -f1`
+if [ ! -z $SCANSTARTLINE ]
+then
+let ACTIONENDLINE=$SCANSTARTLINE-1
+#Show extra data on zfs raid
+RAID_STATUS=`echo -e "$ZPOOLSTATUS" | sed -n $STATUSSTARTLINE,$STATUSENDLINE"p" | sed "s/^status: //g"`
+RAID_ACTION=`echo -e "$ZPOOLSTATUS" | sed -n $ACTIONSTARTLINE,$ACTIONENDLINE"p" | sed "s/^action: //g"`
+echo "<tr><td valign=\"top\">'$RAIDSTATUSMSG'</td><td>$RAID_STATUS</td></tr>"
+echo "<tr><td valign=\"top\">'$RAIDACTIONMSG'</td><td>$RAID_ACTION</td></tr>"
+fi
+fi
+fi
+
+COUNTER=0
+while [ $COUNTER -lt $RAID_DISKS_COUNT ]
+do
+RAID_DISK=`echo /dev/${RAID_DISKS[$COUNTER]}`
+#Get disk status
+DISKSTATUS='$ACTIVEMSG'
+[ `echo -e "$ZPOOLSTATUS" | grep ${RAID_DISKS[$COUNTER]} | grep -c OFFLINE` -gt 0 ] && DISKSTATUS='$OFFLINEMSG'
+[ `echo -e "$ZPOOLSTATUS" | grep ${RAID_DISKS[$COUNTER]} | grep -c SPARE` -gt 0 ] && DISKSTATUS='$SPAREMSG'
+ICON=$ICON3
+DRIVE=$RAID_DISK
+get_drive_info
+echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a>"$RAID_DISK - $DISKSTATUS"</td><td>$MAKER $DRIVE_SN</td></tr>"
+let COUNTER=$COUNTER+1
+done
+echo "</tbody></table><br>"
+'
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
+
+echo boo2
+'\''
+'
+fi
+
+exit
+
+

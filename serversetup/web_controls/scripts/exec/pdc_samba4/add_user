@@ -393,10 +393,10 @@ chmod 0700 /home/users/email/'$NEWUSERNAME'
 SSHSTATUS=`echo $?`
 if [ $SSHSTATUS != 0 ]
 then
-echo `date`: add_user - $NEWUSERNAME ssh failure on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $SERVER,emailserver >> /opt/karoshi/server_network/offline_servers/add_users/$NEWUSERNAME
+echo `date`: add_user - $NEWUSERNAME ssh failure on $EMAILSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo $EMAILSERVER,emailserver >> /opt/karoshi/server_network/offline_servers/add_users/$NEWUSERNAME
 FAILED_SERVER=yes
-FAILEDSERVERLIST=$FAILEDSERVERLIST,$SERVER
+FAILEDSERVERLIST=$FAILEDSERVERLIST,$EMAILSERVER
 fi
 else
 [ ! -d /home/users/email/ ] && mkdir -p /home/users/email/

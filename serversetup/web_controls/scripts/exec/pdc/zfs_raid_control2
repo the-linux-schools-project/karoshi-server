@@ -1,0 +1,211 @@
+#!/bin/bash
+#Copyright (C) 2010 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/zfs_raid_control2_cgi
+then
+echo `date`: zfs_raid_control2 - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/zfs_raid_control2_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/zfs_raid_control2.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $zfs_raid_control2_cgi'check' ]
+then
+echo `date`: zfs_raid_control2 - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: zfs_raid_control2 - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9:_,/%+-.'`
+if [ $DATA'null' = null ]
+then
+echo `date`: zfs_raid_control2 - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+SERVERTYPE=`echo "$DATA" | cut -s -d: -f5`
+SERVERMASTER=`echo "$DATA" | cut -s -d: -f6`
+ACTION=`echo "$DATA" | cut -s -d: -f7`
+DRIVE=`echo "$DATA" | cut -s -d: -f8 | sed 's/%2F/\//g'`
+DRIVE2=`echo "$DATA" | cut -s -d: -f9 | sed 's/%2F/\//g'`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: zfs_raid_control2 - Not called by zfs_raid_control2.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: zfs_raid_control2 - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: zfs_raid_control2 - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVERNAME'null' = null ]
+then
+echo `date`: software_raid_create - Blank server >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $SERVERTYPE'null' = null ]
+then
+echo `date`: software_raid_create - Blank servertype >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+if [ $SERVERMASTER'null' = null ]
+then
+echo `date`: software_raid_create - Blank servermaster >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+fi
+if [ $ACTION'null' = null ]
+then
+echo `date`: zfs_raid_control2 - Blank action >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $DRIVE'null' = null ]
+then
+echo `date`: zfs_raid_control2 - Blank drive >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: zfs_raid_control2 - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+echo `date`: zfs_raid_control2 - server $SERVER action $ACTION drive $DRIVE drive2 $DRIVE2 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+##########################
+#Language
+##########################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/software_raid ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/system/software_raid
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+if [ $SERVERNAME = $HOSTNAME ]
+then
+#Add disk as spare
+if [ $ACTION = addspare ]
+then
+zpool add $HOSTNAME-data spare $DRIVE
+fi
+
+#Remove a spare drive
+if [ $ACTION = removespare ]
+then
+zpool remove $HOSTNAME-data $DRIVE
+fi
+
+#Replace a disk
+if [ $ACTION = replace ]
+then
+zpool replace $HOSTNAME-data $DRIVE2 $DRIVE
+fi
+
+
+fi
+
+if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ] && [ $SERVERNAME != $HOSTNAME ]
+then
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+
+if [ '$ACTION' = addspare ]
+then
+zpool add $HOSTNAME-data spare '$DRIVE'
+fi
+
+#Remove a spare drive
+if [ '$ACTION' = removespare ]
+then
+zpool remove $HOSTNAME-data '$DRIVE'
+fi
+
+#Replace a disk
+if [ '$ACTION' = replace ]
+then
+zpool replace $HOSTNAME-data '$DRIVE2' '$DRIVE'
+fi
+
+'
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+echo `date`: zfs_raid_control2 \(federated mode\) - server '$SERVER' action '$ACTION' raiddevice '$RAIDDEVICE' drive '$DRIVE' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
+
+if [ '$ACTION' = addspare ]
+then
+zpool add $HOSTNAME-data spare '$DRIVE'
+fi
+
+#Remove a spare drive
+if [ '$ACTION' = removespare ]
+then
+zpool remove $HOSTNAME-data '$DRIVE'
+fi
+
+#Replace a disk
+if [ '$ACTION' = replace ]
+then
+zpool replace $HOSTNAME-data '$DRIVE2' '$DRIVE'
+fi
+
+'\''
+'
+fi
+

@@ -1,9 +1,6 @@
 #!/bin/bash
 #Detect Internet explorer, firefox mobile and opera mobile
-[ `echo $HTTP_USER_AGENT | grep -c Mobi` -gt 0 ] && MOBILE=yes
+[ `echo "$HTTP_USER_AGENT" | grep -c Mobi` -gt 0 ] && MOBILE=yes
 #Detect opera mini
-[ `echo $HTTP_USER_AGENT | grep -c Mini` -gt 0 ] && MOBILE=yes
-
-
-
+[ `echo "$HTTP_USER_AGENT" | grep -c Mini` -gt 0 ] && MOBILE=yes
 
