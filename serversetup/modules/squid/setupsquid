@@ -221,10 +221,7 @@ cp -f /opt/karoshi/serversetup/modules/squid/scripts/dgupdatefilterlist /opt/kar
 cp -f /opt/karoshi/serversetup/modules/squid/scripts/internet_log_compress /opt/karoshi/"useful scripts"/
 cp -f /opt/karoshi/serversetup/modules/squid/scripts/activate_filter_changes /opt/karoshi/"useful scripts"/
 #Modify dgupdatefilterlist with pdc ip
-if [ $LDAPSTATUS != slave_ldap_server ] && [ $PDCSERVER != $HOSTNAME ]
-then
 sed -i 's/127.0.0.1/'$PDCIP'/g' /opt/karoshi/"useful scripts"/dgupdatefilterlist
-fi
 
 [ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
 

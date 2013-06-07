@@ -30,13 +30,12 @@ fi
 #get hostname
 ##################
 [ -d /etc/dansguardian/filter_lists ] || mkdir -p /etc/dansguardian/filter_lists
-
-ldapsearch -h 127.0.0.1 -x -b ou=itadmin,ou=personnel,ou=People,dc=karoshi,dc=local uid | grep ^uid: | sed 's/uid: //g ' | sed 's/$/=filter3/g' > /etc/dansguardian/filter_lists/itadminstaff
-ldapsearch -h 127.0.0.1  -x -b ou=staff,ou=personnel,ou=People,dc=karoshi,dc=local uid | grep ^uid: | sed 's/uid: //g' | sed 's/$/=filter3/g' > /etc/dansguardian/filter_lists/staff
-ldapsearch -h 127.0.0.1  -x -b ou=officestaff,ou=personnel,ou=People,dc=karoshi,dc=local uid | grep ^uid: | sed 's/uid: //g' | sed 's/$/=filter3/g' > /etc/dansguardian/filter_lists/officestaff
-ldapsearch -h 127.0.0.1  -x -b ou=techstaff,ou=personnel,ou=People,dc=karoshi,dc=local uid | grep ^uid: | sed 's/uid: //g' | sed 's/$/=filter3/g' > /etc/dansguardian/filter_lists/techstaff
-ldapsearch -h 127.0.0.1  -x -b ou=studentstaff,ou=personnel,ou=People,dc=karoshi,dc=local uid | grep ^uid: | sed 's/uid: //g' | sed 's/$/=filter3/g' > /etc/dansguardian/filter_lists/studentstaff
-ldapsearch -h 127.0.0.1  -x -b ou=nonteachingstaff,ou=personnel,ou=People,dc=karoshi,dc=local uid | grep ^uid: | sed 's/uid: //g' | sed 's/$/=filter3/g' > /etc/dansguardian/filter_lists/nonteachingstaff
+getent passwd | grep /home/users/itadminstaff/ | cut -d: -f1 | sed 's/$/=filter3/g' > /etc/dansguardian/filter_lists/itadminstaff
+getent passwd | grep /home/users/staff/ | cut -d: -f1 | sed 's/$/=filter3/g' > /etc/dansguardian/filter_lists/staff
+getent passwd | grep /home/users/officestaff/ | cut -d: -f1 | sed 's/$/=filter3/g' > /etc/dansguardian/filter_lists/officestaff
+getent passwd | grep /home/users/techstaff/ | cut -d: -f1 | sed 's/$/=filter3/g' > /etc/dansguardian/filter_lists/techstaff
+getent passwd | grep /home/users/studentstaff/ | cut -d: -f1 | sed 's/$/=filter3/g' > /etc/dansguardian/filter_lists/studentstaff
+getent passwd | grep /home/users/nonteachingstaff/ | cut -d: -f1 | sed 's/$/=filter3/g' > /etc/dansguardian/filter_lists/nonteachingstaff
 chmod 0600 /etc/dansguardian/filter_lists/*
 cat /etc/dansguardian/filter_lists/* > /etc/dansguardian/filtergroupslist
 #Create stafflist for squid

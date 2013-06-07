@@ -93,7 +93,7 @@ fi
 
 if [ `ls /etc/rc2.d | grep -c apache2` -gt 0 ]
 then
-echo "<li>"Restartimg apache to apply the ssl certificate"</li>"
+echo "<li>"Restarting apache to apply the ssl certificate"</li>"
 /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_stop
 echo "<br>"
 /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_start

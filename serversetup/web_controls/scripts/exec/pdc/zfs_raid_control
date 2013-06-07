@@ -235,7 +235,7 @@ fi
 
 ZPOOLINFO=`zpool list $HOSTNAME-data | sed -n 2,2p | sed "s/ * / /g"`
 ZPOOLSTATUS=`zpool status $HOSTNAME-data`
-RAID_SIZE=`echo -e $ZPOOLINFO | cut -d" " -f2`
+RAID_SIZE=`df -h | grep $HOSTNAME-data | sed "s/ * / /g" | cut -d" " -f2` 
 RAID_STATE=`echo -e $ZPOOLINFO | cut -d" " -f7`
 SCANINFORMATION=`echo -e "$ZPOOLSTATUS" | grep scan: | cut -d: -f2`
 RAID_TYPE=`zpool status | grep raidz | tr -cd "A-Za-z0-9- " | sed "s/^ * //g" | cut -d" " -f1`
@@ -397,7 +397,7 @@ fi
 
 ZPOOLINFO=`zpool list $HOSTNAME-data | sed -n 2,2p | sed "s/ * / /g"`
 ZPOOLSTATUS=`zpool status $HOSTNAME-data`
-RAID_SIZE=`echo -e $ZPOOLINFO | cut -d" " -f2`
+RAID_SIZE=`df -h | grep $HOSTNAME-data | sed "s/ * / /g" | cut -d" " -f2` 
 RAID_STATE=`echo -e $ZPOOLINFO | cut -d" " -f7`
 SCANINFORMATION=`echo -e "$ZPOOLSTATUS" | grep scan: | cut -d: -f2`
 RAID_TYPE=`zpool status | grep raidz | tr -cd "A-Za-z0-9- " | sed "s/^ * //g" | cut -d" " -f1`

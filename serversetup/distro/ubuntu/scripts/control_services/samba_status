@@ -1,4 +1,5 @@
 #!/bin/bash
+[ ! -f /etc/samba/smb.conf ] && exit 1
 SAMBAVER=smbd
 [ -f /usr/local/sbin/samba ] && SAMBAVER=samba
 [ `grep -c ^#karoshi_member_server /etc/samba/smb.conf` -gt 0 ] && SAMBAVER=smbd

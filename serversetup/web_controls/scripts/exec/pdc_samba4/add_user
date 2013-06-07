@@ -195,16 +195,6 @@ source /opt/karoshi/server_network/domain_information/domain_name
 GROUPLIST=$SECONDARYGROUP
 echo `date`: add_user - creating $NEWUSERNAME, Primary group: $PRIMARYGROUP from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-########################
-#Get mail domain
-########################
-if [ -f /opt/karoshi/server_network/emaildomain ]
-then
-EMAILDOMAIN=`sed -n 1,1p /opt/karoshi/server_network/emaildomain`
-else
-EMAILDOMAIN=notset
-fi
-
 ######################
 #Create User
 ######################
@@ -222,7 +212,7 @@ FIRST_CHAR=`echo ${SURNAME:0:1} | tr 'a-z' 'A-Z'`
 SURNAME=`echo $FIRST_CHAR${SURNAME:1}`
 
 #Add user to samba4 ldap
-samba-tool user add $NEWUSERNAME --userou='CN='$PRIMARYGROUP',CN='$SUBUNIT',CN=Users' --profile-path=\\\\$HOSTNAME\\applications\\profiles\\$PRIMARYGROUP  --script-path=logon.bat --surname=$SURNAME --given-name=$FIRSTNAME --use-username-as-cn  --random-password --mail-address=$NEWUSERNAME@$EMAILDOMAIN 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool user add $NEWUSERNAME --userou='CN='$PRIMARYGROUP',CN='$SUBUNIT',CN=Users' --profile-path=\\\\$HOSTNAME\\applications\\profiles\\$PRIMARYGROUP  --script-path=logon.bat --surname=$SURNAME --given-name=$FIRSTNAME --use-username-as-cn  --random-password --mail-address=$NEWUSERNAME@$REALM 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 #samba-tool user add $NEWUSERNAME --userou='CN='$PRIMARYGROUP',CN='$SUBUNIT',CN=Users' --home-drive=G --script-path='\\'$HOSTNAME'\'netlogon'\'logon.bat --home-directory='\\'$SERVER'\'$NEWUSERNAME --surname=$SURNAME --given-name=$FIRSTNAME --use-username-as-cn  --random-password --mail-address=$NEWUSERNAME@$EMAILDOMAIN 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 

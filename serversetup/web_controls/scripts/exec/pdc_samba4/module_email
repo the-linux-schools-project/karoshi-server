@@ -109,7 +109,7 @@ SERVERTCPIP=`net lookup $SERVERNAME`
 
 #Update alias entry for the server
 [ ! -d /opt/karoshi/server_network/aliases ] && mkdir -p /opt/karoshi/server_network/aliases
-[ ! -f /opt/karoshi/server_network/aliases/$SERVERNAME ] && echo $ALIAS > /opt/karoshi/server_network/aliases/$MOODLESERVER
+[ ! -f /opt/karoshi/server_network/aliases/$SERVERNAME ] && echo $ALIAS > /opt/karoshi/server_network/aliases/$SERVERNAME
 
 #Add entry to samba4 dns for web alias
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`

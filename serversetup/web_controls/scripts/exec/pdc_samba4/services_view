@@ -143,6 +143,7 @@ DSERVICES=cron
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/dhcpserver ] && DSERVICES=$DSERVICES,dhcp
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/ldapserver ] && DSERVICES=$DSERVICES,ldap
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/openvpn ] && DSERVICES=$DSERVICES,openvpn
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/userwebhosting ] && DSERVICES=$DSERVICES,apache,mysql,vsftpd
 fi
 
 if [ $SERVERTYPE = federated ]
@@ -163,6 +164,7 @@ DSERVICES=cron
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/dhcpserver ] && DSERVICES=$DSERVICES,dhcp
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/ldapserver ] && DSERVICES=$DSERVICES,ldap
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/openvpn ] && DSERVICES=$DSERVICES,openvpn
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/userwebhosting ] && DSERVICES=$DSERVICES,apache,mysql,vsftpd
 fi
 
 if [ $SERVERTYPE = federatedslave ]
@@ -183,6 +185,7 @@ DSERVICES=cron
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/dhcpserver ] && DSERVICES=$DSERVICES,dhcp
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/ldapserver ] && DSERVICES=$DSERVICES,ldap
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/openvpn ] && DSERVICES=$DSERVICES,openvpn
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/userwebhosting ] && DSERVICES=$DSERVICES,apache,mysql,vsftpd
 fi
 
 DSERVICES=`echo -e "$DSERVICES" | sed "s/,/\n/g"`

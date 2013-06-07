@@ -1331,13 +1331,13 @@ touch /var/lib/samba/netlogon/linuxclient/versions.txt
 [ `grep -c ^karoshi-2.2 /var/lib/samba/netlogon/linuxclient/versions.txt` = 0 ] && echo karoshi-2.2 >> /var/lib/samba/netlogon/linuxclient/versions.txt
 
 #Point icons at the correct path
-sed -i 's/xen:50001/manage.'$REALM'/g' /var/lib/samba/netlogon/linuxclient/karoshi-2.2/desktop_icons/all/"Change Password.desktop"
-sed -i 's/xen:50001/manage.'$REALM'/g' /var/lib/samba/netlogon/linuxclient/karoshi-2.2/desktop_icons/itadmin/"Helpdesk.desktop"
-sed -i 's/xen:50001/manage.'$REALM'/g' /var/lib/samba/netlogon/linuxclient/karoshi-2.2/desktop_icons/itadmin/"karoshimanagement.desktop"
-sed -i 's/xen:50001/manage.'$REALM'/g' /var/lib/samba/netlogon/linuxclient/karoshi-2.2/desktop_icons/staff/"Helpdesk.desktop"
-sed -i 's/xen:50001/manage.'$REALM'/g' /var/lib/samba/netlogon/linuxclient/karoshi-2.2/desktop_icons/staff/"karoshimanagement.desktop"
-sed -i 's/xen:50001/manage.'$REALM'/g' /var/lib/samba/netlogon/linuxclient/karoshi-2.2/desktop_icons/officestaff/"Helpdesk.desktop"
-sed -i 's/xen:50001/manage.'$REALM'/g' /var/lib/samba/netlogon/linuxclient/karoshi-2.2/desktop_icons/officcestaff/"karoshimanagement.desktop"
+sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/karoshi-2.2/desktop_icons/all/"Change Password.desktop"
+sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/karoshi-2.2/desktop_icons/itadmin/"Helpdesk.desktop"
+sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/karoshi-2.2/desktop_icons/itadmin/"karoshimanagement.desktop"
+sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/karoshi-2.2/desktop_icons/staff/"Helpdesk.desktop"
+sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/karoshi-2.2/desktop_icons/staff/"karoshimanagement.desktop"
+sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/karoshi-2.2/desktop_icons/officestaff/"Helpdesk.desktop"
+sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/karoshi-2.2/desktop_icons/officestaff/"karoshimanagement.desktop"
 
 #Create information for linux clients
 [ ! -d /var/lib/samba/netlogon/domain_information ] && mkdir -p /var/lib/samba/netlogon/domain_information
