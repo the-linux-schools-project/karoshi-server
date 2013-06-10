@@ -168,7 +168,7 @@ document.myform._USERNAMESTYLE_.options[8]=new Option("Style 9: " + enrollmentVa
 }
 </script>
 </head>
-<body>'
+<body onLoad="start()">'
 #########################
 #Get data input
 #########################

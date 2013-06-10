@@ -76,7 +76,7 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	// ]]>
 	</script>'
 fi
-echo '</head><body><form action="/cgi-bin/admin/helpdesk_add.cgi" method="post">'
+echo '</head><body onLoad="start()"><form action="/cgi-bin/admin/helpdesk_add.cgi" method="post">'
 
 #Generate navigation bar
 if [ $MOBILE = no ]

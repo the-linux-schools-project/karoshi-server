@@ -91,7 +91,7 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	// ]]>
 	</script>'
 
-echo '</head><body>'
+echo '</head><body onLoad="start()">'
 
 #Generate navigation bar
 if [ $MOBILE = no ]

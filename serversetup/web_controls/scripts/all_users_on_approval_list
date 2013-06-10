@@ -42,6 +42,6 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 #############################
 #Generate page warning
 #############################
-/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add acceptable_use_authorisations /cgi-bin/admin/view_acceptable_use_authorisations_fm.cgi "$ACCEPTABLEUSEWARNINGMSG" webwarning1.gif
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add acceptable_use_authorisations /cgi-bin/admin/view_acceptable_use_authorisations_fm.cgi "$ACCEPTABLEUSEWARNINGMSG" 1
 
 exit

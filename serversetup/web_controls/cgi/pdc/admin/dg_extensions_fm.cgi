@@ -64,7 +64,7 @@ function SetAllCheckBoxes(FormName, FieldName, CheckValue)
   </script>
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
 </head>
-<body>'
+<body onLoad="start()">'
 
 #Detect mobile browser
 MOBILE=no

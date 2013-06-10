@@ -51,7 +51,7 @@ echo '
 <script type="text/javascript" src="/all/js/script.js"></script>
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
 </head>
-<body>'
+<body onLoad="start()">'
 
 function show_status {
 echo '<SCRIPT language="Javascript">'

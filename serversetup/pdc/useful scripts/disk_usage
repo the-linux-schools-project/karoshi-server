@@ -26,29 +26,20 @@ DISKWARNMSG="Disk Warning"
 RAIDWARNMSG="Raid Warning"
 BAD_SECTOR_WARN=10
 
-if [ ! -d /opt/karoshi/web_controls/warnings ]
-then
-mkdir -p /opt/karoshi/web_controls/warnings/messages
-chmod 0750 /opt/karoshi/web_controls/warnings
-chmod 0750 /opt/karoshi/web_controls/warnings/messages
-chown root.apache_karoshi /opt/karoshi/web_controls/warnings
-chown root.apache_karoshi /opt/karoshi/web_controls/warnings/messages
-fi
-
 function warning_alert {
-/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add disk_usage_$SERVER /cgi-bin/admin/view_disk_usage_logs_fm.cgi "$ERRORALERT" webwarning2.gif
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add disk_usage_$SERVER /cgi-bin/admin/view_disk_usage_logs_fm.cgi "$ERRORALERT" 3
 }
 
 function warning_alert2 {
-/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add raid_warning_$SERVER /cgi-bin/admin/disk_information_fm.cgi "$ERRORALERT" webwarning2.gif
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add raid_warning_$SERVER /cgi-bin/admin/disk_information_fm.cgi "$ERRORALERT" 3
 }
 
 function warning_alert3 {
-/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add smart_warning_$SERVER /cgi-bin/admin/disk_information_fm.cgi "$ERRORALERT" webwarning2.gif
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add smart_warning_$SERVER /cgi-bin/admin/disk_information_fm.cgi "$ERRORALERT" 3
 }
 
 function warning_alert4 {
-/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add zfs_raid_warning_$SERVER /cgi-bin/admin/zfs_raid_control_fm.cgi "$ERRORALERT" webwarning2.gif
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add zfs_raid_warning_$SERVER /cgi-bin/admin/zfs_raid_control_fm.cgi "$ERRORALERT" 3
 }
 
 #####################################

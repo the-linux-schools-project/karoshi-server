@@ -79,7 +79,7 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 fi
 
 echo '</head>
-<body>'
+<body onLoad="start()">'
 #########################
 #Get data input
 #########################

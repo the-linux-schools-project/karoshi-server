@@ -55,7 +55,7 @@ echo '
 <link rel="stylesheet" href="/all/calendar2/calendar.css">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
-<body>'
+<body onLoad="start()">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/dg_view_global_usage.cgi" name="testform" method="post"><b></b>

@@ -24,22 +24,13 @@
 
 LOG_DATE=`date +%F`
 
-if [ ! -d /opt/karoshi/web_controls/warnings ]
-then
-mkdir -p /opt/karoshi/web_controls/warnings/messages
-chmod 0750 /opt/karoshi/web_controls/warnings
-chmod 0750 /opt/karoshi/web_controls/warnings/messages
-chown root.apache_karoshi /opt/karoshi/web_controls/warnings
-chown root.apache_karoshi /opt/karoshi/web_controls/warnings/messages
-fi
-
 #Delete warning file
 /opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete reboot
 
 
 function add_warning {
 echo `date`: check_reboot - $SERVER: reboot required after an upgrade. >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add reboot_$SERVER /cgi-bin/admin/shutdown_fm.cgi "$ERRORALERT" webwarning2.gif
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add reboot_$SERVER /cgi-bin/admin/shutdown_fm.cgi "$ERRORALERT" 3
 }
 
 #Check servers for reboot

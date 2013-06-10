@@ -56,7 +56,7 @@ echo '
 <script type="text/javascript" src="/all/js/script.js"></script>
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
-<body>'
+<body onLoad="start()">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then

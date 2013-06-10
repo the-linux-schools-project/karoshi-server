@@ -20,7 +20,7 @@
 #aball@karoshi.org.uk
 #
 #Website: http://www.karoshi.org.uk
-PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/print_server`
+PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/printserver`
 if [ $PRINTSERVER != $HOSTNAME ]
 then
 ssh $PRINTSERVER "lpstat -v | cut -d' ' -f3 | sed 's/://g'"

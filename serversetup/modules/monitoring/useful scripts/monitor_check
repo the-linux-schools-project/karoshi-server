@@ -13,7 +13,7 @@ STATUS=`echo $?`
 ERRORALERT="Monitoring System Failure Alert"
 if [ $STATUS = 101 ]
 then
-/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add monitoring /cgi-bin/admin/mon_status.cgi "$ERRORALERT" webwarning2.gif
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add monitoring /cgi-bin/admin/mon_status.cgi "$ERRORALERT" 3
 else
 if [ -f /opt/karoshi/web_controls/warnings/messages/monitoring ]
 then

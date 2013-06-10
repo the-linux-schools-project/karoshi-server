@@ -118,7 +118,7 @@ echo "</body></html>"
 exit
 }
 
-[ ! -f /opt/karoshi/server_network/print_server ] && show_status
+[ ! -f /opt/karoshi/server_network/printserver ] && show_status
 
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
 

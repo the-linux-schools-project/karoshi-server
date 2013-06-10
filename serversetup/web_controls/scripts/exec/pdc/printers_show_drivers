@@ -73,7 +73,7 @@ echo `date`: printers_show_drivers - Blank remote tcpip address >> /opt/karoshi/
 exit 101
 fi
 
-if [ ! -f /opt/karoshi/server_network/print_server ]
+if [ ! -f /opt/karoshi/server_network/printserver ]
 then
 echo `date`: printers - no print server has been set up. >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -85,7 +85,7 @@ echo `date`: printers_show_drivers - access denied to $REMOTE_USER from $REMOTE_
 exit 101
 fi
 
-PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/print_server`
+PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/printserver`
 if [ $PRINTSERVER != $HOSTNAME ]
 then
 ssh -x -o PasswordAuthentication=no $PRINTSERVER '

@@ -114,7 +114,7 @@ rm -f /var/lib/samba/netlogon/printers_data.txt
 #Delete the print queue
 ####################
 
-PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/print_server`
+PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/printserver`
 #Check to see that PRINTSERVER is not blank
 if [ $PRINTSERVER'null' = null ]
 then

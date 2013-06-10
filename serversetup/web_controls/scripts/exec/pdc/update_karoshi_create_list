@@ -73,7 +73,7 @@ echo '</tbody></table>' >> /opt/karoshi/updates/updatelist_all.html
 #############################
 if [ $ALL_APPLIED != yes ]
 then
-/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add karoshi_updates /cgi-bin/admin/update_karoshi_fm.cgi "$WARNINGMSG" webwarning1.gif
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add karoshi_updates /cgi-bin/admin/update_karoshi_fm.cgi "$WARNINGMSG" 2
 else
 /opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete karoshi_updates
 fi

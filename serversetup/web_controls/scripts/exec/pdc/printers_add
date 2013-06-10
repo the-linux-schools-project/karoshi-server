@@ -116,14 +116,14 @@ fi
 #add printer
 ####################
 #Check to see that PRINTSERVER is not blank
-if [ ! -f /opt/karoshi/server_network/print_server ]
+if [ ! -f /opt/karoshi/server_network/printserver ]
 then
 echo `date`: printers_add - No print servers have been setup by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 
 
-PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/print_server`
+PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/printserver`
 if [ $PRINTSERVER != $HOSTNAME ]
 then
 USESSH=yes

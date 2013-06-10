@@ -192,7 +192,7 @@ KIXLINENUMBER=`grep -n printserver= /var/lib/samba/netlogon/newlogonform.kix | c
 echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/printserver
 [ ! -d /var/lib/samba/netlogon/domain_information ] && mkdir -p /var/lib/samba/netlogon/domain_information
 echo $SERVERNAME > /var/lib/samba/netlogon/domain_information/print_server
-echo $SERVERNAME > /opt/karoshi/server_network/print_server
+echo $SERVERNAME > /opt/karoshi/server_network/printserver
 cp -f /opt/karoshi/server_network/printserver /var/lib/samba/netlogon/
 sed -i 's/PRINTERCTRL=no/PRINTERCTRL=yes/g' /opt/karoshi/server_network/menusettings
 

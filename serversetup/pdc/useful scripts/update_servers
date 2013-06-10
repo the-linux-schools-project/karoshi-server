@@ -27,7 +27,7 @@ DATE=`date +%d-%m-%Y`
 
 function warning_alert {
 
-/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add update_servers /cgi-bin/admin/update_servers_view_logs_fm.cgi "$ERRORALERT" webwarning2.gif
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add update_servers /cgi-bin/admin/update_servers_view_logs_fm.cgi "$ERRORALERT" 2
 }
 
 #####################################

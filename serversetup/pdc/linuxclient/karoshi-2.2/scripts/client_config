@@ -25,7 +25,7 @@ source /opt/karoshi/linuxclientsetup/utilities/common
 ####################
 #Refresh client information
 ####################
-unset LOCATION
+#unset LOCATION
 unset PRINTSERVER
 unset PROXYSERVER
 unset CLIENTSHUTDOWNTIME
@@ -121,17 +121,17 @@ find /etc/skel -type d -print0 | xargs -0 chmod 755
 ###########################
 if [ "$CLIENTSHUTDOWNTIME" ]; then
 	echo Setting auto shutdown time at $CLIENTSHUTDOWNTIME
-	HOURS=`cut -d: -f1 <<< "$SHUTDOWNTIME"`
-	MINUTES=`cut -d: -f2 <<< "$SHUTDOWNTIME"`
+	hours=`cut -d: -f1 <<< "$SHUTDOWNTIME"`
+	minutes=`cut -d: -f2 <<< "$SHUTDOWNTIME"`
 
-	if [ "$HOURS" ] && [ "$MINUTES" ]
+	if [ "$hours" ] && [ "$minutes" ]
 	then
 		echo "SHELL=/bin/bash
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 MAILTO=\"\"
 HOME=/
 
-$MINUTES $HOURS * * * /opt/karoshi/linuxclientsetup/scripts/clientshutdown" > /opt/karoshi/linuxclientsetup/clientshutdowntime.cron
+$minutes $hours * * * /opt/karoshi/linuxclientsetup/scripts/clientshutdown" > /opt/karoshi/linuxclientsetup/clientshutdowntime.cron
 		crontab /opt/karoshi/linuxclientsetup/clientshutdowntime.cron
 		rm -f /opt/karoshi/linuxclientsetup/clientshutdowntime.cron
 	fi
@@ -172,7 +172,7 @@ if [ -d /opt/karoshi/linuxclientsetup/desktop_icons ]; then
 fi
 
 ############################
-#Printers
+#printers
 ############################
 #Turn off cups browsing
 if [ `grep -c "Browsing Off" /etc/cups/cupsd.conf` -eq 0 ]
@@ -184,32 +184,31 @@ fi
 #Assign printers depending on the location
 if [ "$LOCATION" ]; then
 	#Remove all printers
-	while read -r PRINTER _; do
-		if [ "`lpstat -v $PRINTER | grep 'smb:\|ipp:'`" ]; then
-			echo Removing $PRINTER
-			lpadmin -x $PRINTER
+	while read -r printer _; do
+		if [ "`lpstat -v $printer | grep 'smb:\|ipp:'`" ]; then
+			echo Removing $printer
+			lpadmin -x $printer
 		fi
 	done < <(lpstat -a)
 	
 	#Add printers
 	if [ "$PRINTSERVER" ] && [ -f /tmp/netlogon/printers.txt ]; then
-		ALLPRINTERS=`grep $LOCATION /tmp/netlogon/printers.txt`
-		if [ "$ALLPRINTERS" ]; then
-			NO_OF_PRINTERS=`cut -d, -f2 <<< "$ALLPRINTERS"`
-			DEFAULT_PRINTER=`cut -d, -f$(( NO_OF_PRINTERS + 3 )) <<< "$ALLPRINTERS"`
-			COUNTER=1
-			for (( i = 3; i < NO_OF_PRINTERS + 3; ++i )); do
-				PRINTER=`cut -d, -f$i <<< "$ALLPRINTERS"`
-				echo Adding printer $PRINTER
+		all_printers=`grep $LOCATION /tmp/netlogon/printers.txt`
+		if [ "$all_printers" ]; then
+			printer_count=`cut -d, -f2 <<< "$all_printers"`
+			default_printer=`cut -d, -f$(( printer_count + 3 )) <<< "$all_printers"`
+			for (( i = 3; i < printer_count + 3; ++i )); do
+				printer=`cut -d, -f$i <<< "$all_printers"`
+				echo Adding printer $printer
 				if [ "$DOMAINTYPE" == samba3 ]; then
-					lpadmin -p $PRINTER -v smb://$PRINTSERVER/$PRINTER -L "$LOCATION" -D "$PRINTER" -E
+					lpadmin -p $printer -v smb://$PRINTSERVER/$printer -L "$LOCATION" -D "$printer" -E
 				else
-					lpadmin -p $PRINTER -v ksmb://$PRINTSERVER/$PRINTER -L "$LOCATION" -D "$PRINTER" -E
+					lpadmin -p $printer -v ksmb://$PRINTSERVER/$printer -L "$LOCATION" -D "$printer" -E
 				fi
 				#Copy PPD
-				[ -f /tmp/netlogon/linuxclient/printer_drivers/$PRINTER.ppd ] && cp -f /tmp/netlogon/linuxclient/printer_drivers/$PRINTER.ppd /etc/cups/ppd/
+				[ -f /tmp/netlogon/linuxclient/printer_drivers/$printer.ppd ] && cp -f /tmp/netlogon/linuxclient/printer_drivers/$printer.ppd /etc/cups/ppd/
 			done
-			lpadmin -d $DEFAULT_PRINTER
+			lpadmin -d $default_printer
 		fi
 	fi
 fi
@@ -218,13 +217,13 @@ fi
 #Update client
 ############################
 #Use update var so that apt-get only updates once
-APT_UPDATED=false
+apt_updated=false
 #Only run if flag file is present
 if [ -f /tmp/netlogon/linuxclient/$LINUX_VERSION/enable_updates ]
 then
 	echo Updating Software
 	apt-get update
-	APT_UPDATED=true
+	apt_updated=true
 	apt-get -y upgrade
 fi
 
@@ -238,12 +237,10 @@ then
 	if [ -f /tmp/netlogon/linuxclient/$LINUX_VERSION/install_list ]
 	then
 		#Only run apt-get update if it has not already run
-		! $APT_UPDATED && apt-get update
-		INSTALL_LIST=`sed 's/ //g' /tmp/netlogon/linuxclient/$LINUX_VERSION/install_list`
-		CHECK_LIST=`wc -l /tmp/netlogon/linuxclient/$LINUX_VERSION/install_list`
-		if [ $CHECK_LIST -ne 0 ]
-		then
-			apt-get -y install --no-upgrade $INSTALL_LIST
+		! $apt_updated && apt-get update
+		install_list=`sed 's/ //g' /tmp/netlogon/linuxclient/$LINUX_VERSION/install_list`
+		if [ "$install_list" ]; then
+			apt-get -y install --no-upgrade $install_list
 			[ $? -eq 0 ] && cat /tmp/netlogon/linuxclient/$LINUX_VERSION/install_list >> /opt/karoshi/linuxclient/installed_software
 		fi
 	fi
@@ -251,13 +248,43 @@ then
 	#Remove software
 	if [ -f /tmp/netlogon/linuxclient/$LINUX_VERSION/remove_list ]
 	then
-		REMOVE_LIST=`sed 's/ //g' /tmp/netlogon/linuxclient/$LINUX_VERSION/remove_list`
-		CHECK_LIST=`wc -l /tmp/netlogon/linuxclient/$LINUX_VERSION/remove_list`
-		if [ $CHECK_LIST -ne 0 ]
-		then
+		remove_list=`sed 's/ //g' /tmp/netlogon/linuxclient/$LINUX_VERSION/remove_list`
+		if [ "$remove_list" ]; then
 			echo Removing Software
-			apt-get -y remove $REMOVE_LIST
+			apt-get -y remove $remove_list
 		fi
+	fi
+fi
+
+##########################
+#Configure /opt/virtualbox
+##########################
+mkdir -p /opt/virtualbox
+if ! grep -Eq '^[^[:space:]]+[[:space:]]+/opt/virtualbox[[:space:]]' /etc/fstab; then
+	#Detect any SATA or SCSI drives with no partitions
+	drive=$(parted -lms 2>/dev/null | sed -n '/BYT;$/ { n; /^\/dev\/sd./ { h; n; /^$/ { g; s/\([^:]*\):.*/\1/p; q; } } }')
+	if [[ $drive ]]; then
+		echo "Detected candidate drive for /opt/virtualbox: $drive"
+		#Make GPT partition table and single logical partition
+		parted -s "$drive" -- mktable gpt
+		parted -s -a optimal "$drive" -- mkpart logical 0% 100%
+		mkfs.ext4 "$drive"1
+		
+		#Copy data if required
+		if ! [[ $(find /opt/virtualbox -maxdepth 0 -type d -empty 2>/dev/null) ]]; then
+			mkdir -p /tmp/karoshi-virtualbox
+			mount "$drive"1 /tmp/karoshi-virtualbox
+			find /opt/virtualbox -mindepth 1 -maxdepth 1 -print0 | xargs -0 mv -t /tmp/karoshi-virtualbox
+			umount /tmp/karoshi-virtualbox
+			rmdir /tmp/karoshi-virtualbox
+		fi
+		
+		#Write to /etc/fstab
+		uuid=$(lsblk -no UUID "$drive"1)
+		echo "# karoshi: /opt/virtualbox" >> /etc/fstab
+		echo "UUID=$uuid	/opt/virtualbox	ext4	defaults	0	2" >> /etc/fstab
+		
+		mount /opt/virtualbox
 	fi
 fi
 
@@ -270,10 +297,10 @@ echo root > /etc/cron.allow
 echo root > /etc/at.allow
 
 #Enable trim support in fstab
-for DEVICE in /dev/sd*; do
-	DEVICEUUID=`blkid $DEVICE | sed 's@.*UUID="\([^"]*\)".*@\1@'`
-	if [ "$DEVICEUUID" ] && [ "`hdparm -I $DEVICE | grep TRIM`" ]; then
-		sed -i "/swap\|discard,noatime/!s@\(UUID=$DEVICEUUID[[:blank:]]\+[^[:blank:]]\+[[:blank:]]\+[^[:blank:]]\+[[:blank:]]\+[^[:blank:]]\+\)@\1,discard,noatime@" /etc/fstab
+for device in /dev/sd*; do
+	device_uuid=`blkid $device | sed 's@.*UUID="\([^"]*\)".*@\1@'`
+	if [ "$device_uuid" ] && [ "`hdparm -I $device | grep TRIM`" ]; then
+		sed -i "/swap\|discard,noatime/!s@\(UUID=$device_uuid[[:blank:]]\+[^[:blank:]]\+[[:blank:]]\+[^[:blank:]]\+[[:blank:]]\+[^[:blank:]]\+\)@\1,discard,noatime@" /etc/fstab
 	fi
 done
 

@@ -118,12 +118,12 @@ fi
 ####################
 #Get printer server name
 ####################
-if [ ! -f /opt/karoshi/server_network/print_server ]
+if [ ! -f /opt/karoshi/server_network/printserver ]
 then
 echo `date`: printers_ppd_assign - no printer server has been set up. >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-PRINTERSERVER=`sed -n 1,1p /opt/karoshi/server_network/print_server | sed 's/ //g'`
+PRINTERSERVER=`sed -n 1,1p /opt/karoshi/server_network/printserver | sed 's/ //g'`
 
 ####################
 #add ppd file to printer

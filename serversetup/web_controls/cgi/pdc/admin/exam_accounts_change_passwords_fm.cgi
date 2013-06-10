@@ -48,7 +48,7 @@ echo '
 <link rel="stylesheet" href="/css/'$STYLESHEET'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
-<body>'
+<body onLoad="start()">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/exam_accounts_change_passwords.cgi" method="post"><div id="actionbox">
