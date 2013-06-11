@@ -270,6 +270,16 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MOODLESERVER:$DOMAINPATH:" | /opt/karoshi/serve
 fi
 }
 
+function create_linux_client_icon {
+echo '[Desktop Entry]
+Version=1.0
+Type=Link
+Name=Moodle
+Comment=Moodle
+Icon=moodle
+URL=https://'$DOMAINPATH'/moodle' > /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVER/desktop_icons/all/Moodle.desktop
+}
+
 check_already_installed
 apply_ssl_certificate
 add_dns_entry
@@ -279,6 +289,7 @@ check_ports
 install_moodle
 restore_moodle.sql
 add_role_information
+create_linux_client_icon
 
 #Schedule_moodle_export_grades
 #cp /opt/karoshi/serversetup/modules/moodle/moodle_export_grades /opt/karoshi/"useful scripts"/

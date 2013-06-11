@@ -143,6 +143,7 @@ echo WEBADDRESS=\"$WEBADDRESS\" >> /opt/karoshi/server_network/domain_informatio
 echo REALM=\"$WEBADDRESS\" >> /opt/karoshi/server_network/domain_information/domain_name
 echo REALMCAPS=\"$REALMCAPS\" >> /opt/karoshi/server_network/domain_information/domain_name
 echo LDAPBASE=\"$LDAPBASE\" >> /opt/karoshi/server_network/domain_information/domain_name
+echo LINUXCLIENTVER=\"karoshi-2.2\" >> /opt/karoshi/server_network/domain_information/domain_name
 
 function check_password {
 #Check that passwords have been set
