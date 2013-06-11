@@ -84,7 +84,7 @@ LDAPCHECK=0
 COUNTER=0
 while [ $LDAPCHECK = 0 ]
 do
-LDAPCHECK=`netstat -vatn | grep -c -w :389`
+LDAPCHECK=`netstat -vatn | grep -c -w 389`
 sleep 1
 #Give up after 60 seconds
 [ $COUNTER = 60 ] && exit 101
@@ -420,6 +420,13 @@ whencreated: 20121120112708.0Z" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAP
 }
 
 function add_subcontainers {
+
+#Groups subcontainer
+NAME="Groups"
+DESC="Groups"
+LDAPPATH="CN=Groups,CN=Users,$LDAPBASE"
+add_sub_container
+
 #All personnel subcontainers
 
 NAME="personnel"
@@ -507,16 +514,16 @@ add_sub_container
 }
 
 function add_samba4_group {
-samba-tool group add $NEWGROUP
+samba-tool group add --groupou="CN=Groups,CN=Users" $NEWGROUP
 echo
 GIDNUMBER=`getent group $NEWGROUP | cut -d: -f3`
-echo -e "dn: CN=$NEWGROUP,CN=Users,$LDAPBASE
+echo -e "dn: CN=$NEWGROUP,CN=Groups,CN=Users,$LDAPBASE
 changetype: modify
 add: objectclass
 objectclass: posixgroup
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
 
-echo -e "dn: CN=$NEWGROUP,CN=Users,$LDAPBASE
+echo -e "dn: CN=$NEWGROUP,CN=Groups,CN=Users,$LDAPBASE
 changetype: modify
 add: gidnumber
 gidnumber: $GIDNUMBER

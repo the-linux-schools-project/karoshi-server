@@ -60,6 +60,8 @@ echo `date`: setupemail - Blank email domain >> /opt/karoshi/logs/karoshi_web_ma
 exit 101
 fi
 
+DOMAIN=`echo $EMAILDOMAIN | sed 's/^mail.//g'`
+
 [ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
 [ -d /var/www/html ] || mkdir -p /var/www/html
 [ ! -e /opt/karoshi/.tempdata/mysqlpasswordstatus ] || rm -f /opt/karoshi/.tempdata/mysqlpasswordstatus
@@ -89,7 +91,8 @@ fi
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/dovecot
 
 #Merge postfix keytab into mail keytab
-echo -e "rkt /etc/keytabs/postfix.keytab\nwkt /etc/keytab/mail.keytab\nexit" | ktutil 1>/dev/null
+echo -e "rkt /etc/keytabs/postfix.keytab\nwkt /etc/keytabs/mail.keytab\nexit" | ktutil 1>/dev/null
+rm -f /etc/keytabs/postfix.keytab
 
 function passgen {
 PASSCHOICE=( A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y x 1 2 3 4 5 6 7 8 9 0 )
@@ -220,10 +223,10 @@ sed -i $LINENUM'c'\myhostname' '=' '$EMAILDOMAIN /etc/postfix/main.cf
 fi
 
 LINENUM=`grep -n mydomain' '= /etc/postfix/main.cf | cut -d: -f1`
-sed -i $LINENUM'c'\mydomain' '=' '$EMAILDOMAIN /etc/postfix/main.cf
+sed -i $LINENUM'c'\mydomain' '=' '$DOMAIN /etc/postfix/main.cf
 
 LINENUM=`grep -n masquerade_domains' '= /etc/postfix/main.cf | cut -d: -f1`
-sed -i $LINENUM'c'\masquerade_domains' '=' '$EMAILDOMAIN /etc/postfix/main.cf
+sed -i $LINENUM'c'\masquerade_domains' '=' '$DOMAIN /etc/postfix/main.cf
 
 ########################
 #Set mailname
