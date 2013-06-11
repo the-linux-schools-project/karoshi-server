@@ -515,7 +515,7 @@ add_sub_container
 
 function add_samba4_group {
 samba-tool group add --groupou="CN=Groups,CN=Users" $NEWGROUP
-echo
+
 GIDNUMBER=`getent group $NEWGROUP | cut -d: -f3`
 echo -e "dn: CN=$NEWGROUP,CN=Groups,CN=Users,$LDAPBASE
 changetype: modify
@@ -529,6 +529,12 @@ add: gidnumber
 gidnumber: $GIDNUMBER
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
 
+echo -e "dn: CN=$NEWGROUP,CN=Groups,CN=Users,$LDAPBASE
+changetype: modify
+add: displayname
+displayname: $NEWGROUPDISP
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
+
 }
 
 ##############################
@@ -540,72 +546,89 @@ COUNTER=$STARTYEAR
 while [  $COUNTER -le $ENDYEAR ]; do
 echo -e "$GROUPADDMSG yr$COUNTER\n"
 NEWGROUP=yr$COUNTER
+NEWGROUPDISP="Yr$COUNTER"
 add_samba4_group
 let COUNTER=COUNTER+1
 done
 
 echo -e "$GROUPADDMSG staff\n"
 NEWGROUP=staff
+NEWGROUPDISP=Staff
 add_samba4_group
 
 echo -e "$GROUPADDMSG staff2\n"
 NEWGROUP=staff2
+NEWGROUPDISP=Staff2
 add_samba4_group
 
 echo -e "$GROUPADDMSG staff3\n"
 NEWGROUP=staff3
+NEWGROUPDISP=Staff3
 add_samba4_group
 
 echo -e "$GROUPADDMSG staff4\n"
 NEWGROUP=staff4
+NEWGROUPDISP=Staff4
 add_samba4_group
 
 echo -e "$GROUPADDMSG nonteachingstaff\n"
 NEWGROUP=nonteachingstaff
+NEWGROUPDISP="Non teaching staff"
 add_samba4_group
 
 echo -e "$GROUPADDMSG studentstaff\n"
 NEWGROUP=studentstaff
+NEWGROUPDISP="Student Staff"
 add_samba4_group
 
 echo -e "$GROUPADDMSG guestusers\n"
 NEWGROUP=guestusers
+NEWGROUPDISP="Guest Users"
 add_samba4_group
 
 echo -e "$GROUPADDMSG exams\n"
 NEWGROUP=exams
+NEWGROUPDISP="Exam Users"
 add_samba4_group
 
 echo $GROUPADDMSG itadmin
 NEWGROUP=itadmin
+NEWGROUPDISP="Itadmin Users"
 add_samba4_group
 
 echo $GROUPADDMSG tech
 NEWGROUP=tech
+NEWGROUPDISP="Tech Users"
 add_samba4_group
 
 echo -e "$GROUPADDMSG officestaff\n"
 NEWGROUP=officestaff
+NEWGROUPDISP="Office Staff"
 add_samba4_group
 
 echo -e "$GROUPADDMSG bursar\n"
 NEWGROUP=bursar
+NEWGROUPDISP="Bursars"
 add_samba4_group
 
 echo -e "$GROUPADDMSG smt\n"
 NEWGROUP=smt
+NEWGROUPDISP="Senior Management"
 add_samba4_group
 
 echo -w "$GROUPADDMSG governors\n"
 NEWGROUP=governors
+NEWGROUPDISP="Governors"
 add_samba4_group
 
 echo -e "$GROUPADDMSG guardians\n"
 NEWGROUP=guardians
+NEWGROUPDISP="Guardians"
 add_samba4_group
 
 echo -e "$GROUPADDMSG profilemanagement\n"
 NEWGROUP=profilemanagement
+NEWGROUPDISP="Profile Management"
 add_samba4_group
 
 echo $CREATEHOMEFOLDERSMSG
