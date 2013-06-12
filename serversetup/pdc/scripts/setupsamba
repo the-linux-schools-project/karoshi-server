@@ -50,6 +50,9 @@ GUESTACCOUNTS=30
 TECHACCOUNTS=4
 EXAMACCOUNTS=40
 TRAININGACCOUNTS=30
+DAY=`date +%d`
+MONTH=`date +%m`
+YEAR=`date +%y`
 
 #Install samba4
 /opt/karoshi/serversetup/all/samba4/samba4install
@@ -397,6 +400,10 @@ echo $PASSWORD > /opt/karoshi/server_network/domain_information/nslcd-user
 }
 
 function add_organisational_unit {
+HOUR=`date +%H`
+MINUTES=`date +%M`
+SECONDS=`date +%S`
+CREATETIME=$YEAR$MONTH$DAY$HOUR$MINUTES.0Z
 
 echo -e "version: 1
 
@@ -412,8 +419,8 @@ objectclass: top
 objectclass: organizationalUnit
 usnchanged: 3372
 usncreated: 3371
-whenchanged: 20121120112708.0Z
-whencreated: 20121120112708.0Z" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
+whenchanged: $CREATETIME
+whencreated: $CREATETIME" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
 }
 
 function add_organisational_units {
@@ -548,6 +555,11 @@ add_organisational_unit
 
 function add_sub_container {
 
+HOUR=`date +%H`
+MINUTES=`date +%M`
+SECONDS=`date +%S`
+CREATETIME=$YEAR$MONTH$DAY$HOUR$MINUTES.0Z
+
 echo -e "version: 1
 
 # Entry 1: $LDAPPATH
@@ -564,8 +576,8 @@ showinadvancedviewonly: FALSE
 systemflags: -1946157056
 usnchanged: 3372
 usncreated: 3371
-whenchanged: 20121120112708.0Z
-whencreated: 20121120112708.0Z" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
+whenchanged: $CREATETIME
+whencreated: $CREATETIME" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
 
 }
 
