@@ -396,6 +396,155 @@ chmod 0400 /opt/karoshi/server_network/domain_information/nslcd-user
 echo $PASSWORD > /opt/karoshi/server_network/domain_information/nslcd-user
 }
 
+function add_organisational_unit {
+
+echo -e "version: 1
+
+# Entry 1: $LDAPPATH
+dn: $LDAPPATH
+ou: $NAME
+description: $DESC
+distinguishedname: $LDAPPATH
+instancetype: 4
+name: $NAME
+objectcategory: CN=Organizational-Unit,CN=Schema,CN=Configuration,$LDAPBASE
+objectclass: top
+objectclass: organizationalUnit
+usnchanged: 3372
+usncreated: 3371
+whenchanged: 20121120112708.0Z
+whencreated: 20121120112708.0Z" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
+}
+
+function add_organisational_units {
+
+#Policies subcontainer
+NAME="Policies"
+DESC="Policies"
+LDAPPATH="OU=Policies,$LDAPBASE"
+add_organisational_unit
+
+#Distributionlists subcontainer
+NAME="Distributionlists"
+DESC="Distribution lists"
+LDAPPATH="OU=Distributionlists,$LDAPBASE"
+add_organisational_unit
+
+#All subcontainers for policies and distribution lists
+
+NAME="personnel"
+DESC="Personnel"
+LDAPPATH="OU=personnel,OU=Policies,$LDAPBASE"
+add_organisational_unit
+LDAPPATH="OU=personnel,OU=Distributionlists,$LDAPBASE"
+add_organisational_unit
+
+NAME="staff"
+DESC="Staff"
+LDAPPATH="OU=staff,OU=personnel,OU=Policies,$LDAPBASE"
+add_organisational_unit
+LDAPPATH="OU=staff,OU=personnel,OU=Distributionlists,$LDAPBASE"
+add_organisational_unit
+
+NAME="studentstaff"
+DESC="Student staff"
+LDAPPATH="OU=studentstaff,OU=personnel,OU=Policies,$LDAPBASE"
+add_organisational_unit
+LDAPPATH="OU=studentstaff,OU=personnel,OU=Distributionlists,$LDAPBASE"
+add_organisational_unit
+
+NAME="officestaff"
+DESC="Office staff"
+LDAPPATH="OU=officestaff,OU=personnel,OU=Policies,$LDAPBASE"
+add_organisational_unit
+LDAPPATH="OU=officestaff,OU=personnel,OU=Distributionlists,$LDAPBASE"
+add_organisational_unit
+
+NAME="nonteachingstaff"
+DESC="Non teaching staff"
+LDAPPATH="OU=nonteachingstaff,OU=personnel,OU=Policies,$LDAPBASE"
+add_sub_container
+LDAPPATH="OU=nonteachingstaff,OU=personnel,OU=Distributionlists,$LDAPBASE"
+add_sub_container
+
+NAME="governors"
+DESC="Governors"
+LDAPPATH="OU=governors,OU=personnel,OU=Policies,$LDAPBASE"
+add_organisational_unit
+LDAPPATH="OU=governors,OU=personnel,OU=Distributionlists,$LDAPBASE"
+add_organisational_unit
+
+NAME="itadmin"
+DESC="Itadmin users"
+LDAPPATH="OU=itadmin,OU=personnel,OU=Policies,$LDAPBASE"
+add_organisational_unit
+LDAPPATH="OU=itadmin,OU=personnel,OU=Distributionlists,$LDAPBASE"
+add_organisational_unit
+
+NAME="tech"
+DESC="Technician users"
+LDAPPATH="OU=tech,OU=personnel,OU=Policies,$LDAPBASE"
+add_organisational_unit
+LDAPPATH="OU=tech,OU=personnel,OU=Distributionlists,$LDAPBASE"
+add_organisational_unit
+
+#All student sub containers
+
+NAME="students"
+DESC="Student accounts"
+LDAPPATH="OU=students,OU=Policies,$LDAPBASE"
+add_organisational_unit
+LDAPPATH="OU=students,OU=Distributionlists,$LDAPBASE"
+add_organisational_unit
+
+COUNTER=$STARTYEAR
+while [ $COUNTER -le $ENDYEAR ]
+do
+NAME="yr$COUNTER"
+DESC="yr$COUNTER"
+LDAPPATH="OU=yr$COUNTER,OU=students,OU=Distributionlists,$LDAPBASE"
+add_organisational_unit
+let COUNTER=$COUNTER+1
+done
+
+#All other subcontainers
+NAME="other"
+DESC="Other users"
+LDAPPATH="OU=other,OU=Policies,$LDAPBASE"
+add_organisational_unit
+LDAPPATH="OU=other,OU=Distributionlists,$LDAPBASE"
+add_organisational_unit
+
+NAME="exams"
+DESC="Exam users"
+LDAPPATH="OU=exams,OU=other,OU=Policies,$LDAPBASE"
+add_organisational_unit
+LDAPPATH="OU=exams,OU=other,OU=Distributionlists,$LDAPBASE"
+add_organisational_unit
+
+NAME="guestusers"
+DESC="Guest users"
+LDAPPATH="OU=guestusers,OU=other,OU=Policies,$LDAPBASE"
+add_organisational_unit
+LDAPPATH="OU=guestusers,OU=other,OU=Distributionlists,$LDAPBASE"
+add_organisational_unit
+
+
+NAME="karoshi"
+DESC="Karoshi user"
+LDAPPATH="OU=karoshi,OU=other,OU=Policies,$LDAPBASE"
+add_organisational_unit
+LDAPPATH="OU=karoshi,OU=other,OU=Distributionlists,$LDAPBASE"
+add_organisational_unit
+
+NAME="nogroup"
+DESC="No group"
+LDAPPATH="OU=nogroup,OU=other,OU=Policies,$LDAPBASE"
+add_organisational_unit
+LDAPPATH="OU=nogroup,OU=other,OU=Distributionlists,$LDAPBASE"
+add_organisational_unit
+}
+
 
 function add_sub_container {
 
@@ -1294,6 +1443,7 @@ function run_functions {
 check_ldap_port
 allow_anonumous_browse
 add_subcontainers
+add_organisational_units
 #nslcd-user-accounts - not needed using anonymous bind instead
 echo "N.A.:127.0.0.1:N.A.:$HOSTNAME:users:internal:" | /opt/karoshi/serversetup/modules/authentication/configure_authentication
 makefoldersandgroups
