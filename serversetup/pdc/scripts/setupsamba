@@ -52,7 +52,6 @@ EXAMACCOUNTS=40
 TRAININGACCOUNTS=30
 DAY=`date +%d`
 MONTH=`date +%m`
-YEAR=`date +%y`
 
 #Install samba4
 /opt/karoshi/serversetup/all/samba4/samba4install
@@ -400,10 +399,10 @@ echo $PASSWORD > /opt/karoshi/server_network/domain_information/nslcd-user
 }
 
 function add_organisational_unit {
-HOUR=`date +%H`
-MINUTES=`date +%M`
-SECONDS=`date +%S`
-CREATETIME=$YEAR$MONTH$DAY$HOUR$MINUTES.0Z
+hour=`date +%H`
+minutes=`date +%M`
+seconds=`date +%S`
+CREATETIME=$THISYEAR$MONTH$DAY$hour$minutes$seconds.0Z
 
 echo -e "version: 1
 
@@ -470,9 +469,9 @@ add_organisational_unit
 NAME="nonteachingstaff"
 DESC="Non teaching staff"
 LDAPPATH="OU=nonteachingstaff,OU=personnel,OU=Policies,$LDAPBASE"
-add_sub_container
+add_organisational_unit
 LDAPPATH="OU=nonteachingstaff,OU=personnel,OU=Distributionlists,$LDAPBASE"
-add_sub_container
+add_organisational_unit
 
 NAME="governors"
 DESC="Governors"
@@ -509,6 +508,8 @@ while [ $COUNTER -le $ENDYEAR ]
 do
 NAME="yr$COUNTER"
 DESC="yr$COUNTER"
+LDAPPATH="OU=yr$COUNTER,OU=students,OU=Policies,$LDAPBASE"
+add_organisational_unit
 LDAPPATH="OU=yr$COUNTER,OU=students,OU=Distributionlists,$LDAPBASE"
 add_organisational_unit
 let COUNTER=$COUNTER+1
@@ -555,10 +556,10 @@ add_organisational_unit
 
 function add_sub_container {
 
-HOUR=`date +%H`
-MINUTES=`date +%M`
-SECONDS=`date +%S`
-CREATETIME=$YEAR$MONTH$DAY$HOUR$MINUTES.0Z
+hour=`date +%H`
+minutes=`date +%M`
+seconds=`date +%S`
+CREATETIME=$THISYEAR$MONTH$DAY$hour$minutes$seconds.0Z
 
 echo -e "version: 1
 
@@ -1374,10 +1375,6 @@ then
 samba-tool group addmembers "Domain Admins" $NEWUSERNAME  1>/dev/null 2>>/opt/karoshi/serversetup/install_log
 fi
 
-#Get uid and primary gid for the new user
-PRIGROUPID=`getent group $PRIMARYGROUP | cut -d: -f3`
-UIDNUMBER=`getent passwd $NEWUSERNAME | cut -d: -f3`
-
 #Change primarygroupid and add unixhomedirectory - have to use ldapmodify at this time since samba-tool does not seem to have this option!
 #This is hideous why cant samba4 ldap do this all in one go??
 echo -e "dn: CN=$NEWUSERNAME,$SUBPATH,$LDAPBASE
@@ -1386,11 +1383,7 @@ add: objectclass
 objectclass: posixaccount
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/serversetup/install_log
 
-echo -e "dn: CN=$NEWUSERNAME,$SUBPATH,$LDAPBASE
-changetype: modify
-add: uidnumber
-uidnumber: $UIDNUMBER
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/serversetup/install_log
+PRIGROUPID=`getent group $PRIMARYGROUP | cut -d: -f3`
 
 echo -e "dn: CN=$NEWUSERNAME,$SUBPATH,$LDAPBASE
 changetype: modify
@@ -1398,10 +1391,12 @@ add: gidnumber
 gidnumber: $PRIGROUPID
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/serversetup/install_log
 
+UIDNUMBER=`getent passwd $NEWUSERNAME | cut -d: -f3`
+
 echo -e "dn: CN=$NEWUSERNAME,$SUBPATH,$LDAPBASE
 changetype: modify
-replace: primaryGroupID
-primaryGroupID: $PRIGROUPID
+add: uidnumber
+uidnumber: $UIDNUMBER
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/serversetup/install_log
 
 echo -e "dn: CN=$NEWUSERNAME,$SUBPATH,$LDAPBASE
