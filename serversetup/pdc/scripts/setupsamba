@@ -398,6 +398,185 @@ chmod 0400 /opt/karoshi/server_network/domain_information/nslcd-user
 echo $PASSWORD > /opt/karoshi/server_network/domain_information/nslcd-user
 }
 
+function link_organisational_unit {
+
+#Make a cn inside the ou
+samba-tool group add --groupou="$SUBPATH" $NAME
+#Add member to the group
+echo -e "dn: $LDAPPATH
+changetype: modify
+add: member
+member: $LDAPLINK
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
+}
+
+function link_organisational_units {
+
+NAME=techpolicy
+NAME2=tech
+SUBPATH="OU=$NAME2,OU=personnel,OU=Policies"
+LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
+LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
+link_organisational_unit
+
+NAME=techlist
+SUBPATH="OU=$NAME2,OU=personnel,OU=Distributionlists"
+LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
+LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
+link_organisational_unit
+
+NAME=itadminpolicy
+NAME2=itadmin
+SUBPATH="OU=$NAME2,OU=personnel,OU=Policies"
+LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
+LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
+link_organisational_unit
+
+NAME=itadminlist
+SUBPATH="OU=$NAME2,OU=personnel,OU=Distributionlists"
+LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
+LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
+link_organisational_unit
+
+NAME=staffpolicy
+NAME2=staff
+SUBPATH="OU=$NAME2,OU=personnel,OU=Policies"
+LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
+LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
+link_organisational_unit
+
+NAME=stafflist
+SUBPATH="OU=$NAME2,OU=personnel,OU=Distributionlists"
+LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
+LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
+link_organisational_unit
+
+NAME=staff2policy
+NAME2=staff2
+SUBPATH="OU=$NAME2,OU=personnel,OU=Policies"
+LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
+LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
+link_organisational_unit
+
+NAME=staff2list
+SUBPATH="OU=$NAME2,OU=personnel,OU=Distributionlists"
+LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
+LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
+link_organisational_unit
+
+NAME=staff3policy
+NAME2=staff3
+SUBPATH="OU=$NAME2,OU=personnel,OU=Policies"
+LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
+LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
+link_organisational_unit
+
+NAME=staff3list
+SUBPATH="OU=$NAME2,OU=personnel,OU=Distributionlists"
+LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
+LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
+link_organisational_unit
+
+NAME=staff4policy
+NAME2=staff4
+SUBPATH="OU=$NAME2,OU=personnel,OU=Policies"
+LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
+LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
+link_organisational_unit
+
+NAME=staff4list
+SUBPATH="OU=$NAME2,OU=personnel,OU=Distributionlists"
+LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
+LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
+link_organisational_unit
+
+NAME=studentstaffpolicy
+NAME2=studentstaff
+SUBPATH="OU=$NAME2,OU=personnel,OU=Policies"
+LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
+LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
+link_organisational_unit
+
+NAME=studentstafflist
+SUBPATH="OU=$NAME2,OU=personnel,OU=Distributionlists"
+LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
+LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
+link_organisational_unit
+
+NAME=officestaffpolicy
+NAME2=officestaff
+SUBPATH="OU=$NAME2,OU=personnel,OU=Policies"
+LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
+LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
+link_organisational_unit
+
+NAME=officestafflist
+SUBPATH="OU=$NAME2,OU=personnel,OU=Distributionlists"
+LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
+LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
+link_organisational_unit
+
+NAME=nonteachingstaffpolicy
+NAME2=nonteachingstaff
+SUBPATH="OU=$NAME2,OU=personnel,OU=Policies"
+LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
+LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
+link_organisational_unit
+
+NAME=nonteachingstafflist
+SUBPATH="OU=$NAME2,OU=personnel,OU=Distributionlists"
+LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
+LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
+link_organisational_unit
+
+NAME=governorspolicy
+NAME2=governors
+SUBPATH="OU=$NAME2,OU=personnel,OU=Policies"
+LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
+LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
+link_organisational_unit
+
+NAME=governorslist
+SUBPATH="OU=$NAME2,OU=personnel,OU=Distributionlists"
+LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
+LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
+link_organisational_unit
+
+COUNTER=$STARTYEAR
+while [ $COUNTER -le $ENDYEAR ]
+do
+
+NAME="yr$COUNTER"policy
+NAME2=yr$COUNTER
+SUBPATH="OU=$NAME2,OU=students,OU=Policies"
+LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
+LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
+link_organisational_unit
+
+NAME="yr$COUNTER"list
+SUBPATH="OU=$NAME2,OU=students,OU=Distributionlists"
+LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
+LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
+link_organisational_unit
+
+let COUNTER=$COUNTER+1
+done
+
+NAME=guestuserspolicy
+NAME2=guestusers
+SUBPATH="OU=$NAME2,OU=guestusers,OU=other,OU=Policies"
+LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
+LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
+link_organisational_unit
+
+NAME=guestuserslist
+SUBPATH="OU=$NAME2,OU=guestusers,OU=other,OU=Distributionlists"
+LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
+LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
+link_organisational_unit
+
+}
+
 function add_organisational_unit {
 hour=`date +%H`
 minutes=`date +%M`
@@ -450,6 +629,27 @@ DESC="Staff"
 LDAPPATH="OU=staff,OU=personnel,OU=Policies,$LDAPBASE"
 add_organisational_unit
 LDAPPATH="OU=staff,OU=personnel,OU=Distributionlists,$LDAPBASE"
+add_organisational_unit
+
+NAME="staff2"
+DESC="Staff2"
+LDAPPATH="OU=staff2,OU=personnel,OU=Policies,$LDAPBASE"
+add_organisational_unit
+LDAPPATH="OU=staff2,OU=personnel,OU=Distributionlists,$LDAPBASE"
+add_organisational_unit
+
+NAME="staff3"
+DESC="Staff3"
+LDAPPATH="OU=staff3,OU=personnel,OU=Policies,$LDAPBASE"
+add_organisational_unit
+LDAPPATH="OU=staff3,OU=personnel,OU=Distributionlists,$LDAPBASE"
+add_organisational_unit
+
+NAME="staff4"
+DESC="Staff4"
+LDAPPATH="OU=staff4,OU=personnel,OU=Policies,$LDAPBASE"
+add_organisational_unit
+LDAPPATH="OU=staff4,OU=personnel,OU=Distributionlists,$LDAPBASE"
 add_organisational_unit
 
 NAME="studentstaff"
@@ -1361,10 +1561,6 @@ dsHeuristics: 0000002001001
 
 function create_user {
 samba-tool user add $NEWUSERNAME --userou="$SUBPATH" --profile-path=\\\\$HOSTNAME\\applications\\profiles\\$PRIMARYGROUP --script-path=logon.bat --use-username-as-cn  --random-password --mail-address=$NEWUSERNAME@$REALM 1>/dev/null 2>>/opt/karoshi/serversetup/install_log
-[ ! -d $NEWUSERPATH ] && mkdir $NEWUSERPATH
-chmod 0600 -R $NEWUSERPATH
-chmod u+X -R $NEWUSERPATH
-chown $NEWUSERNAME -R $NEWUSERPATH
 
 #Add user to primary group
 samba-tool group addmembers "$PRIMARYGROUP" $NEWUSERNAME  1>/dev/null 2>>/opt/karoshi/serversetup/install_log
@@ -1404,6 +1600,12 @@ changetype: modify
 add: unixhomedirectory
 unixhomedirectory: $NEWUSERPATH
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/serversetup/install_log
+
+[ ! -d $NEWUSERPATH ] && mkdir $NEWUSERPATH
+chmod 0600 -R $NEWUSERPATH
+chmod u+X -R $NEWUSERPATH
+chown $NEWUSERNAME -R $NEWUSERPATH
+
 }
 
 
@@ -1454,6 +1656,7 @@ add_organisational_units
 #nslcd-user-accounts - not needed using anonymous bind instead
 echo "N.A.:127.0.0.1:N.A.:$HOSTNAME:users:internal:" | /opt/karoshi/serversetup/modules/authentication/configure_authentication
 makefoldersandgroups
+link_organisational_units
 make_default_users
 make_profiles
 getyadpid

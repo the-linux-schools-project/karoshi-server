@@ -172,7 +172,7 @@ if [ -d /opt/karoshi/linuxclientsetup/desktop_icons ]; then
 fi
 
 ############################
-#printers
+#Printers
 ############################
 #Turn off cups browsing
 if [ `grep -c "Browsing Off" /etc/cups/cupsd.conf` -eq 0 ]
@@ -201,12 +201,12 @@ if [ "$LOCATION" ]; then
 				printer=`cut -d, -f$i <<< "$all_printers"`
 				echo Adding printer $printer
 				if [ "$DOMAINTYPE" == samba3 ]; then
-					lpadmin -p $printer -v smb://$PRINTSERVER/$printer -L "$LOCATION" -D "$printer" -E
+					lpadmin -p $printer -v smb://$PRINTSERVER.$DNSSUFFIX/$printer -L "$LOCATION" -D "$printer" -E
 				else
-					lpadmin -p $printer -v ksmb://$PRINTSERVER/$printer -L "$LOCATION" -D "$printer" -E
+					lpadmin -p $printer -v ksmb://$PRINTSERVER.$DNSSUFFIX/$printer -L "$LOCATION" -D "$printer" -E
 				fi
 				#Copy PPD
-				[ -f /tmp/netlogon/linuxclient/printer_drivers/$printer.ppd ] && cp -f /tmp/netlogon/linuxclient/printer_drivers/$printer.ppd /etc/cups/ppd/
+				[[ -f /tmp/netlogon/linuxclient/printer_drivers/$printer.ppd ]] && lpadmin -p $printer -P /tmp/netlogon/linuxclient/printer_drivers/$printer.ppd
 			done
 			lpadmin -d $default_printer
 		fi

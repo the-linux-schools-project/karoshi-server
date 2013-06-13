@@ -29,39 +29,44 @@ OnlyShowIn=XFCE;" | tee ~/Desktop/karoshi-"$filename".desktop > ~/.local/share/a
 [ ! -d ~/.local/share/applications ] && mkdir -p ~/.local/share/applications
 [ ! -d ~/Desktop ] && mkdir ~/Desktop
 
-##################
-#create user.js for default Firefox settings
-##################
-if which firefox >/dev/null && [ -d ~/.mozilla/firefox ]; then
-	firefox_profile=`sed -n '0,/^Path=/s/^Path=//p' ~/.mozilla/firefox/profiles.ini`
-	if [[ "$firefox_profile" ]] && [ -d ~/.mozilla/firefox/"$firefox_profile" ]; then
-		#Apply CA certificate
-		if [ -f /opt/karoshi/linuxclientsetup/cacert.pem ]; then
-			certutil -A -n "Karoshi CA" -addstore root -t "CTu,CTu,CTu" -i /opt/karoshi/linuxclientsetup/cacert.pem -d ~/.mozilla/firefox/"$firefox_profile"
-		fi
+##############################
+#This only makes sense if running as a domain user
+##############################
+if [ -d ~/network/home ]; then
+
+	##################
+	#create user.js for default Firefox settings
+	##################
+	if which firefox >/dev/null && [ -d ~/.mozilla/firefox ]; then
+		firefox_profile=`sed -n '0,/^Path=/s/^Path=//p' ~/.mozilla/firefox/profiles.ini`
+		if [[ "$firefox_profile" ]] && [ -d ~/.mozilla/firefox/"$firefox_profile" ]; then
+			#Apply CA certificate
+			if [ -f /opt/karoshi/linuxclientsetup/cacert.pem ]; then
+				certutil -A -n "Karoshi CA" -addstore root -t "CTu,CTu,CTu" -i /opt/karoshi/linuxclientsetup/cacert.pem -d ~/.mozilla/firefox/"$firefox_profile"
+			fi
 	
-		#Default download directory
-		echo "user_pref('browser.download.lastDir', '~/network/home/');" > ~/.mozilla/firefox/"$firefox_profile"/user.js
+			#Default download directory
+			echo "user_pref('browser.download.lastDir', '~/network/home/');" > ~/.mozilla/firefox/"$firefox_profile"/user.js
 	
-		#Give clipboard capability to Moodle and other sites
-		if [ -f /opt/karoshi/linuxclientsetup/allow_clipboard_sites ]; then
-			echo "user_pref('capability.policy.allowclipboard.sites', '` < /opt/karoshi/linuxclientsetup/allow_clipboard_sites`');
+			#Give clipboard capability to Moodle and other sites
+			if [ -f /opt/karoshi/linuxclientsetup/allow_clipboard_sites ]; then
+				echo "user_pref('capability.policy.allowclipboard.sites', '` < /opt/karoshi/linuxclientsetup/allow_clipboard_sites`');
 user_pref('capability.policy.allowclipboard.Clipboard.cutcopy', 'allAccess');
 user_pref('capability.policy.allowclipboard.Clipboard.paste', 'allAccess');" >> ~/.mozilla/firefox/"$firefox_profile"/user.js
-		fi
+			fi
 	
-		#Remove updated messages and extension checking
-		firefox_version=`firefox --version | sed 's/^[^0-9]*//'`
-		echo "user_pref('browser.startup.homepage_override.mstone', '$firefox_version');
+			#Remove updated messages and extension checking
+			firefox_version=`firefox --version | sed 's/^[^0-9]*//'`
+			echo "user_pref('browser.startup.homepage_override.mstone', '$firefox_version');
 user_pref('extensions.lastAppVersion', '$firefox_version');
 user_pref('extensions.lastPlatformVersion', '$firefox_version');" >> ~/.mozilla/firefox/"$firefox_profile"/user.js
 
-		#Cache settings
-		echo "user_pref('browser.cache.disk.capacity', 5120);" >> ~/.mozilla/firefox/"$firefox_profile"/user.js
+			#Cache settings
+			echo "user_pref('browser.cache.disk.capacity', 5120);" >> ~/.mozilla/firefox/"$firefox_profile"/user.js
 	
-		#Proxy server
-		if [ "$PROXYSERVER" ]; then
-			echo "user_pref('network.proxy.http', '$PROXYSERVER.$DNSSUFFIX');
+			#Proxy server
+			if [ "$PROXYSERVER" ]; then
+				echo "user_pref('network.proxy.http', '$PROXYSERVER.$DNSSUFFIX');
 user_pref('network.proxy.http_port', 3128);
 user_pref('network.proxy.ssl', '$PROXYSERVER.$DNSSUFFIX');
 user_pref('network.proxy.ssl_port', 3128);
@@ -74,41 +79,41 @@ user_pref('network.proxy.gopher_port', 3128);
 user_pref('network.proxy.type', 1);
 user_pref('network.proxy.no_proxies_on', 'localhost, 127.0.0.0/8, $DNSSUFFIX, $PDC');
 user_pref('browser.startup.homepage', '$PROXYSERVER.$DNSSUFFIX');" >> ~/.mozilla/firefox/"$firefox_profile"/user.js
-		else
-			#For no proxy, we want the homepage to be about:home
-			echo "user_pref('browser.startup.homepage', 'about:home');" >> ~/.mozilla/firefox/"$firefox_profile"/user.js
-		fi
+			else
+				#For no proxy, we want the homepage to be about:home
+				echo "user_pref('browser.startup.homepage', 'about:home');" >> ~/.mozilla/firefox/"$firefox_profile"/user.js
+			fi
 	
-		#Set up Kerberos
-		if [ "$DOMAINTYPE" == samba4 ] || [ "$DOMAINTYPE" == samba4_winbind ]; then
-			echo "user_pref('network.negotiate-auth.trusted-uris', '$DNSSUFFIX');" >> ~/.mozilla/firefox/"$firefox_profile"/user.js
+			#Set up Kerberos
+			if [ "$DOMAINTYPE" == samba4 ] || [ "$DOMAINTYPE" == samba4_winbind ]; then
+				echo "user_pref('network.negotiate-auth.trusted-uris', '$DNSSUFFIX');" >> ~/.mozilla/firefox/"$firefox_profile"/user.js
+			fi
 		fi
 	fi
-fi
 
-##################
-#create user.js for default Thunderbird settings
-##################
-if which thunderbird >/dev/null && [ -d ~/.thunderbird ]; then
-	thunderbird_profile=`sed -n '0,/^Path=/s/^Path=//p' ~/.thunderbird/profiles.ini`
-	if [[ "$thunderbird_profile" ]] && [ -d ~/.thunderbird/"$thunderbird_profile" ]; then
-		#Apply CA certificate
-		if [ -f /opt/karoshi/linuxclientsetup/cacert.pem ]; then
-			certutil -A -n "Karoshi CA" -addstore root -t "CTu,CTu,CTu" -i /opt/karoshi/linuxclientsetup/cacert.pem -d ~/.thunderbird/"$thunderbird_profile"
-		fi
+	##################
+	#create user.js for default Thunderbird settings
+	##################
+	if which thunderbird >/dev/null && [ -d ~/.thunderbird ]; then
+		thunderbird_profile=`sed -n '0,/^Path=/s/^Path=//p' ~/.thunderbird/profiles.ini`
+		if [[ "$thunderbird_profile" ]] && [ -d ~/.thunderbird/"$thunderbird_profile" ]; then
+			#Apply CA certificate
+			if [ -f /opt/karoshi/linuxclientsetup/cacert.pem ]; then
+				certutil -A -n "Karoshi CA" -addstore root -t "CTu,CTu,CTu" -i /opt/karoshi/linuxclientsetup/cacert.pem -d ~/.thunderbird/"$thunderbird_profile"
+			fi
 		
-		#Remove updated messages and extension checking
-		thunderbird_version=`thunderbird --version | sed 's/^[^0-9]*//'`
-		echo "user_pref('extensions.lastAppVersion', '$thunderbird_version');
+			#Remove updated messages and extension checking
+			thunderbird_version=`thunderbird --version | sed 's/^[^0-9]*//'`
+			echo "user_pref('extensions.lastAppVersion', '$thunderbird_version');
 user_pref('extensions.lastPlatformVersion', '$thunderbird_version');
 user_pref('mailnews.start_page_override.mstone', '$thunderbird_version');" >> ~/.thunderbird/"$thunderbird_profile"/user.js
 
-		#Cache settings
-		echo "user_pref('browser.cache.disk.capacity', 5120);" >> ~/.thunderbird/"$thunderbird_profile"/user.js
+			#Cache settings
+			echo "user_pref('browser.cache.disk.capacity', 5120);" >> ~/.thunderbird/"$thunderbird_profile"/user.js
 		
-		#Proxy server
-		if [ "$PROXYSERVER" ]; then
-			echo "user_pref('network.proxy.http', '$PROXYSERVER.$DNSSUFFIX');
+			#Proxy server
+			if [ "$PROXYSERVER" ]; then
+				echo "user_pref('network.proxy.http', '$PROXYSERVER.$DNSSUFFIX');
 user_pref('network.proxy.http_port', 3128);
 user_pref('network.proxy.ssl', '$PROXYSERVER.$DNSSUFFIX');
 user_pref('network.proxy.ssl_port', 3128);
@@ -120,20 +125,27 @@ user_pref('network.proxy.gopher', '$PROXYSERVER.$DNSSUFFIX');
 user_pref('network.proxy.gopher_port', 3128);
 user_pref('network.proxy.type', 1);
 user_pref('network.proxy.no_proxies_on', 'localhost, 127.0.0.0/8, $DNSSUFFIX, $PDC');" >> ~/.thunderbird/"$thunderbird_profile"/user.js
-		fi
+			fi
 		
-		#Set up Kerberos
-		if [ "$DOMAINTYPE" == samba4 ] || [ "$DOMAINTYPE" == samba4_winbind ]; then
-			echo "user_pref('network.negotiate-auth.trusted-uris', '$DNSSUFFIX');" >> ~/.thunderbird/"$thunderbird_profile"/user.js
-		fi
+			#Set up Kerberos
+			if [ "$DOMAINTYPE" == samba4 ] || [ "$DOMAINTYPE" == samba4_winbind ]; then
+				echo "user_pref('network.negotiate-auth.trusted-uris', '$DNSSUFFIX');" >> ~/.thunderbird/"$thunderbird_profile"/user.js
+			fi
 		
-		if [ "$MAILSERVER" ]; then
-			user_fullname=$(getent passwd $USER | cut -d: -f5 | cut -d, -f1)
+			if [ "$MAILSERVER" ]; then
+				user_fullname=$(getent passwd $USER | cut -d: -f5 | cut -d, -f1)
 		
-			echo "user_pref('mail.identity.id1.useremail', '$USER@$DNSSUFFIX');
+				echo "user_pref('mail.identity.id1.useremail', '$USER@$DNSSUFFIX');
 user_pref('mail.identity.id1.valid', true);
 user_pref('mail.identity.id1.fullName', '$user_fullname');
 user_pref('mail.identity.id1.smtpServer', 'smtp1');
+user_pref('mail.identity.id1.archive_enabled', false);
+user_pref('mail.identity.id1.draft_folder', 'imap://$USER@mail.$DNSSUFFIX/Drafts');
+user_pref('mail.identity.id1.drafts_folder_picker_mode', '0');
+user_pref('mail.identity.id1.fcc_folder', 'imap://$USER@mail.$DNSSUFFIX/Sent');
+user_pref('mail.identity.id1.fcc_folder_picker_mode', '0');
+user_pref('mail.identity.id1.stationery_folder', 'imap://$USER@mail.$DNSSUFFIX/Templates');
+user_pref('mail.identity.id1.tmpl_folder_picker_mode', '0');
 
 user_pref('mail.server.server1.authMethod', 5);
 user_pref('mail.server.server1.check_new_mail', true);
@@ -144,6 +156,7 @@ user_pref('mail.server.server1.socketType', 2);
 user_pref('mail.server.server1.storeContractID', '@mozilla.org/msgstore/berkeleystore;1');
 user_pref('mail.server.server1.type', 'imap');
 user_pref('mail.server.server1.userName', '$USER');
+user_pref('mail.server.server1.using_subscription', false);
 
 user_pref('mail.smtpserver.smtp1.authMethod', 5);
 user_pref('mail.smtpserver.smtp1.hostname', 'mail.$DNSSUFFIX');
@@ -151,11 +164,11 @@ user_pref('mail.smtpserver.smtp1.port', 25);
 user_pref('mail.smtpserver.smtp1.try_ssl', 2);
 user_pref('mail.smtpserver.smtp1.username', '$USER');
 user_pref('mail.smtpservers', 'smtp1');" >> ~/.thunderbird/"$thunderbird_profile"/user.js
-		fi
+			fi
 		
-		#Set up LDAP address book
-		base_dn="cn=Users"$(sed 's/\(\.\|^\)/,dc=/g' <<< "$DNSSUFFIX")
-		echo "user_pref('ldap_2.autoComplete.directoryServer', 'ldap_2.servers.Karoshi');
+			#Set up LDAP address book
+			base_dn="cn=Users"$(sed 's/\(\.\|^\)/,dc=/g' <<< "$DNSSUFFIX")
+			echo "user_pref('ldap_2.autoComplete.directoryServer', 'ldap_2.servers.Karoshi');
 user_pref('ldap_2.autoComplete.useDirectory', true);
 user_pref('ldap_2.servers.Karoshi.auth.dn', '');
 user_pref('ldap_2.servers.Karoshi.auth.saslmech', '');
@@ -167,22 +180,22 @@ user_pref('ldap_2.servers.Karoshi.autoComplete.commentFormat', '[displayName]');
 user_pref('ldap_2.servers.Karoshi.autoComplete.nameFormat', '[displayName]');
 user_pref('ldap_2.servers.Karoshi.autoComplete.filterFormat', '(|(mail=*%v*)(displayName=*%v*)(givenName=*%v*)(sn=*%v*)(cn=*%v*))');
 user_pref('ldap_2.servers.default.attrmap.DisplayName', 'displayname,cn,commonname');" >> ~/.thunderbird/"$thunderbird_profile"/user.js
+		fi
 	fi
+
 fi
+#End of domain bit
 
 ##################
 #Create icons
 ##################
 mountpoints=false
-> ~/.gtk-bookmarks
 
 #Create home icon first so that it appears first on the desktop
 mountpath=`mount | grep "$USER/network/home type cifs" | cut -d' ' -f3`
 if [ "$mountpath" ]; then
 	mountname=`basename $mountpath`
 	create_entries "$mountname" "$mountpath" folder-home
-	#Thunar
-	echo "file://$mountpath $mountname" >> ~/.gtk-bookmarks
 	mountpoints=true
 fi
 
@@ -191,8 +204,6 @@ for mountpath in `mount | grep "$USER/network/[^[:blank:]]* type cifs" | cut -d'
 	mountname=`basename $mountpath`
 	if [ $mountname != home ] && [ $mountname != netlogon ]; then
 		create_entries "$mountname" "$mountpath" folder-publicshare
-		#Thunar
-		echo "file://$mountpath $mountname" >> ~/.gtk-bookmarks
 		mountpoints=true
 	fi
 done
@@ -231,8 +242,10 @@ fi
 export MOZ_CRASHREPORTER_DISABLE=1
 
 #Create rednotebook link
-[ ! -d ~/network/home/.rednotebook ] && mkdir ~/network/home/.rednotebook
-[ ! -d ~/.rednotebook ] && ln -s network/home/.rednotebook ~/.rednotebook
+if [ -d ~/network/home ]; then
+	[ ! -d ~/network/home/.rednotebook ] && mkdir ~/network/home/.rednotebook
+	[ ! -d ~/.rednotebook ] && ln -s network/home/.rednotebook ~/.rednotebook
+fi
 
 #Set permissions on icons
 chmod 0700 ~/Desktop/*.desktop

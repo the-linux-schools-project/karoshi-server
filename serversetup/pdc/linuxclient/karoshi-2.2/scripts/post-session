@@ -20,7 +20,7 @@ list=( )
 #Populate list with all hidden folders, with some exceptions
 while read -d $'\0' -r file ; do
 	checkAndList "${file##~/}"
-done < <(find ~ -mindepth 1 -maxdepth 1 -xdev -not '(' -name '.mozilla' -o -name '.cache' -o -name '.thumbnails' -o -name '.Xauthority' -o -name '.ICEauthority' -o -name '.xsession-errors' -o -name '.pulse*' -o -name '.gvfs' -o -name '.dbus' -o -name '.gtk-bookmarks' -o -name '.VirtualBox' -o -name '.rednotebook' ')' -name '.*' -print0)
+done < <(find ~ -mindepth 1 -maxdepth 1 -xdev -not '(' -name '.mozilla' -o -name '.cache' -o -name '.thumbnails' -o -name '.Xauthority' -o -name '.ICEauthority' -o -name '.xsession-errors' -o -name '.pulse*' -o -name '.gvfs' -o -name '.dbus' -o -name '.VirtualBox' -o -name '.rednotebook' ')' -name '.*' -print0)
 
 if which firefox >/dev/null && [ -d ~/.mozilla/firefox ]; then
 	firefox_profile=`sed -n '0,/^Path=/s/^Path=//p' ~/.mozilla/firefox/profiles.ini`
