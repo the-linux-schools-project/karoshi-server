@@ -1,0 +1,250 @@
+#!/bin/bash
+#Copyright (C) 2013 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/user_web_hosting_cgi
+then
+echo `date`: user_web_hosting - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/user_web_hosting_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/user_web_hosting.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $user_web_hosting_cgi'check' ]
+then
+echo `date`: user_web_hosting - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: user_web_hosting - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: user_web_hosting - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+KAROSHIUSER=`echo "$DATA" | cut -s -d: -f4`
+ACTION=`echo "$DATA" | cut -s -d: -f5`
+GROUP=`echo "$DATA" | cut -s -d: -f6`
+SERVER=`echo "$DATA" | cut -s -d: -f7`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: user_web_hosting - Not called by user_web_hosting.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: user_web_hosting - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: user_web_hosting - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $KAROSHIUSER'null' = null ]
+then
+echo `date`: user_web_hosting - Blank group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $ACTION'null' = null ]
+then
+echo `date`: user_web_hosting - Blank group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $GROUP'null' = null ]
+then
+echo `date`: user_web_hosting - Blank group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVER'null' = null ]
+then
+echo `date`: user_web_hosting - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: user_web_hosting - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+##########################
+#Language
+##########################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/web/user_web_hosting ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/web/user_web_hosting
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+source /opt/karoshi/server_network/group_information/$GROUP
+
+if [ ! -f /opt/karoshi/server_network/servers/$SERVER/userwebhosting ]
+then
+
+#Add in flag file
+echo "$ROLE" > /opt/karoshi/server_network/servers/$SERVER/userwebhosting
+
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+
+if [ $SERVER = $HOSTNAME ]
+then
+
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mysql
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/vsftpd
+
+APACHESTATUS=`ps -e | grep -c $APACHEVER`
+MYSQLSTATUS=`ps -e | grep -c -w $MYSQLDVER`
+VSFTPDSTATUS=`ps -e | grep -c -w $VSFTPDVER`
+
+[ $APACHESTATUS = 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
+[ $MYSQLSTATUS = 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start
+[ $VSFTPDSTATUS = 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/vsftpd_start
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mysql
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/vsftpd
+
+APACHESTATUS=`ps -e | grep -c $APACHEVER`
+MYSQLSTATUS=`ps -e | grep -c -w $MYSQLDVER`
+VSFTPDSTATUS=`ps -e | grep -c -w $VSFTPDVER`
+
+[ $APACHESTATUS = 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
+[ $MYSQLSTATUS = 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start
+[ $VSFTPDSTATUS = 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/vsftpd_start
+'
+fi
+fi
+
+
+
+if [ $SERVER = $HOSTNAME ]
+then
+if [ $ACTION = enable ]
+then
+#Create web folder
+if [ ! -d /var/www/html/$GROUP/$KAROSHIUSER ]
+then
+mkdir -p /var/www/html/$GROUP/$KAROSHIUSER
+chmod 0750 /var/www/html/$GROUP/$KAROSHIUSER
+chown $KAROSHIUSER.www-data /var/www/html/$GROUP/$KAROSHIUSER
+fi
+
+fi
+if [ $ACTION = disable ]
+then
+#Delete web folder
+[ -d /var/www/html/$GROUP/$KAROSHIUSER ] && rm -f -R /var/www/html/$GROUP/$KAROSHIUSER
+fi
+if [ $ACTION = enableall ]
+then
+for KAROSHIUSERS in $HOMEPATH/*
+do
+KAROSHIUSER=`basename $KAROSHIUSERS`
+if [ ! -d /var/www/html/$GROUP/$KAROSHIUSER ]
+then
+mkdir -p /var/www/html/$GROUP/$KAROSHIUSER
+chmod 0750 /var/www/html/$GROUP/$KAROSHIUSER
+chown $KAROSHIUSER.www-data /var/www/html/$GROUP/$KAROSHIUSER
+fi
+done
+fi
+if [ $ACTION = disableall ]
+then
+for KAROSHIUSERS in $HOMEPATH/*
+do
+KAROSHIUSER=`basename $KAROSHIUSERS`
+[ -d /var/www/html/$GROUP/$KAROSHIUSER ] && rm -f -R /var/www/html/$GROUP/$KAROSHIUSER
+done
+fi
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+
+if [ '$ACTION' = enable ]
+then
+#Create web folder
+if [ ! -d /var/www/html/'$GROUP'/'$KAROSHIUSER' ]
+then
+mkdir -p /var/www/html/'$GROUP'/'$KAROSHIUSER'
+chmod 0750 /var/www/html/'$GROUP'/'$KAROSHIUSER'
+chown '$KAROSHIUSER'.www-data /var/www/html/'$GROUP'/'$KAROSHIUSER'
+fi
+
+fi
+if [ '$ACTION' = disable ]
+then
+#Delete web folder
+[ -d /var/www/html/'$GROUP'/'$KAROSHIUSER' ] && rm -f -R /var/www/html/'$GROUP'/'$KAROSHIUSER'
+fi
+if [ '$ACTION' = enableall ]
+then
+for KAROSHIUSERS in '$HOMEPATH'/*
+do
+KAROSHIUSER=`basename $KAROSHIUSERS`
+if [ ! -d /var/www/html/'$GROUP'/$KAROSHIUSER ]
+then
+mkdir -p /var/www/html/'$GROUP'/$KAROSHIUSER
+chmod 0750 /var/www/html/'$GROUP'/$KAROSHIUSER
+chown $KAROSHIUSER.www-data /var/www/html/'$GROUP'/$KAROSHIUSER
+fi
+done
+fi
+if [ '$ACTION' = disableall ]
+then
+for KAROSHIUSERS in '$HOMEPATH'/*
+do
+KAROSHIUSER=`basename $KAROSHIUSERS`
+[ -d /var/www/html/'$GROUP'/$KAROSHIUSER ] && rm -f -R /var/www/html/'$GROUP'/$KAROSHIUSER
+done
+fi
+'
+fi
+exit
+

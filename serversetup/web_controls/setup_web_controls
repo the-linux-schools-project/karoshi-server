@@ -279,7 +279,7 @@ AuthLDAPUrl ldap://127.0.0.1/CN=personnel,CN=Users,$LDAPBASE?CN
 Require valid-user
 
 Require ldap-group CN=staff,CN=Users,$LDAPBASE
-Require ldap-attribute primaryGroupID=$STAFFGID
+Require ldap-attribute gidNumber=$STAFFGID
 Satisfy any
 
 ErrorDocument 401 \"<html><meta http-equiv=\\\"refresh\\\" content=\\\"0;url=/cgi-bin/access_denied.cgi\\\"></html>\"
