@@ -564,13 +564,13 @@ done
 
 NAME=guestuserspolicy
 NAME2=guestusers
-SUBPATH="OU=$NAME2,OU=guestusers,OU=other,OU=Policies"
+SUBPATH="OU=$NAME2,OU=other,OU=Policies"
 LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
 LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
 link_organisational_unit
 
 NAME=guestuserslist
-SUBPATH="OU=$NAME2,OU=guestusers,OU=other,OU=Distributionlists"
+SUBPATH="OU=$NAME2,OU=other,OU=Distributionlists"
 LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
 LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
 link_organisational_unit
