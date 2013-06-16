@@ -120,13 +120,7 @@ chown root.$APACHEGROUP -R /var/www/html/smbwebclient
 #################################
 sed -i 's/XEN/'$PDCSERVER'/g' /var/www/html/smbwebclient/config/config.php
 sed -i 's/CHANGETHISDOMAIN/'$SAMBA_DOMAIN'/g' /var/www/html/smbwebclient/ldapauth.php
-if [ $PDCSERVER != $HOSTNAME ]
-then
-if [ `grep -c $PDCSERVER.internal /etc/hosts` = 0 ]
-then
-echo $PDCIP'		'$PDCSERVER $PDCSERVER.internal > /etc/hosts
-fi
-fi
+
 #####################################
 #Ensure that apache ports are open in shorewall
 #####################################

@@ -107,7 +107,7 @@ echo '<form action="/cgi-bin/admin/module_joomla.cgi" method="post"><div id="act
 <b>'$PARAMETERSMSG'</b><br><br>
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="0">
     <tbody>
-<tr><td style="width: 180px;">Web Domain</td><td>'
+<tr><td style="width: 180px;">'$WEBDOMAINMSG'</td><td>'
 
 
 #Check to see if this server has been assigned an alias
