@@ -1,5 +1,12 @@
 #!/bin/bash
 #smbwebclientvhost
+WEBPATH=$1
 cp -f /opt/karoshi/serversetup/distro/ubuntu/extra_server/configfiles/smbwebclient-ssl /etc/apache2/sites-enabled/
+sed -i 's/CHANGETHIS/'$WEBPATH'/g' /etc/apache2/sites-enabled/smbwebclient-ssl
 
+#make sure apache is listening on port 50000
 
+if [ `grep -c "Listen 50000" /etc/apache2/ports.conf` = 0 ]
+then
+sed -i 's/Listen 443/Listen 443\nListen 50000/g' /etc/apache2/ports.conf
+fi

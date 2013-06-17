@@ -40,8 +40,8 @@
 	#   /usr/share/doc/apache2.2-common/README.Debian.gz for more info.
 	#   If both key and certificate are stored in the same file, only the
 	#   SSLCertificateFile directive is needed.
-SSLCertificateFile /etc/ssl/apache/server.crt
-SSLCertificateKeyFile /etc/ssl/apache/server.key
+SSLCertificateFile /etc/ssl/apache/CHANGETHIS.pem
+SSLCertificateKeyFile /etc/ssl/apache/CHANGETHIS.key
 
 	#   Server Certificate Chain:
 	#   Point SSLCertificateChainFile at a file containing the
