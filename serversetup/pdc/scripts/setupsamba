@@ -451,45 +451,6 @@ LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
 LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
 link_organisational_unit
 
-NAME=staff2policy
-NAME2=staff2
-SUBPATH="OU=$NAME2,OU=personnel,OU=Policies"
-LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
-LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
-link_organisational_unit
-
-NAME=staff2list
-SUBPATH="OU=$NAME2,OU=personnel,OU=Distributionlists"
-LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
-LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
-link_organisational_unit
-
-NAME=staff3policy
-NAME2=staff3
-SUBPATH="OU=$NAME2,OU=personnel,OU=Policies"
-LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
-LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
-link_organisational_unit
-
-NAME=staff3list
-SUBPATH="OU=$NAME2,OU=personnel,OU=Distributionlists"
-LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
-LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
-link_organisational_unit
-
-NAME=staff4policy
-NAME2=staff4
-SUBPATH="OU=$NAME2,OU=personnel,OU=Policies"
-LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
-LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
-link_organisational_unit
-
-NAME=staff4list
-SUBPATH="OU=$NAME2,OU=personnel,OU=Distributionlists"
-LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
-LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
-link_organisational_unit
-
 NAME=studentstaffpolicy
 NAME2=studentstaff
 SUBPATH="OU=$NAME2,OU=personnel,OU=Policies"
@@ -629,27 +590,6 @@ DESC="Staff"
 LDAPPATH="OU=staff,OU=personnel,OU=Policies,$LDAPBASE"
 add_organisational_unit
 LDAPPATH="OU=staff,OU=personnel,OU=Distributionlists,$LDAPBASE"
-add_organisational_unit
-
-NAME="staff2"
-DESC="Staff2"
-LDAPPATH="OU=staff2,OU=personnel,OU=Policies,$LDAPBASE"
-add_organisational_unit
-LDAPPATH="OU=staff2,OU=personnel,OU=Distributionlists,$LDAPBASE"
-add_organisational_unit
-
-NAME="staff3"
-DESC="Staff3"
-LDAPPATH="OU=staff3,OU=personnel,OU=Policies,$LDAPBASE"
-add_organisational_unit
-LDAPPATH="OU=staff3,OU=personnel,OU=Distributionlists,$LDAPBASE"
-add_organisational_unit
-
-NAME="staff4"
-DESC="Staff4"
-LDAPPATH="OU=staff4,OU=personnel,OU=Policies,$LDAPBASE"
-add_organisational_unit
-LDAPPATH="OU=staff4,OU=personnel,OU=Distributionlists,$LDAPBASE"
 add_organisational_unit
 
 NAME="studentstaff"
@@ -895,7 +835,13 @@ gidnumber: $GIDNUMBER
 echo -e "dn: CN=$NEWGROUP,CN=Groups,CN=Users,$LDAPBASE
 changetype: modify
 add: displayname
-displayname: $NEWGROUPDISP
+displayname: "$NEWGROUPDISP"
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
+
+echo -e "dn: CN=$NEWGROUP,CN=Groups,CN=Users,$LDAPBASE
+changetype: modify
+add: mail
+mail: $NEWGROUP@$REALM
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
 
 }
@@ -917,21 +863,6 @@ done
 echo -e "$GROUPADDMSG staff\n"
 NEWGROUP=staff
 NEWGROUPDISP=Staff
-add_samba4_group
-
-echo -e "$GROUPADDMSG staff2\n"
-NEWGROUP=staff2
-NEWGROUPDISP=Staff2
-add_samba4_group
-
-echo -e "$GROUPADDMSG staff3\n"
-NEWGROUP=staff3
-NEWGROUPDISP=Staff3
-add_samba4_group
-
-echo -e "$GROUPADDMSG staff4\n"
-NEWGROUP=staff4
-NEWGROUPDISP=Staff4
 add_samba4_group
 
 echo -e "$GROUPADDMSG nonteachingstaff\n"
@@ -1018,21 +949,6 @@ done
 chmod 0750 /home/users/staff
 chown root.staff /home/users/staff
 chown .staff -R /home/users/staff
-#Staff2 users home areas
-[ -d /home/users/staff2 ] || mkdir /home/users/staff2
-chmod 0750 /home/users/staff2
-chown root.staff /home/users/staff2
-chown .staff -R /home/users/staff2
-#Staff3 users home areas
-[ -d /home/users/staff3 ] || mkdir /home/users/staff3
-chmod 0750 /home/users/staff3
-chown root.staff /home/users/staff3
-chown .staff -R /home/users/staff3
-#Staff4 users home areas
-[ -d /home/users/staff4 ] || mkdir /home/users/staff4
-chmod 0750 /home/users/staff4
-chown root.staff /home/users/staff4
-chown .staff -R /home/users/staff4
 #Studentstaff users home areas
 [ -d /home/users/studentstaff ] || mkdir /home/users/studentstaff
 chmod 0750 /home/users/studentstaff
@@ -1089,9 +1005,6 @@ then
 mkdir /home/applications/backgrounds
 cp /opt/karoshi/serversetup/pdc/backgrounds/* /home/applications/backgrounds/
 cp /opt/karoshi/serversetup/all/backgrounds/* /home/applications/backgrounds/
-cp /home/applications/backgrounds/staff.bmp /home/applications/backgrounds/staff2.bmp
-cp /home/applications/backgrounds/staff.bmp /home/applications/backgrounds/staff3.bmp
-cp /home/applications/backgrounds/staff.bmp /home/applications/backgrounds/staff4.bmp
 
 COUNTER=2003
 ENDYEAR=2080
@@ -1243,9 +1156,6 @@ echo nonteachingstaff,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
 echo officestaff,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
 echo profileuser,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
 echo staff,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
-echo staff2,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
-echo staff3,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
-echo staff4,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
 echo studentstaff,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
 echo Domain Admins,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
 
@@ -1262,9 +1172,6 @@ if [ ! -d /var/lib/samba/netlogon/windows_settings/security ]
 then
 mkdir -p /var/lib/samba/netlogon/windows_settings/security
 ln -s /var/lib/samba/netlogon/staffdtsec.kix /var/lib/samba/netlogon/windows_settings/security/staff.kix
-ln -s /var/lib/samba/netlogon/staffdtsec.kix /var/lib/samba/netlogon/windows_settings/security/staff2.kix
-ln -s /var/lib/samba/netlogon/staffdtsec.kix /var/lib/samba/netlogon/windows_settings/security/staff3.kix
-ln -s /var/lib/samba/netlogon/staffdtsec.kix /var/lib/samba/netlogon/windows_settings/security/staff4.kix
 ln -s /var/lib/samba/netlogon/officestaffdtsec.kix /var/lib/samba/netlogon/windows_settings/security/officestaff.kix
 ln -s /var/lib/samba/netlogon/guestdtsec.kix /var/lib/samba/netlogon/windows_settings/security/guest.kix
 ln -s /var/lib/samba/netlogon/techdtsec.kix /var/lib/samba/netlogon/windows_settings/security/tech.kix
@@ -1333,21 +1240,6 @@ make_primary_group_info
 PRIMARY_GROUP=staff
 SUBUNIT=personnel
 HOMEPATH=/home/users/staff
-make_primary_group_info
-PRIMARY_GROUP=staff2
-SUBUNIT=personnel
-HOMEPATH=/home/users/staff2
-SECONDARYGROUP=staff
-make_primary_group_info
-PRIMARY_GROUP=staff3
-SUBUNIT=personnel
-HOMEPATH=/home/users/staff3
-SECONDARYGROUP=staff
-make_primary_group_info
-PRIMARY_GROUP=staff4
-SUBUNIT=personnel
-HOMEPATH=/home/users/staff4
-SECONDARYGROUP=staff
 make_primary_group_info
 PRIMARY_GROUP=nonteachingstaff
 SUBUNIT=personnel
@@ -1446,24 +1338,6 @@ then
 echo $COPYPROFILEMSG2 staff
 cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/staff
 cp -f -R /opt/karoshi/serversetup/pdc/profiles/staff /home/applications/profiles/
-fi
-if [ ! -d /home/applications/profiles/staff2 ]
-then
-echo $COPYPROFILEMSG2 staff2
-cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/staff2
-cp -f -R /opt/karoshi/serversetup/pdc/profiles/staff /home/applications/profiles/staff2
-fi
-if [ ! -d /home/applications/profiles/staff3 ]
-then
-echo $COPYPROFILEMSG2 staff3
-cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/staff3
-cp -f -R /opt/karoshi/serversetup/pdc/profiles/staff /home/applications/profiles/staff3
-fi
-if [ ! -d /home/applications/profiles/staff4 ]
-then
-echo $COPYPROFILEMSG2 staff4
-cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/staff4
-cp -f -R /opt/karoshi/serversetup/pdc/profiles/staff /home/applications/profiles/staff4
 fi
 if [ ! -d /home/applications/profiles/tech ]
 then

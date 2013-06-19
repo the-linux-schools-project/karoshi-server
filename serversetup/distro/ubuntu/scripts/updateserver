@@ -75,6 +75,7 @@ function sysvsupport {
 [ -L /etc/init.d/xinetd ] && rm -f /etc/init.d/xinetd
 [ -L /etc/init.d/dovecot ] && rm -f /etc/init.d/dovecot
 [ -L /etc/init.d/vsftpd ] && rm -f /etc/init.d/vsftpd
+[ -L /etc/init.d/sogo ] && rm -f /etc/init.d/sogo
 
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/apache2 /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/clamav-freshclam /etc/init.d/
@@ -100,6 +101,7 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/dovecot /etc/i
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/vsftpd /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/portmap /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/rpcbind /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/sogo /etc/init.d/
 
 #Make sure no scripts have been added to /etc/init for upstart.
 [ `ls /etc/init/mysql* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/mysql*
