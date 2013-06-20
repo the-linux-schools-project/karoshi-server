@@ -63,7 +63,7 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	</script>'
 fi
 
-echo '</head><body>'
+echo '</head><body onLoad="start()">'
 #########################
 #Get data input
 #########################

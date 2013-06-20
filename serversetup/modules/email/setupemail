@@ -301,10 +301,15 @@ cp -f /opt/karoshi/serversetup/modules/email/sogo/sogo.conf /etc/sogo/
 cp -f /opt/karoshi/serversetup/modules/email/sogo/apache/SOGo.conf /etc/apache2/conf.d/
 
 #Modify /etc/sogo/sogo.conf
+
+#Get timezone
+TIMEZONE=`sed -n 1,1p /etc/timezone`
+
 sed -i 's/CHANGETHISREALM/'$REALM'/g' /etc/sogo/sogo.conf
 sed -i 's/CHANGETHISBASEDN/'$LDAPBASE'/g' /etc/sogo/sogo.conf
 sed -i 's/CHANGETHISLDAPSERVER/'$LDAPSERVER'/g' /etc/sogo/sogo.conf
 sed -i 's/CHANGEPASS/'$SOGOPASS'/g' /etc/sogo/sogo.conf
+sed -i 's/CHANGETHISTIMEZONE/'$TIMEZONE'/g' /etc/sogo/sogo.conf
 
 #Modify /etc/apache2/conf.d/SOGo.conf
 sed -i 's/CHANGETHISWEBDOMAIN/'$ALIAS.$REALM'/g' /etc/apache2/conf.d/SOGo.conf
