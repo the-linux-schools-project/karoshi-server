@@ -88,7 +88,6 @@ fi
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/postfix
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mailscanner
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/clamd
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/imap
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mysql
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/dovecot
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/sogo
@@ -133,7 +132,7 @@ fi
 [ -d /opt/postfix ] || mkdir /opt/postfix
 chmod 0700 /opt/postfix
 chown postfix /opt/postfix 1>/dev/null
-usermod -d /opt/postfix -m postfix
+usermod -d /opt/postfix postfix
 
 ########################
 #Setup postfix
@@ -242,7 +241,7 @@ cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/mailscanner/* /etc/M
 [ -d /var/spool/MailScanner/incoming ] || mkdir -p /var/spool/MailScanner/incoming
 [ -d /var/spool/MailScanner/quarantine ] || mkdir -p /var/spool/MailScanner/quarantine
 chown -R postfix.postfix /var/spool/MailScanner/spamassassin 1>/dev/null
-chown -R postfix.postfix/var/spool/MailScanner/incoming 1>/dev/null
+chown -R postfix.postfix /var/spool/MailScanner/incoming 1>/dev/null
 chown -R postfix.postfix /var/spool/MailScanner/quarantine 1>/dev/null
 [ -f /etc/default/mailscanner ] && echo run_mailscanner=1 >> /etc/default/mailscanner
 
@@ -312,10 +311,10 @@ sed -i 's/CHANGETHISWEBDOMAIN/'$ALIAS.$REALM'/g' /etc/apache2/conf.d/SOGo.conf
 sed -i 's/CHANGETHISSERVERNAME/'$HOSTNAME'/g' /etc/apache2/conf.d/SOGo.conf
 
 #Enable apache modules
-a2enmod proxy
-a2enmod proxy_http
-a2enmod headers
-a2enmod rewrite
+a2enmod proxy 1>/dev/null
+a2enmod proxy_http 1>/dev/null
+a2enmod headers 1>/dev/null
+a2enmod rewrite 1>/dev/null
 
 #Restart apache
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop
@@ -331,7 +330,6 @@ sleep 1
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/sogo_start
 echo '<br>'
 ###########################
-#Imap plain text
 ###########################
 echo "I accept the risk" > /etc/c-client.cf
 echo "set disable-plaintext nil" >> /etc/c-client.cf
