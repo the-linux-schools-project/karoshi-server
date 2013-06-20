@@ -337,7 +337,7 @@ samba-tool domain passwordsettings set --max-pwd-age=999
 
 #Add reverse dns entry
 SUBNET=`grep "netmask " /etc/network/interfaces | sed -n 1,1p | cut -d" " -f2`
-PDCIP=`net lookup $HOSTNAME`
+PDCIP=`hostname -I | cut -d" " -f1`
 /opt/karoshi/serversetup/pdc/"useful scripts"/reverse-dns add $PDCIP $SUBNET $SERVER.$REALM
 
 #Add entry to /etc/hosts
@@ -833,22 +833,13 @@ echo -e "dn: CN=$NEWGROUP,CN=Groups,CN=Users,$LDAPBASE
 changetype: modify
 add: objectclass
 objectclass: posixgroup
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
-
-echo -e "dn: CN=$NEWGROUP,CN=Groups,CN=Users,$LDAPBASE
-changetype: modify
+-
 add: gidnumber
 gidnumber: $GIDNUMBER
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
-
-echo -e "dn: CN=$NEWGROUP,CN=Groups,CN=Users,$LDAPBASE
-changetype: modify
+-
 add: displayname
 displayname: "$NEWGROUPDISP"
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
-
-echo -e "dn: CN=$NEWGROUP,CN=Groups,CN=Users,$LDAPBASE
-changetype: modify
+-
 add: mail
 mail: $NEWGROUP@$REALM
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
