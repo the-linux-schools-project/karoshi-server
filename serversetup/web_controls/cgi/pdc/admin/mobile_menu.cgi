@@ -159,7 +159,7 @@ echo '      <div class="collapsed">
 fi
 echo '<div class="a.current">
 <small><small>
-'$VERSION' : 130617-1251
+'$VERSION' : 130620-0831
 </small></small>
 </span></div>
     </div>

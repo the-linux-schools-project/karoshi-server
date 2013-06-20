@@ -68,6 +68,13 @@ source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/variables/tcpip
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 
+LDAPSERVER=127.0.0.1
+#Get ldap server to use
+if [ $SERVERNAME != $HOSTNAME ]
+then
+LDAPSERVER=`grep "kdc =" /etc/krb5.conf | sed "s/ //g" | cut -d"=" -f2`
+fi
+
 #############################
 #Ensure that apache and mysql are running on boot
 #############################
@@ -173,7 +180,10 @@ mysqladmin -f --password=$MYSQLPASS drop moodle 1>/dev/null 2>/dev/null
 sleep 1
 mysqladmin --password=$MYSQLPASS create moodle
 sleep 1
+
 mysql --password=$MYSQLPASS moodle < /opt/karoshi/serversetup/modules/moodle/moodle.sql
+
+
 echo GRANT ALL PRIVILEGES ON moodle.\* TO "'"moodle_user"'"@"'"localhost"'" IDENTIFIED BY "'"$MOODLEPASS"'"';' > /opt/karoshi/.tempdata/mysqlperms.sql
 echo ALTER DATABASE moodle DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci';' >> /opt/karoshi/.tempdata/mysqlperms.sql
 mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/mysqlperms.sql
