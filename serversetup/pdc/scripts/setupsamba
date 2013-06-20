@@ -333,23 +333,20 @@ samba-tool domain passwordsettings set --min-pwd-length=3
 samba-tool domain passwordsettings set --min-pwd-age=0
 samba-tool domain passwordsettings set --max-pwd-age=999
 
-
+#Add entry to /etc/hosts
+echo $PDCIP"	"$HOSTNAME.$REALM"	"$HOSTNAME >> /etc/hosts
+#Restart samba
+echo Restarting samba4 >> /opt/karoshi/serversetup/install_log
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
+#Wait for port 389 on localhost to be available
+check_ldap_port
 
 #Add reverse dns entry
 SUBNET=`grep "netmask " /etc/network/interfaces | sed -n 1,1p | cut -d" " -f2`
 PDCIP=`hostname -I | cut -d" " -f1`
-/opt/karoshi/serversetup/pdc/"useful scripts"/reverse-dns add $PDCIP $SUBNET $SERVER.$REALM
-
-#Add entry to /etc/hosts
-echo $PDCIP"	"$HOSTNAME.$REALM"	"$HOSTNAME >> /etc/hosts
-#Restart samba
-#echo Restarting samba4 >> /opt/karoshi/serversetup/install_log
-#/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop
-#sleep 1
-#/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
-#Wait for port 389 on localhost to be available
-check_ldap_port
-
+/opt/karoshi/serversetup/pdc/"useful scripts"/reverse-dns add $PDCIP $SUBNET $HOSTNAME.$REALM
 
 ###############################
 #Create special user accounts for servers and linux clients to get user information from samba4 ldap
