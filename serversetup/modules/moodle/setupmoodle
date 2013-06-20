@@ -38,7 +38,8 @@ DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/'`
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-MOODLEDOMAIN=`echo "$DATA" | cut -s -d: -f4-`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+ALIAS=`echo "$DATA" | cut -s -d: -f5`
 
 if [ -z "$REMOTE_USER" ]
 then
@@ -50,9 +51,15 @@ then
 echo `date`: setupmoodle - Blank remote tcpip address"<br>"
 exit 101
 fi
-if [ -z "$MOODLEDOMAIN" ]
+if [ -z "$SERVERNAME" ]
 then
-echo `date`: setupmoodle - Blank moodle domain"<br>"
+echo `date`: setupmoodle - Blank servername"<br>"
+exit 101
+fi
+
+if [ -z "$ALIAS" ]
+then
+echo `date`: setupmoodle - Blank alias"<br>"
 exit 101
 fi
 
@@ -67,6 +74,8 @@ source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/moodle/setupmoodle
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/variables/tcpip
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+source /opt/karoshi/server_network/domain_information/domain_name
+
 
 LDAPSERVER=127.0.0.1
 #Get ldap server to use
@@ -181,8 +190,17 @@ sleep 1
 mysqladmin --password=$MYSQLPASS create moodle
 sleep 1
 
-mysql --password=$MYSQLPASS moodle < /opt/karoshi/serversetup/modules/moodle/moodle.sql
+#Make a backup of moodle.sql
+cp /opt/karoshi/serversetup/modules/moodle/moodle.sql /opt/karoshi/serversetup/modules/moodle/moodle2.sql
 
+#Edit moodle2.sql with the correct ldap server information ( replace ldap://127.0.0.1 )
+
+sed -i 's/ldap:\/\/127.0.0.1/ldap:\/\/'$LDAPSERVER'/g' /opt/karoshi/serversetup/modules/moodle/moodle2.sql
+
+#Edit moodle.sql with the correct realm information
+sed -i 's/CHANGETHISLDAPBASE/'$LDAPBASE'/g' /opt/karoshi/serversetup/modules/moodle/moodle2.sql
+
+mysql --password=$MYSQLPASS moodle < /opt/karoshi/serversetup/modules/moodle/moodle2.sql
 
 echo GRANT ALL PRIVILEGES ON moodle.\* TO "'"moodle_user"'"@"'"localhost"'" IDENTIFIED BY "'"$MOODLEPASS"'"';' > /opt/karoshi/.tempdata/mysqlperms.sql
 echo ALTER DATABASE moodle DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci';' >> /opt/karoshi/.tempdata/mysqlperms.sql
@@ -234,7 +252,7 @@ rm -f /var/www/html/moodle/config.php
 mv /var/www/html/moodle/configtemp.php /var/www/html/moodle/config.php
 
 DOMAINLINENO=`grep -n ^'$'CFG-'>'wwwroot /var/www/html/moodle/config.php | cut -d: -f1`
-sed $DOMAINLINENO'c'\$CFG-">"wwwroot"    "=" ""'"http://$MOODLEDOMAIN/moodle"'"";" /var/www/html/moodle/config.php > /var/www/html/moodle/configtemp.php
+sed $DOMAINLINENO'c'\$CFG-">"wwwroot"    "=" ""'"http://$ALIAS.$REALM/moodle"'"";" /var/www/html/moodle/config.php > /var/www/html/moodle/configtemp.php
 rm -f /var/www/html/moodle/config.php
 mv /var/www/html/moodle/configtemp.php /var/www/html/moodle/config.php
 
@@ -308,7 +326,7 @@ fi
 ###########################
 #Show completed message
 ###########################
-echo '<br>'$ACCESSMSG - '<a href="http://'$MOODLEDOMAIN'/moodle" target="_blank">'$MOODLEDOMAIN'/moodle</a>'
+echo '<br>'$ACCESSMSG - '<a href="http://'$ALIAS.$REALM'/moodle" target="_blank">'$ALIAS.$REALM'/moodle</a>'
 echo '<br>'$ACCESSMSG2:admin - $PASSWORDMSG: 154732
 echo '<br><br><b>'$COMPLETEDMSG'</b><br><br>'
 exit

@@ -163,10 +163,8 @@ MESSAGE=$ERRORMSG2
 show_status
 fi
 
-LDAPSERVER=noldap
-
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_moodle.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ALIAS:$LDAPSERVER:$SERVERNAME:$COPYMOODLE:" | sudo -H /opt/karoshi/web_controls/exec/module_moodle
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ALIAS:$SERVERNAME:$COPYMOODLE:" | sudo -H /opt/karoshi/web_controls/exec/module_moodle
 completed
 echo '</div></body></html>'
 exit

@@ -114,11 +114,11 @@ LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 JOOMLASERVERIP=`net lookup $JOOMLASERVER`
 source /opt/karoshi/server_network/domain_information/domain_name
 echo `date`: module_joomla - checking "if" $ALIAS.$REALM is "in" the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-samba-tool dns query 127.0.0.1 $REALM $ALIAS.$REALM A --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool dns query 127.0.0.1 $REALM $ALIAS.$REALM CNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 if [ `echo $?` != 0 ]
 then
-echo `date`: dnsadd - adding $DOMAINPATH $JOOMLASERVERIP to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-samba-tool dns add 127.0.0.1 $REALM $ALIAS.$REALM A $JOOMLASERVERIP --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: dnsadd - adding $ALIAS "for" $JOOMLASERVER to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool dns add 127.0.0.1 $REALM $ALIAS CNAME $JOOMLASERVER.$REALM --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
 
 ##########################

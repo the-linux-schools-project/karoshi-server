@@ -232,7 +232,7 @@ cp -f -R /opt/karoshi/serversetup/web_controls/cgi/pdc/all/* /var/www/cgi-bin_ka
 #Create keytab for the web management
 if [ $SAMBAVER = samba4 ]
 then
-echo "root:127.0.0.1:-:$HOSTNAME:HTTP:webmanagement:manage.$REALM:apache_karoshi:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
+echo "root:127.0.0.1:-:$HOSTNAME:HTTP:webmanagement:$HOSTNAME.$REALM:apache_karoshi:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
 fi
 ######################
 #Htaccess files
@@ -1023,7 +1023,7 @@ LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 samba-tool dns query 127.0.0.1 $REALM manage.$REALM CNAME --username=Administrator --password=$LDAPPASS 2>/dev/null
 if [ `echo $?` != 0 ]
 then
-samba-tool dns add 127.0.0.1 $REALM manage.$REALM A $TCPIP --username=Administrator --password=$LDAPPASS
+samba-tool dns add 127.0.0.1 $REALM manage CNAME $HOSTNAME.$REALM --username=Administrator --password=$LDAPPASS
 fi
 fi
 ############################
