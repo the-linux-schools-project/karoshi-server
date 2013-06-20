@@ -143,6 +143,7 @@ samba-tool dns add 127.0.0.1 $REALM $SERVER A $TCPIPNUMBER --username=Administra
 fi
 
 
+
 ############################
 #Setup ssh connections
 ############################
@@ -270,6 +271,13 @@ fi
 fi
 exit
 fi
+
+#Add in reverse lookup
+
+SUBNET=`ssh $SERVER '
+grep "netmask " /etc/network/interfaces | sed -n 1,1p | cut -d" " -f2
+'`
+/opt/karoshi/serversetup/pdc/"useful scripts"/reverse-dns add $TCPIPNUMBER $SUBNET $SERVER.$REALM
 
 #Add in mac address entry for static arp table
 MAC_ADDRESS=`ssh -x -o PasswordAuthentication=no $SERVER '

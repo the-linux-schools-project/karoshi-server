@@ -288,15 +288,6 @@ unmount_servers
 fi
 fi
 
-#Add domain entry to dns
-if [ `grep -c $DOMAINPATH /etc/hosts` = 0 ]
-then
-echo $SERVERTCPIP'	''	'$DOMAINPATH >> /etc/hosts
-fi
-#Restart dns server
-
-/etc/init.d/$DNSMASQVER stop 1>/dev/null 2>/dev/null
-/etc/init.d/$DNSMASQVER start 1>/dev/null 2>/dev/null
 #Create completed info file
 
 [ ! -d /opt/karoshi/modules/email ] && mkdir -p /opt/karoshi/modules/email

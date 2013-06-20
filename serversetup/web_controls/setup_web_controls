@@ -254,9 +254,6 @@ if [ $SAMBAVER = samba4 ]
 then
 source /opt/karoshi/server_network/domain_information/domain_name
 
-#Get staff group id
-STAFFGID=`getent group staff | cut -d: -f3`
-
 #Create htaccess files for staff
 echo -e "
 
@@ -278,8 +275,7 @@ AuthLDAPUrl ldap://127.0.0.1/CN=personnel,CN=Users,$LDAPBASE?CN
 
 Require valid-user
 
-Require ldap-group CN=staff,CN=Users,$LDAPBASE
-Require ldap-attribute gidNumber=$STAFFGID
+Require ldap-group CN=staff,CN=Groups,CN=Users,$LDAPBASE
 Satisfy any
 
 ErrorDocument 401 \"<html><meta http-equiv=\\\"refresh\\\" content=\\\"0;url=/cgi-bin/access_denied.cgi\\\"></html>\"
