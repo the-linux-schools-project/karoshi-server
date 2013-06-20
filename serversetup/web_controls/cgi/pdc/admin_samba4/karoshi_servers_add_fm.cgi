@@ -79,7 +79,7 @@ function showDiv(divName) {
 
 </style>
 
-</head><body>'
+</head><body onLoad="start()"'
 
 #########################
 #Get data input

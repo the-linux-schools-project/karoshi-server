@@ -53,7 +53,7 @@ echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head
 echo '<link rel="stylesheet" href="/css/'$STYLESHEET'"><script language="JavaScript" type="text/javascript" src="/all/calendar2/calendar_eu.js"></script>
         <!-- Timestamp input popup (European Format) --><link rel="stylesheet" href="/all/calendar2/calendar.css"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 echo "</head>"
-echo "<body onLoad="start()">"
+echo '<body onLoad="start()">'
 #########################
 #Get data input
 #########################

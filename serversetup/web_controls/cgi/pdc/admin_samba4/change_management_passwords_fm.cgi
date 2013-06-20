@@ -53,7 +53,7 @@ echo '
 <link rel="stylesheet" href="/css/'$STYLESHEET'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
-<body>'
+<body onLoad="start()"'
 
 #Generate navigation bar
 if [ $MOBILE = no ]

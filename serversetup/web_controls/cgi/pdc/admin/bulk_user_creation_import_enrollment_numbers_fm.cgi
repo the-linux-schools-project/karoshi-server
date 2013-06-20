@@ -48,7 +48,7 @@ echo '
 <link rel="stylesheet" href="/css/'$STYLESHEET'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </HEAD>
-<BODY>'
+<body onLoad="start()"'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/bulk_user_creation_import_enrollment_numbers.cgi" METHOD="POST"><div id="actionbox">

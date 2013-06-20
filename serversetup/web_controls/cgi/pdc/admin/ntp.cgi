@@ -78,7 +78,7 @@ function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 // -->
 </script><script src="/all/stuHover.js" type="text/javascript"></script>'
 echo "</head>"
-echo "<body>"
+echo '<body onLoad="start()">'
 #########################
 #Check https access
 #########################
