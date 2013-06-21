@@ -204,7 +204,11 @@ cp -f -R /opt/karoshi/serversetup/modules/squid/dansguardian /etc
 cd /etc/dansguardian/
 tar -xvzf /opt/karoshi/serversetup/modules/squid/dansguardian/blacklists_archive.tar.gz 1>/dev/null
 
-
+#############################
+#Get staff list for filter 3
+#############################
+/opt/karoshi/"useful scripts"/dgupdatefilterlist
+#Start squid and dansguardian.
 /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/squid_start
 echo '<br>'
 /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/dansguardian_start
@@ -233,10 +237,7 @@ echo 0 22 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/activate_filter_changes 
 echo 0 5 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/internet_log_compress > /opt/karoshi/cronjobs/jobs/internet_log_compress.cron
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
-#############################
-#Get staff list for filter 3
-#############################
-/opt/karoshi/"useful scripts"/dgupdatefilterlist
+
 ############################
 #Check that Squid and Dansguardian are running
 ############################

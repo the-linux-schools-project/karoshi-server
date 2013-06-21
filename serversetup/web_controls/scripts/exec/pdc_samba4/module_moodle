@@ -154,36 +154,9 @@ fi
 }
 
 function modify_moodle.sql {
-#Edit moodle.sql with the correct ldap base
-
-ZONE=internal
-LDAPSERVER=$HOSTNAME
-
-#Check if the server is in the dmz
-[ -d /opt/karoshi/server_network/zones/dmz/servers/$SERVERNAME ] && ZONE=dmz
-
-#Check for an additional domain controller in that zone
-if [ -d /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ ]
-then
-if [ `ls -1 /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers | wc -l` -gt 0 ]
-then
-#Pick the first additional domain controller in that zone
-LDAPSERVER=`ls -1 /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ | sed -n 1,1p`
-fi
-fi
 
 #Make a backup of moodle.sql
 cp /opt/karoshi/serversetup/modules/moodle/moodle.sql /opt/karoshi/serversetup/modules/moodle/moodle_original.sql
-
-#Edit moodle.sql with the correct ldap server information ( replace ldap://127.0.0.1 )
-if [ $SERVERNAME != $HOSTNAME ]
-then
-LDAPSERVERIP=`net lookup $LDAPSERVER`
-sed -i 's/ldap:\/\/127.0.0.1/ldap:\/\/'$LDAPSERVERIP'/g' /opt/karoshi/serversetup/modules/moodle/moodle.sql
-fi
-
-#Edit moodle.sql with the correct realm information
-sed -i 's/CHANGETHISLDAPBASE/'$LDAPBASE'/g' /opt/karoshi/serversetup/modules/moodle/moodle.sql
 
 #Edit moodle.sql with the correct subnet
 THISIP=`net lookup $HOSTNAME`
@@ -263,7 +236,7 @@ function apply_ssl_certificate {
 #######################
 #Apply certificate
 #######################
-if [ ! -f /etc/ssl/apache/$MOODLEDOMAIN.key ]
+if [ ! -f /etc/ssl/apache/$ALIAS.$REALM.key ]
 then
 echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:$ALIAS.$REALM:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
 [ `echo $?` != 0 ] && exit 101 
@@ -277,7 +250,7 @@ Type=Link
 Name=Moodle
 Comment=Moodle
 Icon=moodle
-URL=https://'$DOMAINPATH'/moodle' > /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVER/desktop_icons/all/Moodle.desktop
+URL=https://'$ALIAS.$REALM'/moodle' > /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVER/desktop_icons/all/Moodle.desktop
 }
 
 check_already_installed
