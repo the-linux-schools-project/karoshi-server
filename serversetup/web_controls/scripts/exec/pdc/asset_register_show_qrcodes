@@ -1,0 +1,127 @@
+#!/bin/bash
+#Copyright (C) 2007  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+############################
+#Language
+############################
+LANGCHOICE=englishuk
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/asset_register ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/client/asset_register
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/asset_register_show_qrcodes_cgi
+then
+echo `date`: asset_register_show_qrcodes - No Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/asset_register_show_qrcodes_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/asset_register_show_qrcodes.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $asset_register_show_qrcodes_cgi'check' ]
+then
+echo `date`: asset_register_show_qrcodes - Incorrect Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/asset_register_show_qrcodes_cgi
+then
+echo `date`: asset_register_show_qrcodes - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/tech_checksums/asset_register_show_qrcodes_cgi
+MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/asset_register_show_qrcodes.cgi | cut -d' ' -f1`
+[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+if [ $MD5SUM2'check' != $asset_register_show_qrcodes_cgi'check' ]
+then
+echo `date`: asset_register_show_qrcodes - Incorrect Tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: asset_register_show_qrcodes - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._,:\-+%'`
+
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+LOCATION=`echo "$DATA" | cut -s -d: -f4 | sed 's/+/ /g'`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: asset_register_show_qrcodes - Not called by asset_register_show_qrcodes.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: asset_register_show_qrcodes - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: asset_register_show_qrcodes - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: asset_register_show_qrcodes - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z $LOCATION ]
+then
+echo `date`: asset_register_show_qrcodes - Blank location >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+echo `date`: asset_register_show_qrcodes "for" $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+source /opt/karoshi/server_network/domain_information/domain_name
+
+[ ! -d /opt/karoshi/asset_register/qrcodes ] && mkdir -p /opt/karoshi/asset_register/qrcodes
+[ ! -e /var/www/html_karoshi/images/qrcodes ] && ln -s /opt/karoshi/asset_register/qrcodes /var/www/html_karoshi/images/qrcodes
+
+
+#Create qrcodes if they do not exist
+for ASSETS in /opt/karoshi/asset_register/locations/$LOCATION/*
+do
+ASSET=`basename $ASSETS`
+[  ! -f /opt/karoshi/asset_register/qrcodes/$ASSET ] && qrencode https://manage.$REALM:50001?$ASSET -o /opt/karoshi/asset_register/qrcodes/$ASSET.png
+#Show qr codes
+echo '<div class="label"><img src="/images/qrcodes/'$ASSET'.png" /><br>'$ASSET'</div>'
+done
+exit
+

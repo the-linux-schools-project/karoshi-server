@@ -129,7 +129,6 @@ ICON14=/images/assets/moreinfo.png
 ICON15=/images/assets/export.png
 ICON16=/images/assets/import.png
 ICON17=/images/assets/client_logs.png
-ICON18=/images/assets/qrcode.png
 [ $ACTION'null' = null ] && ACTION=view
 [ $LOCATION'null' = null ] && LOCATION=showchoice
 
@@ -141,14 +140,32 @@ ICON18=/images/assets/qrcode.png
 
 if [ $ACTION = qrcodes ]
 then
-#Load asset_register_show_qrcodes.cgi
-echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/asset_register_show_qrcodes.cgi\" target=\"_top\" name = \"frm\">
-<input type=\"hidden\" name=\"_LOCATION_\" value=\"$LOCATION\">
-</form>
-<script>
-document.frm.submit();
-</script><form>
-"
+source /opt/karoshi/server_network/domain_information/domain_name
+[ ! -d /opt/karoshi/asset_register/qrcodes ] && mkdir -p /opt/karoshi/asset_register/qrcodes
+[ ! -e /var/www/html_karoshi/images/qrcodes ] && ln -s /opt/karoshi/asset_register/qrcodes /var/www/html_karoshi/images/qrcodes
+
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_" type="image" class="images" src="'$ICON1'" value=""><span>'$CHOOSELOCATIONMSG'</span></a></td>
+<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_add_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON4'" value=""><span>'$ADDASSETMSG'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_qrcodes_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON4'" value=""><span>'$TITLE19'</span></a></td>
+<td style="vertical-align: top;"><b>'$TITLE2 - $LOCATION'</b></td></tr></tbody></table><br>
+'
+
+#Create qrcodes if they do not exist
+COUNTER=1
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+for ASSETS in /opt/karoshi/asset_register/locations/$LOCATION/*
+do
+ASSET=`basename $ASSETS`
+[  ! -f /opt/karoshi/asset_register/qrcodes/$ASSET ] && qrencode https://manage.$REALM:50001?$ASSET -o /opt/karoshi/asset_register/qrcodes/$ASSET
+#Show qr codes
+echo '<td>'$ASSET'</td><td><img src="/images/qrcodes/'$ASSET'" alt="'$ASSET'"> </td>'
+let COUNTER=$COUNTER+1
+if [ $COUNTER = 7 ]
+then
+COUNTER=1
+echo '</tr><tr>'
+fi
+done
+echo '</tr></tbody></table>'
 fi
 
 function assign_asset_labels {
@@ -1110,7 +1127,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 '
 else
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_" type="image" class="images" src="'$ICON1'" value=""><span>'$CHOOSELOCATIONMSG'</span></a></td>
-<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_add_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON4'" value=""><span>'$ADDASSETMSG'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_qrcodes_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON18'" value=""><span>'$TITLE19'</span></a></td>
+<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_add_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON4'" value=""><span>'$ADDASSETMSG'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_qrcodes_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON4'" value=""><span>'$TITLE19'</span></a></td>
 <td style="vertical-align: top;"><b>'$TITLE2 - $LOCATION'</b></td></tr></tbody></table>
 '
 fi
