@@ -181,7 +181,6 @@ echo server' '$PDCSERVER'	'$PDCSERVER'	'$REALM > /etc/squid/msntauth.conf
 
 sed -i 's/SERVERNAME/'$HOSTNAME'/g' /etc/squid/squid.conf
 sed -i 's/REALM/'$REALM'/g' /etc/squid/squid.conf
-sed -i 's/LDAPBASE/'$LDAPBASE'/g' /etc/squid/squid.conf
 #########################
 #Add PDC ip to /etc/hosts
 #########################
