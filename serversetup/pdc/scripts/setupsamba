@@ -114,8 +114,10 @@ echo $SAMBAROOTPASSWORD1 > /opt/karoshi/.tempdata/sambapassword
 #Get domain name
 ###############################
 function getdomainname {
-DATA=`yad --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title="$TITLE" --width 400 --wrap --text "$DOMAINNAMEMSG1\n\n$DOMAINNAMEMSG2\n\n$EXAMPLEMSG: testdomain.example.com\n" --field="$DOMAINNAMEMSG3" --button="gtk-ok"`
+DATA=`yad --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title="$TITLE" --width 500 --wrap --text "$DOMAINNAMEMSG1\n$DOMAINNAMEMSG2\n\n$EXAMPLEMSG\n\n$DOMAINNAMEMSG3:\t\ttestdomain.example.com\n$SITENAMEMSG:\tExample Institute of Technology\nShort Name:\t\tEIT\n" --field="$DOMAINNAMEMSG3" --field="$SITENAMEMSG" --field="$SHORTSITENAMEMSG" --button="gtk-ok"`
 WEBADDRESS=`echo $DATA | cut -d"|" -f1 | tr -cd 'A-Za-z0-9.:/' | tr 'A-Z' 'a-z' | sed 's/^https:\/\///' | sed 's/^http:\/\///' | sed 's/^www.//g'`
+LONGNAME=`echo $DATA | cut -d"|" -f2 | tr -cd 'A-Za-z0-9.: /' | sed 's/^https:\/\///' | sed 's/^http:\/\///' | sed 's/^www.//g'`
+SHORTNAME=`echo $DATA | cut -d"|" -f3 | tr -cd 'A-Za-z0-9.: /' | sed 's/^https:\/\///' | sed 's/^http:\/\///' | sed 's/^www.//g'`
 }
 
 #Get domain name
@@ -145,6 +147,8 @@ echo WEBADDRESS=\"$WEBADDRESS\" >> /opt/karoshi/server_network/domain_informatio
 echo REALM=\"$WEBADDRESS\" >> /opt/karoshi/server_network/domain_information/domain_name
 echo REALMCAPS=\"$REALMCAPS\" >> /opt/karoshi/server_network/domain_information/domain_name
 echo LDAPBASE=\"$LDAPBASE\" >> /opt/karoshi/server_network/domain_information/domain_name
+echo LONGNAME=\"$LONGNAME\" >> /opt/karoshi/server_network/domain_information/domain_name
+echo SHORTNAME=\"$SHORTNAME\" >> /opt/karoshi/server_network/domain_information/domain_name
 echo LINUXCLIENTVER=\"karoshi-2.2\" >> /opt/karoshi/server_network/domain_information/domain_name
 
 function check_password {
@@ -907,7 +911,7 @@ NEWGROUP=smt
 NEWGROUPDISP="Senior Management"
 add_samba4_group
 
-echo -w "$GROUPADDMSG governors\n"
+echo -e "$GROUPADDMSG governors\n"
 NEWGROUP=governors
 NEWGROUPDISP="Governors"
 add_samba4_group

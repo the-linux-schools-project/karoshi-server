@@ -69,10 +69,10 @@ fi
 #Configure a separate apache to run on ports 50001 and 50002 with user apache_karoshi
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/scripts/configure_karoshi_web_management
 #Get School Name
-[ -f /opt/karoshi/server_network/web_controls/institute_name ] && SCHOOL_NAME=`sed -n 1,1p /opt/karoshi/server_network/web_controls/institute_name`
+source /opt/karoshi/server_network/domain_information/domain_name
 #Add school name to language file
 NAMELINENO=`grep -n ^SCHOOL_NAME= /opt/karoshi/serversetup/web_controls/language/englishuk/menus/menu | cut -d: -f1`
-sed -i $NAMELINENO'c'\SCHOOL_NAME=\""$SCHOOL_NAME"\" /opt/karoshi/serversetup/web_controls/language/englishuk/menus/menu
+sed -i $NAMELINENO'c'\SCHOOL_NAME=\""$SHORTNAME"\" /opt/karoshi/serversetup/web_controls/language/englishuk/menus/menu
 
 KAROSHI_SERVER=`hostname`
 

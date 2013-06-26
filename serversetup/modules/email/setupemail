@@ -353,12 +353,6 @@ if [ $APACHESTATUS = 0 ]
 then
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
 fi
-[ ! -d /var/www/egroupware-files ] && mkdir /var/www/egroupware-files
-[ ! -d /var/www/backup ] && mkdir /var/www/backup
-chmod 0750 /var/www/egroupware-files
-chown -c $APACHEUSER.$APACHEGROUP /var/www/egroupware-files 1>/dev/null
-chmod 0750 /var/www/backup
-chown -c $APACHEUSER.$APACHEGROUP /var/www/backup 1>/dev/null
 
 ##########################
 #make sure that apache, postfix, mailscanner and imap is running
@@ -431,6 +425,5 @@ fi
 ###########################
 #Show completed message
 ###########################
-echo $ACCESSMSG1 - '<a href="https://'$EMAILDOMAIN'/squirrelmail" target="_blank">http://'$EMAILDOMAIN'/squirrelmail</a><br>'
-echo $ACCESSMSG2 - '<a href="https://'$EMAILDOMAIN'/egroupware" target="_blank">http://'$EMAILDOMAIN'/egroupware</a><br><br>'
+echo $ACCESSMSG1 - '<a href="https://'$ALIAS.$REALM'/SOGO" target="_blank">https://'$ALIAS.$REALM'/SOGo</a><br>'
 exit
