@@ -30,17 +30,17 @@ echo '<!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>HTML & CSS Avery Labels Square Self-Adhesive Paper Labels 37mm, 35 per Shet, LP35/37SQ</title>
+    <title>HTML & CSS Avery White Heavy Duty Laser Labels, 99.1 x 38.1 mm, L7063-20/L7063</title>
     <style>
     body {
-        width: 8.5in;
+        width: 210mm;
         margin: 2mm;
         }
     .label{
-        /*Square Self-Adhesive Paper Labels 37mm, 35 per Shet, LP35/37SQ */
-        width:37mm; 
-        height: 37mm;
-        padding: 1mm 1mm 1mm 1mm;
+        /*Square Self-Adhesive Paper Labels 37mm, 35 per Shet, L7063-20/L7063 */
+        width:96.5mm; 
+        height: 38.1mm;
+        padding: 0mm 0mm 0mm 0mm;
         margin-right: 1mm; 
 
         float: left;

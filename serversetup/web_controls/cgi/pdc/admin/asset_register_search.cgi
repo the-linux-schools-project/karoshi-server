@@ -137,6 +137,7 @@ LOCATION=`echo $ASSETPATH | cut -d"/" -f6`
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
+TABLECLASS=standard
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox">'
@@ -145,11 +146,12 @@ fi
 echo '<form action="/cgi-bin/admin/asset_register_view.cgi" method="post">'
 if [ $MOBILE = yes ]
 then
+TABLECLASS=mobilestandard
 echo '<div style="float: left" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE13'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$INFRASTRUCTURESMSG'</a>
-</div></div><div id="mobileactionbox3">
+</div></div><div id="mobileactionbox">
 '
 
 fi
@@ -158,7 +160,7 @@ echo "<b>"$TITLE18"</b><br><br>"
 
 #Give a choice of seeing the asset in the asset register or viewing its internet logs if available.
 
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 180px;">'$LOCATIONMSG'</td><td>'$LOCATION'</td></tr>
 <tr><td>'$ASSETNUMMSG'</td><td>'$ASSET'</td></tr>
 <tr><td>'$VIEWASSETMSG'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_edit_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="/images/assets/edit.png" value=""><span>'$VIEWASSETMSG'</span></a></td></tr>
