@@ -58,7 +58,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 if [ $NEW_MESSAGE = yes ]
 then
-/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add helpdesk /cgi-bin/admin/helpdesk_view_fm.cgi "$$NEWREQUESTMSG" 1
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add helpdesk /cgi-bin/admin/helpdesk_view_fm.cgi "$NEWREQUESTMSG" 1
 echo `date`: helpdesk - request added from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 else
 /opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete helpdesk
