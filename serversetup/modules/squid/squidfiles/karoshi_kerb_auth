@@ -1,0 +1,8 @@
+#!/bin/bash
+
+while read -r result_type result_body1 result_body2; do
+	if [[ $result_type == AF ]]; then
+		result_body2=${result_body2%@*}
+	fi
+	echo $result_type $result_body1 $result_body2
+done < <(/usr/lib/squid3/squid_kerb_auth "$@")

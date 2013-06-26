@@ -159,6 +159,8 @@ if [ $SQUIDVER = squid3 ]
 then
 cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/squid3/squid.conf /etc/squid/
 cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/errors/en/* /usr/share/squid3/errors/en/
+cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/karoshi_kerb_auth /usr/lib/squid3
+chmod 755 /usr/lib/squid3/karoshi_kerb_auth
 else
 cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/errors/en/* /usr/share/squid/errors/en/
 fi
