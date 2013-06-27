@@ -110,6 +110,57 @@ find /etc/skel -type d -print0 | xargs -0 chmod 755
 #Static ARPs
 [ -f /tmp/netlogon/domain_information/static_arps ] && arp -f /tmp/netlogon/domain_information/static_arps
 
+#######################
+#Thunderbird extensions
+#######################
+
+function do_xpi {
+	xpi_name=$(basename "$1")
+	xpi_name=${xpi_name%.xpi}
+	
+	if [[ -z $xpi_name ]]; then
+		echo "Warning: Something bad happened" >&2
+		return
+	fi
+	
+	mkdir /opt/karoshi/thunderbird/extensions/"$xpi_name"
+	unzip "$1" -d /opt/karoshi/thunderbird/extensions/"$xpi_name"
+	
+	xpi_id=$(xmlstarlet sel -N rdf=http://www.w3.org/1999/02/22-rdf-syntax-ns# -N em=http://www.mozilla.org/2004/em-rdf# \
+				-t -v "//rdf:Description[@about='urn:mozilla:install-manifest']/em:id" /opt/karoshi/thunderbird/extensions/"$xpi_name"/install.rdf)
+	#Check if we actually have a valid extension id
+	if [[ -z $xpi_id ]]; then
+		echo "Warning: Thunderbird extension $xpi_name is invalid" >&2
+		return
+	fi
+	
+	#Install extension
+	ln -s /opt/karoshi/thunderbird/extensions/"$xpi_name" /usr/lib/mozilla/extensions/{3550f703-e582-4d05-9a08-453d09bdfdc6}/"$xpi_id"
+}
+
+#{3550f703-e582-4d05-9a08-453d09bdfdc6} is the app-id for Thunderbird
+[ -d /usr/lib/mozilla/extensions/{3550f703-e582-4d05-9a08-453d09bdfdc6} ] || mkdir -p /usr/lib/mozilla/extensions/{3550f703-e582-4d05-9a08-453d09bdfdc6}
+[ -d /opt/karoshi/thunderbird/extensions ] || mkdir -p /opt/karoshi/thunderbird/extensions
+
+if [ -d /tmp/netlogon/domain_information/thunderbird/extensions ]; then
+	#Clear all extensions
+	find /opt/karoshi/thunderbird/extensions -mindepth 1 -maxdepth 1 -delete
+	
+	#Global extensions
+	while read -r -d $'\0' xpi; do
+		do_xpi "$xpi"
+	done < <(find /tmp/netlogon/domain_information/thunderbird/extensions -maxdepth 1 -mindepth 1 -name '*.xpi' -print0)
+	#Linux-specific extensions
+	if [ -d /tmp/netlogon/domain_information/thunderbird/extensions/linux-$(uname -i) ]; then
+		while read -r -d $'\0' xpi; do
+			do_xpi "$xpi"
+		done < <(find /tmp/netlogon/domain_information/thunderbird/extensions/linux-$(uname -i) -maxdepth 1 -mindepth 1 -name '*.xpi' -print0)
+	fi
+fi
+
+#Clear out old extensions
+find -L /usr/lib/mozilla/extensions/{3550f703-e582-4d05-9a08-453d09bdfdc6} -maxdepth 1 -lname '/opt/karoshi/thunderbird/extensions/*' -delete
+
 ##########################
 #Update the upstart scripts
 ##########################

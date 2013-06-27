@@ -165,21 +165,6 @@ user_pref('mail.smtpserver.smtp1.try_ssl', 2);
 user_pref('mail.smtpserver.smtp1.username', '$USER');
 user_pref('mail.smtpservers', 'smtp1');" >> ~/.thunderbird/"$thunderbird_profile"/user.js
 			fi
-		
-			#Set up LDAP address book
-			base_dn="cn=Users"$(sed 's/\(\.\|^\)/,dc=/g' <<< "$DNSSUFFIX")
-			echo "user_pref('ldap_2.autoComplete.directoryServer', 'ldap_2.servers.Karoshi');
-user_pref('ldap_2.autoComplete.useDirectory', true);
-user_pref('ldap_2.servers.Karoshi.auth.dn', '');
-user_pref('ldap_2.servers.Karoshi.auth.saslmech', '');
-user_pref('ldap_2.servers.Karoshi.description', '$DNSSUFFIX');
-user_pref('ldap_2.servers.Karoshi.filename', 'ldap.mab');
-user_pref('ldap_2.servers.Karoshi.maxHits', 100);
-user_pref('ldap_2.servers.Karoshi.uri', 'ldap://$PDC.$DNSSUFFIX/$base_dn??sub?(&(mail=*)(displayName=*))');
-user_pref('ldap_2.servers.Karoshi.autoComplete.commentFormat', '[displayName]');
-user_pref('ldap_2.servers.Karoshi.autoComplete.nameFormat', '[displayName]');
-user_pref('ldap_2.servers.Karoshi.autoComplete.filterFormat', '(|(mail=*%v*)(displayName=*%v*)(givenName=*%v*)(sn=*%v*)(cn=*%v*))');
-user_pref('ldap_2.servers.default.attrmap.DisplayName', 'displayname,cn,commonname');" >> ~/.thunderbird/"$thunderbird_profile"/user.js
 		fi
 	fi
 
