@@ -310,6 +310,21 @@ Comment=Email reader
 Icon=internet-mail
 Exec=exo-open --launch MailReader' > /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVER/desktop_icons/all/Thunderbird.desktop
 
+#Add in thunderbird extensions
+
+[ -d /tmp/integrator.$$ ] && rm -f -R /tmp/integrator.$$
+
+[ ! -d /var/lib/samba/netlogon/domain_information/thunderbird/extensions ] && mkdir -p /var/lib/samba/netlogon/domain_information/thunderbird/extensions
+
+mkdir /tmp/integrator.$$
+unzip -q /opt/karoshi/serversetup/modules/email/sogo/thunderbird-extensions/sogo-integrator-17.0.5.xpi -d /tmp/integrator.$$/
+#Edit files -
+sed -i 's/CHANGETHISSERVER.CHANGETHISREALM/'$SERVERNAME'.'$REALM'/g' /tmp/integrator.$$/chrome/content/extensions.rdf
+sed -i "s@CHANGETHISTIMEZONE@`sed -n 1,1p /etc/timezone`@g" /tmp/integrator.$$/defaults/preferences/site.js
+#Rezip file
+( cd /tmp/integrator.$$ ; zip -q /var/lib/samba/netlogon/domain_information/thunderbird/extensions/sogo-integrator-17.0.5.xpi * )
+rm -f -R /tmp/integrator.$$
+cp /opt/karoshi/serversetup/modules/email/sogo/thunderbird-extensions/sogo-connector-17.0.5.xpi /var/lib/samba/netlogon/domain_information/thunderbird/extensions/
 
 #Add role information
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
