@@ -309,7 +309,7 @@ sed -i 's/CHANGETHISREALM/'$REALM'/g' /etc/sogo/sogo.conf
 sed -i 's/CHANGETHISBASEDN/'$LDAPBASE'/g' /etc/sogo/sogo.conf
 sed -i 's/CHANGETHISLDAPSERVER/'$LDAPSERVER'/g' /etc/sogo/sogo.conf
 sed -i 's/CHANGEPASS/'$SOGOPASS'/g' /etc/sogo/sogo.conf
-sed -i 's/CHANGETHISTIMEZONE/'$TIMEZONE'/g' /etc/sogo/sogo.conf
+sed -i 's@CHANGETHISTIMEZONE@'$TIMEZONE'@g' /etc/sogo/sogo.conf
 
 #Modify /etc/apache2/conf.d/SOGo.conf
 sed -i 's/CHANGETHISWEBDOMAIN/'$ALIAS.$REALM'/g' /etc/apache2/conf.d/SOGo.conf
