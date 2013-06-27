@@ -306,9 +306,9 @@ Terminal=false
 X-MultipleArgs=false
 Type=Application
 Name=E-Mail
-Comment=Thunderbird
-Icon=thunderbird
-Exec=thunderbird -addressbook' > /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVER/desktop_icons/all/Thunderbird.desktop
+Comment=Email reader
+Icon=internet-mail
+Exec=exo-open --launch MailReader' > /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVER/desktop_icons/all/Thunderbird.desktop
 
 
 #Add role information
