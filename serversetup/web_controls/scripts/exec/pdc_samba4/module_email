@@ -298,6 +298,19 @@ echo '<b>'Domain'</b>': $DOMAINPATH >> /opt/karoshi/modules/email/installed_info
 
 echo $DOMAINPATH >  /opt/karoshi/serversetup/variables/emaildomain
 
+#Create thunderbird icon for the linux client
+
+echo '[Desktop Entry]
+Version=1.0
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Name=E-Mail
+Comment=Thunderbird
+Icon=thunderbird
+Exec=thunderbird -addressbook' > /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVER/desktop_icons/all/Thunderbird.desktop
+
+
 #Add role information
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
 echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/emailserver
