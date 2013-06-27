@@ -202,6 +202,7 @@ fi
 #########################
 
 cp -f -R /opt/karoshi/serversetup/modules/squid/dansguardian /etc
+sed -i 's/YOURSERVER.YOURDOMAIN/'$HOSTNAME.$REALM'/g' /etc/dansguardian/dansguardian.conf
 cd /etc/dansguardian/
 tar -xvzf /opt/karoshi/serversetup/modules/squid/dansguardian/blacklists_archive.tar.gz 1>/dev/null
 
