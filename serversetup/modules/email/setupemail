@@ -313,6 +313,7 @@ sed -i 's@CHANGETHISTIMEZONE@'$TIMEZONE'@g' /etc/sogo/sogo.conf
 
 #Modify /etc/apache2/conf.d/SOGo.conf
 sed -i 's/CHANGETHISWEBDOMAIN/'$ALIAS.$REALM'/g' /etc/apache2/conf.d/SOGo.conf
+sed -i 's/CHANGETHISKRBPATH/'$HOSTNAME.$REALM'/g' /etc/apache2/conf.d/SOGo.conf
 sed -i 's/CHANGETHISSERVERNAME/'$HOSTNAME'/g' /etc/apache2/conf.d/SOGo.conf
 
 #Enable apache modules

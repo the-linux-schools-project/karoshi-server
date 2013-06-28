@@ -319,7 +319,7 @@ Exec=exo-open --launch MailReader' > /var/lib/samba/netlogon/linuxclient/$LINUXC
 mkdir /tmp/integrator.$$
 unzip -q /opt/karoshi/serversetup/modules/email/sogo/thunderbird-extensions/sogo-integrator-17.0.5.xpi -d /tmp/integrator.$$/
 #Edit files -
-sed -i 's/CHANGETHISSERVER.CHANGETHISREALM/'$SERVERNAME'.'$REALM'/g' /tmp/integrator.$$/chrome/content/extensions.rdf
+sed -i 's/CHANGETHISSERVER.CHANGETHISREALM/'$ALIAS'.'$REALM'/g' /tmp/integrator.$$/chrome/content/extensions.rdf
 sed -i "s@CHANGETHISTIMEZONE@`sed -n 1,1p /etc/timezone`@g" /tmp/integrator.$$/defaults/preferences/site.js
 #Rezip file
 ( cd /tmp/integrator.$$ ; zip -q /var/lib/samba/netlogon/domain_information/thunderbird/extensions/sogo-integrator-17.0.5.xpi * )
