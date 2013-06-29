@@ -271,11 +271,11 @@ KrbLocalUserMapping on
 #AuthType Basic
 #AuthBasicProvider ldap
 #AuthzLDAPAuthoritative on
-AuthLDAPUrl ldap://127.0.0.1/CN=personnel,CN=Users,$LDAPBASE?CN
+AuthLDAPUrl ldap://127.0.0.1/OU=personnel,OU=People,$LDAPBASE?CN
 
 Require valid-user
 
-Require ldap-group CN=staff,CN=Groups,CN=Users,$LDAPBASE
+Require ldap-group OU=staff,OU=Groups,OU=People,$LDAPBASE
 Satisfy any
 
 ErrorDocument 401 \"<html><meta http-equiv=\\\"refresh\\\" content=\\\"0;url=/cgi-bin/access_denied.cgi\\\"></html>\"

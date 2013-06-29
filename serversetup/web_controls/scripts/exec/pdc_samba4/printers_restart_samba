@@ -95,13 +95,13 @@ if [ `echo $?` != 0 ]
 then
 
 #Add karoshiadmin to samba4 ldap
-samba-tool user add karoshiadmin --userou='CN=itadmin,CN=personnel,CN=Users' --home-directory=/home/users/itadmin/karoshiadmin --surname=admin --given-name=karoshi --use-username-as-cn --random-password 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool user add karoshiadmin --userou='OU=itadmin,OU=personnel,OU=People' --home-directory=/home/users/itadmin/karoshiadmin --surname=admin --given-name=karoshi --use-username-as-cn --random-password 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #Add karoshiadmin to the Domain Admins group
 samba-tool group addmembers "Domain Admins" karoshiadmin  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #Get primarygroupid for users group
 PRIGROUPID=`wbinfo -n "Domain Admins" | cut -d- -f8 | cut -d" " -f 1`
 #Change primarygroupid of karoshiadmin - have to use ldapmodify at this time since samba-tool does not seem to have this option!
-echo -e "dn: CN=karoshildap,CN=$PRIMARYGROUP,CN=personnel,CN=Users,$REALM
+echo -e "dn: CN=karoshildap,OU=$PRIMARYGROUP,OU=personnel,OU=People,$REALM
 changetype: modify
 replace: primaryGroupID
 primaryGroupID: $PRIGROUPID

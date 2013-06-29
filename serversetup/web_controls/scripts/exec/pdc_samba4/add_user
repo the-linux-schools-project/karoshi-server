@@ -212,7 +212,7 @@ FIRST_CHAR=`echo ${SURNAME:0:1} | tr 'a-z' 'A-Z'`
 SURNAME=`echo $FIRST_CHAR${SURNAME:1}`
 
 #Add user to samba4 ldap
-samba-tool user add $NEWUSERNAME --userou='CN='$PRIMARYGROUP',CN='$SUBUNIT',CN=Users' --profile-path=\\\\$HOSTNAME\\applications\\profiles\\$PRIMARYGROUP  --script-path=logon.bat --surname=$SURNAME --given-name=$FIRSTNAME --use-username-as-cn  --random-password --mail-address=$NEWUSERNAME@$REALM 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool user add $NEWUSERNAME --userou='OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People' --profile-path=\\\\$HOSTNAME\\applications\\profiles\\$PRIMARYGROUP  --script-path=logon.bat --surname=$SURNAME --given-name=$FIRSTNAME --use-username-as-cn  --random-password --mail-address=$NEWUSERNAME@$REALM 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 #samba-tool user add $NEWUSERNAME --userou='CN='$PRIMARYGROUP',CN='$SUBUNIT',CN=Users' --home-drive=G --script-path='\\'$HOSTNAME'\'netlogon'\'logon.bat --home-directory='\\'$SERVER'\'$NEWUSERNAME --surname=$SURNAME --given-name=$FIRSTNAME --use-username-as-cn  --random-password --mail-address=$NEWUSERNAME@$EMAILDOMAIN 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
@@ -245,7 +245,7 @@ LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 
 #Change primarygroupid and add unixhomedirectory - have to use ldapmodify at this time since samba-tool does not seem to have this option!
 #This is hideous why cant samba4 ldap do this all in one go??
-echo -e "dn: CN=$NEWUSERNAME,CN=$PRIMARYGROUP,CN=$SUBUNIT,CN=Users,$LDAPBASE
+echo -e "dn: CN=$NEWUSERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
 changetype: modify
 add: objectclass
 objectclass: posixaccount
@@ -253,7 +253,7 @@ objectclass: posixaccount
 
 PRIGROUPID=`getent group $PRIMARYGROUP | cut -d: -f3`
 
-echo -e "dn: CN=$NEWUSERNAME,CN=$PRIMARYGROUP,CN=$SUBUNIT,CN=Users,$LDAPBASE
+echo -e "dn: CN=$NEWUSERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
 changetype: modify
 add: gidnumber
 gidnumber: $PRIGROUPID
@@ -261,13 +261,13 @@ gidnumber: $PRIGROUPID
 
 UIDNUMBER=`getent passwd $NEWUSERNAME | cut -d: -f3`
 
-echo -e "dn: CN=$NEWUSERNAME,CN=$PRIMARYGROUP,CN=$SUBUNIT,CN=Users,$LDAPBASE
+echo -e "dn: CN=$NEWUSERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
 changetype: modify
 add: uidnumber
 uidnumber: $UIDNUMBER
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-echo -e "dn: CN=$NEWUSERNAME,CN=$PRIMARYGROUP,CN=$SUBUNIT,CN=Users,$LDAPBASE
+echo -e "dn: CN=$NEWUSERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
 changetype: modify
 add: division
 division: $PRIMARYGROUP
@@ -285,7 +285,7 @@ division: $PRIMARYGROUP
 #loginshell: /bin/bash
 #-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-echo -e "dn: CN=$NEWUSERNAME,CN=$PRIMARYGROUP,CN=$SUBUNIT,CN=Users,$LDAPBASE
+echo -e "dn: CN=$NEWUSERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
 changetype: modify
 add: unixhomedirectory
 unixhomedirectory: $HOMEPATH/$NEWUSERNAME
@@ -296,7 +296,7 @@ unixhomedirectory: $HOMEPATH/$NEWUSERNAME
 if [ ! -z $ENROLLMENTNUMBER ]
 then
 #Add in employee number if it has been set
-echo -e "dn: CN=$NEWUSERNAME,CN=$PRIMARYGROUP,CN=$SUBUNIT,CN=Users,$LDAPBASE
+echo -e "dn: CN=$NEWUSERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
 changetype: modify
 add: employeeNumber
 employeeNumber: $ENROLLMENTNUMBER
@@ -426,17 +426,10 @@ source /opt/karoshi/server_network/group_information/'$PRIMARYGROUP'
 source /opt/karoshi/server_network/domain_information/domain_name
 GROUPLIST=$SECONDARYGROUP
 
-if [ -f /opt/karoshi/server_network/emaildomain ]
-then
-EMAILDOMAIN=`sed -n 1,1p /opt/karoshi/server_network/emaildomain`
-else
-EMAILDOMAIN=notset
-fi
-
 echo `date`: add_user \(federated mode\) - creating '$NEWUSERNAME', Primary group: '$PRIMARYGROUP' from '$REMOTE_ADDR' by '$REMOTE_USER' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
 
 #Add user to samba4 ldap
-samba-tool user add '$NEWUSERNAME' --userou='CN='$PRIMARYGROUP',CN='$SUBUNIT',CN=Users' --profile-path=\\\\$HOSTNAME\\applications\\profiles\\'$NEWUSERNAME' --script-path=logon.bat --surname='$SURNAME' --given-name='$FIRSTNAME' --use-username-as-cn  --random-password --mail-address='$NEWUSERNAME'@'$EMAILDOMAIN' 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+samba-tool user add '$NEWUSERNAME' --userou="OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People" --profile-path=\\\\$HOSTNAME\\applications\\profiles\\'$NEWUSERNAME' --script-path=logon.bat --surname='$SURNAME' --given-name='$FIRSTNAME' --use-username-as-cn  --random-password --mail-address='$NEWUSERNAME'@$REALM 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
 
 #Change password
 samba-tool user setpassword '$NEWUSERNAME' --newpassword='$NEWUSERPASSWORD' 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
@@ -469,37 +462,37 @@ UIDNUMBER=`getent passwd '$NEWUSERNAME' | cut -d: -f3`
 
 #Change primarygroupid and add unixhomedirectory - have to use ldapmodify at this time since samba-tool does not seem to have this option!
 #This is hideous why cant samba4 ldap do this all in one go??
-echo -e "dn: CN='$NEWUSERNAME',CN='$PRIMARYGROUP',CN='$SUBUNIT',CN=Users,$LDAPBASE
+echo -e "dn: CN='$NEWUSERNAME',OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People,$LDAPBASE
 changetype: modify
 add: objectclass
 objectclass: posixaccount
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
 
-echo -e "dn: CN='$NEWUSERNAME',CN='$PRIMARYGROUP',CN='$SUBUNIT',CN=Users,$LDAPBASE
+echo -e "dn: CN='$NEWUSERNAME',OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People,$LDAPBASE
 changetype: modify
 add: uidnumber
 uidnumber: $UIDNUMBER
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
 
-echo -e "dn: CN='$NEWUSERNAME',CN='$PRIMARYGROUP',CN='$SUBUNIT',CN=Users,$LDAPBASE
+echo -e "dn: CN='$NEWUSERNAME',OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People,$LDAPBASE
 changetype: modify
 add: gidnumber
 gidnumber: $PRIGROUPID
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
 
-echo -e "dn: CN='$NEWUSERNAME',CN='$PRIMARYGROUP',CN='$SUBUNIT',CN=Users,$LDAPBASE
+echo -e "dn: CN='$NEWUSERNAME',OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People,$LDAPBASE
 changetype: modify
 replace: primaryGroupID
 primaryGroupID: $PRIGROUPID
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
 
-#echo -e "dn: CN='$NEWUSERNAME',CN='$PRIMARYGROUP',CN=$SUBUNIT,CN=Users,$LDAPBASE
+#echo -e "dn: CN='$NEWUSERNAME',OU='$PRIMARYGROUP',OU=$SUBUNIT,OU=People,$LDAPBASE
 #changetype: modify
 #add: loginshell
 #loginshell: /bin/bash
 #-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
 
-echo -e "dn: CN='$NEWUSERNAME',CN='$PRIMARYGROUP',CN=$SUBUNIT,CN=Users,$LDAPBASE
+echo -e "dn: CN='$NEWUSERNAME',OU='$PRIMARYGROUP',OU=$SUBUNIT,OU=People,$LDAPBASE
 changetype: modify
 add: unixhomedirectory
 unixhomedirectory: $HOMEPATH/'$NEWUSERNAME'
@@ -510,7 +503,7 @@ unixhomedirectory: $HOMEPATH/'$NEWUSERNAME'
 if [ ! -z '$ENROLLMENTNUMBER' ]
 then
 #Add in employee number if it has been set
-echo -e "dn: CN='$NEWUSERNAME',CN='$PRIMARYGROUP',CN=$SUBUNIT,CN=Users,$LDAPBASE
+echo -e "dn: CN='$NEWUSERNAME',OU='$PRIMARYGROUP',OU=$SUBUNIT,OU=People,$LDAPBASE
 changetype: modify
 add: employeeNumber
 employeeNumber: '$ENROLLMENTNUMBER'

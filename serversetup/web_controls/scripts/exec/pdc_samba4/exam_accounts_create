@@ -112,7 +112,7 @@ EXAMPASSWORD=$RANDOM
 echo '<tr><td>'exam$COUNTER'</td><td>'/home/users/exam$COUNTER'</td></tr>'
 
 #Add user to samba4 ldap
-samba-tool user add exam$COUNTER --userou='CN=exams,CN=other,CN=Users' --script-path=logon.bat --surname=exam$COUNTER --given-name=exam$COUNTER --use-username-as-cn  --random-password --mail-address=exam$COUNTER@$EMAILDOMAIN 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool user add exam$COUNTER --userou='OU=exams,OU=other,OU=People' --script-path=logon.bat --surname=exam$COUNTER --given-name=exam$COUNTER --use-username-as-cn  --random-password --mail-address=exam$COUNTER@$EMAILDOMAIN 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 
 #Get uid and primary gid for the new user
@@ -121,25 +121,25 @@ UIDNUMBER=`getent passwd exam$COUNTER | cut -d: -f3`
 
 #Change primarygroupid and add unixhomedirectory - have to use ldapmodify at this time since samba-tool does not seem to have this option!
 #This is hideous why cant samba4 ldap do this all in one go??
-echo -e "dn: CN=exam$COUNTER,CN=exams,CN=other,CN=Users,$LDAPBASE
+echo -e "dn: CN=exam$COUNTER,OU=exams,OU=other,OU=People,$LDAPBASE
 changetype: modify
 add: objectclass
 objectclass: posixaccount
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-echo -e "dn: CN=exam$COUNTER,CN=exams,CN=other,CN=Users,$LDAPBASE
+echo -e "dn: CN=exam$COUNTER,OU=exams,OU=other,OU=People,$LDAPBASE
 changetype: modify
 add: uidnumber
 uidnumber: $UIDNUMBER
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-echo -e "dn: CN=exam$COUNTER,CN=exams,CN=other,CN=Users,$LDAPBASE
+echo -e "dn: CN=exam$COUNTER,OU=exams,OU=other,OU=People,$LDAPBASE
 changetype: modify
 add: gidnumber
 gidnumber: $PRIGROUPID
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-echo -e "dn: CN=exam$COUNTER,CN=exams,CN=other,CN=Users,$LDAPBASE
+echo -e "dn: CN=exam$COUNTER,OU=exams,OU=other,OU=People,$LDAPBASE
 changetype: modify
 replace: primaryGroupID
 primaryGroupID: $PRIGROUPID
@@ -151,7 +151,7 @@ primaryGroupID: $PRIGROUPID
 #loginshell: /bin/bash
 #-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-echo -e "dn: CN=exam$COUNTER,CN=exams,CN=other,CN=Users,$LDAPBASE
+echo -e "dn: CN=exam$COUNTER,OU=exams,OU=other,OU=People,$LDAPBASE
 changetype: modify
 add: unixhomedirectory
 unixhomedirectory: /home/users/exams/exam$COUNTER

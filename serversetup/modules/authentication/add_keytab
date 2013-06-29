@@ -76,10 +76,10 @@ getent passwd karoshi-krb5 1>/dev/null
 if [ `echo $?` != 0 ]
 then 
 #Add user to samba4 ldap
-samba-tool user add karoshi-krb5 --userou='CN=karoshi,CN=other,CN=Users'  --use-username-as-cn --random-password 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool user add karoshi-krb5 --userou='OU=karoshi,OU=other,OU=People'  --use-username-as-cn --random-password 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #Modify useraccountcontrol
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-echo -e "dn: CN=karoshi-krb5,CN=karoshi,CN=other,CN=Users,$LDAPBASE
+echo -e "dn: CN=karoshi-krb5,OU=karoshi,OU=other,OU=People,$LDAPBASE
 changetype: modify
 replace: userAccountControl
 userAccountControl: 66112

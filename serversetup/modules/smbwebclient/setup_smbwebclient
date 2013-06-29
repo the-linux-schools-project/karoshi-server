@@ -104,8 +104,8 @@ define("_SITENAME",	"'$REALM'");
 
 //LDAP Server details
 define("_LDAPSERVER",	"'$PDCSERVER'.'$REALM'");
-define("_SEARCH_OU_1",		"CN=Users,'$LDAPBASE'");
-define("_SEARCH_OU_2",		"CN=Groups,CN=Users,'$LDAPBASE'");
+define("_SEARCH_OU_1",		"OU=People,'$LDAPBASE'");
+define("_SEARCH_OU_2",		"OU=Groups,OU=People,'$LDAPBASE'");
 
 //Tech services info
 define("_TSCONTACTNUM",	"252");

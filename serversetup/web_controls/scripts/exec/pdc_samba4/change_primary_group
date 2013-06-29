@@ -163,7 +163,7 @@ samba-tool group removemembers "$CURRENTPRIGROUP" $USERNAME  1>/dev/null 2>>/opt
 #Add user to new primary group
 samba-tool group addmembers "$NEWPRIGROUP" $USERNAME  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #Set new home path for the user
-echo -e "dn: CN=$USERNAME,CN=$PRIMARYGROUP,CN=$SUBUNIT,CN=Users,$LDAPBASE
+echo -e "dn: CN=$USERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
 changetype: modify
 add: unixhomedirectory
 unixhomedirectory: $HOMEPATH/$USERNAME
@@ -171,7 +171,7 @@ unixhomedirectory: $HOMEPATH/$USERNAME
 
 PRIGROUPID=`getent group $PRIMARYGROUP | cut -d: -f3`
 
-echo -e "dn: CN=$USERNAME,CN=$PRIMARYGROUP,CN=$SUBUNIT,CN=Users,$LDAPBASE
+echo -e "dn: CN=$USERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
 changetype: modify
 replace: primaryGroupID
 primaryGroupID: $PRIGROUPID

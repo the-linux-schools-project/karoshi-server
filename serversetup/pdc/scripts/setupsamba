@@ -378,11 +378,11 @@ PASSWORD=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
 function nslcd-user-accounts {
 #nslcd-server
 random_pass
-samba-tool user add nslcd-server --userou='CN=karoshi,CN=other,CN=Users' --use-username-as-cn --random-password 1>/dev/null 2>> /opt/karoshi/serversetup/install_log
+samba-tool user add nslcd-server --userou='OU=karoshi,OU=other,OU=People' --use-username-as-cn --random-password 1>/dev/null 2>> /opt/karoshi/serversetup/install_log
 samba-tool user setpassword nslcd-server --newpassword=$PASSWORD 1>/dev/null 2>> /opt/karoshi/serversetup/install_log
 
 #Modify useraccountcontrol
-echo -e "dn: CN=nslcd-server,CN=karoshi,CN=other,CN=Users,$LDAPBASE
+echo -e "dn: CN=nslcd-server,OU=karoshi,OU=other,CN=People,$LDAPBASE
 changetype: modify
 replace: userAccountControl
 userAccountControl: 66112
@@ -394,10 +394,10 @@ echo $PASSWORD > /opt/karoshi/server_network/domain_information/nslcd-server
 
 #nslcd-user
 random_pass
-samba-tool user add nslcd-user --userou='CN=karoshi,CN=other,CN=Users' --use-username-as-cn --random-password 1>/dev/null 2>> /opt/karoshi/serversetup/install_log
+samba-tool user add nslcd-user --userou='OU=karoshi,OU=other,OU=People' --use-username-as-cn --random-password 1>/dev/null 2>> /opt/karoshi/serversetup/install_log
 samba-tool user setpassword nslcd-user --newpassword=$PASSWORD 1>/dev/null 2>> /opt/karoshi/serversetup/install_log
 #Modify useraccountcontrol
-echo -e "dn: CN=nslcd-user,CN=karoshi,CN=other,CN=Users,$LDAPBASE
+echo -e "dn: CN=nslcd-user,OU=karoshi,OU=other,OU=People,$LDAPBASE
 changetype: modify
 replace: userAccountControl
 userAccountControl: 66112
@@ -406,146 +406,6 @@ userAccountControl: 66112
 touch /opt/karoshi/server_network/domain_information/nslcd-user
 chmod 0400 /opt/karoshi/server_network/domain_information/nslcd-user
 echo $PASSWORD > /opt/karoshi/server_network/domain_information/nslcd-user
-}
-
-function link_organisational_unit {
-
-#Make a cn inside the ou
-samba-tool group add --groupou="$SUBPATH" $NAME
-#Add member to the group
-echo -e "dn: $LDAPPATH
-changetype: modify
-add: member
-member: $LDAPLINK
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
-}
-
-function link_organisational_units {
-
-NAME=techpolicy
-NAME2=tech
-SUBPATH="OU=$NAME2,OU=personnel,OU=Policies"
-LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
-LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
-link_organisational_unit
-
-NAME=techlist
-SUBPATH="OU=$NAME2,OU=personnel,OU=Distributionlists"
-LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
-LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
-link_organisational_unit
-
-NAME=itadminpolicy
-NAME2=itadmin
-SUBPATH="OU=$NAME2,OU=personnel,OU=Policies"
-LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
-LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
-link_organisational_unit
-
-NAME=itadminlist
-SUBPATH="OU=$NAME2,OU=personnel,OU=Distributionlists"
-LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
-LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
-link_organisational_unit
-
-NAME=staffpolicy
-NAME2=staff
-SUBPATH="OU=$NAME2,OU=personnel,OU=Policies"
-LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
-LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
-link_organisational_unit
-
-NAME=stafflist
-SUBPATH="OU=$NAME2,OU=personnel,OU=Distributionlists"
-LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
-LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
-link_organisational_unit
-
-NAME=studentstaffpolicy
-NAME2=studentstaff
-SUBPATH="OU=$NAME2,OU=personnel,OU=Policies"
-LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
-LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
-link_organisational_unit
-
-NAME=studentstafflist
-SUBPATH="OU=$NAME2,OU=personnel,OU=Distributionlists"
-LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
-LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
-link_organisational_unit
-
-NAME=officestaffpolicy
-NAME2=officestaff
-SUBPATH="OU=$NAME2,OU=personnel,OU=Policies"
-LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
-LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
-link_organisational_unit
-
-NAME=officestafflist
-SUBPATH="OU=$NAME2,OU=personnel,OU=Distributionlists"
-LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
-LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
-link_organisational_unit
-
-NAME=nonteachingstaffpolicy
-NAME2=nonteachingstaff
-SUBPATH="OU=$NAME2,OU=personnel,OU=Policies"
-LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
-LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
-link_organisational_unit
-
-NAME=nonteachingstafflist
-SUBPATH="OU=$NAME2,OU=personnel,OU=Distributionlists"
-LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
-LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
-link_organisational_unit
-
-NAME=governorspolicy
-NAME2=governors
-SUBPATH="OU=$NAME2,OU=personnel,OU=Policies"
-LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
-LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
-link_organisational_unit
-
-NAME=governorslist
-SUBPATH="OU=$NAME2,OU=personnel,OU=Distributionlists"
-LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
-LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
-link_organisational_unit
-
-COUNTER=$STARTYEAR
-while [ $COUNTER -le $ENDYEAR ]
-do
-
-NAME="yr$COUNTER"policy
-NAME2=yr$COUNTER
-SUBPATH="OU=$NAME2,OU=students,OU=Policies"
-LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
-LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
-link_organisational_unit
-
-NAME="yr$COUNTER"list
-SUBPATH="OU=$NAME2,OU=students,OU=Distributionlists"
-LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
-LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
-link_organisational_unit
-
-let COUNTER=$COUNTER+1
-done
-
-NAME=guestuserspolicy
-NAME2=guestusers
-SUBPATH="OU=$NAME2,OU=other,OU=Policies"
-LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
-LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
-link_organisational_unit
-
-NAME=guestuserslist
-SUBPATH="OU=$NAME2,OU=other,OU=Distributionlists"
-LDAPPATH="CN=$NAME,$SUBPATH,$LDAPBASE"
-LDAPLINK="CN=$NAME2,CN=Groups,CN=Users,$LDAPBASE"
-link_organisational_unit
-
 }
 
 function add_organisational_unit {
@@ -575,82 +435,58 @@ whencreated: $CREATETIME" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" 
 function add_organisational_units {
 
 #Policies subcontainer
-NAME="Policies"
-DESC="Policies"
-LDAPPATH="OU=Policies,$LDAPBASE"
+NAME="People"
+DESC="People"
+LDAPPATH="OU=People,$LDAPBASE"
 add_organisational_unit
 
-#Distributionlists subcontainer
-NAME="Distributionlists"
-DESC="Distribution lists"
-LDAPPATH="OU=Distributionlists,$LDAPBASE"
-add_organisational_unit
-
-#All subcontainers for policies and distribution lists
+#All subcontainers for People
 
 NAME="personnel"
 DESC="Personnel"
-LDAPPATH="OU=personnel,OU=Policies,$LDAPBASE"
-add_organisational_unit
-LDAPPATH="OU=personnel,OU=Distributionlists,$LDAPBASE"
+LDAPPATH="OU=personnel,OU=People,$LDAPBASE"
 add_organisational_unit
 
 NAME="staff"
 DESC="Staff"
-LDAPPATH="OU=staff,OU=personnel,OU=Policies,$LDAPBASE"
-add_organisational_unit
-LDAPPATH="OU=staff,OU=personnel,OU=Distributionlists,$LDAPBASE"
+LDAPPATH="OU=staff,OU=personnel,OU=People,$LDAPBASE"
 add_organisational_unit
 
 NAME="studentstaff"
 DESC="Student staff"
-LDAPPATH="OU=studentstaff,OU=personnel,OU=Policies,$LDAPBASE"
-add_organisational_unit
-LDAPPATH="OU=studentstaff,OU=personnel,OU=Distributionlists,$LDAPBASE"
+LDAPPATH="OU=studentstaff,OU=personnel,OU=People,$LDAPBASE"
 add_organisational_unit
 
 NAME="officestaff"
 DESC="Office staff"
-LDAPPATH="OU=officestaff,OU=personnel,OU=Policies,$LDAPBASE"
-add_organisational_unit
-LDAPPATH="OU=officestaff,OU=personnel,OU=Distributionlists,$LDAPBASE"
+LDAPPATH="OU=officestaff,OU=personnel,OU=People,$LDAPBASE"
 add_organisational_unit
 
 NAME="nonteachingstaff"
 DESC="Non teaching staff"
-LDAPPATH="OU=nonteachingstaff,OU=personnel,OU=Policies,$LDAPBASE"
-add_organisational_unit
-LDAPPATH="OU=nonteachingstaff,OU=personnel,OU=Distributionlists,$LDAPBASE"
+LDAPPATH="OU=nonteachingstaff,OU=personnel,OU=People,$LDAPBASE"
 add_organisational_unit
 
 NAME="governors"
 DESC="Governors"
-LDAPPATH="OU=governors,OU=personnel,OU=Policies,$LDAPBASE"
-add_organisational_unit
-LDAPPATH="OU=governors,OU=personnel,OU=Distributionlists,$LDAPBASE"
+LDAPPATH="OU=governors,OU=personnel,OU=People,$LDAPBASE"
 add_organisational_unit
 
 NAME="itadmin"
 DESC="Itadmin users"
-LDAPPATH="OU=itadmin,OU=personnel,OU=Policies,$LDAPBASE"
-add_organisational_unit
-LDAPPATH="OU=itadmin,OU=personnel,OU=Distributionlists,$LDAPBASE"
+LDAPPATH="OU=itadmin,OU=personnel,OU=People,$LDAPBASE"
 add_organisational_unit
 
 NAME="tech"
 DESC="Technician users"
-LDAPPATH="OU=tech,OU=personnel,OU=Policies,$LDAPBASE"
-add_organisational_unit
-LDAPPATH="OU=tech,OU=personnel,OU=Distributionlists,$LDAPBASE"
+LDAPPATH="OU=tech,OU=personnel,OU=People,$LDAPBASE"
 add_organisational_unit
 
 #All student sub containers
 
 NAME="students"
 DESC="Student accounts"
-LDAPPATH="OU=students,OU=Policies,$LDAPBASE"
-add_organisational_unit
-LDAPPATH="OU=students,OU=Distributionlists,$LDAPBASE"
+LDAPPATH="OU=students,OU=People,$LDAPBASE"
 add_organisational_unit
 
 COUNTER=$STARTYEAR
@@ -658,9 +494,7 @@ while [ $COUNTER -le $ENDYEAR ]
 do
 NAME="yr$COUNTER"
 DESC="yr$COUNTER"
-LDAPPATH="OU=yr$COUNTER,OU=students,OU=Policies,$LDAPBASE"
-add_organisational_unit
-LDAPPATH="OU=yr$COUNTER,OU=students,OU=Distributionlists,$LDAPBASE"
+LDAPPATH="OU=yr$COUNTER,OU=students,OU=People,$LDAPBASE"
 add_organisational_unit
 let COUNTER=$COUNTER+1
 done
@@ -668,169 +502,40 @@ done
 #All other subcontainers
 NAME="other"
 DESC="Other users"
-LDAPPATH="OU=other,OU=Policies,$LDAPBASE"
-add_organisational_unit
-LDAPPATH="OU=other,OU=Distributionlists,$LDAPBASE"
+LDAPPATH="OU=other,OU=People,$LDAPBASE"
 add_organisational_unit
 
 NAME="exams"
 DESC="Exam users"
-LDAPPATH="OU=exams,OU=other,OU=Policies,$LDAPBASE"
-add_organisational_unit
-LDAPPATH="OU=exams,OU=other,OU=Distributionlists,$LDAPBASE"
+LDAPPATH="OU=exams,OU=other,OU=People,$LDAPBASE"
 add_organisational_unit
 
 NAME="guestusers"
 DESC="Guest users"
-LDAPPATH="OU=guestusers,OU=other,OU=Policies,$LDAPBASE"
+LDAPPATH="OU=guestusers,OU=other,OU=People,$LDAPBASE"
 add_organisational_unit
-LDAPPATH="OU=guestusers,OU=other,OU=Distributionlists,$LDAPBASE"
-add_organisational_unit
-
 
 NAME="karoshi"
 DESC="Karoshi user"
-LDAPPATH="OU=karoshi,OU=other,OU=Policies,$LDAPBASE"
-add_organisational_unit
-LDAPPATH="OU=karoshi,OU=other,OU=Distributionlists,$LDAPBASE"
+LDAPPATH="OU=karoshi,OU=other,OU=People,$LDAPBASE"
 add_organisational_unit
 
 NAME="nogroup"
 DESC="No group"
-LDAPPATH="OU=nogroup,OU=other,OU=Policies,$LDAPBASE"
+LDAPPATH="OU=nogroup,OU=other,OU=People,$LDAPBASE"
 add_organisational_unit
-LDAPPATH="OU=nogroup,OU=other,OU=Distributionlists,$LDAPBASE"
-add_organisational_unit
-}
 
-
-function add_sub_container {
-
-hour=`date +%H`
-minutes=`date +%M`
-seconds=`date +%S`
-CREATETIME=$THISYEAR$MONTH$DAY$hour$minutes$seconds.0Z
-
-echo -e "version: 1
-
-# Entry 1: $LDAPPATH
-dn: $LDAPPATH
-cn: $NAME
-description: $DESC
-distinguishedname: $LDAPPATH
-instancetype: 4
-name: $NAME
-objectcategory: CN=Container,CN=Schema,CN=Configuration,$LDAPBASE
-objectclass: top
-objectclass: container
-showinadvancedviewonly: FALSE
-systemflags: -1946157056
-usnchanged: 3372
-usncreated: 3371
-whenchanged: $CREATETIME
-whencreated: $CREATETIME" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
-
-}
-
-function add_subcontainers {
-
-#Groups subcontainer
 NAME="Groups"
 DESC="Groups"
-LDAPPATH="CN=Groups,CN=Users,$LDAPBASE"
-add_sub_container
-
-#All personnel subcontainers
-
-NAME="personnel"
-DESC="Personnel"
-LDAPPATH="CN=personnel,CN=Users,$LDAPBASE"
-add_sub_container
-
-NAME="staff"
-DESC="Staff"
-LDAPPATH="CN=staff,CN=personnel,CN=Users,$LDAPBASE"
-add_sub_container
-
-NAME="studentstaff"
-DESC="Student staff"
-LDAPPATH="CN=studentstaff,CN=personnel,CN=Users,$LDAPBASE"
-add_sub_container
-
-NAME="officestaff"
-DESC="Office staff"
-LDAPPATH="CN=officestaff,CN=personnel,CN=Users,$LDAPBASE"
-add_sub_container
-
-NAME="nonteachingstaff"
-DESC="Non teaching staff"
-LDAPPATH="CN=nonteachingstaff,CN=personnel,CN=Users,$LDAPBASE"
-add_sub_container
-
-NAME="governors"
-DESC="Governors"
-LDAPPATH="CN=governors,CN=personnel,CN=Users,$LDAPBASE"
-add_sub_container
-
-NAME="itadmin"
-DESC="Itadmin users"
-LDAPPATH="CN=itadmin,CN=personnel,CN=Users,$LDAPBASE"
-add_sub_container
-
-NAME="tech"
-DESC="Technician users"
-LDAPPATH="CN=tech,CN=personnel,CN=Users,$LDAPBASE"
-add_sub_container
-
-#All student sub containers
-
-NAME="students"
-DESC="Student accounts"
-LDAPPATH="CN=students,CN=Users,$LDAPBASE"
-add_sub_container
-
-COUNTER=$STARTYEAR
-while [ $COUNTER -le $ENDYEAR ]
-do
-NAME="yr$COUNTER"
-DESC="yr$COUNTER"
-LDAPPATH="CN=yr$COUNTER,CN=students,CN=Users,$LDAPBASE"
-add_sub_container
-let COUNTER=$COUNTER+1
-done
-
-#All other subcontainers
-NAME="other"
-DESC="Other users"
-LDAPPATH="CN=other,CN=Users,$LDAPBASE"
-add_sub_container
-
-NAME="exams"
-DESC="Exam users"
-LDAPPATH="CN=exams,CN=other,CN=Users,$LDAPBASE"
-add_sub_container
-
-NAME="guestusers"
-DESC="Guest users"
-LDAPPATH="CN=guestusers,CN=other,CN=Users,$LDAPBASE"
-add_sub_container
-
-NAME="karoshi"
-DESC="Karoshi user"
-LDAPPATH="CN=karoshi,CN=other,CN=Users,$LDAPBASE"
-add_sub_container
-
-NAME="nogroup"
-DESC="No group"
-LDAPPATH="CN=nogroup,CN=other,CN=Users,$LDAPBASE"
-add_sub_container
+LDAPPATH="OU=Groups,OU=People,$LDAPBASE"
+add_organisational_unit
 }
 
 function add_samba4_group {
-samba-tool group add --groupou="CN=Groups,CN=Users" $NEWGROUP
+samba-tool group add --groupou="OU=Groups,OU=People" $NEWGROUP
 
 GIDNUMBER=`getent group $NEWGROUP | cut -d: -f3`
-echo -e "dn: CN=$NEWGROUP,CN=Groups,CN=Users,$LDAPBASE
+echo -e "dn: OU=$NEWGROUP,OU=Groups,OU=People,$LDAPBASE
 changetype: modify
 add: objectclass
 objectclass: posixgroup
@@ -1491,7 +1196,7 @@ LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 #Add profileuser
 NEWUSERNAME=profileuser
 NEWUSERPATH=/home/users/profileuser
-SUBPATH='CN=other,CN=Users'
+SUBPATH='OU=other,OU=People'
 PRIMARYGROUP=profilemanagement
 create_user
 
@@ -1501,7 +1206,7 @@ while [  $COUNTER -le 10 ]
 do
 NEWUSERNAME=guest$COUNTER
 NEWUSERPATH=/home/users/guests/guest$COUNTER
-SUBPATH='CN=guestusers,CN=other,CN=Users'
+SUBPATH='OU=guestusers,OU=other,OU=People'
 PRIMARYGROUP=guestusers
 create_user
 let COUNTER=COUNTER+1
@@ -1513,7 +1218,7 @@ while [  $COUNTER -le 4 ]
 do
 NEWUSERNAME=tech$COUNTER
 NEWUSERPATH=/home/users/techstaff/tech$COUNTER
-SUBPATH='CN=tech,CN=personnel,CN=Users'
+SUBPATH='OU=tech,OU=personnel,OU=People'
 PRIMARYGROUP=tech
 create_user
 let COUNTER=COUNTER+1
@@ -1526,12 +1231,10 @@ done
 function run_functions {
 check_ldap_port
 allow_anonumous_browse
-add_subcontainers
 add_organisational_units
 #nslcd-user-accounts - not needed using anonymous bind instead
 echo "N.A.:127.0.0.1:N.A.:$HOSTNAME:users:internal:" | /opt/karoshi/serversetup/modules/authentication/configure_authentication
 makefoldersandgroups
-link_organisational_units
 make_default_users
 make_profiles
 getyadpid

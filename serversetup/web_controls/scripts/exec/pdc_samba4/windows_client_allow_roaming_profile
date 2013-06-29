@@ -112,7 +112,7 @@ chmod u+X,g+X -R /home/applications/profiles/$USERNAME
 ln -s /home/applications/profiles/$USERNAME /home/applications/profiles/$USERNAME.V2
 
 #Set new profile path for the user
-echo -e "dn: CN=$USERNAME,CN=$PRIMARYGROUP,CN=$SUBUNIT,CN=Users,$LDAPBASE
+echo -e "dn: CN=$USERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
 changetype: modify
 add: unixhomedirectory
 unixhomedirectory: $HOMEPATH/$USERNAME

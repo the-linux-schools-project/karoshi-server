@@ -138,7 +138,7 @@ source /opt/karoshi/server_network/domain_information/domain_name
 samba-tool group add $NEWPRIGROUP
 echo
 GIDNUMBER=`getent group $NEWPRIGROUP | cut -d: -f3`
-echo -e "dn: CN=$NEWPRIGROUP,CN=Users,$LDAPBASE
+echo -e "dn: OU=$NEWPRIGROUP,OU=People,$LDAPBASE
 changetype: modify
 add: objectclass
 objectclass: posixgroup

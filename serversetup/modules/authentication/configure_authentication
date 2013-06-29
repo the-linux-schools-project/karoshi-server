@@ -95,13 +95,13 @@ then
 #Get samba 4 database password
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 #Add karoshiadmin to samba4 ldap
-samba-tool user add karoshiadmin --userou='CN=itadmin,CN=personnel,CN=Users' --home-directory=/home/users/itadmin/karoshiadmin --surname=admin --given-name=karoshi --use-username-as-cn --random-password 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool user add karoshiadmin --userou='OU=itadmin,OU=personnel,OU=People' --home-directory=/home/users/itadmin/karoshiadmin --surname=admin --given-name=karoshi --use-username-as-cn --random-password 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #Add karoshiadmin to the Domain Admins group
 samba-tool group addmembers "Domain Admins" karoshiadmin  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #Get primarygroupid for users group
 PRIGROUPID=`wbinfo -n "Domain Admins" | cut -d- -f8 | cut -d" " -f 1`
 #Change primarygroupid of karoshiadmin - have to use ldapmodify at this time since samba-tool does not seem to have this option!
-echo -e "dn: CN=karoshiadmin,CN=itadmin,CN=personnel,CN=Users,$REALM
+echo -e "dn: CN=karoshiadmin,OU=itadmin,OU=personnel,OU=People,$REALM
 changetype: modify
 replace: primaryGroupID
 primaryGroupID: $PRIGROUPID
@@ -285,7 +285,7 @@ cp /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/configfiles/nsswitch.conf /
 echo uid nslcd > /etc/nslcd.conf
 echo gid nslcd >> /etc/nslcd.conf
 echo uri ldapi://%2fvar%2flib%2fsamba%2fprivate%2fldapi/ >> /etc/nslcd.conf
-echo base CN=Users,$LDAPBASE >> /etc/nslcd.conf
+echo base OU=People,$LDAPBASE >> /etc/nslcd.conf
 #Not needed for anonymous bind
 #echo binddn cn=nslcd-server,cn=karoshi,cn=other,cn=Users,$LDAPBASE >> /etc/nslcd.conf
 #echo bindpw $LDAPPASS >> /etc/nslcd.conf
@@ -399,9 +399,9 @@ echo uri ldapi://%2fvar%2flib%2fsamba%2fprivate%2fldapi/ >> /etc/nslcd.conf
 else
 echo uri ldap://'$KRBSERVER'.'$REALM' >> /etc/nslcd.conf
 fi
-echo base CN=Users,'$LDAPBASE' >> /etc/nslcd.conf
+echo base OU=People,'$LDAPBASE' >> /etc/nslcd.conf
 #Not needed for anonymous bind
-#echo binddn cn=nslcd-server,cn=karoshi,cn=other,cn=Users,'$LDAPBASE' >> /etc/nslcd.conf
+#echo binddn cn=nslcd-server,OU=karoshi,OU=other,OU=People,'$LDAPBASE' >> /etc/nslcd.conf
 #echo bindpw '$LDAPPASS' >> /etc/nslcd.conf
 echo >> /etc/nslcd.conf
 echo nss_min_uid 1000 >> /etc/nslcd.conf
