@@ -535,7 +535,7 @@ function add_samba4_group {
 samba-tool group add --groupou="OU=Groups,OU=People" $NEWGROUP
 
 GIDNUMBER=`getent group $NEWGROUP | cut -d: -f3`
-echo -e "dn: OU=$NEWGROUP,OU=Groups,OU=People,$LDAPBASE
+echo -e "dn: CN=$NEWGROUP,OU=Groups,OU=People,$LDAPBASE
 changetype: modify
 add: objectclass
 objectclass: posixgroup
