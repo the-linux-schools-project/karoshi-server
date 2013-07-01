@@ -1,0 +1,36 @@
+#!/bin/bash
+SOGOVER=SOGo-2.0.6b
+
+#Download latest sogo version
+
+[ -d /tmp/sogo.$$ ] && rm -f -R /tmp/sogo.$$
+mkdir /tmp/sogo.$$
+cd /tmp/sogo.$$
+wget http://www.sogo.nu/files/downloads/SOGo/Sources/$SOGOVER.tar.gz
+
+#Unpack archive
+tar -xvf $SOGOVER.tar.gz
+
+#Modify source for kerberos change
+sed -i 's/if (trustProxyAuthentication)/if (trustProxyAuthentication \&\& [[context request] headerForKey: @"x-webobjects-remote-user"])/g' /tmp/sogo.$$/$SOGOVER/Main/SOGo.m
+
+#Install software
+apt-get update
+apt-get -y remove sogo
+apt-get -y install libsope4.9-dev libxml2-dev libmemcached-dev libcurl4-openssl-dev postgresql-server-dev-all gobjc-multilib libgnustep-base-dev sope4.9-gdl1-mysql sope4.9-libxmlsaxdriver
+
+#Compile new version
+cd /tmp/sogo.$$/$SOGOVER
+make clean
+./configure --disable-strip
+make
+make install
+
+#Copy in init.d script
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/sogo /etc/init.d/
+
+#Tidy up
+rm -f -R /tmp/sogo.$$
+
+
+
