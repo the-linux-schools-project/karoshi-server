@@ -296,6 +296,7 @@ echo filter passwd \(\&\(objectClass=user\)\(!\(objectClass=computer\)\)\) >> /e
 echo map passwd uid sAMAccountName >> /etc/nslcd.conf
 echo map passwd uidNumber objectSid:$DOMAINSID >> /etc/nslcd.conf
 #echo map passwd gidNumber primaryGroupID >> /etc/nslcd.conf
+echo map passwd gecos \"\${displayName:-\${sAMAccountName}},,,\" >> /etc/nslcd.conf
 echo map passwd homeDirectory \"\${unixHomeDirectory:-/home/\$sAMAccountName}\" >> /etc/nslcd.conf
 echo map passwd loginShell \"\${loginShell:-/bin/bash}\" >> /etc/nslcd.conf
 echo filter shadow \(\&\(objectClass=user\)\(!\(objectClass=computer\)\)\) >> /etc/nslcd.conf
@@ -410,6 +411,7 @@ echo filter passwd \(\&\(objectClass=user\)\(!\(objectClass=computer\)\)\) >> /e
 echo map passwd uid sAMAccountName >> /etc/nslcd.conf
 echo map passwd uidNumber objectSid:'$DOMAINSID' >> /etc/nslcd.conf
 echo map passwd gidNumber primaryGroupID >> /etc/nslcd.conf
+echo map passwd gecos \"\${displayName:-\${sAMAccountName}},,,\" >> /etc/nslcd.conf
 echo map passwd homeDirectory \"\${unixHomeDirectory:-/home/\$sAMAccountName}\" >> /etc/nslcd.conf
 echo map passwd loginShell \"\${loginShell:-/bin/bash}\" >> /etc/nslcd.conf
 echo filter shadow \(\&\(objectClass=user\)\(!\(objectClass=computer\)\)\) >> /etc/nslcd.conf
