@@ -159,6 +159,14 @@ then
 echo `date`: add_user - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
+if getent passwd $NEWUSERNAME >/dev/null; then
+	echo `date`: add_user - User with the username $NEWUSERNAME already exists >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if getent group $NEWUSERNAME >/dev/null; then
+	echo `date`: add_user - Group name conflict found - group $NEWUSERNAME already exists >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 106
+fi
 
 [ ! -d /opt/karoshi/server_network/offline_servers ] && mkdir -p /opt/karoshi/server_network/offline_servers
 
