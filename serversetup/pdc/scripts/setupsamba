@@ -536,21 +536,6 @@ LDAPPATH="OU=Distributionlists,OU=People,$LDAPBASE"
 add_organisational_unit
 }
 
-function add_distribution_list {
-samba-tool group add --groupou="OU=Distributionlists,OU=People" $NEWGROUP"list"
-
-GIDNUMBER=`getent group $NEWGROUP | cut -d: -f3`
-echo -e "dn: CN=$NEWGROUP"list",OU=Distributionlists,OU=People,$LDAPBASE
-changetype: modify
-add: displayname
-displayname: "$NEWGROUPDISP"
--
-add: mail
-mail: $NEWGROUP@$REALM
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
-
-}
-
 function add_samba4_group {
 samba-tool group add --groupou="OU=Groups,OU=People" $NEWGROUP
 
@@ -559,6 +544,13 @@ echo -e "dn: CN=$NEWGROUP,OU=Groups,OU=People,$LDAPBASE
 changetype: modify
 add: objectclass
 objectclass: posixgroup
+-
+changetype: modify
+add: displayname
+displayname: "$NEWGROUPDISP"
+-
+add: mail
+mail: $NEWGROUP@$REALM
 -
 add: gidnumber
 gidnumber: $GIDNUMBER
@@ -577,7 +569,6 @@ echo -e "$GROUPADDMSG yr$COUNTER\n"
 NEWGROUP=yr$COUNTER
 NEWGROUPDISP="Yr$COUNTER"
 add_samba4_group
-add_distribution_list
 let COUNTER=COUNTER+1
 done
 
@@ -585,25 +576,21 @@ echo -e "$GROUPADDMSG staff\n"
 NEWGROUP=staff
 NEWGROUPDISP=Staff
 add_samba4_group
-add_distribution_list
 
 echo -e "$GROUPADDMSG nonteachingstaff\n"
 NEWGROUP=nonteachingstaff
 NEWGROUPDISP="Non teaching staff"
 add_samba4_group
-add_distribution_list
 
 echo -e "$GROUPADDMSG studentstaff\n"
 NEWGROUP=studentstaff
 NEWGROUPDISP="Student Staff"
 add_samba4_group
-add_distribution_list
 
 echo -e "$GROUPADDMSG guestusers\n"
 NEWGROUP=guestusers
 NEWGROUPDISP="Guest Users"
 add_samba4_group
-add_distribution_list
 
 echo -e "$GROUPADDMSG exams\n"
 NEWGROUP=exams
@@ -614,7 +601,6 @@ echo $GROUPADDMSG itadmin
 NEWGROUP=itadmin
 NEWGROUPDISP="Itadmin Users"
 add_samba4_group
-add_distribution_list
 
 echo $GROUPADDMSG tech
 NEWGROUP=tech
@@ -625,13 +611,11 @@ echo -e "$GROUPADDMSG officestaff\n"
 NEWGROUP=officestaff
 NEWGROUPDISP="Office Staff"
 add_samba4_group
-add_distribution_list
 
 echo -e "$GROUPADDMSG bursar\n"
 NEWGROUP=bursar
 NEWGROUPDISP="Bursars"
 add_samba4_group
-add_distribution_list
 
 echo -e "$GROUPADDMSG smt\n"
 NEWGROUP=smt
@@ -642,7 +626,6 @@ echo -e "$GROUPADDMSG governors\n"
 NEWGROUP=governors
 NEWGROUPDISP="Governors"
 add_samba4_group
-add_distribution_list
 
 echo -e "$GROUPADDMSG guardians\n"
 NEWGROUP=guardians
@@ -653,7 +636,6 @@ echo -e "$GROUPADDMSG profilemanagement\n"
 NEWGROUP=profilemanagement
 NEWGROUPDISP="Profile Management"
 add_samba4_group
-add_distribution_list
 
 echo $CREATEHOMEFOLDERSMSG
 #Make top level user area
@@ -1250,9 +1232,9 @@ done
 }
 
 function setfolderpermissions {
-setfacl -Rm u::rwx,g::---,o::---,g:itadmin:rwx,d:u::rwx,d:g::---,d:o::---,d:g:staff:rwx /home/itadminshare
+setfacl -Rm u::rwx,g::---,o::---,g:itadmin:rwx,d:u::rwx,d:g::---,d:o::---,d:g:itadmin:rwx /home/itadminshare
 setfacl -Rm u::rwx,g::---,o::---,g:staff:rwx,d:u::rwx,d:g::---,d:o::---,d:g:staff:rwx /home/staffshare
-setfacl -Rm u::rwx,g::---,o::---,g:officestaff:rwx,d:u::rwx,d:g::---,d:o::---,d:g:staff:rwx /home/officeshare
+setfacl -Rm u::rwx,g::---,o::---,g:officestaff:rwx,d:u::rwx,d:g::---,d:o::---,d:g:officestaff:rwx /home/officeshare
 setfacl -Rm u::rwx,g::r-x,o::r-x,g:staff:rwx,d:u::rwx,d:g::r-x,d:o::r-x,d:g:staff:rwx /home/subjects
 }
 
