@@ -220,7 +220,7 @@ FIRST_CHAR=`echo ${SURNAME:0:1} | tr 'a-z' 'A-Z'`
 SURNAME=`echo $FIRST_CHAR${SURNAME:1}`
 
 #Add user to samba4 ldap
-samba-tool user add $NEWUSERNAME --userou='OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People' --profile-path=\\\\$HOSTNAME\\applications\\profiles\\$PRIMARYGROUP  --script-path=logon.bat --surname=$SURNAME --given-name=$FIRSTNAME --use-username-as-cn  --random-password --mail-address=$NEWUSERNAME@$REALM 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool user add $NEWUSERNAME --userou='OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People' --profile-path=\\\\$HOSTNAME\\applications\\profiles\\$PRIMARYGROUP  --script-path="logon.bat $PRIMARYGROUP" --surname=$SURNAME --given-name=$FIRSTNAME --use-username-as-cn  --random-password --mail-address=$NEWUSERNAME@$REALM 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 #samba-tool user add $NEWUSERNAME --userou='CN='$PRIMARYGROUP',CN='$SUBUNIT',CN=Users' --home-drive=G --script-path='\\'$HOSTNAME'\'netlogon'\'logon.bat --home-directory='\\'$SERVER'\'$NEWUSERNAME --surname=$SURNAME --given-name=$FIRSTNAME --use-username-as-cn  --random-password --mail-address=$NEWUSERNAME@$EMAILDOMAIN 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
@@ -313,10 +313,6 @@ fi
 
 CREATE_USER_STATUS=`echo $?`
 
-
-#Add details to primarygroup.txt - workaround for windows 7 bug not getting primary group correctly causing kixtart login scripts to fail.
-echo $NEWUSERNAME,$PRIMARYGROUP >> /var/lib/samba/netlogon/primarygroups.txt
-
 #Allow new user to join clients to the domain if they are a member of the itadmin or tech groups
 if [ $PRIMARYGROUP = itadmin ] || [ $PRIMARYGROUP = tech ]
 then
@@ -324,7 +320,6 @@ echo `date`: add_user - allowing $NEWUSERNAME to "join" clients to the domain by
 net rpc rights grant -U $NEWUSERNAME%$NEWUSERPASSWORD "$SAMBADOMAIN\Domain Admins" SeMachineAccountPrivilege \
 SePrintOperatorPrivilege SeAddUsersPrivilege SeDiskOperatorPrivilege SeRemoteShutdownPrivilege 1>/dev/null
 fi
-
 
 ##########################
 #Add in acceptable use notification

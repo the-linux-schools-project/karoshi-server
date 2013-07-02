@@ -135,22 +135,12 @@ fi
 fi
 #Delete logon script
 [ -f /var/lib/samba/netlogon/windows_settings/drives/$DELETEUSER.kix ] && rm -f /var/lib/samba/netlogon/windows_settings/drives/$DELETEUSER.kix
-#Delete security settings
-[ -f /var/lib/samba/netlogon/windows_settings/security/$DELETEUSER.kix ] && rm -f /var/lib/samba/netlogon/windows_settings/security/$DELETEUSER.kix
+
 #Delete home folder
 [ -d $HOMEPATH/$DELETEUSER ] && rm -f -R $HOMEPATH/$DELETEUSER
-#Delete inbox
-[ -f /var/spool/mail/$DELETEUSER ] && rm -f /var/spool/mail/$DELETEUSER
+
 #Delete group information
 [ -f /opt/karoshi/server_network/group_information/$DELETEUSER ] && rm -f /opt/karoshi/server_network/group_information/$DELETEUSER
-#Rebuild primarygroups.txt - this file is to allow for windows 7 logins where the primary group feature is broken
-[ -f /var/lib/samba/netlogon/primarygroups.txt ] && rm -f /var/lib/samba/netlogon/primarygroups.txt
-for USERDETAILS in `getent passwd | grep /home/users/`
-do
-KAROSHIUSER=`echo $USERDETAILS | cut -d: -f1 | sed 's/,//g'`
-PRIGROUP=`id -g -n $KAROSHIUSER`
-echo $KAROSHIUSER,$PRIGROUP >> /var/lib/samba/netlogon/primarygroups.txt
-done
 
 #######################
 #Delete the folder on extra file server
