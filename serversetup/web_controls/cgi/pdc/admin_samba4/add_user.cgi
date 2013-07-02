@@ -260,6 +260,21 @@ fi
 COUNTER=""
 #Create username
 DUPLICATECHECK=0
+
+function check_username {
+NAMESTATUS=ok
+id -u "$USERNAME" 1>/dev/null 2>/dev/null
+if [ `echo $?` = 0 ]
+then
+NAMESTATUS=error
+fi
+id -g "$USERNAME" 1>/dev/null 2>/dev/null
+if [ `echo $?` = 0 ]
+then
+NAMESTATUS=error
+fi
+}
+
 function create_username {
 source /opt/karoshi/server_network/group_information/$GROUP
 if [ $USERNAMESTYLE = userstyleS1 ]
@@ -326,8 +341,8 @@ if [ $USERNAMESTYLE != userstyleS8 ]
 then
 while [ $DUPLICATECHECK = 1 ]
 do
-id -u "$USERNAME" 1>/dev/null 2>/dev/null
-if [ `echo $?` = 0 ]
+check_username
+if [ $NAMESTATUS = error ]
 then
 [ $COUNTER'null' = null ] && COUNTER=1
 #user exists
@@ -344,8 +359,8 @@ if [ $USERNAMESTYLE = userstyleS8 ]
 then
 while [ $DUPLICATECHECK = 1 ]
 do
-id -u "$USERNAME" 1>/dev/null 2>/dev/null
-if [ `echo $?` = 0 ]
+check_username
+if [ $NAMESTATUS = error ]
 then
 #user exists
 let COUNTER=$COUNTER+1

@@ -434,7 +434,7 @@ whencreated: $CREATETIME" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" 
 
 function add_organisational_units {
 
-#Policies subcontainer
+#People subcontainer
 NAME="People"
 DESC="People"
 LDAPPATH="OU=People,$LDAPBASE"
@@ -529,6 +529,26 @@ NAME="Groups"
 DESC="Groups"
 LDAPPATH="OU=Groups,OU=People,$LDAPBASE"
 add_organisational_unit
+
+NAME="Distributionlists"
+DESC="Distribution Lists"
+LDAPPATH="OU=Distributionlists,OU=People,$LDAPBASE"
+add_organisational_unit
+}
+
+function add_distribution_list {
+samba-tool group add --groupou="OU=Distributionlists,OU=People" $NEWGROUP"list"
+
+GIDNUMBER=`getent group $NEWGROUP | cut -d: -f3`
+echo -e "dn: CN=$NEWGROUP"list",OU=Distributionlists,OU=People,$LDAPBASE
+changetype: modify
+add: displayname
+displayname: "$NEWGROUPDISP"
+-
+add: mail
+mail: $NEWGROUP@$REALM
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
+
 }
 
 function add_samba4_group {
@@ -542,12 +562,6 @@ objectclass: posixgroup
 -
 add: gidnumber
 gidnumber: $GIDNUMBER
--
-add: displayname
-displayname: "$NEWGROUPDISP"
--
-add: mail
-mail: $NEWGROUP@$REALM
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
 
 }
@@ -563,6 +577,7 @@ echo -e "$GROUPADDMSG yr$COUNTER\n"
 NEWGROUP=yr$COUNTER
 NEWGROUPDISP="Yr$COUNTER"
 add_samba4_group
+add_distribution_list
 let COUNTER=COUNTER+1
 done
 
@@ -570,21 +585,25 @@ echo -e "$GROUPADDMSG staff\n"
 NEWGROUP=staff
 NEWGROUPDISP=Staff
 add_samba4_group
+add_distribution_list
 
 echo -e "$GROUPADDMSG nonteachingstaff\n"
 NEWGROUP=nonteachingstaff
 NEWGROUPDISP="Non teaching staff"
 add_samba4_group
+add_distribution_list
 
 echo -e "$GROUPADDMSG studentstaff\n"
 NEWGROUP=studentstaff
 NEWGROUPDISP="Student Staff"
 add_samba4_group
+add_distribution_list
 
 echo -e "$GROUPADDMSG guestusers\n"
 NEWGROUP=guestusers
 NEWGROUPDISP="Guest Users"
 add_samba4_group
+add_distribution_list
 
 echo -e "$GROUPADDMSG exams\n"
 NEWGROUP=exams
@@ -595,6 +614,7 @@ echo $GROUPADDMSG itadmin
 NEWGROUP=itadmin
 NEWGROUPDISP="Itadmin Users"
 add_samba4_group
+add_distribution_list
 
 echo $GROUPADDMSG tech
 NEWGROUP=tech
@@ -605,11 +625,13 @@ echo -e "$GROUPADDMSG officestaff\n"
 NEWGROUP=officestaff
 NEWGROUPDISP="Office Staff"
 add_samba4_group
+add_distribution_list
 
 echo -e "$GROUPADDMSG bursar\n"
 NEWGROUP=bursar
 NEWGROUPDISP="Bursars"
 add_samba4_group
+add_distribution_list
 
 echo -e "$GROUPADDMSG smt\n"
 NEWGROUP=smt
@@ -620,6 +642,7 @@ echo -e "$GROUPADDMSG governors\n"
 NEWGROUP=governors
 NEWGROUPDISP="Governors"
 add_samba4_group
+add_distribution_list
 
 echo -e "$GROUPADDMSG guardians\n"
 NEWGROUP=guardians
@@ -630,6 +653,7 @@ echo -e "$GROUPADDMSG profilemanagement\n"
 NEWGROUP=profilemanagement
 NEWGROUPDISP="Profile Management"
 add_samba4_group
+add_distribution_list
 
 echo $CREATEHOMEFOLDERSMSG
 #Make top level user area
@@ -1225,6 +1249,13 @@ let COUNTER=COUNTER+1
 done
 }
 
+function setfolderpermissions {
+setfacl -Rm u::rwx,g::---,o::---,g:itadmin:rwx,d:u::rwx,d:g::---,d:o::---,d:g:staff:rwx /home/itadminshare
+setfacl -Rm u::rwx,g::---,o::---,g:staff:rwx,d:u::rwx,d:g::---,d:o::---,d:g:staff:rwx /home/staffshare
+setfacl -Rm u::rwx,g::---,o::---,g:officestaff:rwx,d:u::rwx,d:g::---,d:o::---,d:g:staff:rwx /home/officeshare
+setfacl -Rm u::rwx,g::r-x,o::r-x,g:staff:rwx,d:u::rwx,d:g::r-x,d:o::r-x,d:g:staff:rwx /home/subjects
+}
+
 ##############################
 #Display progress box
 ##############################
@@ -1235,6 +1266,7 @@ add_organisational_units
 #nslcd-user-accounts - not needed using anonymous bind instead
 echo "N.A.:127.0.0.1:N.A.:$HOSTNAME:users:internal:" | /opt/karoshi/serversetup/modules/authentication/configure_authentication
 makefoldersandgroups
+setfolderpermissions
 make_default_users
 make_profiles
 getyadpid

@@ -232,6 +232,9 @@ samba-tool user setpassword $NEWUSERNAME --newpassword=$NEWUSERPASSWORD 1>/dev/n
 #Add user to primary group
 samba-tool group addmembers "$PRIMARYGROUP" $NEWUSERNAME  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
+#Add user to distribution lists
+samba-tool group addmembers "$PRIMARYGROUP"list $NEWUSERNAME  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
 #Add user to supplementary groups
 if [ `echo "$SECONDARYGROUP"null | sed 's/ //g'` != null ]
 then
@@ -281,11 +284,11 @@ add: division
 division: $PRIMARYGROUP
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-#echo -e "dn: CN=$NEWUSERNAME,CN=$PRIMARYGROUP,CN=$SUBUNIT,CN=Users,$LDAPBASE
-#changetype: modify
-#replace: primaryGroupID
-#primaryGroupID: $PRIGROUPID
-#-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo -e "dn: CN=$NEWUSERNAME,CN=$PRIMARYGROUP,CN=$SUBUNIT,CN=Users,$LDAPBASE
+changetype: modify
+replace: primaryGroupID
+primaryGroupID: $PRIGROUPID
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 #echo -e "dn: CN=$NEWUSERNAME,CN=$PRIMARYGROUP,CN=$SUBUNIT,CN=Users,$LDAPBASE
 #changetype: modify
