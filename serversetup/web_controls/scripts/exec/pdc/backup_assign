@@ -270,10 +270,9 @@ echo /home/users/students/yr2047,yr2047,21 >> /opt/karoshi/server_network/backup
 echo /home/users/students/yr2048,yr2048,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
 echo /home/users/students/yr2049,yr2049,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
 echo /var/lib/samba/netlogon,netlogon,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /var/mail,mail,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+echo /home/users/email,email,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
 echo /var/www/html,html,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
 echo /var/www/moodle-data,moodle-data,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /var/lib/ldap,ldap,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
 echo /var/lib/mysql,mysql,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
 fi
 exit
