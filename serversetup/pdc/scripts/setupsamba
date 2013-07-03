@@ -1239,6 +1239,8 @@ setfacl -x g:staff /home/subjects
 
 setfacl -bR /home/staffshare/smt
 setfacl -Rm u::rwx,g::---,o::---,g:smt:rwx,d:u::rwx,d:g::---,d:o::---,d:g:smt:rwx /home/staffshare/smt
+
+setfacl -R -m g:staff:r-x,d:g:staff:r-x /home/users/students
 }
 
 ##############################

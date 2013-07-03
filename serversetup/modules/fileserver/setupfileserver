@@ -166,6 +166,8 @@ chmod 0775 /home/programs/programs
 
 [ -d /home/remastersys ] && rm -f -R /home/remastersys
 
+setfacl -R -m g:staff:r-x,d:g:staff:r-x /home/users/students
+
 ###########################
 #Show completed message
 ###########################
