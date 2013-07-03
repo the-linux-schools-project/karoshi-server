@@ -545,7 +545,6 @@ changetype: modify
 add: objectclass
 objectclass: posixgroup
 -
-changetype: modify
 add: displayname
 displayname: "$NEWGROUPDISP"
 -
@@ -749,11 +748,10 @@ mkdir /home/subjects/ict /home/subjects/"leisure and tourism" /home/subjects/lit
 mkdir /home/subjects/music /home/subjects/olc /home/subjects/"physical education" /home/subjects/science /home/subjects/spanish
 mkdir /home/subjects/welsh /home/subjects/technology
 fi
-chmod 0755 /home/subjects
-chmod 2664 -R /home/subjects/*
-chmod u+X,g+X,o+X -R  /home/subjects/*
-chown root.itadmin /home/subjects
-chown -R root.staff /home/subjects/*
+
+chmod 2664 -R /home/subjects
+chmod u+X,g+X,o+X -R  /home/subjects
+chown root.itadmin -R /home/subjects
 #Staffshare area
 echo $CREATEFOLDERMSG staffshare
 [ -d /home/staffshare ] || mkdir /home/staffshare
@@ -785,11 +783,10 @@ echo $CREATEFOLDERMSG staffshare
 [ -d /home/staffshare/spanish ] || mkdir /home/staffshare/spanish
 [ -d /home/staffshare/welsh ] || mkdir /home/staffshare/welsh
 [ -d /home/staffshare/technology ] || mkdir /home/staffshare/technology
-chmod 0750 /home/staffshare
-chmod 2660 -R /home/staffshare/*
-chmod u+X,g+X /home/staffshare/*
-chown -R root.staff /home/staffshare
-chown root.smt -R /home/staffshare/smt
+
+chmod 2660 -R /home/staffshare
+chmod u+X,g+X /home/staffshare
+chown -R root.itadmin /home/staffshare
 
 #Officeshare area
 echo $CREATEFOLDERMSG officeshare
@@ -1236,6 +1233,12 @@ setfacl -Rm u::rwx,g::---,o::---,g:itadmin:rwx,d:u::rwx,d:g::---,d:o::---,d:g:it
 setfacl -Rm u::rwx,g::---,o::---,g:staff:rwx,d:u::rwx,d:g::---,d:o::---,d:g:staff:rwx /home/staffshare
 setfacl -Rm u::rwx,g::---,o::---,g:officestaff:rwx,d:u::rwx,d:g::---,d:o::---,d:g:officestaff:rwx /home/officeshare
 setfacl -Rm u::rwx,g::r-x,o::r-x,g:staff:rwx,d:u::rwx,d:g::r-x,d:o::r-x,d:g:staff:rwx /home/subjects
+
+setfacl -x g:staff /home/staffshare
+setfacl -x g:staff /home/subjects
+
+setfacl -bR /home/staffshare/smt
+setfacl -Rm u::rwx,g::---,o::---,g:smt:rwx,d:u::rwx,d:g::---,d:o::---,d:g:smt:rwx /home/staffshare/smt
 }
 
 ##############################
