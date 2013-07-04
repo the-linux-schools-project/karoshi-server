@@ -95,22 +95,6 @@ $backgroundext="bmp"
 ;Set variables for user
 ;****************************************************************************************************
 $username=LCase(@userid)
-;$pgroup=@PrimaryGroup
-;@PrimaryGroup not working with windows 7
-If Open(1,$prigroupsfile) = 0
-		$userpair = ReadLine(1)
-			While (@ERROR = 0) And ($username <> $usernametest)
-				$marker = InStr($userpair,",")
-				$usernametest = Left($userpair,$marker-1)
-				$pgroup = SubStr($userpair, $marker+1)
-	    			$userpair = ReadLine(1)
-			Loop
-	$res = Close (1)
-	Else
-		Beep
-		DBGMessage ("error","Primary Groups file not opened, error code: [" + @ERROR + "]")
-	EndIf
-
 
 ;****************************************************************************************************
 ;Get & Set Workstation Information - Location and SIMS
