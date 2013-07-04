@@ -173,6 +173,27 @@ done
 
 MOODLEPASS=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
 
+#####################
+#Create moodle badge hash
+#####################
+RANGE=61
+COUNTER=1
+while [ $COUNTER -lt 10 ]
+do
+row[$COUNTER]=$RANDOM
+let "row[$COUNTER] %= $RANGE"
+while [ ${row[$COUNTER]} = 0 ]
+do
+row[$COUNTER]=$RANDOM
+let "row[$COUNTER] %= $RANGE"
+done
+CHARACTER[$COUNTER]=`sed -n ${row[$COUNTER]},1p /opt/karoshi/serversetup/pdc/"useful scripts"/.alphabet`
+let COUNTER=COUNTER+1
+done
+
+BADGEHASH=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
+
+
 #############################
 #Make sure that we know the root mysql password
 #############################
@@ -199,6 +220,9 @@ sed -i 's/ldap:\/\/127.0.0.1/ldap:\/\/'$LDAPSERVER'/g' /opt/karoshi/serversetup/
 
 #Edit moodle.sql with the correct realm information
 sed -i 's/CHANGETHISLDAPBASE/'$LDAPBASE'/g' /opt/karoshi/serversetup/modules/moodle/moodle2.sql
+
+#Edit hash for badges
+sed -i 's/CHANGETHISHASH/'$BADGEHASH'/g' /opt/karoshi/serversetup/modules/moodle/moodle2.sql
 
 mysql --password=$MYSQLPASS moodle < /opt/karoshi/serversetup/modules/moodle/moodle2.sql
 
