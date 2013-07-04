@@ -268,7 +268,7 @@ if [ `echo $?` = 0 ]
 then
 NAMESTATUS=error
 fi
-id -g "$USERNAME" 1>/dev/null 2>/dev/null
+getent group "$USERNAME" 1>/dev/null 2>/dev/null
 if [ `echo $?` = 0 ]
 then
 NAMESTATUS=error
