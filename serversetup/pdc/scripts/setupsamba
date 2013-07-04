@@ -844,9 +844,7 @@ chown root.itadmin /var/lib/samba/netlogon/kix/reclassify.bat
 #Modify logon forms to match servername
 #############################
 sed -i "s/CHANGETHISDOMAINNAME/$SAMBADOMAIN/g" /var/lib/samba/netlogon/logonform.kix
-sed -i "s/CHANGETHISDOMAINNAME/$SAMBADOMAIN/g" /var/lib/samba/netlogon/newlogonform.kix
 sed -i 's/CHANGETHISHOSTNAME/'$HOSTNAME'/g' /var/lib/samba/netlogon/logonform.kix
-sed -i 's/CHANGETHISHOSTNAME/'$HOSTNAME'/g' /var/lib/samba/netlogon/newlogonform.kix
 sed -i 's/CHANGETHISHOSTNAME/'$HOSTNAME'/g' /var/lib/samba/netlogon/logon.bat
 sed -i 's/CHANGETHISHOSTNAME/'$HOSTNAME'/g' /var/lib/samba/netlogon/kixtart_install.bat
 sed -i 's/CHANGETHISHOSTNAME/'$HOSTNAME'/g' /var/lib/samba/netlogon/getdll.bat
@@ -873,28 +871,6 @@ COUNTER=$STARTYEAR
 		echo yr$COUNTER,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
 		let COUNTER=COUNTER+1
          done
-
-########################
-#Add in windows settings
-########################
-if [ ! -d /var/lib/samba/netlogon/windows_settings/security ]
-then
-mkdir -p /var/lib/samba/netlogon/windows_settings/security
-ln -s /var/lib/samba/netlogon/staffdtsec.kix /var/lib/samba/netlogon/windows_settings/security/staff.kix
-ln -s /var/lib/samba/netlogon/officestaffdtsec.kix /var/lib/samba/netlogon/windows_settings/security/officestaff.kix
-ln -s /var/lib/samba/netlogon/guestdtsec.kix /var/lib/samba/netlogon/windows_settings/security/guest.kix
-ln -s /var/lib/samba/netlogon/techdtsec.kix /var/lib/samba/netlogon/windows_settings/security/tech.kix
-ln -s /var/lib/samba/netlogon/examdtsec.kix /var/lib/samba/netlogon/windows_settings/security/exams.kix
-ln -s /var/lib/samba/netlogon/itadmindtsec.kix /var/lib/samba/netlogon/windows_settings/security/itadminstaff.kix
-
-COUNTER=2000
-ENDYEAR=2050
-while [ $COUNTER -le $ENDYEAR ]
-do
-ln -s /var/lib/samba/netlogon/studentdtsec.kix /var/lib/samba/netlogon/windows_settings/security/yr$COUNTER.kix
-let COUNTER=$COUNTER+1
-done
-fi
 
 if [ ! -d /var/lib/samba/netlogon/windows_settings/drives ]
 then
