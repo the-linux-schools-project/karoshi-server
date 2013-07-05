@@ -987,6 +987,11 @@ function make_profiles {
 ###################################
 [ -d /home/remastersys ] && rm -f -R /home/remastersys
 echo $COPYPROFILEMSG
+
+#Point default profile icons to correct realm
+sed -i 's@CHANGETHISREALM@'$REALM'@g' /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/"Help Desk.url"
+sed -i 's@CHANGETHISREALM@'$REALM'@g' /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/"Change My Password.url"
+
 [ ! -d /home/applications/profiles ] && mkdir /home/applications/profiles
 [ ! -d /home/applications/profiles/defaultprofile ] && cp -R /opt/karoshi/serversetup/pdc/profiles/defaultprofile /home/applications/profiles/
 [ ! -d /home/applications/profiles/profileuser ] && cp -R /opt/karoshi/serversetup/pdc/profiles/profileuser /home/applications/profiles/
@@ -1119,7 +1124,7 @@ dsHeuristics: 0000002001001
 
 
 function create_user {
-samba-tool user add $NEWUSERNAME --userou="$SUBPATH" --profile-path=\\\\$HOSTNAME\\applications\\profiles\\$PRIMARYGROUP --script-path=logon.bat --use-username-as-cn  --random-password --mail-address=$NEWUSERNAME@$REALM 1>/dev/null 2>>/opt/karoshi/serversetup/install_log
+samba-tool user add $NEWUSERNAME --userou="$SUBPATH" --profile-path=\\\\$HOSTNAME\\applications\\profiles\\$PROFILEFOLDER --script-path=logon.bat --use-username-as-cn  --random-password --mail-address=$NEWUSERNAME@$REALM 1>/dev/null 2>>/opt/karoshi/serversetup/install_log
 
 #Add user to primary group
 samba-tool group addmembers "$PRIMARYGROUP" $NEWUSERNAME  1>/dev/null 2>>/opt/karoshi/serversetup/install_log
@@ -1177,6 +1182,7 @@ NEWUSERNAME=profileuser
 NEWUSERPATH=/home/users/profileuser
 SUBPATH='OU=other,OU=People'
 PRIMARYGROUP=profilemanagement
+PROFILEFOLDER=profileuser
 create_user
 
 #Add guest accounts
@@ -1187,6 +1193,7 @@ NEWUSERNAME=guest$COUNTER
 NEWUSERPATH=/home/users/guests/guest$COUNTER
 SUBPATH='OU=guestusers,OU=other,OU=People'
 PRIMARYGROUP=guestusers
+PROFILEFOLDER=guests
 create_user
 let COUNTER=COUNTER+1
 done
@@ -1199,6 +1206,7 @@ NEWUSERNAME=tech$COUNTER
 NEWUSERPATH=/home/users/techstaff/tech$COUNTER
 SUBPATH='OU=tech,OU=personnel,OU=People'
 PRIMARYGROUP=tech
+PROFILEFOLDER=tech
 create_user
 let COUNTER=COUNTER+1
 done
