@@ -182,6 +182,33 @@ echo -e "# Global parameters
 	acl:search=false
 
 " > /etc/samba/smb.conf
+
+if [ '$AUTHTYPE' = adc ]
+then
+echo -e "
+
+[netlogon]
+	path = /var/lib/samba/netlogon
+	read only = No
+
+[sysvol]
+	path = /var/lib/samba/sysvol
+	read only = No
+
+[applications]
+	comment = Data
+	path = /home/applications
+	invalid users = root
+	read only = No
+	guest ok = Yes
+	browseable = No
+	locking = No
+	oplocks = No
+	level2 oplocks = No
+
+" >> /etc/samba/smb.conf
+
+fi
 fi
 
 if [ '$AUTHTYPE' = member ]

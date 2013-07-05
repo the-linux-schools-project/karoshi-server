@@ -1,0 +1,16 @@
+#!/bin/bash
+if [ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers ]
+then
+if [ `ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers | wc -l` -gt 0 ]
+then
+for ADSERVERS in /opt/karoshi/server_network/zones/internal/additional_domain_controllers/*
+do
+ADSERVER=`basename $ADSERVERS`
+echo Syncing $ADSERVER
+#Sync applications share
+rsync --timeout=30 --dirs --recursive --links --compress /home/applications root@$ADSERVER:/home/
+#Sync netlogon
+rsync --timeout=30 --dirs --recursive --links --compress /var/lib/samba/netlogon root@$ADSERVER:/var/lib/samba/
+done
+fi
+fi

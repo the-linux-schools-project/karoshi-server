@@ -1266,9 +1266,7 @@ chage -M 99999 karoshi
 [ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
 echo 0 0 '*' '*' 7 /opt/karoshi/'"'useful scripts'"'/resetguestaccounts > /opt/karoshi/cronjobs/jobs/resetguestaccounts.cron
 echo 1 0 '*' '*' 1-5 /opt/karoshi/'"'useful scripts'"'/resettechaccounts > /opt/karoshi/cronjobs/jobs/resettechaccounts.cron
-echo 20 0 '*' '*' 1-5 rm -d -R -f /home/temparea/'*' > /opt/karoshi/cronjobs/jobs/tidytemparea.cron
-echo 30 0 '*' '*' 1-5 rm -d -R -f /home/staffshare/temp/'*' > /opt/karoshi/cronjobs/jobs/tidystafftemparea.cron
-echo 40 0 '*' '*' 1-5 rm -d -R -f /home/officeshare/temp/'*' > /opt/karoshi/cronjobs/jobs/tidyofficetemp.cron
+echo 5 0 '*' '*' 1-5 /opt/karoshi/'"'useful scripts'"'/adc_sync > /opt/karoshi/cronjobs/jobs/adcsync.cron
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
 
 #########################
