@@ -1320,8 +1320,12 @@ echo $WEBADDRESS > /var/lib/samba/netlogon/domain_information/dns_domain
 echo $DOMAINSID > /var/lib/samba/netlogon/domain_information/domain_sid
 echo $LDAPBASE > /var/lib/samba/netlogon/domain_information/ldap_base
 
-#Link domain_information to /home/applications
+#Prepare client_settings
+[ ! -d /var/lib/samba/netlogon/client_settings ] && mkdir -p /var/lib/samba/netlogon/client_settings
+
+#Link netlogon directories to /home/applications
 ln -s /var/lib/samba/netlogon/domain_information/ /home/applications
+ln -s /var/lib/samba/netlogon/client_settings/ /home/applications
 
 #Restart samba
 echo Restarting samba4 >> /opt/karoshi/serversetup/install_log
