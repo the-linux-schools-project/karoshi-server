@@ -28,9 +28,9 @@
 			if(strlen($queryString) > 1) {
                                 
 				if($ldapconnected == 1){
-	         					$attributes= array("primaryGroupID","cn","name");
+	         					$attributes= array("gidNumber","cn","name");
                                                         $lookupString = "cn=$queryString*";                               
-	         					if($userresults=@ldap_search($ldapconnection, "cn=Users,LDAPBASE",$lookupString, $attributes)){
+	         					if($userresults=@ldap_search($ldapconnection, "OU=People,LDAPBASE",$lookupString, $attributes)){
                                                             // While there are results loop through them - fetching an Object.
                                                            $info=@ldap_get_entries($ldapconnection, $userresults);
                                                             // Generate the category id
@@ -49,10 +49,10 @@
                                                                
                                                                     $userName = (@ldap_get_values($ldapconnection,$entry,'name'));
                                                                     $groupDisplayName = array("Unknown");                              
-                                                                                $gidNumber = (@ldap_get_values($ldapconnection,$entry,'primaryGroupID'));
+                                                                                $gidNumber = (@ldap_get_values($ldapconnection,$entry,'gidNumber'));
                                                                                 $attributes= array("name");
                                                                                 $gidNumber = $gidNumber[0];
-                                                                                $primarygroupnameresults=@ldap_search($ldapconnection, "cn=Users,LDAPBASE", "(&(objectClass=group)(gidNumber=$gidNumber))", $attributes);
+                                                                                $primarygroupnameresults=@ldap_search($ldapconnection, "OU=People,LDAPBASE", "(&(objectClass=group)(gidNumber=$gidNumber))", $attributes);
                                                                                 if($entry2=@ldap_first_entry($ldapconnection,$primarygroupnameresults)){
                                                                                     $groupDisplayName = (@ldap_get_values($ldapconnection,$entry2,'name'));
                                                                                 }
