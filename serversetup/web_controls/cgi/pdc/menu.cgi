@@ -96,7 +96,7 @@ fi
 if [ $MOBILE = no ]
 then
 echo '<div id="actionbox">'
-cat /var/www/html_karoshi/statistics.html
+[ -f /var/www/html_karoshi/statistics.html ] && cat /var/www/html_karoshi/statistics.html
 echo '<br><br><br><img src="/images/valid-html401-blue.png" alt="Valid HTML 4.01 Transitional"></div>'
 else
 echo "<br><br>"
