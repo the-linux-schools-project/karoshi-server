@@ -144,7 +144,7 @@ then
 echo '	<li class="top"><a href="/cgi-bin/tech/printers.cgi" id="Printer" class="top_link"><span class="down">'$PRINTERMSG'</span></a>
 		<ul class="sub">
 			<li><a href="/cgi-bin/tech/printers.cgi">'$VIEWQUEUES'</a></li>
-			<li class="mid"><a href="/cgi-bin/admin/printer_accounting_status_fm.cgi" class="fly">'$PRINTERACCOUNTING'</a>
+			<li class="mid"><a href="/cgi-bin/tech/printer_accounting_status_fm.cgi" class="fly">'$PRINTERACCOUNTING'</a>
 					<ul>
 					<li><a href="/cgi-bin/tech/printer_accounting_view_user_usage_fm.cgi">'$USERPRINTERUSAGE'</a></li>
 					<li><a href="/cgi-bin/tech/printer_accounting_view_group_usage_fm.cgi">'$GROUPPRINTERUSAGE'</a></li>
@@ -166,7 +166,7 @@ echo '	<li class="top"><a href="/cgi-bin/tech/activate_internet_changes_fm.cgi" 
 					<ul>
 						<li><a href="/cgi-bin/tech/dg_view_banned_users_fm.cgi">'$VIEWBANNEDUSERS'</a></li>
 						<li><a href="/cgi-bin/tech/dg_view_allowed_sites_fm.cgi">'$VIEWALLOWEDSITES'</a></li>
-						<li><a href="/cgi-bin/admin/dg_view_ssl_allowed_sites_fm.cgi">'$VIEWSSLALLOWEDSITES'</a></li>
+						<li><a href="/cgi-bin/tech/dg_view_ssl_allowed_sites_fm.cgi">'$VIEWSSLALLOWEDSITES'</a></li>
 						<li><a href="/cgi-bin/tech/dg_view_part_allowed_sites_fm.cgi">'$VIEWPALLOWEDSITES'</a></li>
 						<li><a href="/cgi-bin/tech/dg_view_banned_sites_fm.cgi">'$VIEWBANNEDSITES'</a></li>
 						<li><a href="/cgi-bin/tech/dg_view_part_banned_sites_fm.cgi">'$VIEWPBANNEDSITES'</a></li>
@@ -197,7 +197,7 @@ echo '	<li class="top"><a href="/cgi-bin/tech/activate_internet_changes_fm.cgi" 
 					</ul>
 			</li>
 			<li><a href="/cgi-bin/tech/dg_media_controls_fm.cgi">'$MEDIACONTROLS'</a></li>
-			<li><a href="/cgi-bin/admin/dg_room_controls_fm.cgi">'$ROOMCONTROLS'</a></li>
+			<li><a href="/cgi-bin/tech/dg_room_controls_fm.cgi">'$ROOMCONTROLS'</a></li>
 			<li><a href="/cgi-bin/tech/activate_internet_changes_fm.cgi">'$ACTIVATECHANGES'</a></li>
 		</ul>
 	</li>'
