@@ -342,5 +342,10 @@ sed -i 's/EMAILCTRL=no/EMAILCTRL=yes/g' /opt/karoshi/server_network/menusettings
 #Add mail flag for clients
 echo $SERVERNAME > /var/lib/samba/netlogon/domain_information/mail_server
 
+#Add in a cron job to check the mail queue for excessive mail
+echo 5 0 '*' '*' 1-7 /opt/karoshi/serversetup/modules/email/scripts/check_mail_queue > /opt/karoshi/cronjobs/jobs/check_mail_queue.cron
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
+
+
 exit
 
