@@ -1,0 +1,34 @@
+#!/bin/bash
+
+#Check if mail server has been set up
+if [ ! -e /opt/karoshi/server_network/emailserver ]
+then
+echo No Mail Server has been setup.
+exit
+fi
+
+MAILWARN=100
+MAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+
+if [ $MAILSERVER = $HOSTNAME ]
+then
+mailq_count=`/usr/bin/mailq | /usr/bin/tail -n1 | cut -d" " -f5`
+mailq_count=`expr $mailq_count + 0`
+if [ $mailq_count -gt $MAILWARN ]
+then
+echo "Mail count on Server is $mailq_count"
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add mailq_warning_$MAILSERVER /cgi-bin/admin/email_show_queue_fm.cgi "Mail queue alert" 3
+fi 
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $MAILSERVER '
+mailq_count=`/usr/bin/mailq | /usr/bin/tail -n1 | cut -d" " -f5`
+mailq_count=`expr $mailq_count + 0`
+echo count is $mailq_count
+if [ $mailq_count -gt '$MAILWARN' ]
+then
+exit 101
+fi
+'
+[ $? = 101 ] && /opt/karoshi/serversetup/web_controls/scripts/web_management_warn add mailq_warning_$MAILSERVER /cgi-bin/admin/email_show_queue_fm.cgi "Mail queue alert" 3
+fi
+
