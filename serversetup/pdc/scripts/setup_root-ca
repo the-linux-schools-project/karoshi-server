@@ -42,6 +42,13 @@ chmod 0600 /etc/ssl/root-ca/private/cakey.pem
 #Sign key
 echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\n"$LOCALNAME"\n"$SERVERNAME"\n"$EMAILADDRESS"\n"postfix"\n" | openssl req -new -x509 -days 3650 -key /etc/ssl/root-ca/private/cakey.pem -passin pass:$LDAPPASS -out /etc/ssl/root-ca/cacert.pem
 
+#Sign key
+echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\n"$LOCALNAME"\n"$SERVERNAME"\n"$EMAILADDRESS"\n"postfix"\n" | openssl req -new -x509 -days 3650 -key /etc/ssl/root-ca/private/cakey.pem -passin pass:$LDAPPASS -out /etc/ssl/root-ca/cacert.p12
+
 #Copy certificate to netlogon for use on client computers
 cp -f /etc/ssl/root-ca/cacert.pem /var/lib/samba/netlogon/domain_information/
 chmod 0644 /var/lib/samba/netlogon/domain_information/cacert.pem
+
+cp -f /etc/ssl/root-ca/cacert.p12 /var/lib/samba/netlogon/domain_information/
+chmod 0644 /var/lib/samba/netlogon/domain_information/cacert.p12
+
