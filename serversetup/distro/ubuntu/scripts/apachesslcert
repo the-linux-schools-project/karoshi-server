@@ -3,7 +3,7 @@
 LOG_DATE=`date +%F`
 
 source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/server_network/domain_information/domain_name
+source /opt/karoshi/server_network/ALIAS_information/ALIAS_name
 
 #Assign variables
 read DATA
@@ -16,7 +16,7 @@ fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 SERVER=`echo "$DATA" | cut -s -d: -f3`
-DOMAIN=`echo "$DATA" | cut -s -d: -f4`
+ALIAS=`echo "$DATA" | cut -s -d: -f4`
 
 if [ $REMOTE_USER'null' = null ]
 then
@@ -33,20 +33,20 @@ then
 echo `date`: apachesslcert - Blank remote server from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-if [ $DOMAIN'null' = null ]
+if [ $ALIAS'null' = null ]
 then
-echo `date`: apachesslcert - Blank domain from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: apachesslcert - Blank ALIAS from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 
-echo `date`: apachesslcert - creating a certificate "for" $DOMAIN from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: apachesslcert - creating a certificate "for" $ALIAS from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 COUNTRY=`echo $LANG | cut -d_ -f2 | cut -d. -f1`
 STATE=`cat /etc/timezone | cut -d/ -f1`
 CITY=`cat /etc/timezone | cut -d/ -f2`
 NAME=$HOSTNAME
-LOCALNAME=$DOMAIN
-SERVERNAME=$DOMAIN
+LOCALNAME=$ALIAS
+SERVERNAME=$ALIAS
 EMAILADDRESS=administrator@$REALM
 
 rm -f /etc/ssl/root-ca/index.txt
@@ -55,25 +55,25 @@ touch /etc/ssl/root-ca/index.txt
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 
 #Revoke the existing certificate.
-[ -d /etc/ssl/apache/$DOMAIN.pem ] && openssl ca -revoke $DOMAIN.pem -passin pass:$LDAPPASS
+[ -d /etc/ssl/apache/$ALIAS.pem ] && openssl ca -revoke $ALIAS.pem -passin pass:$LDAPPASS
 
 #Clear existing keys
 [ ! -d /etc/ssl/apache ] && mkdir /etc/ssl/apache
-[ -f /etc/ssl/apache/$DOMAIN.key ] && rm -f /etc/ssl/apache/$DOMAIN.key
-[ -f /etc/ssl/apache/$DOMAIN.pem ] && rm -f /etc/ssl/apache/$DOMAIN.pem
-[ -f /etc/ssl/apache/$DOMAIN.req ] && rm -f /etc/ssl/apache/$DOMAIN.req
+[ -f /etc/ssl/apache/$ALIAS.key ] && rm -f /etc/ssl/apache/$ALIAS.key
+[ -f /etc/ssl/apache/$ALIAS.pem ] && rm -f /etc/ssl/apache/$ALIAS.pem
+[ -f /etc/ssl/apache/$ALIAS.req ] && rm -f /etc/ssl/apache/$ALIAS.req
 
 cd /etc/ssl/apache
 #Create host certificate
-echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\n"$DOMAIN"\n"$DOMAIN"\n"$EMAILADDRESS"\n"webserver"\n" | openssl req -newkey rsa:4096 -days 3650 -keyout $DOMAIN.key -nodes -out $DOMAIN.req
+echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\n"$ALIAS"\n"$ALIAS"\n"$EMAILADDRESS"\n"webserver"\n" | openssl req -newkey rsa:4096 -days 3650 -keyout $ALIAS.key -nodes -out $ALIAS.req
 
-chmod 0600 /etc/ssl/apache/$DOMAIN.key
-chmod 0600 /etc/ssl/apache/$DOMAIN.req
+chmod 0600 /etc/ssl/apache/$ALIAS.key
+chmod 0600 /etc/ssl/apache/$ALIAS.req
 
 #Create client pem
-openssl ca -passin pass:$LDAPPASS -days 3650 -batch -out $DOMAIN.pem -infiles $DOMAIN.req 
+openssl ca -passin pass:$LDAPPASS -days 3650 -batch -out $ALIAS.pem -infiles $ALIAS.req 
 
-chmod 0600 /etc/ssl/apache/$DOMAIN.pem
+chmod 0600 /etc/ssl/apache/$ALIAS.pem
 
 if [ $SERVER = $HOSTNAME ]
 then
@@ -82,7 +82,7 @@ a2enmod ssl 1>/dev/null
 #Copy in ssl config file
 cp -f /opt/karoshi/serversetup/distro/ubuntu/all/configfiles/apache/default-ssl /etc/apache2/sites-enabled/
 #Point config file at the correct certificate
-sed -i "s/server./$DOMAIN./g" /etc/apache2/sites-enabled/default-ssl
+sed -i "s/server./$ALIAS./g" /etc/apache2/sites-enabled/default-ssl
 
 #Check which web server to restart
 if [ `ls /etc/rc2.d | grep -c nginx` -gt 0 ]
@@ -106,8 +106,8 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 [ ! -d /etc/ssl/apache ] && mkdir -p /etc/ssl/apache
 '
 #Copy certificates to the correct server
-scp /etc/ssl/apache/$DOMAIN.key root@$SERVER:"/etc/ssl/apache/" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-scp /etc/ssl/apache/$DOMAIN.pem root@$SERVER:"/etc/ssl/apache/" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+scp /etc/ssl/apache/$ALIAS.key root@$SERVER:"/etc/ssl/apache/" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+scp /etc/ssl/apache/$ALIAS.pem root@$SERVER:"/etc/ssl/apache/" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 #Make sure that ssl is enabled
@@ -115,7 +115,7 @@ a2enmod ssl 1>/dev/null
 #Copy in ssl config file
 cp -f /opt/karoshi/serversetup/distro/ubuntu/all/configfiles/apache/default-ssl /etc/apache2/sites-enabled/
 #Point config file at the correct certificate
-sed -i "s/server./'$DOMAIN'./g" /etc/apache2/sites-enabled/default-ssl
+sed -i "s/server./'$ALIAS'./g" /etc/apache2/sites-enabled/default-ssl
 
 #Check which web server to restart
 if [ `ls /etc/rc2.d | grep -c nginx` -gt 0 ]
