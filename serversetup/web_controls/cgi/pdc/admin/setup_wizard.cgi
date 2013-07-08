@@ -41,9 +41,7 @@ fi
 #Change default page to stop recursion problem
 if [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ]
 then
-sed 's/DEFAULTPAGE=setup_wizard.cgi/DEFAULTPAGE=change_password_fm.cgi/g' /opt/karoshi/web_controls/user_prefs/$REMOTE_USER > /tmp/data.$$
-cat /tmp/data.$$ > /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-rm -f /tmp/data.$$
+sed -i 's/DEFAULTPAGE=setup_wizard.cgi/DEFAULTPAGE=change_password_fm.cgi/g' /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 fi
 ############################
 #Show page
