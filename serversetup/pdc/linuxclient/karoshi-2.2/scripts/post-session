@@ -1,51 +1,90 @@
 #!/bin/bash
 
-#Clear Trash folder
-[ -d ~/.local/share/Trash ] && rm -rf ~/.local/share/Trash
+#Copyright (C) 2013 Robin McCorkell
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted either at mpsharrad@karoshi.org.uk or rmccorkell@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
 
-[ -d ~/network/home ] || exit
-#Everything below this point requires ~/network/home to exist
-
-#####################
-#Backup configuration
-#####################
 function checkAndList {
-	if [ -e ~/"$1" ]; then list=( "${list[@]}" "$1" ); fi
+	if [[ -e ~/$1 ]]; then list=( "${list[@]}" "$1" ); fi
 }
 
-#Create archive in ~/network/home/.configuration.tar.gz
-[ -f ~/network/home/.configuration.tar.gz ] && rm ~/network/home/.configuration.tar.gz
-
-list=( )
-#Populate list with all hidden folders, with some exceptions
-while read -d $'\0' -r file ; do
-	checkAndList "${file##~/}"
-done < <(find ~ -mindepth 1 -maxdepth 1 -xdev -not '(' -name '.mozilla' -o -name '.cache' -o -name '.thumbnails' -o -name '.Xauthority' -o -name '.ICEauthority' -o -name '.xsession-errors' -o -name '.pulse*' -o -name '.gvfs' -o -name '.dbus' -o -name '.VirtualBox' -o -name '.rednotebook' ')' -name '.*' -print0)
-
-if which firefox >/dev/null && [ -d ~/.mozilla/firefox ]; then
-	firefox_profile=`sed -n '0,/^Path=/s/^Path=//p' ~/.mozilla/firefox/profiles.ini`
-	if [[ "$firefox_profile" ]] && [ -d ~/.mozilla/firefox/"$firefox_profile" ]; then
-		checkAndList .mozilla/firefox/"$firefox_profile"/places.sqlite
+#Detect an administrator
+is_admin=false
+groups=( $(id -nG) )
+for group in "${groups[@]}"; do
+	if [[ $group == "admin" ]] || [[ $group == "sudo" ]] || [[ $group == "tech" ]]; then
+		is_admin=true
+		break
 	fi
-fi
-if which thunderbird >/dev/null && [ -d ~/.thunderbird ]; then
-	thunderbird_profile=`sed -n '0,/^Path=/s/^Path=//p' ~/.thunderbird/profiles.ini`
-	if [[ "$thunderbird_profile" ]] && [ -d ~/.thunderbird/"$thunderbird_profile" ]; then
-		checkAndList .thunderbird/"$thunderbird_profile"/calendar-data/
-		checkAndList .thunderbird/"$thunderbird_profile"/places.sqlite
-	fi
+done
+if [[ $(id -nu) == "root" ]]; then
+	is_admin=true
 fi
 
-[[ "${list[@]}" ]] && tar -cz --one-file-system --exclude='karoshi-*.desktop' -C ~ -f ~/network/home/.configuration.tar.gz "${list[@]}"
+#Detect a domain user
+is_domain=false
+if [[ $(id -u) -ge 1000 ]] && [[ $(id -u) -ne 65534 ]]; then
+	is_domain=true
+fi
 
-#####################
-#Backup desktop files
-#####################
-list=( )
-while read -d $'\0' -r file ; do
-	checkAndList "${file##~/}"
-done < <(find ~/Desktop -mindepth 1 -maxdepth 1 -not -name "karoshi-*.desktop" -and -size -1024c -print0)
+if $is_domain; then
+	###################
+	#Domain user
+	###################
+	
+	#Clear Trash folder
+	[[ -d ~/.local/share/Trash ]] && rm -rf ~/.local/share/Trash
 
-#Create archive in ~/network/home/.desktop-icons.tar.gz
-[ -f ~/network/home/.desktop-icons.tar.gz ] && rm ~/network/home/.desktop-icons.tar.gz
-[[ "${list[@]}" ]] && tar -cz --one-file-system -C ~ -f ~/network/home/.desktop-icons.tar.gz "${list[@]}"
+	
+	#Backup configuration
+	list=( )
+	#Populate list with all hidden folders, with some exceptions
+	while read -d $'\0' -r file ; do
+		checkAndList "${file##~/}"
+	done < <(find ~ -mindepth 1 -maxdepth 1 -xdev -not '(' -name '.mozilla'  -o -name '.thunderbird' -o -name '.cache' \
+				-o -name '.thumbnails' -o -name '.Xauthority' -o -name '.ICEauthority' -o -name '.xsession-errors' -o -name '.pulse*' \
+				-o -name '.gvfs' -o -name '.dbus' -o -name '.VirtualBox' -o -name '.rednotebook' ')' -name '.*' -print0)
+
+	if which firefox >/dev/null && [[ -d ~/.mozilla/firefox ]]; then
+		firefox_profile=`sed -n '0,/^Path=/s/^Path=//p' ~/.mozilla/firefox/profiles.ini`
+		if [[ $firefox_profile ]] && [[ -d ~/.mozilla/firefox/$firefox_profile ]]; then
+			checkAndList .mozilla/firefox/"$firefox_profile"/places.sqlite
+		fi
+	fi
+	if which thunderbird >/dev/null && [[ -d ~/.thunderbird ]]; then
+		thunderbird_profile=`sed -n '0,/^Path=/s/^Path=//p' ~/.thunderbird/profiles.ini`
+		if [[ $thunderbird_profile ]] && [[ -d ~/.thunderbird/$thunderbird_profile ]]; then
+			checkAndList .thunderbird/"$thunderbird_profile"/places.sqlite
+		fi
+	fi
+
+	#Create archive in ~/network/home/.configuration.tar.gz
+	[[ -f ~/network/home/.configuration.tar.gz ]] && rm ~/network/home/.configuration.tar.gz
+	[[ "${list[@]}" ]] && tar -cz --one-file-system --exclude='karoshi-*.desktop' -C ~ -f ~/network/home/.configuration.tar.gz "${list[@]}"
+
+	
+	#Backup desktop files
+	list=( )
+	while read -d $'\0' -r file ; do
+		checkAndList "${file##~/}"
+	done < <(find ~/Desktop -mindepth 1 -maxdepth 1 -not -name "karoshi-*.desktop" -and -size -1024c -print0)
+
+	#Create archive in ~/network/home/.desktop-icons.tar.gz
+	[[ -f ~/network/home/.desktop-icons.tar.gz ]] && rm ~/network/home/.desktop-icons.tar.gz
+	[[ "${list[@]}" ]] && tar -cz --one-file-system -C ~ -f ~/network/home/.desktop-icons.tar.gz "${list[@]}"
+fi

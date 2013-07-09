@@ -52,21 +52,17 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/bulk_user_creation_upload.cgi" METHOD="POST"><div id="actionbox">
-<B>'$TITLE'</B>
+<B>'$TITLE'</B> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Upload_CSV"><img class="images" alt="" src="/images/help/info.png"><span>'$CSVHELPMSG1':<br><br>'$CSVHELPMSG2'</span></a>
 <br><br>
         
-        <TABLE class="standard" BORDER=0>
-        <TR>
+        <table class="standard" border=0>
+        <tr>
             <td style="width: 180px;">'$CSVMSG'
-            </TD>
-            <TD>
+            </td>
+            <td>
                 <INPUT TYPE="FILE"  NAME="file-to-upload-01" SIZE="35">
-            </TD><td>
-
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Upload_CSV"><img class="images" alt="" src="/images/help/info.png"><span>'$CSVHELPMSG1':<br><br>'$CSVHELPMSG2'</span></a>
-
-        </td></TR>
-        </TABLE>
+        </td></tr>
+        </table>
   
 <br><br>
 </div>

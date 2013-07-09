@@ -1,6 +1,25 @@
 #!/bin/bash
 
-source /opt/karoshi/linuxclientsetup/variables
+#Copyright (C) 2013 Robin McCorkell
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted either at mpsharrad@karoshi.org.uk or rmccorkell@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+source /opt/karoshi/linuxclientsetup/utilities/common
 
 #function create_entries
 #	$1 is mount name
@@ -20,37 +39,96 @@ Categories=X-XFCE;X-Xfce-Toplevel;Karoshi;
 OnlyShowIn=XFCE;" | tee ~/Desktop/karoshi-"$filename".desktop > ~/.local/share/applications/karoshi-"$filename".desktop
 }
 
+#####################
+#All users
+#####################
+
+#Detect an administrator
+is_admin=false
+groups=( $(id -nG) )
+for group in "${groups[@]}"; do
+	if [[ $group == "admin" ]] || [[ $group == "sudo" ]] || [[ $group == "tech" ]]; then
+		is_admin=true
+		break
+	fi
+done
+if [[ $(id -nu) == "root" ]]; then
+	is_admin=true
+fi
+
+#Detect a domain user
+is_domain=false
+if [[ $(id -u) -ge 1000 ]] && [[ $(id -u) -ne 65534 ]]; then
+	is_domain=true
+fi
+
+#Copy in admin-skel
+if $is_admin && [[ -d /opt/karoshi/admin-skel ]]; then
+	find /opt/karoshi/admin-skel -mindepth 1 -print0 | xargs -0 cp -rf -t ~
+fi
+
+#Create file manager entries
+[[ ! -d ~/Desktop ]] && mkdir ~/Desktop
+[[ ! -d ~/.local/share/applications ]] && mkdir -p ~/.local/share/applications
+
 ######################
-#Extract configuration
+#Domain/local users
 ######################
-[ -f ~/network/home/.configuration.tar.gz ] && tar -x -C ~ -f ~/network/home/.configuration.tar.gz
-[ -f ~/network/home/.desktop-icons.tar.gz ] && tar -x -C ~ -f ~/network/home/.desktop-icons.tar.gz
 
-[ ! -d ~/.local/share/applications ] && mkdir -p ~/.local/share/applications
-[ ! -d ~/Desktop ] && mkdir ~/Desktop
+if $is_domain; then
+	###############
+	#Domain user
+	###############
 
-##############################
-#This only makes sense if running as a domain user
-##############################
-if [ -d ~/network/home ]; then
+	#Create home icon first so that it appears first on the desktop
+	if [[ $(mount | grep "^[^ ]* on $HOME/network/home type cifs") ]]; then
+		create_entries "home" "$HOME/network/home" folder-home
+	else
+		create_entries "Home" ~ folder-home
+	fi
 
-	##################
+	#Create icons to other mounted network shares
+	for mountpath in `mount | grep "^[^ ]* on $HOME/network/[^ ]* type cifs" | cut -d' ' -f3 | sort`; do
+		mountname=`basename $mountpath`
+		if [[ $mountname != home ]]; then
+			create_entries "$mountname" "$mountpath" folder-publicshare
+		fi
+	done
+	
+	#Copy in default icons
+	[[ -d /opt/karoshi/desktop-icons/all ]] && find /opt/karoshi/desktop-icons/all -mindepth 1 -print0 | xargs -0 cp -rf -t ~/Desktop
+
+	#Copy in extra icons for groups
+	pri_group=`id -gn`
+	[[ -d /opt/karoshi/desktop-icons/$pri_group ]] && find /opt/karoshi/desktop-icons/$pri_group -mindepth 1 -print0 | xargs -0 cp -rf -t ~/Desktop
+	
+	#Extract configuration
+	[[ -f ~/network/home/.configuration.tar.gz ]] && tar -x -C ~ -f ~/network/home/.configuration.tar.gz
+	[[ -f ~/network/home/.desktop-icons.tar.gz ]] && tar -x -C ~ -f ~/network/home/.desktop-icons.tar.gz
+	
+	#Set default directory for terminal emulator and file manager to network/home
+	mkdir -p ~/.config/xfce4/xfconf/xfce-perchannel-xml
+	cp -n /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml ~/.config/xfce4/xfconf/xfce-perchannel-xml
+	sed -i 's@"exo-open --launch \(TerminalEmulator\|FileManager\)"@"exo-open --launch \1 --working-directory network/home"@' ~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml
+	
+	cp -n /usr/share/applications/exo-terminal-emulator.desktop ~/.local/share/applications
+	sed -i 's@^Exec=exo-open --launch TerminalEmulator$@Exec=exo-open --launch TerminalEmulator --working-directory network/home@' ~/.local/share/applications/exo-terminal-emulator.desktop
+	
 	#create user.js for default Firefox settings
-	##################
-	if which firefox >/dev/null && [ -d ~/.mozilla/firefox ]; then
+	if which firefox >/dev/null && [[ -d ~/.mozilla/firefox ]]; then
 		firefox_profile=`sed -n '0,/^Path=/s/^Path=//p' ~/.mozilla/firefox/profiles.ini`
-		if [[ "$firefox_profile" ]] && [ -d ~/.mozilla/firefox/"$firefox_profile" ]; then
+		if [[ $firefox_profile ]] && [[ -d ~/.mozilla/firefox/$firefox_profile ]]; then
 			#Apply CA certificate
-			if [ -f /opt/karoshi/linuxclientsetup/cacert.pem ]; then
-				certutil -A -n "Karoshi CA" -addstore root -t "CTu,CTu,CTu" -i /opt/karoshi/linuxclientsetup/cacert.pem -d ~/.mozilla/firefox/"$firefox_profile"
+			if [[ -f /opt/karoshi/cacert.pem ]]; then
+				certutil -A -n "Karoshi CA" -addstore root -t "CTu,CTu,CTu" -i /opt/karoshi/cacert.pem -d ~/.mozilla/firefox/"$firefox_profile"
 			fi
 	
 			#Default download directory
 			echo "user_pref('browser.download.lastDir', '~/network/home/');" > ~/.mozilla/firefox/"$firefox_profile"/user.js
 	
 			#Give clipboard capability to Moodle and other sites
-			if [ -f /opt/karoshi/linuxclientsetup/allow_clipboard_sites ]; then
-				echo "user_pref('capability.policy.allowclipboard.sites', '` < /opt/karoshi/linuxclientsetup/allow_clipboard_sites`');
+			if [[ -f /opt/karoshi/allow_clipboard_sites ]]; then
+				echo "user_pref('capability.policy.allowclipboard.sites', '` < /opt/karoshi/allow_clipboard_sites`');
 user_pref('capability.policy.allowclipboard.Clipboard.cutcopy', 'allAccess');
 user_pref('capability.policy.allowclipboard.Clipboard.paste', 'allAccess');" >> ~/.mozilla/firefox/"$firefox_profile"/user.js
 			fi
@@ -65,7 +143,7 @@ user_pref('extensions.lastPlatformVersion', '$firefox_version');" >> ~/.mozilla/
 			echo "user_pref('browser.cache.disk.capacity', 5120);" >> ~/.mozilla/firefox/"$firefox_profile"/user.js
 	
 			#Proxy server
-			if [ "$PROXYSERVER" ]; then
+			if [[ $PROXYSERVER ]]; then
 				echo "user_pref('network.proxy.http', '$PROXYSERVER.$DNSSUFFIX');
 user_pref('network.proxy.http_port', 3128);
 user_pref('network.proxy.ssl', '$PROXYSERVER.$DNSSUFFIX');
@@ -85,21 +163,19 @@ user_pref('browser.startup.homepage', '$PROXYSERVER.$DNSSUFFIX');" >> ~/.mozilla
 			fi
 	
 			#Set up Kerberos
-			if [ "$DOMAINTYPE" == samba4 ] || [ "$DOMAINTYPE" == samba4_winbind ]; then
+			if [[ $DOMAINTYPE == samba4 ]] || [[ $DOMAINTYPE == samba4_winbind ]]; then
 				echo "user_pref('network.negotiate-auth.trusted-uris', '$DNSSUFFIX');" >> ~/.mozilla/firefox/"$firefox_profile"/user.js
 			fi
 		fi
 	fi
 
-	##################
 	#create user.js for default Thunderbird settings
-	##################
-	if which thunderbird >/dev/null && [ -d ~/.thunderbird ]; then
+	if which thunderbird >/dev/null && [[ -d ~/.thunderbird ]]; then
 		thunderbird_profile=`sed -n '0,/^Path=/s/^Path=//p' ~/.thunderbird/profiles.ini`
-		if [[ "$thunderbird_profile" ]] && [ -d ~/.thunderbird/"$thunderbird_profile" ]; then
+		if [[ $thunderbird_profile ]] && [[ -d ~/.thunderbird/$thunderbird_profile ]]; then
 			#Apply CA certificate
-			if [ -f /opt/karoshi/linuxclientsetup/cacert.pem ]; then
-				certutil -A -n "Karoshi CA" -addstore root -t "CTu,CTu,CTu" -i /opt/karoshi/linuxclientsetup/cacert.pem -d ~/.thunderbird/"$thunderbird_profile"
+			if [[ -f /opt/karoshi/cacert.pem ]]; then
+				certutil -A -n "Karoshi CA" -addstore root -t "CTu,CTu,CTu" -i /opt/karoshi/cacert.pem -d ~/.thunderbird/"$thunderbird_profile"
 			fi
 		
 			#Remove updated messages and extension checking
@@ -112,7 +188,7 @@ user_pref('mailnews.start_page_override.mstone', '$thunderbird_version');" >> ~/
 			echo "user_pref('browser.cache.disk.capacity', 5120);" >> ~/.thunderbird/"$thunderbird_profile"/user.js
 		
 			#Proxy server
-			if [ "$PROXYSERVER" ]; then
+			if [[ $PROXYSERVER ]]; then
 				echo "user_pref('network.proxy.http', '$PROXYSERVER.$DNSSUFFIX');
 user_pref('network.proxy.http_port', 3128);
 user_pref('network.proxy.ssl', '$PROXYSERVER.$DNSSUFFIX');
@@ -128,11 +204,11 @@ user_pref('network.proxy.no_proxies_on', 'localhost, 127.0.0.0/8, $DNSSUFFIX, $P
 			fi
 		
 			#Set up Kerberos
-			if [ "$DOMAINTYPE" == samba4 ] || [ "$DOMAINTYPE" == samba4_winbind ]; then
+			if [[ $DOMAINTYPE == samba4 ]] || [[ $DOMAINTYPE == samba4_winbind ]]; then
 				echo "user_pref('network.negotiate-auth.trusted-uris', '$DNSSUFFIX');" >> ~/.thunderbird/"$thunderbird_profile"/user.js
 			fi
 		
-			if [ "$MAILSERVER" ]; then
+			if [[ $MAILSERVER ]]; then
 				user_fullname=$(getent passwd $USER | cut -d: -f5 | cut -d, -f1)
 		
 				echo "user_pref('mail.identity.id1.useremail', '$USER@$DNSSUFFIX');
@@ -167,70 +243,24 @@ user_pref('mail.smtpservers', 'smtp1');" >> ~/.thunderbird/"$thunderbird_profile
 			fi
 		fi
 	fi
-
-fi
-#End of domain bit
-
-##################
-#Create icons
-##################
-mountpoints=false
-
-#Create home icon first so that it appears first on the desktop
-mountpath=`mount | grep "$USER/network/home type cifs" | cut -d' ' -f3`
-if [ "$mountpath" ]; then
-	mountname=`basename $mountpath`
-	create_entries "$mountname" "$mountpath" folder-home
-	mountpoints=true
-fi
-
-#Create icons to other mounted network shares
-for mountpath in `mount | grep "$USER/network/[^[:blank:]]* type cifs" | cut -d' ' -f3 | sort`; do
-	mountname=`basename $mountpath`
-	if [ $mountname != home ] && [ $mountname != netlogon ]; then
-		create_entries "$mountname" "$mountpath" folder-publicshare
-		mountpoints=true
-	fi
-done
-
-#Create folder icon if no mount points
-if ! $mountpoints; then
-	create_entries "File Manager" ~ folder-system
-fi
-
-#Copy in default icons
-[ -d /opt/karoshi/linuxclientsetup/desktop_icons/all ] && cp -rf /opt/karoshi/linuxclientsetup/desktop_icons/all/* ~/Desktop
-
-#Copy in extra icons for groups
-pri_group=`id -g -n`
-[ -d /opt/karoshi/linuxclientsetup/desktop_icons/$pri_group ] && cp -rf /opt/karoshi/linuxclientsetup/desktop_icons/$pri_group/* ~/Desktop
-
-##################
-#Miscellaneous things
-##################
-#Copy in admin_skel
-if [ $pri_group == itadmin -o $pri_group == tech ] && [ -d /opt/karoshi/linuxclientsetup/admin_skel ]; then
-	cp -rf /opt/karoshi/linuxclientsetup/admin_skel/.config ~
-fi
-
-#Set default directory for terminal emulator and file manager to network/home
-if [ -d ~/network/home ]; then
-	mkdir -p ~/.config/xfce4/xfconf/xfce-perchannel-xml
-	cp -n /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml ~/.config/xfce4/xfconf/xfce-perchannel-xml
-	sed -i 's@"exo-open --launch \(TerminalEmulator\|FileManager\)"@"exo-open --launch \1 --working-directory network/home"@' ~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml
 	
-	cp -n /usr/share/applications/exo-terminal-emulator.desktop ~/.local/share/applications
-	sed -i 's@^Exec=exo-open --launch TerminalEmulator$@Exec=exo-open --launch TerminalEmulator --working-directory network/home@' ~/.local/share/applications/exo-terminal-emulator.desktop
+	#Create rednotebook link
+	[[ ! -d ~/network/home/.rednotebook ]] && mkdir ~/network/home/.rednotebook
+	[[ ! -d ~/.rednotebook ]] && ln -s network/home/.rednotebook ~/.rednotebook
+	
+	#Disable Firefox crash reporter
+	export MOZ_CRASHREPORTER_DISABLE=1
+else
+	###############
+	#Local user
+	###############
+	create_entries "Home" ~ folder-home
 fi
 
-#Disable Firefox crash reporter
-export MOZ_CRASHREPORTER_DISABLE=1
-
-#Create rednotebook link
-if [ -d ~/network/home ]; then
-	[ ! -d ~/network/home/.rednotebook ] && mkdir ~/network/home/.rednotebook
-	[ ! -d ~/.rednotebook ] && ln -s network/home/.rednotebook ~/.rednotebook
+#Add file manager entry to / if administrator
+if $is_admin; then
+	create_entries "File System" / folder-system
 fi
 
 #Set permissions on icons
-chmod 0700 ~/Desktop/*.desktop
+find ~/Desktop -name '*.desktop' -print0 | xargs -0 chmod 0700
