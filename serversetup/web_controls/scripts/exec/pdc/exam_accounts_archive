@@ -112,7 +112,7 @@ then
 echo Archiving exam$COUNTER '<br>'
 cp -f -R /home/users/exams/exam$COUNTER /home/staffshare/examfiles/$ARCHIVEFOLDER/
 echo Clearing exam$COUNTER '<br>''<br>'
-rm -d -R -f /home/users/exams/exam$COUNTER
+rm -R -f /home/users/exams/exam$COUNTER
 mkdir /home/users/exams/exam$COUNTER
 chmod 0700 /home/users/exams/exam$COUNTER
 chown exam$COUNTER.exams /home/users/exams/exam$COUNTER
