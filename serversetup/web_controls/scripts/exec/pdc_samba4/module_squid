@@ -138,19 +138,6 @@ echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$HOSTNAME:$PDCIP:$AUTHTYPE:$PASSWORD: | /
 [ `echo $?` = 101 ] && exit 101
 fi
 
-#Modify kix
-KIXLINENUMBER=`grep -n proxyserver= /var/lib/samba/netlogon/newlogonform.kix | cut -d: -f1`
-[ $KIXLINENUMBER'null' != null ] && sed -i $KIXLINENUMBER'c''$proxyserver'=\"$SERVERNAME.internal:3128\" /var/lib/samba/netlogon/newlogonform.kix
-
-KIXLINENUMBER=`grep -n proxyoverride= /var/lib/samba/netlogon/newlogonform.kix | cut -d: -f1`
-[ $KIXLINENUMBER'null' != null ] && sed -i $KIXLINENUMBER'c''$proxyoverride'=\"$SERVERNAME," "$SERVERNAME.internal\" /var/lib/samba/netlogon/newlogonform.kix
-
-KIXLINENUMBER=`grep -n studenthomepage= /var/lib/samba/netlogon/newlogonform.kix | cut -d: -f1`
-[ $KIXLINENUMBER'null' != null ] && sed -i $KIXLINENUMBER'c''$studenthomepage'=\"http://$SERVERNAME.internal/index.html\" /var/lib/samba/netlogon/newlogonform.kix
-
-KIXLINENUMBER=`grep -n staffhomepage= /var/lib/samba/netlogon/newlogonform.kix | cut -d: -f1`
-[ $KIXLINENUMBER'null' != null ] && sed -i $KIXLINENUMBER'c''$staffhomepage'=\"http://$SERVERNAME.internal/index.html\" /var/lib/samba/netlogon/newlogonform.kix
-
 #Add role information
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
 echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/squid
