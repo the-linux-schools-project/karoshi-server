@@ -59,7 +59,9 @@ echo '<form action="/cgi-bin/admin/exam_accounts_change_passwords.cgi" method="p
       <tr>
         <td style="width: 180px;">
 '$PASSWORDMSG'</td>
-        <td><input name="_PASSWORD1_" style="width: 200px;" size="20" type="password"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$OPENINGMSG'</span></a></td></tr>
+        <td><input name="_PASSWORD1_" style="width: 200px;" size="20" type="password"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$OPENINGMSG'</span></a>
+</td></tr>
       <tr>
         <td>
 '$CONFIRMMSG'</td>
@@ -70,7 +72,7 @@ echo '<form action="/cgi-bin/admin/exam_accounts_change_passwords.cgi" method="p
 </td><td>
 <input tabindex= "1" name="_EXCEPTIONLIST_" style="width: 200px;" size="20" type="text">
 </td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php"><img class="images" alt="" src="/images/help/info.png"><span>'$EXCEPTIONHELP'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$EXCEPTIONHELP'</span></a>
 </td></tr>
     </tbody>
   </table>

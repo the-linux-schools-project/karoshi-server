@@ -55,8 +55,9 @@ echo '
 
 echo '
 <form action="/cgi-bin/admin/exam_accounts_archive.cgi" method="post"><div id="actionbox">
-<b>'$TITLE'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$ARCHIVEHELP1'<br><br>'$ARCHIVEHELP2'</span></a><br>
-  <br>
+<b>'$TITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Archive_Exam_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$ARCHIVEHELP1'<br><br>'$ARCHIVEHELP2'</span></a>
+<br>
+<br>
 '$OPENINGMSG'<br><br>
 
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
@@ -66,7 +67,7 @@ echo '
 </td><td>
 <input tabindex= "1" name="_EXCEPTIONLIST_" style="width: 200px;" size="20" type="text">
 </td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php"><img class="images" alt="" src="/images/help/info.png"><span>'$EXCEPTIONHELP'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Archive_Exam_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$EXCEPTIONHELP'</span></a>
 
 </td></tr></tbody></table>
 </div>

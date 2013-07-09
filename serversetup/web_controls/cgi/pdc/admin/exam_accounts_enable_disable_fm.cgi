@@ -51,7 +51,9 @@ echo '
 <body onLoad="start()">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/exam_accounts_enable_disable.cgi" method="post"><div id="actionbox"><b>'$TITLE'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$EXAMHELP1'</span></a><br>
+echo '<form action="/cgi-bin/admin/exam_accounts_enable_disable.cgi" method="post"><div id="actionbox"><b>'$TITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Enable/Disable_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$EXAMHELP1'</span></a>
+
+<br>
   <br>
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
@@ -70,7 +72,7 @@ echo '<form action="/cgi-bin/admin/exam_accounts_enable_disable.cgi" method="pos
 </td><td>
 <input tabindex= "1" name="_EXCEPTIONLIST_" style="width: 200px;" size="20" type="text">
 </td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php"><img class="images" alt="" src="/images/help/info.png"><span>'$EXCEPTIONHELP'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Enable/Disable_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$EXCEPTIONHELP'</span></a>
 </td></tr>
     </tbody>
   </table>
