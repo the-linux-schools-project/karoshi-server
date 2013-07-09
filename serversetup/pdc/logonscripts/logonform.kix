@@ -77,18 +77,6 @@ $lt11printersfile="\\CHANGETHISHOSTNAME\netlogon\laptops11.txt"
 $lt12printersfile="\\CHANGETHISHOSTNAME\netlogon\laptops12.txt"
 $userorg="CHANGETHISHOSTNAMEDOMAINNAME"
 $KixDir="C:\Kix"
-$studenthomepage="http://PORTAL/portal/portal.php"
-$staffhomepage="http://PORTAL/portal/portal.php"
-$proxyserver="PROXYSERVER.internal:3128"
-$proxyoverride="CHANGETHISREALM"
-$itadminwpaper="itadminwpaper.bmp"
-$officestaffwpaper="officestaffwpaper.bmp"
-$staffwpaper="staffwpaper.bmp"
-$studentwpaper="studentwpaper.bmp"
-$techwpaper="techwpaper.bmp"
-$guestwpaper="guestwpaper.bmp"
-$examswpaper="examswpaper.bmp"
-$backgroundext="bmp"
 
 ;****************************************************************************************************
 ;Set variables for user
@@ -133,15 +121,11 @@ DrawForms()
 
 ;FirstRunToday()
 
-ShowNews()
-
 SyncTime()
 
 DropAllShares()
 
 ConnectDrives()
-
-RedirectFolders()
 
 SetDTWallpaper()
 
@@ -156,10 +140,6 @@ While $ProgressBar.Value < 100
 Loop
 
 CheckIfLaptop()
-
-Sleep 1
-
-SetIExplorer()
 
 Sleep 1
 
@@ -423,27 +403,6 @@ Function UpdateClock()
 	EndIf
 EndFunction
 
-;***********************************************************************
-;**  Retrieve News File
-;***********************************************************************
-Function ShowNews()
-	$NewsLbl.ForeColor = Blue
-	Progress( "Retrieving News")
-	If Open(1, $fileLocation + "\news.txt") = 0
-		$NewsLine = ReadLine(1)
-		While @ERROR=0
-			$NewsTextBox.Text=$NewsTextBox.Text + $NewsLine + Chr(13) + Chr(10)
-			$NewsLine = ReadLine(1)
-		Loop
-		If Close (1) <> 0
-			DbgMessage("Error","News File could not be closed", @SError)
-		EndIf
-	Else
-		DbgMessage("Debug","No News")
-	EndIf
-		$NewsTick.Visible = 1
-		$NewsLbl.ForeColor = Black
-EndFunction
 
 ;***********************************************************************
 ;**  Syncronize the local system time with the logon server.  
@@ -625,20 +584,6 @@ EndFunction
 ;***********************************************************************
 Function ConnectGroupDrives()
 Call "$lserver\netlogon\windows_settings/drives/$pgroup.kix"
-EndFunction
-;***********************************************************************
-;**  Set Wallpaper
-;***********************************************************************
-Function SetDTWallpaper()
-	Progress( "Setting Wallpaper")
-
-$res = SetWallpaper("\\CHANGETHISHOSTNAME\applications\backgrounds\"+$pgroup+".bmp",1);
-	
-	If @ERROR<>0
-		DBGMessage ("Error","Setting Wallpaper")
-	Else
-		DbgMessage("Info","Setting Wallpaper")
-	EndIf
 EndFunction
 
 ;***********************************************************************
