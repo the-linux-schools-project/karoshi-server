@@ -120,7 +120,7 @@ echo '<form action="/cgi-bin/admin/group_membership2.cgi" method="post">'
 echo  '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody><tr><td style="width: 180px;"><b>'$GROUPNAMEMSG'</b></td><td><b>'$GROUPIDMSG'</b></td><td><b>'$STATUSMSG'</b></td></tr>'
 #Get database password
-GROUPLIST=( `samba-tool group list | sed 's/ /____/g' | sort`
+GROUPLIST=( `getent group | cut -d: -f1 | sed 's/ /____/g' | sort` )
 #GROUPLIST=( `ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" objectclass=posixGroup | grep ^cn: | cut -d' ' -f2-| sed 's/ /____/g' | sort` )
 GROUPCOUNT=${#GROUPLIST[@]}  
 
