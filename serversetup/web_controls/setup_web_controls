@@ -177,7 +177,6 @@ fi
 chmod 0600 -R /opt/karoshi/logs
 chmod u+X -R /opt/karoshi/logs
 chown -R root:root /opt/karoshi/logs
-chown apache_karoshi /opt/karoshi/web_controls/user_prefs
 #Copy in files
 cp -f -R /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/* /var/www/cgi-bin_karoshi/admin/
 if [ $SAMBAVER = samba4 ]
@@ -581,7 +580,7 @@ chmod -R 0700 /opt/karoshi/web_controls/exec
 chmod -R 0640 /opt/karoshi/web_controls/language
 chmod -R u+X,g+X /opt/karoshi/web_controls/language
 chown -R root:apache_karoshi /opt/karoshi/web_controls/language
-chmod -R 0640 /opt/karoshi/web_controls/user_prefs
+chmod -R 0660 /opt/karoshi/web_controls/user_prefs
 chmod -R u+X,g+X /opt/karoshi/web_controls/user_prefs
 chown -R root:apache_karoshi /opt/karoshi/web_controls/user_prefs
 #Change perms on variables folder
