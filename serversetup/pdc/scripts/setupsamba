@@ -494,7 +494,7 @@ COUNTER=$STARTYEAR
 while [ $COUNTER -le $ENDYEAR ]
 do
 NAME="yr$COUNTER"
-DESC="yr$COUNTER"
+DESC="Year $COUNTER"
 LDAPPATH="OU=yr$COUNTER,OU=students,OU=People,$LDAPBASE"
 add_organisational_unit
 let COUNTER=$COUNTER+1
