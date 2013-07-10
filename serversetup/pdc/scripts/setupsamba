@@ -1220,8 +1220,8 @@ setfacl -Rm u::rwx,g::---,o::---,g:staff:rwx,d:u::rwx,d:g::---,d:o::---,d:g:staf
 setfacl -Rm u::rwx,g::---,o::---,g:officestaff:rwx,d:u::rwx,d:g::---,d:o::---,d:g:officestaff:rwx /home/officeshare
 setfacl -Rm u::rwx,g::r-x,o::r-x,g:staff:rwx,d:u::rwx,d:g::r-x,d:o::r-x,d:g:staff:rwx /home/subjects
 
-setfacl -x g:staff /home/staffshare
-setfacl -x g:staff /home/subjects
+setfacl -m g:staff:r-x,u::r-x /home/staffshare
+setfacl -m g:staff:r-x,u::r-x /home/subjects
 
 setfacl -bR /home/staffshare/smt
 setfacl -Rm u::rwx,g::---,o::---,g:smt:rwx,d:u::rwx,d:g::---,d:o::---,d:g:smt:rwx /home/staffshare/smt
