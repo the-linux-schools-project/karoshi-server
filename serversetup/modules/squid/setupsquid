@@ -206,6 +206,17 @@ sed -i 's/YOURSERVER.YOURDOMAIN/'$HOSTNAME.$REALM'/g' /etc/dansguardian/dansguar
 cd /etc/dansguardian/
 tar -xvzf /opt/karoshi/serversetup/modules/squid/dansguardian/blacklists_archive.tar.gz 1>/dev/null
 
+#########################
+#Scheduling loggging
+#########################
+cp -f /opt/karoshi/serversetup/modules/squid/scripts/internet_log_gen /opt/karoshi/"useful scripts"/
+cp -f /opt/karoshi/serversetup/modules/squid/scripts/archive_internet_logs /opt/karoshi/"useful scripts"/
+cp -f /opt/karoshi/serversetup/modules/squid/scripts/dgupdatefilterlist /opt/karoshi/"useful scripts"/
+cp -f /opt/karoshi/serversetup/modules/squid/scripts/internet_log_compress /opt/karoshi/"useful scripts"/
+cp -f /opt/karoshi/serversetup/modules/squid/scripts/activate_filter_changes /opt/karoshi/"useful scripts"/
+#Modify dgupdatefilterlist with pdc ip
+sed -i 's/127.0.0.1/'$PDCIP'/g' /opt/karoshi/"useful scripts"/dgupdatefilterlist
+
 #############################
 #Get staff list for filter 3
 #############################
@@ -217,17 +228,6 @@ echo '<br>'
 echo '<br>'
 /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_start
 echo '<br>'
-
-#########################
-#Scheduling loggging
-#########################
-cp -f /opt/karoshi/serversetup/modules/squid/scripts/internet_log_gen /opt/karoshi/"useful scripts"/
-cp -f /opt/karoshi/serversetup/modules/squid/scripts/archive_internet_logs /opt/karoshi/"useful scripts"/
-cp -f /opt/karoshi/serversetup/modules/squid/scripts/dgupdatefilterlist /opt/karoshi/"useful scripts"/
-cp -f /opt/karoshi/serversetup/modules/squid/scripts/internet_log_compress /opt/karoshi/"useful scripts"/
-cp -f /opt/karoshi/serversetup/modules/squid/scripts/activate_filter_changes /opt/karoshi/"useful scripts"/
-#Modify dgupdatefilterlist with pdc ip
-sed -i 's/127.0.0.1/'$PDCIP'/g' /opt/karoshi/"useful scripts"/dgupdatefilterlist
 
 [ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
 
