@@ -138,16 +138,16 @@ touch /opt/karoshi/server_network/group_information/optional_groups/$NEWPRIGROUP
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 source /opt/karoshi/server_network/domain_information/domain_name
 
-samba-tool group add $NEWPRIGROUP
-echo
+samba-tool group add --groupou="OU=Groups,OU=People" $NEWPRIGROUP
+
 GIDNUMBER=`getent group $NEWPRIGROUP | cut -d: -f3`
-echo -e "dn: OU=$NEWPRIGROUP,OU=People,$LDAPBASE
+echo -e "dn: CN=$NEWPRIGROUP,OU=Groups,OU=People,$LDAPBASE
 changetype: modify
 add: objectclass
 objectclass: posixgroup
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
 
-echo -e "dn: CN=$NEWPRIGROUP,CN=Users,$LDAPBASE
+echo -e "dn: CN=$NEWPRIGROUP,OU=Groups,OU=People,$LDAPBASE
 changetype: modify
 add: gidnumber
 gidnumber: $GIDNUMBER
@@ -155,30 +155,35 @@ gidnumber: $GIDNUMBER
 
 
 #Create a subcontainer for users of the group
+THISYEAR=`date +%Y`
+DAY=`date +%d`
+MONTH=`date +%m`
 
+hour=`date +%H`
+minutes=`date +%M`
+seconds=`date +%S`
+CREATETIME=$THISYEAR$MONTH$DAY$hour$minutes$seconds.0Z
 
 NAME="$NEWPRIGROUP"
 DESC="$NEWPRIGROUP"
-LDAPPATH="CN=$NEWPRIGROUP,CN=$CATEGORY,CN=Users,$LDAPBASE"
+LDAPPATH="OU=$NEWPRIGROUP,OU=$CATEGORY,OU=People,$LDAPBASE"
 
 echo -e "version: 1
 
 # Entry 1: $LDAPPATH
 dn: $LDAPPATH
-cn: $NAME
+ou: $NAME
 description: $DESC
 distinguishedname: $LDAPPATH
 instancetype: 4
 name: $NAME
-objectcategory: CN=Container,CN=Schema,CN=Configuration,$LDAPBASE
+objectcategory: CN=Organizational-Unit,CN=Schema,CN=Configuration,$LDAPBASE
 objectclass: top
-objectclass: container
-showinadvancedviewonly: FALSE
-systemflags: -1946157056
+objectclass: organizationalUnit
 usnchanged: 3372
 usncreated: 3371
-whenchanged: 20121120112708.0Z
-whencreated: 20121120112708.0Z" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
+whenchanged: $CREATETIME
+whencreated: $CREATETIME" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
 
 ##########################
 #Copy profile and background
@@ -190,7 +195,13 @@ cp -f -R /home/applications/profiles/$PROFILE /home/applications/profiles/$NEWPR
 chmod 0644 /home/applications/profiles/$NEWPRIGROUP
 chmod u+X,g+X,o+X /home/applications/profiles/$NEWPRIGROUP
 fi
-[ -f /home/applications/backgrounds/$PROFILE.bmp ] && cp -f /home/applications/backgrounds/$PROFILE.bmp /home/applications/backgrounds/$NEWPRIGROUP.bmp
+
+if [ -d /home/applications/profiles/$NEWPRIGROUP ] && [ ! -L /home/applications/profiles/$NEWPRIGROUP ] && [ ! -L /home/applications/profiles/$NEWPRIGROUP.V2 ]
+then
+ln -s /home/applications/profiles/$NEWPRIGROUP  /home/applications/profiles/$NEWPRIGROUP.V2
+fi
+
+[ -f /home/applications/backgrounds/$NEWPRIGROUP.bmp ] && cp -f /home/applications/backgrounds/$NEWPRIGROUP.bmp /home/applications/backgrounds/$NEWPRIGROUP.bmp
 
 ##########################
 #Create data files
@@ -199,7 +210,7 @@ fi
 [ -e /var/lib/samba/netlogon/windows_settings/security/$PROFILE.kix ] && cp -f /var/lib/samba/netlogon/windows_settings/security/$PROFILE.kix /var/lib/samba/netlogon/windows_settings/security/$NEWPRIGROUP.kix
 [ `grep -c $NEWPRIGROUP /var/lib/samba/netlogon/groups.txt` = 0 ] && echo $NEWPRIGROUP,$HOMESERVER >> /var/lib/samba/netlogon/groups.txt
 echo SERVER=$HOMESERVER > /opt/karoshi/server_network/group_information/$NEWPRIGROUP
-echo HOMEPATH=/home/users/$CATEGORY/$PRIGROUP >> /opt/karoshi/server_network/group_information/$NEWPRIGROUP
+echo HOMEPATH=/home/users/$CATEGORY/$NEWPRIGROUP  >> /opt/karoshi/server_network/group_information/$NEWPRIGROUP
 echo SUBUNIT=$CATEGORY >> /opt/karoshi/server_network/group_information/$NEWPRIGROUP
 echo SECONDARYGROUP=$SECGROUP >> /opt/karoshi/server_network/group_information/$NEWPRIGROUP
 echo YEARSUFFIX=$YEARSUFFIX >> /opt/karoshi/server_network/group_information/$NEWPRIGROUP
