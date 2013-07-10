@@ -1,18 +1,21 @@
 #!/bin/bash
 #serverselection
 #Copyright (C) 2005 The karoshi Team
-#This program is free software; you can redistribute it and/or
-#modify it under the terms of the GNU General Public License
-#as published by the Free Software Foundation; either version 2
-#of the License, or (at your option) any later version.
 #
-#This program is distributed WITHOUT ANY WARRANTY; without even the implied warranty of
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
 #MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
+#GNU Affero General Public License for more details.
 #
-#You should have received a copy of the GNU General Public License
-#along with this program; if not, write to the Free Software
-#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
 #
 #The Karoshi Team can be contacted at: 
 #mpsharrad@karoshi.org.uk
@@ -53,7 +56,7 @@ fi
 ############################
 #View the full agreement
 ############################
-yad --title "$TITLE $VERSION" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --text "\n$LICENCECONFIRM\n\n\n" --text-info --show-uri --geometry=650x700 --name="notes" --filename="/opt/karoshi/serversetup/GPLv2.0" --title="Confirm Licence" --generic --button="Disagree:1" --button="Agree:0"
+yad --title "$TITLE $VERSION" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --text "\n$LICENCECONFIRM\n\n\n" --text-info --show-uri --geometry=650x700 --name="notes" --filename="/opt/karoshi/serversetup/AGPLv3" --title="Confirm Licence" --generic --button="Disagree:1" --button="Agree:0"
 STATUS=`echo $?`
 [ $STATUS = 0 ] && LICENCE=yes
 [ $STATUS = 1 ] && LICENCE=no

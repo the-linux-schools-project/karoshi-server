@@ -1,18 +1,21 @@
 #!/bin/bash
 #Copyright (C) 2007  The karoshi Team
-#This program is free software; you can redistribute it and/or
-#modify it under the terms of the GNU General Public License
-#as published by the Free Software Foundation; either version 2
-#of the License, or (at your option) any later version.
+
+#This file is part of Karoshi Server.
 #
-#This program is distributed in the hope that it will be useful,
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
 #but WITHOUT ANY WARRANTY; without even the implied warranty of
 #MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
+#GNU Affero General Public License for more details.
 #
-#You should have received a copy of the GNU General Public License
-#along with this program; if not, write to the Free Software
-#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
 #
 #The Karoshi Team can be contacted at: 
 #mpsharrad@karoshi.org.uk
@@ -188,7 +191,7 @@ echo `date`: ban_user_account - $USERNAME disabled by $REMOTE_USER from $REMOTE_
 touch /opt/karoshi/logs/banned_user_permanent/$USERNAME
 [ -f /opt/karoshi/logs/banned_user_account_durations/$USERNAME ] && rm -f /opt/karoshi/logs/banned_user_account_durations/$USERNAME
 fi
-samba-tool disable $USERNAME 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool user disable $USERNAME 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 #Federated ldap servers
 if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
@@ -199,7 +202,7 @@ for FEDERATED_LDAP_SERVER in /opt/karoshi/server_network/federated_ldap_servers/
 do
 FEDERATED_LDAP_SERVER=`basename $FEDERATED_LDAP_SERVER`
 ssh -x $FEDERATED_LDAP_SERVER '
-samba-tool disable '$USERNAME'
+samba-tool user disable '$USERNAME'
 '
 done
 fi
