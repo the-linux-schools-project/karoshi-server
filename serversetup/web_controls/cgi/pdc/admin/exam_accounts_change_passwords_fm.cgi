@@ -59,18 +59,18 @@ echo '<form action="/cgi-bin/admin/exam_accounts_change_passwords.cgi" method="p
       <tr>
         <td style="width: 180px;">
 '$PASSWORDMSG'</td>
-        <td><input name="_PASSWORD1_" style="width: 200px;" size="20" type="password"></td><td>
+        <td><input tabindex= "1" name="_PASSWORD1_" style="width: 200px;" size="20" type="password"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$OPENINGMSG'</span></a>
 </td></tr>
       <tr>
         <td>
 '$CONFIRMMSG'</td>
-        <td><input name="_PASSWORD2_" style="width: 200px;" size="20" type="password"></td>
+        <td><input tabindex= "2" name="_PASSWORD2_" style="width: 200px;" size="20" type="password"></td>
       </tr>
 <tr><td style="width: 180px;">
 '$EXECPTIONMSG'
 </td><td>
-<input tabindex= "1" name="_EXCEPTIONLIST_" style="width: 200px;" size="20" type="text">
+<input tabindex= "3" name="_EXCEPTIONLIST_" style="width: 200px;" size="20" type="text">
 </td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$EXCEPTIONHELP'</span></a>
 </td></tr>
