@@ -37,7 +37,6 @@ if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
 TIMEOUT=86400
 fi
-EXISTINGACCOUNTS=`ls -1 /home/users/exams/ | wc -l`
 ############################
 #Show page
 ############################
