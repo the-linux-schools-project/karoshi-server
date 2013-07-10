@@ -347,6 +347,9 @@ if [ $APACHESTATUS = 0 ]
 then
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
 fi
+#Clear moodle cache
+sudo -u www-data php /var/www/html/moodle/admin/cli/purge_caches.php
+
 ###########################
 #Show completed message
 ###########################
