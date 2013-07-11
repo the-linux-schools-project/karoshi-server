@@ -8,9 +8,13 @@ do
 ADSERVER=`basename $ADSERVERS`
 echo Syncing $ADSERVER
 #Sync applications share
-rsync --timeout=30 --dirs --recursive --links --compress /home/applications root@$ADSERVER:/home/
+unison -owner -group -batch /home/applications ssh://$ADSERVER//home/applications
+#Sync subjects
+unison -owner -group -batch /home/subjects ssh://$ADSERVER//home/subjects
+#Sync staffshare
+unison -owner -group -batch /home/staffshare ssh://$ADSERVER//home/staffshare
 #Sync netlogon
-rsync --timeout=30 --dirs --recursive --links --compress /var/lib/samba/netlogon root@$ADSERVER:/var/lib/samba/
+unison -owner -group -batch /var/lib/samba/netlogon ssh://$ADSERVER//var/lib/samba/netlogon
 done
 fi
 fi
