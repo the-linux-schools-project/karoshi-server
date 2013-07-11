@@ -138,20 +138,20 @@ touch /opt/karoshi/server_network/group_information/optional_groups/$NEWPRIGROUP
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 source /opt/karoshi/server_network/domain_information/domain_name
 
-samba-tool group add --groupou="OU=Groups,OU=People" $NEWPRIGROUP
+samba-tool group add --groupou="OU=Groups,OU=People" $NEWPRIGROUP 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE 
 
 GIDNUMBER=`getent group $NEWPRIGROUP | cut -d: -f3`
 echo -e "dn: CN=$NEWPRIGROUP,OU=Groups,OU=People,$LDAPBASE
 changetype: modify
 add: objectclass
 objectclass: posixgroup
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE 
 
 echo -e "dn: CN=$NEWPRIGROUP,OU=Groups,OU=People,$LDAPBASE
 changetype: modify
 add: gidnumber
 gidnumber: $GIDNUMBER
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE 
 
 
 #Create a subcontainer for users of the group
@@ -183,7 +183,7 @@ objectclass: organizationalUnit
 usnchanged: 3372
 usncreated: 3371
 whenchanged: $CREATETIME
-whencreated: $CREATETIME" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
+whencreated: $CREATETIME" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE 
 
 ##########################
 #Copy profile and background
