@@ -718,15 +718,6 @@ mkdir /home/applications/backgrounds
 cp /opt/karoshi/serversetup/pdc/backgrounds/* /home/applications/backgrounds/
 cp /opt/karoshi/serversetup/all/backgrounds/* /home/applications/backgrounds/
 
-COUNTER=2003
-ENDYEAR=2080
-while [ $COUNTER -le $ENDYEAR ]
-do
-cp /home/applications/backgrounds/students.bmp /home/applications/backgrounds/yr$COUNTER.bmp
-let COUNTER=$COUNTER+1
-done
-fi
-
 #Extract windows GPOs
 unzip /opt/karoshi/serversetup/pdc/gpos/GPOs.zip -d /home/applications/
 
