@@ -281,6 +281,9 @@ fi
 [ -f /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/$SERVERNAME
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc
 
+#Sync applications and netlogon shares
+[ $AUTHTYPE = adc ] && /opt/karoshi/'"'useful scripts'"'/adc_sync
+
 #Authtypes adc rodc member users none
 if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ] 
 then
