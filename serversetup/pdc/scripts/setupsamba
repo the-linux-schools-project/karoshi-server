@@ -727,6 +727,9 @@ let COUNTER=$COUNTER+1
 done
 fi
 
+#Extract windows GPOs
+unzip /opt/karoshi/serversetup/pdc/gpos/GPOs.zip -d /home/applications/
+
 #News information for karoshi log in banner
 [ -d /home/applications/news ] || mkdir /home/applications/news
 if ! test -f /home/applications/news/news.txt
