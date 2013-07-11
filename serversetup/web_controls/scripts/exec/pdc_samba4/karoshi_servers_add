@@ -145,8 +145,6 @@ echo `date`: karoshi_servers_add - adding $SERVER $TCPIPNUMBER to the dns record
 samba-tool dns add 127.0.0.1 $REALM $SERVER A $TCPIPNUMBER --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
 
-
-
 ############################
 #Setup ssh connections
 ############################
@@ -191,15 +189,27 @@ fi
 /opt/karoshi/web_controls/exec/activate_ssh $SERVER $PASSWORD 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 #Check to see that ssh works and set root to only log in with keys
-ssh -x -o PasswordAuthentication=no $SERVER '
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+#Check to see that given servername matches actual servername
+[ '$SERVER' != $HOSTNAME ] && exit 102
 sed -i "s/PermitRootLogin Yes/PermitRootLogin without-password/g" /etc/ssh/sshd_config
 [ ! -d /etc/ssl/root-ca ] && mkdir -m 0700 /etc/ssl/root-ca
 mv /etc/ssl/openssl.cnf /etc/ssl/openssl.cnf.'$$'
 cp -f /opt/karoshi/serversetup/distro/ubuntu/all/configfiles/openssl.cnf /etc/ssl/
 ' 1>/dev/null 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 SSHRESULT=`echo $?`
-if [ $SSHRESULT = 0 ]
+if [ $SSHRESULT = 102 ]
 then
+#Server name does not match
+echo "<li>$SERVER - this name does not match the hostname of the server you are connecting to</li>"
+echo `date`: karoshi_servers_add - $SERVER name mismatch with remote server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+sleep 3
+#Remove entry from dns
+samba-tool dns delete 127.0.0.1 $REALM $SERVER A $TCPIPNUMBER --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+[ $SSHRESULT != 0 ] && exit 101
 
 #Copy in boot controls
 scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services $SERVER:/opt/karoshi/serversetup/distro/ubuntu/scripts/
@@ -272,14 +282,13 @@ mkdir -p /opt/karoshi/server_network/servers/$SERVER
 echo $NO_ROLEMSG > /opt/karoshi/server_network/servers/$SERVER/no_role
 fi
 fi
-exit
-fi
 
 #Add in reverse lookup
-
+[ -z $TCPIPNUMBER ] && TCPIPNUMBER=`net lookup $SERVER`
 SUBNET=`ssh $SERVER '
 grep "netmask " /etc/network/interfaces | sed -n 1,1p | cut -d" " -f2
 '`
+echo /opt/karoshi/serversetup/pdc/"useful scripts"/reverse-dns add $TCPIPNUMBER $SUBNET $SERVER.$REALM"<br>"
 /opt/karoshi/serversetup/pdc/"useful scripts"/reverse-dns add $TCPIPNUMBER $SUBNET $SERVER.$REALM
 
 #Add in mac address entry for static arp table
@@ -293,4 +302,4 @@ echo $MAC_ADDRESS $TCPIPNUMBER > /opt/karoshi/server_network/mac_addresses/$SERV
 #Create static_arps file
 cat /opt/karoshi/server_network/mac_addresses/* > /var/lib/samba/netlogon/domain_information/static_arps
 
-exit 101
+exit
