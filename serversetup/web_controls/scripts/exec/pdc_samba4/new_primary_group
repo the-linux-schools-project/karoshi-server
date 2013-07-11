@@ -215,5 +215,8 @@ echo SUBUNIT=$CATEGORY >> /opt/karoshi/server_network/group_information/$NEWPRIG
 echo SECONDARYGROUP=$SECGROUP >> /opt/karoshi/server_network/group_information/$NEWPRIGROUP
 echo YEARSUFFIX=$YEARSUFFIX >> /opt/karoshi/server_network/group_information/$NEWPRIGROUP
 
+#Recreate pam mount for the linux clients
+/opt/karoshi/"useful scripts"/generate_pam_mount
+
 exit
 
