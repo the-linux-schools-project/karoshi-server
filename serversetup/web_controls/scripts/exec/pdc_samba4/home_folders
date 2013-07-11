@@ -150,41 +150,8 @@ rm -f /var/lib/samba/netlogon/groups.txt
 mv /var/lib/samba/netlogon/groups.txt.$$ /var/lib/samba/netlogon/groups.txt
 echo >> /var/lib/samba/netlogon/groups.txt
 
-###########################
-#Create /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml
-###########################
-
-#Create header
-[ ! -d /var/lib/samba/netlogon/linuxclient ] && mkdir -p /var/lib/samba/netlogon/linuxclient
-cat /opt/karoshi/serversetup/pdc/linuxclient/pam_mount/pam_mount_header_xml > /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml
-#Add in drive mount options
-function get_pri_group_number {
-PRIGROUPNUM=`getent group $PRI_GROUP | cut -d: -f3`
-let PRIGROUPNUM=$PRIGROUPNUM+10000
-}
-
-echo '<volume options="uid=%(USER),dir_mode=0700" user="*" mountpoint="~/network/subjects" path="subjects" server="'$HOSTNAME'.internal" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml
-PRI_GROUP=itadmin
-get_pri_group_number
-echo '<volume options="uid=%(USER),dir_mode=0700" mountpoint="~/network/staffshare" path="staffshare" server="'$HOSTNAME'.internal" gid="'$PRIGROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml
-echo '<volume options="uid=%(USER),dir_mode=0700" mountpoint="~/network/itadmin" path="itadmin" server="'$HOSTNAME'.internal" gid="'$PRIGROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml
-PRI_GROUP=staff
-get_pri_group_number
-echo '<volume options="uid=%(USER),dir_mode=0700" mountpoint="~/network/staffshare" path="staffshare" server="'$HOSTNAME'.internal" gid="'$PRIGROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml
-PRI_GROUP=officestaff
-get_pri_group_number
-echo '<volume options="uid=%(USER),dir_mode=0700" mountpoint="~/network/staffshare" path="staffshare" server="'$HOSTNAME'.internal" gid="'$PRIGROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml
-echo '<volume options="uid=%(USER),dir_mode=0700" mountpoint="~/network/officeshare" path="officeshare" server="'$HOSTNAME'.internal" gid="'$PRIGROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml
-for PRI_GROUPS in /opt/karoshi/server_network/group_information/*
-do
-PRI_GROUP=`basename $PRI_GROUPS`
-source /opt/karoshi/server_network/group_information/$PRI_GROUP
-#Get primary group number and add 10000 for winbind clients
-get_pri_group_number
-
-echo '<volume options="uid=%(USER),dir_mode=0700" mountpoint="~/network/home" path="%(USER)" server="'$SERVER'.internal" gid="'$PRIGROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml
-done
-echo -e '\n</pam_mount>' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml
+#Create pam_mount.conf.xml
+/opt/karoshi/serversetup/pdc/"useful scripts"/generate_pam_mount
 
 function set_perms {
 if [ -f /opt/karoshi/server_network/group_information/$PRIGROUP ]
