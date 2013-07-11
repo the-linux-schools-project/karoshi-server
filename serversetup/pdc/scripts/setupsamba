@@ -433,6 +433,16 @@ whenchanged: $CREATETIME
 whencreated: $CREATETIME" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
 }
 
+function creategpos {
+#Create GPO
+GPOINFO=`samba-tool gpo create ''$DESC' Group Policy' --username=Administrator --password=$LDAPPASS`
+echo $GPOINFO
+GPOREF=`echo $GPOINFO | cut -d"{" -f2 | sed 's/}//g'`
+echo $GPOREF
+#Link GPO
+samba-tool gpo setlink \'$LDAPPATH\' \{$GPOREF\} --username=Administrator --password=$LDAPPASS
+}
+
 function add_organisational_units {
 
 #People subcontainer
@@ -440,48 +450,56 @@ NAME="People"
 DESC="People"
 LDAPPATH="OU=People,$LDAPBASE"
 add_organisational_unit
-
+creategpos
 #All subcontainers for People
 
 NAME="personnel"
 DESC="Personnel"
 LDAPPATH="OU=personnel,OU=People,$LDAPBASE"
 add_organisational_unit
+creategpos
 
 NAME="staff"
 DESC="Staff"
 LDAPPATH="OU=staff,OU=personnel,OU=People,$LDAPBASE"
 add_organisational_unit
+creategpos
 
 NAME="studentstaff"
 DESC="Student staff"
 LDAPPATH="OU=studentstaff,OU=personnel,OU=People,$LDAPBASE"
 add_organisational_unit
+creategpos
 
 NAME="officestaff"
 DESC="Office staff"
 LDAPPATH="OU=officestaff,OU=personnel,OU=People,$LDAPBASE"
 add_organisational_unit
+creategpos
 
 NAME="nonteachingstaff"
 DESC="Non teaching staff"
 LDAPPATH="OU=nonteachingstaff,OU=personnel,OU=People,$LDAPBASE"
 add_organisational_unit
+creategpos
 
 NAME="governors"
 DESC="Governors"
 LDAPPATH="OU=governors,OU=personnel,OU=People,$LDAPBASE"
 add_organisational_unit
+creategpos
 
 NAME="itadmin"
 DESC="Itadmin users"
 LDAPPATH="OU=itadmin,OU=personnel,OU=People,$LDAPBASE"
 add_organisational_unit
+creategpos
 
 NAME="tech"
 DESC="Technician users"
 LDAPPATH="OU=tech,OU=personnel,OU=People,$LDAPBASE"
 add_organisational_unit
+creategpos
 
 #All student sub containers
 
@@ -489,6 +507,7 @@ NAME="students"
 DESC="Student accounts"
 LDAPPATH="OU=students,OU=People,$LDAPBASE"
 add_organisational_unit
+creategpos
 
 COUNTER=$STARTYEAR
 while [ $COUNTER -le $ENDYEAR ]
@@ -497,6 +516,7 @@ NAME="yr$COUNTER"
 DESC="Year $COUNTER"
 LDAPPATH="OU=yr$COUNTER,OU=students,OU=People,$LDAPBASE"
 add_organisational_unit
+creategpos
 let COUNTER=$COUNTER+1
 done
 
@@ -505,16 +525,19 @@ NAME="other"
 DESC="Other users"
 LDAPPATH="OU=other,OU=People,$LDAPBASE"
 add_organisational_unit
+creategpos
 
 NAME="exams"
 DESC="Exam users"
 LDAPPATH="OU=exams,OU=other,OU=People,$LDAPBASE"
 add_organisational_unit
+creategpos
 
 NAME="guestusers"
 DESC="Guest users"
 LDAPPATH="OU=guestusers,OU=other,OU=People,$LDAPBASE"
 add_organisational_unit
+creategpos
 
 NAME="karoshi"
 DESC="Karoshi user"
@@ -529,11 +552,6 @@ add_organisational_unit
 NAME="Groups"
 DESC="Groups"
 LDAPPATH="OU=Groups,OU=People,$LDAPBASE"
-add_organisational_unit
-
-NAME="Distributionlists"
-DESC="Distribution Lists"
-LDAPPATH="OU=Distributionlists,OU=People,$LDAPBASE"
 add_organisational_unit
 }
 
@@ -1234,6 +1252,7 @@ add_organisational_units
 #nslcd-user-accounts - not needed using anonymous bind instead
 echo "N.A.:127.0.0.1:N.A.:$HOSTNAME:users:internal:" | /opt/karoshi/serversetup/modules/authentication/configure_authentication
 makefoldersandgroups
+creategpos
 setfolderpermissions
 make_default_users
 make_profiles
