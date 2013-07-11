@@ -46,9 +46,12 @@ echo '<volume options="'$OPTIONS',dir_mode=0700" mountpoint="~/network/officesha
 for PRI_GROUPS in /opt/karoshi/server_network/group_information/*
 do
 PRI_GROUP=`basename $PRI_GROUPS`
+if [ $PRI_GROUP != optional_groups ]
+then
 source /opt/karoshi/server_network/group_information/$PRI_GROUP
 get_pri_group_number
 echo '<volume options="'$OPTIONS',dir_mode=0700" mountpoint="~/network/home" path="%(USER)" server="'$SERVER.$REALM'" gid="'$PRIGROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/$FILENAME
+fi
 done
 echo -e '\n</pam_mount>' >> /var/lib/samba/netlogon/linuxclient/$FILENAME
 }
