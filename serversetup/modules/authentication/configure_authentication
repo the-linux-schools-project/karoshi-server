@@ -424,10 +424,10 @@ echo  "dns_lookup_realm = false" >> /etc/krb5.conf
 echo  "dns_lookup_kdc = true" >> /etc/krb5.conf
 echo >> /etc/krb5.conf
 echo  "default_realm = '$REALMCAPS'" >> /etc/krb5.conf
-#echo "[realms]" >> /etc/krb5.conf
-#echo "'$REALMCAPS' = {" >> /etc/krb5.conf
-#echo "	kdc = '$KRBSERVER'.'$REALM'" >> /etc/krb5.conf
-#echo "}" >> /etc/krb5.conf
+echo "[realms]" >> /etc/krb5.conf
+echo "'$REALMCAPS' = {" >> /etc/krb5.conf
+echo "	kdc = '$KRBSERVER'.'$REALM'" >> /etc/krb5.conf
+echo "}" >> /etc/krb5.conf
 
 #Modify nsswitch 
 cp /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/configfiles/nsswitch.conf /etc/
