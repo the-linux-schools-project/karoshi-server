@@ -859,9 +859,7 @@ chown root.itadmin /var/lib/samba/netlogon/kix/reclassify.bat
 #Modify logon forms to match servername
 #############################
 sed -i "s/CHANGETHISDOMAINNAME/$SAMBADOMAIN/g" /var/lib/samba/netlogon/logonform.kix
-sed -i 's/CHANGETHISHOSTNAME/'$HOSTNAME'/g' /var/lib/samba/netlogon/logonform.kix
 sed -i 's/CHANGETHISREALM/'$REALM'/g' /var/lib/samba/netlogon/logonform.kix
-sed -i 's/CHANGETHISHOSTNAME/'$HOSTNAME'/g' /var/lib/samba/netlogon/logon.bat
 sed -i 's/CHANGETHISHOSTNAME/'$HOSTNAME'/g' /var/lib/samba/netlogon/kixtart_install.bat
 sed -i 's/CHANGETHISHOSTNAME/'$HOSTNAME'/g' /var/lib/samba/netlogon/getdll.bat
 sed -i 's/CHANGETHISHOSTNAME/'$HOSTNAME'/g' /var/lib/samba/netlogon/kixforms_upgrade.bat
