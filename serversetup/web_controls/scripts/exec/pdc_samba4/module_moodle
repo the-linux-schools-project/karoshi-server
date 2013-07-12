@@ -260,7 +260,7 @@ check_already_installed
 apply_ssl_certificate
 add_dns_entry
 modify_moodle.sql
-check_ports
+#check_ports
 #if not transferring an existing setup then install moodle
 install_moodle
 restore_moodle.sql
