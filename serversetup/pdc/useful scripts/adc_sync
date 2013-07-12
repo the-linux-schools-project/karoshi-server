@@ -13,6 +13,9 @@ unison -owner -group -batch /home/applications ssh://$ADSERVER//home/application
 unison -owner -group -batch /home/subjects ssh://$ADSERVER//home/subjects
 #Sync staffshare
 unison -owner -group -batch /home/staffshare ssh://$ADSERVER//home/staffshare
+#Sync users home areas
+unison -owner -group -batch /home/users/ ssh://$ADSERVER//home/users
+
 #Sync netlogon
 unison -owner -group -batch /var/lib/samba/netlogon ssh://$ADSERVER//var/lib/samba/netlogon
 done
