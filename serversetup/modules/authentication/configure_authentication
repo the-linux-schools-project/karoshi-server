@@ -428,7 +428,8 @@ if [ '$AUTHTYPE' = rodc ] || [ '$AUTHTYPE' = adc ]
 then
 echo uri ldapi://%2fvar%2flib%2fsamba%2fprivate%2fldapi/ >> /etc/nslcd.conf
 else
-echo uri ldap://'$KRBSERVER'.'$REALM' >> /etc/nslcd.conf
+#echo uri ldap://'$KRBSERVER'.'$REALM' >> /etc/nslcd.conf
+echo uri DNS >> /etc/nslcd.conf
 fi
 echo base OU=People,'$LDAPBASE' >> /etc/nslcd.conf
 #Not needed for anonymous bind
