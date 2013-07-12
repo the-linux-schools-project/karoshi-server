@@ -346,6 +346,8 @@ source /opt/karoshi/serversetup/variables/distro
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nslcd
 fi
 
+SERVERIP=`net lookup $SERVERNAME`
+
 if [ $SERVERNAME != $HOSTNAME ]
 then
 
@@ -404,7 +406,13 @@ if [ '$ZONE' = internal ]
 then
 #Setup resolv.conf
 echo domain '$REALM' > /etc/resolv.conf
+
+if [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ]
+then
+echo nameserver '$SERVERIP' >> /etc/resolv.conf
+else
 echo nameserver '$PDCIP' >> /etc/resolv.conf
+fi
 fi
 
 #Set up krb5
