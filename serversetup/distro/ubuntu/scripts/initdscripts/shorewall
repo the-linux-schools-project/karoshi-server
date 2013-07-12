@@ -84,6 +84,7 @@ shorewall_start () {
   echo -n "Starting \"Shorewall firewall\": "
   wait_for_pppd
   $SRWL $SRWL_OPTS start >> $INITLOG 2>&1 && echo "done." || echo_notdone
+  [ -x /opt/karoshi/"useful scripts"/configure_vpn_rules ] && /opt/karoshi/"useful scripts"/configure_vpn_rules
   return 0
 }
 
@@ -98,6 +99,7 @@ shorewall_stop () {
 shorewall_restart () {
   echo -n "Restarting \"Shorewall firewall\": "
   $SRWL $SRWL_OPTS restart >> $INITLOG 2>&1 && echo "done." || echo_notdone
+  [ -x /opt/karoshi/"useful scripts"/configure_vpn_rules ] && /opt/karoshi/"useful scripts"/configure_vpn_rules
   return 0
 }
 

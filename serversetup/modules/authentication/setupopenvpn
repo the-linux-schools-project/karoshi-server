@@ -328,12 +328,6 @@ sed -i "s/^nobind//g" /etc/openvpn/client.conf
 [ `grep -c "^remote '$MAINSERVERIP' 1194" /etc/openvpn/client.conf` = 0 ] && echo remote '$MAINSERVERIP' 1194 >> /etc/openvpn/client.conf
 
 #Add entries to /etc/hosts
-if [ `grep -c ^'$TUNNELIP_SERVER' /etc/hosts` = 0 ]
-then
-echo '$TUNNELIP_SERVER'"	"'$HOSTNAME'.'$REALM'"	"'$HOSTNAME'"	"'$REALM' >> /etc/hosts
-fi
-
-#Add entries to /etc/hosts
 if [ `grep -c '$SERVERNAME'.'$REALM' /etc/hosts` = 0 ]
 then
 echo '$SERVERNAMEIP'"	"'$SERVERNAME'.'$REALM'"	"'$SERVERNAME' >> /etc/hosts
@@ -350,7 +344,7 @@ sleep 2
 
 #Check that tunnel is up - this can take some time
 COUNTER=1
-while [ $COUNTER -lt 15 ]
+while [ $COUNTER -lt 20 ]
 do
 echo "<li>"'$SERVERNAME' - '$CHECKTUNNELMSG' - $COUNTER"</li><br>"
 [ `ifconfig | grep -c tun'$TUNVAL'` -gt 0 ] && break
@@ -370,6 +364,23 @@ done
 #[ `echo $?` != 0 ] && exit 106
 
 #sleep 2
+
+#Create firewall script
+
+echo -e "#!/bin/bash
+MY_REAL_IP='$SERVERNAMEIP'
+PDC_REAL_IP='$MAINSERVERIP'
+MY_VPN_IP='$TUNNELIP_CLIENT'
+PDC_VPN_IP='$TUNNELIP1'
+
+echo Adding Karoshi VPN rules...
+
+iptables -t nat -A OUTPUT -d $PDC_REAL_IP -j DNAT --to-destination $PDC_VPN_IP
+iptables -t nat -A POSTROUTING -d $PDC_VPN_IP -j SNAT --to-source $MY_VPN_IP
+iptables -t nat -A PREROUTING -s $PDC_VPN_IP -j DNAT --to-destination $MY_REAL_IP
+iptables -t nat -A INPUT -s $PDC_VPN_IP -j SNAT --to-source $PDC_REAL_IP" > /opt/karoshi/useful\ scripts/configure_vpn_rules
+
+chmod 0700 /opt/karoshi/useful\ scripts/configure_vpn_rules
 '
 
 }
