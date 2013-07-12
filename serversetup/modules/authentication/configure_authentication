@@ -402,17 +402,20 @@ echo REALMCAPS=\"'$REALMCAPS'\" >> /opt/karoshi/server_network/domain_informatio
 echo LDAPBASE=\"'$LDAPBASE'\" >> /opt/karoshi/server_network/domain_information/domain_name
 echo DOMAINSID=\"'$DOMAINSID'\" >> /opt/karoshi/server_network/domain_information/domain_name
 
-if [ '$ZONE' = internal ]
+if [ '$AUTHTYPE' ! = adc ] && [ '$AUTHTYPE' = !rodc ]
+then
+echo nameserver '$PDCIP' >> /etc/resolv.conf
+fi
+
+if [ '$ZONE' = internal ] || [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ]
 then
 #Setup resolv.conf
 echo domain '$REALM' > /etc/resolv.conf
+fi
 
-if [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ]
+if [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ] 
 then
 echo nameserver '$SERVERIP' >> /etc/resolv.conf
-else
-echo nameserver '$PDCIP' >> /etc/resolv.conf
-fi
 fi
 
 #Set up krb5
@@ -496,7 +499,7 @@ if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
 then
 PORTCHECK=53,88,123,135,137,138,139,389,445,464,636,1024,1100,3268
 TCPPORTS=53,88,123,135,137,138,139,389,445,464,636,1024:1100,3268
-UPDPORTS=53,88,123,135,137,138,139,389,445,464,636,1024:1100,3268
+UDPPORTS=53,88,123,135,137,138,139,389,445,464,636,1024:1100,3268
 fi
 
 #run functions Authtypes adc rodc member users none
