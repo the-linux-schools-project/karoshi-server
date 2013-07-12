@@ -175,7 +175,7 @@ echo -e "# Global parameters
 [global]
 	workgroup = '$SAMBADOMAIN'
 	realm = '$REALM'
-	netbios name = '$HOSTNAME'
+	netbios name = $HOSTNAME
 	server role = '$SERVERROLE'
 	dns forwarder = $DNSFORWARD
 	idmap_ldb:use rfc2307 = yes
