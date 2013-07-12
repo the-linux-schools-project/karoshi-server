@@ -330,14 +330,14 @@ sed -i "s/^nobind//g" /etc/openvpn/client.conf
 #Add entries to /etc/hosts
 if [ `grep -c ^'$TUNNELIP_SERVER' /etc/hosts` = 0 ]
 then
-echo '$TUNNELIP_SERVER'"	"'$HOSTNAME'"	"'$HOSTNAME'.'$REALM' >> /etc/hosts
+echo '$TUNNELIP_SERVER'"	"'$HOSTNAME'.'$REALM'"	"'$HOSTNAME' >> /etc/hosts
 echo '$TUNNELIP_SERVER'"	"'$REALM' >> /etc/hosts
 fi
 
 #Add entries to /etc/hosts
 if [ `grep -c '$SERVERNAME'.'$REALM' /etc/hosts` = 0 ]
 then
-echo '$SERVERNAMEIP'"	"'$SERVERNAME'"	"'$SERVERNAME'.'$REALM' >> /etc/hosts
+echo '$SERVERNAMEIP'"	"'$SERVERNAME'.'$REALM'"	"'$SERVERNAME' >> /etc/hosts
 fi
 
 #Restart openvpn client

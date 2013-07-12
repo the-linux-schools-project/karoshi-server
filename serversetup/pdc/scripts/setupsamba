@@ -339,6 +339,7 @@ samba-tool domain passwordsettings set --min-pwd-age=0
 samba-tool domain passwordsettings set --max-pwd-age=999
 
 #Add entry to /etc/hosts
+PDCIP=`hostname -I | cut -d" " -f1`
 echo $PDCIP"	"$HOSTNAME.$REALM"	"$HOSTNAME >> /etc/hosts
 #Restart samba
 echo Restarting samba4 >> /opt/karoshi/serversetup/install_log
@@ -350,7 +351,7 @@ check_ldap_port
 
 #Add reverse dns entry
 SUBNET=`grep "netmask " /etc/network/interfaces | sed -n 1,1p | cut -d" " -f2`
-PDCIP=`hostname -I | cut -d" " -f1`
+
 /opt/karoshi/serversetup/pdc/"useful scripts"/reverse-dns add $PDCIP $SUBNET $HOSTNAME.$REALM
 
 ###############################
