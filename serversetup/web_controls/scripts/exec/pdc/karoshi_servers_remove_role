@@ -744,7 +744,16 @@ fi
 if [ $MODULE = REMOVESERVER ]
 then
 echo "<li>"$SERVERNAME: $SERVERREMOVE"</li><br>"
+#Remove alias information
 
+if [ -f /opt/karoshi/server_network/aliases/$SERVERNAME ]
+then
+ALIAS=`sed -n 1,1p /opt/karoshi/server_network/aliases/$SERVERNAME`
+rm -f /opt/karoshi/server_network/aliases/$SERVERNAME
+[ -f /etc/ssl/apache/$ALIAS.key ] && rm -f /etc/ssl/apache/$ALIAS.key
+[ -f /etc/ssl/apache/$ALIAS.pem ] && rm -f /etc/ssl/apache/$ALIAS.pem
+[ -f /etc/ssl/apache/$ALIAS.req ] && rm -f /etc/ssl/apache/$ALIAS.req
+fi
 #Change group information
 for GROUPFILES in /opt/karoshi/server_network/group_information/*
 do
