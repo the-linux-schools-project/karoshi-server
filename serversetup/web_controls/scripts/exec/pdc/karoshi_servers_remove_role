@@ -744,8 +744,9 @@ fi
 if [ $MODULE = REMOVESERVER ]
 then
 echo "<li>"$SERVERNAME: $SERVERREMOVE"</li><br>"
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+source /opt/karoshi/server_network/domain_information/domain_name
 #Remove alias information
-
 if [ -f /opt/karoshi/server_network/aliases/$SERVERNAME ]
 then
 ALIAS=`sed -n 1,1p /opt/karoshi/server_network/aliases/$SERVERNAME`
@@ -753,7 +754,13 @@ rm -f /opt/karoshi/server_network/aliases/$SERVERNAME
 [ -f /etc/ssl/apache/$ALIAS.key ] && rm -f /etc/ssl/apache/$ALIAS.key
 [ -f /etc/ssl/apache/$ALIAS.pem ] && rm -f /etc/ssl/apache/$ALIAS.pem
 [ -f /etc/ssl/apache/$ALIAS.req ] && rm -f /etc/ssl/apache/$ALIAS.req
+#Delete alias from dns
+samba-tool dns delete 127.0.0.1 $REALM $ALIAS CNAME $SERVERNAME.$REALM --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
+#Remove entry from dns
+TCPIPNUMBER=`net lookup $SERVERNAME`
+samba-tool dns delete 127.0.0.1 $REALM $SERVERNAME A $TCPIPNUMBER --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
 #Change group information
 for GROUPFILES in /opt/karoshi/server_network/group_information/*
 do
