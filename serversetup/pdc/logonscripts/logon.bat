@@ -5,7 +5,7 @@ if not exist c:\kix\kix32.exe goto kixerror
 if not exist c:\kix\kixforms.upg goto kixformsupgrade
 
 :normal
-start c:\kix\wkix32 \\CHANGETHISHOSTNAME\netlogon\logonform.kix $pgroup=$1
+start c:\kix\wkix32 \\CHANGETHISHOSTNAME\netlogon\logonform.kix $pgroup=%1
 exit
 
 :kixerror
