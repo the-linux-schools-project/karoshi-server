@@ -436,12 +436,12 @@ whencreated: $CREATETIME" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" 
 
 function creategpos {
 #Create GPO
-GPOINFO=`samba-tool gpo create ''$DESC' Group Policy' --username=Administrator --password=$LDAPPASS`
-echo $GPOINFO
-GPOREF=`echo $GPOINFO | cut -d"{" -f2 | sed 's/}//g'`
-echo $GPOREF
+GPOINFO=`samba-tool gpo create ''"$DESC"' Group Policy' --username=Administrator --password=$LDAPPASS`
+echo gpoinfo: $GPOINFO
+GPOREF=`echo "$GPOINFO" | cut -d"{" -f2 | sed 's/^/{/g'`
 #Link GPO
-samba-tool gpo setlink \'$LDAPPATH\' \{$GPOREF\} --username=Administrator --password=$LDAPPASS
+echo gporef: $GPOREF
+samba-tool gpo setlink "$LDAPPATH" "$GPOREF" --username=Administrator --password=$LDAPPASS
 }
 
 function add_organisational_units {
@@ -1316,13 +1316,13 @@ touch /var/lib/samba/netlogon/linuxclient/versions.txt
 [ `grep -c ^karoshi-3.0 /var/lib/samba/netlogon/linuxclient/versions.txt` = 0 ] && echo karoshi-3.0 >> /var/lib/samba/netlogon/linuxclient/versions.txt
 
 #Point icons at the correct path
-sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/karoshi-3.0/desktop_icons/all/"Change Password.desktop"
-sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/karoshi-3.0/desktop_icons/itadmin/"Helpdesk.desktop"
-sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/karoshi-3.0/desktop_icons/itadmin/"karoshimanagement.desktop"
-sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/karoshi-3.0/desktop_icons/staff/"Helpdesk.desktop"
-sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/karoshi-3.0/desktop_icons/staff/"karoshimanagement.desktop"
-sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/karoshi-3.0/desktop_icons/officestaff/"Helpdesk.desktop"
-sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/karoshi-3.0/desktop_icons/officestaff/"karoshimanagement.desktop"
+sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/karoshi-3.0/desktop-icons/all/"Change Password.desktop"
+sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/karoshi-3.0/desktop-icons/itadmin/"Helpdesk.desktop"
+sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/karoshi-3.0/desktop-icons/itadmin/"karoshimanagement.desktop"
+sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/karoshi-3.0/desktop-icons/staff/"Helpdesk.desktop"
+sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/karoshi-3.0/desktop-icons/staff/"karoshimanagement.desktop"
+sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/karoshi-3.0/desktop-icons/officestaff/"Helpdesk.desktop"
+sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/karoshi-3.0/desktop-icons/officestaff/"karoshimanagement.desktop"
 
 #Create zone information
 [ ! -d /opt/karoshi/server_network/zones/internal/primary_domain_controller ] && mkdir -p /opt/karoshi/server_network/zones/internal/primary_domain_controller
