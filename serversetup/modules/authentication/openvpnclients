@@ -13,7 +13,20 @@ then
 echo $VPNCLIENT is online
 #Check if ssh tunnel is up
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $VPNCLIENT '
-[ `ifconfig | grep -c ^tun` = 0 ] && exit 105
+if [ `ifconfig | grep -c ^tun` = 0 ]
+then
+#Check that nat rules have been enabled
+exit 105
+else
+#Enable nat routing for vpn
+if [ `iptables -L -n | grep -c karoshi_vpn_rule` = 0 ]
+then
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+fi
+fi
+
 '
 TUNNELSTATUS=$?
 #Start up ssh tunnel
@@ -25,17 +38,23 @@ echo `date`: vpnclients - $VPNCLIENT starting vpn tunnel >> /opt/karoshi/logs/ka
 nmap -P0 -sU -p1194 -g1194 $VPNCLIENT 1>/dev/null 2>/dev/null
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $VPNCLIENT '
 source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/openvpn_stop 1>/dev/null
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/openvpn_start 1>/dev/null
 #Check tunnel is online
 sleep 1
 COUNTER=1
 while [ $COUNTER -lt 15 ]
 do
-[ `ifconfig | grep -c tun` -gt 0 ] && break
+if [ `ifconfig | grep -c tun` -gt 0 ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+break
+fi
 sleep 1
 let COUNTER=$COUNTER+1
 done
-exit 106
+exit
 '
 if [ $? = 0 ]
 then

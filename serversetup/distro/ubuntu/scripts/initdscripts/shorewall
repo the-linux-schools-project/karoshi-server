@@ -19,6 +19,9 @@ WAIT_FOR_IFUP=/usr/share/shorewall/wait4ifup
 # keep logs of the firewall (not recommended)
 INITLOG=/var/log/shorewall-init.log
 
+#Make sure lock folder exists
+[ ! -d /var/lock/subsys/shorewall ] && mkdir -p /var/lock/subsys/shorewall
+
 test -x $SRWL || exit 0
 test -x $WAIT_FOR_IFUP || exit 0
 test -n $INITLOG || {
