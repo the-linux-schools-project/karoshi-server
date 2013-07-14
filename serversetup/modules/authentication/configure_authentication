@@ -416,6 +416,10 @@ fi
 if [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ] 
 then
 echo nameserver '$SERVERIP' >> /etc/resolv.conf
+if [ `grep -c '$HOSTNAME'.'$REALM' /etc/hosts` = 0 ]
+then
+echo '$PDCIP'"	"'$HOSTNAME'.'$REALM'"	"'$HOSTNAME' >> /etc/hosts
+fi
 fi
 
 #Set up krb5

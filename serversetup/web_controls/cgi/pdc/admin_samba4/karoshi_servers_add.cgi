@@ -279,7 +279,7 @@ fi
 
 #Check to see that this is not the tcpip number of the main server.
 MAINSERVERIP=`net lookup $HOSTNAME`
-if [ $MAINSERVERIP = $TCPIPNUMBER ]
+if [ "$MAINSERVERIP" = "$TCPIPNUMBER" ]
 then
 MESSAGE=$ERRORMSG6
 show_status

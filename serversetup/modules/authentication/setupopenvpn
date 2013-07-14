@@ -371,16 +371,21 @@ echo -e "#!/bin/bash
 MY_REAL_IP='$SERVERNAMEIP'
 PDC_REAL_IP='$MAINSERVERIP'
 MY_VPN_IP='$TUNNELIP_CLIENT'
-PDC_VPN_IP='$TUNNELIP1'
+PDC_VPN_IP='$TUNNELIP_SERVER'
 
 echo Adding Karoshi VPN rules...
 
-iptables -t nat -A OUTPUT -d $PDC_REAL_IP -j DNAT --to-destination $PDC_VPN_IP
-iptables -t nat -A POSTROUTING -d $PDC_VPN_IP -j SNAT --to-source $MY_VPN_IP
-iptables -t nat -A PREROUTING -s $PDC_VPN_IP -j DNAT --to-destination $MY_REAL_IP
-iptables -t nat -A INPUT -s $PDC_VPN_IP -j SNAT --to-source $PDC_REAL_IP" > /opt/karoshi/useful\ scripts/configure_vpn_rules
+iptables -t nat -A OUTPUT -d \$PDC_REAL_IP -j DNAT --to-destination \$PDC_VPN_IP
+iptables -t nat -A POSTROUTING -d \$PDC_VPN_IP -j SNAT --to-source \$MY_VPN_IP
+iptables -t nat -A PREROUTING -s \$PDC_VPN_IP -j DNAT --to-destination \$MY_REAL_IP
+iptables -t nat -A INPUT -s \$PDC_VPN_IP -j SNAT --to-source \$PDC_REAL_IP" > /opt/karoshi/useful\ scripts/configure_vpn_rules
 
 chmod 0700 /opt/karoshi/useful\ scripts/configure_vpn_rules
+
+#Restart shorewall to apply rules
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+sleep 2
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 '
 
 }
