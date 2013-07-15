@@ -290,12 +290,7 @@ echo '			<li class="mid"><a href="/cgi-bin/admin/dhcp_fm.cgi" class="fly">'$DHCP
 					</ul>
 			</li>'
 fi
-echo '			<li class="mid"><a href="/cgi-bin/admin/dnsview_fm.cgi" class="fly">'$DNSCONTROLS'</a>
-					<ul>
-						<li><a href="/cgi-bin/admin/dnsadd_fm.cgi">'$DNSADDMSG'</a></li>
-						<li><a href="/cgi-bin/admin/dnsview_fm.cgi">'$DNSVIEWMSG'</a></li>
-					</ul>
-			</li>'
+echo '			<li><a href="/cgi-bin/admin/dnsview_fm.cgi">'$DNSVIEWMSG'</a></li>'
 if [ $BACKUPCTRL = yes ]
 then
 echo '			<li class="mid"><a href="/cgi-bin/admin/backup_enable_disable_fm.cgi" class="fly">'$BACKUPMSG'</a>
