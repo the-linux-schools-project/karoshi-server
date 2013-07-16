@@ -1,2 +1,2 @@
 C:
-C:\kix\WKIX32.EXE \\CHANGETHISHOSTNAME\netlogon\kix\WSsetup.kix
+C:\kix\WKIX32.EXE %LOGONSERVER%\netlogon\kix\WSsetup.kix

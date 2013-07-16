@@ -23,7 +23,8 @@
 ;Website: http://www.karoshi.org.uk 
 
 ;****************************************************************************************************
-;  Created on 27/07/07 By RTB
+; Created on 27/07/07 by RTB
+; Modified on 12/07/2013 for Samba4 support by RTB 
 ;
 ;****************************************************************************************************
 
@@ -40,7 +41,6 @@ Break On
 ;  Global Variables
 ;****************************************************************************************************
 Global $time
-Global $UpdateSoftware[0]
 Global $DebugMessages[0]
 
 ;****************************************************************************************************
@@ -52,30 +52,14 @@ $logonspeed="300" ; 100 - quick 300 - medium 600 - slow
 $dologging="OFF"
 $verfile = "c:\kix\sversion.ini"
 $scriptver="1.00"
-$lserver="\\CHANGETHISHOSTNAME"
-$printserver="CHANGETHISHOSTNAME"
+$lserver=@LSERVER
+$printserver="wilma"
 $simsdrive="s:"
 $homedrive="g:"
-$logginglocation="\\CHANGETHISHOSTNAME\logging"
-$fileLocation="\\CHANGETHISHOSTNAME\netlogon\news"
-$groupsfile="\\CHANGETHISHOSTNAME\netlogon\groups.txt"
-$printersfile="\\CHANGETHISHOSTNAME\netlogon\printers.txt"
-$ltprintersfile="\\CHANGETHISHOSTNAME\netlogon\laptops.txt"
-$ltstaprintersfile="\\CHANGETHISHOSTNAME\netlogon\laptops_staff.txt"
-$ltstuprintersfile="\\CHANGETHISHOSTNAME\netlogon\laptops_students.txt"
-$lt1printersfile="\\CHANGETHISHOSTNAME\netlogon\laptops1.txt"
-$lt2printersfile="\\CHANGETHISHOSTNAME\netlogon\laptops2.txt"
-$lt3printersfile="\\CHANGETHISHOSTNAME\netlogon\laptops3.txt"
-$lt4printersfile="\\CHANGETHISHOSTNAME\netlogon\laptops4.txt"
-$lt5printersfile="\\CHANGETHISHOSTNAME\netlogon\laptops5.txt"
-$lt6printersfile="\\CHANGETHISHOSTNAME\netlogon\laptops6.txt"
-$lt7printersfile="\\CHANGETHISHOSTNAME\netlogon\laptops7.txt"
-$lt8printersfile="\\CHANGETHISHOSTNAME\netlogon\laptops8.txt"
-$lt9printersfile="\\CHANGETHISHOSTNAME\netlogon\laptops9.txt"
-$lt10printersfile="\\CHANGETHISHOSTNAME\netlogon\laptops10.txt"
-$lt11printersfile="\\CHANGETHISHOSTNAME\netlogon\laptops11.txt"
-$lt12printersfile="\\CHANGETHISHOSTNAME\netlogon\laptops12.txt"
-$userorg="CHANGETHISHOSTNAMEDOMAINNAME"
+$logginglocation=$lserver + "\logging"
+$groupsfile=$lserver + "\netlogon\groups.txt"
+$printersfile=$lserver + "\netlogon\printers.txt"
+$userorg="wilmaDOMAINNAME"
 $KixDir="C:\Kix"
 
 ;****************************************************************************************************
@@ -99,8 +83,6 @@ $issimsws=ReadValue("HKEY_LOCAL_MACHINE\Software\karoshi","issimsws")
 $progressstep=3
 $sleeptime=0
 $numerrors=0
-$Updates=0
-$RunUpdates=$False
 $tmpdir=ExpandEnvironmentVars("%tmp%")
 $systemdrive=ExpandEnvironmentVars("%systemdrive%")
 $windir=ExpandEnvironmentVars("%windir%")
@@ -116,12 +98,6 @@ $DebugMessages[$NumMessages]="-BEGIN--------------------------"
 DBGMessage( "Info", "Logged On User: "+$username)
 
 DrawForms()
-
-;CheckScriptVer()
-
-;FirstRunToday()
-
-SyncTime()
 
 DropAllShares()
 
@@ -139,11 +115,11 @@ Loop
 
 CheckIfLaptop()
 
-Sleep 1
+WriteLogFile(0)
 
-;Installwpkg()
+Sleep 2
 
-;Updatewpkg()
+;MessageBox("Data: $pgroup", "KiXtart", 64)
 
 Exit 1
 
@@ -163,11 +139,11 @@ Function DrawForms()
 	$form.StartPosition = $system.formStartPosition.centerScreen
 	$Form.BackgroundImage = "bgnd.bmp" 
 	$Form.BackColor = #b8dbfc
-	$Form.Width = 500
-	$Form.Height = 380
+	$Form.Width = 495
+	$Form.Height = 225
 	; ClockTimer
-		$Timer = $Form.Timer($logonspeed,0,0,15,15)
-		$Timer.OnTimer = "UpdateClock()"
+	$Timer = $Form.Timer($logonspeed,0,0,15,15)
+	$Timer.OnTimer = "UpdateClock()"
 
 ; Logo
 	$Logo = $Form.Controls.Add("PictureBox")
@@ -176,6 +152,7 @@ Function DrawForms()
 	$Logo.Width=500
 	$Logo.Height=50
 	$Logo.Picture="logov513.bmp"
+
 
 ; Info Frame 
 	$InfoFrame = $Form.Controls.Add("GroupBox")
@@ -260,105 +237,53 @@ Function DrawForms()
 	$ActionFrame.Text = "Actions"
 	$ActionFrame.Bounds = 250,55,240,140
 
-	$NewsLbl = $ActionFrame.Controls.Add("Label")
-	$NewsLbl.Text = "Get News:"
-	$NewsLbl.Bounds = 20,15,100,15
-	$NewsTick = $ActionFrame.Controls.Add("PictureBox")
-	$NewsTick.Visible = 0
-	$NewsTick.BorderStyle = "None"
-	$NewsTick.Bounds = 120,15,15,15
-	$NewsTick.Picture="tick.bmp"
-	
-	$TimeLbl = $ActionFrame.Controls.Add("Label")
-	$TimeLbl.Text = "Sync Time:"
-	$TimeLbl.Bounds = 20,30,100,15
-	$TimeTick = $ActionFrame.Controls.Add("PictureBox")
-	$TimeTick.Visible = 0
-	$TimeTick.BorderStyle = "None"
-	$TimeTick.Bounds = 120,30,15,15
-	$TimeTick.Picture="tick.bmp"
-	
 	$DropSharesLbl = $ActionFrame.Controls.Add("Label")
 	$DropSharesLbl.Text = "Drop All Shares:"
-	$DropSharesLbl.Bounds = 20,45,100,15
-	$DropSharesTick = $ActionFrame.Controls.Add("PictureBox")
-	$DropSharesTick.Visible = 0
-	$DropSharesTick.BorderStyle = "None"
-	$DropSharesTick.Bounds = 120,45,15,15
-	$DropSharesTick.Picture="tick.bmp"
+	$DropSharesLbl.Bounds = 20,15,100,15
+
+	$DropSharesResLbl = $ActionFrame.Controls.Add("Label")
+	$DropSharesResLbl.Bounds = 120,15,100,15
+
 	
 	$ConnectDrivesLbl = $ActionFrame.Controls.Add("Label")
 	$ConnectDrivesLbl.Text = "Connect Drives:"
-	$ConnectDrivesLbl.Bounds = 20,60,100,15
-	$ConnectDrivesTick = $ActionFrame.Controls.Add("PictureBox")
-	$ConnectDrivesTick.Visible = 0
-	$ConnectDrivesTick.BorderStyle = "None"
-	$ConnectDrivesTick.Bounds = 120,60,15,15
-	$ConnectDrivesTick.Picture="tick.bmp"
-	
-	$RedirectLbl = $ActionFrame.Controls.Add("Label")
-	$RedirectLbl.Text = "Redirect Folders:"
-	$RedirectLbl.Bounds = 20,75,100,15
-	$RedirectTick = $ActionFrame.Controls.Add("PictureBox")
-	$RedirectTick.Visible = 0
-	$RedirectTick.BorderStyle = "None"
-	$RedirectTick.Bounds = 120,75,15,15
-	$RedirectTick.Picture="tick.bmp"
-	
-	$SecurityLbl = $ActionFrame.Controls.Add("Label")
-	$SecurityLbl.Text = "Desktop Settings:"
-	$SecurityLbl.Bounds = 20,90,100,15
-	$SecurityTick = $ActionFrame.Controls.Add("PictureBox")
-	$SecurityTick.Visible = 0
-	$SecurityTick.BorderStyle = "None"
-	$SecurityTick.Bounds = 120,90,15,15
-	$SecurityTick.Picture="tick.bmp"
+	$ConnectDrivesLbl.Bounds = 20,30,100,15
+
+	$ConnectDrivesResLbl = $ActionFrame.Controls.Add("Label")
+	$ConnectDrivesResLbl.Bounds = 120,30,100,15
+
 	
 	$PrintersLbl = $ActionFrame.Controls.Add("Label")
 	$PrintersLbl.Text = "Connect Printers:"
-	$PrintersLbl.Bounds = 20,105,100,15
-	$PrintersTick = $ActionFrame.Controls.Add("PictureBox")
-	$PrintersTick.Visible = 0
-	$PrintersTick.BorderStyle = "None"
-	$PrintersTick.Bounds = 120,105,15,15
-	$PrintersTick.Picture="tick.bmp"
+	$PrintersLbl.Bounds = 20,45,100,15
+
+	$PrintersResLbl = $ActionFrame.Controls.Add("Label")
+	$PrintersResLbl.Bounds = 120,45,100,15
+
 	
 	$WriteLogLbl = $ActionFrame.Controls.Add("Label")
 	$WriteLogLbl.Text = "Write Logfile:"
-	$WriteLogLbl.Bounds = 20,120,100,15
-	$WriteLogTick = $ActionFrame.Controls.Add("PictureBox")
-	$WriteLogTick.Visible = 0
-	$WriteLogTick.BorderStyle = "None"
-	$WriteLogTick.Bounds = 120,120,15,15
-	$WriteLogTick.Picture="tick.bmp"
+	$WriteLogLbl.Bounds = 20,60,100,15
+
+	$WriteLogResLbl = $ActionFrame.Controls.Add("Label")
+	$WriteLogResLbl.Bounds = 120,60,100,15
+
 	
-;News Frame
-	$NewsFrame = $Form.Controls.Add("GroupBox")
-	$NewsFrame.Text = "Information"
-	$NewsFrame.Bounds = 6,195,485,150
-
-	$NewsTextBox = $NewsFrame.Controls.Add("TextBox")
-	$NewsTextBox.BorderStyle = "None"
-	$NewsTextBox.Bounds = 5,15,475,130
-	$NewsTextBox.BackColor = $Form.BackColor
-	$NewsTextBox.MultiLine=1
-	$NewsTextBox.Enable=0
-	$NewsTextBox.Text=""
-	$NewsTextBox.Wordwrap=1
-
 ; Progress Bar
+	$ProgressTextBox = $Form.Controls.Add("TextBox")
+	$ProgressTextBox.Bounds = 6,198,240,20
+	$ProgressTextBox.BackColor = $Form.BackColor
+
 	$ProgressBar = $Form.Controls.Add("ProgressBar")
-	$ProgressBar.Bounds = 210,350,200,20
+	$ProgressBar.Bounds = 250,198,180,20
 	$ProgressBar.Style = 0
 	
-	$ProgressTextBox = $Form.Controls.Add("TextBox")
-	$ProgressTextBox.Bounds = 6,350,200,20
-	$ProgressTextBox.BackColor = $Form.BackColor
+
 	
 ; Clock
 	$CurrentTime=@Time
 	$Clock = $Form.Controls.Add("Textbox")
-	$Clock.Bounds = 435,350,55,20
+	$Clock.Bounds = 435,198,55,20
 	$Clock.Alignment=2
 	$Clock.Enabled=1
 	$Clock.BackColor=$Form.BackColor
@@ -402,78 +327,6 @@ Function UpdateClock()
 EndFunction
 
 
-;***********************************************************************
-;**  Syncronize the local system time with the logon server.  
-;**  The PDC server Xen syncronizes with NTP server 
-;***********************************************************************
-Function SyncTime()
-	$TimeLbl.ForeColor = Blue
-	DBGMessage ("Info", "Syncing Time:" )
-	Progress( "Syncing Time")
-;	If $NT_Mode="yes"
-		SetTime $lserver
-		If @ERROR<>0
-			DBGMessage ("Error", "- Error Finding Time Server : " + $lserver )
-		Else
-			DbgMessage("Info","- Synchronized time with : " + $lserver)
-		EndIf
-;	EndIf
-		$TimeTick.Visible = 1
-		$TimeLbl.ForeColor = Black
-EndFunction
-
-;***********************************************************************
-;** Check Script Version
-;***********************************************************************
-Function CheckScriptVer()
-	Progress( "Checking script version")
-	If Exist($verfile)
-		$rc = Open(1,$verfile)
-		$ver = ReadLine(1)
-		$rc = Close(1)
-		If $ver = $scriptver
-			DbgMessage("Info","Script version is current")
-		Else
-			UpdateSystem()
-		EndIf
-	Else
-		$rc = Open(1,$verfile,5)
-		$rc = WriteLine(1,$scriptver)
-		$rc = Close(1)
-		DbgMessage("Info","Script Version File Created")
-	EndIf
-EndFunction
-
-
-;***********************************************************************
-;** Update System
-;***********************************************************************
-Function UpdateSystem()
-	Progress( "Updating System")
-	Del $verfile /c
-	$rc = Open(1,$verfile,5)
-	$rc = WriteLine(1,$scriptver)
-	$rc = Close(1)
-	DbgMessage("Info","System Updated")
-EndFunction
-
-;***********************************************************************
-;**  First time the computer has run today?
-;***********************************************************************
-Function FirstRunToday()
-	Progress( "Checking if first run today")
-	If Exist($logginglocation + "\" + @Wksta + ".log")
-		$FileDate=Left(GetFileTime ($logginglocation + "\" + @Wksta + ".log"),10)
-		If $FileDate<>@Date
-			DbgMessage("Info","Computer First Run Today")
-		Else
-			; To be determined
-		EndIf
-	Else
-		DbgMessage("Info","Computer First Run Today")
-	EndIf
-EndFunction
-
 ;****************************************************************************************************
 ;  Drop all shares
 ;****************************************************************************************************
@@ -483,10 +336,15 @@ Function DropAllShares()
 	Use * /DELETE
 	If @ERROR<>0
 		DBGMessage ("Error","Dropping All Shares:")
+		$DropSharesResLbl.ForeColor = Red
+		$DropSharesResLbl.FontBold = 1
+		$DropSharesResLbl.Text = "FAILED"
 	Else
 		DbgMessage("Info","Dropping All Shares:")
+		$DropSharesResLbl.ForeColor = Green
+		$DropSharesResLbl.FontBold = 1
+		$DropSharesResLbl.Text = "OK"
 	EndIf
-		$DropSharesTick.Visible = 1
 		$DropSharesLbl.ForeColor = Black	
 EndFunction
 
@@ -499,7 +357,17 @@ Function ConnectDrives()
 	DbgMessage("Info","Connecting Drives:")
 	ConnectHomeDrive()
 	ConnectGroupDrives()
-	$ConnectDrivesTick.Visible = 1
+	If @ERROR<>0
+		DBGMessage ("Error","Connecting Drives:")
+		$ConnectDrivesResLbl.ForeColor = Red
+		$ConnectDrivesResLbl.FontBold = 1
+		$ConnectDrivesResLbl.Text = "FAILED"
+	Else
+		DbgMessage("Info","Connecting Drives:")
+		$ConnectDrivesResLbl.ForeColor = Green
+		$ConnectDrivesResLbl.FontBold = 1
+		$ConnectDrivesResLbl.Text = "OK"
+	EndIf
 	$ConnectDrivesLbl.ForeColor = Black	
 EndFunction
 
@@ -526,56 +394,6 @@ Function ConnectHomeDrive()
 
 EndFunction
 
-;****************************************************************************************************
-; Redirect Folders
-;****************************************************************************************************
-Function RedirectFolders()
-	$RedirectLbl.ForeColor = Blue
-	Progress( "Redirecting Folders")
-	
-	$mydocs=$homedrive + "\"
-	$fav=$homedrive + "\favourites"
-	$recent=$homedrive + "\appdata\recent"
-
-	If Exist("g:\appdata") = 0
-	MD g:\appdata
-	EndIf	
-
-	If Exist($recent) = 0
-	MD $recent
-	EndIf
-
-	If Exist($fav) = 0
-	MD $fav
-	EndIf
-
-
-	; Redirect My Documents to home drive folder
-	$key="HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders"
-	If (WriteValue($key,"Personal",$mydocs,"REG_SZ") <> 0)
-	DbgMessage("Error","Could not redirect My Documents")
-	Else
-	DbgMessage("Info","Redirected My Documents")
-	EndIf
-
-	; Redirect Favourites to home drive folder
-	$key="HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders"
-	If (WriteValue($key,"Favorites",$fav,"REG_SZ") <> 0)
-	DbgMessage("Error","Could not redirect Favourites")
-	Else
-	DbgMessage("Info","Redirected Favourites")
-	EndIf
-
-	; Redirect Recent Docs to home drive folder
-	$key="HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders"
-	If (WriteValue($key,"Recent",$recent,"REG_SZ") <> 0)
-	DbgMessage("Error","Could not redirect Recent Docs")
-	Else
-	DbgMessage("Info","Redirected Recent Docs")
-	EndIf
-	$RedirectTick.Visible = 1
-	$RedirectLbl.ForeColor = Black		
-EndFunction
 
 ;***********************************************************************
 ;**  Connect GroupShares to Drives Format: "Drive Letter:, \\Server\Sharename"
@@ -660,35 +478,48 @@ EndFunction
 ;***********************************************************************
 ;**  Write Log File
 ;***********************************************************************
-Function WriteLogFile()
-	; Display DebugMessage
-	$WriteLogLbl.ForeColor = Black
-	Progress( "Writing Logfile")
-	$LogFile=$logginglocation + "\" + @Wksta + ".log"
-	If Exist($LogFile)
-		If GetFileSize($LogFile) > 512 * 1024
-			Del($LogFile)
-		EndIf
-	EndIf
-	
-	$NumMessages=$NumMessages + 1
-	ReDim PRESERVE $DebugMessages[$NumMessages]
-	$DebugMessages[$NumMessages]="-END----------------------------"
-	
-	If Open(1, $LogFile,5) = 0
-		For $x=0 to $NumMessages
-			If WriteLine(1, $DebugMessages[$x] + @CRLF)<>0
-				DbgMessage("Error","DebugLine could not be written")
-			EndIf
-		Next
-		If Close(1)<>0
-			DbgMessage("Error","Log File could not be closed")
-		EndIf
+Function WriteLogFile($status)
+
+	If NOT $status
+		DBGMessage ("Error","Write Logfile:")
+		$WriteLogResLbl.ForeColor = Green
+		$WriteLogResLbl.FontBold = 1
+		$WriteLogResLbl.Text = "Disabled"
 	Else
-		DbgMessage("Debug","Log file could not be written")
+		DbgMessage("Info","Write Logfile:")
+		$WriteLogResLbl.ForeColor = Green
+		$WriteLogResLbl.FontBold = 1
+		$WriteLogResLbl.Text = "OK"
+	
+		; Display DebugMessage
+		$WriteLogLbl.ForeColor = Black
+		Progress( "Writing Logfile")
+		$LogFile=$logginglocation + "\" + @Wksta + ".log"
+		If Exist($LogFile)
+			If GetFileSize($LogFile) > 512 * 1024
+				Del($LogFile)
+			EndIf
+		EndIf
+	
+		$NumMessages=$NumMessages + 1
+		ReDim PRESERVE $DebugMessages[$NumMessages]
+		$DebugMessages[$NumMessages]="-END----------------------------"
+	
+		If Open(1, $LogFile,5) = 0
+			For $x=0 to $NumMessages
+				If WriteLine(1, $DebugMessages[$x] + @CRLF)<>0
+					DbgMessage("Error","DebugLine could not be written")
+				EndIf
+			Next
+			If Close(1)<>0
+				DbgMessage("Error","Log File could not be closed")
+			EndIf
+		Else
+			DbgMessage("Debug","Log file could not be written")
+		EndIf
+		$WriteLogLbl.ForeColor = Black
+
 	EndIf
-	$WriteLogTick.Visible = 1
-	$WriteLogLbl.ForeColor = Black
 EndFunction
 
 
@@ -726,6 +557,7 @@ Select
 		Else
 			DbgMessage("Error","Printers file not opened, error code: [" + @ERROR + "]")
 		EndIf
+
 	Case $location = "laptop_staff"
 		If Open(1,$ltstaprintersfile) = 0
 			; Skip comments
@@ -744,6 +576,7 @@ Select
 		Else
 			DbgMessage("Error","Printers file not opened, error code: [" + @ERROR + "]")
 		EndIf
+
 	Case $location = "laptop_student"
 		If Open(1,$ltstuprintersfile) = 0
 			; Skip comments
@@ -762,222 +595,7 @@ Select
 		Else
 			DbgMessage("Error","Printers file not opened, error code: [" + @ERROR + "]")
 		EndIf
-	Case $location = "laptops1"
-		If Open(1,$lt1printersfile) = 0
-			; Skip comments
-			While $startflag <> "--Start--"
-				$startflag = ReadLine(1)
-			Loop
-			; Read Data
-			$prndef = ReadLine(1)
-				While (@ERROR = 0)
-					If AddPrinterConnection ("\\$printserver\" + $prndef) <> 0
-						DbgMessage("Error","Printer " + $prndef + " not connected, error code: [" + @ERROR + "]")
-					EndIf
-					$prndef = ReadLine(1)
-				Loop
-			$rc = Close (1)
-		Else
-			DbgMessage("Error","Printers file not opened, error code: [" + @ERROR + "]")
-		EndIf
-	Case $location = "laptops2"
-		If Open(1,$lt2printersfile) = 0
-			; Skip comments
-			While $startflag <> "--Start--"
-				$startflag = ReadLine(1)
-			Loop
-			; Read Data
-			$prndef = ReadLine(1)
-				While (@ERROR = 0)
-					If AddPrinterConnection ("\\$printserver\" + $prndef) <> 0
-						DbgMessage("Error","Printer " + $prndef + " not connected, error code: [" + @ERROR + "]")
-					EndIf
-					$prndef = ReadLine(1)
-				Loop
-			$rc = Close (1)
-		Else
-			DbgMessage("Error","Printers file not opened, error code: [" + @ERROR + "]")
-		EndIf
-	Case $location = "laptops3"
-		If Open(1,$lt3printersfile) = 0
-			; Skip comments
-			While $startflag <> "--Start--"
-				$startflag = ReadLine(1)
-			Loop
-			; Read Data
-			$prndef = ReadLine(1)
-				While (@ERROR = 0)
-					If AddPrinterConnection ("\\$printserver\" + $prndef) <> 0
-						DbgMessage("Error","Printer " + $prndef + " not connected, error code: [" + @ERROR + "]")
-					EndIf
-					$prndef = ReadLine(1)
-				Loop
-			$rc = Close (1)
-		Else
-			DbgMessage("Error","Printers file not opened, error code: [" + @ERROR + "]")
-		EndIf
-	Case $location = "laptops4"
-		If Open(1,$lt4printersfile) = 0
-			; Skip comments
-			While $startflag <> "--Start--"
-				$startflag = ReadLine(1)
-			Loop
-			; Read Data
-			$prndef = ReadLine(1)
-				While (@ERROR = 0)
-					If AddPrinterConnection ("\\$printserver\" + $prndef) <> 0
-						DbgMessage("Error","Printer " + $prndef + " not connected, error code: [" + @ERROR + "]")
-					EndIf
-					$prndef = ReadLine(1)
-				Loop
-			$rc = Close (1)
-		Else
-			DbgMessage("Error","Printers file not opened, error code: [" + @ERROR + "]")
-		EndIf
-	Case $location = "laptops5"
-		If Open(1,$lt5printersfile) = 0
-			; Skip comments
-			While $startflag <> "--Start--"
-				$startflag = ReadLine(1)
-			Loop
-			; Read Data
-			$prndef = ReadLine(1)
-				While (@ERROR = 0)
-					If AddPrinterConnection ("\\$printserver\" + $prndef) <> 0
-						DbgMessage("Error","Printer " + $prndef + " not connected, error code: [" + @ERROR + "]")
-					EndIf
-					$prndef = ReadLine(1)
-				Loop
-			$rc = Close (1)
-		Else
-			DbgMessage("Error","Printers file not opened, error code: [" + @ERROR + "]")
-		EndIf
-	Case $location = "laptops6"
-		If Open(1,$lt6printersfile) = 0
-			; Skip comments
-			While $startflag <> "--Start--"
-				$startflag = ReadLine(1)
-			Loop
-			; Read Data
-			$prndef = ReadLine(1)
-				While (@ERROR = 0)
-					If AddPrinterConnection ("\\$printserver\" + $prndef) <> 0
-						DbgMessage("Error","Printer " + $prndef + " not connected, error code: [" + @ERROR + "]")
-					EndIf
-					$prndef = ReadLine(1)
-				Loop
-			$rc = Close (1)
-		Else
-			DbgMessage("Error","Printers file not opened, error code: [" + @ERROR + "]")
-		EndIf
-	Case $location = "laptops7"
-		If Open(1,$lt7printersfile) = 0
-			; Skip comments
-			While $startflag <> "--Start--"
-				$startflag = ReadLine(1)
-			Loop
-			; Read Data
-			$prndef = ReadLine(1)
-				While (@ERROR = 0)
-					If AddPrinterConnection ("\\$printserver\" + $prndef) <> 0
-						DbgMessage("Error","Printer " + $prndef + " not connected, error code: [" + @ERROR + "]")
-					EndIf
-					$prndef = ReadLine(1)
-				Loop
-			$rc = Close (1)
-		Else
-			DbgMessage("Error","Printers file not opened, error code: [" + @ERROR + "]")
-		EndIf
-	Case $location = "laptops8"
-		If Open(1,$lt8printersfile) = 0
-			; Skip comments
-			While $startflag <> "--Start--"
-				$startflag = ReadLine(1)
-			Loop
-			; Read Data
-			$prndef = ReadLine(1)
-				While (@ERROR = 0)
-					If AddPrinterConnection ("\\$printserver\" + $prndef) <> 0
-						DbgMessage("Error","Printer " + $prndef + " not connected, error code: [" + @ERROR + "]")
-					EndIf
-					$prndef = ReadLine(1)
-				Loop
-			$rc = Close (1)
-		Else
-			DbgMessage("Error","Printers file not opened, error code: [" + @ERROR + "]")
-		EndIf
-	Case $location = "laptops9"
-		If Open(1,$lt9printersfile) = 0
-			; Skip comments
-			While $startflag <> "--Start--"
-				$startflag = ReadLine(1)
-			Loop
-			; Read Data
-			$prndef = ReadLine(1)
-				While (@ERROR = 0)
-					If AddPrinterConnection ("\\$printserver\" + $prndef) <> 0
-						DbgMessage("Error","Printer " + $prndef + " not connected, error code: [" + @ERROR + "]")
-					EndIf
-					$prndef = ReadLine(1)
-				Loop
-			$rc = Close (1)
-		Else
-			DbgMessage("Error","Printers file not opened, error code: [" + @ERROR + "]")
-		EndIf
-	Case $location = "laptops10"
-		If Open(1,$lt10printersfile) = 0
-			; Skip comments
-			While $startflag <> "--Start--"
-				$startflag = ReadLine(1)
-			Loop
-			; Read Data
-			$prndef = ReadLine(1)
-				While (@ERROR = 0)
-					If AddPrinterConnection ("\\$printserver\" + $prndef) <> 0
-						DbgMessage("Error","Printer " + $prndef + " not connected, error code: [" + @ERROR + "]")
-					EndIf
-					$prndef = ReadLine(1)
-				Loop
-			$rc = Close (1)
-		Else
-			DbgMessage("Error","Printers file not opened, error code: [" + @ERROR + "]")
-		EndIf
-	Case $location = "laptops11"
-		If Open(1,$lt11printersfile) = 0
-			; Skip comments
-			While $startflag <> "--Start--"
-				$startflag = ReadLine(1)
-			Loop
-			; Read Data
-			$prndef = ReadLine(1)
-				While (@ERROR = 0)
-					If AddPrinterConnection ("\\$printserver\" + $prndef) <> 0
-						DbgMessage("Error","Printer " + $prndef + " not connected, error code: [" + @ERROR + "]")
-					EndIf
-					$prndef = ReadLine(1)
-				Loop
-			$rc = Close (1)
-		Else
-			DbgMessage("Error","Printers file not opened, error code: [" + @ERROR + "]")
-		EndIf
-	Case $location = "laptops12"
-		If Open(1,$lt12printersfile) = 0
-			; Skip comments
-			While $startflag <> "--Start--"
-				$startflag = ReadLine(1)
-			Loop
-			; Read Data
-			$prndef = ReadLine(1)
-				While (@ERROR = 0)
-					If AddPrinterConnection ("\\$printserver\" + $prndef) <> 0
-						DbgMessage("Error","Printer " + $prndef + " not connected, error code: [" + @ERROR + "]")
-					EndIf
-					$prndef = ReadLine(1)
-				Loop
-			$rc = Close (1)
-		Else
-			DbgMessage("Error","Printers file not opened, error code: [" + @ERROR + "]")
-		EndIf
+
 	Case 1
 		If Open(1,$printersfile) = 0
 			; Skip comments
@@ -1016,95 +634,21 @@ Select
 		EndIf
 EndSelect
 
-;Connect to Room 054 Printer on Sentinel
-;IF $location = "R054"
-;	IF ADDPRINTERCONNECTION ("\\sentinel\R054KONC") <> 0
-;	DbgMessage("Error","Printer R054KONC not connected, error code: [" + @ERROR + "]")
-;	ENDIF
-;	IF SETDEFAULTPRINTER("\\sentinel\R054KONC") <> 0
-;	DbgMessage("Error","Default Printer not set, error code: [" + @ERROR + "]")	
-;	ENDIF
-;ENDIF
 
-;Connect staff laptops to Room 119C Printer on Sentinel
-If $location = "laptop" Or $location = "laptops"
-	If AddPrinterConnection ("\\sentinel\R119CAFIM") <> 0
-	DbgMessage("Error","Printer R119CAFIM not connected, error code: [" + @ERROR + "]")
+	If @ERROR<>0
+		DBGMessage ("Error","Connecting Printers:")
+		$PrintersResLbl.ForeColor = Red
+		$PrintersResLbl.FontBold = 1
+		$PrintersResLbl.Text = "FAILED"
+	Else
+		DbgMessage("Info","Connecting Printers:")
+		$PrintersResLbl.ForeColor = Green
+		$PrintersResLbl.FontBold = 1
+		$PrintersResLbl.Text = "OK"
 	EndIf
-	If SetDefaultPrinter("\\sentinel\R119CAFIM") <> 0
-	DbgMessage("Error","Default Printer not set, error code: [" + @ERROR + "]")	
-	EndIf
-EndIf	
-	$PrintersTick.Visible = 1
 	$PrintersLbl.ForeColor = Black
 EndFunction
 
-
-;****************************************************************************************************
-; Internet Explorer Proxy and Homepage
-;****************************************************************************************************
-Function SetIExplorer()
-
-	$keyhp="HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\Main"
-	$keyies="HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings"
-
-	Select
-		Case $pgroup = "exams"
-			$ret=WriteValue($keyies,"ProxyServer",$proxyserver,"REG_SZ")
-			$ret=WriteValue($keyies,"ProxyEnable","1","REG_DWORD")
-			$ret=WriteValue($keyies,"ProxyOverride",$proxyoverride,"REG_SZ")
-			$ret=WriteValue($keyhp,"Start Page",$staffhomepage,"REG_SZ")
-		Case $pgroup = "guests"
-			$ret=WriteValue($keyies,"ProxyServer",$proxyserver,"REG_SZ")
-			$ret=WriteValue($keyies,"ProxyEnable","1","REG_DWORD")
-			$ret=WriteValue($keyies,"ProxyOverride",$proxyoverride,"REG_SZ")
-			$ret=WriteValue($keyhp,"Start Page",$staffhomepage,"REG_SZ")
-		Case $pgroup = "itadmin"
-			$ret=WriteValue($keyies,"ProxyServer",$proxyserver,"REG_SZ")
-			$ret=WriteValue($keyies,"ProxyEnable","0","REG_DWORD")
-			$ret=WriteValue($keyies,"ProxyOverride",$proxyoverride,"REG_SZ")
-			$ret=WriteValue($keyhp,"Start Page",$staffhomepage,"REG_SZ")
-		Case $pgroup = "nonteachingstaff"
-			$ret=WriteValue($keyies,"ProxyServer",$proxyserver,"REG_SZ")
-			$ret=WriteValue($keyies,"ProxyEnable","1","REG_DWORD")
-			$ret=WriteValue($keyies,"ProxyOverride",$proxyoverride,"REG_SZ")
-			$ret=WriteValue($keyhp,"Start Page",$staffhomepage,"REG_SZ")
-		Case $pgroup = "officestaff"
-			$ret=WriteValue($keyies,"ProxyServer",$proxyserver,"REG_SZ")
-			$ret=WriteValue($keyies,"ProxyEnable","1","REG_DWORD")
-			$ret=WriteValue($keyies,"ProxyOverride",$proxyoverride,"REG_SZ")
-			$ret=WriteValue($keyhp,"Start Page",$staffhomepage,"REG_SZ")
-		Case $pgroup= "profileuser"
-			$ret=WriteValue($keyies,"ProxyServer",$proxyserver,"REG_SZ")
-			$ret=WriteValue($keyies,"ProxyEnable","1","REG_DWORD")
-			$ret=WriteValue($keyhp,"Start Page",$staffhomepage,"REG_SZ")
-		Case $pgroup = "staff"
-			$ret=WriteValue($keyies,"ProxyServer",$proxyserver,"REG_SZ")
-			$ret=WriteValue($keyies,"ProxyEnable","1","REG_DWORD")
-			$ret=WriteValue($keyies,"ProxyOverride",$proxyoverride,"REG_SZ")
-			$ret=WriteValue($keyhp,"Start Page",$staffhomepage,"REG_SZ")
-		Case $pgroup = "studentstaff"
-			$ret=WriteValue($keyies,"ProxyServer",$proxyserver,"REG_SZ")
-			$ret=WriteValue($keyies,"ProxyEnable","1","REG_DWORD")
-			$ret=WriteValue($keyies,"ProxyOverride",$proxyoverride,"REG_SZ")
-			$ret=WriteValue($keyhp,"Start Page",$staffhomepage,"REG_SZ")
-		Case $pgroup = "Domain Admins"
-			$ret=WriteValue($keyies,"ProxyServer",$proxyserver,"REG_SZ")
-			$ret=WriteValue($keyies,"ProxyEnable","1","REG_DWORD")
-			$ret=WriteValue($keyies,"ProxyOverride",$proxyoverride,"REG_SZ")
-			$ret=WriteValue($keyhp,"Start Page",$staffhomepage,"REG_SZ")
-		Case 1 ;default - Students
-;			IF $username = "fbloggs02"
-;				debug on
-;			ENDIF
-			$ret=WriteValue($keyies,"ProxyServer",$proxyserver,"REG_SZ")
-			$ret=WriteValue($keyies,"ProxyEnable","1","REG_DWORD")
-			$ret=WriteValue($keyies,"ProxyOverride",$proxyoverride,"REG_SZ")
-			$ret=WriteValue($keyhp,"Start Page",$studenthomepage,"REG_SZ")
-
-	EndSelect
-
-EndFunction
 
 ;****************************************************************************************************
 ; Set Regional Settings and Restart Explorer on Laptops
@@ -1158,35 +702,6 @@ Function CheckIfLaptop()
 EndFunction
 
 
-;****************************************************************************************************
-; Install WPKG package
-;****************************************************************************************************
-Function Installwpkg()
-
-	If $pgroup = "itadmin" Or $pgroup = "tech" Or $pgroup = "staff" Or $pgroup = "officestaff"
-		If Not Exist ("c:\Program Files\wpkg\wpkginst.exe")
-    			Run @LDRIVE + "\wpkg.bat"
-		EndIf
-	
-
-	EndIf
-
-EndFunction
-
-;****************************************************************************************************
-; Update WPKG settings
-;****************************************************************************************************
-Function Updatewpkg()
-
-	If $pgroup = "itadmin" Or $pgroup = "tech" Or $pgroup = "staff" Or $pgroup = "officestaff"
-		If Exist ("c:\Program Files\wpkg\wpkginst.exe")
-    			Run @LDRIVE + "\wpkgupdate.bat"
-		EndIf
-	
-
-	EndIf
-
-EndFunction
 
 
 

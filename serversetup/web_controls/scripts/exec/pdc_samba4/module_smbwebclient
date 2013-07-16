@@ -101,6 +101,8 @@ fi
 
 echo `date`: setupsmbwebclient on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
+source /opt/karoshi/serversetup/variables/distro
+
 #Add entry to samba4 dns
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 SERVERIP=`net lookup $SERVERNAME`

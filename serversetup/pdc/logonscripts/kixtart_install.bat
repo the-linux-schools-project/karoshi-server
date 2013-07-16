@@ -5,13 +5,13 @@ if not exist C:\"Program Files"\kixtest goto permerror
 rmdir C:\"Program Files"\kixtest
 MD C:\kix
 if not exist C:\kix goto permerror2
-COPY \\CHANGETHISHOSTNAME\netlogon\kix\*.* C:\kix
+COPY %LOGONSERVER%\netlogon\kix\*.* C:\kix
 
 attrib +R +S c:\kix\*.*
 rem Install
 regsvr32 "C:\kix\kixforms.dll"
-C:\kix\WKIX32.EXE \\CHANGETHISHOSTNAME\netlogon\kix\WSsetup.kix
-\\CHANGETHISHOSTNAME\netlogon\getdll.bat
+C:\kix\WKIX32.EXE %LOGONSERVER%\netlogon\kix\WSsetup.kix
+%LOGONSERVER%\netlogon\getdll.bat
 exit
 :permerror
 echo You do not have enough permissions to install Kixtart.
