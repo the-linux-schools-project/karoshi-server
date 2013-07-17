@@ -131,6 +131,9 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 [ ! -d /opt/karoshi/serversetup/language/'$LANGCHOICE'/modules ] && mkdir -p /opt/karoshi/serversetup/language/'$LANGCHOICE'/modules
 [ ! -d /opt/karoshi/serversetup/modules/ ] && mkdir -p /opt/karoshi/serversetup/modules/
 '
+#Update alias entry for the server
+[ ! -d /opt/karoshi/server_network/aliases ] && mkdir -p /opt/karoshi/server_network/aliases
+[ ! -f /opt/karoshi/server_network/aliases/$SERVERNAME ] && echo $ALIAS > /opt/karoshi/server_network/aliases/$SERVERNAME
 
 #Copy in language files
 scp -p -r /opt/karoshi/serversetup/language/$LANGCHOICE/modules/smbwebclient root@$SERVERNAME:/opt/karoshi/serversetup/language/$LANGCHOICE/modules/ 1> /dev/null
