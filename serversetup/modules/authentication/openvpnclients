@@ -17,14 +17,6 @@ if [ `ifconfig | grep -c ^tun` = 0 ]
 then
 #Check that nat rules have been enabled
 exit 105
-else
-#Enable nat routing for vpn
-if [ `iptables -L -n | grep -c karoshi_vpn_rule` = 0 ]
-then
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
-fi
 fi
 
 '
@@ -43,12 +35,10 @@ source /opt/karoshi/serversetup/variables/distro
 #Check tunnel is online
 sleep 1
 COUNTER=1
-while [ $COUNTER -lt 15 ]
+while [ $COUNTER -lt 25 ]
 do
 if [ `ifconfig | grep -c tun` -gt 0 ]
 then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 break
 fi
 sleep 1
