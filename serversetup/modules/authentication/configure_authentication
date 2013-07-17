@@ -380,11 +380,11 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 echo "<b>'$CONFIGUREAUTHMSG'</b><br><br>"
 
 echo "<li>"Checking to see that the PDC can be contacted on ports: '$PORTCHECK'"</li><br>"
-SCANRESULT=`nmap '$PDCIP' -p '$PORTCHECK' -PN`
 for PORT in `echo '$PORTCHECK' | sed "s/,/ /g"`
 do
 echo Checking $PORT"<br>"
-[ `echo $SCANRESULT | grep -c "$PORT/tcp"` = 0 ] && exit $PORT
+nc -zv -w5 '$PDCIP' $PORT
+[ $? != 0 ] && exit $PORT
 done
 
 source /opt/karoshi/serversetup/variables/distro

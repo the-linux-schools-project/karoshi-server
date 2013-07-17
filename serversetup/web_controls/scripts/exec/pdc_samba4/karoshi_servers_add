@@ -265,7 +265,7 @@ fi
 #Add in vpn tunnel for adc servers in dmz
 if [ $ZONE = dmz ]
 then
-if [ $AUTHENTICATION = adc ] || [ $AUTHENTICATION = rodc ] || [ $AUTHENTICATION = member ]
+if [ $AUTHENTICATION = adc ] || [ $AUTHENTICATION = rodc ]
 then
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER:" | /opt/karoshi/serversetup/modules/authentication/setupopenvpn
 fi
@@ -273,6 +273,12 @@ fi
 
 #Sort out authentication for the server
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER:$AUTHENTICATION:$ZONE" | /opt/karoshi/serversetup/modules/authentication/configure_authentication
+if [ $? != 0 ]
+then
+echo `date`: karoshi_servers_add - configure_authentication failure "for" $SERVER authtype $AUTHENTICATION zone $ZONE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
 
 if [ ! -f /opt/karoshi/server_network/federated_ldap_servers/$SERVER ]
 then
