@@ -402,15 +402,16 @@ echo REALMCAPS=\"'$REALMCAPS'\" >> /opt/karoshi/server_network/domain_informatio
 echo LDAPBASE=\"'$LDAPBASE'\" >> /opt/karoshi/server_network/domain_information/domain_name
 echo DOMAINSID=\"'$DOMAINSID'\" >> /opt/karoshi/server_network/domain_information/domain_name
 
-if [ '$AUTHTYPE' ! = adc ] && [ '$AUTHTYPE' = !rodc ]
-then
-echo nameserver '$PDCIP' >> /etc/resolv.conf
-fi
-
+#Write resolve.conf
 if [ '$ZONE' = internal ] || [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ]
 then
 #Setup resolv.conf
 echo domain '$REALM' > /etc/resolv.conf
+fi
+
+if [ '$AUTHTYPE' ! = adc ] || [ '$AUTHTYPE' != rodc ]
+then
+echo nameserver '$PDCIP' >> /etc/resolv.conf
 fi
 
 if [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ] 
