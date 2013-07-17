@@ -102,6 +102,11 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/system/karoshi_servers_add
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
+#Get ip zone information
+PDCIP=`net lookup $HOSTNAME`
+PDCZONEIP=`ip addr | grep $PDCIP | sed -n "s/[[:space:]]*inet \([^ ]*\).*/\1/p"`
+PDCZONEINFO=`ipcalc -n $PDCZONEIP | grep ^Network | sed "s/ * / /g" | cut -d" " -f2`
+
 #Create ssh folder
 [ ! -d /root/.ssh ] && mkdir /root/.ssh
 chmod 0700 /root/.ssh
@@ -144,6 +149,8 @@ then
 echo `date`: karoshi_servers_add - adding $SERVER $TCPIPNUMBER to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 samba-tool dns add 127.0.0.1 $REALM $SERVER A $TCPIPNUMBER --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
+
+TCPIPNUMBER=`net lookup $SERVER`
 
 ############################
 #Setup ssh connections
@@ -192,21 +199,63 @@ fi
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 #Check to see that given servername matches actual servername
 [ '$SERVER' != $HOSTNAME ] && exit 102
+#Check that ip addresses match zones
+
+SERVERZONEIP=`ip addr | grep '$TCPIPNUMBER' | sed -n "s/[[:space:]]*inet \([^ ]*\).*/\1/p"`
+touch /tmkp/data
+echo $SERVERZONEIP > /tmp/data
+SERVERZONEINFO=`ipcalc -n $SERVERZONEIP | grep ^Network | sed "s/ * / /g" | cut -d" " -f2`
+
+echo $SERVERZONEINFO >> /tmp/data
+echo '$PDCZONEINFO' >> /tmp/data
+echo '$ZONE' >> /tmp/data
+if [ '$ZONE' = internal ]
+then
+[ $SERVERZONEINFO != '$PDCZONEINFO' ] && exit 103
+fi
+if [ '$ZONE' = dmz ]
+then
+[ $SERVERZONEINFO = '$PDCZONEINFO' ] && exit 104
+fi
+
 sed -i "s/PermitRootLogin Yes/PermitRootLogin without-password/g" /etc/ssh/sshd_config
 [ ! -d /etc/ssl/root-ca ] && mkdir -m 0700 /etc/ssl/root-ca
 mv /etc/ssl/openssl.cnf /etc/ssl/openssl.cnf.'$$'
 cp -f /opt/karoshi/serversetup/distro/ubuntu/all/configfiles/openssl.cnf /etc/ssl/
 ' 1>/dev/null 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 SSHRESULT=`echo $?`
+
+function remove_dns_entry {
+#Remove entry from dns
+samba-tool dns delete 127.0.0.1 $REALM $SERVER A $TCPIPNUMBER --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+}
+
 if [ $SSHRESULT = 102 ]
 then
 #Server name does not match
 echo "<li>$SERVER - this name does not match the hostname of the server you are connecting to</li>"
 echo `date`: karoshi_servers_add - $SERVER name mismatch with remote server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 sleep 3
-#Remove entry from dns
-samba-tool dns delete 127.0.0.1 $REALM $SERVER A $TCPIPNUMBER --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+remove_dns_entry
+fi
+
+if [ $SSHRESULT = 103 ]
+then
+#TCPIP zone information is not correct
+echo "<li>$SERVER - network settings for this server show that it should not be in the same zone as the main server.</li>"
+echo `date`: karoshi_servers_add - $SERVER: $ZONE "network settings for this server show that it should not be in the same zone as the main server." by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+sleep 3
+remove_dns_entry
+fi
+
+if [ $SSHRESULT = 104 ]
+then
+#TCPIP zone information is not correct
+echo "<li>$SERVER - network settings for this server show that it should be in the same zone as the main server.</li>"
+echo `date`: karoshi_servers_add - $SERVER: $ZONE "network settings for this server show that it should be in the same zone as the main server." by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+sleep 3
+remove_dns_entry
 fi
 
 [ $SSHRESULT != 0 ] && exit 101
@@ -294,7 +343,7 @@ fi
 SUBNET=`ssh $SERVER '
 grep "netmask " /etc/network/interfaces | sed -n 1,1p | cut -d" " -f2
 '`
-echo /opt/karoshi/serversetup/pdc/"useful scripts"/reverse-dns add $TCPIPNUMBER $SUBNET $SERVER.$REALM"<br>"
+
 /opt/karoshi/serversetup/pdc/"useful scripts"/reverse-dns add $TCPIPNUMBER $SUBNET $SERVER.$REALM
 
 #Add in mac address entry for static arp table
