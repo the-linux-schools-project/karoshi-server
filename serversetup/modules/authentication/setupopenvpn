@@ -373,13 +373,17 @@ PDC_REAL_IP='$MAINSERVERIP'
 MY_VPN_IP='$TUNNELIP_CLIENT'
 PDC_VPN_IP='$TUNNELIP_SERVER'
 
-[ \`ifconfig | grep -c ^tun\` = 0 ] && exit
+iptables -m comment --comment \"karoshi_vpn_rule\" -t nat -C OUTPUT -d \$PDC_REAL_IP -j DNAT --to-destination \$PDC_VPN_IP && exit 0
 
 echo Adding Karoshi VPN rules...
 
+iptables -m comment --comment \"karoshi_vpn_rule\" -t nat -A OUTPUT -d \$PDC_REAL_IP -p udp --sport 1194 -j ACCEPT
 iptables -m comment --comment \"karoshi_vpn_rule\" -t nat -A OUTPUT -d \$PDC_REAL_IP -j DNAT --to-destination \$PDC_VPN_IP
+iptables -m comment --comment \"karoshi_vpn_rule\" -t nat -A POSTROUTING -d \$PDC_VPN_IP -p udp --sport 1194 -j ACCEPT
 iptables -m comment --comment \"karoshi_vpn_rule\" -t nat -A POSTROUTING -d \$PDC_VPN_IP -j SNAT --to-source \$MY_VPN_IP
+iptables -m comment --comment \"karoshi_vpn_rule\" -t nat -A PREROUTING -s \$PDC_VPN_IP -p udp --dport 1194 -j ACCEPT
 iptables -m comment --comment \"karoshi_vpn_rule\" -t nat -A PREROUTING -s \$PDC_VPN_IP -j DNAT --to-destination \$MY_REAL_IP
+iptables -m comment --comment \"karoshi_vpn_rule\" -t nat -A INPUT -s \$PDC_VPN_IP -p udp --dport 1194 -j ACCEPT
 iptables -m comment --comment \"karoshi_vpn_rule\" -t nat -A INPUT -s \$PDC_VPN_IP -j SNAT --to-source \$PDC_REAL_IP" > /opt/karoshi/useful\ scripts/configure_vpn_rules
 
 chmod 0700 /opt/karoshi/useful\ scripts/configure_vpn_rules
