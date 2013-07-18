@@ -80,13 +80,13 @@ fi
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/ssh
 
 ######################
-#Open port on shorewall for the pdc only
+#Open port on shorewall
 ######################
-MODCHECK=`grep -c ACCEPT'	'net:$PDC'	'fw'	'tcp'	'22'	'- /etc/shorewall/rules`
+MODCHECK=`grep -c ACCEPT'	'net'	'fw'	'tcp'	'22'	'- /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
 LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-sed $LINENUM'c'\ACCEPT'	'net:$PDC'	'fw'	'tcp'	'22'	'-'#'pdc_ssh_rule /etc/shorewall/rules > /etc/shorewall/rulestemp
+sed $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'22'	'-'#'pdc_ssh_rule /etc/shorewall/rules > /etc/shorewall/rulestemp
 rm -f /etc/shorewall/rules
 mv /etc/shorewall/rulestemp /etc/shorewall/rules
 echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules

@@ -38,21 +38,18 @@ source /opt/karoshi/serversetup/language/$LANGCHOICE/extra_server/checknetwork
 source /opt/karoshi/serversetup/variables/tcpip
 
 function getnetworksettings {
-
-DATA=`yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --form --title="Network Settings" --field="Server name" --field="TCPIP" --field="Netmask" --field="Name Server" --field="Gateway" --field="PDC TCPIP" --button="gtk-ok"`
+DATA=`yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --form --title="Network Settings" --field="Server name" --field="TCPIP" --field="Netmask" --field="Name Server" --field="Gateway" --button="gtk-ok"`
 
 NAMECUSTOM=`echo $DATA | cut -d"|" -f1 | tr -cd 'A-Za-z1-9-' | sed 's/^-//g' | sed 's/-$//g' | tr 'A-Z' 'a-z'`
 TCPIPCUSTOM=`echo $DATA | cut -d"|" -f2 | tr -cd '0-9./n'`
 NETMASKCUSTOM=`echo $DATA | cut -d"|" -f3 | tr -cd '0-9./n'`
 NAMESERVERCUSTOM=`echo $DATA | cut -d"|" -f4 | tr -cd '0-9./n'`
 GATEWAYCUSTOM=`echo $DATA | cut -d"|" -f5 | tr -cd '0-9./n'`
-TCPIPPDCCUSTOM=`echo $DATA | cut -d"|" -f6 | tr -cd '0-9./n'`
 }
-
 
 function confirmchoice {
 DATA=`yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 \
-    --text "$NETWORKSET \n\n Server Name: $NAMECUSTOM \n TCPIP: $TCPIPCUSTOM \n Netmask: $NETMASKCUSTOM \n Nameserver: $NAMESERVERCUSTOM \n Gateway: $GATEWAYCUSTOM \n PDC TCPIP: $TCPIPPDCCUSTOM"`
+    --text "$NETWORKSET \n\n Server Name: $NAMECUSTOM \n TCPIP: $TCPIPCUSTOM \n Netmask: $NETMASKCUSTOM \n Nameserver: $NAMESERVERCUSTOM \n Gateway: $GATEWAYCUSTOM \n`
 CHOICE=`echo $?`
 [ $CHOICE = 0 ] && CHOICE=commit
 [ $CHOICE = 1 ] && CHOICE=configure
