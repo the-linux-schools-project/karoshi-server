@@ -43,7 +43,7 @@ function getnetworksettings {
 
 DATA=`yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --title="Network Settings" --field="Server name" --field="TCPIP" --field="Netmask" --field="Name Server" --field="Gateway" --button="gtk-ok"`
 
-NAMECUSTOM=`echo $DATA | cut -d"|" -f1 | tr -cd 'A-Za-z1-9-' | sed 's/^-//g' | sed 's/-$//g'`
+NAMECUSTOM=`echo $DATA | cut -d"|" -f1 | tr -cd 'A-Za-z1-9-' | sed 's/^-//g' | sed 's/-$//g' | tr 'A-Z' 'a-z'`
 TCPIPCUSTOM=`echo $DATA | cut -d"|" -f2 | tr -cd '0-9./n'`
 NETMASKCUSTOM=`echo $DATA | cut -d"|" -f3 | tr -cd '0-9./n'`
 NAMESERVERCUSTOM=`echo $DATA | cut -d"|" -f4 | tr -cd '0-9./n'`
