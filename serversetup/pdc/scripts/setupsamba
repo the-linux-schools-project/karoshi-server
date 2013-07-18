@@ -586,7 +586,7 @@ COUNTER=$STARTYEAR
 while [  $COUNTER -le $ENDYEAR ]; do
 echo -e "$GROUPADDMSG yr$COUNTER\n"
 NEWGROUP=yr$COUNTER
-NEWGROUPDISP="Yr$COUNTER"
+NEWGROUPDISP="Year $COUNTER"
 add_samba4_group
 let COUNTER=COUNTER+1
 done
@@ -1152,18 +1152,15 @@ then
 samba-tool group addmembers "Domain Admins" $NEWUSERNAME  1>/dev/null 2>>/opt/karoshi/serversetup/install_log
 fi
 
+PRIGROUPID=`getent group $PRIMARYGROUP | cut -d: -f3`
+
 #Change primarygroupid and add unixhomedirectory - have to use ldapmodify at this time since samba-tool does not seem to have this option!
 #This is hideous why cant samba4 ldap do this all in one go??
 echo -e "dn: CN=$NEWUSERNAME,$SUBPATH,$LDAPBASE
 changetype: modify
 add: objectclass
 objectclass: posixaccount
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/serversetup/install_log
-
-PRIGROUPID=`getent group $PRIMARYGROUP | cut -d: -f3`
-
-echo -e "dn: CN=$NEWUSERNAME,$SUBPATH,$LDAPBASE
-changetype: modify
+-
 add: gidnumber
 gidnumber: $PRIGROUPID
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/serversetup/install_log
@@ -1174,19 +1171,19 @@ echo -e "dn: CN=$NEWUSERNAME,$SUBPATH,$LDAPBASE
 changetype: modify
 add: uidnumber
 uidnumber: $UIDNUMBER
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/serversetup/install_log
-
-echo -e "dn: CN=$NEWUSERNAME,$SUBPATH,$LDAPBASE
-changetype: modify
+-
 add: unixhomedirectory
 unixhomedirectory: $NEWUSERPATH
+-
+add: displayname
+displayname: "$NEWUSERDISP"
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/serversetup/install_log
+
 
 [ ! -d $NEWUSERPATH ] && mkdir $NEWUSERPATH
 chmod 0600 -R $NEWUSERPATH
 chmod u+X -R $NEWUSERPATH
 chown $NEWUSERNAME -R $NEWUSERPATH
-
 }
 
 
@@ -1200,6 +1197,7 @@ NEWUSERPATH=/home/users/profileuser
 SUBPATH='OU=other,OU=People'
 PRIMARYGROUP=profilemanagement
 PROFILEFOLDER=profileuser
+NEWUSERDISP="Profile User"
 create_user
 
 #Add guest accounts
@@ -1211,6 +1209,7 @@ NEWUSERPATH=/home/users/guests/guest$COUNTER
 SUBPATH='OU=guestusers,OU=other,OU=People'
 PRIMARYGROUP=guestusers
 PROFILEFOLDER=guests
+NEWUSERDISP="Guest $COUNTER"
 create_user
 let COUNTER=COUNTER+1
 done
@@ -1224,6 +1223,7 @@ NEWUSERPATH=/home/users/techstaff/tech$COUNTER
 SUBPATH='OU=tech,OU=personnel,OU=People'
 PRIMARYGROUP=tech
 PROFILEFOLDER=tech
+NEWUSERDISP="Tech $COUNTER"
 create_user
 let COUNTER=COUNTER+1
 done
