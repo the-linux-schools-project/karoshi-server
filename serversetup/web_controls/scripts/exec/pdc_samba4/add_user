@@ -276,12 +276,18 @@ echo -e "dn: CN=$NEWUSERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
 changetype: modify
 add: uidnumber
 uidnumber: $UIDNUMBER
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-echo -e "dn: CN=$NEWUSERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
+-
 changetype: modify
 add: division
 division: $PRIMARYGROUP
+-
+changetype: modify
+add: loginshell
+loginshell: /bin/bash
+-
+changetype: modify
+add: unixhomedirectory
+unixhomedirectory: $HOMEPATH/$NEWUSERNAME
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 #echo -e "dn: CN=$NEWUSERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
@@ -289,20 +295,6 @@ division: $PRIMARYGROUP
 #replace: primaryGroupID
 #primaryGroupID: $PRIGROUPID
 #-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-#echo -e "dn: CN=$NEWUSERNAME,CN=$PRIMARYGROUP,CN=$SUBUNIT,CN=Users,$LDAPBASE
-#changetype: modify
-#add: loginshell
-#loginshell: /bin/bash
-#-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-echo -e "dn: CN=$NEWUSERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
-changetype: modify
-add: unixhomedirectory
-unixhomedirectory: $HOMEPATH/$NEWUSERNAME
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-
 
 if [ ! -z $ENROLLMENTNUMBER ]
 then
