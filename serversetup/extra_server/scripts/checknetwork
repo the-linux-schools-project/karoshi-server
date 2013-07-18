@@ -49,7 +49,7 @@ GATEWAYCUSTOM=`echo $DATA | cut -d"|" -f5 | tr -cd '0-9./n'`
 
 function confirmchoice {
 DATA=`yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 \
-    --text "$NETWORKSET \n\n Server Name: $NAMECUSTOM \n TCPIP: $TCPIPCUSTOM \n Netmask: $NETMASKCUSTOM \n Nameserver: $NAMESERVERCUSTOM \n Gateway: $GATEWAYCUSTOM \n`
+    --text "$NETWORKSET \n\n Server Name: $NAMECUSTOM \n TCPIP: $TCPIPCUSTOM \n Netmask: $NETMASKCUSTOM \n Nameserver: $NAMESERVERCUSTOM \n Gateway: $GATEWAYCUSTOM"`
 CHOICE=`echo $?`
 [ $CHOICE = 0 ] && CHOICE=commit
 [ $CHOICE = 1 ] && CHOICE=configure
@@ -63,7 +63,7 @@ INPUTCHECK=fail
 fi
 #Check that no number is greater than 255
 HIGHESTNUMBER=`echo $IPDATA | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p`
-if [ $HIGHESTNUMBER -gt 255 ]
+if [[ $HIGHESTNUMBER -gt 255 ]]
 then
 INPUTCHECK=fail
 fi
@@ -83,8 +83,6 @@ check_tcpip
 IPDATA=$NETMASKCUSTOM
 check_tcpip
 IPDATA=$GATEWAYCUSTOM
-check_tcpip
-IPDATA=$TCPIPPDCCUSTOM
 check_tcpip
 if [ $INPUTCHECK = ok ]
 then
