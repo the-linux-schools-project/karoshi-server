@@ -213,7 +213,7 @@ if [ '$ZONE' = internal ]
 then
 [ $SERVERZONEINFO != '$PDCZONEINFO' ] && exit 103
 fi
-if [ '$ZONE' = dmz ]
+if [ '$ZONE' = dmz ] || [ '$ZONE' = external ]
 then
 [ $SERVERZONEINFO = '$PDCZONEINFO' ] && exit 104
 fi
