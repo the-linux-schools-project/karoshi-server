@@ -109,7 +109,7 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 </tr></tbody></table>'
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">'
 echo '<tbody>'
-echo '<tr><td style="vertical-align: top; width: 120px; height: 40px;"><b>'$SERVERMSG'</b></td><td style="vertical-align: top; width: 80px;"><b>'$SERVERIPMSG'</b></td><td style="vertical-align: top; width: 320px;"><b>'$ROLESMSG'</b></td><td style="vertical-align: top; width: 70px;"><b>'$ADDROLEMSG2'</b></td><td style="vertical-align: top; width: 70px;"><b>'$REMOVEROLEMSG2'</b></td><td style="vertical-align: top; width: 70px;"><b>'$SSHMSG1'</b></td><td style="vertical-align: top; width: 70px;"><b>'$SSHMSG2'</b></td></tr>'
+echo '<tr><td style="vertical-align: top; width: 10px; height: 40px;"></td><td style="vertical-align: top; width: 120px; height: 40px;"><b>'$SERVERMSG'</b></td><td style="vertical-align: top; width: 80px;"><b>'$SERVERIPMSG'</b></td><td style="vertical-align: top; width: 320px;"><b>'$ROLESMSG'</b></td><td style="vertical-align: top; width: 70px;"><b>'$ADDROLEMSG2'</b></td><td style="vertical-align: top; width: 70px;"><b>'$REMOVEROLEMSG2'</b></td><td style="vertical-align: top; width: 70px;"><b>'$SSHMSG1'</b></td><td style="vertical-align: top; width: 70px;"><b>'$SSHMSG2'</b></td></tr>'
 
 
 
@@ -136,7 +136,7 @@ SERVERSSHSTATUS=$SSHWORKING
 SERVERICON=/images/warnings/server_ok.png
 fi
 
-echo '<tr><td style="vertical-align: top;">'$SERVER'</td><td style="vertical-align: top;">'$SERVERIP'</td><td style="vertical-align: top;">'
+echo '<tr><td style="background-color:'$FILLCOLOUR'"><td style="vertical-align: top;">'$SERVER'</td><td style="vertical-align: top;">'$SERVERIP'</td><td style="vertical-align: top;">'
 [ -d /opt/karoshi/server_network/servers/$SERVER ] &&  cat /opt/karoshi/server_network/servers/$SERVER/*
 echo '</td><td style="vertical-align: top;">'
 if [ $SSHSTATUS = 0 ] || [ $SERVER = $HOSTNAME ]
@@ -203,12 +203,14 @@ echo '</td></tr>'
 
 #Show main server
 SERVER=$HOSTNAME
+FILLCOLOUR=green
 show_servers
 #Show servers in the internal zone
 if [ -d /opt/karoshi/server_network/zones/internal/servers/ ]
 then
 if [ `ls -1 /opt/karoshi/server_network/zones/internal/servers/ | wc -l` -gt 0 ]
 then
+FILLCOLOUR=green
 for SERVER in /opt/karoshi/server_network/zones/internal/servers/*
 do
 SERVER=`basename $SERVER`
@@ -222,6 +224,7 @@ if [ -d /opt/karoshi/server_network/zones/dmz/servers/ ]
 then
 if [ `ls -1 /opt/karoshi/server_network/zones/dmz/servers/ | wc -l` -gt 0 ]
 then
+FILLCOLOUR=orange
 for SERVER in /opt/karoshi/server_network/zones/dmz/servers/*
 do
 SERVER=`basename $SERVER`
@@ -235,6 +238,7 @@ if [ -d /opt/karoshi/server_network/zones/external/servers/ ]
 then
 if [ `ls -1 /opt/karoshi/server_network/zones/external/servers/ | wc -l` -gt 0 ]
 then
+FILLCOLOUR=red
 for SERVER in /opt/karoshi/server_network/zones/external/servers/*
 do
 SERVER=`basename $SERVER`
