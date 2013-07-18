@@ -110,6 +110,12 @@ define("_SEARCH_OU_2",		"OU=Groups,OU=People,'$LDAPBASE'");
 //Tech services info
 define("_TSCONTACTNUM",	"252");
 
+//Share Access Permissions
+
+$itadmingroup = array("itadmin","netlogon", "sysvol", "officeshare", "staffshare", "subjects");
+$officestaffgroup = array("officeshare", "staffshare");
+$staffgroup = array("staffshare", "subjects");
+$studentsgroup = array("students", "subjects");
 
 ?>' > /var/www/html/smbwebclient/config/config.php
 
