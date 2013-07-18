@@ -1,6 +1,0 @@
-#!/bin/bash
-#pam_smb_install
-
-PAM_SMB=pam_smb-1.1.7-5.i386.rpm
-echo installing $PAM_SMB >> /opt/karoshi/serversetup/install_log
-rpm -iU /opt/karoshi/serversetup/xen/rpms/$PAM_SMB 2>&1 >> /opt/karoshi/serversetup/install_log

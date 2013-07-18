@@ -1,5 +1,0 @@
-#!/bin/bash
-#softwareinstall
-
-export RPMNAME=usermin-1.190-1.noarch.rpm
-xterm -geometry 100x20 -bg white -fg black -e rpm -iU /opt/karoshi/serversetup/colossus/rpms/$RPMNAME 2>/dev/null

@@ -1,4 +1,0 @@
-#!/bin/bash
-#Start vncserver on boot
-cp -f /opt/karoshi/serversetup/remotemanagement/S99vncstart /etc/rc5.d/
-chmod 0700 /etc/rc5.d/S99vncstart
