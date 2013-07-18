@@ -277,15 +277,12 @@ changetype: modify
 add: uidnumber
 uidnumber: $UIDNUMBER
 -
-changetype: modify
 add: division
 division: $PRIMARYGROUP
 -
-changetype: modify
 add: loginshell
 loginshell: /bin/bash
 -
-changetype: modify
 add: unixhomedirectory
 unixhomedirectory: $HOMEPATH/$NEWUSERNAME
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -337,6 +334,8 @@ then
 echo $GRACE_TIMER,$REMOTE_USER,`date +%d-%m-%Y` > /opt/karoshi/acceptable_use_authorisations/pending/$NEWUSERNAME
 fi
 
+#Get userid
+USERID=`getent passwd $NEWUSERNAME | cut -d: -f3`
 
 if [ $SERVER = $HOSTNAME ]
 then
@@ -354,7 +353,6 @@ fi
 ############################
 if [ -d /opt/karoshi/server_network/servers/$SERVER ] && [ $SERVER != $HOSTNAME ]
 then
-USERID=`getent passwd $NEWUSERNAME | cut -d: -f3`
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 mkdir -p '$HOMEPATH''/''$NEWUSERNAME'
 chmod 0700 '$HOMEPATH''/''$NEWUSERNAME'
@@ -381,7 +379,7 @@ then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
 [ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
 mkdir /home/users/email/'$NEWUSERNAME'
-chown '$NEWUSERNAME' /home/users/email/'$NEWUSERNAME'
+chown '$USERID':'$PRIMARYGROUP' /home/users/email/'$NEWUSERNAME'
 chmod 0700 /home/users/email/'$NEWUSERNAME'
 '
 SSHSTATUS=`echo $?`
