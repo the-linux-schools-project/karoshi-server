@@ -71,17 +71,17 @@ yad --title "$TITLE $VERSION" --window-icon="/opt/karoshi/serversetup/essentials
 exit
 fi
 
-
+while [ -z $SELECTCHOICE ]
+do
 SELECTCHOICE=$(yad --wrap --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --width 300 --entry --title "$TITLE" \
     --image="/opt/karoshi/serversetup/essentials/smalllogo.png" \
     --button=Ok \
     --text "$SERVERCHOICEMSG\n\n" \
     --entry-text \
-    "Setup the main server" "Setup an extra server")
+    "" "Setup the main server" "Setup an extra server")
 [ `echo $?` != 0 ] && exit
 SELECTCHOICE=`echo $SELECTCHOICE | tr -cd 'A-Za-z'`
-echo $SELECTCHOICE
-
+done
 
 #Setup cronjobs common to all servers
 [ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
