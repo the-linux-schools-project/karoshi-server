@@ -125,7 +125,7 @@ SERVERICON=/images/warnings/server_fail.png
 SERVERBACKUPICON=/images/warnings/server_no_config.png
 SERVERICON2=/images/warnings/server_remove.png
 
-SERVERIP=`cat /etc/hosts | grep -w $SERVER | cut -f1`
+SERVERIP=`net lookup $SERVER`
 
 if [ $SERVER != $HOSTNAME ]
 then
