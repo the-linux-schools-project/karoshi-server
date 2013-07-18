@@ -177,10 +177,12 @@ fi
 
 ZONESELECT1=""
 ZONESELECT2=""
+ZONESELECT3=""
 if [ ! -z "$ZONE" ]
 then
 [ $ZONE = internal ] && ZONESELECT1='selected="selected"'
 [ $ZONE = dmz ] && ZONESELECT2='selected="selected"'
+[ $ZONE = external ] && ZONESELECT3='selected="selected"'
 fi
 
 #Generate navigation bar
@@ -207,6 +209,7 @@ echo '<tr><td style="width: 180px;">'$ROOTMSG'</td><td><input tabindex= "3" styl
 <select name="_ZONE_" style="width: 200px;">
 <option '$ZONESELECT1'>internal</option>
 <option '$ZONESELECT2'>dmz</option>
+<option '$ZONESELECT3'>external</option>
 </select>
 </td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG10'</span></a>
