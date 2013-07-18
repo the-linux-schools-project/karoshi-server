@@ -328,7 +328,7 @@ fi
 fi
 
 #Sort out authentication for the server
-if [ $AUTHTYPE != none ]
+if [ $AUTHENTICATION != none ]
 then
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER:$AUTHENTICATION:$ZONE" | /opt/karoshi/serversetup/modules/authentication/configure_authentication
 if [ $? != 0 ]
