@@ -230,7 +230,7 @@ echo -e "#karoshi_member_server
 " > /etc/samba/smb.conf
 
 #Join the domain
-net ads join -U karoshiadmin%'$PASSWORD'
+net ads join -S '$KRBSERVER' -U karoshiadmin%'$PASSWORD'
 JOINDOMAINSTATUS=`echo $?`
 if [ $JOINDOMAINSTATUS != 0 ]
 then
@@ -304,7 +304,6 @@ function configure_nslcd {
 
 #Get pdc ipnumber
 PDCIP=`net lookup $HOSTNAME`
-PORTSCANIP=$PDCIP
 
 if [ $SERVERNAME = $HOSTNAME ]
 then
@@ -348,6 +347,7 @@ source /opt/karoshi/serversetup/variables/distro
 fi
 
 SERVERIP=`net lookup $SERVERNAME`
+PORTSCANIP=$PDCIP
 
 if [ $SERVERNAME != $HOSTNAME ]
 then
@@ -393,7 +393,7 @@ echo "<b>'$CONFIGUREAUTHMSG'</b><br><br>"
 echo "<li>"Checking to see that the PDC can be contacted on ports: '$PORTCHECK'"</li><br>"
 for PORT in `echo '$PORTCHECK' | sed "s/,/ /g"`
 do
-echo Checking $PORT"<br>"
+echo Checking $PORT" on server '$PORTSCANIP'<br>"
 nc -zv -w5 '$PORTSCANIP' $PORT
 [ $? != 0 ] && exit $PORT
 done
