@@ -413,6 +413,12 @@ echo REALMCAPS=\"'$REALMCAPS'\" >> /opt/karoshi/server_network/domain_informatio
 echo LDAPBASE=\"'$LDAPBASE'\" >> /opt/karoshi/server_network/domain_information/domain_name
 echo DOMAINSID=\"'$DOMAINSID'\" >> /opt/karoshi/server_network/domain_information/domain_name
 
+#Add entries to /etc/hosts
+if [ `grep -c '$SERVERNAME'.'$REALM' /etc/hosts` = 0 ]
+then
+echo '$SERVERIP'"	"'$SERVERNAME'.'$REALM'"	"'$SERVERNAME' >> /etc/hosts
+fi
+
 #Write resolve.conf
 if [ '$ZONE' = internal ] || [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ]
 then
