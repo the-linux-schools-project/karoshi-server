@@ -1,0 +1,32 @@
+#!/bin/bash
+
+SERVERIP=172.30.0.2
+SHARE=subjects
+CONNECTUSER=mpsharrad
+MOUNTFOLDER=network
+FOLDERPATH=/ict/karoshi
+
+echo -e "Updating serversetup\n\nConnecting to samba share as $CONNECTUSER for newer serversetup.tar.gz\n"
+#Mount network share
+[ ! -d /tmp/$MOUNTFOLDER ] && mkdir -p /tmp/$MOUNTFOLDER
+smbmount //$SERVERIP/$SHARE /tmp/$MOUNTFOLDER -o username=$CONNECTUSER
+if [ $? != 0 ]
+then
+echo Connection error so exiting now...
+exit
+fi
+
+#Check that archive exists
+if [ ! -f /tmp/$MOUNTFOLDER/$FOLDERPATH/serversetup.tar.gz ]
+then
+echo /tmp/$MOUNTFOLDER/$FOLDERPATH/serversetup.tar.gz does not exist. Exiting now...
+exit
+fi
+
+#Delete serversetup
+rm -f -R /opt/karoshi/serversetup
+#Extract archive
+cd /opt/karoshi/
+tar -xvf /tmp/$MOUNTFOLDER/$FOLDERPATH/serversetup.tar.gz
+#Disconnet share
+umount /tmp/$MOUNTFOLDER
