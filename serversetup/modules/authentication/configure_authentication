@@ -376,6 +376,16 @@ fi
 fi
 fi
 
+KRBSERVERIP=`net lookup $KRBSERVER`
+
+if [ $ZONE = dmz ]
+then
+if [ $AUTHTYPE = users ] || [ $AUTHTYPE = member ]
+then
+PORTSCANIP=$KRBSERVERIP
+fi
+fi
+
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 echo "<b>'$CONFIGUREAUTHMSG'</b><br><br>"
 
@@ -383,7 +393,7 @@ echo "<li>"Checking to see that the PDC can be contacted on ports: '$PORTCHECK'"
 for PORT in `echo '$PORTCHECK' | sed "s/,/ /g"`
 do
 echo Checking $PORT"<br>"
-nc -zv -w5 '$PDCIP' $PORT
+nc -zv -w5 '$PORTSCANIP' $PORT
 [ $? != 0 ] && exit $PORT
 done
 
@@ -409,9 +419,14 @@ then
 echo domain '$REALM' > /etc/resolv.conf
 fi
 
+if [ '$ZONE' = internal ] || [ '$ZONE' = dmz ]
+then
 if [ '$AUTHTYPE' ! = adc ] || [ '$AUTHTYPE' != rodc ]
 then
-echo nameserver '$PDCIP' >> /etc/resolv.conf
+echo nameserver '$KRBSERVERIP' > /etc/resolv.conf
+echo nameserver 8.8.8.8 >> /etc/resolv.conf
+echo nameserver 8.8.4.4 >> /etc/resolv.conf
+fi
 fi
 
 if [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ] 
@@ -444,8 +459,12 @@ if [ '$AUTHTYPE' = rodc ] || [ '$AUTHTYPE' = adc ]
 then
 echo uri ldapi://%2fvar%2flib%2fsamba%2fprivate%2fldapi/ >> /etc/nslcd.conf
 else
-#echo uri ldap://'$KRBSERVER'.'$REALM' >> /etc/nslcd.conf
+if [ '$ZONE' = dmz ]
+then
+echo uri ldap://'$KRBSERVER'.'$REALM' >> /etc/nslcd.conf
+else
 echo uri DNS >> /etc/nslcd.conf
+fi
 fi
 echo base OU=People,'$LDAPBASE' >> /etc/nslcd.conf
 #Not needed for anonymous bind
