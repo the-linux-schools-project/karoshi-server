@@ -293,9 +293,9 @@ chmod 0755 /etc/init.d/karoshi-uptime
 LINENUM=`grep -n "#pdc_ssh_rule" /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM"c"\ACCEPT"	"net:'$PDCIP'"	"fw"	"tcp"	"22"	"-"#"pdc_ssh_rule /etc/shorewall/rules
 #Restart shorewall
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 sleep 0.5
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 '
 
 #Re-enable keys for backup servers
