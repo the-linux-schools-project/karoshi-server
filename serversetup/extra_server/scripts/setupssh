@@ -104,5 +104,10 @@ if [ $MODCHECK = 0 ]
 then
 echo sshd: 127.0.0.1 , $PDC >> /etc/hosts.allow
 fi
+
+###########################
+#Display completed message
+############################
+yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 100 --timeout=10 --text="$FINALMSG" --no-buttons
 exit
 

@@ -40,10 +40,10 @@ $BASEINSTALLPATH/setupntp 1>>$KAROSHILOG 2>>$KAROSHILOG
 checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
 echo "84"
 echo "# $SETUP $SSH"
+$BASEINSTALLPATH/setupkaroshidesktop 1>>$KAROSHILOG 2>>$KAROSHILOG
+echo "100"
 $BASEINSTALLPATH/setupssh 1>>$KAROSHILOG 2>>$KAROSHILOG
 checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
-echo "100"
-$BASEINSTALLPATH/setupkaroshidesktop 1>>$KAROSHILOG 2>>$KAROSHILOG
 #Kill status bar
 killall yad
 }
