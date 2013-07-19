@@ -366,4 +366,8 @@ echo $MAC_ADDRESS $TCPIPNUMBER > /opt/karoshi/server_network/mac_addresses/$SERV
 #Create static_arps file
 cat /opt/karoshi/server_network/mac_addresses/* > /var/lib/samba/netlogon/domain_information/static_arps
 
+#Add server zone info
+[ ! -d /opt/karoshi/server_network/zones/$ZONE/servers ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/servers
+touch /opt/karoshi/server_network/zones/$ZONE/servers/$SERVERNAME
+
 exit

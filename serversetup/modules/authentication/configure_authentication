@@ -514,8 +514,8 @@ fi
 fi
 
 #Add nslcd flag
-[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
-echo $NSLCDCLIENTMSG"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/nslcd
+#[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
+#echo $NSLCDCLIENTMSG"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/nslcd
 [ ! -d /opt/karoshi/server_network/zones/$ZONE/ldap_clients/ ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/ldap_clients
 echo ldap_server=$PDCIP > /opt/karoshi/server_network/zones/$ZONE/ldap_clients/$SERVERNAME
 
@@ -546,8 +546,4 @@ karoshiadminuser
 echo `date`: configure_authentication - configuring samba4 $AUTHTYPE "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 configure_samba4
 fi
-
-#Add server zone info
-[ ! -d /opt/karoshi/server_network/zones/$ZONE/servers ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/servers
-touch /opt/karoshi/server_network/zones/$ZONE/servers/$SERVERNAME
 
