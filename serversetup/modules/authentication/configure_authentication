@@ -428,7 +428,7 @@ fi
 
 if [ '$ZONE' = internal ] || [ '$ZONE' = dmz ]
 then
-if [ '$AUTHTYPE' ! = adc ] || [ '$AUTHTYPE' != rodc ]
+if [ '$AUTHTYPE' ! = adc ] && [ '$AUTHTYPE' != rodc ]
 then
 echo domain '$REALM' > /etc/resolv.conf
 echo nameserver '$KRBSERVERIP' >> /etc/resolv.conf

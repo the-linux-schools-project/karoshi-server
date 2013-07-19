@@ -272,6 +272,7 @@ echo -e '# Global parameters
 	acl:search=false
 
 [sysvol]
+	comment = sysvol share
 	path = /var/lib/samba/sysvol
 	read only = No
 
@@ -308,14 +309,14 @@ echo -e '# Global parameters
 	browseable = Yes
 
 [subjects]
-	comments = Subjects Share
+	comment = Subjects Share
 	path = /home/subjects
 	invalid users = root,administrator
 	read only = No
 	browseable = Yes
 
 [netlogon]
-	Comment = Netlogon Share
+	comment = Netlogon Share
 	path = /var/lib/samba/netlogon
 	invalid users = root,administrator
 	create mask = 0664
@@ -325,7 +326,7 @@ echo -e '# Global parameters
 	level2 oplocks = No
 
 [officeshare]
-	Comment = Office Share
+	comment = Office Share
 	path = /home/officeshare
 	invalid users = root,administrator
 	read only = No

@@ -202,7 +202,7 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 #Check that ip addresses match zones
 
 SERVERZONEIP=`ip addr | grep '$TCPIPNUMBER' | sed -n "s/[[:space:]]*inet \([^ ]*\).*/\1/p"`
-touch /tmkp/data
+touch /tmp/data
 echo $SERVERZONEIP > /tmp/data
 SERVERZONEINFO=`ipcalc -n $SERVERZONEIP | grep ^Network | sed "s/ * / /g" | cut -d" " -f2`
 
