@@ -77,7 +77,7 @@ if [ $PDCSERVER != $HOSTNAME ]
 then
 #Check to see that we can ping the PDC
 ping -c 2 $PDCIP 1>/dev/null
-if [  echo $? != 0 ]
+if [[ $? != 0 ]]
 then
 echo `date` : setupprintserver - $PINGFAIL."<br>"
 exit 101
@@ -158,6 +158,14 @@ echo "	"read only = yes >> /etc/samba/smb.conf
 echo "	"write list = "@"itadmin, "@"adm, root, karoshiadmin, Administrator >> /etc/samba/smb.conf
 
 echo >> /etc/samba/smb.conf
+
+#Create spool areas
+[ ! -d /var/spool/samba ] && mkdir -p /var/spool/samba
+chmod 1777 /var/spool/samba
+
+[ ! -d /var/lib/samba/printers ] && mkdir -p /var/lib/samba/printers
+chmod 0755 /var/lib/samba/printers
+chown root:itadmin /var/lib/samba/printers
 
 #Restart samba
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null

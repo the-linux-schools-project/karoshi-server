@@ -183,12 +183,6 @@ KIXLINENUMBER=`grep -n printserver= /var/lib/samba/netlogon/logonform.kix | cut 
 
 [ $KIXLINENUMBER'null' != null ] && sed -i $KIXLINENUMBER'c''$printserver'=$SERVERNAME /var/lib/samba/netlogon/logonform.kix
 
-#Modifying newlogonform.kix for correct server
-
-KIXLINENUMBER=`grep -n printserver= /var/lib/samba/netlogon/newlogonform.kix | cut -d: -f1`
-
-[ $KIXLINENUMBER'null' != null ] && sed -i $KIXLINENUMBER'c''$printserver'=$SERVERNAME /var/lib/samba/netlogon/newlogonform.kix
-
 #Add role information
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role

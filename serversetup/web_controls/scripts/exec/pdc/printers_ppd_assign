@@ -127,7 +127,7 @@ echo `date`: printers_ppd_assign - no printer server has been set up. >> /opt/ka
 exit 101
 fi
 PRINTERSERVER=`sed -n 1,1p /opt/karoshi/server_network/printserver | sed 's/ //g'`
-
+[ ! -d /var/lib/samba/netlogon/linuxclient/printer_drivers/ ] && mkdir -p /var/lib/samba/netlogon/linuxclient/printer_drivers/
 ####################
 #add ppd file to printer
 ####################
@@ -173,7 +173,6 @@ sed -i "s/DefaultPageRegion: Letter/DefaultPageRegion: $PAGESIZE/g" /etc/cups/pp
 sed -i "s/DefaultImageableArea: Letter/DefaultImageableArea: $PAGESIZE/g" /etc/cups/ppd/$PRINTERNAME.ppd
 #Change colour option
 sed -i "s/DefaultColorModel: Gray/DefaultColorModel: $COLOUROPTION/g" /etc/cups/ppd/$PRINTERNAME.ppd
-[ ! -d /var/lib/samba/netlogon/linuxclient/printer_drivers/ ] && mkdir -p /var/lib/samba/netlogon/linuxclient/printer_drivers/
 cp -f /etc/cups/ppd/$PRINTERNAME.ppd /var/lib/samba/netlogon/linuxclient/printer_drivers/
 
 fi
