@@ -271,10 +271,6 @@ echo -e '# Global parameters
 	idmap_ldb:use rfc2307 = yes
 	acl:search=false
 
-[netlogon]
-	path = /var/lib/samba/netlogon
-	read only = No
-
 [sysvol]
 	path = /var/lib/samba/sysvol
 	read only = No
@@ -287,7 +283,7 @@ echo -e '# Global parameters
 	veto files = /*.exe/*.msi/*.mp3/*.wma/*.ram/*.mov/*.mpg/*.mpeg/*.bat/*.lnk/*.zip/"Folder Settings"/desktop.ini/
 
 [applications]
-	comment = Data
+	comment = Applications Share
 	path = /home/applications
 	invalid users = root
 	read only = No
@@ -298,24 +294,28 @@ echo -e '# Global parameters
 	level2 oplocks = No
 
 [itadmin]
+	comment = Itadmin Share
 	path = /home/itadminshare
 	invalid users = root,administrator
 	read only = No
 	browseable = Yes
 
 [staffshare]
+	comment = Staff Share
 	path = /home/staffshare
 	invalid users = root,administrator
 	read only = No
 	browseable = Yes
 
 [subjects]
+	comments = Subjects Share
 	path = /home/subjects
 	invalid users = root,administrator
 	read only = No
 	browseable = Yes
 
 [netlogon]
+	Comment = Netlogon Share
 	path = /var/lib/samba/netlogon
 	invalid users = root,administrator
 	create mask = 0664
@@ -325,6 +325,7 @@ echo -e '# Global parameters
 	level2 oplocks = No
 
 [officeshare]
+	Comment = Office Share
 	path = /home/officeshare
 	invalid users = root,administrator
 	read only = No
