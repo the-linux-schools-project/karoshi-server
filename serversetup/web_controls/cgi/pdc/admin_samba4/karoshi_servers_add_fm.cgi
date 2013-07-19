@@ -89,7 +89,7 @@ function showDiv(divName) {
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
 DATA=`cat | tr -cd 'A-Za-z0-9\._:\-' | sed 's/__/_ _/g'`
-ASKIP=no
+
 #########################
 #Assign data to variables
 #########################
@@ -192,17 +192,9 @@ echo '<form id="FormName" action="/cgi-bin/admin/karoshi_servers_add.cgi" method
 <br><br>
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 180px;">'$SERVERMSG'</td><td><input tabindex= "1" style="width: 200px;" name="_SERVERNAME_" value="'$SERVERNAME'" size="23" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a>
-</td></tr>'
-
-#Only ask for tcpip if it is not listed in /etc/hosts
-if [ $ASKIP = yes ]
-then
-echo '<tr><td style="width: 180px;">'$TCPIPMSG'</td><td><input tabindex= "2" style="width: 200px;" name="_TCPIPNUMBER_" size="23" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a>
-
-</td></tr>'
-fi
-
-echo '<tr><td style="width: 180px;">'$ROOTMSG'</td><td><input tabindex= "3" style="width: 200px;" name="_PASSWORD1_" value="'$PASSWORD1'" size="23" type="password"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG4'</span></a>
+</td></tr><tr><td style="width: 180px;">'$TCPIPMSG'</td><td><input tabindex= "2" style="width: 200px;" name="_TCPIPNUMBER_" size="23" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a>
+</td></tr>
+<tr><td style="width: 180px;">'$ROOTMSG'</td><td><input tabindex= "3" style="width: 200px;" name="_PASSWORD1_" value="'$PASSWORD1'" size="23" type="password"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG4'</span></a>
 </td></tr>
 <tr><td>'$CONFIRMMSG'</td><td><input tabindex= "4" style="width: 200px;" name="_PASSWORD2_" value="'$PASSWORD2'" size="23" type="password"></td></tr>
 <tr><td style="width: 180px;">Zone</td><td>
