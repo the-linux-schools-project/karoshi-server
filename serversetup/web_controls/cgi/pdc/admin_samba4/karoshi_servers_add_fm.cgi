@@ -238,7 +238,7 @@ echo '<tr><td style="width: 180px;">'$ROOTMSG'</td><td><input tabindex= "3" styl
 <p id="rodc" class="hiddenDiv"><b>'$MODULESMSG':</b> '$FILESERVERMSG', '$PRINTSERVERMSG', '$SQUIDSERVERMSG', '$EMAILSERVERMSG', '$HOMEACCESSSERVERMSG', '$MOODLESERVERMSG'</p>
 <p id="member" class="hiddenDiv"><b>'$MODULESMSG':</b> '$FILESERVERMSG', '$PRINTSERVERMSG', '$SQUIDSERVERMSG', '$EMAILSERVERMSG', '$HOMEACCESSSERVERMSG', '$MOODLESERVERMSG'</p>
 <p id="users" class="hiddenDiv"><b>'$MODULESMSG':</b> '$EMAILSERVERMSG', '$MOODLESERVERMSG', '$WEBSERVERMSG', '$JOOMLAMSG', '$DISTRIBUTIONSERVERMSG'</p>
-<p id="none" class="hiddenDiv"><b>'$MODULESMSG':</b> '$BACKUPSERVERMSG', '$MONITORSERVERMSG', '$DISTRIBUTIONSERVERMSG', '$WEBSERVERMSG', '$JOOMLAMSG'</p>
+<p id="none" class="hiddenDiv"><b>'$MODULESMSG':</b> '$BACKUPSERVERMSG', '$MONITORSERVERMSG', '$REVERSEPROXYMSG', '$DISTRIBUTIONSERVERMSG', '$WEBSERVERMSG', '$JOOMLAMSG'</p>
 
 </div>
 <div id="submitbox">
