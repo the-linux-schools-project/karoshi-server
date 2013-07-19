@@ -120,7 +120,7 @@ fi
 if [ `grep -c -w vpn_rule /etc/shorewall/rules` = 0 ]
 then
 LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM"c"\ACCEPT"	"net:'$MAINSERVERIP'"	"fw"	"udp"	"1194"	"-"#"vpn_rule /etc/shorewall/rules
+sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"udp"	"1194"	"-"#"vpn_rule /etc/shorewall/rules
 echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 MODCHECK=1
 fi
@@ -128,7 +128,7 @@ fi
 if [ $MODCHECK = 1 ]
 then
 #Restart shorewall
-echo "<li>"$RESTARTSWMSG"</li><br>"
+echo "<li>"$HOSTNAME - $RESTARTSWMSG"</li><br>"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
 echo "<br><br>"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
@@ -151,7 +151,7 @@ fi
 if [ $MODCHECK = 1 ]
 then
 #Restart shorewall
-echo "<li>"'$RESTARTSWMSG'"</li><br>"
+echo "<li>"$HOSTNAME - '$RESTARTSWMSG'"</li><br>"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
 echo "<br><br>"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
@@ -413,7 +413,7 @@ echo "<li>"$SCHEDULECHECKMSG"</li><br>"
 [ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
 echo '*'/5 '*' '*' '*' '*' /opt/karoshi/serversetup/modules/authentication/openvpnclients > /opt/karoshi/cronjobs/jobs/openvpnclients.cron
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
-echo '<br>'
+echo '<br><br>'
 }
 
 echo "<b>"$CONFIGUREOPENVPNMSG"</b><br><br>"
