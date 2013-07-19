@@ -368,6 +368,6 @@ cat /opt/karoshi/server_network/mac_addresses/* > /var/lib/samba/netlogon/domain
 
 #Add server zone info
 [ ! -d /opt/karoshi/server_network/zones/$ZONE/servers ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/servers
-touch /opt/karoshi/server_network/zones/$ZONE/servers/$SERVERNAME
+touch /opt/karoshi/server_network/zones/$ZONE/servers/$SERVER
 
 exit
