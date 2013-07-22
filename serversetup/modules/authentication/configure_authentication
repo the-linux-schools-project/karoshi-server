@@ -237,14 +237,14 @@ echo ACCEPT"	"net"	"fw"	"udp"	"'$UDPPORTS'"	"-"#"auth_rule >> /etc/shorewall/rul
 echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 
 #Restart shorewall
-echo "<li><b>"'$RESTARTSHWALLMSG'"</b></li>"
+echo "<li><b>"$HOSTNAME - '$RESTARTSHWALLMSG'"</b></li>"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
 echo "<br>"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
 echo "<br>"
 fi
 
-echo "<li><b>"'$RESTARTSMBAMSG'"</b></li>"
+echo "<br><li><b>"$HOSTNAME - '$RESTARTSMBAMSG'"</b></li>"
 #Stop samba
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 2>/dev/null
 echo "<br>"
