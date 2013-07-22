@@ -746,6 +746,12 @@ then
 echo "<li>"$SERVERNAME: $SERVERREMOVE"</li><br>"
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 source /opt/karoshi/server_network/domain_information/domain_name
+
+#Remove zone information
+[ -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME
+[ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/zones/dmz/servers/$SERVERNAME
+[ -f /opt/karoshi/server_network/zones/external/servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/zones/external/servers/$SERVERNAME
+
 #Remove alias information
 if [ -f /opt/karoshi/server_network/aliases/$SERVERNAME ]
 then
@@ -757,11 +763,6 @@ rm -f /opt/karoshi/server_network/aliases/$SERVERNAME
 #Delete alias from dns
 samba-tool dns delete 127.0.0.1 $REALM $ALIAS CNAME $SERVERNAME.$REALM --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
-
-#Remove zone information
-[ -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME
-[ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/zones/dmz/servers/$SERVERNAME
-[ -f /opt/karoshi/server_network/zones/external/servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/zones/external/servers/$SERVERNAME
 
 #Remove entry from dns
 TCPIPNUMBER=`net lookup $SERVERNAME`
