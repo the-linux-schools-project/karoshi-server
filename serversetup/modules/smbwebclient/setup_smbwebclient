@@ -154,12 +154,7 @@ chmod 0660 /var/www/smbwebclient-data
 chmod u+X,g+X /var/www/smbwebclient-data
 chown root.$APACHEGROUP /var/www/smbwebclient-data
 fi
-#################################
-#Allow non root users to use smbmount and smbumount
-#################################
-echo '<br>'$SMBPERMMSG
-chmod u+s /usr/bin/smbmnt
-chmod u+s /usr/bin/smbumount
+
 #################################
 #Configure virtual server on port 50000 for smbwebclient
 #################################
