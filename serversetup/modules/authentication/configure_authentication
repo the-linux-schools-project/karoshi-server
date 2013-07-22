@@ -76,17 +76,6 @@ sleep 2
 exit 101
 fi
 
-#Delete any existing auth flag files
-[ ! -d /opt/karoshi/server_network/zones ] && mkdir -p /opt/karoshi/server_network/zones
-for SERVERFLAG in `find /opt/karoshi/server_network/zones -name $SERVERNAME`
-do
-[ -f "$SERVERFLAG" ] && rm -f "$SERVERFLAG"
-done
-
-echo `date`: configure_authentication authtype $AUTHTYPE - "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-source /opt/karoshi/server_network/domain_information/domain_name
-
 function karoshiadminuser {
 #Make sure karoshiadmin user exists
 getent passwd karoshiadmin 1>/dev/null
@@ -263,7 +252,7 @@ sleep 1
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
 #Make sure samba runs on boot
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/samba
-'
+' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #Exit if the server did not join the domain
 if [ `echo $?` = 101 ]
 then
@@ -301,9 +290,6 @@ fi
 }
 
 function configure_nslcd {
-
-#Get pdc ipnumber
-PDCIP=`net lookup $HOSTNAME`
 
 if [ $SERVERNAME = $HOSTNAME ]
 then
@@ -346,57 +332,10 @@ source /opt/karoshi/serversetup/variables/distro
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nslcd
 fi
 
-SERVERIP=`net lookup $SERVERNAME`
-PORTSCANIP=$PDCIP
-
 if [ $SERVERNAME != $HOSTNAME ]
 then
-
-#Decide which krb server to use
-
-#Authtypes adc rodc member users none 
-[ $AUTHTYPE = adc ] && KRBSERVER=$SERVERNAME
-[ $AUTHTYPE = rodc ] && KRBSERVER=$SERVERNAME
-
-if [ $AUTHTYPE = member ] || [ $AUTHTYPE = users ]
-then
-if [ $ZONE = internal ]
-then
-KRBSERVER=$HOSTNAME
-else
-#Check to see if there is an adc in the zone to use
-if [ -d /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ ]
-then
-if [ `ls -1 /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ | wc -l` -gt 0 ]
-then
-KRBSERVER=`ls -1 /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ | sed -n 1,1p`
-else
-KRBSERVER=$HOSTNAME
-fi
-fi
-fi
-fi
-
-KRBSERVERIP=`net lookup $KRBSERVER`
-
-if [ $ZONE = dmz ]
-then
-if [ $AUTHTYPE = users ] || [ $AUTHTYPE = member ]
-then
-PORTSCANIP=$KRBSERVERIP
-fi
-fi
-
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 echo "<b>'$CONFIGUREAUTHMSG'</b><br><br>"
-
-echo "<li>"Checking to see that the PDC can be contacted on ports: '$PORTCHECK'"</li><br>"
-for PORT in `echo '$PORTCHECK' | sed "s/,/ /g"`
-do
-echo Checking $PORT" on server '$PORTSCANIP'<br>"
-nc -zv -w5 '$PORTSCANIP' $PORT
-[ $? != 0 ] && exit $PORT
-done
 
 source /opt/karoshi/serversetup/variables/distro
 
@@ -412,39 +351,6 @@ echo REALM=\"'$WEBADDRESS'\" >> /opt/karoshi/server_network/domain_information/d
 echo REALMCAPS=\"'$REALMCAPS'\" >> /opt/karoshi/server_network/domain_information/domain_name
 echo LDAPBASE=\"'$LDAPBASE'\" >> /opt/karoshi/server_network/domain_information/domain_name
 echo DOMAINSID=\"'$DOMAINSID'\" >> /opt/karoshi/server_network/domain_information/domain_name
-
-#Add entries to /etc/hosts
-if [ `grep -c '$SERVERNAME'.'$REALM' /etc/hosts` = 0 ]
-then
-echo '$SERVERIP'"	"'$SERVERNAME'.'$REALM'"	"'$SERVERNAME' >> /etc/hosts
-fi
-
-#Write resolve.conf
-if [ '$ZONE' = internal ] || [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ]
-then
-#Setup resolv.conf
-echo domain '$REALM' > /etc/resolv.conf
-fi
-
-if [ '$ZONE' = internal ] || [ '$ZONE' = dmz ]
-then
-if [ '$AUTHTYPE' ! = adc ] && [ '$AUTHTYPE' != rodc ]
-then
-echo domain '$REALM' > /etc/resolv.conf
-echo nameserver '$KRBSERVERIP' >> /etc/resolv.conf
-echo nameserver 8.8.8.8 >> /etc/resolv.conf
-echo nameserver 8.8.4.4 >> /etc/resolv.conf
-fi
-fi
-
-if [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ] 
-then
-echo nameserver '$SERVERIP' >> /etc/resolv.conf
-if [ `grep -c '$HOSTNAME'.'$REALM' /etc/hosts` = 0 ]
-then
-echo '$PDCIP'"	"'$HOSTNAME'.'$REALM'"	"'$HOSTNAME' >> /etc/hosts
-fi
-fi
 
 #Set up krb5
 echo "[libdefaults]" > /etc/krb5.conf
@@ -501,9 +407,129 @@ echo map group gidNumber objectSid:'$DOMAINSID' >> /etc/nslcd.conf
 echo "<br><br>"
 #Set nslcd to start on boot
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nslcd
-'
+' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 EXITCHECK=`echo $?`
+fi
 
+#Add ldap client flag
+[ ! -d /opt/karoshi/server_network/zones/$ZONE/ldap_clients/ ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/ldap_clients
+echo ldap_server=$KRBSERVER > /opt/karoshi/server_network/zones/$ZONE/ldap_clients/$SERVERNAME
+
+}
+
+function choose_krbserver {
+#Decide which krb server to use
+if [ $SERVERNAME != $HOSTNAME ]
+then
+#Authtypes adc rodc member users none 
+[ $AUTHTYPE = adc ] && KRBSERVER=$SERVERNAME
+[ $AUTHTYPE = rodc ] && KRBSERVER=$SERVERNAME
+
+if [ $AUTHTYPE = member ] || [ $AUTHTYPE = users ]
+then
+if [ $ZONE = internal ]
+then
+KRBSERVER=$HOSTNAME
+else
+#Check to see if there is an adc in the zone to use
+if [ -d /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ ]
+then
+if [ `ls -1 /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ | wc -l` -gt 0 ]
+then
+KRBSERVER=`ls -1 /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ | sed -n 1,1p`
+else
+KRBSERVER=$HOSTNAME
+fi
+fi
+fi
+fi
+
+KRBSERVERIP=`net lookup $KRBSERVER`
+
+if [ $ZONE = dmz ]
+then
+if [ $AUTHTYPE = users ] || [ $AUTHTYPE = member ]
+then
+PORTSCANIP=$KRBSERVERIP
+fi
+fi
+fi
+}
+
+function configure_hosts {
+#Add entries to /etc/hosts
+if [ $SERVERNAME != $HOSTNAME ]
+then
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+if [ `grep -c '$SERVERNAME'.'$REALM' /etc/hosts` = 0 ]
+then
+echo '$SERVERIP'"	"'$SERVERNAME'.'$REALM'"	"'$SERVERNAME' >> /etc/hosts
+fi
+if [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ] 
+then
+if [ `grep -c '$HOSTNAME'.'$REALM' /etc/hosts` = 0 ]
+then
+echo '$PDCIP'"	"'$HOSTNAME'.'$REALM'"	"'$HOSTNAME' >> /etc/hosts
+fi
+fi
+' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+}
+
+function configure_resolvconf {
+if [ $SERVERNAME != $HOSTNAME ]
+then
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+#Write resolve.conf
+if [ '$ZONE' = internal ] || [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ]
+then
+#Setup resolv.conf
+echo domain '$REALM' > /etc/resolv.conf
+fi
+
+if [ '$ZONE' = internal ] || [ '$ZONE' = dmz ]
+then
+if [ '$AUTHTYPE' != adc ] && [ '$AUTHTYPE' != rodc ]
+then
+echo domain '$REALM' > /etc/resolv.conf
+echo nameserver '$KRBSERVERIP' >> /etc/resolv.conf
+echo nameserver 8.8.8.8 >> /etc/resolv.conf
+echo nameserver 8.8.4.4 >> /etc/resolv.conf
+fi
+fi
+
+if [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ] 
+then
+echo nameserver '$SERVERIP' >> /etc/resolv.conf
+fi
+' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+}
+
+function check_ports {
+if [ $SERVERNAME != $HOSTNAME ]
+then
+#Set ports to check
+PORTCHECK=53,88,389
+TCPPORTS=139,445
+UDPPORTS=137,138,445
+if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
+then
+PORTCHECK=53,88,135,139,389,445,464,636,1024,3268
+TCPPORTS=53,88,123,135,137,138,139,389,445,464,636,1024:1100,3268
+UDPPORTS=53,88,123,135,137,138,139,389,445,464,636,1024:1100,3268
+fi
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+echo "<li>"Checking to see that the '$PORTSCANIP' can be contacted on ports: '$PORTCHECK'"</li><br>"
+for PORT in `echo '$PORTCHECK' | sed "s/,/ /g"`
+do
+echo Checking $PORT on server '$PORTSCANIP'"<br>"
+nc -zv -w5 '$PORTSCANIP' $PORT
+[ $? != 0 ] && exit $PORT
+done
+exit
+' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+EXITCHECK=$?
 if [ $EXITCHECK != 0 ]
 then
 echo `date`: configure_authentication - Error connecting to $PDCIP on port $EXITCHECK "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -512,38 +538,47 @@ sleep 4
 exit $EXITCHECK
 fi
 fi
-
-#Add nslcd flag
-#[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
-#echo $NSLCDCLIENTMSG"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/nslcd
-[ ! -d /opt/karoshi/server_network/zones/$ZONE/ldap_clients/ ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/ldap_clients
-echo ldap_server=$PDCIP > /opt/karoshi/server_network/zones/$ZONE/ldap_clients/$SERVERNAME
-
 }
 
-#Set ports to check and open in shorewall
+echo `date`: configure_authentication authtype $AUTHTYPE - "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#Delete any existing auth flag files
+[ ! -d /opt/karoshi/server_network/zones ] && mkdir -p /opt/karoshi/server_network/zones
+for SERVERFLAG in `find /opt/karoshi/server_network/zones -name $SERVERNAME`
+do
+[ -f "$SERVERFLAG" ] && rm -f "$SERVERFLAG"
+done
 
-PORTCHECK=53,88,389
-TCPPORTS=139,445
-UDPPORTS=137,138,445
+#Set variables
+source /opt/karoshi/server_network/domain_information/domain_name
+SERVERIP=`net lookup $SERVERNAME`
+PDCIP=`net lookup $HOSTNAME`
+PORTSCANIP=$PDCIP
 
-if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
-then
-PORTCHECK=53,88,135,139,389,445,464,636,1024,3268
-TCPPORTS=53,88,123,135,137,138,139,389,445,464,636,1024:1100,3268
-UDPPORTS=53,88,123,135,137,138,139,389,445,464,636,1024:1100,3268
-fi
-
+#####################
 #run functions Authtypes adc rodc member users none
-if [ $AUTHTYPE != none ]
-then
-echo `date`: configure_authentication - configuring nslcd "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-configure_nslcd
-fi
+#####################
+
+#Choose krb server to use
+echo `date`: configure_authentication - choosing  krbserver "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+choose_krbserver
+#Check ports
+echo `date`: configure_authentication - checking ports "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+check_ports
+#Configure /etc/hosts
+echo `date`: configure_authentication - configuring /etc/hosts "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+configure_hosts
+#Configure /etc/resolv.conf
+echo `date`: configure_authentication - configuring /etc/resolv.conf "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+configure_resolvconf
+#Configure samba4
 if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ] || [ $AUTHTYPE = member ]
 then
 karoshiadminuser
 echo `date`: configure_authentication - configuring samba4 $AUTHTYPE "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 configure_samba4
 fi
-
+#Configure nslcd
+echo `date`: configure_authentication - configuring nslcd "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+configure_nslcd
+echo `date`: configure_authentication - completed "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit

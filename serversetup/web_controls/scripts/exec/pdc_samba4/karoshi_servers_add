@@ -271,10 +271,7 @@ scp -r -o PasswordAuthentication=no /etc/ssl/root-ca/cacert.pem $SERVER:/etc/ssl
 #Copy uptime daemon to server
 scp -r /opt/karoshi/serversetup/scripts/uptime $SERVER:/opt/karoshi/serversetup/scripts/
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-#Stop existing uptime
 source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/uptimed_stop 1>/dev/null
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/uptimed
 #Stop karoshi-uptime if it is already running to apply new version
 if [ -f /etc/init.d/karoshi-uptime ]
 then
