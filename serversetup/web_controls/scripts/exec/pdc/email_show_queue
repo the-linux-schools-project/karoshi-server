@@ -183,6 +183,9 @@ else
 echo '$EMPTYQUEUEMSG'
 fi
 '
+
+#Remove any mailq warnings from the web management
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete mailq_warning
 fi
 
 
