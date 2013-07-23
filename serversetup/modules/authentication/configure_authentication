@@ -230,21 +230,21 @@ fi
 MODCHECK=`grep -c -w auth_rule /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
-echo "Adding shorewall ports - tcp '$TCPPORTS' udp '$UDPPORTS'<br><br>"
+echo "<br><li><b>Adding shorewall ports - tcp '$TCPPORTS' udp '$UDPPORTS'</b></li><br>"
 LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"'$TCPPORTS'"	"-"#"auth_rule /etc/shorewall/rules
 echo ACCEPT"	"net"	"fw"	"udp"	"'$UDPPORTS'"	"-"#"auth_rule >> /etc/shorewall/rules
 echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 
 #Restart shorewall
-echo "<li><b>"$HOSTNAME - '$RESTARTSHWALLMSG'"</b></li>"
+echo "<br><li><b>"$HOSTNAME - '$RESTARTSHWALLMSG'"</b></li><br>"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
 echo "<br>"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
 echo "<br>"
 fi
 
-echo "<br><li><b>"$HOSTNAME - '$RESTARTSMBAMSG'"</b></li>"
+echo "<br><li><b>"$HOSTNAME - '$RESTARTSMBAMSG'"</b></li><br>"
 #Stop samba
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 2>/dev/null
 echo "<br>"
