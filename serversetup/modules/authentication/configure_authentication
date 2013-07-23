@@ -428,18 +428,15 @@ then
 
 if [ $AUTHTYPE = member ] || [ $AUTHTYPE = users ]
 then
-if [ $ZONE = internal ]
-then
 KRBSERVER=$HOSTNAME
-else
+if [ $ZONE != internal ]
+then
 #Check to see if there is an adc in the zone to use
 if [ -d /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ ]
 then
 if [ `ls -1 /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ | wc -l` -gt 0 ]
 then
 KRBSERVER=`ls -1 /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ | sed -n 1,1p`
-else
-KRBSERVER=$HOSTNAME
 fi
 fi
 fi
