@@ -77,12 +77,12 @@ exit 101
 fi
 
 function karoshiadminuser {
+#Get samba 4 database password
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 #Make sure karoshiadmin user exists
 getent passwd karoshiadmin 1>/dev/null
 if [ `echo $?` != 0 ]
 then
-#Get samba 4 database password
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 #Add karoshiadmin to samba4 ldap
 samba-tool user add karoshiadmin --userou='OU=itadmin,OU=personnel,OU=People' --home-directory=/home/users/itadmin/karoshiadmin --surname=admin --given-name=karoshi --use-username-as-cn --random-password 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #Add karoshiadmin to the Domain Admins group
@@ -136,6 +136,9 @@ JOINTYPE=DC
 SERVERROLE="active directory domain controller"
 fi
 
+#Get samba 4 database password
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 source /opt/karoshi/serversetup/variables/distro
 echo "<br><li><b>'$JOINDOMAINMSG'</b></li><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
@@ -145,7 +148,7 @@ if [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ]
 then
 [ -f /usr/local/sbin/samba_disabled ] && mv /usr/local/sbin/samba_disabled /usr/local/sbin/samba
 [ -f /etc/samba/smb.conf ] && rm -f /etc/samba/smb.conf
-samba-tool domain join '$REALM' '$JOINTYPE' --server='$HOSTNAME' --username=karoshiadmin --password='$PASSWORD' --realm='$SAMBADOMAIN'.'$REALM'
+samba-tool domain join '$REALM' '$JOINTYPE' --server='$HOSTNAME' --username=Administrator --password='$LDAPPASS' --realm='$SAMBADOMAIN'.'$REALM'
 JOINDOMAINSTATUS=`echo $?`
 if [ $JOINDOMAINSTATUS != 0 ]
 then
@@ -218,7 +221,7 @@ echo -e "#karoshi_member_server
 " > /etc/samba/smb.conf
 
 #Join the domain
-net ads join -S '$KRBSERVER' -U karoshiadmin%'$PASSWORD'
+net ads join -S '$KRBSERVER' -U Administrator%'$LDAPPASS'
 JOINDOMAINSTATUS=`echo $?`
 if [ $JOINDOMAINSTATUS != 0 ]
 then
@@ -571,7 +574,6 @@ configure_resolvconf
 #Configure samba4
 if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ] || [ $AUTHTYPE = member ]
 then
-karoshiadminuser
 echo `date`: configure_authentication - configuring samba4 $AUTHTYPE "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 configure_samba4
 fi
