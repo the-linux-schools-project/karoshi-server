@@ -200,6 +200,10 @@ echo -e "
 " >> /etc/samba/smb.conf
 
 fi
+
+#Point adc and rodc servers at themselves for resolv.conf
+echo domain '$REALM' > /etc/resolv.conf
+echo nameserver '$SERVERIP' >> /etc/resolv.conf
 fi
 
 if [ '$AUTHTYPE' = member ]
@@ -501,7 +505,7 @@ fi
 
 if [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ] 
 then
-echo nameserver '$SERVERIP' >> /etc/resolv.conf
+echo nameserver '$PDCIP' >> /etc/resolv.conf
 fi
 ' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
