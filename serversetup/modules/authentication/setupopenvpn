@@ -373,7 +373,7 @@ PDC_REAL_IP='$MAINSERVERIP'
 MY_VPN_IP='$TUNNELIP_CLIENT'
 PDC_VPN_IP='$TUNNELIP_SERVER'
 
-iptables -m comment --comment \"karoshi_vpn_rule\" -t nat -C OUTPUT -d \$PDC_REAL_IP -j DNAT --to-destination \$PDC_VPN_IP && exit 0
+iptables -m comment --comment \"karoshi_vpn_rule\" -t nat -C OUTPUT -d \$PDC_REAL_IP -j DNAT --to-destination \$PDC_VPN_IP 2>/dev/null && exit 0
 
 echo Adding Karoshi VPN rules...
 
