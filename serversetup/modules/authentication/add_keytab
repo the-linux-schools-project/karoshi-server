@@ -83,6 +83,9 @@ echo -e "dn: CN=karoshi-krb5,OU=karoshi,OU=other,OU=People,$LDAPBASE
 changetype: modify
 replace: userAccountControl
 userAccountControl: 66112
+-
+add: gidNumber
+gidNumber: 65534
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>> /opt/karoshi/serversetup/install_log
 fi
 
