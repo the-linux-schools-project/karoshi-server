@@ -237,7 +237,6 @@ then
 echo "<li>$SERVER - this name does not match the hostname of the server you are connecting to</li>"
 echo `date`: karoshi_servers_add - $SERVER name mismatch with remote server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 sleep 3
-remove_dns_entry
 fi
 
 if [ $SSHRESULT = 103 ]
@@ -246,7 +245,6 @@ then
 echo "<li>$SERVER - network settings for this server show that it should not be in the same zone as the main server.</li>"
 echo `date`: karoshi_servers_add - $SERVER: $ZONE "network settings for this server show that it should not be in the same zone as the main server." by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 sleep 3
-remove_dns_entry
 fi
 
 if [ $SSHRESULT = 104 ]
@@ -255,10 +253,13 @@ then
 echo "<li>$SERVER - network settings for this server show that it should be in the same zone as the main server.</li>"
 echo `date`: karoshi_servers_add - $SERVER: $ZONE "network settings for this server show that it should be in the same zone as the main server." by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 sleep 3
-remove_dns_entry
 fi
 
-[ $SSHRESULT != 0 ] && exit 101
+if [ $SSHRESULT != 0 ]
+then
+remove_dns_entry
+exit 101
+fi
 
 #Copy in boot controls
 scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services $SERVER:/opt/karoshi/serversetup/distro/ubuntu/scripts/
