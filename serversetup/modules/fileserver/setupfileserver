@@ -104,19 +104,9 @@ fi
 ######################
 echo '<b>'$TITLE - $HOSTNAME'</b><br><br>'
 
-######################
-#Restart shorewall
-######################
-if [ $MODCHECK = 0 ]
-then
-echo '<br>'$RESTARTSWMSG
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
-echo '<br><br>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
-echo '<br><br>'
-fi
 
-#Server should already be joined to the domain for with the authentication module
+#Restart shorewall
+#Not needed as ports are opened by authentication modules
 
 #Add in homes share to smb.conf
 
