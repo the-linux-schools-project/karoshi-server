@@ -94,29 +94,6 @@ fi
 #Apache moodle kerberos support
 #####################
 RESTARTAPACHE=no
-if [ `grep -c "#moodle-kerberos-support" /etc/apache2/sites-enabled/000-default` = 0 ]
-then
-#Remove last line
-sed -i 's/<\/VirtualHost>//g' /etc/apache2/sites-enabled/000-default
-
-
-#Add in kerberos
-echo -e '	#moodle-kerberos-support
-	<Directory /var/www/html/moodle/auth/ldap/>
-		<Files ntlmsso_magic.php>
-			KrbServiceName HTTP/'$HOSTNAME'.'$REALM'
-			AuthName "Moodle"
-			AuthType Kerberos
-			Krb5Keytab /etc/keytabs/moodle.keytab
-			KrbMethodNegotiate on
-			KrbMethodK5Passwd off
-			KrbAuthoritative on
-			require valid-user
-		</Files>
-	</Directory>' >> /etc/apache2/sites-enabled/000-default
-echo "</VirtualHost>" >> /etc/apache2/sites-enabled/000-default
-RESTARTAPACHE=yes
-fi
 
 if [ `grep -c "#moodle-kerberos-support" /etc/apache2/sites-enabled/default-ssl` = 0 ]
 then
@@ -134,6 +111,7 @@ echo -e '	#moodle-kerberos-support
 			KrbMethodNegotiate on
 			KrbMethodK5Passwd off
 			KrbAuthoritative on
+			KrbServiceName HTTP/'$HOSTNAME'.'$REALM'
 			require valid-user
 		</Files>
 	</Directory>' >> /etc/apache2/sites-enabled/default-ssl
