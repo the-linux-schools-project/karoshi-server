@@ -111,52 +111,43 @@ echo '<tr><td>'$DEPARTMENTMSG'</td>
 <td>
 <select tabindex= "3" style="width: 200px;" name="_DEPARTMENT_">
 <option value=""></option>
-<option value="$DEPARTMENT1">'$DEPARTMENT1'</option>
-<option value="$DEPARTMENT2">'$DEPARTMENT2'</option>
-<option value="$DEPARTMENT3">'$DEPARTMENT3'</option>
-<option value="$DEPARTMENT4">'$DEPARTMENT4'</option>
-<option value="$DEPARTMENT5">'$DEPARTMENT5'</option>
-<option value="$DEPARTMENT6">'$DEPARTMENT6'</option>
-<option value="$DEPARTMENT7">'$DEPARTMENT7'</option>
-<option value="$DEPARTMENT8">'$DEPARTMENT8'</option>
-<option value="$DEPARTMENT9">'$DEPARTMENT9'</option>
-<option value="$DEPARTMENT10">'$DEPARTMENT10'</option>
-<option value="$DEPARTMENT11">'$DEPARTMENT11'</option>
-<option value="$DEPARTMENT12">'$DEPARTMENT12'</option>
-<option value="$DEPARTMENT13">'$DEPARTMENT13'</option>
-<option value="$DEPARTMENT14">'$DEPARTMENT14'</option>
-<option value="$DEPARTMENT15">'$DEPARTMENT15'</option>
-<option value="$DEPARTMENT16">'$DEPARTMENT16'</option>
-<option value="$DEPARTMENT17">'$DEPARTMENT17'</option>
-<option value="$DEPARTMENT18">'$DEPARTMENT18'</option>
-<option value="$DEPARTMENT19">'$DEPARTMENT19'</option>
-<option value="$DEPARTMENT20">'$DEPARTMENT20'</option>
+<option value="'$DEPARTMENT1'">'$DEPARTMENT1'</option>
+<option value="'$DEPARTMENT2'">'$DEPARTMENT2'</option>
+<option value="'$DEPARTMENT3'">'$DEPARTMENT3'</option>
+<option value="'$DEPARTMENT4'">'$DEPARTMENT4'</option>
+<option value="'$DEPARTMENT5'">'$DEPARTMENT5'</option>
+<option value="'$DEPARTMENT6'">'$DEPARTMENT6'</option>
+<option value="'$DEPARTMENT7'">'$DEPARTMENT7'</option>
+<option value="'$DEPARTMENT8'">'$DEPARTMENT8'</option>
+<option value="'$DEPARTMENT9'">'$DEPARTMENT9'</option>
+<option value="'$DEPARTMENT10'">'$DEPARTMENT10'</option>
+<option value="'$DEPARTMENT11'">'$DEPARTMENT11'</option>
+<option value="'$DEPARTMENT12'">'$DEPARTMENT12'</option>
+<option value="'$DEPARTMENT13'">'$DEPARTMENT13'</option>
+<option value="'$DEPARTMENT14'">'$DEPARTMENT14'</option>
+<option value="'$DEPARTMENT15'">'$DEPARTMENT15'</option>
+<option value="'$DEPARTMENT16'">'$DEPARTMENT16'</option>
+<option value="'$DEPARTMENT17'">'$DEPARTMENT17'</option>
+<option value="'$DEPARTMENT18'">'$DEPARTMENT18'</option>
+<option value="'$DEPARTMENT19'">'$DEPARTMENT19'</option>
+<option value="'$DEPARTMENT20'">'$DEPARTMENT20'</option>
 </select>
 </td></tr>
 <tr><td>'$CATEGORYMSG'</td>
 <td>
 <select tabindex= "4" style="width: 200px;" name="_CATEGORY_">
 <option value=""></option>
-<option value="$CATEGORY1">'$CATEGORY1'</option>
-<option value="$CATEGORY2">'$CATEGORY2'</option>
-<option value="$CATEGORY3">'$CATEGORY3'</option>
-<option value="$CATEGORY4">'$CATEGORY4'</option>
-<option value="$CATEGORY5">'$CATEGORY5'</option>
-<option value="$CATEGORY6">'$CATEGORY6'</option>
-<option value="$CATEGORY7">'$CATEGORY7'</option>
-<option value="$CATEGORY8">'$CATEGORY8'</option>
-<option value="$CATEGORY9">'$CATEGORY9'</option>
-<option value="$CATEGORY10">'$CATEGORY10'</option>
-<option value="$CATEGORY11">'$CATEGORY11'</option>
-<option value="$CATEGORY12">'$CATEGORY12'</option>
-<option value="$CATEGORY13">'$CATEGORY13'</option>
-<option value="$CATEGORY14">'$CATEGORY14'</option>
-<option value="$CATEGORY15">'$CATEGORY15'</option>
-<option value="$CATEGORY16">'$CATEGORY16'</option>
-<option value="$CATEGORY17">'$CATEGORY17'</option>
-<option value="$CATEGORY18">'$CATEGORY18'</option>
-<option value="$CATEGORY19">'$CATEGORY19'</option>
-<option value="$CATEGORY20">'$CATEGORY20'</option>
+<option value="'$CATEGORY1'">'$CATEGORY1'</option>
+<option value="'$CATEGORY2'">'$CATEGORY2'</option>
+<option value="'$CATEGORY3'">'$CATEGORY3'</option>
+<option value="'$CATEGORY4'">'$CATEGORY4'</option>
+<option value="'$CATEGORY5'">'$CATEGORY5'</option>
+<option value="'$CATEGORY6'">'$CATEGORY6'</option>
+<option value="'$CATEGORY7'">'$CATEGORY7'</option>
+<option value="'$CATEGORY8'">'$CATEGORY8'</option>
+<option value="'$CATEGORY9'">'$CATEGORY9'</option>
+<option value="'$CATEGORY10'">'$CATEGORY10'</option>
+<option value="'$CATEGORY11'">'$CATEGORY11'</option>
 </select> 
  <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a>
 </td></tr>
