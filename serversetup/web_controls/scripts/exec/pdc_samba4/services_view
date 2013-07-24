@@ -217,7 +217,7 @@ DSERVICES=$DSERVICES2
 DSERVICES=`echo -e "$DSERVICES" | sed "s/,/\n/g" | sort`
 
 #List of all services to check
-ALLSERVICES="apache aptcacherng cups cron dansguardian dhcp dns dovecot ldap mailscanner mon mysql nfs nginx openvpn portmap postfix radius samba squid vsftpd"
+ALLSERVICES="apache aptcacherng cups cron dansguardian dhcp dns dovecot ldap mailscanner mon mysql nfs nginx openvpn portmap postfix radius samba sogo squid vsftpd"
 if [ $SERVERNAME = $HOSTNAME ]
 then
 function check_status {
@@ -285,6 +285,7 @@ tftpd="'$tftpd'"
 dovecot="'$dovecot'"
 proftpd="'$proftpd'"
 vsftpd="'$vsftpd'"
+sogo="'$sogo'"
 
 source /opt/karoshi/serversetup/variables/distro
 function check_status {
