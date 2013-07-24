@@ -1,4 +1,5 @@
 #!/bin/bash
+export DEBIAN_FRONTEND=noninteractive
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/variables/language
 source /opt/karoshi/serversetup/language/$LANGCHOICE/standardsetup
@@ -48,16 +49,20 @@ checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
 killall yad
 }
 
+
 do_setup | yad --title "$TITLE2" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --geometry=400x100+0+0 --no-buttons --text "Extra Server Setup\n\n\n$STATUS" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --progress
+
+
+###########################
+#Display completed message
+############################
+yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 100 --timeout=10 --text="$FINALMSG" --no-buttons
 
 #Remove extra ubiquity software that is now not needed
 apt-get -y autoremove
 #Create initial disk usage report
 /opt/karoshi/serversetup/all/"useful scripts"/disk_usage
 
-###########################
-#Display completed message
-############################
-yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 100 --timeout=10 --text="$FINALMSG" --no-buttons
+
 exit
 
