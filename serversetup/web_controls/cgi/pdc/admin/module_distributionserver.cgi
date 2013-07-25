@@ -127,6 +127,7 @@ echo '<div id="actionbox"><span style="font-weight: bold;">'$TITLE - $SERVERNAME
 #Add distribution server
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_distributionserver.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_distributionserver
+completed
 echo '</div></body></html>'
 exit
 
