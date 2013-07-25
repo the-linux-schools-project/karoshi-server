@@ -1,10 +1,2 @@
 #!/bin/bash
-#Check which dhcp server we are using
-if [ `grep -c ^conf-dir=/etc/dnsmasq.d /etc/dnsmasq.conf` -gt 0 ]
-then
-#Using dnsmasq
-service dnsmasq start
-else
-#Using dhcp3-server
-service dhcp3-server start
-fi
+service isc-dhcp-server start

@@ -1,26 +1,9 @@
 #!/bin/bash
-#Check which dhcp server we are using
-
-[ ! -f /etc/dnsmasq.conf ] && exit 1
-
-if [ `grep -c ^conf-dir=/etc/dnsmasq.d /etc/dnsmasq.conf` -gt 0 ]
-then
-#Using dnsmasq
-#Only show running if dnsmasq has been configured to do dhcp
-if [ -f /opt/karoshi/server_network/dhcpserver ]
-then
-if [ `ps -e | grep -w -c dnsmasq` -gt 0 ]
-then
-exit 0
-fi
-fi
-exit 1
-else
 #Using dhcp3-server
-if [ `ps -e | grep -w -c dhcpd3` -gt 0 ]
+if [ `ps -e | grep -w -c dhcpd` -gt 0 ]
 then
 exit 0
 else
 exit 1
 fi
-fi
+
