@@ -76,6 +76,7 @@ function sysvsupport {
 [ -L /etc/init.d/dovecot ] && rm -f /etc/init.d/dovecot
 [ -L /etc/init.d/vsftpd ] && rm -f /etc/init.d/vsftpd
 [ -L /etc/init.d/sogo ] && rm -f /etc/init.d/sogo
+[ -L /etc/init.d/isc-dhcp-server ] && rm -f /etc/init.d/isc-dhcp-server
 
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/apache2 /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/clamav-freshclam /etc/init.d/
@@ -102,6 +103,7 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/vsftpd /etc/in
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/portmap /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/rpcbind /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/sogo /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/isc-dhcp-server /etc/init.d/
 
 #Make sure no scripts have been added to /etc/init for upstart.
 [ `ls /etc/init/mysql* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/mysql*
@@ -115,6 +117,7 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/sogo /etc/init
 [ `ls /etc/init/vsftpd* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/vsftpd*
 [ `ls /etc/init/portmap* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/portmap*
 [ `ls /etc/init/rpcbind* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/rpcbind*
+[ `ls /etc/init/isc-dhcp* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/isc-dhcp*
 #May need to add more to this list.
 }
 
