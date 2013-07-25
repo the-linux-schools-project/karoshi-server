@@ -55,8 +55,6 @@ function sysvsupport {
 [ -L /etc/init.d/clamav-freshclam ] && rm -f /etc/init.d/clamav-freshclam
 [ -L /etc/init.d/cups ] && rm -f /etc/init.d/cups
 [ -L /etc/init.d/dansguardian ] && rm -f /etc/init.d/dansguardian
-[ -L /etc/init.d/dhcp3-server ] && rm -f /etc/init.d/dhcp3-server
-[ -L /etc/init.d/dnsmasq ] && rm -f /etc/init.d/dnsmasq
 [ -L /etc/init.d/mailscanner ] && rm -f /etc/init.d/mailscanner
 [ -L /etc/init.d/mon ] && rm -f /etc/init.d/mon
 [ -L /etc/init.d/mysql ] && rm -f /etc/init.d/mysql
@@ -82,8 +80,6 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/apache2 /etc/i
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/clamav-freshclam /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/cups /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/dansguardian /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/dhcp3-server /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/dnsmasq /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/mailscanner /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/mon /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/mysql /etc/init.d/
