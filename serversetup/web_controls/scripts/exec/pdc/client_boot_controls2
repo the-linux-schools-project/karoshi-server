@@ -133,18 +133,7 @@ fi
 DISTRIBUTIONSERVER=`sed -n 1,1p /opt/karoshi/server_network/distribution_server`
 SERVERIP=`net lookup $DISTRIBUTIONSERVER`
 
-DHCPCONFPATH=/etc/dhcpd.conf
-[ -f /etc/dhcp3/dhcpd.conf ] && DHCPCONFPATH=/etc/dhcp3/dhcpd.conf
-
-#Check which dhcp server we are using
-if [ `grep -c ^conf-dir=/etc/dnsmasq.d /etc/dnsmasq.conf` -gt 0 ]
-then
-#Using dnsmasq
-DHCPSERVICE=dnsmasq
-else
-#Using dhcp3-server
-DHCPSERVICE=dhcp3-server
-fi
+DHCPCONFPATH=/etc/dhcp/dhcpd.conf
 
 
 if [ $ACTION = install ]
@@ -295,24 +284,17 @@ source /opt/karoshi/serversetup/variables/distro
 }
 
 function delete_client_info {
-if [ $DHCPSERVICE = dhcp3-server ]
-then
 if [ `grep -c "#client_install_configuration" $DHCPCONFPATH` != 0 ]
 then
 FILELENGTH=`cat $DHCPCONFPATH | wc -l`
 LINENUMBER=`grep -n "#client_install_configuration" $DHCPCONFPATH | cut -d: -f1`
 sed -i ''$LINENUMBER','$FILELENGTH'd' $DHCPCONFPATH
 fi
-else
-rm -f /etc/dnsmasq.d/distribution_clients
-fi
 }
 
 function collate_client_info {
-if [ $DHCPSERVICE = dhcp3-server ]
-then
 echo "#client_install_configuration" >> $DHCPCONFPATH
-fi
+
 if [ -d /opt/karoshi/asset_register/network_install/install ]
 then
 if [ `ls -1 /opt/karoshi/asset_register/network_install/install | wc -l` -gt 0 ]
@@ -324,8 +306,6 @@ CLIENT_DATA=`sed -n 1,1p /opt/karoshi/asset_register/network_install/install/$CL
 TCPIP=`echo $CLIENT_DATA | cut -d, -f1`
 MACADDRESS=`echo $CLIENT_DATA | cut -d, -f2`
 
-if [ $DHCPSERVICE = dhcp3-server ]
-then
 echo >> $DHCPCONFPATH
 echo 'host '$TCPIP' {' >> $DHCPCONFPATH
 echo 'hardware ethernet '$MACADDRESS';' >> $DHCPCONFPATH
@@ -335,14 +315,7 @@ echo 'next-server '$SERVERIP';' >> $DHCPCONFPATH
 echo 'filename "pxelinux.0";' >> $DHCPCONFPATH
 echo '}' >> $DHCPCONFPATH
 echo >> $DHCPCONFPATH
-else
-echo 'dhcp-host='$MACADDRESS','$TCPIP',24h' > /etc/dnsmasq.d/distribution_clients
-fi
 done
-if [ $DHCPSERVICE = dnsmasq ]
-then
-echo 'dhcp-boot=pxelinux.0,,'$SERVERIP'' >> /etc/dnsmasq.d/distribution_clients
-fi
 fi
 fi
 

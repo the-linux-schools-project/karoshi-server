@@ -148,10 +148,6 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/system/dhcp
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
-#Check which dhcp server we are using
-DHCPSERVER=dhcp3-server
-[ `grep -c ^conf-dir=/etc/dnsmasq.d /etc/dnsmasq.conf` -gt 0 ] && DHCPSERVER=dnsmasq
-
 #########################
 #Write data to /opt/karoshi/server_network/dhcp/dhcp_settings
 #########################
@@ -188,14 +184,9 @@ echo MAXLEASETIME=$NEWMAXLEASETIME >> /opt/karoshi/server_network/dhcp/dhcp_sett
 
 source /opt/karoshi/server_network/dhcp/dhcp_settings
 
-if [ $DHCPSERVER = dhcp3-server ]
-then
-
 #Create dhcpd.conf
 
-DHCPCONFPATH=/etc/dhcpd.conf
-[ -f /etc/dhcp3/dhcpd.conf ] && DHCPCONFPATH=/etc/dhcp3/dhcpd.conf
-
+DHCPCONFPATH=/etc/dhcp/dhcpd.conf
 echo 'authoritative;' > $DHCPCONFPATH
 echo '	option domain-name-servers '$NEWDOMAINNAMESERVER';' >> $DHCPCONFPATH
 echo '	option routers '$NEWROUTER';' >> $DHCPCONFPATH
@@ -225,58 +216,6 @@ source /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/software
 [ `echo $?` != 0 ] && exit 101
 #Start DHCP on boot
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/dhcp
-
-#Make sure that dhcp server will run if the server reboots - problem on ubuntu 10.04
-if [ `grep -c post-up /etc/network/interfaces` = 0 ]
-then
-echo post-up /etc/init.d/dhcp3-server start >> /etc/network/interfaces
-echo pre-down /etc/init.d/dhcp3-server stop >> /etc/network/interfaces
-fi
-fi
-
-if [ $DHCPSERVER = dnsmasq ]
-then
-source /opt/karoshi/serversetup/variables/distro
-let NEWDEFAULTLEASETIME=$NEWDEFAULTLEASETIME/60/60
-echo dhcp-authoritative > /etc/dnsmasq.d/dhcp-settings
-echo dhcp-range=$NEWSTARTADDRESS,$NEWENDADDRESS,$NEWSUBNETMASK,$NEWDEFAULTLEASETIME'h' >> /etc/dnsmasq.d/dhcp-settings
-echo dhcp-option=option:router,$NEWROUTER >> /etc/dnsmasq.d/dhcp-settings
-echo dhcp-option=19,0 >> /etc/dnsmasq.d/dhcp-settings
-echo dhcp-option=44,0.0.0.0 >> /etc/dnsmasq.d/dhcp-settings
-echo dhcp-option=45,0.0.0.0 >> /etc/dnsmasq.d/dhcp-settings
-echo dhcp-option=46,8 >> /etc/dnsmasq.d/dhcp-settings
-echo dhcp-option=vendor:MSFT,2,1i >> /etc/dnsmasq.d/dhcp-settings
-
-#open udp ports 67 and 68 on shorewall
-MODCHECK=`grep -c -w dhcp_rule /etc/shorewall/rules`
-RESTART_SHOREWALL=no
-if [ $MODCHECK = 0 ]
-then
-RESTART_SHOREWALL=yes
-echo ''$SHOREWALLMSG - udp 67,68'<br><br>'
-LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'udp'	'67,68'	'-'#'dhcp_rule /etc/shorewall/rules
-echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
-fi
-
-#Start DHCP on boot
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/dhcp
-
-######################
-#Restart shorewall
-######################
-if [ $RESTART_SHOREWALL = yes ]
-then
-echo '<br>'$RESTARTSWMSG
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
-echo '<br><br>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
-echo '<br><br>'
-fi
-
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dns_stop 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dns_start 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-fi
 
 #Add role information
 echo "DHCP Server<br>" > /opt/karoshi/server_network/servers/$HOSTNAME/dhcpserver
