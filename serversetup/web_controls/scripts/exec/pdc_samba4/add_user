@@ -355,8 +355,9 @@ if [ -d /opt/karoshi/server_network/servers/$SERVER ] && [ $SERVER != $HOSTNAME 
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 mkdir -p '$HOMEPATH''/''$NEWUSERNAME'
-chmod 0700 '$HOMEPATH''/''$NEWUSERNAME'
-chown '$USERID':'$PRIMARYGROUP' '$HOMEPATH''/''$NEWUSERNAME'
+chmod 0600 -R '$HOMEPATH''/''$NEWUSERNAME'
+chmod u+X -R '$HOMEPATH''/''$NEWUSERNAME'
+chown -R '$USERID':'$PRIMARYGROUP' '$HOMEPATH''/''$NEWUSERNAME'
 '
 SSHSTATUS=`echo $?`
 if [ $SSHSTATUS != 0 ]
@@ -379,8 +380,9 @@ then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
 [ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
 mkdir /home/users/email/'$NEWUSERNAME'
-chown '$USERID':'$PRIMARYGROUP' /home/users/email/'$NEWUSERNAME'
-chmod 0700 /home/users/email/'$NEWUSERNAME'
+chown -R '$USERID':'$PRIMARYGROUP' /home/users/email/'$NEWUSERNAME'
+chmod -R 0600 /home/users/email/'$NEWUSERNAME'
+chmod -R u+X /home/users/email/'$NEWUSERNAME'
 '
 SSHSTATUS=`echo $?`
 if [ $SSHSTATUS != 0 ]
@@ -393,8 +395,9 @@ fi
 else
 [ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
 mkdir /home/users/email/$NEWUSERNAME
-chown $NEWUSERNAME /home/users/email/$NEWUSERNAME
-chmod 0700 /home/users/email/$NEWUSERNAME
+chown $NEWUSERNAME -R /home/users/email/$NEWUSERNAME
+chmod 0600 -R /home/users/email/$NEWUSERNAME
+chmod u+X -R /home/users/email/$NEWUSERNAME
 fi
 fi
 
