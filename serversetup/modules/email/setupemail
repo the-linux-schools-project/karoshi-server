@@ -203,8 +203,9 @@ then
 if [ ! -d /home/users/email/$MAILUSER ]
 then
 mkdir /home/users/email/$MAILUSER
-chmod 0700 /home/users/email/$MAILUSER
-chown $MAILUSER /home/users/email/$MAILUSER
+chmod -R 0600 /home/users/email/$MAILUSER
+chmod -R u+X /home/users/email/$MAILUSER
+chown -R $MAILUSER /home/users/email/$MAILUSER
 fi
 fi
 done
