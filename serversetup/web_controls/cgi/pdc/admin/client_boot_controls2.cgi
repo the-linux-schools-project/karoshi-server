@@ -232,12 +232,11 @@ MESSAGE=$ERRORMSG12
 show_status
 fi
 
-Generate navigation bar
+#Generate navigation bar
 if [ $MOBILE = no ]
 then
 DIV_ID=actionbox
 TABLECLASS=standard
-#Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
 DIV_ID=actionbox2
