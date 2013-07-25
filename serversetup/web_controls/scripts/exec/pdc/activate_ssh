@@ -18,9 +18,9 @@
 set server [lrange $argv 0 0]
 set password [lrange $argv 1 1]
 set timeout -1
-spawn scp -r /root/.ssh_servers/authorized_keys2 $server:/root/.ssh/authorized_keys2
+spawn scp -o NumberOfPasswordPrompts=1 -r /root/.ssh_servers/authorized_keys2 $server:/root/.ssh/authorized_keys2
 match_max 100000
-# Look for passwod prompt
+# Look for password prompt
 expect "*?assword:*"
 # Send password aka $password
 send -- "$password\r"
