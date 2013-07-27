@@ -851,7 +851,7 @@ fi
 #Copy in logon files
 #############################
 echo $COPYLOGONFILESMSG
-[ ! -d /var/lib/samba/netlogon ] || cp -R /var/lib/samba/netlogon /var/lib/samba/netlogon_`date +%s`
+[ -d /var/lib/samba/netlogon ] && cp -R /var/lib/samba/netlogon /var/lib/samba/netlogon_`date +%s`
 cp -R /opt/karoshi/serversetup/pdc/logonscripts/default_roaming.kix /var/lib/samba/netlogon/
 cp -R /opt/karoshi/serversetup/pdc/logonscripts/examdtsec.kix /var/lib/samba/netlogon/
 cp -R /opt/karoshi/serversetup/pdc/logonscripts/getdll.bat /var/lib/samba/netlogon/
@@ -861,6 +861,8 @@ cp -R /opt/karoshi/serversetup/pdc/logonscripts/kixtart_install.bat /var/lib/sam
 cp -R /opt/karoshi/serversetup/pdc/logonscripts/logo.bmp /var/lib/samba/netlogon/
 cp -R /opt/karoshi/serversetup/pdc/logonscripts/logon.bat /var/lib/samba/netlogon/
 cp -R /opt/karoshi/serversetup/pdc/logonscripts/logonform.kix /var/lib/samba/netlogon/
+
+sed -i 's/CHANGETHISSERVER/'$HOSTNAME'/g' /var/lib/samba/netlogon/logonform.kix
 
 chmod 0644 /var/lib/samba/netlogon/*
 chmod 0660 /var/lib/samba/netlogon/kix/reclassify.bat

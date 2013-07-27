@@ -53,13 +53,19 @@ $dologging="OFF"
 $verfile = "c:\kix\sversion.ini"
 $scriptver="1.00"
 $lserver=@LSERVER
+$mainserver="\\CHANGETHISSERVER"
 $printserver="wilma"
+
+$cmisshare="\\Dgsbsims\Eis_share"
+$simsshare="\\Dgsbsims\Eis_share"
+
+$cmisdrive="e:"
 $simsdrive="s:"
 $homedrive="g:"
+
 $logginglocation=$lserver + "\logging"
 $groupsfile=$lserver + "\netlogon\groups.txt"
 $printersfile=$lserver + "\netlogon\printers.txt"
-$userorg="wilmaDOMAINNAME"
 $KixDir="C:\Kix"
 
 ;****************************************************************************************************
@@ -68,12 +74,17 @@ $KixDir="C:\Kix"
 $username=LCase(@userid)
 
 ;****************************************************************************************************
-;Get & Set Workstation Information - Location and SIMS
+;Get & Set Workstation Information - Location CMIS and SIMS
 ;****************************************************************************************************
 $location=ReadValue("HKEY_LOCAL_MACHINE\Software\karoshi","location")
 If @error<>0
 	MessageBox("This workstation is not configured for location specific functionality. Contact the system administrator.","No location Name Present",16)
 EndIf
+
+;is this a CMIS workstation?
+$iscmisws=ReadValue("HKEY_LOCAL_MACHINE\Software\karoshi","iscmisws")
+
+;is this a SIMS workstation?
 $issimsws=ReadValue("HKEY_LOCAL_MACHINE\Software\karoshi","issimsws")
 
 
@@ -135,6 +146,7 @@ Function DrawForms()
 ; Form
 	$System = CreateObject("Kixtart.System")
 	$Form = $System.Form()
+	$Form.Text = "Karoshi Logon Script"
 	$form.FormBorderStyle = $System.FormBorderStyle.None
 	$form.StartPosition = $system.formStartPosition.centerScreen
 	$Form.BackgroundImage = "bgnd.bmp" 

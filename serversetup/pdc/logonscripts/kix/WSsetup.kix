@@ -23,24 +23,44 @@ $Label1.Top = 45
 $Label1.Width = 50
 ;**************************************
 
-;************* Label2 **************
-$Label2 = $Form.Controls.Label()
-$Label2.Height = 23
-$Label2.Left = 30
-$Label2.Text = "SIMS Workstation?"
-$Label2.Top = 80
-$Label2.Width = 110
+;************* Label_sims **************
+$Label_sims = $Form.Controls.Label()
+$Label_sims.Height = 23
+$Label_sims.Left = 30
+$Label_sims.Text = "SIMS Workstation?"
+$Label_sims.Top = 80
+$Label_sims.Width = 110
 ;**************************************
 
-;************* CheckBox1 **************
-$CheckBox1 = $Form.Controls.CheckBox()
-$CheckBox1.CheckAlign = 16
-$CheckBox1.Height = 24
-$CheckBox1.Left = 144
-$CheckBox1.Text = "Yes"
-$CheckBox1.ToolTipText = "Will this Workstation be used to run SIMS?"
-$CheckBox1.Top = 75
-$CheckBox1.Width = 50
+;************* CheckBox_sims **************
+$CheckBox_sims = $Form.Controls.CheckBox()
+$CheckBox_sims.CheckAlign = 16
+$CheckBox_sims.Height = 24
+$CheckBox_sims.Left = 144
+$CheckBox_sims.Text = "Yes"
+$CheckBox_sims.ToolTipText = "Will this Workstation be used to run SIMS?"
+$CheckBox_sims.Top = 75
+$CheckBox_sims.Width = 50
+;**************************************
+
+;************* Label_cmis **************
+$Label_cmis = $Form.Controls.Label()
+$Label_cmis.Height = 23
+$Label_cmis.Left = 30
+$Label_cmis.Text = "CMIS Workstation?"
+$Label_cmis.Top = 105
+$Label_cmis.Width = 110
+;**************************************
+
+;************* CheckBox_CMIS **************
+$CheckBox_cmis = $Form.Controls.CheckBox()
+$CheckBox_cmis.CheckAlign = 16
+$CheckBox_cmis.Height = 24
+$CheckBox_cmis.Left = 144
+$CheckBox_cmis.Text = "Yes"
+$CheckBox_cmis.ToolTipText = "Will this Workstation be used to run SIMS?"
+$CheckBox_cmis.Top = 100
+$CheckBox_cmis.Width = 50
 ;**************************************
 
 ;************* Button1 **************
@@ -120,10 +140,20 @@ $lblwksta.Width = 200
 $lblsims = $Form.Controls.Label()
 $lblsims.Height = 23
 $lblsims.Left = 30
-$lblsims.Text = "Sims Flag Set"
+$lblsims.Text = "SIMS Flag Set"
 $lblsims.Top = 196
 $lblsims.Visible = "False"
 $lblsims.Width = 200
+;**************************************
+
+;************* lblcmis **************
+$lblcmis = $Form.Controls.Label()
+$lblcmis.Height = 23
+$lblcmis.Left = 30
+$lblcmis.Text = "CMIS Flag Set"
+$lblcmis.Top = 225
+$lblcmis.Visible = "False"
+$lblcmis.Width = 200
 ;**************************************
 
 ;************* Button2 **************
@@ -310,7 +340,7 @@ ENDIF
 	ENDIF
 
 
-	IF $CheckBox1.Checked
+	IF $CheckBox_sims.Checked
 		$RC=WriteValue("HKEY_LOCAL_MACHINE\SOFTWARE\Karoshi","issimsws","Yes","REG_SZ")
 		$lblsims.Text = "SIMS Flag has been set to YES"
 		$lblsims.ForeColor = 0,128,0
@@ -321,6 +351,20 @@ ENDIF
 		$lblsims.Text = "SIMS Flag has been set to NO"
 		$lblsims.ForeColor = 0,128,0
 		$lblsims.Visible = "True"
+		$pgb1.value = 100
+	ENDIF
+
+	IF $CheckBox_cmis.Checked
+		$RC=WriteValue("HKEY_LOCAL_MACHINE\SOFTWARE\Karoshi","iscmisws","Yes","REG_SZ")
+		$lblcmis.Text = "CMIS Flag has been set to YES"
+		$lblcmis.ForeColor = 0,128,0
+		$lblcmis.Visible = "True"
+		$pgb1.value = 100
+	ELSE
+		$RC=WriteValue("HKEY_LOCAL_MACHINE\SOFTWARE\Karoshi","iscmisws","No","REG_SZ")
+		$lblcmis.Text = "CMIS Flag has been set to NO"
+		$lblcmis.ForeColor = 0,128,0
+		$lblcmis.Visible = "True"
 		$pgb1.value = 100
 	ENDIF
 

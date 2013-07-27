@@ -1,8 +1,9 @@
 $issimsws=ReadValue("HKEY_LOCAL_MACHINE\Software\karoshi","issimsws")
 
-ConnectShare("r:, $lserver\subjects")
-ConnectShare("k:, $lserver\staffshare")
-ConnectShare("j:, $lserver\applications")
+ConnectShare("r:, $mainserver\subjects")
+ConnectShare("k:, $mainserver\staffshare")
+ConnectShare("j:, $mainserver\applications")
+
 
 If $issimsws = "YES"
   ConnectShare("$simsdrive, $simsshare")
