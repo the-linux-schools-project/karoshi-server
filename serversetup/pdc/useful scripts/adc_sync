@@ -7,17 +7,16 @@ for ADSERVERS in /opt/karoshi/server_network/zones/internal/additional_domain_co
 do
 ADSERVER=`basename $ADSERVERS`
 echo Syncing $ADSERVER
-#Sync applications share
-unison -ignorearchives -owner -group -batch /home/applications ssh://$ADSERVER//home/applications
-#Sync subjects
-unison -ignorearchives -owner -group -batch /home/subjects ssh://$ADSERVER//home/subjects
-#Sync staffshare
-unison -ignorearchives -owner -group -batch /home/staffshare ssh://$ADSERVER//home/staffshare
-#Sync users home areas
-unison -ignorearchives -owner -group -batch /home/users/ ssh://$ADSERVER//home/users
-
 #Sync netlogon
-unison -ignorearchives -owner -group -batch /var/lib/samba/netlogon ssh://$ADSERVER//var/lib/samba/netlogon
+rsync --timeout=30 --verbose --dirs --recursive --links --compress /var/lib/samba/netlogon ssh://$ADSERVER//var/lib/samba/netlogon
+#Sync applications share
+rsync --timeout=30 --verbose --dirs --recursive --links --compress /home/applications ssh://$ADSERVER//home/applications
+#Sync subjects
+rsync --timeout=30 --verbose --dirs --recursive --links --compress /home/subjects ssh://$ADSERVER//home/subjects
+#Sync staffshare
+rsync --timeout=30 --verbose --dirs --recursive --links --compress /home/staffshare ssh://$ADSERVER//home/staffshare
+#Sync users home areas
+rsync --timeout=30 --verbose --dirs --recursive --links --compress /home/users/ ssh://$ADSERVER//home/users
 done
 fi
 fi

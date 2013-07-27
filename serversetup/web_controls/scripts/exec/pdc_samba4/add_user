@@ -230,7 +230,7 @@ samba-tool user add $NEWUSERNAME --userou='OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=P
 #--login-shell=/bin/bash --gecos=$NEWUSERNAME -- not supported in latest build ???
 
 #Change password
-samba-tool user setpassword $NEWUSERNAME --newpassword=$NEWUSERPASSWORD 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool user setpassword $NEWUSERNAME --newpassword="$NEWUSERPASSWORD" 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 #Add user to primary group
 samba-tool group addmembers "$PRIMARYGROUP" $NEWUSERNAME  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
