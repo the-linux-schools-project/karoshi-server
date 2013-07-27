@@ -52,7 +52,7 @@ exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-+'`
 if [ $DATA'null' = null ]
 then
 echo `date`: remote_management_add - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
