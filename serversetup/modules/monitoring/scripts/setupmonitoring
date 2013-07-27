@@ -158,13 +158,15 @@ chmod 0755 /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop
 ##########################
 #Disable screensaver and Power Management
 ##########################
-xset s 0 0
 xset -dpms
+xset s noblank
+xset s off  
 
 if [ -d /opt/karoshi/karoshi_user/.config/autostart ]
 then
-echo xset s 0 0 > /opt/karoshi/karoshi_user/.no_screensaver
-echo xset -dpms >> /opt/karoshi/karoshi_user/.no_screensaver
+echo xset s -dpms > /opt/karoshi/karoshi_user/.no_screensaver
+echo xset s noblank >> /opt/karoshi/karoshi_user/.no_screensaver
+echo xset s off >> /opt/karoshi/karoshi_user/.no_screensaver
 chown karoshi /opt/karoshi/karoshi_user/.no_screensaver
 chmod 0700 /opt/karoshi/karoshi_user/.no_screensaver
 #Create icon in autostart
