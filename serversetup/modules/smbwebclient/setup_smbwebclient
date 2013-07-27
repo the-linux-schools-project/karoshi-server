@@ -86,8 +86,8 @@ echo '<b>'$TITLE' - '$HOSTNAME'</b><br><br>'
 echo '<br>'$EXTRACTMSG
 
 [ -d /var/www/html/smbwebclient ] || rm -f -R /var/www/html/smbwebclient
-
-cd /var/www/html/
+mkdir -p /var/www/html/smbwebclient
+cd /var/www/html/smbwebclient
 tar -xzf /opt/karoshi/serversetup/modules/smbwebclient/smbwebclient.tar.gz
 
 chmod 0440 -R /var/www/html/smbwebclient
@@ -117,9 +117,9 @@ $officestaffgroup = array("officeshare", "staffshare");
 $staffgroup = array("staffshare", "subjects");
 $studentsgroup = array("students", "subjects");
 
-?>' > /var/www/html/smbwebclient/config/config.php
+?>' > /var/www/html/smbwebclient/smbwebclient/config/config.php
 
-sed -i 's/CHANGETHISDOMAIN/'$REALM'/g' /var/www/html/smbwebclient/ldapauth.php
+sed -i 's/CHANGETHISDOMAIN/'$REALM'/g' /var/www/html/smbwebclient/smbwebclient/ldapauth.php
 
 #####################################
 #Ensure that apache ports are open in shorewall
@@ -172,7 +172,7 @@ echo '<br>'
 ###########################
 #Show completed message
 ###########################
-echo '<br><br>'$ACCESSMSG - '<a href="https://'$WEBPATH':50000" target="_blank">https://'$WEBPATH':50000</a>'
+echo '<br><br>'$ACCESSMSG - '<a href="https://'$WEBPATH':50000/smbwebclient" target="_blank">https://'$WEBPATH':50000/smbwebclient</a>'
 echo '<br><br>'$FIREWALLHELP
 echo '<br><br><b>'$COMPLETEDMSG'</b>'
 exit

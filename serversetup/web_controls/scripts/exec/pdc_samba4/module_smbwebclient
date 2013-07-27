@@ -174,8 +174,7 @@ fi
 [ ! -d /opt/karoshi/modules/smbwebclient ] && mkdir -p /opt/karoshi/modules/smbwebclient
 #echo '<a href="http://www.smbwebclient.com/" target="_blank"><img style="border: 0px solid ;" alt="" src="/images/help/info.png"></a>' > /opt/karoshi/modules/smbwebclient/weblink
 echo '<b>'Server'</b>': $SERVERNAME > /opt/karoshi/modules/smbwebclient/installed_information
-echo '<b>'Access'</b>': '<a href="https://'$ALIAS.$REALM':50000" target="_blank">https://'$ALIAS.$REALM':50000</a>' >> /opt/karoshi/modules/smbwebclient/installed_information
-
+echo '<b>'Access'</b>': '<a href="https://'$ALIAS.$REALM':50000/smbwebclient" target="_blank">https://'$ALIAS.$REALM':50000/smbwebclient</a>' >> /opt/karoshi/modules/smbwebclient/installed_information
 
 ########################
 #Language
@@ -191,7 +190,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 #Add role information
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
 echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/homeaccess
-echo '<a href="https://'$ALIAS.$REALM':50000" target="_blank">https://'$ALIAS.$REALM':50000</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/homeaccess
+echo '<a href="https://'$ALIAS.$REALM':50000/smbwebclient" target="_blank">https://'$ALIAS.$REALM':50000/smbwebclient</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/homeaccess
 #echo $ROLE2"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
 [ ! -d /opt/karoshi/server_network/webservers/ ] && mkdir -p /opt/karoshi/server_network/webservers
