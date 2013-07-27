@@ -349,5 +349,42 @@ echo 5 0 '*' '*' 1-7 /opt/karoshi/serversetup/modules/email/scripts/check_mail_q
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
 
 
+#Allow monitoring server to send email alerts
+########################
+#Allow monitoring server to send email alerts
+########################
+
+if [ -f /opt/karoshi/server_network/monitoringserver ]
+then
+MONITORSERVERNAME=`sed -n 1,1p /opt/karoshi/server_network/monitoringserver`
+MONITORSERVERIP=`net lookup $MONITORSERVERNAME`
+if [ $SERVERNAME = $HOSTNAME ]
+then
+#Add in server ip to main.cf
+if [ `grep -c -w $MONITORSERVERIP /etc/postfix/main.cf` = 0 ]
+then
+sed -i "s/mynetwork = 127.0.0.1/mynetwork = 127.0.0.1 , $MONITORSERVERIP/g" /etc/postfix/main.cf
+#Restart postfix
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_stop
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_start
+fi
+else
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+#Add in server ip to main.cf
+if [ `grep -c -w '$MONITORSERVERIP' /etc/postfix/main.cf` = 0 ]
+then
+sed -i "s/mynetwork = 127.0.0.1/mynetwork = 127.0.0.1 , '$MONITORSERVERIP'/g" /etc/postfix/main.cf
+#Restart postfix
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_stop
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_start
+fi
+'
+fi
+fi
+
 exit
 

@@ -125,6 +125,39 @@ echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PASSWORD:$HOSTNAME:' | /opt/karoshi/ser
 '
 [ `echo $?` = 101 ] && exit 101
 
+#Allow monitoring server to send email alerts
+if [ -f /opt/karoshi/server_network/emailserver ]
+then
+SERVERIP=`net lookup $SERVERNAME`
+EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver` 
+if [ $EMAILSERVER = $HOSTNAME ]
+then
+#Add in server ip to main.cf
+if [ `grep -c -w $SERVERIP /etc/postfix/main.cf` = 0 ]
+then
+sed -i "s/mynetwork = 127.0.0.1/mynetwork = 127.0.0.1 , $SERVERIP/g" /etc/postfix/main.cf
+#Restart postfix
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_stop
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_start
+fi
+else
+ssh -x -o PasswordAuthentication=no $EMAILSERVER '
+#Add in server ip to main.cf
+if [ `grep -c -w '$SERVERIP' /etc/postfix/main.cf` = 0 ]
+then
+sed -i "s/mynetwork = 127.0.0.1/mynetwork = 127.0.0.1 , '$SERVERIP'/g" /etc/postfix/main.cf
+#Restart postfix
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_stop
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_start
+fi
+'
+fi
+fi
+
 #Add role information
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
 echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/monitoring
