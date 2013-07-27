@@ -589,4 +589,12 @@ fi
 echo `date`: configure_authentication - configuring nslcd "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 configure_nslcd
 echo `date`: configure_authentication - completed "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#sync files to adc
+if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ] 
+then
+if [ $ZONE = internal ]
+then
+/opt/karoshi/"useful scripts"/adc_sync &
+fi
+fi
 exit

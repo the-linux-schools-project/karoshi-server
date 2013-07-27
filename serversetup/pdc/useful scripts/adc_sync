@@ -20,3 +20,7 @@ rsync --timeout=30 --verbose --dirs --recursive --links --compress /home/users/ 
 done
 fi
 fi
+
+#Make sure this script is scheduled to run
+echo '*''/'30 '*' '*' '*' 1-5 /opt/karoshi/'"'useful scripts'"'/adc_sync > /opt/karoshi/cronjobs/jobs/adcsync.cron
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
