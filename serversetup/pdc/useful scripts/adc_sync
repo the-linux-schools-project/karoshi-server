@@ -8,15 +8,15 @@ do
 ADSERVER=`basename $ADSERVERS`
 echo Syncing $ADSERVER
 #Sync netlogon
-rsync --timeout=30 --verbose --dirs --recursive --links --compress /var/lib/samba/netlogon ssh://$ADSERVER//var/lib/samba/netlogon
+rsync --timeout=30 --verbose --dirs --recursive --links --compress /var/lib/samba/netlogon $ADSERVER:/var/lib/samba/
 #Sync applications share
-rsync --timeout=30 --verbose --dirs --recursive --links --compress /home/applications ssh://$ADSERVER//home/applications
+rsync --timeout=30 --verbose --dirs --recursive --links --compress /home/applications $ADSERVER:/home/
 #Sync subjects
-rsync --timeout=30 --verbose --dirs --recursive --links --compress /home/subjects ssh://$ADSERVER//home/subjects
+rsync --timeout=30 --verbose --dirs --recursive --links --compress /home/subjects $ADSERVER:/home/
 #Sync staffshare
-rsync --timeout=30 --verbose --dirs --recursive --links --compress /home/staffshare ssh://$ADSERVER//home/staffshare
+rsync --timeout=30 --verbose --dirs --recursive --links --compress /home/staffshare $ADSERVER:/home/
 #Sync users home areas
-rsync --timeout=30 --verbose --dirs --recursive --links --compress /home/users/ ssh://$ADSERVER//home/users
+rsync --timeout=30 --verbose --dirs --recursive --links --compress /home/users/ $ADSERVER:/home/
 done
 fi
 fi
