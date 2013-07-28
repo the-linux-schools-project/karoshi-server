@@ -231,7 +231,7 @@ then
 echo ' 	service http' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
 echo '		description Webserver' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
 echo '		interval '$INTERVAL'm' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		monitor http.monitor -p 80' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+echo '		monitor tcp.monitor -p 80' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
 echo '		allow_empty_group' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
 echo '		period wd {'$DAYSTART-$DAYEND'}' $MON_PERIOD >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
 echo '			alert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' http.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
