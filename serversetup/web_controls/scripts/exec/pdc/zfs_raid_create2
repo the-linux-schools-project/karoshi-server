@@ -180,19 +180,43 @@ echo "<li>Creating ZFS raid z$PARITY</li>"
 if [ ! -z $SPAREDRIVELIST ]
 then
 SPAREDRIVELIST=`echo $SPAREDRIVELIST | sed "s/,/ /g"`
-zpool create -o ashift=12 -f -m $MOUNTPOINT.$$ $HOSTNAME-data raidz$PARITY $DRIVELIST spare $SPAREDRIVELIST
+zpool create -o ashift=12 -f $HOSTNAME-data raidz$PARITY $DRIVELIST spare $SPAREDRIVELIST
 else
-zpool create -o ashift=12 -f -m $MOUNTPOINT.$$ $HOSTNAME-data raidz$PARITY $DRIVELIST
+zpool create -o ashift=12 -f $HOSTNAME-data raidz$PARITY $DRIVELIST
 fi
 
 #Check zfs raid has been created
 zpool status $HOSTNAME-data
 if [ `echo $?` != 0 ]
 then
-echo ZFS Raid not created"<br>"
+echo $ERRORMSG18"<br>"
 sleep 3
 exit 101
 fi
+
+#Get size of zfs raid
+ZFSSIZEDATA=`zfs list $HOSTNAME-data | sed -n 2,2p | sed "s/ * / /g" | cut -d" " -f3`
+#Get rid of decimal places
+ZFSSIZE=`echo $ZFSSIZEDATA | cut -d"." -f1`
+STORAGEUNIT=`echo $ZFSSIZEDATA | tr -cd "A-Z"`
+#Create partition on zfs raid
+echo "<li>$CREATEARTITIONMSG - $ZFSSIZE$STORAGEUNIT</li>"
+zfs create -V $ZFSSIZE$STORAGEUNIT $HOSTNAME-data/storage
+#Check zfs partition has been created
+zpool status $HOSTNAME-data
+if [ `echo $?` != 0 ]
+then
+echo $ERRORMSG19"<br>"
+sleep 3
+exit 101
+fi
+
+#Format the partition as ext4
+echo "<li>$FORMATMSG</li>"
+mkfs.ext4 /dev/$HOSTNAME-data/storage
+#Mount partition on a temporary mount point
+[ ! -d $MOUNTPOINT.$$ ] && mkdir -p $MOUNTPOINT.$$
+mount /dev/$HOSTNAME-data/storage $MOUNTPOINT.$$
 
 #Copy data to new array
 if [ -d $MOUNTMOUNT ]
@@ -206,7 +230,7 @@ fi
 if [ `grep -c -w $MOUNTPOINT /etc/fstab` -gt 0 ]
 then
 #Umount the partition
-echo "<li>"Un mounting existing partition on $MOUNTPOINT"</li>"
+echo "<li>"$MOUNTPOINT- $UMOUNTPARTITIONMSG"</li>"
 umount $MOUNTPOINT
 
 #Backup /etc/fstab
@@ -218,26 +242,27 @@ LINENO=`grep -n $MOUNTPOINT /etc/fstab`
 sed -i $LINENO"d" /etc/fstab
 fi
 
-#Remove exiting folder
-if [ -d $MOUNTPOINT ]
-then
-mv $MOUNTPOINT $MOUNTPOINT.$$
-fi
+#Unmount zfs partition and mount as /home
+umount $MOUNTPOINT.$$
+mount /dev/$HOSTNAME-data/storage $MOUNTPOINT
 
-#Mount zfs raid to the correct path
-echo "<li>"Mounting ZFS raid on $MOUNTPOINT"</li>"
-[ -d $MOUNTPOINT ] && rm -f R $MOUNTPOINT
-mkdir $MOUNTPOINT
-zfs set mountpoint=$MOUNTPOINT $HOSTNAME-data
-zfs mount $HOSTNAME-data
+#Remove temporary mount point
+[ -d $MOUNTPOINT.$$ ] && rm -f -R $MOUNTPOINT.$$
 echo "</pre>"
-fi
 
+#Mount partition on boot
+echo mount /dev/$HOSTNAME-data/storage $MOUNTPOINT > /etc/rc2.d/S99zfs-mount
+chmod 0700 /etc/rc2.d/S99zfs-mount
+fi
 
 #Restore existing zfs raid
 if [ $CREATETYPE = restore ]
 then
-zpool import -f $HOSTNAME-data
+zpool import -D -f $HOSTNAME-data
+mount /dev/$HOSTNAME-data/storage $MOUNTPOINT
+#Mount partition on boot
+echo mount /dev/$HOSTNAME-data/storage $MOUNTPOINT > /etc/rc2.d/S99zfs-mount
+chmod 0700 /etc/rc2.d/S99zfs-mount
 fi
 
 #Reuse existing zfs raid
@@ -277,33 +302,57 @@ echo "<li>Creating ZFS raid z'$PARITY'</li>"
 if [ ! -z '$SPAREDRIVELIST' ]
 then
 SPAREDRIVELIST=`echo '$SPAREDRIVELIST' | sed "s/,/ /g"`
-zpool create -o ashift=12 -f -m '$MOUNTPOINT'.$$ $HOSTNAME-data raidz'$PARITY' $DRIVELIST spare $SPAREDRIVELIST
+zpool create -o ashift=12 -f $HOSTNAME-data raidz'$PARITY' '$DRIVELIST' spare $SPAREDRIVELIST
 else
-zpool create -o ashift=12 -f -m '$MOUNTPOINT'.$$ $HOSTNAME-data raidz'$PARITY' $DRIVELIST
+zpool create -o ashift=12 -f $HOSTNAME-data raidz'$PARITY' '$DRIVELIST'
 fi
 
 #Check zfs raid has been created
 zpool status $HOSTNAME-data
 if [ `echo $?` != 0 ]
 then
-echo ZFS Raid not created"<br>"
+echo '$ERRORMSG18'"<br>"
 sleep 3
 exit 101
 fi
 
+#Get size of zfs raid
+ZFSSIZEDATA=`zfs list $HOSTNAME-data | sed -n 2,2p | sed "s/ * / /g" | cut -d" " -f3`
+#Get rid of decimal places
+ZFSSIZE=`echo $ZFSSIZEDATA | cut -d"." -f1`
+STORAGEUNIT=`echo $ZFSSIZEDATA | tr -cd "A-Z"`
+#Create partition on zfs raid
+echo "<li>'$CREATEARTITIONMSG' - $ZFSSIZE$STORAGEUNIT</li>"
+zfs create -V $ZFSSIZE$STORAGEUNIT $HOSTNAME-data/storage
+#Check zfs partition has been created
+zpool status $HOSTNAME-data
+if [ `echo $?` != 0 ]
+then
+echo '$ERRORMSG19'"<br>"
+sleep 3
+exit 101
+fi
+
+#Format the partition as ext4
+echo "<li>'$FORMATMSG'</li>"
+mkfs.ext4 /dev/$HOSTNAME-data/storage
+#Mount partition on a temporary mount point
+[ ! -d '$MOUNTPOINT'.'$$' ] && mkdir -p '$MOUNTPOINT'.'$$'
+mount /dev/$HOSTNAME-data/storage '$MOUNTPOINT'.'$$'
+
 #Copy data to new array
-if [ -d '$MOUNTMOUNT' ]
+if [ -d $MOUNTMOUNT ]
 then
 echo "<br><li>"'$COPYDATAMSG'"</b></li>"
 sleep 2
-rsync --timeout=30 --verbose --dirs --recursive --links --compress --delete --backup --times --perms --executability --owner --group -o '$MOUNTPOINT'/ '$MOUNTPOINT'.$$/
+rsync --timeout=30 --verbose --dirs --recursive --links --compress --delete --backup --times --perms --executability --owner --group -o '$MOUNTPOINT'/ '$MOUNTPOINT'.'$$'/
 fi
 
 #Remove any existing partitions from fstab
 if [ `grep -c -w '$MOUNTPOINT' /etc/fstab` -gt 0 ]
 then
 #Umount the partition
-echo "<li>"Un mounting existing partition on '$MOUNTPOINT'"</li>"
+echo "<li>"'$MOUNTPOINT'- '$UMOUNTPARTITIONMSG'"</li>"
 umount '$MOUNTPOINT'
 
 #Backup /etc/fstab
@@ -315,25 +364,27 @@ LINENO=`grep -n '$MOUNTPOINT' /etc/fstab`
 sed -i $LINENO"d" /etc/fstab
 fi
 
-#Remove exiting folder
-if [ -d '$MOUNTPOINT' ]
-then
-mv '$MOUNTPOINT' '$MOUNTPOINT'.$$
-fi
+#Unmount zfs partition and mount on correct mount point
+umount '$MOUNTPOINT'.'$$'
+mount /dev/$HOSTNAME-data/storage '$MOUNTPOINT'
 
-#Mount zfs raid to the correct path
-echo "<li>"Mounting ZFS raid on '$MOUNTPOINT'"</li>"
-[ -d '$MOUNTPOINT' ] && rm -f -R '$MOUNTPOINT'
-mkdir '$MOUNTPOINT'
-zfs set mountpoint='$MOUNTPOINT' $HOSTNAME-data
-zfs mount $HOSTNAME-data
+#Remove temporary mount point
+[ -d '$MOUNTPOINT'.'$$' ] && rm -f -R '$MOUNTPOINT'.'$$'
 echo "</pre>"
+
+#Mount partition on boot
+echo mount /dev/$HOSTNAME-data/storage '$MOUNTPOINT' > /etc/rc2.d/S99zfs-mount
+chmod 0700 /etc/rc2.d/S99zfs-mount
 fi
 
 #Restore existing zfs raid
 if [ '$CREATETYPE' = restore ]
 then
-zpool import -f $HOSTNAME-data
+zpool import -D -f $HOSTNAME-data
+mount /dev/$HOSTNAME-data/storage '$MOUNTPOINT'
+#Mount partition on boot
+echo mount /dev/$HOSTNAME-data/storage '$MOUNTPOINT' > /etc/rc2.d/S99zfs-mount
+chmod 0700 /etc/rc2.d/S99zfs-mount
 fi
 
 #Reuse existing zfs raid
