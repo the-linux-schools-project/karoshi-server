@@ -200,16 +200,16 @@ ZFSSIZEDATA=`zfs list $HOSTNAME-data | sed -n 2,2p | sed "s/ * / /g" | cut -d" "
 ZFSSIZE=`echo $ZFSSIZEDATA | cut -d"." -f1`
 STORAGEUNIT=`echo $ZFSSIZEDATA | tr -cd "A-Z"`
 #Create partition on zfs raid
-echo "<li>$CREATEARTITIONMSG - $ZFSSIZE$STORAGEUNIT</li>"
 zfs create -V $ZFSSIZE$STORAGEUNIT $HOSTNAME-data/storage
+STATUS=$?
 #Check zfs partition has been created
-zpool status $HOSTNAME-data
-if [ `echo $?` != 0 ]
-then
-echo $ERRORMSG19"<br>"
-sleep 3
-exit 101
-fi
+while [ $STATUS != 0 ]
+do
+let ZFSSIZE=$ZFSSIZE-1
+zfs create -V $ZFSSIZE$STORAGEUNIT $HOSTNAME-data/storage
+STATUS=$?
+done
+echo "<li>$CREATEARTITIONMSG - $ZFSSIZE$STORAGEUNIT</li>"
 
 #Format the partition as ext4
 echo "<li>$FORMATMSG</li>"
@@ -302,9 +302,9 @@ echo "<li>Creating ZFS raid z'$PARITY'</li>"
 if [ ! -z '$SPAREDRIVELIST' ]
 then
 SPAREDRIVELIST=`echo '$SPAREDRIVELIST' | sed "s/,/ /g"`
-zpool create -o ashift=12 -f $HOSTNAME-data raidz'$PARITY' '$DRIVELIST' spare $SPAREDRIVELIST
+zpool create -o ashift=12 -f $HOSTNAME-data raidz'$PARITY' $DRIVELIST spare $SPAREDRIVELIST
 else
-zpool create -o ashift=12 -f $HOSTNAME-data raidz'$PARITY' '$DRIVELIST'
+zpool create -o ashift=12 -f $HOSTNAME-data raidz'$PARITY' $DRIVELIST
 fi
 
 #Check zfs raid has been created
@@ -322,16 +322,16 @@ ZFSSIZEDATA=`zfs list $HOSTNAME-data | sed -n 2,2p | sed "s/ * / /g" | cut -d" "
 ZFSSIZE=`echo $ZFSSIZEDATA | cut -d"." -f1`
 STORAGEUNIT=`echo $ZFSSIZEDATA | tr -cd "A-Z"`
 #Create partition on zfs raid
-echo "<li>'$CREATEARTITIONMSG' - $ZFSSIZE$STORAGEUNIT</li>"
 zfs create -V $ZFSSIZE$STORAGEUNIT $HOSTNAME-data/storage
+STATUS=$?
 #Check zfs partition has been created
-zpool status $HOSTNAME-data
-if [ `echo $?` != 0 ]
-then
-echo '$ERRORMSG19'"<br>"
-sleep 3
-exit 101
-fi
+while [ $STATUS != 0 ]
+do
+let ZFSSIZE=$ZFSSIZE-1
+zfs create -V $ZFSSIZE$STORAGEUNIT $HOSTNAME-data/storage
+STATUS=$?
+done
+echo "<li>'$CREATEARTITIONMSG' - $ZFSSIZE$STORAGEUNIT</li>"
 
 #Format the partition as ext4
 echo "<li>'$FORMATMSG'</li>"
