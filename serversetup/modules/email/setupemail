@@ -235,8 +235,8 @@ echo mail.$REALM > /etc/mailname
 echo '<li>'$MAILSCANNERMSG'</li><br>'
 
 [ -f /etc/MailScanner/MailScanner.conf ] && mv /etc/MailScanner/MailScanner.conf /etc/MailScanner/MailScannerold.conf
-cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/mailscanner/* /etc/MailScanner/
-#cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/cron_hourly/check_MailScanner /etc/cron.hourly/
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/mailscanner/MailScanner.conf /etc/MailScanner/
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/mailscanner/mailscanner /etc/cron.hourly/
 
 [ -d /var/spool/MailScanner/spamassassin ] || mkdir -p /var/spool/MailScanner/spamassassin
 [ -d /var/spool/MailScanner/incoming ] || mkdir -p /var/spool/MailScanner/incoming
