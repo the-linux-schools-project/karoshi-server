@@ -47,7 +47,7 @@ echo '
 
 
 echo '<img src="/images/small_logo.png" alt="logo" align="top"> <font style="font-weight: bold;" size="+2">Web Management '$SCHOOL_NAME'</font> <small><small>
-'$VERSION' : 130710-1643
+'$VERSION' : 130729-0903
 </small></small>
 '
 

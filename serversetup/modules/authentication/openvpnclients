@@ -51,6 +51,8 @@ then
 echo `date`: vpnclients - $VPNCLIENT vpn tunnel online >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 else
 echo `date`: vpnclients - $VPNCLIENT vpn tunnel offline >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#Add web management warning
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add vpnclient_warning_$SERVER /cgi-bin/admin/view_karoshi_web_management_logs.cgi "$SERVER VPN Failure" 3
 fi
 fi
 fi
