@@ -1,7 +1,16 @@
 #!/bin/bash
 if [ -d /etc/squid3 ]
 then
-service squid3 stop
+SQUID=squid3
 else
-service squid stop
+SQUID=squid
 fi
+COUNTER=0
+while [ `ps -e | grep -w -c $SQUID` -gt 0 ]
+do
+service $SQUID stop
+let COUNTER=$COUNTER+1
+#Give up after 5 tries
+[ $COUNTER = 5 ] && break
+done
+exit
