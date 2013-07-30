@@ -131,9 +131,9 @@ function get_status {
 if [ $SERVERTYPE = network ]
 then
 DSERVICES=cron
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1pdc ] && DSERVICES=$DSERVICES,dns,samba
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ] && DSERVICES=$DSERVICES,dns,samba
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1domainmember ] && DSERVICES=$DSERVICES,samba
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1pdc ] && DSERVICES=$DSERVICES,dns,samba,nslcd
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ] && DSERVICES=$DSERVICES,dns,samba,nslcd
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1domainmember ] && DSERVICES=$DSERVICES,samba,nslcd
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/2users-groups ] && DSERVICES=$DSERVICES,nslcd
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver ] && DSERVICES=$DSERVICES,apache,mysql
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/casserver ] && DSERVICES=$DSERVICES,apache
