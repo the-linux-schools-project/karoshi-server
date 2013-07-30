@@ -340,9 +340,9 @@ USERID=`getent passwd $NEWUSERNAME | cut -d: -f3`
 if [ $SERVER = $HOSTNAME ]
 then
 ######################
-#Create Mail Folder
+#Create home folder
 ######################
-mkdir -p $HOMEPATH/$NEWUSERNAME/
+[ ! -d $HOMEPATH/$NEWUSERNAME/ ] && mkdir -p $HOMEPATH/$NEWUSERNAME/
 chown -R $NEWUSERNAME:$PRIMARYGROUP $HOMEPATH/$NEWUSERNAME/
 chmod -R 0600 $HOMEPATH/$NEWUSERNAME/
 chmod u+X -R $HOMEPATH/$NEWUSERNAME/
@@ -354,7 +354,7 @@ fi
 if [ -d /opt/karoshi/server_network/servers/$SERVER ] && [ $SERVER != $HOSTNAME ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-mkdir -p '$HOMEPATH''/''$NEWUSERNAME'
+[ ! -d '$HOMEPATH''/''$NEWUSERNAME' ] && mkdir -p '$HOMEPATH''/''$NEWUSERNAME'
 chmod 0600 -R '$HOMEPATH''/''$NEWUSERNAME'
 chmod u+X -R '$HOMEPATH''/''$NEWUSERNAME'
 chown -R '$USERID':'$PRIMARYGROUP' '$HOMEPATH''/''$NEWUSERNAME'
@@ -379,7 +379,7 @@ if [ $EMAILSERVER != $HOSTNAME ]
 then 
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
 [ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
-mkdir /home/users/email/'$NEWUSERNAME'
+[ ! -d /home/users/email/'$NEWUSERNAME' ] && mkdir /home/users/email/'$NEWUSERNAME'
 chown -R '$USERID':'$PRIMARYGROUP' /home/users/email/'$NEWUSERNAME'
 chmod -R 0600 /home/users/email/'$NEWUSERNAME'
 chmod -R u+X /home/users/email/'$NEWUSERNAME'
