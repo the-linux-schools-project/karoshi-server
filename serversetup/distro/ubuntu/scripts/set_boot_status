@@ -30,7 +30,8 @@ PRI_NUM=S99
 [ $SERVICE = samba ] && PRI_NUM=S05
 [ $SERVICE = slapd ] && PRI_NUM=S04
 [ $SERVICE = squid ] && PRI_NUM=S06
-
+[ $SERVICE = zfs-share ] && PRI_NUM=S20
+[ $SERVICE = zfs-mount ] && PRI_NUM=S20
 } 
 
 #Check data
