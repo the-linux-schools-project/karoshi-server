@@ -25,6 +25,10 @@
 #
 #Website: http://www.karoshi.org.uk
 
+#Detect mobile browser
+MOBILE=no
+source /opt/karoshi/web_controls/detect_mobile_browser
+
 ############################
 #Language
 ############################
@@ -40,7 +44,30 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE2'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE2'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+
+if [ $MOBILE = yes ]
+then
+echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+		/***********************************************
+		* Slashdot Menu script- By DimX
+		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
+		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+		***********************************************/
+	</script>
+	<script type="text/javascript">
+	// <![CDATA[
+	var myMenu;
+	window.onload = function() {
+		myMenu = new SDMenu("my_menu");
+		myMenu.init();
+	};
+	// ]]>
+	</script>'
+fi
+
+echo '</head><body>'
 #########################
 #Get data input
 #########################
@@ -139,9 +166,16 @@ MESSAGE=$ERRORMSG2
 show_status
 fi
 
-#Detect mobile browser
-MOBILE=no
-source /opt/karoshi/web_controls/detect_mobile_browser
+#Generate navigation bar
+if [ $MOBILE = no ]
+then
+DIV_ID=actionbox
+#Generate navigation bar
+/opt/karoshi/web_controls/generate_navbar_admin
+else
+DIV_ID=actionbox2
+fi
+
 
 #Generate navigation bar
 if [ $MOBILE = no ]
@@ -153,16 +187,17 @@ else
 DIV_ID=actionbox2
 fi
 
-echo '<div id="'$DIV_ID'">'
-
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
-<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$TITLE2'</b></a></td></tr></tbody></table><br>'
+echo '<div style="float: left" id="my_menu" class="sdmenu">
+	<div class="expanded">
+	<span>'$TITLE'</span>
+<a href="/cgi-bin/admin/uptime_fm.cgi">'$SERVERNAME'</a>
+</div></div><div id="mobileactionbox">
+'
 else
-echo '<b>'$TITLE2'</b><br><br>'
+echo '<b>'$TITLE'</b><br><br>'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/uptime_reset.cgi | cut -d' ' -f1`
