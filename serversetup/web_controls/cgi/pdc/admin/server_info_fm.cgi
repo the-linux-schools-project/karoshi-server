@@ -169,7 +169,11 @@ for KAROSHI_SERVER in /opt/karoshi/server_network/servers/*
 do
 KAROSHISERVER=`basename $KAROSHI_SERVER`
 [ $SERVERCOUNTER = $ROWCOUNT ] && echo '</tr><tr>'
-echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_SERVERNAME_'$KAROSHISERVER'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$KAROSHISERVER'</span></a><br>'$KAROSHISERVER'</td>'
+
+echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_SERVERNAME_'$KAROSHISERVER'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$KAROSHISERVER'<br><br>'
+cat /opt/karoshi/server_network/servers/$KAROSHISERVER/* | sed '/<a href/c'"&nbsp"
+echo '</span></a><br>'$KAROSHISERVER'</td>'
+
 let SERVERCOUNTER=$SERVERCOUNTER+1
 [ $SERVERCOUNTER -gt $ROWCOUNT ] && SERVERCOUNTER=1
 done
@@ -190,8 +194,9 @@ source /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/info
 LOCATION_NAME="- $LOCATION_NAME"
 fi
 echo '<b>'$FEDERATEDSERVERSMSG' '$LOCATION_NAME'</b><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
-echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_federated_SERVERNAME_'$FEDERATED_SERVER'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$FEDERATED_SERVER'</span></a><br>'$FEDERATED_SERVER'</td>'
-
+echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_federated_SERVERNAME_'$FEDERATED_SERVER'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$FEDERATED_SERVER'<br><br>'
+cat /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/$FEDERATED_SERVER/* | sed '/<a href/c'"&nbsp"
+echo '</span></a><br>'$FEDERATED_SERVER'</td>'
 SERVERCOUNTER2=1
 for FEDERATED_SLAVE_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/*
 do
@@ -199,7 +204,8 @@ FEDERATED_SLAVE_SERVER=`basename $FEDERATED_SLAVE_SERVERS`
 if [ $FEDERATED_SLAVE_SERVER != $FEDERATED_SERVER ]
 then
 [ $SERVERCOUNTER2 = $ROWCOUNT ] && echo '</tr><tr>'
-echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_federatedslave_SERVERMASTER_'$FEDERATED_SERVER'_SERVERNAME_'$FEDERATED_SLAVE_SERVER'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$FEDERATED_SLAVE_SERVER'</span></a><br>'$FEDERATED_SLAVE_SERVER'</td>'
+echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_federatedslave_SERVERMASTER_'$FEDERATED_SERVER'_SERVERNAME_'$FEDERATED_SLAVE_SERVER'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$FEDERATED_SLAVE_SERVER'<br><br>'
+cat /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/$FEDERATED_SLAVE_SERVER/* | sed '/<a href/c'"&nbsp"
 let SERVERCOUNTER2=$SERVERCOUNTER2+1
 [ $SERVERCOUNTER2 -gt $ROWCOUNT ] && SERVERCOUNTER2=1
 fi
