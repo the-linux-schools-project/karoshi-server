@@ -128,8 +128,10 @@ echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PASSWORD:$HOSTNAME:' | /opt/karoshi/ser
 #Allow monitoring server to send email alerts
 if [ -f /opt/karoshi/server_network/emailserver ]
 then
-SERVERIP=`net lookup $SERVERNAME`
 EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver` 
+if [ $EMAILSERVER != $SERVERNAME ]
+then
+SERVERIP=`net lookup $SERVERNAME`
 if [ $EMAILSERVER = $HOSTNAME ]
 then
 #Add in server ip to main.cf
@@ -155,6 +157,7 @@ sleep 1
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_start
 fi
 '
+fi
 fi
 fi
 
