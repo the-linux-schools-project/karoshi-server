@@ -176,7 +176,7 @@ SSHSTATUS=`echo $?`
 if [ $SSHSTATUS != 0 ]
 then
 echo `date`: delete_user - $DELETEUSER ssh failure on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $SERVER,emailserver >> /opt/karoshi/server_network/offline_servers/delete_users/$DELETEUSER
+echo $EMAILSERVER,emailserver,delete >> /opt/karoshi/server_network/offline_servers/delete_users/$DELETEUSER
 FAILED_SERVER=yes
 FAILEDSERVERLIST=$FAILEDSERVERLIST,$SERVER
 fi

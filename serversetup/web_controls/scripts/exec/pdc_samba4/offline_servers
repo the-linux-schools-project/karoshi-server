@@ -23,15 +23,15 @@ LOG_DATE=`date +%F`
 
 #Check server is online
 function check_server_online {
-CREATE_STATUS=ok
+STATUSCHECK=ok
 SERVERSTATUS=online
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER ls 1>/dev/null
 SSHSTATUS=`echo $?`
 if [ $SSHSTATUS != 0 ]
 then
 SERVERSTATUS=offline
-echo `date`: add_user_offline_servers - $NEWUSERNAME ssh failure on $SERVER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-CREATE_STATUS=fail
+echo `date`: offline_servers - $USERNAME ssh failure on $SERVER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+STATUSCHECK=fail
 fi
 }
 
@@ -46,22 +46,26 @@ fi
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 if [ '$ACTION' = adduser ]
 then
-if [ ! -d '$HOMEPATH'/'$NEWUSERNAME'/Mail ]
+if [ ! -d /home/users/email/'$USERNAME'/ ]
 then
-/opt/karoshi/"useful scripts"/createmailfolders
-mkdir -p '$HOMEPATH'/'$NEWUSERNAME'/Mail
-/opt/karoshi/"useful scripts"/createmailfolders
-cp /opt/karoshi/.tempdata/INBOX.* '$HOMEPATH'/'$NEWUSERNAME'/Mail/
-cp /opt/karoshi/.tempdata/.mailboxlist '$HOMEPATH'/'$NEWUSERNAME'
-chown -R '$NEWUSERNAME:$PRIMARYGROUP' '$HOMEPATH'/'$NEWUSERNAME'/
-chmod -R 0600 '$HOMEPATH'/'$NEWUSERNAME'/ ; chmod u+X -R '$HOMEPATH'/'$NEWUSERNAME'/
+mkdir -p /home/users/email/'$USERNAME'/
+chown -R '$USERNAME:$PRIMARYGROUP' /home/users/email/'$USERNAME'/
+chmod -R 0600 /home/users/email/'$USERNAME'/
+chmod u+X -R /home/users/email/'$USERNAME'/
 fi
-else
-[ -d '$HOMEPATH'/'$NEWUSERNAME'/ ] && rm -f -r '$HOMEPATH'/'$NEWUSERNAME'/
-[ -f /var/spool/mail/'$NEWUSERNAME' ] && rm -f /var/spool/mail/'$NEWUSERNAME'
+fi
+
+if [ '$ACTION' = deleteuser ]
+then
+[ -d /home/users/email/'$USERNAME'/ ] && rm -f -r /home/users/email/'$USERNAME'/
 fi
 '
-[ `echo $?` != 0 ] && CREATE_STATUS=fail
+if [ $? = 0 ]
+then
+echo `date`: offline_servers - $ACTION2 /home/users/email/$USERNAME/ on $SERVER "for" $USERNAME >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+else
+STATUSCHECK=fail
+fi
 }
 
 function fileserver {
@@ -72,53 +76,78 @@ echo $SERVER is offline
 break
 fi
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-if [ ! -d '$HOMEPATH'/'$NEWUSERNAME' ]
+if [ '$ACTION' = adduser ]
 then
-mkdir -p '$HOMEPATH'/'$NEWUSERNAME'
-chmod 0700 '$HOMEPATH'/'$NEWUSERNAME'
-chown '$NEWUSERNAME':'$PRIMARYGROUP' '$HOMEPATH'/'$NEWUSERNAME'
+if [ ! -d '$HOMEPATH'/'$USERNAME' ]
+then
+mkdir -p '$HOMEPATH'/'$USERNAME'
+chmod 0700 '$HOMEPATH'/'$USERNAME'
+chown '$USERNAME':'$PRIMARYGROUP' '$HOMEPATH'/'$USERNAME'
+fi
+fi
+
+if [ '$ACTION' = deleteuser ]
+then
+HOMEPATH=`find /home/users/ -name '$USERNAME'`
+[ -d $HOMEPATH/ ] && rm -f -R $HOMEPATH/
 fi
 '
-[ `echo $?` != 0 ] && CREATE_STATUS=fail
+if [ $? = 0 ]
+then
+echo `date`: offline_servers - $ACTION2 $USERNAME on $SERVER "for" $USERNAME >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+else
+STATUSCHECK=fail
+fi
 }
 
-#######################
-#Check to see if any users need processing due to servers being offline on user creation.
-#######################
-
-if [ `ls -1 /opt/karoshi/server_network/offline_servers | wc -l` != 0 ]
-then 
-for NEWUSERNAMEFILE in /opt/karoshi/server_network/offline_servers/add_users/*
+function process_offline_users {
+if [  -d /opt/karoshi/server_network/offline_servers/$FOLDER/ ]
+then
+if [ `ls -1 /opt/karoshi/server_network/offline_servers/$FOLDER | wc -l` != 0 ]
+then
+for USERNAMEFILE in /opt/karoshi/server_network/offline_servers/$FOLDER/*
 do
-ACTION=adduser
-CREATE_STATUS=ok
-NEWUSERNAME=`basename $NEWUSERNAMEFILE`
-echo Processing $NEWUSERNAME
-PRIMARYGROUP=`id -g -n $NEWUSERNAME`
+STATUSCHECK=ok
+USERNAME=`basename $USERNAMEFILE`
+echo Processing $USERNAME
+if [ $ACTION = adduser ]
+then 
+PRIMARYGROUP=`id -g -n $USERNAME`
 echo Primary group $PRIMARYGROUP
 SECONDARYGROUP=""
 source /opt/karoshi/server_network/group_information/$PRIMARYGROUP
 GROUPLIST=$SECONDARYGROUP
 echo Homepath $HOMEPATH
-FILE_LENGTH=`cat $NEWUSERNAMEFILE | wc -l`
+fi
+FILE_LENGTH=`cat $USERNAMEFILE | wc -l`
 COUNTER=1
 while [ $COUNTER -le $FILE_LENGTH ]
 do
-SERVER_DATA=`sed -n $COUNTER,$COUNTER'p' $NEWUSERNAMEFILE`
+SERVER_DATA=`sed -n $COUNTER,$COUNTER'p' $USERNAMEFILE`
 SERVER=`echo $SERVER_DATA | cut -d, -f1`
 SERVERTYPE=`echo $SERVER_DATA | cut -d, -f2`
-
 [ $SERVERTYPE = fileserver ] && fileserver
 [ $SERVERTYPE = emailserver ] && emailserver
-[ $CREATE_STATUS = ok ] && sed -i $COUNTER'c'\\" "  /opt/karoshi/server_network/offline_servers/$NEWUSERNAME
+[ $STATUSCHECK = ok ] && sed -i $COUNTER'c'\\" "  /opt/karoshi/server_network/offline_servers/$FOLDER/$USERNAME
 
 let COUNTER=$COUNTER+1
 done
-sed -i 's/ //g' /opt/karoshi/server_network/offline_servers/add_users/$NEWUSERNAME
-sed -i '/^$/d' /opt/karoshi/server_network/offline_servers/add_users/$NEWUSERNAME
+sed -i 's/ //g' /opt/karoshi/server_network/offline_servers/$FOLDER/$USERNAME
+sed -i '/^$/d' /opt/karoshi/server_network/offline_servers/$FOLDER/$USERNAME
 
-[ `cat /opt/karoshi/server_network/offline_servers/add_users/$NEWUSERNAME | wc -l` = 0 ] && rm -f /opt/karoshi/server_network/offline_servers/add_users/$NEWUSERNAME
+[ `cat /opt/karoshi/server_network/offline_servers/$FOLDER/$USERNAME | wc -l` = 0 ] && rm -f /opt/karoshi/server_network/offline_servers/$FOLDER/$USERNAME
 done
 fi
+fi
+}
+
+ACTION=adduser
+ACTION2=created
+FOLDER=add_users
+process_offline_users
+ACTION=deleteuser
+ACTION2=deleted
+FOLDER=delete_users
+process_offline_users
 exit
 
