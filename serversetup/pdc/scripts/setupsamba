@@ -1015,6 +1015,7 @@ sed -i 's@CHANGETHISREALM@'$REALM'@g' /opt/karoshi/serversetup/pdc/profiles/defa
 sed -i 's@CHANGETHISREALM@'$REALM'@g' /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/"Karoshi Web Management.url"
 
 cp -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/* /opt/karoshi/serversetup/pdc/profiles/default_roaming_profile/Desktop/
+cp -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/* /opt/karoshi/serversetup/pdc/profiles/profileuser/Desktop/
 
 [ ! -d /home/applications/profiles ] && mkdir /home/applications/profiles
 [ ! -d /home/applications/profiles/defaultprofile ] && cp -R /opt/karoshi/serversetup/pdc/profiles/defaultprofile /home/applications/profiles/

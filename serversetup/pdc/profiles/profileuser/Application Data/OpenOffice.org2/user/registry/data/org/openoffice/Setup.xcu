@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<oor:component-data xmlns:oor="http://openoffice.org/2001/registry" xmlns:xs="http://www.w3.org/2001/XMLSchema" oor:name="Setup" oor:package="org.openoffice">
+ <node oor:name="L10N">
+  <prop oor:name="ooLocale" oor:type="xs:string">
+   <value>en-US</value>
+  </prop>
+ </node>
+ <node oor:name="Office">
+  <prop oor:name="ooSetupInstCompleted" oor:type="xs:boolean">
+   <value>true</value>
+  </prop>
+  <prop oor:name="LicenseAcceptDate" oor:type="xs:string">
+   <value>2006-01-06T12:01:48</value>
+  </prop>
+  <prop oor:name="FirstStartWizardCompleted" oor:type="xs:boolean">
+   <value>true</value>
+  </prop>
+  <node oor:name="Factories">
+   <node oor:name="com.sun.star.text.TextDocument">
+    <prop oor:name="ooSetupFactoryWindowAttributes" oor:type="xs:string">
+     <value>26,45,760,510;4;0,0,0,0;</value>
+    </prop>
+   </node>
+   <node oor:name="com.sun.star.presentation.PresentationDocument">
+    <prop oor:name="ooSetupFactoryWindowAttributes" oor:type="xs:string">
+     <value>4,23,760,510;4;0,0,0,0;</value>
+    </prop>
+   </node>
+   <node oor:name="com.sun.star.drawing.DrawingDocument">
+    <prop oor:name="ooSetupFactoryWindowAttributes" oor:type="xs:string">
+     <value>136,155,760,510;4;0,0,0,0;</value>
+    </prop>
+   </node>
+   <node oor:name="com.sun.star.sheet.SpreadsheetDocument">
+    <prop oor:name="ooSetupFactoryWindowAttributes" oor:type="xs:string">
+     <value>136,155,760,510;4;0,0,0,0;</value>
+    </prop>
+   </node>
+   <node oor:name="com.sun.star.frame.StartModule">
+    <prop oor:name="ooSetupFactoryWindowAttributes" oor:type="xs:string">
+     <value>158,177,760,510;4;0,0,0,0;</value>
+    </prop>
+   </node>
+  </node>
+ </node>
+</oor:component-data>
