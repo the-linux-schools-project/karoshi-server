@@ -157,33 +157,9 @@ chmod 0755 /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop
 ##########################
 #Disable screensaver and Power Management
 ##########################
-xset -dpms
-xset s noblank
-xset s off  
-
-if [ -d /opt/karoshi/karoshi_user/.config/autostart ]
+if [ -f /opt/karoshi/karoshi_user/.xscreensaver ]
 then
-echo xset s -dpms > /opt/karoshi/karoshi_user/.no_screensaver
-echo xset s noblank >> /opt/karoshi/karoshi_user/.no_screensaver
-echo xset s off >> /opt/karoshi/karoshi_user/.no_screensaver
-chown karoshi /opt/karoshi/karoshi_user/.no_screensaver
-chmod 0700 /opt/karoshi/karoshi_user/.no_screensaver
-#Create icon in autostart
-echo "#!/usr/bin/env xdg-open" > /opt/karoshi/karoshi_user/.config/autostart/no_screensaver.desktop
-echo >> /opt/karoshi/karoshi_user/.config/autostart/no_screensaver.desktop
-echo "[Desktop Entry]" >> /opt/karoshi/karoshi_user/.config/autostart/no_screensaver.desktop
-echo "Version=1.0" >> /opt/karoshi/karoshi_user/.config/autostart/no_screensaver.desktop
-echo "Type=Application" >> /opt/karoshi/karoshi_user/.config/autostart/no_screensaver.desktop
-echo "Terminal=false" >> /opt/karoshi/karoshi_user/.config/autostart/no_screensaver.desktop
-echo "Icon[en_GB]=gnome-panel-launcher" >> /opt/karoshi/karoshi_user/.config/autostart/no_screensaver.desktop
-echo "Name[en_GB]=No_Screensaver" >> /opt/karoshi/karoshi_user/.config/autostart/no_screensaver.desktop
-echo "Exec=/opt/karoshi/karoshi_user/.no_screensaver" >> /opt/karoshi/karoshi_user/.config/autostart/no_screensaver.desktop
-echo "Name=No_Screensaver" >> /opt/karoshi/karoshi_user/.config/autostart/no_screensaver.desktop
-echo "Icon=gnome-panel-launcher" >> /opt/karoshi/karoshi_user/.config/autostart/no_screensaver.desktop
-chown karoshi /opt/karoshi/karoshi_user/.config/autostart/no_screensaver.desktop
-chmod 0700 /opt/karoshi/karoshi_user/.config/autostart/no_screensaver.desktop
-
-su karoshi -c 'gconftool-2 --type bool --set /apps/gnome-screensaver/idle_activation_enabled "false"'
+sed -i 's/blank/off/g'/opt/karoshi/karoshi_user/.xscreensaver
 fi
 exit
 
