@@ -263,6 +263,15 @@ sleep 4
 exit 101
 fi
 
+#if the adc or rodc is in the dmz set dns so that windows clients do not use server as logon server
+if [ $ZONE != internal ]
+then
+if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
+then
+samba-tool dns add 127.0.0.1 $REALM _$SERVERNAME._tcp SRV ''$SERVERNAME'.'$REALM' 389 200 200' --username=Administrator --password=$LDAPPASS
+fi
+fi
+
 #Add role information
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
 
@@ -273,7 +282,10 @@ fi
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc
 
 #Sync applications and netlogon shares
+if [ $ZONE = internal ]
+then
 [ $AUTHTYPE = adc ] && /opt/karoshi/"useful scripts"/adc_sync
+fi
 
 #Authtypes adc rodc member users none
 if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ] 
