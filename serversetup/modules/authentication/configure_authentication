@@ -230,7 +230,7 @@ fi
 MODCHECK=`grep -c -w auth_rule /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
-echo "<br><li><b>Adding shorewall ports - tcp '$TCPPORTS' udp '$UDPPORTS'</b></li><br>"
+echo "<br><li><b>'$ADDSWALLPORTSMSG'</b></li><br><b>tcp</b> '$TCPPORTS' <b>udp</b> '$UDPPORTS'<br><br>"
 LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"'$TCPPORTS'"	"-"#"auth_rule /etc/shorewall/rules
 echo ACCEPT"	"net"	"fw"	"udp"	"'$UDPPORTS'"	"-"#"auth_rule >> /etc/shorewall/rules
@@ -251,6 +251,7 @@ echo "<br>"
 sleep 1
 #start samba
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
+echo "<br>"
 #Make sure samba runs on boot
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/samba
 ' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
