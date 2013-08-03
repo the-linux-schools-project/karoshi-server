@@ -103,6 +103,19 @@ echo `date`: setupmoodle by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/moodle/setupmoodle ] || LANGCHOICE=englishuk
 source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/moodle/setupmoodle
 
+#Check that this server has been setup with the correct authentication
+if [ $SERVERNAME != $HOSTNAME ]
+then
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:users:" | /opt/karoshi/serversetup/modules/authentication/check_auth
+if [ $? = 101 ]
+then
+echo $AUTHENTICATIONFAILMSG"<br><br>"
+echo `date`: module_moodle - $SERVERNAME does not have the correct authentication "for" this module by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+sleep 2
+exit 101
+fi
+fi
+
 echo '<b>'$TITLE' - '$SERVERNAME'</b><br><br>'
 
 source /opt/karoshi/server_network/domain_information/domain_name

@@ -17,7 +17,7 @@ REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
 AUTHTYPE=`echo "$DATA" | cut -s -d: -f5`
 
-[ $AUTHTYPE = users ] && SEARCHTYPE=$SERVERNAME
+[ $AUTHTYPE = users ] && SEARCHTYPE=ldap_clients
 [ $AUTHTYPE = members ] && SEARCHTYPE=domain
 
 AUTHFLAGS=`find /opt/karoshi/server_network/zones -name $SERVERNAME`
