@@ -1012,32 +1012,13 @@ echo $COPYPROFILEMSG
 #Point default profile icons to correct realm
 sed -i 's@CHANGETHISREALM@'$REALM'@g' /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/"Help Desk.url"
 sed -i 's@CHANGETHISREALM@'$REALM'@g' /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/"Change My Password.url"
+sed -i 's@CHANGETHISREALM@'$REALM'@g' /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/"Karoshi Web Management.url"
 
 [ ! -d /home/applications/profiles ] && mkdir /home/applications/profiles
 [ ! -d /home/applications/profiles/defaultprofile ] && cp -R /opt/karoshi/serversetup/pdc/profiles/defaultprofile /home/applications/profiles/
 [ ! -d /home/applications/profiles/profileuser ] && cp -R /opt/karoshi/serversetup/pdc/profiles/profileuser /home/applications/profiles/
 [ ! -d /home/applications/profiles/default_roaming_profile ] && cp -R /opt/karoshi/serversetup/pdc/profiles/default_roaming_profile /home/applications/profiles/
-COUNTER=$STARTYEAR
-while [  $COUNTER -le $ENDYEAR ]; do
-if [ ! -d /home/applications/profiles/yr$COUNTER ]
-then
-echo $COPYPROFILEMSG2 yr$COUNTER
-cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/yr$COUNTER
-fi
-let COUNTER=COUNTER+1
-done
-if [ ! -d /home/applications/profiles/guestusers ]
-then
-echo $COPYPROFILEMSG2 guestusers
-cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/guestusers
-cp -f -R /opt/karoshi/serversetup/pdc/profiles/guestusers /home/applications/profiles/
-fi
-if [ ! -d /home/applications/profiles/exams ]
-then
-echo $COPYPROFILEMSG2 exams
-cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/exams
-rm -f /home/applications/profiles/exams/Desktop/*
-fi
+
 if [ ! -d /home/applications/profiles/itadmin ]
 then
 echo $COPYPROFILEMSG2 itadmin
@@ -1050,11 +1031,32 @@ echo $COPYPROFILEMSG2 staff
 cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/staff
 cp -f -R /opt/karoshi/serversetup/pdc/profiles/staff /home/applications/profiles/
 fi
+if [ ! -d /home/applications/profiles/nonteachingstaff ]
+then
+echo $COPYPROFILEMSG2 nonteachingstaff
+cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/nonteachingstaff
+cp -f -R /opt/karoshi/serversetup/pdc/profiles/nonteachingstaff /home/applications/profiles/
+fi
 if [ ! -d /home/applications/profiles/tech ]
 then
 echo $COPYPROFILEMSG2 tech
 cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/tech
 cp -f -R /opt/karoshi/serversetup/pdc/profiles/tech /home/applications/profiles/
+fi
+#Remove extra icons
+rm -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/"Help Desk.url"
+rm -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/"Karoshi Web Management.url"
+if [ ! -d /home/applications/profiles/guestusers ]
+then
+echo $COPYPROFILEMSG2 guestusers
+cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/guestusers
+cp -f -R /opt/karoshi/serversetup/pdc/profiles/guestusers /home/applications/profiles/
+fi
+if [ ! -d /home/applications/profiles/exams ]
+then
+echo $COPYPROFILEMSG2 exams
+cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/exams
+rm -f /home/applications/profiles/exams/Desktop/*
 fi
 if [ ! -d /home/applications/profiles/officestaff ]
 then
@@ -1068,18 +1070,22 @@ echo $COPYPROFILEMSG2 studentstaff
 cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/studentstaff
 cp -f -R /opt/karoshi/serversetup/pdc/profiles/studentstaff /home/applications/profiles/
 fi
-if [ ! -d /home/applications/profiles/nonteachingstaff ]
-then
-echo $COPYPROFILEMSG2 nonteachingstaff
-cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/nonteachingstaff
-cp -f -R /opt/karoshi/serversetup/pdc/profiles/nonteachingstaff /home/applications/profiles/
-fi
 echo $COPYPROFILEMSG2 governors
 cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/governors
 cp -f -R /opt/karoshi/serversetup/pdc/profiles/governors /home/applications/profiles/
 echo $COPYPROFILEMSG2 guardians
 cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/guardians
 cp -f -R /opt/karoshi/serversetup/pdc/profiles/guardians /home/applications/profiles/
+
+COUNTER=$STARTYEAR
+while [  $COUNTER -le $ENDYEAR ]; do
+if [ ! -d /home/applications/profiles/yr$COUNTER ]
+then
+echo $COPYPROFILEMSG2 yr$COUNTER
+cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/yr$COUNTER
+fi
+let COUNTER=COUNTER+1
+done
 
 echo $SETPROFILEPERMSMSG
 chown -R root.itadmin /home/applications/profiles
