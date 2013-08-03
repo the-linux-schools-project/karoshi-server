@@ -60,7 +60,7 @@ echo '<form action="/cgi-bin/admin/exam_accounts_create.cgi" method="post"><div 
 '$OPENINGMSG'<br>
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 180px;">'$NEWEXAMCOUNTMSG'</td><td><input maxlength="3" size="3" name="_NEWEXAMS_" value="10"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Enable/Disable_Accounts"><img class="images" alt="" src="/images/help/info.png"><td><span>'$CREATEHELP1'</span></a></td></tr>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Create_Extra_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$CREATEHELP1'</span></a></td></tr>
 </tbody></table></div>
 <div id="submitbox"><input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset">
 </div>
