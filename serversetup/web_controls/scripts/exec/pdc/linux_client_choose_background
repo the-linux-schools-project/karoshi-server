@@ -104,7 +104,7 @@ then
 if [ -f /var/lib/samba/netlogon/linuxclient/backgrounds/$BACKGROUND.png ]
 then
 [ -f /var/lib/samba/netlogon/linuxclient/background.png ] && rm -f /var/lib/samba/netlogon/linuxclient/background.png
-ln -s  /var/lib/samba/netlogon/linuxclient/backgrounds/$BACKGROUND.png /var/lib/samba/netlogon/linuxclient/background.png
+cp -f /var/lib/samba/netlogon/linuxclient/backgrounds/$BACKGROUND.png /var/lib/samba/netlogon/linuxclient/background.png
 echo 'DEFAULTBACKGROUND="'$BACKGROUND'"' > /var/lib/samba/netlogon/linuxclient/backgrounds/defaultbackground
 fi
 fi
