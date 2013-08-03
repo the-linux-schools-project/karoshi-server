@@ -123,13 +123,13 @@ if [ $OCSCTRL = yes ]
 then
 echo '			<li><a href="/cgi-bin/tech/ocs.cgi" target="_blank">'$OCS'</a></li>'
 fi
-echo '			<li class="mid"><a href="/cgi-bin/tech/generate_classroom_lists_csv_upload_fm.cgi" class="fly">'$CLASSROOMMANAGEMENT'</a>
-					<ul>
-						<li><a href="/cgi-bin/tech/generate_classroom_lists_csv_upload_fm.cgi">'$GENERATECSVMSG'</a></li>
-						<li><a href="/cgi-bin/tech/generate_classroom_lists_asset_register_fm.cgi">'$GENERATEASSETRESGMSG'</a></li>
-						<li><a href="/cgi-bin/tech/generate_classroom_lists_asset_register_fm.cgi">'$GENERATEKEYSMSG'</a></li>
-					</ul>
-			</li>'
+#echo '			<li class="mid"><a href="/cgi-bin/tech/generate_classroom_lists_csv_upload_fm.cgi" class="fly">'$CLASSROOMMANAGEMENT'</a>
+#					<ul>
+#						<li><a href="/cgi-bin/tech/generate_classroom_lists_csv_upload_fm.cgi">'$GENERATECSVMSG'</a></li>
+#						<li><a href="/cgi-bin/tech/generate_classroom_lists_asset_register_fm.cgi">'$GENERATEASSETRESGMSG'</a></li>
+#						<li><a href="/cgi-bin/tech/generate_classroom_lists_asset_register_fm.cgi">'$GENERATEKEYSMSG'</a></li>
+#					</ul>
+#			</li>'
 #Distribution server
 if [ $DISTROCTRL = yes ]
 then
