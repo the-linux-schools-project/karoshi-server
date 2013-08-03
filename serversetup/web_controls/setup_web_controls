@@ -232,7 +232,10 @@ cp -f -R /opt/karoshi/serversetup/web_controls/cgi/pdc/all/* /var/www/cgi-bin_ka
 #Create keytab for the web management
 if [ $SAMBAVER = samba4 ]
 then
+if [ ! -f /etc/keytabs/webmanagement.keytab ]
+then
 echo "root:127.0.0.1:-:$HOSTNAME:HTTP:webmanagement:$HOSTNAME.$REALM:apache_karoshi:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
+fi
 fi
 ######################
 #Htaccess files
