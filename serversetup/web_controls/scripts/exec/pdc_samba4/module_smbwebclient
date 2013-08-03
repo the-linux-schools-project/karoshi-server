@@ -103,6 +103,16 @@ echo `date`: setupsmbwebclient on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR 
 
 source /opt/karoshi/serversetup/variables/distro
 
+#Check that this server has been setup with the correct authentication
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:users:" | /opt/karoshi/serversetup/modules/authentication/check_auth
+if [ $? = 101 ]
+then
+echo $AUTHENTICATIONFAILMSG"<br><br>"
+echo `date`: module_smbwebclient - $SERVERNAME does not have the correct authentication "for" this module by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+sleep 2
+exit 101
+fi
+
 #Add entry to samba4 dns
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 SERVERIP=`net lookup $SERVERNAME`

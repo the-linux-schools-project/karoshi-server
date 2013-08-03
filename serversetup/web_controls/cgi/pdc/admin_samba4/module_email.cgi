@@ -151,6 +151,13 @@ fi
 echo '<b>'$TITLE' - '$SERVERNAME'</b><br><br>'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_email.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ALIAS:$COPYEMAIL:$SERVERNAME" | sudo -H /opt/karoshi/web_controls/exec/module_email
+EXEC_STATUS=$?
+if [ $EXEC_STATUS = 101 ]
+then
+MESSAGE=`echo $PROBLEMMSG $LOGMSG`
+show_status
+fi
+
 completed
 echo '</div></body></html>'
 exit
