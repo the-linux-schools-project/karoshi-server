@@ -103,8 +103,13 @@ case "$1" in
 		rm -f usr/lib/zoneinfo/localtime
 		mkdir -p usr/lib/zoneinfo
 		ln -sf /etc/localtime usr/lib/zoneinfo/localtime
-		rm -f lib/libnss_*so*
-		tar cf - /lib/libnss_*so* 2>/dev/null |tar xf -
+#		rm -f lib/libnss_*so*
+#		tar cf - /lib/libnss_*so* 2>/dev/null |tar xf -
+
+		rm -f lib/x86_64-linux-gnu/libnss_*so*
+		tar cf - /lib/x86_64-linux-gnu/libnss_*so* 2>/dev/null |tar xf -
+
+
 		umask $oldumask
 	    fi
 
