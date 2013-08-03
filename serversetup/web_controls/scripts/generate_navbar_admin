@@ -392,16 +392,16 @@ then
 echo '						<li><a href="/cgi-bin/admin/windows_client_allow_roaming_profile_fm.cgi">'$WALLOWROAMINGPROFILE'</a></li>'
 fi
 echo '					</ul>
-			</li>
-			<li class="mid"><a href="/cgi-bin/admin/generate_classroom_lists_csv_upload_fm.cgi" class="fly">'$CLASSROOMMANAGEMENT'</a>
-					<ul>
-						<li><a href="/cgi-bin/admin/generate_classroom_lists_csv_upload_fm.cgi">'$GENERATECSVMSG'</a></li>
-						<li><a href="/cgi-bin/admin/generate_classroom_lists_asset_register_fm.cgi">'$GENERATEASSETRESGMSG'</a></li>
-						<li><a href="/cgi-bin/admin/generate_classroom_lists_asset_register_fm.cgi">'$GENERATEKEYSMSG'</a></li>
-					</ul>
-			</li>
-			
-'
+			</li>'
+#echo '			<li class="mid"><a href="/cgi-bin/admin/generate_classroom_lists_csv_upload_fm.cgi" class="fly">'$CLASSROOMMANAGEMENT'</a>
+#					<ul>
+#						<li><a href="/cgi-bin/admin/generate_classroom_lists_csv_upload_fm.cgi">'$GENERATECSVMSG'</a></li>
+#						<li><a href="/cgi-bin/admin/generate_classroom_lists_asset_register_fm.cgi">'$GENERATEASSETRESGMSG'</a></li>
+#						<li><a href="/cgi-bin/admin/generate_classroom_lists_asset_register_fm.cgi">'$GENERATEKEYSMSG'</a></li>
+#					</ul>
+#			</li>
+#			
+#'
 #Distribution server
 if [ $DISTROCTRL = yes ]
 then
