@@ -187,7 +187,8 @@ echo '<div id="suggestions"></div><table class="standard" style="text-align: lef
         <td>
 '$PASSWORDMSG2'</td>
         <td><input tabindex= "2" style="width: 200px;" name="____PASSWORD1____" value="'$PASSWORD1'" size="20" type="password"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$PASSWORDHELP5'<br><br>'$CHARACTERHELP':<br><br>space ! # $ & ( ) + - =  %</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$PASSWORDHELP5'<br><br>'$CHARACTERHELP'<br><br> space !	"	# 	$	%	& 	(	) 	*	+	, 	-	.	/ 	:
+;	<	=	>	?	@ 	[	\	]	^	_	` 	{	|	}	~</span></a>
 </td>
       </tr>
       <tr>
