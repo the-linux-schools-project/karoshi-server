@@ -237,11 +237,13 @@ show_status
 fi
 
 #Check to see that the group exists
-if [ `grep -c $GROUP: /etc/group` = 0 ]
+getent group $GROUP 1>/dev/null
+if [ $? != 0 ]
 then
 MESSAGE=$ERRORMSG6
 show_status
 fi
+
 #Check to see that the option choice is correct
 if [ $OPTIONCHOICE != enable ] && [ $OPTIONCHOICE != disable ] && [ $OPTIONCHOICE != changepasswords ] && [ $OPTIONCHOICE != resetpasswords ] && [ $OPTIONCHOICE != deleteaccounts ]
 then
