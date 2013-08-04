@@ -43,7 +43,46 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script>
+<SCRIPT language=JavaScript1.2>
+//change 5 to another integer to alter the scroll speed. Greater is faster
+var speed=1
+var currentpos=-100,alt=1,curpos1=-100,curpos2=-1
+function initialize(){
+startit()
+}
+function scrollwindow(){
+if (document.all &&
+!document.getElementById)
+temp=document.body.scrollTop
+else
+temp=window.pageYOffset
+if (alt==0)
+alt=2
+else
+alt=1
+if (alt==0)
+curpos1=temp
+else
+curpos2=temp
+if (curpos1!=curpos2){
+if (document.all)
+currentpos=document.body.scrollTop+speed
+else
+currentpos=window.pageYOffset+speed
+window.scroll(0,currentpos)
+}
+else{
+currentpos=0
+window.scroll(0,currentpos)
+}
+}
+function startit(){
+setInterval("scrollwindow()",30)
+}
+window.onload=initialize
+</SCRIPT>
+</head><body>'
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin

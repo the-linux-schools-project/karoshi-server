@@ -48,7 +48,7 @@ echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head
 <SCRIPT language=JavaScript1.2>
 //change 5 to another integer to alter the scroll speed. Greater is faster
 var speed=1
-var currentpos=0,alt=1,curpos1=0,curpos2=-1
+var currentpos=-100,alt=1,curpos1=-100,curpos2=-1
 function initialize(){
 startit()
 }
