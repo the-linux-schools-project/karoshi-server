@@ -77,7 +77,7 @@ echo ' <table class="standard" style="text-align: left;" border="0" cellpadding=
 <tr><td>'$PROFILEMSG'</td><td>'
 #Generate list of profiles
 echo '<select name="_PROFILE_" style="width: 200px;"><option value=""></option>'
-for PROFILES in /home/applications/profiles/*
+for PROFILES in `ls -1 /home/applications/profiles | grep -c .V2`
 do
 PROFILE=`basename $PROFILES`
 if [ $PROFILE != default_roaming_profile ]
