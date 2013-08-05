@@ -161,32 +161,31 @@ fi
 #echo new pri group is $NEWPRIGROUP"<br>"
 #echo new sub unit is $NEWSUBUNIT"<br>"
 
+#Get samba 4 database password
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+#Get domain information
+source /opt/karoshi/server_network/domain_information/domain_name
+#Get group information
+PRIGROUPID=`getent group $NEWPRIGROUP | cut -d: -f3`
 #Remove user from current primary group
 samba-tool group removemembers "$CURRENTPRIGROUP" $USERNAME  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #Add user to new primary group
 samba-tool group addmembers "$NEWPRIGROUP" $USERNAME  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #Set new home path for the user
-echo -e "dn: CN=$USERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
+echo -e 'dn: CN='$USERNAME',OU='$CURRENTPRIGROUP',OU='$SUBUNIT',OU=People,'$LDAPBASE'
 changetype: modify
-add: unixhomedirectory
-unixhomedirectory: $HOMEPATH/$USERNAME
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-PRIGROUPID=`getent group $PRIMARYGROUP | cut -d: -f3`
-
-echo -e "dn: CN=$USERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
-changetype: modify
-replace: primaryGroupID
-primaryGroupID: $PRIGROUPID
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-#Change logon script parameter
-
-echo -e "dn: CN=$USERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
-changetype: modify
+replace: unixhomedirectory
+unixhomedirectory: '$HOMEPATH'/'$USERNAME'
+-
+replace: profilePath
+profilePath: \\\\'$HOSTNAME'\\applications\profiles\'$NEWPRIGROUP'
+-
+replace: gidNumber
+gidNumber: '$PRIGROUPID'
+-
 replace: scriptPath
-scriptPath: logon.bat $PRIMARYGROUP
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+scriptPath: logon.bat '$NEWPRIGROUP'
+-' | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 #Check that home area should still be on the same server
 

@@ -149,7 +149,8 @@ MESSAGE=$ERRORMSG3
 show_status
 fi
 #Check that the group exists
-if [ `getent group $GROUP 1>/dev/null` != 0 ]
+getent group $GROUP 1>/dev/null
+if [ $? != 0 ]
 then
 MESSAGE=$ERRORMSG4
 show_status
