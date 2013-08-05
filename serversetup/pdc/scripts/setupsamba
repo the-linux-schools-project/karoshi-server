@@ -832,8 +832,6 @@ chmod u+X,g+X -R /home/itadminshare
 chmod 0373 /var/log/karoshilogs
 chown root.itadmin -R /var/log/karoshilogs
 
-
-[ -d /var/lib/samba/netlogon ] || mkdir /var/lib/samba/netlogon
 ##############################
 #Check if STARTYEAR is even, bash is rounding down on decimal places
 ##############################
@@ -852,6 +850,7 @@ fi
 #############################
 echo $COPYLOGONFILESMSG
 [ -d /var/lib/samba/netlogon ] && cp -R /var/lib/samba/netlogon /var/lib/samba/netlogon_`date +%s`
+[ ! -d /var/lib/samba/netlogon ] && mkdir /var/lib/samba/netlogon
 cp -R /opt/karoshi/serversetup/pdc/logonscripts/default_roaming.kix /var/lib/samba/netlogon/
 cp -R /opt/karoshi/serversetup/pdc/logonscripts/examdtsec.kix /var/lib/samba/netlogon/
 cp -R /opt/karoshi/serversetup/pdc/logonscripts/getdll.bat /var/lib/samba/netlogon/
