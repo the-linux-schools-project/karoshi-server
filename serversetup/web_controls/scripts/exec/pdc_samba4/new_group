@@ -91,7 +91,7 @@ echo `date`: new_group - addding group $NEWGROUP from $REMOTE_ADDR by $REMOTE_US
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 source /opt/karoshi/server_network/domain_information/domain_name
 
-samba-tool group add $NEWGROUP
+samba-tool group add --groupou="OU=Groups,OU=People" $NEWGROUP
 echo
 GIDNUMBER=`getent group $NEWGROUP | cut -d: -f3`
 echo -e "dn: CN=$NEWGROUP,CN=Users,$LDAPBASE
