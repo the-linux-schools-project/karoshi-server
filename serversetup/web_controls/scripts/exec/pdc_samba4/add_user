@@ -389,7 +389,7 @@ if [ $RENAMEUSER = yes ]
 then
 if [ $RSERVER = $HOSTNAME ]
 then
-scp $RHOMEPATH/$RENAME $SERVER:/$HOMEPATH/$NEWUSERNAME
+scp -r $RHOMEPATH/$RENAME $SERVER:/$HOMEPATH/$NEWUSERNAME
 else
 [ ! -d /home/transfer ] && mkdir -p /home/transfer
 chmod 0700 /home/transfer
