@@ -56,7 +56,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=19
+END_POINT=21
 #Assign FIRSTNAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
@@ -172,6 +172,20 @@ if [ `echo $DATAHEADER'check'` = REQUESTFILEcheck ]
 then
 let COUNTER=$COUNTER+1
 REQUESTFILE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+break
+fi
+let COUNTER=$COUNTER+1
+done
+
+#Assign RENAME
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+if [ `echo $DATAHEADER'check'` = RENAMEcheck ]
+then
+let COUNTER=$COUNTER+1
+RENAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
 break
 fi
 let COUNTER=$COUNTER+1
@@ -426,7 +440,7 @@ exit
 else
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/add_user.cgi | cut -d' ' -f1`
 #Add user
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$FIRSTNAME:$SURNAME:$USERNAME:$PASSWORD1:$GROUP:$USERNAMESTYLE:$ENROLLMENTNUMBER:$REQUESTFILE" | sudo -H /opt/karoshi/web_controls/exec/add_user
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$FIRSTNAME:$SURNAME:$USERNAME:$PASSWORD1:$GROUP:$USERNAMESTYLE:$ENROLLMENTNUMBER:$REQUESTFILE::$RENAME:" | sudo -H /opt/karoshi/web_controls/exec/add_user
 EXEC_STATUS=`echo $?`
 MESSAGE=`echo $FIRSTNAMEMSG: "${FIRSTNAME^}"'\\n'$SURNAMEMSG: "${SURNAME^}"'\\n'$USERNAMEMSG: $USERNAME'\\n'$COMPLETEDMSG $GROUP.`
 if [ $EXEC_STATUS = 101 ]

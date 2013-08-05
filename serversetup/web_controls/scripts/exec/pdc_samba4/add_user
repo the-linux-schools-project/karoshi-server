@@ -99,6 +99,7 @@ USERNAMESTYLE=`echo "$DATA" | cut -s -d: -f9`
 ENROLLMENTNUMBER=`echo "$DATA" | cut -s -d: -f10`
 REQUESTFILE=`echo "$DATA" | cut -s -d: -f11`
 BULKUSERCREATION=`echo "$DATA" | cut -s -d: -f12`
+RENAME=`echo "$DATA" | cut -s -d: -f13`
 ########################
 #Check data
 ########################
@@ -185,6 +186,25 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/user/add_user
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 ##########################
+#Check to see if this is for renaming an existing user.
+##########################
+RENAMEUSER=no
+if [ ! -z "$RENAME" ]
+then
+#Check to see if this user exists
+getent passwd $RENAME 1>/dev/null
+if [ $? = 0 ]
+then
+RGROUP=`id -g -n $RENAME`
+#Get server and path information for the existing user
+source /opt/karoshi/server_network/group_information/$RGROUP
+RSERVER=$SERVER
+RHOMEPATH=$HOMEPATH
+RENAMEUSER=yes
+fi
+fi
+
+##########################
 #Check for federated servers
 ##########################
 FEDERATED_LDAP_SERVERS=no
@@ -195,7 +215,6 @@ then
 FEDERATED_LDAP_SERVERS=yes
 fi
 fi
-
 
 ########################
 #Get server and home path for new user
@@ -342,6 +361,18 @@ then
 ######################
 #Create home folder
 ######################
+
+#Move or copy in data from an existing account
+if [ $RENAMEUSER = yes ]
+then
+if [ $RSERVER = $HOSTNAME ]
+then
+mv $RHOMEPATH/$RENAME $HOMEPATH/$NEWUSERNAME
+else
+scp -r $RSERVER:/$RHOMEPATH/$RENAME $HOMEPATH/$NEWUSERNAME
+fi
+fi
+
 [ ! -d $HOMEPATH/$NEWUSERNAME/ ] && mkdir -p $HOMEPATH/$NEWUSERNAME/
 chown -R $NEWUSERNAME:$PRIMARYGROUP $HOMEPATH/$NEWUSERNAME/
 chmod -R 0600 $HOMEPATH/$NEWUSERNAME/
@@ -351,8 +382,21 @@ fi
 ############################
 #Create user home area on extra fileserver
 ############################
-if [ -d /opt/karoshi/server_network/servers/$SERVER ] && [ $SERVER != $HOSTNAME ]
+if [ $SERVER != $HOSTNAME ]
 then
+#Move or copy in data from an existing account
+if [ $RENAMEUSER = yes ]
+then
+if [ $RSERVER = $HOSTNAME ]
+then
+scp $RHOMEPATH/$RENAME $SERVER:/$HOMEPATH/$NEWUSERNAME
+else
+[ ! -d /home/transfer ] && mkdir -p /home/transfer
+chmod 0700 /home/transfer
+scp -r $RSERVER:/$RHOMEPATH/$RENAME /home/transfer/$RENAME
+scp -r /home/transfer/$RENAME $SERVER:/$HOMEPATH/$NEWUSERNAME
+fi
+fi
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 [ ! -d '$HOMEPATH''/''$NEWUSERNAME' ] && mkdir -p '$HOMEPATH''/''$NEWUSERNAME'
 chmod 0600 -R '$HOMEPATH''/''$NEWUSERNAME'
@@ -379,6 +423,10 @@ if [ $EMAILSERVER != $HOSTNAME ]
 then 
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
 [ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
+if [ '$RENAMEUSER' = yes ]
+then
+mv /home/users/email/'$RENAME' /home/users/email/'$NEWUSERNAME'
+fi
 [ ! -d /home/users/email/'$NEWUSERNAME' ] && mkdir /home/users/email/'$NEWUSERNAME'
 chown -R '$USERID':'$PRIMARYGROUP' /home/users/email/'$NEWUSERNAME'
 chmod -R 0600 /home/users/email/'$NEWUSERNAME'
@@ -394,6 +442,10 @@ FAILEDSERVERLIST=$FAILEDSERVERLIST,$EMAILSERVER
 fi
 else
 [ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
+if [ $RENAMEUSER = yes ]
+then
+mv /home/users/email/$RENAME /home/users/email/$NEWUSERNAME
+fi
 mkdir /home/users/email/$NEWUSERNAME
 chown $NEWUSERNAME -R /home/users/email/$NEWUSERNAME
 chmod 0600 -R /home/users/email/$NEWUSERNAME
@@ -636,6 +688,13 @@ if [ -f /opt/karoshi/server_network/email_restrictions/$PRIMARYGROUP ]
 then
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$NEWUSERNAME:$PRIMARYGROUP:deny:" | sudo -H /opt/karoshi/web_controls/exec/email_access
+fi
+
+#Delete account that was being renamed
+if [ $RENAMEUSER = yes ]
+then
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/delete_user.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$RENAME:::" | sudo -H /opt/karoshi/web_controls/exec/delete_user
 fi
 
 exit $CREATE_USER_STATUS
