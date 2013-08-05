@@ -54,7 +54,7 @@ echo '
 <body onLoad="start()">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/exam_accounts_enable_disable.cgi" method="post"><div id="actionbox"><b>'$TITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Enable/Disable_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$EXAMHELP1'</span></a>
+echo '<form action="/cgi-bin/admin/exam_accounts_enable_disable.cgi" method="post"><div id="actionbox"><b>'$TITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Enable/Disable_Exam_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$EXAMHELP1'</span></a>
 
 <br>
   <br>

@@ -65,7 +65,7 @@ echo '<form action="/cgi-bin/admin/exam_accounts_reset_passwords.cgi" method="po
 </td><td>
 <input tabindex= "1" name="_EXCEPTIONLIST_" style="width: 200px;" size="20" type="text">
 </td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php"><img class="images" alt="" src="/images/help/info.png"><span>'$EXCEPTIONHELP'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reset_Exam_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$EXCEPTIONHELP'</span></a>
 
 </td></tr></tbody></table>
 </div>

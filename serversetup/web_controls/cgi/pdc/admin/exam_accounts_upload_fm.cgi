@@ -55,7 +55,7 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/exam_accounts_upload.cgi" METHOD="POST"><div id="actionbox">
-<B>'$TITLE1'</B> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Copy_Data_to_Accounts"><img class="images" alt="" src="/images/help/info.png"><td><span>'$UPLOADHELP1'<br><br>'$UPLOADHELP3'</span></a>
+<B>'$TITLE1'</B> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Copy_Data_to_Exam_Accounts"><img class="images" alt="" src="/images/help/info.png"><td><span>'$UPLOADHELP1'<br><br>'$UPLOADHELP3'</span></a>
 <P>
 '$OPENINGMSG':
 <P>
