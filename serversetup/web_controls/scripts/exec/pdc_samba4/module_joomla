@@ -124,6 +124,10 @@ echo `date`: dnsadd - adding $ALIAS "for" $JOOMLASERVER to the dns records by $R
 samba-tool dns add 127.0.0.1 $REALM $ALIAS CNAME $JOOMLASERVER.$REALM --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
 
+#Update alias entry for the server
+[ ! -d /opt/karoshi/server_network/aliases ] && mkdir -p /opt/karoshi/server_network/aliases
+[ ! -f /opt/karoshi/server_network/aliases/$SERVERNAME ] && echo $ALIAS > /opt/karoshi/server_network/aliases/$SERVERNAME
+
 if [ $JOOMLASERVER = $HOSTNAME ]
 then
 #Install joomla
