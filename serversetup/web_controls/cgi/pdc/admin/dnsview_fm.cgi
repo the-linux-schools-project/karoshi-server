@@ -97,7 +97,7 @@ echo '<div style="float: left" id="my_menu" class="sdmenu">
 </div></div><div id="mobileactionbox">
 '
 else
-echo '<b>'$TITLE2'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_DNS_Entries"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a>
+echo '<b>'$TITLE2'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a>
 <br><br>'
 fi
 

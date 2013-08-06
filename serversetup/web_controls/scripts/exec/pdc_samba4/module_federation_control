@@ -1,0 +1,307 @@
+#!/bin/bash
+#Copyright (C) 2011 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/module_federation_control_cgi
+then
+echo `date`: module_federation_control - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/module_federation_control_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_federation_control.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $module_federation_control_cgi'check' ]
+then
+echo `date`: module_federation_control - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: module_federation_control - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: module_federation_control - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: module_federation_control - Not called by module_federation_control.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: module_federation_control - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: module_federation_control - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SERVERNAME'null' = null ]
+then
+echo `date`: module_federation_control - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+echo `date`: module_federation_control - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+#Copy in module
+scp -p -r /opt/karoshi/serversetup/modules/ldap root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
+
+#Copy in web management
+scp -p -r /opt/karoshi/serversetup/web_controls/ root@$SERVERNAME:/opt/karoshi/serversetup/ 1> /dev/null
+
+
+##########################
+#Configure ldap
+##########################
+#Copy in ldap module
+scp -p -r /opt/karoshi/serversetup/modules/ldap root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
+scp -p -r /opt/karoshi/serversetup/distro/ubuntu/extra_server/software root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/extra_server/ 1> /dev/null
+scp -p -r /opt/karoshi/serversetup/distro/pclinuxos/extra_server/software root@$SERVERNAME:/opt/karoshi/serversetup/distro/pclinuxos/extra_server/ 1> /dev/null
+#Transfer ldap information to the slave ldap server
+[ -f /opt/karoshi/.tempdata/users.ldif ] && rm -f /opt/karoshi/.tempdata/users.ldif
+[ -f /opt/karoshi/.tempdata/groups.ldif ] && rm -f /opt/karoshi/.tempdata/groups.ldif
+touch /opt/karoshi/.tempdata/users.ldif
+chown root.root /opt/karoshi/.tempdata/users.ldif
+chmod 0600 /opt/karoshi/.tempdata/users.ldif
+slapcat -s "ou=People,dc=karoshi,dc=local" -l /opt/karoshi/.tempdata/users.ldif
+slapcat -s "ou=Group,dc=karoshi,dc=local" -l /opt/karoshi/.tempdata/groups.ldif
+scp /opt/karoshi/.tempdata/users.ldif root@$SERVERNAME:"/opt/karoshi/.tempdata/"
+scp /opt/karoshi/.tempdata/groups.ldif root@$SERVERNAME:"/opt/karoshi/.tempdata/"
+scp /opt/karoshi/server_network/domain_information/domain_name root@$SERVERNAME:"/opt/karoshi/.tempdata/"
+rm -f /opt/karoshi/.tempdata/users.ldif
+rm -f /opt/karoshi/.tempdata/groups.ldif
+
+#ssh -x -o PasswordAuthentication=no $SERVERNAME '
+#mv /home/applications/profiles /home/applications/profiles.$$
+#mv /var/lib/samba/netlogon/windows_settings/security /var/lib/samba/netlogon/windows_settings/security.$$
+#mv /var/lib/samba/netlogon/windows_settings/drives /var/lib/samba/netlogon/windows_settings/drives.$$
+#'
+
+#Copy /home/applications/profiles to the federated server
+#scp -r /home/applications/profiles root@$SERVERNAME:"/home/applications/"
+#Copy /var/lib/samba/netlogon/windows_settings/security
+#scp -r /var/lib/samba/netlogon/windows_settings/security root@$SERVERNAME:"/var/lib/samba/netlogon/windows_settings/"
+#Copy /var/lib/samba/netlogon/windows_settings/drives
+#scp -r /var/lib/samba/netlogon/windows_settings/drives root@$SERVERNAME:"/var/lib/samba/netlogon/windows_settings/"
+
+#Add flag files
+[ ! -d /opt/karoshi/server_network/federated_ldap_servers ] && mkdir -p /opt/karoshi/server_network/federated_ldap_servers
+mkdir -p /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME
+[ -d /opt/karoshi/server_network/servers/$SERVERNAME ] && rm -f -R  /opt/karoshi/server_network/servers/$SERVERNAME
+
+############################
+#Make sure that there is a gap of $MACHINE_COUNT between the uidNumbers to allow for machine accounts to be added to the federated domains.
+############################
+MACHINE_COUNT=10000
+for FEDERATEDLDAPSERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
+do
+FEDERATEDLDAPSERVER=`basename $FEDERATEDLDAPSERVERS`
+
+SAMBADOMAIN=`grep "workgroup ="  /etc/samba/smb.conf | cut -d= -f2 | sed 's/ //g'`
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+#Get uidnumber from this server
+UIDNUMBER=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" sambaDomainName=$SAMBADOMAIN | grep ^uidNumber | cut -d: -f2 | sed 's/ //g' | tr -cd "0-9"`
+
+#Get uidnumber from federated server
+FEDERATEDUIDNUMBER=$(ssh -x -o PasswordAuthentication=no $FEDERATEDLDAPSERVER '
+SAMBADOMAIN=`grep "workgroup ="  /etc/samba/smb.conf | cut -d= -f2 | sed "s/ //g"`
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" sambaDomainName=$SAMBADOMAIN | grep ^uidNumber | cut -d: -f2 | sed "s/ //g" | tr -cd "0-9"
+')
+
+#Compare UID numbers and adjust if neccessary.
+let UID_DIFFERENCE=$UIDNUMBER-$FEDERATEDUIDNUMBER
+if [ $UID_DIFFERENCE -lt $MACHINE_COUNT ]
+then
+let ADD_VALUE=$MACHINE_COUNT-$UID_DIFFERENCE
+let UIDNUMBER=$UIDNUMBER+$ADD_VALUE
+
+echo -e "dn: sambaDomainName=$SAMBADOMAIN,dc=karoshi,dc=local
+changetype: modify
+replace: uidNumber
+uidNumber: $UIDNUMBER
+" | ldapmodify -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS 1>/dev/null
+fi
+done
+
+############################
+#Migrate user information on this server to users on the federated server
+############################
+SAMBADOMAIN=`grep "workgroup ="  /etc/samba/smb.conf | cut -d= -f2 | sed "s/ //g"`
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+MASTERSID=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" sambaDomainName=$SAMBADOMAIN | grep ^sambaSID | cut -d: -f2 | sed "s/ //g"`
+
+SAMBASID=$(ssh -x -o PasswordAuthentication=no $SERVERNAME '
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+SAMBADOMAIN=`grep "workgroup ="  /etc/samba/smb.conf | cut -d= -f2 | sed "s/ //g"`
+ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" sambaDomainName=$SAMBADOMAIN | grep ^sambaSID | cut -d: -f2 | sed "s/ //g"
+')
+
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+sed -i "s/'$MASTERSID'/'$SAMBASID'/g" /opt/karoshi/.tempdata/users.ldif
+sed -i "s/'$MASTERSID'/'$SAMBASID'/g" /opt/karoshi/.tempdata/groups.ldif
+/opt/karoshi/serversetup/modules/ldap/setupfederatedldapserver
+'
+############################
+#Check if there are roaming profile users to sync
+############################
+ROAMING_SYNC=yes
+[ ! -f /opt/karoshi/server_network/windows_roaming_profile_users ] && ROAMING_SYNC=no
+[ `cat /opt/karoshi/server_network/windows_roaming_profile_users | wc -l` = 0 ] && ROAMING_SYNC=no
+
+if [ $ROAMING_SYNC = yes ]
+then
+for ROAMING_USER in `cat /opt/karoshi/server_network/windows_roaming_profile_users`
+do
+############################
+#Migrate roaming profile data
+############################
+scp -p -r /var/lib/samba/netlogon/windows_settings/drives/$ROAMING_USER.kix root@$SERVERNAME:/var/lib/samba/netlogon/windows_settings/drives/ 1> /dev/null
+scp -p -r /opt/karoshi/server_network/group_information/$ROAMING_USER root@$SERVERNAME:/opt/karoshi/server_network/group_information/ 1> /dev/null
+scp -p -r /home/applications/profiles/$ROAMING_USER root@$SERVERNAME:/home/applications/profiles/ 1> /dev/null
+
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+[ ! -f /var/lib/samba/netlogon/windows_settings/security/'$ROAMING_USER'.kix ] && ln -s /var/lib/samba/netlogon/default_roaming.kix /var/lib/samba/netlogon/windows_settings/security/'$ROAMING_USER'.kix
+chown -R '$ROAMING_USER'.itadmin /home/applications/profiles/'$ROAMING_USER'
+sed -i "s/'$HOSTNAME'/$HOSTNAME/g" /var/lib/samba/netlogon/windows_settings/drives/'$ROAMING_USER'.kix
+touch /opt/karoshi/server_network/windows_roaming_profile_users
+if [ `grep -c '$USERNAME' /opt/karoshi/server_network/windows_roaming_profile_users` = 0 ]
+then
+echo '$ROAMING_USER' >> /opt/karoshi/server_network/windows_roaming_profile_users
+fi
+'
+done
+fi
+############################
+#Modify web management menu
+############################
+sed -i 's/FEDERATEDCTL=no/FEDERATEDCTL=yes/g' /opt/karoshi/server_network/menusettings
+
+#Schedule federated password synchronisation
+echo 0,20,40 '*' '*' '*' 1-7 /opt/karoshi/serversetup/modules/federated_server/sync_passwords > /opt/karoshi/cronjobs/jobs/federated_password_sync.cron
+#Schedule federated file synchronisation
+echo 15,45 '*' '*' '*' 1-7 /opt/karoshi/serversetup/modules/federated_server/sync_files > /opt/karoshi/cronjobs/jobs/federated_file_sync.cron
+#Schedule federated server network sync
+echo 0 2 '*' '*' 1-7 /opt/karoshi/serversetup/modules/federated_server/sync_server_information  > /opt/karoshi/cronjobs/jobs/federated_server_information_sync.cron
+
+########################
+#Copy any missing group information across to federated server
+########################
+for GROUPFILES in /opt/karoshi/server_network/group_information/*
+do
+GROUPFILE=`basename $GROUPFILES`
+if [ -f /opt/karoshi/server_network/group_information/$GROUPFILE ]
+then
+source /opt/karoshi/server_network/group_information/$GROUPFILE
+#Check to see if file exists on federated server
+
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+
+if [ ! -f /opt/karoshi/server_network/group_information/'$GROUPFILE' ]
+then
+echo SERVER=$HOSTNAME > /opt/karoshi/server_network/group_information/'$GROUPFILE'
+echo HOMEPATH='$HOMEPATH' >> /opt/karoshi/server_network/group_information/'$GROUPFILE'
+echo SUBUNIT='$SUBUNIT' >> /opt/karoshi/server_network/group_information/'$GROUPFILE'
+echo SECONDARYGROUP='$SECONDARYGROUP' >> /opt/karoshi/server_network/group_information/'$GROUPFILE'
+echo YEARSUFFIX='$YEARSUFFIX' >> /opt/karoshi/server_network/group_information/'$GROUPFILE'
+fi
+
+#Add group to /var/lib/samba/netlogon/groups.txt
+if [ `grep -c ^'$GROUPFILE', /var/lib/samba/netlogon/groups.txt` = 0 ]
+then
+echo '$GROUPFILE',$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
+fi
+'
+fi
+done
+
+########################
+#Copy any missing profiles to the federated server
+########################
+for WINPROFILES in /home/applications/profiles/*
+do
+WINPROFILE=`basename $WINPROFILES`
+
+#Check to see if profile exists on federated server
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+[ ! -d /home/applications/profiles/'$WINPROFILE' ] && exit 105
+'
+if [ `echo $?` = 105 ]
+then
+scp -p -r /home/applications/profiles/$WINPROFILE/ root@$SERVERNAME:/home/applications/profiles/ 1> /dev/null
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+chown root.itadmin /home/applications/profiles/'$WINPROFILE'/
+chmod 0644 /home/applications/profiles/'$WINPROFILE'/
+chmod u+X,g+X,o+X /home/applications/profiles/'$WINPROFILE'/
+'
+fi
+done
+
+########################
+#Add users to correct groups on federated servers
+########################
+
+echo "<br><li>Adding users to correct groups on $SERVERNAME</li>"
+for EXISTING_USER in `getent passwd | grep /home/users/ | cut -d: -f1`
+do
+GROUPLIST=`groups $EXISTING_USER | cut -d: -f2 | sed "s/^ //g" | sed "s/ /,/g" | sed "s/Domain,Admins/Domain Admins/g"`
+echo Adding $EXISTING_USER to $GROUPLIST on $SERVERNAME"<br>"
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+smbldap-usermod -G "'$GROUPLIST'" '$EXISTING_USER'
+'
+done
+
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
+############################
+#Sync server information now
+############################
+/opt/karoshi/serversetup/modules/federated_server/sync_server_information 1>/dev/null
+
+

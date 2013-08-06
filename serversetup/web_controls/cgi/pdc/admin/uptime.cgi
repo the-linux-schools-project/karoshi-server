@@ -190,7 +190,7 @@ echo '<div style="float: left" id="my_menu" class="sdmenu">
 </div></div><div id="mobileactionbox">
 '
 else
-echo '<b>'$TITLE'</b><br><br>'
+echo '<b>'$TITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Uptime"><img class="images" alt="" src="/images/help/info.png"><span>'$UPTIMEHELP'</span></a><br><br>'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/uptime.cgi | cut -d' ' -f1`

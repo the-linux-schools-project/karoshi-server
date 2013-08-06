@@ -265,7 +265,7 @@ echo '<div style="float: left" id="my_menu" class="sdmenu">
 '
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tr><td style="vertical-align: top;"><b>'$TITLE' - '$SERVERNAME'</b></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td><td style="vertical-align: top;">
+<tr><td style="vertical-align: top;"><b>'$TITLE' - '$SERVERNAME'</b></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td><td style="vertical-align: top;">
 <form action="/cgi-bin/admin/dnsview.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_ACTION_'$ACTION2'_" type="image" class="images" src="'$ICON'" value=""><span>'$ALTTITLE'</span></a></form>
 
 
