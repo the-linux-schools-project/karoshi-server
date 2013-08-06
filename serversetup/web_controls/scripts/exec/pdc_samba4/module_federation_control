@@ -90,46 +90,8 @@ fi
 
 echo `date`: module_federation_control - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-#Copy in module
-scp -p -r /opt/karoshi/serversetup/modules/ldap root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
-
 #Copy in web management
 scp -p -r /opt/karoshi/serversetup/web_controls/ root@$SERVERNAME:/opt/karoshi/serversetup/ 1> /dev/null
-
-
-##########################
-#Configure ldap
-##########################
-#Copy in ldap module
-scp -p -r /opt/karoshi/serversetup/modules/ldap root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
-scp -p -r /opt/karoshi/serversetup/distro/ubuntu/extra_server/software root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/extra_server/ 1> /dev/null
-scp -p -r /opt/karoshi/serversetup/distro/pclinuxos/extra_server/software root@$SERVERNAME:/opt/karoshi/serversetup/distro/pclinuxos/extra_server/ 1> /dev/null
-#Transfer ldap information to the slave ldap server
-[ -f /opt/karoshi/.tempdata/users.ldif ] && rm -f /opt/karoshi/.tempdata/users.ldif
-[ -f /opt/karoshi/.tempdata/groups.ldif ] && rm -f /opt/karoshi/.tempdata/groups.ldif
-touch /opt/karoshi/.tempdata/users.ldif
-chown root.root /opt/karoshi/.tempdata/users.ldif
-chmod 0600 /opt/karoshi/.tempdata/users.ldif
-slapcat -s "ou=People,dc=karoshi,dc=local" -l /opt/karoshi/.tempdata/users.ldif
-slapcat -s "ou=Group,dc=karoshi,dc=local" -l /opt/karoshi/.tempdata/groups.ldif
-scp /opt/karoshi/.tempdata/users.ldif root@$SERVERNAME:"/opt/karoshi/.tempdata/"
-scp /opt/karoshi/.tempdata/groups.ldif root@$SERVERNAME:"/opt/karoshi/.tempdata/"
-scp /opt/karoshi/server_network/domain_information/domain_name root@$SERVERNAME:"/opt/karoshi/.tempdata/"
-rm -f /opt/karoshi/.tempdata/users.ldif
-rm -f /opt/karoshi/.tempdata/groups.ldif
-
-#ssh -x -o PasswordAuthentication=no $SERVERNAME '
-#mv /home/applications/profiles /home/applications/profiles.$$
-#mv /var/lib/samba/netlogon/windows_settings/security /var/lib/samba/netlogon/windows_settings/security.$$
-#mv /var/lib/samba/netlogon/windows_settings/drives /var/lib/samba/netlogon/windows_settings/drives.$$
-#'
-
-#Copy /home/applications/profiles to the federated server
-#scp -r /home/applications/profiles root@$SERVERNAME:"/home/applications/"
-#Copy /var/lib/samba/netlogon/windows_settings/security
-#scp -r /var/lib/samba/netlogon/windows_settings/security root@$SERVERNAME:"/var/lib/samba/netlogon/windows_settings/"
-#Copy /var/lib/samba/netlogon/windows_settings/drives
-#scp -r /var/lib/samba/netlogon/windows_settings/drives root@$SERVERNAME:"/var/lib/samba/netlogon/windows_settings/"
 
 #Add flag files
 [ ! -d /opt/karoshi/server_network/federated_ldap_servers ] && mkdir -p /opt/karoshi/server_network/federated_ldap_servers
@@ -137,57 +99,26 @@ mkdir -p /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME
 [ -d /opt/karoshi/server_network/servers/$SERVERNAME ] && rm -f -R  /opt/karoshi/server_network/servers/$SERVERNAME
 
 ############################
-#Make sure that there is a gap of $MACHINE_COUNT between the uidNumbers to allow for machine accounts to be added to the federated domains.
+#Create users on the federated server
 ############################
-MACHINE_COUNT=10000
-for FEDERATEDLDAPSERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
-do
-FEDERATEDLDAPSERVER=`basename $FEDERATEDLDAPSERVERS`
 
-SAMBADOMAIN=`grep "workgroup ="  /etc/samba/smb.conf | cut -d= -f2 | sed 's/ //g'`
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-#Get uidnumber from this server
-UIDNUMBER=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" sambaDomainName=$SAMBADOMAIN | grep ^uidNumber | cut -d: -f2 | sed 's/ //g' | tr -cd "0-9"`
-
-#Get uidnumber from federated server
-FEDERATEDUIDNUMBER=$(ssh -x -o PasswordAuthentication=no $FEDERATEDLDAPSERVER '
-SAMBADOMAIN=`grep "workgroup ="  /etc/samba/smb.conf | cut -d= -f2 | sed "s/ //g"`
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" sambaDomainName=$SAMBADOMAIN | grep ^uidNumber | cut -d: -f2 | sed "s/ //g" | tr -cd "0-9"
-')
-
-#Compare UID numbers and adjust if neccessary.
-let UID_DIFFERENCE=$UIDNUMBER-$FEDERATEDUIDNUMBER
-if [ $UID_DIFFERENCE -lt $MACHINE_COUNT ]
-then
-let ADD_VALUE=$MACHINE_COUNT-$UID_DIFFERENCE
-let UIDNUMBER=$UIDNUMBER+$ADD_VALUE
-
-echo -e "dn: sambaDomainName=$SAMBADOMAIN,dc=karoshi,dc=local
-changetype: modify
-replace: uidNumber
-uidNumber: $UIDNUMBER
-" | ldapmodify -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS 1>/dev/null
-fi
-done
-
-############################
-#Migrate user information on this server to users on the federated server
-############################
-SAMBADOMAIN=`grep "workgroup ="  /etc/samba/smb.conf | cut -d= -f2 | sed "s/ //g"`
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-MASTERSID=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" sambaDomainName=$SAMBADOMAIN | grep ^sambaSID | cut -d: -f2 | sed "s/ //g"`
-
-SAMBASID=$(ssh -x -o PasswordAuthentication=no $SERVERNAME '
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-SAMBADOMAIN=`grep "workgroup ="  /etc/samba/smb.conf | cut -d= -f2 | sed "s/ //g"`
-ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" sambaDomainName=$SAMBADOMAIN | grep ^sambaSID | cut -d: -f2 | sed "s/ //g"
-')
-
+#Get list of users
+USERLIST=`getent passwd | grep /home/users`
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
-sed -i "s/'$MASTERSID'/'$SAMBASID'/g" /opt/karoshi/.tempdata/users.ldif
-sed -i "s/'$MASTERSID'/'$SAMBASID'/g" /opt/karoshi/.tempdata/groups.ldif
-/opt/karoshi/serversetup/modules/ldap/setupfederatedldapserver
+for USERDATA in `echo -e "'$USERLIST'"`
+do
+USERNAME=`echo $USERDATA | cut -d: -f1`
+NAMEDATA=`echo $USERDATA | cut -d: -f5 | sed "s/,//g;"`
+FORENAME=`echo $NAMEDATA | cut -d" " -f1`
+SURNAME=`echo $NAMEDATA | cut -d" " -f2`
+HOMEPATH=`echo $USERDATA | cut -d: -f6 | sed "s/$USERNAME//g"`
+PRIMARYGROUP=`basename $HOMEPATH`
+
+echo "<li>"Creating User"</li>""<br>"Username: $USERNAME"<br>"Forename: $FORENAME"<br>"Surname: $SURNAME"<br>"Primary group: $PRIMARYGROUP"<br>"
+
+#Create user
+
+done
 '
 ############################
 #Check if there are roaming profile users to sync
