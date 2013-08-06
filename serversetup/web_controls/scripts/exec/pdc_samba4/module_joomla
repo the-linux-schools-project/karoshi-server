@@ -124,64 +124,6 @@ echo `date`: dnsadd - adding $ALIAS "for" $JOOMLASERVER to the dns records by $R
 samba-tool dns add 127.0.0.1 $REALM $ALIAS CNAME $JOOMLASERVER.$REALM --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
 
-##########################
-#Configure ldap
-##########################
-
-CONFIGURE_LDAP=yes
-if [ $JOOMLASERVER = $HOSTNAME ]
-then
-CONFIGURE_LDAP=no
-fi
-if [ -f /opt/karoshi/server_network/slave_ldap_servers/$JOOMLASERVER ]
-then
-CONFIGURE_LDAP=no
-fi
-if [ -f /opt/karoshi/server_network/ldap_clients/$JOOMLASERVER ]
-then
-CONFIGURE_LDAP=no
-fi
-
-if [ $CONFIGURE_LDAP = yes ]
-then
-if [ $LDAPSERVER = slaveldapserver ]
-then
-#Copy in /etc/ldap.secret
-scp -p /etc/ldap.secret root@$JOOMLASERVER:/etc/ 1> /dev/null
-#Copy in ldap module
-scp -p -r /opt/karoshi/serversetup/modules/ldap root@$JOOMLASERVER:/opt/karoshi/serversetup/modules/ 1> /dev/null
-scp -p -r /opt/karoshi/serversetup/distro/ubuntu/extra_server/software root@$JOOMLASERVER:/opt/karoshi/serversetup/distro/ubuntu/extra_server/ 1> /dev/null
-scp -p -r /opt/karoshi/serversetup/distro/pclinuxos/extra_server/software root@$JOOMLASERVER:/opt/karoshi/serversetup/distro/pclinuxos/extra_server/ 1> /dev/null
-
-#Transfer ldap information to the slave ldap server
-[ -f /opt/karoshi/.tempdata/master.ldif ] && rm -f /opt/karoshi/.tempdata/master.ldif
-touch /opt/karoshi/.tempdata/master.ldif
-chown root.root /opt/karoshi/.tempdata/master.ldif
-chmod 0600 /opt/karoshi/.tempdata/master.ldif
-slapcat -s "ou=People,dc=karoshi,dc=local" -l /opt/karoshi/.tempdata/master.ldif
-scp /opt/karoshi/.tempdata/master.ldif root@$JOOMLASERVER:"/opt/karoshi/.tempdata/"
-scp /opt/karoshi/server_network/domain_information/domain_name root@$SERVERNAME:"/opt/karoshi/.tempdata/"
-rm -f /opt/karoshi/.tempdata/master.ldif
-ssh -x -o PasswordAuthentication=no $JOOMLASERVER '
-/opt/karoshi/serversetup/modules/ldap/setupslaveldapserver
-'
-[ ! -d /opt/karoshi/server_network/slave_ldap_servers ] && mkdir -p /opt/karoshi/server_network/slave_ldap_servers
-touch /opt/karoshi/server_network/slave_ldap_servers/$JOOMLASERVER
-[ ! -d /opt/karoshi/server_network/servers/$JOOMLASERVER ] && mkdir -p /opt/karoshi/server_network/servers/$JOOMLASERVER
-echo $ROLE3"<br>" > /opt/karoshi/server_network/servers/$JOOMLASERVER/ldapserver
-else
-PDCIP=`net lookup $HOSTNAME`
-ssh -x -o PasswordAuthentication=no $JOOMLASERVER '
-echo "'$REMOTE_USER':'$REMOTE_ADDR':'$MD5SUM':'$HOSTNAME':'$PDCIP':" | /opt/karoshi/serversetup/modules/ldap/configureldap 
-'
-#Copy in /etc/ldap.secret
-scp -p /etc/ldap.secret root@$JOOMLASERVER:/etc/ 1> /dev/null
-[ ! -d /opt/karoshi/server_network/ldap_clients/ ] && mkdir -p /opt/karoshi/server_network/ldap_clients/
-touch /opt/karoshi/server_network/ldap_clients/$JOOMLASERVER
-fi
-fi
-
-
 if [ $JOOMLASERVER = $HOSTNAME ]
 then
 #Install joomla
@@ -209,11 +151,17 @@ fi
 [ ! -d /opt/karoshi/server_network/servers/$JOOMLASERVER ] && mkdir -p /opt/karoshi/server_network/servers/$JOOMLASERVER
 [ -f /opt/karoshi/server_network/servers/$JOOMLASERVER/no_role ] && rm -f /opt/karoshi/server_network/servers/$JOOMLASERVER/no_role
 echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$JOOMLASERVER/joomlaserver
-echo '<a href="http://'$JOOMLASERVER'/joomla" target="_blank">http://'$JOOMLASERVER'/joomla</a><br>' >> /opt/karoshi/server_network/servers/$JOOMLASERVER/joomlaserver
+echo '<a href="http://'$ALIAS.$REALM'/joomla" target="_blank">http://'$ALIAS.$REALM'/joomla</a><br>' >> /opt/karoshi/server_network/servers/$JOOMLASERVER/joomlaserver
 
 [ ! -d /opt/karoshi/server_network/webservers/ ] && mkdir -p /opt/karoshi/server_network/webservers
 echo $JOOMLASERVER > /opt/karoshi/server_network/webservers/$JOOMLASERVER
 
 sed -i 's/WEBCTRL=no/WEBCTRL=yes/g' /opt/karoshi/server_network/menusettings
+###########################
+#Show completed message
+###########################
+echo '<br>'$ACCESSMSG - '<a href="http://'$ALIAS.$REALM'/joomla" target="_blank">http://'$ALIAS.$REALM'/joomla</a>'
+echo '<br>'$ACCESSMSG2:admin - $PASSWORDMSG: admin
+echo '<br><br><li><b>'$COMPLETEDMSG'</b></li>'
 exit
 

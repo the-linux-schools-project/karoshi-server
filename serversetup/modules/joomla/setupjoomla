@@ -198,12 +198,7 @@ fi
 #############################
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mysql
-###########################
-#Show completed message
-###########################
-echo '<br>'$ACCESSMSG - '<a href="http://'$HOSTNAME'/joomla" target="_blank">http://'$HOSTNAME'/joomla</a>'
-echo '<br>'$ACCESSMSG2:admin - $PASSWORDMSG: admin
-echo '<br><br><li><b>'$COMPLETEDMSG'</b></li>'
+
 exit
 
 
