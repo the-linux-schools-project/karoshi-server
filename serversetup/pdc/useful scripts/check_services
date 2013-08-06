@@ -1,0 +1,64 @@
+#!/bin/bash
+LOG_DATE=`date +%F`
+source /opt/karoshi/serversetup/variables/distro
+
+for SERVERS in /opt/karoshi/server_network/servers/*
+do
+SERVERNAME=`basename $SERVERS`
+DSERVICES=cron
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1pdc ] && DSERVICES=$DSERVICES,dns,samba,nslcd
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ] && DSERVICES=$DSERVICES,dns,samba,nslcd
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1domainmember ] && DSERVICES=$DSERVICES,samba,nslcd
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/2users-groups ] && DSERVICES=$DSERVICES,nslcd
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver ] && DSERVICES=$DSERVICES,apache,mysql
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/casserver ] && DSERVICES=$DSERVICES,apache
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/distributionserver ] && DSERVICES=$DSERVICES,nfs,tftpd
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver ] && DSERVICES=$DSERVICES,apache,mysql,mailscanner,postfix,dovecot,sogo
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/homeaccess ] && DSERVICES=$DSERVICES,apache
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/squid ] && DSERVICES=$DSERVICES,apache,dansguardian,squid,aptcacherng
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/printserver ] && DSERVICES=$DSERVICES,cups,samba
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/radiusserver ] && DSERVICES=$DSERVICES,radius
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ] && DSERVICES=$DSERVICES,nginx
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/monitoring ] && DSERVICES=$DSERVICES,apache,mon
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/dhcpserver ] && DSERVICES=$DSERVICES,dhcp
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/openvpn ] && DSERVICES=$DSERVICES,openvpn
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/userwebhosting ] && DSERVICES=$DSERVICES,apache,mysql,vsftpd
+
+echo -e "Servicecheck: $SERVERNAME\nServices: $DSERVICES"
+
+DSERVICES=`echo -e "$DSERVICES" | sed "s/,/\n/g" | sort`
+
+for SERVICE in $DSERVICES
+do
+#Check if the service is running
+SERVICESTATUS=0
+if [ $SERVERNAME = $HOSTNAME ]
+then
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/$SERVICE"_"status 1>/dev/null
+SERVICESTATUS=$?
+if [ $SERVICESTATUS != 0 ]
+then
+echo $SERVERNAME: $SERVICE is not running.
+echo Attempting to start $SERVICE
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/$SERVICE"_"start
+fi
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/'$SERVICE'"_"status 1>/dev/null
+SERVICESTATUS=$?
+if [ $SERVICESTATUS != 0 ]
+then
+echo '$SERVERNAME:' '$SERVICE' is not running.
+echo Attempting to start '$SERVICE'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/'$SERVICE'"_"start
+fi
+exit $SERVICESTATUS
+'
+SERVICESTATUS=$?
+fi
+#Log service failure
+[ $SERVICESTATUS != 0 ] && echo `date`: check_services - service $SERVICE was not running on $SERVERNAME >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+done
+done
+exit

@@ -1297,6 +1297,7 @@ chage -M 99999 karoshi
 echo 0 0 '*' '*' 7 /opt/karoshi/'"'useful scripts'"'/resetguestaccounts > /opt/karoshi/cronjobs/jobs/resetguestaccounts.cron
 echo 1 0 '*' '*' 1-5 /opt/karoshi/'"'useful scripts'"'/resettechaccounts > /opt/karoshi/cronjobs/jobs/resettechaccounts.cron
 echo 0 23 '*' '*' 1-5 /opt/karoshi/serversetup/all/'"'useful scripts'"'/backup_servers/samba_backup > /opt/karoshi/cronjobs/jobs/samba_backup.cron
+echo '*/30' '*' '*' '*' 1-7 /opt/karoshi/'"'useful scripts'"'/check_services > /opt/karoshi/cronjobs/jobs/checkservices.cron
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
 
 #########################
