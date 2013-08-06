@@ -156,6 +156,7 @@ fi
 [ -f /opt/karoshi/server_network/servers/$JOOMLASERVER/no_role ] && rm -f /opt/karoshi/server_network/servers/$JOOMLASERVER/no_role
 echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$JOOMLASERVER/joomlaserver
 echo '<a href="http://'$ALIAS.$REALM'/joomla" target="_blank">http://'$ALIAS.$REALM'/joomla</a><br>' >> /opt/karoshi/server_network/servers/$JOOMLASERVER/joomlaserver
+echo $ROLE2"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver
 
 [ ! -d /opt/karoshi/server_network/webservers/ ] && mkdir -p /opt/karoshi/server_network/webservers
 echo $JOOMLASERVER > /opt/karoshi/server_network/webservers/$JOOMLASERVER
