@@ -25,22 +25,7 @@
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
 [ $LOG_DATE'null' = null ] && exit
-########################
-#Check md5checksum
-########################
-if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/module_federation_control_cgi
-then
-echo `date`: module_federation_control - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
-source /opt/karoshi/web_controls/checksums/admin_checksums/module_federation_control_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_federation_control.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $module_federation_control_cgi'check' ]
-then
-echo `date`: module_federation_control - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
+
 
 ########################
 #Get variables
@@ -59,6 +44,7 @@ then
 echo `date`: module_federation_control - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
+
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
@@ -67,11 +53,7 @@ SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
-then
-echo `date`: module_federation_control - Not called by module_federation_control.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
+
 if [ $REMOTE_USER'null' = null ]
 then
 echo `date`: module_federation_control - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -91,41 +73,58 @@ fi
 echo `date`: module_federation_control - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 #Copy in web management
-scp -p -r /opt/karoshi/serversetup/web_controls/ root@$SERVERNAME:/opt/karoshi/serversetup/ 1> /dev/null
+#scp -p -r /opt/karoshi/serversetup/web_controls/ root@$SERVERNAME:/opt/karoshi/serversetup/ 1> /dev/null
 
 #Add flag files
 [ ! -d /opt/karoshi/server_network/federated_ldap_servers ] && mkdir -p /opt/karoshi/server_network/federated_ldap_servers
 mkdir -p /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME
 [ -d /opt/karoshi/server_network/servers/$SERVERNAME ] && rm -f -R  /opt/karoshi/server_network/servers/$SERVERNAME
 
+#Remove flag files in zones
+[ -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME ] && rm -f  /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME
+[ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVERNAME ] && rm -f  /opt/karoshi/server_network/zones/dmz/servers/$SERVERNAME
+[ -f /opt/karoshi/server_network/zones/external/servers/$SERVERNAME ] && rm -f  /opt/karoshi/server_network/zones/external/servers/$SERVERNAME
+
 ############################
 #Create users on the federated server
 ############################
 
 #Get list of users
-USERLIST=`getent passwd | grep /home/users`
+USERLIST=`getent passwd | grep /home/users | sed "s/ /SPACE/g"`
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/add_user.cgi | cut -d" " -f1`
+USERNAMESTYLE=userstyleS1
 for USERDATA in `echo -e "'$USERLIST'"`
 do
 USERNAME=`echo $USERDATA | cut -d: -f1`
-NAMEDATA=`echo $USERDATA | cut -d: -f5 | sed "s/,//g;"`
-FORENAME=`echo $NAMEDATA | cut -d" " -f1`
+NAMEDATA=`echo $USERDATA | cut -d: -f5 | sed "s/,//g;" | sed "s/SPACE/ /g"`
+FIRSTNAME=`echo $NAMEDATA | cut -d" " -f1`
 SURNAME=`echo $NAMEDATA | cut -d" " -f2`
 HOMEPATH=`echo $USERDATA | cut -d: -f6 | sed "s/$USERNAME//g"`
-PRIMARYGROUP=`basename $HOMEPATH`
+GROUP=`basename $HOMEPATH`
+PASSWORD1=$RANDOM
+#Create user if it does not already exist
+getent passwd $USERNAME 1>/dev/null
 
+if [ $? != 0 ]
+then
 echo "<li>"Creating User"</li>""<br>"Username: $USERNAME"<br>"Forename: $FORENAME"<br>"Surname: $SURNAME"<br>"Primary group: $PRIMARYGROUP"<br>"
-
-#Create user
-
+#Add user
+echo "'$REMOTE_USER':'$REMOTE_ADDR':$MD5SUM:$FIRSTNAME:$SURNAME:$USERNAME:$PASSWORD1:$GROUP:$USERNAMESTYLE:$ENROLLMENTNUMBER:$REQUESTFILE" | sudo -H /opt/karoshi/web_controls/exec/add_user
+fi
 done
 '
+
 ############################
 #Check if there are roaming profile users to sync
 ############################
 ROAMING_SYNC=yes
-[ ! -f /opt/karoshi/server_network/windows_roaming_profile_users ] && ROAMING_SYNC=no
+if [ ! -f /opt/karoshi/server_network/windows_roaming_profile_users ]
+then
+ROAMING_SYNC=no
+else
 [ `cat /opt/karoshi/server_network/windows_roaming_profile_users | wc -l` = 0 ] && ROAMING_SYNC=no
+fi
 
 if [ $ROAMING_SYNC = yes ]
 then
@@ -150,6 +149,7 @@ fi
 '
 done
 fi
+
 ############################
 #Modify web management menu
 ############################
@@ -196,6 +196,7 @@ done
 ########################
 #Copy any missing profiles to the federated server
 ########################
+echo "<li>"Copying any missing windows profiles"</li>"
 for WINPROFILES in /home/applications/profiles/*
 do
 WINPROFILE=`basename $WINPROFILES`
@@ -206,6 +207,7 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 '
 if [ `echo $?` = 105 ]
 then
+echo "<li>"Copying /home/applications/profiles/$WINPROFILE"<'/li>"
 scp -p -r /home/applications/profiles/$WINPROFILE/ root@$SERVERNAME:/home/applications/profiles/ 1> /dev/null
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 chown root.itadmin /home/applications/profiles/'$WINPROFILE'/
@@ -219,15 +221,15 @@ done
 #Add users to correct groups on federated servers
 ########################
 
-echo "<br><li>Adding users to correct groups on $SERVERNAME</li>"
-for EXISTING_USER in `getent passwd | grep /home/users/ | cut -d: -f1`
-do
-GROUPLIST=`groups $EXISTING_USER | cut -d: -f2 | sed "s/^ //g" | sed "s/ /,/g" | sed "s/Domain,Admins/Domain Admins/g"`
-echo Adding $EXISTING_USER to $GROUPLIST on $SERVERNAME"<br>"
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-smbldap-usermod -G "'$GROUPLIST'" '$EXISTING_USER'
-'
-done
+#echo "<br><li>Adding users to correct groups on $SERVERNAME</li>"
+#for EXISTING_USER in `getent passwd | grep /home/users/ | cut -d: -f1`
+#do
+#GROUPLIST=`groups $EXISTING_USER | cut -d: -f2 | sed "s/^ //g" | sed "s/ /,/g" | sed "s/Domain,Admins/Domain Admins/g"`
+#echo Adding $EXISTING_USER to $GROUPLIST on $SERVERNAME"<br>"
+#ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+#smbldap-usermod -G "'$GROUPLIST'" '$EXISTING_USER'
+#'
+#done
 
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
 ############################
