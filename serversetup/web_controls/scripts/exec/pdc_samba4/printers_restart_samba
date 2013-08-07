@@ -98,8 +98,8 @@ scp -r /opt/karoshi/serversetup/modules/printserver/cupsdrivers64 root@$PRINTSER
 #For a domain member cupsaddsmb -H $HOSTNAME -U root%$LDAPPASS -a -v 2>&1
 
 #set root password to be the same as the administrator password
-samba-tool user setpassword root --newpassword=$LDAPPASS 1>/dev/null
-
+#samba-tool user setpassword root --newpassword=$LDAPPASS 1>/dev/null
+echo -e "$LDAPPASS\n$LDAPPASS\n" | smbpasswd -a -s root
 ssh -x -o PasswordAuthentication=no $PRINTSERVER '
 
 ######################
