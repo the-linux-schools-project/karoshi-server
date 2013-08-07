@@ -136,7 +136,7 @@ cp /etc/samba/smb.conf /etc/samba/smb.$$.conf
 #Modify samba to add in printing
 ###########################
 
-GLOBALLINE=`cat /etc/samba/smb.conf | grep -n ^\\[global\\] | cut -d: -f1`
+GLOBALLINE=`cat /etc/samba/smb.conf | grep -n global | cut -d: -f1`
 let GLOBALLINE=$GLOBALLINE+1
 
 sed -i ''$GLOBALLINE' i load printers = yes\ncups options = raw\nprintcap name = cups' /etc/samba/smb.conf
