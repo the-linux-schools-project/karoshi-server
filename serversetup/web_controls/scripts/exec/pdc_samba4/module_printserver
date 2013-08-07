@@ -121,7 +121,7 @@ scp -p -r /opt/karoshi/serversetup/modules/printserver root@$SERVERNAME:/opt/kar
 fi
 
 #Create keytab for cups
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:cups:squid:$SERVERNAME.$REALM:root:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:cups:cups:$SERVERNAME.$REALM:root:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
 
 PDCIP=`net lookup $HOSTNAME`
 if [ $SERVERNAME != $HOSTNAME ]
@@ -374,6 +374,10 @@ fi
 #restrict anonymous = 2 needs adding to /etc/samba/smb.conf global section
 # printers section	guest ok = No
 
+###########################
+#Show completed message
+###########################
+echo '<br><b>'$COMPLETEDMSG'</b>'
 
 exit
 
