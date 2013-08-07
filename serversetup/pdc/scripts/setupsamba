@@ -1353,4 +1353,7 @@ sleep 1
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
 #Wait for port  on localhost to be available
 check_ldap_port
+#Add in root acount to samba4
+echo -e "$LDAPPASS\n$LDAPPASS\n" | smbpasswd -a -s root
+
 exit
