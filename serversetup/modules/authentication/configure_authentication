@@ -241,10 +241,10 @@ fi
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc
 
 #Sync applications and netlogon shares
-if [ $ZONE = internal ]
-then
-[ $AUTHTYPE = adc ] && /opt/karoshi/"useful scripts"/adc_sync
-fi
+#if [ $ZONE = internal ]
+#then
+#[ $AUTHTYPE = adc ] && /opt/karoshi/"useful scripts"/adc_sync
+#fi
 
 #Authtypes adc rodc member users none
 if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ] 
