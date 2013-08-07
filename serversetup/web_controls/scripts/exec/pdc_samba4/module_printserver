@@ -107,48 +107,9 @@ sleep 2
 exit 101
 fi
 
-#Make sure karoshiadmin user exists
-getent passwd karoshiadmin 1>/dev/null
-if [ `echo $?` != 0 ]
-then
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 
-#Add karoshiadmin to samba4 ldap
-samba-tool user add karoshiadmin --userou='OU=itadmin,OU=personnel,OU=People' --home-directory=/home/users/itadmin/karoshiadmin --surname=admin --given-name=karoshi --use-username-as-cn --random-password 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-#Add karoshiadmin to the Domain Admins group
-samba-tool group addmembers "Domain Admins" karoshiadmin  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-#Get primarygroupid for users group
-PRIGROUPID=`wbinfo -n "Domain Admins" | cut -d- -f8 | cut -d" " -f 1`
-#Change primarygroupid of karoshiadmin - have to use ldapmodify at this time since samba-tool does not seem to have this option!
-echo -e "dn: CN=karoshildap,OU=$PRIMARYGROUP,OU=personnel,OU=People,$REALM
-changetype: modify
-replace: primaryGroupID
-primaryGroupID: $PRIGROUPID
--" | ldapmodify -x -D "CN=Administrator,CN=Users,DC=$SAMBADOMAIN,DC=internal" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-fi
-
-#Generate random password for karoshiadmin user
-PASSCHOICE=( A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y x 1 2 3 4 5 6 7 8 9 0 )
-
-RANGE=`echo ${#PASSCHOICE[@]}`
-let RANGE=$RANGE-1 
-
-COUNTER=1
-while [ $COUNTER -le 16 ]
-do
-ARRAYCHOICE=$RANDOM
-let "ARRAYCHOICE %= $RANGE"
-RANDPASSWORD[$COUNTER]=`echo ${PASSCHOICE[$ARRAYCHOICE]} `
-let COUNTER=COUNTER+1
-done
-PASSWORD=`echo ${RANDPASSWORD[@]:0} | sed 's/ //g'`
-
-#Change karoshiadmin password 
-samba-tool user setpassword karoshiadmin --newpassword=$PASSWORD 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-#allow karoshiadmin to join clients to the domain
-echo `date`: module_fileserver - allowing karoshiadmin to "join" clients to the domain by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-net rpc rights grant -U karoshiadmin%$PASSWORD "$SAMBADOMAIN\Domain Admins" SeMachineAccountPrivilege \
+net rpc rights grant -U Administrator%$LDAPPASS "$SAMBADOMAIN\Domain Admins" SeMachineAccountPrivilege \
 SePrintOperatorPrivilege SeAddUsersPrivilege SeDiskOperatorPrivilege SeRemoteShutdownPrivilege 1>/dev/null
 
 if [ $SERVERNAME != $HOSTNAME ]
@@ -166,11 +127,11 @@ PDCIP=`net lookup $HOSTNAME`
 if [ $SERVERNAME != $HOSTNAME ]
 then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
-echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PASSWORD:$HOSTNAME:$PDCIP:$SAMBADOMAIN:' | /opt/karoshi/serversetup/modules/printserver/setupprintserver
+echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LDAPPASS:$HOSTNAME:$PDCIP:$SAMBADOMAIN:' | /opt/karoshi/serversetup/modules/printserver/setupprintserver
 '
 [ `echo $?` = 101 ] && exit 101
 else
-echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PASSWORD:$HOSTNAME:$PDCIP:$SAMBADOMAIN: | /opt/karoshi/serversetup/modules/printserver/setupprintserver
+echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LDAPPASS:$HOSTNAME:$PDCIP:$SAMBADOMAIN: | /opt/karoshi/serversetup/modules/printserver/setupprintserver
 [ `echo $?` = 101 ] && exit 101
 fi
 

@@ -76,48 +76,6 @@ sleep 2
 exit 101
 fi
 
-function karoshiadminuser {
-#Get samba 4 database password
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-#Make sure karoshiadmin user exists
-getent passwd karoshiadmin 1>/dev/null
-if [ `echo $?` != 0 ]
-then
-#Add karoshiadmin to samba4 ldap
-samba-tool user add karoshiadmin --userou='OU=itadmin,OU=personnel,OU=People' --home-directory=/home/users/itadmin/karoshiadmin --surname=admin --given-name=karoshi --use-username-as-cn --random-password 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-#Add karoshiadmin to the Domain Admins group
-samba-tool group addmembers "Domain Admins" karoshiadmin  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-fi
-
-#Generate random password for karoshiadmin user
-PASSCHOICE=( A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y x 1 2 3 4 5 6 7 8 9 0 )
-
-RANGE=`echo ${#PASSCHOICE[@]}`
-let RANGE=$RANGE-1 
-
-COUNTER=1
-while [ $COUNTER -le 16 ]
-do
-ARRAYCHOICE=$RANDOM
-let "ARRAYCHOICE %= $RANGE"
-RANDPASSWORD[$COUNTER]=`echo ${PASSCHOICE[$ARRAYCHOICE]} `
-let COUNTER=COUNTER+1
-done
-PASSWORD=`echo ${RANDPASSWORD[@]:0} | sed 's/ //g'`
-
-#Change karoshiadmin password 
-samba-tool user setpassword karoshiadmin --newpassword=$PASSWORD 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-#Get samba domain
-SAMBADOMAIN=`cat /etc/samba/smb.conf | grep workgroup | sed -n 1,1p | sed 's/ //g' | cut -d'=' -f2`
-
-#allow karoshiadmin to join clients to the domain
-echo `date`: configure_authentication - allowing karoshiadmin to "join" clients to the domain by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-net rpc rights grant -U karoshiadmin%$PASSWORD "$SAMBADOMAIN\Domain Admins" SeMachineAccountPrivilege \
-SePrintOperatorPrivilege SeAddUsersPrivilege SeDiskOperatorPrivilege SeRemoteShutdownPrivilege 1>/dev/null
-}
-
 function configure_samba4 {
 #Set Join type
 JOINTYPE=member

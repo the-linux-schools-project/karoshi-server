@@ -37,9 +37,8 @@ DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/'`
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-ROOTPASSWORD=`echo "$DATA" | cut -s -d: -f4`
-PDCSERVER=`echo "$DATA" | cut -s -d: -f5`
-PDCIP=`echo "$DATA" | cut -s -d: -f6`
+PDCSERVER=`echo "$DATA" | cut -s -d: -f4`
+PDCIP=`echo "$DATA" | cut -s -d: -f5`
 
 if [ -z "$REMOTE_USER" ]
 then
@@ -49,11 +48,6 @@ fi
 if [ -z "$REMOTE_ADDR" ]
 then
 echo `date`: setupfileserver - Blank remote tcpip address."<br>"
-exit 101
-fi
-if [ -z "$ROOTPASSWORD" ]
-then
-echo `date`: setupfileserver - Blank root password."<br>"
 exit 101
 fi
 
