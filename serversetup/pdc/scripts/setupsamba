@@ -1231,6 +1231,10 @@ NEWUSERDISP="Tech $COUNTER"
 create_user
 let COUNTER=COUNTER+1
 done
+
+#Add root account for domain member printing with cupsaddsmb
+samba-tool user add root --use-username-as-cn --random-password 1>/dev/null 2>>/opt/karoshi/serversetup/install_log
+samba-tool user setpassword root --newpassword=$LDAPPASS 1>/dev/null 2>>/opt/karoshi/serversetup/install_log
 }
 
 function setfolderpermissions {
@@ -1353,7 +1357,4 @@ sleep 1
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
 #Wait for port  on localhost to be available
 check_ldap_port
-#Add in root acount to samba4
-echo -e "$LDAPPASS\n$LDAPPASS\n" | smbpasswd -a -s root
-
 exit
