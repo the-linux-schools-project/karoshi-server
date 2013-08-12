@@ -31,6 +31,8 @@ smtpd_client_restrictions = check_client_access hash:/etc/postfix/access
 header_checks = regexp:/etc/postfix/header_checks
 mail_spool_directory = /home/users/email/
 
+mailbox_command = /usr/bin/maildrop
+
 smtpd_sasl_type = dovecot
 smtpd_sasl_path = private/auth
 smtpd_sasl_auth_enable = yes

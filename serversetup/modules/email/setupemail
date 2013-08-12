@@ -134,6 +134,10 @@ chmod 0700 /opt/postfix
 chown postfix /opt/postfix 1>/dev/null
 usermod -d /opt/postfix postfix
 
+#Setup maildrop
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/email/maildrop /etc/
+chmod +s /usr/bin/maildrop
+
 ########################
 #Setup postfix
 ########################
