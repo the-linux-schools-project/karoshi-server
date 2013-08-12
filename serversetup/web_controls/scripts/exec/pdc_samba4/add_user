@@ -431,6 +431,11 @@ fi
 chown -R '$USERID':'$PRIMARYGROUP' /home/users/email/'$NEWUSERNAME'
 chmod -R 0600 /home/users/email/'$NEWUSERNAME'
 chmod -R u+X /home/users/email/'$NEWUSERNAME'
+
+[ ! -d '$HOMEPATH''/''$NEWUSERNAME' ] && mkdir -p '$HOMEPATH''/''$NEWUSERNAME'
+chmod 0600 -R '$HOMEPATH''/''$NEWUSERNAME'
+chmod u+X -R '$HOMEPATH''/''$NEWUSERNAME'
+chown -R '$USERID':'$PRIMARYGROUP' '$HOMEPATH''/''$NEWUSERNAME'
 '
 SSHSTATUS=`echo $?`
 if [ $SSHSTATUS != 0 ]

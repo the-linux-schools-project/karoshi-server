@@ -171,6 +171,7 @@ if [ $EMAILSERVER != $HOSTNAME ]
 then 
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
 rm -f -R /home/users/email/'$DELETEUSER'
+rm -f -R '$HOMEPATH''/''$DELETEUSER'
 '
 SSHSTATUS=`echo $?`
 if [ $SSHSTATUS != 0 ]
