@@ -263,14 +263,19 @@ chmod 0644 -R /opt/karoshi/postfixdata
 chmod u+X,g+X,o+X -R /opt/karoshi/postfixdata
 chown root.root -R /opt/karoshi/postfixdata 1>/dev/null
 
+#Copy in scripts
+cp -f /opt/karoshi/serversetup/modules/email/scripts/delete_old_mail /opt/karoshi/"useful scripts"/
+cp -f /opt/karoshi/serversetup/modules/email/scripts/postfixstats /opt/karoshi/"useful scripts"/
+
 #######################
 #Create a cron job to run mailbox size checks
 #######################
 echo 0 1,9,17 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/mailboxcheck > /opt/karoshi/cronjobs/jobs/mailboxcheck.cron
-#######################
 #Create a cron job to run postfix stats
-#######################
 echo 55 23 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/postfixstats > /opt/karoshi/cronjobs/jobs/postfixstats.cron
+#Create a cron job to delete old Trash and Spam mail
+echo 55 23 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/delete_old_mail > /opt/karoshi/cronjobs/jobs/postfixstats.cron
+
 #######################
 #Refresh cronjobs
 #######################

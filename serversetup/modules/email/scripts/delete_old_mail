@@ -1,0 +1,13 @@
+#!/bin/bash
+
+OLDSPAM=30 #How old in days spam should be before deleting it.
+#Delete all old spam files
+
+OLDTRASH=30 #How old in days spam should be before deleting it.
+#Delete all old spam files
+
+#Get variables if they have been set in the config files
+[ -f /opt/karoshi/server_network/emailsettings ] && source /opt/karoshi/server_network/emailsettings
+
+[ $OLDSPAM != 0 ] && find /home/users/email/*/.Spam -type f -mtime +$OLDSPAM -exec rm {} \;
+[ $OLDTRASH != 0 ] && find /home/users/email/*/.Trash -type f -mtime +$OLDTRASH -exec rm {} \;
