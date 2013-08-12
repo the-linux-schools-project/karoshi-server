@@ -121,23 +121,23 @@ fi
 ###############################
 # Make sure that /var/spool/mail is not empty
 ###############################
-if [ "$(ls -A $MAILSPOOL)" ]
+if [ "$(ls -A /home/users/email)" ]
 then
-echo "Checking $MAILSPOOL"
+echo "Checking /home/users/email"
 else
-echo "$MAILSPOOL is empty so exiting."
+echo "/home/users/email is empty so exiting."
 exit
 fi 
 ##########################
 #Run Mail Checks
 ##########################
 
-for MAILBOX in $MAILSPOOL/*
+for MAILBOX in /home/users/email/*
 do
 USERNAME=`basename $MAILBOX`
 if [ `echo $USERNAME | grep -c .lock` = 0 ]
 then
-MAILBOXSIZE=`du -ak $MAILBOX | cut -f1`
+MAILBOXSIZE=`du -sh $MAILBOX/cur | cut -f1`
 if [ $MAILBOXSIZE -gt $LIMIT4 ]
 then
 echo $USERNAME: Inbox is over $THRESHOLD4%.
