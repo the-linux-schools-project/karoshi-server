@@ -1,0 +1,43 @@
+# Global maildrop filter file
+
+# Uncomment this line to make maildrop default to ~/Maildir for
+# delivery- this is where courier-imap (amongst others) will look.
+#DEFAULT="$HOME/Maildir"
+
+DEFAULT="/home/users/email/$LOGNAME"
+
+# commands and variables for making the mail directories
+maildirmake=/usr/bin/maildirmake
+mkdir=/bin/mkdir
+rmdir=/bin/rmdir
+MAILDIR=$DEFAULT
+
+# make the user's mail directory if it doesn't exist
+`test -e $MAILDIR`
+if ($RETURNCODE != 0)
+{
+`$mkdir -p $MAILDIR`
+`$rmdir $MAILDIR`
+`$maildirmake $MAILDIR`
+}
+
+# make the .Junk folder if it doesn't exist
+JUNK_FOLDER=.Spam
+_JUNK_DEST=$MAILDIR/$JUNK_FOLDER/
+`test -d $_JUNK_DEST`
+if ($RETURNCODE != 0 )
+{
+`$maildirmake $_JUNK_DEST`
+#auto subscribe. the following works for courier-imap
+#`echo Junk >> $MAILDIR/courierimapsubscribed`
+}
+
+# If the Spam-Flag is set, move the mail to the Junk folder
+if (/^X-Karoshi-MailScanner-SpamScore: sssss/)
+{
+exception {
+to $DEFAULT/.Spam/
+}
+
+}
+
