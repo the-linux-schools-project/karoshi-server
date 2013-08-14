@@ -214,6 +214,24 @@ fi
 fi
 done
 
+#Create folder for root 
+if [ ! -d /home/users/email/root ]
+then
+mkdir /home/users/email/root
+chmod -R 0600 /home/users/email/root
+chmod -R u+X /home/users/email/root
+chown -R root /home/users/email/root
+fi
+
+#Create folder for root 
+if [ ! -d /home/users/email/postfix ]
+then
+mkdir /home/users/email/postfix
+chmod -R 0600 /home/users/email/postfix
+chmod -R u+X /home/users/email/postfix
+chown -R root /home/users/email/postfix
+fi
+
 ########################
 #Modify postfix main.cf
 ########################
