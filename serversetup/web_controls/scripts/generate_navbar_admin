@@ -195,7 +195,6 @@ echo '						<li><a href="/cgi-bin/admin/bulk_user_creation_import_enrollment_num
 						<li><a href="/cgi-bin/admin/karoshi_servers_view.cgi">'$SHOWSERVERMSG'</a></li>
 						<li><a href="/cgi-bin/admin/services_view_fm.cgi">'$SERVICESMSG'</a></li>
 						<li><a href="/cgi-bin/admin/change_management_passwords_fm.cgi">'$SYSPASSMSG'</a></li>
-						<li><a href="/cgi-bin/admin/samba_add_share_fm.cgi">'$ADDNETWORKSHAREMSG'</a></li>
 						<li><a href="/cgi-bin/admin/custom_command_fm.cgi">'$CUSTOMMSG'</a></li>
 						<li><a href="/cgi-bin/admin/server_info_fm.cgi">'$SERVERINFOMSG'</a>
 						<li><a href="/cgi-bin/admin/windows_servers_add_fm.cgi">'$ADDWINDOWSSERVERSMSG'</a></li>
@@ -228,6 +227,7 @@ echo '						<li><a href="/cgi-bin/admin/bulk_user_creation_import_enrollment_num
 							<li><a href="/cgi-bin/admin/software_raid_create_fm.cgi">'$CREATERAIDMSG'</a></li>
 							<li><a href="/cgi-bin/admin/software_raid_control_fm.cgi">'$CONTROLRAIDMSG'</a></li>
 						</ul>
+						<li><a href="/cgi-bin/admin/samba_add_share_fm.cgi">'$ADDNETWORKSHAREMSG'</a></li>
 			</li>'
 if [ $FEDERATEDCTL = yes ]
 then
@@ -278,16 +278,6 @@ echo '			<li class="mid"><a href="/cgi-bin/admin/ntp.cgi" class="fly">'$SERVERTI
 						<li><a href="/cgi-bin/admin/cron_view_fm.cgi">'$VIEWCRON'</a></li>
 					</ul>
 			</li>'
-if [ $DHCPCTRL = yes ]
-then
-echo '			<li class="mid"><a href="/cgi-bin/admin/dhcp_fm.cgi" class="fly">'$DHCPMSG'</a>
-					<ul>
-						<li><a href="/cgi-bin/admin/dhcp_fm.cgi">'$CONFIGUREDHCPMSG'</a></li>
-						<li><a href="/cgi-bin/admin/dhcp_view_leases.cgi">'$DHCPLEASESMSG'</a></li>
-					</ul>
-			</li>'
-fi
-echo '			<li><a href="/cgi-bin/admin/dnsview_fm.cgi">'$DNSVIEWMSG'</a></li>'
 if [ $BACKUPCTRL = yes ]
 then
 echo '			<li class="mid"><a href="/cgi-bin/admin/backup_enable_disable_fm.cgi" class="fly">'$BACKUPMSG'</a>
@@ -318,6 +308,24 @@ echo '			<li><a href="/cgi-bin/admin/apply_ssl_certificate_fm.cgi">'$SSLCERTMSG'
 	<li class="top"><a href="/cgi-bin/admin/asset_register_view.cgi" id="infrastucture" class="top_link"><span class="down">'$INFRASTRUCTURESMSG'</span></a>
 		<ul class="sub">
 			<li><a href="/cgi-bin/admin/asset_register_view.cgi">'$ASSETREGISTER'</a></li>'
+#Distribution server
+if [ $DISTROCTRL = yes ]
+then
+echo '			<li><a href="/cgi-bin/admin/linux_client_choose_distro_fm.cgi">'$CHOOSECLIENTDISTRO'</a></li>
+'
+fi
+if [ $DHCPCTRL = yes ]
+then
+echo '			<li class="mid"><a href="/cgi-bin/admin/dhcp_fm.cgi" class="fly">'$DHCPMSG'</a>
+					<ul>
+						<li><a href="/cgi-bin/admin/dhcp_fm.cgi">'$CONFIGUREDHCPMSG'</a></li>
+						<li><a href="/cgi-bin/admin/dhcp_view_leases.cgi">'$DHCPLEASESMSG'</a></li>
+					</ul>
+			</li>'
+fi
+
+echo '<li><a href="/cgi-bin/admin/dnsview_fm.cgi">'$DNSVIEWMSG'</a></li>'
+
 #Monitoring
 if [ $MONITORINGCTRL = yes ]
 then
@@ -368,14 +376,8 @@ echo '			<li><a href="/cgi-bin/admin/locations.cgi">'$CLIENTLOCATIONS'</a></li>
 						<li><a href="/cgi-bin/admin/linux_client_view_remove_list.cgi">'$LVIEWREMOVESOFTWARE'</a></li>
 						<li><a href="/cgi-bin/admin/linux_client_software_controls.cgi">'$LSOFTWARECONTROLS'</a></li>
 						<li><a href="/cgi-bin/admin/linux_client_upload_skel_fm.cgi">'$UPLOADSKELARC'</a></li>
-						<li><a href="/cgi-bin/admin/linux_client_download_skel.cgi">'$DOWNLOADSKELARC'</a></li>'
-#Distribution server
-if [ $DISTROCTRL = yes ]
-then
-echo '						<li><a href="/cgi-bin/admin/linux_client_choose_distro_fm.cgi">'$CHOOSECLIENTDISTRO'</a></li>
-'
-fi
-echo '					</ul>
+						<li><a href="/cgi-bin/admin/linux_client_download_skel.cgi">'$DOWNLOADSKELARC'</a></li>
+					</ul>
 			</li>
 			<li class="mid"><a href="/cgi-bin/admin/windows_client_profile_upload_fm.cgi" class="fly">'$WINDOWSCLIENT'</a>
 					<ul>

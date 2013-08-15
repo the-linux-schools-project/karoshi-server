@@ -105,7 +105,6 @@ echo '        <a href="/cgi-bin/admin/change_password_fm.cgi">'$CHANGEPASSMSG'</
         <a href="/cgi-bin/admin/uptime_fm.cgi">'$UPTIMEMSG'</a>
         <a href="/cgi-bin/admin/view_karoshi_web_management_logs.cgi">'$WEBLOGSMSG'</a>
         <a href="/cgi-bin/admin/cron_view_fm.cgi">'$CRONCONTROLS'</a>
-        <a href="/cgi-bin/admin/dnsview_fm.cgi">'$DNSCONTROLS'</a>
         <a href="/cgi-bin/admin/remote_management_change_language.cgi">'$CHANGELANG'</a>
         <a href="/cgi-bin/admin/remote_management_change_theme.cgi">'$CHANGETHEME'</a>
         <a href="/cgi-bin/admin/custom_command_fm.cgi">'$CUSTOMMSG'</a>
@@ -127,7 +126,8 @@ echo '        <a href="/cgi-bin/admin/change_password_fm.cgi">'$CHANGEPASSMSG'</
         <span>'$INFRASTRUCTURESMSG'</span>
         <a href="/cgi-bin/admin/asset_register_view.cgi">'$ASSETREGISTER'</a>'
 [ $MONITORINGCTRL = yes ] && echo '	<a href="/cgi-bin/admin/mon_status.cgi">'$SERVERSTATUSMSG'</a>'
-       echo ' </div> '
+echo '<a href="/cgi-bin/admin/dnsview_fm.cgi">'$DNSCONTROLS'</a>
+</div>'
 
 
 if [ $PRINTERCTRL = yes ]
