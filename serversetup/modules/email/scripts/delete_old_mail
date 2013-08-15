@@ -5,9 +5,13 @@ OLDSPAM=30 #How old in days spam should be before deleting it.
 
 OLDTRASH=30 #How old in days spam should be before deleting it.
 #Delete all old spam files
+OLDMAIL=30 #How long old mail should be kept for in system accounts before deleting it.
 
 #Get variables if they have been set in the config files
 [ -f /opt/karoshi/server_network/emailsettings ] && source /opt/karoshi/server_network/emailsettings
 
-[ $OLDSPAM != 0 ] && find /home/users/email/*/.Spam -type f -mtime +$OLDSPAM -exec rm {} \;
-[ $OLDTRASH != 0 ] && find /home/users/email/*/.Trash -type f -mtime +$OLDTRASH -exec rm {} \;
+[ $OLDSPAM != 0 ] && find /home/users/email/*/.Spam -type f -mtime +$OLDSPAM -delete
+[ $OLDTRASH != 0 ] && find /home/users/email/*/.Trash -type f -mtime +$OLDTRASH -delete
+
+#Delete old mail for karoshi user.
+[ $OLDTRASH != 0 ] && find /home/users/email/karoshi/ -type f -mtime +$OLDMAIL -delete
