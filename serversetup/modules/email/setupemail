@@ -214,22 +214,13 @@ fi
 fi
 done
 
-#Create folder for root 
-if [ ! -d /home/users/email/root ]
+#Create folder for karoshi
+if [ ! -d /home/users/email/karoshi ]
 then
-mkdir /home/users/email/root
-chmod -R 0600 /home/users/email/root
-chmod -R u+X /home/users/email/root
-chown -R root /home/users/email/root
-fi
-
-#Create folder for root 
-if [ ! -d /home/users/email/postfix ]
-then
-mkdir /home/users/email/postfix
-chmod -R 0600 /home/users/email/postfix
-chmod -R u+X /home/users/email/postfix
-chown -R root /home/users/email/postfix
+mkdir /home/users/email/karoshi
+chmod -R 0600 /home/users/email/karoshi
+chmod -R u+X /home/users/email/karoshi
+chown -R root /home/users/email/karoshi
 fi
 
 ########################
@@ -393,6 +384,10 @@ echo '<br>'
 #generate aliases.db in /etc/postfix/
 #############
 touch /etc/postfix/aliases
+if [ `grep -c ^root: /etc/postfix/aliases` = 0 ]
+then
+echo root:"	""	"karoshi >> /etc/postfix/aliases
+fi
 newaliases
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_start  1>/dev/null
 if [ $APACHESTATUS = 0 ]
