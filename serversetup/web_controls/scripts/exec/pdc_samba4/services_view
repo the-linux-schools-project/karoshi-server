@@ -138,7 +138,7 @@ DSERVICES=cron
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver ] && DSERVICES=$DSERVICES,apache,mysql
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/casserver ] && DSERVICES=$DSERVICES,apache
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/distributionserver ] && DSERVICES=$DSERVICES,nfs,tftpd
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver ] && DSERVICES=$DSERVICES,apache,mysql,mailscanner,postfix,dovecot,sogo
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver ] && DSERVICES=$DSERVICES,apache,mysql,mailscanner,postfix,dovecot,sogo,clamd
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/homeaccess ] && DSERVICES=$DSERVICES,apache
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/squid ] && DSERVICES=$DSERVICES,apache,dansguardian,squid,aptcacherng
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/printserver ] && DSERVICES=$DSERVICES,cups,samba
@@ -160,7 +160,7 @@ DSERVICES=cron
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/apacheserver ] && DSERVICES=$DSERVICES,apache,mysql
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/casserver ] && DSERVICES=$DSERVICES,apache
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/distributionserver ] && DSERVICES=$DSERVICES,nfs,tftpd
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/emailserver ] && DSERVICES=$DSERVICES,apache,mysql,mailscanner,postfix,dovecot,sogo
+[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/emailserver ] && DSERVICES=$DSERVICES,apache,mysql,mailscanner,postfix,dovecot,sogo,clamd
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/homeaccess ] && DSERVICES=$DSERVICES,apache
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/squid ] && DSERVICES=$DSERVICES,apache,dansguardian,squid,aptcacherng
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/printserver ] && DSERVICES=$DSERVICES,cups,samba
@@ -182,7 +182,7 @@ DSERVICES=cron
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/apacheserver ] && DSERVICES=$DSERVICES,apache,mysql
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/casserver ] && DSERVICES=$DSERVICES,apache
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/distributionserver ] && DSERVICES=$DSERVICES,nfs,tftpd
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/emailserver ] && DSERVICES=$DSERVICES,apache,mysql,mailscanner,postfix,dovecot,sogo
+[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/emailserver ] && DSERVICES=$DSERVICES,apache,mysql,mailscanner,postfix,dovecot,sogo,clamd
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/homeaccess ] && DSERVICES=$DSERVICES,apache
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/squid ] && DSERVICES=$DSERVICES,apache,dansguardian,squid,aptcacherng
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/printserver ] && DSERVICES=$DSERVICES,cups,samba
@@ -220,7 +220,7 @@ DSERVICES=$DSERVICES2
 DSERVICES=`echo -e "$DSERVICES" | sed "s/,/\n/g" | sort`
 
 #List of all services to check
-ALLSERVICES="apache aptcacherng cups cron dansguardian dhcp dns dovecot mailscanner mon mysql nfs nginx nslcd openvpn postfix radius samba sogo squid vsftpd"
+ALLSERVICES="apache aptcacherng clamd cups cron dansguardian dhcp dns dovecot mailscanner mon mysql nfs nginx nslcd openvpn postfix radius samba sogo squid vsftpd"
 if [ $SERVERNAME = $HOSTNAME ]
 then
 function check_status {
@@ -266,6 +266,7 @@ then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 apache="'$apache'"
 aptcacherng="'$aptcacherng'"
+clamd="'$clamd'"
 cups="'$cups'"
 cron="'$cron'"
 dansguardian="'$dansguardian'"
