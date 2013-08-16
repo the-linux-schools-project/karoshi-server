@@ -223,12 +223,15 @@ exit 101
 fi
 
 #if the adc or rodc is in the dmz set dns so that windows clients do not use server as logon server
-if [ $ZONE != internal ]
-then
+
 if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
 then
-samba-tool dns add 127.0.0.1 $REALM _$SERVERNAME._tcp SRV ''$SERVERNAME'.'$REALM' 389 200 200' --username=Administrator --password=$LDAPPASS
+WEIGHTING=1
+if [ $ZONE != internal ]
+then
+WEIGHTING=200
 fi
+samba-tool dns add 127.0.0.1 $REALM _$SERVERNAME._tcp SRV ''$SERVERNAME'.'$REALM' 389 '$WEIGHTING' '$WEIGHTING'' --username=Administrator --password=$LDAPPASS
 fi
 
 #Add role information

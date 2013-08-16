@@ -1350,6 +1350,10 @@ echo $LDAPBASE > /var/lib/samba/netlogon/domain_information/ldap_base
 #Prepare client_settings
 [ ! -d /var/lib/samba/netlogon/client_settings ] && mkdir -p /var/lib/samba/netlogon/client_settings
 
+#Add in dns weighting for the main server
+WEIGHTING=1
+samba-tool dns add 127.0.0.1 $REALM _$HOSTNAME._tcp SRV ''$HOSTNAME'.'$REALM' 389 '$WEIGHTING' '$WEIGHTING'' --username=Administrator --password=$LDAPPASS
+
 #Restart samba
 echo Restarting samba4 >> /opt/karoshi/serversetup/install_log
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop

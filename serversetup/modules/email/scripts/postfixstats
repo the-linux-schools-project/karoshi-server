@@ -28,5 +28,5 @@ chmod 0700 /opt/karoshi/logs/postfixstats
 fi
 
 #Create log
-/opt/karoshi/serversetup/modules/email/scripts/pflogsumm.pl /var/log/mail.info > /opt/karoshi/logs/postfixstats/$LOG_DATE
+/opt/karoshi/serversetup/modules/email/scripts/pflogsumm.pl /var/log/mail.log > /opt/karoshi/logs/postfixstats/$LOG_DATE
 

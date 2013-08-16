@@ -30,7 +30,7 @@ source /opt/karoshi/server_network/menusettings
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
 echo '<img src="/images/small_logo.png" alt="logo" align="top"> <font style="font-weight: bold;" size="+2">Web Management '$SCHOOL_NAME'</font> <small><small>
-'$VERSION' : 130812-1407
+'$VERSION' : 130815-1517
 </small></small>'
 
 #Check for warning messages
@@ -308,12 +308,6 @@ echo '			<li><a href="/cgi-bin/admin/apply_ssl_certificate_fm.cgi">'$SSLCERTMSG'
 	<li class="top"><a href="/cgi-bin/admin/asset_register_view.cgi" id="infrastucture" class="top_link"><span class="down">'$INFRASTRUCTURESMSG'</span></a>
 		<ul class="sub">
 			<li><a href="/cgi-bin/admin/asset_register_view.cgi">'$ASSETREGISTER'</a></li>'
-#Distribution server
-if [ $DISTROCTRL = yes ]
-then
-echo '			<li><a href="/cgi-bin/admin/linux_client_choose_distro_fm.cgi">'$CHOOSECLIENTDISTRO'</a></li>
-'
-fi
 if [ $DHCPCTRL = yes ]
 then
 echo '			<li class="mid"><a href="/cgi-bin/admin/dhcp_fm.cgi" class="fly">'$DHCPMSG'</a>
@@ -359,7 +353,6 @@ then
 echo '			<li><a href="/cgi-bin/admin/ocs.cgi" target="_blank">'$OCS'</a></li>'
 fi
 echo '			<li><a href="/cgi-bin/admin/locations.cgi">'$CLIENTLOCATIONS'</a></li>
-			<li><a href="/cgi-bin/admin/asset_register_view.cgi">'$ASSETREGISTER'</a></li>
 			<li class="mid"><a href="/cgi-bin/admin/wake_on_lan_add.cgi" class="fly">'$WAKEONLAN'</a>
 					<ul>
 						<li><a href="/cgi-bin/admin/wake_on_lan_add.cgi">'$WAKEONLANADD'</a></li>
@@ -404,7 +397,12 @@ echo '					</ul>
 #Distribution server
 if [ $DISTROCTRL = yes ]
 then
-echo '			<li><a href="/cgi-bin/admin/client_boot_controls_fm.cgi">'$CLIENTBOOTCONTROLS'</a></li>'
+echo '			<li class="mid"><a href="/cgi-bin/admin/linux_client_choose_distro_fm.cgi" class="fly">'$CHOOSECLIENTDISTRO'</a>
+					<ul>
+						<li><a href="/cgi-bin/admin/linux_client_choose_distro_fm.cgi">'$CHOOSECLIENTDISTRO'</a></li>
+						<li><a href="/cgi-bin/admin/client_boot_controls_fm.cgi">'$CLIENTBOOTCONTROLS'</a></li>
+					</ul>
+			</li>'
 fi
 echo '			<li><a href="/cgi-bin/admin/client_shutdown_time.cgi">'$CSHUTDOWNTIME'</a></li>
 			</ul>		
