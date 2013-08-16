@@ -156,6 +156,14 @@ fi
 echo domain '$REALM' > /etc/resolv.conf
 echo nameserver '$SERVERIP' >> /etc/resolv.conf
 echo timeout:1 >> /etc/resolv.conf
+
+#Make sure /var/run is large enough for samba
+if [ `grep -c /run/lock /etc/rc.local` = 0 ]
+then
+echo mount -t tmpfs tmpfs /run/lock -o remount,size=50M > /etc/rc.local
+echo exit 0 >> /etc/rc.local
+fi
+
 fi
 
 if [ '$AUTHTYPE' = member ]
