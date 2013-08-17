@@ -202,6 +202,7 @@ for USERINFO in `getent passwd | cut -d: -f1-3`
 do
 MAILUSER=`echo $USERINFO | cut -d: -f1`
 MAILUSERID=`echo $USERINFO | cut -d: -f3`
+HOMEPATH=`echo $USERINFO | cut -d: -f6`
 if [ $MAILUSERID -ge 1000 ]
 then
 if [ ! -d /home/users/email/$MAILUSER ]
@@ -211,6 +212,18 @@ chmod -R 0600 /home/users/email/$MAILUSER
 chmod -R u+X /home/users/email/$MAILUSER
 chown -R $MAILUSER /home/users/email/$MAILUSER
 fi
+
+if [ ! -z $HOMEPATH ]
+then
+if [ ! -d $HOMEPATH ]
+then
+mkdir -p $HOMEPATH
+chmod -R 0600 $HOMEPATH
+chmod -R u+X $HOMEPATH
+chown -R $MAILUSER $HOMEPATH
+fi
+fi
+
 fi
 done
 
