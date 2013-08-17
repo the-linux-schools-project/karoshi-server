@@ -5,3 +5,17 @@ SAMBAVER=samba
 
 service $SAMBAVER start
 
+if [ $SAMBAVER = samba4 ]
+then
+#Check that samba 4 is ready for ldap requests
+LDAPCHECK=0
+COUNTER=0
+while [ $LDAPCHECK = 0 ]
+do
+LDAPCHECK=`netstat -vatn | grep -c -w 389`
+sleep 1
+#Give up after 60 seconds
+[ $COUNTER = 60 ] && exit 101
+let COUNTER=$COUNTER+1
+done
+fi

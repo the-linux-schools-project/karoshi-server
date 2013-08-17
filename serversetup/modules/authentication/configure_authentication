@@ -99,6 +99,15 @@ LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 source /opt/karoshi/serversetup/variables/distro
+
+#Make sure /run/lock is large enough for samba
+if [ `grep -c /run/lock /etc/rc.local` = 0 ]
+then
+echo mount -t tmpfs tmpfs /run/lock -o remount,size=50M > /etc/rc.local
+echo exit 0 >> /etc/rc.local
+mount -t tmpfs tmpfs /run/lock -o remount,size=50M
+fi
+
 echo "<br><li><b>'$JOINDOMAINMSG'</b></li><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 
 #Join the domain
@@ -164,14 +173,6 @@ fi
 echo domain '$REALM' > /etc/resolv.conf
 echo nameserver '$SERVERIP' >> /etc/resolv.conf
 echo timeout:1 >> /etc/resolv.conf
-
-#Make sure /var/run is large enough for samba
-if [ `grep -c /run/lock /etc/rc.local` = 0 ]
-then
-echo mount -t tmpfs tmpfs /run/lock -o remount,size=50M > /etc/rc.local
-echo exit 0 >> /etc/rc.local
-fi
-
 fi
 
 if [ '$AUTHTYPE' = member ]
@@ -242,12 +243,12 @@ fi
 
 if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
 then
-WEIGHTING=1
 if [ $ZONE != internal ]
 then
-WEIGHTING=200
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+samba-tool dns delete 127.0.0.1 $REALM _ldap._tcp.$REALM SRV ''$SERVERNAME'.'$REALM' 389 0 100' --username=Administrator --password=$LDAPPASS
+samba-tool dns add 127.0.0.1 $REALM _ldap._tcp.$REALM SRV ''$SERVERNAME'.'$REALM' 389 200 200' --username=Administrator --password=$LDAPPASS
 fi
-samba-tool dns add 127.0.0.1 $REALM _$SERVERNAME._tcp SRV ''$SERVERNAME'.'$REALM' 389 '$WEIGHTING' '$WEIGHTING'' --username=Administrator --password=$LDAPPASS
 fi
 
 #Add role information
