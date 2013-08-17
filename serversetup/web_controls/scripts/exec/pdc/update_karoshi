@@ -131,6 +131,7 @@ echo '</pre>'
 echo '<tr><td>'$PATCHNAME'<\td><td>'$KAROSHISERVER'<\td><td>'`date`'</td></tr>' >> /opt/karoshi/logs/karoshi_updates/$PATCHNAME
 #Delete warning message
 /opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete karoshi_updates
+}
 
 ###########################
 #Download patch

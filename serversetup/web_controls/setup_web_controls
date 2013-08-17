@@ -1020,7 +1020,7 @@ if [ $SAMBAVER = samba4 ]
 then
 TCPIP=`net lookup $HOSTNAME`
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-samba-tool dns query 127.0.0.1 $REALM manage.$REALM CNAME --username=Administrator --password=$LDAPPASS 2>/dev/null
+samba-tool dns query 127.0.0.1 $REALM manage.$REALM CNAME --username=Administrator --password=$LDAPPASS 1>/dev/null 2>/dev/null
 if [ `echo $?` != 0 ]
 then
 samba-tool dns add 127.0.0.1 $REALM manage CNAME $HOSTNAME.$REALM --username=Administrator --password=$LDAPPASS

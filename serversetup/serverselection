@@ -84,10 +84,7 @@ SELECTCHOICE=`echo $SELECTCHOICE | tr -cd 'A-Za-z'`
 done
 
 #Setup cronjobs common to all servers
-[ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
-echo 0 0 '*' '*' 1 'echo' '>' /var/spool/mail/karoshi > /opt/karoshi/cronjobs/jobs/tidyrootmail.cron
-/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
-
+[ ! -d /opt/karoshi/cronjobs/jobs ] && mkdir -p /opt/karoshi/cronjobs/jobs
 
 if [ $SELECTCHOICE = Setupthemainserver ]
 then
