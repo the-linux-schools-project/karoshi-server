@@ -84,6 +84,14 @@ if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
 then
 JOINTYPE=DC
 SERVERROLE="active directory domain controller"
+
+if [ $ZONE = internal ]
+then
+#Schedule adc_sync
+echo '*''/'30 '*' '*' '*' 1-5 /opt/karoshi/'"'useful scripts'"'/adc_sync > /opt/karoshi/cronjobs/jobs/adcsync.cron
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
+fi
+
 fi
 
 #Get samba 4 database password
