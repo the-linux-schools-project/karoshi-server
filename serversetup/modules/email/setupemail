@@ -198,19 +198,16 @@ echo 'ssl_key = </etc/ssl/mail/dovecot.key' >> /etc/dovecot/conf.d/10-ssl.conf
 
 #Create folders for existing accounts
 [ ! -d /home/users/email ] && mkdir -p /home/users/email
-for USERINFO in `getent passwd | cut -d: -f1-3`
+for USERNAME in `getent passwd | grep /home/users | cut -d: -f1`
 do
-MAILUSER=`echo $USERINFO | cut -d: -f1`
-MAILUSERID=`echo $USERINFO | cut -d: -f3`
-HOMEPATH=`echo $USERINFO | cut -d: -f6`
-if [ $MAILUSERID -ge 1000 ]
+
+HOMEPATH=`getent passwd $USERNAME | cut -d: -f6`
+if [ ! -d /home/users/email/$USERNAME ]
 then
-if [ ! -d /home/users/email/$MAILUSER ]
-then
-mkdir /home/users/email/$MAILUSER
-chmod -R 0600 /home/users/email/$MAILUSER
-chmod -R u+X /home/users/email/$MAILUSER
-chown -R $MAILUSER /home/users/email/$MAILUSER
+mkdir /home/users/email/$USERNAME
+chmod -R 0600 /home/users/email/$USERNAME
+chmod -R u+X /home/users/email/$USERNAME
+chown -R $USERNAME /home/users/email/$USERNAME
 fi
 
 if [ ! -z $HOMEPATH ]
@@ -220,10 +217,8 @@ then
 mkdir -p $HOMEPATH
 chmod -R 0600 $HOMEPATH
 chmod -R u+X $HOMEPATH
-chown -R $MAILUSER $HOMEPATH
+chown -R $USERNAME $HOMEPATH
 fi
-fi
-
 fi
 done
 
