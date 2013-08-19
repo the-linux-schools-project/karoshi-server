@@ -1195,6 +1195,16 @@ function make_default_users {
 #Get samba 4 database password
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 
+#Add sysadmin
+NEWUSERNAME=sysadmin
+NEWUSERPATH=/home/users/itadminstaff/sysadmin
+SUBPATH='OU=itadmin,OU=personnel,OU=People'
+PRIMARYGROUP=itadmin
+PROFILEFOLDER=itadmin
+NEWUSERDISP="Sysadmin User"
+create_user
+
+
 #Add profileuser
 NEWUSERNAME=profileuser
 NEWUSERPATH=/home/users/profileuser

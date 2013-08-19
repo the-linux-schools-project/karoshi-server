@@ -133,7 +133,7 @@ echo '<form action="/cgi-bin/admin/view_disk_usage_logs.cgi" name="testform" met
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<div style="float: left" id="my_menu" class="sdmenu">
+echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$FILEMENUMSG'</a>

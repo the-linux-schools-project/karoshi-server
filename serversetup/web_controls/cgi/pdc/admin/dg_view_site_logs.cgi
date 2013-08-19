@@ -223,7 +223,7 @@ echo '<input name="_LOGDATE_" value="'$DAY'-'$MONTH'-'$YEAR'" type="hidden">'
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<div style="float: left" id="my_menu" class="sdmenu">
+echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE2'</span>
 <a href="/cgi-bin/admin/dg_view_user_logs_fm.cgi">'$SEARCH'</a>

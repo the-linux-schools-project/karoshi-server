@@ -100,7 +100,7 @@ echo '<form action="/cgi-bin/admin/remote_management_change_theme2.cgi" method="
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<div style="float: left" id="my_menu" class="sdmenu">
+echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$SYSMENUMSG'</a>

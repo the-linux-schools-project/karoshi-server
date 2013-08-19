@@ -89,7 +89,7 @@ echo '<form action="/cgi-bin/admin/dnsadd.cgi" method="post">
 <br><br>'
 else
 TABLECLASS=mobilestandard
-echo '<form action="/cgi-bin/admin/dnsadd.cgi" method="post"><div style="float: left" id="my_menu" class="sdmenu">
+echo '<form action="/cgi-bin/admin/dnsadd.cgi" method="post"><div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE4'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$SYSMENUMSG'</a>

@@ -77,7 +77,7 @@ echo '
 	</script>
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head>
 <body>
-    <div style="float: left" id="my_menu" class="sdmenu">
+    <div style="float: center" id="my_menu" class="sdmenu">
 	<div class="collapsed">
 	<span>TLSP '$SCHOOL_NAME'</span>
 <a href="/cgi-bin/menu.cgi">'$MAINMENUMSG'</a>
@@ -162,7 +162,7 @@ echo '      <div class="collapsed">
 fi
 echo '<div class="a.current">
 <small><small>
-'$VERSION' : 130817-1816
+'$VERSION' : 130818-0830
 </small></small>
 </span></div>
     </div>

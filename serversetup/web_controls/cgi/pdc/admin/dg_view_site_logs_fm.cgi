@@ -104,7 +104,7 @@ echo '<form action="/cgi-bin/admin/dg_view_site_logs.cgi" name="testform" method
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<div style="float: left" id="my_menu" class="sdmenu">
+echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE2'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$INTERNETMENUMSG'</a>

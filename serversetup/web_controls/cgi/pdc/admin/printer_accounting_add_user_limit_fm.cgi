@@ -101,7 +101,7 @@ echo '<form name="myform" action="/cgi-bin/admin/printer_accounting_edit_limits.
 if [ $MOBILE = yes ]
 then
 
-echo '<div style="float: left" id="my_menu" class="sdmenu">
+echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE8'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$PRINTMENUMSG'</a>

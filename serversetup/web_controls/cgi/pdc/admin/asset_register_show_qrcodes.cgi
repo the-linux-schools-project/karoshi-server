@@ -46,7 +46,7 @@ echo '<!doctype html>
         padding: 0mm 0mm 0mm 0mm;
         margin-right: 1mm; 
 
-        float: left;
+        float: center;
 
         text-align: center;
         overflow: hidden;

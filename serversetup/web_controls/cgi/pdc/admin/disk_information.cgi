@@ -181,7 +181,7 @@ fi
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<div style="float: left" id="my_menu" class="sdmenu">
+echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$SERVERNAME'</span>
 <a href="/cgi-bin/admin/disk_information_fm.cgi">'$TITLE'</a>

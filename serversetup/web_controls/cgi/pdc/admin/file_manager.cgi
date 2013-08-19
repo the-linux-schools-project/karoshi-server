@@ -538,7 +538,7 @@ fi
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<form action="/cgi-bin/admin/file_manager.cgi" method="post"><div style="float: left" id="my_menu" class="sdmenu">
+echo '<form action="/cgi-bin/admin/file_manager.cgi" method="post"><div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE' - '$SERVER2'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$SYSMENUMSG'</a>

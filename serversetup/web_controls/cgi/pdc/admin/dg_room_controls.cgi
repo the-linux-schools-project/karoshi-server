@@ -145,7 +145,7 @@ WIDTH=50
 WIDTH2=80
 TABLETITLE="$LOCATION"
 
-echo '<div style="float: left" id="my_menu" class="sdmenu">
+echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$INTERNETMENUMSG'</a>

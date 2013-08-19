@@ -77,7 +77,7 @@ echo '
 	</script>
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head>
 <body>
-    <div style="float: left" id="my_menu" class="sdmenu">
+    <div style="float: center" id="my_menu" class="sdmenu">
       <div class="collapsed">
         <span>'$USERMSG'</span>
         <a href="/cgi-bin/staff/change_student_password_fm.cgi">'$CHANGEPASSMSG'</a>

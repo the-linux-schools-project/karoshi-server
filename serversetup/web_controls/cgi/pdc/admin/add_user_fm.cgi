@@ -195,7 +195,7 @@ echo '<form name="myform" action="/cgi-bin/admin/add_user.cgi" method="post">'
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<div style="float: left" id="my_menu" class="sdmenu">
+echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$USERMENUMSG'</a>

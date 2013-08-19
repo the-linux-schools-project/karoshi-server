@@ -394,7 +394,7 @@ echo '<br>'
 touch /etc/postfix/aliases
 if [ `grep -c ^root: /etc/postfix/aliases` = 0 ]
 then
-echo root:"	""	"karoshi >> /etc/postfix/aliases
+echo root:"	""	"sysadmin >> /etc/postfix/aliases
 fi
 newaliases
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_start  1>/dev/null
