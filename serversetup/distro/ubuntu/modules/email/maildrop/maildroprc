@@ -13,12 +13,12 @@ rmdir=/bin/rmdir
 MAILDIR=$DEFAULT
 
 # make the user's mail directory if it doesn't exist
-`test -e $MAILDIR`
+`test -e $MAILDIR/cur`
 if ($RETURNCODE != 0)
 {
-`$mkdir -p $MAILDIR`
-`$rmdir $MAILDIR`
-`$maildirmake $MAILDIR`
+`$mkdir -p $MAILDIR/cur`
+`$mkdir -p $MAILDIR/new`
+`$mkdir -p $MAILDIR/tmp`
 }
 
 # make the .Junk folder if it doesn't exist
