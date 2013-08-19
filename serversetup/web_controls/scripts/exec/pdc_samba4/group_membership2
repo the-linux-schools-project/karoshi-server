@@ -131,6 +131,12 @@ echo `date`: group_membership2 - "$GROUP": $ACTION2 $USERNAME  by $REMOTE_USER f
 if [ $ACTION = ADD ]
 then
 samba-tool group addmembers "$GROUP" $USERNAME 1>/dev/null 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+if [ $GROUP = itadmin ] || [ $GROUP = tech ]
+then
+samba-tool group addmembers "Domain Admins" $USERNAME  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+
 if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
 then
 for FEDERATEDSERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
@@ -139,6 +145,11 @@ FEDERATEDLDAPSERVER=`basename $FEDERATEDSERVERS`
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $FEDERATEDLDAPSERVER '
 echo `date`: group_membership2 \(federated mode\) - "'$GROUP'" : '$ACTION2' '$USERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
 samba-tool group addmembers "'$GROUP'" '$USERNAME' 1>/dev/null 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+
+if [ '$GROUP' = itadmin ] || [ '$GROUP' = tech ]
+then
+samba-tool group addmembers "Domain Admins" '$USERNAME'  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+fi
 '
 done
 fi
@@ -147,6 +158,12 @@ fi
 if [ $ACTION = REMOVE ]
 then
 samba-tool group removemembers "$GROUP" $USERNAME 1>/dev/null 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+if [ $GROUP = itadmin ] || [ $GROUP = tech ]
+then
+samba-tool group removemembers "Domain Admins" $USERNAME  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+
 if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
 then
 for FEDERATEDSERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
@@ -155,6 +172,11 @@ FEDERATEDLDAPSERVER=`basename $FEDERATEDSERVERS`
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $FEDERATEDLDAPSERVER '
 echo `date`: group_membership2 \(federated mode\) - "'$GROUP'" : '$ACTION2' '$USERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
 samba-tool group removemembers "'$GROUP'" '$USERNAME' 1>/dev/null 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+
+if [ '$GROUP' = itadmin ] || [ '$GROUP' = tech ]
+then
+samba-tool group removemembers "Domain Admins" '$USERNAME'  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
 '
 done
 fi

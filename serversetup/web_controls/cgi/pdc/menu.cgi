@@ -74,7 +74,7 @@ if [ $MOBILE = no ]
 then
 /opt/karoshi/web_controls/generate_navbar_top
 else
-echo '<div style="float: left" id="my_menu" class="sdmenu">
+echo '<div style="float: center" id="my_menu" class="sdmenu">
 
       <div class="expanded">
        <span>TLSP '$SCHOOL_NAME'</span>
@@ -84,7 +84,7 @@ echo '<div style="float: left" id="my_menu" class="sdmenu">
         <a href="/cgi-bin/admin/mobile_menu.cgi">'$NMANMSG'</a>
      <div class="a.current">
 <small><small>
-'$VERSION' : 130819-0930
+'$VERSION' : 130819-1301
 </small></small>
 </span></div>
       </div>

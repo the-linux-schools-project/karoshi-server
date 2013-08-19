@@ -134,6 +134,9 @@ chmod 0700 /opt/postfix
 chown postfix /opt/postfix 1>/dev/null
 usermod -d /opt/postfix postfix
 
+#Add clamav to postfix group
+usermod -a -G postfix clamav
+
 #Setup maildrop
 cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/email/maildrop/maildroprc /etc/
 chmod +s /usr/bin/maildrop
