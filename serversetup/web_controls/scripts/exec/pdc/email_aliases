@@ -1,0 +1,254 @@
+#!/bin/bash
+#Copyright (C) 2007  Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/email_aliases_cgi
+then
+echo `date`: email_aliases - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/email_aliases_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_aliases.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $email_aliases_cgi'check' ]
+then
+echo `date`: email_aliases - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: email_aliases - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: email_aliases - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+ACTION=`echo "$DATA" | cut -s -d: -f4`
+ALIAS=`echo "$DATA" | cut -s -d: -f5`
+USERNAME=`echo "$DATA" | cut -s -d: -f6`
+MOBILE=`echo "$DATA" | cut -s -d: -f7`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: email_aliases - Not called by email_aliases.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: email_aliases - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: email_aliases - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: email_aliases - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ ! -z $ACTION ]
+then
+	if [ $ACTION = delete ] || [ $ACTION = reallyadd ]
+	then
+		if [ -z "$ALIAS" ]
+		then
+		echo `date`: email_aliases - Blank alias by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+		fi
+		if [ -z "$USERNAME" ]
+		then
+		echo `date`: email_aliases - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+		fi
+	fi
+else
+ACTION=view
+fi
+
+############################
+#Language
+############################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_aliases ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_aliases
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+ICON1="/images/submenus/email/email_delete.png"
+ICON2="/images/submenus/email/alias_add.png"
+ICON3="/images/submenus/email/alias_view.png"
+TABLECLASS=standard
+WIDTH1=200
+if [ $MOBILE = yes ]
+then
+TABLECLASS=mobilestandard
+WIDTH1=160
+fi
+
+function completed_status {
+echo '<SCRIPT language="Javascript">'
+echo 'window.location = "/cgi-bin/admin/email_aliases.cgi";'
+echo '</script>'
+echo "</body></html>"
+exit
+}
+
+#View aliases
+if [ $ACTION = view ]
+then
+
+if [ $MOBILE = yes ]
+then
+echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_add_" type="image" class="images" src="'$ICON2'" value=""><span>'$ADDALIASMSG'</span></a>'
+fi
+
+echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody><tr><td style=\"width: 120px;\"><b>$ALIASMSG</b></td><td style=\"width: 120px;\"><b>$USERNAMEMSG</b></td><td><b>$DELETEMSG</b></td></tr>"
+	if [ $EMAILSERVER = $HOSTNAME ]
+	then
+	#Check that alias file is there
+		if [ ! -f /etc/postfix/aliases ]
+		then
+		echo `date`: "email_aliases - no alias file on $EMAILSERVER for $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+		fi
+	for ENTRY in `cat /etc/postfix/aliases | sed "s/\t//g"`
+		do
+		ALIAS=`echo $ENTRY | cut -d: -f1`
+		USERNAME=`echo $ENTRY | cut -d: -f2`
+		echo "<tr><td>"$ALIAS"</td><td>"$USERNAME"</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_ALIAS_$ALIAS"_"USERNAME_$USERNAME"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$ALIAS - $USERNAME</span></a></td></tr>"
+		done
+	else
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+	#Check that alias file is there
+		if [ ! -f /etc/postfix/aliases ]
+		then
+		exit 101
+		fi
+	for ENTRY in `cat /etc/postfix/aliases | sed "s/\t//g"`
+		do
+		ALIAS=`echo $ENTRY | cut -d: -f1`
+		USERNAME=`echo $ENTRY | cut -d: -f2`
+		echo "<tr><td>"$ALIAS"</td><td>"$USERNAME"</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_ALIAS_$ALIAS"_"USERNAME_$USERNAME"_"\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>$ALIAS - $USERNAME</span></a></td></tr>"
+		done
+	'
+	fi
+echo "</tbody></table>"
+fi
+
+if [ $ACTION = delete ]
+then
+echo `date`: "email_aliases - deleting alias for $ALIAS by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+if [ $EMAILSERVER = $HOSTNAME ]
+then
+sed -i "/^$ALIAS/d" /etc/postfix/aliases
+newaliases
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+sed -i "/^'$ALIAS'/d" /etc/postfix/aliases
+newaliases
+'
+fi
+completed_status
+fi
+
+if [ $ACTION = add ]
+then
+if [ $MOBILE = yes ]
+then
+echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_view_" type="image" class="images" src="'$ICON3'" value=""><span>'$VIEWALIASESMSG'</span></a>'
+fi
+echo '
+<input name="_ACTION_" value="reallyadd" type="hidden"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<tbody><tr><td style="width: 180px;">'$USERNAMEMSG'</td>
+<td><input tabindex= "1" name="_USERNAME_" style="width: '$WIDTH1'px;" size="20" type="text"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$ALIASHELP1'</span></a>
+</td></tr>
+ <tr><td>'$ALIASMSG'</td><td><input tabindex= "2" name="_ALIAS_" style="width: '$WIDTH1'px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$ALIASHELP2'</span></a></td></tr>
+</tbody></table>'
+
+if [ $MOBILE = yes ]
+then
+echo "<br>"
+else
+echo '</div> <div id="submitbox">'
+fi
+echo '<input value="'$SUBMITMSG'" type="submit">'
+fi
+
+if [ $ACTION = reallyadd ]
+then
+echo `date`: "email_aliases - adding  alias $ALIAS for $USERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+if [ $EMAILSERVER = $HOSTNAME ]
+then
+	if [ `grep -c ^$ALIAS: /etc/postfix/aliases` = 0 ]
+	then
+	echo -e "$ALIAS:\t\t$USERNAME" >> /etc/postfix/aliases
+	cat /etc/postfix/aliases | sort > /etc/postfix/aliases1
+	rm /etc/postfix/aliases
+	mv /etc/postfix/aliases1 /etc/postfix/aliases
+	newaliases
+	fi
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+	if [ `grep -c ^'$ALIAS': /etc/postfix/aliases` = 0 ]
+	then
+	echo -e "'$ALIAS':\t\t'$USERNAME'" >> /etc/postfix/aliases
+	cat /etc/postfix/aliases | sort > /etc/postfix/aliases1
+	rm /etc/postfix/aliases
+	mv /etc/postfix/aliases1 /etc/postfix/aliases
+	newaliases
+	fi
+'
+fi
+completed_status
+fi
+
+exit
+

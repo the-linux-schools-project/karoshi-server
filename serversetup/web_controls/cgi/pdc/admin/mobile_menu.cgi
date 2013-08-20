@@ -143,6 +143,14 @@ echo '      <div class="collapsed">
       </div>'
 fi
 
+if [ $EMAILCTRL = yes ]
+then
+echo '      <div class="collapsed">
+        <span>E-Mail</span>
+        <a href="/cgi-bin/admin/email_aliases.cgi">'$ALIASES'</a>
+      </div>'
+fi
+
 if [ $INTERNETCTRL = yes ]
 then
 echo '      <div class="collapsed">
@@ -162,7 +170,7 @@ echo '      <div class="collapsed">
 fi
 echo '<div class="a.current">
 <small><small>
-'$VERSION' : 130819-1359
+'$VERSION' : 130820-1430
 </small></small>
 </span></div>
     </div>
