@@ -72,6 +72,14 @@ echo "</body></html>"
 exit
 }
 
+function completed_status {
+echo '<script type="text/javascript">'
+echo 'window.location = "/cgi-bin/admin/email_view_banned_domains_fm.cgi";'
+echo '</script>'
+echo "</body></html>"
+exit
+}
+
 #########################
 #Check https access
 #########################
@@ -107,6 +115,5 @@ fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_ban_domain.cgi | cut -d' ' -f1`
 #Add user
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$EMAILDOMAIN:" | sudo -H /opt/karoshi/web_controls/exec/email_ban_domain
-MESSAGE="$EMAILDOMAIN - $COMPLETEDMSG"
-show_status
+completed_status
 exit

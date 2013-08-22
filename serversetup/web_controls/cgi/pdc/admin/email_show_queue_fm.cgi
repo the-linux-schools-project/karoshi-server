@@ -23,6 +23,11 @@
 #aball@karoshi.org.uk
 #
 #Website: http://www.karoshi.org.uk
+
+#Detect mobile browser
+MOBILE=no
+source /opt/karoshi/web_controls/detect_mobile_browser
+
 ############################
 #Language
 ############################
@@ -49,12 +54,57 @@ echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'">
-<script src="/all/stuHover.js" type="text/javascript"></script>
-</head>
-<body onLoad="start()">'
+<script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+
+if [ $MOBILE = yes ]
+then
+echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+		/***********************************************
+		* Slashdot Menu script- By DimX
+		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
+		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+		***********************************************/
+	</script>
+	<script type="text/javascript">
+	// <![CDATA[
+	var myMenu;
+	window.onload = function() {
+		myMenu = new SDMenu("my_menu");
+		myMenu.init();
+	};
+	// ]]>
+	</script>'
+fi
+
+echo '</head><body onLoad="start()">'
+
+#Generate navigation bar
+if [ $MOBILE = no ]
+then
+DIV_ID=actionbox
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/email_control_queue.cgi" method="post"><div id="actionbox">'
+else
+DIV_ID=menubox
+fi
+
+
+#Show back button for mobiles
+if [ $MOBILE = yes ]
+then
+echo '<div style="float: center" id="my_menu" class="sdmenu">
+	<div class="expanded">
+	<span>'$TITLE'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$EMAILMENUMSG'</a>
+</div></div><div id="mobileactionbox2">
+'
+else
+echo '<div id="'$DIV_ID'">'
+fi
+
+
+echo '<form action="/cgi-bin/admin/email_control_queue.cgi" method="post">'
 #Check to see if we have an email server
 if [ ! -f /opt/karoshi/server_network/emailserver ]
 then
@@ -65,7 +115,7 @@ fi
 
 #Get postfix queue data
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_show_queue_fm.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:" | sudo -H /opt/karoshi/web_controls/exec/email_show_queue
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/email_show_queue
 
-echo '</div></form></body></html>'
+echo '</form></div></body></html>'
 exit

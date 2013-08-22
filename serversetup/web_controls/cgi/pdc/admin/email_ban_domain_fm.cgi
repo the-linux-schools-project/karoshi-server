@@ -23,6 +23,11 @@
 #aball@karoshi.org.uk
 #
 #Website: http://www.karoshi.org.uk
+
+#Detect mobile browser
+MOBILE=no
+source /opt/karoshi/web_controls/detect_mobile_browser
+
 ############################
 #Language
 ############################
@@ -46,46 +51,67 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE1'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
-</head>
-<body onLoad="start()">'
-#########################
-#Get data input
-#########################
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
-#########################
-#Assign data to variables
-#########################
-FILE=`echo $DATA | cut -s -d_ -f7`
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE1'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-#Detect mobile browser
-MOBILE=no
-source /opt/karoshi/web_controls/detect_mobile_browser
+if [ $MOBILE = yes ]
+then
+echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+		/***********************************************
+		* Slashdot Menu script- By DimX
+		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
+		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+		***********************************************/
+	</script>
+	<script type="text/javascript">
+	// <![CDATA[
+	var myMenu;
+	window.onload = function() {
+		myMenu = new SDMenu("my_menu");
+		myMenu.init();
+	};
+	// ]]>
+	</script>'
+fi
+
+echo '</head>
+<body onLoad="start()">'
 
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
 DIV_ID=actionbox
+TABLECLASS=standard
+WIDTH1=200
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
 DIV_ID=menubox
+TABLECLASS=mobilestandard
+WIDTH1=160
 fi
-echo '<form name="myform" action="/cgi-bin/admin/email_ban_domain.cgi" method="post"><div id="'$DIV_ID'">'
+echo '<form name="myform" action="/cgi-bin/admin/email_ban_domain.cgi" method="post">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
-<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_email_menu.cgi"><b>'$TITLE'</b></a></td></tr></tbody></table>'
+echo '<div style="float: center" id="my_menu" class="sdmenu">
+	<div class="expanded">
+	<span>'$TITLE1'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$EMAILMENUMSG'</a>
+</div></div><div id="mobileactionbox"><a class="info" target="_top" href="email_view_banned_domains_fm.cgi"><img class="images" alt="" src="/images/submenus/email/email_ban_domain.png"><span>'$TITLE2'</span></a><br>
+'
 else
-echo '<b>'$TITLE1'</b><br><br>'
+echo '<div id="'$DIV_ID'">
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: middle; height: 20px;"><b>'$TITLE1'</b></td>
+<td style="vertical-align: middle;"><a class="info" target="_top" href="email_view_banned_domains_fm.cgi"><img class="images" alt="" src="/images/submenus/email/email_ban_domain.png"><span>'$TITLE2'</span></a>
+</td></tr>
+</tbody></table><br>'
 fi
 
 echo '
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="width: 180px;">'$EMAILDOMAINMSG'</td><td><input tabindex= "1" name="_EMAILDOMAIN_" style="width: 200px;" size="20" type="text"></td><td>
+<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<tbody><tr><td style="width: 180px;">'$EMAILDOMAINMSG'</td><td><input tabindex= "1" name="_EMAILDOMAIN_" style="width: '$WIDTH1'px;" size="20" type="text"></td><td>
 <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'<br><br>'$HELPMSG2'</span></a>
       </td></tr>
 </tbody></table><br>'
@@ -95,7 +121,7 @@ if [ $MOBILE = no ]
 then
 echo '</div><div id="submitbox">'
 fi
-echo '<input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset">
+echo '<input value="'$SUBMITMSG'" type="submit">
 </div></form></body></html>
 '
 exit

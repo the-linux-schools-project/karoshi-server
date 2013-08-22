@@ -61,6 +61,7 @@ fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+MOBILE=`echo "$DATA" | cut -s -d: -f4`
 
 ########################
 #Check data
@@ -100,6 +101,8 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 ICON1=/images/submenus/email/email_flush.png
 ICON2=/images/submenus/email/email_delete.png
+TABLECLASS=standard
+[ $MOBILE = yes ] && TABLECLASS=mobilestandard
 
 #Get mail server
 if [ -f /opt/karoshi/server_network/emailserver ]
@@ -121,12 +124,12 @@ QUEUEARRAYCOUNT=${#QUEUEARRAY[@]}
 let QUEUEARRAYCOUNT=$QUEUEARRAYCOUNT-1
 if [ $QUEUEARRAYCOUNT -gt 0 ]
 then
-echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
 <tbody><tr><td style=\"width: 140px;\">$FLUSHMSG</td><td style=\"vertical-align: top;\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_FLUSH_MAILID_NOTSET_\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$FLUSHMSG</span></a></td></tr>
 <tr><td style=\"width: 180px;\">$DELETEALLMSG</td><td style=\"vertical-align: top;\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_DELETEALL_MAILID_NOTSET_\" type=\"image\" class=\"images\" src=\"$ICON2\" value=\"\"><span>$DELETEALLMSG</span></a></td></tr>
 </tbody></table><br>
 
-<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
 <tbody>
 <tr><td style=\"width: 120px;\"><b>$MAILIDMSG</b></td><td><b>$SIZEMSG</b></td><td><b>$DATEMSG</b></td><td><b>$SENDERMSG</b></td><td><b>$RECIPIENTMSG</b></td></tr>"
 COUNTER=0
@@ -156,11 +159,11 @@ QUEUEARRAYCOUNT=${#QUEUEARRAY[@]}
 let QUEUEARRAYCOUNT=$QUEUEARRAYCOUNT-1
 if [ $QUEUEARRAYCOUNT -gt 0 ]
 then
-echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
 <tbody><tr><td style=\"width: 140px;\">'$FLUSHMSG'</td><td style=\"vertical-align: top;\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_FLUSH_MAILID_NOTSET_\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$FLUSHMSG'</span></a></td></tr>
 <tr><td style=\"width: 180px;\">'$DELETEALLMSG'</td><td style=\"vertical-align: top;\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_DELETEALL_MAILID_NOTSET_\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>'$DELETEALLMSG'</span></a></td></tr>
 </tbody></table><br>
-<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
 <tbody>
 <tr><td style=\"width: 120px;\"><b>'$MAILIDMSG'</b></td><td><b>'$SIZEMSG'</b></td><td><b>'$DATEMSG'</b></td><td><b>'$SENDERMSG'</b></td><td><b>'$RECIPIENTMSG'</b></td></tr>"
 COUNTER=0

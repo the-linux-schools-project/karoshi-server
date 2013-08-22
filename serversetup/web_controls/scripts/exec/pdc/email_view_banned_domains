@@ -61,6 +61,7 @@ fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+MOBILE=`echo "$DATA" | cut -s -d: -f4`
 ########################
 #Check data
 ########################
@@ -81,6 +82,9 @@ exit 101
 fi
 
 echo `date`: email_view_banned_domains_fm - by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+TABLECLASS=standard
+[ $MOBILE = yes ] && TABLECLASS=mobilestandard
 
 ############################
 #Language
@@ -106,7 +110,7 @@ then
 EMAILARRAY=( `cat /etc/postfix/access | cut -f1` )
 EMAILARRAYCOUNT=${#EMAILARRAY[@]} 
 
-echo  "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+echo  "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
 <tbody>
 <tr><td style=\"width: 180px;\"><b>$EMAILDOMAINMSG</b></td><td><b>$DELETEMSG</b></td></tr>"
 
@@ -128,7 +132,7 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
 EMAILARRAY=( `cat /etc/postfix/access | cut -f1` )
 EMAILARRAYCOUNT=${#EMAILARRAY[@]} 
 
-echo  "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+echo  "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
 <tbody>
 <tr><td style=\"width: 180px;\"><b>'$EMAILDOMAINMSG'</b></td><td><b>'$DELETEMSG'</b></td></tr>"
 

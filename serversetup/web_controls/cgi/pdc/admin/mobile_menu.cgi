@@ -148,6 +148,8 @@ then
 echo '      <div class="collapsed">
         <span>E-Mail</span>
         <a href="/cgi-bin/admin/email_aliases.cgi">'$ALIASES'</a>
+	<a href="/cgi-bin/admin/email_view_banned_domains_fm.cgi">'$VIEWBANNEDEMAILDOMAINS'</a>
+	<a href="/cgi-bin/admin/email_show_queue_fm.cgi">'$EMAILSHOWQUEUE'</a>
       </div>'
 fi
 
@@ -170,7 +172,7 @@ echo '      <div class="collapsed">
 fi
 echo '<div class="a.current">
 <small><small>
-'$VERSION' : 130820-1430
+'$VERSION' : 130822-1046
 </small></small>
 </span></div>
     </div>
