@@ -9,6 +9,10 @@
 # Short-Description: start Samba daemons 
 ### END INIT INFO
 
+#Symlink to /run/samba-cache
+[ ! -d /run/samba-cache ] && mkdir -p /run/samba-cache 
+ln -s /run/samba-cache /run/lock/samba
+
 #
 # Start/stops the Samba daemon (samba).
 # Adapted from the Samba 3 packages.
