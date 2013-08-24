@@ -24,10 +24,7 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-#language
-SEND_DIRECT="Send E-mail directly"
-USE_RELAY="Use E-mail relay"
-HELPMSG1="This is address of the email relay that you want all the email sent to."
+
 ########################
 #Check md5checksum
 ########################
@@ -82,6 +79,11 @@ echo `date`: email_relay_view - access denied to $REMOTE_USER from $REMOTE_ADDR 
 exit 101
 fi
 echo `date`: email_relay_view - by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_relay ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_relay
+
 ############################
 #Apply relay settings
 ############################
@@ -109,12 +111,15 @@ RELAYHOST=`grep ^"relayhost =" /etc/postfix/main.cf | sed -n 1,1p | cut -d"=" -f
 else
 CHECK1="checked=\"checked\""
 fi
-echo \<table class=\"standard\" style=\"text-align: left\; \" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>\<tbody\>\<tr\>\<td style=\"width: 180px\;\" colspan=\"1\" rowspan=\"1\"\>'$SEND_DIRECT'\</td\>
-echo \<td\>\<input name=\"_RELAY_\" value=\"direct\" $CHECK1 type=\"radio\"\>\</td\>\<td\>\</td\>\<td\>\</td\>\<td\>\</td\>\</tr\>\<tr\>\<td\>'$USE_RELAY'\</td\>\<td\>\<input name=\"_RELAY_\" value=\"relay\" $CHECK2 type=\"radio\"\>\</td\>\<td\>Relay\</td\>
-echo \<td\>\<span style=\"font-weight: bold\;\"\>\<span style=\"font-weight: bold\;\"\>\<span style=\"font-weight: bold\;\"\>\<input name=\"_RADDRESS_\" size=\"30\" type=\"text\" value=\"$RELAYHOST\"\>\</span\>\</span\>\</span\>\</td\>\<td\>\<a class=\"info\" href=\"javascript:void\(0\)\"\>\<img class=\"images\" alt=\"\" src=\"/images/help/info.png\"\>\<span\>'$HELPMSG1'\</span\>\</a\>\</td\>\</tr\>\</tbody\>\</table\>\<br\>\<br\>\</div\>
+
+echo "<table class=\"standard\" style=\"text-align: left\; \" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody><tr><td style=\"width: 180px;\" colspan=\"1\" rowspan=\"1\">$SEND_DIRECT</td><td><input name=\"_RELAY_\" value=\"direct\" $CHECK1 type=\"radio\"></td><td></td><td></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Use_E-Mail_Relay#Send_E-Mail_directly\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$HELPMSG1'</span></a></td></tr>
+<tr><td>$USE_RELAY</td><td><input name=\"_RELAY_\" value=\"relay\" $CHECK2 type=\"radio\"></td><td>Relay</td>
+<td><span style=\"font-weight: bold;\"><input name=\"_RADDRESS_\" size=\"30\" type=\"text\" value=\"$RELAYHOST\"></span></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Use_E-Mail_Relay#Use_E-Mail_relay\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$HELPMSG2'</span></a></td></tr></tbody></table><br>"
+
+
+
 '
 else
-#Xen
 CHECK1=""
 CHECK2=""
 RELAYHOST=""
@@ -128,18 +133,8 @@ else
 CHECK1="checked=\"checked\""
 fi
 
-echo \<table class=\"standard\" style=\"text-align: left\; \" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>\<tbody\>\<tr\>\<td style=\"width: 180px\;\" colspan=\"1\" rowspan=\"1\"\>$SEND_DIRECT\</td\>
-echo \<td\>\<input name=\"_RELAY_\" value=\"direct\" $CHECK1 type=\"radio\"\>\</td\>\<td\>\</td\>\<td\>\</td\>\<td\>\</td\>\</tr\>\<tr\>\<td\>$USE_RELAY\</td\>\<td\>\<input name=\"_RELAY_\" value=\"relay\" $CHECK2 type=\"radio\"\>\</td\>\<td\>Relay\</td\>
-echo \<td\>\<span style=\"font-weight: bold\;\"\>\<span style=\"font-weight: bold\;\"\>\<span style=\"font-weight: bold\;\"\>\<input name=\"_RADDRESS_\" size=\"30\" type=\"text\" value=\"$RELAYHOST\"\>\</span\>\</span\>\</span\>\</td\>\<td\>\<a class=\"info\" href=\"javascript:void\(0\)\"\>\<img class=\"images\" alt=\"\" src=\"/images/help/info.png\"\>\<span\>$HELPMSG1\</span\>\</a\>\</td\>\</tr\>\</tbody\>\</table\>\<br\>\<br\>\</div\>
+echo "<table class=\"standard\" style=\"text-align: left\; \" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody><tr><td style=\"width: 180px;\" colspan=\"1\" rowspan=\"1\">$SEND_DIRECT</td><td><input name=\"_RELAY_\" value=\"direct\" $CHECK1 type=\"radio\"></td><td></td><td></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Use_E-Mail_Relay#Send_E-Mail_directly\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$HELPMSG1</span></a></td></tr>
+<tr><td>$USE_RELAY</td><td><input name=\"_RELAY_\" value=\"relay\" $CHECK2 type=\"radio\"></td><td>Relay</td>
+<td><span style=\"font-weight: bold;\"><input name=\"_RADDRESS_\" size=\"30\" type=\"text\" value=\"$RELAYHOST\"></span></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Use_E-Mail_Relay#Use_E-Mail_relay\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$HELPMSG2</span></a></td></tr></tbody></table><br>"
 fi
-
-
-
-
-
-
-
-
-
-
 

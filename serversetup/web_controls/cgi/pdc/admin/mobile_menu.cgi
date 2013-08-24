@@ -149,7 +149,9 @@ echo '      <div class="collapsed">
         <span>E-Mail</span>
         <a href="/cgi-bin/admin/email_aliases.cgi">'$ALIASES'</a>
 	<a href="/cgi-bin/admin/email_view_banned_domains_fm.cgi">'$VIEWBANNEDEMAILDOMAINS'</a>
+	<a href="/cgi-bin/admin/email_limits.cgi">'$EMAILLIMITS'</a>
 	<a href="/cgi-bin/admin/email_show_queue_fm.cgi">'$EMAILSHOWQUEUE'</a>
+	<a href="/cgi-bin/admin/email_statistics_fm.cgi">'$EMAILSTATS'</a>
       </div>'
 fi
 

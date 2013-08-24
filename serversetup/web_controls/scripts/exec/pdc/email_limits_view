@@ -58,6 +58,9 @@ fi
 REMOTE_USER=`echo $* | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | cut -s -d: -f2`
 REMOTE_MD5=`echo $* | cut -s -d: -f3`
+MOBILE=`echo $* | cut -s -d: -f4`
+WIDTH1=200
+[ $MOBILE = yes ] && WIDTH1=160 
 ########################
 #Check data
 ########################
@@ -95,6 +98,7 @@ exit 101
 fi
 
 
+
 if [ $EMAILSERVER != $HOSTNAME ]
 then
 ssh -x -o PasswordAuthentication=no $EMAILSERVER '
@@ -103,8 +107,11 @@ MBOXLIMIT=`grep ^"mailbox_size_limit =" /etc/postfix/main.cf | sed -n 1,1p | cut
 #Convert to megabytes
 let MESSAGELIMIT=$MESSAGELIMIT/1024/1024
 let MBOXLIMIT=$MBOXLIMIT/1024/1024
-echo \<tr\>\<td\>'$MESSAGELIMITMSG'\</td\>\<td\>\(MB\)\</td\>\<td\>\<input tabindex= \"1\" name=\"_MESSAGESIZE_\" maxlength=\"4\" size=\"4\" type=\"text\" value=\"$MESSAGELIMIT\"\>\</td\>\<td\>\<a class=\"info\" href=\"javascript:void\(0\)\"\>\<img class=\"images\" alt=\"\" src=\"/images/help/info.png\"\>\<span\>'$HELP1'\</span\>\</a\>\</td\>\</tr\>
-echo \<tr\>\<td\>'$MAILBOXLIMITMSG'\</td\>\<td\>\(MB\)\</td\>\<td\>\<input tabindex= \"2\" name=\"_MAILBOXSIZE_\" maxlength=\"4\" size=\"4\" type=\"text\" value=\"$MBOXLIMIT\"\>\</td\>\<td\>\<a class=\"info\" href=\"javascript:void\(0\)\"\>\<img class=\"images\" alt=\"\" src=\"/images/help/info.png\"\>\<span\>'$HELP2'\</span\>\</a\>\</td\>\</tr\>
+
+echo "<tr><td style=\"width: 180px;\">'$MESSAGELIMITMSG' (MB)</td><td><input tabindex= \"1\" style=\"width: '$WIDTH1'px;\" value=\"$MESSAGELIMIT\" name=\"_MESSAGESIZE_\" style=\"width: 200px;\" maxlength=\"4\" size=\"4\" type=\"text\"></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Limits\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$HELP1'</span></a></td></tr>
+<tr><td style=\"width: 180px;\">'$MAILBOXLIMITMSG' (MB)</td><td><input tabindex= \"2\" style=\"width: '$WIDTH1'px;\" value=\"$MBOXLIMIT\" name=\"_MAILBOXSIZE_\" style=\"width: 200px;\" maxlength=\"4\" size=\"4\" type=\"text\"></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Limits\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$HELP2'</span></a></td></tr>
+"
+
 '
 else
 MESSAGELIMIT=`grep ^"message_size_limit =" /etc/postfix/main.cf | sed -n 1,1p | cut -d"=" -f2 | sed "s/ //g"`
@@ -112,6 +119,10 @@ MBOXLIMIT=`grep ^"mailbox_size_limit =" /etc/postfix/main.cf | sed -n 1,1p | cut
 #Convert to megabytes
 let MESSAGELIMIT=$MESSAGELIMIT/1024/1024
 let MBOXLIMIT=$MBOXLIMIT/1024/1024
-echo \<tr\>\<td\>$MESSAGELIMITMSG\</td\>\<td\>\(MB\)\</td\>\<td\>\<input tabindex= \"1\" name=\"_MESSAGESIZE_\" maxlength=\"4\" size=\"4\" type=\"text\" value=\"$MESSAGELIMIT\"\>\</td\>\<td\>\<a class=\"info\" href=\"javascript:void\(0\)\"\>\<img class=\"images\" alt=\"\" src=\"/images/help/info.png\"\>\<span\>$HELP1\</span\>\</a\>\</td\>\</tr\>
-echo \<tr\>\<td\>$MAILBOXLIMITMSG\</td\>\<td\>\(MB\)\</td\>\<td\>\<input tabindex= \"2\" name=\"_MAILBOXSIZE_\" maxlength=\"4\" size=\"4\" type=\"text\" value=\"$MBOXLIMIT\"\>\</td\>\<td\>\<a class=\"info\" href=\"javascript:void\(0\)\"\>\<img class=\"images\" alt=\"\" src=\"/images/help/info.png\"\>\<span\>$HELP2\</span\>\</a\>\</td\>\</tr\>
+
+echo "<tr><td style=\"width: 180px;\">$MESSAGELIMITMSG (MB)</td><td><input tabindex= \"1\" style=\"width: '$WIDTH1'px;\" value=\"$MESSAGELIMIT\" name=\"_MESSAGESIZE_\" style=\"width: 200px;\" maxlength=\"4\" size=\"4\" type=\"text\"></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Limits\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$HELP1</span></a></td></tr>
+<tr><td style=\"width: 180px;\">$MAILBOXLIMITMSG (MB)</td><td><input tabindex= \"2\" style=\"width: '$WIDTH1'px;\" value=\"$MBOXLIMIT\" name=\"_MAILBOXSIZE_\" style=\"width: 200px;\" maxlength=\"4\" size=\"4\" type=\"text\"></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Limits\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$HELP2</span></a></td></tr>
+"
+
+
 fi

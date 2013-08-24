@@ -23,6 +23,11 @@
 #aball@karoshi.org.uk
 #
 #Website: http://www.karoshi.org.uk
+
+#Detect mobile browser
+MOBILE=no
+source /opt/karoshi/web_controls/detect_mobile_browser
+
 ############################
 #Language
 ############################
@@ -74,6 +79,8 @@ echo '<form action="/cgi-bin/admin/email_relay2.cgi" method="post">'
 echo '<div id="actionbox"><b>'$TITLE'</b><br><br>'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_relay.cgi | cut -d' ' -f1`
 sudo -H /opt/karoshi/web_controls/exec/email_relay_view $REMOTE_USER:$REMOTE_ADDR:$MD5SUM
-echo '<div id="submitbox"><input value="Submit" type="submit"> <input value="Reset" type="reset">
+[ $MOBILE != yes ] && echo '</div><div id="submitbox">'
+
+echo '<input value="Submit" type="submit"> <input value="Reset" type="reset">
 </div></form></body></html>'
 exit

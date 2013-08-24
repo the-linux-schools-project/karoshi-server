@@ -439,7 +439,7 @@ fi
 #E-Mail
 if [ $EMAILCTRL = yes ]
 then
-echo '	<li class="top"><a href="/cgi-bin/admin/email_add_alias_fm.cgi" id="E-Mail" class="top_link"><span class="down">'$EMAILMSG'</span></a>
+echo '	<li class="top"><a href="/cgi-bin/admin/email_aliases.cgi" id="E-Mail" class="top_link"><span class="down">'$EMAILMSG'</span></a>
 		<ul class="sub">
 			<li><a href="/cgi-bin/admin/email_aliases.cgi">'$ALIASES'</a></li>
 			<li><a href="/cgi-bin/admin/email_relay.cgi">'$USERELAY'</a></li>
