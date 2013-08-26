@@ -76,19 +76,6 @@ break
 fi
 let COUNTER=$COUNTER+1
 done
-#Assign SPOOLDIR
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SPOOLDIRcheck ]
-then
-let COUNTER=$COUNTER+1
-SPOOLDIR=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
 #Assign THRESHOLD1
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
@@ -232,12 +219,6 @@ then
 MESSAGE=$ERRORMSG1
 show_status
 fi
-#Check to see that SPOOLDIR is not blank
-if [ $SPOOLDIR'null' = null ]
-then
-MESSAGE=$ERRORMSG2
-show_status
-fi
 #Check to see that THRESHOLD1 is not blank
 if [ $THRESHOLD1'null' = null ]
 then
@@ -304,7 +285,7 @@ fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_quota_settings2.cgi | cut -d' ' -f1`
 #Create config file
-sudo -H /opt/karoshi/web_controls/exec/email_quota_settings_apply $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ADMINEMAIL:$SPOOLDIR:$THRESHOLD1:$THRESHOLD2:$THRESHOLD3:$THRESHOLD4:$INTERVAL1:$INTERVAL2:$INTERVAL3:$INTERVAL4
+sudo -H /opt/karoshi/web_controls/exec/email_quota_settings_apply $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ADMINEMAIL:$THRESHOLD1:$THRESHOLD2:$THRESHOLD3:$THRESHOLD4:$INTERVAL1:$INTERVAL2:$INTERVAL3:$INTERVAL4
 MESSAGE=$COMPLETEDMSG
 show_status
 exit

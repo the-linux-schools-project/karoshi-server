@@ -109,11 +109,11 @@ echo $USERNAME,$LEVEL,$MAILBOXSIZE,$INTERVAL >> /opt/karoshi/postfixdata/quota_w
 ###########################
 if [ $SEND_EMAIL = yes ]
 then
-su - karoshi -c 'mail -s "E-mail housekeeping - Warning mailbox is over '$PERCENT'%" '$USERNAME@$EMAILDOMAIN' < '$WARNING_PATH''
+su - sysadmin -c 'mail -s "E-mail housekeeping - Warning mailbox is over '$PERCENT'%" '$USERNAME@$EMAILDOMAIN' < '$WARNING_PATH''
 #Warn email admin if level4
 if [ $LEVEL = 4 ]
 then
-su - karoshi -c 'echo '$USERNAME': Inbox is over '$PERCENT'% | mail -s "E-mail housekeeping - '$USERNAME': Warning mailbox is over '$PERCENT'%" '$ADMIN_EMAIL@$EMAILDOMAIN''
+su - sysadmin -c 'echo '$USERNAME': Inbox is over '$PERCENT'% | mail -s "E-mail housekeeping - '$USERNAME': Warning mailbox is over '$PERCENT'%" '$ADMIN_EMAIL@$EMAILDOMAIN''
 fi
 fi
 }

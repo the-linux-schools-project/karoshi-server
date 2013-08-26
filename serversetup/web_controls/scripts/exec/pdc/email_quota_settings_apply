@@ -54,15 +54,14 @@ REMOTE_USER=`echo "$*" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$*" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$*" | cut -s -d: -f3`
 ADMIN_EMAIL=`echo "$*" | cut -s -d: -f4`
-MAILSPOOL=`echo "$*" | cut -s -d: -f5 | sed 's/%2F/\//g'`
-THRESHOLD1=`echo "$*" | cut -s -d: -f6`
-THRESHOLD2=`echo "$*" | cut -s -d: -f7`
-THRESHOLD3=`echo "$*" | cut -s -d: -f8`
-THRESHOLD4=`echo "$*" | cut -s -d: -f9`
-INTERVAL1=`echo "$*" | cut -s -d: -f10`
-INTERVAL2=`echo "$*" | cut -s -d: -f11`
-INTERVAL3=`echo "$*" | cut -s -d: -f12`
-INTERVAL4=`echo "$*" | cut -s -d: -f13`
+THRESHOLD1=`echo "$*" | cut -s -d: -f5`
+THRESHOLD2=`echo "$*" | cut -s -d: -f6`
+THRESHOLD3=`echo "$*" | cut -s -d: -f7`
+THRESHOLD4=`echo "$*" | cut -s -d: -f8`
+INTERVAL1=`echo "$*" | cut -s -d: -f9`
+INTERVAL2=`echo "$*" | cut -s -d: -f10`
+INTERVAL3=`echo "$*" | cut -s -d: -f11`
+INTERVAL4=`echo "$*" | cut -s -d: -f12`
 
 ########################
 #Check data
@@ -157,7 +156,6 @@ ssh -x -o PasswordAuthentication=no $EMAILSERVER '
 echo "#!/bin/bash" > /opt/karoshi/postfixdata/mailboxcheck_settings
 echo "#Settings" >> /opt/karoshi/postfixdata/mailboxcheck_settings
 echo "ADMIN_EMAIL='$ADMIN_EMAIL'" >> /opt/karoshi/postfixdata/mailboxcheck_settings
-echo "MAILSPOOL='$MAILSPOOL'" >> /opt/karoshi/postfixdata/mailboxcheck_settings
 echo "#Warning thresholds in percent" >> /opt/karoshi/postfixdata/mailboxcheck_settings
 echo "THRESHOLD1='$THRESHOLD1'" >> /opt/karoshi/postfixdata/mailboxcheck_settings
 echo "THRESHOLD2='$THRESHOLD2'" >> /opt/karoshi/postfixdata/mailboxcheck_settings
@@ -173,7 +171,6 @@ else
 echo "#!/bin/bash" > /opt/karoshi/postfixdata/mailboxcheck_settings
 echo "#Settings" >> /opt/karoshi/postfixdata/mailboxcheck_settings
 echo "ADMIN_EMAIL=$ADMIN_EMAIL" >> /opt/karoshi/postfixdata/mailboxcheck_settings
-echo "MAILSPOOL=$MAILSPOOL" >> /opt/karoshi/postfixdata/mailboxcheck_settings
 echo "#Warning thresholds in percent" >> /opt/karoshi/postfixdata/mailboxcheck_settings
 echo "THRESHOLD1=$THRESHOLD1" >> /opt/karoshi/postfixdata/mailboxcheck_settings
 echo "THRESHOLD2=$THRESHOLD2" >> /opt/karoshi/postfixdata/mailboxcheck_settings
