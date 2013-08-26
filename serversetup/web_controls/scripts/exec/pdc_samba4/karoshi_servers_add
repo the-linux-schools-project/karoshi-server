@@ -265,6 +265,7 @@ fi
 scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services $SERVER:/opt/karoshi/serversetup/distro/ubuntu/scripts/
 scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot $SERVER:/opt/karoshi/serversetup/distro/ubuntu/scripts/
 scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot $SERVER:/opt/karoshi/serversetup/distro/ubuntu/scripts/
+scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts $SERVER:/opt/karoshi/serversetup/distro/ubuntu/scripts/
 
 #Copy in cacert.pem
 scp -r -o PasswordAuthentication=no /etc/ssl/root-ca/cacert.pem $SERVER:/etc/ssl/root-ca/
@@ -279,6 +280,35 @@ then
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/karoshi-uptime_stop 1>/dev/null
 fi
 #Copy in files
+
+#init.d scripts
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/apache2 /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/clamav-freshclam /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/cups /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/dansguardian /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/mailscanner /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/mon /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/mysql /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/postfix /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/rsync /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/samba /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/samba4 /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/shorewall /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/slapd /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/spamassassin /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/squid /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/squid3 /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/ssh /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/tftpd-hpa /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/xinetd /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/dovecot /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/vsftpd /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/portmap /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/rpcbind /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/sogo /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/isc-dhcp-server /etc/init.d/
+
+#Uptime
 cp /opt/karoshi/serversetup/scripts/uptime/karoshi-uptime /etc/init.d
 cp /opt/karoshi/serversetup/scripts/uptime/karoshi-uptime.sh /usr/sbin/
 chmod 0755 /usr/sbin/karoshi-uptime.sh
