@@ -95,7 +95,8 @@ then
 echo '        <a href="/cgi-bin/admin/add_user_fm.cgi">'$ADDUSERMSG'</a>
         <a href="/cgi-bin/admin/delete_user_fm.cgi">'$DELETEUSERMSG'</a>'
 fi
-echo '        <a href="/cgi-bin/admin/change_password_fm.cgi">'$CHANGEPASSMSG'</a>
+echo '	<a href="/cgi-bin/admin/change_password_fm.cgi">'$CHANGEPASSMSG'</a>
+	<a href="/cgi-bin/admin/group_membership_fm.cgi">'$CHANGESECGRPMSG'</a>
       </div>
       <div class="collapsed">
         <span>'$SYSTEMMSG'</span>

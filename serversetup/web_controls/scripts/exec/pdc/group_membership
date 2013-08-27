@@ -63,7 +63,7 @@ REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 USERNAME=`echo "$DATA" | cut -s -d: -f4`
-
+MOBILE=`echo "$DATA" | cut -s -d: -f5`
 ########################
 #Check data
 ########################
@@ -99,6 +99,9 @@ echo `date`: group_membership - showing group information "for" $USERNAME by $RE
 ICON1=/images/submenus/user/group_yes.png
 ICON2=/images/submenus/user/group_no.png
 
+TABLECLASS=standard
+[ $MOBILE = yes ] && TABLECLASS=mobilestandard
+
 function check_group_membership {
 if [ `echo "$CURRENTGROUPS" | grep -c -w "$GROUPNAME"` -gt 0 ]
 then
@@ -120,7 +123,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 #Get existing group information
 CURRENTGROUPS=`id -G -n $USERNAME`
 echo '<form action="/cgi-bin/admin/group_membership2.cgi" method="post">'
-echo  '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo  '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody><tr><td style="width: 180px;"><b>'$GROUPNAMEMSG'</b></td><td><b>'$GROUPIDMSG'</b></td><td><b>'$STATUSMSG'</b></td></tr>'
 #Get database password
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
