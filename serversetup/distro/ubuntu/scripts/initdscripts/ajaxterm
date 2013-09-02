@@ -1,0 +1,61 @@
+#!/bin/sh
+#
+### BEGIN INIT INFO
+# Provides:          ajaxterm
+# Required-Start:    $syslog $local_fs $remote_fs
+# Required-Stop:     $syslog $local_fs $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: starts/stops ajaxterm
+# Description:       starts and stops Ajaterm,
+#					a web based terminal written in Python
+### END INIT INFO
+
+PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin
+DAEMON=/usr/bin/ajaxterm
+PORT=8022
+SERVERPORT=22
+PIDFILE=/var/run/ajaxterm.pid
+NAME=ajaxterm
+DESC="web based terminal"
+AJAXTERM_UID=ajaxterm
+AJAXTERM_GID=ajaxterm
+
+if [ $(id -u) != 0 ]; then
+  echo "You should run this program as root"
+  exit 1
+fi
+
+[ -x "$DAEMON" ] || exit 0
+
+[ -f "/etc/default/ajaxterm" ] && . /etc/default/ajaxterm
+
+. /lib/lsb/init-functions
+
+case "$1" in
+	start)
+		log_begin_msg "Starting $DESC:" "$NAME"
+		if [ -f $PIDFILE ]; then
+			log_action_cont_msg " already running"
+			log_end_msg 1
+		else
+			start-stop-daemon --start --group=$AJAXTERM_GID --pidfile $PIDFILE --exec $DAEMON -- --daemon --port=$PORT --serverport=$SERVERPORT \
+				--uid=$AJAXTERM_UID >/dev/null
+			log_end_msg $?
+		fi
+	;;
+	stop)
+		log_begin_msg "Stopping $DESC:" "$NAME"
+		start-stop-daemon  --stop --pidfile $PIDFILE
+		rm -f $PIDFILE
+		log_end_msg $?
+	;;
+	restart|force-reload)
+		$0 stop
+		$0 start
+	;;
+	*)
+		echo "Usage: $SCRIPTNAME {start|stop|restart|force-reload}" >&2
+		exit 3
+	;;
+esac

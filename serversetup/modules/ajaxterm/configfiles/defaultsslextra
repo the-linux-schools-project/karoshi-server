@@ -1,0 +1,12 @@
+    ProxyRequests Off
+        <Proxy *>
+                AuthUserFile /opt/karoshi/web_controls/web_access_admin
+                AuthName EnterPassword
+                AuthType Basic
+                require valid-user
+
+                Order Deny,allow
+                Allow from all
+        </Proxy>
+        ProxyPass /admin/shell/ http://localhost:8022/
+        ProxyPassReverse /admin/shell/ http://localhost:8022/

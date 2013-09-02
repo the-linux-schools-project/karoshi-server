@@ -929,6 +929,9 @@ WEBCTRL=yes
 fi
 fi
 
+SHELLCTRL=no
+[ -f /opt/karoshi/server_network/shellserver ] && SHELLCTRL=yes
+
 echo ADDUSERCTRL=$ADDUSERCTRL > /opt/karoshi/server_network/menusettings
 echo BACKUPCTRL=$BACKUPCTRL >> /opt/karoshi/server_network/menusettings
 echo DHCPCTRL=$DHCPCTRL >> /opt/karoshi/server_network/menusettings
@@ -944,6 +947,7 @@ echo PRINTERCTRL=$PRINTERCTRL >> /opt/karoshi/server_network/menusettings
 echo RADIUSCTRL=$RADIUSCTRL >> /opt/karoshi/server_network/menusettings
 echo REVERSEPROXYCTRL=$REVERSEPROXYCTRL >> /opt/karoshi/server_network/menusettings
 echo WEBCTRL=$WEBCTRL >> /opt/karoshi/server_network/menusettings
+echo SHELLCTRL=$SHELLCTRL >> /opt/karoshi/server_network/menusettings
 
 ###########################
 #Check for updates
