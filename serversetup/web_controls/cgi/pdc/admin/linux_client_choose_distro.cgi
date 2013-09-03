@@ -89,6 +89,14 @@ echo "</body></html>"
 exit
 }
 
+function completed {
+echo '<script type="text/javascript">'
+echo 'window.location = "/cgi-bin/admin/linux_client_choose_distro_fm.cgi";'
+echo '</script>'
+echo "</body></html>"
+exit
+}
+
 #########################
 #Check https access
 #########################
@@ -144,6 +152,6 @@ then
 MESSAGE=`echo $ERRORMSG3`
 fi
 
-show_status
+completed
 echo "</div>/body></html>"
 exit
