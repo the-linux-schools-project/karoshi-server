@@ -8,7 +8,7 @@ echo '"<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">
 echo "<li>"Updating repositories"</li>"
 apt-get update
 echo "<li>"Installing ajaxterm"</li>"
-apt-get install ajaxterm
+apt-get install -y ajaxterm
 echo "</pre>"
 fi
 

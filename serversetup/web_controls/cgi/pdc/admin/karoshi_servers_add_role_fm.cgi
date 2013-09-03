@@ -252,6 +252,15 @@ echo '<form action="/cgi-bin/admin/module_ssh_access_fm.cgi" method="post">
 else
 echo '<a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$SSHACCESSHELPMSG'</span></a>'
 fi
+echo '</td><td style="vertical-align: top; width: 180px; height: 40px;">'$SHELLACCESSMSG'</td><td style="vertical-align: top; width: 80px;">'
+
+if [ $SERVERNAME = $HOSTNAME ]
+then
+echo '<form action="/cgi-bin/admin/module_ajaxterm_fm.cgi" method="post">
+<input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$SHELLACCESSHELMSG'</span></a></form>'
+else
+echo '<a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$SHELLACCESSHELMSG'</span></a>'
+fi
 echo '</td>'
 
 if [ -f /opt/karoshi/serversetup/variables/enable_federation_module ]
