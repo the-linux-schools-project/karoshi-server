@@ -30,7 +30,7 @@ source /opt/karoshi/server_network/menusettings
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
 echo '<img src="/images/small_logo.png" alt="logo" align="top"> <font style="font-weight: bold;" size="+2">Web Management '$SCHOOL_NAME'</font> <small><small>
-'$VERSION' : 130907-0711
+'$VERSION' : 130907-1209
 </small></small>'
 
 #Check for warning messages
@@ -118,6 +118,7 @@ echo '			<li class="mid"><a href="/cgi-bin/admin/change_password_fm.cgi" class="
 					<ul>
 						<li><a href="/cgi-bin/admin/change_password_fm.cgi">'$CHANGEPASSMSG'</a></li>
 						<li><a href="/cgi-bin/admin/reset_password_fm.cgi">'$RESETPASSMSG'</a></li>
+						<li><a href="/cgi-bin/admin/change_username_fm.cgi">'$CHANGEUSERNAMEMSG'</a></li>
 						<li><a href="/cgi-bin/admin/change_primary_group_fm.cgi">'$CHANGEPRIGRPMSG'</a></li>
 						<li><a href="/cgi-bin/admin/group_membership_fm.cgi">'$CHANGESECGRPMSG'</a></li>
 						<li class="mid"><a href="/cgi-bin/admin/view_acceptable_use_authorisations_fm.cgi" class="fly">'$ACCEPTABLEUSEMSG'</a>

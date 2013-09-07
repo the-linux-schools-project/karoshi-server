@@ -326,13 +326,7 @@ echo '
         <option value="userstyleS9" '$SELECT9'>'$STYLE9MSG': '$STYLE9MSGEX'</option>
 	</select></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Username_Styles"><img class="images" alt="" src="/images/help/info.png"><span>'$USERNAMESTYLEHELP1'</span></a>
-      </td></tr>
-<tr><td style="vertical-align: top; height: 70px;"></td></tr>
-<tr><td>'$REUSEUSERACCOUNTMSG'</td>
-<td><input tabindex= "6" name="_RENAME_" style="width: 200px;" size="20" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$RENAMEHELPMSG'</span></a></td></tr>
-    </tbody>
-  </table><br>
+      </td></tr></tbody></table><br>
 
 </div><div id="submitbox">'
 fi

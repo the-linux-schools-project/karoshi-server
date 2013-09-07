@@ -84,7 +84,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
         <a href="/cgi-bin/admin/mobile_menu.cgi">'$NMANMSG'</a>
      <div class="a.current">
 <small><small>
-'$VERSION' : 130907-0711
+'$VERSION' : 130907-1209
 </small></small>
 </span></div>
       </div>

@@ -93,7 +93,9 @@ echo '
 if [ $ADDUSERCTRL = yes ]
 then
 echo '        <a href="/cgi-bin/admin/add_user_fm.cgi">'$ADDUSERMSG'</a>
-        <a href="/cgi-bin/admin/delete_user_fm.cgi">'$DELETEUSERMSG'</a>'
+        <a href="/cgi-bin/admin/delete_user_fm.cgi">'$DELETEUSERMSG'</a>
+	<a href="/cgi-bin/admin/change_username_fm.cgi">'$CHANGEUSERNAMEMSG'</a>
+'
 fi
 echo '	<a href="/cgi-bin/admin/change_password_fm.cgi">'$CHANGEPASSMSG'</a>
 	<a href="/cgi-bin/admin/group_membership_fm.cgi">'$CHANGESECGRPMSG'</a>
@@ -175,7 +177,7 @@ echo '      <div class="collapsed">
 fi
 echo '<div class="a.current">
 <small><small>
-'$VERSION' : 130907-0711
+'$VERSION' : 130907-1209
 </small></small>
 </span></div>
     </div>

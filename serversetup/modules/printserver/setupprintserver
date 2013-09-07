@@ -178,7 +178,7 @@ fi
 ########################
 ROOTUSER=Administrator
 [ `grep -c "#karoshi_member_server" /etc/samba/smb.conf` -gt 0 ] && ROOTUSER=root
-net rpc rights grant "itadmin" SePrintOperatorPrivilege -U $ROOTUSER%$LDAPPASS
+net rpc rights grant "itadmin" SePrintOperatorPrivilege -U $ROOTUSER%"$LDAPPASS"
 
 ###########################
 #Open shorewall ports for samba
