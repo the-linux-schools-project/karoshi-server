@@ -86,8 +86,8 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <small><small>
 '$VERSION' : 130907-1209
 </small></small>
-</span></div>
-      </div>
+</div>
+</div>
 </div>'
 
 

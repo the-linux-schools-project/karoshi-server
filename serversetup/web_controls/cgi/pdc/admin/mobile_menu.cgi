@@ -58,7 +58,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'">
-	<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css" />
+	<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
@@ -179,8 +179,8 @@ echo '<div class="a.current">
 <small><small>
 '$VERSION' : 130907-1209
 </small></small>
-</span></div>
-    </div>
+</div>
+</div>
 </body></html>
 '
 exit
