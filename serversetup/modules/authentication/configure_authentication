@@ -239,15 +239,30 @@ sleep 4
 exit 101
 fi
 
-#if the adc or rodc is in the dmz set dns so that windows clients do not use server as logon server
+#if the adc or rodc is in the dmz set dns weigting and priority so that windows clients do not use server as logon server
 
 if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
 then
 if [ $ZONE != internal ]
 then
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+sleep 10
+
+#Need to wait for the dns entry to appear
+LOOKUPDATA=`echo -e "set type=SRV\n_ldap._tcp.$REALM" | nslookup`
+while [ `echo -e "$LOOKUPDATA" | grep -c $SERVERNAME` = 0 ]
+do
+sleep 1
+LOOKUPDATA=`echo -e "set type=SRV\n_ldap._tcp.$REALM" | nslookup`
+[ $COUNTER = 30 ] && break
+let COUNTER=$COUNTER+1
+done
+#Lets just try and splatter priority and weighting values everywhere in the hope that someday a windows client will realise not to use that domain controller in a dmz.
 samba-tool dns delete 127.0.0.1 $REALM _ldap._tcp.$REALM SRV ''$SERVERNAME'.'$REALM' 389 0 100' --username=Administrator --password=$LDAPPASS
-samba-tool dns add 127.0.0.1 $REALM _ldap._tcp.$REALM SRV ''$SERVERNAME'.'$REALM' 389 200 200' --username=Administrator --password=$LDAPPASS
+samba-tool dns add 127.0.0.1 $REALM _ldap._tcp.$REALM SRV ''$SERVERNAME'.'$REALM' 389 5000 1' --username=Administrator --password=$LDAPPASS
+
+samba-tool dns add 127.0.0.1 _msdcs.$REALM _ldap._tcp.dc._msdcs.$REALM SRV ''$SERVERNAME'.'$REALM' 389 5000 1' --username=Administrator --password=$LDAPPASS
+samba-tool dns delete 127.0.0.1 _msdcs.$REALM _ldap._tcp.dc._msdcs.$REALM SRV ''$SERVERNAME'.'$REALM' 389 0 100' --username=Administrator --password=$LDAPPASS
 fi
 fi
 
