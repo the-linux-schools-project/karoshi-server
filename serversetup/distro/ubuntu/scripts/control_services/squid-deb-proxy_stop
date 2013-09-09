@@ -1,0 +1,9 @@
+#!/bin/bash
+service squid-deb-proxy stop
+COUNTER=0
+while [ `ps aux | grep -c squid-deb-proxy.conf` -gt 1 ]
+do
+sleep 0.5
+let COUNTER=$COUNTER+1
+[ $COUNTER = 20 ] && break
+done
