@@ -561,7 +561,7 @@ if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
 then
 if [ $ZONE = internal ]
 then
-/opt/karoshi/"useful scripts"/adc_sync &
+/opt/karoshi/"useful scripts"/adc_sync yes &
 fi
 fi
 exit

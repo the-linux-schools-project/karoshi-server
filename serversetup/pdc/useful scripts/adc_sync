@@ -1,25 +1,49 @@
 #!/bin/bash
-if [ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers ]
+SYNC_APPLICATIONS=no
+SYNC_SYSVOL=no
+SYNC_NETLOGON=no
+FORCE_SYNC=$1
+[ -z $FORCE_SYNC ] && FORCE_SYNC=no 
+#Check for any changes
+if [ $FORCE_SYNC = no ]
 then
-if [ `ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers | wc -l` -gt 0 ]
+[ `find /home/applications -mmin -30 | wc -l` -gt 0 ] && SYNC_APPLICATIONS=yes
+[ `find /var/lib/samba/sysvol -mmin -30 | wc -l` -gt 0 ] && SYNC_SYSVOL=yes
+[ `find /var/lib/samba/netlogon -mmin -30 | wc -l` -gt 0 ] && SYNC_NETLOGON=yes
+else
+SYNC_APPLICATIONS=yes
+SYNC_SYSVOL=yes
+SYNC_NETLOGON=yes
+fi
+
+function do_sync {
+if [ -d /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers ]
 then
-for ADSERVERS in /opt/karoshi/server_network/zones/internal/additional_domain_controllers/*
+if [ `ls -1 /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers | wc -l` -gt 0 ]
+then
+for ADSERVERS in /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/*
 do
 ADSERVER=`basename $ADSERVERS`
 echo Syncing $ADSERVER
 #Sync netlogon
-rsync --timeout=30 --verbose --dirs --recursive --links --perms --executability --owner --group --acls --xattrs --compress /var/lib/samba/netlogon $ADSERVER:/var/lib/samba/
+[ $SYNC_NETLOGON = yes ] && rsync --timeout=30 --verbose --dirs --recursive --links --perms --executability --owner --group --acls --xattrs --compress /var/lib/samba/netlogon $ADSERVER:/var/lib/samba/
 #Sync sysvol
-rsync --timeout=30 --verbose --dirs --recursive --links --perms --executability --owner --group --acls --xattrs --compress /var/lib/samba/sysvol $ADSERVER:/var/lib/samba/
+[ $SYNC_SYSVOL = yes ] && rsync --timeout=30 --verbose --dirs --recursive --links --perms --executability --owner --group --acls --xattrs --compress /var/lib/samba/sysvol $ADSERVER:/var/lib/samba/
 #Sync applications share
-rsync --timeout=30 --verbose --dirs --recursive --links --perms --executability --owner --group --acls --xattrs --compress /home/applications $ADSERVER:/home/
+[ $SYNC_APPLICATIONS = yes ] && rsync --timeout=30 --verbose --dirs --recursive --links --perms --executability --owner --group --acls --xattrs --compress /home/applications $ADSERVER:/home/
 #Sync subjects
-rsync --timeout=30 --verbose --dirs --recursive --links --perms --executability --owner --group --acls --xattrs --compress /home/subjects $ADSERVER:/home/
+#[ $ZONE = internal ] && rsync --timeout=30 --verbose --dirs --recursive --links --perms --executability --owner --group --acls --xattrs --compress /home/subjects $ADSERVER:/home/
 #Sync staffshare
-rsync --timeout=30 --verbose --dirs --recursive --links --perms --executability --owner --group --acls --xattrs --compress /home/staffshare $ADSERVER:/home/
+#[ $ZONE = internal ] && rsync --timeout=30 --verbose --dirs --recursive --links --perms --executability --owner --group --acls --xattrs --compress /home/staffshare $ADSERVER:/home/
 #Sync users home areas
-rsync --timeout=30 --verbose --dirs --recursive --links --perms --executability --owner --group --acls --xattrs --compress /home/users/ $ADSERVER:/home/
+#[ $ZONE = internal ] && rsync --timeout=30 --verbose --dirs --recursive --links --perms --executability --owner --group --acls --xattrs --compress /home/users/ $ADSERVER:/home/
 done
 fi
 fi
+}
+
+ZONE=internal
+do_sync
+ZONE=dmz
+do_sync
 
