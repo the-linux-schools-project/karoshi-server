@@ -11,7 +11,7 @@
 
 #Symlink to /run/samba-cache
 [ ! -d /run/samba-cache ] && mkdir -p /run/samba-cache 
-ln -s /run/samba-cache /run/lock/samba
+[ ! -e /run/lock/samba ] && ln -s /run/samba-cache /run/lock/samba
 
 #
 # Start/stops the Samba daemon (samba).
