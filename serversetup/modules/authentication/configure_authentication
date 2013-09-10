@@ -85,7 +85,7 @@ then
 JOINTYPE=DC
 SERVERROLE="active directory domain controller"
 
-if [ $ZONE = internal ]
+if [ $ZONE = internal ] || [ $ZONE = dmz ]
 then
 #Schedule adc_sync
 echo '*''/'30 '*' '*' '*' 1-5 /opt/karoshi/'"'useful scripts'"'/adc_sync > /opt/karoshi/cronjobs/jobs/adc_sync.cron
@@ -140,12 +140,6 @@ echo -e "# Global parameters
 	acl:search=false
 	log level = 1
 
-" > /etc/samba/smb.conf
-
-if [ '$AUTHTYPE' = adc ]
-then
-echo -e "
-
 [netlogon]
 	path = /var/lib/samba/netlogon
 	read only = No
@@ -165,9 +159,7 @@ echo -e "
 	oplocks = No
 	level2 oplocks = No
 
-" >> /etc/samba/smb.conf
-
-fi
+" > /etc/samba/smb.conf
 
 #Point adc and rodc servers at themselves for resolv.conf
 echo domain '$REALM' > /etc/resolv.conf
@@ -239,33 +231,6 @@ sleep 4
 exit 101
 fi
 
-#if the adc or rodc is in the dmz set dns weigting and priority so that windows clients do not use server as logon server
-
-if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
-then
-if [ $ZONE != internal ]
-then
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-sleep 10
-
-#Need to wait for the dns entry to appear
-LOOKUPDATA=`echo -e "set type=SRV\n_ldap._tcp.$REALM" | nslookup`
-while [ `echo -e "$LOOKUPDATA" | grep -c $SERVERNAME` = 0 ]
-do
-sleep 1
-LOOKUPDATA=`echo -e "set type=SRV\n_ldap._tcp.$REALM" | nslookup`
-[ $COUNTER = 30 ] && break
-let COUNTER=$COUNTER+1
-done
-#Lets just try and splatter priority and weighting values everywhere in the hope that someday a windows client will realise not to use that domain controller in a dmz.
-samba-tool dns delete 127.0.0.1 $REALM _ldap._tcp.$REALM SRV ''$SERVERNAME'.'$REALM' 389 0 100' --username=Administrator --password=$LDAPPASS
-samba-tool dns add 127.0.0.1 $REALM _ldap._tcp.$REALM SRV ''$SERVERNAME'.'$REALM' 389 5000 1' --username=Administrator --password=$LDAPPASS
-
-samba-tool dns add 127.0.0.1 _msdcs.$REALM _ldap._tcp.dc._msdcs.$REALM SRV ''$SERVERNAME'.'$REALM' 389 5000 1' --username=Administrator --password=$LDAPPASS
-samba-tool dns delete 127.0.0.1 _msdcs.$REALM _ldap._tcp.dc._msdcs.$REALM SRV ''$SERVERNAME'.'$REALM' 389 0 100' --username=Administrator --password=$LDAPPASS
-fi
-fi
-
 #Add role information
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
 
@@ -276,10 +241,13 @@ fi
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc
 
 #Sync applications and netlogon shares
-#if [ $ZONE = internal ]
-#then
-#[ $AUTHTYPE = adc ] && /opt/karoshi/"useful scripts"/adc_sync
-#fi
+if [ $ZONE = internal ] || [ $ZONE = dmz ]
+then
+if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
+then
+/opt/karoshi/"useful scripts"/adc_sync
+fi
+fi
 
 #Authtypes adc rodc member users none
 if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ] 
