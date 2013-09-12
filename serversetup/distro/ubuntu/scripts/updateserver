@@ -68,6 +68,7 @@ function sysvsupport {
 [ -L /etc/init.d/spamassassin ] && rm -f /etc/init.d/spamassassin
 [ -L /etc/init.d/squid ] && rm -f /etc/init.d/squid
 [ -L /etc/init.d/squid3 ] && rm -f /etc/init.d/squid3
+[ -L /etc/init.d/squid-deb-proxy ] && rm -f /etc/init.d/squid-deb-proxy
 [ -L /etc/init.d/ssh ] && rm -f /etc/init.d/ssh
 [ -L /etc/init.d/tftpd-hpa ] && rm -f /etc/init.d/tftpd-hpa
 [ -L /etc/init.d/xinetd ] && rm -f /etc/init.d/xinetd
@@ -92,6 +93,7 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/slapd /etc/ini
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/spamassassin /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/squid /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/squid3 /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/squid-deb-proxy /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/ssh /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/tftpd-hpa /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/xinetd /etc/init.d/

@@ -1,6 +1,5 @@
 #!/bin/bash
-
-if [ `ps aux | grep -w -c /usr/lib/squid3` -gt 1 ]
+if [ `ps aux | grep -w -c /etc/squid3/squid.conf` -gt 1 ]
 then
 exit 0
 else

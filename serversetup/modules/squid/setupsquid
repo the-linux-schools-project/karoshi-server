@@ -89,7 +89,7 @@ SQUIDVER=squid
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/squid
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/dansguardian
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/aptcacherng
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/squid-deb-proxy
 
 mkdir /home/multimedia 2>/dev/null
 mkdir /home/internetdata 2>/dev/null
@@ -244,7 +244,35 @@ if [ $DANSGUARDIANSTATUS = 0 ]
 then
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dansguardian_start
 fi
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/aptcacherng_start
+
+#Install squid-deb-proxy
+which squid-deb-proxy 1>/dev/null
+if [ $? != 0 ]
+then
+echo "<li>$PROXYSERVER - Installing squid-deb-proxy</li>"
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+apt-get update
+sleep 1
+apt-get install -y squid-deb-proxy
+echo "</pre>"
+fi
+
+#Setup squid-deb-proxy
+echo www.remastersys.com > /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
+echo ppa.launchpad.net >> /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
+echo inverse.ca >> /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
+
+echo blacklisted-mirror.com > /etc/squid-deb-proxy/pkg-blacklist.d
+
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/squiddebproxy /etc/init.d/
+
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squiddebproxy_stop
+sleep 1
+[ -L /etc/init.d/squid-deb-proxy ] && rm -f /etc/init.d/squid-deb-proxy
+[ `ls /etc/init/squid* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/squid*
+
+
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squiddebproxy_start
 ###########################
 #Open shorewall ports for dansguardian
 ###########################
@@ -254,10 +282,10 @@ RESTART_SHOREWALL=no
 if [ $MODCHECK = 0 ]
 then
 RESTART_SHOREWALL=yes
-echo '<br>'$SHOREWALLMSG - tcp 3128,3142 udp 3128,3142'<br><br>'
+echo '<br>'$SHOREWALLMSG - tcp 3128,3142 udp 3128,8000'<br><br>'
 LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'3128,3142'	'-'#'squid_proxy_rule /etc/shorewall/rules
-echo ACCEPT'	'net'	'fw'	'udp'	'3128,4142'	'-'#'squid_proxy_rule >> /etc/shorewall/rules
+sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'3128,8000'	'-'#'squid_proxy_rule /etc/shorewall/rules
+echo ACCEPT'	'net'	'fw'	'udp'	'3128,8000'	'-'#'squid_proxy_rule >> /etc/shorewall/rules
 echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 fi
 
