@@ -1,5 +1,5 @@
 #!/bin/bash
-#Copyright (C) 2012 Paul Sharrad
+#Copyright (C) 2013 Paul Sharrad
 
 #This file is part of Karoshi Server.
 #
@@ -25,22 +25,13 @@
 #Website: http://www.karoshi.org.uk
 
 ########################
-#Required input variables
-########################
-#  _USERNAME_
-
-#Detect mobile browser
-MOBILE=no
-source /opt/karoshi/web_controls/detect_mobile_browser
-
-########################
 #Language
 ########################
 LANGCHOICE=englishuk
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/group_membership ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/group_membership
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/client_wireless_settings ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/client/client_wireless_settings
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 #########################
@@ -54,48 +45,33 @@ echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
 #DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%*+-' | sed 's/___/TRIPLEUNDERSCORE/g' | sed 's/_/UNDERSCORE/g' | sed 's/TRIPLEUNDERSCORE/_/g'`
+DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%*+-'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=15
-#Assign USERNAME
+END_POINT=9
+#Assign KEY
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
 DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
+if [ `echo $DATAHEADER'check'` = KEYcheck ]
 then
 let COUNTER=$COUNTER+1
-USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+KEY=`echo $DATA | cut -s -d'_' -f$COUNTER`
 break
 fi
 let COUNTER=$COUNTER+1
 done
-
-#Assign ACTION
+#Assign SSID
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
 DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
+if [ `echo $DATAHEADER'check'` = SSIDcheck ]
 then
 let COUNTER=$COUNTER+1
-ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
-
-#Assign GROUP
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = GROUPcheck ]
-then
-let COUNTER=$COUNTER+1
-GROUP=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/UNDERSCORE/_/g'`
+SSID=`echo $DATA | cut -s -d'_' -f$COUNTER`
 break
 fi
 let COUNTER=$COUNTER+1
@@ -104,7 +80,7 @@ done
 function show_status {
 echo '<SCRIPT language="Javascript">
 alert("'$MESSAGE'");
-window.location = "/cgi-bin/admin/group_membership_fm.cgi"
+window.location = "/cgi-bin/admin/change_password_fm.cgi"
 </script>
 </body></html>'
 exit
@@ -131,64 +107,25 @@ then
 MESSAGE=$ACCESS_ERROR1
 show_status
 fi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/group_membership2.cgi | cut -d' ' -f1`
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/client_wireless_settings.cgi | cut -d' ' -f1`
 #########################
 #Check data
 #########################
-#Check to see that username is not blank
-if [ $USERNAME'null' = null ]
+#Check to see that the key is not blank
+if [ $KEY'null' = null ]
 then
 MESSAGE=$ERRORMSG1
 show_status
 fi
 
-#Check to see that action is not blank
-if [ $ACTION'null' = null ]
-then
-MESSAGE=$ERRORMSG3
-show_status
-fi
-
-#Check to see that the action  is correct
-if [ $ACTION != ADD ] && [ $ACTION != REMOVE ]
-then
-MESSAGE=$ERRORMSG4
-show_status
-fi
-
-#Check to see that group is not blank
-if [ `echo "$GROUP"'null' | sed 's/ //g'` = null ]
-then
-MESSAGE=$ERRORMSG5
-show_status
-fi
-
-#Check to see that the user exists
-getent passwd "$USERNAME" 1>/dev/null 2>/dev/null
-USEREXISTSTATUS=`echo $?`
-if [ $USEREXISTSTATUS != 0 ]
+#Check to see that the ssid is not blank
+if [ $SSID'null' = null ]
 then
 MESSAGE=$ERRORMSG2
 show_status
 fi
 
-#Generate navigation bar
-if [ $MOBILE = no ]
-then
-DIV_ID=actionbox
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
-else
-DIV_ID=actionbox2
-fi
-
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'$TITLE1' - '$USERNAME'<br><br>'
-
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$ACTION:$GROUP" | sudo -H /opt/karoshi/web_controls/exec/group_membership2
-echo "<form action=\"group_membership.cgi\" method=\"post\" id=\"membershipview\">
-<input type=\"hidden\" name=\"____USERNAME____$USERNAME"____"\" value=\"\">
-</form>
-<script language=\"JavaScript\" type=\"text/javascript\">
-document.getElementById('membershipview').submit();
-</script></div></body></html>"
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$KEY:$SSID" | sudo -H /opt/karoshi/web_controls/exec/client_wireless_settings
+MESSAGE=$COMPLETEDMSG
+show_status
 exit

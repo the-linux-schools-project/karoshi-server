@@ -408,7 +408,8 @@ echo '			<li class="mid"><a href="/cgi-bin/admin/linux_client_choose_distro_fm.c
 					</ul>
 			</li>'
 fi
-echo '			<li><a href="/cgi-bin/admin/client_shutdown_time.cgi">'$CSHUTDOWNTIME'</a></li>
+echo '					<li><a href="/cgi-bin/admin/client_wireless_settings_fm.cgi">'$CLIENTWIRELESS'</a></li>			
+					<li><a href="/cgi-bin/admin/client_shutdown_time.cgi">'$CSHUTDOWNTIME'</a></li>
 			</ul>		
 		</li>
 '

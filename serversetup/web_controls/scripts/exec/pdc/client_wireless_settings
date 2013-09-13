@@ -1,0 +1,106 @@
+#!/bin/bash
+#Copyright (C) 2013 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/client_wireless_settings_cgi
+then
+echo `date`: client_wireless_settings - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/client_wireless_settings_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/client_wireless_settings.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $client_wireless_settings_cgi'check' ]
+then
+echo `date`: client_wireless_settings - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: client_wireless_settings - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-' | sed 's/REPLACEUNDERSCORE/_/g'`
+if [ $DATA'null' = null ]
+then
+echo `date`: client_wireless_settings - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+KEY=`echo "$DATA" | cut -s -d: -f4`
+SSID=`echo "$DATA" | cut -s -d: -f5`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: client_wireless_settings - Not called by client_wireless_settings.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: client_wireless_settings - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: client_wireless_settings - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $KEY'null' = null ]
+then
+echo `date`: client_wireless_settings - Blank mkey by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ $SSID'null' = null ]
+then
+echo `date`: client_wireless_settings - Blank mkey by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: client_wireless_settings - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+[ ! -d /var/lib/samba/netlogon/domain_information/ ] && mkdir -p /var/lib/samba/netlogon/domain_information
+
+echo $KEY > /var/lib/samba/netlogon/domain_information/wifi_key
+echo $SSID > /var/lib/samba/netlogon/domain_information/wifi_ssid
+exit
