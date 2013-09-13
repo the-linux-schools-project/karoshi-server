@@ -1,0 +1,85 @@
+#!/bin/bash
+
+#Copyright (C) 2013 Robin McCorkell
+
+#This file is part of Karoshi Client.
+#
+#Karoshi Client is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Client is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Client.  If not, see <http://www.gnu.org/licenses/>.
+
+#The Karoshi Team can be contacted either at mpsharrad@karoshi.org.uk or rmccorkell@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+if [[ ! $PAM_USER ]]; then
+	echo "ERROR: Must be run through pam_exec.so" >&2
+	exit $PAM_CRED_UNAVAIL
+fi
+#Make sure the user exists
+if ! getent passwd "$PAM_USER" >/dev/null; then
+	echo "ERROR: Must be run with a valid PAM_USER" >&2
+	exit $PAM_USER_UNKNOWN
+fi
+
+if [[ -f /opt/karoshi/paths ]]; then
+	source /opt/karoshi/paths
+else
+	source /opt/karoshi/linuxclientsetup/paths
+fi
+
+user_info=$(getent passwd "$PAM_USER")
+user_uid=$(cut -d":" -f3 <<< "$user_info")
+user_gid=$(cut -d":" -f4 <<< "$user_info")
+user_home=$(cut -d":" -f6 <<< "$user_info")
+
+#Check for required directories
+if [[ ! -d $KAROSHI_DATA ]]; then
+	echo "ERROR: Missing $KAROSHI_DATA" >&2
+	exit $PAM_SYSTEM_ERR
+fi
+if [[ ! -d $KAROSHI_DATA/$KAROSHI_OFFLINE_HOMES ]]; then
+	echo "$KAROSHI_DATA/$KAROSHI_OFFLINE_HOMES did not exist - creating"
+	mkdir "$KAROSHI_DATA"/"$KAROSHI_OFFLINE_HOMES" -m 0755
+fi
+
+if [[ ! -d $KAROSHI_DATA/$KAROSHI_OFFLINE_HOMES/users ]]; then
+	echo "$KAROSHI_DATA/$KAROSHI_OFFLINE_HOMES/users did not exist - creating"
+	mkdir "$KAROSHI_DATA"/"$KAROSHI_OFFLINE_HOMES"/users -m 0755
+fi
+if [[ ! -d $KAROSHI_DATA/$KAROSHI_OFFLINE_HOMES/flags ]]; then
+	echo "$KAROSHI_DATA/$KAROSHI_OFFLINE_HOMES/flags did not exist - creating"
+	mkdir "$KAROSHI_DATA"/"$KAROSHI_OFFLINE_HOMES"/flags -m 0711
+fi
+
+if ! [[ $user_uid -ge 1000 ]]; then
+	echo "User is not a domain user - exiting"
+	exit $PAM_IGNORE
+fi
+
+if karoshi-manage-flags get offline_mode >/dev/null; then
+	if [[ ! -d $KAROSHI_DATA/$KAROSHI_OFFLINE_HOMES/users/$PAM_USER ]]; then
+		echo "Creating offline home directory for $PAM_USER"
+		mkdir "$KAROSHI_DATA"/"$KAROSHI_OFFLINE_HOMES"/users/"$PAM_USER" -m 0700
+		chown $user_uid:$user_gid "$KAROSHI_DATA"/"$KAROSHI_OFFLINE_HOMES"/users/"$PAM_USER"
+	fi
+	touch "$KAROSHI_DATA"/"$KAROSHI_OFFLINE_HOMES"/flags/"$PAM_USER"
+	chown $user_uid:$user_gid "$KAROSHI_DATA"/"$KAROSHI_OFFLINE_HOMES"/flags/"$PAM_USER"
+	chmod 0600 "$KAROSHI_DATA"/"$KAROSHI_OFFLINE_HOMES"/flags/"$PAM_USER"
+else
+	if [[ -f $KAROSHI_DATA/$KAROSHI_OFFLINE_HOMES/flags/$PAM_USER ]] && [[ $(< "$KAROSHI_DATA"/"$KAROSHI_OFFLINE_HOMES"/flags/"$PAM_USER") == "delete" ]]; then
+		#Remove offline home directory
+		echo "Detected stale offline home directory - removing"
+		rm -rf "$KAROSHI_DATA"/"$KAROSHI_OFFLINE_HOMES"/users/"$PAM_USER"
+		rm -rf "$KAROSHI_DATA"/"$KAROSHI_OFFLINE_HOMES"/flags/"$PAM_USER"
+	fi
+fi

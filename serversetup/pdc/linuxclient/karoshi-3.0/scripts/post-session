@@ -1,0 +1,142 @@
+#!/bin/bash
+
+#Copyright (C) 2013 Robin McCorkell
+
+#This file is part of Karoshi Client.
+#
+#Karoshi Client is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Client is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Client.  If not, see <http://www.gnu.org/licenses/>.
+
+#The Karoshi Team can be contacted either at mpsharrad@karoshi.org.uk or rmccorkell@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+source /opt/karoshi/linuxclientsetup/utilities/common
+
+function checkAndList {
+	if [[ -e ~/$1 ]]; then list=( "${list[@]}" "$1" ); fi
+}
+
+#Detect an administrator
+is_admin=false
+groups=( $(id -nG) )
+for group in "${groups[@]}"; do
+	if [[ $group == "admin" ]] || [[ $group == "sudo" ]] || [[ $group == "tech" ]]; then
+		echo "Detected admin user"
+		is_admin=true
+		break
+	fi
+done
+if [[ $(id -nu) == "root" ]]; then
+	is_admin=true
+fi
+
+#Detect a domain user
+is_domain=false
+if [[ $(id -u) -ge 1000 ]] && [[ $(id -u) -ne 65534 ]]; then
+	echo "Detected domain user"
+	is_domain=true
+fi
+
+#Detect offline home area
+offline_home_exists=false
+if $is_domain && [[ $(mount | grep "on $HOME/offline-home") ]]; then
+	echo "Detected offline home area"
+	offline_home_exists=true
+fi
+
+#Detect running graphically
+is_graphical=false
+if [[ $PAM_SERVICE == "lightdm" ]]; then
+	echo "Detected running graphically"
+	is_graphical=true
+else
+	echo "Detected running in console"
+fi
+
+#Exit if still logged in
+if [[ $(pmvarrun -u "$(id -nu)" -o 0) -gt 1 ]]; then
+	echo "User still logged in - exiting"
+	exit 0
+fi
+
+if $is_domain; then
+	###################
+	#Domain user
+	###################
+	
+	if karoshi-manage-flags get offline_mode >/dev/null; then
+		if $offline_home_exists; then
+			echo "Using offline-home as alternate home"
+			alternate_home="offline-home"
+		fi
+	else
+		if [[ $(mount | grep "^[^ ]* on $HOME/network/home type cifs") ]]; then
+			echo "Using network/home as alternate home"
+			alternate_home="network/home"
+		fi
+		if $offline_home_exists; then
+			echo "Setting offline home area to be removed"
+			echo "delete" > "$KAROSHI_DATA"/"$KAROSHI_OFFLINE_HOMES"/flags/"$USER"
+		fi
+	fi
+	
+	#Clear Trash folder
+	[[ -d ~/.local/share/Trash ]] && rm -rf ~/.local/share/Trash
+	
+	#Remove Karoshi autostart files
+	$is_graphical && find ~/.config/autostart -name 'karoshi-*.desktop' -delete
+	
+	#Backup configuration
+	if [[ $alternate_home ]]; then
+		list=( )
+		#Populate list with all hidden folders, with some exceptions
+		while read -d $'\0' -r file ; do
+			checkAndList "${file##~/}"
+		done < <(find ~ -mindepth 1 -maxdepth 1 -xdev -not '(' -name '.mozilla'  -o -name '.thunderbird' -o -name '.cache' \
+					-o -name '.thumbnails' -o -name '.Xauthority' -o -name '.ICEauthority' -o -name '.xsession-errors' -o -name '.pulse*' \
+					-o -name '.gvfs' -o -name '.dbus' -o -name '.VirtualBox' -o -name '.rednotebook' ')' -name '.*' -print0)
+
+		if which firefox >/dev/null && [[ -d ~/.mozilla/firefox ]]; then
+			firefox_profile=`sed -n '0,/^Path=/s/^Path=//p' ~/.mozilla/firefox/profiles.ini`
+			if [[ $firefox_profile ]] && [[ -d ~/.mozilla/firefox/$firefox_profile ]]; then
+				echo "Found Firefox profile - preserving places.sqlite"
+				checkAndList .mozilla/firefox/"$firefox_profile"/places.sqlite
+			fi
+		fi
+		if which thunderbird >/dev/null && [[ -d ~/.thunderbird ]]; then
+			thunderbird_profile=`sed -n '0,/^Path=/s/^Path=//p' ~/.thunderbird/profiles.ini`
+			if [[ $thunderbird_profile ]] && [[ -d ~/.thunderbird/$thunderbird_profile ]]; then
+				echo "Found Thunderbird profile - preserving places.sqlite"
+				checkAndList .thunderbird/"$thunderbird_profile"/places.sqlite
+			fi
+		fi
+
+		#Create archive in ~/$alternate_home/.configuration.tar.gz
+		[[ -f ~/$alternate_home/.configuration.tar.gz ]] && rm ~/"$alternate_home"/.configuration.tar.gz
+		[[ "${list[@]}" ]] && tar -cz --one-file-system --exclude='karoshi-*.desktop' --exclude='*.karoshi-session' -C ~ -f ~/"$alternate_home"/.configuration.tar.gz "${list[@]}"
+
+	
+		#Backup desktop files
+		if $is_graphical; then
+			list=( )
+			while read -d $'\0' -r file ; do
+				checkAndList "${file##~/}"
+			done < <(find ~/Desktop -mindepth 1 -maxdepth 1 -not -name "karoshi-*.desktop" -and -size -1024c -print0)
+
+			#Create archive in ~/$alternate_home/.desktop-icons.tar.gz
+			[[ -f ~/$alternate_home/.desktop-icons.tar.gz ]] && rm ~/"$alternate_home"/.desktop-icons.tar.gz
+			[[ "${list[@]}" ]] && tar -cz --one-file-system -C ~ -f ~/"$alternate_home"/.desktop-icons.tar.gz "${list[@]}"
+		fi
+	fi
+fi
