@@ -748,6 +748,10 @@ then
 source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
 #Delete entry from netlogon
 [ -f /var/lib/samba/netlogon/clients/$MAC1 ] && rm -f /var/lib/samba/netlogon/clients/$MAC1
+#Delete entry from netlogon
+[ -f /var/lib/samba/netlogon/clients/$MAC2 ] && rm -f /var/lib/samba/netlogon/clients/$MAC2
+#Delete entry from netlogon
+[ -f /var/lib/samba/netlogon/clients/$MAC3 ] && rm -f /var/lib/samba/netlogon/clients/$MAC3
 #Move entry to deleted folder
 mv -f /opt/karoshi/asset_register/locations/$LOCATION/$ASSET /opt/karoshi/asset_register/deleted/$LOCATION/
 echo `date`: asset_register_view - deleting $ASSET from $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -939,17 +943,39 @@ echo BUDGET=\""$BUDGET"\" >> "/opt/karoshi/asset_register/locations/$LOCATION/$A
 echo EXTRAINFO=\""$EXTRAINFO"\" >> "/opt/karoshi/asset_register/locations/$LOCATION/$ASSET"
 
 #Add details to netlogon
+[ ! -d /var/lib/samba/netlogon/clients ] && mkdir -p /var/lib/samba/netlogon/clients
+
 if [ $MACADDRESS1'null' != null ]
 then
 if [ $MACADDRESS1 != N.A. ]
 then
-if [ ! -d /var/lib/samba/netlogon/clients ]
-then
-mkdir /var/lib/samba/netlogon/clients
-fi
 CLIENTMAC=`echo $MACADDRESS1 | sed 's/://g'`
 echo $IDENTITY > /var/lib/samba/netlogon/clients/"$CLIENTMAC"
 echo $TCPIP1 >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
+echo $LOCATION >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
+fi
+fi
+}
+
+if [ $MACADDRESS2'null' != null ]
+then
+if [ $MACADDRESS2 != N.A. ]
+then
+CLIENTMAC=`echo $MACADDRESS2 | sed 's/://g'`
+echo $IDENTITY > /var/lib/samba/netlogon/clients/"$CLIENTMAC"
+echo $TCPIP2 >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
+echo $LOCATION >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
+fi
+fi
+}
+
+if [ $MACADDRESS3'null' != null ]
+then
+if [ $MACADDRESS3 != N.A. ]
+then
+CLIENTMAC=`echo $MACADDRESS3 | sed 's/://g'`
+echo $IDENTITY > /var/lib/samba/netlogon/clients/"$CLIENTMAC"
+echo $TCPIP3 >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
 echo $LOCATION >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
 fi
 fi
