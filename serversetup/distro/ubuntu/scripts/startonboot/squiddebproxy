@@ -3,8 +3,8 @@
 
 if [ -f /opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status ]
 then
-/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status squid-deb-proxy on 1>/dev/null 2>/dev/null
+/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status squiddebproxy on 1>/dev/null 2>/dev/null
 else
-chkconfig -f squid-deb-proxy on 1>/dev/null 2>/dev/null
+chkconfig -f squiddebproxy on 1>/dev/null 2>/dev/null
 fi
 
