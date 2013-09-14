@@ -26,7 +26,7 @@
 ########################
 #Required input variables
 ########################
-#  _LINUXVERSION_
+#  _VERSION_
 #  _INSTALL_
 #  _UPDATES_
 ############################
@@ -50,32 +50,100 @@ echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
 DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+
 #########################
 #Assign data to variables
 #########################
-END_POINT=6
-#Assign LINUXVERSION
+END_POINT=17
+#Assign VERSION
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
 DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = LINUXVERSIONcheck ]
+if [ `echo $DATAHEADER'check'` = VERSIONcheck ]
 then
 let COUNTER=$COUNTER+1
-LINUXVERSION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+VERSION=`echo $DATA | cut -s -d'_' -f$COUNTER`
 break
 fi
 let COUNTER=$COUNTER+1
 done
-#Assign INSTALL
+#Assign SOFTWARE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
 DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = INSTALLcheck ]
+if [ `echo $DATAHEADER'check'` = SOFTWAREcheck ]
 then
 let COUNTER=$COUNTER+1
-INSTALL=`echo $DATA | cut -s -d'_' -f$COUNTER`
+SOFTWARE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+break
+fi
+let COUNTER=$COUNTER+1
+done
+#Assign GRAPHICS
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+if [ `echo $DATAHEADER'check'` = GRAPHICScheck ]
+then
+let COUNTER=$COUNTER+1
+GRAPHICS=`echo $DATA | cut -s -d'_' -f$COUNTER`
+break
+fi
+let COUNTER=$COUNTER+1
+done
+#Assign AUTO
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+if [ `echo $DATAHEADER'check'` = AUTOcheck ]
+then
+let COUNTER=$COUNTER+1
+AUTO=`echo $DATA | cut -s -d'_' -f$COUNTER`
+break
+fi
+let COUNTER=$COUNTER+1
+done
+#Assign RESTRICTED
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+if [ `echo $DATAHEADER'check'` = RESTRICTEDcheck ]
+then
+let COUNTER=$COUNTER+1
+RESTRICTED=`echo $DATA | cut -s -d'_' -f$COUNTER`
+break
+fi
+let COUNTER=$COUNTER+1
+done
+
+#Assign FIRMWARE
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+if [ `echo $DATAHEADER'check'` = FIRMWAREcheck ]
+then
+let COUNTER=$COUNTER+1
+FIRMWARE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+break
+fi
+let COUNTER=$COUNTER+1
+done
+
+#Assign SOFTWARE
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+if [ `echo $DATAHEADER'check'` = SOFTWAREcheck ]
+then
+let COUNTER=$COUNTER+1
+SOFTWARE=`echo $DATA | cut -s -d'_' -f$COUNTER`
 break
 fi
 let COUNTER=$COUNTER+1
@@ -97,11 +165,18 @@ done
 function show_status {
 echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
-echo 'window.location = "linux_client_software_controls.cgi"'
+echo 'window.location = "linux_client_software_controls_fm.cgi"'
 echo '</script>'
 echo "</body></html>"
 exit
 }
+
+function completed {
+echo '<form name="myForm" id="myForm" action="/cgi-bin/admin/linux_client_software_controls.cgi" method="post"><input name="_VERSION_" value="'$VERSION'" type="hidden"></form>'
+echo "<script type='text/javascript'>document.myForm.submit();</script></body></html>"
+exit
+}
+
 #########################
 #Check https access
 #########################
@@ -127,59 +202,15 @@ fi
 #########################
 #Check data
 #########################
-#Check to see that LINUXVERSION is not blank
-if [ $LINUXVERSION'null' = null ]
+#Check to see that VERSION is not blank
+if [ -z "$VERSION" ]
 then
 MESSAGE=$ERRORMS1
 show_status
 fi
 
-#Check to see that INSTALL is not blank
-if [ $INSTALL'null' = null ]
-then
-MESSAGE=$ERRORMSG2
-show_status
-fi
-
-if [ $UPDATES'null' = null ]
-then
-MESSAGE=$ERRORMSG3
-show_status
-fi
-
-#Check that values are only yes and no
-if [ $INSTALL != yes ] && [ $INSTALL != no ]
-then
-MESSAGE=$ERRORMSG4
-show_status
-fi
-if [ $UPDATES != yes ] && [ $UPDATES != no ]
-then
-MESSAGE=$ERRORMSG4
-show_status
-fi
-#Set lang
-if [ $INSTALL = yes ]
-then
-INSTALLSTATUS=$ENABLED
-else
-INSTALLSTATUS=$DISABLED
-fi
-if [ $UPDATES = yes ]
-then
-UPDATESTATUS=$ENABLED
-else
-UPDATESTATUS=$DISABLED
-fi
-
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/linux_client_software_controls2.cgi | cut -d' ' -f1`
 #Set software control options
-sudo -H /opt/karoshi/web_controls/exec/linux_client_software_controls $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LINUXVERSION:$INSTALL:$UPDATES
-if [ `echo $?` = 101 ]
-then
-MESSAGE=$ERRORMSG6
-else
-MESSAGE=`echo "$CHOOSEVERSION: $LINUXVERSION\n$INSTALLMSG: $INSTALLSTATUS\n$UPDATEMSG: $UPDATESTATUS"`
-show_status
-fi
+sudo -H /opt/karoshi/web_controls/exec/linux_client_software_controls $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$VERSION:$SOFTWARE:$UPDATES:$AUTO:$GRAPHICS:$RESTRICTED:$FIRMWARE:
+completed
 exit

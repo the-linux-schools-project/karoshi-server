@@ -23,6 +23,11 @@
 #aball@karoshi.org.uk
 #
 #Website: http://www.karoshi.org.uk
+
+#Detect mobile browser
+MOBILE=no
+source /opt/karoshi/web_controls/detect_mobile_browser
+
 ############################
 #Language
 ############################
@@ -45,7 +50,30 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+
+if [ $MOBILE = yes ]
+then
+echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+		/***********************************************
+		* Slashdot Menu script- By DimX
+		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
+		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+		***********************************************/
+	</script>
+	<script type="text/javascript">
+	// <![CDATA[
+	var myMenu;
+	window.onload = function() {
+		myMenu = new SDMenu("my_menu");
+		myMenu.init();
+	};
+	// ]]>
+	</script>'
+fi
+
+echo '</head><body onLoad="start()">'
 #########################
 #Get data input
 #########################
@@ -55,7 +83,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 function show_status {
 echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
-echo '                window.location = "/cgi-bin/admin/linux_client_software_controls.cgi";'
+echo '                window.location = "/cgi-bin/admin/linux_client_software_controls_fm.cgi";'
 echo '</script>'
 echo "</body></html>"
 exit
@@ -83,42 +111,121 @@ MESSAGE=$ACCESS_ERROR1
 show_status
 fi
 
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
-
-echo '<form action="/cgi-bin/admin/linux_client_software_controls2.cgi" method="post"><div id="actionbox"><b>'$TITLE'</b><br><br>'
-
-if [ -f /var/lib/samba/netlogon/linuxclient/versions.txt ]
-then
-LINUXVERSION_COUNT=`cat /var/lib/samba/netlogon/linuxclient/versions.txt | wc -l`
-else
-LINUXVERSION_COUNT=0
-fi
-
-#Show current linux client versions
-if [ $LINUXVERSION_COUNT -gt 0 ]
-then
-#Get software options
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
-<td style="width: 180px;">'$ENABLEINSTALLMSG'</td><td><input name="_INSTALL_" value="yes" type="radio"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$INSTALLHELP'</span></a></td></tr>
-<tr><td>'$DISABLEINSTALLMSG'</td><td><input name="_INSTALL_" value="no" checked="checked" type="radio"></td></tr>
-<tr><td>'$ENABLEUPDATESMSG'</td><td><input name="_UPDATES_" value="yes" type="radio"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$UPDATEHELP'</span></a></td></tr>
-<tr><td>'$DISABLEUPDATESMSG'</td><td><input name="_UPDATES_" value="no" checked="checked" type="radio"></td></tr></tbody></table>
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$CHOOSEVERSION'</td><td><select name="_LINUXVERSION_" style="width: 185px;">'
-COUNTER=1
-while [ $COUNTER -le $LINUXVERSION_COUNT ]
+#########################
+#Assign data to variables
+#########################
+END_POINT=6
+#Assign VERSION
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
 do
-LINUXVERSION=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/linuxclient/versions.txt`
-echo '<option value="'$LINUXVERSION'">'$LINUXVERSION'</option>'
+DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+if [ `echo $DATAHEADER'check'` = VERSIONcheck ]
+then
+let COUNTER=$COUNTER+1
+VERSION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+break
+fi
 let COUNTER=$COUNTER+1
 done
-echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$VERSIONHELP'</span></a></td></tr></tbody></table>'
+
+#Generate navigation bar
+if [ $MOBILE = no ]
+then
+DIV_ID=actionbox
+TABLECLASS=standard
+WIDTH=180
+#Generate navigation bar
+/opt/karoshi/web_controls/generate_navbar_admin
 else
-echo $ERRORMSG7'<br>'
+DIV_ID=actionbox2
+TABLECLASS=mobilestandard
+WIDTH=160
 fi
 
-echo '</div>'
-echo '<div id="submitbox"><input value="Submit" type="submit"> <input value="Reset" type="reset"></div>'
-echo '</form></body></html>'
+#########################
+#Check data
+#########################
+#Check to see that VERSION is not blank
+if [ -z $VERSION ]
+then
+MESSAGE=$ERRORMSG1
+show_status
+fi
+
+echo '<form action="/cgi-bin/admin/linux_client_software_controls2.cgi" name="selectservers" method="post">'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+
+#Show back button for mobiles
+if [ $MOBILE = yes ]
+then
+echo '<div style="float: center" id="my_menu" class="sdmenu">
+	<div class="expanded">
+	<span>'$TITLE'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$CLIENTMENUMSG'</a>
+</div></div><div id="mobileactionbox">'
+else
+echo '<b>'$TITLE' - '$VERSION'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Linux_Client_Software_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a><br><br>'
+fi
+
+#Check current settings
+if [ -f /var/lib/samba/netlogon/linuxclient/nonfree/auto ]
+then
+AICON="/images/submenus/client/allowed.png"
+ASTATUS=no
+else
+AICON="/images/submenus/client/denied.png"
+ASTATUS=yes
+fi
+if [ -f /var/lib/samba/netlogon/linuxclient/nonfree/graphics-drivers ]
+then
+GICON="/images/submenus/client/allowed.png"
+GSTATUS=no
+else
+GICON="/images/submenus/client/denied.png"
+GSTATUS=yes
+fi
+if [ -f /var/lib/samba/netlogon/linuxclient/nonfree/restricted-extras ]
+then
+RICON="/images/submenus/client/allowed.png"
+RSTATUS=no
+else
+RICON="/images/submenus/client/denied.png"
+RSTATUS=yes
+fi
+if [ -f /var/lib/samba/netlogon/linuxclient/nonfree/firmware-nonfree ]
+then
+FICON="/images/submenus/client/allowed.png"
+FSTATUS=no
+else
+FICON="/images/submenus/client/denied.png"
+FSTATUS=yes
+fi
+if [ -f /var/lib/samba/netlogon/linuxclient/$VERSION/enable_software_install ]
+then
+SICON="/images/submenus/client/allowed.png"
+SSTATUS=no
+else
+SICON="/images/submenus/client/denied.png"
+SSTATUS=yes
+fi
+if [ -f /var/lib/samba/netlogon/linuxclient/$VERSION/enable_updates ]
+then
+UICON="/images/submenus/client/allowed.png"
+USTATUS=no
+else
+UICON="/images/submenus/client/denied.png"
+USTATUS=yes
+fi
+
+#Show controls for auto, graphics drivers and restricted extras
+echo '<input name="_VERSION_" value="'$VERSION'" type="hidden"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: 180px;">'$AUTOSMSG'</td><td><a class="info" href="javascript:void(0)"><input name="_AUTO_'$ASTATUS'_" type="image" class="images" src="'$AICON'" value=""><span>'$AUTOHELPMSG'</span></a></td></tr>
+<tr><td style="width: 180px;">'$GRAPHICSDRVERSMSG'</td><td><a class="info" href="javascript:void(0)"><input name="_GRAPHICS_'$GSTATUS'_" type="image" class="images" src="'$GICON'" value=""><span>'$GRAPHICSDRVERSHELPMSG'</span></a></td></tr>
+<tr><td style="width: 180px;">'$RESTRICTEDSMSG'</td><td><a class="info" href="javascript:void(0)"><input name="_RESTRICTED_'$RSTATUS'_" type="image" class="images" src="'$RICON'" value=""><span>'$RESTRICTEDHELPSMSG'</span></a></td></tr>
+<tr><td style="width: 180px;">'$FIRRMWAREMSG'</td><td><a class="info" href="javascript:void(0)"><input name="_FIRMWARE_'$FSTATUS'_" type="image" class="images" src="'$FICON'" value=""><span>'$FIRMWAREHELPMSG'</span></a></td></tr>
+<tr><td style="width: 180px;">'$ENABLEINSTALLMSG'</td><td><a class="info" href="javascript:void(0)"><input name="_SOFTWARE_'$SSTATUS'_" type="image" class="images" src="'$SICON'" value=""><span>'$INSTALLHELP'</span></a></td></tr>
+<tr><td style="width: 180px;">'$ENABLEUPDATESMSG'</td><td><a class="info" href="javascript:void(0)"><input name="_UPDATES_'$USTATUS'_" type="image" class="images" src="'$UICON'" value=""><span>'$UPDATEHELP'</span></a></td></tr>
+</tbody></table></div></form></body></html>'
 exit
+

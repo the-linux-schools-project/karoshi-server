@@ -123,6 +123,7 @@ echo '	<a href="/cgi-bin/admin/change_password_fm.cgi">'$CHANGEPASSMSG'</a>
       <div class="collapsed">
         <span>'$CLIENTMSG'</span>
 	<a href="/cgi-bin/admin/client_boot_controls_fm.cgi">'$CLIENTBOOTCONTROLS'</a>
+	<a href="/cgi-bin/admin/linux_client_software_controls_fm.cgi">'$LSOFTWARECONTROLS'</a>
       </div>
 
  <div class="collapsed">
