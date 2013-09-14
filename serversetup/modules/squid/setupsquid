@@ -262,7 +262,7 @@ echo www.remastersys.com > /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-defaul
 echo ppa.launchpad.net >> /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
 echo inverse.ca >> /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
 
-echo blacklisted-mirror.com > /etc/squid-deb-proxy/pkg-blacklist.d
+echo blacklisted-mirror.com > /etc/squid-deb-proxy/pkg-blacklist.d/10-default
 
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/squiddebproxy /etc/init.d/
 
