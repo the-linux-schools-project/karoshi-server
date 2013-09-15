@@ -85,12 +85,20 @@ then
 DIV_ID=actionbox
 TABLECLASS=standard
 MAXSTYLES=5
+WIDTH1=180
+WIDTH2=400
+WIDTH3=300
+CHARS=25
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
+DIV_ID=mobileactionbox
 TABLECLASS=mobilestandard
 MAXSTYLES=4
+WIDTH1=90
+WIDTH2=160
+WIDTH3=120
+CHARS=11
 fi
 
 
@@ -102,18 +110,15 @@ then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$SYSMENUMSG'</a>
-</div></div><div id="mobileactionbox4">'
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$CLIENTMENUMSG'</a>
+</div></div><div id="'$DIV_ID'">'
 else
 
 echo '<form action="/cgi-bin/admin/linux_client_background_upload_fm.cgi" method="post"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td><b>'$TITLE'</b></td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title="><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Linux_Client_Background"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
 </td><td style="vertical-align: top;">
 <a class="info" href="javascript:void(0)"><input name="_UPLOAD_" type="image" class="images"  src="/images/submenus/client/upload.png" value=""><span>'$UPLOADMSG'</span></a>
 </td></tr></tbody></table></form><br>'
-
-
-
 fi
 
 function show_status {
@@ -156,15 +161,16 @@ DEFAULTBACKGROUND=notset
 for BACKGROUNDS in /var/lib/samba/netlogon/linuxclient/backgrounds/*.png
 do
 BACKGROUND=`basename "$BACKGROUNDS" | sed 's/.png$//g'`
+BACKGROUND_SHORT=${BACKGROUND:0:$CHARS}
 if [ $BACKGROUND = $DEFAULTBACKGROUND ]
 then
-echo '<tr><td style="width: 180px; vertical-align: top; background-color: rgb(204, 0, 0); height: 160px; text-align: left;"><b>Default Background</b><br><br>'$BACKGROUND'</td><td>
-<a class="info" href="javascript:void(0)"><input name="___ACTION___choose___BACKGROUND___'$BACKGROUND'___" type="image" class="images" style="width: 400px; height: 300px;" src="/images/linuxclient/backgrounds/'$BACKGROUND'.png" value=""><span>'$BACKGROUND'</span></a>
+echo '<tr><td style="width: '$WIDTH1'px; vertical-align: top; background-color: rgb(204, 0, 0); text-align: left;"><b>Default Background</b><br><br>'$BACKGROUND_SHORT'</td><td>
+<a class="info" href="javascript:void(0)"><input name="___ACTION___choose___BACKGROUND___'$BACKGROUND'___" type="image" class="images" style="width: '$WIDTH2'px; height: '$WIDTH3'px;" src="/images/linuxclient/backgrounds/'$BACKGROUND'.png" value=""><span>'$BACKGROUND'</span></a>
 </td></tr>'
 else
-echo '<tr><td style="width: 180px; vertical-align: top; height: 160px; text-align: left;">'$BACKGROUND'</td><td>
-<a class="info" href="javascript:void(0)"><input name="___ACTION___choose___BACKGROUND___'$BACKGROUND'___" type="image" class="images" style="width: 400px; height: 300px;" src="/images/linuxclient/backgrounds/'$BACKGROUND'.png" value=""><span>'$BACKGROUND'</span></a>
-</td><td style="width: 180px; vertical-align: top;">
+echo '<tr><td style="width: '$WIDTH1'px; vertical-align: top; text-align: left;">'$BACKGROUND_SHORT'</td><td>
+<a class="info" href="javascript:void(0)"><input name="___ACTION___choose___BACKGROUND___'$BACKGROUND'___" type="image" class="images" style="width: '$WIDTH2'px; height: '$WIDTH3'px;" src="/images/linuxclient/backgrounds/'$BACKGROUND'.png" value=""><span>'$BACKGROUND'</span></a>
+</td><td style="width: '$WIDTH1'px; vertical-align: top;">
 <a class="info" href="javascript:void(0)"><input name="___ACTION___delete___BACKGROUND___'$BACKGROUND'___" type="image" class="images" src="/images/submenus/file/delete.png" value=""><span>'$DELETEMSG'<br>'$BACKGROUND'</span></a>
 </td></tr>'
 fi

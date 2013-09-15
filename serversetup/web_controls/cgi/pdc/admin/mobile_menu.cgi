@@ -123,7 +123,11 @@ echo '	<a href="/cgi-bin/admin/change_password_fm.cgi">'$CHANGEPASSMSG'</a>
       <div class="collapsed">
         <span>'$CLIENTMSG'</span>
 	<a href="/cgi-bin/admin/client_boot_controls_fm.cgi">'$CLIENTBOOTCONTROLS'</a>
+	<a href="/cgi-bin/admin/client_wireless_settings_fm.cgi">'$CLIENTWIRELESS'</a>
+	<a href="/cgi-bin/admin/client_shutdown_time.cgi">'$CSHUTDOWNTIME'</a>
+	<a href="/cgi-bin/admin/linux_client_choose_background_fm.cgi">'$CHOOSEBACKGROUND'</a>
 	<a href="/cgi-bin/admin/linux_client_software_controls_fm.cgi">'$LSOFTWARECONTROLS'</a>
+	<a href="/cgi-bin/admin/linux_client_install_software_packages_fm.cgi">'$LINSTALLSOFTWARE'</a>
       </div>
 
  <div class="collapsed">

@@ -23,6 +23,11 @@
 #aball@karoshi.org.uk
 #
 #Website: http://www.karoshi.org.uk
+
+#Detect mobile browser
+MOBILE=no
+source /opt/karoshi/web_controls/detect_mobile_browser
+
 ############################
 #Language
 ############################
@@ -45,7 +50,30 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body onLoad="start()">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+
+if [ $MOBILE = yes ]
+then
+echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+		/***********************************************
+		* Slashdot Menu script- By DimX
+		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
+		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+		***********************************************/
+	</script>
+	<script type="text/javascript">
+	// <![CDATA[
+	var myMenu;
+	window.onload = function() {
+		myMenu = new SDMenu("my_menu");
+		myMenu.init();
+	};
+	// ]]>
+	</script>'
+fi
+
+echo '</head><body onLoad="start()">'
 #########################
 #Get data input
 #########################
@@ -84,10 +112,40 @@ show_status
 fi
 
 #Generate navigation bar
+if [ $MOBILE = no ]
+then
+DIV_ID=actionbox
+TABLECLASS=standard
+WIDTH1=180
+WIDTH2=400
+WIDTH3=300
+#Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
+else
+DIV_ID=mobileactionbox
+TABLECLASS=mobilestandard
+WIDTH1=90
+WIDTH2=160
+WIDTH3=120
+fi
 
-echo '<form action="/cgi-bin/admin/client_shutdown_time2.cgi" method="post"><div id="actionbox"><b>'$TITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$USERHELP1'</span></a>
+
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+
+echo '<form action="/cgi-bin/admin/client_shutdown_time2.cgi" method="post">'
+
+#Show back button for mobiles
+if [ $MOBILE = yes ]
+then
+echo '<div style="float: center" id="my_menu" class="sdmenu">
+	<div class="expanded">
+	<span>'$TITLE'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$CLIENTMENUMSG'</a>
+</div></div><div id="'$DIV_ID'">'
+else
+echo '<b>'$TITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Client_Shutdown_Time"><img class="images" alt="" src="/images/help/info.png"><span>'$USERHELP1'</span></a>
       </td></tr><br><br>'
+fi
 #Get shutdown time
 if [ -f /var/lib/samba/netlogon/domain_information/clientshutdowntime ]
 then
@@ -101,11 +159,17 @@ fi
 IDLETIME=10
 [ -f /var/lib/samba/netlogon/domain_information/idletime ] && IDLETIME=`sed -n 1,1p /var/lib/samba/netlogon/domain_information/idletime`
 
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: 180px;">'$TIMEMSG'</td><td><input maxlength="2" size="2" value="'$HOUR'" name="_HOUR_"></td><td><input maxlength="2" size="2" value="'$MINUTES'" name="_MINUTES_"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$TIMEHELP'</span></a></td></tr>
-<tr><td style="width: 180px;">'$IDLETIMEMSG'</td><td></td><td><input maxlength="2" size="2" value="'$IDLETIME'" name="_IDLETIME_"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$IDLETIMEHELP'</span></a></td></tr>
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: 180px;">'$TIMEMSG'</td><td><input maxlength="2" size="2" value="'$HOUR'" name="_HOUR_"></td><td><input maxlength="2" size="2" value="'$MINUTES'" name="_MINUTES_"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Client_Shutdown_Time"><img class="images" alt="" src="/images/help/info.png"><span>'$TIMEHELP'</span></a>
+</td></tr>
+<tr><td style="width: 180px;">'$IDLETIMEMSG'</td><td></td><td><input maxlength="2" size="2" value="'$IDLETIME'" name="_IDLETIME_"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Client_Shutdown_Time"><img class="images" alt="" src="/images/help/info.png"><span>'$IDLETIMEHELP'</span></a>
+</td></tr>
 </tbody></table>'
 
-echo "</div>"
-echo '<div id="submitbox"><input value="Submit" type="submit"> <input value="Reset" type="reset"></div>'
+
+[ $MOBILE != yes ] && echo '</div><div id="submitbox">'
+
+echo '<input value="Submit" type="submit"> <input value="Reset" type="reset"></div>'
 echo '</form></body></html>'
 exit
