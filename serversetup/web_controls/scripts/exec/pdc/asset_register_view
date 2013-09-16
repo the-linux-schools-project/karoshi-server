@@ -955,7 +955,7 @@ echo $TCPIP1 >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
 echo $LOCATION >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
 fi
 fi
-}
+
 
 if [ $MACADDRESS2'null' != null ]
 then
@@ -967,7 +967,7 @@ echo $TCPIP2 >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
 echo $LOCATION >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
 fi
 fi
-}
+
 
 if [ $MACADDRESS3'null' != null ]
 then

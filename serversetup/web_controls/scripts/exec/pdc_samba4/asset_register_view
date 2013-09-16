@@ -955,6 +955,29 @@ echo $LOCATION >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
 fi
 fi
 
+if [ $MACADDRESS2'null' != null ]
+then
+if [ $MACADDRESS2 != N.A. ]
+then
+CLIENTMAC=`echo $MACADDRESS2 | sed 's/://g'`
+echo $IDENTITY > /var/lib/samba/netlogon/clients/"$CLIENTMAC"
+echo $TCPIP2 >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
+echo $LOCATION >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
+fi
+fi
+
+
+if [ $MACADDRESS3'null' != null ]
+then
+if [ $MACADDRESS3 != N.A. ]
+then
+CLIENTMAC=`echo $MACADDRESS3 | sed 's/://g'`
+echo $IDENTITY > /var/lib/samba/netlogon/clients/"$CLIENTMAC"
+echo $TCPIP3 >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
+echo $LOCATION >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
+fi
+fi
+
 if [[ $TCPIP1 ]] && [[ $TCPIP1 != "N.A." ]]; then
 	LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 	source /opt/karoshi/server_network/domain_information/domain_name
