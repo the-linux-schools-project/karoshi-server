@@ -30,7 +30,7 @@ source /opt/karoshi/server_network/menusettings
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
 echo '<img src="/images/small_logo.png" alt="logo" align="top"> <font style="font-weight: bold;" size="+2">Web Management '$SCHOOL_NAME'</font> <small><small>
-'$VERSION' : 130916-1018
+'$VERSION' : 130920-0945
 </small></small>'
 
 #Check for warning messages
@@ -376,6 +376,7 @@ echo '			<li><a href="/cgi-bin/admin/locations.cgi">'$CLIENTLOCATIONS'</a></li>
 			<li class="mid"><a href="/cgi-bin/admin/windows_client_profile_upload_fm.cgi" class="fly">'$WINDOWSCLIENT'</a>
 					<ul>
 						<li><a href="/cgi-bin/admin/windows_client_profile_upload_fm.cgi">'$WUPLOADPROFILE'</a></li>
+						<li><a href="/cgi-bin/admin/windows_client_application_data_upload_fm.cgi">'$WUPLOADAPPLICATIONDATA'</a></li>
 						<li><a href="/cgi-bin/admin/windows_client_icon_upload_fm.cgi">'$WUPLOADDESKTOPICONS'</a></li>
 						<li><a href="/cgi-bin/admin/windows_client_startmenu_upload_fm.cgi">'$WUPLOADSTARTMENU'</a></li>
 						<li><a href="/cgi-bin/admin/windows_client_background_upload_fm.cgi">'$WUPLOADBACKGROUND'</a></li>'
