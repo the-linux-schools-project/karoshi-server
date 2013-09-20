@@ -161,13 +161,12 @@ else
 #Extract tar
 tar -C /opt/karoshi/.tempdata/win_application_data_new.$$ -xzf /opt/karoshi/.tempdata/win_application_data_upload.$$/$FILENAME 1>/dev/null
 fi
-#Check that there is only one directory extracted
-if [ `ls -1 /opt/karoshi/.tempdata/win_application_data_new.$$ | wc -l` = 1 ]
-then
-TOPDIRNAME=`ls -1 /opt/karoshi/.tempdata/win_application_data_new.$$ | sed -n 1,1p`
-else
-echo `date`: windows_client_application_data_profile_select - The archive has more than one top directory by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 rm -f -R /opt/karoshi/.tempdata/win_application_data_upload.$$
+
+#Check that there is at least directory extracted
+if [ `ls -1 /opt/karoshi/.tempdata/win_application_data_new.$$ | wc -l` = 0 ]
+then
+echo `date`: windows_client_application_data_profile_select - The archive has no directories by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 
@@ -179,17 +178,19 @@ COUNTER=0
 while [ $COUNTER -lt $GROUPCOUNT ]
 do
 CURRENTGROUP=`echo ${PRIGROUP[$COUNTER]}`
-
 [ $CURRENTGROUP = defaultroamingprofile ] && CURRENTGROUP=default_roaming_profile
-
+for FOLDERS in `find /opt/karoshi/.tempdata/win_application_data_new.$$/ -maxdepth 1 -type d | sed 1d | sort`
+do
+FOLDER=`basename $FOLDERS`
 #Log event
-echo `date`: windows_client_application_data_profile_select - copying $FILENAME2 to $CURRENTGROUP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $COPYMSG : $CURRENTGROUP'<br><br>'
-[ -d "/home/applications/profiles/$CURRENTGROUP/Application Data/$TOPDIRNAME" ] && rm -f -R "/home/applications/profiles/$CURRENTGROUP/Application Data/$TOPDIRNAME"
-cp -f -R /opt/karoshi/.tempdata/win_application_data_new.$$/$TOPDIRNAME "/home/applications/profiles/$CURRENTGROUP/Application Data/"
-chown -R root.itadmin "/home/applications/profiles/$CURRENTGROUP/Application Data/$TOPDIRNAME"
-chmod 0664 -R "/home/applications/profiles/$CURRENTGROUP/Application Data/$TOPDIRNAME"
-chmod a+X -R "/home/applications/profiles/$CURRENTGROUP/Application Data/$TOPDIRNAME"
+echo `date`: windows_client_application_data_profile_select - copying "$FOLDER" to $CURRENTGROUP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo $FOLDER: $COPYMSG $CURRENTGROUP'<br><br>'
+[ -d "/home/applications/profiles/$CURRENTGROUP/Application Data/$FOLDER" ] && rm -f -R "/home/applications/profiles/$CURRENTGROUP/Application Data/$FOLDER"
+cp -f -R /opt/karoshi/.tempdata/win_application_data_new.$$/$FOLDER "/home/applications/profiles/$CURRENTGROUP/Application Data/"
+chown -R root.itadmin "/home/applications/profiles/$CURRENTGROUP/Application Data/$FOLDER"
+chmod 0664 -R "/home/applications/profiles/$CURRENTGROUP/Application Data/$FOLDER"
+chmod a+X -R "/home/applications/profiles/$CURRENTGROUP/Application Data/$FOLDER"
+done
 let COUNTER=$COUNTER+1
 done
 #Remove temp folder

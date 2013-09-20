@@ -56,7 +56,7 @@ echo '
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<div id="actionbox">
-<B>'$TITLE'</B> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$CREATEFOLDERHELP1'</span></a>
+<B>'$TITLE'</B> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Upload_application_data"><img class="images" alt="" src="/images/help/info.png"><span>'$CREATEFOLDERHELP1'</span></a>
 <P>
 '$UPLOADMSG':
 <P>
@@ -66,7 +66,10 @@ echo '<div id="actionbox">
             <TD style="width: 200px;" ALIGN=LEFT>
                 '$FILEMSG':
             </TD>
-            <TD> <INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="35"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$ARCHIVEHELP1'<br><br>'$ARCHIVEHELP2'</span></a></TD>
+            <TD> <INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="35"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Upload_application_data"><img class="images" alt="" src="/images/help/info.png"><span>'$ARCHIVEHELP1'<br><br>'$ARCHIVEHELP2'</span></a>
+
+</TD>
         </TR>
         </TABLE>
 </div>

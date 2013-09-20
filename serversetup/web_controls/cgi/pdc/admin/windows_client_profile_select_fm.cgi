@@ -82,6 +82,8 @@ echo '<div id="actionbox">
 '$TITLE2'</span><br>
   <br>
 '
+WIDTH1=15
+WIDTH2=100
 #Check to see if any files have been uploaded
 FILECOUNT=0
 if [ -d /var/www/karoshi/win_profile_upload/ ]
@@ -115,7 +117,7 @@ echo '
   <br><input name="_FILENAME_" value="'$FILENAME'" type="hidden">
   <br>
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
- <tbody><tr><td style="width: 100px;"><b>'$GROUPMSG2'</b></td><td style="width: 50px;"></td><td style="width: 100px;"><b>'$GROUPMSG2'</b></td><td style="width: 50px;"></td><td style="width: 100px;"><b>'$GROUPMSG2'</b></td><td style="width: 50px;"></td><td style="width: 100px;"><b>'$GROUPMSG2'</b></td><td style="width: 50px;"></td></tr>'
+ <tbody><tr><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td></tr>'
 
 COUNTER=1
 for GROUPNAMES in /opt/karoshi/server_network/group_information/*
@@ -127,7 +129,7 @@ if [ $COUNTER = 1 ]
 then
 echo '<tr>'
 fi
-echo '<td>'$GROUPNAME'</td><td><input name="_PRIGROUP_" value="'$GROUPNAME'" type="checkbox"></td>'
+echo '<td><input name="_PRIGROUP_" value="'$GROUPNAME'" type="checkbox"></td><td>'$GROUPNAME'</td>'
 if [ $COUNTER = 4 ]
 then
 echo '</tr>'
@@ -138,7 +140,7 @@ fi
 fi
 done
 
-echo '<tr><td>'$DEFAULTPROFILEMSG'</td><td><input name="_PRIGROUP_" value="defaultroamingprofile" type="checkbox"><br></td></tr>'
+echo '<tr><input name="_PRIGROUP_" value="defaultroamingprofile" type="checkbox"></td><td>'$DEFAULTPROFILEMSG'</td><td></tr>'
 
 echo '</tbody></table><br>
   <input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset"> <input type="button" onclick="SetAllCheckBoxes('\'selectgroups\'', '\'_PRIGROUP_\'', true);" value="'$SELECTMSG'">
