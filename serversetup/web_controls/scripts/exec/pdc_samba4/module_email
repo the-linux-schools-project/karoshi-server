@@ -337,6 +337,7 @@ sed -i "s@CHANGETHISTIMEZONE@`sed -n 1,1p /etc/timezone`@g" /tmp/integrator.$$/d
 ( cd /tmp/integrator.$$ ; zip -r -q /var/lib/samba/netlogon/client_settings/thunderbird/extensions/sogo-integrator-17.0.5.xpi * )
 rm -f -R /tmp/integrator.$$
 cp /opt/karoshi/serversetup/modules/email/sogo/thunderbird-extensions/sogo-connector-17.0.5.xpi /var/lib/samba/netlogon/client_settings/thunderbird/extensions/
+cp /opt/karoshi/serversetup/modules/email/sogo/thunderbird-extensions/firetray*.xpi /var/lib/samba/netlogon/client_settings/thunderbird/extensions/
 
 #Add role information
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME

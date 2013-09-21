@@ -68,7 +68,6 @@ echo '<div id="actionbox">
             </TD>
             <TD> <INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="35"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Upload_application_data"><img class="images" alt="" src="/images/help/info.png"><span>'$ARCHIVEHELP1'<br><br>'$ARCHIVEHELP2'</span></a>
-
 </TD>
         </TR>
         </TABLE>

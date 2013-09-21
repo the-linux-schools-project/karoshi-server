@@ -79,7 +79,7 @@ function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 
 echo '<div id="actionbox">
 <form action="/cgi-bin/admin/windows_client_profile_select.cgi" name="selectgroups" method="post"><span style="font-weight: bold;">
-'$TITLE2'</span><br>
+'$TITLE2'</span> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Upload_a_new_profile"><img class="images" alt="" src="/images/help/info.png"><span>'$CHOOSEPROFILEMSG'</span></a><br>
   <br>
 '
 WIDTH1=15
@@ -114,13 +114,13 @@ fi
 echo $UPLOADEDFILEMSG :$FILENAME'<br><br>'$GROUPMSG
 FILENAME=$FILENAME2
 echo '
-  <br><input name="_FILENAME_" value="'$FILENAME'" type="hidden">
+  <br><input name="___FILENAME___" value="'$FILENAME'" type="hidden">
   <br>
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
  <tbody><tr><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td></tr>'
 
 COUNTER=1
-for GROUPNAMES in /opt/karoshi/server_network/group_information/*
+for GROUPNAMES in `find /home/applications/profiles/ -maxdepth 1 -type d | sed 1d | sort`
 do
 GROUPNAME=`basename $GROUPNAMES`
 if [ $GROUPNAME != optional_groups ]
@@ -129,7 +129,7 @@ if [ $COUNTER = 1 ]
 then
 echo '<tr>'
 fi
-echo '<td><input name="_PRIGROUP_" value="'$GROUPNAME'" type="checkbox"></td><td>'$GROUPNAME'</td>'
+echo '<td><input name="___PRIGROUP___" value="'$GROUPNAME'" type="checkbox"></td><td>'$GROUPNAME'</td>'
 if [ $COUNTER = 4 ]
 then
 echo '</tr>'
@@ -140,7 +140,7 @@ fi
 fi
 done
 
-echo '<tr><input name="_PRIGROUP_" value="defaultroamingprofile" type="checkbox"></td><td>'$DEFAULTPROFILEMSG'</td><td></tr>'
+echo '<tr><td><input name="___PRIGROUP___" value="defaultroamingprofile" type="checkbox"></td><td>'$DEFAULTPROFILEMSG'</td></tr>'
 
 echo '</tbody></table><br>
   <input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset"> <input type="button" onclick="SetAllCheckBoxes('\'selectgroups\'', '\'_PRIGROUP_\'', true);" value="'$SELECTMSG'">

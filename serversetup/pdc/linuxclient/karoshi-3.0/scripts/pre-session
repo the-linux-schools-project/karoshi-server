@@ -373,6 +373,83 @@ user_pref('mail.smtpservers', 'smtp1');" >> ~/.thunderbird/"$thunderbird_profile
 		fi
 	fi
 	
+	#Configure sessions with a bit of a hack for Thunderbird
+	[[ -e ~/.cache/sessions ]] && rm -rf ~/.cache/sessions
+	mkdir -p ~/.cache/sessions
+	cat > ~/.cache/sessions/xfce4-session-$HOSTNAME:0 << EOF
+[Session: Default]
+Client0_ClientId=226a61821-10f3-4419-9e7a-0249f50322e8
+Client0_Hostname=local/$HOSTNAME
+Client0_CloneCommand=Thunar
+Client0_DiscardCommand=rm,-f,$HOME/.cache/sessions/Thunar-226a61821-10f3-4419-9e7a-0249f50322e8
+Client0_RestartCommand=Thunar,--sm-client-id,226a61821-10f3-4419-9e7a-0249f50322e8,--daemon
+Client0_Program=Thunar
+Client0_UserId=$USER
+Client0_Priority=24
+Client1_ClientId=2e0608e27-afa3-4b87-943b-7a7bef018379
+Client1_Hostname=local/$HOSTNAME
+Client1_CloneCommand=xfsettingsd
+Client1_RestartCommand=xfsettingsd,--display,:0.0,--sm-client-id,2e0608e27-afa3-4b87-943b-7a7bef018379
+Client1_CurrentDirectory=$HOME
+Client1_DesktopFile=/etc/xdg/autostart/xfsettingsd.desktop
+Client1_Program=xfsettingsd
+Client1_UserId=$USER
+Client1_Priority=25
+Client1_RestartStyleHint=2
+Client2_ClientId=234147f9f-2bba-4250-8eb9-845b10e926d2
+Client2_Hostname=local/$HOSTNAME
+Client2_CloneCommand=xfce4-panel
+Client2_RestartCommand=xfce4-panel,--display,:0.0,--sm-client-id,234147f9f-2bba-4250-8eb9-845b10e926d2
+Client2_CurrentDirectory=$HOME
+Client2_Program=xfce4-panel
+Client2_UserId=$USER
+Client2_Priority=25
+Client2_RestartStyleHint=2
+Client3_ClientId=2b5ddc17e-a05b-499c-96f3-943828ce775d
+Client3_Hostname=local/$HOSTNAME
+Client3_CloneCommand=xfdesktop
+Client3_RestartCommand=xfdesktop,--display,:0.0,--sm-client-id,2b5ddc17e-a05b-499c-96f3-943828ce775d
+Client3_CurrentDirectory=$HOME
+Client3_Program=xfdesktop
+Client3_UserId=$USER
+Client3_Priority=35
+Client3_RestartStyleHint=2
+Client4_ClientId=239478cd6-b813-4b07-b95a-1ee567735dfa
+Client4_Hostname=local/$HOSTNAME
+Client4_CloneCommand=xfwm4
+Client4_DiscardCommand=rm,-rf,$HOME/.cache/sessions/xfwm4-239478cd6-b813-4b07-b95a-1ee567735dfa.state
+Client4_RestartCommand=xfwm4,--display,:0.0,--sm-client-id,239478cd6-b813-4b07-b95a-1ee567735dfa
+Client4_CurrentDirectory=$HOME
+Client4_Program=xfwm4
+Client4_UserId=$USER
+Client4_Priority=15
+Client4_RestartStyleHint=2
+Client5_ClientId=24b0bb6c1-ae0c-460f-8a32-085b2005d88c
+Client5_Hostname=local/$HOSTNAME
+Client5_CloneCommand=/usr/bin/thunderbird,--sm-config-prefix,/thunderbird-kKsbG2/
+Client5_RestartCommand=/usr/bin/thunderbird,--sm-config-prefix,/thunderbird-kKsbG2/,--sm-client-id,24b0bb6c1-ae0c-460f-8a32-085b2005d88c,--screen,0
+Client5_CurrentDirectory=$HOME
+Client5_Program=thunderbird
+Client5_UserId=$USER
+Count=6
+LegacyCount=0
+Screen0_ActiveWorkspace=0
+EOF
+	cat > ~/.cache/sessions/xfwm4-239478cd6-b813-4b07-b95a-1ee567735dfa.state << EOF
+[CLIENT] 0x2e0008e
+  [CLIENT_ID] 24b0bb6c1-ae0c-460f-8a32-085b2005d88c
+  [CLIENT_LEADER] 0x2e00001
+  [WINDOW_ROLE] 3pane
+  [RES_NAME] Mail
+  [RES_CLASS] Thunderbird
+  [WM_NAME] Inbox - Mozilla Thunderbird
+  [WM_COMMAND] (1) "thunderbird"
+  [GEOMETRY] (1,47,1024,1004)
+  [GEOMETRY-MAXIMIZED] (1,47,1024,1004)
+  [SCREEN] 0
+  [DESK] 0
+  [FLAGS] 0x80
+EOF
 else
 	###############
 	#Local user
