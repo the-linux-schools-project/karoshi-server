@@ -52,12 +52,12 @@ echo '
 <link rel="stylesheet" href="/css/'$STYLESHEET'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </HEAD>
-<BODY>'
+<body onLoad="start()">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<div id="actionbox">
-<B>'$TITLE'</B>
+<B>'$TITLE'</B> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Upload_Desktop_Icons"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
 <P>
 '$UPLOADMSG':
 <P>
@@ -94,6 +94,38 @@ echo '<div id="actionbox">
             <TD>
                 <INPUT TYPE="FILE" NAME="file-to-upload-04" SIZE="35">
             </TD>
+        </TR>
+        <TR>
+            <TD ALIGN=left>
+                '$FILEMSG' 5:
+            </TD>
+            <TD>
+                <INPUT TYPE="FILE" NAME="file-to-upload-05" SIZE="35">
+            </TD>
+        </TR>
+        <TR>
+            <TD ALIGN=left>
+                '$FILEMSG' 6:
+            </TD>
+            <TD>
+                <INPUT TYPE="FILE" NAME="file-to-upload-06" SIZE="35">
+            </TD>
+        <TR>
+            <TD ALIGN=left>
+                '$FILEMSG' 7:
+            </TD>
+            <TD>
+                <INPUT TYPE="FILE" NAME="file-to-upload-07" SIZE="35">
+            </TD>
+        </TR>
+        <TR>
+            <TD ALIGN=left>
+                '$FILEMSG' 8:
+            </TD>
+            <TD>
+                <INPUT TYPE="FILE" NAME="file-to-upload-08" SIZE="35">
+            </TD>
+        </TR>
         </TR>
         </TABLE>
 </div>

@@ -53,6 +53,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 #########################
 #Assign data to variables
 #########################
+DATA=`echo $DATA | sed 's/___/TRIPLEUNDERSCORE/g' | sed 's/_/UNDERSCORE/g' | sed 's/TRIPLEUNDERSCORE/_/g'`
 DATA_ARRAY=( `echo $DATA | sed 's/_FILENAME_/_FILENAME_ /g' | sed 's/_PRIGROUP_/_PRIGROUP_ /g'` )
 END_POINT=`echo ${#DATA_ARRAY[@]}`
 let END_POINT=$END_POINT*2

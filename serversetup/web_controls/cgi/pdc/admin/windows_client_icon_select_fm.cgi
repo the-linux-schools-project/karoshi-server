@@ -77,11 +77,13 @@ function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox">
-<form action="/cgi-bin/admin/windows_client_icon_select.cgi" name="selectgroups" method="post"><span style="font-weight: bold;">
-'$TITLE2'</span><br>
+echo '<form action="/cgi-bin/admin/windows_client_icon_select.cgi" name="selectgroups" method="post"><div id="actionbox"><span style="font-weight: bold;">
+'$TITLE2'</span> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Upload_Desktop_Icons"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a><br>
   <br>
 '
+WIDTH1=15
+WIDTH2=100
+
 #Check to see if any files have been uploaded
 FILECOUNT=0
 if [ -d /var/www/karoshi/win_icon_upload/ ]
@@ -102,33 +104,33 @@ fi
 echo '
 '$GROUPMSG'<br><br>
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
- <tbody><tr><td style="width: 100px;"><b>'$GROUPMSG2'</b></td><td style="width: 50px;"></td><td style="width: 100px;"><b>'$GROUPMSG2'</b></td><td style="width: 50px;"></td><td style="width: 100px;"><b>'$GROUPMSG2'</b></td><td style="width: 50px;"></td><td style="width: 100px;"><b>'$GROUPMSG2'</b></td><td style="width: 50px;"></td></tr>'
-while [ $GROUPSTART -le $GROUPEND ]
+ <tbody><tr><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td><td style="width: '$WIDTH1'px;"><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td></tr>'
+
+COUNTER=1
+for GROUPNAMES in `find /home/applications/profiles/ -maxdepth 1 -type d | sed 1d | sort`
 do
-echo '<tr><td>yr'$GROUPSTART'</td><td><input name="_PRIGROUP_" value="yr'$GROUPSTART'" type="checkbox"><br></td>'
-let GROUPSTART=$GROUPSTART+1
-echo '<td>yr'$GROUPSTART'</td><td><input name="_PRIGROUP_" value="yr'$GROUPSTART'" type="checkbox"><br></td>'
-let GROUPSTART=$GROUPSTART+1
-echo '<td>yr'$GROUPSTART'</td><td><input name="_PRIGROUP_" value="yr'$GROUPSTART'" type="checkbox"><br></td>'
-let GROUPSTART=$GROUPSTART+1
-echo '<td>yr'$GROUPSTART'</td><td><input name="_PRIGROUP_" value="yr'$GROUPSTART'" type="checkbox"><br></td></tr>'
-let GROUPSTART=$GROUPSTART+1
+GROUPNAME=`basename $GROUPNAMES`
+if [ $GROUPNAME != optional_groups ]
+then
+if [ $COUNTER = 1 ]
+then
+echo '<tr>'
+fi
+echo '<td><input name="___PRIGROUP___" value="'$GROUPNAME'" type="checkbox"></td><td>'$GROUPNAME'</td>'
+if [ $COUNTER = 4 ]
+then
+echo '</tr>'
+COUNTER=1
+else
+let COUNTER=$COUNTER+1
+fi
+fi
 done
-echo '
-<tr><td>staff</td><td><input name="_PRIGROUP_" value="staff" type="checkbox"><br></td>
-<td>nonteachingstaff</td><td><input name="_PRIGROUP_" value="nonteachingstaff" type="checkbox"><br></td>
-<td>officestaff</td><td><input name="_PRIGROUP_" value="officestaff" type="checkbox"><br></td>
-<td>studentstaff</td><td><input name="_PRIGROUP_" value="studentstaff" type="checkbox"><br></td></tr>
-<tr><td>guests</td><td><input name="_PRIGROUP_" value="guests" type="checkbox"><br></td>
-<td>exams</td><td><input name="_PRIGROUP_" value="guests" type="checkbox"><br></td>
-<td>tech</td><td><input name="_PRIGROUP_" value="tech" type="checkbox"><br></td>
-<td>itadmin</td><td><input name="_PRIGROUP_" value="itadmin" type="checkbox"><br></td></tr>
-</tbody></table>
-</div>
-<div id="submitbox">
-  <input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset"> <input type="button" onclick="SetAllCheckBoxes('\'selectgroups\'', '\'_PRIGROUP_\'', true);" value="'$SELECTMSG'">
-</div>
+
+echo '</tbody></table><br>
+  <input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset"> <input type="button" onclick="SetAllCheckBoxes('\'selectgroups\'', '\'___PRIGROUP___\'', true);" value="'$SELECTMSG'">
 </form>
+</div>
 </body>
 </html>
 '

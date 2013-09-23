@@ -140,8 +140,6 @@ fi
 fi
 done
 
-echo '<tr><td><input name="___PRIGROUP___" value="defaultroamingprofile" type="checkbox"></td><td>'$DEFAULTPROFILEMSG'</td></tr>'
-
 echo '</tbody></table><br>
   <input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset"> <input type="button" onclick="SetAllCheckBoxes('\'selectgroups\'', '\'_PRIGROUP_\'', true);" value="'$SELECTMSG'">
 </div>
