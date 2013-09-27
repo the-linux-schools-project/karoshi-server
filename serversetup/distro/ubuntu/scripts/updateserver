@@ -31,6 +31,9 @@ mkdir -p /opt/karoshi/logs/server_upgrades/
 chmod 0700 /opt/karoshi/logs/server_upgrades/
 fi
 
+#Update non apt packages
+/opt/karoshi/serversetup/all/samba4/update_samba4
+
 #Check to see if this server should have ssh - need to make sure this is running.
 
 SSHSERVICE=yes
@@ -130,7 +133,6 @@ function check_status {
 STATUS=off
 /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$SERVICENAME"_"status
 [ `echo $?` = 0 ] && STATUS=on
-
 
 #Make sure status is correct for ssh
 if [ $SERVICENAME = ssh ]

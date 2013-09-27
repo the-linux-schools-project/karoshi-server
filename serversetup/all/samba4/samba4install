@@ -41,7 +41,6 @@ make -j $THREADS
 make install
 fi
 
-
 #Copy in samba 4 startup script
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/samba4 /etc/init.d
 chmod 0755 /etc/init.d/samba4

@@ -272,6 +272,11 @@ scp -r -o PasswordAuthentication=no /etc/ssl/root-ca/cacert.pem $SERVER:/etc/ssl
 
 #Copy uptime daemon to server
 scp -r /opt/karoshi/serversetup/scripts/uptime $SERVER:/opt/karoshi/serversetup/scripts/
+
+#Copy in update server scripts
+scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/ubuntu/scripts/updateserver $SERVER:/opt/karoshi/serversetup/distro/ubuntu/scripts/
+scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/all/samba4/updatesamba4 $SERVER:/opt/karoshi/serversetup/all/samba4/
+
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 source /opt/karoshi/serversetup/variables/distro
 #Stop karoshi-uptime if it is already running to apply new version

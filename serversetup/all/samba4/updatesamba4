@@ -1,0 +1,117 @@
+#!/bin/bash
+LATESTVER=4.0.9
+LOG_DATE=`date +%F`
+[ ! -d /opt/karoshi/logs/server_upgrades ] && mkdir -p /opt/karoshi/logs/server_upgrades
+echo `date` "Checking Samba4 version" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
+#Get the latest version
+
+[ ! -d /opt/karoshi/serversetup/all/samba4/download ] && mkdir /opt/karoshi/serversetup/all/samba4/download
+
+cd /opt/karoshi/serversetup/all/samba4/download
+
+#LATESTVER=`lynx -dump http://ftp.samba.org/pub/samba/ | grep LATEST-IS-SAMBA- | sed -n 1,1p | cut -d"-" -f4 | cut -d" " -f1`
+#Check that we could get the latest version
+#if [ -z $LATESTVER ]
+#then
+#echo Error - could not determine the latest samba version.
+#echo "Error - could not determine the latest samba version." >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
+#exit
+#fi
+
+LATESTVER2=`echo $LATESTVER | tr -cd 0-9`
+#Get current samba4 version
+CURRENTVER=`samba-tool -V`
+CURRENTVER2=`echo $CURRENTVER | tr -cd 0-9`
+
+echo "Current Samba4 version: $CURRENTVER" | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+echo "Latest Samba4 version: $LATESTVER" | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+
+if [ $LATESTVER2 -gt $CURRENTVER2 ]
+then
+echo "A samba4 upgrade is required." | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+else
+exit
+fi
+
+#Download the latest samba version
+[  -f /opt/karoshi/serversetup/all/samba4/download/samba-$LATESTVER.tar.gz ] && rm -f /opt/karoshi/serversetup/all/samba4/download/samba-$LATESTVER.tar.gz
+wget http://ftp.samba.org/pub/samba/samba-$LATESTVER.tar.gz
+#Check that download was successful
+if [ $? != 0 ]
+then
+echo "Error - unable to download the latest samba4 version." | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+exit
+fi
+
+#Extracting samba
+[ -d /opt/karoshi/serversetup/all/samba4/download/samba-$LATESTVER ] && rm -f -R /opt/karoshi/serversetup/all/samba4/download/samba-$LATESTVER
+tar -xvf samba-$LATESTVER.tar.gz
+if [ $? != 0 ]
+then
+echo "Error -samba-$LATESTVER.tar.gz did not extract correctly." | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+exit
+fi
+
+cd /opt/karoshi/serversetup/all/samba4/download/samba-$LATESTVER
+
+#Get number of cpu cores
+CORES=`cat /proc/cpuinfo | grep "cpu cores" | head -n 1 | sed "s@.*: \(.*\)@\1@"`
+[ `echo $CORES'null'` = null ] && CORES=1
+let THREADS=$CORES*2
+
+#Configure
+echo `date` "Configuring samba-$LATESTVER" | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+./configure --enable-cups --with-ads --prefix=/usr/local --enable-fhs --sysconfdir=/etc --localstatedir=/var
+if [ $? != 0 ]
+then
+echo "Error -samba-$LATESTVER did not configure correctly." | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+exit
+fi
+#Make
+echo `date` "Making samba-$LATESTVER" | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+make -j $THREADS
+if [ $? != 0 ]
+then
+echo "Error -samba-$LATESTVER did not make correctly." | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+exit
+fi
+
+#Check to see if the current samba4 version is running
+source /opt/karoshi/serversetup/variables/distro
+RESTART_SAMBA=no
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_status
+[ $? = 0 ] && RESTART_SAMBA=yes
+
+#Install
+echo `date` "Installing samba-$LATESTVER" | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+make install
+if [ $? != 0 ]
+then
+echo "Error -samba did not install correctly." | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+exit
+fi
+
+#Stop samba4
+if [ $RESTART_SAMBA = yes ]
+then
+echo `date` "Stopping samba4" | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop
+if [ $? != 0 ]
+then
+echo "Error -samba did not stop." | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+exit
+fi
+fi
+
+#Start samba4
+if [ $RESTART_SAMBA = yes ]
+then
+echo `date` "Starting samba4" | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
+if [ $? != 0 ]
+then
+echo "Error -samba did not start." | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+exit
+fi
+fi
+exit
