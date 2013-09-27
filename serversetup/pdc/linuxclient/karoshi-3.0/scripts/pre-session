@@ -376,7 +376,8 @@ user_pref('mail.smtpservers', 'smtp1');" >> ~/.thunderbird/"$thunderbird_profile
 	#Configure sessions with a bit of a hack for Thunderbird
 	[[ -e ~/.cache/sessions ]] && rm -rf ~/.cache/sessions
 	mkdir -p ~/.cache/sessions
-	cat > ~/.cache/sessions/xfce4-session-$HOSTNAME:0 << EOF
+	if ! karoshi-manage-flags get offline_mode >/dev/null; then
+		cat > ~/.cache/sessions/xfce4-session-$HOSTNAME:0 << EOF
 [Session: Default]
 Client0_ClientId=226a61821-10f3-4419-9e7a-0249f50322e8
 Client0_Hostname=local/$HOSTNAME
@@ -435,7 +436,7 @@ Count=6
 LegacyCount=0
 Screen0_ActiveWorkspace=0
 EOF
-	cat > ~/.cache/sessions/xfwm4-239478cd6-b813-4b07-b95a-1ee567735dfa.state << EOF
+		cat > ~/.cache/sessions/xfwm4-239478cd6-b813-4b07-b95a-1ee567735dfa.state << EOF
 [CLIENT] 0x2e0008e
   [CLIENT_ID] 24b0bb6c1-ae0c-460f-8a32-085b2005d88c
   [CLIENT_LEADER] 0x2e00001
@@ -450,6 +451,7 @@ EOF
   [DESK] 0
   [FLAGS] 0x80
 EOF
+	fi
 else
 	###############
 	#Local user

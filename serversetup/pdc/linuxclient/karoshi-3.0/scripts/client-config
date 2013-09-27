@@ -422,6 +422,8 @@ then
 BrowseInterval 0" >> /etc/cups/cupsd.conf
 fi
 
+start cups
+
 #Assign printers depending on the location
 if [[ $LOCATION ]] && ! karoshi-manage-flags get offline_mode >/dev/null; then
 	#Remove all printers
@@ -464,7 +466,7 @@ fi
 
 #Fix any outdated PPD files
 cups-genppdupdate
-service cups restart
+restart cups
 
 ############################
 #Update client
