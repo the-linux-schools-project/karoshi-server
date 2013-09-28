@@ -29,9 +29,17 @@ source /opt/karoshi/server_network/menusettings
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
-echo '<img src="/images/small_logo.png" alt="logo" align="top"> <font style="font-weight: bold;" size="+2">Web Management '$SCHOOL_NAME'</font> <small><small>
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
+<tbody><tr><td style="vertical-align: top;"><img src="/images/small_logo.png" alt="logo" align="top"> <font style="font-weight: bold;" size="+2">Web Management '$SCHOOL_NAME'</font> <small><small>
 '$VERSION' : 130927-1404
-</small></small>'
+</small></small> '
+
+#Show search bar
+echo '</td><td style="vertical-align: top; width: 100px;"></td><td style="vertical-align: top;"><form name="myform" action="/cgi-bin/admin/search.cgi" method="post">
+<input name="_SEARCH_" style="width: 200px;" size="20" type="text">
+<input value="Search" type="submit">
+</form></td></tr></tbody></table>
+'
 
 #Check for warning messages
 if [ -f /opt/karoshi/web_controls/warnings/summary.txt ]
@@ -463,15 +471,11 @@ echo '	<li class="top"><a href="/cgi-bin/admin/email_aliases.cgi" id="E-Mail" cl
 fi
 #Internet
 
-if [ $INTERNETCTRL = yes ] || [ $KSSOCTRL = yes ]
-then
-echo '	<li class="top"><a href="/cgi-bin/admin/activate_internet_changes_fm.cgi" id="Internet" class="top_link"><span class="down">Internet</span></a>
-		<ul class="sub">'
-fi
-
 if [ $INTERNETCTRL = yes ]
 then
-echo '			<li class="mid"><a href="/cgi-bin/admin/dg_view_banned_users_fm.cgi" class="fly">'$VIEWMSG'</a>
+echo '	<li class="top"><a href="/cgi-bin/admin/activate_internet_changes_fm.cgi" id="Internet" class="top_link"><span class="down">Internet</span></a>
+		<ul class="sub">
+			<li class="mid"><a href="/cgi-bin/admin/dg_view_banned_users_fm.cgi" class="fly">'$VIEWMSG'</a>
 					<ul>
 						<li><a href="/cgi-bin/admin/dg_view_banned_users_fm.cgi">'$VIEWBANNEDUSERS'</a></li>
 						<li><a href="/cgi-bin/admin/dg_view_allowed_sites_fm.cgi">'$VIEWALLOWEDSITES'</a></li>
@@ -516,25 +520,9 @@ echo '			<li class="mid"><a href="/cgi-bin/admin/dg_view_banned_users_fm.cgi" cl
 			<li><a href="/cgi-bin/admin/dg_staff_filters_fm.cgi">'$STAFFFILTERS'</a></li>
 			<li><a href="/cgi-bin/admin/dg_room_controls_fm.cgi">'$ROOMCONTROLS'</a></li>
 			<li><a href="/cgi-bin/admin/dg_reset_room_controls_fm.cgi">'$RESETROOMCONTROLS'</a></li>
-			<li><a href="/cgi-bin/admin/activate_internet_changes_fm.cgi">'$ACTIVATECHANGES'</a></li>'
-fi
-
-if [ $KSSOCTRL = yes ]
-then
-echo '			<li class="mid"><a href="/cgi-bin/admin/ksso_add1_fm.cgi" class="fly">'$KSSO'</a>
-					<ul>
-						<li><a href="/cgi-bin/admin/ksso_add1_fm.cgi">'$KSSOADD'</a></li>
-						<li><a href="/cgi-bin/admin/ksso_view_fm.cgi">'$KSSOVIEW'</a></li>
-						<li><a href="/cgi-bin/admin/ksso_icon_upload_fm.cgi">'$KSSOUPLOAD'</a></li>
-						<li><a href="/cgi-bin/admin/ksso_view_icons_fm.cgi">'$KSSOVIEWICONS'</a></li>
-					</ul>
-			</li>
+			<li><a href="/cgi-bin/admin/activate_internet_changes_fm.cgi">'$ACTIVATECHANGES'</a></li>
+</ul></li>
 '
-fi
-
-if [ $INTERNETCTRL = yes ] || [ $KSSOCTRL = yes ]
-then
-echo '	</ul>'
 fi
 
 #Web
@@ -557,4 +545,5 @@ echo '		</ul>
 	</li>'
 fi
 echo '</ul></div>'
+
 exit

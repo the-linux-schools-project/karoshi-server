@@ -106,65 +106,40 @@ fi
 #Check to see that SEARCH is not blank
 if [ $SEARCH'null' = null ]
 then
-MESSAGE=$ERRORMSG1
-show_status
+echo "</body></html>"
+exit
 fi
 
 #make sure that the search criteria has at least three spaces
 if [ ${#SEARCH} -le 2 ]
 then
-MESSAGE=$ERRORMSG2
-show_status
+echo "</body></html>"
+exit
 fi
 
 #Sort out spaces
 SEARCH=`echo $SEARCH | sed 's/+/ /g'`
 
-echo "<div id="menubox">"
-echo "<iframe src="/cgi-bin/admin/menu.cgi" name="main" frameborder="0" width="950" height="150" scrolling="no" marginwidth="0" marginheight="0">"
-echo "</iframe><br><br>"
+echo '<div id="actionbox">'
 
 echo '<b>'$TITLE - "$SEARCH"'</b><br><br>'
 
-#Do search
-#User
-/var/www/cgi-bin_karoshi/admin/user.cgi | grep -i "$SEARCH" | grep -i -v html | grep -i -v table
-#System
-/var/www/cgi-bin_karoshi/admin/system.cgi | grep -i "$SEARCH" | grep -i -v html | grep -i -v table
-/var/www/cgi-bin_karoshi/admin/updates.cgi | grep -i "$SEARCH" | grep -i -v html | grep -i -v table
-/var/www/cgi-bin_karoshi/admin/logs.cgi | grep -i "$SEARCH" | grep -i -v html | grep -i -v table
-/var/www/cgi-bin_karoshi/admin/dns.cgi | grep -i "$SEARCH" | grep -i -v html | grep -i -v table
-#Client
-/var/www/cgi-bin_karoshi/admin/client.cgi | grep -i "$SEARCH" | grep -i -v html | grep -i -v table
-#Printer
-/var/www/cgi-bin_karoshi/admin/printer.cgi | grep -i "$SEARCH" | grep -i -v html | grep -i -v table
-#File
-/var/www/cgi-bin_karoshi/admin/file.cgi | grep -i "$SEARCH" | grep -i -v html | grep -i -v table
-#Email
-/var/www/cgi-bin_karoshi/admin/email.cgi | grep -i "$SEARCH" | grep -i -v html | grep -i -v table
-#Exams
-/var/www/cgi-bin_karoshi/admin/exams.cgi | grep -i "$SEARCH" | grep -i -v html | grep -i -v table
-#Internet
-/var/www/cgi-bin_karoshi/admin/internet.cgi | grep -i "$SEARCH" | grep -i -v html | grep -i -v table
-#Web
-/var/www/cgi-bin_karoshi/admin/web_management.cgi | grep -i "$SEARCH" | grep -i -v html | grep -i -v table
-#Bulk user creation
-/var/www/cgi-bin_karoshi/admin/bulk_user_creation.cgi | grep -i "$SEARCH" | grep -i -v html | grep -i -v table
-#group
-/var/www/cgi-bin_karoshi/admin/group.cgi | grep -i "$SEARCH" | grep -i -v html | grep -i -v table
-#Backup controls
-/var/www/cgi-bin_karoshi/admin/backup.cgi | grep -i "$SEARCH" | grep -i -v html | grep -i -v table
-#Monitoring
-/var/www/cgi-bin_karoshi/admin/monitoring.cgi | grep -i "$SEARCH" | grep -i -v html | grep -i -v table
-#Linux Client
-/var/www/cgi-bin_karoshi/admin/linux_client.cgi | grep -i "$SEARCH" | grep -i -v html | grep -i -v table
-#Windows Client
-/var/www/cgi-bin_karoshi/admin/windows_client.cgi | grep -i "$SEARCH" | grep -i -v html | grep -i -v table
-#Asset Register
-/var/www/cgi-bin_karoshi/admin/asset_register.cgi | grep -i "$SEARCH" | grep -i -v html | grep -i -v table
-#Remote Management
-/var/www/cgi-bin_karoshi/admin/remote_management.cgi | grep -i "$SEARCH" | grep -i -v html | grep -i -v table
+#Get array of results
+RESULTS=( `cat /opt/karoshi/web_controls/language/englishuk/menus/menu | grep -v "#" | grep -i "$SEARCH" | sed 's/"//g' | sed 's/ /+/g'` )
+RESULTCOUNT=${#RESULTS[@]}
+COUNTER=0
 
+while [ $COUNTER -lt $RESULTCOUNT ]
+do
+SEARCHENTRY=${RESULTS[$COUNTER]}
+RESULT=`echo $SEARCHENTRY | cut -d"=" -f2 | sed 's/+/ /g'`
+LANGVAR=`echo $SEARCHENTRY | cut -d"=" -f1 | sed 's/+/ /g'`
+#Get html link for each result
+LINK=`grep -v 'class="mid"' /opt/karoshi/web_controls/generate_navbar_admin | grep -w $LANGVAR | cut -d'"' -f2`
+[ $LINK'null' != $LINK ] && echo '<a href="'$LINK'">'$RESULT'</a><br>'
+let COUNTER=$COUNTER+1
+done
 echo "</div>"
 echo "</body></html>"
 exit
+
