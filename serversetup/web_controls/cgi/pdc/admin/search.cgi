@@ -136,7 +136,8 @@ RESULT=`echo $SEARCHENTRY | cut -d"=" -f2 | sed 's/+/ /g'`
 LANGVAR=`echo $SEARCHENTRY | cut -d"=" -f1 | sed 's/+/ /g'`
 #Get html link for each result
 LINK=`grep -v 'class="mid"' /opt/karoshi/web_controls/generate_navbar_admin | grep -w $LANGVAR | cut -d'"' -f2`
-[ $LINK'null' != $LINK ] && echo '<a href="'$LINK'">'$RESULT'</a><br>'
+[ $LINK'null' != null ] && echo '<a href="'$LINK'" class="searchlink">'$RESULT'</a><br>'
+
 let COUNTER=$COUNTER+1
 done
 echo "</div>"

@@ -20,7 +20,7 @@ cd /opt/karoshi/serversetup/all/samba4/download
 
 LATESTVER2=`echo $LATESTVER | tr -cd 0-9`
 #Get current samba4 version
-CURRENTVER=`samba-tool -V`
+CURRENTVER=`/usr/local/bin/samba-tool -V`
 CURRENTVER2=`echo $CURRENTVER | tr -cd 0-9`
 
 echo "Current Samba4 version: $CURRENTVER" | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE

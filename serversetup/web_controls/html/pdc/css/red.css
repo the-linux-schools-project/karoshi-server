@@ -152,18 +152,61 @@ A:hover {
 
 #searchbar {
         position:absolute;
-        top: 8px;
-	width: 1200px;
+        top: 2px;
+	width: 1000px;
 	text-align: right;
         margin: 2px 2px 2px 2px;
         z-index:500;
 }
 
+.searchlink
+{
+   border: solid 1px #aaa;
+   border-radius: 10px;
+   -moz-border-radius: 10px;
+   -webkit-border-radius: 10px;
+   background-color: #898989;
+   font-family: Arial, Times, Georgia, "Times New Roman", Times, serif;
+   font-size: 10pt;
+   width: 200px;
+   text-align:center;
+   text-decoration: none;
+   font-weight: bold;
+   margin: 6px 3px 6px 3px;
+   padding: 3px;
+   display: inline-block;
+}
+.searchlink:hover { background-color: #3C3C3C;
+		text-decoration: none;
+ } 
+
+.button
+{
+   border: solid 1px #aaa;
+   border-radius: 10px;
+   -moz-border-radius: 10px;
+   -webkit-border-radius: 10px;
+   background-color: #DEDEDE;
+   font-family: Arial, Times, Georgia, "Times New Roman", Times, serif;
+   color: #2A2A2A;
+   font-size: 10pt;
+   width: 105px;
+   text-align:center;
+   text-decoration: none;
+   font-weight: bold;
+   margin: 6px 3px 6px 3px;
+   padding: 3px;
+   display: inline-block;
+}
+.button:hover { background-color: #B4B4B4;
+		text-decoration: none;
+ }
+
 #navbar {
         position:absolute;
         top: 60px;
         left: 0px;
-	width: 1210px;
+	width: 1010px;
         margin: 2px 2px 2px 2px;
 	z-index:100;
 }

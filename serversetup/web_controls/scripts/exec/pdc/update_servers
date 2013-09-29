@@ -242,6 +242,7 @@ scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts" root@$SERVE
 scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
 scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
 scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
+scp -r "/opt/karoshi/serversetup/all/samba4/updatesamba4" root@$SERVERNAME:"/opt/karoshi/serversetup/all/samba4/"
 fi
 fi
 
@@ -253,6 +254,7 @@ scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts" root@$SERVE
 scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services" root@$SERVERMASTER:"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
 scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot" root@$SERVERMASTER:"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
 scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot" root@$SERVERMASTER:"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
+scp -r "/opt/karoshi/serversetup/all/samba4/updatesamba4" root@$SERVERMASTER:"/opt/karoshi/serversetup/all/samba4/"
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
 scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/updateserver" root@'$SERVERNAME':"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
 scp "/opt/karoshi/serversetup/all/scripts/updateserver" root@'$SERVERNAME':"/opt/karoshi/serversetup/all/scripts/"
@@ -260,6 +262,7 @@ scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts" root@'$SERV
 scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services" root@'$SERVERNAME':"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
 scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot" root@'$SERVERNAME':"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
 scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot" root@'$SERVERNAME':"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
+scp -r "/opt/karoshi/serversetup/all/samba4/updatesamba4" root@'$SERVERNAME':"/opt/karoshi/serversetup/all/samba4/"
 '
 fi
 }
