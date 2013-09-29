@@ -29,17 +29,13 @@ source /opt/karoshi/server_network/menusettings
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr><td style="vertical-align: top;"><img src="/images/small_logo.png" alt="logo" align="top"> <font style="font-weight: bold;" size="+2">Web Management '$SCHOOL_NAME'</font> <small><small>
+echo '<img src="/images/small_logo.png" alt="logo" align="top"> <font style="font-weight: bold;" size="+2">Web Management '$SCHOOL_NAME'</font> <small><small>
 '$VERSION' : 130927-1404
-</small></small> '
-
-#Show search bar
-echo '</td><td style="vertical-align: top; width: 100px;"></td><td style="vertical-align: top;"><form name="myform" action="/cgi-bin/admin/search.cgi" method="post">
+</small></small>
+<div id="searchbar"><form name="myform" action="/cgi-bin/admin/search.cgi" method="post">
 <input name="_SEARCH_" style="width: 200px;" size="20" type="text">
 <input value="Search" type="submit">
-</form></td></tr></tbody></table>
-'
+</form></div>'
 
 #Check for warning messages
 if [ -f /opt/karoshi/web_controls/warnings/summary.txt ]
