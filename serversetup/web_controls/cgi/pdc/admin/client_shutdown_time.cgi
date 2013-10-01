@@ -170,6 +170,6 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 
 [ $MOBILE != yes ] && echo '</div><div id="submitbox">'
 
-echo '<input value="Submit" type="submit"> <input value="Reset" type="reset"></div>'
+echo '<input value="Submit" class="button" type="submit"> <input value="Reset" class="button" type="reset"></div>'
 echo '</form></body></html>'
 exit

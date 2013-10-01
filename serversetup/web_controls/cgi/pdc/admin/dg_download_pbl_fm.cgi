@@ -59,7 +59,7 @@ echo '<div id="actionbox">
 <br><br>
  </div>
 <div id="submitbox">
-  <input value="'$SUBMITMSG'" type="submit">
+  <input value="'$SUBMITMSG'" class="button" type="submit">
 </div>
         </FORM>
 </BODY>

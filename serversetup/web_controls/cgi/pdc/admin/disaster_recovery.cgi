@@ -211,5 +211,5 @@ then
 MESSAGE=$ERRORMSG6
 show_status
 fi
-echo '<br><input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset"></form></div></body></html>'
+echo '<br><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></form></div></body></html>'
 exit

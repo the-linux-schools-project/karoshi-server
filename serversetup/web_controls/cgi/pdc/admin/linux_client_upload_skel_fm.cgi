@@ -72,7 +72,7 @@ echo '<div id="actionbox">
         </TR>
         </TABLE>
 </div>
-<div id="submitbox"><input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset"></div>
+<div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></div>
         </FORM>
 </BODY>
 </HTML>

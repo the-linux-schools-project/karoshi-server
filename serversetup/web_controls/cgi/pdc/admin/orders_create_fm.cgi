@@ -351,7 +351,7 @@ echo '</td></tr>
 
 if [ $GRANDTOTAL != 0 ] && [ `echo $SUPPLIER'null' | sed 's/ //g'` != null ] && [ `echo $BHOLDER'null' | sed 's/ //g'` != null ] && [ `echo $DEPARTMENT'null' | sed 's/ //g'` != null ]
 then
-echo '<input value="'$SUBMITMSG'" type="submit">'
+echo '<input value="'$SUBMITMSG'" class="button" type="submit">'
 fi
 echo '
 </div>

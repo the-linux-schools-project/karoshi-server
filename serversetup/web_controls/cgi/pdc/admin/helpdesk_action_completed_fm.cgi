@@ -124,7 +124,7 @@ echo '<form action="/cgi-bin/admin/helpdesk_action.cgi" method="post"><div id="a
 <tr><td>'$FEEDBACKMSG'</td><td>'$FEEDBACK'</td></tr>
 </tbody></table></div>
 <div id="submitbox">
-<input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset">
+<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
 </div></form></body></html>'
 exit
 

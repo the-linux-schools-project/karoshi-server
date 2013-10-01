@@ -66,7 +66,7 @@ echo '<div id="actionbox"><form action="/cgi-bin/admin/email_access.cgi" method=
 <a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls#Banning_and_Allowing_Users"><img class="images" alt="" src="/images/help/info.png"><span>'$USERHELP1'</span></a></td></tr>
 <tr><td>Ban</td><td><input checked="checked" name="_ACTION_" value="deny" type="radio"></td></tr>
 <tr><td>Allow</td><td><input name="_ACTION_" value="allow" type="radio"></td></tr></tbody></table><br><br>
-<input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset">
+<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
 </form><br>
 <form action="/cgi-bin/admin/email_access.cgi" method="post"><table class="standard" style="text-align: left" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 180px;"><b>'$PRIGROUPMSG'</b></td><td style="width: 180px;"><b>'$CHANGEMSG'</b></td><td style="width: 180px;"><b>'$PRIGROUPMSG'</b></td><td><b>'$CHANGEMSG'</b></td></tr><tr>

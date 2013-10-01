@@ -149,7 +149,7 @@ show_status
 fi
 #echo "</div>"
 #echo '<div id="submitbox">'
-echo '<input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset"> '
+echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"> '
 echo '<'input type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedsites"'", "'"_SITENAME_"'", true')'';''"' value='"'Select all'"''>'
 echo '</div>'
 echo '</form>'

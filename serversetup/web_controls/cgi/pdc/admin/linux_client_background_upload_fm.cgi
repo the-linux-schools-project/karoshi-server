@@ -137,7 +137,7 @@ fi
 echo '</TR>
 </TABLE>
 <br><br>
-<input value="'$SUBMITMSG'" type="submit">
+<input value="'$SUBMITMSG'" class="button" type="submit">
 </form></div>
 </BODY>
 </HTML>

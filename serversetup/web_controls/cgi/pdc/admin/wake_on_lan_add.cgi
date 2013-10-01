@@ -111,6 +111,6 @@ MESSAGE=$ERROR_MESSAGE1
 show_status
 fi
 echo "</div>"
-echo '<div id="submitbox"><input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset"></div>'
+echo '<div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></div>'
 echo '</form></body></html>'
 exit

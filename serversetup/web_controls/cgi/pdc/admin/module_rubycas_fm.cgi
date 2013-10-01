@@ -155,5 +155,5 @@ else
 echo '<input name="_LDAPSERVER_" value="noldap" type="hidden">'
 fi
 
-echo '<br><br></div><div id="submitbox"><input value="'$SUBMITMSG'" type="submit"></div></form></body></html>'
+echo '<br><br></div><div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit"></div></form></body></html>'
 exit

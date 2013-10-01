@@ -137,6 +137,6 @@ then
 echo '</div><div id="submitbox">'
 fi
 
-echo '<input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset"></div>'
+echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></div>'
 echo '</form></body></html>'
 exit

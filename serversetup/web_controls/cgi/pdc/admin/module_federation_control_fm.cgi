@@ -108,5 +108,5 @@ echo '<form action="/cgi-bin/admin/module_federation_control.cgi" method="post">
 '$HELPMSG1'<br>
 '$HELPMSG2'<br><br>
 '$WARNINGMSG'
-</div><div id="submitbox"><input value="'$SUBMITMSG'" type="submit"></div></form></body></html>'
+</div><div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit"></div></form></body></html>'
 exit

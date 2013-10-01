@@ -330,7 +330,7 @@ echo '
 
 </div><div id="submitbox">'
 fi
-echo '<input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset">
+echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
 </div></form></body></html>
 '
 exit

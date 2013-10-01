@@ -224,5 +224,5 @@ echo '<input value="'$STUDENTS'" name="_STUDENTS_" size="53" type="text">'
 echo '<br>Incident Report<br>'
 echo '<textarea cols="77" rows="5" name="_INCIDENT_">'$INCIDENT'</textarea><br><br>Action Taken<br>'
 echo '<textarea cols="77" rows="5" name="_ACTIONTAKEN_">'$ACTIONTAKEN'</textarea>'
-echo '</div><div id="submitbox"> <input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset"> </div></form></body></html>'
+echo '</div><div id="submitbox"> <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"> </div></form></body></html>'
 exit

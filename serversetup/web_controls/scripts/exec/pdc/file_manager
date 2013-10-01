@@ -272,23 +272,28 @@ done
 
 if [ $MOVECHECK = yes ]
 then
-echo '<br><input name="_ITEMMOVE_" value="'$ITEMMOVE'" type="hidden">'
+echo '<br><br><input name="_ITEMMOVE_" value="'$ITEMMOVE'" type="hidden">'
 
-echo ''$ITEMMOVE2' - '$MOVEMSG2' <input type="image" src="'$ICON9'" name="_ACTION_REALLYMOVE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_ITEMMOVE_'$ITEMMOVE'_LOCATION_'$LOCATION2'_" value="">'
-echo ''$COPYMSG2' <input type="image" src="'$ICON4'" name="_ACTION_REALLYCOPY_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_ITEMMOVE_'$ITEMMOVE'_LOCATION_'$LOCATION2'_" value="">'
-echo ''$CANCELMSG' <input type="image" src="'$ICON8'" name="_ACTION_CANCELCOPY_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" value="">'
+echo ''$ITEMMOVE2'
+
+<input name="_ACTION_REALLYMOVE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_ITEMMOVE_'$ITEMMOVE'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$MOVEMSG2'">
+<input name="_ACTION_REALLYCOPY_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_ITEMMOVE_'$ITEMMOVE'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$COPYMSG2'">
+<input name="_ACTION_CANCELCOPY_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$CANCELMSG'">
+'
 else
 echo "<br><br>"$ERRORMSG11"<br>"
 fi
 fi
 
-echo '<br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><col width=22><col width=22><col width=22><col width=22><col width=22><tbody>
-<tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_" type="image" class="images" src="'$ICON7'" value=""><span>'$TOPDIRMSG'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LASTLOCATION'_" type="image" class="images" src="'$ICON6'" value=""><span>'$UPMSG'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_CREATEDIR_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" type="image" class="images" src="'$ICON11'" value=""><span>'$NEWDIRMSG'</span></a></td>
-<td><a class="info" href="javascript:void(0)"><input name="_ACTION_CREATEFILE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" type="image" class="images" src="'$ICON14'" value=""><span>'$NEWFILEMSG'</span></a></td>
-<td><a class="info" href="javascript:void(0)"><input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" type="image" class="images" src="'$ICON13'" value=""><span>'$RELOADMSG'</span></a></td>
-</tr>
+echo '<br><br>
+<input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_" type="submit" class="button" value="'$TOPDIRMSG'">
+<input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$UPMSG'">
+<input name="_ACTION_CREATEDIR_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$NEWDIRMSG'">
+<input name="_ACTION_CREATEFILE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$NEWFILEMSG'">
+<input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$RELOADMSG'">
+<br><br>
+<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><col width=22><col width=22><col width=22><col width=22><col width=22><tbody>
 '
-
 #Log Browse Actions
 echo `date`: file_manager - browsing  "$LOCATION" on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
@@ -537,8 +542,10 @@ else
 convert_special_chars
 LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
 echo $DELETEMSG $LOCATION'<br><br>'$CONFIRMDELETEMSG'<br><br>'
-echo '<input type="image" src="/images/submenus/file/delete.gif" name="_ACTION_REALLYDELETE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" value="">'
-echo '<a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" alt="back" border="0"></a>'
+echo '<input name="_ACTION_REALLYDELETE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$DELETEMSG'">
+<input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$BACKMSG'">
+'
+
 fi
 }
 
@@ -1027,8 +1034,10 @@ fi
 '
 fi
 
-echo '<br><input src="/images/submenus/file/go.gif" name="_" type="image" value="">'
-echo '<a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" alt="back" border="0"></A>'
+echo '<br>
+<input name="_" type="submit" class="button" value="'$SUBMITMSG'">
+<input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$BACKMSG'">
+'
 }
 
 
@@ -1323,15 +1332,16 @@ done
 
 if [ $RENAMECHECK = no ]
 then
-echo "<br><br><a href=\"javascript:history.go(-1)\"> <img src=\"/images/submenus/file/back.gif\" alt=\"back\" border=\"0\"></a><br><br>"$ERRORMSG10
+echo '<br><br><input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$BACKMSG'"><br><br>'$ERRORMSG10
 else
 #Confirm rename of item.
 convert_special_chars
 RENAMEFILE=`basename "$LOCATION"`
 LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
 echo '<b>'$RENAMEMSG'</b>' $LOCATION'<br><br>'
-echo '<input type="image" src="/images/submenus/file/go.gif" name="_ACTION_REALLYRENAME_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" value="">'
-echo '<a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" alt="back" border="0"></a><br><br>'
+echo '
+<input name="_ACTION_REALLYRENAME_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$RENAMEMSG'">'
+echo '<input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$BACKMSG'"><br><br>'
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 180px;">'$CURRENTNAMEMSG'</td><td>'$RENAMEFILE'<td></tr>
 <tr><td>'$NEWNAMEMSG'</td><td><input name="_NEWFOLDER_" type="text" size="20" value="'$RENAMEFILE'"></td></tr></tbody></table>'
@@ -1443,7 +1453,13 @@ done
 FILETYPEDATA=`file "$LOCATION"`
 if [ `echo "$FILETYPEDATA" | grep -c ASCII` -gt 0 ] || [ `echo "$FILETYPEDATA" | grep -c Bourne-Again` -gt 0 ] || [ `echo "$FILETYPEDATA" | grep -c PHP` -gt 0 ] || [ `echo "$FILETYPEDATA" | grep -c XML` -gt 0 ] && [ $EDITCHECK = ok ]
 then
-echo "<input type=\"image\" src=\"/images/submenus/file/go.gif\" name=\"_ACTION_REALLYEDIT_SERVERTYPE_$SERVERTYPE"_"SERVERMASTER_$SERVERMASTER"_"SERVER_$SERVER"_"LOCATION_$LOCATION2"_"\" value=\"\"><a href=\"javascript:history.go(-1)\"> <img src=\"/images/submenus/file/back.gif\" alt=\"back\" border=\"0\"></a><br><br><textarea cols=\"95\" rows=\"28\" name=\"_TEXTDATA_\">"
+
+echo '
+<input name="_ACTION_REALLYEDIT_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$EDITMSG'">
+<input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$BACKMSG'">
+' 
+
+echo "</a><br><br><textarea cols=\"95\" rows=\"28\" name=\"_TEXTDATA_\">"
 echo "`cat "$LOCATION"`</textarea>"
 else
 echo "<a href=\"javascript:history.go(-1)\"> <img src=\"/images/submenus/file/back.gif\" alt=\"back\" border=\"0\"></a><br><br>"$EDITERRORMSG
@@ -1572,7 +1588,10 @@ function create_dir {
 [ $LOCATION'null' = null ] && LOCATION=/
 LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
 convert_special_chars
-echo '<b>'$CREATEFOLDERMSG'</b><br><br><input type="image" src="/images/submenus/file/go.gif" name="_ACTION_REALLYCREATEDIR_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" value=""><A HREF="javascript:history.go(-1)"> <IMG SRC="/images/submenus/file/back.gif" BORDER="0"></A><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<b>'$CREATEFOLDERMSG'</b><br><br>
+<input name="_ACTION_REALLYCREATEDIR_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$NEWFOLDERMSG'">
+<input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$BACKMSG'">
+<br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 180px;">'$CURRENTLOCATIONMSG'</td><td>'$LOCATION'<td></tr>
 <tr><td>'$NEWFOLDERMSG'</td><td><input name="_NEWFOLDER_" type="text" size="20"></td></tr></tbody></table><br>'
 }
@@ -1646,7 +1665,10 @@ function create_file {
 [ $LOCATION'null' = null ] && LOCATION=/
 LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
 convert_special_chars
-echo '<b>'$CREATEFOLDERMSG'</b><br><br><input type="image" src="/images/submenus/file/go.gif" name="_ACTION_REALLYCREATEFILE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" value=""><A HREF="javascript:history.go(-1)"> <IMG SRC="/images/submenus/file/back.gif" BORDER="0"></A><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<b>'$CREATEFOLDERMSG'</b><br><br>
+<input name="_ACTION_REALLYCREATEFILE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$NEWFILEMSG'">
+<input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$BACKMSG'">
+<br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 180px;">'$CURRENTLOCATIONMSG'</td><td>'$LOCATION'<td></tr>
 <tr><td>'$NEWFILEMSG'</td><td><input name="_NEWFOLDER_" type="text" size="20"></td></tr></tbody></table><br>'
 }

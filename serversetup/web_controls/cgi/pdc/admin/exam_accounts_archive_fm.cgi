@@ -75,7 +75,7 @@ echo '
 </td></tr></tbody></table>
 </div>
 <div id="submitbox">
-  <input value="'$SUBMITMSG'" type="submit">
+  <input value="'$SUBMITMSG'" class="button" type="submit">
 </div>
 </form>
 </body>

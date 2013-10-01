@@ -101,12 +101,17 @@ exit
 echo '<div id="actionbox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="vertical-align: top;"><b>'$TITLE'</b></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG1"'</span></a></td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/printers.cgi" name="printers" method="post"><a class="info" href="javascript:void(0)"><input name="SHOWPRINTERS" type="image" class="images" src="/images/submenus/printer/show_printers.png" value=""><span>'$SHOWPRINTERSMSG'</span></a></form></td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/printers_add_fm.cgi" name="printers" method="post"><a class="info" href="javascript:void(0)"><input name="ADDPRINTER" type="image" class="images" src="/images/submenus/printer/add_printer.png" value=""><span>'$ADDPRINTERMSG'</span></a></form></td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/locations.cgi" name="printers" method="post"><a class="info" href="javascript:void(0)"><input name="ADDLOCATION" type="image" class="images" src="/images/submenus/client/add_location.png" value=""><span>'$ADDLOCATIONMSG'</span></a></form></td>
+<td style="vertical-align: top;"><form action="/cgi-bin/admin/printers.cgi" name="printers" method="post">
+<input name="SHOWPRINTERS" type="submit" class="button" value="'$SHOWPRINTERSMSG'">
+</form></td>
+<td style="vertical-align: top;"><form action="/cgi-bin/admin/printers_add_fm.cgi" name="printers" method="post">
+<input name="ADDPRINTER" type="submit" class="button" value="'$ADDPRINTERMSG'">
+</form></td>
+<td style="vertical-align: top;"><form action="/cgi-bin/admin/locations.cgi" name="printers" method="post">
+<input name="ADDLOCATION" type="submit" class="button" value="'$ADDLOCATIONMSG'">
+</form></td>
 </tr></tbody></table><br>
 '
-
 
 echo '<form action="/cgi-bin/admin/printers_delete2.cgi" method="post">'
 PRINTERLIST=( `sudo -H /opt/karoshi/web_controls/exec/printers_show_queues` )

@@ -81,7 +81,7 @@ if [ $MOBILE = no ]
 then
 echo '</div><div id="submitbox">'
 fi
-echo '<input value="'$SUBMITMSG'" type="submit">
+echo '<input value="'$SUBMITMSG'" class="button" type="submit">
 </div></form></body></html>
 '
 

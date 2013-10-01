@@ -79,6 +79,6 @@ echo '<table class="standard" style="text-align: left; height: 30px;" border="0"
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_quota_settings.cgi | cut -d' ' -f1`
 sudo -H /opt/karoshi/web_controls/exec/email_quota_settings_view $REMOTE_USER:$REMOTE_ADDR:$MD5SUM
 echo '</tbody></table></div>'
-echo '<div id="submitbox"><input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset">
+echo '<div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
 </div></form></body></html>'
 exit

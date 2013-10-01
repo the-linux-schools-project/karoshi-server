@@ -73,7 +73,7 @@ echo '<form action="/cgi-bin/admin/printers_restart_samba.cgi" method="post"><di
   <br><br>
 </div>
 <div id="submitbox">
-  <input value="'$SUBMITMSG'" type="submit">
+  <input value="'$SUBMITMSG'" class="button" type="submit">
 </div>
 </form>
 </body>

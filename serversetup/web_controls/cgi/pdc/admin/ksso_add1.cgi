@@ -256,7 +256,7 @@ fi
 let COUNTER=$COUNTER+1
 done
 
-echo '</tbody></table><br><br><input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset">'
+echo '</tbody></table><br><br><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">'
 
 #rm -f -R $PROCESSFOLDER
 

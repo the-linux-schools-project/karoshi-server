@@ -70,7 +70,7 @@ echo '<form action="/cgi-bin/admin/exam_accounts_reset_passwords.cgi" method="po
 </td></tr></tbody></table>
 </div>
 <div id="submitbox">
-  <input value="'$SUBMITMSG'" type="submit">
+  <input value="'$SUBMITMSG'" class="button" type="submit">
 </div>
 </form>
 </body>

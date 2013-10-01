@@ -111,7 +111,7 @@ echo '<table class="standard" style="text-align: left; height: 20px;" border="0"
 echo '<option></option>'
 sudo -H /opt/karoshi/web_controls/exec/web_management_create_folder_list $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$WEBSERVER:
 echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td></tr></tbody></table><br><br></div>
-<div id="submitbox"><input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset">
+<div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
 </div></body></html>'
 exit
 

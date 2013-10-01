@@ -179,7 +179,7 @@ fi
 fi
 fi
 done
-echo '</select></td><td><input value="'$SUBMITMSG'" type="submit"></td></tr></tbody></table>'
+echo '</select></td><td><input value="'$SUBMITMSG'" class="button" type="submit"></td></tr></tbody></table>'
 
 echo '</div></form></body></html>'
 exit

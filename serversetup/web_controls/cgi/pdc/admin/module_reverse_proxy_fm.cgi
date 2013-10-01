@@ -104,5 +104,5 @@ echo '<form action="/cgi-bin/admin/module_reverse_proxy.cgi" method="post"><div 
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$DESCRIPTIONMSG'</b><br><br>
 '$HELPMSG1'
-</div><div id="submitbox"><input value="'$SUBMITMSG'" type="submit"></div></form></body></html>'
+</div><div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit"></div></form></body></html>'
 exit

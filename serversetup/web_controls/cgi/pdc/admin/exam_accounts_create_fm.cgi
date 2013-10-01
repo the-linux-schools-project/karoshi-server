@@ -62,7 +62,7 @@ echo '<form action="/cgi-bin/admin/exam_accounts_create.cgi" method="post"><div 
 <tr><td style="width: 180px;">'$NEWEXAMCOUNTMSG'</td><td><input maxlength="3" size="3" name="_NEWEXAMS_" value="10"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Create_Extra_Exam_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$CREATEHELP1'</span></a></td></tr>
 </tbody></table></div>
-<div id="submitbox"><input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset">
+<div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
 </div>
 </form>
 </body>

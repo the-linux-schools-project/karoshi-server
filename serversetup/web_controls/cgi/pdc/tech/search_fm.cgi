@@ -60,7 +60,7 @@ echo '
       <tr>
         <td style="width: 100px;">
 '$SEARCHMSG'</td>
-        <td><input tabindex= "1" name="_SEARCH_" size="20" type="text"> <input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset"></td></tr>
+        <td><input tabindex= "1" name="_SEARCH_" size="20" type="text"> <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></td></tr>
     </tbody>
   </table>
 </div>

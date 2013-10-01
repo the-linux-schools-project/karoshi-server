@@ -70,9 +70,15 @@ exit
 echo '<div id="actionbox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="vertical-align: top;"><b>'$TITLE'</b></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG1"'</span></a></td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/printers.cgi" name="printers" method="post"><a class="info" href="javascript:void(0)"><input name="SHOWPRINTERS" type="image" class="images" src="/images/submenus/printer/show_printers.png" value=""><span>'$SHOWPRINTERSMSG'</span></a></form></td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/printers_delete.cgi" name="printers" method="post"><a class="info" href="javascript:void(0)"><input name="DELETEPRINTER" type="image" class="images" src="/images/submenus/printer/delete_printer.png" value=""><span>'$DELETEPRINTERMSG'</span></a></form></td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/locations.cgi" name="printers" method="post"><a class="info" href="javascript:void(0)"><input name="ADDLOCATION" type="image" class="images" src="/images/submenus/client/add_location.png" value=""><span>'$ADDLOCATIONMSG'</span></a></form></td>
+<td style="vertical-align: top;"><form action="/cgi-bin/admin/printers.cgi" name="printers" method="post">
+<input name="SHOWPRINTERS" type="submit" class="button" value="'$SHOWPRINTERSMSG'">
+</form></td>
+<td style="vertical-align: top;"><form action="/cgi-bin/admin/printers_delete.cgi" name="printers" method="post">
+<input name="DELETEPRINTER" type="submit" class="button" value="'$DELETEPRINTERMSG'">
+</form></td>
+<td style="vertical-align: top;"><form action="/cgi-bin/admin/locations.cgi" name="printers" method="post">
+<input name="ADDLOCATION" type="submit" class="button" value="'$ADDLOCATIONMSG'">
+</form></td>
 </tr></tbody></table><br>
 '
 
@@ -147,7 +153,7 @@ echo '<tr><td>'$ADDRESSMSG'</td><td><input name="_PRINTERADDRESS_" maxlength="15
       </tr>
     </tbody>
   </table><br><br>
-  <input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset">
+  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
 </form>
 </div>
 </body>

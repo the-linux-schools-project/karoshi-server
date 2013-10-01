@@ -131,7 +131,7 @@ echo '<form name="myform" action="/cgi-bin/admin/user_web_hosting_fm.cgi" method
 <tr><td style="width: 180px;">'$PRIGROUPMSG'</td><td>'
 /opt/karoshi/web_controls/group_dropdown_list
 echo '</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Username_Styles"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td></tr>
-</tbody></table><br><br><input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset"></form>'
+</tbody></table><br><br><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></form>'
 else
 
 #Show current state of web hosting for the group

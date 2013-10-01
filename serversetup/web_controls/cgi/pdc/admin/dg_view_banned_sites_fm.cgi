@@ -124,7 +124,7 @@ echo '<form action="/cgi-bin/admin/dg_view_banned_sites.cgi" name="selectedsites
   </table>
   <br>
   </div>
-  <div id="submitbox"> <input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset"> </div>
+  <div id="submitbox"> <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"> </div>
 </form>
 </body>
 </html>

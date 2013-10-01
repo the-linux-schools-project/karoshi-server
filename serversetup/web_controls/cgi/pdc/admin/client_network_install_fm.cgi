@@ -91,7 +91,7 @@ if [ -d /opt/karoshi/asset_register/network_install/normal_boot/ ]
 then
 if [ `ls -1 /opt/karoshi/asset_register/network_install/normal_boot/ | wc -l` -gt 0 ]
 then
-echo '<b>$STANDARDBOOTMSG</b><br><br><input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset">'
+echo '<b>$STANDARDBOOTMSG</b><br><br><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">'
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody><tr><td style="width: 120px;">'$LOCATIONMSG'</td><td style="width: 180px;">'$MACMSG'</td><td style="width: 120px;">'$TCPMSG'</td><td>'$NETWORKINSTALLMSG'</td><td>'$NORMALMSG'</td><td>'$MEMTESTMSG'</td><td>'$REMOVEMSG'</td>'
 for LOCATIONS in /opt/karoshi/asset_register/network_install/normal_boot/*
@@ -99,7 +99,7 @@ do
 LOCATION=`basename "$LOCATIONS"`
 cat /opt/karoshi/asset_register/network_install/normal_boot/"$LOCATION"/*
 done
-echo '</tbody></table><input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset"><br><br>'
+echo '</tbody></table><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"><br><br>'
 else
 echo $NOCLIENTSMSG"<br><br>"
 fi
@@ -110,7 +110,7 @@ fi
 
 echo '</div>
 <div id="submitbox">
-  <input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset">
+  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
 </div>
 </form>
 </body>

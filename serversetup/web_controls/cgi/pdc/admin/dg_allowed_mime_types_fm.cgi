@@ -114,6 +114,6 @@ then
 echo '</div><div id="submitbox">'
 fi
 
-echo '<input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset"> <input type="button" onclick="SetAllCheckBoxes('\'selectedsites\'', '\'_FILTERGROUP_\'', true);" value="'$SELECTMSG'">
+echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"> <input type="button" onclick="SetAllCheckBoxes('\'selectedsites\'', '\'_FILTERGROUP_\'', true);" value="'$SELECTMSG'">
   </div></form></body></html>'
 exit

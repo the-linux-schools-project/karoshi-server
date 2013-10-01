@@ -126,6 +126,6 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 
 echo '<textarea cols="80" rows="20" name="___CACERT___"></textarea><br><br>'
 echo "<b>"$SSLCERTMSG"</b><br><br>"
-echo '<textarea cols="80" rows="20" name="___SSLCERT___"></textarea><br><br><input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset">'
+echo '<textarea cols="80" rows="20" name="___SSLCERT___"></textarea><br><br><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">'
 echo '</div></form></body></html>'
 exit

@@ -130,7 +130,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left; height: 30px;" borde
   <br>'
 
 [ $MOBILE = no ] && echo '</div><div id="submitbox">'
-echo '<input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset">
+echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
 </div></form></body></html>
 '
 exit

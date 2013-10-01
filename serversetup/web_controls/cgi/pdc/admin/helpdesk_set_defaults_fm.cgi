@@ -103,7 +103,7 @@ echo '<option value="NODEFAULTPRIORITY">'$NODEFAULTMSG'</option>'
 echo '</td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG6'</span></a></td></tr></tbody></table><br>
 </div>
 <div id="submitbox">
-<input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset">
+<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
 </div>
 </form>
 </body>

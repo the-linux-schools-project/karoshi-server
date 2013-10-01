@@ -146,5 +146,5 @@ echo '<tr><td>'$COPYMOODLESMSG'</td><td><input name="_COPYMOODLE_" value="yes" t
 fi
 fi
 
-echo '</tbody></table><br><br></div><div id="submitbox"><input value="'$SUBMITMSG'" type="submit">'
+echo '</tbody></table><br><br></div><div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit">'
 exit

@@ -177,7 +177,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/exam_accounts_u
 			<TD COLSPAN=2>&nbsp;<BR></TD>
 		</TR>
         </TABLE>
-  <input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset">
+  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
 </div>
         </FORM>
 </BODY>

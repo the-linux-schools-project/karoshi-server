@@ -109,7 +109,7 @@ echo '<form action="/cgi-bin/admin/module_ocsinventory.cgi" method="post"><div i
 '$OPENINGMSG'
 </div>
 <div id="submitbox">
-<input value="'$SUBMITMSG'" type="submit">
+<input value="'$SUBMITMSG'" class="button" type="submit">
 </div>
 </form>
 </body>

@@ -63,7 +63,7 @@ echo '<div id="actionbox">
 <form action="/cgi-bin/admin/generate_classroom_lists_asset_register.cgi" method="post">
   </div>
 <div id="submitbox">
-  <input value="'$SUBMITMSG'" type="submit">
+  <input value="'$SUBMITMSG'" class="button" type="submit">
 </div>
         </FORM>
 </BODY>

@@ -71,6 +71,6 @@ echo '
 
 echo '</td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Acceptable_Use#View_approved_users"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a>
-</td></tr></tbody></table><br><br></div><div id="submitbox"><input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset"></div></form></body></html>
+</td></tr></tbody></table><br><br></div><div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></div></form></body></html>
 '
 exit

@@ -193,5 +193,5 @@ then
 echo '</div><div id="submitbox">'
 fi
 
-echo '<input value="Submit" type="submit"> <input value="Reset" type="reset"> </div></form></body></html>'
+echo '<input value="Submit" class="button" type="submit"> <input value="Reset" class="button" type="reset"> </div></form></body></html>'
 exit

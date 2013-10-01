@@ -171,5 +171,5 @@ then
 echo '</div><div id="submitbox">'
 fi
 
-echo '<input value="'$SUBMITMSG'" type="submit"></form></body></html>'
+echo '<input value="'$SUBMITMSG'" class="button" type="submit"></form></body></html>'
 exit

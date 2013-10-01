@@ -131,5 +131,5 @@ echo '</select>.'$REALM'</td><td><a class="info" target="_blank" href="http://ww
 echo 
 fi
 echo '</tbody></table>
-</div><div id="submitbox"><input value="'$SUBMITMSG'" type="submit"></div></form></body></html>'
+</div><div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit"></div></form></body></html>'
 exit

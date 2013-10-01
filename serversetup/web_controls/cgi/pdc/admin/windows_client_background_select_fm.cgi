@@ -165,7 +165,7 @@ fi
 echo '</tbody></table>
 </div>
 <div id="submitbox">
-  <input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset"> <input type="button" onclick="SetAllCheckBoxes('\'selectgroups\'', '\'_PRIGROUP_\'', true);" value="'$SELECTMSG'">
+  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"> <input type="button" onclick="SetAllCheckBoxes('\'selectgroups\'', '\'_PRIGROUP_\'', true);" value="'$SELECTMSG'">
 </div>
 </form>
 </body>

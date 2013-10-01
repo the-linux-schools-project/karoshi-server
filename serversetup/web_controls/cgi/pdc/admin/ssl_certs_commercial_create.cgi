@@ -154,7 +154,7 @@ echo '<tr><td>'$EMAILMSG'</td><td><input tabindex= "7" value="'$CONTACTEMAIL'" n
 echo '</tbody></table>'
 
 echo '<input name="___SERVER___" value="'$SERVER'" type="hidden">'
-echo '</div><div id="submitbox"><input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset"></div>'
+echo '</div><div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></div>'
 echo '</form></body</html>'
 
 exit

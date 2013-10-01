@@ -81,6 +81,6 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_relay.cgi | cut -d' ' -f1`
 sudo -H /opt/karoshi/web_controls/exec/email_relay_view $REMOTE_USER:$REMOTE_ADDR:$MD5SUM
 [ $MOBILE != yes ] && echo '</div><div id="submitbox">'
 
-echo '<input value="Submit" type="submit"> <input value="Reset" type="reset">
+echo '<input value="Submit" class="button" type="submit"> <input value="Reset" class="button" type="reset">
 </div></form></body></html>'
 exit

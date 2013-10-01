@@ -140,9 +140,13 @@ else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="vertical-align: top;"><b>'$TITLE1'</b></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Manage_Print_Queues"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG1"'</span></a></td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/printers_add_fm.cgi" name="printers" method="post"><a class="info" href="javascript:void(0)"><input name="ADDPRINTER" type="image" class="images" src="/images/submenus/printer/add_printer.png" value=""><span>'$ADDPRINTERMSG'</span></a></form></td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/printers_delete.cgi" name="printers" method="post"><a class="info" href="javascript:void(0)"><input name="DELETEPRINTER" type="image" class="images" src="/images/submenus/printer/delete_printer.png" value=""><span>'$DELETEPRINTERMSG'</span></a></form></td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/locations.cgi" name="printers" method="post"><a class="info" href="javascript:void(0)"><input name="ADDLOCATION" type="image" class="images" src="/images/submenus/client/add_location.png" value=""><span>'$ADDLOCATIONMSG'</span></a></form></td>
+<td style="vertical-align: top;">
+<form action="/cgi-bin/admin/printers_add_fm.cgi" name="printers" method="post"><input name="ADDPRINTER" type="submit" class="button" value="'$ADDPRINTERMSG'"></form>
+</td>
+<td style="vertical-align: top;"><form action="/cgi-bin/admin/printers_delete.cgi" name="printers" method="post">
+<input name="DELETEPRINTER" type="submit" class="button" value="'$DELETEPRINTERMSG'"></form></td>
+<td style="vertical-align: top;"><form action="/cgi-bin/admin/locations.cgi" name="printers" method="post">
+<input name="ADDLOCATION" type="submit" class="button" value="'$ADDLOCATIONMSG'"></form></td>
 </tr></tbody></table><br>
 '
 fi

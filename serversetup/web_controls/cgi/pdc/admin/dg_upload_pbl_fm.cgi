@@ -66,7 +66,7 @@ echo '<div id="actionbox">
                 <INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="35">
   </div>
 <div id="submitbox">
-  <input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset">
+  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
 </div>
         </FORM>
 </BODY>

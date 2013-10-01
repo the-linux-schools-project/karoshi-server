@@ -155,5 +155,5 @@ echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="im
 else
 echo '<tr><td><input name="___LDAPSERVER___" value="noldap" type="hidden"></td></tr>'
 fi
-echo '</tbody></table><br><br></div><div id="submitbox"><input value="'$SUBMITMSG'" type="submit">  <input value="'$RESETMSG'" type="reset"></div></form></body></html>'
+echo '</tbody></table><br><br></div><div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit">  <input value="'$RESETMSG'" class="button" type="reset"></div></form></body></html>'
 exit

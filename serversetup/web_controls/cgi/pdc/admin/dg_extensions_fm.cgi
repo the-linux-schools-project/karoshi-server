@@ -96,7 +96,7 @@ echo '<b>'$TITLE'</b> <a class="info" href="javascript:void(0)"><img class="imag
 <br><br>'
 fi
 
-echo '<input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset"><br>'
+echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"><br><br>'
 
 echo '<table class="standard" style="text-align:" border="0" cellpadding="2" cellspacing="2">
     <tbody><tr><td><b>'$EXTENSIONMSG'</b></td><td><b>'$DESCRIPTIONMSG'</b></td><td><b>'$STUDENTSTITLE'</b></td><td><b>'$STAFFTITLE'</b></td></tr>'
@@ -897,6 +897,6 @@ echo '</tbody></table>'
 
 
 
-echo '<input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset">
+echo '<br><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
   </div></form></body></html>'
 exit

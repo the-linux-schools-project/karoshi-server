@@ -120,7 +120,7 @@ echo '<input name="_SECGROUP_" value="staff" type="checkbox">staff</td><td><a cl
 echo '</tbody></table><br><br>
 </div>
 <div id="submitbox">
-  <input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset">
+  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
 </div>
 </form>
 </body>

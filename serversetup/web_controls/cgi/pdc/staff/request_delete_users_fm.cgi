@@ -64,7 +64,7 @@ echo '
 <tr><td><input tabindex= "34" size="10" name="_FORENAME9_"></td><td><input tabindex= "35" size="15" name="_SURNAME9_"></td><td>'`/opt/karoshi/web_controls/group_dropdown_list | sed "s/GROUP/GROUP9/g"`'</td><td><input tabindex= "37" size="18" name="_ADNO9_"></td></tr>
 <tr><td><input tabindex= "38" size="10" name="_FORENAME10_"></td><td><input tabindex= "39" size="15" name="_SURNAME10_"></td><td>'`/opt/karoshi/web_controls/group_dropdown_list | sed "s/GROUP/GROUP10/g"`'</td><td><input tabindex= "41" size="18" name="_ADNO10_"></td></tr>
 </tbody></table><br></div>
-<div id="submitbox"><input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset"></div>
+<div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></div>
 </form></body></html>
 '
 exit

@@ -59,7 +59,7 @@ echo '<form action="/cgi-bin/admin/clear_warnings.cgi" method="post"><div id="ac
 <br>
 </div>
 <div id="submitbox">
-<input value="'$SUBMITMSG'" type="submit">
+<input value="'$SUBMITMSG'" class="button" type="submit">
 </div>
 </form>
 </body>

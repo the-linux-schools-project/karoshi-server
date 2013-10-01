@@ -113,7 +113,7 @@ echo '<form action="/cgi-bin/admin/radius_add_access_pt.cgi" method="post">
         <td><input tabindex= "4" name="_SECRETKEY2_" size="20" type="password"></td>
       </tr>
     </tbody>
-  </table><br><br><input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset">
+  </table><br><br><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
 </form></div></body></html>
 '
 exit

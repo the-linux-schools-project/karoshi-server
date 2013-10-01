@@ -178,7 +178,7 @@ echo '<input name="___SERVER___" value="'$SERVER'" type="hidden">'
 echo '<input name="___EMAILCERT___" value="'$EMAILCERT'" type="hidden">'
 echo '<input name="___WEBCERT___" value="'$WEBCERT'" type="hidden">'
 echo '<input name="___CERTTYPE___" value="'$CERTTYPE'" type="hidden">'
-echo '</div><div id="submitbox"><input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset"></div>'
+echo '</div><div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></div>'
 echo '</form></body</html>'
 
 exit

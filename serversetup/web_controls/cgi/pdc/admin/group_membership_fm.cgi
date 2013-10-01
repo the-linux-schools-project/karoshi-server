@@ -129,5 +129,5 @@ echo '</div><div id="submitbox">'
 else
 echo '<br>'
 fi
-echo '<input value="'$SUBMITMSG'" type="submit"></div></form></body></html>'
+echo '<input value="'$SUBMITMSG'" class="button" type="submit"></div></form></body></html>'
 exit

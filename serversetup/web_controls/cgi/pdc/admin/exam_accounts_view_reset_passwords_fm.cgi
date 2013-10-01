@@ -60,7 +60,7 @@ echo '<form action="/cgi-bin/admin/exam_accounts_view_reset_passwords.cgi" metho
 '$OPENINGMSG'<br>
 </div>
 <div id="submitbox">
-  <input value="'$SUBMITMSG'" type="submit">
+  <input value="'$SUBMITMSG'" class="button" type="submit">
 </div>
 </form>
 </body>
