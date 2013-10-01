@@ -43,7 +43,6 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 function show_status {
 echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
-echo '                window.location = "/cgi-bin/admin/search_fm.cgi";'
 echo '</script>'
 echo "</body></html>"
 exit
@@ -73,7 +72,7 @@ done
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title></head><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body onLoad="start()">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
@@ -85,20 +84,7 @@ then
 export MESSAGE=$HTTPS_ERROR
 show_status
 fi
-#########################
-#Check user accessing this script
-#########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
-then
-MESSAGE=$ACCESS_ERROR1
-show_status
-fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
-then
-MESSAGE=$ACCESS_ERROR1
-show_status
-fi
 #########################
 #Check data
 #########################

@@ -79,7 +79,7 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	// ]]>
 	</script>'
 fi
-echo '</head><body onLoad="start()"><form action="/cgi-bin/admin/helpdesk_add.cgi" method="post">'
+echo '</head><body onLoad="start()">'
 
 #Generate navigation bar
 if [ $MOBILE = no ]
@@ -118,7 +118,7 @@ fi
 
 
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo '<form action="/cgi-bin/admin/helpdesk_add.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody>
 <tr><td style="width: '$WIDTH1'px;">'$NAMEMSG'</td><td ><input value="'$REMOTE_USER'" tabindex="1" style="width: '$WIDTH1'px;" maxlength="22" size="20" name="_NAME_"></td></tr>
 <tr><td style="width: '$WIDTH1'px;">'$JOBTITLEMMSG'</td><td style="vertical-align: top;"><input tabindex="2" maxlength="24" style="width: '$WIDTH1'px;" size="20" name="_JOBTITLE_"></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td>
@@ -200,8 +200,8 @@ then
 echo '</div><div id="submitbox">'
 fi
 echo '<input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset">
-</div>
 </form>
+</div>
 </body>
 </html>
 '

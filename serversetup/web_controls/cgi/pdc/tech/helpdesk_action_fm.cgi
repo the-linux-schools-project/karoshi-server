@@ -66,7 +66,7 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	// ]]>
 	</script>'
 fi
-echo '</head><body><form action="/cgi-bin/admin/helpdesk_action.cgi" method="post">'
+echo '</head><body>'
 #########################
 #Get data input
 #########################
@@ -143,6 +143,9 @@ WIDTH3=140
 COLS=18
 ROWS=4
 fi
+
+echo '<form action="/cgi-bin/admin/helpdesk_action.cgi" method="post">'
+
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
 
 #Show back button for mobiles
