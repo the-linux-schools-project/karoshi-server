@@ -86,7 +86,7 @@ else
 DIV_ID=actionbox2
 fi
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 #########################
 #Get data input
 #########################
@@ -306,6 +306,6 @@ YEAR=`echo $DATE | cut -d- -f1`
 
 let COUNTER=$COUNTER+1
 done
-
+[ $MOBILE = no ] && echo '</div>'
 echo '</div></body></html>'
 exit

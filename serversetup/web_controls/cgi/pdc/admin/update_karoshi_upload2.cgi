@@ -99,7 +99,7 @@ else
 DIV_ID=actionbox2
 fi
 
-echo '<div id="'$DIV_ID'">'
+echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -108,7 +108,7 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 <tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$TITLE'</b></a></td></tr></tbody></table><br>'
 else
-echo '<b>'$TITLE'</b><br><br>'
+echo '<b>'$TITLE'</b><br><br></div><div id="infobox">'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/update_karoshi_upload2.cgi | cut -d' ' -f1`
@@ -136,5 +136,5 @@ MESSAGE=$ERRORMSG9
 show_status
 fi
 
-echo "</body></html>"
+echo "</div></div></body></html>"
 

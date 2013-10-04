@@ -135,7 +135,10 @@ LOGTYPE=NOTSET
 [ -f /opt/karoshi/logs/internetlogs/"'$LOGDATE'"/sites/allowed/"'$WEBSITE'".tar.gz ] && LOGTYPE=archive
 [ $LOGTYPE = NOTSET ] && exit 102
 #Create table header
-echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\">"\<b\>'$TITLE2' '$WEBSITE' '$LOGDATE'\<\/b\>"</td><td style=\"vertical-align: top;\">"\<form action=\"/cgi-bin/admin/dg_banned_sites_fm.cgi\" method=\"post\" target=\"_blank\"\>\<a class=\"info\" href=\"javascript:void\(0\)\"\>\<input name=\"_WEBSITE_'$WEBSITE'"_"\" type=\"image\" class=\"images\" src=\"/images/submenus/internet/internet_ban.png\" value=\"\"\>\<span\>'$BANSITEMSG'\</span\>\</a\>\</form\>"</td></tr></tbody></table>"\<br\>
+echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>'$TITLE2' '$WEBSITE' '$LOGDATE'</b></td><td style=\"vertical-align: top;\"><form action=\"/cgi-bin/admin/dg_banned_sites_fm.cgi\" method=\"post\" target=\"_blank\">
+<input name=\"_WEBSITE_'$WEBSITE'"_"\" type=\"submit\" class=\"button\" value=\"'$BANSITEMSG'\">
+</form></td></tr></tbody></table><br></div><div id=\"infobox\">"
+
 echo \<table class=\"standard\" style=\"text-align: left\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>\<tbody\>
 echo \<tr\>\<td style\=\"width: 60px\;\"\>\<b\>'$FILTERMSG'\<\/b\>\<td style\=\"width: 90px\;\"\>\<b\>'$TIMEMSG'\<\/b\>\</td\>\<td\>\</td\>\<td style\=\"width: 120px\;\"\>\<b\>'$USERNAMEMSG'\<\/b\>\</td\>\<td\>\</td\>\<td\>\<b\>'$COMPIP'\<\/b\>\</td\>\</tr\>
 if [ $LOGTYPE = text ]
@@ -157,7 +160,11 @@ LOGTYPE=NOTSET
 [ -f /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/allowed/"$WEBSITE".tar.gz ] && LOGTYPE=archive
 [ $LOGTYPE = NOTSET ] && exit 102
 #Create table header
-echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\">"\<b\>$TITLE2 $WEBSITE $LOGDATE\<\/b\>"</td><td style=\"vertical-align: top;\">"\<form action=\"/cgi-bin/admin/dg_banned_sites_fm.cgi\" method=\"post\" target=\"_blank\"\>\<a class=\"info\" href=\"javascript:void\(0\)\"\>\<input name=\"_WEBSITE_$WEBSITE"_"\" type=\"image\" class=\"images\" src=\"/images/submenus/internet/internet_ban.png\" value=\"\"\>\<span\>$BANSITEMSG\</span\>\</a\>\</form\>"</td></tr></tbody></table>"\<br\>
+#Create table header
+echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>$TITLE2 $WEBSITE $LOGDATE</b></td><td style=\"vertical-align: top;\"><form action=\"/cgi-bin/admin/dg_banned_sites_fm.cgi\" method=\"post\" target=\"_blank\">
+<input name=\"_WEBSITE_$WEBSITE"_"\" type=\"submit\" class=\"button\" value=\"$BANSITEMSG\">
+</form></td></tr></tbody></table><br></div><div id=\"infobox\">"
+
 echo \<table class=\"standard\" style=\"text-align: left\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>\<tbody\>
 echo \<tr\>\<td style\=\"width: 60px\;\"\>\<b\>$FILTERMSG\<\/b\>\</td\>\<td style\=\"width: 90px\;\"\>\<b\>$TIMEMSG\<\/b\>\</td\>\<td\>\</td\>\<td style\=\"width: 120px\;\"\>\<b\>$USERNAMEMSG\<\/b\>\</td\>\<td\>\</td\>\<td\>\<b\>$COMPIP\<\/b\>\</td\>\</tr\>
 if [ $LOGTYPE = text ]

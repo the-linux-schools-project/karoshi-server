@@ -234,7 +234,7 @@ else
 DIV_ID=actionbox2
 fi
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 
 
@@ -266,12 +266,13 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tr><td style="vertical-align: top;"><b>'$TITLE' - '$SERVERNAME'</b></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td><td style="vertical-align: top;">
-<form action="/cgi-bin/admin/dnsview.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_ACTION_'$ACTION2'_" type="image" class="images" src="'$ICON'" value=""><span>'$ALTTITLE'</span></a></form>
-
-
+<form action="/cgi-bin/admin/dnsview.cgi" method="post">
+<input name="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_ACTION_'$ACTION2'_" type="submit" class="button" value="'$ALTTITLE'">
+</form>
 </td></tr></tbody></table><br>'
 fi
 
+[ $MOBILE = no ] && echo '</div><div id="infobox">'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dnsview.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$ACTION:$NAME:$DNSENTRY:$DNSTYPE:$MOBILE" | sudo -H /opt/karoshi/web_controls/exec/dnsview

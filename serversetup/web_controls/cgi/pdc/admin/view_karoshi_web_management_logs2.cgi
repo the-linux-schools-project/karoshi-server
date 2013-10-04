@@ -209,7 +209,7 @@ if [ $MOBILE = no ]
 then
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox">'
+echo '<div id="actionbox"><div id="titlebox">'
 fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/view_karoshi_web_management_logs2.cgi | cut -d' ' -f1`
 #Show logs
@@ -233,6 +233,8 @@ echo '<b>'$TITLE : $MONTH-$YEAR'</b><br><br>'
 fi
 fi
 
+[ $MOBILE = no ] && echo '</div><div id="infobox">'
+
 sudo -H /opt/karoshi/web_controls/exec/view_karoshi_web_management_logs $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOGVIEW:$DAY:$MONTH:$YEAR:$MOBILE:
 LOG_STATUS=`echo $?`
 if [ $LOG_STATUS = 101 ]
@@ -245,6 +247,6 @@ then
 MESSAGE=$ERRORMSG4
 show_status
 fi
-echo '</div>'
-echo "</body></html>"
+[ $MOBILE = no ] && echo '</div>'
+echo '</div></body></html>'
 exit

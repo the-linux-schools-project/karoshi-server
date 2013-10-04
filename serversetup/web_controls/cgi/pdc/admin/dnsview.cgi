@@ -250,9 +250,10 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tr><td style="vertical-align: top;"><b>'$TITLE2' - '$SERVERNAME'</b></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td><td style="vertical-align: top;">
-<form action="/cgi-bin/admin/dnsadd_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_" type="image" class="images" src="/images/submenus/system/dnsadd.png" value=""><span>'$TITLE4'</span></a></form></td></tr></tbody></table><br>'
+<form action="/cgi-bin/admin/dnsadd_fm.cgi" method="post">
+<input name="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_" type="submit" class="button" value="'$TITLE4'">
+</form></td></tr></tbody></table><br>'
 fi
-
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dnsview.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$ACTION:$LINENUMBER:$TCPIP:$DNSDATA2:$MOBILE" | sudo -H /opt/karoshi/web_controls/exec/dnsview
@@ -262,9 +263,7 @@ then
 show_dns
 fi
 
-echo '</div>
-</body>
-</html>
-'
+[ $MOBILE = no ] && echo '</div>'
+echo '</div></body></html>'
 exit
 

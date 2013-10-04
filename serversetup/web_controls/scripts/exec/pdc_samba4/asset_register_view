@@ -276,6 +276,8 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 <td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_add_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON4'" value=""><span>'$ADDASSETMSG'</span></a></td>
 <td style="vertical-align: top;"><b>'$TITLE16'</b></td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_view_LOCATION_'$LOCATION'_ASSETCHOICE_'$ASSETTYPE'_OPTION_nofilter_" type="image" class="images" src="'$ASSETICON'" value=""><span>'$SHOWALLMSG'</span></a></td></tr></tbody></table><br><br>'
 
+[ $MOBILE != yes ] && echo '</div><div id="infobox">'
+
 echo '<textarea rows="100" cols="150">'
 echo $IDENTITYNAME,$LOCATIONMSG,$ASSETTYPEMSG,$DESCRIPTIONMSG,$TCPIPMSG,$MACADDRESSMSG,$SERIAL_KEY,$PURCHASE_DATE,$VALUEMSG,$SUPPLIERMSG,$BUDGETMSG,$USERNAME
 for LOCATIONS in /opt/karoshi/asset_register/locations/*
@@ -760,7 +762,7 @@ fi
 function asset_form {
 echo '<input type="image" src="/images/submenus/file/go.gif" name="_ACTION_really'$ACTION'_ASSET_'$ASSET'_" value="">'
 echo '<a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" alt="back" border="0"></a><br><br>'
-echo '<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2" class="'$TABLECLASS'"><tbody>'
+echo '<table style="text-align: left;" border="0" cellpadding="2" cellspacing="2" class="'$TABLECLASS'"><tbody>'
 if [ $ACTION = edit ]
 then
 echo '<tr><td style="width: 180px;">'$ASSETNUMMSG'</td><td>'$ASSET'</td></tr>'
@@ -1162,6 +1164,9 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 <td style="vertical-align: top;"><b>'$TITLE2 - $LOCATION'</b></td></tr></tbody></table>
 '
 fi
+
+[ $MOBILE != yes ] && echo '</div><div id="infobox">'
+
 if [ `ls -1 /opt/karoshi/asset_register/locations/$LOCATION/ | wc -l` -gt 0 ]
 then
 echo '
@@ -1215,6 +1220,8 @@ then
 OPTION=`echo $OPTION | sed 's/%3A/:/g'`
 
 echo '<b>'$TITLE5' - '$OPTION'</b><br><br>'
+
+[ $MOBILE != yes ] && echo '</div><div id="infobox">'
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 60px;">'$IDENTITYNAME'</td><td style="width: 180px;">'$DESCRIPTIONMSG'</td><td style="width: 80px;">'$ASSIGNEDMSG'</td><td style="width: 60px;">'$TCPIPMSG'</td><td style="width: 60px;">'$MACADDRESSMSG'</td><td style="width: 80px;">'$SERIAL_KEY'</td><td style="width: 60px;">'$PURCHASE_DATE'</td><td style="width: 60px;">'$VALUEMSG'</td><td style="width: 80px;">'$SUPPLIERMSG'</td><td style="width: 180px;">'$BUDGETMSG'</td></tr>'

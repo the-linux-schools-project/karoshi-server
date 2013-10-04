@@ -145,7 +145,7 @@ ICON18=/images/assets/qrcode.png
 if [ $ACTION = qrcodes ]
 then
 #Load asset_register_show_qrcodes.cgi
-echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/asset_register_show_qrcodes.cgi\" target=\"_top\" name = \"frm\">
+echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/asset_register_show_qrcodes.cgi\" target=\"_blank\" name = \"frm\">
 <input type=\"hidden\" name=\"_LOCATION_\" value=\"$LOCATION\">
 </form>
 <script>
@@ -1143,6 +1143,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 <td style="vertical-align: top;"><b>'$TITLE2 - $LOCATION'</b></td></tr></tbody></table>
 '
 fi
+
 if [ `ls -1 /opt/karoshi/asset_register/locations/$LOCATION/ | wc -l` -gt 0 ]
 then
 echo '

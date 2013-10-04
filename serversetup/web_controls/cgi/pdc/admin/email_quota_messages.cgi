@@ -75,7 +75,7 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<form action="/cgi-bin/admin/email_quota_messages2.cgi" method="post">'
-echo '<div id="actionbox"><b>'$TITLE'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG'</span></a><br><br><input value="Submit" type="submit"><input value="Reset" type="reset"><br><br>'
+echo '<div id="actionbox"><b>'$TITLE'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG'</span></a><br><br><input value="Submit" class="button" type="submit"><input value="Reset" class="button" type="reset"><br><br>'
 ###########################
 #Get current email messages
 ###########################
@@ -126,6 +126,6 @@ echo \</textarea\>
 else
 echo \<textarea cols=\"80\" rows=\"8\" name=\"_LEVEL4_\"\>\</textarea\>
 fi
-echo '<br><br><input value="Submit" type="submit"><input value="Reset" type="reset">
+echo '<br><br><input value="Submit" class="button" type="submit"><input value="Reset" class="button" type="reset">
 </div></form></body></html>'
 exit

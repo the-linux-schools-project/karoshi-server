@@ -169,7 +169,11 @@ LOGTYPE=NOTSET
 [ $LOGTYPE = NOTSET ] && exit 102
 #Create table header
 
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\">"\<b\>'$TITLE5' '$TCPIP' '$DAY'-'$MONTH'-'$YEAR'\<\/b\>"</td><td style=\"vertical-align: top; width: 25px;\">" \<form action=\"/cgi-bin/admin/dg_view_computer_logs.cgi\" method=\"post\" target=\"_top\"\>\<a class=\"info\" href=\"javascript:void\(0\)\"\>\<input name=\"_TCPIP_'$TCPIP'"_"DATE_'$DAY'-'$MONTH'-'$YEAR'"_"DETAILED_'$DETAILED2'"_"\" type=\"image\" class=\"images\" src=\"/images/submenus/internet/'$DETAIL_ICON'\" value=\"\"\>\<span\>'$DETAILEDLOGSMSG'\</span\>\</a\>\</form\>"</td></tr></tbody></table>"\<br\>
+echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>'$TITLE5' '$TCPIP' '$DAY'-'$MONTH'-'$YEAR'</b></td><td style=\"vertical-align: top; width: 25px;\"> <form action=\"/cgi-bin/admin/dg_view_computer_logs.cgi\" method=\"post\" target=\"_top\">
+<input name=\"_TCPIP_'$TCPIP'"_"DATE_'$DAY'-'$MONTH'-'$YEAR'"_"DETAILED_'$DETAILED2'"_"\" type=\"submit\" class=\"button\" value=\"'$DETAILEDLOGSMSG'\">
+</form></td></tr></tbody></table><br>"
+
+[ '$MOBILE' = no ] && echo "</div><div id=\"infobox\">"
 
 echo \<table class=\"'$TABLECLASS'\" style=\"text-align: left\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>\<tbody\>
 echo \<tr\>\<td style\=\"width: 60px\;\"\>\<b\>'$FILTERMSG'\<\/b\>\</td\>\<td style\=\"width: 90px\;\"\>\<b\>'$TIMEMSG'\<\/b\>\</td\>\<td\>\</td\>\<td style\=\"width: 120px\;\"\>\<b\>'$USERNAMEMSG'\<\/b\>\</td\>\<td\>\</td\>\<td\>\<b\>'$WEBURL'\<\/b\>\</td\>\</tr\>
@@ -191,7 +195,11 @@ LOGTYPE=NOTSET
 [ $LOGTYPE = NOTSET ] && exit 102
 #Create table header
 
-echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\">"\<b\>$TITLE5 $TCPIP $DAY-$MONTH-$YEAR\<\/b\>"</td><td style=\"vertical-align: top; width: 25px;\">" \<form action=\"/cgi-bin/admin/dg_view_computer_logs.cgi\" method=\"post\" target=\"_top\"\>\<a class=\"info\" href=\"javascript:void\(0\)\"\>\<input name=\"_TCPIP_$TCPIP"_"DATE_$DAY-$MONTH-$YEAR"_"DETAILED_$DETAILED2"_"\" type=\"image\" class=\"images\" src=\"/images/submenus/internet/$DETAIL_ICON\" value=\"\"\>\<span\>$DETAILEDLOGSMSG\</span\>\</a\>\</form\>"</td></tr></tbody></table>"\<br\>
+echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>'$TITLE5' '$TCPIP' '$DAY'-'$MONTH'-'$YEAR'</b></td><td style=\"vertical-align: top; width: 25px;\"> <form action=\"/cgi-bin/admin/dg_view_computer_logs.cgi\" method=\"post\" target=\"_top\">
+<input name=\"_TCPIP_'$TCPIP'"_"DATE_'$DAY'-'$MONTH'-'$YEAR'"_"DETAILED_'$DETAILED2'"_"\" type=\"submit\" class=\"button\" value=\"'$DETAILEDLOGSMSG'\">
+</form></td></tr></tbody></table><br>"
+
+[ $MOBILE = no ] && echo "</div><div id=\"infobox\">"
 
 echo \<table class=\"$TABLECLASS\" style=\"text-align: left\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>\<tbody\>
 echo \<tr\>\<td style\=\"width: 60px\;\"\>\<b\>$FILTERMSG\<\/b\>\</td\>\<td style\=\"width: 90px\;\"\>\<b\>$TIMEMSG\<\/b\>\</td\>\</td\>\<td\>\<td style\=\"width: 120px\;\"\>\<b\>$USERNAMEMSG\<\/b\>\</td\>\<td\>\</td\>\<td\>\<b\>$WEBURL\<\/b\>\</td\>\</tr\>

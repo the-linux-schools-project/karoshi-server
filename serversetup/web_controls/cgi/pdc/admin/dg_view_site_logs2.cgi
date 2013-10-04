@@ -48,7 +48,7 @@ echo ""
 echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE2'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body>'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox">'
+echo '<div id="actionbox"><div id="titlebox">'
 #########################
 #Get data input
 #########################
@@ -148,5 +148,6 @@ then
 MESSAGE=`echo $ERRORMSG7`
 show_status
 fi
+[ $MOBILE = no ] && echo '</div>'
 echo '</div></body></html>'
 exit

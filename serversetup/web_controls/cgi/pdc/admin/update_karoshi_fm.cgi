@@ -163,8 +163,12 @@ fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td>
-<form action="/cgi-bin/admin/update_karoshi_fm.cgi" name="selectservers" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'$ACTION'_" type="image" class="images" src="'$ICON'" value=""><span>'$MESSAGE'</span></a></form></td><td>
-<form action="/cgi-bin/admin/refresh_karoshi_update_list.cgi" name="selectservers" method="post"><a class="info" href="javascript:void(0)"><input name="" type="image" class="images" src="/images/submenus/system/reload_ls_server_list.png" value=""><span>'$REFRESHLISTMSG'</span></a></form></td></tr></tbody></table>'
+<form action="/cgi-bin/admin/update_karoshi_fm.cgi" name="selectservers" method="post">
+<input name="_ACTION_'$ACTION'_" type="submit" class="button" value="'$MESSAGE'">
+</form></td><td>
+<form action="/cgi-bin/admin/refresh_karoshi_update_list.cgi" name="selectservers" method="post">
+<input name="" type="submit" class="button" value="'$REFRESHLISTMSG'">
+</form></td></tr></tbody></table>'
 
 echo '<form action="/cgi-bin/admin/update_karoshi.cgi" name="selectservers" method="post">'
 

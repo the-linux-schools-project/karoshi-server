@@ -128,8 +128,11 @@ LOGTYPE=NOTSET
 
 [ $LOGTYPE = NOTSET ] && exit 102
 #Create table header
-echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>'$TITLE6' '$USERNAME' </b></td><td style=\"vertical-align: top;\"><form action=\"/cgi-bin/admin/dg_ban_user.cgi\" method=\"post\" target=\"_blank\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_STUDENTS_'$USERNAME'"_"\" type=\"image\" class=\"images\" src=\"/images/submenus/internet/ban_user.png\" value=\"\"><span>'$BANMSG'</span></a></form></td></tr></tbody></table><br>
-<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody><tr><td style=\"width: 60px;\"><b>'$VIEWLOGMSG2'</b></td><td style=\"width: 90px;\"><b>'$SITESVISTEDMSG'</b></td><td style=\"width: 120px;\"><b>'$WEBLOGDATE'</b></td></tr>"
+echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>'$TITLE6' '$USERNAME' </b></td><td style=\"vertical-align: top;\"><form action=\"/cgi-bin/admin/dg_ban_user.cgi\" method=\"post\" target=\"_blank\">
+<input name=\"_USERNAME_'$USERNAME'"_"\" type=\"submit\" class=\"button\" value=\"'$BANMSG'\">
+</form></td></tr></tbody></table><br>
+</div><div id=\"infobox\">
+<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody><tr><td style=\"width: 60px;\"><b>'$BANMSG'</b></td><td style=\"width: 90px;\"><b>'$SITESVISTEDMSG'</b></td><td style=\"width: 120px;\"><b>'$WEBLOGDATE'</b></td></tr>"
 
 cat /opt/karoshi/logs/internetlogs/user_usage/'$USERNAME'
 
@@ -143,8 +146,11 @@ LOGTYPE=NOTSET
 [ -f /opt/karoshi/logs/internetlogs/user_usage/$USERNAME ] && LOGTYPE=text
 [ $LOGTYPE = NOTSET ] && exit 102
 #Create table header
-echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>$TITLE6 $USERNAME </b></td><td style=\"vertical-align: top;\"><form action=\"/cgi-bin/admin/dg_ban_user.cgi\" method=\"post\" target=\"_blank\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_STUDENTS_$USERNAME"_"\" type=\"image\" class=\"images\" src=\"/images/submenus/internet/ban_user.png\" value=\"\"><span>$BANMSG</span></a></form></td></tr></tbody></table><br>
-<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody><tr><td style=\"width: 60px;\"><b>$VIEWLOGMSG2</b></td><td style=\"width: 90px;\"><b>$SITESVISTEDMSG</b></td><td style=\"width: 120px;\"><b>$WEBLOGDATE</b></td></tr>"
+echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>$TITLE6 $USERNAME </b></td><td style=\"vertical-align: top;\"><form action=\"/cgi-bin/admin/dg_ban_user.cgi\" method=\"post\" target=\"_blank\">
+<input name=\"_USERNAME_'$USERNAME'"_"\" type=\"submit\" class=\"button\" value=\"'$BANMSG'\">
+</form></td></tr></tbody></table><br>
+</div><div id=\"infobox\">
+<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody><tr><td style=\"width: 60px;\"><b>$SITESVISTEDMSG</b></td><td style=\"width: 90px;\"><b>$SITESVISTEDMSG</b></td><td style=\"width: 120px;\"><b>$WEBLOGDATE</b></td></tr>"
 
 cat /opt/karoshi/logs/internetlogs/user_usage/$USERNAME
 

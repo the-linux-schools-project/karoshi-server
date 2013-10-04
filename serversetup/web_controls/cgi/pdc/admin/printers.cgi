@@ -137,7 +137,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 '
 
 else
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<div id="titlebox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="vertical-align: top;"><b>'$TITLE1'</b></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Manage_Print_Queues"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG1"'</span></a></td>
 <td style="vertical-align: top;">
@@ -147,12 +147,14 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 <input name="DELETEPRINTER" type="submit" class="button" value="'$DELETEPRINTERMSG'"></form></td>
 <td style="vertical-align: top;"><form action="/cgi-bin/admin/locations.cgi" name="printers" method="post">
 <input name="ADDLOCATION" type="submit" class="button" value="'$ADDLOCATIONMSG'"></form></td>
-</tr></tbody></table><br>
+</tr></tbody></table></div>
 '
 fi
 
+[ $MOBILE = no ] && echo '<div id="infobox">'
+
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printers.cgi | cut -d' ' -f1`
 sudo -H /opt/karoshi/web_controls/exec/printers $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:
-echo "</div>"
-echo "</body></html>"
+[ $MOBILE = no ] && echo '</div>'
+echo "</div></body></html>"
 exit

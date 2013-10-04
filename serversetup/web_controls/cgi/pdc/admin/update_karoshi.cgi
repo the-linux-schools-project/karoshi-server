@@ -23,12 +23,11 @@
 #aball@karoshi.org.uk
 #
 #Website: http://www.karoshi.org.uk
-########################
-#Required input variables
-########################
-#  _SERVER_
-#  _PASSWORD1_  Root Password
-#  _PASSWORD2_  Checked against PASSWORD1 for typos.
+
+#Detect mobile browser
+MOBILE=no
+source /opt/karoshi/web_controls/detect_mobile_browser
+
 ############################
 #Language
 ############################
@@ -111,10 +110,6 @@ MESSAGE=$ERRORMSG1
 show_status
 fi
 
-#Detect mobile browser
-MOBILE=no
-source /opt/karoshi/web_controls/detect_mobile_browser
-
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
@@ -125,11 +120,13 @@ else
 DIV_ID=actionbox2
 fi
 
-echo '<div id="'$DIV_ID'">'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="infobox">'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/update_karoshi.cgi | cut -d' ' -f1`
 
 sudo -H /opt/karoshi/web_controls/exec/update_karoshi $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PATCHNAME:
 EXEC_STATUS=`echo $?`
+
+[ $MOBILE = no ] && echo '</div></div>'
 
 if [ $EXEC_STATUS = 102 ]
 then

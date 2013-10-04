@@ -250,6 +250,7 @@ fi
 
 echo '<b>'$LOCATION'</b>'
 
+SHOWMOVE=no
 if [ "$ITEMMOVE"'null' != null ]
 then
 convert_special_chars2
@@ -272,16 +273,8 @@ done
 
 if [ $MOVECHECK = yes ]
 then
-echo '<br><br><input name="_ITEMMOVE_" value="'$ITEMMOVE'" type="hidden">'
-
-echo ''$ITEMMOVE2'
-
-<input name="_ACTION_REALLYMOVE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_ITEMMOVE_'$ITEMMOVE'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$MOVEMSG2'">
-<input name="_ACTION_REALLYCOPY_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_ITEMMOVE_'$ITEMMOVE'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$COPYMSG2'">
-<input name="_ACTION_CANCELCOPY_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$CANCELMSG'">
-'
-else
-echo "<br><br>"$ERRORMSG11"<br>"
+SHOWMOVE=yes
+echo '<input name="_ITEMMOVE_" value="'$ITEMMOVE'" type="hidden">'
 fi
 fi
 
@@ -291,8 +284,25 @@ echo '<br><br>
 <input name="_ACTION_CREATEDIR_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$NEWDIRMSG'">
 <input name="_ACTION_CREATEFILE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$NEWFILEMSG'">
 <input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$RELOADMSG'">
-<br><br>
-<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><col width=22><col width=22><col width=22><col width=22><col width=22><tbody>
+<br><br>'
+
+[ $MOBILE != yes ] && echo '</div><div id="infobox">'
+
+if [ $SHOWMOVE = yes ]
+then
+if [ $MOVECHECK = yes ]
+then 
+echo '<input name="_ACTION_REALLYMOVE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_ITEMMOVE_'$ITEMMOVE'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$MOVEMSG2'">
+<input name="_ACTION_REALLYCOPY_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_ITEMMOVE_'$ITEMMOVE'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$COPYMSG2'">
+<input name="_ACTION_CANCELCOPY_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$CANCELMSG'">
+'$ITEMMOVE2'
+'
+else
+echo "<br><br>"$ERRORMSG11"<br>"
+fi
+fi
+
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><col width=22><col width=22><col width=22><col width=22><col width=22><tbody>
 '
 #Log Browse Actions
 echo `date`: file_manager - browsing  "$LOCATION" on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE

@@ -181,7 +181,7 @@ DIV_ID=actionbox2
 TABLECLASS=mobilestandard
 fi
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -230,14 +230,14 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 <a class="info" href="javascript:void(0)"><input name="_ACTION_resetall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="image" class="images" src="'$ICON3'" value=""><span>'$RESETALLMSG'</span></a></form></td>
 <td style="vertical-align: top;">
 <form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
-<a class="info" href="javascript:void(0)"><input name="_ACTION_wakeonlanall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="image" class="images" src="'$ICON2'" value=""><span>'$WAKEONLANALLMSG'</span></a></form></td></tr></table><br>'
+<a class="info" href="javascript:void(0)"><input name="_ACTION_wakeonlanall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="image" class="images" src="'$ICON2'" value=""><span>'$WAKEONLANALLMSG'</span></a></form></td></tr></table>'
 fi
-
+[ $MOBILE = no ] && echo '</div><div id="infobox">'
 echo '<form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/client_boot_controls.cgi | cut -d' ' -f1`
 sudo -H /opt/karoshi/web_controls/exec/client_boot_controls $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOCATION:$SEARCH:$MOBILE:
 
 echo '</form>'
-echo "</div>"
-echo "</body></html>"
+[ $MOBILE = no ] && echo '</div>'
+echo "</div></body></html>"
 exit

@@ -452,15 +452,17 @@ MESSAGE=$ACCESS_ERROR1
 show_status
 fi
 
+
+
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox">'
 fi
 
 echo '<form action="/cgi-bin/admin/asset_register_view.cgi" method="post">'
+
 if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
@@ -469,11 +471,13 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$INFRASTRUCTURESMSG'</a>
 </div></div><div id="mobileactionbox3">
 '
-
+else
+echo '<div id="actionbox"><div id="titlebox">'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/asset_register_view.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$LOCATION:$ACTION:$ASSET:$OPTION:$ASSETCHOICE:$ASSETTYPE:$TCPIP1:$TCPIP2:$TCPIP3:$MACADDRESS1:$MACADDRESS2:$MACADDRESS3:$SERIALKEY:$PURCHASEDATE:$IDENTITY:$DESCRIPTION:$USERNAME:$VALUE:$SUPPLIER:$BUDGET:$IMPORTDATA:$EXTRAINFO" | sudo -H /opt/karoshi/web_controls/exec/asset_register_view
 
-echo '</form></div></body></html>'
+[ $MOBILE = no ] && echo '</div>'
+echo '</div></form></body></html>'
 exit
