@@ -1,0 +1,72 @@
+#!/bin/bash
+
+#Copyright (C) 2013 Robin McCorkell
+
+#This file is part of Karoshi Client.
+#
+#Karoshi Client is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Client is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Client.  If not, see <http://www.gnu.org/licenses/>.
+
+#The Karoshi Team can be contacted either at mpsharrad@karoshi.org.uk or rmccorkell@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+source /opt/karoshi/linuxclientsetup/utilities/common
+
+#Turn off cups browsing
+if [[ `grep -c "Browsing Off" /etc/cups/cupsd.conf` -eq 0 ]]
+then
+	cat >> /etc/cups/cupsd.conf << EOF
+Browsing Off
+BrowseInterval 0
+EOF
+fi
+
+#Remove all network printers
+while read -r printer _; do
+	if [[ `lpstat -v $printer | grep 'smb:\|ipp:'` ]]; then
+		echo "Removing $printer"
+		lpadmin -x $printer
+	fi
+done < <(lpstat -a)
+
+#Assign printers depending on the location
+if [[ $LOCATION ]] && [[ $PRINTSERVER ]] && [[ -f /var/lib/karoshi/printing/list ]]; then
+	printerList=$(< /var/lib/karoshi/printing/list)
+	if [[ $printerList ]]; then
+		read -r defaultPrinter _ <<< "$printerList"
+		while read -r printer _; do
+			echo "Adding printer $printer"
+			if [[ $DOMAINTYPE == samba3 ]]; then
+				lpadmin -p $printer -v smb://$PRINTSERVER.$DNSSUFFIX/$printer -L "$LOCATION" -D "$printer" -E
+			else
+				lpadmin -p $printer -v ksmb://$PRINTSERVER.$DNSSUFFIX/$printer -L "$LOCATION" -D "$printer" -E
+			fi
+			#Copy PPD
+			[[ -f /var/lib/karoshi/printing/$printer.ppd ]] && lpadmin -p $printer -P /var/lib/karoshi/printing/$printer.ppd
+		done <<< "$printerList"
+		lpadmin -d $defaultPrinter
+	fi
+fi
+
+#Permit administrative access to CUPS if offline
+if karoshi-manage-flags get offline_mode >/dev/null; then
+	echo "Unlocking CUPS for offline mode"
+	[[ -f /etc/cups/cupsd.conf ]] && sed -i 's/^DefaultPolicy .*/DefaultPolicy offline/' /etc/cups/cupsd.conf
+else
+	[[ -f /etc/cups/cupsd.conf ]] && sed -i 's/^DefaultPolicy .*/DefaultPolicy default/' /etc/cups/cupsd.conf
+fi
+
+#Fix any outdated PPD files
+cups-genppdupdate
+restart cups

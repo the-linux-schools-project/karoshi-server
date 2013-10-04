@@ -222,13 +222,6 @@ if [[ -d /tmp/netlogon/client_settings/thunderbird/extensions ]]; then
 	fi
 fi
 
-##########################
-#Update the upstart scripts
-##########################
-echo "Updating Upstart scripts"
-[[ -f /tmp/netlogon/linuxclient/$LINUX_VERSION/utilities/karoshi-update.conf ]] && cp -f /tmp/netlogon/linuxclient/$LINUX_VERSION/utilities/karoshi-update.conf /etc/init
-[[ -f /tmp/netlogon/linuxclient/$LINUX_VERSION/utilities/karoshi-idle-shutdown.conf ]] && cp -f /tmp/netlogon/linuxclient/$LINUX_VERSION/utilities/karoshi-idle-shutdown.conf /etc/init
-
 ###########################
 #Create cronjob to shut computer down
 ###########################
@@ -414,59 +407,27 @@ fi
 ############################
 #Printers
 ############################
-echo "Configuring printers"
-#Turn off cups browsing
-if [[ `grep -c "Browsing Off" /etc/cups/cupsd.conf` -eq 0 ]]
-then
-	echo "Browsing Off
-BrowseInterval 0" >> /etc/cups/cupsd.conf
-fi
-
-start cups
-
-#Assign printers depending on the location
-if [[ $LOCATION ]] && ! karoshi-manage-flags get offline_mode >/dev/null; then
-	#Remove all printers
-	while read -r printer _; do
-		if [[ `lpstat -v $printer | grep 'smb:\|ipp:'` ]]; then
-			echo "Removing $printer"
-			lpadmin -x $printer
-		fi
-	done < <(lpstat -a)
-	
-	#Add printers
-	if [[ $PRINTSERVER ]] && [[ -f /tmp/netlogon/printers.txt ]]; then
-		all_printers=`grep $LOCATION /tmp/netlogon/printers.txt`
-		if [[ $all_printers ]]; then
-			printer_count=`cut -d, -f2 <<< "$all_printers"`
-			default_printer=`cut -d, -f$(( printer_count + 3 )) <<< "$all_printers"`
-			for (( i = 3; i < printer_count + 3; ++i )); do
-				printer=`cut -d, -f$i <<< "$all_printers"`
-				echo "Adding printer $printer"
-				if [[ $DOMAINTYPE == samba3 ]]; then
-					lpadmin -p $printer -v smb://$PRINTSERVER.$DNSSUFFIX/$printer -L "$LOCATION" -D "$printer" -E
-				else
-					lpadmin -p $printer -v ksmb://$PRINTSERVER.$DNSSUFFIX/$printer -L "$LOCATION" -D "$printer" -E
-				fi
-				#Copy PPD
-				[[ -f /tmp/netlogon/linuxclient/printer_drivers/$printer.ppd ]] && lpadmin -p $printer -P /tmp/netlogon/linuxclient/printer_drivers/$printer.ppd
-			done
-			lpadmin -d $default_printer
-		fi
+echo "Configuring printer configuration files"
+[[ -d /var/lib/karoshi/printing ]] || mkdir /var/lib/karoshi/printing
+find /var/lib/karoshi/printing -mindepth 1 -delete
+#Copy printer configuration
+if [[ $LOCATION ]] && [[ -f /tmp/netlogon/printers.txt ]]; then
+	all_printers=`grep $LOCATION /tmp/netlogon/printers.txt`
+	if [[ $all_printers ]]; then
+		printer_count=`cut -d, -f2 <<< "$all_printers"`
+		default_printer=`cut -d, -f$(( printer_count + 3 )) <<< "$all_printers"`
+		echo $default_printer > /var/lib/karoshi/printing/list
+		for (( i = 3; i < printer_count + 3; ++i )); do
+			printer=`cut -d, -f$i <<< "$all_printers"`
+			if [[ $printer != $default_printer ]]; then
+				echo "Marking printer $printer to be configured"
+				echo $printer >> /var/lib/karoshi/printing/list
+			fi
+			#Copy PPD
+			[[ -f /tmp/netlogon/linuxclient/printer_drivers/$printer.ppd ]] && cp -f /tmp/netlogon/linuxclient/printer_drivers/$printer.ppd /var/lib/karoshi/printing/$printer.ppd
+		done
 	fi
 fi
-
-#Permit administrative access to CUPS if offline
-if karoshi-manage-flags get offline_mode >/dev/null; then
-	echo "Unlocking CUPS for offline mode"
-	[[ -f /etc/cups/cupsd.conf ]] && sed -i 's/^DefaultPolicy .*/DefaultPolicy offline/' /etc/cups/cupsd.conf
-else
-	[[ -f /etc/cups/cupsd.conf ]] && sed -i 's/^DefaultPolicy .*/DefaultPolicy default/' /etc/cups/cupsd.conf
-fi
-
-#Fix any outdated PPD files
-cups-genppdupdate
-restart cups
 
 ############################
 #Update client

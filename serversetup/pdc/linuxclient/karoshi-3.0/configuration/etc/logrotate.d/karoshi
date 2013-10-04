@@ -1,0 +1,32 @@
+/var/log/karoshi/pre-session.log {
+	weekly
+	rotate 3
+	compress
+	missingok
+	notifempty
+	create 640 root adm
+}
+/var/log/karoshi/post-session.log {
+	weekly
+	rotate 3
+	compress
+	missingok
+	notifempty
+	create 640 root adm
+}
+/var/log/karoshi/offline-homes.log {
+	weekly
+	rotate 3
+	compress
+	missingok
+	notifempty
+	create 640 root adm
+}
+/var/log/karoshi/virtualbox-mkdir.log {
+	weekly
+	rotate 3
+	compress
+	missingok
+	notifempty
+	create 640 root adm
+}
