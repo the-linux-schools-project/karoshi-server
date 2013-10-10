@@ -84,7 +84,7 @@ if [ `echo $MACADDRESS | sed 's/:/\n/g'  | sed /^$/d | wc -l` = 6 ]
 then
 #Send wakeonlan
 echo `date +%T` $MACADDRESS >> /opt/karoshi/logs/wake_on_lan/$LOCATION/$LOG_DATE
-wakelan $MACADDRESS
+wakeonlan $MACADDRESS
 fi
 #Delay to avoid power surges
 sleep 1

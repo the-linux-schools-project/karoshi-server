@@ -169,7 +169,7 @@ then
 if [ $MACADDRESS != N.A. ]
 then
 echo `date`: client_boot_controls2 - waking up $ASSET on $MACADDRESS by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-wakelan $MACADDRESS
+wakeonlan $MACADDRESS
 fi
 fi
 fi
@@ -187,7 +187,7 @@ MACADDRESS=`sed -n 8,8p /opt/karoshi/asset_register/locations/$LOCATION/1/$ASSET
 if [ $MACADDRESS'null' != null ] && [ $MACADDRESS != N.A. ]
 then
 echo Waking $MACADDRESS"<br>"
-wakelan $MACADDRESS 1>/dev/null
+wakeonlan $MACADDRESS 1>/dev/null
 sleep 1.5
 fi
 done
@@ -205,7 +205,7 @@ MACADDRESS=`sed -n 8,8p /opt/karoshi/asset_register/locations/$LOCATION/2/$ASSET
 if [ $MACADDRESS'null' != null ] && [ $MACADDRESS != N.A. ]
 then
 echo Waking $MACADDRESS"<br>"
-wakelan $MACADDRESS 1>/dev/null
+wakeonlan $MACADDRESS 1>/dev/null
 sleep 1.5
 fi
 done
@@ -223,7 +223,7 @@ MACADDRESS=`sed -n 8,8p /opt/karoshi/asset_register/locations/$LOCATION/3/$ASSET
 if [ $MACADDRESS'null' != null ] && [ $MACADDRESS != N.A. ]
 then
 echo Waking $MACADDRESS"<br>"
-wakelan $MACADDRESS 1>/dev/null
+wakeonlan $MACADDRESS 1>/dev/null
 sleep 1.5
 fi
 done
@@ -241,7 +241,7 @@ MACADDRESS=`sed -n 8,8p /opt/karoshi/asset_register/locations/$LOCATION/2/$ASSET
 if [ $MACADDRESS'null' != null ] && [ $MACADDRESS != N.A. ]
 then
 echo Waking $MACADDRESS"<br>"
-wakelan $MACADDRESS 1>/dev/null
+wakeonlan $MACADDRESS 1>/dev/null
 sleep 1.5
 fi
 done
@@ -259,7 +259,7 @@ MACADDRESS=`sed -n 8,8p /opt/karoshi/asset_register/locations/$LOCATION/5/$ASSET
 if [ $MACADDRESS'null' != null ] && [ $MACADDRESS != N.A. ]
 then
 echo Waking $MACADDRESS"<br>"
-wakelan $MACADDRESS 1>/dev/null
+wakenonlan $MACADDRESS 1>/dev/null
 sleep 1.5
 fi
 done
