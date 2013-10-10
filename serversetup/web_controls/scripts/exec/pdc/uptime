@@ -25,7 +25,7 @@
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
 [ $LOG_DATE'null' = null ] && exit
-SERVERICON="/images/submenus/system/uptime_reset.png"
+
 ########################
 #Check md5checksum
 ########################
@@ -110,9 +110,16 @@ fi
 
 echo `date`: uptime - "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
+if [ $MOBILE = no ]
+then
+SERVERICON="/images/submenus/system/uptime_reset.png"
+ICON1=/images/submenus/system/computer.png
 TABLECLASS=standard
-[ $MOBILE = yes ] && TABLECLASS=mobilestandard
-
+else
+SERVERICON="/images/submenus/system/uptime_resetm.png"
+ICON1=/images/submenus/system/computerm.png
+TABLECLASS=mobilestandard
+fi
 ############################
 #Language
 ############################
@@ -145,7 +152,7 @@ fi
 fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="6"><tbody><tr><td style="vertical-align: top;">
-<a href="uptime_fm.cgi"><img alt="" src="/images/warnings/server.png"></a>
+<a href="uptime_fm.cgi"><img alt="" src="'$ICON1'"></a>
 </td><td style="vertical-align: top;"><b>'$LABEL' '$LOCATION_NAME'</b></td></tr></tbody></table>'
 
 

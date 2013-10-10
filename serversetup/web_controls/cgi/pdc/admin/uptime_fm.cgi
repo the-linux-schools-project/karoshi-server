@@ -133,12 +133,20 @@ fi
 #Show list of ssh enabled servers
 SERVERLISTCOUNT=1
 SERVERCOUNTER=0
+
+if [ $MOBILE = no ]
+then
 ROWCOUNT=6
-[ $MOBILE = yes ] && ROWCOUNT=3
 WIDTH=90
-[ $MOBILE = yes ] && WIDTH=70
 SERVERICON="/images/submenus/system/computer.png"
 SERVERICON2="/images/submenus/system/all_computers.png"
+else
+ROWCOUNT=3
+WIDTH=70
+SERVERICON="/images/submenus/system/computerm.png"
+SERVERICON2="/images/submenus/system/all_computersm.png"
+fi
+
 if [ -f /opt/karoshi/server_network/info ]
 then
 source /opt/karoshi/server_network/info

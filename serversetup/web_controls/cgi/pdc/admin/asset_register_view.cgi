@@ -469,8 +469,15 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE13'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$INFRASTRUCTURESMSG'</a>
-</div></div><div id="mobileactionbox3">
+</div></div>
 '
+if [ $ACTION = add ] || [ $ACTION = edit ]
+then
+echo '<div id="mobileactionbox2">'
+else
+echo '<div id="mobileactionbox">'
+fi
+
 else
 echo '<div id="actionbox"><div id="titlebox">'
 fi

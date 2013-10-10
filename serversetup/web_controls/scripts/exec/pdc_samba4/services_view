@@ -121,9 +121,15 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/system/services
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 source /opt/karoshi/serversetup/variables/distro
 
+
+if [ $MOBILE = no ]
+then
 ICON1=/images/submenus/system/service_running.png
 ICON2=/images/submenus/system/service_stopped.png
-
+else
+ICON1=/images/submenus/system/service_runningm.png
+ICON2=/images/submenus/system/service_stoppedm.png
+fi
 
 function get_status {
 #Get suggested service list for this server

@@ -32,6 +32,33 @@ VIEWMODE=notset
 MOBILE=$3
 [ $MOBILE'null' = null ] && MOBILE=no
 
+
+ICON1=/images/help/printer_spool.png
+ICON2=/images/help/printer_spool_off.png
+ICON3=/images/submenus/printer/printer_assigned.png
+ICON4=/images/submenus/printer/printer_assigned_off.png
+ICON5=/images/submenus/printer/enable_printer.png
+ICON6=/images/submenus/printer/disable_printer.png
+ICON7=/images/submenus/printer/test_printer.png
+ICON8=/images/submenus/printer/delete_job.png
+ICON9=/images/submenus/printer/clear_queue.png
+ICON10=/images/submenus/printer/printer_unassigned.png
+
+if [ $MOBILE = yes ]
+then
+ICON1=/images/help/printer_spoolm.png
+ICON2=/images/help/printer_spool_offm.png
+ICON3=/images/submenus/printer/printer_assignedm.png
+ICON4=/images/submenus/printer/printer_assigned_offm.png
+ICON5=/images/submenus/printer/enable_printerm.png
+ICON6=/images/submenus/printer/disable_printerm.png
+ICON7=/images/submenus/printer/test_printerm.png
+ICON8=/images/submenus/printer/delete_jobm.png
+ICON9=/images/submenus/printer/clear_queuem.png
+ICON10=/images/submenus/printer/printer_unassignedm.png
+fi
+
+
 TABLECLASS=headings
 WIDTH1=180
 WIDTH2=60
@@ -39,8 +66,8 @@ WIDTH2=60
 if [ $MOBILE = yes ]
 then
 TABLECLASS=mobileheadings
-WIDTH1=100
-WIDTH2=30
+WIDTH1=90
+WIDTH2=36
 echo '<div id="mobileactionbox">'
 fi
 ##########################
@@ -102,7 +129,7 @@ let QUEUE_COUNTER2=$QUEUE_COUNTER+1
 #echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
 if [ $MOBILE = yes ]
 then
-echo '<td>'$PRINT_JOB_OWNER'</td>'
+echo '<tr><td>'$PRINT_JOB_OWNER'</td>'
 echo '<td>'$DATE_TIME'</td>'
 echo '<td>'$DATE_DAY1 $DATE_DAY2 $DATE_MONTH'</td>'
 else
@@ -115,7 +142,7 @@ echo '<td style="width: 80px;">'$JOB_SIZE'</td>'
 echo '<td style="width: 110px;">'$DATE_TIME'</td>'
 echo '<td style="width: 90px;">'$DATE_DAY1 $DATE_DAY2 $DATE_MONTH'</td>'
 
-echo '<td><a class="info" href="javascript:void(0)"><input name="_jobid_'$PRINT_ID'_" type="image" class="images" src="/images/submenus/printer/delete_job.png" value=""><span>Delete Job</span></a></td>'
+echo '<td><a class="info" href="javascript:void(0)"><input name="_jobid_'$PRINT_ID'_" type="image" class="images" src="'$ICON8'" value=""><span>Delete Job</span></a></td>'
 fi
 #echo '</tr></tbody></table>'
 echo '</tr>'
@@ -130,21 +157,27 @@ PRINTER_COUNTER=0
 while [ $PRINTER_COUNTER -lt $PRINTER_INFO_COUNT ]
 do
 PRINTER_NAME=`echo ${PRINTER_INFO[$PRINTER_COUNTER]} | sed 's/://g'`
+PDNAME=$PRINTER_NAME
+if [ $MOBILE = yes ]
+then
+PDNAME=${PRINTER_NAME:0:10}
+fi
+
 let ARRAY_ENTRY=$PRINTER_COUNTER+1
 QUEUE_STATUS=`echo ${PRINTER_INFO[$ARRAY_ENTRY]} | sed 's/_/ /g'`
 let ARRAY_ENTRY=$PRINTER_COUNTER+2
 PRINTING_STATUS=`echo ${PRINTER_INFO[$ARRAY_ENTRY]} | sed 's/_/ /g'`
 let ARRAY_ENTRY=$PRINTER_COUNTER+3
 QUEUE_COUNT=`echo ${PRINTER_INFO[$ARRAY_ENTRY]} | tr -cd '0-9'`
-PRINTER_LOCATION_ICON=/images/submenus/printer/printer_assigned.png
+PRINTER_LOCATION_ICON=$ICON3
 
 if [ `echo $PRINTING_STATUS | grep -c enabled` -gt 0 ]
 then
-PRINTER_ICON=/images/help/printer_spool.png
+PRINTER_ICON=$ICON1
 PRINTER_STATUS=0
 else
-PRINTER_ICON=/images/help/printer_spool_off.png
-PRINTER_LOCATION_ICON=/images/submenus/printer/printer_assigned_off.png
+PRINTER_ICON=$ICON2
+PRINTER_LOCATION_ICON=$ICON4
 PRINTER_STATUS=1
 fi
 
@@ -168,7 +201,7 @@ fi
 #Show information for each printer
 echo '
 <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr><td style="width: '$WIDTH1'px;"><b>'$PRINTER_NAME'</b></td>
+<tbody><tr><td style="width: '$WIDTH1'px;"><b>'$PDNAME'</b></td>
 <td style="width: '$WIDTH2'px;">'
 if [ $VIEWMODE = admin ]
 then
@@ -182,7 +215,7 @@ PRINTER_LOCATIONS=`echo -e "$LOCATIONDATA" | grep -w $PRINTER_NAME | cut -d, -f1
 if [ `echo $PRINTER_LOCATIONS'null' | sed 's/ //g'` = null ]
 then
 PRINTER_LOCATIONS="$PRINTERASSIGNEDMSG2"
-PRINTER_LOCATION_ICON=/images/submenus/printer/printer_unassigned.png
+PRINTER_LOCATION_ICON=$ICON10
 fi
 
 if [ $VIEWMODE = admin ]
@@ -196,12 +229,12 @@ fi
 if [ $PRINTER_STATUS = 1 ]
 then
 echo '
-<td style="width: '$WIDTH2'px;"><a class="info" href="javascript:void(0)"><input name="_'$PRINTER_NAME'_enable_" type="image" class="images" src="/images/submenus/printer/disable_printer.png" value=""><span>Enable Printer Queue</span></a></td>
+<td style="width: '$WIDTH2'px;"><a class="info" href="javascript:void(0)"><input name="_'$PRINTER_NAME'_enable_" type="image" class="images" src="'$ICON6'" value=""><span>Enable Printer Queue</span></a></td>
 <td style="width: '$WIDTH2';"><img alt="spacer" src="/images/submenus/printer/spacer.png"></td>'
 else
 echo '
-<td style="width: '$WIDTH2'px;"><a class="info" href="javascript:void(0)"><input class="images" name="_'$PRINTER_NAME'_disable_" type="image" src="/images/submenus/printer/enable_printer.png" value=""><span>Disable Printer Queue</span></a></td>
-<td style="width: '$WIDTH2'px;"><a class="info" href="javascript:void(0)"><input class="images" name="_'$PRINTER_NAME'_test_" type="image" src="/images/submenus/printer/test_printer.png" value=""><span>Test Printer Queue</span></a></td>
+<td style="width: '$WIDTH2'px;"><a class="info" href="javascript:void(0)"><input class="images" name="_'$PRINTER_NAME'_disable_" type="image" src="'$ICON5'" value=""><span>Disable Printer Queue</span></a></td>
+<td style="width: '$WIDTH2'px;"><a class="info" href="javascript:void(0)"><input class="images" name="_'$PRINTER_NAME'_test_" type="image" src="'$ICON7'" value=""><span>Test Printer Queue</span></a></td>
 '
 fi
 
@@ -209,7 +242,7 @@ fi
 if [ $QUEUE_COUNT -gt 0 ]
 then
 echo '
-<td style="width: '$WIDTH2'px;"><a class="info" href="javascript:void(0)"><input class="images" name="_'$PRINTER_NAME'_clearqueue_" type="image" src="/images/submenus/printer/clear_queue.png" value=""><span>Clear Printer Queue</span></a></td>'
+<td style="width: '$WIDTH2'px;"><a class="info" href="javascript:void(0)"><input class="images" name="_'$PRINTER_NAME'_clearqueue_" type="image" src="'$ICON9'" value=""><span>Clear Printer Queue</span></a></td>'
 else
 echo '<td style="width: '$WIDTH2'px;"><img alt="spacer" src="/images/submenus/printer/spacer.png"></td>'
 fi

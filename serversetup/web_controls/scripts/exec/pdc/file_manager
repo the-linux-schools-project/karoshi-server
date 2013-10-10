@@ -126,20 +126,58 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/file/file_manager
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
+#icons
+if [ $MOBILE = no ]
+then
 TABLECLASS=standard
-[ $MOBILE = yes ] && TABLECLASS=mobilestandard
+ROWCOUNT=6
+WIDTH=90
+SERVERICON="/images/submenus/system/computer.png"
+SERVERICON2="/images/submenus/system/all_computers.png"
+ICON2=/images/submenus/file/show_info.png
+ICON3=/images/submenus/file/rename.png
+ICON4=/images/submenus/file/copy.png
+ICON5=/images/submenus/file/delete.png
+ICON6=/images/submenus/file/up.png
+ICON7=/images/submenus/file/home.png
+ICON8=/images/submenus/file/stop.png
+ICON9=/images/submenus/file/move.png
+ICON10=/images/submenus/file/edit.png
+ICON11=/images/submenus/file/newfolder.png
+ICON12=/images/submenus/file/restore.png
+ICON13=/images/submenus/file/reload.png
+ICON14=/images/submenus/file/create.png
+ICON15=/images/submenus/file/file.png
+ICON16=/images/submenus/file/folder.png
+else
+ROWCOUNT=3
+WIDTH=70
+TABLECLASS=mobilestandard
+SERVERICON="/images/submenus/system/computerm.png"
+SERVERICON2="/images/submenus/system/all_computersm.png"
+ICON2=/images/submenus/file/show_info.png
+ICON3=/images/submenus/file/renamem.png
+ICON4=/images/submenus/file/copym.png
+ICON5=/images/submenus/file/deletem.png
+ICON6=/images/submenus/file/upm.png
+ICON7=/images/submenus/file/homem.png
+ICON8=/images/submenus/file/stop.png
+ICON9=/images/submenus/file/movem.png
+ICON10=/images/submenus/file/editm.png
+ICON11=/images/submenus/file/newfolderm.png
+ICON12=/images/submenus/file/restore.png
+ICON13=/images/submenus/file/reloadm.png
+ICON14=/images/submenus/file/createm.png
+ICON15=/images/submenus/file/filem.png
+ICON16=/images/submenus/file/folderm.png
+fi
 
 #Show server choice
 if [ $SERVER = notset ]
 then
 
 SERVERCOUNTER=1
-ROWCOUNT=6
-[ $MOBILE = yes ] && ROWCOUNT=3
-WIDTH=90
-[ $MOBILE = yes ] && WIDTH=70
-SERVERICON="/images/submenus/system/computer.png"
-SERVERICON2="/images/submenus/system/all_computers.png"
+
 if [ -f /opt/karoshi/server_network/info ]
 then
 source /opt/karoshi/server_network/info
@@ -151,7 +189,7 @@ for KAROSHI_SERVER in /opt/karoshi/server_network/servers/*
 do
 KAROSHI_SERVER=`basename "$KAROSHI_SERVER"`
 
-echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_SERVER_'$KAROSHI_SERVER'_ACTION_ENTER_" type="image" class="images" src="/images/submenus/file/server.png" value=""><span>'$KAROSHI_SERVER'<br><br>'
+echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_SERVER_'$KAROSHI_SERVER'_ACTION_ENTER_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$KAROSHI_SERVER'<br><br>'
 cat /opt/karoshi/server_network/servers/$KAROSHI_SERVER/* | sed '/<a href/c'"&nbsp"
 echo '</span></a><br>'$KAROSHI_SERVER'</td>'
 
@@ -208,21 +246,6 @@ fi
 LOCATION_LIST="/ /bin /boot /dev /etc /media /mnt /home /home/applications /home/itadminshare /home/staffshare /home/subjects /home/officeshare /home/users /home/users/guests /home/users/exams /home/users/profileuser /home/users/nonteachingstaff /home/users/studentstaff /home/users/staff /home/users/students /home/users/itadminstaff /home/users/officestaff /home/users/techstaff /initrd /lib /root /opt /opt/karoshi /opt/karoshi/serversetup /opt/karoshi/karoshi_user /usr /usr/bin /proc /sbin /sys /var /var/www /var/www/html /var/www/html_karoshi /var/www/cgi-bin /var/www/cgi-bin_karoshi"
 #This list is used to recursivly declare areas that cannot me deleted or moved
 LOCATION_LIST2=( /opt/karoshi/logs /opt/karoshi/web_management /var/www/cgi-bin_karoshi )
-
-#icons
-ICON2=/images/submenus/file/show_info.png
-ICON3=/images/submenus/file/rename.png
-ICON4=/images/submenus/file/copy.png
-ICON5=/images/submenus/file/delete.png
-ICON6=/images/submenus/file/up.png
-ICON7=/images/submenus/file/home.png
-ICON8=/images/submenus/file/stop.png
-ICON9=/images/submenus/file/move.png
-ICON10=/images/submenus/file/edit.png
-ICON11=/images/submenus/file/newfolder.png
-ICON12=/images/submenus/file/restore.png
-ICON13=/images/submenus/file/reload.png
-ICON14=/images/submenus/file/create.png
 
 function check_recursive {
 ENTER=yes
@@ -323,15 +346,14 @@ FILENAME=`basename "$FILE"`
 FILE2=`echo "$FILE" | sed "s/_/Z%%%%%Z/g"`
 LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
 
-ICON1=/images/submenus/file/file.png
+ICON1=$ICON15
 FILEACTION=DOWNLOAD
 if [ -d "$FILE" ]
 then
-ICON1=/images/submenus/file/folder.png
+ICON1=$ICON16
 FILEACTION=ENTER
 fi
 echo '<tr>'
-
 
 echo '
 <td><a class="info" href="javascript:void(0)"><input name="_ACTION_RENAME_SERVERTYPE_'$SERVERTYPE'_SERVER_'$SERVER'_LOCATION_'$FILE2'_" type="image" class="images" src="'$ICON3'" value=""><span>'$RENAMEMSG'<br>'$FILENAME'</span></a></td>

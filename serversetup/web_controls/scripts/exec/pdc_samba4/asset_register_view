@@ -111,11 +111,30 @@ echo `date`: asset_register_view - access denied to $REMOTE_USER from $REMOTE_AD
 exit 101
 fi
 
+
+if [ $MOBILE = yes ]
+then
+TABLECLASS=mobilestandard
+ICON1=/images/assets/locationm.png
+ICON2=/images/assets/editm.png
+ICON3=/images/assets/deletem.png
+ICON4=/images/assets/add_assetm.png
+ICON5=/images/assets/totalsm.png
+ICON6=/images/assets/searchm.png
+ICON7=/images/assets/descriptionsm.png
+ICON8=/images/assets/addescm.png
+ICON9=/images/assets/suppliersm.png
+ICON10=/images/assets/adddescm.png
+ICON11=/images/assets/addsupplierm.png
+ICON12=/images/assets/budgetm.png
+ICON13=/images/assets/addbudgetm.png
+ICON14=/images/assets/moreinfom.png
+ICON15=/images/assets/exportm.png
+ICON16=/images/assets/importm.png
+ICON17=/images/assets/client_logsm.png
+ICON18=/images/assets/qrcodem.png
+else
 TABLECLASS=standard
-[ $MOBILE = yes ] && TABLECLASS=mobilestandard
-
-[ $OPTION'null' = null ] && OPTION=nofilter
-
 ICON1=/images/assets/location.png
 ICON2=/images/assets/edit.png
 ICON3=/images/assets/delete.png
@@ -134,6 +153,11 @@ ICON15=/images/assets/export.png
 ICON16=/images/assets/import.png
 ICON17=/images/assets/client_logs.png
 ICON18=/images/assets/qrcode.png
+fi
+
+
+[ $OPTION'null' = null ] && OPTION=nofilter
+
 [ $ACTION'null' = null ] && ACTION=view
 [ $LOCATION'null' = null ] && LOCATION=showchoice
 
@@ -1154,14 +1178,16 @@ if [ $OPTION = filter ]
 then
 ASSETTYPE=$ASSETCHOICE
 assign_asset_labels
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_" type="image" class="images" src="'$ICON1'" value=""><span>'$CHOOSELOCATIONMSG'</span></a></td>
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<td style="vertical-align: top;"><b>'$LOCATION'</b></td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_view_LOCATION_'$LOCATION'_ASSETCHOICE_'$ASSETTYPE'_OPTION_nofilter_" type="image" class="images" src="'$ASSETICON'" value=""><span>'$SHOWALLMSG'</span></a></td>
+<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_" type="image" class="images" src="'$ICON1'" value=""><span>'$CHOOSELOCATIONMSG'</span></a></td>
 <td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_add_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON4'" value=""><span>'$ADDASSETMSG'</span></a></td>
-<td style="vertical-align: top;"><b>'$TITLE2 - $LOCATION'</b></td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_view_LOCATION_'$LOCATION'_ASSETCHOICE_'$ASSETTYPE'_OPTION_nofilter_" type="image" class="images" src="'$ASSETICON'" value=""><span>'$SHOWALLMSG'</span></a></td></tr></tbody></table>
+</tr></tbody></table>
 '
 else
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_" type="image" class="images" src="'$ICON1'" value=""><span>'$CHOOSELOCATIONMSG'</span></a></td>
 <td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_add_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON4'" value=""><span>'$ADDASSETMSG'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_qrcodes_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON18'" value=""><span>'$TITLE19'</span></a></td>
-<td style="vertical-align: top;"><b>'$TITLE2 - $LOCATION'</b></td></tr></tbody></table>
+<td style="vertical-align: top;"><b>'$LOCATION'</b></td></tr></tbody></table>
 '
 fi
 
@@ -1171,7 +1197,14 @@ if [ `ls -1 /opt/karoshi/asset_register/locations/$LOCATION/ | wc -l` -gt 0 ]
 then
 echo '
 <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 60px;">'$IDENTITYNAME'</td><td style="width: 240px;">'$DESCRIPTIONMSG'</td><td style="width: 100px;">'$TCPIPMSG'</td><td style="width: 110px;">'$MACADDRESSMSG'</td><td style="width: 30px;">'$SERIAL_KEY'</td></tr>'
+<tr><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td>'
+
+if [ $MOBILE = no ]
+then
+echo '<td style="width: 60px;">'$IDENTITYNAME'</td><td style="width: 240px;">'$DESCRIPTIONMSG'</td><td style="width: 100px;">'$TCPIPMSG'</td><td style="width: 110px;">'$MACADDRESSMSG'</td><td style="width: 30px;">'$SERIAL_KEY'</td></tr>'
+else
+echo '</tr>'
+fi
 for ASSETS in /opt/karoshi/asset_register/locations/$LOCATION/*
 do
 ASSET=`basename $ASSETS`
@@ -1186,14 +1219,20 @@ SHOWENTRY=no
 fi
 if [ $SHOWENTRY = yes ]
 then
-echo '<tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$ASSIGNEDMSG' : '$ASSIGNED'<br>'$PURCHASE_DATE' : '$PURCHASEDATE'<br>'$VALUEMSG' : '$VALUE'<br>'$SUPPLIERMSG' : '$SUPPLIER'<br>'$BUDGETMSG' : '$BUDGET'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_edit_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON2'" value=""><span>'$EDITMSG' '$IDENTITY'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_delete_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON3'" value=""><span>'$DELETEMSG' '$IDENTITY'</span></a></td>
+echo '<tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$ASSIGNEDMSG' : '$ASSIGNED'<br>'$PURCHASE_DATE' : '$PURCHASEDATE'<br>'$VALUEMSG' : '$VALUE'<br>'$SUPPLIERMSG' : '$SUPPLIER'<br>'$BUDGETMSG' : '$BUDGET'<br>'$TCPIPMSG'<br>'$TCPIP1' '$TCPIP2' '$TCPIP3'<br>'$MACADDRESSMSG'<br>'$MAC1' '$MAC2' '$MAC3'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_edit_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON2'" value=""><span>'$EDITMSG' '$IDENTITY'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_delete_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON3'" value=""><span>'$DELETEMSG' '$IDENTITY'</span></a></td>
 <td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_LOCATION_'$LOCATION'_ASSETCHOICE_'$ASSETTYPE'_OPTION_filter_" type="image" class="images" src="'$ASSETICON'" value=""><span>'$ASSETLABEL'</span></a></td>
 <td style="vertical-align: top;">'
 if [ $ASSETTYPE -le 8 ]
 then
-echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_showlogs_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON17'" value=""><span>Show logs '$IDENTITY'</span></a>'
+echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_showlogs_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON17'" value=""><span>Show logs '$IDENTITY'</span></a></td>'
 fi
-echo '</td><td style="vertical-align: top;">'$IDENTITY'</td><td style="vertical-align: top;">'$DESCRIPTION'</td><td style="vertical-align: top;">'$TCPIP1' '$TCPIP2' '$TCPIP3'</td><td style="vertical-align: top;">'$MAC1' '$MAC2' '$MAC3'</td><td style="vertical-align: top;">'$SERIAL'</td></tr>'
+echo '<td style="vertical-align: top;">'$IDENTITY'</td>'
+if [ $MOBILE = no ]
+then
+echo '<td style="vertical-align: top;">'$DESCRIPTION'</td><td style="vertical-align: top;">'$TCPIP1' '$TCPIP2' '$TCPIP3'</td><td style="vertical-align: top;">'$MAC1' '$MAC2' '$MAC3'</td><td style="vertical-align: top;">'$SERIAL'</td></tr>'
+else
+echo '</tr>'
+fi
 fi
 done
 echo '</tbody></table>'
@@ -1224,7 +1263,13 @@ echo '<b>'$TITLE5' - '$OPTION'</b><br><br>'
 [ $MOBILE != yes ] && echo '</div><div id="infobox">'
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 60px;">'$IDENTITYNAME'</td><td style="width: 180px;">'$DESCRIPTIONMSG'</td><td style="width: 80px;">'$ASSIGNEDMSG'</td><td style="width: 60px;">'$TCPIPMSG'</td><td style="width: 60px;">'$MACADDRESSMSG'</td><td style="width: 80px;">'$SERIAL_KEY'</td><td style="width: 60px;">'$PURCHASE_DATE'</td><td style="width: 60px;">'$VALUEMSG'</td><td style="width: 80px;">'$SUPPLIERMSG'</td><td style="width: 180px;">'$BUDGETMSG'</td></tr>'
+<tr><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 60px;">'$IDENTITYNAME'</td>'
+if [ $MOBILE = no ]
+then
+echo '<td style="width: 180px;">'$DESCRIPTIONMSG'</td><td style="width: 80px;">'$ASSIGNEDMSG'</td><td style="width: 60px;">'$TCPIPMSG'</td><td style="width: 60px;">'$MACADDRESSMSG'</td><td style="width: 80px;">'$SERIAL_KEY'</td><td style="width: 60px;">'$PURCHASE_DATE'</td><td style="width: 60px;">'$VALUEMSG'</td><td style="width: 80px;">'$SUPPLIERMSG'</td><td style="width: 180px;">'$BUDGETMSG'</td></tr>'
+else
+echo '</tr>'
+fi
 
 for ASSETS in `grep -l -R $OPTION /opt/karoshi/asset_register/locations/*`
 do
@@ -1245,9 +1290,15 @@ then
 echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_showlogs_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON17'" value=""><span>Show logs '$IDENTITY'</span></a>'
 fi
 
-echo '</td><td style="vertical-align: top;">'$IDENTITY'</td><td style="vertical-align: top;">'$DESCRIPTION'</td><td style="vertical-align: top;">'$ASSIGNED'</td><td style="vertical-align: top;">
-'$TCPIP1' '$TCPIP2' '$TCPIP3'</td><td style="vertical-align: top;">'$MAC1' '$MAC2' '$MAC3'</td><td style="vertical-align: top;">'$SERIAL'</td><td style="vertical-align: top;">'$PURCHASEDATE'</td><td style="vertical-align: top;">'$VALUE'</td><td style="vertical-align: top;">'$SUPPLIER'</td><td style="vertical-align: top;">'$BUDGET'</td></tr>'
+echo '</td><td style="vertical-align: top;">'$IDENTITY'</td>'
 
+if [ $MOBILE = no ]
+then
+echo '<td style="vertical-align: top;">'$DESCRIPTION'</td><td style="vertical-align: top;">'$ASSIGNED'</td><td style="vertical-align: top;">
+'$TCPIP1' '$TCPIP2' '$TCPIP3'</td><td style="vertical-align: top;">'$MAC1' '$MAC2' '$MAC3'</td><td style="vertical-align: top;">'$SERIAL'</td><td style="vertical-align: top;">'$PURCHASEDATE'</td><td style="vertical-align: top;">'$VALUE'</td><td style="vertical-align: top;">'$SUPPLIER'</td><td style="vertical-align: top;">'$BUDGET'</td></tr>'
+else
+echo '</tr>'
+fi
 done
 echo '</tbody></table><br>'
 fi
