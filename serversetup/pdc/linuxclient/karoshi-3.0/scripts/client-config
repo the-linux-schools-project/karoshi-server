@@ -412,7 +412,7 @@ echo "Configuring printer configuration files"
 find /var/lib/karoshi/printing -mindepth 1 -delete
 #Copy printer configuration
 if [[ $LOCATION ]] && [[ -f /tmp/netlogon/printers.txt ]]; then
-	all_printers=`grep $LOCATION /tmp/netlogon/printers.txt`
+	all_printers=`grep ^$LOCATION, /tmp/netlogon/printers.txt`
 	if [[ $all_printers ]]; then
 		printer_count=`cut -d, -f2 <<< "$all_printers"`
 		default_printer=`cut -d, -f$(( printer_count + 3 )) <<< "$all_printers"`
