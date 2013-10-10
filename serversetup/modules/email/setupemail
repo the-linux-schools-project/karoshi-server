@@ -56,6 +56,16 @@ echo `date`: setupemail - Blank remote tcpip address >> /opt/karoshi/logs/karosh
 exit 101
 fi
 
+#Make sure that memcached is installed
+which memcached 1>/dev/null
+if [ $? != 0 ]
+then
+echo "<li>Installing memcached</li>"
+apt-get update
+apt-get install -y memcached
+echo "<br>"
+fi
+
 [ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
 [ -d /var/www/html ] || mkdir -p /var/www/html
 [ ! -e /opt/karoshi/.tempdata/mysqlpasswordstatus ] || rm -f /opt/karoshi/.tempdata/mysqlpasswordstatus
@@ -91,6 +101,7 @@ fi
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mysql
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/dovecot
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/sogo
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/memcached
 
 #Merge postfix keytab into mail keytab
 echo -e "rkt /etc/keytabs/postfix.keytab\nwkt /etc/keytabs/mail.keytab\nexit" | ktutil 1>/dev/null
@@ -373,6 +384,10 @@ echo '<br>'
 #Restart sogo
 echo '<br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/sogo_stop
+echo '<br>'
+sleep 1
+#Start memcached
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/memcached_start
 echo '<br>'
 sleep 1
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/sogo_start

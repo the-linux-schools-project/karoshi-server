@@ -138,7 +138,7 @@ DSERVICES=cron
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver ] && DSERVICES=$DSERVICES,apache,mysql
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/casserver ] && DSERVICES=$DSERVICES,apache
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/distributionserver ] && DSERVICES=$DSERVICES,nfs,tftpd
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver ] && DSERVICES=$DSERVICES,apache,mysql,mailscanner,postfix,dovecot,sogo,clamd
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver ] && DSERVICES=$DSERVICES,apache,mysql,mailscanner,memcached,postfix,dovecot,sogo,clamd
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/homeaccess ] && DSERVICES=$DSERVICES,apache
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/squid ] && DSERVICES=$DSERVICES,apache,dansguardian,squid,squiddebproxy
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/printserver ] && DSERVICES=$DSERVICES,cups,samba
@@ -160,7 +160,7 @@ DSERVICES=cron
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/apacheserver ] && DSERVICES=$DSERVICES,apache,mysql
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/casserver ] && DSERVICES=$DSERVICES,apache
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/distributionserver ] && DSERVICES=$DSERVICES,nfs,tftpd
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/emailserver ] && DSERVICES=$DSERVICES,apache,mysql,mailscanner,postfix,dovecot,sogo,clamd
+[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/emailserver ] && DSERVICES=$DSERVICES,apache,mysql,memcached,mailscanner,postfix,dovecot,sogo,clamd
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/homeaccess ] && DSERVICES=$DSERVICES,apache
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/squid ] && DSERVICES=$DSERVICES,apache,dansguardian,squid,squiddebproxy
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/printserver ] && DSERVICES=$DSERVICES,cups,samba
@@ -182,7 +182,7 @@ DSERVICES=cron
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/apacheserver ] && DSERVICES=$DSERVICES,apache,mysql
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/casserver ] && DSERVICES=$DSERVICES,apache
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/distributionserver ] && DSERVICES=$DSERVICES,nfs,tftpd
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/emailserver ] && DSERVICES=$DSERVICES,apache,mysql,mailscanner,postfix,dovecot,sogo,clamd
+[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/emailserver ] && DSERVICES=$DSERVICES,apache,mysql,memcached,mailscanner,postfix,dovecot,sogo,clamd
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/homeaccess ] && DSERVICES=$DSERVICES,apache
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/squid ] && DSERVICES=$DSERVICES,apache,dansguardian,squid,squiddebproxy
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/printserver ] && DSERVICES=$DSERVICES,cups,samba
@@ -220,7 +220,7 @@ DSERVICES=$DSERVICES2
 DSERVICES=`echo -e "$DSERVICES" | sed "s/,/\n/g" | sort`
 
 #List of all services to check
-ALLSERVICES="apache clamd cups cron dansguardian dhcp dns dovecot mailscanner mon mysql nfs nginx nslcd openvpn postfix radius samba sogo squid squiddebproxy vsftpd"
+ALLSERVICES="apache clamd cups cron dansguardian dhcp dns dovecot mailscanner memcached mon mysql nfs nginx nslcd openvpn postfix radius samba sogo squid squiddebproxy vsftpd"
 if [ $SERVERNAME = $HOSTNAME ]
 then
 function check_status {
@@ -273,6 +273,7 @@ dhcp="'$dhcp'"
 dns="'$dns'"
 dovecot="'$dovecot'"
 mailscanner="'$mailscanner'"
+memcached="'$memcached'"
 mon="'$mon'"
 mysql="'$mysql'"
 nfs="'$nfs'"

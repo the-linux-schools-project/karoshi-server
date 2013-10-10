@@ -30,7 +30,7 @@ source /opt/karoshi/server_network/menusettings
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
 echo '<img src="/images/small_logo.png" alt="logo" align="top"> <font style="font-weight: bold;" size="+2">Web Management '$SCHOOL_NAME'</font> <small><small>
-'$VERSION' : 131004-1305
+'$VERSION' : 131004-1412
 </small></small>
 <div id="searchbar"><form name="myform" action="/cgi-bin/staff/search.cgi" method="post">
 <input name="_SEARCH_" tabindex= "1" style="width: 200px;" size="20" type="text">

@@ -78,6 +78,7 @@ function sysvsupport {
 [ -L /etc/init.d/dovecot ] && rm -f /etc/init.d/dovecot
 [ -L /etc/init.d/vsftpd ] && rm -f /etc/init.d/vsftpd
 [ -L /etc/init.d/sogo ] && rm -f /etc/init.d/sogo
+[ -L /etc/init.d/memcached ] && rm -f /etc/init.d/memcached
 [ -L /etc/init.d/isc-dhcp-server ] && rm -f /etc/init.d/isc-dhcp-server
 
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/apache2 /etc/init.d/
@@ -105,6 +106,7 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/vsftpd /etc/in
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/portmap /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/rpcbind /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/sogo /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/memcached /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/isc-dhcp-server /etc/init.d/
 
 #Make sure no scripts have been added to /etc/init for upstart.
@@ -119,6 +121,7 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/isc-dhcp-serve
 [ `ls /etc/init/vsftpd* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/vsftpd*
 [ `ls /etc/init/portmap* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/portmap*
 [ `ls /etc/init/rpcbind* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/rpcbind*
+[ `ls /etc/init/memcached* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/memcached*
 [ `ls /etc/init/isc-dhcp* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/isc-dhcp*
 #May need to add more to this list.
 }
@@ -149,7 +152,7 @@ echo -e "$SERVICENAME $STATUS" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
 #######################
 #Check which services should be running on this server.
 #######################
-SERVICE_ARRAY=( apache aptcacherng apache_karoshi cron cups dansguardian dhcp dns mailscanner mon mysql nfs nginx postfix portmap proftpd rpcbind samba squid nut ssh tftpd xinetd )
+SERVICE_ARRAY=( apache aptcacherng apache_karoshi cron cups dansguardian dhcp dns mailscanner memcached mon mysql nfs nginx postfix portmap proftpd rpcbind samba squid nut ssh tftpd xinetd )
 echo -e "$HOSTNAME: `date` - Checking which services are currently set to run on boot.\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
 COUNTER=0
 ARRAY_COUNT=${#SERVICE_ARRAY[@]}

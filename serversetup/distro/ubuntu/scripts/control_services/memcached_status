@@ -1,0 +1,4 @@
+#!/bin/bash
+[ `ps -e | grep -w -c memcached` -gt 0 ] && exit 0
+exit 1
+
