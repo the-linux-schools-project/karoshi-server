@@ -1,5 +1,5 @@
 #!/bin/bash
-LATESTVER=4.0.9
+LATESTVER=4.0.10
 LOG_DATE=`date +%F`
 [ ! -d /opt/karoshi/logs/server_upgrades ] && mkdir -p /opt/karoshi/logs/server_upgrades
 echo `date` "Checking Samba4 version" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
