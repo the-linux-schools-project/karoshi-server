@@ -8,7 +8,7 @@ fi
 COUNTER=0
 while [ `ps -e | grep -w -c $SQUID` -gt 0 ]
 do
-service $SQUID stop
+$SQUID -k interrupt
 let COUNTER=$COUNTER+1
 #Give up after 5 tries
 [ $COUNTER = 5 ] && break
