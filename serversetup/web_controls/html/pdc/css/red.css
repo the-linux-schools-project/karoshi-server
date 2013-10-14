@@ -98,12 +98,27 @@ A:hover {
         margin: 2px 2px 2px 2px;
 }
 
+#titlebox {
+        margin: 2px 2px 2px 2px;
+	bottom: 0px;
+}
+
+#infobox {
+	overflow: auto;
+	height: 100%;
+	width: 100%;
+	bottom: 0px;
+        margin: 2px 2px 2px 2px;
+}
+
 #actionbox {
         position:absolute;
         top: 120px;
         left: 10px;
-        width: 900px;
+	right: 0px;
+	bottom: 0px;
         margin: 2px 2px 2px 2px;
+	padding-bottom: 70px;
 }
 
 #actionbox2 {

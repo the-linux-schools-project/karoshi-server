@@ -99,7 +99,7 @@ else
 DIV_ID=actionbox2
 fi
 
-echo '<div id="'$DIV_ID'"><div id="titlebox">'
+echo '<div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
