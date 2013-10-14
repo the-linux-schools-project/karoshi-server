@@ -77,7 +77,7 @@ done
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title></head><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body>'
 #########################
 #Check https access
 #########################
@@ -120,10 +120,10 @@ else
 DIV_ID=actionbox2
 fi
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="infobox">'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/update_karoshi.cgi | cut -d' ' -f1`
 
-sudo -H /opt/karoshi/web_controls/exec/update_karoshi $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PATCHNAME:
+sudo -H /opt/karoshi/web_controls/exec/update_karoshi $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PATCHNAME:$MOBILE:
 EXEC_STATUS=`echo $?`
 
 [ $MOBILE = no ] && echo '</div></div>'

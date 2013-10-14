@@ -55,6 +55,7 @@ REMOTE_USER=`echo $* | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | cut -s -d: -f2`
 REMOTE_MD5=`echo $* | cut -s -d: -f3`
 PATCHNAME=`echo $* | cut -s -d: -f4`
+MOBILE=`echo $* | cut -s -d: -f5`
 ########################
 #Check data
 ########################
@@ -228,6 +229,8 @@ MD5SUM=notset
 
 
 echo \<b\>$PROCESINGMSG - $PATCHNAME\</b\>\<br\>\<br\>
+
+[ $MOBILE = no ] && echo '</div><div id="infobox">'
 #Get information on patch
 PATCHDATALINE=`grep -n ^$PATCHNAME /opt/karoshi/updates/updatelist | cut -d: -f1`
 if [ $PATCHDATALINE'null' != null ]
