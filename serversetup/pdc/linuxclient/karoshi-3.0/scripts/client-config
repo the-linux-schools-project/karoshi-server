@@ -480,6 +480,15 @@ fi
 #Configure virtualbox drive
 ##########################
 
+# Bind mount adjustments
+if ! grep -q '# karoshi: bind mounts' /etc/fstab; then
+	sed -i '/^UUID=[^ ]*[[:space:]]*\/[[:space:]]/ a\
+# karoshi: bind mounts\
+/tmp            /tmp            none    bind            0       0\
+/home           /home           none    bind            0       0\
+/var            /var            none    bind            0       0' /etc/fstab
+fi
+
 function configureVboxPartition {
 	#Copy data if required
 	if ! [[ $(find "$KAROSHI_DATA"/"$KAROSHI_VIRTUALBOX" -maxdepth 0 -type d -empty 2>/dev/null) ]]; then
