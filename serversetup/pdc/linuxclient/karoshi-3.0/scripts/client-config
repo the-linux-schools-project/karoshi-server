@@ -473,7 +473,7 @@ fi
 
 # Remove deja-dup if installed
 if which deja-dup > /dev/null; then
-	apt-get purge deja-dup
+	apt-get -y purge deja-dup
 fi
 
 ##########################
