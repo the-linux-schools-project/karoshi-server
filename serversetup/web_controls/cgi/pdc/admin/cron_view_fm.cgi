@@ -142,15 +142,21 @@ fi
 
 echo '<form action="/cgi-bin/admin/cron_view.cgi" name="selectservers" method="post">'
 
-
-#Show list of ssh enabled servers
 SERVERCOUNTER=0
+#Show list of ssh enabled servers
+if [ $MOBILE = no ]
+then
 ROWCOUNT=6
-[ $MOBILE = yes ] && ROWCOUNT=3
 WIDTH=90
-[ $MOBILE = yes ] && WIDTH=70
 SERVERICON="/images/submenus/system/computer.png"
 SERVERICON2="/images/submenus/system/all_computers.png"
+else
+ROWCOUNT=3
+WIDTH=70
+SERVERICON="/images/submenus/system/computerm.png"
+SERVERICON2="/images/submenus/system/all_computersm.png"
+fi
+
 if [ -f /opt/karoshi/server_network/info ]
 then
 source /opt/karoshi/server_network/info

@@ -121,15 +121,19 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_aliases
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+if [ $MOBILE = no ]
+then
+TABLECLASS=standard
+WIDTH1=200
 ICON1="/images/submenus/email/email_delete.png"
 ICON2="/images/submenus/email/alias_add.png"
 ICON3="/images/submenus/email/alias_view.png"
-TABLECLASS=standard
-WIDTH1=200
-if [ $MOBILE = yes ]
-then
+else
 TABLECLASS=mobilestandard
 WIDTH1=160
+ICON1="/images/submenus/email/email_deletem.png"
+ICON2="/images/submenus/email/alias_addm.png"
+ICON3="/images/submenus/email/alias_viewm.png"
 fi
 
 function completed_status {

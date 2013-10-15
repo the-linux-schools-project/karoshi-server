@@ -223,7 +223,7 @@ COMMAND=`echo "$CRONDATA" | cut -d' ' -f6- | sed 's/\"//g'`
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<div style="float: left" id="my_menu" class="sdmenu">
+echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE3'</span>
 <a href="/cgi-bin/admin/cron_view_fm.cgi">'$SERVERNAME'</a>
@@ -233,8 +233,14 @@ else
 echo '<b>'$TITLE3'</b><br><br>'
 fi
 
+if [ $MOBILE = no ]
+then
 TABLECLASS=standard
-[ $MOBILE = yes ] && TABLECLASS=mobilestandard
+STYLEWIDTH=200
+else
+TABLECLASS=mobilestandard
+STYLEWIDTH=120
+fi
 
 echo '<form action="/cgi-bin/admin/cron_add.cgi" name="selectservers" method="post">
   <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
@@ -242,7 +248,7 @@ echo '<form action="/cgi-bin/admin/cron_add.cgi" name="selectservers" method="po
       <tr>
         <td style="width: 180px;">
 '$MINUTEMSG'</td>
-<td><select name="___MINUTES___" style="width: 200px;">
+<td><select name="___MINUTES___" style="width: '$STYLEWIDTH'px;">
 <option value="'$MINS'" selected="selected">'$MINS'</option>
 <option value="0">0</option>
 <option value="5">5</option>
@@ -265,7 +271,7 @@ echo '<form action="/cgi-bin/admin/cron_add.cgi" name="selectservers" method="po
 </select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'"$MINUTEHELP"'</span></a>
       </td></tr>
 <tr><td>'$HOURMSG'</td>
-<td><select name="___HOUR___" style="width: 200px;">
+<td><select name="___HOUR___" style="width: '$STYLEWIDTH'px;">
 <option value="'$HOUR'" selected="selected">'$HOUR'</option>
 <option value="*">'$EVERYHOURMSG'</option>
 <option>0</option>
@@ -296,7 +302,7 @@ echo '<form action="/cgi-bin/admin/cron_add.cgi" name="selectservers" method="po
 <td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'"$HOURHELP"'</span></a>
       </td></tr>
 <tr><td>'$DAYMSG'</td>
-<td><select name="___DAY___" style="width: 200px;">
+<td><select name="___DAY___" style="width: '$STYLEWIDTH'px;">
 
 <option value="*">'$EVERYDAYMSG'</option>
 <option value="'$DAY'" selected="selected">'$DAY'</option>
@@ -334,7 +340,7 @@ echo '<form action="/cgi-bin/admin/cron_add.cgi" name="selectservers" method="po
 </select></td>
 <td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'"$DAYHELP"'</span></a></td></tr>
 <tr><td>'$MONTHMSG'</td>
-<td><select name="___MONTH___" style="width: 200px;">
+<td><select name="___MONTH___" style="width: '$STYLEWIDTH'px;">
 <option value="'$MONTH'" selected="selected">'$MONTH'</option>
 <option value="*">'$EVERYMONTHMSG'</option>
 <option>0</option>
@@ -379,11 +385,12 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 <tr><td>'$COMMANDMSG'</td><td>'$COMMAND'</td></tr>
 <tr><td>'$SERVERMSG'</td><td>'$SERVERNAME'</td></tr>
 </tbody></table>
-
-<input name="___SERVERTYPE___'$SERVERTYPE'___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'______COMMAND___'$COMMAND'___" value="" type="hidden">'
+'
 else
 echo '<small><br>'$COMMANDMSG'<br>'$COMMAND'<br><br>'$SERVERMSG'<br>'$SERVERNAME'</small><br><br>'
 fi
+
+echo '<input name="___SERVERTYPE___'$SERVERTYPE'___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'______COMMAND___'$COMMAND'___" value="" type="hidden">'
 
 if [ $MOBILE = no ]
 then

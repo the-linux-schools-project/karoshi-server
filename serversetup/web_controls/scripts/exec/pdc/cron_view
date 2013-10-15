@@ -136,11 +136,19 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/system/cron
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
-
+if [ $MOBILE = no ]
+then
+TABLECLASS=standard
 EDITICON=/images/submenus/system/cron/cron_edit.png
 DELETEICON=/images/submenus/system/cron/cron_delete.png
-TABLECLASS=standard
-[ $MOBILE = yes ] && TABLECLASS=mobilestandard
+INFOICON=/images/help/info.png
+else
+TABLECLASS=mobilestandard
+EDITICON=/images/submenus/system/cron/cron_editm.png
+DELETEICON=/images/submenus/system/cron/cron_deletem.png
+INFOICON=/images/help/info.png
+fi
+
 
 ##################################
 #Show cron jobs for pdc
@@ -176,7 +184,7 @@ SHORTCOMMAND=`echo $COMMAND | sed "s/\/\*/SLASHWILDCARD/g"`
 SHORTCOMMAND=`basename "$SHORTCOMMAND" | sed "s/SLASHWILDCARD/\/\*/g" | sed "s/\"//g"`
 echo '<tr><td>
 
-<a class="info3" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>
+<a class="info3" href="javascript:void(0)"><img class="images" alt="" src="'$INFOICON'"><span>
 '$MINUTESMSG2' : '$MINUTES'<br>'$HOURMSG' : '$HOUR'<br>'$DAYOFWEEKMSG2' : '$DAYMSG'<br>'$MONTHMSG' : '$MONTH'<br>'$DAYOFWEEKMSG2' : '$DOFW'<br><br>
 '$COMMANDMSG'<br>'$COMMAND'<br><br>
 </span></a></td><td>'$CRON_NAME'</td>
@@ -217,7 +225,7 @@ SHORTCOMMAND=`echo $COMMAND | sed "s/\/\*/SLASHWILDCARD/g"`
 SHORTCOMMAND=`basename "$SHORTCOMMAND" | sed "s/SLASHWILDCARD/\/\*/g" | sed "s/\"//g"`
 
 echo "<tr><td style=\"width: 40px;\">
-<a class=\"info3\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>
+<a class=\"info3\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"'$INFOICON'\"><span>
 '$MINUTESMSG2' : $MINUTES<br>'$HOURMSG' : $HOUR<br>'$DAYOFWEEKMSG2' : $DAYMSG<br>'$MONTHMSG' : $MONTH<br>'$DAYOFWEEKMSG2' : $DOFW<br><br>
 '$COMMANDMSG'<br>$COMMAND<br><br>
 </span></a>
@@ -259,7 +267,7 @@ SHORTCOMMAND=`echo $COMMAND | sed "s/\/\*/SLASHWILDCARD/g"`
 SHORTCOMMAND=`basename "$SHORTCOMMAND" | sed "s/SLASHWILDCARD/\/\*/g" | sed "s/\"//g"`
 
 echo "<tr><td style=\"width: 40px;\">
-<a class=\"info3\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>
+<a class=\"info3\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"'$INFOICON'\"><span>
 '$MINUTESMSG2' : $MINUTES<br>'$HOURMSG' : $HOUR<br>'$DAYOFWEEKMSG2' : $DAYMSG<br>'$MONTHMSG' : $MONTH<br>'$DAYOFWEEKMSG2' : $DOFW<br><br>
 '$COMMANDMSG'<br>$COMMAND<br><br>
 </span></a>
