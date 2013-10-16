@@ -240,7 +240,7 @@ fi
 
 TITLE=$TITLE2
 ALTTITLE="$TITLE2"
-ICON=/images/submenus/system/dnsview.png
+ICON=/images/submenus/system/dnsviewm.png
 ACTION2=view
 
 [ $ACTION = edit ] && TITLE="$TITLE3"
@@ -250,7 +250,7 @@ if [ $ACTION = view ]
 then
 ALTTITLE="$TITLE4"
 ACTION2=add
-ICON=/images/submenus/system/dnsadd.png
+ICON=/images/submenus/system/dnsaddm.png
 fi
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -261,7 +261,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<span>'$TITLE2'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$SYSMENUMSG'</a>
 </div></div><div id="mobileactionbox">
-<form action="/cgi-bin/admin/dnsadd_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_" type="image" class="images" src="/images/submenus/system/dnsadd.png" value=""><span>'$TITLE4'</span></a></form><br>
+<form action="/cgi-bin/admin/dnsadd_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_" type="image" class="images" src="'$ICON'" value=""><span>'$TITLE4'</span></a></form><br>
 '
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">

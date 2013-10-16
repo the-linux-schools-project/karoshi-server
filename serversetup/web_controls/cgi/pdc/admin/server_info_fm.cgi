@@ -104,12 +104,14 @@ then
 DIV_ID=actionbox
 TABLECLASS=standard
 WIDTH=180
+HELPICON=/images/help/info.png
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
 DIV_ID=actionbox2
 TABLECLASS=mobilestandard
 WIDTH=160
+HELPICON=/images/help/infom.png
 fi
 
 echo '<form action="/cgi-bin/admin/server_info.cgi" name="selectservers" method="post"><b></b>'
@@ -132,32 +134,41 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
       <tr>
         <td style="width: '$WIDTH'px;">'$HARDDISKMSG'</td>
         <td><input name="_INFO_" value="harddrive" checked="checked" type="radio"></td>
-<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td>
+<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$HELPICON'"><span>'$HELPMSG1'</span></a></td>
       </tr>
       <tr>
         <td>'$CPUMSG'</td>
         <td><input name="_INFO_" value="cpu" type="radio"></td>
-<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td>
+<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$HELPICON'"><span>'$HELPMSG2'</span></a></td>
       </tr>
       <tr>
         <td>'$KERNELMSG'</td>
         <td><input name="_INFO_" value="kernel" type="radio"></td>
-<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a></td>
+<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$HELPICON'"><span>'$HELPMSG3'</span></a></td>
       </tr>
       <tr>
         <td>'$SAMBAMSG'</td>
         <td><input name="_INFO_" value="samba" type="radio"></td>
-<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG4'</span></a></td>
+<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$HELPICON'"><span>'$HELPMSG4'</span></a></td>
       </tr></tbody></table><br><br>'
 
 #Show list of ssh enabled servers
 SERVERCOUNTER=0
+
+
+if [ $MOBILE = no ]
+then
 ROWCOUNT=6
-[ $MOBILE = yes ] && ROWCOUNT=3
 WIDTH=90
-[ $MOBILE = yes ] && WIDTH=70
 SERVERICON="/images/submenus/system/computer.png"
 SERVERICON2="/images/submenus/system/all_computers.png"
+else
+ROWCOUNT=3
+WIDTH=70
+SERVERICON="/images/submenus/system/computerm.png"
+SERVERICON2="/images/submenus/system/all_computersm.png"
+fi
+
 if [ -f /opt/karoshi/server_network/info ]
 then
 source /opt/karoshi/server_network/info

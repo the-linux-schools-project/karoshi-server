@@ -120,19 +120,22 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/system/dns
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 MONITORSERVER=no
 [ -f /opt/karoshi/server_network/monitoringserver ] && MONITORSERVER=yes
-ICON1=/images/submenus/system/edit.png
-ICON2=/images/submenus/system/delete.png
-ICON3=/images/submenus/monitoring/custom_monitors.png
 
-
+if [ $MOBILE = no ]
+then
 WIDTH1=100
 WIDTH2=100
 TABLECLASS=standard
-if [ $MOBILE = yes ]
-then
+ICON1=/images/submenus/system/edit.png
+ICON2=/images/submenus/system/delete.png
+ICON3=/images/submenus/monitoring/custom_monitors.png
+else
 WIDTH1=50
 WIDTH2=50
 TABLECLASS=mobilestandard
+ICON1=/images/submenus/system/editm.png
+ICON2=/images/submenus/system/deletem.png
+ICON3=/images/submenus/monitoring/custom_monitorsm.png
 EDITMSG=""
 DELETEMSG=""
 MONITORMSG=""
@@ -167,8 +170,17 @@ then
 DATA=`echo -e "$DNSINFO" | awk '/Name='$NAME'/ { getline;print}'`
 DNSTYPE=`echo $DATA | cut -d: -f1`
 DNSENTRY=`echo $DATA | cut -d: -f2 | cut -d" " -f2 | sed "s/\.$//g"`
+
+if [ $MOBILE = no ]
+then
+NAME2=$NAME
+DNSENTRY2=$DNSENTRY
+else
+NAME2=${NAME:0:10}
+DNSENTRY2=${DNSENTRY:0:10}
+fi
 #Add line to table
-echo "<tr><td style=\"vertical-align: top;\">$NAME</td><td style=\"vertical-align: top;\">$DNSTYPE</td><td style=\"vertical-align: top;\">$DNSENTRY</td>
+echo "<tr><td style=\"vertical-align: top;\">$NAME2</td><td style=\"vertical-align: top;\">$DNSTYPE</td><td style=\"vertical-align: top;\">$DNSENTRY2</td>
 <td><form action=\"/cgi-bin/admin/dnsview.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$SERVERNAME"_"SERVERTYPE_$SERVERTYPE"_"ACTION_edit_NAME_$NAME"_"_DNSENTRY_$DNSENTRY"_"DNSTYPE_$DNSTYPE"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$EDITMSG<br>$NAME<br>$DNSENTRY</span></a></form></td>
 <td><form action=\"/cgi-bin/admin/dnsview.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$SERVERNAME"_"SERVERTYPE_$SERVERTYPE"_"ACTION_delete_NAME_$NAME"_"_DNSENTRY_$DNSENTRY"_"DNSTYPE_$DNSTYPE"_"\" type=\"image\" class=\"images\" src=\"$ICON2\" value=\"\"><span>$DELETEMSG<br>$NAME<br>$DNSENTRY</span></a></form></td>"
 
@@ -209,8 +221,18 @@ then
 DATA=`echo -e "$DNSINFO" | awk "/Name=$NAME/ { getline;print}"`
 DNSTYPE=`echo $DATA | cut -d: -f1`
 DNSENTRY=`echo $DATA | cut -d: -f2 | cut -d" " -f2 | sed "s/\.$//g"`
+
+if [ '$MOBILE' = no ]
+then
+NAME2=$NAME
+DNSENTRY2=$DNSENTRY
+else
+NAME2=${NAME:0:10}
+DNSENTRY2=${DNSENTRY:0:10}
+fi
+
 #Add line to table
-echo "<tr><td style=\"vertical-align: top;\">$NAME</td><td style=\"vertical-align: top;\">$DNSTYPE</td><td style=\"vertical-align: top;\">$DNSENTRY</td>
+echo "<tr><td style=\"vertical-align: top;\">$NAME2</td><td style=\"vertical-align: top;\">$DNSTYPE</td><td style=\"vertical-align: top;\">$DNSENTRY2</td>
 <td><form action=\"/cgi-bin/admin/dnsview.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$SERVERNAME"_"SERVERTYPE_$SERVERTYPE"_"ACTION_edit_NAME_$NAME"_"_DNSENTRY_$DNSENTRY"_"DNSTYPE_$DNSTYPE"_"\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$EDITMSG'<br>$NAME<br>$DNSENTRY</span></a></form></td>
 <td><form action=\"/cgi-bin/admin/dnsview.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$SERVERNAME"_"SERVERTYPE_$SERVERTYPE"_"ACTION_delete_NAME_$NAME"_"_DNSENTRY_$DNSENTRY"_"DNSTYPE_$DNSTYPE"_"\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>'$DELETEMSG'<br>$NAME<br>$DNSENTRY</span></a></form></td>"
 

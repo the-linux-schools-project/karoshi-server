@@ -102,8 +102,14 @@ echo '<b>'$TITLE2'</b> <a class="info" target="_blank" href="http://www.linuxsch
 fi
 
 #Show main server
+if [ $MOBILE = no ]
+then
 SERVERICON="/images/submenus/system/computer.png"
 SERVERICON2="/images/submenus/system/all_computers.png"
+else
+SERVERICON="/images/submenus/system/computerm.png"
+SERVERICON2="/images/submenus/system/all_computersm.png"
+fi
 if [ -f /opt/karoshi/server_network/info ]
 then
 source /opt/karoshi/server_network/info
