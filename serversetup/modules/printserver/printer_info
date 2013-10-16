@@ -66,7 +66,7 @@ WIDTH2=60
 if [ $MOBILE = yes ]
 then
 TABLECLASS=mobileheadings
-WIDTH1=90
+WIDTH1=125
 WIDTH2=36
 echo '<div id="mobileactionbox">'
 fi
@@ -160,7 +160,7 @@ PRINTER_NAME=`echo ${PRINTER_INFO[$PRINTER_COUNTER]} | sed 's/://g'`
 PDNAME=$PRINTER_NAME
 if [ $MOBILE = yes ]
 then
-PDNAME=${PRINTER_NAME:0:10}
+PDNAME=${PRINTER_NAME:0:15}
 fi
 
 let ARRAY_ENTRY=$PRINTER_COUNTER+1
@@ -203,11 +203,9 @@ echo '
 <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
 <tbody><tr><td style="width: '$WIDTH1'px;"><b>'$PDNAME'</b></td>
 <td style="width: '$WIDTH2'px;">'
-if [ $VIEWMODE = admin ]
+if [ $VIEWMODE = admin ] && [ $MOBILE = no ]
 then
 echo '<a class="info" href="javascript:void(0)"><input name="_'$PRINTER_NAME'_setppd_" type="image" class="images" src="'$PRINTER_ICON'" value=""><span>'$PRINTER_STATE_MSG'<br>'$JOBS_MSG: $QUEUE_COUNT'<br>' $ACCEPTING_JOBS_MSG: $QUEUE_STATUS'<br>'$PRINTER_STATE_MSG : $PRINTING_STATUS'<br>'$PRINTER_DEST'<br>'$PPDNICKNAME'</span></a></td>'
-else
-echo '<a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$PRINTER_ICON'" /><span>'$PRINTER_STATE_MSG'<br>'$JOBS_MSG: $QUEUE_COUNT'<br>' $ACCEPTING_JOBS_MSG: $QUEUE_STATUS'<br>'$PRINTER_STATE_MSG : $PRINTING_STATUS'<br>'$PRINTER_DEST'<br>'$PPDNICKNAME'</span></a></td>'
 fi
 
 #Show printer location
@@ -218,13 +216,10 @@ PRINTER_LOCATIONS="$PRINTERASSIGNEDMSG2"
 PRINTER_LOCATION_ICON=$ICON10
 fi
 
-if [ $VIEWMODE = admin ]
+if [ $VIEWMODE = admin ] && [ $MOBILE = no ]
 then
 echo '
 <td style="width: '$WIDTH2'px;"><a class="info" href="javascript:void(0)"><input class="images" name="_'$PRINTER_NAME'_setlocation_" type="image" src="'$PRINTER_LOCATION_ICON'" value=""><span>'$PRINTERASSIGNEDMSG':<br>'$PRINTER_LOCATIONS'</span></a></td>'
-else
-echo '
-<td style="width: '$WIDTH2'px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$PRINTER_LOCATION_ICON'" /><span>'$PRINTERASSIGNEDMSG':<br>'$PRINTER_LOCATIONS'</span></a></td>'
 fi
 if [ $PRINTER_STATUS = 1 ]
 then

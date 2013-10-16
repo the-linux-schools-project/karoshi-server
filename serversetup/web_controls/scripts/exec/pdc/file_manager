@@ -155,7 +155,7 @@ WIDTH=70
 TABLECLASS=mobilestandard
 SERVERICON="/images/submenus/system/computerm.png"
 SERVERICON2="/images/submenus/system/all_computersm.png"
-ICON2=/images/submenus/file/show_info.png
+ICON2=/images/submenus/file/show_infom.png
 ICON3=/images/submenus/file/renamem.png
 ICON4=/images/submenus/file/copym.png
 ICON5=/images/submenus/file/deletem.png
@@ -402,11 +402,11 @@ FILENAME=`basename "$FILE"`
 FILE2=`echo "$FILE" | sed "s/_/Z%%%%%Z/g"`
 LOCATION2=`echo "'$LOCATION'" | sed "s/_/Z%%%%%Z/g"`
 
-ICON1=/images/submenus/file/file.png
+ICON1='$ICON15'
 FILEACTION=DOWNLOAD
 if [ -d "$FILE" ]
 then
-ICON1=/images/submenus/file/folder.png
+ICON1='$ICON16'
 FILEACTION=ENTER
 fi
 echo "<tr>"
@@ -460,11 +460,11 @@ FILENAME=`basename "$FILE"`
 FILE2=`echo "$FILE" | sed "s/_/Z%%%%%Z/g"`
 LOCATION2=`echo "'$LOCATION'" | sed "s/_/Z%%%%%Z/g"`
 
-ICON1=/images/submenus/file/file.png
+ICON1='$ICON15'
 FILEACTION=DOWNLOAD
 if [ -d "$FILE" ]
 then
-ICON1=/images/submenus/file/folder.png
+ICON1='$ICON16'
 FILEACTION=ENTER
 fi
 echo "<tr>"

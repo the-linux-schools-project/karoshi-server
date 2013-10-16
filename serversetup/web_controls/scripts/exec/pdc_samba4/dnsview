@@ -155,7 +155,11 @@ DNSINFO=`samba-tool dns query 127.0.0.1 $REALM $REALM ALL -U Administrator --pas
 
 #Create top of table
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="vertical-align: top; width: '$WIDTH1'px;"><b>'$DNSNAMEMSG'</b></td><td style="vertical-align: top; width: '$WIDTH2'px;"><b>Type</b></td><td><b>Entry</b></td><td><b>'$EDITMSG'</b></td><td><b>'$DELETEMSG'</b></td>'
+<tr><td style="vertical-align: top; width: '$WIDTH1'px;"><b>'$DNSNAMEMSG'</b></td>'
+
+[ $MOBILE = no ] && echo '<td style="vertical-align: top; width: '$WIDTH2'px;"><b>Type</b></td>'
+
+echo '<td><b>Entry</b></td><td><b>'$EDITMSG'</b></td><td><b>'$DELETEMSG'</b></td>'
 
 [ $MONITORSERVER = yes ] && echo '<td><b>'$MONITORMSG'</b></td>'
 echo '</tr>'
@@ -180,7 +184,9 @@ NAME2=${NAME:0:10}
 DNSENTRY2=${DNSENTRY:0:10}
 fi
 #Add line to table
-echo "<tr><td style=\"vertical-align: top;\">$NAME2</td><td style=\"vertical-align: top;\">$DNSTYPE</td><td style=\"vertical-align: top;\">$DNSENTRY2</td>
+echo "<tr><td style=\"vertical-align: top;\">$NAME2</td>"
+[ $MOBILE = no ] && echo "<td style=\"vertical-align: top;\">$DNSTYPE</td>"
+echo "<td style=\"vertical-align: top;\">$DNSENTRY2</td>
 <td><form action=\"/cgi-bin/admin/dnsview.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$SERVERNAME"_"SERVERTYPE_$SERVERTYPE"_"ACTION_edit_NAME_$NAME"_"_DNSENTRY_$DNSENTRY"_"DNSTYPE_$DNSTYPE"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$EDITMSG<br>$NAME<br>$DNSENTRY</span></a></form></td>
 <td><form action=\"/cgi-bin/admin/dnsview.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$SERVERNAME"_"SERVERTYPE_$SERVERTYPE"_"ACTION_delete_NAME_$NAME"_"_DNSENTRY_$DNSENTRY"_"DNSTYPE_$DNSTYPE"_"\" type=\"image\" class=\"images\" src=\"$ICON2\" value=\"\"><span>$DELETEMSG<br>$NAME<br>$DNSENTRY</span></a></form></td>"
 
@@ -207,7 +213,9 @@ DNSINFO=`samba-tool dns query 127.0.0.1 $REALM $REALM ALL -U Administrator --pas
 
 #Create top of table
 echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"vertical-align: top; width: '$WIDTH1'px;\"><b>'$DNSNAMEMSG'</b></td><td style=\"vertical-align: top; width: '$WIDTH2'px;\"><b>Type</b></td><td><b>Entry</b></td><td><b>'$EDITMSG'</b></td><td><b>'$DELETEMSG'</b></td>"
+<tr><td style=\"vertical-align: top; width: '$WIDTH1'px;\"><b>'$DNSNAMEMSG'</b></td>"
+[ '$MOBILE' = no ] && echo "<td style=\"vertical-align: top; width: '$WIDTH2'px;\"><b>Type</b></td>"
+echo "<td><b>Entry</b></td><td><b>'$EDITMSG'</b></td><td><b>'$DELETEMSG'</b></td>"
 
 [ $MONITORSERVER = yes ] && echo "<td><b>'$MONITORMSG'</b></td>"
 echo "</tr>"
@@ -232,7 +240,9 @@ DNSENTRY2=${DNSENTRY:0:10}
 fi
 
 #Add line to table
-echo "<tr><td style=\"vertical-align: top;\">$NAME2</td><td style=\"vertical-align: top;\">$DNSTYPE</td><td style=\"vertical-align: top;\">$DNSENTRY2</td>
+echo "<tr><td style=\"vertical-align: top;\">$NAME2</td>"
+[ '$MOBILE' = no ] && echo "<td style=\"vertical-align: top;\">$DNSTYPE</td>"
+echo "<td style=\"vertical-align: top;\">$DNSENTRY2</td>
 <td><form action=\"/cgi-bin/admin/dnsview.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$SERVERNAME"_"SERVERTYPE_$SERVERTYPE"_"ACTION_edit_NAME_$NAME"_"_DNSENTRY_$DNSENTRY"_"DNSTYPE_$DNSTYPE"_"\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$EDITMSG'<br>$NAME<br>$DNSENTRY</span></a></form></td>
 <td><form action=\"/cgi-bin/admin/dnsview.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$SERVERNAME"_"SERVERTYPE_$SERVERTYPE"_"ACTION_delete_NAME_$NAME"_"_DNSENTRY_$DNSENTRY"_"DNSTYPE_$DNSTYPE"_"\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>'$DELETEMSG'<br>$NAME<br>$DNSENTRY</span></a></form></td>"
 
