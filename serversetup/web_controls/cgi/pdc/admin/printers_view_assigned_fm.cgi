@@ -67,7 +67,9 @@ exit
 
 [ ! -f /opt/karoshi/server_network/printserver ] && show_status
 
-echo '<form action="/cgi-bin/admin/printers_view_assigned.cgi" method="post"><div id="actionbox"><b>'$TITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Assigned_Printers"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG1"'</span></a><br><br>'
+echo '<form action="/cgi-bin/admin/printers_view_assigned.cgi" method="post"><div id="actionbox"><div id="titlebox"><b>'$TITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Assigned_Printers"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG1"'</span></a><br><br>
+</div><div id="infobox">
+'
 
 #Check to see that locations.txt exists
 if [ ! -f /var/lib/samba/netlogon/locations.txt ]
@@ -78,6 +80,10 @@ fi
 COUNTER=`grep -n ^--start-- /var/lib/samba/netlogon/printers.txt | cut -d: -f1`
 let COUNTER=$COUNTER+1
 NOOFLINES=`cat /var/lib/samba/netlogon/printers.txt | wc -l`
+
+#Create top of table
+echo '<table class="standard" style="text-align: left;"><tbody><tr><td style="width: 200px;"><b>'$LOCATIONMSG'</b></td><td style="width: 150px;"><b>'$PRINTERMSG'</b></td></td><td></td></tr>'
+LASTLOCATION=notset
 #Show locations and printers
 while [ $COUNTER -le $NOOFLINES ]
 do
@@ -89,34 +95,36 @@ DATARRAY=( `echo $DATAENTRY | sed 's/,/ /g'` )
 ARRAYCOUNT=${#DATARRAY[@]}
 let ARRAYCOUNT=$ARRAYCOUNT-1
 DEFAULTPRINTER=${DATARRAY[$ARRAYCOUNT]}
-#Show location an default printer
-echo '<table class="standard" style="text-align: left;"><tbody><tr><td style="width: 200px;"><b>'$LOCATIONMSG':</b> '${DATARRAY[0]}'</td><td style="width: 180px;"><b>'$DEFAULTPRINTERMSG':</b> '$DEFAULTPRINTER'</td><td><b>'$PRINTERMSG'</b></td><td style="text-align: center;"></td><td style="text-align: center;"></td></tr>'
 #Show printers
 ARRAYCOUNTER=2
 while [ $ARRAYCOUNTER -lt $ARRAYCOUNT ]
 do
-#Show printer name
-echo '<tr><td></td><td></td><td>'${DATARRAY[$ARRAYCOUNTER]}'</td>'
+#Show location 
+[ $LASTLOCATION != ${DATARRAY[0]} ] && echo '<tr><td style="vertical-align: top; height: 15px;"><br></td></tr>'
+echo '<tr><td>'
+[ $LASTLOCATION != ${DATARRAY[0]} ] && echo ${DATARRAY[0]}
+LASTLOCATION=${DATARRAY[0]}
+echo '</td><td>'${DATARRAY[$ARRAYCOUNTER]}'</td>'
 #Show printer actions
 #Set default option
 if [ ${DATARRAY[$ARRAYCOUNTER]} != $DEFAULTPRINTER ]
 then
 echo '<td style="text-align: center;"><a class="info" href="javascript:void(0)"><input name="_PRINTACTION_default:'${DATARRAY[0]}':'${DATARRAY[$ARRAYCOUNTER]}'_" type="image" class="images" src="/images/help/printer_make_default.png" value=""><span>'$DEFAULTMSG'</span></a></td>'
 else
-echo '<td style="text-align: center;"></td>'
+echo '<td style="text-align: center;">
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/printer_default.png"><span>'$DEFAULTPRINTERMSG'</span></a>
+'
 fi
-#Delete option
 
+#Delete option
 echo '<td><a class="info" href="javascript:void(0)"><input name="_PRINTACTION_delete:'${DATARRAY[0]}':'${DATARRAY[$ARRAYCOUNTER]}'_" type="image" class="images" src="/images/help/printer_remove.png" value=""><span>'$REMOVEMSG'</span></a></td></tr>'
 let ARRAYCOUNTER=$ARRAYCOUNTER+1
 done
-#End table
-echo '</tbody></table>'
-echo '<br>'
 #Clear array
 unset DATARRAY
 let COUNTER=$COUNTER+1
 fi
 done
-echo '</div></form></body></html>'
+#End table
+echo '</tbody></table></div></form></body></html>'
 exit
