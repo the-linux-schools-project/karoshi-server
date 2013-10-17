@@ -260,14 +260,19 @@ let COUNTER=$COUNTER+1
 done
 }
 
+function getlastlocation {
+LOCATIONFOLDER=`basename "$LOCATION"`
+LASTLOCATION=`echo "$LOCATION" | sed "s/\/$LOCATIONFOLDER$//g" | sed "s/_/Z%%%%%Z/g"`
+}
+
+
 function show_directory {
 
 if [ "$LOCATION""null" != null ]
 then
 convert_special_chars
 LOCATION=`echo "$LOCATION" | sed 's/+/ /g'`
-LOCATIONFOLDER=`basename "$LOCATION"`
-LASTLOCATION=`echo "$LOCATION" | sed "s/\/$LOCATIONFOLDER$//g" | sed "s/_/Z%%%%%Z/g"`
+getlastlocation
 LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
 fi
 
@@ -549,6 +554,7 @@ fi
 }
 
 function delete_item {
+getlastlocation
 #Check to see that item is not on the protected list
 DELETECHECK=yes
 #Check that file is not in a banned path
@@ -830,7 +836,7 @@ function set_perms {
 convert_special_chars
 echo $SETPERMSMSG - "$LOCATION""<br><br><br>"
 #Get ownership details
-
+getlastlocation
 LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
 echo '<input name="_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVER_'$SERVER'_LOCATION_'$LOCATION2'_ACTION_REALLYSETPERMS_" value="" type="hidden">'
 
@@ -1348,6 +1354,7 @@ show_directory
 
 function rename_item {
 #Check to see that item is not on the protected list
+getlastlocation
 RENAMECHECK=yes
 #Check that file is not in a banned path
 if [ `echo ${LOCATION_LIST[@]:0} | grep -c -w "$LOCATION"` -gt 0 ]
@@ -1463,6 +1470,7 @@ show_directory
 
 function edit_item {
 convert_special_chars
+getlastlocation
 LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
 echo $EDITMSG $LOCATION'<br><br>'
 
