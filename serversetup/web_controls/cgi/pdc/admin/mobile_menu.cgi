@@ -34,6 +34,7 @@
 #Section Control
 ##########################
 source /opt/karoshi/server_network/menusettings
+source /opt/karoshi/web_controls/version
 ############################
 #Language
 ############################
@@ -182,7 +183,7 @@ echo '      <div class="collapsed">
 fi
 echo '<div class="a.current">
 <small><small>
-'$VERSION' : 131016-1624
+'$VERSIONMSG' : '$VERSION'
 </small></small>
 </div>
 </div>

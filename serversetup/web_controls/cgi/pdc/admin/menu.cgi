@@ -31,6 +31,7 @@ STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
+source /opt/karoshi/web_controls/version
 ############################
 #Show page
 ############################
@@ -70,7 +71,7 @@ echo '
 
 <div id="headerbar">
 	<div id="headerbar1">
-&nbsp;&nbsp;<a href="/cgi-bin/menu.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/home.png"></a>&nbsp;&nbsp;<a href="/cgi-bin/admin/search_fm.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/search.png"></a>&nbsp;&nbsp;'$SCHOOL_NAME'&nbsp;&nbsp; - &nbsp;&nbsp;'$TITLE' <small><small>'$VERSION ':' 280509-0838'</small></small>
+&nbsp;&nbsp;<a href="/cgi-bin/menu.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/home.png"></a>&nbsp;&nbsp;<a href="/cgi-bin/admin/search_fm.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/search.png"></a>&nbsp;&nbsp;'$SCHOOL_NAME'&nbsp;&nbsp; - &nbsp;&nbsp;'$TITLE' <small><small>'$VERSIONMSG' : '$VERSION'</small></small>
 	</div>'
 
 if [ -f /opt/karoshi/information ]

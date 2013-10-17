@@ -23,10 +23,10 @@
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
-
+source /opt/karoshi/web_controls/version
 
 
 echo '<table class="standard" style="text-align: left; height: 91px;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td><img src="/images/smalllogo.png" alt="Karoshi" /></td><td style="vertical-align: middle;"><font style="font-weight: bold;" size="+3">Web Management '$SCHOOL_NAME'</font></td><td style="vertical-align: middle;"><small>
-'$VERSION' : 131016-1624
+'$VERSIONMSG' : '$VERSION'
 </td></tr></tbody></table>'

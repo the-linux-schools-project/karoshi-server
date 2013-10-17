@@ -29,6 +29,7 @@ STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/access_denied ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/access_denied
 source /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
+source /opt/karoshi/web_controls/version
 ############################
 #Show page
 ############################
@@ -47,7 +48,7 @@ echo '
 
 
 echo '<img src="/images/small_logo.png" alt="logo" align="top"> <font style="font-weight: bold;" size="+2">Web Management '$SCHOOL_NAME'</font> <small><small>
-'$VERSION' : 131016-1624
+'$VERSIONMSG' : '$VERSION'
 </small></small>
 '
 

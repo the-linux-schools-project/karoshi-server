@@ -556,6 +556,9 @@ done
 fi
 fi
 
+#Copy in version info
+cp -f /opt/karoshi/serversetup/web_controls/version /opt/karoshi/web_controls/version
+
 #Copy in backed up user images if they exist
 if [ -d /var/www/user_images.$$ ]
 then
