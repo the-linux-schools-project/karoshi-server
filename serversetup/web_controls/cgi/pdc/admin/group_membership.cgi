@@ -71,7 +71,7 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	</script>'
 fi
 
-echo '</head><body>'
+echo '</head><body onLoad="start()">'
 #########################
 #Get data input
 #########################
@@ -165,12 +165,19 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="mobileactionbox">
 '
 else
-echo '<div id="'$DIV_ID'"><b>'$TITLE1' - '$USERNAME'</b><br><br>'
+echo '<div id="'$DIV_ID'"><div id="titlebox">
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="vertical-align: top;">
+<form action="/cgi-bin/admin/group_membership_fm.cgi" method="post"><input name="" type="submit" class="button" value="'$CHOOSEUSERMSG'"></form></td>
+<td style="vertical-align: top;"><b>'$TITLE1' - '$USERNAME'</b></td>
+</tr></tbody></table>
+<br></div><div id="infobox">'
 fi
 
 
 
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/group_membership
+[ $MOBILE = no ] && echo '</div>'
 echo '</div></body></html>'
 exit
 
