@@ -170,8 +170,7 @@ echo '<div id="'$DIV_ID'"><div id="titlebox">
 <tr><td style="vertical-align: top;">
 <form action="/cgi-bin/admin/group_membership_fm.cgi" method="post"><input name="" type="submit" class="button" value="'$CHOOSEUSERMSG'"></form></td>
 <td style="vertical-align: top;"><b>'$TITLE1' - '$USERNAME'</b></td>
-</tr></tbody></table>
-<br></div><div id="infobox">'
+</tr></tbody></table></div><div id="infobox">'
 fi
 
 

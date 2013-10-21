@@ -112,8 +112,6 @@ MESSAGE=$ACCESS_ERROR1
 show_status
 fi
 
-
-
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
@@ -164,21 +162,19 @@ echo '<form action="/cgi-bin/admin/update_servers.cgi" name="tstest" method="pos
 </tbody></table><br><br>'
 
 #Show list of ssh enabled servers
-SERVERLISTARRAY=( `ls -1 /opt/karoshi/server_network/servers` )
-SERVERLISTCOUNT=${#SERVERLISTARRAY[@]}
-SERVERCOUNTER=0
+SERVERCOUNTER=1
 
 if [ $MOBILE = no ]
 then
 ROWCOUNT=6
 WIDTH=90
-SERVERICON="/images/submenus/system/computer.png"
+SERVERICON1="/images/submenus/system/computer.png"
 SERVERICON2="/images/submenus/system/all_computers.png"
 SCHEDULEICON="/images/submenus/system/computer_schedule.png"
 else
-ROWCOUNT=3
+ROWCOUNT=4
 WIDTH=70
-SERVERICON="/images/submenus/system/computerm.png"
+SERVERICON1="/images/submenus/system/computerm.png"
 SERVERICON2="/images/submenus/system/all_computersm.png"
 SCHEDULEICON="/images/submenus/system/computer_schedulem.png"
 fi
@@ -193,9 +189,10 @@ fi
 echo '<b>'$MYSERVERSMSG' '$LOCATION_NAME2'</b><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
 
 AUTOSCHEDULE=no
-while [ $SERVERCOUNTER -lt $SERVERLISTCOUNT ]
+for KAROSHI_SERVER in /opt/karoshi/server_network/servers/*
 do
-KAROSHISERVER=${SERVERLISTARRAY[$SERVERCOUNTER]}
+KAROSHISERVER=`basename $KAROSHI_SERVER`
+SERVERICON=$SERVERICON1
 [ -f /opt/karoshi/server_network/upgrade_schedules/servers/$KAROSHISERVER ] && SERVERICON=$SCHEDULEICON
 
 echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_SERVERNAME_'$KAROSHISERVER'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$KAROSHISERVER'<br><br>'
@@ -205,6 +202,7 @@ echo '</span></a><br>'$KAROSHISERVER'</td>'
 [ $SERVERCOUNTER = $ROWCOUNT ] && echo '</tr><tr>'
 [ $SERVERCOUNTER -gt 0 ] && AUTOSCHEDULE=yes
 let SERVERCOUNTER=$SERVERCOUNTER+1
+[ $SERVERCOUNTER -gt $ROWCOUNT ] && SERVERCOUNTER=1
 done
 echo '</tr>'
 if [ $AUTOSCHEDULE = yes ]
@@ -235,7 +233,7 @@ echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a c
 cat /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/$FEDERATED_SERVER/* | sed '/<a href/c'"<br>"
 echo '</span></a><br>'$FEDERATED_SERVER'</td>'
 
-SERVERCOUNTER2=0
+SERVERCOUNTER2=1
 for FEDERATED_SLAVE_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/*
 do
 FEDERATED_SLAVE_SERVER=`basename $FEDERATED_SLAVE_SERVERS`

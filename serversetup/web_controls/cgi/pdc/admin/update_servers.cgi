@@ -29,6 +29,12 @@
 #  _SERVER_
 #  _PASSWORD1_  Root Password
 #  _PASSWORD2_  Checked against PASSWORD1 for typos.
+
+#Detect mobile browser
+MOBILE=no
+source /opt/karoshi/web_controls/detect_mobile_browser
+
+
 ############################
 #Language
 ############################
@@ -158,12 +164,30 @@ done
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title></head>'
-echo '<link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+
+if [ $MOBILE = yes ]
+then
+echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+		/***********************************************
+		* Slashdot Menu script- By DimX
+		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
+		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+		***********************************************/
+	</script>
+	<script type="text/javascript">
+	// <![CDATA[
+	var myMenu;
+	window.onload = function() {
+		myMenu = new SDMenu("my_menu");
+		myMenu.init();
+	};
+	// ]]>
+	</script>'
+fi
+
 echo '</head><body>'
-#Detect mobile browser
-MOBILE=no
-source /opt/karoshi/web_controls/detect_mobile_browser
 
 #Generate navigation bar
 if [ $MOBILE = no ]
@@ -172,9 +196,23 @@ DIV_ID=actionbox
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=menubox
+DIV_ID=actionbox2
 fi
-echo '<div id="'$DIV_ID'"><b>'$TITLE'</b><br><br>'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+
+#Show back button for mobiles
+if [ $MOBILE = yes ]
+then
+echo '<div style="float: center" id="my_menu" class="sdmenu">
+	<div class="expanded">
+	<span>'$TITLE'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$SYSMENUMSG'</a>
+</div></div><div id="mobileactionbox">'
+else
+echo '
+<b>'$TITLE'</b><br><br>'
+fi
+
 #########################
 #Check https access
 #########################
