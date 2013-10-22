@@ -63,7 +63,7 @@ for d in $DIRS;do
 	if [ "$d" = "private" ]; then
 		find $relativedirname -name "*.ldb.bak" -exec rm {} \;
 		for ldb in `find $relativedirname -name "*.ldb"`; do
-			tdbbackup $ldb
+			/usr/local/bin/tdbbackup $ldb
 			if [ $? -ne 0 ]; then
 				echo "Error while backuping $ldb"
 				exit 1
