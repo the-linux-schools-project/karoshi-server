@@ -2,7 +2,7 @@
 server {
 	listen   80 default;
 	server_name  localhost;
-
+client_max_body_size 100M;
 	access_log  /var/log/nginx/localhost.access.log;
 
 include /etc/nginx/proxysites;
@@ -13,7 +13,7 @@ include /etc/nginx/proxysites;
 server {
 listen   443;
 server_name localhost;
-client_max_body_size 50M;
+client_max_body_size 100M;
 ssl  on;
 #Using the same location as for the apache server
 ssl_certificate  /etc/ssl/apache/server.crt;
