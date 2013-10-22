@@ -106,6 +106,7 @@ echo '	<a href="/cgi-bin/admin/change_password_fm.cgi">'$CHANGEPASSMSG'</a>
         <a href="/cgi-bin/admin/file_manager.cgi">'$FILEMANAGER'</a>
         <a href="/cgi-bin/admin/server_info_fm.cgi">'$SERVERINFOMSG'</a>
         <a href="/cgi-bin/admin/update_servers_fm.cgi">'$UPDATESERVERSMSG'</a>
+        <a href="/cgi-bin/admin/update_servers_view_logs_fm.cgi">'$UPDATESERVERLOGSMSG'</a>
         <a href="/cgi-bin/admin/update_karoshi_fm.cgi">'$UPDATEKAROSHIMSG'</a>
         <a href="/cgi-bin/admin/uptime_fm.cgi">'$UPTIMEMSG'</a>
         <a href="/cgi-bin/admin/view_karoshi_web_management_logs.cgi">'$WEBLOGSMSG'</a>

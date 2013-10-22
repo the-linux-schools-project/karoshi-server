@@ -33,6 +33,11 @@
 #  _DAY2_
 #  _MONTH2_
 #  _YEAR2_
+
+#Detect mobile browser
+MOBILE=no
+source /opt/karoshi/web_controls/detect_mobile_browser
+
 ############################
 #Language
 ############################
@@ -54,7 +59,31 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
-echo "<link rel=\"stylesheet\" href=\"/css/$STYLESHEET\"><script src=\"/all/stuHover.js\" type=\"text/javascript\"></script></head><body>"
+echo "<link rel=\"stylesheet\" href=\"/css/$STYLESHEET\"><script src=\"/all/stuHover.js\" type=\"text/javascript\"></script>"
+
+if [ $MOBILE = yes ]
+then
+echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+		/***********************************************
+		* Slashdot Menu script- By DimX
+		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
+		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+		***********************************************/
+	</script>
+	<script type="text/javascript">
+	// <![CDATA[
+	var myMenu;
+	window.onload = function() {
+		myMenu = new SDMenu("my_menu");
+		myMenu.init();
+	};
+	// ]]>
+	</script>'
+fi
+
+
+echo '</head><body>'
 #########################
 #Get data input
 #########################
@@ -219,10 +248,6 @@ MESSAGE=$ERRORMSG5
 show_status
 fi
 
-#Detect mobile browser
-MOBILE=no
-source /opt/karoshi/web_controls/detect_mobile_browser
-
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
@@ -230,10 +255,9 @@ DIV_ID=actionbox
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
+DIV_ID=mobileactionbox3
 fi
 
-echo '<div id="'$DIV_ID'">'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/update_servers_view_logs.cgi | cut -d' ' -f1`
 #Show logs
 
@@ -241,21 +265,25 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/update_servers_view_logs.cgi | cut
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
-<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$TITLE'</b></a></td></tr></tbody></table><br>'
+echo '<div style="float: center" id="my_menu" class="sdmenu">
+	<div class="expanded">
+	<span>'$TITLE'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$SYSMENUMSG'</a>
+</div></div><div id="'$DIV_ID'">
+'
 else
+echo '<div id="'$DIV_ID'"><div id="titlebox">'
 if [ $LOGVIEW = today ]
 then
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a href="update_servers_view_logs_fm.cgi"><img alt="" src="/images/warnings/server.png"></a></td><td><b>'$TITLE $SERVERNAME $DAY-$MONTH-$YEAR'</b></td></tr></tbody></table><br>'
 else
-echo '<b>'$TITLE $SERVERNAME $MONTH-$YEAR'</b><br><br>'
+echo '<b>'$TITLE $SERVERNAME $MONTH-$YEAR'</b><br><br></div><div id="infobox">'
 fi
 fi
 
 sudo -H /opt/karoshi/web_controls/exec/update_servers_view_logs $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOGVIEW:$DAY:$MONTH:$YEAR:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:
-
 LOG_STATUS=`echo $?`
+[ $MOBILE = no ] && echo '</div>'
 if [ $LOG_STATUS = 101 ]
 then
 MESSAGE=$ERRORMSG3
@@ -266,6 +294,5 @@ then
 MESSAGE=$ERRORMSG4
 show_status
 fi
-echo '</div>'
-echo "</body></html>"
+echo '</div></body></html>'
 exit
