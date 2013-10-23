@@ -1,0 +1,150 @@
+#!/bin/bash
+
+MOBILE=`echo $1 | tr -cd a-z`
+VIEW=`echo $2 | tr -cd a-z`
+ACTIONMSG=`echo $3 | tr -cd "A-Za-z\n-/"`
+ACTION=`echo $4 | tr -cd "A-Za-z"`
+
+SERVERMSG=Server
+ROLESMSG=Role
+
+
+#Check data
+
+function usage {
+echo -e "show_servers usage\n\nshow_servers mobile(yes/no) view(all/internal/pdc/servers)" 
+exit
+}
+
+[ -z $MOBILE ] && usage
+[ -z $VIEW ] && usage
+
+if [ $MOBILE != yes ] && [ $MOBILE != no ]
+then
+usage
+fi
+
+if [ $VIEW != all ] && [ $VIEW != internal ] && [ $VIEW != pdc ] && [ $VIEW != servers ]
+then
+usage
+fi
+
+if [ $MOBILE = no ]
+then
+WIDTH1=120
+WIDTH2=200
+WIDTH3=80
+HEIGHT1=50
+SERVERICON="/images/submenus/system/computer.png"
+SERVERICON2="/images/submenus/system/all_computers.png"
+TABLECLASS=standard
+else
+WIDTH1=120
+WIDTH2=140
+WIDTH3=50
+HEIGHT1=30
+SERVERICON="/images/submenus/system/computerm.png"
+SERVERICON2="/images/submenus/system/all_computersm.png"
+TABLECLASS=mobilestandard
+fi
+
+function tabletop {
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="vertical-align: top; width: 10px;"></td><td style="vertical-align: top; width: '$WIDTH1'px;"><b>'$SERVERMSG'</b></td>'
+
+[ $MOBILE = no ] && echo '<td style="vertical-align: top; width: '$WIDTH2'px;"><b>'$ROLESMSG'</b></td>'
+
+echo '<td style="vertical-align: top; text-align: right; width: '$WIDTH3'px;"></td></tr>'
+}
+
+function tablebottom {
+echo '</tbody></table>'
+}
+
+
+function show_server {
+echo '<tr><td style="background-color:'$FILLCOLOUR'; height: '$HEIGHT1'px;"></td><td style="vertical-align: top;">'$SERVER'</td>'
+
+if [ $MOBILE = no ]
+then
+echo '<td style="vertical-align: top;">'
+[ -d $INFOPATH/$SERVER ] &&  cat $INFOPATH/$SERVER/*
+echo '</td>'
+fi
+
+echo '<td style="vertical-align: top; text-align: right;">
+<input name="_SERVERNAME_'$SERVER'_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$FEDERATED_SERVER'_ACTION_'$ACTION'_" type="submit" class="button" value="'$ACTIONMSG'">
+</td></tr>'
+}
+
+function show_all_option {
+FILLCOLOUR=yellow
+SERVERTYPE=network
+INFOPATH=/opt/karoshi/server_network/servers
+SERVER=allservers
+show_server
+}
+
+function show_internal_servers {
+FILLCOLOUR=green
+SERVERTYPE=network
+INFOPATH=/opt/karoshi/server_network/servers
+for SERVERS in /opt/karoshi/server_network/zones/internal/servers/*
+do
+SERVER=`basename $SERVERS`
+[ $SERVER != $HOSTNAME ] && show_server
+done
+}
+
+function show_dmz_servers {
+FILLCOLOUR=orange
+INFOPATH=/opt/karoshi/server_network/servers
+SERVERTYPE=network
+if [ -d /opt/karoshi/server_network/zones/dmz/servers/ ]
+then
+if [ `ls -1 /opt/karoshi/server_network/zones/dmz/servers/ | wc -l` -gt 0 ]
+then
+for SERVERS in /opt/karoshi/server_network/zones/dmz/servers/*
+do
+SERVER=`basename $SERVERS`
+[ $SERVER != $HOSTNAME ] && show_server
+done
+fi
+fi
+}
+
+function show_pdc {
+FILLCOLOUR=green
+INFOPATH=/opt/karoshi/server_network/servers
+SERVERTYPE=network
+SERVER=$HOSTNAME
+show_server
+}
+
+#Start table
+tabletop
+
+#Show pdc
+show_pdc
+
+#Show internal servers
+if [ $VIEW = all ] || [ $VIEW = internal ] || [ $VIEW = servers ]
+then
+show_internal_servers
+show_dmz_servers
+fi
+
+#Show all option
+if [ $VIEW = all ]
+then
+show_all_option
+fi
+
+#End table
+tablebottom
+
+#Show federated servers
+
+exit
+
+

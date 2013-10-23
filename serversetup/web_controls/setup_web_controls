@@ -834,7 +834,11 @@ chown apache_karoshi /var/www/html_karoshi/.tempdata/
 fi
 
 cp -f /opt/karoshi/serversetup/web_controls/scripts/detect_mobile_browser /opt/karoshi/web_controls
-chmod 0750 /opt/karoshi/web_controls/generate_navbar_admin
+chmod 0750 /opt/karoshi/web_controls/detect_mobile_browser
+chown root:apache_karoshi /opt/karoshi/web_controls/detect_mobile_browser
+cp -f /opt/karoshi/serversetup/web_controls/scripts/show_servers /opt/karoshi/web_controls
+chmod 0750 /opt/karoshi/web_controls/show_servers
+chown root:apache_karoshi /opt/karoshi/web_controls/show_servers
 cp -f /opt/karoshi/serversetup/web_controls/scripts/generate_navbar_admin /opt/karoshi/web_controls
 chmod 0750 /opt/karoshi/web_controls/generate_navbar_admin
 chown root:apache_karoshi /opt/karoshi/web_controls/generate_navbar_admin

@@ -172,6 +172,7 @@ fi
 if [ $MOBILE = no ]
 then
 DIV_ID=actionbox
+TABLECLASS=standard
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -190,7 +191,11 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="mobileactionbox">
 '
 else
-echo '<b>'$TITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Uptime"><img class="images" alt="" src="/images/help/info.png"><span>'$UPTIMEHELP'</span></a><br><br>'
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr><td style="vertical-align: top;"><b>'$TITLE'</b></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Uptime"><img class="images" alt="" src="/images/help/info.png"><span>'$UPTIMEHELP'</span></a></td><td style="vertical-align: top;">
+<form action="/cgi-bin/admin/uptime_fm.cgi" name="selectservers" method="post">
+<input name="" type="submit" class="button" value="'$CHOOSESERVERMSG'">
+</form></td></tr></tbody></table>
+<br>'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/uptime.cgi | cut -d' ' -f1`

@@ -151,11 +151,6 @@ LOCATION_NAME="- $LOCATION_NAME"
 fi
 fi
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="6"><tbody><tr><td style="vertical-align: top;">
-<a href="uptime_fm.cgi"><img alt="" src="'$ICON1'"></a>
-</td><td style="vertical-align: top;"><b>'$LABEL' '$LOCATION_NAME'</b></td></tr></tbody></table>'
-
-
 if [ $MOBILE = yes ]
 then
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>

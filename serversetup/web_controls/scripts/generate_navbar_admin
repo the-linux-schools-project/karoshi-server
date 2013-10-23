@@ -233,6 +233,7 @@ echo '						<li><a href="/cgi-bin/admin/bulk_user_creation_import_enrollment_num
 							<li><a href="/cgi-bin/admin/software_raid_create_fm.cgi">'$CREATERAIDMSG'</a></li>
 							<li><a href="/cgi-bin/admin/software_raid_control_fm.cgi">'$CONTROLRAIDMSG'</a></li>
 						</ul>
+						<li><a href="/cgi-bin/admin/find_student_files_fm.cgi">'$FINDSTUDENTFILES'</a></li>
 						<li><a href="/cgi-bin/admin/samba_add_share_fm.cgi">'$ADDNETWORKSHAREMSG'</a></li>'
 if [ $FEDERATEDCTL = yes ]
 then
@@ -245,7 +246,6 @@ then
 echo '						<li><a href="/cgi-bin/admin/shell.cgi">'$SHELLMSG'</a></li>'
 fi
 echo '			<li><a href="/cgi-bin/admin/file_manager.cgi">'$FILEMANAGER'</a></li>
-			<li><a href="/cgi-bin/admin/find_student_files_fm.cgi">'$FINDSTUDENTFILES'</a></li>
 			<li class="mid"><a href="/cgi-bin/admin/remote_management_view.cgi" class="fly">'$KAROSHIMSG'</a>
 					<ul>
 						<li><a href="/cgi-bin/admin/remote_management_view.cgi">'$VIEWREMOTEADMINS'</a></li>

@@ -90,10 +90,10 @@ COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
 DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERcheck ]
+if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
 then
 let COUNTER=$COUNTER+1
-SERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
 break
 fi
 let COUNTER=$COUNTER+1
@@ -155,9 +155,9 @@ then
 ACTION=notset
 fi
 
-if [ $SERVER'null' = null ]
+if [ $SERVERNAME'null' = null ]
 then
-SERVER=notset
+SERVERNAME=notset
 fi
 if [ $SERVERTYPE'null' = null ]
 then
@@ -532,7 +532,7 @@ if [ $ACTION = notset ]
 then
 SERVER2=$CHOOSESERVERMSG
 else
-SERVER2=$SERVER
+SERVER2=$SERVERNAME
 fi
 
 #Show back button for mobiles
@@ -552,7 +552,7 @@ fi
 
 #echo $DATA'<br>'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/file_manager.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$SERVER:$SERVERTYPE:$SERVERMASTER:$LOCATION:$FILENAME:$ACTION:$PERMISSIONS:$OWNER:$GROUP:$ITEMMOVE:$NEWFOLDER:$TEXTDATA:" | sudo -H /opt/karoshi/web_controls/exec/file_manager
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$LOCATION:$FILENAME:$ACTION:$PERMISSIONS:$OWNER:$GROUP:$ITEMMOVE:$NEWFOLDER:$TEXTDATA:" | sudo -H /opt/karoshi/web_controls/exec/file_manager
 
 [ $MOBILE = no ] && echo '</div>'
 

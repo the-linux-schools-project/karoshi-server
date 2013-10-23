@@ -131,14 +131,13 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 
 
 else
-echo '<div id="'$DIV_ID'">
+echo '<div id="'$DIV_ID'"><div id="titlebox">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="vertical-align: top;"><b>'$TITLE'</b></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'"$SERVERHELP2"'</span></a></td><td style="vertical-align: top;">
 <form action="/cgi-bin/admin/cron_view_fm.cgi" method="post">
-<a class="info" href="javascript:void(0)"><input name="" type="image" class="images" src="/images/submenus/system/computer_schedule.png" value=""><span>'$TITLE2'</span></a>
+<input name="" type="submit" class="button" value="'$TITLE2'">
 </form>
-</td></tr></table>'
-
+</td></tr></table></div><div id ="infobox">'
 fi
 
 echo '<form action="/cgi-bin/admin/cron_add.cgi" name="selectservers" method="post">'
@@ -281,74 +280,11 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'"$COMMANDHELP"'</span></a>
       </td></tr></tbody></table><br><br>'
 
-#Show list of ssh enabled servers
-SERVERCOUNTER=0
-ROWCOUNT=6
-[ $MOBILE = yes ] && ROWCOUNT=3
-WIDTH=90
-[ $MOBILE = yes ] && WIDTH=70
-SERVERICON="/images/submenus/system/computer.png"
-SERVERICON2="/images/submenus/system/all_computers.png"
-if [ -f /opt/karoshi/server_network/info ]
-then
-source /opt/karoshi/server_network/info
-LOCATION_NAME="- $LOCATION_NAME"
-fi
-echo '<b>'$MYSERVERSMSG' '$LOCATION_NAME'</b><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+#Show list of servers
+/opt/karoshi/web_controls/show_servers $MOBILE servers "$ACTIONMSG2"
 
-for KAROSHI_SERVER in /opt/karoshi/server_network/servers/*
-do
-KAROSHISERVER=`basename $KAROSHI_SERVER`
-[ $SERVERCOUNTER = $ROWCOUNT ] && echo '</tr><tr>'
-echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="___SERVERTYPE___network___SERVERNAME___'$KAROSHISERVER'___" type="image" class="images" src="'$SERVERICON'" value=""><span>'$KAROSHISERVER'<br><br>'
-cat /opt/karoshi/server_network/servers/$KAROSHISERVER/* | sed '/<a href/c'"&nbsp"
-echo '</span></a><br>'$KAROSHISERVER'</td>'
+[ $MOBILE = no ] && echo '</div>'
 
-let SERVERCOUNTER=$SERVERCOUNTER+1
-[ $SERVERCOUNTER -gt $ROWCOUNT ] && SERVERCOUNTER=1
-done
-
-
-echo '</tr></tbody></table><br>'
-
-#Show list of federated servers
-if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
-then
-if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
-then
-for FEDERATED_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
-do
-FEDERATED_SERVER=`basename $FEDERATED_SERVERS`
-if [ -f /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/info ]
-then
-source /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/info
-LOCATION_NAME="- $LOCATION_NAME"
-fi
-echo '<b>'$FEDERATEDSERVERSMSG' '$LOCATION_NAME'</b><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
-echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="___SERVERTYPE___federated___SERVERNAME___'$FEDERATED_SERVER'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$FEDERATED_SERVER'<br><br>'
-cat /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/$FEDERATED_SERVER/* | sed '/<a href/c'"&nbsp"
-echo '</span></a><br>'$FEDERATED_SERVER'</td>'
-
-SERVERCOUNTER2=1
-for FEDERATED_SLAVE_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/*
-do
-FEDERATED_SLAVE_SERVER=`basename $FEDERATED_SLAVE_SERVERS`
-if [ $FEDERATED_SLAVE_SERVER != $FEDERATED_SERVER ]
-then
-[ $SERVERCOUNTER2 = $ROWCOUNT ] && echo '</tr><tr>'
-echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="___SERVERTYPE___federatedslave___SERVERMASTER___'$FEDERATED_SERVER'___SERVERNAME___'$FEDERATED_SLAVE_SERVER'___" type="image" class="images" src="'$SERVERICON'" value=""><span>'$FEDERATED_SLAVE_SERVER'<br><br>'
-cat /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/$FEDERATED_SLAVE_SERVER/* | sed '/<a href/c'"&nbsp"
-echo '</span></a><br>'$FEDERATED_SLAVE_SERVER'</td>'
-let SERVERCOUNTER2=$SERVERCOUNTER2+1
-[ $SERVERCOUNTER2 -gt $ROWCOUNT ] && SERVERCOUNTER2=1
-
-fi
-done
-echo '</tr></tbody></table><br>'
-done
-fi
-fi
-
-echo '</form></div></body></html>'
+echo '</div></form></body></html>'
 
 exit
