@@ -57,7 +57,7 @@ echo '
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox5
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -106,12 +106,12 @@ echo '</td><td>
 <tr><td>'$NONEMSG'</td><td><input name="_OTHERSPERMS_" value="none" type="radio"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$OTHERSPERMSHELP'</span></a></td></tr>
 <tr><td>'$READONLYMSG'</td><td><input name="_OTHERSPERMS_" checked="checked" value="readonly" type="radio"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$OTHERSPERMSHELP'</span></a></td></tr>
 <tr><td>'$FULLACCESSMSG'</td><td><input name="_OTHERSPERMS_" value="fullaccess" type="radio"></td></tr>
-</tbody></table><br><br>'
+</tbody></table><br>'
 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE servers "$ACTIONMSG"
+/opt/karoshi/web_controls/show_servers $MOBILE servers "$ADDSHAREMSG"
 
 [ $MOBILE = no ] && echo '</div>'
 

@@ -1038,6 +1038,10 @@ then
 samba-tool dns add 127.0.0.1 $REALM manage CNAME $HOSTNAME.$REALM --username=Administrator --password=$LDAPPASS
 fi
 fi
+
+#Create some statistics
+/opt/karoshi/web_controls/statistics
+
 ############################
 #Display completed message
 ############################

@@ -208,7 +208,13 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="mobileactionbox">
 '
 else
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a href="disk_usage_fm.cgi"><img alt="" src="/images/warnings/server.png"></a></td><td><b>'$SERVERNAME' - Disk Usage</b></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Usage"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td></tr></tbody></table><br>
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<td style="vertical-align: top;">
+<a href="disk_usage_fm.cgi"><input class="button" type="button" name="" value="'$CHOOSESERVERMSG'"></a> 
+</td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Usage"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td>
+<td style="vertical-align: top;"></td><td><b>'$SERVERNAME' - Disk Usage</b></td>
+</tr></tbody></table><br>
 '
 fi
 

@@ -108,10 +108,10 @@ LOCATION_NAME="- $LOCATION_NAME"
 fi
 
 
-echo '<div id="actionbox">'
+echo '<div id="actionbox"><div id="titlebox">'
 
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="6"><tbody><tr><td style="vertical-align: top;"><form action="/cgi-bin/admin/karoshi_servers_add_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="ADDSERVER" type="image" class="images" src="'$ADDSERVERICON'" value="ADDSERVER"><span>'$ADDSERVERMSG'</span></a></form></td><td style="vertical-align: top;"><b>'$MYSERVERSMSG' '$LOCATION_NAME'</b></td>
-</tr></tbody></table>'
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><form action="/cgi-bin/admin/karoshi_servers_add_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="ADDSERVER" type="image" class="images" src="'$ADDSERVERICON'" value="ADDSERVER"><span>'$ADDSERVERMSG'</span></a></form></td><td style="vertical-align: top;"><b>'$MYSERVERSMSG' '$LOCATION_NAME'</b></td>
+</tr></tbody></table></div><div id="infobox>"'
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">'
 echo '<tbody>'
 echo '<tr><td style="vertical-align: top; width: 120px; height: 40px;"><b>'$SERVERMSG'</b></td><td style="vertical-align: top; width: 80px;"><b>'$SERVERIPMSG'</b></td><td style="vertical-align: top; width: 320px;"><b>'$ROLESMSG'</b></td><td style="vertical-align: top; width: 70px;"><b>'$ADDROLEMSG2'</b></td><td style="vertical-align: top; width: 70px;"><b>'$REMOVEROLEMSG2'</b></td><td style="vertical-align: top; width: 70px;"><b>'$SSHMSG1'</b></td><td style="vertical-align: top; width: 70px;"><b>'$SSHMSG2'</b></td></tr>'

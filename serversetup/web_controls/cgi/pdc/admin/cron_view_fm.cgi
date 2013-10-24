@@ -123,17 +123,21 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div>
 </div><div id="mobileactionbox">
 <form action="/cgi-bin/admin/cron_add_fm.cgi" method="post">
-<a class="info" href="javascript:void(0)"><input name="" type="image" class="images" src="/images/submenus/system/cron_add.png" value=""><span>'$TITLE'</span></a>
+<input name="" type="submit" class="button" value="'$TITLE'">
 </form><br>
 '
 else
 echo '
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="vertical-align: top;"><b>'$TITLE2'</b></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'"$SERVERHELP2"'</span></a></td><td style="vertical-align: top;">
+<tr>
+<td style="vertical-align: top;">
 <form action="/cgi-bin/admin/cron_add_fm.cgi" method="post">
 <input name="" type="submit" class="button" value="'$TITLE'">
 </form>
-</td></tr></table>
+</td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'"$SERVERHELP2"'</span></a></td>
+<td style="vertical-align: top;"><b>'$TITLE2'</b></td>
+</tr></table>
 <br></div><div id="infobox">'
 fi
 

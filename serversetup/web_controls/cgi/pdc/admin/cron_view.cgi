@@ -199,7 +199,9 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 '
 
 else
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a href="cron_view_fm.cgi"><img alt="" src="/images/warnings/server.png"></a></td><td><b>'$TITLE2' - '$SERVERNAME'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'"$VIEWJOBSHELP"'</span></a></td></tr></tbody></table><br>'
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;">
+<a href="cron_view_fm.cgi"><input class="button" type="button" name="" value="'$CHOOSESERVERMSG'"></a>
+</td><td style="vertical-align: top;"><b>'$TITLE2' - '$SERVERNAME'</b></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'"$VIEWJOBSHELP"'</span></a></td></tr></tbody></table><br>'
 fi
 echo '<form action="/cgi-bin/admin/cron_edit.cgi" name="selectservers" method="post">'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/cron_view.cgi | cut -d' ' -f1`

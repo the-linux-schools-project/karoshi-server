@@ -92,7 +92,7 @@ COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
 DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERcheck ]
+if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
 then
 let COUNTER=$COUNTER+1
 SERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
@@ -232,7 +232,14 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 '
 
 else
-echo '<b>'$TITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Usage_Logs"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG2"'</span></a><br><br>'
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<td style="vertical-align: top;">
+<a href="view_disk_usage_logs_fm.cgi"><input class="button" type="button" name="" value="'$CHOOSESERVERMSG'"></a> 
+</td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Usage_Logs"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td>
+<td style="vertical-align: top;"></td><td><b>'$TITLE'</b></td>
+</tr></tbody></table><br>
+'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/view_disk_usage_logs.cgi | cut -d' ' -f1`

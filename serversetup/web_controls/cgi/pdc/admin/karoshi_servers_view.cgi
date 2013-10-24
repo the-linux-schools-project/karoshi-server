@@ -86,5 +86,5 @@ then
 MESSAGE=$ERRORMSG1
 show_status
 fi
-echo '</div></body></html>'
+echo '</div></div></body></html>'
 exit

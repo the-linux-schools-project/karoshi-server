@@ -85,7 +85,7 @@ fi
 
 echo '<form action="/cgi-bin/admin/dnsview.cgi" method="post">'
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -98,52 +98,13 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 '
 else
 echo '<b>'$TITLE2'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a>
-<br><br>'
+<br><br></div><div id="infobox">'
 fi
 
-#Show main server
-if [ $MOBILE = no ]
-then
-SERVERICON="/images/submenus/system/computer.png"
-SERVERICON2="/images/submenus/system/all_computers.png"
-else
-SERVERICON="/images/submenus/system/computerm.png"
-SERVERICON2="/images/submenus/system/all_computersm.png"
-fi
-if [ -f /opt/karoshi/server_network/info ]
-then
-source /opt/karoshi/server_network/info
-LOCATION_NAME="- $LOCATION_NAME"
-fi
+#Show list of servers
+/opt/karoshi/web_controls/show_servers $MOBILE pdc "$ACTIONMSG"
 
-WIDTH=90
-[ $MOBILE = yes ] && WIDTH=70
-
-echo '<b>'$MYSERVERSMSG' '$LOCATION_NAME'</b><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
-
-echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_SERVERNAME_'$HOSTNAME'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$HOSTNAME'</span></a><br>'$HOSTNAME'</td></tr>'
-
-echo '</tbody></table><br>'
-
-#Show list of federated servers
-if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
-then
-if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
-then
-for FEDERATED_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
-do
-FEDERATED_SERVER=`basename $FEDERATED_SERVERS`
-if [ -f /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/info ]
-then
-source /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/info
-LOCATION_NAME="- $LOCATION_NAME"
-fi
-echo '<b>'$FEDERATEDSERVERSMSG' '$LOCATION_NAME'</b><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
-echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_federated_SERVERNAME_'$FEDERATED_SERVER'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$FEDERATED_SERVER'</span></a><br>'$FEDERATED_SERVER'</td>'
-echo '</tr></tbody></table><br>'
-done
-fi
-fi
+[ $MOBILE = no ] && echo '</div>'
 
 echo '</div></form></body></html>'
 exit

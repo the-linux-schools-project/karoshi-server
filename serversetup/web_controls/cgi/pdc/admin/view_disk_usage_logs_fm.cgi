@@ -117,7 +117,7 @@ fi
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox4
 TABLECLASS=standard
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
@@ -128,7 +128,7 @@ fi
 
 echo '<form action="/cgi-bin/admin/view_disk_usage_logs.cgi" name="testform" method="post">'
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -172,7 +172,7 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 <tr><td style="width: 180px;">'$DATEMSG'</td><td>'
 echo "	<!-- calendar attaches to existing form element -->
 	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxlength=10 name=\"_DATE_\"></td><td style=\"vertical-align: top; text-align: center;\">
-	<script language=\"JavaScript\">
+	<script type=\"text/javascript\">
 	new tcal ({
 		// form name
 		'formname': 'testform',
@@ -185,28 +185,12 @@ echo "	<!-- calendar attaches to existing form element -->
 echo "<tr><td>$VIEWLOGSMSG1</td><td></td><td><div style=\"text-align: center;\"><input checked=\"checked\" name=\"_LOGVIEW_\" value=\"today\" type=\"radio\"></div></td></tr><tr><td>$VIEWLOGSMSG2</td><td></td><td style=\"vertical-align: top;\"><div style=\"text-align: center;\"><input name=\"_LOGVIEW_\" value=\"month\" type=\"radio\"></div></td></tr></tbody></table><br>"
 fi
 
-#Show list of ssh enabled servers
-SERVERCOUNTER=1
-ROWCOUNT=6
-[ $MOBILE = yes ] && ROWCOUNT=3
-WIDTH=90
-[ $MOBILE = yes ] && WIDTH=70
+[ $MOBILE = no ] && echo '</div><div id="infobox">'
 
-SERVERICON="/images/submenus/system/computer.png"
-SERVERICON2="/images/submenus/system/all_computers.png"
+#Show list of servers
+/opt/karoshi/web_controls/show_servers $MOBILE servers "$ACTIONMSG"
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+[ $MOBILE = no ] && echo '</div>'
 
-for KAROSHI_SERVER in /opt/karoshi/server_network/servers/*
-do
-KAROSHISERVER=`basename $KAROSHI_SERVER`
-echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVER_'$KAROSHISERVER'_" type="image" class="images" src="'$SERVERICON'" value="_SERVER_'$KAROSHISERVER'"><span>'$KAROSHISERVER'<br><br>'
-cat /opt/karoshi/server_network/servers/$KAROSHISERVER/* | sed '/<a href/c'"&nbsp"
-echo '</span></a><br>'$KAROSHISERVER'</td>'
-[ $SERVERCOUNTER = $ROWCOUNT ] && echo '</tr><tr>'
-let SERVERCOUNTER=$SERVERCOUNTER+1
-[ $SERVERCOUNTER -gt $ROWCOUNT ] && SERVERCOUNTER=1
-done
-
-echo '</tbody></table></div></form></body></html>'
+echo '</div></form></body></html>'
 exit

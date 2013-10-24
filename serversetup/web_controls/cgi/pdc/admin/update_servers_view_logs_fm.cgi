@@ -121,7 +121,7 @@ fi
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox4
 WIDTH=180
 TABLECLASS=standard
 #Generate navigation bar
@@ -143,8 +143,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="'$DIV_ID'">
 '
 else
-echo '<div id="'$DIV_ID'"><div id="titlebox"><b>'$TITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Viewing_Update_Logs"><img class="images" alt="" src="/images/help/info.png"><span>'$UPDATESERVERLOGSHELP'</span></a><br><br>'
-
+echo '<div id="'$DIV_ID'"><div id="titlebox"><b>'$TITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Viewing_Update_Logs"><img class="images" alt="" src="/images/help/info.png"><span>'$UPDATESERVERLOGSHELP'</span></a><br>' 
 fi
 
 
