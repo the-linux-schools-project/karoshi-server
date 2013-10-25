@@ -261,6 +261,7 @@ fi
 echo www.remastersys.com > /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
 echo ppa.launchpad.net >> /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
 echo inverse.ca >> /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
+echo download.videolan.org >> /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
 
 echo blacklisted-mirror.com > /etc/squid-deb-proxy/pkg-blacklist.d/10-default
 
