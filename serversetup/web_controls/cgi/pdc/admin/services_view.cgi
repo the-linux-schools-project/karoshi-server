@@ -182,8 +182,8 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE1'</span>
-<a href="/cgi-bin/admin/services_view_fm.cgi">'$SERVERNAME'</a>
+	<span>'$SERVERNAME'</span>
+<a href="/cgi-bin/admin/services_view_fm.cgi">'$TITLE1'</a>
 </div></div><div id="mobileactionbox">
 '
 else

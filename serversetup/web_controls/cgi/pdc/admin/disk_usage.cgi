@@ -204,7 +204,7 @@ then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$SERVERNAME'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$FILEMENUMSG'</a>
+<a href="/cgi-bin/admin/disk_usage_fm.cgi">'$TITLE'</a>
 </div></div><div id="mobileactionbox">
 '
 else

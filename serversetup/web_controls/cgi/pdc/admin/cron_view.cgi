@@ -193,8 +193,8 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE2'</span>
-<a href="/cgi-bin/admin/cron_view_fm.cgi">'$SERVERNAME'</a>
+	<span>'$SERVERNAME'</span>
+<a href="/cgi-bin/admin/cron_view_fm.cgi">'$TITLE2'</a>
 </div></div><div id="mobileactionbox">
 '
 

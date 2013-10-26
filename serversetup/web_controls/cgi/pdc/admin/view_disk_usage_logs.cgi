@@ -225,8 +225,8 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$FILEMENUMSG'</a>
+	<span>'$SERVER'</span>
+<a href="/cgi-bin/admin/view_disk_usage_logs_fm.cgi">'$TITLE'</a>
 </div></div>
 <div id="mobileactionbox">
 '

@@ -600,7 +600,7 @@ chmod u+X,g+X,o+X -R /opt/karoshi/serversetup/variables/
 ##############################
 #Display progress box
 ##############################
-WAITTIME=1
+WAITTIME=0.5
 if [ $INTERACTIVE_MODE = yes ]
 then
 install_web_management

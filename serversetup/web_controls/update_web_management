@@ -1,0 +1,20 @@
+#!/bin/bash
+
+updatethemes=yes
+
+function update_themes {
+[ -d /var/www/html_karoshi/images/backgrounds ] && rm -f -r /var/www/html_karoshi/images/backgrounds
+cp -f -R /opt/karoshi/serversetup/web_controls/images/backgrounds /var/www/html_karoshi/images/
+chown root:apache_karoshi -R /var/www/html_karoshi/images/backgrounds
+chmod 0640 -R /var/www/html_karoshi/images/backgrounds
+chmod u+x,g+x -R /var/www/html_karoshi/images/backgrounds
+
+[ -d /var/www/html_karoshi/images/theme_preview ] && rm -f -R /var/www/html_karoshi/images/theme_preview
+cp -f -R /opt/karoshi/serversetup/web_controls/images/theme_preview /var/www/html_karoshi/images/
+chown root:apache_karoshi -R /var/www/html_karoshi/images/theme_preview
+chmod 0640 -R /var/www/html_karoshi/images/theme_preview
+chmod u+X,g+X -R /var/www/html_karoshi/images/theme_preview
+}
+
+
+[ $updatethemes = yes ] && update_themes
