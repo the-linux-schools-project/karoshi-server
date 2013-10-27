@@ -129,7 +129,7 @@ ICON6=/images/assets/searchm.png
 SEARCHW=150
 fi
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -141,8 +141,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="mobileactionbox">
 '
 else
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tr><td style="vertical-align: top;"><b>'$TITLE6'</b></td></tr></tbody></table><br>'
+echo '<b>'$TITLE6'</b><br><br></div><div id="infobox">'
 fi
 
 if [ -f /var/lib/samba/netlogon/locations.txt ]
@@ -189,5 +188,6 @@ fi
 else
 echo $ERRORMSG18
 fi
+[ $MOBILE = no ] && echo '</div">'
 echo '</div></body></html>'
 exit

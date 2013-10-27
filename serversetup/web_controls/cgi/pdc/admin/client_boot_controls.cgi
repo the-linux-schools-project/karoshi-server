@@ -189,7 +189,7 @@ then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE6'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$CLIENTMENUMSG'</a>
+<a href="/cgi-bin/admin/client_boot_controls_fm.cgi">'$LOCATION'</a>
 </div></div><div id="mobileactionbox">
 '
 ICON1=/images/submenus/client/activate_changesm.png
@@ -199,18 +199,15 @@ ICON4=/images/assets/locationm.png
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody><tr>
-<td style="vertical-align: middle;"><b>'$LOCATION'</b></td>
-<td style="vertical-align: top;">
-<form action="/cgi-bin/admin/client_boot_controls_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_LOCATION_NOTSET_" type="image" class="images" src="'$ICON4'" value=""><span>'$CHOOSELOCATIONMSG'</span></a></form></td>
 <td style="vertical-align: top;">
 <form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
-<a class="info" href="javascript:void(0)"><input name="_ACTION_activatechanges_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="image" class="images" src="'$ICON1'" value=""><span>'$ACTIVATECHANGESMSG'</span></a></form></td>
+<input name="_ACTION_activatechanges_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$ACTIVATECHANGESMSG'">
+</form></td>
 <td style="vertical-align: top;">
 <form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
- <a class="info" href="javascript:void(0)"><input name="_ACTION_resetall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="image" class="images" src="'$ICON3'" value=""><span>'$RESETALLMSG'</span></a></form></td>
-<td style="vertical-align: top;">
-<form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
- <a class="info" href="javascript:void(0)"><input name="_ACTION_wakeonlanall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="image" class="images" src="'$ICON2'" value=""><span>'$WAKEONLANALLMSG'</span></a></form></td></tr></tbody></table>'
+<input name="_ACTION_resetall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$RESETALLMSG'">
+</form></td>
+</tr></tbody></table>'
 
 else
 ICON1=/images/submenus/client/activate_changes.png
@@ -218,19 +215,23 @@ ICON2=/images/submenus/client/wakeupall.png
 ICON3=/images/submenus/client/reset_all.png
 ICON4=/images/assets/location.png
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tr><td style="vertical-align: top;"><b>'$TITLE6' - '$LOCATION'</b></td>
-<td style="vertical-align: top;">
-<form action="/cgi-bin/admin/client_boot_controls_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_LOCATION_NOTSET_" type="image" class="images" src="'$ICON4'" value=""><span>'$CHOOSELOCATIONMSG'</span></a></form></td>
-<td style="vertical-align: top;">
-<form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
-<a class="info" href="javascript:void(0)"><input name="_ACTION_activatechanges_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="image" class="images" src="'$ICON1'" value=""><span>'$ACTIVATECHANGESMSG'</span></a></form></td>
+echo '<b>'$TITLE6' - '$LOCATION'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<tr><td style="vertical-align: top;">
+<form action="/cgi-bin/admin/client_boot_controls_fm.cgi" method="post">
+<input name="_LOCATION_NOTSET_" type="submit" class="button" value="'$CHOOSELOCATIONMSG'">
+</form></td>
 <td style="vertical-align: top;">
 <form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
-<a class="info" href="javascript:void(0)"><input name="_ACTION_resetall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="image" class="images" src="'$ICON3'" value=""><span>'$RESETALLMSG'</span></a></form></td>
+<input name="_ACTION_activatechanges_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$ACTIVATECHANGESMSG'">
+</form></td>
 <td style="vertical-align: top;">
 <form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
-<a class="info" href="javascript:void(0)"><input name="_ACTION_wakeonlanall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="image" class="images" src="'$ICON2'" value=""><span>'$WAKEONLANALLMSG'</span></a></form></td></tr></table>'
+<input name="_ACTION_resetall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$RESETALLMSG'">
+</form></td>
+<td style="vertical-align: top;">
+<form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
+<input name="_ACTION_wakeonlanall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$WAKEONLANALLMSG'">
+</form></td></tr></table>'
 fi
 [ $MOBILE = no ] && echo '</div><div id="infobox">'
 echo '<form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">'

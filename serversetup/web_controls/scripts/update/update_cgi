@@ -1,0 +1,40 @@
+#!/bin/bash
+
+function usage {
+echo -e "update_cgi section($1/tech/staff/all) \"scripnames\""
+exit
+}
+
+[ -z "$1" ] && usage
+[ -z "$2" ] && usage
+
+for script in $2
+do
+if [ -f /opt/karoshi/serversetup/web_controls/cgi/pdc/$1/$script ]
+then
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/$1/$script /var/www/cgi-bin_karoshi/$1/
+chmod 0750 /var/www/cgi-bin_karoshi/$1/$script
+chown root:apache_karoshi /var/www/cgi-bin_karoshi/$1/$script
+
+echo >> /var/www/cgi-bin_karoshi/$1/$script
+echo "########################" >> /var/www/cgi-bin_karoshi/$1/$script
+echo "#"Unique key >> /var/www/cgi-bin_karoshi/$1/$script
+echo "########################" >> /var/www/cgi-bin_karoshi/$1/$script
+echo "#""$RANDOM$RANDOM" >> /var/www/cgi-bin_karoshi/$1/$script
+SCRIPTNAME=`basename /var/www/cgi-bin_karoshi/$1/$script | sed 's/\./_/g' | sed 's/ /_/g'`
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/$1/$script | cut -d' ' -f1`
+echo $SCRIPTNAME=$MD5SUM > /opt/karoshi/web_controls/checksums/$1_checksums/$SCRIPTNAME
+chmod 0400 /opt/karoshi/web_controls/checksums/$1_checksums/$SCRIPTNAME
+
+#Update language file for script
+LANGPATH=`grep "LANGCHOICE/" /opt/karoshi/serversetup/web_controls/cgi/pdc/$1/$script | cut -d" " -f3 | sed -n 1,1p | sed 's/\/opt\/karoshi\/web_controls\/language\/$LANGCHOICE//g'`
+if [ -f /opt/karoshi/serversetup/web_controls/language/englishuk/$LANGPATH ]
+then
+cp -f /opt/karoshi/serversetup/web_controls/language/englishuk/$LANGPATH /opt/karoshi/web_controls/language/englishuk/$LANGPATH
+chmod 0640 /opt/karoshi/web_controls/language/englishuk/$LANGPATH
+chown root:apache_karoshi /opt/karoshi/web_controls/language/englishuk/$LANGPATH
+fi
+fi
+done
+exit
+
