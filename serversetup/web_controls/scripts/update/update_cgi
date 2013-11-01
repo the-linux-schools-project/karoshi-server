@@ -1,17 +1,23 @@
 #!/bin/bash
 
 function usage {
-echo -e "update_cgi section($1/tech/staff/all) \"scripnames\""
+echo -e "update_cgi section($1/tech/staff/all) \"cgi scripnames\" \"exec scripnames\" "
 exit
 }
 
 [ -z "$1" ] && usage
-[ -z "$2" ] && usage
+if [ -z "$2" ] && [ -z "$3" ]
+then
+usage
+fi
 
+if [ ! -z "$2" ]
+then
 for script in $2
 do
 if [ -f /opt/karoshi/serversetup/web_controls/cgi/pdc/$1/$script ]
 then
+echo Copying $script to /var/www/cgi-bin_karoshi/$1/
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/$1/$script /var/www/cgi-bin_karoshi/$1/
 chmod 0750 /var/www/cgi-bin_karoshi/$1/$script
 chown root:apache_karoshi /var/www/cgi-bin_karoshi/$1/$script
@@ -36,5 +42,26 @@ chown root:apache_karoshi /opt/karoshi/web_controls/language/englishuk/$LANGPATH
 fi
 fi
 done
+fi
+
+if [ ! -z "$3" ]
+then
+for execscript in $3
+do
+if [ -f /opt/karoshi/serversetup/web_controls/scripts/exec/pdc/$execscript ]
+then
+echo Copying $execscript to /opt/karoshi/web_controls/exec/
+cp -f /opt/karoshi/serversetup/web_controls/scripts/exec/pdc/$execscript /opt/karoshi/web_controls/exec/
+chmod 0750 /opt/karoshi/web_controls/exec/$execscript
+chown root.apache_karoshi /opt/karoshi/web_controls/exec/$execscript
+
+#Check script is declared in sudoers
+if [ `grep -c $execscript /etc/sudoers` = 0 ]
+then
+/opt/karoshi/serversetup/web_controls/scripts/generate_sudoers
+fi
+fi
+done
+fi
 exit
 

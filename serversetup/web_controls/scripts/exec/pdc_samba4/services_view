@@ -154,6 +154,7 @@ DSERVICES=cron
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/dhcpserver ] && DSERVICES=$DSERVICES,dhcp
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/openvpn ] && DSERVICES=$DSERVICES,openvpn
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/userwebhosting ] && DSERVICES=$DSERVICES,apache,mysql,vsftpd
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/user_web_folders ] && DSERVICES=$DSERVICES,apache
 fi
 
 if [ $SERVERTYPE = federated ]
@@ -173,6 +174,7 @@ DSERVICES=cron
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/radiusserver ] && DSERVICES=$DSERVICES,radius
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/reverseproxyserver ] && DSERVICES=$DSERVICES,nginx
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/monitoring ] && DSERVICES=$DSERVICES,apache,mon
+[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/user_web_folders ] && DSERVICES=$DSERVICES,apache
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/dhcpserver ] && DSERVICES=$DSERVICES,dhcp
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/openvpn ] && DSERVICES=$DSERVICES,openvpn
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/userwebhosting ] && DSERVICES=$DSERVICES,apache,mysql,vsftpd
@@ -195,6 +197,7 @@ DSERVICES=cron
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/radiusserver ] && DSERVICES=$DSERVICES,radius
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/reverseproxyserver ] && DSERVICES=$DSERVICES,nginx
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/monitoring ] && DSERVICES=$DSERVICES,apache,mon
+[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/user_web_folders ] && DSERVICES=$DSERVICES,apache
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/dhcpserver ] && DSERVICES=$DSERVICES,dhcp
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/openvpn ] && DSERVICES=$DSERVICES,openvpn
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/userwebhosting ] && DSERVICES=$DSERVICES,apache,mysql,vsftpd

@@ -239,7 +239,9 @@ if [ $FEDERATEDCTL = yes ]
 then
 echo '						<li><a href="/cgi-bin/admin/federated_file_sync_fm.cgi">'$FEDERATIONSYNCMSG'</a></li>'
 fi
-echo '					</ul>
+echo '
+						<li><a href="/cgi-bin/admin/user_web_folders.cgi">'$USERWEBFOLDERS'</a></li>
+					</ul>
 			</li>'
 if [ $SHELLCTRL = yes ]
 then

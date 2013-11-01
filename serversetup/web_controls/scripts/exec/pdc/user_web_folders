@@ -1,0 +1,403 @@
+#!/bin/bash
+#Copyright (C) 2013 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/user_web_folders_cgi
+then
+echo `date`: user_web_folders - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/user_web_folders_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/user_web_folders.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $user_web_folders_cgi'check' ]
+then
+echo `date`: user_web_folders - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: user_web_folders - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: user_web_folders - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+GROUP=`echo "$DATA" | cut -s -d: -f4`
+ACTION=`echo "$DATA" | cut -s -d: -f5`
+USERNAME=`echo "$DATA" | cut -s -d: -f6`
+SERVICECHECK=`echo "$DATA" | cut -s -d: -f7`
+MOBILE=`echo "$DATA" | cut -s -d: -f8`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ] && [ $REMOTE_MD5'check' != $MD5SUM3'check' ]
+then
+echo `date`: user_web_folders - Not called by user_web_folders.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_USER'null' = null ]
+then
+echo `date`: user_web_folders - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $REMOTE_ADDR'null' = null ]
+then
+echo `date`: user_web_folders - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z "$GROUP" ]
+then
+echo `date`: user_web_folders - Blank group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z "$ACTION" ]
+then
+echo `date`: user_web_folders - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z "$USERNAME" ]
+then
+echo `date`: user_web_folders - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z "$SERVICECHECK" ]
+then
+echo `date`: user_web_folders - Blank servicecheck by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+echo `date`: user_web_folders -  Username: $USERNAME, Group: $GROUP, Action: $ACTION from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+
+##########################
+#Language
+##########################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/user_web_folders ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/user/user_web_folders
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+########################
+#Get server and home path for new user
+########################
+
+source /opt/karoshi/server_network/group_information/$GROUP
+
+if [ $SERVER = $HOSTNAME ]
+then
+
+function enablewebhosting {
+chmod 0755 $HOMEPATH
+chown .www-data $HOMEPATH/$USERNAME
+chmod 0710 $HOMEPATH/$USERNAME
+[ ! -d $HOMEPATH/$USERNAME/public_html ] && mkdir $HOMEPATH/$USERNAME/public_html
+chmod -R 0640 $HOMEPATH/$USERNAME/public_html
+chmod -R u+X,g+X $HOMEPATH/$USERNAME/public_html
+chown -R $USERNAME.www-data $HOMEPATH/$USERNAME/public_html
+}
+
+function disablewebhosting {
+chmod 0700 $HOMEPATH/$USERNAME
+}
+
+if [ $USERNAME != all ] && [ $ACTION = enable ]
+#Enable/disable hosting for a user
+then
+enablewebhosting
+fi
+
+if [ $USERNAME != all ] && [ $ACTION = disable ]
+then
+disablewebhosting
+fi
+
+if [ $USERNAME = all ] && [ $ACTION = enable ]
+then
+for USERFOLDER in $HOMEPATH/*
+do
+USERNAME=`basename $USERFOLDER`
+enablewebhosting
+done
+fi
+
+if [ $USERNAME = all ] && [ $ACTION = disable ]
+then
+for USERFOLDER in $HOMEPATH/*
+do
+USERNAME=`basename $USERFOLDER`
+disablewebhosting
+done
+fi
+
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+function enablewebhosting {
+chmod 0755 '$HOMEPATH'
+chown .www-data '$HOMEPATH'/$USERNAME
+chmod 0710 '$HOMEPATH'/$USERNAME
+[ ! -d '$HOMEPATH'/$USERNAME/public_html ] && mkdir '$HOMEPATH'/$USERNAME/public_html
+chmod -R 0640 '$HOMEPATH'/$USERNAME/public_html
+chmod -R u+X,g+X '$HOMEPATH'/$USERNAME/public_html
+chown -R $USERNAME.www-data '$HOMEPATH'/$USERNAME/public_html
+}
+
+function disablewebhosting {
+chmod 0700 '$HOMEPATH'/$USERNAME
+}
+
+if [ '$USERNAME' != all ] && [ '$ACTION' = enable ]
+#Enable/disable hosting for a user
+then
+USERNAME='$USERNAME'
+enablewebhosting
+fi
+
+if [ '$USERNAME' != all ] && [ '$ACTION' = disable ]
+then
+USERNAME='$USERNAME'
+disablewebhosting
+fi
+
+if [ '$USERNAME' = all ] && [ '$ACTION' = enable ]
+then
+for USERFOLDER in '$HOMEPATH'/*
+do
+USERNAME=`basename $USERFOLDER`
+enablewebhosting
+done
+fi
+
+if [ '$USERNAME' = all ] && [ '$ACTION' = disable ]
+then
+for USERFOLDER in '$HOMEPATH'/*
+do
+USERNAME=`basename $USERFOLDER`
+disablewebhosting
+done
+fi
+'
+fi
+
+if [ $ACTION = enablehosting ]
+then
+#Enable user web folders
+if [ $SERVER = $HOSTNAME ]
+then
+a2enmod userdir 1> /dev/null
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1> /dev/null
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1> /dev/null
+
+#Open shorewall ports
+MODCHECK=`grep -c -w 80 /etc/shorewall/rules`
+MODCHECK2=`grep -c -w 443 /etc/shorewall/rules`
+
+if [ `grep -c 80,443 /etc/shorewall/rules` = 0 ]
+then
+LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'80,443'	'-'#'apacherule /etc/shorewall/rules
+echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+fi
+
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+a2enmod userdir 1> /dev/null
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1> /dev/null
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1> /dev/null
+
+if [ `grep -c 80,443 /etc/shorewall/rules` = 0 ]
+then
+LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
+sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"80,443"	"-"#"apacherule /etc/shorewall/rules
+echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+fi
+
+'
+fi
+echo $ROLEMSG"<br>" > /opt/karoshi/server_network/servers/$SERVER/user_web_folders
+fi
+
+if [ $ACTION = disablehosting ]
+then
+#Disable user web folders
+if [ $SERVER = $HOSTNAME ]
+then
+a2dismod userdir 1> /dev/null
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1> /dev/null
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1> /dev/null
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+a2dismod userdir 1> /dev/null
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1> /dev/null
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1> /dev/null
+'
+fi
+rm -f /opt/karoshi/server_network/servers/$SERVER/user_web_folders
+fi
+
+#########################
+#Show user web folder status for a group
+#########################
+if [ $MOBILE = no ]
+then
+ICON1=/images/submenus/user/web_folder_enabled.png
+ICON2=/images/submenus/user/web_folder_disabled.png
+WIDTH1=180
+else
+ICON1=/images/submenus/user/web_folder_enabledm.png
+ICON2=/images/submenus/user/web_folder_disabledm.png
+WIDTH1=140
+fi
+
+
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: '$WIDTH1'px;"><b>'$SERVERMSG'</b> '$SERVER'</td><td>
+'
+
+if [ ! -f /opt/karoshi/server_network/servers/$SERVER/user_web_folders ]
+then
+echo '<input name="_GROUP_'$GROUP'_ACTION_enablehosting_USERNAME_none_" type="submit" class="button" value="'$ENABLEHOSTINGMSG'">'
+else
+echo '<input name="_GROUP_'$GROUP'_ACTION_disablehosting_USERNAME_none_" type="submit" class="button" value="'$DISABLEHOSTINGMSG'">'
+fi
+
+#Show global options
+echo '<tr><td><b>'$PRIGROUPMSG'</b> '$GROUP'</td><td>
+<input name="_GROUP_'$GROUP'_ACTION_enable_USERNAME_all_" type="submit" class="button" value="'$ENABLEALLMSG'">
+</td></tr>
+<tr><td></td><td>
+<input name="_GROUP_'$GROUP'_ACTION_disable_USERNAME_all_" type="submit" class="button" value="'$DISABLEALLMSG'">
+</td></tr></tbody></table>
+<br>'
+
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: '$WIDTH1'px;"><b>'$USERNAMEMSG'</b></td><td><b>'$STATUSMSG'</b></td></tr>'
+
+if [ $SERVER = $HOSTNAME ]
+then
+if [ -d $HOMEPATH ]
+then
+if [ `ls -1 $HOMEPATH | wc -l` -gt 0 ]
+then
+for USERFOLDERS in $HOMEPATH/*
+do
+USERNAME=`basename $USERFOLDERS`
+#Check folder ownership and permissions
+
+INFO=`ls -ld $HOMEPATH/$USERNAME`
+PERMINFO=`echo $INFO | cut -d" " -f1`
+GROUPINFO=`echo $INFO | cut -d" " -f4`
+
+WEBGROUP=no
+[ $GROUPINFO = www-data ] && WEBGROUP=yes
+GROUPPERMS=no
+[ ${PERMINFO:0:7} = "drwxr-x" ] && GROUPPERMS=yes
+
+FOLDERACTION=enable
+STATUSICON=$ICON2
+MESSAGE="$ENABLEFOLDERMSG"
+if [ $WEBGROUP = yes ] && [ $GROUPPERMS = yes ]
+then
+STATUSICON=$ICON1
+FOLDERACTION=disable
+MESSAGE="$DISABLEFOLDERMSG"
+fi
+echo "<tr><td>$USERNAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_USERNAME_$USERNAME"_"GROUP_$GROUP"_"ACTION_$FOLDERACTION"_"\" type=\"image\" class=\"images\" src=\"$STATUSICON\" value=\"\"><span>$MESSAGE<br><br>$USERNAME</span></a></td></tr>"
+done
+fi
+fi
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+if [ -d '$HOMEPATH' ]
+then
+if [ `ls -1 '$HOMEPATH' | wc -l` -gt 0 ]
+then
+for USERFOLDERS in '$HOMEPATH'/*
+do
+USERNAME=`basename $USERFOLDERS`
+#Check folder ownership and permissions
+
+INFO=`ls -ld '$HOMEPATH'/$USERNAME`
+PERMINFO=`echo $INFO | cut -d" " -f1`
+GROUPINFO=`echo $INFO | cut -d" " -f4`
+
+WEBGROUP=no
+[ $GROUPINFO = www-data ] && WEBGROUP=yes
+GROUPPERMS=no
+
+[ ${PERMINFO:0:7} = "drwxr-x" ] && GROUPPERMS=yes
+FOLDERACTION=enable
+STATUSICON='$ICON2'
+MESSAGE="'$ENABLEFOLDERMSG'"
+if [ $WEBGROUP = yes ] && [ $GROUPPERMS = yes ]
+then
+STATUSICON='$ICON1'
+FOLDERACTION=disable
+MESSAGE="'$DISABLEFOLDERMSG'"
+fi
+echo "<tr><td>$USERNAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_USERNAME_$USERNAME"_"GROUP_'$GROUP'"_"ACTION_$FOLDERACTION"_"\" type=\"image\" class=\"images\" src=\"$STATUSICON\" value=\"\"><span>$MESSAGE<br><br>$USERNAME</span></a></td></tr>"
+done
+fi
+fi
+'
+fi
+echo '</tbody></table>'
+exit
+
