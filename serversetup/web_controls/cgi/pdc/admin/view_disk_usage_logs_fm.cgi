@@ -141,7 +141,12 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <div id="mobileactionbox">
 '
 else
-echo '<b>'$TITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Usage_Logs"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG1"'</span></a><br><br>'
+echo '
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<td style="vertical-align: top;"><b>'$TITLE'</b></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Usage_Logs"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td>
+</tr></tbody></table><br>
+'
 fi
 
 

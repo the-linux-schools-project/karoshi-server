@@ -112,7 +112,7 @@ TABLECLASS=mobilestandard
 WIDTH=160
 fi
 
-echo '<form action="/cgi-bin/admin/disk_information.cgi" name="selectservers" method="post"><b></b>'
+echo '<form action="/cgi-bin/admin/disk_information.cgi" name="selectservers" method="post">'
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
@@ -124,7 +124,12 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$STORAGEMMENUMSG'</a>
 </div></div><div id="mobileactionbox">'
 else
-echo '<b>'$TITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Information"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a><br><br></div><div id="infobox">'
+echo '
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<td style="vertical-align: top;"><b>'$TITLE'</b></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Information"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td>
+</tr></tbody></table><br>
+</div><div id="infobox">'
 fi
 
 #Show list of servers

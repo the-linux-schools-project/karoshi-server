@@ -179,7 +179,7 @@ else
 DIV_ID=actionbox2
 fi
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -192,15 +192,14 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 '
 else
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr><td style="vertical-align: top;"><b>'$TITLE'</b></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Uptime"><img class="images" alt="" src="/images/help/info.png"><span>'$UPTIMEHELP'</span></a></td><td style="vertical-align: top;">
-<form action="/cgi-bin/admin/uptime_fm.cgi" name="selectservers" method="post">
-<input name="" type="submit" class="button" value="'$CHOOSESERVERMSG'">
-</form></td></tr></tbody></table>
+<a href="/cgi-bin/admin/uptime_fm.cgi"><input class="button" type="button" name="" value="'$CHOOSESERVERMSG'"></a>
+</td></tr></tbody></table>
 <br>'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/uptime.cgi | cut -d' ' -f1`
 #Shutdown server
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/uptime
-echo "</div>"
-echo "</body></html>"
+[ $MOBILE = no ] && echo '</div>'
+echo '</div></body></html>'
 exit

@@ -175,7 +175,7 @@ else
 DIV_ID=actionbox2
 fi
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -187,9 +187,14 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="mobileactionbox">
 '
 else
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a href="services_view_fm.cgi"><img alt="" src="/images/warnings/server.png"></a></td><td><b>'$TITLE1' - '$SERVERNAME'</b></td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Service_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a>
-</td></tr></tbody></table><br>'
+echo '
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr>
+<td style="vertical-align: top;"><b>'$TITLE1' - '$SERVERNAME'</b></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Service_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td>
+<td style="vertical-align: top;"><a href="/cgi-bin/admin/services_view_fm.cgi"><input class="button" type="button" name="" value="'$CHOOSESERVERMSG'"></a></td>
+</tr></table><br>
+'
 fi
 
 
@@ -197,6 +202,6 @@ fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/services_view.cgi | cut -d' ' -f1`
 
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/services_view
-
+[ $MOBILE = no ] && echo '</div>'
 echo "</div></body></html>"
 exit

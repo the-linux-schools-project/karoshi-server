@@ -177,7 +177,7 @@ else
 DIV_ID=actionbox2
 fi
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
@@ -188,14 +188,10 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="mobileactionbox3">'
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
-<td style="vertical-align: top;">
-<a href="disk_information_fm.cgi"><input class="button" type="button" name="" value="'$CHOOSESERVERMSG'"></a> 
-</td>
-<td style="vertical-align: top;">
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Information"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
-</td>
-<td style="vertical-align: top;"></td><td><b>'$TITLE' - '$SERVERNAME'</b></td>
-</tr></tbody></table><br>
+<td style="vertical-align: top;"><b>'$TITLE' - '$SERVERNAME'</b></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Information"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td>
+<td style="vertical-align: top;"><a href="disk_information_fm.cgi"><input class="button" type="button" name="" value="'$CHOOSESERVERMSG'"></a></td>
+</tr></tbody></table><br></div><div id="infobox">
 '
 fi
 
@@ -213,6 +209,6 @@ if [ $EXEC_STATUS = 103 ]
 then
 echo '<br><b>'$CHECKCOMPLETEDMSG'</b><br>'
 fi
-echo "</div>"
-echo "</body></html>"
+[ $MOBILE = no ] && echo '</div>'
+echo '</div></body></html>'
 exit

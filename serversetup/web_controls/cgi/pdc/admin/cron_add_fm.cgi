@@ -134,13 +134,9 @@ else
 echo '<div id="'$DIV_ID'"><div id="titlebox">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr>
-<td style="vertical-align: top;">
-<form action="/cgi-bin/admin/cron_view_fm.cgi" method="post">
-<input name="" type="submit" class="button" value="'$TITLE2'">
-</form>
-</td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'"$SERVERHELP2"'</span></a></td>
 <td style="vertical-align: top;"><b>'$TITLE'</b></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'"$SERVERHELP2"'</span></a></td>
+<td style="vertical-align: top;"><a href="/cgi-bin/admin/cron_view_fm.cgi"><input class="button" type="button" name="" value="'$TITLE2'"></a></td>
 </tr></table></div><div id ="infobox">'
 fi
 

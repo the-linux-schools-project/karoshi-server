@@ -192,7 +192,7 @@ DIV_ID=actionbox2
 fi
 echo '<form name="myform" action="/cgi-bin/admin/disk_usage.cgi" method="post">'
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id ="titlebox">'
 echo '<input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <input name="_SERVERTYPE_" value="'$SERVERTYPE'" type="hidden">
 <input name="_SERVERMASTER_" value="'$SERVERMASTER'" type="hidden">
@@ -209,16 +209,15 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 '
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
-<td style="vertical-align: top;">
-<a href="disk_usage_fm.cgi"><input class="button" type="button" name="" value="'$CHOOSESERVERMSG'"></a> 
-</td>
+<td style="vertical-align: top;"><b>'$TITLE' - '$SERVERNAME'</b></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Usage"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td>
-<td style="vertical-align: top;"></td><td><b>'$SERVERNAME' - Disk Usage</b></td>
+<td style="vertical-align: top;"><a href="disk_usage_fm.cgi"><input class="button" type="button" name="" value="'$CHOOSESERVERMSG'"></a></td>
 </tr></tbody></table><br>
 '
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/disk_usage.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$CHOICE:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/disk_usage
-echo "</div></form></body></html>"
+[ $MOBILE = no ] && echo '</div>'
+echo '</div></form></body></html>'
 exit
