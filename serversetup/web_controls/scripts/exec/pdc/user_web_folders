@@ -300,14 +300,16 @@ then
 ICON1=/images/submenus/user/web_folder_enabled.png
 ICON2=/images/submenus/user/web_folder_disabled.png
 WIDTH1=180
+TABLECLASS=standard
 else
 ICON1=/images/submenus/user/web_folder_enabledm.png
 ICON2=/images/submenus/user/web_folder_disabledm.png
 WIDTH1=140
+TABLECLASS=mobilestandard
 fi
 
 
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: '$WIDTH1'px;"><b>'$SERVERMSG'</b> '$SERVER'</td><td>
 '
 
@@ -327,7 +329,7 @@ echo '<tr><td><b>'$PRIGROUPMSG'</b> '$GROUP'</td><td>
 </td></tr></tbody></table>
 <br>'
 
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: '$WIDTH1'px;"><b>'$USERNAMEMSG'</b></td><td><b>'$STATUSMSG'</b></td></tr>'
 
 if [ $SERVER = $HOSTNAME ]
@@ -348,7 +350,7 @@ GROUPINFO=`echo $INFO | cut -d" " -f4`
 WEBGROUP=no
 [ $GROUPINFO = www-data ] && WEBGROUP=yes
 GROUPPERMS=no
-[ ${PERMINFO:0:7} = "drwxr-x" ] && GROUPPERMS=yes
+[ ${PERMINFO:0:7} = "drwx--x" ] && GROUPPERMS=yes
 
 FOLDERACTION=enable
 STATUSICON=$ICON2
@@ -382,7 +384,7 @@ WEBGROUP=no
 [ $GROUPINFO = www-data ] && WEBGROUP=yes
 GROUPPERMS=no
 
-[ ${PERMINFO:0:7} = "drwxr-x" ] && GROUPPERMS=yes
+[ ${PERMINFO:0:7} = "drwx--x" ] && GROUPPERMS=yes
 FOLDERACTION=enable
 STATUSICON='$ICON2'
 MESSAGE="'$ENABLEFOLDERMSG'"

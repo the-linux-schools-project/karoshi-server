@@ -122,6 +122,7 @@ echo '	<a href="/cgi-bin/admin/change_password_fm.cgi">'$CHANGEPASSMSG'</a>
         <a href="/cgi-bin/admin/disk_information_fm.cgi">'$DISKINFORMATION'</a>
         <a href="/cgi-bin/admin/disk_usage_fm.cgi">'$DISKUSAGE'</a>
         <a href="/cgi-bin/admin/view_disk_usage_logs_fm.cgi">'$DISKUSAGELOGS'</a>
+	<a href="/cgi-bin/admin/user_web_folders.cgi">'$USERWEBFOLDERS'</a>
       </div>
       <div class="collapsed">
         <span>'$CLIENTMSG'</span>

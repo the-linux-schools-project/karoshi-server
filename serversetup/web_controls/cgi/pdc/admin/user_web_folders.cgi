@@ -146,10 +146,16 @@ done
 if [ $MOBILE = no ]
 then
 DIV_ID=actionbox
+TABLECLASS=standard
+WIDTH1=180
+WIDTH2=200
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
 DIV_ID=actionbox
+TABLECLASS=mobilestandard
+WIDTH1=120
+WIDTH2=140
 fi
 echo '<form name="myform" action="/cgi-bin/admin/user_web_folders.cgi" method="post">'
 
@@ -158,12 +164,20 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$USERMENUMSG'</a>
-</div></div>
+	<span>'$TITLE'</span>'
+
+if [ -z "$GROUP" ]
+then
+echo '<a href="/cgi-bin/admin/mobile_menu.cgi">'$STORAGEMMENUMSG'</a>'
+else
+echo '<a href="/cgi-bin/admin/user_web_folders.cgi">'$GROUP'</a>'
+fi
+echo '</div></div><div id="mobileactionbox">
 '
 else
-echo '<div id="'$DIV_ID'"><b>'$TITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a><br><br>'
+echo '<div id="'$DIV_ID'">'
+[ ! -z "$GROUP" ] && echo '<a href="user_web_folders.cgi"><input class="button" type="button" name="" value="Choose group"></a>'
+echo '<b>'$TITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_web_folders"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a><br><br>'
 fi
 
 
@@ -171,14 +185,15 @@ fi
 if [ -z "$GROUP" ]
 then
 echo '
-  <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-    <tbody><tr><td style="width: 180px;">'$PRIGROUPMSG'</td>
+  <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+    <tbody><tr><td style="width: '$WIDTH1'px;">'$PRIGROUPMSG'</td>
 <td>'
-/opt/karoshi/web_controls/group_dropdown_list
+/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: '$WIDTH2'px;">/g'
 echo '</td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_web_folders"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td>
 </tr></tbody></table><br>
-</div><div id="submitbox">'
+'
+[ $MOBILE = no ] && echo '</div><div id="submitbox">'
 echo '<input value="'$SUBMITMSG'" class="button" type="submit">
 </div></form></body></html>
 '
@@ -186,8 +201,6 @@ exit
 fi
 
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$GROUP:$ACTION:$USERNAME:$SERVICECHECK:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/user_web_folders
-
-
-
+echo '</div></form></body></html>'
 exit
 
