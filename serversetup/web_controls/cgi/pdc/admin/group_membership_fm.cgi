@@ -91,7 +91,7 @@ fi
 
 echo '<form action="/cgi-bin/admin/group_membership.cgi" method="post">'
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -103,7 +103,12 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div>
 '
 else
-echo '<b>'$TITLE1'</b><br><br>'
+echo '
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr>
+<td style="vertical-align: top;"><b>'$TITLE1'</b></td>
+</tr></tbody></table>
+<br>'
 fi
 
 if [ $MOBILE = yes ]
@@ -125,7 +130,7 @@ fi
 
 if [ $MOBILE = no ]
 then
-echo '</div><div id="submitbox">'
+echo '</div></div><div id="submitbox">'
 else
 echo '<br>'
 fi

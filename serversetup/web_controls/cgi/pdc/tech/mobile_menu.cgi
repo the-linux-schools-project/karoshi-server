@@ -28,7 +28,11 @@
 #		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
 #		***********************************************/
 
-
+##########################
+#Section Control
+##########################
+source /opt/karoshi/server_network/menusettings
+source /opt/karoshi/web_controls/version
 ############################
 #Language
 ############################
@@ -89,10 +93,18 @@ echo '
         <a href="/cgi-bin/admin/change_password_fm.cgi">'$CHANGEPASSMSG'</a>
       </div>
       <div class="collapsed">
-        <span>'$INFRASTRUCTURESMSG'</span>
-        <a href="/cgi-bin/admin/mon_status.cgi">'$SERVERSTATUSMSG'</a>
+        <span>'$CLIENTMSG'</span>
+	<a href="/cgi-bin/admin/client_boot_controls_fm.cgi">'$CLIENTBOOTCONTROLS'</a>
       </div>
       <div class="collapsed">
+        <span>'$INFRASTRUCTURESMSG'</span>
+	<a href="/cgi-bin/admin/asset_register_view.cgi">'$ASSETREGISTER'</a>'
+[ $MONITORINGCTRL = yes ] && echo '	<a href="/cgi-bin/admin/mon_status.cgi">'$SERVERSTATUSMSG'</a>'
+echo 	'</div>'
+
+if [ $PRINTERCTRL = yes ]
+then
+echo '       <div class="collapsed">
         <span>'$PRINTERMSG'</span>
         <a href="/cgi-bin/admin/printers.cgi">'$VIEWQUEUES'</a>
         <a href="/cgi-bin/admin/printer_accounting_view_user_usage_fm.cgi">'$USERPRINTERUSAGE'</a>
@@ -100,8 +112,9 @@ echo '
         <a href="/cgi-bin/admin/printer_accounting_add_user_limit_fm.cgi">'$ADDUSERPRINTERLIMIT'</a>
         <a href="/cgi-bin/admin/printer_accounting_user_limits_fm.cgi">'$USERPRINTERLIMITS'</a>
         <a href="/cgi-bin/admin/printer_accounting_group_limits_fm.cgi">'$ACCOUNTINGGROUPLIMITS'</a>
-      </div>
-      <div class="collapsed">
+      </div>'
+fi
+echo '  <div class="collapsed">
         <span>Internet</span>
         <a href="/cgi-bin/admin/dg_view_user_logs_fm.cgi">'$VIEWUSERLOGS'</a>
         <a href="/cgi-bin/admin/dg_view_site_logs_fm.cgi">'$VIEWSITELOGS'</a>
@@ -117,7 +130,7 @@ echo '
       </div>
 <div class="a.current">
 <small><small>
-'$VERSION' : 120515-1742
+'$VERSIONMSG' : '$VERSION'
 </small></small>
 </span></div>
     </div>

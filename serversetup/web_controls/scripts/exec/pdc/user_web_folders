@@ -329,6 +329,8 @@ echo '<tr><td><b>'$PRIGROUPMSG'</b> '$GROUP'</td><td>
 </td></tr></tbody></table>
 <br>'
 
+[ $MOBILE = no ] && echo '</div><div id="infobox">'
+
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: '$WIDTH1'px;"><b>'$USERNAMEMSG'</b></td><td><b>'$STATUSMSG'</b></td></tr>'
 

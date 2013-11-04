@@ -167,9 +167,9 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 else
 echo '<div id="'$DIV_ID'"><div id="titlebox">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="vertical-align: top;">
-<form action="/cgi-bin/admin/group_membership_fm.cgi" method="post"><input name="" type="submit" class="button" value="'$CHOOSEUSERMSG'"></form></td>
+<tr>
 <td style="vertical-align: top;"><b>'$TITLE1' - '$USERNAME'</b></td>
+<td style="vertical-align: top;"><a href="group_membership_fm.cgi"><input class="button" type="button" name="" value="'$CHOOSEUSERMSG'"></a></td>
 </tr></tbody></table></div><div id="infobox">'
 fi
 

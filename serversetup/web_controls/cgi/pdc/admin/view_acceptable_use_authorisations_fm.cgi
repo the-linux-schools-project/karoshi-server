@@ -136,7 +136,7 @@ CREATION_DATE=`echo $PENDING_USER_DATA | cut -d, -f3`
 echo '<tr><td>'$PENDING_USER'</td><td>'$USER_CREATOR'</td><td>'$CREATION_DATE'</td><td>'$DAY_COUNT'</td><td><input name="_USERNAME_" value="'$PENDING_USER'" type="checkbox"></td></tr>'
 done
 
-echo '</tbody></table><br><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"> <input type="button" onclick="SetAllCheckBoxes('\'selectservers\'', '\'_USERNAME_\'', true);" value="'$SELECTMSG'">'
+echo '</tbody></table><br><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"> <input class="button" type="button" onclick="SetAllCheckBoxes('\'selectservers\'', '\'_USERNAME_\'', true);" value="'$SELECTMSG'">'
 fi
 echo '</div></form></body></html>'
 exit

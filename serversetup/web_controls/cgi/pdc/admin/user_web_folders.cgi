@@ -145,7 +145,7 @@ done
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox6
 TABLECLASS=standard
 WIDTH1=180
 WIDTH2=200
@@ -175,7 +175,7 @@ fi
 echo '</div></div><div id="mobileactionbox">
 '
 else
-echo '<div id="'$DIV_ID'">'
+echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr>
@@ -201,7 +201,7 @@ echo '</td>
 <td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_web_folders"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td>
 </tr></tbody></table><br>
 '
-[ $MOBILE = no ] && echo '</div><div id="submitbox">'
+[ $MOBILE = no ] && echo '</div></div><div id="submitbox">'
 echo '<input value="'$SUBMITMSG'" class="button" type="submit">
 </div></form></body></html>
 '
@@ -209,6 +209,8 @@ exit
 fi
 
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$GROUP:$ACTION:$USERNAME:$SERVICECHECK:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/user_web_folders
+
+[ $MOBILE = no ] && echo '</div>'
 echo '</div></form></body></html>'
 exit
 

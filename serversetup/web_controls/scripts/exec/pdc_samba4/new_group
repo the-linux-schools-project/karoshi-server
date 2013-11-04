@@ -91,21 +91,23 @@ echo `date`: new_group - addding group $NEWGROUP from $REMOTE_ADDR by $REMOTE_US
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 source /opt/karoshi/server_network/domain_information/domain_name
 
-samba-tool group add --groupou="OU=Groups,OU=People" $NEWGROUP
+samba-tool group add --groupou="OU=Groups,OU=People" $NEWGROUP 1>/dev/null
 echo
 GIDNUMBER=`getent group $NEWGROUP | cut -d: -f3`
-echo -e "dn: CN=$NEWGROUP,CN=Users,$LDAPBASE
+echo -e "dn: CN=$NEWGROUP,OU=Groups,OU=People,$LDAPBASE
 changetype: modify
 add: objectclass
 objectclass: posixgroup
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
-
-echo -e "dn: CN=$NEWGROUP,CN=Users,$LDAPBASE
-changetype: modify
+-
+add: displayname
+displayname: "$NEWGROUP"
+-
+add: mail
+mail: $NEWGROUP@$REALM
+-
 add: gidnumber
 gidnumber: $GIDNUMBER
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
-
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null
 
 #Add group to federated server
 FEDERATED_LDAP_SERVERS=no
