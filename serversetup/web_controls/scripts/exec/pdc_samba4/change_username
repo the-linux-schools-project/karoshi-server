@@ -225,14 +225,14 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
 if [ -d /home/users/email/'$CURRENT_USERNAME' ]
 then
 mv /home/users/email/'$CURRENT_USERNAME' /home/users/email/'$NEW_USERNAME'
-chmod '$USERID' -R /home/users/email/'$NEW_USERNAME'
+chown '$USERID' -R /home/users/email/'$NEW_USERNAME'
 fi
 '
 else
 if [ -d /home/users/email/$CURRENT_USERNAME ]
 then
 mv /home/users/email/$CURRENT_USERNAME /home/users/email/$NEW_USERNAME
-chmod $USERID -R /home/users/email/$NEW_USERNAME
+chown $USERID -R /home/users/email/$NEW_USERNAME
 fi
 fi
 fi

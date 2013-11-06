@@ -214,8 +214,6 @@ getlastlocation
 LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
 fi
 
-echo '<b>'$LOCATION'</b>'
-
 SHOWMOVE=no
 if [ "$ITEMMOVE"'null' != null ]
 then
@@ -250,7 +248,7 @@ echo '<br>
 <input name="_ACTION_CREATEDIR_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$NEWDIRMSG'">
 <input name="_ACTION_CREATEFILE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$NEWFILEMSG'">
 <input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$RELOADMSG'">
-<br><br>'
+<br><br><b>'$LOCATION'</b>'
 
 [ $MOBILE != yes ] && echo '</div><div id="infobox">'
 

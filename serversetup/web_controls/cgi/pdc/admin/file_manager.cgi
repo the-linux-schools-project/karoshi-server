@@ -540,9 +540,14 @@ if [ $MOBILE = yes ]
 then
 echo '<form action="/cgi-bin/admin/file_manager.cgi" method="post"><div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE' - '$SERVER2'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$SYSMENUMSG'</a>
-</div></div>
+	<span>'$TITLE' - '$SERVER2'</span>'
+if [ $SERVERNAME != notset ]
+then
+echo '<a href="/cgi-bin/admin/file_manager.cgi">'$CHOOSESERVERMSG'</a>'
+else
+echo '<a href="/cgi-bin/admin/mobile_menu.cgi">'$SYSMENUMSG'</a>'
+fi
+echo '</div></div>
 <div id="'$DIV_ID'">
 <b>'$TITLE' - '$SERVER2'</b> '
 
