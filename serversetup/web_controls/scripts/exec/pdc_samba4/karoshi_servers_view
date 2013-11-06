@@ -105,14 +105,10 @@ source /opt/karoshi/server_network/domain_information/domain_name
 
 echo '<div id="actionbox"><div id="titlebox">'
 
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><form action="/cgi-bin/admin/karoshi_servers_add_fm.cgi" method="post">
-<input name="ADDSERVER" type="submit" class="button" value="'$ADDSERVERMSG'">
-</form></td><td style="vertical-align: top;"><b>'$MYSERVERSMSG' '$SHORTNAME'</b></td>
-</tr></tbody></table></div><div id="infobox">'
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">'
-echo '<tbody>'
-echo '<tr><td style="vertical-align: top; width: 10px; height: 40px;"></td><td style="vertical-align: top; width: 120px; height: 40px;"><b>'$SERVERMSG'</b></td><td style="vertical-align: top; width: 80px;"><b>'$SERVERIPMSG'</b></td><td style="vertical-align: top; width: 320px;"><b>'$ROLESMSG'</b></td><td style="vertical-align: top; width: 70px;"><b>'$ADDROLEMSG2'</b></td><td style="vertical-align: top; width: 70px;"><b>'$REMOVEROLEMSG2'</b></td><td style="vertical-align: top; width: 70px;"><b>'$SSHMSG1'</b></td><td style="vertical-align: top; width: 70px;"><b>'$SSHMSG2'</b></td></tr>'
-
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<td style="vertical-align: top;"><b>'$MYSERVERSMSG' '$SHORTNAME'</b></td>
+<td style="vertical-align: top;"><a href="karoshi_servers_add_fm.cgi"><input class="button" type="button" name="" value="'$ADDSERVERMSG'"></a></td>
+</tr></tbody></table></div><div id="infobox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top; width: 10px; height: 40px;"></td><td style="vertical-align: top; width: 120px; height: 40px;"><b>'$SERVERMSG'</b></td><td style="vertical-align: top; width: 80px;"><b>'$SERVERIPMSG'</b></td><td style="vertical-align: top; width: 320px;"><b>'$ROLESMSG'</b></td><td style="vertical-align: top; width: 70px;"><b>'$ADDROLEMSG2'</b></td><td style="vertical-align: top; width: 70px;"><b>'$REMOVEROLEMSG2'</b></td><td style="vertical-align: top; width: 70px;"><b>'$SSHMSG1'</b></td><td style="vertical-align: top; width: 70px;"><b>'$SSHMSG2'</b></td></tr>'
 
 
 function show_servers {

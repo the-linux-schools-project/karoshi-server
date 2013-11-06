@@ -101,21 +101,14 @@ SERVERICON=/images/warnings/server_ok.png
 SERVERBACKUPICON=/images/warnings/server_no_config.png
 ADDSERVERICON=/images/warnings/server.png
 
-if [ -f /opt/karoshi/server_network/info ]
-then
-source /opt/karoshi/server_network/info
-LOCATION_NAME="- $LOCATION_NAME"
-fi
-
+source /opt/karoshi/server_network/domain_information/domain_name
 
 echo '<div id="actionbox"><div id="titlebox">'
 
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><form action="/cgi-bin/admin/karoshi_servers_add_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="ADDSERVER" type="image" class="images" src="'$ADDSERVERICON'" value="ADDSERVER"><span>'$ADDSERVERMSG'</span></a></form></td><td style="vertical-align: top;"><b>'$MYSERVERSMSG' '$LOCATION_NAME'</b></td>
-</tr></tbody></table></div><div id="infobox>"'
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">'
-echo '<tbody>'
-echo '<tr><td style="vertical-align: top; width: 120px; height: 40px;"><b>'$SERVERMSG'</b></td><td style="vertical-align: top; width: 80px;"><b>'$SERVERIPMSG'</b></td><td style="vertical-align: top; width: 320px;"><b>'$ROLESMSG'</b></td><td style="vertical-align: top; width: 70px;"><b>'$ADDROLEMSG2'</b></td><td style="vertical-align: top; width: 70px;"><b>'$REMOVEROLEMSG2'</b></td><td style="vertical-align: top; width: 70px;"><b>'$SSHMSG1'</b></td><td style="vertical-align: top; width: 70px;"><b>'$SSHMSG2'</b></td></tr>'
-
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<td style="vertical-align: top;"><b>'$MYSERVERSMSG' '$SHORTNAME'</b></td>
+<td style="vertical-align: top;"><a href="karoshi_servers_add_fm.cgi"><input class="button" type="button" name="" value="'$ADDSERVERMSG'"></a></td>
+</tr></tbody></table></div><div id="infobox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top; width: 10px; height: 40px;"></td><td style="vertical-align: top; width: 120px; height: 40px;"><b>'$SERVERMSG'</b></td><td style="vertical-align: top; width: 80px;"><b>'$SERVERIPMSG'</b></td><td style="vertical-align: top; width: 320px;"><b>'$ROLESMSG'</b></td><td style="vertical-align: top; width: 70px;"><b>'$ADDROLEMSG2'</b></td><td style="vertical-align: top; width: 70px;"><b>'$REMOVEROLEMSG2'</b></td><td style="vertical-align: top; width: 70px;"><b>'$SSHMSG1'</b></td><td style="vertical-align: top; width: 70px;"><b>'$SSHMSG2'</b></td></tr>'
 
 
 function show_servers {
@@ -141,7 +134,7 @@ SERVERSSHSTATUS=$SSHWORKING
 SERVERICON=/images/warnings/server_ok.png
 fi
 
-echo '<tr><td style="vertical-align: top;">'$SERVER'</td><td style="vertical-align: top;">'$SERVERIP'</td><td style="vertical-align: top;">'
+echo '<tr><td style="background-color:'$FILLCOLOUR'"><td style="vertical-align: top;">'$SERVER'</td><td style="vertical-align: top;">'$SERVERIP'</td><td style="vertical-align: top;">'
 [ -d /opt/karoshi/server_network/servers/$SERVER ] &&  cat /opt/karoshi/server_network/servers/$SERVER/*
 echo '</td><td style="vertical-align: top;">'
 if [ $SSHSTATUS = 0 ] || [ $SERVER = $HOSTNAME ]
@@ -206,14 +199,52 @@ fi
 echo '</td></tr>'
 }
 
-
+#Show main server
 SERVER=$HOSTNAME
+FILLCOLOUR=green
 show_servers
-for SERVER in /opt/karoshi/server_network/servers/*
+#Show servers in the internal zone
+if [ -d /opt/karoshi/server_network/zones/internal/servers/ ]
+then
+if [ `ls -1 /opt/karoshi/server_network/zones/internal/servers/ | wc -l` -gt 0 ]
+then
+FILLCOLOUR=green
+for SERVER in /opt/karoshi/server_network/zones/internal/servers/*
 do
 SERVER=`basename $SERVER`
 [ $SERVER != $HOSTNAME ] && show_servers
 done
+fi
+fi
+
+#Show servers in the dmz zone
+if [ -d /opt/karoshi/server_network/zones/dmz/servers/ ]
+then
+if [ `ls -1 /opt/karoshi/server_network/zones/dmz/servers/ | wc -l` -gt 0 ]
+then
+FILLCOLOUR=orange
+for SERVER in /opt/karoshi/server_network/zones/dmz/servers/*
+do
+SERVER=`basename $SERVER`
+[ $SERVER != $HOSTNAME ] && show_servers
+done
+fi
+fi
+
+#Show servers in the external zone
+if [ -d /opt/karoshi/server_network/zones/external/servers/ ]
+then
+if [ `ls -1 /opt/karoshi/server_network/zones/external/servers/ | wc -l` -gt 0 ]
+then
+FILLCOLOUR=red
+for SERVER in /opt/karoshi/server_network/zones/external/servers/*
+do
+SERVER=`basename $SERVER`
+[ $SERVER != $HOSTNAME ] && show_servers
+done
+fi
+fi
+
 echo '</tbody></table>'
 
 #Show federated servers
@@ -231,8 +262,7 @@ SERVERBACKUPICON=/images/warnings/server_no_config.png
 SERVERICON2=/images/warnings/server_remove.png
 
 FEDERATED_SERVER=`basename $FEDERATED_SERVERS`
-SERVERIP=`cat /etc/hosts | grep -w $FEDERATED_SERVER | cut -f1`
-
+SERVERIP=`net lookup $FEDERATED_SERVER`
 
 if [ -f /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/info ]
 then
