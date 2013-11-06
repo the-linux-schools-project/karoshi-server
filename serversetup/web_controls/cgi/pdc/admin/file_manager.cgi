@@ -544,10 +544,22 @@ echo '<form action="/cgi-bin/admin/file_manager.cgi" method="post"><div style="f
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$SYSMENUMSG'</a>
 </div></div>
 <div id="'$DIV_ID'">
-<a class="info" href="javascript:void(0)"><input name="_SERVER_notset_ACTION_notset_" type="image" class="images" src="/images/submenus/file/serverm.png" value=""><span>'$CHOOSESERVERMSG'</span></a> <b>'$TITLE' - '$SERVER2'</b>
-'
+<b>'$TITLE' - '$SERVER2'</b> '
+
 else
-echo '<form action="/cgi-bin/admin/file_manager.cgi" method="post"><div id="'$DIV_ID'"><div id="titlebox"><b>'$TITLE' - '$SERVER2'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG1"'</span></a>'
+echo '<form action="/cgi-bin/admin/file_manager.cgi" method="post"><div id="'$DIV_ID'"><div id="titlebox">
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr>
+<td style="vertical-align: top;"><b>'$TITLE' - '$SERVER2'</b></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG1"'</span></a></td>'
+
+if [ $SERVERNAME != notset ]
+then
+echo '
+<td style="vertical-align: top;"><input name="_SERVER_notset_ACTION_notset_" type="submit" class="button" value="'$CHOOSESERVERMSG'"></td>
+'
+fi
+echo '</tr></tbody></table>'
 fi
 
 #echo $DATA'<br>'

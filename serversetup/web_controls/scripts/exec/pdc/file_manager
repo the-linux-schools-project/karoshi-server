@@ -178,7 +178,6 @@ then
 #Show list of servers
 [ $MOBILE = no ] && echo '</div><div id="infobox">'
 /opt/karoshi/web_controls/show_servers $MOBILE servers "$ACTIONMSG" ENTER
-[ $MOBILE = no ] && echo '</div>'
 fi
 
 #This list is used to declare areas that cannot me deleted or moved
@@ -245,9 +244,7 @@ echo '<input name="_ITEMMOVE_" value="'$ITEMMOVE'" type="hidden">'
 fi
 fi
 
-echo '<br><br>
-
-<input name="_SERVER_notset_ACTION_notset_" type="submit" class="button" value="'$CHOOSESERVERMSG'">
+echo '<br>
 <input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_" type="submit" class="button" value="'$TOPDIRMSG'">
 <input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$UPMSG'">
 <input name="_ACTION_CREATEDIR_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$NEWDIRMSG'">
