@@ -100,7 +100,7 @@ BACKUPPATH=/home/backups/$KAROSHISERVER
 #Get backup server
 BACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/$KAROSHISERVER/backupserver`
 
-echo '<td style="width: 90px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_ACTION_ENTER_SERVER_'$BACKUPSERVER'_LOCATION_'$BACKUPPATH'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$KAROSHISERVER'<br><br>'
+echo '<td style="width: 90px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'$BACKUPSERVER'_LOCATION_'$BACKUPPATH'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$KAROSHISERVER'<br><br>'
 
 cat /opt/karoshi/server_network/servers/$KAROSHISERVER/* | sed '/<a href/c'"&nbsp"
 
@@ -134,10 +134,10 @@ BACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_sett
 BACKUPPATH=/home/backups/$SERVER/$PRI_GROUP
 if [ $START_LINE = yes ]
 then
-echo '<tr><td>'$PRI_GROUP'</td><td>'$SERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_ACTION_ENTER_SERVER_'$BACKUPSERVER'_LOCATION_'$BACKUPPATH'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_"><span>'$RESTOREMSG'<br>'$SERVER' - '$PRI_GROUP'</span></a></td>'
+echo '<tr><td>'$PRI_GROUP'</td><td>'$SERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'$BACKUPSERVER'_LOCATION_'$BACKUPPATH'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVERNAME_'$SERVER'_"><span>'$RESTOREMSG'<br>'$SERVER' - '$PRI_GROUP'</span></a></td>'
 START_LINE=no
 else
-echo '<td>'$PRI_GROUP'</td><td>'$SERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_ACTION_ENTER_SERVER_'$BACKUPSERVER'_LOCATION_'$BACKUPPATH'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_"><span>'$RESTOREMSG'<br>'$SERVER' - '$PRI_GROUP'</span></a></td></tr>'
+echo '<td>'$PRI_GROUP'</td><td>'$SERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'$BACKUPSERVER'_LOCATION_'$BACKUPPATH'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVERNAME_'$SERVER'_"><span>'$RESTOREMSG'<br>'$SERVER' - '$PRI_GROUP'</span></a></td></tr>'
 START_LINE=yes
 fi
 fi
