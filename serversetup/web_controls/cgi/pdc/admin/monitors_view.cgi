@@ -109,7 +109,11 @@ fi
 
 echo '<div id="actionbox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top; width: 110px;"><b>'"$TITLE"'</b></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_add_fm.cgi" name="monitors" method="post"><a class="info" href="javascript:void(0)"><input name="ADDMONITOR" type="image" class="images" src="/images/submenus/system/computer.png" value=""><span>'$ADDMONITORMSG'</span></a></form></td><td style="vertical-align: top;"><form action="/cgi-bin/admin/mon_status.cgi" name="monitors" method="post"><a class="info" href="javascript:void(0)"><input name="MONITORSTATUS" type="image" class="images" src="/images/submenus/system/monitor_status.png" value=""><span>'$NETWORKSTATUSMSG'</span></a></form></td></tr></tbody></table>
+<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_add_fm.cgi" name="monitors" method="post">
+<input name="ADDMONITOR" type="submit" class="button" value="'$ADDMONITORMSG'">
+</form></td><td style="vertical-align: top;"><form action="/cgi-bin/admin/mon_status.cgi" name="monitors" method="post">
+<input name="MONITORSTATUS" type="submit" class="button" value="'$NETWORKSTATUSMSG'">
+</form></td></tr></tbody></table>
 <br>'
 
 #Show monitors

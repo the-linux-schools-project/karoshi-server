@@ -133,9 +133,13 @@ echo '<div id="actionbox">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top; width: 110px;"><b>'"$TITLE"'</b></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td>
 <td style="vertical-align: top;">
-<form action="/cgi-bin/admin/mon_status.cgi" name="monitors" method="post"><a class="info" href="javascript:void(0)"><input name="MONITORSTATUS" type="image" class="images" src="/images/submenus/system/monitor_status.png" value=""><span>'$NETWORKSTATUSMSG'</span></a></form></td>
+<form action="/cgi-bin/admin/mon_status.cgi" name="monitors" method="post">
+<input name="MONITORSTATUS" type="submit" class="button" value="'$NETWORKSTATUSMSG'">
+</form></td>
 <td style="vertical-align: top;">
-<form action="/cgi-bin/admin/monitors_view.cgi" name="monitors" method="post"><a class="info" href="javascript:void(0)"><input name="MONITORSTATUS" type="image" class="images" src="/images/submenus/system/view_monitors.png" value=""><span>'$VIEWMONITORSMSG'</span></a></form></td>
+<form action="/cgi-bin/admin/monitors_view.cgi" name="monitors" method="post">
+<input name="MONITORSTATUS" type="submit" class="button" value="'$VIEWMONITORSMSG'">
+</form></td>
 </tr></tbody></table>
 <form action="/cgi-bin/admin/monitors_add.cgi" method="post" name="selectmonitors">'
 

@@ -129,7 +129,11 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 else
 #Show title
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="vertical-align: top; width: 110px;"><b>'$TITLE'</b></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td><td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_add_fm.cgi" name="monitors" method="post"><a class="info" href="javascript:void(0)"><input name="ADDMONITOR" type="image" class="images" src="/images/submenus/system/computer.png" value=""><span>'$ADDMONITORMSG'</span></a></form></td><td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_view.cgi" name="monitors" method="post"><a class="info" href="javascript:void(0)"><input name="VIEWMONITOR" type="image" class="images" src="/images/submenus/system/view_monitors.png" value=""><span>'$VIEWMONITORMSG'</span></a></form></td></tr></tbody></table>'
+<tbody><tr><td style="vertical-align: top; width: 110px;"><b>'$TITLE'</b></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td><td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_add_fm.cgi" name="monitors" method="post">
+<input name="ADDMONITOR" type="submit" class="button" value="'$ADDMONITORMSG'">
+</form></td><td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_view.cgi" name="monitors" method="post">
+<input name="VIEWMONITOR" type="submit" class="button" value="'$VIEWMONITORMSG'">
+</form></td></tr></tbody></table>'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/mon_status.cgi | cut -d' ' -f1`
