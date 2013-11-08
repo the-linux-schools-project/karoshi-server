@@ -130,59 +130,67 @@ fi
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox3
 TABLECLASS=standard
 WIDTH=60
 WIDTH2=120
+WIDTH3=120
 TABLETITLE="$TITLE - $LOCATION"
+ICON1=/images/submenus/internet/client_allowed.png
+ICON2=/images/submenus/internet/client_denied.png
+ICON3=/images/assets/location.png
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="'$DIV_ID'">'
+echo '<div id="'$DIV_ID'"><div id="titlebox"><b>'$TABLETITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Room_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a><br>'
 else
 DIV_ID=menubox
 TABLECLASS=mobilestandard
-WIDTH=50
-WIDTH2=80
+WIDTH=60
+WIDTH2=90
+WIDTH3=110
 TABLETITLE="$LOCATION"
+ICON1=/images/submenus/internet/client_allowedm.png
+ICON2=/images/submenus/internet/client_deniedm.png
+ICON3=/images/assets/locationm.png
 
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$INTERNETMENUMSG'</a>
+<a href="/cgi-bin/admin/dg_room_controls_fm.cgi">'$LOCATION'</a>
 </div></div><div id="mobileactionbox">
 '
 fi
 
-ICON1=/images/submenus/internet/client_allowed.png
-ICON2=/images/submenus/internet/client_denied.png
-ICON3=/images/assets/location.png
-
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tr><td style="vertical-align: top;"><b>'$TABLETITLE'</b></td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/dg_room_controls_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="" type="image" class="images" src="'$ICON3'" value=""><span>'$CHOOSELOCATIONMSG'</span></a></form></td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_allowall_ASSET_na_" type="image" class="images" src="'$ICON1'" value=""><span>'$ALLOWALLMSG'</span></a></form></td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_denyall_ASSET_na_" type="image" class="images" src="'$ICON2'" value=""><span>'$DENYALLMSG'</span></a></form></td>
-<td valign=top><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Room_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td>'
+<tr><td style="vertical-align: top;"><form action="/cgi-bin/admin/dg_room_controls_fm.cgi" method="post">
+<input name="" type="submit" class="button" value="'$CHOOSELOCATIONMSG'">
+</form></td>
+<td valign=top>
+<a href="dg_reset_room_controls_fm.cgi"><input class="button" type="button" name="" value="'$RESETTIMESMSG'"></a>
+</td>'
 
-#Show reset times
-if [ -d /opt/karoshi/server_network/internet_room_controls_reset ]
-then
-if [ `ls -1 /opt/karoshi/server_network/internet_room_controls_reset | wc -l` -gt 0 ]
-then
-echo '<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Room_Controls"><img class="images" alt="" src="/images/submenus/internet/reset_room_controls_add.png"><span>'$HELPMSG4':<br>'
-ls /opt/karoshi/server_network/internet_room_controls_reset | sed 's/$/<br>/g'
-echo '</span></a></td>'
-fi
-fi
+[ $MOBILE = yes ] && echo '</tr><tr>'
 
-echo '</tr></table><br>'
+echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post">
+<input name="_LOCATION_'$LOCATION'_ACTION_allowall_ASSET_na_" type="submit" class="button" value="'$ALLOWALLMSG'">
+</form></td>
+<td style="vertical-align: top;"><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post">
+<input name="_LOCATION_'$LOCATION'_ACTION_denyall_ASSET_na_" type="submit" class="button" value="'$DENYALLMSG'">
+</form></td>
+</tr></table><br>'
+
+[ $MOBILE = no ] && echo '</div><div id="infobox">'
 
 if [ -d /opt/karoshi/asset_register/locations/$LOCATION/ ]
 then
 if [ `ls -1 /opt/karoshi/asset_register/locations/$LOCATION/ | wc -l` -gt 0 ]
 then
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="width: '$WIDTH'px;"><b>'$ASSETMSG'</b></td><td style="width: '$WIDTH2'px;"><b>'$MACADDRESSMSG'</b></td><td style="width: '$WIDTH2'px;"><b>'$TCPIPMSG'</b></td><td><b>Status</b></td></tr>'
+<tbody><tr><td style="width: '$WIDTH'px;"><b>'$ASSETMSG'</b></td>'
+
+[ $MOBILE = no ] && echo '<td style="width: '$WIDTH2'px;"><b>'$MACADDRESSMSG'</b></td>'
+
+echo '<td style="width: '$WIDTH3'px;"><b>'$TCPIPMSG'</b></td><td><b>Status</b></td></tr>'
 
 for ASSETS in "/opt/karoshi/asset_register/locations/$LOCATION/"*
 do
@@ -200,13 +208,17 @@ ICON=$ICON2
 CONTROLMSG=$ALLOWMSG
 ACTION=allow
 fi
-echo '<tr><td style="vertical-align: top;">'$ASSET'</td><td style="vertical-align: top;">'$MAC1'</td><td style="vertical-align: top;">'$TCPIP1'</td><td><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'$ACTION'_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON'" value=""><span>'$CONTROLMSG' '$ASSET'</span></a></form></td></tr>'
+echo '<tr><td style="vertical-align: top;">'$ASSET'</td>'
+
+[ $MOBILE = no ] && echo '<td style="vertical-align: top;">'$MAC1'</td>'
+
+echo '<td style="vertical-align: top;">'$TCPIP1'</td><td><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'$ACTION'_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON'" value=""><span>'$CONTROLMSG' '$ASSET'</span></a></form></td></tr>'
 fi
 done
 fi
 fi
 
-echo '</tbody></table>'
-echo "</div>"
-echo "</body></html>"
+echo '</tbody></table></div>'
+[ $MOBILE = no ] && echo '</div>'
+echo '</body></html>'
 exit

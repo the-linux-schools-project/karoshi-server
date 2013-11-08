@@ -241,14 +241,18 @@ SHOWMOVE=yes
 echo '<input name="_ITEMMOVE_" value="'$ITEMMOVE'" type="hidden">'
 fi
 fi
-
+if [ $LOCATION"null" = null ]
+then
+DISPLOCATION=/
+else
+DISPLOCATION=$LOCATION
+fi
 echo '<br>
 <input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_" type="submit" class="button" value="'$TOPDIRMSG'">
 <input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$UPMSG'">
 <input name="_ACTION_CREATEDIR_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$NEWDIRMSG'">
 <input name="_ACTION_CREATEFILE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$NEWFILEMSG'">
-<input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$RELOADMSG'">
-<br><br><b>'$LOCATION'</b>'
+<input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$RELOADMSG'"><br><br><b>'$LOCATIONMSG': '$DISPLOCATION'</b><br>'
 
 [ $MOBILE != yes ] && echo '</div><div id="infobox">'
 

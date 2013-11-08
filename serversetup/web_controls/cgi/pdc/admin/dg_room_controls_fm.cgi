@@ -102,11 +102,13 @@ if [ $MOBILE = no ]
 then
 DIV_ID=actionbox
 TABLECLASS=standard
+ICON1=/images/assets/location.png
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
 DIV_ID=actionbox2
 TABLECLASS=mobilestandard
+ICON1=/images/assets/locationm.png
 fi
 
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
@@ -148,7 +150,7 @@ WIDTH=90
 
 echo '<form action="dg_room_controls.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
 LOCCOUNTER=1
-ICON1=/images/assets/location.png
+
 for LOCATIONS in /opt/karoshi/asset_register/locations/*
 do
 LOCATION=`basename "$LOCATIONS"`
