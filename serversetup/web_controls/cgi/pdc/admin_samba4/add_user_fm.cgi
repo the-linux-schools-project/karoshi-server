@@ -170,8 +170,7 @@ document.myform._USERNAMESTYLE_.options[7]=new Option("Style 8: " + firstnameVal
 document.myform._USERNAMESTYLE_.options[8]=new Option("Style 9: " + enrollmentValue, "userstyleS9", false, status9);
 }
 </script>
-</head>
-<body>'
+</head><body onLoad="start()">'
 #########################
 #Get data input
 #########################
