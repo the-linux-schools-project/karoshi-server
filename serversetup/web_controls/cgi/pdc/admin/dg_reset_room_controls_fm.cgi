@@ -88,12 +88,13 @@ FILE=`echo $DATA | cut -s -d_ -f3`
 if [ $MOBILE = no ]
 then
 DIV_ID=actionbox
+TABLECLASS=standard
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
 DIV_ID=actionbox
+TABLECLASS=mobilestandard
 fi
-echo '<form name="myform" action="/cgi-bin/admin/dg_reset_room_controls.cgi" method="post">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -102,16 +103,15 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE2'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$USERMENUMSG'</a>
-</div></div>
-'
+</div></div><div id="mobileactionbox">'
 else
 echo '<div id="'$DIV_ID'"><b>'$TITLE2'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Room_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a><br><br>'
 fi
 
 ICON1=/images/submenus/internet/reset_room_controls_add.png
 ICON2=/images/submenus/internet/reset_room_controls_delete.png
-echo '<form action="/cgi-bin/admin/dg_reset_room_controls.cgi" method="post">
-  <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo '<form action="/cgi-bin/admin/dg_reset_room_controls.cgi" method="post"><b>'$ADDRESETTIMEMSG'</b><br><br>
+<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody><tr>
         <td style="width: 180px;">'$TIMEMSG'</td>
         <td style="width: 120px;">
@@ -165,7 +165,7 @@ if [ -d /opt/karoshi/server_network/internet_room_controls_reset ]
 then
 if [ `ls -1 /opt/karoshi/server_network/internet_room_controls_reset | wc -l` -gt 0 ]
 then
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>'
+echo '<b>'$RESETTIMESMSG'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>'
 
 for RESETTIMES in /opt/karoshi/server_network/internet_room_controls_reset/*
 do
