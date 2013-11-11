@@ -76,14 +76,14 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox">
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="vertical-align: top;"><b>'$TITLE2'</b></td><td style="vertical-align: middle;">
-<form action="/cgi-bin/admin/ups_add_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="" type="image" class="images" src="/images/submenus/system/ups_add.png" value=""><span>'$TITLE1'</span></form></a></td><td style="vertical-align: middle;">
-<form action="/cgi-bin/admin/ups_slave_add_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="" type="image" class="images" src="/images/submenus/system/ups_slave_add.png" value=""><span>'$TITLE5'</span></form></a></td>
-<td style="vertical-align: middle;">
-<form action="/cgi-bin/admin/ups_device_add_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="" type="image" class="images" src="/images/submenus/system/ups_add_device.png" value=""><span>'$TITLE6'</span></form></a></td>
-</tr>
-</tbody></table>
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr>
+<td style="vertical-align: top;"><b>'$TITLE2'</b></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=UPS_Status"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELP7"'</span></a></td>
+<td style="vertical-align: top;"><a href="ups_add_fm.cgi"><input class="button" type="button" name="" value="'$TITLE1'"></a></td>
+<td style="vertical-align: top;"><a href="ups_slave_add_fm.cgi"><input class="button" type="button" name="" value="'$TITLE5'"></a></td>
+<td style="vertical-align: top;"><a href="ups_device_add_fm.cgi"><input class="button" type="button" name="" value="'$TITLE6'"></a></td>
+</tr></table>
 <br>'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ups_status.cgi | cut -d' ' -f1`
@@ -95,5 +95,5 @@ then
 MESSAGE=$ERRORMSG5
 show_status
 fi
-echo "</div></body></html>"
+echo '</div></body></html>'
 exit
