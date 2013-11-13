@@ -162,7 +162,7 @@ then
 [ $DAY = 7 ] && DAY2=$SUNMSG
 [ $DAY = 8 ] && DAY2=$EVERYDAYMSG
 
-echo "$UPGRADESCHEDULEMSG<br>$DAY2 - $HOURS:$MINUTES<br><br>" > /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME
+echo "$DAY2 - $HOURS:$MINUTES" > /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME
 else
 [ -f /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME ] && rm -f /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME
 fi
@@ -268,7 +268,7 @@ fi
 }
 
 #Schedule update for individual computers
-if [ $SERVERNAME != all ]
+if [ $SERVERNAME != allservers ]
 then
 recordtime
 scheduleupdate
@@ -276,7 +276,7 @@ copyscripts
 fi
 
 #Auto schedule
-if [ $SERVERNAME = all ]
+if [ $SERVERNAME = allservers ]
 then
 #Auto schedule network servers
 if [ $SERVERTYPE = network ]

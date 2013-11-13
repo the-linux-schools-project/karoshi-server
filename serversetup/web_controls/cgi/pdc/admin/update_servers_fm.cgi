@@ -161,6 +161,12 @@ echo '<form action="/cgi-bin/admin/update_servers.cgi" name="tstest" method="pos
 <tr><td>'$MINMSG'</td><td><input tabindex= "1" value="'$MINUTES'" name="_MINUTES_" style="width: 200px;" size="3" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$TIMEHELP'</span></a></td></tr>
 </tbody></table><br><br>'
 
+
+#Show list of servers
+/opt/karoshi/web_controls/show_servers $MOBILE all "$SCHEDULEMSG" notset updateserver
+
+exit
+
 #Show list of ssh enabled servers
 SERVERCOUNTER=1
 
