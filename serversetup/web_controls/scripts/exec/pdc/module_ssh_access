@@ -71,9 +71,9 @@ if [ $RESTRICTTYPE != null ]
 then
 if [ $RESTRICTTYPE = TCPIP ]
 then
-RESTRICT=`echo $RESTRICT | tr -cd '0-9.'`
+RESTRICT=`echo $RESTRICT | tr -cd '0-9.,'`
 else
-RESTRICT=`echo $RESTRICT | sed 's/%3A/-/g' | tr -cd 'A-Za-z0-9\-:' | sed 's/^/~/g'`
+RESTRICT=`echo $RESTRICT | sed 's/%3A/-/g' | tr -cd 'A-Za-z0-9\-:,' | sed 's/^/~/g; s/,/,~/g'`
 fi
 fi
 
@@ -216,7 +216,7 @@ if [ $RESTRICT'null' = null ]
 then
 echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/remote_ssh
 else
-RESTRICT=`echo $RESTRICT | sed 's/~//g' | sed 's/-/:/g'` 
+RESTRICT=`echo $RESTRICT | sed 's/~//g; s/-/:/g; s/,/, /g'`
 echo $ROLE $RESTRICT"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/remote_ssh
 fi
 exit
