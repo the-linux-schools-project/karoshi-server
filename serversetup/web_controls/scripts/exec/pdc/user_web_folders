@@ -225,7 +225,23 @@ then
 #Enable user web folders
 if [ $SERVER = $HOSTNAME ]
 then
-a2enmod userdir 1> /dev/null
+#Make sure suphp is installed
+if [ ! -f /etc/apache2/mods-available/suphp.load ]
+then
+echo "<li>"$UPDATEREPOMSG"</li><br><br>"
+sleep 1
+apt-get update
+echo "<br><br><li>"$INSTALLMSG"</li><br><br>"
+apt-get install -y libapache2-mod-suphp
+fi
+
+#Copy in config files
+cp -f /opt/karoshi/serversetup/modules/user_web_folders/karoshi-userdir.conf /etc/apache2/mods-available/
+cp -f /opt/karoshi/serversetup/modules/user_web_folders/karoshi-userdir.load /etc/apache2/mods-available/
+cp -f /opt/karoshi/serversetup/modules/user_web_folders/suphp.conf /etc/suphp
+
+a2enmod karoshi-userdir 1> /dev/null
+a2enmod suphp 1> /dev/null
 source /opt/karoshi/serversetup/variables/distro
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1> /dev/null
@@ -244,10 +260,26 @@ echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/s
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
-
 else
+
+#Copy in config files
+scp -o PasswordAuthentication=no /opt/karoshi/serversetup/modules/user_web_folders/karoshi-userdir.conf $SERVER:/etc/apache2/mods-available/
+scp -o PasswordAuthentication=no /opt/karoshi/serversetup/modules/user_web_folders/karoshi-userdir.load $SERVER:/etc/apache2/mods-available/
+scp -o PasswordAuthentication=no /opt/karoshi/serversetup/modules/user_web_folders/suphp.conf $SERVER:/etc/suphp/
+
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-a2enmod userdir 1> /dev/null
+#Make sure suphp is installed
+if [ ! -f /etc/apache2/mods-available/suphp.load ]
+then
+echo "<li>"'$UPDATEREPOMSG'"</li><br><br>"
+sleep 1
+apt-get update
+echo "<br><br><li>"'$INSTALLMSG'"</li><br><br>"
+apt-get -y install libapache2-mod-suphp
+fi
+
+a2enmod suphp 1> /dev/null
+a2enmod karoshi-userdir 1> /dev/null
 source /opt/karoshi/serversetup/variables/distro
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1> /dev/null
@@ -266,6 +298,14 @@ fi
 '
 fi
 echo $ROLEMSG"<br>" > /opt/karoshi/server_network/servers/$SERVER/user_web_folders
+#reload form
+echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/user_web_folders.cgi\" target=\"_top\" name = \"frm\">
+<input type=\"hidden\" name=\"_GROUP_\" value=\"$GROUP\">
+</form>
+<script>
+document.frm.submit();
+</script>"
+exit
 fi
 
 if [ $ACTION = disablehosting ]
@@ -274,6 +314,7 @@ then
 if [ $SERVER = $HOSTNAME ]
 then
 a2dismod userdir 1> /dev/null
+a2dismod suphp 1> /dev/null
 source /opt/karoshi/serversetup/variables/distro
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1> /dev/null
@@ -282,6 +323,7 @@ sleep 1
 else
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 a2dismod userdir 1> /dev/null
+a2dismod suphp 1> /dev/null
 source /opt/karoshi/serversetup/variables/distro
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1> /dev/null
