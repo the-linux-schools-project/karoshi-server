@@ -115,7 +115,7 @@ fi
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox6
 TABLECLASS=standard
 WIDTH=180
 #Generate navigation bar
@@ -125,7 +125,10 @@ DIV_ID=actionbox2
 TABLECLASS=mobilestandard
 WIDTH=160
 fi
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+
+echo '<form action="/cgi-bin/admin/update_servers.cgi" name="tstest" method="post">'
+
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -141,7 +144,7 @@ echo '
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers"><img class="images" alt="" src="/images/help/info.png"><span>'$UPDATESERVERHELP'</span></a><br><br>'
 fi
 
-echo '<form action="/cgi-bin/admin/update_servers.cgi" name="tstest" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 
 <tr><td style="width: 180px;">'$DAYMSG'</td><td>
 <select style="width: 200px;" name="_DAY_">
@@ -159,111 +162,14 @@ echo '<form action="/cgi-bin/admin/update_servers.cgi" name="tstest" method="pos
 </td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$DAYHELP'</span></a></td></tr>
 <tr><td>'$HOURMSG'</td><td><input tabindex= "1" value="'$HOUR'" name="_HOURS_" style="width: 200px;" size="3" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$TIMEHELP'</span></a></td></tr>
 <tr><td>'$MINMSG'</td><td><input tabindex= "1" value="'$MINUTES'" name="_MINUTES_" style="width: 200px;" size="3" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$TIMEHELP'</span></a></td></tr>
-</tbody></table><br><br>'
+</tbody></table><br>'
 
+[ $MOBILE = no ] && echo '</div><div id="infobox">'
 
 #Show list of servers
 /opt/karoshi/web_controls/show_servers $MOBILE all "$SCHEDULEMSG" notset updateserver
 
+[ $MOBILE = no ] && echo '</div>'
+echo '</div></form></body></html>'
 exit
 
-#Show list of ssh enabled servers
-SERVERCOUNTER=1
-
-if [ $MOBILE = no ]
-then
-ROWCOUNT=6
-WIDTH=90
-SERVERICON1="/images/submenus/system/computer.png"
-SERVERICON2="/images/submenus/system/all_computers.png"
-SCHEDULEICON="/images/submenus/system/computer_schedule.png"
-else
-ROWCOUNT=4
-WIDTH=70
-SERVERICON1="/images/submenus/system/computerm.png"
-SERVERICON2="/images/submenus/system/all_computersm.png"
-SCHEDULEICON="/images/submenus/system/computer_schedulem.png"
-fi
-
-
-if [ -f /opt/karoshi/server_network/info ]
-then
-source /opt/karoshi/server_network/info
-LOCATION_NAME2="- $LOCATION_NAME"
-fi
-
-echo '<b>'$MYSERVERSMSG' '$LOCATION_NAME2'</b><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
-
-AUTOSCHEDULE=no
-for KAROSHI_SERVER in /opt/karoshi/server_network/servers/*
-do
-KAROSHISERVER=`basename $KAROSHI_SERVER`
-SERVERICON=$SERVERICON1
-[ -f /opt/karoshi/server_network/upgrade_schedules/servers/$KAROSHISERVER ] && SERVERICON=$SCHEDULEICON
-
-echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_SERVERNAME_'$KAROSHISERVER'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$KAROSHISERVER'<br><br>'
-[ -f /opt/karoshi/server_network/upgrade_schedules/servers/$KAROSHISERVER ] && cat /opt/karoshi/server_network/upgrade_schedules/servers/$KAROSHISERVER
-cat /opt/karoshi/server_network/servers/$KAROSHISERVER/* | sed '/<a href/c'"<br>"
-echo '</span></a><br>'$KAROSHISERVER'</td>'
-[ $SERVERCOUNTER = $ROWCOUNT ] && echo '</tr><tr>'
-[ $SERVERCOUNTER -gt 0 ] && AUTOSCHEDULE=yes
-let SERVERCOUNTER=$SERVERCOUNTER+1
-[ $SERVERCOUNTER -gt $ROWCOUNT ] && SERVERCOUNTER=1
-done
-echo '</tr>'
-if [ $AUTOSCHEDULE = yes ]
-then
-echo '<tr><td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_SERVERNAME_all_" type="image" class="images" src="'$SERVERICON2'" value=""><span>'$LOCATION_NAME' - '$AUTOSCHEDULMSG2'<br><br></span></a><br>'$AUTOSCHEDULEMSG'</td></tr>'
-fi
-echo '</tbody></table><br>'
-
-
-#Show list of federated servers
-if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
-then
-if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
-then
-for FEDERATED_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
-do
-AUTOSCHEDULE=no
-FEDERATED_SERVER=`basename $FEDERATED_SERVERS`
-[ -f /opt/karoshi/server_network/upgrade_schedules/federated_servers/$FEDERATED_SERVER/$FEDERATED_SERVER ] && SERVERICON=$SCHEDULEICON
-if [ -f /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/info ]
-then
-source /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/info
-LOCATION_NAME2="- $LOCATION_NAME"
-fi
-echo '<b>'$FEDERATEDSERVERSMSG' '$LOCATION_NAME2'</b><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
-echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_federated_SERVERNAME_'$FEDERATED_SERVER'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$FEDERATED_SERVER'<br><br>'
-[  -f /opt/karoshi/server_network/upgrade_schedules/federated_servers/$FEDERATED_SERVER/$FEDERATED_SERVER ] && cat /opt/karoshi/server_network/upgrade_schedules/federated_servers/$FEDERATED_SERVER/$FEDERATED_SERVER
-cat /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/$FEDERATED_SERVER/* | sed '/<a href/c'"<br>"
-echo '</span></a><br>'$FEDERATED_SERVER'</td>'
-
-SERVERCOUNTER2=1
-for FEDERATED_SLAVE_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/*
-do
-FEDERATED_SLAVE_SERVER=`basename $FEDERATED_SLAVE_SERVERS`
-[ -f /opt/karoshi/server_network/upgrade_schedules/federated_servers/$FEDERATED_SERVER/$FEDERATED_SLAVE_SERVER ] && SERVERICON=$SCHEDULEICON
-[ $SERVERCOUNTER2 = $ROWCOUNT ] && echo '</tr><tr>'
-if [ $FEDERATED_SLAVE_SERVER != $FEDERATED_SERVER ]
-then
-let SERVERCOUNTER2=$SERVERCOUNTER2+1
-echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_federatedslave_SERVERMASTER_'$FEDERATED_SERVER'_SERVERNAME_'$FEDERATED_SLAVE_SERVER'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$FEDERATED_SLAVE_SERVER'<br><br>'
-[ -f /opt/karoshi/server_network/upgrade_schedules/federated_servers/$FEDERATED_SERVER/$FEDERATED_SLAVE_SERVER ] && cat /opt/karoshi/server_network/upgrade_schedules/federated_servers/$FEDERATED_SERVER/$FEDERATED_SLAVE_SERVER
-cat /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/$FEDERATED_SLAVE_SERVER/* | sed '/<a href/c'"<br>"
-echo '</span></a><br>'$FEDERATED_SLAVE_SERVER'</td>'
-[ $SERVERCOUNTER2 -gt 0 ] && AUTOSCHEDULE=yes
-fi
-done
-echo '</tr>'
-if [ $AUTOSCHEDULE = yes ]
-then
-echo '<tr><td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERMASTER_'$FEDERATED_SERVER'_SERVERTYPE_federated_SERVERNAME_all_" type="image" class="images" src="'$SERVERICON2'" value=""><span>'$LOCATION_NAME' - '$AUTOSCHEDULMSG2'<br><br></span></a><br>'$AUTOSCHEDULEMSG'</td></tr>'
-fi
-echo '</tbody></table><br>'
-done
-fi
-fi
-
-echo '</form></div></body></html>'
-exit
