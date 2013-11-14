@@ -1145,7 +1145,7 @@ dsHeuristics: 0000002001001
 
 
 function create_user {
-samba-tool user add $NEWUSERNAME --userou="$SUBPATH" --profile-path=\\\\$HOSTNAME\\applications\\profiles\\$PROFILEFOLDER --script-path=logon.bat --use-username-as-cn  --random-password --mail-address=$NEWUSERNAME@$REALM 1>/dev/null 2>>/opt/karoshi/serversetup/install_log
+samba-tool user add $NEWUSERNAME --userou="$SUBPATH" --profile-path=\\\\$HOSTNAME\\applications\\profiles\\$PROFILEFOLDER --script-path="logon.bat $PRIMARYGROUP" --use-username-as-cn  --random-password --mail-address=$NEWUSERNAME@$REALM 1>/dev/null 2>>/opt/karoshi/serversetup/install_log
 
 #Add user to primary group
 samba-tool group addmembers "$PRIMARYGROUP" $NEWUSERNAME  1>/dev/null 2>>/opt/karoshi/serversetup/install_log
@@ -1219,10 +1219,10 @@ COUNTER=1
 while [  $COUNTER -le 10 ]
 do
 NEWUSERNAME=guest$COUNTER
-NEWUSERPATH=/home/users/guests/guest$COUNTER
+NEWUSERPATH=/home/users/guestusers/guest$COUNTER
 SUBPATH='OU=guestusers,OU=other,OU=People'
 PRIMARYGROUP=guestusers
-PROFILEFOLDER=guests
+PROFILEFOLDER=guestusers
 NEWUSERDISP="Guest $COUNTER"
 create_user
 let COUNTER=COUNTER+1
