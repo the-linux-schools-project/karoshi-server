@@ -130,16 +130,14 @@ then
 
 function enablewebhosting {
 chmod 0755 $HOMEPATH
-chown .www-data $HOMEPATH/$USERNAME
-chmod 0710 $HOMEPATH/$USERNAME
 [ ! -d $HOMEPATH/$USERNAME/public_html ] && mkdir $HOMEPATH/$USERNAME/public_html
-chmod -R 0640 $HOMEPATH/$USERNAME/public_html
-chmod -R u+X,g+X $HOMEPATH/$USERNAME/public_html
-chown -R $USERNAME.www-data $HOMEPATH/$USERNAME/public_html
+setfacl -m user:www-data:--x $HOMEPATH/$USERNAME
+setfacl -Rm user:www-data:r-x,d:user:www-data:r-x $HOMEPATH/$USERNAME/public_html
 }
 
 function disablewebhosting {
-chmod 0700 $HOMEPATH/$USERNAME
+setfacl -x user:www-data $HOMEPATH/$USERNAME
+setfacl -Rx user:www-data,d:user:www-data $HOMEPATH/$USERNAME/public_html
 }
 
 if [ $USERNAME != all ] && [ $ACTION = enable ]
@@ -175,16 +173,14 @@ else
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 function enablewebhosting {
 chmod 0755 '$HOMEPATH'
-chown .www-data '$HOMEPATH'/$USERNAME
-chmod 0710 '$HOMEPATH'/$USERNAME
-[ ! -d '$HOMEPATH'/$USERNAME/public_html ] && mkdir '$HOMEPATH'/$USERNAME/public_html
-chmod -R 0640 '$HOMEPATH'/$USERNAME/public_html
-chmod -R u+X,g+X '$HOMEPATH'/$USERNAME/public_html
-chown -R $USERNAME.www-data '$HOMEPATH'/$USERNAME/public_html
+[ ! -d '$HOMEPATH'/'$USERNAME'/public_html ] && mkdir '$HOMEPATH'/'$USERNAME'/public_html
+setfacl -m user:www-data:--x '$HOMEPATH'/'$USERNAME'
+setfacl -Rm user:www-data:r-x,d:user:www-data:r-x '$HOMEPATH'/'$USERNAME'/public_html
 }
 
 function disablewebhosting {
-chmod 0700 '$HOMEPATH'/$USERNAME
+setfacl -x user:www-data '$HOMEPATH'/'$USERNAME'
+setfacl -Rx user:www-data,d:user:www-data '$HOMEPATH'/'$USERNAME'/public_html
 }
 
 if [ '$USERNAME' != all ] && [ '$ACTION' = enable ]
