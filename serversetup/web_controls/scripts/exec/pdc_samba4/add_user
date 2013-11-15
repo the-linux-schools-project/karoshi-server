@@ -345,7 +345,7 @@ then
 [ ! -d $HOMEPATH/$NEWUSERNAME/ ] && mkdir -p $HOMEPATH/$NEWUSERNAME/
 chown -R $NEWUSERNAME:$PRIMARYGROUP $HOMEPATH/$NEWUSERNAME/
 chmod -R 0600 $HOMEPATH/$NEWUSERNAME/
-chmod u+X -R $HOMEPATH/$NEWUSERNAME/
+setfacl -m u::rwx,g::---,o::---,m::r-x $HOMEPATH/$NEWUSERNAME/
 fi
 
 ############################
@@ -355,9 +355,9 @@ if [ $SERVER != $HOSTNAME ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 [ ! -d '$HOMEPATH''/''$NEWUSERNAME' ] && mkdir -p '$HOMEPATH''/''$NEWUSERNAME'
-chmod 0600 -R '$HOMEPATH''/''$NEWUSERNAME'
-chmod u+X -R '$HOMEPATH''/''$NEWUSERNAME'
 chown -R '$USERID':'$PRIMARYGROUP' '$HOMEPATH''/''$NEWUSERNAME'
+chmod -R 0600 '$HOMEPATH''/''$NEWUSERNAME'
+setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
 '
 SSHSTATUS=`echo $?`
 if [ $SSHSTATUS != 0 ]
@@ -385,9 +385,9 @@ chmod -R 0600 /home/users/email/'$NEWUSERNAME'
 chmod -R u+X /home/users/email/'$NEWUSERNAME'
 
 [ ! -d '$HOMEPATH''/''$NEWUSERNAME' ] && mkdir -p '$HOMEPATH''/''$NEWUSERNAME'
-chmod 0600 -R '$HOMEPATH''/''$NEWUSERNAME'
-chmod u+X -R '$HOMEPATH''/''$NEWUSERNAME'
 chown -R '$USERID':'$PRIMARYGROUP' '$HOMEPATH''/''$NEWUSERNAME'
+chmod -R 0600 '$HOMEPATH''/''$NEWUSERNAME'
+setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
 '
 SSHSTATUS=`echo $?`
 if [ $SSHSTATUS != 0 ]
@@ -517,17 +517,22 @@ cp /opt/karoshi/.tempdata/INBOX.* '$HOMEPATH'/'$NEWUSERNAME'/Mail/
 cp /opt/karoshi/.tempdata/.mailboxlist '$HOMEPATH'/'$NEWUSERNAME'
 chown -R '$NEWUSERNAME:$PRIMARYGROUP' '$HOMEPATH'/'$NEWUSERNAME'/
 chmod -R 0600 '$HOMEPATH'/'$NEWUSERNAME'/
-chmod u+X -R '$HOMEPATH'/'$NEWUSERNAME'/
+setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
 
 #Create home folder
 if [ $SERVER = $HOSTNAME ]
 then
-mkdir -p $HOMEPATH/'$NEWUSERNAME'/
-chown -R '$NEWUSERNAME':'$PRIMARYGROUP' $HOMEPATH/'$NEWUSERNAME'/
-chmod -R 0600 $HOMEPATH/'$NEWUSERNAME'/
-chmod u+X -R $HOMEPATH/'$NEWUSERNAME'/
+mkdir -p '$HOMEPATH'/'$NEWUSERNAME'/
+chown -R '$NEWUSERNAME':'$PRIMARYGROUP' '$HOMEPATH'/'$NEWUSERNAME'/
+chmod -R 0600 '$HOMEPATH'/'$NEWUSERNAME'/
+setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
 else
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER "mkdir -p '$HOMEPATH'/'$NEWUSERNAME' ; chmod 0700 '$HOMEPATH'/'$NEWUSERNAME' ; chown '$NEWUSERNAME':'$PRIMARYGROUP' '$HOMEPATH'/'$NEWUSERNAME'"
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER "
+mkdir -p '$HOMEPATH'/'$NEWUSERNAME'/
+chown -R '$NEWUSERNAME':'$PRIMARYGROUP' '$HOMEPATH'/'$NEWUSERNAME'/
+chmod -R 0600 '$HOMEPATH'/'$NEWUSERNAME'/
+setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
+"
 fi
 
 #Create folder on email server
@@ -539,7 +544,7 @@ then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '\''
 [ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
 mkdir /home/users/email/'$NEWUSERNAME'
-chown $NEWUSERNAME /home/users/email/'$NEWUSERNAME'
+chown '$NEWUSERNAME' /home/users/email/'$NEWUSERNAME'
 chmod 0700 /home/users/email/'$NEWUSERNAME'
 '\''
 
@@ -554,7 +559,7 @@ fi
 else
 [ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
 mkdir /home/users/email/'$NEWUSERNAME'
-chown $NEWUSERNAME /home/users/email/'$NEWUSERNAME'
+chown '$NEWUSERNAME' /home/users/email/'$NEWUSERNAME'
 chmod 0700 /home/users/email/'$NEWUSERNAME'
 fi
 fi
