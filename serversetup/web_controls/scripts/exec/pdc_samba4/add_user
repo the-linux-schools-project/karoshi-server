@@ -346,6 +346,7 @@ then
 chown -R $NEWUSERNAME:$PRIMARYGROUP $HOMEPATH/$NEWUSERNAME/
 chmod -R 0600 $HOMEPATH/$NEWUSERNAME/
 setfacl -m u::rwx,g::---,o::---,m::r-x $HOMEPATH/$NEWUSERNAME/
+[ `echo $HOMEPATH | grep -c students` -gt 0 ] && setfacl -Rm group:staff:r-x,d:group:staff:r-x $HOMEPATH/$NEWUSERNAME/
 fi
 
 ############################
@@ -358,6 +359,7 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 chown -R '$USERID':'$PRIMARYGROUP' '$HOMEPATH''/''$NEWUSERNAME'
 chmod -R 0600 '$HOMEPATH''/''$NEWUSERNAME'
 setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
+[ `echo '$HOMEPATH' | grep -c students` -gt 0 ] && setfacl -Rm group:staff:r-x,d:group:staff:r-x '$HOMEPATH'/'$NEWUSERNAME'/
 '
 SSHSTATUS=`echo $?`
 if [ $SSHSTATUS != 0 ]
