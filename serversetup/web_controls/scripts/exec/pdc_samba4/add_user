@@ -222,7 +222,7 @@ FIRST_CHAR=`echo ${SURNAME:0:1} | tr 'a-z' 'A-Z'`
 SURNAME=`echo $FIRST_CHAR${SURNAME:1}`
 
 #Add user to samba4 ldap
-samba-tool user add $NEWUSERNAME --userou='OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People' --profile-path=%LOGONSERVER%\\applications\\profiles\\$PRIMARYGROUP  --script-path="logon.bat $PRIMARYGROUP" --surname=$SURNAME --given-name=$FIRSTNAME --use-username-as-cn  --random-password --mail-address=$NEWUSERNAME@$REALM 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool user add $NEWUSERNAME --userou='OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People' --profile-path=%LOGONSERVER%\\applications\\profiles\\$PRIMARYGROUP  --script-path="logon.bat $PRIMARYGROUP" --home-directory='\\'$SERVER'\'$NEWUSERNAME --surname=$SURNAME --given-name=$FIRSTNAME --use-username-as-cn  --random-password --mail-address=$NEWUSERNAME@$REALM 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 #samba-tool user add $NEWUSERNAME --userou='CN='$PRIMARYGROUP',CN='$SUBUNIT',CN=Users' --home-drive=G --script-path='\\'$HOSTNAME'\'netlogon'\'logon.bat --home-directory='\\'$SERVER'\'$NEWUSERNAME --surname=$SURNAME --given-name=$FIRSTNAME --use-username-as-cn  --random-password --mail-address=$NEWUSERNAME@$EMAILDOMAIN 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
