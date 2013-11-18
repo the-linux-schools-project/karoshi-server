@@ -254,11 +254,11 @@ USERNAME=${USERLIST[$COUNTER]}
 echo "<li>"$(($COUNTER+1))/$USERLISTCOUNT: Copying $USERNAME"</li><br>"
 
 #rsync user folder to the pdc
-rsync --timeout=30 --dirs --recursive --links --compress --times --perms --owner --group  root@$CURRENTSERVER:/$HOMEPATH/$USERNAME "$DESTFOLDERPATH$PRIGROUP"/
+rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group  root@$CURRENTSERVER:/$HOMEPATH/$USERNAME "$DESTFOLDERPATH$PRIGROUP"/
 
 let COUNTER=$COUNTER+1
 done
-set_perms
+#set_perms
 fi
 fi
 
@@ -280,11 +280,11 @@ USERNAME=${USERLIST[$COUNTER]}
 echo "<li>"$(($COUNTER+1))/$USERLISTCOUNT: Copying $USERNAME"</li><br>"
 
 #rsync user folders to the new server
-rsync --timeout=30 --dirs --recursive --links --compress --times --perms --owner --group "$HOMEPATH"/"$USERFOLDER" root@$NEWSERVER:/$DESTFOLDERPATH$PRIGROUP/
+rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group "$HOMEPATH"/"$USERFOLDER" root@$NEWSERVER:/$DESTFOLDERPATH$PRIGROUP/
 
 let COUNTER=$COUNTER+1
 done
-set_perms
+#set_perms
 fi
 fi
 
@@ -309,19 +309,19 @@ USERNAME=${USERLIST[$COUNTER]}
 echo "<li>"$(($COUNTER+1))/$USERLISTCOUNT: Copying $USERNAME"</li><br>"
 
 #rsync user folder to the pdc
-rsync --timeout=30 --dirs --recursive --links --compress --times --perms --owner --group  root@$CURRENTSERVER:/$HOMEPATH/$USERNAME /home/transfer/
+rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group  root@$CURRENTSERVER:/$HOMEPATH/$USERNAME /home/transfer/
 
 #rsync to new server
 if [ -d /home/transfer/$USERNAME ]
 then
 echo "<li>"Transfering $USERNAME to $NEWSERVER"</li><br>"
-rsync --timeout=30 --dirs --recursive --links --compress --times --perms --owner --group  /home/transfer/$USERNAME root@$NEWSERVER:/$DESTFOLDERPATH$PRIGROUP/
+rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group  /home/transfer/$USERNAME root@$NEWSERVER:/$DESTFOLDERPATH$PRIGROUP/
 #Remove temp folder
 rm -f -R /home/transfer/$USERNAME
 fi
 let COUNTER=$COUNTER+1
 done
-set_perms
+#set_perms
 fi
 fi
 fi
