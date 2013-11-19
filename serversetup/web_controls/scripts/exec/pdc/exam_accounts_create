@@ -92,6 +92,7 @@ STYLESHEET=defaultstyle.css
 source /opt/karoshi/web_controls/language/$LANGCHOICE/user/exam_accounts_create
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+source /opt/karoshi/server_network/domain_information/domain_name
 
 #Create default mail boxes
 /opt/karoshi/"useful scripts"/createmailfolders
@@ -102,10 +103,6 @@ let COUNTER=$COUNTER+1
 echo '<table class="standard" style="text-align: left; width: 600px;" border="0" cellpadding="2" cellspacing="2"><tbody>'
 echo '<tr><td style="width: 300px;"><b>'$CREATINGMSG'</b></td><td style="width: 300px;"><b>'$HOMEPATHMSG'</b></td></tr>'
 
-
-
-
-
 while [ $COUNTER -le $EXAMSTOTAL ]
 do
 ########################
@@ -113,27 +110,57 @@ do
 ########################
 #Assign random password for each new exam account
 EXAMPASSWORD=$RANDOM
-echo '<tr><td>'exam$COUNTER'</td><td>'/home/users/exam$COUNTER'</td></tr>'
-karoshildap-useradd -a -g exams -d /home/users/exams/exam$COUNTER -c exam$COUNTER -N exam -S $COUNTER -M exam$COUNTER@$EMAILDOMAIN exam$COUNTER 1>/dev/null
+echo '<tr><td>'exam$COUNTER'</td><td>'/home/users/exams/exam$COUNTER'</td></tr>'
 
-#Get database password
+#Add user to samba4 ldap
+samba-tool user add exam$COUNTER --userou='OU=exams,OU=other,OU=People' --profile-path=\\\\$HOSTNAME\\applications\\profiles\\exams --script-path=logon.bat exams --surname=exam$COUNTER --given-name=exam$COUNTER --use-username-as-cn  --random-password --mail-address=exam$COUNTER@$REALM 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+#Get samba 4 database password
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-#Create ldif for new user
-[ -f /opt/karoshi/.tempdata/exam$COUNTER.$$.ldif ] && rm -f /opt/karoshi/.tempdata/exam$COUNTER.$$.ldif
-touch /opt/karoshi/.tempdata/exam$COUNTER.$$.ldif
-chmod 0600 /opt/karoshi/.tempdata/exam$COUNTER.$$.ldif
-ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" uid=exam$COUNTER > /opt/karoshi/.tempdata/exam$COUNTER.$$.ldif
-#Modify ldif file with correct sub organisation unit
 
-sed -i 's/ou=People,dc=karoshi,dc=local/ou=exams,ou=other,ou=People,dc=karoshi,dc=local/g' /opt/karoshi/.tempdata/exam$COUNTER.$$.ldif
-#Delete user entry from the top organisation unit
-ldapdelete -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS uid=exam$COUNTER,ou=People,dc=karoshi,dc=local
-#Import user ldif file to correct sub organisation unit
-ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS -f /opt/karoshi/.tempdata/exam$COUNTER.$$.ldif 1>/dev/null 2>/dev/null
+#Get uid and primary gid for the new user
+PRIGROUPID=`getent group exams | cut -d: -f3`
+UIDNUMBER=`getent passwd exam$COUNTER | cut -d: -f3`
+
+#Change primarygroupid and add unixhomedirectory - have to use ldapmodify at this time since samba-tool does not seem to have this option!
+#This is hideous why cant samba4 ldap do this all in one go??
+echo -e "dn: CN=exam$COUNTER,OU=exams,OU=other,OU=People,$LDAPBASE
+changetype: modify
+add: objectclass
+objectclass: posixaccount
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+echo -e "dn: CN=exam$COUNTER,OU=exams,OU=other,OU=People,$LDAPBASE
+changetype: modify
+add: uidnumber
+uidnumber: $UIDNUMBER
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+echo -e "dn: CN=exam$COUNTER,OU=exams,OU=other,OU=People,$LDAPBASE
+changetype: modify
+add: gidnumber
+gidnumber: $PRIGROUPID
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+echo -e "dn: CN=exam$COUNTER,OU=exams,OU=other,OU=People,$LDAPBASE
+changetype: modify
+replace: primaryGroupID
+primaryGroupID: $PRIGROUPID
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+#echo -e "dn: CN=exam$COUNTER,CN=exams,CN=other,CN=Users,$LDAPBASE
+#changetype: modify
+#add: loginshell
+#loginshell: /bin/bash
+#-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+echo -e "dn: CN=exam$COUNTER,OU=exams,OU=other,OU=People,$LDAPBASE
+changetype: modify
+add: unixhomedirectory
+unixhomedirectory: /home/users/exams/exam$COUNTER
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 
-#Add samba password
-echo -e "$EXAMPASSWORD""\n""$EXAMPASSWORD" | smbldap-passwd exam$COUNTER 1>/dev/null 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #Create mail folder
 mkdir -p /home/users/exams/exam$COUNTER/Mail
 cp /opt/karoshi/.tempdata/INBOX.* /home/users/exams/exam$COUNTER/Mail/
@@ -145,9 +172,5 @@ chmod u+X -R /home/users/exams/exam$COUNTER
 let COUNTER=$COUNTER+1
 done
 echo '</tbody></table>'
-#############################
-#Remake  nis maps
-#############################
-cd /var/yp
-make 1>/dev/null 2>/dev/null
+
 exit

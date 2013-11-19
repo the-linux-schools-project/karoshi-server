@@ -55,43 +55,24 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 #########################
 
 END_POINT=8
-#Assign CERTTYPE
+#Assign ALIAS
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
 DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = CERTTYPEcheck ]
+if [ `echo $DATAHEADER'check'` = ALIAScheck ]
 then
 let COUNTER=$COUNTER+1
-CERTTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+ALIAS=`echo $DATA | cut -s -d'_' -f$COUNTER`
 break
 fi
 let COUNTER=$COUNTER+1
 done
-
-#Assign ACTIONTYPE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ACTIONTYPEcheck ]
-then
-let COUNTER=$COUNTER+1
-ACTIONTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
-[ $ACTIONTYPE = webcert ] && WEBCERT=yes
-[ $ACTIONTYPE = emailcert ] && EMAILCERT=yes
-
-#Assign SERVER
-SERVER=`echo $DATA | cut -d_ -f6`
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
-echo '                window.location = "/cgi-bin/admin/apply_ssl_certificate_fm.cgi";'
+echo 'window.location = "/cgi-bin/admin/apply_ssl_certificate_fm.cgi";'
 echo '</script>'
 echo "</body></html>"
 exit
@@ -122,63 +103,17 @@ fi
 #########################
 #Check data
 #########################
-#Check to see that SERVER is not blank
-if [ $SERVER'null' = null ]
+#Check to see that ALIAS is not blank
+if [ $ALIAS'null' = null ]
 then
-MESSAGE=$ERRORMSG10
-show_status
-fi
-#Check to see that CERTTYPE is not blank
-if [ $CERTTYPE'null' = null ]
-then
-MESSAGE=$ERRORMSG11
-show_status
-fi
-#Check CERTTYPE is the correct value
-if [ $CERTTYPE != selfsign ] && [ $CERTTYPE != commercial ]
-then
-MESSAGE=$ERRORMSG12
+MESSAGE=$ERRORMSG1
 show_status
 fi
 
-TITLE="$TITLE2"
-[ $CERTTYPE = commercial ] && TITLE="$TITLE3"
-
-[ $EMAILCERT'null' = null ] && EMAILCERT=no
-[ $WEBCERT'null' = null ] && WEBCERT=no
-#Check to see that EMAILCERT or WEBCERT is set to yes
-if [ $EMAILCERT != yes ] && [ $WEBCERT != yes ]
-then
-MESSAGE=$ERRORMSG13
-show_status
-fi
-
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
-#Fill in form for self sign certificate
-
-echo '<form action="/cgi-bin/admin/apply_ssl_certificate2.cgi" method="post"><div id="actionbox"><b>'$TITLE'</b><br><br>'
-
-if [ $WEBCERT = yes ]
-then
-echo "<b>"$SERVER - $WEBCERTMSG"</b><br><br>"
-else
-echo "<b>"$SERVER - $EMAILCERTMSG"</b><br><br>"
-fi
-#Get current certificate data if it has been set
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/apply_ssl_certificate.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER" | sudo -H /opt/karoshi/web_controls/exec/view_ssl_data
-STATUS=`echo $?`
-if [ $STATUS = 102 ]
-then
-MESSAGE=$SSHWARNMSG
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER:$ALIAS:" | sudo -H /opt/karoshi/web_controls/exec/apply_ssl_certificate
+MESSAGE=$COMPLETEDMSG
 show_status
-fi
-echo '<input name="___SERVER___" value="'$SERVER'" type="hidden">'
-echo '<input name="___EMAILCERT___" value="'$EMAILCERT'" type="hidden">'
-echo '<input name="___WEBCERT___" value="'$WEBCERT'" type="hidden">'
-echo '<input name="___CERTTYPE___" value="'$CERTTYPE'" type="hidden">'
-echo '</div><div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></div>'
-echo '</form></body</html>'
-
+exit
+echo '</body</html>'
 exit

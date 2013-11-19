@@ -122,11 +122,7 @@ then
 EMPLOYEENUMBER=null
 fi
 
-#if [ $MAILLOCALADDRESS'null' = null ]
-#then
-#echo `date`: change_user_info - Blank local email address by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-#exit 101
-#fi
+
 if [ $MAIL'null' = null ]
 then
 echo `date`: change_user_info - Blank email address by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -140,23 +136,18 @@ exit 101
 fi
 
 ########################
-#Convert special characters back for new password
-########################
-#                                 space                      !              #                      $                &               (                 )                  +                   =               % (must be last) 
-#PASSWORD=`echo $PASSWORD | sed 's/+/ /g' | sed 's/%21/!/g' | sed 's/%23/#/g' |  sed 's/%24/$/g' | sed 's/%26/\&/g' |  sed 's/%28/(/g' | sed 's/%29/)/g' | sed 's/%2B/+/g' | sed 's/%3D/=/g' | sed 's/%25/%/g'`
-
-########################
 #Change the information
 ########################
-echo `date`: change_user_info -'for' $USERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: change_user_info - 'for' $USERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 MAIL=`echo "$MAIL" | sed 's/%40/@/g'`
 CN=`echo $CN | sed 's/+/ /g'`
 DISPLAYNAME=`echo $DISPLAYNAME | sed 's/+/ /g'`
 
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-USERDN=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" uid=$USERNAME | grep ^dn:`
-ENROLLMENTCHECK=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" uid=$USERNAME | grep -c employeeNumber:`
+source /opt/karoshi/server_network/domain_information/domain_name
+USERDN=`ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME | grep ^dn:`
+ENROLLMENTCHECK=`ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME | grep -c employeeNumber:`
 
 if [ $ENROLLMENTCHECK = 0 ]
 then
@@ -164,27 +155,14 @@ ACTION=add
 else
 ACTION=replace
 fi
-#Change info on PDC
-#echo -e "$USERDN\nchangetype: modify\n$ACTION: employeeNumber\nemployeeNumber: $EMPLOYEENUMBER\n-\nreplace: cn\ncn: $CN\n-\nreplace: sn\nsn: $SN\n-\nreplace: givenName\ngivenName: $GIVENNAME\n-\nreplace: displayName\ndisplayName: $DISPLAYNAME\n-\nreplace: mailLocalAddress\nmailLocalAddress: $MAILLOCALADDRESS\n-\nreplace: mail\nmail: $MAIL\n-" | ldapmodify -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" 1>/dev/null
 
-echo -e "$USERDN\nchangetype: modify\n$ACTION: employeeNumber\nemployeeNumber: $EMPLOYEENUMBER\n-\nreplace: cn\ncn: $CN\n-\nreplace: sn\nsn: $SN\n-\nreplace: givenName\ngivenName: $GIVENNAME\n-\nreplace: displayName\ndisplayName: $DISPLAYNAME\n-\nreplace: mail\nmail: $MAIL\n-" | ldapmodify -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" 1>/dev/null
+echo -e "$USERDN\nchangetype: modify\n$ACTION: employeeNumber\nemployeeNumber: $EMPLOYEENUMBER\n-\nreplace: sn\nsn: $SN\n-\nreplace: givenName\ngivenName: $GIVENNAME\n-\nreplace: displayName\ndisplayName: $DISPLAYNAME\n-\nreplace: mail\nmail: $MAIL\n-" | ldapmodify -x -w $LDAPPASS -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null
 
-#Change info on slave ldap servers
-if [ -d /opt/karoshi/server_network/slave_ldap_servers/  ]
-then
-if [ `ls -1 /opt/karoshi/server_network/slave_ldap_servers/ | wc -l` -gt 0 ]
-then
-for SLAVELDAPSERVERS in /opt/karoshi/server_network/slave_ldap_servers/*
-do
-SLAVELDAPSERVER=`basename $SLAVELDAPSERVERS`
-echo `date`: change_user_info - 'for' $USERNAME on $SLAVELDAPSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-ssh -x -o PasswordAuthentication=no $SLAVELDAPSERVER '
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-echo -e "'$USERDN'\nchangetype: modify\n'$ACTION': employeeNumber\nemployeeNumber: '$EMPLOYEENUMBER'\n-\nreplace: cn\ncn: '$CN'\n-\nreplace: sn\nsn: '$SN'\n-\nreplace: givenName\ngivenName: '$GIVENNAME'\n-\nreplace: displayName\ndisplayName: '$DISPLAYNAME'\n-\nreplace: mailLocalAddress\nmailLocalAddress: '$MAILLOCALADDRESS'\n-\nreplace: mail\nmail: '$MAIL'\n-" | ldapmodify -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" 1>/dev/null
-' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-done
-fi
-fi
+echo "<pre>"
+
+echo -e "$USERDN\nchangetype: modify\n$ACTION: employeeNumber\nemployeeNumber: $EMPLOYEENUMBER\n-\nreplace: sn\nsn: $SN\n-\nreplace: givenName\ngivenName: $GIVENNAME\n-\nreplace: displayName\ndisplayName: $DISPLAYNAME\n-\nreplace: mail\nmail: $MAIL\n-"
+
+echo "</pre>"
 
 #Change info on federated ldap servers
 if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
@@ -197,27 +175,9 @@ FEDERATEDLDAPSERVER=`basename $FEDERATEDLDAPSERVERS`
 echo `date`: change_user_info \(federated mode\) - 'for' $USERNAME on $FEDERATEDLDAPSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 ssh -x -o PasswordAuthentication=no $FEDERATEDLDAPSERVER '
 #Change info on federated slave ldap servers
-
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-echo -e "'$USERDN'\nchangetype: modify\n'$ACTION': employeeNumber\nemployeeNumber: '$EMPLOYEENUMBER'\n-\nreplace: cn\ncn: '$CN'\n-\nreplace: sn\nsn: '$SN'\n-\nreplace: givenName\ngivenName: '$GIVENNAME'\n-\nreplace: displayName\ndisplayName: '$DISPLAYNAME'\n-\nreplace: mailLocalAddress\nmailLocalAddress: '$MAILLOCALADDRESS'\n-\nreplace: mail\nmail: '$MAIL'\n-" | ldapmodify -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" 1>/dev/null
-
-#Change info on any federated slave ldap servers.
-if [ -d /opt/karoshi/server_network/slave_ldap_servers/ ]
-then
-if [ `ls -1 /opt/karoshi/server_network/slave_ldap_servers/ | wc -l` -gt 0 ]
-then
-for SLAVELDAPSERVERS in /opt/karoshi/server_network/slave_ldap_servers/*
-do
-SLAVELDAPSERVER=`basename $SLAVELDAPSERVERS`
-
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SLAVELDAPSERVER '\''
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-echo -e "'$USERDN'\nchangetype: modify\n'$ACTION': employeeNumber\nemployeeNumber: '$EMPLOYEENUMBER'\n-\nreplace: cn\ncn: '$CN'\n-\nreplace: sn\nsn: '$SN'\n-\nreplace: givenName\ngivenName: '$GIVENNAME'\n-\nreplace: displayName\ndisplayName: '$DISPLAYNAME'\n-\nreplace: mailLocalAddress\nmailLocalAddress: '$MAILLOCALADDRESS'\n-\nreplace: mail\nmail: '$MAIL'\n-" | ldapmodify -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" 1>/dev/null
-'\''
-
-done
-fi
-fi
+source /opt/karoshi/server_network/domain_information/domain_name
+echo -e "'$USERDN'\nchangetype: modify\n'$ACTION': employeeNumber\nemployeeNumber: '$EMPLOYEENUMBER'\n-\nreplace: cn\ncn: '$CN'\n-\nreplace: sn\nsn: '$SN'\n-\nreplace: givenName\ngivenName: '$GIVENNAME'\n-\nreplace: displayName\ndisplayName: '$DISPLAYNAME'\n-\nreplace: mailLocalAddress\nmailLocalAddress: '$MAILLOCALADDRESS'\n-\nreplace: mail\nmail: '$MAIL'\n-" | ldapmodify -x -w $LDAPPASS -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null
 ' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 done
 fi

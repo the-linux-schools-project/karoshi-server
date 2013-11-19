@@ -83,6 +83,19 @@ fi
 let COUNTER=$COUNTER+1
 done
 
+#Assign ALIAS
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+if [ `echo $DATAHEADER'check'` = ALIAScheck ]
+then
+let COUNTER=$COUNTER+1
+ALIAS=`echo $DATA | cut -s -d'_' -f$COUNTER`
+break
+fi
+let COUNTER=$COUNTER+1
+done
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
@@ -128,8 +141,15 @@ MESSAGE=$LDAPSERVERERRORMSG1
 show_status
 fi
 
+#Check to see that ALIAS is not blank
+if [ $ALIAS'null' = null ]
+then
+MESSAGE=$ERRORMSG2
+show_status
+fi
+
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_joomla.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LDAPSERVER:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_joomla
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LDAPSERVER:$SERVERNAME:$ALIAS" | sudo -H /opt/karoshi/web_controls/exec/module_joomla
 echo '</div>
 </form>
 </body>

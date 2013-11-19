@@ -191,7 +191,7 @@ echo `date`: ban_user_account - $USERNAME disabled by $REMOTE_USER from $REMOTE_
 touch /opt/karoshi/logs/banned_user_permanent/$USERNAME
 [ -f /opt/karoshi/logs/banned_user_account_durations/$USERNAME ] && rm -f /opt/karoshi/logs/banned_user_account_durations/$USERNAME
 fi
-smbpasswd -d $USERNAME 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool user disable $USERNAME 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 #Federated ldap servers
 if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
@@ -202,7 +202,7 @@ for FEDERATED_LDAP_SERVER in /opt/karoshi/server_network/federated_ldap_servers/
 do
 FEDERATED_LDAP_SERVER=`basename $FEDERATED_LDAP_SERVER`
 ssh -x $FEDERATED_LDAP_SERVER '
-smbpasswd -d '$USERNAME'
+samba-tool user disable '$USERNAME'
 '
 done
 fi

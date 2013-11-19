@@ -56,7 +56,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=19
+END_POINT=21
 #Assign FIRSTNAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
@@ -263,6 +263,21 @@ fi
 COUNTER=""
 #Create username
 DUPLICATECHECK=0
+
+function check_username {
+NAMESTATUS=ok
+id -u "$USERNAME" 1>/dev/null 2>/dev/null
+if [ `echo $?` = 0 ]
+then
+NAMESTATUS=error
+fi
+getent group "$USERNAME" 1>/dev/null 2>/dev/null
+if [ `echo $?` = 0 ]
+then
+NAMESTATUS=error
+fi
+}
+
 function create_username {
 source /opt/karoshi/server_network/group_information/$GROUP
 if [ $USERNAMESTYLE = userstyleS1 ]
@@ -329,8 +344,8 @@ if [ $USERNAMESTYLE != userstyleS8 ]
 then
 while [ $DUPLICATECHECK = 1 ]
 do
-id -u "$USERNAME" 1>/dev/null 2>/dev/null
-if [ `echo $?` = 0 ]
+check_username
+if [ $NAMESTATUS = error ]
 then
 [ $COUNTER'null' = null ] && COUNTER=1
 #user exists
@@ -347,8 +362,8 @@ if [ $USERNAMESTYLE = userstyleS8 ]
 then
 while [ $DUPLICATECHECK = 1 ]
 do
-id -u "$USERNAME" 1>/dev/null 2>/dev/null
-if [ `echo $?` = 0 ]
+check_username
+if [ $NAMESTATUS = error ]
 then
 #user exists
 let COUNTER=$COUNTER+1
@@ -411,9 +426,9 @@ exit
 else
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/add_user.cgi | cut -d' ' -f1`
 #Add user
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$FIRSTNAME:$SURNAME:$USERNAME:$PASSWORD1:$GROUP:$USERNAMESTYLE:$ENROLLMENTNUMBER:$REQUESTFILE" | sudo -H /opt/karoshi/web_controls/exec/add_user
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$FIRSTNAME:$SURNAME:$USERNAME:$PASSWORD1:$GROUP:$USERNAMESTYLE:$ENROLLMENTNUMBER:$REQUESTFILE::" | sudo -H /opt/karoshi/web_controls/exec/add_user
 EXEC_STATUS=`echo $?`
-MESSAGE=`echo $FIRSTNAMEMSG: $FIRSTNAME'\\n'$SURNAMEMSG: $SURNAME'\\n'$USERNAMEMSG: $USERNAME'\\n'$COMPLETEDMSG $GROUP.`
+MESSAGE=`echo $FIRSTNAMEMSG: "${FIRSTNAME^}"'\\n'$SURNAMEMSG: "${SURNAME^}"'\\n'$USERNAMEMSG: $USERNAME'\\n'$COMPLETEDMSG $GROUP.`
 if [ $EXEC_STATUS = 101 ]
 then
 MESSAGE=`echo $PROBLEMMSG $LOGMSG`
@@ -427,6 +442,10 @@ fi
 if [ $EXEC_STATUS = 105 ]
 then
 MESSAGE=`echo $SERVERDOWNMSG $LOGMSG`
+fi
+
+if [[ $EXEC_STATUS -eq 106 ]]; then
+	MESSAGE="$USERNAME - $GROUPDUPLICATEMSG"
 fi
 
 show_status

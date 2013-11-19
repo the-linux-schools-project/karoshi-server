@@ -1,21 +1,18 @@
 #!/bin/bash
 #Copyright (C) 2007  The karoshi Team
-
-#This file is part of Karoshi Server.
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
 #
-#Karoshi Server is free software: you can redistribute it and/or modify
-#it under the terms of the GNU Affero General Public License as published by
-#the Free Software Foundation, either version 3 of the License, or
-#(at your option) any later version.
-#
-#Karoshi Server is distributed in the hope that it will be useful,
+#This program is distributed in the hope that it will be useful,
 #but WITHOUT ANY WARRANTY; without even the implied warranty of
 #MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU Affero General Public License for more details.
+#GNU General Public License for more details.
 #
-#You should have received a copy of the GNU Affero General Public License
-#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
-
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #
 #The Karoshi Team can be contacted at: 
 #mpsharrad@karoshi.org.uk
@@ -23,6 +20,7 @@
 #aball@karoshi.org.uk
 #
 #Website: http://www.karoshi.org.uk
+
 LOG_DATE=`date +%F`
 [ $LOG_DATE'null' = null ] && exit
 ########################
@@ -76,6 +74,8 @@ REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 CURRENT_USERNAME=`echo "$DATA" | cut -s -d: -f4`
 NEW_USERNAME=`echo "$DATA" | cut -s -d: -f5`
+FIRSTNAME=`echo "$DATA" | cut -s -d: -f6`
+SURNAME=`echo "$DATA" | cut -s -d: -f7`
 ########################
 #Check data
 ########################
@@ -97,11 +97,21 @@ fi
 if [ $CURRENT_USERNAME'null' = null ]
 then
 echo `date`: change_username - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+exit 101
 fi
 if [ $NEW_USERNAME'null' = null ]
 then
 echo `date`: change_username - Blank new username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $FIRSTNAME'null' = null ]
+then
+echo `date`: change_username - Blank first name by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ $SURNAME'null' = null ]
+then
+echo `date`: change_username - Blank surname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/admin_users/web_access_tech` != 1 ]
@@ -109,6 +119,23 @@ then
 echo `date`: change_username - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
+
+#Make sure current username exists
+getent passwd $CURRENT_USERNAME 1> /dev/null
+if [ $? != 0 ]
+then
+echo `date`: change_username - $CURRENT_USERNAME does not exist by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+#Make sure new username does not exist
+getent passwd $NEW_USERNAME 1> /dev/null
+if [ $? = 0 ]
+then
+echo `date`: change_username - $NEW_USERNAME already exists by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
 ########################
 #Change the username
 ########################
@@ -130,69 +157,84 @@ let COUNTER=$COUNTER-1
 done
 #Get primary group for user
 PRIMARYGROUP=`id -g -n $CURRENT_USERNAME`
+#Get userid
+USERID=`getent passwd $CURRENT_USERNAME | cut -d: -f3`
+
 #########################
 #Change username
 #########################
-ldapsearch -x -b "ou=People,dc=karoshi,dc=local" uid="$CURRENT_USERNAME" > /opt/karoshi/.tempdata/$CURRENT_USERNAME.$$.ldif
-LDAPSTATUS=`echo $?`
-sed -i "s/$CURRENT_USERNAME/$NEW_USERNAME/g" /opt/karoshi/.tempdata/$CURRENT_USERNAME.$$.ldif
-if [ $LDAPSTATUS = 0 ]
-then
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-smbldap-userdel $CURRENT_USERNAME
-ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS -f /opt/karoshi/.tempdata/$CURRENT_USERNAME.$$.ldif 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-else
-exit 101
-fi
+source /opt/karoshi/server_network/domain_information/domain_name
+source /opt/karoshi/server_network/group_information/$PRIMARYGROUP
 
-#Rebuild primarygroups.txt - this file is to allow for windows 7 logins where the primary group feature is broken
-[ -f /var/lib/samba/netlogon/primarygroups.txt ] && rm -f /var/lib/samba/netlogon/primarygroups.txt
-for USERDETAILS in `getent passwd | grep /home/users/`
-do
-KAROSHIUSER=`echo $USERDETAILS | cut -d: -f1 | sed 's/,//g'`
-PRIGROUP=`id -g -n $KAROSHIUSER`
-echo $KAROSHIUSER,$PRIGROUP >> /var/lib/samba/netlogon/primarygroups.txt
-done
+echo -e "dn: CN=$CURRENT_USERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
+changetype: modify
+replace: mail
+mail: $NEW_USERNAME@$REALM
+-
+replace: unixHomeDirectory
+unixHomeDirectory: /home/users/$PRIMARYGROUP/$NEW_USERNAME
+-
+replace: sn
+sn: $SURNAME
+-
+replace: givenName
+givenName: $FIRSTNAME
+-
+replace: displayName
+displayName: "$FIRSTNAME $SURNAME"
+-
+replace: userPrincipalName
+userPrincipalName: $NEW_USERNAME@$REALM
+-
+replace: sAMAccountName
+sAMAccountName: $NEW_USERNAME
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+echo -e "dn: CN=$CURRENT_USERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
+changetype: modrdn
+newrdn: cn=$NEW_USERNAME
+deleteoldrdn: 1
+newsuperior: OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 #########################
 #Move files to new area
 #########################
-source /opt/karoshi/server_network/group_information/$PRIMARYGROUP
 if [ -d $CURRENTPATH ]
 then
 mv $CURRENTPATH $PARENTPATH/$NEW_USERNAME
 chmod 0600 -R $PARENTPATH/$NEW_USERNAME
 chmod u+X -R $PARENTPATH/$NEW_USERNAME
-chown $NEW_USERNAME:$PRIMARYGROUP -R $PARENTPATH/$NEW_USERNAME
+chown $USERID:$PRIMARYGROUP -R $PARENTPATH/$NEW_USERNAME
 CHANGE_PASS_STATUS=`echo $?`
 fi
 if [ $SERVER != $HOSTNAME ]
 then
-ssh -x -o PasswordAuthentication=no $SERVER 'mv '$CURRENTPATH' '$PARENTPATH/$NEW_USERNAME' ; chmod 0600 -R '$PARENTPATH''/''$NEW_USERNAME' ; chmod u+X -R '$PARENTPATH''/''$NEW_USERNAME' ; chown -R '$NEW_USERNAME':'$PRIMARYGROUP' '$PARENTPATH''/''$NEW_USERNAME''
+ssh -x -o PasswordAuthentication=no $SERVER 'mv '$CURRENTPATH' '$PARENTPATH/$NEW_USERNAME' ; chmod 0600 -R '$PARENTPATH''/''$NEW_USERNAME' ; chmod u+X -R '$PARENTPATH''/''$NEW_USERNAME' ; chown -R '$USERID':'$PRIMARYGROUP' '$PARENTPATH''/''$NEW_USERNAME''
 fi
+#########################
 #Move mail
-[ -f /var/spool/mail/$CURRENT_USERNAME ] && mv /var/spool/mail/$CURRENT_USERNAME /var/spool/mail/$NEW_USERNAME
-
-if [ `ls -1 /opt/karoshi/server_network/slave_ldap_servers/ | wc -l` -gt 0 ]
+#########################
+if [ -f /opt/karoshi/server_network/emailserver ]
 then
-for SLAVELDAPSERVERS in /opt/karoshi/server_network/slave_ldap_servers/*
-do
-SLAVELDAPSERVER=`basename $SLAVELDAPSERVERS`
-scp /opt/karoshi/.tempdata/$CURRENT_USERNAME.$$.ldif root@$SLAVELDAPSERVER:"/opt/karoshi/.tempdata"
-ssh -x -o PasswordAuthentication=no $SLAVELDAPSERVER '
-smbldap-userdel '$CURRENT_USERNAME'
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS -f /opt/karoshi/.tempdata/'$CURRENT_USERNAME.$$.ldif' 1> /dev/null 2>/dev/null
-mv '$CURRENTPATH' '$PARENTPATH/$NEW_USERNAME'
-chmod 0600 -R '$PARENTPATH''/''$NEW_USERNAME'
-chmod u+X -R '$PARENTPATH''/''$NEW_USERNAME'
-chown -R '$NEW_USERNAME':'$PRIMARYGROUP' '$PARENTPATH''/''$NEW_USERNAME'
-rm -f /opt/karoshi/.tempdata/'$CURRENT_USERNAME.$$.ldif'
-#Move mail
-[ -f /var/spool/mail/'$CURRENT_USERNAME' ] && mv /var/spool/mail/'$CURRENT_USERNAME' /var/spool/mail/'$NEW_USERNAME'
-
-'
-done
+EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+if [ $EMAILSERVER != $HOSTNAME ]
+then 
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+if [ -d /home/users/email/'$CURRENT_USERNAME' ]
+then
+mv /home/users/email/'$CURRENT_USERNAME' /home/users/email/'$NEW_USERNAME'
+chown '$USERID' -R /home/users/email/'$NEW_USERNAME'
 fi
-rm -f /opt/karoshi/.tempdata/$CURRENT_USERNAME.$$.ldif
+'
+else
+if [ -d /home/users/email/$CURRENT_USERNAME ]
+then
+mv /home/users/email/$CURRENT_USERNAME /home/users/email/$NEW_USERNAME
+chown $USERID -R /home/users/email/$NEW_USERNAME
+fi
+fi
+fi
+
 exit $CHANGE_PASS_STATUS

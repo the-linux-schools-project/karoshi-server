@@ -170,8 +170,7 @@ document.myform._USERNAMESTYLE_.options[7]=new Option("Style 8: " + firstnameVal
 document.myform._USERNAMESTYLE_.options[8]=new Option("Style 9: " + enrollmentValue, "userstyleS9", false, status9);
 }
 </script>
-</head>
-<body onLoad="start()">'
+</head><body onLoad="start()">'
 #########################
 #Get data input
 #########################
@@ -326,9 +325,7 @@ echo '
         <option value="userstyleS9" '$SELECT9'>'$STYLE9MSG': '$STYLE9MSGEX'</option>
 	</select></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Username_Styles"><img class="images" alt="" src="/images/help/info.png"><span>'$USERNAMESTYLEHELP1'</span></a>
-      </td></tr>
-    </tbody>
-  </table><br>
+      </td></tr></tbody></table><br>
 
 </div><div id="submitbox">'
 fi

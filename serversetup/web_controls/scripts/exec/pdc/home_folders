@@ -73,27 +73,27 @@ then
 echo `date`: home_folders - Not called by home_folders.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
 echo `date`: home_folders - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
 echo `date`: home_folders - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-if [ $CURRENTSERVER'null' = null ]
+if [ -z "$CURRENTSERVER" ]
 then
 echo `date`: home_folders - Blank current server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit
 fi
-if [ $NEWSERVER'null' = null ]
+if [ -z "$NEWSERVER" ]
 then
 echo `date`: home_folders - Blank new server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit
 fi
-if [ $PRIGROUP'null' = null ]
+if [ -z "$PRIGROUP" ]
 then
 echo `date`: home_folders - Blank primary group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit
@@ -152,7 +152,6 @@ echo >> /var/lib/samba/netlogon/groups.txt
 
 #Create pam_mount.conf.xml
 /opt/karoshi/serversetup/pdc/"useful scripts"/generate_pam_mount
-
 
 function set_perms {
 if [ -f /opt/karoshi/server_network/group_information/$PRIGROUP ]

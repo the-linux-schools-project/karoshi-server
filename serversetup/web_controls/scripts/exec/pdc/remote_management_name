@@ -61,9 +61,10 @@ fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-NAME=`echo "$DATA" | cut -s -d: -f4`
-SERVERNAME=`echo "$DATA" | cut -s -d: -f5`
-SERVERTYPE=`echo "$DATA" | cut -s -d: -f6`
+SHORTNAME=`echo "$DATA" | cut -s -d: -f4`
+LONGNAME=`echo "$DATA" | cut -s -d: -f5`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f6`
+SERVERTYPE=`echo "$DATA" | cut -s -d: -f7`
 ########################
 #Check data
 ########################
@@ -82,9 +83,14 @@ then
 echo `date`: remote_management_name - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-if [ $NAME'null' = null ]
+if [ $SHORTNAME'null' = null ]
 then
-echo `date`: remote_management_name - Blank name by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: remote_management_name - Blank shortname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit
+fi
+if [ $LONGNAME'null' = null ]
+then
+echo `date`: remote_management_name - Blank longname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit
 fi
 if [ $SERVERNAME'null' = null ]
@@ -103,9 +109,6 @@ echo `date`: remote_management_name - access denied to $REMOTE_USER from $REMOTE
 exit 101
 fi
 
-NAME=`echo $NAME | sed 's/+/ /g' | sed 's/27//g'`
-echo `date`: remote_management_name - changed to "$NAME" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
 LANGCHOICE=englishuk
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
@@ -123,19 +126,24 @@ chown root.apache_karoshi /opt/karoshi/server_network
 chown root.apache_karoshi /opt/karoshi/server_network/web_controls
 fi
 
+LONGNAME=`echo "$LONGNAME" | sed 's/+/ /g'`
+
 
 if [ $SERVERTYPE = network ]
 then
+echo `date`: remote_management_name - changed. Shortname: "$SHORTNAME" Longname: "$LONGNAME" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 [ ! -f /opt/karoshi/server_network/info ] && echo > /opt/karoshi/server_network/info
-sed -i 1cLOCATION_NAME=\""$NAME"\" /opt/karoshi/server_network/info
-echo "$NAME" > /opt/karoshi/server_network/web_controls/institute_name
-
+sed -i 1cLOCATION_NAME=\""$SHORTNAME"\" /opt/karoshi/server_network/info
+SHORTNAMELINENO=`grep -n ^SHORTNAME= /opt/karoshi/server_network/domain_information/domain_name | cut -d: -f1`
+sed -i $SHORTNAMELINENO'c'\SHORTNAME=\""$SHORTNAME"\" /opt/karoshi/server_network/domain_information/domain_name
+LONGNAMELINENO=`grep -n ^LONGNAME= /opt/karoshi/server_network/domain_information/domain_name | cut -d: -f1`
+sed -i $LONGNAMELINENO'c'\LONGNAME=\""$LONGNAME"\" /opt/karoshi/server_network/domain_information/domain_name
 #Add name to language files
 for LANGUAGE in /opt/karoshi/web_controls/language/*
 do
 LANGCHOICE=`basename $LANGUAGE`
 NAMELINENO=`grep -n ^SCHOOL_NAME= /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu | cut -d: -f1`
-sed -i $NAMELINENO'c'\SCHOOL_NAME=\""$NAME"\" /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
+sed -i $NAMELINENO'c'\SCHOOL_NAME=\""$SHORTNAME"\" /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
 done
 
 #Change the name on the monitoring server
@@ -147,7 +155,7 @@ for LANGUAGE in /opt/karoshi/web_controls/language/*
 do
 LANGCHOICE=`basename $LANGUAGE`
 NAMELINENO=`grep -n ^SCHOOL_NAME= /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu | cut -d: -f1`
-sed -i $NAMELINENO"c"\SCHOOL_NAME=\""'$NAME'"\" /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
+sed -i $NAMELINENO"c"\SCHOOL_NAME=\""'$SHORTNAME'"\" /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
 done
 '
 fi
@@ -158,7 +166,7 @@ if [ $SERVERTYPE = federated ]
 then
 [ ! -d /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME
 [ ! -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/info ] && echo > /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/info
-sed -i 1cLOCATION_NAME=\""$NAME"\" /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/info
+sed -i 1cLOCATION_NAME=\""$SHORTNAME"\" /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/info
 fi
 exit
 

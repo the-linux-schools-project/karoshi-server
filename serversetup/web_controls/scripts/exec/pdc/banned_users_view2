@@ -120,7 +120,8 @@ do
 BANNEDUSER=`echo ${USERARRAY[$COUNTER]}`
 [ -f /opt/karoshi/logs/banned_user_account_durations/$BANNEDUSER ] && rm -f /opt/karoshi/logs/banned_user_account_durations/$BANNEDUSER
 [ -f /opt/karoshi/logs/banned_user_permanent/$BANNEDUSER ] && rm -f /opt/karoshi/logs/banned_user_permanent/$BANNEDUSER
-smbpasswd -e $BANNEDUSER 1>/dev/null
+samba-tool user enable $BANNEDUSER 1>/dev/null
+
 #Federated ldap servers
 if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
 then
@@ -130,7 +131,7 @@ for FEDERATED_LDAP_SERVER in /opt/karoshi/server_network/federated_ldap_servers/
 do
 FEDERATED_LDAP_SERVER=`basename $FEDERATED_LDAP_SERVER`
 ssh -x $FEDERATED_LDAP_SERVER '
-smbpasswd -e '$BANNEDUSER'
+samba-tool user enable '$BANNEDUSER' 1>/dev/null
 '
 done
 fi

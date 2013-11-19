@@ -61,18 +61,17 @@ FILE=`echo $DATA | cut -s -d_ -f7`
 /opt/karoshi/web_controls/generate_navbar_admin
 SERVERICON="/images/submenus/system/computer.png"
 
-echo '<form action="/cgi-bin/admin/remote_management_name.cgi" method="post"><div id="actionbox"><b>'$TITLE'</b><br><br>
+source /opt/karoshi/server_network/domain_information/domain_name
+
+echo '<form action="/cgi-bin/admin/remote_management_name.cgi" method="post"><div id="actionbox"><b>'$TITLE'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a><br><br>
 
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
-      <tr>
-        <td style="width: 180px;">
-'$NAMEMSG'</td>
-        <td><input tabindex= "1" value="'$FORENAME'" name="_NAME_" size="20" type="text"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
-      </td></tr>
-    </tbody>
-  </table><br><br>'
+<tr><td style="width: 180px;">'$SITENAMEMSG'</td><td><input tabindex= "1" value="'$LONGNAME'" name="_LONGNAME_" size="20" type="text"></td><td>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td></tr>
+<tr><td style="width: 180px;">'$SHORTSITENAMEMSG'</td><td><input tabindex= "2" value="'$SHORTNAME'" name="_SHORTNAME_" size="20" type="text"></td><td>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a></td></tr>
+</tbody></table><br><br>'
 
 if [ -f /opt/karoshi/server_network/info ]
 then

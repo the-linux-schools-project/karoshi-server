@@ -35,17 +35,8 @@ NOTIMEOUT=127.0.0.1
 source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/moodle/setupmoodle
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
-if [ -f /opt/karoshi/server_network/moodledomain ]
-then
-SUGGGESTDOMAIN=`sed -n 1,1p /opt/karoshi/server_network/moodledomain`
-else
-SUGGGESTDOMAIN=www.elearning.myschool.com
-fi
-if [ -f /opt/karoshi/server_network/domain_information/domain_name ]
-then
+
 source /opt/karoshi/server_network/domain_information/domain_name
-SUGGGESTDOMAIN=www.$WEBADDRESS
-fi
 
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
@@ -120,59 +111,28 @@ echo '<form action="/cgi-bin/admin/module_moodle.cgi" method="post"><div id="act
   <table class="standard" style="text-align: left; height: 15px;" border="0" cellpadding="2" cellspacing="0">
     <tbody>
       <tr>
-        <td style="width: 180px;">
-'$DOMAINMSG'</td>
-        <td><input tabindex= "1" value="'$SUGGGESTDOMAIN'" name="_DOMAINPATH_" size="30" type="text" style="width: 200px;"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$MOODLEDOMAINHELP'</span></a>
-      </td></tr>'
+        <td style="width: 180px;">'$DOMAINMSG'</td><td>'
 
-
-#Show ldap choice for earlier karoshi servers
-
-if [ ! -f /usr/local/sbin/samba ]
+#Check to see if this server has been assigned an alias
+if [ -f /opt/karoshi/server_network/aliases/$SERVERNAME ]
 then
-SHOW_LDAP=yes
-if [ $SERVERNAME = $HOSTNAME ]
-then
-SHOW_LDAP=no
-fi
-if [ -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME ]
-then
-SHOW_LDAP=no
-fi
-if [ -f /opt/karoshi/server_network/ldap_clients/$SERVERNAME ]
-then
-SHOW_LDAP=no
-fi
+ALIAS=`sed -n 1,1p /opt/karoshi/server_network/aliases/$SERVERNAME`
+echo ''$ALIAS'.'$REALM'<input type="hidden" name="_ALIAS_" value="'$ALIAS'"></td></tr>'
 else
-SHOW_LDAP=no
-fi
+echo '<select name="_ALIAS_"><option></option>'
 
-if [ $SHOW_LDAP = yes ]
-then
-echo '<tr><td style="width: 200px;">'$LDAPSERVERMSG1'</td><td>'
+#Get a set of available aliases to check
 
-#Generate list of ldap servers for authentication
-echo '<select name="_LDAPSERVER_" style="width: 200px;">
-<option value=""></option>
-<option value="'$HOSTNAME'">'$LDAPSERVERMSG2 : $HOSTNAME'</option>
-<option value="slaveldapserver">'$LDAPSERVERMSG3'</option>
-'
-
-if [ -d /opt/karoshi/server_network/slave_ldap_servers ]
-then
-if [ `ls -1 /opt/karoshi/server_network/slave_ldap_servers | wc -l` -gt 0 ]
-then
-for LDAPSERVER in /opt/karoshi/server_network/slave_ldap_servers/*
+#Check www.realm
+[ `nslookup www.$REALM 127.0.0.1 | grep -c ^Name:` = 0 ] && echo '<option>www</option>'
+COUNTER=1
+while [ $COUNTER -le 10 ]
 do
-LDAPSERVER=`basename $LDAPSERVER`
-echo '<option>'$LDAPSERVER'</option>'
+[ `nslookup www$COUNTER.$REALM 127.0.0.1 | grep -c ^Name:` = 0 ] && echo '<option>www'$COUNTER'</option>'
+let COUNTER=$COUNTER+1
 done
-fi
-fi
-echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$LDAPSERVERHELP'</span></a></td></tr>'
-else
-echo '<tr><td><input name="_LDAPSERVER_" value="noldap" type="hidden"></td></tr>'
+echo '</select>.'$REALM'</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Moodle_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$ALIASHELP'</span></a></td></tr>'
+echo 
 fi
 
 #Ask to migrate an existing moodle setup
@@ -186,5 +146,5 @@ echo '<tr><td>'$COPYMOODLESMSG'</td><td><input name="_COPYMOODLE_" value="yes" t
 fi
 fi
 
-echo '</tbody></table><br><br></div><div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></div></form></body></html>'
+echo '</tbody></table><br><br></div><div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit">'
 exit

@@ -36,6 +36,8 @@ source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/smbwebclient/setups
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
+source /opt/karoshi/server_network/domain_information/domain_name
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -105,8 +107,38 @@ echo '<form action="/cgi-bin/admin/module_smbwebclient.cgi" method="post"><div i
   <br>
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$DESCRIPTIONMSG'</b><br><br>
-'$HELPMSG1'
-</div>
+'$HELPMSG1'<br><br>
+<b>'$PARAMETERSMSG'</b><br><br>
+  <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="0">
+    <tbody>
+<tr><td style="width: 180px;">'$WEBDOMAINMSG'</td><td>'
+
+
+#Check to see if this server has been assigned an alias
+if [ -f /opt/karoshi/server_network/aliases/$SERVERNAME ]
+then
+ALIAS=`sed -n 1,1p /opt/karoshi/server_network/aliases/$SERVERNAME`
+echo ''$ALIAS'</td><td>.</td><td>'$REALM'<input type="hidden" name="_ALIAS_" value="'$ALIAS'"></td></tr>'
+else
+echo '<select name="_ALIAS_"><option></option>'
+
+#Get a set of available aliases to check
+
+#Check www.realm
+[ `nslookup www.$REALM 127.0.0.1 | grep -c ^Name:` = 0 ] && echo '<option>www</option>'
+COUNTER=1
+while [ $COUNTER -le 10 ]
+do
+[ `nslookup www$COUNTER.$REALM 127.0.0.1 | grep -c ^Name:` = 0 ] && echo '<option>www'$COUNTER'</option>'
+let COUNTER=$COUNTER+1
+done
+echo '</select></td><td>.</td><td>'$REALM'</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Moodle_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$ALIASHELP'</span></a></td></tr>'
+echo 
+fi
+
+echo '</tbody></table><br><br>'
+
+echo '</div>
 <div id="submitbox">
 <input value="'$SUBMITMSG'" class="button" type="submit">
 </div>

@@ -100,7 +100,12 @@ ICON1=/images/submenus/user/group_yes.png
 ICON2=/images/submenus/user/group_no.png
 
 TABLECLASS=standard
-[ $MOBILE = yes ] && TABLECLASS=mobilestandard
+WIDTH=180
+if [ $MOBILE = yes ]
+then
+TABLECLASS=mobilestandard
+WIDTH=140
+fi
 
 function check_group_membership {
 if [ `echo "$CURRENTGROUPS" | grep -c -w "$GROUPNAME"` -gt 0 ]
@@ -124,10 +129,10 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 CURRENTGROUPS=`id -G -n $USERNAME`
 echo '<form action="/cgi-bin/admin/group_membership2.cgi" method="post">'
 echo  '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="width: 180px;"><b>'$GROUPNAMEMSG'</b></td><td><b>'$GROUPIDMSG'</b></td><td><b>'$STATUSMSG'</b></td></tr>'
+<tbody><tr><td style="width: '$WIDTH'px;"><b>'$GROUPNAMEMSG'</b></td><td><b>'$GROUPIDMSG'</b></td><td><b>'$STATUSMSG'</b></td></tr>'
 #Get database password
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-GROUPLIST=( `ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" objectclass=posixGroup | grep ^cn: | cut -d' ' -f2-| sed 's/ /____/g' | sort` )
+GROUPLIST=( `getent group | cut -d: -f1 | sed 's/ /____/g' | sort` )
+#GROUPLIST=( `ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" objectclass=posixGroup | grep ^cn: | cut -d' ' -f2-| sed 's/ /____/g' | sort` )
 GROUPCOUNT=${#GROUPLIST[@]}  
 
 function check_groups {

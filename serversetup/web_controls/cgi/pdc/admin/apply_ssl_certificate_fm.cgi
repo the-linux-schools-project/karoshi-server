@@ -40,6 +40,9 @@ if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
 TIMEOUT=86400
 fi
+
+SERVERICON="/images/submenus/system/computer.png"
+source /opt/karoshi/server_network/domain_information/domain_name
 ############################
 #Show page
 ############################
@@ -55,38 +58,26 @@ echo '
 echo '<form action="/cgi-bin/admin/apply_ssl_certificate.cgi" name="selectservers" method="post"><b></b>
   <div id="actionbox"><b>'$TITLE'</b>
   <br>
-  <br>
-<input name="_CERTTYPE_" value="selfsign" type="hidden">
-  <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+  <br><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
-<tr><td style="width: 180px;">'$WEBCERTMSG'</td><td><input name="_ACTIONTYPE_" checked="checked" value="webcert" type="radio"></td></tr>
-<tr><td>'$EMAILCERTMSG'</td><td><input name="_ACTIONTYPE_" value="emailcert" type="radio"></td></tr>
-</tbody></table><br><br>'
+<tr><td style="width: 90px;"><b>Server</b></td><td style="width: 180px;"><b>Alias</b></td></tr>
+<tr><td>'$HOSTNAME'</td><td>manage.'$REALM'</td><td style="width: 90px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_ALIAS_manage_" type="image" class="images" src="'$SERVERICON'" value=""><span>Web Management</td></tr>'
 
-#Show list of ssh enabled servers
-SERVERLISTARRAY=( `ls -1 /opt/karoshi/server_network/servers/ | sed 's/ssh//g'` )
-SERVERLISTCOUNT=${#SERVERLISTARRAY[@]}
-SERVERCOUNTER=0
-SERVERICON="/images/submenus/system/computer.png"
-SERVERICON2="/images/submenus/system/all_computers.png"
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
-echo '<td style="width: 90px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_'$HOSTNAME'_" type="image" class="images" src="'$SERVERICON'" value="'$HOSTNAME'"><span>'$HOSTNAME'<br><br>'
-cat /opt/karoshi/server_network/servers/$HOSTNAME/* | sed '/<a href/c'"&nbsp"
-echo '</span></a><br>'$HOSTNAME'</td>'
-while [ $SERVERCOUNTER -lt $SERVERLISTCOUNT ]
-do
-KAROSHISERVER=${SERVERLISTARRAY[$SERVERCOUNTER]}
-if [ $KAROSHISERVER != $HOSTNAME ]
+#Show all aliases that have been setup
+
+if [ -d /opt/karoshi/server_network/aliases ]
 then
-echo '<td style="width: 90px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_'$KAROSHISERVER'_" type="image" class="images" src="'$SERVERICON'" value="'$KAROSHISERVER'"><span>'$KAROSHISERVER'<br><br>'
-cat /opt/karoshi/server_network/servers/$KAROSHISERVER/* | sed '/<a href/c'"&nbsp"
-echo '</span></a><br>'$KAROSHISERVER'</td>'
-fi
-[ $SERVERCOUNTER = 5 ] && echo '</tr><tr>'
-let SERVERCOUNTER=$SERVERCOUNTER+1
+if [ `ls -1 /opt/karoshi/server_network/aliases | wc -l` -gt 0 ]
+then
+for ALIASES in /opt/karoshi/server_network/aliases/*
+do
+SERVER=`basename $ALIASES`
+ALIAS=`sed -n 1,1p /opt/karoshi/server_network/aliases/$SERVER`
+
+echo '<tr><td>'$SERVER'</td><td>'$ALIAS.$REALM'</td><td style="width: 90px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVER_'$SERVER'_ALIAS_'$ALIAS'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$ALIAS.$REALM'</td></tr>'
 done
-
-echo '</tr><tr><td style="width: 90px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_webmanagement_" type="image" class="images" src="'$SERVERICON2'" value="webmanagement"><span>Web Management</span></a><br>Web Management</td>'
-
-echo  '</tr></tbody></table></div></form></body></html>'
+echo '</tbody></table>'
+fi
+fi
 exit
+

@@ -51,16 +51,29 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-+'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=9
-#Assign NAME
+END_POINT=11
+#Assign LONGNAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
 DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = NAMEcheck ]
+if [ `echo $DATAHEADER'check'` = LONGNAMEcheck ]
 then
 let COUNTER=$COUNTER+1
-NAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+LONGNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+break
+fi
+let COUNTER=$COUNTER+1
+done
+#Assign SHORTNAME
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+if [ `echo $DATAHEADER'check'` = SHORTNAMEcheck ]
+then
+let COUNTER=$COUNTER+1
+SHORTNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
 break
 fi
 let COUNTER=$COUNTER+1
@@ -128,10 +141,16 @@ fi
 #########################
 #Check data
 #########################
-#Check to see that name is not blank
-if [ $NAME'null' = null ]
+#Check to see that longname is not blank
+if [ $LONGNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$ERRORMSG4
+show_status
+fi
+#Check to see that shortname is not blank
+if [ $SHORTNAME'null' = null ]
+then
+MESSAGE=$ERRORMSG5
 show_status
 fi
 #Check to see that servername is not blank
@@ -149,10 +168,10 @@ fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_name.cgi | cut -d' ' -f1`
 #Add user
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$NAME:$SERVERNAME:$SERVERTYPE" | sudo -H /opt/karoshi/web_controls/exec/remote_management_name
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SHORTNAME:$LONGNAME:$SERVERNAME:$SERVERTYPE" | sudo -H /opt/karoshi/web_controls/exec/remote_management_name
 EXEC_STATUS=`echo $?`
 NAME=`echo $NAME | sed 's/+/ /g' | sed 's/27//g'`
-MESSAGE=`echo "$COMPLETEDMSG" "$NAME"`
+MESSAGE=`echo "$COMPLETEDMSG\\n$SHORTNAME\\n$LONGNAME"`
 if [ $EXEC_STATUS = 101 ]
 then
 MESSAGE=`echo $PROBLEMMSG $LOGMSG`

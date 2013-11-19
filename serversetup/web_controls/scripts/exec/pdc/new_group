@@ -87,30 +87,27 @@ fi
 #######################
 echo `date`: new_group - addding group $NEWGROUP from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-#Set gidNumber to uidNumber
-SAMBADOMAIN=`grep "workgroup =" /etc/samba/smb.conf | sed 's/ //g' | cut -d= -f2 | sed -n 1,1p`
+#Get samba 4 database password
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-UIDNUMBER=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" sambaDomainName=$SAMBADOMAIN | grep ^uidNumber | cut -d: -f2 | sed 's/ //g'`
-echo -e "dn: sambaDomainName=$SAMBADOMAIN,dc=karoshi,dc=local
-changetype: modify
-replace: gidNumber
-gidNumber: $UIDNUMBER
-" | ldapmodify -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS 1>/dev/null
-smbldap-groupadd $NEWGROUP 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-#Set SID for the group
-GROUP_RID=`getent group $NEWGROUP | cut -d: -f3`
-SAMBASID=`net getlocalsid | cut -d: -f2 | sed 's/ //g'`
-smbldap-groupmod -s $SAMBASID-$GROUP_RID $NEWGROUP 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+source /opt/karoshi/server_network/domain_information/domain_name
 
-#Set uidNumber to uidNumber+1
-let UIDNUMBER=$UIDNUMBER+1
-echo -e "dn: sambaDomainName=$SAMBADOMAIN,dc=karoshi,dc=local
+samba-tool group add --groupou="OU=Groups,OU=People" $NEWGROUP 1>/dev/null
+echo
+GIDNUMBER=`getent group $NEWGROUP | cut -d: -f3`
+echo -e "dn: CN=$NEWGROUP,OU=Groups,OU=People,$LDAPBASE
 changetype: modify
-replace: uidNumber
-uidNumber: $UIDNUMBER
-" | ldapmodify -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS 1>/dev/null
-
-ADD_GROUP_STATUS=`echo $?`
+add: objectclass
+objectclass: posixgroup
+-
+add: displayname
+displayname: "$NEWGROUP"
+-
+add: mail
+mail: $NEWGROUP@$REALM
+-
+add: gidnumber
+gidnumber: $GIDNUMBER
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null
 
 #Add group to federated server
 FEDERATED_LDAP_SERVERS=no

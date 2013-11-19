@@ -134,110 +134,56 @@ echo `date`: new_primary_group - addding group $NEWPRIGROUP from $REMOTE_ADDR by
 
 touch /opt/karoshi/server_network/group_information/optional_groups/$NEWPRIGROUP
 
-#Set gidNumber to uidNumber
-SAMBADOMAIN=`grep "workgroup =" /etc/samba/smb.conf | sed 's/ //g' | cut -d= -f2 | sed -n 1,1p`
+#Get samba 4 database password
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-UIDNUMBER=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" sambaDomainName=$SAMBADOMAIN | grep ^uidNumber | cut -d: -f2 | sed 's/ //g'`
-echo -e "dn: sambaDomainName=$SAMBADOMAIN,dc=karoshi,dc=local
+source /opt/karoshi/server_network/domain_information/domain_name
+
+samba-tool group add --groupou="OU=Groups,OU=People" $NEWPRIGROUP 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE 
+
+GIDNUMBER=`getent group $NEWPRIGROUP | cut -d: -f3`
+echo -e "dn: CN=$NEWPRIGROUP,OU=Groups,OU=People,$LDAPBASE
 changetype: modify
-replace: gidNumber
-gidNumber: $UIDNUMBER
-" | ldapmodify -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS 1>/dev/null
-smbldap-groupadd $NEWPRIGROUP 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-#Set SID for the group
-GROUP_RID=`getent group $NEWPRIGROUP | cut -d: -f3`
-SAMBASID=`net getlocalsid | cut -d: -f2 | sed 's/ //g'`
-smbldap-groupmod -s $SAMBASID-$GROUP_RID $NEWPRIGROUP 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+add: objectclass
+objectclass: posixgroup
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE 
 
-#Set uidNumber to uidNumber+1
-let UIDNUMBER=$UIDNUMBER+1
-echo -e "dn: sambaDomainName=$SAMBADOMAIN,dc=karoshi,dc=local
+echo -e "dn: CN=$NEWPRIGROUP,OU=Groups,OU=People,$LDAPBASE
 changetype: modify
-replace: uidNumber
-uidNumber: $UIDNUMBER
-" | ldapmodify -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS 1>/dev/null
-
-let UIDNUMBER=$UIDNUMBER-1
+add: gidnumber
+gidnumber: $GIDNUMBER
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE 
 
 
-###########################
-#Create a sub domain for users of the group
-###########################
-#Main server
-#ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS -f /opt/karoshi/.tempdata/$NEWUSERNAME.$$.ldif 1>/dev/null
+#Create a subcontainer for users of the group
+THISYEAR=`date +%Y`
+DAY=`date +%d`
+MONTH=`date +%m`
 
-echo -e "dn: ou=$NEWPRIGROUP,ou=$CATEGORY,ou=People,dc=karoshi,dc=local
-objectClass: organizationalUnit
-objectClass: top
-ou: $CATEGORY" | ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-#Create group and sub domain on federated servers and slave ldap servers
-if [ $SLAVE_LDAP_SERVERS = yes ]
-then
-for SLAVELDAPSERVERS in /opt/karoshi/server_network/slave_ldap_servers/*
-do
-SLAVELDAPSERVER=`basename $SLAVELDAPSERVERS`
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SLAVELDAPSERVER '
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-echo -e "dn: ou='$NEWPRIGROUP',ou='$CATEGORY',ou=People,dc=karoshi,dc=local
-objectClass: organizationalUnit
-objectClass: top
-ou: '$CATEGORY'" | ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS 1>/dev/null
+hour=`date +%H`
+minutes=`date +%M`
+seconds=`date +%S`
+CREATETIME=$THISYEAR$MONTH$DAY$hour$minutes$seconds.0Z
 
-#Create group
-SAMBASID=`net getlocalsid | cut -d: -f2 | sed "s/ //g"`
-smbldap-groupadd -g '$GROUP_RID' '$NEWPRIGROUP'
-smbldap-groupmod -s $SAMBASID'-$GROUP_RID' '$NEWPRIGROUP' 1>/dev/null
-'
-done
-fi
+NAME="$NEWPRIGROUP"
+DESC="$NEWPRIGROUP"
+LDAPPATH="OU=$NEWPRIGROUP,OU=$CATEGORY,OU=People,$LDAPBASE"
 
-if [ $FEDERATED_LDAP_SERVERS = yes ]
-then
-for FEDERATEDLDAPSERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
-do
-FEDERATEDLDAPSERVER=`basename $FEDERATEDLDAPSERVERS`
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $FEDERATEDLDAPSERVER '
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-echo -e "dn: ou='$NEWPRIGROUP',ou='$CATEGORY',ou=People,dc=karoshi,dc=local
-objectClass: organizationalUnit
-objectClass: top
-ou: '$CATEGORY'" | ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE' 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-#Create group
-SAMBASID=`net getlocalsid | cut -d: -f2 | sed "s/ //g"`
-smbldap-groupadd -g '$GROUP_RID' '$NEWPRIGROUP'
-smbldap-groupmod -s $SAMBASID'-$GROUP_RID' '$NEWPRIGROUP' 1>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE' 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+echo -e "version: 1
 
-#Create group and subdomain on slave ldap servers in this federated location
-
-
-
-if [ -d /opt/karoshi/server_network/slave_ldap_servers/ ]
-then
-if [ `ls -1 /opt/karoshi/server_network/slave_ldap_servers/ | wc -l` -gt 0 ]
-then
-for SLAVELDAPSERVERS in /opt/karoshi/server_network/slave_ldap_servers/*
-do
-SLAVELDAPSERVER=`basename $SLAVELDAPSERVERS`
-ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SLAVELDAPSERVER '\''
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-echo -e "dn: ou='$NEWPRIGROUP',ou='$CATEGORY',ou=People,dc=karoshi,dc=local
-objectClass: organizationalUnit
-objectClass: top
-ou: '$CATEGORY'" | ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS 1>/dev/null
-
-#Create group
-SAMBASID=`net getlocalsid | cut -d: -f2 | sed "s/ //g"`
-smbldap-groupadd -g '$GROUP_RID' '$NEWPRIGROUP'
-smbldap-groupmod -s $SAMBASID-'$GROUP_RID' '$NEWPRIGROUP' 1>/dev/null
-'\''
-done
-
-fi
-fi
-'
-done
-fi
-
+# Entry 1: $LDAPPATH
+dn: $LDAPPATH
+ou: $NAME
+description: $DESC
+distinguishedname: $LDAPPATH
+instancetype: 4
+name: $NAME
+objectcategory: CN=Organizational-Unit,CN=Schema,CN=Configuration,$LDAPBASE
+objectclass: top
+objectclass: organizationalUnit
+usnchanged: 3372
+usncreated: 3371
+whenchanged: $CREATETIME
+whencreated: $CREATETIME" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE 
 
 ##########################
 #Copy profile and background
@@ -248,28 +194,14 @@ then
 cp -f -R /home/applications/profiles/$PROFILE /home/applications/profiles/$NEWPRIGROUP 
 chmod 0644 /home/applications/profiles/$NEWPRIGROUP
 chmod u+X,g+X,o+X /home/applications/profiles/$NEWPRIGROUP
-ln -s /home/applications/profiles/$NEWPRIGROUP /home/applications/profiles/$NEWPRIGROUP.V2
 fi
 
-[ -f /home/applications/backgrounds/$PROFILE.bmp ] && cp -f /home/applications/backgrounds/$PROFILE.bmp /home/applications/backgrounds/$NEWPRIGROUP.bmp
+if [ -d /home/applications/profiles/$NEWPRIGROUP ] && [ ! -L /home/applications/profiles/$NEWPRIGROUP ] && [ ! -L /home/applications/profiles/$NEWPRIGROUP.V2 ]
+then
+ln -s /home/applications/profiles/$NEWPRIGROUP  /home/applications/profiles/$NEWPRIGROUP.V2
+fi
 
-#Copy profile on federated servers
-if [ $FEDERATED_LDAP_SERVERS = yes ]
-then
-for FEDERATEDLDAPSERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
-do
-FEDERATEDLDAPSERVER=`basename $FEDERATEDLDAPSERVERS`
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $FEDERATEDLDAPSERVER '
-if [ ! -d /home/applications/profiles/'$NEWPRIGROUP' ]
-then
-cp -f -R /home/applications/profiles/'$PROFILE' /home/applications/profiles/'$NEWPRIGROUP' 
-chmod 0644 /home/applications/profiles/'$NEWPRIGROUP'
-chmod u+X,g+X,o+X /home/applications/profiles/'$NEWPRIGROUP'
-fi
-[ -f /home/applications/backgrounds/'$PROFILE'.bmp ] && cp -f /home/applications/backgrounds/'$PROFILE'.bmp /home/applications/backgrounds/'$NEWPRIGROUP'.bmp
-'
-done
-fi
+[ -f /home/applications/backgrounds/$NEWPRIGROUP.bmp ] && cp -f /home/applications/backgrounds/$NEWPRIGROUP.bmp /home/applications/backgrounds/$NEWPRIGROUP.bmp
 
 ##########################
 #Create data files
@@ -278,27 +210,13 @@ fi
 [ -e /var/lib/samba/netlogon/windows_settings/security/$PROFILE.kix ] && cp -f /var/lib/samba/netlogon/windows_settings/security/$PROFILE.kix /var/lib/samba/netlogon/windows_settings/security/$NEWPRIGROUP.kix
 [ `grep -c $NEWPRIGROUP /var/lib/samba/netlogon/groups.txt` = 0 ] && echo $NEWPRIGROUP,$HOMESERVER >> /var/lib/samba/netlogon/groups.txt
 echo SERVER=$HOMESERVER > /opt/karoshi/server_network/group_information/$NEWPRIGROUP
-echo HOMEPATH=/home/users/$CATEGORY/$PRIGROUP >> /opt/karoshi/server_network/group_information/$NEWPRIGROUP
+echo HOMEPATH=/home/users/$CATEGORY/$NEWPRIGROUP  >> /opt/karoshi/server_network/group_information/$NEWPRIGROUP
 echo SUBUNIT=$CATEGORY >> /opt/karoshi/server_network/group_information/$NEWPRIGROUP
 echo SECONDARYGROUP=$SECGROUP >> /opt/karoshi/server_network/group_information/$NEWPRIGROUP
 echo YEARSUFFIX=$YEARSUFFIX >> /opt/karoshi/server_network/group_information/$NEWPRIGROUP
-#Create data file on federated servers
-if [ $FEDERATED_LDAP_SERVERS = yes ]
-then
-for FEDERATEDLDAPSERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
-do
-FEDERATEDLDAPSERVER=`basename $FEDERATEDLDAPSERVERS`
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $FEDERATEDLDAPSERVER '
-[ -e /var/lib/samba/netlogon/windows_settings/drives/'$PROFILE'.kix ] && cp -f /var/lib/samba/netlogon/windows_settings/drives/'$PROFILE'.kix /var/lib/samba/netlogon/windows_settings/drives/'$NEWPRIGROUP'.kix
-[ -e /var/lib/samba/netlogon/windows_settings/security/'$PROFILE'.kix ] && cp -f /var/lib/samba/netlogon/windows_settings/security/'$PROFILE'.kix /var/lib/samba/netlogon/windows_settings/security/'$NEWPRIGROUP'.kix
-[ `grep -c '$NEWPRIGROUP' /var/lib/samba/netlogon/groups.txt` = 0 ] && echo '$NEWPRIGROUP',$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
-echo SERVER=$HOSTNAME > /opt/karoshi/server_network/group_information/'$NEWPRIGROUP'
-echo HOMEPATH=/home/users/'$CATEGORY'/'$PRIGROUP' >> /opt/karoshi/server_network/group_information/'$NEWPRIGROUP'
-echo SUBUNIT='$CATEGORY' >> /opt/karoshi/server_network/group_information/'$NEWPRIGROUP'
-echo SECONDARYGROUP='$SECGROUP' >> /opt/karoshi/server_network/group_information/'$NEWPRIGROUP'
-echo YEARSUFFIX='$YEARSUFFIX' >> /opt/karoshi/server_network/group_information/'$NEWPRIGROUP'
-'
-done
-fi
+
+#Recreate pam mount for the linux clients
+/opt/karoshi/"useful scripts"/generate_pam_mount
+
 exit
 

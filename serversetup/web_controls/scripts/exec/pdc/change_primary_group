@@ -161,28 +161,31 @@ fi
 #echo new pri group is $NEWPRIGROUP"<br>"
 #echo new sub unit is $NEWSUBUNIT"<br>"
 
-smbldap-usermod -d $HOMEPATH/$USERNAME $USERNAME
-smbldap-usermod -g "$NEWPRIGROUP" $USERNAME
-############################
-#Change group in ldap
-############################
-#Get database password
+#Get samba 4 database password
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-
-[ -f /opt/karoshi/.tempdata/$USERNAME.$$.ldif ] && rm -f /opt/karoshi/.tempdata/$USERNAME.$$.ldif
-touch /opt/karoshi/.tempdata/$USERNAME.$$.ldif
-chmod 0600 /opt/karoshi/.tempdata/$NEWUSERNAME.$$.ldif
-ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" uid=$USERNAME > /opt/karoshi/.tempdata/$USERNAME.$$.ldif
-#Modify ldif file with correct sub organisation unit
-sed -i 's/ou='$CURRENTPRIGROUP',ou='$CURRENTSUBUNIT',ou=People,dc=karoshi,dc=local/ou='$NEWPRIGROUP',ou='$NEWSUBUNIT',ou=People,dc=karoshi,dc=local/g' /opt/karoshi/.tempdata/$USERNAME.$$.ldif
-
-
-
-#Delete user entry from the current organisation unit
-ldapdelete -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS uid=$USERNAME,ou=$CURRENTPRIGROUP,ou=$CURRENTSUBUNIT,ou=People,dc=karoshi,dc=local
-
-#Import user ldif file to the new sub organisation unit
-ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS -f /opt/karoshi/.tempdata/$USERNAME.$$.ldif 1>/dev/null 2>/dev/null
+#Get domain information
+source /opt/karoshi/server_network/domain_information/domain_name
+#Get group information
+PRIGROUPID=`getent group $NEWPRIGROUP | cut -d: -f3`
+#Remove user from current primary group
+samba-tool group removemembers "$CURRENTPRIGROUP" $USERNAME  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#Add user to new primary group
+samba-tool group addmembers "$NEWPRIGROUP" $USERNAME  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#Set new home path for the user
+echo -e 'dn: CN='$USERNAME',OU='$CURRENTPRIGROUP',OU='$SUBUNIT',OU=People,'$LDAPBASE'
+changetype: modify
+replace: unixhomedirectory
+unixhomedirectory: '$HOMEPATH'/'$USERNAME'
+-
+replace: profilePath
+profilePath: \\\\'$HOSTNAME'\\applications\profiles\'$NEWPRIGROUP'
+-
+replace: gidNumber
+gidNumber: '$PRIGROUPID'
+-
+replace: scriptPath
+scriptPath: logon.bat '$NEWPRIGROUP'
+-' | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 #Check that home area should still be on the same server
 
@@ -204,35 +207,6 @@ if [ $CURRENT_SERVER != $NEW_SERVER ]
 then
 ssh -x -o PasswordAuthentication=no $SERVER 'mv '$CURRENTPATH' '$HOMEPATH' ; chmod 0600 -R '$HOMEPATH''/''$USERNAME' ; chmod u+X -R '$HOMEPATH''/''$USERNAME' ; chown -R '$USERNAME':'$PRIMARYGROUP' '$HOMEPATH''/''$USERNAME'' 2>$HOME/.tempdata/ssherrors1
 fi
-
-############################
-#Change path on slave ldap servers
-############################
-if [ `ls -1 /opt/karoshi/server_network/slave_ldap_servers/ | wc -l` -gt 0 ]
-then
-for SLAVELDAPSERVERS in /opt/karoshi/server_network/slave_ldap_servers/*
-do
-SLAVELDAPSERVER=`basename $SLAVELDAPSERVERS`
-scp /opt/karoshi/.tempdata/$USERNAME.$$.ldif root@$SLAVELDAPSERVER:"/opt/karoshi/.tempdata/"
-ssh -x -o PasswordAuthentication=no $SLAVELDAPSERVER '
-#smbldap-usermod -g '$NEWPRIGROUP' '$USERNAME'
-#smbldap-usermod -d '$HOMEPATH'/'$USERNAME' '$USERNAME'
-
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-#Delete user entry from the current organisation unit
-ldapdelete -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS uid='$USERNAME',ou='$CURRENTPRIGROUP',ou='$CURRENTSUBUNIT',ou=People,dc=karoshi,dc=local
-ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS -f /opt/karoshi/.tempdata/'$USERNAME'.'$$'.ldif 1>/dev/null 2>/dev/null
-#Delete ldif file
-rm -f /opt/karoshi/.tempdata/'$USERNAME'.'$$'.ldif
-mv '$CURRENTPATH' '$HOMEPATH' ; chmod -R 0600 '$HOMEPATH'/'$USERNAME'/
-chmod u+X '-R $HOMEPATH'/'$USERNAME'/
-chown -R '$USERNAME':'$PRIMARYGROUP' -R '$HOMEPATH'/'$USERNAME'/
-' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-done
-fi
-
-#Delete ldif file
-rm -f /opt/karoshi/.tempdata/$USERNAME.$$.ldif
 
 if [ $CURRENT_SERVER != $NEW_SERVER ]
 then

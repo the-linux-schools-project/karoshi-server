@@ -71,12 +71,12 @@ then
 echo `date`: delete_user - Not called by delete_user.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
 echo `date`: delete_user - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
 echo `date`: delete_user - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -86,16 +86,6 @@ if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
 echo `date`: delete_user - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
-fi
-
-#Check for slave ldap servers
-SLAVE_LDAP_SERVERS=no
-if [ -d /opt/karoshi/server_network/slave_ldap_servers/ ]
-then
-if [ `ls -1 /opt/karoshi/server_network/slave_ldap_servers/ | wc -l` -gt 0 ]
-then
-SLAVE_LDAP_SERVERS=yes
-fi
 fi
 
 #Check for federated ldap servers
@@ -121,72 +111,6 @@ fi
 source /opt/karoshi/server_network/group_information/$PRIMARYGROUP
 echo `date`: delete_user - deleting $DELETEUSER from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-#######################
-#Check all servers are up before deleting the user
-#######################
-#Check slave ldap servers
-if [ $SLAVE_LDAP_SERVERS = yes ]
-then
-for SLAVELDAPSERVERS in /opt/karoshi/server_network/slave_ldap_servers/*
-do
-SLAVELDAPSERVER=`basename $SLAVELDAPSERVERS`
-SSHSTATUS=0
-ssh -o PasswordAuthentication=no -o ConnectTimeout=2 $SLAVELDAPSERVER ls 1>/dev/null
-SSHSTATUS=`echo $?`
-if [ $SSHSTATUS != 0 ]
-then
-echo `date`: delete_user - user not deleted due to ssh failure on $SLAVELDAPSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 105
-fi
-done
-fi
-
-#Check federated servers
-if [ $FEDERATED_LDAP_SERVERS = yes ]
-then
-for FEDERATEDLDAPSERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
-do
-FEDERATEDLDAPSERVER=`basename $FEDERATEDLDAPSERVERS`
-SSHSTATUS=0
-ssh -o PasswordAuthentication=no -o ConnectTimeout=2  $FEDERATEDLDAPSERVER '
-#Check to see if the users home area should be on a separate file server in this area.
-source /opt/karoshi/server_network/group_information/'$PRIMARYGROUP'
-if [ -d /opt/karoshi/server_network/servers/$SERVER ] && [ $SERVER != $HOSTNAME ]
-then
-ssh -x -o PasswordAuthentication=no -o ConnectTimeout=2 $SERVER ls 1>/dev/null
-SSHSTATUS=`echo $?`
-if [ $SSHSTATUS != 0 ]
-then
-exit 106
-fi
-fi
-'
-SSHSTATUS=`echo $?`
-if [ $SSHSTATUS != 0 ]
-then
-if [ $SSHSTATUS = 106 ]
-then
-echo `date`: delete_user - user not deleted due to ssh failure on a file server connected from $FEDERATEDLDAPSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 105
-else
-echo `date`: delete_user - user not deleted due to ssh failure on $FEDERATEDLDAPSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 105
-fi
-fi
-done
-fi
-
-#Check file server is up for user's home area
-if [ -d /opt/karoshi/server_network/servers/$SERVER ] && [ $SERVER != $HOSTNAME ]
-then
-ssh -o PasswordAuthentication=no -o ConnectTimeout=2 -o ConnectTimeout=2 $SERVER ls 1>/dev/null
-SSHSTATUS=`echo $?`
-if [ $SSHSTATUS != 0 ]
-then
-echo `date`: delete_user - user not created due to ssh failure on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 105
-fi
-fi
 
 #######################
 #Delete user image
@@ -195,14 +119,14 @@ fi
 #######################
 #Delete the user account
 #######################
-smbldap-userdel $DELETEUSER 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool user delete $DELETEUSER 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 DELETE_USER_STATUS=`echo $?`
 if [ -d /home/applications/profiles/$DELETEUSER ]
 then
 #Delete profile if using a roaming profile
 rm -d -R -f /home/applications/profiles/$DELETEUSER
 rm -f /home/applications/profiles/$DELETEUSER.V2
-smbldap-groupdel $DELETEUSER 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool group delete $DELETEUSER 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 if [ `grep -w -c $DELETEUSER /opt/karoshi/server_network/windows_roaming_profile_users` -gt 0 ]
 then
 LINENUMBER=`grep -w -n ^$DELETEUSER /opt/karoshi/server_network/windows_roaming_profile_users | cut -d: -f1`
@@ -214,22 +138,12 @@ fi
 fi
 #Delete logon script
 [ -f /var/lib/samba/netlogon/windows_settings/drives/$DELETEUSER.kix ] && rm -f /var/lib/samba/netlogon/windows_settings/drives/$DELETEUSER.kix
-#Delete security settings
-[ -f /var/lib/samba/netlogon/windows_settings/security/$DELETEUSER.kix ] && rm -f /var/lib/samba/netlogon/windows_settings/security/$DELETEUSER.kix
+
 #Delete home folder
 [ -d $HOMEPATH/$DELETEUSER ] && rm -f -R $HOMEPATH/$DELETEUSER
-#Delete inbox
-[ -f /var/spool/mail/$DELETEUSER ] && rm -f /var/spool/mail/$DELETEUSER
+
 #Delete group information
 [ -f /opt/karoshi/server_network/group_information/$DELETEUSER ] && rm -f /opt/karoshi/server_network/group_information/$DELETEUSER
-#Rebuild primarygroups.txt - this file is to allow for windows 7 logins where the primary group feature is broken
-[ -f /var/lib/samba/netlogon/primarygroups.txt ] && rm -f /var/lib/samba/netlogon/primarygroups.txt
-for USERDETAILS in `getent passwd | grep /home/users/`
-do
-KAROSHIUSER=`echo $USERDETAILS | cut -d: -f1 | sed 's/,//g'`
-PRIGROUP=`id -g -n $KAROSHIUSER`
-echo $KAROSHIUSER,$PRIGROUP >> /var/lib/samba/netlogon/primarygroups.txt
-done
 
 #######################
 #Delete the folder on extra file server
@@ -237,26 +151,39 @@ done
 if [ -d /opt/karoshi/server_network/servers/$SERVER ] && [ $SERVER != $HOSTNAME ]
 then
 ssh -x -o PasswordAuthentication=no $SERVER 'rm -f -R '$HOMEPATH''/''$DELETEUSER'' 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+SSHSTATUS=`echo $?`
+if [ $SSHSTATUS != 0 ]
+then
+echo `date`: delete_user - $DELETEUSER ssh failure on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo $SERVER,fileserver,delete >> /opt/karoshi/server_network/offline_servers/delete_users/$DELETEUSER
+FAILED_SERVER=yes
+FAILEDSERVERLIST=$FAILEDSERVERLIST,$SERVER
+fi
 fi
 
 #######################
-#Delete the account on any slave ldap servers
+#Delete the account on any email servers
 #######################
-
-if [ $SLAVE_LDAP_SERVERS = yes ]
+if [ -f /opt/karoshi/server_network/emailserver ]
 then
-for SLAVELDAPSERVERS in /opt/karoshi/server_network/slave_ldap_servers/*
-do
-SLAVELDAPSERVER=`basename $SLAVELDAPSERVERS`
-echo `date`: delete_user - deleting $DELETEUSER on $SLAVELDAPSERVER from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-ssh -x -o PasswordAuthentication=no $SLAVELDAPSERVER '
-smbldap-userdel -r '$DELETEUSER'
-#Delete home folder
-[ -d '$HOMEPATH''/''$DELETEUSER' ] && rm -f -R '$HOMEPATH''/''$DELETEUSER'
-#Delete inbox
-[ -f /var/spool/mail/'$DELETEUSER' ] && rm -f /var/spool/mail/'$DELETEUSER'
-' 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-done
+EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+if [ $EMAILSERVER != $HOSTNAME ]
+then 
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+rm -f -R /home/users/email/'$DELETEUSER'
+rm -f -R '$HOMEPATH''/''$DELETEUSER'
+'
+SSHSTATUS=`echo $?`
+if [ $SSHSTATUS != 0 ]
+then
+echo `date`: delete_user - $DELETEUSER ssh failure on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo $EMAILSERVER,emailserver,delete >> /opt/karoshi/server_network/offline_servers/delete_users/$DELETEUSER
+FAILED_SERVER=yes
+FAILEDSERVERLIST=$FAILEDSERVERLIST,$SERVER
+fi
+else
+rm -f -R /home/users/email/$DELETEUSER
+fi
 fi
 
 #######################
@@ -274,7 +201,7 @@ if [ -d /home/applications/profiles/'$DELETEUSER' ]
 then
 #Delete profile if using a roaming profile
 rm -d -R -f /home/applications/profiles/'$DELETEUSER'
-smbldap-groupdel '$DELETEUSER' 1>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE' 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+samba-tool group delete '$DELETEUSER' 1>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE' 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
 if [ `grep -w -c '$DELETEUSER' /opt/karoshi/server_network/windows_roaming_profile_users` -gt 0 ]
 then
 LINENUMBER=`grep -w -n ^'$DELETEUSER' /opt/karoshi/server_network/windows_roaming_profile_users | cut -d: -f1`
@@ -284,12 +211,9 @@ sed -i $LINENUMBER"d" /opt/karoshi/server_network/windows_roaming_profile_users
 sed -i "/^$/d" /opt/karoshi/server_network/windows_roaming_profile_users
 fi
 fi
-#Delete home folder from file server
+
 source /opt/karoshi/server_network/group_information/'$PRIMARYGROUP'
-if [ -d /opt/karoshi/server_network/servers/$SERVER ] && [ $SERVER != $HOSTNAME ]
-then
-ssh -x -o PasswordAuthentication=no $SERVER "rm -f -R '$HOMEPATH'/'$DELETEUSER'" 1>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE' 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-fi
+
 #Delete logon script
 [ -f /var/lib/samba/netlogon/windows_settings/drives/'$DELETEUSER'.kix ] && rm -f /var/lib/samba/netlogon/windows_settings/drives/'$DELETEUSER'.kix
 #Delete security settings
@@ -297,29 +221,49 @@ fi
 #Delete group information
 [ -f /opt/karoshi/server_network/group_information/'$DELETEUSER' ] && rm -f /opt/karoshi/server_network/group_information/'$DELETEUSER'
 #Delete user from ldap
-smbldap-userdel -r '$DELETEUSER'
+samba-tool user delete '$DELETEUSER'
 #Delete home folder
 [ -d '$HOMEPATH''/''$DELETEUSER' ] && rm -f -R '$HOMEPATH''/''$DELETEUSER'
 #Delete inbox
 [ -f /var/spool/mail/'$DELETEUSER' ] && rm -f /var/spool/mail/'$DELETEUSER'
 
-#Delete user from any federated slave ldap servers
-if [ -d /opt/karoshi/server_network/slave_ldap_servers/ ]
+#######################
+#Delete the folder on extra file server
+#######################
+if [ -d /opt/karoshi/server_network/servers/$SERVER ] && [ $SERVER != $HOSTNAME ]
 then
-if [ `ls -1 /opt/karoshi/server_network/slave_ldap_servers/ | wc -l` -gt 0 ]
+ssh -x -o PasswordAuthentication=no $SERVER "rm -f -R '$HOMEPATH''/''$DELETEUSER'" 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+SSHSTATUS=`echo $?`
+if [ $SSHSTATUS != 0 ]
 then
-for SLAVELDAPSERVERS in /opt/karoshi/server_network/slave_ldap_servers/*
-do
-SLAVELDAPSERVER=`basename $SLAVELDAPSERVERS`
-echo `date`: delete_user \(federated mode\) - deleting $DELETEUSER on $SLAVELDAPSERVER from '$REMOTE_ADDR' by '$REMOTE_USER' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-ssh -x -o PasswordAuthentication=no $SLAVELDAPSERVER "
-smbldap-userdel -r '$DELETEUSER'
-#Delete home folder
-[ -d '$HOMEPATH'/'$DELETEUSER' ] && rm -f -R '$HOMEPATH'/'$DELETEUSER'
-#Delete inbox
-[ -f /var/spool/mail/'$DELETEUSER' ] && rm -f /var/spool/mail/'$DELETEUSER'
-" 1>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE' 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-done
+echo `date`: delete_user - '$DELETEUSER' ssh failure on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+echo $SERVER,fileserver,delete >> /opt/karoshi/server_network/offline_servers/delete_users/'$DELETEUSER'
+FAILED_SERVER=yes
+FAILEDSERVERLIST=$FAILEDSERVERLIST,$SERVER
+fi
+fi
+
+#######################
+#Delete the account on any email servers
+#######################
+if [ -f /opt/karoshi/server_network/emailserver ]
+then
+EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+if [ $EMAILSERVER != $HOSTNAME ]
+then 
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER "
+rm -f -R /home/users/email/'$DELETEUSER'
+"
+SSHSTATUS=`echo $?`
+if [ $SSHSTATUS != 0 ]
+then
+echo `date`: delete_user - '$DELETEUSER' ssh failure on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+echo $SERVER,emailserver >> /opt/karoshi/server_network/offline_servers/delete_users/'$DELETEUSER'
+FAILED_SERVER=yes
+FAILEDSERVERLIST=$FAILEDSERVERLIST,$SERVER
+else
+rm -f -R /home/users/email/'$DELETEUSER'
+fi
 fi
 fi
 
@@ -327,13 +271,14 @@ fi
 [ -f /var/lib/samba/netlogon/primarygroups.txt ] && rm -f /var/lib/samba/netlogon/primarygroups.txt
 for USERDETAILS in `getent passwd | grep /home/users/`
 do
-KAROSHIUSER=`echo $USERDETAILS | cut -d: -f1 | sed "s/,//g"`
+KAROSHIUSER=`echo $USERDETAILS | cut -d: -f1 | sed 's/,//g'`
 PRIGROUP=`id -g -n $KAROSHIUSER`
 echo $KAROSHIUSER,$PRIGROUP >> /var/lib/samba/netlogon/primarygroups.txt
 done
 ' 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 done
 fi
+
 
 #Delete request file if this user has been requested by a member of staff
 if [ $REQUESTFILE'null' != null ]
@@ -380,29 +325,4 @@ then
 /opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete acceptable_use_authorisations
 fi
 fi
-
-#######################
-#Delete the account on any email servers
-#######################
-if [ -f /opt/karoshi/server_network/emailserver ]
-then
-EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
-if [ $EMAILSERVER != $HOSTNAME ]
-then 
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
-rm -f -R /home/users/email/'$DELETEUSER'
-'
-SSHSTATUS=`echo $?`
-if [ $SSHSTATUS != 0 ]
-then
-echo `date`: delete_user - $DELETEUSER ssh failure on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $SERVER,emailserver >> /opt/karoshi/server_network/offline_servers/delete_users/$DELETEUSER
-FAILED_SERVER=yes
-FAILEDSERVERLIST=$FAILEDSERVERLIST,$SERVER
-fi
-else
-rm -f -R /home/users/email/$DELETEUSER
-fi
-fi
-
 exit $DELETE_USER_STATUS

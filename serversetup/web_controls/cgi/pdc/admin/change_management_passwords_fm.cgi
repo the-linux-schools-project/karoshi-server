@@ -79,6 +79,7 @@ echo '<form action="/cgi-bin/admin/change_management_passwords.cgi" method="post
 <select name="____USERACCOUNT____"  tabindex="1" style="width: 200px;">
 <option></option>
 <option>karoshi</option>
+<option>Administrator</option>
 <option>mysql</option>
 '
 #<option value="sambaroot">Samba Root</option>

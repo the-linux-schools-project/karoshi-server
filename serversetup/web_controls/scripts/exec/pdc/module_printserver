@@ -95,6 +95,22 @@ echo `date`: module_printserver - Setting up $SERVERNAME by $REMOTE_USER from $R
 source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/printserver/setupprintserver
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+source /opt/karoshi/server_network/domain_information/domain_name
+
+#Check that this server has been setup with the correct authentication
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:members:" | /opt/karoshi/serversetup/modules/authentication/check_auth
+if [ $? = 101 ]
+then
+echo $AUTHENTICATIONFAILMSG"<br><br>"
+echo `date`: module_fileserver - $SERVERNAME does not have the correct authentication "for" this module by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+sleep 2
+exit 101
+fi
+
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+
+net rpc rights grant -U Administrator%$LDAPPASS "$SAMBADOMAIN\Domain Admins" SeMachineAccountPrivilege \
+SePrintOperatorPrivilege SeAddUsersPrivilege SeDiskOperatorPrivilege SeRemoteShutdownPrivilege 1>/dev/null
 
 if [ $SERVERNAME != $HOSTNAME ]
 then
@@ -103,118 +119,19 @@ scp -p -r /opt/karoshi/serversetup/language/$LANGCHOICE/modules/printserver root
 #Copy in module
 scp -p -r /opt/karoshi/serversetup/modules/printserver root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
 fi
-##########################
-#Configure ldap
-##########################
 
-CONFIGURE_LDAP=yes
-if [ $SERVERNAME = $HOSTNAME ]
-then
-CONFIGURE_LDAP=no
-fi
-if [ -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME ]
-then
-CONFIGURE_LDAP=no
-fi
-if [ -f /opt/karoshi/server_network/ldap_clients/$SERVERNAME ]
-then
-CONFIGURE_LDAP=no
-fi
-
-#########################
-#Ldap user check
-#########################
-if [ $SERVERNAME != $HOSTNAME ] && [ $CONFIGURE_LDAP != yes ]
-then
-PDCUSERCOUNT=`getent passwd | grep -c :/home/users/`
-
-SERVERUSERCOUNT=`ssh -x -o PasswordAuthentication=no $SERVERNAME '
-getent passwd | grep -c :/home/users/
-'
-`
-[ $PDCUSERCOUNT != $SERVERUSERCOUNT ] && CONFIGURE_LDAP=yes
-fi
-
-if [ $CONFIGURE_LDAP = yes ]
-then
-PDCIP=`net lookup $HOSTNAME`
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-echo "'$REMOTE_USER':'$REMOTE_ADDR':'$MD5SUM':'$HOSTNAME':'$PDCIP':" | /opt/karoshi/serversetup/modules/ldap/configureldap 
-'
-#Copy in /etc/ldap.secret
-scp -p /etc/ldap.secret root@$SERVERNAME:/etc/ 1> /dev/null
-fi
-
-#########################
-#Run module
-#########################
-if [ ! -f /opt/karoshi/server_network/domain_information/domain_name ]
-then
-#Get samba domain
-SAMBADOMAIN=`cat /etc/samba/smb.conf | grep workgroup | sed -n 1,1p | sed 's/ //g' | cut -d'=' -f2`
-echo SAMBADOMAIN="$SAMBADOMAIN" > /opt/karoshi/server_network/domain_information/domain_name
-fi
-source /opt/karoshi/server_network/domain_information/domain_name
+#Create keytab for cups
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:cups:cups:$SERVERNAME.$REALM:root:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
 
 PDCIP=`net lookup $HOSTNAME`
 if [ $SERVERNAME != $HOSTNAME ]
 then
-
-#Make sure karoshiadmin user exists
-getent passwd karoshiadmin 1>/dev/null
-if [ `echo $?` != 0 ]
-then
-#Create karoshiadmin user and add to itadmin
-PRIMARYGROUPID=`getent group | grep -w ^itadmin | cut -d: -f3 | sed -n 1,1p`
-[ $PRIMARYGROUPID'null' = null ] && exit 101
-karoshildap-useradd -a -g $PRIMARYGROUPID -G "Domain Admins" -d /home/users/itadminstaff/karoshiadmin -c karoshiadmin -N add -S client karoshiadmin 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-#Move user to the correct sub organisation unit
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-#Create ldif for new user
-[ -f /opt/karoshi/.tempdata/karoshiadmin.$$.ldif ] && rm -f /opt/karoshi/.tempdata/karoshiadmin.$$.ldif
-touch /opt/karoshi/.tempdata/karoshiadmin.$$.ldif
-chmod 0600 /opt/karoshi/.tempdata/karoshiadmin.$$.ldif
-ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" uid=karoshiadmin > /opt/karoshi/.tempdata/karoshiadmin.$$.ldif
-#Modify ldif file with correct sub organisation unit
-sed -i 's/ou=People,dc=karoshi,dc=local/ou=itadmin,ou=personnel,ou=People,dc=karoshi,dc=local/g' /opt/karoshi/.tempdata/karoshiadmin.$$.ldif
-#Delete user entry from the top organisation unit
-ldapdelete -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS uid=karoshiadmin,ou=People,dc=karoshi,dc=local
-#Import user ldif file to correct sub organisation unit
-ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS -f /opt/karoshi/.tempdata/karoshiadmin.$$.ldif 1>/dev/null 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-fi
-
-#Generate random password for karoshiadmin user
-PASSCHOICE=( A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y x 1 2 3 4 5 6 7 8 9 0 )
-
-RANGE=`echo ${#PASSCHOICE[@]}`
-let RANGE=$RANGE-1 
-
-COUNTER=1
-while [ $COUNTER -le 16 ]
-do
-ARRAYCHOICE=$RANDOM
-let "ARRAYCHOICE %= $RANGE"
-RANDPASSWORD[$COUNTER]=`echo ${PASSCHOICE[$ARRAYCHOICE]} `
-let COUNTER=COUNTER+1
-done
-PASSWORD=`echo ${RANDPASSWORD[@]:0} | sed 's/ //g'`
-
-#Change karoshiadmin password 
-echo -e "$PASSWORD""\n""$PASSWORD" | smbldap-passwd karoshiadmin 1>/dev/null 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-#allow karoshiadmin to join clients to the domain
-echo `date`: module_printserver - allowing karoshiadmin to "join" clients to the domain by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-net rpc rights grant -U karoshiadmin%$PASSWORD "$SAMBADOMAIN\Domain Admins" SeMachineAccountPrivilege \
-SePrintOperatorPrivilege SeAddUsersPrivilege SeDiskOperatorPrivilege SeRemoteShutdownPrivilege 1>/dev/null
-
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
-echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PASSWORD:$HOSTNAME:$PDCIP:$SAMBADOMAIN:' | /opt/karoshi/serversetup/modules/printserver/setupprintserver
+echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LDAPPASS:$HOSTNAME:$PDCIP:$SAMBADOMAIN:' | /opt/karoshi/serversetup/modules/printserver/setupprintserver
 '
 [ `echo $?` = 101 ] && exit 101
 else
-echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PASSWORD:$HOSTNAME:$PDCIP:$SAMBADOMAIN: | /opt/karoshi/serversetup/modules/printserver/setupprintserver
+echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LDAPPASS:$HOSTNAME:$PDCIP:$SAMBADOMAIN: | /opt/karoshi/serversetup/modules/printserver/setupprintserver
 [ `echo $?` = 101 ] && exit 101
 fi
 
@@ -226,12 +143,6 @@ fi
 KIXLINENUMBER=`grep -n printserver= /var/lib/samba/netlogon/logonform.kix | cut -d: -f1`
 
 [ $KIXLINENUMBER'null' != null ] && sed -i $KIXLINENUMBER'c''$printserver'=$SERVERNAME /var/lib/samba/netlogon/logonform.kix
-
-#Modifying newlogonform.kix for correct server
-
-KIXLINENUMBER=`grep -n printserver= /var/lib/samba/netlogon/newlogonform.kix | cut -d: -f1`
-
-[ $KIXLINENUMBER'null' != null ] && sed -i $KIXLINENUMBER'c''$printserver'=$SERVERNAME /var/lib/samba/netlogon/newlogonform.kix
 
 #Add role information
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
@@ -463,7 +374,10 @@ fi
 #restrict anonymous = 2 needs adding to /etc/samba/smb.conf global section
 # printers section	guest ok = No
 
-#Create printer_drivers folder for linux clients
-[ ! -d /var/lib/samba/netlogon/linuxclient/printer_drivers/ ] && mkdir -p /var/lib/samba/netlogon/linuxclient/printer_drivers/
+###########################
+#Show completed message
+###########################
+echo '<br><b>'$COMPLETEDMSG'</b>'
+
 exit
 

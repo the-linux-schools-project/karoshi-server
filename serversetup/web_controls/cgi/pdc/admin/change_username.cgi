@@ -1,22 +1,19 @@
 #!/bin/bash
 #Change a user name
 #Copyright (C) 2007  Paul Sharrad
-
-#This file is part of Karoshi Server.
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
 #
-#Karoshi Server is free software: you can redistribute it and/or modify
-#it under the terms of the GNU Affero General Public License as published by
-#the Free Software Foundation, either version 3 of the License, or
-#(at your option) any later version.
-#
-#Karoshi Server is distributed in the hope that it will be useful,
+#This program is distributed in the hope that it will be useful,
 #but WITHOUT ANY WARRANTY; without even the implied warranty of
 #MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU Affero General Public License for more details.
+#GNU General Public License for more details.
 #
-#You should have received a copy of the GNU Affero General Public License
-#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
-
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #
 #The Karoshi Team can be contacted at: 
 #mpsharrad@karoshi.org.uk
@@ -54,7 +51,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\--'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=7
+END_POINT=11
 #Assign USERNAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
@@ -77,6 +74,32 @@ if [ `echo $DATAHEADER'check'` = NEWUSERNAMEcheck ]
 then
 let COUNTER=$COUNTER+1
 NEWUSERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+break
+fi
+let COUNTER=$COUNTER+1
+done
+#Assign FIRSTNAME
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+if [ `echo $DATAHEADER'check'` = FIRSTNAMEcheck ]
+then
+let COUNTER=$COUNTER+1
+FIRSTNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+break
+fi
+let COUNTER=$COUNTER+1
+done
+#Assign SURNAME
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+if [ `echo $DATAHEADER'check'` = SURNAMEcheck ]
+then
+let COUNTER=$COUNTER+1
+SURNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
 break
 fi
 let COUNTER=$COUNTER+1
@@ -115,33 +138,44 @@ fi
 #Check data
 #########################
 #Check to see that username is not blank
-if [ $USERNAME'null' = null ]
+if [ -z "$USERNAME" ]
 then
 MESSAGE=$ERRORMSG2
 show_status
 fi
 #Check to see if the user exists
-echo "$MD5SUM:$USERNAME" | sudo -H /opt/karoshi/web_controls/exec/existcheck_user
-USEREXISTSTATUS=`echo $?`
-if [ $USEREXISTSTATUS != 112 ]
+getent passwd $USERNAME 1>/dev/null
+if [ $? != 0 ]
 then
 MESSAGE=$ERRORMSG1
 show_status
 fi
 #Check to see that newusername is not blank
-if [ $NEWUSERNAME'null' = null ]
+if [ -z "$NEWUSERNAME"  ]
 then
 MESSAGE=$ERRORMSG3
 show_status
 fi
 #Check to see if the newusername exists
-echo "$MD5SUM:$NEWUSERNAME" | sudo -H /opt/karoshi/web_controls/exec/existcheck_user
-USEREXISTSTATUS=`echo $?`
-if [ $USEREXISTSTATUS = 112 ]
+getent passwd $NEWUSERNAME 1>/dev/null
+if [ $? = 0 ]
 then
-MESSAGE=`echo $NEWUSERNAME $ERRORMSG4`
+MESSAGE=$ERRORMSG4
 show_status
 fi
+#Check to see that firstname is not blank
+if [ -z $FIRSTNAME ]
+then
+MESSAGE=$ERRORMSG11
+show_status
+fi
+#Check to see that surname is not blank
+if [ -z "$SURNAME" ]
+then
+MESSAGE=$ERRORMSG12
+show_status
+fi
+
 #Don't change username for certain users
 if [ $USERNAME = root ] || [ $USERNAME = karoshi ]
 then
@@ -161,7 +195,7 @@ fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/change_username.cgi | cut -d' ' -f1`
 #Change username
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$NEWUSERNAME" | sudo -H /opt/karoshi/web_controls/exec/change_username
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$NEWUSERNAME:$FIRSTNAME:$SURNAME:" | sudo -H /opt/karoshi/web_controls/exec/change_username
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 0 ]
 then

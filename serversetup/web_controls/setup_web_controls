@@ -36,10 +36,6 @@ INTERACTIVE_MODE=no
 fi
 fi
 
-#Check to see which version of samba we are using
-SAMBAVER=samba3
-[ -f /usr/local/sbin/samba ] && SAMBAVER=samba4
-
 #########################
 #Add log entry
 #########################
@@ -59,12 +55,9 @@ DEMO_MODE=no
 ###########################
 
 #Create certificate
-if [ $SAMBAVER = samba4 ]
-then
 if [ ! -f /etc/ssl/webmanagement/server_web_management.key ]
 then
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert_web_management
-fi
 fi
 #Configure a separate apache to run on ports 50001 and 50002 with user apache_karoshi
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/scripts/configure_karoshi_web_management
@@ -179,10 +172,6 @@ chmod u+X -R /opt/karoshi/logs
 chown -R root:root /opt/karoshi/logs
 #Copy in files
 cp -f -R /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/* /var/www/cgi-bin_karoshi/admin/
-if [ $SAMBAVER = samba4 ]
-then
-cp -f -R /opt/karoshi/serversetup/web_controls/cgi/pdc/admin_samba4/* /var/www/cgi-bin_karoshi/admin/
-fi
 cp -f -R /opt/karoshi/serversetup/web_controls/cgi/pdc/tech/* /var/www/cgi-bin_karoshi/tech/
 cp -f /opt/karoshi/serversetup/web_controls/images/favicon.ico /var/www/html_karoshi/
 chmod 0440 /var/www/html_karoshi/favicon.ico
@@ -230,12 +219,9 @@ cp -f -R /opt/karoshi/serversetup/web_controls/cgi/pdc/all/* /var/www/cgi-bin_ka
 
 
 #Create keytab for the web management
-if [ $SAMBAVER = samba4 ]
-then
 if [ ! -f /etc/keytabs/webmanagement.keytab ]
 then
 echo "root:127.0.0.1:-:$HOSTNAME:HTTP:webmanagement:$HOSTNAME.$REALM:apache_karoshi:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
-fi
 fi
 ######################
 #Htaccess files
@@ -253,8 +239,6 @@ cp -f /opt/karoshi/serversetup/web_controls/htaccess/staff/.htaccess /var/www/ht
 
 
 #Get the realm information
-if [ $SAMBAVER = samba4 ]
-then
 source /opt/karoshi/server_network/domain_information/domain_name
 
 #Create htaccess files for staff
@@ -286,7 +270,6 @@ ErrorDocument 403 \"<html><meta http-equiv=\\\"refresh\\\" content=\\\"0;url=/cg
 
 " > /var/www/cgi-bin_karoshi/staff/.htaccess
 cp /var/www/cgi-bin_karoshi/staff/.htaccess /var/www/html_karoshi/staff/
-fi
 
 #################################
 #Copy in tech html scripts
@@ -507,12 +490,9 @@ cp -f -R /opt/karoshi/serversetup/web_controls/html/pdc/all/* /var/www/html_karo
 cp -f -R /opt/karoshi/serversetup/web_controls/images /var/www/html_karoshi/
 cp -f -R /opt/karoshi/serversetup/web_controls/html/pdc/css /var/www/html_karoshi/
 
-if [ $SAMBAVER = samba4 ]
-then
 rm /var/www/html_karoshi/all/js/ldap.php
 mv /var/www/html_karoshi/all/js/ldap_samba4.php /var/www/html_karoshi/all/js/ldap.php
 sed -i 's/LDAPBASE/'$LDAPBASE'/g' /var/www/html_karoshi/all/js/ldap.php
-fi
 
 if [ -f /opt/karoshi/web_controls/web_admin_restrictions ]
 then
@@ -574,8 +554,6 @@ cp -f /opt/karoshi/serversetup/web_controls/scripts/* /opt/karoshi/web_controls/
 [ -f /opt/karoshi/web_controls/group_dropdown_def.$$ ] && mv -f /opt/karoshi/web_controls/group_dropdown_def.$$ /opt/karoshi/web_controls/group_dropdown_def
 cp -f -R /opt/karoshi/serversetup/web_controls/scripts/exec/pdc/* /opt/karoshi/web_controls/exec/
 [ $DEMO_MODE = yes ] && cp -f -R /opt/karoshi/serversetup/web_controls/scripts/exec/pdc_demo/* /opt/karoshi/web_controls/exec/
-
-[ $SAMBAVER = samba4 ] && cp -f -R /opt/karoshi/serversetup/web_controls/scripts/exec/pdc_samba4/* /opt/karoshi/web_controls/exec/
 
 cp -f /opt/karoshi/serversetup/web_controls/allowed_custom_commands /opt/karoshi/web_controls
 cp -f -R /opt/karoshi/serversetup/web_controls/language /opt/karoshi/web_controls/
@@ -812,14 +790,9 @@ chmod 0700 /var/www/karoshi
 cd /var/www/html_karoshi/admin
 tar -xf /opt/karoshi/serversetup/web_controls/phpldapadmin/phpldapadmin.tar.gz
 #Copy in correct config.cfg for samba4
-if [ $SAMBAVER = samba4 ]
-then
 cp /opt/karoshi/serversetup/web_controls/phpldapadmin/samba4/config.php /var/www/html_karoshi/admin/phpldapadmin/config/config.php
 #Change path for correct realm
 sed -i 's/CHANGETHISBASE/'$LDAPBASE'/g' /var/www/html_karoshi/admin/phpldapadmin/config/config.php
-else
-cp /opt/karoshi/serversetup/web_controls/phpldapadmin/samba3/config.php /var/www/html_karoshi/admin/phpldapadmin/config/config.php
-fi
 #Set permissions on phpldapadmin
 chown root:apache_karoshi -R /var/www/html_karoshi/admin/phpldapadmin
 chmod 0440 -R /var/www/html_karoshi/admin/phpldapadmin
@@ -1028,15 +1001,13 @@ fi
 ln -s /var/lib/samba/netlogon/linuxclient/backgrounds /var/www/html_karoshi/images/linuxclient/backgrounds
 
 #Add in dns record for manage.realm
-if [ $SAMBAVER = samba4 ]
-then
+
 TCPIP=`net lookup $HOSTNAME`
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 samba-tool dns query 127.0.0.1 $REALM manage.$REALM CNAME --username=Administrator --password=$LDAPPASS 1>/dev/null 2>/dev/null
 if [ `echo $?` != 0 ]
 then
 samba-tool dns add 127.0.0.1 $REALM manage CNAME $HOSTNAME.$REALM --username=Administrator --password=$LDAPPASS
-fi
 fi
 
 #Create some statistics

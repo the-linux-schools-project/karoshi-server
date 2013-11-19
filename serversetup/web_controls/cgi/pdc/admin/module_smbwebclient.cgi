@@ -55,7 +55,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=5
+END_POINT=9
 #Assign SERVERNAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
@@ -65,6 +65,20 @@ if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
 then
 let COUNTER=$COUNTER+1
 SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+break
+fi
+let COUNTER=$COUNTER+1
+done
+
+#Assign ALIAS
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+if [ `echo $DATAHEADER'check'` = ALIAScheck ]
+then
+let COUNTER=$COUNTER+1
+ALIAS=`echo $DATA | cut -s -d'_' -f$COUNTER`
 break
 fi
 let COUNTER=$COUNTER+1
@@ -110,9 +124,28 @@ then
 MESSAGE=$ACCESS_ERROR1
 show_status
 fi
+
+#Check to see that SERVERNAME is not blank
+if [ $SERVERNAME'null' = null ]
+then
+MESSAGE=$ERRORMSG1
+show_status
+fi
+
+#Check to see that ALIAS is not blank
+if [ $ALIAS'null' = null ]
+then
+MESSAGE=$ERRORMSG2
+show_status
+fi
+
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_smbwebclient.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME" | sudo -H /opt/karoshi/web_controls/exec/module_smbwebclient
-echo '</div>
-</body>
-</html>'
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ALIAS:" | sudo -H /opt/karoshi/web_controls/exec/module_smbwebclient
+EXEC_STATUS=$?
+if [ $EXEC_STATUS = 101 ]
+then
+MESSAGE=`echo $PROBLEMMSG $LOGMSG`
+show_status
+fi
+echo '</div></body></html>'
 exit

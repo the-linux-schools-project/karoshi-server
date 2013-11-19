@@ -92,10 +92,10 @@ fi
 #######################
 if [ $EXAMSTATUS = enable ]
 then
-ACTION=e
+ACTION=enable
 ACTIONLANG=enabling
 else
-ACTION=d
+ACTION=disable
 ACTIONLANG=disabling
 fi
 echo `date`: exam_accounts_enable_disable - $ACTIONLANG all exam accounts from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -106,7 +106,8 @@ do
 if [ `echo $EXCEPTIONLIST | grep -c -w exam$COUNTER` = 0 ]
 then 
 echo $ACTIONLANG exam$COUNTER '<br>'
-smbpasswd -$ACTION exam$COUNTER 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool user $ACTION exam$COUNTER 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "<br><br>"
 fi
 let COUNTER=COUNTER+1
 done

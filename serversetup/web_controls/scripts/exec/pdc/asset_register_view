@@ -1,5 +1,6 @@
 #!/bin/bash
 #Copyright (C) 2007  Paul Sharrad
+#Copyright (C) 2013  Robin McCorkell
 
 #This file is part of Karoshi Server.
 #
@@ -110,11 +111,30 @@ echo `date`: asset_register_view - access denied to $REMOTE_USER from $REMOTE_AD
 exit 101
 fi
 
+
+if [ $MOBILE = yes ]
+then
+TABLECLASS=mobilestandard
+ICON1=/images/assets/locationm.png
+ICON2=/images/assets/editm.png
+ICON3=/images/assets/deletem.png
+ICON4=/images/assets/add_assetm.png
+ICON5=/images/assets/totalsm.png
+ICON6=/images/assets/searchm.png
+ICON7=/images/assets/descriptionsm.png
+ICON8=/images/assets/addescm.png
+ICON9=/images/assets/suppliersm.png
+ICON10=/images/assets/adddescm.png
+ICON11=/images/assets/addsupplierm.png
+ICON12=/images/assets/budgetm.png
+ICON13=/images/assets/addbudgetm.png
+ICON14=/images/assets/moreinfom.png
+ICON15=/images/assets/exportm.png
+ICON16=/images/assets/importm.png
+ICON17=/images/assets/client_logsm.png
+ICON18=/images/assets/qrcodem.png
+else
 TABLECLASS=standard
-[ $MOBILE = yes ] && TABLECLASS=mobilestandard
-
-[ $OPTION'null' = null ] && OPTION=nofilter
-
 ICON1=/images/assets/location.png
 ICON2=/images/assets/edit.png
 ICON3=/images/assets/delete.png
@@ -133,6 +153,11 @@ ICON15=/images/assets/export.png
 ICON16=/images/assets/import.png
 ICON17=/images/assets/client_logs.png
 ICON18=/images/assets/qrcode.png
+fi
+
+
+[ $OPTION'null' = null ] && OPTION=nofilter
+
 [ $ACTION'null' = null ] && ACTION=view
 [ $LOCATION'null' = null ] && LOCATION=showchoice
 
@@ -145,7 +170,7 @@ ICON18=/images/assets/qrcode.png
 if [ $ACTION = qrcodes ]
 then
 #Load asset_register_show_qrcodes.cgi
-echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/asset_register_show_qrcodes.cgi\" target=\"_blank\" name = \"frm\">
+echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/asset_register_show_qrcodes.cgi\" target=\"_top\" name = \"frm\">
 <input type=\"hidden\" name=\"_LOCATION_\" value=\"$LOCATION\">
 </form>
 <script>
@@ -274,6 +299,8 @@ then
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_" type="image" class="images" src="'$ICON1'" value=""><span>'$CHOOSELOCATIONMSG'</span></a></td>
 <td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_add_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON4'" value=""><span>'$ADDASSETMSG'</span></a></td>
 <td style="vertical-align: top;"><b>'$TITLE16'</b></td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_view_LOCATION_'$LOCATION'_ASSETCHOICE_'$ASSETTYPE'_OPTION_nofilter_" type="image" class="images" src="'$ASSETICON'" value=""><span>'$SHOWALLMSG'</span></a></td></tr></tbody></table><br><br>'
+
+[ $MOBILE != yes ] && echo '</div><div id="infobox">'
 
 echo '<textarea rows="100" cols="150">'
 echo $IDENTITYNAME,$LOCATIONMSG,$ASSETTYPEMSG,$DESCRIPTIONMSG,$TCPIPMSG,$MACADDRESSMSG,$SERIAL_KEY,$PURCHASE_DATE,$VALUEMSG,$SUPPLIERMSG,$BUDGETMSG,$USERNAME
@@ -748,10 +775,6 @@ then
 source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
 #Delete entry from netlogon
 [ -f /var/lib/samba/netlogon/clients/$MAC1 ] && rm -f /var/lib/samba/netlogon/clients/$MAC1
-#Delete entry from netlogon
-[ -f /var/lib/samba/netlogon/clients/$MAC2 ] && rm -f /var/lib/samba/netlogon/clients/$MAC2
-#Delete entry from netlogon
-[ -f /var/lib/samba/netlogon/clients/$MAC3 ] && rm -f /var/lib/samba/netlogon/clients/$MAC3
 #Move entry to deleted folder
 mv -f /opt/karoshi/asset_register/locations/$LOCATION/$ASSET /opt/karoshi/asset_register/deleted/$LOCATION/
 echo `date`: asset_register_view - deleting $ASSET from $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -763,7 +786,7 @@ fi
 function asset_form {
 echo '<input type="image" src="/images/submenus/file/go.gif" name="_ACTION_really'$ACTION'_ASSET_'$ASSET'_" value="">'
 echo '<a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" alt="back" border="0"></a><br><br>'
-echo '<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2" class="'$TABLECLASS'"><tbody>'
+echo '<table style="text-align: left;" border="0" cellpadding="2" cellspacing="2" class="'$TABLECLASS'"><tbody>'
 if [ $ACTION = edit ]
 then
 echo '<tr><td style="width: 180px;">'$ASSETNUMMSG'</td><td>'$ASSET'</td></tr>'
@@ -943,19 +966,20 @@ echo BUDGET=\""$BUDGET"\" >> "/opt/karoshi/asset_register/locations/$LOCATION/$A
 echo EXTRAINFO=\""$EXTRAINFO"\" >> "/opt/karoshi/asset_register/locations/$LOCATION/$ASSET"
 
 #Add details to netlogon
-[ ! -d /var/lib/samba/netlogon/clients ] && mkdir -p /var/lib/samba/netlogon/clients
-
 if [ $MACADDRESS1'null' != null ]
 then
 if [ $MACADDRESS1 != N.A. ]
 then
+if [ ! -d /var/lib/samba/netlogon/clients ]
+then
+mkdir /var/lib/samba/netlogon/clients
+fi
 CLIENTMAC=`echo $MACADDRESS1 | sed 's/://g'`
 echo $IDENTITY > /var/lib/samba/netlogon/clients/"$CLIENTMAC"
 echo $TCPIP1 >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
 echo $LOCATION >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
 fi
 fi
-
 
 if [ $MACADDRESS2'null' != null ]
 then
@@ -978,6 +1002,27 @@ echo $IDENTITY > /var/lib/samba/netlogon/clients/"$CLIENTMAC"
 echo $TCPIP3 >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
 echo $LOCATION >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
 fi
+fi
+
+if [[ $TCPIP1 ]] && [[ $TCPIP1 != "N.A." ]]; then
+	LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+	source /opt/karoshi/server_network/domain_information/domain_name
+	
+	#Add entry to dns for TCPIP1
+	echo `date`: asset_register_view - checking "if" $IDENTITY is "in" the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	samba-tool dns query 127.0.0.1 $REALM $IDENTITY A --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	if [ `echo $?` != 0 ]
+	then
+		echo `date`: asset_register_view - removing existing $IDENTITY $TCPIP1 from dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		samba-tool dns delete 127.0.0.1 $REALM $IDENTITY A $TCPIP1 --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	fi
+	echo `date`: asset_register_view - adding $IDENTITY $TCPIP1 to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	samba-tool dns add 127.0.0.1 $REALM $IDENTITY A $TCPIP1 --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	
+	#Add reverse DNS entry for TCPIP1
+	SUBNET=$(grep "netmask " /etc/network/interfaces | sed -n 1,1p | cut -d" " -f2)
+	echo `date`: asset_register_view - adding a reverse DNS entry "for" $IDENTITY $TCPIP1 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	/opt/karoshi/serversetup/pdc/"useful scripts"/reverse-dns add $TCPIP1 $SUBNET $IDENTITY.$REALM
 fi
 }
 
@@ -1133,22 +1178,33 @@ if [ $OPTION = filter ]
 then
 ASSETTYPE=$ASSETCHOICE
 assign_asset_labels
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_" type="image" class="images" src="'$ICON1'" value=""><span>'$CHOOSELOCATIONMSG'</span></a></td>
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<td style="vertical-align: top;"><b>'$LOCATION'</b></td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_view_LOCATION_'$LOCATION'_ASSETCHOICE_'$ASSETTYPE'_OPTION_nofilter_" type="image" class="images" src="'$ASSETICON'" value=""><span>'$SHOWALLMSG'</span></a></td>
+<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_" type="image" class="images" src="'$ICON1'" value=""><span>'$CHOOSELOCATIONMSG'</span></a></td>
 <td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_add_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON4'" value=""><span>'$ADDASSETMSG'</span></a></td>
-<td style="vertical-align: top;"><b>'$TITLE2 - $LOCATION'</b></td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_view_LOCATION_'$LOCATION'_ASSETCHOICE_'$ASSETTYPE'_OPTION_nofilter_" type="image" class="images" src="'$ASSETICON'" value=""><span>'$SHOWALLMSG'</span></a></td></tr></tbody></table>
+</tr></tbody></table>
 '
 else
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_" type="image" class="images" src="'$ICON1'" value=""><span>'$CHOOSELOCATIONMSG'</span></a></td>
 <td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_add_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON4'" value=""><span>'$ADDASSETMSG'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_qrcodes_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON18'" value=""><span>'$TITLE19'</span></a></td>
-<td style="vertical-align: top;"><b>'$TITLE2 - $LOCATION'</b></td></tr></tbody></table>
+<td style="vertical-align: top;"><b>'$LOCATION'</b></td></tr></tbody></table>
 '
 fi
+
+[ $MOBILE != yes ] && echo '</div><div id="infobox">'
 
 if [ `ls -1 /opt/karoshi/asset_register/locations/$LOCATION/ | wc -l` -gt 0 ]
 then
 echo '
 <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 60px;">'$IDENTITYNAME'</td><td style="width: 240px;">'$DESCRIPTIONMSG'</td><td style="width: 100px;">'$TCPIPMSG'</td><td style="width: 110px;">'$MACADDRESSMSG'</td><td style="width: 30px;">'$SERIAL_KEY'</td></tr>'
+<tr><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td>'
+
+if [ $MOBILE = no ]
+then
+echo '<td style="width: 60px;">'$IDENTITYNAME'</td><td style="width: 240px;">'$DESCRIPTIONMSG'</td><td style="width: 100px;">'$TCPIPMSG'</td><td style="width: 110px;">'$MACADDRESSMSG'</td><td style="width: 30px;">'$SERIAL_KEY'</td></tr>'
+else
+echo '</tr>'
+fi
 for ASSETS in /opt/karoshi/asset_register/locations/$LOCATION/*
 do
 ASSET=`basename $ASSETS`
@@ -1163,14 +1219,20 @@ SHOWENTRY=no
 fi
 if [ $SHOWENTRY = yes ]
 then
-echo '<tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$ASSIGNEDMSG' : '$ASSIGNED'<br>'$PURCHASE_DATE' : '$PURCHASEDATE'<br>'$VALUEMSG' : '$VALUE'<br>'$SUPPLIERMSG' : '$SUPPLIER'<br>'$BUDGETMSG' : '$BUDGET'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_edit_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON2'" value=""><span>'$EDITMSG' '$IDENTITY'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_delete_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON3'" value=""><span>'$DELETEMSG' '$IDENTITY'</span></a></td>
+echo '<tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$ASSIGNEDMSG' : '$ASSIGNED'<br>'$PURCHASE_DATE' : '$PURCHASEDATE'<br>'$VALUEMSG' : '$VALUE'<br>'$SUPPLIERMSG' : '$SUPPLIER'<br>'$BUDGETMSG' : '$BUDGET'<br>'$TCPIPMSG'<br>'$TCPIP1' '$TCPIP2' '$TCPIP3'<br>'$MACADDRESSMSG'<br>'$MAC1' '$MAC2' '$MAC3'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_edit_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON2'" value=""><span>'$EDITMSG' '$IDENTITY'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_delete_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON3'" value=""><span>'$DELETEMSG' '$IDENTITY'</span></a></td>
 <td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_LOCATION_'$LOCATION'_ASSETCHOICE_'$ASSETTYPE'_OPTION_filter_" type="image" class="images" src="'$ASSETICON'" value=""><span>'$ASSETLABEL'</span></a></td>
 <td style="vertical-align: top;">'
 if [ $ASSETTYPE -le 8 ]
 then
-echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_showlogs_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON17'" value=""><span>Show logs '$IDENTITY'</span></a>'
+echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_showlogs_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON17'" value=""><span>Show logs '$IDENTITY'</span></a></td>'
 fi
-echo '</td><td style="vertical-align: top;">'$IDENTITY'</td><td style="vertical-align: top;">'$DESCRIPTION'</td><td style="vertical-align: top;">'$TCPIP1' '$TCPIP2' '$TCPIP3'</td><td style="vertical-align: top;">'$MAC1' '$MAC2' '$MAC3'</td><td style="vertical-align: top;">'$SERIAL'</td></tr>'
+echo '<td style="vertical-align: top;">'$IDENTITY'</td>'
+if [ $MOBILE = no ]
+then
+echo '<td style="vertical-align: top;">'$DESCRIPTION'</td><td style="vertical-align: top;">'$TCPIP1' '$TCPIP2' '$TCPIP3'</td><td style="vertical-align: top;">'$MAC1' '$MAC2' '$MAC3'</td><td style="vertical-align: top;">'$SERIAL'</td></tr>'
+else
+echo '</tr>'
+fi
 fi
 done
 echo '</tbody></table>'
@@ -1198,8 +1260,16 @@ OPTION=`echo $OPTION | sed 's/%3A/:/g'`
 
 echo '<b>'$TITLE5' - '$OPTION'</b><br><br>'
 
+[ $MOBILE != yes ] && echo '</div><div id="infobox">'
+
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 60px;">'$IDENTITYNAME'</td><td style="width: 180px;">'$DESCRIPTIONMSG'</td><td style="width: 80px;">'$ASSIGNEDMSG'</td><td style="width: 60px;">'$TCPIPMSG'</td><td style="width: 60px;">'$MACADDRESSMSG'</td><td style="width: 80px;">'$SERIAL_KEY'</td><td style="width: 60px;">'$PURCHASE_DATE'</td><td style="width: 60px;">'$VALUEMSG'</td><td style="width: 80px;">'$SUPPLIERMSG'</td><td style="width: 180px;">'$BUDGETMSG'</td></tr>'
+<tr><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 60px;">'$IDENTITYNAME'</td>'
+if [ $MOBILE = no ]
+then
+echo '<td style="width: 180px;">'$DESCRIPTIONMSG'</td><td style="width: 80px;">'$ASSIGNEDMSG'</td><td style="width: 60px;">'$TCPIPMSG'</td><td style="width: 60px;">'$MACADDRESSMSG'</td><td style="width: 80px;">'$SERIAL_KEY'</td><td style="width: 60px;">'$PURCHASE_DATE'</td><td style="width: 60px;">'$VALUEMSG'</td><td style="width: 80px;">'$SUPPLIERMSG'</td><td style="width: 180px;">'$BUDGETMSG'</td></tr>'
+else
+echo '</tr>'
+fi
 
 for ASSETS in `grep -l -R $OPTION /opt/karoshi/asset_register/locations/*`
 do
@@ -1220,9 +1290,15 @@ then
 echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_showlogs_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON17'" value=""><span>Show logs '$IDENTITY'</span></a>'
 fi
 
-echo '</td><td style="vertical-align: top;">'$IDENTITY'</td><td style="vertical-align: top;">'$DESCRIPTION'</td><td style="vertical-align: top;">'$ASSIGNED'</td><td style="vertical-align: top;">
-'$TCPIP1' '$TCPIP2' '$TCPIP3'</td><td style="vertical-align: top;">'$MAC1' '$MAC2' '$MAC3'</td><td style="vertical-align: top;">'$SERIAL'</td><td style="vertical-align: top;">'$PURCHASEDATE'</td><td style="vertical-align: top;">'$VALUE'</td><td style="vertical-align: top;">'$SUPPLIER'</td><td style="vertical-align: top;">'$BUDGET'</td></tr>'
+echo '</td><td style="vertical-align: top;">'$IDENTITY'</td>'
 
+if [ $MOBILE = no ]
+then
+echo '<td style="vertical-align: top;">'$DESCRIPTION'</td><td style="vertical-align: top;">'$ASSIGNED'</td><td style="vertical-align: top;">
+'$TCPIP1' '$TCPIP2' '$TCPIP3'</td><td style="vertical-align: top;">'$MAC1' '$MAC2' '$MAC3'</td><td style="vertical-align: top;">'$SERIAL'</td><td style="vertical-align: top;">'$PURCHASEDATE'</td><td style="vertical-align: top;">'$VALUE'</td><td style="vertical-align: top;">'$SUPPLIER'</td><td style="vertical-align: top;">'$BUDGET'</td></tr>'
+else
+echo '</tr>'
+fi
 done
 echo '</tbody></table><br>'
 fi

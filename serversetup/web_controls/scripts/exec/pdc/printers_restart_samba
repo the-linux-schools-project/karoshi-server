@@ -82,83 +82,49 @@ echo `date`: printers_restart_samba - Restarting from $REMOTE_ADDR by $REMOTE_US
 
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
-
-if [ ! -f /opt/karoshi/server_network/domain_information/domain_name ]
-then
-#Get samba domain
-SAMBADOMAIN=`cat /etc/samba/smb.conf | grep workgroup | sed -n 1,1p | sed 's/ //g' | cut -d'=' -f2`
-echo SAMBADOMAIN="$SAMBADOMAIN" > /opt/karoshi/server_network/domain_information/domain_name
-fi
 source /opt/karoshi/server_network/domain_information/domain_name
 
-#Make sure karoshiadmin user exists
-getent passwd karoshiadmin 1>/dev/null
-if [ `echo $?` != 0 ]
-then
-#Create karoshiadmin user and add to itadmin
-PRIMARYGROUPID=`getent group | grep -w ^itadmin | cut -d: -f3 | sed -n 1,1p`
-[ $PRIMARYGROUPID'null' = null ] && exit 101
-karoshildap-useradd -a -g $PRIMARYGROUPID -G "Domain Admins" -d /home/users/itadminstaff/karoshiadmin -c karoshiadmin -N add -S client karoshiadmin 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-#Move user to the correct sub organisation unit
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-#Create ldif for new user
-[ -f /opt/karoshi/.tempdata/karoshiadmin.$$.ldif ] && rm -f /opt/karoshi/.tempdata/karoshiadmin.$$.ldif
-touch /opt/karoshi/.tempdata/karoshiadmin.$$.ldif
-chmod 0600 /opt/karoshi/.tempdata/karoshiadmin.$$.ldif
-ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" uid=karoshiadmin > /opt/karoshi/.tempdata/karoshiadmin.$$.ldif
-#Modify ldif file with correct sub organisation unit
-sed -i 's/ou=People,dc=karoshi,dc=local/ou=itadmin,ou=personnel,ou=People,dc=karoshi,dc=local/g' /opt/karoshi/.tempdata/karoshiadmin.$$.ldif
-#Delete user entry from the top organisation unit
-ldapdelete -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS uid=karoshiadmin,ou=People,dc=karoshi,dc=local
-#Import user ldif file to correct sub organisation unit
-ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS -f /opt/karoshi/.tempdata/karoshiadmin.$$.ldif 1>/dev/null 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-fi
-
-#Generate random password for karoshiadmin user
-PASSCHOICE=( A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y x 1 2 3 4 5 6 7 8 9 0 )
-
-RANGE=`echo ${#PASSCHOICE[@]}`
-let RANGE=$RANGE-1 
-
-COUNTER=1
-while [ $COUNTER -le 16 ]
-do
-ARRAYCHOICE=$RANDOM
-let "ARRAYCHOICE %= $RANGE"
-RANDPASSWORD[$COUNTER]=`echo ${PASSCHOICE[$ARRAYCHOICE]} `
-let COUNTER=COUNTER+1
-done
-PASSWORD=`echo ${RANDPASSWORD[@]:0} | sed 's/ //g'`
-
-#Change karoshiadmin password 
-echo -e "$PASSWORD""\n""$PASSWORD" | smbldap-passwd karoshiadmin 1>/dev/null 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-#allow karoshiadmin to join clients to the domain
-echo `date`: module_printserver - allowing karoshiadmin to "join" clients to the domain by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-net rpc rights grant -U karoshiadmin%$PASSWORD "$SAMBADOMAIN\Domain Admins" SeMachineAccountPrivilege \
-SePrintOperatorPrivilege SeAddUsersPrivilege SeDiskOperatorPrivilege SeRemoteShutdownPrivilege 1>/dev/null
-
 PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/printserver`
+
+
 if [ $PRINTSERVER != $HOSTNAME ]
 then
 #Make sure 64bit drivers are on print server
 scp -r /opt/karoshi/serversetup/modules/printserver/cupsdrivers64 root@$PRINTSERVER:"/opt/karoshi/serversetup/modules/printserver/"
 
-ssh -x -o PasswordAuthentication=no $PRINTSERVER "
+#Check to see if the print server is a domain member or an additional domain controller
+#For a dc we have to use cupsaddsmb -H $HOSTNAME -U Administrator%$LDAPPASS -a -v 2>&1
+#For a domain member cupsaddsmb -H $HOSTNAME -U root%$LDAPPASS -a -v 2>&1
 
-net rpc rights grant itadmin SePrintOperatorPrivilege -U karoshiadmin%$PASSWORD
+#set root password to be the same as the administrator password
+samba-tool user setpassword root --newpassword=$LDAPPASS 1>/dev/null
+
+ssh -x -o PasswordAuthentication=no $PRINTSERVER '
+
 ######################
 #Restart samba
 ######################
-echo '<b>'$RESTARTSMBMSG'</b><br><br>'
-echo '<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">'
-/opt/karoshi/serversetup/distro/'$DISTROCHOICE'/scripts/control_services/samba_stop
-echo '<br>'
-/opt/karoshi/serversetup/distro/'$DISTROCHOICE'/scripts/control_services/samba_start
-echo '</pre>'
-echo '<br>'
+source /opt/karoshi/serversetup/variables/distro
+echo "<b>"'$RESTARTSMBMSG'"</b><br><br>"
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop
+echo "<br>"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
+echo "</pre>"
+#Wait for samba to have restarted properly
+PORTCHECK=0
+COUNTER=1
+while [ $PORTCHECK = 0 ]
+do
+echo Waiting "for" samba to start - $COUNTER"<br>"
+PORTCHECK=`netstat -vatn | grep LISTEN | grep -c -w 445`
+sleep 1
+#Give up after 20 seconds
+[ $COUNTER = 20 ] && exit 101
+let COUNTER=$COUNTER+1
+done
+echo "<br>"
 ######################
 #Copy cups drivers from \\pdc\applications
 ######################
@@ -173,40 +139,41 @@ cp /opt/karoshi/serversetup/modules/printserver/cupsdrivers64/cups6.inf /usr/sha
 
 if ! test -e /usr/share/cups/drivers/pscript5.dll
 then
-echo Attempting to get windows printer dll files from //$HOSTNAME/applications/cups_print'"'<br>'"'
 cd /usr/share/cups/drivers
-smbclient -N //$HOSTNAME/applications -c '"'get \cups_print\pscript5.dll pscript5.dll'"'
-smbclient -N //$HOSTNAME/applications -c '"'get \cups_print\ps5ui.dll ps5ui.dll'"'
-smbclient -N //$HOSTNAME/applications -c '"'get \cups_print\pscript.hlp pscript.hlp'"'
-smbclient -N //$HOSTNAME/applications -c '"'get \cups_print\pscript.ntf pscript.ntf'"'
+smbclient -N //'$HOSTNAME'/applications -c "get \cups_print\pscript5.dll pscript5.dll"
+smbclient -N //'$HOSTNAME'/applications -c "get \cups_print\ps5ui.dll ps5ui.dll"
+smbclient -N //'$HOSTNAME'/applications -c "get \cups_print\pscript.hlp pscript.hlp"
+smbclient -N //'$HOSTNAME'/applications -c "get \cups_print\pscript.ntf pscript.ntf"
 fi
 
 if ! test -e /usr/share/cups/drivers/x64/pscript5.dll
 then
 cd /usr/share/cups/drivers/x64
-smbclient -N //$HOSTNAME/applications -c '"'get \cups_print\x64\pscript5.dll pscript5.dll'"'
-smbclient -N //$HOSTNAME/applications -c '"'get \cups_print\x64\ps5ui.dll ps5ui.dll'"'
-smbclient -N //$HOSTNAME/applications -c '"'get \cups_print\x64\pscript.hlp pscript.hlp'"'
-smbclient -N //$HOSTNAME/applications -c '"'get \cups_print\x64\pscript.ntf pscript.ntf'"'
+smbclient -N //'$HOSTNAME'/applications -c "get \cups_print\x64\pscript5.dll pscript5.dll"
+smbclient -N //'$HOSTNAME'/applications -c "get \cups_print\x64\ps5ui.dll ps5ui.dll"
+smbclient -N //'$HOSTNAME'/applications -c "get \cups_print\x64\pscript.hlp pscript.hlp"
+smbclient -N //'$HOSTNAME'/applications -c "get \cups_print\x64\pscript.ntf pscript.ntf"
 chmod 0644 -R /usr/share/cups/drivers
 chmod u+X,g+X,o+X /usr/share/cups/drivers
 fi
-
+echo "<br>"
 [ ! -f /usr/share/cups/drivers/pscript5.dll ] && exit 103
-"
+'
 SSHSTATUS=`echo $?`
 [ $SSHSTATUS = 103 ] && exit 103
-echo '<b>'$PRINTERGENMSG'</b><br><br>'
+echo '<br><b>'$PRINTERGENMSG'</b><br>'
 echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 ssh -x -o PasswordAuthentication=no $PRINTSERVER '
-
 #Make sure /var/lib/samba/printers/ exists and has correct permissions
 [ ! -d /var/lib/samba/printers ] && mkdir -p /var/lib/samba/printers
 chown root.itadmin -R /var/lib/samba/printers 
 chmod -R 0664 /var/lib/samba/printers
 chmod u+X,g+X,o+X -R /var/lib/samba/printers
 
-cupsaddsmb -H '$PRINTSERVER' -U karoshiadmin%'$PASSWORD' -a -v 2>&1
+#Check to see if this server is a domain member or a dc
+REGENUSER=Administrator
+[ `grep -c "#karoshi_member_server" /etc/samba/smb.conf` -gt 0 ] && REGENUSER=root
+cupsaddsmb -H $HOSTNAME -U $REGENUSER%'$LDAPPASS' -a -v 2>&1
 #Copy in cups6.inf
 cp -f /usr/share/cups/drivers/x64/cups6.inf /var/lib/samba/printers/x64/
 '
@@ -217,11 +184,24 @@ else
 ######################
 echo '<b>'$RESTARTSMBMSG'</b><br><br>'
 echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-net rpc rights grant "itadmin" SePrintOperatorPrivilege -U karoshiadmin%$PASSWORD
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop
 echo "<br>"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
 echo "</pre>"
+
+#Wait for samba to have restarted properly
+PORTCHECK=0
+COUNTER=1
+while [ $PORTCHECK = 0 ]
+do
+echo Waiting "for" samba to start - $COUNTER"<br>"
+PORTCHECK=`netstat -vatn | grep LISTEN | grep -c -w 445`
+sleep 1
+#Give up after 20 seconds
+[ $COUNTER = 20 ] && exit 101
+let COUNTER=$COUNTER+1
+done
+
 ######################
 #Copy cups drivers from \\pdc\applications
 ######################
@@ -274,7 +254,7 @@ fi
 #rm -f -R /var/lib/samba/printers/WIN40
 #rm -f -R /var/lib/samba/printers/x64
 #Generate drivers
-echo '<b>'$PRINTERGENMSG'</b><br><br>'
+echo '<br><b>'$PRINTERGENMSG'</b><br><br>'
 echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 
 #Make sure /var/lib/samba/printers/ exists and has correct permissions
@@ -284,7 +264,7 @@ chmod -R 0664 /var/lib/samba/printers
 chmod u+X,g+X,o+X -R /var/lib/samba/printers
 
 #Generate printer drivers
-cupsaddsmb -H $HOSTNAME -U karoshiadmin%$PASSWORD -a -v 2>&1
+cupsaddsmb -H $HOSTNAME -U Administrator%$LDAPPASS -a -v 2>&1
 #Copy in cups.inf
 cp -f /usr/share/cups/drivers/x64/cups6.inf /var/lib/samba/printers/x64/
 echo "</pre>"

@@ -132,43 +132,43 @@ fi
 let COUNTER=$COUNTER+1
 done
 
-#Assign TCPIP
+#Assign NAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
 DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = TCPIPcheck ]
+if [ `echo $DATAHEADER'check'` = NAMEcheck ]
 then
 let COUNTER=$COUNTER+1
-TCPIP=`echo $DATA | cut -s -d'_' -f$COUNTER`
+NAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
 break
 fi
 let COUNTER=$COUNTER+1
 done
 
-#Assign DNSDATA2
+#Assign DNSENTRY
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
 DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = DNSDATA2check ]
+if [ `echo $DATAHEADER'check'` = DNSENTRYcheck ]
 then
 let COUNTER=$COUNTER+1
-DNSDATA2=`echo $DATA | cut -s -d'_' -f$COUNTER`
+DNSENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
 break
 fi
 let COUNTER=$COUNTER+1
 done
 
-#Assign LINENUMBER
+#Assign DNSTYPE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
 DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = LINENUMBERcheck ]
+if [ `echo $DATAHEADER'check'` = DNSTYPEcheck ]
 then
 let COUNTER=$COUNTER+1
-LINENUMBER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+DNSTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
 break
 fi
 let COUNTER=$COUNTER+1
@@ -186,7 +186,7 @@ exit
 function show_dns {
 echo "
 <form action=\"/cgi-bin/admin/dnsview.cgi\" method=\"post\" id=\"showdns\">
-<input type="hidden" name="_SERVERNAME_$SERVERNAME"_"SERVERTYPE_$SERVERTYPE"_"ACTION_view_" value=''>
+<input type=\"hidden\" name=\"_SERVERNAME_$SERVERNAME"_"SERVERTYPE_$SERVERTYPE"_"ACTION_view_\" value=''>
 </form>
 <script language=\"JavaScript\" type=\"text/javascript\">
 <!--
@@ -234,8 +234,24 @@ else
 DIV_ID=actionbox2
 fi
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
+
+
+TITLE=$TITLE2
+ALTTITLE="$TITLE2"
+ICON=/images/submenus/system/dnsviewm.png
+ACTION2=view
+
+[ $ACTION = edit ] && TITLE="$TITLE3"
+[ $ACTION = add ] && TITLE="$TITLE4"
+
+if [ $ACTION = view ]
+then
+ALTTITLE="$TITLE4"
+ACTION2=add
+ICON=/images/submenus/system/dnsaddm.png
+fi
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
@@ -245,25 +261,30 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<span>'$TITLE2'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$SYSMENUMSG'</a>
 </div></div><div id="mobileactionbox">
-<form action="/cgi-bin/admin/dnsadd_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_" type="image" class="images" src="/images/submenus/system/dnsadd.png" value=""><span>'$TITLE4'</span></a></form><br>
+<form action="/cgi-bin/admin/dnsadd_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_" type="image" class="images" src="'$ICON'" value=""><span>'$TITLE4'</span></a></form><br>
 '
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tr><td style="vertical-align: top;"><b>'$TITLE2' - '$SERVERNAME'</b></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td><td style="vertical-align: top;">
-<form action="/cgi-bin/admin/dnsadd_fm.cgi" method="post">
-<input name="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_" type="submit" class="button" value="'$TITLE4'">
-</form></td></tr></tbody></table><br>'
+<tr><td style="vertical-align: top;"><b>'$TITLE' - '$SERVERNAME'</b></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td><td style="vertical-align: top;">
+<form action="/cgi-bin/admin/dnsview.cgi" method="post">
+<input name="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_ACTION_'$ACTION2'_" type="submit" class="button" value="'$ALTTITLE'">
+</form>
+</td></tr></tbody></table><br>'
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dnsview.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$ACTION:$LINENUMBER:$TCPIP:$DNSDATA2:$MOBILE" | sudo -H /opt/karoshi/web_controls/exec/dnsview
+[ $MOBILE = no ] && echo '</div><div id="infobox">'
 
-if [ $ACTION = reallyedit ] || [ $ACTION = delete ]
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dnsview.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$ACTION:$NAME:$DNSENTRY:$DNSTYPE:$MOBILE" | sudo -H /opt/karoshi/web_controls/exec/dnsview
+
+if [ $ACTION = reallyedit ] || [ $ACTION = delete ] || [ $ACTION = reallyadd ]
 then
 show_dns
 fi
 
-[ $MOBILE = no ] && echo '</div>'
-echo '</div></body></html>'
+echo '</div>
+</body>
+</html>
+'
 exit
 

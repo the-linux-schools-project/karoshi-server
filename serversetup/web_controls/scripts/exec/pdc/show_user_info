@@ -134,17 +134,20 @@ PRIMARYGROUP=`id -g -n $USERNAME`
 SECONDARYGROUPS=`id -G -n $USERNAME`
 
 source /opt/karoshi/server_network/group_information/$PRIMARYGROUP
+source /opt/karoshi/server_network/domain_information/domain_name
 
 #Get ldap information
 if [ $SERVERNAME = $HOSTNAME ]
 then
-LDAPDATA=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" uid=$USERNAME | sed -n 6,50p`
+LDAPDATA=`ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME`
 fi
 
 if [ $SERVERTYPE = federated ] || [ $SERVERTYPE = network ] && [ $SERVERNAME != $HOSTNAME ]
 then
 LDAPDATA=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-ldapsearch -x -w '$LDAPPASS' -D "cn=admin,dc=karoshi,dc=local" uid='$USERNAME' | sed -n 6,50p
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+source /opt/karoshi/server_network/domain_information/domain_name
+ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn='$USERNAME'
 '`
 fi
 
@@ -153,7 +156,8 @@ then
 LDAPDATA=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" uid='$USERNAME' | sed -n 6,50p
+source /opt/karoshi/server_network/domain_information/domain_name
+ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn='$USERNAME'
 '\''
 '`
 fi
@@ -165,17 +169,13 @@ LDAPUSERNAME=`echo -e "$LDAPDATA" | grep ^uid: | cut -d: -f2 | sed 's/^ //g'`
 UIDNUMBER=`echo -e "$LDAPDATA" | grep ^uidNumber: | cut -d: -f2 | sed 's/^ //g'`
 GIDNUMBER=`echo -e "$LDAPDATA" | grep ^gidNumber: | cut -d: -f2 | sed 's/^ //g'`
 EMPLOYEENUMBER=`echo -e "$LDAPDATA" | grep ^employeeNumber: | cut -d: -f2 | sed 's/^ //g'`
-HOMEDIRECTORY=`echo -e "$LDAPDATA" | grep ^homeDirectory: | cut -d: -f2 | sed 's/^ //g'`
+HOMEDIRECTORY=`echo -e "$LDAPDATA" | grep ^unixHomeDirectory: | cut -d: -f2 | sed 's/^ //g'`
 GECOS=`echo -e "$LDAPDATA" | grep ^gecos: | cut -d: -f2 | sed 's/^ //g'`
 SAMBALOGONTIME=`echo -e "$LDAPDATA" | grep ^sambaLogonTime: | cut -d: -f2 | sed 's/^ //g'`
 SAMBALOGOFFTIME=`echo -e "$LDAPDATA" | grep ^sambaLogoffTime: | cut -d: -f2 | sed 's/^ //g'`
 SAMBAKICKOFFTIME=`echo -e "$LDAPDATA" | grep ^sambaKickoffTime: | cut -d: -f2 | sed 's/^ //g'`
 SAMBAPWDCANCHANGE=`echo -e "$LDAPDATA" | grep ^sambaPwdCanChange: | cut -d: -f2 | sed 's/^ //g'`
 DISPLAYNAME=`echo -e "$LDAPDATA" | grep ^displayName: | cut -d: -f2 | sed 's/^ //g'`
-SAMBASID=`echo -e "$LDAPDATA" | grep ^sambaSID: | cut -d: -f2 | sed 's/^ //g'`
-#SambaPrimary Group Sid not stored in user data after 3.0.23
-#SAMBAPRIMARYGROUPSID=`echo -e "$LDAPDATA" | grep ^sambaPrimaryGroupSID: | cut -d: -f2 | sed 's/^ //g'`
-SAMBAPRIMARYGROUPSID=`pdbedit -v -u $USERNAME | grep ^"Primary Group SID" | cut -d: -f2 | sed 's/^ //g'`
 MAILLOCALADDRESS=`echo -e "$LDAPDATA" | grep ^mailLocalAddress: | cut -d: -f2 | sed 's/^ //g'`
 MAIL=`echo -e "$LDAPDATA" | grep ^mail: | cut -d: -f2 | sed 's/^ //g'`
 SAMBAPWDMUSTCHANGE=`echo -e "$LDAPDATA" | grep ^sambaPwdMustChange: | cut -d: -f2 | sed 's/^ //g'`
@@ -201,15 +201,12 @@ echo '<input type="hidden" name="_USERNAME_" value="'$USERNAME'" /><table class=
 <tr><td>'$SECGROUPMSG'</td><td>'$SECONDARYGROUPS'</td></tr>
 <tr><td>UID number</td><td>'$UIDNUMBER'</td></tr>
 <tr><td>GID number</td><td>'$GIDNUMBER'</td></tr>
-<tr><td>Samba SID</td><td>'$SAMBASID'</td></tr>
-<tr><td>Samba primary group SID</td><td>'$SAMBAPRIMARYGROUPSID'</td></tr>
-<tr><td>'$CNMSG'</td><td><input tabindex= "1" value="'$CN'" name="_CN_" style="width: 200px;" size="20" type="text"></td></tr>
+<tr><td>'$CNMSG'</td><td>'$CN'</td></tr>
 <tr><td>'$SURNAMEMSG'</td><td><input tabindex= "2" value="'$SN'" name="_SN_" style="width: 200px;" size="20" type="text"></td></tr>
 <tr><td>'$GIVENNAMEMSG'</td><td><input tabindex= "3" value="'$GIVENNAME'" name="_GIVENNAME_" style="width: 200px;" size="20" type="text"></td></tr>
 <tr><td>Employee / student number</td><td><input tabindex= "4" value="'$EMPLOYEENUMBER'" name="_EMPLOYEENUMBER_" style="width: 200px;" size="20" type="text"></td></tr>
-<tr><td>'$DISPLAYNAMEMSG'</td><td><input tabindex= "5" value="'$DISPLAYNAME'" name="_DISPLAYNAME_" style="width: 200px;" size="20" type="text"></td></tr>'
-#<tr><td>'$LOCALMAILADDRESSMSG'</td><td><input tabindex= "6" value="'$MAILLOCALADDRESS'" name="_MAILLOCALADDRESS_" style="width: 200px;" size="20" type="text"></td></tr>
-echo '<tr><td>'$EMAILADDRESSMSG'</td><td><input tabindex= "7" value="'$MAIL'" name="_MAIL_" style="width: 200px;" size="20" type="text"></td></tr>
+<tr><td>'$DISPLAYNAMEMSG'</td><td><input tabindex= "5" value="'$DISPLAYNAME'" name="_DISPLAYNAME_" style="width: 200px;" size="20" type="text"></td></tr>
+<tr><td>'$EMAILADDRESSMSG'</td><td><input tabindex= "7" value="'$MAIL'" name="_MAIL_" style="width: 200px;" size="20" type="text"></td></tr>
 <tr><td>'$SMBACCFLAGSMSG'</td><td>'$SAMBAACCTFLAGS'</td></tr>
 <tr><td>'$PASSLASTCHANGEDMSG'</td><td>'$SAMBAPWDLASTSET'</td></tr>
 <tr><td>'$SHADOWMAXMSG'</td><td>'$SHADOWMAX'</td></tr>
@@ -222,9 +219,9 @@ echo '</td><td valign="top">'
 
 if [ -f /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg ]
 then
-echo "<p><img src="/images/user_images/$PRIMARYGROUP/$USERNAME.jpg" width="120" height="150"></p>"
+echo '<p><img src="/images/user_images/'$PRIMARYGROUP'/'$USERNAME'.jpg" width="120" height="150"></p>'
 else
-echo "<p><img src="/images/blank_user_image.jpg" width="120" height="150"></p>"
+echo '<p><img src="/images/blank_user_image.jpg" width="120" height="150"></p>'
 fi
 echo '</td></tr></tbody></table><br><br><input value="Submit" type="submit"> <input value="Reset" type="reset"></form>'
 exit

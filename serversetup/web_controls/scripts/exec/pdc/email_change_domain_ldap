@@ -129,51 +129,6 @@ fi
 let COUNTER=$COUNTER+1
 done
 rm -f /opt/karoshi/.tempdata/userlist.$$
-
-#############################
-#Change mail entry for all ldap users on slave ldap servers
-#############################
-if [ -d /opt/karoshi/server_network/slave_ldap_servers/ ]
-then
-for SLAVE_LDAP_SERVER in /opt/karoshi/server_network/slave_ldap_servers/*
-do
-SLAVE_LDAP_SERVER=`basename $SLAVE_LDAP_SERVER`
-ssh -x -o PasswordAuthentication=no $SLAVE_LDAP_SERVER '
-echo "<br><b>"$HOSTNAME"</b><br>"
-#Create list of users
-getent passwd > /opt/karoshi/.tempdata/userlist.$$
-
-#Get database password
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-
-#Process userlist
-USERCOUNT=`cat /opt/karoshi/.tempdata/userlist.$$ | wc -l`
-COUNTER=1
-while [ $COUNTER -le $USERCOUNT ]
-do
-USERDATA=`sed -n $COUNTER,$COUNTER"p" /opt/karoshi/.tempdata/userlist.$$`
-USERNAME=`echo $USERDATA | cut -d: -f1`
-USERPATH=`echo $USERDATA | cut -d: -f6`
-
-if [ `echo $USERPATH | grep -c /home/users` = 1 ]
-then
-echo "<br>"$USERNAME - $USERNAME@'$EMAILDOMAIN'"<br>"
-LDAPIDENT=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" uid=$USERNAME | grep dn:`
-#Create ldiff with modified mail
-echo $LDAPIDENT > mail$USERNAME.$$.ldif
-echo changetype: modify >> mail$USERNAME.$$.ldif
-echo replace: mail >> mail$USERNAME.$$.ldif
-echo mail: $USERNAME@'$EMAILDOMAIN' >> mail$USERNAME.$$.ldif
-echo - >> mail$USERNAME.$$.ldif
-ldapmodify -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" -f mail$USERNAME.$$.ldif 1>/dev/null
-rm -f mail$USERNAME.$$.ldif
-fi
-let COUNTER=$COUNTER+1
-done
-rm -f /opt/karoshi/.tempdata/userlist.$$
-'
-done
-fi
 echo '<br><br>'
 echo '<b>'$COMPLETEDMSG'</b>'
 exit

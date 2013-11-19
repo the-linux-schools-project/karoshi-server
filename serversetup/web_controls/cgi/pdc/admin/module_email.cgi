@@ -67,15 +67,15 @@ break
 fi
 let COUNTER=$COUNTER+1
 done
-#Assign _DOMAINPATH_
+#Assign _ALIAS_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
 DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = DOMAINPATHcheck ]
+if [ `echo $DATAHEADER'check'` = ALIAScheck ]
 then
 let COUNTER=$COUNTER+1
-DOMAINPATH=`echo $DATA | cut -s -d'_' -f$COUNTER`
+ALIAS=`echo $DATA | cut -s -d'_' -f$COUNTER`
 break
 fi
 let COUNTER=$COUNTER+1
@@ -135,10 +135,10 @@ fi
 #########################
 #Check data
 #########################
-#Check to see that DOMAINPATH is not blank
-if [ $DOMAINPATH'null' = null ]
+#Check to see that ALIAS is not blank
+if [ $ALIAS'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$ERRORMSG2
 show_status
 fi
 
@@ -150,7 +150,14 @@ show_status
 fi
 echo '<b>'$TITLE' - '$SERVERNAME'</b><br><br>'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_email.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DOMAINPATH:$COPYEMAIL:$SERVERNAME" | sudo -H /opt/karoshi/web_controls/exec/module_email
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ALIAS:$COPYEMAIL:$SERVERNAME" | sudo -H /opt/karoshi/web_controls/exec/module_email
+EXEC_STATUS=$?
+if [ $EXEC_STATUS = 101 ]
+then
+MESSAGE=`echo $PROBLEMMSG $LOGMSG`
+show_status
+fi
+
 completed
 echo '</div></body></html>'
 exit

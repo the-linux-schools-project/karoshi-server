@@ -53,7 +53,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=5
+END_POINT=9
 
 #Assign SERVERNAME
 COUNTER=2
@@ -64,6 +64,20 @@ if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
 then
 let COUNTER=$COUNTER+1
 SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+break
+fi
+let COUNTER=$COUNTER+1
+done
+
+#Assign _ALIAS_
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+if [ `echo $DATAHEADER'check'` = ALIAScheck ]
+then
+let COUNTER=$COUNTER+1
+ALIAS=`echo $DATA | cut -s -d'_' -f$COUNTER`
 break
 fi
 let COUNTER=$COUNTER+1
@@ -112,7 +126,7 @@ fi
 
 echo '<b>'$TITLE - $SERVERNAME"</b><br><br>"
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_reverse_proxy.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME" | sudo -H /opt/karoshi/web_controls/exec/module_reverse_proxy
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ALIAS" | sudo -H /opt/karoshi/web_controls/exec/module_reverse_proxy
 MESSAGE=$COMPLETEDMSG
 show_status
 echo '</div></form></body></html>'

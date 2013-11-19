@@ -35,16 +35,9 @@ NOTIMEOUT=127.0.0.1
 source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/email/setupemail
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
-if [ -f /opt/karoshi/serversetup/variables/maindomain ]
-then
-SUGGGESTDOMAIN=`sed -n 1,1p /opt/karoshi/serversetup/variables/maindomain`
-else
-SUGGGESTDOMAIN=emaildomain.com
-fi
-if [ -f /opt/karoshi/serversetup/variables/maildomain ]
-then
-SUGGGESTDOMAIN=`sed -n 1,1p /opt/karoshi/serversetup/variables/maildomain`
-fi
+
+source /opt/karoshi/server_network/domain_information/domain_name
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -112,10 +105,11 @@ fi
 
 echo '<form action="/cgi-bin/admin/module_email.cgi" method="post"><div id="actionbox"><b>'$TITLE' - '$SERVERNAME'</b><br><br>
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
+<input name="_DOMAINPATH_" value="'$REALM'" type="hidden">
 <b>'$DESCRIPTIONMSG'</b><br><br>
 '$HELPMSG1'<br><br>
 <b>'$PARAMETERSMSG'</b><br><br>
-  <table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
+  <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="0">
     <tbody>'
 
 #Check to see if an email server has already been assigned
@@ -131,9 +125,33 @@ fi
 
 echo '<tr><td style="width: 180px;">
 '$DOMAINMSG'</td>
-        <td><input tabindex= "2" value="'$SUGGGESTDOMAIN'" name="_DOMAINPATH_" size="20" type="text"></td><td>
+        <td style="vertical-align: top; text-align: right;">mail</td><td>.</td><td>'$REALM'</td><td>
 <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$EMAILDOMAINHELP'</span></a>
-      </td></tr>'
+      </td></tr>
+<tr><td>Web Mail Access</td><td>'
+
+
+#Check to see if this server has been assigned an alias
+if [ -f /opt/karoshi/server_network/aliases/$SERVERNAME ]
+then
+ALIAS=`sed -n 1,1p /opt/karoshi/server_network/aliases/$SERVERNAME`
+echo ''$ALIAS'</td><td>.</td><td>'$REALM'<input type="hidden" name="_ALIAS_" value="'$ALIAS'"></td></tr>'
+else
+echo '<select name="_ALIAS_"><option></option>'
+
+#Get a set of available aliases to check
+
+#Check www.realm
+[ `nslookup www.$REALM 127.0.0.1 | grep -c ^Name:` = 0 ] && echo '<option>www</option>'
+COUNTER=1
+while [ $COUNTER -le 10 ]
+do
+[ `nslookup www$COUNTER.$REALM 127.0.0.1 | grep -c ^Name:` = 0 ] && echo '<option>www'$COUNTER'</option>'
+let COUNTER=$COUNTER+1
+done
+echo '</select></td><td>.</td><td>'$REALM'</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Moodle_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$ALIASHELP'</span></a></td></tr>'
+echo 
+fi
 
 
 
