@@ -163,8 +163,8 @@ for USERFOLDERS in $HOMEPATH/*
 do
 USERFOLDER=`basename $USERFOLDERS`
 echo "<li>"$USERFOLDER: Setting Permissions"</li><br>"
-chmod 0600 -R $HOMEPATH/$USERFOLDER
-chmod u+X -R $HOMEPATH/$USERFOLDER
+#chmod 0600 -R $HOMEPATH/$USERFOLDER
+#chmod u+X -R $HOMEPATH/$USERFOLDER
 chown -R $USERFOLDER.$PRIGROUP $HOMEPATH/$USERFOLDER
 done
 else
@@ -173,8 +173,8 @@ for USERFOLDERS in '$HOMEPATH'/*
 do
 USERFOLDER=`basename $USERFOLDERS`
 echo "<li>"$USERFOLDER: Setting Permissions"</li><br>"
-chmod 0600 -R '$HOMEPATH'/$USERFOLDER
-chmod u+X -R '$HOMEPATH'/$USERFOLDER
+#chmod 0600 -R '$HOMEPATH'/$USERFOLDER
+#chmod u+X -R '$HOMEPATH'/$USERFOLDER
 chown -R $USERFOLDER.'$PRIGROUP' '$HOMEPATH'/$USERFOLDER
 done
 '
@@ -183,6 +183,28 @@ sleep 4
 fi
 }
 
+
+#Get group information
+source /opt/karoshi/server_network/group_information/$PRIGROUP
+DESTFOLDERPATH=`echo $HOMEPATH | sed 's/'$PRIGROUP'$//g'`
+USERLIST=( `getent passwd | grep /$PRIGROUP/ | cut -d: -f1` )
+USERLISTCOUNT=${#USERLIST[@]}
+
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+source /opt/karoshi/server_network/domain_information/domain_name
+
+#Set windows home path in samba4
+COUNTER=0
+while  [ $COUNTER -lt $USERLISTCOUNT ]
+do
+USERNAME=${USERLIST[$COUNTER]}
+echo -e 'dn: CN='$USERNAME',OU='$PRIGROUP',OU='$SUBUNIT',OU=People,'$LDAPBASE'
+changetype: modify
+replace: homeDirectory
+homeDirectory: \\\\'$SERVER'\\'$USERNAME'
+-' | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+let COUNTER=$COUNTER+1
+done
 
 ###########################
 #Copy home areas
@@ -231,19 +253,12 @@ echo "    <script type = \"text/javascript\" >
 
     </script>"
 
-#Get group information
-source /opt/karoshi/server_network/group_information/$PRIGROUP
-DESTFOLDERPATH=`echo $HOMEPATH | sed 's/'$PRIGROUP'$//g'`
 
 
+COUNTER=0
 if [ $NEWSERVER = $HOSTNAME ]
 then
 #Copy work back to this server
-
-USERLIST=( `getent passwd | grep /$PRIGROUP/ | cut -d: -f1` )
-USERLISTCOUNT=${#USERLIST[@]}
-COUNTER=0
-
 if [ $USERLISTCOUNT -gt 0 ]
 then
 echo "<li>"$USERLISTCOUNT home folders. Please wait"</li><br>"
@@ -254,20 +269,15 @@ echo "<li>"$(($COUNTER+1))/$USERLISTCOUNT: Copying $USERNAME"</li><br>"
 
 #rsync user folder to the pdc
 rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group  root@$CURRENTSERVER:/$HOMEPATH/$USERNAME "$DESTFOLDERPATH$PRIGROUP"/
-
 let COUNTER=$COUNTER+1
 done
-#set_perms
+set_perms
 fi
 fi
 
 if [ $CURRENTSERVER = $HOSTNAME ]
 then
 #Copy from this server to a new server
-
-USERLIST=( `getent passwd | grep /$PRIGROUP/ | cut -d: -f1` )
-USERLISTCOUNT=${#USERLIST[@]}
-COUNTER=0
 
 if [ $USERLISTCOUNT -gt 0 ]
 then
@@ -280,10 +290,9 @@ echo "<li>"$(($COUNTER+1))/$USERLISTCOUNT: Copying $USERNAME"</li><br>"
 
 #rsync user folders to the new server
 rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group "$HOMEPATH"/"$USERFOLDER" root@$NEWSERVER:/$DESTFOLDERPATH$PRIGROUP/
-
 let COUNTER=$COUNTER+1
 done
-#set_perms
+set_perms
 fi
 fi
 
@@ -293,10 +302,6 @@ ssh -x -o PasswordAuthentication=no $NEWSERVER '
 [ ! -d '$HOMEPATH' ] && mkdir -p '$HOMEPATH'
 '
 #Copy work between two karoshi servers
-
-USERLIST=( `getent passwd | grep /$PRIGROUP/ | cut -d: -f1` )
-USERLISTCOUNT=${#USERLIST[@]}
-COUNTER=0
 
 if [ $USERLISTCOUNT -gt 0 ]
 then
@@ -309,7 +314,6 @@ echo "<li>"$(($COUNTER+1))/$USERLISTCOUNT: Copying $USERNAME"</li><br>"
 
 #rsync user folder to the pdc
 rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group  root@$CURRENTSERVER:/$HOMEPATH/$USERNAME /home/transfer/
-
 #rsync to new server
 if [ -d /home/transfer/$USERNAME ]
 then
@@ -320,7 +324,7 @@ rm -f -R /home/transfer/$USERNAME
 fi
 let COUNTER=$COUNTER+1
 done
-#set_perms
+set_perms
 fi
 fi
 fi
