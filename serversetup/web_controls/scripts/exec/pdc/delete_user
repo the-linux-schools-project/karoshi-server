@@ -63,6 +63,7 @@ REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 DELETEUSER=`echo "$DATA" | cut -s -d: -f4`
 DOMAINPASSWORD=`echo "$DATA" | cut -s -d: -f5`
 REQUESTFILE=`echo "$DATA" | cut -s -d: -f6`
+ARCHIVE=`echo "$DATA" | cut -s -d: -f7`
 ########################
 #Check data
 ########################
@@ -88,6 +89,8 @@ echo `date`: delete_user - access denied to $REMOTE_USER from $REMOTE_ADDR >> /o
 exit 101
 fi
 
+[ -z $ARCHIVE ] && ARCHIVE=no
+
 #Check for federated ldap servers
 FEDERATED_LDAP_SERVERS=no
 if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
@@ -110,7 +113,6 @@ fi
 
 source /opt/karoshi/server_network/group_information/$PRIMARYGROUP
 echo `date`: delete_user - deleting $DELETEUSER from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
 
 #######################
 #Delete user image
@@ -139,10 +141,22 @@ fi
 #Delete logon script
 [ -f /var/lib/samba/netlogon/windows_settings/drives/$DELETEUSER.kix ] && rm -f /var/lib/samba/netlogon/windows_settings/drives/$DELETEUSER.kix
 
+if [ $ARCHIVE = yes ]
+then
+#Archive home folder
+if [ -d $HOMEPATH/$DELETEUSER ]
+then
+[ ! -d /home/users/archive/$PRIMARYGROUP ] && mkdir -p /home/users/archive/$PRIMARYGROUP
+mv $HOMEPATH/$DELETEUSER /home/users/archive/$PRIMARYGROUP/$DELETEUSER
+chown -R root:itadmin /home/users/archive/$PRIMARYGROUP/$DELETEUSER
+fi
+else
 #Delete home folder
 [ -d $HOMEPATH/$DELETEUSER ] && rm -f -R $HOMEPATH/$DELETEUSER
+fi
 
 #Delete group information
+
 [ -f /opt/karoshi/server_network/group_information/$DELETEUSER ] && rm -f /opt/karoshi/server_network/group_information/$DELETEUSER
 
 #######################
@@ -150,7 +164,20 @@ fi
 #######################
 if [ -d /opt/karoshi/server_network/servers/$SERVER ] && [ $SERVER != $HOSTNAME ]
 then
-ssh -x -o PasswordAuthentication=no $SERVER 'rm -f -R '$HOMEPATH''/''$DELETEUSER'' 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+ssh -x -o PasswordAuthentication=no $SERVER '
+if [ '$ARCHIVE' = yes ]
+then
+#Archive home folder
+if [ -d '$HOMEPATH'/'$DELETEUSER' ]
+then
+[ ! -d /home/users/archive/'$PRIMARYGROUP' ] && mkdir -p /home/users/archive/'$PRIMARYGROUP'
+mv '$HOMEPATH'/'$DELETEUSER' /home/users/archive/'$PRIMARYGROUP'/'$DELETEUSER'
+chown -R root:itadmin /home/users/archive/'$PRIMARYGROUP'/'$DELETEUSER'
+fi
+else
+rm -f -R '$HOMEPATH''/''$DELETEUSER'
+fi
+' 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 SSHSTATUS=`echo $?`
 if [ $SSHSTATUS != 0 ]
 then
@@ -223,7 +250,18 @@ source /opt/karoshi/server_network/group_information/'$PRIMARYGROUP'
 #Delete user from ldap
 samba-tool user delete '$DELETEUSER'
 #Delete home folder
+if [ '$ARCHIVE' = yes ]
+then
+#Archive home folder
+if [ -d '$HOMEPATH'/'$DELETEUSER' ]
+then
+[ ! -d /home/users/archive/'$PRIMARYGROUP' ] && mkdir -p /home/users/archive/'$PRIMARYGROUP'
+mv '$HOMEPATH'/'$DELETEUSER' /home/users/archive/'$PRIMARYGROUP'/'$DELETEUSER'
+chown -R root:itadmin /home/users/archive/'$PRIMARYGROUP'/'$DELETEUSER'
+fi
+else
 [ -d '$HOMEPATH''/''$DELETEUSER' ] && rm -f -R '$HOMEPATH''/''$DELETEUSER'
+fi
 #Delete inbox
 [ -f /var/spool/mail/'$DELETEUSER' ] && rm -f /var/spool/mail/'$DELETEUSER'
 
@@ -232,7 +270,20 @@ samba-tool user delete '$DELETEUSER'
 #######################
 if [ -d /opt/karoshi/server_network/servers/$SERVER ] && [ $SERVER != $HOSTNAME ]
 then
-ssh -x -o PasswordAuthentication=no $SERVER "rm -f -R '$HOMEPATH''/''$DELETEUSER'" 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+ssh -x -o PasswordAuthentication=no $SERVER "
+if [ '$ARCHIVE' = yes ]
+then
+#Archive home folder
+if [ -d '$HOMEPATH'/'$DELETEUSER' ]
+then
+[ ! -d /home/users/archive/'$PRIMARYGROUP' ] && mkdir -p /home/users/archive/'$PRIMARYGROUP'
+mv '$HOMEPATH'/'$DELETEUSER' /home/users/archive/'$PRIMARYGROUP'/'$DELETEUSER'
+chown -R root:itadmin /home/users/archive/'$PRIMARYGROUP'/'$DELETEUSER'
+fi
+else
+rm -f -R '$HOMEPATH''/''$DELETEUSER'
+fi
+" 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
 SSHSTATUS=`echo $?`
 if [ $SSHSTATUS != 0 ]
 then

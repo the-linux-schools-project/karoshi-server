@@ -91,7 +91,7 @@ window.onload=initialize
 #########################
 #Get data input
 #########################
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=`cat | tr -cd 'A-Za-z0-9\._:\-+'`
 #########################
 #Assign data to variables
 #########################
@@ -245,7 +245,7 @@ show_status
 fi
 
 #Check to see that the option choice is correct
-if [ $OPTIONCHOICE != enable ] && [ $OPTIONCHOICE != disable ] && [ $OPTIONCHOICE != changepasswords ] && [ $OPTIONCHOICE != resetpasswords ] && [ $OPTIONCHOICE != deleteaccounts ]
+if [ $OPTIONCHOICE != enable ] && [ $OPTIONCHOICE != disable ] && [ $OPTIONCHOICE != changepasswords ] && [ $OPTIONCHOICE != resetpasswords ] && [ $OPTIONCHOICE != deleteaccounts ] && [ $OPTIONCHOICE != deleteaccounts2 ]
 then
 MESSAGE=$ERRORMSG3
 show_status
@@ -305,6 +305,11 @@ if [ $OPTIONCHOICE = deleteaccounts ]
 then
 MESSAGE=`echo $ACTION5 $GROUP`
 fi
+if [ $OPTIONCHOICE = deleteaccounts2 ]
+then
+MESSAGE=`echo $ACTION6 $GROUP`
+fi
+
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo "<div id="actionbox">"

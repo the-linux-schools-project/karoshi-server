@@ -213,6 +213,9 @@ echo '
 </td></tr>
 <tr><td>'$CODEMSG'</td>
         <td style="vertical-align: top; text-align: left;"><b>'$SHUTDOWN_CODE'</b></td></tr>
+<tr><td>'$ARCHIVEMSG'</td><td><input type="checkbox" name="_ARCHIVE_" value="yes"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Delete_User"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a>
+      </td></tr>
 <tr><td>'$VIEWIMAGEMSG'</td><td>
 <a class="info" href="javascript:void(0)"><input name="_VIEWIMAGE_yes_" type="image" class="images" src="/images/submenus/user/user_photo.png" value=""><span>'$VIEWIMAGEMSG'</span></a>
 </td></tr>

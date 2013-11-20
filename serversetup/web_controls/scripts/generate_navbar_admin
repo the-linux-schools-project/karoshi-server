@@ -126,6 +126,7 @@ echo '			<li class="mid"><a href="/cgi-bin/admin/change_password_fm.cgi" class="
 						<li><a href="/cgi-bin/admin/change_username_fm.cgi">'$CHANGEUSERNAMEMSG'</a></li>
 						<li><a href="/cgi-bin/admin/change_primary_group_fm.cgi">'$CHANGEPRIGRPMSG'</a></li>
 						<li><a href="/cgi-bin/admin/group_membership_fm.cgi">'$CHANGESECGRPMSG'</a></li>
+						<li><a href="/cgi-bin/admin/modify_groups_fm.cgi">'$MODIFYGROUPMSG'</a></li>
 						<li class="mid"><a href="/cgi-bin/admin/view_acceptable_use_authorisations_fm.cgi" class="fly">'$ACCEPTABLEUSEMSG'</a>
 						      <ul>
 						      <li><a href="/cgi-bin/admin/view_acceptable_use_authorisations_fm.cgi">'$VIEWTRIALAUTHMSG'</a></li>
@@ -152,7 +153,6 @@ then
 echo '						<li><a href="/cgi-bin/admin/new_primary_group_fm.cgi">'$NEWPRIGRPMSG'</a></li>'
 fi
 echo '						<li><a href="/cgi-bin/admin/new_group_fm.cgi">'$NEWGRPMSG'</a></li>
-						<li><a href="/cgi-bin/admin/modify_groups_fm.cgi">'$MODIFYGROUPMSG'</a></li>
 						<li><a href="/cgi-bin/admin/copy_files_upload_fm.cgi">'$CPFILEMSG'</a></li>
 					</ul>
 			</li>

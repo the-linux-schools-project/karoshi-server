@@ -205,6 +205,12 @@ fi
 #########################
 #Delete users
 #########################
+if [ $OPTIONCHOICE = deleteaccounts2 ]
+then
+ARCHIVE=yes
+OPTIONCHOICE=deleteaccounts
+fi
+
 if [ $OPTIONCHOICE = deleteaccounts ]
 then
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/delete_user.cgi | cut -d' ' -f1`
@@ -215,7 +221,7 @@ USERNAME=`echo ${USERLIST[$COUNTER]}`
 if [ `echo $EXCEPTIONLIST | grep -c -w $USERNAME` = 0 ]
 then
 echo Deleting $USERNAME '<br>'
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$DOMAINPASSWORD:$REQUESTFILE:" | /opt/karoshi/web_controls/exec/delete_user
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$DOMAINPASSWORD:$REQUESTFILE:$ARCHIVE:" | /opt/karoshi/web_controls/exec/delete_user
 fi
 let COUNTER=$COUNTER+1
 done

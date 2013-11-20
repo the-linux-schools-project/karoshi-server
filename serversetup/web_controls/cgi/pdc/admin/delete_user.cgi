@@ -123,6 +123,20 @@ fi
 let COUNTER=$COUNTER+1
 done
 
+#Assign ARCHIVE
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+if [ `echo $DATAHEADER'check'` = ARCHIVEcheck ]
+then
+let COUNTER=$COUNTER+1
+ARCHIVE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+break
+fi
+let COUNTER=$COUNTER+1
+done
+
 function show_status {
 echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
@@ -205,7 +219,7 @@ show_status
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/delete_user.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$DOMAINPASSWORD:$REQUESTFILE:" | sudo -H /opt/karoshi/web_controls/exec/delete_user
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$DOMAINPASSWORD:$REQUESTFILE:$ARCHIVE:" | sudo -H /opt/karoshi/web_controls/exec/delete_user
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 105 ]
 then

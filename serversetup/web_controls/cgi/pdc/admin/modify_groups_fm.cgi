@@ -60,7 +60,7 @@ echo '
 echo '<form action="/cgi-bin/admin/modify_groups.cgi" method="post">
   <div id="actionbox">
   <b>'$TITLE'</b> 
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Modify_Groups"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Bulk_User_Actions"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
 <br><br>
   <table class="standard" style="text-align: left; left: 232px;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
@@ -68,13 +68,14 @@ echo '<form action="/cgi-bin/admin/modify_groups.cgi" method="post">
 '$PRIGROUPMSG'</td><td>'
 /opt/karoshi/web_controls/group_dropdown_list
 echo '</td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Modify_Groups"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Bulk_User_Actions"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a>
 </td></tr>
 <tr><td>'$OPTIONMSG'</td><td>
 <select name="_OPTIONCHOICE_" style="width: 200px;">
 <option value="enable">'$ENABLEMSG'</option>
 <option value="disable">'$DISABLEMSG'</option>
 <option value="deleteaccounts">'$DELETEMSG'</option>
+<option value="deleteaccounts2">'$DELETEMSG2'</option>
 <option value="resetpasswords">'$RESETPASSMSG'</option>
 </select></td></tr>
 <tr><td style="width: 180px;">
@@ -82,7 +83,7 @@ echo '</td><td>
 </td><td>
 <input tabindex= "1" name="_EXCEPTIONLIST_" style="width: 200px;" size="20" type="text">
 </td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Modify_Groups"><img class="images" alt="" src="/images/help/info.png"><span>'$EXCEPTIONHELP'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Bulk_User_Actions"><img class="images" alt="" src="/images/help/info.png"><span>'$EXCEPTIONHELP'</span></a>
 </td></tr>
 <tr><td>'$CODEMSG'</td><td style="vertical-align: top; text-align: left;"><b>'$MOD_CODE'</b></td></tr>
 <tr><td>'$CONFIRMMSG'</td><td style="vertical-align: top; text-align: left;"><input name="_MODCODE_" maxlength="3" size="3" type="text"></td><td>
