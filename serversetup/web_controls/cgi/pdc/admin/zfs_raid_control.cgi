@@ -169,7 +169,7 @@ else
 DIV_ID=menubox
 fi
 
-echo '<div id="'$DIV_ID'">'
+echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 
 #Show back button for mobiles
@@ -179,15 +179,18 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 <tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$TITLE4 - $SERVERNAME'</b></a></td></tr></tbody></table>'
 else
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a href="zfs_raid_control_fm.cgi"><img alt="" src="/images/warnings/server.png"></a></td><td><b>'$TITLE4' - '$SERVERNAME'</b></td>
-<td><a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG5'</span></a>
-</td></tr></tbody></table><br>'
-
+echo '
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr>
+<td style="vertical-align: top;"><b>'$TITLE4' - '$SERVERNAME'</b></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>"'$HELPMSG5'"</span></a></td>
+<td style="vertical-align: top;"><a href="zfs_raid_control_fm.cgi"><input class="button" type="button" name="" value="'$CHOOSESERVERMSG'"></a></td>
+</tr></table><br>'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/zfs_raid_control.cgi | cut -d' ' -f1`
 echo '<form action="/cgi-bin/admin/zfs_raid_control2.cgi" name="selectservers" method="post">'
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:" | sudo -H /opt/karoshi/web_controls/exec/zfs_raid_control
 
-echo "</form></div></body></html>"
+echo "</form></div></div></body></html>"
 exit
