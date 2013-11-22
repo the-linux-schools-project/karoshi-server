@@ -329,5 +329,28 @@ fi
 fi
 fi
 fi
+
+if [ $COPYHOMEAREAS'null' != null ]
+then
+if [ $COPYHOMEAREAS = yes ]
+then
+#Move backup folder to the new server if it is on the same backup server
+[ ! -f /opt/karoshi/server_network/backup_servers/backup_settings/$CURRENTSERVER/backupserver ] && exit
+CURRENTBACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/$CURRENTSERVER/backupserver`
+[ ! -f /opt/karoshi/server_network/backup_servers/backup_settings/$NEWSERVER/backupserver ] && exit
+NEWBACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/$NEWSERVER/backupserver`
+
+if [ $CURRENTBACKUPSERVER = $NEWBACKUPSERVER ]
+then
+ssh -x -o PasswordAuthentication=no $NEWBACKUPSERVER '
+
+if [ -d /home/backups/'$CURRENTSERVER'/'$PRIGROUP' ] && [ ! -d /home/backups/'$NEWSERVER'/'$PRIGROUP' ]
+then
+[ ! -d /home/backups/'$NEWSERVER' ] && mkdir -p /home/backups/'$NEWSERVER'
+mv /home/backups/'$CURRENTSERVER'/'$PRIGROUP' /home/backups/'$NEWSERVER'/'$PRIGROUP'
+fi
+'
+fi
+fi
 exit
 
