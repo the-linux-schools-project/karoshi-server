@@ -239,7 +239,7 @@ fi
 #Copy in config files
 cp -f /opt/karoshi/serversetup/modules/user_web_folders/karoshi-userdir.conf /etc/apache2/mods-available/
 cp -f /opt/karoshi/serversetup/modules/user_web_folders/karoshi-userdir.load /etc/apache2/mods-available/
-cp -f /opt/karoshi/serversetup/modules/user_web_folders/suphp.conf /etc/suphp
+cp -f /opt/karoshi/serversetup/modules/user_web_folders/suphp.conf /etc/suphp/
 
 a2enmod karoshi-userdir 1> /dev/null
 a2enmod suphp 1> /dev/null
@@ -264,9 +264,8 @@ fi
 else
 
 #Copy in config files
-scp -o PasswordAuthentication=no /opt/karoshi/serversetup/modules/user_web_folders/karoshi-userdir.conf $SERVER:/etc/apache2/mods-available/
-scp -o PasswordAuthentication=no /opt/karoshi/serversetup/modules/user_web_folders/karoshi-userdir.load $SERVER:/etc/apache2/mods-available/
-scp -o PasswordAuthentication=no /opt/karoshi/serversetup/modules/user_web_folders/suphp.conf $SERVER:/etc/suphp/
+scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/modules/user_web_folders $SERVER:/opt/karoshi/serversetup/modules/
+
 
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 #Make sure suphp is installed
@@ -278,6 +277,11 @@ apt-get update
 echo "<br><br><li>"'$INSTALLMSG'"</li><br><br>"
 apt-get -y install libapache2-mod-suphp
 fi
+
+#Copy in config files
+cp -f /opt/karoshi/serversetup/modules/user_web_folders/karoshi-userdir.conf /etc/apache2/mods-available/
+cp -f /opt/karoshi/serversetup/modules/user_web_folders/karoshi-userdir.load /etc/apache2/mods-available/
+cp -f /opt/karoshi/serversetup/modules/user_web_folders/suphp.conf /etc/suphp/
 
 a2enmod suphp 1> /dev/null
 a2enmod karoshi-userdir 1> /dev/null
