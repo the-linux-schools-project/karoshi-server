@@ -224,10 +224,10 @@ fi
 if [ $ACTION = enablehosting ]
 then
 #Add server to user web folder list
-touch /var/lib/samba/netlogon/domain_information/user_web_folders
-if [ `grep -c $SERVER /var/lib/samba/netlogon/domain_information/user_web_folders` = 0 ]
+touch /var/lib/samba/netlogon/domain_information/user_web_servers
+if [ `grep -c $SERVER /var/lib/samba/netlogon/domain_information/user_web_servers` = 0 ]
 then
-echo $SERVER >> /var/lib/samba/netlogon/domain_information/user_web_folders
+echo $SERVER >> /var/lib/samba/netlogon/domain_information/user_web_servers
 fi
 
 #Enable user web folders
@@ -324,11 +324,11 @@ if [ $ACTION = disablehosting ]
 then
 
 #Remove server from user web folder list
-touch /var/lib/samba/netlogon/domain_information/user_web_folders
-if [ `grep -c $SERVER /var/lib/samba/netlogon/domain_information/user_web_folders` != 0 ]
+touch /var/lib/samba/netlogon/domain_information/user_web_servers
+if [ `grep -c $SERVER /var/lib/samba/netlogon/domain_information/user_web_servers` != 0 ]
 then
-sed -i 's/'$SERVER'//g' /var/lib/samba/netlogon/domain_information/user_web_folders
-sed -i '/^[[:space:]]*$/d' /var/lib/samba/netlogon/domain_information/user_web_folders
+sed -i 's/'$SERVER'//g' /var/lib/samba/netlogon/domain_information/user_web_servers
+sed -i '/^[[:space:]]*$/d' /var/lib/samba/netlogon/domain_information/user_web_servers
 fi
 
 #Disable user web folders
