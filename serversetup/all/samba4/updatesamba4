@@ -1,6 +1,4 @@
 #!/bin/bash
-LATESTVER=4.0.11
-#LATESTVER=4.1.0
 LOG_DATE=`date +%F`
 [ ! -d /opt/karoshi/logs/server_upgrades ] && mkdir -p /opt/karoshi/logs/server_upgrades
 echo `date` "Checking Samba4 version" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
@@ -10,14 +8,14 @@ echo `date` "Checking Samba4 version" >> /opt/karoshi/logs/server_upgrades/$LOG_
 
 cd /opt/karoshi/serversetup/all/samba4/download
 
-#LATESTVER=`lynx -dump http://ftp.samba.org/pub/samba/ | grep LATEST-IS-SAMBA- | sed -n 1,1p | cut -d"-" -f4 | cut -d" " -f1`
+LATESTVER=`lynx -dump http://ftp.samba.org/pub/samba/ | grep LATEST-IS-SAMBA- | sed -n 1,1p | cut -d"-" -f4 | cut -d" " -f1`
 #Check that we could get the latest version
-#if [ -z $LATESTVER ]
-#then
-#echo Error - could not determine the latest samba version.
-#echo "Error - could not determine the latest samba version." >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
-#exit
-#fi
+if [ -z $LATESTVER ]
+then
+echo Error - could not determine the latest samba version.
+echo "Error - could not determine the latest samba version." >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
+exit
+fi
 
 LATESTVER2=`echo $LATESTVER | tr -cd 0-9`
 #Get current samba4 version
