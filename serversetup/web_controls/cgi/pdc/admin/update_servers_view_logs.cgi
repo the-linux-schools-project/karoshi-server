@@ -272,13 +272,12 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="'$DIV_ID'">
 '
 else
-echo '<div id="'$DIV_ID'"><div id="titlebox">'
-if [ $LOGVIEW = today ]
-then
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a href="update_servers_view_logs_fm.cgi"><img alt="" src="/images/warnings/server.png"></a></td><td><b>'$TITLE $SERVERNAME $DAY-$MONTH-$YEAR'</b></td></tr></tbody></table><br>'
-else
-echo '<b>'$TITLE $SERVERNAME $MONTH-$YEAR'</b><br><br></div><div id="infobox">'
-fi
+echo '<div id="'$DIV_ID'"><div id="titlebox">
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr>
+<td style="vertical-align: top;"><b>'$TITLE $SERVERNAME $DAY-$MONTH-$YEAR'</b></td>
+<td style="vertical-align: top;"><a href="update_servers_view_logs_fm.cgi"><input class="button" type="button" name="" value="'$CHOOSESERVERMSG'"></a></td>
+</tr></table></div><div id="infobox">'
 fi
 
 sudo -H /opt/karoshi/web_controls/exec/update_servers_view_logs $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOGVIEW:$DAY:$MONTH:$YEAR:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:

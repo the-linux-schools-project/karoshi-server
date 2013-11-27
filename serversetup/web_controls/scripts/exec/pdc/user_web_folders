@@ -175,7 +175,7 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 function enablewebhosting {
 
 chmod 0755 '$HOMEPATH'
-[ ! -d '$HOMEPATH'/$USERNAME/public_html ] && mkdir '$HOMEPATH'/'$USERNAME'/public_html
+[ ! -d '$HOMEPATH'/$USERNAME/public_html ] && mkdir '$HOMEPATH'/$USERNAME/public_html
 chown $USERNAME '$HOMEPATH'/$USERNAME/public_html
 setfacl -m user:www-data:--x '$HOMEPATH'/$USERNAME
 setfacl -Rm user:www-data:r-x,d:user:www-data:r-x '$HOMEPATH'/$USERNAME/public_html
@@ -201,11 +201,9 @@ fi
 
 if [ '$USERNAME' = all ] && [ '$ACTION' = enable ]
 then
-echo boo3'$ACTION''$USERNAME'
 for USERFOLDER in '$HOMEPATH'/*
 do
 USERNAME=`basename $USERFOLDER`
-echo boo4$USERNAME
 enablewebhosting
 done
 fi
@@ -404,23 +402,30 @@ then
 if [ `ls -1 $HOMEPATH | wc -l` -gt 0 ]
 then
 
-sudo -u www-data /bin/bash << ENDOFTESTING
 for USERFOLDER in $HOMEPATH/*
 do
-	FOLDERACTION=enable
-	STATUSICON=$ICON2
-	MESSAGE="$ENABLEFOLDERMSG"
-	if [[ -r \$USERFOLDER/public_html ]]
-	then
-		STATUSICON=$ICON1
-		FOLDERACTION=disable
-		MESSAGE="$DISABLEFOLDERMSG"
-	fi
-	USERNAME=\${USERFOLDER##*/}
-	echo "<tr><td>\$USERNAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_USERNAME_\$USERNAME"_"GROUP_$GROUP"_"ACTION_\$FOLDERACTION"_"\" type=\"image\" class=\"images\" src=\"\$STATUSICON\" value=\"\"><span>\$MESSAGE<br><br>\$USERNAME</span></a></td></tr>"
-done
-ENDOFTESTING
+FOLDERACTION=enable
+STATUSICON=$ICON2
+MESSAGE="$ENABLEFOLDERMSG"
 
+sudo -u www-data /bin/bash << ENDOFTEST
+	if test -r $USERFOLDER/public_html
+	then
+		exit 1
+		else
+		exit 0
+	fi
+ENDOFTEST
+if [ $? = 1 ]
+then
+STATUSICON=$ICON1
+FOLDERACTION=disable
+MESSAGE="$DISABLEFOLDERMSG"
+fi
+USERNAME=`basename $USERFOLDER`
+echo "<tr><td>$USERNAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_USERNAME_$USERNAME"_"GROUP_$GROUP"_"ACTION_$FOLDERACTION"_"\" type=\"image\" class=\"images\" src=\"$STATUSICON\" value=\"\"><span>$MESSAGE<br><br>$USERNAME</span></a></td></tr>"
+
+done
 fi
 fi
 else
@@ -430,22 +435,31 @@ then
 if [ `ls -1 '$HOMEPATH' | wc -l` -gt 0 ]
 then
 
-sudo -u www-data /bin/bash << ENDOFTESTING
+
 for USERFOLDER in '$HOMEPATH'/*
 do
-	FOLDERACTION=enable
-	STATUSICON='$ICON2'
-	MESSAGE="'$ENABLEFOLDERMSG'"
-	if [[ -r \$USERFOLDER/public_html ]]
+FOLDERACTION=enable
+STATUSICON='$ICON2'
+MESSAGE="'$ENABLEFOLDERMSG'"
+
+sudo -u www-data /bin/bash << ENDOFTEST
+	if test -r $USERFOLDER/public_html
 	then
-		STATUSICON='$ICON1'
-		FOLDERACTION=disable
-		MESSAGE="'$DISABLEFOLDERMSG'"
+		exit 1
+		else
+		exit 0
 	fi
-	USERNAME=\${USERFOLDER##*/}
-	echo "<tr><td>\$USERNAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_USERNAME_\$USERNAME"_"GROUP_'$GROUP'"_"ACTION_\$FOLDERACTION"_"\" type=\"image\" class=\"images\" src=\"\$STATUSICON\" value=\"\"><span>\$MESSAGE<br><br>\$USERNAME</span></a></td></tr>"
+ENDOFTEST
+if [ $? = 1 ]
+then
+STATUSICON='$ICON1'
+FOLDERACTION=disable
+MESSAGE="'$DISABLEFOLDERMSG'"
+fi
+USERNAME=`basename $USERFOLDER`
+echo "<tr><td>$USERNAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_USERNAME_$USERNAME"_"GROUP_'$GROUP'"_"ACTION_$FOLDERACTION"_"\" type=\"image\" class=\"images\" src=\"$STATUSICON\" value=\"\"><span>$MESSAGE<br><br>$USERNAME</span></a></td></tr>"
 done
-ENDOFTESTING
+
 
 fi
 fi
