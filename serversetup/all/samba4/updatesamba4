@@ -17,15 +17,28 @@ echo "Error - could not determine the latest samba version." >> /opt/karoshi/log
 exit
 fi
 
-LATESTVER2=`echo $LATESTVER | tr -cd 0-9`
+
 #Get current samba4 version
 CURRENTVER=`/usr/local/bin/samba-tool -V`
-CURRENTVER2=`echo $CURRENTVER | tr -cd 0-9`
 
 echo "Current Samba4 version: $CURRENTVER" | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
 echo "Latest Samba4 version: $LATESTVER" | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
 
-if [ $LATESTVER2 -gt $CURRENTVER2 ]
+if [[ $CURRENTVER = $LATESTVER ]]
+then
+echo "Samba4 is up to date" | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+exit
+fi
+
+LINE1=`echo -e "$CURRENTVER\n$LATESTVER" | sort -Vr | sed -n 1,1p`
+
+if [[ $LINE1 = $CURRENTVER ]]
+then
+echo "Current Samba4 version is ahead of the latest official version." | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+exit
+fi
+
+if [[ $LINE1 = $LATESTVER ]]
 then
 echo "A samba4 upgrade is required." | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
 else
