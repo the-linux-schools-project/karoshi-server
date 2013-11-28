@@ -18,7 +18,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/system/show_servers
 #Check data
 
 function usage {
-echo -e "show_servers usage\n\nshow_servers mobile(yes/no) view(all/internal/pdc/servers)" 
+echo -e "show_servers usage\n\nshow_servers mobile(yes/no) view(all/internal/pdc/servers/adc)" 
 exit
 }
 
@@ -33,7 +33,7 @@ then
 usage
 fi
 
-if [ $VIEW != all ] && [ $VIEW != internal ] && [ $VIEW != pdc ] && [ $VIEW != servers ]
+if [ $VIEW != all ] && [ $VIEW != internal ] && [ $VIEW != pdc ] && [ $VIEW != servers ] && [ $VIEW != adc ]
 then
 usage
 fi
@@ -120,6 +120,7 @@ SERVER=`basename $SERVERS`
 done
 }
 
+
 function show_dmz_servers {
 FILLCOLOUR=orange
 INFOPATH=/opt/karoshi/server_network/servers
@@ -147,11 +148,56 @@ SERVER=$HOSTNAME
 show_server
 }
 
+function show_adc_servers {
+FILLCOLOUR=green
+INFOPATH=/opt/karoshi/server_network/servers
+SERVERTYPE=network
+SERVERMASTER=notset
+if [ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ ]
+then
+if [ `ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ | wc -l` -gt 0 ]
+then
+for SERVERS in /opt/karoshi/server_network/zones/internal/additional_domain_controllers/*
+do
+SERVER=`basename $SERVERS`
+[ $SERVER != $HOSTNAME ] && show_server
+done
+fi
+fi
+}
+
+function show_dmz_adc_servers {
+FILLCOLOUR=orange
+INFOPATH=/opt/karoshi/server_network/servers
+SERVERTYPE=network
+SERVERMASTER=notset
+if [ -d /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/ ]
+then
+if [ `ls -1 /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/ | wc -l` -gt 0 ]
+then
+for SERVERS in /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/*
+do
+SERVER=`basename $SERVERS`
+[ $SERVER != $HOSTNAME ] && show_server
+done
+fi
+fi
+}
+
+
 #Start table
 tabletop
 
 #Show pdc
 show_pdc
+
+#Show adc servers
+if [ $VIEW = adc ]
+then
+show_adc_servers
+show_dmz_adc_servers
+fi
+
 
 #Show internal servers
 if [ $VIEW = all ] || [ $VIEW = internal ] || [ $VIEW = servers ]

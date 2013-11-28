@@ -139,7 +139,7 @@ source /opt/karoshi/server_network/domain_information/domain_name
 #Get ldap information
 if [ $SERVERNAME = $HOSTNAME ]
 then
-LDAPDATA=`ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME`
+LDAPDATA=`ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME | sed "s/[\]/BACKSLASH/g"`
 fi
 
 if [ $SERVERTYPE = federated ] || [ $SERVERTYPE = network ] && [ $SERVERNAME != $HOSTNAME ]
@@ -147,7 +147,7 @@ then
 LDAPDATA=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 source /opt/karoshi/server_network/domain_information/domain_name
-ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn='$USERNAME'
+ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn='$USERNAME' | sed "s/[\]/BACKSLASH/g""
 '`
 fi
 
@@ -157,7 +157,7 @@ LDAPDATA=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 source /opt/karoshi/server_network/domain_information/domain_name
-ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn='$USERNAME'
+ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn='$USERNAME' | sed "s/[\]/BACKSLASH/g"
 '\''
 '`
 fi
@@ -170,6 +170,7 @@ UIDNUMBER=`echo -e "$LDAPDATA" | grep ^uidNumber: | cut -d: -f2 | sed 's/^ //g'`
 GIDNUMBER=`echo -e "$LDAPDATA" | grep ^gidNumber: | cut -d: -f2 | sed 's/^ //g'`
 EMPLOYEENUMBER=`echo -e "$LDAPDATA" | grep ^employeeNumber: | cut -d: -f2 | sed 's/^ //g'`
 HOMEDIRECTORY=`echo -e "$LDAPDATA" | grep ^unixHomeDirectory: | cut -d: -f2 | sed 's/^ //g'`
+HOMEDIRECTORY2=`echo -e "$LDAPDATA" | grep ^homeDirectory: | cut -d: -f2 | sed 's/^ //g' | sed 's/BACKSLASH/\\\/g'`
 GECOS=`echo -e "$LDAPDATA" | grep ^gecos: | cut -d: -f2 | sed 's/^ //g'`
 SAMBALOGONTIME=`echo -e "$LDAPDATA" | grep ^sambaLogonTime: | cut -d: -f2 | sed 's/^ //g'`
 SAMBALOGOFFTIME=`echo -e "$LDAPDATA" | grep ^sambaLogoffTime: | cut -d: -f2 | sed 's/^ //g'`
@@ -188,8 +189,9 @@ SAMBAPWDLASTSET=`perl -e 'print scalar(localtime('$SAMBAPWDLASTSET')), "\n"'`
 SHADOWLASTCHANGE=`perl -e 'print scalar(localtime('$SHADOWLASTCHANGE')), "\n"'`
 SAMBAPWDMUSTCHANGE=`perl -e 'print scalar(localtime('$SAMBAPWDMUSTCHANGE')), "\n"'`
 SAMBAKICKOFFTIME=`perl -e 'print scalar(localtime('$SAMBAKICKOFFTIME')), "\n"'`
-#Show user information
 
+
+#Show user information
 echo '<form name="myform" action="/cgi-bin/admin/change_user_info.cgi" method="post"><table class="standard" style="text-align: left; height: 40px;" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td valign="top">'
 
 echo '<input type="hidden" name="_USERNAME_" value="'$USERNAME'" /><table class="standard" style="text-align: left; height: 40px;" border="0" cellpadding="2" cellspacing="2"><tbody>
@@ -197,6 +199,7 @@ echo '<input type="hidden" name="_USERNAME_" value="'$USERNAME'" /><table class=
 <tr><td>'$USERNAMEMSG'</td><td>'$USERNAME'</td></tr>
 <tr><td>'$SERVERMSG'</td><td>'$SERVER'</td></tr>
 <tr><td>'$HOMEDIRMSG'</td><td>'$HOMEDIRECTORY'</td></tr>
+<tr><td>'$HOMEDIRMSG2'</td><td>'$HOMEDIRECTORY2'</td></tr>
 <tr><td>'$PRIGROUPMSG'</td><td>'$PRIMARYGROUP'</td></tr>
 <tr><td>'$SECGROUPMSG'</td><td>'$SECONDARYGROUPS'</td></tr>
 <tr><td>UID number</td><td>'$UIDNUMBER'</td></tr>

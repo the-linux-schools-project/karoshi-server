@@ -190,6 +190,7 @@ fi
 echo '						<li><a href="/cgi-bin/admin/bulk_user_creation_import_enrollment_numbers_fm.cgi">'$IMPORTUSERIDMSG'</a></li>
 					</ul>
 			</li>
+			<li><a href="/cgi-bin/admin/user_web_folders.cgi">'$USERWEBFOLDERS'</a></li>
 		</ul>
 	</li>
 	<li class="top"><a href="/cgi-bin/admin/change_management_passwords_fm.cgi" id="System" class="top_link"><span class="down">'$SYSTEMMSG'</span></a>
@@ -240,7 +241,6 @@ then
 echo '						<li><a href="/cgi-bin/admin/federated_file_sync_fm.cgi">'$FEDERATIONSYNCMSG'</a></li>'
 fi
 echo '
-						<li><a href="/cgi-bin/admin/user_web_folders.cgi">'$USERWEBFOLDERS'</a></li>
 					</ul>
 			</li>'
 if [ $SHELLCTRL = yes ]
