@@ -5,6 +5,7 @@ VIEW=`echo $2 | tr -cd a-z`
 ACTIONMSG=`echo $3 | tr -cd "A-Za-z\n-/"`
 ACTION=`echo $4 | tr -cd "A-Za-z"`
 CUSTOM=`echo $5 | tr -cd "A-Za-z"`
+SEPARATOR=`echo $6 | tr -cd "_"`
 
 ############################
 #Language
@@ -24,6 +25,8 @@ exit
 [ -z $MOBILE ] && usage
 [ -z $VIEW ] && usage
 [ -z $CUSTOM ] && CUSTOM=no
+[ -z $ACTION ] && ACTION=notset
+[ -z $SEPARATOR ] && SEPARATOR=_
 
 if [ $MOBILE != yes ] && [ $MOBILE != no ]
 then
@@ -93,7 +96,7 @@ echo '</td>'
 fi
 
 echo '<td style="vertical-align: top; text-align: right;">
-<input name="_SERVERNAME_'$SERVER'_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$FEDERATED_SERVER'_ACTION_'$ACTION'_" type="submit" class="button" value="'$ACTIONMSG'">
+<input name="'$SEPARATOR'SERVERNAME'$SEPARATOR''$SERVER''$SEPARATOR'SERVERTYPE'$SEPARATOR''$SERVERTYPE''$SEPARATOR'SERVERMASTER'$SEPARATOR''$SERVERMASTER''$SEPARATOR'ACTION'$SEPARATOR''$ACTION''$SEPARATOR'" type="submit" class="button" value="'$ACTIONMSG'">
 </td></tr>'
 }
 
@@ -107,8 +110,9 @@ show_server
 
 function show_internal_servers {
 FILLCOLOUR=green
-SERVERTYPE=network
 INFOPATH=/opt/karoshi/server_network/servers
+SERVERTYPE=network
+SERVERMASTER=notset
 for SERVERS in /opt/karoshi/server_network/zones/internal/servers/*
 do
 SERVER=`basename $SERVERS`
@@ -120,6 +124,7 @@ function show_dmz_servers {
 FILLCOLOUR=orange
 INFOPATH=/opt/karoshi/server_network/servers
 SERVERTYPE=network
+SERVERMASTER=notset
 if [ -d /opt/karoshi/server_network/zones/dmz/servers/ ]
 then
 if [ `ls -1 /opt/karoshi/server_network/zones/dmz/servers/ | wc -l` -gt 0 ]
@@ -137,6 +142,7 @@ function show_pdc {
 FILLCOLOUR=green
 INFOPATH=/opt/karoshi/server_network/servers
 SERVERTYPE=network
+SERVERMASTER=notset
 SERVER=$HOSTNAME
 show_server
 }

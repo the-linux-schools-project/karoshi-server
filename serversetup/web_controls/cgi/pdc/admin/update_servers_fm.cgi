@@ -47,17 +47,6 @@ then
 TIMEOUT=86400
 fi
 
-#########################
-#Get data input
-#########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
-
-#Get current date and time
-DAY=`date +%d`
-MONTH=`date +%m`
-YEAR=`date +%Y`
-
 HOUR=`date +%H`
 MINUTES=`date +%M`
 SECONDS=`date +%S`
@@ -89,6 +78,28 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 fi
 
 echo '</head><body onLoad="start()">'
+
+#########################
+#Get data input
+#########################
+TCPIP_ADDR=$REMOTE_ADDR
+DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%+'`
+
+END_POINT=9
+#Assign _DAY_
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+if [ `echo $DATAHEADER'check'` = DAYcheck ]
+then
+let COUNTER=$COUNTER+1
+DAY=`echo $DATA | cut -s -d'_' -f$COUNTER`
+break
+fi
+let COUNTER=$COUNTER+1
+done
+
 #########################
 #Check https access
 #########################
@@ -144,20 +155,32 @@ echo '
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers"><img class="images" alt="" src="/images/help/info.png"><span>'$UPDATESERVERHELP'</span></a><br><br>'
 fi
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+#Preselect day
+if [ ! -z $DAY ]
+then
+[ $DAY = 1 ] && OP1='selected="selected"'
+[ $DAY = 2 ] && OP2='selected="selected"'
+[ $DAY = 3 ] && OP3='selected="selected"'
+[ $DAY = 4 ] && OP4='selected="selected"'
+[ $DAY = 5 ] && OP5='selected="selected"'
+[ $DAY = 6 ] && OP6='selected="selected"'
+[ $DAY = 7 ] && OP7='selected="selected"'
+[ $DAY = 8 ] && OP8='selected="selected"'
+fi
 
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 180px;">'$DAYMSG'</td><td>
 <select style="width: 200px;" name="_DAY_">
 <option value=""></option>
 <option value="never">'$NEVERMSG'</option>
-<option value="1">'$MONMSG'</option>
-<option value="2">'$TUESMSG'</option>
-<option value="3">'$WEDMSG'</option>
-<option value="4">'$THURSMSG'</option>
-<option value="5">'$FRIMSG'</option>
-<option value="6">'$SATMSG'</option>
-<option value="7">'$SUNMSG'</option>
-<option value="8">'$EVERYDAYMSG'</option>
+<option '$OP1' value="1">'$MONMSG'</option>
+<option '$OP2' value="2">'$TUESMSG'</option>
+<option '$OP3' value="3">'$WEDMSG'</option>
+<option '$OP4' value="4">'$THURSMSG'</option>
+<option '$OP5' value="5">'$FRIMSG'</option>
+<option '$OP6' value="6">'$SATMSG'</option>
+<option '$OP7' value="7">'$SUNMSG'</option>
+<option '$OP8' value="8">'$EVERYDAYMSG'</option>
 </select>
 </td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$DAYHELP'</span></a></td></tr>
 <tr><td>'$HOURMSG'</td><td><input tabindex= "1" value="'$HOUR'" name="_HOURS_" style="width: 200px;" size="3" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$TIMEHELP'</span></a></td></tr>

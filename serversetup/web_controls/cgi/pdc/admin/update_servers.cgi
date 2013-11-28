@@ -60,6 +60,7 @@ exit
 function show_page {
 echo "
 <form action=\"/cgi-bin/admin/update_servers_fm.cgi\" method=\"post\" id=\"showdns\">
+<input type=\"hidden\" name=\"_DAY_\" value=\"$DAY\">
 </form>
 <script language=\"JavaScript\" type=\"text/javascript\">
 <!--

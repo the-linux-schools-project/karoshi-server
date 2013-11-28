@@ -115,6 +115,7 @@ echo '	<a href="/cgi-bin/admin/change_password_fm.cgi">'$CHANGEPASSMSG'</a>
         <a href="/cgi-bin/admin/remote_management_change_theme.cgi">'$CHANGETHEME'</a>
         <a href="/cgi-bin/admin/custom_command_fm.cgi">'$CUSTOMMSG'</a>
         <a href="/cgi-bin/admin/services_view_fm.cgi">'$SERVICESMSG'</a>
+        <a href="/cgi-bin/admin/change_management_passwords_fm.cgi">'$SYSPASSMSG'</a>
         <a href="/cgi-bin/admin/shutdown_fm.cgi">'$SHUTDOWNMSG'</a>
       </div>
 	<div class="collapsed">
