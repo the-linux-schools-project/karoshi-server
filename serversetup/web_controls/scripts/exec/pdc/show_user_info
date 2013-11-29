@@ -147,7 +147,7 @@ then
 LDAPDATA=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 source /opt/karoshi/server_network/domain_information/domain_name
-ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn='$USERNAME' | sed "s/[\]/BACKSLASH/g""
+ldapsearch -x -w $LDAPPASS -b "OU=People,'$LDAPBASE'" -D "cn=Administrator,cn=Users,$LDAPBASE" cn='$USERNAME' | sed "s/[\]/BACKSLASH/g""
 '`
 fi
 
@@ -157,7 +157,7 @@ LDAPDATA=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 source /opt/karoshi/server_network/domain_information/domain_name
-ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn='$USERNAME' | sed "s/[\]/BACKSLASH/g"
+ldapsearch -x -w $LDAPPASS -b "OU=People,'$LDAPBASE'" -D "cn=Administrator,cn=Users,$LDAPBASE" cn='$USERNAME' | sed "s/[\]/BACKSLASH/g"
 '\''
 '`
 fi
@@ -190,11 +190,11 @@ SHADOWLASTCHANGE=`perl -e 'print scalar(localtime('$SHADOWLASTCHANGE')), "\n"'`
 SAMBAPWDMUSTCHANGE=`perl -e 'print scalar(localtime('$SAMBAPWDMUSTCHANGE')), "\n"'`
 SAMBAKICKOFFTIME=`perl -e 'print scalar(localtime('$SAMBAKICKOFFTIME')), "\n"'`
 
-
 #Show user information
-echo '<form name="myform" action="/cgi-bin/admin/change_user_info.cgi" method="post"><table class="standard" style="text-align: left; height: 40px;" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td valign="top">'
-
-echo '<input type="hidden" name="_USERNAME_" value="'$USERNAME'" /><table class="standard" style="text-align: left; height: 40px;" border="0" cellpadding="2" cellspacing="2"><tbody>
+if [ $SERVER = $HOSTNAME ]
+then
+echo '<form name="myform" action="/cgi-bin/admin/change_user_info.cgi" method="post"><table class="standard" style="text-align: left; height: 40px;" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td valign="top">
+<input type="hidden" name="_USERNAME_" value="'$USERNAME'" /><table class="standard" style="text-align: left; height: 40px;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 180px;" valign="top"><b>'$BASEINFOMSG'</b></td></tr>
 <tr><td>'$USERNAMEMSG'</td><td>'$USERNAME'</td></tr>
 <tr><td>'$SERVERMSG'</td><td>'$SERVER'</td></tr>
@@ -217,9 +217,7 @@ echo '<input type="hidden" name="_USERNAME_" value="'$USERNAME'" /><table class=
 <tr><td>'$ACCEXPMSG'</td><td>'$SAMBAKICKOFFTIME'</td></tr>
 </tbody></table>
 '
-
 echo '</td><td valign="top">'
-
 if [ -f /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg ]
 then
 echo '<p><img src="/images/user_images/'$PRIMARYGROUP'/'$USERNAME'.jpg" width="120" height="150"></p>'
@@ -227,4 +225,39 @@ else
 echo '<p><img src="/images/blank_user_image.jpg" width="120" height="150"></p>'
 fi
 echo '</td></tr></tbody></table><br><br><input value="Submit" type="submit"> <input value="Reset" type="reset"></form>'
+else
+
+echo '<table class="standard" style="text-align: left; height: 40px;" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td valign="top">
+<input type="hidden" name="_USERNAME_" value="'$USERNAME'" /><table class="standard" style="text-align: left; height: 40px;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: 180px;" valign="top"><b>'$BASEINFOMSG'</b></td></tr>
+<tr><td>'$USERNAMEMSG'</td><td>'$USERNAME'</td></tr>
+<tr><td>'$SERVERMSG'</td><td>'$SERVER'</td></tr>
+<tr><td>'$HOMEDIRMSG'</td><td>'$HOMEDIRECTORY'</td></tr>
+<tr><td>'$HOMEDIRMSG2'</td><td>'$HOMEDIRECTORY2'</td></tr>
+<tr><td>'$PRIGROUPMSG'</td><td>'$PRIMARYGROUP'</td></tr>
+<tr><td>'$SECGROUPMSG'</td><td>'$SECONDARYGROUPS'</td></tr>
+<tr><td>UID number</td><td>'$UIDNUMBER'</td></tr>
+<tr><td>GID number</td><td>'$GIDNUMBER'</td></tr>
+<tr><td>'$CNMSG'</td><td>'$CN'</td></tr>
+<tr><td>'$SURNAMEMSG'</td><td>'$SN'</td></tr>
+<tr><td>'$GIVENNAMEMSG'</td><td>'$GIVENNAME'</td></tr>
+<tr><td>Employee / student number</td><td>'$EMPLOYEENUMBER'</td></tr>
+<tr><td>'$DISPLAYNAMEMSG'</td><td>'$DISPLAYNAME'</td></tr>
+<tr><td>'$EMAILADDRESSMSG'</td><td>'$MAIL'</td></tr>
+<tr><td>'$SMBACCFLAGSMSG'</td><td>'$SAMBAACCTFLAGS'</td></tr>
+<tr><td>'$PASSLASTCHANGEDMSG'</td><td>'$SAMBAPWDLASTSET'</td></tr>
+<tr><td>'$SHADOWMAXMSG'</td><td>'$SHADOWMAX'</td></tr>
+<tr><td>'$PASSMUSTCHANGEMSG'</td><td>'$SAMBAPWDMUSTCHANGE'</td></tr>
+<tr><td>'$ACCEXPMSG'</td><td>'$SAMBAKICKOFFTIME'</td></tr>
+</tbody></table>
+'
+echo '</td><td valign="top">'
+if [ -f /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg ]
+then
+echo '<p><img src="/images/user_images/'$PRIMARYGROUP'/'$USERNAME'.jpg" width="120" height="150"></p>'
+else
+echo '<p><img src="/images/blank_user_image.jpg" width="120" height="150"></p>'
+fi
+echo '</td></tr></tbody></table><br><br>'
+fi
 exit
