@@ -55,15 +55,6 @@ if $is_domain && [[ $(mount | grep "on $HOME/offline-home") ]]; then
 	offline_home_exists=true
 fi
 
-#Detect running graphically
-is_graphical=false
-if [[ $PAM_SERVICE == "lightdm" ]]; then
-	echo "Detected running graphically"
-	is_graphical=true
-else
-	echo "Detected running in console"
-fi
-
 #Exit if still logged in
 if [[ $(pmvarrun -u "$(id -nu)" -o 0) -gt 1 ]]; then
 	echo "User still logged in - exiting"
@@ -74,7 +65,7 @@ if $is_domain; then
 	###################
 	#Domain user
 	###################
-	
+
 	if karoshi-manage-flags get offline_mode >/dev/null; then
 		if $offline_home_exists; then
 			echo "Using offline-home as alternate home"
@@ -90,13 +81,13 @@ if $is_domain; then
 			echo "delete" > "$KAROSHI_DATA"/"$KAROSHI_OFFLINE_HOMES"/flags/"$USER"
 		fi
 	fi
-	
+
 	#Clear Trash folder
 	[[ -d ~/.local/share/Trash ]] && rm -rf ~/.local/share/Trash
-	
+
 	#Remove Karoshi autostart files
-	$is_graphical && find ~/.config/autostart -name 'karoshi-*.desktop' -delete
-	
+	find ~/.config/autostart -name 'karoshi-*.desktop' -delete
+
 	#Backup configuration
 	if [[ $alternate_home ]]; then
 		list=( )
@@ -126,17 +117,14 @@ if $is_domain; then
 		[[ -f ~/$alternate_home/.configuration.tar.gz ]] && rm ~/"$alternate_home"/.configuration.tar.gz
 		[[ "${list[@]}" ]] && tar -cz --one-file-system --exclude='karoshi-*.desktop' --exclude='*.karoshi-session' -C ~ -f ~/"$alternate_home"/.configuration.tar.gz "${list[@]}"
 
-	
-		#Backup desktop files
-		if $is_graphical; then
-			list=( )
-			while read -d $'\0' -r file ; do
-				checkAndList "${file##~/}"
-			done < <(find ~/Desktop -mindepth 1 -maxdepth 1 -not -name "karoshi-*.desktop" -and -size -1024c -print0)
 
-			#Create archive in ~/$alternate_home/.desktop-icons.tar.gz
-			[[ -f ~/$alternate_home/.desktop-icons.tar.gz ]] && rm ~/"$alternate_home"/.desktop-icons.tar.gz
-			[[ "${list[@]}" ]] && tar -cz --one-file-system -C ~ -f ~/"$alternate_home"/.desktop-icons.tar.gz "${list[@]}"
-		fi
+		#Backup desktop files
+		list=( )
+		while read -d $'\0' -r file ; do
+			checkAndList "${file##~/}"
+		done < <(find ~/Desktop -mindepth 1 -maxdepth 1 -not -name "karoshi-*.desktop" -and -size -1024c -print0)
+		#Create archive in ~/$alternate_home/.desktop-icons.tar.gz
+		[[ -f ~/$alternate_home/.desktop-icons.tar.gz ]] && rm ~/"$alternate_home"/.desktop-icons.tar.gz
+		[[ "${list[@]}" ]] && tar -cz --one-file-system -C ~ -f ~/"$alternate_home"/.desktop-icons.tar.gz "${list[@]}"
 	fi
 fi

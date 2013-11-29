@@ -169,6 +169,12 @@ if [[ -f /tmp/netlogon/linuxclient/server-verify.key ]]; then
 	gpg --batch --no-default-keyring --keyring /opt/karoshi/keyring.gpg --import /tmp/netlogon/linuxclient/server-verify.key
 fi
 
+#Get list of available user web folder servers
+[[ -e /opt/karoshi/user_web_servers ]] && rm -f /opt/karoshi/user_web_servers
+if [[ -f /tmp/netlogon/domain_information/user_web_servers ]]; then
+	cp /tmp/netlogon/domain_information/user_web_servers /opt/karoshi
+fi
+
 #######################
 #Thunderbird extensions
 #######################
@@ -176,15 +182,15 @@ fi
 function do_xpi {
 	xpi_name=$(basename "$1")
 	xpi_name=${xpi_name%.xpi}
-	
+
 	if [[ -z $xpi_name ]]; then
 		echo "Warning: Something bad happened" >&2
 		return
 	fi
-	
+
 	mkdir /opt/karoshi/thunderbird/extensions/"$xpi_name"
 	unzip -q "$1" -d /opt/karoshi/thunderbird/extensions/"$xpi_name"
-	
+
 	xpi_id=$(xmlstarlet sel -N rdf=http://www.w3.org/1999/02/22-rdf-syntax-ns# -N em=http://www.mozilla.org/2004/em-rdf# \
 				-t -m "//rdf:Description[@about='urn:mozilla:install-manifest']" -i "em:id" -v "em:id" --else -v "@em:id" \
 				/opt/karoshi/thunderbird/extensions/"$xpi_name"/install.rdf)
@@ -193,7 +199,7 @@ function do_xpi {
 		echo "Warning: Thunderbird extension $xpi_name is invalid" >&2
 		return
 	fi
-	
+
 	#Install extension
 	ln -Ts /opt/karoshi/thunderbird/extensions/"$xpi_name" /usr/lib/mozilla/extensions/{3550f703-e582-4d05-9a08-453d09bdfdc6}/"$xpi_id"
 }
@@ -292,13 +298,13 @@ function process_rules {
 		echo "ERROR: Firewall rule processing: chain $2 does not exist" >&2
 		return
 	fi
-	
+
 	(( line_no = 0 ))
 	while read -r action protocol port source; do
 		(( ++line_no ))
 		if [[ $action ]] && [[ $action != \#* ]]; then
 			rule=( )
-			
+
 			#Protocol
 			case "$protocol" in
 			all|any)
@@ -312,7 +318,7 @@ function process_rules {
 				fi
 				;;
 			esac
-			
+
 			#Port
 			case "$port" in
 			all|any)
@@ -330,7 +336,7 @@ function process_rules {
 				fi
 				;;
 			esac
-			
+
 			#Source
 			case "$source" in
 			any|all|"")
@@ -339,7 +345,7 @@ function process_rules {
 				rule+=( --source "$source" )
 				;;
 			esac
-			
+
 			#Action
 			case "$action" in
 			allow)
@@ -353,7 +359,7 @@ function process_rules {
 				continue
 				;;
 			esac
-			
+
 			#Commit rule
 			iptables -A "$2" "${rule[@]}"
 		fi
@@ -419,8 +425,8 @@ if [[ $LOCATION ]] && [[ -f /tmp/netlogon/printers.txt ]]; then
 		echo $default_printer > /var/lib/karoshi/printing/list
 		for (( i = 3; i < printer_count + 3; ++i )); do
 			printer=`cut -d, -f$i <<< "$all_printers"`
+			echo "Marking printer $printer to be configured"
 			if [[ $printer != $default_printer ]]; then
-				echo "Marking printer $printer to be configured"
 				echo $printer >> /var/lib/karoshi/printing/list
 			fi
 			#Copy PPD
@@ -459,7 +465,7 @@ then
 			apt-get -y install --no-upgrade $install_list
 		fi
 	fi
-	
+
 	#Remove software
 	if [[ -f /tmp/netlogon/linuxclient/$LINUX_VERSION/remove_list ]]
 	then
@@ -519,7 +525,7 @@ if ! grep -Eq "^[^[:space:]]+[[:space:]]+$KAROSHI_DATA/$KAROSHI_VIRTUALBOX[[:spa
 			break
 		fi
 	done < <(find /dev -maxdepth 1 -name sd??)
-	
+
 	if ! $vbox_set; then
 		#Detect any SATA or SCSI drives with no valid partition table
 		drive=$(parted -lms 2>/dev/null | sed -n 's@Error: \(/dev/sd.\): unrecognised disk label@\1@p')
@@ -527,14 +533,14 @@ if ! grep -Eq "^[^[:space:]]+[[:space:]]+$KAROSHI_DATA/$KAROSHI_VIRTUALBOX[[:spa
 		if ! [[ $drive ]]; then
 			drive=$(parted -lms 2>/dev/null | sed -n '/BYT;$/ { n; /^\/dev\/sd./ { h; n; /^$/ { g; s/\([^:]*\):.*/\1/p; q; } } }')
 		fi
-	
+
 		if [[ $drive ]]; then
 			echo "Detected candidate drive for $KAROSHI_DATA/$KAROSHI_VIRTUALBOX: $drive"
 			#Make GPT partition table and single logical partition
 			parted -s "$drive" -- mktable gpt
 			parted -s -a optimal "$drive" -- mkpart logical 0% 100%
 			mkfs.ext4 -L "KAROSHI-VBOX" "$drive"1
-		
+
 			configureVboxPartition "$drive"1
 		fi
 	fi

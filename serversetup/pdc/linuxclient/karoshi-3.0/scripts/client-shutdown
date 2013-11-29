@@ -26,9 +26,9 @@ function sendXNotifications {
 	if [[ $1 -eq 1 ]]; then
 		minute_string="minute"
 	fi
-	
+
 	echo "Sending shutdown notification - $1 $minute_string"
-	
+
 	while read -r x_display; do
 		export DISPLAY=":${x_display##*/X}"
 		is_valid=false
