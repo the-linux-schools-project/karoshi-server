@@ -201,6 +201,13 @@ fi
 #fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/show_user_info.cgi | cut -d' ' -f1`
 #Show User info
+
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr>
+<td style="vertical-align: top;"><b>'$TITLE2'</b></td>
+<td style="vertical-align: top;"><a href="/cgi-bin/admin/show_user_info_fm.cgi"><input class="button" type="button" name="" value="'$CHOOSEUSERMSG'"></a></td>
+</tr></table><br><br>'
+
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:" | sudo -H /opt/karoshi/web_controls/exec/show_user_info
 echo "</div></body></html>"
 exit

@@ -128,13 +128,15 @@ if [ $MOBILE = no ]
 then
 DIV_ID=actionbox6
 TABLECLASS=standard
-WIDTH=180
+WIDTH1=180
+WIDTH2=200
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
 DIV_ID=actionbox2
 TABLECLASS=mobilestandard
-WIDTH=160
+WIDTH1=90
+WIDTH2=120
 fi
 
 echo '<form action="/cgi-bin/admin/update_servers.cgi" name="tstest" method="post">'
@@ -169,8 +171,8 @@ then
 fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$DAYMSG'</td><td>
-<select style="width: 200px;" name="_DAY_">
+<tr><td style="width: '$WIDTH1'px;">'$DAYMSG'</td><td>
+<select style="width: '$WIDTH2'px;" name="_DAY_">
 <option value=""></option>
 <option value="never">'$NEVERMSG'</option>
 <option '$OP1' value="1">'$MONMSG'</option>
@@ -183,8 +185,8 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 <option '$OP8' value="8">'$EVERYDAYMSG'</option>
 </select>
 </td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$DAYHELP'</span></a></td></tr>
-<tr><td>'$HOURMSG'</td><td><input tabindex= "1" value="'$HOUR'" name="_HOURS_" style="width: 200px;" size="3" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$TIMEHELP'</span></a></td></tr>
-<tr><td>'$MINMSG'</td><td><input tabindex= "1" value="'$MINUTES'" name="_MINUTES_" style="width: 200px;" size="3" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$TIMEHELP'</span></a></td></tr>
+<tr><td>'$HOURMSG'</td><td><input tabindex= "1" value="'$HOUR'" name="_HOURS_" style="width: '$WIDTH2'px;" size="3" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$TIMEHELP'</span></a></td></tr>
+<tr><td>'$MINMSG'</td><td><input tabindex= "1" value="'$MINUTES'" name="_MINUTES_" style="width: '$WIDTH2'px;" size="3" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$TIMEHELP'</span></a></td></tr>
 </tbody></table><br>'
 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'

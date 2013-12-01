@@ -142,12 +142,19 @@ then
 LDAPDATA=`ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME | sed "s/[\]/BACKSLASH/g"`
 fi
 
-if [ $SERVERTYPE = federated ] || [ $SERVERTYPE = network ] && [ $SERVERNAME != $HOSTNAME ]
+if [ $SERVERTYPE = network ] && [ $SERVERNAME != $HOSTNAME ]
 then
 LDAPDATA=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+ldapsearch -x -w '$LDAPPASS' -b "OU=People,'$LDAPBASE'" -D "cn=Administrator,cn=Users,'$LDAPBASE'" cn='$USERNAME' | sed "s/[\]/BACKSLASH/g"
+'`
+fi
+
+if [ $SERVERTYPE = federated ]
+then
+LDAPDATA=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 source /opt/karoshi/server_network/domain_information/domain_name
-ldapsearch -x -w $LDAPPASS -b "OU=People,'$LDAPBASE'" -D "cn=Administrator,cn=Users,$LDAPBASE" cn='$USERNAME' | sed "s/[\]/BACKSLASH/g""
+ldapsearch -x -w $LDAPPASS -b "OU=People,'$LDAPBASE'" -D "cn=Administrator,cn=Users,$LDAPBASE" cn='$USERNAME' | sed "s/[\]/BACKSLASH/g"
 '`
 fi
 
@@ -184,14 +191,14 @@ SHADOWLASTCHANGE=`echo -e "$LDAPDATA" | grep ^shadowLastChange: | cut -d: -f2 | 
 SHADOWMAX=`echo -e "$LDAPDATA" | grep ^shadowMax: | cut -d: -f2 | sed 's/^ //g'`
 SAMBAPASSWORDHISTORY=`echo -e "$LDAPDATA" | grep ^sambaPasswordHistory: | cut -d: -f2 | sed 's/^ //g'`
 SAMBAACCTFLAGS=`echo -e "$LDAPDATA" | grep ^sambaAcctFlags: | cut -d: -f2 | sed 's/^ //g'`
-SAMBAPWDLASTSET=`echo -e "$LDAPDATA" | grep ^sambaPwdLastSet: | cut -d: -f2 | sed 's/^ //g'`
+SAMBAPWDLASTSET=`echo -e "$LDAPDATA" | grep ^PwdLastSet: | cut -d: -f2 | sed 's/^ //g'`
 SAMBAPWDLASTSET=`perl -e 'print scalar(localtime('$SAMBAPWDLASTSET')), "\n"'`
 SHADOWLASTCHANGE=`perl -e 'print scalar(localtime('$SHADOWLASTCHANGE')), "\n"'`
 SAMBAPWDMUSTCHANGE=`perl -e 'print scalar(localtime('$SAMBAPWDMUSTCHANGE')), "\n"'`
 SAMBAKICKOFFTIME=`perl -e 'print scalar(localtime('$SAMBAKICKOFFTIME')), "\n"'`
 
 #Show user information
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVERNAME = $HOSTNAME ]
 then
 echo '<form name="myform" action="/cgi-bin/admin/change_user_info.cgi" method="post"><table class="standard" style="text-align: left; height: 40px;" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td valign="top">
 <input type="hidden" name="_USERNAME_" value="'$USERNAME'" /><table class="standard" style="text-align: left; height: 40px;" border="0" cellpadding="2" cellspacing="2"><tbody>
@@ -212,9 +219,6 @@ echo '<form name="myform" action="/cgi-bin/admin/change_user_info.cgi" method="p
 <tr><td>'$EMAILADDRESSMSG'</td><td><input tabindex= "7" value="'$MAIL'" name="_MAIL_" style="width: 200px;" size="20" type="text"></td></tr>
 <tr><td>'$SMBACCFLAGSMSG'</td><td>'$SAMBAACCTFLAGS'</td></tr>
 <tr><td>'$PASSLASTCHANGEDMSG'</td><td>'$SAMBAPWDLASTSET'</td></tr>
-<tr><td>'$SHADOWMAXMSG'</td><td>'$SHADOWMAX'</td></tr>
-<tr><td>'$PASSMUSTCHANGEMSG'</td><td>'$SAMBAPWDMUSTCHANGE'</td></tr>
-<tr><td>'$ACCEXPMSG'</td><td>'$SAMBAKICKOFFTIME'</td></tr>
 </tbody></table>
 '
 echo '</td><td valign="top">'
@@ -246,9 +250,6 @@ echo '<table class="standard" style="text-align: left; height: 40px;" border="0"
 <tr><td>'$EMAILADDRESSMSG'</td><td>'$MAIL'</td></tr>
 <tr><td>'$SMBACCFLAGSMSG'</td><td>'$SAMBAACCTFLAGS'</td></tr>
 <tr><td>'$PASSLASTCHANGEDMSG'</td><td>'$SAMBAPWDLASTSET'</td></tr>
-<tr><td>'$SHADOWMAXMSG'</td><td>'$SHADOWMAX'</td></tr>
-<tr><td>'$PASSMUSTCHANGEMSG'</td><td>'$SAMBAPWDMUSTCHANGE'</td></tr>
-<tr><td>'$ACCEXPMSG'</td><td>'$SAMBAKICKOFFTIME'</td></tr>
 </tbody></table>
 '
 echo '</td><td valign="top">'

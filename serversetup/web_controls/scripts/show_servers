@@ -91,7 +91,12 @@ fi
 if [ $CUSTOM = updateserver ]
 then
 echo '<td style="vertical-align: top; text-align: left;">'
-[ -f /opt/karoshi/server_network/upgrade_schedules/servers/$SERVER ] && cat /opt/karoshi/server_network/upgrade_schedules/servers/$SERVER
+if [ -f /opt/karoshi/server_network/upgrade_schedules/servers/$SERVER ]
+then
+cat /opt/karoshi/server_network/upgrade_schedules/servers/$SERVER
+else
+echo -
+fi
 echo '</td>'
 fi
 
