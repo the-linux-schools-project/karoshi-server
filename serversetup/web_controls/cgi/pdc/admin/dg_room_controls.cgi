@@ -208,11 +208,11 @@ ICON=$ICON2
 CONTROLMSG=$ALLOWMSG
 ACTION=allow
 fi
-echo '<tr><td style="vertical-align: top;">'$ASSET'</td>'
+echo '<tr><td>'$ASSET'</td>'
 
-[ $MOBILE = no ] && echo '<td style="vertical-align: top;">'$MAC1'</td>'
+[ $MOBILE = no ] && echo '<td>'$MAC1'</td>'
 
-echo '<td style="vertical-align: top;">'$TCPIP1'</td><td><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'$ACTION'_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON'" value=""><span>'$CONTROLMSG' '$ASSET'</span></a></form></td></tr>'
+echo '<td>'$TCPIP1'</td><td><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'$ACTION'_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON'" value=""><span>'$CONTROLMSG' '$ASSET'</span></a></form></td></tr>'
 fi
 done
 fi
