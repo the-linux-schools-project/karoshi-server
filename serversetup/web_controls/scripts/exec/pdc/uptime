@@ -216,12 +216,12 @@ fi
 
 if [ $MOBILE = yes ]
 then
-echo '<tr><td style="vertical-align: top;">'$DISPLAY_NAME'</td><td style="vertical-align: top;">'$UPPRCENT''$SYMBOL'</td>'
+echo '<tr><td>'$DISPLAY_NAME'</td><td>'$UPPRCENT''$SYMBOL'</td>'
 else
-echo '<tr><td style="vertical-align: top;">'$DISPLAY_NAME'</td><td style="vertical-align: top;">'$UPPRCENT''$SYMBOL'</td><td style="vertical-align: top;">'$DPY' '$SUFFIX'</td><td style="vertical-align: top;">'$START_TIME'</td>'
+echo '<tr><td>'$DISPLAY_NAME'</td><td>'$UPPRCENT''$SYMBOL'</td><td>'$DPY' '$SUFFIX'</td><td>'$START_TIME'</td>'
 fi
 
-echo '<td style="vertical-align: middle;"> 
+echo '<td> 
 <form action="/cgi-bin/admin/uptime_reset.cgi" name="selectservers" method="post">
 <a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_SERVERMASTER_'$FEDERATED_SERVER'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$TITLE2'<br><br>'$SERVERNAME'<br><br>'
 cat /opt/karoshi/server_network/servers/$SERVERNAME/* | sed '/<a href/c'"&nbsp"
@@ -232,7 +232,7 @@ echo '</span></a>
 }
 
 function offline {
-echo '<tr><td style="vertical-align: top;"> '$DISPLAY_NAME'</td><td>'$OFFLINEMSG'</td><td>'$OFFLINEMSG'</td><td>'$OFFLINEMSG'</td></tr>'
+echo '<tr><td> '$DISPLAY_NAME'</td><td>'$OFFLINEMSG'</td><td>'$OFFLINEMSG'</td><td>'$OFFLINEMSG'</td></tr>'
 }
 
 #Show uptime this server

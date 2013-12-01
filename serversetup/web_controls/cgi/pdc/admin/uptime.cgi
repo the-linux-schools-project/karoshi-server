@@ -198,7 +198,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/uptime.cgi | cut -d' ' -f1`
-#Shutdown server
+#Get uptime
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/uptime
 [ $MOBILE = no ] && echo '</div>'
 echo '</div></body></html>'
