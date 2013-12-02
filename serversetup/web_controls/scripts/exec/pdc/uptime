@@ -154,7 +154,7 @@ fi
 if [ $MOBILE = yes ]
 then
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 120px;"><b>'$SERVERMSG'</b></td><td style="width: 80px;"><b>'$UPTIMEMSG'</b></td></tr>'
+<tr><td style="width: 90px;"><b>'$SERVERMSG'</b></td><td style="width: 80px;"><b>'$UPTIMEMSG'</b></td></tr>'
 else
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 120px;"><b>'$SERVERMSG'</b></td><td style="width: 80px;"><b>'$UPTIMEMSG'</b></td><td style="width: 140px;"><b>'$DOWNTIMEMSG'</b></td><td><b>'$STARTTIMEMSG'</b></td><td>'$RESETMSG'</tr>'
@@ -216,16 +216,14 @@ fi
 
 if [ $MOBILE = yes ]
 then
-echo '<tr><td>'$DISPLAY_NAME'</td><td>'$UPPRCENT''$SYMBOL'</td>'
+echo '<tr><td valign="top">'$DISPLAY_NAME'</td><td valign="top">'$UPPRCENT''$SYMBOL'</td>'
 else
-echo '<tr><td>'$DISPLAY_NAME'</td><td>'$UPPRCENT''$SYMBOL'</td><td>'$DPY' '$SUFFIX'</td><td>'$START_TIME'</td>'
+echo '<tr><td valign="top">'$DISPLAY_NAME'</td><td valign="top">'$UPPRCENT''$SYMBOL'</td><td valign="top">'$DPY' '$SUFFIX'</td><td valign="top">'$START_TIME'</td>'
 fi
 
-echo '<td> 
+echo '<td valign="top"> 
 <form action="/cgi-bin/admin/uptime_reset.cgi" name="selectservers" method="post">
-<a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_SERVERMASTER_'$FEDERATED_SERVER'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$TITLE2'<br><br>'$SERVERNAME'<br><br>'
-cat /opt/karoshi/server_network/servers/$SERVERNAME/* | sed '/<a href/c'"&nbsp"
-echo '</span></a>
+<input name="_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_SERVERMASTER_'$FEDERATED_SERVER'_" type="submit" class="button" value="'$RESETMSG'">
 </form>
 </td>
 </tr>'

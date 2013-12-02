@@ -190,7 +190,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 
 [ $MOBILE = no ] && echo '<td style="width: '$WIDTH2'px;"><b>'$MACADDRESSMSG'</b></td>'
 
-echo '<td style="width: '$WIDTH3'px;"><b>'$TCPIPMSG'</b></td><td><b>Status</b></td></tr>'
+echo '<td style="width: '$WIDTH3'px;"><b>'$TCPIPMSG'</b></td><td><b>'$ACTIONMSG'</b></td></tr>'
 
 for ASSETS in "/opt/karoshi/asset_register/locations/$LOCATION/"*
 do
@@ -199,20 +199,22 @@ source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
 #Only show certain asset types
 if [ $ASSETTYPE = 1 ] || [ $ASSETTYPE = 3 ] || [ $ASSETTYPE = 5 ] || [ $ASSETTYPE = 7 ] || [ $ASSETTYPE = 9 ]
 then
-ICON=$ICON1
 CONTROLMSG=$DENYMSG
+COLOUR=#11BE26
 ACTION=deny
 if [ -f /opt/karoshi/server_network/internet_room_controls/$LOCATION/$ASSET ]
 then
-ICON=$ICON2
 CONTROLMSG=$ALLOWMSG
+COLOUR=#FF0000
 ACTION=allow
 fi
-echo '<tr><td>'$ASSET'</td>'
+echo '<tr><td valign="top"><font color="'$COLOUR'">'$ASSET'</font></td>'
 
-[ $MOBILE = no ] && echo '<td>'$MAC1'</td>'
+[ $MOBILE = no ] && echo '<td valign="top"><font color="'$COLOUR'">'$MAC1'</font></td>'
 
-echo '<td>'$TCPIP1'</td><td><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'$ACTION'_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON'" value=""><span>'$CONTROLMSG' '$ASSET'</span></a></form></td></tr>'
+echo '<td valign="top"><font color="'$COLOUR'">'$TCPIP1'</font></td><td valign="top"><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post">
+<input name="_ACTION_'$ACTION'_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="submit" class="button" value="'$CONTROLMSG'"></form></td></tr>
+'
 fi
 done
 fi
