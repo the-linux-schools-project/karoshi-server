@@ -283,6 +283,8 @@ sysvsupport
 #######################
 if [ -f /var/run/reboot-required ]
 then
+#Let any services restart and stabilise
+sleep 30
 echo "A reboot is required."
 echo -e "$HOSTNAME: `date` - A reboot is required, rebooting now.\nA reboot has not occurred unless there is a reboot entry below this." >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
 #Add in script to record reboot time
@@ -290,14 +292,12 @@ echo '#!/bin/bash' > /etc/rc2.d/S99recordreboot
 echo 'echo -e "$HOSTNAME: `date` - This server has now rebooted.\n" >>/opt/karoshi/logs/server_upgrades/'$LOG_DATE'' >> /etc/rc2.d/S99recordreboot
 echo 'rm -f /etc/rc2.d/S99recordreboot' >> /etc/rc2.d/S99recordreboot
 chmod 0700 /etc/rc2.d/S99recordreboot
-#Let any services restart and stabilise
-sleep 30
 #Check if kexec is installed
-if [ -e /etc/init.d/kexec ]
-then
+#if [ -e /etc/init.d/kexec ]
+#then
 #Load kernel into memory before rebooting
-kexec -l /vmlinuz --initrd=/initrd.img --reuse-cmdline
-fi
+#kexec -l /vmlinuz --initrd=/initrd.img --reuse-cmdline
+#fi
 shutdown -r now 1>> /opt/karoshi/logs/server_upgrades/$LOG_DATE 2>> /opt/karoshi/logs/server_upgrades/$LOG_DATE
 exit
 fi
