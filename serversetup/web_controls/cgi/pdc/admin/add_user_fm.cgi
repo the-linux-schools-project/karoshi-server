@@ -229,28 +229,28 @@ if [ $MOBILE = yes ]
 then
 echo '<div id="mobileactionbox">'
 echo ''$FIRSTNAMEMSG'<br>
-<input tabindex= "1" value="'$FORENAME'" name="_FIRSTNAME_" style="width: 160px;" size="20" type="text"><br>
+<input tabindex= "1" value="'$FORENAME'" name="_FIRSTNAME_" style="width: 200px;" size="20" type="text"><br>
 '$SURNAMEMSG'<br>
-<input tabindex= "2" value="'$SURNAME'" name="_SURNAME_" style="width: 160px;" size="20" type="text"><br>
+<input tabindex= "2" value="'$SURNAME'" name="_SURNAME_" style="width: 200px;" size="20" type="text"><br>
 '$PASSWORDMSG'<br>
-<input tabindex= "3" name="_PASSWORD1_" style="width: 160px;" size="20" type="password"><br>
+<input tabindex= "3" name="_PASSWORD1_" style="width: 200px;" size="20" type="password"><br>
 '$CONFIRMMSG'<br>
-<input tabindex= "4" name="_PASSWORD2_" style="width: 160px;" size="20" type="password"><br>
+<input tabindex= "4" name="_PASSWORD2_" style="width: 200px;" size="20" type="password"><br>
 '$ENROLLMENTNUMBERMSG'<br>
-<input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="_ENROLLMENTNUMBER_" style="width: 160px;" size="20" type="text"><br>
+<input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="_ENROLLMENTNUMBER_" style="width: 200px;" size="20" type="text"><br>
 '$PRIGROUPMSG'<br>
 '
 
 
 if [ $FILE'null' = null ]
 then
-/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: 160px;" onClick="rewriteselect();">/g'
+/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: 200px;" onClick="rewriteselect();">/g'
 else
 /opt/karoshi/web_controls/group_dropdown_list | sed 's/<option><\/option>/<option selected="selected">'$GROUP'<\/option>/g'
 fi
 echo '<br>
 '$USERSTYLEMSG'<br>
-  <select name="_USERNAMESTYLE_" style="width: 160px;" onClick="rewriteselect();">
+  <select name="_USERNAMESTYLE_" style="width: 200px;" onClick="rewriteselect();">
         <option value="userstyleS1" '$SELECT1'>'$STYLE1MSG': '$STYLE1MSGEX'</option>
         <option value="userstyleS2" '$SELECT2'>'$STYLE2MSG': '$STYLE2MSGEX'</option>
         <option value="userstyleS3" '$SELECT3'>'$STYLE3MSG': '$STYLE3MSGEX'</option>
