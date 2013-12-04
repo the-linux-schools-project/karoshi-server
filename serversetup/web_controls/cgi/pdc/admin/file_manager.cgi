@@ -530,7 +530,7 @@ done
 
 if [ $ACTION = notset ]
 then
-SERVER2=$CHOOSESERVERMSG
+SERVER2=""
 else
 SERVER2=$SERVERNAME
 fi

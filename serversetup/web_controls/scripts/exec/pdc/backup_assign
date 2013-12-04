@@ -132,7 +132,7 @@ ssh -x -o PasswordAuthentication=no $SERVER '
 ########################
 #Check to see if keys do not exist
 ########################
-if ! test -f $HOME/.ssh/id_rsa || ! test -f $HOME/.ssh/id_rsa.pub || ! test -f $HOME/.ssh/id_dsa || ! test -f $HOME/.ssh/id_dsa.pub
+if ! test -f $HOME/.ssh/id_rsa || ! test -f $HOME/.ssh/id_rsa.pub
 then
 #Check that timeout has been set
 TIMEOUTSTATUS=`grep -c "#""   "ConnectTimeout" "0 /etc/ssh/ssh_config`
@@ -142,10 +142,11 @@ sed -i "s/#   ConnectTimeout 0/ConnectTimeout 4/g" /etc/ssh/ssh_config
 fi
 rm -f $HOME/.ssh/id_rsa
 rm -f $HOME/.ssh/id_dsa
-ssh-keygen -t rsa -N "" -f $HOME/.ssh/id_rsa > /dev/null
-ssh-keygen -t dsa -N "" -f $HOME/.ssh/id_dsa > /dev/null
+ssh-keygen -t rsa -b 4096 -N "" -f $HOME/.ssh/id_rsa > /dev/null
+#ssh-keygen -t dsa -N "" -f $HOME/.ssh/id_dsa > /dev/null
 fi
-cat /root/.ssh/id_rsa.pub > /root/.ssh/authorized_keys'$SERVER' ; cat /root/.ssh/id_dsa.pub >> /root/.ssh/authorized_keys'$SERVER'
+cat /root/.ssh/id_rsa.pub > /root/.ssh/authorized_keys'$SERVER'
+#cat /root/.ssh/id_dsa.pub >> /root/.ssh/authorized_keys'$SERVER'
 [ ! -d /root/.ssh_servers ] && mkdir /root/.ssh_servers
 chmod 0700 /root/.ssh_servers
 cp -f /root/.ssh/authorized_keys'$SERVER' /root/.ssh_servers/

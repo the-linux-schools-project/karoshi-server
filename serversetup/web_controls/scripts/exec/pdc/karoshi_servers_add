@@ -115,7 +115,7 @@ chmod 0700 /root/.ssh
 #Check to see if keys do not exist
 ########################
 
-if ! test -f $HOME/.ssh/id_rsa || ! test -f $HOME/.ssh/id_rsa.pub || ! test -f $HOME/.ssh/id_dsa || ! test -f $HOME/.ssh/id_dsa.pub
+if ! test -f $HOME/.ssh/id_rsa || ! test -f $HOME/.ssh/id_rsa.pub
 then
 echo `date`: karoshi_servers_add - creating ssh keys by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #Check that timeout has been set
@@ -133,8 +133,8 @@ fi
 
 rm -f -R $HOME/.ssh/id_rsa
 rm -f -R $HOME/.ssh/id_dsa
-ssh-keygen -t rsa -N '' -f $HOME/.ssh/id_rsa > /dev/null
-ssh-keygen -t dsa -N '' -f $HOME/.ssh/id_dsa > /dev/null
+ssh-keygen -t rsa -b 4096 -N '' -f $HOME/.ssh/id_rsa > /dev/null
+#ssh-keygen -t dsa -N '' -f $HOME/.ssh/id_dsa > /dev/null
 fi
 
 ##############################
@@ -159,16 +159,12 @@ TCPIPNUMBER=`net lookup $SERVER`
 #Delete known hosts to avoid man in the middle warnings on re-installed servers.
 [ -f /root/.ssh/known_hosts ] && rm -f /root/.ssh/known_hosts
 
-#cat /root/.ssh/id_rsa.pub > /root/.ssh/authorized_keys2
-#cat /root/.ssh/id_dsa.pub >> /root/.ssh/authorized_keys2
 [ ! -d /root/.ssh_servers ] && mkdir /root/.ssh_servers
 chmod 0700 /root/.ssh_servers
 
 cat /root/.ssh/id_rsa.pub > /root/.ssh_servers/authorized_keys2
-cat /root/.ssh/id_dsa.pub >> /root/.ssh_servers/authorized_keys2
+#cat /root/.ssh/id_dsa.pub >> /root/.ssh_servers/authorized_keys2
 
-
-#cp -f /root/.ssh/authorized_keys2 /root/.ssh_servers/
 chmod 0600 /root/.ssh_servers/authorized_keys2
 echo `date`: karoshi_servers_add - Enabling ssh connection 'for' $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
