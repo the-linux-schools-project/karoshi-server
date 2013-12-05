@@ -1,0 +1,55 @@
+#!/bin/bash
+
+#This file is part of Karoshi Client.
+#
+#Karoshi Client is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Client is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Client.  If not, see <http://www.gnu.org/licenses/>.
+
+while read -r line; do
+	if [[ $line == changed:* ]]; then
+		unset device
+		has_media=0
+	fi
+	if [[ $line == device-file:* ]]; then
+		device=${line##device-file:* }
+	fi
+	if [[ $line == has\ media:* ]]; then
+		line=${line%% (*}
+		has_media=${line##has media:* }
+	fi
+	if [[ $line == "" ]]; then
+		if [[ $device ]]; then
+			filename=${device//\//-}
+			filename=${filename#-}
+			if (( has_media == 1 )); then
+				if dd if=$device count=2048 2>/dev/null | grep -q VIDEO_TS; then
+					cat > ~/Desktop/karoshi-$filename.desktop << EOF
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Play Movie
+Exec=vlc $device
+Icon=vlc
+Terminal=false
+StartupNotify=false
+EOF
+					chmod +x ~/Desktop/karoshi-$filename.desktop
+				fi
+			else
+				if [[ -f ~/Desktop/karoshi-$filename.desktop ]]; then
+					rm -f ~/Desktop/karoshi-$filename.desktop
+				fi
+			fi
+		fi
+	fi
+done < <(udisks --monitor-detail)
