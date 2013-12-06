@@ -8,6 +8,37 @@ background-color: #010204;
 
 }
 
+.button
+{
+   border: solid 1px #aaa;
+   border-radius: 10px;
+   -moz-border-radius: 10px;
+   -webkit-border-radius: 10px;
+   background-color: #DEDEDE;
+   font-family: Arial, Times, Georgia, "Times New Roman", Times, serif;
+   color: #2A2A2A;
+   font-size: 11px;
+   width: 105px;
+   height: 20px;
+   text-align:center;
+   text-decoration: none;
+   font-weight: bold;
+   margin: 0px 1px 0px 1px;
+   padding: 3px;
+   display: inline-block;
+}
+.button:hover { background-color: #585858;
+   		border: solid 1px #6C6C6C;
+		color: #FFFFFF;
+		text-decoration: none;
+ }
+.smallbutton
+{
+   padding: 1px;
+   width: 50px;
+   height: 15px;
+}
+
 table.standard th, table.standard td {
   font-size : 16pt;
   font-family: Arial, Times, Georgia, "Times New Roman", Times, serif;
