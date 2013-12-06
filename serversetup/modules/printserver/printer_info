@@ -66,8 +66,8 @@ WIDTH2=60
 if [ $MOBILE = yes ]
 then
 TABLECLASS=mobileheadings
-WIDTH1=125
-WIDTH2=36
+WIDTH1=130
+WIDTH2=50
 echo '<div id="mobileactionbox">'
 fi
 ##########################
@@ -152,6 +152,21 @@ echo '</tbody></table>'
 fi
 }
 
+
+#Show column headings
+echo '
+<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
+<tbody><tr><td style="width: '$WIDTH1'px;"><b>Printer</b></td>'
+if [ $VIEWMODE = admin ] && [ $MOBILE = no ]
+then
+echo '<td style="width: '$WIDTH2'px;"><b>Status</b></td>
+<td style="width: '$WIDTH2'px;">
+<b>Location</b></td>
+'
+fi
+echo '<td style="width: '$WIDTH2'px;"><b>Enabled</b></td><td style="width: '$WIDTH2'px;"><b>Test</b></td></tr></tbody></table><br>
+'
+
 #Process Printer data
 PRINTER_COUNTER=0
 while [ $PRINTER_COUNTER -lt $PRINTER_INFO_COUNT ]
@@ -202,10 +217,10 @@ fi
 echo '
 <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
 <tbody><tr><td style="width: '$WIDTH1'px;"><b>'$PDNAME'</b></td>
-<td style="width: '$WIDTH2'px;">'
+'
 if [ $VIEWMODE = admin ] && [ $MOBILE = no ]
 then
-echo '<a class="info" href="javascript:void(0)"><input name="_'$PRINTER_NAME'_setppd_" type="image" class="images" src="'$PRINTER_ICON'" value=""><span>'$PRINTER_STATE_MSG'<br>'$JOBS_MSG: $QUEUE_COUNT'<br>' $ACCEPTING_JOBS_MSG: $QUEUE_STATUS'<br>'$PRINTER_STATE_MSG : $PRINTING_STATUS'<br>'$PRINTER_DEST'<br>'$PPDNICKNAME'</span></a></td>'
+echo '<td style="width: '$WIDTH2'px;"><a class="info" href="javascript:void(0)"><input name="_'$PRINTER_NAME'_setppd_" type="image" class="images" src="'$PRINTER_ICON'" value=""><span>'$PRINTER_STATE_MSG'<br>'$JOBS_MSG: $QUEUE_COUNT'<br>' $ACCEPTING_JOBS_MSG: $QUEUE_STATUS'<br>'$PRINTER_STATE_MSG : $PRINTING_STATUS'<br>'$PRINTER_DEST'<br>'$PPDNICKNAME'</span></a></td>'
 fi
 
 #Show printer location

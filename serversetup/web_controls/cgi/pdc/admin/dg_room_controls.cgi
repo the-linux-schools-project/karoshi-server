@@ -208,11 +208,11 @@ CONTROLMSG=$ALLOWMSG
 COLOUR=#FF0000
 ACTION=allow
 fi
-echo '<tr><td valign="top"><font color="'$COLOUR'">'$ASSET'</font></td>'
+echo '<tr><td valign="top"><font color="'$COLOUR'"><b>'$ASSET'</b></font></td>'
 
-[ $MOBILE = no ] && echo '<td valign="top"><font color="'$COLOUR'">'$MAC1'</font></td>'
+[ $MOBILE = no ] && echo '<td valign="top"><font color="'$COLOUR'"><b>'$MAC1'</b></font></td>'
 
-echo '<td valign="top"><font color="'$COLOUR'">'$TCPIP1'</font></td><td valign="top"><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post">
+echo '<td valign="top"><font color="'$COLOUR'"><b>'$TCPIP1'</b></font></td><td valign="top"><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post">
 <input name="_ACTION_'$ACTION'_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="submit" class="button" value="'$CONTROLMSG'"></form></td></tr>
 '
 fi

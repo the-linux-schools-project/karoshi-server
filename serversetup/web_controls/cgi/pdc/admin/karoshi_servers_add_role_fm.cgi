@@ -227,7 +227,13 @@ fi
 
 echo '
 
-</td></tr>
+</td>
+<td style="vertical-align: top; height: 40px;">'$OWNCLOUDSERVERMSG'</td>
+<td style="vertical-align: top; height: 40px;">
+<form action="/cgi-bin/admin/module_owncloud_fm.cgi" method="post">
+<input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$OWNCLOUDSERVERHELPMSG'</span></a></form>
+</td>
+</tr>
 </tbody></table><br>'
 fi
 

@@ -1,0 +1,145 @@
+#!/bin/bash
+
+#Todo on module_owncloud
+#Create keytab for owncloud, add alias - enable ssh
+
+#Ensure that apache and mysql are running on boot
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/server_network/domain_information/domain_name
+
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mysql
+
+LDAPSERVER=127.0.0.1
+#Get ldap server to use
+if [ `grep -c -w "kdc" /etc/krb5.conf` -gt 0 ]
+then
+LDAPSERVER=`grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | cut -d"=" -f2`
+fi
+
+#Extract archive
+
+echo '<li>Extracting Owncloud</li><br>'
+[ -d /var/www/html/owncloud ] && rm -f -R /var/www/html/owncloud
+tar -xzf /opt/karoshi/serversetup/modules/owncloud/owncloud.tar.gz --directory /var/www/html
+
+#Set ownership and permissions
+[ ! -d /home/owncloud/data ] && mkdir -p /home/owncloud/data
+[ ! -d /var/www/html/owncloud/data ] && mkdir -p /var/www/html/owncloud/data
+
+chown -R root:www-data /var/www/html/owncloud 
+chmod -R 0640 /var/www/html/owncloud
+chmod -R u+X,g+X  /var/www/html/owncloud
+
+chmod 0700 /home/owncloud/
+chmod 0700 /home/owncloud/data
+
+chown -R www-data:www-data /home/owncloud
+chown -R www-data:www-data /var/www/html/owncloud/data
+chown -R www-data:www-data /var/www/html/owncloud/apps
+chown -R www-data:www-data /var/www/html/owncloud/config
+
+#Create data folder for owncloud
+[ ! -d /home/owncloud ] && mkdir /home/owncloud
+
+#Allow htaccess for owncloud
+if [ `grep -c "#owncloud-kerberos-support" /etc/apache2/sites-enabled/default-ssl` = 0 ]
+then
+#Remove last lines
+sed -i 's/<\/VirtualHost>//g' /etc/apache2/sites-enabled/default-ssl
+sed -i 's/<\/IfModule>//g' /etc/apache2/sites-enabled/default-ssl
+
+#Add in kerberos
+echo -e '	#owncloud-kerberos-support
+	<Directory /var/www/html/owncloud/>
+			Options Indexes FollowSymLinks MultiViews
+			AllowOverride all
+
+			AuthName "Owncloud"
+			AuthType Kerberos
+			Krb5Keytab /etc/keytabs/owncloud.keytab
+			KrbMethodNegotiate on
+			KrbMethodK5Passwd off
+			KrbAuthoritative on
+			KrbServiceName HTTP/'$HOSTNAME'.'$REALM'
+			require valid-user
+	</Directory>' >> /etc/apache2/sites-enabled/default-ssl
+echo "</VirtualHost>" >> /etc/apache2/sites-enabled/default-ssl
+echo "</IfModule>" >> /etc/apache2/sites-enabled/default-ssl
+fi
+
+#Enable mod rewrite and headers
+a2enmod rewrite 1>/dev/null
+a2enmod headers 1>/dev/null
+
+#Restart apache2
+echo '<li>Restarting Apache</li><br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
+
+#####################
+#Create owncloud mysql password for the new database
+#####################
+echo '<li>Create mysql database for Owncloud</li><br>'
+RANGE=61
+COUNTER=1
+while [ $COUNTER -lt 16 ]
+do
+row[$COUNTER]=$RANDOM
+let "row[$COUNTER] %= $RANGE"
+while [ ${row[$COUNTER]} = 0 ]
+do
+row[$COUNTER]=$RANDOM
+let "row[$COUNTER] %= $RANGE"
+done
+CHARACTER[$COUNTER]=`sed -n ${row[$COUNTER]},1p /opt/karoshi/serversetup/pdc/"useful scripts"/.alphabet`
+let COUNTER=COUNTER+1
+done
+
+CLOUDPASS=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
+CLOUDPASS=12345
+#############################
+#Make sure that we know the root mysql password
+#############################
+
+/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
+#Get root mysql password
+MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
+
+#############################
+#create and pipe in the database
+#############################
+mysqladmin -f --password=$MYSQLPASS drop owncloud 1>/dev/null 2>/dev/null
+sleep 1
+mysqladmin --password=$MYSQLPASS create owncloud
+sleep 1
+
+echo GRANT ALL PRIVILEGES ON owncloud.\* TO "'"owncloud_user"'"@"'"localhost"'" IDENTIFIED BY "'"$CLOUDPASS"'"';' > /opt/karoshi/.tempdata/mysqlperms.sql
+echo ALTER DATABASE owncloud DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci';' >> /opt/karoshi/.tempdata/mysqlperms.sql
+mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/mysqlperms.sql
+rm -f /opt/karoshi/.tempdata/mysqlperms.sql
+
+#Modify config.php with the correct password.
+sed -i 's/CHANGETHISPASS/'$CLOUDPASS'/g' /var/www/html/owncloud/config/config.php
+
+#Make a backup of owncloud.sql
+cp /opt/karoshi/serversetup/modules/owncloud/owncloud.sql /opt/karoshi/serversetup/modules/owncloud/owncloud_original.sql
+
+#Edit owncloud.sql with the correct realm information
+sed -i 's@CHANGETHISREALM@'$LDAPBASE'@g' /opt/karoshi/serversetup/modules/owncloud/owncloud.sql
+
+#Edit owncloud.sql with the correct ldap server information ( replace ldap://127.0.0.1 )
+sed -i 's/ldap:\/\/127.0.0.1/ldap:\/\/'$LDAPSERVER'/g' /opt/karoshi/serversetup/modules/owncloud/owncloud.sql
+
+#Pipe in database
+mysql --password=$MYSQLPASS owncloud < /opt/karoshi/serversetup/modules/owncloud/owncloud.sql
+
+#Restore original owncloud.sql
+rm -f /opt/karoshi/serversetup/modules/owncloud/owncloud.sql
+mv /opt/karoshi/serversetup/modules/owncloud/owncloud_original.sql /opt/karoshi/serversetup/modules/owncloud/owncloud.sql
+
+
+
+
+

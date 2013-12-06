@@ -136,6 +136,7 @@ if [ -d /var/www/html/owncloud ]
 then
 echo `date`: module_owncloud - owncloud is already installed on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 echo $INSTERROR
+sleep 5
 exit
 fi
 else
@@ -143,12 +144,13 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 #Check to see if moodle is already installed
 if [ -d /var/www/html/owncloud ]
 then
-echo '$INSTERROR'
 exit 101
 fi'
 if [ `echo $?` = 101 ]
 then
 echo `date`: module_owncloud - owncloud is already installed on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo $INSTERROR
+sleep 5
 exit
 fi
 fi
@@ -165,19 +167,6 @@ then
 echo `date`: module_owncloud - adding $ALIAS "for" $SERVERNAME to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 samba-tool dns add 127.0.0.1 $REALM $ALIAS CNAME $SERVERNAME.$REALM --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
-}
-
-function modify_owncloud.sql {
-
-#Make a backup of owncloud.sql
-cp /opt/karoshi/serversetup/modules/owncloud/owncloud.sql /opt/karoshi/serversetup/modules/moodle/owncloud_original.sql
-
-#Edit owncloud.sql with the correct realm information
-THISIP=`net lookup $HOSTNAME`
-THISSUBNETMASK=`grep -w netmask /etc/network/interfaces | sed -n 1,1p | cut -d' ' -f2`
-NETWORK=`ipcalc $THISIP/$THISSUBNETMASK | grep -w ^Network: | sed 's/ * / /g' | cut -d' ' -f2`
-sed -i 's@CHANGETHISSUBNET@'$NETWORK'@g' /opt/karoshi/serversetup/modules/moodle/moodle.sql
-
 }
 
 function install_owncloud {
@@ -214,11 +203,6 @@ echo $DOMAINPATH > /opt/karoshi/server_network/moodledomain
 echo $SERVERNAME > /opt/karoshi/server_network/webservers/$SERVERNAME
 sed -i 's/WEBCTRL=no/WEBCTRL=yes/g' /opt/karoshi/server_network/menusettings
 #sed -i 's/MOODLECTRL=no/MOODLECTRL=yes/g' /opt/karoshi/server_network/menusettings
-}
-
-function restore_owncloud.sql {
-rm -f /opt/karoshi/serversetup/modules/owncloud/owncloud.sql
-mv /opt/karoshi/serversetup/modules/owncloud/owncloud_original.sql /opt/karoshi/serversetup/modules/owncloud/owncloud.sql
 }
 
 function check_ports {
@@ -270,10 +254,8 @@ URL=https://'$ALIAS.$REALM'/owncloud' > /var/lib/samba/netlogon/linuxclient/$LIN
 check_already_installed
 apply_ssl_certificate
 add_dns_entry
-modify_owncloud.sql
 #check_ports
 install_owncloud
-restore_owncloud.sql
 add_role_information
 #create_linux_client_icon
 exit
