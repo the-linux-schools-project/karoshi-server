@@ -120,7 +120,7 @@ LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 
 #Get uid and primary gid for the new user
 PRIGROUPID=`getent group exams | cut -d: -f3`
-UIDNUMBER=`getent passwd exam$COUNTER | cut -d: -f3`
+
 
 #Change primarygroupid and add unixhomedirectory - have to use ldapmodify at this time since samba-tool does not seem to have this option!
 #This is hideous why cant samba4 ldap do this all in one go??
@@ -132,14 +132,15 @@ objectclass: posixaccount
 
 echo -e "dn: CN=exam$COUNTER,OU=exams,OU=other,OU=People,$LDAPBASE
 changetype: modify
-add: uidnumber
-uidnumber: $UIDNUMBER
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-echo -e "dn: CN=exam$COUNTER,OU=exams,OU=other,OU=People,$LDAPBASE
-changetype: modify
 add: gidnumber
 gidnumber: $PRIGROUPID
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+UIDNUMBER=`getent passwd exam$COUNTER | cut -d: -f3`
+echo -e "dn: CN=exam$COUNTER,OU=exams,OU=other,OU=People,$LDAPBASE
+changetype: modify
+add: uidnumber
+uidnumber: $UIDNUMBER
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 echo -e "dn: CN=exam$COUNTER,OU=exams,OU=other,OU=People,$LDAPBASE
