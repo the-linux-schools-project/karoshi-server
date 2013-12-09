@@ -931,6 +931,10 @@ PRIMARY_GROUP=profilemanagement
 SUBUNIT=other
 HOMEPATH=/home/users/
 make_primary_group_info
+PRIMARY_GROUP=exams
+SUBUNIT=other
+HOMEPATH=/home/users/exams
+make_primary_group_info
 PRIMARY_GROUP=guestusers
 SUBUNIT=other
 HOMEPATH=/home/users/guestusers
@@ -1238,6 +1242,20 @@ SUBPATH='OU=tech,OU=personnel,OU=People'
 PRIMARYGROUP=tech
 PROFILEFOLDER=tech
 NEWUSERDISP="Tech $COUNTER"
+create_user
+let COUNTER=COUNTER+1
+done
+
+#Add exam accounts
+COUNTER=1
+while [  $COUNTER -le 5 ]
+do
+NEWUSERNAME=exam$COUNTER
+NEWUSERPATH=/home/users/exams/exam$COUNTER
+SUBPATH='OU=exams,OU=other,OU=People'
+PRIMARYGROUP=exams
+PROFILEFOLDER=exams
+NEWUSERDISP="Exam $COUNTER"
 create_user
 let COUNTER=COUNTER+1
 done
