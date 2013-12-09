@@ -187,7 +187,7 @@ fi
 #Get group information
 source /opt/karoshi/server_network/group_information/$PRIGROUP
 DESTFOLDERPATH=`echo $HOMEPATH | sed 's/'$PRIGROUP'$//g'`
-USERLIST=( `getent passwd | grep /$PRIGROUP/ | cut -d: -f1` )
+USERLIST=( `getent passwd | grep /$PRIGROUP/ | cut -d: -f1 | sort` )
 USERLISTCOUNT=${#USERLIST[@]}
 
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`

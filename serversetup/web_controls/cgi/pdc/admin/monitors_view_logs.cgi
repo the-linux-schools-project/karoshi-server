@@ -142,7 +142,7 @@ else
 DIV_ID=menubox
 fi
 
-echo '<div id="'$DIV_ID'">'
+echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -151,8 +151,11 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 <tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mon_status.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mon_status.cgi"><b>'$TITLE' : '$GROUPNAME' - '$SERVICE'</b></a></td></tr></tbody></table>'
 else
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;">
-<form action="/cgi-bin/admin/mon_status.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SHOWMONITORS_" type="image" class="images" src="'$ICON'" value=""><span>'$VIEWMONITORS'</span></a></form></td><td style="vertical-align: top;"><b>'$TITLE' : '$GROUPNAME' - '$SERVICE'</b></td></tr></tbody></table>'
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<td style="vertical-align: top;"><b>'$TITLE' : '$GROUPNAME' - '$SERVICE'</b></td>
+<td style="vertical-align: top;"><a href="mon_status.cgi"><input class="button" type="button" name="" value="'$SHOWSTATUSMSG'"></a></td>
+</tr></tbody></table><br></div><div id="infobox">
+'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/monitors_view_logs.cgi | cut -d' ' -f1`
@@ -164,5 +167,6 @@ then
 MESSAGE=$ERRORMSG4
 show_status
 fi
+echo '</div></div></body></html>'
 exit
 
