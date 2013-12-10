@@ -132,35 +132,18 @@ echo -e "dn: CN=exam$COUNTER,OU=exams,OU=other,OU=People,$LDAPBASE
 changetype: modify
 add: objectclass
 objectclass: posixaccount
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-echo -e "dn: CN=exam$COUNTER,OU=exams,OU=other,OU=People,$LDAPBASE
-changetype: modify
+-
 add: gidnumber
 gidnumber: $PRIGROUPID
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 UIDNUMBER=`getent passwd exam$COUNTER | cut -d: -f3`
+
 echo -e "dn: CN=exam$COUNTER,OU=exams,OU=other,OU=People,$LDAPBASE
 changetype: modify
 add: uidnumber
 uidnumber: $UIDNUMBER
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-echo -e "dn: CN=exam$COUNTER,OU=exams,OU=other,OU=People,$LDAPBASE
-changetype: modify
-replace: primaryGroupID
-primaryGroupID: $PRIGROUPID
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-#echo -e "dn: CN=exam$COUNTER,CN=exams,CN=other,CN=Users,$LDAPBASE
-#changetype: modify
-#add: loginshell
-#loginshell: /bin/bash
-#-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-echo -e "dn: CN=exam$COUNTER,OU=exams,OU=other,OU=People,$LDAPBASE
-changetype: modify
+-
 add: unixhomedirectory
 unixhomedirectory: /home/users/exams/exam$COUNTER
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
