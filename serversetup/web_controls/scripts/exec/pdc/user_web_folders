@@ -238,7 +238,7 @@ echo "<li>"$UPDATEREPOMSG"</li><br><br>"
 sleep 1
 apt-get update
 echo "<br><br><li>"$INSTALLMSG"</li><br><br>"
-apt-get install -y libapache2-mod-suphp
+apt-get install -y libapache2-mod-suphp apache2-suexec
 fi
 
 #Copy in config files
@@ -248,6 +248,7 @@ cp -f /opt/karoshi/serversetup/modules/user_web_folders/suphp.conf /etc/suphp/
 
 a2enmod karoshi-userdir 1> /dev/null
 a2enmod suphp 1> /dev/null
+a2enmod suexec 1> /dev/null
 source /opt/karoshi/serversetup/variables/distro
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1> /dev/null
@@ -280,7 +281,7 @@ echo "<li>"'$UPDATEREPOMSG'"</li><br><br>"
 sleep 1
 apt-get update
 echo "<br><br><li>"'$INSTALLMSG'"</li><br><br>"
-apt-get -y install libapache2-mod-suphp
+apt-get -y install libapache2-mod-suphp apache2-suexec
 fi
 
 #Copy in config files
@@ -290,6 +291,7 @@ cp -f /opt/karoshi/serversetup/modules/user_web_folders/suphp.conf /etc/suphp/
 
 a2enmod suphp 1> /dev/null
 a2enmod karoshi-userdir 1> /dev/null
+a2enmod suexec 1> /dev/null
 source /opt/karoshi/serversetup/variables/distro
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1> /dev/null
@@ -332,8 +334,9 @@ fi
 #Disable user web folders
 if [ $SERVER = $HOSTNAME ]
 then
-a2dismod userdir 1> /dev/null
+a2dismod karoshi-userdir 1> /dev/null
 a2dismod suphp 1> /dev/null
+a2dismod suexec 1> /dev/null
 source /opt/karoshi/serversetup/variables/distro
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1> /dev/null
@@ -341,8 +344,9 @@ sleep 1
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1> /dev/null
 else
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-a2dismod userdir 1> /dev/null
+a2dismod karoshi-userdir 1> /dev/null
 a2dismod suphp 1> /dev/null
+a2dismod suexec 1> /dev/null
 source /opt/karoshi/serversetup/variables/distro
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1> /dev/null
