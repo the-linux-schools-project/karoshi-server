@@ -55,7 +55,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\+-'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=38
+END_POINT=40
 #Assign GROUPNAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
@@ -92,6 +92,20 @@ if [ `echo $DATAHEADER'check'` = INTERVALcheck ]
 then
 let COUNTER=$COUNTER+1
 INTERVAL=`echo $DATA | cut -s -d'_' -f$COUNTER`
+break
+fi
+let COUNTER=$COUNTER+1
+done
+
+#Assign ALERTAFTER
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+if [ `echo $DATAHEADER'check'` = ALERTAFTERcheck ]
+then
+let COUNTER=$COUNTER+1
+ALERTAFTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
 break
 fi
 let COUNTER=$COUNTER+1
@@ -235,7 +249,7 @@ fi
 INTERVAL=`echo $INTERVAL | tr -cd '0-9\._:\n-'`
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/monitors_add.cgi | cut -d' ' -f1`
 #Add monitor
-sudo -H /opt/karoshi/web_controls/exec/monitors_add $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$GROUPNAME:$TCPIP:$INTERVAL:$DAYSTART:$DAYEND:$HOURSTART:$HOUREND:`echo ${MONITORTYPES[@]:0} | sed 's/ /:/g'`
+sudo -H /opt/karoshi/web_controls/exec/monitors_add $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$GROUPNAME:$TCPIP:$ALERTAFTER:$INTERVAL:$DAYSTART:$DAYEND:$HOURSTART:$HOUREND:`echo ${MONITORTYPES[@]:0} | sed 's/ /:/g'`
 EXEC_STATUS=`echo $?`
 GROUPNAME=`echo $GROUPNAME | sed 's/+/ /g'`
 MESSAGE=`echo $GROUPNAME: $COMPLETEDMSG`

@@ -133,16 +133,14 @@ echo '<div id="actionbox">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top; width: 110px;"><b>'"$TITLE"'</b></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td>
 <td style="vertical-align: top;">
-<form action="/cgi-bin/admin/mon_status.cgi" name="monitors" method="post">
-<input name="MONITORSTATUS" type="submit" class="button" value="'$NETWORKSTATUSMSG'">
-</form></td>
+<a href="/cgi-bin/admin/mon_status.cgi"><input class="button" type="button" name="" value="'$NETWORKSTATUSMSG'"></a>
+</td>
 <td style="vertical-align: top;">
-<form action="/cgi-bin/admin/monitors_view.cgi" name="monitors" method="post">
-<input name="MONITORSTATUS" type="submit" class="button" value="'$VIEWMONITORSMSG'">
-</form></td>
-</tr></tbody></table>
+<a href="/cgi-bin/admin/monitors_view.cgi"><input class="button" type="button" name="" value="'$VIEWMONITORSMSG'"></a>
+</td>
+</tr></tbody></table><br>
 <form action="/cgi-bin/admin/monitors_add.cgi" method="post" name="selectmonitors">'
-
+ALERTAFTER=1
 EDITMODE=no
 #Check to see if a monitoring server has been setup
 if [ -f /opt/karoshi/server_network/monitoringserver ]
@@ -197,6 +195,12 @@ DANSGUARDIAN=""
 DNS=""
 [ `grep -c "service dns" /opt/karoshi/server_network/mon/$MONFOLDER/$MONITOR` -gt 0 ] && DNS='checked="checked"'
 
+#alertafter
+ALERTAFTER=`grep alertafter /opt/karoshi/server_network/mon/$MONFOLDER/$MONITOR | sed -n 1,1p | tr -cd 0-9`
+[ -z $ALERTAFTER ] && ALERTAFTER=1
+
+#Interval
+INTERVAL=`grep interval /opt/karoshi/server_network/mon/$MONFOLDER/$MONITOR | sed -n 1,1p | tr -cd 0-9`
 
 GROUPDATA=`sed -n 4,4p  /opt/karoshi/server_network/mon/$MONFOLDER/$MONITOR`
 TCPIPS=`echo $GROUPDATA | cut -d' ' -f3-`
@@ -222,10 +226,19 @@ echo '</td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a>
       </td>
       </tr>
+
+<tr>
+        <td>
+'$ALTERAFTERMSG'</td>
+        <td><input tabindex="2" name="_ALERTAFTER_" value="'$ALERTAFTER'" maxlength="1" size="1" type="text" style="width: 80px;"></td>
+        <td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG9'</span></a>
+      </td>
+      </tr>
       <tr>
         <td>
 '$MONINTMSG'</td>
-        <td><input tabindex="2" name="_INTERVAL_" value="5" maxlength="2" size="2" type="text" style="width: 80px;"></td>
+        <td><input tabindex="2" name="_INTERVAL_" value="'$INTERVAL'" maxlength="2" size="2" type="text" style="width: 80px;"></td>
         <td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG4'</span></a>
       </td>
@@ -323,9 +336,8 @@ echo '</td><td>
 <input type="checkbox" name="_MONITORTYPES_" '$DNS' value="dns"> dns
 </td>
 </tr>
-</tbody></table>
-</div><div id="submitbox">
-  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"> <input type="button" onclick="SetAllCheckBoxes('\'selectmonitors\'', '\'_MONITORTYPES_\'', true);" value="'$SELECTMSG'">
+</tbody></table><br>
+  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"> <input type="button" class="button" onclick="SetAllCheckBoxes('\'selectmonitors\'', '\'_MONITORTYPES_\'', true);" value="'$SELECTMSG'">
 '
 else
 echo $ERRORMSG6
