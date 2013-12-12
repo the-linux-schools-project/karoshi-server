@@ -195,8 +195,8 @@ LOGTYPE=NOTSET
 [ $LOGTYPE = NOTSET ] && exit 102
 #Create table header
 
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>'$TITLE5' '$TCPIP' '$DAY'-'$MONTH'-'$YEAR'</b></td><td style=\"vertical-align: top; width: 25px;\"> <form action=\"/cgi-bin/admin/dg_view_computer_logs.cgi\" method=\"post\" target=\"_top\">
-<input name=\"_TCPIP_'$TCPIP'"_"DATE_'$DAY'-'$MONTH'-'$YEAR'"_"DETAILED_'$DETAILED2'"_"\" type=\"submit\" class=\"button\" value=\"'$DETAILEDLOGSMSG'\">
+echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>$TITLE5 $TCPIP $DAY-$MONTH-$YEAR</b></td><td style=\"vertical-align: top; width: 25px;\"> <form action=\"/cgi-bin/admin/dg_view_computer_logs.cgi\" method=\"post\" target=\"_top\">
+<input name=\"_TCPIP_$TCPIP"_"DATE_$DAY-$MONTH-$YEAR"_"DETAILED_$DETAILED2"_"\" type=\"submit\" class=\"button\" value=\"$DETAILEDLOGSMSG\">
 </form></td></tr></tbody></table><br>"
 
 [ $MOBILE = no ] && echo "</div><div id=\"infobox\">"

@@ -206,23 +206,23 @@ LOGTYPE=NOTSET
 [ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME.tar.gz ] && LOGTYPE=archive
 [ $LOGTYPE = NOTSET ] && exit 102
 #Create table header
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>'$TITLE' '$USERNAME' '$DAY'-'$MONTH'-'$YEAR'</b></td><td style=\"vertical-align: top; width: 25px;\"><form action=\"dg_ban_user.cgi\" method=\"post\" target=\"_blank\">
-<input name=\"_STUDENTS_'$USERNAME'"_"\" type=\"submit\" class=\"button\" value=\"'$BANMSG'\">
+echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>$TITLE $USERNAME $DAY-$MONTH-$YEAR</b></td><td style=\"vertical-align: top; width: 25px;\"><form action=\"dg_ban_user.cgi\" method=\"post\" target=\"_blank\">
+<input name=\"_STUDENTS_$USERNAME"_"\" type=\"submit\" class=\"button\" value=\"$BANMSG\">
 </form></td><td style=\"vertical-align: top; width: 25px;\"><form action=\"dg_view_user_logs.cgi\" method=\"post\" target=\"_top\">
-<input name=\"_USERNAME_'$USERNAME'"_"DATE_'$DAY'-'$MONTH'-'$YEAR'"_"DETAILED_'$DETAILED2'"_"\" type=\"submit\" class=\"button\" value=\"'$DETAILEDLOGSMSG'\">
+<input name=\"_USERNAME_$USERNAME"_"DATE_$DAY-$MONTH-$YEAR"_"DETAILED_$DETAILED2"_"\" type=\"submit\" class=\"button\" value=\"$DETAILEDLOGSMSG\">
 </form></td><td style=\"vertical-align: top; width: 25px;\"><form action=\"dg_view_user_usage.cgi\" method=\"post\" target=\"_top\">
-<input name=\"_USERNAME_'$USERNAME'"_"\" type=\"submit\" class=\"button\" value=\"'$VIEWUSAGEMSG'\">
+<input name=\"_USERNAME_$USERNAME"_"\" type=\"submit\" class=\"button\" value=\"$VIEWUSAGEMSG\">
 </form></td></tr></tbody></table><br>"
 
 [ $MOBILE != yes ] && echo "</div><div id=\"infobox\">"
 
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 60px;\"><b>'$FILTERMSG'</b><td><td style=\"width: 90px;\"><b>'$TIMEMSG'</b></td><td style=\"width: 120px;\"><b>'$COMPIP'</b></td><td></td><td><b>'$WEBURL'</b></td></tr>"
+echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+<tr><td style=\"width: 60px;\"><b>$FILTERMSG</b><td><td style=\"width: 90px;\"><b>$TIMEMSG</b></td><td style=\"width: 120px;\"><b>$COMPIP</b></td><td></td><td><b>$WEBURL</b></td></tr>"
 if [ $LOGTYPE = text ]
 then
-cat /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$USERS'/'$USERNAME'
+cat /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME
 else
-tar -xzOf /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$USERS'/'$USERNAME'.tar.gz
+tar -xzOf /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME.tar.gz
 fi
 #end table
 echo "</tbody></table><br>"
