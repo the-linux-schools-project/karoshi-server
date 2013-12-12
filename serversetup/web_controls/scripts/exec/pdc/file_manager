@@ -252,7 +252,7 @@ echo '<br>
 <input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$UPMSG'">
 <input name="_ACTION_CREATEDIR_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$NEWDIRMSG'">
 <input name="_ACTION_CREATEFILE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$NEWFILEMSG'">
-<input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$RELOADMSG'"><br><br><b>'$LOCATIONMSG': '$DISPLOCATION'</b><br>'
+<br><br><b>'$LOCATIONMSG': '$DISPLOCATION'</b><br>'
 
 [ $MOBILE != yes ] && echo '</div><div id="infobox">'
 
@@ -298,17 +298,18 @@ then
 ICON1=$ICON16
 FILEACTION=ENTER
 fi
-echo '<tr>'
-
-echo '
-<td><a class="info" href="javascript:void(0)"><input name="_ACTION_RENAME_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_'$FILE2'_" type="image" class="images" src="'$ICON3'" value=""><span>'$RENAMEMSG'<br>'$FILENAME'</span></a></td>
-<td><a class="info" href="javascript:void(0)"><input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$HOSTNAME'_ITEMMOVE_'$FILE2'_LOCATION_'$LOCATION2'_" type="image" class="images" src="'$ICON4'" value=""><span>'$MOVEMSG'<br>'$FILENAME'</span></a></td>
-<td><a class="info" href="javascript:void(0)"><input name="_ACTION_DELETE_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$HOSTNAME'_LOCATION_'$FILE2'_" type="image" class="images" src="'$ICON5'" value=""><span>'$DELETEMSG'<br>'$FILENAME'</span></a></td>
+echo '<tr><td>
+<ul id="menuBar">
+	<li class="top"><a href="javascript:void()" class="top_link">Action</span></a>
+		<ul class="sub">
+		<li><input name="_ACTION_RENAME_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_'$FILE2'_" type="submit" class="button squarebutton" value="'$RENAMEMSG'"></li>
+		<li><input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$HOSTNAME'_ITEMMOVE_'$FILE2'_LOCATION_'$LOCATION2'_" type="submit" class="button squarebutton" value="'$MOVEMSG'"></li>
+		<li><input name="_ACTION_DELETE_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$HOSTNAME'_LOCATION_'$FILE2'_" type="submit" class="button squarebutton" value="'$DELETEMSG'"></li>
+		<li><input name="_ACTION_SETPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$HOSTNAME'_LOCATION_'$FILE2'_" type="submit" class="button squarebutton" value="'$PROPERTIESMSG'"></li>
+		</ul>
+	</li></ul>
+</td><td>
 '
-
-
-echo '<td><a class="info" href="javascript:void(0)"><input name="_ACTION_SETPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$HOSTNAME'_LOCATION_'$FILE2'_" type="image" class="images" src="'$ICON2'" value=""><span>'$PROPERTIESMSG'<br>'$FILENAME'</span></a></td><td>'
-
 
 if [ $FILEACTION = ENTER ]
 then
@@ -354,14 +355,19 @@ then
 ICON1='$ICON16'
 FILEACTION=ENTER
 fi
-echo "<tr>"
-
-echo "<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_RENAME_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'"_"LOCATION_$FILE2"_"\" type=\"image\" class=\"images\" src=\"'$ICON3'\" value=\"\"><span>'$RENAMEMSG'<br>$FILENAME</span></a></td>
-<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'"_"ITEMMOVE_$FILE2"_"LOCATION_$LOCATION2"_"\" type=\"image\" class=\"images\" src=\"'$ICON4'\" value=\"'$SERVERNAME'_MOVE_$FILE\"><span>'$MOVEMSG'<br>$FILENAME</span></a></td>
-<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_DELETE_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'"_"LOCATION_$FILE2"_"\" type=\"image\" class=\"images\" src=\"'$ICON5'\" value=\"\"><span>'$DELETEMSG'<br>$FILENAME</span></a></td>"
 
 
-echo "<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_SETPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'"_"LOCATION_$FILE2"_"\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>'$PROPERTIESMSG'<br>$FILENAME</span></a></td><td>"
+echo "<tr><td>
+<ul id=\"menuBar\">
+	<li class=\"top\"><a href=\"javascript:void()\" class=\"top_link\"><span class=\"down\">Action</span></a>
+		<ul class=\"sub\">
+		<li><input name=\"_ACTION_RENAME_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'"_"LOCATION_$FILE2"_"\" type=\"submit\" class=\"button squarebutton\" value=\"'$RENAMEMSG'\"></li>
+		<li><input name=\"_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'"_"ITEMMOVE_$FILE2"_"LOCATION_$LOCATION2"_"\" type=\"submit\" class=\"button squarebutton\" value=\"'$MOVEMSG'\"></li>
+		<li><input name=\"_ACTION_DELETE_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'"_"LOCATION_$FILE2"_"\" type=\"submit\" class=\"button squarebutton\" value=\"'$DELETEMSG'\"></li>
+		<li><input name=\"_ACTION_SETPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'"_"LOCATION_$FILE2"_"\" type=\"submit\" class=\"button squarebutton\" value=\"'$PROPERTIESMSG'\"></li>
+		</ul>
+	</li></ul>
+</td><td>"
 
 if [ $FILEACTION = ENTER ]
 then
@@ -412,13 +418,18 @@ then
 ICON1='$ICON16'
 FILEACTION=ENTER
 fi
-echo "<tr>"
 
-echo "<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_RENAME_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'"_"LOCATION_$FILE2"_"\" type=\"image\" class=\"images\" src=\"'$ICON3'\" value=\"\"><span>'$RENAMEMSG'<br>$FILENAME</span></a></td>
-<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'"_"ITEMMOVE_$FILE2"_"LOCATION_$LOCATION2"_"\" type=\"image\" class=\"images\" src=\"'$ICON4'\" value=\"'$SERVERNAME'_MOVE_$FILE\"><span>'$MOVEMSG'<br>$FILENAME</span></a></td>
-<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_DELETE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'"_"LOCATION_$FILE2"_"\" type=\"image\" class=\"images\" src=\"'$ICON5'\" value=\"\"><span>'$DELETEMSG'<br>$FILENAME</span></a></td>"
-
-echo "<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_SETPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'"_"LOCATION_$FILE2"_"\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>'$PROPERTIESMSG'<br>$FILENAME</span></a></td><td>"
+echo "<tr><td>
+<ul id=\"menuBar\">
+	<li class=\"top\"><a href=\"javascript:void()\" class=\"top_link\"><span class=\"down\">Action</span></a>
+		<ul class=\"sub\">
+		<li><input name=\"_ACTION_RENAME_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'"_"LOCATION_$FILE2"_"\" type=\"submit\" class=\"button squarebutton\" value=\"'$RENAMEMSG'\"></li>
+		<li><input name=\"_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'"_"ITEMMOVE_$FILE2"_"LOCATION_$LOCATION2"_"\" type=\"submit\" class=\"button squarebutton\" value=\"'$MOVEMSG'\"></li>
+		<li><input name=\"_ACTION_DELETE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'"_"LOCATION_$FILE2"_"\" type=\"submit\" class=\"button squarebutton\" value=\"'$DELETEMSG'\"></li>
+		<li><input name=\"_ACTION_SETPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'"_"LOCATION_$FILE2"_"\" type=\"submit\" class=\"button squarebutton\" value=\"'$PROPERTIESMSG'\"></li>
+		</ul>
+	</li></ul>
+</td><td>"
 
 if [ $FILEACTION = ENTER ]
 then

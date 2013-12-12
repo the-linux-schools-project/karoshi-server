@@ -271,6 +271,12 @@ A:hover {
    height: 15px;
 }
 
+.squarebutton
+{
+   border: solid 0px #aaa;
+}
+
+
 #navbar {
         position:absolute;
         top: 60px;
@@ -394,6 +400,96 @@ A:hover {
 				border: none;
         }
 
+
+ul#menuBar {
+	list-style: none;
+	text-align:center;
+	font-weight: bold;
+	float: left;
+	margin: 3px 3px;
+	padding: 0;
+	font-size: 11px;
+	font-family: Arial, Times, Georgia, "Times New Roman", Times, serif;
+}
+ul#menuBar li {
+	float: left;
+	position: relative;
+	margin: 3px;
+}
+ul#menuBar li a {
+	display: block;
+	padding: 3px 6px;
+	text-decoration: none;
+	color: black;
+	min-width: 40px;
+	width: auto;
+   	border: solid 1px #aaa;
+   	border-radius: 10px;
+   	-moz-border-radius: 10px;
+   	-webkit-border-radius: 10px;
+
+	background-color: #DEDEDE;
+	transition: background 1s;
+	-moz-transition: background 1s;
+	-webkit-transition: background 1s;
+	-o-transition: background 1s;
+}
+ul#menuBar li a:hover {
+	background-color: #585858;
+	color: white;
+}
+ul#menuBar li ul {
+	position: absolute;
+	list-style: none;
+	display: none;
+	margin: 0;
+	margin-left: -2px;
+	padding: 0;
+	z-index: 100;
+  	 border-radius: 10px;
+   	-moz-border-radius: 10px;
+   	-webkit-border-radius: 10px;
+}
+ul#menuBar li:hover ul {
+	display: block;
+}
+ul#menuBar li ul li {
+	float: none;
+	display: inline;
+	margin:0;
+}
+ul#menuBar li ul li a {
+	display: block;
+	padding: 3px 3px;
+	margin:3px 3px;
+	text-decoration: none;
+	color: black;
+	min-width: 50px;
+	width: auto;
+	background-color: #DEDEDE;
+
+}
+
+ul#menuBar li ul li input {
+	border-radius: 0;
+	-moz-border-radius: 0;
+	-webkit-border-radius: 0;
+	-o-border-radius: 0;
+} 
+
+ul#menuBar li ul li:first-child input {
+	border-radius: 1em 1em 0 0;
+	-moz-border-radius: 1em 1em 0 0;
+	-webkit-border-radius: 1em 1em 0 0;
+	-o-border-radius: 1em 1em 0 0;
+} 
+
+ul#menuBar li ul li:last-child input {
+	border-radius: 0 0 1em 1em;
+	-moz-border-radius: 0 0 1em 1em;
+	-webkit-border-radius: 0 0 1em 1em;
+	-o-border-radius: 0 0 1em 1em;
+}
 
 /* ================================================================ 
 This copyright notice must be kept untouched in the stylesheet at 
