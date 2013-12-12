@@ -300,7 +300,7 @@ FILEACTION=ENTER
 fi
 echo '<tr><td>
 <ul id="menuBar">
-	<li class="top"><a href="javascript:void()" class="top_link">Action</span></a>
+	<li class="top"><a href="javascript:void()" class="top_link">Action</a>
 		<ul class="sub">
 		<li><input name="_ACTION_RENAME_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_'$FILE2'_" type="submit" class="button squarebutton" value="'$RENAMEMSG'"></li>
 		<li><input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$HOSTNAME'_ITEMMOVE_'$FILE2'_LOCATION_'$LOCATION2'_" type="submit" class="button squarebutton" value="'$MOVEMSG'"></li>
@@ -359,7 +359,7 @@ fi
 
 echo "<tr><td>
 <ul id=\"menuBar\">
-	<li class=\"top\"><a href=\"javascript:void()\" class=\"top_link\"><span class=\"down\">Action</span></a>
+	<li class=\"top\"><a href=\"javascript:void()\" class=\"top_link\"><span class=\"down\">Action</a>
 		<ul class=\"sub\">
 		<li><input name=\"_ACTION_RENAME_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'"_"LOCATION_$FILE2"_"\" type=\"submit\" class=\"button squarebutton\" value=\"'$RENAMEMSG'\"></li>
 		<li><input name=\"_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'"_"ITEMMOVE_$FILE2"_"LOCATION_$LOCATION2"_"\" type=\"submit\" class=\"button squarebutton\" value=\"'$MOVEMSG'\"></li>
@@ -421,7 +421,7 @@ fi
 
 echo "<tr><td>
 <ul id=\"menuBar\">
-	<li class=\"top\"><a href=\"javascript:void()\" class=\"top_link\"><span class=\"down\">Action</span></a>
+	<li class=\"top\"><a href=\"javascript:void()\" class=\"top_link\"><span class=\"down\">Action</a>
 		<ul class=\"sub\">
 		<li><input name=\"_ACTION_RENAME_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'"_"LOCATION_$FILE2"_"\" type=\"submit\" class=\"button squarebutton\" value=\"'$RENAMEMSG'\"></li>
 		<li><input name=\"_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'"_"ITEMMOVE_$FILE2"_"LOCATION_$LOCATION2"_"\" type=\"submit\" class=\"button squarebutton\" value=\"'$MOVEMSG'\"></li>
