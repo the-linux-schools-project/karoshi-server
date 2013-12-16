@@ -190,12 +190,12 @@ DISKTEMP=`echo -e "$EXTRASMARTINFO" | grep Temperature_Celsius | sed "s/ * / /g"
 PENDINGSECTORS=`echo -e "$EXTRASMARTINFO" | grep Current_Pending_Sector | sed "s/ * / /g" | cut -d" " -f10`
 
 #Convert capacity to gigabytes
-CAPACITY=`echo "scale=0; $CAPACITYBYTES/1024/1024/1024" | bc`
+CAPACITY=`echo "scale=2; $CAPACITYBYTES/1024/1024/1024" | bc`
 DRIVESCALE=GB
 if [ $CAPACITY -gt 1000 ]
 then
 #Covert capacity to terabytes
-CAPACITY=`echo "scale=0; $CAPACITY/1024" | bc`
+CAPACITY=`echo "scale=2; $CAPACITY/1024" | bc`
 DRIVESCALE=TB
 fi
 
@@ -345,12 +345,12 @@ EXTRASMARTINFO=`smartctl -a $DISK`
 DISKTEMP=`echo -e "$EXTRASMARTINFO" | grep Temperature_Celsius | sed "s/ * / /g" | cut -d" " -f10`
 PENDINGSECTORS=`echo -e "$EXTRASMARTINFO" | grep Current_Pending_Sector | sed "s/ * / /g" | cut -d" " -f10`
 #Convert capacity to gigabytes
-CAPACITY=`echo "scale=0; $CAPACITYBYTES/1024/1024/1024" | bc`
+CAPACITY=`echo "scale=2; $CAPACITYBYTES/1024/1024/1024" | bc`
 DRIVESCALE=GB
 if [ $CAPACITY -gt 1000 ]
 then
 #Covert capacity to terabytes
-CAPACITY=`echo "scale=0; $CAPACITY/1024" | bc`
+CAPACITY=`echo "scale=2; $CAPACITY/1024" | bc`
 DRIVESCALE=TB
 fi
 
