@@ -406,30 +406,23 @@ then
 if [ `ls -1 $HOMEPATH | wc -l` -gt 0 ]
 then
 
-for USERFOLDER in $HOMEPATH/*
-do
-FOLDERACTION=enable
-STATUSICON=$ICON2
-MESSAGE="$ENABLEFOLDERMSG"
+folders=( $(find "$HOMEPATH" -mindepth 1 -maxdepth 1 -type d) )
 
 sudo -u www-data /bin/bash << ENDOFTEST
-	if test -r $USERFOLDER/public_html
-	then
-		exit 1
-		else
-		exit 0
-	fi
+	for folder in ${folders[@]}; do
+		FOLDERACTION=enable
+		STATUSICON=$ICON2
+		MESSAGE="$ENABLEFOLDERMSG"
+		if [[ -r \$folder/public_html ]]; then
+			STATUSICON=$ICON1
+			FOLDERACTION=disable
+			MESSAGE="$DISABLEFOLDERMSG"
+		fi
+		USERNAME=\${folder##*/}
+		echo "<tr><td>\$USERNAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_USERNAME_\$USERNAME"_"GROUP_$GROUP"_"ACTION_\$FOLDERACTION"_"\" type=\"image\" class=\"images\" src=\"\$STATUSICON\" value=\"\"><span>\$MESSAGE<br><br>\$USERNAME</span></a></td></tr>"
+	done
 ENDOFTEST
-if [ $? = 1 ]
-then
-STATUSICON=$ICON1
-FOLDERACTION=disable
-MESSAGE="$DISABLEFOLDERMSG"
-fi
-USERNAME=`basename $USERFOLDER`
-echo "<tr><td>$USERNAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_USERNAME_$USERNAME"_"GROUP_$GROUP"_"ACTION_$FOLDERACTION"_"\" type=\"image\" class=\"images\" src=\"$STATUSICON\" value=\"\"><span>$MESSAGE<br><br>$USERNAME</span></a></td></tr>"
 
-done
 fi
 fi
 else
@@ -439,31 +432,22 @@ then
 if [ `ls -1 '$HOMEPATH' | wc -l` -gt 0 ]
 then
 
-
-for USERFOLDER in '$HOMEPATH'/*
-do
-FOLDERACTION=enable
-STATUSICON='$ICON2'
-MESSAGE="'$ENABLEFOLDERMSG'"
+folders=( $(find "'$HOMEPATH'" -mindepth 1 -maxdepth 1 -type d) )
 
 sudo -u www-data /bin/bash << ENDOFTEST
-	if test -r $USERFOLDER/public_html
-	then
-		exit 1
-		else
-		exit 0
-	fi
+	for folder in ${folders[@]}; do
+		FOLDERACTION=enable
+		STATUSICON='$ICON2'
+		MESSAGE="'$ENABLEFOLDERMSG'"
+		if [[ -r \$folder/public_html ]]; then
+			STATUSICON='$ICON1'
+			FOLDERACTION=disable
+			MESSAGE="'$DISABLEFOLDERMSG'"
+		fi
+		USERNAME=\${folder##*/}
+		echo "<tr><td>\$USERNAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_USERNAME_\$USERNAME"_"GROUP_'$GROUP'"_"ACTION_\$FOLDERACTION"_"\" type=\"image\" class=\"images\" src=\"\$STATUSICON\" value=\"\"><span>\$MESSAGE<br><br>\$USERNAME</span></a></td></tr>"
+	done
 ENDOFTEST
-if [ $? = 1 ]
-then
-STATUSICON='$ICON1'
-FOLDERACTION=disable
-MESSAGE="'$DISABLEFOLDERMSG'"
-fi
-USERNAME=`basename $USERFOLDER`
-echo "<tr><td>$USERNAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_USERNAME_$USERNAME"_"GROUP_'$GROUP'"_"ACTION_$FOLDERACTION"_"\" type=\"image\" class=\"images\" src=\"$STATUSICON\" value=\"\"><span>$MESSAGE<br><br>$USERNAME</span></a></td></tr>"
-done
-
 
 fi
 fi
