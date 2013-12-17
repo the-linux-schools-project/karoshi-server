@@ -313,5 +313,20 @@ echo '<br><br>'
 echo '<br><br>'
 fi
 
+######################
+#Configure Fail2ban
+######################
+if [ -d /etc/fail2ban ]
+then
+[ ! -d /opt/karoshi/server_network/security/fail2ban ] && mkdir -p /opt/karoshi/server_network/security/fail2ban
+[ ! -f /opt/karoshi/server_network/security/fail2ban/squid ] && cp -f /opt/karoshi/serversetup/all/fail2ban/jails/squid /opt/karoshi/server_network/security/fail2ban/
+cat /opt/karoshi/server_network/security/fail2ban/* > /etc/fail2ban/jail.local
+[ ! -f /etc/fail2ban/filters/squid-auth.conf ] && cp /opt/karoshi/serversetup/all/fail2ban/filters/squid-auth.conf /etc/fail2ban/filters
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_stop
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/fail2ban
+fi
+
 exit
 

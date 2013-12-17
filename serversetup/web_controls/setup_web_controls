@@ -987,11 +987,11 @@ fi
 if [ -d /etc/fail2ban ]
 then
 [ ! -d /opt/karoshi/server_network/security/fail2ban ] && mkdir -p /opt/karoshi/server_network/security/fail2ban
-[ ! -f /opt/karoshi/server_network/security/fail2ban/web_management ] && cp -f /opt/karoshi/serversetup/all/fail2ban/web_management /opt/karoshi/server_network/security/fail2ban/
+[ ! -f /opt/karoshi/server_network/security/fail2ban/web_management ] && cp -f /opt/karoshi/serversetup/all/fail2ban/jails/web_management /opt/karoshi/server_network/security/fail2ban/
 cat /opt/karoshi/server_network/security/fail2ban/* > /etc/fail2ban/jail.local
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_stop
 sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_restart
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_start
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/fail2ban
 fi
 

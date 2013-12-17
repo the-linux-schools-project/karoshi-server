@@ -1,0 +1,10 @@
+[squid]
+
+enabled = true
+port	= 3128
+filter	= squid-auth
+logpath = /var/log/squid3/access.log
+bantime = 600
+maxretry = 5
+
+
