@@ -4,43 +4,5 @@ DOMAINMSG="Owncloud Domain"
 ERRORMSG1="You have not entered in a domain name."
 ERRORMSG2="The server cannot be blank."
 INSTERROR="Owncloud has already been installed on this server."
+ROLE="Owncloud Server"
 
-
-
-
-
-
-WARNINGMSG="WARNING this will overwrite any current installation."
-CONTINUE=Continue
-OPENINGMSG2="Setting up the Online Classroom"
-COPYFILESMSG="Copying files and setting permissions"
-COMPLETEDMSG4="Please login and change these passwords as soon as possible."
-COMPLETEDMSG5="Your existing Moodle installation has been copied"
-HELP1="For moodle to work correctly it must me accessed by the same domain name both inside and outside your network. This means that the entry you put in here must also exist on your dns server and this is the path that must be used by all clients to access the moodle."
-HELPMSG2="This will copy an existing moodle setup onto a new server."
-MOODLEHELP1="You can set up moodle on a different server to spread the load. The Karoshi server for this is Cassandra"
-EXTRACTMOODLEMSG="Extracting moodle"
-SETMOODLEPERMS="Setting permissions"
-COMPLETEDMSG="Setup Moodle Completed"
-ACCESSMSG="Moodle has been installed and can be accessed from"
-ACCESSMSG2="username"
-PASSWORDMSG="password"
-MOODLEDOMAINMSG="Enter in the domain that you want moodle to use."
-MOODLEDOMAINHELP="This should be a fully qualified domain."
-
-
-MYSQLMSG="Creating the moodle database in mysql"
-
-RESTARTSWMSG="Restarting shorewall"
-ROLE="Moodle E-Learning Server"
-ROLE2="Apache Web Server"
-ROLE3="Ldap Server"
-COPYMSG="Copying"
-DUMPDBMSG="Dumping the mysql database."
-PIPEDBMSG="Piping in the mysql database."
-CURRENTMOODLESERVERMSG="Current moodle server"
-NEWMOODLESERVERMSG="New moodle server"
-TRANSFERMSG1="Copying a moodle installation from an existing moodle server"
-MIGRATECHECKMSG="IMPORTANT Please check that the dns entry has been changed to access your moodle server and it is accessing the correct ldap server for authentication."
-
-ERRORMSG1="You have not entered an alias or domain path."

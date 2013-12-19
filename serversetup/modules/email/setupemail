@@ -317,7 +317,7 @@ echo 0 1,9,17 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/mailboxcheck > /opt/
 #Create a cron job to run postfix stats
 echo 55 23 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/postfixstats > /opt/karoshi/cronjobs/jobs/postfixstats.cron
 #Create a cron job to delete old Trash and Spam mail
-echo 55 23 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/delete_old_mail > /opt/karoshi/cronjobs/jobs/postfixstats.cron
+echo 55 23 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/delete_old_mail > /opt/karoshi/cronjobs/jobs/delete_old_mail.cron
 
 #######################
 #Refresh cronjobs
@@ -484,6 +484,19 @@ echo '<br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
 echo '<br><br>'
 fi
+
+######################
+#Configure Fail2ban
+######################
+
+[ ! -d /opt/karoshi/server_network/security/fail2ban ] && mkdir -p /opt/karoshi/server_network/security/fail2ban
+[ ! -f /opt/karoshi/server_network/security/fail2ban/email ] && cp -f /opt/karoshi/serversetup/all/fail2ban/jails/email /opt/karoshi/server_network/security/fail2ban/
+cat /opt/karoshi/server_network/security/fail2ban/* > /etc/fail2ban/jail.local
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_stop
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/fail2ban
+
 ###########################
 #Show completed message
 ###########################

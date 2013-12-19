@@ -50,19 +50,28 @@ sed -i 's/<\/VirtualHost>//g' /etc/apache2/sites-enabled/default-ssl
 sed -i 's/<\/IfModule>//g' /etc/apache2/sites-enabled/default-ssl
 
 #Add in kerberos
+#echo -e '	#owncloud-kerberos-support
+#	<Directory /var/www/html/owncloud/>
+#			Options Indexes FollowSymLinks MultiViews
+#			AllowOverride all
+#
+#			AuthName "Owncloud"
+#			AuthType Kerberos
+#			Krb5Keytab /etc/keytabs/owncloud.keytab
+#			KrbMethodNegotiate on
+#			KrbMethodK5Passwd off
+#			KrbAuthoritative on
+#			KrbServiceName HTTP/'$HOSTNAME'.'$REALM'
+#			require valid-user
+#	</Directory>' >> /etc/apache2/sites-enabled/default-ssl
+#echo "</VirtualHost>" >> /etc/apache2/sites-enabled/default-ssl
+#echo "</IfModule>" >> /etc/apache2/sites-enabled/default-ssl
+
+#Add in kerberos
 echo -e '	#owncloud-kerberos-support
 	<Directory /var/www/html/owncloud/>
 			Options Indexes FollowSymLinks MultiViews
 			AllowOverride all
-
-			AuthName "Owncloud"
-			AuthType Kerberos
-			Krb5Keytab /etc/keytabs/owncloud.keytab
-			KrbMethodNegotiate on
-			KrbMethodK5Passwd off
-			KrbAuthoritative on
-			KrbServiceName HTTP/'$HOSTNAME'.'$REALM'
-			require valid-user
 	</Directory>' >> /etc/apache2/sites-enabled/default-ssl
 echo "</VirtualHost>" >> /etc/apache2/sites-enabled/default-ssl
 echo "</IfModule>" >> /etc/apache2/sites-enabled/default-ssl
@@ -98,7 +107,6 @@ let COUNTER=COUNTER+1
 done
 
 CLOUDPASS=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
-CLOUDPASS=12345
 #############################
 #Make sure that we know the root mysql password
 #############################

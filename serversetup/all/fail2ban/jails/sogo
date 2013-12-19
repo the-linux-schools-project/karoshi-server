@@ -1,0 +1,12 @@
+[sogo]
+
+enabled = true
+port    = http,https
+filter  = sogo-auth
+logpath = /var/log/sogo/sogo.log
+          /var/log/apache2/access.log
+          /var/log/apache2/ssl_access.log
+bantime = 600
+maxretry = 5
+
+
