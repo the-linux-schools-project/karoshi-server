@@ -159,6 +159,6 @@ then
 MESSAGE=`echo $PROBLEMMSG $LOGMSG`
 show_status
 fi
-completed
+#completed
 echo '</div></body></html>'
 exit
