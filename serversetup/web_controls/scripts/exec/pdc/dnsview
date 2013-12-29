@@ -125,6 +125,7 @@ if [ $MOBILE = no ]
 then
 WIDTH1=100
 WIDTH2=100
+WIDTH3=100
 TABLECLASS=standard
 ICON1=/images/submenus/system/edit.png
 ICON2=/images/submenus/system/delete.png
@@ -132,13 +133,11 @@ ICON3=/images/submenus/monitoring/custom_monitors.png
 else
 WIDTH1=50
 WIDTH2=50
+WIDTH3=130
 TABLECLASS=mobilestandard
 ICON1=/images/submenus/system/editm.png
 ICON2=/images/submenus/system/deletem.png
 ICON3=/images/submenus/monitoring/custom_monitorsm.png
-EDITMSG=""
-DELETEMSG=""
-MONITORMSG=""
 fi
 
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
@@ -157,9 +156,9 @@ DNSINFO=`samba-tool dns query 127.0.0.1 $REALM $REALM ALL -U Administrator --pas
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="vertical-align: top; width: '$WIDTH1'px;"><b>'$DNSNAMEMSG'</b></td>'
 
-[ $MOBILE = no ] && echo '<td style="vertical-align: top; width: '$WIDTH2'px;"><b>Type</b></td>'
+[ $MOBILE = no ] && echo '<td style="vertical-align: top; width: '$WIDTH2'px;"><b>'$TYPEMSG'</b></td>'
 
-echo '<td><b>Entry</b></td><td><b>'$EDITMSG'</b></td><td><b>'$DELETEMSG'</b></td>'
+echo '<td style="vertical-align: top; width: '$WIDTH3'px;"><b>'$ENTRYMSG'</b></td><td style="vertical-align: top;"><b>'$EDITMSG'</b></td><td style="vertical-align: top;"><b>'$DELETEMSG'</b></td>'
 
 [ $MONITORSERVER = yes ] && echo '<td><b>'$MONITORMSG'</b></td>'
 echo '</tr>'
@@ -180,8 +179,8 @@ then
 NAME2=$NAME
 DNSENTRY2=$DNSENTRY
 else
-NAME2=${NAME:0:10}
-DNSENTRY2=${DNSENTRY:0:10}
+NAME2=${NAME:0:9}
+DNSENTRY2=${DNSENTRY:0:20}
 fi
 #Add line to table
 echo "<tr><td style=\"vertical-align: top;\">$NAME2</td>"
@@ -214,8 +213,8 @@ DNSINFO=`samba-tool dns query 127.0.0.1 $REALM $REALM ALL -U Administrator --pas
 #Create top of table
 echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
 <tr><td style=\"vertical-align: top; width: '$WIDTH1'px;\"><b>'$DNSNAMEMSG'</b></td>"
-[ '$MOBILE' = no ] && echo "<td style=\"vertical-align: top; width: '$WIDTH2'px;\"><b>Type</b></td>"
-echo "<td><b>Entry</b></td><td><b>'$EDITMSG'</b></td><td><b>'$DELETEMSG'</b></td>"
+[ '$MOBILE' = no ] && echo "<td style=\"vertical-align: top; width: '$WIDTH2'px;\"><b>'$TYPEMSG'</b></td>"
+echo "<td style="vertical-align: top; width: '$WIDTH3'px;"><b>'$ENTRYMSG'</b></td><td><b>'$EDITMSG'</b></td><td><b>'$DELETEMSG'</b></td>"
 
 [ $MONITORSERVER = yes ] && echo "<td><b>'$MONITORMSG'</b></td>"
 echo "</tr>"
@@ -292,9 +291,8 @@ echo "<form action=\"/cgi-bin/admin/dnsview.cgi\" method=\"post\"><table class=\
 <tr><td style=\"width: 180px;\">Name</td><td><input tabindex= \"1\" name=\"_NAME_$NAME-\" value=\"$NAME\" style=\"width: 200px;\" size=\"20\" type=\"text\"></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>Enter in the name that you want. This can be the name of a server or an alias.</span></a></td></tr>
 <tr><td>DNS Entry</td><td><input tabindex= \"2\" name=\"_ACTION_reallyedit"_"DNSENTRY_$DNSENTRY-\" value=\"$DNSENTRY\" size=\"20\" style=\"width: 200px;\" type=\"text\"></td><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>Enter in the dns information that you want. This would be a tcpip number for an A record or it would be an alias entry for a CNAME.</span></a></td></tr>
 <tr><td style=\"width: 180px;\">DNS Type</td><td>$DNSTYPE</td><td><input type = \"hidden\" name=\"_DNSTYPE_\" value=\"$DNSTYPE\"></td></tr>
-</tbody></table><br>
-
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERTYPE_network_SERVERNAME_$SERVERNAME"_"\" type=\"image\" class=\"images\" src=\"$SERVERICON\" value=\"\"><span>$SERVERNAME</span></a><br>$SERVERNAME
+</tbody></table><br><br>
+<input name=\"_SERVERTYPE_network_SERVERNAME_$SERVERNAME"_"\" type=\"submit\" class=\"button\" value=\"$EDITDNSMSG\">
 </form>
 "
 fi
@@ -315,9 +313,8 @@ echo "<form action=\"/cgi-bin/admin/dnsview.cgi\" method=\"post\"><table class=\
 <option value=\"CNAME\">CNAME</option>
 <option value=\"A\">A Record</option>
 </select>
-</td></tr></tbody></table><br>
-
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERTYPE_network_SERVERNAME_$SERVERNAME"_"\" type=\"image\" class=\"images\" src=\"$SERVERICON\" value=\"\"><span>$SERVERNAME</span></a><br>$SERVERNAME
+</td></tr></tbody></table><br><br>
+<input name=\"_SERVERTYPE_network_SERVERNAME_$SERVERNAME"_"\" type=\"submit\" class=\"button\" value=\"$ADDDNSMSG\">
 </form>
 "
 fi

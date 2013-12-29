@@ -93,7 +93,7 @@ then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE2'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$SYSMENUMSG'</a>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$INFRASTRUCTURESMSG'</a>
 </div></div><div id="mobileactionbox">
 '
 else
@@ -102,7 +102,7 @@ echo '<b>'$TITLE2'</b> <a class="info" target="_blank" href="http://www.linuxsch
 fi
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE pdc "$ACTIONMSG"
+/opt/karoshi/web_controls/show_servers $MOBILE pdc "$ACTIONMSG" view
 
 [ $MOBILE = no ] && echo '</div>'
 
