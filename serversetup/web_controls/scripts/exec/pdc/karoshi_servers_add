@@ -133,7 +133,7 @@ fi
 
 rm -f -R $HOME/.ssh/id_rsa
 #rm -f -R $HOME/.ssh/id_dsa
-ssh-keygen -t rsa -b 4096 -N '' -f $HOME/.ssh/id_rsa > /dev/null
+ssh-keygen -t rsa -b 8192 -N '' -f $HOME/.ssh/id_rsa > /dev/null
 #ssh-keygen -t dsa -N '' -f $HOME/.ssh/id_dsa > /dev/null
 fi
 

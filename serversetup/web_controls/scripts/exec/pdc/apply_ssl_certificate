@@ -106,9 +106,8 @@ if [ $ALIAS = manage ]
 then
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert_web_management
 else
-SERVERNAME=
-echo "$REMOTE_USER:$REMOTE_ADDR:$SERVER:$ALIAS:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
-
+source /opt/karoshi/server_network/domain_information/domain_name
+echo "$REMOTE_USER:$REMOTE_ADDR:$SERVER:$ALIAS.$REALM:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
 fi
 exit
 

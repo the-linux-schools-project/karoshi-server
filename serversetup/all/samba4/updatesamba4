@@ -65,7 +65,7 @@ exit
 fi
 
 #Make sure that key.pem has the correct permissions
-chmod 0600 /var/lib/samba/private/tls/key.pem
+[ -f /var/lib/samba/private/tls/key.pem ] && chmod 0600 /var/lib/samba/private/tls/key.pem
 
 cd /opt/karoshi/serversetup/all/samba4/download/samba-$LATESTVER
 

@@ -107,15 +107,16 @@ touch /etc/ssl/root-ca/index.txt
 [ -d /etc/ssl/webmanagement ] && rm -f -R  /etc/ssl/webmanagement
 mkdir /etc/ssl/webmanagement
 cd /etc/ssl/webmanagement
-
+echo "<li>Creating Host Certificate</li>"
 #Create host certificate
-echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\nmanage."$LOCALNAME"\nmanage."$SERVERNAME"\n"$EMAILADDRESS"\n"webmanagement"\n" | openssl req -newkey rsa:4096 -days 3650 -keyout server_web_management.key -nodes -out server_web_management.req
+echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\nmanage."$LOCALNAME"\nmanage."$SERVERNAME"\n"$EMAILADDRESS"\n"webmanagement"\n" | openssl req -newkey rsa:8192 -days 3650 -keyout server_web_management.key -nodes -out server_web_management.req
 
 #Create client csr
 
 openssl ca -passin pass:$LDAPPASS -days 3650 -batch -out server_web_management.pem -infiles server_web_management.req 
-
+echo "<li>Creating Client csr</li>"
 #Create self signed for 50002 access
+echo "<li>Creating key for 50002 access</li>"
 echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\n"$LOCALNAME"\n"$SERVERNAME"\n"$EMAILADDRESS"\n" | openssl req -new -x509 -days 3650 -nodes -out server_web_management_50002.crt -keyout server_web_management_50002.key
 
 chmod 0600 /etc/ssl/webmanagement/server_web_management.pem
@@ -126,22 +127,13 @@ chmod 0600 /etc/ssl/webmanagement/server_web_management.req
 chmod 0600 /etc/ssl/webmanagement/server_web_management.srl
 
 #Create client certificate
-echo
-echo -e "\nMaking client key\n"
-#openssl genrsa -des3 -out client_web_management.key 4096
-openssl genrsa -aes256 -passout pass:$LDAPPASS -out client_web_management.key 4096
+echo "<li>Creating client key</li>"
+openssl genrsa -aes256 -passout pass:$LDAPPASS -out client_web_management.key 8192
 chmod 0600 /etc/ssl/webmanagement/client_web_management.key
-echo -e "\n_____________________________________________________\n"
-echo
-echo -e "\nMaking client csr\n"
-echo
+
 echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\n"manage.$LOCALNAME"\n"manage.$SERVERNAME"\n"$EMAILADDRESS"\n""\n\n"$UNIQUE_REF"\n"Karoshi Web Management"\n" | openssl req -new -passin pass:$LDAPPASS -key client_web_management.key -out client_web_management.csr
 chmod 0600 /etc/ssl/webmanagement/client_web_management.csr
-
-echo -e "\n_____________________________________________________\n"
-echo -e "\nMaking client crt\n\n"
-echo
-
+echo "<li>Creating client crt</li>"
 #Create client self signed cert
 create_random_string
 openssl x509 -req -in client_web_management.csr -out client_web_management.crt -sha1 -CA server_web_management_50002.crt -CAkey server_web_management_50002.key -CAcreateserial -days 3650
@@ -162,6 +154,6 @@ chmod 0640 /home/itadminshare/ssl_certificates/$NAME'_password'.txt
 chown root.itadmin /home/itadminshare/ssl_certificates/$NAME'_password'.txt
 echo $CLIENT_PASS > /home/itadminshare/ssl_certificates/$NAME'_password'.txt
 
-#Reload apache2_karoshi if configures
+#Reload apache2_karoshi
 [ -f /etc/init.d/apache2_karoshi ] && /etc/init.d/apache2_karoshi reload
 

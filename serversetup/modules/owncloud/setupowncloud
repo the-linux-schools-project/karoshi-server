@@ -148,6 +148,7 @@ a2enmod headers 1>/dev/null
 #Restart apache2
 echo '<li>Restarting Apache</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop
+echo "<br>"
 sleep 1
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
 echo "<br><br>"
@@ -211,10 +212,26 @@ mysql --password=$MYSQLPASS owncloud < /opt/karoshi/serversetup/modules/owncloud
 rm -f /opt/karoshi/serversetup/modules/owncloud/owncloud.sql
 mv /opt/karoshi/serversetup/modules/owncloud/owncloud_original.sql /opt/karoshi/serversetup/modules/owncloud/owncloud.sql
 
+#####################################
+#Ensure that apache ports are open in shorewall
+#####################################
+
+MODCHECK=`grep -c -w 443 /etc/shorewall/rules`
+
+if [ $MODCHECK = 0 ]
+then
+LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'443'	'-'#'apacherule /etc/shorewall/rules
+echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+echo '<li>'$RESTARTSWMSG'</li>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+fi
+
 ###########################
 #Show completed message
 ###########################
-echo '<br>'$ACCESSMSG - '<a href="https://'$ALIAS.$REALM'/owncloud" target="_blank">'$ALIAS.$REALM'/owncloud</a>'
+echo '<br><br>'$ACCESSMSG - '<a href="https://'$ALIAS.$REALM'/owncloud" target="_blank">'$ALIAS.$REALM'/owncloud</a>'
 echo '<br>'$ACCESSMSG2:admin - $PASSWORDMSG: admin
 echo '<br><br><b>'$WARNINGMSG1'</b><br><br>'
 exit

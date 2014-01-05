@@ -57,11 +57,14 @@ echo '
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/apply_ssl_certificate.cgi" name="selectservers" method="post"><b></b>
   <div id="actionbox"><b>'$TITLE'</b>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=SSL_Certificate"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
   <br>
   <br><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
 <tr><td style="width: 90px;"><b>Server</b></td><td style="width: 180px;"><b>Alias</b></td></tr>
-<tr><td>'$HOSTNAME'</td><td>manage.'$REALM'</td><td style="width: 90px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_ALIAS_manage_" type="image" class="images" src="'$SERVERICON'" value=""><span>Web Management</td></tr>'
+<tr><td>'$HOSTNAME'</td><td>manage.'$REALM'</td><td style="width: 90px; vertical-align: top; text-align: left;">
+<input name="_SERVER_'$HOSTNAME'_ALIAS_manage_" type="submit" class="button" value="'$GENCERTMSG'">
+</td></tr>'
 
 #Show all aliases that have been setup
 
@@ -74,7 +77,10 @@ do
 SERVER=`basename $ALIASES`
 ALIAS=`sed -n 1,1p /opt/karoshi/server_network/aliases/$SERVER`
 
-echo '<tr><td>'$SERVER'</td><td>'$ALIAS.$REALM'</td><td style="width: 90px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVER_'$SERVER'_ALIAS_'$ALIAS'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$ALIAS.$REALM'</td></tr>'
+echo '<tr><td>'$SERVER'</td><td>'$ALIAS.$REALM'</td>
+<td style="width: 90px; vertical-align: top; text-align: left;">
+<input name="_SERVER_'$SERVER'_ALIAS_'$ALIAS'_" type="submit" class="button" value="'$GENCERTMSG'">
+</td></tr>'
 done
 echo '</tbody></table>'
 fi

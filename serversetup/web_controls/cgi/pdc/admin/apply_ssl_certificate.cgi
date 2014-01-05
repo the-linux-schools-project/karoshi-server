@@ -69,6 +69,20 @@ fi
 let COUNTER=$COUNTER+1
 done
 
+#Assign SERVER
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+if [ `echo $DATAHEADER'check'` = SERVERcheck ]
+then
+let COUNTER=$COUNTER+1
+SERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+break
+fi
+let COUNTER=$COUNTER+1
+done
+
 function show_status {
 echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
@@ -104,11 +118,21 @@ fi
 #Check data
 #########################
 #Check to see that ALIAS is not blank
-if [ $ALIAS'null' = null ]
+if [ -z "$ALIAS" ]
+then
+MESSAGE=$ERRORMSG15
+show_status
+fi
+
+#Check to see that SERVER is not blank
+if [ -z "$SERVER" ]
 then
 MESSAGE=$ERRORMSG1
 show_status
 fi
+
+#Generate navigation bar
+/opt/karoshi/web_controls/generate_navbar_admin
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/apply_ssl_certificate.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER:$ALIAS:" | sudo -H /opt/karoshi/web_controls/exec/apply_ssl_certificate
