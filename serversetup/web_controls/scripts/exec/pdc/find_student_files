@@ -157,7 +157,7 @@ fi
 if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
 then
 ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-if [ $OPTION = delete ]
+if [ '$OPTION' = delete ]
 then
 find /home/users/students -name "'$FILENAME'"
 find /home/users/students -name "'$FILENAME'" -exec rm -rf {} \;
@@ -171,7 +171,7 @@ if [ $SERVERTYPE = federatedslave ]
 then
 ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3  $SERVERMASTER '
 ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
-if [ $OPTION = delete ]
+if [ '$OPTION' = delete ]
 then
 find /home/users/students -name "'$FILENAME'"
 find /home/users/students -name "'$FILENAME'" -exec rm -rf {} \;

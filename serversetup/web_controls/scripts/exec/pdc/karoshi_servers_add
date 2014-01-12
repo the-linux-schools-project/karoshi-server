@@ -118,6 +118,7 @@ chmod 0700 /root/.ssh
 if ! test -f $HOME/.ssh/id_rsa || ! test -f $HOME/.ssh/id_rsa.pub
 then
 echo `date`: karoshi_servers_add - creating ssh keys by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "<li>$CREATESSHKEYMSG</li>"
 #Check that timeout has been set
 TIMEOUTSTATUS=`grep -c '#''   'ConnectTimeout' '0 /etc/ssh/ssh_config`
 if [ $TIMEOUTSTATUS != 0 ]

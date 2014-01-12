@@ -78,7 +78,7 @@ fi
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/scripts/serverlevelsecurity
 
 function show_info {
-yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 600 --tail --no-buttons --text-info
+yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 700 --height 350 --tail --no-buttons --text-info
 }
 
 function check_ldap_port {
