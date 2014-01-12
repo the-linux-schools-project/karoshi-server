@@ -132,6 +132,9 @@ then
 TABLECLASS=standard
 ROWCOUNT=6
 WIDTH=90
+WIDTH2=120
+COLSIZE=95
+ROWSIZE=28
 SERVERICON="/images/submenus/system/computer.png"
 SERVERICON2="/images/submenus/system/all_computers.png"
 ICON2=/images/submenus/file/show_info.png
@@ -152,6 +155,9 @@ ICON16=/images/submenus/file/folder.png
 else
 ROWCOUNT=3
 WIDTH=70
+WIDTH2=90
+COLSIZE=36
+ROWSIZE=26
 TABLECLASS=mobilestandard
 SERVERICON="/images/submenus/system/computerm.png"
 SERVERICON2="/images/submenus/system/all_computersm.png"
@@ -171,6 +177,9 @@ ICON14=/images/submenus/file/createm.png
 ICON15=/images/submenus/file/filem.png
 ICON16=/images/submenus/file/folderm.png
 fi
+
+LINECOLOUR1="#A0A0A0"
+LINECOLOUR2="#DCDCDC"
 
 #Show SERVERNAME choice
 if [ $SERVERNAME = notset ]
@@ -252,7 +261,7 @@ echo '<br>
 <input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$UPMSG'">
 <input name="_ACTION_CREATEDIR_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$NEWDIRMSG'">
 <input name="_ACTION_CREATEFILE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$NEWFILEMSG'">
-<input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$RELOADMSG'"><br><br><b>'$LOCATIONMSG': '$DISPLOCATION'</b><br>'
+<br><br><b>'$LOCATIONMSG': '$DISPLOCATION'</b><br>'
 
 [ $MOBILE != yes ] && echo '</div><div id="infobox">'
 
@@ -262,8 +271,11 @@ if [ $MOVECHECK = yes ]
 then 
 echo '<input name="_ACTION_REALLYMOVE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_ITEMMOVE_'$ITEMMOVE'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$MOVEMSG2'">
 <input name="_ACTION_REALLYCOPY_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_ITEMMOVE_'$ITEMMOVE'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$COPYMSG2'">
-<input name="_ACTION_CANCELCOPY_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$CANCELMSG'">
-'$ITEMMOVE2'
+<input name="_ACTION_CANCELCOPY_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$CANCELMSG'">'
+
+[ $MOBILE = yes ] && echo "<br>"
+
+echo ''$ITEMMOVE2'
 '
 else
 echo "<br><br>"$ERRORMSG11"<br>"
@@ -274,7 +286,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 '
 #Log Browse Actions
 echo `date`: file_manager - browsing  "$LOCATION" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
+LINECOLOUR=$LINECOLOUR1
 if [ $SERVERNAME = $HOSTNAME ]
 then
 if [ `ls -1 -a "$LOCATION"/ | wc -l` -gt 2 ]
@@ -282,6 +294,7 @@ then
 GLOBIGNORE=yes
 for FILE in "$LOCATION"/*
 do
+
 FILENAME=`basename "$FILE"`
 #FILEINFO=`ls -l -h -d "$FILE"`
 #PERMS=`echo $FILEINFO | cut -d" " -f1`
@@ -298,31 +311,26 @@ then
 ICON1=$ICON16
 FILEACTION=ENTER
 fi
-<<<<<<< HEAD
-echo '<tr><td>
-<ul id="menuBar">
-	<li class="top"><a href="javascript:void()" class="top_link">Action</a>
-		<ul class="sub">
-		<li><input name="_ACTION_RENAME_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_'$FILE2'_" type="submit" class="button squarebutton" value="'$RENAMEMSG'"></li>
-		<li><input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$HOSTNAME'_ITEMMOVE_'$FILE2'_LOCATION_'$LOCATION2'_" type="submit" class="button squarebutton" value="'$MOVEMSG'"></li>
-		<li><input name="_ACTION_DELETE_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$HOSTNAME'_LOCATION_'$FILE2'_" type="submit" class="button squarebutton" value="'$DELETEMSG'"></li>
-		<li><input name="_ACTION_SETPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$HOSTNAME'_LOCATION_'$FILE2'_" type="submit" class="button squarebutton" value="'$PROPERTIESMSG'"></li>
-		</ul>
-	</li></ul>
-</td><td>
-=======
+
+if [ $MOBILE = yes ]
+then
+if [ $LINECOLOUR = "$LINECOLOUR1" ]
+then
+LINECOLOUR=$LINECOLOUR2
+else
+LINECOLOUR=$LINECOLOUR1
+fi
+echo '<tr style="background-color:'$LINECOLOUR'"><td colspan="5">'$FILENAME'</td></tr><tr style="background-color:'$LINECOLOUR'">'
+else
 echo '<tr>'
+fi
 
 echo '
 <td><a class="info" href="javascript:void(0)"><input name="_ACTION_RENAME_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_'$FILE2'_" type="image" class="images" src="'$ICON3'" value=""><span>'$RENAMEMSG'<br>'$FILENAME'</span></a></td>
 <td><a class="info" href="javascript:void(0)"><input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$HOSTNAME'_ITEMMOVE_'$FILE2'_LOCATION_'$LOCATION2'_" type="image" class="images" src="'$ICON4'" value=""><span>'$MOVEMSG'<br>'$FILENAME'</span></a></td>
 <td><a class="info" href="javascript:void(0)"><input name="_ACTION_DELETE_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$HOSTNAME'_LOCATION_'$FILE2'_" type="image" class="images" src="'$ICON5'" value=""><span>'$DELETEMSG'<br>'$FILENAME'</span></a></td>
->>>>>>> parent of aca1a5b... file_manager - mobile style improvements.
 '
-
-
 echo '<td><a class="info" href="javascript:void(0)"><input name="_ACTION_SETPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$HOSTNAME'_LOCATION_'$FILE2'_" type="image" class="images" src="'$ICON2'" value=""><span>'$PROPERTIESMSG'<br>'$FILENAME'</span></a></td><td>'
-
 
 if [ $FILEACTION = ENTER ]
 then
@@ -330,7 +338,12 @@ echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_ENTER_SERVE
 else
 echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_EDIT_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$HOSTNAME'_LOCATION_'$FILE2'_" type="image" class="images" src="'$ICON10'" value=""><span>'$EDITMSG'<br>'$FILENAME'</span></a>'
 fi
+if [ $MOBILE = no ]
+then
 echo '</td><td>'$FILENAME'</td></tr>'
+else
+echo '</td></tr>'
+fi
 done
 fi
 fi
@@ -350,6 +363,8 @@ SHOWRESTORE=yes
 fi
 fi
 
+LINECOLOUR='$LINECOLOUR1'
+
 for FILE in "'$LOCATION'"/*
 do
 FILENAME=`basename "$FILE"`
@@ -368,28 +383,25 @@ then
 ICON1='$ICON16'
 FILEACTION=ENTER
 fi
+
+if [ '$MOBILE' = yes ]
+then
+if [ $LINECOLOUR = "'$LINECOLOUR1'" ]
+then
+LINECOLOUR='$LINECOLOUR2'
+else
+LINECOLOUR='$LINECOLOUR1'
+fi
+echo "<tr style=\"background-color:$LINECOLOUR\"><td colspan=\"5\">$FILENAME</td></tr><tr style=\"background-color:$LINECOLOUR\">"
+else
 echo "<tr>"
+fi
 
 echo "<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_RENAME_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'"_"LOCATION_$FILE2"_"\" type=\"image\" class=\"images\" src=\"'$ICON3'\" value=\"\"><span>'$RENAMEMSG'<br>$FILENAME</span></a></td>
 <td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'"_"ITEMMOVE_$FILE2"_"LOCATION_$LOCATION2"_"\" type=\"image\" class=\"images\" src=\"'$ICON4'\" value=\"'$SERVERNAME'_MOVE_$FILE\"><span>'$MOVEMSG'<br>$FILENAME</span></a></td>
 <td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_DELETE_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'"_"LOCATION_$FILE2"_"\" type=\"image\" class=\"images\" src=\"'$ICON5'\" value=\"\"><span>'$DELETEMSG'<br>$FILENAME</span></a></td>"
 
-
-<<<<<<< HEAD
-echo "<tr><td>
-<ul id=\"menuBar\">
-	<li class=\"top\"><a href=\"javascript:void()\" class=\"top_link\"><span class=\"down\">Action</a>
-		<ul class=\"sub\">
-		<li><input name=\"_ACTION_RENAME_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'"_"LOCATION_$FILE2"_"\" type=\"submit\" class=\"button squarebutton\" value=\"'$RENAMEMSG'\"></li>
-		<li><input name=\"_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'"_"ITEMMOVE_$FILE2"_"LOCATION_$LOCATION2"_"\" type=\"submit\" class=\"button squarebutton\" value=\"'$MOVEMSG'\"></li>
-		<li><input name=\"_ACTION_DELETE_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'"_"LOCATION_$FILE2"_"\" type=\"submit\" class=\"button squarebutton\" value=\"'$DELETEMSG'\"></li>
-		<li><input name=\"_ACTION_SETPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'"_"LOCATION_$FILE2"_"\" type=\"submit\" class=\"button squarebutton\" value=\"'$PROPERTIESMSG'\"></li>
-		</ul>
-	</li></ul>
-</td><td>"
-=======
 echo "<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_SETPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'"_"LOCATION_$FILE2"_"\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>'$PROPERTIESMSG'<br>$FILENAME</span></a></td><td>"
->>>>>>> parent of aca1a5b... file_manager - mobile style improvements.
 
 if [ $FILEACTION = ENTER ]
 then
@@ -399,7 +411,13 @@ echo "<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_EDIT_S
 fi
 [ $SHOWRESTORE = yes ] && echo "</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_RESTORE_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\" type="image" class=\"images\" src=\"'$ICON12'\" value=\"\"><span>Restore<br>$FILENAME</span></a>"
 
+if [ '$MOBILE' = no ]
+then
 echo "</td><td>$FILENAME</td></tr>"
+else
+echo "</td></tr>"
+fi
+
 done
 fi
 '
@@ -422,6 +440,8 @@ SHOWRESTORE=yes
 fi
 fi
 
+LINECOLOUR='$LINECOLOUR1'
+
 for FILE in "'$LOCATION'"/*
 do
 FILENAME=`basename "$FILE"`
@@ -440,27 +460,23 @@ then
 ICON1='$ICON16'
 FILEACTION=ENTER
 fi
+
+if [ '$MOBILE' = yes ]
+then
+if [ $LINECOLOUR = "'$LINECOLOUR1'" ]
+then
+LINECOLOUR='$LINECOLOUR2'
+else
+LINECOLOUR='$LINECOLOUR1'
+fi
+echo "<tr style=\"background-color:$LINECOLOUR\"><td colspan=\"5\">$FILENAME</td></tr><tr style=\"background-color:$LINECOLOUR\">"
+else
 echo "<tr>"
+fi
 
 echo "<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_RENAME_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'"_"LOCATION_$FILE2"_"\" type=\"image\" class=\"images\" src=\"'$ICON3'\" value=\"\"><span>'$RENAMEMSG'<br>$FILENAME</span></a></td>
 <td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'"_"ITEMMOVE_$FILE2"_"LOCATION_$LOCATION2"_"\" type=\"image\" class=\"images\" src=\"'$ICON4'\" value=\"'$SERVERNAME'_MOVE_$FILE\"><span>'$MOVEMSG'<br>$FILENAME</span></a></td>
 <td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_DELETE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'"_"LOCATION_$FILE2"_"\" type=\"image\" class=\"images\" src=\"'$ICON5'\" value=\"\"><span>'$DELETEMSG'<br>$FILENAME</span></a></td>"
-
-<<<<<<< HEAD
-echo "<tr><td>
-<ul id=\"menuBar\">
-	<li class=\"top\"><a href=\"javascript:void()\" class=\"top_link\"><span class=\"down\">Action</a>
-		<ul class=\"sub\">
-		<li><input name=\"_ACTION_RENAME_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'"_"LOCATION_$FILE2"_"\" type=\"submit\" class=\"button squarebutton\" value=\"'$RENAMEMSG'\"></li>
-		<li><input name=\"_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'"_"ITEMMOVE_$FILE2"_"LOCATION_$LOCATION2"_"\" type=\"submit\" class=\"button squarebutton\" value=\"'$MOVEMSG'\"></li>
-		<li><input name=\"_ACTION_DELETE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'"_"LOCATION_$FILE2"_"\" type=\"submit\" class=\"button squarebutton\" value=\"'$DELETEMSG'\"></li>
-		<li><input name=\"_ACTION_SETPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'"_"LOCATION_$FILE2"_"\" type=\"submit\" class=\"button squarebutton\" value=\"'$PROPERTIESMSG'\"></li>
-		</ul>
-	</li></ul>
-</td><td>"
-=======
-echo "<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_SETPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'"_"LOCATION_$FILE2"_"\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>'$PROPERTIESMSG'<br>$FILENAME</span></a></td><td>"
->>>>>>> parent of aca1a5b... file_manager - mobile style improvements.
 
 if [ $FILEACTION = ENTER ]
 then
@@ -469,7 +485,14 @@ else
 echo "<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_EDIT_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\" type="image" class=\"images\" src=\"'$ICON10'\" value=\"\"><span>'$EDITMSG'<br>$FILENAME</span></a>"
 fi
 [ $SHOWRESTORE = yes ] && echo "</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_RESTORE_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\" type="image" class=\"images\" src=\"'$ICON12'\" value=\"\"><span>Restore<br>$FILENAME</span></a>"
+
+if [ '$MOBILE' = no ]
+then
 echo "</td><td>$FILENAME</td></tr>"
+else
+echo "</td></tr>"
+fi
+
 done
 fi
 '\''
@@ -839,9 +862,9 @@ LASTMOD=`stat -c %y "$LOCATION" | cut -d. -f1`
 #Last accessed
 LASTACC=`stat -c %x "$LOCATION" | cut -d. -f1`
 
-echo "<b>$BASICINFOMSG</b><br><br><table class=\"standard\" style=\"text-align: left; \" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+echo "<b>$BASICINFOMSG</b><br><br><table class=\"$TABLECLASS\" style=\"text-align: left; \" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
 <tbody>
-<tr><td style=\"width: 120px;\">$NAMEMSG</td><td>$SHORTNAME</td></tr>
+<tr><td style=\"width: $WIDTH2px;\">$NAMEMSG</td><td>$SHORTNAME</td></tr>
 <tr><td>$PATHMSG</td><td>$LOCATION</td></tr>
 <tr><td>$SIZEMSG</td><td>$ITEMSIZE</td></tr>
 <tr><td>$TYPEMSG</td><td>$ITEMTYPE</td></tr>
@@ -850,9 +873,9 @@ echo "<b>$BASICINFOMSG</b><br><br><table class=\"standard\" style=\"text-align: 
 </tbody></table><br>
 "
 
-echo "<b>$OWNERSHIPMSG</b><br><br><table class=\"standard\" style=\"text-align: left; \" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+echo "<b>$OWNERSHIPMSG</b><br><br><table class=\"$TABLECLASS\" style=\"text-align: left; \" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
 <tbody>
-<tr><td style=\"width: 120px;\">$USERMSG</td><td><input tabindex= \"1\" name=\"_OWNER_\" value=\"$OWNER\" size=\"20\" type=\"text\"></td></tr>
+<tr><td style=\"width: $WIDTH2px;\">$USERMSG</td><td><input tabindex= \"1\" name=\"_OWNER_\" value=\"$OWNER\" size=\"20\" type=\"text\"></td></tr>
 <tr><td>$GROUPMSG</td><td><input tabindex= \"2\" name=\"_GROUP_\" value=\"$GROUP\" size=\"20\" type=\"text\"></td><td></td></tr>
 </tbody></table><br>
 "
@@ -881,8 +904,8 @@ DIRECTORY=no
 EXECENTERMSG=$ENTERMSG
 [ $DIRECTORY = no ] && EXECENTERMSG=$EXECMSG
 #Show ownership
-echo "<table class=\"standard\" style=\"text-align: left; width: 400px;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 120px;\"></td><td>$READMSG</td><td>$WRITEMSG</td><td>$EXECENTERMSG</td><td>$SPECIALMSG</td></tr>
+echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+<tr><td style=\"width: $WIDTH2px;\"></td><td>$READMSG</td><td>$WRITEMSG</td><td>$EXECENTERMSG</td><td>$SPECIALMSG</td></tr>
 <tr><td>$USERMSG</td><td><input name=\"_USERREAD_\" $USERREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_USERWRITE_\" $USERWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_USEREXEC_\" $USEREXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_SETUID_\" $SETUID value=\"1\" type=\"checkbox\"></td><td>$SETUIDMSG</td></tr>
 <tr><td>$GROUPMSG</td><td><input name=\"_GROUPREAD_\" $GROUPREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_GROUPWRITE_\" $GROUPWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_GROUPEXEC_\" $GROUPEXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_SETGID_\" $SETGID value=\"1\" type=\"checkbox\"></td><td>$SETGIDMSG</td></tr>
 <tr><td>$OTHERMSG</td><td><input name=\"_OTHERREAD_\" $OTHERREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_OTHERWRITE_\" $OTHERWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_OTHEREXEC_\" $OTHEREXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_STICKY_\" $STICKY value=\"1\" type=\"checkbox\"></td><td>$STICKYMSG</td></tr></tbody></table><br>"
@@ -890,8 +913,8 @@ echo "<table class=\"standard\" style=\"text-align: left; width: 400px;\" border
 #Show recursive options if the item is a directory
 if [ $DIRECTORY = yes ]
 then
-echo "<table class=\"standard\" style=\"text-align: left; width: 400px;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>"
-echo "<tr><td style=\"width: 120px;\">$RECURSEMSG</td><td><input name=\"_RECURSIVE_\" value=\"1\" type=\"checkbox\"></td></tr>"
+echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>"
+echo "<tr><td style=\"width: $WIDTH2px;\">$RECURSEMSG</td><td><input name=\"_RECURSIVE_\" value=\"1\" type=\"checkbox\"></td></tr>"
 echo "<tr><td>$EXECMSG2</td><td><input name=\"_EXECRECURSE_\" value=\"1\" type=\"checkbox\"></td></tr></tbody></table>"
 fi
 fi
@@ -914,9 +937,9 @@ LASTMOD=`stat -c %y "'$LOCATION'" | cut -d. -f1`
 #Last accessed
 LASTACC=`stat -c %x "'$LOCATION'" | cut -d. -f1`
 
-echo "<b>'$BASICINFOMSG'</b><br><br><table class=\"standard\" style=\"text-align: left; \" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+echo "<b>'$BASICINFOMSG'</b><br><br><table class=\"'$TABLECLASS'\" style=\"text-align: left; \" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
 <tbody>
-<tr><td style=\"width: 120px;\">'$NAMEMSG'</td><td>$SHORTNAME</td></tr>
+<tr><td style=\"width: '$WIDTH2'px;\">'$NAMEMSG'</td><td>$SHORTNAME</td></tr>
 <tr><td>'$PATHMSG'</td><td>'$LOCATION'</td></tr>
 <tr><td>'$SIZEMSG'</td><td>$ITEMSIZE</td></tr>
 <tr><td>'$TYPEMSG'</td><td>$ITEMTYPE</td></tr>
@@ -926,9 +949,9 @@ echo "<b>'$BASICINFOMSG'</b><br><br><table class=\"standard\" style=\"text-align
 "
 
 #Show ownership
-echo "<table class=\"standard\" style=\"text-align: left; \" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left; \" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
 <tbody>
-<tr><td style=\"width: 120px;\">'$USERMSG'</td><td><input tabindex= \"1\" name=\"_OWNER_\" value=\"$OWNER\" size=\"20\" type=\"text\"></td></tr>
+<tr><td style=\"width: '$WIDTH2'px;\">'$USERMSG'</td><td><input tabindex= \"1\" name=\"_OWNER_\" value=\"$OWNER\" size=\"20\" type=\"text\"></td></tr>
 <tr><td>'$GROUPMSG'</td><td><input tabindex= \"2\" name=\"_GROUP_\" value=\"$GROUP\" size=\"20\" type=\"text\"></td><td></td></tr>
 </tbody></table><br>
 "
@@ -958,8 +981,8 @@ DIRECTORY=no
 EXECENTERMSG='$ENTERMSG'
 [ $DIRECTORY = no ] && EXECENTERMSG='$EXECMSG'
 
-echo "<table class=\"standard\" style=\"text-align: left; width: 400px;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 120px;\"></td><td>'$READMSG'</td><td>'$WRITEMSG'</td><td>$EXECENTERMSG</td><td>'$SPECIALMSG'</td></tr>
+echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+<tr><td style=\"width: '$WIDTH2'px;\"></td><td>'$READMSG'</td><td>'$WRITEMSG'</td><td>$EXECENTERMSG</td><td>'$SPECIALMSG'</td></tr>
 <tr><td>'$USERMSG'</td><td><input name=\"_USERREAD_\" $USERREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_USERWRITE_\" $USERWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_USEREXEC_\" $USEREXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_SETUID_\" $SETUID value=\"1\" type=\"checkbox\"></td><td>$SETUIDMSG</td></tr>
 <tr><td>'$GROUPMSG'</td><td><input name=\"_GROUPREAD_\" $GROUPREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_GROUPWRITE_\" $GROUPWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_GROUPEXEC_\" $GROUPEXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_SETGID_\" $SETGID value=\"1\" type=\"checkbox\"></td><td>$SETGIDMSG</td></tr>
 <tr><td>'$OTHERMSG'</td><td><input name=\"_OTHERREAD_\" $OTHERREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_OTHERWRITE_\" $OTHERWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_OTHEREXEC_\" $OTHEREXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_STICKY_\" $STICKY value=\"1\" type=\"checkbox\"></td><td>$STICKYMSG</td></tr></tbody></table><br><br>"
@@ -967,8 +990,8 @@ echo "<table class=\"standard\" style=\"text-align: left; width: 400px;\" border
 #Show recursive options if the item is a directory
 if [ $DIRECTORY = yes ]
 then
-echo "<table class=\"standard\" style=\"text-align: left; width: 400px;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>"
-echo "<tr><td style=\"width: 120px;\">'$RECURSEMSG'</td><td><input name=\"_RECURSIVE_\" value=\"1\" type=\"checkbox\"></td></tr>"
+echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>"
+echo "<tr><td style=\"width: '$WIDTH2'px;\">'$RECURSEMSG'</td><td><input name=\"_RECURSIVE_\" value=\"1\" type=\"checkbox\"></td></tr>"
 echo "<tr><td>'$EXECMSG2'</td><td><input name=\"_EXECRECURSE_\" value=\"1\" type=\"checkbox\"></td></tr></tbody></table>"
 fi
 '
@@ -995,9 +1018,9 @@ LASTMOD=`stat -c %y "'$LOCATION'" | cut -d. -f1`
 #Last accessed
 LASTACC=`stat -c %x "'$LOCATION'" | cut -d. -f1`
 
-echo "<b>Basic Information</b><br><br><table class=\"standard\" style=\"text-align: left; \" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+echo "<b>Basic Information</b><br><br><table class=\"'$TABLECLASS'\" style=\"text-align: left; \" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
 <tbody>
-<tr><td style=\"width: 120px;\">'$NAMEMSG'</td><td>$SHORTNAME</td></tr>
+<tr><td style=\"width: '$WIDTH2'px;\">'$NAMEMSG'</td><td>$SHORTNAME</td></tr>
 <tr><td>Path</td><td>$LOCATION</td></tr>
 <tr><td>Size</td><td>$ITEMSIZE</td></tr>
 <tr><td>Type</td><td>$ITEMTYPE</td></tr>
@@ -1007,9 +1030,9 @@ echo "<b>Basic Information</b><br><br><table class=\"standard\" style=\"text-ali
 "
 
 #Show ownership
-echo "<table class=\"standard\" style=\"text-align: left; \" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left; \" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
 <tbody>
-<tr><td style=\"width: 120px;\">'$USERMSG'</td><td><input tabindex= \"1\" name=\"_OWNER_\" value=\"$OWNER\" size=\"20\" type=\"text\"></td></tr>
+<tr><td style=\"width: '$WIDTH2'px;\">'$USERMSG'</td><td><input tabindex= \"1\" name=\"_OWNER_\" value=\"$OWNER\" size=\"20\" type=\"text\"></td></tr>
 <tr><td>'$GROUPMSG'</td><td><input tabindex= \"2\" name=\"_GROUP_\" value=\"$GROUP\" size=\"20\" type=\"text\"></td><td></td></tr>
 </tbody></table><br>
 "
@@ -1037,8 +1060,8 @@ DIRECTORY=no
 EXECENTERMSG='$ENTERMSG'
 [ $DIRECTORY = no ] && EXECENTERMSG='$EXECMSG'
 
-echo "<table class=\"standard\" style=\"text-align: left; width: 400px;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 120px;\"></td><td>'$READMSG'</td><td>'$WRITEMSG'</td><td>$EXECENTERMSG</td><td>'$SPECIALMSG'</td></tr>
+echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+<tr><td style=\"width: '$WIDTH2'px;\"></td><td>'$READMSG'</td><td>'$WRITEMSG'</td><td>$EXECENTERMSG</td><td>'$SPECIALMSG'</td></tr>
 <tr><td>'$USERMSG'</td><td><input name=\"_USERREAD_\" $USERREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_USERWRITE_\" $USERWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_USEREXEC_\" $USEREXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_SETUID_\" $SETUID value=\"1\" type=\"checkbox\"></td><td>$SETUIDMSG</td></tr>
 <tr><td>'$GROUPMSG'</td><td><input name=\"_GROUPREAD_\" $GROUPREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_GROUPWRITE_\" $GROUPWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_GROUPEXEC_\" $GROUPEXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_SETGID_\" $SETGID value=\"1\" type=\"checkbox\"></td><td>$SETGIDMSG</td></tr>
 <tr><td>'$OTHERMSG'</td><td><input name=\"_OTHERREAD_\" $OTHERREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_OTHERWRITE_\" $OTHERWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_OTHEREXEC_\" $OTHEREXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_STICKY_\" $STICKY value=\"1\" type=\"checkbox\"></td><td>$STICKYMSG</td></tr></tbody></table><br><br>"
@@ -1046,8 +1069,8 @@ echo "<table class=\"standard\" style=\"text-align: left; width: 400px;\" border
 #Show recursive options if the item is a directory
 if [ $DIRECTORY = yes ]
 then
-echo "<table class=\"standard\" style=\"text-align: left; width: 400px;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>"
-echo "<tr><td style=\"width: 120px;\">'$RECURSEMSG'</td><td><input name=\"_RECURSIVE_\" value=\"1\" type=\"checkbox\"></td></tr>"
+echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>"
+echo "<tr><td style=\"width: '$WIDTH2'px;\">'$RECURSEMSG'</td><td><input name=\"_RECURSIVE_\" value=\"1\" type=\"checkbox\"></td></tr>"
 echo "<tr><td>'$EXECMSG2'</td><td><input name=\"_EXECRECURSE_\" value=\"1\" type=\"checkbox\"></td></tr></tbody></table>"
 fi
 '\''
@@ -1364,8 +1387,12 @@ echo '
 <input name="_ACTION_REALLYRENAME_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$RENAMEMSG'">'
 echo '<input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$BACKMSG'"><br><br>'
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$CURRENTNAMEMSG'</td><td>'$RENAMEFILE'<td></tr>
-<tr><td>'$NEWNAMEMSG'</td><td><input name="_NEWFOLDER_" type="text" size="20" value="'$RENAMEFILE'"></td></tr></tbody></table>'
+<tr><td style="width: 180px;"><b>'$CURRENTNAMEMSG'</b></td>'
+[ $MOBILE = yes ] && echo "</tr><tr>" 
+echo '<td>'$RENAMEFILE'<td></tr>
+<tr><td><b>'$NEWNAMEMSG'</b></td>'
+[ $MOBILE = yes ] && echo "</tr><tr>" 
+echo '<td><input name="_NEWFOLDER_" type="text" size="20" value="'$RENAMEFILE'"></td></tr></tbody></table>'
 fi
 }
 
@@ -1481,7 +1508,7 @@ echo '
 <input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$BACKMSG'">
 ' 
 
-echo "</a><br><br><textarea cols=\"95\" rows=\"28\" name=\"_TEXTDATA_\">"
+echo "</a><br><br><textarea cols=\"$COLSIZE\" rows=\"$ROWSIZE\" name=\"_TEXTDATA_\">"
 echo "`cat "$LOCATION"`</textarea>"
 else
 echo "<a href=\"javascript:history.go(-1)\"> <img src=\"/images/submenus/file/back.gif\" alt=\"back\" border=\"0\"></a><br><br>"$EDITERRORMSG
@@ -1548,6 +1575,7 @@ if [ $LOCATION'null' != null ] && [ $NEWFOLDER'null' != null ]
 then
 
 convert_special_chars
+
 ITEMMOVE="$NEWFOLDER"
 convert_special_chars2
 NEWFOLDER="$ITEMMOVE"
@@ -1612,10 +1640,15 @@ LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
 convert_special_chars
 echo '<b>'$CREATEFOLDERMSG'</b><br><br>
 <input name="_ACTION_REALLYCREATEDIR_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$NEWFOLDERMSG'">
-<input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$BACKMSG'">
+<input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$BACKMSG'">
 <br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$CURRENTLOCATIONMSG'</td><td>'$LOCATION'<td></tr>
-<tr><td>'$NEWFOLDERMSG'</td><td><input name="_NEWFOLDER_" type="text" size="20"></td></tr></tbody></table><br>'
+<tr><td style="width: 180px;"><b>'$CURRENTLOCATIONMSG'</b></td>'
+[ $MOBILE = yes ] && echo '</tr><tr>'
+echo '<td>'$LOCATION2'<td></tr>
+<tr><td><b>'$NEWFOLDERMSG'</b></td>'
+[ $MOBILE = yes ] && echo '</tr><tr>'
+echo '<td><input name="_NEWFOLDER_" type="text" size="20"></td></tr></tbody></table><br>
+'
 }
 
 function really_create_file {
@@ -1687,12 +1720,22 @@ function create_file {
 [ $LOCATION'null' = null ] && LOCATION=/
 LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
 convert_special_chars
-echo '<b>'$CREATEFOLDERMSG'</b><br><br>
-<input name="_ACTION_REALLYCREATEFILE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$NEWFILEMSG'">
-<input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$BACKMSG'">
-<br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$CURRENTLOCATIONMSG'</td><td>'$LOCATION'<td></tr>
-<tr><td>'$NEWFILEMSG'</td><td><input name="_NEWFOLDER_" type="text" size="20"></td></tr></tbody></table><br>'
+CREATEFILEMSG="Create File"
+echo '<b>'$CREATEFILEMSG'</b>
+<br><br>
+<input name="_ACTION_REALLYCREATEFILE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$CREATEFILEMSG'">
+<input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$BACKMSG'">
+<br><br>
+'
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: 180px;"><b>'$CURRENTLOCATIONMSG'</b></td>'
+[ $MOBILE = yes ] && echo '</tr><tr>'
+echo '<td>'$LOCATION2'<td></tr>
+<tr><td><b>'$NEWFILEMSG'</b></td>'
+[ $MOBILE = yes ] && echo '</tr><tr>'
+echo '<td><input name="_NEWFOLDER_" type="text" size="20"></td></tr></tbody></table><br>
+'
+
 }
 
 function restore_check_info {

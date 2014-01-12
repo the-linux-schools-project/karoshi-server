@@ -510,7 +510,7 @@ DIV_ID=actionbox4
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=mobileactionbox2
+DIV_ID=mobileactionbox
 fi
 
 END_POINT=12
@@ -549,7 +549,7 @@ echo '<a href="/cgi-bin/admin/mobile_menu.cgi">'$SYSMENUMSG'</a>'
 fi
 echo '</div></div>
 <div id="'$DIV_ID'">
-<b>'$TITLE' - '$SERVER2'</b> '
+'
 
 else
 echo '<form action="/cgi-bin/admin/file_manager.cgi" method="post"><div id="'$DIV_ID'"><div id="titlebox">
