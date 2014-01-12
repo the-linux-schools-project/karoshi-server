@@ -510,7 +510,7 @@ DIV_ID=actionbox4
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=mobileactionbox
+DIV_ID=mobileactionbox2
 fi
 
 END_POINT=12
