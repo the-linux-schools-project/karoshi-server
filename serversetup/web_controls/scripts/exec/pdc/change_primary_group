@@ -264,6 +264,8 @@ chmod u+X -R '$HOMEPATH'/'$USERNAME'
 chown '$USERNAME':'$NEWPRIGROUP' '$HOMEPATH'/'$USERNAME'
 fi
 '
+fi
+fi
 
 exit $CHANGE_PASS_STATUS
 
