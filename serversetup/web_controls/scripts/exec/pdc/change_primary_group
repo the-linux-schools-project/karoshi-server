@@ -247,5 +247,23 @@ fi
 #Delete tar temp folder
 rm -f -R /home/$HOMETEMPFOLDER
 fi
+
+#Move homepath on the email server
+
+if [ -f /opt/karoshi/server_network/emailserver ]
+then
+EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+if [ $EMAILSERVER != $HOSTNAME ]
+then 
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+if [ -d '$CURRENTPATH' ]
+then
+mv '$CURRENTPATH' '$HOMEPATH'
+chmod 0600 -R '$HOMEPATH'/'$USERNAME'
+chmod u+X -R '$HOMEPATH'/'$USERNAME'
+chown '$USERNAME':'$NEWPRIGROUP' '$HOMEPATH'/'$USERNAME'
+fi
+'
+
 exit $CHANGE_PASS_STATUS
 
