@@ -120,11 +120,8 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 echo `date`: backup_assign - assigning $SERVER to $BACKUPSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 
-
-
 #Enable ssh from the server to the backup server
 
-BACKUPSERVERIP=`grep -w $BACKUPSERVER /etc/hosts | sed -n 1,1p | cut -f1`
 if [ $SERVER != $HOSTNAME ]
 then
 ssh -x -o PasswordAuthentication=no $SERVER '
@@ -152,25 +149,10 @@ chmod 0700 /root/.ssh_servers
 cp -f /root/.ssh/authorized_keys'$SERVER' /root/.ssh_servers/
 chmod 0600 /root/.ssh_servers/authorized_keys'$SERVER'
 
-#Check to see if IP number matches for backupserver
-if [ `grep -c -w '$BACKUPSERVER' /etc/hosts` = 0 ]
-then
-#Add backup server details to /etc/hosts if it does not exist
-echo '$BACKUPSERVERIP'"		"'$BACKUPSERVER'.internal"	"'$BACKUPSERVER' >> /etc/hosts
-else
-#Check that backup server tcpip is correct
-CURRENTBACKUPSERVERIP=`grep -w '$BACKUPSERVER' /etc/hosts | sed -n 1,1p | cut -f1`
-
-if [ $CURRENTBACKUPSERVERIP != '$BACKUPSERVERIP' ]
-then
-#Change tcpip number on the remote server if it does not match
-sed -i "s/$CURRENTBACKUPSERVERIP/'$BACKUPSERVERIP'/g" /etc/hosts
-fi
-fi
 '
 
 #Get server ip
-KAROSHISERVERTCPIP=`grep -w $SERVER /etc/hosts | sed -n 1,1p | cut -f1`
+KAROSHISERVERTCPIP=`netlookup $SERVER`
 scp -o PasswordAuthentication=no -r $SERVER:/root/.ssh_servers/authorized_keys$SERVER /root/.ssh_servers
 scp -o PasswordAuthentication=no -r /root/.ssh_servers/authorized_keys$SERVER $BACKUPSERVER:/root/.ssh
 ssh -x -o PasswordAuthentication=no $BACKUPSERVER '

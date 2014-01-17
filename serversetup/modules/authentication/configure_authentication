@@ -235,10 +235,10 @@ fi
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
 
 #Remove any current flag information for domain roles
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1domainmember ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/1domainmember
-[ -f /opt/karoshi/server_network/zones/$ZONE/domain_members/$SERVERNAME ] && rm -f /opt/karoshi/server_network/zones/$ZONE/domain_members/$SERVERNAME
-[ -f /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/$SERVERNAME
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME.$REALM/1domainmember ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/1domainmember
+[ -f /opt/karoshi/server_network/zones/$ZONE/domain_members/$SERVERNAME.$REALM ] && rm -f /opt/karoshi/server_network/zones/$ZONE/domain_members/$SERVERNAME.$REALM
+[ -f /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/$SERVERNAME.$REALM ] && rm -f /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/$SERVERNAME.$REALM
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME.$REALM/1dc ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME.$REALM/1dc
 
 #Sync applications and netlogon shares
 if [ $ZONE = internal ] || [ $ZONE = dmz ]
@@ -255,13 +255,13 @@ then
 DCROLE="Additional Domain Controller"
 [ $AUTHTYPE = rodc ] && DCROLE="Read Only Domain Controller"
 
-echo $DCROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/1dc
+echo $DCROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME.$REALM/1dc
 [ ! -d /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/
-echo $AUTHTYPE > /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/$SERVERNAME
+echo $AUTHTYPE > /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/$SERVERNAME.$REALM
 else
-echo Domain member"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/1domainmember
+echo Domain member"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME.$REALM/1domainmember
 [ ! -d /opt/karoshi/server_network/zones/$ZONE/domain_members/ ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/domain_members
-touch /opt/karoshi/server_network/zones/$ZONE/domain_members/$SERVERNAME
+touch /opt/karoshi/server_network/zones/$ZONE/domain_members/$SERVERNAME.$REALM
 fi
 }
 
@@ -311,7 +311,7 @@ fi
 
 if [ $SERVERNAME != $HOSTNAME ]
 then
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
+ssh -x -o PasswordAuthentication=no $SERVERNAME.$REALM '
 echo "<br><li><b>'$CONFIGUREAUTHMSG'</b></li><br>"
 
 source /opt/karoshi/serversetup/variables/distro
@@ -391,10 +391,10 @@ fi
 
 #Add ldap client flag
 [ ! -d /opt/karoshi/server_network/zones/$ZONE/ldap_clients/ ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/ldap_clients
-echo ldap_server=$KRBSERVER > /opt/karoshi/server_network/zones/$ZONE/ldap_clients/$SERVERNAME
+echo ldap_server=$KRBSERVER > /opt/karoshi/server_network/zones/$ZONE/ldap_clients/$SERVERNAME.$REALM
 
-[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
-echo $USERSGROUPSMSG"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/2users-groups
+[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME.$REALM ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME.$REALM
+echo $USERSGROUPSMSG"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME.$REALM/2users-groups
 }
 
 function choose_krbserver {
