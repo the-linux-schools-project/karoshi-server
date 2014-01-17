@@ -184,6 +184,8 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/user/add_user
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
+source /opt/karoshi/server_network/domain_information/domain_name
+
 ##########################
 #Check for federated servers
 ##########################
