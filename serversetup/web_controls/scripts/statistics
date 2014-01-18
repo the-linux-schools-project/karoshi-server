@@ -54,10 +54,11 @@ table_gen
 #SSh to any other enabled servers and get the data
 if [ `ls -1 /opt/karoshi/server_network/servers | wc -l` -gt 0 ]
 then
+source /opt/karoshi/server_network/domain_information/domain_name
 for KAROSHI_SERVER in /opt/karoshi/server_network/servers/*
 do
 KAROSHI_SERVER=`basename $KAROSHI_SERVER`
-if [ $KAROSHI_SERVER != $HOSTNAME ]
+if [ $KAROSHI_SERVER != $HOSTNAME.$REALM ]
 then
 #Check if server is online
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $KAROSHI_SERVER ls 1>/dev/null

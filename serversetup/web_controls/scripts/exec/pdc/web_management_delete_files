@@ -131,7 +131,7 @@ echo `date`: web_management_delete_files - deleting $DELETEFILE by $REMOTE_USER 
 echo $DELETEMSG2 $DELETEFILE'<br>'
 
 #Delete the file
-if [ $WEBSERVER != $HOSTNAME ]
+if [ $WEBSERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $WEBSERVER '
 rm -f /var/www/html/webfiles/'$UPLOADFOLDER'/'$DELETEFILE'

@@ -112,7 +112,7 @@ LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 net rpc rights grant -U Administrator%$LDAPPASS "$SAMBADOMAIN\Domain Admins" SeMachineAccountPrivilege \
 SePrintOperatorPrivilege SeAddUsersPrivilege SeDiskOperatorPrivilege SeRemoteShutdownPrivilege 1>/dev/null
 
-if [ $SERVERNAME != $HOSTNAME ]
+if [ $SERVERNAME != `hostname-fqdn` ]
 then
 #Copy in language files
 scp -p -r /opt/karoshi/serversetup/language/$LANGCHOICE/modules/printserver root@$SERVERNAME:/opt/karoshi/serversetup/language/$LANGCHOICE/modules/ 1> /dev/null
@@ -124,7 +124,7 @@ fi
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:cups:cups:$SERVERNAME.$REALM:root:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
 
 PDCIP=`net lookup $HOSTNAME`
-if [ $SERVERNAME != $HOSTNAME ]
+if [ $SERVERNAME != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LDAPPASS:$HOSTNAME:$PDCIP:$SAMBADOMAIN:' | /opt/karoshi/serversetup/modules/printserver/setupprintserver
@@ -199,7 +199,7 @@ done
 [ ! -f /opt/karoshi/server_network/printer_accounting/quotas/tech_group_quota ] && echo 300 > /opt/karoshi/server_network/printer_accounting/quotas/tech_group_quota
 
 
-if [ $PRINTSERVER = $HOSTNAME ]
+if [ $PRINTSERVER = `hostname-fqdn` ]
 then
 
 cp -f "/opt/karoshi/serversetup/modules/printserver/printer_info" /opt/karoshi/"useful scripts/"

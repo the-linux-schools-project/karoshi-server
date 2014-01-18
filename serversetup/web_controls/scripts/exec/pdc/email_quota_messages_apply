@@ -126,7 +126,7 @@ exit 101
 fi
 
 
-if [ $EMAILSERVER != $HOSTNAME ]
+if [ $EMAILSERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $EMAILSERVER '
 echo -n -e "'$LEVEL1'" > /opt/karoshi/postfixdata/warning_messages/level1

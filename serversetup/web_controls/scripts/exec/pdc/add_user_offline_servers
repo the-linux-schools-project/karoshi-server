@@ -120,7 +120,7 @@ fi
 smbldap-usermod -G "'$GROUPLIST'" '$NEWUSERNAME'
 #Create user home area on extra fileserver
 source /opt/karoshi/server_network/group_information/'$PRIMARYGROUP'
-if [ -d /opt/karoshi/server_network/servers/$SERVER ] && [ $SERVER != $HOSTNAME ]
+if [ -d /opt/karoshi/server_network/servers/$SERVER ] && [ $SERVER != `hostname-fqdn` ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER  '\''
 if [ ! -d '$HOMEPATH'/'$NEWUSERNAME' ]

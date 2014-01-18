@@ -163,7 +163,7 @@ chmod 0600 /opt/karoshi/server_network/ups/master/$UPSSERVER/upsd.users
 cat /opt/karoshi/server_network/ups/master/$UPSSERVER/users/* > /opt/karoshi/server_network/ups/master/$UPSSERVER/upsd.users
 cat /opt/karoshi/server_network/ups/slave/$UPSSERVER/users/* >> /opt/karoshi/server_network/ups/master/$UPSSERVER/upsd.users
 
-if [ $UPSSERVER = $HOSTNAME ]
+if [ $UPSSERVER = `hostname-fqdn` ]
 then
 touch /etc/nut/upsd.users
 chmod 0600 /etc/nut/upsd.users
@@ -180,7 +180,7 @@ fi
 #Modify shorewall to allow 3493 tcp
 ########################
 
-if [ $UPSSERVER = $HOSTNAME ]
+if [ $UPSSERVER = `hostname-fqdn` ]
 then
 MODCHECK=`grep -c UPS_rule_$SERVER /etc/shorewall/rules`
 RESTART_SHOREWALL=no
@@ -236,7 +236,7 @@ fi
 ########################
 # Restart nut on UPS server
 ########################
-if [ $UPSSERVER = $HOSTNAME ]
+if [ $UPSSERVER = `hostname-fqdn` ]
 then
 /etc/init.d/nut stop
 sleep 1
@@ -258,7 +258,7 @@ fi
 ########################
 # /etc/nut/nut.conf on UPS slave
 ########################
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 echo MODE=netclient > /etc/nut/nut.conf
 echo >> /etc/nut/nut.conf
@@ -271,7 +271,7 @@ fi
 ########################
 # Create upsmon.conf on UPS slave
 ########################
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 touch /etc/nut/upsmon.conf
 chmod 0640 /etc/nut/upsmon.conf
@@ -290,7 +290,7 @@ fi
 ########################
 # start nut on UPS slave
 ########################
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 /etc/init.d/nut stop
 sleep 1

@@ -126,7 +126,7 @@ TABLECLASS=standard
 [ $MOBILE = yes ] && TABLECLASS=mobilestandard
 
 echo `date`: disk_information - checking $INFO "for" $KAROSHI_SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ $KAROSHI_SERVER = $HOSTNAME ]
+if [ $KAROSHI_SERVER = `hostname-fqdn` ]
 then
 #Show free space
 echo '<b>'$FREESPACEMSG'</b><br>'
@@ -280,7 +280,7 @@ fi
 fi
 
 
-if [ $KAROSHI_SERVER != $HOSTNAME ] && [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
+if [ $KAROSHI_SERVER != `hostname-fqdn` ] && [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $KAROSHI_SERVER '
 #Show free space

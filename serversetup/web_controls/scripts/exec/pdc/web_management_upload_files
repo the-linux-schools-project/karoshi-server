@@ -139,7 +139,7 @@ done
 ########################
 #Copy in files
 ########################
-if [ $WEBSERVER != $HOSTNAME ]
+if [ $WEBSERVER != `hostname-fqdn` ]
 then
 #Create tar archive
 tar -z -c -f /var/www/karoshi/webfiles$UPLOADID.tar.gz icons /var/www/karoshi/webfiles.$UPLOADID/ 1>/dev/null 2>/dev/null

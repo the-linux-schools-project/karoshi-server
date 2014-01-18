@@ -123,13 +123,13 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 function reset_data {
 #Reset uptime_reset data for this server
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 karoshi-uptime.sh reset
 fi
 
 #Reset uptime_reset data on slave servers and federated servers
-if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ] && [ $SERVERNAME != $HOSTNAME ]
+if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ] && [ $SERVERNAME != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 karoshi-uptime.sh reset

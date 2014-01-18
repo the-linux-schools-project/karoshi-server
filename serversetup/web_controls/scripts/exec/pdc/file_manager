@@ -287,7 +287,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 #Log Browse Actions
 echo `date`: file_manager - browsing  "$LOCATION" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 LINECOLOUR=$LINECOLOUR1
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 if [ `ls -1 -a "$LOCATION"/ | wc -l` -gt 2 ]
 then
@@ -347,7 +347,7 @@ fi
 done
 fi
 fi
-if [ $SERVERTYPE = network ] && [ $SERVERNAME != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 
@@ -530,11 +530,11 @@ convert_special_chars
 LOCATIONFOLDER=`basename "$LOCATION"`
 LASTLOCATION=`echo "$LOCATION" | sed "s/\/$LOCATIONFOLDER//g"`
 echo `date`: file_manager - deleting "$LOCATION" from $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 rm -f -R "$LOCATION"
 fi
-if [ $SERVERTYPE = network ] && [ $SERVERNAME != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 [ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - deleting "'$LOCATION'" from '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
@@ -636,12 +636,12 @@ convert_special_chars
 echo `date`: file_manager - setting ownership of "$LOCATION" to $OWNER $GROUP from $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #change ownership
 [ $SETRECURSIVE = -R ] && SETRECURSIVE2=-R
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 chown $SETRECURSIVE2 $OWNER:$GROUP "$LOCATION"
 fi
 
-if [ $SERVERTYPE = network ] && [ $SERVERNAME != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 [ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - setting ownership of "'$LOCATION'" to '$OWNER' '$GROUP' from '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
@@ -663,12 +663,12 @@ fi
 #Change file permissions
 echo `date`: file_manager - setting permissions of "$LOCATION" to $OCTALPERMS from $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #Apply permissions
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 chmod $OCTALPERMS "$LOCATION"
 fi
 
-if [ $SERVERTYPE = network ] && [ $SERVERNAME != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 [ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - setting permissions of "'$LOCATION'" to '$OCTALPERMS' from '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
@@ -696,7 +696,7 @@ then
 [ $OTHERDIGIT = 7 ] && let OTHERDIGIT=$OTHERDIGIT-1
 [ $OTHERDIGIT = 5 ] && let OTHERDIGIT=$OTHERDIGIT-1
 OCTALPERMS=`echo $USERDIGIT$GROUPDIGIT$OTHERDIGIT`
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 chmod $OCTALPERMS -R "$LOCATION"/*
 [ $USERDIGIT = 6 ] && chmod u+X -R "$LOCATION"/*
@@ -706,7 +706,7 @@ chmod $OCTALPERMS -R "$LOCATION"/*
 [ $OTHERDIGIT = 6 ] && chmod o+X -R "$LOCATION"/*
 [ $OTHERDIGIT = 4 ] && chmod o+X -R "$LOCATION"/*
 fi
-if [ $SERVERTYPE = network ] && [ $SERVERNAME != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 chmod '$OCTALPERMS' -R "'$LOCATION'"/*
@@ -736,11 +736,11 @@ fi
 #Apply same permissions to sub files and directories
 if [ $SETRECURSIVE = "-R" ] && [ $SETEXECRECURSIVE = yes ]
 then
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 chmod $OCTALPERMS -R "$LOCATION"/*
 fi
-if [ $SERVERTYPE = network ] && [ $SERVERNAME != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 chmod '$OCTALPERMS' -R "'$LOCATION'"/*
@@ -760,12 +760,12 @@ fi
 if [ $SETUID = yes ]
 then
 
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 chmod +s $SETRECURSIVE2 "$LOCATION"
 fi
 
-if [ $SERVERTYPE = network ] && [ $SERVERNAME != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 chmod +s '$SETRECURSIVE2' "'$LOCATION'"
@@ -785,12 +785,12 @@ fi
 #Apply groupid
 if [ $SETGID = yes ]
 then
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 chmod g+s $SETRECURSIVE2 "$LOCATION"
 fi
 
-if [ $SERVERTYPE = network ] && [ $SERVERNAME != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 chmod g+s '$SETRECURSIVE2' "'$LOCATION'"
@@ -810,12 +810,12 @@ fi
 #Apply sticky
 if [ $SETSTICKY = yes ]
 then
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 chmod +t $SETRECURSIVE2 "$LOCATION"
 fi
 
-if [ $SERVERTYPE = network ] && [ $SERVERNAME != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 chmod +t '$SETRECURSIVE2' "'$LOCATION'"
@@ -845,7 +845,7 @@ getlastlocation
 LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
 echo '<input name="_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_ACTION_REALLYSETPERMS_" value="" type="hidden">'
 
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 OWNER=`ls -d -l "$LOCATION" | cut -d" " -f3`
 GROUP=`ls -d -l "$LOCATION" | cut -d" " -f4`
@@ -919,7 +919,7 @@ echo "<tr><td>$EXECMSG2</td><td><input name=\"_EXECRECURSE_\" value=\"1\" type=\
 fi
 fi
 
-if [ $SERVERTYPE = network ] && [ $SERVERNAME != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 OWNER=`ls -d -l "'$LOCATION'" | cut -d" " -f3`
@@ -1090,7 +1090,7 @@ convert_special_chars2
 ITEMMOVE=`echo $ITEMMOVE| sed "s/Z%%%%%Z/_/g"`
 
 echo `date`: file_manager - moving "$ITEMMOVE" to "$LOCATION" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 EXISTCHECK=go
 FILETOCOPY=`basename "$ITEMMOVE"`
@@ -1107,7 +1107,7 @@ done
 [ -d "$LOCATION/" ] && mv -f "$ITEMMOVE" "$LOCATION"/"$FILETOCOPY"
 fi
 
-if [ $SERVERTYPE = network ] && [ $SERVERNAME != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 [ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - moving "'$ITEMMOVE'" to "'$LOCATION'" on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
@@ -1161,7 +1161,7 @@ ITEMMOVE=`echo $ITEMMOVE| sed "s/Z%%%%%Z/_/g"`
 
 #Copy item
 echo `date`: file_manager - copying "$ITEMMOVE" to "$LOCATION" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 EXISTCHECK=go
 FILETOCOPY=`basename "$ITEMMOVE"`
@@ -1182,7 +1182,7 @@ echo "</pre>"
 fi
 fi
 
-if [ $SERVERTYPE = network ] && [ $SERVERNAME != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 [ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - copying "'$ITEMMOVE'" to "'$LOCATION'" on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
@@ -1298,7 +1298,7 @@ ITEMMOVE=""
 
 #Rename the item
 echo `date`: file_manager - renaming "$LOCATION" to "$NEWNAME" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 if [ -e "$LOCATION" ]
 then
@@ -1312,7 +1312,7 @@ fi
 fi
 fi
 
-if [ $SERVERTYPE = network ] && [ $SERVERNAME != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 [ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - renaming "'$LOCATION'" to "'$NEWNAME'" on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
@@ -1405,7 +1405,7 @@ convert_special_chars3
 
 echo `date`: file_manager - editing "$LOCATION" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 if [ -f "$LOCATION" ]
 then
@@ -1423,7 +1423,7 @@ sed -i "s/%5C/\\\/g" "$LOCATION"
 fi
 fi
 
-if [ $SERVERTYPE = network ] && [ $SERVERNAME != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
 then
 echo -e "$TEXTCONTENT" | sed 's/%0D%0A/\n/g' > "/opt/karoshi/.tempdata/file_edit.$$"
 #replace speech marks
@@ -1486,7 +1486,7 @@ echo $EDITMSG $LOCATION'<br><br>'
 #Get data from text file
 echo `date`: file_manager - viewing "$LOCATION" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 EDITERRORMSG="$ERRORMSG8"
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 EDITCHECK=ok
 #Check that file is not in a banned edit path
@@ -1514,7 +1514,7 @@ else
 echo "<a href=\"javascript:history.go(-1)\"> <img src=\"/images/submenus/file/back.gif\" alt=\"back\" border=\"0\"></a><br><br>"$EDITERRORMSG
 fi
 fi
-if [ $SERVERTYPE = network ] && [ $SERVERNAME != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 
@@ -1584,7 +1584,7 @@ LOCATION=`echo "$LOCATION" | sed 's/+/ /g'`
 #Create new folder
 echo `date`: file_manager - creating "$LOCATION"/"$NEWFOLDER" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 if [ ! -e "$LOCATION"/"$NEWFOLDER" ]
 then
@@ -1595,7 +1595,7 @@ exit
 fi
 fi
 
-if [ $SERVERTYPE = network ] && [ $SERVERNAME != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 [ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - creating "'$LOCATION'"/"'$NEWFOLDER'" on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
@@ -1665,7 +1665,7 @@ LOCATION=`echo "$LOCATION" | sed 's/+/ /g'`
 #Create new folder
 echo `date`: file_manager - creating "$LOCATION"/"$NEWFOLDER" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 if [ ! -e "$LOCATION"/"$NEWFOLDER" ]
 then
@@ -1676,7 +1676,7 @@ exit
 fi
 fi
 
-if [ $SERVERTYPE = network ] && [ $SERVERNAME != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 [ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - creating "'$LOCATION'"/"'$NEWFOLDER'" on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
@@ -1866,7 +1866,7 @@ LOCATION=`echo "$LOCATION" | sed 's/ /\\\ /g'`
 
 #echo 'rsync --dirs --recursive --compress --times --progress --perms --executability --owner --group root@'$SERVERNAME':"'$LOCATION'" "'$RESTOREPATH'"'
 
-if [ $RESTORESERVER = $HOSTNAME ]
+if [ $RESTORESERVER = `hostname-fqdn` ]
 then
 echo Restoring "$LOCATION" to $HOSTNAME
 #echo restorepath "$RESTOREPATH"

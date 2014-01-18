@@ -137,7 +137,7 @@ SHARE=`echo $SHARE | sed 's/+/ /g'`
 echo `date`: samba_view_shares -  Server: $SERVERNAME Share: $SHARE Action: $ACTION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 if [ $ACTION = enable ]
 then
@@ -187,7 +187,7 @@ fi
 
 exit
 
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 #Make sure that the folder does not already exist
 if [ -d /home/$FOLDERNAME ]
@@ -253,7 +253,7 @@ fi
 fi
 
 
-if [ $SERVERTYPE = network ] && [ $SERVERNAME != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 #Make sure that the folder does not already exist

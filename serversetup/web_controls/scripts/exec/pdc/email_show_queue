@@ -116,7 +116,7 @@ fi
 #Get postfix data
 echo '<b>'$TITLE' - '$EMAILSERVER'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Show_E-Mail_Queue"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a><br><br>'
 
-if [ $EMAILSERVER = $HOSTNAME ]
+if [ $EMAILSERVER = `hostname-fqdn` ]
 then
 QUEUEARRAY=( `postqueue -p | sed 1d | sed "s/^$/;/g" | sed "s/ * /,/g" | tr -cd "A-Za-z0-9.@;:,\!\* " | sed "s/;/ /g"` )
 #Process array

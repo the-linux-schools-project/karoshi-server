@@ -125,7 +125,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 source /opt/karoshi/server_network/group_information/$GROUP
 
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 
 function enablewebhosting {
@@ -229,7 +229,7 @@ echo $SERVER >> /var/lib/samba/netlogon/domain_information/user_web_servers
 fi
 
 #Enable user web folders
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 #Make sure suphp is installed
 if [ ! -f /etc/apache2/mods-available/suphp.load ]
@@ -332,7 +332,7 @@ sed -i '/^[[:space:]]*$/d' /var/lib/samba/netlogon/domain_information/user_web_s
 fi
 
 #Disable user web folders
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 a2dismod karoshi-userdir 1> /dev/null
 a2dismod suphp 1> /dev/null
@@ -399,7 +399,7 @@ echo '<tr><td><b>'$PRIGROUPMSG'</b> '$GROUP'</td><td>
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: '$WIDTH1'px;"><b>'$USERNAMEMSG'</b></td><td><b>'$STATUSMSG'</b></td></tr>'
 
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 if [ -d $HOMEPATH ]
 then

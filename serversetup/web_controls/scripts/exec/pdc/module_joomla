@@ -128,7 +128,7 @@ fi
 [ ! -d /opt/karoshi/server_network/aliases ] && mkdir -p /opt/karoshi/server_network/aliases
 [ ! -f /opt/karoshi/server_network/aliases/$JOOMLASERVER ] && echo $ALIAS > /opt/karoshi/server_network/aliases/$JOOMLASERVER
 
-if [ $JOOMLASERVER = $HOSTNAME ]
+if [ $JOOMLASERVER = `hostname-fqdn` ]
 then
 #Install joomla
 /opt/karoshi/serversetup/modules/joomla/setupjoomla

@@ -158,7 +158,7 @@ then
 rm -f /opt/karoshi/server_network/printer_accounting/quotas/$NAME"_"user_quota
 fi
 
-if [ $PRINTSERVER != $HOSTNAME ]
+if [ $PRINTSERVER != `hostname-fqdn` ]
 then
 scp -r /opt/karoshi/server_network/printer_accounting/quotas/ root@$PRINTSERVER:"/opt/karoshi/server_network/printer_accounting/"
 fi

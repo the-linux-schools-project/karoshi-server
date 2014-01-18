@@ -150,7 +150,7 @@ rm -f -R /var/www/karoshi/linuxiso
 
 #Get distribution server
 DISTRIBUTIONSERVER=`sed -n 1,1p /opt/karoshi/server_network/distribution_server`
-if [ $DISTRIBUTIONSERVER = $HOSTNAME ]
+if [ $DISTRIBUTIONSERVER = `hostname-fqdn` ]
 then
 
 [ ! -d /media/iso ] && mkdir -p /media/iso

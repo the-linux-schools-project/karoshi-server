@@ -109,7 +109,7 @@ UPLOADFOLDER=`echo $UPLOADFOLDER | sed 's/UNDERSCORE/_/g'`
 
 echo `date`: web_management_delete_folder - deleting $UPLOADFOLDER on $WEBSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 echo $DELETEMSG2 $DELETEFILE'<br>'
-if [ $WEBSERVER != $HOSTNAME ]
+if [ $WEBSERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $WEBSERVER '
 rm -f -R /var/www/html/webfiles/'$UPLOADFOLDER'

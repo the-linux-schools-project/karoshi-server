@@ -104,7 +104,7 @@ ICON1=/images/submenus/email/email_delete.png
 
 EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
 
-if [ $EMAILSERVER = $HOSTNAME ]
+if [ $EMAILSERVER = `hostname-fqdn` ]
 then
 
 EMAILARRAY=( `cat /etc/postfix/access | cut -f1` )

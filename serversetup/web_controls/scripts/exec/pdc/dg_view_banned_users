@@ -120,7 +120,7 @@ chmod 0700 /opt/karoshi/.tempdata
 [ ! -f /opt/karoshi/server_network/proxyserver ] && exit 101
 PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
 
-if [ $PROXYSERVER != $HOSTNAME ]
+if [ $PROXYSERVER != `hostname-fqdn` ]
 then
 #Copy in badusers.list from squid server to the pdc
 scp  root@$PROXYSERVER:"/etc/squid/badusers.list" /etc/squid/

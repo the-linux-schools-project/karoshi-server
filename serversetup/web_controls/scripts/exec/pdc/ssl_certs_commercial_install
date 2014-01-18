@@ -178,7 +178,7 @@ fi
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 #SSLCertificateKeyFile /usr/local/ssl/private/private.key
 cp -f /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVER/server_no_passphrase.key /etc/ssl/apache/server.key

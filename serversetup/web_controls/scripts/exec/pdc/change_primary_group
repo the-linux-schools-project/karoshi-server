@@ -225,7 +225,7 @@ exit
 fi
 done
 #Tar user folder, copy file to pdc
-if [ $CURRENT_SERVER = $HOSTNAME ]
+if [ $CURRENT_SERVER = `hostname-fqdn` ]
 then
 cd $CURRENTPATH ; cd ../ ; tar -czf $USERNAME.tar.gz $USERNAME ; rm -f -R $USERNAME
 mv $USERNAME.tar.gz /home/$HOMETEMPFOLDER/
@@ -236,7 +236,7 @@ ssh -x -o PasswordAuthentication=no $CURRENT_SERVER 'cd '$CURRENTPATH' ; cd ../ 
 fi
 
 #Copy file to new server and extract tar archive
-if [ $NEW_SERVER = $HOSTNAME ]
+if [ $NEW_SERVER = `hostname-fqdn` ]
 then
 mv /home/$HOMETEMPFOLDER/$USERNAME.tar.gz $HOMEPATH
 cd $HOMEPATH ; tar -xvf $USERNAME.tar.gz ; rm -f $USERNAME.tar.gz ; chown :$NEWPRIGROUP -R $USERNAME
@@ -253,7 +253,7 @@ fi
 if [ -f /opt/karoshi/server_network/emailserver ]
 then
 EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
-if [ $EMAILSERVER != $HOSTNAME ]
+if [ $EMAILSERVER != `hostname-fqdn` ]
 then 
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
 if [ -d '$CURRENTPATH' ]

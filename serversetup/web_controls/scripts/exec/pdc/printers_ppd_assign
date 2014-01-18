@@ -132,7 +132,7 @@ PRINTERSERVER=`sed -n 1,1p /opt/karoshi/server_network/printserver | sed 's/ //g
 #add ppd file to printer
 ####################
 echo `date`: printers_ppd_assign - Adding ppd file to $PRINTERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ $PRINTERSERVER != $HOSTNAME ]
+if [ $PRINTERSERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $PRINTERSERVER '
 if [ -f '$PRINTERPPD' ]

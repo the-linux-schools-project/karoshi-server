@@ -129,7 +129,7 @@ ICON4=/images/submenus/system/hdd_fail.png
 
 
 
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 
 #Check that a zfs raid has been set up on this server
@@ -290,7 +290,7 @@ done
 echo "</tbody></table><br>"
 fi
 
-if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ] && [ $SERVERNAME != $HOSTNAME ]
+if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ] && [ $SERVERNAME != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 

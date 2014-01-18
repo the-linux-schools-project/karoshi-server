@@ -94,7 +94,7 @@ exit 101
 fi
 
 echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-if [ $EMAILSERVER != $HOSTNAME ]
+if [ $EMAILSERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $EMAILSERVER '
 

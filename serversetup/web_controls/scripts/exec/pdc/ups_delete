@@ -149,7 +149,7 @@ UPS=yes
 cat /opt/karoshi/server_network/ups/master/$SERVER/drivers/* > /opt/karoshi/server_network/ups/master/$SERVER/ups.conf
 fi
 
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 cp -f /opt/karoshi/server_network/ups/master/$SERVER/ups.conf /etc/nut/
 else
@@ -160,7 +160,7 @@ fi
 # Restart Nut
 ########################
 echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 /etc/init.d/nut stop
 sleep 1
@@ -199,7 +199,7 @@ fi
 cat /opt/karoshi/server_network/ups/master/$SERVERMASTER/users/* > /opt/karoshi/server_network/ups/master/$SERVERMASTER/upsd.users
 cat /opt/karoshi/server_network/ups/slave/$SERVERMASTER/users/* >> /opt/karoshi/server_network/ups/master/$SERVERMASTER/upsd.users
 #Stop nut on slave server
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 source /opt/karoshi/serversetup/variables/distro
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/nut
@@ -212,7 +212,7 @@ chkconfig -f nut off
 '
 fi
 #Remove information from the servermaster
-if [ $SERVERMASTER = $HOSTNAME ]
+if [ $SERVERMASTER = `hostname-fqdn` ]
 then
 touch /etc/nut/upsd.users
 chmod 0600 /etc/nut/upsd.users

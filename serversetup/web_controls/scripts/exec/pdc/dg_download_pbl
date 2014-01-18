@@ -111,7 +111,7 @@ chown root.apache_karoshi /var/www/html_karoshi/admin/pbl
 [ ! -f /opt/karoshi/server_network/proxyserver ] && exit 101
 PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
 
-if [ $PROXYSERVER != $HOSTNAME ]
+if [ $PROXYSERVER != `hostname-fqdn` ]
 then
 scp root@$PROXYSERVER:"/etc/dansguardian/pbl" /var/www/html_karoshi/admin/
 else

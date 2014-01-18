@@ -90,7 +90,7 @@ echo `date`: email_over_quota_report - blank email server by $REMOTE_USER from $
 exit 101
 fi
 
-if [ $EMAILSERVER != $HOSTNAME ]
+if [ $EMAILSERVER != `hostname-fqdn` ]
 then
 scp  root@$EMAILSERVER:"/opt/karoshi/postfixdata/warning_messages/*" /opt/karoshi/postfixdata/warning_messages/
 fi

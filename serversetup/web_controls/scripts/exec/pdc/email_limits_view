@@ -99,7 +99,7 @@ fi
 
 
 
-if [ $EMAILSERVER != $HOSTNAME ]
+if [ $EMAILSERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $EMAILSERVER '
 MESSAGELIMIT=`grep ^"message_size_limit =" /etc/postfix/main.cf | sed -n 1,1p | cut -d"=" -f2 | sed "s/ //g"`

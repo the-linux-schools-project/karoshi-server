@@ -101,7 +101,7 @@ fi
 echo `date`: view_ssl_data "for" $SERVER - by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #Get ssl data
 [ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 if test -f /opt/karoshi/serversetup/variables/ssldata
 then

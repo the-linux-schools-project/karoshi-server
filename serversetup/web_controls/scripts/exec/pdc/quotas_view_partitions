@@ -126,7 +126,7 @@ fi
 for SERVERS in /opt/karoshi/server_network/servers/*
 do
 SERVER=`basename $SERVERS`
-if [ $SERVER != $HOSTNAME ]
+if [ $SERVER != `hostname-fqdn` ]
 then
 [ -d /opt/karoshi/server_network/servers/$SERVER ] && SERVERROLES=`cat /opt/karoshi/server_network/servers/$SERVER/*`
 ssh -o PasswordAuthentication=no -o ConnectTimeout=2  $SERVER '
@@ -196,7 +196,7 @@ fi
 for SERVERS in /opt/karoshi/server_network/servers/*
 do
 SERVER=`basename $SERVERS`
-if [ $SERVER != $HOSTNAME ]
+if [ $SERVER != `hostname-fqdn` ]
 then
 [ -d /opt/karoshi/server_network/servers/$SERVER ] && SERVERROLES=`cat /opt/karoshi/server_network/servers/$SERVER/*`
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '\''

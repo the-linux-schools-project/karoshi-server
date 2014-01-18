@@ -137,12 +137,12 @@ source /opt/karoshi/server_network/group_information/$PRIMARYGROUP
 source /opt/karoshi/server_network/domain_information/domain_name
 
 #Get ldap information
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 LDAPDATA=`ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME | sed "s/[\]/BACKSLASH/g"`
 fi
 
-if [ $SERVERTYPE = network ] && [ $SERVERNAME != $HOSTNAME ]
+if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ]
 then
 LDAPDATA=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 ldapsearch -x -w '$LDAPPASS' -b "OU=People,'$LDAPBASE'" -D "cn=Administrator,cn=Users,'$LDAPBASE'" cn='$USERNAME' | sed "s/[\]/BACKSLASH/g"
@@ -198,7 +198,7 @@ SAMBAPWDMUSTCHANGE=`perl -e 'print scalar(localtime('$SAMBAPWDMUSTCHANGE')), "\n
 SAMBAKICKOFFTIME=`perl -e 'print scalar(localtime('$SAMBAKICKOFFTIME')), "\n"'`
 
 #Show user information
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 echo '<form name="myform" action="/cgi-bin/admin/change_user_info.cgi" method="post"><table class="standard" style="text-align: left; height: 40px;" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td valign="top">
 <input type="hidden" name="_USERNAME_" value="'$USERNAME'" /><table class="standard" style="text-align: left; height: 40px;" border="0" cellpadding="2" cellspacing="2"><tbody>

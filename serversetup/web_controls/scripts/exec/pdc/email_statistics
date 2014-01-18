@@ -128,7 +128,7 @@ echo `date`: email_statistics "for" $SERVERNAME on $DAY-$MONTH-$YEAR from $REMOT
 echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 #echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">'
 #This server
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 #Get todays logs
 if [ $LOGVIEW = today ]
@@ -155,7 +155,7 @@ done
 fi
 fi
 #Slave and federated servers
-if [ $SERVERNAME != $HOSTNAME ]
+if [ $SERVERNAME != `hostname-fqdn` ]
 then
 if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
 then

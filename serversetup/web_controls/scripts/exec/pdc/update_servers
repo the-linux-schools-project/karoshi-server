@@ -172,7 +172,7 @@ fi
 function scheduleupdate {
 
 #Schedule update on this server
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 if [ $DAY != never ]
 then
@@ -185,7 +185,7 @@ fi
 fi
 
 #Schedule update on network and federated servers
-if [ $SERVERNAME != $HOSTNAME ]
+if [ $SERVERNAME != `hostname-fqdn` ]
 then
 if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
 then
@@ -232,7 +232,7 @@ fi
 
 function copyscripts {
 #Copy update scripts to other servers
-if [ $SERVERNAME != $HOSTNAME ]
+if [ $SERVERNAME != `hostname-fqdn` ]
 then
 if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
 then

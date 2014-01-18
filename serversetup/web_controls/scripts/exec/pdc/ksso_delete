@@ -143,7 +143,7 @@ source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 
 #Copy cgi files to the ksso server
-if [ $KSSOSERVER = $HOSTNAME ]
+if [ $KSSOSERVER = `hostname-fqdn` ]
 then
 cp -f /opt/karoshi/server_network/ksso/cgi/ksso_menu.cgi /var/www/cgi-bin/ksso/
 cp -f /opt/karoshi/server_network/ksso/cgi/ksso_connect.cgi /var/www/cgi-bin/ksso/

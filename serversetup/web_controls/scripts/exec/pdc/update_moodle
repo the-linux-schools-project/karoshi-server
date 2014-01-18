@@ -141,7 +141,7 @@ fi
 
 MOODLESERVER=`sed -n 1,1p /opt/karoshi/server_network/moodleserver`
 
-if [ $MOODLESERVER != $HOSTNAME ]
+if [ $MOODLESERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $MOODLESERVER '
 if [ ! -d /var/www/html/moodle ]
@@ -165,7 +165,7 @@ fi
 ################################
 MESSAGE="$BACKUPPATHMSG $BACKUPFOLDER/$DAY-$MONTH-$YEAR/moodle"
 show_message
-if [ $MOODLESERVER != $HOSTNAME ]
+if [ $MOODLESERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $MOODLESERVER '
 [ -d '$BACKUPFOLDER'/'$DAY-$MONTH-$YEAR' ] && rm -f -R '$BACKUPFOLDER'/'$DAY-$MONTH-$YEAR'
@@ -180,7 +180,7 @@ fi
 ################################
 MESSAGE="$MOVEMOODLEMSG"
 show_message
-if [ $MOODLESERVER != $HOSTNAME ]
+if [ $MOODLESERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $MOODLESERVER '
 cp -f -R /var/www/html/moodle '$BACKUPFOLDER'/'$DAY'-'$MONTH'-'$YEAR'/moodle
@@ -209,7 +209,7 @@ fi
 ################################
 MESSAGE=$BACKUPDBMSG
 show_message
-if [ $MOODLESERVER != $HOSTNAME ]
+if [ $MOODLESERVER != `hostname-fqdn` ]
 then
 scp root@$MOODLESERVER:$BACKUPFOLDER/$DAY-$MONTH-$YEAR/moodle/config.php /opt/karoshi/.tempdata/config.php.$$
 MOODLEPASS=`grep CFG-\>dbpass /opt/karoshi/.tempdata/config.php.$$ | cut -d\' -f2`
@@ -254,7 +254,7 @@ fi
 ################################
 MESSAGE=$EXTRACTMOODLEMSG
 show_message
-if [ $MOODLESERVER != $HOSTNAME ]
+if [ $MOODLESERVER != `hostname-fqdn` ]
 then
 #Copy the moodle archive to the correct server
 scp /var/www/karoshi/moodle/"$ARCHIVENAME" root@$MOODLESERVER:/var/www/html/
@@ -280,7 +280,7 @@ then
 MESSAGE="$INSTALLERRORMSG"
 show_warning_message
 #Restore old version
-if [ $MOODLESERVER != $HOSTNAME ]
+if [ $MOODLESERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $MOODLESERVER '
 [ -d /var/www/html/moodle/ ] && rm -f -R /var/www/html/moodle/
@@ -299,7 +299,7 @@ fi
 ################################
 MESSAGE=$COPYCONFIGMSG
 show_message
-if [ $MOODLESERVER != $HOSTNAME ]
+if [ $MOODLESERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $MOODLESERVER '
 cp -f '$BACKUPFOLDER'/'$DAY'-'$MONTH'-'$YEAR'/moodle/config.php /var/www/html/moodle/
@@ -337,7 +337,7 @@ fi
 ################################
 MESSAGE=$SETPERMSMSG
 show_message
-if [ $MOODLESERVER != $HOSTNAME ]
+if [ $MOODLESERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $MOODLESERVER '
 chmod 0440 -R /var/www/html/moodle
@@ -355,7 +355,7 @@ fi
 MESSAGE=$COMPLETEDMSG
 show_message
 #Visit admin page to complete update
-if [ $MOODLESERVER != $HOSTNAME ]
+if [ $MOODLESERVER != `hostname-fqdn` ]
 then
 scp root@$MOODLESERVER:$BACKUPFOLDER/$DAY-$MONTH-$YEAR/moodle/config.php /opt/karoshi/.tempdata/config.php.$$
 MOODLEDOMAIN=`grep CFG-\>wwwroot /opt/karoshi/.tempdata/config.php.$$ | cut -d\' -f2`

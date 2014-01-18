@@ -154,7 +154,7 @@ echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_add_" type=
 fi
 
 echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody><tr><td style=\"width: 120px;\"><b>$ALIASMSG</b></td><td style=\"width: 120px;\"><b>$USERNAMEMSG</b></td><td><b>$DELETEMSG</b></td></tr>"
-	if [ $EMAILSERVER = $HOSTNAME ]
+	if [ $EMAILSERVER = `hostname-fqdn` ]
 	then
 	#Check that alias file is there
 		if [ ! -f /etc/postfix/aliases ]
@@ -189,7 +189,7 @@ fi
 if [ $ACTION = delete ]
 then
 echo `date`: "email_aliases - deleting alias for $ALIAS by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ $EMAILSERVER = $HOSTNAME ]
+if [ $EMAILSERVER = `hostname-fqdn` ]
 then
 sed -i "/^$ALIAS/d" /etc/postfix/aliases
 newaliases
@@ -229,7 +229,7 @@ fi
 if [ $ACTION = reallyadd ]
 then
 echo `date`: "email_aliases - adding  alias $ALIAS for $USERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ $EMAILSERVER = $HOSTNAME ]
+if [ $EMAILSERVER = `hostname-fqdn` ]
 then
 	if [ `grep -c ^$ALIAS: /etc/postfix/aliases` = 0 ]
 	then

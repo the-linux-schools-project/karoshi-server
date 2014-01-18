@@ -134,7 +134,7 @@ echo '<span style="font-weight: bold;">'$SERVERNAME'</span></td>'
 echo '</tr></tbody></table>'
 source /opt/karoshi/serversetup/variables/distro
 #pdc
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 echo $HOSTNAME - $STOPNTP"<br><br>"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_stop 1> /dev/null
@@ -173,7 +173,7 @@ ntpq -p 2>/dev/null
 echo \</pre\>\<br\>
 fi
 
-if [ $SERVERNAME != $HOSTNAME ] && [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
+if [ $SERVERNAME != `hostname-fqdn` ] && [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 [ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: ntp \(federated mode\) - Setting '$SERVERNAME' to '$NTPSERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'

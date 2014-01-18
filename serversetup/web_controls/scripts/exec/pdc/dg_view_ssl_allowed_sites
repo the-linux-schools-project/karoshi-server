@@ -117,7 +117,7 @@ FILTERPATH=/etc/dansguardian/allowed_ssl_sites
 [ ! -f /opt/karoshi/server_network/proxyserver ] && exit 101
 PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
 
-if [ $PROXYSERVER != $HOSTNAME ]
+if [ $PROXYSERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $PROXYSERVER '
 [ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata

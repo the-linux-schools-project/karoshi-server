@@ -143,7 +143,7 @@ if [ $ACTION = DELETE ]
 then
 echo `date`: cron_edit - deleting $JOBNAME on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 if [ -f /opt/karoshi/cronjobs/jobs/$JOBNAME.cron ]
 then
@@ -154,7 +154,7 @@ fi
 fi
 
 
-if [ $SERVERNAME != $HOSTNAME ] && [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
+if [ $SERVERNAME != `hostname-fqdn` ] && [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 [ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: cron_edit \(federated mode\) - deleting '$JOBNAME' on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
@@ -189,12 +189,12 @@ then
 #Feed job information to cron_add
 
 #Get data for form
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 #cat /opt/karoshi/cronjobs/jobs/$JOBNAME.cron
 CRONDATA=`cat /opt/karoshi/cronjobs/jobs/$JOBNAME.cron`
 fi
-if [ $SERVERNAME != $HOSTNAME ] && [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
+if [ $SERVERNAME != `hostname-fqdn` ] && [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
 then
 CRONDATA=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 cat /opt/karoshi/cronjobs/jobs/'$JOBNAME'.cron

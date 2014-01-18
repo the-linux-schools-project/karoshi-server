@@ -157,7 +157,7 @@ fi
 ICON1=/images/warnings/server_fail.png
 
 #Shutdown this server
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="vertical-align: top; width: 180px; height: 30px;"><b>'$SERVERMSG'</b></td><td style="vertical-align: top;"><b>'$ACTIONMSG'</b></td></tr>
@@ -169,7 +169,7 @@ shutdown $SHUTDOWN_OPTION now 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_
 fi
 
 #Shutdown other server
-if [ $SERVERNAME != $HOSTNAME ] && [ $SERVERNAME != allservers ]
+if [ $SERVERNAME != `hostname-fqdn` ] && [ $SERVERNAME != allservers ]
 then
 if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
 then
@@ -213,7 +213,7 @@ then
 for KAROSHISERVER in /opt/karoshi/server_network/servers/*
 do
 KAROSHISERVER=`basename $KAROSHISERVER`
-if [ $KAROSHISERVER != $HOSTNAME ]
+if [ $KAROSHISERVER != `hostname-fqdn` ]
 then
 let SERVERCOUNTER=$SERVERCOUNTER+1
 echo '<tr><td style="vertical-align: top; width: 180px; height: 30px;">'$KAROSHISERVER'</td>

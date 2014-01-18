@@ -134,7 +134,7 @@ echo `date`: backup_now - $KAROSHI_SERVER by $REMOTE_USER from $REMOTE_ADDR >> /
 echo '<span style="font-weight: bold;">'$KAROSHI_SERVER': '$BACKUPNOWMSG'</span>'
 echo `date`: backup_now - $KAROSHI_SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-if [ $KAROSHI_SERVER = $HOSTNAME ]
+if [ $KAROSHI_SERVER = `hostname-fqdn` ]
 then
 backup_pdc
 else

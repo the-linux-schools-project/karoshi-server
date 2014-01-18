@@ -123,7 +123,7 @@ UPSLOAD=""
 UPSTEMP=""
 BATTRUNTIME=""
 
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 UPSDATA=`upsc $UPSMODEL`
 else
@@ -218,7 +218,7 @@ for SLAVESERVERS in /opt/karoshi/server_network/ups/slave/$SERVER/users/*
 do
 SLAVESERVER=`basename $SLAVESERVERS`
 #Chech ups status
-if [ $SLAVESERVER = $HOSTNAME ]
+if [ $SLAVESERVER = `hostname-fqdn` ]
 then
 upsmon status 1>/dev null 2>/dev/null
 SLAVESTATUS=`echo $?`

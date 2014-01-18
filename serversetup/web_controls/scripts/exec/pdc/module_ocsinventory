@@ -114,7 +114,7 @@ echo '<b>'$TITLE' - '$SERVERNAME'</b><br><br>'
 
 PDCIP=`net lookup $HOSTNAME`
 
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 #Check to see if ocs is already installed
 if [ -d /var/www/html_karoshi/admin/ocs ]
@@ -127,7 +127,7 @@ fi
 echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PDCIP: | /opt/karoshi/serversetup/modules/ocsinventory/setupocs
 fi
 
-if [ $SERVERNAME != $HOSTNAME ]
+if [ $SERVERNAME != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 #Check to see if ocs is already installed
@@ -208,7 +208,7 @@ fi
 [ -d /var/www/html_karoshi/tech/ocs ] && rm -f -R /var/www/html_karoshi/tech/ocs
 
 #Add files to web management
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 cp -f -R /usr/share/ocsinventory-reports/ocsreports /var/www/html_karoshi/admin/ocs
 else

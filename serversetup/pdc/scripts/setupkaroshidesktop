@@ -130,6 +130,10 @@ cp -f /opt/karoshi/serversetup/scripts/uptime/karoshi-uptime /etc/init.d/
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/karoshi-uptime
 #Reset the uptime data
 karoshi-uptime.sh reset
+
+#Create some statistics
+/opt/karoshi/web_controls/statistics
+
 #######################
 #Stop password aging
 #######################

@@ -234,7 +234,7 @@ echo '<tr><td> '$DISPLAY_NAME'</td><td>'$OFFLINEMSG'</td><td>'$OFFLINEMSG'</td><
 }
 
 #Show uptime this server
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 UPTIMEDATA=`karoshi-uptime.sh -p uptime`,`karoshi-uptime.sh -n start-time`
 
@@ -246,7 +246,7 @@ table_bottom
 fi
 
 #Slave servers and federated servers
-if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ] && [ $SERVERNAME != allservers ] && [ $SERVERNAME != $HOSTNAME ]
+if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ] && [ $SERVERNAME != allservers ] && [ $SERVERNAME != `hostname-fqdn` ]
 then
 
 UPTIMEDATA=`ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
@@ -293,7 +293,7 @@ table_top
 for SERVERNAMES in /opt/karoshi/server_network/servers/*
 do
 SERVERNAME=`basename $SERVERNAMES`
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 UPTIMEDATA=`karoshi-uptime.sh -p uptime`,`karoshi-uptime.sh -n start-time`
 DISPLAY_NAME=$SERVERNAME

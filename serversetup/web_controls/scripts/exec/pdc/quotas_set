@@ -159,7 +159,7 @@ echo '<table class="standard" style="text-align: left; width: 630px; height: 58p
 #Check if quotas are enabled on the server
 
 QUOTASENABLED=yes
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 [ `grep /home /etc/fstab | grep -c usrquota` = 0 ] && QUOTASENABLED=no
 
@@ -183,7 +183,7 @@ do
 echo `date`: quotas_set - Setting Maxsize:$MAXSIZE2 Maxfiles:$MAXFILES2 "for" $NETWORKUSER on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #Set quota
 echo "<tr><td>"$NETWORKUSER"</td><td>"$SERVER"</td><td>"$PRIMARYGROUP"</td><td>"$DISPLAYSIZE1"</td><td>"$DISPLAYSIZE2"</td><td>"$MAXFILES1"</td><td>"$MAXFILES2"</td></tr>"
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 setquota -u $NETWORKUSER $MAXSIZE1 $MAXSIZE2 $MAXFILES1 $MAXFILES2 -a /dev/loop0
 else
@@ -216,7 +216,7 @@ fi
 source /opt/karoshi/server_network/group_information/'$PRIMARYGROUP'
 
 QUOTASENABLED=yes
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 [ `grep /home /etc/fstab | grep -c usrquota` = 0 ] && QUOTASENABLED=no
 #Make sure quota file is not locked
@@ -242,7 +242,7 @@ do
 echo `date`: quotas_set - Setting Maxsize:$MAXSIZE2 Maxfiles:$MAXFILES2 "for" $NETWORKUSER on $SERVER by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
 #Set quota
 echo "<tr><td>"$NETWORKUSER"</td><td>"$SERVER"</td><td>"'$PRIMARYGROUP'"</td><td>"'$DISPLAYSIZE1'"</td><td>"'$DISPLAYSIZE2'"</td><td>"'$MAXFILES1'"</td><td>"'$MAXFILES2'"</td></tr>"
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 setquota -u $NETWORKUSER '$MAXSIZE1' '$MAXSIZE2' '$MAXFILES1' '$MAXFILES2' -a /dev/loop0
 else

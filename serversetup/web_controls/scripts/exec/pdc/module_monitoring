@@ -132,7 +132,7 @@ EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
 if [ $EMAILSERVER != $SERVERNAME ]
 then
 SERVERIP=`net lookup $SERVERNAME`
-if [ $EMAILSERVER = $HOSTNAME ]
+if [ $EMAILSERVER = `hostname-fqdn` ]
 then
 #Add in server ip to main.cf
 if [ `grep -c -w $SERVERIP /etc/postfix/main.cf` = 0 ]

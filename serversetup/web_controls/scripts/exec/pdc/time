@@ -144,13 +144,13 @@ fi
 
 echo '<b>'$SERVERNAME'</b><br><br>'
 echo `date`: time - set to $DAY:$MONTH:$YEAR:$HOUR:$MINUTES:$SECS on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 #Set the time
 date --set "$YEAR-$MONTH-$DAY $HOUR:$MINUTES:$SECONDS"
 fi
 
-if [ $SERVERNAME != $HOSTNAME ] && [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
+if [ $SERVERNAME != `hostname-fqdn` ] && [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 [ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: time - set to '$DAY':'$MONTH':'$YEAR':'$HOUR':'$MINUTES':'$SECS' on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'

@@ -116,7 +116,7 @@ echo `date`: module_reverse_proxy - adding $ALIAS "for" $WEBSERVER to the dns re
 samba-tool dns add 127.0.0.1 $REALM $ALIAS CNAME $WEBSERVER.$REALM --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
 
-if [ $WEBSERVER = $HOSTNAME ]
+if [ $WEBSERVER = `hostname-fqdn` ]
 then
 echo "<li>"$ERRORMSG2"</li>"
 echo `date`: module_reverse_proxy not allowed to set this up on $HOSTNNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE

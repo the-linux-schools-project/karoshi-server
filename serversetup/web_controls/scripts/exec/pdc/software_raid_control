@@ -127,7 +127,7 @@ ICON2=/images/submenus/system/hdd_add_spare.png
 ICON3=/images/submenus/system/hdd_remove.png
 ICON4=/images/submenus/system/hdd_fail.png
 
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 
 #Check that a software raid has been set up on this server
@@ -321,7 +321,7 @@ fi
 echo "</tbody></table><br>"
 fi
 
-if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ] && [ $SERVERNAME != $HOSTNAME ]
+if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ] && [ $SERVERNAME != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 

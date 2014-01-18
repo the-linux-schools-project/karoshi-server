@@ -333,6 +333,7 @@ sudo -u www-data php /var/www/html/moodle/admin/cli/purge_caches.php
 #Show completed message
 ###########################
 echo '<br>'$ACCESSMSG - '<a href="http://'$ALIAS.$REALM'/moodle" target="_blank">'$ALIAS.$REALM'/moodle</a>'
-echo '<br>'$ACCESSMSG2:admin - $PASSWORDMSG: 154732
+echo '<br>'$ACCESSMSG2:admin - $PASSWORDMSG: admin
 echo '<br><br><b>'$COMPLETEDMSG'</b><br><br>'
+sleep 60
 exit

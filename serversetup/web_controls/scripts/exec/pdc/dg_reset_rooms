@@ -30,7 +30,7 @@ echo `date`: dg_reset_rooms - flushing iptables dynamic ruleset on $PROXYSERVER 
 [ -d /opt/karoshi/server_network/internet_room_controls/ ] && rm -f -R /opt/karoshi/server_network/internet_room_controls/ 
 
 #Clear iptables rules
-if [ $PROXYSERVER = $HOSTNAME ]
+if [ $PROXYSERVER = `hostname-fqdn` ]
 then
 iptables --flush dynamic
 else

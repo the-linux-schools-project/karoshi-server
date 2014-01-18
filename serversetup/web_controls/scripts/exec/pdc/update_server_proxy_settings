@@ -120,7 +120,7 @@ then
 USE_AUTH=no
 fi
 
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 ########################
 #Configure wget to use proxy server
@@ -183,7 +183,7 @@ fi
 fi
 fi
 
-if [ $SERVERNAME != $HOSTNAME ]
+if [ $SERVERNAME != `hostname-fqdn` ]
 then
 if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
 then
@@ -250,7 +250,7 @@ fi
 fi
 fi
 
-if [ $SERVERNAME != $HOSTNAME ]
+if [ $SERVERNAME != `hostname-fqdn` ]
 then
 if [ $SERVERTYPE = federatedslave ]
 then

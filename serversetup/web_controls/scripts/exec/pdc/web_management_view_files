@@ -115,7 +115,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 UPLOADFOLDER=`echo $UPLOADFOLDER | sed 's/UNDERSCORE/_/g'`
 echo '<b>'$TITLE : http://$WEBSERVER/webfiles/$UPLOADFOLDER'</b><br><br>'
 echo '<input name="___UPLOADFOLDER___" value="'$UPLOADFOLDER'" type="hidden">'
-if [ $WEBSERVER != $HOSTNAME ]
+if [ $WEBSERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $WEBSERVER '
 #Show files

@@ -112,7 +112,7 @@ echo ''$TITLE' - '$SERVERNAME'</span>
 <td style="vertical-align: top; width: 80px;">
 '
 
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 echo '<form action="/cgi-bin/admin/dhcp_fm.cgi" method="post">
 <input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$DHCPSERVERHELPMSG'</span></a></form>'
@@ -122,7 +122,7 @@ fi
 
 echo '</td><td style="vertical-align: top; width: 180px; height: 40px;">'$FILESERVERMSG'</td><td style="vertical-align: top;">'
 
-if [ $SERVERNAME != $HOSTNAME ] && [ ! -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME ]
+if [ $SERVERNAME != `hostname-fqdn` ] && [ ! -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME ]
 then
 echo '<form action="/cgi-bin/admin/module_fileserver_fm.cgi" method="post">
 <input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$FILESERVERHELPMSG'</span></a></form>'
@@ -139,7 +139,7 @@ echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$PRINTSE
 
 echo '<td style="vertical-align: top; height: 40px;">'$BACKUPSERVERMSG'</td><td style="vertical-align: top; height: 40px;">'
 
-if [ $SERVERNAME != $HOSTNAME ]
+if [ $SERVERNAME != `hostname-fqdn` ]
 then
 echo '<form action="/cgi-bin/admin/module_backupserver_fm.cgi" method="post">
 <input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$BACKUPSERVERHELPMSG'</span></a></form>
@@ -184,7 +184,7 @@ echo '<td style="vertical-align: top; height: 40px;">'$SQUIDSERVERMSG'</td>
 
 echo '<tr><td style="vertical-align: top; height: 40px;">'$RADIUSSERVERMSG'</td><td style="vertical-align: top; height: 40px;">'
 
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 
 echo '<form action="/cgi-bin/admin/module_radius_fm.cgi" method="post">
@@ -217,7 +217,7 @@ echo '</td></tr><tr><td style="vertical-align: top; height: 40px;">'$RADIOSERVER
 <tr><td style="vertical-align: top; height: 40px;">'$MONITORSERVERMSG'</td>
 <td style="vertical-align: top; height: 40px;">
 '
-if [ $SERVERNAME != $HOSTNAME ]
+if [ $SERVERNAME != `hostname-fqdn` ]
 then
 echo '<form action="/cgi-bin/admin/module_monitoring_fm.cgi" method="post">
 <input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$MONITORSERVERHELPMSG'</span></a></form>'
@@ -251,7 +251,7 @@ echo '<b>'$TITLE3' - '$SERVERNAME'</b><br><br><table class="standard" style="tex
 <td style="vertical-align: top; width: 80px;">
 '
 
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 echo '<form action="/cgi-bin/admin/module_ssh_access_fm.cgi" method="post">
 <input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$SSHACCESSHELPMSG'</span></a></form>'
@@ -260,7 +260,7 @@ echo '<a class="info" href="javascript:void(0)"><img class="images" alt="" src="
 fi
 #echo '</td><td style="vertical-align: top; width: 180px; height: 40px;">'$SHELLACCESSMSG'</td><td style="vertical-align: top; width: 80px;">'
 
-#if [ $SERVERNAME = $HOSTNAME ]
+#if [ $SERVERNAME = `hostname-fqdn` ]
 #then
 #echo '<form action="/cgi-bin/admin/module_ajaxterm_fm.cgi" method="post">
 #<input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$SHELLACCESSHELMSG'</span></a></form>'
@@ -272,7 +272,7 @@ fi
 if [ -f /opt/karoshi/serversetup/variables/enable_federation_module ]
 then
 echo '<td style="vertical-align: top; width: 180px; height: 40px;">'$FEDERATIONCONTROLMSG'</td><td style="vertical-align: top; width: 80px;">'
-if [ $SERVERNAME != $HOSTNAME ]
+if [ $SERVERNAME != `hostname-fqdn` ]
 then
 echo '<form action="/cgi-bin/admin/module_federation_control_fm.cgi" method="post">
 <input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$FEDERATIONCONTROLHELPMSG'</span></a></form>'

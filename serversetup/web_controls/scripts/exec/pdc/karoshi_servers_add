@@ -118,7 +118,7 @@ chmod 0700 /root/.ssh
 if ! test -f $HOME/.ssh/id_rsa || ! test -f $HOME/.ssh/id_rsa.pub
 then
 echo `date`: karoshi_servers_add - creating ssh keys by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo "<li>$CREATESSHKEYMSG</li>"
+echo "<li><b>$CREATESSHKEYMSG</b></li><br>"
 #Check that timeout has been set
 TIMEOUTSTATUS=`grep -c '#''   'ConnectTimeout' '0 /etc/ssh/ssh_config`
 if [ $TIMEOUTSTATUS != 0 ]
@@ -183,7 +183,7 @@ chmod 0750 /opt/karoshi/server_network/servers
 chown root.apache_karoshi /opt/karoshi/server_network/servers
 fi
 
-if [ -d /opt/karoshi/server_network/servers/$SERVER ]
+if [ -d /opt/karoshi/server_network/servers/$SERVER.$REALM ]
 then
 ssh -x -o PasswordAuthentication=no $SERVER '
 rm -f -R $HOME/.ssh/known_hosts
@@ -219,6 +219,13 @@ sed -i "s/PermitRootLogin Yes/PermitRootLogin without-password/g" /etc/ssh/sshd_
 [ ! -d /etc/ssl/root-ca ] && mkdir -m 0700 /etc/ssl/root-ca
 mv /etc/ssl/openssl.cnf /etc/ssl/openssl.cnf.'$$'
 cp -f /opt/karoshi/serversetup/distro/ubuntu/all/configfiles/openssl.cnf /etc/ssl/
+
+#Add in fqdn
+echo $HOSTNAME.'$REALM' > /etc/hostname-fqdn
+
+#Create hostname-fqdn command
+echo "cat /etc/hostname-fqdn" > /bin/hostname-fqdn
+chmod 0755 /bin/hostname-fqdn
 ' 1>/dev/null 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 SSHRESULT=`echo $?`
 
@@ -370,10 +377,10 @@ fi
 
 if [ ! -f /opt/karoshi/server_network/federated_ldap_servers/$SERVER ]
 then
-if [ ! -d /opt/karoshi/server_network/servers/$SERVER ]
+if [ ! -d /opt/karoshi/server_network/servers/$SERVER.$REALM ]
 then
-mkdir -p /opt/karoshi/server_network/servers/$SERVER
-echo $NO_ROLEMSG > /opt/karoshi/server_network/servers/$SERVER/no_role
+mkdir -p /opt/karoshi/server_network/servers/$SERVER.$REALM
+echo $NO_ROLEMSG > /opt/karoshi/server_network/servers/$SERVER.$REALM/no_role
 fi
 fi
 
@@ -401,6 +408,6 @@ fi
 
 #Add server zone info
 [ ! -d /opt/karoshi/server_network/zones/$ZONE/servers ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/servers
-touch /opt/karoshi/server_network/zones/$ZONE/servers/$SERVER
+touch /opt/karoshi/server_network/zones/$ZONE/servers/$SERVER.$REALM
 
 exit

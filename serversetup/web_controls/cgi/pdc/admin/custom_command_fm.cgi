@@ -132,7 +132,7 @@ echo '<div id="'$DIV_ID'"><div id="titlebox"><table class="standard" style="text
 fi
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE all "$ACTIONMSG"
+/opt/karoshi/web_controls/show_servers $MOBILE servers "$ACTIONMSG"
 
 [ $MOBILE = no ] && echo '</div>'
 

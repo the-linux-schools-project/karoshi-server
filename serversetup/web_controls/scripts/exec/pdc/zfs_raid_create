@@ -127,7 +127,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/system/software_raid
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 source /opt/karoshi/serversetup/variables/distro
 
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 #Check to see if zfs is installed
 UPDATEREPOS=yes
@@ -308,7 +308,7 @@ fi
 fi
 fi
 
-if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ] && [ $SERVERNAME != $HOSTNAME ]
+if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ] && [ $SERVERNAME != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 #Check to see if zfs is installed

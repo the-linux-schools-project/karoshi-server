@@ -101,27 +101,13 @@ fi
 #Ask for email domain - needed for ldap user creation
 ###########################
 #Get mail domain
-if [ -f /opt/karoshi/serversetup/variables/maildomain ]
-then
-EMAILDOMAIN2=`sed -n 1,1p /opt/karoshi/serversetup/variables/maildomain`
-else
-EMAILDOMAIN2=emaildomain.com
-if [ $INTERACTIVE_MODE = yes ]
-then
-DATA=`--title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 300 --form --field="$EMAILGMSG"`
-EMAILDOMAIN=`echo $DATA | cut -d"|" -f1`
-
-EMAILDOMAIN=`echo $EMAILDOMAIN | sed 's/ //g'`
-[ $EMAILDOMAIN'null' != null ] && echo $EMAILDOMAIN > /opt/karoshi/serversetup/variables/maildomain
-fi
-fi
+[ ! -f /opt/karoshi/serversetup/variables/maildomain ] && echo $REALM > /opt/karoshi/serversetup/variables/maildomain
 
 [ ! -d /opt/karoshi/server_network/ups ] && mkdir -p /opt/karoshi/server_network/ups
 cp -f /opt/karoshi/serversetup/"Important Information"/ups-model-information.csv /opt/karoshi/server_network/ups/
 
 [ ! -d /opt/karoshi/server_network/servers ] && mkdir -p /opt/karoshi/server_network/servers
-[ ! -d /opt/karoshi/server_network/servers/$HOSTNAME ] && mkdir -p /opt/karoshi/server_network/servers/$HOSTNAME
-
+[ ! -d /opt/karoshi/server_network/servers/$HOSTNAME.$REALM ] && mkdir -p /opt/karoshi/server_network/servers/$HOSTNAME.$REALM
 
 [ ! -d /opt/karoshi/server_network/dansguardian/media_controls ] && mkdir -p /opt/karoshi/server_network/dansguardian/media_controls
 chown root.apache_karoshi /opt/karoshi/server_network/dansguardian/media_controls
@@ -775,7 +761,9 @@ echo /etc/samba/smb.conf has been backed up to /etc/samba/smb$$.conf
 cp -f /etc/samba/smb.conf /etc/samba/smb$$.conf
 sed -i $NETLOGONLINENUMBER'd' /etc/samba/smb.conf
 echo Restarting samba
-service smb restart
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
 fi
 fi
 #Start httpd_karoshi if it is not running
@@ -843,12 +831,12 @@ chown root:apache_karoshi /opt/karoshi/web_controls/generate_navbar_staff
 ###########################
 #Add role
 ###########################
-[ ! -d /opt/karoshi/server_network/servers/$HOSTNAME ] && mkdir -p /opt/karoshi/server_network/servers/$HOSTNAME
-echo "Primary Domain Controller<br>" > /opt/karoshi/server_network/servers/$HOSTNAME/1pdc
-echo "File Server<br>" > /opt/karoshi/server_network/servers/$HOSTNAME/fileserver
-echo "Ldap Server<br>" > /opt/karoshi/server_network/servers/$HOSTNAME/ldapserver
+[ ! -d /opt/karoshi/server_network/servers/$HOSTNAME.$REALM ] && mkdir -p /opt/karoshi/server_network/servers/$HOSTNAME.$REALM
+echo "Primary Domain Controller<br>" > /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/1pdc
+echo "File Server<br>" > /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/fileserver
+echo "Ldap Server<br>" > /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/ldapserver
 
-[ -f /opt/karoshi/server_network/servers/$HOSTNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$HOSTNAME/no_role
+[ -f /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/no_role ] && rm -f /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/no_role
 
 ############################
 #Configure Menus
@@ -1009,9 +997,6 @@ if [ `echo $?` != 0 ]
 then
 samba-tool dns add 127.0.0.1 $REALM manage CNAME $HOSTNAME.$REALM --username=Administrator --password=$LDAPPASS
 fi
-
-#Create some statistics
-/opt/karoshi/web_controls/statistics
 
 ############################
 #Display completed message

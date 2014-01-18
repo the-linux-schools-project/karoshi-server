@@ -108,7 +108,7 @@ fi
 ########################
 echo `date`: web_management_create_folder - creating $NEWFOLDER on $WEBSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-if [ $WEBSERVER != $HOSTNAME ]
+if [ $WEBSERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $WEBSERVER '
 

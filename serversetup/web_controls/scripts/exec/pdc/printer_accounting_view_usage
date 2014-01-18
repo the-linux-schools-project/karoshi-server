@@ -135,7 +135,7 @@ fi
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: '$WIDTH1'px;"><b>'$USERNAMEMSG'</b></td><td><b>'$YEARMSG'</b></td><td><b>'$MONTHMSG'</b></td><td><b>'$TOTALMSG'</b></td></tr>'
 
-if [ $PRINTSERVER = $HOSTNAME ] && [ $TYPE = user ]
+if [ $PRINTSERVER = `hostname-fqdn` ] && [ $TYPE = user ]
 then
 if [ $MONTH = all ]
 then
@@ -184,7 +184,7 @@ fi
 fi
 fi
 
-if [ $PRINTSERVER = $HOSTNAME ] && [ $TYPE = group ]
+if [ $PRINTSERVER = `hostname-fqdn` ] && [ $TYPE = group ]
 then
 if [ $MONTH = all ]
 then
@@ -208,7 +208,7 @@ fi
 
 
 
-if [ $PRINTSERVER != $HOSTNAME ] && [ $TYPE = user ]
+if [ $PRINTSERVER != `hostname-fqdn` ] && [ $TYPE = user ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PRINTSERVER '
 if [ '$MONTH' = all ]
@@ -263,7 +263,7 @@ fi
 '
 fi
 
-if [ $PRINTSERVER != $HOSTNAME ] && [ $TYPE = group ]
+if [ $PRINTSERVER != `hostname-fqdn` ] && [ $TYPE = group ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PRINTSERVER '
 if [ '$MONTH' = all ]

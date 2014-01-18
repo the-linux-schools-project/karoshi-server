@@ -185,7 +185,7 @@ ls /var/www/karoshi/ppd_files/ >> /tmp/data
 ####################
 echo `date`: printers_ppd_add - Adding "$PPDFILE" ppd file to $PRINTERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/printserver`
-if [ $PRINTSERVER != $HOSTNAME ]
+if [ $PRINTSERVER != `hostname-fqdn` ]
 then
 #Copy ppd file accross
 ssh -x -o PasswordAuthentication=no $PRINTSERVER '

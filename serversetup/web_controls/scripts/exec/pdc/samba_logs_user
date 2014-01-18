@@ -134,7 +134,7 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 echo '</tbody></table><br>
 <b>'$SHOWLOGMSG'</b><br><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 if [ $DAY'null' = null ]
 then

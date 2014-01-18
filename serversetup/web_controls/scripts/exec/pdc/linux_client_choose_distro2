@@ -122,7 +122,7 @@ then
 ln -s /home/itadminshare/distributions/linux/"$DISTROCHOICE" /home/distributions/linux_iso/"$DISTROCHOICE"
 #Get distribution server
 
-if [ $DISTRIBUTIONSERVER = $HOSTNAME ]
+if [ $DISTRIBUTIONSERVER = `hostname-fqdn` ]
 then
 
 [ ! -d /media/iso.$$ ] && mkdir -p /media/iso.$$
@@ -304,7 +304,7 @@ then
 #Delete symlink
 [ -e /home/distributions/linux_iso/"$DISTROCHOICE" ] && rm -f /home/distributions/linux_iso/"$DISTROCHOICE"
 
-if [ $$DISTRIBUTIONSERVER = $HOSTNAME ]
+if [ $$DISTRIBUTIONSERVER = `hostname-fqdn` ]
 then
 [ -d /home/tftpboot/images/$DISTROFOLDER/ ] && rm -f -R /home/tftpboot/images/$DISTROFOLDER/
 [ -e /home/tftpboot/menus/$DISTROFOLDER ] && rm -f /home/tftpboot/menus/$DISTROFOLDER

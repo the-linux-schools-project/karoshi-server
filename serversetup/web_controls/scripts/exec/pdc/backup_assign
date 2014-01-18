@@ -122,7 +122,7 @@ echo `date`: backup_assign - assigning $SERVER to $BACKUPSERVER by $REMOTE_USER 
 
 #Enable ssh from the server to the backup server
 
-if [ $SERVER != $HOSTNAME ]
+if [ $SERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $SERVER '
 [ -f /root/.ssh/known_hosts ] && rm -f /root/.ssh/known_hosts

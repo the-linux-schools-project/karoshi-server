@@ -147,7 +147,7 @@ DISTROSERVER=`sed -n 1,1p /opt/karoshi/server_network/distribution_server`
 echo "<br><br><b>$DISTROSERVERISOMSG</b><br><br>"
 
 
-if [ $DISTROSERVER = $HOSTNAME ]
+if [ $DISTROSERVER = `hostname-fqdn` ]
 then
 
 if [ `ls -1 /home/distributions/linux_iso/*.iso | wc -l` -gt 0 ]

@@ -232,7 +232,7 @@ exit 101
 fi
 
 #Add role information
-[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
+[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME.$REALM ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME.$REALM
 
 #Remove any current flag information for domain roles
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME.$REALM/1domainmember ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/1domainmember

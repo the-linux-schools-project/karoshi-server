@@ -40,7 +40,7 @@ fi
 
 if [ $MOBILE = no ]
 then
-WIDTH1=120
+WIDTH1=200
 WIDTH2=200
 WIDTH3=80
 WIDTH4=120
@@ -121,7 +121,7 @@ SERVERMASTER=notset
 for SERVERS in /opt/karoshi/server_network/zones/internal/servers/*
 do
 SERVER=`basename $SERVERS`
-[ $SERVER != $HOSTNAME ] && show_server
+[ $SERVER != `hostname-fqdn` ] && show_server
 done
 }
 
@@ -138,7 +138,7 @@ then
 for SERVERS in /opt/karoshi/server_network/zones/dmz/servers/*
 do
 SERVER=`basename $SERVERS`
-[ $SERVER != $HOSTNAME ] && show_server
+[ $SERVER != `hostname-fqdn` ] && show_server
 done
 fi
 fi
@@ -149,7 +149,7 @@ FILLCOLOUR=green
 INFOPATH=/opt/karoshi/server_network/servers
 SERVERTYPE=network
 SERVERMASTER=notset
-SERVER=$HOSTNAME
+SERVER=`hostname-fqdn`
 show_server
 }
 
@@ -165,7 +165,7 @@ then
 for SERVERS in /opt/karoshi/server_network/zones/internal/additional_domain_controllers/*
 do
 SERVER=`basename $SERVERS`
-[ $SERVER != $HOSTNAME ] && show_server
+[ $SERVER != `hostname-fqdn` ] && show_server
 done
 fi
 fi
@@ -183,7 +183,7 @@ then
 for SERVERS in /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/*
 do
 SERVER=`basename $SERVERS`
-[ $SERVER != $HOSTNAME ] && show_server
+[ $SERVER != `hostname-fqdn` ] && show_server
 done
 fi
 fi

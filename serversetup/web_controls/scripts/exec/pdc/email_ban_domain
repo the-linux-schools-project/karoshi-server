@@ -103,7 +103,7 @@ EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
 
 echo `date`: email_ban_domain -banning $EMAILDOMAIN by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-if [ $EMAILSERVER = $HOSTNAME ]
+if [ $EMAILSERVER = `hostname-fqdn` ]
 then
 if [ `grep -c ^$EMAILDOMAIN /etc/postfix/access` = 0 ]
 then

@@ -126,7 +126,7 @@ exit 101
 fi
 echo `date`: printers_delete - Deleting $PRINTERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-if [ $PRINTSERVER != $HOSTNAME ]
+if [ $PRINTSERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $PRINTSERVER '
 lpadmin -x '$PRINTERNAME'

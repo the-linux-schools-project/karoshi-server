@@ -139,12 +139,12 @@ fi
 
 
 echo `date`: custom_command - running "$CUSTOMCOMMAND" "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 $CUSTOMCOMMAND 2>&1 | sed 's/$/\<br\>/g'
 fi
 #SSH to all other servers for command
-if [ $SERVERNAME != $HOSTNAME ]
+if [ $SERVERNAME != `hostname-fqdn` ]
 then
 if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
 then

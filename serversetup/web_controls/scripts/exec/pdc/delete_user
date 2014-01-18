@@ -162,7 +162,7 @@ fi
 #######################
 #Delete the folder on extra file server
 #######################
-if [ -d /opt/karoshi/server_network/servers/$SERVER ] && [ $SERVER != $HOSTNAME ]
+if [ -d /opt/karoshi/server_network/servers/$SERVER ] && [ $SERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $SERVER '
 if [ '$ARCHIVE' = yes ]
@@ -194,7 +194,7 @@ fi
 if [ -f /opt/karoshi/server_network/emailserver ]
 then
 EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
-if [ $EMAILSERVER != $HOSTNAME ]
+if [ $EMAILSERVER != `hostname-fqdn` ]
 then 
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
 rm -f -R /home/users/email/'$DELETEUSER'
@@ -268,7 +268,7 @@ fi
 #######################
 #Delete the folder on extra file server
 #######################
-if [ -d /opt/karoshi/server_network/servers/$SERVER ] && [ $SERVER != $HOSTNAME ]
+if [ -d /opt/karoshi/server_network/servers/$SERVER ] && [ $SERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $SERVER "
 if [ '$ARCHIVE' = yes ]
@@ -300,7 +300,7 @@ fi
 if [ -f /opt/karoshi/server_network/emailserver ]
 then
 EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
-if [ $EMAILSERVER != $HOSTNAME ]
+if [ $EMAILSERVER != `hostname-fqdn` ]
 then 
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER "
 rm -f -R /home/users/email/'$DELETEUSER'

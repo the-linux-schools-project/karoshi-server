@@ -151,7 +151,7 @@ echo "</pre>"
 
 echo `date`: backup_view_logs - $KAROSHI_SERVER : view logs by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 echo '<span style="font-weight: bold;">'$KAROSHI_SERVER: $VIEWLOGMSG1 $DAY-$MONTH-$YEAR'</span><br>'
-if [ $KAROSHI_SERVER = $HOSTNAME ]
+if [ $KAROSHI_SERVER = `hostname-fqdn` ]
 then
 view_logs_pdc
 else

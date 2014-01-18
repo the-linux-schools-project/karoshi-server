@@ -148,7 +148,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 echo `date`: samba_add_share - adding $FOLDERNAME as a share to $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 #Make sure that the folder does not already exist
 if [ -d /home/$FOLDERNAME ]
@@ -214,7 +214,7 @@ fi
 fi
 
 
-if [ $SERVERTYPE = network ] && [ $SERVERNAME != $HOSTNAME ] || [ $SERVERTYPE = federated ]
+if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 #Make sure that the folder does not already exist

@@ -173,7 +173,7 @@ PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr><td style="width: 180px;"><b>Computer Name</b></td><td><b>MAC/TCPIP</b></td></tr>'
 
-if [ $PROXYSERVER != $HOSTNAME ]
+if [ $PROXYSERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $PROXYSERVER '
 #Create folders

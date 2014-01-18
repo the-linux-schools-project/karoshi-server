@@ -725,7 +725,7 @@ touch /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist
 
 #Copy config files to the proxy server and restart dansguardian
 PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
-if [ $PROXYSERVER = $HOSTNAME ]
+if [ $PROXYSERVER = `hostname-fqdn` ]
 then
 cp -f /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist /etc/dansguardian/staff_rules/bannedextensionlist
 cp -f /opt/karoshi/server_network/dansguardian/students_bannedextensionlist /etc/dansguardian/student_rules/bannedextensionlist

@@ -100,7 +100,7 @@ echo `date`: ups_restart on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/ka
 # Restart nut
 ########################
 echo '<pre style=font-family:Arial, Times, Georgia, "Times New Roman", Times, serif>'
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 /etc/init.d/nut stop
 sleep 1

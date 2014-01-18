@@ -209,7 +209,7 @@ chmod u+X -R $PARENTPATH/$NEW_USERNAME
 chown $USERID:$PRIMARYGROUP -R $PARENTPATH/$NEW_USERNAME
 CHANGE_PASS_STATUS=`echo $?`
 fi
-if [ $SERVER != $HOSTNAME ]
+if [ $SERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $SERVER 'mv '$CURRENTPATH' '$PARENTPATH/$NEW_USERNAME' ; chmod 0600 -R '$PARENTPATH''/''$NEW_USERNAME' ; chmod u+X -R '$PARENTPATH''/''$NEW_USERNAME' ; chown -R '$USERID':'$PRIMARYGROUP' '$PARENTPATH''/''$NEW_USERNAME''
 fi
@@ -219,7 +219,7 @@ fi
 if [ -f /opt/karoshi/server_network/emailserver ]
 then
 EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
-if [ $EMAILSERVER != $HOSTNAME ]
+if [ $EMAILSERVER != `hostname-fqdn` ]
 then 
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
 if [ -d /home/users/email/'$CURRENT_USERNAME' ]

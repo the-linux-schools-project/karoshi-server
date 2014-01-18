@@ -106,7 +106,7 @@ source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/ksso/setupksso
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM: | /opt/karoshi/serversetup/modules/ksso/setupksso
 else

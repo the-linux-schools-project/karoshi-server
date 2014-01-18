@@ -139,7 +139,7 @@ then
 #Remove any listed reverse proxies
 [  -d /opt/karoshi/server_network/reverseproxy/sites ] && rm -f /opt/karoshi/server_network/reverseproxy/sites
 
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 APACHECONFIG=/etc/httpd/conf/httpd.conf
 APACHEPATH=/etc/httpd
@@ -265,7 +265,7 @@ fi
 if [ $MODULE = homeaccess ]
 then
 
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 [ -d /var/www/smbwebclient-data ] && rm -f -R /var/www/smbwebclient-data
 [ -d /var/www/html/smbwebclient ] && rm -f -R /var/www/html/smbwebclient
@@ -289,7 +289,7 @@ fi
 if [ $MODULE = casserver ]
 then
 
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 #Get root mysql password
 /opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
@@ -339,7 +339,7 @@ fi
 ##########################
 if [ $MODULE = emailserver ]
 then
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 echo "<li>"$SERVERNAME: $SQUIRRELREMOVE"</li><br>"
 [ -d /var/www/html/squirrelmail ] && rm -f -R /var/www/html/squirrelmail
@@ -416,7 +416,7 @@ fi
 if [ $MODULE = joomlaserver ]
 then
 echo "<li>"$SERVERNAME: $JOOMLAREMOVE"</li><br>"
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 [ -d /var/www/html/joomla ] && rm -f -R /var/www/html/joomla
 /opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
@@ -446,7 +446,7 @@ fi
 if [ $MODULE = radioserver ]
 then
 echo "<li>"$SERVERNAME: $RADIOREMOVE"</li><br>"
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 #Stop icecast server
 source /opt/karoshi/serversetup/variables/distro
@@ -504,7 +504,7 @@ fi
 if [ $MODULE = moodleserver ]
 then
 echo "<li>"$SERVERNAME: $MOODLEREMOVE"</li><br>"
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 [ -d /var/www/html/moodle ] && rm -f -R /var/www/html/moodle
 [ -d /var/www/moodle-data ] && rm -f -R /var/www/moodle-data
@@ -549,7 +549,7 @@ echo "<li>"$SERVERNAME: $OCSREMOVE"</li><br>"
 [ -d /var/www/html_karoshi/admin/ocs ] && rm -f -R /var/www/html_karoshi/admin/ocs
 [ -d /var/www/html_karoshi/tech/ocs ] && rm -f -R /var/www/html_karoshi/tech/ocs
 
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 [ -d /usr/share/ocsinventory-reports ] && rm -f -R /usr/share/ocsinventory-reports
 [ -f /etc/httpd/conf.d/z-ocsinventory-server.conf ] && em -f /etc/httpd/conf.d/z-ocsinventory-server.conf
@@ -601,7 +601,7 @@ fi
 if [ $MODULE = printserver ]
 then
 echo "<li>"$SERVERNAME: $PRINTREMOVE"</li><br>"
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 #Stop Cups
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/cups_stop 1>/dev/null
@@ -633,7 +633,7 @@ fi
 if [ $MODULE = squid ]
 then
 echo "<li>"$SERVERNAME: $SQUIDREMOVE"</li><br>"
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 #Stop squid and dansguardian
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_stop 1>/dev/null
@@ -682,7 +682,7 @@ fi
 if [ $MODULE = monitoring ]
 then
 echo "<li>"$SERVERNAME: $MONREMOVE"</li><br>"
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 #Stop mon
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_stop 1>/dev/null

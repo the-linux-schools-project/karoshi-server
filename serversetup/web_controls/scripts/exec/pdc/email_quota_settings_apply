@@ -150,7 +150,7 @@ exit 101
 fi
 
 
-if [ $EMAILSERVER != $HOSTNAME ]
+if [ $EMAILSERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $EMAILSERVER '
 echo "#!/bin/bash" > /opt/karoshi/postfixdata/mailboxcheck_settings

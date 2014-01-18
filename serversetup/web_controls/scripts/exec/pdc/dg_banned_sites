@@ -117,7 +117,7 @@ echo `date`: dg_banned_sites - adding $WEBADDRESS by $REMOTE_USER from $REMOTE_A
 [ ! -f /opt/karoshi/server_network/proxyserver ] && exit 101
 PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
 
-if [ $PROXYSERVER != $HOSTNAME ]
+if [ $PROXYSERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $PROXYSERVER '
 #Add address to list

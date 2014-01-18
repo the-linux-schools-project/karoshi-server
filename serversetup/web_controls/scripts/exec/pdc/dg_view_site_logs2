@@ -126,7 +126,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 [ ! -f /opt/karoshi/server_network/proxyserver ] && exit 101
 PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
 
-if [ $PROXYSERVER != $HOSTNAME ]
+if [ $PROXYSERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $PROXYSERVER '
 #Check to see if a log for this user exists on the date given

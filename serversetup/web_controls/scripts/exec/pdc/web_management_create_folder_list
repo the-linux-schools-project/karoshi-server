@@ -68,7 +68,7 @@ fi
 #Create folder list
 ########################
 echo `date`: web_management_create_folder_list by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ $WEBSERVER != $HOSTNAME ]
+if [ $WEBSERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $WEBSERVER '
 [ ! -d /var/www/html/webfiles/default ] && mkdir -p /var/www/html/webfiles/default

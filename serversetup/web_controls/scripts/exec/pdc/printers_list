@@ -24,7 +24,7 @@
 #
 #Website: http://www.karoshi.org.uk
 PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/printserver`
-if [ $PRINTSERVER != $HOSTNAME ]
+if [ $PRINTSERVER != `hostname-fqdn` ]
 then
 ssh $PRINTSERVER "lpstat -v | cut -d' ' -f3 | sed 's/://g'"
 else

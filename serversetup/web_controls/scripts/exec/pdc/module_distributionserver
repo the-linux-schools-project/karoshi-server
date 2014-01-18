@@ -128,7 +128,7 @@ source /opt/karoshi/serversetup/variables/distro
 ##########################
 #Make sure software is installed
 ##########################
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/distributionserver/software
 

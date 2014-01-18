@@ -122,7 +122,7 @@ samba-tool dns query 127.0.0.1 $REALM $ALIAS.$REALM CNAME --username=Administrat
 if [ `echo $?` != 0 ]
 then
 echo `date`: dnsadd - adding $DOMAINPATH $SERVERIP to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-samba-tool dns add 127.0.0.1 $REALM $ALIAS CNAME $SERVERNAME.$REALM --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool dns add 127.0.0.1 $REALM $ALIAS CNAME $SERVERNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
 
 if [ ! -f /etc/ssl/apache/$ALIAS.$REALM.key ]
@@ -131,7 +131,7 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:$ALIAS.$REALM:" | /opt/karoshi/serve
 [ `echo $?` != 0 ] && exit 101 
 fi
 
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 #Install smbwebclient
 echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$HOSTNAME:$ALIAS.$REALM: | /opt/karoshi/serversetup/modules/smbwebclient/setup_smbwebclient

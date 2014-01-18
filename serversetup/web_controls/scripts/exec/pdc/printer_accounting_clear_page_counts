@@ -91,7 +91,7 @@ echo `date`: printer_accounting_clear_page_counts by $REMOTE_USER from $REMOTE_A
 
 PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/printserver`
 
-if [ $PRINTSERVER = $HOSTNAME ]
+if [ $PRINTSERVER = `hostname-fqdn` ]
 then
 rm -f /opt/karoshi/server_network/printer_accounting/usage/*
 rm -f /opt/karoshi/server_network/printer_accounting/accounting/*

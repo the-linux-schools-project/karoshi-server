@@ -89,7 +89,7 @@ exit 101
 fi
 
 PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/printserver`
-if [ $PRINTSERVER != $HOSTNAME ]
+if [ $PRINTSERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $PRINTSERVER '
 if [ -d /usr/share/ppd/ ]

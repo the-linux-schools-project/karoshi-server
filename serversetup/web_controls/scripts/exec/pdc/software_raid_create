@@ -121,7 +121,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/system/software_raid
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 source /opt/karoshi/serversetup/variables/distro
 
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 #Check to see that a raid has not already been created on this server
 if [ `grep -c "#Software raid" /etc/fstab` -gt 0 ]
@@ -282,7 +282,7 @@ fi
 
 fi
 
-if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ] && [ $SERVERNAME != $HOSTNAME ]
+if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ] && [ $SERVERNAME != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 

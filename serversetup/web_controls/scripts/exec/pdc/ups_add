@@ -161,7 +161,7 @@ echo >> /opt/karoshi/server_network/ups/master/$SERVER/drivers/"$UPSMODEL"
 #Build config file
 ########################
 cat /opt/karoshi/server_network/ups/master/$SERVER/drivers/* > /opt/karoshi/server_network/ups/master/$SERVER/ups.conf
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 cp -f /opt/karoshi/server_network/ups/master/$SERVER/ups.conf /etc/nut/
 else
@@ -173,7 +173,7 @@ fi
 UPSPORT2=`echo $UPSPORT | sed 's/\/dev\///g'`
 if [ $UPSPORT != auto ]
 then
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 echo "#"/etc/udev/rules.d/99_nut-serialups.rules > /etc/udev/rules.d/99_nut-serialups.rules
 echo 'KERNEL=="'$UPSPORT2'", GROUP="nut"' >> /etc/udev/rules.d/99_nut-serialups.rules
@@ -192,7 +192,7 @@ fi
 #Make sure server can see the ups returns 1 on fault so add error check
 ########################
 echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 #Make sure run directory exists
 if [ ! -d /var/run/nut ]
@@ -230,7 +230,7 @@ echo "</pre>"
 ########################
 #Create /etc/nut/upsd.conf
 ########################
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 echo LISTEN 127.0.0.1 3493 > /etc/nut/upsd.conf
 echo LISTEN $SERVERTPCIP 3493 >> /etc/nut/upsd.conf
@@ -284,7 +284,7 @@ chmod 0600 /opt/karoshi/server_network/ups/master/$SERVER/upsd.users
 cat /opt/karoshi/server_network/ups/master/$SERVER/users/* > /opt/karoshi/server_network/ups/master/$SERVER/upsd.users
 
 
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 touch /etc/nut/upsd.users
 chmod 0600 /etc/nut/upsd.users
@@ -301,7 +301,7 @@ fi
 # /etc/nut/upsmon.conf
 ########################
 
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 echo "MONITOR "$UPSMODEL"@$SERVERTPCIP 1 local_mon $RANDOMPASSWORD master" > /etc/nut/upsmon.conf
 echo "POWERDOWNFLAG /etc/killpower" >> /etc/nut/upsmon.conf
@@ -317,7 +317,7 @@ fi
 ########################
 # /etc/default/nut/
 ########################
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 echo MODE=netserver > /etc/nut/nut.conf
 echo START_UPSD=yes >> /etc/nut/nut.conf
@@ -333,7 +333,7 @@ fi
 ########################
 # start nut
 ########################
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 /etc/init.d/nut stop
 sleep 1

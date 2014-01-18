@@ -117,7 +117,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/system/view_disk_usage_log
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 
-if [ $KAROSHI_SERVER = $HOSTNAME ]
+if [ $KAROSHI_SERVER = `hostname-fqdn` ]
 then
 if [ $LOGVIEW = month ]
 then

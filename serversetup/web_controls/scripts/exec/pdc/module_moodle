@@ -104,7 +104,7 @@ echo `date`: setupmoodle by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/
 source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/moodle/setupmoodle
 
 #Check that this server has been setup with the correct authentication
-if [ $SERVERNAME != $HOSTNAME ]
+if [ $SERVERNAME != `hostname-fqdn` ]
 then
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:users:" | /opt/karoshi/serversetup/modules/authentication/check_auth
 if [ $? = 101 ]
@@ -127,10 +127,10 @@ source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 [ ! -f /opt/karoshi/server_network/aliases/$SERVERNAME ] && echo $ALIAS > /opt/karoshi/server_network/aliases/$SERVERNAME
 
 #Create keytab for moodle
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:HTTP:moodle:$SERVERNAME.$REALM:www-data:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:HTTP:moodle:$SERVERNAME:www-data:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
 
 function check_already_installed {
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 #Check to see if moodle is already installed
 if [ -d /var/www/html/moodle ]
@@ -164,7 +164,7 @@ samba-tool dns query 127.0.0.1 $REALM $ALIAS.$REALM CNAME --username=Administrat
 if [ `echo $?` != 0 ]
 then
 echo `date`: module_moodle - adding $ALIAS "for" $SERVERNAME to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-samba-tool dns add 127.0.0.1 $REALM $ALIAS CNAME $SERVERNAME.$REALM --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool dns add 127.0.0.1 $REALM $ALIAS CNAME $SERVERNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
 }
 
@@ -183,7 +183,7 @@ sed -i 's@CHANGETHISSUBNET@'$NETWORK'@g' /opt/karoshi/serversetup/modules/moodle
 
 function install_moodle {
 #Install
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ALIAS: | /opt/karoshi/serversetup/modules/moodle/setupmoodle
 else
@@ -223,7 +223,7 @@ mv /opt/karoshi/serversetup/modules/moodle/moodle_original.sql /opt/karoshi/serv
 }
 
 function check_ports {
-if [ $SERVERNAME != $HOSTNAME ]
+if [ $SERVERNAME != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 PORTCHECK=53,88,389
@@ -354,7 +354,7 @@ source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 function set_moodle_perms {
 
 echo "<li>"$SERVERNAME - $SETMOODLEPERMS - /var/www/html/moodle"</li><br>"
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 chmod 0440 -R /var/www/html/moodle
 chmod u+X,g+X -R /var/www/html/moodle
@@ -369,7 +369,7 @@ chown -R root.$APACHEGROUP /var/www/html/moodle
 '
 fi
 echo "<li>"$SERVERNAME - $SETMOODLEPERMS - /var/www/moodle-data"</li><br>"
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 chmod 0600 -R /var/www/moodle-data
 chmod u+X -R /var/www/moodle-data
@@ -399,7 +399,7 @@ fi
 ############################
 echo "<li>"$CURRENTSERVERNAME - $SERVERNAME - $COPYMSG - /var/www/html/moodle"</li><br><br>"
 sleep 2
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 [ -d /var/www/html/moodle ] && rm -f -R /var/www/html/moodle
 #Copy /var/www/html/moodle back to this server
@@ -408,7 +408,7 @@ echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 rsync --timeout=30 --verbose --dirs --perms --recursive --links --compress root@$CURRENTSERVERNAME:/var/www/html/moodle /var/www/html/
 echo '</pre>'
 fi
-if [ $CURRENTSERVERNAME = $HOSTNAME ]
+if [ $CURRENTSERVERNAME = `hostname-fqdn` ]
 then
 #Copy /var/www/html/moodle from this server to a new server
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
@@ -419,7 +419,7 @@ echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 rsync --timeout=30 --dirs --recursive --links --compress /var/www/html/moodle root@$SERVERNAME:/var/www/html/
 echo '</pre>'
 fi
-if [ $CURRENTSERVERNAME != $HOSTNAME ] && [ $SERVERNAME != $HOSTNAME ]
+if [ $CURRENTSERVERNAME != `hostname-fqdn` ] && [ $SERVERNAME != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 [ -d /var/www/html/moodle ] && rm -f -R /var/www/html/moodle
@@ -441,7 +441,7 @@ fi
 ############################
 echo "<li>"$CURRENTSERVERNAME - $SERVERNAME - $COPYMSG - /var/www/moodle-data"</li><br><br>"
 sleep 2
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 #Copy /var/www/moodle-data back to this server
 [ -d /var/www/moodle-data ] && rm -f -R /var/www/moodle-data
@@ -450,7 +450,7 @@ echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 rsync --timeout=30 --verbose --dirs --perms --recursive --links --compress root@$CURRENTSERVERNAME:/var/www/moodle-data /var/www/
 echo '</pre>'
 fi
-if [ $CURRENTSERVERNAME = $HOSTNAME ]
+if [ $CURRENTSERVERNAME = `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 [ -d /var/www/moodle-data ] && rm -f -R /var/www/moodle-data
@@ -461,7 +461,7 @@ echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 rsync --timeout=30 --verbose --dirs --perms --recursive --links --compress /var/www/moodle-data root@$SERVERNAME:/var/www/
 echo '</pre>'
 fi
-if [ $CURRENTSERVERNAME != $HOSTNAME ] && [ $SERVERNAME != $HOSTNAME ]
+if [ $CURRENTSERVERNAME != `hostname-fqdn` ] && [ $SERVERNAME != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 [ -d /var/www/moodle-data ] && rm -f -R /var/www/moodle-data
@@ -487,7 +487,7 @@ set_moodle_perms
 ##########################
 echo "<li>"$CURRENTSERVERNAME - $DUMPDBMSG"</li><br><br>"
 
-if [ $CURRENTSERVERNAME = $HOSTNAME ]
+if [ $CURRENTSERVERNAME = `hostname-fqdn` ]
 then
 /opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
 #Get root mysql password
@@ -511,7 +511,7 @@ echo '</pre>'
 fi
 
 #Copy moodle database to new moodle server
-if [ $SERVERNAME != $HOSTNAME ]
+if [ $SERVERNAME != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 if [ ! -d /home/transfer ]
@@ -529,7 +529,7 @@ fi
 #Pipe in database
 ######################
 echo "<li>"$SERVERNAME - $PIPEDBMSG"</li><br><br>"
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 #Get moodle password
 MOODLEPASS=`grep '$CFG->dbpass' /var/www/html/moodle/config.php | cut -d"'" -f2 | sed -n 1,1p`
@@ -540,7 +540,7 @@ fi
 echo GRANT ALL PRIVILEGES ON moodle.\* TO "'"moodle_user"'"@"'"localhost"'" IDENTIFIED BY "'"$MOODLEPASS"'"';' > /home/transfer/mysqlperms.sql
 echo ALTER DATABASE moodle DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci';' >> /home/transfer/mysqlperms.sql
 
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 /opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
 #Get root mysql password

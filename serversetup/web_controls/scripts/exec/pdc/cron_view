@@ -157,7 +157,7 @@ fi
 echo "<table class=\"$TABLECLASS\" style=\"text-align: left\;\"><tbody>"
 echo "<tr><td style=\"width: 40px;\"></td><td style=\"width: 180px;\"><b>$COMMANDMSG</b></td><td></td><td></td></tr>"
 
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 if [ ! -d /opt/karoshi/cronjobs/jobs/ ]
 then
@@ -197,7 +197,7 @@ fi
 fi
 
 
-if [ $SERVERNAME != $HOSTNAME ] && [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
+if [ $SERVERNAME != `hostname-fqdn` ] && [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
 then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 [ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: cron_view \(federated mode\) - showing cron "jobs" "for" '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'

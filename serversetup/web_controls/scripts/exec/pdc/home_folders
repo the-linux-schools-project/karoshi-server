@@ -157,7 +157,7 @@ function set_perms {
 if [ -f /opt/karoshi/server_network/group_information/$PRIGROUP ]
 then
 source /opt/karoshi/server_network/group_information/$PRIGROUP
-if [ $NEWSERVER = $HOSTNAME ]
+if [ $NEWSERVER = `hostname-fqdn` ]
 then
 for USERFOLDERS in $HOMEPATH/*
 do
@@ -256,7 +256,7 @@ echo "    <script type = \"text/javascript\" >
 
 
 COUNTER=0
-if [ $NEWSERVER = $HOSTNAME ]
+if [ $NEWSERVER = `hostname-fqdn` ]
 then
 #Copy work back to this server
 if [ $USERLISTCOUNT -gt 0 ]
@@ -276,7 +276,7 @@ set_perms
 fi
 fi
 
-if [ $CURRENTSERVER = $HOSTNAME ]
+if [ $CURRENTSERVER = `hostname-fqdn` ]
 then
 #Copy from this server to a new server
 
@@ -298,7 +298,7 @@ set_perms
 fi
 fi
 
-if [ $NEWSERVER != $HOSTNAME ] && [ $CURRENTSERVER != $HOSTNAME ]
+if [ $NEWSERVER != `hostname-fqdn` ] && [ $CURRENTSERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $NEWSERVER '
 [ ! -d '$HOMEPATH' ] && mkdir -p '$HOMEPATH'
@@ -354,6 +354,7 @@ then
 mv /home/backups/'$CURRENTSERVER'/'$PRIGROUP' /home/backups/'$NEWSERVER'/'$PRIGROUP'
 fi
 '
+fi
 fi
 fi
 exit

@@ -176,7 +176,7 @@ KAROSHI_SERVER=`echo ${SERVER[$COUNTER]}`
 echo `date`: cron_add "$COMMAND" to $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 echo '<b>'$SERVERNAME'</b><br><br>'
 #PDC
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 if [ ! -d /opt/karoshi/cronjobs/jobs ]
 then
@@ -188,7 +188,7 @@ echo "$MINUTES" "$HOUR" "$DAY" "$MONTH" "$DOFW" \""$COMMAND"\" > /opt/karoshi/cr
 /opt/karoshi/"useful scripts"/refreshcronjobs
 fi
 
-if [ $SERVERNAME != $HOSTNAME ] && [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
+if [ $SERVERNAME != `hostname-fqdn` ] && [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 [ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: cron_add \(federated mode\) "'$COMMAND'" to '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'

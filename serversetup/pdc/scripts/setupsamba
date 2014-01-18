@@ -78,7 +78,7 @@ fi
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/scripts/serverlevelsecurity
 
 function show_info {
-yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 700 --height 350 --tail --no-buttons --text-info
+yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 800 --height 230 --tail --no-buttons --text-info
 }
 
 function check_ldap_port {
@@ -722,10 +722,10 @@ chmod 0750 /home/users/itadminstaff
 chown root.itadmin /home/users/itadminstaff
 chown .itadmin -R /home/users/itadminstaff
 #Guest users home area
-[ -d /home/users/guests ] || mkdir /home/users/guests
-chmod 0750 /home/users/guests
-chown root.guestusers /home/users/guests
-chown .guestusers -R /home/users/guests
+[ -d /home/users/guestusers ] || mkdir /home/users/guestusers
+chmod 0750 /home/users/guestusers
+chown root.guestusers /home/users/guestusers
+chown .guestusers -R /home/users/guestusers
 #Exam users home area
 [ -d /home/users/exams ] || mkdir /home/users/exams
 chmod 0750 /home/users/exams
@@ -862,7 +862,7 @@ cp -R /opt/karoshi/serversetup/pdc/logonscripts/logo.bmp /var/lib/samba/netlogon
 cp -R /opt/karoshi/serversetup/pdc/logonscripts/logon.bat /var/lib/samba/netlogon/
 cp -R /opt/karoshi/serversetup/pdc/logonscripts/logonform.kix /var/lib/samba/netlogon/
 
-sed -i 's/CHANGETHISSERVER/'$HOSTNAME'/g' /var/lib/samba/netlogon/logonform.kix
+sed -i 's/CHANGETHISSERVER/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon/logonform.kix
 
 chmod 0644 /var/lib/samba/netlogon/*
 chmod 0660 /var/lib/samba/netlogon/kix/reclassify.bat
@@ -873,29 +873,29 @@ chown root.itadmin /var/lib/samba/netlogon/kix/reclassify.bat
 #############################
 sed -i "s/CHANGETHISDOMAINNAME/$SAMBADOMAIN/g" /var/lib/samba/netlogon/logonform.kix
 sed -i 's/CHANGETHISREALM/'$REALM'/g' /var/lib/samba/netlogon/logonform.kix
-sed -i 's/CHANGETHISHOSTNAME/'$HOSTNAME'/g' /var/lib/samba/netlogon/kixtart_install.bat
-sed -i 's/CHANGETHISHOSTNAME/'$HOSTNAME'/g' /var/lib/samba/netlogon/getdll.bat
-sed -i 's/CHANGETHISHOSTNAME/'$HOSTNAME'/g' /var/lib/samba/netlogon/kixforms_upgrade.bat
-sed -i 's/CHANGETHISHOSTNAME/'$HOSTNAME'/g' /var/lib/samba/netlogon//kix/reclassify.bat
+sed -i 's/CHANGETHISHOSTNAME/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon/kixtart_install.bat
+sed -i 's/CHANGETHISHOSTNAME/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon/getdll.bat
+sed -i 's/CHANGETHISHOSTNAME/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon/kixforms_upgrade.bat
+sed -i 's/CHANGETHISHOSTNAME/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon//kix/reclassify.bat
 
 #############################
 #make group file information for kixtart windows logon script
 #############################
-echo exams,$HOSTNAME > /var/lib/samba/netlogon/groups.txt
-echo itadmin,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
-echo guestusers,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
-echo guardians,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
-echo governors,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
-echo nonteachingstaff,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
-echo officestaff,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
-echo profileuser,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
-echo staff,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
-echo studentstaff,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
-echo Domain Admins,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
+echo exams,$HOSTNAME.$REALM > /var/lib/samba/netlogon/groups.txt
+echo itadmin,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
+echo guestusers,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
+echo guardians,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
+echo governors,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
+echo nonteachingstaff,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
+echo officestaff,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
+echo profileuser,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
+echo staff,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
+echo studentstaff,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
+echo Domain Admins,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
 
 COUNTER=$STARTYEAR
          while [  $COUNTER -le $ENDYEAR ]; do
-		echo yr$COUNTER,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
+		echo yr$COUNTER,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
 		let COUNTER=COUNTER+1
          done
 
@@ -920,7 +920,7 @@ source /opt/karoshi/serversetup/variables/years
 [ ! -d /opt/karoshi/server_network/group_information ] && mkdir -p /opt/karoshi/server_network/group_information
 
 function make_primary_group_info {
-echo SERVER'='$HOSTNAME > /opt/karoshi/server_network/group_information/$PRIMARY_GROUP
+echo SERVER'='$HOSTNAME.$REALM > /opt/karoshi/server_network/group_information/$PRIMARY_GROUP
 echo HOMEPATH'='$HOMEPATH >> /opt/karoshi/server_network/group_information/$PRIMARY_GROUP
 echo SUBUNIT'='$SUBUNIT >> /opt/karoshi/server_network/group_information/$PRIMARY_GROUP
 echo SECONDARYGROUP'='$SECONDARYGROUP >> /opt/karoshi/server_network/group_information/$PRIMARY_GROUP
@@ -1366,7 +1366,7 @@ sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient
 
 #Create zone information
 [ ! -d /opt/karoshi/server_network/zones/internal/primary_domain_controller ] && mkdir -p /opt/karoshi/server_network/zones/internal/primary_domain_controller
-echo $HOSTNAME > /opt/karoshi/server_network/zones/internal/primary_domain_controller/$HOSTNAME
+echo $HOSTNAME.$REALM > /opt/karoshi/server_network/zones/internal/primary_domain_controller/$HOSTNAME.$REALM
 
 #Create information for linux clients
 [ ! -d /var/lib/samba/netlogon/domain_information ] && mkdir -p /var/lib/samba/netlogon/domain_information
@@ -1377,6 +1377,13 @@ echo $LDAPBASE > /var/lib/samba/netlogon/domain_information/ldap_base
 
 #Prepare client_settings
 [ ! -d /var/lib/samba/netlogon/client_settings ] && mkdir -p /var/lib/samba/netlogon/client_settings
+
+#Add in fqdn
+echo $HOSTNAME.$REALM > /etc/hostname-fqdn
+
+#Create hostname-fqdn command
+echo "cat /etc/hostname-fqdn" > /bin/hostname-fqdn
+chmod 0755 /bin/hostname-fqdn
 
 #Restart samba
 echo Restarting samba4 >> /opt/karoshi/serversetup/install_log

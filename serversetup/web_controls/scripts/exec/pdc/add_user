@@ -338,7 +338,7 @@ fi
 #Get userid
 USERID=`getent passwd $NEWUSERNAME | cut -d: -f3`
 
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 ######################
 #Create home folder
@@ -354,7 +354,7 @@ fi
 ############################
 #Create user home area on extra fileserver
 ############################
-if [ $SERVER != $HOSTNAME ]
+if [ $SERVER != `hostname-fqdn` ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 [ ! -d '$HOMEPATH''/''$NEWUSERNAME' ] && mkdir -p '$HOMEPATH''/''$NEWUSERNAME'
@@ -379,7 +379,7 @@ fi
 if [ -f /opt/karoshi/server_network/emailserver ]
 then
 EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
-if [ $EMAILSERVER != $HOSTNAME ]
+if [ $EMAILSERVER != `hostname-fqdn` ]
 then 
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
 [ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
@@ -524,7 +524,7 @@ chmod -R 0600 '$HOMEPATH'/'$NEWUSERNAME'/
 setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
 
 #Create home folder
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 mkdir -p '$HOMEPATH'/'$NEWUSERNAME'/
 chown -R '$NEWUSERNAME':'$PRIMARYGROUP' '$HOMEPATH'/'$NEWUSERNAME'/
@@ -543,7 +543,7 @@ fi
 if [ -f /opt/karoshi/server_network/emailserver ]
 then
 EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
-if [ $EMAILSERVER != $HOSTNAME ]
+if [ $EMAILSERVER != `hostname-fqdn` ]
 then 
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '\''
 [ ! -d /home/users/email/ ] && mkdir -p /home/users/email/

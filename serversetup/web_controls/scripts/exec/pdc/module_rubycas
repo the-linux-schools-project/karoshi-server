@@ -107,7 +107,7 @@ echo '<b>'$TITLE' - '$CASSERVER'</b><br><br>'
 #Check to see which distro this is
 ##########################
 
-if [ $CASSERVER = $HOSTNAME ]
+if [ $CASSERVER = `hostname-fqdn` ]
 then
 if [ $DISTROCHOICE != ubuntu ]
 then
@@ -132,7 +132,7 @@ fi
 ##########################
 
 CONFIGURE_LDAP=yes
-if [ $CASSERVER = $HOSTNAME ]
+if [ $CASSERVER = `hostname-fqdn` ]
 then
 CONFIGURE_LDAP=no
 fi
@@ -148,7 +148,7 @@ fi
 #########################
 #Ldap user check
 #########################
-if [ $CASSERVER != $HOSTNAME ] && [ $CONFIGURE_LDAP != yes ]
+if [ $CASSERVER != `hostname-fqdn` ] && [ $CONFIGURE_LDAP != yes ]
 then
 PDCUSERCOUNT=`getent passwd | grep -c :/home/users/`
 
@@ -198,13 +198,13 @@ fi
 ##########################
 #PDC
 CASSERVERIP=127.0.0.1
-if [ $CASSERVER = $HOSTNAME ]
+if [ $CASSERVER = `hostname-fqdn` ]
 then
 echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$CASSERVER:$CASSERVERIP: | /opt/karoshi/serversetup/modules/rubycas/setuprubycas
 fi
 
 #Remote server
-if [ $CASSERVER != $HOSTNAME ]
+if [ $CASSERVER != `hostname-fqdn` ]
 then
 
 ssh -x -o PasswordAuthentication=no $CASSERVER '

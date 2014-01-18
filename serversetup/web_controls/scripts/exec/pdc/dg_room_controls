@@ -140,7 +140,7 @@ source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
 
 function allowasset {
 get_asset_info
-if [ $PROXYSERVER = $HOSTNAME ]
+if [ $PROXYSERVER = `hostname-fqdn` ]
 then
 #Allow tcpip
 if [ $TCPIP1"null" != null ]
@@ -188,7 +188,7 @@ fi
 function denyasset {
 get_asset_info
 
-if [ $PROXYSERVER = $HOSTNAME ]
+if [ $PROXYSERVER = `hostname-fqdn` ]
 then
 BAN_FLAG=no
 #Ban mac1
