@@ -63,6 +63,21 @@ source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/authentication/auth
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/server_network/domain_information/domain_name
 
+#Get realm information
+HOSTNAMEFQDN=$HOSTNAME.$REALM
+REALM2=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+if [ -f /etc/hostname-fqdn ]
+then
+cat /etc/hostname-fqdn
+else
+exit 101
+fi
+'`
+
+[ $? = 101 ] && exit 101
+
+SERVERNAME=`echo $SERVERNAME.$REALM2`
+
 function get_tunnel_details {
 #Get tunnel number
 TUNVAL=0
@@ -78,7 +93,7 @@ echo $TUNVAL2 > /opt/karoshi/server_network/vpn_tunnels/next_tunnel_interface
 fi
 
 #Get ip address to use for the tunnel
-MAINSERVERIP=`net lookup $HOSTNAME`
+MAINSERVERIP=`net lookup $HOSTNAMEFQDN`
 SERVERNAMEIP=`net lookup $SERVERNAME`
 TUNNELIP1=10.8.1.0
 UPDATETUNIP=no
@@ -215,7 +230,7 @@ cd /etc/openvpn/easy-rsa
 source vars 1>/dev/null 2>/dev/null
 
 #Generate master certificate authority and key
-if [ ! -f /etc/openvpn/$HOSTNAME.key ] || [ ! -f /etc/openvpn/$HOSTNAME.crt ] || [ ! -f /etc/openvpn/ca_$HOSTNAME.crt ] || [ ! -f /etc/openvpn/dh1024.pem ]
+if [ ! -f /etc/openvpn/$HOSTNAMEFQDN.key ] || [ ! -f /etc/openvpn/$HOSTNAMEFQDN.crt ] || [ ! -f /etc/openvpn/ca_$HOSTNAMEFQDN.crt ] || [ ! -f /etc/openvpn/dh1024.pem ]
 then
 echo "<li>$GENKEYSMSG1</li><br>"
 
@@ -225,8 +240,8 @@ echo -e ""US"\n"Karoshi"\n"Karoshi"\n"Karoshi"\n"$HOSTNAME"\n"$HOSTNAME"\n"$HOST
 #Build Server Certificates
 echo "<li>$GENKEYSMSG2</li><br>"
 sleep 1
-SERVER=$HOSTNAME
-pipe_data | ./build-key-server $HOSTNAME 1>/dev/null 2>/dev/null
+SERVER=$HOSTNAMEFQDN
+pipe_data | ./build-key-server $HOSTNAMEFQDN 1>/dev/null 2>/dev/null
 
 #Generate Diffie Hellmam parameters
 echo "<li>$GENKEYSMSG3</li><br>"
@@ -235,13 +250,13 @@ sleep 3
 
 #Copy keys to /etc/openvpn
 echo "<li>Copying keys to /etc/openvpn</li><br>"
-cp /etc/openvpn/easy-rsa/keys/$HOSTNAME.key /etc/openvpn/
-cp /etc/openvpn/easy-rsa/keys/$HOSTNAME.crt /etc/openvpn/
-cp /etc/openvpn/easy-rsa/keys/ca.crt /etc/openvpn/ca_$HOSTNAME.crt
+cp /etc/openvpn/easy-rsa/keys/$HOSTNAMEFQDN.key /etc/openvpn/
+cp /etc/openvpn/easy-rsa/keys/$HOSTNAMEFQDN.crt /etc/openvpn/
+cp /etc/openvpn/easy-rsa/keys/ca.crt /etc/openvpn/ca_$HOSTNAMEFQDN.crt
 cp /etc/openvpn/easy-rsa/keys/dh1024.pem /etc/openvpn/
 
-chmod 0400 /etc/openvpn/$HOSTNAME.key
-chmod 0400 /etc/openvpn/$HOSTNAME.crt
+chmod 0400 /etc/openvpn/$HOSTNAMEFQDN.key
+chmod 0400 /etc/openvpn/$HOSTNAMEFQDN.crt
 
 fi
 
@@ -252,16 +267,16 @@ cp /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz /etc/openv
 gzip -d /etc/openvpn/server.conf.gz
 
 sed -i "s/server 10.8.0.0 255.255.255.0/server $TUNNELIP1 255.255.255.0/g" /etc/openvpn/server.conf
-sed -i "s/ca ca_$HOSTNAME.crt//g" /etc/openvpn/server.conf
+sed -i "s/ca ca_$HOSTNAMEFQDN.crt//g" /etc/openvpn/server.conf
 sed -i "s/cert server.crt//g" /etc/openvpn/server.conf
 sed -i "s/key server.key  # This file should be kept secret//g" /etc/openvpn/server.conf
 
-[ `grep -c "^cert $HOSTNAME.crt" /etc/openvpn/server.conf` = 0 ] && echo cert $HOSTNAME.crt >> /etc/openvpn/server.conf
-[ `grep -c "^key $HOSTNAME.key" /etc/openvpn/server.conf` = 0 ] && echo key $HOSTNAME.key >> /etc/openvpn/server.conf
+[ `grep -c "^cert $HOSTNAMEFQDN.crt" /etc/openvpn/server.conf` = 0 ] && echo cert $HOSTNAMEFQDN.crt >> /etc/openvpn/server.conf
+[ `grep -c "^key $HOSTNAMEFQDN.key" /etc/openvpn/server.conf` = 0 ] && echo key $HOSTNAMEFQDN.key >> /etc/openvpn/server.conf
 
-[ `grep -c "^key $HOSTNAME.key" /etc/openvpn/server.conf` = 0 ] && echo key $HOSTNAME.key >> /etc/openvpn/server.conf
+[ `grep -c "^key $HOSTNAMEFQDN.key" /etc/openvpn/server.conf` = 0 ] && echo key $HOSTNAMEFQDN.key >> /etc/openvpn/server.conf
 
-sed -i "s/ca ca.crt/ca ca_$HOSTNAME.crt/g" /etc/openvpn/server.conf
+sed -i "s/ca ca.crt/ca ca_$HOSTNAMEFQDN.crt/g" /etc/openvpn/server.conf
 
 [ `grep -c "client-config-dir ccd"` = 0 ] && echo client-config-dir ccd >> /etc/openvpn/server.conf
 
@@ -296,7 +311,7 @@ cp /usr/share/doc/openvpn/examples/sample-config-files/client.conf /etc/openvpn/
 '
 #Copy in new certificates
 
-scp /etc/openvpn/ca_$HOSTNAME.crt root@$SERVERNAME:"/etc/openvpn/ca_$HOSTNAME.crt"
+scp /etc/openvpn/ca_$HOSTNAMEFQDN.crt root@$SERVERNAME:"/etc/openvpn/ca_$HOSTNAMEFQDN.crt"
 scp /etc/openvpn/easy-rsa/keys/$SERVERNAME.crt root@$SERVERNAME:"/etc/openvpn/"
 scp /etc/openvpn/easy-rsa/keys/$SERVERNAME.key root@$SERVERNAME:"/etc/openvpn/"
 
@@ -322,7 +337,7 @@ sed -i "s/cert client.crt//g" /etc/openvpn/client.conf
 sed -i "s/key client.key//g" /etc/openvpn/client.conf
 sed -i "s/^nobind//g" /etc/openvpn/client.conf
 
-[ `grep -c "^ca ca_'$HOSTNAME'.crt" /etc/openvpn/client.conf` = 0 ] && echo ca ca_'$HOSTNAME'.crt >> /etc/openvpn/client.conf
+[ `grep -c "^ca ca_'$HOSTNAMEFQDN'.crt" /etc/openvpn/client.conf` = 0 ] && echo ca ca_'$HOSTNAMEFQDN'.crt >> /etc/openvpn/client.conf
 [ `grep -c "^cert '$SERVERNAME'.crt" /etc/openvpn/client.conf` = 0 ] && echo cert '$SERVERNAME'.crt >> /etc/openvpn/client.conf
 [ `grep -c "^key '$SERVERNAME'.key" /etc/openvpn/client.conf` = 0 ] && echo key '$SERVERNAME'.key >> /etc/openvpn/client.conf
 [ `grep -c "^remote '$MAINSERVERIP' 1194" /etc/openvpn/client.conf` = 0 ] && echo remote '$MAINSERVERIP' 1194 >> /etc/openvpn/client.conf
@@ -403,7 +418,7 @@ nmap -P0 -sU -p1194 -g1194 $SERVERNAME 1>/dev/null 2>/dev/null
 
 function add_role_info {
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir /opt/karoshi/server_network/servers/$SERVERNAME
-echo OpenVPN server"<br>" > /opt/karoshi/server_network/servers/$HOSTNAME/openvpn
+echo OpenVPN server"<br>" > /opt/karoshi/server_network/servers/$HOSTNAMEFQDN/openvpn
 echo OpenVPN client"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/openvpn
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
 }

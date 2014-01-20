@@ -60,9 +60,11 @@ fi
 which memcached 1>/dev/null
 if [ $? != 0 ]
 then
-echo "<li>Installing memcached</li>"
+echo "<li>Installing memcached</li><br>"
+echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 apt-get update
 apt-get install -y memcached
+echo "</pre>"
 echo "<br>"
 fi
 

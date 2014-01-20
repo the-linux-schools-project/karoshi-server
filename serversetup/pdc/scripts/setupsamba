@@ -587,54 +587,54 @@ function makefoldersandgroups {
 #Make Groups
 COUNTER=$STARTYEAR
 while [  $COUNTER -le $ENDYEAR ]; do
-echo -e "$GROUPADDMSG yr$COUNTER\n"
+echo -e "\n$GROUPADDMSG yr$COUNTER\n"
 NEWGROUP=yr$COUNTER
 NEWGROUPDISP="Year $COUNTER"
 add_samba4_group
 let COUNTER=COUNTER+1
 done
 
-echo -e "$GROUPADDMSG staff\n"
+echo -e "\n$GROUPADDMSG staff\n"
 NEWGROUP=staff
 NEWGROUPDISP=Staff
 add_samba4_group
 
-echo -e "$GROUPADDMSG nonteachingstaff\n"
+echo -e "\n$GROUPADDMSG nonteachingstaff\n"
 NEWGROUP=nonteachingstaff
 NEWGROUPDISP="Non teaching staff"
 add_samba4_group
 
-echo -e "$GROUPADDMSG studentstaff\n"
+echo -e "\n$GROUPADDMSG studentstaff\n"
 NEWGROUP=studentstaff
 NEWGROUPDISP="Student Staff"
 add_samba4_group
 
-echo -e "$GROUPADDMSG guestusers\n"
+echo -e "\n$GROUPADDMSG guestusers\n"
 NEWGROUP=guestusers
 NEWGROUPDISP="Guest Users"
 add_samba4_group
 
-echo -e "$GROUPADDMSG exams\n"
+echo -e "\n$GROUPADDMSG exams\n"
 NEWGROUP=exams
 NEWGROUPDISP="Exam Users"
 add_samba4_group
 
-echo $GROUPADDMSG itadmin
+echo -e "\n$GROUPADDMSG itadmin\n"
 NEWGROUP=itadmin
 NEWGROUPDISP="Itadmin Users"
 add_samba4_group
 
-echo $GROUPADDMSG tech
+echo "\n$GROUPADDMSG tech\n"
 NEWGROUP=tech
 NEWGROUPDISP="Tech Users"
 add_samba4_group
 
-echo -e "$GROUPADDMSG officestaff\n"
+echo -e "\n$GROUPADDMSG officestaff\n"
 NEWGROUP=officestaff
 NEWGROUPDISP="Office Staff"
 add_samba4_group
 
-echo -e "$GROUPADDMSG bursar\n"
+echo -e "\n$GROUPADDMSG bursar\n"
 NEWGROUP=bursar
 NEWGROUPDISP="Bursars"
 add_samba4_group
@@ -644,17 +644,17 @@ NEWGROUP=smt
 NEWGROUPDISP="Senior Management"
 add_samba4_group
 
-echo -e "$GROUPADDMSG governors\n"
+echo -e "\n$GROUPADDMSG governors\n"
 NEWGROUP=governors
 NEWGROUPDISP="Governors"
 add_samba4_group
 
-echo -e "$GROUPADDMSG guardians\n"
+echo -e "\n$GROUPADDMSG guardians\n"
 NEWGROUP=guardians
 NEWGROUPDISP="Guardians"
 add_samba4_group
 
-echo -e "$GROUPADDMSG profilemanagement\n"
+echo -e "\n$GROUPADDMSG profilemanagement\n"
 NEWGROUP=profilemanagement
 NEWGROUPDISP="Profile Management"
 add_samba4_group
@@ -1346,7 +1346,7 @@ cp -f /opt/karoshi/serversetup/all/backgrounds/linuxclient.png /var/lib/samba/ne
 #Create client info on netlogon
 [ ! -d /var/lib/samba/netlogon/domain_information ] && mkdir -p /var/lib/samba/netlogon/domain_information
 echo $SAMBADOMAIN > /var/lib/samba/netlogon/domain_information/domain_name
-echo $HOSTNAME > /var/lib/samba/netlogon/domain_information/main_server
+echo $HOSTNAME.$REALM > /var/lib/samba/netlogon/domain_information/main_server
 
 #Copy printer info to netlogon
 [ -f /opt/karoshi/server_network/printserver ] && cp -f /opt/karoshi/server_network/printserver /var/lib/samba/netlogon/

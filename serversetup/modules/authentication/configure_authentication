@@ -337,7 +337,7 @@ echo >> /etc/krb5.conf
 echo  "default_realm = '$REALMCAPS'" >> /etc/krb5.conf
 echo "[realms]" >> /etc/krb5.conf
 echo "'$REALMCAPS' = {" >> /etc/krb5.conf
-echo "	kdc = '$KRBSERVER'.'$REALM'" >> /etc/krb5.conf
+echo "	kdc = '$KRBSERVER'" >> /etc/krb5.conf
 echo "}" >> /etc/krb5.conf
 
 #Modify nsswitch 
@@ -352,7 +352,7 @@ echo uri ldapi://%2fvar%2flib%2fsamba%2fprivate%2fldapi/ >> /etc/nslcd.conf
 else
 if [ '$ZONE' = dmz ]
 then
-echo uri ldap://'$KRBSERVER'.'$REALM' >> /etc/nslcd.conf
+echo uri ldap://'$KRBSERVER' >> /etc/nslcd.conf
 else
 echo uri DNS >> /etc/nslcd.conf
 fi
@@ -407,7 +407,7 @@ then
 
 if [ $AUTHTYPE = member ] || [ $AUTHTYPE = users ]
 then
-KRBSERVER=$HOSTNAME
+KRBSERVER=$HOSTNAME.$REALM
 if [ $ZONE != internal ]
 then
 #Check to see if there is an adc in the zone to use

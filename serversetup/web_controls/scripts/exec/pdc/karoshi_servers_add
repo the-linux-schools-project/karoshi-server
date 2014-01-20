@@ -119,6 +119,7 @@ if ! test -f $HOME/.ssh/id_rsa || ! test -f $HOME/.ssh/id_rsa.pub
 then
 echo `date`: karoshi_servers_add - creating ssh keys by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 echo "<li><b>$CREATESSHKEYMSG</b></li><br>"
+echo "<b>$CREATESSHKEYMSG2</b>"
 #Check that timeout has been set
 TIMEOUTSTATUS=`grep -c '#''   'ConnectTimeout' '0 /etc/ssh/ssh_config`
 if [ $TIMEOUTSTATUS != 0 ]
@@ -221,7 +222,10 @@ mv /etc/ssl/openssl.cnf /etc/ssl/openssl.cnf.'$$'
 cp -f /opt/karoshi/serversetup/distro/ubuntu/all/configfiles/openssl.cnf /etc/ssl/
 
 #Add in fqdn
+if [ ! -f /etc/hostname-fqdn ]
+then
 echo $HOSTNAME.'$REALM' > /etc/hostname-fqdn
+fi
 
 #Create hostname-fqdn command
 echo "cat /etc/hostname-fqdn" > /bin/hostname-fqdn
@@ -263,6 +267,32 @@ if [ $SSHRESULT != 0 ]
 then
 remove_dns_entry
 exit 101
+fi
+
+#Check to see if the server is in a different domain.
+REALM2=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+if [ -f /etc/hostname-fqdn ]
+then
+cat /etc/hostname-fqdn
+else
+echo "notset"
+fi
+'`
+
+if [ $REALM2 != notset ]
+then
+if [ "$REALM2" != "$SERVER.$REALM" ]
+then
+REALM=$REALM2
+#Make sure that authtype is set to none if this is the case since cannot different realms together at this point.
+if [ $AUTHENTICATION != none ]
+then
+echo "<li>$SERVER - this server is in the wrong domain for this authentication type.</li>"
+echo `date`: "karoshi_servers_add - $SERVER this server is in the wrong domain for this authentication type by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+sleep 3
+exit 101
+fi
+fi
 fi
 
 #Copy in boot controls
