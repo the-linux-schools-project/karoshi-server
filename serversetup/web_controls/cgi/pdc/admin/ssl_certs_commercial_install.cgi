@@ -42,7 +42,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE7'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"></head><body>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE7'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -72,7 +72,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/admin/ssl_certs_commercial_fm.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -127,5 +127,5 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 echo '<textarea cols="80" rows="20" name="___CACERT___"></textarea><br><br>'
 echo "<b>"$SSLCERTMSG"</b><br><br>"
 echo '<textarea cols="80" rows="20" name="___SSLCERT___"></textarea><br><br><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">'
-echo '</div></form></body></html>'
+echo '</div></form></div></body></html>'
 exit

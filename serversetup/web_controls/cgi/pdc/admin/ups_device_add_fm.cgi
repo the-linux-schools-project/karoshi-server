@@ -63,16 +63,16 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo 'window.location = "/cgi-bin/admin/ups_add_fm.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE5'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'"><script language="JavaScript" src="/all/calendar/ts_picker.js" type="text/javascript"></script>
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE5'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script language="JavaScript" src="/all/calendar/ts_picker.js" type="text/javascript"></script>
         <!-- Timestamp input popup (European Format) --><script src="/all/stuHover.js" type="text/javascript"></script>'
 echo "</head>"
-echo '<body onLoad="start()">'
+echo '<body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Check https access
 #########################
@@ -141,7 +141,7 @@ echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="im
 </tbody></table><br><br>
 </div><div id="submitbox">
 <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
-</div></form></body></html>'
+</div></form></div></body></html>'
 exit
 
 

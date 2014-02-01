@@ -44,7 +44,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/staff/printers.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 
@@ -56,9 +56,9 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+'`
 echo "Content-type: text/html"
 echo ""
 echo '<html><head><title>'$TITLE'</title><meta http-equiv='"'REFRESH'"' content='"'2; URL=printers.cgi'"'></head>'
-echo '<link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 echo '</head>'
-echo '<body>'
+echo '<body><div id="pagecontainer">'
 #########################
 #Assign data
 ########################
@@ -141,5 +141,5 @@ sudo -H /opt/karoshi/web_controls/exec/printers_control $REMOTE_USER:$REMOTE_ADD
 fi
 
 echo "</div>"
-echo "</body></html>"
+echo "</div></body></html>"
 exit

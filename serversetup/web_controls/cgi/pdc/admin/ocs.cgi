@@ -46,7 +46,7 @@ echo ""
 echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title>'
 [ $OCSENABLED = yes ] && echo '<meta http-equiv="REFRESH" content="0;url=/admin/ocs/">'
 
-echo '<link rel="stylesheet" href="/css/'$STYLESHEET'"></head><body>'
+echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 
 if [ $OCSENABLED = no ]
 then
@@ -55,5 +55,5 @@ then
 echo '<div id="actionbox"><b>'$TITLE'</b><br><br>'$ERRORMSG1''
 fi
 
-echo '</body></html>'
+echo '</div></body></html>'
 exit

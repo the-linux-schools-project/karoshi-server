@@ -48,7 +48,7 @@ echo ""
 echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">'
 echo "<link rel="stylesheet" href="/css/$STYLESHEET"><script src=\"/all/stuHover.js\" type=\"text/javascript\"></script>"
 echo "</head>"
-echo "<body>"
+echo "<body><div id='pagecontainer'>"
 #########################
 #Get data input
 #########################
@@ -59,7 +59,7 @@ function show_status {
 echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -91,5 +91,5 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/domain_information.cgi | cut -d' '
 #Show domain information
 sudo -H /opt/karoshi/web_controls/exec/domain_information $REMOTE_USER:$REMOTE_ADDR:$MD5SUM
 echo "</div>"
-echo "</body></html>"
+echo "</div></body></html>"
 exit

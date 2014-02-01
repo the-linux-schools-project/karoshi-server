@@ -66,7 +66,7 @@ echo '			objCheckBoxes[i].checked = CheckValue;'
 echo '}'
 echo '// -->'
 echo '</script><script src="/all/stuHover.js" type="text/javascript"></script>'
-echo "</head><body>"
+echo "</head><body><div id='pagecontainer'>"
 #########################
 #Get data input
 #########################
@@ -109,7 +109,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/admin/dg_view_banned_sites_fm.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -168,4 +168,4 @@ show_status
 fi
 echo '</div>'
 echo '</form>'
-echo "</body></html>"
+echo "</div></body></html>"

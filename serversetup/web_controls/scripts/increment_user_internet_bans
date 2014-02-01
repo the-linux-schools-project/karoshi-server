@@ -34,7 +34,7 @@ echo `date`: dg_increment_user_internet_bans - allowing $BANNEDUSER >> /opt/karo
 
 PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
 
-if [ $PROXYSERVER != $HOSTNAME ]
+if [ $PROXYSERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $PROXYSERVER '
 #Get line number of site

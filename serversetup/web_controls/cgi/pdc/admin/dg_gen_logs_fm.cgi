@@ -51,10 +51,10 @@ echo '
 <html>
 <head>
   <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-  <link rel="stylesheet" href="/css/'$STYLESHEET'">
+  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
-<body onLoad="start()">'
+<body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/dg_gen_logs.cgi" name="selectedsites" method="post"><b></b>
@@ -66,7 +66,7 @@ echo '<form action="/cgi-bin/admin/dg_gen_logs.cgi" name="selectedsites" method=
   <input value="'$SUBMITMSG'" class="button" type="submit">
   </div>
 </form>
-</body>
+</div></body>
 </html>
 '
 exit

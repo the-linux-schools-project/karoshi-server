@@ -47,7 +47,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE2'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"></head><body>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE2'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -91,7 +91,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo 'window.location = "/cgi-bin/admin/reset_password_fm.cgi"'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -145,7 +145,7 @@ fi
 #Check view image tick box
 if [ $VIEWIMAGE'check' = yescheck ]
 then
-echo '<body onload="submitForm()"><form action="/cgi-bin/admin/reset_password_fm.cgi" method="post" name="form">'
+echo '<body onload="submitForm()"><div id="pagecontainer"><form action="/cgi-bin/admin/reset_password_fm.cgi" method="post" name="form">'
 echo '<input name="_USERNAME_" value="'$USERNAME'" type="hidden">'
 echo '<input name="_DOMAINPASSWORD_" value="'$DOMAINPASSWORD'" type="hidden"></form>'
 
@@ -153,7 +153,7 @@ echo '<SCRIPT LANGUAGE="JavaScript">
 function submitForm(){
 document.form.submit();
 }
-</SCRIPT></body></html>'
+</SCRIPT></div></body></html>'
 exit
 fi
 

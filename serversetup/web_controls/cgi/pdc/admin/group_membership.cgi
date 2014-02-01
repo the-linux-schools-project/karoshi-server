@@ -48,7 +48,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 #########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE1'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE1'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -71,7 +71,7 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	</script>'
 fi
 
-echo '</head><body onLoad="start()">'
+echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -101,7 +101,7 @@ echo '<SCRIPT language="Javascript">
 alert("'$MESSAGE'");
 window.location = "/cgi-bin/admin/group_membership_fm.cgi"
 </script>
-</body></html>'
+</div></body></html>'
 exit
 }
 #########################
@@ -148,7 +148,7 @@ fi
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox3
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -177,6 +177,6 @@ fi
 
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/group_membership
 [ $MOBILE = no ] && echo '</div>'
-echo '</div></body></html>'
+echo '</div></div></body></html>'
 exit
 

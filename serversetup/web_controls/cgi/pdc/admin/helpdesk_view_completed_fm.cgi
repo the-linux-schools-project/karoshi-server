@@ -51,10 +51,10 @@ echo '
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$TITLE' - '$TITLE2'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'">
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
-<body onLoad="start()">'
+<body onLoad="start()"><div id="pagecontainer">'
 
 TCPIP_ADDR=$REMOTE_ADDR
 DATA=`cat | tr -cd 'A-Za-z0-9\.%+_:\-'`
@@ -84,13 +84,13 @@ echo '<div id="actionbox"><form action="/cgi-bin/admin/helpdesk_view_completed_f
 #Check to see if there are any completed jobs
 if [ ! -d /opt/karoshi/helpdesk/completed/ ]
 then
-echo $ERRORMSG13'</div></form></body></html>'
+echo $ERRORMSG13'</div></form></div></body></html>'
 exit
 fi
 
 if [ `ls -1 /opt/karoshi/helpdesk/completed/ | wc -l` = 0 ]
 then
-echo $ERRORMSG13'</div></form></body></html>'
+echo $ERRORMSG13'</div></form></div></body></html>'
 exit
 fi
 

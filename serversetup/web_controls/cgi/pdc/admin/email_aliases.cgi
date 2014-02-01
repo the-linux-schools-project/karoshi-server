@@ -50,7 +50,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'">
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script type="text/javascript"></script><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
@@ -74,7 +74,7 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	</script>'
 fi
 
-echo '</head><body>'
+echo '</head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -133,7 +133,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/admin/email_aliases.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -227,4 +227,4 @@ fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_aliases.cgi | cut -d' ' -f1`
 #Show aliases
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$ALIAS:$USERNAME:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/email_aliases
-echo '</form></div></body></html>'
+echo '</form></div></div></body></html>'

@@ -46,7 +46,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo 'window.location = "/cgi-bin/admin/update_moodle_theme_fm.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 
@@ -58,7 +58,7 @@ echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <TITLE>'$TITLE'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'">
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 </HEAD>
 <BODY>
 '

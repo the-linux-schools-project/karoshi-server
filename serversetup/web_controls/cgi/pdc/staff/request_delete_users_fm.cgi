@@ -40,11 +40,11 @@ echo '
 <html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$TITLE'</title>
-  <link rel="stylesheet" href="/css/'$STYLESHEET'">
+  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <META HTTP-EQUIV="refresh" CONTENT="300; URL=/cgi-bin/blank.cgi">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
-<body>'
+<body><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_staff
 echo '
@@ -65,6 +65,6 @@ echo '
 <tr><td><input tabindex= "38" size="10" name="_FORENAME10_"></td><td><input tabindex= "39" size="15" name="_SURNAME10_"></td><td>'`/opt/karoshi/web_controls/group_dropdown_list | sed "s/GROUP/GROUP10/g"`'</td><td><input tabindex= "41" size="18" name="_ADNO10_"></td></tr>
 </tbody></table><br></div>
 <div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></div>
-</form></body></html>
+</form></div></body></html>
 '
 exit

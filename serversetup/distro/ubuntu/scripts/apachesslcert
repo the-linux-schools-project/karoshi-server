@@ -75,7 +75,7 @@ openssl ca -passin pass:$LDAPPASS -days 3650 -batch -out $ALIAS.pem -infiles $AL
 
 chmod 0600 /etc/ssl/apache/$ALIAS.pem
 
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 #Make sure that ssl is enabled
 a2enmod ssl 1>/dev/null

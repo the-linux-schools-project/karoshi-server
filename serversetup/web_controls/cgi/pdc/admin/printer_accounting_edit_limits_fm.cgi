@@ -129,7 +129,7 @@ echo '<script type="text/javascript">'
 echo 'alert("'$MESSAGE'");'
 echo 'window.location = "/cgi-bin/admin/'$STARTCGI'";'
 echo '</script>'
-echo "</div></body></html>"
+echo "</div></div></body></html>"
 exit
 }
 
@@ -139,8 +139,8 @@ exit
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE3'</title><link rel="stylesheet" href="/css/'$STYLESHEET'">
-</head><body onLoad="start()">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE3'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+</head><body onLoad="start()"><div id="pagecontainer">'
 
 #########################
 #Check https access
@@ -246,6 +246,6 @@ then
 echo '</div><div id="submitbox">'
 fi
 echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
-</div></form></body></html>
+</div></form></div></body></html>
 '
 exit

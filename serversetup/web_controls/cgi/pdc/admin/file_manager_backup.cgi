@@ -48,10 +48,10 @@ echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'">
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
-<body>'
+<body><div id="pagecontainer">'
 TCPIP_ADDR=$REMOTE_ADDR
 
 DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+*'`
@@ -79,7 +79,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/admin/file_manager.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 
@@ -174,7 +174,7 @@ echo '
 
 </div>
 </form>
-</body>
+</div></body>
 </html>
 '
 exit

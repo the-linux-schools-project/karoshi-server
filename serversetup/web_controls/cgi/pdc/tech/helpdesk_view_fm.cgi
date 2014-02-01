@@ -48,10 +48,10 @@ echo '
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$TITLE' - '$TITLE2'</title><META HTTP-EQUIV="refresh" CONTENT="300">
-<link rel="stylesheet" href="/css/'$STYLESHEET'">
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
 </head>
-<body>'
+<body><div id="pagecontainer">'
 
 TCPIP_ADDR=$REMOTE_ADDR
 DATA=`cat | tr -cd 'A-Za-z0-9\.%+_:\-'`
@@ -108,13 +108,13 @@ fi
 #Check to see if there are any new jobs
 if [ ! -d /opt/karoshi/helpdesk/todo/ ]
 then
-echo $ERRORMSG6'</div></form></body></html>'
+echo $ERRORMSG6'</div></form></div></body></html>'
 exit
 fi
 
 if [ `ls -1 /opt/karoshi/helpdesk/todo/ | wc -l` = 0 ]
 then
-echo $ERRORMSG6'</div></form></body></html>'
+echo $ERRORMSG6'</div></form></div></body></html>'
 exit
 fi
 

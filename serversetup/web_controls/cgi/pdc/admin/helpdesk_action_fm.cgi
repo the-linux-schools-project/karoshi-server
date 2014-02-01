@@ -48,7 +48,7 @@ echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<link rel="stylesheet" href="/css/'$STYLESHEET'"><title>'$TITLE'</title><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><title>'$TITLE'</title><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
@@ -69,7 +69,7 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	// ]]>
 	</script>'
 fi
-echo '</head><body onLoad="start()">'
+echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -98,7 +98,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo 'window.location = "/cgi-bin/admin/helpdesk_view_fm.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -214,6 +214,6 @@ echo '</div><div id="submitbox">'
 fi
 
 echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
-</div></form></body></html>'
+</div></form></div></body></html>'
 exit
 

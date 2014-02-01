@@ -66,7 +66,7 @@ function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 }
 // -->
 </script><script src="/all/stuHover.js" type="text/javascript"></script>'
-echo "</head><body>"
+echo "</head><body><div id='pagecontainer'>"
 #########################
 #Get data input
 #########################
@@ -78,7 +78,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/admin/locations.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -110,5 +110,5 @@ echo '<form action="/cgi-bin/admin/wake_on_lan_view2.cgi" name="selectwol" metho
 #Show scheduled wake on lan locations
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/wake_on_lan_view.cgi | cut -d' ' -f1`
 sudo -H /opt/karoshi/web_controls/exec/wake_on_lan_view $REMOTE_USER:$REMOTE_ADDR:$MD5SUM
-echo '</div></form></body></html>'
+echo '</div></form></div></body></html>'
 exit

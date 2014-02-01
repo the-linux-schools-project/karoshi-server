@@ -35,7 +35,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"><meta http-equiv="REFRESH" content="0;url=dg_extensions_fm.cgi"></head><body>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta http-equiv="REFRESH" content="0;url=dg_extensions_fm.cgi"></head><body><div id="pagecontainer">'
 
 #Detect mobile browser
 MOBILE=no
@@ -65,7 +65,7 @@ echo '<script type="text/javascript">'
 echo 'alert("'$MESSAGE'");'
 echo 'window.location = "/cgi-bin/admin/dg_extensions_fm.cgi";'
 echo '</script>'
-echo "</div></body></html>"
+echo "</div></div></body></html>"
 exit
 }
 
@@ -105,5 +105,5 @@ fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_extensions.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DATA" | sudo -H /opt/karoshi/web_controls/exec/dg_extensions
-echo '</div></body></html>'
+echo '</div></div></body></html>'
 exit

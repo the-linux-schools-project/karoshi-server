@@ -69,7 +69,7 @@ echo `date`: setupsquid - Blank PDC."<br>"
 exit 101
 fi
 
-if [ $PDCSERVER != $HOSTNAME ]
+if [ $PDCSERVER != `hostname-fqdn` ]
 then
 if [ -z "$PDCIP" ]
 then

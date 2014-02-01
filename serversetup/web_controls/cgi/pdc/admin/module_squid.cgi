@@ -45,7 +45,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 #########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"></head><body>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -77,7 +77,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo 'window.location = "/cgi-bin/admin/karoshi_servers_view.cgi"'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 
@@ -85,7 +85,7 @@ function completed {
 echo '<SCRIPT language="Javascript">'
 echo 'window.location = "/cgi-bin/admin/karoshi_servers_view.cgi"'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 
@@ -124,8 +124,9 @@ fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox">'
-#Join server
+echo '<div id="actionbox3"><div id="infobox">'
+
+
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_squid.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_squid
 EXEC_STATUS=`echo $?`
@@ -136,6 +137,6 @@ MESSAGE=`echo $PROBLEMMSG $LOGMSG`
 show_status
 fi
 completed
-echo '</div></body></html>'
+echo '</div></div></div></body></html>'
 exit
 

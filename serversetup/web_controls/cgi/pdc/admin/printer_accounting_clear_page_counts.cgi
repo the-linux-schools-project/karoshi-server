@@ -65,7 +65,7 @@ TCPIP_ADDR=$REMOTE_ADDR
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE3'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"></head><body>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE3'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 
 
 function show_status {
@@ -73,7 +73,7 @@ echo '<script type="text/javascript">'
 echo 'alert("'$MESSAGE'");'
 echo 'window.location = "/cgi-bin/admin/printer_accounting_clear_page_counts_fm.cgi";'
 echo '</script>'
-echo "</div></body></html>"
+echo "</div></div></body></html>"
 exit
 }
 
@@ -121,5 +121,5 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printer_accounting_clear_page_coun
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:" | sudo -H /opt/karoshi/web_controls/exec/printer_accounting_clear_page_counts
 MESSAGE=$CLEAREDMSG
 show_status
-echo '</div></body></html>'
+echo '</div></div></body></html>'
 exit

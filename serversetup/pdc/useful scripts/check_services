@@ -32,7 +32,7 @@ for SERVICE in $DSERVICES
 do
 #Check if the service is running
 SERVICESTATUS=0
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/$SERVICE"_"status 1>/dev/null
 SERVICESTATUS=$?

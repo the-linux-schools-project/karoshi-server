@@ -58,7 +58,7 @@ echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$TITLE2'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-  <link rel="stylesheet" href="/css/'$STYLESHEET'">
+  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script language="JavaScript" src="/all/calendar2/calendar_eu.js" type="text/javascript"></script>
         <!-- Timestamp input popup (European Format) -->
 <link rel="stylesheet" href="/all/calendar2/calendar.css">
@@ -85,7 +85,7 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	</script>'
 fi
 
-echo '</head><body onLoad="start()">'
+echo '</head><body onLoad="start()"><div id="pagecontainer">'
 
 #Generate navigation bar
 if [ $MOBILE = no ]
@@ -163,5 +163,5 @@ then
 echo '</div><div id="submitbox">'
 fi
 
-echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"> </div></form></body></html>'
+echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"> </div></form></div></body></html>'
 exit

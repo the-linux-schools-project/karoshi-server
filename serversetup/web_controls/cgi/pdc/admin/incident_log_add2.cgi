@@ -50,7 +50,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -174,7 +174,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/admin/incident_log_add.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 
@@ -191,7 +191,7 @@ echo '<input type="hidden" id="_MINUTES_" name="_MINUTES_" value="'$MINUTES'" />
 echo '<input type="hidden" id="_STUDENTS_" name="_STUDENTS_" value="'$STUDENTS'" />'
 echo '<input type="hidden" id="_INCIDENT_" name="_INCIDENT_" value="'$INCIDENT'" />'
 echo '<input type="hidden" id="_ACTIONTAKEN_" name="_ACTIONTAKEN_" value="'$ACTIONTAKEN'" />'
-echo '</div><div id="submitbox"> <input value='$BACK' type="submit"></div></form></body></html>'
+echo '</div><div id="submitbox"> <input value='$BACK' type="submit"></div></form></div></body></html>'
 exit
 }
 

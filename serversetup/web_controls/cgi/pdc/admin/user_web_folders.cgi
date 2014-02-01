@@ -53,7 +53,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
@@ -75,7 +75,7 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	</script>'
 fi
 echo '
-</head><body onLoad="start()">'
+</head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -145,7 +145,7 @@ done
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox6
+DIV_ID=actionbox3
 TABLECLASS=standard
 WIDTH1=180
 WIDTH2=200
@@ -203,7 +203,7 @@ echo '</td>
 '
 [ $MOBILE = no ] && echo '</div></div><div id="submitbox">'
 echo '<input value="'$SUBMITMSG'" class="button" type="submit">
-</div></form></body></html>
+</div></form></div></body></html>
 '
 exit
 fi
@@ -211,6 +211,6 @@ fi
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$GROUP:$ACTION:$USERNAME:$SERVICECHECK:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/user_web_folders
 
 [ $MOBILE = no ] && echo '</div>'
-echo '</div></form></body></html>'
+echo '</div></form></div></body></html>'
 exit
 

@@ -39,7 +39,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"></head><body>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -109,7 +109,7 @@ echo '<script type="text/javascript">'
 echo 'alert("'$MESSAGE'");'
 echo 'window.location = "/cgi-bin/admin/dg_reset_room_controls_fm.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 
@@ -117,7 +117,7 @@ function completed {
 echo '<script type="text/javascript">'
 echo 'window.location = "/cgi-bin/admin/dg_reset_room_controls_fm.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 
@@ -180,5 +180,5 @@ fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_reset_room_controls.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$HOURS:$MINUTES:$TIME:" | sudo -H /opt/karoshi/web_controls/exec/dg_reset_room_controls
 completed
-echo '</body></html>'
+echo '</div></body></html>'
 exit

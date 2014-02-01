@@ -42,7 +42,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/tech/search_fm.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -73,7 +73,7 @@ echo ""
 echo "<html><head><title>$TITLE</title></head>"
 echo "<link rel="stylesheet" href="/css/$STYLESHEET">"
 echo "</head>"
-echo "<body>"
+echo "<body><div id='pagecontainer'>"
 #########################
 #Check https access
 #########################
@@ -157,5 +157,5 @@ echo '<b>'$TITLE - "$SEARCH"'</b><br><br>'
 #Remote Management
 /var/www/cgi-bin_karoshi/tech/remote_management.cgi | grep -i "$SEARCH" | grep -i -v html | grep -i -v table
 echo "</div>"
-echo "</body></html>"
+echo "</div></body></html>"
 exit

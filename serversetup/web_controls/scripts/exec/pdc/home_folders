@@ -183,7 +183,6 @@ sleep 4
 fi
 }
 
-
 #Get group information
 source /opt/karoshi/server_network/group_information/$PRIGROUP
 DESTFOLDERPATH=`echo $HOMEPATH | sed 's/'$PRIGROUP'$//g'`
@@ -356,6 +355,31 @@ fi
 '
 fi
 fi
+fi
+
+
+#Make sure that there is a home folder for all users in the current group on the selected server
+if [ $NEWSERVER != `hostname-fqdn` ]
+then
+ssh -x -o PasswordAuthentication=no $NEWSERVER '
+for PRIGROUPUSER in `getent passwd | grep "/'$PRIGROUP'/" | cut -d: -f1`
+do
+if [ ! -d '$HOMEPATH'/$PRIGROUPUSER ]
+then
+mkdir -p '$HOMEPATH'/$PRIGROUPUSER
+chown $PRIGROUPUSER '$HOMEPATH'/$PRIGROUPUSER
+fi
+done
+'
+else
+for PRIGROUPUSER in `getent passwd | grep "/$PRIGROUP/" | cut -d: -f1`
+do
+if [ ! -d $HOMEPATH/$PRIGROUPUSER ]
+then
+mkdir -p $HOMEPATH/$PRIGROUPUSER
+chown $PRIGROUPUSER $HOMEPATH/$PRIGROUPUSER
+fi
+done
 fi
 exit
 

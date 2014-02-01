@@ -31,8 +31,8 @@ done
 ####################
 function setnetwork {
 echo nameserver $NAMESERVER > /etc/resolv.conf
-echo nameserver 8.8.8.8 >> /etc/resolv.conf
-echo nameserver 8.8.4.4 >> /etc/resolv.conf
+#echo nameserver 8.8.8.8 >> /etc/resolv.conf
+#echo nameserver 8.8.4.4 >> /etc/resolv.conf
 echo timeout:1 >> /etc/resolv.conf
 ####################
 #Set TCP/IP
@@ -59,7 +59,7 @@ ping -c 1 $NAMESERVER
 if [ `echo $?` = 1 ]
 then
 #Show warning message
-yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=4 --text="$WARNINGMSG1: $NAMESERVER\n\n$WARNINGMSG2" --no-buttons
+yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=8 --text="$WARNINGMSG1: $NAMESERVER\n\n$WARNINGMSG2" --no-buttons
 #Change DNS if default is not available
 #NAMESERVER=$TCPIPNUMBER
 setnetwork

@@ -42,7 +42,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
@@ -130,7 +130,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/admin/quotas_set_fm.cgi";'
 echo '</script>'
-echo "</div></body></html>"
+echo "</div></div></body></html>"
 exit
 }
 #########################
@@ -209,6 +209,6 @@ fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/quotas_set.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$GROUP:$SIZE:$MAXFILES:$UNIT:$USERNAME:" | sudo -H /opt/karoshi/web_controls/exec/quotas_set
-echo "</div></body></html>"
+echo "</div></div></body></html>"
 exit
 

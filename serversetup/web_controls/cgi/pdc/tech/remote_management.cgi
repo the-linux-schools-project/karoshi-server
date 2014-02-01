@@ -39,13 +39,13 @@ echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
 <title>Karoshi Remote Access</title><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link href="/css/'$STYLESHEET'" rel="stylesheet" type="text/css"></head>
+<link href="/css/'$STYLESHEET'?d='`date +%F`'" rel="stylesheet" type="text/css"></head>
 <body leftmargin="0" topmargin="0" rightmargin="0" class="Body">
 <table class="leftmenu" style="text-align: left; width: 222px; height: 426px;" border="0" cellpadding="6" cellspacing="0">
 <tbody><tr><td style="vertical-align: top;">
 <a href="/cgi-bin/admin/remote_management_change_password_fm.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/remote_management/password.png">'$CHANGEREMOTEPASSWORDS'</a><br>
 <a href="/cgi-bin/admin/remote_management_change_language.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/remote_management/language.png">'$CHANGELANG'</a><br>
 <a href="/cgi-bin/admin/remote_management_change_theme.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/remote_management/theme.png">'$CHANGETHEME'</a><br>
-</td></tr></tbody></table></body></html>
+</td></tr></tbody></table></div></body></html>
 '
 exit

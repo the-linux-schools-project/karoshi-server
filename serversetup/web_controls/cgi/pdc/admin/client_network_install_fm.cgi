@@ -52,7 +52,7 @@ echo '
 <html>
 <head>
   <title>'$TITLE2'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'">
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script type="text/javascript">
 <!--
 function SetAllCheckBoxes(FormName, FieldName, CheckValue)
@@ -74,7 +74,7 @@ function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 </script>
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
-<body onLoad="start()">'
+<body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
@@ -113,7 +113,7 @@ echo '</div>
   <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
 </div>
 </form>
-</body>
+</div></body>
 </html>
 '
 exit

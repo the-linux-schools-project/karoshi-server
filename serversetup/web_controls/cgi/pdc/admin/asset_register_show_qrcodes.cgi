@@ -61,7 +61,7 @@ echo '<!doctype html>
     </style>
 
 </head>
-<body>'
+<body><div id="pagecontainer">'
 
 #########################
 #Get data input
@@ -91,7 +91,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/admin/view_karoshi_web_admin_log.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -120,5 +120,5 @@ fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/asset_register_show_qrcodes.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOCATION:" | sudo -H /opt/karoshi/web_controls/exec/asset_register_show_qrcodes
 
-echo '</body></html>'
+echo '</div></body></html>'
 exit

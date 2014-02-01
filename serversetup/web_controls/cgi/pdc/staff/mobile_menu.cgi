@@ -57,7 +57,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 	<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css" />
 	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
@@ -100,5 +100,5 @@ echo  '     <div class="collapsed">
         <a href="/cgi-bin/admin/dg_room_controls_fm.cgi">'$ROOMCONTROLS'</a>
       </div>'
 fi
-echo '</div></body></html>'
+echo '</div></div></body></html>'
 exit

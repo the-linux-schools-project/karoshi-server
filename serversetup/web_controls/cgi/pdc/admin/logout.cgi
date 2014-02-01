@@ -45,7 +45,7 @@ echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$TITLE'</title><meta http-equiv="REFRESH" target="_top" content="5; URL='/cgi-bin/menu.cgi'">
-<link rel="stylesheet" href="/css/'$STYLESHEET'">
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 </head>
 <body>
 <iframe src="/cgi-bin/logout/'$REMOTE_USER'/logout2.cgi" name="submenu" frameborder="0" width="1024" height="768" scrolling="no" marginwidth="0" marginheight="0">
@@ -54,7 +54,7 @@ echo '
 sleep 4
 sudo -H /opt/karoshi/web_controls/exec/logout2 $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:
 
-echo '</body>
+echo '</div></body>
 </html>
 '
 

@@ -38,14 +38,14 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head><title>Karoshi Web Application</title><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><link href="/css/'$STYLESHEET'"rel="stylesheet" type="text/css"></head>
-<body><table class="leftmenu" style="text-align: left; width: 222px; height: 426px;" border="0" cellpadding="6" cellspacing="0"><tbody><tr><td style="vertical-align: top;">
+<html><head><title>Karoshi Web Application</title><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><link href="/css/'$STYLESHEET'?d='`date +%F`'"rel="stylesheet" type="text/css"></head>
+<body><div id="pagecontainer"><table class="leftmenu" style="text-align: left; width: 222px; height: 426px;" border="0" cellpadding="6" cellspacing="0"><tbody><tr><td style="vertical-align: top;">
 <a href="/cgi-bin/admin/view_karoshi_web_management_logs.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/system/web.png">'$WEBLOGSMSG'</a><br>
 <a href="/cgi-bin/admin/view_disk_usage_logs_fm.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/system/web.png">'$DISKLOGSMSG'</a><br>
 <a href="/cgi-bin/admin/view_karoshi_auth_errors.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/system/web.png">'$AUTHERRMSG'</a><br>
 <a href="/cgi-bin/admin/clear_warnings_fm.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/system/clear_warnings.png">'$CLEARWARNINGSMSG'</a><br>
 <a href="/cgi-bin/admin/change_management_passwords_fm.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/all/back.png"></a><br>
-</td></tr></tbody></table></body></html>
+</td></tr></tbody></table></div></body></html>
 '
 #Not in use - not happy with gui being enabled and not unlinking properly from parent apache cgi
 #<a href="/cgi-bin/admin/enable_disable_gui_fm.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/system/enable_disable_gui.png">'$GUIMSG'</a><br>

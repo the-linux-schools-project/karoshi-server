@@ -38,11 +38,11 @@ echo ""
 echo '
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head><title>Karoshi Web Application</title><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><link href="/css/'$STYLESHEET'" rel="stylesheet" type="text/css"></head>
-<body><table class="leftmenu" style="text-align: left; width: 222px; height: 426px;" border="0" cellpadding="6" cellspacing="0"><tbody><tr><td style="vertical-align: top;">
+<html><head><title>Karoshi Web Application</title><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><link href="/css/'$STYLESHEET'?d='`date +%F`'" rel="stylesheet" type="text/css"></head>
+<body><div id="pagecontainer"><table class="leftmenu" style="text-align: left; width: 222px; height: 426px;" border="0" cellpadding="6" cellspacing="0"><tbody><tr><td style="vertical-align: top;">
 <a href="/cgi-bin/tech/domain_information.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/client/domain_information.png">'$DOMAININFO'</a><br>
 <a href="/cgi-bin/tech/asset_register_add.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/client/locations.png">'$ASSETREGISTER'</a><br>
 <a href="/cgi-bin/admin/generate_classroom_lists_csv_upload_fm.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/client/domain_information.png">'$CLASSROOMMANAGEMENT'</a><br>
-</td></tr></tbody></table></body></html>
+</td></tr></tbody></table></div></body></html>
 '
 exit

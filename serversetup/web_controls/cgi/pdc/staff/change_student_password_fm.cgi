@@ -45,7 +45,7 @@ echo '
 <html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$TITLE'</title>
-  <link rel="stylesheet" href="/css/'$STYLESHEET'">
+  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script type="text/javascript" src="/all/js/jquery.js"></script>
 <script type="text/javascript" src="/all/js/script.js"></script>
 <META HTTP-EQUIV="refresh" CONTENT="300; URL=/cgi-bin/blank.cgi">
@@ -71,7 +71,7 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	</script>'
 fi
 
-echo '</head><body>'
+echo '</head><body><div id="pagecontainer">'
 
 
 #########################
@@ -203,5 +203,5 @@ echo '</div><div id="submitbox">'
 else
 echo '<br>'
 fi
-echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></div></form></body></html>'
+echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></div></form></div></body></html>'
 exit

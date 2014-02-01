@@ -66,10 +66,10 @@ echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'">
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
-<body onLoad="start()">'
+<body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox"><form action="/cgi-bin/admin/bulk_user_creation_create.cgi" method="post"><b>'$TITLE'</b><br>
@@ -80,7 +80,7 @@ echo '<div id="actionbox"><form action="/cgi-bin/admin/bulk_user_creation_create
 #Check that this server is not part of a federated setup
 if [ -f /opt/karoshi/server_network/servers/$HOSTNAME/federated_server ]
 then
-echo $ERRORMSG18 '</div></body></html>'
+echo $ERRORMSG18 '</div></div></body></html>'
 exit
 fi
 
@@ -109,7 +109,7 @@ echo '</td></tr></tbody></table>
   <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
 </div>
 </form>
-</body>
+</div></body>
 </html>
 '
 exit

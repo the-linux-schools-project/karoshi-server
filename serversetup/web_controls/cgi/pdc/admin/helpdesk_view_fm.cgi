@@ -56,7 +56,7 @@ echo '
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$TITLE' - '$TITLE2'</title><META HTTP-EQUIV="refresh" CONTENT="300">
-<link rel="stylesheet" href="/css/'$STYLESHEET'">
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ $MOBILE = yes ]
 then
@@ -78,7 +78,7 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	// ]]>
 	</script>'
 fi
-echo '</head><body onLoad="start()">'
+echo '</head><body onLoad="start()"><div id="pagecontainer">'
 
 TCPIP_ADDR=$REMOTE_ADDR
 DATA=`cat | tr -cd 'A-Za-z0-9\.%+_:\-'`
@@ -130,13 +130,13 @@ fi
 #Check to see if there are any new jobs
 if [ ! -d /opt/karoshi/helpdesk/todo/ ]
 then
-echo $ERRORMSG6'</div></body></html>'
+echo $ERRORMSG6'</div></div></body></html>'
 exit
 fi
 
 if [ `ls -1 /opt/karoshi/helpdesk/todo/ | wc -l` = 0 ]
 then
-echo $ERRORMSG6'</div></body></html>'
+echo $ERRORMSG6'</div></div></body></html>'
 exit
 fi
 if [ $MOBILE = yes ]

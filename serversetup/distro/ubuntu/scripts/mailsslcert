@@ -78,7 +78,7 @@ chmod 0600 /etc/ssl/mail/dovecot.pem
 cp -f /etc/ssl/mail/dovecot.key /etc/ssl/mail/postfix.key
 cp -f /etc/ssl/mail/dovecot.pem /etc/ssl/mail/postfix.pem
 
-if [ $SERVER != $HOSTNAME ]
+if [ $SERVER != `hostname-fqdn` ]
 then
 #Make sure /etc/ssl/mail exists on the remote server
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '

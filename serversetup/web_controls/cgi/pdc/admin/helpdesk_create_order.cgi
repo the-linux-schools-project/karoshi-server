@@ -52,13 +52,13 @@ echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'">
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script language="JavaScript" src="/all/calendar2/calendar_eu.js"></script>
         <!-- Timestamp input popup (European Format) -->
 <link rel="stylesheet" href="/all/calendar2/calendar.css">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
-<body>'
+<body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -223,7 +223,7 @@ echo '<table class="standard" style="text-align: left; width: 100%;" border="0" 
 <td><input tabindex= "4" name="_UNITCOST_" size="6" type="text"></td><td><input type="image" title="add" src="/images/submenus/user/helpdesk/add.png" name="_ADD_"></td></tr></tbody></table></form>
 
 </div>
-</body>
+</div></body>
 </html>
 '
 exit

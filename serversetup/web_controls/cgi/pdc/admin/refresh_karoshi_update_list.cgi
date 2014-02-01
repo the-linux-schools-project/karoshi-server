@@ -40,7 +40,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 echo "Content-type: text/html"
 echo ""
 echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="0;url=/cgi-bin/admin/update_karoshi_fm.cgi">'
-echo '<link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body>'
+echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body><div id="pagecontainer">'
 
 #########################
 #Check user accessing this script
@@ -77,5 +77,5 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/refresh_karoshi_update_list.cgi | 
 echo '<pre>'
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:" | sudo -H /opt/karoshi/web_controls/exec/refresh_karoshi_update_list
 sleep 1
-echo '</pre></div></body></html>'
+echo '</pre></div></div></body></html>'
 exit

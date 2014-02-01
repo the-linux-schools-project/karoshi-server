@@ -66,7 +66,7 @@ echo '			objCheckBoxes[i].checked = CheckValue;'
 echo '}'
 echo '// -->'
 echo '</script>'
-echo "</head><body>"
+echo "</head><body><div id='pagecontainer'>"
 #########################
 #Get data input
 #########################
@@ -95,7 +95,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/admin/dg_view_banned_users_fm.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -153,4 +153,4 @@ echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$
 echo '<'input type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedusers"'", "'"_USERNAME_"'", true')'';''"' value='"'Select all'"''>'
 echo '</div>'
 echo '</form>'
-echo "</body></html>"
+echo "</div></body></html>"

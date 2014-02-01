@@ -30,7 +30,7 @@ source /opt/karoshi/server_network/menusettings
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
 source /opt/karoshi/web_controls/version
-echo '<img src="/images/small_logo.png" alt="logo" align="top"> <font style="font-weight: bold;" size="+2">Web Management '$SCHOOL_NAME'</font> <small><small>
+echo '<div id="header"><img src="/images/small_logo.png" alt="logo" align="top"> <font style="font-weight: bold;" size="+2">Web Management '$SCHOOL_NAME'</font> <small><small>
 '$VERSIONMSG' : '$VERSION'
 </small></small>
 <div id="searchbar"><form name="searchform" action="/cgi-bin/admin/search.cgi" method="post">
@@ -110,7 +110,7 @@ echo '<div id="navbar"><span class="preload1"></span>
 			<li><a href="/cgi-bin/admin/helpdesk_set_defaults_fm.cgi">'$HELPDESKSETDEFAULTS'</a></li>
 		</ul>
 	</li>
-	<li class="top"><a href="/cgi-bin/admin/change_password_fm.cgi" id="menu" class="top_link"><span class="down">'$USERMSG'</span></a>
+	<li class="top"><a href="/cgi-bin/admin/change_password_fm.cgi" id="users" class="top_link"><span class="down">'$USERMSG'</span></a>
 		<ul class="sub">'
 
 if [ $ADDUSERCTRL = yes ]
@@ -543,6 +543,6 @@ fi
 echo '		</ul>
 	</li>'
 fi
-echo '</ul></div>'
+echo '</ul></div></div>'
 
 exit

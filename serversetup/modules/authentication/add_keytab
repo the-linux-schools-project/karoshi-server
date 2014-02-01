@@ -97,7 +97,7 @@ samba-tool spn add $KEYNAME/$SPN_NAME karoshi-krb5
 samba-tool domain exportkeytab /opt/karoshi/.tempdata/$KEYNAME.keytab.$$ --principal=$KEYNAME/$SPN_NAME
 
 #Copy keytab to server
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 [ ! -d /etc/keytabs ] && mkdir -p /etc/keytabs
 touch /etc/keytabs/$SERVICENAME.keytab

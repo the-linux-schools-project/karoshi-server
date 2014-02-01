@@ -44,7 +44,7 @@ echo '
   <title>'$WARNINGMSG'</title>
 <link href="/css/'$STYLESHEET'" rel="stylesheet" type="text/css">
 </head>
-<body>'
+<body><div id="pagecontainer">'
 
 
 echo '<img src="/images/small_logo.png" alt="logo" align="top"> <font style="font-weight: bold;" size="+2">Web Management '$SCHOOL_NAME'</font> <small><small>
@@ -63,7 +63,7 @@ echo '<div id="navbar"><span class="preload1"></span>
 echo '<div id="actionbox">
 <b>'$ERRORMSG 401 - $DENIEDMSG1'</b><br><br>
 '$DENIEDMSG2'<br>
-</div>
+</div></div>
 </body>
 </html>
 '

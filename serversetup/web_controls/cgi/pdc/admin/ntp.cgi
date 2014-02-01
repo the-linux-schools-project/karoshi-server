@@ -50,7 +50,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/admin/update_servers_fm.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 
@@ -63,7 +63,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'"><script type="text/javascript">
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script type="text/javascript">
 <!--
 function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 {
@@ -83,7 +83,7 @@ function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 // -->
 </script><script src="/all/stuHover.js" type="text/javascript"></script>'
 echo "</head>"
-echo '<body onLoad="start()">'
+echo '<body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Check https access
 #########################
@@ -119,6 +119,6 @@ echo '<form action="/cgi-bin/admin/ntp2.cgi" name="selectservers" method="post">
 
 [ $MOBILE = no ] && echo '</div>'
 
-echo '</div></form></body></html>'
+echo '</div></form></div></body></html>'
 
 exit

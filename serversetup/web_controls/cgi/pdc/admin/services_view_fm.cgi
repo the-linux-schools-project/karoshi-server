@@ -54,7 +54,7 @@ echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$TITLE1'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-  <link rel="stylesheet" href="/css/'$STYLESHEET'">
+  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
   <script type="text/javascript">
 <!--
 function SetAllCheckBoxes(FormName, FieldName, CheckValue)
@@ -94,7 +94,7 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	// ]]>
 	</script>'
 
-echo '</head><body onLoad="start()">'
+echo '</head><body onLoad="start()"><div id="pagecontainer">'
 
 #Generate navigation bar
 if [ $MOBILE = no ]
@@ -139,7 +139,7 @@ echo '</form>'
 
 [ $MOBILE = no ] && echo '</div>'
 
-echo '</div></body></html>'
+echo '</div></div></body></html>'
 
 exit
 #Show list of ssh enabled servers
@@ -222,6 +222,6 @@ then
 echo '<b>'$ALLSERVERSMSG'</b><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_SERVERNAME_allservers_" type="image" class="images" src="'$SERVERICON2'" value=""><span>'$ALLSERVERMSG'</span></a><br>'$ALLSERVERMSG'</td></tr></tbody></table>'
 fi
 
-echo '</div></form></body></html>'
+echo '</div></form></div></body></html>'
 
 exit

@@ -45,7 +45,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="0; URL=/cgi-bin/admin/generate_classroom_lists_csv_upload_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'"></head><body>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="0; URL=/cgi-bin/admin/generate_classroom_lists_csv_upload_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -58,7 +58,7 @@ function show_status {
 echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -155,4 +155,4 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/generate_classroom_lists_csv_proce
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MD5SUMCSV:$$:" | sudo -H /opt/karoshi/web_controls/exec/generate_classroom_lists_csv
 MESSAGE=`echo $COMPLETEDMSG`
 show_status
-echo "</body></html>"
+echo "</div></body></html>"

@@ -54,7 +54,7 @@ echo ""
 echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE2'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">'
 echo "<link rel="stylesheet" href="/css/$STYLESHEET"><script src=\"/all/stuHover.js\" type=\"text/javascript\"></script>"
 echo "</head>"
-echo "<body>"
+echo "<body><div id='pagecontainer'>"
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 #########################
@@ -68,7 +68,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/admin/bulk_user_creation_view_passwords_fm.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -112,4 +112,4 @@ then
 MESSAGE=`echo $ERRORMSG17`
 show_status
 fi
-echo "</body></html>"
+echo "</div></body></html>"

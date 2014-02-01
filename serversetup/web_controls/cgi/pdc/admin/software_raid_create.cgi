@@ -46,13 +46,13 @@ echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/admin/software_raid_create_fm.cgi";'
 echo '</script>
 '
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE1'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE1'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body><div id="pagecontainer">'
 
 #########################
 #Get data input
@@ -188,5 +188,5 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/software_raid_create.cgi | cut -d'
 echo '<form action="/cgi-bin/admin/software_raid_create2.cgi" name="selectservers" method="post">'
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:" | sudo -H /opt/karoshi/web_controls/exec/software_raid_create
 
-echo "</form></div></body></html>"
+echo "</form></div></div></body></html>"
 exit

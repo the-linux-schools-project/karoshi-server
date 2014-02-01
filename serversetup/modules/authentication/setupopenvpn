@@ -25,7 +25,7 @@ LOG_DATE=`date +%F`
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: configure_authentication - incorrect number of arguments."<br>"
+echo `date`: setupopenvpn - incorrect number of arguments."<br>"
 exit 101
 fi
 read -t 3 DATA
@@ -38,22 +38,22 @@ SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
 
 if [ -z "$REMOTE_USER" ]
 then
-echo `date`: configure_authentication - Blank remote user."<br>"
-echo `date`: configure_authentication - Blank remote user from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: setupopenvpn - Blank remote user."<br>"
+echo `date`: setupopenvpn - Blank remote user from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 sleep 2
 exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: configure_authentication - Blank remote tcpip address."<br>"
-echo `date`: configure_authentication - Blank remote tcpip address by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: setupopenvpn - Blank remote tcpip address."<br>"
+echo `date`: setupopenvpn - Blank remote tcpip address by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 sleep 2
 exit 101
 fi
 if [ -z "$SERVERNAME" ]
 then
-echo `date`: configure_authentication - Blank servername."<br>"
-echo `date`: configure_authentication - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: setupopenvpn - Blank servername."<br>"
+echo `date`: setupopenvpn - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 sleep 2
 exit 101
 fi
@@ -74,60 +74,49 @@ exit 101
 fi
 '`
 
+REALM2=`echo $REALM2 | sed 's/^'$SERVERNAME'.//g'`
+
 [ $? = 101 ] && exit 101
+
 
 SERVERNAME=`echo $SERVERNAME.$REALM2`
 
 function get_tunnel_details {
-#Get tunnel number
-TUNVAL=0
-[ -f /opt/karoshi/server_network/vpn_tunnels/next_tunnel_interface ] && TUNVAL=`sed -n 1,1p /opt/karoshi/server_network/vpn_tunnels/next_tunnel_interface`
-let TUNVAL2=$TUNVAL+1
-if [ -f /opt/karoshi/server_network/vpn_tunnels/clients/$SERVERNAME/tun_interface ]
-then
-TUNVAL=`cat /opt/karoshi/server_network/vpn_tunnels/clients/$SERVERNAME/tun_interface`
-else
-mkdir -p /opt/karoshi/server_network/vpn_tunnels/clients/$SERVERNAME/
-echo $TUNVAL > /opt/karoshi/server_network/vpn_tunnels/clients/$SERVERNAME/tun_interface
-echo $TUNVAL2 > /opt/karoshi/server_network/vpn_tunnels/next_tunnel_interface
-fi
-
+[ ! -d /opt/karoshi/server_network/vpn_tunnels/clients/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/vpn_tunnels/clients/$SERVERNAME
 #Get ip address to use for the tunnel
+
 MAINSERVERIP=`net lookup $HOSTNAMEFQDN`
 SERVERNAMEIP=`net lookup $SERVERNAME`
 TUNNELIP1=10.8.1.0
-UPDATETUNIP=no
-[ -f /opt/karoshi/server_network/vpn_tunnels/next_tunnel_ip ] && TUNNELIP1=`sed -n 1,1p /opt/karoshi/server_network/vpn_tunnels/next_tunnel_ip`
-if [ -f /opt/karoshi/server_network/vpn_tunnels/clients/$SERVERNAME/tunnel_ip ]
+TUNNELIP_SERVER=10.8.1.1
+
+#Get tunnel ip for the vpn client
+if [ ! -f /opt/karoshi/server_network/vpn_tunnels/next_tunnel_ip ]
 then
-TUNNELIP1=`cat /opt/karoshi/server_network/vpn_tunnels/clients/$SERVERNAME/tunnel_ip`
-else
-echo $TUNNELIP1 > /opt/karoshi/server_network/vpn_tunnels/clients/$SERVERNAME/tunnel_ip
-UPDATETUNIP=yes
+echo 10.8.1.2 > /opt/karoshi/server_network/vpn_tunnels/next_tunnel_ip
 fi
 
-THIRD_NUM=`echo $TUNNELIP1 | cut -d. -f3`
-TUNNELIP_SERVER=10.8.$THIRD_NUM.1
-TUNNELIP_CLIENT=10.8.$THIRD_NUM.2
-
-let THIRD_NUM=$THIRD_NUM+1
-TUNNELIP2=10.8.$THIRD_NUM.0
-
-if [ $UPDATETUNIP = yes ]
+if [ -f /opt/karoshi/server_network/vpn_tunnels/clients/$SERVERNAME/tunnel_ip ]
 then
-#Record next available ip address and tunnel number to use for a tunnel
-echo $TUNNELIP2 > /opt/karoshi/server_network/vpn_tunnels/next_tunnel_ip
+TUNNELIP_CLIENT=`cat /opt/karoshi/server_network/vpn_tunnels/clients/$SERVERNAME/tunnel_ip`
+else
+TUNNELIP_CLIENT=`cat /opt/karoshi/server_network/vpn_tunnels/next_tunnel_ip`
+echo $TUNNELIP_CLIENT > /opt/karoshi/server_network/vpn_tunnels/clients/$SERVERNAME/tunnel_ip
+#Update next tunnel ip
+FORTH_NUM=`echo $TUNNELIP_CLIENT | cut -d. -f4`
+let FORTH_NUM=$FORTH_NUM+1
+echo 10.8.1.$FORTH_NUM > /opt/karoshi/server_network/vpn_tunnels/next_tunnel_ip
 fi
 }
 
 function configure_shorewall {
 #Configure shorewall to use the tunnel inteface on the vpn server
 MODCHECK=0
-if [ `grep -c -w tun$TUNVAL /etc/shorewall/interfaces` = 0 ]
+if [ `grep -c -w tun+ /etc/shorewall/interfaces` = 0 ]
 then
 #Configure shorewall for tunnel
 LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/interfaces | cut -d: -f1`
-sed -i $LINENUM"c"\net"	"tun$TUNVAL"	"detect /etc/shorewall/interfaces
+sed -i $LINENUM"c"\net"	"tun+"	"detect /etc/shorewall/interfaces
 echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/interfaces
 MODCHECK=1
 fi
@@ -154,11 +143,11 @@ fi
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 MODCHECK=0
 source /opt/karoshi/serversetup/variables/distro
-#Configure shorewall for tun'$TUNVAL'
-if [ `grep -c -w tun'$TUNVAL' /etc/shorewall/interfaces` = 0 ]
+#Configure shorewall for tun+
+if [ `grep -c -w tun+ /etc/shorewall/interfaces` = 0 ]
 then
 LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/interfaces | cut -d: -f1`
-sed -i $LINENUM"c"\net"	"tun'$TUNVAL'"	"detect /etc/shorewall/interfaces
+sed -i $LINENUM"c"\net"	"tun+"	"detect /etc/shorewall/interfaces
 echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/interfaces
 MODCHECK=1
 fi
@@ -279,7 +268,7 @@ sed -i "s/key server.key  # This file should be kept secret//g" /etc/openvpn/ser
 sed -i "s/ca ca.crt/ca ca_$HOSTNAMEFQDN.crt/g" /etc/openvpn/server.conf
 
 [ `grep -c "client-config-dir ccd"` = 0 ] && echo client-config-dir ccd >> /etc/openvpn/server.conf
-
+fi
 #Create custom client config
 [ ! -d /etc/openvpn/ccd ] && mkdir /etc/openvpn/ccd
 echo ifconfig-push $TUNNELIP_CLIENT $TUNNELIP1 > /etc/openvpn/ccd/$SERVERNAME
@@ -290,7 +279,7 @@ sleep 1
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/openvpn_start 1>/dev/null
 #Make sure service runs on boot
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/openvpn
-fi
+
 }
 
 function configure_openvpn_client {
@@ -343,9 +332,9 @@ sed -i "s/^nobind//g" /etc/openvpn/client.conf
 [ `grep -c "^remote '$MAINSERVERIP' 1194" /etc/openvpn/client.conf` = 0 ] && echo remote '$MAINSERVERIP' 1194 >> /etc/openvpn/client.conf
 
 #Add entries to /etc/hosts
-if [ `grep -c '$SERVERNAME'.'$REALM' /etc/hosts` = 0 ]
+if [ `grep -c '$SERVERNAME' /etc/hosts` = 0 ]
 then
-echo '$SERVERNAMEIP'"	"'$SERVERNAME'.'$REALM'"	"'$SERVERNAME' >> /etc/hosts
+echo '$SERVERNAMEIP'"	"'$SERVERNAME'"	"$HOSTNAME >> /etc/hosts
 fi
 
 #Restart openvpn client
@@ -440,5 +429,8 @@ open_firewall_port
 configure_openvpn_client
 add_role_info
 schedule_cron
+
+#Check all vpn links
+/opt/karoshi/serversetup/modules/authentication/openvpnclients
 exit
 

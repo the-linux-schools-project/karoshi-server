@@ -54,7 +54,7 @@ echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
 
 
 		<script type="text/javascript"><!--
@@ -82,7 +82,7 @@ function showDiv(divName) {
 
 </style>
 
-</head><body onLoad="start()">'
+</head><body onLoad="start()"><div id="pagecontainer">'
 
 #########################
 #Get data input
@@ -187,7 +187,7 @@ fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form id="FormName" action="/cgi-bin/admin/karoshi_servers_add.cgi" method="post"><div id="actionbox"><div id="titlebox">
+echo '<form id="FormName" action="/cgi-bin/admin/karoshi_servers_add.cgi" method="post"><div id="actionbox3"><div id="titlebox">
 
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
 <td style="vertical-align: top;">
@@ -246,6 +246,6 @@ echo '<form id="FormName" action="/cgi-bin/admin/karoshi_servers_add.cgi" method
 <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
 </div></div>
 </form>
-</body></html>'
+</div></body></html>'
 exit
 

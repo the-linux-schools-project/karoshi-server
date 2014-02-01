@@ -52,7 +52,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE6'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE6'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -79,7 +79,7 @@ fi
 
 
 
-echo '</head><body onload="submitForm()">'
+echo '</head><body onload="submitForm()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -175,7 +175,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'");'
 echo 'window.location = "/cgi-bin/admin/client_boot_controls_fm.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -263,5 +263,5 @@ echo '<form name="myForm" id="myForm" action="/cgi-bin/admin/client_boot_control
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/client_boot_controls2.cgi | cut -d' ' -f1`
 
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOCATION:$ACTION:$ASSET:$TCPIP:$MACADDRESS:" | sudo -H /opt/karoshi/web_controls/exec/client_boot_controls2
-echo "<script type='text/javascript'>document.myForm.submit();</script></div></body></html>"
+echo "<script type='text/javascript'>document.myForm.submit();</script></div></div></body></html>"
 exit

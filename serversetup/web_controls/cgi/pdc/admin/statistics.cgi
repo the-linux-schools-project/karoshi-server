@@ -58,4 +58,4 @@ echo CPU: $CPUTYPE '<br>'
 echo Memory: $TOTAL_MEMORY '<br>'
 echo Hard Disk size: $HARD_DISK_SIZE '<br>'
 echo Kernel: $KERNEL '<br>'
-echo "</body></html>"
+echo "</div></body></html>"

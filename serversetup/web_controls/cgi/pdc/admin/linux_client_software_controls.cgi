@@ -50,7 +50,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -73,7 +73,7 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	</script>'
 fi
 
-echo '</head><body onLoad="start()">'
+echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -85,7 +85,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/admin/linux_client_software_controls_fm.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -226,6 +226,6 @@ echo '<input name="_VERSION_" value="'$VERSION'" type="hidden"><table class="'$T
 <tr><td style="width: 180px;">'$FIRRMWAREMSG'</td><td><a class="info" href="javascript:void(0)"><input name="_FIRMWARE_'$FSTATUS'_" type="image" class="images" src="'$FICON'" value=""><span>'$FIRMWAREHELPMSG'</span></a></td></tr>
 <tr><td style="width: 180px;">'$ENABLEINSTALLMSG'</td><td><a class="info" href="javascript:void(0)"><input name="_SOFTWARE_'$SSTATUS'_" type="image" class="images" src="'$SICON'" value=""><span>'$INSTALLHELP'</span></a></td></tr>
 <tr><td style="width: 180px;">'$ENABLEUPDATESMSG'</td><td><a class="info" href="javascript:void(0)"><input name="_UPDATES_'$USTATUS'_" type="image" class="images" src="'$UICON'" value=""><span>'$UPDATEHELP'</span></a></td></tr>
-</tbody></table></div></form></body></html>'
+</tbody></table></div></form></div></body></html>'
 exit
 

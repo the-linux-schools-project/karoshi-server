@@ -3,6 +3,7 @@ LOG_DATE=`date +%F`
 
 for VPNCLIENTS in /opt/karoshi/server_network/vpn_tunnels/clients/*
 do
+
 VPNCLIENT=`basename $VPNCLIENTS`
 #Check if server is online
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $VPNCLIENT ls 1>/dev/null
@@ -10,7 +11,7 @@ ONLINESTATUS=$?
 [ $ONLINESTATUS != 0 ] && echo `date`: vpnclients - $VPNCLIENT offline >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 if [ $ONLINESTATUS = 0 ]
 then
-echo $VPNCLIENT is online
+#echo $VPNCLIENT is online
 #Check if ssh tunnel is up
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $VPNCLIENT '
 if [ `ifconfig | grep -c ^tun` = 0 ]
@@ -24,7 +25,7 @@ TUNNELSTATUS=$?
 #Start up ssh tunnel
 if [ $TUNNELSTATUS = 105 ]
 then
-echo $VPNCLIENT starting vpn tunnel
+#echo $VPNCLIENT starting vpn tunnel
 echo `date`: vpnclients - $VPNCLIENT starting vpn tunnel >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #UDP hole punch
 nmap -P0 -sU -p1194 -g1194 $VPNCLIENT 1>/dev/null 2>/dev/null

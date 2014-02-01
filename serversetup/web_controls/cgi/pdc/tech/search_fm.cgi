@@ -46,7 +46,7 @@ echo '
 <html>
 <head>
   <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'">
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 </head>
 <body>
 <div id="menubox">
@@ -65,7 +65,7 @@ echo '
   </table>
 </div>
 </form>
-</body>
+</div></body>
 </html>
 '
 exit

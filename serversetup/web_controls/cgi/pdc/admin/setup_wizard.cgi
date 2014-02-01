@@ -52,7 +52,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head>
 <body>'
 
 #########################
@@ -158,27 +158,90 @@ fi
 
 
 
-echo '<div id="actionbox">
+echo '<div id="wizard">
 <form action="/cgi-bin/admin/setup_wizard.cgi" method="post">
-<input type="hidden" id="age" name="_VIEWEDPAGES_'$VIEWEDPAGES'_" value="" />
-<a class="info" href="javascript:void(0)"><input name="_ACTION_2_" type="image" class="images" src="/images/submenus/system/'$IMAGE2'" value=""><span>'$ADDSERVERROLEMSG'</span></a>'$ADDSERVERROLEMSG'<br><br>
-<a class="info" href="javascript:void(0)"><input name="_ACTION_3_" type="image" class="images" src="/images/submenus/system/'$IMAGE3'" value=""><span>'$ADDWEBMANAGEMENTUSERSMSG'</span></a>'$ADDWEBMANAGEMENTUSERSMSG'<br><br>
-<a class="info" href="javascript:void(0)"><input name="_ACTION_4_" type="image" class="images" src="/images/submenus/system/'$IMAGE4'" value=""><span>'$LABELGROUPSMSG'</span></a>'$LABELGROUPSMSG'<br><br>
-<a class="info" href="javascript:void(0)"><input name="_ACTION_5_" type="image" class="images" src="/images/submenus/system/'$IMAGE5'" value=""><span>'$ADDUSERMSG'</span></a>'$ADDUSERMSG'<br><br>
-<a class="info" href="javascript:void(0)"><input name="_ACTION_6_" type="image" class="images" src="/images/submenus/system/'$IMAGE6'" value=""><span>'$ROOMLOCATIONSMSG'</span></a>'$ROOMLOCATIONSMSG'<br><br>
-<a class="info" href="javascript:void(0)"><input name="_ACTION_7_" type="image" class="images" src="/images/submenus/system/'$IMAGE7'" value=""><span>'$JOINCLIENTSMSG'</span></a>'$JOINCLIENTSMSG'<br><br>
-<a class="info" href="javascript:void(0)"><input name="_ACTION_8_" type="image" class="images" src="/images/submenus/system/'$IMAGE8'" value=""><span>'$CUSTOMISEPROFILESMSG'</span></a>'$CUSTOMISEPROFILESMSG'<br><br>
-<a class="info" href="javascript:void(0)"><input name="_ACTION_9_" type="image" class="images" src="/images/submenus/system/'$IMAGE9'" value=""><span>'$ADDASSETSMSG'</span></a>'$ADDASSETSMSG'<br><br>
-<a class="info" href="javascript:void(0)"><input name="_ACTION_a_" type="image" class="images" src="/images/submenus/system/'$IMAGEa'" value=""><span>'$SETUPPRINTERSMSG'</span></a>'$SETUPPRINTERSMSG'<br><br>
-<a class="info" href="javascript:void(0)"><input name="_ACTION_b_" type="image" class="images" src="/images/submenus/system/'$IMAGEb'" value=""><span>'$DEFAULTUSERSETTINGSMSG'</span></a>'$DEFAULTUSERSETTINGSMSG'<br><br>
-<a class="info" href="javascript:void(0)"><input name="_ACTION_c_" type="image" class="images" src="/images/submenus/system/'$IMAGEc'" value=""><span>'$ADDBULKUSERMSG'</span></a>'$ADDBULKUSERMSG'<br><br>
-<a class="info" href="javascript:void(0)"><input name="_ACTION_d_" type="image" class="images" src="/images/submenus/system/'$IMAGEd'" value=""><span>'$CHANGEDEFAULTPAGEMSG'</span></a>'$CHANGEDEFAULTPAGEMSG'<br><br>
+<input type="hidden" id="age" name="_VIEWEDPAGES_'$VIEWEDPAGES'_" value="">
+
+<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
+<tbody>
+<tr><td style="width: 50px; height: 35px;">
+<a class="info" href="javascript:void(0)"><input name="_ACTION_2_" type="image" class="images"  src="/images/submenus/system/'$IMAGE2'" value=""></a>
+</td><td>
+<input name="_ACTION_2_" value="'$ADDSERVERROLEMSG'" class="button wizardbutton" type="submit">
+</td></tr>
+
+<tr><td style="width: 50px; height: 35px;">
+<a class="info" href="javascript:void(0)"><input name="_ACTION_4_" type="image" class="images" src="/images/submenus/system/'$IMAGE3'" value=""></a>
+</td><td>
+<input name="_ACTION_3_" value="'$ADDWEBMANAGEMENTUSERSMSG'" class="button wizardbutton" type="submit">
+</td></tr>
+
+<tr><td style="width: 50px; height: 35px;">
+<a class="info" href="javascript:void(0)"><input name="_ACTION_4_" type="image" class="images" src="/images/submenus/system/'$IMAGE4'" value=""></a>
+</td><td>
+<input name="_ACTION_4_" value="'$LABELGROUPSMSG'" class="button wizardbutton" type="submit">
+</td></tr>
+
+<tr><td style="width: 50px; height: 35px;">
+<a class="info" href="javascript:void(0)"><input name="_ACTION_5_" type="image" class="images" src="/images/submenus/system/'$IMAGE5'" value=""></a>
+</td><td>
+<input name="_ACTION_5_" value="'$ADDUSERMSG'" class="button wizardbutton" type="submit">
+</td></tr>
+
+<tr><td style="width: 50px; height: 35px;">
+<a class="info" href="javascript:void(0)"><input name="_ACTION_6_" type="image" class="images" src="/images/submenus/system/'$IMAGE6'" value=""></a>
+</td><td>
+<input name="_ACTION_6_" value="'$ROOMLOCATIONSMSG'" class="button wizardbutton" type="submit">
+</td></tr>
+
+<tr><td style="width: 50px; height: 35px;">
+<a class="info" href="javascript:void(0)"><input name="_ACTION_7_" type="image" class="images" src="/images/submenus/system/'$IMAGE7'" value=""></a>
+</td><td>
+<input name="_ACTION_7_" value="'$JOINCLIENTSMSG'" class="button wizardbutton" type="submit">
+</td></tr>
+
+<tr><td style="width: 50px; height: 35px;">
+<a class="info" href="javascript:void(0)"><input name="_ACTION_8_" type="image" class="images" src="/images/submenus/system/'$IMAGE8'" value=""></a>
+</td><td>
+<input name="_ACTION_8_" value="'$CUSTOMISEPROFILESMSG'" class="button wizardbutton" type="submit">
+</td></tr>
+
+<tr><td style="width: 50px; height: 35px;">
+<a class="info" href="javascript:void(0)"><input name="_ACTION_9_" type="image" class="images" src="/images/submenus/system/'$IMAGE9'" value=""></a>
+</td><td>
+<input name="_ACTION_9_" value="'$ADDASSETSMSG'" class="button wizardbutton" type="submit">
+</td></tr>
+
+<tr><td style="width: 50px; height: 35px;">
+<a class="info" href="javascript:void(0)"><input name="_ACTION_a_" type="image" class="images" src="/images/submenus/system/'$IMAGEa'" value=""></a>
+</td><td>
+<input name="_ACTION_a_" value="'$SETUPPRINTERSMSG'" class="button wizardbutton" type="submit">
+</td></tr>
+
+<tr><td style="width: 50px; height: 35px;">
+<a class="info" href="javascript:void(0)"><input name="_ACTION_b_" type="image" class="images" src="/images/submenus/system/'$IMAGEb'" value=""></a>
+</td><td>
+<input name="_ACTION_b_" value="'$DEFAULTUSERSETTINGSMSG'" class="button wizardbutton" type="submit">
+</td></tr>
+
+<tr><td style="width: 50px; height: 35px;">
+<a class="info" href="javascript:void(0)"><input name="_ACTION_c_" type="image" class="images" src="/images/submenus/system/'$IMAGEc'" value=""></a>
+</td><td>
+<input name="_ACTION_c_" value="'$ADDBULKUSERMSG'" class="button wizardbutton" type="submit">
+</td></tr>
+
+<tr><td style="width: 50px; height: 35px;">
+<a class="info" href="javascript:void(0)"><input name="_ACTION_d_" type="image" class="images" src="/images/submenus/system/'$IMAGEd'" value=""></a>
+</td><td>
+<input name="_ACTION_d_" value="'$CHANGEDEFAULTPAGEMSG'" class="button wizardbutton" type="submit">
+</td></tr>
+</tbody></table>
 </form></div>
-<div id="welcomebox">
-<iframe src="'$SITEURL'" name="setupwizard" width="100%" height="900" frameborder="no">
+<iframe src="'$SITEURL'" name="setupwizard" width="100%" height="100%" frameborder="0">
   <p>Your browser does not support iframes.</p>
 </iframe>
-</div>
+</body></html>
 '
 exit
+
 

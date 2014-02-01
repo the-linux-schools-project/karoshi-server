@@ -37,7 +37,7 @@ echo '<td style="width: 100px; height: 30px;">'$TOTAL_MEMORY'</td></tr>' >> /var
 }
 
 #Get data for the PDC
-KAROSHI_SERVER=`hostname`
+KAROSHI_SERVER=`hostname-fqdn`
 UPTIME=`karoshi-uptime.sh -p uptime`
 UPTIME2=`echo $UPTIME | cut -d. -f1`
 SYMBOL=%
@@ -58,7 +58,7 @@ source /opt/karoshi/server_network/domain_information/domain_name
 for KAROSHI_SERVER in /opt/karoshi/server_network/servers/*
 do
 KAROSHI_SERVER=`basename $KAROSHI_SERVER`
-if [ $KAROSHI_SERVER != $HOSTNAME.$REALM ]
+if [ $KAROSHI_SERVER != `hostname-fqdn` ]
 then
 #Check if server is online
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $KAROSHI_SERVER ls 1>/dev/null

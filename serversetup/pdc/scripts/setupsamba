@@ -587,74 +587,74 @@ function makefoldersandgroups {
 #Make Groups
 COUNTER=$STARTYEAR
 while [  $COUNTER -le $ENDYEAR ]; do
-echo -e "\n$GROUPADDMSG yr$COUNTER\n"
+echo -e "$GROUPADDMSG yr$COUNTER"
 NEWGROUP=yr$COUNTER
 NEWGROUPDISP="Year $COUNTER"
 add_samba4_group
 let COUNTER=COUNTER+1
 done
 
-echo -e "\n$GROUPADDMSG staff\n"
+echo -e "$GROUPADDMSG staff"
 NEWGROUP=staff
 NEWGROUPDISP=Staff
 add_samba4_group
 
-echo -e "\n$GROUPADDMSG nonteachingstaff\n"
+echo -e "$GROUPADDMSG nonteachingstaff"
 NEWGROUP=nonteachingstaff
 NEWGROUPDISP="Non teaching staff"
 add_samba4_group
 
-echo -e "\n$GROUPADDMSG studentstaff\n"
+echo -e "$GROUPADDMSG studentstaff"
 NEWGROUP=studentstaff
 NEWGROUPDISP="Student Staff"
 add_samba4_group
 
-echo -e "\n$GROUPADDMSG guestusers\n"
+echo -e "$GROUPADDMSG guestusers"
 NEWGROUP=guestusers
 NEWGROUPDISP="Guest Users"
 add_samba4_group
 
-echo -e "\n$GROUPADDMSG exams\n"
+echo -e "$GROUPADDMSG exams"
 NEWGROUP=exams
 NEWGROUPDISP="Exam Users"
 add_samba4_group
 
-echo -e "\n$GROUPADDMSG itadmin\n"
+echo -e "$GROUPADDMSG itadmin"
 NEWGROUP=itadmin
 NEWGROUPDISP="Itadmin Users"
 add_samba4_group
 
-echo "\n$GROUPADDMSG tech\n"
+echo "$GROUPADDMSG tech"
 NEWGROUP=tech
 NEWGROUPDISP="Tech Users"
 add_samba4_group
 
-echo -e "\n$GROUPADDMSG officestaff\n"
+echo -e "$GROUPADDMSG officestaff"
 NEWGROUP=officestaff
 NEWGROUPDISP="Office Staff"
 add_samba4_group
 
-echo -e "\n$GROUPADDMSG bursar\n"
+echo -e "$GROUPADDMSG bursar"
 NEWGROUP=bursar
 NEWGROUPDISP="Bursars"
 add_samba4_group
 
-echo -e "$GROUPADDMSG smt\n"
+echo -e "$GROUPADDMSG smt"
 NEWGROUP=smt
 NEWGROUPDISP="Senior Management"
 add_samba4_group
 
-echo -e "\n$GROUPADDMSG governors\n"
+echo -e "$GROUPADDMSG governors"
 NEWGROUP=governors
 NEWGROUPDISP="Governors"
 add_samba4_group
 
-echo -e "\n$GROUPADDMSG guardians\n"
+echo -e "$GROUPADDMSG guardians"
 NEWGROUP=guardians
 NEWGROUPDISP="Guardians"
 add_samba4_group
 
-echo -e "\n$GROUPADDMSG profilemanagement\n"
+echo -e "$GROUPADDMSG profilemanagement"
 NEWGROUP=profilemanagement
 NEWGROUPDISP="Profile Management"
 add_samba4_group
@@ -1287,8 +1287,16 @@ function run_functions {
 check_ldap_port
 allow_anonumous_browse
 add_organisational_units
+
+#Add in fqdn
+echo $HOSTNAME.$REALM > /etc/hostname-fqdn
+
+#Create hostname-fqdn command
+echo "cat /etc/hostname-fqdn" > /bin/hostname-fqdn
+chmod 0755 /bin/hostname-fqdn
+
 #nslcd-user-accounts - not needed using anonymous bind instead
-echo "N.A.:127.0.0.1:N.A.:$HOSTNAME:users:internal:" | /opt/karoshi/serversetup/modules/authentication/configure_authentication
+echo "N.A.:127.0.0.1:N.A.:$HOSTNAME.$REALM:users:internal:" | /opt/karoshi/serversetup/modules/authentication/configure_authentication
 makefoldersandgroups
 creategpos
 setfolderpermissions
@@ -1346,7 +1354,8 @@ cp -f /opt/karoshi/serversetup/all/backgrounds/linuxclient.png /var/lib/samba/ne
 #Create client info on netlogon
 [ ! -d /var/lib/samba/netlogon/domain_information ] && mkdir -p /var/lib/samba/netlogon/domain_information
 echo $SAMBADOMAIN > /var/lib/samba/netlogon/domain_information/domain_name
-echo $HOSTNAME.$REALM > /var/lib/samba/netlogon/domain_information/main_server
+#echo $HOSTNAME.$REALM > /var/lib/samba/netlogon/domain_information/main_server_fqdn
+echo $HOSTNAME > /var/lib/samba/netlogon/domain_information/main_server
 
 #Copy printer info to netlogon
 [ -f /opt/karoshi/server_network/printserver ] && cp -f /opt/karoshi/server_network/printserver /var/lib/samba/netlogon/
@@ -1378,12 +1387,6 @@ echo $LDAPBASE > /var/lib/samba/netlogon/domain_information/ldap_base
 #Prepare client_settings
 [ ! -d /var/lib/samba/netlogon/client_settings ] && mkdir -p /var/lib/samba/netlogon/client_settings
 
-#Add in fqdn
-echo $HOSTNAME.$REALM > /etc/hostname-fqdn
-
-#Create hostname-fqdn command
-echo "cat /etc/hostname-fqdn" > /bin/hostname-fqdn
-chmod 0755 /bin/hostname-fqdn
 
 #Restart samba
 echo Restarting samba4 >> /opt/karoshi/serversetup/install_log

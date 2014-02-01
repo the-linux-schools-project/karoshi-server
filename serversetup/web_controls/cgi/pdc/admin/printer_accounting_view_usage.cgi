@@ -120,7 +120,7 @@ fi
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
@@ -141,14 +141,14 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	// ]]>
 	</script>'
 fi
-echo '</head><body>'
+echo '</head><body><div id="pagecontainer">'
 
 function show_status {
 echo '<script type="text/javascript">'
 echo 'alert("'$MESSAGE'");'
 echo 'window.location = "/cgi-bin/admin/'$STARTPAGE'";'
 echo '</script>'
-echo "</div></body></html>"
+echo "</div></div></body></html>"
 exit
 }
 
@@ -228,5 +228,5 @@ fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printer_accounting_view_usage.cgi | cut -d' ' -f1`
 #View Usage
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$NAME:$TYPE:$MONTH:$YEAR:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/printer_accounting_view_usage
-echo '</div></body></html>'
+echo '</div></div></body></html>'
 exit

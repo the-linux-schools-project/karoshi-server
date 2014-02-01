@@ -44,7 +44,7 @@ echo "Content-type: text/html"
 echo ""
 echo '<html><head><title>'$TITLE1'</title><META HTTP-EQUIV="refresh" CONTENT="300; URL=/cgi-bin/blank.cgi">'
 echo "<link rel="stylesheet" href="/css/$STYLESHEET"><script src=\"/all/stuHover.js\" type=\"text/javascript\"></script>"
-echo "</head><body>"
+echo "</head><body><div id='pagecontainer'>"
 #########################
 #Get data input
 #########################
@@ -56,7 +56,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/staff/dg_ban_location_fm.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 
@@ -83,5 +83,5 @@ echo '<option value="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb
 fi
 echo "</div>"
 echo '<div id="submitbox"><input value="Submit" type="submit"> <input value="Reset" type="reset"></div>'
-echo '</form></body></html>'
+echo '</form></div></body></html>'
 exit

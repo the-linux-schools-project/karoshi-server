@@ -94,7 +94,7 @@ done
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE3'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"><meta http-equiv="REFRESH" content="0;url='$STARTPAGE'"></head><body>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE3'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta http-equiv="REFRESH" content="0;url='$STARTPAGE'"></head><body><div id="pagecontainer">'
 
 
 function show_status {
@@ -102,7 +102,7 @@ echo '<script type="text/javascript">'
 echo 'alert("'$MESSAGE'");'
 echo 'window.location = "/cgi-bin/admin/'$STARTPAGE'";'
 echo '</script>'
-echo "</div></body></html>"
+echo "</div></div></body></html>"
 exit
 }
 
@@ -180,5 +180,5 @@ echo '<div id="'$DIV_ID'">'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printer_accounting_edit_limits.cgi | cut -d' ' -f1`
 #Change Printer status
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$NAME:$TYPE:$LIMIT:" | sudo -H /opt/karoshi/web_controls/exec/printer_accounting_edit_limits
-echo '</div></body></html>'
+echo '</div></div></body></html>'
 exit

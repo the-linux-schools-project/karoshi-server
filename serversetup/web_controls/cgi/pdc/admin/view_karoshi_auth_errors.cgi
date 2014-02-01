@@ -46,7 +46,7 @@ echo ""
 echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">'
 echo "<link rel="stylesheet" href="/css/$STYLESHEET"><script src=\"/all/stuHover.js\" type=\"text/javascript\"></script>"
 echo "</head>"
-echo "<body>"
+echo "<body><div id='pagecontainer'>"
 #########################
 #Get data input
 #########################
@@ -58,7 +58,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/admin/view_karoshi_web_auth_errors.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -95,5 +95,5 @@ echo "--->"
 echo "</STYLE>"
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/view_karoshi_auth_errors.cgi | cut -d' ' -f1`
 sudo -H /opt/karoshi/web_controls/exec/view_karoshi_auth_errors $REMOTE_USER:$REMOTE_ADDR:$MD5SUM
-echo '</div></body></html>'
+echo '</div></div></body></html>'
 exit

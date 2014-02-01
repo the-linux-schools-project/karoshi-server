@@ -45,7 +45,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -57,7 +57,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/admin/printers.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -92,7 +92,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$PRINTSERVERERRORMSG'")';
 echo 'window.location = "karoshi_servers_view.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 
@@ -120,7 +120,7 @@ if [ $PRINTERCOUNT = 0 ]
 then
 echo $NOPRINTERSMSG'<br>'
 echo "</div>"
-echo '</body></html>'
+echo '</div></body></html>'
 exit
 fi
 #Show printer list to choose from
@@ -141,5 +141,5 @@ done
 echo '</select></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Delete_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'"$CHOOSEPRINTERMSG"'</span></a>
 </td></tr></tbody</table></div><div id="submitbox"><input value="Submit" type="submit">'
-echo '</form></div></body></html>'
+echo '</form></div></div></body></html>'
 exit

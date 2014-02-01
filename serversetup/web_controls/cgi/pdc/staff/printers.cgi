@@ -43,7 +43,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/karoshi/admin/printers.html";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -53,7 +53,7 @@ TCPIP_ADDR=$REMOTE_ADDR
 echo "Content-type: text/html"
 echo ""
 echo "<html><head><title>$TITLE1</title></head>"
-echo '<link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script>'
+echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>'
 echo '<meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
@@ -78,7 +78,7 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 fi
 
 
-echo '</head><body>'
+echo '</head><body><div id="pagecontainer">'
 
 #Generate navigation bar
 if [ $MOBILE = no ]
@@ -109,5 +109,5 @@ fi
 
 sudo -H /opt/karoshi/web_controls/exec/printers_staff $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:
 echo '</div></form>'
-echo '</body></html>'
+echo '</div></body></html>'
 exit

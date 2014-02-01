@@ -37,7 +37,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 echo "Content-type: text/html"
 echo ""
 echo "<html><head><title>$TITLE</title>"
-echo '<link rel="stylesheet" href="/css/'$STYLESHEET'"><meta http-equiv="REFRESH" content="0;url=helpdesk_view_fm.cgi"></head><body>'
+echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta http-equiv="REFRESH" content="0;url=helpdesk_view_fm.cgi"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -119,7 +119,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo 'window.location = "/cgi-bin/admin/helpdesk_view_fm.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################

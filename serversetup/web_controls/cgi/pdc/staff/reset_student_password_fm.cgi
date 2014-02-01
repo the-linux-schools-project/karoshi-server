@@ -40,13 +40,13 @@ echo '
 <html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$TITLE2'</title>
-  <link rel="stylesheet" href="/css/'$STYLESHEET'">
+  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script type="text/javascript" src="/all/js/jquery.js"></script>
 <script type="text/javascript" src="/all/js/script.js"></script>
 <META HTTP-EQUIV="refresh" CONTENT="300; URL=/cgi-bin/blank.cgi">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
-<body>'
+<body><div id="pagecontainer">'
 
 
 #########################
@@ -104,7 +104,7 @@ echo '
   <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
   </div>
 </form>
-</body>
+</div></body>
 </html>
 '
 exit

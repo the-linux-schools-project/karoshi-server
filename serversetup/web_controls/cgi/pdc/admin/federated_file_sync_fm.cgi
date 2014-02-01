@@ -47,9 +47,9 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
 </head>
-<body onLoad="start()">'
+<body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -91,13 +91,13 @@ fi
 #Check that this server is a federated server
 if [ ! -d  /opt/karoshi/server_network/federated_ldap_servers ]
 then
-echo $ERRORMSG1 '</div></body></html>'
+echo $ERRORMSG1 '</div></div></body></html>'
 exit
 fi
 
 if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers | wc -l` = 0 ]
 then
-echo $ERRORMSG1 '</div></body></html>'
+echo $ERRORMSG1 '</div></div></body></html>'
 exit
 fi
 
@@ -181,6 +181,6 @@ fi
 done
 echo '</select></td><td><input value="'$SUBMITMSG'" class="button" type="submit"></td></tr></tbody></table>'
 
-echo '</div></form></body></html>'
+echo '</div></form></div></body></html>'
 exit
 

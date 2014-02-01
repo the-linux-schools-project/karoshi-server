@@ -39,7 +39,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"><meta http-equiv="REFRESH" content="0;url=/cgi-bin/admin/karoshi_servers_view.cgi"></head><body>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta http-equiv="REFRESH" content="0;url=/cgi-bin/admin/karoshi_servers_view.cgi"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -107,7 +107,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'");'
 echo 'window.location = "/cgi-bin/admin/karoshi_servers_view.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -172,5 +172,5 @@ echo '<div id="actionbox"><b>'$TITLE2' - '$SERVERNAME'</b><br><br>'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/karoshi_servers_remove_role.cgi | cut -d' ' -f1`
 #Remove module
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$MODULE:" | sudo -H /opt/karoshi/web_controls/exec/karoshi_servers_remove_role
-echo '</div></body></html>'
+echo '</div></div></body></html>'
 

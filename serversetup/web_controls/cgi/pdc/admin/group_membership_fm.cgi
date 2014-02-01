@@ -53,7 +53,7 @@ echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$TITLE1'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'">
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script type="text/javascript" src="/all/js/jquery.js"></script>
 <script type="text/javascript" src="/all/js/script.js"></script>
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
@@ -77,7 +77,7 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	// ]]>
 	</script>'
 fi
-echo '</head><body onLoad="start()">'
+echo '</head><body onLoad="start()"><div id="pagecontainer">'
 
 #Generate navigation bar
 if [ $MOBILE = no ]
@@ -134,5 +134,5 @@ echo '</div></div><div id="submitbox">'
 else
 echo '<br>'
 fi
-echo '<input value="'$SUBMITMSG'" class="button" type="submit"></div></form></body></html>'
+echo '<input value="'$SUBMITMSG'" class="button" type="submit"></div></form></div></body></html>'
 exit

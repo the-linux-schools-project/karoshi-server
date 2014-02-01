@@ -47,7 +47,7 @@ echo "Content-type: text/html"
 echo ""
 echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE2'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">'
 echo "<link rel="stylesheet" href="/css/$STYLESHEET"><script src=\"/all/stuHover.js\" type=\"text/javascript\"></script>"
-echo "</head><body>"
+echo "</head><body><div id='pagecontainer'>"
 #########################
 #Get data input
 #########################
@@ -77,7 +77,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/karoshi/admin/incident_logs_view.html";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -117,5 +117,5 @@ echo "<div id="actionbox">"
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/incident_log_view.cgi | cut -d' ' -f1`
 #Show logs
 sudo -H /opt/karoshi/web_controls/exec/incident_log_view $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ALPHABET
-echo '</div></body></html>'
+echo '</div></div></body></html>'
 exit

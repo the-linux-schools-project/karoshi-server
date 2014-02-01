@@ -38,8 +38,8 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head><title>Karoshi Web Application</title><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><link rel="stylesheet" href="/css/'$STYLESHEET'"></head>
-<body><table class="leftmenu" style="text-align: left; width: 222px; height: 426px;" border="0" cellpadding="6" cellspacing="0">
+<html><head><title>Karoshi Web Application</title><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head>
+<body><div id="pagecontainer"><table class="leftmenu" style="text-align: left; width: 222px; height: 426px;" border="0" cellpadding="6" cellspacing="0">
 <tbody><tr><td style="vertical-align: top;">
 <a href="/cgi-bin/tech/change_password_fm.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/user/password.png">'$CHANGEPASSMSG'</a><br>
 <a href="/cgi-bin/tech/reset_password_fm.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/user/reset_password.png">'$RESETPASSMSG'</a><br>
@@ -53,6 +53,6 @@ echo '
 <a href="/cgi-bin/tech/change_username_fm.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/user/change_username.png">'$CHANGEUSERNAMEMSG'</a><br>
 <a href="/cgi-bin/tech/incident_log_add.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/user/info.png">'$RECINCMSG'</a><br>
 <a href="/cgi-bin/tech/incident_log_view_fm.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/user/info.png">'$VIEWLOGSMSG'</a><br>
-</td></tr></tbody></table></body></html>
+</td></tr></tbody></table></div></body></html>
 '
 exit

@@ -47,9 +47,9 @@ fi
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">'
 echo "</head>"
-echo "<body onLoad="start()">"
+echo "<body onLoad="start()"><div id='pagecontainer'>"
 #########################
 #Check https access
 #########################
@@ -80,7 +80,7 @@ function show_status {
 echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 
@@ -114,7 +114,7 @@ echo '<td style="width: 90px; vertical-align: top; text-align: left;"><a class="
 [ $SERVERCOUNTER = 5 ] && echo '</tr><tr>'
 let SERVERCOUNTER=$SERVERCOUNTER+1
 done
-echo '</tr></tbody></table></div></form></body></html>'
+echo '</tr></tbody></table></div></form></div></body></html>'
 exit
 
 

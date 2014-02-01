@@ -48,7 +48,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 echo "Content-type: text/html"
 echo ""
 echo "<html><head><title>$TITLE</title><meta http-equiv='"'REFRESH'"' content='"'0; URL='/cgi-bin/admin/remote_management_view.cgi''"'>"
-echo '<link rel="stylesheet" href="/css/'$STYLESHEET'"></head><body>'
+echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -169,7 +169,7 @@ function show_status {
 echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################

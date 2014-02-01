@@ -62,10 +62,10 @@ SECONDS=`date +%S`
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'"><script language="JavaScript" src="/all/calendar/ts_picker.js" type="text/javascript"></script>
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script language="JavaScript" src="/all/calendar/ts_picker.js" type="text/javascript"></script>
         <!-- Timestamp input popup (European Format) --><script src="/all/stuHover.js" type="text/javascript"></script>'
 echo "</head>"
-echo '<body onLoad="start()">'
+echo '<body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Check https access
 #########################
@@ -90,7 +90,7 @@ show_status
 fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/time.cgi" name="tstest" method="post"><div id="actionbox4"><div id="titlebox"><b>'$TITLE'</b><br><br>'
+echo '<form action="/cgi-bin/admin/time.cgi" name="tstest" method="post"><div id="actionbox3"><div id="titlebox"><b>'$TITLE'</b><br><br>'
 
 
 
@@ -105,5 +105,5 @@ echo "$TIMEMSG:<br>
 
 [ $MOBILE = no ] && echo '</div>'
 
-echo '</div></form></body></html>'
+echo '</div></form></div></body></html>'
 exit

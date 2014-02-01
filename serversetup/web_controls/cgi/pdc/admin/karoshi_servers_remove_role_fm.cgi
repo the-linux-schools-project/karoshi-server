@@ -48,10 +48,10 @@ echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$TITLE2'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'">
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
-<body onLoad="start()">'
+<body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -82,7 +82,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo 'window.location = "/cgi-bin/admin/karoshi_servers_view.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 
@@ -133,7 +133,7 @@ ROLE_NAME=$BACKUPSERVERMSG
 ROLE_NAME_STATUS=set
 CONSEQUENCES=$BACKUPSERVER_REMOVAL
 MODULES=yes
-elif [ $ROLE_FILE = dhcp_server ] && [ $SERVERNAME = $HOSTNAME ]
+elif [ $ROLE_FILE = dhcp_server ] && [ $SERVERNAME = `hostname-fqdn` ]
 then
 ROLE_NAME=$DHCPSERVERMSG
 ROLE_NAME_STATUS=set
@@ -145,7 +145,7 @@ ROLE_NAME=$EMAILSERVERMSG
 ROLE_NAME_STATUS=set
 CONSEQUENCES=$EMAILSERVER_REMOVAL
 MODULES=yes
-elif [ $SERVERNAME != $HOSTNAME ] && [ $ROLE_FILE = fileserver ]
+elif [ $SERVERNAME != `hostname-fqdn` ] && [ $ROLE_FILE = fileserver ]
 then
 ROLE_NAME=$FILESERVERMSG
 ROLE_NAME_STATUS=set
@@ -205,13 +205,13 @@ ROLE_NAME=$RADIOSERVERMSG
 ROLE_NAME_STATUS=set
 CONSEQUENCES=$RADIOSERVER_REMOVAL
 MODULES=yes
-elif [ $ROLE_FILE = federated_server ] && [ $SERVERNAME != $HOSTNAME ]
+elif [ $ROLE_FILE = federated_server ] && [ $SERVERNAME != `hostname-fqdn` ]
 then
 ROLE_NAME=$FEDERATIONCONTROLMSG
 ROLE_NAME_STATUS=set
 CONSEQUENCES=$FEDERATIONCONTROL_REMOVAL
 MODULES=yes
-elif [ $ROLE_FILE = ldapserver ] && [ $SERVERNAME != $HOSTNAME ]
+elif [ $ROLE_FILE = ldapserver ] && [ $SERVERNAME != `hostname-fqdn` ]
 then
 ROLE_NAME=$SLAVELDAPSERVERMSG
 ROLE_NAME_STATUS=set
@@ -243,7 +243,7 @@ echo '
 
 MODULES=no
 
-if [ $SERVERNAME != $HOSTNAME ] && [ ! -d /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME ]
+if [ $SERVERNAME != `hostname-fqdn` ] && [ ! -d /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME ]
 then
 echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$REMOVE_SERVER_MSG'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="___MODULE___REMOVESERVER___" type="image" class="images" src="'$ICON'" value=""><span>'$REMOVE_SERVER_CONSEQUENCES'</span></a></td></tr>'
 fi
@@ -281,5 +281,5 @@ if [ $MODULES != yes ]
 then
 echo $NO_MODULES_WARN
 fi
-echo '</form></div></body></html>'
+echo '</form></div></div></body></html>'
 exit

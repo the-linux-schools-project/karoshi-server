@@ -39,7 +39,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE3'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"><meta http-equiv="REFRESH" content="3;url=/cgi-bin/admin/ups_status.cgi"></head><body>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE3'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta http-equiv="REFRESH" content="3;url=/cgi-bin/admin/ups_status.cgi"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -69,7 +69,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo 'window.location = "/cgi-bin/admin/ups_status.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -111,5 +111,5 @@ echo '<div id="actionbox"><b>'$TITLE3'</b><br><br>'$RESTARTMSG2''
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ups_restart.cgi | cut -d' ' -f1`
 #Restart UPS
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER:" | sudo -H /opt/karoshi/web_controls/exec/ups_restart
-echo '</div></body></html>'
+echo '</div></div></body></html>'
 exit

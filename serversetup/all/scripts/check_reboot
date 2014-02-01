@@ -37,7 +37,7 @@ echo `date`: check_reboot - $SERVER: reboot required after an upgrade. >> /opt/k
 for SERVERS in /opt/karoshi/server_network/servers/*
 do
 SERVER=`basename $SERVERS`
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 [ -f /var/run/reboot-required ] && add_warning
 else

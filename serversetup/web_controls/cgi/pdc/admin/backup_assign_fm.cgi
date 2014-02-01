@@ -47,7 +47,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body onLoad="start()">'
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -78,7 +78,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo 'window.location = "/cgi-bin/admin/karoshi_servers_view.cgi"'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 
@@ -141,5 +141,5 @@ echo '</tr>'
 [ -d /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME ] && echo '<tr><td><a class="info" href="javascript:void(0)"><input name="_BACKUPSERVER_removebackupoption_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$NOBACKUPMSG'</span></a><br>'$NOBACKUPMSG'</td></tr>'
 
 
-echo '</tbody></table></div></form></body></html>'
+echo '</tbody></table></div></form></div></body></html>'
 exit

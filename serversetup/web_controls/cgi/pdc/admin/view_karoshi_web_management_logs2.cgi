@@ -81,7 +81,7 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	</script>'
 fi
 
-echo '<link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body>'
+echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -122,7 +122,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/admin/view_karoshi_web_management_logs.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -209,7 +209,7 @@ if [ $MOBILE = no ]
 then
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><div id="titlebox">'
+echo '<div id="actionbox3"><div id="titlebox">'
 fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/view_karoshi_web_management_logs2.cgi | cut -d' ' -f1`
 #Show logs
@@ -248,5 +248,5 @@ MESSAGE=$ERRORMSG4
 show_status
 fi
 [ $MOBILE = no ] && echo '</div>'
-echo '</div></body></html>'
+echo '</div></div></body></html>'
 exit

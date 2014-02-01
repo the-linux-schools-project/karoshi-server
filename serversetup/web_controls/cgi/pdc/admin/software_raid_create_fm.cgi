@@ -48,7 +48,7 @@ echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$TITLE1'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-  <link rel="stylesheet" href="/css/'$STYLESHEET'">
+  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script type="text/javascript">
 <!--
 function SetAllCheckBoxes(FormName, FieldName, CheckValue)
@@ -70,7 +70,7 @@ function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 </script>
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
 </head>
-<body onLoad="start()">'
+<body onLoad="start()"><div id="pagecontainer">'
 
 #Detect mobile browser
 MOBILE=no
@@ -110,5 +110,5 @@ fi
 
 [ $MOBILE = no ] && echo '</div>'
 
-echo '</div></form></body></html>'
+echo '</div></form></div></body></html>'
 exit

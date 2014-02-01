@@ -51,7 +51,7 @@ echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$TITLE2'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'">
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script type="text/javascript">
 <!--
 function SetAllCheckBoxes(FormName, FieldName, CheckValue)
@@ -73,7 +73,7 @@ function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 </script>
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
-<body onLoad="start()">'
+<body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
@@ -94,13 +94,13 @@ fi
 
 if [ $FILECOUNT != 1 ]
 then
-echo ''$ERRORMSG1'</div></body></html>'
+echo ''$ERRORMSG1'</div></div></body></html>'
 exit
 fi
 
 if [ `echo $FILENAME'null' | sed 's/ //g'` = null ]
 then
-echo ''$ERRORMSG2'</div></body></html>'
+echo ''$ERRORMSG2'</div></div></body></html>'
 exit
 else
 FILENAME=`ls -1 /var/www/karoshi/win_startmenu_upload/ | sed -n 1,1p`
@@ -142,7 +142,7 @@ echo '
   <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"> <input type="button" onclick="SetAllCheckBoxes('\'selectgroups\'', '\'_PRIGROUP_\'', true);" value="'$SELECTMSG'">
 </div>
 </form>
-</body>
+</div></body>
 </html>
 '
 exit

@@ -43,7 +43,7 @@ echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<link rel="stylesheet" href="/css/'$STYLESHEET'"><title>'$TITLE'</title></head><body onLoad="start()">'
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><title>'$TITLE'</title></head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -72,7 +72,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo 'window.location = "/cgi-bin/admin/helpdesk_view_completed_fm.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -125,6 +125,6 @@ echo '<form action="/cgi-bin/admin/helpdesk_action.cgi" method="post"><div id="a
 </tbody></table></div>
 <div id="submitbox">
 <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
-</div></form></body></html>'
+</div></form></div></body></html>'
 exit
 

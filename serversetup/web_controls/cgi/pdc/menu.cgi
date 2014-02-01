@@ -28,6 +28,11 @@ STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
+
+#Detect mobile browser
+MOBILE=no
+source /opt/karoshi/web_controls/detect_mobile_browser
+
 ############################
 #Show page
 ############################
@@ -41,10 +46,13 @@ echo '
 <META HTTP-EQUIV="refresh" CONTENT="300; URL=/cgi-bin/blank.cgi">
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
   <title>'$TITLE'</title>
-<link href="/css/'$STYLESHEET'" rel="stylesheet" type="text/css">
-<script src="/all/stuHover.js" type="text/javascript"></script>
+<link href="/css/'$STYLESHEET'?d=`date +%F`" rel="stylesheet" type="text/css">
+<script src="/all/stuHover.js" type="text/javascript"></script>'
 
-	<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+
+if [ $MOBILE = yes ]
+then
+echo '	<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
@@ -60,14 +68,10 @@ echo '
 		myMenu.init();
 	};
 	// ]]>
-	</script>
+	</script>'
+fi
 
-</head>
-<body>'
-#echo the user agent is $HTTP_USER_AGENT"<br>"
-#Detect mobile browser
-MOBILE=no
-source /opt/karoshi/web_controls/detect_mobile_browser
+echo '</head><body><div id="pagecontainer">'
 
 #Generate navigation bar
 if [ $MOBILE = no ]
@@ -101,5 +105,5 @@ echo '<br><br><br><img src="/images/valid-html401-blue.png" alt="Valid HTML 4.01
 else
 echo "<br><br>"
 fi
-echo '</body></html>'
+echo '</div></body></html>'
 exit

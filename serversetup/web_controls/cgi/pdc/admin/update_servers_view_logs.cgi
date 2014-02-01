@@ -83,7 +83,7 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 fi
 
 
-echo '</head><body>'
+echo '</head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -166,7 +166,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/admin/update_servers_view_logs_fm.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -293,5 +293,5 @@ then
 MESSAGE=$ERRORMSG4
 show_status
 fi
-echo '</div></body></html>'
+echo '</div></div></body></html>'
 exit

@@ -44,7 +44,7 @@ function show_status {
 echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -72,7 +72,7 @@ done
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body onLoad="start()">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
@@ -92,23 +92,23 @@ fi
 #Check to see that SEARCH is not blank
 if [ $SEARCH'null' = null ]
 then
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 fi
 
 #make sure that the search criteria has at least three spaces
 if [ ${#SEARCH} -le 2 ]
 then
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 fi
 
 #Sort out spaces
 SEARCH=`echo $SEARCH | sed 's/+/ /g'`
 
-echo '<div id="actionbox">'
+echo '<div id="actionbox3"><div id="titlebox">'
 
-echo '<b>'$TITLE - "$SEARCH"'</b><br><br>'
+echo '<b>'$TITLE - "$SEARCH"'</b><br><br></div><div id="infobox">'
 
 #Get array of results
 RESULTS=( `cat /opt/karoshi/web_controls/language/englishuk/menus/menu | grep -v "#" | grep -i "$SEARCH" | sed 's/"//g' | sed 's/ /+/g'` )
@@ -126,7 +126,6 @@ LINK=`grep -v 'class="mid"' /opt/karoshi/web_controls/generate_navbar_admin | gr
 
 let COUNTER=$COUNTER+1
 done
-echo "</div>"
-echo "</body></html>"
+echo '</div></div></div></body></html>'
 exit
 

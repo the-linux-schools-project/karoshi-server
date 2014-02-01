@@ -58,7 +58,7 @@ then
 echo `date`: setupprintserver - Blank PDC."<br>"
 exit 101
 fi
-if [ $PDCSERVER != $HOSTNAME ]
+if [ $PDCSERVER != `hostname-fqdn` ]
 then
 if [ $LDAPPASS'null' = null ]
 then
@@ -73,7 +73,7 @@ echo `date`: setupprintserver - Blank TCPIP."<br>"
 exit 101
 fi
 
-if [ $PDCSERVER != $HOSTNAME ]
+if [ $PDCSERVER != `hostname-fqdn` ]
 then
 #Check to see that we can ping the PDC
 ping -c 2 $PDCIP 1>/dev/null

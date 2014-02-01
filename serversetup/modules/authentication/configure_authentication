@@ -232,22 +232,14 @@ exit 101
 fi
 
 #Add role information
-[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME.$REALM ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME.$REALM
+[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
 
 #Remove any current flag information for domain roles
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME.$REALM/1domainmember ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/1domainmember
-[ -f /opt/karoshi/server_network/zones/$ZONE/domain_members/$SERVERNAME.$REALM ] && rm -f /opt/karoshi/server_network/zones/$ZONE/domain_members/$SERVERNAME.$REALM
-[ -f /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/$SERVERNAME.$REALM ] && rm -f /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/$SERVERNAME.$REALM
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME.$REALM/1dc ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME.$REALM/1dc
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1domainmember ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/1domainmember
+[ -f /opt/karoshi/server_network/zones/$ZONE/domain_members/$SERVERNAME ] && rm -f /opt/karoshi/server_network/zones/$ZONE/domain_members/$SERVERNAME
+[ -f /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/$SERVERNAME
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc
 
-#Sync applications and netlogon shares
-if [ $ZONE = internal ] || [ $ZONE = dmz ]
-then
-if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
-then
-/opt/karoshi/"useful scripts"/adc_sync
-fi
-fi
 
 #Authtypes adc rodc member users none
 if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ] 
@@ -255,19 +247,19 @@ then
 DCROLE="Additional Domain Controller"
 [ $AUTHTYPE = rodc ] && DCROLE="Read Only Domain Controller"
 
-echo $DCROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME.$REALM/1dc
+echo $DCROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/1dc
 [ ! -d /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/
-echo $AUTHTYPE > /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/$SERVERNAME.$REALM
+echo $AUTHTYPE > /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/$SERVERNAME
 else
-echo Domain member"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME.$REALM/1domainmember
+echo Domain member"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/1domainmember
 [ ! -d /opt/karoshi/server_network/zones/$ZONE/domain_members/ ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/domain_members
-touch /opt/karoshi/server_network/zones/$ZONE/domain_members/$SERVERNAME.$REALM
+touch /opt/karoshi/server_network/zones/$ZONE/domain_members/$SERVERNAME
 fi
 }
 
 function configure_nslcd {
 
-if [ $SERVERNAME = $HOSTNAME ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
 
 source /opt/karoshi/serversetup/variables/distro
@@ -309,9 +301,9 @@ source /opt/karoshi/serversetup/variables/distro
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nslcd
 fi
 
-if [ $SERVERNAME != $HOSTNAME ]
+if [ $SERVERNAME != `hostname-fqdn` ]
 then
-ssh -x -o PasswordAuthentication=no $SERVERNAME.$REALM '
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
 echo "<br><li><b>'$CONFIGUREAUTHMSG'</b></li><br>"
 
 source /opt/karoshi/serversetup/variables/distro
@@ -391,15 +383,15 @@ fi
 
 #Add ldap client flag
 [ ! -d /opt/karoshi/server_network/zones/$ZONE/ldap_clients/ ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/ldap_clients
-echo ldap_server=$KRBSERVER > /opt/karoshi/server_network/zones/$ZONE/ldap_clients/$SERVERNAME.$REALM
+echo ldap_server=$KRBSERVER > /opt/karoshi/server_network/zones/$ZONE/ldap_clients/$SERVERNAME
 
-[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME.$REALM ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME.$REALM
-echo $USERSGROUPSMSG"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME.$REALM/2users-groups
+[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
+echo $USERSGROUPSMSG"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/2users-groups
 }
 
 function choose_krbserver {
 #Decide which krb server to use
-if [ $SERVERNAME != $HOSTNAME ]
+if [ $SERVERNAME != `hostname-fqdn` ]
 then
 #Authtypes adc rodc member users none 
 [ $AUTHTYPE = adc ] && KRBSERVER=$SERVERNAME
@@ -435,12 +427,12 @@ fi
 
 function configure_hosts {
 #Add entries to /etc/hosts
-if [ $SERVERNAME != $HOSTNAME ]
+if [ $SERVERNAME != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
-if [ `grep -c '$SERVERNAME'.'$REALM' /etc/hosts` = 0 ]
+if [ `grep -c $HOSTNAME /etc/hosts` = 0 ]
 then
-echo '$SERVERIP'"	"'$SERVERNAME'.'$REALM'"	"'$SERVERNAME' >> /etc/hosts
+echo '$SERVERIP'"	"$HOSTNAME.'$REALM'"	"$HOSTNAME >> /etc/hosts
 fi
 if [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ] 
 then
@@ -454,7 +446,7 @@ fi
 }
 
 function configure_resolvconf {
-if [ $SERVERNAME != $HOSTNAME ]
+if [ $SERVERNAME != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 #Write resolve.conf
@@ -485,7 +477,7 @@ fi
 }
 
 function check_ports {
-if [ $SERVERNAME != $HOSTNAME ]
+if [ $SERVERNAME != `hostname-fqdn` ]
 then
 #Set ports to check
 PORTCHECK=53,88,389
@@ -558,12 +550,4 @@ fi
 echo `date`: configure_authentication - configuring nslcd "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 configure_nslcd
 echo `date`: configure_authentication - completed "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-#sync files to adc
-if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ] 
-then
-if [ $ZONE = internal ]
-then
-/opt/karoshi/"useful scripts"/adc_sync yes &
-fi
-fi
 exit

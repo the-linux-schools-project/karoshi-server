@@ -49,7 +49,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<html><head><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body>'
+echo '<html><head><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -184,7 +184,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/admin/dg_ban_user.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 
@@ -203,7 +203,7 @@ echo '<input type="hidden" id="_STUDENTS_" name="_STUDENTS_" value="'$STUDENTS'"
 echo '<input type="hidden" id="_INCIDENT_" name="_INCIDENT_" value="'$INCIDENT'" />'
 echo '<input type="hidden" id="_ACTIONTAKEN_" name="_ACTIONTAKEN_" value="'$ACTIONTAKEN'" />'
 echo '<input type="hidden" id="_BANLENGTH_" name="_BANLENGTH_" value="'$BANLENGTH'" />'
-echo '</div><div id="submitbox"> <input value='$BACK' type="submit"></div></form></body></html>'
+echo '</div><div id="submitbox"> <input value='$BACK' type="submit"></div></form></div></body></html>'
 exit
 }
 

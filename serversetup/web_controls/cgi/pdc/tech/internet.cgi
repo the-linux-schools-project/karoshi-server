@@ -35,15 +35,15 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head><title>Karoshi Web Application</title><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><link href="/css/'$STYLESHEET'" rel="stylesheet" type="text/css"></head>
-<body><table class="leftmenu" style="text-align: left; width: 222px; height: 426px;" border="0" cellpadding="6" cellspacing="0"><tbody><tr><td style="vertical-align: top;">
+<html><head><title>Karoshi Web Application</title><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><link href="/css/'$STYLESHEET'?d='`date +%F`'" rel="stylesheet" type="text/css"></head>
+<body><div id="pagecontainer"><table class="leftmenu" style="text-align: left; width: 222px; height: 426px;" border="0" cellpadding="6" cellspacing="0"><tbody><tr><td style="vertical-align: top;">
 <a href="/cgi-bin/admin/dg_view_banned_users_fm.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/internet/view_banned_users.png">'$VIEWMSG'</a><br>
 <a href="/cgi-bin/admin/dg_banned_sites_fm.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/internet/banned_sites.png">'$BANMSG'</a><br>
 <a href="/cgi-bin/admin/dg_allowed_sites_fm.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/internet/allowed_sites.png">'$ALLOWMSG'</a><br>
 <a href="/cgi-bin/admin/dg_update_locations_fm.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/internet/internet_update_data.png">'$UPDATELOCATIONS'</a><br>
 <a href="/cgi-bin/admin/dg_import_location_data1.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/internet/internet_import_data.png">'$IMPORTLOCATIONDATA'</a><br>
 <a href="/cgi-bin/admin/activate_internet_changes_fm.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/internet/activate_changes.png">'$ACTIVATECHANGES'</a><br>
-</body>
-</td></tr></tbody></table></body></html>
+</div></body>
+</td></tr></tbody></table></div></body></html>
 '
 exit

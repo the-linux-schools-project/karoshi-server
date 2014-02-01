@@ -47,12 +47,12 @@ echo '
 <html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'">
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script type="text/javascript" src="/all/js/jquery.js"></script>
 <script type="text/javascript" src="/all/js/script.js"></script>
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
-<body>'
+<body><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_staff
 echo '<form action="/cgi-bin/staff/lockout_reset.cgi" method="post"><div id="actionbox"><b>'$TITLE'</b><br><br>
@@ -68,7 +68,7 @@ echo '<form action="/cgi-bin/staff/lockout_reset.cgi" method="post"><div id="act
 <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
 </div>
 </form>
-</body>
+</div></body>
 </html>
 '
 exit

@@ -45,7 +45,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"><meta http-equiv="REFRESH" content="0;url=/cgi-bin/admin/printers.cgi"></head><body>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta http-equiv="REFRESH" content="0;url=/cgi-bin/admin/printers.cgi"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -63,7 +63,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/admin/printers.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -126,5 +126,5 @@ done
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printers_assign.cgi | cut -d' ' -f1`
 #Assign printers
 sudo -H /opt/karoshi/web_controls/exec/printers_assign $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PRINTER:`echo ${LOCATIONS[@]:0} | sed 's/ /:/g'`
-echo "</body></html>"
+echo "</div></body></html>"
 exit

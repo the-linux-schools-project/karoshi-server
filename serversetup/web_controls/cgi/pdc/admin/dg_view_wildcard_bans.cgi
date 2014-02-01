@@ -66,7 +66,7 @@ echo '			objCheckBoxes[i].checked = CheckValue;'
 echo '}'
 echo '// -->'
 echo '</script><script src="/all/stuHover.js" type="text/javascript"></script>'
-echo "</head><body>"
+echo "</head><body><div id='pagecontainer'>"
 #########################
 #Get data input
 #########################
@@ -95,7 +95,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/admin/dg_view_wildcard_bans_fm.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -154,5 +154,5 @@ echo '<input value="Reset" type="reset"> '
 echo '<'input type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedwildcards"'", "'"_WILDCARD_"'", true')'';''"' value='"'Select all'"''>'
 echo '</div>'
 echo '</form>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit

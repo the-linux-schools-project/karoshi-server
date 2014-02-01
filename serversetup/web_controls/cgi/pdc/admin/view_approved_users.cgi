@@ -39,7 +39,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"></head><body>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
@@ -73,7 +73,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo 'window.location = "/cgi-bin/admin/view_approved_users_fm.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -128,5 +128,5 @@ echo '<div id="actionbox"><b>'$TITLE' - '$GROUP'</b><br><br>
 
 grep -w $GROUP /opt/karoshi/acceptable_use_authorisations/approved_users | sed 's/^/\<tr\>\<td\>/g' | sed 's/$/\<\/td\>\<\/tr\>/g' | sed 's/,/\<\/td\>\<td\>/g' | sort
 
-echo '</tbody></table></div></body></html>'
+echo '</tbody></table></div></div></body></html>'
 exit

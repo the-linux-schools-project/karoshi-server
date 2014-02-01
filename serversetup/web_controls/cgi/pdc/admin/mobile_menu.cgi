@@ -58,7 +58,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 	<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
@@ -77,7 +77,7 @@ echo '
 	// ]]>
 	</script>
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head>
-<body>
+<body><div id="pagecontainer">
     <div style="float: center" id="my_menu" class="sdmenu">
 	<div class="collapsed">
 	<span>TLSP '$SCHOOL_NAME'</span>
@@ -191,6 +191,6 @@ echo '<div class="a.current">
 </small></small>
 </div>
 </div>
-</body></html>
+</div></div></body></html>
 '
 exit

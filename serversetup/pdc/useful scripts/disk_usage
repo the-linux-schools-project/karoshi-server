@@ -54,7 +54,7 @@ function warning_alert4 {
 
 function check_smart_data {
 SMARTWARN=no
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 
 #Check to see if mdadm is installed
@@ -172,7 +172,7 @@ echo checking $SERVER
 DISKWARN=no
 RAIDWARN=no
 ZFSWARN=no
-if [ $SERVER = $HOSTNAME ]
+if [ $SERVER = `hostname-fqdn` ]
 then
 [ ! -d /opt/karoshi/logs/disk_usage/$LOG_DATE ] && mkdir -p /opt/karoshi/logs/disk_usage/$LOG_DATE
 sleep 4 ; killall df 2>/dev/null | df -h -l > /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage.$$

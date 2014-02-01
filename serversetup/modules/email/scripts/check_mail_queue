@@ -10,7 +10,7 @@ fi
 MAILWARN=50
 MAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
 
-if [ $MAILSERVER = $HOSTNAME ]
+if [ $MAILSERVER = `hostname-fqdn` ]
 then
 mailq_count=`/usr/bin/mailq | /usr/bin/tail -n1 | cut -d" " -f5`
 mailq_count=`expr $mailq_count + 0`

@@ -31,7 +31,7 @@ ACCESS_ERROR1="You must be a Karoshi Management User to complete this action."
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/karoshi/style.css"><script src="/all/stuHover.js" type="text/javascript"></script></head><body>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/karoshi/style.css"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -43,7 +43,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/admin/view_karoshi_web_admin_log.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -104,5 +104,5 @@ echo '</tbody></table>'
 echo "</div>"
 echo '<div id="submitbox"><input value="Submit" type="submit"></div>'
 echo '<div id="resetbox"><input value="Reset" type="reset"></div>'
-echo '</form></body></html>'
+echo '</form></div></body></html>'
 exit

@@ -29,7 +29,7 @@ source /opt/karoshi/web_controls/version
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
-echo '<img src="/images/small_logo.png" alt="logo" align="top"> <font style="font-weight: bold;" size="+2">Web Management '$SCHOOL_NAME'</font> <small><small>
+echo '<div id="header"><img src="/images/small_logo.png" alt="logo" align="top"> <font style="font-weight: bold;" size="+2">Web Management '$SCHOOL_NAME'</font> <small><small>
 '$VERSIONMSG' : '$VERSION'
 </small></small>
 <div id="searchbar"><form name="searchform" action="/cgi-bin/tech/search.cgi" method="post">
@@ -218,4 +218,4 @@ echo '	<li class="top"><a href="/cgi-bin/tech/web_management_upload_files_fm.cgi
 		</ul>
 	</li>'
 fi
-echo '</ul></div>'
+echo '</ul></div></div>'

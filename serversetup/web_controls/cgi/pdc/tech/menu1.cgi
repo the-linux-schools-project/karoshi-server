@@ -39,7 +39,7 @@ echo '
 <head>
   <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
   <title>'$TITLE'</title>
-<link href="/css/'$STYLESHEET'" rel="stylesheet" type="text/css">
+<link href="/css/'$STYLESHEET'?d='`date +%F`'" rel="stylesheet" type="text/css">
 </head>
 <body>
 <table class="menu" style="text-align: left; height: 91px;" border="0" cellpadding="2" cellspacing="2">
@@ -77,5 +77,5 @@ echo '
 <a href="/cgi-bin/tech/information.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/info.png"></a>
 	</div>'
 fi
-echo '</div></body></html>'
+echo '</div></div></body></html>'
 exit

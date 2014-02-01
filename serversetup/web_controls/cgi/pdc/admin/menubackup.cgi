@@ -42,7 +42,7 @@ echo '
 <head>
   <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
   <title>'$TITLE'</title>
-<link href="/css/'$STYLESHEET'" rel="stylesheet" type="text/css">
+<link href="/css/'$STYLESHEET'?d='`date +%F`'" rel="stylesheet" type="text/css">
 </head>
 <body>
 <table class="menu" style="text-align: left; height: 90px;" border="0" cellpadding="2" cellspacing="2">
@@ -89,6 +89,6 @@ else
 echo $WARNINGS
 fi
 fi
-echo '</div></body></html>'
+echo '</div></div></body></html>'
 exit
 

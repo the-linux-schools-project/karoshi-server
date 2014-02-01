@@ -45,7 +45,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/admin/ntp.cgi";'
 echo '</script><script src="/all/stuHover.js" type="text/javascript"></script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 
@@ -117,7 +117,7 @@ done
 
 echo "Content-type: text/html"
 echo ""
-echo '<html><head><title>'$TITLE'</title></head><link rel="stylesheet" href="/css/'$STYLESHEET'"></head><body>'
+echo '<html><head><title>'$TITLE'</title></head><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Check https access
 #########################
@@ -182,5 +182,5 @@ then
 echo '<br><b>'$CHECKCOMPLETEDMSG'</b><br>'
 fi
 echo "</div>"
-echo "</body></html>"
+echo "</div></body></html>"
 exit

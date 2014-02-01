@@ -49,7 +49,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 echo "Content-type: text/html"
 echo ""
 echo "<html><head><title>$TITLE4</title>"
-echo '<link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -72,7 +72,7 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	</script>'
 fi
 
-echo '</head><body>'
+echo '</head><body><div id="pagecontainer">'
 
 #Generate navigation bar
 if [ $MOBILE = no ]
@@ -128,7 +128,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/staff/dg_view_student_user_logs_fm.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 
@@ -249,5 +249,5 @@ then
 MESSAGE=`echo $USERNAME $DAY-$MONTH-$YEAR : $ERRORMSG5`
 show_status
 fi
-echo '</div></body></html>'
+echo '</div></div></body></html>'
 exit

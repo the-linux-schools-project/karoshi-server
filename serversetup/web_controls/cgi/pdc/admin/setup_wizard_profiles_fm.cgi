@@ -46,8 +46,8 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head>
-<body onLoad="start()">'
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head>
+<body onLoad="start()"><div id="pagecontainer">'
 
 #Detect mobile browser
 MOBILE=no
@@ -71,9 +71,9 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 <tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$TITLE'</b></a></td></tr></tbody></table>'
 else
-echo '<b>'$CUSTOMISEPROFILESMSG'</b><br><br><b>'$WINDOWSCLIENTSMSG'</b><br><br>'$PROFILEHELP1'<br><br>'$PROFILEHELP2'<br><br>'$PROFILEHELP3'<br><br>
+echo '<b>'$CUSTOMISEPROFILESMSG'</b><br><br><b>'$WINDOWSCLIENTSMSG'</b><br><br>'$PROFILEHELP1'<br>'$PROFILEHELP1b'<br><br>'$PROFILEHELP2'<br>'$PROFILEHELP2b'<br>'$PROFILEHELP2c'<br><br>'$PROFILEHELP3'<br><br>
 <a href="windows_client_profile_upload_fm.cgi"><img src="/images/submenus/client/upload_skel.png" border="0" alt="" />'$WUPLOADPROFILEMSG'</a><br><br><br>
-<b>'$KLINUXCLIENTMSG'</b><br><br>'$PROFILEHELP4'<br><br>
+<b>'$KLINUXCLIENTMSG'</b><br><br>'$PROFILEHELP4'<br>'$PROFILEHELP4b'<br><br>
 <a href="linux_client_download_skel.cgi"><img src="/images/submenus/client/upload_skel.png" border="0" alt="" />'$KLDOWNLOADPROFILEMSG'</a><br><br>
 <a href="linux_client_upload_skel_fm.cgi"><img src="/images/submenus/client/download_skel.png" border="0" alt="" />'$KLUPLOADPROFILEMSG'</a><br><br>
 '
@@ -82,6 +82,6 @@ fi
 
 echo '
 '$OPENINGMSG'
-</div></body></html>
+</div></div></body></html>
 '
 exit

@@ -69,7 +69,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
@@ -170,7 +170,7 @@ document.myform._USERNAMESTYLE_.options[7]=new Option("Style 8: " + firstnameVal
 document.myform._USERNAMESTYLE_.options[8]=new Option("Style 9: " + enrollmentValue, "userstyleS9", false, status9);
 }
 </script>
-</head><body onLoad="start()">'
+</head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -207,7 +207,7 @@ fi
 #Check that this server is not part of a federated setup
 if [ -f /opt/karoshi/server_network/servers/$HOSTNAME/federated_server ]
 then
-echo $ERRORMSG11 '</div></body></html>'
+echo $ERRORMSG11 '</div></div></body></html>'
 exit
 fi
 
@@ -330,7 +330,7 @@ echo '
 </div><div id="submitbox">'
 fi
 echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
-</div></form></body></html>
+</div></form></div></body></html>
 '
 exit
 

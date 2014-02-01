@@ -46,7 +46,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/css/pro_dropdown_2/stuHover.js" type="text/javascript"></script></head><body>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/css/pro_dropdown_2/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 
 #########################
 #Get data input
@@ -96,7 +96,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/admin/banned_users_view_fm.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 #########################
@@ -140,4 +140,4 @@ echo "<div id="actionbox">"
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:`echo ${VIEWARRAY[@]:0} | sed 's/ /:/g'`" | sudo -H /opt/karoshi/web_controls/exec/incident_log_view2
 echo "</div>"
 fi
-echo "</body></html>"
+echo "</div></body></html>"

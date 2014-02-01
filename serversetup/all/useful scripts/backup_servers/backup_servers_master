@@ -34,7 +34,7 @@ else
 echo `date` - Backing up $KAROSHI_SERVER >> /opt/karoshi/logs/backup_servers/$LOG_DATE/master_backup_log
 
 #Do backup
-if [ $KAROSHI_SERVER != $HOSTNAME ]
+if [ $KAROSHI_SERVER != `hostname-fqdn` ]
 then
 #Copy in configuration file
 

@@ -65,7 +65,7 @@ done
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE9'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE9'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body><div id="pagecontainer">'
 
 
 function show_status {
@@ -73,7 +73,7 @@ echo '<script type="text/javascript">'
 echo 'alert("'$MESSAGE'");'
 echo 'window.location = "/cgi-bin/admin/printer_accounting_view_logs_fm.cgi";'
 echo '</script>'
-echo "</div></body></html>"
+echo "</div></div></body></html>"
 exit
 }
 
@@ -128,5 +128,5 @@ echo '<b>'$TITLE9'</b><br><br>'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printer_accounting_view_logs.cgi | cut -d' ' -f1`
 #View printer logs
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOGTYPE:" | sudo -H /opt/karoshi/web_controls/exec/printer_accounting_view_logs
-echo '</div></body></html>'
+echo '</div></div></body></html>'
 exit

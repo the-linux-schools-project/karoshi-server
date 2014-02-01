@@ -48,18 +48,18 @@ echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'">
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
-<body onLoad="start()">'
+<body onLoad="start()"><div id="pagecontainer">'
 
 
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/home_folders.cgi" method="post"><div id="actionbox"><b>'$TITLE'</b>
+echo '<form action="/cgi-bin/admin/home_folders.cgi" method="post"><div id="actionbox3"><div id="titlebox"><b>'$TITLE'</b>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Home_Folders"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
-<br><br>
+<br><br></div><div id="infobox">
   <table class="standard" style="text-align: left; height: 91px;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 140px;"><b>'$PRIGROUPMSG'</b></td><td style="width: 180px;"><b>'$SERVERMSG'</b></td><td style="width: 180px;"><b>'$CHANGESERVERMSG'</b></td><td style="width: 140px;"><b>'$PRIGROUPMSG'</b></td><td style="width: 180px;"><b>'$SERVERMSG'</b></td><td><b>'$CHANGESERVERMSG'</b></td></tr>
 '
@@ -82,9 +82,9 @@ done
 
 echo '</tbody>
   </table><br><br>
-</div>
+</div></div>
 </form>
-</body>
+</div></body>
 </html>'
 exit
 

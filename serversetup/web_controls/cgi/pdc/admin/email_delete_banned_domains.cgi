@@ -39,7 +39,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE3'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"><meta http-equiv="REFRESH" content="0;url=email_view_banned_domains_fm.cgi"></head><body>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE3'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta http-equiv="REFRESH" content="0;url=email_view_banned_domains_fm.cgi"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -82,7 +82,7 @@ echo '<script type="text/javascript">'
 echo 'alert("'$MESSAGE'");'
 echo 'window.location = "/cgi-bin/admin/email_view_banned_domains_fm.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 
@@ -127,5 +127,5 @@ fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_delete_banned_domains.cgi | cut -d' ' -f1`
 #Delete domain
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$DOMAIN" | sudo -H /opt/karoshi/web_controls/exec/email_delete_banned_domains
-echo "</body></html>"
+echo "</div></body></html>"
 exit

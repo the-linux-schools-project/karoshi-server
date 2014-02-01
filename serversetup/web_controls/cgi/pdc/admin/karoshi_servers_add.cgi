@@ -43,7 +43,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script>
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
 <SCRIPT language=JavaScript1.2>
 //change 5 to another integer to alter the scroll speed. Greater is faster
 var speed=1
@@ -82,11 +82,11 @@ setInterval("scrollwindow()",30)
 }
 window.onload=initialize
 </SCRIPT>
-</head><body>'
+</head><body><div id="pagecontainer">'
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><b>'$TITLE'</b><br><br>'
+echo '<div id="actionbox3"><div id="titlebox"><b>'$TITLE'</b><br><br></div><div id="infobox">'
 ############################
 #Show page
 ############################
@@ -95,7 +95,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/admin/karoshi_servers_add_fm.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 
@@ -104,7 +104,7 @@ echo '<SCRIPT language="Javascript">'
 #echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/admin/karoshi_servers_view.cgi";'
 echo '</script>'
-echo "</body></html>"
+echo "</div></div></body></html>"
 exit
 }
 
@@ -270,7 +270,7 @@ fi
 function get_data {
 #Send data back to form and ask for tcpip number
 echo '
-<body onload="submitForm()"><form action="/cgi-bin/admin/karoshi_servers_add_fm.cgi" method="post" name="form">
+<body onload="submitForm()"><div id="pagecontainer"><form action="/cgi-bin/admin/karoshi_servers_add_fm.cgi" method="post" name="form">
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <input name="_PASSWORD1_" value="'$PASSWORD1'" type="hidden">
 <input name="_PASSWORD2_" value="'$PASSWORD2'" type="hidden">
@@ -281,7 +281,7 @@ echo '
 function submitForm(){
 document.form.submit();
 }
-</SCRIPT></body></html
+</SCRIPT></div></body></html
 '
 exit
 }

@@ -48,7 +48,7 @@ SLEEPTIME=5
 
 echo "Content-type: text/html"
 echo ""
-echo "<html><head><title>$TITLE2</title><meta http-equiv='"'REFRESH'"' content='"'0; URL='$HTTP_REFERER''"'><link rel="stylesheet" href="/css/$STYLESHEET"></head><body>"
+echo "<html><head><title>$TITLE2</title><meta http-equiv='"'REFRESH'"' content='"'0; URL='$HTTP_REFERER''"'><link rel="stylesheet" href="/css/$STYLESHEET"></head><body><div id='pagecontainer'>"
 #########################
 #Get data input
 #########################
@@ -90,7 +90,7 @@ function show_status {
 echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '</script>'
-echo "</body></html>"
+echo "</div></body></html>"
 exit
 }
 
@@ -136,7 +136,7 @@ fi
 #Check view image tick box
 if [ $VIEWIMAGE'check' = yescheck ]
 then
-echo '<body onload="submitForm()"><form action="/cgi-bin/staff/reset_student_password_fm.cgi" method="post" name="form">'
+echo '<body onload="submitForm()"><div id="pagecontainer"><form action="/cgi-bin/staff/reset_student_password_fm.cgi" method="post" name="form">'
 echo '<input name="_MYUSERNAME_" value="'$MYUSERNAME'" type="hidden">'
 echo '<input name="_MYPASSWORD_" value="'$MYPASSWORD'" type="hidden">'
 echo '<input name="_USERNAME_" value="'$USERNAME'" type="hidden"></form>'
@@ -145,7 +145,7 @@ echo '<SCRIPT LANGUAGE="JavaScript">
 function submitForm(){
 document.form.submit();
 }
-</SCRIPT></body></html>'
+</SCRIPT></div></body></html>'
 exit
 fi
 

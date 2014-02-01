@@ -38,13 +38,13 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/menus/user
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>Karoshi Web Application</title><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><link rel="stylesheet" href="/css/'$STYLESHEET'"></head>
-<body><table class="leftmenu" style="text-align: left; width: 222px; height: 426px;" border="0" cellpadding="6" cellspacing="0"><tbody><tr><td style="vertical-align: top;">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>Karoshi Web Application</title><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head>
+<body><div id="pagecontainer"><table class="leftmenu" style="text-align: left; width: 222px; height: 426px;" border="0" cellpadding="6" cellspacing="0"><tbody><tr><td style="vertical-align: top;">
 <a href="/cgi-bin/admin/change_primary_group_fm.cgi" target="_top"><img style="border: 0px solid ; width: 17px; height: 17px;" alt="" src="/images/submenus/user/change_primary_group.png">'$CHANGEPRIGRPMSG'</a><br>
 <a href="/cgi-bin/admin/groups_change_fm.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/user/change_seconday_group.png">'$CHANGESECGRPMSG'</a><br>
 <a href="/cgi-bin/admin/label_groups_fm.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/user/label_groups.png">'$LABELGROUPSMSG'</a><br>
 <a href="/cgi-bin/admin/new_group_fm.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/user/new_group.png">'$NEWGRPMSG'</a><br>
 <a href="/cgi-bin/admin/change_password_fm.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/all/back.png"></a><br>
-</td></tr></tbody></table></body></html>
+</td></tr></tbody></table></div></body></html>
 '
 exit

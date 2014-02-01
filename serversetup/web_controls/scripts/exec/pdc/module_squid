@@ -256,6 +256,8 @@ fi
 done
 
 #Create info file for linux clients proxy server
+PROXYSERVER=`echo $PROXYSERVER | sed 's/.'$REALM'//g'`
 echo $PROXYSERVER > /var/lib/samba/netlogon/domain_information/proxy_server
+#echo $PROXYSERVER.$REALM > /var/lib/samba/netlogon/domain_information/proxy_server_fqdn
 exit
 

@@ -47,11 +47,11 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script type="text/javascript" src="/all/js/jquery.js"></script>
 <script type="text/javascript" src="/all/js/script.js"></script>
 <script src="/all/stuHover.js" type="text/javascript"></script>
-</head><body onLoad="start()">'
+</head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
@@ -60,7 +60,7 @@ echo '<form action="/cgi-bin/admin/windows_client_allow_roaming_profile.cgi" met
 #Check that this server is not part of a federated setup
 if [ -f /opt/karoshi/server_network/servers/$HOSTNAME/federated_server ]
 then
-echo $ERRORMSG7 '</div></body></html>'
+echo $ERRORMSG7 '</div></div></body></html>'
 exit
 fi
 
@@ -88,6 +88,6 @@ echo '</select>
 </tbody></table><br></div>
 <div id="submitbox">
 <input value="Submit" type="submit"> <input value="Reset" type="reset">
-</div></form></body></html>
+</div></form></div></body></html>
 '
 exit
