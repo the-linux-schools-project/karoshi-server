@@ -154,12 +154,12 @@ echo \<table class=\"'$TABLECLASS'\" style=\"text-align: left\; \" border=\"0\" 
 echo "<tbody>"
 #Generate list of sites to choose from
 SHOWSUBMIT=no
-ls /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/denied/$SEARCH1* 1>/dev/null 2>/dev/null
+ls /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/denied/*$SEARCH1* 1>/dev/null 2>/dev/null
 if [ `echo $?` = 0 ]
 then
 SHOWSUBMIT=yes
 SITECOUNT=1
-for WEBSITE in /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/denied/$SEARCH1*
+for WEBSITE in /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/denied/*$SEARCH1*
 do
 WEBSITE2=`basename "$WEBSITE" | sed "s/.tar.gz$//g"`
 if [ $SITECOUNT = 1 ]
@@ -173,12 +173,12 @@ let SITECOUNT=$SITECOUNT+1
 done
 fi
 
-ls /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/allowed/$SEARCH1* 1>/dev/null 2>/dev/null
+ls /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/allowed/*$SEARCH1* 1>/dev/null 2>/dev/null
 if [ `echo $?` = 0 ]
 then
 SHOWSUBMIT=yes
 SITECOUNT=1
-for WEBSITE in /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/allowed/$SEARCH1*
+for WEBSITE in /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/allowed/*$SEARCH1*
 do
 WEBSITE2=`basename "$WEBSITE" | sed "s/.tar.gz$//g"`
 if [ $SITECOUNT = 1 ]
@@ -219,12 +219,12 @@ echo \<table class=\"$TABLECLASS\" style=\"text-align: left\; \" border=\"0\" ce
 echo "<tbody>"
 #Generate list of denied sites to choose from
 SHOWSUBMIT=no
-ls /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/denied/$SEARCH1* 1>/dev/null 2>/dev/null
+ls /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/denied/*$SEARCH1* 1>/dev/null 2>/dev/null
 if [ `echo $?` = 0 ]
 then
 SHOWSUBMIT=yes
 SITECOUNT=1
-for WEBSITE in /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/denied/$SEARCH1*
+for WEBSITE in /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/denied/*$SEARCH1*
 do
 WEBSITE2=`basename "$WEBSITE" | sed "s/.tar.gz$//g"`
 if [ $SITECOUNT = 1 ]
@@ -239,12 +239,12 @@ done
 fi
 
 #Generate list of allowed sites to choose from
-ls /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/allowed/$SEARCH1* 1>/dev/null 2>/dev/null
+ls /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/allowed/*$SEARCH1* 1>/dev/null 2>/dev/null
 if [ `echo $?` = 0 ]
 then
 SHOWSUBMIT=yes
 SITECOUNT=1
-for WEBSITE in /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/allowed/$SEARCH1*
+for WEBSITE in /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/allowed/*$SEARCH1*
 do
 WEBSITE2=`basename "$WEBSITE" | sed "s/.tar.gz$//g"`
 if [ $SITECOUNT = 1 ]
