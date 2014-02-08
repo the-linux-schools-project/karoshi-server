@@ -108,7 +108,8 @@ echo '<div id="actionbox3"><div id="titlebox">'
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
 <td style="vertical-align: top;"><b>'$MYSERVERSMSG' '$SHORTNAME'</b></td>
 <td style="vertical-align: top;"><a href="karoshi_servers_add_fm.cgi"><input class="button" type="button" name="" value="'$ADDSERVERMSG'"></a></td>
-</tr></tbody></table></div><div id="infobox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top; width: 10px; height: 40px;"></td><td style="vertical-align: top; width: 200px; height: 40px;"><b>'$SERVERMSG'</b></td><td style="vertical-align: top; width: 100px;"><b>'$SERVERIPMSG'</b></td><td style="vertical-align: top; width: 260px;"><b>'$ROLESMSG'</b></td><td style="vertical-align: top; width: 70px;"><b>'$ADDROLEMSG2'</b></td><td style="vertical-align: top; width: 70px;"><b>'$REMOVEROLEMSG2'</b></td><td style="vertical-align: top; width: 70px;"><b>'$SSHMSG1'</b></td><td style="vertical-align: top; width: 70px;"><b>'$SSHMSG2'</b></td></tr>'
+</tr></tbody></table></div><div id="infobox">
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top; width: 10px; height: 40px;"></td><td style="vertical-align: top; width: 250px; height: 40px;"><b>'$SERVERMSG'</b></td><td style="vertical-align: top; width: 100px;"><b>'$SERVERIPMSG'</b></td><td style="vertical-align: top; width: 260px;"><b>'$ROLESMSG'</b></td><td style="vertical-align: top; width: 70px;"><b>'$ADDROLEMSG2'</b></td><td style="vertical-align: top; width: 70px;"><b>'$REMOVEROLEMSG2'</b></td><td style="vertical-align: top; width: 70px;"><b>'$SSHMSG1'</b></td><td style="vertical-align: top; width: 70px;"><b>'$SSHMSG2'</b></td></tr>'
 
 
 function show_servers {
@@ -186,7 +187,7 @@ fi
 SSHBACKUPSTATUS=`echo $?`
 if [ $SSHBACKUPSTATUS = 0 ]
 then
-SERVERBACKUPSSHSTATUS=`echo "$BACKUPSERVERMSG - $BACKUPSERVER. \n\n$SSHBACKUPMS3"`
+SERVERBACKUPSSHSTATUS=`echo "$BACKUPSERVERMSG - $BACKUPSERVER.<br><br>$SSHBACKUPMS3"`
 SERVERBACKUPICON=/images/warnings/server_ok.png
 fi
 fi

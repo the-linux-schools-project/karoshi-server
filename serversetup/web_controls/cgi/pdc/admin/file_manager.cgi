@@ -532,7 +532,12 @@ if [ $ACTION = notset ]
 then
 SERVER2=""
 else
-SERVER2=$SERVERNAME
+if [ $MOBILE = yes ]
+then
+SERVER2=`echo "- ${SERVERNAME:0:9}" | cut -d. -f1`
+else
+SERVER2="- $SERVERNAME"
+fi
 fi
 
 #Show back button for mobiles
@@ -540,7 +545,7 @@ if [ $MOBILE = yes ]
 then
 echo '<form action="/cgi-bin/admin/file_manager.cgi" method="post"><div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE' - '$SERVER2'</span>'
+	<span>'$TITLE' '$SERVER2'</span>'
 if [ $SERVERNAME != notset ]
 then
 echo '<a href="/cgi-bin/admin/file_manager.cgi">'$CHOOSESERVERMSG'</a>'
@@ -555,7 +560,7 @@ else
 echo '<form action="/cgi-bin/admin/file_manager.cgi" method="post"><div id="'$DIV_ID'"><div id="titlebox">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr>
-<td style="vertical-align: top;"><b>'$TITLE' - '$SERVER2'</b></td>
+<td style="vertical-align: top;"><b>'$TITLE' '$SERVER2'</b></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG1"'</span></a></td>'
 
 if [ $SERVERNAME != notset ]

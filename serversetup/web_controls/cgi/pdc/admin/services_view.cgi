@@ -169,7 +169,7 @@ fi
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox3
 /opt/karoshi/web_controls/generate_navbar_admin
 else
 DIV_ID=actionbox2
@@ -193,7 +193,7 @@ echo '
 <td style="vertical-align: top;"><b>'$TITLE1' - '$SERVERNAME'</b></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Service_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td>
 <td style="vertical-align: top;"><a href="/cgi-bin/admin/services_view_fm.cgi"><input class="button" type="button" name="" value="'$CHOOSESERVERMSG'"></a></td>
-</tr></table><br>
+</tr></table><br></div><div id="infobox">
 '
 fi
 

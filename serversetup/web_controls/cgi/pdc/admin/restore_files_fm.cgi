@@ -78,12 +78,12 @@ fi
 
 echo '
 <form action="/cgi-bin/admin/file_manager.cgi" method="post">
-<div id="actionbox">'
+<div id="actionbox3"><div id="titlebox">'
 
 #############################
 #Show list of servers to restore to
 #############################
-echo '<b>'$SYSTEMRESTOREMSG'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a><br><br>'
+echo '<b>'$SYSTEMRESTOREMSG'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a><br><br></div><div id="infobox">'
 SERVERLISTARRAY=( `ls -1 /opt/karoshi/server_network/backup_servers/backup_settings/` )
 SERVERLISTCOUNT=${#SERVERLISTARRAY[@]}
 SERVERCOUNTER=0
@@ -106,7 +106,7 @@ cat /opt/karoshi/server_network/servers/$KAROSHISERVER/* | sed '/<a href/c'"&nbs
 
 echo '</span></a><br>'$KAROSHISERVER'</td>'
 
-[ $SERVERCOUNTER = 5 ] && echo '</tr><tr>'
+[ $SERVERCOUNTER = 3 ] && echo '</tr><tr>'
 let SERVERCOUNTER=$SERVERCOUNTER+1
 done
 echo '</tr></tbody></table><br>'
@@ -116,7 +116,7 @@ echo '</tr></tbody></table><br>'
 #############################
 
 echo '<b>'$USERRESTOREMSG'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a><br><br><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;"><b>'$PRIGROUPMSG'</b></td><td style="width: 90px;"><b>'$SERVERMSG'</b></td><td style="width: 180px;"><b>'$RESTOREMSG'</b></td><td style="width: 180px;"><b>'$PRIGROUPMSG'</b></td><td style="width: 90px;"><b>'$SERVERMSG'</b></td><td><b>'$RESTOREMSG'</b></td></tr>
+<tr><td style="width: 120px;"><b>'$PRIGROUPMSG'</b></td><td style="width:200px;"><b>'$SERVERMSG'</b></td><td style="width: 120px;"><b>'$RESTOREMSG'</b></td><td style="width: 120px;"><b>'$PRIGROUPMSG'</b></td><td style="width: 200px;"><b>'$SERVERMSG'</b></td><td><b>'$RESTOREMSG'</b></td></tr>
 '
 START_LINE=yes
 ICON1=/images/submenus/system/computer.png
@@ -144,6 +144,6 @@ fi
 done
 echo '</tbody></table><br>'
 
-echo '</div></form></div></body></html>'
+echo '</div></div></form></div></body></html>'
 exit
 

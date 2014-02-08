@@ -238,8 +238,12 @@ if [ $SERVERNAME = `hostname-fqdn` ]
 then
 UPTIMEDATA=`karoshi-uptime.sh -p uptime`,`karoshi-uptime.sh -n start-time`
 
-
+if [ $MOBILE = yes ]
+then
+DISPLAY_NAME=`echo $SERVERNAME | cut -d. -f1`
+else
 DISPLAY_NAME=$SERVERNAME
+fi
 table_top
 show_data
 table_bottom
@@ -254,7 +258,13 @@ karoshi-uptime.sh -p uptime ; echo , ; karoshi-uptime.sh -n start-time
 '`
 STATUS=`echo $?`
 
+if [ $MOBILE = yes ]
+then
+DISPLAY_NAME=`echo $SERVERNAME | cut -d. -f1`
+else
 DISPLAY_NAME=$SERVERNAME
+fi
+
 table_top
 if [ $STATUS = 0 ]
 then
@@ -274,7 +284,14 @@ karoshi-uptime.sh -p uptime ; echo , ; karoshi-uptime.sh -n start-time
 '\''
 '`
 STATUS=`echo $?`
+
+if [ $MOBILE = yes ]
+then
+DISPLAY_NAME=`echo $SERVERNAME | cut -d. -f1`
+else
 DISPLAY_NAME=$SERVERNAME
+fi
+
 SERVERTYPE=federated
 table_top
 if [ $STATUS = 0 ]

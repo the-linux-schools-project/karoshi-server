@@ -131,7 +131,7 @@ echo `date`: ntp - Setting $SERVERNAME to $NTPSERVER by $REMOTE_USER from $REMOT
 echo '<table class="headings" style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="0">'
 echo '<tbody><tr><td>'
 echo '<span style="font-weight: bold;">'$SERVERNAME'</span></td>'
-echo '</tr></tbody></table>'
+echo '</tr></tbody></table><br><br>'
 source /opt/karoshi/serversetup/variables/distro
 #pdc
 if [ $SERVERNAME = `hostname-fqdn` ]

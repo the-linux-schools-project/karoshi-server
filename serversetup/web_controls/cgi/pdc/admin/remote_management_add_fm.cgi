@@ -56,7 +56,14 @@ echo '
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '
 <form action="/cgi-bin/admin/remote_management_add.cgi" method="post">
-  <div id="actionbox"><b>'$TITLE'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG4'</span></a><br>
+  <div id="actionbox">
+
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<td style="vertical-align: top;"><b>'$TITLE'</b></td>
+<td style="vertical-align: top;"><a href="remote_management_view.cgi"><input class="button" type="button" name="" value="'$VIEWMANUSERMSG'"></a></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_a_Remote_Admin"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG4'</span></a>
+</td>
+</tr></tbody></table>
   <br>
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
@@ -96,7 +103,8 @@ echo '
 <option value="3">'$TECHMSG'</option>        
         </select>
         </td>
-<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'<br><br>'$HELPMSG2'<br><br>'$HELPMSG3'</span></a></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_a_Remote_Admin"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'<br><br>'$HELPMSG2'<br><br>'$HELPMSG3'</span></a>
+</td>
       </tr>
     </tbody>
   </table>

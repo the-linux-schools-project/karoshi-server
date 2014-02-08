@@ -79,12 +79,18 @@ echo '</tbody></table>'
 
 
 function show_server {
-echo '<tr><td style="background-color:'$FILLCOLOUR'; height: '$HEIGHT1'px;"></td><td style="vertical-align: top;">'$SERVER'</td>'
+if [ $MOBILE = yes ]
+then
+SERVERNAME=`echo $SERVER | cut -d. -f1`
+else
+SERVERNAME=$SERVER
+fi
+echo '<tr><td style="background-color:'$FILLCOLOUR'; height: '$HEIGHT1'px;"></td><td style="vertical-align: top;">'$SERVERNAME'</td>'
 
 if [ $MOBILE = no ]
 then
 echo '<td style="vertical-align: top;">'
-[ -d $INFOPATH/$SERVER ] &&  cat $INFOPATH/$SERVER/*
+[ -d $INFOPATH/$SERVER ] && cat $INFOPATH/$SERVER/*
 echo '</td>'
 fi
 

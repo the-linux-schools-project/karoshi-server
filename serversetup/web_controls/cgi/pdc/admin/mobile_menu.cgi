@@ -190,7 +190,6 @@ echo '<div class="a.current">
 '$VERSIONMSG' : '$VERSION'
 </small></small>
 </div>
-</div>
 </div></div></body></html>
 '
 exit

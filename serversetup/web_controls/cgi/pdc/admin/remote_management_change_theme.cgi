@@ -106,7 +106,10 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$SYSMENUMSG'</a>
 </div></div><div id="mobileactionbox4">'
 else
-echo '<b>'$TITLE'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'<br><br>'$HELPMSG2'</span></a><br><br></div><div id="infobox">'
+echo '<b>'$TITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Web_Management_Themes"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'<br><br>'$HELPMSG2'</span></a>
+
+
+<br><br></div><div id="infobox">'
 fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'

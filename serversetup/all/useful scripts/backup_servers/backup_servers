@@ -5,7 +5,7 @@ LOG_DATE=`date +%F`
 #Make log folder
 [ ! -d /opt/karoshi/logs/backup_servers/$LOG_DATE ] && mkdir -p /opt/karoshi/logs/backup_servers/$LOG_DATE
 #Get server data
-THIS_SERVER=`hostname`
+THIS_SERVER=`hostname-fqdn`
 #Check that server data exists for this server
 if [ ! -f /opt/karoshi/server_network/backup_servers/backup_settings/$THIS_SERVER/backup_folders ]
 then

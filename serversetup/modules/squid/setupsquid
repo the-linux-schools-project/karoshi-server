@@ -89,7 +89,7 @@ SQUIDVER=squid
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/squid
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/dansguardian
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/squid-deb-proxy
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/squiddebproxy
 
 mkdir /home/multimedia 2>/dev/null
 mkdir /home/internetdata 2>/dev/null
@@ -272,7 +272,6 @@ sleep 1
 [ -L /etc/init.d/squid-deb-proxy ] && rm -f /etc/init.d/squid-deb-proxy
 [ `ls /etc/init/squid* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/squid*
 
-
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squiddebproxy_start
 ###########################
 #Open shorewall ports for dansguardian
@@ -317,14 +316,14 @@ fi
 #Configure Fail2ban
 ######################
 
-[ ! -d /opt/karoshi/server_network/security/fail2ban ] && mkdir -p /opt/karoshi/server_network/security/fail2ban
-[ ! -f /opt/karoshi/server_network/security/fail2ban/squid ] && cp -f /opt/karoshi/serversetup/all/fail2ban/jails/squid /opt/karoshi/server_network/security/fail2ban/
-cat /opt/karoshi/server_network/security/fail2ban/* > /etc/fail2ban/jail.local
-[ ! -f /etc/fail2ban/filters/squid-auth.conf ] && cp /opt/karoshi/serversetup/all/fail2ban/filters/squid-auth.conf /etc/fail2ban/filter.d
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_stop
-sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_start
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/fail2ban
+#[ ! -d /opt/karoshi/server_network/security/fail2ban ] && mkdir -p /opt/karoshi/server_network/security/fail2ban
+#[ ! -f /opt/karoshi/server_network/security/fail2ban/squid ] && cp -f /opt/karoshi/serversetup/all/fail2ban/jails/squid /opt/karoshi/server_network/security/fail2ban/
+#cat /opt/karoshi/server_network/security/fail2ban/* > /etc/fail2ban/jail.local
+#[ ! -f /etc/fail2ban/filters/squid-auth.conf ] && cp /opt/karoshi/serversetup/all/fail2ban/filters/squid-auth.conf /etc/fail2ban/filter.d
+#/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_stop
+#sleep 1
+#/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_start
+#/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/fail2ban
 
 exit
 

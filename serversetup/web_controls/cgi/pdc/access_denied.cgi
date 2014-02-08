@@ -44,7 +44,7 @@ echo '
   <title>'$WARNINGMSG'</title>
 <link href="/css/'$STYLESHEET'" rel="stylesheet" type="text/css">
 </head>
-<body><div id="pagecontainer">'
+<body><div id="pagecontainer"><div id="header">'
 
 
 echo '<img src="/images/small_logo.png" alt="logo" align="top"> <font style="font-weight: bold;" size="+2">Web Management '$SCHOOL_NAME'</font> <small><small>
@@ -52,7 +52,7 @@ echo '<img src="/images/small_logo.png" alt="logo" align="top"> <font style="fon
 </small></small>
 '
 
-echo '<div id="navbar"><span class="preload1"></span>
+echo '</div><div id="navbar"><span class="preload1"></span>
 <span class="preload2"></span>
 
 <ul id="nav">

@@ -146,6 +146,7 @@ done
 if [ $MOBILE = no ]
 then
 DIV_ID=actionbox3
+[ -z "$GROUP" ] && DIV_ID=actionbox
 TABLECLASS=standard
 WIDTH1=180
 WIDTH2=200
@@ -192,7 +193,7 @@ fi
 #Show list of groups to check
 if [ -z "$GROUP" ]
 then
-echo '
+echo '</div><div id="infobox">
   <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody><tr><td style="width: '$WIDTH1'px;">'$PRIGROUPMSG'</td>
 <td>'

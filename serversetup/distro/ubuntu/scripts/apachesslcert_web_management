@@ -109,7 +109,7 @@ mkdir /etc/ssl/webmanagement
 cd /etc/ssl/webmanagement
 echo "<li>Creating Host Certificate</li>"
 #Create host certificate
-echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\nmanage."$LOCALNAME"\nmanage."$SERVERNAME"\n"$EMAILADDRESS"\n"webmanagement"\n" | openssl req -newkey rsa:8192 -days 3650 -keyout server_web_management.key -nodes -out server_web_management.req
+echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\nmanage."$LOCALNAME"\nmanage."$SERVERNAME"\n"$EMAILADDRESS"\n"webmanagement"\n" | openssl req -newkey rsa:4096 -days 3650 -keyout server_web_management.key -nodes -out server_web_management.req
 
 #Create client csr
 
@@ -128,7 +128,7 @@ chmod 0600 /etc/ssl/webmanagement/server_web_management.srl
 
 #Create client certificate
 echo "<li>Creating client key</li>"
-openssl genrsa -aes256 -passout pass:$LDAPPASS -out client_web_management.key 8192
+openssl genrsa -aes256 -passout pass:$LDAPPASS -out client_web_management.key 4096
 chmod 0600 /etc/ssl/webmanagement/client_web_management.key
 
 echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\n"manage.$LOCALNAME"\n"manage.$SERVERNAME"\n"$EMAILADDRESS"\n""\n\n"$UNIQUE_REF"\n"Karoshi Web Management"\n" | openssl req -new -passin pass:$LDAPPASS -key client_web_management.key -out client_web_management.csr

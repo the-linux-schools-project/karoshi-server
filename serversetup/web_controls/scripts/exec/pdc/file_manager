@@ -152,6 +152,10 @@ ICON13=/images/submenus/file/reload.png
 ICON14=/images/submenus/file/create.png
 ICON15=/images/submenus/file/file.png
 ICON16=/images/submenus/file/folder.png
+CELLPADDING=2
+CELLSPACING=2
+COLSPAN=5
+COLWIDTH=22
 else
 ROWCOUNT=3
 WIDTH=70
@@ -171,11 +175,15 @@ ICON8=/images/submenus/file/stop.png
 ICON9=/images/submenus/file/movem.png
 ICON10=/images/submenus/file/editm.png
 ICON11=/images/submenus/file/newfolderm.png
-ICON12=/images/submenus/file/restore.png
+ICON12=/images/submenus/file/restorem.png
 ICON13=/images/submenus/file/reloadm.png
 ICON14=/images/submenus/file/createm.png
 ICON15=/images/submenus/file/filem.png
 ICON16=/images/submenus/file/folderm.png
+CELLPADDING=2
+CELLSPACING=0
+COLSPAN=6
+COLWIDTH=32
 fi
 
 LINECOLOUR1="#A0A0A0"
@@ -256,7 +264,7 @@ DISPLOCATION=/
 else
 DISPLOCATION=$LOCATION
 fi
-[ $MOBILE = yes ] && DISPLOCATION=`echo ${DISPLOCATION:${#DISPLOCATION} - 20}`
+[ $MOBILE = yes ] && DISPLOCATION=${DISPLOCATION:0:20}
 echo '<br>
 <input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_" type="submit" class="button" value="'$TOPDIRMSG'">
 <input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$UPMSG'">
@@ -283,8 +291,11 @@ echo "<br><br>"$ERRORMSG11"<br>"
 fi
 fi
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><col width=22><col width=22><col width=22><col width=22><col width=22><tbody>
-'
+echo '<table class="'$TABLECLASS'" style="text-align: left; width: 100%;" border="0" cellpadding="'$CELLPADDING'" cellspacing="'$CELLSPACING'"><col width='$COLWIDTH'><col width='$COLWIDTH'><col width='$COLWIDTH'><col width='$COLWIDTH'><col width='$COLWIDTH'><col width='$COLWIDTH'>'
+
+#[ $MOBILE = yes ] && echo '<col width='$COLWIDTH'>'
+
+echo '<tbody>'
 #Log Browse Actions
 echo `date`: file_manager - browsing  "$LOCATION" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 LINECOLOUR=$LINECOLOUR1
@@ -321,29 +332,29 @@ LINECOLOUR=$LINECOLOUR2
 else
 LINECOLOUR=$LINECOLOUR1
 fi
-echo '<tr style="background-color:'$LINECOLOUR'"><td colspan="5">'$FILENAME'</td></tr><tr style="background-color:'$LINECOLOUR'">'
+echo '<tr style="background-color:'$LINECOLOUR'"><td colspan="'$COLSPAN'">'$FILENAME'</td></tr><tr style="background-color:'$LINECOLOUR'">'
 else
 echo '<tr>'
 fi
 
 echo '
 <td><a class="info" href="javascript:void(0)"><input name="_ACTION_RENAME_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_'$FILE2'_" type="image" class="images" src="'$ICON3'" value=""><span>'$RENAMEMSG'<br>'$FILENAME'</span></a></td>
-<td><a class="info" href="javascript:void(0)"><input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$HOSTNAME'_ITEMMOVE_'$FILE2'_LOCATION_'$LOCATION2'_" type="image" class="images" src="'$ICON4'" value=""><span>'$MOVEMSG'<br>'$FILENAME'</span></a></td>
-<td><a class="info" href="javascript:void(0)"><input name="_ACTION_DELETE_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$HOSTNAME'_LOCATION_'$FILE2'_" type="image" class="images" src="'$ICON5'" value=""><span>'$DELETEMSG'<br>'$FILENAME'</span></a></td>
+<td><a class="info" href="javascript:void(0)"><input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_ITEMMOVE_'$FILE2'_LOCATION_'$LOCATION2'_" type="image" class="images" src="'$ICON4'" value=""><span>'$MOVEMSG'<br>'$FILENAME'</span></a></td>
+<td><a class="info" href="javascript:void(0)"><input name="_ACTION_DELETE_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_'$FILE2'_" type="image" class="images" src="'$ICON5'" value=""><span>'$DELETEMSG'<br>'$FILENAME'</span></a></td>
 '
-echo '<td><a class="info" href="javascript:void(0)"><input name="_ACTION_SETPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$HOSTNAME'_LOCATION_'$FILE2'_" type="image" class="images" src="'$ICON2'" value=""><span>'$PROPERTIESMSG'<br>'$FILENAME'</span></a></td><td>'
+echo '<td><a class="info" href="javascript:void(0)"><input name="_ACTION_SETPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_'$FILE2'_" type="image" class="images" src="'$ICON2'" value=""><span>'$PROPERTIESMSG'<br>'$FILENAME'</span></a></td><td>'
 
 if [ $FILEACTION = ENTER ]
 then
-echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$HOSTNAME'_LOCATION_'$FILE2'_" type="image" class="images" src="'$ICON1'" value=""><span>Enter<br>'$FILENAME'<br></span></a>'
+echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_'$FILE2'_" type="image" class="images" src="'$ICON1'" value=""><span>Enter<br>'$FILENAME'<br></span></a>'
 else
-echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_EDIT_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$HOSTNAME'_LOCATION_'$FILE2'_" type="image" class="images" src="'$ICON10'" value=""><span>'$EDITMSG'<br>'$FILENAME'</span></a>'
+echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_EDIT_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_'$FILE2'_" type="image" class="images" src="'$ICON10'" value=""><span>'$EDITMSG'<br>'$FILENAME'</span></a>'
 fi
 if [ $MOBILE = no ]
 then
-echo '</td><td>'$FILENAME'</td></tr>'
+echo '</td><td>'$FILENAME'</td><td></td></tr>'
 else
-echo '</td></tr>'
+echo '</td><td></td></tr>'
 fi
 done
 fi
@@ -393,7 +404,8 @@ LINECOLOUR='$LINECOLOUR2'
 else
 LINECOLOUR='$LINECOLOUR1'
 fi
-echo "<tr style=\"background-color:$LINECOLOUR\"><td colspan=\"5\">$FILENAME</td></tr><tr style=\"background-color:$LINECOLOUR\">"
+
+echo "<tr style=\"background-color:$LINECOLOUR\"><td colspan=\"'$COLSPAN'\">$FILENAME</td></tr><tr style=\"background-color:$LINECOLOUR\">"
 else
 echo "<tr>"
 fi
@@ -414,9 +426,11 @@ fi
 
 if [ '$MOBILE' = no ]
 then
-echo "</td><td>$FILENAME</td></tr>"
+echo "</td><td style=\"text-align: left;\">$FILENAME</td><td></td></tr>"
 else
-echo "</td></tr>"
+echo "</td>"
+[ $SHOWRESTORE != yes ] && echo "</td><td>"
+echo "</tr>"
 fi
 
 done
@@ -485,15 +499,16 @@ echo "<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_ENTER_
 else
 echo "<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_EDIT_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\" type="image" class=\"images\" src=\"'$ICON10'\" value=\"\"><span>'$EDITMSG'<br>$FILENAME</span></a>"
 fi
-[ $SHOWRESTORE = yes ] && echo "</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_RESTORE_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\" type="image" class=\"images\" src=\"'$ICON12'\" value=\"\"><span>Restore<br>$FILENAME</span></a>"
 
-if [ '$MOBILE' = no ]
+
+if [ $SHOWRESTORE = yes ]
 then
-echo "</td><td>$FILENAME</td></tr>"
+echo "</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_RESTORE_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\" type="image" class=\"images\" src=\"'$ICON12'\" value=\"\"><span>Restore<br>$FILENAME</span></a></td>"
 else
-echo "</td></tr>"
+echo "</td><td></td>"
 fi
-
+[ '$MOBILE' = no ] && echo "<td>$FILENAME</td>"
+echo "</tr>"
 done
 fi
 '\''

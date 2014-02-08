@@ -198,6 +198,9 @@ scp -p -r /opt/karoshi/serversetup/distro/ubuntu/modules/mailscanner root@$SERVE
 scp -p -r /opt/karoshi/serversetup/distro/ubuntu/modules/email root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/modules/ 1> /dev/null
 #Copy in ssl certificates
 scp -p -r /etc/ssl/mail root@$SERVERNAME:/etc/ssl/ 1> /dev/null
+#Copy in fail2ban files
+scp -p -r /opt/karoshi/serversetup/all/fail2ban root@$SERVERNAME:/opt/karoshi/serversetup/all/ 1> /dev/null
+
 #Install email
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 #Make sure that home areas exist for users to store email folders in.

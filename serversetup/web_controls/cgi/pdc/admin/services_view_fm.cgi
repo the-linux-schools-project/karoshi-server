@@ -76,6 +76,8 @@ function SetAllCheckBoxes(FormName, FieldName, CheckValue)
   </script>
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
+if [ $MOBILE = yes ]
+then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
@@ -93,13 +95,14 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	};
 	// ]]>
 	</script>'
+fi
 
 echo '</head><body onLoad="start()"><div id="pagecontainer">'
 
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox3
 TABLECLASS=standard
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin

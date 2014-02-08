@@ -65,6 +65,7 @@ LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 
 cd /etc/ssl/apache
 #Create host certificate
+echo "<li>"$SERVER - Creating SSL certificate"</li>"
 echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\n"$ALIAS"\n"$ALIAS"\n"$EMAILADDRESS"\n"webserver"\n" | openssl req -newkey rsa:8192 -days 3650 -keyout $ALIAS.key -nodes -out $ALIAS.req
 
 chmod 0600 /etc/ssl/apache/$ALIAS.key

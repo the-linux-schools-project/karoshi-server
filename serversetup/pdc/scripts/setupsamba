@@ -217,8 +217,8 @@ SERVERIP=`cat /etc/network/interfaces | grep address | cut -d' ' -f2 | sed -n 1,
 #Modify /etc/resolv.conf for samba4
 echo domain $REALM > /etc/resolv.conf
 echo nameserver $SERVERIP >> /etc/resolv.conf
-echo nameserver 8.8.8.8 >> /etc/resolv.conf
-echo nameserver 8.8.4.4 >> /etc/resolv.conf
+#echo nameserver 8.8.8.8 >> /etc/resolv.conf
+#echo nameserver 8.8.4.4 >> /etc/resolv.conf
 
 function provision_samba4 {
 echo Provisioning samba 4

@@ -99,7 +99,7 @@ MESSAGE=$ERRORMSG2
 show_status
 fi
 
-if [ `ls -1 /opt/karoshi/server_network/backup_servers/servers` = 0 ]
+if [ `ls -1 /opt/karoshi/server_network/backup_servers/servers | wc -l` = 0 ]
 then
 MESSAGE=$ERRORMSG2
 show_status

@@ -79,7 +79,7 @@ echo '</head><body><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbo3
+DIV_ID=actionbox3
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else

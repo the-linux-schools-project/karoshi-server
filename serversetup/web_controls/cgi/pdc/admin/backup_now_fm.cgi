@@ -75,7 +75,7 @@ function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/backup_now.cgi" name="selectservers" method="post">
-  <div id="actionbox"><b>'$TITLE'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a><br><br>'
+  <div id="actionbox3"><div id="titlebox"><b>'$TITLE'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a><br><br></div><div id="infobox">'
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
@@ -101,7 +101,6 @@ fi
 
 
 #Show list of servers
-SERVERCOUNTER=0
 SERVERICON="/images/submenus/system/computer.png"
 SERVERICON2="/images/submenus/system/all_computers.png"
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
@@ -109,11 +108,7 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 for SERVER in /opt/karoshi/server_network/backup_servers/backup_settings/*
 do
 KAROSHISERVER=`basename "$SERVER"`
-
-echo '<td style="width: 90px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVER_'$KAROSHISERVER'_" type="image" class="images" src="'$SERVERICON'" value="_SERVER_'$KAROSHISERVER'"><span>'$KAROSHISERVER'</span></a><br>'$KAROSHISERVER'</td>'
-
-[ $SERVERCOUNTER = 5 ] && echo '</tr><tr>'
-let SERVERCOUNTER=$SERVERCOUNTER+1
+echo '<tr><td style="width: 90px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVER_'$KAROSHISERVER'_" type="image" class="images" src="'$SERVERICON'" value="_SERVER_'$KAROSHISERVER'"><span>'$KAROSHISERVER'</span></a><br>'$KAROSHISERVER'</td></tr>'
 done
-echo '</tbody></table></form></div></div></body></html>'
+echo '</tbody></table></form></div></div></div></body></html>'
 exit

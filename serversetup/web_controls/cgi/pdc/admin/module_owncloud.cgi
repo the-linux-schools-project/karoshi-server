@@ -43,7 +43,7 @@ echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox3"><div id="infobox">'
+echo '<div id="actionbox3"><div id="titlebox">'
 
 #########################
 #Get data input

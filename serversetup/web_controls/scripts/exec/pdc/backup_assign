@@ -151,7 +151,7 @@ chmod 0600 /root/.ssh_servers/authorized_keys'$SERVER'
 '
 
 #Get server ip
-KAROSHISERVERTCPIP=`netlookup $SERVER`
+KAROSHISERVERTCPIP=`net lookup $SERVER`
 scp -o PasswordAuthentication=no -r $SERVER:/root/.ssh_servers/authorized_keys$SERVER /root/.ssh_servers
 scp -o PasswordAuthentication=no -r /root/.ssh_servers/authorized_keys$SERVER $BACKUPSERVER:/root/.ssh
 ssh -x -o PasswordAuthentication=no $BACKUPSERVER '

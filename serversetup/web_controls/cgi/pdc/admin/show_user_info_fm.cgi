@@ -63,7 +63,7 @@ echo '
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
+DIV_ID=actionbox
 TABLECLASS=standard
 WIDTH=180
 #Generate navigation bar

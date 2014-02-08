@@ -89,7 +89,7 @@ fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox">'
+echo '<div id="actionbox3"><div id="titlebox">'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_view.cgi | cut -d' ' -f1`
 #Show web admin users

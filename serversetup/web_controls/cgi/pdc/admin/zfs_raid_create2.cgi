@@ -47,7 +47,7 @@ echo '
 #Get data input
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\_\-%'`
+DATA=`cat | tr -cd 'A-Za-z0-9\._\-%'`
 #########################
 #Assign data to variables
 #########################

@@ -122,19 +122,21 @@ fi
 
 if [ $PRIADMINSTATUS = yes ]
 then
-echo '<form action="/cgi-bin/admin/remote_management_add_fm.cgi" method="post">
-<b>'$WEBADMINMSG1'</b> 
-<a class="info" href="javascript:void(0)"><input name="" type="image" class="images" src="/images/submenus/system/web_admin_add.png" value=""><span>Add Web Management User</span></a></form>
-<br>'$WEBADMINMSG2'<br><br>'
+echo '<form action="/cgi-bin/admin/remote_management_process.cgi" method="post">
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<td style="vertical-align: top;"><b>'$WEBADMINMSG1'</b></td>
+<td style="vertical-align: top;"><a href="remote_management_add_fm.cgi"><input class="button" type="button" name="" value="'$ADDMANUSERMSG'"></a></td>
+</tr></tbody></table>
+'
 else
-echo '<b>'$WEBADMINMSG1'</b><br><br>'$WEBADMINMSG2'<br><br>'
+echo '
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<td style="vertical-align: top;"><b>'$WEBADMINMSG1'</b></td>
+</tr></tbody></table>
+'
 fi
 
-
-if [ $PRIADMINSTATUS = yes ]
-then
-echo '<form action="/cgi-bin/admin/remote_management_process.cgi" method="post">'
-fi
+echo '<br>'$WEBADMINMSG2'<br><br></div><div id="infobox">'
 
 while [ $COUNTER -le $REMOTE_USER_COUNT ]
 do
@@ -198,5 +200,5 @@ if [ $PRIADMINSTATUS = yes ]
 then
 echo '</form>'
 fi
-echo '</div></body></html>'
+echo '</div></div></body></html>'
 exit
