@@ -148,6 +148,7 @@ A:hover {
 	flex: auto;
 	flex-direction: column;
         margin: 2px 2px 2px 2px;
+	background-color: #212020;
 	-moz-border-radius: 15px;
 	border-radius: 15px;
 	border-style:solid;
@@ -515,7 +516,7 @@ way to fit your requirements.
 #nav li:hover ul.sub li
 {display:block; height:20px; position:relative; float:left; width:150px; font-weight:normal;}
 #nav li:hover ul.sub li a
-{display:block; font-size:11px; height:18px; width:157px; line-height:18px; text-indent:5px; color:#000; text-decoration:none;border:1px solid #ffffff;}
+{display:block; font-size:11px; height:18px; width:157px; line-height:18px; text-indent:5px; color:#000; text-decoration:none;border:1px solid #ffffff;border-radius: 0 0 0 0;}
 #nav li ul.sub li a.fly
 {background:#ffffff url(/images/pro_dropdown_2_default/arrow.gif) 150px 6px no-repeat;}
 #nav li:hover ul.sub li a:hover 
