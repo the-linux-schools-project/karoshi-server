@@ -180,9 +180,10 @@ fi
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
+SERVERNAME2=`echo "${SERVERNAME:0:9}" | cut -d. -f1`
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$SERVERNAME'</span>
+	<span>'$SERVERNAME2'</span>
 <a href="/cgi-bin/admin/services_view_fm.cgi">'$TITLE1'</a>
 </div></div><div id="mobileactionbox">
 '

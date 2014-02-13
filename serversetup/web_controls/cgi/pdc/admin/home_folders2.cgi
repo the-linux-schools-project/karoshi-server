@@ -56,7 +56,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 #Generate navigation bar
 #########################
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><b>'$TITLE2'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a><br><br>'
+echo '<div id="actionbox3"><div id="titlebox"><b>'$TITLE2'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a><br><br></div><div id="infobox">'
 
 #########################
 #Assign data to variables
@@ -198,7 +198,7 @@ MESSAGE=`echo $PROBLEMMSG $LOGMSG`
 show_status
 fi
 completed
-echo '</div></div></body></html>'
+echo '</div></div></div></body></html>'
 exit
 
 

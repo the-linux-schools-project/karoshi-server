@@ -88,9 +88,9 @@ MAXSTYLES=5
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
+DIV_ID=mobileactionbox
 TABLECLASS=mobilestandard
-MAXSTYLES=4
+MAXSTYLES=1
 fi
 
 echo '<form action="/cgi-bin/admin/remote_management_change_theme2.cgi" method="post">'
@@ -104,7 +104,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$SYSMENUMSG'</a>
-</div></div><div id="mobileactionbox4">'
+</div></div><div id="'$DIV_ID'">'
 else
 echo '<b>'$TITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Web_Management_Themes"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'<br><br>'$HELPMSG2'</span></a>
 
@@ -112,7 +112,10 @@ echo '<b>'$TITLE'</b> <a class="info" target="_blank" href="http://www.linuxscho
 <br><br></div><div id="infobox">'
 fi
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+STYLESHEET2=`echo $STYLESHEET | cut -d. -f1`
+echo $CURTHEMEMSG: $STYLESHEET2"<br><br>"
+
+echo '<center><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
 
 STYLESHEET=`echo $STYLESHEET | cut -d. -f1`
 STYLECOUNT=1
@@ -125,14 +128,14 @@ then
 echo '<td style="width: 90px; vertical-align: top; height: 160px; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_THEMECHOICE_'$STYLESHEETCHOICE'_" type="image" class="images" src="/images/theme_preview/'$STYLESHEETCHOICE'.png" value="_THEMECHOICE_'$STYLESHEETCHOICE'_"><span>'$STYLESHEETCHOICE'</span></a></td>'
 let STYLECOUNT=$STYLECOUNT+1
 fi
-if [ $STYLECOUNT = $MAXSTYLES ]
+if [ $STYLECOUNT -gt $MAXSTYLES ]
 then
 echo '</tr><tr>'
 STYLECOUNT=1
 fi
 done
 [ $STYLECOUNT = 1 ] && echo "<td></td>"
-echo '</tr></tbody></table><br>'
+echo '</tr></tbody></table></center><br>'
 
 [ $MOBILE = no ] && echo '</div>'
 
