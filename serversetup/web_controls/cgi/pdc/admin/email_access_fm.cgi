@@ -57,9 +57,9 @@ echo '
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><form action="/cgi-bin/admin/email_access.cgi" method="post"><b>'$TITLE'</b>
+echo '<div id="actionbox3"><div id="titlebox"><form action="/cgi-bin/admin/email_access.cgi" method="post"><b>'$TITLE'</b>
 <a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
-<br><br>
+<br><br></div><div id="infobox">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody>
 <tr><td style="width: 180px;">'$USERNAMEMSG'</td><td><input tabindex= "1" name="_EMAILUSER_" style="width: 200px;" size="20" type="text"></td><td>
@@ -102,6 +102,6 @@ fi
 
 done
 
-echo '</tbody></table></form><br><br></div></div></body></html>'
+echo '</tbody></table></form><br><br></div></div></div></body></html>'
 exit
 

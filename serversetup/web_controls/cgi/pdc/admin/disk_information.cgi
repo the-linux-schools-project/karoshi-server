@@ -186,7 +186,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$SERVERNAME2'</span>
 <a href="/cgi-bin/admin/disk_information_fm.cgi">'$TITLE'</a>
-</div></div><div id="mobileactionbox3">'
+</div></div><div id="mobileactionbox">'
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
 <td style="vertical-align: top;"><b>'$TITLE' - '$SERVERNAME'</b></td>

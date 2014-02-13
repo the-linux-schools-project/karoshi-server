@@ -155,7 +155,7 @@ then
 echo ''$DATEMSG'<br>'
 
 echo "	<!-- calendar attaches to existing form element -->
-	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxlength=10 name=\"_DATE_\"></td><td style=\"vertical-align: top; text-align: center;\">
+	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxlength=10 name=\"_DATE_\">
 	<script type=\"text/javascript\" language=\"JavaScript\">
 	new tcal ({
 		// form name

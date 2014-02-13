@@ -24,6 +24,21 @@ DSERVICES=cron
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/openvpn ] && DSERVICES=$DSERVICES,openvpn
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/userwebhosting ] && DSERVICES=$DSERVICES,apache,mysql,vsftpd
 
+
+#Check that the server is online
+ONLINE=yes
+if [ $SERVERNAME != `hostname-fqdn` ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME ls 1>/dev/null
+if [ $? != 0 ]
+then
+echo `date`: check_services - $SERVERNAME is offline. >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+ONLINE=no
+fi
+fi
+
+if [ $ONLINE = yes ]
+then
 echo -e "Servicecheck: $SERVERNAME\nServices: $DSERVICES"
 
 DSERVICES=`echo -e "$DSERVICES" | sed "s/,/\n/g" | sort`
@@ -60,5 +75,6 @@ fi
 #Log service failure
 [ $SERVICESTATUS != 0 ] && echo `date`: check_services - service $SERVICE was not running on $SERVERNAME >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 done
+fi
 done
 exit

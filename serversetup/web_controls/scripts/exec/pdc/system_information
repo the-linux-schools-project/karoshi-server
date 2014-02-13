@@ -1,0 +1,70 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+##################################
+#Get raw system information
+##################################
+
+#IP Address
+
+#Kernel version
+KERNELVER=`uname -r`
+
+source /etc/lsb-release
+#DISTRIB_ID=Ubuntu
+#DISTRIB_RELEASE=13.10
+#DISTRIB_CODENAME=saucy
+#DISTRIB_DESCRIPTION="Ubuntu 13.10"
+
+############################
+#CPU information
+############################
+
+RAWCPUINFO=`cat /proc/cpuinfo`
+#Get line ranges for each cpu
+LINEARRAY=( `echo -e "$RAWCPUINFO" | grep -n ^processor | cut -d: -f1` )
+CPUCOUNT=${#LINEARRAY[@]}
+
+
+COUNTER1=0
+COUNTER2=1
+echo cpu count is $CPUCOUNT
+while [ $COUNTER1 -lt $CPUCOUNT ]
+do
+
+if [ $CPUCOUNT -gt 1 ]
+then
+LASTLINE=${LINEARRAY[$COUNTER1]}
+else
+LASTLINE=$CPUCOUNT
+
+echo last line is $LASTLINE
+
+((COUNTER1++))
+((COUNTER2++))
+done
+
+

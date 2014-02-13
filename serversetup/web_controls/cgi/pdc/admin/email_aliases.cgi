@@ -219,7 +219,9 @@ HELPMSG=$HELPMSG1
 fi
 echo '<div id="'$DIV_ID'"><form action="/cgi-bin/admin/email_aliases.cgi" method="post">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: middle; height: 20px;"><b>'$TITLE'</b></td>
-<td style="vertical-align: middle;"><a class="info" href="javascript:void(0)"><input name="_ACTION_'$ACTION2'_" type="image" class="images" src="'$ICON'" value=""><span>'$MESSAGE'</span></a></td><td style="vertical-align: middle;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG'</span></a>
+<td style="vertical-align: middle;">
+<input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$MESSAGE'">
+</td><td style="vertical-align: middle;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG'</span></a>
 </td></tr>
 </tbody></table><br>'
 fi

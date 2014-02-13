@@ -104,7 +104,8 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 else
 echo '<div id="'$DIV_ID'">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: middle; height: 20px;"><b>'$TITLE1'</b></td>
-<td style="vertical-align: middle;"><a class="info" target="_top" href="email_view_banned_domains_fm.cgi"><img class="images" alt="" src="/images/submenus/email/email_ban_domain.png"><span>'$TITLE2'</span></a>
+<td style="vertical-align: top;">
+<a href="email_view_banned_domains_fm.cgi"><input class="button" type="button" name="" value="'$VIEWBANDOMAINMSG'"></a>
 </td></tr>
 </tbody></table><br>'
 fi

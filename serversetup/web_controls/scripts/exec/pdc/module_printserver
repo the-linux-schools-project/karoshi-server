@@ -152,7 +152,7 @@ echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/printserver
 
 SHORTSERVERNAME=`echo $SERVERNAME | sed 's/.'$REALM'//g'`
 echo $SHORTSERVERNAME > /var/lib/samba/netlogon/domain_information/print_server
-echo $SHORTSERVERNAME > /opt/karoshi/server_network/printserver
+echo $SERVERNAME > /opt/karoshi/server_network/printserver
 cp -f /opt/karoshi/server_network/printserver /var/lib/samba/netlogon/
 sed -i 's/PRINTERCTRL=no/PRINTERCTRL=yes/g' /opt/karoshi/server_network/menusettings
 

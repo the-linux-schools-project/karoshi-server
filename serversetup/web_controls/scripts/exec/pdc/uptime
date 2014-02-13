@@ -157,7 +157,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 <tr><td style="width: 90px;"><b>'$SERVERMSG'</b></td><td style="width: 80px;"><b>'$UPTIMEMSG'</b></td></tr>'
 else
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 120px;"><b>'$SERVERMSG'</b></td><td style="width: 80px;"><b>'$UPTIMEMSG'</b></td><td style="width: 140px;"><b>'$DOWNTIMEMSG'</b></td><td><b>'$STARTTIMEMSG'</b></td><td>'$RESETMSG'</tr>'
+<tr><td style="width: 200px;"><b>'$SERVERMSG'</b></td><td style="width: 80px;"><b>'$UPTIMEMSG'</b></td><td style="width: 140px;"><b>'$DOWNTIMEMSG'</b></td><td><b>'$STARTTIMEMSG'</b></td><td>'$RESETMSG'</tr>'
 fi
 }
 
@@ -236,7 +236,7 @@ echo '<tr><td> '$DISPLAY_NAME'</td><td>'$OFFLINEMSG'</td><td>'$OFFLINEMSG'</td><
 #Show uptime this server
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
-UPTIMEDATA=`karoshi-uptime.sh -p uptime`,`karoshi-uptime.sh -n start-time`
+UPTIMEDATA=`karoshi-uptime.sh -p uptime ; echo , ; karoshi-uptime.sh -n start-time`
 
 if [ $MOBILE = yes ]
 then
@@ -310,10 +310,18 @@ table_top
 for SERVERNAMES in /opt/karoshi/server_network/servers/*
 do
 SERVERNAME=`basename $SERVERNAMES`
+
+if [ $MOBILE = yes ]
+then
+DISPLAY_NAME=`echo $SERVERNAME | cut -d. -f1`
+else
+DISPLAY_NAME=$SERVERNAME
+fi
+
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 UPTIMEDATA=`karoshi-uptime.sh -p uptime`,`karoshi-uptime.sh -n start-time`
-DISPLAY_NAME=$SERVERNAME
+
 SERVERTYPE=network
 show_data
 else
@@ -321,7 +329,7 @@ UPTIMEDATA=`ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME 
 karoshi-uptime.sh -p uptime ; echo , ; karoshi-uptime.sh -n start-time
 '`
 STATUS=`echo $?`
-DISPLAY_NAME=$SERVERNAME
+
 if [ $STATUS = 0 ]
 then
 show_data
@@ -339,12 +347,18 @@ then
 for SERVERNAMES in /opt/karoshi/server_network/federated_ldap_servers/*
 do
 SERVERNAME=`basename $SERVERNAMES`
+if [ $MOBILE = yes ]
+then
+DISPLAY_NAME=`echo $SERVERNAME | cut -d. -f1`
+else
+DISPLAY_NAME=$SERVERNAME
+fi
+
 UPTIMEDATA=`ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 karoshi-uptime.sh -p uptime ; echo , ; karoshi-uptime.sh -n start-time
 '`
 STATUS=`echo $?`
 
-DISPLAY_NAME=$SERVERNAME
 SERVERTYPE=federated
 table_top
 if [ $STATUS = 0 ]

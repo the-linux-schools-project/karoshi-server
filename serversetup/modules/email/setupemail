@@ -493,6 +493,7 @@ fi
 
 [ ! -d /opt/karoshi/server_network/security/fail2ban ] && mkdir -p /opt/karoshi/server_network/security/fail2ban
 [ ! -f /opt/karoshi/server_network/security/fail2ban/email ] && cp -f /opt/karoshi/serversetup/all/fail2ban/jails/email /opt/karoshi/server_network/security/fail2ban/
+[ ! -f /opt/karoshi/server_network/security/fail2ban/sogo ] && cp -f /opt/karoshi/serversetup/all/fail2ban/jails/sogo /opt/karoshi/server_network/security/fail2ban/
 cat /opt/karoshi/server_network/security/fail2ban/* > /etc/fail2ban/jail.local
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_stop
 sleep 1

@@ -96,8 +96,14 @@ fi
 
 echo `date`: group_membership - showing group information "for" $USERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
+if [ $MOBILE = no ]
+then
 ICON1=/images/submenus/user/group_yes.png
 ICON2=/images/submenus/user/group_no.png
+else
+ICON1=/images/submenus/user/group_yes_m.png
+ICON2=/images/submenus/user/group_no_m.png
+fi
 
 TABLECLASS=standard
 WIDTH=180

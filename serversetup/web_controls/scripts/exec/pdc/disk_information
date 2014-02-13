@@ -122,9 +122,21 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/system/disk_information
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 KAROSHI_SERVER=$SERVER
-TABLECLASS=standard
-[ $MOBILE = yes ] && TABLECLASS=mobilestandard
 
+if [ $MOBILE = yes ]
+then
+MULTI=1
+WIDTH1=100
+WIDTH2=40
+WIDTH3=100
+TABLECLASS=mobilestandard
+else
+MULTI=5
+WIDTH1=180
+WIDTH2=86
+WIDTH3=180
+TABLECLASS=standard
+fi
 echo `date`: disk_information - checking $INFO "for" $KAROSHI_SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 if [ $KAROSHI_SERVER = `hostname-fqdn` ]
 then
@@ -135,8 +147,9 @@ echo '<b>'$FREESPACEMSG'</b><br>'
 DISKINFO=`df -h -l | sed 1d | sed "s/ * / /g" | sort -b -k5n,5`
 MOUNTCOUNT=`echo -e "$DISKINFO" | wc -l`
 echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 86px;\">Mount point</td><td style=\"width: 86px;\">File System</td><td>Size</td><td>Used</td><td>Avail</td><td>% Use</td></tr>
-"
+<tr><td style=\"width: $WIDTH1"px";\"><b>Mount point</b></td>"
+[ $MOBILE = no ] && echo "<td style=\"width: $WIDTH2"px";\"><b>File System</b></td><td><b>Size</b></td><td><b>Used</b></td>"
+echo "<td><b>Avail</b></td><td><b>%Use</b></td></tr>"
 COUNTER=1
 while [ $COUNTER -le $MOUNTCOUNT ]
 do
@@ -151,16 +164,20 @@ MOUNTPOINT=`echo $MOUNTDATA | cut -d" " -f6`
 
 if [ $USE2 -gt 90 ]
 then
-let USE2=$USE2*3
-echo "<tr><td><FONT COLOR=\"red\"><b>$MOUNTPOINT</b></font></td><td><FONT COLOR=\"red\"><b>$FILESYSTEM</b></font></td><td><FONT COLOR=\"red\"><b>$SIZE</b></font></td><td><FONT COLOR=\"red\"><b>$USED</b></font></td><td><FONT COLOR=\"red\"><b>$AVAIL</b></font></td><td><FONT COLOR=\"red\"><b>$USE</b></font></td><td class=\"BarFull\"><img src=\"/images/disk_usage/red.png\" height=\"12\" alt=\"$USE2\" width=\"$USE2\"></td></tr>"
+ALERTCOL=red
+BARCOL=red
 elif [ $USE2 -gt 70 ]
 then
-let USE2=$USE2*3
-echo "<tr><td><FONT COLOR=\"orange\">$MOUNTPOINT</font></td><td><FONT COLOR=\"orange\">$FILESYSTEM</font></td><td><FONT COLOR=\"orange\">$SIZE</font></td><td><FONT COLOR=\"orange\">$USED</font></td><td><FONT COLOR=\"orange\">$AVAIL</font></td><td><FONT COLOR=\"orange\">$USE</font></td><td class=\"BarFull\"><img src=\"/images/disk_usage/orange.png\" height=\"12\" alt=\"$USE2\" width=\"$USE2\"></td></tr>"
+ALERTCOL=orange
+BARCOL=orange
 else
-let USE2=$USE2*3
-echo "<tr><td>$MOUNTPOINT</td><td>$FILESYSTEM</td><td>$SIZE</td><td>$USED</td><td>$AVAIL</td><td>$USE</td><td class=\"BarFull\"><img src=\"/images/disk_usage/blue.png\" height=\"12\" alt=\"$USE2\" width=\"$USE2\"></td></tr>"
+ALERTCOL=green
+BARCOL=green
 fi
+let USE2=$USE2*$MULTI
+echo "<tr><td><FONT COLOR=\"$ALERTCOL\">$MOUNTPOINT</font></td>"
+[ $MOBILE = no ] && echo "<td><FONT COLOR=\"$ALERTCOL\">$FILESYSTEM</font></td><td><FONT COLOR=\"$ALERTCOL\">$SIZE</font></td><td><FONT COLOR=\"$ALERTCOL\">$USED</font></td>"
+echo "<td><FONT COLOR=\"$ALERTCOL\">$AVAIL</font></td><td><FONT COLOR=\"$ALERTCOL\">$USE</font></td><td class=\"BarFull\"><img src=\"/images/disk_usage/$BARCOL.png\" height=\"12\" alt=\"$USE2\" width=\"$USE2\"></td></tr>"
 
 let COUNTER=$COUNTER+1
 done
@@ -200,32 +217,32 @@ DRIVESCALE=TB
 fi
 
 echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\">$MODELFAMILIYMSG</td><td>$MODELFAMILY</td></tr>
-<tr><td style=\"width: 180px;\">$DEVICEMODELMSG</td><td>$DEVICEMODEL</td></tr>
-<tr><td style=\"width: 180px;\">$SERIALNOMSG</td><td>$SERIALNO</td></tr>
-<tr><td style=\"width: 180px;\">$FIRMWAREMSG</td><td>$FIRMWARE</td></tr>
-<tr><td style=\"width: 180px;\">$CAPACITYMSG</td><td>$CAPACITY $DRIVESCALE</td></tr>
-<tr><td style=\"width: 180px;\">$SMARTENABLEDMSG</td><td>$SMARTENABLED</td></tr>
-<tr><td style=\"width: 180px;\">$SMARTSTATUSMSG</td><td>$SMARTSTATUS</td></tr>"
+<tr><td style=\"width: $WIDTH3"px";\">$MODELFAMILIYMSG</td><td>$MODELFAMILY</td></tr>
+<tr><td>$DEVICEMODELMSG</td><td>$DEVICEMODEL</td></tr>
+<tr><td>$SERIALNOMSG</td><td>$SERIALNO</td></tr>
+<tr><td>$FIRMWAREMSG</td><td>$FIRMWARE</td></tr>
+<tr><td>$CAPACITYMSG</td><td>$CAPACITY $DRIVESCALE</td></tr>
+<tr><td>$SMARTENABLEDMSG</td><td>$SMARTENABLED</td></tr>
+<tr><td>$SMARTSTATUSMSG</td><td>$SMARTSTATUS</td></tr>"
 
 if [ ! -z "$PENDINGSECTORS" ]
 then
 if [ $PENDINGSECTORS -gt 0 ]
 then
-echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"red\"><b>$PENDINGSECTORSMSG</b></font></td><td><FONT COLOR=\"red\"><b>$PENDINGSECTORS</b></font></td></tr>"
+echo "<tr><td><FONT COLOR=\"red\"><b>$PENDINGSECTORSMSG</b></font></td><td><FONT COLOR=\"red\"><b>$PENDINGSECTORS</b></font></td></tr>"
 else
-echo "<tr><td style=\"width: 180px;\">$PENDINGSECTORSMSG</td><td>$PENDINGSECTORS</td></tr>"
+echo "<tr><td>$PENDINGSECTORSMSG</td><td>$PENDINGSECTORS</td></tr>"
 fi
 fi
 
 if [ $DISKTEMP -gt 50 ]
 then
-echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"red\"><b>$DISKTEMPMSG</b></font></td><td><FONT COLOR=\"red\"><b>$DISKTEMP <sup>o</sup>C</b></font></td></tr>"
+echo "<tr><td><FONT COLOR=\"red\"><b>$DISKTEMPMSG</b></font></td><td><FONT COLOR=\"red\"><b>$DISKTEMP <sup>o</sup>C</b></font></td></tr>"
 elif [ $DISKTEMP -gt 40 ]
 then
-echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"orange\">$DISKTEMPMSG</font></td><td><FONT COLOR=\"orange\">$DISKTEMP <sup>o</sup>C</font></td></tr>"
+echo "<tr><td><FONT COLOR=\"orange\">$DISKTEMPMSG</font></td><td><FONT COLOR=\"orange\">$DISKTEMP <sup>o</sup>C</font></td></tr>"
 else
-echo "<tr><td style=\"width: 180px;\">$DISKTEMPMSG</td><td>$DISKTEMP <sup>o</sup>C</td></tr>"
+echo "<tr><td>$DISKTEMPMSG</td><td>$DISKTEMP <sup>o</sup>C</td></tr>"
 fi
 
 echo "</tbody></table><br>"
@@ -258,23 +275,23 @@ CHUNKSIZE=`echo -e "$MDADMDATA" | grep "Chunk Size :" | cut -d: -f2 | sed "s/^ /
 UUID=`echo -e "$MDADMDATA" | grep "UUID :" | cut -d: -f2- | sed "s/^ //g"`
 
 echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\">$RAIDLEVELMSG</td><td>$RAIDLEVEL</td></tr>
-<tr><td style=\"width: 180px;\">$RAIDSIZEMSG</td><td>$ARRAYSIZE</td></tr>
-<tr><td style=\"width: 180px;\">$USEDSIZEMSG</td><td>$USEDSIZE</td></tr>
-<tr><td style=\"width: 180px;\">$RAIDSTATUSMSG</td><td>$RAIDSTATUS</td></tr>"
-[ ! -z "$REBUILDSTATUS" ] && echo "<tr><td style=\"width: 180px;\">Rebuild Status</td><td>$REBUILDSTATUS</td></tr>"
-echo "<tr><td style=\"width: 180px;\">$RAIDDRIVESMSG</td><td>$RAIDDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">$USEDDRIVESMSG</td><td>$TOTALDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">$ACTIVEDEVICESMSG</td><td>$ACTIVEDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">$WORKINGDEVICESMSG</td><td>$WORKINGDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">$FAILEDDEVICESMSG</td><td>$FAILEDDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">$SPAREDEVICESMSG</td><td>$SPAREDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">$LAYOUTMSG</td><td>$LAYOUT</td></tr>
-<tr><td style=\"width: 180px;\">$CHUNKSIZEMSG</td><td>$CHUNKSIZE</td></tr>
-<tr><td style=\"width: 180px;\">$ACTIVEDISKSMSG</td><td>$ACTIVE_RAID_DISKS</td></tr>
-<tr><td style=\"width: 180px;\">$REBUILDINGDISKSMSG</td><td>$REBUILDING_RAID_DISKS</td></tr>
-<tr><td style=\"width: 180px;\">$SPAREDISKSMSG</td><td>$SPARE_RAID_DISKS</td></tr>
-<tr><td style=\"width: 180px;\">UUID</td><td>$UUID</td></tr>
+<tr><td style=\"width: $WIDTH3"px";\">$RAIDLEVELMSG</td><td>$RAIDLEVEL</td></tr>
+<tr><td>$RAIDSIZEMSG</td><td>$ARRAYSIZE</td></tr>
+<tr><td>$USEDSIZEMSG</td><td>$USEDSIZE</td></tr>
+<tr><td>$RAIDSTATUSMSG</td><td>$RAIDSTATUS</td></tr>"
+[ ! -z "$REBUILDSTATUS" ] && echo "<tr><td>Rebuild Status</td><td>$REBUILDSTATUS</td></tr>"
+echo "<tr><td>$RAIDDRIVESMSG</td><td>$RAIDDEVICES</td></tr>
+<tr><td>$USEDDRIVESMSG</td><td>$TOTALDEVICES</td></tr>
+<tr><td>$ACTIVEDEVICESMSG</td><td>$ACTIVEDEVICES</td></tr>
+<tr><td>$WORKINGDEVICESMSG</td><td>$WORKINGDEVICES</td></tr>
+<tr><td>$FAILEDDEVICESMSG</td><td>$FAILEDDEVICES</td></tr>
+<tr><td>$SPAREDEVICESMSG</td><td>$SPAREDEVICES</td></tr>
+<tr><td>$LAYOUTMSG</td><td>$LAYOUT</td></tr>
+<tr><td>$CHUNKSIZEMSG</td><td>$CHUNKSIZE</td></tr>
+<tr><td>$ACTIVEDISKSMSG</td><td>$ACTIVE_RAID_DISKS</td></tr>
+<tr><td>$REBUILDINGDISKSMSG</td><td>$REBUILDING_RAID_DISKS</td></tr>
+<tr><td>$SPAREDISKSMSG</td><td>$SPARE_RAID_DISKS</td></tr>
+<tr><td>UUID</td><td>$UUID</td></tr>
 </tbody></table>"
 fi
 fi
@@ -289,9 +306,10 @@ echo "<b>'$FREESPACEMSG'</b><br>"
 #Get partition info
 DISKINFO=`df -h -l | sed 1d | sed "s/ * / /g" | sort -b -k5n,5`
 MOUNTCOUNT=`echo -e "$DISKINFO" | wc -l`
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 86px;\">Mount point</td><td style=\"width: 86px;\">File System</td><td>Size</td><td>Used</td><td>Avail</td><td>% Use</td></tr>
-"
+echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+<tr><td style=\"width: '$WIDTH1'px;\"><b>Mount point</b></td>"
+[ '$MOBILE' = no ] && echo "<td style=\"width: '$WIDTH2'px;\"><b>File System</b></td><td><b>Size</b></td><td><b>Used</b></td>"
+echo "<td><b>Avail</b></td><td><b>%Use</b></td></tr>"
 COUNTER=1
 while [ $COUNTER -le $MOUNTCOUNT ]
 do
@@ -307,16 +325,20 @@ MOUNTPOINT=`echo $MOUNTDATA | cut -d" " -f6`
 
 if [ $USE2 -gt 90 ]
 then
-let USE2=$USE2*3
-echo "<tr><td><FONT COLOR=\"red\"><b>$MOUNTPOINT</b></font></td><td><FONT COLOR=\"red\"><b>$FILESYSTEM</b></font></td><td><FONT COLOR=\"red\"><b>$SIZE</b></font></td><td><FONT COLOR=\"red\"><b>$USED</b></font></td><td><FONT COLOR=\"red\"><b>$AVAIL</b></font></td><td><FONT COLOR=\"red\"><b>$USE</b></font></td><td class=\"BarFull\"><img src=\"/images/disk_usage/red.png\" height=\"12\" alt=\"$USE2\" width=\"$USE2\"></td></tr>"
+ALERTCOL=red
+BARCOL=red
 elif [ $USE2 -gt 70 ]
 then
-let USE2=$USE2*3
-echo "<tr><td><FONT COLOR=\"orange\">$MOUNTPOINT</font></td><td><FONT COLOR=\"orange\">$FILESYSTEM</font></td><td><FONT COLOR=\"orange\">$SIZE</font></td><td><FONT COLOR=\"orange\">$USED</font></td><td><FONT COLOR=\"orange\">$AVAIL</font></td><td><FONT COLOR=\"orange\">$USE</font></td><td class=\"BarFull\"><img src=\"/images/disk_usage/orange.png\" height=\"12\" alt=\"$USE2\" width=\"$USE2\"></td></tr>"
+ALERTCOL=orange
+BARCOL=orange
 else
-let USE2=$USE2*3
-echo "<tr><td>$MOUNTPOINT</td><td>$FILESYSTEM</td><td>$SIZE</td><td>$USED</td><td>$AVAIL</td><td>$USE</td><td class=\"BarFull\"><img src=\"/images/disk_usage/blue.png\" height=\"12\" alt=\"$USE2\" width=\"$USE2\"></td></tr>"
+ALERTCOL=green
+BARCOL=green
 fi
+let USE2=$USE2*'$MULTI'
+echo "<tr><td><FONT COLOR=\"$ALERTCOL\">$MOUNTPOINT</font></td>"
+[ $MOBILE = no ] && echo "<td><FONT COLOR=\"$ALERTCOL\">$FILESYSTEM</font></td><td><FONT COLOR=\"$ALERTCOL\">$SIZE</font></td><td><FONT COLOR=\"$ALERTCOL\">$USED</font></td>"
+echo "<td><FONT COLOR=\"$ALERTCOL\">$AVAIL</font></td><td><FONT COLOR=\"$ALERTCOL\">$USE</font></td><td class=\"BarFull\"><img src=\"/images/disk_usage/$BARCOL.png\" height=\"12\" alt=\"$USE2\" width=\"$USE2\"></td></tr>"
 
 let COUNTER=$COUNTER+1
 done
@@ -413,23 +435,23 @@ CHUNKSIZE=`echo -e "$MDADMDATA" | grep "Chunk Size :" | cut -d: -f2 | sed "s/^ /
 UUID=`echo -e "$MDADMDATA" | grep "UUID :" | cut -d: -f2- | sed "s/^ //g"`
 
 echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\">'$RAIDLEVELMSG'</td><td>$RAIDLEVEL</td></tr>
-<tr><td style=\"width: 180px;\">'$RAIDSIZEMSG'</td><td>$ARRAYSIZE</td></tr>
-<tr><td style=\"width: 180px;\">'$USEDSIZEMSG'</td><td>$USEDSIZE</td></tr>
-<tr><td style=\"width: 180px;\">'$RAIDSTATUSMSG'</td><td>$RAIDSTATUS</td></tr>"
-[ ! -z "$REBUILDSTATUS" ] && echo "<tr><td style=\"width: 180px;\">Rebuild Status</td><td>$REBUILDSTATUS</td></tr>"
-echo "<tr><td style=\"width: 180px;\">'$RAIDDRIVESMSG'</td><td>$RAIDDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">'$USEDDRIVESMSG'</td><td>$TOTALDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">'$ACTIVEDEVICESMSG'</td><td>$ACTIVEDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">'$WORKINGDEVICESMSG'</td><td>$WORKINGDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">'$FAILEDDEVICESMSG'</td><td>$FAILEDDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">'$SPAREDEVICESMSG'</td><td>$SPAREDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">'$LAYOUTMSG'</td><td>$LAYOUT</td></tr>
-<tr><td style=\"width: 180px;\">'$CHUNKSIZEMSG'</td><td>$CHUNKSIZE</td></tr>
-<tr><td style=\"width: 180px;\">'$ACTIVEDISKSMSG'</td><td>$ACTIVE_RAID_DISKS</td></tr>
-<tr><td style=\"width: 180px;\">'$REBUILDINGDISKSMSG'</td><td>$REBUILDING_RAID_DISKS</td></tr>
-<tr><td style=\"width: 180px;\">'$SPAREDISKSMSG'</td><td>$SPARE_RAID_DISKS</td></tr>
-<tr><td style=\"width: 180px;\">UUID</td><td>$UUID</td></tr>
+<tr><td style=\"width: '$WIDTH3'px;\">'$RAIDLEVELMSG'</td><td>$RAIDLEVEL</td></tr>
+<tr><td>'$RAIDSIZEMSG'</td><td>$ARRAYSIZE</td></tr>
+<tr><td>'$USEDSIZEMSG'</td><td>$USEDSIZE</td></tr>
+<tr><td>'$RAIDSTATUSMSG'</td><td>$RAIDSTATUS</td></tr>"
+[ ! -z "$REBUILDSTATUS" ] && echo "<tr><td>Rebuild Status</td><td>$REBUILDSTATUS</td></tr>"
+echo "<tr><td>'$RAIDDRIVESMSG'</td><td>$RAIDDEVICES</td></tr>
+<tr><td>'$USEDDRIVESMSG'</td><td>$TOTALDEVICES</td></tr>
+<tr><td>'$ACTIVEDEVICESMSG'</td><td>$ACTIVEDEVICES</td></tr>
+<tr><td>'$WORKINGDEVICESMSG'</td><td>$WORKINGDEVICES</td></tr>
+<tr><td>'$FAILEDDEVICESMSG'</td><td>$FAILEDDEVICES</td></tr>
+<tr><td>'$SPAREDEVICESMSG'</td><td>$SPAREDEVICES</td></tr>
+<tr><td>'$LAYOUTMSG'</td><td>$LAYOUT</td></tr>
+<tr><td>'$CHUNKSIZEMSG'</td><td>$CHUNKSIZE</td></tr>
+<tr><td>'$ACTIVEDISKSMSG'</td><td>$ACTIVE_RAID_DISKS</td></tr>
+<tr><td>'$REBUILDINGDISKSMSG'</td><td>$REBUILDING_RAID_DISKS</td></tr>
+<tr><td>'$SPAREDISKSMSG'</td><td>$SPARE_RAID_DISKS</td></tr>
+<tr><td>UUID</td><td>$UUID</td></tr>
 </tbody></table>"
 fi
 '
@@ -446,9 +468,10 @@ echo "<b>'$FREESPACEMSG'</b><br>"
 #Get partition info
 DISKINFO=`df -h -l | sed 1d | sed "s/ * / /g" | sort -b -k5n,5`
 MOUNTCOUNT=`echo -e "$DISKINFO" | wc -l`
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 86px;\">Mount point</td><td style=\"width: 86px;\">File System</td><td>Size</td><td>Used</td><td>Avail</td><td>% Use</td></tr>
-"
+echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+<tr><td style=\"width: '$WIDTH1'px;\"><b>Mount point</b></td>"
+[ '$MOBILE' = no ] && echo "<td style=\"width: '$WIDTH2'px;\"><b>File System</b></td><td><b>Size</b></td><td><b>Used</b></td>"
+echo "<td><b>Avail</b></td><td><b>%Use</b></td></tr>"
 COUNTER=1
 while [ $COUNTER -le $MOUNTCOUNT ]
 do
@@ -463,16 +486,20 @@ USE2=`echo $USE | sed "s/%//g"`
 MOUNTPOINT=`echo $MOUNTDATA | cut -d" " -f6`
 if [ $USE2 -gt 90 ]
 then
-let USE2=$USE2*3
-echo "<tr><td><FONT COLOR=\"red\"><b>$MOUNTPOINT</b></font></td><td><FONT COLOR=\"red\"><b>$FILESYSTEM</b></font></td><td><FONT COLOR=\"red\"><b>$SIZE</b></font></td><td><FONT COLOR=\"red\"><b>$USED</b></font></td><td><FONT COLOR=\"red\"><b>$AVAIL</b></font></td><td><FONT COLOR=\"red\"><b>$USE</b></font></td><td class=\"BarFull\"><img src=\"/images/disk_usage/red.png\" height=\"12\" alt=\"$USE2\" width=\"$USE2\"></td></tr>"
+ALERTCOL=red
+BARCOL=red
 elif [ $USE2 -gt 70 ]
 then
-let USE2=$USE2*3
-echo "<tr><td><FONT COLOR=\"orange\">$MOUNTPOINT</font></td><td><FONT COLOR=\"orange\">$FILESYSTEM</font></td><td><FONT COLOR=\"orange\">$SIZE</font></td><td><FONT COLOR=\"orange\">$USED</font></td><td><FONT COLOR=\"orange\">$AVAIL</font></td><td><FONT COLOR=\"orange\">$USE</font></td><td class=\"BarFull\"><img src=\"/images/disk_usage/orange.png\" height=\"12\" alt=\"$USE2\" width=\"$USE2\"></td></tr>"
+ALERTCOL=orange
+BARCOL=orange
 else
-let USE2=$USE2*3
-echo "<tr><td>$MOUNTPOINT</td><td>$FILESYSTEM</td><td>$SIZE</td><td>$USED</td><td>$AVAIL</td><td>$USE</td><td class=\"BarFull\"><img src=\"/images/disk_usage/blue.png\" height=\"12\" alt=\"$USE2\" width=\"$USE2\"></td></tr>"
+ALERTCOL=green
+BARCOL=green
 fi
+let USE2=$USE2*'$MULTI'
+echo "<tr><td><FONT COLOR=\"$ALERTCOL\">$MOUNTPOINT</font></td>"
+[ $MOBILE = no ] && echo "<td><FONT COLOR=\"$ALERTCOL\">$FILESYSTEM</font></td><td><FONT COLOR=\"$ALERTCOL\">$SIZE</font></td><td><FONT COLOR=\"$ALERTCOL\">$USED</font></td>"
+echo "<td><FONT COLOR=\"$ALERTCOL\">$AVAIL</font></td><td><FONT COLOR=\"$ALERTCOL\">$USE</font></td><td class=\"BarFull\"><img src=\"/images/disk_usage/$BARCOL.png\" height=\"12\" alt=\"$USE2\" width=\"$USE2\"></td></tr>"
 let COUNTER=$COUNTER+1
 done
 echo "</tbody></table><br>"
@@ -573,23 +600,23 @@ CHUNKSIZE=`echo -e "$MDADMDATA" | grep "Chunk Size :" | cut -d: -f2 | sed "s/^ /
 UUID=`echo -e "$MDADMDATA" | grep "UUID :" | cut -d: -f2- | sed "s/^ //g"`
 
 echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\">'$RAIDLEVELMSG'</td><td>$RAIDLEVEL</td></tr>
-<tr><td style=\"width: 180px;\">'$RAIDSIZEMSG'</td><td>$ARRAYSIZE</td></tr>
-<tr><td style=\"width: 180px;\">'$USEDSIZEMSG'</td><td>$USEDSIZE</td></tr>
-<tr><td style=\"width: 180px;\">'$RAIDSTATUSMSG'</td><td>$RAIDSTATUS</td></tr>"
-[ ! -z "$REBUILDSTATUS" ] && echo "<tr><td style=\"width: 180px;\">Rebuild Status</td><td>$REBUILDSTATUS</td></tr>"
-echo "<tr><td style=\"width: 180px;\">'$RAIDDRIVESMSG'</td><td>$RAIDDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">'$USEDDRIVESMSG'</td><td>$TOTALDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">'$ACTIVEDEVICESMSG'</td><td>$ACTIVEDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">'$WORKINGDEVICESMSG'</td><td>$WORKINGDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">'$FAILEDDEVICESMSG'</td><td>$FAILEDDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">'$SPAREDEVICESMSG'</td><td>$SPAREDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">'$LAYOUTMSG'</td><td>$LAYOUT</td></tr>
-<tr><td style=\"width: 180px;\">'$CHUNKSIZEMSG'</td><td>$CHUNKSIZE</td></tr>
-<tr><td style=\"width: 180px;\">'$ACTIVEDISKSMSG'</td><td>$ACTIVE_RAID_DISKS</td></tr>
-<tr><td style=\"width: 180px;\">'$REBUILDINGDISKSMSG'</td><td>$REBUILDING_RAID_DISKS</td></tr>
-<tr><td style=\"width: 180px;\">'$SPAREDISKSMSG'</td><td>$SPARE_RAID_DISKS</td></tr>
-<tr><td style=\"width: 180px;\">UUID</td><td>$UUID</td></tr>
+<tr><td style=\"width: '$WIDTH3'px;\">'$RAIDLEVELMSG'</td><td>$RAIDLEVEL</td></tr>
+<tr><td>'$RAIDSIZEMSG'</td><td>$ARRAYSIZE</td></tr>
+<tr><td>'$USEDSIZEMSG'</td><td>$USEDSIZE</td></tr>
+<tr><td>'$RAIDSTATUSMSG'</td><td>$RAIDSTATUS</td></tr>"
+[ ! -z "$REBUILDSTATUS" ] && echo "<tr><td>Rebuild Status</td><td>$REBUILDSTATUS</td></tr>"
+echo "<tr><td>'$RAIDDRIVESMSG'</td><td>$RAIDDEVICES</td></tr>
+<tr><td>'$USEDDRIVESMSG'</td><td>$TOTALDEVICES</td></tr>
+<tr><td>'$ACTIVEDEVICESMSG'</td><td>$ACTIVEDEVICES</td></tr>
+<tr><td>'$WORKINGDEVICESMSG'</td><td>$WORKINGDEVICES</td></tr>
+<tr><td>'$FAILEDDEVICESMSG'</td><td>$FAILEDDEVICES</td></tr>
+<tr><td>'$SPAREDEVICESMSG'</td><td>$SPAREDEVICES</td></tr>
+<tr><td>'$LAYOUTMSG'</td><td>$LAYOUT</td></tr>
+<tr><td>'$CHUNKSIZEMSG'</td><td>$CHUNKSIZE</td></tr>
+<tr><td>'$ACTIVEDISKSMSG'</td><td>$ACTIVE_RAID_DISKS</td></tr>
+<tr><td>'$REBUILDINGDISKSMSG'</td><td>$REBUILDING_RAID_DISKS</td></tr>
+<tr><td>'$SPAREDISKSMSG'</td><td>$SPARE_RAID_DISKS</td></tr>
+<tr><td>UUID</td><td>$UUID</td></tr>
 </tbody></table>"
 fi
 '\''

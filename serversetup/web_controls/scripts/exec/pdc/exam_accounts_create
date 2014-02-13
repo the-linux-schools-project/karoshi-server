@@ -113,7 +113,7 @@ EXAMPASSWORD=$RANDOM
 echo '<tr><td>'exam$COUNTER'</td><td>'/home/users/exams/exam$COUNTER'</td></tr>'
 
 #Add user to samba4 ldap
-samba-tool user add exam$COUNTER --userou='OU=exams,OU=other,OU=People' --profile-path=\\\\$HOSTNAME\\applications\\profiles\\exams --script-path=logon.bat exams --surname=exam$COUNTER --given-name=exam$COUNTER --use-username-as-cn  --random-password --mail-address=exam$COUNTER@$REALM 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool user add exam$COUNTER --userou='OU=exams,OU=other,OU=People' --profile-path=\\\\$HOSTNAME\\applications\\profiles\\exams --script-path="logon.bat exams" --surname=exam$COUNTER --home-directory='\\'$SERVER'\'exam$COUNTER --given-name=exam$COUNTER --use-username-as-cn  --random-password --mail-address=exam$COUNTER@$REALM 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 #Add user to primary group
 samba-tool group addmembers "exams" exam$COUNTER  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -143,6 +143,9 @@ echo -e "dn: CN=exam$COUNTER,OU=exams,OU=other,OU=People,$LDAPBASE
 changetype: modify
 add: uidnumber
 uidnumber: $UIDNUMBER
+-
+add: loginshell
+loginshell: /bin/bash
 -
 add: unixhomedirectory
 unixhomedirectory: /home/users/exams/exam$COUNTER
