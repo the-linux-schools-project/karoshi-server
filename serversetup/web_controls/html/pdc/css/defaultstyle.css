@@ -18,6 +18,12 @@ height: 100%;
 	flex-direction: column;
 }
 
+.reinstall a:link, 
+.reinstall {
+color: red;
+text-decoration: bold
+}
+
 #pagecontainer > form {
 	display: flex;
 	flex: auto;
@@ -165,7 +171,7 @@ border:2px solid;
 border-radius:25px;
 padding: 10px;
 width: 200px;
-background-color:#303030;
+background-color:#030F20;
 }
 
 #submitbox {

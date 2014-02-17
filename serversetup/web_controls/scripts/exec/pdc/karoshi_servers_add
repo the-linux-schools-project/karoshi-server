@@ -293,6 +293,56 @@ fi
 fi
 fi
 
+function create_unique_id {
+SERVERID=`date +%s`.$$
+echo $SERVERID > /opt/karoshi/server_network/server_identifiers/$SERVER.$REALM
+ssh -x -o PasswordAuthentication=no $TCPIPNUMBER '
+[ ! -d /opt/karoshi/server_network/server_identifiers ] && mkdir -p /opt/karoshi/server_network/server_identifiers
+echo '$SERVERID' > /opt/karoshi/server_network/server_identifiers/'$SERVER.$REALM'
+'
+}
+
+
+#Check unique identifier
+[ ! -d /opt/karoshi/server_network/server_identifiers ] && mkdir -p /opt/karoshi/server_network/server_identifiers
+if [ ! -f /opt/karoshi/server_network/server_identifiers/$SERVER.$REALM ]
+then
+#Create identifier since it doesnt exist
+create_unique_id
+else
+#See if unique identifiers are the same
+SERVERID1=`sed -n 1,1p /opt/karoshi/server_network/server_identifiers/$SERVER.$REALM`
+SERVERID2=`ssh -x -o PasswordAuthentication=no $TCPIPNUMBER '
+if [ -f /opt/karoshi/server_network/server_identifiers/'$SERVER'.'$REALM' ]
+then
+sed -n 1,1p /opt/karoshi/server_network/server_identifiers/'$SERVER'.'$REALM'
+else
+echo notset
+fi
+'`
+if [ $SERVERID1 != $SERVERID2 ]
+then
+#Show warning that this server has been re-installed and roles will have to be re-added.
+echo "<ul><li>$SERVER - $REINSTALLWARNING</li></ul>"
+echo "<br>$REINSTALLWARNING2<br><br>"
+sleep 4
+#Modify role information
+if [ -d /opt/karoshi/server_network/servers/$SERVER.$REALM ]
+then
+for INFOFILES in /opt/karoshi/server_network/servers/$SERVER.$REALM/*
+do
+INFOFILE=`basename $INFOFILES`
+if [ `grep -c RE-INSTALL /opt/karoshi/server_network/servers/$SERVER.$REALM/$INFOFILE` = 0 ]
+then
+sed -i '1i <span class="reinstall"><b>' /opt/karoshi/server_network/servers/$SERVER.$REALM/$INFOFILE
+echo 'RE-INSTALL MODULE<br></b></span>' >> /opt/karoshi/server_network/servers/$SERVER.$REALM/$INFOFILE
+fi
+done
+fi
+create_unique_id
+fi
+fi
+
 ##############################
 #Add entry to dns if needed
 ##############################
@@ -411,6 +461,7 @@ done
 fi
 fi
 
+
 #Add in vpn tunnel for adc servers in dmz
 if [ $ZONE = dmz ]
 then
@@ -467,5 +518,9 @@ fi
 #Add server zone info
 [ ! -d /opt/karoshi/server_network/zones/$ZONE/servers ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/servers
 touch /opt/karoshi/server_network/zones/$ZONE/servers/$SERVER.$REALM
+
+
+#Add in unique id
+
 
 exit
