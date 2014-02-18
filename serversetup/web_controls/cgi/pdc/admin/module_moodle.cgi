@@ -121,6 +121,7 @@ exit
 
 function completed {
 echo '<SCRIPT language="Javascript">'
+echo 'alert("'$MESSAGE'")';
 echo 'window.location = "/cgi-bin/admin/karoshi_servers_view.cgi"'
 echo '</script>'
 echo "</div></body></html>"
@@ -172,8 +173,9 @@ EXEC_STATUS=$?
 if [ $EXEC_STATUS = 101 ]
 then
 MESSAGE=`echo $PROBLEMMSG $LOGMSG`
-show_status
+completed
 fi
+MESSAGE="$COMPLETEDMSG\n\n$COMPLETEDMSG2\n\n$COMPLETEDMSG3"
 completed
 echo '</div></div></div></body></html>'
 exit

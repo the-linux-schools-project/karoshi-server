@@ -137,7 +137,7 @@ if [ -d /var/www/html/moodle ]
 then
 echo `date`: module_moodle - moodle is already installed on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 echo $MOODLEINSTERROR
-exit
+exit 101
 fi
 else
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
@@ -150,7 +150,7 @@ fi'
 if [ `echo $?` = 101 ]
 then
 echo `date`: module_moodle - moodle is already installed on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+exit 101
 fi
 fi
 }
@@ -210,7 +210,7 @@ echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/moodle
 echo '<a href="https://'$ALIAS.$REALM'/moodle" target="_blank">https://'$ALIAS.$REALM'/moodle</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/moodle
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
 echo $ROLE2"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver
-echo $SERVERNAME > /opt/karoshi/server_network/SERVERNAME
+echo $SERVERNAME > /opt/karoshi/server_network/moodleserver
 echo $DOMAINPATH > /opt/karoshi/server_network/moodledomain
 [ ! -d /opt/karoshi/server_network/webservers/ ] && mkdir -p /opt/karoshi/server_network/webservers
 echo $SERVERNAME > /opt/karoshi/server_network/webservers/$SERVERNAME
