@@ -55,6 +55,12 @@ div.sdmenu div a:hover {
 	text-decoration: none;
 }
 
+#mobilecontent {
+	margin-left: auto ;
+	margin-right: auto ;
+	width: 300px;
+}
+
 #mobileactionbox {
 	margin-left: auto ;
 	margin-right: auto ;
@@ -72,17 +78,15 @@ div.sdmenu div a:hover {
 	border-bottom-right-radius: 15px;
 }
 
+
 #mobileactionbox2 {
-	margin-left: auto ;
-	margin-right: auto ;
+	position: absolute;
 	background-color: #EEEEEE;
 	color: #525252;
 	font-family: Arial, sans-serif;
 	font-size: 16px;
-        top: 90px;
-        left: 5px;
-        width: 600px;
 	padding: 5px 10px;
+	margin: 0;
 	border-top-left-radius: 15px;
 	border-top-right-radius: 15px;
 	border-bottom-left-radius: 15px;
@@ -90,33 +94,14 @@ div.sdmenu div a:hover {
 }
 
 #mobileactionbox3 {
-	margin-left: auto ;
-	margin-right: auto ;
+	position: absolute;
 	background-color: #EEEEEE;
 	color: #525252;
 	font-family: Arial, sans-serif;
 	font-size: 16px;
-        top: 90px;
-        left: 5px;
-        width: 700px;
 	padding: 5px 10px;
-	border-top-left-radius: 15px;
-	border-top-right-radius: 15px;
-	border-bottom-left-radius: 15px;
-	border-bottom-right-radius: 15px;
-}
-
-#mobileactionbox4 {
-	margin-left: auto ;
-	margin-right: auto ;
-	background-color: #EEEEEE;
-	color: #525252;
-	font-family: Arial, sans-serif;
-	font-size: 16px;
-        top: 90px;
-        left: 5px;
-        width: 780px;
-	padding: 5px 10px;
+	margin: 0;
+	width: 280px;
 	border-top-left-radius: 15px;
 	border-top-right-radius: 15px;
 	border-bottom-left-radius: 15px;

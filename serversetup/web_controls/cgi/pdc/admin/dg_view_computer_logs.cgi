@@ -279,7 +279,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE5'</span>
 <a href="/cgi-bin/admin/dg_view_computer_logs_fm.cgi">'$TCPIP'</a>
-</div></div><div id="mobileactionbox3">
+</div></div><div id="mobilecontent"><div id="mobileactionbox2">
 '
 fi
 
@@ -306,6 +306,5 @@ YEAR=`echo $DATE | cut -d- -f1`
 
 let COUNTER=$COUNTER+1
 done
-[ $MOBILE = no ] && echo '</div>'
-echo '</div></div></body></html>'
+echo '</div></div></div></body></html>'
 exit

@@ -197,7 +197,7 @@ else
 DIV_ID=actionbox2
 fi
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
@@ -206,9 +206,9 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$SERVERNAME2'</span>
 <a href="/cgi-bin/admin/server_info_fm.cgi">'$TITLE'</a>
-</div></div><div id="mobileactionbox3">'
+</div></div><div id="mobilecontent"><div id="mobileactionbox2">'
 else
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a href="server_info_fm.cgi"><img alt="" src="/images/warnings/server.png"></a></td><td><b>'$SERVERNAME'</b></td></tr></tbody></table><br>'
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><b>'$SERVERNAME'</b></td><td style="vertical-align: top;"><a href="server_info_fm.cgi"><input class="button" type="button" name="" value="'$CHOOSESERVERMSG'"></a></td></tr></tbody></table><br></div><div id="infobox">'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/server_info.cgi | cut -d' ' -f1`
@@ -225,6 +225,5 @@ if [ $EXEC_STATUS = 103 ]
 then
 echo '<br><b>'$CHECKCOMPLETEDMSG'</b><br>'
 fi
-echo "</div>"
-echo "</div></body></html>"
+echo "</div></div></div></body></html>"
 exit

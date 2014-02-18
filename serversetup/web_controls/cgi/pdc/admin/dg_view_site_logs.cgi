@@ -78,14 +78,13 @@ echo '</head><body><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox3
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
 DIV_ID=actionbox2
 fi
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
 #########################
 #Get data input
 #########################
@@ -227,11 +226,12 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE2'</span>
 <a href="/cgi-bin/admin/dg_view_user_logs_fm.cgi">'$SEARCH'</a>
-</div></div><div id="mobileactionbox3">
+</div></div><div id="mobilecontent"><div id="mobileactionbox2">
 '
+
 else
-echo '<b>'$TITLE2'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
-<br><br>'
+echo '<div id="'$DIV_ID'"><div id="titlebox"><b>'$TITLE2'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
+<br><br></div><div id="infobox">'
 fi
 
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SEARCH:$DAY:$MONTH:$YEAR:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/dg_view_site_logs
@@ -247,5 +247,5 @@ MESSAGE=`echo $ERRORMSG7`
 show_status
 fi
 
-echo '</form></div></div></body></html>'
+echo '</div></div></form></div></body></html>'
 exit

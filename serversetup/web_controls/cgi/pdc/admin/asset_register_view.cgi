@@ -469,13 +469,13 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE13'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$INFRASTRUCTURESMSG'</a>
-</div></div>
+</div></div><div id="mobilecontent">
 '
 if [ $ACTION = add ] || [ $ACTION = edit ]
 then
 echo '<div id="mobileactionbox2">'
 else
-echo '<div id="mobileactionbox">'
+echo '<div id="mobileactionbox3">'
 fi
 
 else
@@ -485,6 +485,6 @@ fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/asset_register_view.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$LOCATION:$ACTION:$ASSET:$OPTION:$ASSETCHOICE:$ASSETTYPE:$TCPIP1:$TCPIP2:$TCPIP3:$MACADDRESS1:$MACADDRESS2:$MACADDRESS3:$SERIALKEY:$PURCHASEDATE:$IDENTITY:$DESCRIPTION:$USERNAME:$VALUE:$SUPPLIER:$BUDGET:$IMPORTDATA:$EXTRAINFO" | sudo -H /opt/karoshi/web_controls/exec/asset_register_view
 
-[ $MOBILE = no ] && echo '</div>'
+echo '</div>'
 echo '</div></form></div></body></html>'
 exit

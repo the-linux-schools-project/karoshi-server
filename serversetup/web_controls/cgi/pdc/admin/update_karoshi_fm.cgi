@@ -140,9 +140,9 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE2'</span>
+	<span>'$TITLE'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$SYSMENUMSG'</a>
-</div></div><div id="mobileactionbox2">'
+</div></div><div id="mobilecontent"><div id="mobileactionbox2">'
 else
 echo '<b>'$TITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Linux_Schools_Server_System"><img class="images" alt="" src="/images/help/info.png"><span>'$UPDATELSSERVERHELP'</span></a><br><br>'
 fi
@@ -184,5 +184,5 @@ else
 echo $NO_UPDATES_MSG'<br>'
 fi
 
-echo '</form></div></div></body></html>'
+echo '</form></div></div></div></body></html>'
 exit

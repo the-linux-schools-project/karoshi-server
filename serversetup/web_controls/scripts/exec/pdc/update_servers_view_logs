@@ -60,6 +60,7 @@ YEAR=`echo $* | cut -s -d: -f7`
 SERVERNAME=`echo $* | cut -s -d: -f8`
 SERVERTYPE=`echo $* | cut -s -d: -f9`
 SERVERMASTER=`echo $* | cut -s -d: -f10`
+MOBILE=`echo $* | cut -s -d: -f11`
 ########################
 #Check data
 ########################
@@ -232,8 +233,7 @@ fi
 fi
 
 echo '</pre>'
-
-
+[ $MOBILE = yes ] && echo '</div>'
 
 exit
 

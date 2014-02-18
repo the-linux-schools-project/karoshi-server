@@ -97,14 +97,12 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$EMAILMENUMSG'</a>
-</div></div><div id="mobileactionbox2">
+</div></div><div id="mobilecontent"><div id="mobileactionbox2">
 '
 else
-echo '<div id="'$DIV_ID'">'
+echo '<div id="'$DIV_ID'"><div id="titlebox">'
 fi
 
-
-echo '<form action="/cgi-bin/admin/email_control_queue.cgi" method="post">'
 #Check to see if we have an email server
 if [ ! -f /opt/karoshi/server_network/emailserver ]
 then
@@ -117,5 +115,5 @@ fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_show_queue_fm.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/email_show_queue
 
-echo '</form></div></div></body></html>'
+echo '</div></div></div></body></html>'
 exit

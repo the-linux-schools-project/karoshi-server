@@ -249,7 +249,7 @@ fi
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox3
 TABLECLASS=standard
 WIDTH=200
 #Generate navigation bar
@@ -271,10 +271,10 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$EMAILMENUMSG'</a>
-</div></div><div id="mobileactionbox"><b>'$TITLE'</b><br> 
+</div></div><div id="mobilecontent"><div id="mobileactionbox2"><b>'$TITLE'</b><br> 
 '
 else
-echo '<div id="'$DIV_ID'">'
+echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 if [ $LOGVIEW = today ]
 then
@@ -282,7 +282,7 @@ echo '<b>'$TITLE $SERVERNAME $DAY-$MONTH-$YEAR'</b><br><br>'
 else
 echo '<b>'$TITLE $SERVERNAME $MONTH-$YEAR'</b><br><br>'
 fi
-
+echo '</div><div id="infobox">'
 fi
 
 sudo -H /opt/karoshi/web_controls/exec/email_statistics $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOGVIEW:$DAY:$MONTH:$YEAR:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:
@@ -298,6 +298,5 @@ then
 MESSAGE=$ERRORMSG4
 show_status
 fi
-echo '</div>'
-echo "</div></body></html>"
+echo '</div></div></div></body></html>'
 exit

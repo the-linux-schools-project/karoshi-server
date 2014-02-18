@@ -190,14 +190,12 @@ fi
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox3
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-else
-DIV_ID=actionbox2
 fi
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -207,15 +205,15 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE'</span>
 <a href="/cgi-bin/admin/custom_command_fm.cgi">'$SERVERNAME2'</a>
-</div></div><div id="mobileactionbox2">'
+</div></div><div id="mobilecontent"><div id="mobileactionbox2">'
 else
-echo '<b>'$SERVERNAME'</b><br><br>'
+echo '<b>'$SERVERNAME'</b><br></div><div id="infobox">'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/custom_command.cgi | cut -d' ' -f1`
 sudo -H /opt/karoshi/web_controls/exec/custom_command $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$CUSTOMCOMMAND:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:
 CUSTOM_COMMAND_STATUS=`echo $?`
-echo "</div>"
+echo "</div></div>"
 if [ $CUSTOM_COMMAND_STATUS = 102 ]
 then
 MESSAGE=$ERRORMSG3

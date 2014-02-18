@@ -255,7 +255,7 @@ DIV_ID=actionbox3
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=mobileactionbox3
+DIV_ID=mobileactionbox
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/update_servers_view_logs.cgi | cut -d' ' -f1`
@@ -269,7 +269,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$SYSMENUMSG'</a>
-</div></div><div id="'$DIV_ID'">
+</div></div><div id="mobilecontent"><div id="mobileactionbox2">
 '
 else
 echo '<div id="'$DIV_ID'"><div id="titlebox">
@@ -280,9 +280,9 @@ echo '<div id="'$DIV_ID'"><div id="titlebox">
 </tr></table></div><div id="infobox">'
 fi
 
-sudo -H /opt/karoshi/web_controls/exec/update_servers_view_logs $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOGVIEW:$DAY:$MONTH:$YEAR:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:
+sudo -H /opt/karoshi/web_controls/exec/update_servers_view_logs $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOGVIEW:$DAY:$MONTH:$YEAR:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:
 LOG_STATUS=`echo $?`
-[ $MOBILE = no ] && echo '</div>'
+echo '</div>'
 if [ $LOG_STATUS = 101 ]
 then
 MESSAGE=$ERRORMSG3
