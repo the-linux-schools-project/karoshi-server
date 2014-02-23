@@ -118,7 +118,7 @@ SERVERBACKUPSSHSTATUS=$SSHBACKUPMS1
 SERVERICON=/images/warnings/server_fail.png
 SERVERBACKUPICON=/images/warnings/server_no_config.png
 SERVERICON2=/images/warnings/server_remove.png
-
+SERVERSHORT=`echo $SERVER | cut -d"." -f1`
 SERVERIP=`net lookup $SERVER`
 
 if [ $SERVER != `hostname-fqdn` ]
@@ -141,7 +141,7 @@ echo '</td><td style="vertical-align: top;">'
 if [ $SSHSTATUS = 0 ] || [ $SERVER = `hostname-fqdn` ]
 then
 echo '<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
-<a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVER'_" type="image" class="images" src="'$SERVERICON'" value="'$SERVER'"><span>'$SERVER' - '$ADDROLEMSG'</span></a>
+<a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVER'_" type="image" class="images" src="'$SERVERICON'" value="'$SERVER'"><span>'$SERVERSHORT' - '$ADDROLEMSG'</span></a>
 </form>
 </td>
 '
@@ -151,7 +151,7 @@ fi
 
 echo '<td style="vertical-align: top;">
 <form action="/cgi-bin/admin/karoshi_servers_remove_role_fm.cgi" method="post">
-<a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVER'_" type="image" class="images" src="'$SERVERICON2'" value="'$SERVER'"><span>'$SERVER' - '$REMOVEROLEMSG'</span></a></form></td>'
+<a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVER'_" type="image" class="images" src="'$SERVERICON2'" value="'$SERVER'"><span>'$SERVERSHORT' - '$REMOVEROLEMSG'</span></a></form></td>'
 
 
 echo '<td style="vertical-align: top;">'
@@ -159,7 +159,7 @@ echo '<td style="vertical-align: top;">'
 if [ $SERVER != `hostname-fqdn` ]
 then
 echo '<form action="/cgi-bin/admin/karoshi_servers_add_fm.cgi" method="post">
-<a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVER'_" type="image" class="images" src="'$SERVERICON'" value="'$SERVER'"><span>'$SERVER - $SERVERSSHSTATUS'</span></a>
+<a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERSHORT'_" type="image" class="images" src="'$SERVERICON'" value="'$SERVER'"><span>'$SERVERSHORT - $SERVERSSHSTATUS'</span></a>
 </form>'
 fi
 
