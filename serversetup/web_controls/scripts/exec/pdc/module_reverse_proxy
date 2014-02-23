@@ -137,10 +137,10 @@ scp -p -r /opt/karoshi/serversetup/distro/ubuntu/modules/reverseproxy root@$WEBS
 #######################
 #Apply certificate
 #######################
-if [ ! -f /etc/ssl/apache/$REALM.key ]
+
+if [ ! -f /etc/ssl/apache/$ALIAS.$REALM.key ]
 then
-source /opt/karoshi/server_network/domain_information/domain_name
-echo "$REMOTE_USER:$REMOTE_ADDR:$WEBSERVER:$REALM:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
+echo "$REMOTE_USER:$REMOTE_ADDR:$WEBSERVER:$ALIAS.$REALM:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
 [ `echo $?` != 0 ] && exit 101 
 fi
 
@@ -189,8 +189,8 @@ fi
 cp -f /opt/karoshi/serversetup/modules/reverseproxy/default /etc/nginx/sites-available
 
 #Point certificates at the correct place
-sed -i "s/\/etc\/ssl\/apache\/server.crt;/\/etc\/ssl\/apache\/'$REALM'.pem;/g" /etc/nginx/sites-available/default
-sed -i "s/\/etc\/ssl\/apache\/server.key;/\/etc\/ssl\/apache\/'$REALM'.key;/g" /etc/nginx/sites-available/default
+sed -i "s/\/etc\/ssl\/apache\/server.crt;/\/etc\/ssl\/apache\/'$ALIAS'.'$REALM'.pem;/g" /etc/nginx/sites-available/default
+sed -i "s/\/etc\/ssl\/apache\/server.key;/\/etc\/ssl\/apache\/'$ALIAS'.'$REALM'.key;/g" /etc/nginx/sites-available/default
 
 source /opt/karoshi/serversetup/variables/distro
 
@@ -228,6 +228,22 @@ touch /etc/nginx/proxysites
 ###########################
 echo "<br><li>'$COMPLETEDMSG'</li><br>"
 '
+
+#Add in any existing reverse proxy rules
+if [ -d /opt/karoshi/server_network/reverseproxy/sites ]
+then
+if [ `ls -1 /opt/karoshi/server_network/reverseproxy/sites | wc -l` -gt 0 ]
+then
+cat /opt/karoshi/server_network/reverseproxy/sites/* > /opt/karoshi/server_network/reverseproxy/proxysites
+#Copy proxysites to /etc/nginx
+scp /opt/karoshi/server_network/reverseproxy/proxysites root@$WEBSERVER:"/etc/nginx/"
+ssh -x -o PasswordAuthentication=no $WEBSERVER '
+#Reload nginx
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nginx_reload
+'
+fi
+fi
 
 #########################
 #Add role information

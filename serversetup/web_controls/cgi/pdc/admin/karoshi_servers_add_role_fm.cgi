@@ -102,8 +102,6 @@ ICON2=/images/warnings/server_no_config.png
 
 echo '<div id="actionbox"><span style="font-weight: bold;">'
 
-if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
-then
 echo ''$TITLE' - '$SERVERNAME'</span> 
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Role"><img class="images" alt="" src="/images/help/info.png"><span>'$CHOOSEROLEHELP'</span></a>
 <br><br>
@@ -152,35 +150,65 @@ echo '</td></tr>'
 
 
 
-if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ]
+if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver ]
 then
 echo '<tr><td style="vertical-align: top; height: 40px;">'$REVERSEPROXYMSG'</td>
 <td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_reverse_proxy_fm.cgi" method="post">
 <input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$REVERSEPROXYHELPMSG'</span></a></form></td>'
 else
 echo '<tr><td style="vertical-align: top; height: 40px;">'$REVERSEPROXYMSG'</td>
-<td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$REVERSEPROXYHELPMSG'<br><br>'$NOOTHERDEPS'</span></a></td>'
+<td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$REVERSEPROXYHELPMSG'<br><br>'$NGINXDEPS'</span></a></td>'
 fi
 
+if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
+then
 echo '<td style="vertical-align: top; height: 40px;">'$SQUIDSERVERMSG'</td>
 <td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_squid_fm.cgi" method="post">
-<input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$SQUIDSERVERHELPMSG'</span></a></form></td></tr>
+<input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$SQUIDSERVERHELPMSG'</span></a></form></td></tr>'
+else
+echo '<td style="vertical-align: top; height: 40px;">'$SQUIDSERVERMSG'</td>
+<td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$SQUIDSERVERHELPMSG'<br><br>'$APACHEDEPS'</span></a></td></tr>'
+fi
 
-<tr><td style="vertical-align: top; height: 40px;">'$EMAILSERVERMSG'</td>
+if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
+then
+echo '<tr><td style="vertical-align: top; height: 40px;">'$EMAILSERVERMSG'</td>
 <td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_email_fm.cgi" method="post">
-<input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$EMAILSERVERHELPMSG'</span></a></form></td>
+<input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$EMAILSERVERHELPMSG'</span></a></form></td>'
+else
+echo '<tr><td style="vertical-align: top; height: 40px;">'$EMAILSERVERMSG'</td>
+<td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$EMAILSERVERHELPMSG'<br><br>'$APACHEDEPS'</span></a></td>'
+fi
 
-<td style="vertical-align: top; height: 40px;">'$HOMEACCESSSERVERMSG'</td>
+if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
+then
+echo '<td style="vertical-align: top; height: 40px;">'$HOMEACCESSSERVERMSG'</td>
 <td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_smbwebclient_fm.cgi" method="post">
-<input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$HOMEACCESSSERVERHELPMSG'</span></a></form></td></tr>
+<input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$HOMEACCESSSERVERHELPMSG'</span></a></form></td></tr>'
+else
+echo '<td style="vertical-align: top; height: 40px;">'$HOMEACCESSSERVERMSG'</td>
+<td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$HOMEACCESSSERVERHELPMSG'<br><br>'$APACHEDEPS'</span></a></td></tr>'
+fi
 
-<tr><td style="vertical-align: top; height: 40px;">'$MOODLESERVERMSG'</td>
+if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
+then
+echo '<tr><td style="vertical-align: top; height: 40px;">'$MOODLESERVERMSG'</td>
 <td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_moodle_fm.cgi" method="post">
-<input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$HOMEACCESSSERVERHELPMSG'</span></a></form></td>
+<input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$MOODLEHELPMSG'</span></a></form></td>'
+else
+echo '<tr><td style="vertical-align: top; height: 40px;">'$MOODLESERVERMSG'</td>
+<td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$MOODLEHELPMSG'<br><br>'$APACHEDEPS'</span></a></td>'
+fi
 
-<td style="vertical-align: top; height: 40px;">'$OCSSERVERMSG'</td>
+if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
+then
+echo '<td style="vertical-align: top; height: 40px;">'$OCSSERVERMSG'</td>
 <td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_ocsinventory_fm.cgi" method="post">
 <input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$OCSINVENTORYHELPMSG'</span></a></form></td></tr>'
+else
+echo '<td style="vertical-align: top; height: 40px;">'$OCSSERVERMSG'</td>
+<td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$OCSINVENTORYHELPMSG'<br><br>'$APACHEDEPS'</span></a></td></tr>'
+fi
 
 echo '<tr><td style="vertical-align: top; height: 40px;">'$RADIUSSERVERMSG'</td><td style="vertical-align: top; height: 40px;">'
 
@@ -207,14 +235,20 @@ fi
 
 echo '</td></tr><tr><td style="vertical-align: top; height: 40px;">'$RADIOSERVERMSG'</td>
 <td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_radioserver_fm.cgi" method="post">
-<input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$RRADIOSSERVERHELPMSG'</span></a></form></td>
+<input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$RRADIOSSERVERHELPMSG'</span></a></form></td>'
 
-<td style="vertical-align: top; height: 40px;">'$JOOMLAMSG'</td>
+if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
+then
+echo '<td style="vertical-align: top; height: 40px;">'$JOOMLAMSG'</td>
 <td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_joomla_fm.cgi" method="post">
 <input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$JOOMLAHELPMSG'</span></a></form></td>
-</tr>
+</tr>'
+else
+echo '<td style="vertical-align: top; height: 40px;">'$JOOMLAMSG'</td>
+<td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$JOOMLAHELPMSG'<br><br>'$APACHEDEPS'</span></a></td></tr>'
+fi
 
-<tr><td style="vertical-align: top; height: 40px;">'$MONITORSERVERMSG'</td>
+echo '<tr><td style="vertical-align: top; height: 40px;">'$MONITORSERVERMSG'</td>
 <td style="vertical-align: top; height: 40px;">
 '
 if [ $SERVERNAME != `hostname-fqdn` ]
@@ -225,29 +259,39 @@ else
 echo '<a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$MONITORSERVERHELPMSG'<br><br>'$NEWSERVERDEPS'</span></a>'
 fi
 
-echo '
+echo '</td>'
 
-</td>
-<td style="vertical-align: top; height: 40px;">'$OWNCLOUDSERVERMSG'</td>
+if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
+then
+echo '<td style="vertical-align: top; height: 40px;">'$OWNCLOUDSERVERMSG'</td>
 <td style="vertical-align: top; height: 40px;">
 <form action="/cgi-bin/admin/module_owncloud_fm.cgi" method="post">
-<input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$OWNCLOUDSERVERHELPMSG'</span></a></form>
-</td>
-</tr>
-</tbody></table><br>'
+<input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$OWNCLOUDSERVERHELPMSG'</span></a></form></td></tr>'
+else
+echo '<td style="vertical-align: top; height: 40px;">'$OWNCLOUDSERVERMSG'</td>
+<td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$OWNCLOUDSERVERHELPMSG'<br><br>'$APACHEDEPS'</span></a></td></tr>'
 fi
 
+echo '</tbody></table><br>'
 
 #Advanced Modules
 echo '<b>'$TITLE3' - '$SERVERNAME'</b><br><br><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="vertical-align: top; width: 180px; height: 40px;">'$CUSTOMSERVERMSG'</td>
 <td style="vertical-align: top; width: 80px;"><form action="/cgi-bin/admin/module_custom_fm.cgi" method="post">
-<input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$CUSTOMSERVERHELPMSG'</span></a></form></td>
-<td style="vertical-align: top; width: 180px; height: 40px;">'$WEBSERVERMSG'</td>
-<td style="vertical-align: top; width: 80px;"><form action="/cgi-bin/admin/module_web_fm.cgi" method="post">
-<input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$WEBSERVERHELPMSG'</span></a></form></td></tr>
+<input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$CUSTOMSERVERHELPMSG'</span></a></form></td>'
 
-<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$SSHACCESSMSG'</td>
+
+if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
+then
+echo '<td style="vertical-align: top; width: 180px; height: 40px;">'$WEBSERVERMSG'</td>
+<td style="vertical-align: top; width: 80px;"><form action="/cgi-bin/admin/module_web_fm.cgi" method="post">
+<input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$WEBSERVERHELPMSG'</span></a></form></td></tr>'
+else
+echo '<td style="vertical-align: top; width: 180px; height: 40px;">'$WEBSERVERMSG'</td>
+<td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$WEBSERVERHELPMSG'<br><br>'$APACHEDEPS'</span></a></td></tr>'
+fi
+
+echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$SSHACCESSMSG'</td>
 <td style="vertical-align: top; width: 80px;">
 '
 
