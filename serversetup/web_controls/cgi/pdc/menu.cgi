@@ -105,5 +105,5 @@ echo '<br><br><br><img src="/images/valid-html401-blue.png" alt="Valid HTML 4.01
 else
 echo "<br><br>"
 fi
-echo '</div>/div></body></html>'
+echo '</div></body></html>'
 exit

@@ -332,10 +332,13 @@ then
 for INFOFILES in /opt/karoshi/server_network/servers/$SERVER.$REALM/*
 do
 INFOFILE=`basename $INFOFILES`
+if [ $INFOFILE != apacheserver ]
+then
 if [ `grep -c RE-INSTALL /opt/karoshi/server_network/servers/$SERVER.$REALM/$INFOFILE` = 0 ]
 then
 sed -i '1i <span class="reinstall"><b>' /opt/karoshi/server_network/servers/$SERVER.$REALM/$INFOFILE
 echo 'RE-INSTALL MODULE<br></b></span>' >> /opt/karoshi/server_network/servers/$SERVER.$REALM/$INFOFILE
+fi
 fi
 done
 fi
@@ -518,9 +521,6 @@ fi
 #Add server zone info
 [ ! -d /opt/karoshi/server_network/zones/$ZONE/servers ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/servers
 touch /opt/karoshi/server_network/zones/$ZONE/servers/$SERVER.$REALM
-
-
-#Add in unique id
 
 
 exit

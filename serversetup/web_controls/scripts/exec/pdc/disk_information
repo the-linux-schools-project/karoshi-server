@@ -141,7 +141,6 @@ echo `date`: disk_information - checking $INFO "for" $KAROSHI_SERVER by $REMOTE_
 if [ $KAROSHI_SERVER = `hostname-fqdn` ]
 then
 #Show free space
-echo '<b>'$FREESPACEMSG'</b><br>'
 
 #Get partition info
 DISKINFO=`df -h -l | sed 1d | sed "s/ * / /g" | sort -b -k5n,5`
@@ -301,12 +300,11 @@ if [ $KAROSHI_SERVER != `hostname-fqdn` ] && [ $SERVERTYPE = network ] || [ $SER
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $KAROSHI_SERVER '
 #Show free space
-echo "<b>'$FREESPACEMSG'</b><br>"
 
 #Get partition info
 DISKINFO=`df -h -l | sed 1d | sed "s/ * / /g" | sort -b -k5n,5`
 MOUNTCOUNT=`echo -e "$DISKINFO" | wc -l`
-echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
 <tr><td style=\"width: '$WIDTH1'px;\"><b>Mount point</b></td>"
 [ '$MOBILE' = no ] && echo "<td style=\"width: '$WIDTH2'px;\"><b>File System</b></td><td><b>Size</b></td><td><b>Used</b></td>"
 echo "<td><b>Avail</b></td><td><b>%Use</b></td></tr>"
@@ -337,7 +335,7 @@ BARCOL=green
 fi
 let USE2=$USE2*'$MULTI'
 echo "<tr><td><FONT COLOR=\"$ALERTCOL\">$MOUNTPOINT</font></td>"
-[ $MOBILE = no ] && echo "<td><FONT COLOR=\"$ALERTCOL\">$FILESYSTEM</font></td><td><FONT COLOR=\"$ALERTCOL\">$SIZE</font></td><td><FONT COLOR=\"$ALERTCOL\">$USED</font></td>"
+[ '$MOBILE' = no ] && echo "<td><FONT COLOR=\"$ALERTCOL\">$FILESYSTEM</font></td><td><FONT COLOR=\"$ALERTCOL\">$SIZE</font></td><td><FONT COLOR=\"$ALERTCOL\">$USED</font></td>"
 echo "<td><FONT COLOR=\"$ALERTCOL\">$AVAIL</font></td><td><FONT COLOR=\"$ALERTCOL\">$USE</font></td><td class=\"BarFull\"><img src=\"/images/disk_usage/$BARCOL.png\" height=\"12\" alt=\"$USE2\" width=\"$USE2\"></td></tr>"
 
 let COUNTER=$COUNTER+1
@@ -463,7 +461,6 @@ then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$KAROSHI_SERVER' '\''
 #Show free space
-echo "<b>'$FREESPACEMSG'</b><br>"
 
 #Get partition info
 DISKINFO=`df -h -l | sed 1d | sed "s/ * / /g" | sort -b -k5n,5`
@@ -498,7 +495,7 @@ BARCOL=green
 fi
 let USE2=$USE2*'$MULTI'
 echo "<tr><td><FONT COLOR=\"$ALERTCOL\">$MOUNTPOINT</font></td>"
-[ $MOBILE = no ] && echo "<td><FONT COLOR=\"$ALERTCOL\">$FILESYSTEM</font></td><td><FONT COLOR=\"$ALERTCOL\">$SIZE</font></td><td><FONT COLOR=\"$ALERTCOL\">$USED</font></td>"
+[ '$MOBILE' = no ] && echo "<td><FONT COLOR=\"$ALERTCOL\">$FILESYSTEM</font></td><td><FONT COLOR=\"$ALERTCOL\">$SIZE</font></td><td><FONT COLOR=\"$ALERTCOL\">$USED</font></td>"
 echo "<td><FONT COLOR=\"$ALERTCOL\">$AVAIL</font></td><td><FONT COLOR=\"$ALERTCOL\">$USE</font></td><td class=\"BarFull\"><img src=\"/images/disk_usage/$BARCOL.png\" height=\"12\" alt=\"$USE2\" width=\"$USE2\"></td></tr>"
 let COUNTER=$COUNTER+1
 done

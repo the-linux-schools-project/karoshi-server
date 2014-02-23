@@ -200,11 +200,11 @@ fi
 
 function add_role_information {
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
-echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/SERVERNAME
-echo '<a href="https://'$ALIAS.$REALM'/owncloud" target="_blank">https://'$ALIAS.$REALM'/owncloud</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/SERVERNAME
+echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/owncloud
+echo '<a href="https://'$ALIAS.$REALM'/owncloud" target="_blank">https://'$ALIAS.$REALM'/owncloud</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/owncloud
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
 echo $ROLE2"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver
-echo $SERVERNAME > /opt/karoshi/server_network/SERVERNAME
+echo $SERVERNAME > /opt/karoshi/server_network/owncloudserver
 echo $DOMAINPATH > /opt/karoshi/server_network/moodledomain
 [ ! -d /opt/karoshi/server_network/webservers/ ] && mkdir -p /opt/karoshi/server_network/webservers
 echo $SERVERNAME > /opt/karoshi/server_network/webservers/$SERVERNAME
