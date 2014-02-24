@@ -116,6 +116,12 @@ echo "<li>"mail.err"</li><br>"
 grep -A 2 '$USERNAME' /var/log/mail.err
 fi
 
+if [ -f /var/log/mail.log ]
+then
+echo "<li>"mail.log"</li><br>"
+grep -A 2 '$USERNAME' /var/log/mail.log
+fi
+
 '
 else
 
@@ -135,6 +141,12 @@ if [ -f /var/log/mail.err ]
 then
 echo "<li>"mail.err"</li><br>"
 grep -A 2 $USERNAME /var/log/mail.err
+fi
+
+if [ -f /var/log/mail.log ]
+then
+echo "<li>"mail.log"</li><br>"
+grep -A 2 $USERNAME /var/log/mail.log
 fi
 
 fi
