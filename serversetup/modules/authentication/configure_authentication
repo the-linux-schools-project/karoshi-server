@@ -85,13 +85,6 @@ then
 JOINTYPE=DC
 SERVERROLE="active directory domain controller"
 
-if [ $ZONE = internal ] || [ $ZONE = dmz ]
-then
-#Schedule adc_sync
-echo '*''/'30 '*' '*' '*' 1-5 /opt/karoshi/'"'useful scripts'"'/adc_sync > /opt/karoshi/cronjobs/jobs/adc_sync.cron
-/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
-fi
-
 fi
 
 #Get samba 4 database password
@@ -246,6 +239,16 @@ if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
 then
 DCROLE="Additional Domain Controller"
 [ $AUTHTYPE = rodc ] && DCROLE="Read Only Domain Controller"
+
+if [ $ZONE = internal ] || [ $ZONE = dmz ]
+then
+#Schedule adc_sync
+echo '*''/'30 '*' '*' '*' 1-5 /opt/karoshi/'"'useful scripts'"'/adc_sync > /opt/karoshi/cronjobs/jobs/adc_sync.cron
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+
+#Sync adc now
+nohup /opt/karoshi/"useful scripts"/adc_sync yes 2>/dev/null 1>/dev/null &
+fi
 
 echo $DCROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/1dc
 [ ! -d /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/

@@ -38,6 +38,9 @@ echo '<volume options="'$OPTIONS',dir_mode=0700" mountpoint="~/network/staffshar
 PRI_GROUP=itadmin
 get_pri_group_number
 echo '<volume options="'$OPTIONS',dir_mode=0700" mountpoint="~/network/staffshare" path="staffshare" server="'$HOSTNAME.$REALM'" gid="'$PRIGROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/$FILENAME
+PRI_GROUP=studentstaff
+get_pri_group_number
+echo '<volume options="'$OPTIONS',dir_mode=0700" mountpoint="~/network/staffshare" path="staffshare" server="'$HOSTNAME.$REALM'" gid="'$PRIGROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/$FILENAME
 #Officeshare
 PRI_GROUP=officestaff
 get_pri_group_number

@@ -78,6 +78,7 @@ if [ $MOBILE = no ]
 then
 /opt/karoshi/web_controls/generate_navbar_top
 else
+source /opt/karoshi/web_controls/version
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 
       <div class="expanded">
@@ -88,7 +89,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
         <a href="/cgi-bin/admin/mobile_menu.cgi">'$NMANMSG'</a>
      <div class="a.current">
 <small><small>
-'$VERSION' : 131016-1624
+'$VERSIONMSG' : '$VERSION'
 </small></small>
 </div>
 </div>
