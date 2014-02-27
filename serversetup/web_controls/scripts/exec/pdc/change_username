@@ -211,7 +211,11 @@ CHANGE_PASS_STATUS=`echo $?`
 fi
 if [ $SERVER != `hostname-fqdn` ]
 then
-ssh -x -o PasswordAuthentication=no $SERVER 'mv '$CURRENTPATH' '$PARENTPATH/$NEW_USERNAME' ; chmod 0600 -R '$PARENTPATH''/''$NEW_USERNAME' ; chmod u+X -R '$PARENTPATH''/''$NEW_USERNAME' ; chown -R '$USERID':'$PRIMARYGROUP' '$PARENTPATH''/''$NEW_USERNAME''
+ssh -x -o PasswordAuthentication=no $SERVER '
+mv '$CURRENTPATH' '$PARENTPATH/$NEW_USERNAME'
+chmod 0600 -R '$PARENTPATH''/''$NEW_USERNAME'
+chmod u+X -R '$PARENTPATH''/''$NEW_USERNAME'
+chown -R '$USERID':'$PRIMARYGROUP' '$PARENTPATH''/''$NEW_USERNAME''
 fi
 #########################
 #Move mail
@@ -226,6 +230,13 @@ if [ -d /home/users/email/'$CURRENT_USERNAME' ]
 then
 mv /home/users/email/'$CURRENT_USERNAME' /home/users/email/'$NEW_USERNAME'
 chown '$USERID' -R /home/users/email/'$NEW_USERNAME'
+fi
+if [ -d '$CURRENTPATH' ]
+then
+mv '$CURRENTPATH' '$PARENTPATH/$NEW_USERNAME'
+chmod 0600 -R '$PARENTPATH''/''$NEW_USERNAME'
+chmod u+X -R '$PARENTPATH''/''$NEW_USERNAME'
+chown -R '$USERID':'$PRIMARYGROUP' '$PARENTPATH''/''$NEW_USERNAME'
 fi
 '
 else
