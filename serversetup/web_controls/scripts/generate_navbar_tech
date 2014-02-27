@@ -218,4 +218,7 @@ echo '	<li class="top"><a href="/cgi-bin/tech/web_management_upload_files_fm.cgi
 		</ul>
 	</li>'
 fi
+
+#Show logout
+echo '<li class="top right"><a href="/cgi-bin/admin/logout.cgi" class="top_link top_link_right"><span>'$LOGOUT'</span></a></li>'
 echo '</ul></div></div>'

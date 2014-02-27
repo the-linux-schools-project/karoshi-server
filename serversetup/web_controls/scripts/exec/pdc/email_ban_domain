@@ -62,6 +62,7 @@ REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 EMAILDOMAIN=`echo "$DATA" | cut -s -d: -f4`
+DROPTYPE=`echo "$DATA" | cut -s -d: -f5`
 
 ########################
 #Check data
@@ -71,19 +72,25 @@ then
 echo `date`: email_ban_domain - Not called by email_ban_domain.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z $REMOTE_USER ]
 then
 echo `date`: email_ban_domain - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z $REMOTE_ADDR ]
 then
 echo `date`: email_ban_domain - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-if [ $EMAILDOMAIN'null' = null ]
+if [ -z $EMAILDOMAIN ]
 then
 echo `date`: email_ban_domain - Blank email domain by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ -z $DROPTYPE ]
+then
+echo `date`: email_ban_domain - Blank email droptype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 
@@ -101,13 +108,13 @@ fi
 
 EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
 
-echo `date`: email_ban_domain -banning $EMAILDOMAIN by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: email_ban_domain -banning $EMAILDOMAIN $DROPTYPE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 if [ $EMAILSERVER = `hostname-fqdn` ]
 then
 if [ `grep -c ^$EMAILDOMAIN /etc/postfix/access` = 0 ]
 then
-echo $EMAILDOMAIN"	"REJECT >> /etc/postfix/access
+echo $EMAILDOMAIN"	"$DROPTYPE >> /etc/postfix/access
 #Sort access file
 sort /etc/postfix/access > /etc/postfix/access.$$
 rm -f /etc/postfix/access
@@ -122,7 +129,7 @@ else
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 -o ConnectTimeout=2 $EMAILSERVER '
 if [ `grep -c ^'$EMAILDOMAIN' /etc/postfix/access` = 0 ]
 then
-echo '$EMAILDOMAIN'"	"REJECT >> /etc/postfix/access
+echo '$EMAILDOMAIN'"	"'$DROPTYPE' >> /etc/postfix/access
 #Sort access file
 sort /etc/postfix/access > /etc/postfix/access.$$
 rm -f /etc/postfix/access

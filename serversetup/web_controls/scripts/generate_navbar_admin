@@ -542,6 +542,9 @@ fi
 echo '		</ul>
 	</li>'
 fi
+
+#Show logout
+echo '<li class="top right"><a href="/cgi-bin/admin/logout.cgi" class="top_link top_link_right"><span>'$LOGOUT'</span></a></li>'
 echo '</ul></div></div>'
 
 exit

@@ -89,7 +89,7 @@ else
 DIV_ID=menubox
 fi
 
-
+echo '<form action="/cgi-bin/admin/email_control_queue.cgi" method="post">'
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
@@ -103,6 +103,8 @@ else
 echo '<div id="'$DIV_ID'"><div id="titlebox">'
 fi
 
+
+
 #Check to see if we have an email server
 if [ ! -f /opt/karoshi/server_network/emailserver ]
 then
@@ -115,5 +117,5 @@ fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_show_queue_fm.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/email_show_queue
 
-echo '</div></div></div></body></html>'
+echo '</div></div></form></div></body></html>'
 exit

@@ -514,6 +514,15 @@ way to fit your requirements.
 #nav li:hover a.top_link span {background:url(/images/pro_dropdown_2_default/three_1.gif) no-repeat right top;}
 #nav li:hover a.top_link span.down {background:url(/images/pro_dropdown_2_default/three_1a.gif) no-repeat right top;}
 
+#nav li a.top_link_right { padding:0 4px 0 12px;
+   	border-radius: 10px;
+   	-moz-border-radius: 10px;
+   	-webkit-border-radius: 10px;
+}
+
+#nav li.right { 
+		float:right;
+		}
 /* Default list styling */
 
 #nav li:hover {position:relative; z-index:200;}

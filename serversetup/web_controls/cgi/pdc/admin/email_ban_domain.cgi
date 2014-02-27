@@ -48,7 +48,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=9
+END_POINT=11
 #Assign EMAILDOMAIN
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
@@ -58,6 +58,20 @@ if [ `echo $DATAHEADER'check'` = EMAILDOMAINcheck ]
 then
 let COUNTER=$COUNTER+1
 EMAILDOMAIN=`echo $DATA | cut -s -d'_' -f$COUNTER`
+break
+fi
+let COUNTER=$COUNTER+1
+done
+
+#Assign DROPTYPE
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+if [ `echo $DATAHEADER'check'` = DROPTYPEcheck ]
+then
+let COUNTER=$COUNTER+1
+DROPTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
 break
 fi
 let COUNTER=$COUNTER+1
@@ -114,6 +128,6 @@ fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_ban_domain.cgi | cut -d' ' -f1`
 #Add user
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$EMAILDOMAIN:" | sudo -H /opt/karoshi/web_controls/exec/email_ban_domain
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$EMAILDOMAIN:$DROPTYPE:" | sudo -H /opt/karoshi/web_controls/exec/email_ban_domain
 completed_status
 exit

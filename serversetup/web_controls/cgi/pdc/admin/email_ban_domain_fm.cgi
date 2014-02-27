@@ -113,8 +113,11 @@ fi
 echo '
 <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody><tr><td style="width: 180px;">'$EMAILDOMAINMSG'</td><td><input tabindex= "1" name="_EMAILDOMAIN_" style="width: '$WIDTH1'px;" size="20" type="text"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'<br><br>'$HELPMSG2'</span></a>
-      </td></tr>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'<br><br>'$HELPMSG2'</span></a></td></tr>
+<tr><td>'$REJECTMSG'</td><td><input type="radio" name="_DROPTYPE_" value="REJECT" checked></td><td>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$REJECTHELP'</span></a></td></tr>
+<tr><td>'$DISCARDMSG'</td><td><input type="radio" name="_DROPTYPE_" value="DISCARD"></td><td>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$DISCARDHELP'</span></a></td></tr>
 </tbody></table><br>'
 
 
