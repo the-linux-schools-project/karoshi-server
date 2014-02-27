@@ -52,7 +52,7 @@ echo '
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </HEAD>
-<BODY>'
+<body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
@@ -135,8 +135,8 @@ echo '<div id="actionbox">
 <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
 </div>
         </FORM>
-</div>
-</BODY>
-</HTML>
+</div></div>
+</body>
+</html>
 '
 exit
