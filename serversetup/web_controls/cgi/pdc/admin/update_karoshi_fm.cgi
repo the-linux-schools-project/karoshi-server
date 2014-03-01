@@ -135,18 +135,6 @@ TABLECLASS=mobilestandard
 fi
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
 
-#Show back button for mobiles
-if [ $MOBILE = yes ]
-then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
-	<div class="expanded">
-	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$SYSMENUMSG'</a>
-</div></div><div id="mobilecontent"><div id="mobileactionbox2">'
-else
-echo '<b>'$TITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Linux_Schools_Server_System"><img class="images" alt="" src="/images/help/info.png"><span>'$UPDATELSSERVERHELP'</span></a><br><br>'
-fi
-
 #Show update list choice
 if [ $ACTION = ALL ]
 then
@@ -160,6 +148,22 @@ ICON=/images/submenus/system/updates_all.png
 ACTION=ALL
 MESSAGE=$SHOWUPDATESMSG2
 fi
+
+#Show back button for mobiles
+if [ $MOBILE = yes ]
+then
+MOBILEACTIONBOX=mobileactionbox2
+[ ! -f /opt/karoshi/updates/$UPDATELIST ] && MOBILEACTIONBOX=mobileactionbox
+echo '<div style="float: center" id="my_menu" class="sdmenu">
+	<div class="expanded">
+	<span>'$TITLE'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$SYSMENUMSG'</a>
+</div></div><div id="mobilecontent"><div id="'$MOBILEACTIONBOX'">'
+else
+echo '<b>'$TITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Linux_Schools_Server_System"><img class="images" alt="" src="/images/help/info.png"><span>'$UPDATELSSERVERHELP'</span></a><br><br>'
+fi
+
+
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td>
@@ -184,5 +188,7 @@ else
 echo $NO_UPDATES_MSG'<br>'
 fi
 
-echo '</form></div></div></div></body></html>'
+echo '</form></div></div>'
+[ $MOBILE = yes ] && echo '</div>'
+echo '</body></html>'
 exit

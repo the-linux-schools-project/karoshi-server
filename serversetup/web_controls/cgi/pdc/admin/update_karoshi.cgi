@@ -131,12 +131,12 @@ EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 102 ]
 then
 MESSAGE=`echo $COMPLETEDMSG $LOGMSG`
-show_status
 fi
 
 if [ $EXEC_STATUS = 103 ]
 then
 echo '<br><b>'$CHECKCOMPLETEDMSG'</b><br>'
+exit
 fi
-
+show_status
 
