@@ -159,23 +159,23 @@ then
 source /opt/karoshi/server_network/group_information/$PRIGROUP
 if [ $NEWSERVER = `hostname-fqdn` ]
 then
-for USERFOLDERS in $HOMEPATH/*
+for USERFOLDER in `getent passwd | grep ":$HOMEPATH/" | cut -d: -f1`
 do
-USERFOLDER=`basename $USERFOLDERS`
 echo "<li>"$USERFOLDER: Setting Permissions"</li><br>"
+[ ! -d $HOMEPATH/$USERFOLDER ] && mkdir -p $HOMEPATH/$USERFOLDER
 #chmod 0600 -R $HOMEPATH/$USERFOLDER
 #chmod u+X -R $HOMEPATH/$USERFOLDER
-chown -R $USERFOLDER.$PRIGROUP $HOMEPATH/$USERFOLDER
+chown -R $USERFOLDER:staff $HOMEPATH/$USERFOLDER
 done
 else
 ssh -x -o PasswordAuthentication=no $NEWSERVER '
-for USERFOLDERS in '$HOMEPATH'/*
+for USERFOLDER in `getent passwd | grep ":'$HOMEPATH'/" | cut -d: -f1`
 do
-USERFOLDER=`basename $USERFOLDERS`
 echo "<li>"$USERFOLDER: Setting Permissions"</li><br>"
+[ ! -d '$HOMEPATH'/$USERFOLDER ] && mkdir -p '$HOMEPATH'/$USERFOLDER
 #chmod 0600 -R '$HOMEPATH'/$USERFOLDER
 #chmod u+X -R '$HOMEPATH'/$USERFOLDER
-chown -R $USERFOLDER.'$PRIGROUP' '$HOMEPATH'/$USERFOLDER
+chown -R $USERFOLDER:staff '$HOMEPATH'/$USERFOLDER
 done
 '
 fi
@@ -212,12 +212,6 @@ if [ $COPYHOMEAREAS'null' != null ]
 then
 if [ $COPYHOMEAREAS = yes ]
 then
-
-if [ ! -d /home/transfer ]
-then
-mkdir /home/transfer
-chown 0700 /home/transfer
-fi
 
 echo $COPYHOMEAREASMSG2'<br><br>'
 echo '
@@ -271,7 +265,6 @@ echo `date`: home_folders - Copying $USERNAME from $CURRENTSERVER to $HOSTNAME b
 rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group  root@$CURRENTSERVER:/$HOMEPATH/$USERNAME "$DESTFOLDERPATH$PRIGROUP"/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 let COUNTER=$COUNTER+1
 done
-set_perms
 fi
 fi
 
@@ -290,10 +283,9 @@ echo "<li>"$(($COUNTER+1))/$USERLISTCOUNT: Copying $USERNAME"</li><br>"
 
 #rsync user folders to the new server
 echo `date`: home_folders - Copying $USERNAME from $HOSTNAME to $NEWSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group "$HOMEPATH"/"$USERFOLDER" root@$NEWSERVER:/$DESTFOLDERPATH$PRIGROUP/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group "$HOMEPATH"/"$USERNAME" root@$NEWSERVER:/$DESTFOLDERPATH$PRIGROUP/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 let COUNTER=$COUNTER+1
 done
-set_perms
 fi
 fi
 
@@ -304,34 +296,48 @@ ssh -x -o PasswordAuthentication=no $NEWSERVER '
 '
 #Copy work between two karoshi servers
 
+#Make sure that sshfs is installed
+which sshfs 1>/dev/null
+if [ $? != 0 ]
+then
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+echo "<li>"$HOSTNAME - Updating repository lists"</li>"
+apt-get update
+echo "<li>"$HOSTNAME - Installing sshfs"</li>"
+apt-get install -y sshfs
+echo "</pre>"
+fi
+
+#Mount /home as sshfs on both servers
+
+[ ! -d /opt/karoshi/mount/$CURRENTSERVER/home ] && mkdir -p /opt/karoshi/mount/$CURRENTSERVER/home
+[ ! -d /opt/karoshi/mount/$NEWSERVER/home ] && mkdir -p /opt/karoshi/mount/$NEWSERVER/home
+sshfs root@$CURRENTSERVER:/home /opt/karoshi/mount/$CURRENTSERVER/home 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+sshfs root@$NEWSERVER:/home /opt/karoshi/mount/$NEWSERVER/home 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
 if [ $USERLISTCOUNT -gt 0 ]
 then
 echo "<li>"$USERLISTCOUNT home folders. Please wait"</li><br>"
 while  [ $COUNTER -lt $USERLISTCOUNT ]
 do
-
 USERNAME=${USERLIST[$COUNTER]}
 echo "<li>"$(($COUNTER+1))/$USERLISTCOUNT: Copying $USERNAME"</li><br>"
 
-#rsync user folder to the pdc
-echo `date`: home_folders - Copying $HOMEPATH/$USERNAME from $CURRENTSERVER to /home/transfer by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group  root@$CURRENTSERVER:/$HOMEPATH/$USERNAME /home/transfer/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-#rsync to new server
-if [ -d /home/transfer/$USERNAME ]
-then
-echo "<li>"Transfering $USERNAME to $NEWSERVER"</li><br>"
-echo `date`: home_folders - Copying $USERNAME from /home/transfer to $NEWSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group  /home/transfer/$USERNAME root@$NEWSERVER:/$DESTFOLDERPATH$PRIGROUP/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-#Remove temp folder
-rm -f -R /home/transfer/$USERNAME
-fi
+echo `date`: home_folders - Copying $HOMEPATH/$USERNAME from $CURRENTSERVER to $NEWSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group /opt/karoshi/mount/$CURRENTSERVER"$HOMEPATH"/"$USERNAME" /opt/karoshi/mount/$NEWSERVER"$HOMEPATH"/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
 let COUNTER=$COUNTER+1
 done
+#Unmount sshfs shares
+fusermount -u /opt/karoshi/mount/$CURRENTSERVER/home 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fusermount -u /opt/karoshi/mount/$NEWSERVER/home 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+fi
+fi
+fi
+
 set_perms
-fi
-fi
-fi
-fi
 
 if [ $COPYHOMEAREAS'null' != null ]
 then
@@ -357,29 +363,5 @@ fi
 fi
 fi
 
-
-#Make sure that there is a home folder for all users in the current group on the selected server
-if [ $NEWSERVER != `hostname-fqdn` ]
-then
-ssh -x -o PasswordAuthentication=no $NEWSERVER '
-for PRIGROUPUSER in `getent passwd | grep "/'$PRIGROUP'/" | cut -d: -f1`
-do
-if [ ! -d '$HOMEPATH'/$PRIGROUPUSER ]
-then
-mkdir -p '$HOMEPATH'/$PRIGROUPUSER
-chown $PRIGROUPUSER '$HOMEPATH'/$PRIGROUPUSER
-fi
-done
-'
-else
-for PRIGROUPUSER in `getent passwd | grep "/$PRIGROUP/" | cut -d: -f1`
-do
-if [ ! -d $HOMEPATH/$PRIGROUPUSER ]
-then
-mkdir -p $HOMEPATH/$PRIGROUPUSER
-chown $PRIGROUPUSER $HOMEPATH/$PRIGROUPUSER
-fi
-done
-fi
 exit
 
