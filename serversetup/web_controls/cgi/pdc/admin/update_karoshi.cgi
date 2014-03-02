@@ -49,6 +49,14 @@ echo '</script>'
 echo "</div></body></html>"
 exit
 }
+
+function completed {
+echo '<SCRIPT language="Javascript">'
+echo '                window.location = "/cgi-bin/admin/update_karoshi_fm.cgi";'
+echo '</script>'
+echo "</div></body></html>"
+exit
+}
 #########################
 #Get data input
 #########################
@@ -131,12 +139,16 @@ EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 102 ]
 then
 MESSAGE=`echo $COMPLETEDMSG $LOGMSG`
+show_status
+exit
 fi
 
 if [ $EXEC_STATUS = 103 ]
 then
 echo '<br><b>'$CHECKCOMPLETEDMSG'</b><br>'
+show_status
 exit
 fi
-show_status
+completed
+
 

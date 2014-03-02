@@ -420,6 +420,12 @@ fi
 APACHESTATUS=`ps -e | grep -c $APACHEVER`
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_stop  1>/dev/null
 echo '<br>'
+
+
+#Create access file
+touch /etc/postfix/access
+postmap hash:/etc/postfix/access
+
 #############
 #generate aliases.db in /etc/postfix/
 #############
