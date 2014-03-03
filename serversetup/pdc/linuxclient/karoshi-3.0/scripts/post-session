@@ -55,6 +55,14 @@ if $is_domain && [[ $(mount | grep "on $HOME/offline-home") ]]; then
 	offline_home_exists=true
 fi
 
+#Detect Firefox and Thunderbird profiles
+if which firefox >/dev/null && [[ -d ~/.mozilla/firefox ]]; then
+	firefox_profile=`sed -n '0,/^Path=/s/^Path=//p' ~/.mozilla/firefox/profiles.ini`
+fi
+if which thunderbird >/dev/null && [[ -d ~/.thunderbird ]]; then
+	thunderbird_profile=`sed -n '0,/^Path=/s/^Path=//p' ~/.thunderbird/profiles.ini`
+fi
+
 #Exit if still logged in
 if [[ $(pmvarrun -u "$(id -nu)" -o 0) -gt 1 ]]; then
 	echo "User still logged in - exiting"
@@ -93,6 +101,7 @@ if $is_domain; then
 
 	#Backup configuration
 	if [[ $alternate_home ]]; then
+		#linux.tar.gz
 		list=( )
 		#Populate list with all hidden folders, with some exceptions
 		while read -d $'\0' -r file ; do
@@ -101,33 +110,38 @@ if $is_domain; then
 					-o -name '.thumbnails' -o -name '.Xauthority' -o -name '.ICEauthority' -o -name '.xsession-errors' -o -name '.pulse*' \
 					-o -name '.gvfs' -o -name '.dbus' -o -name '.VirtualBox' -o -name '.rednotebook' ')' -name '.*' -print0)
 
-		if which firefox >/dev/null && [[ -d ~/.mozilla/firefox ]]; then
-			firefox_profile=`sed -n '0,/^Path=/s/^Path=//p' ~/.mozilla/firefox/profiles.ini`
-			if [[ $firefox_profile ]] && [[ -d ~/.mozilla/firefox/$firefox_profile ]]; then
-				echo "Found Firefox profile - preserving places.sqlite"
-				checkAndList .mozilla/firefox/"$firefox_profile"/places.sqlite
-			fi
-		fi
-		if which thunderbird >/dev/null && [[ -d ~/.thunderbird ]]; then
-			thunderbird_profile=`sed -n '0,/^Path=/s/^Path=//p' ~/.thunderbird/profiles.ini`
-			if [[ $thunderbird_profile ]] && [[ -d ~/.thunderbird/$thunderbird_profile ]]; then
-				echo "Found Thunderbird profile - preserving places.sqlite"
-				checkAndList .thunderbird/"$thunderbird_profile"/places.sqlite
-			fi
-		fi
-
-		#Create archive in ~/$alternate_home/.configuration.tar.gz
-		[[ -f ~/$alternate_home/.configuration.tar.gz ]] && rm ~/"$alternate_home"/.configuration.tar.gz
-		[[ "${list[@]}" ]] && tar -cz --one-file-system --exclude='karoshi-*.desktop' --exclude='*.karoshi-session' -C ~ -f ~/"$alternate_home"/.configuration.tar.gz "${list[@]}"
-
-
-		#Backup desktop files
-		list=( )
 		while read -d $'\0' -r file ; do
 			checkAndList "${file##~/}"
 		done < <(find ~/Desktop -mindepth 1 -maxdepth 1 -not -name "karoshi-*.desktop" -and -size -1024c -print0)
-		#Create archive in ~/$alternate_home/.desktop-icons.tar.gz
-		[[ -f ~/$alternate_home/.desktop-icons.tar.gz ]] && rm ~/"$alternate_home"/.desktop-icons.tar.gz
-		[[ "${list[@]}" ]] && tar -cz --one-file-system -C ~ -f ~/"$alternate_home"/.desktop-icons.tar.gz "${list[@]}"
+
+		[[ -f ~/$alternate_home/.config/linux.tar.gz ]] && rm -f ~/"$alternate_home"/.config/linux.tar.gz
+		[[ "${list[@]}" ]] && tar -cz --one-file-system --exclude='karoshi-*.desktop' --exclude='*.karoshi-session' -C ~ -f ~/"$alternate_home"/.config/linux.tar.gz "${list[@]}"
+
+		#all.tar.gz
+		temp_dir=$(mktemp -d)
+		[[ -f ~/$alternate_home/.config/all.tar.gz ]] && tar -x -C "$temp_dir" -f ~/"$alternate_home"/.config/all.tar.gz
+		if [[ $firefox_profile ]]; then
+			[[ -d $temp_dir/firefox ]] || mkdir -p "$temp_dir"/firefox
+			[[ -f $temp_dir/firefox/places.sqlite ]] && rm -f "$temp_dir"/firefox/places.sqlite
+			if [[ -f ~/.mozilla/firefox/$firefox_profile/places.sqlite ]]; then
+				cp -ft "$temp_dir"/firefox ~/.mozilla/firefox/"$firefox_profile"/places.sqlite
+			fi
+		fi
+		if [[ $thunderbird_profile ]]; then
+			[[ -d $temp_dir/thunderbird ]] || mkdir -p "$temp_dir"/thunderbird
+			[[ -f $temp_dir/thunderbird/places.sqlite ]] && rm -f "$temp_dir"/thunderbird/places.sqlite
+			if [[ -f ~/.thunderbird/$thunderbird_profile/places.sqlite ]]; then
+				cp -ft "$temp_dir"/thunderbird ~/.thunderbird/"$thunderbird_profile"/places.sqlite
+			fi
+		fi
+
+		(
+			cd "$temp_dir"
+			tar -cz --one-file-system -f ~/"$alternate_home"/.config/all.tar.gz *
+		)
+
+ 		#DEPRECATED: Used for existing configurations
+		[[ -f ~/$alternate_home/.configuration.tar.gz ]] && rm -f ~/"$alternate_home"/.configuration.tar.gz
+		[[ -f ~/$alternate_home/.desktop-icons.tar.gz ]] && rm -f ~/"$alternate_home"/.desktop-icons.tar.gz
 	fi
 fi

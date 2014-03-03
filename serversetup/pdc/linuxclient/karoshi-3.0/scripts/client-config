@@ -117,72 +117,76 @@ if ! grep -q 'pam_mkhomedir.so umask=' /etc/pam.d/common-session; then
 	pam-auth-update --package --remove mkhomedir
 	fix_pam_mkhomedir=true
 fi
-
-echo "Copying configuration"
-[[ -d /tmp/netlogon/linuxclient/$LINUX_VERSION/configuration/ ]] && find /tmp/netlogon/linuxclient/$LINUX_VERSION/configuration -mindepth 1 -maxdepth 1 -print0 | xargs -r0 cp -rf -t /
+if ! karoshi-manage-flags get no_update_config >/dev/null; then
+	echo "Copying configuration"
+	[[ -d /tmp/netlogon/linuxclient/$LINUX_VERSION/configuration/ ]] && find /tmp/netlogon/linuxclient/$LINUX_VERSION/configuration -mindepth 1 -maxdepth 1 -print0 | xargs -r0 cp -rf -t /
+fi
 
 if [[ $fix_pam_mkhomedir ]]; then
 	pam-auth-update --package
 fi
+if ! karoshi-manage-flags get no_update_skel >/dev/null; then
+	#Admin skel
+	echo "Copying admin skel"
+	[[ -e /opt/karoshi/admin-skel ]] && rm -rf /opt/karoshi/admin-skel
+	mkdir /opt/karoshi/admin-skel
+	if [[ -d /tmp/netlogon/linuxclient/$LINUX_VERSION/admin-skel/ ]]; then
+		find /tmp/netlogon/linuxclient/$LINUX_VERSION/admin-skel -mindepth 1 -maxdepth 1 -print0 | xargs -r0 cp -rf -t /opt/karoshi/admin-skel
+	elif [[ -d /tmp/netlogon/linuxclient/$LINUX_VERSION/admin_skel/ ]]; then
+		find /tmp/netlogon/linuxclient/$LINUX_VERSION/admin_skel -mindepth 1 -maxdepth 1 -print0 | xargs -r0 cp -rf -t /opt/karoshi/admin-skel
+	else
+		karoshi-manage-flags get offline_mode >/dev/null || echo "WARNING: No admin skel found on server - using default one"
+		find /opt/karoshi/linuxclientsetup/admin-skel -mindepth 1 -maxdepth 1 -print0 | xargs -r0 cp -rf -t /opt/karoshi/admin-skel
+	fi
 
-#Admin skel
-echo "Copying admin skel"
-[[ -e /opt/karoshi/admin-skel ]] && rm -rf /opt/karoshi/admin-skel
-mkdir /opt/karoshi/admin-skel
-if [[ -d /tmp/netlogon/linuxclient/$LINUX_VERSION/admin-skel/ ]]; then
-	find /tmp/netlogon/linuxclient/$LINUX_VERSION/admin-skel -mindepth 1 -maxdepth 1 -print0 | xargs -r0 cp -rf -t /opt/karoshi/admin-skel
-elif [[ -d /tmp/netlogon/linuxclient/$LINUX_VERSION/admin_skel/ ]]; then
-	find /tmp/netlogon/linuxclient/$LINUX_VERSION/admin_skel -mindepth 1 -maxdepth 1 -print0 | xargs -r0 cp -rf -t /opt/karoshi/admin-skel
-else
-	karoshi-manage-flags get offline_mode >/dev/null || echo "WARNING: No admin skel found on server - using default one"
-	find /opt/karoshi/linuxclientsetup/admin-skel -mindepth 1 -maxdepth 1 -print0 | xargs -r0 cp -rf -t /opt/karoshi/admin-skel
+	#Do skel (properly)
+	if [[ -f /tmp/netlogon/linuxclient/$LINUX_VERSION/skel.tar.gz ]]; then
+		echo "Found new skel - replacing existing one"
+		[[ -e /etc/skel ]] && rm -rf /etc/skel
+		tar -x -C /etc -f /tmp/netlogon/linuxclient/$LINUX_VERSION/skel.tar.gz
+	fi
+	#/etc/skel should be readable by all, and directories should be 755
+	chown -R root:root /etc/skel
+	chmod -R +r /etc/skel
+	find /etc/skel -type d -print0 | xargs -r0 chmod 755
 fi
-
-#Do skel (properly)
-if [[ -f /tmp/netlogon/linuxclient/$LINUX_VERSION/skel.tar.gz ]]; then
-	echo "Found new skel - replacing existing one"
-	[[ -e /etc/skel ]] && rm -rf /etc/skel
-	tar -x -C /etc -f /tmp/netlogon/linuxclient/$LINUX_VERSION/skel.tar.gz
-fi
-#/etc/skel should be readable by all, and directories should be 755
-chown -R root:root /etc/skel
-chmod -R +r /etc/skel
-find /etc/skel -type d -print0 | xargs -r0 chmod 755
 
 #Version agnostic configuration
-echo "Copying other files"
-#Background images
-[[ -d $KAROSHI_DATA/images ]] || mkdir -p "$KAROSHI_DATA"/images
-if [[ -f /tmp/netlogon/linuxclient/background.png ]]; then
-	cp -f /tmp/netlogon/linuxclient/background.png "$KAROSHI_DATA"/images
-	update-alternatives --install /usr/share/backgrounds/karoshi.png karoshi-background "$KAROSHI_DATA"/images/background.png 50
-fi
-if [[ -f /tmp/netlogon/linuxclient/login-background.png ]]; then
-	cp -f /tmp/netlogon/linuxclient/login-background.png "$KAROSHI_DATA"/images
-	update-alternatives --install /usr/share/backgrounds/karoshi-login.png karoshi-login-background "$KAROSHI_DATA"/images/login-background.png 50
-fi
+if ! karoshi-manage-flags get no_update_other >/dev/null; then
+	echo "Copying other files"
+	#Background images
+	[[ -d $KAROSHI_DATA/images ]] || mkdir -p "$KAROSHI_DATA"/images
+	if [[ -f /tmp/netlogon/linuxclient/background.png ]]; then
+		cp -f /tmp/netlogon/linuxclient/background.png "$KAROSHI_DATA"/images
+		update-alternatives --install /usr/share/backgrounds/karoshi.png karoshi-background "$KAROSHI_DATA"/images/background.png 50
+	fi
+	if [[ -f /tmp/netlogon/linuxclient/login-background.png ]]; then
+		cp -f /tmp/netlogon/linuxclient/login-background.png "$KAROSHI_DATA"/images
+		update-alternatives --install /usr/share/backgrounds/karoshi-login.png karoshi-login-background "$KAROSHI_DATA"/images/login-background.png 50
+	fi
 
-#Clipboard sites for later on
-[[ -f /opt/karoshi/allow_clipboard_sites ]] && rm -f /opt/karoshi/allow_clipboard_sites
-[[ -f /tmp/netlogon/domain_information/allow_clipboard_sites ]] && cp /tmp/netlogon/domain_information/allow_clipboard_sites /opt/karoshi
+	#Clipboard sites for later on
+	[[ -f /opt/karoshi/allow_clipboard_sites ]] && rm -f /opt/karoshi/allow_clipboard_sites
+	[[ -f /tmp/netlogon/domain_information/allow_clipboard_sites ]] && cp /tmp/netlogon/domain_information/allow_clipboard_sites /opt/karoshi
 
-#Copy domain CA certificate
-[[ -f /opt/karoshi/cacert.pem ]] && rm -f /opt/karoshi/cacert.pem
-[[ -f /tmp/netlogon/domain_information/cacert.pem ]] && cp /tmp/netlogon/domain_information/cacert.pem /opt/karoshi
+	#Copy domain CA certificate
+	[[ -f /opt/karoshi/cacert.pem ]] && rm -f /opt/karoshi/cacert.pem
+	[[ -f /tmp/netlogon/domain_information/cacert.pem ]] && cp /tmp/netlogon/domain_information/cacert.pem /opt/karoshi
 
-#Static ARPs
-[[ -f /tmp/netlogon/domain_information/static_arps ]] && arp -f /tmp/netlogon/domain_information/static_arps
+	#Static ARPs
+	[[ -f /tmp/netlogon/domain_information/static_arps ]] && arp -f /tmp/netlogon/domain_information/static_arps
 
-#Create GPG keyring for verifying server messages
-[[ -e /opt/karoshi/keyring.gpg ]] && rm -f /opt/karoshi/keyring.gpg
-if [[ -f /tmp/netlogon/linuxclient/server-verify.key ]]; then
-	gpg --batch --no-default-keyring --keyring /opt/karoshi/keyring.gpg --import /tmp/netlogon/linuxclient/server-verify.key
-fi
+	#Create GPG keyring for verifying server messages
+	[[ -e /opt/karoshi/keyring.gpg ]] && rm -f /opt/karoshi/keyring.gpg
+	if [[ -f /tmp/netlogon/linuxclient/server-verify.key ]]; then
+		gpg --batch --no-default-keyring --keyring /opt/karoshi/keyring.gpg --import /tmp/netlogon/linuxclient/server-verify.key
+	fi
 
-#Get list of available user web folder servers
-[[ -e /opt/karoshi/user_web_servers ]] && rm -f /opt/karoshi/user_web_servers
-if [[ -f /tmp/netlogon/domain_information/user_web_servers ]]; then
-	cp /tmp/netlogon/domain_information/user_web_servers /opt/karoshi
+	#Get list of available user web folder servers
+	[[ -e /opt/karoshi/user_web_servers ]] && rm -f /opt/karoshi/user_web_servers
+	if [[ -f /tmp/netlogon/domain_information/user_web_servers ]]; then
+		cp /tmp/netlogon/domain_information/user_web_servers /opt/karoshi
+	fi
 fi
 
 #######################
@@ -397,51 +401,55 @@ iptables -P OUTPUT ACCEPT
 ###########################
 #Update desktop icons for groups
 ###########################
-echo "Updating desktop icons"
-if [[ -d /tmp/netlogon/linuxclient/$LINUX_VERSION/desktop-icons ]]; then
-	[[ -e /opt/karoshi/desktop-icons ]] && rm -rf /opt/karoshi/desktop-icons
-	cp -rfT /tmp/netlogon/linuxclient/$LINUX_VERSION/desktop-icons /opt/karoshi/desktop-icons
-elif [[ -d /tmp/netlogon/linuxclient/$LINUX_VERSION/desktop_icons ]]; then
-	[[ -e /opt/karoshi/desktop-icons ]] && rm -rf /opt/karoshi/desktop-icons
-	cp -rfT /tmp/netlogon/linuxclient/$LINUX_VERSION/desktop_icons /opt/karoshi/desktop-icons
-else
-	if ! karoshi-manage-flags get offline_mode >/dev/null; then
+if ! karoshi-manage-flags get no_update_icons >/dev/null; then
+	echo "Updating desktop icons"
+	if [[ -d /tmp/netlogon/linuxclient/$LINUX_VERSION/desktop-icons ]]; then
 		[[ -e /opt/karoshi/desktop-icons ]] && rm -rf /opt/karoshi/desktop-icons
-		echo "WARNING: Could not find any desktop icons on server"
+		cp -rfT /tmp/netlogon/linuxclient/$LINUX_VERSION/desktop-icons /opt/karoshi/desktop-icons
+	elif [[ -d /tmp/netlogon/linuxclient/$LINUX_VERSION/desktop_icons ]]; then
+		[[ -e /opt/karoshi/desktop-icons ]] && rm -rf /opt/karoshi/desktop-icons
+		cp -rfT /tmp/netlogon/linuxclient/$LINUX_VERSION/desktop_icons /opt/karoshi/desktop-icons
+	else
+		if ! karoshi-manage-flags get offline_mode >/dev/null; then
+			[[ -e /opt/karoshi/desktop-icons ]] && rm -rf /opt/karoshi/desktop-icons
+			echo "WARNING: Could not find any desktop icons on server"
+		fi
 	fi
-fi
 
-if [[ -d /opt/karoshi/desktop-icons ]]; then
-	chmod -R 0644 /opt/karoshi/desktop-icons
-	chmod -R u+X,g+X,o+X /opt/karoshi/desktop-icons
-	while read file; do
-		filename="$(tr '[:upper:] ' '[:lower:]-' <<< "$(basename "$file")")"
-		mv "$file" "`dirname "$file"`/karoshi-$filename"
-	done < <(find /opt/karoshi/desktop-icons/ -name "*.desktop" -and -not -name "karoshi-*.desktop")
+	if [[ -d /opt/karoshi/desktop-icons ]]; then
+		chmod -R 0644 /opt/karoshi/desktop-icons
+		chmod -R u+X,g+X,o+X /opt/karoshi/desktop-icons
+		while read file; do
+			filename="$(tr '[:upper:] ' '[:lower:]-' <<< "$(basename "$file")")"
+			mv "$file" "`dirname "$file"`/karoshi-$filename"
+		done < <(find /opt/karoshi/desktop-icons/ -name "*.desktop" -and -not -name "karoshi-*.desktop")
+	fi
 fi
 
 ############################
 #Printers
 ############################
-echo "Configuring printer configuration files"
-[[ -d /var/lib/karoshi/printing ]] || mkdir /var/lib/karoshi/printing
-find /var/lib/karoshi/printing -mindepth 1 -delete
-#Copy printer configuration
-if [[ $LOCATION ]] && [[ -f /tmp/netlogon/printers.txt ]]; then
-	all_printers=`grep ^$LOCATION, /tmp/netlogon/printers.txt`
-	if [[ $all_printers ]]; then
-		printer_count=`cut -d, -f2 <<< "$all_printers"`
-		default_printer=`cut -d, -f$(( printer_count + 3 )) <<< "$all_printers"`
-		echo $default_printer > /var/lib/karoshi/printing/list
-		for (( i = 3; i < printer_count + 3; ++i )); do
-			printer=`cut -d, -f$i <<< "$all_printers"`
-			echo "Marking printer $printer to be configured"
-			if [[ $printer != $default_printer ]]; then
-				echo $printer >> /var/lib/karoshi/printing/list
-			fi
-			#Copy PPD
-			[[ -f /tmp/netlogon/linuxclient/printer_drivers/$printer.ppd ]] && cp -f /tmp/netlogon/linuxclient/printer_drivers/$printer.ppd /var/lib/karoshi/printing/$printer.ppd
-		done
+if ! karoshi-manage-flags get no_update_printers >/dev/null; then
+	echo "Configuring printer configuration files"
+	[[ -d /var/lib/karoshi/printing ]] || mkdir /var/lib/karoshi/printing
+	find /var/lib/karoshi/printing -mindepth 1 -delete
+	#Copy printer configuration
+	if [[ $LOCATION ]] && [[ -f /tmp/netlogon/printers.txt ]]; then
+		all_printers=`grep ^$LOCATION, /tmp/netlogon/printers.txt`
+		if [[ $all_printers ]]; then
+			printer_count=`cut -d, -f2 <<< "$all_printers"`
+			default_printer=`cut -d, -f$(( printer_count + 3 )) <<< "$all_printers"`
+			echo $default_printer > /var/lib/karoshi/printing/list
+			for (( i = 3; i < printer_count + 3; ++i )); do
+				printer=`cut -d, -f$i <<< "$all_printers"`
+				echo "Marking printer $printer to be configured"
+				if [[ $printer != $default_printer ]]; then
+					echo $printer >> /var/lib/karoshi/printing/list
+				fi
+				#Copy PPD
+				[[ -f /tmp/netlogon/linuxclient/printer_drivers/$printer.ppd ]] && cp -f /tmp/netlogon/linuxclient/printer_drivers/$printer.ppd /var/lib/karoshi/printing/$printer.ppd
+			done
+		fi
 	fi
 fi
 

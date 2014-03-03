@@ -99,6 +99,14 @@ if $is_domain && [[ $(mount | grep "on $HOME/offline-home") ]]; then
 	offline_home_exists=true
 fi
 
+#Detect Firefox and Thunderbird profiles
+if which firefox >/dev/null && [[ -d ~/.mozilla/firefox ]]; then
+	firefox_profile=`sed -n '0,/^Path=/s/^Path=//p' ~/.mozilla/firefox/profiles.ini`
+fi
+if which thunderbird >/dev/null && [[ -d ~/.thunderbird ]]; then
+	thunderbird_profile=`sed -n '0,/^Path=/s/^Path=//p' ~/.thunderbird/profiles.ini`
+fi
+
 #Exit if already logged in
 if [[ $(pmvarrun -u "$(id -nu)" -o 0) -gt 1 ]]; then
 	echo "User already logged in - exiting"
@@ -205,11 +213,25 @@ if $is_domain; then
 		[[ -d ~/$alternate_home/rednotebook ]] || mkdir ~/"$alternate_home"/rednotebook
 		[[ -d ~/.rednotebook ]] || ln -sT "$alternate_home"/rednotebook ~/.rednotebook
 
+		#DEPRECATED: Used for existing configurations
 		[[ -f ~/$alternate_home/.configuration.tar.gz ]] && tar -x -C ~ -f ~/"$alternate_home"/.configuration.tar.gz
-
 		[[ -f ~/$alternate_home/.desktop-icons.tar.gz ]] && tar -x -C ~ -f ~/"$alternate_home"/.desktop-icons.tar.gz
-		if [[ $alternate_home != "offline-home" ]] && $offline_home_exists; then
-			[[ -f ~/offline-home/.desktop-icons.tar.gz ]] && tar -xk -C ~ -f ~/offline-home/.desktop-icons.tar.gz
+
+		#Install configuration
+		[[ -f ~/$alternate_home/.config/linux.tar.gz ]] && tar -x -C ~ -f ~/"$alternate_home"/.config/linux.tar.gz
+		if [[ -f ~/$alternate_home/.config/all.tar.gz ]]; then
+			#Files may be in here that need to be preserved but not handled
+			temp_dir=$(mktemp -d)
+			tar -x -C "$temp_dir" -f ~/"$alternate_home"/.config/all.tar.gz
+
+			if [[ -f $temp_dir/firefox/places.sqlite ]] && [[ $firefox_profile ]]; then
+				cp -ft ~/.mozilla/firefox/"$firefox_profile"/ "$temp_dir"/firefox/places.sqlite
+			fi
+			if [[ -f $temp_dir/thunderbird/places.sqlite ]] && [[ $thunderbird_profile ]]; then
+				cp -ft ~/.thunderbird/"$thunderbird_profile"/ "$temp_dir"/thunderbird/places.sqlite
+			fi
+
+			rm -rf "$temp_dir"
 		fi
 
 		#Set default directory for terminal emulator and file manager to $alternate_home
