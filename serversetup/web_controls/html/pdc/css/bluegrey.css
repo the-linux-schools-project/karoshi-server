@@ -1,5 +1,6 @@
-@import 'defaultstyle.css';
-
+@import 'defaultstyle.css' screen;
+@import 'print.css' print;
+@media screen {
 body {
 	color: #000000;
 	background-color: #7182b0;
@@ -119,4 +120,4 @@ A:hover {
 	color:#000;
 	border-color:#ffffff;
 }
-
+}

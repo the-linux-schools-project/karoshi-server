@@ -1,6 +1,29 @@
-#noprint { 
-display: none; 
-background: none;
-color: #111;
+@media print {
+
+body {
+font-family: Arial, Times, Georgia, "Times New Roman", Times, serif;
+color: black;
 }
 
+#header {
+	display: none;
+}
+
+#titlebox table.standard b {
+    text-decoration: underline;
+    font-size: 1.2em;
+}
+
+a {
+    color: black;
+}
+
+input {
+    display: none;
+}
+
+a.info, a.info2, a.info3{
+    display: none;
+}
+
+}
