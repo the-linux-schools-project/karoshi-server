@@ -213,11 +213,8 @@ FlashBan_Location_end=`grep -n ^'#FLASHBAN_EOP' $Config_location/staff_rules/ban
 sed -i "$FlashBan_Location_start","$FlashBan_Location_end"'d' "$Config_location/staff_rules/bannedmimetypelist"
 fi
 
-#Restart dansguardian
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dansguardian_stop 2> /dev/null
-sleep 0.5
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dansguardian_start 2> /dev/null
+#Reload dansguardian rules
+dansguardian -g
 
 else
 
@@ -296,11 +293,8 @@ FlashBan_Location_end=`grep -n ^"#FLASHBAN_EOP" '$Config_location'/staff_rules/b
 		sed -i "$FlashBan_Location_start","$FlashBan_Location_end""d" "'$Config_location'/staff_rules/bannedmimetypelist"
 fi
 
-#Restart dansguardian
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dansguardian_stop 2> /dev/null
-sleep 0.5
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dansguardian_start 2> /dev/null
+#Reload dansguardian rules
+dansguardian -g
 
 '
 fi

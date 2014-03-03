@@ -156,6 +156,9 @@ if [ $SITECOUNT = 0 ]
 then
 echo members.home.net/uporn > '$FILTERPATH'
 fi
+
+#Reload dansguardian rules
+dansguardian -g
 '
 else
 touch /etc/dansguardian/staff_rules/bannedurllist_staff
@@ -181,5 +184,8 @@ if [ $SITECOUNT = 0 ]
 then
 echo members.home.net/uporn > $FILTERPATH
 fi
+
+#Reload dansguardian rules
+dansguardian -g
 fi
 exit

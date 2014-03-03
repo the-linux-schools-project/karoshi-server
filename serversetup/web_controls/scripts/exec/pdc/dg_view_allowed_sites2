@@ -158,6 +158,9 @@ if [ $SITECOUNT = 0 ]
 then
 echo bbc.co.uk > '$FILTERPATH'
 fi
+
+#Reload dansguardian rules
+dansguardian -g
 '
 else
 touch /etc/dansguardian/staff_rules/exceptionsitelist_staff
@@ -183,5 +186,8 @@ if [ $SITECOUNT = 0 ]
 then
 echo bbc.co.uk > $FILTERPATH
 fi
+
+#Reload dansguardian rules
+dansguardian -g
 fi
 exit

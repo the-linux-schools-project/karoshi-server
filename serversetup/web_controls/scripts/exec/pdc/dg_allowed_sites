@@ -144,6 +144,9 @@ sed -i "/^$/d" /etc/dansguardian/staff_rules/exceptionsitelist_staff
 fi
 
 touch /etc/dansguardian/activate_changes
+
+#Reload dansguardian rules
+dansguardian -g
 '
 else
 
@@ -170,5 +173,8 @@ mv /etc/dansguardian/staff_rules/exceptionsitelist_staff1 /etc/dansguardian/staf
 sed -i "/^$/d" /etc/dansguardian/staff_rules/exceptionsitelist_staff
 fi
 touch /etc/dansguardian/activate_changes
+
+#Reload dansguardian rules
+dansguardian -g
 fi
 exit

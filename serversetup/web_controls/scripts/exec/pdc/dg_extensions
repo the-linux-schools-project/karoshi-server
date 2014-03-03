@@ -729,23 +729,16 @@ if [ $PROXYSERVER = `hostname-fqdn` ]
 then
 cp -f /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist /etc/dansguardian/staff_rules/bannedextensionlist
 cp -f /opt/karoshi/server_network/dansguardian/students_bannedextensionlist /etc/dansguardian/student_rules/bannedextensionlist
-source /opt/karoshi/serversetup/variables/distro
-echo Restarting Dansguardian"<br><br>"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dansguardian_stop
-sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dansguardian_start
+#Reload dansguardian rules
+dansguardian -g
 else
 scp /opt/karoshi/server_network/dansguardian/staff_bannedextensionlist root@$PROXYSERVER:"/etc/dansguardian/staff_rules/bannedextensionlist"
 scp /opt/karoshi/server_network/dansguardian/students_bannedextensionlist root@$PROXYSERVER:"/etc/dansguardian/student_rules/bannedextensionlist"
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
-source /opt/karoshi/serversetup/variables/distro
-echo Restarting Dansguardian"<br><br>"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dansguardian_stop
-sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dansguardian_start
+#Reload dansguardian rules
+dansguardian -g
 '
 fi
-
 
 exit
 

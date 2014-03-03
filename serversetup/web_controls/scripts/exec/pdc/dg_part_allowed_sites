@@ -145,6 +145,9 @@ mv /etc/dansguardian/staff_rules/exceptionurllist_staff1 /etc/dansguardian/staff
 sed -i "/^$/d" /etc/dansguardian/staff_rules/exceptionurllist_staff
 fi
 touch /etc/dansguardian/activate_changes
+
+#Reload dansguardian rules
+dansguardian -g
 '
 else
 #Add address to list
@@ -172,6 +175,9 @@ mv /etc/dansguardian/staff_rules/exceptionurllist_staff1 /etc/dansguardian/staff
 sed -i "/^$/d" /etc/dansguardian/staff_rules/exceptionurllist_staff
 fi
 touch /etc/dansguardian/activate_changes
+
+#Reload dansguardian rules
+dansguardian -g
 fi
 exit
 

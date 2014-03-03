@@ -160,6 +160,9 @@ if [ $STUDENTCOUNT = 0 ]
 then
 echo badboys.com > /etc/dansguardian/student_rules/bannedsites_students
 fi
+
+#Reload dansguardian rules
+dansguardian -g
 '
 else
 COUNTER=0
@@ -188,5 +191,7 @@ if [ $STUDENTCOUNT = 0 ]
 then
 echo badboys.com > /etc/dansguardian/student_rules/bannedsites_students
 fi
+#Reload dansguardian rules
+dansguardian -g
 fi
 exit
