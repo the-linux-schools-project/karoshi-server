@@ -112,8 +112,18 @@ find /home -mindepth 1 -xdev -delete
 ####################
 #Copy configuration
 ####################
+#FIX: pam_mkhomedir creating home areas with wrong mode
+if grep -q 'umask=' /usr/share/pam-configs/mkhomedir; then
+	pam-auth-update --package --remove mkhomedir
+	fix_pam_mkhomedir=true
+fi
+
 echo "Copying configuration"
 [[ -d /tmp/netlogon/linuxclient/$LINUX_VERSION/configuration/ ]] && find /tmp/netlogon/linuxclient/$LINUX_VERSION/configuration -mindepth 1 -maxdepth 1 -print0 | xargs -r0 cp -rf -t /
+
+if [[ $fix_pam_mkhomedir ]]; then
+	pam-auth-update --package
+fi
 
 #Admin skel
 echo "Copying admin skel"
