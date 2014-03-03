@@ -113,7 +113,7 @@ find /home -mindepth 1 -xdev -delete
 #Copy configuration
 ####################
 #FIX: pam_mkhomedir creating home areas with wrong mode
-if grep -q 'umask=' /usr/share/pam-configs/mkhomedir; then
+if ! grep -q 'pam_mkhomedir.so umask=' /etc/pam.d/common-session; then
 	pam-auth-update --package --remove mkhomedir
 	fix_pam_mkhomedir=true
 fi
