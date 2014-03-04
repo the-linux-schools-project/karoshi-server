@@ -80,10 +80,10 @@ COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
 DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERcheck ]
+if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
 then
 let COUNTER=$COUNTER+1
-SERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
 break
 fi
 let COUNTER=$COUNTER+1
@@ -135,8 +135,8 @@ then
 MESSAGE=$ERRORMSG2
 show_status
 fi
-#Check to see that SERVER is not blank
-if [ $SERVER'null' = null ]
+#Check to see that SERVERNAME is not blank
+if [ $SERVERNAME'null' = null ]
 then
 MESSAGE=$ERRORMSG3
 show_status
@@ -147,7 +147,7 @@ fi
 echo '<div id="actionbox"><b>'$TITLE1'</b><br><br>'$UPSMODEL $SERVER.''
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ups_add.cgi | cut -d' ' -f1`
 #Add UPS
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$UPSDRIVER:$UPSPORT:$SERVER:" | sudo -H /opt/karoshi/web_controls/exec/ups_add
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$UPSDRIVER:$UPSPORT:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/ups_add
 EXEC_STATUS=`echo $?`
 MESSAGE=`echo $SERVER - $COMPLETEDMSG`
 if [ $EXEC_STATUS = 101 ]
