@@ -1,0 +1,252 @@
+#!/bin/bash
+#Copyright (C) 2014 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ $LOG_DATE'null' = null ] && exit
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dg_bypass_cgi
+then
+echo `date`: dg_bypass - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/dg_bypass_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_bypass.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $dg_bypass_cgi'check' ]
+then
+echo `date`: dg_bypass - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/dg_bypass_cgi
+then
+echo `date`: dg_bypass - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/tech_checksums/dg_bypass_cgi
+MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/dg_bypass.cgi | cut -d' ' -f1`
+[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+if [ $MD5SUM2'check' != $dg_bypass_cgi'check' ]
+then
+echo `date`: dg_bypass - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: dg_bypass - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-' | sed 's/REPLACEUNDERSCORE/_/g'`
+if [ $DATA'null' = null ]
+then
+echo `date`: dg_bypass - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+ACTION=`echo "$DATA" | cut -s -d: -f4`
+TCPIP=`echo "$DATA" | cut -s -d: -f5 | tr -cd '0-9.'`
+
+
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_bypass ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_bypass
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+echo `date`: dg_bypass - Not called by dg_bypass.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+then
+echo `date`: dg_bypass - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+echo `date`: dg_bypass - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z "$ACTION" ]
+then
+echo `date`: dg_bypass - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $ACTION != view ] && [ $ACTION != reallyadd ] && [ $ACTION != delete ]
+then
+echo `date`: dg_bypass - Incorrect action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $ACTION = reallyadd ] || [ $ACTION = delete ]
+then
+if [ -z $TCPIP ]
+then
+echo `date`: dg_bypass - Blank tcpip by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ `echo $TCPIP | sed 's/\./\n /g'  | sed /^$/d | wc -l` != 4 ]
+then
+INPUTCHECK=fail
+fi
+#Check that no number is greater than 255
+HIGHESTNUMBER=`echo $IPDATA | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p`
+if [ $HIGHESTNUMBER -gt 255 ]
+then
+INPUTCHECK=fail
+fi
+
+if [ $INPUTCHECK = fail ]
+then
+echo `date`: dg_bypass - Incorrect tcpip by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo $ERRORMSG1"<br><br>"
+ACTION=view
+fi
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+echo `date`: dg_bypass - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+ICON1=/images/submenus/system/delete.png
+
+if [ $PROXYSERVER = `hostname-fqdn` ]
+then
+[ ! -d /etc/dansguardian ] && mkdir -p /etc/dansguardian 
+touch /etc/dansguardian/exceptioniplist
+
+if [ $ACTION = reallyadd ]
+then
+if [ `grep -c $TCPIP /etc/dansguardian/exceptioniplist` = 0 ]
+then
+echo $TCPIP >> /etc/dansguardian/exceptioniplist
+fi
+ACTION=view
+fi
+
+if [ $ACTION = delete ]
+then
+#Delete entry
+sed -i "s/^$TCPIP//g" /etc/dansguardian/exceptioniplist
+#Remove empty lines
+sed -i '/^$/d' /etc/dansguardian/exceptioniplist
+ACTION=view
+fi
+
+if [ $ACTION = reallyadd ] || [ $ACTION = delete ]
+then
+#Sort list
+sort -h /etc/dansguardian/exceptioniplist > /etc/dansguardian/exceptioniplist.$$
+rm -f /etc/dansguardian/exceptioniplist
+mv /etc/dansguardian/exceptioniplist.$$ /etc/dansguardian/exceptioniplist
+dansguardian -g
+fi
+
+if [ $ACTION = view ]
+then
+if [ `grep -v "^#" /etc/dansguardian/exceptioniplist | sed "/^$/d" | wc -l` != 0 ]
+then
+echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+<tr><td style=\"width: 180px;\"><b>$TCPIPMSG</b></td><td><b>$DELETEMSG</b></td></tr>"
+for tcpipnumber in `grep -v "^#" /etc/dansguardian/exceptioniplist`
+do
+echo "<tr><td>$tcpipnumber</td><td>
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_TCPIP_$tcpipnumber"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$DELETEMSG<br>$tcpipnumber</span></a>
+</td></tr>"
+done
+echo "</tbody></table>"
+fi
+fi
+else
+ssh -x -o PasswordAuthentication=no $PROXYSERVER '
+[ ! -d /etc/dansguardian ] && mkdir -p /etc/dansguardian 
+touch /etc/dansguardian/exceptioniplist
+ACTION='$ACTION'
+if [ $ACTION = reallyadd ]
+then
+if [ `grep -c '$TCPIP' /etc/dansguardian/exceptioniplist` = 0 ]
+then
+echo '$TCPIP' >> /etc/dansguardian/exceptioniplist
+fi
+ACTION=view
+fi
+
+if [ $ACTION = delete ]
+then
+#Delete entry
+sed -i "s/^'$TCPIP'//g" /etc/dansguardian/exceptioniplist
+#Remove empty lines
+sed -i "/^$/d" /etc/dansguardian/exceptioniplist
+ACTION=view
+fi
+
+if [ $ACTION = reallyadd ] || [ $ACTION = delete ]
+then
+#Sort list
+sort -h /etc/dansguardian/exceptioniplist > /etc/dansguardian/exceptioniplist.$$
+rm -f /etc/dansguardian/exceptioniplist
+mv /etc/dansguardian/exceptioniplist.$$ /etc/dansguardian/exceptioniplist
+dansguardian -g
+fi
+
+if [ $ACTION = view ]
+then
+if [ `grep -v "^#" /etc/dansguardian/exceptioniplist | sed "/^$/d" | wc -l` != 0 ]
+then
+echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+<tr><td style=\"width: 180px;\"><b>'$TCPIPMSG'</b></td><td><b>'$DELETEMSG'</b></td></tr>"
+for tcpipnumber in `grep -v "^#" /etc/dansguardian/exceptioniplist`
+do
+echo "<tr><td>$tcpipnumber</td><td>
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_TCPIP_$tcpipnumber"_"\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$DELETEMSG'<br>$tcpipnumber</span></a>
+</td></tr>"
+done
+echo "</tbody></table>"
+fi
+fi
+'
+fi
+
+
+exit
+
