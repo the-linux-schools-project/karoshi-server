@@ -48,6 +48,15 @@ if [[ $(id -u) -ge 1000 ]] && [[ $(id -u) -ne 65534 ]]; then
 	is_domain=true
 fi
 
+#Detect a staff user
+is_staff=false
+for grp in $(groups); do
+	if [[ $grp == "staff" ]]; then
+		is_staff=true
+		break
+	fi
+done
+
 #Detect offline home area
 offline_home_exists=false
 if $is_domain && [[ $(mount | grep "on $HOME/offline-home") ]]; then
@@ -140,6 +149,7 @@ if $is_domain; then
 			cd "$temp_dir"
 			tar -cz --one-file-system -f ~/"$alternate_home"/.config/all.tar.gz *
 		)
+		rm -rf "$temp_dir"
 
  		#DEPRECATED: Used for existing configurations
 		[[ -f ~/$alternate_home/.configuration.tar.gz ]] && rm -f ~/"$alternate_home"/.configuration.tar.gz
