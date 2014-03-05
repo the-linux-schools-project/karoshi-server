@@ -144,10 +144,12 @@ done
 if [ $MOBILE = no ]
 then
 DIV_ID=actionbox
+TABLECLASS=standard
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
 DIV_ID=actionbox2
+TABLECLASS=mobilestandard
 fi
 
 echo '<form action="/cgi-bin/admin/dg_bypass.cgi" name="selectedsites" method="post"><b></b>'
@@ -157,7 +159,7 @@ echo '<form action="/cgi-bin/admin/dg_bypass.cgi" name="selectedsites" method="p
 
 function passinfo {
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_bypass.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$TCPIP:" | sudo -H /opt/karoshi/web_controls/exec/dg_bypass
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$TCPIP:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/dg_bypass
 }
 
 
@@ -180,9 +182,9 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$INTERNETMENUMSG'</a>
 </div></div><div id="mobileactionbox">
 '
-else
+fi
 
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr>
 <td style="vertical-align: top;"><b>'$TITLE'</b></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Bypass_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td>
@@ -190,8 +192,6 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 <input name="_ACTION_'$BUTTONACTION'_" type="submit" class="button" value="'$BUTTONMSG'">
 </td>
 </tr></table><br>'
-
-fi
 
 if [ $ACTION = reallyadd ]
 then
@@ -226,5 +226,5 @@ fi
 echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></div>'
 fi
 
-echo '</div></form></div></div></body></html>'
+echo '</div></form></div></body></html>'
 exit

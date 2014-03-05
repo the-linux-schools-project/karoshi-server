@@ -182,6 +182,7 @@ echo '      <div class="collapsed">
         <a href="/cgi-bin/admin/dg_allowed_sites_fm.cgi">'$ADDALLOWEDSITES'</a>
         <a href="/cgi-bin/admin/dg_part_allowed_sites_fm.cgi">'$ADDPALLOWEDSITES'</a>
         <a href="/cgi-bin/admin/dg_room_controls_fm.cgi">'$ROOMCONTROLS'</a>
+        <a href="/cgi-bin/admin/dg_bypass.cgi">'$DGBYPASS'</a>
         <a href="/cgi-bin/admin/activate_internet_changes_fm.cgi">'$ACTIVATECHANGES'</a>
       </div>'
 fi

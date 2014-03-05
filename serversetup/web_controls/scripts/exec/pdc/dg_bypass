@@ -77,6 +77,7 @@ REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 ACTION=`echo "$DATA" | cut -s -d: -f4`
 TCPIP=`echo "$DATA" | cut -s -d: -f5 | tr -cd '0-9.'`
+MOBILE=`echo "$DATA" | cut -s -d: -f6`
 
 
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_bypass ] || LANGCHOICE=englishuk
@@ -149,6 +150,12 @@ fi
 
 PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
 ICON1=/images/submenus/system/delete.png
+TABLECLASS=standard
+if [ $MOBILE = yes ]
+then
+ICON1=/images/submenus/system/deletem.png
+TABLECLASS=mobilestandard
+fi
 
 if [ $PROXYSERVER = `hostname-fqdn` ]
 then
@@ -186,7 +193,7 @@ if [ $ACTION = view ]
 then
 if [ `grep -v "^#" /etc/dansguardian/exceptioniplist | sed "/^$/d" | wc -l` != 0 ]
 then
-echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
 <tr><td style=\"width: 180px;\"><b>$TCPIPMSG</b></td><td><b>$DELETEMSG</b></td></tr>"
 for tcpipnumber in `grep -v "^#" /etc/dansguardian/exceptioniplist`
 do
@@ -233,7 +240,7 @@ if [ $ACTION = view ]
 then
 if [ `grep -v "^#" /etc/dansguardian/exceptioniplist | sed "/^$/d" | wc -l` != 0 ]
 then
-echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
 <tr><td style=\"width: 180px;\"><b>'$TCPIPMSG'</b></td><td><b>'$DELETEMSG'</b></td></tr>"
 for tcpipnumber in `grep -v "^#" /etc/dansguardian/exceptioniplist`
 do
