@@ -475,9 +475,9 @@ EOF
 	export MOZ_CRASHREPORTER_DISABLE=1
 
 	#xscreensaver extend timeout for staff
-	if $is_staff; then
-		[[ -f ~/.xscreensaver ]] && sed -i 's/\(timeout:[[:space:]]*\).*/\10:20:00/' ~/.xscreensaver
-	fi
+	#if $is_staff; then
+	#	[[ -f ~/.xscreensaver ]] && sed -i 's/\(timeout:[[:space:]]*\).*/\10:20:00/' ~/.xscreensaver
+	#fi
 
 	if karoshi-manage-flags get offline_mode >/dev/null; then
 		if $offline_home_exists && [[ ! -e ~/.config/karoshi/offline-home-seen ]]; then
