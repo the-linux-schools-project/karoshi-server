@@ -110,7 +110,7 @@ if $is_domain; then
 
 	#Backup configuration
 	if [[ $alternate_home ]]; then
-		mkdir "$alternate_home"/.config
+		mkdir ~/"$alternate_home"/.config
 		#linux.tar.gz
 		list=( )
 		#Populate list with all hidden folders, with some exceptions
