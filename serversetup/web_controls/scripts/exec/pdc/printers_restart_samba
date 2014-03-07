@@ -173,7 +173,9 @@ chmod u+X,g+X,o+X -R /var/lib/samba/printers
 #Check to see if this server is a domain member or a dc
 REGENUSER=Administrator
 [ `grep -c "#karoshi_member_server" /etc/samba/smb.conf` -gt 0 ] && REGENUSER=root
-cupsaddsmb -H $HOSTNAME -U $REGENUSER%'$LDAPPASS' -a -v 2>&1
+[ ! -d /opt/karoshi/server_network/printers/windows/stop_driver_gen ] && mkdir -p /opt/karoshi/server_network/printers/windows/stop_driver_gen
+cupsaddsmb -H $HOSTNAME -U $REGENUSER%'$LDAPPASS' -v `diff <(lpstat -a | cut -d" " -f1 | sort) <(ls -1 /opt/karoshi/server_network/printers/windows/stop_driver_gen | sort) | grep "<" | sed "s/^< //g"`
+
 #Copy in cups6.inf
 cp -f /usr/share/cups/drivers/x64/cups6.inf /var/lib/samba/printers/x64/
 '
@@ -264,7 +266,9 @@ chmod -R 0664 /var/lib/samba/printers
 chmod u+X,g+X,o+X -R /var/lib/samba/printers
 
 #Generate printer drivers
-cupsaddsmb -H $HOSTNAME -U Administrator%$LDAPPASS -a -v 2>&1
+[ ! -d /opt/karoshi/server_network/printers/windows/stop_driver_gen ] && mkdir -p /opt/karoshi/server_network/printers/windows/stop_driver_gen
+cupsaddsmb -H $HOSTNAME -U Administrator%$LDAPPASS -v `diff <(lpstat -a | cut -d" " -f1 | sort) <(ls -1 /opt/karoshi/server_network/printers/windows/stop_driver_gen | sort) | grep "<" | sed "s/^< //g"`
+
 #Copy in cups.inf
 cp -f /usr/share/cups/drivers/x64/cups6.inf /var/lib/samba/printers/x64/
 echo "</pre>"

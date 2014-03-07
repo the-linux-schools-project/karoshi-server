@@ -154,7 +154,7 @@ fi
 
 echo '<form action="/cgi-bin/admin/printer_driver_gen.cgi" name="selectedsites" method="post"><b></b>'
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 
 #Show back button for mobiles
@@ -174,8 +174,10 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Driver_Generation"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td>
 </tr></table><br>'
 
+[ $MOBILE = no ] && echo '</div><div id="infobox">'
+
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printer_driver_gen.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$QUEUE:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/printer_driver_gen
-
+[ $MOBILE = no ] && echo '</div>'
 echo '</div></form></div></body></html>'
 exit
