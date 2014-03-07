@@ -117,6 +117,10 @@ if ! grep -q 'pam_mkhomedir.so umask=' /etc/pam.d/common-session; then
 	pam-auth-update --package --remove mkhomedir
 	fix_pam_mkhomedir=true
 fi
+#FIX: error in pam-wrapper
+if [[ -f /opt/karoshi/scripts/pam-wrapper ]]; then
+	update-alternatives /usr/bin/karoshi-pam-wrapper karoshi-pam-wrapper /opt/karoshi/scripts/pam-wrapper 21
+fi
 if ! karoshi-manage-flags get no_update_config >/dev/null; then
 	echo "Copying configuration"
 	[[ -d /tmp/netlogon/linuxclient/$LINUX_VERSION/configuration/ ]] && find /tmp/netlogon/linuxclient/$LINUX_VERSION/configuration -mindepth 1 -maxdepth 1 -print0 | xargs -r0 cp -rf -t /
