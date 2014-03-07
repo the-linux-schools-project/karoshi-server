@@ -119,7 +119,7 @@ if ! grep -q 'pam_mkhomedir.so umask=' /etc/pam.d/common-session; then
 fi
 #FIX: error in pam-wrapper
 if [[ -f /opt/karoshi/scripts/pam-wrapper ]]; then
-	update-alternatives /usr/bin/karoshi-pam-wrapper karoshi-pam-wrapper /opt/karoshi/scripts/pam-wrapper 21
+	update-alternatives --install /usr/bin/karoshi-pam-wrapper karoshi-pam-wrapper /opt/karoshi/scripts/pam-wrapper 21
 fi
 if ! karoshi-manage-flags get no_update_config >/dev/null; then
 	echo "Copying configuration"
