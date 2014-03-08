@@ -130,9 +130,11 @@ if [ $PRINTSERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $PRINTSERVER '
 lpadmin -x '$PRINTERNAME'
+[ -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/'$PRINTERNAME' ] && rm -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/'$PRINTERNAME'
 ' 2>&1
 else
 lpadmin -x $PRINTERNAME 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+[ -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTERNAME ] && rm -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTERNAME
 fi
 ####################
 #Modify printers.txt

@@ -98,6 +98,8 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 source /opt/karoshi/server_network/domain_information/domain_name
 
 #Check that this server has been setup with the correct authentication
+if [ $SERVERNAME != `hostname-fqdn`
+then
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:members:" | /opt/karoshi/serversetup/modules/authentication/check_auth
 if [ $? = 101 ]
 then
@@ -105,6 +107,7 @@ echo $AUTHENTICATIONFAILMSG"<br><br>"
 echo `date`: module_fileserver - $SERVERNAME does not have the correct authentication "for" this module by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 sleep 2
 exit 101
+fi
 fi
 
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`

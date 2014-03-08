@@ -153,6 +153,7 @@ echo '      <div class="collapsed">
         <a href="/cgi-bin/admin/printer_accounting_add_user_limit_fm.cgi">'$ADDUSERPRINTERLIMIT'</a>
         <a href="/cgi-bin/admin/printer_accounting_user_limits_fm.cgi">'$USERPRINTERLIMITS'</a>
         <a href="/cgi-bin/admin/printer_accounting_group_limits_fm.cgi">'$ACCOUNTINGGROUPLIMITS'</a>
+        <a href="/cgi-bin/admin/printer_driver_gen.cgi">'$PRINTERDRIVERGEN'</a>
       </div>'
 fi
 

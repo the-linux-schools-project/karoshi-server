@@ -190,6 +190,16 @@ else
 lpadmin -p $PRINTERNAME -L "$LOCATION" -D "$PRINTERDESC"
 fi
 
+#Reload samba configuration to enable samba print share
+if [ $USESSH = yes ]
+then
+ssh -x -o PasswordAuthentication=no $PRINTSERVER '
+killall -HUP smbd nmbd 2>/dev/null
+'
+else
+killall -HUP smbd nmbd 2>/dev/null
+fi
+
 function sortprinterstxt {
 ###################
 #Sort printers.txt

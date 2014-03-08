@@ -235,7 +235,6 @@ MESSAGE=$ERRORMSG5
 show_status
 fi
 
-echo '<div id="actionbox">'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printers_add.cgi | cut -d' ' -f1`
 #Add printer
 sudo -H /opt/karoshi/web_controls/exec/printers_add $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PRINTERNAME:$LOCATION:$PRINTERADDRESS:$PRINTERQUEUE:$PRINTERDESC:$PRINTERTYPE:$PRINTERPORT
@@ -247,6 +246,5 @@ else
 MESSAGE=`echo $PRINTERNAME - $COMPLETEDMSG`
 fi
 show_printers
-echo "</div>"
 echo "</div></body></html>"
 exit

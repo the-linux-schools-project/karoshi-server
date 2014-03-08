@@ -143,7 +143,7 @@ done
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox3
 TABLECLASS=standard
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
@@ -151,6 +151,15 @@ else
 DIV_ID=actionbox2
 TABLECLASS=mobilestandard
 fi
+
+function show_status {
+echo '<SCRIPT language="Javascript">'
+echo 'alert("'$MESSAGE'")';
+echo '                window.location = "/cgi-bin/admin/printer_driver_gen.cgi";'
+echo '</script>'
+echo "</div></form></div></body></html>"
+exit
+}
 
 echo '<form action="/cgi-bin/admin/printer_driver_gen.cgi" name="selectedsites" method="post"><b></b>'
 
@@ -162,22 +171,48 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$INTERNETMENUMSG'</a>
+	<span>'$TITLE2'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$PRINTMENUMSG'</a>
 </div></div><div id="mobileactionbox">
 '
 fi
-
+if [ $MOBILE = yes ]
+then
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td>
+<b>'$TITLE1'</b></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Driver_Generation"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td></tr>
+</tbody></table><br>
+<input name="_ACTION_enableall_PRINTQUEUE_all_" type="submit" class="button" value="'$ENABLEALLMSG'">
+<input name="_ACTION_disableall_PRINTQUEUE_all_" type="submit" class="button" value="'$DISABLEALLMSG'"><br>
+<input name="_ACTION_gendrivers_PRINTQUEUE_all_" type="submit" class="button" value="'$GENDRIVERSMSG'"><br><br>
+'
+else
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr>
 <td style="vertical-align: top;"><b>'$TITLE1'</b></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Driver_Generation"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td>
-</tr></table><br>'
-
-[ $MOBILE = no ] && echo '</div><div id="infobox">'
-
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Driver_Generation"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td><td><input name="_ACTION_enableall_PRINTQUEUE_all_" type="submit" class="button" value="'$ENABLEALLMSG'"></td><td><input name="_ACTION_disableall_PRINTQUEUE_all_" type="submit" class="button" value="'$DISABLEALLMSG'"></td><td><input name="_ACTION_gendrivers_PRINTQUEUE_all_" type="submit" class="button" value="'$GENDRIVERSMSG'"></td></tr></table><br>
+</div><div id="infobox">'
+fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printer_driver_gen.cgi | cut -d' ' -f1`
+if [ $ACTION = gendrivers ]
+then
+sudo -H /opt/karoshi/web_controls/exec/printer_driver_gen2 $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:
+EXEC_STATUS=$?
+echo execstatus is $EXEC_STATUS"<br>"
+[ $EXEC_STATUS = 0 ] && MESSAGE=$COMPLETEDMSG
+
+if [ $EXEC_STATUS = 102 ]
+then
+MESSAGE=$ERRORMSG1
+fi
+if [ $EXEC_STATUS = 103 ]
+then
+MESSAGE=$ERRORMSG2
+fi
+show_status
+else
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$QUEUE:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/printer_driver_gen
+fi
 [ $MOBILE = no ] && echo '</div>'
 echo '</div></form></div></body></html>'
 exit

@@ -196,7 +196,7 @@ document.setppd.submit();
 exit
 fi
 
-echo "<div id="actionbox">"
+
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printers_ppd_assign2.cgi | cut -d' ' -f1`
 #Add ppd file to printer
 sudo -H /opt/karoshi/web_controls/exec/printers_ppd_assign $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PRINTERNAME:$PAGESIZE:$COLOUR:$PRINTERPPD
@@ -208,6 +208,6 @@ show_status
 fi
 MESSAGE=`echo $COMPLETEDMSG $PRINTERNAME`
 show_status
-echo "</div>"
+
 echo "</div></body></html>"
 exit

@@ -96,7 +96,7 @@ echo `date`: printer_driver_gen - Blank action by $REMOTE_USER from $REMOTE_ADDR
 exit 101
 fi
 
-if [ $ACTION != view ] && [ $ACTION != enable ] && [ $ACTION != disable ]
+if [ $ACTION != view ] && [ $ACTION != enable ] && [ $ACTION != disable ] && [ $ACTION != enableall ] && [ $ACTION != disableall ]
 then
 echo `date`: printer_driver_gen - Incorrect action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -117,15 +117,19 @@ echo `date`: printer_driver_gen - access denied to $REMOTE_USER from $REMOTE_ADD
 exit 101
 fi
 
+echo `date`: printer_driver_gen - action $ACTION Queue $QUEUE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
 PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/printserver`
 ICON1=/images/submenus/printer/enable_printer
 ICON2=/images/submenus/printer/disable_printer
 TABLECLASS=standard
+WIDTH1=180
 if [ $MOBILE = yes ]
 then
 ICON1=/images/submenus/printer/enable_printerm
 ICON2=/images/submenus/printer/disable_printerm
 TABLECLASS=mobilestandard
+WIDTH1=100
 fi
 
 if [ $PRINTSERVER = `hostname-fqdn` ]
@@ -143,8 +147,22 @@ touch /opt/karoshi/server_network/printers/windows/stop_driver_gen/$QUEUE
 fi
 fi
 
+if [ $ACTION = disableall ] || [ $ACTION = enableall ]
+then
+for PRINTQUEUE in `lpstat -a | cut -d" " -f1`
+do
+if [ $ACTION = enableall ]
+then
+[ -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE ] && rm -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE
+else
+[ ! -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE ] && touch /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE
+fi
+done
+fi
+
 echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\"><b>$PRINTQUEUEMSG</b></td><td><b>$AUTOGENMSG</b></td></tr>"
+<tr><td style=\"width: $WIDTH1"px";\"><b>$PRINTQUEUEMSG</b></td><td><b>$AUTOGENMSG</b></td></tr>"
+
 for PRINTQUEUE in `lpstat -a | cut -d" " -f1`
 do
 echo "<tr><td>$PRINTQUEUE</td><td>"
@@ -162,7 +180,7 @@ fi
 echo "<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_$ACTION1"_"QUEUE_$PRINTQUEUE"_"\" type="image" class=\"images\" src=\"$ICON\" value=\"\"><span>$PRINTQUEUE<br>$ACTIONMSG</span></a>"
 echo "</td></tr>"
 done
-echo "</tbody></table>"
+echo "</tbody></table><br><br><br>"
 else
 ssh -x -o PasswordAuthentication=no $PRINTSERVER '
 if [ '$ACTION' = "enable" ] || [ '$ACTION' = "disable" ]
@@ -176,6 +194,19 @@ if [ '$ACTION' = disable ]
 then
 touch /opt/karoshi/server_network/printers/windows/stop_driver_gen/'$QUEUE'
 fi
+fi
+
+if [ '$ACTION' = disableall ] || [ '$ACTION' = enableall ]
+then
+for PRINTQUEUE in `lpstat -a | cut -d" " -f1`
+do
+if [ '$ACTION' = enableall ]
+then
+[ -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE ] && rm -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE
+else
+[ ! -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE ] && touch /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE
+fi
+done
 fi
 
 echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
@@ -197,7 +228,7 @@ fi
 echo "<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_$ACTION1"_"QUEUE_$PRINTQUEUE"_"\" type="image" class=\"images\" src=\"$ICON\" value=\"\"><span>$PRINTQUEUE<br>$ACTIONMSG</span></a>"
 echo "</td></tr>"
 done
-echo "</tbody></table>"
+echo "</tbody></table><br><br><br>"
 '
 fi
 exit

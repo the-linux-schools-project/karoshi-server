@@ -23,23 +23,22 @@
 #aball@karoshi.org.uk
 #
 #Website: http://www.karoshi.org.uk
-PRINTERGENMSG="Generating Printer Drivers."
-RESTARTSMBMSG="Restarting Samba"
+
 LOG_DATE=`date +%F`
 ########################
 #Check md5checksum
 ########################
-if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/printers_restart_samba_cgi
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/printer_driver_gen_cgi
 then
-echo `date`: printers_restart_samba - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: printer_driver_gen - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-source /opt/karoshi/web_controls/checksums/admin_checksums/printers_restart_samba_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printers_restart_samba.cgi | cut -d' ' -f1`
+source /opt/karoshi/web_controls/checksums/admin_checksums/printer_driver_gen_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printer_driver_gen.cgi | cut -d' ' -f1`
 [ $MD5SUM'null' = null ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $printers_restart_samba_cgi'check' ]
+if [ $MD5SUM'check' != $printer_driver_gen_cgi'check' ]
 then
-echo `date`: printers_restart_samba - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: printer_driver_gen - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 ########################
@@ -48,41 +47,47 @@ fi
 numArgs=$#
 if [ $numArgs != 1 ]
 then
-echo `date`: printers_restart_samba - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: printer_driver_gen2 - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 REMOTE_USER=`echo $* | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | cut -s -d: -f2`
 REMOTE_MD5=`echo $* | cut -s -d: -f3`
+MOBILE=`echo $* | cut -s -d: -f4`
 ########################
 #Check data
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: printers_restart_samba - Not called by printers_restart_samba.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: printer_driver_gen2 - Not called by printer_driver_gen2.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 if [ $REMOTE_USER'null' = null ]
 then
-echo `date`: printers_restart_samba - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: printer_driver_gen2 - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 if [ $REMOTE_ADDR'null' = null ]
 then
-echo `date`: printers_restart_samba - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: printer_driver_gen2 - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: printers_restart_samba - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: printer_driver_gen2 - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 
-echo `date`: printers_restart_samba - Restarting from $REMOTE_ADDR by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: printer_driver_gen2 - Restarting from $REMOTE_ADDR by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 source /opt/karoshi/server_network/domain_information/domain_name
+
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printer_driver_gen ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printer_driver_gen
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/printserver`
@@ -102,29 +107,6 @@ samba-tool user setpassword root --newpassword=$LDAPPASS 1>/dev/null
 
 ssh -x -o PasswordAuthentication=no $PRINTSERVER '
 
-######################
-#Restart samba
-######################
-source /opt/karoshi/serversetup/variables/distro
-echo "<b>"'$RESTARTSMBMSG'"</b><br><br>"
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop
-echo "<br>"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
-echo "</pre>"
-#Wait for samba to have restarted properly
-PORTCHECK=0
-COUNTER=1
-while [ $PORTCHECK = 0 ]
-do
-echo Waiting "for" samba to start - $COUNTER"<br>"
-PORTCHECK=`netstat -vatn | grep LISTEN | grep -c -w 445`
-sleep 1
-#Give up after 20 seconds
-[ $COUNTER = 20 ] && exit 101
-let COUNTER=$COUNTER+1
-done
-echo "<br>"
 ######################
 #Copy cups drivers from \\pdc\applications
 ######################
@@ -162,10 +144,10 @@ echo "<br>"
 SSHSTATUS=`echo $?`
 [ $SSHSTATUS = 103 ] && exit 103
 echo '<br><b>'$PRINTERGENMSG'</b><br>'
-echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+[ $MOBILE = no ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 ssh -x -o PasswordAuthentication=no $PRINTSERVER '
 #Make sure /var/lib/samba/printers/ exists and has correct permissions
-[ ! -d /var/lib/samba/printers ] && mkdir -p /var/lib/samba/printers
+[ ! -d /var/lib/samba/printers/x64/ ] && mkdir -p /var/lib/samba/printers/x64/
 chown root.itadmin -R /var/lib/samba/printers 
 chmod -R 0664 /var/lib/samba/printers
 chmod u+X,g+X,o+X -R /var/lib/samba/printers
@@ -174,35 +156,17 @@ chmod u+X,g+X,o+X -R /var/lib/samba/printers
 REGENUSER=Administrator
 [ `grep -c "#karoshi_member_server" /etc/samba/smb.conf` -gt 0 ] && REGENUSER=root
 [ ! -d /opt/karoshi/server_network/printers/windows/stop_driver_gen ] && mkdir -p /opt/karoshi/server_network/printers/windows/stop_driver_gen
-cupsaddsmb -H $HOSTNAME -U $REGENUSER%'$LDAPPASS' -v `diff <(lpstat -a | cut -d" " -f1 | sort) <(ls -1 /opt/karoshi/server_network/printers/windows/stop_driver_gen | sort) | grep "<" | sed "s/^< //g"`
 
+QUEUELIST=`diff <(lpstat -a | cut -d" " -f1 | sort) <(ls -1 /opt/karoshi/server_network/printers/windows/stop_driver_gen | sort) | grep "<" | sed "s/^< //g"`
+if [ ! -z "$QUEUELIST" ]
+then
+cupsaddsmb -H $HOSTNAME -U $REGENUSER%'$LDAPPASS' -v $QUEUELIST 2>&1
 #Copy in cups6.inf
 cp -f /usr/share/cups/drivers/x64/cups6.inf /var/lib/samba/printers/x64/
+fi
 '
-echo "</pre>"
+[ $MOBILE = no ] && echo "</pre>"
 else
-######################
-#Restart samba
-######################
-echo '<b>'$RESTARTSMBMSG'</b><br><br>'
-echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop
-echo "<br>"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
-echo "</pre>"
-
-#Wait for samba to have restarted properly
-PORTCHECK=0
-COUNTER=1
-while [ $PORTCHECK = 0 ]
-do
-echo Waiting "for" samba to start - $COUNTER"<br>"
-PORTCHECK=`netstat -vatn | grep LISTEN | grep -c -w 445`
-sleep 1
-#Give up after 20 seconds
-[ $COUNTER = 20 ] && exit 101
-let COUNTER=$COUNTER+1
-done
 
 ######################
 #Copy cups drivers from \\pdc\applications
@@ -257,20 +221,23 @@ fi
 #rm -f -R /var/lib/samba/printers/x64
 #Generate drivers
 echo '<br><b>'$PRINTERGENMSG'</b><br><br>'
-echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+[ $MOBILE = no ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 
 #Make sure /var/lib/samba/printers/ exists and has correct permissions
-[ ! -d /var/lib/samba/printers ] && mkdir -p /var/lib/samba/printers
+[ ! -d /var/lib/samba/printers/x64/ ] && mkdir -p /var/lib/samba/printers/x64/
 chown root.itadmin -R /var/lib/samba/printers
 chmod -R 0664 /var/lib/samba/printers
 chmod u+X,g+X,o+X -R /var/lib/samba/printers
 
 #Generate printer drivers
 [ ! -d /opt/karoshi/server_network/printers/windows/stop_driver_gen ] && mkdir -p /opt/karoshi/server_network/printers/windows/stop_driver_gen
-cupsaddsmb -H $HOSTNAME -U Administrator%$LDAPPASS -v `diff <(lpstat -a | cut -d" " -f1 | sort) <(ls -1 /opt/karoshi/server_network/printers/windows/stop_driver_gen | sort) | grep "<" | sed "s/^< //g"`
-
+QUEUELIST=`diff <(lpstat -a | cut -d" " -f1 | sort) <(ls -1 /opt/karoshi/server_network/printers/windows/stop_driver_gen | sort) | grep "<" | sed "s/^< //g"`
+if [ ! -z "$QUEUELIST" ]
+then
+cupsaddsmb -H $HOSTNAME -U Administrator%$LDAPPASS -v $QUEUELIST 2>&1
 #Copy in cups.inf
 cp -f /usr/share/cups/drivers/x64/cups6.inf /var/lib/samba/printers/x64/
-echo "</pre>"
 fi
-exit
+[ $MOBILE = no ] && echo "</pre>"
+fi
+exit 0
