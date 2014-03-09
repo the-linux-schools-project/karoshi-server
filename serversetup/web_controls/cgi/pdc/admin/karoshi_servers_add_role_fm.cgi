@@ -150,7 +150,7 @@ echo '</td></tr>'
 
 
 
-if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver ]
+if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver ] && [ $SERVERNAME != `hostname-fqdn` ]
 then
 echo '<tr><td style="vertical-align: top; height: 40px;">'$REVERSEPROXYMSG'</td>
 <td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_reverse_proxy_fm.cgi" method="post">
