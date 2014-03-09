@@ -78,14 +78,29 @@ chmod 0600 /etc/ssl/apache/$ALIAS.pem
 
 if [ $SERVER = `hostname-fqdn` ]
 then
+
+#Copy in config files
+cp -f /opt/karoshi/serversetup/modules/reverseproxy/default /etc/nginx/sites-available
+
+SSLCertificateFileline=`grep -w -n ssl_certificate /etc/nginx/sites-available/default | grep -v "#" | cut -d: -f1`
+sed -i $SSLCertificateFileline'c'\ssl_certificate" "/etc/ssl/apache2/$ALIAS.pem";" /etc/nginx/sites-available/default
+
+SSLCertificateKeyFileline=`grep -w -n ssl_certificate_key /etc/nginx/sites-available/default | grep -v "#" | cut -d: -f1`
+sed -i $SSLCertificateKeyFileline'c'\ssl_certificate_key" "/etc/ssl/apache2/$ALIAS.key";" /etc/nginx/sites-available/default
+
 #Make sure that ssl is enabled
 a2enmod ssl 1>/dev/null
 #Copy in ssl config file
 cp -f /opt/karoshi/serversetup/distro/ubuntu/all/configfiles/apache/default-ssl /etc/apache2/sites-enabled/
-#Point config file at the correct certificate
-sed -i "s/server./$ALIAS./g" /etc/apache2/sites-enabled/default-ssl
 
-#Check which web server to restart
+#Point config file at the correct certificate
+SSLCertificateFileline=`grep -n SSLCertificateFile /etc/apache2/sites-enabled/default-ssl | grep -v "#" | cut -d: -f1`
+sed -i $SSLCertificateFileline'c'\SSLCertificateFile" "/etc/ssl/apache/$ALIAS.pem /etc/apache2/sites-enabled/default-ssl
+#Point config file at the correct certificate
+SSLCertificateKeyFileline=`grep -n SSLCertificateKeyFile /etc/apache2/sites-enabled/default-ssl | grep -v "#" | cut -d: -f1`
+sed -i $SSLCertificateKeyFileline'c'\SSLCertificateKeyFile" "/etc/ssl/apache/$ALIAS.key /etc/apache2/sites-enabled/default-ssl
+
+#Check which web server
 if [ `ls /etc/rc2.d | grep -c nginx` -gt 0 ]
 then
 /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nginx_stop
@@ -103,6 +118,7 @@ fi
 
 else
 #Make sure /etc/ssl/apache exists on the remote server
+echo 
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 [ ! -d /etc/ssl/apache ] && mkdir -p /etc/ssl/apache
 '
@@ -111,14 +127,29 @@ scp /etc/ssl/apache/$ALIAS.key root@$SERVER:"/etc/ssl/apache/" 2>> /opt/karoshi/
 scp /etc/ssl/apache/$ALIAS.pem root@$SERVER:"/etc/ssl/apache/" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+
+
+#Copy in config files
+cp -f /opt/karoshi/serversetup/modules/reverseproxy/default /etc/nginx/sites-available
+
+SSLCertificateFileline=`grep -w -n ssl_certificate /etc/nginx/sites-available/default | grep -v "#" | cut -d: -f1`
+sed -i $SSLCertificateFileline"c"\ssl_certificate" "/etc/ssl/apache/'$ALIAS'.pem /etc/nginx/sites-available/default
+SSLCertificateKeyFileline=`grep -w -n ssl_certificate_key /etc/nginx/sites-available/default | grep -v "#" | cut -d: -f1`
+sed -i $SSLCertificateKeyFileline"c"\ssl_certificate_key" "/etc/ssl/apache/'$ALIAS'.key /etc/nginx/sites-available/default
+
 #Make sure that ssl is enabled
 a2enmod ssl 1>/dev/null
 #Copy in ssl config file
 cp -f /opt/karoshi/serversetup/distro/ubuntu/all/configfiles/apache/default-ssl /etc/apache2/sites-enabled/
-#Point config file at the correct certificate
-sed -i "s/server./'$ALIAS'./g" /etc/apache2/sites-enabled/default-ssl
 
-#Check which web server to restart
+#Point config file at the correct certificate
+SSLCertificateFileline=`grep -n SSLCertificateFile /etc/apache2/sites-enabled/default-ssl | grep -v "#" | cut -d: -f1`
+sed -i $SSLCertificateFileline"c"\SSLCertificateFile" "/etc/ssl/apache/'$ALIAS'.pem /etc/apache2/sites-enabled/default-ssl
+#Point config file at the correct certificate
+SSLCertificateKeyFileline=`grep -n SSLCertificateKeyFile /etc/apache2/sites-enabled/default-ssl | grep -v "#" | cut -d: -f1`
+sed -i $SSLCertificateKeyFileline"c"\SSLCertificateKeyFile" "/etc/ssl/apache/'$ALIAS'.key /etc/apache2/sites-enabled/default-ssl
+
+#Check which web server
 if [ `ls /etc/rc2.d | grep -c nginx` -gt 0 ]
 then
 /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nginx_stop

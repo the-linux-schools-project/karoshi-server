@@ -189,8 +189,11 @@ fi
 cp -f /opt/karoshi/serversetup/modules/reverseproxy/default /etc/nginx/sites-available
 
 #Point certificates at the correct place
-sed -i "s/\/etc\/ssl\/apache\/server.crt;/\/etc\/ssl\/apache\/'$ALIAS'.'$REALM'.pem;/g" /etc/nginx/sites-available/default
-sed -i "s/\/etc\/ssl\/apache\/server.key;/\/etc\/ssl\/apache\/'$ALIAS'.'$REALM'.key;/g" /etc/nginx/sites-available/default
+SSLCertificateFileline=`grep -w -n ssl_certificate /etc/nginx/sites-available/default | grep -v "#" | cut -d: -f1`
+sed -i $SSLCertificateFileline"c"\ssl_certificate" "/etc/ssl/apache/'$ALIAS'.'$REALM'.pem";" /etc/nginx/sites-available/default
+SSLCertificateKeyFileline=`grep -w -n ssl_certificate_key /etc/nginx/sites-available/default | grep -v "#" | cut -d: -f1`
+sed -i $SSLCertificateKeyFileline"c"\ssl_certificate_key" "/etc/ssl/apache/'$ALIAS'.'$REALM'.key";" /etc/nginx/sites-available/default
+
 
 source /opt/karoshi/serversetup/variables/distro
 
