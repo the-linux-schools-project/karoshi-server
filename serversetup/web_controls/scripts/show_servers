@@ -18,7 +18,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/system/show_servers
 #Check data
 
 function usage {
-echo -e "show_servers usage\n\nshow_servers mobile(yes/no) view(all/internal/pdc/servers/adc)" 
+echo -e "show_servers usage\n\nshow_servers mobile(yes/no) view(all/internal/pdc/servers/adc) actionmsg action custom separator" 
 exit
 }
 
@@ -70,7 +70,18 @@ then
 echo '<td style="vertical-align: top; text-align: left; width: '$WIDTH4'px;"><b>'$UPGRADEMSG'</b></td>'
 fi
 
+if [ $CUSTOM = commercialsslcert ]
+then
+COMMERCIALSSLSTEP1="Step 1"
+COMMERCIALSSLSTEP2="Step 2"
+COMMERCIALSSLSTEP3="Step 3"
+echo '<td style="vertical-align: top; text-align: left; width: '$WIDTH3'px;"><b>'$COMMERCIALSSLSTEP1'</b></td>
+<td style="vertical-align: top; text-align: left; width: '$WIDTH3'px;"><b>'$COMMERCIALSSLSTEP2'</b></td>
+<td style="vertical-align: top; text-align: left; width: '$WIDTH3'px;"><b>'$COMMERCIALSSLSTEP3'</b></td>
+</tr>'
+else
 echo '<td style="vertical-align: top; text-align: right; width: '$WIDTH3'px;"></td></tr>'
+fi
 }
 
 function tablebottom {
@@ -94,6 +105,12 @@ echo '<td style="vertical-align: top;">'
 echo '</td>'
 fi
 
+if [ $CUSTOM = commercialsslcert ]
+then
+#Set action depending on what has been set
+ACTION=getcertdetails
+fi
+
 if [ $CUSTOM = updateserver ]
 then
 echo '<td style="vertical-align: top; text-align: left;">'
@@ -107,8 +124,25 @@ echo '</td>'
 fi
 
 echo '<td style="vertical-align: top; text-align: right;">
-<input name="'$SEPARATOR'SERVERNAME'$SEPARATOR''$SERVER''$SEPARATOR'SERVERTYPE'$SEPARATOR''$SERVERTYPE''$SEPARATOR'SERVERMASTER'$SEPARATOR''$SERVERMASTER''$SEPARATOR'ACTION'$SEPARATOR''$ACTION''$SEPARATOR'" type="submit" class="button" value="'$ACTIONMSG'">
-</td></tr>'
+<input name="'$SEPARATOR'SERVERNAME'$SEPARATOR''$SERVER''$SEPARATOR'SERVERTYPE'$SEPARATOR''$SERVERTYPE''$SEPARATOR'SERVERMASTER'$SEPARATOR''$SERVERMASTER''$SEPARATOR'ACTION'$SEPARATOR''$ACTION''$SEPARATOR'" type="submit" class="button" value="'$ACTIONMSG'"></td>'
+
+if [ $CUSTOM = commercialsslcert ]
+then
+ACTION2=copycertinfo
+ACTION3=getinstallcertinfo
+ACTIONMSG2="Copy Certificate"
+ACTIONMSG3="Install Certificate"
+if [ -f /opt/karoshi/server_network/ssl/commercial_ssl_certs/$SERVERNAME ]
+then
+echo '<td style="vertical-align: top; text-align: right;">
+<input name="'$SEPARATOR'SERVERNAME'$SEPARATOR''$SERVER''$SEPARATOR'SERVERTYPE'$SEPARATOR''$SERVERTYPE''$SEPARATOR'SERVERMASTER'$SEPARATOR''$SERVERMASTER''$SEPARATOR'ACTION'$SEPARATOR''$ACTION2''$SEPARATOR'" type="submit" class="button" value="'$ACTIONMSG2'"></td>
+<td style="vertical-align: top; text-align: right;">
+<input name="'$SEPARATOR'SERVERNAME'$SEPARATOR''$SERVER''$SEPARATOR'SERVERTYPE'$SEPARATOR''$SERVERTYPE''$SEPARATOR'SERVERMASTER'$SEPARATOR''$SERVERMASTER''$SEPARATOR'ACTION'$SEPARATOR''$ACTION3''$SEPARATOR'" type="submit" class="button" value="'$ACTIONMSG3'"></td>
+'
+fi
+fi
+
+echo '</tr>'
 }
 
 function show_all_option {

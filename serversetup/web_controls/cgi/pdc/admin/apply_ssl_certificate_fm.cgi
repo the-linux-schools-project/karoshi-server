@@ -61,7 +61,7 @@ echo '<form action="/cgi-bin/admin/apply_ssl_certificate.cgi" name="selectserver
   <br>
   <br><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
-<tr><td style="width: 90px;"><b>Server</b></td><td style="width: 180px;"><b>Alias</b></td></tr>
+<tr><td style="width: 90px;"><b>Server</b></td><td style="width: 300px;"><b>Alias</b></td></tr>
 <tr><td>'$HOSTNAME'</td><td>manage.'$REALM'</td><td style="width: 90px; vertical-align: top; text-align: left;">
 <input name="_SERVER_'$HOSTNAME'_ALIAS_manage_" type="submit" class="button" value="'$GENCERTMSG'">
 </td></tr>'
@@ -77,7 +77,7 @@ do
 SERVER=`basename $ALIASES`
 ALIAS=`sed -n 1,1p /opt/karoshi/server_network/aliases/$SERVER`
 
-echo '<tr><td>'$SERVER'</td><td>'$ALIAS.$REALM'</td>
+echo '<tr><td>'$SERVER'</td><td>'$ALIAS'.'$REALM'</td>
 <td style="width: 90px; vertical-align: top; text-align: left;">
 <input name="_SERVER_'$SERVER'_ALIAS_'$ALIAS'_" type="submit" class="button" value="'$GENCERTMSG'">
 </td></tr>'

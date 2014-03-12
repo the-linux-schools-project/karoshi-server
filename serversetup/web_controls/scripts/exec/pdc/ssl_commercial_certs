@@ -1,0 +1,405 @@
+#!/bin/bash
+#Copyright (C) 2014 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/ssl_commercial_certs_cgi
+then
+echo `date`: ssl_commercial_certs - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/ssl_commercial_certs_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ssl_commercial_certs.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $ssl_commercial_certs_cgi'check' ]
+then
+echo `date`: ssl_commercial_certs - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: ssl_commercial_certs - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\-\n-+' | sed 's/ /-/g'`
+
+if [ $DATA'null' = null ]
+then
+echo `date`: ssl_commercial_certs - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+ACTION=`echo "$DATA" | cut -s -d: -f5`
+COUNTRYCODE=`echo "$DATA" | cut -s -d: -f6`
+STATE=`echo "$DATA" | cut -s -d: -f7`
+LOCALITY=`echo "$DATA" | cut -s -d: -f8`
+INSTITUTENAME=`echo "$DATA" | cut -s -d: -f9`
+DEPARTMENT=`echo "$DATA" | cut -s -d: -f10`
+COMMONNAME=`echo "$DATA" | cut -s -d: -f11`
+EMAIL=`echo "$DATA" | cut -s -d: -f12 |  sed 's/%40/@/g'`
+CERTTYPE=`echo "$DATA" | cut -s -d: -f13`
+CACERT=`echo "$DATA" | cut -s -d: -f14 | sed 's/%0D%0A/\n/g' | sed 's/%2F/\//g' | sed 's/+/ /g' | sed 's/%2B/+/g' | sed 's/%3D/=/g'`
+SSLCERT=`echo "$DATA" | cut -s -d: -f15 | sed 's/%0D%0A/\n/g' | sed 's/%2F/\//g' | sed 's/+/ /g' | sed 's/%2B/+/g' | sed 's/%3D/=/g'`
+
+########################
+#Check data
+########################
+
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: ssl_commercial_certs - Not called by ssl_commercial_certs.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+then
+echo `date`: ssl_commercial_certs - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+echo `date`: ssl_commercial_certs - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z "$ACTION" ]
+then
+echo `date`: ssl_commercial_certs - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z "$SERVERNAME" ]
+then
+echo `date`: ssl_commercial_certs - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $ACTION = installcertinfo ]
+then
+if [ -z "$CERTTYPE" ]
+then
+echo `date`: ssl_commercial_certs - Blank certificate "type" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z "$CACERT" ]
+then
+echo `date`: ssl_commercial_certs - Blank cacert by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z "$SSLCERT" ]
+then
+echo `date`: ssl_commercial_certs - Blank sslcert by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+fi
+
+if [ $ACTION = createcert ]
+then
+if [ "$COUNTRYCODE"'null' = null ]
+then
+echo `date`: ssl_commercial_certs - Blank countrycode by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ "$STATE"'null' = null ]
+then
+echo `date`: ssl_commercial_certs - Blank state by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ "$LOCALITY"'null' = null ]
+then
+echo `date`: ssl_commercial_certs - Blank locality by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ "$INSTITUTENAME"'null' = null ]
+then
+echo `date`: ssl_commercial_certs - Blank institute name by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ "$DEPARTMENT"'null' = null ]
+then
+echo `date`: ssl_commercial_certs - Blank department by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ "$COMMONNAME"'null' = null ]
+then
+echo `date`: ssl_commercial_certs - Blank commonname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ "$EMAIL"'null' = null ]
+then
+echo `date`: ssl_commercial_certs - Blank e-mail by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: ssl_commercial_certs - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $ACTION = createcert ]
+then
+echo `date`: ssl_commercial_certs creating a certificate "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+
+chmod 0750 /opt/karoshi/server_network/ssl
+chown root.apache_karoshi /opt/karoshi/server_network/ssl
+
+if [ ! -d /opt/karoshi/server_network/ssl/commercial_ssl_certs ]
+then
+mkdir -p /opt/karoshi/server_network/ssl/commercial_ssl_certs
+chmod 0750 /opt/karoshi/server_network/ssl/commercial_ssl_certs
+chown root.apache_karoshi /opt/karoshi/server_network/ssl/commercial_ssl_certs
+fi
+
+if [ ! -d /opt/karoshi/server_network/ssl/commercial_ssl_store ]
+then
+mkdir -p /opt/karoshi/server_network/ssl/commercial_ssl_store
+chmod 0700 /opt/karoshi/server_network/ssl/commercial_ssl_store
+chown root.apache_karoshi /opt/karoshi/server_network/ssl/commercial_ssl_store
+fi
+
+if [ ! -d /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME ]
+then
+mkdir -p /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME
+chmod 0700 /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME
+chown root.apache_karoshi /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME
+fi
+
+[ -f /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/server.csr ] && rm -f /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/server.csr
+[ -f /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/server.key ] && rm -f /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/server.key
+
+cd /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME
+
+#Write certificate data to /opt/karoshi/server_network/ssl/cert_data/server
+
+if [ ! -d /opt/karoshi/server_network/ssl/cert_data ]
+then
+mkdir -p /opt/karoshi/server_network/ssl/cert_data
+chmod 0750 /opt/karoshi/server_network/ssl/cert_data
+chown root.apache_karoshi /opt/karoshi/server_network/ssl/cert_data
+fi
+
+echo "$COUNTRYCODE" > /opt/karoshi/server_network/ssl/cert_data/$SERVERNAME
+echo "$STATE" >> /opt/karoshi/server_network/ssl/cert_data/$SERVERNAME
+echo "$LOCALITY" >> /opt/karoshi/server_network/ssl/cert_data/$SERVERNAME
+echo "$INSTITUTENAME" >> /opt/karoshi/server_network/ssl/cert_data/$SERVERNAME
+echo "$DEPARTMENT" >> /opt/karoshi/server_network/ssl/cert_data/$SERVERNAME
+echo "$COMMONNAME" >> /opt/karoshi/server_network/ssl/cert_data/$SERVERNAME
+echo "$EMAIL" >> /opt/karoshi/server_network/ssl/cert_data/$SERVERNAME
+
+#Create commercial certificate
+
+echo "<pre>"
+
+openssl genrsa -passout pass:12345 -aes256 -out server.key 2048
+#openssl rsa -passin pass:12345 -noout -text -in server.key
+echo -e ""$COUNTRYCODE"\n"$STATE"\n"$LOCALITY"\n"$INSTITUTENAME"\n"$DEPARTMENT"\n"$COMMONNAME"\n"$EMAIL"\n"12345"\n" | openssl req -passin pass:12345 -new -key server.key -out server.csr
+openssl x509 -passin pass:12345 -req -days 3650 -in server.csr -signkey server.key -out server.crt
+openssl rsa -passin pass:12345 -in server.key -out server_no_passphrase.key
+
+echo "<br>"
+echo "</pre>"
+chmod 0600 /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/server.csr
+chmod 0600 /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/server.key
+chmod 0600 /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/server.crt
+touch /opt/karoshi/server_network/ssl/commercial_ssl_certs/$SERVERNAME
+fi
+
+if [ $ACTION = copycertinfo ]
+then
+echo '<textarea cols="80" rows="20" name="_CRT_">'
+#sed -n 2,$LINELENGTH'p' /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVER/server.crt
+cat /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/server.csr
+echo '</textarea>'
+fi
+
+if [ $ACTION = installcertinfo ]
+then
+
+if [ $CERTTYPE = intcert ]
+then
+INT_CERT=intermediate.crt
+else
+INT_CERT=server-ca.crt
+fi
+
+#Delete existing certificates
+[ -f /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/$INT_CERT ] && rm -f /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/$INT_CERT
+[ -f /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/public.crt ] && rm -f /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/public.crt
+
+#Write intermediate crt or bundle.crt
+touch /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/$INT_CERT
+chmod 0600 /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/$INT_CERT
+echo -e "$CACERT" > /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/$INT_CERT
+
+#Write SSl Certificate
+touch /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/public.crt
+chmod 0600 /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/public.crt
+echo -e "$SSLCERT" > /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/public.crt
+
+
+if [ $CERTTYPE = intcert ]
+then
+INT_CERT=intermediate.crt
+else
+INT_CERT=server-ca.crt
+fi
+
+#Delete existing certificates
+[ -f /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/$INT_CERT ] && rm -f /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/$INT_CERT
+[ -f /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/public.crt ] && rm -f /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/public.crt
+
+#Write intermediate crt or bundle.crt
+touch /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/$INT_CERT
+chmod 0600 /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/$INT_CERT
+echo -e "$CACERT" > /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/$INT_CERT
+
+#Write SSl Certificate
+touch /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/public.crt
+chmod 0600 /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/public.crt
+echo -e "$SSLCERT" > /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/public.crt
+
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+
+#Check to see which web server should be running
+STARTCOMMAND=apache_start
+STOPCOMMAND=apache_stop
+SERVERTYPE=apache
+if [ -f /opt/karoshi/server_network/reverseproxyserver ]
+then
+if [ `sed -n 1,1p /opt/karoshi/server_network/reverseproxyserver` = $SERVERNAME ]
+then
+STARTCOMMAND=nginx_start
+STOPCOMMAND=nginx_stop
+SERVERTYPE=nginx
+fi
+fi
+
+#Copy certificates to the server and restart apache
+
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+
+if [ $SERVERNAME = `hostname-fqdn` ]
+then
+#SSLCertificateKeyFile /usr/local/ssl/private/private.key
+cp -f /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/server_no_passphrase.key /etc/ssl/apache/server.key
+chmod 0600 /etc/ssl/apache/server.key
+
+#Intermediate crt
+cp -f /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/$INT_CERT /etc/ssl/apache/
+chmod 0600 /etc/ssl/apache/$INT_CERT
+#Copy SSLCertificateFile to server.crt
+cp -f /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/public.crt /etc/ssl/apache/server.crt
+chmod 0600 /etc/ssl/apache/server.crt
+#Set intermediate.crt in apache configuration file
+
+if [ $SERVERTYPE = apache ] && [ $CERTTYPE = intcert ]
+then
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/configfiles/apache/default-ssl-commercial /etc/apache2/sites-enabled/default-ssl
+fi
+
+if [ $SERVERTYPE = apache ] && [ $CERTTYPE = bundle ]
+then
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/configfiles/apache/default-ssl-commercial-bundle /etc/apache2/sites-enabled/default-ssl
+fi
+
+if [ $SERVERTYPE = nginx ] && [ $CERTTYPE = intcert ]
+then
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/configfiles/nginx/default /etc/nginx/sites-available/
+cat /etc/ssl/apache/intermediate.crt >> /etc/ssl/apache/server.crt
+fi
+
+if [ $SERVERTYPE = nginx ] && [ $CERTTYPE = bundle ]
+then
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/configfiles/nginx/default /etc/nginx/sites-available/
+cat /etc/ssl/apache/server-ca.crt >> /etc/ssl/apache/server.crt
+fi
+
+#Restart web server
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/$STOPCOMMAND
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/$STARTCOMMAND
+else
+scp /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/server_no_passphrase.key root@$SERVERNAME:"/etc/ssl/apache/server.key"
+scp /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/$INT_CERT root@$SERVERNAME:"/etc/ssl/apache/"
+scp /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/public.crt root@$SERVERNAME:"/etc/ssl/apache/server.crt"
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+source /opt/karoshi/serversetup/variables/distro
+chmod 0600 /etc/ssl/apache/server.key
+chmod 0600 /etc/ssl/apache/intermediate.crt
+chmod 0600 /etc/ssl/apache/server.crt
+
+#Set intermediate.crt in apache configuration file
+if [ '$SERVERTYPE' = apache ] && [ '$CERTTYPE' = intcert ]
+then
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/configfiles/apache/default-ssl-commercial /etc/apache2/sites-enabled/default-ssl
+fi
+
+if [ '$SERVERTYPE' = apache ] && [ '$CERTTYPE' = bundle ]
+then
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/configfiles/apache/default-ssl-commercial-bundle /etc/apache2/sites-enabled/default-ssl
+fi
+
+if [ '$SERVERTYPE' = nginx ] && [ '$CERTTYPE' = intcert ]
+then
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/configfiles/nginx/default /etc/nginx/sites-available/
+cat /etc/ssl/apache/intermediate.crt >> /etc/ssl/apache/server.crt
+fi
+
+if [ '$SERVERTYPE' = nginx ] && [ '$CERTTYPE' = bundle ]
+then
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/configfiles/nginx/default /etc/nginx/sites-available/
+cat /etc/ssl/apache/server-ca.crt >> /etc/ssl/apache/server.crt
+fi
+
+#Restart webserver
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/'$STOPCOMMAND'
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/'$STARTCOMMAND'
+'
+fi
+
+
+
+
+
+
+fi
+
+exit
