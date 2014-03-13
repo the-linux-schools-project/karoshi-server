@@ -168,6 +168,17 @@ echo `date`: ssl_commercial_certs - access denied to $REMOTE_USER from $REMOTE_A
 exit 101
 fi
 
+if [ $ACTION = checkservercsr ]
+then
+echo `date`: ssl_commercial_certs checking "if" a server csr exists "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+if [ -f /opt/karoshi/server_network/ssl/commercial_ssl_store/$SERVERNAME/server.csr ]
+then
+exit 105
+else
+exit 0
+fi
+fi
+
 if [ $ACTION = createcert ]
 then
 echo `date`: ssl_commercial_certs creating a certificate "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE

@@ -354,6 +354,7 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox3"><div id="titlebox">'
 
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ssl_commercial_certs.cgi | cut -d' ' -f1`
 
 if [ $ACTION = getcertdetails ]
 then
@@ -361,16 +362,23 @@ echo "<b>"$TITLE1 - $SERVERNAME"</b><br><br>"
 #Get current certificate data if it has been set
 source /etc/default/locale
 source /opt/karoshi/server_network/domain_information/domain_name
-[ -f /opt/karoshi/server_network/aliases/$SERVERNAME ] && ALIAS=`sed -n 1,1p /opt/karoshi/server_network/aliases/$SERVERNAME`
-
 
 COUNTRYCODE=`echo $LANG | cut -d_ -f2 | cut -d. -f1`
 STATE=`cat /etc/timezone | cut -d/ -f1`
 LOCALITY=`cat /etc/timezone | cut -d/ -f2`
-UNITNAME=$HOSTNAME
+UNITNAME=$SERVERNAME
 ORGANISATIONNAME=$REALM
+
+if [ -f /opt/karoshi/server_network/aliases/$SERVERNAME ] 
+then
+ALIAS=`sed -n 1,1p /opt/karoshi/server_network/aliases/$SERVERNAME`
 LOCALNAME=$ALIAS.$REALM
 COMMONNAME=$ALIAS.$REALM
+else
+LOCALNAME=$SERVERNAME
+COMMONNAME=$SERVERNAME
+fi
+
 CONTACTEMAIL=administrator@$REALM
 
 if [ -f /opt/karoshi/server_network/ssl/cert_data/$SERVERNAME ]
@@ -382,6 +390,14 @@ ORGANISATIONNAME=`sed -n 4,4p /opt/karoshi/server_network/ssl/cert_data/$SERVERN
 UNITNAME=`sed -n 5,5p /opt/karoshi/server_network/ssl/cert_data/$SERVERNAME`
 COMMONNAME=`sed -n 6,6p /opt/karoshi/server_network/ssl/cert_data/$SERVERNAME`
 CONTACTEMAIL=`sed -n 7,7p /opt/karoshi/server_network/ssl/cert_data/$SERVERNAME`
+fi
+
+#Check to see if a ca cert has already been created and show warning message.
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:checkservercsr:" | sudo -H /opt/karoshi/web_controls/exec/ssl_commercial_certs
+if [ $? = 105 ]
+then
+echo '<font color="red"><b>'$WARNINGMSG'<br><br>
+'$ERRORMSG18'<br>'$ERRORMSG19'</b></font><br><br>'
 fi
 
 echo '<form action="/cgi-bin/admin/ssl_commercial_certs.cgi" name="selectservers" method="post">
@@ -405,7 +421,6 @@ echo '<tr><td style="width: 180px;">'$COUNTRYCODEMSG'</td><td><input tabindex= "
 exit
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ssl_commercial_certs.cgi | cut -d' ' -f1`
 if [ $ACTION = copycertinfo ]
 then
 echo "<b>"$TITLE5 - $SERVERNAME"</b><br><br>$HELPMSG5<br><br>"
@@ -429,9 +444,9 @@ echo '<input type="hidden" name="___ACTION___" value="installcertinfo"><input na
 </select></td></tr></tbody></table>
 '
 
-echo '<textarea cols="80" rows="16" name="___CACERT___"></textarea><br><br>'
+echo '<textarea cols="80" rows="14" name="___CACERT___"></textarea><br><br>'
 echo "<b>"$SSLCERTMSG"</b><br><br>"
-echo '<textarea cols="80" rows="16" name="___SSLCERT___"></textarea><br><br><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+echo '<textarea cols="80" rows="14" name="___SSLCERT___"></textarea><br><br><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
 <a href="ssl_commercial_certs_fm.cgi"><input class="button" type="button" name="" value="'$BACKMSG'"></a>
 '
 echo '</div></form></div></body></html>'
