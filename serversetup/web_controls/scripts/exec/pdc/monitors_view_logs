@@ -120,7 +120,7 @@ ssh -x -o PasswordAuthentication=no $MONITOR_SERVER '
 if [ -f /opt/karoshi/server_network/mon/events/'$GROUPNAME'/'$SERVICE'.log ]
 then
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-cat /opt/karoshi/server_network/mon/events/'$GROUPNAME'/'$SERVICE'.log
+tac /opt/karoshi/server_network/mon/events/'$GROUPNAME'/'$SERVICE'.log
 echo "</pre>"
 else
 echo '$ERRORMSG3'
