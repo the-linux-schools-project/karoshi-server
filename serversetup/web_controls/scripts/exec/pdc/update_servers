@@ -178,6 +178,7 @@ if [ $DAY != never ]
 then
 [ ! -d /opt/karoshi/cronjobs/jobs ] && mkdir -p /opt/karoshi/cronjobs/jobs
 echo $MINUTES $HOURS '*' '*' $DAY /opt/karoshi/serversetup/all/scripts/updateserver > /opt/karoshi/cronjobs/jobs/updateserver.cron
+echo $MINUTES $HOURS "*" "*" $DAY /opt/karoshi/serversetup/all/scripts/updateserver > /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME.cron
 else
 [ -f /opt/karoshi/cronjobs/jobs/updateserver.cron ] && rm -f /opt/karoshi/cronjobs/jobs/updateserver.cron
 fi
@@ -191,12 +192,14 @@ if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
 then
 if [ $DAY != never ]
 then
+echo $MINUTES $HOURS "*" "*" $DAY /opt/karoshi/serversetup/all/scripts/updateserver > /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME.cron
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 [ ! -d /opt/karoshi/cronjobs/jobs ] && mkdir -p /opt/karoshi/cronjobs/jobs
 echo '$MINUTES' '$HOURS' "*" "*" '$DAY' /opt/karoshi/serversetup/all/scripts/updateserver > /opt/karoshi/cronjobs/jobs/updateserver.cron
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 '
 else
+[ -f /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME.cron ] && rm -f /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME.cron
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 [ -f /opt/karoshi/cronjobs/jobs/updateserver.cron ] && rm -f /opt/karoshi/cronjobs/jobs/updateserver.cron
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null

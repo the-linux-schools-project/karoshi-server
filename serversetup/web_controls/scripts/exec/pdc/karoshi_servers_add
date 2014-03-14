@@ -522,5 +522,19 @@ fi
 [ ! -d /opt/karoshi/server_network/zones/$ZONE/servers ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/servers
 touch /opt/karoshi/server_network/zones/$ZONE/servers/$SERVER.$REALM
 
+#Reschedule updates if they have already been scheduled
+if [ -f /opt/karoshi/server_network/upgrade_schedules/servers/$SERVER.$REALM.cron ]
+then
+
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $TCPIPNUMBER '
+[ ! -d /opt/karoshi/cronjobs/jobs ] && mkdir -p /opt/karoshi/cronjobs/jobs
+'
+
+scp -o PasswordAuthentication=no /opt/karoshi/server_network/upgrade_schedules/servers/$SERVER.$REALM.cron $SERVER.$REALM:/opt/karoshi/cronjobs/jobs/updateserver.cron 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $TCPIPNUMBER '
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+'
+fi
 
 exit
