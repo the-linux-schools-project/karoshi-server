@@ -17,7 +17,6 @@ chmod 0744 /etc/init.d/apache2_karoshi
 [ ! -d /etc/apache2/sites-karoshi-enabled ] && mkdir -p /etc/apache2/sites-karoshi-enabled
 cp -f $COPYPATH/karoshi-global-ssl /etc/apache2/sites-karoshi-enabled/
 cp -f $COPYPATH/karoshi-local-ssl /etc/apache2/sites-karoshi-enabled/
-cp -f $COPYPATH/karoshi-local-no-ssl /etc/apache2/sites-karoshi-enabled/
 cp -f $COPYPATH/ports_karoshi.conf /etc/apache2/
 cp -f $COPYPATH/envvars_karoshi /etc/apache2/
 cp -f $COPYPATH/apache2ctl_karoshi /usr/sbin
