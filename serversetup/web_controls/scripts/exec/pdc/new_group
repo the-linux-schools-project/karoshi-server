@@ -121,26 +121,41 @@ fi
 
 if [ $FEDERATED_LDAP_SERVERS = yes ]
 then
-ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" cn=$NEWGROUP > /opt/karoshi/.tempdata/$NEWGROUP.$$.ldif
 for FEDERATEDLDAPSERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
 do
 FEDERATEDLDAPSERVER=`basename $FEDERATEDLDAPSERVERS`
 ######################
 #Export ldif file to add to the federated server
 ######################
-echo `date`: new_group \(federated mode\) - exporting $NEWGROUP to $FEDERATEDLDAPSERVER from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-scp /opt/karoshi/.tempdata/$NEWGROUP.$$.ldif root@$FEDERATEDLDAPSERVER:"/opt/karoshi/.tempdata/" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: new_group \(federated mode\) - adding $NEWGROUP to $FEDERATEDLDAPSERVER from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $FEDERATEDLDAPSERVER '
 ######################
 #Import group to federated ldap server
 ######################
 echo `date`: new_group \(federated mode\) - adding '$NEWGROUP' from '$REMOTE_ADDR' by '$REMOTE_USER' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS -f /opt/karoshi/.tempdata/'$NEWGROUP'.'$$'.ldif 1>/dev/null
-rm -f /opt/karoshi/.tempdata/'$NEWGROUP'.'$$'.ldif
+source /opt/karoshi/server_network/domain_information/domain_name
+
+samba-tool group add --groupou="OU=Groups,OU=People" '$NEWGROUP' 1>/dev/null
+echo
+GIDNUMBER=`getent group '$NEWGROUP' | cut -d: -f3`
+echo -e "dn: CN='$NEWGROUP',OU=Groups,OU=People,$LDAPBASE
+changetype: modify
+add: objectclass
+objectclass: posixgroup
+-
+add: displayname
+displayname: "'$NEWGROUP'"
+-
+add: mail
+mail: '$NEWGROUP'@$REALM
+-
+add: gidnumber
+gidnumber: $GIDNUMBER
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null
 '
 done
-rm -f /opt/karoshi/.tempdata/$NEWGROUP.$$.ldif
 fi
 
 exit $ADD_GROUP_STATUS
