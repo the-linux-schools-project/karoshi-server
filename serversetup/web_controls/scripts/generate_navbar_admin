@@ -150,9 +150,9 @@ echo '			<li class="mid"><a href="/cgi-bin/admin/change_password_fm.cgi" class="
 						<li><a href="/cgi-bin/admin/label_groups_fm.cgi">'$LABELGROUPSMSG'</a></li>'
 if [ $ADDUSERCTRL = yes ]
 then
-echo '						<li><a href="/cgi-bin/admin/new_primary_group_fm.cgi">'$NEWPRIGRPMSG'</a></li>'
+echo '						<li><a href="/cgi-bin/admin/groups.cgi">'$GRPMANAGEMENTMSG'</a></li>'
 fi
-echo '						<li><a href="/cgi-bin/admin/new_group_fm.cgi">'$NEWGRPMSG'</a></li>
+echo '
 						<li><a href="/cgi-bin/admin/copy_files_upload_fm.cgi">'$CPFILEMSG'</a></li>
 					</ul>
 			</li>

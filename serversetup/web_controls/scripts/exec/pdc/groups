@@ -1,0 +1,353 @@
+#!/bin/bash
+#Copyright (C) 2014 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/groups_cgi
+then
+echo `date`: groups - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/groups_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/groups.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $groups_cgi'check' ]
+then
+echo `date`: groups - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: groups - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ $DATA'null' = null ]
+then
+echo `date`: groups - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+GROUPNAME=`echo "$DATA" | cut -s -d: -f4`
+ACTION=`echo "$DATA" | cut -s -d: -f5`
+TYPE=`echo "$DATA" | cut -s -d: -f6`
+PROFILE=`echo "$DATA" | cut -s -d: -f7`
+HOMESERVER=`echo "$DATA" | cut -s -d: -f8`
+CATEGORY=`echo "$DATA" | cut -s -d: -f9`
+SECGROUP=`echo "$DATA" | cut -s -d: -f10`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: groups - Not called by groups.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+then
+echo `date`: groups - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+echo `date`: groups - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z "$ACTION" ]
+then
+echo `date`: groups - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z "$GROUPNAME" ]
+then
+echo `date`: groups - Blank groupname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ -z "$TYPE" ]
+then
+echo `date`: groups - Blank type by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ $ACTION = reallyadd ] && [ $TYPE = primary ]
+then
+if [ -z "$PROFILE" ]
+then
+echo `date`: groups - Blank profile by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z "$HOMESERVER" ]
+then
+echo `date`: groups - Blank home server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z "$CATEGORY" ]
+then
+echo `date`: groups - Blank category by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+fi
+
+##########################
+#Language
+##########################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/groups ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/user/groups
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+#Get samba 4 database password
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+source /opt/karoshi/server_network/domain_information/domain_name
+
+##########################
+#Check for federated servers
+##########################
+FEDERATED_LDAP_SERVERS=no
+if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
+then
+if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
+then
+FEDERATED_LDAP_SERVERS=yes
+fi
+fi
+
+
+if [ $ACTION = reallyadd ]
+then
+echo `date`: groups - adding $GROUPNAME "type" $TYPE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+if [ $TYPE = primary ]
+then
+#Add a new primary group
+samba-tool group add --groupou="OU=Groups,OU=People" $GROUPNAME 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE 
+
+GIDNUMBER=`getent group $GROUPNAME | cut -d: -f3`
+echo -e "dn: CN=$GROUPNAME,OU=Groups,OU=People,$LDAPBASE
+changetype: modify
+add: objectclass
+objectclass: posixgroup
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE 
+
+echo -e "dn: CN=$GROUPNAME,OU=Groups,OU=People,$LDAPBASE
+changetype: modify
+add: gidnumber
+gidnumber: $GIDNUMBER
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE 
+
+
+#Create a subcontainer for users of the group
+THISYEAR=`date +%Y`
+DAY=`date +%d`
+MONTH=`date +%m`
+
+hour=`date +%H`
+minutes=`date +%M`
+seconds=`date +%S`
+CREATETIME=$THISYEAR$MONTH$DAY$hour$minutes$seconds.0Z
+
+NAME="$GROUPNAME"
+DESC="$GROUPNAME"
+LDAPPATH="OU=$GROUPNAME,OU=$CATEGORY,OU=People,$LDAPBASE"
+
+echo -e "version: 1
+
+# Entry 1: $LDAPPATH
+dn: $LDAPPATH
+ou: $NAME
+description: $DESC
+distinguishedname: $LDAPPATH
+instancetype: 4
+name: $NAME
+objectcategory: CN=Organizational-Unit,CN=Schema,CN=Configuration,$LDAPBASE
+objectclass: top
+objectclass: organizationalUnit
+usnchanged: 3372
+usncreated: 3371
+whenchanged: $CREATETIME
+whencreated: $CREATETIME" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE 
+
+##########################
+#Copy profile and background
+##########################
+#Main server
+if [ ! -d /home/applications/profiles/$GROUPNAME ]
+then
+cp -f -R /home/applications/profiles/$PROFILE /home/applications/profiles/$GROUPNAME 
+chmod 0644 /home/applications/profiles/$GROUPNAME
+chmod u+X,g+X,o+X /home/applications/profiles/$GROUPNAME
+fi
+
+if [ -d /home/applications/profiles/$GROUPNAME ] && [ ! -L /home/applications/profiles/$GROUPNAME ] && [ ! -L /home/applications/profiles/$GROUPNAME.V2 ]
+then
+ln -s /home/applications/profiles/$GROUPNAME  /home/applications/profiles/$GROUPNAME.V2
+fi
+
+[ -f /home/applications/backgrounds/$GROUPNAME.bmp ] && cp -f /home/applications/backgrounds/$GROUPNAME.bmp /home/applications/backgrounds/$GROUPNAME.bmp
+
+##########################
+#Create data files
+##########################
+[ -e /var/lib/samba/netlogon/windows_settings/drives/$PROFILE.kix ] && cp -f /var/lib/samba/netlogon/windows_settings/drives/$PROFILE.kix /var/lib/samba/netlogon/windows_settings/drives/$GROUPNAME.kix
+[ -e /var/lib/samba/netlogon/windows_settings/security/$PROFILE.kix ] && cp -f /var/lib/samba/netlogon/windows_settings/security/$PROFILE.kix /var/lib/samba/netlogon/windows_settings/security/$GROUPNAME.kix
+[ `grep -c $GROUPNAME /var/lib/samba/netlogon/groups.txt` = 0 ] && echo $GROUPNAME,$HOMESERVER >> /var/lib/samba/netlogon/groups.txt
+echo SERVER=$HOMESERVER > /opt/karoshi/server_network/group_information/$GROUPNAME
+echo HOMEPATH=/home/users/$CATEGORY/$GROUPNAME  >> /opt/karoshi/server_network/group_information/$GROUPNAME
+echo SUBUNIT=$CATEGORY >> /opt/karoshi/server_network/group_information/$GROUPNAME
+echo SECONDARYGROUP=$SECGROUP >> /opt/karoshi/server_network/group_information/$GROUPNAME
+echo YEARSUFFIX=$YEARSUFFIX >> /opt/karoshi/server_network/group_information/$GROUPNAME
+
+#Recreate pam mount for the linux clients
+/opt/karoshi/"useful scripts"/generate_pam_mount
+fi
+
+if [ $TYPE = secondary ]
+then
+#Add a new secondary group
+#Get samba 4 database password
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+source /opt/karoshi/server_network/domain_information/domain_name
+
+samba-tool group add --groupou="OU=Groups,OU=People" $GROUPNAME 1>/dev/null
+GIDNUMBER=`getent group $GROUPNAME | cut -d: -f3`
+echo -e "dn: CN=$GROUPNAME,OU=Groups,OU=People,$LDAPBASE
+changetype: modify
+add: objectclass
+objectclass: posixgroup
+-
+add: displayname
+displayname: "$GROUPNAME"
+-
+add: mail
+mail: $GROUPNAME@$REALM
+-
+add: gidnumber
+gidnumber: $GIDNUMBER
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null
+
+fi
+
+if [ $FEDERATED_LDAP_SERVERS = yes ]
+then
+for FEDERATEDLDAPSERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
+do
+FEDERATEDLDAPSERVER=`basename $FEDERATEDLDAPSERVERS`
+
+echo `date`: groups \(federated mode\) - adding $GROUPNAME to $FEDERATEDLDAPSERVER from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $FEDERATEDLDAPSERVER '
+######################
+#Import group to federated ldap server
+######################
+echo `date`: new_group \(federated mode\) - adding '$GROUPNAME' from '$REMOTE_ADDR' by '$REMOTE_USER' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+source /opt/karoshi/server_network/domain_information/domain_name
+
+samba-tool group add --groupou="OU=Groups,OU=People" '$GROUPNAME' 1>/dev/null
+echo
+GIDNUMBER=`getent group '$GROUPNAME' | cut -d: -f3`
+echo -e "dn: CN='$GROUPNAME',OU=Groups,OU=People,$LDAPBASE
+changetype: modify
+add: objectclass
+objectclass: posixgroup
+-
+add: displayname
+displayname: "'$GROUPNAME'"
+-
+add: mail
+mail: '$GROUPNAME'@$REALM
+-
+add: gidnumber
+gidnumber: $GIDNUMBER
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null
+'
+done
+fi
+fi
+
+if [ $ACTION = reallydelete ]
+then
+echo `date`: groups - deleting $GROUPNAME "type" $TYPE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool group delete $GROUPNAME 1>/dev/null
+
+if [ $GROUPTYPE = primary ]
+then
+#Delete group information
+[ -f /opt/karoshi/server_network/group_information/$GROUPNAME ] && rm -f /opt/karoshi/server_network/group_information/$GROUPNAME
+#Delete windows profile
+[ -d /home/applications/profiles/$GROUPNAME ] && rm -f -R /home/applications/profiles/$GROUPNAME
+#Delete windows drives
+[ -f /var/lib/samba/netlogon/windows_settings/drives/$GROUPNAME.kix ] && rm -f /var/lib/samba/netlogon/windows_settings/drives/$GROUPNAME.kix
+
+#Recreate pam mount for the linux clients
+/opt/karoshi/"useful scripts"/generate_pam_mount 
+fi
+
+if [ $FEDERATED_LDAP_SERVERS = yes ]
+then
+for FEDERATEDLDAPSERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
+do
+FEDERATEDLDAPSERVER=`basename $FEDERATEDLDAPSERVERS`
+echo `date`: groups \(federated mode\) - deleting $GROUPNAME on $FEDERATEDLDAPSERVER from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $FEDERATEDLDAPSERVER '
+echo `date`: groups \(federated mode\) - deleting '$GROUPNAME' "type" $TYPE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+samba-tool group delete '$GROUPNAME' 1>/dev/null
+
+if [ '$GROUPTYPE' = primary ]
+then
+#Delete group information
+[ -f /opt/karoshi/server_network/group_information/'$GROUPNAME' ] && rm -f /opt/karoshi/server_network/group_information/'$GROUPNAME'
+#Delete windows profile
+[ -d /home/applications/profiles/'$GROUPNAME' ] && rm -f -R /home/applications/profiles/'$GROUPNAME'
+#Delete windows drives
+[ -f /var/lib/samba/netlogon/windows_settings/drives/'$GROUPNAME'.kix ] && rm -f /var/lib/samba/netlogon/windows_settings/drives/'$GROUPNAME'.kix
+
+#Recreate pam mount for the linux clients
+/opt/karoshi/"useful scripts"/generate_pam_mount 
+fi
+'
+done
+fi
+fi
+
+exit
+
+
+
+
