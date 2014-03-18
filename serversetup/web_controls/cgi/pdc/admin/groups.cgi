@@ -388,7 +388,9 @@ then
 echo '<option value="'$PROFILE'">'$PROFILE'</option>'
 fi
 done
-echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a></td></tr>
+echo '</select></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management#New_Primary_Group"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a>
+</td></tr>
 <tr><td>'$HOMESERVERMSG'</td><td><select name="____HOMESERVER____" style="width: '$WIDTH1'px;">'
 
 #Generate a list of servers for the home folders
@@ -408,7 +410,8 @@ do
 echo '<option value="'${SERVERARRAY[$COUNTER]}'">'${SERVERARRAY[$COUNTER]}'</option>'
 let COUNTER=$COUNTER+1
 done
-echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG4'</span></a></td></tr>'
+echo '</select></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management#New_Primary_Group"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG4'</span></a></td></tr>'
 #Show categories
 echo '<tr><td>'$CATEGORYMSG'</td><td><select name="____CATEGORY____" style="width: '$WIDTH1'px;">
 <option value=""></option>
@@ -417,10 +420,7 @@ echo '<tr><td>'$CATEGORYMSG'</td><td><select name="____CATEGORY____" style="widt
 <option value="other">'$OTHERMSG'</option>
 <option value="trustees">'$TRUSTEESMSG'</option></select>
 </td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG5'</span></a></td></tr>
-<tr><td>'$SECONDARYGROUPMSG'</td><td>'
-#Show a list of secondary groups to be a member of
-echo '<input name="____SECGROUP____" value="staff" type="checkbox">staff</td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG6'</span></a></td></tr>'
-echo '</tbody></table><br><br><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">'
+</tbody></table><br><br><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">'
 
 fi
 
