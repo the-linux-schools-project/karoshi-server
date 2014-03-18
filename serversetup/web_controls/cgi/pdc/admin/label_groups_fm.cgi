@@ -60,61 +60,32 @@ echo '
 <body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/label_groups.cgi" method="post"><div id="actionbox"><b>'$TITLE'</b> 
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Label_Groups"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
+echo '<form action="/cgi-bin/admin/label_groups.cgi" method="post"><div id="actionbox3"><div id="titlebox">
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr>
+<td style="vertical-align: top;"><b>'$TITLE'</b></td>
+<td style="vertical-align: top;"><a href="/cgi-bin/admin/groups.cgi"><input class="button" type="button" name="" value="'$VIEWGROUPSMSG'"></a></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management#Labelling_groups"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td></tr></tbody></table>
+<br></div><div id="infobox">'
 
-<br><br>
-<table class="standard" style="text-align: left;" border="0"
- cellpadding="2" cellspacing="2">
-<tbody><tr><td style="vertical-align: top; width: 200px;">'
-
-#Student groups
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>'
-
-while [ $STARTYEAR -lt $ENDYEAR ]
+#groups
+COUNTER=1
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+for GROUPNAMES in /opt/karoshi/server_network/group_information/*
 do
-eval LABEL=\$YR${STARTYEAR}
-echo '<tr><td>yr'$STARTYEAR'</td><td><input maxlength="20" size="10" name="____YR'$STARTYEAR':" value="'$LABEL'"></td></tr>'
-let STARTYEAR=$STARTYEAR+1
-done 
-echo '</tbody></table>'
-echo '</td><td style="vertical-align: top; width: 200px;">'
+GROUPNAME=`basename $GROUPNAMES`
+UPPERGROUPNAME=${GROUPNAME^^}
+LABEL=${!UPPERGROUPNAME}
+echo '<td style="width: 100px;">'$GROUPNAME'</td><td style="width: 100px;"><input maxlength="20" size="10" name="____'$UPPERGROUPNAME':" value="'$LABEL'"></td><td style="width: 40px;"></td>'
 
-#Personnel
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td>guests</td><td><input maxlength="20" size="10" name="____GUESTS:" value="'$GUESTS'"></td></tr>
-<tr><td>staff</td><td><input maxlength="20" size="10" name="____STAFF:" value="'$STAFF'"></td></tr>
-<tr><td>staff2</td><td><input maxlength="20" size="10" name="____STAFF2:" value="'$STAFF2'"></td></tr>
-<tr><td>staff3</td><td><input maxlength="20" size="10" name="____STAFF3:" value="'$STAFF3'"></td></tr>
-<tr><td>staff4</td><td><input maxlength="20" size="10" name="____STAFF4:" value="'$STAFF4'"></td></tr>
-<tr><td>nonteachingstaff</td><td><input maxlength="20" size="10" name="____NONTEACHINGSTAFF:" value="'$NONTEACHINGSTAFF'"></td></tr>
-<tr><td>officestaff</td><td><input maxlength="20" size="10" name="____OFFICESTAFF:" value="'$OFFICESTAFF'"></td></tr>
-<tr><td>studentstaff</td><td><input maxlength="20" size="10" name="____STUDENTSTAFF:" value="'$STUDENTSTAFF'"></td></tr>
-<tr><td>guardians</td><td><input maxlength="20" size="10" name="____GUARDIANS:" value="'$GUARDIANS'"></td></tr>
-<tr><td>tech</td><td><input maxlength="20" size="10" name="____TECH:" value="'$TECH'"></td></tr>
-<tr><td>itadmin</td><td><input maxlength="20" size="10" name="____ITADMIN:" value="'$ITADMIN'"></td></tr>
-</tbody></table>
-'
-
-#Custom groups
-echo '</td><td style="vertical-align: top; width: 200px;">'
-if [ -d /opt/karoshi/server_network/group_information/optional_groups/ ]
+if [ $COUNTER = 3 ]
 then
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>'
-for OPTGROUPS in /opt/karoshi/server_network/group_information/optional_groups/*
-do
-OPTGROUP=`basename $OPTGROUPS`
-eval LABEL=\$OPT${OPTGROUP}
-echo '<tr><td>'$OPTGROUP'</td><td><input maxlength="20" size="10" name="____OPT'$OPTGROUP':" value="'$LABEL'"></td></tr>'
-done
-echo '</tbody></table>'
+echo "</tr><tr>"
+COUNTER=0
 fi
-
-
-echo '</tbody></table>'
-
-echo '</div>
-<div id="submitbox">
+let COUNTER=$COUNTER+1
+done
+echo '</tbody></table><br>
 <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
 </div>
 </form>

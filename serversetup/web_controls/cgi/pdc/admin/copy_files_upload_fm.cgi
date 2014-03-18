@@ -51,12 +51,18 @@ echo '
     <TITLE>'$TITLE1'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
-</HEAD>
-<BODY>'
+</head>
+<body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/copy_files_upload.cgi" METHOD="POST"><div id="actionbox">
-<B>Copy Files - upload</B>
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr>
+<td style="vertical-align: top;"><b>'$TITLE1'</b></td>
+<td style="vertical-align: top;"><a href="/cgi-bin/admin/groups.cgi"><input class="button" type="button" name="" value="'$VIEWGROUPSMSG'"></a></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Label_Groups"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td></tr></tbody></table><br>
+
+
 <P>
 '$UPLOADMSG':
 <P>
@@ -100,6 +106,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/copy_files_uplo
 <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
 </div>
 </FORM>
+</div>
 </BODY>
 </HTML>
 '

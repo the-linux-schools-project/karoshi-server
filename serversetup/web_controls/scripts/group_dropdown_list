@@ -2,9 +2,6 @@
 
 #Get correct guest group depending on the samba version
 
-GUESTGROUP=guests
-[ -f /usr/local/sbin/samba ] && GUESTGROUP=guestusers
-
 YEAR=`date +%Y`
 let STARTYEAR=$YEAR-11
 let ENDYEAR=$YEAR+2
@@ -14,38 +11,15 @@ echo '
         <select name="_GROUP_" style="width: 200px;">
 	<option></option>'
 
+#Show all groups in group_information
 
-#Show list of student groups
-
-
-while [ $STARTYEAR -lt $ENDYEAR ]
+for GROUPNAMES in /opt/karoshi/server_network/group_information/*
 do
-eval LABEL=\$YR${STARTYEAR}
-echo '<option value="yr'$STARTYEAR'">yr'$STARTYEAR' : '$LABEL'</option>'
-let STARTYEAR=$STARTYEAR+1
-done 
-
-echo '  <option value="'$GUESTGROUP'">guests : '"$GUESTS"'</option>
-        <option value="staff">staff : '"$STAFF"'</option>
-        <option value="nonteachingstaff">nonteachingstaff : '"$NONTEACHINGSTAFF"'</option>
-        <option value="officestaff">officestaff : '"$OFFICESTAFF"'</option>
-        <option value="studentstaff">studentstaff : '"$STUDENTSTAFF"'</option>
-        <option value="guardians">guardians : '"$GUARDIANS"'</option>
-        <option value="governors">governors : '"$GOVERNORS"'</option>
-        <option value="tech">tech : '"$TECH"'</option>
-        <option value="itadmin">itadmin : '"$ITADMIN"'</option>'
-
-#Show extra options
-
-if [ -d /opt/karoshi/server_network/group_information/optional_groups/ ]
-then
-for OPTGROUPS in /opt/karoshi/server_network/group_information/optional_groups/*
-do
-OPTGROUP=`basename $OPTGROUPS`
-eval LABEL=\$OPT${OPTGROUP}
-echo '<option value="'$OPTGROUP'">'$OPTGROUP' : '"$LABEL"'</option>'
+GROUPNAME=`basename $GROUPNAMES`
+UPPERGROUPNAME=${GROUPNAME^^}
+LABEL=${!UPPERGROUPNAME:+ : ${!UPPERGROUPNAME}}
+echo '<option value="'$GROUPNAME'">'$GROUPNAME"$LABEL"'</option>'
 done
-fi
+
 echo '</select>'
 exit
-

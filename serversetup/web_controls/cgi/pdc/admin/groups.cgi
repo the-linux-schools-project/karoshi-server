@@ -83,7 +83,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%+-' | sed 's/____/QUADRUPLEUNDERSCORE/g' | s
 function show_status {
 echo '<SCRIPT language="Javascript">
 alert("'$MESSAGE'");
-window.location = "/cgi-bin/admin/secondary_groups_fm.cgi"
+window.location = "/cgi-bin/admin/groups.cgi"
 </script>
 </div></div></form></body></html>'
 exit
@@ -197,6 +197,8 @@ let COUNTER=$COUNTER+1
 done
 fi
 
+PROTECTEDLIST="itadmin exams karoshi staff nogroup"
+
 #########################
 #Check https access
 #########################
@@ -269,8 +271,8 @@ ICON1=/images/submenus/system/delete.png
 else
 DIV_ID=actionbox2
 TABLECLASS=mobilestandard
-WIDTH1=100
-WIDTH2=60
+WIDTH1=120
+WIDTH2=70
 ICON1=/images/submenus/system/deletem.png
 fi
 
@@ -281,6 +283,22 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$GROUPNAME:$ACTION:$TYPE:$PROFILE:$HOMES
 
 if [ $ACTION = reallyadd ]
 then
+#Check that the group does not already exist
+getent group $GROUPNAME 1>/dev/null
+if [ $? = 0 ]
+then
+MESSAGE=$ERRORMSG4
+show_status
+fi
+
+#Check that a user with the same name does not already exist
+getent passwd $GROUPNAME 1>/dev/null
+if [ $? = 0 ]
+then
+MESSAGE=$ERRORMSG5
+show_status
+fi
+
 do_action
 ACTION=view
 fi
@@ -321,11 +339,14 @@ echo '<div id="'$DIV_ID'"><div id="titlebox">
 if [ $ACTION = view ] 
 then
 echo '<td style="vertical-align: top;"><input name="____ACTION____add____TYPE____primary____" type="submit" class="button" value="'$NEWPRIGROUPMSG'"></td>
-<td style="vertical-align: top;"><input name="____ACTION____add____TYPE____secondary____" type="submit" class="button" value="'$NEWSECGROUPMSG'"></td>'
+<td style="vertical-align: top;"><input name="____ACTION____add____TYPE____secondary____" type="submit" class="button" value="'$NEWSECGROUPMSG'"></td>
+<td style="vertical-align: top;"><a href="/cgi-bin/admin/label_groups_fm.cgi"><input class="button" type="button" name="" value="'$LABELGROUPSMSG'"></a></td>
+<td style="vertical-align: top;"><a href="/cgi-bin/admin/copy_files_upload_fm.cgi"><input class="button" type="button" name="" value="'$COPYFILESMSG'"></a></td>
+'
 else
 echo '<td style="vertical-align: top;"><input name="____ACTION____view____TYPE____notset____" type="submit" class="button" value="'$VIEWGROUPSMSG'"></td>'
 fi
-echo '</tr></tbody></table></div><div id="infobox">'
+echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG7'<br><br>'$HELPMSG8'<br><br>'$HELPMSG9'</span></a></td></tr></tbody></table></div><div id="infobox">'
 fi
 
 #Show form for adding groups
@@ -337,15 +358,14 @@ echo '<input type="hidden" name="____TYPE____secondary____" value=""><input type
         <td style="width: '$WIDTH1'px;">
 '$NEWSECGROUPMSG'</td>
         <td><input name="____GROUPNAME____" size="20" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=New_Supplementary_Group"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1a'<br><br>'$HELPMSG1b'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management#New_Secondary_Goup"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1a'<br><br>'$HELPMSG1b'</span></a>
 </td>
       </tr>
     </tbody>
   </table>
   <br>
   <br>
-  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
-</div>'
+  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">'
 fi
 
 if [ $ACTION = add ] && [ $TYPE = primary ]
@@ -353,14 +373,14 @@ then
 echo '<input type="hidden" name="____TYPE____primary____" value=""><input type="hidden" name="____ACTION____reallyadd____" value=""><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
 <tr><td style="width: '$WIDTH1'px;">'$PRIGROUPNAMEMSG'</td><td><input name="____GROUPNAME____" style="width: '$WIDTH1'px;" size="20" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=New_Primary_Group"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2a'<br><br>'$HELPMSG2b'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management#New_Primary_Group"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2a'<br><br>'$HELPMSG2b'</span></a>
 
 </td></tr>
 
 <tr><td>'$PROFILEMSG'</td><td>'
 #Generate list of profiles
 echo '<select name="____PROFILE____" style="width: 200px;"><option value=""></option>'
-for PROFILES in `ls -1 /home/applications/profiles | grep -c .V2`
+for PROFILES in `ls -1 /home/applications/profiles | grep -v .V2`
 do
 PROFILE=`basename $PROFILES`
 if [ $PROFILE != default_roaming_profile ]
@@ -369,7 +389,7 @@ echo '<option value="'$PROFILE'">'$PROFILE'</option>'
 fi
 done
 echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a></td></tr>
-<tr><td>'$HOMESERVERMSG'</td><td><select name="____HOMESERVER____" style="width: '$WIDTH1'px;"><option value=""></option>'
+<tr><td>'$HOMESERVERMSG'</td><td><select name="____HOMESERVER____" style="width: '$WIDTH1'px;">'
 
 #Generate a list of servers for the home folders
 FILESERVERCOUNT=0
@@ -388,14 +408,14 @@ do
 echo '<option value="'${SERVERARRAY[$COUNTER]}'">'${SERVERARRAY[$COUNTER]}'</option>'
 let COUNTER=$COUNTER+1
 done
-echo '</td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG4'</span></a></td></tr>'
+echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG4'</span></a></td></tr>'
 #Show categories
 echo '<tr><td>'$CATEGORYMSG'</td><td><select name="____CATEGORY____" style="width: '$WIDTH1'px;">
 <option value=""></option>
 <option value="students">'$STUDENTMSG'</option>
 <option value="personnel">'$PERSONNELMSG'</option>
 <option value="other">'$OTHERMSG'</option>
-<option value="trustees">'$TRUSTEESMSG'</option>
+<option value="trustees">'$TRUSTEESMSG'</option></select>
 </td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG5'</span></a></td></tr>
 <tr><td>'$SECONDARYGROUPMSG'</td><td>'
 #Show a list of secondary groups to be a member of
@@ -412,16 +432,22 @@ GROUPCOUNT=${#GROUPLIST[@]}
 COUNTER=0
 
 echo  '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="width: '$WIDTH1'px;"><b>'$GROUPNAMEMSG'</b></td><td style="width: '$WIDTH2'px;"><b>'$GROUPIDMSG'</b></td><td style="width: '$WIDTH2'px;"><b>'$MEMBERCOUNTMSG'</b></td><td style="width: '$WIDTH2'px;"><b>Type</b></td><td><b>Delete</b></td><td></td></tr>'
+<tbody><tr><td style="width: '$WIDTH1'px;"><b>'$GROUPNAMEMSG'</b></td>'
+
+
+[ $MOBILE = no ] && echo '<td style="width: '$WIDTH2'px;"><b>'$GROUPIDMSG'</b></td><td style="width: '$WIDTH2'px;"><b>'$MEMBERCOUNTMSG'</b></td>'
+
+echo '<td style="width: '$WIDTH2'px;"><b>Type</b></td><td><b>Delete</b></td><td></td></tr>'
 
 while [ $COUNTER -lt $GROUPCOUNT ]
 do
 GROUPNAME=`echo ${GROUPLIST[$COUNTER]} | sed 's/____/ /g'`
 GROUPID=`getent group "$GROUPNAME" | cut -d: -f3`
-MEMBERCOUNT=`getent group $GROUPNAME | cut -d: -f4- | sed 's/,/\n/g' | wc -l`
+MEMBERCOUNT=`getent group $GROUPNAME | cut -d: -f4- | sed '/^$/d' | sed 's/,/\n/g' | wc -l`
 if [ $GROUPID -ge 1000 ]
 then
-echo '<tr><td>'$GROUPNAME'</td><td>'$GROUPID'</td><td>'$MEMBERCOUNT'<td>'
+echo '<tr><td>'$GROUPNAME'</td><td>'
+[ $MOBILE = no ] && echo ''$GROUPID'</td><td>'$MEMBERCOUNT'</td><td>'
 GROUPTYPE="$TYPE2MSG"
 TYPE=secondary
 if [ -f /opt/karoshi/server_network/group_information/"$GROUPNAME" ]
@@ -429,10 +455,12 @@ then
 GROUPTYPE="$TYPE1MSG"
 TYPE=primary
 fi
-echo ''$GROUPTYPE'</td><td><a class="info" href="javascript:void(0)">'
-if [ $MEMBERCOUNT -gt 0 ] || [ $TYPE = secondary ]
+echo ''$GROUPTYPE'</td><td>'
+PROTECTED=no
+[ `echo $PROTECTEDLIST | grep -c $GROUPNAME` -gt 0 ] && PROTECTED=yes
+if [ $MEMBERCOUNT = 0 ] || [ $TYPE = secondary ] && [ $PROTECTED = no ]
 then
-echo '<input name="____ACTION____delete____GROUPNAME____'$GROUPNAME'____TYPE____'$TYPE'____" type="image" class="images" src="'$ICON1'" value=""><span>'$DELETEMSG'<br>'$GROUPNAME'</span></a>'
+echo '<a class="info" href="javascript:void(0)"><input name="____ACTION____delete____GROUPNAME____'$GROUPNAME'____TYPE____'$TYPE'____" type="image" class="images" src="'$ICON1'" value=""><span>'$DELETEMSG'<br>'$GROUPNAME'</span></a>'
 fi
 echo '</td></tr>'
 fi
@@ -447,8 +475,6 @@ echo '<input type="hidden" name="____TYPE____'$TYPE'____" value=""><input type="
 <b>'$GROUPNAMEMSG: $GROUPNAME'</b><br><br>'$CONFIRMDELETEMSG'<br><br><input value="'$SUBMITMSG'" class="button" type="submit">'
 fi
 
-#MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/groups.cgi | cut -d' ' -f1`
-#echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/secondary_groups
 [ $MOBILE = no ] && echo '</div>'
 echo '</div></form></div></body></html>'
 exit

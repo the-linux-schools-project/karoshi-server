@@ -235,6 +235,7 @@ echo YEARSUFFIX=$YEARSUFFIX >> /opt/karoshi/server_network/group_information/$GR
 
 #Recreate pam mount for the linux clients
 /opt/karoshi/"useful scripts"/generate_pam_mount
+
 fi
 
 if [ $TYPE = secondary ]
@@ -306,12 +307,13 @@ then
 echo `date`: groups - deleting $GROUPNAME "type" $TYPE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 samba-tool group delete $GROUPNAME 1>/dev/null
 
-if [ $GROUPTYPE = primary ]
+if [ $TYPE = primary ]
 then
 #Delete group information
 [ -f /opt/karoshi/server_network/group_information/$GROUPNAME ] && rm -f /opt/karoshi/server_network/group_information/$GROUPNAME
 #Delete windows profile
 [ -d /home/applications/profiles/$GROUPNAME ] && rm -f -R /home/applications/profiles/$GROUPNAME
+[ -L /home/applications/profiles/$GROUPNAME.V2 ] && rm -f -R /home/applications/profiles/$GROUPNAME.V2
 #Delete windows drives
 [ -f /var/lib/samba/netlogon/windows_settings/drives/$GROUPNAME.kix ] && rm -f /var/lib/samba/netlogon/windows_settings/drives/$GROUPNAME.kix
 
@@ -329,7 +331,7 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $FEDERATEDLDAPSERVER '
 echo `date`: groups \(federated mode\) - deleting '$GROUPNAME' "type" $TYPE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
 samba-tool group delete '$GROUPNAME' 1>/dev/null
 
-if [ '$GROUPTYPE' = primary ]
+if [ '$TYPE' = primary ]
 then
 #Delete group information
 [ -f /opt/karoshi/server_network/group_information/'$GROUPNAME' ] && rm -f /opt/karoshi/server_network/group_information/'$GROUPNAME'

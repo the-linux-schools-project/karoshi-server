@@ -145,18 +145,7 @@ echo '			<li class="mid"><a href="/cgi-bin/admin/change_password_fm.cgi" class="
 						</li>
 					</ul>
 			</li>
-			<li><a href="/cgi-bin/admin/change_primary_group_fm.cgi" class="fly">'$GROUPSMSG'</a>
-					<ul>						
-						<li><a href="/cgi-bin/admin/label_groups_fm.cgi">'$LABELGROUPSMSG'</a></li>'
-if [ $ADDUSERCTRL = yes ]
-then
-echo '						<li><a href="/cgi-bin/admin/groups.cgi">'$GRPMANAGEMENTMSG'</a></li>'
-fi
-echo '
-						<li><a href="/cgi-bin/admin/copy_files_upload_fm.cgi">'$CPFILEMSG'</a></li>
-					</ul>
-			</li>
-
+			<li><a href="/cgi-bin/admin/groups.cgi">'$GRPMANAGEMENTMSG'</a></li>
 			<li class="mid"><a href="/cgi-bin/admin/incident_log_view_fm.cgi" class="fly">'$USERINFOMSG'</a>
 					<ul>
 			<li><a href="/cgi-bin/admin/incident_log_add.cgi">'$RECINCMSG'</a></li>
