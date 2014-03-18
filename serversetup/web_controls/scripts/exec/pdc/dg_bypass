@@ -123,12 +123,13 @@ echo `date`: dg_bypass - Blank tcpip by $REMOTE_USER from $REMOTE_ADDR >> /opt/k
 exit 101
 fi
 
+INPUTCHECK=ok
 if [ `echo $TCPIP | sed 's/\./\n /g'  | sed /^$/d | wc -l` != 4 ]
 then
 INPUTCHECK=fail
 fi
 #Check that no number is greater than 255
-HIGHESTNUMBER=`echo $IPDATA | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p`
+HIGHESTNUMBER=`echo $TCPIP | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p`
 if [ $HIGHESTNUMBER -gt 255 ]
 then
 INPUTCHECK=fail
@@ -186,7 +187,9 @@ then
 sort -h /etc/dansguardian/exceptioniplist > /etc/dansguardian/exceptioniplist.$$
 rm -f /etc/dansguardian/exceptioniplist
 mv /etc/dansguardian/exceptioniplist.$$ /etc/dansguardian/exceptioniplist
-dansguardian -g
+#Reload squid
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_reload
 fi
 
 if [ $ACTION = view ]
@@ -233,7 +236,9 @@ then
 sort -h /etc/dansguardian/exceptioniplist > /etc/dansguardian/exceptioniplist.$$
 rm -f /etc/dansguardian/exceptioniplist
 mv /etc/dansguardian/exceptioniplist.$$ /etc/dansguardian/exceptioniplist
-dansguardian -g
+#Reload squid
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_reload
 fi
 
 if [ $ACTION = view ]

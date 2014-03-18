@@ -69,18 +69,13 @@ echo '			<li class="mid"><a href="/cgi-bin/tech/change_password_fm.cgi" class="f
 						<li><a href="/cgi-bin/tech/ban_user_account.cgi">'$BANUSERMSG'</a></li>
 						<li><a href="/cgi-bin/tech/banned_users_view_fm.cgi">'$VIEWBANUSERMSG'</a></li>
 						<li><a href="/cgi-bin/tech/change_username_fm.cgi">'$CHANGEUSERNAMEMSG'</a></li>
+						<li><a href="/cgi-bin/tech/change_primary_group_fm.cgi">'$CHANGEPRIGRPMSG'</a></li>
 						<li class="mid"><a href="/cgi-bin/tech/user_image_upload_fm.cgi" class="fly">'$USERIMAGEMSG'</a>
 						<ul>
 							<li><a href="/cgi-bin/tech/user_image_upload_fm.cgi">'$USERIMAGEMSG'</a></li>
 							<li><a href="/cgi-bin/tech/user_image_bulk_upload_fm.cgi">'$BULKUSERUPLOADMSG'</a></li>
 						</ul>
 						</li>
-					</ul>
-			</li>
-			<li><a href="/cgi-bin/tech/change_primary_group_fm.cgi" class="fly">'$GROUPSMSG'</a>
-					<ul>
-						<li><a href="/cgi-bin/tech/change_primary_group_fm.cgi">'$CHANGEPRIGRPMSG'</a></li>
-						<li><a href="/cgi-bin/tech/groups_change_fm.cgi">'$CHANGESECGRPMSG'</a></li>
 					</ul>
 			</li>
 			<li><a href="/cgi-bin/tech/lockout_reset_fm.cgi">'$LOCKOUTRESETMSG'</a></li>
@@ -197,8 +192,7 @@ echo '	<li class="top"><a href="/cgi-bin/tech/activate_internet_changes_fm.cgi" 
 						<li><a href="/cgi-bin/tech/dg_allowed_sites_fm.cgi">'$ADDALLOWEDSITES'</a></li>
 						<li><a href="/cgi-bin/tech/dg_ssl_allowed_sites_fm.cgi">'$ADDSSLALLOWEDSITES'</a></li>
 						<li><a href="/cgi-bin/tech/dg_part_allowed_sites_fm.cgi">'$ADDPALLOWEDSITES'</a></li>
-						<li><a href="/cgi-bin/tech/dg_allow_location_fm.cgi">'$ALLOWLOCATION'</a></li>
-						<li><a href="/cgi-bin/admin/dg_bypass.cgi">'$DGBYPASS'</a></li>
+						<li><a href="/cgi-bin/tech/dg_bypass.cgi">'$DGBYPASS'</a></li>
 					</ul>
 			</li>
 			<li><a href="/cgi-bin/tech/dg_media_controls_fm.cgi">'$MEDIACONTROLS'</a></li>
