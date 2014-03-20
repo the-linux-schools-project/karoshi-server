@@ -236,7 +236,6 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo "<div id="actionbox">"
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_add.cgi | cut -d' ' -f1`
 #add remote management user
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$JOBTITLE:$FORENAME:$SURNAME:$USERNAME:$PASSWORD1:$PRIMARYADMIN:$TCPACCESS" | sudo -H /opt/karoshi/web_controls/exec/remote_management_add
@@ -255,7 +254,6 @@ if [ $EXEC_STATUS = 101 ]
 then
 MESSAGE=`echo $USERNAME: $ERRORMSG5`
 fi
-echo "</div>"
 show_status
-echo "</div></body></html>"
+echo '</div></body></html>'
 exit
