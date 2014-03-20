@@ -101,7 +101,7 @@ fi
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox3
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_tech
 else
@@ -134,14 +134,13 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 '
 
 else
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<div id="titlebox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="vertical-align: top;"><b>'$TITLE1'</b></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Manage_Print_Queues"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG1"'</span></a></td></tr></tbody></table><br>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Manage_Print_Queues"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG1"'</span></a></td></tr></tbody></table><br></div><div id="infobox">
 '
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/tech/printers.cgi | cut -d' ' -f1`
 sudo -H /opt/karoshi/web_controls/exec/printers $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:
-echo "</div>"
-echo "</div></body></html>"
+echo '</div></div></body></html>'
 exit
