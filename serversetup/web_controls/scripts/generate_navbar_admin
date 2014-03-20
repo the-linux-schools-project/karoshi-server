@@ -169,16 +169,7 @@ echo '			<li class="mid"><a href="/cgi-bin/admin/change_password_fm.cgi" class="
 						<li><a href="/cgi-bin/admin/exam_accounts_create_fm.cgi">'$EXTRAACCOUNTS'</a></li>
 					</ul>
 			</li>
-			<li class="mid"><a href="/cgi-bin/admin/bulk_user_creation_upload_fm.cgi" class="fly">'$BLKUSERCRMSG'</a>
-					<ul>'
-if [ $ADDUSERCTRL = yes ]
-then
-echo '						<li><a href="/cgi-bin/admin/bulk_user_creation_upload_fm.cgi">'$BLKUSERCRMSG'</a></li>
-						<li><a href="/cgi-bin/admin/bulk_user_creation_view_passwords_fm.cgi">'$VIEWNEWPASSMSG'</a></li>'
-fi
-echo '						<li><a href="/cgi-bin/admin/bulk_user_creation_import_enrollment_numbers_fm.cgi">'$IMPORTUSERIDMSG'</a></li>
-					</ul>
-			</li>
+			<li><a href="/cgi-bin/admin/bulk_user_creation_upload_fm.cgi">'$BLKUSERCRMSG'</a></li>
 			<li><a href="/cgi-bin/admin/user_web_folders.cgi">'$USERWEBFOLDERS'</a></li>
 		</ul>
 	</li>

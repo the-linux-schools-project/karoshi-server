@@ -55,8 +55,11 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/bulk_user_creation_import_enrollment_numbers.cgi" METHOD="POST"><div id="actionbox">
-<B>'$TITLE3'</B>
-<br><br>
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="vertical-align: top;"><b>'$TITLE3'</b></td>
+<td style="vertical-align: top;"><a href="bulk_user_creation_upload_fm.cgi"><input class="button" type="button" name="" value="'$TITLE'"></td>
+<td style="vertical-align: top;"><a href="bulk_user_creation_view_passwords_fm.cgi"><input class="button" type="button" name="" value="'$VIEWPASSWORDSMSG'"></td></tr>
+</tbody></table><br>
         
         <TABLE class="standard" BORDER=0>
         <TR>

@@ -55,9 +55,13 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/bulk_user_creation_upload.cgi" METHOD="POST"><div id="actionbox">
-<B>'$TITLE'</B> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Upload_CSV"><img class="images" alt="" src="/images/help/info.png"><span>'$CSVHELPMSG1':<br><br>'$CSVHELPMSG2'</span></a>
-<br><br>
-        
+
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="vertical-align: top;"><b>'$TITLE'</b></td>
+<td style="vertical-align: top;"><a href="bulk_user_creation_view_passwords_fm.cgi"><input class="button" type="button" name="" value="'$VIEWPASSWORDSMSG'"></td>
+<td style="vertical-align: top;"><a href="bulk_user_creation_import_enrollment_numbers_fm.cgi"><input class="button" type="button" name="" value="'$IMPORTENROLLNUMBERS'"></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Upload_CSV"><img class="images" alt="" src="/images/help/info.png"><span>'$CSVHELPMSG1':<br><br>'$CSVHELPMSG2'</span></a></td></tr></tbody></table><br>
+  
         <table class="standard" border=0>
         <tr>
             <td style="width: 180px;">'$CSVMSG'
