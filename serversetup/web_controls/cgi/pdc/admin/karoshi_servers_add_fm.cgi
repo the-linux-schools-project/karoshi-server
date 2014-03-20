@@ -227,7 +227,7 @@ echo '<form id="FormName" action="/cgi-bin/admin/karoshi_servers_add.cgi" method
 <tr><td>'$DMMSG'</td><td><input type="radio" name="_AUTHENTICATION_" value="member" '$CHECKED3' onchange="showDiv(this.value);"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Authentication_Type"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG7'</span></a>
 </td></tr>
-<tr><td>'$UAGMSG'</td><td><input type="radio" name="_AUTHENTICATION_" value="users" '$CHECKED4' onchange="showDiv(this.value);"></td><td>
+<tr><td>'$UAGMSG'</td><td><input type="radio" name="_AUTHENTICATION_" value="usersandgroups" '$CHECKED4' onchange="showDiv(this.value);"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Authentication_Type"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG8'</span></a>
 </td></tr>
 <tr><td>'$NOAUTHMSG'</td><td><input type="radio" name="_AUTHENTICATION_" value="none" '$CHECKED5' onchange="showDiv(this.value);"></td><td>
@@ -238,7 +238,7 @@ echo '<form id="FormName" action="/cgi-bin/admin/karoshi_servers_add.cgi" method
 <p id="adc" class="hiddenDiv"><b>'$MODULESMSG':</b> '$FILESERVERMSG', '$PRINTSERVERMSG', '$SQUIDSERVERMSG', '$EMAILSERVERMSG', '$HOMEACCESSSERVERMSG', '$MOODLESERVERMSG'</p>
 <p id="rodc" class="hiddenDiv"><b>'$MODULESMSG':</b> '$FILESERVERMSG', '$PRINTSERVERMSG', '$SQUIDSERVERMSG', '$EMAILSERVERMSG', '$HOMEACCESSSERVERMSG', '$MOODLESERVERMSG'</p>
 <p id="member" class="hiddenDiv"><b>'$MODULESMSG':</b> '$FILESERVERMSG', '$PRINTSERVERMSG', '$SQUIDSERVERMSG', '$EMAILSERVERMSG', '$HOMEACCESSSERVERMSG', '$MOODLESERVERMSG'</p>
-<p id="users" class="hiddenDiv"><b>'$MODULESMSG':</b> '$SQUIDSERVERMSG', '$EMAILSERVERMSG', '$HOMEACCESSSERVERMSG', '$MOODLESERVERMSG', '$WEBSERVERMSG', '$JOOMLAMSG', '$DISTRIBUTIONSERVERMSG'</p>
+<p id="usersandgroups" class="hiddenDiv"><b>'$MODULESMSG':</b> '$SQUIDSERVERMSG', '$EMAILSERVERMSG', '$HOMEACCESSSERVERMSG', '$MOODLESERVERMSG', '$WEBSERVERMSG', '$JOOMLAMSG', '$DISTRIBUTIONSERVERMSG'</p>
 <p id="none" class="hiddenDiv"><b>'$MODULESMSG':</b> '$BACKUPSERVERMSG', '$MONITORSERVERMSG', '$REVERSEPROXYMSG', '$DISTRIBUTIONSERVERMSG', '$WEBSERVERMSG', '$JOOMLAMSG'</p>
 
 </div>
