@@ -156,8 +156,7 @@ echo '<form action="/cgi-bin/admin/dg_reset_room_controls.cgi" method="post"><b>
         <option value="55">55</option>
 	</select>
 </td>
-<td><a class="info" href="javascript:void(0)"><input name="_ACTION_add_" type="image" class="images" src="'$ICON1'" value=""><span>'$ADDTIMEMSG'</span></a></td>
-</tr></tbody></table></form><br>'
+<td><input name="_ACTION_add_" type="submit" class="button" value="'$ADDRESETTIMEMSG'"></td></tr></tbody></table></form><br>'
 
 
 #Show any existing reset times
