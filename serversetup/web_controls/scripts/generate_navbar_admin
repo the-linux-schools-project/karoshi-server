@@ -483,7 +483,6 @@ echo '	<li class="top"><a href="/cgi-bin/admin/activate_internet_changes_fm.cgi"
 						<li><a href="/cgi-bin/admin/dg_allowed_sites_fm.cgi">'$ADDALLOWEDSITES'</a></li>
 						<li><a href="/cgi-bin/admin/dg_ssl_allowed_sites_fm.cgi">'$ADDSSLALLOWEDSITES'</a></li>
 						<li><a href="/cgi-bin/admin/dg_part_allowed_sites_fm.cgi">'$ADDPALLOWEDSITES'</a></li>
-						<li><a href="/cgi-bin/admin/dg_bypass.cgi">'$DGBYPASS'</a></li>
 					</ul>
 			</li>
 			<li class="mid"><a href="/cgi-bin/admin/dg_upload_pbl_fm.cgi" class="fly">'$PROXYBYPASSLIST'</a>
@@ -494,6 +493,7 @@ echo '	<li class="top"><a href="/cgi-bin/admin/activate_internet_changes_fm.cgi"
 						<li><a href="/cgi-bin/admin/dg_clear_pbl_fm.cgi">'$CLEARPROXYBYPASSLIST'</a></li>
 					</ul>
 			</li>
+			<li><a href="/cgi-bin/admin/dg_bypass.cgi">'$DGBYPASS'</a></li>
 			<li><a href="/cgi-bin/admin/dg_extensions_fm.cgi">'$ALLOWEDFILEEXTENSIONS'</a></li>
 			<li><a href="/cgi-bin/admin/dg_media_controls_fm.cgi">'$MEDIACONTROLS'</a></li>
 			<li><a href="/cgi-bin/admin/dg_staff_filters_fm.cgi">'$STAFFFILTERS'</a></li>
