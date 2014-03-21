@@ -92,7 +92,7 @@ exit
 #########################
 #Assign data to variables
 #########################
-END_POINT=25
+END_POINT=27
 #Assign GROUPNAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
@@ -197,6 +197,24 @@ let COUNTER=$COUNTER+1
 done
 fi
 
+
+if [ $ACTION = editextrargroups ]
+then
+#Assign EXTRAGROUPS
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+if [ `echo $DATAHEADER'check'` = EXTRAGROUPNAMEcheck ]
+then
+let COUNTER=$COUNTER+1
+EXTRAGROUPS=`echo $DATA | cut -s -d'_' -f$COUNTER- | sed 's/_EXTRAGROUPNAME_/,/g'`
+break
+fi
+let COUNTER=$COUNTER+1
+done
+fi
+
 PROTECTEDLIST="itadmin exams karoshi staff nogroup"
 
 #########################
@@ -231,7 +249,7 @@ TITLE="$TITLE1"
 ACTIONTYPE=add
 ACTIONMSG="$NEWGROUPMSG"
 
-if [ "$ACTION" != add ] && [ $ACTION != delete ] && [ $ACTION != view ] && [ $ACTION != reallyadd ] && [ $ACTION != reallydelete ]
+if [ "$ACTION" != add ] && [ $ACTION != delete ] && [ $ACTION != view ] && [ $ACTION != reallyadd ] && [ $ACTION != reallydelete ] && [ $ACTION != extragroups ] && [ $ACTION != editextrargroups ]
 then
 MESSAGE=$ERRORMSG1
 show_status
@@ -247,7 +265,7 @@ show_status
 fi
 fi
 
-if [ $ACTION = add ] || [ $ACTION = delete ] || [ "$ACTION" = reallyadd ] || [ $ACTION = reallydelete ]
+if [ $ACTION = add ] || [ $ACTION = delete ] || [ "$ACTION" = reallyadd ] || [ $ACTION = reallydelete ] || [ $ACTION = extragroups ] || [ $ACTION = editextrargroups ]
 then
 if [ -z "$TYPE" ]
 then
@@ -265,7 +283,9 @@ DIV_ID=actionbox3
 TABLECLASS=standard
 WIDTH1=200
 WIDTH2=90
+WIDTH3=300
 ICON1=/images/submenus/system/delete.png
+ICON2=/images/submenus/system/edit.png
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -273,12 +293,14 @@ DIV_ID=actionbox2
 TABLECLASS=mobilestandard
 WIDTH1=120
 WIDTH2=70
+WIDTH3=200
 ICON1=/images/submenus/system/deletem.png
+ICON2=/images/submenus/system/editm.png
 fi
 
 function do_action {
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/groups.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$GROUPNAME:$ACTION:$TYPE:$PROFILE:$HOMESERVER:$CATEGORY:$SECGROUP:" | sudo -H /opt/karoshi/web_controls/exec/groups
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$GROUPNAME:$ACTION:$TYPE:$PROFILE:$HOMESERVER:$CATEGORY:$SECGROUP:$EXTRAGROUPS:" | sudo -H /opt/karoshi/web_controls/exec/groups
 }
 
 if [ $ACTION = reallyadd ]
@@ -303,6 +325,12 @@ do_action
 ACTION=view
 fi
 
+if [ $ACTION = editextrargroups ]
+then
+do_action
+ACTION=view
+fi
+
 if [ $ACTION = reallydelete ]
 then
 do_action
@@ -318,7 +346,7 @@ then
 TITLE="$TITLE2"
 fi
 [ $ACTION = delete ] && TITLE="$TITLE4"
-
+[ $ACTION = extragroups ] && TITLE="$EXTRAGROUPSMSG"
 echo '<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">'
 
 #Show back button for mobiles
@@ -421,12 +449,11 @@ echo '<tr><td>'$CATEGORYMSG'</td><td><select name="____CATEGORY____" style="widt
 <option value="trustees">'$TRUSTEESMSG'</option></select>
 </td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG5'</span></a></td></tr>
 </tbody></table><br><br><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">'
-
 fi
 
 if [ $ACTION = view ]
 then
-#Show list of secondary groups
+#Show list of groups
 GROUPLIST=( `getent group | cut -d: -f1 | sed 's/ /____/g' | sort` )
 GROUPCOUNT=${#GROUPLIST[@]}  
 COUNTER=0
@@ -437,14 +464,14 @@ echo  '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpad
 
 [ $MOBILE = no ] && echo '<td style="width: '$WIDTH2'px;"><b>'$GROUPIDMSG'</b></td><td style="width: '$WIDTH2'px;"><b>'$MEMBERCOUNTMSG'</b></td>'
 
-echo '<td style="width: '$WIDTH2'px;"><b>Type</b></td><td><b>Delete</b></td><td></td></tr>'
+echo '<td style="width: '$WIDTH2'px;"><b>'$TYPEMSG'</b></td><td style="width: '$WIDTH3'px;"><b>'$EXTRAGROUPSMSG'</b></td><td><b>'$EDITMSG'</b></td><td><b>'$DELETEMSG'</b></td></tr>'
 
 while [ $COUNTER -lt $GROUPCOUNT ]
 do
 GROUPNAME=`echo ${GROUPLIST[$COUNTER]} | sed 's/____/ /g'`
 GROUPID=`getent group "$GROUPNAME" | cut -d: -f3`
 MEMBERCOUNT=`getent group $GROUPNAME | cut -d: -f4- | sed '/^$/d' | sed 's/,/\n/g' | wc -l`
-if [ $GROUPID -ge 1000 ]
+if [ $GROUPID -ge 1000 ] && [ $GROUPNAME != nogroup ]
 then
 echo '<tr><td>'$GROUPNAME'</td><td>'
 [ $MOBILE = no ] && echo ''$GROUPID'</td><td>'$MEMBERCOUNT'</td><td>'
@@ -456,11 +483,22 @@ GROUPTYPE="$TYPE1MSG"
 TYPE=primary
 fi
 echo ''$GROUPTYPE'</td><td>'
+
+if [ $TYPE = primary ]
+then
+source /opt/karoshi/server_network/group_information/"$GROUPNAME"
+echo ''$SECONDARYGROUP'</td><td><a class="info" href="javascript:void(0)"><input name="____ACTION____extragroups____GROUPNAME____'$GROUPNAME'____TYPE____'$TYPE'____" type="image" class="images" src="'$ICON2'" value=""><span>'$EXTRAGROUPSMSG' '$GROUPNAME'</span></a>'
+else
+echo '</td><td>'
+fi
+
+echo '</td><td>'
+
 PROTECTED=no
 [ `echo $PROTECTEDLIST | grep -c $GROUPNAME` -gt 0 ] && PROTECTED=yes
 if [ $MEMBERCOUNT = 0 ] || [ $TYPE = secondary ] && [ $PROTECTED = no ]
 then
-echo '<a class="info" href="javascript:void(0)"><input name="____ACTION____delete____GROUPNAME____'$GROUPNAME'____TYPE____'$TYPE'____" type="image" class="images" src="'$ICON1'" value=""><span>'$DELETEMSG'<br>'$GROUPNAME'</span></a>'
+echo '<a class="info" href="javascript:void(0)"><input name="____ACTION____delete____GROUPNAME____'$GROUPNAME'____TYPE____'$TYPE'____" type="image" class="images" src="'$ICON1'" value=""><span>'$DELETEMSG' '$GROUPNAME'</span></a>'
 fi
 echo '</td></tr>'
 fi
@@ -473,6 +511,40 @@ if [ $ACTION = delete ]
 then
 echo '<input type="hidden" name="____TYPE____'$TYPE'____" value=""><input type="hidden" name="____GROUPNAME____'$GROUPNAME'____" value=""><input type="hidden" name="____ACTION____reallydelete____" value="">
 <b>'$GROUPNAMEMSG: $GROUPNAME'</b><br><br>'$CONFIRMDELETEMSG'<br><br><input value="'$SUBMITMSG'" class="button" type="submit">'
+fi
+
+if [ $ACTION = extragroups ]
+then
+#Get a list of groups already asociated with this group
+source /opt/karoshi/server_network/group_information/"$GROUPNAME"
+
+echo '<input type="hidden" name="____TYPE____'$TYPE'____" value=""><input type="hidden" name="____GROUPNAME____'$GROUPNAME'____" value=""><input type="hidden" name="____ACTION____editextrargroups____" value="">'
+
+#Show list of groups
+GROUPLIST=( `getent group | cut -d: -f1 | sed 's/ /____/g' | sort` )
+GROUPCOUNT=${#GROUPLIST[@]}  
+COUNTER=0
+
+echo  '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<tbody><tr><td style="width: '$WIDTH1'px;"><b>'$GROUPNAMEMSG'</b></td><td><b>Select</b></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management#Extra_Groups"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG10'</span></a></td></tr>'
+
+while [ $COUNTER -lt $GROUPCOUNT ]
+do
+GROUPNAMECHOICE=`echo ${GROUPLIST[$COUNTER]} | sed 's/____/ /g'`
+GROUPID=`getent group "$GROUPNAMECHOICE" | cut -d: -f3`
+if [ $GROUPID -ge 1000 ] && [ $GROUPNAMECHOICE != $GROUPNAME ] && [ $GROUPNAME != nogroup ]
+then
+echo '<tr><td>'$GROUPNAMECHOICE'</td><td>'
+CHECKED=""
+[ `echo $SECONDARYGROUP | grep -c -w $GROUPNAMECHOICE` -gt 0 ] && CHECKED=checked
+echo '<input type="checkbox" name="____EXTRAGROUPNAME____" value="'$GROUPNAMECHOICE'" '$CHECKED'>'
+echo '</td></tr>'
+fi
+let COUNTER=$COUNTER+1
+done
+
+echo '</tbody></table><br><br><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">'
+
 fi
 
 [ $MOBILE = no ] && echo '</div>'

@@ -52,7 +52,7 @@ exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-,'`
 if [ $DATA'null' = null ]
 then
 echo `date`: groups - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -68,6 +68,7 @@ PROFILE=`echo "$DATA" | cut -s -d: -f7`
 HOMESERVER=`echo "$DATA" | cut -s -d: -f8`
 CATEGORY=`echo "$DATA" | cut -s -d: -f9`
 SECGROUP=`echo "$DATA" | cut -s -d: -f10`
+EXTRAGROUPS=`echo "$DATA" | cut -s -d: -f11`
 ########################
 #Check data
 ########################
@@ -149,6 +150,11 @@ FEDERATED_LDAP_SERVERS=yes
 fi
 fi
 
+if [ $ACTION = editextrargroups ]
+then
+echo `date`: groups - editing $GROUPNAME with extragroups: $EXTRAGROUPS by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+sed -i 's/^SECONDARYGROUP=.*/SECONDARYGROUP='$EXTRAGROUPS'/' /opt/karoshi/server_network/group_information/"$GROUPNAME"
+fi
 
 if [ $ACTION = reallyadd ]
 then
