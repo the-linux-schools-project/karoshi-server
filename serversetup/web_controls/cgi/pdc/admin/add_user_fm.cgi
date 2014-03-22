@@ -201,7 +201,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div>
 '
 else
-echo '<div id="'$DIV_ID'"><b>'$TITLE'</b><br><br>'
+echo '<div id="'$DIV_ID'"><div class="sectiontitle">'$TITLE'</div><br>'
 fi
 
 #Check that this server is not part of a federated setup

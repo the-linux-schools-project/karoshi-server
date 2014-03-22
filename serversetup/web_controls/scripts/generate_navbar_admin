@@ -117,6 +117,7 @@ if [ $ADDUSERCTRL = yes ]
 then
 echo '			<li><a href="/cgi-bin/admin/add_user_fm.cgi">'$ADDUSERMSG'</a></li>
 			<li><a href="/cgi-bin/admin/delete_user_fm.cgi">'$DELETEUSERMSG'</a></li>
+			<li><a href="/cgi-bin/admin/acceptable_use.cgi">'$ACCEPTABLEUSEMSG'</a></li>
 '
 fi
 echo '			<li class="mid"><a href="/cgi-bin/admin/change_password_fm.cgi" class="fly">'$MODUSERSMSG'</a>
@@ -127,14 +128,6 @@ echo '			<li class="mid"><a href="/cgi-bin/admin/change_password_fm.cgi" class="
 						<li><a href="/cgi-bin/admin/change_primary_group_fm.cgi">'$CHANGEPRIGRPMSG'</a></li>
 						<li><a href="/cgi-bin/admin/group_membership_fm.cgi">'$CHANGESECGRPMSG'</a></li>
 						<li><a href="/cgi-bin/admin/modify_groups_fm.cgi">'$MODIFYGROUPMSG'</a></li>
-						<li class="mid"><a href="/cgi-bin/admin/view_acceptable_use_authorisations_fm.cgi" class="fly">'$ACCEPTABLEUSEMSG'</a>
-						      <ul>
-						      <li><a href="/cgi-bin/admin/view_acceptable_use_authorisations_fm.cgi">'$VIEWTRIALAUTHMSG'</a></li>
-						      <li><a href="/cgi-bin/admin/view_approved_users_fm.cgi">'$VIEWAUTHORISEDMSG'</a></li>
-						      <li><a href="/cgi-bin/admin/set_acceptable_use_grace_time_fm.cgi">'$SETGRACETIMEMSG'</a></li>
-						      <li><a href="/cgi-bin/admin/acceptable_use_status_fm.cgi">'$ACCEPTABLEUSESTATUSMSG'</a></li>
-						      </ul>
-						 </li>
 						<li><a href="/cgi-bin/admin/ban_user_account.cgi">'$BANUSERMSG'</a></li>
 						<li><a href="/cgi-bin/admin/banned_users_view_fm.cgi">'$VIEWBANUSERMSG'</a></li>
 						<li class="mid"><a href="/cgi-bin/admin/user_image_upload_fm.cgi" class="fly">'$USERIMAGEMSG'</a>
