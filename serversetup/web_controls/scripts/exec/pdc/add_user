@@ -609,7 +609,7 @@ fi
 if [ $GRACE_TIME = yes ]
 then
 #Generate page warning
-/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add acceptable_use_authorisations /cgi-bin/admin/view_acceptable_use_authorisations_fm.cgi "$ACCEPTABLEUSEWARNINGMSG" 1
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add acceptable_use_authorisations /cgi-bin/admin/acceptable_use.cgi "$ACCEPTABLEUSEWARNINGMSG" 1
 fi
 
 if [ $BULKUSERCREATION'null' != null ]
