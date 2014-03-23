@@ -362,7 +362,7 @@ else
 echo '<div id="'$DIV_ID'"><div id="titlebox">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr>
-<td style="vertical-align: top;"><b>'$TITLE'</b></td>'
+<td style="vertical-align: top;"><div class="sectiontitle">'$TITLE'</div></td>'
 
 if [ $ACTION = view ] 
 then

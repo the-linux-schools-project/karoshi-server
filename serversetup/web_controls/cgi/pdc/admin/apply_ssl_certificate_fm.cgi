@@ -56,9 +56,9 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/apply_ssl_certificate.cgi" name="selectservers" method="post"><b></b>
-  <div id="actionbox"><b>'$TITLE'</b>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=SSL_Certificate"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
-  <br>
+  <div id="actionbox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<td style="vertical-align: top;"><div class="sectiontitle">'$TITLE'</div></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=SSL_Certificate"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td></tr></tbody></table>
   <br><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
 <tr><td style="width: 90px;"><b>Server</b></td><td style="width: 300px;"><b>Alias</b></td></tr>

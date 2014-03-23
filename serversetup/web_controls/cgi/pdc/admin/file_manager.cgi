@@ -560,7 +560,7 @@ else
 echo '<form action="/cgi-bin/admin/file_manager.cgi" method="post"><div id="'$DIV_ID'"><div id="titlebox">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr>
-<td style="vertical-align: top;"><b>'$TITLE' '$SERVER2'</b></td>
+<td style="vertical-align: top;"><div class="sectiontitle">'$TITLE' '$SERVER2'</div></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG1"'</span></a></td>'
 
 if [ $SERVERNAME != notset ]

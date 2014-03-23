@@ -124,14 +124,14 @@ if [ $PRIADMINSTATUS = yes ]
 then
 echo '<form action="/cgi-bin/admin/remote_management_process.cgi" method="post">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
-<td style="vertical-align: top;"><b>'$WEBADMINMSG1'</b></td>
+<td style="vertical-align: top;"><div class="sectiontitle">'$WEBADMINMSG1'</div></td>
 <td style="vertical-align: top;"><a href="remote_management_add_fm.cgi"><input class="button" type="button" name="" value="'$ADDMANUSERMSG'"></a></td>
 </tr></tbody></table>
 '
 else
 echo '
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
-<td style="vertical-align: top;"><b>'$WEBADMINMSG1'</b></td>
+<td style="vertical-align: top;"><div class="sectiontitle">'$WEBADMINMSG1'</div></td>
 </tr></tbody></table>
 '
 fi

@@ -53,8 +53,9 @@ echo '
 <body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/remote_management_change_global_theme2.cgi" method="post"><div id="actionbox3"><div id="titlebox"><b>'$TITLE2'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Web_Management_Themes"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'<br><br>'$HELPMSG3'</span></a>
-<br>
+echo '<form action="/cgi-bin/admin/remote_management_change_global_theme2.cgi" method="post"><div id="actionbox3"><div id="titlebox">
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<td style="vertical-align: top;"><div class="sectiontitle">'$TITLE2'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Web_Management_Themes"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'<br><br>'$HELPMSG3'</span></a></td></tr></tbody></table>
   <br></div><div id="infobox">
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
 

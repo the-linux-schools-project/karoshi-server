@@ -190,13 +190,13 @@ fi
 echo '<form id="FormName" action="/cgi-bin/admin/karoshi_servers_add.cgi" method="post"><div id="actionbox3"><div id="titlebox">
 
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<td style="vertical-align: top;"></td><td><div class="sectiontitle">'$TITLE'</div></td>
 <td style="vertical-align: top;">
 <a href="karoshi_servers_view.cgi"><input class="button" type="button" name="" value="'$SHOWSERVERMSG'"></a> 
 </td>
 <td style="vertical-align: top;">
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Information"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
 </td>
-<td style="vertical-align: top;"></td><td><b>'$TITLE'</b></td>
 </tr></tbody></table>
 <br>
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
@@ -216,7 +216,9 @@ echo '<form id="FormName" action="/cgi-bin/admin/karoshi_servers_add.cgi" method
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Zone"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG10'</span></a>
 </td></tr>
 </tbody></table><br>
-<b>'$AUTHTYPEMSG'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Authentication_Type"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG11'</span></a><br><br>
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td>
+<div class="sectiontitle">'$AUTHTYPEMSG'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Authentication_Type"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG11'</span></a></td></tr></tbody></table><br>
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 180px;">'$ADCMSG'</td><td><input type="radio" name="_AUTHENTICATION_" value="adc" '$CHECKED1' onchange="showDiv(this.value);"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Authentication_Type"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG5'</span></a>

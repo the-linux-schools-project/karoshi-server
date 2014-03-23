@@ -55,8 +55,9 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/remote_management_change_password.cgi" method="post">
-<div id="actionbox">
-<span style="font-weight: bold;">'$TITLE'</span> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a><br>
+<div id="actionbox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<td style="vertical-align: top;">
+<div class="sectiontitle">'$TITLE'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td></tr></tbody></table><br>
   <br>
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>

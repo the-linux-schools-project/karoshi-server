@@ -102,7 +102,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$SYSMENUMSG'</a>
 </div></div><div id="mobileactionbox">'
 else
-echo '<b>'$TITLE1'</b><br><br></div><div id="infobox">'
+echo '<div class="sectiontitle">'$TITLE1'</div><br></div><div id="infobox">'
 fi
 
 #Show list of servers

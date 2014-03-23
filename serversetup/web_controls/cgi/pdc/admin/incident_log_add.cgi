@@ -203,9 +203,7 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/incident_log_add2.cgi" method="post">'
-echo "<div id="actionbox">"
-echo "<b>"$TITLE"</b><br>"
+echo '<form action="/cgi-bin/admin/incident_log_add2.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>'
 echo '<table class="standard" style="text-align: left; top: 207px; left: 232px; width: 674px; height: 61px;" border="0" cellpadding="2" cellspacing="2">'
 echo '<tbody><tr><td>'$DATEMSG'</td><td>'
 #HOUR

@@ -153,8 +153,9 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="mobileactionbox">'
 else
 echo '
-<b>'$TITLE'</b> 
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers"><img class="images" alt="" src="/images/help/info.png"><span>'$UPDATESERVERHELP'</span></a><br><br>'
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<td style="vertical-align: top;"></td><td><div class="sectiontitle">'$TITLE'</div></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers"><img class="images" alt="" src="/images/help/info.png"><span>'$UPDATESERVERHELP'</span></a></td></tr></tbody></table><br>'
 fi
 
 #Preselect day

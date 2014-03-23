@@ -53,7 +53,7 @@ echo '
 <body><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/remote_management_change_global_language2.cgi" method="post"><div id="actionbox"><b>'$TITLE2'</b><br>
+echo '<form action="/cgi-bin/admin/remote_management_change_global_language2.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE2'</div>
   <br>
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>

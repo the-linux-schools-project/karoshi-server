@@ -75,7 +75,7 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 <tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$TITLE2'</b></a></td></tr></tbody></table><br>'
 else
-echo '<b>'$TITLE2'</b><br><br>'
+echo '<div class="sectiontitle">'$TITLE2'</div><br>'
 fi
 
 echo '

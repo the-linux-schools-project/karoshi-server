@@ -97,7 +97,8 @@ show_status
 fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/ups_slave_add.cgi" name="tstest" method="post"><div id="actionbox"><b>'$TITLE5'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELP1'</span></a><br><br>'
+echo '<form action="/cgi-bin/admin/ups_slave_add.cgi" name="tstest" method="post"><div id="actionbox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<td style="vertical-align: top;"><div class="sectiontitle">'$TITLE5'</div></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELP1'</span></a></td></tr></tbody></table><br>'
 
 
 #Check to see if there are any master ups available

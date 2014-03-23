@@ -56,7 +56,7 @@ echo '
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<div id="actionbox">
-<b>'$TITLE2'</b><br><br>'
+<div class="sectiontitle">'$TITLE2'</div><br>'
 if [ -d /opt/karoshi/user_requests/new_users ]
 then
 if [ `ls -1 /opt/karoshi/user_requests/new_users | wc -l` -gt 0  ]

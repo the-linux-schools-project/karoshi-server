@@ -57,7 +57,8 @@ echo '
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<div id="actionbox">
-<B>'$TITLE2'</B> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a>
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="vertical-align: top;"><div class="sectiontitle">'$TITLE2'</div></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a></td></tr></tbody></table>
 <P>
 '$UPLOADMSG'
 <P>

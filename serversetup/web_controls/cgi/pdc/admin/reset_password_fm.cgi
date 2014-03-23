@@ -83,7 +83,7 @@ done
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '
-<form action="/cgi-bin/admin/reset_password.cgi" method="post"><div id="actionbox"><b>'$TITLE2'</b><br>
+<form action="/cgi-bin/admin/reset_password.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE2'</div>
   <br><div id="suggestions"></div>
   <table class="standard" style="text-align: left; height: 30px;" border="0" cellpadding="2" cellspacing="2">
     <tbody>

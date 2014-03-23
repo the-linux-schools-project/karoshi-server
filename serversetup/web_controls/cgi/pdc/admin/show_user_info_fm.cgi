@@ -78,7 +78,7 @@ echo '<form action="/cgi-bin/admin/show_user_info.cgi" method="post">'
 
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id ="titlebox">'
 
-echo '<b>'$TITLE1'</b><br>
+echo '<div class="sectiontitle">'$TITLE1'</div>
   <br><div id="suggestions"></div>
   <table class="standard" style="text-align: left; height: 40px;" border="0" cellpadding="2" cellspacing="2">
     <tbody>

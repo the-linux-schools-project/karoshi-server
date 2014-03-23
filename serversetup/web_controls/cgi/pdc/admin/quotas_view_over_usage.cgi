@@ -105,7 +105,7 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox"><b>'$TITLE2'</b><br><br>'
+echo '<div id="actionbox"><div class="sectiontitle">'$TITLE2'</div><br>'
 
 #########################
 #Check https access

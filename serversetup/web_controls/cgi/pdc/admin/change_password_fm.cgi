@@ -154,7 +154,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div>
 '
 else
-echo '<b>'$TITLE1'</b><br><br>'
+echo '<div class="sectiontitle">'$TITLE1'</div><br>'
 fi
 
 if [ $MOBILE = yes ]

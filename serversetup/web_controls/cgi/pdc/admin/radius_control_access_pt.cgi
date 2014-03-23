@@ -140,7 +140,7 @@ else
 DIV_ID=menubox
 fi
 
-echo '<div id="'$DIV_ID'"><b>'$TITLE2'</b><br><br>'
+echo '<div id="'$DIV_ID'"><div class="sectiontitle">'$TITLE2'</div><br>'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/radius_control_access_pt.cgi | cut -d' ' -f1`
 #Control access point

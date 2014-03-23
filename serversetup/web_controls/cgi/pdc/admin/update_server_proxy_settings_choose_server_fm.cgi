@@ -100,7 +100,7 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 <tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$TITLE1'</b></a></td></tr></tbody></table><br>'
 else
-echo '<b>'$TITLE1'</b><br><br></div><div id="infobox">'
+echo '<div class="sectiontitle">'$TITLE1'</div><br></div><div id="infobox">'
 fi
 
 #Show list of servers

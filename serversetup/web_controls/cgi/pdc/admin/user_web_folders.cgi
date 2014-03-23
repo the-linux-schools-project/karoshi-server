@@ -181,7 +181,7 @@ echo '<div id="'$DIV_ID'"><div id="titlebox">'
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr>
 <td style="vertical-align: top;">
-<b>'$TITLE'</b>
+<div class="sectiontitle">'$TITLE'</div>
 </td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_web_folders"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG1"'</span></a></td>
 <td style="vertical-align: top;">'

@@ -87,8 +87,9 @@ CREATECERTMSG="Create Certificate"
 ACTIONMSG="$CREATECERTMSG"
 echo '
 <form action="/cgi-bin/admin/ssl_commercial_certs.cgi" name="selectservers" method="post">
-<div id="actionbox3"><div id="titlebox"><b>'$TITLE1'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Commercial_SSL_Certificate"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG2"'</span></a>
-<br><br></div><div id="infobox">'
+<div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<td style="vertical-align: top;"><div class="sectiontitle">'$TITLE1'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Commercial_SSL_Certificate"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG2"'</span></a></td></tr></tbody></table>
+<br></div><div id="infobox">'
 MOBILE=no
 #Show list of servers
 /opt/karoshi/web_controls/show_servers $MOBILE servers "$ACTIONMSG" createcert commercialsslcert ___

@@ -78,7 +78,7 @@ fi
 echo '<div id="actionbox">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr>
-<td style="vertical-align: top;"><b>'$TITLE2'</b></td>
+<td style="vertical-align: top;"><div class="sectiontitle">'$TITLE2'</div></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=UPS_Status"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELP7"'</span></a></td>
 <td style="vertical-align: top;"><a href="ups_add_fm.cgi"><input class="button" type="button" name="" value="'$TITLE1'"></a></td>
 <td style="vertical-align: top;"><a href="ups_slave_add_fm.cgi"><input class="button" type="button" name="" value="'$TITLE5'"></a></td>

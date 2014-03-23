@@ -63,7 +63,9 @@ SERVERICON="/images/submenus/system/computer.png"
 
 source /opt/karoshi/server_network/domain_information/domain_name
 
-echo '<form action="/cgi-bin/admin/remote_management_name.cgi" method="post"><div id="actionbox"><b>'$TITLE'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a><br><br>
+echo '<form action="/cgi-bin/admin/remote_management_name.cgi" method="post"><div id="actionbox">
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="vertical-align: top;"><div class="sectiontitle">'$TITLE'</div></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td></tr></tbody></table><br>
 
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>

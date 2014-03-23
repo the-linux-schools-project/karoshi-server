@@ -57,9 +57,10 @@ echo '
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/home_folders.cgi" method="post"><div id="actionbox3"><div id="titlebox"><b>'$TITLE'</b>
+echo '<form action="/cgi-bin/admin/home_folders.cgi" method="post"><div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<td style="vertical-align: top;"><div class="sectiontitle">'$TITLE'</div></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Home_Folders"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
-<br><br></div><div id="infobox">
+</td></tr></tbody></table><br></div><div id="infobox">
   <table class="standard" style="text-align: left; height: 91px;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 140px;"><b>'$PRIGROUPMSG'</b></td><td style="width: 180px;"><b>'$SERVERMSG'</b></td><td style="width: 180px;"><b>'$CHANGESERVERMSG'</b></td><td style="width: 140px;"><b>'$PRIGROUPMSG'</b></td><td style="width: 180px;"><b>'$SERVERMSG'</b></td><td><b>'$CHANGESERVERMSG'</b></td></tr>
 '
