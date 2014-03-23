@@ -108,7 +108,7 @@ show_status
 fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/ntp2.cgi" name="selectservers" method="post"><div id="actionbox3"><div id="titlebox"><b>'$TITLE'</b><br><br>
+echo '<form action="/cgi-bin/admin/ntp2.cgi" name="selectservers" method="post"><div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$TITLE'</div><br>
 <table class="standard" style="text-align: left; height: 50px;" border="0" cellpadding="2" cellspacing="2">
 <tbody><tr><td style="width: 180px;">'$NTPMSG'</td>
 <td><input name="_NTPSERVER_" size="25" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=Configure_NTP"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>

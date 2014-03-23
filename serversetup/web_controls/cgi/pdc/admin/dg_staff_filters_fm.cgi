@@ -56,7 +56,7 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/dg_staff_filters.cgi" name="selectedsites" method="post"><b></b>
-  <div id="actionbox"><b>'$TITLE'</b><br>
+  <div id="actionbox"><div class="sectiontitle">'$TITLE'</div>
   <br>
   <table class="standard" style="text-align: left; width: 250px; height: 50px;" border="0" cellpadding="2" cellspacing="2">
     <tbody>

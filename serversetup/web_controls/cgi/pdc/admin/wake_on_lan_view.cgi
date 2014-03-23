@@ -106,7 +106,7 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/wake_on_lan_view2.cgi" name="selectwol" method="post"><div id="actionbox"><b>'$TITLE'</b><br><br>'
+echo '<form action="/cgi-bin/admin/wake_on_lan_view2.cgi" name="selectwol" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>'
 #Show scheduled wake on lan locations
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/wake_on_lan_view.cgi | cut -d' ' -f1`
 sudo -H /opt/karoshi/web_controls/exec/wake_on_lan_view $REMOTE_USER:$REMOTE_ADDR:$MD5SUM

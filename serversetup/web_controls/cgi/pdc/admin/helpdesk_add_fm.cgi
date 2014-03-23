@@ -112,7 +112,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$HELPDESKMENUMSG'</a>
 </div></div><div id="mobileactionbox">'
 else
-echo '<b>'$TITLE'</b><br><br>'
+echo '<div class="sectiontitle">'$TITLE'</div><br>'
 fi
 
 

@@ -101,7 +101,7 @@ fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><b>'$TITLE'</b><br><br>'
+echo '<div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/exam_accounts_reset_passwords.cgi | cut -d' ' -f1`
 #Reset passwords

@@ -117,7 +117,7 @@ fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_change_domain_ldap.cgi | cut -d' ' -f1`
 #Change domain
-echo '<b>'$TITLE'</b><br><br>'
+echo '<div class="sectiontitle">'$TITLE'</div><br>'
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$EMAILDOMAIN:" | sudo -H /opt/karoshi/web_controls/exec/email_change_domain_ldap
 echo '</div></div></body></html>'
 exit

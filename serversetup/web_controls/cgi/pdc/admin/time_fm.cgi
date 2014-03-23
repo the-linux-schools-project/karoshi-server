@@ -90,7 +90,7 @@ show_status
 fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/time.cgi" name="tstest" method="post"><div id="actionbox3"><div id="titlebox"><b>'$TITLE'</b><br><br>'
+echo '<form action="/cgi-bin/admin/time.cgi" name="tstest" method="post"><div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$TITLE'</div><br>'
 
 
 

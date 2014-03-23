@@ -196,7 +196,7 @@ done
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/helpdesk_create_order.cgi" name="testform" method="post"><div id="actionbox"><b>'$TITLE'</b><br><br>'$DATA''
+echo '<form action="/cgi-bin/admin/helpdesk_create_order.cgi" name="testform" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>'$DATA''
 
 #Show calendar
 echo "<table class=\"standard\" style=\"text-align: left; width: 100%;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tr><td>$ORDERDATEMSG</td><td>

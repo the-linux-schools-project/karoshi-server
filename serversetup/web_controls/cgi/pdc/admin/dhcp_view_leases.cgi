@@ -65,7 +65,7 @@ else
 DHCPSERVER=dhcp3-server
 fi
 
-echo '<div id="actionbox"><b>'$TITLE'</b><br><br>'
+echo '<div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>'
 
 if [ $DHCPSERVER = dhcp3-server ]
 then

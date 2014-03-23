@@ -159,7 +159,7 @@ echo '<form action="/cgi-bin/admin/monitors_add_email_alert.cgi" method="post"><
 </div>
 </form>'
 else
-echo '<div id="actionbox"><b>'$TITLE'</b><br><br>'$ERRORMSG5'<br><br></div>'
+echo '<div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>'$ERRORMSG5'<br><br></div>'
 fi
 echo '</div></body>
 </html>

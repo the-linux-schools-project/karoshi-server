@@ -59,7 +59,7 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/change_primary_group.cgi" method="post"><div id="actionbox"><b>'$TITLE'</b><br>
+echo '<form action="/cgi-bin/admin/change_primary_group.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE'</div>
   <br><div id="suggestions"></div> 
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>

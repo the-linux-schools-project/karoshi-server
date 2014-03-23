@@ -81,7 +81,7 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 <tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_user_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
 <td style="vertical-align: middle;"><b>'$TITLE'</b></td></tr></tbody></table>'
 else
-echo '<b>'$TITLE'</b><br><br>'
+echo '<div class="sectiontitle">'$TITLE'</div><br>'
 fi
 
 ICON1=/images/submenus/internet/allowed_sites.png

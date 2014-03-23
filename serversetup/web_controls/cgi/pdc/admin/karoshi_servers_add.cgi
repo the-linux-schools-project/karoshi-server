@@ -86,7 +86,7 @@ window.onload=initialize
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox3"><div id="titlebox"><b>'$TITLE'</b><br><br></div><div id="infobox">'
+echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$TITLE'</div><br></div><div id="infobox">'
 ############################
 #Show page
 ############################

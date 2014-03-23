@@ -67,7 +67,7 @@ FILE=`echo $DATA | cut -s -d_ -f7`
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/dhcp.cgi" method="post"><div id="actionbox"><b>'$TITLE'</b><br><br>'
+echo '<form action="/cgi-bin/admin/dhcp.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>'
 
 #Get current dhcp data
 

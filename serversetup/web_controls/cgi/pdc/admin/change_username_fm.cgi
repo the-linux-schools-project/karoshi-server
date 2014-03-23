@@ -104,7 +104,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="'$DIV_ID'">
 '
 else
-echo '<div id="'$DIV_ID'"><b>'$TITLE'</b><br><br>'
+echo '<div id="'$DIV_ID'"><div class="sectiontitle">'$TITLE'</div><br>'
 fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left; height: 30px;" border="0" cellpadding="2" cellspacing="2">

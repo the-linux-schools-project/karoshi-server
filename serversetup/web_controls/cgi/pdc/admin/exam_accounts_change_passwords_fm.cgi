@@ -55,7 +55,7 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/exam_accounts_change_passwords.cgi" method="post"><div id="actionbox">
-<b>'$TITLE'</b><br>
+<div class="sectiontitle">'$TITLE'</div>
   <br>
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>

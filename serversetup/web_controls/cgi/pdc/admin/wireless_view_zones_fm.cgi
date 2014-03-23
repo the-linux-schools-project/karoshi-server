@@ -56,7 +56,7 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/wireless_view_zones.cgi" method="post"><div id="actionbox"><b>'$TITLE'</b><br><br>'
+echo '<form action="/cgi-bin/admin/wireless_view_zones.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/wireless_view_zones_fm.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:" | sudo -H /opt/karoshi/web_controls/exec/wireless_view_zones

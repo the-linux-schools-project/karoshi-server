@@ -266,7 +266,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <a href="/cgi-bin/admin/shutdown_fm.cgi">'$SERVERNAME'</a>
 </div></div><div id="mobileactionbox">'
 else
-echo '<b>'$TITLE'</b><br><br>'
+echo '<div class="sectiontitle">'$TITLE'</div><br>'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/shutdown.cgi | cut -d' ' -f1`

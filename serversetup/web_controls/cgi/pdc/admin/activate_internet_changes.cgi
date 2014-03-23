@@ -136,7 +136,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="mobileactionbox">
 '
 else
-echo '<b>'$TITLE'</b><br><br>'
+echo '<div class="sectiontitle">'$TITLE'</div><br>'
 fi
 
 echo '<STYLE TYPE="text/css">'

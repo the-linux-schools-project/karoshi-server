@@ -106,7 +106,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="mobilecontent"><div id="mobileactionbox2">
 '
 else
-echo '<b>'$TITLE'</b><br><br>'
+echo '<div class="sectiontitle">'$TITLE'</div><br>'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/refresh_karoshi_update_list.cgi | cut -d' ' -f1`

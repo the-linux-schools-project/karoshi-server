@@ -271,7 +271,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$EMAILMENUMSG'</a>
-</div></div><div id="mobilecontent"><div id="mobileactionbox2"><b>'$TITLE'</b><br> 
+</div></div><div id="mobilecontent"><div id="mobileactionbox2"><div class="sectiontitle">'$TITLE'</div> 
 '
 else
 echo '<div id="'$DIV_ID'"><div id="titlebox">'

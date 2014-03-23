@@ -85,7 +85,7 @@ fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/staff_restrictions2.cgi" method="post"><div id="actionbox"><b>'$TITLE'</b><br><br>'
+echo '<form action="/cgi-bin/admin/staff_restrictions2.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>'
 echo '<table class="standard" style="text-align: left; height: 20px;" border="0" cellpadding="2" cellspacing="2">'
 echo '<tbody>'
 echo '<tr><td style="width: 180px;">'$ADDSTAFFMSG'</td><td><input name="_STAFFNAME_" size="25" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td></tr>'

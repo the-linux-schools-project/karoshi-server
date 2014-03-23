@@ -58,7 +58,7 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/dg_gen_logs.cgi" name="selectedsites" method="post"><b></b>
-  <div id="actionbox"><b>'$TITLE'</b><br>
+  <div id="actionbox"><div class="sectiontitle">'$TITLE'</div>
   <br>
 '$GENLOGSMSG' <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$GENLOGHELP1'<br>'$GENLOGHELP2'</span></a><br>
   </div>

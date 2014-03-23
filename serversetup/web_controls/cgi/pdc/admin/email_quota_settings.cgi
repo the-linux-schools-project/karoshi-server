@@ -73,7 +73,7 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<form action="/cgi-bin/admin/email_quota_settings2.cgi" method="post">'
-echo '<div id="actionbox"><b>'$TITLE'</b><br><br>'
+echo '<div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>'
 echo '<table class="standard" style="text-align: left; height: 30px;" border="0" cellpadding="2" cellspacing="2"><tbody>'
 #Get current email quota settings
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_quota_settings.cgi | cut -d' ' -f1`

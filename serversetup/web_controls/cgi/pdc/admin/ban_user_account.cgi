@@ -219,7 +219,7 @@ fi
 
 echo '<form action="/cgi-bin/admin/ban_user_account2.cgi" method="post">'
 echo '<div id="actionbox">'
-echo '<b>'$TITLE'</b><br>'
+echo '<div class="sectiontitle">'$TITLE'</div>'
 echo '<table class="standard" style="text-align: left; top: 207px; left: 232px; width: 674px; height: 61px;" border="0" cellpadding="0" cellspacing="0">'
 echo '<tbody><tr><td>'$DATEMSG'</td><td>'
 #HOUR

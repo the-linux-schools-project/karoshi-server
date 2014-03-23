@@ -47,7 +47,7 @@ echo '<html><head><title>'$TITLE'</title><meta http-equiv="REFRESH" content="0; 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox"><b>'$TITLE'</b><br><br>'
+echo '<div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>'
 #########################
 #Get data input
 #########################

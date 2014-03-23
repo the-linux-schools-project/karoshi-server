@@ -58,7 +58,7 @@ echo '
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<form action="/cgi-bin/admin/dg_view_banned_sites.cgi" name="selectedsites" method="post">
-  <div id="actionbox"><b>'$TITLE'</b><br>
+  <div id="actionbox"><div class="sectiontitle">'$TITLE'</div>
   <br>
 <table class="standard" style="text-align: left; width: 100px;" border="0"
  cellpadding="2" cellspacing="2">

@@ -52,7 +52,7 @@ if [ $OCSENABLED = no ]
 then
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><b>'$TITLE'</b><br><br>'$ERRORMSG1''
+echo '<div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>'$ERRORMSG1''
 fi
 
 echo '</div></body></html>'

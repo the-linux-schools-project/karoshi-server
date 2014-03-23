@@ -55,7 +55,7 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/dg_add_pbl.cgi" name="selectedsites" method="post"><b></b>
-  <div id="actionbox"><b>'$TITLE'</b><br><br>
+  <div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>
   Add in the name of the site that you want to ban.<br><br><br>
 <input name="_WEBADDRESS_" size="40">
   </div>

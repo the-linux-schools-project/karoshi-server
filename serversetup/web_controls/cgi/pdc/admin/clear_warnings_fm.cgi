@@ -54,7 +54,7 @@ echo '
 <body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/clear_warnings.cgi" method="post"><div id="actionbox"><b>'$TITLE'</b><br><br>
+echo '<form action="/cgi-bin/admin/clear_warnings.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>
 '$CLEARWARNINGSMSG' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Clear_Warning_Messages"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG1"'</span></a>
 <br>
 </div>

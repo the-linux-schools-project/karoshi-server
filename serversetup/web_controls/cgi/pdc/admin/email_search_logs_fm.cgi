@@ -57,7 +57,7 @@ echo '
 
 echo '<form action="/cgi-bin/admin/email_search_logs.cgi" method="post">
   <div id="actionbox">
-<b>'$TITLE'</b><br><br>
+<div class="sectiontitle">'$TITLE'</div><br>
   <table class="standard" style="text-align: left; " border="0" cellpadding="2" cellspacing="2">
     <tbody>
       <tr>

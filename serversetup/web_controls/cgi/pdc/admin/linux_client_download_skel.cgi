@@ -85,7 +85,7 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/linux_client_download_skel2.cgi" method="post"><div id="actionbox"><b>'$TITLE'</b><br><br>'
+echo '<form action="/cgi-bin/admin/linux_client_download_skel2.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>'
 
 if [ -f /var/lib/samba/netlogon/linuxclient/versions.txt ]
 then

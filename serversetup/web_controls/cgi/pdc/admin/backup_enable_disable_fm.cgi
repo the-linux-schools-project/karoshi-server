@@ -52,7 +52,7 @@ echo '
 <script src="/all/stuHover.js" type="text/javascript"></script></head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><b>'$TITLE'</b><br><br>'
+echo '<div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>'
 
 echo '<form action="/cgi-bin/admin/backup_enable_disable.cgi" name="selectservers" method="post">'
 

@@ -98,7 +98,7 @@ function check_choice() {
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form name="demoform" onsubmit="return valid(this.menu,this.choicetext)" action="/cgi-bin/admin/add_user.cgi" method="post"><div id="actionbox"><b>'$TITLE'</b><br><br><form action="/cgi-bin/admin/add_user.cgi" method="post">'
+echo '<form name="demoform" onsubmit="return valid(this.menu,this.choicetext)" action="/cgi-bin/admin/add_user.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br><form action="/cgi-bin/admin/add_user.cgi" method="post">'
 
 echo '
   <table class="standard" style="text-align: left; height: 91px;" border="0" cellpadding="2" cellspacing="2">

@@ -56,7 +56,7 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/module_sslbridge.cgi" method="post"><div id="actionbox"><b>'$TITLE'</b><br>
+echo '<form action="/cgi-bin/admin/module_sslbridge.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE'</div>
   <br>
 '$OPENINGMSG'
 </div>

@@ -79,7 +79,7 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo "<div id="actionbox">"
-echo '<b>'$TITLE'</b><br>'
+echo '<div class="sectiontitle">'$TITLE'</div>'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_gen_logs.cgi | cut -d' ' -f1`
 #Generate logs
 echo '<pre>'

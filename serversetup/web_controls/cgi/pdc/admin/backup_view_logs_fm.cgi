@@ -63,7 +63,7 @@ echo '<link rel="stylesheet" href="/all/calendar2/calendar.css">
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/backup_view_logs.cgi" name="testform" method="post">
-  <div id="actionbox3"><div id="titlebox"><b>'$TITLE'</b><br><br></div><div id="infobox">'
+  <div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$TITLE'</div><br></div><div id="infobox">'
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
