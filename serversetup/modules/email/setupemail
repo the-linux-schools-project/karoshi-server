@@ -355,6 +355,15 @@ rm -f /opt/karoshi/.tempdata/mysqlperms.sql
 cp -f /opt/karoshi/serversetup/modules/email/sogo/sogo.conf /etc/sogo/
 cp -f /opt/karoshi/serversetup/modules/email/sogo/apache/SOGo.conf /etc/apache2/conf.d/
 
+#Set sogo limits
+if [ -f /etc/default/sogo ]
+then
+if [ `grep -c ^"PREFORK=" /etc/default/sogo` = 0 ]
+then 
+echo PREFORK=5 >> /etc/default/sogo 
+fi
+fi
+
 #Modify /etc/sogo/sogo.conf
 
 #Get timezone
