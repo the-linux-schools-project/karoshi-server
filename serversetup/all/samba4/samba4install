@@ -15,6 +15,32 @@ fi
 ######################
 if [ $DOINSTALL = yes ]
 then
+#Download the latest samba4
+#Get the latest version
+
+[ ! -d /opt/karoshi/serversetup/all/samba4/download ] && mkdir /opt/karoshi/serversetup/all/samba4/download
+
+cd /opt/karoshi/serversetup/all/samba4/download
+
+LATESTVER=`lynx -dump http://ftp.samba.org/pub/samba/ | grep LATEST-IS-SAMBA- | sed -n 1,1p | cut -d"-" -f4 | cut -d" " -f1`
+#Check that we could get the latest version
+if [ -z $LATESTVER ]
+then
+echo Error - could not determine the latest samba version.
+echo "Error - could not determine the latest samba version."
+exit
+fi
+
+#Download the latest samba version
+[  -f /opt/karoshi/serversetup/all/samba4/download/samba-$LATESTVER.tar.gz ] && rm -f /opt/karoshi/serversetup/all/samba4/download/samba-$LATESTVER.tar.gz
+wget http://ftp.samba.org/pub/samba/samba-$LATESTVER.tar.gz
+#Check that download was successful
+if [ $? != 0 ]
+then
+echo "Error - unable to download the latest samba4 version."
+exit
+fi
+
 #Get number of cpu cores
 CORES=`cat /proc/cpuinfo | grep "cpu cores" | head -n 1 | sed "s@.*: \(.*\)@\1@"`
 [ `echo $CORES'null'` = null ] && CORES=1
@@ -25,6 +51,8 @@ source /opt/karoshi/serversetup/variables/distro
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/samba4deps
 
 cd /opt/karoshi/serversetup/all/samba4
+mv /opt/karoshi/serversetup/all/samba4/download/samba-$LATESTVER /opt/karoshi/serversetup/all/samba4/samba-$LATESTVER
+
 SAMBAARCHIVE=`ls samba-*.tar.gz`
 INSTALLDIR=`echo $SAMBAARCHIVE | sed 's/.tar.gz//g'`
 [ -d /opt/karoshi/serversetup/all/samba4/$INSTALLDIR ] && rm -f -R /opt/karoshi/serversetup/all/samba4/$INSTALLDIR

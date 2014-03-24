@@ -1,0 +1,103 @@
+#!/bin/bash
+#Check that this script is running as root
+if [ `id -u` != 0 ]
+then
+echo This script must be run as root.
+fi
+
+function create_karoshi_user { 
+#Create karoshi user
+getent passwd karoshi 1>/dev/null
+if [ $? != 0 ]
+then
+echo -e "\nCreating karoshi user\n"
+sleep 1
+useradd -d /opt/karoshi/karoshi_user -m karoshi
+#Set password to karoshi
+echo -e "\nSetting karoshi user password to karoshi\n"
+sleep 1
+echo -e "karoshi\nkaroshi\n" | passwd karoshi
+
+#Extract karoshi home area
+echo -e "\nExtracting karoshi home area folder\n"
+sleep 1
+cd /
+tar -xvf /opt/karoshi/serversetup/distro/ubuntu/all/createserver/karoshi_user.tar.gz
+chmod 0600 -R /opt/karoshi/karoshi_user
+chmod u+X -R /opt/karoshi/karoshi_user
+chown karoshi -R /opt/karoshi/karoshi_user
+
+#Add karoshi user to the admin group
+usermod -a -G karoshi adm
+fi
+}
+
+function add_repos {
+#Add remastersys repositories
+add-apt-repository "deb http://www.geekconnection.org/remastersys/repository karmic/"
+add-apt-repository ppa:webupd8team/y-ppa-manager
+}
+
+function update_repos {
+echo Updating repositories
+sleep 2
+apt-get update
+}
+
+function install_xfce4 {
+#Install xfce4
+echo -e "\nInstalling $xfce4\n"
+aptitude install --no-install-recommends xfce4
+sleep 1
+}
+
+function install_software {
+#Install software
+packages="xorg gdm remastersys gksu yad gedit synaptic plymouth apache2-mpm-prefork libapache2-mod-php5 mysql-server php5-mysql php5-sqlite php-pear php5-cli php5-common php5-imap php5-mcrypt php5-curl php5-fpm php5-gd php5-intl php5-xmlrpc mailscanner postfix postfix-ldap mb2md clamav clamav-daemon clamav-freshclam memcached dovecot-core dovecot-gssapi dovecot-imapd maildrop squid3 dansguardian nginx shorewall mon isc-dhcp-server openvpn cups printer-driver-hpijs printer-driver-hpcups ghostscript-cups printer-driver-gutenprint ghostscript-cups tftpd-hpa nfs-kernel-server openssh-server openssh-client rsync unison squashfs-tools zip unzip libarchive-zip-perl perl bleachbit "
+
+for package in `echo $packages`
+do
+echo -e "\nInstalling $package\n"
+sleep 1
+apt-get -y install $package
+if [ $? != 0 ]
+then
+echo $package: There was a problem installing this package. Press return to continue.
+read pause
+fi
+done
+}
+
+function install_samba4 {
+#Install samba4
+echo -e "\nInstalling Samba4\n"
+sleep 1
+/opt/karoshi/serversetup/all/samba4/updatesamba4
+}
+
+function update_server {
+#Update server
+/opt/karoshi/serversetup/distro/ubuntu/scripts/updateserver
+}
+
+function configure_sudoers {
+#Configure sudoers
+cp /opt/karoshi/serversetup/all/configfiles/sudoers /etc
+chown root:root /etc/sudoers
+chmod 0550 /etc/sudoers
+}
+
+#Run functions
+create_karoshi_user
+#add_repos
+#update_repos
+#install_xfce4
+#install_software
+#install_samba4
+#update_server
+#configure_sudoers
+
+#Configure gdm to auto log in to karoshi user
+
+#Reboot
+

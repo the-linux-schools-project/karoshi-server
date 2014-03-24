@@ -12,6 +12,7 @@ Cmnd_Alias KAROSHIUTILS = /opt/karoshi/karoshimanagement/
 ##########################
 # Members of the admin group may gain root privileges
 %admin ALL=(ALL) ALL
+%adm ALL=(ALL) ALL
 
 root	ALL=(ALL) ALL
 ROOTNOPASSWD ALL= NOPASSWD: KAROSHIUTILS
