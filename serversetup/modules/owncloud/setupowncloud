@@ -175,8 +175,9 @@ CLOUDPASS=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
 #############################
 #Make sure that we know the root mysql password
 #############################
-
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 /opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
+echo "</pre>"
 #Get root mysql password
 MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
 
