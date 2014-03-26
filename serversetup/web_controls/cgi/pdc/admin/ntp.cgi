@@ -115,7 +115,7 @@ echo '<form action="/cgi-bin/admin/ntp2.cgi" name="selectservers" method="post">
 </td></tr></tbody></table></div><div id="infobox">'
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE servers "$ACTIONMSG"
+/opt/karoshi/web_controls/show_servers $MOBILE pdc "$ACTIONMSG"
 
 [ $MOBILE = no ] && echo '</div>'
 

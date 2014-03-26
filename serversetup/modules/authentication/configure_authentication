@@ -513,6 +513,29 @@ fi
 fi
 }
 
+
+function configure_ntp {
+
+NTPSERVER=$KRBSERVER
+if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
+then
+NTPSERVER=$HOSTNAME.$REALM
+fi
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+echo server '$NTPSERVER' iburst > /etc/ntp.conf
+echo driftfile /etc/ntp/drift >> /etc/ntp.conf
+echo broadcastdelay 0.008 >> /etc/ntp.conf
+echo server 127.127.1.0 >> /etc/ntp.conf
+echo fudge 127.127.1.0 stratum 15 >> /etc/ntp.conf
+
+#Restart ntp server
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_stop 1>/dev/null
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_start 1>/dev/null
+'
+}
+
 echo `date`: configure_authentication authtype $AUTHTYPE - "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #Delete any existing auth flag files
 [ ! -d /opt/karoshi/server_network/zones ] && mkdir -p /opt/karoshi/server_network/zones
@@ -552,5 +575,10 @@ fi
 #Configure nslcd
 echo `date`: configure_authentication - configuring nslcd "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 configure_nslcd
+if [ $SERVERNAME != `hostname-fqdn` ] && [ $ZONE != external ]
+then
+echo `date`: configure_authentication - configuring ntp "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+configure_ntp
+fi
 echo `date`: configure_authentication - completed "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit
