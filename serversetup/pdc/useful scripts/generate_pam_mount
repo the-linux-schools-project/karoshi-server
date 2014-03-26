@@ -72,3 +72,109 @@ OPTIONS="sec=krb5,cruid=%(USERUID)"
 FILENAME=pam_mount.conf.xml.krb5
 create_file
 
+#Create mount information for owncloud
+
+if [ -f /opt/karoshi/server_network/owncloudserver ]
+then
+OWNCLOUDSERVER=`sed -n 1,1p /opt/karoshi/server_network/owncloudserver`
+[ ! -d /home/owncloud/data ] && mkdir -p /home/owncloud/data
+
+MAINSERVER=`hostname-fqdn`
+#Groups
+
+echo '{
+"group":{' > /home/owncloud/data/mount.json
+
+#Staff info
+source /opt/karoshi/server_network/group_information/staff
+echo '
+	"staff":{
+		"\/$user\/files\/home":{
+			"class":"\\OC\\Files\\Storage\\SMB_OC","options":{
+				"host":"'$SERVER'","username_as_share":"true","share":"","root":""
+			}
+		},
+		"\/$user\/files\/staffshare":{
+			"class":"\\OC\\Files\\Storage\\SMB_OC","options":{
+				"host":"'$MAINSERVER'","username_as_share":"false","share":"staffshare","root":""
+			}
+		}
+	},' >> /home/owncloud/data/mount.json
+
+
+#Itadmin info
+source /opt/karoshi/server_network/group_information/itadmin
+echo '	"itadmin":{
+		"\/$user\/files\/home":{
+			"class":"\\OC\\Files\\Storage\\SMB_OC","options":{
+				"host":"'$SERVER'","username_as_share":"true","share":"","root":""
+			}
+		},
+		"\/$user\/files\/itadmin":{
+			"class":"\\OC\\Files\\Storage\\SMB_OC","options":{
+				"host":"'$MAINSERVER'","username_as_share":"false","share":"itadmin","root":""
+			}
+		}
+	},' >> /home/owncloud/data/mount.json
+
+
+#Officestaff
+source /opt/karoshi/server_network/group_information/officestaff
+echo '	"officestaff":{
+		"\/$user\/files\/home":{
+			"class":"\\OC\\Files\\Storage\\SMB_OC","options":{
+				"host":"'$SERVER'","username_as_share":"true","share":"","root":""
+			}
+		},
+		"\/$user\/files\/officeshare":{
+			"class":"\\OC\\Files\\Storage\\SMB_OC","options":{
+				"host":"'$MAINSERVER'","username_as_share":"false","share":"officeshare","root":""
+			}
+		}
+	},' >> /home/owncloud/data/mount.json
+
+#Home shares
+COMMA=""
+for PRI_GROUPS in /opt/karoshi/server_network/group_information/*
+do
+PRI_GROUP=`basename $PRI_GROUPS`
+if [ $PRI_GROUP != itadmin ] && [ $PRI_GROUP != staff ] && [ $PRI_GROUP != officestaff ]
+then
+source /opt/karoshi/server_network/group_information/$PRI_GROUP
+echo '	'$COMMA'"'$PRI_GROUP'":{
+		"\/$user\/files\/home":{
+			"class":"\\OC\\Files\\Storage\\SMB_OC","options":{
+				"host":"'$SERVER'","username_as_share":"true","share":"","root":""
+			}
+		}
+	}' >> /home/owncloud/data/mount.json
+COMMA=","
+fi
+done
+echo '
+},
+'  >> /home/owncloud/data/mount.json
+
+#Subjects
+
+echo '"user":{
+	"all":{
+		"\/$user\/files\/subjects":{
+			"class":"\\OC\\Files\\Storage\\SMB_OC","options":{
+				"host":"'$MAINSERVER'","username_as_share":"false","share":"subjects","root":""
+			}
+		}
+	}
+}
+
+}
+' >> /home/owncloud/data/mount.json
+chown www-data:www-data /home/owncloud/data/mount.json
+chmod 0640 /home/owncloud/data/mount.json
+
+if [ $OWNCLOUDSERVER != `hostname-fqdn` ]
+then
+scp -r -o PasswordAuthentication=no /home/owncloud/data/mount.json $OWNCLOUDSERVER:/home/owncloud/data/
+fi
+fi
+
