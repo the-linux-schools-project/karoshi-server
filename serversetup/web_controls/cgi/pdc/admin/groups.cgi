@@ -525,7 +525,7 @@ GROUPLIST=( `getent group | cut -d: -f1 | sed 's/ /____/g' | sort` )
 GROUPCOUNT=${#GROUPLIST[@]}  
 COUNTER=0
 
-echo  '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo  '<div class="sectiontitle">'$GROUPNAME'</div><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody><tr><td style="width: '$WIDTH1'px;"><b>'$GROUPNAMEMSG'</b></td><td><b>Select</b></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management#Extra_Groups"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG10'</span></a></td></tr>'
 
 while [ $COUNTER -lt $GROUPCOUNT ]
