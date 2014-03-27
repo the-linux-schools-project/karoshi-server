@@ -81,7 +81,7 @@ OWNCLOUDSERVER=`sed -n 1,1p /opt/karoshi/server_network/owncloudserver`
 
 MAINSERVER=`hostname-fqdn`
 #Groups
-
+MAPEXTRASHARES=no
 echo '{
 "group":{' > /home/owncloud/data/mount.json
 
@@ -93,13 +93,17 @@ echo '
 			"class":"\\OC\\Files\\Storage\\SMB_OC","options":{
 				"host":"'$SERVER'","username_as_share":"true","share":"","root":""
 			}
-		},
-		"\/$user\/files\/staffshare":{
+		} ' >> /home/owncloud/data/mount.json
+
+if [ $MAPEXTRASHARES = yes ]
+then
+echo '		,"\/$user\/files\/staffshare":{
 			"class":"\\OC\\Files\\Storage\\SMB_OC","options":{
 				"host":"'$MAINSERVER'","username_as_share":"false","share":"staffshare","root":""
 			}
-		}
-	},' >> /home/owncloud/data/mount.json
+		}' >> /home/owncloud/data/mount.json
+fi
+echo '	},' >> /home/owncloud/data/mount.json
 
 
 #Itadmin info
@@ -109,13 +113,16 @@ echo '	"itadmin":{
 			"class":"\\OC\\Files\\Storage\\SMB_OC","options":{
 				"host":"'$SERVER'","username_as_share":"true","share":"","root":""
 			}
-		},
-		"\/$user\/files\/itadmin":{
+		}' >> /home/owncloud/data/mount.json
+if [ $MAPEXTRASHARES = yes ]
+then
+echo '		,"\/$user\/files\/itadmin":{
 			"class":"\\OC\\Files\\Storage\\SMB_OC","options":{
 				"host":"'$MAINSERVER'","username_as_share":"false","share":"itadmin","root":""
 			}
-		}
-	},' >> /home/owncloud/data/mount.json
+		}' >> /home/owncloud/data/mount.json
+fi
+echo '	},' >> /home/owncloud/data/mount.json
 
 
 #Officestaff
@@ -125,13 +132,16 @@ echo '	"officestaff":{
 			"class":"\\OC\\Files\\Storage\\SMB_OC","options":{
 				"host":"'$SERVER'","username_as_share":"true","share":"","root":""
 			}
-		},
-		"\/$user\/files\/officeshare":{
+		}' >> /home/owncloud/data/mount.json
+if [ $MAPEXTRASHARES = yes ]
+then
+echo '		,"\/$user\/files\/officeshare":{
 			"class":"\\OC\\Files\\Storage\\SMB_OC","options":{
 				"host":"'$MAINSERVER'","username_as_share":"false","share":"officeshare","root":""
 			}
-		}
-	},' >> /home/owncloud/data/mount.json
+		}' >> /home/owncloud/data/mount.json
+fi
+echo '	},' >> /home/owncloud/data/mount.json
 
 #Home shares
 COMMA=""
@@ -152,12 +162,13 @@ COMMA=","
 fi
 done
 echo '
-},
+}
 '  >> /home/owncloud/data/mount.json
 
 #Subjects
-
-echo '"user":{
+if [ $MAPEXTRASHARES = yes ]
+then
+echo ',"user":{
 	"all":{
 		"\/$user\/files\/subjects":{
 			"class":"\\OC\\Files\\Storage\\SMB_OC","options":{
@@ -165,16 +176,16 @@ echo '"user":{
 			}
 		}
 	}
-}
+}' >> /home/owncloud/data/mount.json
+fi
+echo '}' >> /home/owncloud/data/mount.json
 
-}
-' >> /home/owncloud/data/mount.json
 chown www-data:www-data /home/owncloud/data/mount.json
-chmod 0640 /home/owncloud/data/mount.json
+chmod 0644 /home/owncloud/data/mount.json
 
 if [ $OWNCLOUDSERVER != `hostname-fqdn` ]
 then
-scp -r -o PasswordAuthentication=no /home/owncloud/data/mount.json $OWNCLOUDSERVER:/home/owncloud/data/
+scp -p -o PasswordAuthentication=no /home/owncloud/data/mount.json $OWNCLOUDSERVER:/home/owncloud/data/
 fi
 fi
 

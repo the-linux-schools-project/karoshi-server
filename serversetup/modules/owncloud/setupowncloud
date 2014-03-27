@@ -172,6 +172,25 @@ let COUNTER=COUNTER+1
 done
 
 CLOUDPASS=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
+
+
+RANGE=61
+COUNTER=1
+while [ $COUNTER -lt 16 ]
+do
+row[$COUNTER]=$RANDOM
+let "row[$COUNTER] %= $RANGE"
+while [ ${row[$COUNTER]} = 0 ]
+do
+row[$COUNTER]=$RANDOM
+let "row[$COUNTER] %= $RANGE"
+done
+CHARACTER[$COUNTER]=`sed -n ${row[$COUNTER]},1p /opt/karoshi/serversetup/pdc/"useful scripts"/.alphabet`
+let COUNTER=COUNTER+1
+done
+
+CLOUDID=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
+
 #############################
 #Make sure that we know the root mysql password
 #############################
@@ -196,7 +215,7 @@ rm -f /opt/karoshi/.tempdata/mysqlperms.sql
 
 #Modify config.php with the correct password.
 sed -i 's/CHANGETHISPASS/'$CLOUDPASS'/g' /var/www/html/owncloud/config/config.php
-
+sed -i 's/CHANGETHISID/'$CLOUDID'/g' /var/www/html/owncloud/config/config.php
 #Make a backup of owncloud.sql
 cp /opt/karoshi/serversetup/modules/owncloud/owncloud.sql /opt/karoshi/serversetup/modules/owncloud/owncloud_original.sql
 
