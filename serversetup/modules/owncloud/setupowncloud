@@ -225,6 +225,11 @@ sed -i 's@CHANGETHISREALM@'$LDAPBASE'@g' /opt/karoshi/serversetup/modules/ownclo
 #Edit owncloud.sql with the correct ldap server information ( replace ldap://127.0.0.1 )
 sed -i 's/ldap:\/\/127.0.0.1/ldap:\/\/'$LDAPSERVER'/g' /opt/karoshi/serversetup/modules/owncloud/owncloud.sql
 
+#Edit owncloud.sql with the correct base dn information ( replace DC=testdomain,DC=com )
+sed -i 's/DC=testdomain,DC=com/'$LDAPBASE'/g' /opt/karoshi/serversetup/modules/owncloud/owncloud.sql
+
+
+
 #Pipe in database
 mysql --password=$MYSQLPASS owncloud < /opt/karoshi/serversetup/modules/owncloud/owncloud.sql
 

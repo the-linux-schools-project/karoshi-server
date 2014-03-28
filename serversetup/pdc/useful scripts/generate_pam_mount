@@ -181,11 +181,14 @@ fi
 echo '}' >> /home/owncloud/data/mount.json
 
 chown www-data:www-data /home/owncloud/data/mount.json
-chmod 0644 /home/owncloud/data/mount.json
+chmod 0640 /home/owncloud/data/mount.json
 
 if [ $OWNCLOUDSERVER != `hostname-fqdn` ]
 then
 scp -p -o PasswordAuthentication=no /home/owncloud/data/mount.json $OWNCLOUDSERVER:/home/owncloud/data/
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $OWNCLOUDSERVER '
+chown www-data /home/owncloud/data/mount.json
+'
 fi
 fi
 
