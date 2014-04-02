@@ -74,7 +74,7 @@ echo -e "$SERVICENAME $STATUS" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
 #######################
 #Check which services should be running on this server.
 #######################
-SERVICE_ARRAY=( apache apache_karoshi clamd cron cups dansguardian dhcp dns glusterfs-server mailscanner memcached mon mysql nfs nginx postfix portmap proftpd radius rpcbind samba squid nut ssh tftpd xinetd )
+SERVICE_ARRAY=( apache apache_karoshi clamd cron cups dansguardian dhcp dns glusterfs mailscanner memcached mon mysql nfs nginx postfix portmap proftpd radius rpcbind samba squid nut ssh tftpd xinetd )
 echo -e "$HOSTNAME: `date` - Checking which services are currently set to run on boot.\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
 COUNTER=0
 ARRAY_COUNT=${#SERVICE_ARRAY[@]}
@@ -127,7 +127,7 @@ apt-get -s dist-upgrade >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
 if [ `echo $?` != 0 ]
 then
 echo -e "Apt-get is reporting an upgrade problem. Upgrade NOT carried out.\n" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
-sysvsupport
+/opt/karoshi/serversetup/distro/ubuntu/scripts/sysvsupport
 exit
 fi
 echo -e "_________________________________________________\n" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
@@ -198,7 +198,7 @@ done
 echo -e "_________________________________________________\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
 
 #Check sysv
-sysvsupport
+/opt/karoshi/serversetup/distro/ubuntu/scripts/sysvsupport
 
 #######################
 #Check to see if server needs a reboot.
