@@ -1,8 +1,53 @@
 #!/bin/bash
-#Check that this script is running as root
+
+#Create the karoshi user
+CREATE_KAROSHI_USER=yes
+#Add additional repos for yad remastersys and mailscanner.
+ADD_REPOS=yes
+UPDATE_REPOS=yes
+#Install xorg support - the initial karoshi setup will no run without graphical support.
+INSTALL_XORG=yes
+#Install a lightwieght desktop environment.
+INSTALL_XFCE=yes
+#Install lightdm gtk display manager.
+INSTALL_DM=yes
+#Install remastersys so that we can repackage an new server iso. May have to start looking for a replacement for this soon.
+INSTALL_REMASTERSYS=yes
+#Install additional software utils.
+INSTALL_ADDITIONAL=yes
+#Install all of the main software packages needed such as apache and mysql.
+INSTALL_SOFTWARE=yes
+#Install mailscanner for the email system - kept separate because it is not in the standard repos.
+INSTALL_MAILSCANNER=yes
+#We are currently using sysv startup scripts instead of upstart.
+SYSVSUPPORT=yes
+#Download and compile samba4 - we are staying with a compiled version rather than the version from the repos for backward compatibily with Karoshi V9.
+INSTALL_SAMBA4=yes
+#Services are started and set to run on boot when installed so lets turn them all back off for now until they are actually needed.
+TURN_OFF_SERVICES=yes
+#Configure sudoers to allow the karoshi user to sudo.
+CONFIGURE_SUDOERS=yes
+#Remove a few extra packages that are installed with xfce that are not needed.
+REMOVE_SOFTWARE=yes
+#Update the system.
+UPDATE_SERVER=yes
+#Change to a better theme for the karoshi user in xfce.
+SET_THEME=yes
+#Reboot the machine to auto log in to the karoshi user.
+REBOOT=yes
+
+#Main list of packages to install (apart from samba4 which is compiled).
+packages="apache2-mpm-prefork libapache2-mod-php5 mysql-server php5-mysql php5-sqlite php-pear php5-cli php5-common php5-imap php5-mcrypt php5-curl php5-fpm php5-gd php5-intl php5-xmlrpc postfix postfix-ldap mb2md clamav clamav-daemon clamav-freshclam memcached dovecot-core dovecot-gssapi dovecot-imapd maildrop squid3 dansguardian nginx shorewall mon isc-dhcp-server openvpn cups printer-driver-hpijs printer-driver-hpcups ghostscript-cups printer-driver-gutenprint ghostscript-cups tftpd-hpa nfs-kernel-server openssh-server openssh-client rsync unison squashfs-tools zip unzip libarchive-zip-perl perl nut-server spamassassin"
+
+#Utilities and other extras to install.
+extrapackages="shimmer-themes xscreensaver virtualbox-guest-x11 gksu yad gedit synaptic plymouth zip unzip bleachbit lynx gnome-terminal libgtk2.0-bin"
+
+#Check that this script is running as root.
+
 if [ `id -u` != 0 ]
 then
 echo This script must be run as root.
+exit
 fi
 
 function create_karoshi_user { 
@@ -22,38 +67,101 @@ echo -e "karoshi\nkaroshi\n" | passwd karoshi
 echo -e "\nExtracting karoshi home area folder\n"
 sleep 1
 cd /
-tar -xvf /opt/karoshi/serversetup/distro/ubuntu/all/createserver/karoshi_user.tar.gz
+tar -xvf /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/karoshi_user.tar.gz
 chmod 0600 -R /opt/karoshi/karoshi_user
 chmod u+X -R /opt/karoshi/karoshi_user
 chown karoshi -R /opt/karoshi/karoshi_user
+chmod 0750 /opt/karoshi/karoshi_user/karoshi_setup
+
+#Make sure that there is an admin group
+getent group admin 1>/dev/null
+[ $? != 0 ] && groupadd admin
 
 #Add karoshi user to the admin group
-usermod -a -G karoshi adm
+usermod -a -G admin karoshi
+fi
+
+#Create synaptic-warning
+if [ ! -f /usr/bin/synaptic-warning ]
+then
+echo '#!/bin/bash
+yad --title="Synaptic" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width=400 --height=200 --text="Do not use synaptic to update your server.\n\n\Updates can be scheduled in the web management."
+if [ `echo $?` = 0 ]
+then
+synaptic &
+fi' > /usr/bin/synaptic-warning
+chmod 0755 /usr/bin/synaptic-warning
 fi
 }
 
 function add_repos {
 #Add remastersys repositories
-add-apt-repository "deb http://www.geekconnection.org/remastersys/repository karmic/"
-add-apt-repository ppa:webupd8team/y-ppa-manager
+wget -O - http://www.remastersys.com/ubuntu/remastersys.gpg.key | apt-key add -
+wget -O - http://apt.baruwa.org/baruwa-apt-keys.gpg | apt-key add -
+add-apt-repository -y "deb http://www.remastersys.com/ubuntu/ precise main"
+add-apt-repository -y ppa:webupd8team/y-ppa-manager
+add-apt-repository -y "deb http://apt.baruwa.org/ubuntu natty main"
 }
 
 function update_repos {
-echo Updating repositories
+echo -e "\nUpdating repositories\n"
 sleep 2
 apt-get update
 }
 
+function install_xorg {
+apt-get -y install xorg
+}
+
+function install_dm {
+apt-get -y install --no-install-recommends lightdm lightdm-gtk-greeter
+
+#Configure lightdm to auto login the karoshi user
+cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/lightdm.conf /etc/lightdm/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/lightdm-gtk-greeter.conf /etc/lightdm/
+usermod -a -G nopasswdlogin karoshi
+cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/computer.png /usr/share/icons/hicolor/64x64/devices/
+gtk-update-icon-cache /usr/share/icons/hicolor
+
+cp -f 
+
+}
+
 function install_xfce4 {
 #Install xfce4
-echo -e "\nInstalling $xfce4\n"
-aptitude install --no-install-recommends xfce4
+echo -e "\nInstalling xfce4\n"
+apt-get -y install --no-install-recommends xfce4
 sleep 1
+}
+
+function install_remastersys {
+echo -e "\nInstalling remastersys\n"
+apt-get -y install --no-install-recommends remastersys
+}
+
+
+function install_additional_software {
+#Install software
+
+for package in `echo $extrapackages`
+do
+echo -e "\nInstalling $package\n"
+sleep 1
+apt-get -y install $package
+if [ $? != 0 ]
+then
+echo $package: There was a problem installing this package. Press return to continue.
+read pause
+fi
+done
 }
 
 function install_software {
 #Install software
-packages="xorg gdm remastersys gksu yad gedit synaptic plymouth apache2-mpm-prefork libapache2-mod-php5 mysql-server php5-mysql php5-sqlite php-pear php5-cli php5-common php5-imap php5-mcrypt php5-curl php5-fpm php5-gd php5-intl php5-xmlrpc mailscanner postfix postfix-ldap mb2md clamav clamav-daemon clamav-freshclam memcached dovecot-core dovecot-gssapi dovecot-imapd maildrop squid3 dansguardian nginx shorewall mon isc-dhcp-server openvpn cups printer-driver-hpijs printer-driver-hpcups ghostscript-cups printer-driver-gutenprint ghostscript-cups tftpd-hpa nfs-kernel-server openssh-server openssh-client rsync unison squashfs-tools zip unzip libarchive-zip-perl perl bleachbit "
+
+
+echo -e "\nInstalling main software packages\n\nMysql - Set the password to karoshi\nPostfix - Choose the no configuration option\nDovecot - Do not create a certificate - one will be created later\n\nPress a key to continue\n"
+read pause
 
 for package in `echo $packages`
 do
@@ -71,8 +179,11 @@ done
 function install_samba4 {
 #Install samba4
 echo -e "\nInstalling Samba4\n"
+echo -e "\nKerberos - leave the default realm blank.\n" 
 sleep 1
-/opt/karoshi/serversetup/all/samba4/updatesamba4
+/opt/karoshi/serversetup/all/samba4/samba4install
+#Remove download folder
+[ -d /opt/karoshi/serversetup/all/samba4/download ] && rm -f -R /opt/karoshi/serversetup/all/samba4/download
 }
 
 function update_server {
@@ -87,17 +198,50 @@ chown root:root /etc/sudoers
 chmod 0550 /etc/sudoers
 }
 
+function turn_off_services {
+services="apache apache_karoshi clamd cron cups dansguardian dhcp dns mailscanner memcached mon mysql nfs nginx postfix portmap proftpd radius rpcbind samba squid nut ssh tftpd xinetd"
+
+for service in `echo $services`
+do
+echo -e "\nStopping $service\n"
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$service"_"stop
+/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/$service
+done
+}
+
+function sysvsupport {
+/opt/karoshi/serversetup/distro/ubuntu/scripts/sysvsupport
+}
+
+function install_mailscanner {
+apt-get -y install mailscanner
+}
+
+function set_theme {
+su karoshi -c "xfconf-query -c xsettings -p /Net/ThemeName -s Clearlooks"
+}
+
+function remove_software {
+byobu xterm orage xfce4-mixer
+}
+
 #Run functions
-create_karoshi_user
-#add_repos
-#update_repos
-#install_xfce4
-#install_software
-#install_samba4
-#update_server
-#configure_sudoers
-
-#Configure gdm to auto log in to karoshi user
-
-#Reboot
+[ $CREATE_KAROSHI_USER = yes ] && create_karoshi_user
+[ $ADD_REPOS = yes ] && add_repos
+[ $UPDATE_REPOS = yes ] && update_repos
+[ $INSTALL_XORG = yes ] && install_xorg
+[ $INSTALL_XFCE = yes ] && install_xfce4
+[ $INSTALL_DM = yes ] && install_dm
+[ $INSTALL_REMASTERSYS = yes ] && install_remastersys
+[ $INSTALL_ADDITIONAL = yes ] && install_additional_software
+[ $INSTALL_SOFTWARE = yes ] && install_software
+[ $INSTALL_MAILSCANNER = yes ] && install_mailscanner
+[ $SYSVSUPPORT = yes ] && sysvsupport
+[ $INSTALL_SAMBA4 = yes ] && install_samba4
+[ $TURN_OFF_SERVICES = yes ] && turn_off_services
+[ $CONFIGURE_SUDOERS = yes ] && configure_sudoers
+[ $REMOVE_SOFTWARE = yes ] && remove_software
+[ $UPDATE_SERVER = yes ] && update_server
+[ $SET_THEME = yes ] && set_theme
+[ $REBOOT = yes ] && shutdown -r now
 

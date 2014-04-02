@@ -48,86 +48,8 @@ SSHSERVICE=yes
 fi
 fi
 
-##########################
-#SysV - much more reliable for starting, stopping, checking if services are running than upstart.
-##########################
-function sysvsupport {
-#Copy startup scripts back into /etc/init.d
-
-[ -L /etc/init.d/apache2 ] && rm -f /etc/init.d/apache2
-[ -L /etc/init.d/clamav-freshclam ] && rm -f /etc/init.d/clamav-freshclam
-[ -L /etc/init.d/cups ] && rm -f /etc/init.d/cups
-[ -L /etc/init.d/dansguardian ] && rm -f /etc/init.d/dansguardian
-[ -L /etc/init.d/mailscanner ] && rm -f /etc/init.d/mailscanner
-[ -L /etc/init.d/mon ] && rm -f /etc/init.d/mon
-[ -L /etc/init.d/mysql ] && rm -f /etc/init.d/mysql
-[ -L /etc/init.d/postfix ] && rm -f /etc/init.d/postfix
-[ -L /etc/init.d/portmap ] && rm -f /etc/init.d/portmap
-[ -L /etc/init.d/rpcbind ] && rm -f /etc/init.d/rpcbind
-[ -L /etc/init.d/rsync ] && rm -f /etc/init.d/rsync
-[ -L /etc/init.d/samba ] && rm -f /etc/init.d/samba
-[ -L /etc/init.d/shorewall ] && rm -f /etc/init.d/shorewall
-[ -L /etc/init.d/slapd ] && rm -f /etc/init.d/slapd
-[ -L /etc/init.d/spamassassin ] && rm -f /etc/init.d/spamassassin
-[ -L /etc/init.d/squid ] && rm -f /etc/init.d/squid
-[ -L /etc/init.d/squid3 ] && rm -f /etc/init.d/squid3
-[ -L /etc/init.d/squid-deb-proxy ] && rm -f /etc/init.d/squid-deb-proxy
-[ -L /etc/init.d/ssh ] && rm -f /etc/init.d/ssh
-[ -L /etc/init.d/tftpd-hpa ] && rm -f /etc/init.d/tftpd-hpa
-[ -L /etc/init.d/xinetd ] && rm -f /etc/init.d/xinetd
-[ -L /etc/init.d/dovecot ] && rm -f /etc/init.d/dovecot
-[ -L /etc/init.d/vsftpd ] && rm -f /etc/init.d/vsftpd
-[ -L /etc/init.d/sogo ] && rm -f /etc/init.d/sogo
-[ -L /etc/init.d/memcached ] && rm -f /etc/init.d/memcached
-[ -L /etc/init.d/isc-dhcp-server ] && rm -f /etc/init.d/isc-dhcp-server
-
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/apache2 /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/clamav-freshclam /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/cups /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/dansguardian /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/mailscanner /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/mon /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/mysql /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/postfix /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/rsync /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/samba /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/samba4 /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/shorewall /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/slapd /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/spamassassin /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/squid /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/squid3 /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/squiddebproxy /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/ssh /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/tftpd-hpa /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/xinetd /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/dovecot /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/vsftpd /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/portmap /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/rpcbind /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/sogo /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/memcached /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/isc-dhcp-server /etc/init.d/
-
-#Make sure no scripts have been added to /etc/init for upstart.
-[ `ls /etc/init/mysql* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/mysql*
-[ `ls /etc/init/smbd* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/smbd*
-[ `ls /etc/init/nmbd* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/nmbd*
-[ `ls /etc/init/squid* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/squid*
-[ `ls /etc/init/ssh* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/ssh*
-[ `ls /etc/init/tftpd-hpa* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/tftpd-hpa*
-[ `ls /etc/init/xinetd* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/xinetd*
-[ `ls /etc/init/dovecot* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/dovecot*
-[ `ls /etc/init/vsftpd* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/vsftpd*
-[ `ls /etc/init/portmap* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/portmap*
-[ `ls /etc/init/rpcbind* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/rpcbind*
-[ `ls /etc/init/memcached* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/memcached*
-[ `ls /etc/init/isc-dhcp* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/isc-dhcp*
-#May need to add more to this list.
-}
-
 #Make sure we are using sysv scripts before we check which services should still be running after the update.
-sysvsupport
+/opt/karoshi/serversetup/distro/ubuntu/scripts/sysvsupport
 
 ######################
 #Check to see if a service should be running after the update.
@@ -152,7 +74,7 @@ echo -e "$SERVICENAME $STATUS" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
 #######################
 #Check which services should be running on this server.
 #######################
-SERVICE_ARRAY=( apache apache_karoshi clamd cron cups dansguardian dhcp dns mailscanner memcached mon mysql nfs nginx postfix portmap proftpd radius rpcbind samba squid nut ssh tftpd xinetd )
+SERVICE_ARRAY=( apache apache_karoshi clamd cron cups dansguardian dhcp dns glusterfs-server mailscanner memcached mon mysql nfs nginx postfix portmap proftpd radius rpcbind samba squid nut ssh tftpd xinetd )
 echo -e "$HOSTNAME: `date` - Checking which services are currently set to run on boot.\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
 COUNTER=0
 ARRAY_COUNT=${#SERVICE_ARRAY[@]}

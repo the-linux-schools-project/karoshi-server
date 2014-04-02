@@ -1,21 +1,7 @@
 #!/bin/bash
-
-#This compiles and installs samba4 to the provisioning stage.
-
-DOINSTALL=no
-[ `echo $1'install'` = forceinstall ] && DOINSTALL=yes
-if [ ! -f /usr/local/sbin/samba ]
-then
-DOINSTALL=yes
-else
-echo samba4 is already installed - use force to recompile.
-fi
-######################
-#Install samba 4
-######################
-if [ $DOINSTALL = yes ]
-then
-#Download the latest samba4
+LOG_DATE=`date +%F`
+[ ! -d /opt/karoshi/logs/server_upgrades ] && mkdir -p /opt/karoshi/logs/server_upgrades
+echo `date` "Checking Samba4 version" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
 #Get the latest version
 
 [ ! -d /opt/karoshi/serversetup/all/samba4/download ] && mkdir /opt/karoshi/serversetup/all/samba4/download
@@ -27,9 +13,47 @@ LATESTVER=`lynx -dump http://ftp.samba.org/pub/samba/ | grep LATEST-IS-SAMBA- | 
 if [ -z $LATESTVER ]
 then
 echo Error - could not determine the latest samba version.
-echo "Error - could not determine the latest samba version."
+echo "Error - could not determine the latest samba version." >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
 exit
 fi
+
+
+#Get current samba4 version
+
+if [ -f /usr/local/bin/samba-tool ]
+then
+CURRENTVER=`/usr/local/bin/samba-tool -V`
+
+echo "Current Samba4 version: $CURRENTVER" | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+echo "Latest Samba4 version: $LATESTVER" | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+
+if [[ $CURRENTVER = $LATESTVER ]]
+then
+echo "Samba4 is up to date" | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+exit
+fi
+
+LINE1=`echo -e "$CURRENTVER\n$LATESTVER" | sort -Vr | sed -n 1,1p`
+
+if [[ $LINE1 = $CURRENTVER ]]
+then
+echo "Current Samba4 version is ahead of the latest official version." | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+exit
+fi
+
+if [[ $LINE1 = $LATESTVER ]]
+then
+echo "A samba4 upgrade is required." | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+else
+exit
+fi
+else
+echo "Samba 4 needs installing." | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+fi
+
+#Install dependencies
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/samba4deps
 
 #Download the latest samba version
 [  -f /opt/karoshi/serversetup/all/samba4/download/samba-$LATESTVER.tar.gz ] && rm -f /opt/karoshi/serversetup/all/samba4/download/samba-$LATESTVER.tar.gz
@@ -37,39 +61,82 @@ wget http://ftp.samba.org/pub/samba/samba-$LATESTVER.tar.gz
 #Check that download was successful
 if [ $? != 0 ]
 then
-echo "Error - unable to download the latest samba4 version."
+echo "Error - unable to download the latest samba4 version." | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
 exit
 fi
+
+#Extracting samba
+[ -d /opt/karoshi/serversetup/all/samba4/download/samba-$LATESTVER ] && rm -f -R /opt/karoshi/serversetup/all/samba4/download/samba-$LATESTVER
+tar -xvf samba-$LATESTVER.tar.gz
+if [ $? != 0 ]
+then
+echo "Error -samba-$LATESTVER.tar.gz did not extract correctly." | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+exit
+fi
+
+#Make sure that key.pem has the correct permissions
+[ -f /var/lib/samba/private/tls/key.pem ] && chmod 0600 /var/lib/samba/private/tls/key.pem
+
+cd /opt/karoshi/serversetup/all/samba4/download/samba-$LATESTVER
 
 #Get number of cpu cores
 CORES=`cat /proc/cpuinfo | grep "cpu cores" | head -n 1 | sed "s@.*: \(.*\)@\1@"`
 [ `echo $CORES'null'` = null ] && CORES=1
 let THREADS=$CORES*2
 
-#Install dependencies
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/samba4deps
-
-cd /opt/karoshi/serversetup/all/samba4
-mv /opt/karoshi/serversetup/all/samba4/download/samba-$LATESTVER /opt/karoshi/serversetup/all/samba4/samba-$LATESTVER
-
-SAMBAARCHIVE=`ls samba-*.tar.gz`
-INSTALLDIR=`echo $SAMBAARCHIVE | sed 's/.tar.gz//g'`
-[ -d /opt/karoshi/serversetup/all/samba4/$INSTALLDIR ] && rm -f -R /opt/karoshi/serversetup/all/samba4/$INSTALLDIR
-#Extracting samba
-tar -xvf $SAMBAARCHIVE 
-cd $INSTALLDIR
-
 #Configure
-#./configure --prefix=/usr/local --with-ads --enable-fhs --sysconfdir=/etc --localstatedir=/var
+echo `date` "Configuring samba-$LATESTVER" | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
 ./configure --enable-cups --with-ads --prefix=/usr/local --enable-fhs --sysconfdir=/etc --localstatedir=/var
+if [ $? != 0 ]
+then
+echo "Error -samba-$LATESTVER did not configure correctly." | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+exit
+fi
 #Make
+echo `date` "Making samba-$LATESTVER" | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
 make -j $THREADS
-#Install
-make install
+if [ $? != 0 ]
+then
+echo "Error -samba-$LATESTVER did not make correctly." | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+exit
 fi
 
-#Copy in samba 4 startup script
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/samba4 /etc/init.d
-chmod 0755 /etc/init.d/samba4
+#Check to see if the current samba4 version is running
+source /opt/karoshi/serversetup/variables/distro
+RESTART_SAMBA=no
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_status
+[ $? = 0 ] && RESTART_SAMBA=yes
 
+#Install
+echo `date` "Installing samba-$LATESTVER" | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+make install
+if [ $? != 0 ]
+then
+echo "Error -samba did not install correctly." | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+exit
+fi
+
+#Stop samba4
+if [ $RESTART_SAMBA = yes ]
+then
+echo `date` "Stopping samba4" | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop
+if [ $? != 0 ]
+then
+echo "Error -samba did not stop." | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+exit
+fi
+fi
+
+#Start samba4
+if [ $RESTART_SAMBA = yes ]
+then
+echo `date` "Starting samba4" | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
+if [ $? != 0 ]
+then
+echo "Error -samba did not start." | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+exit
+fi
+fi
+exit
