@@ -32,6 +32,7 @@ LANGCHOICE=englishuk
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
+MOBILE=no
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/ups ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/system/ups
@@ -140,26 +141,7 @@ echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="im
 </tbody></table><br><br>'
 
 #Show list of ssh enabled servers that do not have a main UPS
-SERVERLISTARRAY=( `ls -1 /opt/karoshi/server_network/servers` )
-SERVERLISTCOUNT=${#SERVERLISTARRAY[@]}
-SERVERCOUNTER=0
-SERVERICON="/images/submenus/system/computer.png"
-SERVERICON2="/images/submenus/system/all_computers.png"
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
-
-while [ $SERVERCOUNTER -lt $SERVERLISTCOUNT ]
-do
-KAROSHISERVER=${SERVERLISTARRAY[$SERVERCOUNTER]}
-if [ ! -d /opt/karoshi/server_network/ups/master/$KAROSHISERVER ]
-then
-echo '<td style="width: 90px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVER_'$KAROSHISERVER'_" type="image" class="images" src="'$SERVERICON'" value="_SERVER_'$KAROSHISERVER'_"><span>'$KAROSHISERVER'</span></a><br>'$KAROSHISERVER'</td>'
-fi
-[ $SERVERCOUNTER = 5 ] && echo '</tr><tr>'
-let SERVERCOUNTER=$SERVERCOUNTER+1
-done
-echo '</tr></tbody></table></div></form></div></body></html>'
+/opt/karoshi/web_controls/show_servers $MOBILE addslaveups "$ACTIONMSG2"
+echo '</div></form></div></body></html>'
 exit
-
-
-
 

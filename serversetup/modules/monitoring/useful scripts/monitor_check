@@ -1,6 +1,6 @@
 #!/bin/bash
 #MonitorCheck
-[ ! -f /opt/karoshi/server_network/monitoring_server ] && exit
+[ ! -f /opt/karoshi/server_network/monitoringserver ] && exit
 MONITORING_SERVER=`sed -n 1,1p /opt/karoshi/server_network/monitoringserver`
 ssh -x -o PasswordAuthentication=no $MONITORING_SERVER '
 [ ! -f /opt/karoshi/server_network/mon/mon_data ] && monshow --full > /opt/karoshi/server_network/mon/mon_data

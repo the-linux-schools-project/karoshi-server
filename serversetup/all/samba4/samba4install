@@ -14,7 +14,7 @@ if [ -z $LATESTVER ]
 then
 echo Error - could not determine the latest samba version.
 echo "Error - could not determine the latest samba version." >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
-exit
+exit 101
 fi
 
 
@@ -62,7 +62,7 @@ wget http://ftp.samba.org/pub/samba/samba-$LATESTVER.tar.gz
 if [ $? != 0 ]
 then
 echo "Error - unable to download the latest samba4 version." | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
-exit
+exit 101
 fi
 
 #Extracting samba
@@ -71,7 +71,7 @@ tar -xvf samba-$LATESTVER.tar.gz
 if [ $? != 0 ]
 then
 echo "Error -samba-$LATESTVER.tar.gz did not extract correctly." | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
-exit
+exit 101
 fi
 
 #Make sure that key.pem has the correct permissions
@@ -90,7 +90,7 @@ echo `date` "Configuring samba-$LATESTVER" | tee -a /opt/karoshi/logs/server_upg
 if [ $? != 0 ]
 then
 echo "Error -samba-$LATESTVER did not configure correctly." | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
-exit
+exit 101
 fi
 #Make
 echo `date` "Making samba-$LATESTVER" | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
@@ -98,7 +98,7 @@ make -j $THREADS
 if [ $? != 0 ]
 then
 echo "Error -samba-$LATESTVER did not make correctly." | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
-exit
+exit 101
 fi
 
 #Check to see if the current samba4 version is running
@@ -113,7 +113,7 @@ make install
 if [ $? != 0 ]
 then
 echo "Error -samba did not install correctly." | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
-exit
+exit 101
 fi
 
 #Stop samba4

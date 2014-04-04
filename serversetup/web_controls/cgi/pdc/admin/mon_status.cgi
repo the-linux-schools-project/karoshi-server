@@ -66,7 +66,7 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	</script>'
 fi
 
-echo '</head><body><div id="pagecontainer">'
+echo '</head><body onLoad="start()"><div id="pagecontainer">'
 
 
 #Generate navigation bar

@@ -65,7 +65,7 @@ else
 DHCPSERVER=dhcp3-server
 fi
 
-echo '<div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>'
+echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$TITLE'</div></div><div id="infobox"><br>'
 
 if [ $DHCPSERVER = dhcp3-server ]
 then
@@ -139,4 +139,5 @@ let COUNTER=$COUNTER+1
 done
 echo '</tbody></table>'
 fi
+echo '</div></div></body></html>'
 exit

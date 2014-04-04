@@ -1,2 +1,12 @@
 #!/bin/bash
+
+if [ -f /etc./init.d/nut ]
+then
 service nut start
+fi
+
+if [ -f /etc./init.d/nut-server ]
+then
+service nut-server start
+service nut-client start
+fi

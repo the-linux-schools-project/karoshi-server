@@ -33,7 +33,7 @@ then
 usage
 fi
 
-if [ $VIEW != all ] && [ $VIEW != internal ] && [ $VIEW != pdc ] && [ $VIEW != servers ] && [ $VIEW != adc ]
+if [ $VIEW != all ] && [ $VIEW != internal ] && [ $VIEW != pdc ] && [ $VIEW != servers ] && [ $VIEW != adc ] && [ $VIEW != addslaveups ]
 then
 usage
 fi
@@ -166,6 +166,21 @@ done
 }
 
 
+function addslaveups {
+FILLCOLOUR=green
+INFOPATH=/opt/karoshi/server_network/servers
+SERVERTYPE=network
+SERVERMASTER=notset
+for SERVERS in /opt/karoshi/server_network/servers/*
+do
+SERVER=`basename $SERVERS`
+[ ! -d /opt/karoshi/server_network/ups/master/$SERVER ] && show_server
+done
+}
+
+
+
+
 function show_dmz_servers {
 FILLCOLOUR=orange
 INFOPATH=/opt/karoshi/server_network/servers
@@ -233,8 +248,14 @@ fi
 #Start table
 tabletop
 
+
+if [ $VIEW = addslaveups ]
+then
+addslaveups
+else
 #Show pdc
 show_pdc
+fi
 
 #Show adc servers
 if [ $VIEW = adc ]

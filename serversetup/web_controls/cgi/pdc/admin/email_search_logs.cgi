@@ -110,11 +110,10 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo "<div id="actionbox">"
+echo '<div id="actionbox3"><div id="titlebox">'
 USERNAME2=`echo $USERNAME | sed 's/%40/@/g'`
-echo '<b>Searching for:</b> '"$USERNAME2"'<br><br>'
+echo '<b>Searching for:</b> '"$USERNAME2"'<br><br></div><div id="infobox">'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_search_logs.cgi | cut -d' ' -f1`
 sudo -H /opt/karoshi/web_controls/exec/email_search_logs $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:"$USERNAME"
-echo "</div>"
-echo "</div></body></html>"
+echo "</div></div></body></html>"
 exit

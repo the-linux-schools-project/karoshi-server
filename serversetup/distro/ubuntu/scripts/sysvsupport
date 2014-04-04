@@ -80,7 +80,7 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/rpcbind /etc/i
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/sogo /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/memcached /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/isc-dhcp-server /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/glusterfs-server /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/glusterfs /etc/init.d/
 
 #Make sure no scripts have been added to /etc/init for upstart.
 [ `ls /etc/init/mysql* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/mysql*

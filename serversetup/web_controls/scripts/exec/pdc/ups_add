@@ -283,7 +283,6 @@ touch /opt/karoshi/server_network/ups/master/$SERVER/upsd.users
 chmod 0600 /opt/karoshi/server_network/ups/master/$SERVER/upsd.users
 cat /opt/karoshi/server_network/ups/master/$SERVER/users/* > /opt/karoshi/server_network/ups/master/$SERVER/upsd.users
 
-
 if [ $SERVER = `hostname-fqdn` ]
 then
 touch /etc/nut/upsd.users
@@ -335,12 +334,14 @@ fi
 ########################
 if [ $SERVER = `hostname-fqdn` ]
 then
+source /opt/karoshi/serversetup/variables/distro
+
 /etc/init.d/nut stop
 sleep 1
 /etc/init.d/nut start
-#source /opt/karoshi/serversetup/variables/distro
-#/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nut
-chkconfig -f nut on 1>/dev/null 2>/dev/null
+
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nut
+
 else
 ssh -x -o PasswordAuthentication=no $SERVER '
 /etc/init.d/nut stop
