@@ -133,7 +133,7 @@ done
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox3
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -142,7 +142,7 @@ fi
 
 echo '<form action="/cgi-bin/admin/change_password.cgi" method="post">'
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -154,7 +154,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div>
 '
 else
-echo '<div class="sectiontitle">'$TITLE1'</div><br>'
+echo '<div class="sectiontitle">'$TITLE1'</div><br></div><div id="infobox">'
 fi
 
 if [ $MOBILE = yes ]
@@ -172,12 +172,12 @@ echo '<div id="mobileactionbox">
 <a class="info" href="javascript:void(0)"><input name="____VIEWIMAGE____yes____" type="image" class="images" src="/images/submenus/user/user_photo.png" value=""><span>'$VIEWIMAGEMSG'</span></a><br>
 '
 else
-echo '<div id="suggestions"></div><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
       <tr>
         <td style="width: 180px;">
 '$USERNAMEMSG'</td>
-        <td>
+        <td><div id="suggestions"></div>
 <input tabindex= "1" style="width: 200px;" name="____USERNAME____" 
  value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$PASSWORDHELP4'</span></a>
@@ -217,5 +217,7 @@ echo '</div><div id="submitbox">'
 else
 echo '<br>'
 fi
-echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></div></form></div></body></html>'
+echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></div>'
+[ $MOBILE = no ] && echo '</div>'
+echo '</form></div></body></html>'
 exit

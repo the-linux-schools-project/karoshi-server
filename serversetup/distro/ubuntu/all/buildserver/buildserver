@@ -31,10 +31,10 @@ TURN_OFF_SERVICES=yes
 CONFIGURE_SUDOERS=yes
 #Remove a few extra packages that are installed with xfce that are not needed.
 REMOVE_SOFTWARE=yes
-#Update the system.
-UPDATE_SERVER=yes
 #Change to a better theme for the karoshi user in xfce.
 SET_THEME=yes
+#Update the system.
+UPDATE_SERVER=yes
 #Reboot the machine to auto log in to the karoshi user.
 REBOOT=yes
 
@@ -53,6 +53,12 @@ if [ `id -u` != 0 ]
 then
 echo This script must be run as root.
 exit
+fi
+
+if [ $AUTO = no ]
+then
+echo -e "\nGuidance - some software will prompt for action when installed \n\nMysql - Set the password to karoshi.\nPostfix - Choose the no configuration option.\nDovecot - Do not create a certificate - one will be created later.\n\nOn reboot the username and passsword is karoshi.\n\nPress a key to continue\n"
+read pause
 fi
 
 function create_karoshi_user { 
@@ -170,8 +176,8 @@ function install_software {
 #Install software
 
 
-echo -e "\nInstalling main software packages\n\nMysql - Set the password to karoshi\nPostfix - Choose the no configuration option\nDovecot - Do not create a certificate - one will be created later\n\nPress a key to continue\n"
-[ $AUTO = no ] && read pause
+echo -e "\nInstalling main software packages\n"
+sleep 1
 
 for package in `echo $packages`
 do
@@ -269,7 +275,7 @@ done
 [ $TURN_OFF_SERVICES = yes ] && turn_off_services
 [ $CONFIGURE_SUDOERS = yes ] && configure_sudoers
 [ $REMOVE_SOFTWARE = yes ] && remove_software
-[ $UPDATE_SERVER = yes ] && update_server
 [ $SET_THEME = yes ] && set_theme
+[ $UPDATE_SERVER = yes ] && update_server
 [ $REBOOT = yes ] && shutdown -r now
 

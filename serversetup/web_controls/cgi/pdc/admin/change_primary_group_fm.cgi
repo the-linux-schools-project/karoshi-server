@@ -59,14 +59,14 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/change_primary_group.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE'</div>
-  <br><div id="suggestions"></div> 
+echo '<form action="/cgi-bin/admin/change_primary_group.cgi" method="post"><div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$TITLE'</div>
+  <br></div><div id="infobox">
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
       <tr>
         <td style="width: 180px;">
 '$USERNAMEMSG'</td>
-        <td><input name="_USERNAME_" size="20" style="width: 200px;" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Primary_Group"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
+        <td><div id="suggestions"></div> <input name="_USERNAME_" size="20" style="width: 200px;" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Primary_Group"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
 
 </td>
       </tr>
@@ -86,7 +86,7 @@ echo '
   <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
 </div>
 </form>
-</div></body>
+</div></div></body>
 </html>
 '
 exit

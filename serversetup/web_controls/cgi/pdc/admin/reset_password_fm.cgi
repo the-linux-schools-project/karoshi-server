@@ -83,14 +83,14 @@ done
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '
-<form action="/cgi-bin/admin/reset_password.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE2'</div>
-  <br><div id="suggestions"></div>
+<form action="/cgi-bin/admin/reset_password.cgi" method="post"><div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$TITLE2'</div>
+  <br></div><div id="infobox">
   <table class="standard" style="text-align: left; height: 30px;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
       <tr>
         <td style="width: 180px;">
 '$USERNAMEMSG'</td>
-        <td><input name="_USERNAME_" value="'$USERNAME'" style="width: 200px;" size="20" AUTOCOMPLETE = "off" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
+        <td><div id="suggestions"></div><input name="_USERNAME_" value="'$USERNAME'" style="width: 200px;" size="20" AUTOCOMPLETE = "off" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reset_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$PASSWORDHELP6'</span></a>
 
       </td></tr>
@@ -110,6 +110,6 @@ echo '
   <br>
 </div><div id="submitbox">
 <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
-</div></form></div></body></html>
+</div></div></form></div></body></html>
 '
 exit

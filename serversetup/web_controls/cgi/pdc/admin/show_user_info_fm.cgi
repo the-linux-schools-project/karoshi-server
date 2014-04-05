@@ -63,7 +63,7 @@ echo '
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox3
 TABLECLASS=standard
 WIDTH=180
 #Generate navigation bar
@@ -79,13 +79,13 @@ echo '<form action="/cgi-bin/admin/show_user_info.cgi" method="post">'
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id ="titlebox">'
 
 echo '<div class="sectiontitle">'$TITLE1'</div>
-  <br><div id="suggestions"></div>
+  <br>
   <table class="standard" style="text-align: left; height: 40px;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
       <tr>
         <td style="width: 180px;">
 '$USERNAMEMSG'</td>
-        <td><input tabindex= "1" style="width: 200px;" name="_USERNAME_" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
+        <td><div id="suggestions"></div><input tabindex= "1" style="width: 200px;" name="_USERNAME_" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Show_User_Information"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
       </td></tr>
     </tbody>
