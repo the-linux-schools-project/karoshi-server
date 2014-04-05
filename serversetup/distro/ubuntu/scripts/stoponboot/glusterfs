@@ -1,8 +1,3 @@
 #!/bin/bash
-#Start apache2 on boot
-if [ -f /opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status ]
-then
 /opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status glusterfs off 1>/dev/null 2>/dev/null
-chkconfig -f glusterfs off 1>/dev/null 2>/dev/null
-else
-fi
+

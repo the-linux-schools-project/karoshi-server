@@ -83,6 +83,7 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/isc-dhcp-serve
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/glusterfs /etc/init.d/
 
 #Make sure no scripts have been added to /etc/init for upstart.
+[ `ls /etc/init/cups* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/cups*
 [ `ls /etc/init/mysql* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/mysql*
 [ `ls /etc/init/smbd* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/smbd*
 [ `ls /etc/init/nmbd* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/nmbd*

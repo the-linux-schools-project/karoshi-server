@@ -31,6 +31,8 @@ TURN_OFF_SERVICES=yes
 CONFIGURE_SUDOERS=yes
 #Remove a few extra packages that are installed with xfce that are not needed.
 REMOVE_SOFTWARE=yes
+#Purge packages that are no longer required.
+TIDYPACKAGES=yes 
 #Change to a better theme for the karoshi user in xfce.
 SET_THEME=yes
 #Update the system.
@@ -57,7 +59,7 @@ fi
 
 if [ $AUTO = no ]
 then
-echo -e "\nGuidance - some software will prompt for action when installed \n\nMysql - Set the password to karoshi.\nPostfix - Choose the no configuration option.\nDovecot - Do not create a certificate - one will be created later.\n\nOn reboot the username and passsword is karoshi.\n\nPress a key to continue\n"
+echo -e "\nThis will convert your Ubuntu 14.04 server into a karoshi server.\n\nGuidance - some software will prompt for action when installed \n\nMysql - Set the password to karoshi.\nPostfix - Choose the no configuration option.\nDovecot - Do not create a certificate - one will be created later.\n\nOn reboot the username and passsword is karoshi.\n\nPress a key to continue\n"
 read pause
 fi
 
@@ -259,6 +261,10 @@ done
 
 }
 
+function tidy_packages {
+apt-get autoremove
+}
+
 #Run functions
 [ $CREATE_KAROSHI_USER = yes ] && create_karoshi_user
 [ $ADD_REPOS = yes ] && add_repos
@@ -275,6 +281,7 @@ done
 [ $TURN_OFF_SERVICES = yes ] && turn_off_services
 [ $CONFIGURE_SUDOERS = yes ] && configure_sudoers
 [ $REMOVE_SOFTWARE = yes ] && remove_software
+[ $TIDYPACKAGES = yes ] && tidy_packages
 [ $SET_THEME = yes ] && set_theme
 [ $UPDATE_SERVER = yes ] && update_server
 [ $REBOOT = yes ] && shutdown -r now
