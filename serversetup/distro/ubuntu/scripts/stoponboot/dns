@@ -1,12 +1,5 @@
 #!/bin/bash
 #Stop dns on boot
-SERVICE=dnsmasq
-[ -f /usr/local/sbin/samba ] && SERVICE=samba4
+/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status samba4 off 1>/dev/null 2>/dev/null
 
-if [ -f /opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status ]
-then
-/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status $SERVICE off 1>/dev/null 2>/dev/null
-else
-chkconfig -f $SERVICE off 1>/dev/null 2>/dev/null
-fi
 

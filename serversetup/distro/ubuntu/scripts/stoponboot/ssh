@@ -1,9 +1,9 @@
 #!/bin/bash
 if [ -f /opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status ]
 then
-/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status squid off 1>/dev/null 2>/dev/null
+/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status ssh off 1>/dev/null 2>/dev/null
 else
-chkconfig -f squid off 1>/dev/null 2>/dev/null
+chkconfig -f ssh off 1>/dev/null 2>/dev/null
 fi
 
 
