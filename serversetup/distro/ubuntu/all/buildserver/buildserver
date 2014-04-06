@@ -243,6 +243,11 @@ apt-get -y install mailscanner
 
 function set_theme {
 su karoshi -c "xfconf-query -c xsettings -p /Net/ThemeName -s Clearlooks"
+#Copy in backgrounds
+[ ! -d /usr/share/backgrounds/karoshi ] && mkdir -p /usr/share/backgrounds/karoshi
+cp -f /opt/karoshi/serversetup/all/backgrounds/background.png /usr/share/backgrounds/karoshi/
+cp -f /opt/karoshi/serversetup/all/backgrounds/login-background.png /usr/share/backgrounds/karoshi/
+cp -f /opt/karoshi/serversetup/all/backgrounds/bootmenu.png /usr/share/backgrounds/karoshi/
 }
 
 function remove_software {
