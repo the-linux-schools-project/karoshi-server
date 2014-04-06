@@ -32,7 +32,7 @@ CONFIGURE_SUDOERS=yes
 #Remove a few extra packages that are installed with xfce that are not needed.
 REMOVE_SOFTWARE=yes
 #Purge packages that are no longer required.
-TIDYPACKAGES=yes 
+TIDYPACKAGES=no
 #Change to a better theme for the karoshi user in xfce.
 SET_THEME=yes
 #Update the system.
@@ -59,7 +59,7 @@ fi
 
 if [ $AUTO = no ]
 then
-echo -e "\nThis will convert your Ubuntu 14.04 server into a karoshi server.\n\nGuidance - some software will prompt for action when installed \n\nMysql - Set the password to karoshi.\nPostfix - Choose the no configuration option.\nDovecot - Do not create a certificate - one will be created later.\n\nOn reboot the username and passsword is karoshi.\n\nPress a key to continue\n"
+echo -e "\nThis will convert your Ubuntu 14.04 server into a karoshi server.\n\nGuidance - some software will prompt for action when installed: \n\nMysql - Set the password to karoshi.\nPostfix - Choose the no configuration option.\nDovecot - Do not create a certificate - one will be created later.\nNSLCD - Set to 127.0.0.1\n\nOn reboot the username and passsword is karoshi.\n\nPress a key to continue\n"
 read pause
 fi
 
@@ -68,7 +68,7 @@ function create_karoshi_user {
 getent passwd karoshi 1>/dev/null
 if [ $? != 0 ]
 then
-echo -e "\nCreating karoshi user\n"
+echo -e "Creating karoshi user\n"
 sleep 1
 useradd -d /opt/karoshi/karoshi_user -m karoshi
 #Set password to karoshi
@@ -224,7 +224,7 @@ chmod 0550 /etc/sudoers
 function turn_off_services {
 echo -e "\nStopping Services\n"
 sleep 1
-services="apache apache_karoshi clamd cron cups dansguardian dhcp dns mailscanner memcached mon mysql nfs nginx openvpn postfix portmap proftpd radius rpcbind samba squid nut ssh tftpd xinetd"
+services="apache apache_karoshi clamd cron cups dansguardian dhcp dns fail2ban mailscanner memcached mon mysql nfs nginx nslcd openvpn postfix portmap proftpd radius rpcbind samba squid nut ssh tftpd xinetd"
 for service in `echo $services`
 do
 echo -e "\nStopping $service\n"
@@ -267,7 +267,7 @@ done
 }
 
 function tidy_packages {
-apt-get autoremove
+apt-get -y autoremove
 }
 
 #Run functions
