@@ -3,7 +3,7 @@
 
 #Assign variables
 source /opt/karoshi/server_network/domain_information/domain_name
-
+source /etc/default/locale
 COUNTRY=`echo $LANG | cut -d_ -f2 | cut -d. -f1`
 STATE=`cat /etc/timezone | cut -d/ -f1`
 CITY=`cat /etc/timezone | cut -d/ -f2`
