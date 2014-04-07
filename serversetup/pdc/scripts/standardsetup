@@ -16,7 +16,7 @@ function checkstatus {
 EXITSTATUS=`echo $?`
 if [ $EXITSTATUS = 101 ]
 then
-yad --title "$TITLE $VERSION" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --text="$ERRORMSG1" --timeout=3 --no-buttons
+yad --title "$TITLE $VERSION" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --text="$ERRORMSG1" --timeout=3 --no-buttons 2>/dev/null
 exit
 fi
 if [ $EXITSTATUS = 103 ]
@@ -56,7 +56,7 @@ $BASEINSTALLPATH/setupkaroshidesktop 1>>$KAROSHILOG 2>>$KAROSHILOG
 killall yad
 }
 
-do_setup | yad --title "$TITLE" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --geometry=400x100+0+10 --no-buttons --text "Main Server Setup\n\n\n$STATUS" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --progress
+do_setup | yad --title "$TITLE" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --geometry=400x100+0+10 --no-buttons --text "Main Server Setup\n\n\n$STATUS" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --progress 2>/dev/null
 
 #Remove extra ubiquity software that is now not needed
 apt-get -y autoremove

@@ -81,8 +81,14 @@ fi
 #############################
 #Get squid version
 #############################
+
 SQUIDVER=squid
-[ -d /etc/squid3 ] && SQUIDVER=squid3
+if [ -d /etc/squid3 ]
+then
+SQUIDVER=squid3
+[ ! -e /etc/squid ] && ln -s /etc/squid3 /etc/squid
+fi
+
 #############################
 #Ensure that squid and dansguardian are running on boot
 #############################

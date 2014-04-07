@@ -17,7 +17,7 @@ function checkstatus {
 EXITSTATUS=`echo $?`
 if [ $EXITSTATUS = 101 ]
 then
-yad --title "$TITLE $VERSION" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --text="$ERRORMSG1" --timeout=3 --no-buttons
+yad --title "$TITLE $VERSION" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --text="$ERRORMSG1" --timeout=3 --no-buttons 2>/dev/null
 exit
 fi
 if [ $EXITSTATUS = 103 ]

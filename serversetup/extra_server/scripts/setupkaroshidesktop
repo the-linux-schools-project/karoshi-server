@@ -164,7 +164,7 @@ chmod 0700 /opt/karoshi/karoshimanagement/admin_file_manager
 ###########################
 
 function getpassword {
-DATA=`yad --image="/opt/karoshi/serversetup/essentials/smalllogo2.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title="$TITLE" --width 400 --wrap --text "$ERRORMSG $PASSWDMSG1" --field="$PASSWDMSG3":H --field="$CONFIRMMSG":H --button=Ok`
+DATA=`yad --image="/opt/karoshi/serversetup/essentials/smalllogo2.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title="$TITLE" --width 400 --wrap --text "$ERRORMSG $PASSWDMSG1" --field="$PASSWDMSG3":H --field="$CONFIRMMSG":H --button=Ok 2>/dev/null`
 PASSWORD1=`echo $DATA | cut -d"|" -f1`
 PASSWORD2=`echo $DATA | cut -d"|" -f2`
 

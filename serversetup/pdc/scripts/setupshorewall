@@ -54,7 +54,7 @@ fi
 if ! test -f /etc/init.d/$SHOREWALLVER
 then
 echo /etc/init.d/$SHOREWALLVER does not exist >> /opt/karoshi/serversetup/install_log
-yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=4 --text="$SHOREWALLVER $NOTINSTALLED" --no-buttons
+yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=4 --text="$SHOREWALLVER $NOTINSTALLED" --no-buttons 2>/dev/null
 exit 101
 fi
 

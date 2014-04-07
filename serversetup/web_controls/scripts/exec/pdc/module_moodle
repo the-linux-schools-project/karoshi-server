@@ -292,9 +292,6 @@ create_linux_client_icon
 ########################
 function modify_prefs.js {
 
-if [ /opt/karoshi/server_network/SERVERNAME ]
-then
-SERVERNAME=`sed -n 1,1p /opt/karoshi/server_network/SERVERNAME`
 #Set clipboard setting for moodle
 if [ `grep -c 'user_pref("capability.policy.allowclipboard.sites",' "$PREFSJSPATH"` -gt 0 ]
 then
@@ -303,7 +300,7 @@ sed -i $LINE'c''user_pref("capability.policy.allowclipboard.sites", "http://'$SE
 else
 echo 'user_pref("capability.policy.allowclipboard.sites", "http://'$SERVERNAME'.internal");' >> "$PREFSJSPATH"
 fi
-fi
+
 
 #Set no proxy settings
 NOPROXYSERVERS=`ls /opt/karoshi/server_network/servers/`

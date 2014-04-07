@@ -56,7 +56,7 @@ fi
 ############################
 #View the full agreement
 ############################
-yad --title "$TITLE $VERSION" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --text "\n$LICENCECONFIRM\n\n\n" --text-info --show-uri --geometry=650x700 --name="notes" --filename="/opt/karoshi/serversetup/AGPLv3" --title="Confirm Licence" --generic --button="Disagree:1" --button="Agree:0"
+yad --title "$TITLE $VERSION" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --text "\n$LICENCECONFIRM\n\n\n" --text-info --show-uri --geometry=650x700 --name="notes" --filename="/opt/karoshi/serversetup/AGPLv3" --title="Confirm Licence" --generic --button="Disagree:1" --button="Agree:0" 2>/dev/null
 STATUS=`echo $?`
 [ $STATUS = 0 ] && LICENCE=yes
 [ $STATUS = 1 ] && LICENCE=no
@@ -67,7 +67,7 @@ ACCEPTDATE=`date`
 echo GPL_Karoshi_Licence_Accepted > /opt/karoshi/serversetup/variables/acceptlicence
 echo $ACCEPTDATE >> /opt/karoshi/serversetup/variables/acceptlicence
 else
-yad --title "$TITLE $VERSION" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --text="$CANCELLEDMSG" --timeout=3 --no-buttons
+yad --title "$TITLE $VERSION" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --text="$CANCELLEDMSG" --timeout=3 --no-buttons 2>/dev/null
 exit
 fi
 

@@ -1,4 +1,12 @@
 #!/bin/bash
+
+#Dont run this script again if apache has already been configured.
+if [ -d /etc/apache2/sites-karoshi-enabled ]
+then
+echo "/etc/apache2/sites-karoshi-enabled already exists so not configuring apache for the web management again."
+exit
+fi
+
 COPYPATH=/opt/karoshi/serversetup/distro/ubuntu/pdc/configfiles/karoshi_web_management
 #Create apache_karoshi user and group
 if [ `grep -c apache_karoshi /etc/group` = 0 ]
@@ -22,27 +30,54 @@ cp -f $COPYPATH/envvars_karoshi /etc/apache2/
 cp -f $COPYPATH/apache2ctl_karoshi /usr/sbin
 cp -f $COPYPATH/apache2_karoshi.conf /etc/apache2
 
+#Add in servername to apache2_karoshi.conf
+if [ `grep -c manage.$REALM /etc/apache2/apache2_karoshi.conf` = 0 ]
+then
+source /opt/karoshi/server_network/domain_information/domain_name
+echo manage.$REALM >> /etc/apache2/apache2_karoshi.con
+fi
+
 [ ! -f /usr/sbin/apache2_karoshi ] && ln -s /usr/sbin/apache2 /usr/sbin/apache2_karoshi
 
 #Make sure that apache starts on boot
 /opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/apache_karoshi
 
-#Make conf.d_karoshi
-mkdir -p /etc/apache2/conf.d_karoshi
-cp /etc/apache2/conf.d/security /etc/apache2/conf.d_karoshi/
-
 #Make mods enabled
-#cp -f -R /opt/karoshi/serversetup/distro/ubuntu/pdc/configfiles/karoshi_web_management/mods-enabled_karoshi /etc/apache2/
-cp -f -R /etc/apache2/mods-enabled /etc/apache2/mods-enabled_karoshi
+[ ! -d /etc/apache2/mods-enabled_karoshi ] && mkdir -p /etc/apache2/mods-enabled_karoshi
 
-#Enable ssl
+[ ! -f /etc/apache2/mods-enabled_karoshi/access_compat.load ] && ln -s /etc/apache2/mods-available/access_compat.load /etc/apache2/mods-enabled_karoshi/access_compat.load
+[ ! -f /etc/apache2/mods-enabled_karoshi/auth_kerb.load ] && ln -s /etc/apache2/mods-available/auth_kerb.load /etc/apache2/mods-enabled_karoshi/auth_kerb.load
+[ ! -f /etc/apache2/mods-enabled_karoshi/alias.conf ] && ln -s /etc/apache2/mods-available/alias.conf /etc/apache2/mods-enabled_karoshi/alias.conf
+[ ! -f /etc/apache2/mods-enabled_karoshi/alias.load ] && ln -s /etc/apache2/mods-available/alias.load /etc/apache2/mods-enabled_karoshi/alias.load
+[ ! -f /etc/apache2/mods-enabled_karoshi/auth_basic.load ] && ln -s /etc/apache2/mods-available/auth_basic.load /etc/apache2/mods-enabled_karoshi/auth_basic.load
+[ ! -f /etc/apache2/mods-enabled_karoshi/authn_core.load ] && ln -s /etc/apache2/mods-available/authn_core.load /etc/apache2/mods-enabled_karoshi/authn_core.load
+[ ! -f /etc/apache2/mods-enabled_karoshi/authn_file.load ] && ln -s /etc/apache2/mods-available/authn_file.load /etc/apache2/mods-enabled_karoshi/authn_file.load
+[ ! -f /etc/apache2/mods-enabled_karoshi/authnz_ldap.load ] && ln -s /etc/apache2/mods-available/authnz_ldap.load /etc/apache2/mods-enabled_karoshi/authnz_ldap.load
+[ ! -f /etc/apache2/mods-enabled_karoshi/authz_core.load ] && ln -s /etc/apache2/mods-available/authz_core.load /etc/apache2/mods-enabled_karoshi/authz_core.load
+[ ! -f /etc/apache2/mods-enabled_karoshi/authz_host.load ] && ln -s /etc/apache2/mods-available/authz_host.load /etc/apache2/mods-enabled_karoshi/authz_host.load
+[ ! -f /etc/apache2/mods-enabled_karoshi/authz_user.load ] && ln -s /etc/apache2/mods-available/authz_user.load /etc/apache2/mods-enabled_karoshi/authz_user.load
+[ ! -f /etc/apache2/mods-enabled_karoshi/autoindex.conf ] && ln -s /etc/apache2/mods-available/autoindex.conf /etc/apache2/mods-enabled_karoshi/autoindex.conf
+[ ! -f /etc/apache2/mods-enabled_karoshi/cgi.load ] && ln -s /etc/apache2/mods-available/cgi.load /etc/apache2/mods-enabled_karoshi/cgi.load
+[ ! -f /etc/apache2/mods-enabled_karoshi/dir.conf ] && ln -s /etc/apache2/mods-available/dir.conf /etc/apache2/mods-enabled_karoshi/dir.conf
+[ ! -f /etc/apache2/mods-enabled_karoshi/dir.load ] && ln -s /etc/apache2/mods-available/dir.load /etc/apache2/mods-enabled_karoshi/dir.load
+[ ! -f /etc/apache2/mods-enabled_karoshi/env.load ] && ln -s /etc/apache2/mods-available/env.load /etc/apache2/mods-enabled_karoshi/env.load
+[ ! -f /etc/apache2/mods-enabled_karoshi/filter.load ] && ln -s /etc/apache2/mods-available/filter.load /etc/apache2/mods-enabled_karoshi/filter.load
+[ ! -f /etc/apache2/mods-enabled_karoshi/ldap.load ] && ln -s /etc/apache2/mods-available/ldap.load /etc/apache2/mods-enabled_karoshi/ldap.load
+[ ! -f /etc/apache2/mods-enabled_karoshi/mime.conf ] && ln -s /etc/apache2/mods-available/mime.conf /etc/apache2/mods-enabled_karoshi/mime.conf
+[ ! -f /etc/apache2/mods-enabled_karoshi/mime.load ] && ln -s /etc/apache2/mods-available/mime.load /etc/apache2/mods-enabled_karoshi/mime.load
+[ ! -f /etc/apache2/mods-enabled_karoshi/mpm_prefork.conf ] && ln -s /etc/apache2/mods-available/mpm_prefork.conf /etc/apache2/mods-enabled_karoshi/mpm_prefork.conf
+[ ! -f /etc/apache2/mods-enabled_karoshi/mpm_prefork.load ] && ln -s /etc/apache2/mods-available/mpm_prefork.load /etc/apache2/mods-enabled_karoshi/mpm_prefork.load
+[ ! -f /etc/apache2/mods-enabled_karoshi/negotiation.conf ] && ln -s /etc/apache2/mods-available/negotiation.conf /etc/apache2/mods-enabled_karoshi/negotiation.conf
+[ ! -f /etc/apache2/mods-enabled_karoshi/negotiation.load ] && ln -s /etc/apache2/mods-available/negotiation.load /etc/apache2/mods-enabled_karoshi/negotiation.load
+[ ! -f /etc/apache2/mods-enabled_karoshi/php5.conf ] && ln -s /etc/apache2/mods-available/php5.conf /etc/apache2/mods-enabled_karoshi/php5.conf
+[ ! -f /etc/apache2/mods-enabled_karoshi/php5.load ] && ln -s /etc/apache2/mods-available/php5.load /etc/apache2/mods-enabled_karoshi/php5.load
+[ ! -f /etc/apache2/mods-enabled_karoshi/setenvif.conf ] && ln -s /etc/apache2/mods-available/setenvif.conf /etc/apache2/mods-enabled_karoshi/setenvif.conf
+[ ! -f /etc/apache2/mods-enabled_karoshi/setenvif.load ] && ln -s /etc/apache2/mods-available/setenvif.load /etc/apache2/mods-enabled_karoshi/setenvif.load
+[ ! -f /etc/apache2/mods-enabled_karoshi/socache_shmcb.load ] && ln -s /etc/apache2/mods-available/socache_shmcb.load /etc/apache2/mods-enabled_karoshi/socache_shmcb.load
 [ ! -f /etc/apache2/mods-enabled_karoshi/ssl.conf ] && ln -s /etc/apache2/mods-available/ssl.conf /etc/apache2/mods-enabled_karoshi/ssl.conf
 [ ! -f /etc/apache2/mods-enabled_karoshi/ssl.load ] && ln -s /etc/apache2/mods-available/ssl.load /etc/apache2/mods-enabled_karoshi/ssl.load
-#a2enmod ssl
-
-#Make sure that apache can authenticate with ldap for the web management
-[ ! -f /etc/apache2/mods-enabled_karoshi/authnz_ldap.load ] && ln -s /etc/apache2/mods-available/authnz_ldap.load /etc/apache2/mods-enabled_karoshi/authnz_ldap.load
-
+[ ! -f /etc/apache2/mods-enabled_karoshi/status.conf ] && ln -s /etc/apache2/mods-available/status.conf /etc/apache2/mods-enabled_karoshi/status.conf
+[ ! -f /etc/apache2/mods-enabled_karoshi/status.load ] && ln -s /etc/apache2/mods-available/status.load /etc/apache2/mods-enabled_karoshi/status.load
 
 #Create apache 2 run folder
 [ ! -d /var/run/apache2 ] && mkdir -p /var/run/apache2

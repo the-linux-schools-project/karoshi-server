@@ -25,6 +25,8 @@ INSTALL_MAILSCANNER=yes
 SYSVSUPPORT=yes
 #Download and compile samba4 - we are staying with a compiled version rather than the version from the repos for backward compatibily with Karoshi V9.
 INSTALL_SAMBA4=yes
+#Download and install sogo email 
+INSTALL_SOGO=yes
 #Services are started and set to run on boot when installed so lets turn them all back off for now until they are actually needed.
 TURN_OFF_SERVICES=yes
 #Configure sudoers to allow the karoshi user to sudo.
@@ -35,16 +37,18 @@ REMOVE_SOFTWARE=yes
 TIDYPACKAGES=no
 #Change to a better theme for the karoshi user in xfce.
 SET_THEME=yes
+#Configure apache modules and settings
+CONFIGURE_APACHE=yes
 #Update the system.
 UPDATE_SERVER=yes
 #Reboot the machine to auto log in to the karoshi user.
 REBOOT=yes
 
 #Main list of packages to install (apart from samba4 which is compiled).
-packages="apache2-mpm-prefork libapache2-mod-php5 mysql-server php5-mysql php5-sqlite php-pear php5-cli php5-common php5-imap php5-mcrypt php5-curl php5-fpm php5-gd php5-intl php5-xmlrpc postfix postfix-ldap mb2md clamav clamav-daemon clamav-freshclam memcached dovecot-core dovecot-gssapi dovecot-imapd maildrop squid3 dansguardian nginx shorewall mon isc-dhcp-server openvpn cups printer-driver-hpijs printer-driver-hpcups ghostscript-cups printer-driver-gutenprint ghostscript-cups tftpd-hpa nfs-kernel-server openssh-server openssh-client rsync unison squashfs-tools zip unzip libarchive-zip-perl perl nut-server spamassassin ntp"
+packages="apache2-mpm-prefork libapache2-mod-php5 libapache2-mod-auth-kerb libssl-dev apache2-utils mysql-server php5-mysql php5-ldap php5-sqlite php-pear php5-cli php5-common php5-imap php5-mcrypt php5-curl php5-fpm php5-gd php5-intl php5-xmlrpc postfix postfix-ldap mb2md clamav clamav-daemon clamav-freshclam memcached dovecot-core dovecot-gssapi dovecot-imapd ipopd maildrop squid3 squid-deb-proxy dansguardian nginx shorewall mon isc-dhcp-server openvpn cups printer-driver-hpijs printer-driver-hpcups ghostscript-cups printer-driver-gutenprint ghostscript-cups tftpd-hpa nfs-kernel-server openssh-server openssh-client rsync unison squashfs-tools zip unzip libarchive-zip-perl perl nut-server spamassassin ntp"
 
 #Utilities and other extras to install.
-extrapackages="nslcd fail2ban ldap-utils shimmer-themes gtk2-engines light-themes mate-icon-theme firefox xscreensaver virtualbox-guest-x11 gksu yad gedit synaptic plymouth zip unzip bleachbit lynx gnome-terminal libgtk2.0-bin"
+extrapackages="fonts-liberation ipcalc libnss3-tools nslcd fail2ban ldap-utils shimmer-themes gtk2-engines light-themes mate-icon-theme firefox xscreensaver virtualbox-guest-x11 gksu yad gedit synaptic plymouth zip unzip bleachbit lynx gnome-terminal libgtk2.0-bin"
 
 #Packages to remove
 removepackages="nscd byobu xterm orage xfce4-mixer ppp php5-fpm landscape-common avahi-daemon gnome-user-guide libsane gstreamer1.0-plugins-good geoip-database libgphoto2-6 libsane-common w3m libcdparanoia0 vim-runtime vim wireless-tools"
@@ -270,6 +274,16 @@ function tidy_packages {
 apt-get -y autoremove
 }
 
+function install_sogo {
+/opt/karoshi/serversetup/modules/email/sogo/install_sogo
+}
+
+function configure_apache {
+[ ! -f /etc/apache2/mods-enabled_karoshi/auth_kerb.load ] && ln -s /etc/apache2/mods-available/auth_kerb.load /etc/apache2/mods-enabled_karoshi/auth_kerb.load
+[ ! -f /etc/apache2/mods-enabled/ldap.conf ] && ln -s /etc/apache2/mods-available/ldap.conf /etc/apache2/mods-enabled/ldap.conf
+[ ! -f /etc/apache2/mods-enabled/ldap.load ] && ln -s /etc/apache2/mods-available/ldap.load /etc/apache2/mods-enabled/ldap.load
+}
+
 #Run functions
 [ $CREATE_KAROSHI_USER = yes ] && create_karoshi_user
 [ $ADD_REPOS = yes ] && add_repos
@@ -283,11 +297,13 @@ apt-get -y autoremove
 [ $INSTALL_MAILSCANNER = yes ] && install_mailscanner
 [ $SYSVSUPPORT = yes ] && sysvsupport
 [ $INSTALL_SAMBA4 = yes ] && install_samba4
+[ $INSTALL_SOGO = yes ] && install_sogo
 [ $TURN_OFF_SERVICES = yes ] && turn_off_services
 [ $CONFIGURE_SUDOERS = yes ] && configure_sudoers
 [ $REMOVE_SOFTWARE = yes ] && remove_software
 [ $TIDYPACKAGES = yes ] && tidy_packages
 [ $SET_THEME = yes ] && set_theme
+[ $CONFIGURE_APACHE = yes ] && configure_apache
 [ $UPDATE_SERVER = yes ] && update_server
 [ $REBOOT = yes ] && shutdown -r now
 
