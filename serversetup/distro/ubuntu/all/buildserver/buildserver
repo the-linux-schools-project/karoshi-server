@@ -37,8 +37,8 @@ REMOVE_SOFTWARE=yes
 TIDYPACKAGES=no
 #Change to a better theme for the karoshi user in xfce.
 SET_THEME=yes
-#Configure apache modules and settings
-CONFIGURE_APACHE=yes
+#Configure system settings
+CONFIGURE_SYSTEM=yes
 #Update the system.
 UPDATE_SERVER=yes
 #Reboot the machine to auto log in to the karoshi user.
@@ -51,7 +51,7 @@ packages="apache2-mpm-prefork libapache2-mod-php5 libapache2-mod-auth-kerb libss
 extrapackages="fonts-liberation ipcalc libnss3-tools nslcd fail2ban ldap-utils shimmer-themes gtk2-engines light-themes mate-icon-theme firefox xscreensaver virtualbox-guest-x11 gksu yad gedit synaptic plymouth zip unzip bleachbit lynx gnome-terminal libgtk2.0-bin"
 
 #Packages to remove
-removepackages="nscd byobu xterm orage xfce4-mixer ppp php5-fpm landscape-common avahi-daemon gnome-user-guide libsane gstreamer1.0-plugins-good geoip-database libgphoto2-6 libsane-common w3m libcdparanoia0 vim-runtime vim wireless-tools"
+removepackages="resolvconf nscd byobu xterm orage xfce4-mixer ppp php5-fpm landscape-common avahi-daemon gnome-user-guide libsane gstreamer1.0-plugins-good geoip-database libgphoto2-6 libsane-common w3m libcdparanoia0 vim-runtime vim wireless-tools"
 
 #Check that this script is running as root.
 
@@ -109,6 +109,10 @@ synaptic &
 fi' > /usr/bin/synaptic-warning
 chmod 0755 /usr/bin/synaptic-warning
 fi
+[ ! -d /opt/karoshi/karoshi_user/.local/share/applications ] && mkdir -p /opt/karoshi/karoshi_user/.local/share/applications
+cp -f /opt/karoshi/serversetup/all/synaptic/synaptic.desktop /opt/karoshi/karoshi_user/.local/share/applications/
+chown karoshi /opt/karoshi/karoshi_user/.local/share/applications/synaptic.desktop
+chmod 0755 /opt/karoshi/karoshi_user/.local/share/applications/synaptic.desktop
 }
 
 function add_repos {
@@ -158,7 +162,7 @@ sleep 1
 function install_remastersys {
 echo -e "\nInstalling remastersys\n"
 sleep 1
-apt-get -y install --no-install-recommends remastersys
+apt-get -y install --no-install-recommends remastersys remastersys-gui
 }
 
 
@@ -278,10 +282,14 @@ function install_sogo {
 /opt/karoshi/serversetup/modules/email/sogo/install_sogo
 }
 
-function configure_apache {
+function configure_system {
+#COnfigure apache with extra modules.
 [ ! -f /etc/apache2/mods-enabled_karoshi/auth_kerb.load ] && ln -s /etc/apache2/mods-available/auth_kerb.load /etc/apache2/mods-enabled_karoshi/auth_kerb.load
 [ ! -f /etc/apache2/mods-enabled/ldap.conf ] && ln -s /etc/apache2/mods-available/ldap.conf /etc/apache2/mods-enabled/ldap.conf
 [ ! -f /etc/apache2/mods-enabled/ldap.load ] && ln -s /etc/apache2/mods-available/ldap.load /etc/apache2/mods-enabled/ldap.load
+#Remove resolvconf folder
+[ -d /etc/resolvconf ] && rm -f -R /etc/resolvconf
+
 }
 
 #Run functions
@@ -303,7 +311,7 @@ function configure_apache {
 [ $REMOVE_SOFTWARE = yes ] && remove_software
 [ $TIDYPACKAGES = yes ] && tidy_packages
 [ $SET_THEME = yes ] && set_theme
-[ $CONFIGURE_APACHE = yes ] && configure_apache
+[ $CONFIGURE_SYSTEM = yes ] && configure_system
 [ $UPDATE_SERVER = yes ] && update_server
 [ $REBOOT = yes ] && shutdown -r now
 

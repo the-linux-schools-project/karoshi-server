@@ -163,9 +163,17 @@ cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/webwarning.htm /var/www/
 
 if [ $SQUIDVER = squid3 ]
 then
+
+if [ -f /usr/lib/squid3/basic_msnt_auth ]
+then
+cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/squid3/karoshi10-squid3.conf /etc/squid/squid.conf
+else
 cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/squid3/squid.conf /etc/squid/
+fi
+
 cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/errors/en/* /usr/share/squid3/errors/en/
 cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/karoshi_kerb_auth /usr/lib/squid3
+echo 8.8.8.8 > /etc/dansguardian/exceptioniplist
 chmod 755 /usr/lib/squid3/karoshi_kerb_auth
 else
 cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/errors/en/* /usr/share/squid/errors/en/

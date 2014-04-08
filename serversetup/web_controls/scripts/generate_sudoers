@@ -2,8 +2,8 @@
 
 #Check which admin group to use
 ADMINGROUP=admin
-getent group adm 1>/dev/null
-[ $? = 0 ] && ADMINGROUP=adm
+#getent group adm 1>/dev/null
+#[ $? = 0 ] && ADMINGROUP=adm
 
 #Backup sudoers file
 [ -d /etc/sudoers_backup ] || mkdir /etc/sudoers_backup
