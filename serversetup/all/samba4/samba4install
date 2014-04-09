@@ -84,6 +84,9 @@ CORES=`cat /proc/cpuinfo | grep "cpu cores" | head -n 1 | sed "s@.*: \(.*\)@\1@"
 [ `echo $CORES'null'` = null ] && CORES=1
 let THREADS=$CORES*2
 
+#Patch smbreadline.c - shouldnt be needed on samba 4.1.7
+sed -i 's/(Function/(rl_hook_func_t/g' libcli/smbreadline/smbreadline.c
+
 #Configure
 echo `date` "Configuring samba-$LATESTVER" | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
 ./configure --enable-cups --with-ads --prefix=/usr/local --enable-fhs --sysconfdir=/etc --localstatedir=/var

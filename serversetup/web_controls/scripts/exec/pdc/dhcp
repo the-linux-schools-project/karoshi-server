@@ -218,8 +218,8 @@ source /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/software
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/dhcp
 
 #Add role information
-echo "DHCP Server<br>" > /opt/karoshi/server_network/servers/$HOSTNAME/dhcpserver
-echo $HOSTNAME > /opt/karoshi/server_network/dhcpserver
+echo "DHCP Server<br>" > /opt/karoshi/server_network/servers/`hostname-fqdn`/dhcpserver
+echo `hostname-fqdn` > /opt/karoshi/server_network/dhcpserver
 sed -i 's/DHCPCTRL=no/DHCPCTRL=yes/g' /opt/karoshi/server_network/menusettings
 
 exit

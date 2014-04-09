@@ -175,7 +175,5 @@ then
 MESSAGE=`echo $PROBLEMMSG $LOGMSG`
 completed
 fi
-MESSAGE="$COMPLETEDMSG\n\n$COMPLETEDMSG2\n\n$COMPLETEDMSG3"
-completed
 echo '</div></div></div></body></html>'
 exit

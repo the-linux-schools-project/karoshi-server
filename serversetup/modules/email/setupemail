@@ -86,13 +86,7 @@ if [ `grep -c -w "kdc" /etc/krb5.conf` -gt 0 ]
 then
 LDAPSERVER=`grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | cut -d"=" -f2`
 fi
-#############################
-#Check for missing software
-#############################
-if [ -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/email/software ]
-then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/email/software
-fi
+
 #############################
 #Ensure that apache, mailscanner, postfix, mysql, clamd and mailscanner are running on boot
 #############################
