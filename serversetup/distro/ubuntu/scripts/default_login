@@ -9,3 +9,7 @@ if [ -f /etc/lightdm/lightdm.conf ]
 then
 sed -i 's/karoshi//g' /etc/lightdm/lightdm.conf
 fi
+
+#Remove the karoshi user from the nopasswdlogin group
+getent group nopasswdlogin 2>/dev/null
+[ $? = 0 ] && usermod -G karoshi,admin karoshi

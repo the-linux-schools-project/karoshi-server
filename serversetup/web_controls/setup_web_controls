@@ -415,18 +415,12 @@ cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/generate_classroom_lis
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/generate_classroom_lists_asset_register.cgi /var/www/cgi-bin_karoshi/tech/
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/lockout_reset.cgi /var/www/cgi-bin_karoshi/tech/
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/lockout_reset_fm.cgi /var/www/cgi-bin_karoshi/tech/
-
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/generate_classroom_lists_csv_upload_fm.cgi /var/www/cgi-bin_karoshi/tech/
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/generate_classroom_lists_csv_upload.cgi /var/www/cgi-bin_karoshi/tech/
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/generate_classroom_lists_csv_process.cgi /var/www/cgi-bin_karoshi/tech/
-
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/user_image_upload_fm.cgi /var/www/cgi-bin_karoshi/tech/
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/user_image_upload.cgi /var/www/cgi-bin_karoshi/tech/
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/user_image_process.cgi /var/www/cgi-bin_karoshi/tech/
-
-cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/user_image_bulk_upload_fm.cgi /var/www/cgi-bin_karoshi/tech/
-cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/user_image_bulk_upload.cgi /var/www/cgi-bin_karoshi/tech/
-cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/user_image_bulk_process.cgi /var/www/cgi-bin_karoshi/tech/
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/bulk_user_creation_import_enrollment_numbers.cgi /var/www/cgi-bin_karoshi/tech/
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/bulk_user_creation_import_enrollment_numbers_fm.cgi /var/www/cgi-bin_karoshi/tech/
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/bulk_user_creation_import_enrollment_numbers_process.cgi /var/www/cgi-bin_karoshi/tech/
@@ -990,6 +984,10 @@ if [ `echo $?` != 0 ]
 then
 samba-tool dns add 127.0.0.1 $REALM manage CNAME $HOSTNAME.$REALM --username=Administrator --password=$LDAPPASS
 fi
+
+#Copy in uptime script
+cp -f /opt/karoshi/serversetup/scripts/uptime/karoshi-uptime.sh /usr/sbin/
+cp -f /opt/karoshi/serversetup/scripts/uptime/karoshi-uptime /etc/init.d/
 
 #Create some statistics for the front page
 /opt/karoshi/web_controls/statistics

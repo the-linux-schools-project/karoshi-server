@@ -108,7 +108,10 @@ echo `date`: user_image_upload - access denied to $REMOTE_USER from $REMOTE_ADDR
 exit 101
 fi
 
-#echo `date`: user_image_upload - Username does not exist by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+#Process individual file
+if [ `echo $IMAGEFILE | grep -c .jpg$` = 1 ]
+then
 #Check to see if image matches a username
 IMAGESTYLE=notset
 FILENAME_NO_EXT=`echo $IMAGEFILE | sed 's/.jpg//g'| sed 's/ /space/g'`
@@ -127,8 +130,6 @@ USERNAME=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" employeeN
 fi
 [ $IMAGESTYLE = notset ] && exit 103
 
-
-
 if [ -f /var/www/karoshi/user_image_upload/$IMAGEFILE ]
 then
 PRIMARYGROUP=`id -g -n $USERNAME`
@@ -138,13 +139,117 @@ mkdir -p /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/
 chmod 0770 /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/
 chown root.apache_karoshi /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/
 fi
-echo `date`: user_image_upload - $IMAGEFILE for user $USERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: user_image_upload - $IMAGEFILE "for" user $USERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 cp -f /var/www/karoshi/user_image_upload/$IMAGEFILE /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg
 chown root.apache_karoshi /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg
 chmod 0440 /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg
-rm -f -R /var/www/karoshi/user_image_upload
 else
-echo `date`: user_image_upload - upload error for $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: user_image_upload - upload error "for" $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
+fi
+
+
+
+
+#Process compressed file
+if [ `echo $IMAGEFILE | grep -c .tar.gz$` = 1 ] || [ `echo $IMAGEFILE | grep -c .zip$` = 1 ]
+then
+COMPRESSEDFILE=$IMAGEFILE
+
+#Process compressed file
+[ -d /opt/karoshi/.tempdata/user_image_bulk_upload.$$ ] && rm -f -R /opt/karoshi/.tempdata/user_image_bulk_upload.$$
+mkdir -p /opt/karoshi/.tempdata/user_image_bulk_upload.$$
+mv /var/www/karoshi/user_image_bulk_upload/$COMPRESSEDFILE /opt/karoshi/.tempdata/user_image_bulk_upload.$$/
+cd /opt/karoshi/.tempdata/user_image_bulk_upload.$$
+
+COMPRESSIONTYPE=NOT_SET
+[ `echo $COMPRESSEDFILE | grep -c .tar.gz$` = 1 ] && COMPRESSIONTYPE=TARGZ
+[ `echo $COMPRESSEDFILE | grep -c .zip$` = 1 ] && COMPRESSIONTYPE=ZIP
+
+if [ $COMPRESSIONTYPE = NOT_SET ]
+then
+echo `date`: user_image_upload - Incorrect compressed file type by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi 
+
+echo `date`: user_image_upload - $COMPRESSEDFILE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#Uncompress file
+[ $COMPRESSIONTYPE = TARGZ ] && tar -xf /opt/karoshi/.tempdata/user_image_upload.$$/$COMPRESSEDFILE
+[ $COMPRESSIONTYPE = ZIP ] && unzip /opt/karoshi/.tempdata/user_image_upload.$$/$COMPRESSEDFILE 1>/dev/null
+rm -f /opt/karoshi/.tempdata/user_image_upload.$$/$COMPRESSEDFILE
+
+#Check users exist and move images to correct location
+
+ls -1 /opt/karoshi/.tempdata/user_image_upload.$$/ > /opt/karoshi/.tempdata/user_image_upload_list.$$
+
+IMAGE_COUNT=`cat /opt/karoshi/.tempdata/user_image_upload_list.$$ | wc -l`
+
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/user_image_upload ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/user/user_image_upload
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+echo '<b>'$TITLE'</b><br><br>'
+
+if [ $IMAGE_COUNT = 0 ]
+then
+echo `date`: user_image_upload - $ERRORMSG4 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo $ERRORMSG4
+exit 101
+fi
+
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+COUNTER=1
+while [ $COUNTER -le $IMAGE_COUNT ]
+do
+IMAGE_NAME=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/.tempdata/user_image_upload_list.$$`
+#Check image
+if [ `echo $IMAGE_NAME | grep -c .jpg$` = 1 ]
+then
+FILENAME_NO_EXT=`echo $IMAGE_NAME | sed 's/.jpg//g' | sed 's/ /space/g'`
+
+#Check to see if username or enrollment number is being used
+IMAGESTYLE=notset
+id -g $FILENAME_NO_EXT 1>/dev/null
+if [ `echo $?` = 0 ]
+then
+USERNAME=$FILENAME_NO_EXT
+IMAGESTYLE=usernamematch
+fi
+
+if [ $IMAGESTYLE = notset ]
+then
+USERNAME=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" employeeNumber=$FILENAME_NO_EXT | grep ^uid: | sed 's/uid: //g'`
+[ $USERNAME'null' != null ] && IMAGESTYLE=enrollmentmatch
+fi
+
+if [ $IMAGESTYLE != notset ]
+then
+PRIMARYGROUP=`id -g -n $USERNAME`
+if [ ! -d /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/ ]
+then
+mkdir -p /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/
+chown root.apache_karoshi /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/
+chmod 0550 /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/
+fi
+mv /opt/karoshi/.tempdata/user_image_upload.$$/$IMAGE_NAME /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg
+chown root.apache_karoshi /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg
+chmod 0440 /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg
+echo $USERNAME - $IMAGE_NAME - $PRIMARYGROUP - $IMAGECOPYMSG'<br>'
+else
+echo `date`: user_image_upload - $IMAGE_NAME - $ERRORMSG6 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo $IMAGE_NAME - $ERRORMSG6'<br>'
+fi
+else
+echo `date`: user_image_upload - $IMAGE_NAME - $ERRORMSG5 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo $IMAGE_NAME - $ERRORMSG5'<br>'
+fi
+let COUNTER=$COUNTER+1
+done
+rm -f /opt/karoshi/.tempdata/user_image_upload_list.$$
+rm -f -R /opt/karoshi/.tempdata/user_image_upload.$$
+fi
+rm -f -R /var/www/karoshi/user_image_upload
 exit

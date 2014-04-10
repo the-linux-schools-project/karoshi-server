@@ -97,8 +97,8 @@ MESSAGE=$ERRORMSG1
 show_status
 fi
 IMAGEFILE=`ls -1 /var/www/karoshi/user_image_upload | sed -n 1,1p`
-#Check to see if image is a .jpg
-if [ `echo $IMAGEFILE | grep -c .jpg$` != 1 ]
+#Check to see if image is a .jpg / zip / tar.gz
+if [ `echo $IMAGEFILE | grep -c .jpg$` != 1 ] && [ `echo $IMAGEFILE | grep -c .zip$` != 1 ] && [ `echo $IMAGEFILE | grep -c .tar.gz$` != 1 ]
 then
 MESSAGE=$ERRORMSG2
 show_status
