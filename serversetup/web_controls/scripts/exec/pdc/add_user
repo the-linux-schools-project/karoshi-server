@@ -345,7 +345,7 @@ then
 ######################
 
 [ ! -d $HOMEPATH/$NEWUSERNAME/ ] && mkdir -p $HOMEPATH/$NEWUSERNAME/
-chown -R $NEWUSERNAME:staff $HOMEPATH/$NEWUSERNAME/
+chown -R $NEWUSERNAME:root $HOMEPATH/$NEWUSERNAME/
 chmod -R 0600 $HOMEPATH/$NEWUSERNAME/
 setfacl -m u::rwx,g::---,o::---,m::r-x $HOMEPATH/$NEWUSERNAME/
 [ `echo $HOMEPATH | grep -c students` -gt 0 ] && setfacl -Rm group:staff:r-x,d:group:staff:r-x $HOMEPATH/$NEWUSERNAME/
@@ -358,7 +358,7 @@ if [ $SERVER != `hostname-fqdn` ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 [ ! -d '$HOMEPATH''/''$NEWUSERNAME' ] && mkdir -p '$HOMEPATH''/''$NEWUSERNAME'
-chown -R '$USERID':staff '$HOMEPATH''/''$NEWUSERNAME'
+chown -R '$USERID':root '$HOMEPATH''/''$NEWUSERNAME'
 chmod -R 0600 '$HOMEPATH''/''$NEWUSERNAME'
 setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
 [ `echo '$HOMEPATH' | grep -c students` -gt 0 ] && setfacl -Rm group:staff:r-x,d:group:staff:r-x '$HOMEPATH'/'$NEWUSERNAME'/
@@ -384,12 +384,12 @@ then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
 [ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
 [ ! -d /home/users/email/'$NEWUSERNAME' ] && mkdir /home/users/email/'$NEWUSERNAME'
-chown -R '$USERID':staff /home/users/email/'$NEWUSERNAME'
+chown -R '$USERID':root /home/users/email/'$NEWUSERNAME'
 chmod -R 0600 /home/users/email/'$NEWUSERNAME'
 chmod -R u+X /home/users/email/'$NEWUSERNAME'
 
 [ ! -d '$HOMEPATH''/''$NEWUSERNAME' ] && mkdir -p '$HOMEPATH''/''$NEWUSERNAME'
-chown -R '$USERID':staff '$HOMEPATH''/''$NEWUSERNAME'
+chown -R '$USERID':root '$HOMEPATH''/''$NEWUSERNAME'
 chmod -R 0600 '$HOMEPATH''/''$NEWUSERNAME'
 setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
 '
@@ -527,13 +527,13 @@ setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
 if [ $SERVER = `hostname-fqdn` ]
 then
 mkdir -p '$HOMEPATH'/'$NEWUSERNAME'/
-chown -R '$NEWUSERNAME':'$PRIMARYGROUP' '$HOMEPATH'/'$NEWUSERNAME'/
+chown -R '$NEWUSERNAME':root '$HOMEPATH'/'$NEWUSERNAME'/
 chmod -R 0600 '$HOMEPATH'/'$NEWUSERNAME'/
 setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
 else
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER "
 mkdir -p '$HOMEPATH'/'$NEWUSERNAME'/
-chown -R '$NEWUSERNAME':'$PRIMARYGROUP' '$HOMEPATH'/'$NEWUSERNAME'/
+chown -R '$NEWUSERNAME':root '$HOMEPATH'/'$NEWUSERNAME'/
 chmod -R 0600 '$HOMEPATH'/'$NEWUSERNAME'/
 setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
 "

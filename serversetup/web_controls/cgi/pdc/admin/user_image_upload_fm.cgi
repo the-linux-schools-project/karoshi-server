@@ -62,7 +62,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/user_image_uplo
         
         <TABLE class="standard" BORDER=0>
         <TR>
-<td style="width: 180px;">
+<td style="width: 200px;">
 '$USERUPLOADMSG':
 </td>
             <TD>

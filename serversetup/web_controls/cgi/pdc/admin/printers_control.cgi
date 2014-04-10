@@ -90,14 +90,10 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-else
-DIV_ID=menubox
 fi
 
-echo '<div id="'$DIV_ID'">'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printers_control.cgi | cut -d' ' -f1`
 
 PRINTER_ACTION=none
@@ -163,6 +159,5 @@ then
 sudo -H /opt/karoshi/web_controls/exec/printers_control $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PRINTERNAME:$PRINTER_ACTION:$JOBID
 fi
 
-echo "</div>"
 echo "</div></body></html>"
 exit

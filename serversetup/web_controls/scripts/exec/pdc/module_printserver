@@ -98,7 +98,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 source /opt/karoshi/server_network/domain_information/domain_name
 
 #Check that this server has been setup with the correct authentication
-if [ $SERVERNAME != `hostname-fqdn`
+if [ $SERVERNAME != `hostname-fqdn` ]
 then
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:members:" | /opt/karoshi/serversetup/modules/authentication/check_auth
 if [ $? = 101 ]

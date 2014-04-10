@@ -3,7 +3,6 @@
 #Dont run this script again if apache has already been configured.
 if [ -d /etc/apache2/sites-karoshi-enabled ]
 then
-echo "/etc/apache2/sites-karoshi-enabled already exists so not configuring apache for the web management again."
 exit
 fi
 

@@ -173,7 +173,6 @@ fi
 
 cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/errors/en/* /usr/share/squid3/errors/en/
 cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/karoshi_kerb_auth /usr/lib/squid3
-echo 8.8.8.8 > /etc/dansguardian/exceptioniplist
 chmod 755 /usr/lib/squid3/karoshi_kerb_auth
 else
 cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/errors/en/* /usr/share/squid/errors/en/
@@ -257,18 +256,6 @@ DANSGUARDIANSTATUS=`ps -e | grep -c $DANSGUARDIANVER`
 if [ $DANSGUARDIANSTATUS = 0 ]
 then
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dansguardian_start
-fi
-
-#Install squid-deb-proxy
-which squid-deb-proxy 1>/dev/null
-if [ $? != 0 ]
-then
-echo "<li>$PROXYSERVER - Installing squid-deb-proxy</li>"
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-apt-get update
-sleep 1
-apt-get install -y squid-deb-proxy
-echo "</pre>"
 fi
 
 #Setup squid-deb-proxy

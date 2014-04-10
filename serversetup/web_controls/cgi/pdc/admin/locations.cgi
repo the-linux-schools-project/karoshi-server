@@ -90,7 +90,7 @@ echo '<div id="actionbox"><table class="standard" style="text-align: left;" bord
 
 echo '<form action="/cgi-bin/admin/locations2.cgi" method="post"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">'
 echo '<tbody>'
-echo '<tr><td style="width: 180px;">'$NEWLOCATION'</td><td><input name="_NEWLOCATION_" size="15" type="text"> </td><td><input value="Submit" type="submit"></td></tr>'
+echo '<tr><td style="width: 180px;">'$NEWLOCATION'</td><td><input name="_NEWLOCATION_" size="15" type="text"> </td><td><input value="Submit" type="submit" class="button"></td></tr>'
 echo '</tbody></table><br>'
 
 if [ -f /var/lib/samba/netlogon/locations.txt ]

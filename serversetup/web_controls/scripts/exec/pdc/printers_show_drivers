@@ -142,16 +142,15 @@ echo "<option value=\"$PPDFILE\">$PRINTER</option>"
 done
 fi
 
-if [ -d /usr/share/cups/model/ ]
+if [ -d /usr/share/ppd/cupsfilters/ ]
 then
-for PPDFILE in `ls -d /usr/share/cups/model/*/*.ppd* | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
+for PPDFILE in `ls -d //usr/share/ppd/cupsfilters/*.ppd* | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
 do
 PRINTER=`basename $PPDFILE | sed "s/.ppd$//g"`
 PPDFILE=`echo $PPDFILE | sed "s/_/123456789/g"`
 echo "<option value=\"$PPDFILE\">$PRINTER</option>"
 done
 fi
-
 '
 else
 if [ -d /usr/share/ppd/ ]
@@ -204,14 +203,15 @@ echo "<option value=\"$PPDFILE\">$PRINTER</option>"
 done
 fi
 
-if [ -d /usr/share/cups/model/ ]
+if [ -d /usr/share/ppd/cupsfilters/ ]
 then
-for PPDFILE in `ls -d /usr/share/cups/model/*/*.ppd* | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
+for PPDFILE in `ls -d //usr/share/ppd/cupsfilters/*.ppd* | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
 do
 PRINTER=`basename $PPDFILE | sed "s/.ppd$//g"`
 PPDFILE=`echo $PPDFILE | sed "s/_/123456789/g"`
-echo '<option value="'$PPDFILE'">'$PRINTER'</option>'
+echo "<option value=\"$PPDFILE\">$PRINTER</option>"
 done
 fi
+
 fi
 exit
