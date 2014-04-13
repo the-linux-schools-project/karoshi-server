@@ -275,7 +275,7 @@ done
 if [ $SHOW_SUBMIT = yes ]
 then
 echo "</tbody></table><br><br>"
-echo "<input value=\"$SUBMITMSG\" type=\"submit\"> <input value=\"$RESETMSG\" type=\"reset\">"
+echo "<input value=\"$SUBMITMSG\" class=\"button\" type=\"submit\"> <input value=\"$RESETMSG\" class=\"button\" type=\"reset\">"
 else
 echo $ERRORMSG8"<br><br>"
 fi
@@ -443,7 +443,7 @@ done
 if [ $SHOW_SUBMIT = yes ]
 then
 echo "</tbody></table><br><br>"
-echo "<input value=\"'$SUBMITMSG'\" type=\"submit\"> <input value=\"'$RESETMSG'\" type=\"reset\">"
+echo "<input value=\"'$SUBMITMSG'\" class=\"button\" type=\"submit\"> <input value=\"'$RESETMSG'\" class=\"button\" type=\"reset\">"
 else
 echo '$ERRORMSG8'"<br><br>"
 fi
@@ -611,7 +611,7 @@ done
 if [ $SHOW_SUBMIT = yes ]
 then
 echo "</tbody></table><br><br>"
-echo "<input value=\"'$SUBMITMSG'\" type=\"submit\"> <input value=\"'$RESETMSG'\" type=\"reset\">"
+echo "<input value=\"'$SUBMITMSG'\" class=\"button\" type=\"submit\"> <input class=\"button\" value=\"'$RESETMSG'\" type=\"reset\">"
 else
 echo '$ERRORMSG8'"<br><br>"
 fi

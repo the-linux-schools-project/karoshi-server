@@ -164,14 +164,14 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox3
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
 DIV_ID=menubox
 fi
 
-echo '<div id="'$DIV_ID'">'
+echo '<div id="'$DIV_ID'"><div id=titlebox>'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -180,13 +180,21 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 <tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$TITLE1 - $SERVERNAME'</b></a></td></tr></tbody></table>'
 else
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a href="software_raid_create_fm.cgi"><img alt="" src="/images/warnings/server.png"></a></td><td><b>'$TITLE1' - '$SERVERNAME'</b></td></tr></tbody></table><br>'
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="vertical-align: middle;"><div class="sectiontitle">'$TITLE1' - '$SERVERNAME'</div></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Software_Raid"><img class="images" alt="" src="/images/help/info.png"><span>"'$HELPMSG8'"</span></a></td>
+<td style="vertical-align: top;">
+<a href="/cgi-bin/admin/software_raid_create_fm.cgi"><input class="button" type="button" name="" value="'$CHOOSESERVERMSG'"></a>
+</td>
+</tr></tbody></table>
+<br>
 
+</div><div id="infobox">'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/software_raid_create.cgi | cut -d' ' -f1`
 echo '<form action="/cgi-bin/admin/software_raid_create2.cgi" name="selectservers" method="post">'
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:" | sudo -H /opt/karoshi/web_controls/exec/software_raid_create
 
-echo "</form></div></div></body></html>"
+echo "</form></div></div></div></body></html>"
 exit

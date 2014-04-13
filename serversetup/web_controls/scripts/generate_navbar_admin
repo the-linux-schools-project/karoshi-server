@@ -191,17 +191,8 @@ echo '			<li class="mid"><a href="/cgi-bin/admin/change_password_fm.cgi" class="
 							<li><a href="/cgi-bin/admin/quotas_view_over_usage_fm.cgi">'$VIEWOVERQUOTAUSAGE'</a></li>
 							<li><a href="/cgi-bin/admin/quotas_set_fm.cgi">'$SETQUOTAS'</a></li>
 						</ul>
-						<li class="mid"><a href="/cgi-bin/admin/zfs_raid_control_fm.cgi" class="fly">'$ZFSRAIDMSG'</a>
-						<ul>
-							<li><a href="/cgi-bin/admin/zfs_raid_create_fm.cgi">'$CREATERAIDMSG'</a></li>
-							<li><a href="/cgi-bin/admin/zfs_raid_control_fm.cgi">'$CONTROLRAIDMSG'</a></li>
-						</ul>
-						</li>
-						<li class="mid"><a href="/cgi-bin/admin/software_raid_control_fm.cgi" class="fly">'$SOFTWARERAIDMSG'</a>
-						<ul>
-							<li><a href="/cgi-bin/admin/software_raid_create_fm.cgi">'$CREATERAIDMSG'</a></li>
-							<li><a href="/cgi-bin/admin/software_raid_control_fm.cgi">'$CONTROLRAIDMSG'</a></li>
-						</ul>
+						<li><a href="/cgi-bin/admin/zfs_raid_control_fm.cgi">'$ZFSRAIDMSG'</a></li>
+						<li><a href="/cgi-bin/admin/software_raid_control_fm.cgi">'$SOFTWARERAIDMSG'</a></li>
 						<li><a href="/cgi-bin/admin/find_student_files_fm.cgi">'$FINDSTUDENTFILES'</a></li>
 						<li><a href="/cgi-bin/admin/samba_add_share_fm.cgi">'$ADDNETWORKSHAREMSG'</a></li>'
 if [ $FEDERATEDCTL = yes ]
@@ -268,16 +259,6 @@ echo '			<li class="mid"><a href="/cgi-bin/admin/backup_enable_disable_fm.cgi" c
 					</ul>
 			</li>'
 fi
-
-if [ $RADIUSCTRL = yes ]
-then
-echo '			<li class="mid"><a href="/cgi-bin/admin/radius_view_access_pt_fm.cgi" class="fly">'$RADIUSNETWORK'</a>
-					<ul>
-						<li><a href="/cgi-bin/admin/radius_add_access_pt_fm.cgi">'$ADDRADIUSWIRELESS'</a></li>
-						<li><a href="/cgi-bin/admin/radius_view_access_pt_fm.cgi">'$VIEWRADIUSWIRELESS'</a></li>
-					</ul>
-			</li>'
-fi
 echo '			<li><a href="/cgi-bin/admin/apply_ssl_certificate_fm.cgi">'$SSLCERTMSG'</a></li>
 			<li><a href="/cgi-bin/admin/ssl_commercial_certs_fm.cgi">'$SSLCERTMSG2'</a></li>
 			<li><a href="/admin/phpldapadmin/" target="_blank">'$LDAPMSG'</a></li>
@@ -289,12 +270,7 @@ echo '			<li><a href="/cgi-bin/admin/apply_ssl_certificate_fm.cgi">'$SSLCERTMSG'
 			<li><a href="/cgi-bin/admin/asset_register_view.cgi">'$ASSETREGISTER'</a></li>'
 if [ $DHCPCTRL = yes ]
 then
-echo '			<li class="mid"><a href="/cgi-bin/admin/dhcp_fm.cgi" class="fly">'$DHCPMSG'</a>
-					<ul>
-						<li><a href="/cgi-bin/admin/dhcp_fm.cgi">'$CONFIGUREDHCPMSG'</a></li>
-						<li><a href="/cgi-bin/admin/dhcp_view_leases.cgi">'$DHCPLEASESMSG'</a></li>
-					</ul>
-			</li>'
+echo '			<li><a href="/cgi-bin/admin/dhcp_view_leases.cgi">'$DHCPMSG'</a></li>'
 fi
 
 echo '<li><a href="/cgi-bin/admin/dnsview_fm.cgi">'$DNSVIEWMSG'</a></li>'
@@ -312,16 +288,13 @@ echo '			<li class="mid"><a href="/cgi-bin/admin/mon_status.cgi" class="fly">'$M
 					</ul>
 			</li>'
 fi
-echo '		
-			<li class="mid"><a href="/cgi-bin/admin/ups_status.cgi" class="fly">'$UPSMSG'</a>
-					<ul>
-						<li><a href="/cgi-bin/admin/ups_add_fm.cgi">'$UPSADDMSG'</a></li>
-						<li><a href="/cgi-bin/admin/ups_slave_add_fm.cgi">'$UPSSLAVEADDMSG'</a></li>
-						<li><a href="/cgi-bin/admin/ups_status.cgi">'$UPSSTATUSMSG'</a></li>
-					</ul>
-			</li>
+echo '						<li><a href="/cgi-bin/admin/ups_status.cgi">'$UPSMSG'</a></li>'
+if [ $RADIUSCTRL = yes ]
+then
+echo '			<li><a href="/cgi-bin/admin/radius_view_access_pt_fm.cgi">'$VIEWRADIUSWIRELESS'</a></li>'
+fi
 
-		</ul>
+echo '		</ul>
 	</li>
 	<li class="top"><a href="/cgi-bin/admin/domain_information.cgi" id="Client" class="top_link"><span class="down">'$CLIENTMSG'</span></a>
 		<ul class="sub">

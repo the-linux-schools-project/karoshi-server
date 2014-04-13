@@ -92,8 +92,7 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:" | sudo -H /opt/karoshi/web_controls/ex
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 106 ]
 then
-MESSAGE=$ERRORMSG5
-show_status
+echo $ERRORMSG5
 fi
 echo '</div></div></body></html>'
 exit

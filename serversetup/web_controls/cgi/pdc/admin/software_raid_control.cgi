@@ -179,10 +179,14 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 <tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$TITLE2 - $SERVERNAME'</b></a></td></tr></tbody></table>'
 else
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a href="software_raid_control_fm.cgi"><img alt="" src="/images/warnings/server.png"></a></td><td><b>'$TITLE2' - '$SERVERNAME'</b></td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Software_Raid"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG5'</span></a>
-</td></tr></tbody></table><br>'
-
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="vertical-align: middle;"><div class="sectiontitle">'$TITLE2' - '$SERVERNAME'</div></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Software_Raid"><img class="images" alt="" src="/images/help/info.png"><span>"'$HELPMSG5'"</span></a></td>
+<td style="vertical-align: top;">
+<a href="/cgi-bin/admin/software_raid_create_fm.cgi"><input class="button" type="button" name="" value="'$TITLE1'"></a>
+</td>
+</tr></tbody></table>
+<br>'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/software_raid_control.cgi | cut -d' ' -f1`

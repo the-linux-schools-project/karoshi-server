@@ -80,8 +80,10 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$TITLE2'</b></a></td></tr></tbody></table>'
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="vertical-align: top;"><b>'$TITLE2'</b></td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/radius_add_access_pt_fm.cgi" name="printers" method="post"><a class="info" href="javascript:void(0)"><input name="ADDACCESSPOINT" type="image" class="images" src="/images/submenus/system/wireless_add.png" value=""><span>'$TITLE1'</span></a></form></td>
+<tr><td style="vertical-align: middle;"><b>'$TITLE2'</b></td>
+<td style="vertical-align: top;">
+<a href="/cgi-bin/admin/radius_add_access_pt_fm.cgi"><input class="button" type="button" name="" value="'$TITLE1'"></a>
+</td>
 </tr></tbody></table><br><form action="/cgi-bin/admin/radius_control_access_pt.cgi" method="post">
 '
 

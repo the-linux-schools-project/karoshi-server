@@ -100,7 +100,18 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$SYSMENUMSG'</a>
 </div></div><div id="mobileactionbox">'
 else
-echo '<b>'$TITLE3'</b><br><br></div><div id="infobox">'
+echo '
+
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="vertical-align: middle;"><div class="sectiontitle">'$TITLE3'</div></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>"'$HELPMSG8'"</span></a></td>
+<td style="vertical-align: top;">
+<a href="/cgi-bin/admin/zfs_raid_control_fm.cgi"><input class="button" type="button" name="" value="'$TITLE4'"></a>
+</td>
+</tr></tbody></table>
+<br>
+
+</div><div id="infobox">'
 fi
 
 #Show list of servers

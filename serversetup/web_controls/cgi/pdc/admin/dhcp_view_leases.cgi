@@ -31,8 +31,8 @@ STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/dhcp_view_leases ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/dhcp_view_leases
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/dhcp ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/system/dhcp
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 #Check if timout should be disabled
@@ -65,7 +65,14 @@ else
 DHCPSERVER=dhcp3-server
 fi
 
-echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$TITLE'</div></div><div id="infobox"><br>'
+echo '<div id="actionbox3"><div id="titlebox">
+
+
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<tr><td style="vertical-align: middle;"><div class="sectiontitle">'$TITLE2'</div></td><td style="vertical-align: top;"><a href="dhcp_fm.cgi"><input class="button" type="button" name="" value="'$TITLE'"></a></td>
+</tr>
+</tbody></table><br>
+</div><div id="infobox"><br>'
 
 if [ $DHCPSERVER = dhcp3-server ]
 then
