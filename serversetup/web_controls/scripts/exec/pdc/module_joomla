@@ -149,6 +149,12 @@ ssh -x -o PasswordAuthentication=no $JOOMLASERVER '
 '
 fi
 
+#Add in monitoring for the server
+if [ -f /opt/karoshi/server_network/monitoringserver ]
+then
+/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVERNAME
+fi
+
 #########################
 #Add role information
 #########################

@@ -207,7 +207,9 @@ logo.sprite.SetImage (logo.image);
 logo.width = logo.image.GetWidth ();
 logo.height = logo.image.GetHeight ();
 logo.x = Window.GetX () + Window.GetWidth () / 2 - logo.width  / 2;
-logo.y = Window.GetY () + Window.GetHeight () / 2 - logo.height;
+#logo.y = Window.GetY () + Window.GetHeight () / 2 - logo.height;
+logo.y = Window.GetY () + Window.GetHeight () - logo.height;
+
 logo.z = 1000;
 logo.sprite.SetX (logo.x);
 logo.sprite.SetY (logo.y);
@@ -231,7 +233,9 @@ progress_indicator.bullet_height = progress_indicator.bullet_off.GetHeight ();
 progress_indicator.bullet_hspacing = progress_indicator.bullet_width * 1.35;
 progress_indicator.width = progress_indicator.bullet_width * 3.6;
 progress_indicator.height = progress_indicator.bullet_height;
-progress_indicator.y = logo.y + logo.height + (logo.height / 3);
+#progress_indicator.y = logo.y + logo.height + (logo.height / 3);
+progress_indicator.y = Window.GetY () + Window.GetHeight () / 2;
+
 progress_indicator.x = Window.GetX () + Window.GetWidth () / 2 - progress_indicator.width / 2; # logo.x + 26;
 
 # use a fixed string with ascending and descending stems to calibrate the

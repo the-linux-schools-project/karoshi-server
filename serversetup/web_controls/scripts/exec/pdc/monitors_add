@@ -82,11 +82,13 @@ then
 echo `date`: monitors_add - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-
+if [ $REMOTE_USER != karoshi ]
+then
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
 echo `date`: monitors_add - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
+fi
 fi
 
 if [ $GROUPNAME'null' = null ]

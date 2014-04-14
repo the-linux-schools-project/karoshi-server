@@ -121,9 +121,10 @@ fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox">'
+echo '<div id="actionbox3"><div id=titlebox>'
 #Setup monitoring
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_monitoring.cgi | cut -d' ' -f1`
+echo '<div class="sectiontitle">'$TITLE' - '$SERVERNAME'</div><br></div><div id="infobox">'
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_monitoring
 EXEC_STATUS=`echo $?`
 
@@ -134,6 +135,6 @@ show_status
 fi
 MESSAGE=`echo $SERVERNAME - $COMPLETEDMSG`
 completed_status
-echo '</div></div></body></html>'
+echo '</div></div></div></body></html>'
 exit
 

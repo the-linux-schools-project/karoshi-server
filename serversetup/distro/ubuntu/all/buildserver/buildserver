@@ -50,7 +50,7 @@ REBOOT=yes
 packages="apache2-mpm-prefork libapache2-mod-php5 libapache2-mod-auth-kerb libssl-dev apache2-utils mysql-server php5-mysql php5-ldap php5-sqlite php-pear php5-cli php5-common php5-imap php5-mcrypt php5-curl php5-fpm php5-gd php5-intl php5-xmlrpc postfix postfix-ldap mb2md clamav clamav-daemon clamav-freshclam memcached dovecot-core dovecot-gssapi dovecot-imapd maildrop squid3 squid-deb-proxy dansguardian nginx shorewall mon isc-dhcp-server openvpn cups printer-driver-hpijs printer-driver-hpcups ghostscript-cups printer-driver-gutenprint ghostscript-cups tftpd-hpa nfs-kernel-server openssh-server openssh-client rsync unison squashfs-tools zip unzip libarchive-zip-perl perl nut-server spamassassin ntp"
 
 #Utilities and other extras to install.
-extrapackages="hpijs-ppds hp-ppd openprinting-ppds printer-driver-cjet cups-bsd smartmontools libnet-snmp-perl snmp fonts-liberation ipcalc libnss3-tools nslcd fail2ban ldap-utils shimmer-themes gtk2-engines light-themes mate-icon-theme firefox xscreensaver virtualbox-guest-x11 gksu yad gedit synaptic plymouth plymouth-label plymouth-theme-gnome-logo zip unzip bleachbit lynx gnome-terminal libgtk2.0-bin"
+extrapackages="libmime-lite-perl hpijs-ppds hp-ppd openprinting-ppds printer-driver-cjet cups-bsd smartmontools libnet-snmp-perl snmp fonts-liberation ipcalc libnss3-tools nslcd fail2ban ldap-utils shimmer-themes gtk2-engines light-themes mate-icon-theme firefox xscreensaver virtualbox-guest-x11 gksu yad gedit synaptic plymouth plymouth-label plymouth-theme-gnome-logo zip unzip bleachbit lynx gnome-terminal libgtk2.0-bin"
 
 #Packages to remove
 removepackages="apparmor resolvconf nscd byobu xterm orage xfce4-mixer ppp php5-fpm landscape-common avahi-daemon gnome-user-guide libsane gstreamer1.0-plugins-good geoip-database libgphoto2-6 libsane-common w3m libcdparanoia0 vim-runtime vim wireless-tools"
@@ -269,6 +269,25 @@ su karoshi -c "xfconf-query -c xsettings -p /Net/ThemeName -s Clearlooks"
 cp -f /opt/karoshi/serversetup/all/backgrounds/background.png /usr/share/backgrounds/karoshi/
 cp -f /opt/karoshi/serversetup/all/backgrounds/login-background.png /usr/share/backgrounds/karoshi/
 cp -f /opt/karoshi/serversetup/all/backgrounds/bootmenu.png /usr/share/backgrounds/karoshi/
+
+#Configure Plymouth
+echo -e "\nAdding karoshi-gnome-logo theme to plymouth.\n"
+cp -f -R /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/plymouth/karoshi-gnome-logo /lib/plymouth/themes/
+update-alternatives --install /lib/plymouth/themes/default.plymouth default.plymouth /lib/plymouth/themes/karoshi-gnome-logo/karoshi-gnome-logo.plymouth 100
+update-alternatives --config default.plymouth
+#Get selection number for karoshi theme
+SELECT=`update-alternatives --list default.plymouth | grep -n karoshi-gnome-logo | cut -d: -f1`
+#Set karoshi theme as the default theme
+echo -e "\nSetting karoshi-gnome-logo theme as the default theme for plymouth.\n"
+echo -e "$SELECT\n" | update-alternatives --config default.plymouth | grep karoshi-gnome-theme
+#Update initramfs
+sudo update-initramfs -u
+
+#Configure grub
+echo -e "\nConfiguring grub2.\n"
+cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/grub /etc/default/grub
+echo -e "\nUpdating grub2.\n"
+update-grub
 }
 
 function remove_software {
@@ -300,6 +319,10 @@ function configure_system {
 [ ! -f /etc/apache2/mods-enabled_karoshi/auth_kerb.load ] && ln -s /etc/apache2/mods-available/auth_kerb.load /etc/apache2/mods-enabled_karoshi/auth_kerb.load
 [ ! -f /etc/apache2/mods-enabled/ldap.conf ] && ln -s /etc/apache2/mods-available/ldap.conf /etc/apache2/mods-enabled/ldap.conf
 [ ! -f /etc/apache2/mods-enabled/ldap.load ] && ln -s /etc/apache2/mods-available/ldap.load /etc/apache2/mods-enabled/ldap.load
+
+#Configure remastersys
+cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/remastersys.conf /etc/
+
 #Remove resolvconf folder
 [ -d /etc/resolvconf ] && rm -f -R /etc/resolvconf
 
@@ -315,19 +338,6 @@ FINGERPRINT=`gpg --fingerprint $KEY | grep fingerprint | sed 's/ //g' | cut -d"=
 #Set ownertrust to 6
 echo $FINGERPRINT:6: | gpg --import-ownertrust
 done
-
-#Configure Plymouth
-echo -e "\nAdding karoshi-gnome-logo theme to plymouth.\n"
-cp -f -R /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/plymouth/karoshi-gnome-logo /lib/plymouth/themes/
-update-alternatives --install /lib/plymouth/themes/default.plymouth default.plymouth /lib/plymouth/themes/karoshi-gnome-logo/karoshi-gnome-logo.plymouth 100
-update-alternatives --config default.plymouth
-#Get selection number for karoshi theme
-SELECT=`update-alternatives --list default.plymouth | grep -n karoshi-gnome-logo | cut -d: -f1`
-#Set karoshi theme as the default theme
-echo -e "\nSetting karoshi-gnome-logo theme as the default theme for plymouth.\n"
-echo -e "$SELECT\n" | update-alternatives --config default.plymouth | grep karoshi-gnome-theme
-#Update initramfs
-sudo update-initramfs -u
 
 #Make sure that apt is happy - something was causing a problem and thunar was getting removed - this may have been caused by remastersys later on.
 dpkg --configure -a

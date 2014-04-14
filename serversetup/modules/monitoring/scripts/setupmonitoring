@@ -78,7 +78,8 @@ fi
 
 [ ! -d /opt/karoshi/"useful scripts" ] && mkdir -p /opt/karoshi/"useful scripts"
 [ ! -d /opt/karoshi/server_network/mon ] && mkdir -p /opt/karoshi/server_network/mon
-
+[ ! -d /opt/karoshi/server_network/mon/monitors_disabled ] && mkdir /opt/karoshi/server_network/mon/monitors_disabled
+[ ! -d /opt/karoshi/server_network/mon/monitors ] && mkdir /opt/karoshi/server_network/mon/monitors
 cp -f /opt/karoshi/serversetup/modules/monitoring/mon/index.html /var/www/html/
 cp -f /opt/karoshi/serversetup/modules/monitoring/mon/logo.png /var/www/html/mon/
 cp -f /opt/karoshi/serversetup/modules/monitoring/mon/mon.cgi /var/www/cgi-bin/

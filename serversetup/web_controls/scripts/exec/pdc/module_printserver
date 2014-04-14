@@ -379,6 +379,12 @@ fi
 #restrict anonymous = 2 needs adding to /etc/samba/smb.conf global section
 # printers section	guest ok = No
 
+#Add in monitoring for the server
+if [ -f /opt/karoshi/server_network/monitoringserver ]
+then
+/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVERNAME
+fi
+
 ###########################
 #Show completed message
 ###########################

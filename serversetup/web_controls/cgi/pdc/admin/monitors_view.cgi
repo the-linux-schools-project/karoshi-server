@@ -124,7 +124,7 @@ MESSAGE=$ERRORMSG4
 show_status
 fi 
 
-if [ `ls -1 /opt/karoshi/server_network/mon/monitors | wc -l` = 0 ]
+if [ `ls -1 /opt/karoshi/server_network/mon/monitors | wc -l` = 0 ] && [ `ls -1 /opt/karoshi/server_network/mon/monitors_disabled | wc -l` = 0 ]
 then
 MESSAGE=$ERRORMSG4
 show_status

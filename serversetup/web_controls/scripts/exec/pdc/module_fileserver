@@ -143,5 +143,9 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/fileserver
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
 
-
+#Add in monitoring for the server
+if [ -f /opt/karoshi/server_network/monitoringserver ]
+then
+/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVERNAME
+fi
 

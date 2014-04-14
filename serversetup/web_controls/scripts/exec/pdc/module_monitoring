@@ -176,6 +176,8 @@ chmod 0700 /opt/karoshi/"useful scripts"/monitor_check
 echo '*' '*' '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/monitor_check > /opt/karoshi/cronjobs/jobs/monitorcheck.cron
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
+#Add in default monitors for any existing servers on the system
+/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors all
 exit
 
 

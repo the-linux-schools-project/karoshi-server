@@ -268,6 +268,13 @@ add_role_information
 #create_linux_client_icon
 #Show completed message
 #Generate mount.json
+
+#Add in monitoring for the server
+if [ -f /opt/karoshi/server_network/monitoringserver ]
+then
+/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVERNAME
+fi
+
 /opt/karoshi/"useful scripts"/generate_pam_mount
 exit
 
