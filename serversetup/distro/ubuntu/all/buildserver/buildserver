@@ -151,12 +151,19 @@ apt-get -y install xorg
 }
 
 function install_dm {
-echo -e "\nInstalling lightdm\n"
+echo -e "\nInstalling slim display manager\n"
 sleep 1
-apt-get -y install --no-install-recommends lightdm lightdm-gtk-greeter
+#apt-get -y install --no-install-recommends lightdm lightdm-gtk-greeter
 #Configure lightdm to auto login the karoshi user
-cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/lightdm.conf /etc/lightdm/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/lightdm-gtk-greeter.conf /etc/lightdm/
+#cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/lightdm.conf /etc/lightdm/
+#cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/lightdm-gtk-greeter.conf /etc/lightdm/
+
+apt-get -y install --no-install-recommends slim
+#Configure slim to auto login the karoshi user
+cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/slim/slim.conf /etc/
+#Add in slim theme.
+cp -f -R /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/slim/karoshi /usr/share/slim/themes/
+#Add the karoshi user to the nopasswdlogin group. 
 usermod -a -G nopasswdlogin karoshi
 }
 
