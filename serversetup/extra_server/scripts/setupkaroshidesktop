@@ -109,7 +109,7 @@ chage -M 99999 karoshi
 ############################
 #Do sudo for karoshi management user
 ############################
-cp -f /opt/karoshi/serversetup/all/configfiles/sudoers /etc/
+cp -f /opt/karoshi/serversetup/all/configfiles/sudoers3 /etc/
 [ -d /opt/karoshi/karoshimanagement ] || mkdir /opt/karoshi/karoshimanagement
 
 [ -d /opt/karoshi/"useful scripts" ] || mkdir /opt/karoshi/"useful scripts"

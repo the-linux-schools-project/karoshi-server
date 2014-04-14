@@ -76,7 +76,7 @@ if [ $? != 0 ]
 then
 echo -e "Creating karoshi user\n"
 sleep 1
-useradd -d /opt/karoshi/karoshi_user -m karoshi
+useradd -d /opt/karoshi/karoshi_user -s /bin/bash -m karoshi
 #Set password to karoshi
 echo -e "\nSetting karoshi user password to karoshi\n"
 sleep 1
@@ -350,6 +350,9 @@ done
 dpkg --configure -a
 which thunar 2>/dev/null
 [ $? != 0 ] && apt-get install thunar
+
+#Stop apt-get autoremove from removing thunar and xfce panel
+apt-mark manual thunar
 }
 
 #Run functions
@@ -360,8 +363,8 @@ which thunar 2>/dev/null
 [ $INSTALL_XFCE = yes ] && install_xfce4
 [ $INSTALL_DM = yes ] && install_dm
 [ $INSTALL_REMASTERSYS = yes ] && install_remastersys
-[ $INSTALL_ADDITIONAL = yes ] && install_additional_software
 [ $INSTALL_SOFTWARE = yes ] && install_software
+[ $INSTALL_ADDITIONAL = yes ] && install_additional_software
 [ $INSTALL_MAILSCANNER = yes ] && install_mailscanner
 [ $INSTALL_ZFS = yes ] && install_zfs
 [ $SYSVSUPPORT = yes ] && sysvsupport
