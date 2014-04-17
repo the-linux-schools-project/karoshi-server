@@ -34,7 +34,7 @@ CONFIGURE_SUDOERS=yes
 #Remove a few extra packages that are installed with xfce that are not needed.
 REMOVE_SOFTWARE=yes
 #Purge packages that are no longer required.
-TIDYPACKAGES=no
+TIDYPACKAGES=yes
 #Change to a better theme for the karoshi user in xfce.
 SET_THEME=yes
 #Configure system settings
@@ -50,7 +50,7 @@ REBOOT=yes
 packages="apache2-mpm-prefork libapache2-mod-php5 libapache2-mod-auth-kerb libssl-dev apache2-utils mysql-server php5-mysql php5-ldap php5-sqlite php-pear php5-cli php5-common php5-imap php5-mcrypt php5-curl php5-fpm php5-gd php5-intl php5-xmlrpc postfix postfix-ldap mb2md clamav clamav-daemon clamav-freshclam memcached dovecot-core dovecot-gssapi dovecot-imapd maildrop squid3 squid-deb-proxy dansguardian nginx shorewall mon isc-dhcp-server openvpn cups printer-driver-hpijs printer-driver-hpcups ghostscript-cups printer-driver-gutenprint ghostscript-cups tftpd-hpa nfs-kernel-server openssh-server openssh-client rsync unison squashfs-tools zip unzip libarchive-zip-perl perl nut-server spamassassin ntp"
 
 #Utilities and other extras to install.
-extrapackages="libmime-lite-perl hpijs-ppds hp-ppd openprinting-ppds printer-driver-cjet cups-bsd smartmontools libnet-snmp-perl snmp fonts-liberation ipcalc libnss3-tools nslcd fail2ban ldap-utils shimmer-themes gtk2-engines light-themes mate-icon-theme firefox xscreensaver virtualbox-guest-x11 gksu yad gedit synaptic plymouth plymouth-label plymouth-theme-gnome-logo zip unzip bleachbit lynx gnome-terminal libgtk2.0-bin"
+extrapackages="nmap easy-rsa libmime-lite-perl hpijs-ppds hp-ppd openprinting-ppds printer-driver-cjet cups-bsd smartmontools libnet-snmp-perl snmp fonts-liberation ipcalc libnss3-tools nslcd fail2ban ldap-utils shimmer-themes gtk2-engines light-themes mate-icon-theme firefox xscreensaver virtualbox-guest-x11 gksu yad gedit synaptic plymouth plymouth-label zip unzip bleachbit lynx gnome-terminal libgtk2.0-bin"
 
 #Packages to remove
 removepackages="apparmor resolvconf nscd byobu xterm orage xfce4-mixer ppp php5-fpm landscape-common avahi-daemon gnome-user-guide libsane gstreamer1.0-plugins-good geoip-database libgphoto2-6 libsane-common w3m libcdparanoia0 vim-runtime vim wireless-tools"
@@ -328,7 +328,9 @@ function configure_system {
 [ ! -f /etc/apache2/mods-enabled/ldap.load ] && ln -s /etc/apache2/mods-available/ldap.load /etc/apache2/mods-enabled/ldap.load
 
 #Configure remastersys
-cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/remastersys.conf /etc/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/remastersys/remastersys.conf /etc/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/remastersys/isolinux.cfg.vesamenu /etc/remastersys/isolinux/
+cp -f /opt/karoshi/serversetup/all/backgrounds/bootmenu.png /etc/remastersys/isolinux/splash.png
 
 #Remove resolvconf folder
 [ -d /etc/resolvconf ] && rm -f -R /etc/resolvconf
@@ -353,6 +355,26 @@ which thunar 2>/dev/null
 
 #Stop apt-get autoremove from removing thunar and xfce panel
 apt-mark manual thunar
+
+#Modify remastersys so that it will remaster with the slim display manager
+LINE_NO=`grep -n "Can't determine which user to use. Please logoff all users except for your main user and try again. Exiting." /usr/bin/remastersys | cut -d: -f1`
+if [ ! -z $LINE_NO ]
+then
+let LINE_NO=$LINE_NO+1
+cp /usr/bin/remastersys /usr/bin/remastersys.$$
+sed -i ''$LINE_NO'c\	LIVEUSER=karoshi' /usr/bin/remastersys
+fi
+
+#Plymouth boot waiting for dhcp
+cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/failsafe.conf /etc/init/
+
+#Configure easy-rsa
+cp -f -R /usr/share/easy-rsa /etc/openvpn/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/easy-rsa/vars /etc/openvpn/easy-rsa/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/easy-rsa/openssl-1.0.0.cnf /etc/openvpn/easy-rsa/
+
+#remove serversetup.tar.gz
+[ -f /opt/karoshi/serversetup.tar.gz ] && rm -f /opt/karoshi/serversetup.tar.gz
 }
 
 #Run functions
@@ -372,10 +394,10 @@ apt-mark manual thunar
 [ $INSTALL_SOGO = yes ] && install_sogo
 [ $CONFIGURE_SUDOERS = yes ] && configure_sudoers
 [ $REMOVE_SOFTWARE = yes ] && remove_software
-[ $TIDYPACKAGES = yes ] && tidy_packages
 [ $SET_THEME = yes ] && set_theme
 [ $CONFIGURE_SYSTEM = yes ] && configure_system
 [ $UPDATE_SERVER = yes ] && update_server
 [ $TURN_OFF_SERVICES = yes ] && turn_off_services
+[ $TIDYPACKAGES = yes ] && tidy_packages
 [ $REBOOT = yes ] && shutdown -r now
 

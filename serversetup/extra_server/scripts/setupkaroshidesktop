@@ -55,7 +55,7 @@ then
 DESKTOP_TYPE=gnome
 fi
 
-if [ `ps -e | grep -c xfce4-session` -gt 0 ]
+if [ `ps -e | grep -c xfce4` -gt 0 ]
 then
 #Using Thunar
 DESKTOP_TYPE=xfce4

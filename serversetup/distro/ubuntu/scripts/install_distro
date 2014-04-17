@@ -1,11 +1,11 @@
 #!/bin/bash
 #Detect if running the live cd
 LOOPCHECK=`mount | grep -c /dev/loop`
-AUFSCHECK=`mount | grep -c aufs`
+COWCHECK=`mount | grep -c /cow`
 
-if [ $LOOPCHECK -gt 0 ] && [ $AUFSCHECK -gt 0 ]
+if [ $LOOPCHECK -gt 0 ] && [ $COWCHECK -gt 0 ]
 then
-ubiquity --desktop %k gtk_ui
+ubiquity
 exit 101
 fi
 exit
