@@ -11,6 +11,7 @@ Cmnd_Alias KAROSHIUTILS = /opt/karoshi/karoshimanagement/
 ##########################
 # User privilege specification
 ##########################
+%admin ALL=(ALL) ALL
 root	ALL=(ALL) ALL
 ROOTNOPASSWD ALL= NOPASSWD: KAROSHIUTILS
 

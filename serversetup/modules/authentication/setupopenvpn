@@ -307,7 +307,7 @@ scp /etc/openvpn/easy-rsa/keys/$SERVERNAME.key root@$SERVERNAME:"/etc/openvpn/"
 #Delete keys from the vpn server
 rm -f /etc/openvpn/easy-rsa/keys/$SERVERNAME.crt
 rm -f /etc/openvpn/easy-rsa/keys/$SERVERNAME.key
-
+open_firewall_port
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 
 chmod 0400 /etc/openvpn/'$SERVERNAME'.crt
@@ -425,7 +425,6 @@ get_tunnel_details
 configure_shorewall
 create_secret
 configure_openvpn_server
-open_firewall_port
 configure_openvpn_client
 add_role_info
 schedule_cron

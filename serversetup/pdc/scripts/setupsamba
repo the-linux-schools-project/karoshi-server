@@ -1374,6 +1374,9 @@ sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient
 [ ! -d /opt/karoshi/server_network/zones/internal/primary_domain_controller ] && mkdir -p /opt/karoshi/server_network/zones/internal/primary_domain_controller
 echo $HOSTNAME.$REALM > /opt/karoshi/server_network/zones/internal/primary_domain_controller/$HOSTNAME.$REALM
 
+[ ! -d /opt/karoshi/server_network/zones/$ZONE/servers ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/servers
+touch /opt/karoshi/server_network/zones/$ZONE/servers/$HOSTNAME.$REALM
+
 #Create information for linux clients
 [ ! -d /var/lib/samba/netlogon/domain_information ] && mkdir -p /var/lib/samba/netlogon/domain_information
 touch /var/lib/samba/netlogon/domain_information/samba4
