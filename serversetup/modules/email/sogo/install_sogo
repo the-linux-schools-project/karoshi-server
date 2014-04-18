@@ -1,36 +1,69 @@
 #!/bin/bash
-SOGOVER=SOGo-2.0.6b
 
-#Download latest sogo version
+BUILDPATH=/tmp/sogo
 
-[ -d /tmp/sogo.$$ ] && rm -f -R /tmp/sogo.$$
-mkdir /tmp/sogo.$$
-cd /tmp/sogo.$$
-wget http://www.sogo.nu/files/downloads/SOGo/Sources/$SOGOVER.tar.gz
+[ -d $BUILDPATH ] && rm -f -R $BUILDPATH
+mkdir $BUILDPATH
 
-#Unpack archive
-tar -xvf $SOGOVER.tar.gz
+function install_deps {
+for package in gnustep-make gnustep-base-runtime libgnustep-base-dev libgnustep-base1.24-dbg gobjc gobjc-multilib libxml2-dev libldap2-dev libssl-dev zlib1g-dev libpq-dev libmysqlclient-dev libmemcached-dev python-m2crypto python-simplejson python-vobject python-dateutil mysql-client postgresql-client  tmpreaper libcurl4-openssl-dev postgresql-server-dev-all libmapi-dev libmapistore-dev libmapiproxy-dev
+do
+echo -e "\n\nInstalling $package\n"
+apt-get -y install $package
+if [ $? != 0 ]
+then
+echo There was a problem installing $package.
+read pause
+fi
+done
+}
 
-#Modify source for kerberos change
-sed -i 's/if (trustProxyAuthentication)/if (trustProxyAuthentication \&\& [[context request] headerForKey: @"x-webobjects-remote-user"])/g' /tmp/sogo.$$/$SOGOVER/Main/SOGo.m
+function get_sogo {
+cd $BUILDPATH
+echo -e "\n\nDownloading SOGO\n"
+git clone https://github.com/inverse-inc/sogo.git
+echo -e "\n\nDownloading Sope\n"
+git clone https://github.com/inverse-inc/sope.git
+}
 
-#Install software
-apt-get update
-apt-get -y remove sogo
-apt-get -y install libsope4.9-dev libxml2-dev libmemcached-dev libcurl4-openssl-dev postgresql-server-dev-all gobjc-multilib libgnustep-base-dev sope4.9-gdl1-mysql sope4.9-libxmlsaxdriver
+function compile_sope {
+echo -e "\n\nCompiling Sope\n"
+cd $BUILDPATH/sope
+./configure --with-gnustep --enable-debug --disable-strip
+make
+make install
+}
 
-#Compile new version
-cd /tmp/sogo.$$/$SOGOVER
+function compile_sogo {
+echo -e "\n\nCompiling Sogo\n"
+sed -i 's/if (trustProxyAuthentication)/if (trustProxyAuthentication \&\& [[context request] headerForKey: @"x-webobjects-remote-user"])/g' $BUILDPATH/sogo/Main/SOGo.m
+cd $BUILDPATH/sogo
 make clean
+#./configure --enable-debug --disable-strip
 ./configure --disable-strip
 make
 make install
+}
+
+function compile_openchange {
+#Extra software for openchange? ibmagic-dev libical-dev libsqlite3-dev swig bison flex libboost-thread-dev python-paste python-pastedeploy python-mako
+echo -e "\n\nCompiling Openchange\n"
+cd $BUILDPATH/sogo/OpenChange
+make clean
+make install
+}
+
+install_deps
+get_sogo
+compile_sope
+compile_sogo
+#compile_openchange
 
 #Copy in init.d script
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/sogo /etc/init.d/
 
 #Tidy up
-rm -f -R /tmp/sogo.$$
-
+rm -f -R $BUILDPATH
+exit
 
 

@@ -10,7 +10,7 @@ then
 sed -i 's/karoshi//g' /etc/lightdm/lightdm.conf
 fi
 
-if [ -f /etc/lslim.conf ]
+if [ -f /etc/slim.conf ]
 then
 sed -i 's/auto_login         yes/auto_login         no/g' /etc/slim.conf
 fi

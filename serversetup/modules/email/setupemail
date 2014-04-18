@@ -347,7 +347,8 @@ rm -f /opt/karoshi/.tempdata/mysqlperms.sql
 
 #Copy in sogo config files
 cp -f /opt/karoshi/serversetup/modules/email/sogo/sogo.conf /etc/sogo/
-cp -f /opt/karoshi/serversetup/modules/email/sogo/apache/SOGo.conf /etc/apache2/conf.d/
+[ -d /etc/apache2/conf.d/ ] && cp -f /opt/karoshi/serversetup/modules/email/sogo/apache/SOGo.conf /etc/apache2/conf.d/
+[ -d /etc/apache2/conf-enabled/ ] && cp -f /opt/karoshi/serversetup/modules/email/sogo/apache/SOGo.conf-2.4 /etc/apache2/conf-enabled/SOGo.conf
 
 #Set sogo limits
 if [ -f /etc/default/sogo ]
@@ -512,5 +513,5 @@ sleep 1
 ###########################
 #Show completed message
 ###########################
-echo "<br><br>"$ACCESSMSG1 - '<a href="https://'$ALIAS.$REALM'/SOGO" target="_blank">https://'$ALIAS.$REALM'/SOGo</a><br>'
+echo "<br><br>"$ACCESSMSG1 - '<a href="https://'$ALIAS.$REALM'/SOGo" target="_blank">https://'$ALIAS.$REALM'/SOGo</a><br>'
 exit
