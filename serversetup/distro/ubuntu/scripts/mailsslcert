@@ -85,6 +85,8 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 [ ! -d /etc/ssl/mail ] && mkdir -p /etc/ssl/mail
 '
 #Copy certificates to the correct server
+scp /etc/ssl/mail/dovecot.key root@$SERVER:"/etc/ssl/mail/" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+scp /etc/ssl/mail/dovecot.pem root@$SERVER:"/etc/ssl/mail/" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 scp /etc/ssl/mail/postfix.key root@$SERVER:"/etc/ssl/mail/" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 scp /etc/ssl/mail/postfix.pem root@$SERVER:"/etc/ssl/mail/" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi

@@ -346,9 +346,14 @@ mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/mysqlperms.sql
 rm -f /opt/karoshi/.tempdata/mysqlperms.sql
 
 #Copy in sogo config files
+[ ! -d /etc/sogo/ ] && mkdir /etc/sogo/
 cp -f /opt/karoshi/serversetup/modules/email/sogo/sogo.conf /etc/sogo/
-[ -d /etc/apache2/conf.d/ ] && cp -f /opt/karoshi/serversetup/modules/email/sogo/apache/SOGo.conf /etc/apache2/conf.d/
-[ -d /etc/apache2/conf-enabled/ ] && cp -f /opt/karoshi/serversetup/modules/email/sogo/apache/SOGo.conf-2.4 /etc/apache2/conf-enabled/SOGo.conf
+
+
+SOGoPath=/etc/apache2/conf.d
+[ -d /etc/apache2/conf-enabled/ ] && SOGoPath=/etc/apache2/conf-enabled
+[ -d /etc/apache2/conf.d ] && cp -f /opt/karoshi/serversetup/modules/email/sogo/apache/SOGo.conf $SOGoPath
+[ -d /etc/apache2/conf-enabled ] && cp -f /opt/karoshi/serversetup/modules/email/sogo/apache/SOGo.conf-2.4 $SOGoPath/SOGo.conf
 
 #Set sogo limits
 if [ -f /etc/default/sogo ]
@@ -371,9 +376,9 @@ sed -i 's/CHANGEPASS/'$SOGOPASS'/g' /etc/sogo/sogo.conf
 sed -i 's@CHANGETHISTIMEZONE@'$TIMEZONE'@g' /etc/sogo/sogo.conf
 
 #Modify /etc/apache2/conf.d/SOGo.conf
-sed -i 's/CHANGETHISWEBDOMAIN/'$ALIAS.$REALM'/g' /etc/apache2/conf.d/SOGo.conf
-sed -i 's/CHANGETHISKRBPATH/'$HOSTNAME.$REALM'/g' /etc/apache2/conf.d/SOGo.conf
-sed -i 's/CHANGETHISSERVERNAME/'$HOSTNAME'/g' /etc/apache2/conf.d/SOGo.conf
+sed -i 's/CHANGETHISWEBDOMAIN/'$ALIAS.$REALM'/g' $SOGoPath/SOGo.conf
+sed -i 's/CHANGETHISKRBPATH/'$HOSTNAME.$REALM'/g' $SOGoPath/SOGo.conf
+sed -i 's/CHANGETHISSERVERNAME/'$HOSTNAME'/g' $SOGoPath/SOGo.conf
 
 #Enable apache modules
 a2enmod proxy 1>/dev/null
