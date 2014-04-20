@@ -1,0 +1,73 @@
+#!/bin/bash
+
+echo -e "Karoshi Server Conversion\n"
+sleep 1
+#Checking to see if unzip is installed
+which unzip 1>/dev/null
+if [ $? != 0 ]
+then
+echo -e "Installing unzip\n"
+sudo apt-get install unzip
+if [ $? != 0 ]
+then
+echo -e "There was a problem installing unzip - exiting now."
+exit
+fi
+fi
+
+if [ ! -d /opt/karoshi ]
+then
+echo -e "Creating folder /opt/karoshi\n"
+sleep 1
+sudo mkdir /opt/karoshi
+if [ ! -d /opt/karoshi ]
+then
+echo -e "/opt/karoshi does not exist - exiting now."
+exit
+fi
+fi
+
+if [ -f /tmp/master.zip ]
+then
+echo -e "Ddeleting /tmp/master.zip\n"
+sleep 1
+sudo rm -f /tmp/master.zip
+fi
+
+cd /tmp
+echo -e "Downloading master.zip from github.\n"
+sleep 1
+wget https://github.com/the-linux-schools-project/karoshi-server/archive/master.zip
+if [ $? != 0 ]
+then
+echo -e "There was a problem downloading master.zip - exiting now."
+exit
+fi
+
+if [ -d /opt/karoshi/serversetup ]
+then
+echo -e "Deleting existing /opt/karoshi/serversetup\n"
+sleep 1
+sudo rm -f -R /opt/karoshi/serversetup
+if [ $? != 0 ]
+then
+echo -e "There was a problem deleting /opt/karoshi/serversetup - exiting now."
+exit
+fi
+fi
+
+echo -e "Unziping master.zip to /opt/karoshi\n"
+sleep 1
+sudo unzip master.zip  -d /opt/karoshi/
+if [ $? != 0 ]
+then
+echo -e "There was a problem unziping master.zip - exiting now."
+exit
+fi
+
+sudo mv /opt/karoshi/karoshi-server-master/serversetup /opt/karoshi/
+sudo rm -f -R /opt/karoshi/karoshi-server-master
+
+echo -e "Running buildserver\n"
+sleep 1
+sudo /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/buildserver
