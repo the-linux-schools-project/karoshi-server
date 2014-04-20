@@ -16,18 +16,18 @@ function get_monitors {
 #Check services to monitor for each server
 MONITORS="ping"
 #Check for samba
-if [ -f /opt/karoshi/server_network/servers/$GROUPNAME/1pdc ] || [ -f /opt/karoshi/server_network/servers/$GROUPNAME/1dc ] || [ -f /opt/karoshi/server_network/servers/$GROUPNAME/1domainmember ] || [ -f /opt/karoshi/server_network/servers/$GROUPNAME/fileserver ]
+if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1pdc ] || [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ] || [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1domainmember ] || [ -f /opt/karoshi/server_network/servers/$SERVERNAME/fileserver ]
 then
-MONITORS="$MONITORS:samba"
+MONITORS="$MONITORS:samba:dns"
 fi
 #Check for email
-[ -f /opt/karoshi/server_network/servers/$GROUPNAME/emailserver ] && MONITORS="$MONITORS:pop3:pop3s:imap:imaps:smtp"
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver ] && MONITORS="$MONITORS:imap:imaps:smtp"
 #Check for cups
-[ -f /opt/karoshi/server_network/servers/$GROUPNAME/printserver ] && MONITORS="$MONITORS:cups"
+#[ -f /opt/karoshi/server_network/servers/$SERVERNAME/printserver ] && MONITORS="$MONITORS:cups"
 #Check for dansguardian
-[ -f /opt/karoshi/server_network/servers/$GROUPNAME/proxy_server ] && MONITORS="$MONITORS:dansguardian"
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/squid ] && MONITORS="$MONITORS:dansguardian:http:"
 #Check for apache or nginx
-if [ -f /opt/karoshi/server_network/servers/$GROUPNAME/apacheserver ] || [ -f /opt/karoshi/server_network/servers/$GROUPNAME/reverseproxyserver ]
+if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver ] || [ -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
 then
 MONITORS="$MONITORS:http:https"
 fi
@@ -37,14 +37,15 @@ if [ $SERVER = all ]
 then
 for karoshi_servers in /opt/karoshi/server_network/servers/*
 do
-karoshi_server=`basename $karoshi_servers`
-GROUPNAME=`echo $karoshi_server | cut -d. -f1`
+SERVERNAME=`basename $karoshi_servers`
+GROUPNAME=`echo $SERVERNAME | cut -d. -f1`
 #Get ip of the server
-TCPIP=`net lookup $karoshi_server`
+TCPIP=`net lookup $SERVERNAME`
 get_monitors
 sudo -H /opt/karoshi/web_controls/exec/monitors_add $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$GROUPNAME:$TCPIP:$ALERTAFTER:$INTERVAL:$DAYSTART:$DAYEND:$HOURSTART:$HOUREND:$MONITORS 1> /dev/null
 done
 else
+SERVERNAME=$SERVER
 GROUPNAME=`echo $SERVER | cut -d. -f1`
 TCPIP=`net lookup $SERVER`
 get_monitors

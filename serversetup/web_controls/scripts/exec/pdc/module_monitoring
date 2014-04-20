@@ -178,6 +178,10 @@ echo '*' '*' '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/monitor_check > /opt/
 
 #Add in default monitors for any existing servers on the system
 /opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors all
+#Generate some data so we can see something!
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+/opt/karoshi/"useful scripts"/gen_status
+'
 exit
 
 
