@@ -3,29 +3,27 @@ server {
 	listen   80 default;
 	server_name  localhost;
 	client_max_body_size 100M;
+	proxy_max_temp_file_size 1924m;
 	access_log  /var/log/nginx/localhost.access.log;
-
-include /etc/nginx/proxysites;
+	include /etc/nginx/proxysites;
 }
 
 # HTTPS server
 #
 server {
-listen   443;
-server_name localhost;
-client_max_body_size 100M;
-ssl  on;
-#Using the same location as for the apache server
-ssl_certificate  /etc/ssl/apache/server.crt;
-ssl_certificate_key  /etc/ssl/apache/server.key;
-
-ssl_session_timeout  5m;
-
-ssl_protocols  SSLv2 SSLv3 TLSv1;
-ssl_ciphers  ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
-ssl_prefer_server_ciphers   on;
-
-include /etc/nginx/proxysites;
+	listen   443;
+	server_name localhost;
+	client_max_body_size 100M;
+	proxy_max_temp_file_size 1924m;
+	ssl  on;
+	#Using the same location as for the apache server
+	ssl_certificate  /etc/ssl/apache/server.crt;
+	ssl_certificate_key  /etc/ssl/apache/server.key;
+	ssl_session_timeout  5m;
+	ssl_protocols  SSLv2 SSLv3 TLSv1;
+	ssl_ciphers  ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
+	ssl_prefer_server_ciphers   on;
+	include /etc/nginx/proxysites;
 }
 
 
