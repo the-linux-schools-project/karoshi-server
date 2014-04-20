@@ -3,9 +3,9 @@
 #Check for software
 INSTALL_DEPS=no
 dpkg -S libmime-lite-perl 1>/dev/null
-[ `echo $?` != 0 ] && INSTALL_DEPS=yes
+[ $? != 0 ] && INSTALL_DEPS=yes
 dpkg -S libfile-type-perl 1>/dev/null
-[ `echo $?` != 0 ] && INSTALL_DEPS=yes
+[ $? != 0 ] && INSTALL_DEPS=yes
 
 if [ $INSTALL_DEPS = yes ]
 then

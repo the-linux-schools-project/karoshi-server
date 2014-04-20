@@ -81,7 +81,7 @@ exit
 
 function completed_status {
 echo '<SCRIPT language="Javascript">'
-echo 'window.location = "/cgi-bin/admin/monitors_add_fm.cgi"'
+echo 'window.location = "/cgi-bin/admin/mon_status.cgi"'
 echo '</script>'
 echo "</div></body></html>"
 exit

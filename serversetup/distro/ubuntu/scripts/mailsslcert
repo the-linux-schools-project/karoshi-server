@@ -40,7 +40,7 @@ exit 101
 fi
 
 echo `date`: mailsslcert - creating a certificate "for" $DOMAIN from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
+source /etc/default/locale
 COUNTRY=`echo $LANG | cut -d_ -f2 | cut -d. -f1`
 STATE=`cat /etc/timezone | cut -d/ -f1`
 CITY=`cat /etc/timezone | cut -d/ -f2`
