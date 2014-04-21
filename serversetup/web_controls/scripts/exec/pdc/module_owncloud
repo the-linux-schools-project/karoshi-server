@@ -115,7 +115,7 @@ exit 101
 fi
 fi
 
-echo '<b>'$TITLE' - '$SERVERNAME'</b><br><br></div><div id="infobox">'
+echo '<div class="sectiontitle">'$TITLE' - '$SERVERNAME'</div><br></div><div id="infobox">'
 
 source /opt/karoshi/server_network/domain_information/domain_name
 source /opt/karoshi/serversetup/variables/distro

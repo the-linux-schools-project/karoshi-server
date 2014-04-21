@@ -101,8 +101,7 @@ fi
 
 echo '
 <form action="/cgi-bin/admin/module_backupserver.cgi" method="post">
-<div id="actionbox"><span style="font-weight: bold;">'$TITLE' - '$SERVERNAME'</span> 
-<br><br>
+<div id="actionbox"><div class="sectiontitle">'$TITLE' - '$SERVERNAME'</div><br>
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$DESCRIPTIONMSG'</b><br><br>
 '$HELPMSG1'

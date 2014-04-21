@@ -70,4 +70,4 @@ sudo rm -f -R /opt/karoshi/karoshi-server-master
 
 echo -e "Running buildserver\n"
 sleep 1
-sudo /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/buildserver
+sudo -H /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/buildserver

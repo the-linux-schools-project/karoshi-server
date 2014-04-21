@@ -103,7 +103,7 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/module_smbwebclient.cgi" method="post"><div id="actionbox"><b>'$TITLE' - '$SERVERNAME'</b><br>
+echo '<form action="/cgi-bin/admin/module_smbwebclient.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE' - '$SERVERNAME'</div>
   <br>
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$DESCRIPTIONMSG'</b><br><br>

@@ -103,7 +103,7 @@ fi
 echo '
 <form action="/cgi-bin/admin/module_radioserver.cgi" method="post">
 <div id="actionbox">
-<b>'$TITLE - $SERVERNAME'</b><br><br>
+<div class="sectiontitle">'$TITLE - $SERVERNAME'</div><br>
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$DESCRIPTIONMSG'</b><br><br>
 '$HELPMSG1'<br><br>

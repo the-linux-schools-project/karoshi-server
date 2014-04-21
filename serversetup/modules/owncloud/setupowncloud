@@ -151,11 +151,11 @@ echo '<li>Restarting Apache</li><br>'
 echo "<br>"
 sleep 1
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
-echo "<br><br>"
+echo "<br>"
 #####################
 #Create owncloud mysql password for the new database
 #####################
-echo '<li>'$CREATEDBMSG'</li><br>'
+echo '<li>'$CREATEDBMSG'</li>'
 RANGE=61
 COUNTER=1
 while [ $COUNTER -lt 16 ]
@@ -256,7 +256,7 @@ fi
 ###########################
 #Show completed message
 ###########################
-echo '<br><br>'$ACCESSMSG - '<a href="https://'$ALIAS.$REALM'/owncloud" target="_blank">'$ALIAS.$REALM'/owncloud</a>'
+echo '<br>'$ACCESSMSG - '<a href="https://'$ALIAS.$REALM'/owncloud" target="_blank">'$ALIAS.$REALM'/owncloud</a>'
 echo '<br>'$ACCESSMSG2:admin - $PASSWORDMSG: admin
 echo '<br><p style="font-weight:bold; font-size:20px;">'$WARNINGMSG1'</p><br>'
 exit

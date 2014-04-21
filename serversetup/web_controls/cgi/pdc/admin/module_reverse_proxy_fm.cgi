@@ -105,7 +105,7 @@ echo '<form action="/cgi-bin/admin/module_reverse_proxy.cgi" method="post"><div 
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$DESCRIPTIONMSG'</b><br><br>
 '$HELPMSG1'<br><br>
-<b>'$PARAMETERSMSG'</b><br><br>
+<div class="sectiontitle">'$PARAMETERSMSG'</div><br>
 <table class="standard" style="text-align: left; height: 15px;" border="0" cellpadding="2" cellspacing="0">
 <tbody><tr><td style="width: 180px;">'$DOMAINMSG'</td><td>'
 

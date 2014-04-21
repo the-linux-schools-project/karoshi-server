@@ -103,7 +103,7 @@ MESSAGE=$BLANKSERVERMSG
 show_status
 fi
 
-echo '<form action="/cgi-bin/admin/module_email.cgi" method="post"><div id="actionbox"><b>'$TITLE' - '$SERVERNAME'</b><br><br>
+echo '<form action="/cgi-bin/admin/module_email.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE' - '$SERVERNAME'</div><br>
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <input name="_DOMAINPATH_" value="'$REALM'" type="hidden">
 <b>'$DESCRIPTIONMSG'</b><br><br>
