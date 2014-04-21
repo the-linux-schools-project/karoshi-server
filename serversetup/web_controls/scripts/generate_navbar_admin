@@ -278,15 +278,7 @@ echo '<li><a href="/cgi-bin/admin/dnsview_fm.cgi">'$DNSVIEWMSG'</a></li>'
 #Monitoring
 if [ $MONITORINGCTRL = yes ]
 then
-echo '			<li class="mid"><a href="/cgi-bin/admin/mon_status.cgi" class="fly">'$MONNSG'</a>
-					<ul>
-						<li><a href="/cgi-bin/admin/monitors_add_fm.cgi">'$ADDCUSTMSG'</a></li>
-						<li><a href="/cgi-bin/admin/monitors_view.cgi">'$VIEWMONSERVERSMSG'</a></li>
-						<li><a href="/cgi-bin/admin/mon_status.cgi">'$SERVERSTATUSMSG'</a></li>
-						<li><a href="/cgi-bin/admin/monitors_add_email_alert_fm.cgi">'$MONEMAILALERTMSG'</a></li>
-						<li><a href="/cgi-bin/admin/monitors_view_email_alerts_fm.cgi">'$MONVIEWEMAILALERTMSG'</a></li>
-					</ul>
-			</li>'
+echo '			<li><a href="/cgi-bin/admin/mon_status.cgi">'$MONNSG'</a></li>'
 fi
 echo '						<li><a href="/cgi-bin/admin/ups_status.cgi">'$UPSMSG'</a></li>'
 if [ $RADIUSCTRL = yes ]

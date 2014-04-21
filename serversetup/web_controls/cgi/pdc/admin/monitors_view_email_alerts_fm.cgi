@@ -69,8 +69,12 @@ echo '<div id="actionbox"><table class="standard" style="text-align: left; " bor
 <td style="vertical-align: top;">
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_eMail_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG7'</span></a>
 </td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_add_email_alert_fm.cgi" method="post">
- <a class="info" href="javascript:void(0)"><input name="_ADDEMAILALERT_" type="image" class="images" src="/images/submenus/system/email_alert_add.png" value=""><span>'$ADDEMAILALERTMSG'</span></a></form></td>
+<td style="vertical-align: top;">
+<a href="/cgi-bin/admin/monitors_add_email_alert_fm.cgi"><input class="button" type="button" name="" value="'$ADDEMAILALERTMSG'"></a>
+</td>
+<td style="vertical-align: top;">
+<a href="/cgi-bin/admin/mon_status.cgi"><input class="button" type="button" name="" value="'$NETWORKSTATUSMSG'"></a>
+</td>
 </tr></tbody></table>
 <br>'
 
