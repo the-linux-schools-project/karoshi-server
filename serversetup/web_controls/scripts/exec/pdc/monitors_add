@@ -379,5 +379,6 @@ source /opt/karoshi/serversetup/variables/distro
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_stop 1>/dev/null
 sleep 1
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_start 1>/dev/null
+/opt/karoshi/"useful scripts"/gen_status
 '
 exit
