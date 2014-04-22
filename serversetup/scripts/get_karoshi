@@ -68,8 +68,8 @@ fi
 sudo mv /opt/karoshi/karoshi-server-master/serversetup /opt/karoshi/
 sudo rm -f -R /opt/karoshi/karoshi-server-master
 
-echo -e "Do you want to start the build process now?\n"
-read reponse
+echo -e "\nDo you want to start the build process now? (y/n)"
+read response
 if [ $response = y ]
 then
 echo -e "Running buildserver\n"
