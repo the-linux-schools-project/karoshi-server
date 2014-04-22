@@ -61,7 +61,7 @@ then
 #Show warning message
 yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=8 --text="$WARNINGMSG1: $NAMESERVER\n\n$WARNINGMSG2" --no-buttons
 #Change DNS if default is not available
-#NAMESERVER=$TCPIPNUMBER
+NAMESERVER=8.8.8.8
 setnetwork
 fi
 

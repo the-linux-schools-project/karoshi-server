@@ -331,6 +331,7 @@ function configure_system {
 cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/remastersys/remastersys.conf /etc/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/remastersys/isolinux.cfg.vesamenu /etc/remastersys/isolinux/
 cp -f /opt/karoshi/serversetup/all/backgrounds/bootmenu.png /etc/remastersys/isolinux/splash.png
+cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/remastersys/custom.seed /etc/remastersys/preseed/
 
 #Remove resolvconf folder
 [ -d /etc/resolvconf ] && rm -f -R /etc/resolvconf
