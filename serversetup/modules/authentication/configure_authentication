@@ -573,8 +573,11 @@ echo `date`: configure_authentication - configuring samba4 $AUTHTYPE "for" $SERV
 configure_samba4
 fi
 #Configure nslcd
+if [ $AUTHTYPE != none ]
+then
 echo `date`: configure_authentication - configuring nslcd "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 configure_nslcd
+fi
 if [ $SERVERNAME != `hostname-fqdn` ] && [ $ZONE != external ]
 then
 echo `date`: configure_authentication - configuring ntp "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
