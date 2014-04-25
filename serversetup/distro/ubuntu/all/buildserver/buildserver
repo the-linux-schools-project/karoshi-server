@@ -131,7 +131,7 @@ add-apt-repository -y ppa:webupd8team/y-ppa-manager
 
 #MailScanner
 wget -O - http://apt.baruwa.org/baruwa-apt-keys.gpg | apt-key add -
-add-apt-repository -y "deb http://apt.baruwa.org/ubuntu natty main"
+add-apt-repository -y "deb http://apt.baruwa.org/ubuntu precise main"
 
 #ZFS
 gpg --keyserver keyserver.ubuntu.com --recv-key 1196ba81f6b0fc61

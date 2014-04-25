@@ -72,14 +72,14 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox3
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
 DIV_ID=actionbox2
 fi
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 #########################
 #Get data input
 #########################
@@ -138,7 +138,7 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 <td style="vertical-align: top;">
 <a href="/cgi-bin/admin/monitors_view_email_alerts_fm.cgi"><input class="button" type="button" name="" value="'$EMAILARERTSMSG'"></a>
 </td>
-</tr></tbody></table>'
+</tr></tbody></table></div><div id="infobox">'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/mon_status.cgi | cut -d' ' -f1`
@@ -147,6 +147,6 @@ if [ `echo $?` = 102 ]
 then
 echo '<br><br>'$SSH_ERROR1'<br>'
 fi
-echo "</div>"
-echo "</div></body></html>"
+[ $MOBILE = no ] && echo '</div>'
+echo "</div></div></body></html>"
 exit
