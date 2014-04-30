@@ -297,10 +297,10 @@ echo '			upalert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAM
 echo '			alertevery 480m' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
 fi
 #dansguardian
-if [ $MONITORTYPE = dansguardian ]
+if [ $MONITORTYPE = proxy ]
 then
-echo ' 	service dansguardian' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		description Dansguardian' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+echo ' 	service proxy' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+echo '		description Proxy Server' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
 echo '		interval '$INTERVAL'm' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
 echo '		monitor tcp.monitor -p 3128' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
 echo '		period wd {'$DAYSTART-$DAYEND'}' $MON_PERIOD >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME

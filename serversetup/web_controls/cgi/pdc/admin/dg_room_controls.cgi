@@ -176,8 +176,18 @@ echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/dg_room_cont
 </form></td>
 <td style="vertical-align: top;"><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post">
 <input name="_LOCATION_'$LOCATION'_ACTION_denyall_ASSET_na_" type="submit" class="button" value="'$DENYALLMSG'">
+</form></td>'
+
+[ $MOBILE = yes ] && echo '</tr><tr>'
+
+echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post">
+<input name="_LOCATION_'$LOCATION'_ACTION_allowallmedia_ASSET_na_" type="submit" class="button" value="'$ALLOWALLMSG2'">
 </form></td>
-</tr></table><br>'
+<td style="vertical-align: top;"><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post">
+<input name="_LOCATION_'$LOCATION'_ACTION_denyallmedia_ASSET_na_" type="submit" class="button" value="'$DENYALLMSG2'">
+</form></td>'
+
+echo '</tr></table><br>'
 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'
 
@@ -208,12 +218,27 @@ CONTROLMSG=$ALLOWMSG
 COLOUR=#FF0000
 ACTION=allow
 fi
-echo '<tr><td valign="top"><font color="'$COLOUR'"><b>'$ASSET'</b></font></td>'
 
-[ $MOBILE = no ] && echo '<td valign="top"><font color="'$COLOUR'"><b>'$MAC1'</b></font></td>'
+CONTROLMSG2=$DENYMSG2
+COLOUR2=#11BE26
+ACTION2=denymedia
+if [ -f /opt/karoshi/server_network/internet_media_room_controls/$LOCATION/$ASSET"_"media ]
+then
+CONTROLMSG2=$ALLOWMSG2
+COLOUR2=#FF0000
+ACTION2=allowmedia
+fi
 
-echo '<td valign="top"><font color="'$COLOUR'"><b>'$TCPIP1'</b></font></td><td valign="top"><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post">
-<input name="_ACTION_'$ACTION'_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="submit" class="button" value="'$CONTROLMSG'"></form></td></tr>
+
+echo '<tr><td valign="top"><b>'$ASSET'</b></td>'
+
+[ $MOBILE = no ] && echo '<td valign="top"><b>'$MAC1'</b></td><td valign="top"><b>'$TCPIP1'</b></td>'
+
+echo '<td valign="top"><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post">
+<input name="_ACTION_'$ACTION'_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="submit" class="button" style="color:'$COLOUR';" value="'$CONTROLMSG'"></form></td>
+
+<td valign="top"><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post"><input name="_ACTION_'$ACTION2'_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="submit" class="button" style="color:'$COLOUR2';" value="'$CONTROLMSG2'"></form></td>
+</tr>
 '
 fi
 done

@@ -118,7 +118,7 @@ if [ $MOBILE != yes ]
 then
 TABLECLASS=mon
 #Create table
-echo '<br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="1" cellspacing="1"><tbody><tr><td style="vertical-align: top; text-align: left; width: '$WIDTH1'px;"><b>Host Group</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>'$MONITORMSG'</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>ping</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>smb</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>http</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>https</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>pop3</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>pop3s</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>imap</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>imaps</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>smtp</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>dg</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>dns</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>cups</b></td></tr>'
+echo '<br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="1" cellspacing="1"><tbody><tr><td style="vertical-align: top; text-align: left; width: '$WIDTH1'px;"><b>Host Group</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>'$MONITORMSG'</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>ping</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>smb</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>http</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>https</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>pop3</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>pop3s</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>imap</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>imaps</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>smtp</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>proxy</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>dns</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>cups</b></td></tr>'
 else
 TABLECLASS=mobilestandard
 #Create table
@@ -145,8 +145,7 @@ then
 if [ `ls -1 /opt/karoshi/server_network/mon/monitors_disabled | wc -l` -gt 0 ]
 then
 
-echo '<br><br>
-<b>'$INACTIVEMONITORSMSG'<b><br>
+echo '<br><b>'$INACTIVEMONITORSMSG'</b><br><br>
 <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="1" cellspacing="1"><tbody><tr><td style="width: '$WIDTH1'px;"><b>Host Group</b></td><td style="width: '$WIDTH2'px;"></td></tr>'
 
 for MONITORNAME in /opt/karoshi/server_network/mon/monitors_disabled/*

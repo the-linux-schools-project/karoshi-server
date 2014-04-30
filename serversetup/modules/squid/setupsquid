@@ -171,6 +171,43 @@ else
 cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/squid3/squid.conf /etc/squid/
 fi
 
+if [ ! -f /etc/squid/location_tcpip.list ]
+then
+echo 1.1.1.1 > /etc/squid/location_tcpip.list
+fi
+
+if [ ! -f /etc/squid/location_white.list ]
+then
+echo 4.4.4.4 > /etc/squid/location_white.list
+fi
+
+
+grep -v ^# /etc/dansguardian/exceptioniplist | sed "/^$/d" | wc -l
+
+if [ ! -f /etc/dansguardian/exceptioniplist ]
+then
+echo 4.4.4.4 > /etc/dansguardian/exceptioniplist
+fi
+
+if [ `grep -v ^# /etc/dansguardian/exceptioniplist | sed "/^$/d" | wc -l` = 0 ]
+then
+echo 4.4.4.4 > /etc/dansguardian/exceptioniplist
+fi
+
+if [ ! -f /etc/squid/location_banned_sites.list ]
+then
+echo -e ".youtube.com
+.mtv.co.uk
+.mtv.com
+.last.fm
+.dailymotion.com
+.grooveshark.com
+.rautemusik.fm
+.charthits.fm
+.vidstatsx.com
+.sharethis.com" > /etc/squid/location_banned_sites.list
+fi
+
 cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/errors/en/* /usr/share/squid3/errors/en/
 cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/karoshi_kerb_auth /usr/lib/squid3
 chmod 755 /usr/lib/squid3/karoshi_kerb_auth

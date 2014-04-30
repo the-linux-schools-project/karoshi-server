@@ -24,8 +24,8 @@ fi
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver ] && MONITORS="$MONITORS:imap:imaps:smtp"
 #Check for cups
 #[ -f /opt/karoshi/server_network/servers/$SERVERNAME/printserver ] && MONITORS="$MONITORS:cups"
-#Check for dansguardian
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/squid ] && MONITORS="$MONITORS:dansguardian:http:"
+#Check for squid
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/squid ] && MONITORS="$MONITORS:proxy:http:"
 #Check for apache or nginx
 if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver ] || [ -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
 then

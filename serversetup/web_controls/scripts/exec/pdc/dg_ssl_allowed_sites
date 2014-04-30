@@ -137,7 +137,7 @@ mv /etc/dansguardian/allowed_ssl_sites.$$ /etc/dansguardian/allowed_ssl_sites
 sed -i "/^$/d" /etc/dansguardian/allowed_ssl_sites
 #Reload squid
 source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_reload
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_reload 1>/dev/null
 fi
 fi
 exit

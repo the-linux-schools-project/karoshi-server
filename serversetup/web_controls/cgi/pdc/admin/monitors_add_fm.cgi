@@ -188,9 +188,9 @@ SMTP=""
 #cups
 CUPS=""
 [ `grep -c "service cups" /opt/karoshi/server_network/mon/$MONFOLDER/$MONITOR` -gt 0 ] && CUPS='checked="checked"'
-#Dansguardian
-DANSGUARDIAN=""
-[ `grep -c "service dansguardian" /opt/karoshi/server_network/mon/$MONFOLDER/$MONITOR` -gt 0 ] && DANSGUARDIAN='checked="checked"'
+#PROXY
+PROXY=""
+[ `grep -c "service proxy" /opt/karoshi/server_network/mon/$MONFOLDER/$MONITOR` -gt 0 ] && PROXY='checked="checked"'
 #dns
 DNS=""
 [ `grep -c "service dns" /opt/karoshi/server_network/mon/$MONFOLDER/$MONITOR` -gt 0 ] && DNS='checked="checked"'
@@ -330,7 +330,7 @@ echo '</td><td>
 <input type="checkbox" name="_MONITORTYPES_" '$CUPS' value="cups"> cups
 </td></tr>
 <tr><td>
-<input type="checkbox" name="_MONITORTYPES_" '$DANSGUARDIAN' value="dansguardian"> dansguardian
+<input type="checkbox" name="_MONITORTYPES_" '$PROXY' value="PROXY"> PROXY
 </td>
 <td>
 <input type="checkbox" name="_MONITORTYPES_" '$DNS' value="dns"> dns

@@ -132,7 +132,20 @@ echo `date`: dg_room_controls - action: $ACTION asset: $ASSET location: $LOCATIO
 PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
 
 [ ! -d /opt/karoshi/server_network/internet_room_controls/$LOCATION ] && mkdir -p /opt/karoshi/server_network/internet_room_controls/$LOCATION
+[ ! -d /opt/karoshi/server_network/internet_media_room_controls/$LOCATION ] && mkdir -p /opt/karoshi/server_network/internet_media_room_controls/$LOCATION
 
+function activate_changes {
+if [ $PROXYSERVER = `hostname-fqdn` ]
+then
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_reload 1>/dev/null
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_reload 1>/dev/null
+'
+fi
+}
 
 function get_asset_info {
 source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
@@ -183,6 +196,25 @@ fi
 '
 fi
 [ -f /opt/karoshi/server_network/internet_room_controls/$LOCATION/$ASSET ] && rm -f /opt/karoshi/server_network/internet_room_controls/$LOCATION/$ASSET
+}
+
+function allowmediaasset {
+get_asset_info
+if [ $PROXYSERVER = `hostname-fqdn` ]
+then
+if [ `grep -c $TCPIP1 /etc/squid/location_tcpip.list` -gt 0 ]
+then
+sed -i '/^'$TCPIP1'/d' /etc/squid/location_tcpip.list
+fi
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
+if [ `grep -c '$TCPIP1' /etc/squid/location_tcpip.list` -gt 0 ]
+then
+sed -i "/^'$TCPIP1'/d" /etc/squid/location_tcpip.list
+fi
+'
+fi
+[ -f /opt/karoshi/server_network/internet_media_room_controls/$LOCATION/$ASSET"_"media ] && rm -f /opt/karoshi/server_network/internet_media_room_controls/$LOCATION/$ASSET"_"media
 }
 
 function denyasset {
@@ -239,9 +271,35 @@ fi
 touch /opt/karoshi/server_network/internet_room_controls/$LOCATION/$ASSET
 }
 
+function denymediaasset {
+get_asset_info
+
+if [ $PROXYSERVER = `hostname-fqdn` ]
+then
+if [ `grep -c ^$TCPIP1 /etc/squid/location_tcpip.list` = 0 ]
+then
+echo $TCPIP1 >> /etc/squid/location_tcpip.list
+fi
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
+if [ `grep -c ^'$TCPIP1' /etc/squid/location_tcpip.list` = 0 ]
+then
+echo '$TCPIP1' >> /etc/squid/location_tcpip.list
+fi
+'
+fi
+touch /opt/karoshi/server_network/internet_media_room_controls/$LOCATION/$ASSET"_"media
+}
+
 if [ $ACTION = deny ]
 then
 denyasset
+fi
+
+if [ $ACTION = denymedia ]
+then
+denymediaasset
+activate_changes
 fi
 
 if [ $ACTION = allow ]
@@ -249,7 +307,13 @@ then
 allowasset
 fi
 
-if [ $ACTION = allowall ] || [ $ACTION = denyall ]
+if [ $ACTION = allowmedia ]
+then
+allowmediaasset
+activate_changes
+fi
+
+if [ $ACTION = allowall ] || [ $ACTION = denyall ] || [ $ACTION = allowallmedia ] || [ $ACTION = denyallmedia ]
 then
 if [ -d /opt/karoshi/asset_register/locations/$LOCATION ]
 then
@@ -261,13 +325,26 @@ ASSET=`basename $ASSETS`
 if [ $ACTION = allowall ]
 then
 allowasset
-else
+fi
+if [ $ACTION = denyall ]
+then
 denyasset
+fi
+if [ $ACTION = allowallmedia ]
+then
+allowmediaasset
+fi
+if [ $ACTION = denyallmedia ]
+then
+denymediaasset
 fi
 done
 fi
 fi
 fi
 
-
+if [ $ACTION = allowallmedia ] || [ $ACTION = denyallmedia ]
+then
+activate_changes
+fi
 

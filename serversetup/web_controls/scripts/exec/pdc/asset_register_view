@@ -723,6 +723,9 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 if [ `ls -1 /opt/karoshi/asset_register/locations/ | wc -l`  -gt 0 ]
 then
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><b>'$TITLE2' - Choose Location</b></td></tr></tbody></table><br>'
+
+[ $MOBILE != yes ] && echo '</div><div id="infobox">'
+
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
 LOCCOUNTER=1
 LOCATIONARRAY=( `ls /opt/karoshi/asset_register/locations/ | sort -f` )
