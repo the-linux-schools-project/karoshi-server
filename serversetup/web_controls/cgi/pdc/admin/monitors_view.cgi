@@ -107,14 +107,14 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top; width: 110px;"><b>'"$TITLE"'</b></td>
+echo '<div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top; width: 110px;"><b>'"$TITLE"'</b></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td>
 <td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_add_fm.cgi" name="monitors" method="post">
 <input name="ADDMONITOR" type="submit" class="button" value="'$ADDMONITORMSG'">
 </form></td><td style="vertical-align: top;"><form action="/cgi-bin/admin/mon_status.cgi" name="monitors" method="post">
 <input name="MONITORSTATUS" type="submit" class="button" value="'$NETWORKSTATUSMSG'">
 </form></td></tr></tbody></table>
-<br>'
+<br></div><div id="infobox">'
 
 #Show monitors
 
@@ -182,5 +182,5 @@ done
 fi
 fi
 
-echo '</tbody></table></div></div></body></html>'
+echo '</tbody></table></div></div></div></body></html>'
 exit

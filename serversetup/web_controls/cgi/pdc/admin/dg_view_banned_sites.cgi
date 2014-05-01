@@ -154,8 +154,7 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/dg_view_banned_sites2.cgi" name="selectedsites" method="post"><b></b>'
-echo "<div id="actionbox">"
+echo '<form action="/cgi-bin/admin/dg_view_banned_sites2.cgi" name="selectedsites" method="post"><b></b><div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$TITLE'</div><br></div><div id="infobox">'
 echo '<input name="_GROUP_" value="'$GROUP'" type="hidden">'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_banned_sites.cgi | cut -d' ' -f1`
 #Show sites
@@ -166,6 +165,5 @@ then
 MESSAGE=$ERRORMSG2
 show_status
 fi
-echo '</div>'
-echo '</form>'
-echo "</div></body></html>"
+echo '</div></div></form></div></body></html>'
+

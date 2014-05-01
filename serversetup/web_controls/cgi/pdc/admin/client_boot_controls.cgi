@@ -206,7 +206,12 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 <td style="vertical-align: top;">
 <form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
 <input name="_ACTION_resetall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$RESETALLMSG'">
-</form></td>
+</form></td></tr>
+<tr><td style="vertical-align: top;">
+<form action="/cgi-bin/admin/asset_register_view.cgi" method="post">
+<input name="_ACTION_view_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$TITLE18'">
+</form>
+</td>
 </tr></tbody></table>'
 
 else
@@ -231,7 +236,13 @@ echo '<b>'$TITLE6' - '$LOCATION'</b><br><br><table class="'$TABLECLASS'" style="
 <td style="vertical-align: top;">
 <form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
 <input name="_ACTION_wakeonlanall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$WAKEONLANALLMSG'">
-</form></td></tr></table>'
+</form></td>
+<td style="vertical-align: top;">
+<form action="/cgi-bin/admin/asset_register_view.cgi" method="post">
+<input name="_ACTION_view_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$TITLE18'">
+</form>
+</td>
+</tr></table>'
 fi
 [ $MOBILE = no ] && echo '</div><div id="infobox">'
 echo '<form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">'

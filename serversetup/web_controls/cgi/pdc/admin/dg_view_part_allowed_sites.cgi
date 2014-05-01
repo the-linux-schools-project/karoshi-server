@@ -155,13 +155,12 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/dg_view_part_allowed_sites2.cgi" name="selectedsites" method="post"><b></b>'
-echo "<div id="actionbox">"
+echo '<form action="/cgi-bin/admin/dg_view_part_allowed_sites2.cgi" name="selectedsites" method="post"><b></b><div id="actionbox3"><div id="titlebox"><b>'$TITLE'</b><br><br></div><div id="infobox">'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_part_allowed_sites.cgi | cut -d' ' -f1`
 #Show sites
-echo '<input value="Submit" type="submit">' '<input value="Reset" type="reset">'
-echo '<'input type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedsites"'", "'"_SITENAME_"'", true')'';''"' value='"'Select all'"''>'
+echo '<input class="button" value="Submit" type="submit">' '<input value="Reset" type="reset">'
+echo '<'input class='"'button'"' type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedsites"'", "'"_SITENAME_"'", true')'';''"' value='"'Select all'"''>'
 echo '<input name="_GROUP_" value="'$GROUP'" type="hidden">'
 sudo -H /opt/karoshi/web_controls/exec/dg_view_part_allowed_sites $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ALPHABET:$GROUP
 SITESTATUS=`echo $?`
@@ -170,9 +169,7 @@ then
 MESSAGE=$ERRORMSG2
 show_status
 fi
-echo '<input value="Submit" type="submit"> <input value="Reset" type="reset"> '
-echo '<'input type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedsites"'", "'"_SITENAME_"'", true')'';''"' value='"'Select all'"''>'
-echo '</div>'
-echo '</form>'
-echo "</div></body></html>"
+echo '<input class="button" value="Submit" type="submit"> <input value="Reset" type="reset"> '
+echo '<'input class='"'button'"' type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedsites"'", "'"_SITENAME_"'", true')'';''"' value='"'Select all'"''>'
+echo '</div></div></form></div></body></html>'
 exit

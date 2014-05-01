@@ -76,14 +76,14 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox3
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
 DIV_ID=menubox
 fi
 
-echo '<form action="/cgi-bin/admin/dg_extensions.cgi" name="selectedsites" method="post"><b></b><div id="'$DIV_ID'">'
+echo '<form action="/cgi-bin/admin/dg_extensions.cgi" name="selectedsites" method="post"><b></b><div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = allow ]
@@ -93,7 +93,7 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/dg_extensions.cgi"><b>'$TITLE'</b></a></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td></tr></tbody></table><br>'
 else
 echo '<b>'$TITLE'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
-<br><br>'
+<br><br></div><div id="infobox">'
 fi
 
 echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"><br><br>'
@@ -898,5 +898,9 @@ echo '</tbody></table>'
 
 
 echo '<br><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
-  </div></form></div></body></html>'
+  </div>'
+
+[ $MOBILE = no ] && echo '</div>'
+
+echo '</form></div></body></html>'
 exit

@@ -137,9 +137,9 @@ echo "<div id="actionbox">"
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_banned_users.cgi | cut -d' ' -f1`
 #Show sites
-echo '<input value="Submit" type="submit">'
-echo '<input value="Reset" type="reset">'
-echo '<'input type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedusers"'", "'"_USERNAME_"'", true')'';''"' value='"'Select all'"''>'
+echo '<input class="button" value="Submit" type="submit">'
+echo '<input class="button" value="Reset" type="reset">'
+echo '<'input class='"'button'"' type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedusers"'", "'"_USERNAME_"'", true')'';''"' value='"'Select all'"''>'
 sudo -H /opt/karoshi/web_controls/exec/dg_view_banned_users $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ALPHABET
 SITESTATUS=`echo $?`
 if [ $SITESTATUS = 101 ]
@@ -150,7 +150,7 @@ fi
 #echo "</div>"
 #echo '<div id="submitbox">'
 echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"> '
-echo '<'input type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedusers"'", "'"_USERNAME_"'", true')'';''"' value='"'Select all'"''>'
+echo '<'input class='"'button'"' type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedusers"'", "'"_USERNAME_"'", true')'';''"' value='"'Select all'"''>'
 echo '</div>'
 echo '</form>'
 echo "</div></body></html>"

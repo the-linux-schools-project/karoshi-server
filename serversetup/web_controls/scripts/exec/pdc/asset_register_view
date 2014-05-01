@@ -1181,16 +1181,32 @@ if [ $OPTION = filter ]
 then
 ASSETTYPE=$ASSETCHOICE
 assign_asset_labels
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
-<td style="vertical-align: top;"><b>'$LOCATION'</b></td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_view_LOCATION_'$LOCATION'_ASSETCHOICE_'$ASSETTYPE'_OPTION_nofilter_" type="image" class="images" src="'$ASSETICON'" value=""><span>'$SHOWALLMSG'</span></a></td>
-<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_" type="image" class="images" src="'$ICON1'" value=""><span>'$CHOOSELOCATIONMSG'</span></a></td>
-<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_add_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON4'" value=""><span>'$ADDASSETMSG'</span></a></td>
-</tr></tbody></table>
+echo '<b>'$TITLE13' - '$LOCATION'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<td style="vertical-align: top;"><input name="_ACTION_view_LOCATION_'$LOCATION'_ASSETCHOICE_'$ASSETTYPE'_OPTION_nofilter_" type="submit" class="button" value="'$SHOWALLMSG'"></td>
+<td style="vertical-align: top;"><input name="_ACTION_view_" type="submit" class="button" value="'$CHOOSELOCATIONMSG'"></td>'
+
+[ $MOBILE = yes ] && echo '</tr><tr>'
+
+echo '<td style="vertical-align: top;"><input name="_ACTION_add_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$ADDASSETMSG'"></td>'
+if [ -f /opt/karoshi/server_network/distribution_server ]
+then 
+echo '<td style="vertical-align: top;"></form><form action="client_boot_controls.cgi" id="foo" method="post"><input name="_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$TITLE6'"></form><form action="asset_register_view.cgi" id="foo" method="post"></td>'
+fi
+echo '</tr></tbody></table>
 '
 else
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_" type="image" class="images" src="'$ICON1'" value=""><span>'$CHOOSELOCATIONMSG'</span></a></td>
-<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_add_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON4'" value=""><span>'$ADDASSETMSG'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_qrcodes_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON18'" value=""><span>'$TITLE19'</span></a></td>
-<td style="vertical-align: top;"><b>'$LOCATION'</b></td></tr></tbody></table>
+echo '<b>'$TITLE13' - '$LOCATION'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<td style="vertical-align: top;"><input name="_ACTION_view_" type="submit" class="button" value="'$CHOOSELOCATIONMSG'"></td>
+<td style="vertical-align: top;"><input name="_ACTION_add_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$ADDASSETMSG'"></td>'
+
+[ $MOBILE = yes ] && echo '</tr><tr>'
+
+echo '<td style="vertical-align: top;"><input name="_ACTION_qrcodes_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$TITLE19'"></td>'
+if [ -f /opt/karoshi/server_network/distribution_server ]
+then 
+echo '<td style="vertical-align: top;"></form><form action="client_boot_controls.cgi" id="foo" method="post"><input name="_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$TITLE6'"></form><form action="asset_register_view.cgi" id="foo" method="post"></td>'
+fi
+echo '</tr></tbody></table>
 '
 fi
 

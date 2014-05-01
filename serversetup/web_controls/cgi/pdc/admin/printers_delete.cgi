@@ -140,6 +140,6 @@ let COUNTER=$COUNTER+1
 done
 echo '</select></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Delete_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'"$CHOOSEPRINTERMSG"'</span></a>
-</td></tr></tbody</table></div><div id="submitbox"><input value="Submit" type="submit">'
+</td></tr></tbody></table></div><div id="submitbox"><input class="button" value="Submit" type="submit">'
 echo '</form></div></div></body></html>'
 exit

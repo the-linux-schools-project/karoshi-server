@@ -129,7 +129,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 else
 #Show title
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="vertical-align: top; width: 110px;"><b>'$TITLE'</b></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td><td style="vertical-align: top;">
+<tbody><tr><td style="vertical-align: top; width: 110px;"><div class="sectiontitle">'$TITLE'</div></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td><td style="vertical-align: top;">
 <a href="/cgi-bin/admin/monitors_add_fm.cgi"><input class="button" type="button" name="" value="'$ADDMONITORMSG'"></a>
 </td>
 <td style="vertical-align: top;">

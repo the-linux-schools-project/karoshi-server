@@ -153,6 +153,8 @@ source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
 
 function allowasset {
 get_asset_info
+if [ $ASSETTYPE = 1 ] || [ $ASSETTYPE = 3 ] || [ $ASSETTYPE = 5 ] || [ $ASSETTYPE = 7 ] || [ $ASSETTYPE = 9 ]
+then
 if [ $PROXYSERVER = `hostname-fqdn` ]
 then
 #Allow tcpip
@@ -196,10 +198,13 @@ fi
 '
 fi
 [ -f /opt/karoshi/server_network/internet_room_controls/$LOCATION/$ASSET ] && rm -f /opt/karoshi/server_network/internet_room_controls/$LOCATION/$ASSET
+fi
 }
 
 function allowmediaasset {
 get_asset_info
+if [ $ASSETTYPE = 1 ] || [ $ASSETTYPE = 3 ] || [ $ASSETTYPE = 5 ] || [ $ASSETTYPE = 7 ] || [ $ASSETTYPE = 9 ]
+then
 if [ $PROXYSERVER = `hostname-fqdn` ]
 then
 if [ `grep -c $TCPIP1 /etc/squid/location_tcpip.list` -gt 0 ]
@@ -215,11 +220,13 @@ fi
 '
 fi
 [ -f /opt/karoshi/server_network/internet_media_room_controls/$LOCATION/$ASSET"_"media ] && rm -f /opt/karoshi/server_network/internet_media_room_controls/$LOCATION/$ASSET"_"media
+fi
 }
 
 function denyasset {
 get_asset_info
-
+if [ $ASSETTYPE = 1 ] || [ $ASSETTYPE = 3 ] || [ $ASSETTYPE = 5 ] || [ $ASSETTYPE = 7 ] || [ $ASSETTYPE = 9 ]
+then
 if [ $PROXYSERVER = `hostname-fqdn` ]
 then
 BAN_FLAG=no
@@ -269,11 +276,13 @@ fi
 '
 fi
 touch /opt/karoshi/server_network/internet_room_controls/$LOCATION/$ASSET
+fi
 }
 
 function denymediaasset {
 get_asset_info
-
+if [ $ASSETTYPE = 1 ] || [ $ASSETTYPE = 3 ] || [ $ASSETTYPE = 5 ] || [ $ASSETTYPE = 7 ] || [ $ASSETTYPE = 9 ]
+then
 if [ $PROXYSERVER = `hostname-fqdn` ]
 then
 if [ `grep -c ^$TCPIP1 /etc/squid/location_tcpip.list` = 0 ]
@@ -289,6 +298,7 @@ fi
 '
 fi
 touch /opt/karoshi/server_network/internet_media_room_controls/$LOCATION/$ASSET"_"media
+fi
 }
 
 if [ $ACTION = deny ]

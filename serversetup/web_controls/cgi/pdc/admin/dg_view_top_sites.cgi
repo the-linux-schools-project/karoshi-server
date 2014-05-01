@@ -47,7 +47,7 @@ echo ""
 echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE3'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox">'
+echo '<div id="actionbox3"><div id="titlebox">'
 #########################
 #Get data input
 #########################
@@ -160,7 +160,7 @@ fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_top_sites.cgi | cut -d' ' -f1`
 #View logs
-echo '<b>'$TITLE3 $DAY-$MONTH-$YEAR'</b><br><br>'
+echo '<b>'$TITLE3 $DAY-$MONTH-$YEAR'</b><br><br></div><div id="infobox">'
 echo \<form action=\"/cgi-bin/admin/dg_view_site_logs2.cgi\" method=\"post\"\>
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DAY:$MONTH:$YEAR:" | sudo -H /opt/karoshi/web_controls/exec/dg_view_top_sites
 EXEC_STATUS=`echo $?`
@@ -175,5 +175,5 @@ MESSAGE=`echo $ERRORMSG7`
 show_status
 fi
 
-echo '</form></div></div></body></html>'
+echo '</form></div></div></div></body></html>'
 exit

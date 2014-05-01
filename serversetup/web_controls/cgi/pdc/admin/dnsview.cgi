@@ -252,6 +252,9 @@ ALTTITLE="$TITLE4"
 ACTION2=add
 ICON=/images/submenus/system/dnsaddm.png
 fi
+
+SERVERNAME2=`echo "${SERVERNAME:0:9}" | cut -d. -f1`
+
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
@@ -268,7 +271,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 '
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tr><td style="vertical-align: top;"><b>'$TITLE' - '$SERVERNAME'</b></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td><td style="vertical-align: top;">
+<tr><td style="vertical-align: top;"><div class="sectiontitle">'$TITLE' - '$SERVERNAME2'</div></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td><td style="vertical-align: top;">
 <form action="/cgi-bin/admin/dnsview.cgi" method="post">
 <input name="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_ACTION_'$ACTION2'_" type="submit" class="button" value="'$ALTTITLE'">
 </form>

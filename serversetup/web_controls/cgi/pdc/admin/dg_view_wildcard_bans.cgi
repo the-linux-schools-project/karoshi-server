@@ -132,14 +132,13 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/dg_view_wildcard_bans2.cgi" name="selectedwildcards" method="post"><b></b>'
-echo "<div id="actionbox">"
+echo '<form action="/cgi-bin/admin/dg_view_wildcard_bans2.cgi" name="selectedwildcards" method="post"><b></b><div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$TITLE'</div><br></div><div id="infobox">'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_wildcard_bans.cgi | cut -d' ' -f1`
 #Show sites
-echo '<input value="Submit" type="submit">'
-echo '<input value="Reset" type="reset">'
-echo '<'input type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedusers"'", "'"_USERNAME_"'", true')'';''"' value='"'Select all'"''>'
+echo '<input class="button" value="Submit" type="submit">'
+echo '<input class="button" value="Reset" type="reset">'
+echo '<'input class='"'button'"' type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedusers"'", "'"_USERNAME_"'", true')'';''"' value='"'Select all'"''>'
 sudo -H /opt/karoshi/web_controls/exec/dg_view_wildcard_bans $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ALPHABET
 SITESTATUS=`echo $?`
 if [ $SITESTATUS = 101 ]
@@ -149,10 +148,6 @@ show_status
 fi
 #echo "</div>"
 #echo '<div id="submitbox">'
-echo '<input value="Submit" type="submit">'
-echo '<input value="Reset" type="reset"> '
-echo '<'input type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedwildcards"'", "'"_WILDCARD_"'", true')'';''"' value='"'Select all'"''>'
-echo '</div>'
-echo '</form>'
-echo "</div></body></html>"
+echo '<input class="button" value="Submit" type="submit"><input class="button" value="Reset" type="reset"><'input class='"'button'"' type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedwildcards"'", "'"_WILDCARD_"'", true')'';''"' value='"'Select all'"''>'
+echo '</div></form></div></div></body></html>'
 exit

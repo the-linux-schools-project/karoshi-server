@@ -188,10 +188,11 @@ MESSAGE=$ACCESS_ERROR1
 show_status
 fi
 
+SERVERNAME2=`echo "${SERVERNAME:0:9}" | cut -d. -f1`
+
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-SERVERNAME2=`echo "${SERVERNAME:0:9}" | cut -d. -f1`
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$SERVERNAME2'</span>
@@ -201,7 +202,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
-<td style="vertical-align: top;"><b>'$TITLE2' - '$SERVERNAME'</b></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'"$VIEWJOBSHELP"'</span></a></td>
+<td style="vertical-align: top;"><div class="sectiontitle">'$TITLE2' - '$SERVERNAME2'</div></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'"$VIEWJOBSHELP"'</span></a></td>
 <td style="vertical-align: top;"><a href="cron_view_fm.cgi"><input class="button" type="button" name="" value="'$CHOOSESERVERMSG'"></a></td>
 <td style="vertical-align: top;"><a href="cron_add_fm.cgi"><input class="button" type="button" name="" value="'$TITLE'"></a></td>
 </tr></tbody></table><br>'

@@ -130,7 +130,7 @@ else
 echo '
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr>
-<td style="vertical-align: top;"><b>'$TITLE2'</b></td>
+<td style="vertical-align: top;"><div class="sectiontitle">'$TITLE2'</div></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'"$SERVERHELP2"'</span></a></td>
 <td style="vertical-align: top;"><a href="cron_add_fm.cgi"><input class="button" type="button" name="" value="'$TITLE'"></a></td>
 </tr></table>

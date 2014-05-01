@@ -128,9 +128,7 @@ else
 FILTERPATH=/etc/dansguardian/student_rules/bannedurllist_students
 fi
 
-echo '<input value="Submit" type="submit">'
-echo '<input value="Reset" type="reset">'
-echo '<'input type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedsites"'", "'"_SITENAME_"'", true')'';''"' value='"'Select all'"''>'
+echo '<input class="button" value="Submit" type="submit"><input class="button" value="Reset" type="reset"><'input class='"'button'"' type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedsites"'", "'"_SITENAME_"'", true')'';''"' value='"'Select all'"''>'
 
 #Get squid server name
 [ ! -f /opt/karoshi/server_network/proxyserver ] && exit 101
@@ -211,7 +209,6 @@ exit 101
 fi
 fi
 
-echo '<input value="Submit" type="submit">'
-echo '<input value="Reset" type="reset">'
-echo '<'input type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedsites"'", "'"_SITENAME_"'", true')'';''"' value='"'Select all'"''>'
+echo '<input class="button" value="Submit" type="submit"><input class="button" value="Reset" type="reset">'
+echo '<'input class='"'button'"' type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedsites"'", "'"_SITENAME_"'", true')'';''"' value='"'Select all'"''>'
 exit

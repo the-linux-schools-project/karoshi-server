@@ -132,7 +132,7 @@ echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpad
 <input name=\"_USERNAME_'$USERNAME'"_"\" type=\"submit\" class=\"button\" value=\"'$BANMSG'\">
 </form></td></tr></tbody></table><br>
 </div><div id=\"infobox\">
-<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody><tr><td style=\"width: 60px;\"><b>'$BANMSG'</b></td><td style=\"width: 90px;\"><b>'$SITESVISTEDMSG'</b></td><td style=\"width: 120px;\"><b>'$WEBLOGDATE'</b></td></tr>"
+<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody><tr><td style=\"width: 60px;\"><b>'$VIEWLOGMSG2'</b></td><td style=\"width: 90px;\"><b>'$SITESVISTEDMSG'</b></td><td style=\"width: 120px;\"><b>'$WEBLOGDATE'</b></td></tr>"
 
 cat /opt/karoshi/logs/internetlogs/user_usage/'$USERNAME'
 
@@ -150,7 +150,7 @@ echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpad
 <input name=\"_USERNAME_'$USERNAME'"_"\" type=\"submit\" class=\"button\" value=\"'$BANMSG'\">
 </form></td></tr></tbody></table><br>
 </div><div id=\"infobox\">
-<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody><tr><td style=\"width: 60px;\"><b>$SITESVISTEDMSG</b></td><td style=\"width: 90px;\"><b>$SITESVISTEDMSG</b></td><td style=\"width: 120px;\"><b>$WEBLOGDATE</b></td></tr>"
+<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody><tr><td style=\"width: 60px;\"><b>$VIEWLOGMSG2</b></td><td style=\"width: 90px;\"><b>$SITESVISTEDMSG</b></td><td style=\"width: 120px;\"><b>$WEBLOGDATE</b></td></tr>"
 
 cat /opt/karoshi/logs/internetlogs/user_usage/$USERNAME
 

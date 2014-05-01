@@ -361,7 +361,7 @@ echo "</tbody></table>$GEN_DATE<br>" >> /opt/karoshi/server_network/mon/mon_mobi
 
 #Add in today's failures to the bottom
 
-TODAY=`date "+%a %b %d"`
+TODAY=`date "+%a %b %e" | sed 's/  / /g'`
 EVENTS=`grep -R "$TODAY" /opt/karoshi/server_network/mon/events/* | cut -d: -f2- | sed 's/ /_/g'`
 if [ ! -z "$EVENTS" ]
 then

@@ -103,7 +103,7 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox3
 TABLECLASS=standard
 STYLEWIDTH=200
 #Generate navigation bar
@@ -134,7 +134,7 @@ else
 echo '<div id="'$DIV_ID'"><div id="titlebox">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr>
-<td style="vertical-align: top;"><b>'$TITLE'</b></td>
+<td style="vertical-align: top;"><div class="sectiontitle">'$TITLE'</div></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'"$SERVERHELP2"'</span></a></td>
 <td style="vertical-align: top;"><a href="/cgi-bin/admin/cron_view_fm.cgi"><input class="button" type="button" name="" value="'$TITLE2'"></a></td>
 </tr></table></div><div id ="infobox">'
