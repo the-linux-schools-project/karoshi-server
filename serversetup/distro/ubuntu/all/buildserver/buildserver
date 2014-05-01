@@ -322,6 +322,9 @@ function install_sogo {
 }
 
 function configure_system {
+#Remove staff group
+groupdel staff
+
 #COnfigure apache with extra modules.
 [ ! -f /etc/apache2/mods-enabled_karoshi/auth_kerb.load ] && ln -s /etc/apache2/mods-available/auth_kerb.load /etc/apache2/mods-enabled_karoshi/auth_kerb.load
 [ ! -f /etc/apache2/mods-enabled/ldap.conf ] && ln -s /etc/apache2/mods-available/ldap.conf /etc/apache2/mods-enabled/ldap.conf
