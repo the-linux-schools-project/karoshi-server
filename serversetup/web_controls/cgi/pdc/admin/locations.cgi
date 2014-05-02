@@ -80,7 +80,7 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="vertical-align: top;"><div class="sectiontitle">'$TITLE'</div></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG1"'</span></a></td>
 <td style="vertical-align: top;"><form action="/cgi-bin/admin/printers.cgi" name="printers" method="post">
@@ -91,7 +91,7 @@ echo '<div id="actionbox"><table class="standard" style="text-align: left;" bord
 echo '<form action="/cgi-bin/admin/locations2.cgi" method="post"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">'
 echo '<tbody>'
 echo '<tr><td style="width: 180px;">'$NEWLOCATION'</td><td><input name="_NEWLOCATION_" size="15" type="text"> </td><td><input value="Submit" type="submit" class="button"></td></tr>'
-echo '</tbody></table><br>'
+echo '</tbody></table><br></div><div id="infobox">'
 
 if [ -f /var/lib/samba/netlogon/locations.txt ]
 then
@@ -118,5 +118,5 @@ let COUNTER=$COUNTER+1
 done
 echo '</tbody></table><br>'
 fi
-echo '</form></div></div></body></html>'
+echo '</form></div></div></div></body></html>'
 exit

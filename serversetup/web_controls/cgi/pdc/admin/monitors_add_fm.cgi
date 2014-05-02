@@ -330,7 +330,7 @@ echo '</td><td>
 <input type="checkbox" name="_MONITORTYPES_" '$CUPS' value="cups"> cups
 </td></tr>
 <tr><td>
-<input type="checkbox" name="_MONITORTYPES_" '$PROXY' value="PROXY"> PROXY
+<input type="checkbox" name="_MONITORTYPES_" '$PROXY' value="PROXY"> proxy
 </td>
 <td>
 <input type="checkbox" name="_MONITORTYPES_" '$DNS' value="dns"> dns

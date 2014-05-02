@@ -328,23 +328,6 @@ Comment=Email reader
 Icon=internet-mail
 Exec=exo-open --launch MailReader' > /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVER/desktop-icons/all/Thunderbird.desktop
 
-#Add in thunderbird extensions
-
-[ -d /tmp/integrator.$$ ] && rm -f -R /tmp/integrator.$$
-
-[ ! -d /var/lib/samba/netlogon/client_settings/thunderbird/extensions ] && mkdir -p /var/lib/samba/netlogon/client_settings/thunderbird/extensions
-
-mkdir /tmp/integrator.$$
-unzip -q /opt/karoshi/serversetup/modules/email/sogo/thunderbird-extensions/sogo-integrator-17.0.5.xpi -d /tmp/integrator.$$/
-#Edit files -
-sed -i 's/CHANGETHISSERVER.CHANGETHISREALM/'$ALIAS'.'$REALM'/g' /tmp/integrator.$$/chrome/content/extensions.rdf
-sed -i "s@CHANGETHISTIMEZONE@`sed -n 1,1p /etc/timezone`@g" /tmp/integrator.$$/defaults/preferences/site.js
-#Rezip file
-( cd /tmp/integrator.$$ ; zip -r -q /var/lib/samba/netlogon/client_settings/thunderbird/extensions/sogo-integrator-*.xpi * )
-rm -f -R /tmp/integrator.$$
-cp /opt/karoshi/serversetup/modules/email/sogo/thunderbird-extensions/sogo-connector-*.xpi /var/lib/samba/netlogon/client_settings/thunderbird/extensions/
-cp /opt/karoshi/serversetup/modules/email/sogo/thunderbird-extensions/firetray*.xpi /var/lib/samba/netlogon/client_settings/thunderbird/extensions/
-
 #Add role information
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
 echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/emailserver
