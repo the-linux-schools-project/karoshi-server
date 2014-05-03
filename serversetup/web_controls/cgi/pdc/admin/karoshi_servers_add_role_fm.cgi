@@ -100,11 +100,15 @@ ICON2=/images/warnings/server_no_config.png
 /opt/karoshi/web_controls/generate_navbar_admin
 
 
-echo '<div id="actionbox"><span style="font-weight: bold;">'
+echo '<div id="actionbox">'
 
-echo ''$TITLE' - '$SERVERNAME'</span> 
+
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="vertical-align: top;"><div class="sectiontitle">'$TITLE' - '$SERVERNAME'</div></td>
+<td style="vertical-align: top;">
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Role"><img class="images" alt="" src="/images/help/info.png"><span>'$CHOOSEROLEHELP'</span></a>
-<br><br>
+</td></tr></tbody></table>
+<br>
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="vertical-align: top; width: 180px; height: 40px;">'$DHCPSERVERMSG'</td>
 <td style="vertical-align: top; width: 80px;">

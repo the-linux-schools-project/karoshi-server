@@ -43,8 +43,6 @@ echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox">'
-
 #########################
 #Get data input
 #########################
@@ -139,6 +137,8 @@ MESSAGE=$ERRORMSG2
 show_status
 fi
 
+echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$TITLE' - '$SERVERNAME'</div><br><br></div><div id="infobox">'
+
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_smbwebclient.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ALIAS:" | sudo -H /opt/karoshi/web_controls/exec/module_smbwebclient
 EXEC_STATUS=$?
@@ -147,5 +147,5 @@ then
 MESSAGE=`echo $PROBLEMMSG $LOGMSG`
 show_status
 fi
-echo '</div></div></body></html>'
+echo '</div></div></div></body></html>'
 exit
