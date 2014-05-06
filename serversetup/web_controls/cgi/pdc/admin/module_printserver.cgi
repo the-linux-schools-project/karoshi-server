@@ -1,5 +1,5 @@
 #!/bin/bash
-#module_fileserver
+#module_printserver
 #Copyright (C) 2007 Paul Sharrad
 
 #This file is part of Karoshi Server.

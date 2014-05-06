@@ -117,23 +117,6 @@ cp -f /opt/karoshi/serversetup/all/links/adminfilemanager.desktop /opt/karoshi/k
 cp -f /opt/karoshi/serversetup/all/links/webmanagement.desktop /opt/karoshi/karoshi_user/Desktop/
 chmod 0700 /opt/karoshi/karoshi_user/Desktop/adminfilemanager.desktop
 
-#########################
-#Add in uptime
-#########################
-source /opt/karoshi/serversetup/variables/distro
-#Copy in uptime script
-cp -f /opt/karoshi/serversetup/scripts/uptime/karoshi-uptime.sh /usr/sbin/
-cp -f /opt/karoshi/serversetup/scripts/uptime/karoshi-uptime /etc/init.d/
-#Start update script
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/karoshi-uptime_start
-#Set update script to run on boot
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/karoshi-uptime
-#Reset the uptime data
-karoshi-uptime.sh reset
-
-#Create some statistics
-/opt/karoshi/web_controls/statistics
-
 #######################
 #Stop password aging
 #######################

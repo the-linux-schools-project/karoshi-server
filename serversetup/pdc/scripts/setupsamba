@@ -112,17 +112,17 @@ echo $SAMBAROOTPASSWORD1 > /opt/karoshi/.tempdata/sambapassword
 #Get domain name
 ###############################
 function getdomainname {
-DATA=`yad --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title="$TITLE" --width 500 --wrap --text "$DOMAINNAMEMSG1\n$DOMAINNAMEMSG2\n\n$EXAMPLEMSG\n\n$DOMAINNAMEMSG3:\t\ttestdomain.example.com\n$SITENAMEMSG:\tExample Institute of Technology\nShort Name:\tEIT\n" --field="$DOMAINNAMEMSG3" --field="$SITENAMEMSG" --field="$SHORTSITENAMEMSG" --button="gtk-ok" 2>/dev/null`
+DATA=`yad --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title="$TITLE" --width 500 --wrap --text "$DOMAINNAMEMSG1\n$DOMAINNAMEMSG2\n\n$EXAMPLEMSG\n\n$DOMAINNAMEMSG3:\t\ttestdomain.example.com\n$SITENAMEMSG:\tExample Institute of Technology\nShort Name:\tEIT\n\n$DOMAINERRORMSG" --field="$DOMAINNAMEMSG3" --field="$SITENAMEMSG" --field="$SHORTSITENAMEMSG" --button="gtk-ok" 2>/dev/null`
 WEBADDRESS=`echo $DATA | cut -d"|" -f1 | tr -cd 'A-Za-z0-9.:/' | tr 'A-Z' 'a-z' | sed 's/^https:\/\///' | sed 's/^http:\/\///' | sed 's/^www.//g'`
 LONGNAME=`echo $DATA | cut -d"|" -f2 | tr -cd 'A-Za-z0-9.: /' | sed 's/^https:\/\///' | sed 's/^http:\/\///' | sed 's/^www.//g'`
 SHORTNAME=`echo $DATA | cut -d"|" -f3 | tr -cd 'A-Za-z0-9.: /' | sed 's/^https:\/\///' | sed 's/^http:\/\///' | sed 's/^www.//g'`
 }
 
 #Get domain name
-getdomainname
-while [ $WEBADDRESS'null' = null ]
+while [ -z "$WEBADDRESS" ] || [ "$WEBADDRESS" = $HOSTNAME ]
 do
 getdomainname
+[ "$WEBADDRESS" = $HOSTNAME ] && DOMAINERRORMSG="$DOMAINERRORMSG1"
 done
 
 #Create domain information
