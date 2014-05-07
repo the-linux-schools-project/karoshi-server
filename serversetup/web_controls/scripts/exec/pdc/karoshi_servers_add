@@ -107,6 +107,14 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 source /opt/karoshi/server_network/domain_information/domain_name
 
+if [ $SERVER = $REALM ]
+then
+echo "<li>$SERVER - $ERRORMSG8</li>"
+echo `date`: karoshi_servers_add - $SERVER - $ERRORMSG8 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+sleep 3
+exit 101
+fi
+
 #Get ip zone information
 PDCIP=`net lookup $HOSTNAME`
 PDCZONEIP=`ip addr | grep $PDCIP | sed -n "s/[[:space:]]*inet \([^ ]*\).*/\1/p"`
@@ -243,8 +251,8 @@ fi
 if [ $SSHRESULT = 103 ]
 then
 #TCPIP zone information is not correct
-echo "<li>$SERVER - network settings for this server show that it should not be in the same zone as the main server.</li>"
-echo `date`: karoshi_servers_add - $SERVER: $ZONE "network settings for this server show that it should not be in the same zone as the main server." by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "<li>$SERVER - $ERRORMSG9</li>"
+echo `date`: karoshi_servers_add - $SERVER: $ZONE "$ERRORMSG9" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 sleep 3
 exit 101
 fi
@@ -252,16 +260,16 @@ fi
 if [ $SSHRESULT = 104 ]
 then
 #TCPIP zone information is not correct
-echo "<li>$SERVER - network settings for this server show that it should be in the same zone as the main server.</li>"
-echo `date`: karoshi_servers_add - $SERVER: $ZONE "network settings for this server show that it should be in the same zone as the main server." by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "<li>$SERVER - $ERRORMSG10</li>"
+echo `date`: karoshi_servers_add - $SERVER: $ZONE "$ERRORMSG10" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 sleep 3
 exit 101
 fi
 
 if [ $SSHRESULT != 0 ]
 then
-echo "<li>$SERVER - SSH connection failure</li>"
-echo `date`: karoshi_servers_add - $SERVER: $ZONE SSH connection failure by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "<li>$SERVER - $ERRORMSG11</li>"
+echo `date`: karoshi_servers_add - $SERVER: $ZONE $ERRORMSG11 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 sleep 3
 exit 101
 fi
