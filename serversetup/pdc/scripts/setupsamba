@@ -265,6 +265,7 @@ echo -e '# Global parameters
 	netbios name = '$HOSTNAME'
 	server role = active directory domain controller
 	dns forwarder = '$DNSFORWARD'
+	allow dns updates = nonsecure
 	idmap_ldb:use rfc2307 = yes
 	acl:search=false
 	log level = 1
