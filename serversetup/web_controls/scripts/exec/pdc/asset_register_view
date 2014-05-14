@@ -1290,7 +1290,7 @@ else
 echo '</tr>'
 fi
 
-for ASSETS in `grep -l -R $OPTION /opt/karoshi/asset_register/locations/*`
+for ASSETS in `grep -i -l -R $OPTION /opt/karoshi/asset_register/locations/*`
 do
 ASSET=`basename $ASSETS`
 LOCATION=`echo $ASSETS | cut -d"/" -f6`

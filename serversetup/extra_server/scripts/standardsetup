@@ -53,6 +53,9 @@ killall yad
 do_setup | yad --title "$TITLE2" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --geometry=400x100+0+0 --no-buttons --text "Extra Server Setup\n\n\n$STATUS" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --progress
 
 
+#Configure /opt/karoshi/serversetup for git in case this is a development server
+/opt/karoshi/serversetup/all/scripts/configure_git
+
 ###########################
 #Display completed message
 ############################
@@ -62,7 +65,6 @@ yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png"
 apt-get -y autoremove
 #Create initial disk usage report
 /opt/karoshi/serversetup/all/"useful scripts"/disk_usage
-
 
 exit
 

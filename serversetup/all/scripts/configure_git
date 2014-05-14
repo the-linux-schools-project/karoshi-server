@@ -1,0 +1,24 @@
+#!/bin/bash
+#Configure /opt/karoshi/serversetup for git.
+
+[ ! -d /opt/karoshi/.git ] && mkdir -p /opt/karoshi/.git
+
+echo '[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+[remote "origin"]
+	fetch = +refs/heads/*:refs/remotes/origin/*
+	url = https://github.com/the-linux-schools-project/karoshi-server.git
+[branch "master"]
+	remote = origin
+	merge = refs/heads/master
+[alias]
+	sync = gitsync
+[branch "cups-testing"]
+	remote = origin
+	merge = refs/heads/cups-testing
+' > /opt/karoshi/.git/config
+
+cp -f /opt/karoshi/serversetup/all/scripts/gitsync /usr/sbin/

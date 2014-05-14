@@ -1,0 +1,12 @@
+#!/bin/bash
+LOG_DATE=`date +%F`
+
+[ ! -d /opt/karoshi/backups/serversetup/$LOG_DATE ] && mkdir -p /opt/karoshi/backups/serversetup/$LOG_DATE
+[ ! -d /opt/karoshi/backups/serversetup/current ] && mkdir -p /opt/karoshi/backups/serversetup/current
+
+#Backup serversetup
+rsync --timeout=30 --verbose --dirs --recursive --xattrs --links --compress --backup-dir=/opt/karoshi/backups/serversetup/$LOG_DATE/ --delete --backup --times --perms --executability --owner --group -o "/opt/karoshi/serversetup" /opt/karoshi/backups/serversetup/current 1>> /opt/karoshi/backups/serversetup/$LOG_DATE/backup_log 2>> /opt/karoshi/backups/serversetup/$LOG_DATE/backup_log
+
+git pull --rebase
+
+
