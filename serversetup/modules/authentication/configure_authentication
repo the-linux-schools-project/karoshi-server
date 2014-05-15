@@ -293,7 +293,7 @@ echo map shadow shadowLastChange pwdLastSet >> /etc/nslcd.conf
 echo filter group \(objectClass=group\) >> /etc/nslcd.conf
 echo map group cn sAMAccountName >> /etc/nslcd.conf
 echo map group gidNumber objectSid:$DOMAINSID >> /etc/nslcd.conf
-echo map group member nogroupmembers >> /etc/nslcd.conf
+#echo map group member nogroupmembers >> /etc/nslcd.conf
 
 source /opt/karoshi/serversetup/variables/distro
 #Stop nslcd

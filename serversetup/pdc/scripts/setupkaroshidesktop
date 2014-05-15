@@ -147,6 +147,9 @@ certutil -A -n "Karoshi Web Management" -addstore root -t "CTu,CTu,CTu" -i /var/
 #Modify web management to point at the domain path instead of 127.0.0.1
 sed -i "s/127.0.0.1/manage.$REALM/g" /opt/karoshi/karoshi_user/Desktop/webmanagement.desktop
 
+#Modify defaullt home page to point at the web management
+sed -i "s/http:\/\/www.linuxschools.com/https:\/\/manage.$REALM:50001/g" /opt/karoshi/karoshi_user/.mozilla/firefox/usihywjy.default/prefs.js
+
 ###########################
 #Display completed message
 ############################
