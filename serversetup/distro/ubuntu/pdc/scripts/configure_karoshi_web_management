@@ -33,7 +33,7 @@ cp -f $COPYPATH/apache2_karoshi.conf /etc/apache2
 if [ `grep -c manage.$REALM /etc/apache2/apache2_karoshi.conf` = 0 ]
 then
 source /opt/karoshi/server_network/domain_information/domain_name
-echo manage.$REALM >> /etc/apache2/apache2_karoshi.con
+echo manage.$REALM >> /etc/apache2/apache2_karoshi.conf
 fi
 
 [ ! -f /usr/sbin/apache2_karoshi ] && ln -s /usr/sbin/apache2 /usr/sbin/apache2_karoshi
