@@ -100,14 +100,14 @@ ICON2=/images/warnings/server_no_config.png
 /opt/karoshi/web_controls/generate_navbar_admin
 
 
-echo '<div id="actionbox">'
+echo '<div id="actionbox3"><div id="titlebox">'
 
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="vertical-align: top;"><div class="sectiontitle">'$TITLE' - '$SERVERNAME'</div></td>
 <td style="vertical-align: top;">
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Role"><img class="images" alt="" src="/images/help/info.png"><span>'$CHOOSEROLEHELP'</span></a>
-</td></tr></tbody></table>
+</td></tr></tbody></table></div><div id="infobox">
 <br>
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="vertical-align: top; width: 180px; height: 40px;">'$DHCPSERVERMSG'</td>
@@ -276,6 +276,18 @@ echo '<td style="vertical-align: top; height: 40px;">'$OWNCLOUDSERVERMSG'</td>
 <td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$OWNCLOUDSERVERHELPMSG'<br><br>'$APACHEDEPS'</span></a></td></tr>'
 fi
 
+
+#if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
+#then
+#echo '<tr><td style="vertical-align: top; height: 40px;">'$XIBOSERVERMSG'</td>
+#<td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_xibo_fm.cgi" method="post">
+#<input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$XIBOHELPMSG'</span></a></form></td></tr>'
+#else
+#echo '<tr><td style="vertical-align: top; height: 40px;">'$XIBOSERVERMSG'</td>
+#<td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$XIBOHELPMSG'<br><br>'$APACHEDEPS'</span></a></td></tr>'
+#fi
+
+
 echo '</tbody></table><br>'
 
 #Advanced Modules
@@ -329,7 +341,7 @@ echo '<a class="info" href="javascript:void(0)"><img class="images" alt="" src="
 fi
 fi
 
-echo '</td></tr></tbody></table></div></div></body></html>'
+echo '</td></tr></tbody></table></div></div></div></body></html>'
 exit
 
 
