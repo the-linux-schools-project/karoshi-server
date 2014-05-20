@@ -544,4 +544,9 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $TCPIPNUMBER '
 '
 fi
 
+#Configure monitorix
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $TCPIPNUMBER '
+/opt/karoshi/serversetup/modules/monitoring/monitorix/setupmonitorix
+'
+/opt/karoshi/serversetup/web_controls/scripts/monitorixwebmanagement
 exit

@@ -84,7 +84,7 @@ fi
 #Check that mysql is running
 ######################
 mysqladmin ping 2>/dev/null
-RUNSTATUS=`echo $?`
+RUNSTATUS=$?
 [ $RUNSTATUS != 0 ] && start_mysql
 ######################
 #Check that we can connect with the root password
@@ -92,19 +92,19 @@ RUNSTATUS=`echo $?`
 
 ROOTMYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
 mysqladmin --password="$ROOTMYSQLPASS" status 1>/dev/null 2>/dev/null
-LOGINSTATUS=`echo $?`
+LOGINSTATUS=$?
 
 if [ $LOGINSTATUS != 0 ]
 then
 #Check if this is the first time that mysql has been used and the password is still karoshi
 mysqladmin --password="karoshi" status 1>/dev/null 2>/dev/null
-LOGINSTATUS=`echo $?`
+LOGINSTATUS=$?
 if [ $LOGINSTATUS = 0 ]
 then
 #Change mysql password to random password
 mysqladmin -u root -pkaroshi password ''$ROOTMYSQLPASS''
 mysqladmin --password="$ROOTMYSQLPASS" status 1>/dev/null 2>/dev/null
-LOGINSTATUS=`echo $?`
+LOGINSTATUS=$?
 fi
 fi
 

@@ -46,8 +46,8 @@ TURN_OFF_SERVICES=yes
 #Reboot the machine to auto log in to the karoshi user.
 REBOOT=yes
 
-#Main list of packages to install (apart from samba4 which is compiled).
-packages="glusterfs-server apache2-mpm-prefork libapache2-mod-php5 libapache2-mod-auth-kerb libssl-dev apache2-utils mysql-server php5-mysql php5-ldap php5-sqlite php-pear php5-cli php5-common php5-imap php5-mcrypt php5-curl php5-fpm php5-gd php5-intl php5-xmlrpc postfix postfix-ldap mb2md clamav clamav-daemon clamav-freshclam memcached dovecot-core dovecot-gssapi dovecot-imapd maildrop squid3 squid-deb-proxy dansguardian nginx shorewall mon isc-dhcp-server openvpn cups printer-driver-hpijs printer-driver-hpcups ghostscript-cups printer-driver-gutenprint ghostscript-cups tftpd-hpa nfs-kernel-server openssh-server openssh-client rsync unison squashfs-tools zip unzip libarchive-zip-perl perl nut-server spamassassin ntp"
+#Main list of packages to install (apart from samba4 and SOGo which are compiled).
+packages="monitorix glusterfs-server apache2-mpm-prefork libapache2-mod-php5 libapache2-mod-auth-kerb libssl-dev apache2-utils mysql-server php5-mysql php5-ldap php5-sqlite php-pear php5-cli php5-common php5-imap php5-mcrypt php5-curl php5-fpm php5-gd php5-intl php5-xmlrpc postfix postfix-ldap mb2md clamav clamav-daemon clamav-freshclam memcached dovecot-core dovecot-gssapi dovecot-imapd maildrop squid3 squid-deb-proxy dansguardian nginx shorewall mon isc-dhcp-server openvpn cups printer-driver-hpijs printer-driver-hpcups ghostscript-cups printer-driver-gutenprint ghostscript-cups tftpd-hpa nfs-kernel-server openssh-server openssh-client rsync unison squashfs-tools zip unzip libarchive-zip-perl perl nut-server spamassassin ntp"
 
 #Utilities and other extras to install.
 extrapackages="libapache2-mod-suphp apache2-suexec wakeonlan git xarchiver nmap easy-rsa libmime-lite-perl libfile-type-perl hpijs-ppds hp-ppd openprinting-ppds printer-driver-cjet cups-bsd smartmontools libnet-snmp-perl snmp fonts-liberation ipcalc libnss3-tools nslcd fail2ban ldap-utils shimmer-themes gtk2-engines light-themes mate-icon-theme tango-icon-theme firefox xscreensaver virtualbox-guest-x11 gksu yad gedit synaptic plymouth plymouth-label zip unzip bleachbit lynx gnome-terminal libgtk2.0-bin"
@@ -118,13 +118,17 @@ chmod 0755 /opt/karoshi/karoshi_user/.local/share/applications/synaptic.desktop
 }
 
 function add_repos {
-#Add remastersys and mailscanner repositories
-echo -e "\nAdding mailscanner and remastersys repositories\n"
+#Add remastersys mailscanner, monitoriz,yad, and zfs repositories
+echo -e "\nAdding mailscanner, monitorix, remastersys, yad, and zfs repositories\n"
 sleep 1
 
 #Remastersys
 wget -O - http://www.remastersys.com/ubuntu/remastersys.gpg.key | apt-key add -
 add-apt-repository -y "deb http://www.remastersys.com/ubuntu/ precise main"
+
+#Monitorix
+wget -O - http://apt.izzysoft.de/izzysoft.asc | apt-key add -
+add-apt-repository -y "deb http://apt.izzysoft.de/ubuntu generic universe"
 
 #Yad
 add-apt-repository -y ppa:webupd8team/y-ppa-manager
@@ -369,6 +373,9 @@ cp /usr/bin/remastersys /usr/bin/remastersys.$$
 sed -i ''$LINE_NO'c\	LIVEUSER=karoshi' /usr/bin/remastersys
 fi
 
+#Set mysql root password to a random password
+/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
+
 #Plymouth boot waiting for dhcp
 cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/failsafe.conf /etc/init/
 
@@ -392,6 +399,12 @@ chown sogo:sogo /var/run/sogo
 
 #Configure php
 cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/php.ini /etc/php5/apache2/
+
+#Configure proxy_html.conf
+cp -f /opt/karoshi/serversetup/modules/monitoring/monitorix/proxy_html.conf /etc/apache2/mods-available/
+
+#Configure mcrypt
+ln -s /etc/php5/mods-available/mcrypt.ini /etc/php5/apache2/conf.d/20-mcrypt.ini
 
 #Configure cups
 sed -i "s/JobPrivateAccess default/JobPrivateAccess all/g" /etc/cups/cupsd.conf

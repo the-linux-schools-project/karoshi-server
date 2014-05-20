@@ -21,4 +21,11 @@ echo '[core]
 	merge = refs/heads/cups-testing
 ' > /opt/karoshi/.git/config
 
+echo '[user]
+	name = Change Me
+	email = changeme@changethis.com
+[push]
+	default = simple
+' > /root/.gitconfig
+
 cp -f /opt/karoshi/serversetup/all/scripts/gitsync /usr/sbin/

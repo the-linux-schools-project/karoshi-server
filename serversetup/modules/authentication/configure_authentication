@@ -135,10 +135,17 @@ echo -e "# Global parameters
 	log level = 1
 
 [netlogon]
+	comment = Netlogon Share
 	path = /var/lib/samba/netlogon
-	read only = No
+	invalid users = root,administrator
+	create mask = 0664
+	guest ok = Yes
+	locking = No
+	oplocks = No
+	level2 oplocks = No
 
 [sysvol]
+	comment = sysvol share
 	path = /var/lib/samba/sysvol
 	read only = No
 

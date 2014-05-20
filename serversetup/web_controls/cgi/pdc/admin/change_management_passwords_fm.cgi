@@ -121,7 +121,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 '
 #<option value="sambaroot">Samba Root</option>
 echo '<option>root</option>
-</select></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Management_Passwords"><img class="images" alt="" src="/images/help/info.png"><span><b>Karoshi</b> - '$HELPMSG1'<br><br><b>Sambaroot</b> - '$HELPMSG2'<br><br><b>Root</b> - '$HELPMSG3'</span></a>
+</select></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Management_Passwords"><img class="images" alt="" src="/images/help/info.png"><span><b>Karoshi</b> - '$HELPMSG1'<br><br><b>administrator</b> - '$HELPMSG2'<br><br><b>Root</b> - '$HELPMSG3'</span></a>
 </td></tr>
 <tr><td>'$NEWPASSMSG'</td><td><input name="____PASSWORD1____"  tabindex="2" size="20" style="width: '$WIDTH'px;" type="password"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Management_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$PASSWORDHELP1'<br><br><b>'$SPECIALCHARSMSG'</b><br><br>'$CHARACTERHELP' space !	"	# 	$	%	& 	(	) 	*	+	, 	-	.	/ 	:

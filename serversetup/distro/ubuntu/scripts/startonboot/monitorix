@@ -1,0 +1,4 @@
+#!/bin/bash
+#Start monitorix on boot
+/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status monitorix on 1>/dev/null 2>/dev/null
+

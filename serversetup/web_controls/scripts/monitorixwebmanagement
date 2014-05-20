@@ -1,0 +1,21 @@
+#!/bin/bash
+
+echo ProxyRequests Off > /etc/apache2/conf.d_karoshi/monitorix
+source /opt/karoshi/server_network/domain_information/domain_name
+for SERVERS in /opt/karoshi/server_network/servers/*
+do
+SERVER=`basename $SERVERS`
+echo '<Location /monitorix-'$SERVER'>
+	ProxyPass http://'$SERVER':50005/monitorix/
+	ProxyPassReverse http://'$SERVER':50005/monitorix/
+	ProxyHTMLEnable On
+	ProxyHTMLURLMap http://'$SERVER':50005/monitorix/ /monitorix-'$SERVER'/
+</Location>
+<Location /monitorix-'$SERVER'/monitorix.cgi>
+	ProxyPass http://'$SERVER':50005/monitorix-cgi/monitorix.cgi
+	ProxyPassReverse http://'$SERVER':50005/monitorix-cgi/monitorix.cgi
+</Location>' >> /etc/apache2/conf.d_karoshi/monitorix
+
+
+done
+service apache2_karoshi reload
