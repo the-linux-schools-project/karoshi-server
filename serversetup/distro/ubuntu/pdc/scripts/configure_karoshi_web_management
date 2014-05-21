@@ -33,7 +33,7 @@ cp -f $COPYPATH/apache2_karoshi.conf /etc/apache2
 if [ `grep -c manage.$REALM /etc/apache2/apache2_karoshi.conf` = 0 ]
 then
 source /opt/karoshi/server_network/domain_information/domain_name
-echo manage.$REALM >> /etc/apache2/apache2_karoshi.conf
+echo ServerName manage.$REALM >> /etc/apache2/apache2_karoshi.conf
 fi
 
 [ ! -f /usr/sbin/apache2_karoshi ] && ln -s /usr/sbin/apache2 /usr/sbin/apache2_karoshi
@@ -77,14 +77,12 @@ fi
 [ ! -f /etc/apache2/mods-enabled_karoshi/ssl.load ] && ln -s /etc/apache2/mods-available/ssl.load /etc/apache2/mods-enabled_karoshi/ssl.load
 [ ! -f /etc/apache2/mods-enabled_karoshi/status.conf ] && ln -s /etc/apache2/mods-available/status.conf /etc/apache2/mods-enabled_karoshi/status.conf
 [ ! -f /etc/apache2/mods-enabled_karoshi/status.load ] && ln -s /etc/apache2/mods-available/status.load /etc/apache2/mods-enabled_karoshi/status.load
-
-
 [ ! -f /etc/apache2/mods-enabled_karoshi/proxy.load ] && ln -s /etc/apache2/mods-available/proxy.load /etc/apache2/mods-enabled_karoshi/proxy.load
-[ ! -f /etc/apache2/mods-enabled_karoshi/proxy_html.load ] && ln -s /etc/apache2/mods-available/status.load /etc/apache2/mods-enabled_karoshi/proxy_html.load
-[ ! -f /etc/apache2/mods-enabled_karoshi/proxy_http.load ] && ln -s /etc/apache2/mods-available/status.load /etc/apache2/mods-enabled_karoshi/proxy_http.load
-[ ! -f /etc/apache2/mods-enabled_karoshi/proxy.conf ] && ln -s /etc/apache2/mods-available/status.load /etc/apache2/mods-enabled_karoshi/proxy.conf
-[ ! -f /etc/apache2/mods-enabled_karoshi/proxy_html.conf ] && ln -s /etc/apache2/mods-available/status.load /etc/apache2/mods-enabled_karoshi/proxy_html.conf
-
+[ ! -f /etc/apache2/mods-enabled_karoshi/proxy_html.load ] && ln -s /etc/apache2/mods-available/proxy_html.load /etc/apache2/mods-enabled_karoshi/proxy_html.load
+[ ! -f /etc/apache2/mods-enabled_karoshi/proxy_http.load ] && ln -s /etc/apache2/mods-available/proxy_http.load /etc/apache2/mods-enabled_karoshi/proxy_http.load
+[ ! -f /etc/apache2/mods-enabled_karoshi/proxy.conf ] && ln -s /etc/apache2/mods-available/proxy.conf /etc/apache2/mods-enabled_karoshi/proxy.conf
+[ ! -f /etc/apache2/mods-enabled_karoshi/proxy_html.conf ] && ln -s /etc/apache2/mods-available/proxy_html.conf /etc/apache2/mods-enabled_karoshi/proxy_html.conf
+[ ! -f /etc/apache2/mods-enabled_karoshi/xml2enc.load ] && ln -s /etc/apache2/mods-available/xml2enc.load /etc/apache2/mods-enabled_karoshi/xml2enc.load
 
 #Create apache 2 run folder
 [ ! -d /var/run/apache2 ] && mkdir -p /var/run/apache2

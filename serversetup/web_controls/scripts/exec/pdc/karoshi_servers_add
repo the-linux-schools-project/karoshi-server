@@ -546,7 +546,24 @@ fi
 
 #Configure monitorix
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $TCPIPNUMBER '
+source /opt/karoshi/serversetup/variables/distro
 /opt/karoshi/serversetup/modules/monitoring/monitorix/setupmonitorix
+
+#Add in firewall rule for monitorix
+
+MODCHECK=`grep -c -w \#monitorix /etc/shorewall/rules`
+if [ $MODCHECK = 0 ]
+then
+echo '''$SHOREWALLMSG' - tcp 50005"<br><br>"
+LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
+sed -i $LINENUM"c"\ACCEPT"	"net:'$PDCIP'"	"fw"	"tcp"	"50005"	"-"#"monitorix /etc/shorewall/rules
+echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+#Restart shorewall
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
+echo "<br>"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
+echo "<br><br>"
+fi
 '
 /opt/karoshi/serversetup/web_controls/scripts/monitorixwebmanagement
 exit

@@ -124,67 +124,6 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 <option value="Y">'$YEARLYMSG'</option>
 </select>
 </td></tr>
-<tr><td>'$GRAPHMSG'</td><td>
-<select name="____GRAPHTYPE____" size="1">
-            <option value="all">All graphs</option>
-            <optgroup label="System load average and usage">
-              <option value="_system1">System load</option>
-              <option value="_system2">Active processes</option>
-              <option value="_system3">Memory allocation</option>
-            </optgroup>
-            <optgroup label="Global kernel usage">
-              <option value="_kern1">Kernel usage</option>
-              <option value="_kern2">Context switches and forks</option>
-              <option value="_kern3">VFS usage</option>
-            </optgroup>
-            <optgroup label="Kernel usage per processor">
-              <option value="_proc0">Processor 0</option>
-              <option value="_proc1">Processor 1</option>
-              <option value="_proc2">Processor 2</option>
-              <option value="_proc3">Processor 3</option>
-            <optgroup label="Filesystem usage and I/O activity">
-              <option value="_fs01">Filesystems usage</option>
-              <option value="_fs02">Disk I/O activity</option>
-              <option value="_fs03">Inode usage</option>
-              <option value="_fs04">Time spent in I/O activity</option>
-            <optgroup label="Network traffic and usage">
-              <option value="_net01">eth0 Network traffic</option>
-              <option value="_net02">eth0 Network packets</option>
-              <option value="_net03">eth0 Network errors</option>
-            <optgroup label="Netstat statistics">
-              <option value="_netstat1">IPv4 states</option>
-              <option value="_netstat2">IPv6 states</option>
-              <option value="_netstat3">Active close</option>
-              <option value="_netstat4">Passive close</option>
-              <option value="_netstat5">UDP statistics</option>
-            </optgroup>
-            <optgroup label="System services demand">
-              <option value="_serv1">System services demand</option>
-              <option value="_serv2">IMAP and POP3 services</option>
-              <option value="_serv3">SMTP service</option>
-            </optgroup>
-            <optgroup label="Network port traffic">
-              <option value="_port0">Port 25 (IN-SMTP)</option>
-              <option value="_port1">Port 21 (IN-FTP)</option>
-              <option value="_port2">Port 80 (IN-HTTP)</option>
-              <option value="_port3">Port 22 (IN-SSH)</option>
-              <option value="_port4">Port 110 (IN-POP3)</option>
-              <option value="_port5">Port 139 (IN-NETBIOS)</option>
-              <option value="_port6">Port 3306 (IN-MYSQL)</option>
-              <option value="_port7">Port 53 (IN-DNS)</option>
-              <option value="_port8">Port 143 (IN-IMAP)</option>
-            <optgroup label="Users using the system">
-              <option value="_user1">Users logged in</option>
-              <option value="_user2">Samba users</option>
-              <option value="_user3">Netatalk users</option>
-            </optgroup>
-            <optgroup label="Devices interrupt activity">
-              <option value="_int1">Interrupt activity</option>
-              <option value="_int2">Core activity</option>
-              <option value="_int3">Interrupt activity</option>
-            </optgroup>
-          </select>
-</td></tr>
 </tbody></table><br>
 '
 

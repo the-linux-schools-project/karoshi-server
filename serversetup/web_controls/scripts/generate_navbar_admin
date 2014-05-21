@@ -274,6 +274,7 @@ echo '			<li><a href="/cgi-bin/admin/dhcp_view_leases.cgi">'$DHCPMSG'</a></li>'
 fi
 
 echo '<li><a href="/cgi-bin/admin/dnsview_fm.cgi">'$DNSVIEWMSG'</a></li>'
+echo '<li><a href="/cgi-bin/admin/monitorix_fm.cgi">'$MONITORIXMSG'</a></li>'
 
 #Monitoring
 if [ $MONITORINGCTRL = yes ]

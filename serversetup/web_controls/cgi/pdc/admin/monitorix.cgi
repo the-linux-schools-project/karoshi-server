@@ -87,19 +87,6 @@ break
 fi
 let COUNTER=$COUNTER+1
 done
-#Assign GRAPHTYPE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = GRAPHTYPEcheck ]
-then
-let COUNTER=$COUNTER+1
-GRAPHTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/REPLACEUNDERSCORE/_/g'`
-break
-fi
-let COUNTER=$COUNTER+1
-done
 
 function show_status {
 echo '<SCRIPT language="Javascript">
@@ -177,7 +164,7 @@ source /opt/karoshi/server_network/domain_information/domain_name
 echo '<div class="sectiontitle">'$TITLE'</div></div><div id="infobox">'
 #Show monitorix data
 
-echo '<iframe src="https://manage.'$REALM':'$ACCESSPORT'/monitorix-'$SERVERNAME'/monitorix.cgi?mode=localhost&graph='$GRAPHTYPE'&when='$INTERVAL'&color=black" frameborder="0" width="1200" height="5000" scrolling="no"></iframe>'
+echo '<iframe src="https://manage.'$REALM':'$ACCESSPORT'/monitorix-'$SERVERNAME'/monitorix.cgi?mode=localhost&graph=all&when='$INTERVAL'&color=black" frameborder="0" width="1200" height="5000" scrolling="no"></iframe>'
 
 #Get data
 #MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/monitorix.cgi | cut -d' ' -f1`

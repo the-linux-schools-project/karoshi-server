@@ -401,7 +401,7 @@ chown sogo:sogo /var/run/sogo
 cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/php.ini /etc/php5/apache2/
 
 #Configure proxy_html.conf
-cp -f /opt/karoshi/serversetup/modules/monitoring/monitorix/proxy_html.conf /etc/apache2/mods-available/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/proxy_html.conf /etc/apache2/mods-available/
 
 #Configure mcrypt
 ln -s /etc/php5/mods-available/mcrypt.ini /etc/php5/apache2/conf.d/20-mcrypt.ini
