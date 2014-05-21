@@ -124,6 +124,10 @@ fi
 [ ! -d /opt/karoshi/server_network/aliases ] && mkdir -p /opt/karoshi/server_network/aliases
 [ ! -f /opt/karoshi/server_network/aliases/$SERVERNAME ] && echo $ALIAS > /opt/karoshi/server_network/aliases/$SERVERNAME
 
+SHORTSERVERNAME=`echo $SERVERNAME | cut -d. -f1`
+[ ! -d /var/lib/samba/netlogon/domain_information/aliases ] && mkdir -p /var/lib/samba/netlogon/domain_information/aliases
+[ ! -f /var/lib/samba/netlogon/domain_information/aliases/$SHORTSERVERNAME ] && echo $ALIAS > /var/lib/samba/netlogon/domain_information/aliases/$SHORTSERVERNAME
+
 #Add entry to samba4 dns for web alias
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 source /opt/karoshi/server_network/domain_information/domain_name
