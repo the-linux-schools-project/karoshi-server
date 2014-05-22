@@ -193,7 +193,6 @@ LINECOLOUR2="#DCDCDC"
 if [ $SERVERNAME = notset ]
 then
 #Show list of servers
-[ $MOBILE = no ] && echo '</div><div id="infobox">'
 /opt/karoshi/web_controls/show_servers $MOBILE servers "$ACTIONMSG" ENTER
 fi
 
@@ -271,8 +270,6 @@ echo '<br>
 <input name="_ACTION_CREATEDIR_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$NEWDIRMSG'">
 <input name="_ACTION_CREATEFILE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$NEWFILEMSG'">
 <br><br><b>'$LOCATIONMSG': '$DISPLOCATION'</b><br>'
-
-[ $MOBILE != yes ] && echo '</div><div id="infobox">'
 
 if [ $SHOWMOVE = yes ]
 then

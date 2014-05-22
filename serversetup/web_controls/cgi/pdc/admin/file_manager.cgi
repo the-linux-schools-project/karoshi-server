@@ -569,7 +569,7 @@ echo '
 <td style="vertical-align: top;"><input name="_SERVER_notset_ACTION_notset_" type="submit" class="button" value="'$CHOOSESERVERMSG'"></td>
 '
 fi
-echo '</tr></tbody></table>'
+echo '</tr></tbody></table></div><div id="infobox">'
 fi
 
 #echo $DATA'<br>'
