@@ -52,6 +52,7 @@
 [ -L /etc/init.d/memcached ] && rm -f /etc/init.d/memcached
 [ -L /etc/init.d/isc-dhcp-server ] && rm -f /etc/init.d/isc-dhcp-server
 [ -L /etc/init.d/glusterfs-server ] && rm -f /etc/init.d/glusterfs-server
+[ -L /etc/init.d/monitorix ] && rm -f /etc/init.d/monitorix
 
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/apache2 /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/clamav-freshclam /etc/init.d/
@@ -81,6 +82,7 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/sogo /etc/init
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/memcached /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/isc-dhcp-server /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/glusterfs /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/monitorix /etc/init.d/
 
 #Make sure no scripts have been added to /etc/init for upstart.
 [ `ls /etc/init/cups* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/cups*
@@ -98,6 +100,7 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/glusterfs /etc
 [ `ls /etc/init/memcached* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/memcached*
 [ `ls /etc/init/isc-dhcp* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/isc-dhcp*
 [ `ls /etc/init/glusterfs* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/glusterfs*
+[ `ls /etc/init/monitorix* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/monitorix*
 #May need to add more to this list.
 
 exit

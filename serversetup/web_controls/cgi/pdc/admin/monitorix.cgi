@@ -130,12 +130,6 @@ MESSAGE=$ERRORMSG1
 show_status
 fi
 
-if [ -z "$GRAPHTYPE" ]
-then
-MESSAGE=$ERRORMSG2
-show_status
-fi
-
 if [ -z "$INTERVAL" ]
 then
 MESSAGE=$ERRORMSG3
@@ -161,14 +155,17 @@ fi
 ACCESSPORT=50001
 [ `echo $HTTP_REFERER | grep -c ":50002"` -gt 0 ] && ACCESSPORT=50002
 source /opt/karoshi/server_network/domain_information/domain_name
-echo '<div class="sectiontitle">'$TITLE'</div></div><div id="infobox">'
+echo '
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr>
+<td style="vertical-align: top;"><div class="sectiontitle">'$TITLE'</div></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=System_Monitoring"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td>
+<td style="vertical-align: top;"><a href="/cgi-bin/admin/monitorix_fm.cgi"><input class="button" type="button" name="" value="'$CHOOSESERVERMSG'"></a></td>
+</tr></table><br></div><div id="infobox">'
 #Show monitorix data
 
-echo '<iframe src="https://manage.'$REALM':'$ACCESSPORT'/monitorix-'$SERVERNAME'/monitorix.cgi?mode=localhost&graph=all&when='$INTERVAL'&color=black" frameborder="0" width="1200" height="5000" scrolling="no"></iframe>'
+echo '<iframe src="https://manage.'$REALM':'$ACCESSPORT'/monitorix-'$SERVERNAME'/monitorix.cgi?mode=localhost&amp;graph=all&amp;when='$INTERVAL'&amp;color=black" frameborder="0" width="1200" height="3000" scrolling="no"></iframe>'
 
-#Get data
-#MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/monitorix.cgi | cut -d' ' -f1`
-#echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$GRAPHTYPE:$INTERVAL:" | sudo -H /opt/karoshi/web_controls/exec/monitorix
 
 echo '</div></div></div></body></html>'
 exit
