@@ -82,12 +82,9 @@ source /opt/karoshi/server_network/domain_information/domain_name
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mysql
 
-echo "got this far"
-exit
-
 
 #####################
-#Create moodle mysql password for the new database
+#Create xibo mysql password for the new database
 #####################
 echo '<li>'$MYSQLMSG'</li><br>'
 RANGE=61
@@ -105,28 +102,7 @@ CHARACTER[$COUNTER]=`sed -n ${row[$COUNTER]},1p /opt/karoshi/serversetup/pdc/"us
 let COUNTER=COUNTER+1
 done
 
-MOODLEPASS=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
-
-#####################
-#Create moodle badge hash
-#####################
-RANGE=61
-COUNTER=1
-while [ $COUNTER -lt 10 ]
-do
-row[$COUNTER]=$RANDOM
-let "row[$COUNTER] %= $RANGE"
-while [ ${row[$COUNTER]} = 0 ]
-do
-row[$COUNTER]=$RANDOM
-let "row[$COUNTER] %= $RANGE"
-done
-CHARACTER[$COUNTER]=`sed -n ${row[$COUNTER]},1p /opt/karoshi/serversetup/pdc/"useful scripts"/.alphabet`
-let COUNTER=COUNTER+1
-done
-
-BADGEHASH=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
-
+xiboPASS=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
 
 #############################
 #Make sure that we know the root mysql password
@@ -140,28 +116,15 @@ MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphras
 #create and pipe in the database
 #############################
 
-mysqladmin -f --password=$MYSQLPASS drop moodle 1>/dev/null 2>/dev/null
+mysqladmin -f --password=$MYSQLPASS drop xibo 1>/dev/null 2>/dev/null
 sleep 1
-mysqladmin --password=$MYSQLPASS create moodle
+mysqladmin --password=$MYSQLPASS create xibo
 sleep 1
 
-#Make a backup of moodle.sql
-cp /opt/karoshi/serversetup/modules/moodle/moodle.sql /opt/karoshi/serversetup/modules/moodle/moodle2.sql
+mysql --password=$MYSQLPASS xibo < /opt/karoshi/serversetup/modules/xibo/xibo.sql
 
-#Edit moodle2.sql with the correct ldap server information ( replace ldap://127.0.0.1 )
-
-sed -i 's/ldap:\/\/127.0.0.1/ldap:\/\/'$LDAPSERVER'/g' /opt/karoshi/serversetup/modules/moodle/moodle2.sql
-
-#Edit moodle.sql with the correct realm information
-sed -i 's/CHANGETHISLDAPBASE/'$LDAPBASE'/g' /opt/karoshi/serversetup/modules/moodle/moodle2.sql
-
-#Edit hash for badges
-sed -i 's/CHANGETHISHASH/'$BADGEHASH'/g' /opt/karoshi/serversetup/modules/moodle/moodle2.sql
-
-mysql --password=$MYSQLPASS moodle < /opt/karoshi/serversetup/modules/moodle/moodle2.sql
-
-echo GRANT ALL PRIVILEGES ON moodle.\* TO "'"moodle_user"'"@"'"localhost"'" IDENTIFIED BY "'"$MOODLEPASS"'"';' > /opt/karoshi/.tempdata/mysqlperms.sql
-echo ALTER DATABASE moodle DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci';' >> /opt/karoshi/.tempdata/mysqlperms.sql
+echo GRANT ALL PRIVILEGES ON xibo.\* TO "'"xibo_user"'"@"'"localhost"'" IDENTIFIED BY "'"$xiboPASS"'"';' > /opt/karoshi/.tempdata/mysqlperms.sql
+echo ALTER DATABASE xibo DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci';' >> /opt/karoshi/.tempdata/mysqlperms.sql
 mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/mysqlperms.sql
 rm -f /opt/karoshi/.tempdata/mysqlperms.sql
 
@@ -181,46 +144,31 @@ echo "<li>"Apache was not running"</li"
 echo "<br>"
 fi
 
-##########################
-#Copy in files for online classroom
-##########################
-
 ###########################
-#Extract moodle
+#Extract xibo
 ###########################
 cd /var/www/html/
-echo '<li>'$EXTRACTMOODLEMSG'</li><br>'
-[ -d /var/www/html/moodle ] && rm -f -R /var/www/html/moodle
-tar -xzf /opt/karoshi/serversetup/modules/moodle/moodle.tar.gz
-cp -f -R /opt/karoshi/serversetup/modules/moodle/moodle-data /var/www
-echo '<li>'$SETMOODLEPERMS'</li><br>'
-chmod 0440 -R /var/www/html/moodle
-chmod u+X,g+X -R /var/www/html/moodle
-chmod 0600 -R /var/www/moodle-data
-chmod u+X -R /var/www/moodle-data
-chown -R root.$APACHEGROUP /var/www/html/moodle
-chown -R $APACHEUSER.$APACHEGROUP /var/www/moodle-data
+echo '<li>'$EXTRACTxiboMSG'</li><br>'
+[ -d /var/www/html/xibo ] && rm -f -R /var/www/html/xibo
+tar -xzf /opt/karoshi/serversetup/modules/xibo/xibo.tar.gz
+
+tar -xzf /opt/karoshi/serversetup/modules/xibo/xibo-library.tar.gz /home
+
+ln -s /home/xibo-library /var/www/xibo-library
+
+echo '<li>'$SETxiboPERMS'</li><br>'
+chmod 0640 -R /var/www/html/xibo
+chmod u+X,g+X -R /var/www/html/xibo
+chmod 0750 -R /var/www/xibo-library
+chmod u+X -R /var/www/xibo-library
+chown -R $APACHEUSER.$APACHEGROUP /var/www/html/xibo
+chown -R $APACHEUSER.$APACHEGROUP /var/www/xibo-library
 
 ################################
-#Modifying config.php for moodle
+#Modifying config.php for xibo
 ################################
-PASSWORDLINENO=`grep -n ^'$'CFG-'>'dbpass /var/www/html/moodle/config.php | cut -d: -f1`
-sed $PASSWORDLINENO'c'\$CFG-">"dbpass"    "=" ""'"$MOODLEPASS"'"";" /var/www/html/moodle/config.php > /var/www/html/moodle/configtemp.php
-rm -f /var/www/html/moodle/config.php
-mv /var/www/html/moodle/configtemp.php /var/www/html/moodle/config.php
-
-DOMAINLINENO=`grep -n ^'$'CFG-'>'wwwroot /var/www/html/moodle/config.php | cut -d: -f1`
-sed $DOMAINLINENO'c'\$CFG-">"wwwroot"    "=" ""'"http://$ALIAS.$REALM/moodle"'"";" /var/www/html/moodle/config.php > /var/www/html/moodle/configtemp.php
-rm -f /var/www/html/moodle/config.php
-mv /var/www/html/moodle/configtemp.php /var/www/html/moodle/config.php
-
-##############################
-#Schedule a refresh job for moodle
-##############################
-[ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
-echo '*'/5 '*' '*' '*' '*' lynx -dump http://localhost/moodle/admin/cron.php '>' /dev/null > /opt/karoshi/cronjobs/jobs/refresh_moodle.cron
-/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
-echo '<br>'
+PASSWORDLINENO=`grep -n ^'$'dbpass /var/www/html/xibo/settings.php | cut -d: -f1`
+sed -i $PASSWORDLINENO'c'\$dbpass = \'$xiboPASS\'\; /var/www/html/xibo/settings.php
 
 #####################################
 #Ensure that apache ports are open in shorewall
@@ -255,10 +203,6 @@ sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'apacherule /etc/shorew
 echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 fi
 
-#Copy in export grades
-cp -f /opt/karoshi/serversetup/modules/moodle/moodle_export_grades /opt/karoshi/"useful scripts"/
-chmod 0700 /opt/karoshi/"useful scripts"/moodle_export_grades
-
 ######################
 #Restart shorewall
 ######################
@@ -281,13 +225,11 @@ if [ $APACHESTATUS = 0 ]
 then
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
 fi
-#Clear moodle cache
-sudo -u www-data php /var/www/html/moodle/admin/cli/purge_caches.php
 
-###########################
+#########################
 #Show completed message
 ###########################
-echo '<br><br>'$ACCESSMSG - '<a href="http://'$ALIAS.$REALM'/moodle" target="_blank">'$ALIAS.$REALM'/moodle</a>'
-echo '<br>'$ACCESSMSG2:admin - $PASSWORDMSG: admin
+echo '<br><br>'$ACCESSMSG - '<a href="http://'$ALIAS.$REALM'/xibo" target="_blank">'$ALIAS.$REALM'/xibo</a>'
+echo '<br>'$ACCESSMSG2:xibo_admin - $PASSWORDMSG: admin
 echo '<br><p style="font-weight:bold; font-size:20px;">'$COMPLETEDMSG3'</p><br>'
 exit
