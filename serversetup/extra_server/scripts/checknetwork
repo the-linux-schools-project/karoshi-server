@@ -35,7 +35,6 @@ fi
 source /opt/karoshi/serversetup/variables/language
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/language/$LANGCHOICE/extra_server/checknetwork
-source /opt/karoshi/serversetup/variables/tcpip
 
 function getnetworksettings {
 DATA=`yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --form --title="Network Settings" --field="Server name" --field="TCPIP" --field="Netmask" --field="Name Server" --field="Gateway" --button="gtk-ok" 2>/dev/null`
@@ -91,12 +90,6 @@ else
 inputwarning
 fi
 done
-
-#Change tcpip variables
-sed -i 's/'$PDC'\t/'$TCPIPPDCCUSTOM'\t/g' /opt/karoshi/serversetup/variables/tcpip
-sed -i 's/'$NETMASK1'\t/'$NETMASKCUSTOM'\t/g' /opt/karoshi/serversetup/variables/tcpip
-sed -i 's/'$NAMESERVER1'\t/'$NAMESERVERCUSTOM'\t/g' /opt/karoshi/serversetup/variables/tcpip
-sed -i 's/'$GATEWAY1'\t/'$GATEWAYCUSTOM'\t/g' /opt/karoshi/serversetup/variables/tcpip
 
 [ -e /opt/karoshi/serversetup/variables/language ] || /opt/karoshi/serversetup/changelanguage
 [ -e /opt/karoshi/serversetup/variables/distro ] || /opt/karoshi/serversetup/changedistro

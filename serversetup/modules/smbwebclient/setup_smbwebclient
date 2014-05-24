@@ -69,7 +69,6 @@ LANGCHOICE=englishuk
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/smbwebclient/setupsmbwebclient ] || LANGCHOICE=englishuk
 source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/smbwebclient/setupsmbwebclient
 source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/variables/tcpip
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 source /opt/karoshi/server_network/domain_information/domain_name
 

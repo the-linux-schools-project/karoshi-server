@@ -1,5 +1,0 @@
-#!/bin/bash
-#Start apache2 on boot
-chkconfig httpd_karoshi off
-[ -f /opt/karoshi/start_on_boot/karoshi_services ] || touch /opt/karoshi/start_on_boot/karoshi_services
-[ `grep -c -w httpd_karoshi /opt/karoshi/start_on_boot/karoshi_services` = 0 ] && echo httpd_karoshi,3 >> /opt/karoshi/start_on_boot/karoshi_services

@@ -34,7 +34,6 @@ fi
 source /opt/karoshi/serversetup/variables/language
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/language/$LANGCHOICE/pdc/checknetwork
-source /opt/karoshi/serversetup/variables/tcpip
 
 ##########################
 #Configure Network
@@ -97,12 +96,6 @@ else
 inputwarning
 fi
 done
-
-#Change tcpip variables
-sed -i 's/'$PDC'\t/'$TCPIPCUSTOM'\t/g' /opt/karoshi/serversetup/variables/tcpip
-sed -i 's/'$NETMASK1'\t/'$NETMASKCUSTOM'\t/g' /opt/karoshi/serversetup/variables/tcpip
-sed -i 's/'$NAMESERVER1'\t/'$NAMESERVERCUSTOM'\t/g' /opt/karoshi/serversetup/variables/tcpip
-sed -i 's/'$GATEWAY1'\t/'$GATEWAYCUSTOM'\t/g' /opt/karoshi/serversetup/variables/tcpip
 
 ########################
 #Configure network

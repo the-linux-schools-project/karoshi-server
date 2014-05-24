@@ -1,6 +1,0 @@
-#!/bin/bash
-#Start ldap on boot
-#Needs to start before udev
-chkconfig ldap on
-[ -f /opt/karoshi/start_on_boot/karoshi_services ] || touch /opt/karoshi/start_on_boot/karoshi_services
-[ `grep -c -w ldap /opt/karoshi/start_on_boot/karoshi_services` = 0 ] && echo ldap,1 >> /opt/karoshi/start_on_boot/karoshi_services

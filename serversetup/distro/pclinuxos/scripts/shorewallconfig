@@ -1,5 +1,0 @@
-#!/bin/bash
-#shorewallconfig
-#Enable shorewall
-sed -i 1c\STARTUP_ENABLED=Yes /etc/shorewall/shorewall.conf
-

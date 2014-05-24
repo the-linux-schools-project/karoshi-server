@@ -28,7 +28,6 @@
 [ -d $HOME/.tempdata ] || mkdir $HOME/.tempdata
 source /opt/karoshi/serversetup/variables/language
 source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/variables/tcpip
 source /opt/karoshi/serversetup/language/$LANGCHOICE/extra_server/setupssh
 source /opt/karoshi/serversetup/language/$LANGCHOICE/softwareinstall
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/extra_server/software

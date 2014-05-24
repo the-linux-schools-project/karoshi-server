@@ -1,8 +1,0 @@
-#!/bin/bash
-#Start postfix on boot
-#Not needed - postfix is started by mailscanner
-#chkconfig postfix off
-#[ -f /opt/karoshi/start_on_boot/karoshi_services ] || touch /opt/karoshi/start_on_boot/karoshi_services
-#[ `grep -c -w postfix /opt/karoshi/start_on_boot/karoshi_services` = 0 ] && echo postfix,1 >> /opt/karoshi/start_on_boot/karoshi_services
-
-
