@@ -277,15 +277,15 @@ echo '<td style="vertical-align: top; height: 40px;">'$OWNCLOUDSERVERMSG'</td>
 fi
 
 
-#if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
-#then
-#echo '<tr><td style="vertical-align: top; height: 40px;">'$XIBOSERVERMSG'</td>
-#<td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_xibo_fm.cgi" method="post">
-#<input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$XIBOHELPMSG'</span></a></form></td></tr>'
-#else
-#echo '<tr><td style="vertical-align: top; height: 40px;">'$XIBOSERVERMSG'</td>
-#<td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$XIBOHELPMSG'<br><br>'$APACHEDEPS'</span></a></td></tr>'
-#fi
+if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
+then
+echo '<tr><td style="vertical-align: top; height: 40px;">'$XIBOSERVERMSG'</td>
+<td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_xibo_fm.cgi" method="post">
+<input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$XIBOHELPMSG'</span></a></form></td></tr>'
+else
+echo '<tr><td style="vertical-align: top; height: 40px;">'$XIBOSERVERMSG'</td>
+<td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$XIBOHELPMSG'<br><br>'$APACHEDEPS'</span></a></td></tr>'
+fi
 
 
 echo '</tbody></table><br>'

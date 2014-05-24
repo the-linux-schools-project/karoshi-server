@@ -148,27 +148,31 @@ fi
 #Extract xibo
 ###########################
 cd /var/www/html/
-echo '<li>'$EXTRACTxiboMSG'</li><br>'
+echo '<li>'$EXTRACTXiboMSG'</li><br>'
 [ -d /var/www/html/xibo ] && rm -f -R /var/www/html/xibo
 tar -xzf /opt/karoshi/serversetup/modules/xibo/xibo.tar.gz
 
-tar -xzf /opt/karoshi/serversetup/modules/xibo/xibo-library.tar.gz /home
+cp /opt/karoshi/serversetup/modules/xibo/clock.php /var/www/html/
+chmod 0640 /var/www/html/clock.php
+chown root.$APACHEGROUP /var/www/html/clock.php
+cd /home
+tar -xzf /opt/karoshi/serversetup/modules/xibo/xibo-library.tar.gz
 
 ln -s /home/xibo-library /var/www/xibo-library
 
-echo '<li>'$SETxiboPERMS'</li><br>'
+echo '<li>'$SETXiboPERMS'</li><br>'
 chmod 0640 -R /var/www/html/xibo
 chmod u+X,g+X -R /var/www/html/xibo
-chmod 0750 -R /var/www/xibo-library
-chmod u+X -R /var/www/xibo-library
+chmod 0750 -R /home/xibo-library
+chmod u+X -R /home/xibo-library
 chown -R $APACHEUSER.$APACHEGROUP /var/www/html/xibo
-chown -R $APACHEUSER.$APACHEGROUP /var/www/xibo-library
+chown -R $APACHEUSER.$APACHEGROUP /home/xibo-library
 
 ################################
 #Modifying config.php for xibo
 ################################
 PASSWORDLINENO=`grep -n ^'$'dbpass /var/www/html/xibo/settings.php | cut -d: -f1`
-sed -i $PASSWORDLINENO'c'\$dbpass = \'$xiboPASS\'\; /var/www/html/xibo/settings.php
+sed -i $PASSWORDLINENO'c'\$dbpass" "=" "\'$xiboPASS\'\; /var/www/html/xibo/settings.php
 
 #####################################
 #Ensure that apache ports are open in shorewall

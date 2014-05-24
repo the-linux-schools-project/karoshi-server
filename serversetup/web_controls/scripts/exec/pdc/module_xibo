@@ -96,7 +96,7 @@ then
 echo `date`: module_xibo - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-echo `date`: setupmoodle by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: setupxibo by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/xibo/setupxibo ] || LANGCHOICE=englishuk
@@ -126,13 +126,17 @@ source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 [ ! -d /opt/karoshi/server_network/aliases ] && mkdir -p /opt/karoshi/server_network/aliases
 [ ! -f /opt/karoshi/server_network/aliases/$SERVERNAME ] && echo $ALIAS > /opt/karoshi/server_network/aliases/$SERVERNAME
 
-#Create keytab for moodle
+SHORTSERVERNAME=`echo $SERVERNAME | cut -d. -f1`
+[ ! -d /var/lib/samba/netlogon/domain_information/aliases ] && mkdir -p /var/lib/samba/netlogon/domain_information/aliases
+[ ! -f /var/lib/samba/netlogon/domain_information/aliases/$SHORTSERVERNAME ] && echo $ALIAS > /var/lib/samba/netlogon/domain_information/aliases/$SHORTSERVERNAME
+
+#Create keytab for xibo
 #echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:HTTP:xibo:$SERVERNAME:www-data:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
 
 function check_already_installed {
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
-#Check to see if moodle is already installed
+#Check to see if xibo is already installed
 if [ -d /var/www/html/xibo ]
 then
 echo `date`: module_xibo - Xibo is already installed on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -141,7 +145,7 @@ exit 101
 fi
 else
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
-#Check to see if moodle is already installed
+#Check to see if xibo is already installed
 if [ -d /var/www/html/xibo ]
 then
 echo '$XIBOINSTERROR'
@@ -168,18 +172,6 @@ samba-tool dns add 127.0.0.1 $REALM $ALIAS CNAME $SERVERNAME --username=Administ
 fi
 }
 
-function modify_xibo.sql {
-
-#Make a backup of moodle.sql
-cp /opt/karoshi/serversetup/modules/moodle/xibo.sql /opt/karoshi/serversetup/modules/moodle/xibo_original.sql
-
-#Edit xibo.sql with the correct subnet
-THISIP=`net lookup $HOSTNAME`
-THISSUBNETMASK=`grep -w netmask /etc/network/interfaces | sed -n 1,1p | cut -d' ' -f2`
-NETWORK=`ipcalc $THISIP/$THISSUBNETMASK | grep -w ^Network: | sed 's/ * / /g' | cut -d' ' -f2`
-sed -i 's@CHANGETHISSUBNET@'$NETWORK'@g' /opt/karoshi/serversetup/modules/xibo/xibo.sql
-
-}
 
 function install_xibo {
 #Install
@@ -197,7 +189,7 @@ scp -p -r /opt/karoshi/serversetup/modules/xibo root@$SERVERNAME:/opt/karoshi/se
 #Copy in domain information
 scp -p -r /opt/karoshi/server_network/domain_information root@$SERVERNAME:/opt/karoshi/server_network/ 1> /dev/null
 
-#Install moodle
+#Install xibo
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ALIAS:' | /opt/karoshi/serversetup/modules/xibo/setupxibo
 '
@@ -217,12 +209,6 @@ echo $SERVERNAME > /opt/karoshi/server_network/webservers/$SERVERNAME
 sed -i 's/WEBCTRL=no/WEBCTRL=yes/g' /opt/karoshi/server_network/menusettings
 }
 
-function restore_xibo.sql {
-rm -f /opt/karoshi/serversetup/modules/xibo/xibo.sql
-mv /opt/karoshi/serversetup/modules/xibo/xibo_original.sql /opt/karoshi/serversetup/modules/xibo/xibo.sql
-}
-
-
 function apply_ssl_certificate {
 #######################
 #Apply certificate
@@ -237,11 +223,8 @@ fi
 check_already_installed
 apply_ssl_certificate
 add_dns_entry
-modify_xibo.sql
 #check_ports
-#if not transferring an existing setup then install moodle
 install_xibo
-restore_xibo.sql
 add_role_information
 
 exit
