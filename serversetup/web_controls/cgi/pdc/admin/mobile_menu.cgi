@@ -81,7 +81,7 @@ echo '
     <div style="float: center" id="my_menu" class="sdmenu">
 	<div class="collapsed">
 	<span>TLSP '$SCHOOL_NAME'</span>
-<a href="/cgi-bin/menu.cgi">'$MENUMSG'</a>
+<a href="/cgi-bin/menu.cgi">'$MAINMENUMSG'</a>
 <a href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Main_Page">'$DOCUMENTATIONMSG'</a>
  	</div>
        <div class="collapsed">

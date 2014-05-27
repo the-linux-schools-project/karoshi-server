@@ -40,7 +40,7 @@ SET_THEME=yes
 #Configure system settings
 CONFIGURE_SYSTEM=yes
 #Update the system.
-UPDATE_SERVER=no
+UPDATE_SERVER=yes
 #Services are started and set to run on boot when installed so lets turn them all back off for now until they are actually needed.
 TURN_OFF_SERVICES=yes
 #Reboot the machine to auto log in to the karoshi user.
@@ -53,7 +53,7 @@ packages="glusterfs-server apache2-mpm-prefork libapache2-mod-php5 libapache2-mo
 extrapackages="libapache2-mod-suphp apache2-suexec wakeonlan git xarchiver nmap easy-rsa libmime-lite-perl libfile-type-perl hpijs-ppds hp-ppd openprinting-ppds printer-driver-cjet cups-bsd smartmontools libnet-snmp-perl snmp fonts-liberation ipcalc libnss3-tools nslcd fail2ban ldap-utils shimmer-themes gtk2-engines light-themes mate-icon-theme tango-icon-theme firefox xscreensaver virtualbox-guest-x11 gksu yad gedit synaptic plymouth plymouth-label zip unzip bleachbit lynx gnome-terminal libgtk2.0-bin"
 
 #Packages to remove
-removepackages="wpasupplicant apparmor resolvconf nscd byobu xterm orage xfce4-mixer ppp php5-fpm landscape-common avahi-daemon gnome-user-guide libsane gstreamer1.0-plugins-good geoip-database libgphoto2-6 libsane-common w3m libcdparanoia0 vim-runtime vim wireless-tools"
+removepackages="wpasupplicant apparmor resolvconf nscd byobu xterm orage xfce4-mixer ppp php5-fpm landscape-common avahi-daemon gnome-user-guide libsane gstreamer1.0-plugins-good geoip-database libgphoto2-6 libsane-common w3m libcdparanoia0 vim-runtime vim wireless-tools pcscd libccid"
 
 #Check that this script is running as root.
 
@@ -252,7 +252,7 @@ chmod 0550 /etc/sudoers
 function turn_off_services {
 echo -e "\nStopping Services\n"
 sleep 1
-services="apache apache_karoshi clamd cron cups dansguardian dhcp dns fail2ban glusterfs mailscanner memcached mon mysql nfs nginx nslcd nut openvpn postfix portmap proftpd radius rpcbind samba squid ssh tftpd xinetd"
+services="apache apache_karoshi clamd cron cups dansguardian dhcp dns fail2ban glusterfs mailscanner memcached mon monitorix mysql nfs nginx nslcd nut openvpn postfix portmap proftpd radius rpcbind samba squid ssh tftpd xinetd"
 for service in `echo $services`
 do
 echo -e "\nStopping $service\n"
@@ -437,8 +437,8 @@ sed -i 's/Inherits=gnome,crystalsvg/Inherits=gnome,crystalsvg,mate/g' /usr/share
 [ $REMOVE_SOFTWARE = yes ] && remove_software
 [ $SET_THEME = yes ] && set_theme
 [ $CONFIGURE_SYSTEM = yes ] && configure_system
+[ $TIDYPACKAGES = yes ] && tidy_packages
 [ $UPDATE_SERVER = yes ] && update_server
 [ $TURN_OFF_SERVICES = yes ] && turn_off_services
-[ $TIDYPACKAGES = yes ] && tidy_packages
 [ $REBOOT = yes ] && shutdown -r now
 
