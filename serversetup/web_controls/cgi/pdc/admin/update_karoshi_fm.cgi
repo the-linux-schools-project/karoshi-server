@@ -157,7 +157,7 @@ MOBILEACTIONBOX=mobileactionbox2
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$SYSMENUMSG'</a>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
 </div></div><div id="mobilecontent"><div id="'$MOBILEACTIONBOX'">'
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>

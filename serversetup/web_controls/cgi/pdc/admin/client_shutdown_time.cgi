@@ -140,7 +140,7 @@ then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$CLIENTMENUMSG'</a>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
 </div></div><div id="'$DIV_ID'">'
 else
 echo '<b>'$TITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Client_Shutdown_Time"><img class="images" alt="" src="/images/help/info.png"><span>'$USERHELP1'</span></a>

@@ -109,7 +109,7 @@ then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$HELPDESKMENUMSG'</a>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
 </div></div><div id="mobileactionbox">'
 else
 echo '<div class="sectiontitle">'$TITLE'</div><br>'

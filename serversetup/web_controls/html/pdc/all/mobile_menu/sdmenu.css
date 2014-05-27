@@ -33,19 +33,20 @@ div.sdmenu {
 	margin-right: auto ;
         top: 5px;
         left: 5px;
-	width: 300px;
+	width: 100%;
 	font-family: Arial, sans-serif;
 	font-size: 20px;
 	padding-bottom: 15px;
 	background: url(bottom.gif) no-repeat  right bottom;
 	color: #fff;
+	text-align: center;
 }
 div.sdmenu div {
 	background: url(title.gif) repeat-x;
 	overflow: hidden;
 }
 div.sdmenu div:first-child {
-	background: url(toptitle.png) no-repeat;
+	background: url(toptitle.png) repeat-x;
 }
 div.sdmenu div.collapsed {
 	height: 40px;
@@ -81,7 +82,7 @@ div.sdmenu div a:hover {
 #mobilecontent {
 	margin-left: auto ;
 	margin-right: auto ;
-	width: 300px;
+	width: 100%;
 }
 
 #mobileactionbox {
@@ -92,13 +93,9 @@ div.sdmenu div a:hover {
 	font-family: Arial, sans-serif;
 	font-size: 16px;
         top: 90px;
-        left: 5px;
-        width: 280px;
-	padding: 5px 10px;
-	border-top-left-radius: 15px;
-	border-top-right-radius: 15px;
-	border-bottom-left-radius: 15px;
-	border-bottom-right-radius: 15px;
+        width: 100%;
+	padding: 10px 0px 10px 0px;
+	text-align: center;
 }
 
 
@@ -110,10 +107,7 @@ div.sdmenu div a:hover {
 	font-size: 16px;
 	padding: 5px 10px;
 	margin: 0;
-	border-top-left-radius: 15px;
-	border-top-right-radius: 15px;
-	border-bottom-left-radius: 15px;
-	border-bottom-right-radius: 15px;
+	text-align: center;
 }
 
 #mobileactionbox3 {
@@ -124,12 +118,16 @@ div.sdmenu div a:hover {
 	font-size: 16px;
 	padding: 5px 10px;
 	margin: 0;
-	width: 280px;
-	border-top-left-radius: 15px;
-	border-top-right-radius: 15px;
-	border-bottom-left-radius: 15px;
-	border-bottom-right-radius: 15px;
+	width: 100%;
+	text-align: center;
 }
+
+table.mobilestandard {
+	margin-left: auto ;
+	margin-right: auto ;
+text-align: center;
+ }
+
 
 table.mobilestandard th, table.mobilestandard td {
   font-size : 10pt;

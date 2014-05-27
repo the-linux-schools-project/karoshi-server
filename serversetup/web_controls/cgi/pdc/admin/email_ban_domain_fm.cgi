@@ -98,7 +98,7 @@ then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE1'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$EMAILMENUMSG'</a>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
 </div></div><div id="mobileactionbox"><a class="info" target="_top" href="email_view_banned_domains_fm.cgi"><img class="images" alt="" src="/images/submenus/email/email_ban_domain.png"><span>'$TITLE2'</span></a><br>
 '
 else

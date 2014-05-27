@@ -104,7 +104,7 @@ then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE8'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$PRINTMENUMSG'</a>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
 </div></div>
 '
 else

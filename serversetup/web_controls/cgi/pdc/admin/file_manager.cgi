@@ -550,7 +550,7 @@ if [ $SERVERNAME != notset ]
 then
 echo '<a href="/cgi-bin/admin/file_manager.cgi">'$CHOOSESERVERMSG'</a>'
 else
-echo '<a href="/cgi-bin/admin/mobile_menu.cgi">'$SYSMENUMSG'</a>'
+echo '<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>'
 fi
 echo '</div></div>
 <div id="'$DIV_ID'">

@@ -129,7 +129,7 @@ then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE1'</span>
-<a href="/cgi-bin/tech/mobile_menu.cgi">'$PRINTMENUMSG'</a>
+<a href="/cgi-bin/tech/mobile_menu.cgi">'$INFRASTRUCTURESMSG'</a>
 </div></div>
 '
 

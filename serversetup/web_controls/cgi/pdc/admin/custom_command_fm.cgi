@@ -119,7 +119,7 @@ then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$SYSMENUMSG'</a>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
 </div></div><div id="mobileactionbox">
 <b>'$COMMANDMSG'</b><br>'$KEYSMSG'<br>
 <input name="_CUSTOMCOMMAND_" size="28" type="text"><br><br>

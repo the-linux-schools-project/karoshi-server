@@ -137,7 +137,7 @@ then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE6'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$CLIENTMENUMSG'</a>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
 </div></div><div id="mobileactionbox">
 '
 else

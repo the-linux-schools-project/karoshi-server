@@ -169,7 +169,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 
 if [ -z "$GROUP" ]
 then
-echo '<a href="/cgi-bin/admin/mobile_menu.cgi">'$STORAGEMMENUMSG'</a>'
+echo '<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>'
 else
 echo '<a href="/cgi-bin/admin/user_web_folders.cgi">'$GROUP'</a>'
 fi

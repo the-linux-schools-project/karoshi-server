@@ -262,7 +262,7 @@ then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE2'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$INFRASTRUCTURESMSG'</a>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
 </div></div><div id="mobileactionbox">
 <form action="/cgi-bin/admin/dnsview.cgi" method="post">
 <input name="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_ACTION_'$ACTION2'_" type="submit" class="button" value="'$ALTTITLE'">
