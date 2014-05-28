@@ -147,7 +147,7 @@ echo REALMCAPS=\"$REALMCAPS\" >> /opt/karoshi/server_network/domain_information/
 echo LDAPBASE=\"$LDAPBASE\" >> /opt/karoshi/server_network/domain_information/domain_name
 echo LONGNAME=\"$LONGNAME\" >> /opt/karoshi/server_network/domain_information/domain_name
 echo SHORTNAME=\"$SHORTNAME\" >> /opt/karoshi/server_network/domain_information/domain_name
-echo LINUXCLIENTVER=\"LINUXCLIENTVERSION\" >> /opt/karoshi/server_network/domain_information/domain_name
+echo LINUXCLIENTVER=\"$LINUXCLIENTVERSION\" >> /opt/karoshi/server_network/domain_information/domain_name
 
 function check_password {
 #Check that passwords have been set
@@ -1345,7 +1345,7 @@ echo '*/30' '*' '*' '*' 1-7 /opt/karoshi/'"'useful scripts'"'/check_services > /
 #Linux Client support
 #########################
 [ ! -d /var/lib/samba/netlogon/linuxclient ] && mkdir -p /var/lib/samba/netlogon/linuxclient
-cp -f -R /opt/karoshi/serversetup/pdc/linuxclient/LINUXCLIENTVERSION /var/lib/samba/netlogon/linuxclient/
+cp -f -R /opt/karoshi/serversetup/pdc/linuxclient/$LINUXCLIENTVERSION /var/lib/samba/netlogon/linuxclient/
 
 #Create pam_mount.conf.xml
 /opt/karoshi/serversetup/pdc/"useful scripts"/generate_pam_mount
@@ -1363,16 +1363,16 @@ echo $HOSTNAME > /var/lib/samba/netlogon/domain_information/main_server
 
 #Add LINUXCLIENTVERSION to versions.txt
 touch /var/lib/samba/netlogon/linuxclient/versions.txt
-[ `grep -c ^LINUXCLIENTVERSION /var/lib/samba/netlogon/linuxclient/versions.txt` = 0 ] && echo LINUXCLIENTVERSION >> /var/lib/samba/netlogon/linuxclient/versions.txt
+[ `grep -c ^LINUXCLIENTVERSION /var/lib/samba/netlogon/linuxclient/versions.txt` = 0 ] && echo $LINUXCLIENTVERSION >> /var/lib/samba/netlogon/linuxclient/versions.txt
 
 #Point icons at the correct path
-sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/LINUXCLIENTVERSION/desktop-icons/all/"Change Password.desktop"
-sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/LINUXCLIENTVERSION/desktop-icons/itadmin/"Helpdesk.desktop"
-sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/LINUXCLIENTVERSION/desktop-icons/itadmin/"karoshimanagement.desktop"
-sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/LINUXCLIENTVERSION/desktop-icons/staff/"Helpdesk.desktop"
-sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/LINUXCLIENTVERSION/desktop-icons/staff/"karoshimanagement.desktop"
-sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/LINUXCLIENTVERSION/desktop-icons/officestaff/"Helpdesk.desktop"
-sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/LINUXCLIENTVERSION/desktop-icons/officestaff/"karoshimanagement.desktop"
+sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION/desktop-icons/all/"Change Password.desktop"
+sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION/desktop-icons/itadmin/"Helpdesk.desktop"
+sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION/desktop-icons/itadmin/"karoshimanagement.desktop"
+sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION/desktop-icons/staff/"Helpdesk.desktop"
+sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION/desktop-icons/staff/"karoshimanagement.desktop"
+sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION/desktop-icons/officestaff/"Helpdesk.desktop"
+sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION/desktop-icons/officestaff/"karoshimanagement.desktop"
 
 #Create zone information
 [ ! -d /opt/karoshi/server_network/zones/internal/primary_domain_controller ] && mkdir -p /opt/karoshi/server_network/zones/internal/primary_domain_controller
@@ -1390,7 +1390,6 @@ echo $LDAPBASE > /var/lib/samba/netlogon/domain_information/ldap_base
 
 #Prepare client_settings
 [ ! -d /var/lib/samba/netlogon/client_settings ] && mkdir -p /var/lib/samba/netlogon/client_settings
-
 
 #Restart samba
 echo Restarting samba4 >> /opt/karoshi/serversetup/install_log

@@ -593,6 +593,10 @@ configure_ntp
 fi
 echo `date`: configure_authentication - completed "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
+#Add server zone info
+[ ! -d /opt/karoshi/server_network/zones/$ZONE/servers ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/servers
+touch /opt/karoshi/server_network/zones/$ZONE/servers/$SERVER.$REALM
+
 #Add in monitoring for the server
 if [ -f /opt/karoshi/server_network/monitoringserver ]
 then

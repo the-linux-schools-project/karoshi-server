@@ -136,7 +136,7 @@ function get_status {
 
 if [ $SERVERTYPE = network ]
 then
-DSERVICES=cron
+DSERVICES=cron,monitorix
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1pdc ] && DSERVICES=$DSERVICES,dns,samba,nslcd
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ] && DSERVICES=$DSERVICES,dns,samba,nslcd
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1domainmember ] && DSERVICES=$DSERVICES,samba,nslcd
@@ -160,7 +160,7 @@ fi
 
 if [ $SERVERTYPE = federated ]
 then
-DSERVICES=cron
+DSERVICES=cron,monitorix
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/1pdc ] && DSERVICES=$DSERVICES,dns,samba
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/1dc ] && DSERVICES=$DSERVICES,dns,samba
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/1domainmember ] && DSERVICES=$DSERVICES,samba
@@ -184,7 +184,7 @@ fi
 
 if [ $SERVERTYPE = federatedslave ]
 then
-DSERVICES=cron
+DSERVICES=cron,monitorix
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/1pdc ] && DSERVICES=$DSERVICES,dns,samba
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/1dc ] && DSERVICES=$DSERVICES,dns,samba
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/1domainmember ] && DSERVICES=$DSERVICES,samba

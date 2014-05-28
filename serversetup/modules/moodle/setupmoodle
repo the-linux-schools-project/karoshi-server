@@ -249,14 +249,10 @@ chown -R $APACHEUSER.$APACHEGROUP /var/www/moodle-data
 #Modifying config.php for moodle
 ################################
 PASSWORDLINENO=`grep -n ^'$'CFG-'>'dbpass /var/www/html/moodle/config.php | cut -d: -f1`
-sed $PASSWORDLINENO'c'\$CFG-">"dbpass"    "=" ""'"$MOODLEPASS"'"";" /var/www/html/moodle/config.php > /var/www/html/moodle/configtemp.php
-rm -f /var/www/html/moodle/config.php
-mv /var/www/html/moodle/configtemp.php /var/www/html/moodle/config.php
+sed -i $PASSWORDLINENO'c'\$CFG-">"dbpass"    "=" ""'"$MOODLEPASS"'"";" /var/www/html/moodle/config.php
 
 DOMAINLINENO=`grep -n ^'$'CFG-'>'wwwroot /var/www/html/moodle/config.php | cut -d: -f1`
-sed $DOMAINLINENO'c'\$CFG-">"wwwroot"    "=" ""'"http://$ALIAS.$REALM/moodle"'"";" /var/www/html/moodle/config.php > /var/www/html/moodle/configtemp.php
-rm -f /var/www/html/moodle/config.php
-mv /var/www/html/moodle/configtemp.php /var/www/html/moodle/config.php
+sed -i $DOMAINLINENO'c'\$CFG-">"wwwroot"    "=" ""'"https://$ALIAS.$REALM/moodle"'"";" /var/www/html/moodle/config.php
 
 ##############################
 #Schedule a refresh job for moodle

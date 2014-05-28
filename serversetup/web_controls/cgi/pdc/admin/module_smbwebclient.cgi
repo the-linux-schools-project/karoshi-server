@@ -137,7 +137,7 @@ MESSAGE=$ERRORMSG2
 show_status
 fi
 
-echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$TITLE' - '$SERVERNAME'</div><br><br></div><div id="infobox">'
+echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$TITLE' - '$SERVERNAME'</div><br></div><div id="infobox">'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_smbwebclient.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ALIAS:" | sudo -H /opt/karoshi/web_controls/exec/module_smbwebclient

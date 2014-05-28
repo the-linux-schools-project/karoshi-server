@@ -5,7 +5,7 @@
 <body bgcolor="#000000">
 <p style="border-radius: 20px; -moz-border-radius: 20px; -webkit-border-radius: 20px; border: 4px solid #ffffff; height:80px; width:300px; font-size:72; color:white; text-align: center;">
 <?php
-print date("h.i<br>", time());
+print date("H.i<br>", time());
 ?>
 </p>
 </body>

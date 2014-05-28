@@ -75,7 +75,7 @@ gen_rand_pass
 touch /opt/karoshi/server_network/mysql/mysql_password
 chmod 0600 /opt/karoshi/server_network/mysql/mysql_password
 echo $RANDPASS > /opt/karoshi/server_network/mysql/mysql_password
-sed -n 1,1p /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -c /opt/karoshi/server_network/mysql/mysql_password
+sed -n 1,1p /opt/karoshi/server_network/mysql/.key | gpg --batch --passphrase-fd 0 -c /opt/karoshi/server_network/mysql/mysql_password
 rm -f /opt/karoshi/server_network/mysql/mysql_password
 chmod 0600 /opt/karoshi/server_network/mysql/mysql_password.gpg
 fi

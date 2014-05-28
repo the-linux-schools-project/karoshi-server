@@ -173,6 +173,6 @@ sed -i 's/WEBCTRL=no/WEBCTRL=yes/g' /opt/karoshi/server_network/menusettings
 ###########################
 echo '<br>'$ACCESSMSG - '<a href="http://'$ALIAS.$REALM'/joomla" target="_blank">http://'$ALIAS.$REALM'/joomla</a>'
 echo '<br>'$ACCESSMSG2:admin - $PASSWORDMSG: admin
-echo '<br><br><li><b>'$COMPLETEDMSG'</b></li>'
+echo '<br><p style="font-weight:bold; font-size:20px;">'$COMPLETEDMSG3'</p><br>'
 exit
 

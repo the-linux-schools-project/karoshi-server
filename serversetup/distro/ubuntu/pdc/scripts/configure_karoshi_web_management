@@ -41,6 +41,9 @@ fi
 #Make sure that apache starts on boot
 /opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/apache_karoshi
 
+#Make conf folder
+[ ! -d /etc/apache2/conf.d_karoshi ] && mkdir -p /etc/apache2/conf.d_karoshi
+
 #Make mods enabled
 [ ! -d /etc/apache2/mods-enabled_karoshi ] && mkdir -p /etc/apache2/mods-enabled_karoshi
 

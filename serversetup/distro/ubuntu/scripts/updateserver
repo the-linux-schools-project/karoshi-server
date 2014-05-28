@@ -21,8 +21,14 @@
 
 LOG_DATE=`date +%F`
 
-#Check install type
+if [ $1 = "buildserver" ]
+then
+REMOVE_OLD_KERNELS=yes
+INSTALLTYPE=notscheduled
+else
+REMOVE_OLD_KERNELS=no
 INSTALLTYPE=scheduled
+fi
 
 #Make Log folder
 if [ ! -d /opt/karoshi/logs/server_upgrades/ ]
@@ -110,10 +116,6 @@ then
 echo Holding Cron from updating
 echo cron hold | dpkg --set-selections
 echo apache2 install | dpkg --set-selections
-else
-echo Holding Apache2 from updating
-echo apache2 hold | dpkg --set-selections
-echo cron install | dpkg --set-selections
 fi
 #######################
 #Remove any init.d scripts that would stop an update from taking place!
@@ -200,6 +202,11 @@ echo -e "_________________________________________________\n" >>/opt/karoshi/log
 #Check sysv
 /opt/karoshi/serversetup/distro/ubuntu/scripts/sysvsupport
 
+#Remove old kernels 
+[ if $REMOVE_OLD_KERNELS = yes ]
+then
+apt-get purge $(dpkg -l 'linux-*' | sed '/^ii/!d;/'"$(uname -r | sed "s/\(.*\)-\([^0-9]\+\)/\1/")"'/d;s/^[^ ]* [^ ]* \([^ ]*\).*/\1/;/[0-9]/!d' | head -n -1) --assume-yes
+fi
 #######################
 #Check to see if server needs a reboot.
 #######################

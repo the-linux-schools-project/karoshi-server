@@ -239,7 +239,7 @@ fi
 
 function update_server {
 #Update server
-/opt/karoshi/serversetup/distro/ubuntu/scripts/updateserver
+/opt/karoshi/serversetup/distro/ubuntu/scripts/updateserver buildserver
 }
 
 function configure_sudoers {
@@ -406,6 +406,9 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/proxy_h
 #Configure mcrypt
 ln -s /etc/php5/mods-available/mcrypt.ini /etc/php5/apache2/conf.d/20-mcrypt.ini
 
+#Configure suphp
+cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/suphp.conf /etc/apache2/mods-available/
+
 #Configure cups
 sed -i "s/JobPrivateAccess default/JobPrivateAccess all/g" /etc/cups/cupsd.conf
 sed -i "s/JobPrivateValues default/JobPrivateValues none/g" /etc/cups/cupsd.conf
@@ -438,7 +441,7 @@ sed -i 's/Inherits=gnome,crystalsvg/Inherits=gnome,crystalsvg,mate/g' /usr/share
 [ $SET_THEME = yes ] && set_theme
 [ $CONFIGURE_SYSTEM = yes ] && configure_system
 [ $TIDYPACKAGES = yes ] && tidy_packages
-[ $UPDATE_SERVER = yes ] && update_server
 [ $TURN_OFF_SERVICES = yes ] && turn_off_services
+[ $UPDATE_SERVER = yes ] && update_server
 [ $REBOOT = yes ] && shutdown -r now
 

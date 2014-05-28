@@ -59,11 +59,13 @@ killall yad
 do_setup | yad --title "$TITLE" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --geometry=400x100+0+10 --no-buttons --text "Main Server Setup\n\n\n$STATUS" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --progress 2>/dev/null
 
 #Configure /opt/karoshi/serversetup for git in case this is a development server
-/opt/karoshi/serversetup/all/scripts/configure_git
+/opt/karoshi/serversetup/all/scripts/configure_git 1>>$KAROSHILOG 2>>$KAROSHILOG
 
 #Configure monitorix
-/opt/karoshi/serversetup/modules/monitoring/monitorix/setupmonitorix
-/opt/karoshi/serversetup/web_controls/scripts/monitorixwebmanagement
+echo '##############'setupmonitorix'##############' >>$KAROSHILOG
+/opt/karoshi/serversetup/modules/monitoring/monitorix/setupmonitorix 1>>$KAROSHILOG 2>>$KAROSHILOG
+echo '##############'monitorixwebmanagement'##############' >>$KAROSHILOG
+/opt/karoshi/serversetup/web_controls/scripts/monitorixwebmanagement 1>>$KAROSHILOG 2>>$KAROSHILOG
 
 #Create initial disk usage report
 /opt/karoshi/serversetup/all/"useful scripts"/disk_usage
