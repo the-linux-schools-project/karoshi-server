@@ -68,9 +68,9 @@ echo "</pre>"
 echo "<br>"
 fi
 
-[ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
-[ -d /var/www/html ] || mkdir -p /var/www/html
-[ ! -e /opt/karoshi/.tempdata/mysqlpasswordstatus ] || rm -f /opt/karoshi/.tempdata/mysqlpasswordstatus
+[ ! -d /opt/karoshi/.tempdata ] && mkdir /opt/karoshi/.tempdata
+[ ! -d /var/www/html ] && mkdir -p /var/www/html
+
 
 LANGCHOICE=englishuk
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/email/setupemail ] || LANGCHOICE=englishuk
@@ -334,7 +334,7 @@ SOGOPASS=`echo ${PASSWORD[@]:0} | sed 's/ //g'`
 
 /opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
 #Get root mysql password
-MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
+MYSQLPASS=`sed -n 1,1p /etc/mysql.secret`
 
 #Create sogo database
 mysqladmin -f --password=$MYSQLPASS drop sogo 1>/dev/null 2>/dev/null

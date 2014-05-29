@@ -217,7 +217,7 @@ echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cell
 [ $MOBILE != yes ] && echo "</div><div id=\"infobox\">"
 
 echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 60px;\"><b>$FILTERMSG</b><td><td style=\"width: 90px;\"><b>$TIMEMSG</b></td><td></td><td style=\"width: 110px;\"><b>$COMPIP</b></td><td></td><td><b>$WEBURL</b></td></tr>"
+<tr><td style=\"width: 60px;\"><b>$FILTERMSG</b></td><td style=\"width: 90px;\"><b>$TIMEMSG</b></td><td></td><td style=\"width: 110px;\"><b>$COMPIP</b></td><td></td><td><b>$WEBURL</b></td></tr>"
 if [ $LOGTYPE = text ]
 then
 cat /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME

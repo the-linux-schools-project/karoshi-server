@@ -46,38 +46,17 @@ done
 
 }
 
-
-######################
-#Create mysql gpg key
-######################
-
-if [ ! -d /opt/karoshi/server_network/mysql ]
-then
-mkdir -p /opt/karoshi/server_network/mysql
-chmod 0700 /opt/karoshi/server_network/mysql
-fi
-
-if [ ! -f /opt/karoshi/server_network/mysql/.key ]
-then
-touch /opt/karoshi/server_network/mysql/.key
-chmod 0600 /opt/karoshi/server_network/mysql/.key
-gen_rand_pass
-echo $RANDPASS > /opt/karoshi/server_network/mysql/.key
-fi
-
 ######################
 #Create and encrypt mysql password
 ######################
 
-if [ ! -f /opt/karoshi/server_network/mysql/mysql_password.gpg ]
+if [ ! -f /etc/mysql.secret ]
 then
 gen_rand_pass
-touch /opt/karoshi/server_network/mysql/mysql_password
-chmod 0600 /opt/karoshi/server_network/mysql/mysql_password
-echo $RANDPASS > /opt/karoshi/server_network/mysql/mysql_password
-sed -n 1,1p /opt/karoshi/server_network/mysql/.key | gpg --batch --passphrase-fd 0 -c /opt/karoshi/server_network/mysql/mysql_password
-rm -f /opt/karoshi/server_network/mysql/mysql_password
-chmod 0600 /opt/karoshi/server_network/mysql/mysql_password.gpg
+touch /etc/mysql.secret
+chmod 0600 /etc/mysql.secret
+chown root.root /etc/mysql.secret
+echo $RANDPASS > /etc/mysql.secret
 fi
 
 ######################
@@ -90,7 +69,7 @@ RUNSTATUS=$?
 #Check that we can connect with the root password
 ######################
 
-ROOTMYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
+ROOTMYSQLPASS=`cat /etc/mysql.secret`
 mysqladmin --password="$ROOTMYSQLPASS" status 1>/dev/null 2>/dev/null
 LOGINSTATUS=$?
 
@@ -127,9 +106,8 @@ sleep 2
 STARTCOUNT=0
 while [ $STARTCOUNT -lt 50 ]
 do
-
-MYSQLSTATUS=`ps -e | grep -c $MYSQLDVER`
-if [ $MYSQLSTATUS = 0 ]
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_status
+if [ $? = 1 ]
 then
 sleep 1
 else
@@ -151,9 +129,8 @@ sleep 1
 STOPCOUNT=0
 while [ $STOPCOUNT -lt 50 ]
 do
-
-MYSQLSTATUS=`ps -e | grep -c $MYSQLDVER`
-if [ $MYSQLSTATUS != 0 ]
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_status
+if [ $? = 0 ]
 then
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_stop
 else

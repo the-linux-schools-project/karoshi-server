@@ -48,7 +48,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <TITLE>'$TITLE1'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+    <TITLE>'$TITLE'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </HEAD>
@@ -57,7 +57,7 @@ echo '
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<div id="actionbox">
-<B>'$TITLE'</B> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'<br><br>'$HELPMSG2'<br><br>'$HELPMSG3'</span></a>
+<B>'$TITLE'</B> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'<br><br>'$HELPMSG3'</span></a>
 <P>
 '$UPLOADMSG'
 <P>

@@ -395,7 +395,6 @@ echo '	<li class="top"><a href="/cgi-bin/admin/email_aliases.cgi" id="E-Mail" cl
 			<li><a href="/cgi-bin/admin/email_over_quota_report.cgi">'$OVERQUOTA'</a></li>
 			<li><a href="/cgi-bin/admin/email_quota_settings.cgi">'$QWARNINGSETTINGS'</a></li>
 			<li><a href="/cgi-bin/admin/email_quota_messages.cgi">'$QWARNINGMESSAGES'</a></li>
-			<li><a href="/cgi-bin/admin/email_change_domain_ldap_fm.cgi">'$CHANGEDOMAIN'</a></li>
 			<li><a href="/cgi-bin/admin/email_show_queue_fm.cgi">'$EMAILSHOWQUEUE'</a></li>
 			<li><a href="/cgi-bin/admin/email_statistics_fm.cgi">'$EMAILSTATS'</a></li>
 		</ul>
@@ -468,9 +467,7 @@ if [ $WEBCTRL = yes ]
 then
 echo '
 			<li><a href="/cgi-bin/admin/web_management_upload_files_fm.cgi">'$UPLOADFILES'</a></li>
-			<li><a href="/cgi-bin/admin/web_management_view_files_choose_server_fm.cgi">'$VIEWDELETEFILES'</a></li>
-			<li><a href="/cgi-bin/admin/web_management_create_folder_fm.cgi">'$CREATEFOLDER'</a></li>
-			<li><a href="/cgi-bin/admin/web_management_delete_folder_choose_server_fm.cgi">'$DELETEFOLDER'</a></li>'
+			<li><a href="/cgi-bin/admin/web_management_view_files_choose_server_fm.cgi">'$VIEWDELETEFILES'</a></li>'
 fi
 if [ $REVERSEPROXYCTRL = yes ]
 then

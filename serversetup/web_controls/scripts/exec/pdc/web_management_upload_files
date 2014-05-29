@@ -41,19 +41,6 @@ echo `date`: web_management_upload_files - Incorrect Admin MD5Checksum >> /opt/k
 exit 101
 fi
 
-if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/web_management_upload_files_select_cgi
-then
-echo `date`: web_management_upload_files - No Tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
-source /opt/karoshi/web_controls/checksums/tech_checksums/web_management_upload_files_select_cgi
-MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/web_management_upload_files_select.cgi | cut -d' ' -f1`
-[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
-if [ $MD5SUM2'check' != $web_management_upload_files_select_cgi'check' ]
-then
-echo `date`: web_management_upload_files - Incorrect Tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
 ########################
 #Get variables
 ########################
@@ -68,11 +55,11 @@ REMOTE_ADDR=`echo $* | cut -s -d: -f2`
 REMOTE_MD5=`echo $* | cut -s -d: -f3`
 UPLOADFOLDER=`echo $* | cut -s -d: -f4`
 UPLOADID=`echo $* | cut -s -d: -f5`
-WEBSERVER=`echo $* | cut -s -d: -f6`
+SERVERNAME=`echo $* | cut -s -d: -f6`
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
 echo `date`: web_management_upload_files - Not called by web_management_upload_files.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -98,9 +85,9 @@ echo `date`: web_management_upload_files - Blank upload id >> /opt/karoshi/logs/
 exit 101
 fi
 
-if [ $WEBSERVER'null' = null ]
+if [ $SERVERNAME'null' = null ]
 then
-echo `date`: web_management_upload_files - Blank webserver by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: web_management_upload_files - Blank SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 
@@ -109,6 +96,17 @@ then
 echo `date`: web_management_upload_files - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
+
+############################
+#Language
+############################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/web/upload_files ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/web/upload_files
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 UPLOADFOLDER=`echo $UPLOADFOLDER | sed 's/UNDERSCORE/_/g'`
 
@@ -133,24 +131,24 @@ do
 FILENAME=`basename $UPLOADEDFILE`
 #Replace spaces with underscores
 FILENAME=`echo $FILENAME | sed "s/ /_/g"`
-echo `date`: web_management_upload_files $FILENAME uploaded to $UPLOADFOLDER on $WEBSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: web_management_upload_files $FILENAME uploaded to $UPLOADFOLDER on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 done
 
 ########################
 #Copy in files
 ########################
-if [ $WEBSERVER != `hostname-fqdn` ]
+if [ $SERVERNAME != `hostname-fqdn` ]
 then
 #Create tar archive
-tar -z -c -f /var/www/karoshi/webfiles$UPLOADID.tar.gz icons /var/www/karoshi/webfiles.$UPLOADID/ 1>/dev/null 2>/dev/null
-#Transfer archive to webserver
-scp /var/www/karoshi/webfiles$UPLOADID.tar.gz root@$WEBSERVER:"/opt/karoshi/.tempdata"
+tar -z -c -f /var/www/karoshi/webfiles$UPLOADID.tar.gz /var/www/karoshi/webfiles.$UPLOADID/ 1>/dev/null 2>/dev/null
+#Transfer archive to SERVERNAME
+scp /var/www/karoshi/webfiles$UPLOADID.tar.gz root@$SERVERNAME:"/opt/karoshi/.tempdata"
 #Delete tar archive on pdc
 rm -f /var/www/karoshi/webfiles$UPLOADID.tar.gz
-ssh -x -o PasswordAuthentication=no $WEBSERVER '
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
-[ ! -d /var/www/html/webfiles/'$UPLOADFOLDER'/ ] && mkdir -p /var/www/html/webfiles/'$UPLOADFOLDER'/
+[ ! -d /var/www/html/'$UPLOADFOLDER'/ ] && mkdir -p /var/www/html/'$UPLOADFOLDER'/
 #Extract archive
 cd /
 tar -xzf /opt/karoshi/.tempdata/webfiles'$UPLOADID'.tar.gz 1>/dev/null 2>/dev/null
@@ -165,9 +163,20 @@ FILENAME=`echo $FILENAME | sed "s/ /_/g"`
 if [ $FILENAME"null" != null ]
 then
 #Copy file and change permissions
-cp -f $UPLOADEDFILE /var/www/html/webfiles/'$UPLOADFOLDER'/
-chown root.$APACHEGROUP /var/www/html/webfiles/'$UPLOADFOLDER'/$FILENAME
-chmod 0440 /var/www/html/webfiles/'$UPLOADFOLDER'/$FILENAME
+echo "<li>'$SERVERNAME' - '$COPYMSG' $FILENAME</li>"
+cp -f $UPLOADEDFILE '$UPLOADFOLDER'/
+
+#Extract file if it is a zip or tar.gz
+if [ `echo "$FILENAME" | grep -c .tar.gz` -gt 0 ]
+then
+echo "<li>'$SERVERNAME' - '$EXTRACTMSG' $FILENAME</li>"
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+tar -zxvf '$UPLOADFOLDER'/"$FILENAME" -C /var/www/html/
+echo "</pre>"
+fi
+
+chown root.$APACHEGROUP '$UPLOADFOLDER'/$FILENAME
+chmod 0440 '$UPLOADFOLDER'/$FILENAME
 fi
 done
 #Remove uploaded folder
@@ -176,7 +185,7 @@ rm -f -R /var/www/karoshi/webfiles.'$UPLOADID'/
 else
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
-[ ! -d /var/www/html/webfiles/$UPLOADFOLDER/ ] && mkdir -p /var/www/html/webfiles/$UPLOADFOLDER/
+[ ! -d $UPLOADFOLDER/ ] && mkdir -p $UPLOADFOLDER/
 #Copy files to web folder
 for UPLOADEDFILE in /var/www/karoshi/webfiles.$UPLOADID/*
 do
@@ -186,9 +195,20 @@ FILENAME=`echo $FILENAME | sed "s/ /_/g"`
 #Copy file and change permissions
 if [ $FILENAME"null" != null ]
 then
-cp -f $UPLOADEDFILE /var/www/html/webfiles/$UPLOADFOLDER/
-chown root.$APACHEGROUP /var/www/html/webfiles/$UPLOADFOLDER/$FILENAME
-chmod 0440 /var/www/html/webfiles/$UPLOADFOLDER/$FILENAME
+echo "<li>$SERVERNAME - $COPYMSG $FILENAME</li>"
+cp -f $UPLOADEDFILE "$UPLOADFOLDER"/
+
+#Extract file if it is a zip or tar.gz
+if [ `echo "$FILENAME" | grep -c .tar.gz` -gt 0 ]
+then
+echo "<li>$SERVERNAME - $EXTRACTMSG $FILENAME</li>"
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+tar -zxvf $UPLOADFOLDER/"$FILENAME" -C /var/www/html/
+echo "</pre>"
+fi
+
+chown root.$APACHEGROUP "$UPLOADFOLDER/$FILENAME"
+chmod 0440 "$UPLOADFOLDER/$FILENAME"
 fi
 done
 fi

@@ -178,7 +178,7 @@ BADGEHASH=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
 
 /opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
 #Get root mysql password
-MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
+MYSQLPASS=`sed -n 1,1p /etc/mysql.secret`
 
 #############################
 #create and pipe in the database

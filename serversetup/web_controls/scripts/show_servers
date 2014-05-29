@@ -18,7 +18,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/system/show_servers
 #Check data
 
 function usage {
-echo -e "show_servers usage\n\nshow_servers mobile(yes/no) view(all/internal/pdc/servers/adc) actionmsg action custom separator" 
+echo -e "show_servers usage\n\nshow_servers mobile(yes/no) view(all/internal/pdc/servers/adc/web) actionmsg action custom separator" 
 exit
 }
 
@@ -33,7 +33,7 @@ then
 usage
 fi
 
-if [ $VIEW != all ] && [ $VIEW != internal ] && [ $VIEW != pdc ] && [ $VIEW != servers ] && [ $VIEW != adc ] && [ $VIEW != addslaveups ]
+if [ $VIEW != all ] && [ $VIEW != internal ] && [ $VIEW != pdc ] && [ $VIEW != servers ] && [ $VIEW != adc ] && [ $VIEW != addslaveups ]  && [ $VIEW != web ]
 then
 usage
 fi
@@ -166,6 +166,21 @@ done
 }
 
 
+function show_web_servers {
+INFOPATH=/opt/karoshi/server_network/servers
+SERVERTYPE=network
+SERVERMASTER=notset
+for SERVERS in /opt/karoshi/server_network/webservers/*
+do
+FILLCOLOUR=green
+SERVER=`basename $SERVERS`
+[ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ] && FILLCOLOUR=orange
+show_server
+done
+}
+
+
+
 function addslaveups {
 FILLCOLOUR=green
 INFOPATH=/opt/karoshi/server_network/servers
@@ -254,7 +269,7 @@ then
 addslaveups
 else
 #Show pdc
-show_pdc
+[ $VIEW != web ] && show_pdc
 fi
 
 #Show adc servers
@@ -270,6 +285,12 @@ if [ $VIEW = all ] || [ $VIEW = internal ] || [ $VIEW = servers ]
 then
 show_internal_servers
 show_dmz_servers
+fi
+
+#Show adc servers
+if [ $VIEW = web ]
+then
+show_web_servers
 fi
 
 #Show all option

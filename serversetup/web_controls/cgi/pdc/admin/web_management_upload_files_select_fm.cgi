@@ -62,20 +62,20 @@ echo '
 #Get data input
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=`cat | tr -cd 'A-Za-z0-9\._:\-.'`
 #########################
 #Assign data to variables
 #########################
 END_POINT=5
-#Assign WEBSERVER
+#Assign SERVERNAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
 DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = WEBSERVERcheck ]
+if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
 then
 let COUNTER=$COUNTER+1
-WEBSERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
 break
 fi
 let COUNTER=$COUNTER+1
@@ -92,9 +92,8 @@ exit
 
 
 
-echo '<div id="actionbox">
-<form action="/cgi-bin/admin/web_management_upload_files_select.cgi" method="post"><span style="font-weight: bold;">
-'$TITLE' - '$WEBSERVER'</span><br>
+echo '<form action="/cgi-bin/admin/web_management_upload_files_select.cgi" method="post"><div id="actionbox"><span style="font-weight: bold;">
+'$TITLE' - '$SERVERNAME'</span><br>
   <br>
   <br>
 '
@@ -102,8 +101,8 @@ echo '<div id="actionbox">
 #########################
 #Check data
 #########################
-#Check to see that WEBSERVER is not blank
-if [ $WEBSERVER'null' = null ]
+#Check to see that SERVERNAME is not blank
+if [ -z "$SERVERNAME" ]
 then
 MESSAGE=$ERRORMSG5
 show_status
@@ -122,21 +121,22 @@ echo $$ > /var/www/karoshi/webfiles/web_management_upload_id
 UPLOADID=`echo $$`
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/web_management_upload_files_select_fm.cgi | cut -d' ' -f1`
 
-echo '<input name="___WEBSERVER___" value="'$WEBSERVER'" type="hidden">'
+echo '<input name="___SERVERNAME___" value="'$SERVERNAME'" type="hidden">'
 echo '<input name="___UPLOADID___" value="'$UPLOADID'" type="hidden">'
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody><tr><td style="width: 180px;">'$FOLDERMSG'</td><td><select name="___UPLOADFOLDER___" style="width: 185px;">'
 
 #Create folder list
-sudo -H /opt/karoshi/web_controls/exec/web_management_create_folder_list $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$WEBSERVER:
+echo '<option>/var/www/html</option>'
+sudo -H /opt/karoshi/web_controls/exec/web_management_create_folder_list $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:
 
 echo '
 </select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$FOLDERHELPMSG'</span></a></td></tr></tbody></table>
 </div>
 <div id="submitbox">
 <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
-</div>
+</div></form>
 </div></body>
 </html>
 '

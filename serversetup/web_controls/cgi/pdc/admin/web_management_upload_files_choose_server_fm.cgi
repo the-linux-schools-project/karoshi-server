@@ -28,6 +28,7 @@
 ############################
 #Language
 ############################
+MOBILE=no
 LANGCHOICE=englishuk
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
@@ -47,9 +48,8 @@ fi
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">'
-echo "</head>"
-echo "<body onLoad="start()"><div id='pagecontainer'>"
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head>"
+<body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Check https access
 #########################
@@ -74,7 +74,7 @@ show_status
 fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/web_management_upload_files_select_fm.cgi" name="tstest" method="post"><div id="actionbox"><b>'$TITLE'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG4'</span></a><br><br>'
+echo '<div id="actionbox"><form action="/cgi-bin/admin/web_management_upload_files_select_fm.cgi" name="tstest" method="post"><b>'$TITLE'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG4'</span></a><br><br>'
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
@@ -98,23 +98,10 @@ MESSAGE=$ERRORMSG6
 show_status
 fi
 
+#Show list of servers
+/opt/karoshi/web_controls/show_servers $MOBILE web "$ACTIONMSG"
 
-#Show list of ssh enabled web servers
-SERVERLISTARRAY=( `ls -1 /opt/karoshi/server_network/webservers` )
-SERVERLISTCOUNT=${#SERVERLISTARRAY[@]}
-SERVERCOUNTER=0
-SERVERICON="/images/submenus/system/computer.png"
-SERVERICON2="/images/submenus/system/all_computers.png"
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
-
-while [ $SERVERCOUNTER -lt $SERVERLISTCOUNT ]
-do
-KAROSHISERVER=${SERVERLISTARRAY[$SERVERCOUNTER]}
-echo '<td style="width: 90px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_WEBSERVER_'$KAROSHISERVER'_" type="image" class="images" src="'$SERVERICON'" value="_WEBSERVER_'$KAROSHISERVER'_"><span>'$KAROSHISERVER'</span></a><br>'$KAROSHISERVER'</td>'
-[ $SERVERCOUNTER = 5 ] && echo '</tr><tr>'
-let SERVERCOUNTER=$SERVERCOUNTER+1
-done
-echo '</tr></tbody></table></div></form></div></body></html>'
+echo '</form></div></div></body></html>'
 exit
 
 

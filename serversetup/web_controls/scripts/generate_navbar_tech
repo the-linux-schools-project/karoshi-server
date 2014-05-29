@@ -190,18 +190,6 @@ echo '	<li class="top"><a href="/cgi-bin/tech/activate_internet_changes_fm.cgi" 
 		</ul>
 	</li>'
 fi
-#Web
-if [ $WEBCTRL = yes ]
-then
-echo '	<li class="top"><a href="/cgi-bin/tech/web_management_upload_files_fm.cgi" id="Web" class="top_link"><span class="down">Web</span></a>
-		<ul class="sub">
-			<li><a href="/cgi-bin/tech/web_management_upload_files_fm.cgi">'$UPLOADFILES'</a></li>
-			<li><a href="/cgi-bin/tech/web_management_view_files_choose_server_fm.cgi">'$VIEWDELETEFILES'</a></li>
-			<li><a href="/cgi-bin/tech/web_management_create_folder_fm.cgi">'$CREATEFOLDER'</a></li>
-			<li><a href="/cgi-bin/tech/web_management_delete_folder_choose_server_fm.cgi">'$DELETEFOLDER'</a></li>
-		</ul>
-	</li>'
-fi
 
 #Show logout
 echo '<li class="top right"><a href="/cgi-bin/admin/logout.cgi" class="top_link top_link_right"><span>'$LOGOUT'</span></a></li>'

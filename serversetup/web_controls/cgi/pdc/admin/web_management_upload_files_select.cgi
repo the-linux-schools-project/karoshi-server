@@ -44,12 +44,13 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE2'</title><meta http-equiv="REFRESH" content="0; URL=/cgi-bin/admin/web_management_upload_files_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE2'</title><meta http-equiv="REFRESH" content="0; URL=/cgi-bin/admin/web_management_upload_files_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head>
+<body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\_:\-'`
+DATA=`cat | tr -cd 'A-Za-z0-9\_:\-.%'`
 DATA=`echo $DATA | sed 's/___/TRIPLEUNDERSCORE/g' | sed 's/_/UNDERSCORE/g' | sed 's/TRIPLEUNDERSCORE/_/g'`
 #########################
 #Assign data to variables
@@ -63,7 +64,7 @@ DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
 if [ `echo $DATAHEADER'check'` = UPLOADFOLDERcheck ]
 then
 let COUNTER=$COUNTER+1
-UPLOADFOLDER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+UPLOADFOLDER=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/%2F/\//g'`
 break
 fi
 let COUNTER=$COUNTER+1
@@ -81,15 +82,15 @@ break
 fi
 let COUNTER=$COUNTER+1
 done
-#Assign WEBSERVER
+#Assign SERVERNAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
 DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = WEBSERVERcheck ]
+if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
 then
 let COUNTER=$COUNTER+1
-WEBSERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
 break
 fi
 let COUNTER=$COUNTER+1
@@ -99,7 +100,7 @@ function show_status {
 echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '</script>'
-echo "</div></body></html>"
+echo "</div></div></body></html>"
 exit
 }
 #########################
@@ -128,19 +129,19 @@ fi
 #Check data
 #########################
 #Check to see that UPLOADFOLDER is not blank
-if [ $UPLOADFOLDER'null' = null ]
+if [ -z "$UPLOADFOLDER" ]
 then
 MESSAGE=$ERRORMSG2
 show_status
 fi
 #Check to see that UPLOADID is not blank
-if [ $UPLOADID'null' = null ]
+if [ -z "$UPLOADID" ]
 then
 MESSAGE=$ERRORMSG3
 show_status
 fi
-#Check to see that WEBSERVER is not blank
-if [ $WEBSERVER'null' = null ]
+#Check to see that SERVERNAME is not blank
+if [ -z "$SERVERNAME" ]
 then
 MESSAGE=$ERRORMSG5
 show_status
@@ -151,11 +152,10 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/web_management_upload_files_select
 #Copy data to group
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
+echo '<div id="actionbox3"><div id="infobox">'
+sudo -H /opt/karoshi/web_controls/exec/web_management_upload_files $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$UPLOADFOLDER:$UPLOADID:$SERVERNAME:
 
-echo "<div id="actionbox">"
-sudo -H /opt/karoshi/web_controls/exec/web_management_upload_files $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$UPLOADFOLDER:$UPLOADID:$WEBSERVER:
-echo "</div>"
 UPLOADFOLDER=`echo $UPLOADFOLDER | sed 's/UNDERSCORE/_/g'`
-MESSAGE=`echo $COMPLETEDMSG : http://$WEBSERVER/webfiles/$UPLOADFOLDER`
+MESSAGE=`echo $COMPLETEDMSG : $UPLOADFOLDER`
 show_status
 exit

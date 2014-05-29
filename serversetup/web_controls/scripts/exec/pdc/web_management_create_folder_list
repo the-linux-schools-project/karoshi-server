@@ -36,22 +36,22 @@ fi
 REMOTE_USER=`echo $* | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | cut -s -d: -f2`
 REMOTE_MD5=`echo $* | cut -s -d: -f3`
-WEBSERVER=`echo $* | cut -s -d: -f4`
+SERVERNAME=`echo $* | cut -s -d: -f4`
 ########################
 #Check data
 ########################
-if [ $REMOTE_USER'null' = null ]
+if [ -z $REMOTE_USER ]
 then
 echo `date`: web_management_create_folder_list - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z $REMOTE_ADDR ]
 then
 echo `date`: web_management_create_folder_list - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 
-if [ $WEBSERVER'null' = null ]
+if [ -z $SERVERNAME ]
 then
 echo `date`: web_management_create_folder_list - Blank web server by $REMOTE_USER from $REMOTE_ADDRESS >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -68,14 +68,12 @@ fi
 #Create folder list
 ########################
 echo `date`: web_management_create_folder_list by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ $WEBSERVER != `hostname-fqdn` ]
+if [ $SERVERNAME != `hostname-fqdn` ]
 then
-ssh -x -o PasswordAuthentication=no $WEBSERVER '
-[ ! -d /var/www/html/webfiles/default ] && mkdir -p /var/www/html/webfiles/default
-ls -1 /var/www/html/webfiles | sed "s/^/<option>/"g | sed "s/\///g" | sed "s/$/<\/option>/g"
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+ls -l --time-style="long-iso" /var/www/html | egrep "^d" | sed "s/ * / /g" | cut -d" " -f8 | sed "s/^/<option>\/var\/www\/html\//"g | sed "s/$/<\/option>/g"
 '
 else
-[ ! -d /var/www/html/webfiles/default ] && mkdir -p /var/www/html/webfiles/default
-ls -1 /var/www/html/webfiles | sed "s/^/<option>/"g | sed "s/\///g" | sed "s/$/<\/option>/g"
+ls -l --time-style="long-iso" /var/www/html | egrep "^d" | sed "s/ * / /g" | cut -d" " -f8 | sed "s/^/<option>\/var\/www\/html\//g" | sed "s/$/<\/option>/g"
 fi
 exit
