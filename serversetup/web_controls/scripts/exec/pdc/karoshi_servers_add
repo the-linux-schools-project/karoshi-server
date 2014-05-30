@@ -195,7 +195,7 @@ fi
 echo `date`: karoshi_servers_add - checking "ssh" connection to $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $TCPIPNUMBER '
 #Check to see that given servername matches actual servername
-[ '$SERVER' != `hostname-fqdn` ] && exit 102
+[ '$SERVER' != $HOSTNAME ] && exit 102
 #Check that ip addresses match zones
 
 SERVERZONEIP=`ip addr | grep '$TCPIPNUMBER' | sed -n "s/[[:space:]]*inet \([^ ]*\).*/\1/p"`
