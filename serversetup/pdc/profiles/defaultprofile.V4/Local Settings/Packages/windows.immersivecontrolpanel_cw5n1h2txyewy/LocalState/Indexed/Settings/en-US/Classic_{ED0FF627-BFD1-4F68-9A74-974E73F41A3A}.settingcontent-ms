@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PCSettings>
+  <SearchableContent xmlns="http://schemas.microsoft.com/Search/2013/SettingContent">
+    <ApplicationInformation>
+      <AppID>windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel</AppID>
+      <DeepLink>%windir%\system32\rundll32.exe shell32.dll,Control_RunDLL TabletPC.cpl @0,touch</DeepLink>
+      <Icon>%SystemRoot%\System32\tabletpc.cpl,-10201</Icon>
+    </ApplicationInformation>
+    <SettingIdentity>
+      <PageID>{F82DF8F7-8B9F-442E-A48C-818EA735FF9B}</PageID>
+      <SettingID>{ED0FF627-BFD1-4F68-9A74-974E73F41A3A}</SettingID>
+      <HostID>{12B1697E-D3A0-4DBC-B568-CCF64A3F934D}</HostID>
+      <Condition>shcond://v1#IsTouchAvailable;0</Condition>
+    </SettingIdentity>
+    <SettingInformation>
+      <Name>@shell32.dll,-24333</Name>
+      <Description>@shell32.dll,-24333</Description>
+      <Keywords>@@shell32.dll,-25173@shell32.dll,-25078@shell32.dll,-25313@shell32.dll,-25481</Keywords>
+    </SettingInformation>
+  </SearchableContent>
+</PCSettings>

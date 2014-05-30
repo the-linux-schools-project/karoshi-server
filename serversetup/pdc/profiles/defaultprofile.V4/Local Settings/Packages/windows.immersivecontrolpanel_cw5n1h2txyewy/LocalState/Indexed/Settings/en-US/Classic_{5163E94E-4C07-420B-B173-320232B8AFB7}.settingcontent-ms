@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PCSettings>
+  <SearchableContent xmlns="http://schemas.microsoft.com/Search/2013/SettingContent">
+    <ApplicationInformation>
+      <AppID>windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel</AppID>
+      <DeepLink>%windir%\system32\dccw.exe</DeepLink>
+      <Icon>%SystemRoot%\System32\Display.dll,-1</Icon>
+    </ApplicationInformation>
+    <SettingIdentity>
+      <PageID>{C555438B-3C23-4769-A71F-B6D3D9B6053A}</PageID>
+      <SettingID>{5163E94E-4C07-420B-B173-320232B8AFB7}</SettingID>
+      <HostID>{12B1697E-D3A0-4DBC-B568-CCF64A3F934D}</HostID>
+      <Condition>shcond://v1#RegvalExists;0;Regkey;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ICM\Calibration;Regval;DisplayCalibrator</Condition>
+    </SettingIdentity>
+    <SettingInformation>
+      <Name>@shell32.dll,-25682</Name>
+      <Description>@shell32.dll,-25682</Description>
+      <Keywords>@@shell32.dll,-25067@shell32.dll,-25069@shell32.dll,-25174@shell32.dll,-25343@shell32.dll,-25274@shell32.dll,-25486</Keywords>
+    </SettingInformation>
+  </SearchableContent>
+</PCSettings>

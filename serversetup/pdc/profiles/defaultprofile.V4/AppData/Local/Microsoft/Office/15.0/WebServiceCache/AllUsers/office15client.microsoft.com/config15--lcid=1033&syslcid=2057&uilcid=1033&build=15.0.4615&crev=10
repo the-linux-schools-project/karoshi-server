@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="utf-8"?>
+<o:OfficeConfig xmlns:o="urn:schemas-microsoft-com:office:office">
+ <o:services o:GenerationTime="2014-05-28T07:30:12">
+  <!--Build: 14.0.5690.4000-->
+  <o:default>
+   <o:ticket o:headerName="Authorization" o:headerValue="{}" />
+  </o:default>
+  <o:service o:name="Research">
+   <o:url>http://rr.office.microsoft.com/research/query.asmx</o:url>
+  </o:service>
+  <o:service o:name="ORedir">
+   <o:url>http://o15.officeredir.microsoft.com/r</o:url>
+  </o:service>
+  <o:service o:name="ClViewClientHelpId">
+   <o:url>http://[ODC.BaseHost]/client/15/help/home</o:url>
+  </o:service>
+  <o:service o:name="ClViewClientHome">
+   <o:url>http://[ODC.BaseHost]/client/15/help/home</o:url>
+  </o:service>
+  <o:service o:name="ClViewClientTemplate">
+   <o:url>http://[ODC.BaseHost]/client/15/help/template</o:url>
+  </o:service>
+  <o:service o:name="ClViewClientSearch">
+   <o:url>http://[ODC.BaseHost]/client/15/help/results</o:url>
+  </o:service>
+  <o:service o:name="ClViewClientSearchRedir">
+   <o:url>http://[ODC.BaseHost]/search/redir.aspx</o:url>
+  </o:service>
+  <o:service o:name="ClViewClientUpdate">
+   <o:url>http://[ODC.BaseHost]/client/15/help/clvupd</o:url>
+  </o:service>
+  <o:service o:name="AwsCgQuery">
+   <o:url>http://[ODC.BaseHost]/client/15/gallery/query</o:url>
+  </o:service>
+  <o:service o:name="TemplateStart" o:authentication="1">
+   <o:url>http://[ODC.BaseHost]/client/15/templates/start</o:url>
+   <o:ticket o:policy="MBI" o:target="[ODC.AuthHost]" />
+  </o:service>
+  <o:service o:name="TemplateStartModern" o:authentication="1">
+   <o:url>https://[OMEX.BaseHost]/client/templates/modern/start</o:url>
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="[OMEX.AuthHost]" />
+  </o:service>
+  <o:service o:name="TemplateSearch" o:authentication="1">
+   <o:url>http://[ODC.BaseHost]/client/15/templates/search</o:url>
+   <o:ticket o:policy="MBI" o:target="[ODC.AuthHost]" />
+  </o:service>
+  <o:service o:name="TemplateSearchModern" o:authentication="1">
+   <o:url>https://[OMEX.BaseHost]/client/templates/modern/search</o:url>
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="[OMEX.AuthHost]" />
+  </o:service>
+  <o:service o:name="TemplateDetails">
+   <o:url>http://[ODC.CDNBaseHost]/client/15/templates/details</o:url>
+  </o:service>
+  <o:service o:name="TemplateDetailsModern" o:authentication="1">
+   <o:url>https://[OMEX.BaseHost]/client/templates/modern/details</o:url>
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="[OMEX.AuthHost]" />
+  </o:service>
+  <o:service o:name="MruDocuments" o:authentication="2">
+   <o:url>https://ocws.[OSI.BaseHost]/ocs/docs/recent</o:url>
+   <o:ticket o:policy="MBI" o:idprovider="2" o:target="[OSI.RootHost]" />
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="ssl.[Live.WebHost]" />
+  </o:service>
+  <o:service o:name="MruPlaces" o:authentication="2">
+   <o:url>https://ocws.[OSI.BaseHost]/ocs/locations/recent</o:url>
+   <o:ticket o:policy="MBI" o:idprovider="2" o:target="[OSI.RootHost]" />
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="ssl.[Live.WebHost]" />
+  </o:service>
+  <o:service o:name="ODCInsertMedia" o:authentication="1">
+   <o:url>https://odc.[OSI.BaseHost]/odc/insertmedia</o:url>
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="ssl.[Live.WebHost]" />
+  </o:service>
+  <o:service o:name="HomeRealmDiscovery">
+   <o:url>https://odc.[OSI.BaseHost]/odc/emailhrd</o:url>
+  </o:service>
+  <o:service o:name="GetFederationProvider">
+   <o:url>https://odc.[OSI.BaseHost]/odc/emailhrd/getfederationprovider</o:url>
+  </o:service>
+  <o:service o:name="ODCServicesCatalog">
+   <o:url>http://odc.[OSI.BaseHost]/odc/servicemanager/catalog</o:url>
+  </o:service>
+  <o:service o:name="ODCUserConnectedServices" o:authentication="2">
+   <o:url>http://odc.[OSI.BaseHost]/odc/servicemanager/userconnected</o:url>
+   <o:ticket o:policy="MBI" o:idprovider="2" o:target="[OSI.RootHost]" />
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="ssl.[Live.WebHost]" />
+  </o:service>
+  <o:service o:name="ODCClientDeveloperHelp">
+   <o:url>http://odc.[OSI.BaseHost]/odc/help/clientdeveloper</o:url>
+  </o:service>
+  <o:service o:name="ODCManageServiceRedir" o:authentication="2">
+   <o:url>https://odc.[OSI.BaseHost]/odc/servicemanager/manageserviceredir.aspx</o:url>
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="ssl.[Live.WebHost]" o:headerName="X-Office-Auth-ODCSM" />
+  </o:service>
+  <o:service o:name="ODCSMAddRepairService" o:authentication="2">
+   <o:url>https://odc.[OSI.BaseHost]/odc/servicemanager/liveredir</o:url>
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="ssl.[Live.WebHost]" o:headerName="X-Office-Auth-ODCSM" />
+  </o:service>
+  <o:service o:name="ODCSMManageService" o:authentication="2">
+   <o:url>https://odc.[OSI.BaseHost]/odc/servicemanager/liveredir</o:url>
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="ssl.[Live.WebHost]" o:parameterName="t" />
+  </o:service>
+  <o:service o:name="ODCSMServiceAdded" o:authentication="2">
+   <o:url>http://odc.[OSI.BaseHost]/odc/servicemanager/serviceadd</o:url>
+   <o:ticket o:policy="MBI" o:idprovider="2" o:target="[OSI.RootHost]" />
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="ssl.[Live.WebHost]" />
+  </o:service>
+  <o:service o:name="ODCSMServiceDetails" o:authentication="2">
+   <o:url>http://odc.[OSI.BaseHost]/odc/servicemanager/servicedetails</o:url>
+   <o:ticket o:policy="MBI" o:idprovider="2" o:target="[OSI.RootHost]" />
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="ssl.[Live.WebHost]" />
+  </o:service>
+  <o:service o:name="ODCSMServiceRemoved" o:authentication="2">
+   <o:url>http://odc.[OSI.BaseHost]/odc/servicemanager/serviceremove</o:url>
+   <o:ticket o:policy="MBI" o:idprovider="2" o:target="[OSI.RootHost]" />
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="ssl.[Live.WebHost]" />
+  </o:service>
+  <o:service o:name="ODCSMReportServiceError" o:authentication="2">
+   <o:url>http://odc.[OSI.BaseHost]/odc/servicemanager/reportserviceerror</o:url>
+   <o:ticket o:policy="MBI" o:idprovider="2" o:target="[OSI.RootHost]" />
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="ssl.[Live.WebHost]" />
+  </o:service>
+  <o:service o:name="DSIRoamingSettings" o:authentication="2">
+   <o:url>https://roaming.[OSI.BaseHost]/rs/RoamingSoapService.svc</o:url>
+   <o:ticket o:policy="MBI" o:idprovider="2" o:target="[OSI.RootHost]" />
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="ssl.[Live.WebHost]" />
+  </o:service>
+  <o:service o:name="OfficeLicensingService15" o:authentication="2">
+   <o:url>https://ols.[OSI.BaseHost]/olsc/OlsClient.svc/OlsClient</o:url>
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="ssl.[Live.WebHost]" />
+   <o:ticket o:policy="MBI" o:idprovider="2" o:target="[OSI.RootHost]" />
+  </o:service>
+  <o:service o:name="OfficeLicensingServiceGlobal">
+   <o:url>https://ols.[OSI.BaseHost.Global]/olsc/OlsClient.svc/OlsClient</o:url>
+  </o:service>
+  <o:service o:name="RMSOnline" o:authentication="2">
+   <o:url>-</o:url>
+   <o:ticket o:policy="MCMBI" o:idprovider="2" o:target="[RMSOnline.BaseHost]" />
+  </o:service>
+  <o:service o:name="BroadcastService" o:authentication="1">
+   <o:url>https://broadcast.[OSI.BaseHost]/m/broadcasthost.asmx</o:url>
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="ssl.[Live.WebHost]" />
+  </o:service>
+  <o:service o:name="AccessNounDefinitionsB2">
+   <o:url>http://[ODC.BaseHost]/client/15/getcontent?AssetId=AF102833395</o:url>
+  </o:service>
+  <o:service o:name="AccessNounDefinitionsRTM">
+   <o:url>http://[ODC.BaseHost]/client/15/getcontent?AssetId=AF102833403</o:url>
+  </o:service>
+  <o:service o:name="LiveOAuthLoginStart">
+   <o:url>https://login.[Live.WebHost]/oauth20_authorize.srf</o:url>
+  </o:service>
+  <o:service o:name="LiveOAuthLoginEnd">
+   <o:url>https://login.[Live.WebHost]/oauth20_desktop.srf</o:url>
+  </o:service>
+  <o:service o:name="LiveOAuthLoginError">
+   <o:url>https://login.[Live.WebHost]/err.srf</o:url>
+  </o:service>
+  <o:service o:name="LiveOAuthSignOut">
+   <o:url>https://login.[Live.WebHost]/logout.srf</o:url>
+  </o:service>
+  <o:service o:name="LiveOAuthGetToken">
+   <o:url>https://login.[Live.WebHost]/oauth20_token.srf</o:url>
+  </o:service>
+  <o:service o:name="LiveOAuthSignUp">
+   <o:url>https://signup.[Live.WebHost]/signup.aspx?ru=https://login.[Live.WebHost]/oauth20_authorize.srf%3fclient_id%3d[LiveOAuthAppID]%26scope%3dservice::ssl.[Live.WebHost]::MBI_SSL_SHORT%26response_type%3dtoken%26redirect_uri%3dhttps://login.[Live.WebHost]/oauth20_desktop.srf%26display%3dtouch&amp;uiflavor=hostmobile&amp;lic=1</o:url>
+  </o:service>
+  <o:service o:name="ODCLogging" o:authentication="1">
+   <o:url>http://[ODC.BaseHost]/client/15/log</o:url>
+   <o:ticket o:policy="MBI" o:target="[ODC.AuthHost]" />
+  </o:service>
+  <o:service o:name="SkyDriveSkyDocs" o:authentication="2">
+   <o:url>https://[Live.DocumentAPIHost]/SkyDocsService.svc</o:url>
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="ssl.[Live.WebHost]" o:headerValue="Passport1.4 from-PP='{}&amp;p='" />
+  </o:service>
+  <o:service o:name="SkyDriveSharing" o:authentication="2">
+   <o:url>https://[Live.DocumentAPIHost]/SharingService.svc</o:url>
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="ssl.[Live.WebHost]" />
+  </o:service>
+  <o:service o:name="SkyDriveSyncClientUpsell">
+   <o:url>http://[ODC.BaseHost]/client/15/getcontent?AssetId=AF102788108</o:url>
+  </o:service>
+  <o:service o:name="LiveProfileService" o:authentication="2">
+   <o:url>https://directory.services.[Live.WebHost]/profile/Profile.asmx</o:url>
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="ssl.[Live.WebHost]" />
+  </o:service>
+  <o:service o:name="LiveCreateProfile" o:authentication="1">
+   <o:url>https://profile.[Live.WebHost]/cid-%s/</o:url>
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="ssl.[Live.WebHost]" />
+  </o:service>
+  <o:service o:name="PreinstalledAppsQuery" o:authentication="1">
+   <o:url>https://retailer.[OSI.BaseHost]/appinstall/preinstalled</o:url>
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="ssl.[Live.WebHost]" />
+  </o:service>
+  <o:service o:name="LiveEditProfile" o:authentication="1">
+   <o:url>https://profile.[Live.WebHost]/home</o:url>
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="ssl.[Live.WebHost]" />
+  </o:service>
+  <o:service o:name="LiveContacts" o:authentication="1">
+   <o:url>https://contacts.[MSN.WebHost]/ABService/ABService.asmx</o:url>
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="ssl.[Live.WebHost]" />
+  </o:service>
+  <o:service o:name="SkyDriveSignUpUpsell">
+   <o:url>http://[ODC.BaseHost]/client/15/getcontent?AssetId=AF102819338</o:url>
+  </o:service>
+  <o:service o:name="SkyDriveSignUpUpsellImage">
+   <o:url>http://office.microsoft.com/download/cdnfile.aspx?AssetId=AF102895210</o:url>
+  </o:service>
+  <o:service o:name="OutlookConnectorManifest">
+   <o:url>https://[ODC.BaseHost]/client/15/getcontent?AssetId=AF102819889</o:url>
+  </o:service>
+  <o:service o:name="LiveIdFederatedToOrgIdForDesktop">
+   <o:url>-</o:url>
+   <o:ticket o:policy="MBI_FED_SSL_C14N" o:idprovider="1" o:target="[Live.FederatedAuthHost]" />
+  </o:service>
+  <o:service o:name="LiveIdFederatedToOrgIdForImmersive">
+   <o:url>-</o:url>
+   <o:ticket o:policy="LBI_FED_STS_CLEAR" o:idprovider="1" o:target="[Live.FederatedAuthHost]" />
+  </o:service>
+  <o:service o:name="OrgIdSigninRedir">
+   <o:url>http://office.microsoft.com/en-gb/signinredir.aspx?url=http%3A%2F%2Foffice%2Emicrosoft%2Ecom&amp;hurl=AC4D110EE7083C4D61748D4E056EF0D3BB88084E&amp;ipt=2</o:url>
+  </o:service>
+  <o:service o:name="NLGEnglishAssistance">
+   <o:url>https://ssl.bing.com/dict/?view=officemoe&amp;ulang=zh-cn&amp;tlang=en-us</o:url>
+  </o:service>
+  <o:service o:name="NLGEnglishAssistanceIcon">
+   <o:url>https://ssl.bing.com/dict/img/BingDict_E2C.PNG</o:url>
+  </o:service>
+  <o:service o:name="CISMobileAssociation">
+   <o:url>https://partnerservices.getmicrosoftkey.com/PartnerProvisioning.svc/v1/subscriptions</o:url>
+   <o:ticket o:policy="MBI_SSL" o:idprovider="1" o:target="partnerservices.getmicrosoftkey.com" />
+  </o:service>
+  <o:service o:name="CISRedemptionService">
+   <o:url>https://pbsub.microsoft.com/RedemptionService/v1/redeem</o:url>
+   <o:ticket o:policy="MBI_SSL" o:idprovider="1" o:target="redemptionservices.getmicrosoftkey.com" />
+  </o:service>
+  <o:service o:name="Nexus">
+   <o:url>https://nexus.[OSI.BaseHost]</o:url>
+  </o:service>
+  <o:service o:name="LiveRestAPI">
+   <o:url>https://apis.live.net/v5.0/</o:url>
+  </o:service>
+  <o:service o:name="FontService">
+   <o:url>http://fs.officeapps.live.com/fs</o:url>
+  </o:service>
+  <o:service o:name="AppClientSearch" o:authentication="1">
+   <o:url>https://[OMEX.BaseHost]/client/search.aspx</o:url>
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="[OMEX.AuthHost]" />
+  </o:service>
+  <o:service o:name="AppClientStore" o:authentication="1">
+   <o:url>https://[OMEX.BaseHost]/client/store.aspx</o:url>
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="[OMEX.AuthHost]" />
+  </o:service>
+  <o:service o:name="AppClientTrust" o:authentication="1">
+   <o:url>https://[OMEX.BaseHost]/client/trust.aspx</o:url>
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="[OMEX.AuthHost]" />
+  </o:service>
+  <o:service o:name="AppInfoQuery15">
+   <o:url>https://[ODC.BaseHost]/client/15/appinfo/query</o:url>
+  </o:service>
+  <o:service o:name="AppInstallInfoQuery15">
+   <o:url>https://[ODC.BaseHost]/client/15/appinstallinfo/query</o:url>
+  </o:service>
+  <o:service o:name="AppLandingPage" o:authentication="1">
+   <o:url>https://[OMEX.BaseHost]/webapplandingpage.aspx</o:url>
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="[OMEX.AuthHost]" o:parameterName="t" />
+  </o:service>
+  <o:service o:name="AppQuery15">
+   <o:url>http://[ODC.BaseHost]/client/15/app/query</o:url>
+  </o:service>
+  <o:service o:name="AppStateQuery15">
+   <o:url>https://[ODC.BaseHost]/client/15/appstate/query</o:url>
+  </o:service>
+  <o:service o:name="ClientAppInstallInfoQuery15" o:authentication="2">
+   <o:url>https://[ODC.BaseHost]/client/15/clientappinstallinfo/query</o:url>
+   <o:ticket o:policy="MBI" o:target="[ODC.AuthHost]" />
+  </o:service>
+  <o:service o:name="CommerceQuery15">
+   <o:url>http://[ODC.BaseHost]/client/15/commerce/query</o:url>
+  </o:service>
+  <o:service o:name="CustomMessaging15" o:authentication="2">
+   <o:url>https://[ODC.BaseHost]/client/15/custommessaging/query</o:url>
+   <o:ticket o:policy="MBI" o:target="[ODC.AuthHost]" />
+  </o:service>
+  <o:service o:name="EntitlementQuery15" o:authentication="2">
+   <o:url>https://[ODC.BaseHost]/client/15/entitlement/query</o:url>
+   <o:ticket o:policy="MBI" o:target="[ODC.AuthHost]" />
+  </o:service>
+  <o:service o:name="MyApps" o:authentication="1">
+   <o:url>https://[OMEX.BaseHost]/myapps.aspx</o:url>
+   <o:ticket o:policy="MBI_SSL_SHORT" o:idprovider="1" o:target="[OMEX.AuthHost]" o:parameterName="t" />
+  </o:service>
+  <o:service o:name="ReviewQuery15">
+   <o:url>http://[ODC.BaseHost]/client/15/review/query</o:url>
+  </o:service>
+ </o:services>
+ <o:tokens>
+  <o:token o:name="Live.DocumentAPIHost">docs.live.net</o:token>
+  <o:token o:name="Live.FederatedAuthHost">urn:federation:MicrosoftOnline</o:token>
+  <o:token o:name="Live.WebHost">live.com</o:token>
+  <o:token o:name="MSN.WebHost">msn.com</o:token>
+  <o:token o:name="ODC.AuthHost">[ODC.BaseHost]</o:token>
+  <o:token o:name="ODC.AuthHostLiveID">
+  </o:token>
+  <o:token o:name="ODC.AuthHostOrgID">
+  </o:token>
+  <o:token o:name="ODC.BaseHost">office.microsoft.com</o:token>
+  <o:token o:name="ODC.CDNBaseHost">officeimg.vo.msecnd.net</o:token>
+  <o:token o:name="OMEX.AuthHost">ssl.live.com</o:token>
+  <o:token o:name="OMEX.BaseHost">retailer.officeapps.live.com</o:token>
+  <o:token o:name="OSI.BaseHost">officeapps.live.com</o:token>
+  <o:token o:name="OSI.BaseHost.FP">
+  </o:token>
+  <o:token o:name="OSI.BaseHost.Global">officeapps.live.com</o:token>
+  <o:token o:name="OSI.RootHost">officeapps.live.com</o:token>
+  <o:token o:name="RMSOnline.BaseHost">discover.aadrm.com</o:token>
+  <o:token o:name="SPO.BaseHost">sharepoint.com</o:token>
+  <o:token o:name="ADALClientIdExcel">d3590ed6-52b3-4102-aeff-aad2292ab01c</o:token>
+  <o:token o:name="ADALClientIdLync">d3590ed6-52b3-4102-aeff-aad2292ab01c</o:token>
+  <o:token o:name="ADALClientIdOneNote">d3590ed6-52b3-4102-aeff-aad2292ab01c</o:token>
+  <o:token o:name="ADALClientIdOutlook">d3590ed6-52b3-4102-aeff-aad2292ab01c</o:token>
+  <o:token o:name="ADALClientIdPowerPoint">d3590ed6-52b3-4102-aeff-aad2292ab01c</o:token>
+  <o:token o:name="ADALClientIdProject">d3590ed6-52b3-4102-aeff-aad2292ab01c</o:token>
+  <o:token o:name="ADALClientIdRMS">d3590ed6-52b3-4102-aeff-aad2292ab01c</o:token>
+  <o:token o:name="ADALClientIdSkyDrivePro">d3590ed6-52b3-4102-aeff-aad2292ab01c</o:token>
+  <o:token o:name="ADALClientIdVisio">d3590ed6-52b3-4102-aeff-aad2292ab01c</o:token>
+  <o:token o:name="ADALClientIdWord">d3590ed6-52b3-4102-aeff-aad2292ab01c</o:token>
+  <o:token o:name="ADALRedirectUrlExcel">urn:ietf:wg:oauth:2.0:oob</o:token>
+  <o:token o:name="ADALRedirectUrlLync">urn:ietf:wg:oauth:2.0:oob</o:token>
+  <o:token o:name="ADALRedirectUrlOneNote">urn:ietf:wg:oauth:2.0:oob</o:token>
+  <o:token o:name="ADALRedirectUrlOutlook">urn:ietf:wg:oauth:2.0:oob</o:token>
+  <o:token o:name="ADALRedirectUrlPowerPoint">urn:ietf:wg:oauth:2.0:oob</o:token>
+  <o:token o:name="ADALRedirectUrlProject">urn:ietf:wg:oauth:2.0:oob</o:token>
+  <o:token o:name="ADALRedirectUrlRMS">urn:ietf:wg:oauth:2.0:oob</o:token>
+  <o:token o:name="ADALRedirectUrlSkyDrivePro">urn:ietf:wg:oauth:2.0:oob</o:token>
+  <o:token o:name="ADALRedirectUrlVisio">urn:ietf:wg:oauth:2.0:oob</o:token>
+  <o:token o:name="ADALRedirectUrlWord">urn:ietf:wg:oauth:2.0:oob</o:token>
+  <o:token o:name="GlobalFederationProvider">microsoftonline.com</o:token>
+  <o:token o:name="LiveIdTrustedRootDomains">live.net|live.com|live.org</o:token>
+  <o:token o:name="LiveOAuthAppID">00000000480728C5</o:token>
+  <o:token o:name="LiveProfileViewName">Office15.Profile</o:token>
+  <o:token o:name="OfficeIdentityVersion">0</o:token>
+ </o:tokens>
+ <o:signin>
+  <o:tickets o:idprovider="1">
+   <o:ticket o:policy="MBI_SSL_SHORT" o:target="ssl.[Live.WebHost]" />
+  </o:tickets>
+  <o:tickets o:idprovider="2">
+   <o:ticket o:policy="MBI" o:target="[SPO.BaseHost]" />
+   <o:ticket o:policy="MBI" o:target="[OSI.RootHost]" />
+  </o:tickets>
+ </o:signin>
+</o:OfficeConfig>

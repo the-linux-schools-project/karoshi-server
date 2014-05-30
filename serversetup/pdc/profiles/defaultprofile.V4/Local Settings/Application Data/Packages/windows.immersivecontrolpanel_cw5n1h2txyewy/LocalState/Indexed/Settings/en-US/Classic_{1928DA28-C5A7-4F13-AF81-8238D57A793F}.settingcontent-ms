@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PCSettings>
+  <SearchableContent xmlns="http://schemas.microsoft.com/Search/2013/SettingContent">
+    <ApplicationInformation>
+      <AppID>windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel</AppID>
+      <DeepLink>Microsoft.WindowsFirewall\PageConfigureApps</DeepLink>
+      <Icon>%SystemRoot%\System32\FirewallControlPanel.dll,-1</Icon>
+    </ApplicationInformation>
+    <SettingIdentity>
+      <PageID>{4026492F-2F69-46B8-B9BF-5654FC07E423}</PageID>
+      <SettingID>{1928DA28-C5A7-4F13-AF81-8238D57A793F}</SettingID>
+      <HostID>{7E0522FC-1AC4-41CA-AFD0-3610417A9C41}</HostID>
+      <Condition>shcond://v1#RegvalEquals;1;Regkey;HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment;Regval;PROCESSOR_ARCHITECTURE;RegvalExpected;ARM</Condition>
+    </SettingIdentity>
+    <SettingInformation>
+      <Name>@shell32.dll,-24318</Name>
+      <Description>@shell32.dll,-24318</Description>
+      <Keywords>@@shell32.dll,-25094@shell32.dll,-25306@shell32.dll,-25095@shell32.dll,-25127@shell32.dll,-25077@shell32.dll,-25124@shell32.dll,-25070</Keywords>
+    </SettingInformation>
+  </SearchableContent>
+</PCSettings>

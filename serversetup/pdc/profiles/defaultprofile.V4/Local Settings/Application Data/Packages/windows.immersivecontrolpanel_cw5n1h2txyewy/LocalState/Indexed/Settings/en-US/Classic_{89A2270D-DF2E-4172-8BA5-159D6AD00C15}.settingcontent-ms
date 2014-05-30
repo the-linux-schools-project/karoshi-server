@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PCSettings>
+  <SearchableContent xmlns="http://schemas.microsoft.com/Search/2013/SettingContent">
+    <ApplicationInformation>
+      <AppID>windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel</AppID>
+      <DeepLink>%windir%\system32\rundll32.exe shell32.dll,Control_RunDLL %windir%\system32\speech\speechux\sapi.cpl</DeepLink>
+      <Icon>%SystemRoot%\System32\Speech\SpeechUX\speechuxcpl.dll,-1</Icon>
+    </ApplicationInformation>
+    <SettingIdentity>
+      <PageID>{58E3C745-D971-4081-9034-86E34B30836A}</PageID>
+      <SettingID>{89A2270D-DF2E-4172-8BA5-159D6AD00C15}</SettingID>
+      <HostID>{12B1697E-D3A0-4DBC-B568-CCF64A3F934D}</HostID>
+      <Condition>shcond://v1#RegkeyExists;0;Regkey;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ControlPanel\NameSpace\{58E3C745-D971-4081-9034-86E34B30836A}</Condition>
+    </SettingIdentity>
+    <SettingInformation>
+      <Name>@shell32.dll,-24248</Name>
+      <Description>@shell32.dll,-24248</Description>
+      <Keywords>@@shell32.dll,-25078@shell32.dll,-25294</Keywords>
+    </SettingInformation>
+  </SearchableContent>
+</PCSettings>

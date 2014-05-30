@@ -1,0 +1,100 @@
+/*---------------------------------------------------------------
+# Package - Joomla Template based on Helix Framework   
+# ---------------------------------------------------------------
+# Author - JoomShaper http://www.joomshaper.com
+# Copyright (C) 2010 - 2011 JoomShaper.com. All Rights Reserved.
+# license - PHP files are licensed under  GNU/GPL V2
+# license - CSS  - JS - IMAGE files  are Copyrighted material 
+# Websites: http://www.joomshaper.com - http://www.joomxpert.com
+-----------------------------------------------------------------*/
+
+/* Master Reset */
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent;margin:0;padding:0}
+body{line-height:1}
+ol,ul{list-style:none}
+blockquote,q{quotes:none}
+blockquote:before,blockquote:after,q:before,q:after{content:none}
+:focus{outline:0}
+ins{text-decoration:none}
+del{text-decoration:line-through}
+table{border-collapse:collapse;border-spacing:0}
+
+/* Core */
+body{color:#525253;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:150%}
+.sp-wrap{margin-left:auto;margin-right:auto}
+.sp-block{float:left;display:inline}
+.mod-block {padding:5px}
+.sp-inner{padding-left:10px;padding-right:10px}
+.sp-block .first {margin-left:0px}
+.sp-block .last {margin-right:0px}
+.sp-block .single {margin-left:-10px;margin-right:-10px}
+.gap{clear:both; margin-bottom:10px}
+.main-bg {background:#fff;margin-bottom:80px}
+
+/*Header Area*/
+#header {background: url("../images/masthead.png") repeat-x scroll 0 0 transparent;position:relative}
+a#logo,#logo-text{float:left;margin:0 10px}
+a#logo{background:url(../images/logo.png) no-repeat 0 50%}
+#logo-text h1{font-size:200%;font-weight:bold;text-transform:uppercase;border:0!important;margin:10px 0 0!important;padding:0!important}
+#logo-text h1 a{}
+#logo-text p.site-slogan{margin:0;padding:0;color:#999}
+
+/*Search*/
+#search{float:right;margin:8px 50px 0}
+#search input#mod-search-searchword{padding:2px 5px;margin:0 10px 0 0;}
+.mod-search{margin:0;padding:0}
+
+/*Module positions user1-user4*/
+#sp-userpos {margin:10px 0}
+#sp-userpos h3 {color:#333}
+#sp-bottom{background:transparent;font-size:90%}
+
+/* Layout */
+#sp-leftcol, #sp-rightcol, #sp-maincol ,#inset1, #inset2, #inner_content {float:left}
+#sp-maincol {padding:10px 0}
+
+/*Font Resizer*/
+div.font-sizer{width:45px;height:16px;line-height:16px;position:absolute;z-index:1;top:10px;right:10px}
+div.font-sizer a.btn_fs_big,div.font-sizer a.btn_fs_reset,div.font-sizer a.btn_fs_small
+{background-image:url(../images/font-resizer.png);background-repeat:no-repeat;height:16px;width:15px;border:medium none;cursor:pointer;display:block;float:left;text-indent:-999em;padding:0}
+div.font-sizer a.btn_fs_big{background-position:0 0}
+div.font-sizer a.btn_fs_reset{background-position:-15px 0}
+div.font-sizer a.btn_fs_small{background-position:-30px 0}
+div.font-sizer a.btn_fs_big:hover{background-position:0 -16px}
+div.font-sizer a.btn_fs_reset:hover{background-position:-15px -16px}
+div.font-sizer a.btn_fs_small:hover{background-position:-30px -16px}
+
+/* Breadcrumbs */
+#breadcrumbs{overflow:hidden;height:30px;line-height:30px;border-top:1px solid #e7e7e7;border-bottom:1px solid #e7e7e7}
+#breadcrumbs span.showhome {font-weight:bold;margin-right:5px}
+#breadcrumbs .padding{padding:5px 8px}
+#breadcrumbs a,#breadcrumbs span,#breadcrumbs strong{display:block;float:left}
+#breadcrumbs a,#breadcrumbs span.separator{margin-right:10px;padding-right:15px;background:url(../images/breadcrumbs.png) 100% 50% no-repeat}
+#breadcrumbs span.current{color:#666}
+a#topofpage{float:right!important;background:none!important;margin:0!important;padding:0!important}
+
+/* Footer */
+#sp-footer{background:#fff;padding:10px 0}
+#sp-footer .cp {float:left;}
+
+/*Footer Navigation*/
+#footer-nav{margin-left:auto;margin-right:auto;margin-top:8px}
+#footer-nav ul{list-style-type:none;padding:0;margin:0 0 5px 0}
+#footer-nav li{background:none;padding:0;display:inline}
+#footer-nav a{font-size:11px;font-weight:normal;text-decoration:none;display:inline;margin:0;padding:0 8px}
+
+/* Helix Logo */
+#powered-by{display:block;text-indent:-999em}
+.helix-logo-light,.helix-logo-dark,.helix-logo-light-small,.helix-logo-dark-small{display:block;float:left;padding:0 10px 0 0;margin:0 15px 0 0;border-right:1px solid #e5e5e5}
+.helix-logo-light,.helix-logo-dark,.helix-logo-light a,.helix-logo-dark a{height:33px;width:160px}
+.helix-logo-light-small,.helix-logo-dark-small,.helix-logo-light-small a,.helix-logo-dark-small a{height:33px;width:100px}
+.helix-logo a{background-position:center center;background-repeat:no-repeat;display:block;text-indent:-999em}
+.helix-logo-light a{background-image:url(../images/helix-logo/helix_light.png)}
+.helix-logo-dark a{background-image:url(../images/helix-logo/helix_dark.png)}
+.helix-logo-light-small a{background-image:url(../images/helix-logo/helix_light_small.png)}
+.helix-logo-dark-small a{background-image:url(../images/helix-logo/helix_dark_small.png)}
+
+/* Clearfix */
+.clr{clear:both;display:block;overflow:hidden;visibility:hidden;width:0;height:0}
+.clearfix:after{clear:both;content:' ';display:block;font-size:0;line-height:0;visibility:hidden;width:0;height:0}
+* html .clearfix,:first-child+html .clearfix{zoom:1}

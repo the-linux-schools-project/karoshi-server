@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PCSettings>
+  <SearchableContent xmlns="http://schemas.microsoft.com/Search/2013/SettingContent">
+    <ApplicationInformation>
+      <AppID>windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel</AppID>
+      <DeepLink>%windir%\system32\SystemPropertiesProtection.exe</DeepLink>
+      <Icon>%SystemRoot%\System32\imageres.dll,-149</Icon>
+    </ApplicationInformation>
+    <SettingIdentity>
+      <PageID>{BB06C0E4-D293-4F75-8A90-CB05B6477EEE}</PageID>
+      <SettingID>{DD338333-7000-45CC-A84D-64680D6E683D}</SettingID>
+      <HostID>{12B1697E-D3A0-4DBC-B568-CCF64A3F934D}</HostID>
+      <Condition>shcond://v1#RegvalEquals;1;Regkey;HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment;Regval;PROCESSOR_ARCHITECTURE;RegvalExpected;ARM</Condition>
+    </SettingIdentity>
+    <SettingInformation>
+      <Name>@shell32.dll,-24264</Name>
+      <Description>@shell32.dll,-24264</Description>
+      <Keywords>@@shell32.dll,-25253@shell32.dll,-25192@shell32.dll,-25186</Keywords>
+    </SettingInformation>
+  </SearchableContent>
+</PCSettings>

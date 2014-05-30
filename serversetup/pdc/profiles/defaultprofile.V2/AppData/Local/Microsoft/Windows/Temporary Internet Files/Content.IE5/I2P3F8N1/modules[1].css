@@ -1,0 +1,57 @@
+/*---------------------------------------------------------------
+# Package - Joomla Template based on Helix Framework   
+# ---------------------------------------------------------------
+# Author - JoomShaper http://www.joomshaper.com
+# Copyright (C) 2010 - 2011 JoomShaper.com. All Rights Reserved.
+# license - PHP files are licensed under  GNU/GPL V2
+# license - CSS  - JS - IMAGE files  are Copyrighted material 
+# Websites: http://www.joomshaper.com - http://www.joomxpert.com
+-----------------------------------------------------------------*/
+
+/*Module type XHTML*/
+.mod-wrapper,.mod-wrapper-flat {position:relative}
+.mod-wrapper {border:0px solid #e5e5e5;padding:10px}
+.module_none .mod-wrapper {border:0;background:none;padding:0}
+.module_none  .mod-wrapper .mod-inner {border:0}
+
+
+.mod-wrapper h3.header{font-size:13px;line-height:normal;margin:0 -10px 10px -10px;padding:0 10px 10px 10px;border-bottom:1px solid #e5e5e5;}
+.module_none .mod-wrapper h3 {margin:0 0 10px;padding:0 0 10px;}
+
+.mod-wrapper h3.header span{color:#2B2B2B}
+.module_none .mod-wrapper h3.header {border-bottom:1px solid #e5e5e5}
+.module_text .mod-wrapper h3.header {font-size:9px;text-align:center}
+
+.mod-wrapper ul{list-style:none;margin:0;padding:0}
+.mod-wrapper li{background:none;border-bottom:1px solid #E5E5E5;font-size:12px;margin:0;padding:4px 0px}
+.mod-wrapper li li{margin-left:10px;border-bottom:0!important}
+.mod-wrapper li a{text-decoration:none}
+.mod-wrapper li:hover > a, .mod-wrapper li.active > a{text-decoration:none}
+
+/*Module Type Flat*/
+.mod-wrapper-flat h3.header{font-size:18px;font-weight:700;color:#333;margin:0 0 7px 0;padding:2px 5px}
+.mod-wrapper-flat ul{list-style:none;margin:0;padding:0}
+.mod-wrapper-flat li{font-size:11px;display:block;text-decoration:none;margin:0;padding:4px;background:none;color:#888}
+.mod-wrapper-flat li a,.mod-wrapper-flat a{color:#888}
+.mod-wrapper-flat a:hover{text-decoration:underline}
+#sp-bottom .mod-wrapper-flat h3.header{color:#fff}
+#sp-bottom .separator .mod-block{border-right:1px solid #222}
+#sp-bottom .mod-block{padding:20px 10px}
+#sp-bottom .mod-wrapper-flat li{border-bottom:1px dashed #222}
+
+
+/*Module Type Menu*/
+.mod-wrapper-menu {margin-top:8px}
+.mod-wrapper-menu h3.header{font-size:12px;font-weight:700;color:#000;margin:0;padding:2px 5px}
+.mod-wrapper-menu ul{list-style:none;margin:0;padding:0}
+.mod-wrapper-menu li{font-size:11px;display:block;text-decoration:none;margin:0;padding:4px}
+.mod-wrapper-menu li a:hover{text-decoration:underline}
+
+/*Badges*/
+span.badge_new,span.badge_free,span.badge_hot,span.badge_pick,span.badge_top
+{height:48px;position:absolute;right:-3px;text-indent:-999em;top:-3px;width:48px;z-index:99}
+span.badge_new{background: url(../images/base_new.png) no-repeat 100% 0;}
+span.badge_free{background: url(../images/base_free.png) no-repeat 100% 0;}
+span.badge_hot{background: url(../images/base_hot.png) no-repeat 100% 0;}
+span.badge_pick{background: url(../images/base_pick.png) no-repeat 100% 0;}
+span.badge_top {background: url(../images/base_top.png) no-repeat 100% 0;}

@@ -1019,69 +1019,223 @@ sed -i 's@CHANGETHISREALM@'$REALM'@g' /opt/karoshi/serversetup/pdc/profiles/defa
 sed -i 's@CHANGETHISREALM@'$REALM'@g' /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/"Change My Password.url"
 sed -i 's@CHANGETHISREALM@'$REALM'@g' /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/"Karoshi Web Management.url"
 
+sed -i 's@CHANGETHISREALM@'$REALM'@g' /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V2/Desktop/"Help Desk.url"
+sed -i 's@CHANGETHISREALM@'$REALM'@g' /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V2/Desktop/"Change My Password.url"
+sed -i 's@CHANGETHISREALM@'$REALM'@g' /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V2/Desktop/"Karoshi Web Management.url"
+
+sed -i 's@CHANGETHISREALM@'$REALM'@g' /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V4/Desktop/"Help Desk.url"
+sed -i 's@CHANGETHISREALM@'$REALM'@g' /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V4/Desktop/"Change My Password.url"
+sed -i 's@CHANGETHISREALM@'$REALM'@g' /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V4/Desktop/"Karoshi Web Management.url"
+
 cp -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/* /opt/karoshi/serversetup/pdc/profiles/default_roaming_profile/Desktop/
 cp -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/* /opt/karoshi/serversetup/pdc/profiles/profileuser/Desktop/
 
 [ ! -d /home/applications/profiles ] && mkdir /home/applications/profiles
 [ ! -d /home/applications/profiles/defaultprofile ] && cp -R /opt/karoshi/serversetup/pdc/profiles/defaultprofile /home/applications/profiles/
+[ ! -d /home/applications/profiles/defaultprofile ] && cp -R /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V2 /home/applications/profiles/
+[ ! -d /home/applications/profiles/defaultprofile ] && cp -R /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V4 /home/applications/profiles/
+
+
 [ ! -d /home/applications/profiles/profileuser ] && cp -R /opt/karoshi/serversetup/pdc/profiles/profileuser /home/applications/profiles/
 [ ! -d /home/applications/profiles/default_roaming_profile ] && cp -R /opt/karoshi/serversetup/pdc/profiles/default_roaming_profile /home/applications/profiles/
 
+#Copy in itadmin profile
 if [ ! -d /home/applications/profiles/itadmin ]
 then
 echo $COPYPROFILEMSG2 itadmin
 cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/itadmin
 fi
+if [ ! -d /home/applications/profiles/itadmin.V2 ]
+then
+echo $COPYPROFILEMSGV2 itadmin
+cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/itadmin.V2
+fiif [ ! -d /home/applications/profiles/itadmin.V4 ]
+then
+echo $COPYPROFILEMSGV4 itadmin
+cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/itadmin.V4
+fi
+
+#Copy in staff profile
 if [ ! -d /home/applications/profiles/staff ]
 then
 echo $COPYPROFILEMSG2 staff
 cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/staff
 fi
+if [ ! -d /home/applications/profiles/staff.V2 ]
+then
+echo $COPYPROFILEMSGV2 staff
+cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/staff.V2
+fi
+if [ ! -d /home/applications/profiles/staff.V4 ]
+then
+echo $COPYPROFILEMSGV4 staff
+cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/staff.V4
+fi
+
+#Copy in officestaff profile
 if [ ! -d /home/applications/profiles/officestaff ]
 then
 echo $COPYPROFILEMSG2 officestaff
 cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/officestaff
 fi
+if [ ! -d /home/applications/profiles/officestaff.V2 ]
+then
+echo $COPYPROFILEMSGV2 officestaff
+cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/officestaff.V2
+fi
+if [ ! -d /home/applications/profiles/officestaff.V4 ]
+then
+echo $COPYPROFILEMSGV4 officestaff
+cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/officestaff.V4
+fi
+
+#Copy in non teaching staff profile
 if [ ! -d /home/applications/profiles/nonteachingstaff ]
 then
 echo $COPYPROFILEMSG2 nonteachingstaff
 cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/nonteachingstaff
 fi
+if [ ! -d /home/applications/profiles/nonteachingstaff.V2 ]
+then
+echo $COPYPROFILEMSGV2 nonteachingstaff
+cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/nonteachingstaff.V2
+fi
+if [ ! -d /home/applications/profiles/nonteachingstaff.V4 ]
+then
+echo $COPYPROFILEMSGV4 nonteachingstaff
+cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/nonteachingstaff.V4
+fi
+
+#Copy in tech profile
 if [ ! -d /home/applications/profiles/tech ]
 then
 echo $COPYPROFILEMSG2 tech
 cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/tech
 fi
+if [ ! -d /home/applications/profiles/tech.V2 ]
+then
+echo $COPYPROFILEMSGV2 tech
+cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/tech.V2
+fi
+if [ ! -d /home/applications/profiles/tech.V4 ]
+then
+echo $COPYPROFILEMSGV4 tech
+cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/tech.V4
+fi
+
 #Remove extra icons
-rm -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/"Help Desk.url"
-rm -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/"Karoshi Web Management.url"
+[ -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/"Help Desk.url" ] && rm -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/"Help Desk.url"
+[ -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/"Karoshi Web Management.url" ] && rm -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/"Karoshi Web Management.url"
+[ -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V2/Desktop/"Help Desk.url" ] && rm -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V2/Desktop/"Help Desk.url"
+[ -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V2/Desktop/"Karoshi Web Management.url" ] && rm -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V2/Desktop/"Karoshi Web Management.url"
+[ -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V4/Desktop/"Help Desk.url" ] && rm -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V4/Desktop/"Help Desk.url"
+[ -f  /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V4/Desktop/"Karoshi Web Management.url" ] && rm -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V4/Desktop/"Karoshi Web Management.url"
+
+#Copy in guestusers profile
 if [ ! -d /home/applications/profiles/guestusers ]
 then
 echo $COPYPROFILEMSG2 guestusers
 cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/guestusers
 fi
+if [ ! -d /home/applications/profiles/guestusers.V2 ]
+then
+echo $COPYPROFILEMSGV2 guestusers
+cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/guestusers.V2
+fi
+if [ ! -d /home/applications/profiles/guestusers.V4 ]
+then
+echo $COPYPROFILEMSGV2 guestusers
+cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/guestusers.V4
+fi
+
+#Copy in exam profile
 if [ ! -d /home/applications/profiles/exams ]
 then
 echo $COPYPROFILEMSG2 exams
 cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/exams
 rm -f /home/applications/profiles/exams/Desktop/*
 fi
+if [ ! -d /home/applications/profiles/exams.V2 ]
+then
+echo $COPYPROFILEMSGV2 exams
+cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/exams.V2
+rm -f /home/applications/profiles/exams.V2/Desktop/*
+fi
+if [ ! -d /home/applications/profiles/exams.V4 ]
+then
+echo $COPYPROFILEMSGV4 exams
+cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/exams.V4
+rm -f /home/applications/profiles/exams.V4/Desktop/*
+fi
+
+#Copy in studentstaff profile
 if [ ! -d /home/applications/profiles/studentstaff ]
 then
 echo $COPYPROFILEMSG2 studentstaff
 cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/studentstaff
 fi
+if [ ! -d /home/applications/profiles/studentstaff.V2 ]
+then
+echo $COPYPROFILEMSGV2 studentstaff
+cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/studentstaff.V2
+fi
+if [ ! -d /home/applications/profiles/studentstaff.V4 ]
+then
+echo $COPYPROFILEMSGV4 studentstaff
+cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/studentstaff.V4
+fi
+
+#Copy in governors profile
+if [ ! -d /home/applications/profiles/governors ]
+then
 echo $COPYPROFILEMSG2 governors
 cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/governors
+fi
+if [ ! -d /home/applications/profiles/governors.V2 ]
+then
+echo $COPYPROFILEMSGV2 governors
+cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/governors.V2
+fi
+if [ ! -d /home/applications/profiles/governors.V4 ]
+then
+echo $COPYPROFILEMSGV4 governors
+cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/governors.V4
+fi
+
+#Copy in guardians profile
+if [ ! -d /home/applications/profiles/guardians ]
+then
 echo $COPYPROFILEMSG2 guardians
 cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/guardians
+fi
+if [ ! -d /home/applications/profiles/guardians.V2 ]
+then
+echo $COPYPROFILEMSGV2 guardians
+cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/guardians.V2
+fi
+if [ ! -d /home/applications/profiles/guardians.V4 ]
+then
+echo $COPYPROFILEMSGV4 guardians
+cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/guardians.V4
+fi
 
+#Copy in student profile
 COUNTER=$STARTYEAR
 while [  $COUNTER -le $ENDYEAR ]; do
 if [ ! -d /home/applications/profiles/yr$COUNTER ]
 then
 echo $COPYPROFILEMSG2 yr$COUNTER
 cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/yr$COUNTER
+fi
+if [ ! -d /home/applications/profiles/yr$COUNTER.V2 ]
+then
+echo $COPYPROFILEMSGV2 yr$COUNTER
+cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/yr$COUNTER.V2
+fi
+if [ ! -d /home/applications/profiles/yr$COUNTER.V4 ]
+then
+echo $COPYPROFILEMSGV4 yr$COUNTER
+cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/yr$COUNTER.V4
 fi
 let COUNTER=COUNTER+1
 done
@@ -1104,18 +1258,6 @@ chown -R profileuser /home/applications/profiles/profileuser
 chown -R root.itadmin /home/applications/"profile management"
 chmod 0660 -R /home/applications/"profile management"
 chmod u+X,g+X -R /home/applications/"profile management"
-
-#Link V2 profiles 
-for PROFILES in /home/applications/profiles/*
-do
-PROFILE=`basename $PROFILES`
-if [ -d /home/applications/profiles/$PROFILE ] && [ ! -L /home/applications/profiles/$PROFILE ] && [ ! -L /home/applications/profiles/$PROFILE.V2 ]
-then
-echo Symlinking $PROFILE to $PROFILE.V2
-ln -s /home/applications/profiles/$PROFILE /home/applications/profiles/$PROFILE.V2
-fi
-done
-
 
 [ -d /var/lib/samba/printers ] || mkdir /var/lib/samba/printers
 chown -R root.itadmin /var/lib/samba/printers

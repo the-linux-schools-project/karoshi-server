@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PCSettings>
+  <SearchableContent xmlns="http://schemas.microsoft.com/Search/2013/SettingContent">
+    <ApplicationInformation>
+      <AppID>windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel</AppID>
+      <DeepLink>%windir%\speech\common\sapisvr.exe -SpeechUX</DeepLink>
+      <Icon>%SystemRoot%\System32\Speech\SpeechUX\speechuxcpl.dll,-1</Icon>
+    </ApplicationInformation>
+    <SettingIdentity>
+      <PageID>{58E3C745-D971-4081-9034-86E34B30836A}</PageID>
+      <SettingID>{FD4FB8FA-F752-4E78-933B-8969E18BC9B5}</SettingID>
+      <HostID>{12B1697E-D3A0-4DBC-B568-CCF64A3F934D}</HostID>
+      <Condition>shcond://v1#RegkeyExists;0;Regkey;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ControlPanel\NameSpace\{58E3C745-D971-4081-9034-86E34B30836A}</Condition>
+    </SettingIdentity>
+    <SettingInformation>
+      <Name>@shell32.dll,-24251</Name>
+      <Description>@shell32.dll,-24251</Description>
+      <Keywords>@@shell32.dll,-25078@shell32.dll,-25165</Keywords>
+    </SettingInformation>
+  </SearchableContent>
+</PCSettings>

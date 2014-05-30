@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PCSettings>
+  <SearchableContent xmlns="http://schemas.microsoft.com/Search/2013/SettingContent">
+    <ApplicationInformation>
+      <AppID>windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel</AppID>
+      <DeepLink>%windir%\system32\rundll32.exe newdev.dll,DeviceInternetSettingUi 5</DeepLink>
+      <Icon>%systemroot%\system32\DeviceCenter.dll,-1</Icon>
+    </ApplicationInformation>
+    <SettingIdentity>
+      <PageID>{A8A91A66-3A7D-4424-8D24-04E180695C7A}</PageID>
+      <SettingID>{083D5202-600A-4f38-981B-2D138FBDC4D1}</SettingID>
+      <HostID>{12B1697E-D3A0-4DBC-B568-CCF64A3F934D}</HostID>
+      <Condition>shcond://v1#RegvalEquals;1;Regkey;HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment;Regval;PROCESSOR_ARCHITECTURE;RegvalExpected;ARM</Condition>
+    </SettingIdentity>
+    <SettingInformation>
+      <Name>@shell32.dll,-24226</Name>
+      <Description>@shell32.dll,-24226</Description>
+      <Keywords>@@shell32.dll,-25487@shell32.dll,-25485</Keywords>
+    </SettingInformation>
+  </SearchableContent>
+</PCSettings>

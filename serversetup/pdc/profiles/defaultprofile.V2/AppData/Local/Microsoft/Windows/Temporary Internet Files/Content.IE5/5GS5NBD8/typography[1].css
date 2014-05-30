@@ -1,0 +1,82 @@
+/*---------------------------------------------------------------
+# Package - Joomla Template based on Helix Framework   
+# ---------------------------------------------------------------
+# Author - JoomShaper http://www.joomshaper.com
+# Copyright (C) 2010 - 2011 JoomShaper.com. All Rights Reserved.
+# license - PHP files are licensed under  GNU/GPL V2
+# license - CSS  - JS - IMAGE files  are Copyrighted material 
+# Websites: http://www.joomshaper.com - http://www.joomxpert.com
+-----------------------------------------------------------------*/
+
+/* TYPOGRAPHY */
+pre.typo{background:transparent!important;font-size-adjust:none;font-stretch:normal;font:normal normal normal 1em/1.5 "Courier News",monospace;margin:0!important;padding:0!important;border:none!important;border-left:none!important}
+pre,.code{background:#ededed;font-size-adjust:none;font-stretch:normal;font:normal normal normal 1em/1.5 "Courier News",monospace;margin:5px 0 15px;padding:10px 15px;border:1px solid #d3d3d3;border-left:5px solid #888}
+blockquote{padding:1em 40px 1em 15px}
+blockquote span.open{background:url(../images/typo/quote-open.png) no-repeat left top;padding:3px 0 0 30px}
+blockquote span.close{background:url(../images/typo/quote-close.png) no-repeat bottom right;padding:0 30px 3px 0}
+blockquote.testimonial{padding:0 0 15px;border-bottom:1px solid #E6E6E6}
+blockquote.testimonial span.author{background:url(../images/typo/author.gif) no-repeat 5px center;display:block;font-weight:bold;margin-top:5px;padding-left:20px}
+p.quote {background:url(../images/typo/quote.png) no-repeat left top;min-height:35px;padding:3px 0 0 40px;font-size:90%;font-style:italic}
+
+small{font-size:0.85em}
+sup{position:relative;bottom:0.3em;vertical-align:baseline}
+sup em{color:#F00;font-size:.8em}
+sup{position:relative;bottom:0.3em;vertical-align:baseline}
+acronym,abbr{border-bottom:1px dashed;letter-spacing:1px;cursor:help}
+/* @IMAGE */
+img{border:none}
+img.image-left{float:left;margin:.5em 1em .5em 0}
+img.image-right{float:right;margin:.5em 0 .5em 1em}
+img.border{background:#f5f5f5;border:1px solid #e5e5e5;padding: 4px}
+img.image-margin{margin:.5em}
+/* Dropcap */
+.dropcap{overflow:hidden}
+.dropcap:first-letter{color:#666;display:block;float:left;font:50px/40px Georgia,Times,serif;padding:4px 8px 0 0}
+/* Tips,Error,Message,Hightlight*/
+p.error{background:url(../images/typo/error.png) no-repeat 0 5px;padding:0 0 5px 24px}
+p.warn{background:url(../images/typo/warn.png) no-repeat 0 5px;padding:0 0 5px 24px}
+p.tips{background:url(../images/typo/tips.png) no-repeat 0 5px;padding:0 0 5px 24px}
+p.help{background:url(../images/typo/help.png) no-repeat 0 5px;padding:0 0 5px 24px}
+p.info{background:url(../images/typo/info.png) no-repeat 0 5px;padding:0 0 5px 24px}
+p.email{background:url(../images/typo/email.png) no-repeat 0 5px;padding:0 0 5px 24px}
+p.print{background:url(../images/typo/print.png) no-repeat 0 5px;padding:0 0 5px 24px}
+p.rss{background:url(../images/typo/rss.png) no-repeat 0 5px;padding:0 0 5px 24px}
+p.save{background:url(../images/typo/save.png) no-repeat 0 5px;padding:0 0 5px 24px}
+p.lock{background:url(../images/typo/lock.gif) no-repeat 0 5px;padding:0 0 5px 24px}
+p.user{background:url(../images/typo/user.png) no-repeat 0 5px;padding:0 0 5px 24px}
+p.new{background:url(../images/typo/new.png) no-repeat 0 5px;padding:0 0 5px 24px}
+p.house{background:url(../images/typo/house.png) no-repeat 0 5px;padding:0 0 5px 24px}
+p.tag{background:url(../images/typo/tag.png) no-repeat 0 5px;padding:0 0 5px 24px}
+
+/*Social Share*/
+
+.highlight{color:#fff;background:#999;font-weight:bold;padding:3px 5px}
+/* Note Style */
+p.stickynote{background:#f5f5f5 url(../images/typo/sticky.png) no-repeat 0 0;border:1px solid #d3d3d3;padding:15px 10px 15px 60px}
+p.download{background:#f5f5f5 url(../images/typo/download.png) no-repeat 0 0;border:1px solid #d3d3d3;padding:15px 10px 15px 60px}
+.blocknumber{clear:both;padding:5px 15px 10px;position:relative}
+
+/*Unordered Lists*/
+ol {list-style-type: decimal;list-style-position:inside}
+ol li {margin-left:0;padding:0}
+ul, ul.rss, ul.minus, ul.delete, ul.check, ul.arrow, ul.arrow-2, ul.add, ul.star {list-style:none}
+ul.rss li, ul.minus li, ul.delete li, ul.check li, ul.arrow li, ul.arrow-2 li, ul.add li, ul.star li {margin-left:0;padding:0 0 0 20px}
+ul li {background:url(../images/typo/bullet.gif) no-repeat 0 6px;margin-left:0;padding:0 0 0 10px}
+ul.rss li {background:url(../images/typo/rss_list.png) no-repeat 0 2px;}
+ul.minus li {background:url(../images/typo/minus.png) no-repeat 0 2px;}
+ul.delete li {background:url(../images/typo/delete.png) no-repeat 0 2px;}
+ul.check li {background:url(../images/typo/check.png) no-repeat 0 2px;}
+ul.arrow li {background:url(../images/typo/arrow.png) no-repeat 0 2px;}
+ul.arrow-2 li {background:url(../images/typo/arrow-2.png) no-repeat 0 2px;}
+ul.add li {background:url(../images/typo/add.png) no-repeat 0 2px;}
+ul.star li {background:url(../images/typo/star.png) no-repeat 0 2px;}
+
+/* Bignumber */
+.bignumber{background:transparent url(../images/typo/bignumber.png) no-repeat 0 0;color:#FFF;display:block;float:left;font-size-adjust:none;font-stretch:normal;font:normal normal bold 20px/normal Arial,sans-serif;margin-right:8px;padding:6px 7px}
+/* Legend */
+.legend-title{background:#fff;display:inline-block;font-size:100%;font-weight:bold;left:7px;margin:0;padding:0 5px;position:absolute;top:-10px}
+.legend{border:1px solid #e7e7e7;margin:20px 0;padding:10px;position:relative}
+/* Left & Right*/
+div.sp-left,div.sp-right{margin:0;padding:0;width:49%}
+div.sp-left{float:left}
+div.sp-right{float:right}
