@@ -346,8 +346,8 @@ sed -i 's/WEBCTRL=no/WEBCTRL=yes/g' /opt/karoshi/server_network/menusettings
 sed -i 's/EMAILCTRL=no/EMAILCTRL=yes/g' /opt/karoshi/server_network/menusettings
 
 #Add mail flag for clients
-SERVERNAME=`echo $SERVERNAME | sed 's/.'$REALM'//g'`
-echo $SERVERNAME > /var/lib/samba/netlogon/domain_information/mail_server
+SERVERNAME2=`echo $SERVERNAME | sed 's/.'$REALM'//g'`
+echo $SERVERNAME2 > /var/lib/samba/netlogon/domain_information/mail_server
 #echo $SERVERNAME.$REALM > /var/lib/samba/netlogon/domain_information/mail_server_fqdn
 
 #Add in a cron job to check the mail queue for excessive mail
