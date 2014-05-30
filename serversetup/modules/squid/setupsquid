@@ -181,9 +181,6 @@ then
 echo 4.4.4.4 > /etc/squid/location_white.list
 fi
 
-
-grep -v ^# /etc/dansguardian/exceptioniplist | sed "/^$/d" | wc -l
-
 if [ ! -f /etc/dansguardian/exceptioniplist ]
 then
 echo 4.4.4.4 > /etc/dansguardian/exceptioniplist

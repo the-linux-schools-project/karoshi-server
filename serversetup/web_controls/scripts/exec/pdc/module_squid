@@ -136,11 +136,11 @@ scp -p -r /opt/karoshi/serversetup/modules/squid root@$SERVERNAME:/opt/karoshi/s
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$HOSTNAME:$PDCIP:$AUTHTYPE:$PASSWORD:' | /opt/karoshi/serversetup/modules/squid/setupsquid
 '
-[ `echo $?` = 101 ] && exit 101
+[ $? = 101 ] && exit 101
 
 else
 echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$HOSTNAME:$PDCIP:$AUTHTYPE:$PASSWORD: | /opt/karoshi/serversetup/modules/squid/setupsquid
-[ `echo $?` = 101 ] && exit 101
+[ $? = 101 ] && exit 101
 fi
 
 #Add role information

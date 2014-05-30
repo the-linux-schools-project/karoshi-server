@@ -25,7 +25,7 @@ fi
 #Check for cups
 #[ -f /opt/karoshi/server_network/servers/$SERVERNAME/printserver ] && MONITORS="$MONITORS:cups"
 #Check for squid
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/squid ] && MONITORS="$MONITORS:proxy:http:"
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/squid ] && MONITORS="$MONITORS:proxy:"
 #Check for apache or nginx
 if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver ] || [ -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
 then
