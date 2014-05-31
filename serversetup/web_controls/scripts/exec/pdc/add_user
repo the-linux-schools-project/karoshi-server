@@ -628,7 +628,6 @@ fi
 
 #Show servers that are offline
 
-
 if [ $FAILED_SERVER = yes ]
 then
 FAILEDSERVERLIST=`echo $FAILEDSERVERLIST | sed 's/^,//g' | sed 's/,/, /g'`
@@ -646,4 +645,30 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$NEWUSERNAME:$PRIMARYGROUP:deny:" | sudo -H /opt/karoshi/web_controls/exec/email_access
 fi
 
+#Add in windows profile support
+if [ ! -d /home/applications/profiles/$PRIMARYGROUP ]
+then
+echo $COPYPROFILEMSG2 $PRIMARYGROUP
+[ -d /home/applications/profiles/defaultprofile ] && cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/$PRIMARYGROUP
+fi
+if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V2 ]
+then
+echo $COPYPROFILEMSGV2 $PRIMARYGROUP
+[ -d /home/applications/profiles/defaultprofile.V2 ] && cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/$PRIMARYGROUP.V2
+fi
+if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V3 ]
+then
+echo $COPYPROFILEMSGV3 $PRIMARYGROUP
+[ -d /home/applications/profiles/defaultprofile.V3] && cp -f -R /home/applications/profiles/defaultprofile.V3 /home/applications/profiles/$PRIMARYGROUP.V3
+fi
+if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V4 ]
+then
+echo $COPYPROFILEMSGV4 $PRIMARYGROUP
+[ -d /home/applications/profiles/defaultprofile.V4 ] && cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/$PRIMARYGROUP.V4
+fi
+if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V5 ]
+then
+echo $COPYPROFILEMSGV5 $PRIMARYGROUP
+[ -d /home/applications/profiles/defaultprofile.V5 ] && cp -f -R /home/applications/profiles/defaultprofile.V5 /home/applications/profiles/$PRIMARYGROUP.V5
+fi
 exit $CREATE_USER_STATUS

@@ -181,13 +181,41 @@ STARTCGI=add_user_fm.cgi
 [ $REQUESTFILE'null' != null ] && STARTCGI=request_new_users_fm.cgi
 
 function show_status {
-echo '<script type="text/javascript">'
-echo 'alert("'$MESSAGE'");'
-echo 'window.location = "/cgi-bin/admin/'$STARTCGI'";'
-echo '</script>'
-echo "</div></body></html>"
+echo '<script type="text/javascript">
+alert("'$MESSAGE'");
+window.location = "/cgi-bin/admin/'$STARTCGI'";
+</script>'
+[ $MOBILE = no ] && echo '</div>'
+echo '</div></body></html>'
 exit
 }
+
+#Detect mobile browser
+MOBILE=no
+source /opt/karoshi/web_controls/detect_mobile_browser
+
+#Generate navigation bar
+if [ $MOBILE = no ]
+then
+DIV_ID=actionbox
+#Generate navigation bar
+/opt/karoshi/web_controls/generate_navbar_admin
+else
+DIV_ID=menubox
+fi
+
+#Show back button for mobiles
+if [ $MOBILE = yes ]
+then
+echo '<div style="float: center" id="my_menu" class="sdmenu">
+	<div class="expanded">
+	<span>'$TITLE'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+</div></div>
+'
+else
+echo '<div id="'$DIV_ID'"><div class="sectiontitle">'$TITLE'</div><br>'
+fi
 
 #########################
 #Check https access
@@ -379,19 +407,7 @@ fi
 if [ $ACTIONUSER = 1 ]
 then
 
-#Detect mobile browser
-MOBILE=no
-source /opt/karoshi/web_controls/detect_mobile_browser
 
-#Generate navigation bar
-if [ $MOBILE = no ]
-then
-DIV_ID=actionbox
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
-else
-DIV_ID=menubox
-fi
 echo '<form action="/cgi-bin/admin/add_user.cgi" method="post"><div id="'$DIV_ID'">
 <input name="_FIRSTNAME_" value="'$FIRSTNAME'" type="hidden">
 <input name="_SURNAME_" value="'$SURNAME'" type="hidden">

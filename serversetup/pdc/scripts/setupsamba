@@ -119,10 +119,21 @@ SHORTNAME=`echo $DATA | cut -d"|" -f3 | tr -cd 'A-Za-z0-9.: /' | sed 's/^https:\
 }
 
 #Get domain name
-while [ -z "$WEBADDRESS" ] || [ "$WEBADDRESS" = $HOSTNAME ]
+LENGTHCHECK=16
+DOTCHECK=0
+while [ -z "$WEBADDRESS" ] || [ "$WEBADDRESS" = $HOSTNAME ] || [ $LENGTHCHECK -gt 15 ] || [ $DOTCHECK = 0 ]
 do
 getdomainname
+#Check to see if the domain name is the same as the hostname
 [ "$WEBADDRESS" = $HOSTNAME ] && DOMAINERRORMSG="$DOMAINERRORMSG1"
+
+#Check to see if any part of the domain name is longer than 15 chars
+LENGTHCHECK=`echo -e "$WEBADDRESS" | sed 's/\./\n/g' | wc -L`
+[ $LENGTHCHECK -gt 15 ] && DOMAINERRORMSG="$DOMAINERRORMSG2"
+
+#Check for fqdn
+DOTCHECK=`echo $WEBADDRESS | grep -c "\."`
+[ $DOTCHECK = 0 ] && DOMAINERRORMSG="$DOMAINERRORMSG3"
 done
 
 #Create domain information
@@ -1014,231 +1025,42 @@ function make_profiles {
 [ -d /home/remastersys ] && rm -f -R /home/remastersys
 echo $COPYPROFILEMSG
 
-#Point default profile icons to correct realm
-sed -i 's@CHANGETHISREALM@'$REALM'@g' /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/"Help Desk.url"
-sed -i 's@CHANGETHISREALM@'$REALM'@g' /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/"Change My Password.url"
-sed -i 's@CHANGETHISREALM@'$REALM'@g' /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/"Karoshi Web Management.url"
-
-sed -i 's@CHANGETHISREALM@'$REALM'@g' /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V2/Desktop/"Help Desk.url"
-sed -i 's@CHANGETHISREALM@'$REALM'@g' /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V2/Desktop/"Change My Password.url"
-sed -i 's@CHANGETHISREALM@'$REALM'@g' /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V2/Desktop/"Karoshi Web Management.url"
-
-sed -i 's@CHANGETHISREALM@'$REALM'@g' /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V4/Desktop/"Help Desk.url"
-sed -i 's@CHANGETHISREALM@'$REALM'@g' /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V4/Desktop/"Change My Password.url"
-sed -i 's@CHANGETHISREALM@'$REALM'@g' /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V4/Desktop/"Karoshi Web Management.url"
-
-cp -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/* /opt/karoshi/serversetup/pdc/profiles/default_roaming_profile/Desktop/
-cp -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/* /opt/karoshi/serversetup/pdc/profiles/profileuser/Desktop/
+#Extract profiles
 
 [ ! -d /home/applications/profiles ] && mkdir /home/applications/profiles
-[ ! -d /home/applications/profiles/defaultprofile ] && cp -R /opt/karoshi/serversetup/pdc/profiles/defaultprofile /home/applications/profiles/
-[ ! -d /home/applications/profiles/defaultprofile ] && cp -R /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V2 /home/applications/profiles/
-[ ! -d /home/applications/profiles/defaultprofile ] && cp -R /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V4 /home/applications/profiles/
 
+echo $EXTRACTPROFILEMSG1
+tar -zxf /opt/karoshi/serversetup/pdc/profiles/defaultprofile.tar.gz -C /home/applications/profiles/
+echo $EXTRACTPROFILEMSG2
+tar -zxf /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V2.tar.gz -C /home/applications/profiles/
+echo $EXTRACTPROFILEMSG4
+tar -zxf /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V4.tar.gz -C /home/applications/profiles/
 
-[ ! -d /home/applications/profiles/profileuser ] && cp -R /opt/karoshi/serversetup/pdc/profiles/profileuser /home/applications/profiles/
-[ ! -d /home/applications/profiles/default_roaming_profile ] && cp -R /opt/karoshi/serversetup/pdc/profiles/default_roaming_profile /home/applications/profiles/
+#Point default profile icons to correct realm
+[ -f /home/applications/profiles/defaultprofile/Desktop/"Help Desk.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile/Desktop/"Help Desk.url"
+[ -f /home/applications/profiles/defaultprofile/Desktop/"Change My Password.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile/Desktop/"Change My Password.url"
+[ -f /home/applications/profiles/defaultprofile/Desktop/"Karoshi Web Management.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile/Desktop/"Karoshi Web Management.url"
 
-#Copy in itadmin profile
-if [ ! -d /home/applications/profiles/itadmin ]
-then
-echo $COPYPROFILEMSG2 itadmin
-cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/itadmin
-fi
-if [ ! -d /home/applications/profiles/itadmin.V2 ]
-then
-echo $COPYPROFILEMSGV2 itadmin
-cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/itadmin.V2
-fiif [ ! -d /home/applications/profiles/itadmin.V4 ]
-then
-echo $COPYPROFILEMSGV4 itadmin
-cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/itadmin.V4
-fi
+[ -f /home/applications/profiles/defaultprofile.V2/Desktop/"Help Desk.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V2/Desktop/"Help Desk.url"
+[ -f /home/applications/profiles/defaultprofile.V2/Desktop/"Change My Password.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V2/Desktop/"Change My Password.url"
+[ -f /home/applications/profiles/defaultprofile.V2/Desktop/"Karoshi Web Management.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V2/Desktop/"Karoshi Web Management.url"
 
-#Copy in staff profile
-if [ ! -d /home/applications/profiles/staff ]
-then
-echo $COPYPROFILEMSG2 staff
-cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/staff
-fi
-if [ ! -d /home/applications/profiles/staff.V2 ]
-then
-echo $COPYPROFILEMSGV2 staff
-cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/staff.V2
-fi
-if [ ! -d /home/applications/profiles/staff.V4 ]
-then
-echo $COPYPROFILEMSGV4 staff
-cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/staff.V4
-fi
+[ -f /home/applications/profiles/defaultprofile.V3/Desktop/"Help Desk.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V2/Desktop/"Help Desk.url"
+[ -f /home/applications/profiles/defaultprofile.V3/Desktop/"Change My Password.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V2/Desktop/"Change My Password.url"
+[ -f /home/applications/profiles/defaultprofile.V3/Desktop/"Karoshi Web Management.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V2/Desktop/"Karoshi Web Management.url"
 
-#Copy in officestaff profile
-if [ ! -d /home/applications/profiles/officestaff ]
-then
-echo $COPYPROFILEMSG2 officestaff
-cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/officestaff
-fi
-if [ ! -d /home/applications/profiles/officestaff.V2 ]
-then
-echo $COPYPROFILEMSGV2 officestaff
-cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/officestaff.V2
-fi
-if [ ! -d /home/applications/profiles/officestaff.V4 ]
-then
-echo $COPYPROFILEMSGV4 officestaff
-cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/officestaff.V4
-fi
+[ -f /home/applications/profiles/defaultprofile.V4/Desktop/"Help Desk.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V4/Desktop/"Help Desk.url"
+[ -f /home/applications/profiles/defaultprofile.V4/Desktop/"Change My Password.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V4/Desktop/"Change My Password.url"
+[ -f /home/applications/profiles/defaultprofile.V4/Desktop/"Karoshi Web Management.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V4/Desktop/"Karoshi Web Management.url"
 
-#Copy in non teaching staff profile
-if [ ! -d /home/applications/profiles/nonteachingstaff ]
-then
-echo $COPYPROFILEMSG2 nonteachingstaff
-cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/nonteachingstaff
-fi
-if [ ! -d /home/applications/profiles/nonteachingstaff.V2 ]
-then
-echo $COPYPROFILEMSGV2 nonteachingstaff
-cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/nonteachingstaff.V2
-fi
-if [ ! -d /home/applications/profiles/nonteachingstaff.V4 ]
-then
-echo $COPYPROFILEMSGV4 nonteachingstaff
-cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/nonteachingstaff.V4
-fi
-
-#Copy in tech profile
-if [ ! -d /home/applications/profiles/tech ]
-then
-echo $COPYPROFILEMSG2 tech
-cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/tech
-fi
-if [ ! -d /home/applications/profiles/tech.V2 ]
-then
-echo $COPYPROFILEMSGV2 tech
-cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/tech.V2
-fi
-if [ ! -d /home/applications/profiles/tech.V4 ]
-then
-echo $COPYPROFILEMSGV4 tech
-cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/tech.V4
-fi
-
-#Remove extra icons
-[ -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/"Help Desk.url" ] && rm -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/"Help Desk.url"
-[ -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/"Karoshi Web Management.url" ] && rm -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile/Desktop/"Karoshi Web Management.url"
-[ -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V2/Desktop/"Help Desk.url" ] && rm -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V2/Desktop/"Help Desk.url"
-[ -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V2/Desktop/"Karoshi Web Management.url" ] && rm -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V2/Desktop/"Karoshi Web Management.url"
-[ -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V4/Desktop/"Help Desk.url" ] && rm -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V4/Desktop/"Help Desk.url"
-[ -f  /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V4/Desktop/"Karoshi Web Management.url" ] && rm -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V4/Desktop/"Karoshi Web Management.url"
-
-#Copy in guestusers profile
-if [ ! -d /home/applications/profiles/guestusers ]
-then
-echo $COPYPROFILEMSG2 guestusers
-cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/guestusers
-fi
-if [ ! -d /home/applications/profiles/guestusers.V2 ]
-then
-echo $COPYPROFILEMSGV2 guestusers
-cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/guestusers.V2
-fi
-if [ ! -d /home/applications/profiles/guestusers.V4 ]
-then
-echo $COPYPROFILEMSGV2 guestusers
-cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/guestusers.V4
-fi
-
-#Copy in exam profile
-if [ ! -d /home/applications/profiles/exams ]
-then
-echo $COPYPROFILEMSG2 exams
-cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/exams
-rm -f /home/applications/profiles/exams/Desktop/*
-fi
-if [ ! -d /home/applications/profiles/exams.V2 ]
-then
-echo $COPYPROFILEMSGV2 exams
-cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/exams.V2
-rm -f /home/applications/profiles/exams.V2/Desktop/*
-fi
-if [ ! -d /home/applications/profiles/exams.V4 ]
-then
-echo $COPYPROFILEMSGV4 exams
-cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/exams.V4
-rm -f /home/applications/profiles/exams.V4/Desktop/*
-fi
-
-#Copy in studentstaff profile
-if [ ! -d /home/applications/profiles/studentstaff ]
-then
-echo $COPYPROFILEMSG2 studentstaff
-cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/studentstaff
-fi
-if [ ! -d /home/applications/profiles/studentstaff.V2 ]
-then
-echo $COPYPROFILEMSGV2 studentstaff
-cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/studentstaff.V2
-fi
-if [ ! -d /home/applications/profiles/studentstaff.V4 ]
-then
-echo $COPYPROFILEMSGV4 studentstaff
-cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/studentstaff.V4
-fi
-
-#Copy in governors profile
-if [ ! -d /home/applications/profiles/governors ]
-then
-echo $COPYPROFILEMSG2 governors
-cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/governors
-fi
-if [ ! -d /home/applications/profiles/governors.V2 ]
-then
-echo $COPYPROFILEMSGV2 governors
-cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/governors.V2
-fi
-if [ ! -d /home/applications/profiles/governors.V4 ]
-then
-echo $COPYPROFILEMSGV4 governors
-cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/governors.V4
-fi
-
-#Copy in guardians profile
-if [ ! -d /home/applications/profiles/guardians ]
-then
-echo $COPYPROFILEMSG2 guardians
-cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/guardians
-fi
-if [ ! -d /home/applications/profiles/guardians.V2 ]
-then
-echo $COPYPROFILEMSGV2 guardians
-cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/guardians.V2
-fi
-if [ ! -d /home/applications/profiles/guardians.V4 ]
-then
-echo $COPYPROFILEMSGV4 guardians
-cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/guardians.V4
-fi
-
-#Copy in student profile
-COUNTER=$STARTYEAR
-while [  $COUNTER -le $ENDYEAR ]; do
-if [ ! -d /home/applications/profiles/yr$COUNTER ]
-then
-echo $COPYPROFILEMSG2 yr$COUNTER
-cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/yr$COUNTER
-fi
-if [ ! -d /home/applications/profiles/yr$COUNTER.V2 ]
-then
-echo $COPYPROFILEMSGV2 yr$COUNTER
-cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/yr$COUNTER.V2
-fi
-if [ ! -d /home/applications/profiles/yr$COUNTER.V4 ]
-then
-echo $COPYPROFILEMSGV4 yr$COUNTER
-cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/yr$COUNTER.V4
-fi
-let COUNTER=COUNTER+1
-done
+[ ! -d /home/applications/profiles/profileuser ] && mkdir /home/applications/profiles/profileuser
+[ ! -d /home/applications/profiles/profileuser.V2 ] && mkdir /home/applications/profiles/profileuser.V2
+[ ! -d /home/applications/profiles/profileuser.V3 ] && mkdir /home/applications/profiles/profileuser.V3
+[ ! -d /home/applications/profiles/profileuser.V4 ] && mkdir /home/applications/profiles/profileuser.V4
+[ ! -d /home/applications/profiles/default_roaming_profile ] && mkdir /home/applications/profiles/default_roaming_profile
+[ ! -d /home/applications/profiles/default_roaming_profile.V2 ] && mkdir /home/applications/profiles/default_roaming_profile.V2
+[ ! -d /home/applications/profiles/default_roaming_profile.V3 ] && mkdir /home/applications/profiles/default_roaming_profile.V3
+[ ! -d /home/applications/profiles/default_roaming_profile.V4 ] && mkdir /home/applications/profiles/default_roaming_profile.V4
 
 echo $SETPROFILEPERMSMSG
 chown -R root.itadmin /home/applications/profiles
@@ -1251,13 +1073,12 @@ chmod u+X,g+X,o+X -R /home/applications/Shortcuts
 chmod 0600 -R /home/applications/profiles/profileuser
 chmod u+X -R /home/applications/profiles/profileuser
 chown -R profileuser /home/applications/profiles/profileuser
-
-[ ! -d /home/applications/profiles/profileuser.V2 ] && mkdir /home/applications/profiles/profileuser.V2
-[ ! -d /home/applications/profiles/profileuser.V$ ] && mkdir /home/applications/profiles/profileuser.V4
-
 chmod 0600 -R /home/applications/profiles/profileuser.V2
 chmod u+X -R /home/applications/profiles/profileuser.V2
 chown -R profileuser /home/applications/profiles/profileuser.V2
+chmod 0600 -R /home/applications/profiles/profileuser.V3
+chmod u+X -R /home/applications/profiles/profileuser.V3
+chown -R profileuser /home/applications/profiles/profileuser.V3
 chmod 0600 -R /home/applications/profiles/profileuser.V4
 chmod u+X -R /home/applications/profiles/profileuser.V4
 chown -R profileuser /home/applications/profiles/profileuser.V4
