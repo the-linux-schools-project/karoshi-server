@@ -1251,6 +1251,17 @@ chmod u+X,g+X,o+X -R /home/applications/Shortcuts
 chmod 0600 -R /home/applications/profiles/profileuser
 chmod u+X -R /home/applications/profiles/profileuser
 chown -R profileuser /home/applications/profiles/profileuser
+
+[ ! -d /home/applications/profiles/profileuser.V2 ] && mkdir /home/applications/profiles/profileuser.V2
+[ ! -d /home/applications/profiles/profileuser.V$ ] && mkdir /home/applications/profiles/profileuser.V4
+
+chmod 0600 -R /home/applications/profiles/profileuser.V2
+chmod u+X -R /home/applications/profiles/profileuser.V2
+chown -R profileuser /home/applications/profiles/profileuser.V2
+chmod 0600 -R /home/applications/profiles/profileuser.V4
+chmod u+X -R /home/applications/profiles/profileuser.V4
+chown -R profileuser /home/applications/profiles/profileuser.V4
+
 [ -d /home/applications/"profile management" ] || mkdir /home/applications/"profile management"
 [ -d /home/applications/"profile management"/"desktop icons" ] || mkdir /home/applications/"profile management"/"desktop icons"
 [ -d /home/applications/"profile management"/"start menu" ] || mkdir /home/applications/"profile management"/"start menu"

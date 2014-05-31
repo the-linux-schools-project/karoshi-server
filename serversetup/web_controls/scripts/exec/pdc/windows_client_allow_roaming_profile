@@ -60,7 +60,6 @@ REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 USERNAME=`echo "$DATA" | cut -s -d: -f4`
-PERMISSIONS=`echo "$DATA" | cut -s -d: -f5`
 ########################
 #Check data
 ########################
@@ -82,11 +81,6 @@ fi
 if [ $USERNAME'null' = null ]
 then
 echo `date`: windows_client_allow_roaming_profile - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
-fi
-if [ $USERNAME'null' = null ]
-then
-echo `date`: windows_client_allow_roaming_profile - Blank permissions by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit
 fi
 
@@ -112,13 +106,33 @@ cp -R /home/applications/profiles/default_roaming_profile /home/applications/pro
 chown -c -R $USERNAME:itadmin /home/applications/profiles/$USERNAME 1>/dev/null
 chmod 0660 -R /home/applications/profiles/$USERNAME
 chmod u+X,g+X -R /home/applications/profiles/$USERNAME
-ln -s /home/applications/profiles/$USERNAME /home/applications/profiles/$USERNAME.V2
+
+if [ ! -d /home/applications/profiles/$USERNAME.V2 ]
+then
+mkdir /home/applications/profiles/$USERNAME.V2
+chmod 0660 -R /home/applications/profiles/$USERNAME.V2
+chmod u+X,g+X -R /home/applications/profiles/$USERNAME.V2
+fi
+
+if [ ! -d /home/applications/profiles/$USERNAME.V3 ]
+then
+mkdir /home/applications/profiles/$USERNAME.V3
+chmod 0660 -R /home/applications/profiles/$USERNAME.V3
+chmod u+X,g+X -R /home/applications/profiles/$USERNAME.V3
+fi
+
+if [ ! -d /home/applications/profiles/$USERNAME.V4 ]
+then
+mkdir /home/applications/profiles/$USERNAME.V4
+chmod 0660 -R /home/applications/profiles/$USERNAME.V4
+chmod u+X,g+X -R /home/applications/profiles/$USERNAME.V4
+fi
 
 #Set new profile path for the user
 echo -e "dn: CN=$USERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
 changetype: modify
-add: unixhomedirectory
-unixhomedirectory: $HOMEPATH/$USERNAME
+replace: profilePath
+profilePath: \\\\$HOSTNAME\\applications\\profiles\\$USERNAME
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 

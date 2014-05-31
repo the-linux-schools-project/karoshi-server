@@ -55,7 +55,8 @@ REMOTE_USER=`echo $* | cut -s -d: -f1 | tr -cd 'A-Za-z0-9\._:\-'`
 REMOTE_ADDR=`echo $* | cut -s -d: -f2 | tr -cd 'A-Za-z0-9\._:\-'`
 REMOTE_MD5=`echo $* | cut -s -d: -f3 | tr -cd 'A-Za-z0-9\._:\-'`
 FILENAME=`echo $* | cut -s -d: -f4 | tr -cd 'A-Za-z0-9\._:\-'`
-PRIGROUP=( `echo $* | cut -s -d: -f5- | sed 's/:/ /g'` )
+WINDOWSVER=`echo $* | cut -s -d: -f5 | tr -cd 'A-Za-z0-9\._:\-'`
+PRIGROUP=( `echo $* | cut -s -d: -f6- | sed 's/:/ /g'` )
 ########################
 #Check data
 ########################
@@ -64,12 +65,12 @@ then
 echo `date`: windows_client_application_data_profile_select - Not called by windows_client_application_data_profile_select.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
 echo `date`: windows_client_application_data_profile_select - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
 echo `date`: windows_client_application_data_profile_select - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -81,9 +82,15 @@ echo `date`: windows_client_application_data_profile_select - access denied to $
 exit 101
 fi
 
-if [ $FILENAME'null' = null ]
+if [ -z "$FILENAME" ]
 then
 echo `date`: windows_client_application_data_profile_select - No filename by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ -z "$WINDOWSVER" ]
+then
+echo `date`: windows_client_application_data_profile_select - No windows version by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 
@@ -170,6 +177,12 @@ echo `date`: windows_client_application_data_profile_select - The archive has no
 exit 101
 fi
 
+#Check windows version
+PROFILEVER=""
+[ $WINDOWSVER = windows7 ] && PROFILEVER=".V2"
+[ $WINDOWSVER = windows8.0 ] && PROFILEVER=".V3"
+[ $WINDOWSVER = windows8.1 ] && PROFILEVER=".V4"
+
 #######################
 #Copy application data folder to chosen profile groups
 #######################
@@ -181,15 +194,16 @@ CURRENTGROUP=`echo ${PRIGROUP[$COUNTER]}`
 [ $CURRENTGROUP = defaultroamingprofile ] && CURRENTGROUP=default_roaming_profile
 for FOLDERS in `find /opt/karoshi/.tempdata/win_application_data_new.$$/ -maxdepth 1 -type d | sed 1d | sort`
 do
-FOLDER=`basename $FOLDERS`
+FOLDER=`basename "$FOLDERS"`
 #Log event
 echo `date`: windows_client_application_data_profile_select - copying "$FOLDER" to $CURRENTGROUP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $FOLDER: $COPYMSG $CURRENTGROUP'<br><br>'
-[ -d "/home/applications/profiles/$CURRENTGROUP/Application Data/$FOLDER" ] && rm -f -R "/home/applications/profiles/$CURRENTGROUP/Application Data/$FOLDER"
-cp -f -R /opt/karoshi/.tempdata/win_application_data_new.$$/$FOLDER "/home/applications/profiles/$CURRENTGROUP/Application Data/"
-chown -R root.itadmin "/home/applications/profiles/$CURRENTGROUP/Application Data/$FOLDER"
-chmod 0664 -R "/home/applications/profiles/$CURRENTGROUP/Application Data/$FOLDER"
-chmod a+X -R "/home/applications/profiles/$CURRENTGROUP/Application Data/$FOLDER"
+echo $FOLDER: $COPYMSG $CURRENTGROUP$PROFILEVER'<br><br>'
+[ ! -d "/home/applications/profiles/$CURRENTGROUP$PROFILEVER/Application Data" ] && mkdir -p "/home/applications/profiles/$CURRENTGROUP$PROFILEVER/Application Data"
+[ -d "/home/applications/profiles/$CURRENTGROUP$PROFILEVER/Application Data/$FOLDER" ] && rm -f -R "/home/applications/profiles/$CURRENTGROUP$PROFILEVER/Application Data/$FOLDER"
+cp -f -R /opt/karoshi/.tempdata/win_application_data_new.$$/"$FOLDER" "/home/applications/profiles/$CURRENTGROUP$PROFILEVER/Application Data/"
+chown -R root.itadmin "/home/applications/profiles/$CURRENTGROUP$PROFILEVER/Application Data/"
+chmod 0664 -R "/home/applications/profiles/$CURRENTGROUP$PROFILEVER/Application Data/"
+chmod a+X -R "/home/applications/profiles/$CURRENTGROUP$PROFILEVER/Application Data/"
 done
 let COUNTER=$COUNTER+1
 done

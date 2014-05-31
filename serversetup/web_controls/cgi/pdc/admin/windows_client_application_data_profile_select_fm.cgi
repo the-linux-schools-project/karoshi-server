@@ -109,10 +109,22 @@ FILENAME2=`echo $FILENAME | sed 's/ /SPACECORRECT/g'`
 [ -f /var/www/karoshi/win_application_data_upload/$FILENAME2 ] || mv /var/www/karoshi/win_application_data_upload/"$FILENAME" /var/www/karoshi/win_application_data_upload/$FILENAME2
 fi
 #Show list of profiles to choose from
-echo $UPLOADEDFILEMSG :$FILENAME'<br><br>'$GROUPMSG
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: 180px;">'$UPLOADEDFILEMSG'</td><td>'$FILENAME'</td></tr>
+<tr><td>'$WINVERMSG'</td><td>
+<select name="___WINDOWSVER___" style="width: 200px;">
+<option value="windowsxp">Windows XP</option>
+<option value="windows7">Windows 7</option>
+<option value="windows8.0">Windows 8.0</option>
+<option value="windows8.1">Windows 8.1</option>
+</select>
+</td></tr>
+</tbody></table><br>'$GROUPMSG''
+
 FILENAME=$FILENAME2
 WIDTH1=15
 WIDTH2=100
+
 echo '
   <br><input name="___FILENAME___" value="'$FILENAME'" type="hidden">
   <br>
@@ -120,7 +132,7 @@ echo '
  <tbody><tr><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td></tr>'
 
 COUNTER=1
-for GROUPNAMES in `find /home/applications/profiles/ -maxdepth 1 -type d | sed 1d | sort`
+for GROUPNAMES in /opt/karoshi/server_network/group_information/*
 do
 GROUPNAME=`basename $GROUPNAMES`
 if [ $GROUPNAME != optional_groups ]
@@ -141,7 +153,7 @@ fi
 done
 
 echo '</tbody></table><br>
-  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"> <input type="button" onclick="SetAllCheckBoxes('\'selectgroups\'', '\'_PRIGROUP_\'', true);" value="'$SELECTMSG'">
+  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"> <input type="button" class="button" onclick="SetAllCheckBoxes('\'selectgroups\'', '\'_PRIGROUP_\'', true);" value="'$SELECTMSG'">
 </div>
 </form>
 </div></body>

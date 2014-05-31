@@ -73,20 +73,6 @@ fi
 let COUNTER=$COUNTER+1
 done
 
-#Assign PERMISSIONS
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = PERMISSIONScheck ]
-then
-let COUNTER=$COUNTER+1
-PERMISSIONS=`echo $DATA | cut -s -d'_' -f$COUNTER-`
-break
-fi
-let COUNTER=$COUNTER+1
-done
-
 function show_status {
 echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'");'
@@ -127,13 +113,6 @@ MESSAGE=$ERRORMSG2
 show_status
 fi
 
-#Check to see that permissions is not blank
-if [ $PERMISSIONS'null' = null ]
-then
-MESSAGE=$ERRORMSG8
-show_status
-fi
-
 #Check to see if the user exists
 getent passwd $USERNAME 1>/dev/null 
 if [ `echo $?` != 0 ]
@@ -166,7 +145,7 @@ fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/windows_client_allow_roaming_profile.cgi | cut -d' ' -f1`
 #Enable roaming profile
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$PERMISSIONS:" | sudo -H /opt/karoshi/web_controls/exec/windows_client_allow_roaming_profile
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:" | sudo -H /opt/karoshi/web_controls/exec/windows_client_allow_roaming_profile
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 0 ]
 then

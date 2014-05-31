@@ -101,13 +101,28 @@ then
 echo ''$ERRORMSG2'</div></div></body></html>'
 exit
 fi
-echo '
-'$GROUPMSG'<br><br>
+
+#Show list of profiles to choose from
+
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: 180px;">'$UPLOADEDFILEMSG'</td><td>'$FILENAME'</td></tr>
+<tr><td>'$WINVERMSG'</td><td>
+<select name="___WINDOWSVER___" style="width: 200px;">
+<option value="windowsxp">Windows XP</option>
+<option value="windows7">Windows 7</option>
+<option value="windows8.0">Windows 8.0</option>
+<option value="windows8.1">Windows 8.1</option>
+</select>
+</td></tr>
+</tbody></table>
+'
+
+echo '<br>'$GROUPMSG'<br><br>
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
  <tbody><tr><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td><td style="width: '$WIDTH1'px;"><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td></tr>'
 
 COUNTER=1
-for GROUPNAMES in `find /home/applications/profiles/ -maxdepth 1 -type d | sed 1d | sort`
+for GROUPNAMES in /opt/karoshi/server_network/group_information/*
 do
 GROUPNAME=`basename $GROUPNAMES`
 if [ $GROUPNAME != optional_groups ]
@@ -128,7 +143,7 @@ fi
 done
 
 echo '</tbody></table><br>
-  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"> <input type="button" onclick="SetAllCheckBoxes('\'selectgroups\'', '\'___PRIGROUP___\'', true);" value="'$SELECTMSG'">
+  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"> <input type="button" class="button" onclick="SetAllCheckBoxes('\'selectgroups\'', '\'___PRIGROUP___\'', true);" value="'$SELECTMSG'">
 </form>
 </div>
 </div></body>

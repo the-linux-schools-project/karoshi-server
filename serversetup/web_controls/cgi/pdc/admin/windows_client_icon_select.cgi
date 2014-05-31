@@ -72,6 +72,21 @@ fi
 let COUNTER=$COUNTER+1
 done
 
+#Assign WINDOWSVER
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+if [ `echo $DATAHEADER'check'` = WINDOWSVERcheck ]
+then
+let COUNTER=$COUNTER+1
+WINDOWSVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+WINDOWSVER=`echo $WINDOWSVER | sed 's/UNDERSCORE/_/g'`
+break
+fi
+let COUNTER=$COUNTER+1
+done
+
 function show_status {
 echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
@@ -105,9 +120,16 @@ fi
 #Check data
 #########################
 #Check to see that prigroup is not blank
-if [ $PRIGROUP'null' = null ]
+if [ -z "$PRIGROUP" ]
 then
 MESSAGE=$ERRORMSG3
+show_status
+fi
+
+#Check to see that WINDOWSVER is not blank
+if [ -z "$WINDOWSVER" ]
+then
+MESSAGE=$ERRORMSG5
 show_status
 fi
 
@@ -133,8 +155,8 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/windows_client_icon_select.cgi | c
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo "<div id="actionbox">"
-sudo -H /opt/karoshi/web_controls/exec/windows_client_icon_select $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:`echo ${PRIGROUP[@]:0} | sed 's/ /:/g'`
+echo '<div id="actionbox">'
+sudo -H /opt/karoshi/web_controls/exec/windows_client_icon_select $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$WINDOWSVER:`echo ${PRIGROUP[@]:0} | sed 's/ /:/g'`
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 0 ]
 then

@@ -55,7 +55,8 @@ REMOTE_USER=`echo $* | cut -s -d: -f1 | tr -cd 'A-Za-z0-9\._:\-'`
 REMOTE_ADDR=`echo $* | cut -s -d: -f2 | tr -cd 'A-Za-z0-9\._:\-'`
 REMOTE_MD5=`echo $* | cut -s -d: -f3 | tr -cd 'A-Za-z0-9\._:\-'`
 FILENAME=`echo $* | cut -s -d: -f4 | tr -cd 'A-Za-z0-9\._:\-'`
-PRIGROUP=( `echo $* | cut -s -d: -f5- | sed 's/:/ /g'` )
+WINDOWSVER=`echo $* | cut -s -d: -f5 | tr -cd 'A-Za-z0-9\._:\-'`
+PRIGROUP=( `echo $* | cut -s -d: -f6- | sed 's/:/ /g'` )
 ########################
 #Check data
 ########################
@@ -81,9 +82,15 @@ echo `date`: windows_client_startmenu_select - access denied to $REMOTE_USER fro
 exit 101
 fi
 
-if [ $FILENAME'null' = null ]
+if [ -z "$FILENAME" ]
 then
 echo `date`: windows_client_startmenu_select - No filename by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if [ -z "$WINDOWSVER" ]
+then
+echo `date`: windows_client_startmenu_select - No windows version by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 
@@ -177,6 +184,12 @@ rm -f -R /opt/karoshi/.tempdata/win_startmenu_upload.$$
 exit 101
 fi
 
+#Get windows version
+PROFILEVER=""
+[ $WINDOWSVER = windows7 ] && PROFILEVER=".V2"
+[ $WINDOWSVER = windows8.0 ] && PROFILEVER=".V3"
+[ $WINDOWSVER = windows8.1 ] && PROFILEVER=".V4"
+
 #######################
 #Copy startmenu to chosen groups
 #######################
@@ -188,13 +201,14 @@ CURRENTGROUP=`echo ${PRIGROUP[$COUNTER]}`
 if [ $CURRENTGROUP'null' != null ]
 then
 #Log event
-echo `date`: windows_client_startmenu_select - copying $FILENAME2 to $CURRENTGROUP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $COPYMSG : $CURRENTGROUP'<br><br>'
-rm -f -R /home/applications/profiles/$CURRENTGROUP/"Start Menu"
-cp -f -R /opt/karoshi/.tempdata/win_startmenu_new.$$/"$TOPDIRNAME" /home/applications/profiles/$CURRENTGROUP/"Start Menu"
-chown -R root.itadmin /home/applications/profiles/$CURRENTGROUP
-chmod 0664 -R /home/applications/profiles/$CURRENTGROUP
-chmod a+X -R /home/applications/profiles/$CURRENTGROUP
+echo `date`: windows_client_startmenu_select - copying $FILENAME2 to $CURRENTGROUP$PROFILEVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo $COPYMSG : $CURRENTGROUP$PROFILEVER'<br><br>'
+[ ! -d /home/applications/profiles/$CURRENTGROUP$PROFILEVER ] && mkdir -p /home/applications/profiles/$CURRENTGROUP$PROFILEVER
+[ -d /home/applications/profiles/$CURRENTGROUP$PROFILEVER/"Start Menu" ] && rm -f -R /home/applications/profiles/$CURRENTGROUP$PROFILEVER/"Start Menu"
+cp -f -R /opt/karoshi/.tempdata/win_startmenu_new.$$/"$TOPDIRNAME" /home/applications/profiles/$CURRENTGROUP$PROFILEVER/"Start Menu"
+chown -R root.itadmin /home/applications/profiles/$CURRENTGROUP$PROFILEVER
+chmod 0664 -R /home/applications/profiles/$CURRENTGROUP$PROFILEVER
+chmod a+X -R /home/applications/profiles/$CURRENTGROUP$PROFILEVER
 fi
 let COUNTER=$COUNTER+1
 done

@@ -54,7 +54,8 @@ fi
 REMOTE_USER=`echo $* | cut -s -d: -f1 | tr -cd 'A-Za-z0-9\._:\-'`
 REMOTE_ADDR=`echo $* | cut -s -d: -f2 | tr -cd 'A-Za-z0-9\._:\-'`
 REMOTE_MD5=`echo $* | cut -s -d: -f3 | tr -cd 'A-Za-z0-9\._:\-'`
-PRIGROUP=( `echo $* | cut -s -d: -f4- | sed 's/:/ /g'` )
+WINDOWSVER=`echo $* | cut -s -d: -f4 | tr -cd 'A-Za-z0-9\._:\-'`
+PRIGROUP=( `echo $* | cut -s -d: -f5- | sed 's/:/ /g'` )
 ########################
 #Check data
 ########################
@@ -85,6 +86,13 @@ then
 echo `date`: windows_client_icon_select - Blank primary group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
+
+if [ -z "$WINDOWSVER" ]
+then
+echo `date`: windows_client_icon_select - No windows version by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
 #######################
 #Move file
 #######################
@@ -124,6 +132,11 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/client/windows_icon_upload
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
+#Check windows version
+PROFILEVER=""
+[ $WINDOWSVER = windows7 ] && PROFILEVER=".V2"
+[ $WINDOWSVER = windows8.0 ] && PROFILEVER=".V3"
+[ $WINDOWSVER = windows8.1 ] && PROFILEVER=".V4"
 
 #######################
 #Copy icons to chosen groups
@@ -135,15 +148,15 @@ do
 CURRENTGROUP=`echo ${PRIGROUP[$COUNTER]}`
 #Log event
 echo `date`: windows_client_icon_select - copying icons to $CURRENTGROUP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $COPYMSG : $CURRENTGROUP'<br><br>'
-[ -d /home/applications/profiles/$CURRENTGROUP/Desktop ] || mkdir -p /home/applications/profiles/$CURRENTGROUP/Desktop
-cp -f /opt/karoshi/.tempdata/win_icon_upload.$$/*.lnk /home/applications/profiles/$CURRENTGROUP/Desktop/ 2>/dev/null
-cp -f /opt/karoshi/.tempdata/win_icon_upload.$$/*.LNK /home/applications/profiles/$CURRENTGROUP/Desktop/ 2>/dev/null
-cp -f /opt/karoshi/.tempdata/win_icon_upload.$$/*.url /home/applications/profiles/$CURRENTGROUP/Desktop/ 2>/dev/null
-cp -f /opt/karoshi/.tempdata/win_icon_upload.$$/*.URL /home/applications/profiles/$CURRENTGROUP/Desktop/ 2>/dev/null
-chown -R root.itadmin /home/applications/profiles/$CURRENTGROUP
-chmod 0664 -R /home/applications/profiles/$CURRENTGROUP
-chmod a+X -R /home/applications/profiles/$CURRENTGROUP
+echo $COPYMSG : $CURRENTGROUP$PROFILEVER'<br><br>'
+[ -d /home/applications/profiles/$CURRENTGROUP$PROFILEVER/Desktop ] || mkdir -p /home/applications/profiles/$CURRENTGROUP$PROFILEVER/Desktop
+cp -f /opt/karoshi/.tempdata/win_icon_upload.$$/*.lnk /home/applications/profiles/$CURRENTGROUP$PROFILEVER/Desktop/ 2>/dev/null
+cp -f /opt/karoshi/.tempdata/win_icon_upload.$$/*.LNK /home/applications/profiles/$CURRENTGROUP$PROFILEVER/Desktop/ 2>/dev/null
+cp -f /opt/karoshi/.tempdata/win_icon_upload.$$/*.url /home/applications/profiles/$CURRENTGROUP$PROFILEVER/Desktop/ 2>/dev/null
+cp -f /opt/karoshi/.tempdata/win_icon_upload.$$/*.URL /home/applications/profiles/$CURRENTGROUP$PROFILEVER/Desktop/ 2>/dev/null
+chown -R root.itadmin /home/applications/profiles/$CURRENTGROUP$PROFILEVER
+chmod 0664 -R /home/applications/profiles/$CURRENTGROUP$PROFILEVER
+chmod a+X -R /home/applications/profiles/$CURRENTGROUP$PROFILEVER
 let COUNTER=$COUNTER+1
 done
 #Remove temp folder

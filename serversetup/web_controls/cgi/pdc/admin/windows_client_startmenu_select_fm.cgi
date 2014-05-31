@@ -109,37 +109,51 @@ FILENAME2=`echo $FILENAME | sed 's/ /SPACECORRECT/g'`
 [ -f /var/www/karoshi/win_startmenu_upload/$FILENAME2 ] || mv /var/www/karoshi/win_startmenu_upload/"$FILENAME" /var/www/karoshi/win_startmenu_upload/$FILENAME2
 fi
 #Show list of profiles to choose from
-echo ''$UPLOADEDFILEMSG' : '$FILENAME'<br><br>'$GROUPMSG''
+
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: 180px;">'$UPLOADEDFILEMSG'</td><td>'$FILENAME'</td></tr>
+<tr><td>'$WINVERMSG'</td><td>
+<select name="_WINDOWSVER_" style="width: 200px;">
+<option value="windowsxp">Windows XP</option>
+<option value="windows7">Windows 7</option>
+<option value="windows8.0">Windows 8.0</option>
+<option value="windows8.1">Windows 8.1</option>
+</select>
+</td></tr>
+</tbody></table>
+'
+
 FILENAME=$FILENAME2
 echo '
   <br><input name="_FILENAME_" value="'$FILENAME'" type="hidden">
   <br>
+
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
- <tbody><tr><td style="width: 100px;"><b>'$GROUPMSG2'</b></td><td style="width: 50px;"></td><td style="width: 100px;"><b>'$GROUPMSG2'</b></td><td style="width: 50px;"></td><td style="width: 100px;"><b>'$GROUPMSG2'</b></td><td style="width: 50px;"></td><td style="width: 100px;"><b>'$GROUPMSG2'</b></td><td style="width: 50px;"></td></tr>'
-while [ $GROUPSTART -le $GROUPEND ]
+ <tbody><tr><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td></tr>'
+
+COUNTER=1
+for GROUPNAMES in /opt/karoshi/server_network/group_information/*
 do
-echo '<tr><td>yr'$GROUPSTART'</td><td><input name="_PRIGROUP_" value="yr'$GROUPSTART'" type="checkbox"><br></td>'
-let GROUPSTART=$GROUPSTART+1
-echo '<td>yr'$GROUPSTART'</td><td><input name="_PRIGROUP_" value="yr'$GROUPSTART'" type="checkbox"><br></td>'
-let GROUPSTART=$GROUPSTART+1
-echo '<td>yr'$GROUPSTART'</td><td><input name="_PRIGROUP_" value="yr'$GROUPSTART'" type="checkbox"><br></td>'
-let GROUPSTART=$GROUPSTART+1
-echo '<td>yr'$GROUPSTART'</td><td><input name="_PRIGROUP_" value="yr'$GROUPSTART'" type="checkbox"><br></td></tr>'
-let GROUPSTART=$GROUPSTART+1
+GROUPNAME=`basename $GROUPNAMES`
+if [ $COUNTER = 1 ]
+then
+echo '<tr>'
+fi
+echo '<td><input name="_PRIGROUP_" value="'$GROUPNAME'" type="checkbox"></td><td>'$GROUPNAME'</td>'
+if [ $COUNTER = 4 ]
+then
+echo '</tr>'
+COUNTER=1
+else
+let COUNTER=$COUNTER+1
+fi
 done
-echo '
-<tr><td>staff</td><td><input name="_PRIGROUP_" value="staff" type="checkbox"><br></td>
-<td>nonteachingstaff</td><td><input name="_PRIGROUP_" value="nonteachingstaff" type="checkbox"><br></td>
-<td>officestaff</td><td><input name="_PRIGROUP_" value="officestaff" type="checkbox"><br></td>
-<td>studentstaff</td><td><input name="_PRIGROUP_" value="studentstaff" type="checkbox"><br></td></tr>
-<tr><td>guests</td><td><input name="_PRIGROUP_" value="guests" type="checkbox"><br></td>
-<td>exams</td><td><input name="_PRIGROUP_" value="guests" type="checkbox"><br></td>
-<td>tech</td><td><input name="_PRIGROUP_" value="tech" type="checkbox"><br></td>
-<td>itadmin</td><td><input name="_PRIGROUP_" value="itadmin" type="checkbox"><br></td></tr>
-</tbody></table>
+
+echo '</tbody></table><br>
+
 </div>
 <div id="submitbox">
-  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"> <input type="button" onclick="SetAllCheckBoxes('\'selectgroups\'', '\'_PRIGROUP_\'', true);" value="'$SELECTMSG'">
+  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"> <input type="button" class="button" onclick="SetAllCheckBoxes('\'selectgroups\'', '\'_PRIGROUP_\'', true);" value="'$SELECTMSG'">
 </div>
 </form>
 </div></body>

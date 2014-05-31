@@ -72,19 +72,6 @@ echo ' <br><div id="suggestions"></div>
 '$USERNAMEMSG'</td>
         <td><input name="_USERNAME_" size="20" style="width: 200px;" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a></td>
       </tr>
-<tr><td>'$PERMMSG'</td><td>
-
-<select name="_PERMISSIONS_" style="width: 200px;">
-<option selected="selected">default_roaming.kix</option>'
-
-
-for PERMS in /var/lib/samba/netlogon/windows_settings/security/*
-do
-PERM=`basename $PERMS`
-echo '<option>'$PERM'</option>'
-done
-echo '</select>
-</td></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG4'</span></a></td></tr>
 </tbody></table><br></div>
 <div id="submitbox">
 <input value="Submit" type="submit"> <input value="Reset" type="reset">
