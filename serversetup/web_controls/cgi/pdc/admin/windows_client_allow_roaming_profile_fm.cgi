@@ -64,17 +64,17 @@ echo $ERRORMSG7 '</div></div></body></html>'
 exit
 fi
 
-echo ' <br><div id="suggestions"></div>
+echo ' <br>
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
       <tr>
         <td style="width: 180px;">
 '$USERNAMEMSG'</td>
-        <td><input name="_USERNAME_" size="20" style="width: 200px;" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a></td>
+        <td><div id="suggestions"></div><input name="_USERNAME_" size="20" style="width: 200px;" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a></td>
       </tr>
 </tbody></table><br></div>
 <div id="submitbox">
-<input value="Submit" type="submit"> <input value="Reset" type="reset">
+<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
 </div></form></div></body></html>
 '
 exit

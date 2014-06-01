@@ -672,7 +672,7 @@ fi
 
 if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V3 ]
 then
-if [ -d /home/applications/profiles/defaultprofile.V3]
+if [ -d /home/applications/profiles/defaultprofile.V3 ]
 then
 echo $PRIMARYGROUP - $COPYPROFILEMSGV3"<br>"
 cp -f -R /home/applications/profiles/defaultprofile.V3 /home/applications/profiles/$PRIMARYGROUP.V3

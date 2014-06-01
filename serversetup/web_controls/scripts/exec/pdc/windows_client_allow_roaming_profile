@@ -85,7 +85,7 @@ exit
 fi
 
 #Check to see that this user does not already have a roaming profile
-if [ -d /home/applications/profiles/$USERNAME ]
+if [ -d /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME ]
 then
 echo `date`: windows_client_allow_roaming_profile - $USERNAME already has a roaming profile by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi 
@@ -96,44 +96,55 @@ echo `date`: windows_client_allow_roaming_profile - access denied to $REMOTE_USE
 exit 101
 fi
 
+PRIMARYGROUP=`id -g -n $USERNAME`
+source /opt/karoshi/server_network/domain_information/domain_name
+source /opt/karoshi/server_network/group_information/$PRIMARYGROUP
 ########################
 #Allow the roaming profile
 ########################
 echo `date`: windows_client_allow_roaming_profile - Roaming profile enabled "for" $USERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
+[ ! -d /home/applications/profiles/roaming_profiles/$PRIMARYGROUP ] && mkdir -p /home/applications/profiles/roaming_profiles/$PRIMARYGROUP
+
 #Create new profile folder for the user
-cp -R /home/applications/profiles/default_roaming_profile /home/applications/profiles/$USERNAME
-chown -c -R $USERNAME:itadmin /home/applications/profiles/$USERNAME 1>/dev/null
-chmod 0660 -R /home/applications/profiles/$USERNAME
-chmod u+X,g+X -R /home/applications/profiles/$USERNAME
+cp -R /home/applications/profiles/default_roaming_profile /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME
+chown -c -R $USERNAME:itadmin /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME 1>/dev/null
+chmod 0660 -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME
+chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME
 
-if [ ! -d /home/applications/profiles/$USERNAME.V2 ]
+if [ ! -d /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V2 ]
 then
-mkdir /home/applications/profiles/$USERNAME.V2
-chmod 0660 -R /home/applications/profiles/$USERNAME.V2
-chmod u+X,g+X -R /home/applications/profiles/$USERNAME.V2
+cp -R /home/applications/profiles/default_roaming_profile.V2 /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V2
+chown -c -R $USERNAME:itadmin /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V2 1>/dev/null
+chmod 0660 -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V2
+chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V2
 fi
 
-if [ ! -d /home/applications/profiles/$USERNAME.V3 ]
+if [ ! -d /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V3 ]
 then
-mkdir /home/applications/profiles/$USERNAME.V3
-chmod 0660 -R /home/applications/profiles/$USERNAME.V3
-chmod u+X,g+X -R /home/applications/profiles/$USERNAME.V3
+cp -R /home/applications/profiles/default_roaming_profile.V3 /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V3
+chown -c -R $USERNAME:itadmin /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V3 1>/dev/null
+chmod 0660 -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V3
+chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V3
 fi
 
-if [ ! -d /home/applications/profiles/$USERNAME.V4 ]
+if [ ! -d /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V4 ]
 then
-mkdir /home/applications/profiles/$USERNAME.V4
-chmod 0660 -R /home/applications/profiles/$USERNAME.V4
-chmod u+X,g+X -R /home/applications/profiles/$USERNAME.V4
+cp -R /home/applications/profiles/default_roaming_profile.V4 /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V4
+chown -c -R $USERNAME:itadmin /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V4 1>/dev/null
+chmod 0660 -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V4
+chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V4
 fi
+
+#Get samba 4 database password
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 
 #Set new profile path for the user
-echo -e "dn: CN=$USERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
+echo -e 'dn: CN='$USERNAME',OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People,'$LDAPBASE'
 changetype: modify
 replace: profilePath
-profilePath: \\\\$HOSTNAME\\applications\\profiles\\$USERNAME
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+profilePath: \\\\'$HOSTNAME'\\applications\\profiles\\roaming_profiles\\'$PRIMARYGROUP'\\'$USERNAME'
+-' | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 
 exit
