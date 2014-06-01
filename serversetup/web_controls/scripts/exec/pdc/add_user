@@ -648,27 +648,61 @@ fi
 #Add in windows profile support
 if [ ! -d /home/applications/profiles/$PRIMARYGROUP ]
 then
-echo $COPYPROFILEMSG2 $PRIMARYGROUP
-[ -d /home/applications/profiles/defaultprofile ] && cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/$PRIMARYGROUP
+if [ -d /home/applications/profiles/defaultprofile ]
+then
+echo $PRIMARYGROUP - $COPYPROFILEMSG2"<br>"
+cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/$PRIMARYGROUP
+chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP
+chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP
+chmod u+X,g+X,o+X -R /home/applications/profiles/$PRIMARYGROUP
 fi
+fi
+
 if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V2 ]
 then
-echo $COPYPROFILEMSGV2 $PRIMARYGROUP
-[ -d /home/applications/profiles/defaultprofile.V2 ] && cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/$PRIMARYGROUP.V2
+if [ -d /home/applications/profiles/defaultprofile.V2 ]
+then
+echo $PRIMARYGROUP - $COPYPROFILEMSGV2"<br>"
+cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/$PRIMARYGROUP.V2
+chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V2
+chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V2
+chmod u+X,g+X,o+X -R /home/applications/profiles/$PRIMARYGROUP.V2
 fi
+fi
+
 if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V3 ]
 then
-echo $COPYPROFILEMSGV3 $PRIMARYGROUP
-[ -d /home/applications/profiles/defaultprofile.V3] && cp -f -R /home/applications/profiles/defaultprofile.V3 /home/applications/profiles/$PRIMARYGROUP.V3
+if [ -d /home/applications/profiles/defaultprofile.V3]
+then
+echo $PRIMARYGROUP - $COPYPROFILEMSGV3"<br>"
+cp -f -R /home/applications/profiles/defaultprofile.V3 /home/applications/profiles/$PRIMARYGROUP.V3
+chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V3
+chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V3
+chmod u+X,g+X,o+X -R /home/applications/profiles/$PRIMARYGROUP.V3
 fi
+fi
+
 if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V4 ]
 then
-echo $COPYPROFILEMSGV4 $PRIMARYGROUP
-[ -d /home/applications/profiles/defaultprofile.V4 ] && cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/$PRIMARYGROUP.V4
+if [ -d /home/applications/profiles/defaultprofile.V4 ]
+then
+echo $PRIMARYGROUP - $COPYPROFILEMSGV4"<br>"
+cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/$PRIMARYGROUP.V4
+chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V4
+chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V4
+chmod u+X,g+X,o+X -R /home/applications/profiles/$PRIMARYGROUP.V4
 fi
+fi
+
 if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V5 ]
 then
-echo $COPYPROFILEMSGV5 $PRIMARYGROUP
-[ -d /home/applications/profiles/defaultprofile.V5 ] && cp -f -R /home/applications/profiles/defaultprofile.V5 /home/applications/profiles/$PRIMARYGROUP.V5
+if [ -d /home/applications/profiles/defaultprofile.V5 ]
+then
+echo $PRIMARYGROUP - $COPYPROFILEMSGV5"<br>"
+cp -f -R /home/applications/profiles/defaultprofile.V5 /home/applications/profiles/$PRIMARYGROUP.V5
+chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V5
+chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V5
+chmod u+X,g+X,o+X -R /home/applications/profiles/$PRIMARYGROUP.V5
+fi
 fi
 exit $CREATE_USER_STATUS

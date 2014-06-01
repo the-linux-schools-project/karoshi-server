@@ -1036,6 +1036,9 @@ tar -zxf /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V2.tar.gz -C /home
 echo $EXTRACTPROFILEMSG4
 tar -zxf /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V4.tar.gz -C /home/applications/profiles/
 
+#We dont have a windows 8.0 profile so make an empty folder for it
+[ ! -d /home/applications/profiles/defaultprofile.V3 ] && mkdir -p /home/applications/profiles/defaultprofile.V3
+
 #Point default profile icons to correct realm
 [ -f /home/applications/profiles/defaultprofile/Desktop/"Help Desk.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile/Desktop/"Help Desk.url"
 [ -f /home/applications/profiles/defaultprofile/Desktop/"Change My Password.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile/Desktop/"Change My Password.url"
@@ -1045,9 +1048,9 @@ tar -zxf /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V4.tar.gz -C /home
 [ -f /home/applications/profiles/defaultprofile.V2/Desktop/"Change My Password.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V2/Desktop/"Change My Password.url"
 [ -f /home/applications/profiles/defaultprofile.V2/Desktop/"Karoshi Web Management.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V2/Desktop/"Karoshi Web Management.url"
 
-[ -f /home/applications/profiles/defaultprofile.V3/Desktop/"Help Desk.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V2/Desktop/"Help Desk.url"
-[ -f /home/applications/profiles/defaultprofile.V3/Desktop/"Change My Password.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V2/Desktop/"Change My Password.url"
-[ -f /home/applications/profiles/defaultprofile.V3/Desktop/"Karoshi Web Management.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V2/Desktop/"Karoshi Web Management.url"
+[ -f /home/applications/profiles/defaultprofile.V3/Desktop/"Help Desk.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V3/Desktop/"Help Desk.url"
+[ -f /home/applications/profiles/defaultprofile.V3/Desktop/"Change My Password.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V3/Desktop/"Change My Password.url"
+[ -f /home/applications/profiles/defaultprofile.V3/Desktop/"Karoshi Web Management.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V3/Desktop/"Karoshi Web Management.url"
 
 [ -f /home/applications/profiles/defaultprofile.V4/Desktop/"Help Desk.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V4/Desktop/"Help Desk.url"
 [ -f /home/applications/profiles/defaultprofile.V4/Desktop/"Change My Password.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V4/Desktop/"Change My Password.url"
