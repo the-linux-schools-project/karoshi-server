@@ -37,8 +37,7 @@ source /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/software
 #########################
 #Add log entry
 #########################
-echo '##############'setupsamba'##############' >> /opt/karoshi/serversetup/install_log
-date >> /opt/karoshi/serversetup/install_log
+echo `date`: '##############'setupsamba'##############' >> /opt/karoshi/serversetup/install_log
 touch /opt/karoshi/serversetup/setuplog
 if [ `grep -c "$TITLE" /opt/karoshi/serversetup/setuplog` = 0 ]
 then
@@ -79,6 +78,7 @@ yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png"
 }
 
 function check_ldap_port {
+echo `date`: Checking that samba4 is available on port 389 >> /opt/karoshi/serversetup/install_log
 #Check that samba 4 is ready for ldap requests
 LDAPCHECK=0
 COUNTER=0
@@ -101,6 +101,7 @@ YADPID=`ps aux | grep yad | grep '\--tail' | sed 's/ * / /g' | cut -d' ' -f2`
 #Get new root samba password
 ###############################
 function getrootsmbpasswd {
+echo `date`: "Asking the user a new root samba password" >> /opt/karoshi/serversetup/install_log
 DATA=`yad --image="/opt/karoshi/serversetup/essentials/smalllogo2.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title="$TITLE" --width 400 --wrap --text "$ROOTPASSWDMSG" --field="$ROOTPASSWDMSG4":H --field="$ROOTPASSWDMSG5":H --button=Ok 2>/dev/null`
 SAMBAROOTPASSWORD1=`echo $DATA | cut -d"|" -f1`
 SAMBAROOTPASSWORD2=`echo $DATA | cut -d"|" -f2`
@@ -112,6 +113,7 @@ echo $SAMBAROOTPASSWORD1 > /opt/karoshi/.tempdata/sambapassword
 #Get domain name
 ###############################
 function getdomainname {
+echo `date`: "Asking the user for the new domain name" >> /opt/karoshi/serversetup/install_log
 DATA=`yad --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title="$TITLE" --width 500 --wrap --text "$DOMAINNAMEMSG1\n$DOMAINNAMEMSG2\n\n$EXAMPLEMSG\n\n$DOMAINNAMEMSG3:\t\ttestdomain.example.com\n$SITENAMEMSG:\tExample Institute of Technology\nShort Name:\tEIT\n\n$DOMAINERRORMSG" --field="$DOMAINNAMEMSG3" --field="$SITENAMEMSG" --field="$SHORTSITENAMEMSG" --button="gtk-ok" 2>/dev/null`
 WEBADDRESS=`echo $DATA | cut -d"|" -f1 | tr -cd 'A-Za-z0-9.:/' | tr 'A-Z' 'a-z' | sed 's/^https:\/\///' | sed 's/^http:\/\///' | sed 's/^www.//g'`
 LONGNAME=`echo $DATA | cut -d"|" -f2 | tr -cd 'A-Za-z0-9.: /' | sed 's/^https:\/\///' | sed 's/^http:\/\///' | sed 's/^www.//g'`
@@ -229,6 +231,7 @@ echo nameserver $SERVERIP >> /etc/resolv.conf
 #echo nameserver 8.8.4.4 >> /etc/resolv.conf
 
 function provision_samba4 {
+echo `date`: "Provisioning samba4" >> /opt/karoshi/serversetup/install_log
 echo Provisioning samba 4
 #Delete smb.conf it exists
 [ -f /etc/samba/smb.conf ] && rm -f /etc/samba/smb.conf
@@ -244,7 +247,6 @@ kill $YADPID
 fi
 }
 
-echo Provisioning samba4 >> /opt/karoshi/serversetup/install_log
 provisionsamba 2>> /opt/karoshi/serversetup/install_log | show_info
 
 #Get domain sid and add to domain information
@@ -256,6 +258,7 @@ echo DOMAINSID=\"$DOMAINSID\" >> /opt/karoshi/server_network/domain_information/
 yad --title "Domain Information" --button="gtk-ok" --geometry=400x100-40+10 --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --text="$PROVISONMSG\n\n$INFORMATIONMSG :\n\n$FQDMSG\n$REALM\n\n$SHORTDOMAINMSG\n$SAMBADOMAIN\n\n$BASEDNMSG\n$LDAPBASE\n" 2>/dev/null &
 
 #Configure kerberos
+echo `date`: "Configuring Kerberos" >> /opt/karoshi/serversetup/install_log
 echo Configuring kerberos >> /opt/karoshi/serversetup/install_log
 sed -i 's/${REALM}/'$REALMCAPS'/g' /usr/local/share/samba/setup/krb5.conf
 #Copy in krb5.conf to etc
@@ -268,6 +271,7 @@ cp -f /usr/local/share/samba/setup/krb5.conf /etc/
 
 
 #Create smb.conf
+echo `date`: "Creating smb.conf" >> /opt/karoshi/serversetup/install_log
 echo Creating smb.conf >> /opt/karoshi/serversetup/install_log
 echo -e '# Global parameters
 [global]
@@ -347,6 +351,7 @@ echo -e '# Global parameters
 ' > /etc/samba/smb.conf
 
 #Turn off complex password settings
+echo `date`: "Turning off complex password settings" >> /opt/karoshi/serversetup/install_log
 echo Setting password settings >> /opt/karoshi/serversetup/install_log
 samba-tool domain passwordsettings set --complexity=off
 samba-tool domain passwordsettings set --min-pwd-length=3
@@ -354,9 +359,11 @@ samba-tool domain passwordsettings set --min-pwd-age=0
 samba-tool domain passwordsettings set --max-pwd-age=999
 
 #Add entry to /etc/hosts
+echo `date`: "Adding hostname entry to /etc/hosts" >> /opt/karoshi/serversetup/install_log
 PDCIP=`hostname -I | cut -d" " -f1`
 echo $PDCIP"	"$HOSTNAME.$REALM"	"$HOSTNAME >> /etc/hosts
 #Restart samba
+echo `date`: "Restarting samba4" >> /opt/karoshi/serversetup/install_log
 echo Restarting samba4 >> /opt/karoshi/serversetup/install_log
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop
 sleep 1
@@ -365,6 +372,7 @@ sleep 1
 check_ldap_port
 
 #Add reverse dns entry
+echo `date`: "Adding in reverse dns entry" >> /opt/karoshi/serversetup/install_log
 SUBNET=`grep "netmask " /etc/network/interfaces | sed -n 1,1p | cut -d" " -f2`
 
 /opt/karoshi/serversetup/pdc/"useful scripts"/reverse-dns add $PDCIP $SUBNET $HOSTNAME.$REALM
@@ -395,6 +403,7 @@ PASSWORD=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
 function nslcd-user-accounts {
 #nslcd-server
 random_pass
+echo `date`: "Adding nslcd-server." >> /opt/karoshi/serversetup/install_log
 samba-tool user add nslcd-server --userou='OU=karoshi,OU=other,OU=People' --use-username-as-cn --random-password 1>/dev/null 2>> /opt/karoshi/serversetup/install_log
 samba-tool user setpassword nslcd-server --newpassword=$PASSWORD 1>/dev/null 2>> /opt/karoshi/serversetup/install_log
 
@@ -410,6 +419,7 @@ chmod 0400 /opt/karoshi/server_network/domain_information/nslcd-server
 echo $PASSWORD > /opt/karoshi/server_network/domain_information/nslcd-server
 
 #nslcd-user
+echo `date`: "Adding nslcd-user" >> /opt/karoshi/serversetup/install_log
 random_pass
 samba-tool user add nslcd-user --userou='OU=karoshi,OU=other,OU=People' --use-username-as-cn --random-password 1>/dev/null 2>> /opt/karoshi/serversetup/install_log
 samba-tool user setpassword nslcd-user --newpassword=$PASSWORD 1>/dev/null 2>> /opt/karoshi/serversetup/install_log
@@ -426,6 +436,7 @@ echo $PASSWORD > /opt/karoshi/server_network/domain_information/nslcd-user
 }
 
 function add_organisational_unit {
+echo `date`: "Addding organisational unit: $LDAPPATH" >> /opt/karoshi/serversetup/install_log
 hour=`date +%H`
 minutes=`date +%M`
 seconds=`date +%S`
@@ -451,6 +462,7 @@ whencreated: $CREATETIME" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" 
 
 function creategpos {
 #Create GPO
+echo `date`: "Addding gpo: $LDAPPATH $GPOREF" >> /opt/karoshi/serversetup/install_log
 GPOINFO=`samba-tool gpo create ''"$DESC"' Group Policy' --username=Administrator --password=$LDAPPASS`
 echo gpoinfo: $GPOINFO
 GPOREF=`echo "$GPOINFO" | cut -d"{" -f2 | sed 's/^/{/g'`
@@ -460,7 +472,7 @@ samba-tool gpo setlink "$LDAPPATH" "$GPOREF" --username=Administrator --password
 }
 
 function add_organisational_units {
-
+echo `date`: "Adding organisational units" >> /opt/karoshi/serversetup/install_log
 #People subcontainer
 NAME="People"
 DESC="People"
@@ -572,6 +584,7 @@ add_organisational_unit
 }
 
 function add_samba4_group {
+echo `date`: "Addding samba4 group $NEWGROUP" >> /opt/karoshi/serversetup/install_log
 samba-tool group add --groupou="OU=Groups,OU=People" $NEWGROUP
 
 GIDNUMBER=`getent group $NEWGROUP | cut -d: -f3`
@@ -596,6 +609,7 @@ gidnumber: $GIDNUMBER
 #function Make the folders and groups
 ##############################
 function makefoldersandgroups {
+echo `date`: "Making folders and groups" >> /opt/karoshi/serversetup/install_log
 #Make Groups
 COUNTER=$STARTYEAR
 while [  $COUNTER -le $ENDYEAR ]; do
@@ -754,6 +768,7 @@ cp /opt/karoshi/serversetup/all/backgrounds/* /home/applications/backgrounds/
 fi
 
 #Extract windows GPOs
+echo `date`: "Extracting windows GPOs" >> /opt/karoshi/serversetup/install_log
 unzip /opt/karoshi/serversetup/pdc/gpos/GPOs.zip -d /home/applications/
 
 #News information for karoshi log in banner
@@ -768,6 +783,7 @@ chmod 0664 -R /home/applications
 chmod u+X,g+X,o+X -R /home/applications
 chown root.itadmin -R /home/applications
 #Subjects area
+echo `date`: "Creating subjects area" >> /opt/karoshi/serversetup/install_log
 echo $CREATEFOLDERMSG subjects
 if ! test -d /home/subjects
 then
@@ -783,6 +799,7 @@ chmod 2664 -R /home/subjects
 chmod u+X,g+X,o+X -R  /home/subjects
 chown root.itadmin -R /home/subjects
 #Staffshare area
+echo `date`: "Creating staffshare area" >> /opt/karoshi/serversetup/install_log
 echo $CREATEFOLDERMSG staffshare
 [ -d /home/staffshare ] || mkdir /home/staffshare
 [ -d /home/staffshare/temp ] || mkdir /home/staffshare/temp
@@ -819,6 +836,7 @@ chmod u+X,g+X /home/staffshare
 chown -R root.itadmin /home/staffshare
 
 #Officeshare area
+echo `date`: "Creating officeshare area" >> /opt/karoshi/serversetup/install_log
 echo $CREATEFOLDERMSG officeshare
 [ -d /home/officeshare ] || mkdir /home/officeshare
 [ -d /home/officeshare/temp ] || mkdir /home/officeshare/temp
@@ -829,6 +847,7 @@ chmod u+X,g+X -R /home/officeshare
 chown -R root.officestaff /home/officeshare
 chown root.bursar -R /home/officeshare/bursar
 #Itadminshare area
+echo `date`: "Creating itadminshare area" >> /opt/karoshi/serversetup/install_log
 echo $CREATEFOLDERMSG itadminshare
 [ -d /home/itadminshare ] || mkdir /home/itadminshare
 [ -d /home/itadminshare/"bulk user creation"/"input files" ] || mkdir -p /home/itadminshare/"bulk user creation"/"input files"
@@ -845,23 +864,11 @@ chmod u+X,g+X -R /home/itadminshare
 chmod 0373 /var/log/karoshilogs
 chown root.itadmin -R /var/log/karoshilogs
 
-##############################
-#Check if STARTYEAR is even, bash is rounding down on decimal places
-##############################
-let YEARCHECK=STARTYEAR/2
-let YEARCHECK=YEARCHECK*2
-if [ $YEARCHECK = $STARTYEAR ]
-then
-let ORACCOUNTER=STARTYEAR
-let JOSHUACOUNTER=STARTYEAR+1
-else
-let ORACCOUNTER=STARTYEAR+1
-let JOSHUACOUNTER=STARTYEAR
-fi
 #############################
-#Copy in logon files
+#Copy in netlogon files
 #############################
 echo $COPYLOGONFILESMSG
+echo `date`: "Copying in netlogon files" >> /opt/karoshi/serversetup/install_log
 [ -d /var/lib/samba/netlogon ] && cp -R /var/lib/samba/netlogon /var/lib/samba/netlogon_`date +%s`
 [ ! -d /var/lib/samba/netlogon ] && mkdir /var/lib/samba/netlogon
 cp -R /opt/karoshi/serversetup/pdc/logonscripts/default_roaming.kix /var/lib/samba/netlogon/
@@ -928,6 +935,7 @@ fi
 #############################
 #make group file information for web management logon information
 #############################
+echo `date`: "Creating group information for primary groups" >> /opt/karoshi/serversetup/install_log
 source /opt/karoshi/serversetup/variables/years
 [ ! -d /opt/karoshi/server_network/group_information ] && mkdir -p /opt/karoshi/server_network/group_information
 
@@ -1001,6 +1009,7 @@ done
 #######################
 #Make printers.txt
 #######################
+echo `date`: "Creating printers.txt" >> /opt/karoshi/serversetup/install_log
 if ! test -e /var/lib/samba/netlogon/printers.txt
 then
 echo '**********************************************************************' > /var/lib/samba/netlogon/printers.txt
@@ -1019,6 +1028,7 @@ fi
 }
 
 function make_profiles {
+echo `date`: "Creating windows profiles" >> /opt/karoshi/serversetup/install_log
 ###################################
 #Copying profiles
 ###################################
@@ -1127,14 +1137,17 @@ dsHeuristics: 0000002001001
 
 
 function create_user {
+echo `date`: "Creating user: $NEWUSERNAME" >> /opt/karoshi/serversetup/install_log
 samba-tool user add $NEWUSERNAME --userou="$SUBPATH" --profile-path=\\\\$HOSTNAME\\applications\\profiles\\$PROFILEFOLDER --script-path="logon.bat $PRIMARYGROUP" --use-username-as-cn  --random-password --mail-address=$NEWUSERNAME@$REALM 1>/dev/null 2>>/opt/karoshi/serversetup/install_log
 
 #Add user to primary group
+echo `date`: "Adding $NEWUSERNAME to $PRIMARYGROUP" >> /opt/karoshi/serversetup/install_log
 samba-tool group addmembers "$PRIMARYGROUP" $NEWUSERNAME  1>/dev/null 2>>/opt/karoshi/serversetup/install_log
 
 #Add tech and itadmin users to the domain admins group
 if [ $PRIMARYGROUP = itadmin ] || [ $PRIMARYGROUP = tech ]
 then
+echo `date`: "Adding $NEWUSERNAME to Domain Admins" >> /opt/karoshi/serversetup/install_log
 samba-tool group addmembers "Domain Admins" $NEWUSERNAME  1>/dev/null 2>>/opt/karoshi/serversetup/install_log
 fi
 
@@ -1174,6 +1187,7 @@ chown $NEWUSERNAME -R $NEWUSERPATH
 
 
 function make_default_users {
+echo `date`: "Making default users" >> /opt/karoshi/serversetup/install_log
 #Get samba 4 database password
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 
@@ -1239,11 +1253,13 @@ let COUNTER=COUNTER+1
 done
 
 #Add root account for domain member printing with cupsaddsmb
+echo `date`: "Adding root account for domain member printing with cupsaddsmb" >> /opt/karoshi/serversetup/install_log
 samba-tool user add root --use-username-as-cn --random-password 1>/dev/null 2>>/opt/karoshi/serversetup/install_log
 samba-tool user setpassword root --newpassword=$LDAPPASS 1>/dev/null 2>>/opt/karoshi/serversetup/install_log
 }
 
 function setfolderpermissions {
+echo `date`: "Setting acl folder permissions" >> /opt/karoshi/serversetup/install_log
 setfacl -Rm u::rwx,g::---,o::---,g:itadmin:rwx,d:u::rwx,d:g::---,d:o::---,d:g:itadmin:rwx /home/itadminshare
 setfacl -Rm u::rwx,g::---,o::---,g:staff:rwx,d:u::rwx,d:g::---,d:o::---,d:g:staff:rwx /home/staffshare
 setfacl -Rm u::rwx,g::---,o::---,g:officestaff:rwx,d:u::rwx,d:g::---,d:o::---,d:g:officestaff:rwx /home/officeshare
@@ -1291,6 +1307,7 @@ run_functions 2>> /opt/karoshi/serversetup/install_log | show_info
 #######################
 #Change passwords
 #######################
+echo `date`: "Changing root and karoshi passwords" >> /opt/karoshi/serversetup/install_log
 echo root:"$SAMBAROOTPASSWORD1" | chpasswd
 echo karoshi:"$SAMBAROOTPASSWORD1" | chpasswd
 
@@ -1305,12 +1322,14 @@ chmod 0600 /opt/karoshi/serversetup/variables/initial_password.gpg
 #######################
 #Stop password aging
 #######################
+echo `date`: "Stopping password aging" >> /opt/karoshi/serversetup/install_log
 chage -M 99999 root
 chage -M 99999 karoshi
 
 #######################
 #Setup Scheduled Jobs
 #######################
+echo `date`: "Setting up scheduled jobs" >> /opt/karoshi/serversetup/install_log
 [ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
 echo 0 0 '*' '*' 7 /opt/karoshi/'"'useful scripts'"'/resetguestaccounts > /opt/karoshi/cronjobs/jobs/resetguestaccounts.cron
 echo 1 0 '*' '*' 1-5 /opt/karoshi/'"'useful scripts'"'/resettechaccounts > /opt/karoshi/cronjobs/jobs/resettechaccounts.cron
@@ -1321,6 +1340,7 @@ echo '*/30' '*' '*' '*' 1-7 /opt/karoshi/'"'useful scripts'"'/check_services > /
 #########################
 #Linux Client support
 #########################
+echo `date`: "Adding linux client support" >> /opt/karoshi/serversetup/install_log
 [ ! -d /var/lib/samba/netlogon/linuxclient ] && mkdir -p /var/lib/samba/netlogon/linuxclient
 cp -f -R /opt/karoshi/serversetup/pdc/linuxclient/$LINUXCLIENTVERSION /var/lib/samba/netlogon/linuxclient/
 
@@ -1352,6 +1372,7 @@ sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient
 sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION/desktop-icons/officestaff/"karoshimanagement.desktop"
 
 #Create zone information
+echo `date`: "Creating zone information" >> /opt/karoshi/serversetup/install_log
 [ ! -d /opt/karoshi/server_network/zones/internal/primary_domain_controller ] && mkdir -p /opt/karoshi/server_network/zones/internal/primary_domain_controller
 echo $HOSTNAME.$REALM > /opt/karoshi/server_network/zones/internal/primary_domain_controller/$HOSTNAME.$REALM
 

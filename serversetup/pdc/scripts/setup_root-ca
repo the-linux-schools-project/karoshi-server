@@ -15,8 +15,7 @@
 #You should have received a copy of the GNU Affero General Public License
 #along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
 
-echo '##############'setup_root-ca'##############' >> /opt/karoshi/serversetup/install_log
-date >> /opt/karoshi/serversetup/install_log
+echo `date`: '##############'setup_root-ca'##############' >> /opt/karoshi/serversetup/install_log
 
 #Copy in revised openssl.cnf
 
@@ -39,6 +38,7 @@ LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 #Clear existing certificates
 [ -d /etc/ssl/root-ca ] && rm -f -R /etc/ssl/root-ca
 
+echo `date`: "Creating roo-ca dirs" >> /opt/karoshi/serversetup/install_log
 #Create root-ca dirs
 [ ! -d /etc/ssl/root-ca ] && mkdir -m 0700 /etc/ssl/root-ca
 [ ! -d /etc/ssl/root-ca/certs ] && mkdir -m 0700 /etc/ssl/root-ca/certs
@@ -51,16 +51,20 @@ touch /etc/ssl/root-ca/index.txt
 [ ! -f /etc/ssl/root-ca/serial ] && echo 01 > /etc/ssl/root-ca/serial
 
 #Generate root-ca key
+echo `date`: "Generating root-ca key" >> /opt/karoshi/serversetup/install_log
 openssl genrsa -des3 -passout pass:$LDAPPASS -out /etc/ssl/root-ca/private/cakey.pem 4096
 chmod 0600 /etc/ssl/root-ca/private/cakey.pem
 
 #Sign key
+echo `date`: "Signing the key to create cacert.pem" >> /opt/karoshi/serversetup/install_log
 echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\n"$LOCALNAME"\n"$SERVERNAME"\n"$EMAILADDRESS"\n"postfix"\n" | openssl req -new -x509 -days 3650 -key /etc/ssl/root-ca/private/cakey.pem -passin pass:$LDAPPASS -out /etc/ssl/root-ca/cacert.pem
 
 #Sign key
+echo `date`: "Signing the key to create cacert.p12" >> /opt/karoshi/serversetup/install_log
 echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\n"$LOCALNAME"\n"$SERVERNAME"\n"$EMAILADDRESS"\n"postfix"\n" | openssl req -new -x509 -days 3650 -key /etc/ssl/root-ca/private/cakey.pem -passin pass:$LDAPPASS -out /etc/ssl/root-ca/cacert.p12
 
 #Copy certificate to netlogon for use on client computers
+echo `date`: "Copying the certificate to netlogon for use on client computers" >> /opt/karoshi/serversetup/install_log
 cp -f /etc/ssl/root-ca/cacert.pem /var/lib/samba/netlogon/domain_information/
 chmod 0644 /var/lib/samba/netlogon/domain_information/cacert.pem
 

@@ -9,6 +9,9 @@ SERVERTYPE=$6
 
 source /opt/karoshi/serversetup/variables/language
 source /opt/karoshi/serversetup/language/$LANGCHOICE/all/configurenetwork
+
+echo `date`: '##############'configurenetwork'##############' >> /opt/karoshi/serversetup/install_log
+
 ####################
 #detect network interface
 ####################
@@ -30,6 +33,14 @@ done
 #Set Nameserver
 ####################
 function setnetwork {
+
+echo "Network settings:" >> /opt/karoshi/serversetup/install_log
+echo nameserver $NAMESERVER >> /opt/karoshi/serversetup/install_log
+echo iface $NETWORKINT >> /opt/karoshi/serversetup/install_log
+echo address $TCPIPNUMBER >> /opt/karoshi/serversetup/install_log
+echo netmask $NETMASK >> /opt/karoshi/serversetup/install_log
+echo dns-nameservers $NAMESERVER >> /opt/karoshi/serversetup/install_log
+
 echo nameserver $NAMESERVER > /etc/resolv.conf
 #echo nameserver 8.8.8.8 >> /etc/resolv.conf
 #echo nameserver 8.8.4.4 >> /etc/resolv.conf
@@ -54,14 +65,24 @@ ifdown $NETWORKINT
 ifup $NETWORKINT
 }
 setnetwork
-#Check DNS
+#Check that we can contact dns
 ping -c 1 $NAMESERVER
-if [ `echo $?` = 1 ]
+PINGCHECK=$?
+
+#Check that the dns actually works
+host www.google.com $NAMESERVER 1> /dev/null
+LOOKUPCHECK=$?
+
+[ $PINGCHECK != 0 ] && echo `date`: The dns server could not be contacted on $NAMESERVER. >> /opt/karoshi/serversetup/install_log
+[ $LOOKUPCHECK != 0 ] && echo `date`: The dns server could not resolve dns on $NAMESERVER. when testing www.google.com >> /opt/karoshi/serversetup/install_log
+
+if [ $PINGCHECK != 0 ] || [ $LOOKUPCHECK != 0 ]
 then
 #Show warning message
 yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=8 --text="$WARNINGMSG1: $NAMESERVER\n\n$WARNINGMSG2" --no-buttons
 #Change DNS if default is not available
 NAMESERVER=8.8.8.8
+echo `date`: "The dns server has been changed to $NAMESERVER." >> /opt/karoshi/serversetup/install_log
 setnetwork
 fi
 

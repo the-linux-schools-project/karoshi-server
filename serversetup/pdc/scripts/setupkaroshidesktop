@@ -41,8 +41,7 @@ then
 echo setupkaroshidesktop:$TITLE:/opt/karoshi/serversetup/pdc/scripts/setupkaroshidesktop >> /opt/karoshi/serversetup/setuplog
 chmod 0600 /opt/karoshi/serversetup/setuplog
 fi
-echo '##############'setupkaroshidesktop'##############' >> /opt/karoshi/serversetup/install_log
-date >> /opt/karoshi/serversetup/install_log
+echo `date`: '##############'setupkaroshidesktop'##############' >> /opt/karoshi/serversetup/install_log
 ###########################
 #Detect desktop type
 ###########################
@@ -78,6 +77,7 @@ fi
 ###########################
 #Stop the karoshi user from logging in by default
 ###########################
+echo `date`: "Stopping auto login for the karoshi user" >> /opt/karoshi/serversetup/install_log
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/default_login
 [ -d /opt/karoshi/karoshimanagement ] || mkdir /opt/karoshi/karoshimanagement
 
@@ -105,6 +105,7 @@ fi
 ##########################
 #Stop karoshi setup from running on logon
 ##########################
+echo `date`: "Stopping karoshi setup from running at logon" >> /opt/karoshi/serversetup/install_log
 [ -f /opt/karoshi/karoshi_user/.config/autostart/karoshi_setup.desktop ] && rm -f /opt/karoshi/karoshi_user/.config/autostart/karoshi_setup.desktop
 #Schedule disk_usage
 echo 0 1 "*" "*" 6 /opt/karoshi/serversetup/all/\"useful scripts\"/disk_usage > /opt/karoshi/cronjobs/jobs/disk_usage_report.cron
@@ -113,6 +114,7 @@ echo 0 1 "*" "*" 6 /opt/karoshi/serversetup/all/\"useful scripts\"/disk_usage > 
 ##########################
 #Copy in icons
 ##########################
+echo `date`: "Copying in icons" >> /opt/karoshi/serversetup/install_log
 cp -f /opt/karoshi/serversetup/all/links/adminfilemanager.desktop /opt/karoshi/karoshi_user/Desktop/
 cp -f /opt/karoshi/serversetup/all/links/webmanagement.desktop /opt/karoshi/karoshi_user/Desktop/
 chmod 0700 /opt/karoshi/karoshi_user/Desktop/adminfilemanager.desktop
@@ -125,6 +127,7 @@ chage -M 99999 karoshi
 ##########################
 #Set Karoshi User Permissions
 ##########################
+echo `date`: "Setting karoshi user permissions" >> /opt/karoshi/serversetup/install_log
 chown -c -R karoshi /opt/karoshi/karoshi_user
 
 chmod 0700 /opt/karoshi/karoshimanagement/admin_file_manager
@@ -139,15 +142,18 @@ chmod -R 0700 /opt/karoshi/"useful scripts"
 sed -i 's/CHANGETHISDOMAINNAME/'$SAMBADOMAINlcase'/g' /opt/karoshi/"useful scripts"/ldap_add_machine
 
 #Import SSL root certificate into firefox
+echo `date`: "Importing ssl root certificate into firefox" >> /opt/karoshi/serversetup/install_log
 FIREFOXPROFILE=`ls /opt/karoshi/karoshi_user/.mozilla/firefox | grep .default`
 #su karoshi -c 'certutil -A -n "Karoshi Web Management" -addstore root -t "CTu,CTu,CTu" -i /var/lib/samba/netlogon/domain_information/cacert.pem -d /opt/karoshi/karoshi_user/.mozilla/firefox/'$FIREFOXPROFILE''
 
 certutil -A -n "Karoshi Web Management" -addstore root -t "CTu,CTu,CTu" -i /var/lib/samba/netlogon/domain_information/cacert.pem -d /opt/karoshi/karoshi_user/.mozilla/firefox/$FIREFOXPROFILE
 
 #Modify web management to point at the domain path instead of 127.0.0.1
+echo `date`: "MOdifying the web management desktop icon to point at the domain path" >> /opt/karoshi/serversetup/install_log
 sed -i "s/127.0.0.1/manage.$REALM/g" /opt/karoshi/karoshi_user/Desktop/webmanagement.desktop
 
 #Modify defaullt home page to point at the web management
+echo `date`: "Modifying firefox default home page to point at the web management" >> /opt/karoshi/serversetup/install_log
 sed -i "s/http:\/\/www.linuxschools.com/https:\/\/manage.$REALM:50001/g" /opt/karoshi/karoshi_user/.mozilla/firefox/usihywjy.default/prefs.js
 
 ###########################

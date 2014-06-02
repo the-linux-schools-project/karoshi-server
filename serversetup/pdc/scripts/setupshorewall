@@ -39,8 +39,8 @@ source /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/software
 #########################
 #Add log entry
 #########################
-echo '##############'setupshorewall'##############' >> /opt/karoshi/serversetup/install_log
-date >> /opt/karoshi/serversetup/install_log
+echo `date`: '##############'setupshorewall'##############' >> /opt/karoshi/serversetup/install_log
+
 touch /opt/karoshi/serversetup/setuplog
 if [ `grep -c "$TITLE" /opt/karoshi/serversetup/setuplog` = 0 ]
 then
@@ -65,6 +65,7 @@ fi
 #########################
 #Setup and start shorewall
 #########################
+echo `date`: "Configuring shorewall" >> /opt/karoshi/serversetup/install_log
 cd /etc
 rm -R -f /etc/shorewall
 tar -xvzf /opt/karoshi/serversetup/all/shorewall/shorewall.tar.gz
@@ -85,6 +86,7 @@ fi
 #########################
 #Start shorewall
 #########################
+echo `date`: "Restarting shorewall" >> /opt/karoshi/serversetup/install_log
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
 exit

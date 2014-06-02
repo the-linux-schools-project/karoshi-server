@@ -41,8 +41,8 @@ NTPSERVERIP=$NTPSERVER
 #Add log entry
 #########################
 touch /opt/karoshi/serversetup/setuplog
-echo '##############'setupntp'##############' >> /opt/karoshi/serversetup/install_log
-date >> /opt/karoshi/serversetup/install_log
+echo `date`: '##############'setupntp'##############' >> /opt/karoshi/serversetup/install_log
+
 if [ `grep -c "$TITLE" /opt/karoshi/serversetup/setuplog` = 0 ]
 then
 echo setupntp:$TITLE:/opt/karoshi/serversetup/pdc/scripts/setupntp >> /opt/karoshi/serversetup/setuplog
@@ -63,12 +63,14 @@ fi
 #############################
 #Ensure that NTP is running on boot
 ##############################
+echo `date`: "Setting ntp to run on boot" >> /opt/karoshi/serversetup/install_log
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/ntp
 
-#echo Setting up NTP service to get the time from the IPCop firewall on $NTPSERVERIP
+#echo Setting up NTP service to get the time from pool.ntp.org
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_stop 1> /dev/null
 
 #echo Creating ntp configuration file
+echo `date`: "Configuring ntp.conf" >> /opt/karoshi/serversetup/install_log
 rm -f /etc/ntp.conf
 ###############################
 #create ntp.conf
@@ -85,8 +87,9 @@ echo broadcastdelay	0.008 >> /etc/ntp.conf
 ###############################
 #Do initial time syncronisation
 ###############################
+echo `date`: "Doing initial time syncronisation" >> /opt/karoshi/serversetup/install_log
 ntpdate -t 1 $NTPSERVERIP
-NTPSYNCSTATUS=`echo $?`
+echo `date`: "Starting ntp" >> /opt/karoshi/serversetup/install_log
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_start
 exit
 
