@@ -194,6 +194,9 @@ scp -p -r /opt/karoshi/serversetup/modules/owncloud root@$SERVERNAME:/opt/karosh
 echo `date`: module_owncloud - copying domain information to $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 scp -p -r /opt/karoshi/server_network/domain_information root@$SERVERNAME:/opt/karoshi/server_network/ 1> /dev/null
 
+#Copy in mysql_root_pass
+scp -p -r /opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass root@$SERVERNAME:"/opt/karoshi/serversetup/all/useful\ scripts/" 1> /dev/null
+
 #Install owncloud
 echo `date`: module_owncloud - running setupowncloud by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 ssh -x -o PasswordAuthentication=no $SERVERNAME '

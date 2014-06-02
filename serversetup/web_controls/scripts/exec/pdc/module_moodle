@@ -201,6 +201,9 @@ scp -p -r /opt/karoshi/serversetup/modules/moodle root@$SERVERNAME:/opt/karoshi/
 #Copy in domain information
 scp -p -r /opt/karoshi/server_network/domain_information root@$SERVERNAME:/opt/karoshi/server_network/ 1> /dev/null
 
+#Copy in mysql_root_pass
+scp -p -r /opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass root@$SERVERNAME:"/opt/karoshi/serversetup/all/useful\ scripts/" 1> /dev/null
+
 #Install moodle
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ALIAS:' | /opt/karoshi/serversetup/modules/moodle/setupmoodle

@@ -35,8 +35,7 @@ source /opt/karoshi/serversetup/distro/$DISTROCHOICE/extra_server/software
 #########################
 #Add log entry
 #########################
-echo '##############'setupssh'##############' >> /opt/karoshi/serversetup/install_log
-date >> /opt/karoshi/serversetup/install_log
+echo `date`: '##############'setupssh'##############' >> /opt/karoshi/serversetup/install_log
 touch /opt/karoshi/serversetup/setuplog
 if [ `grep -c "$TITLE" /opt/karoshi/serversetup/setuplog` = 0 ]
 then
@@ -51,6 +50,7 @@ chmod 0700 /root/.ssh
 #############################
 #copy in config file
 #############################
+echo `date`: "Configuring ssh" >> /opt/karoshi/serversetup/install_log
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ssh_stop
 mv /etc/ssh/sshd_config /etc/ssh/sshd_configbackup
 cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/extra_server/configfiles/sshd_config /etc/ssh/
@@ -81,6 +81,7 @@ fi
 ######################
 #Open port on shorewall
 ######################
+echo `date`: "Opening shorewall port for ssh" >> /opt/karoshi/serversetup/install_log
 MODCHECK=`grep -c ACCEPT'	'net'	'fw'	'tcp'	'22'	'- /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
@@ -92,6 +93,7 @@ echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/s
 ######################
 #Restart shorewall
 ######################
+echo `date`: "Restarting shorewall" >> /opt/karoshi/serversetup/install_log
 /etc/init.d/$SHOREWALLVER restart 
 fi
 
