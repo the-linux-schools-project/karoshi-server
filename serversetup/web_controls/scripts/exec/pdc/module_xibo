@@ -189,7 +189,7 @@ fi
 function add_role_information {
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
 echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/xibo
-echo '<a href="https://'$ALIAS.$REALM'/xibo" target="_blank">https://'$ALIAS.$REALM'/xibo</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/xibo
+echo '<a href="http://'$ALIAS.$REALM'/xibo" target="_blank">http://'$ALIAS.$REALM'/xibo</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/xibo
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
 echo $ROLE2"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver
 echo $SERVERNAME > /opt/karoshi/server_network/xiboserver
