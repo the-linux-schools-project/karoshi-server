@@ -54,10 +54,11 @@ $verfile = "c:\kix\sversion.ini"
 $scriptver="1.00"
 $lserver=@LSERVER
 $mainserver="\\CHANGETHISSERVER"
+$pserver="\\franklin" ;programs server
 $printserver="wilma"
 
-$cmisshare="\\Dgsbsims\Eis_share"
-$simsshare="\\Dgsbsims\Eis_share"
+$cmisshare="\\cmis02\Facility$"
+$simsshare="\\dgsbsims\SIMS_shared$"
 
 $cmisdrive="e:"
 $simsdrive="s:"
@@ -68,6 +69,7 @@ $groupsfile=$lserver + "\netlogon\groups.txt"
 $printersfile=$lserver + "\netlogon\printers.txt"
 $KixDir="C:\Kix"
 
+
 ;****************************************************************************************************
 ;Set variables for user
 ;****************************************************************************************************
@@ -77,9 +79,9 @@ $username=LCase(@userid)
 ;Get & Set Workstation Information - Location CMIS and SIMS
 ;****************************************************************************************************
 $location=ReadValue("HKEY_LOCAL_MACHINE\Software\karoshi","location")
-If @error<>0
-	MessageBox("This workstation is not configured for location specific functionality. Contact the system administrator.","No location Name Present",16)
-EndIf
+;If @error<>0
+;	MessageBox("This workstation is not configured for location specific functionality. Contact the system administrator.","No location Name Present",16)
+;EndIf
 
 ;is this a CMIS workstation?
 $iscmisws=ReadValue("HKEY_LOCAL_MACHINE\Software\karoshi","iscmisws")
@@ -105,282 +107,42 @@ $DebugMessages[$NumMessages]="-BEGIN--------------------------"
 ;  Main Application
 ;****************************************************************************************************
 
-;Who has logged on?
-DBGMessage( "Info", "Logged On User: "+$username)
-
-DrawForms()
-
 DropAllShares()
-
 ConnectDrives()
-
+sleep 5
 SetPrintersLSR()
-
-If $dologging = "ON"
-	WriteLogFile()
-EndIf
-
-While $ProgressBar.Value < 100
-	Progress("Finalizing",20)
-Loop
 
 CheckIfLaptop()
 
-WriteLogFile(0)
+;DoWinConfig()
 
-Sleep 2
+
+;If $dologging = "ON"
+;	WriteLogFile(1)
+;Else
+;	WriteLogFile(0)
+;EndIf
+
+
+;Sleep 2
 
 ;MessageBox("Data: $pgroup", "KiXtart", 64)
 
 Exit 1
 
-;***********************************************************************
-;**
-;**  Functions
-;**
-;***********************************************************************
-;**  Draw the Form
-;***********************************************************************
-Function DrawForms()
-
-; Form
-	$System = CreateObject("Kixtart.System")
-	$Form = $System.Form()
-	$Form.Text = "Karoshi Logon Script"
-	$form.FormBorderStyle = $System.FormBorderStyle.None
-	$form.StartPosition = $system.formStartPosition.centerScreen
-	$Form.BackgroundImage = "bgnd.bmp" 
-	$Form.BackColor = #b8dbfc
-	$Form.Width = 495
-	$Form.Height = 225
-	; ClockTimer
-	$Timer = $Form.Timer($logonspeed,0,0,15,15)
-	$Timer.OnTimer = "UpdateClock()"
-
-; Logo
-	$Logo = $Form.Controls.Add("PictureBox")
-	$Logo.BorderStyle = "None"
-	$Logo.Dock=Top
-	$Logo.Width=500
-	$Logo.Height=50
-	$Logo.Picture="logov513.bmp"
-
-
-; Info Frame 
-	$InfoFrame = $Form.Controls.Add("GroupBox")
-	$InfoFrame.Text = "Environment"
-	$InfoFrame.Bounds = 6,55,240,140
-
-	$UserIdLbl = $InfoFrame.Controls.Add("Label")
-	$UserIdLbl.Text = "User ID:"
-	$UserIdLbl.Bounds = 20,15,100,15
-	$UserIdBox = $InfoFrame.Controls.Add("Label")
-	$UserIdBox.Text = $username
-	$UserIdBox.BorderStyle = "None"
-	$UserIdBox.Bounds = 120,15,115,15
-	$UserIdBox.BackColor = $Form.BackColor	
-
-	$GroupLbl = $InfoFrame.Controls.Add("Label")
-	$GroupLbl.Text = "Group ID:"
-	$GroupLbl.Bounds = 20,30,100,15
-	$GroupBox = $InfoFrame.Controls.Add("Label")
-	$GroupBox.Text = $pgroup
-	$GroupBox.BorderStyle = "None"
-	$GroupBox.Bounds = 120,30,115,15
-	$GroupBox.BackColor = $Form.BackColor	
-	
-	$WorkStnLbl = $InfoFrame.Controls.Add("Label")
-	$WorkStnLbl.Text = "Workstation:"
-	$WorkStnLbl.Bounds = 20,45,100,15
-	$WorkStnBox = $InfoFrame.Controls.Add("Label")
-	$WorkStnBox.Text = @WKSTA
-	$WorkStnBox.BorderStyle = "None"
-	$WorkStnBox.Bounds = 120,45,115,15
-	$WorkStnBox.BackColor = $Form.BackColor		
-	
-	$DomainLbl = $InfoFrame.Controls.Add("Label")
-	$DomainLbl.Text = "Domain:"
-	$DomainLbl.Bounds = 20,60,100,15
-	$DomainBox = $InfoFrame.Controls.Add("Label")
-	$DomainBox.Text = @DOMAIN
-	$DomainBox.BorderStyle = "None"
-	$DomainBox.Bounds = 120,60,115,15
-	$DomainBox.BackColor = $Form.BackColor	
-	
-	$ServerLbl = $InfoFrame.Controls.Add("Label")
-	$ServerLbl.Text = "Server:"
-	$ServerLbl.Bounds = 20,75,100,15
-	$ServerBox = $InfoFrame.Controls.Add("Label")
-	$ServerBox.Text = @LSERVER
-	$ServerBox.BorderStyle = "None"
-	$ServerBox.Bounds = 120,75,115,15
-	$ServerBox.BackColor = $Form.BackColor		
-	
-	$OSLbl = $InfoFrame.Controls.Add("Label")
-	$OSLbl.Text = "Product:"
-	$OSLbl.Bounds = 20,90,100,15
-	$OSBox = $InfoFrame.Controls.Add("Label")
-	$OSBox.Text = @PRODUCTTYPE
-	$OSBox.BorderStyle = "None"
-	$OSBox.Bounds = 120,90,115,15
-	$OSBox.BackColor = $Form.BackColor
-	
-	$ServPackLbl = $InfoFrame.Controls.Add("Label")
-	$ServPackLbl.Text = "Service Pack:"
-	$ServPackLbl.Bounds = 20,105,100,15
-	$ServPackBox = $InfoFrame.Controls.Add("Label")
-	$ServPackBox.Text = @CSD
-	$ServPackBox.BorderStyle = "None"
-	$ServPackBox.Bounds = 120,105,115,15
-	$ServPackBox.BackColor = $Form.BackColor
-	
-	$KixVerLbl = $InfoFrame.Controls.Add("Label")
-	$KixVerLbl.Text = "Kix Version:"
-	$KixVerLbl.Bounds = 20,120,100,15
-	$KixVerBox = $InfoFrame.Controls.Add("Label")
-	$KixVerBox.Text = @KIX
-	$KixVerBox.BorderStyle = "None"
-	$KixVerBox.Bounds = 120,120,115,15
-	$KixVerBox.BackColor = $Form.BackColor
-
-
-; Action Frame
-	$ActionFrame = $Form.Controls.Add("GroupBox")
-	$ActionFrame.Text = "Actions"
-	$ActionFrame.Bounds = 250,55,240,140
-
-	$DropSharesLbl = $ActionFrame.Controls.Add("Label")
-	$DropSharesLbl.Text = "Drop All Shares:"
-	$DropSharesLbl.Bounds = 20,15,100,15
-
-	$DropSharesResLbl = $ActionFrame.Controls.Add("Label")
-	$DropSharesResLbl.Bounds = 120,15,100,15
-
-	
-	$ConnectDrivesLbl = $ActionFrame.Controls.Add("Label")
-	$ConnectDrivesLbl.Text = "Connect Drives:"
-	$ConnectDrivesLbl.Bounds = 20,30,100,15
-
-	$ConnectDrivesResLbl = $ActionFrame.Controls.Add("Label")
-	$ConnectDrivesResLbl.Bounds = 120,30,100,15
-
-	
-	$PrintersLbl = $ActionFrame.Controls.Add("Label")
-	$PrintersLbl.Text = "Connect Printers:"
-	$PrintersLbl.Bounds = 20,45,100,15
-
-	$PrintersResLbl = $ActionFrame.Controls.Add("Label")
-	$PrintersResLbl.Bounds = 120,45,100,15
-
-	
-	$WriteLogLbl = $ActionFrame.Controls.Add("Label")
-	$WriteLogLbl.Text = "Write Logfile:"
-	$WriteLogLbl.Bounds = 20,60,100,15
-
-	$WriteLogResLbl = $ActionFrame.Controls.Add("Label")
-	$WriteLogResLbl.Bounds = 120,60,100,15
-
-	
-; Progress Bar
-	$ProgressTextBox = $Form.Controls.Add("TextBox")
-	$ProgressTextBox.Bounds = 6,198,240,20
-	$ProgressTextBox.BackColor = $Form.BackColor
-
-	$ProgressBar = $Form.Controls.Add("ProgressBar")
-	$ProgressBar.Bounds = 250,198,180,20
-	$ProgressBar.Style = 0
-	
-
-	
-; Clock
-	$CurrentTime=@Time
-	$Clock = $Form.Controls.Add("Textbox")
-	$Clock.Bounds = 435,198,55,20
-	$Clock.Alignment=2
-	$Clock.Enabled=1
-	$Clock.BackColor=$Form.BackColor
-
-$Form.Show
-; DebugForm
-If $DebugFlag=$True
-	$DbgForm = CreateObject("Kixtart.Form")	
-	$DbgForm.Text = "DebugBox"
-	$DbgForm.Width = 260
-	$DbgForm.Height = 500
-	$DbgForm.Left=1024 -260
-	$DbgFOrm.Top=768 - 550
-	
-	$DbgTextBox=$DbgForm.TextBox()
-	$DbgTextBox.Left=5
-	$DbgTextBox.Top=5
-	$DbgTextBox.Width=245
-	$DbgTextBox.Height=465
-	$DbgTextBox.MultiLine=1
-	$DbgTextBox.Enable=0
-	$DbgTextBox.Text=""
-	$DbgTextBox.ScrollBars=2
-	$DbgTextBox.Wordwrap=1	
-	
-	$CurrentX=0
-	$CurrentY=0
-	$DbgForm.Show
-EndIf	
-
-EndFunction
-
-;***********************************************************************
-;**  Update the clock
-;***********************************************************************
-Function UpdateClock()
-	If @Time<>$time
-		$Clock.Text=@Time
-		$time=@time
-	EndIf
-EndFunction
-
-
 ;****************************************************************************************************
 ;  Drop all shares
 ;****************************************************************************************************
 Function DropAllShares()
-	$DropSharesLbl.ForeColor = Blue
-	Progress( "Dropping All Shares")
 	Use * /DELETE
-	If @ERROR<>0
-		DBGMessage ("Error","Dropping All Shares:")
-		$DropSharesResLbl.ForeColor = Red
-		$DropSharesResLbl.FontBold = 1
-		$DropSharesResLbl.Text = "FAILED"
-	Else
-		DbgMessage("Info","Dropping All Shares:")
-		$DropSharesResLbl.ForeColor = Green
-		$DropSharesResLbl.FontBold = 1
-		$DropSharesResLbl.Text = "OK"
-	EndIf
-		$DropSharesLbl.ForeColor = Black	
 EndFunction
 
 ;***********************************************************************
 ;**  Connecting Drives
 ;***********************************************************************
 Function ConnectDrives()
-	$ConnectDrivesLbl.ForeColor = Blue
-	Progress( "Connecting Drives")
-	DbgMessage("Info","Connecting Drives:")
 	ConnectHomeDrive()
 	ConnectGroupDrives()
-	If @ERROR<>0
-		DBGMessage ("Error","Connecting Drives:")
-		$ConnectDrivesResLbl.ForeColor = Red
-		$ConnectDrivesResLbl.FontBold = 1
-		$ConnectDrivesResLbl.Text = "FAILED"
-	Else
-		DbgMessage("Info","Connecting Drives:")
-		$ConnectDrivesResLbl.ForeColor = Green
-		$ConnectDrivesResLbl.FontBold = 1
-		$ConnectDrivesResLbl.Text = "OK"
-	EndIf
-	$ConnectDrivesLbl.ForeColor = Black	
 EndFunction
 
 ;***********************************************************************
@@ -398,12 +160,10 @@ Function ConnectHomeDrive()
 	$res = Close (1)
 	Else
 		Beep
-		DBGMessage ("error","Groups file not opened, error code: [" + @ERROR + "]")
 	EndIf
 
 	$homeloc="\\"+$homesrvr+"\"+$username
 	ConnectShare("$homedrive, $homeloc")
-
 EndFunction
 
 
@@ -424,68 +184,8 @@ Function ConnectShare( $DriveDefinition)
 	If ($NT_mode = "no") 
 		DelKey("HKEY_CURRENT_USER\Network\Persistent\" + $DriveLetter)
 	EndIf
-	Progress( "Connecting " + $DriveLetter + " to " + $Share)
-	DbgMessage("Info","- Connecting " + $DriveLetter + " on " + $Share)
 	Use $DriveLetter $Share
-	If @ERROR <> 0
-		DBGMessage ( "Error","- Connecting " + $DriveLetter + " on " + $Share )
-	EndIf
 EndFunction 
-
-;***********************************************************************
-;**  Update Progress Bar
-;***********************************************************************
-Function Progress($ProgressText,optional $Step)
-	If $Step=""
-		$Step=$progressstep
-	EndIf
-	$ProgressTextBox.Text=$ProgressText
-	If $ProgressBar.Value + $Step < 101
-		$ProgressBar.Value=$ProgressBar.Value+$Step
-		If $DebugFlag = $TRUE		 
-			Sleep $sleeptime
-		EndIf
-	Else
-		$ProgressBar.Value=100
-	EndIf
-	$=Execute($Form.DoEvents())
-EndFunction
-
-;***********************************************************************
-;**  Function: DBGMessage
-;**  Usage: DBGMessage( "Debug", "This is a debug Message" ) 
-;**  DebugType : Info, Debug, Error
-;***********************************************************************
-Function DBGMessage($DebugType, $DebugMessage, Optional $SError)
-	Select
-		Case $DebugLevel="Error"
-			If $DebugType="Info" Or $DebugType="Debug"
-				Return
-			EndIf
-		Case $DebugLevel="Info"
-			If $DebugType="Debug"
-				Return
-			EndIf
-	EndSelect
-	
-	If $DebugType="Error"
-		$numerrors=$numerrors+1
-	EndIf
-	$NumMessages=$NumMessages + 1
-	ReDim Preserve $DebugMessages[$NumMessages]
-	
-	$DebugTime="" + @Date + " - " + @Time +" >"
-	$DebugText=$DebugType + " : " + $DebugMessage
-	If $SError<>""
-		 $DebugText=$DebugText + " | Additional Info: @SERROR"
-	EndIf
-	
-	$DebugMessages[$NumMessages]=$DebugTime + $DebugText
-	If $DebugFlag = $TRUE		 
-		$DbgTextBox.Text=$DbgTextBox.Text + $DebugText + @CRLF
-		Sleep $sleeptime
-	EndIf		
-EndFunction
 
 ;***********************************************************************
 ;**  Write Log File
@@ -493,19 +193,16 @@ EndFunction
 Function WriteLogFile($status)
 
 	If NOT $status
-		DBGMessage ("Error","Write Logfile:")
 		$WriteLogResLbl.ForeColor = Green
 		$WriteLogResLbl.FontBold = 1
 		$WriteLogResLbl.Text = "Disabled"
 	Else
-		DbgMessage("Info","Write Logfile:")
 		$WriteLogResLbl.ForeColor = Green
 		$WriteLogResLbl.FontBold = 1
 		$WriteLogResLbl.Text = "OK"
 	
 		; Display DebugMessage
 		$WriteLogLbl.ForeColor = Black
-		Progress( "Writing Logfile")
 		$LogFile=$logginglocation + "\" + @Wksta + ".log"
 		If Exist($LogFile)
 			If GetFileSize($LogFile) > 512 * 1024
@@ -539,17 +236,12 @@ EndFunction
 ; Set Printers and Location Specific Requirements
 ;****************************************************************************************************
 Function SetPrintersLSR() 
-	Progress( "Connecting Printers")
-	DbgMessage("Info","Connecting Printers")	
-	$PrintersLbl.ForeColor = Black
 	Dim $prn[10]
 
 Select
 	Case $location = "nogroup"
-		DbgMessage("Info","No Printers Declared")
 		Return
 	Case $location = ""
-		DbgMessage("Info","No Printers Declared")
 		Return
 	Case $location = "laptop" Or $location = "laptops"
 		If Open(1,$ltprintersfile) = 0
@@ -561,13 +253,11 @@ Select
 			$prndef = ReadLine(1)
 				While (@ERROR = 0)
 					If AddPrinterConnection ("\\$printserver\" + $prndef) <> 0
-						DbgMessage("Error","Printer " + $prndef + " not connected, error code: [" + @ERROR + "]")
 					EndIf
 					$prndef = ReadLine(1)
 				Loop
 			$rc = Close (1)
 		Else
-			DbgMessage("Error","Printers file not opened, error code: [" + @ERROR + "]")
 		EndIf
 
 	Case $location = "laptop_staff"
@@ -580,13 +270,11 @@ Select
 			$prndef = ReadLine(1)
 				While (@ERROR = 0)
 					If AddPrinterConnection ("\\$printserver\" + $prndef) <> 0
-						DbgMessage("Error","Printer " + $prndef + " not connected, error code: [" + @ERROR + "]")
 					EndIf
 					$prndef = ReadLine(1)
 				Loop
 			$rc = Close (1)
 		Else
-			DbgMessage("Error","Printers file not opened, error code: [" + @ERROR + "]")
 		EndIf
 
 	Case $location = "laptop_student"
@@ -599,13 +287,11 @@ Select
 			$prndef = ReadLine(1)
 				While (@ERROR = 0)
 					If AddPrinterConnection ("\\$printserver\" + $prndef) <> 0
-						DbgMessage("Error","Printer " + $prndef + " not connected, error code: [" + @ERROR + "]")
 					EndIf
 					$prndef = ReadLine(1)
 				Loop
 			$rc = Close (1)
 		Else
-			DbgMessage("Error","Printers file not opened, error code: [" + @ERROR + "]")
 		EndIf
 
 	Case 1
@@ -625,40 +311,22 @@ Select
 						For $x = 1 to $numprn
 						$prn[$x] = Left($temp,InStr($temp,",")-1)
 						If AddPrinterConnection ("\\$printserver\" + $prn[$x]) <> 0
-							DbgMessage("Error","Printer " + $prn[$x] + " not connected, error code: [" + @ERROR + "]")
 						EndIf
 						$temp = SubStr($temp,Len($prn[$x])+2)
 						Next
 						; Set default Printer
 						$defprn = $temp
 						If SetDefaultPrinter("\\$printserver\" + $defprn) <> 0
-							DbgMessage("Error","Default Printer not set, error code: [" + @ERROR + "]")	
 						EndIf
 					EndIf
 			    		$prndef = ReadLine(1)
 				Loop
 			If $room = ""
-			DbgMessage("Info","No Printers Declared")
 			EndIf
 			$rc = Close (1)
 		Else
-			DbgMessage("Error","Printers file not opened, error code: [" + @ERROR + "]")
 		EndIf
 EndSelect
-
-
-	If @ERROR<>0
-		DBGMessage ("Error","Connecting Printers:")
-		$PrintersResLbl.ForeColor = Red
-		$PrintersResLbl.FontBold = 1
-		$PrintersResLbl.Text = "FAILED"
-	Else
-		DbgMessage("Info","Connecting Printers:")
-		$PrintersResLbl.ForeColor = Green
-		$PrintersResLbl.FontBold = 1
-		$PrintersResLbl.Text = "OK"
-	EndIf
-	$PrintersLbl.ForeColor = Black
 EndFunction
 
 
@@ -714,6 +382,16 @@ Function CheckIfLaptop()
 EndFunction
 
 
+;****************************************************************************************************
+; Process Firefox Bookmarks
+;****************************************************************************************************
+Function DoWinConfig()
+;	If $pgroup = "ITAdmin"
+		;RUN "\\einstein\netlogon\tidyws.bat"
+                ;RUN "notepad.exe"
+ ;               SHELL "C:\WINDOWS\SYSTEM32\CMD /E:1024 /C " + @LDRIVE + "\test.bat"
+;	EndIf
 
+EndFunction
 
 
