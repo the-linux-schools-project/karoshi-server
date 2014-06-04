@@ -199,6 +199,12 @@ sed -i 's/ldap:\/\/127.0.0.1/ldap:\/\/'$LDAPSERVER'/g' /opt/karoshi/serversetup/
 #Edit moodle.sql with the correct realm information
 sed -i 's/CHANGETHISLDAPBASE/'$LDAPBASE'/g' /opt/karoshi/serversetup/modules/moodle/moodle2.sql
 
+#Edit moodle.sql with the correct subnet
+THISIP=`net lookup $HOSTNAME`
+THISSUBNETMASK=`grep -w netmask /etc/network/interfaces | sed -n 1,1p | cut -d' ' -f2`
+NETWORK=`ipcalc $THISIP/$THISSUBNETMASK | grep -w ^Network: | sed 's/ * / /g' | cut -d' ' -f2`
+sed -i 's@CHANGETHISSUBNET@'$NETWORK'@g' /opt/karoshi/serversetup/modules/moodle/moodle2.sql
+
 #Edit hash for badges
 sed -i 's/CHANGETHISHASH/'$BADGEHASH'/g' /opt/karoshi/serversetup/modules/moodle/moodle2.sql
 

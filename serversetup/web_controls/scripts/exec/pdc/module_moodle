@@ -172,19 +172,6 @@ samba-tool dns add 127.0.0.1 $REALM $ALIAS CNAME $SERVERNAME --username=Administ
 fi
 }
 
-function modify_moodle.sql {
-
-#Make a backup of moodle.sql
-cp /opt/karoshi/serversetup/modules/moodle/moodle.sql /opt/karoshi/serversetup/modules/moodle/moodle_original.sql
-
-#Edit moodle.sql with the correct subnet
-THISIP=`net lookup $HOSTNAME`
-THISSUBNETMASK=`grep -w netmask /etc/network/interfaces | sed -n 1,1p | cut -d' ' -f2`
-NETWORK=`ipcalc $THISIP/$THISSUBNETMASK | grep -w ^Network: | sed 's/ * / /g' | cut -d' ' -f2`
-sed -i 's@CHANGETHISSUBNET@'$NETWORK'@g' /opt/karoshi/serversetup/modules/moodle/moodle.sql
-
-}
-
 function install_moodle {
 #Install
 if [ $SERVERNAME = `hostname-fqdn` ]
@@ -279,7 +266,6 @@ URL=https://'$ALIAS.$REALM'/moodle' > /var/lib/samba/netlogon/linuxclient/$LINUX
 check_already_installed
 apply_ssl_certificate
 add_dns_entry
-modify_moodle.sql
 #check_ports
 #if not transferring an existing setup then install moodle
 install_moodle
