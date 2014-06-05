@@ -6,8 +6,6 @@ COPY %LOGONSERVER%\netlogon\kix\*.* C:\kix
 
 attrib +R +S c:\kix\*.*
 rem Install
-regsvr32 "C:\kix\kixforms.dll"
-C:\kix\WKIX32.EXE %LOGONSERVER%\netlogon\kix\WSsetup.kix
 %LOGONSERVER%\netlogon\getdll.bat
 exit
 :createerror1
