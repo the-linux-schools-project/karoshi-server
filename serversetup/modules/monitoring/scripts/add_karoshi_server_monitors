@@ -18,7 +18,12 @@ MONITORS="ping"
 #Check for samba
 if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1pdc ] || [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ] || [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1domainmember ] || [ -f /opt/karoshi/server_network/servers/$SERVERNAME/fileserver ]
 then
-MONITORS="$MONITORS:samba:dns"
+MONITORS="$MONITORS:samba"
+fi
+#Check for dns
+if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1pdc ] || [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ]
+then
+MONITORS="$MONITORS:dns"
 fi
 #Check for email
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver ] && MONITORS="$MONITORS:imap:imaps:smtp"

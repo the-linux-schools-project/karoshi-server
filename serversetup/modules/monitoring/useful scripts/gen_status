@@ -182,7 +182,7 @@ SMTPSTATUS=fail
 fi
 [ `echo 'check'$STATUS | grep -c untested` -gt 0 ] && SMTPSTATUS=untested
 fi
-if [ $SERVICE_NAME = dansguardian ]
+if [ $SERVICE_NAME = proxy ]
 then
 DG_LAST_CHECK=$LAST_CHECK
 DG_NEXT_CHECK=$NEXT_CHECK
