@@ -419,6 +419,12 @@ echo ulimit -n 131072 > /etc/default/dovecot
 #Make sure that tango is inheriting icons 
 sed -i 's/Inherits=gnome,crystalsvg/Inherits=gnome,crystalsvg,mate/g' /usr/share/icons/Tango/index.theme
 /usr/bin/gtk-update-icon-cache --force /usr/share/icons/Tango
+
+#Configure mount.d to run on 33777
+if [ `grep -c 33777 /etc/default/nfs-kernel-server` = 0 ]
+then
+sed -i 's/--manage-gids/--manage-gids -p 33777/g' /etc/default/nfs-kernel-server
+fi
 }
 
 #Run functions
