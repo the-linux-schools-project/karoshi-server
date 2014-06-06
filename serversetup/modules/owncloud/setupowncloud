@@ -98,6 +98,7 @@ chmod -R u+X,g+X  /var/www/html/owncloud
 
 chmod 0700 /home/owncloud/
 chmod 0700 /home/owncloud/data
+touch /home/owncloud/.ocdata
 
 chown -R www-data:www-data /home/owncloud
 chown -R www-data:www-data /var/www/html/owncloud/data
@@ -217,6 +218,8 @@ rm -f /opt/karoshi/.tempdata/mysqlperms.sql
 #Modify config.php with the correct password.
 sed -i 's/CHANGETHISPASS/'$CLOUDPASS'/g' /var/www/html/owncloud/config/config.php
 sed -i 's/CHANGETHISID/'$CLOUDID'/g' /var/www/html/owncloud/config/config.php
+sed -i 's/CHANGETHISREALM/'$ALIAS'.'$REALM'/g' /var/www/html/owncloud/config/config.php
+
 #Make a backup of owncloud.sql
 cp /opt/karoshi/serversetup/modules/owncloud/owncloud.sql /opt/karoshi/serversetup/modules/owncloud/owncloud_original.sql
 
