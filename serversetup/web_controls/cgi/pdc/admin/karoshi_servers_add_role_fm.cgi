@@ -265,7 +265,7 @@ fi
 
 echo '</td>'
 
-if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
+if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ] && [ -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME ]
 then
 echo '<td style="vertical-align: top; height: 40px;">'$OWNCLOUDSERVERMSG'</td>
 <td style="vertical-align: top; height: 40px;">
