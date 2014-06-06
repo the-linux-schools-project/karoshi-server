@@ -124,7 +124,7 @@ done
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
+DIV_ID=actionbox
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -136,7 +136,7 @@ echo '
 <form action="/cgi-bin/admin/delete_user.cgi" method="post">
 <input name="_FORMCODE_" value="'$SHUTDOWN_CODE'" type="hidden">'
 
-[ $MOBILE = no ]  && echo '<div id="'$DIV_ID'"><div id="titlebox">'
+[ $MOBILE = no ]  && echo '<div id="'$DIV_ID'">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -148,7 +148,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div>
 '
 else
-echo '<div class="sectiontitle">'$TITLE'</div><br></div><div id="infobox">'
+echo '<div class="sectiontitle">'$TITLE'</div><br>'
 fi
 
 #Check that this server is not part of a federated setup
@@ -235,7 +235,5 @@ echo '</div><div id="submitbox">'
 else
 echo '<br>'
 fi
-echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></div>'
-[ $MOBILE = no ] && echo '</div>'
-echo '</form></div></body></html>'
+echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></div></form></div></body></html>'
 exit

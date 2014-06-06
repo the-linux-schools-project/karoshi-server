@@ -132,8 +132,8 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox">
-<div class="sectiontitle">'$TITLE2'</div><br>'
+echo '<div id="actionbox3"><div id="titlebox">
+<div class="sectiontitle">'$TITLE2'</div><br><div id="infobox>"'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/linux_client_choose_distro.cgi | cut -d' ' -f1`
 #Copy iso
@@ -153,5 +153,5 @@ MESSAGE=`echo $ERRORMSG3`
 fi
 
 completed
-echo "</div>/body></html>"
+echo "</div></div>/body></html>"
 exit
