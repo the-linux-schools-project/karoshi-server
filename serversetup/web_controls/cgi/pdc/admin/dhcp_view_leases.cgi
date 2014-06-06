@@ -55,15 +55,7 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-#Check what we are using for dhcp
-if [ `grep -c ^conf-dir=/etc/dnsmasq.d /etc/dnsmasq.conf` -gt 0 ]
-then
-#Using dnsmasq
-DHCPSERVER=dnsmasq
-else
-#Using dhcp3-server
 DHCPSERVER=dhcp3-server
-fi
 
 echo '<div id="actionbox3"><div id="titlebox">
 
@@ -74,8 +66,6 @@ echo '<div id="actionbox3"><div id="titlebox">
 </tbody></table><br>
 </div><div id="infobox"><br>'
 
-if [ $DHCPSERVER = dhcp3-server ]
-then
 LEASEPATH=/var/lib/dhcp/dhcpd.leases
 [ -d /var/lib/dhcp3 ] && LEASEPATH=/var/lib/dhcp3/dhcpd.leases
 
@@ -127,24 +117,4 @@ let COUNTER=$COUNTER+1
 done
 echo '</tbody></table></div></div></body></html>'
 
-else
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tr><td style="width: 120px;"><b>'$TCPIPMSG'</b></td><td style="width: 130px;"><b>'$MACMSG'</b></td><td style="width: 170px;"><b>'$NAMEMSG'</b></td><td style="width: 170px;"><b>'$ENDMSG'</b></td></tr>'
-LEASECOUNT=`cat /var/lib/misc/dnsmasq.leases | wc -l`
-COUNTER=1
-while [ $COUNTER -le $LEASECOUNT ]
-do
-LEASEDATA=`sed -n $COUNTER,$COUNTER'p' /var/lib/misc/dnsmasq.leases`
-EXPIRES=`echo $LEASEDATA | cut -d' ' -f1`
-EXPIRES=`perl -e 'print scalar(localtime('$EXPIRES')), "\n"'`
-MAC=`echo $LEASEDATA | cut -d' ' -f2`
-TCPIP=`echo $LEASEDATA | cut -d' ' -f3`
-NAME=`echo $LEASEDATA | cut -d' ' -f4`
-echo '<tr><td>'$TCPIP'</td><td>'$MAC'</td><td>'$NAME'</td><td>'"$EXPIRES"'</td></tr>'
-
-let COUNTER=$COUNTER+1
-done
-echo '</tbody></table>'
-fi
-echo '</div></div></body></html>'
 exit
