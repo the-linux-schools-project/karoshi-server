@@ -95,17 +95,18 @@ then
 #Show legend
 if [ $MOBILE = yes ]
 then
-echo '<table class="mobilestandard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+echo '<tr><td colspan 100%><table class="mobilestandard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
 echo '<td style="width: 60px;"><b>'$USERNAMEMSG'</b></td>'
 echo '<td style="width: 60px;"><b>'$TIMEMSG'</b></td>'
 echo '<td style="width: 40px;"><b>'$DATEMSG'</b></td>'
 echo '</tr>'
 else
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+echo '<tr><td colspan=100% style="height: 10px;"></td></tr>
+<tr><td colspan=100% ><p style="border-style: solid; border-color: white; border-radius: 5px; border-width:1px;"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
 echo '<td colspan="2" style="width: 90px;"><b>'$JOB_COUNT'</b></td>'
 echo '<td style="width: 70px;"><b>'$JOB_ID_MSG'</b></td>'
 echo '<td style="width: 100px;"><b>'$USERNAMEMSG'</b></td>'
-echo '<td style="width: 80px;"><b>'$SIZEMSG' (KB)</b></td>'
+echo '<td style="width: 90px;"><b>'$SIZEMSG' (KB)</b></td>'
 echo '<td style="width: 110px;"><b>'$TIMEMSG'</b></td>'
 echo '<td style="width: 90px;"><b>'$DATEMSG'</b></td>'
 echo '</tr>'
@@ -148,23 +149,22 @@ fi
 echo '</tr>'
 let QUEUE_COUNTER=$QUEUE_COUNTER+1
 done
-echo '</tbody></table>'
+echo '</tbody></table></td></tr><tr><td colspan=100% style="height: 10px;"></td></tr>'
 fi
 }
-
 
 #Show column headings
 echo '
 <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr><td style="width: '$WIDTH1'px;"><b>Printer</b></td>'
+<tbody><tr><td style="height: 30px; width: '$WIDTH1'px; vertical-align: top;"><b>Printer</b></td>'
 if [ $VIEWMODE = admin ] && [ $MOBILE = no ]
 then
-echo '<td style="width: '$WIDTH2'px;"><b>Status</b></td>
-<td style="width: '$WIDTH2'px;">
+echo '<td style="width: '$WIDTH2'px; vertical-align: top;"><b>Status</b></td>
+<td style="width: '$WIDTH2'px; vertical-align: top;">
 <b>Location</b></td>
 '
 fi
-echo '<td style="width: '$WIDTH2'px;"><b>Enabled</b></td><td style="width: '$WIDTH2'px;"><b>Test</b></td></tr></tbody></table><br>
+echo '<td style="width: '$WIDTH2'px; vertical-align: top;"><b>Enabled</b></td><td style="width: '$WIDTH2'px; vertical-align: top;"><b>Test</b></td></tr>
 '
 
 #Process Printer data
@@ -214,13 +214,10 @@ fi
 
 [ $QUEUE_COUNT'null' = null ] && QUEUE_COUNT=0
 #Show information for each printer
-echo '
-<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr><td style="width: '$WIDTH1'px;"><b>'$PDNAME'</b></td>
-'
+echo '<tr><td style="width: '$WIDTH1'px;"><b>'$PDNAME'</b></td>'
 if [ $VIEWMODE = admin ] && [ $MOBILE = no ]
 then
-echo '<td style="width: '$WIDTH2'px;"><a class="info" href="javascript:void(0)"><input name="_'$PRINTER_NAME'_setppd_" type="image" class="images" src="'$PRINTER_ICON'" value=""><span>'$PRINTER_STATE_MSG'<br>'$JOBS_MSG: $QUEUE_COUNT'<br>' $ACCEPTING_JOBS_MSG: $QUEUE_STATUS'<br>'$PRINTER_STATE_MSG : $PRINTING_STATUS'<br>'$PRINTER_DEST'<br>'$PPDNICKNAME'</span></a></td>'
+echo '<td style="width: '$WIDTH2'px; height: 25px;"><a class="info" href="javascript:void(0)"><input name="_'$PRINTER_NAME'_setppd_" type="image" class="images" src="'$PRINTER_ICON'" value=""><span>'$PRINTER_STATE_MSG'<br>'$JOBS_MSG: $QUEUE_COUNT'<br>' $ACCEPTING_JOBS_MSG: $QUEUE_STATUS'<br>'$PRINTER_STATE_MSG : $PRINTING_STATUS'<br>'$PRINTER_DEST'<br>'$PPDNICKNAME'</span></a></td>'
 fi
 
 #Show printer location
@@ -257,13 +254,11 @@ else
 echo '<td style="width: '$WIDTH2'px;"><img alt="spacer" src="/images/submenus/printer/spacer.png"></td>'
 fi
 
-echo '</tr></tbody></table>'
-
 [ $QUEUE_COUNT -gt 0 ] && get_queue_info
-echo "<br>"
+
 let PRINTER_COUNTER=$PRINTER_COUNTER+5
 done
 
-echo '</form><br><br><br><br><br>'
+echo '</tbody></table></form><br><br>'
 
 exit
