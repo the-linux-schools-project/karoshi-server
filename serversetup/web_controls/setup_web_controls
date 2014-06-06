@@ -227,8 +227,6 @@ cp -f /opt/karoshi/serversetup/web_controls/htaccess/staff/.htaccess /var/www/ht
 #Create htaccess files for staff
 echo -e "
 
-Order deny,allow
-Deny from All
 AuthName \"Karoshi Web Control\"
 
 AuthType Kerberos
@@ -243,10 +241,7 @@ KrbLocalUserMapping on
 #AuthzLDAPAuthoritative on
 AuthLDAPUrl ldap://127.0.0.1/OU=personnel,OU=People,$LDAPBASE?CN
 
-Require valid-user
-
 Require ldap-group CN=staff,OU=Groups,OU=People,$LDAPBASE
-Satisfy any
 
 ErrorDocument 401 \"<html><meta http-equiv=\\\"refresh\\\" content=\\\"0;url=/cgi-bin/access_denied.cgi\\\"></html>\"
 ErrorDocument 403 \"<html><meta http-equiv=\\\"refresh\\\" content=\\\"0;url=/cgi-bin/access_forbidden.cgi\\\"></html>\"
