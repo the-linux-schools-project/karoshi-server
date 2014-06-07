@@ -163,11 +163,11 @@ fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox">
+echo '<form action="/cgi-bin/admin/acceptable_use.cgi" name="acceptableuse" method="post"><div id="actionbox3"><div id="titlebox">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="vertical-align: top; width: 150px;"><div class="sectiontitle">'$TITLE'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Acceptable_Use"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td></tr></tbody></table>
 
-<br><form action="/cgi-bin/admin/acceptable_use.cgi" name="acceptableuse" method="post">'
+<br>'
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 200px;">'$STATUSMSG'</td><td>
@@ -176,7 +176,7 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 <tr><td>'$GRACETIMEMSG'</td><td><input maxlength="2" size="2" name="_GRACETIME_" value="'$GRACETIME'"></td>
 <td><input name="_ACTION_setgracetime_" type="submit" class="button" value="'$SETGRACETIMEMSG'"></td>
 <td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Acceptable_Use"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td>
-</tr></tbody></table><br><br>'
+</tr></tbody></table></div><div id="infobox"><br><br>'
 
 #Get list of pending users
 PROCESS_USERS=yes
@@ -220,5 +220,5 @@ echo '<br><input value="'$SUBMITMSG'" class="button" type="submit"> <input value
 [ $PROCESS_USERS = yes ] && echo '<input class="button" type="button" onclick="SetAllCheckBoxes('\'acceptableuse\'', '\'_ACTION_approve_USERNAME_\'', true);" value="'$SELECTMSG'">'
 
 
-echo '</form></div></div></body></html>'
+echo '</div></div></form></div></body></html>'
 exit

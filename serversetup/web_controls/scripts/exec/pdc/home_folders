@@ -20,7 +20,6 @@
 #The Karoshi Team can be contacted at: 
 #mpsharrad@karoshi.org.uk
 #jharris@karoshi.org.uk
-#aball@karoshi.org.uk
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
@@ -165,7 +164,7 @@ echo "<li>"$USERFOLDER: Setting Permissions"</li><br>"
 [ ! -d $HOMEPATH/$USERFOLDER ] && mkdir -p $HOMEPATH/$USERFOLDER
 #chmod 0600 -R $HOMEPATH/$USERFOLDER
 #chmod u+X -R $HOMEPATH/$USERFOLDER
-chown -R $USERFOLDER:staff $HOMEPATH/$USERFOLDER
+chown -R $USERFOLDER $HOMEPATH/$USERFOLDER
 done
 else
 ssh -x -o PasswordAuthentication=no $NEWSERVER '
@@ -175,7 +174,7 @@ echo "<li>"$USERFOLDER: Setting Permissions"</li><br>"
 [ ! -d '$HOMEPATH'/$USERFOLDER ] && mkdir -p '$HOMEPATH'/$USERFOLDER
 #chmod 0600 -R '$HOMEPATH'/$USERFOLDER
 #chmod u+X -R '$HOMEPATH'/$USERFOLDER
-chown -R $USERFOLDER:staff '$HOMEPATH'/$USERFOLDER
+chown -R $USERFOLDER '$HOMEPATH'/$USERFOLDER
 done
 '
 fi
@@ -185,8 +184,8 @@ fi
 
 #Get group information
 source /opt/karoshi/server_network/group_information/$PRIGROUP
-DESTFOLDERPATH=`echo $HOMEPATH | sed 's/'$PRIGROUP'$//g'`
-USERLIST=( `getent passwd | grep /$PRIGROUP/ | cut -d: -f1 | sort` )
+
+USERLIST=( `getent passwd | grep $HOMEPATH/ | cut -d: -f1 | sort` )
 USERLISTCOUNT=${#USERLIST[@]}
 
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
@@ -208,11 +207,11 @@ done
 ###########################
 #Copy home areas
 ###########################
-if [ $COPYHOMEAREAS'null' != null ]
+
+if [ ! -z "$COPYHOMEAREAS" ]
 then
 if [ $COPYHOMEAREAS = yes ]
 then
-
 echo $COPYHOMEAREASMSG2'<br><br>'
 echo '
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
@@ -246,8 +245,6 @@ echo "    <script type = \"text/javascript\" >
 
     </script>"
 
-
-
 COUNTER=0
 if [ $NEWSERVER = `hostname-fqdn` ]
 then
@@ -262,7 +259,7 @@ echo "<li>"$(($COUNTER+1))/$USERLISTCOUNT: Copying $USERNAME"</li><br>"
 
 #rsync user folder to the pdc
 echo `date`: home_folders - Copying $USERNAME from $CURRENTSERVER to $HOSTNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group  root@$CURRENTSERVER:/$HOMEPATH/$USERNAME "$DESTFOLDERPATH$PRIGROUP"/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group  root@$CURRENTSERVER:/$HOMEPATH/$USERNAME "$$HOMEPATH/" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 let COUNTER=$COUNTER+1
 done
 fi
@@ -283,7 +280,9 @@ echo "<li>"$(($COUNTER+1))/$USERLISTCOUNT: Copying $USERNAME"</li><br>"
 
 #rsync user folders to the new server
 echo `date`: home_folders - Copying $USERNAME from $HOSTNAME to $NEWSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group "$HOMEPATH"/"$USERNAME" root@$NEWSERVER:/$DESTFOLDERPATH$PRIGROUP/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group "$HOMEPATH"/"$USERNAME" root@$NEWSERVER:/$HOMEPATH/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
 let COUNTER=$COUNTER+1
 done
 fi

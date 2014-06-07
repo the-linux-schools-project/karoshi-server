@@ -360,10 +360,10 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 [ ! -d '$HOMEPATH''/''$NEWUSERNAME' ] && mkdir -p '$HOMEPATH''/''$NEWUSERNAME'
 chown -R '$USERID':root '$HOMEPATH''/''$NEWUSERNAME'
 chmod -R 0600 '$HOMEPATH''/''$NEWUSERNAME'
-setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
 [ `echo '$HOMEPATH' | grep -c students` -gt 0 ] && setfacl -Rm group:staff:r-x,d:group:staff:r-x '$HOMEPATH'/'$NEWUSERNAME'/
+setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
 '
-SSHSTATUS=`echo $?`
+SSHSTATUS=$?
 if [ $SSHSTATUS != 0 ]
 then
 echo `date`: add_user - $NEWUSERNAME ssh failure on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE

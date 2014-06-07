@@ -408,7 +408,7 @@ if [ $ACTIONUSER = 1 ]
 then
 
 
-echo '<form action="/cgi-bin/admin/add_user.cgi" method="post"><div id="'$DIV_ID'">
+echo '<form action="/cgi-bin/admin/add_user.cgi" method="post">
 <input name="_FIRSTNAME_" value="'$FIRSTNAME'" type="hidden">
 <input name="_SURNAME_" value="'$SURNAME'" type="hidden">
 <input name="_PASSWORD1_" value="'$PASSWORD1'" type="hidden">
@@ -417,27 +417,9 @@ echo '<form action="/cgi-bin/admin/add_user.cgi" method="post"><div id="'$DIV_ID
 <input name="_USERNAMESTYLE_" value="'$USERNAMESTYLE'" type="hidden">
 <input name="_USERNAME_" value="'$USERNAME'" type="hidden">
 <input name="_ENROLLMENTNUMBER_" value="'$ENROLLMENTNUMBER'" type="hidden">
-
-'
-
-#Show back button for mobiles
-if [ $MOBILE = yes ]
-then
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
-<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$TITLE'</b></a></td></tr></tbody></table>'
-else
-echo '<div class="sectiontitle">'$TITLE'</div><br>'
-fi
-
-
-echo $INITUSERNAME - $ERRORMSG10"<br><br>"$DUPLICATECREATE $USERNAME?
-if [ $MOBILE = no ]
-then
-echo '</div><div id="submitbox">'
-fi
-echo '<input value="'$SUBMITMSG'" class="button" type="submit">
-</div></form></div></body></html>'
+'$INITUSERNAME' - '$ERRORMSG10'<br><br>'$DUPLICATECREATE' '$USERNAME'?<br><br>
+<input value="'$SUBMITMSG'" class="button" type="submit">
+</form></div></div></body></html>'
 exit
 else
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/add_user.cgi | cut -d' ' -f1`

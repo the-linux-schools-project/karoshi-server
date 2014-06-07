@@ -83,8 +83,8 @@ done
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '
-<form action="/cgi-bin/admin/reset_password.cgi" method="post"><div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$TITLE2'</div>
-  <br></div><div id="infobox">
+<form action="/cgi-bin/admin/reset_password.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE2'</div>
+  <br>
   <table class="standard" style="text-align: left; height: 30px;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
       <tr>
@@ -110,6 +110,6 @@ echo '
   <br>
 </div><div id="submitbox">
 <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
-</div></div></form></div></body></html>
+</div></form></div></body></html>
 '
 exit

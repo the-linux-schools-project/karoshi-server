@@ -123,7 +123,7 @@ fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><span style="font-weight: bold;">'$TITLE - $SERVERNAME'</span>'
+echo '<div id="actionbox"><div class="sectiontitle">'$TITLE - $SERVERNAME'</div>'
 #Add distribution server
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_distributionserver.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_distributionserver
