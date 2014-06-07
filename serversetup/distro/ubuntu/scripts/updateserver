@@ -22,15 +22,15 @@
 LOG_DATE=`date +%F`
 
 
-if [ ! -z "$1" ]
+REMOVE_OLD_KERNELS=no
+INSTALLTYPE=scheduled
+
+if [ ! -z "$1" ] 
 then
 if [ "$1" = "buildserver" ]
 then
 REMOVE_OLD_KERNELS=yes
 INSTALLTYPE=notscheduled
-else
-REMOVE_OLD_KERNELS=no
-INSTALLTYPE=scheduled
 fi
 fi
 
