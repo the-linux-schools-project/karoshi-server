@@ -65,7 +65,7 @@ REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ] && [ $REMOTE_MD5'check' != $MD5SUM3'check' ]
+if [[ $REMOTE_MD5'check' != $MD5SUM'check' ]]
 then
 echo `date`: linux_client_choose_distro - Not called by linux_client_choose_distro.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
