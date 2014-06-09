@@ -117,7 +117,11 @@ chmod 0755 /usr/lib/mon/alert.d/*
 
 touch /etc/mon/userfile
 
-cat /opt/karoshi/serversetup/modules/monitoring/mon/global /opt/karoshi/server_network/mon/monitors/* > /etc/mon/mon.cf
+cat /opt/karoshi/serversetup/modules/monitoring/mon/global > /etc/mon/mon.cf
+if [ `ls -1 /opt/karoshi/server_network/mon/monitors | wc -l` -gt 0 ]
+then
+cat /opt/karoshi/server_network/mon/monitors/* >> /etc/mon/mon.cf
+fi
 
 #############################
 #Ensure that apache, mon are running

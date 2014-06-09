@@ -3,7 +3,7 @@
 if not exist c:\kix\kix32.exe goto kixerror
 
 :normal
-start c:\kix\wkix32 %LOGONSERVER%\netlogon\logonform.kix $pgroup=%1
+start c:\kix\kix32 %LOGONSERVER%\netlogon\logonform.kix $pgroup=%1
 exit
 
 :kixerror

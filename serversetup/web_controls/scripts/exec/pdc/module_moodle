@@ -212,11 +212,6 @@ sed -i 's/WEBCTRL=no/WEBCTRL=yes/g' /opt/karoshi/server_network/menusettings
 #sed -i 's/MOODLECTRL=no/MOODLECTRL=yes/g' /opt/karoshi/server_network/menusettings
 }
 
-function restore_moodle.sql {
-rm -f /opt/karoshi/serversetup/modules/moodle/moodle.sql
-mv /opt/karoshi/serversetup/modules/moodle/moodle_original.sql /opt/karoshi/serversetup/modules/moodle/moodle.sql
-}
-
 function check_ports {
 if [ $SERVERNAME != `hostname-fqdn` ]
 then
@@ -269,7 +264,6 @@ add_dns_entry
 #check_ports
 #if not transferring an existing setup then install moodle
 install_moodle
-restore_moodle.sql
 add_role_information
 create_linux_client_icon
 

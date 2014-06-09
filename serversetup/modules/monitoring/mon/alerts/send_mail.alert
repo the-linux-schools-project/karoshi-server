@@ -39,7 +39,7 @@ DATAHEADER=`echo $DATA | cut -s -d: -f$COUNTER`
 if [ `echo $DATAHEADER'check'` = SERVICEcheck ]
 then
 let COUNTER=$COUNTER+1
-SERVICE=`echo $DATA | cut -s -d: -f$COUNTER`
+SERVICE=`echo $DATA | cut -s -d: -f$COUNTER | tr 'A-Z' 'a-z'`
 break
 fi
 let COUNTER=$COUNTER+1
@@ -73,18 +73,20 @@ fi
 let COUNTER=$COUNTER+1
 done
 
-if [ `echo $SERVICE'null' | sed 's/ //g'` != null ]
-then
-EMAILMESSAGE=`echo $SERVICE failure on $GROUP.`
-else
-EMAILMESSAGE="Please check the Karoshi Monitoring in the web management."
-fi
+#Get additional log information. 
+LOGINFO=`tail -n 20 /opt/karoshi/server_network/mon/events/$GROUP/$SERVICE.log | grep failure`
 
 for EMAILCONTACT in /opt/karoshi/server_network/mon/email_alerts/*
 do
 EMAILCONTACT=`basename $EMAILCONTACT`
 source /opt/karoshi/server_network/mon/email_alerts/$EMAILCONTACT
-/opt/karoshi/server_network/mon/smtp-cli --verbose --host="$EMAILSERVER" --from "$SENDER" --to "$EMAILADDRESS" --subject "Karoshi Network Monitoring" --body-plain "$EMAILMESSAGE"
+/opt/karoshi/server_network/mon/smtp-cli --verbose --host="$EMAILSERVER" --from "$SENDER" --to "$EMAILADDRESS" --subject "Karoshi Network Monitoring" --body-plain "Host Group: $GROUP
+Service: $SERVICE
+Status: failure
+
+Log information
+
+$LOGINFO"
 
 done
 rm -f /opt/karoshi/server_network/mon/messages/email_message.$$
