@@ -39,7 +39,7 @@ source /opt/karoshi/serversetup/language/$LANGCHOICE/extra_server/checknetwork
 function getnetworksettings {
 DATA=`yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --form --title="Network Settings" --field="Server name" --field="TCPIP" --field="Netmask" --field="Name Server" --field="Gateway" --button="gtk-ok" 2>/dev/null`
 
-NAMECUSTOM=`echo $DATA | cut -d"|" -f1 | tr -cd 'A-Za-z1-9-' | sed 's/^-//g' | sed 's/-$//g' | tr 'A-Z' 'a-z'`
+NAMECUSTOM=`echo $DATA | cut -d"|" -f1 | tr -cd 'A-Za-z0-9-' | sed 's/^-//g' | sed 's/-$//g' | tr 'A-Z' 'a-z'`
 TCPIPCUSTOM=`echo $DATA | cut -d"|" -f2 | tr -cd '0-9./n'`
 NETMASKCUSTOM=`echo $DATA | cut -d"|" -f3 | tr -cd '0-9./n'`
 NAMESERVERCUSTOM=`echo $DATA | cut -d"|" -f4 | tr -cd '0-9./n'`

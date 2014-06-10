@@ -95,14 +95,17 @@ then
 #Show legend
 if [ $MOBILE = yes ]
 then
-echo '<tr><td colspan 100%><table class="mobilestandard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+echo '<tr><tr><td colspan=100% style="height: 10px;"></td></tr>
+<tr><td colspan=100%><p style="border-style: solid; border-color: black; border-radius: 5px; border-width:1px;">
+<table class="mobilestandard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
 echo '<td style="width: 60px;"><b>'$USERNAMEMSG'</b></td>'
 echo '<td style="width: 60px;"><b>'$TIMEMSG'</b></td>'
-echo '<td style="width: 40px;"><b>'$DATEMSG'</b></td>'
+echo '<td style="width: 60px;"><b>'$DATEMSG'</b></td>'
 echo '</tr>'
 else
 echo '<tr><td colspan=100% style="height: 10px;"></td></tr>
-<tr><td colspan=100% ><p style="border-style: solid; border-color: white; border-radius: 5px; border-width:1px;"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+<tr><td colspan=100% ><p style="border-style: solid; border-color: white; border-radius: 5px; border-width:1px;">
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
 echo '<td colspan="2" style="width: 90px;"><b>'$JOB_COUNT'</b></td>'
 echo '<td style="width: 70px;"><b>'$JOB_ID_MSG'</b></td>'
 echo '<td style="width: 100px;"><b>'$USERNAMEMSG'</b></td>'
@@ -214,10 +217,10 @@ fi
 
 [ $QUEUE_COUNT'null' = null ] && QUEUE_COUNT=0
 #Show information for each printer
-echo '<tr><td style="width: '$WIDTH1'px;"><b>'$PDNAME'</b></td>'
+echo '<tr><td style="width: '$WIDTH1'px; height: 35px;"><b>'$PDNAME'</b></td>'
 if [ $VIEWMODE = admin ] && [ $MOBILE = no ]
 then
-echo '<td style="width: '$WIDTH2'px; height: 25px;"><a class="info" href="javascript:void(0)"><input name="_'$PRINTER_NAME'_setppd_" type="image" class="images" src="'$PRINTER_ICON'" value=""><span>'$PRINTER_STATE_MSG'<br>'$JOBS_MSG: $QUEUE_COUNT'<br>' $ACCEPTING_JOBS_MSG: $QUEUE_STATUS'<br>'$PRINTER_STATE_MSG : $PRINTING_STATUS'<br>'$PRINTER_DEST'<br>'$PPDNICKNAME'</span></a></td>'
+echo '<td style="width: '$WIDTH2'px;"><a class="info" href="javascript:void(0)"><input name="_'$PRINTER_NAME'_setppd_" type="image" class="images" src="'$PRINTER_ICON'" value=""><span>'$PRINTER_STATE_MSG'<br>'$JOBS_MSG: $QUEUE_COUNT'<br>' $ACCEPTING_JOBS_MSG: $QUEUE_STATUS'<br>'$PRINTER_STATE_MSG : $PRINTING_STATUS'<br>'$PRINTER_DEST'<br>'$PPDNICKNAME'</span></a></td>'
 fi
 
 #Show printer location

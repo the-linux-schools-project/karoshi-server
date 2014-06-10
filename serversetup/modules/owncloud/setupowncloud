@@ -89,7 +89,6 @@ tar -xzf /opt/karoshi/serversetup/modules/owncloud/owncloud.tar.gz --directory /
 
 #Set ownership and permissions
 [ ! -d /home/owncloud/data ] && mkdir -p /home/owncloud/data
-[ ! -d /var/www/html/owncloud/data ] && mkdir -p /var/www/html/owncloud/data
 
 #chown -R root:www-data /var/www/html/owncloud
 chown -R www-data:www-data /var/www/html/owncloud
@@ -98,10 +97,9 @@ chmod -R u+X,g+X  /var/www/html/owncloud
 
 chmod 0700 /home/owncloud/
 chmod 0700 /home/owncloud/data
-touch /home/owncloud/.ocdata
+touch /home/owncloud/data/.ocdata
 
 chown -R www-data:www-data /home/owncloud
-chown -R www-data:www-data /var/www/html/owncloud/data
 chown -R www-data:www-data /var/www/html/owncloud/apps
 chown -R www-data:www-data /var/www/html/owncloud/config
 

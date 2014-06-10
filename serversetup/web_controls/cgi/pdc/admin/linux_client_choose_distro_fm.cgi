@@ -55,8 +55,8 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox">
-<b>'$TITLE2'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a><br><br>
+echo '<div id="actionbox3"><div id="titlebox">
+<b>'$TITLE2'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a><br><br></div><div id="infobox">
         <form name="myform" action="/cgi-bin/admin/linux_client_choose_distro.cgi" method="post">'
 
 #Get list of distributions in /home/itadminshare/distributions in the main server
@@ -64,5 +64,5 @@ echo '<div id="actionbox">
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/linux_client_choose_distro_fm.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:" | sudo -H /opt/karoshi/web_controls/exec/linux_client_choose_distro
 
-echo '</form></div></div></body></html>'
+echo '</form></div></div></div></body></html>'
 exit
