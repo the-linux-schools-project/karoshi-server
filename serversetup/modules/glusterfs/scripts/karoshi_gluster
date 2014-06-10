@@ -1,0 +1,113 @@
+#!/bin/bash
+
+VOLUME=netlogon
+FOLDERPATH=/var/lib/samba/netlogon
+
+COUNTER=0
+
+source /opt/karoshi/server_network/domain_information/domain_name
+
+for SERVERS in /opt/karoshi/server_network/servers/*
+do
+
+SERVER=`basename $SERVERS`
+
+GLUSTERCLUSTER=`echo $GLUSTERCLUSTER $SERVER:$FOLDERPATH-gluster`
+
+if [ $SERVER = `hostname-fqdn` ]
+then
+#Open ports on firewall
+
+#Delete brick folder if it exists
+[ -d $FOLDERPATH-gluster ] && rm -f -R $FOLDERPATH-gluster
+
+#Make sure glusterfs is running
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/glusterfs
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_status
+if [ $? != 0 ]
+then
+echo "<li> $SERVER - starting glusterfs</li>"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_start
+fi
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+
+#Delete brick folder if it exists
+[ -d '$FOLDERPATH'-gluster ] && rm -f -R '$FOLDERPATH'-gluster
+
+#Make sure glusterfs is running
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/glusterfs
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_status
+if [ $? != 0 ]
+then
+echo "<li> '$SERVER' - starting glusterfs</li>"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_start
+fi
+gluster peer probe '$HOSTNAME.$REALM'
+'
+gluster peer probe $SERVER
+fi
+
+let COUNTER=$COUNTER+1
+
+done
+
+#Create glusterfs volume
+echo "<li>Creating GlusterFS volume for $VOLUME</li>"
+gluster volume create $VOLUME replica $COUNTER $GLUSTERCLUSTER force
+[ $? != 0 ] && echo "<li>There was a problem creating the volume for $VOLUME</li>"
+
+#Start Gluster volume
+gluster volume start $VOLUME
+[ $? != 0 ] && echo "<li>There was a problem starting the volume for $VOLUME</li>"
+
+for SERVERS in /opt/karoshi/server_network/servers/*
+do
+
+SERVER=`basename $SERVERS`
+
+if [ $SERVER = `hostname-fqdn` ]
+then
+#Move folder path if it exists
+if [ -d $FOLDERPATH ]
+then
+echo "<li>$SERVER - Backing up $FOLDERPATH</li>"
+mv $FOLDERPATH $FOLDERPATH.pregluster.$$
+fi
+
+#Create empty folder to mount to 
+[ ! -d $FOLDERPATH ] && mkdir -p $FOLDERPATH
+#Mount volume
+echo "<li>'$SERVER' - Mounting '$FOLDERPATH'</li>"
+mount -t glusterfs $SERVER:/$VOLUME $FOLDERPATH
+#Create mount command
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+#Move folder path if it exists
+if [ -d '$FOLDERPATH' ]
+then
+echo "<li>'$SERVER' - Backing up '$FOLDERPATH'</li>"
+mv '$FOLDERPATH' '$FOLDERPATH'.pregluster.'$$'
+fi
+
+#Create empty folder to mount to 
+[ ! -d '$FOLDERPATH' ] && mkdir -p '$FOLDERPATH'
+
+#Mount volume
+echo "<li>'$SERVER' - Mounting '$FOLDERPATH'</li>"
+mount -t glusterfs '$SERVER':/'$VOLUME' '$FOLDERPATH'
+'
+fi
+done
+
+#Copy in data to gluster cluster
+echo "<li>'$SERVER' - Copying in existing data to '$FOLDERPATH'</li>"
+cp -f -R $FOLDERPATH.pregluster.$$/* $FOLDERPATH/ 
+exit
+
+
+
+
+
