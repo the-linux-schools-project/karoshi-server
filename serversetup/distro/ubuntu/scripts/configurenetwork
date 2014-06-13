@@ -103,8 +103,8 @@ echo '	'netmask $NETMASK >> /etc/network/interfaces
 echo '	'gateway $GATEWAY >> /etc/network/interfaces
 echo '	'dns-nameservers $NAMESERVER >> /etc/network/interfaces
 
-stop networking 
-start networking
+ifdown -a
+ifup -a
 dnscheck
 fi
 
@@ -195,12 +195,12 @@ echo '	'bond-slaves ${CARDSELECTION[@]:0} >> /etc/network/interfaces
 fi
 
 #Stop networking
-stop networking
+ifdown -a
 #Load bonding kernel module
 modprobe bonding
 [ `grep -c bonding /etc/modules` = 0 ] && echo bonding >> /etc/modules
 
-start networking
+ifup -a
 #Check dns
 dnscheck
 fi
