@@ -2,6 +2,14 @@
 source /opt/karoshi/server_network/domain_information/domain_name
 source /opt/karoshi/serversetup/variables/distro
 cp -f /opt/karoshi/serversetup/modules/monitoring/monitorix/monitorix.conf /etc/monitorix/
+
+#Modify monitorix.conf with the correct network interface.
+if [ -f /opt/karoshi/serversetup/variables/network_card_info ]
+then
+source /opt/karoshi/serversetup/variables/network_card_info
+sed -i "s/eth0/'$NETWORK_INT'/g" /etc/monitorix/monitorix.conf
+fi
+
 sed -i "s/changethishostname/$HOSTNAME/g" /etc/monitorix/monitorix.conf
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/monitorix_stop 1>/dev/null
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/monitorix

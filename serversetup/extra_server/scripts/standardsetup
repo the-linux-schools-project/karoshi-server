@@ -5,6 +5,7 @@ source /opt/karoshi/serversetup/variables/language
 source /opt/karoshi/serversetup/language/$LANGCHOICE/standardsetup
 #baseinstallorac
 BASEINSTALLPATH=/opt/karoshi/serversetup/extra_server/scripts
+BASEINSTALLPATH2=/opt/karoshi/serversetup/all/scripts
 KAROSHILOG=/opt/karoshi/serversetup/install_log
 
 #Set timezone in php.ini
@@ -29,7 +30,7 @@ fi
 function do_setup {
 echo "1"
 echo "# $NETWORKCHECK"
-$BASEINSTALLPATH/checknetwork 1>>$KAROSHILOG 2>>$KAROSHILOG
+$BASEINSTALLPATH2/checknetwork extra_server 1>>$KAROSHILOG 2>>$KAROSHILOG
 checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
 echo "28"
 echo "# $SETUP $SHOREWALL"

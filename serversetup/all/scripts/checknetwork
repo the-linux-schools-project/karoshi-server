@@ -1,0 +1,212 @@
+#!/bin/bash
+#checknetwork
+#Copyright (C) 2005  The karoshi Team
+#
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+[ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
+
+SERVERTYPE=$1
+
+if [ -z "$SERVERTYPE" ]
+then
+echo Blank servertype
+exit 101
+fi
+
+#Only run network setup once
+if [ -f /opt/karoshi/.tempdata/network_set ]
+then
+rm -f /opt/karoshi/.tempdata/network_set
+exit
+fi
+
+source /opt/karoshi/serversetup/variables/language
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/language/$LANGCHOICE/pdc/checknetwork
+
+function inputwarning {
+yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --text="$ERRORMSG" --button=OK 2>/dev/null
+}
+
+function getcardlist {
+#Get network card list
+NICARRAY=( `ls /sys/class/net | sed 's/lo//g'` )
+NIC_COUNT=${#NICARRAY[@]}
+if [ $NIC_COUNT = 0 ]
+then
+ERRORMSG="No network cards have been detected."
+inputwarning
+exit 101
+fi
+}
+
+
+#Show choice of network cards if nic count is greater than 1.
+function show_nic_choice {
+YADNICS=""
+COUNTER=0
+while [ $COUNTER -lt $NIC_COUNT ] 
+do
+YADNICS="$YADNICS `echo --field=${NICARRAY[$COUNTER]}:chk`" 
+let COUNTER=$COUNTER+1
+done
+
+CARDCHOICE=`yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --form --text="Multiple network cards have been detected. Select the network card that you want to configure.\n\nChoose multiple cards if you want to bond the cards together." $YADNICS --button=OK`
+
+#Check which cards have been selected
+
+COUNTER=0
+COUNTER2=1
+SCARDCOUNT=0
+CARDSELECTION=""
+while [ $COUNTER -lt $NIC_COUNT ] 
+do
+if [ `echo $CARDCHOICE | cut -d"|" -f $COUNTER2 | grep -c TRUE` = 1 ]
+then
+CARDSELECTION="$CARDSELECTION,${NICARRAY[$COUNTER]}"
+let SCARDCOUNT=$SCARDCOUNT+1
+fi
+let COUNTER=$COUNTER+1
+let COUNTER2=$COUNTER2+1
+
+done
+CARDSELECTION=`echo $CARDSELECTION | sed 's/^,//g'`
+}
+
+function checkcardselection {
+if [ -z "$CARDSELECTION" ]
+then
+ERRORMSG="No network cards have been selected."
+inputwarning
+else
+SHOW_NICKS=no
+fi
+}
+
+##########################
+#Configure Network
+##########################
+function getnetworksettings {
+
+if [ $SCARDCOUNT -gt 1 ]
+then
+DATA=`yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --title="Network Settings"  --field="Server name" --field="TCPIP" --field="Netmask" --field="Name Server" --field="Gateway" --field="Bond mode:CB" "" "" "" "" "" 'mode0!mode1!mode4!' --button="gtk-ok"`
+else
+DATA=`yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --title="Network Settings" --text "Choose the network settings" --field="Server name" --field="TCPIP" --field="Netmask" --field="Name Server" --field="Gateway" --button="gtk-ok" 2>/dev/null`
+fi
+
+NAMECUSTOM=`echo $DATA | cut -d"|" -f1 | tr -cd 'A-Za-z1-9-' | sed 's/^-//g' | sed 's/-$//g' | tr 'A-Z' 'a-z'`
+TCPIPCUSTOM=`echo $DATA | cut -d"|" -f2 | tr -cd '0-9./n'`
+NETMASKCUSTOM=`echo $DATA | cut -d"|" -f3 | tr -cd '0-9./n'`
+NAMESERVERCUSTOM=`echo $DATA | cut -d"|" -f4 | tr -cd '0-9./n'`
+GATEWAYCUSTOM=`echo $DATA | cut -d"|" -f5 | tr -cd '0-9./n'`
+if [ $SCARDCOUNT -gt 1 ]
+then
+BONDMODE=`echo $DATA | cut -d"|" -f6 | tr -cd 'a-z0-9./n'`
+else
+BONDMODE=notset
+fi
+#echo name $NAMECUSTOM tcpip $TCPIPCUSTOM netmask $NETMASKCUSTOM nameserver $NAMESERVERCUSTOM gateway $GATEWAYCUSTOM bondmode $BONDMODE
+}
+
+function confirmchoice {
+BONDMSG=""
+[ $SCARDCOUNT -gt 1 ] && BONDMSG="\nBond Mode:\t\t$BONDMODE"
+DATA=`yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 250 \
+    --text "$NETWORKSET \n\nServer Name:\t\t$NAMECUSTOM \nTCPIP:\t\t\t$TCPIPCUSTOM \nNetmask:\t\t$NETMASKCUSTOM \nNameserver:\t\t$NAMESERVERCUSTOM \nGateway:\t\t$GATEWAYCUSTOM \nCard selection:\t$CARDSELECTION$BONDMSG" 2>/dev/null`
+CHOICE=$?
+[ $CHOICE = 0 ] && CHOICE=commit
+[ $CHOICE = 1 ] && CHOICE=configure
+}
+
+function check_tcpip {
+INPUTCHECK=ok
+#Check dots
+if [ ! -z "$IPDATA" ]
+then
+if [ `echo $IPDATA | sed 's/\./\n /g'  | sed /^$/d | wc -l` != 4 ]
+then
+INPUTCHECK=getsettings
+fi
+#Check that no number is greater than 255
+HIGHESTNUMBER=`echo $IPDATA | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p`
+if [ $HIGHESTNUMBER -gt 255 ]
+then
+INPUTCHECK=getsettings
+fi
+else
+INPUTCHECK=getsettings
+fi
+}
+
+
+CHOICE=configure
+while [ $CHOICE = configure ]
+do
+
+getcardlist
+if [ $NIC_COUNT -gt 1 ]
+then
+SHOW_NICKS=yes
+while [ $SHOW_NICKS = yes ]
+do
+show_nic_choice
+checkcardselection
+done
+else
+SCARDCOUNT=1
+fi
+
+INPUTCHECK=getsettings
+while [ $INPUTCHECK = getsettings ]
+do
+getnetworksettings
+INPUTCHECK=ok
+IPDATA=$TCPIPCUSTOM
+check_tcpip
+IPDATA=$NETMASKCUSTOM
+check_tcpip
+IPDATA=$NAMESERVERCUSTOM
+check_tcpip
+IPDATA=$GATEWAYCUSTOM
+check_tcpip
+if [ $INPUTCHECK = getsettings ]
+then
+ERRORMSG=$ERRORMSG1
+inputwarning
+fi
+done
+confirmchoice
+done
+
+########################
+#Configure network
+########################
+if [ $SERVERTYPE = pdc ]
+then
+#Create script to update arp table on boot
+ln -s /opt/karoshi/serversetup/pdc/"useful scripts"/update_server_arp /etc/rc2.d/S99update_server_arp
+fi
+
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/configurenetwork $NAMECUSTOM $TCPIPCUSTOM $NETMASKCUSTOM $NAMESERVERCUSTOM $GATEWAYCUSTOM $SERVERTYPE $CARDSELECTION $BONDMODE
+exit 103
+

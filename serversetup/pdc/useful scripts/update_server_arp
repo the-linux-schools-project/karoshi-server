@@ -1,6 +1,9 @@
 #!/bin/bash
 [ ! -d /opt/karoshi/server_network/mac_addresses ] && mkdir -p /opt/karoshi/server_network/mac_addresses
-TCPIPNUMBER=`ifconfig eth0 | grep "inet addr" | sed "s/ * / /g" | cut -d" " -f3 | cut -d: -f2`
+
+source /opt/karoshi/serversetup/variables/network_card_info
+
+TCPIPNUMBER=`ifconfig $NETWORK_INT | grep "inet addr" | sed "s/ * / /g" | cut -d" " -f3 | cut -d: -f2`
 MAC_ADDRESS=`ip addr | grep -B1 $TCPIPNUMBER | sed -n 1p | sed "s/ * / /g" | cut -d" " -f3`
 
 if [ ! -z $MAC_ADDRESS ] && [ ! -z $TCPIPNUMBER ]

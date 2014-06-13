@@ -1,3 +1,14 @@
 #!/bin/bash
-#shorewallconfig
-#Not needed
+
+if [ ! -f /opt/karoshi/serversetup/variables/network_card_info ]
+then
+echo `date`: "No network card info" >> /opt/karoshi/serversetup/install_log
+exit 101
+fi
+source /opt/karoshi/serversetup/variables/network_card_info
+
+echo `date`: "Configuring shorewall to use $NETWORK_INT" >> /opt/karoshi/serversetup/install_log
+
+sed -i 's/eth0/'$NETWORK_INT'/g' /etc/shorewall/interfaces
+
+

@@ -6,65 +6,44 @@ NETMASK=$3
 NAMESERVER=$4
 GATEWAY=$5
 SERVERTYPE=$6
+CARDSELECTION=$7
+BONDMODE=$8
+
+echo `date`: '##############'configurenetwork'##############' >> /opt/karoshi/serversetup/install_log
+
+#Assign chosen network cards
+CARDSELECTION=( `echo $CARDSELECTION | sed 's/,/ /g'` )
+
+#Get the number of network cards
+CARD_COUNT=${#CARDSELECTION[@]}
+
+#Check data
+if [ $CARD_COUNT = 0 ]
+then
+echo `date`: No cards selected >> /opt/karoshi/serversetup/install_log
+exit 101
+fi
+
+if [ $CARD_COUNT -gt 1 ]
+then
+if [ -z "$BONDMODE" ]
+then
+echo `date`: No bond mode selected >> /opt/karoshi/serversetup/install_log
+exit 101
+fi
+fi
+
+if [ "$SERVERTYPE" != pdc ] && [ "$SERVERTYPE" != extra_server ]
+then
+echo `date`: Incorrect servertype >> /opt/karoshi/serversetup/install_log
+exit 101
+fi
 
 source /opt/karoshi/serversetup/variables/language
 source /opt/karoshi/serversetup/language/$LANGCHOICE/all/configurenetwork
 
-echo `date`: '##############'configurenetwork'##############' >> /opt/karoshi/serversetup/install_log
 
-####################
-#detect network interface
-####################
-NETWORKINTFS=( eth0 eth1 eth2 lan0 lan1 lan2 )
-NETWORKINTFSNO=`echo ${#NETWORKINTFS[@]}`
-COUNTER=0
-while [ $COUNTER -lt $NETWORKINTFSNO ]
-do
-NETWORKINT=`echo ${NETWORKINTFS[$COUNTER]}`
-NETWORKINTCHECK=`ifconfig -a | grep -c -w $NETWORKINT`
-if [ $NETWORKINTCHECK -gt 0 ]
-then
-COUNTER=$NETWORKINTFSNO
-fi
-let COUNTER=COUNTER+1
-done
-
-####################
-#Set Nameserver
-####################
-function setnetwork {
-
-echo "Network settings:" >> /opt/karoshi/serversetup/install_log
-echo nameserver $NAMESERVER >> /opt/karoshi/serversetup/install_log
-echo iface $NETWORKINT >> /opt/karoshi/serversetup/install_log
-echo address $TCPIPNUMBER >> /opt/karoshi/serversetup/install_log
-echo netmask $NETMASK >> /opt/karoshi/serversetup/install_log
-echo dns-nameservers $NAMESERVER >> /opt/karoshi/serversetup/install_log
-
-echo nameserver $NAMESERVER > /etc/resolv.conf
-#echo nameserver 8.8.8.8 >> /etc/resolv.conf
-#echo nameserver 8.8.4.4 >> /etc/resolv.conf
-echo timeout:1 >> /etc/resolv.conf
-####################
-#Set TCP/IP
-####################
-echo auto lo > /etc/network/interfaces
-echo iface lo inet loopback  >> /etc/network/interfaces
-echo auto $NETWORKINT >> /etc/network/interfaces
-echo iface $NETWORKINT inet static >> /etc/network/interfaces
-echo '	'address $TCPIPNUMBER >> /etc/network/interfaces
-echo '	'netmask $NETMASK >> /etc/network/interfaces
-echo '	'gateway $GATEWAY >> /etc/network/interfaces
-echo '	'dns-nameservers $NAMESERVER >> /etc/network/interfaces
-
-[ ! -d /var/lib/samba/netlogon/domain_information ] && mkdir -p /var/lib/samba/netlogon/domain_information
-echo $NETMASK > /var/lib/samba/netlogon/domain_information/netmask
-echo $GATEWAY > /var/lib/samba/netlogon/domain_information/gateway
-
-ifdown $NETWORKINT
-ifup $NETWORKINT
-}
-setnetwork
+function dnscheck {
 #Check that we can contact dns
 ping -c 1 $NAMESERVER
 PINGCHECK=$?
@@ -74,7 +53,7 @@ host www.google.com $NAMESERVER 1> /dev/null
 LOOKUPCHECK=$?
 
 [ $PINGCHECK != 0 ] && echo `date`: The dns server could not be contacted on $NAMESERVER. >> /opt/karoshi/serversetup/install_log
-[ $LOOKUPCHECK != 0 ] && echo `date`: The dns server could not resolve dns on $NAMESERVER. when testing www.google.com >> /opt/karoshi/serversetup/install_log
+[ $LOOKUPCHECK != 0 ] && echo `date`: The dns server could not resolve dns on $NAMESERVER when testing www.google.com >> /opt/karoshi/serversetup/install_log
 
 if [ $PINGCHECK != 0 ] || [ $LOOKUPCHECK != 0 ]
 then
@@ -83,9 +62,154 @@ yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png"
 #Change DNS if default is not available
 NAMESERVER=8.8.8.8
 echo `date`: "The dns server has been changed to $NAMESERVER." >> /opt/karoshi/serversetup/install_log
-setnetwork
+sed -i 's/dns-nameservers '$NAMESERVER'/dns-nameservers 8.8.8.8/g' /etc/network/interfaces
+echo nameserver $NAMESERVER > /etc/resolv.conf
+echo timeout:1 >> /etc/resolv.conf
+fi
+}
+
+echo "Network settings:" >> /opt/karoshi/serversetup/install_log
+echo nameserver $NAMESERVER >> /opt/karoshi/serversetup/install_log
+echo iface ${CARDSELECTION[0]} >> /opt/karoshi/serversetup/install_log
+echo address $TCPIPNUMBER >> /opt/karoshi/serversetup/install_log
+echo netmask $NETMASK >> /opt/karoshi/serversetup/install_log
+echo dns-nameservers $NAMESERVER >> /opt/karoshi/serversetup/install_log
+
+echo nameserver $NAMESERVER > /etc/resolv.conf
+#echo nameserver 8.8.8.8 >> /etc/resolv.conf
+#echo nameserver 8.8.4.4 >> /etc/resolv.conf
+echo timeout:1 >> /etc/resolv.conf
+
+[ ! -d /var/lib/samba/netlogon/domain_information ] && mkdir -p /var/lib/samba/netlogon/domain_information
+echo $NETMASK > /var/lib/samba/netlogon/domain_information/netmask
+echo $GATEWAY > /var/lib/samba/netlogon/domain_information/gateway
+
+##########################
+#Configure a standard network card
+##########################
+
+if [ $CARD_COUNT = 1 ]
+then
+echo NETWORK_INT=${CARDSELECTION[0]} > /opt/karoshi/serversetup/variables/network_card_info
+####################
+#Set TCP/IP
+####################
+echo auto lo > /etc/network/interfaces
+echo iface lo inet loopback  >> /etc/network/interfaces
+echo auto ${CARDSELECTION[0]} >> /etc/network/interfaces
+echo iface ${CARDSELECTION[0]} inet static >> /etc/network/interfaces
+echo '	'address $TCPIPNUMBER >> /etc/network/interfaces
+echo '	'netmask $NETMASK >> /etc/network/interfaces
+echo '	'gateway $GATEWAY >> /etc/network/interfaces
+echo '	'dns-nameservers $NAMESERVER >> /etc/network/interfaces
+
+stop networking 
+start networking
+dnscheck
 fi
 
+##########################
+#Configure a bonded network card
+##########################
+if [ $CARD_COUNT -gt  1 ]
+then
+echo "NETWORK_INT=bond0" > /opt/karoshi/serversetup/variables/network_card_info
+echo `date`: Setting up a bonded network $BONDMODE >> /opt/karoshi/serversetup/install_log
+if [ $BONDMODE = mode0 ]
+then
+#Create /etc/network/interfaces
+echo auto lo > /etc/network/interfaces
+echo iface lo inet loopback  >> /etc/network/interfaces
+echo "# The primary network interface"  >> /etc/network/interfaces
+echo auto bond0 >> /etc/network/interfaces
+echo iface bond0 inet static >> /etc/network/interfaces
+echo '	'address $TCPIPNUMBER >> /etc/network/interfaces
+echo '	'netmask $NETMASK >> /etc/network/interfaces
+echo '	'gateway $GATEWAY >> /etc/network/interfaces
+echo '	'dns-nameservers $NAMESERVER >> /etc/network/interfaces
+echo '	'slaves ${CARDSELECTION[@]:0} >> /etc/network/interfaces
+echo '	'# jumbo frame support >> /etc/network/interfaces
+echo '	'mtu 9000 >> /etc/network/interfaces
+echo '	'bond-mode balance-rr >> /etc/network/interfaces
+echo '	'bond-miimon 100 >> /etc/network/interfaces
+echo '	'bond-downdelay 200 >> /etc/network/interfaces
+echo '	'bond-updelay 200 >> /etc/network/interfaces
+fi
+
+if [ $BONDMODE = mode1 ]
+then
+echo auto lo > /etc/network/interfaces
+echo iface lo inet loopback >> /etc/network/interfaces
+#First card is manually configured, and slave to the "bond0" bonded NIC
+echo auto ${CARDSELECTION[0]} >> /etc/network/interfaces
+echo iface ${CARDSELECTION[0]} inet manual >> /etc/network/interfaces
+echo bond-master bond0 >> /etc/network/interfaces
+echo bond-primary ${CARDSELECTION[0]} >> /etc/network/interfaces
+#Next cards  ditto, thus creating an n-link bond.
+COUNTER=1
+while [ $COUNTER -lt $CARD_COUNT ]
+do
+echo auto ${CARDSELECTION[$COUNTER]} >> /etc/network/interfaces
+echo iface ${CARDSELECTION[$COUNTER]} inet manual >> /etc/network/interfaces
+echo bond-master bond0 >> /etc/network/interfaces
+let COUNTER=$COUNTER+1
+done
+# bond0 is the bonding NIC and can be used like any other normal NIC.
+# bond0 is configured using static network information.
+echo auto bond0 >> /etc/network/interfaces
+echo iface bond0 inet static >> /etc/network/interfaces
+echo '	'address $TCPIPNUMBER >> /etc/network/interfaces
+echo '	'netmask $NETMASK >> /etc/network/interfaces
+echo '	'gateway $GATEWAY >> /etc/network/interfaces
+echo '	'dns-nameservers $NAMESERVER >> /etc/network/interfaces
+echo '	'bond-mode active-backup >> /etc/network/interfaces
+echo '	'bond-miimon 100 >> /etc/network/interfaces
+echo '	'bond-slaves none >> /etc/network/interfaces
+fi
+
+if [ $BONDMODE = mode4 ]
+then
+#eth0 is manually configured, and slave to the "bond0" bonded NIC
+COUNTER=0
+while [ $COUNTER -lt $CARD_COUNT ]
+do
+echo auto ${CARDSELECTION[$COUNTER]} >> /etc/network/interfaces
+echo iface ${CARDSELECTION[$COUNTER]} inet manual >> /etc/network/interfaces
+echo bond-master bond0 >> /etc/network/interfaces
+let COUNTER=$COUNTER+1
+done
+
+# bond0 is the bonded NIC and can be used like any other normal NIC.
+# bond0 is configured using static network information.
+echo auto bond0 >> /etc/network/interfaces
+echo iface bond0 inet static >> /etc/network/interfaces
+echo '	'address $TCPIPNUMBER >> /etc/network/interfaces
+echo '	'netmask $NETMASK >> /etc/network/interfaces
+echo '	'gateway $GATEWAY >> /etc/network/interfaces
+echo '	'dns-nameservers $NAMESERVER >> /etc/network/interfaces
+# bond0 uses standard IEEE 802.3ad LACP bonding protocol
+echo '	'bond-mode 4 >> /etc/network/interfaces
+echo '	'bond-miimon 100 >> /etc/network/interfaces
+echo '	'bond-lacp-rate 1 >> /etc/network/interfaces
+echo '	'bond-slaves ${CARDSELECTION[@]:0} >> /etc/network/interfaces
+fi
+
+#Stop networking
+stop networking
+#Load bonding kernel module
+modprobe bonding
+[ `grep -c bonding /etc/modules` = 0 ] && echo bonding >> /etc/modules
+
+start networking
+#Check dns
+dnscheck
+fi
+
+###########################
+#All card types
+###########################
+
+#Kill any dhcp clients
 killall dhclient
 
 #Warn about reboot
