@@ -425,6 +425,9 @@ if [ `grep -c 33777 /etc/default/nfs-kernel-server` = 0 ]
 then
 sed -i 's/--manage-gids/--manage-gids -p 33777/g' /etc/default/nfs-kernel-server
 fi
+
+#Create an empty main.cf to stop postconf from moaning.
+touch /etc/postfix/main.cf
 }
 
 #Run functions
