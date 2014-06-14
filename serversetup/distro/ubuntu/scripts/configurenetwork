@@ -120,31 +120,40 @@ then
 #Create /etc/network/interfaces
 echo auto lo > /etc/network/interfaces
 echo iface lo inet loopback  >> /etc/network/interfaces
-echo "# The primary network interface"  >> /etc/network/interfaces
+echo >> /etc/network/interfaces
+COUNTER=0
+while [ $COUNTER -lt $CARD_COUNT ]
+do
+echo auto ${CARDSELECTION[$COUNTER]} >> /etc/network/interfaces
+echo iface ${CARDSELECTION[$COUNTER]} inet manual >> /etc/network/interfaces
+echo bond-master bond0 >> /etc/network/interfaces
+echo >> /etc/network/interfaces
+let COUNTER=$COUNTER+1
+done
+echo >> /etc/network/interfaces
 echo auto bond0 >> /etc/network/interfaces
 echo iface bond0 inet static >> /etc/network/interfaces
 echo '	'address $TCPIPNUMBER >> /etc/network/interfaces
 echo '	'netmask $NETMASK >> /etc/network/interfaces
 echo '	'gateway $GATEWAY >> /etc/network/interfaces
 echo '	'dns-nameservers $NAMESERVER >> /etc/network/interfaces
-echo '	'slaves ${CARDSELECTION[@]:0} >> /etc/network/interfaces
-echo '	'# jumbo frame support >> /etc/network/interfaces
-echo '	'mtu 9000 >> /etc/network/interfaces
-echo '	'bond-mode balance-rr >> /etc/network/interfaces
+echo '	'bond-mode 0 >> /etc/network/interfaces
 echo '	'bond-miimon 100 >> /etc/network/interfaces
-echo '	'bond-downdelay 200 >> /etc/network/interfaces
-echo '	'bond-updelay 200 >> /etc/network/interfaces
+echo '	'bond-slaves ${CARDSELECTION[@]:0} >> /etc/network/interfaces
+echo >> /etc/network/interfaces
 fi
 
 if [ $BONDMODE = mode1 ]
 then
 echo auto lo > /etc/network/interfaces
 echo iface lo inet loopback >> /etc/network/interfaces
+echo >> /etc/network/interfaces
 #First card is manually configured, and slave to the "bond0" bonded NIC
 echo auto ${CARDSELECTION[0]} >> /etc/network/interfaces
 echo iface ${CARDSELECTION[0]} inet manual >> /etc/network/interfaces
 echo bond-master bond0 >> /etc/network/interfaces
 echo bond-primary ${CARDSELECTION[0]} >> /etc/network/interfaces
+echo >> /etc/network/interfaces
 #Next cards  ditto, thus creating an n-link bond.
 COUNTER=1
 while [ $COUNTER -lt $CARD_COUNT ]
@@ -152,6 +161,7 @@ do
 echo auto ${CARDSELECTION[$COUNTER]} >> /etc/network/interfaces
 echo iface ${CARDSELECTION[$COUNTER]} inet manual >> /etc/network/interfaces
 echo bond-master bond0 >> /etc/network/interfaces
+echo >> /etc/network/interfaces
 let COUNTER=$COUNTER+1
 done
 # bond0 is the bonding NIC and can be used like any other normal NIC.
@@ -165,10 +175,14 @@ echo '	'dns-nameservers $NAMESERVER >> /etc/network/interfaces
 echo '	'bond-mode active-backup >> /etc/network/interfaces
 echo '	'bond-miimon 100 >> /etc/network/interfaces
 echo '	'bond-slaves none >> /etc/network/interfaces
+echo >> /etc/network/interfaces
 fi
 
 if [ $BONDMODE = mode4 ]
 then
+echo auto lo > /etc/network/interfaces
+echo iface lo inet loopback >> /etc/network/interfaces
+echo >> /etc/network/interfaces
 #eth0 is manually configured, and slave to the "bond0" bonded NIC
 COUNTER=0
 while [ $COUNTER -lt $CARD_COUNT ]
@@ -176,6 +190,7 @@ do
 echo auto ${CARDSELECTION[$COUNTER]} >> /etc/network/interfaces
 echo iface ${CARDSELECTION[$COUNTER]} inet manual >> /etc/network/interfaces
 echo bond-master bond0 >> /etc/network/interfaces
+echo >> /etc/network/interfaces
 let COUNTER=$COUNTER+1
 done
 
@@ -192,6 +207,7 @@ echo '	'bond-mode 4 >> /etc/network/interfaces
 echo '	'bond-miimon 100 >> /etc/network/interfaces
 echo '	'bond-lacp-rate 1 >> /etc/network/interfaces
 echo '	'bond-slaves ${CARDSELECTION[@]:0} >> /etc/network/interfaces
+echo >> /etc/network/interfaces
 fi
 
 #Stop networking
