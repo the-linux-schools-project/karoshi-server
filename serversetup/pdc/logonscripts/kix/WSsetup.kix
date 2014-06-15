@@ -1,0 +1,309 @@
+
+
+Break On
+$System = CreateObject("Kixtart.System")
+
+;KD START
+
+;************* Form **************
+$Form = $System.Form()
+$Form.Height = 390
+$Form.Left = 200
+$Form.Text = "WS Settings @PRODUCTTYPE"
+$Form.Top = 147
+$Form.Width = 268
+;**************************************
+
+;************* Label1 **************
+$Label1 = $Form.Controls.Label()
+$Label1.Height = 23
+$Label1.Left = 30
+$Label1.Text = "Location"
+$Label1.Top = 45
+$Label1.Width = 50
+;**************************************
+
+;************* Label_sims **************
+$Label_sims = $Form.Controls.Label()
+$Label_sims.Height = 23
+$Label_sims.Left = 30
+$Label_sims.Text = "SIMS Workstation?"
+$Label_sims.Top = 80
+$Label_sims.Width = 110
+;**************************************
+
+;************* CheckBox_sims **************
+$CheckBox_sims = $Form.Controls.CheckBox()
+$CheckBox_sims.CheckAlign = 16
+$CheckBox_sims.Height = 24
+$CheckBox_sims.Left = 144
+$CheckBox_sims.Text = "Yes"
+$CheckBox_sims.ToolTipText = "Will this Workstation be used to run SIMS?"
+$CheckBox_sims.Top = 75
+$CheckBox_sims.Width = 50
+;**************************************
+
+;************* Label_cmis **************
+$Label_cmis = $Form.Controls.Label()
+$Label_cmis.Height = 23
+$Label_cmis.Left = 30
+$Label_cmis.Text = "CMIS Workstation?"
+$Label_cmis.Top = 105
+$Label_cmis.Width = 110
+;**************************************
+
+;************* CheckBox_CMIS **************
+$CheckBox_cmis = $Form.Controls.CheckBox()
+$CheckBox_cmis.CheckAlign = 16
+$CheckBox_cmis.Height = 24
+$CheckBox_cmis.Left = 144
+$CheckBox_cmis.Text = "Yes"
+$CheckBox_cmis.ToolTipText = "Will this Workstation be used to run CMIS?"
+$CheckBox_cmis.Top = 100
+$CheckBox_cmis.Width = 50
+;**************************************
+
+;************* Button1 **************
+$Button1 = $Form.Controls.Button()
+$Button1.Height = 23
+$Button1.Left = 31
+$Button1.Text = "Execute"
+$Button1.Top = 307
+$Button1.Width = 75
+$Button1.OnClick = "Button1_Click()"
+;**************************************
+
+;************* ComboBox1 **************
+$ComboBox1 = $Form.Controls.ComboBox()
+$ComboBox1.DropDownStyle = 2
+$ComboBox1.DropDownWidth = 121
+$ComboBox1.Height = 21
+$ComboBox1.List = "6thform1","6thform2","6thformoffice","Art","BE1","BE2","BE3","BE4","Bursary","CM1","CM2","CM3","DTOffice","DTWorkshop1","DTWorkshop2","DTWorkshop3","ExamOffice","Hall","hoh","ICT_Office","L1","L2","L3","L4","L5","L6","L7","L8","LearningCentre","Library","Main-Office","Maths","Maths2","Maths3","Maths4","Maths5","ME2","Media","music","MusicTech","Office","Other","PE1","RecordingStudio","serverroom","SixthFormArea","SL1","SL2","slprep","Staffroom","SU1","SU2","SU3","SU4","SU5","U1","U2","U3","U4","NoGroup"
+,"CM1","CM2","CM3",DTOffice,"DTWorkshop1","DTWorkshop2","DTWorkshop3","ExamOffice","Hall","hoh"
+,"ICT_Office","L1","L2","L3","L4","L5","L6","L7","L8","LearningCentre","Library","Main-Office"
+,"Maths","Maths2","Maths3","Maths4","Maths5","ME2","Media","music","MusicTech","Office","Other","PE1"
+,"RecordingStudio","serverroom","SixthFormArea","SL1","SL2","Staffroom","SU1","SU2","SU3","SU4","SU5"
+,"U1","U2","U3","U4"
+$ComboBox1.Left = 90
+$ComboBox1.Sorted = "True"
+$ComboBox1.Text = ""
+$ComboBox1.Top = 44
+$ComboBox1.Width = 106
+;**************************************
+
+;************* Label3 **************
+$Label3 = $Form.Controls.Label()
+$Label3.FontBold = "True"
+$Label3.FontSize = 10
+$Label3.FontUnderline = "True"
+$Label3.Height = 23
+$Label3.Left = 57
+$Label3.Text = "Workstation Settings"
+$Label3.Top = 8
+$Label3.Width = 150
+;**************************************
+
+;************* pgb1 **************
+$pgb1 = $Form.Controls.ProgressBar()
+$pgb1.Height = 23
+$pgb1.Left = 30
+$pgb1.Top = 263
+$pgb1.Width = 200
+;**************************************
+
+;************* lblgpo **************
+$lblgpo = $Form.Controls.Label()
+$lblgpo.Height = 23
+$lblgpo.Left = 30
+$lblgpo.Text = "GPO Settings Written"
+$lblgpo.Top = 109
+$lblgpo.Visible = "False"
+$lblgpo.Width = 200
+;**************************************
+
+;************* lblfw **************
+$lblfw = $Form.Controls.Label()
+$lblfw.Height = 23
+$lblfw.Left = 30
+$lblfw.Text = "Firewall Settings Written"
+$lblfw.Top = 138
+$lblfw.Visible = "False"
+$lblfw.Width = 200
+;**************************************
+
+;************* lblwksta **************
+$lblwksta = $Form.Controls.Label()
+$lblwksta.Height = 23
+$lblwksta.Left = 30
+$lblwksta.Text = "Workstation Location Set"
+$lblwksta.Top = 167
+$lblwksta.Visible = "False"
+$lblwksta.Width = 200
+;**************************************
+
+;************* lblsims **************
+$lblsims = $Form.Controls.Label()
+$lblsims.Height = 23
+$lblsims.Left = 30
+$lblsims.Text = "SIMS Flag Set"
+$lblsims.Top = 196
+$lblsims.Visible = "False"
+$lblsims.Width = 200
+;**************************************
+
+;************* lblcmis **************
+$lblcmis = $Form.Controls.Label()
+$lblcmis.Height = 23
+$lblcmis.Left = 30
+$lblcmis.Text = "CMIS Flag Set"
+$lblcmis.Top = 225
+$lblcmis.Visible = "False"
+$lblcmis.Width = 200
+;**************************************
+
+;************* Button2 **************
+$Button2 = $Form.Controls.Button()
+$Button2.Height = 23
+$Button2.Left = 152
+$Button2.Text = "Close"
+$Button2.Top = 307
+$Button2.Width = 75
+$Button2.OnClick = "Button2_Click()"
+;**************************************
+
+;************* lblgina **************
+$lblgina = $Form.Controls.Label()
+$lblgina.Height = 23
+$lblgina.Left = 30
+$lblgina.Text = "Gina File Copied"
+$lblgina.Top = 225
+$lblgina.Visible = "False"
+$lblgina.Width = 200
+;**************************************
+
+
+;KD END
+
+$Form.Show
+While $Form.Visible
+   $=Execute($Form.DoEvents())
+Loop
+
+Exit
+
+Function Button1_Click()
+
+	;Get System Type
+	$ostype = @PRODUCTTYPE
+	$testtype = @INWIN
+	$dostype = @DOS
+
+;Apply windows 8.1 specific registry edits
+IF "@DOS"="6.2"
+;Set profile extension for windows 8.1
+$RC=WriteValue("HKEY_LOCAL_MACHINE\System\CurrentControlset\Services\ProfSvc\Parameters","UseProfilePathExtensionVersion",1,"REG_DWORD")
+ENDIF
+	;Always wait for the network at computer startup and logon
+	$RC=WriteValue("HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows NT\CurrentVersion\Winlogon","SyncForegroundPolicy",1,"REG_DWORD")
+
+	;Dont display last logged on Username
+	$RC=WriteValue("HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System","DontDisplayLastUserName",1,"REG_DWORD")
+
+	;Do Not Check for User Ownership of Roaming Profile
+	$RC=WriteValue("HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\System","CompatibleRUPSecurity",1,"REG_DWORD")
+
+	;Delete cached Roaming Profiles
+	$RC=WriteValue("HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\System","DeleteRoamingCache",1,"REG_DWORD")
+
+	;Run Logon Script Synchronously
+	$RC=WriteValue("HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System","RunLogonScriptSync",1,"REG_DWORD")
+
+	;Always wait for the network at computer startup and logon
+	$RC=WriteValue("HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows NT\CurrentVersion\Winlogon","SyncForegroundPolicy",1,"REG_DWORD")
+
+	;Dont display last logged on Username
+	$RC=WriteValue("HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System","DontDisplayLastUserName",1,"REG_DWORD")
+	
+	If @ERROR = 0
+		$lblgpo.ForeColor = 0,128,0
+		$lblgpo.Visible = "True"
+		$pgb1.value = 20
+	ELSE
+		$lblgpo.Text = "GPO Settings not Written"
+		$lblgpo.ForeColor = 255,0,0
+		$lblgpo.Visible = "True"
+		$pgb1.value = 20
+	Endif
+
+	If @ERROR = 0
+ 		$lblfw.ForeColor = 0,128,0
+		$lblfw.Visible = "True"
+		$pgb1.value = 30
+	ELSE
+		$lblfw.Text = "Firewall Settings not Written"
+ 		$lblfw.ForeColor = 255,0,0
+		$lblfw.Visible = "True"
+		$pgb1.value = 30
+	Endif
+
+
+	IF $ComboBox1.Text = ""
+		$lblwksta.Text = "Select a Workstaion Location"
+		$lblwksta.ForeColor = 255,0,0
+		$lblwksta.Visible = "True"
+		$pgb1.value = 60
+	ELSE
+		$RC=WriteValue("HKEY_LOCAL_MACHINE\SOFTWARE\Karoshi","location",$ComboBox1.Text,"REG_SZ")
+		$lblwksta.Text = "Location has been set to "+$ComboBox1.Text
+		$lblwksta.ForeColor = 0,128,0
+		$lblwksta.Visible = "True"
+		$pgb1.value = 60
+	ENDIF
+
+
+	IF $CheckBox_sims.Checked
+		$RC=WriteValue("HKEY_LOCAL_MACHINE\SOFTWARE\Karoshi","issimsws","Yes","REG_SZ")
+		$lblsims.Text = "SIMS Flag has been set to YES"
+		$lblsims.ForeColor = 0,128,0
+		$lblsims.Visible = "True"
+		$pgb1.value = 100
+	ELSE
+		$RC=WriteValue("HKEY_LOCAL_MACHINE\SOFTWARE\Karoshi","issimsws","No","REG_SZ")
+		$lblsims.Text = "SIMS Flag has been set to NO"
+		$lblsims.ForeColor = 0,128,0
+		$lblsims.Visible = "True"
+		$pgb1.value = 100
+	ENDIF
+
+	IF $CheckBox_cmis.Checked
+		$RC=WriteValue("HKEY_LOCAL_MACHINE\SOFTWARE\Karoshi","iscmisws","Yes","REG_SZ")
+		$lblcmis.Text = "CMIS Flag has been set to YES"
+		$lblcmis.ForeColor = 0,128,0
+		$lblcmis.Visible = "True"
+		$pgb1.value = 100
+	ELSE
+		$RC=WriteValue("HKEY_LOCAL_MACHINE\SOFTWARE\Karoshi","iscmisws","No","REG_SZ")
+		$lblcmis.Text = "CMIS Flag has been set to NO"
+		$lblcmis.ForeColor = 0,128,0
+		$lblcmis.Visible = "True"
+		$pgb1.value = 100
+	ENDIF
+
+	;************* MESSAGEBOX **************
+	$CompleteMsg = MESSAGEBOX("WS Settings Completed - Please restart your computer.", "Completed", 64)
+	IF $CompleteMsg = 6
+
+	ENDIF
+
+	$Form.Hide
+	;**************************************
+
+EndFunction
+
+
+Function Button2_Click()
+
+	$Form.Hide
+
+EndFunction
+

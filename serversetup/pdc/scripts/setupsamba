@@ -874,7 +874,6 @@ echo `date`: "Copying in netlogon files" >> /opt/karoshi/serversetup/install_log
 
 cp -R /opt/karoshi/serversetup/pdc/logonscripts/getdll.bat /var/lib/samba/netlogon/
 cp -R /opt/karoshi/serversetup/pdc/logonscripts/kix /var/lib/samba/netlogon/
-cp -R /opt/karoshi/serversetup/pdc/logonscripts/kixforms_upgrade.bat /var/lib/samba/netlogon/
 cp -R /opt/karoshi/serversetup/pdc/logonscripts/kixtart_install.bat /var/lib/samba/netlogon/
 cp -R /opt/karoshi/serversetup/pdc/logonscripts/logo.bmp /var/lib/samba/netlogon/
 cp -R /opt/karoshi/serversetup/pdc/logonscripts/logon.bat /var/lib/samba/netlogon/

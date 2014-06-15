@@ -226,7 +226,6 @@ done
 function install_samba4 {
 #Install samba4
 echo -e "\nInstalling Samba4\n"
-echo -e "\nKerberos - leave the default realm blank.\n" 
 sleep 1
 /opt/karoshi/serversetup/all/samba4/samba4install
 if [ $? != 0 ]
@@ -428,6 +427,9 @@ fi
 
 #Create an empty main.cf to stop postconf from moaning.
 touch /etc/postfix/main.cf
+
+#Delete install_log
+[ -f /opt/karoshi/serversetup/install_log ] && rm -f /opt/karoshi/serversetup/install_log
 }
 
 #Run functions
