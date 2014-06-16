@@ -137,25 +137,33 @@ fi
 #Run custom command
 ###########################
 
-echo "$CUSTOMCOMMAND""<br><br>"
+echo "$CUSTOMCOMMAND""<br><br><pre>"
 echo `date`: custom_command - running "$CUSTOMCOMMAND" "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+{
+
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
-$CUSTOMCOMMAND 2>&1 | sed 's/$/\<br\>/g'
+$CUSTOMCOMMAND 2>&1
 fi
 #SSH to all other servers for command
 if [ $SERVERNAME != `hostname-fqdn` ]
 then
 if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
 then
-ssh -x -o PasswordAuthentication=no -o ConnectTimeout=4 $SERVERNAME $CUSTOMCOMMAND 2>&1 | sed 's/$/\<br\>/g'
+ssh -x -o PasswordAuthentication=no -o ConnectTimeout=4 $SERVERNAME $CUSTOMCOMMAND 2>&1
 else
 ssh -x -o PasswordAuthentication=no -o ConnectTimeout=4 $SERVERMASTER '
 ssh -x -o PasswordAuthentication=no -o ConnectTimeout=4 '$SERVERNAME' '\''
-'$CUSTOMCOMMAND' 2>&1 | sed "s/$/\<br\>/g"
+'$CUSTOMCOMMAND' 2>&1
 '\''
 '
 
 fi
 fi
+
+} | sed 's/&/\&amp;/g; s/"/\&quot;/g; s/</\&lt;/g; s/>/\&gt;/g'
+
+echo "</pre>"
+
 exit
