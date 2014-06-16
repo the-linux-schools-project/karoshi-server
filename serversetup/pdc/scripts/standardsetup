@@ -60,6 +60,7 @@ echo "# $SETUP $MONITORIXWEBMANAGEMENT"
 /opt/karoshi/serversetup/web_controls/scripts/monitorixwebmanagement 1>>$KAROSHILOG 2>>$KAROSHILOG
 checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
 echo "100"
+echo "# $SETUP $KAROSHIDESKTOP"
 $BASEINSTALLPATH/setupkaroshidesktop 1>>$KAROSHILOG 2>>$KAROSHILOG
 #Kill status bar
 killall yad
