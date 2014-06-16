@@ -84,6 +84,9 @@ echo timeout:1 >> /etc/resolv.conf
 echo $NETMASK > /var/lib/samba/netlogon/domain_information/netmask
 echo $GATEWAY > /var/lib/samba/netlogon/domain_information/gateway
 
+ifdown --force -a
+#Kill any dhcp clients
+killall dhclient
 ##########################
 #Configure a standard network card
 ##########################
@@ -103,7 +106,6 @@ echo '	'netmask $NETMASK >> /etc/network/interfaces
 echo '	'gateway $GATEWAY >> /etc/network/interfaces
 echo '	'dns-nameservers $NAMESERVER >> /etc/network/interfaces
 
-ifdown -a
 ifup -a
 dnscheck
 fi
@@ -115,6 +117,8 @@ if [ $CARD_COUNT -gt  1 ]
 then
 echo "NETWORK_INT=bond0" > /opt/karoshi/serversetup/variables/network_card_info
 echo `date`: Setting up a bonded network $BONDMODE >> /opt/karoshi/serversetup/install_log
+#Stop networking
+ifdown --force -a
 if [ $BONDMODE = mode0 ]
 then
 #Create /etc/network/interfaces
@@ -210,11 +214,12 @@ echo '	'bond-slaves ${CARDSELECTION[@]:0} >> /etc/network/interfaces
 echo >> /etc/network/interfaces
 fi
 
-#Stop networking
-ifdown -a
 #Load bonding kernel module
 modprobe bonding
 [ `grep -c bonding /etc/modules` = 0 ] && echo bonding >> /etc/modules
+
+#Kill any dhcp clients
+killall dhclient
 
 ifup -a
 #Check dns
@@ -225,8 +230,6 @@ fi
 #All card types
 ###########################
 
-#Kill any dhcp clients
-killall dhclient
 
 #Warn about reboot
 yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=4 --text="$REBOOTMSG" --no-buttons

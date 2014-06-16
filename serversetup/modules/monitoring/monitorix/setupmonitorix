@@ -1,4 +1,5 @@
 #!/bin/bash
+echo `date`: '##############'setupmonitorix'##############' >> /opt/karoshi/serversetup/install_log
 source /opt/karoshi/server_network/domain_information/domain_name
 source /opt/karoshi/serversetup/variables/distro
 cp -f /opt/karoshi/serversetup/modules/monitoring/monitorix/monitorix.conf /etc/monitorix/

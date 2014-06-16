@@ -872,9 +872,7 @@ echo `date`: "Copying in netlogon files" >> /opt/karoshi/serversetup/install_log
 [ -d /var/lib/samba/netlogon ] && cp -R /var/lib/samba/netlogon /var/lib/samba/netlogon_`date +%s`
 [ ! -d /var/lib/samba/netlogon ] && mkdir /var/lib/samba/netlogon
 
-cp -R /opt/karoshi/serversetup/pdc/logonscripts/getdll.bat /var/lib/samba/netlogon/
 cp -R /opt/karoshi/serversetup/pdc/logonscripts/kix /var/lib/samba/netlogon/
-cp -R /opt/karoshi/serversetup/pdc/logonscripts/kixtart_install.bat /var/lib/samba/netlogon/
 cp -R /opt/karoshi/serversetup/pdc/logonscripts/logo.bmp /var/lib/samba/netlogon/
 cp -R /opt/karoshi/serversetup/pdc/logonscripts/logon.bat /var/lib/samba/netlogon/
 cp -R /opt/karoshi/serversetup/pdc/logonscripts/logonform.kix /var/lib/samba/netlogon/
@@ -882,9 +880,11 @@ cp -R /opt/karoshi/serversetup/pdc/logonscripts/logonform.kix /var/lib/samba/net
 sed -i 's/CHANGETHISSERVER/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon/logonform.kix
 
 chmod 0644 /var/lib/samba/netlogon/*
-chmod 0660 /var/lib/samba/netlogon/kix/reclassify.bat
-chown root.itadmin /var/lib/samba/netlogon/kix/reclassify.bat
-
+chmod 0755 /var/lib/samba/netlogon/logon.bat
+chmod 0755 /var/lib/samba/netlogon/kix/kixinstall.bat
+chmod 0755 /var/lib/samba/netlogon/kix/getdll.bat
+chmod 0755 /var/lib/samba/netlogon/kix/kix32.exe
+chmod 0755 /var/lib/samba/netlogon/kix/wkix32.exe
 #############################
 #Modify logon forms to match servername
 #############################
@@ -892,8 +892,6 @@ sed -i "s/CHANGETHISDOMAINNAME/$SAMBADOMAIN/g" /var/lib/samba/netlogon/logonform
 sed -i 's/CHANGETHISREALM/'$REALM'/g' /var/lib/samba/netlogon/logonform.kix
 sed -i 's/CHANGETHISHOSTNAME/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon/kixtart_install.bat
 sed -i 's/CHANGETHISHOSTNAME/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon/getdll.bat
-sed -i 's/CHANGETHISHOSTNAME/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon/kixforms_upgrade.bat
-sed -i 's/CHANGETHISHOSTNAME/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon//kix/reclassify.bat
 
 #############################
 #make group file information for kixtart windows logon script
