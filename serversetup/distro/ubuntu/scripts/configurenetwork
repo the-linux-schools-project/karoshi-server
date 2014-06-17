@@ -68,12 +68,14 @@ echo timeout:1 >> /etc/resolv.conf
 fi
 }
 
+function log_card_settngs {
 echo "Network settings:" >> /opt/karoshi/serversetup/install_log
 echo nameserver $NAMESERVER >> /opt/karoshi/serversetup/install_log
-echo iface ${CARDSELECTION[0]} >> /opt/karoshi/serversetup/install_log
+echo iface $CARD >> /opt/karoshi/serversetup/install_log
 echo address $TCPIPNUMBER >> /opt/karoshi/serversetup/install_log
 echo netmask $NETMASK >> /opt/karoshi/serversetup/install_log
 echo dns-nameservers $NAMESERVER >> /opt/karoshi/serversetup/install_log
+}
 
 echo nameserver $NAMESERVER > /etc/resolv.conf
 #echo nameserver 8.8.8.8 >> /etc/resolv.conf
@@ -97,6 +99,8 @@ echo NETWORK_INT=${CARDSELECTION[0]} > /opt/karoshi/serversetup/variables/networ
 ####################
 #Set TCP/IP
 ####################
+CARD=${CARDSELECTION[0]}
+log_card_settngs
 echo auto lo > /etc/network/interfaces
 echo iface lo inet loopback  >> /etc/network/interfaces
 echo auto ${CARDSELECTION[0]} >> /etc/network/interfaces
@@ -117,6 +121,8 @@ if [ $CARD_COUNT -gt  1 ]
 then
 echo "NETWORK_INT=bond0" > /opt/karoshi/serversetup/variables/network_card_info
 echo `date`: Setting up a bonded network $BONDMODE >> /opt/karoshi/serversetup/install_log
+CARD=bond0
+log_card_settngs
 #Stop networking
 ifdown --force -a
 if [ $BONDMODE = mode0 ]
