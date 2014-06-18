@@ -121,6 +121,8 @@ SHORTNAME=`echo $DATA | cut -d"|" -f3 | tr -cd 'A-Za-z0-9.: /' | sed 's/^https:\
 }
 
 #Get domain name
+CHECK_DOMAIN=yes
+
 LENGTHCHECK=16
 DOTCHECK=0
 while [ -z "$WEBADDRESS" ] || [ "$WEBADDRESS" = $HOSTNAME ] || [ $LENGTHCHECK -gt 15 ] || [ $DOTCHECK = 0 ]
@@ -235,6 +237,7 @@ echo `date`: "Provisioning samba4" >> /opt/karoshi/serversetup/install_log
 echo Provisioning samba 4
 #Delete smb.conf it exists
 [ -f /etc/samba/smb.conf ] && rm -f /etc/samba/smb.conf
+echo `date`: Realm: $$REALM Domain: $SAMBADOMAIN >> /opt/karoshi/serversetup/install_log
 samba-tool domain provision --use-rfc2307 --realm=$REALM --domain=$SAMBADOMAIN --adminpass=''$SAMBAROOTPASSWORD1'' --server-role=dc 2>&1 | tee /opt/karoshi/server_network/domain_information/provisioning_info
 }
 
