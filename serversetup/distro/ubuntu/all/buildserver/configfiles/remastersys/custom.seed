@@ -9,3 +9,5 @@ d-i passwd/user-password password karoshi
 d-i passwd/user-password-again password karoshi
 d-i user-setup/allow-password-weak boolean true
 d-i user-setup/encrypt-home boolean false
+# Avoid that last message about the install being complete.
+d-i finish-install/reboot_in_progress note
