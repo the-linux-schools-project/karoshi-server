@@ -125,19 +125,43 @@ CHECK_DOMAIN=yes
 
 LENGTHCHECK=16
 DOTCHECK=0
-while [ -z "$WEBADDRESS" ] || [ "$WEBADDRESS" = $HOSTNAME ] || [ $LENGTHCHECK -gt 15 ] || [ $DOTCHECK = 0 ]
+while [ $CHECK_DOMAIN = yes ]
 do
+CHECK_DOMAIN=no
 getdomainname
+#Check to see if the domain name has been set
+if [ -z "$WEBADDRESS" ]
+then
+DOMAINERRORMSG="$DOMAINERRORMSG3"
+CHECK_DOMAIN=yes
+else
 #Check to see if the domain name is the same as the hostname
-[ "$WEBADDRESS" = $HOSTNAME ] && DOMAINERRORMSG="$DOMAINERRORMSG1"
-
+if [ "$WEBADDRESS" = $HOSTNAME ]
+then
+DOMAINERRORMSG="$DOMAINERRORMSG1"
+CHECK_DOMAIN=yes
+fi
+#Check to see if the first part of the domain name is the same as the hostname
+if [ `echo $WEBADDRESS | cut -d"." -f1` = $HOSTNAME ]
+then
+DOMAINERRORMSG="$DOMAINERRORMSG4"
+CHECK_DOMAIN=yes
+fi 
 #Check to see if any part of the domain name is longer than 15 chars
 LENGTHCHECK=`echo -e "$WEBADDRESS" | sed 's/\./\n/g' | wc -L`
-[ $LENGTHCHECK -gt 15 ] && DOMAINERRORMSG="$DOMAINERRORMSG2"
-
+if [ $LENGTHCHECK -gt 15 ]
+then
+DOMAINERRORMSG="$DOMAINERRORMSG2"
+CHECK_DOMAIN=yes
+fi
 #Check for fqdn
 DOTCHECK=`echo $WEBADDRESS | grep -c "\."`
-[ $DOTCHECK = 0 ] && DOMAINERRORMSG="$DOMAINERRORMSG3"
+if [ $DOTCHECK = 0 ]
+then
+DOMAINERRORMSG="$DOMAINERRORMSG3"
+CHECK_DOMAIN=yes
+fi
+fi
 done
 
 #Create domain information
