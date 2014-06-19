@@ -103,7 +103,7 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/module_smbwebclient.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE' - '$SERVERNAME'</div>
+echo '<form id="form1" name="combobox" action="/cgi-bin/admin/module_smbwebclient.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE' - '$SERVERNAME'</div>
   <br>
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$DESCRIPTIONMSG'</b><br><br>
@@ -111,16 +111,23 @@ echo '<form action="/cgi-bin/admin/module_smbwebclient.cgi" method="post"><div i
 <b>'$PARAMETERSMSG'</b><br><br>
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="0">
     <tbody>
-<tr><td style="width: 180px;">'$WEBDOMAINMSG'</td><td>'
+<tr><td valign="middle" style="width: 180px;">'$WEBDOMAINMSG'</td><td>'
 
+echo '<input type="text" name="_ALIAS_" style="width: 200px;" value="" size="10"></td><td valign="middle">.'$REALM'</td><td valign="middle"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Home_Access"><img class="images" alt="" src="/images/help/info.png"><span>'$ALIASHELP'</span></a></td></tr>
+<tr><td></td><td><select name="_ALIASLIST_" style="width: 200px;" size="1" onchange="document.combobox._ALIAS_.value = document.combobox._ALIASLIST_.options[document.combobox._ALIASLIST_.selectedIndex].value;document.combobox._ALIASLIST_.value=&#39;&#39;">
+<option value="" selected="selected"></option>'
+            
+#Show alias choice
 
-#Check to see if this server has been assigned an alias
 if [ -f /opt/karoshi/server_network/aliases/$SERVERNAME ]
 then
-ALIAS=`sed -n 1,1p /opt/karoshi/server_network/aliases/$SERVERNAME`
-echo ''$ALIAS'</td><td>.</td><td>'$REALM'<input type="hidden" name="_ALIAS_" value="'$ALIAS'"></td></tr>'
-else
-echo '<select name="_ALIAS_"><option></option>'
+#Show any custom aliases that have been assigned
+for CUSTOM_ALIAS in `cat /opt/karoshi/server_network/aliases/$SERVERNAME`
+do
+echo '<option>'$CUSTOM_ALIAS'</option>'
+done
+fi
+
 
 #Get a set of available aliases to check
 
@@ -132,18 +139,5 @@ do
 [ `nslookup www$COUNTER.$REALM 127.0.0.1 | grep -c ^Name:` = 0 ] && echo '<option>www'$COUNTER'</option>'
 let COUNTER=$COUNTER+1
 done
-echo '</select></td><td>.</td><td>'$REALM'</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Moodle_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$ALIASHELP'</span></a></td></tr>'
-echo 
-fi
-
-echo '</tbody></table><br><br>'
-
-echo '</div>
-<div id="submitbox">
-<input value="'$SUBMITMSG'" class="button" type="submit">
-</div>
-</form>
-</div></body>
-</html>
-'
+echo '</select></td></tr></tbody></table><br><br></div><div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit"></div></form></div></body></html>'
 exit

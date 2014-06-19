@@ -64,7 +64,7 @@ REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 LDAPSERVER=`echo "$DATA" | cut -s -d: -f4`
 JOOMLASERVER=`echo "$DATA" | cut -s -d: -f5`
-ALIAS=`echo "$DATA" | cut -s -d: -f6`
+ALIAS=`echo "$DATA" | cut -s -d: -f6 | cut -d"." -f1`
 ########################
 #Check data
 ########################
@@ -122,7 +122,8 @@ fi
 
 #Update alias entry for the server
 [ ! -d /opt/karoshi/server_network/aliases ] && mkdir -p /opt/karoshi/server_network/aliases
-[ ! -f /opt/karoshi/server_network/aliases/$JOOMLASERVER ] && echo $ALIAS > /opt/karoshi/server_network/aliases/$JOOMLASERVER
+touch /opt/karoshi/server_network/aliases/$SERVERNAME
+[ `grep -c -w $ALIAS /opt/karoshi/server_network/aliases/$SERVERNAME` = 0 ] && echo $ALIAS >> /opt/karoshi/server_network/aliases/$SERVERNAME
 
 SHORTSERVERNAME=`echo $JOOMLASERVER | cut -d. -f1`
 [ ! -d /var/lib/samba/netlogon/domain_information/aliases ] && mkdir -p /var/lib/samba/netlogon/domain_information/aliases
