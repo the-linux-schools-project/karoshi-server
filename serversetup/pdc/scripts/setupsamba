@@ -1089,10 +1089,6 @@ tar -zxf /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V4.tar.gz -C /home
 [ -f /home/applications/profiles/defaultprofile.V4/Desktop/"Change My Password.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V4/Desktop/"Change My Password.url"
 [ -f /home/applications/profiles/defaultprofile.V4/Desktop/"Karoshi Web Management.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V4/Desktop/"Karoshi Web Management.url"
 
-[ ! -d /home/applications/profiles/profileuser ] && mkdir /home/applications/profiles/profileuser
-[ ! -d /home/applications/profiles/profileuser.V2 ] && mkdir /home/applications/profiles/profileuser.V2
-[ ! -d /home/applications/profiles/profileuser.V3 ] && mkdir /home/applications/profiles/profileuser.V3
-[ ! -d /home/applications/profiles/profileuser.V4 ] && mkdir /home/applications/profiles/profileuser.V4
 [ ! -d /home/applications/profiles/default_roaming_profile ] && mkdir /home/applications/profiles/default_roaming_profile
 [ ! -d /home/applications/profiles/default_roaming_profile.V2 ] && mkdir /home/applications/profiles/default_roaming_profile.V2
 [ ! -d /home/applications/profiles/default_roaming_profile.V3 ] && mkdir /home/applications/profiles/default_roaming_profile.V3
@@ -1106,18 +1102,6 @@ chmod u+X,g+X,o+X -R /home/applications/profiles
 chown -R root.itadmin /home/applications/Shortcuts
 chmod 0664 -R /home/applications/Shortcuts
 chmod u+X,g+X,o+X -R /home/applications/Shortcuts
-chmod 0600 -R /home/applications/profiles/profileuser
-chmod u+X -R /home/applications/profiles/profileuser
-chown -R profileuser /home/applications/profiles/profileuser
-chmod 0600 -R /home/applications/profiles/profileuser.V2
-chmod u+X -R /home/applications/profiles/profileuser.V2
-chown -R profileuser /home/applications/profiles/profileuser.V2
-chmod 0600 -R /home/applications/profiles/profileuser.V3
-chmod u+X -R /home/applications/profiles/profileuser.V3
-chown -R profileuser /home/applications/profiles/profileuser.V3
-chmod 0600 -R /home/applications/profiles/profileuser.V4
-chmod u+X -R /home/applications/profiles/profileuser.V4
-chown -R profileuser /home/applications/profiles/profileuser.V4
 
 [ -d /home/applications/"profile management" ] || mkdir /home/applications/"profile management"
 [ -d /home/applications/"profile management"/"desktop icons" ] || mkdir /home/applications/"profile management"/"desktop icons"
@@ -1161,7 +1145,14 @@ dsHeuristics: 0000002001001
 
 function create_user {
 echo `date`: "Creating user: $NEWUSERNAME" >> /opt/karoshi/serversetup/install_log
+
+if [ $$NEWUSERNAME = profileuser ]
+then
+#Dont add in a profile path for profileuser - so that this account has a local profile.
+samba-tool user add $NEWUSERNAME --userou="$SUBPATH" --script-path="logon.bat $PRIMARYGROUP" --use-username-as-cn  --random-password --mail-address=$NEWUSERNAME@$REALM 1>/dev/null 2>>/opt/karoshi/serversetup/install_log
+else
 samba-tool user add $NEWUSERNAME --userou="$SUBPATH" --profile-path=\\\\$HOSTNAME\\applications\\profiles\\$PROFILEFOLDER --script-path="logon.bat $PRIMARYGROUP" --use-username-as-cn  --random-password --mail-address=$NEWUSERNAME@$REALM 1>/dev/null 2>>/opt/karoshi/serversetup/install_log
+fi
 
 #Add user to primary group
 echo `date`: "Adding $NEWUSERNAME to $PRIMARYGROUP" >> /opt/karoshi/serversetup/install_log
