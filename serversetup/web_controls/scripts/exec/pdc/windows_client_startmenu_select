@@ -186,10 +186,22 @@ fi
 
 #Get windows version
 PROFILEVER=""
-[ $WINDOWSVER = windows7 ] && PROFILEVER=".V2"
-[ $WINDOWSVER = windows8.0 ] && PROFILEVER=".V3"
-[ $WINDOWSVER = windows8.1 ] && PROFILEVER=".V4"
-
+STARTMENUPATH=""
+if [ $WINDOWSVER = windows7 ]
+then
+PROFILEVER=".V2"
+STARTMENUPATH="AppData/Roaming/Microsoft/Windows/"
+fi
+if [ $WINDOWSVER = windows8.0 ]
+then
+PROFILEVER=".V3"
+STARTMENUPATH="AppData/Roaming/Microsoft/Windows/"
+fi
+if [ $WINDOWSVER = windows8.1 ]
+then
+PROFILEVER=".V4"
+STARTMENUPATH="AppData/Roaming/Microsoft/Windows/"
+fi
 #######################
 #Copy startmenu to chosen groups
 #######################
@@ -203,9 +215,9 @@ then
 #Log event
 echo `date`: windows_client_startmenu_select - copying $FILENAME2 to $CURRENTGROUP$PROFILEVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 echo $COPYMSG : $CURRENTGROUP$PROFILEVER'<br><br>'
-[ ! -d /home/applications/profiles/$CURRENTGROUP$PROFILEVER ] && mkdir -p /home/applications/profiles/$CURRENTGROUP$PROFILEVER
-[ -d /home/applications/profiles/$CURRENTGROUP$PROFILEVER/"Start Menu" ] && rm -f -R /home/applications/profiles/$CURRENTGROUP$PROFILEVER/"Start Menu"
-cp -f -R /opt/karoshi/.tempdata/win_startmenu_new.$$/"$TOPDIRNAME" /home/applications/profiles/$CURRENTGROUP$PROFILEVER/"Start Menu"
+[ ! -d /home/applications/profiles/$CURRENTGROUP$PROFILEVER/$STARTMENUPATH ] && mkdir -p /home/applications/profiles/$CURRENTGROUP$PROFILEVER/$STARTMENUPATH
+[ -d /home/applications/profiles/$CURRENTGROUP$PROFILEVER/"Start Menu" ] && rm -f -R /home/applications/profiles/$CURRENTGROUP$PROFILEVER/$STARTMENUPATH"Start Menu"
+cp -f -R /opt/karoshi/.tempdata/win_startmenu_new.$$/"$TOPDIRNAME" /home/applications/profiles/$CURRENTGROUP$PROFILEVER/$STARTMENUPATH/$STARTMENUPATH"Start Menu"
 chown -R root.itadmin /home/applications/profiles/$CURRENTGROUP$PROFILEVER
 chmod 0664 -R /home/applications/profiles/$CURRENTGROUP$PROFILEVER
 chmod a+X -R /home/applications/profiles/$CURRENTGROUP$PROFILEVER
