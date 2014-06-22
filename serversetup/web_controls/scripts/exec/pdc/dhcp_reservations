@@ -1,0 +1,174 @@
+#!/bin/bash
+#Copyright (C) 2014 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+FAILED_SERVER=no
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dhcp_reservations_cgi
+then
+	echo `date`: dhcp_reservations - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/dhcp_reservations_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dhcp_reservations.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $dhcp_reservations_cgi'check' ]
+	then
+	echo `date`: dhcp_reservations - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+	echo `date`: dhcp_reservations - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-%'`
+if [ $DATA'null' = null ]
+then
+	echo `date`: dhcp_reservations - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+ACTION=`echo "$DATA" | cut -s -d: -f4`
+CLIENTHOSTNAME=`echo "$DATA" | cut -s -d: -f5`
+MACADDRESS=`echo "$DATA" | cut -s -d: -f6 | sed 's/%3A/:/g'`
+TCPIPADDRESS=`echo "$DATA" | cut -s -d: -f7`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] 
+then
+	echo `date`: dhcp_reservations - Not called by dhcp_reservations.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+then
+	echo `date`: dhcp_reservations - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+	echo `date`: dhcp_reservations - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$ACTION" ]
+then
+	echo `date`: dhcp_reservations - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$CLIENTHOSTNAME" ]
+then
+	echo `date`: dhcp_reservations - Blank "client hostname" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ "$ACTION" = reallyadd ]
+then
+	if [ -z "$MACADDRESS" ]
+	then
+		echo `date`: dhcp_reservations - Blank mac address by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
+	if [ -z "$TCPIPADDRESS" ]
+	then
+		echo `date`: dhcp_reservations - Blank tcpip  address by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
+fi
+
+function updatedhcpconf {
+#Create warning file
+echo -e "#Karoshi DHCP auto configuration.
+#
+#Do not add any configuration below this point." > /opt/karoshi/server_network/dhcp/karoshi_warning
+
+#Create config file
+echo -e "
+#Karoshi DHCP reservations" > /opt/karoshi/server_network/dhcp/reservation_list
+for RESERVATIONS in /opt/karoshi/server_network/dhcp/reservations/*
+do
+	source $RESERVATIONS
+	RESERVATION=`basename $RESERVATIONS`
+	echo '
+	host '$RESERVATION' {
+	hardware ethernet '$MACADDRESS';
+	fixed-address '$TCPIPADDRESS';
+	}' >> /opt/karoshi/server_network/dhcp/reservation_list
+done
+echo >> /opt/karoshi/server_network/dhcp/reservation_list
+
+#Remove existing lines from dhcp config file
+sed -i '/^#Karoshi DHCP auto configuration/,$d' /etc/dhcp/dhcpd.conf
+
+#Add warning message
+[ -f /opt/karoshi/server_network/dhcp/karoshi_warning ] && cat /opt/karoshi/server_network/dhcp/karoshi_warning >> /etc/dhcp/dhcpd.conf
+
+#Cat reservation list  into dhcpd.conf
+[ -f /opt/karoshi/server_network/dhcp/reservation_list ] && cat /opt/karoshi/server_network/dhcp/reservation_list >> /etc/dhcp/dhcpd.conf
+
+#Cat client network boots into the dhcp config file
+[ -f /opt/karoshi/server_network/dhcp/network_boot_list ] && cat /opt/karoshi/server_network/dhcp/network_boot_list >> /etc/dhcp/dhcpd.confs
+
+#Restart DHCP
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_stop 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_start 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+}
+
+if [ $ACTION = reallyadd ]
+then
+	#Add dhcp reservation and restart dhcp
+	echo `date`: dhcp_reservations - adding $CLIENTHOSTNAME - mac address: $MACADDRESS tpcip: $TCPIPADDRESS by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	[ ! -d /opt/karoshi/server_network/dhcp/reservations ] && mkdir -p /opt/karoshi/server_network/dhcp/reservations
+	echo -e "MACADDRESS=$MACADDRESS
+	TCPIPADDRESS=$TCPIPADDRESS" > /opt/karoshi/server_network/dhcp/reservations/$CLIENTHOSTNAME
+	updatedhcpconf
+fi
+
+if [ $ACTION = delete ]
+then
+	if [ -f /opt/karoshi/server_network/dhcp/reservations/$CLIENTHOSTNAME ]
+	then
+		rm -f /opt/karoshi/server_network/dhcp/reservations/$CLIENTHOSTNAME
+		updatedhcpconf
+	fi
+fi
+exit
+
+
+
+
+

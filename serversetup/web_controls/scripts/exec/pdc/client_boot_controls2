@@ -133,7 +133,7 @@ fi
 DISTRIBUTIONSERVER=`sed -n 1,1p /opt/karoshi/server_network/distribution_server`
 SERVERIP=`net lookup $DISTRIBUTIONSERVER`
 
-DHCPCONFPATH=/etc/dhcp/dhcpd.conf
+BOOT_CONTROL_CONFIG=/opt/karoshi/server_network/dhcp/network_boot_list
 
 
 if [ $ACTION = install ]
@@ -283,17 +283,14 @@ source /opt/karoshi/serversetup/variables/distro
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_start 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 }
 
-function delete_client_info {
-if [ `grep -c "#client_install_configuration" $DHCPCONFPATH` != 0 ]
-then
-FILELENGTH=`cat $DHCPCONFPATH | wc -l`
-LINENUMBER=`grep -n "#client_install_configuration" $DHCPCONFPATH | cut -d: -f1`
-sed -i ''$LINENUMBER','$FILELENGTH'd' $DHCPCONFPATH
-fi
-}
-
 function collate_client_info {
-echo "#client_install_configuration" >> $DHCPCONFPATH
+#Create warning file
+echo -e "#Karoshi DHCP auto configuration.
+#
+#Do not add any configuration below this point." > /opt/karoshi/server_network/dhcp/karoshi_warning
+
+
+echo "#client_install_configuration" >> $BOOT_CONTROL_CONFIG
 
 if [ -d /opt/karoshi/asset_register/network_install/install ]
 then
@@ -306,15 +303,15 @@ CLIENT_DATA=`sed -n 1,1p /opt/karoshi/asset_register/network_install/install/$CL
 TCPIP=`echo $CLIENT_DATA | cut -d, -f1`
 MACADDRESS=`echo $CLIENT_DATA | cut -d, -f2`
 
-echo >> $DHCPCONFPATH
-echo 'host '$TCPIP' {' >> $DHCPCONFPATH
-echo 'hardware ethernet '$MACADDRESS';' >> $DHCPCONFPATH
-echo 'fixed-address '$TCPIP';' >> $DHCPCONFPATH
-echo 'option host-name "'$TCPIP'";' >> $DHCPCONFPATH
-echo 'next-server '$SERVERIP';' >> $DHCPCONFPATH 
-echo 'filename "pxelinux.0";' >> $DHCPCONFPATH
-echo '}' >> $DHCPCONFPATH
-echo >> $DHCPCONFPATH
+echo >> $BOOT_CONTROL_CONFIG
+echo 'host '$TCPIP' {' >> $BOOT_CONTROL_CONFIG
+echo 'hardware ethernet '$MACADDRESS';' >> $BOOT_CONTROL_CONFIG
+echo 'fixed-address '$TCPIP';' >> $BOOT_CONTROL_CONFIG
+echo 'option host-name "'$TCPIP'";' >> $BOOT_CONTROL_CONFIG
+echo 'next-server '$SERVERIP';' >> $BOOT_CONTROL_CONFIG 
+echo 'filename "pxelinux.0";' >> $BOOT_CONTROL_CONFIG
+echo '}' >> $BOOT_CONTROL_CONFIG
+echo >> $BOOT_CONTROL_CONFIG
 done
 fi
 fi
@@ -330,18 +327,30 @@ CLIENT_DATA=`sed -n 1,1p /opt/karoshi/asset_register/network_install/memtest/$CL
 TCPIP=`echo $CLIENT_DATA | cut -d, -f1`
 MACADDRESS=`echo $CLIENT_DATA | cut -d, -f2`
 
-echo >> $DHCPCONFPATH
-echo 'host '$TCPIP' {' >> $DHCPCONFPATH
-echo 'hardware ethernet '$MACADDRESS';' >> $DHCPCONFPATH
-echo 'fixed-address '$TCPIP';' >> $DHCPCONFPATH
-echo 'option host-name "'$TCPIP'";' >> $DHCPCONFPATH
-echo 'next-server '$SERVERIP';' >> $DHCPCONFPATH 
-echo 'filename "pxelinux.0";' >> $DHCPCONFPATH
-echo '}' >> $DHCPCONFPATH
-echo >> $DHCPCONFPATH
+echo >> $BOOT_CONTROL_CONFIG
+echo 'host '$TCPIP' {' >> $BOOT_CONTROL_CONFIG
+echo 'hardware ethernet '$MACADDRESS';' >> $BOOT_CONTROL_CONFIG
+echo 'fixed-address '$TCPIP';' >> $BOOT_CONTROL_CONFIG
+echo 'option host-name "'$TCPIP'";' >> $BOOT_CONTROL_CONFIG
+echo 'next-server '$SERVERIP';' >> $BOOT_CONTROL_CONFIG 
+echo 'filename "pxelinux.0";' >> $BOOT_CONTROL_CONFIG
+echo '}' >> $BOOT_CONTROL_CONFIG
+echo >> $BOOT_CONTROL_CONFIG
 done
 fi
 fi
+
+#Remove existing lines from dhcp config file
+sed -i '/^#Karoshi DHCP auto configuration/,$d' /etc/dhcp/dhcpd.conf
+
+#Add warning message
+[ -f /opt/karoshi/server_network/dhcp/karoshi_warning ] && cat /opt/karoshi/server_network/dhcp/karoshi_warning >> /etc/dhcp/dhcpd.conf
+
+#Cat reservation list  into dhcpd.conf
+[ -f /opt/karoshi/server_network/dhcp/reservation_list ] && cat /opt/karoshi/server_network/dhcp/reservation_list >> /etc/dhcp/dhcpd.conf
+
+#Cat client network boots into the dhcp config file
+[ -f /opt/karoshi/server_network/dhcp/network_boot_list ] && cat /opt/karoshi/server_network/dhcp/network_boot_list >> /etc/dhcp/dhcpd.conf
 }
 
 
@@ -350,14 +359,12 @@ then
 echo `date`: client_boot_controls2 - resetting all by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 [ -d /opt/karoshi/asset_register/network_install/memtest/ ] && rm -f /opt/karoshi/asset_register/network_install/memtest/*
 [ -d /opt/karoshi/asset_register/network_install/install/ ] && rm -f /opt/karoshi/asset_register/network_install/install/*
-delete_client_info
 restart_dhcp
 fi
 
 if [ $ACTION = activatechanges ]
 then
 echo `date`: client_boot_controls2 - activating changes by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-delete_client_info
 #Check to see if there are any clients to add to the dhcp config file
 collate_client_info
 restart_dhcp

@@ -138,6 +138,7 @@ echo '	<a href="/cgi-bin/admin/change_password_fm.cgi">'$CHANGEPASSMSG'</a>
  <div class="collapsed">
         <span>'$INFRASTRUCTURESMSG'</span>
         <a href="/cgi-bin/admin/asset_register_view.cgi">'$ASSETREGISTER'</a>'
+[ $DHCPCTRL = yes ] && echo '	<a href="/cgi-bin/admin/dhcp_reservations.cgi">'$DHCPRESERVATIONSMSG'</a>'
 [ $MONITORINGCTRL = yes ] && echo '	<a href="/cgi-bin/admin/mon_status.cgi">'$SERVERSTATUSMSG'</a>'
 echo '<a href="/cgi-bin/admin/dnsview_fm.cgi">'$DNSCONTROLS'</a>
 </div>'

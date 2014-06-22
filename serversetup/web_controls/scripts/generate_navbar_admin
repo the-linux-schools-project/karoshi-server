@@ -271,6 +271,7 @@ echo '			<li><a href="/cgi-bin/admin/apply_ssl_certificate_fm.cgi">'$SSLCERTMSG'
 if [ $DHCPCTRL = yes ]
 then
 echo '			<li><a href="/cgi-bin/admin/dhcp_view_leases.cgi">'$DHCPMSG'</a></li>'
+echo '			<li><a href="/cgi-bin/admin/dhcp_reservations.cgi">'$DHCPRESERVATIONSMSG'</a></li>'
 fi
 
 echo '<li><a href="/cgi-bin/admin/dnsview_fm.cgi">'$DNSVIEWMSG'</a></li>'
