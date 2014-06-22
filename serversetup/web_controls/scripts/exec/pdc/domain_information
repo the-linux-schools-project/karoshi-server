@@ -20,7 +20,6 @@
 #The Karoshi Team can be contacted at: 
 #mpsharrad@karoshi.org.uk
 #jharris@karoshi.org.uk
-#aball@karoshi.org.uk
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
@@ -98,13 +97,13 @@ echo `date`: domain_information - showing information to $REMOTE_USER from $REMO
 SAMBADOMAIN=`grep workgroup /etc/samba/smb.conf | sed 's/workgroup = //g' | sed 's/\t//g' | tr 'A-Z' 'a-z'`
 GATEWAY=
 
-DHCPCONFPATH=/etc/dhcpd.conf
+DHCPCONFPATH=/etc/dhcp/dhcpd.conf
 [ -f /etc/dhcp3/dhcpd.conf ] && DHCPCONFPATH=/etc/dhcp3/dhcpd.conf
 
 
 #Check if this server has been set up as a dhcp server
 SHOWDHCP=no
-if [ -f /opt/karoshi/server_network/dhcp_server ]
+if [ -f /opt/karoshi/server_network/dhcpserver ]
 then
 SHOWDHCP=yes
 CURRENTDOMAINSERVERS=`grep domain-name-servers $DHCPCONFPATH | sed -n 1,1p | cut -d' ' -f3 | sed 's/;//'`
@@ -155,6 +154,8 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/client/domain_information
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
+source /opt/karoshi/server_network/domain_information/domain_name
+
 ####################
 #Show domain information
 ####################
@@ -165,13 +166,15 @@ echo '
 <tr><td style="width: 180px;"><b>'$DOMAINMSG'</b></td><td>'$SAMBADOMAIN'</td></tr>
 <tr><td style="width: 180px;"><b>'$REALMMSG'</b></td><td>'$REALM'</td></tr>
 <tr><td style="width: 180px;"><b>'$GATEWAYMSG'</b></td><td>'$DEFAULTGATEWAY'</td></tr>
-<tr><td style="width: 180px;"><b>'$NAMESERVERMSG'</b></td><td>'$NAMESERVER'</td></tr>'
+<tr><td style="width: 180px;"><b>'$NAMESERVERMSG'</b></td><td>'$NAMESERVER'</td></tr>
+<tr><td style="width: 180px;"><b>'$NTPSERVERMSG'</b></td><td>'$NTPSERVER'</td></tr>
+'
 
 if [ $SHOWDHCP = yes ]
 then
-echo '<tr><td style="width: 180px;"><b>'$DHCPSETTINGSMSG'</b></td><td></td></tr>
+echo '
+<tr><td valign="bottom" style="width: 180px; height: 40px;"><b>'$DHCPSETTINGSMSG'</b></td><td></td></tr>
 <tr><td style="width: 180px;"><b>'$NAMESERVERMSG'</b></td><td>'$CURRENTDOMAINSERVERS'</td></tr>
-<tr><td style="width: 180px;"><b>'$NTPSERVERMSG'</b></td><td>'$NTPSERVER'</td></tr>
 <tr><td style="width: 180px;"><b>'$DHCPRANGEMSG'</b></td><td>'$STARTADDRESS - $ENDADDRESS'</td></tr>
 '
 fi
