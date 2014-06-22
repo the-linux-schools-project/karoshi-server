@@ -116,20 +116,24 @@ echo -e "#Karoshi DHCP auto configuration.
 #Do not add any configuration below this point." > /opt/karoshi/server_network/dhcp/karoshi_warning
 
 #Create config file
-echo -e "
-#Karoshi DHCP reservations" > /opt/karoshi/server_network/dhcp/reservation_list
-for RESERVATIONS in /opt/karoshi/server_network/dhcp/reservations/*
-do
-	source $RESERVATIONS
-	RESERVATION=`basename $RESERVATIONS`
-	echo '
-	host '$RESERVATION' {
-	hardware ethernet '$MACADDRESS';
-	fixed-address '$TCPIPADDRESS';
-	}' >> /opt/karoshi/server_network/dhcp/reservation_list
-done
-echo >> /opt/karoshi/server_network/dhcp/reservation_list
 
+[ -f /opt/karoshi/server_network/dhcp/reservation_list ] && rm -f /opt/karoshi/server_network/dhcp/reservation_list
+
+if [ `ls -1 /opt/karoshi/server_network/dhcp/reservations | wc -l` -gt 0 ]
+then
+	echo -e "\n#Karoshi DHCP reservations" > /opt/karoshi/server_network/dhcp/reservation_list
+	for RESERVATIONS in /opt/karoshi/server_network/dhcp/reservations/*
+	do
+		source $RESERVATIONS
+		RESERVATION=`basename $RESERVATIONS`
+		echo '
+		host '$RESERVATION' {
+		hardware ethernet '$MACADDRESS';
+		fixed-address '$TCPIPADDRESS';
+		}' >> /opt/karoshi/server_network/dhcp/reservation_list
+	done
+	echo >> /opt/karoshi/server_network/dhcp/reservation_list
+fi
 #Remove existing lines from dhcp config file
 sed -i '/^#Karoshi DHCP auto configuration/,$d' /etc/dhcp/dhcpd.conf
 

@@ -61,7 +61,7 @@ echo '<div id="actionbox3"><div id="titlebox">
 
 
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tr><td style="vertical-align: middle;"><div class="sectiontitle">'$TITLE2'</div></td><td style="vertical-align: top;"><a href="dhcp_fm.cgi"><input class="button" type="button" name="" value="'$TITLE'"></a></td>
+<tr><td style="vertical-align: top; width:180px"><div class="sectiontitle">'$TITLE2'</div></td><td style="vertical-align: top;"><a href="dhcp_fm.cgi"><input class="button" type="button" name="" value="'$TITLE'"></a></td><td style="vertical-align: top;"><a href="dhcp_reservations.cgi"><input class="button" type="button" name="" value="'$TITLE3'"></a></td>
 </tr>
 </tbody></table><br>
 </div><div id="infobox"><br>'

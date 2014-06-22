@@ -67,12 +67,12 @@ FILE=`echo $DATA | cut -s -d_ -f7`
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/dhcp.cgi" method="post"><div id="actionbox">
+echo '<form action="/cgi-bin/admin/dhcp.cgi" method="post"><div id="actionbox3"><div id="titlebox">
 
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tr><td style="vertical-align: middle;"><div class="sectiontitle">'$TITLE'</div></td><td style="vertical-align: top;"><a href="dhcp_view_leases.cgi"><input class="button" type="button" name="" value="'$TITLE2'"></a></td>
+<tr><td style="vertical-align: top; width:180px"><div class="sectiontitle">'$TITLE'</div></td><td style="vertical-align: top;"><a href="dhcp_view_leases.cgi"><input class="button" type="button" name="" value="'$TITLE2'"></a></td><td style="vertical-align: top;"><a href="dhcp_reservations.cgi"><input class="button" type="button" name="" value="'$TITLE3'"></a></td>
 </tr>
-</tbody></table><br><br>'
+</tbody></table><br><br></div><div id="infobox">'
 
 #Get current dhcp data
 
@@ -146,10 +146,8 @@ echo '
       </td></tr>
     </tbody>
   </table><br><br>
-</div>
-<div id="submitbox">
 <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
-</div>
+</div></div>
 </form>
 </div></body>
 </html>

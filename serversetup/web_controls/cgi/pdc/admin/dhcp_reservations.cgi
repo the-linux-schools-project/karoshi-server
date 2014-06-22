@@ -191,12 +191,15 @@ then
 			show_warnings
 		fi
 		#Check to see that the tcpip number has not already been added
-		if [ `grep -R -w "$TCPIPADDRESS" /opt/karoshi/server_network/dhcp/reservations | wc -l` -gt 0 ]
+		if [ -f /opt/karoshi/server_network/dhcp/reservations ]
 		then
-			ACTION=view
-			MESSAGE="$ERRORMSG15"
-			show_warnings		
-		fi 
+			if [ `grep -R -w "$TCPIPADDRESS" /opt/karoshi/server_network/dhcp/reservations | wc -l` -gt 0 ]
+			then
+				ACTION=view
+				MESSAGE="$ERRORMSG15"
+				show_warnings		
+			fi
+		fi
 	fi
 	#Check that mac address is not blank
 	if [ -z "$MACADDRESS" ]
@@ -224,12 +227,15 @@ then
 			fi
 		done
 		#Check to see that the mac address has not already been added
-		if [ `grep -R -w "$MACADDRESS" /opt/karoshi/server_network/dhcp/reservations | wc -l` -gt 0 ]
+		if [ -f /opt/karoshi/server_network/dhcp/reservations ]
 		then
-			ACTION=view
-			MESSAGE="$ERRORMSG16"
-			show_warnings		
-		fi 
+			if [ `grep -R -w "$MACADDRESS" /opt/karoshi/server_network/dhcp/reservations | wc -l` -gt 0 ]
+			then
+				ACTION=view
+				MESSAGE="$ERRORMSG16"
+				show_warnings		
+			fi
+		fi
 	fi		
 fi
 
@@ -278,7 +284,7 @@ then
 	fi
 else
 	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
-	<td style="vertical-align: top;"><div class="sectiontitle">'$TITLE3'</div></td>
+	<td style="vertical-align: top; width:180px"><div class="sectiontitle">'$TITLE3'</div></td>
 	<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Reservation"><img class="images" alt="" src="/images/help/info.png"><span>'$RESERVATIONHELP'</span></a></td>
 	<td style="vertical-align: top;">'
 
@@ -288,7 +294,7 @@ else
 	else
 		echo '<input name="_ACTION_view_" type="submit" class="button" value="'$VIEWRESERVATIONS'">'
 	fi
-	echo '</td></tr></tbody></table></div><div id="infobox">
+	echo '</td><td style="vertical-align: top;"><a href="dhcp_view_leases.cgi"><input class="button" type="button" name="" value="'$TITLE2'"></a></td><td style="vertical-align: top;"><a href="dhcp_fm.cgi"><input class="button" type="button" name="" value="'$TITLE'"></a></td></tr></tbody></table></div><div id="infobox">
 	'
 fi
 
@@ -297,7 +303,7 @@ function view_reservations {
 SHOWENTRIES=no
 if [ -d /opt/karoshi/server_network/dhcp/reservations ]
 then 
-	if [ `ls -1 /opt/karoshi/server_network/dhcp/reservations/* | wc -l` -gt 0 ]
+	if [ `ls -1 /opt/karoshi/server_network/dhcp/reservations | wc -l` -gt 0 ]
 		then
 		SHOWENTRIES=yes
 		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
