@@ -126,11 +126,7 @@ then
 	do
 		source $RESERVATIONS
 		RESERVATION=`basename $RESERVATIONS`
-		echo '
-		host '$RESERVATION' {
-		hardware ethernet '$MACADDRESS';
-		fixed-address '$TCPIPADDRESS';
-		}' >> /opt/karoshi/server_network/dhcp/reservation_list
+		echo -e '\nhost '$RESERVATION' {\n\thardware ethernet '$MACADDRESS';\n\tfixed-address '$TCPIPADDRESS';\n}' >> /opt/karoshi/server_network/dhcp/reservation_list
 	done
 	echo >> /opt/karoshi/server_network/dhcp/reservation_list
 fi
@@ -144,7 +140,7 @@ sed -i '/^#Karoshi DHCP auto configuration/,$d' /etc/dhcp/dhcpd.conf
 [ -f /opt/karoshi/server_network/dhcp/reservation_list ] && cat /opt/karoshi/server_network/dhcp/reservation_list >> /etc/dhcp/dhcpd.conf
 
 #Cat client network boots into the dhcp config file
-[ -f /opt/karoshi/server_network/dhcp/network_boot_list ] && cat /opt/karoshi/server_network/dhcp/network_boot_list >> /etc/dhcp/dhcpd.confs
+[ -f /opt/karoshi/server_network/dhcp/network_boot_list ] && cat /opt/karoshi/server_network/dhcp/network_boot_list >> /etc/dhcp/dhcpd.conf
 
 #Restart DHCP
 source /opt/karoshi/serversetup/variables/distro

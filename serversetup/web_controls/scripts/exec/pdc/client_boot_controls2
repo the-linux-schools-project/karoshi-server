@@ -290,7 +290,7 @@ echo -e "#Karoshi DHCP auto configuration.
 #Do not add any configuration below this point." > /opt/karoshi/server_network/dhcp/karoshi_warning
 
 
-echo "#client_install_configuration" >> $BOOT_CONTROL_CONFIG
+echo "#Client_network_install_configuration" > $BOOT_CONTROL_CONFIG
 
 if [ -d /opt/karoshi/asset_register/network_install/install ]
 then
@@ -305,11 +305,11 @@ MACADDRESS=`echo $CLIENT_DATA | cut -d, -f2`
 
 echo >> $BOOT_CONTROL_CONFIG
 echo 'host '$TCPIP' {' >> $BOOT_CONTROL_CONFIG
-echo 'hardware ethernet '$MACADDRESS';' >> $BOOT_CONTROL_CONFIG
-echo 'fixed-address '$TCPIP';' >> $BOOT_CONTROL_CONFIG
-echo 'option host-name "'$TCPIP'";' >> $BOOT_CONTROL_CONFIG
-echo 'next-server '$SERVERIP';' >> $BOOT_CONTROL_CONFIG 
-echo 'filename "pxelinux.0";' >> $BOOT_CONTROL_CONFIG
+echo '	hardware ethernet '$MACADDRESS';' >> $BOOT_CONTROL_CONFIG
+echo '	fixed-address '$TCPIP';' >> $BOOT_CONTROL_CONFIG
+echo '	option host-name "'$TCPIP'";' >> $BOOT_CONTROL_CONFIG
+echo '	next-server '$SERVERIP';' >> $BOOT_CONTROL_CONFIG 
+echo '	filename "pxelinux.0";' >> $BOOT_CONTROL_CONFIG
 echo '}' >> $BOOT_CONTROL_CONFIG
 echo >> $BOOT_CONTROL_CONFIG
 done
