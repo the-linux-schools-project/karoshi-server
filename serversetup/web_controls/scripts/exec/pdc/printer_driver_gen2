@@ -139,7 +139,10 @@ chmod 0644 -R /usr/share/cups/drivers
 chmod u+X,g+X,o+X /usr/share/cups/drivers
 fi
 echo "<br>"
-[ ! -f /usr/share/cups/drivers/pscript5.dll ] && exit 103
+if [ ! -f /usr/share/cups/drivers/pscript5.dll ] && [ ! -f /usr/share/cups/drivers/x64/pscript5.dll ]
+then
+exit 103
+fi
 '
 SSHSTATUS=`echo $?`
 [ $SSHSTATUS = 103 ] && exit 103
@@ -208,8 +211,10 @@ fi
 fi
 
 #Exit if printer drivers are not there
-[ ! -f /usr/share/cups/drivers/pscript5.dll ] && exit 103
-
+if [ ! -f /usr/share/cups/drivers/pscript5.dll ] && [ ! -f /usr/share/cups/drivers/x64/pscript5.dll ]
+then
+exit 103
+fi
 #Delete existing drives
 #rm -f -R /var/lib/samba/printers/COLOR
 #rm -f -R /var/lib/samba/printers/IA64

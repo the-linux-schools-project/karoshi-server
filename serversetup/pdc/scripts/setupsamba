@@ -917,8 +917,6 @@ chmod 0755 /var/lib/samba/netlogon/kix/wkix32.exe
 #############################
 sed -i "s/CHANGETHISDOMAINNAME/$SAMBADOMAIN/g" /var/lib/samba/netlogon/logonform.kix
 sed -i 's/CHANGETHISREALM/'$REALM'/g' /var/lib/samba/netlogon/logonform.kix
-sed -i 's/CHANGETHISHOSTNAME/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon/kixtart_install.bat
-sed -i 's/CHANGETHISHOSTNAME/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon/getdll.bat
 
 #############################
 #make group file information for kixtart windows logon script
@@ -1146,7 +1144,7 @@ dsHeuristics: 0000002001001
 function create_user {
 echo `date`: "Creating user: $NEWUSERNAME" >> /opt/karoshi/serversetup/install_log
 
-if [ $$NEWUSERNAME = profileuser ]
+if [ $NEWUSERNAME = profileuser ]
 then
 #Dont add in a profile path for profileuser - so that this account has a local profile.
 samba-tool user add $NEWUSERNAME --userou="$SUBPATH" --script-path="logon.bat $PRIMARYGROUP" --use-username-as-cn  --random-password --mail-address=$NEWUSERNAME@$REALM 1>/dev/null 2>>/opt/karoshi/serversetup/install_log
