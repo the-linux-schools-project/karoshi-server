@@ -78,7 +78,7 @@ $ComboBox1 = $Form.Controls.ComboBox()
 $ComboBox1.DropDownStyle = 2
 $ComboBox1.DropDownWidth = 121
 $ComboBox1.Height = 21
-$ComboBox1.List = No_Locations_Set,NoGroup
+$ComboBox1.List = "cm1","cm2","NoGroup"
 $ComboBox1.Left = 90
 $ComboBox1.Sorted = "True"
 $ComboBox1.Text = ""
@@ -193,11 +193,56 @@ Function Button1_Click()
 	$testtype = @INWIN
 	$dostype = @DOS
 
+;Apply windows 7 specific registry edits
+IF "@PRODUCTTYPE"="Windows 6.1 / 1"
+	;Set no admin popup box for installing printer drivers
+	$RC=WriteValue("HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Printers\PointAndPrint","Restricted",1,"REG_DWORD")
+	$RC=WriteValue("HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Printers\PointAndPrint","TrustedServers",0,"REG_DWORD")
+	$RC=WriteValue("HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Printers\PointAndPrint","InForest",0,"REG_DWORD")
+	$RC=WriteValue("HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Printers\PointAndPrint","NoWarningNoElevationOnInstall",1,"REG_DWORD")
+	$RC=WriteValue("HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Printers\PointAndPrint","UpdatePromptSettings",2,"REG_DWORD")
+
+	;Set “DelayedDesktopSwitchTimeout to 5
+	$RC=WriteValue("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System","DelayedDesktopSwitchTimeout",5,"REG_DWORD")
+
+	;Set domain compatibility mode to 1
+	$RC=WriteValue("HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\LanManWorkstation\Parameters","DomainCompatibilityMode",1,"REG_DWORD")
+	;Set DNS name resolution required to 0
+	$RC=WriteValue("HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\LanManWorkstation\Parameters","DNSNameResolutionRequired",0,"REG_DWORD")
+
+	;Disable UAC
+	$RC=WriteValue("HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System","EnableLUA",0,"REG_DWORD")
+
+	;Set Startup policy processing time to 1
+	$RC=WriteValue("HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\System","GpNetworkStartTimeoutPolicyValue",1,"REG_DWORD")
+
+	;Set maximum wait time for the network to 1
+	$RC=WriteValue("HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\System","WaitForNetwork",1,"REG_DWORD")
+ENDIF
+
 ;Apply windows 8.1 specific registry edits
 IF "@DOS"="6.2"
 ;Set profile extension for windows 8.1
 $RC=WriteValue("HKEY_LOCAL_MACHINE\System\CurrentControlset\Services\ProfSvc\Parameters","UseProfilePathExtensionVersion",1,"REG_DWORD")
+
+	;Set no admin popup box for installing printer drivers
+	$RC=WriteValue("HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Printers\PointAndPrint","Restricted",1,"REG_DWORD")
+	$RC=WriteValue("HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Printers\PointAndPrint","TrustedServers",0,"REG_DWORD")
+	$RC=WriteValue("HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Printers\PointAndPrint","InForest",0,"REG_DWORD")
+	$RC=WriteValue("HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Printers\PointAndPrint","NoWarningNoElevationOnInstall",1,"REG_DWORD")
+	$RC=WriteValue("HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Printers\PointAndPrint","UpdatePromptSettings",2,"REG_DWORD")
+
+	;Disable UAC
+	$RC=WriteValue("HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System","EnableLUA",0,"REG_DWORD")
+
+	;Set Startup policy processing time to 1
+	$RC=WriteValue("HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\System","GpNetworkStartTimeoutPolicyValue",1,"REG_DWORD")
+
+	;Set maximum wait time for the network to 1
+	$RC=WriteValue("HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\System","WaitForNetwork",1,"REG_DWORD")
+
 ENDIF
+
 	;Always wait for the network at computer startup and logon
 	$RC=WriteValue("HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows NT\CurrentVersion\Winlogon","SyncForegroundPolicy",1,"REG_DWORD")
 
