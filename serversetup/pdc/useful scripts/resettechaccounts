@@ -44,7 +44,7 @@ done
 PASSWORD=`echo ${RANDPASSWORD[@]:0} | sed 's/ //g'`
 }
 
-for TECHUSERS in `getent passwd | grep /home/users/techstaff/tech`
+for TECHUSERS in `getent passwd | grep /home/users/techstaff/tech | cut -d: -f1`
 do
 TECHUSER=`basename $TECHUSERS`
 #Get random password

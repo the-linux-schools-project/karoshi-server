@@ -288,7 +288,7 @@ echo "<br><br>"$ERRORMSG11"<br>"
 fi
 fi
 
-echo '<table class="'$TABLECLASS'" style="text-align: left; width: 100%;" border="0" cellpadding="'$CELLPADDING'" cellspacing="'$CELLSPACING'"><col width='$COLWIDTH'><col width='$COLWIDTH'><col width='$COLWIDTH'><col width='$COLWIDTH'><col width='$COLWIDTH'><col width='$COLWIDTH'>'
+echo '<table class="'$TABLECLASS'" style="text-align: left; width: 100%;" border="0" cellpadding="'$CELLPADDING'" cellspacing="'$CELLSPACING'"><col width='$COLWIDTH'><col width='$COLWIDTH'><col width='$COLWIDTH'><col width='$COLWIDTH'><col width='$COLWIDTH'>'
 
 #[ $MOBILE = yes ] && echo '<col width='$COLWIDTH'>'
 
@@ -1521,7 +1521,7 @@ echo '
 <input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$BACKMSG'">
 ' 
 
-echo "</a><br><br><textarea cols=\"$COLSIZE\" rows=\"$ROWSIZE\" name=\"_TEXTDATA_\">"
+echo "<br><br><textarea cols=\"$COLSIZE\" rows=\"$ROWSIZE\" name=\"_TEXTDATA_\">"
 echo "`cat "$LOCATION"`</textarea>"
 else
 echo "<a href=\"javascript:history.go(-1)\"> <img src=\"/images/submenus/file/back.gif\" alt=\"back\" border=\"0\"></a><br><br>"$EDITERRORMSG

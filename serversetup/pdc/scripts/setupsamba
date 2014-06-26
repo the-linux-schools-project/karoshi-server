@@ -905,6 +905,10 @@ cp -R /opt/karoshi/serversetup/pdc/logonscripts/logon.bat /var/lib/samba/netlogo
 cp -R /opt/karoshi/serversetup/pdc/logonscripts/logonform.kix /var/lib/samba/netlogon/
 
 sed -i 's/CHANGETHISSERVER/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon/logonform.kix
+sed -i 's/CHANGETHISSERVER/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon/logon.bat
+sed -i 's/CHANGETHISSERVER/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon/kix/getdll.bat
+sed -i 's/CHANGETHISSERVER/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon/kix/kixinstall.bat
+sed -i 's/CHANGETHISSERVER/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon/kix/Setup_Workstation.bat
 
 chmod 0644 /var/lib/samba/netlogon/*
 chmod 0755 /var/lib/samba/netlogon/logon.bat
@@ -1070,6 +1074,23 @@ tar -zxf /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V4.tar.gz -C /home
 #We dont have a windows 8.0 profile so make an empty folder for it
 [ ! -d /home/applications/profiles/defaultprofile.V3 ] && mkdir -p /home/applications/profiles/defaultprofile.V3
 
+#Copy in windows icons
+cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Change My Password.url" /home/applications/profiles/defaultprofile/Desktop/
+cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Help Desk.url" /home/applications/profiles/defaultprofile/Desktop/
+cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Karoshi Web Management.url" /home/applications/profiles/defaultprofile/Desktop/
+
+cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Change My Password.url" /home/applications/profiles/defaultprofile.V2/Desktop/
+cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Help Desk.url" /home/applications/profiles/defaultprofile.V2/Desktop/
+cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Karoshi Web Management.url" /home/applications/profiles/defaultprofile.V2/Desktop/
+
+cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Change My Password.url" /home/applications/profiles/defaultprofile.V3/Desktop/
+cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Help Desk.url" /home/applications/profiles/defaultprofile.V3/Desktop/
+cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Karoshi Web Management.url" /home/applications/profiles/defaultprofile.V3/Desktop/
+
+cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Change My Password.url" /home/applications/profiles/defaultprofile.V4/Desktop/
+cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Help Desk.url" /home/applications/profiles/defaultprofile.V4/Desktop/
+cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Karoshi Web Management.url" /home/applications/profiles/defaultprofile.V4/Desktop/
+
 #Point default profile icons to correct realm
 [ -f /home/applications/profiles/defaultprofile/Desktop/"Help Desk.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile/Desktop/"Help Desk.url"
 [ -f /home/applications/profiles/defaultprofile/Desktop/"Change My Password.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile/Desktop/"Change My Password.url"
@@ -1086,6 +1107,13 @@ tar -zxf /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V4.tar.gz -C /home
 [ -f /home/applications/profiles/defaultprofile.V4/Desktop/"Help Desk.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V4/Desktop/"Help Desk.url"
 [ -f /home/applications/profiles/defaultprofile.V4/Desktop/"Change My Password.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V4/Desktop/"Change My Password.url"
 [ -f /home/applications/profiles/defaultprofile.V4/Desktop/"Karoshi Web Management.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V4/Desktop/"Karoshi Web Management.url"
+
+#Create tch profile
+
+cp -f -R home/applications/profiles/defaultprofile home/applications/profiles/tech
+cp -f -R home/applications/profiles/defaultprofile.V2 home/applications/profiles/tech.V2
+cp -f -R home/applications/profiles/defaultprofile.V3 home/applications/profiles/tech.V3
+cp -f -R home/applications/profiles/defaultprofile.V4 home/applications/profiles/tech.V4
 
 [ ! -d /home/applications/profiles/default_roaming_profile ] && mkdir /home/applications/profiles/default_roaming_profile
 [ ! -d /home/applications/profiles/default_roaming_profile.V2 ] && mkdir /home/applications/profiles/default_roaming_profile.V2

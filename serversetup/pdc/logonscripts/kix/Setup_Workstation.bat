@@ -1,2 +1,2 @@
 C:
-C:\"Program Files"\kix\WKIX32.EXE %LOGONSERVER%\netlogon\kix\WSsetup.kix
+C:\"Program Files"\kix\WKIX32.EXE \\CHANGETHISSERVER\netlogon\kix\WSsetup.kix

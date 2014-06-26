@@ -17,12 +17,12 @@ exit
 
 rem copy new files
 :install
-COPY %LOGONSERVER%\netlogon\kix\*.* C:\"Program Files"\kix
+COPY \\CHANGETHISSERVER\netlogon\kix\*.* C:\"Program Files"\kix
 attrib +R +S c:\kix\*.*
 attrib -R -S c:\kix\*.*
 rem register kixforms.dll
 regsvr32 "C:\Program Files\kix\kixforms.dll"
 rem run WSsetup
-C:\"Program Files"\kix\WKIX32.EXE %LOGONSERVER%\netlogon\kix\WSsetup.kix
+C:\"Program Files"\kix\WKIX32.EXE \\CHANGETHISSERVER\netlogon\kix\WSsetup.kix
 
 

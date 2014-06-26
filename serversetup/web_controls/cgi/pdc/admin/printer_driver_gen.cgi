@@ -198,7 +198,6 @@ if [ $ACTION = gendrivers ]
 then
 sudo -H /opt/karoshi/web_controls/exec/printer_driver_gen2 $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:
 EXEC_STATUS=$?
-echo execstatus is $EXEC_STATUS"<br>"
 [ $EXEC_STATUS = 0 ] && MESSAGE=$COMPLETEDMSG
 
 if [ $EXEC_STATUS = 102 ]

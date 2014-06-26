@@ -19,9 +19,9 @@ attrib -R -S c:\kix\*.*
 del c:\kix\*.* /Q
 
 rem copy new files
-COPY %LOGONSERVER%\netlogon\kix\kixinstall.bat C:\kix
-COPY %LOGONSERVER%\netlogon\kix\kixinstall.lnk C:\kix
-COPY %LOGONSERVER%\netlogon\kix\getdll.bat C:\kix
+COPY \\CHANGETHISSERVER\netlogon\kix\kixinstall.bat C:\kix
+COPY \\CHANGETHISSERVER\netlogon\kix\kixinstall.lnk C:\kix
+COPY \\CHANGETHISSERVER\netlogon\kix\getdll.bat C:\kix
 attrib +R +S c:\kix\*.*
 
 START "C:\kix\kixinstall.lnk" "C:\kix\kixinstall.lnk"

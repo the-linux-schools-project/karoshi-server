@@ -39,7 +39,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -68,14 +68,14 @@ END_POINT=5
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -93,8 +93,8 @@ exit
 #Check to see that servername is not blank
 if [ $SERVERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG1
-show_status
+	MESSAGE=$ERRORMSG1
+	show_status
 fi
 
 #Generate navigation bar
@@ -118,11 +118,11 @@ echo '<input type="text" name="_ALIAS_" style="width: 200px;" value="" size="10"
 
 if [ -f /opt/karoshi/server_network/aliases/$SERVERNAME ]
 then
-#Show any custom aliases that have been assigned
-for CUSTOM_ALIAS in `cat /opt/karoshi/server_network/aliases/$SERVERNAME`
-do
-echo '<option>'$CUSTOM_ALIAS'</option>'
-done
+	#Show any custom aliases that have been assigned
+	for CUSTOM_ALIAS in `cat /opt/karoshi/server_network/aliases/$SERVERNAME`
+	do
+		echo '<option>'$CUSTOM_ALIAS'</option>'
+	done
 fi
 
 #Get a set of available aliases to check
@@ -132,12 +132,8 @@ fi
 COUNTER=1
 while [ $COUNTER -le 10 ]
 do
-[ `nslookup www$COUNTER.$REALM 127.0.0.1 | grep -c ^Name:` = 0 ] && echo '<option>www'$COUNTER'</option>'
-let COUNTER=$COUNTER+1
+	[ `nslookup www$COUNTER.$REALM 127.0.0.1 | grep -c ^Name:` = 0 ] && echo '<option>www'$COUNTER'</option>'
+	let COUNTER=$COUNTER+1
 done
-echo '</select>.'$REALM'</td></tr>'
-echo 
-fi
-echo '</tbody></table>
-</div><div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit"></div></form></div></body></html>'
+echo '</select></td></tr></tbody></table></div><div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit"></div></form></div></body></html>'
 exit
