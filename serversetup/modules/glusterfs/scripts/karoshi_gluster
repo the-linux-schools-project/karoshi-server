@@ -278,7 +278,11 @@ exit" > /etc/rc2.d/S99mount_gluster_shares
 chmod 0755 /etc/rc2.d/S99mount_gluster_shares
 '
 fi
+echo GlusterFS Server > /opt/karoshi/server_network/servers/$SERVER/gluster_server
 done
+
+#Restrict access to the gluster volume
+gluster volume set $VOLUME auth.allow 127.0.0.1
 
 #Copy in data to gluster cluster
 echo "<li>`hostname-fqdn` - Copying in existing data to '$FOLDERPATH'</li>"
@@ -389,6 +393,8 @@ chmod 0755 /etc/rc2.d/S99mount_gluster_shares
 
 
 '
+echo GlusterFS Server > /opt/karoshi/server_network/servers/$SERVER/gluster_server
+
 fi
 
 exit

@@ -1110,10 +1110,10 @@ cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Karoshi Web Management.url" /
 
 #Create tch profile
 
-cp -f -R home/applications/profiles/defaultprofile home/applications/profiles/tech
-cp -f -R home/applications/profiles/defaultprofile.V2 home/applications/profiles/tech.V2
-cp -f -R home/applications/profiles/defaultprofile.V3 home/applications/profiles/tech.V3
-cp -f -R home/applications/profiles/defaultprofile.V4 home/applications/profiles/tech.V4
+cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/tech
+cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/tech.V2
+cp -f -R /home/applications/profiles/defaultprofile.V3 /home/applications/profiles/tech.V3
+cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/tech.V4
 
 [ ! -d /home/applications/profiles/default_roaming_profile ] && mkdir /home/applications/profiles/default_roaming_profile
 [ ! -d /home/applications/profiles/default_roaming_profile.V2 ] && mkdir /home/applications/profiles/default_roaming_profile.V2
