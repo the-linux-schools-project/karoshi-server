@@ -1083,9 +1083,9 @@ cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Change My Password.url" /home
 cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Help Desk.url" /home/applications/profiles/defaultprofile.V2/Desktop/
 cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Karoshi Web Management.url" /home/applications/profiles/defaultprofile.V2/Desktop/
 
-cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Change My Password.url" /home/applications/profiles/defaultprofile.V3/Desktop/
-cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Help Desk.url" /home/applications/profiles/defaultprofile.V3/Desktop/
-cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Karoshi Web Management.url" /home/applications/profiles/defaultprofile.V3/Desktop/
+#cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Change My Password.url" /home/applications/profiles/defaultprofile.V3/Desktop/
+#cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Help Desk.url" /home/applications/profiles/defaultprofile.V3/Desktop/
+#cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Karoshi Web Management.url" /home/applications/profiles/defaultprofile.V3/Desktop/
 
 cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Change My Password.url" /home/applications/profiles/defaultprofile.V4/Desktop/
 cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Help Desk.url" /home/applications/profiles/defaultprofile.V4/Desktop/
@@ -1151,9 +1151,9 @@ chown root.tech -R /home/applications/cups_print
 chmod 0444 -R /var/lib/samba/netlogon/*
 chmod u+X,g+X,o+X -R /var/lib/samba/netlogon/*
 chmod 0555 /var/lib/samba/netlogon/logon.bat
-chmod 0555 /var/lib/samba/netlogon/kixtart_install.bat
-chmod 0555 /var/lib/samba/netlogon/getdll.bat
-chmod 0555 /var/lib/samba/netlogon/kix/reclassify.bat
+chmod 0555 /var/lib/samba/netlogon/kix/kixinstall.bat
+chmod 0555 /var/lib/samba/netlogon/kix/getdll.bat
+chmod 0555 /var/lib/samba/netlogon/kix/Setup_Workstation.bat
 }
 
 echo EXTRASERVERS'='no > /opt/karoshi/serversetup/variables/choice

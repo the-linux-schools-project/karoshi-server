@@ -149,7 +149,7 @@ FIREFOXPROFILE=`ls /opt/karoshi/karoshi_user/.mozilla/firefox | grep .default`
 certutil -A -n "Karoshi Web Management" -addstore root -t "CTu,CTu,CTu" -i /var/lib/samba/netlogon/domain_information/cacert.pem -d /opt/karoshi/karoshi_user/.mozilla/firefox/$FIREFOXPROFILE
 
 #Modify web management to point at the domain path instead of 127.0.0.1
-echo `date`: "MOdifying the web management desktop icon to point at the domain path" >> /opt/karoshi/serversetup/install_log
+echo `date`: "Modifying the web management desktop icon to point at the domain path" >> /opt/karoshi/serversetup/install_log
 sed -i "s/127.0.0.1/manage.$REALM/g" /opt/karoshi/karoshi_user/Desktop/webmanagement.desktop
 
 #Modify defaullt home page to point at the web management

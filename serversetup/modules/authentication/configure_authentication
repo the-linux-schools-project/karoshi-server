@@ -108,6 +108,7 @@ if [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ]
 then
 [ -f /usr/local/sbin/samba_disabled ] && mv /usr/local/sbin/samba_disabled /usr/local/sbin/samba
 [ -f /etc/samba/smb.conf ] && rm -f /etc/samba/smb.conf
+[ -d /var/lib/samba/private ] && rm -f -R /var/lib/samba/private
 samba-tool domain join '$REALM' '$JOINTYPE' --server='$HOSTNAME' --username=Administrator --password='$LDAPPASS' --realm='$SAMBADOMAIN'.'$REALM'
 JOINDOMAINSTATUS=`echo $?`
 if [ $JOINDOMAINSTATUS != 0 ]
@@ -199,7 +200,7 @@ fi
 MODCHECK=`grep -c -w auth_rule /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
-echo "<br><li><b>'$ADDSWALLPORTSMSG'</b></li><br><b>tcp</b> '$TCPPORTS' <b>udp</b> '$UDPPORTS'<br><br>"
+echo "<br><li><b>'$ADDSWALLPORTSMSG'</b></li><br><b>tcp</b> '$TCPPORTS'<br><b>udp</b> '$UDPPORTS'<br><br>"
 LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"'$TCPPORTS'"	"-"#"auth_rule /etc/shorewall/rules
 echo ACCEPT"	"net"	"fw"	"udp"	"'$UDPPORTS'"	"-"#"auth_rule >> /etc/shorewall/rules
@@ -247,16 +248,6 @@ if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
 then
 DCROLE="Additional Domain Controller"
 [ $AUTHTYPE = rodc ] && DCROLE="Read Only Domain Controller"
-
-if [ $ZONE = internal ] || [ $ZONE = dmz ]
-then
-#Schedule adc_sync
-echo '*''/'30 '*' '*' '*' 1-5 /opt/karoshi/'"'useful scripts'"'/adc_sync > /opt/karoshi/cronjobs/jobs/adc_sync.cron
-/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
-
-#Sync adc now
-nohup /opt/karoshi/"useful scripts"/adc_sync yes 2>/dev/null 1>/dev/null &
-fi
 
 echo $DCROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/1dc
 [ ! -d /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/
