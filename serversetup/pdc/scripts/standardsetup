@@ -31,31 +31,31 @@ echo "1"
 echo "# $NETWORKCHECK"
 $BASEINSTALLPATH3/checknetwork pdc 1>>$KAROSHILOG 2>>$KAROSHILOG
 checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
-echo "12"
+echo "17"
 echo "# $SETUP $SHOREWALL"
 $BASEINSTALLPATH/setupshorewall 1>>$KAROSHILOG 2>>$KAROSHILOG
 checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
-echo "24"
+echo "34"
 echo "# $SETUP $NTP"
 $BASEINSTALLPATH/setupntp 1>>$KAROSHILOG 2>>$KAROSHILOG
 checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
-echo "36"
+echo "51"
 echo "# $SETUP $SAMBA"
 $BASEINSTALLPATH/setupsamba 1>>$KAROSHILOG 2>>$KAROSHILOG
 checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
-echo "48"
+echo "68"
 echo "# $SETUP $ROOTCA"
 $BASEINSTALLPATH/setup_root-ca 1>>$KAROSHILOG 2>>$KAROSHILOG
 checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
-echo "60"
+echo "85"
 echo "# $SETUP $WEBCONTROLS"
 $BASEINSTALLPATH2/setup_web_controls interactive 1>>$KAROSHILOG 2>>$KAROSHILOG
 checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
-echo "72"
+echo "90"
 echo "# $SETUP $MONITORIX"
 /opt/karoshi/serversetup/modules/monitoring/monitorix/setupmonitorix 1>>$KAROSHILOG 2>>$KAROSHILOG
 checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
-echo "84"
+echo "95"
 echo "# $SETUP $MONITORIXWEBMANAGEMENT"
 /opt/karoshi/serversetup/web_controls/scripts/monitorixwebmanagement 1>>$KAROSHILOG 2>>$KAROSHILOG
 checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
