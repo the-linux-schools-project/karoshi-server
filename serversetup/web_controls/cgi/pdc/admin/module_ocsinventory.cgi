@@ -19,8 +19,8 @@
 #
 #The Karoshi Team can be contacted at: 
 #mpsharrad@karoshi.org.uk
-#jharris@karoshi.org.uk
-#aball@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
 #
 #Website: http://www.karoshi.org.uk
 
@@ -69,7 +69,7 @@ done
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox">'
+echo '<div id="actionbox3"><div id="titlebox">'
 
 #########################
 #Get data input
@@ -81,7 +81,7 @@ function show_status {
 echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '</script>'
-echo "</div></body></html>"
+echo "</div></div></body></html>"
 exit
 }
 #########################
@@ -114,10 +114,10 @@ MESSAGE=$ACCESS_ERROR1
 show_status
 fi
 
+
+echo '<div class="sectiontitle">'$TITLE' - '$SERVERNAME'</div><br></div><div id="infobox">'
+
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_ocsinventory.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_ocsinventory
-echo '</div>
-</form>
-</div></body>
-</html>'
+echo '</div></form></div></div></body></html>'
 exit

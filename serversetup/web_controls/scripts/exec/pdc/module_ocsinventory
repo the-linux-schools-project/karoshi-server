@@ -19,8 +19,8 @@
 #
 #The Karoshi Team can be contacted at: 
 #mpsharrad@karoshi.org.uk
-#jharris@karoshi.org.uk
-#aball@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
@@ -109,7 +109,7 @@ source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 #####################
 #Install ocs
 #####################
-echo '<b>'$TITLE' - '$SERVERNAME'</b><br><br>'
+
 
 PDCIP=`net lookup $HOSTNAME`
 
@@ -215,7 +215,7 @@ cp -f -R /usr/share/ocsinventory-reports/ocsreports /var/www/html_karoshi/admin/
 else
 scp -p -r root@$SERVERNAME:/usr/share/ocsinventory-reports/ocsreports/ /var/www/html_karoshi/admin/ocs 1> /dev/null
 #Edit host path
-sed -i 's/localhost/'$SERVERNAME'.internal/g' /var/www/html_karoshi/admin/ocs/dbconfig.inc.php
+sed -i 's/localhost/'$SERVERNAME'/g' /var/www/html_karoshi/admin/ocs/dbconfig.inc.php
 sed -i 's/ocs/ocs2/g' /var/www/html_karoshi/admin/ocs/dbconfig.inc.php
 fi
 cp -f -R /var/www/html_karoshi/admin/ocs /var/www/html_karoshi/tech/ocs
@@ -229,7 +229,7 @@ chmod -R u+X,g+X /var/www/html_karoshi/tech/ocs
 #Create completed info file
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
 echo '<a href="/admin/ocs/" target="_blank">OCSInventory</a><br>' > /opt/karoshi/server_network/servers/$SERVERNAME/ocsserver
-echo Client Path: http://$SERVERNAME.internal/ocsinventory"<br>" >> /opt/karoshi/server_network/servers/$SERVERNAME/ocsserver
+echo Client Path: http://$SERVERNAME/ocsinventory"<br>" >> /opt/karoshi/server_network/servers/$SERVERNAME/ocsserver
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
 echo $SERVERNAME > /opt/karoshi/server_network/ocs_server
 

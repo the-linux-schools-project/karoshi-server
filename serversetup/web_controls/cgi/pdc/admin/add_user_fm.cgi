@@ -19,8 +19,7 @@
 #
 #The Karoshi Team can be contacted at: 
 #mpsharrad@karoshi.org.uk
-#jharris@karoshi.org.uk
-#aball@karoshi.org.uk
+#jsharrad@karoshi.org.uk
 #
 #Website: http://www.karoshi.org.uk
 
