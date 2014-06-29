@@ -112,48 +112,5 @@ echo '<form action="/cgi-bin/admin/module_web.cgi" method="post"><div id="action
 <td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$DBUSERNAMEMSG'</span></a></td></tr>
 <tr><td style="width: 180px;">'$MYSQLPASSMSG'</td><td><input tabindex= "1" name="___MYSQLPASS___" size="20" type="password" style="width: 200px;"></td>
 <td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$DBPASSMSG'</span></a></td></tr>
-'
-
-
-SHOW_LDAP=yes
-if [ $SERVERNAME = `hostname-fqdn` ]
-then
-SHOW_LDAP=no
-fi
-if [ -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME ]
-then
-SHOW_LDAP=no
-fi
-if [ -f /opt/karoshi/server_network/ldap_clients/$SERVERNAME ]
-then
-SHOW_LDAP=no
-fi
-
-
-if [ $SHOW_LDAP = yes ]
-then
-echo '<tr><td>'$LDAPSERVERMSG1'</td><td>'
-
-#Generate list of ldap servers for authentication
-echo '<select name="___LDAPSERVER___" style="width: 200px;">
-<option value="'$HOSTNAME'">'$LDAPSERVERMSG2 : $HOSTNAME'</option>
-<option value="slaveldapserver">'$LDAPSERVERMSG3'</option>
-'
-
-if [ -d /opt/karoshi/server_network/slave_ldap_servers ]
-then
-if [ `ls -1 /opt/karoshi/server_network/slave_ldap_servers | wc -l` -gt 0 ]
-then
-for LDAPSERVER in /opt/karoshi/server_network/slave_ldap_servers/*
-do
-LDAPSERVER=`basename $LDAPSERVER`
-echo '<option>'$LDAPSERVER'</option>'
-done
-fi
-fi
-echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$LDAPSERVERHELP'</span></a></td></tr>'
-else
-echo '<tr><td><input name="___LDAPSERVER___" value="noldap" type="hidden"></td></tr>'
-fi
-echo '</tbody></table><br><br></div><div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit">  <input value="'$RESETMSG'" class="button" type="reset"></div></form></div></body></html>'
+</tbody></table><br><br></div><div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit">  <input value="'$RESETMSG'" class="button" type="reset"></div></form></div></body></html>'
 exit

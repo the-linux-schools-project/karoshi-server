@@ -54,19 +54,6 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%' | sed 's/___/TRIPLEUNDERSCORE/g' | sed 's/
 #Assign data to variables
 #########################
 END_POINT=15
-#Assign _LDAPSERVER_
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = LDAPSERVERcheck ]
-then
-let COUNTER=$COUNTER+1
-LDAPSERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
 
 #Assign SERVERNAME
 COUNTER=2
@@ -164,14 +151,7 @@ MESSAGE=$ERRORMSG2
 show_status
 fi
 
-#Check to see that LDAPSERVER is not blank
-if [ $LDAPSERVER'null' = null ]
-then
-MESSAGE=$LDAPSERVERERRORMSG1
-show_status
-fi
-
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_web.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LDAPSERVER:$SERVERNAME:$MYSQLDB:$MYSQLUSER:$MYSQLPASS:" | sudo -H /opt/karoshi/web_controls/exec/module_web
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$MYSQLDB:$MYSQLUSER:$MYSQLPASS:" | sudo -H /opt/karoshi/web_controls/exec/module_web
 echo '<li>'$TITLE - $COMPLETEMSG'</li></div></div></body></html>'
 exit

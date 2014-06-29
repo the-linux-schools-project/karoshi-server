@@ -61,11 +61,10 @@ fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-LDAPSERVER=`echo "$DATA" | cut -s -d: -f4`
-WEBSERVER=`echo "$DATA" | cut -s -d: -f5`
-WEBDB=`echo "$DATA" | cut -s -d: -f6`
-WEBDBUSER=`echo "$DATA" | cut -s -d: -f7`
-WEBDBPASS=`echo "$DATA" | cut -s -d: -f8`
+WEBSERVER=`echo "$DATA" | cut -s -d: -f4`
+WEBDB=`echo "$DATA" | cut -s -d: -f5`
+WEBDBUSER=`echo "$DATA" | cut -s -d: -f6`
+WEBDBPASS=`echo "$DATA" | cut -s -d: -f7`
 ########################
 #Check data
 ########################
@@ -123,106 +122,19 @@ source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 
 
 ##########################
-#Configure Proftp to limit access to /var/www/html 
-##########################
-if [ $WEBSERVER = `hostname-fqdn` ]
-then
-cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/configfiles/proftpd.conf /etc/proftpd/
-else
-ssh -x -o PasswordAuthentication=no $WEBSERVER '
-cp -f /opt/karoshi/serversetup/distro/'$DISTROCHOICE'/all/configfiles/proftpd.conf /etc/proftpd/
-'
-fi
-
-##########################
-#Configure ldap
-##########################
-
-CONFIGURE_LDAP=yes
-if [ $WEBSERVER = `hostname-fqdn` ]
-then
-CONFIGURE_LDAP=no
-fi
-if [ -f /opt/karoshi/server_network/slave_ldap_servers/$WEBSERVER ]
-then
-CONFIGURE_LDAP=no
-fi
-if [ -f /opt/karoshi/server_network/ldap_clients/$WEBSERVER ]
-then
-CONFIGURE_LDAP=no
-fi
-
-#########################
-#Ldap user check
-#########################
-if [ $WEBSERVER != `hostname-fqdn` ] && [ $CONFIGURE_LDAP != yes ]
-then
-PDCUSERCOUNT=`getent passwd | grep -c :/home/users/`
-
-SERVERUSERCOUNT=`ssh -x -o PasswordAuthentication=no $WEBSERVER '
-getent passwd | grep -c :/home/users/
-'
-`
-[ $PDCUSERCOUNT != $SERVERUSERCOUNT ] && CONFIGURE_LDAP=yes
-fi
-
-
-if [ $CONFIGURE_LDAP = yes ]
-then
-if [ $LDAPSERVER = slaveldapserver ]
-then
-echo "<li>"$LDAPMSG"</li><br>"
-
-#Copy in ldap module
-scp -p -r /opt/karoshi/serversetup/modules/ldap root@$WEBSERVER:/opt/karoshi/serversetup/modules/ 1> /dev/null
-
-#Transfer ldap information to the slave ldap server
-[ -f /opt/karoshi/.tempdata/master.ldif ] && rm -f /opt/karoshi/.tempdata/master.ldif
-touch /opt/karoshi/.tempdata/master.ldif
-chown root.root /opt/karoshi/.tempdata/master.ldif
-chmod 0600 /opt/karoshi/.tempdata/master.ldif
-slapcat -s "ou=People,dc=karoshi,dc=local" -l /opt/karoshi/.tempdata/master.ldif
-scp /opt/karoshi/.tempdata/master.ldif root@$WEBSERVER:"/opt/karoshi/.tempdata/"
-scp /opt/karoshi/server_network/domain_information/domain_name root@$SERVERNAME:"/opt/karoshi/.tempdata/"
-rm -f /opt/karoshi/.tempdata/master.ldif
-ssh -x -o PasswordAuthentication=no $WEBSERVER '
-/opt/karoshi/serversetup/modules/ldap/setupslaveldapserver
-'
-[ ! -d /opt/karoshi/server_network/slave_ldap_servers ] && mkdir -p /opt/karoshi/server_network/slave_ldap_servers
-touch /opt/karoshi/server_network/slave_ldap_servers/$WEBSERVER
-else
-ssh -x -o PasswordAuthentication=no $WEBSERVER '
-echo "'$REMOTE_USER':'$REMOTE_ADDR':'$MD5SUM':'$HOSTNAME':" | /opt/karoshi/serversetup/modules/ldap/configureldap 
-'
-#Copy in /etc/ldap.secret
-scp -p /etc/ldap.secret root@$WEBSERVER:/etc/ 1> /dev/null
-[ ! -d /opt/karoshi/server_network/ldap_clients/ ] && mkdir -p /opt/karoshi/server_network/ldap_clients/
-touch /opt/karoshi/server_network/ldap_clients/$WEBSERVER
-fi
-fi
-
-##########################
 #Make sure that apache and mysql are running
 ##########################
 echo "<li>"Making sure that apache and mysql are running"</li><br>"
 if [ $WEBSERVER = `hostname-fqdn` ]
 then
-MYSQLSTATUS=`ps -e | grep -c -w $MYSQLDVER`
-APACHESTATUS=`ps -e | grep -c -w $APACHEVER`
-PROFTPDSTATUS=`ps -e | grep -c -w $PROFTPDVER`
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_status
+[ $? != 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
 
-if [ $MYSQLSTATUS = 0 ]
-then
-/etc/init.d/$MYSQLDVER start
-fi
-if [ $APACHESTATUS = 0 ]
-then
-/etc/init.d/$APACHEVER start
-fi
-if [ $PROFTPDSTATUS = 0 ]
-then
-/etc/init.d/$PROFTPDVER start
-fi
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_status
+[ $? != 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start
+
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/tftpd_status
+[ $? != 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/tftpd_start
 
 #############################
 #Ensure that apache and mysql are running on boot
@@ -230,32 +142,28 @@ fi
 echo "<li>"$STARTONBOOTMSG"</li><br>"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mysql
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/proftp
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/tftpd
 
 else
 ssh -x -o PasswordAuthentication=no $WEBSERVER '
-MYSQLSTATUS=`ps -e | grep -c -w '$MYSQLDVER'`
-APACHESTATUS=`ps -e | grep -c -w '$APACHEVER'`
-PROFTPDSTATUS=`ps -e | grep -c -w '$PROFTPDVER'`
-if [ '$MYSQLSTATUS' = 0 ]
-then
-/etc/init.d/'$MYSQLDVER' start
-fi
-if [ '$APACHESTATUS' = 0 ]
-then
-/etc/init.d/'$APACHEVER' start
-fi
-if [ $PROFTPDSTATUS = 0 ]
-then
-/etc/init.d/'$PROFTPDVER' start
-fi
+source /opt/karoshi/serversetup/variables/distro
+
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_status
+[ $? != 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
+
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_status
+[ $? != 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start
+
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/tftpd_status
+[ $? != 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/tftpd_start
+
 #############################
 #Ensure that apache and mysql are running on boot
 #############################
 echo "<li>"'$STARTONBOOTMSG'"</li><br>"
-/opt/karoshi/serversetup/distro/'$DISTROCHOICE'/scripts/startonboot/apache
-/opt/karoshi/serversetup/distro/'$DISTROCHOICE'/scripts/startonboot/mysql
-/opt/karoshi/serversetup/distro/'$DISTROCHOICE'/scripts/startonboot/proftp
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mysql
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/tftpd
 '
 fi
 
@@ -269,11 +177,11 @@ then
 
 MODCHECK=`grep -c -w 80 /etc/shorewall/rules`
 MODCHECK2=`grep -c -w 443 /etc/shorewall/rules`
-MODCHECK3=`grep -c -w \#proftpd_rule /etc/shorewall/rules`
+MODCHECK3=`grep -c -w \#ftp_rule /etc/shorewall/rules`
 
 MOD_SHOREWALL=no
 ADD_APACHE_RULE=no
-ADD_PROFTPD_RULE=no
+ADD_FTP_RULE=no
 if [ $MODCHECK = 0 ]
 then
 MOD_SHOREWALL=yes
@@ -298,7 +206,7 @@ fi
 if [ $MODCHECK3 = 0 ]
 then
 MOD_SHOREWALL=yes
-ADD_PROFTPD_RULE=yes
+ADD_FTP_RULE=yes
 fi
 
 if [ $ADD_APACHE_RULE = yes ]
@@ -309,11 +217,11 @@ sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'apache_webserver_rule 
 echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 fi
 
-if [ $ADD_PROFTPD_RULE = yes ]
+if [ $ADD_FTP_RULE = yes ]
 then
 echo '<li>'$SHOREWALLMSG2'</li><br>'
 LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'20,21'	'-'#'proftpd_rule /etc/shorewall/rules
+sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'20,21'	'-'#'ftp_rule /etc/shorewall/rules
 echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 fi
 
@@ -330,14 +238,15 @@ ssh -x -o PasswordAuthentication=no $WEBSERVER '
 #####################################
 #Ensure that apache ports are open in shorewall
 #####################################
+source /opt/karoshi/serversetup/variables/distro
 
 MODCHECK=`grep -c -w 80 /etc/shorewall/rules`
 MODCHECK2=`grep -c -w 443 /etc/shorewall/rules`
-MODCHECK3=`grep -c -w \#proftpd_rule /etc/shorewall/rules`
+MODCHECK3=`grep -c -w \#ftp_rule /etc/shorewall/rules`
 
 MOD_SHOREWALL=no
 ADD_APACHE_RULE=no
-ADD_PROFTPD_RULE=no
+ADD_FTP_RULE=no
 
 
 if [ $MODCHECK = 0 ]
@@ -364,7 +273,7 @@ fi
 if [ $MODCHECK3 = 0 ]
 then
 MOD_SHOREWALL=yes
-ADD_PROFTPD_RULE=yes
+ADD_FTP_RULE=yes
 fi
 
 
@@ -376,11 +285,11 @@ sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"$PORTS"	"-"#"apache_webserver_rule 
 echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 fi
 
-if [ $ADD_PROFTPD_RULE = yes ]
+if [ $ADD_FTP_RULE = yes ]
 then
 echo "<li>"'$SHOREWALLMSG2'"</li><br>"
 LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"$PORTS"	"-"#"proftpd_rule /etc/shorewall/rules
+sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"$PORTS"	"-"#"ftp_rule /etc/shorewall/rules
 echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 fi
 
@@ -406,7 +315,7 @@ then
 #Make sure that we know the root mysql password
 /opt/karoshi/serversetup/all/'useful scripts'/mysql_root_pass
 #Get root mysql password
-MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
+MYSQLPASS=`sed -n 1,1p /etc/mysql.secret`
 mysqladmin --password=$MYSQLPASS create $WEBDB
 sleep 1
 echo GRANT ALL PRIVILEGES ON $WEBDB.\* TO \'$WEBDBUSER\'@\'localhost\' IDENTIFIED BY \'$WEBDBPASS\'\; > /opt/karoshi/.tempdata/perms$$.sql
@@ -419,11 +328,11 @@ ssh -x -o PasswordAuthentication=no $WEBSERVER '
 #Make sure that we know the root mysql password
 /opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
 #Get root mysql password
-MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
+MYSQLPASS=`sed -n 1,1p /etc/mysql.secret`
 mysqladmin --password=$MYSQLPASS create '$WEBDB'
 sleep 1
 echo GRANT ALL PRIVILEGES ON '$WEBDB'.\* TO "'"'$WEBDBUSER'"'"@"'"localhost"'" IDENTIFIED BY "'"'$WEBDBPASS'"'"\; > /opt/karoshi/.tempdata/perms$$.sql
-echo ALTER DATABASE $WEBDB DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci\; >> /opt/karoshi/.tempdata/perms$$.sql
+echo ALTER DATABASE '$WEBDB' DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci\; >> /opt/karoshi/.tempdata/perms$$.sql
 mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/perms$$.sql
 rm -f /opt/karoshi/.tempdata/perms$$.sql
 '
