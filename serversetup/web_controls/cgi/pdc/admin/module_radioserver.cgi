@@ -181,7 +181,7 @@ fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><b>'$TITLE - $SERVERNAME'</b><br><br>'
+echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$TITLE - $SERVERNAME'</div><br></div><div id="infobox">'
 #Join server
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_radioserver.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ADMINPASS:$SOURCEPASS:$RELAYPASS" | sudo -H /opt/karoshi/web_controls/exec/module_radioserver
@@ -193,6 +193,6 @@ MESSAGE=`echo $PROBLEMMSG $LOGMSG`
 show_status
 fi
 completed
-echo '</div></div></body></html>'
+echo '</div></div></div></body></html>'
 exit
 

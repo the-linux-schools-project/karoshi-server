@@ -118,7 +118,7 @@ fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox3"><div id="titlebox"><b>'$TITLE - $SERVERNAME'</b><br><br><div id="infobox">'
+echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$TITLE - $SERVERNAME'</div><br></div><div id="infobox">'
 #Join server
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_radius.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_radius
