@@ -3,32 +3,61 @@
 #Check if mail server has been set up
 if [ ! -e /opt/karoshi/server_network/emailserver ]
 then
-echo No Mail Server has been setup.
-exit
+	echo No Mail Server has been setup.
+	exit
 fi
 
-MAILWARN=50
+MAILWARN=25
 MAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+
+function send_mail_warning {
+#Only send an email once
+if [ ! -f /opt/karoshi/web_controls/warnings/messages/mailq_warning ]
+then
+
+	#Send an email if a monitoring server is enabled.
+	if [ -f /opt/karoshi/server_network/monitoringserver ]
+	then
+		MONITORINGSERVER=`sed -n 1,1p /opt/karoshi/server_network/monitoringserver`
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $MONITORINGSERVER '
+		[ ! -d /opt/karoshi/server_network/mon/email_alerts/ ] && exit
+		[ `ls -1 /opt/karoshi/server_network/mon/email_alerts/ | wc -l` = 0 ] && exit
+		for EMAILCONTACT in /opt/karoshi/server_network/mon/email_alerts/*
+		do
+		EMAILCONTACT=`basename $EMAILCONTACT`
+		source /opt/karoshi/server_network/mon/email_alerts/$EMAILCONTACT
+		/opt/karoshi/server_network/mon/smtp-cli --verbose --host="$EMAILSERVER" --from "$SENDER" --to "$EMAILADDRESS" --subject "Karoshi E-Mail Queue Warning" --body-plain "E-Mail Queue Warning for '$MAILSERVER'.
+
+Please check the E-Mail logs immediately.
+"
+		done
+		'
+	fi
+fi
+}
 
 if [ $MAILSERVER = `hostname-fqdn` ]
 then
-mailq_count=`/usr/bin/mailq | /usr/bin/tail -n1 | cut -d" " -f5`
-mailq_count=`expr $mailq_count + 0`
-if [ $mailq_count -gt $MAILWARN ]
-then
-echo "Mail count on Server is $mailq_count"
-/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add mailq_warning /cgi-bin/admin/email_show_queue_fm.cgi "Mail queue alert" 3
-fi 
+	mailq_count=`/usr/bin/mailq | /usr/bin/tail -n1 | cut -d" " -f5`
+	mailq_count=`expr $mailq_count + 0`
+	if [ $mailq_count -ge $MAILWARN ]
+	then
+		send_mail_warning
+		/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add mailq_warning /cgi-bin/admin/email_show_queue_fm.cgi "Mail queue alert" 3
+	fi 
 else
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $MAILSERVER '
-mailq_count=`/usr/bin/mailq | /usr/bin/tail -n1 | cut -d" " -f5`
-mailq_count=`expr $mailq_count + 0`
-echo count is $mailq_count
-if [ $mailq_count -gt '$MAILWARN' ]
-then
-exit 101
-fi
-'
-[ $? = 101 ] && /opt/karoshi/serversetup/web_controls/scripts/web_management_warn add mailq_warning /cgi-bin/admin/email_show_queue_fm.cgi "Mail queue alert" 3
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $MAILSERVER '
+	mailq_count=`/usr/bin/mailq | /usr/bin/tail -n1 | cut -d" " -f5`
+	mailq_count=`expr $mailq_count + 0`
+	if [ $mailq_count -ge '$MAILWARN' ]
+	then
+		exit 101
+	fi
+	'
+	if [ $? = 101 ]
+	then
+		send_mail_warning
+		/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add mailq_warning /cgi-bin/admin/email_show_queue_fm.cgi "Mail queue alert" 3
+	fi
 fi
 
