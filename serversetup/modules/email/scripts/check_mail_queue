@@ -7,7 +7,7 @@ then
 	exit
 fi
 
-MAILWARN=25
+MAILWARN=30
 MAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
 
 function send_mail_warning {
