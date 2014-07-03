@@ -147,15 +147,13 @@ a2enmod headers 1>/dev/null
 
 #Restart apache2
 echo '<li>Restarting Apache</li><br>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop
-echo "<br>"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null 2>/dev/null
 sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
-echo "<br>"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 #####################
 #Create owncloud mysql password for the new database
 #####################
-echo '<li>'$CREATEDBMSG'</li>'
+echo '<li>'$CREATEDBMSG'</li><br>'
 RANGE=61
 COUNTER=1
 while [ $COUNTER -lt 16 ]
@@ -194,9 +192,9 @@ CLOUDID=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
 #############################
 #Make sure that we know the root mysql password
 #############################
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+
 /opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
-echo "</pre>"
+
 #Get root mysql password
 MYSQLPASS=`sed -n 1,1p /etc/mysql.secret`
 
@@ -205,7 +203,7 @@ MYSQLPASS=`sed -n 1,1p /etc/mysql.secret`
 #############################
 mysqladmin -f --password=$MYSQLPASS drop owncloud 1>/dev/null 2>/dev/null
 sleep 1
-mysqladmin --password=$MYSQLPASS create owncloud
+mysqladmin --password=$MYSQLPASS create owncloud 1>/dev/null
 sleep 1
 
 echo GRANT ALL PRIVILEGES ON owncloud.\* TO "'"owncloud_user"'"@"'"localhost"'" IDENTIFIED BY "'"$CLOUDPASS"'"';' > /opt/karoshi/.tempdata/mysqlperms.sql
@@ -245,7 +243,7 @@ then
 LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'443'	'-'#'apacherule /etc/shorewall/rules
 echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
-echo '<li>'$RESTARTSWMSG'</li>'
+echo '<li>'$RESTARTSWMSG'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi

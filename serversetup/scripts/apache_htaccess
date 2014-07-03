@@ -58,6 +58,6 @@ fi
 
 if [ $RESTART = yes ]
 then
-/etc/init.d/$APACHEVER stop
-/etc/init.d/$APACHEVER start
+/etc/init.d/$APACHEVER stop 1>/dev/null 2>/dev/null
+/etc/init.d/$APACHEVER start 1>/dev/null
 fi

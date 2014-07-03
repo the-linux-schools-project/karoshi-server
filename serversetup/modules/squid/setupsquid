@@ -126,26 +126,22 @@ fi
 #Stopping Squid and Apache if they are running
 #########################
 
-
 DANSTATUS=`ps -e | grep -c -w $DANSGUARDIANVER`
 if [ $DANSTATUS != 0 ]
 then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dansguardian_stop
-echo '<br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dansguardian_stop  1>/dev/null
 fi
 
 APACHESTATUS=`ps -e | grep -c -w $$APACHEVER`
 if [ $APACHESTATUS != 0 ]
 then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop
-echo '<br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null
 fi
 
 SQUIDSTATUS=`ps -e | grep -c -w $SQUIDVER`
 if [ $SQUIDSTATUS != 0 ]
 then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_stop
-echo '<br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_stop 1>/dev/null
 fi
 
 #Configure squid to use a different krb5
@@ -259,13 +255,14 @@ sed -i 's/127.0.0.1/'$PDCIP'/g' /opt/karoshi/"useful scripts"/dgupdatefilterlist
 #Get staff list for filter 3
 #############################
 /opt/karoshi/"useful scripts"/dgupdatefilterlist
+
 #Start squid and dansguardian.
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/squid_start
-echo '<br>'
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/dansguardian_start
-echo '<br>'
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_start
-echo '<br>'
+echo '<li>'$STARTSQUIDMSG'</li><br>'
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/squid_start 1>/dev/null
+echo '<li>'$STARTDGMSG'</li><br>'
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/dansguardian_start 1>/dev/null
+echo '<li>'$STARTAPACHEMSG'</li><br>'
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_start 1>/dev/null
 
 [ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
 
@@ -284,12 +281,12 @@ echo 0 5 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/internet_log_compress > /
 SQUIDSTATUS=`ps -e | grep -c $SQUIDVER`
 if [ $SQUIDSTATUS = 0 ]
 then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_start 1>/dev/null
 fi
 DANSGUARDIANSTATUS=`ps -e | grep -c $DANSGUARDIANVER`
 if [ $DANSGUARDIANSTATUS = 0 ]
 then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dansguardian_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dansguardian_start 1>/dev/null
 fi
 
 #Setup squid-deb-proxy
@@ -302,12 +299,13 @@ echo blacklisted-mirror.com > /etc/squid-deb-proxy/pkg-blacklist.d/10-default
 
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/squiddebproxy /etc/init.d/
 
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squiddebproxy_stop
+echo '<li>'$STARTSQUIDDPMSG'</li><br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squiddebproxy_stop 1>/dev/null
 sleep 1
 [ -L /etc/init.d/squid-deb-proxy ] && rm -f /etc/init.d/squid-deb-proxy
 [ `ls /etc/init/squid* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/squid*
 
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squiddebproxy_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squiddebproxy_start 1>/dev/null
 ###########################
 #Open shorewall ports for dansguardian
 ###########################
@@ -317,7 +315,7 @@ RESTART_SHOREWALL=no
 if [ $MODCHECK = 0 ]
 then
 RESTART_SHOREWALL=yes
-echo '<br>'$SHOREWALLMSG - tcp 3128,3142 udp 3128,8000'<br><br>'
+echo '<li>'$SHOREWALLMSG - tcp 3128,3142 udp 3128,8000'</li><br>'
 LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'3128,8000'	'-'#'squid_proxy_rule /etc/shorewall/rules
 echo ACCEPT'	'net'	'fw'	'udp'	'3128,8000'	'-'#'squid_proxy_rule >> /etc/shorewall/rules
@@ -329,7 +327,7 @@ MODCHECK=`grep -c -w apache_web_server /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
 RESTART_SHOREWALL=yes
-echo ''$SHOREWALLMSG - tcp 80 udp 443'<br><br>'
+echo '<li>'$SHOREWALLMSG - tcp 80 udp 443'</li><br>'
 LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'80,443'	'-'#'apache_web_server /etc/shorewall/rules
 echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
@@ -340,11 +338,10 @@ fi
 ######################
 if [ $RESTART_SHOREWALL = yes ]
 then
-echo '<br>'$RESTARTSWMSG
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
-echo '<br><br>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
-echo '<br><br>'
+echo '<li>'$RESTARTSWMSG'</li><br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
 ######################

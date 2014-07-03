@@ -122,11 +122,10 @@ fi
 if [ $RESTARTAPACHE = yes ]
 then
 #Restart apache
-echo "<li>"Restarting apache to apply kerberos support"</li>"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop
-echo "<br>"
+echo "<li>"Restarting apache to apply kerberos support"</li><br>"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null
 sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 echo "<br>"
 fi
 
@@ -186,7 +185,7 @@ MYSQLPASS=`sed -n 1,1p /etc/mysql.secret`
 
 mysqladmin -f --password=$MYSQLPASS drop moodle 1>/dev/null 2>/dev/null
 sleep 1
-mysqladmin --password=$MYSQLPASS create moodle
+mysqladmin --password=$MYSQLPASS create moodle 1>/dev/null
 sleep 1
 
 #Make a backup of moodle.sql
@@ -223,12 +222,12 @@ MYSQLSTATUS=`ps -e | grep -c $MYSQLDVER`
 APACHESTATUS=`ps -e | grep -c $APACHEVER`
 if [ $MYSQLSTATUS = 0 ]
 then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start 1>/dev/null
 fi
 if [ $APACHESTATUS = 0 ]
 then
 echo "<li>"Apache was not running"</li"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 echo "<br>"
 fi
 
@@ -266,8 +265,8 @@ sed -i $DOMAINLINENO'c'\$CFG-">"wwwroot"    "=" ""'"https://$ALIAS.$REALM/moodle
 ##############################
 [ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
 echo '*'/5 '*' '*' '*' '*' lynx -dump http://localhost/moodle/admin/cron.php '>' /dev/null > /opt/karoshi/cronjobs/jobs/refresh_moodle.cron
-/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
-echo '<br>'
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+
 
 #####################################
 #Ensure that apache ports are open in shorewall
@@ -296,7 +295,7 @@ fi
 
 if [ $MOD_SHOREWALL = yes ]
 then
-echo '<br>'$SHOREWALLMSG
+echo '<li>'$SHOREWALLMSG' - tcp 80,443</li><br>'
 LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'apacherule /etc/shorewall/rules
 echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
@@ -311,7 +310,7 @@ chmod 0700 /opt/karoshi/"useful scripts"/moodle_export_grades
 ######################
 if [ $MOD_SHOREWALL = yes ]
 then
-echo '<br>'$RESTARTSWMSG
+echo '<li>'$RESTARTSWMSG'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
@@ -321,12 +320,12 @@ fi
 MYSQLSTATUS=`ps -e | grep -c -w $MYSQLDVER`
 if [ $MYSQLSTATUS = 0 ]
 then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start 1>/dev/null
 fi
 APACHESTATUS=`ps -e | grep -c -w $APACHEVER`
 if [ $APACHESTATUS = 0 ]
 then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 fi
 #Clear moodle cache
 sudo -u www-data php /var/www/html/moodle/admin/cli/purge_caches.php
@@ -334,7 +333,7 @@ sudo -u www-data php /var/www/html/moodle/admin/cli/purge_caches.php
 ###########################
 #Show completed message
 ###########################
-echo '<br><br>'$ACCESSMSG - '<a href="https://'$ALIAS.$REALM'/moodle" target="_blank">'$ALIAS.$REALM'/moodle</a>'
+echo ''$ACCESSMSG - '<a href="https://'$ALIAS.$REALM'/moodle" target="_blank">'$ALIAS.$REALM'/moodle</a>'
 echo '<br>'$ACCESSMSG2:admin - $PASSWORDMSG: admin
 echo '<br><p style="font-weight:bold; font-size:20px;">'$COMPLETEDMSG3'</p><br>'
 exit

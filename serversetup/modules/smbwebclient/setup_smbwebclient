@@ -41,24 +41,24 @@ REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 PDCSERVER=`echo "$DATA" | cut -s -d: -f4`
 WEBPATH=`echo "$DATA" | cut -s -d: -f5`
 
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
 echo `date`: setupfileserver - Blank remote user."<br>"
 exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
 echo `date`: setupfileserver - Blank remote tcpip address."<br>"
 exit 101
 fi
 
-if [ $PDCSERVER'null' = null ]
+if [ -z "$PDCSERVER" ]
 then
 echo `date`: setupfileserver - Blank PDC."<br>"
 exit 101
 fi
 
-if [ $WEBPATH'null' = null ]
+if [ -z "$WEBPATH" ]
 then
 echo `date`: setupfileserver - Blank webpath."<br>"
 exit 101
@@ -80,7 +80,7 @@ source /opt/karoshi/server_network/domain_information/domain_name
 #####################################
 #Extract in smbwebclient and set permisions
 #####################################
-echo '<br>'$EXTRACTMSG
+echo '<li>'$EXTRACTMSG'</li><br>'
 
 [ -d /var/www/html/smbwebclient ] || rm -f -R /var/www/html/smbwebclient
 mkdir -p /var/www/html/smbwebclient
@@ -125,7 +125,7 @@ MODCHECK=`grep -c -w 50000 /etc/shorewall/rules`
 
 if [ $MODCHECK = 0 ]
 then
-echo '<br>'$SHOREWALLMSG
+echo '<li>'$SHOREWALLMSG'</li><br>'
 LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'50000'	'-'#'smbwebclientrule /etc/shorewall/rules
 echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
@@ -135,7 +135,7 @@ fi
 ######################
 if [ $MODCHECK = 0 ]
 then
-echo '<br>'$RESTARTSWMSG
+echo '<li>'$RESTARTSWMSG'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
@@ -155,21 +155,20 @@ fi
 #################################
 #Configure virtual server on port 50000 for smbwebclient
 #################################
-echo '<br>'$VIRTUALSERVERMSG
+echo '<li>'$VIRTUALSERVERMSG'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/smbwebclientvhost $WEBPATH
 #################################
 #Restart apache
 #################################
-echo '<br>'$RESTARTAPACHEMSG'<br>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop
-echo '<br>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 2>/dev/null
-echo '<br>'
+echo '<li>'$RESTARTAPACHEMSG'</li><br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
+
 
 ###########################
 #Show completed message
 ###########################
-echo '<br><br>'$ACCESSMSG - '<a href="https://'$WEBPATH':50000/smbwebclient" target="_blank">https://'$WEBPATH':50000/smbwebclient</a>'
+echo '<br>'$ACCESSMSG - '<a href="https://'$WEBPATH':50000/smbwebclient" target="_blank">https://'$WEBPATH':50000/smbwebclient</a>'
 echo '<br><br>'$FIREWALLHELP
 echo '<br><br><b>'$COMPLETEDMSG'</b>'
 exit

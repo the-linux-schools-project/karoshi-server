@@ -115,13 +115,15 @@ echo -e '
 	veto files = /*.exe/*.msi/*.mp3/*.wma/*.ram/*.mov/*.mpg/*.mpeg/*.bat/*.lnk/*.zip/"Folder Settings"/desktop.ini/
 ' >> /etc/samba/smb.conf
 fi
+
+
+
 #Stop samba
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 sleep 1
-echo "<br>"
 #start samba
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
-echo "<br>"
+echo "<li>"$STARTSAMBAMSG"</li><br>"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null
 #Create the folders
 chmod 0755 /home
 chown root.root /home
@@ -142,7 +144,7 @@ setfacl -R -m g:staff:r-x,d:g:staff:r-x /home/users/students
 ###########################
 #Show completed message
 ###########################
-echo '<br><br><b>'$COMPLETEDMSG'</b>'
+echo '<br><b>'$COMPLETEDMSG'</b>'
 sleep 2
 exit
 

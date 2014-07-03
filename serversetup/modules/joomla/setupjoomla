@@ -45,10 +45,12 @@ MYSQLSTATUS=`ps -e | grep -c $MYSQLDVER`
 APACHESTATUS=`ps -e | grep -c $APACHEVER`
 if [ $MYSQLSTATUS = 0 ]
 then
+echo '<li>'$STARTMYSQLMSG'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start
 fi
 if [ $APACHESTATUS = 0 ]
 then
+echo '<li>'$STARTAPACHEMSG'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 fi
 
@@ -110,7 +112,7 @@ MYSQLPASS=`sed -n 1,1p /etc/mysql.secret`
 #Drop joomla database if exists, create a new one and pipe in the data
 ########################
 mysqladmin -f --password=$MYSQLPASS drop joomla25 1>/dev/null 2>/dev/null
-mysqladmin --password=$MYSQLPASS create joomla25
+mysqladmin --password=$MYSQLPASS create joomla25 1>/dev/null
 CONNECT_STATUS=`echo $?`
 mysql --password=$MYSQLPASS joomla25 < /opt/karoshi/serversetup/modules/joomla/joomla.sql
 echo GRANT ALL PRIVILEGES ON joomla25.\* TO "'"joomla_user"'"@"'"localhost"'" IDENTIFIED BY "'"$WBPASS"'"';' > /opt/karoshi/.tempdata/wbperms.sql
@@ -175,7 +177,7 @@ fi
 
 if [ $MOD_SHOREWALL = yes ]
 then
-echo '<br>'$SHOREWALLMSG
+echo '<li>'$SHOREWALLMSG'</li><br>'
 LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'apacherule /etc/shorewall/rules
 echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
@@ -186,7 +188,7 @@ fi
 ######################
 if [ $MOD_SHOREWALL = yes ]
 then
-echo '<br>'$RESTARTSWMSG
+echo '<li>'$RESTARTSWMSG'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi

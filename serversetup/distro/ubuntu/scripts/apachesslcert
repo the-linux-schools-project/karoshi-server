@@ -65,7 +65,7 @@ LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 
 cd /etc/ssl/apache
 #Create host certificate
-echo "<li>"$SERVER - Creating SSL certificate"</li>"
+echo "<li>"$SERVER - Creating SSL certificate"</li><br>"
 echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\n"$ALIAS"\n"$ALIAS"\n"$EMAILADDRESS"\n"webserver"\n" | openssl req -newkey rsa:8192 -days 3650 -keyout $ALIAS.key -nodes -out $ALIAS.req
 
 chmod 0600 /etc/ssl/apache/$ALIAS.key
@@ -108,17 +108,16 @@ sed -i $SSLCertificateKeyFileline'c'\SSLCertificateKeyFile" "/etc/ssl/apache/$AL
 #Check which web server
 if [ `ls /etc/rc2.d | grep -c nginx` -gt 0 ]
 then
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nginx_stop
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nginx_start
+echo "<li>"Restarting nginx to apply the ssl certificate"</li><br>"
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nginx_stop 1>/dev/null 2>/dev/null
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nginx_start 1>/dev/null
 fi
 
 if [ `ls /etc/rc2.d | grep -c apache2` -gt 0 ]
 then
-echo "<li>"Restarting apache to apply the ssl certificate"</li>"
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_stop
-echo "<br>"
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_start
-echo "<br>"
+echo "<li>"Restarting apache to apply the ssl certificate"</li><br>"
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_stop 1>/dev/null 2>/dev/null
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_start 1>/dev/null
 fi
 
 else
@@ -163,17 +162,16 @@ sed -i $SSLCertificateKeyFileline"c"\SSLCertificateKeyFile" "/etc/ssl/apache/'$A
 #Check which web server
 if [ `ls /etc/rc2.d | grep -c nginx` -gt 0 ]
 then
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nginx_stop
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nginx_start
+echo "<li>"Restarting apache to apply the ssl certificate"</li><br>"
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nginx_stop 1>/dev/null 2>/dev/null
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nginx_start 1>/dev/null
 fi
 
 if [ `ls /etc/rc2.d | grep -c apache2` -gt 0 ]
 then
-echo "<li>"Restarting apache to apply the ssl certificate"</li>"
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_stop
-echo "<br>"
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_start
-echo "<br>"
+echo "<li>"Restarting apache to apply the ssl certificate"</li><br>"
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_stop 1>/dev/null 2>/dev/null
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_start 1>/dev/null
 fi
 '
 fi

@@ -122,10 +122,12 @@ echo '<input type="text" name="_ALIAS_" style="width: 200px;" value="" size="10"
 if [ -f /opt/karoshi/server_network/aliases/$SERVERNAME ]
 then
 #Show any custom aliases that have been assigned
+echo '<option style="color:grey ; font-weight:bold" value="">Assigned Aliases</option>'
 for CUSTOM_ALIAS in `cat /opt/karoshi/server_network/aliases/$SERVERNAME`
 do
-echo '<option>'$CUSTOM_ALIAS'</option>'
+echo '<option style="color:green">'$CUSTOM_ALIAS'</option>'
 done
+echo '<option style="color:grey ; font-weight:bold" value="">Unassigned Aliases</option>'
 fi
 
 

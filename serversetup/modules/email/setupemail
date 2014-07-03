@@ -339,7 +339,7 @@ MYSQLPASS=`sed -n 1,1p /etc/mysql.secret`
 #Create sogo database
 mysqladmin -f --password=$MYSQLPASS drop sogo 1>/dev/null 2>/dev/null
 sleep 1
-mysqladmin --password=$MYSQLPASS create sogo
+mysqladmin --password=$MYSQLPASS create sogo 1>/dev/null
 sleep 1
 echo GRANT ALL PRIVILEGES ON sogo.\* TO "'"sogo_user"'"@"'"localhost"'" IDENTIFIED BY "'"$SOGOPASS"'"';' > /opt/karoshi/.tempdata/mysqlperms.sql
 mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/mysqlperms.sql
@@ -387,22 +387,19 @@ a2enmod headers 1>/dev/null
 a2enmod rewrite 1>/dev/null
 
 #Restart apache
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop
-echo '<br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null 2>/dev/null
 sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
-echo '<br>'
+echo '<li>'$STARTAPACHEMSG'</li><br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 #Restart sogo
-echo '<br>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/sogo_stop
-echo '<br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/sogo_stop 1>/dev/null 2>/dev/null
 sleep 1
+echo '<li>'$STARTMEMCACHEDMSG'</li><br>'
 #Start memcached
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/memcached_start
-echo '<br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/memcached_start 1>/dev/null
 sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/sogo_start
-echo '<br>'
+echo '<li>'$STARTAOGOMSG'</li><br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/sogo_start 1>/dev/null
 ###########################
 ###########################
 echo "I accept the risk" > /etc/c-client.cf
@@ -416,20 +413,20 @@ MYSQLSTATUS=`ps -e | grep -c -w $MYSQLDVER`
 APACHESTATUS=`ps -e | grep -c -w $APACHEVER`
 if [ $MYSQLSTATUS = 0 ]
 then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start
+echo '<li>'$STARTMYSQLMSG'</li><br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start 1>/dev/null
 fi
 if [ $APACHESTATUS = 0 ]
 then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
+echo '<li>'$STARTAPACHEMSG'</li><br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 fi
 
 ##########################
 #make sure that apache, postfix, mailscanner and imap is running
 ##########################
 APACHESTATUS=`ps -e | grep -c $APACHEVER`
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_stop  1>/dev/null
-echo '<br>'
-
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_stop 1>/dev/null 2>/dev/null
 
 #Create access file
 touch /etc/postfix/access
@@ -444,25 +441,26 @@ then
 echo root:"	""	"sysadmin >> /etc/postfix/aliases
 fi
 newaliases
+echo '<li>'$STARTPOSTFIXMSG'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_start  1>/dev/null
 if [ $APACHESTATUS = 0 ]
 then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 
+echo '<li>'$STARTFAIL2BANMSG'</li><br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 fi
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mailscanner_stop
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mailscanner_stop 1>/dev/null 2>/dev/null
 sleep 1
-echo '<br>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/clamd_start 
+echo '<li>'$STARTCLAMDMSG'</li><br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/clamd_start 1>/dev/null
+echo '<li>'$STARTMAILSCANNERMSG'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mailscanner_start 
-echo '<br>'
+
 ##########################
 #Restart dovecot
 ##########################
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dovecot_stop 
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dovecot_stop 1>/dev/null 2>/dev/null
 sleep 0.5
-echo '<br>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dovecot_start
-echo '<br><br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dovecot_start 1>/dev/null
 
 ###########################
 #Open shorewall ports
@@ -495,11 +493,10 @@ fi
 ######################
 if [ $RESTART_SHOREWALL = yes ]
 then
-echo $RESTARTSWMSG'<br><br>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
-echo '<br>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
-echo '<br><br>'
+echo '<li>'$RESTARTSWMSG'</li><br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
 ######################
@@ -510,9 +507,10 @@ fi
 [ ! -f /opt/karoshi/server_network/security/fail2ban/email ] && cp -f /opt/karoshi/serversetup/all/fail2ban/jails/email /opt/karoshi/server_network/security/fail2ban/
 [ ! -f /opt/karoshi/server_network/security/fail2ban/sogo ] && cp -f /opt/karoshi/serversetup/all/fail2ban/jails/sogo /opt/karoshi/server_network/security/fail2ban/
 cat /opt/karoshi/server_network/security/fail2ban/* > /etc/fail2ban/jail.local
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_stop
+echo '<li>'$STARTFAIL2BANMSG'</li><br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_stop 1>/dev/null
 sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_start 1>/dev/null
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/fail2ban
 
 ###########################

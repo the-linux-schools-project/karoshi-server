@@ -84,7 +84,6 @@ if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
 then
 JOINTYPE=DC
 SERVERROLE="active directory domain controller"
-
 fi
 
 #Get samba 4 database password
@@ -101,7 +100,7 @@ echo exit 0 >> /etc/rc.local
 mount -t tmpfs tmpfs /run/lock -o remount,size=50M
 fi
 
-echo "<br><li><b>'$JOINDOMAINMSG'</b></li><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+echo "<li><b>'$JOINDOMAINMSG'</b></li><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 
 #Join the domain
 if [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ]
@@ -196,39 +195,37 @@ exit 101
 fi
 fi
 
+echo "<br>"
+
 #Check firewall rules for adc, rodc and domain member
 MODCHECK=`grep -c -w auth_rule /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
-echo "<br><li><b>'$ADDSWALLPORTSMSG'</b></li><br><b>tcp</b> '$TCPPORTS'<br><b>udp</b> '$UDPPORTS'<br><br>"
+echo "<li><b>'$ADDSWALLPORTSMSG'</b></li><br><b>tcp</b> '$TCPPORTS'<br><b>udp</b> '$UDPPORTS'<br>"
 LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"'$TCPPORTS'"	"-"#"auth_rule /etc/shorewall/rules
 echo ACCEPT"	"net"	"fw"	"udp"	"'$UDPPORTS'"	"-"#"auth_rule >> /etc/shorewall/rules
 echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 
 #Restart shorewall
-echo "<br><li><b>"$HOSTNAME - '$RESTARTSHWALLMSG'"</b></li><br>"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
-echo "<br>"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
-echo "<br>"
+echo "<li><b>"$HOSTNAME - '$RESTARTSHWALLMSG'"</b></li><br>"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
-echo "<br><li><b>"$HOSTNAME - '$RESTARTSMBAMSG'"</b></li><br>"
+echo "<li><b>"$HOSTNAME - '$RESTARTSMBAMSG'"</b></li><br>"
 #Stop samba
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 2>/dev/null
-echo "<br>"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 sleep 1
 #start samba
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
-echo "<br>"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null
 #Make sure samba runs on boot
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/samba
 ' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #Exit if the server did not join the domain
-if [ `echo $?` = 101 ]
+if [ $? = 101 ]
 then
-echo $ERRORMSG1"<br><br>"
+echo $ERRORMSG1"<br>"
 sleep 4
 exit 101
 fi
@@ -306,7 +303,7 @@ fi
 if [ $SERVERNAME != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
-echo "<br><li><b>'$CONFIGUREAUTHMSG'</b></li><br>"
+echo "<li><b>'$CONFIGUREAUTHMSG'</b></li><br>"
 
 source /opt/karoshi/serversetup/variables/distro
 
@@ -376,7 +373,6 @@ echo map group member nogroupmembers >> /etc/nslcd.conf
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nslcd_stop 1>/dev/null
 #Start nslcd
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nslcd_start 1>/dev/null
-echo "<br><br>"
 #Set nslcd to start on boot
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nslcd
 ' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -510,11 +506,12 @@ sleep 4
 exit $EXITCHECK
 fi
 fi
+echo '<br><br>'
 }
 
 
 function configure_ntp {
-
+echo '<li>'$CONFIGURENTPMSG'</li><br>'
 NTPSERVER=$KRBSERVER
 if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
 then

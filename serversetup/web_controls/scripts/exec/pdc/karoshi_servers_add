@@ -517,7 +517,7 @@ gluster volume info $GLUSTERVOL 1>/dev/null 2>/dev/null
 if [ $? != 0 ]
 then
 	#Volume does not exist so create one
-	/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster $HOSTNAME.$REALM,$SERVER.$REALM $GLUSTERVOL $GLUSTERPATH  create $REMOTE_USER $REMOTE_ADDR
+	/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster $HOSTNAME.$REALM,$SERVER.$REALM $GLUSTERVOL $GLUSTERPATH create $REMOTE_USER $REMOTE_ADDR
 else
 	#Volume exists so add server to the volume if the server is not already in the volume
 	/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster $SERVER.$REALM $GLUSTERVOL $GLUSTERPATH add $REMOTE_USER $REMOTE_ADDR
@@ -537,7 +537,7 @@ then
 			if [ $? != 0 ]
 			then
 				echo "<li> $HOSTNAME.$REALM - starting glusterfs</li>"
-				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_start
+				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_start 1>/dev/null
 			fi
 			GLUSTERVOL=netlogon
 			GLUSTERPATH=/var/lib/samba/netlogon

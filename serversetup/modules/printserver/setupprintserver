@@ -118,14 +118,8 @@ fi
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/samba
 
 ######################
-#Install extra printer drivers
-######################
-#/opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/printserver/install_ppds
-######################
 #Setup Samba
 ######################
-
-echo '<br><br>'
 
 if [ `grep -c "All Printers" /etc/samba/smb.conf` = 0 ]
 then
@@ -178,7 +172,7 @@ fi
 ########################
 ROOTUSER=Administrator
 [ `grep -c "#karoshi_member_server" /etc/samba/smb.conf` -gt 0 ] && ROOTUSER=root
-net rpc rights grant "itadmin" SePrintOperatorPrivilege -U $ROOTUSER%"$LDAPPASS"
+net rpc rights grant "itadmin" SePrintOperatorPrivilege -U $ROOTUSER%"$LDAPPASS" 1>/dev/null
 
 ###########################
 #Open shorewall ports for samba
@@ -186,23 +180,15 @@ net rpc rights grant "itadmin" SePrintOperatorPrivilege -U $ROOTUSER%"$LDAPPASS"
 MODCHECK=`grep -c -w samba_fileserver_rule /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
-echo ''$SHOREWALLMSG - tcp 139,445 udp 137,138,445'<br><br>'
-LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'53,88,123,135,137,138,139,389,445,464,636,1024:1100,3268'	'-'#'samba_fileserver_rule /etc/shorewall/rules
-echo ACCEPT'	'net'	'fw'	'udp'	'53,88,123,137,138,139,389,445,464,636,1024:1100'	'-'#'samba_fileserver_rule >> /etc/shorewall/rules
-echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
-fi
+	echo '<li>'$SHOREWALLMSG - tcp 139,445 udp 137,138,445'</li><br>'
+	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'53,88,123,135,137,138,139,389,445,464,636,1024:1100,3268'	'-'#'samba_fileserver_rule /etc/shorewall/rules
+	echo ACCEPT'	'net'	'fw'	'udp'	'53,88,123,137,138,139,389,445,464,636,1024:1100'	'-'#'samba_fileserver_rule >> /etc/shorewall/rules
+	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 
-######################
-#Restart shorewall
-######################
-if [ $MODCHECK = 0 ]
-then
-echo '<br>'$RESTARTSWMSG
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
-echo '<br><br>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
-echo '<br><br>'
+	echo '<li>'$RESTARTSWMSG'</li><br>'
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
 #Make sure that lpstat can see usernames
@@ -240,6 +226,7 @@ CUPSSTATUS=`ps -e | grep -c $CUPSVER`
 
 if [ $CUPSSTATUS = 0 ]
 then
+echo '<li>'$STARTCUPSMSG'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/cups_start 1>/dev/null
 fi
 
@@ -247,6 +234,7 @@ SAMBASTATUS=`ps -e | grep -c $SMBVER`
 
 if [ $SAMBASTATUS = 0 ]
 then
+echo '<li>'$STARTSAMBAMSG'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null
 fi
 

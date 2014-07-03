@@ -74,7 +74,7 @@ source /opt/karoshi/serversetup/variables/distro
 if [ $? != 0 ]
 then
 echo "<li> $HOSTNAME.$REALM - starting glusterfs</li><br>"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_start 1>/dev/null
 fi
 
 ############################
@@ -147,13 +147,13 @@ fi
 if [ $? != 0 ]
 then
 echo "<li> '$SERVER' - starting glusterfs</li><br>"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_start 1>/dev/null
 fi
 '
-gluster peer probe $SERVER
+gluster peer probe $SERVER 1>/dev/null
 
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-gluster peer probe '$HOSTNAME.$REALM'
+gluster peer probe '$HOSTNAME.$REALM' 1>/dev/null
 '
 #Make sure that peer probe is successfull
 PCOUNTER=1
@@ -178,7 +178,7 @@ done
 
 #Create glusterfs volume
 echo "<li>Creating GlusterFS volume for $VOLUME</li><br>"
-gluster volume create $VOLUME $TYPE $COUNTER $GLUSTERCLUSTER force
+gluster volume create $VOLUME $TYPE $COUNTER $GLUSTERCLUSTER force 1>/dev/null 
 if [ $? != 0 ]
 then
 echo "<li>There was a problem creating the volume for $VOLUME</li><br>"
@@ -186,7 +186,7 @@ exit 101
 fi
 #Start Gluster volume
 echo "<li>Starting GlusterFS volume for $VOLUME</li>"
-gluster volume start $VOLUME
+gluster volume start $VOLUME 1>/dev/null
 if [ $? != 0 ]
 then
 echo "<li>There was a problem starting the volume for $VOLUME</li><br>"

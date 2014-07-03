@@ -26,7 +26,7 @@ done
 
 function start_mysql {
 
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start 1>/dev/null
 
 #Make sure the mysql database is started
 STARTCOUNT=0

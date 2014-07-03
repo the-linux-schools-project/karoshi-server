@@ -63,7 +63,7 @@ fi
 #Copy in config files for mon
 #############################
 
-echo '<b>'$TITLE'</b><br><br>'$CONFIGUREMONMSG
+echo '<b>'$TITLE'</b><br><li>'$CONFIGUREMONMSG'</li><br>'
 [ -d /var/www/html/mon/ ] || ( mkdir -p /var/www/html/mon/ ; chmod 0755 -R /var/www/html/mon/ )
 [ -d /opt/karoshi/server_network/mon/events ] || ( mkdir -p /opt/karoshi/server_network/mon/events ; chmod 0755 -R /opt/karoshi/server_network/mon ; chown mon /opt/karoshi/server_network/mon/events )
 [ -d /opt/karoshi/server_network/mon/messages ] || ( mkdir -p /opt/karoshi/server_network/mon/messages ; chmod 0755 -R /opt/karoshi/server_network/mon ; chown mon /opt/karoshi/server_network/mon/messages )
@@ -126,16 +126,16 @@ fi
 #############################
 #Ensure that apache, mon are running
 ##############################
-
+echo '<li>'$STARTMONMSG'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_stop 1>/dev/null
 sleep 1
-echo '<br><br>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_start
-echo '<br><br>'
+
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_start 1>/dev/null
 APACHESTATUS=`ps -e | grep -c -w $APACHEVER`
 if [ $APACHESTATUS = 0 ]
 then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
+echo '<li>'$STARTAPACHEMSG'</li><br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 fi
 
 ############################
@@ -163,9 +163,8 @@ chmod 0755 /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop
 ##########################
 if [ -f /opt/karoshi/karoshi_user/.xscreensaver ]
 then
-sed -i 's/blank/off/g'/opt/karoshi/karoshi_user/.xscreensaver
+sed -i 's/blank/off/g' /opt/karoshi/karoshi_user/.xscreensaver
 fi
-
 exit
 
 

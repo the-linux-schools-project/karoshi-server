@@ -131,7 +131,7 @@ DIV_ID=mobileactionbox
 WIDTH=160
 TABLECLASS=mobilestandard
 fi
-echo '<form name="myform" action="/cgi-bin/admin/update_servers_view_logs.cgi" method="post">'
+echo '<form name="testform" action="/cgi-bin/admin/update_servers_view_logs.cgi" method="post">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
