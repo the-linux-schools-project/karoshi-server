@@ -61,20 +61,19 @@ REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 SERVER=`echo "$DATA" | cut -s -d: -f4`
-ALIAS=`echo "$DATA" | cut -s -d: -f5`
 
 ########################
 #Check data
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: apply_ssl_certificate - Not called by apply_ssl_certificate.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: apply_ssl_certificate - Not called by apply_ssl_certificate.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ $REMOTE_USER'null' = null ]
 then
-echo `date`: apply_ssl_certificate - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: apply_ssl_certificate - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ $REMOTE_ADDR'null' = null ]
 then
@@ -83,18 +82,13 @@ exit 101
 fi
 if [ "$SERVER"'null' = null ]
 then
-echo `date`: apply_ssl_certificate - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
-if [ "$ALIAS"'null' = null ]
-then
-echo `date`: apply_ssl_certificate - Blank "alias" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: apply_ssl_certificate - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: apply_ssl_certificate - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: apply_ssl_certificate - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 source /opt/karoshi/server_network/domain_information/domain_name
@@ -104,10 +98,10 @@ echo `date`: apply_ssl_certificate - applying certificate "for" $ALIAS.$REALM by
 
 if [ $ALIAS = manage ]
 then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert_web_management
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert_web_management
 else
-source /opt/karoshi/server_network/domain_information/domain_name
-echo "$REMOTE_USER:$REMOTE_ADDR:$SERVER:$ALIAS.$REALM:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
+	source /opt/karoshi/server_network/domain_information/domain_name
+	echo "$REMOTE_USER:$REMOTE_ADDR:$SERVER:newcert:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
 fi
 exit
 

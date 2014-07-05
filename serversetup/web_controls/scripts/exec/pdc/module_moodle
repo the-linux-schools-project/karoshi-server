@@ -166,7 +166,7 @@ LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 source /opt/karoshi/server_network/domain_information/domain_name
 echo `date`: module_moodle - checking "if" $ALIAS.$REALM is "in" the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 samba-tool dns query 127.0.0.1 $REALM $ALIAS.$REALM CNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ `echo $?` != 0 ]
+if [ $? != 0 ]
 then
 echo `date`: module_moodle - adding $ALIAS "for" $SERVERNAME to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 samba-tool dns add 127.0.0.1 $REALM $ALIAS CNAME $SERVERNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -242,11 +242,8 @@ function apply_ssl_certificate {
 #######################
 #Apply certificate
 #######################
-if [ ! -f /etc/ssl/apache/$ALIAS.$REALM.key ]
-then
-echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:$ALIAS.$REALM:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
+echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:enablecert:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
 [ `echo $?` != 0 ] && exit 101 
-fi
 }
 
 function create_linux_client_icon {

@@ -53,22 +53,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 #########################
 #Assign data to variables
 #########################
-
-END_POINT=8
-#Assign ALIAS
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ALIAScheck ]
-then
-let COUNTER=$COUNTER+1
-ALIAS=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
-
+END_POINT=9
 #Assign SERVER
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
@@ -117,12 +102,6 @@ fi
 #########################
 #Check data
 #########################
-#Check to see that ALIAS is not blank
-if [ -z "$ALIAS" ]
-then
-MESSAGE=$ERRORMSG15
-show_status
-fi
 
 #Check to see that SERVER is not blank
 if [ -z "$SERVER" ]
@@ -135,7 +114,7 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/apply_ssl_certificate.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER:$ALIAS:" | sudo -H /opt/karoshi/web_controls/exec/apply_ssl_certificate
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER:" | sudo -H /opt/karoshi/web_controls/exec/apply_ssl_certificate
 MESSAGE=$COMPLETEDMSG
 show_status
 exit

@@ -126,7 +126,6 @@ echo "<li>"Restarting apache to apply kerberos support"</li><br>"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null
 sleep 1
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
-echo "<br>"
 fi
 
 #####################

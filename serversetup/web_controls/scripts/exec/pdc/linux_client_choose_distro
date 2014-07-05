@@ -131,7 +131,7 @@ for ISOIMAGES in /home/itadminshare/distributions/linux/*.iso
 do
 ISOIMAGE=`basename "$ISOIMAGES"`
 
-echo '<tr><td style="width: 200px; vertical-align: top;">'$ISOIMAGE'</td><td style="vertical-align: top;">
+echo '<tr><td style="width: 250px; vertical-align: top;">'$ISOIMAGE'</td><td style="vertical-align: top;">
 <a class="info" href="javascript:void(0)"><input name="___DISTROCHOICE___'$ISOIMAGE'___CONTROL___copy___" type="image" class="images" src="/images/submenus/client/copy_iso.png" value=""><span>'$ISOIMAGE' - '$HELPMSG5'</span></a>
 </td></tr>
 '
@@ -158,7 +158,7 @@ for ISOIMAGES in /home/distributions/linux_iso/*.iso
 do
 ISOIMAGE=`basename "$ISOIMAGES"`
 
-echo "<tr><td style=\"width: 200px; vertical-align: top;\">$ISOIMAGE</td>
+echo "<tr><td style=\"width: 250px; vertical-align: top;\">$ISOIMAGE</td>
 <td style=\"vertical-align: top;\">
 <a class=\"info\" href=\"javascript:void(0)\"><input name=\"___DISTROCHOICE___'$ISOIMAGE'___CONTROL___delete___\" type=\"image\" class=\"images\" src=\"/images/submenus/client/delete_iso.png\" value=""><span>$ISOIMAGE - '$HELPMSG6'</span></a>
 </td></tr>
@@ -179,7 +179,7 @@ echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpad
 for ISOIMAGES in /home/distributions/linux_iso/*.iso
 do
 ISOIMAGE=`basename "$ISOIMAGES"`
-echo "<tr><td style=\"width: 200px; vertical-align: top;\">$ISOIMAGE</td>
+echo "<tr><td style=\"width: 250px; vertical-align: top;\">$ISOIMAGE</td>
 <td style=\"vertical-align: top;\">
 <a class=\"info\" href=\"javascript:void(0)\"><input name=\"___DISTROCHOICE___${ISOIMAGE}___CONTROL___delete___\" type=\"image\" class=\"images\" src=\"/images/submenus/client/delete_iso.png\" value=""><span>$ISOIMAGE - '$HELPMSG6'</span></a>
 </td></tr>

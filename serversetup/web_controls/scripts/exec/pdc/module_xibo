@@ -204,11 +204,8 @@ function apply_ssl_certificate {
 #######################
 #Apply certificate
 #######################
-if [ ! -f /etc/ssl/apache/$ALIAS.$REALM.key ]
-then
-echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:$ALIAS.$REALM:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
+echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:enablecert:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
 [ `echo $?` != 0 ] && exit 101 
-fi
 }
 
 check_already_installed

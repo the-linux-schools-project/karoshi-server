@@ -249,12 +249,9 @@ function apply_ssl_certificate {
 #######################
 #Apply certificate
 #######################
-if [ ! -f /etc/ssl/apache/$ALIAS.$REALM.key ]
-then
 echo `date`: module_owncloud - applying ssl certificate by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:$ALIAS.$REALM:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
+echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:enablecert:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
 [ `echo $?` != 0 ] && exit 101 
-fi
 }
 
 function create_linux_client_icon {

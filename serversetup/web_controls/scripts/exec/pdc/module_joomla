@@ -63,7 +63,7 @@ REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 JOOMLASERVER=`echo "$DATA" | cut -s -d: -f4`
-ALIAS=`echo "$DATA" | cut -s -d: -f6 | cut -d"." -f1`
+ALIAS=`echo "$DATA" | cut -s -d: -f5 | cut -d"." -f1`
 ########################
 #Check data
 ########################
@@ -127,6 +127,9 @@ touch /opt/karoshi/server_network/aliases/$SERVERNAME
 SHORTSERVERNAME=`echo $JOOMLASERVER | cut -d. -f1`
 [ ! -d /var/lib/samba/netlogon/domain_information/aliases ] && mkdir -p /var/lib/samba/netlogon/domain_information/aliases
 [ ! -f /var/lib/samba/netlogon/domain_information/aliases/$SHORTSERVERNAME ] && echo $ALIAS > /var/lib/samba/netlogon/domain_information/aliases/$SHORTSERVERNAME
+
+#Create ssl cert
+echo "$REMOTE_USER:$REMOTE_ADDR:$JOOMLASERVER:enablecert:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
 
 if [ $JOOMLASERVER = `hostname-fqdn` ]
 then

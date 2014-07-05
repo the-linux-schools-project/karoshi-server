@@ -125,11 +125,9 @@ echo `date`: dnsadd - adding $DOMAINPATH $SERVERIP to the dns records by $REMOTE
 samba-tool dns add 127.0.0.1 $REALM $ALIAS CNAME $SERVERNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
 
-if [ ! -f /etc/ssl/apache/$ALIAS.$REALM.key ]
-then
-echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:$ALIAS.$REALM:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
+echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:enablecert:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
 [ `echo $?` != 0 ] && exit 101 
-fi
+
 
 if [ $SERVERNAME = `hostname-fqdn` ]
 then

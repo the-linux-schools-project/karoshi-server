@@ -159,11 +159,9 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:smtp:postfix:$SERVERNAME:pos
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:HTTP:sogo:$SERVERNAME:www-data:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
 
 #Create ssl certificate for web access
-if [ ! -f /etc/ssl/apache/$ALIAS.$REALM.key ]
-then
-echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:$ALIAS.$REALM:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
+echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:enablecert:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
 [ `echo $?` != 0 ] && exit 101 
-fi
+
 
 #Create ssl certificate for mail access
 if [ ! -f /etc/ssl/mail/dovecot.key ]
@@ -356,7 +354,7 @@ echo $SERVERNAME2 > /var/lib/samba/netlogon/domain_information/mail_server
 
 #Add in a cron job to check the mail queue for excessive mail
 echo '*/15' '*' '*' '*' '1-7' /opt/karoshi/serversetup/modules/email/scripts/check_mail_queue > /opt/karoshi/cronjobs/jobs/check_mail_queue.cron
-/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
 
 #Allow monitoring server to send email alerts

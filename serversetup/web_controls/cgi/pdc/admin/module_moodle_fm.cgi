@@ -41,7 +41,7 @@ source /opt/karoshi/server_network/domain_information/domain_name
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -70,14 +70,14 @@ END_POINT=5
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -95,8 +95,8 @@ exit
 #Check to see that servername is not blank
 if [ $SERVERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG2
-show_status
+	MESSAGE=$ERRORMSG2
+	show_status
 fi
 
 #Generate navigation bar
@@ -119,13 +119,13 @@ echo '<input type="text" name="_ALIAS_" style="width: 200px;" value="" size="10"
 
 if [ -f /opt/karoshi/server_network/aliases/$SERVERNAME ]
 then
-#Show any custom aliases that have been assigned
-echo '<option style="color:grey ; font-weight:bold" value="">Assigned Aliases</option>'
-for CUSTOM_ALIAS in `cat /opt/karoshi/server_network/aliases/$SERVERNAME`
-do
-echo '<option style="color:green">'$CUSTOM_ALIAS'</option>'
-done
-echo '<option style="color:grey ; font-weight:bold" value="">Unassigned Aliases</option>'
+	#Show any custom aliases that have been assigned
+	echo '<option style="color:black ; font-weight:bold" value="">'$ALIASMSG1'</option>'
+	for CUSTOM_ALIAS in `cat /opt/karoshi/server_network/aliases/$SERVERNAME`
+	do
+		echo '<option style="color:green">'$CUSTOM_ALIAS'</option>'
+	done
+	echo '<option style="color:black ; font-weight:bold" value="">'$ALIASMSG2'</option>'
 fi
 
 #Get a set of available aliases to check
@@ -135,20 +135,9 @@ fi
 COUNTER=1
 while [ $COUNTER -le 10 ]
 do
-[ `nslookup www$COUNTER.$REALM 127.0.0.1 | grep -c ^Name:` = 0 ] && echo '<option>www'$COUNTER'</option>'
-let COUNTER=$COUNTER+1
+	[ `nslookup www$COUNTER.$REALM 127.0.0.1 | grep -c ^Name:` = 0 ] && echo '<option>www'$COUNTER'</option>'
+	let COUNTER=$COUNTER+1
 done
-echo '</select></td></tr>'
-#Ask to migrate an existing moodle setup
-if [ -f /opt/karoshi/server_network/moodleserver ]
-then
-CURRENTMOODLESERVER=`sed -n 1,1p /opt/karoshi/server_network/moodleserver`
-if [ $CURRENTMOODLESERVER != $SERVERNAME ]
-then
-echo '<tr><td>'$CURRENTSERVERMSG'</td><td>'$CURRENTMOODLESERVER'</td></tr>'
-echo '<tr><td>'$COPYMOODLESMSG'</td><td><input name="_COPYMOODLE_" value="yes" type="checkbox"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td></tr>'
-fi
-fi
-
-echo '</tbody></table><br><br></div><div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit"></div></form></div></body></html>'
+echo '</select></td></tr></tbody></table><br><br></div><div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit"></div></form></div></body></html>'
 exit
+
