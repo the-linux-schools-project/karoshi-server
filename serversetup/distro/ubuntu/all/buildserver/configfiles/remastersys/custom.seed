@@ -12,3 +12,4 @@ d-i user-setup/encrypt-home boolean false
 # Avoid that last message about the install being complete.
 d-i finish-install/reboot_in_progress note
 d-i debian-installer/exit/poweroff boolean true
+d-i cdrom-detect/eject boolean false
