@@ -28,15 +28,15 @@ SERVERTYPE=$1
 
 if [ -z "$SERVERTYPE" ]
 then
-echo Blank servertype
-exit 101
+	echo Blank servertype
+	exit 101
 fi
 
 #Only run network setup once
 if [ -f /opt/karoshi/.tempdata/network_set ]
 then
-rm -f /opt/karoshi/.tempdata/network_set
-exit
+	rm -f /opt/karoshi/.tempdata/network_set
+	exit
 fi
 
 source /opt/karoshi/serversetup/variables/language
@@ -53,9 +53,9 @@ NICARRAY=( `ls /sys/class/net | sed 's/lo//g'` )
 NIC_COUNT=${#NICARRAY[@]}
 if [ $NIC_COUNT = 0 ]
 then
-ERRORMSG="$ERRORMSG2"
-inputwarning
-exit 101
+	ERRORMSG="$ERRORMSG2"
+	inputwarning
+	exit 101
 fi
 }
 
@@ -66,8 +66,8 @@ YADNICS=""
 COUNTER=0
 while [ $COUNTER -lt $NIC_COUNT ] 
 do
-YADNICS="$YADNICS `echo --field=${NICARRAY[$COUNTER]}:chk`" 
-let COUNTER=$COUNTER+1
+	YADNICS="$YADNICS `echo --field=${NICARRAY[$COUNTER]}:chk`" 
+	let COUNTER=$COUNTER+1
 done
 
 CARDCHOICE=`yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --form --text="$MULTIPLECARDMSG1\n\n$MULTIPLECARDMSG2" $YADNICS --button=OK`
@@ -80,13 +80,13 @@ SCARDCOUNT=0
 CARDSELECTION=""
 while [ $COUNTER -lt $NIC_COUNT ] 
 do
-if [ `echo $CARDCHOICE | cut -d"|" -f $COUNTER2 | grep -c TRUE` = 1 ]
-then
-CARDSELECTION="$CARDSELECTION,${NICARRAY[$COUNTER]}"
-let SCARDCOUNT=$SCARDCOUNT+1
-fi
-let COUNTER=$COUNTER+1
-let COUNTER2=$COUNTER2+1
+	if [ `echo $CARDCHOICE | cut -d"|" -f $COUNTER2 | grep -c TRUE` = 1 ]
+	then
+		CARDSELECTION="$CARDSELECTION,${NICARRAY[$COUNTER]}"
+		let SCARDCOUNT=$SCARDCOUNT+1
+	fi
+	let COUNTER=$COUNTER+1
+	let COUNTER2=$COUNTER2+1
 
 done
 CARDSELECTION=`echo $CARDSELECTION | sed 's/^,//g'`
@@ -95,10 +95,10 @@ CARDSELECTION=`echo $CARDSELECTION | sed 's/^,//g'`
 function checkcardselection {
 if [ -z "$CARDSELECTION" ]
 then
-ERRORMSG="$ERRORMSG3"
-inputwarning
+	ERRORMSG="$ERRORMSG3"
+	inputwarning
 else
-SHOW_NICKS=no
+	SHOW_NICKS=no
 fi
 }
 
@@ -109,9 +109,9 @@ function getnetworksettings {
 
 if [ $SCARDCOUNT -gt 1 ]
 then
-DATA=`yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --field="$SERVERNAMEMSG" --field="$TCPIPMSG" --field="$NETMASKMSG" --field="$NAMESERVERMSG" --field="$GATEWAYMSG" --field="Bond mode:CB" "" "" "" "" "" 'mode0!mode1!mode4!' --button="gtk-ok"`
+	DATA=`yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --field="$SERVERNAMEMSG" "$NAMECUSTOM" --field="$TCPIPMSG" "$TCPIPCUSTOM" --field="$NETMASKMSG" "$NETMASKCUSTOM" --field="$NAMESERVERMSG" "$NAMESERVERCUSTOM" --field="$GATEWAYMSG" "$GATEWAYCUSTOM" --field="Bond mode:CB" "" "" "" "" "" 'mode0!mode1!mode4!' --button="gtk-ok"`
 else
-DATA=`yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --text "$SETTINGSMSG" --field="$SERVERNAMEMSG" --field="$TCPIPMSG" --field="$NETMASKMSG" --field="$NAMESERVERMSG" --field="$GATEWAYMSG" --button="gtk-ok" 2>/dev/null`
+	DATA=`yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --text "$SETTINGSMSG" --field="$SERVERNAMEMSG" "$NAMECUSTOM" --field="$TCPIPMSG" "$TCPIPCUSTOM" --field="$NETMASKMSG" "$NETMASKCUSTOM" --field="$NAMESERVERMSG" "$NAMESERVERCUSTOM" --field="$GATEWAYMSG" "$GATEWAYCUSTOM" --button="gtk-ok" 2>/dev/null`
 fi
 
 NAMECUSTOM=`echo $DATA | cut -d"|" -f1 | tr -cd 'A-Za-z1-9-' | sed 's/^-//g' | sed 's/-$//g' | tr 'A-Z' 'a-z'`
@@ -121,9 +121,9 @@ NAMESERVERCUSTOM=`echo $DATA | cut -d"|" -f4 | tr -cd '0-9./n'`
 GATEWAYCUSTOM=`echo $DATA | cut -d"|" -f5 | tr -cd '0-9./n'`
 if [ $SCARDCOUNT -gt 1 ]
 then
-BONDMODE=`echo $DATA | cut -d"|" -f6 | tr -cd 'a-z0-9./n'`
+	BONDMODE=`echo $DATA | cut -d"|" -f6 | tr -cd 'a-z0-9./n'`
 else
-BONDMODE=notset
+	BONDMODE=notset
 fi
 
 }
@@ -143,18 +143,21 @@ INPUTCHECK=ok
 #Check dots
 if [ ! -z "$IPDATA" ]
 then
-if [ `echo $IPDATA | sed 's/\./\n /g'  | sed /^$/d | wc -l` != 4 ]
-then
-INPUTCHECK=getsettings
-fi
-#Check that no number is greater than 255
-HIGHESTNUMBER=`echo $IPDATA | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p`
-if [ $HIGHESTNUMBER -gt 255 ]
-then
-INPUTCHECK=getsettings
-fi
+	if [ `echo $IPDATA | sed 's/\./\n /g'  | sed /^$/d | wc -l` != 4 ]
+	then
+		GETSETTINGS=yes
+		INPUTCHECK=fail
+	fi
+	#Check that no number is greater than 255
+	HIGHESTNUMBER=`echo $IPDATA | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p`
+	if [ $HIGHESTNUMBER -gt 255 ]
+	then
+		GETSETTINGS=yes
+		INPUTCHECK=fail
+	fi
 else
-INPUTCHECK=getsettings
+	GETSETTINGS=yes
+	INPUTCHECK=fail
 fi
 }
 
@@ -163,40 +166,55 @@ CHOICE=configure
 while [ $CHOICE = configure ]
 do
 
-getcardlist
-if [ $NIC_COUNT -gt 1 ]
-then
-SHOW_NICKS=yes
-while [ $SHOW_NICKS = yes ]
-do
-show_nic_choice
-checkcardselection
-done
-else
-SCARDCOUNT=1
-CARDSELECTION=${NICARRAY[0]}
-fi
+	getcardlist
+	if [ $NIC_COUNT -gt 1 ]
+	then
+		SHOW_NICKS=yes
+		while [ $SHOW_NICKS = yes ]
+		do
+			show_nic_choice
+			checkcardselection
+		done
+	else
+		SCARDCOUNT=1
+		CARDSELECTION=${NICARRAY[0]}
+	fi
 
-INPUTCHECK=getsettings
-while [ $INPUTCHECK = getsettings ]
-do
-getnetworksettings
-INPUTCHECK=ok
-IPDATA=$TCPIPCUSTOM
-check_tcpip
-IPDATA=$NETMASKCUSTOM
-check_tcpip
-IPDATA=$NAMESERVERCUSTOM
-check_tcpip
-IPDATA=$GATEWAYCUSTOM
-check_tcpip
-if [ $INPUTCHECK = getsettings ]
-then
-ERRORMSG=$ERRORMSG1
-inputwarning
-fi
-done
-confirmchoice
+	INPUTCHECK=getsettings
+	GETSETTINGS=yes
+	while [ $GETSETTINGS = yes ]
+	do
+		GETSETTINGS=no
+		getnetworksettings
+
+		#Check that a servername has been entered.
+		if [ -z "$NAMECUSTOM" ]
+		then
+				GETSETTINGS=yes
+				ERRORMSG="You have not entered in a server name."
+				inputwarning	
+		else 
+			INPUTCHECK=ok
+			IPDATA=$TCPIPCUSTOM
+			check_tcpip
+			[ $INPUTCHECK = fail ] && TCPIPCUSTOM=""
+			IPDATA=$NETMASKCUSTOM
+			check_tcpip
+			[ $INPUTCHECK = fail ] && NETMASKCUSTOM=""
+			IPDATA=$NAMESERVERCUSTOM
+			check_tcpip
+			[ $INPUTCHECK = fail ] && NAMESERVERCUSTOM=""
+			IPDATA=$GATEWAYCUSTOM
+			check_tcpip
+			[ $INPUTCHECK = fail ] && GATEWAYCUSTOM=""
+			if [ $GETSETTINGS = yes ]
+			then
+				ERRORMSG=$ERRORMSG1
+				inputwarning
+			fi
+		fi
+	done
+	confirmchoice
 done
 
 ########################
@@ -207,8 +225,8 @@ touch /opt/karoshi/.tempdata/network_set
 
 if [ $SERVERTYPE = pdc ]
 then
-#Create script to update arp table on boot
-ln -s /opt/karoshi/serversetup/pdc/"useful scripts"/update_server_arp /etc/rc2.d/S99update_server_arp
+	#Create script to update arp table on boot
+	ln -s /opt/karoshi/serversetup/pdc/"useful scripts"/update_server_arp /etc/rc2.d/S99update_server_arp
 fi
 
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/configurenetwork $NAMECUSTOM $TCPIPCUSTOM $NETMASKCUSTOM $NAMESERVERCUSTOM $GATEWAYCUSTOM $SERVERTYPE $CARDSELECTION $BONDMODE
