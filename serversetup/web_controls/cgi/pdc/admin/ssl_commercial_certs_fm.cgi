@@ -35,6 +35,7 @@ NOTIMEOUT=127.0.0.1
 source /opt/karoshi/web_controls/language/$LANGCHOICE/system/ssl_certs
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+source /opt/karoshi/server_network/domain_information/domain_name
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -82,17 +83,36 @@ done
 ############################
 #Stage 1 - Create server key and server.crt
 ############################
-CREATECERTMSG="Create Certificate"
 
-ACTIONMSG="$CREATECERTMSG"
 echo '
 <form action="/cgi-bin/admin/ssl_commercial_certs.cgi" name="selectservers" method="post">
 <div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
 <td style="vertical-align: top;"><div class="sectiontitle">'$TITLE1'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Commercial_SSL_Certificate"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG2"'</span></a></td></tr></tbody></table>
 <br></div><div id="infobox">'
 MOBILE=no
+
+#Show step 1
+
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<tbody>
+<tr><td height="50" style="width: 180px;">'$COMMERCIALSSLSTEP1'</td><td><input name="___SERVERNAME___'$REALM'___SERVERTYPE___network___SERVERMASTER___notset___ACTION___getcertdetails___" type="submit" class="button" value="'$CREATECERTMSG'"></td></tr>
+'
+
+if [ -f /opt/karoshi/server_network/ssl/commercial_ssl_certs/$REALM ]
+then
+echo '
+<tr><td height="50" style="width: 180px;">'$COMMERCIALSSLSTEP2'</td><td><input name="___SERVERNAME___'$REALM'___SERVERTYPE___network___SERVERMASTER___notset___ACTION___copycertinfo___" type="submit" class="button" value="'$COPYCERTMSG'"></td></tr>
+<tr><td height="50" style="width: 180px;">'$COMMERCIALSSLSTEP3'</td><td>'$INSTALLCERTMSG'</td></tr>
+'
+fi
+
+echo '</tbody></table><br><br>'
+
+if [ -f /opt/karoshi/server_network/ssl/commercial_ssl_certs/$REALM ]
+then
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE servers "$ACTIONMSG" createcert commercialsslcert ___
+/opt/karoshi/web_controls/show_servers $MOBILE servers "$INSTALLCERTMSG" getinstallcertinfo no ___
+fi
 
 echo '</div></div></form></div></body></html>'
 exit
