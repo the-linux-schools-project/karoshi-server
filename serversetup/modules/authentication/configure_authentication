@@ -201,7 +201,7 @@ echo "<br>"
 MODCHECK=`grep -c -w auth_rule /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
-echo "<li><b>'$ADDSWALLPORTSMSG'</b></li><br><b>tcp</b> '$TCPPORTS'<br><b>udp</b> '$UDPPORTS'<br>"
+echo "<li><b>'$ADDSWALLPORTSMSG'</b></li><br><b>tcp</b> '$TCPPORTS'<br><b>udp</b> '$UDPPORTS'<br><br>"
 LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"'$TCPPORTS'"	"-"#"auth_rule /etc/shorewall/rules
 echo ACCEPT"	"net"	"fw"	"udp"	"'$UDPPORTS'"	"-"#"auth_rule >> /etc/shorewall/rules
