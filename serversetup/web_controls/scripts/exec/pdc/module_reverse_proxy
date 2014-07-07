@@ -142,7 +142,7 @@ scp -p -r /opt/karoshi/serversetup/distro/ubuntu/modules/reverseproxy root@$WEBS
 #Apply certificate
 #######################
 
-echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:enablecert:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
+echo "$REMOTE_USER:$REMOTE_ADDR:$WEBSERVER:enablecert:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
 [ `echo $?` != 0 ] && exit 101 
 
 ssh -x -o PasswordAuthentication=no $WEBSERVER '

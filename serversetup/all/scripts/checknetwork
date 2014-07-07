@@ -161,6 +161,17 @@ else
 fi
 }
 
+function check_gateway {
+INPUTCHECK=ok
+ZONEINFO1=`ipcalc -n $TCPIPCUSTOM/$NETMASKCUSTOM | grep ^Network | sed "s/ * / /g" | cut -d" " -f2`
+ZONEINFO2=`ipcalc -n $GATEWAYCUSTOM/$NETMASKCUSTOM | grep ^Network | sed "s/ * / /g" | cut -d" " -f2`
+
+if [[ "$ZONEINFO1" != "$ZONEINFO2" ]]
+then
+	GETSETTINGS=yes
+	INPUTCHECK=fail
+fi
+}
 
 CHOICE=configure
 while [ $CHOICE = configure ]
@@ -191,7 +202,7 @@ do
 		if [ -z "$NAMECUSTOM" ]
 		then
 				GETSETTINGS=yes
-				ERRORMSG="You have not entered in a server name."
+				ERRORMSG="$ERRORMSG4"
 				inputwarning	
 		else 
 			INPUTCHECK=ok
@@ -207,6 +218,12 @@ do
 			IPDATA=$GATEWAYCUSTOM
 			check_tcpip
 			[ $INPUTCHECK = fail ] && GATEWAYCUSTOM=""
+			#Check that the gateway is in the same range as the server ip.
+			if [ $GETSETTINGS = no ]
+			then
+				check_gateway
+				[ $INPUTCHECK = fail ] && GATEWAYCUSTOM=""
+			fi
 			if [ $GETSETTINGS = yes ]
 			then
 				ERRORMSG=$ERRORMSG1
