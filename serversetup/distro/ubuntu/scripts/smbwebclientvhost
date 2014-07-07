@@ -1,8 +1,8 @@
 #!/bin/bash
 #smbwebclientvhost
-WEBPATH=$1
+REALM=$1
 cp -f /opt/karoshi/serversetup/distro/ubuntu/extra_server/configfiles/smbwebclient-ssl /etc/apache2/sites-enabled/
-sed -i 's/CHANGETHIS/'$WEBPATH'/g' /etc/apache2/sites-enabled/smbwebclient-ssl
+sed -i 's/CHANGETHIS/'$REALM'/g' /etc/apache2/sites-enabled/smbwebclient-ssl
 
 #Link default-ssl to default-ssl.conf for later versions of apache on Ubuntu 14.04
 if [ `grep -c "IncludeOptional sites-enabled/\*.conf" /etc/apache2/apache2.conf` -gt 0 ]

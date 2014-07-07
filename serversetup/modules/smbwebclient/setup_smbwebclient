@@ -156,7 +156,7 @@ fi
 #Configure virtual server on port 50000 for smbwebclient
 #################################
 echo '<li>'$VIRTUALSERVERMSG'</li><br>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/smbwebclientvhost $WEBPATH
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/smbwebclientvhost $REALM
 #################################
 #Restart apache
 #################################
