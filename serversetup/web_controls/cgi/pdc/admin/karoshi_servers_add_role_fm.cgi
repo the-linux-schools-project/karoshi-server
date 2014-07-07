@@ -134,8 +134,15 @@ fi
 echo '</td></tr>'
 
 echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$PRINTSERVERMSG'</td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/module_printserver_fm.cgi" method="post">
-<input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$PRINTERSERVERHELPMSG'</span></a></form></td>'
+<td style="vertical-align: top;">'
+
+if [ -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME ]
+then
+	echo '<form action="/cgi-bin/admin/module_printserver_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$PRINTERSERVERHELPMSG'</span></a></form>'
+else
+	echo '<a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$PRINTERSERVERHELPMSG'<br><br>'$PRINTSERVERDEPS'</span></a>'
+fi
+echo '</td>'
 
 
 echo '<td style="vertical-align: top; height: 40px;">'$BACKUPSERVERMSG'</td><td style="vertical-align: top; height: 40px;">'
