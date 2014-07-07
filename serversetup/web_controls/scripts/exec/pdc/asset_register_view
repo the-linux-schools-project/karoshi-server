@@ -698,6 +698,8 @@ fi
 ############################
 #Show choice of locations
 ############################
+[ ! -d /opt/karoshi/asset_register/locations/ ] && mkdir -p /opt/karoshi/asset_register/locations/
+
 if [ $LOCATION = showchoice ]
 then
 ROWCOUNT=6
@@ -1025,7 +1027,7 @@ if [[ $TCPIP1 ]] && [[ $TCPIP1 != "N.A." ]]; then
 	#Add reverse DNS entry for TCPIP1
 	SUBNET=$(grep "netmask " /etc/network/interfaces | sed -n 1,1p | cut -d" " -f2)
 	echo `date`: asset_register_view - adding a reverse DNS entry "for" $IDENTITY $TCPIP1 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	/opt/karoshi/serversetup/pdc/"useful scripts"/reverse-dns add $TCPIP1 $SUBNET $IDENTITY.$REALM
+	/opt/karoshi/serversetup/pdc/"useful scripts"/reverse-dns add $TCPIP1 $SUBNET $IDENTITY.$REALM 1>/dev/null
 fi
 }
 
@@ -1062,6 +1064,7 @@ let ASSET=$ASSET+1
 else
 ASSET=1
 fi
+[ ! -d /opt/karoshi/asset_register ] && mkdir -p /opt/karoshi/asset_register
 echo $ASSET > /opt/karoshi/asset_register/.last_asset_number
 }
 
