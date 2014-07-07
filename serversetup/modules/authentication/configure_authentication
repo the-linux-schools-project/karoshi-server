@@ -511,7 +511,7 @@ echo '<br><br>'
 
 
 function configure_ntp {
-echo '<li>'$CONFIGURENTPMSG'</li><br>'
+echo '<li><b>'$CONFIGURENTPMSG'</b></li><br>'
 NTPSERVER=$KRBSERVER
 if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
 then

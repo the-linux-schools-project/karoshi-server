@@ -101,7 +101,7 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 source /opt/karoshi/server_network/domain_information/domain_name
 
-echo '<form action="/cgi-bin/admin/module_reverse_proxy.cgi" method="post"><div id="actionbox"><b>'$TITLE' - '$SERVERNAME'</b><br><br>
+echo '<form name="combobox" action="/cgi-bin/admin/module_reverse_proxy.cgi" method="post"><div id="actionbox"><b>'$TITLE' - '$SERVERNAME'</b><br><br>
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$DESCRIPTIONMSG'</b><br><br>
 '$HELPMSG1'<br><br>

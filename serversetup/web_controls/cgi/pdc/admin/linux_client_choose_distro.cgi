@@ -133,7 +133,7 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<div id="actionbox3"><div id="titlebox">
-<div class="sectiontitle">'$TITLE2'</div><br><div id="infobox>"'
+<div class="sectiontitle">'$TITLE2'<br></div><div id="infobox>"'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/linux_client_choose_distro.cgi | cut -d' ' -f1`
 #Copy iso
