@@ -259,7 +259,7 @@ echo "<li>"$(($COUNTER+1))/$USERLISTCOUNT: Copying $USERNAME"</li><br>"
 
 #rsync user folder to the pdc
 echo `date`: home_folders - Copying $USERNAME from $CURRENTSERVER to $HOSTNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group  root@$CURRENTSERVER:/$HOMEPATH/$USERNAME "$$HOMEPATH/" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group  root@$CURRENTSERVER:/$HOMEPATH/$USERNAME "$HOMEPATH/" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 let COUNTER=$COUNTER+1
 done
 fi
