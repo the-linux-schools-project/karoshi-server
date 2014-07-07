@@ -129,6 +129,11 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:enablecert:" | /opt/karoshi/serverse
 [ `echo $?` != 0 ] && exit 101 
 
 
+#Update alias entry for the server
+[ ! -d /opt/karoshi/server_network/aliases ] && mkdir -p /opt/karoshi/server_network/aliases
+touch /opt/karoshi/server_network/aliases/$SERVERNAME
+[ `grep -c -w $ALIAS /opt/karoshi/server_network/aliases/$SERVERNAME` = 0 ] && echo $ALIAS >> /opt/karoshi/server_network/aliases/$SERVERNAME
+
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 #Install smbwebclient
@@ -139,13 +144,6 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 [ ! -d /opt/karoshi/serversetup/language/'$LANGCHOICE'/modules ] && mkdir -p /opt/karoshi/serversetup/language/'$LANGCHOICE'/modules
 [ ! -d /opt/karoshi/serversetup/modules/ ] && mkdir -p /opt/karoshi/serversetup/modules/
 '
-#Update alias entry for the server
-[ ! -d /opt/karoshi/server_network/aliases ] && mkdir -p /opt/karoshi/server_network/aliases
-[ ! -f /opt/karoshi/server_network/aliases/$SERVERNAME ] && echo $ALIAS > /opt/karoshi/server_network/aliases/$SERVERNAME
-
-SHORTSERVERNAME=`echo $SERVERNAME | cut -d. -f1`
-[ ! -d /var/lib/samba/netlogon/domain_information/aliases ] && mkdir -p /var/lib/samba/netlogon/domain_information/aliases
-[ ! -f /var/lib/samba/netlogon/domain_information/aliases/$SHORTSERVERNAME ] && echo $ALIAS > /var/lib/samba/netlogon/domain_information/aliases/$SHORTSERVERNAME
 
 #Copy in language files
 scp -p -r /opt/karoshi/serversetup/language/$LANGCHOICE/modules/smbwebclient root@$SERVERNAME:/opt/karoshi/serversetup/language/$LANGCHOICE/modules/ 1> /dev/null

@@ -41,8 +41,8 @@ echo '##############'setupmonitoring'##############' >> /opt/karoshi/serversetup
 date >> /opt/karoshi/serversetup/install_log
 if [ `grep -c "$TITLE" /opt/karoshi/serversetup/setuplog` = 0 ]
 then
-echo setupmonitoring:$TITLE://opt/karoshi/serversetup/extra_server/scripts/setupmonitoring >> /opt/karoshi/serversetup/setuplog
-chmod 0600 /opt/karoshi/serversetup/setuplog
+	echo setupmonitoring:$TITLE://opt/karoshi/serversetup/extra_server/scripts/setupmonitoring >> /opt/karoshi/serversetup/setuplog
+	chmod 0600 /opt/karoshi/serversetup/setuplog
 fi
 
 #############################
@@ -50,7 +50,7 @@ fi
 #############################
 if [ -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/monitoring/software ]
 then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/monitoring/software
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/monitoring/software
 fi
 
 #############################
@@ -70,9 +70,9 @@ echo '<b>'$TITLE'</b><br><li>'$CONFIGUREMONMSG'</li><br>'
 
 if [ ! -d /var/www/cgi-bin ]
 then
-mkdir p /var/www/cgi-bin
-chown root.$APACHEGROUP /var/www/cgi-bin
-chmod 0550 /var/www/cgi-bin
+	mkdir p /var/www/cgi-bin
+	chown root.$APACHEGROUP /var/www/cgi-bin
+	chmod 0550 /var/www/cgi-bin
 fi
 
 [ ! -d /opt/karoshi/"useful scripts" ] && mkdir -p /opt/karoshi/"useful scripts"
@@ -120,22 +120,22 @@ touch /etc/mon/userfile
 cat /opt/karoshi/serversetup/modules/monitoring/mon/global > /etc/mon/mon.cf
 if [ `ls -1 /opt/karoshi/server_network/mon/monitors | wc -l` -gt 0 ]
 then
-cat /opt/karoshi/server_network/mon/monitors/* >> /etc/mon/mon.cf
+	cat /opt/karoshi/server_network/mon/monitors/* >> /etc/mon/mon.cf
 fi
 
 #############################
 #Ensure that apache, mon are running
 ##############################
 echo '<li>'$STARTMONMSG'</li><br>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_stop 1>/dev/null 2>/dev/null
 sleep 1
 
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_start 1>/dev/null
 APACHESTATUS=`ps -e | grep -c -w $APACHEVER`
 if [ $APACHESTATUS = 0 ]
 then
-echo '<li>'$STARTAPACHEMSG'</li><br>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
+	echo '<li>'$STARTAPACHEMSG'</li><br>'
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 fi
 
 ############################

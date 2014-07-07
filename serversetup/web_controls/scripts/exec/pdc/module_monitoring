@@ -140,9 +140,9 @@ then
 sed -i "s/mynetworks = 127.0.0.1/mynetworks = 127.0.0.1 , $SERVERIP/g" /etc/postfix/main.cf
 #Restart postfix
 source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_stop
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_stop 1>/dev/null
 sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_start 1>/dev/null
 fi
 else
 ssh -x -o PasswordAuthentication=no $EMAILSERVER '
@@ -152,9 +152,9 @@ then
 sed -i "s/mynetworks = 127.0.0.1/mynetworks = 127.0.0.1 , '$SERVERIP'/g" /etc/postfix/main.cf
 #Restart postfix
 source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_stop
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_stop 1>/dev/null
 sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_start 1>/dev/null
 fi
 '
 fi

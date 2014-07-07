@@ -126,10 +126,6 @@ source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 touch /opt/karoshi/server_network/aliases/$SERVERNAME
 [ `grep -c -w $ALIAS /opt/karoshi/server_network/aliases/$SERVERNAME` = 0 ] && echo $ALIAS >> /opt/karoshi/server_network/aliases/$SERVERNAME
 
-SHORTSERVERNAME=`echo $SERVERNAME | cut -d. -f1`
-[ ! -d /var/lib/samba/netlogon/domain_information/aliases ] && mkdir -p /var/lib/samba/netlogon/domain_information/aliases
-[ ! -f /var/lib/samba/netlogon/domain_information/aliases/$SHORTSERVERNAME ] && echo $ALIAS > /var/lib/samba/netlogon/domain_information/aliases/$SHORTSERVERNAME
-
 #Create keytab for owncloud
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:HTTP:owncloud:$SERVERNAME.$REALM:www-data:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
 
