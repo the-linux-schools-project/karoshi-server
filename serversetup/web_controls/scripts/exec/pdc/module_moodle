@@ -170,6 +170,15 @@ fi
 }
 
 function install_moodle {
+
+#Edit moodle.sql with the correct subnet
+THISIP=`net lookup $HOSTNAME`
+THISSUBNETMASK=`grep -w netmask /etc/network/interfaces | sed -n 1,1p | cut -d' ' -f2`
+NETWORK=`ipcalc $THISIP/$THISSUBNETMASK | grep -w ^Network: | sed 's/ * / /g' | cut -d' ' -f2`
+
+cp /opt/karoshi/serversetup/modules/moodle/moodle.sql /opt/karoshi/serversetup/modules/moodle/moodle_backup.$$.sql
+sed -i 's@CHANGETHISSUBNET@'$NETWORK'@g' /opt/karoshi/serversetup/modules/moodle/moodle.sql
+
 #Install
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
@@ -193,6 +202,10 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ALIAS:' | /opt/karoshi/serversetup/modules/moodle/setupmoodle
 '
 fi
+
+#Restore moodle.sql
+cp -f /opt/karoshi/serversetup/modules/moodle/moodle_backup.$$.sql /opt/karoshi/serversetup/modules/moodle/moodle.sql 
+
 }
 
 function add_role_information {
