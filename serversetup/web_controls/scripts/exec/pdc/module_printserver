@@ -253,9 +253,9 @@ chmod 0770 /opt/karoshi/server_network/printer_accounting/accounting
 fi
 
 source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/cups_stop
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/cups_stop 1>/dev/null 2>/dev/null
 sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/cups_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/cups_start 1>/dev/null
 
 #Enable e-mail notifications for over quota users
 if [ $USE_EMAIL = yes ]

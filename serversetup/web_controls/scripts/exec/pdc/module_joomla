@@ -121,8 +121,8 @@ fi
 
 #Update alias entry for the server
 [ ! -d /opt/karoshi/server_network/aliases ] && mkdir -p /opt/karoshi/server_network/aliases
-touch /opt/karoshi/server_network/aliases/$SERVERNAME
-[ `grep -c -w $ALIAS /opt/karoshi/server_network/aliases/$SERVERNAME` = 0 ] && echo $ALIAS >> /opt/karoshi/server_network/aliases/$SERVERNAME
+touch /opt/karoshi/server_network/aliases/$JOOMLASERVER
+[ `grep -c -w $ALIAS /opt/karoshi/server_network/aliases/$JOOMLASERVER` = 0 ] && echo $ALIAS >> /opt/karoshi/server_network/aliases/$JOOMLASERVER
 
 #Create ssl cert
 echo "$REMOTE_USER:$REMOTE_ADDR:$JOOMLASERVER:enablecert:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
@@ -150,11 +150,6 @@ ssh -x -o PasswordAuthentication=no $JOOMLASERVER '
 '
 fi
 
-#Add in monitoring for the server
-if [ -f /opt/karoshi/server_network/monitoringserver ]
-then
-/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $JOOMLASERVER
-fi
 
 #########################
 #Add role information
@@ -169,6 +164,13 @@ echo $ROLE2"<br>" > /opt/karoshi/server_network/servers/$JOOMLASERVER/apacheserv
 echo $JOOMLASERVER > /opt/karoshi/server_network/webservers/$JOOMLASERVER
 
 sed -i 's/WEBCTRL=no/WEBCTRL=yes/g' /opt/karoshi/server_network/menusettings
+
+#Add in monitoring for the server
+if [ -f /opt/karoshi/server_network/monitoringserver ]
+then
+/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $JOOMLASERVER
+fi
+
 ###########################
 #Show completed message
 ###########################

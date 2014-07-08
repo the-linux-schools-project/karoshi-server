@@ -211,6 +211,12 @@ add_dns_entry
 install_xibo
 add_role_information
 
+#Add in monitoring for the server
+if [ -f /opt/karoshi/server_network/monitoringserver ]
+then
+/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVERNAME
+fi
+
 exit
 
 

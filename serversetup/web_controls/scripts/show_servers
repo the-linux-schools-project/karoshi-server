@@ -18,7 +18,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/system/show_servers
 #Check data
 
 function usage {
-echo -e "show_servers usage\n\nshow_servers mobile(yes/no) view(all/internal/pdc/servers/adc/web) actionmsg action custom separator" 
+echo -e "show_servers usage\n\nshow_servers mobile(yes/no) view(all/internal/pdc/servers/adc/web/email) actionmsg action custom separator" 
 exit
 }
 
@@ -30,33 +30,33 @@ exit
 
 if [ $MOBILE != yes ] && [ $MOBILE != no ]
 then
-usage
+	usage
 fi
 
-if [ $VIEW != all ] && [ $VIEW != internal ] && [ $VIEW != pdc ] && [ $VIEW != servers ] && [ $VIEW != adc ] && [ $VIEW != addslaveups ]  && [ $VIEW != web ]
+if [ $VIEW != all ] && [ $VIEW != internal ] && [ $VIEW != pdc ] && [ $VIEW != servers ] && [ $VIEW != adc ] && [ $VIEW != addslaveups ] && [ $VIEW != web ] && [ $VIEW != email ]
 then
-usage
+	usage
 fi
 
 if [ $MOBILE = no ]
 then
-WIDTH1=200
-WIDTH2=200
-WIDTH3=80
-WIDTH4=120
-HEIGHT1=50
-SERVERICON="/images/submenus/system/computer.png"
-SERVERICON2="/images/submenus/system/all_computers.png"
-TABLECLASS=standard
+	WIDTH1=200
+	WIDTH2=200
+	WIDTH3=80
+	WIDTH4=120
+	HEIGHT1=50
+	SERVERICON="/images/submenus/system/computer.png"
+	SERVERICON2="/images/submenus/system/all_computers.png"
+	TABLECLASS=standard
 else
-WIDTH1=120
-WIDTH2=140
-WIDTH3=50
-WIDTH4=100
-HEIGHT1=30
-SERVERICON="/images/submenus/system/computerm.png"
-SERVERICON2="/images/submenus/system/all_computersm.png"
-TABLECLASS=mobilestandard
+	WIDTH1=120
+	WIDTH2=140
+	WIDTH3=50
+	WIDTH4=100
+	HEIGHT1=30
+	SERVERICON="/images/submenus/system/computerm.png"
+	SERVERICON2="/images/submenus/system/all_computersm.png"
+	TABLECLASS=mobilestandard
 fi
 
 function tabletop {
@@ -67,20 +67,20 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 
 if [ $CUSTOM = updateserver ]
 then
-echo '<td style="vertical-align: top; text-align: left; width: '$WIDTH4'px;"><b>'$UPGRADEMSG'</b></td>'
+	echo '<td style="vertical-align: top; text-align: left; width: '$WIDTH4'px;"><b>'$UPGRADEMSG'</b></td>'
 fi
 
 if [ $CUSTOM = commercialsslcert ]
 then
-COMMERCIALSSLSTEP1="Step 1"
-COMMERCIALSSLSTEP2="Step 2"
-COMMERCIALSSLSTEP3="Step 3"
-echo '<td style="vertical-align: top; text-align: left; width: '$WIDTH3'px;"><b>'$COMMERCIALSSLSTEP1'</b></td>
-<td style="vertical-align: top; text-align: left; width: '$WIDTH3'px;"><b>'$COMMERCIALSSLSTEP2'</b></td>
-<td style="vertical-align: top; text-align: left; width: '$WIDTH3'px;"><b>'$COMMERCIALSSLSTEP3'</b></td>
-</tr>'
+	COMMERCIALSSLSTEP1="Step 1"
+	COMMERCIALSSLSTEP2="Step 2"
+	COMMERCIALSSLSTEP3="Step 3"
+	echo '<td style="vertical-align: top; text-align: left; width: '$WIDTH3'px;"><b>'$COMMERCIALSSLSTEP1'</b></td>
+	<td style="vertical-align: top; text-align: left; width: '$WIDTH3'px;"><b>'$COMMERCIALSSLSTEP2'</b></td>
+	<td style="vertical-align: top; text-align: left; width: '$WIDTH3'px;"><b>'$COMMERCIALSSLSTEP3'</b></td>
+	</tr>'
 else
-echo '<td style="vertical-align: top; text-align: right; width: '$WIDTH3'px;"></td></tr>'
+	echo '<td style="vertical-align: top; text-align: right; width: '$WIDTH3'px;"></td></tr>'
 fi
 }
 
@@ -92,35 +92,35 @@ echo '</tbody></table>'
 function show_server {
 if [ $MOBILE = yes ]
 then
-SERVERNAME=`echo $SERVER | cut -d. -f1`
+	SERVERNAME=`echo $SERVER | cut -d. -f1`
 else
-SERVERNAME=$SERVER
+	SERVERNAME=$SERVER
 fi
 echo '<tr><td style="background-color:'$FILLCOLOUR'; height: '$HEIGHT1'px;"></td><td style="vertical-align: top;">'$SERVERNAME'</td>'
 
 if [ $MOBILE = no ]
 then
-echo '<td style="vertical-align: top;">'
-[ -d $INFOPATH/$SERVER ] && cat $INFOPATH/$SERVER/*
-echo '</td>'
+	echo '<td style="vertical-align: top;">'
+	[ -d $INFOPATH/$SERVER ] && cat $INFOPATH/$SERVER/*
+	echo '</td>'
 fi
 
 if [ $CUSTOM = commercialsslcert ]
 then
-#Set action depending on what has been set
-ACTION=getcertdetails
+	#Set action depending on what has been set
+	ACTION=getcertdetails
 fi
 
 if [ $CUSTOM = updateserver ]
 then
-echo '<td style="vertical-align: top; text-align: left;">'
-if [ -f /opt/karoshi/server_network/upgrade_schedules/servers/$SERVER ]
-then
-cat /opt/karoshi/server_network/upgrade_schedules/servers/$SERVER
-else
-echo -
-fi
-echo '</td>'
+	echo '<td style="vertical-align: top; text-align: left;">'
+	if [ -f /opt/karoshi/server_network/upgrade_schedules/servers/$SERVER ]
+	then
+		cat /opt/karoshi/server_network/upgrade_schedules/servers/$SERVER
+	else
+		echo -
+	fi
+	echo '</td>'
 fi
 
 echo '<td style="vertical-align: top; text-align: right;">
@@ -128,18 +128,14 @@ echo '<td style="vertical-align: top; text-align: right;">
 
 if [ $CUSTOM = commercialsslcert ]
 then
-ACTION2=copycertinfo
-ACTION3=getinstallcertinfo
-ACTIONMSG2="Copy Certificate"
-ACTIONMSG3="Install Certificate"
-if [ -f /opt/karoshi/server_network/ssl/commercial_ssl_certs/$SERVERNAME ]
-then
-echo '<td style="vertical-align: top; text-align: right;">
-<input name="'$SEPARATOR'SERVERNAME'$SEPARATOR''$SERVER''$SEPARATOR'SERVERTYPE'$SEPARATOR''$SERVERTYPE''$SEPARATOR'SERVERMASTER'$SEPARATOR''$SERVERMASTER''$SEPARATOR'ACTION'$SEPARATOR''$ACTION2''$SEPARATOR'" type="submit" class="button" value="'$ACTIONMSG2'"></td>
-<td style="vertical-align: top; text-align: right;">
-<input name="'$SEPARATOR'SERVERNAME'$SEPARATOR''$SERVER''$SEPARATOR'SERVERTYPE'$SEPARATOR''$SERVERTYPE''$SEPARATOR'SERVERMASTER'$SEPARATOR''$SERVERMASTER''$SEPARATOR'ACTION'$SEPARATOR''$ACTION3''$SEPARATOR'" type="submit" class="button" value="'$ACTIONMSG3'"></td>
-'
-fi
+	ACTION2=copycertinfo
+	ACTION3=getinstallcertinfo
+	ACTIONMSG2="Copy Certificate"
+	ACTIONMSG3="Install Certificate"
+	if [ -f /opt/karoshi/server_network/ssl/commercial_ssl_certs/$SERVERNAME ]
+	then
+		echo '<td style="vertical-align: top; text-align: right;"><input name="'$SEPARATOR'SERVERNAME'$SEPARATOR''$SERVER''$SEPARATOR'SERVERTYPE'$SEPARATOR''$SERVERTYPE''$SEPARATOR'SERVERMASTER'$SEPARATOR''$SERVERMASTER''$SEPARATOR'ACTION'$SEPARATOR''$ACTION2''$SEPARATOR'" type="submit" class="button" value="'$ACTIONMSG2'"></td><td style="vertical-align: top; text-align: right;"><input name="'$SEPARATOR'SERVERNAME'$SEPARATOR''$SERVER''$SEPARATOR'SERVERTYPE'$SEPARATOR''$SERVERTYPE''$SEPARATOR'SERVERMASTER'$SEPARATOR''$SERVERMASTER''$SEPARATOR'ACTION'$SEPARATOR''$ACTION3''$SEPARATOR'" type="submit" class="button" value="'$ACTIONMSG3'"></td>'
+	fi
 fi
 
 echo '</tr>'
@@ -160,8 +156,8 @@ SERVERTYPE=network
 SERVERMASTER=notset
 for SERVERS in /opt/karoshi/server_network/zones/internal/servers/*
 do
-SERVER=`basename $SERVERS`
-[ $SERVER != `hostname-fqdn` ] && show_server
+	SERVER=`basename $SERVERS`
+	[ $SERVER != `hostname-fqdn` ] && show_server
 done
 }
 
@@ -172,10 +168,26 @@ SERVERTYPE=network
 SERVERMASTER=notset
 for SERVERS in /opt/karoshi/server_network/webservers/*
 do
-FILLCOLOUR=green
-SERVER=`basename $SERVERS`
-[ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ] && FILLCOLOUR=orange
-show_server
+	FILLCOLOUR=green
+	SERVER=`basename $SERVERS`
+	[ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ] && FILLCOLOUR=orange
+	show_server
+done
+}
+
+function show_email_servers {
+INFOPATH=/opt/karoshi/server_network/servers
+SERVERTYPE=network
+SERVERMASTER=notset
+for SERVERS in /opt/karoshi/server_network/servers/*
+	do
+	FILLCOLOUR=green
+	SERVER=`basename $SERVERS`
+	if [ -f /opt/karoshi/server_network/servers/$SERVER/emailserver ]
+	then
+		[ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ] && FILLCOLOUR=orange
+		show_server
+	fi
 done
 }
 
@@ -188,8 +200,8 @@ SERVERTYPE=network
 SERVERMASTER=notset
 for SERVERS in /opt/karoshi/server_network/servers/*
 do
-SERVER=`basename $SERVERS`
-[ ! -d /opt/karoshi/server_network/ups/master/$SERVER ] && show_server
+	SERVER=`basename $SERVERS`
+	[ ! -d /opt/karoshi/server_network/ups/master/$SERVER ] && show_server
 done
 }
 
@@ -203,14 +215,14 @@ SERVERTYPE=network
 SERVERMASTER=notset
 if [ -d /opt/karoshi/server_network/zones/dmz/servers/ ]
 then
-if [ `ls -1 /opt/karoshi/server_network/zones/dmz/servers/ | wc -l` -gt 0 ]
-then
-for SERVERS in /opt/karoshi/server_network/zones/dmz/servers/*
-do
-SERVER=`basename $SERVERS`
-[ $SERVER != `hostname-fqdn` ] && show_server
-done
-fi
+	if [ `ls -1 /opt/karoshi/server_network/zones/dmz/servers/ | wc -l` -gt 0 ]
+	then
+		for SERVERS in /opt/karoshi/server_network/zones/dmz/servers/*
+		do
+			SERVER=`basename $SERVERS`
+			[ $SERVER != `hostname-fqdn` ] && show_server
+		done
+	fi
 fi
 }
 
@@ -230,14 +242,14 @@ SERVERTYPE=network
 SERVERMASTER=notset
 if [ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ ]
 then
-if [ `ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ | wc -l` -gt 0 ]
-then
-for SERVERS in /opt/karoshi/server_network/zones/internal/additional_domain_controllers/*
-do
-SERVER=`basename $SERVERS`
-[ $SERVER != `hostname-fqdn` ] && show_server
-done
-fi
+	if [ `ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ | wc -l` -gt 0 ]
+	then
+		for SERVERS in /opt/karoshi/server_network/zones/internal/additional_domain_controllers/*
+		do
+			SERVER=`basename $SERVERS`
+			[ $SERVER != `hostname-fqdn` ] && show_server
+		done
+	fi
 fi
 }
 
@@ -248,14 +260,14 @@ SERVERTYPE=network
 SERVERMASTER=notset
 if [ -d /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/ ]
 then
-if [ `ls -1 /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/ | wc -l` -gt 0 ]
-then
-for SERVERS in /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/*
-do
-SERVER=`basename $SERVERS`
-[ $SERVER != `hostname-fqdn` ] && show_server
-done
-fi
+	if [ `ls -1 /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/ | wc -l` -gt 0 ]
+	then
+		for SERVERS in /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/*
+		do
+			SERVER=`basename $SERVERS`
+			[ $SERVER != `hostname-fqdn` ] && show_server
+		done
+	fi
 fi
 }
 
@@ -266,37 +278,46 @@ tabletop
 
 if [ $VIEW = addslaveups ]
 then
-addslaveups
+	addslaveups
 else
-#Show pdc
-[ $VIEW != web ] && show_pdc
+	#Show pdc
+	if [ $VIEW != web ] && [ $VIEW != email ]
+	then
+		show_pdc
+	fi
 fi
 
 #Show adc servers
 if [ $VIEW = adc ]
 then
-show_adc_servers
-show_dmz_adc_servers
+	show_adc_servers
+	show_dmz_adc_servers
 fi
 
 
 #Show internal servers
 if [ $VIEW = all ] || [ $VIEW = internal ] || [ $VIEW = servers ]
 then
-show_internal_servers
-show_dmz_servers
+	show_internal_servers
+	show_dmz_servers
 fi
 
-#Show adc servers
+#Show web servers
 if [ $VIEW = web ]
 then
-show_web_servers
+	show_web_servers
+fi
+
+#Show email servers
+if [ $VIEW = email ]
+then
+	show_email_servers
 fi
 
 #Show all option
 if [ $VIEW = all ]
 then
-show_all_option
+	show_all_option
 fi
 
 #End table

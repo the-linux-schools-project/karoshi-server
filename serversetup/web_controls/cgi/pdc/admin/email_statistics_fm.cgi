@@ -180,82 +180,8 @@ echo "	<!-- calendar attaches to existing form element -->
 
 fi
 
+#Show list of email servers
+/opt/karoshi/web_controls/show_servers $MOBILE email "$ACTIONMSG"
 
-#Show list of ssh enabled servers
-SERVERCOUNTER=1
-ROWCOUNT=6
-[ $MOBILE = yes ] && ROWCOUNT=3
-WIDTH=90
-[ $MOBILE = yes ] && WIDTH=70
-SERVERICON="/images/submenus/system/computer.png"
-SERVERICON2="/images/submenus/system/all_computers.png"
-if [ -f /opt/karoshi/server_network/info ]
-then
-source /opt/karoshi/server_network/info
-LOCATION_NAME="- $LOCATION_NAME"
-fi
-echo '<b>'$MYSERVERSMSG' '$LOCATION_NAME'</b><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
-for KAROSHI_SERVER in /opt/karoshi/server_network/servers/*
-do
-KAROSHISERVER=`basename $KAROSHI_SERVER`
-
-if [ -f /opt/karoshi/server_network/servers/$KAROSHISERVER/emailserver ]
-then
-echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_SERVERNAME_'$KAROSHISERVER'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$KAROSHISERVER'<br><br>'
-[ -f /opt/karoshi/server_network/upgrade_schedules/servers/$KAROSHISERVER ] && cat /opt/karoshi/server_network/upgrade_schedules/servers/$KAROSHISERVER
-cat /opt/karoshi/server_network/servers/$KAROSHISERVER/* | sed '/<a href/c'"&nbsp"
-echo '</span></a><br>'$KAROSHISERVER'</td>'
-[ $SERVERCOUNTER = $ROWCOUNT ] && echo '</tr><tr>'
-let SERVERCOUNTER=$SERVERCOUNTER+1
-[ $SERVERCOUNTER -gt $ROWCOUNT ] && SERVERCOUNTER=1
-fi
-done
-echo '</tr></tbody></table><br>'
-
-
-#Show list of federated servers
-if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
-then
-if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
-then
-for FEDERATED_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
-do
-FEDERATED_SERVER=`basename $FEDERATED_SERVERS`
-if [ -f /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/info ]
-then
-source /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/info
-LOCATION_NAME="- $LOCATION_NAME"
-fi
-echo '<b>'$FEDERATEDSERVERSMSG' '$LOCATION_NAME'</b><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
-if [ -f /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/$FEDERATED_SERVER/emailserver ]
-then
-echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_federated_SERVERNAME_'$FEDERATED_SERVER'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$FEDERATED_SERVER'<br><br>'
-[  -f /opt/karoshi/server_network/upgrade_schedules/federated_servers/$FEDERATED_SERVER/$FEDERATED_SERVER ] && cat /opt/karoshi/server_network/upgrade_schedules/federated_servers/$FEDERATED_SERVER/$FEDERATED_SERVER
-cat /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/$FEDERATED_SERVER/* | sed '/<a href/c'"&nbsp"
-echo '</span></a><br>'$FEDERATED_SERVER'</td>'
-fi
-SERVERCOUNTER2=2
-for FEDERATED_SLAVE_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/*
-do
-FEDERATED_SLAVE_SERVER=`basename $FEDERATED_SLAVE_SERVERS`
-if [ $FEDERATED_SLAVE_SERVER != $FEDERATED_SERVER ]
-then
-if [ -f /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/$FEDERATED_SLAVE_SERVER/emailserver ]
-then
-echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_federatedslave_SERVERMASTER_'$FEDERATED_SERVER'_SERVERNAME_'$FEDERATED_SLAVE_SERVER'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$FEDERATED_SLAVE_SERVER'<br><br>'
-[ -f /opt/karoshi/server_network/upgrade_schedules/federated_servers/$FEDERATED_SERVER/$FEDERATED_SLAVE_SERVER ] && cat /opt/karoshi/server_network/upgrade_schedules/federated_servers/$FEDERATED_SERVER/$FEDERATED_SLAVE_SERVER
-cat /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/$FEDERATED_SLAVE_SERVER/* | sed '/<a href/c'"&nbsp"
-echo '</span></a><br>'$FEDERATED_SLAVE_SERVER'</td>'
-[ $SERVERCOUNTER2 = $ROWCOUNT ] && echo '</tr><tr>'
-let SERVERCOUNTER2=$SERVERCOUNTER2+1
-[ $SERVERCOUNTER2 -gt $ROWCOUNT ] && SERVERCOUNTER2=1
-fi
-fi
-done
-echo '</tr></tbody></table><br>'
-let SERVERLISTCOUNT=$SERVERLISTCOUNT+1
-done
-fi
-fi
 echo '</div></form></div></body></html>'
 exit

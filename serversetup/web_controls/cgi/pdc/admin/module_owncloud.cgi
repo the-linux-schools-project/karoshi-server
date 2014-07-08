@@ -90,7 +90,7 @@ DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
 if [ `echo $DATAHEADER'check'` = ALIAScheck ]
 then
 let COUNTER=$COUNTER+1
-ALIAS=`echo $DATA | cut -s -d'_' -f$COUNTER`
+ALIAS=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/.//g'`
 break
 fi
 let COUNTER=$COUNTER+1

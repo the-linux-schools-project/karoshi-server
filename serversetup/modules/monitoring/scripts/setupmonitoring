@@ -63,7 +63,7 @@ fi
 #Copy in config files for mon
 #############################
 
-echo '<b>'$TITLE'</b><br><li>'$CONFIGUREMONMSG'</li><br>'
+echo '<li>'$CONFIGUREMONMSG'</li><br>'
 [ -d /var/www/html/mon/ ] || ( mkdir -p /var/www/html/mon/ ; chmod 0755 -R /var/www/html/mon/ )
 [ -d /opt/karoshi/server_network/mon/events ] || ( mkdir -p /opt/karoshi/server_network/mon/events ; chmod 0755 -R /opt/karoshi/server_network/mon ; chown mon /opt/karoshi/server_network/mon/events )
 [ -d /opt/karoshi/server_network/mon/messages ] || ( mkdir -p /opt/karoshi/server_network/mon/messages ; chmod 0755 -R /opt/karoshi/server_network/mon ; chown mon /opt/karoshi/server_network/mon/messages )

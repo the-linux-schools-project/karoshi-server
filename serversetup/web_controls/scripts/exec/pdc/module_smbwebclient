@@ -209,4 +209,11 @@ echo $SERVERNAME > /opt/karoshi/server_network/home_access_server
 
 sed -i 's/WEBCTRL=no/WEBCTRL=yes/g' /opt/karoshi/server_network/menusettings
 
+#Add in monitoring for the server
+if [ -f /opt/karoshi/server_network/monitoringserver ]
+then
+/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVERNAME
+fi
+
+
 exit

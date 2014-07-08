@@ -219,5 +219,12 @@ else
 RESTRICT=`echo $RESTRICT | sed 's/~//g; s/-/:/g; s/,/, /g'`
 echo $ROLE $RESTRICT"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/remote_ssh
 fi
+
+#Add in monitoring for the server
+if [ -f /opt/karoshi/server_network/monitoringserver ]
+then
+/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVERNAME
+fi
+
 exit
 

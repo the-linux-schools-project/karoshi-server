@@ -245,12 +245,6 @@ source /opt/karoshi/serversetup/variables/distro
 fi
 fi
 
-#Add in monitoring for the server
-if [ -f /opt/karoshi/server_network/monitoringserver ]
-then
-/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $WEBSERVER
-fi
-
 #########################
 #Add role information
 #########################
@@ -258,5 +252,12 @@ echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$WEBSERVER/reverseproxyse
 [ -f /opt/karoshi/server_network/servers/$WEBSERVER/no_role ] && rm -f /opt/karoshi/server_network/servers/$WEBSERVER/no_role
 echo $WEBSERVER > /opt/karoshi/server_network/reverseproxyserver
 sed -i 's/REVERSEPROXYCTRL=no/REVERSEPROXYCTRL=yes/g' /opt/karoshi/server_network/menusettings
+
+#Add in monitoring for the server
+if [ -f /opt/karoshi/server_network/monitoringserver ]
+then
+/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $WEBSERVER
+fi
+
 exit
 

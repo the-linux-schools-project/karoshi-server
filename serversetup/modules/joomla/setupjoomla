@@ -46,7 +46,7 @@ APACHESTATUS=`ps -e | grep -c $APACHEVER`
 if [ $MYSQLSTATUS = 0 ]
 then
 echo '<li>'$STARTMYSQLMSG'</li><br>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start 1>/dev/null
 fi
 if [ $APACHESTATUS = 0 ]
 then
@@ -177,7 +177,6 @@ fi
 
 if [ $MOD_SHOREWALL = yes ]
 then
-echo '<li>'$SHOREWALLMSG'</li><br>'
 LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'apacherule /etc/shorewall/rules
 echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
