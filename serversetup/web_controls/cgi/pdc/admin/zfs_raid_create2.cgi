@@ -190,6 +190,8 @@ echo '
 document.frm.submit();
 </script>
 '
+[ $MOBILE = no ] && echo '</div>'
+
 echo "</div></div></body></html>"
 exit
 }
@@ -314,7 +316,7 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox3
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -322,6 +324,8 @@ DIV_ID=menubox
 fi
 
 echo '<div id="'$DIV_ID'">'
+
+[ $MOBILE = no ] && echo '<div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -332,6 +336,8 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 else
 echo '<b>'$TITLE1 - $SERVERNAME'</b><br><br>'
 fi
+
+[ $MOBILE = no ] && echo '</div><div id="infobox">'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/zfs_raid_create2.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$ACTION:$PARITY:$DRIVES:$SPAREDRIVES:$MOUNTPOINT:$CREATETYPE" | sudo -H /opt/karoshi/web_controls/exec/zfs_raid_create2
