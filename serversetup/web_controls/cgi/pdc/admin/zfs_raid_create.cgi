@@ -52,7 +52,7 @@ exit
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE1'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE3'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body><div id="pagecontainer">'
 
 #########################
 #Get data input
@@ -178,7 +178,7 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox3
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -194,7 +194,16 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 <tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$TITLE3 - $SERVERNAME'</b></a></td></tr></tbody></table>'
 else
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a href="zfs_raid_create_fm.cgi"><img alt="" src="/images/warnings/server.png"></a></td><td><b>'$TITLE3' - '$SERVERNAME'</b></td></tr></tbody></table><br>'
+
+echo '<div id="titlebox">
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="vertical-align: middle;"><div class="sectiontitle">'$TITLE3' - '$SERVERNAME'</div></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>"'$HELPMSG8'"</span></a></td>
+<td style="vertical-align: top;">
+<a href="/cgi-bin/admin/zfs_raid_create_fm.cgi"><input class="button" type="button" name="" value="'$TITLE3'"></a>
+</td>
+</tr></tbody></table><br></div><div id="infobox">
+<br>'
 
 fi
 
@@ -202,5 +211,5 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/zfs_raid_create.cgi | cut -d' ' -f
 echo '<form action="/cgi-bin/admin/zfs_raid_create2.cgi" name="selectservers" method="post">'
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$CREATETYPE:" | sudo -H /opt/karoshi/web_controls/exec/zfs_raid_create
 
-echo "</form></div></div></body></html>"
+echo "</form></div></div></div></body></html>"
 exit

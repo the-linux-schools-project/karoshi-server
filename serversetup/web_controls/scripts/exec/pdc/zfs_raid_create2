@@ -71,6 +71,8 @@ SPAREDRIVELIST=`echo "$DATA" | cut -s -d: -f10`
 MOUNTPOINT=`echo "$DATA" | cut -s -d: -f11`
 CREATETYPE=`echo "$DATA" | cut -s -d: -f12`
 
+ZPOOLTOPPATH=dev/zvol
+
 ########################
 #Check data
 ########################
@@ -215,17 +217,26 @@ let ZFSSIZE=$ZFSSIZE-1
 zfs create -V $ZFSSIZE$STORAGEUNIT $HOSTNAME-data/storage
 STATUS=$?
 done
+
 echo "<li>$CREATEARTITIONMSG - $ZFSSIZE$STORAGEUNIT</li>"
+
+COUNTER=1
+while [ $COUNTER -lt 30 ]
+do
+[ -e /'$ZPOOLTOPPATH'/$HOSTNAME-data/storage ] && break
+sleep 1
+let COUNTER=$COUNTER+1
+done
 
 #Format the partition as ext4
 echo "<li>$FORMATMSG</li>"
-mkfs.ext4 /dev/$HOSTNAME-data/storage
+mkfs.ext4 /$ZPOOLTOPPATH/$HOSTNAME-data/storage
 #Mount partition on a temporary mount point
 [ ! -d $MOUNTPOINT.$$ ] && mkdir -p $MOUNTPOINT.$$
-mount /dev/$HOSTNAME-data/storage $MOUNTPOINT.$$
+mount /$ZPOOLTOPPATH/$HOSTNAME-data/storage $MOUNTPOINT.$$
 
 #Copy data to new array
-if [ -d $MOUNTMOUNT ]
+if [ -d $MOUNTPOINT ]
 then
 echo "<br><li>"$COPYDATAMSG"</b></li>"
 sleep 2
@@ -250,14 +261,14 @@ fi
 
 #Unmount zfs partition and mount as /home
 umount $MOUNTPOINT.$$
-mount /dev/$HOSTNAME-data/storage $MOUNTPOINT
+mount /$ZPOOLTOPPATH/$HOSTNAME-data/storage $MOUNTPOINT
 
 #Remove temporary mount point
 [ -d $MOUNTPOINT.$$ ] && rm -f -R $MOUNTPOINT.$$
 echo "</pre>"
 
 #Mount partition on boot
-echo mount /dev/$HOSTNAME-data/storage $MOUNTPOINT > /etc/rc2.d/S99zfs-mount
+echo mount /$ZPOOLTOPPATH/$HOSTNAME-data/storage $MOUNTPOINT > /etc/rc2.d/S99zfs-mount
 chmod 0700 /etc/rc2.d/S99zfs-mount
 fi
 
@@ -265,9 +276,18 @@ fi
 if [ $CREATETYPE = restore ]
 then
 zpool import -D -f $HOSTNAME-data
-mount /dev/$HOSTNAME-data/storage $MOUNTPOINT
+
+COUNTER=1
+while [ $COUNTER -lt 30 ]
+do
+[ -e /$ZPOOLTOPPATH/$HOSTNAME-data/storage ] && break
+sleep 1
+let COUNTER=$COUNTER+1
+done
+
+mount /$ZPOOLTOPPATH/$HOSTNAME-data/storage $MOUNTPOINT
 #Mount partition on boot
-echo mount /dev/$HOSTNAME-data/storage $MOUNTPOINT > /etc/rc2.d/S99zfs-mount
+echo mount /$ZPOOLTOPPATH/$HOSTNAME-data/storage $MOUNTPOINT > /etc/rc2.d/S99zfs-mount
 chmod 0700 /etc/rc2.d/S99zfs-mount
 fi
 
@@ -343,17 +363,29 @@ let ZFSSIZE=$ZFSSIZE-1
 zfs create -V $ZFSSIZE$STORAGEUNIT $HOSTNAME-data/storage
 STATUS=$?
 done
+
 echo "<li>'$CREATEARTITIONMSG' - $ZFSSIZE$STORAGEUNIT</li>"
+
+#Wait for zfs to catch up
+
+COUNTER=1
+while [ $COUNTER -lt 30 ]
+do
+[ -e /'$ZPOOLTOPPATH'/$HOSTNAME-data/storage ] && break
+sleep 1
+let COUNTER=$COUNTER+1
+done
+
 
 #Format the partition as ext4
 echo "<li>'$FORMATMSG'</li>"
-mkfs.ext4 /dev/$HOSTNAME-data/storage
+mkfs.ext4 /'$ZPOOLTOPPATH'/$HOSTNAME-data/storage
 #Mount partition on a temporary mount point
 [ ! -d '$MOUNTPOINT'.'$$' ] && mkdir -p '$MOUNTPOINT'.'$$'
-mount /dev/$HOSTNAME-data/storage '$MOUNTPOINT'.'$$'
+mount /'$ZPOOLTOPPATH'/$HOSTNAME-data/storage '$MOUNTPOINT'.'$$'
 
 #Copy data to new array
-if [ -d $MOUNTMOUNT ]
+if [ -d '$MOUNTPOINT' ]
 then
 echo "<br><li>"'$COPYDATAMSG'"</b></li>"
 sleep 2
@@ -378,14 +410,14 @@ fi
 
 #Unmount zfs partition and mount on correct mount point
 umount '$MOUNTPOINT'.'$$'
-mount /dev/$HOSTNAME-data/storage '$MOUNTPOINT'
+mount /'$ZPOOLTOPPATH'/$HOSTNAME-data/storage '$MOUNTPOINT'
 
 #Remove temporary mount point
 [ -d '$MOUNTPOINT'.'$$' ] && rm -f -R '$MOUNTPOINT'.'$$'
 echo "</pre>"
 
 #Mount partition on boot
-echo mount /dev/$HOSTNAME-data/storage '$MOUNTPOINT' > /etc/rc2.d/S99zfs-mount
+echo mount /'$ZPOOLTOPPATH'/$HOSTNAME-data/storage '$MOUNTPOINT' > /etc/rc2.d/S99zfs-mount
 chmod 0700 /etc/rc2.d/S99zfs-mount
 fi
 
@@ -393,9 +425,18 @@ fi
 if [ '$CREATETYPE' = restore ]
 then
 zpool import -D -f $HOSTNAME-data
-mount /dev/$HOSTNAME-data/storage '$MOUNTPOINT'
+
+COUNTER=1
+while [ $COUNTER -lt 30 ]
+do
+[ -e /'$ZPOOLTOPPATH'/$HOSTNAME-data/storage ] && break
+sleep 1
+let COUNTER=$COUNTER+1
+done
+
+mount /'$ZPOOLTOPPATH'/$HOSTNAME-data/storage '$MOUNTPOINT'
 #Mount partition on boot
-echo mount /dev/$HOSTNAME-data/storage '$MOUNTPOINT' > /etc/rc2.d/S99zfs-mount
+echo mount /'$ZPOOLTOPPATH'/$HOSTNAME-data/storage '$MOUNTPOINT' > /etc/rc2.d/S99zfs-mount
 chmod 0700 /etc/rc2.d/S99zfs-mount
 fi
 

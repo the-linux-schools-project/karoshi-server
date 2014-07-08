@@ -210,12 +210,15 @@ echo "<b>"$RESTOREZFSREAIDMSG"</b><br><br>"
 echo "$RESTOREZFSREAIDMSG2<br><br>
 <table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
 <tbody>
-<tr><td style=\"width: 180px;\">$RESTOREZFSARRAYMSG</td><td><input type=\"radio\" name=\"_CREATETYPE_\" value=\"restore\"></td></tr>
-<tr><td>$REUSEDRIVESMSG</td><td><input type=\"radio\" name=\"_CREATETYPE_\" value=\"reuse\"></td></tr>
-<tr><td style=\"Vertical-align: top;\">$ZFSRAIDINFOMSG</td><td>"
+<tr><td style=\"width: 180px;\"><b>$REUSEDRIVESMSG</b></td><td><input type=\"radio\" name=\"_CREATETYPE_\" value=\"reuse\"></td></tr>
+<tr><td><b>$RESTOREZFSARRAYMSG</b></td><td><input type=\"radio\" name=\"_CREATETYPE_\" value=\"restore\"></td></tr>
+<tr><td><b>"$MOUNTMSG"</b></td><td><input tabindex= \"1\" value=\"/home\" name=\"_MOUNTPOINT_\" size=\"20\" style=\"width: 200px;\" type=\"text\"></td><td>
+<a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$HELPMSG1</span></a>
+</td></tr>
+<tr><td style=\"Vertical-align: top;\"><b>$ZFSRAIDINFOMSG</b></td></tr></tbody></table><br>"
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-zpool import | sed "s/^ * //g"
-echo "</pre></td></tr></tbody></table><br><br>
+zpool import -D | sed "s/^ * //g"
+echo "</pre><br><br>
 <input class=\"button\" value=\"$SUBMITMSG\" type=\"submit\"> <input class=\"button\" value=\"$RESETMSG\" type=\"reset\">"
 
 else
@@ -392,12 +395,16 @@ echo "<b>"'$RESTOREZFSREAIDMSG'"</b><br><br>"
 echo "'$RESTOREZFSREAIDMSG2'<br><br>
 <table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
 <tbody>
-<tr><td style=\"width: 180px;\">'$RESTOREZFSARRAYMSG'</td><td><input type=\"radio\" name=\"_CREATETYPE_\" value=\"restore\"></td></tr>
-<tr><td>'$REUSEDRIVESMSG'</td><td><input type=\"radio\" name=\"_CREATETYPE_\" value=\"reuse\"></td></tr>
-<tr><td style=\"Vertical-align: top;\">'$ZFSRAIDINFOMSG'</td><td>"
+<tr><td style=\"width: 180px;\"><b>'$REUSEDRIVESMSG'</b></td><td><input type=\"radio\" name=\"_CREATETYPE_\" value=\"reuse\"></td></tr>
+<tr><td><b>'$RESTOREZFSARRAYMSG'</b></td><td><input type=\"radio\" name=\"_CREATETYPE_\" value=\"restore\"></td></tr>
+<tr><td><b>"'$MOUNTMSG'"</b></td><td><input tabindex= \"1\" value=\"/home\" name=\"_MOUNTPOINT_\" size=\"20\" style=\"width: 200px;\" type=\"text\"></td><td>
+<a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$HELPMSG1'</span></a>
+</td></tr>
+
+<tr><td style=\"Vertical-align: top;\"><b>'$ZFSRAIDINFOMSG'</b></td></tr></tr></tbody></table><br>"
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-zpool import | sed "s/^ * //g"
-echo "</pre></td></tr></tbody></table><br><br>
+zpool import -D | sed "s/^ * //g"
+echo "</pre><br><br>
 <input class=\"button\" value=\"'$SUBMITMSG'\" type=\"submit\"> <input class=\"button\" value=\"'$RESETMSG'\" type=\"reset\">"
 
 else
