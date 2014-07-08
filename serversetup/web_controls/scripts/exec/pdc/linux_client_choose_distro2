@@ -151,6 +151,7 @@ cp -v -f /home/distributions/linux_distro/$DISTROFOLDER/casper/initrd.* /home/tf
 cp -v -f /home/distributions/linux_distro/$DISTROFOLDER/casper/vmlinuz /home/tftpboot/images/$DISTROFOLDER/
 [ ! -f /home/tftpboot/preseed.cfg ] && cp /opt/karoshi/serversetup/modules/distributionserver/tftpboot/images/ubuntu/preseed.cfg /home/tftpboot/
 cp -v -f /home/tftpboot/preseed.cfg /home/distributions/linux_distro/$DISTROFOLDER/casper/
+sed -i "s/CHANGETHISLOCALE/$LANG/" /home/distributions/linux_distro/$DISTROFOLDER/casper/preseed.cfg
 
 
 
@@ -243,6 +244,8 @@ cp -v -f /home/distributions/linux_distro/'$DISTROFOLDER'/casper/initrd.* /home/
 cp -v -f /home/distributions/linux_distro/'$DISTROFOLDER'/casper/vmlinuz /home/tftpboot/images/'$DISTROFOLDER'/
 [ ! -f /home/tftpboot/preseed.cfg ] && cp /opt/karoshi/serversetup/modules/distributionserver/tftpboot/images/ubuntu/preseed.cfg /home/tftpboot/
 cp -v -f /home/tftpboot/preseed.cfg cp -v -f /home/tftpboot/preseed.cfg /home/distributions/linux_distro/'$DISTROFOLDER'/casper/
+sed -i "s/CHANGETHISLOCALE/$LANG/" /home/distributions/linux_distro/$DISTROFOLDER/casper/preseed.cfg
+
 echo "</pre>"
 
 #Find which initrd
