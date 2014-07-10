@@ -156,10 +156,10 @@ fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox">'
+echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$KAROSHI_SERVER: $VIEWLOGMSG1 $DAY-$MONTH-$YEAR'</div><br><div id=infobox>'
+
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_view_logs.cgi | cut -d' ' -f1`
 #View logs
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DAY:$MONTH:$YEAR:$SERVER" | sudo -H /opt/karoshi/web_controls/exec/backup_view_logs
-echo "</div>"
-echo "</div></body></html>"
+echo "</div></div></div></body></html>"
 exit

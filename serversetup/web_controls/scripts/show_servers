@@ -206,6 +206,19 @@ do
 done
 }
 
+function show_backups {
+INFOPATH=/opt/karoshi/server_network/servers
+SERVERTYPE=network
+SERVERMASTER=notset
+for SERVERS in /opt/karoshi/server_network/backup_servers/backup_settings/*
+do
+	FILLCOLOUR=green
+	SERVER=`basename $SERVERS`
+	[ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ] && FILLCOLOUR=orange
+	show_server
+done
+}
+
 function addslaveups {
 FILLCOLOUR=green
 INFOPATH=/opt/karoshi/server_network/servers
@@ -281,7 +294,6 @@ then
 fi
 }
 
-
 #Start table
 tabletop
 
@@ -291,7 +303,7 @@ then
 	addslaveups
 else
 	#Show pdc
-	if [ $VIEW != web ] && [ $VIEW != email ] && [ $VIEW != fileservers ]
+	if [ $VIEW != web ] && [ $VIEW != email ] && [ $VIEW != fileservers ] && [ $VIEW != backups ]
 	then
 		show_pdc
 	fi
@@ -328,6 +340,12 @@ fi
 if [ $VIEW = fileservers ]
 then
 	show_file_servers
+fi
+
+#Show backups
+if [ $VIEW = backups ]
+then
+	show_backups
 fi
 
 #Show all option

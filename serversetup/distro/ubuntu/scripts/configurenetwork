@@ -111,6 +111,16 @@ echo '	'gateway $GATEWAY >> /etc/network/interfaces
 echo '	'dns-nameservers $NAMESERVER >> /etc/network/interfaces
 
 ifup -a
+
+#Wait for network to be up
+COUNTER=0
+while [ $COUNTER -lt 20 ]
+do
+ifconfig ${CARDSELECTION[0]} 1>/dev/null 2>/dev/null
+[ $? = 0 ] && break
+let COUNTER=$COUNTER+1
+done
+#Check dns server
 dnscheck
 fi
 
@@ -228,6 +238,16 @@ modprobe bonding
 killall dhclient
 
 ifup -a
+
+#Wait for network to be up
+COUNTER=0
+while [ $COUNTER -lt 20 ]
+do
+ifconfig bond0 1>/dev/null 2>/dev/null
+[ $? = 0 ] && break
+let COUNTER=$COUNTER+1
+done
+
 #Check dns
 dnscheck
 fi
@@ -235,7 +255,6 @@ fi
 ###########################
 #All card types
 ###########################
-
 
 #Warn about reboot
 yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=4 --text="$REBOOTMSG" --no-buttons
