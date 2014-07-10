@@ -176,17 +176,6 @@ else
 DIV_ID=actionbox2
 fi
 
-
-#Generate navigation bar
-if [ $MOBILE = no ]
-then
-DIV_ID=actionbox
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
-else
-DIV_ID=actionbox2
-fi
-
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then

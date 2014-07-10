@@ -170,8 +170,9 @@ echo '</td><td style="vertical-align: top;">'
 if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backupserver ]
 then
 BACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backupserver`
+BSERVERSHORT=`echo $BACKUPSERVER | cut -d. -f1`
 SERVERBACKUPICON=/images/warnings/server_fail.png
-SERVERBACKUPSSHSTATUS=`echo $BACKUPSERVERMSG - $BACKUPSERVER. $SSHBACKUPMS2`
+SERVERBACKUPSSHSTATUS=`echo $BACKUPSERVERMSG - $BSERVERSHORT. $SSHBACKUPMS2`
 
 if [ $SERVER != `hostname-fqdn` ]
 then
@@ -187,7 +188,7 @@ fi
 SSHBACKUPSTATUS=`echo $?`
 if [ $SSHBACKUPSTATUS = 0 ]
 then
-SERVERBACKUPSSHSTATUS=`echo "$BACKUPSERVERMSG - $BACKUPSERVER.<br><br>$SSHBACKUPMS3"`
+SERVERBACKUPSSHSTATUS=`echo "$BACKUPSERVERMSG - $BSERVERSHORT.<br><br>$SSHBACKUPMS3"`
 SERVERBACKUPICON=/images/warnings/server_ok.png
 fi
 fi

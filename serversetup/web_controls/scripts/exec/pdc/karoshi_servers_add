@@ -610,4 +610,11 @@ then
 fi
 '
 /opt/karoshi/serversetup/web_controls/scripts/monitorixwebmanagement
+
+#Add in monitoring for the server
+if [ -f /opt/karoshi/server_network/monitoringserver ]
+then
+	/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVER.$REALM
+fi
+
 exit

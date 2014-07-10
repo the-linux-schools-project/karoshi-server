@@ -306,7 +306,7 @@ for package in `echo $removepackages`
 do
 echo -e "\nRemoving $package\n"
 sleep 1
-apt-get -y remove $package
+apt-get -y purge $package
 if [ $? != 0 ]
 then
 echo $package: There was a problem removing this package. Press return to continue.

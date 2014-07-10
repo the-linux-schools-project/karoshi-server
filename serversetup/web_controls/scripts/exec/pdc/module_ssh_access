@@ -30,16 +30,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/module_ssh_access_cgi
 then
-echo `date`: module_ssh_access - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_ssh_access - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_ssh_access_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_ssh_access.cgi | cut -d' ' -f1`
 [ $MD5SUM'null' = null ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $module_ssh_access_cgi'check' ]
 then
-echo `date`: module_ssh_access - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_ssh_access - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -48,17 +48,18 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: module_ssh_access - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_ssh_access - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
 if [ $DATA'null' = null ]
 then
-echo `date`: module_ssh_access - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_ssh_access - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
+
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
@@ -66,15 +67,14 @@ RESTRICT=`echo "$DATA" | cut -s -d: -f4`
 SERVERNAME=`echo "$DATA" | cut -s -d: -f5`
 RESTRICTTYPE=`echo "$DATA" | cut -s -d: -f6`
 
-
 if [ $RESTRICTTYPE != null ]
 then
-if [ $RESTRICTTYPE = TCPIP ]
-then
-RESTRICT=`echo $RESTRICT | tr -cd '0-9.,'`
-else
-RESTRICT=`echo $RESTRICT | sed 's/%3A/-/g' | tr -cd 'A-Za-z0-9\-:,' | sed 's/^/~/g; s/,/,~/g'`
-fi
+	if [ $RESTRICTTYPE = TCPIP ]
+	then
+		RESTRICT=`echo $RESTRICT | tr -cd '0-9.,'`
+	else
+		RESTRICT=`echo $RESTRICT | sed 's/%3A/-/g' | tr -cd 'A-Za-z0-9\-:,' | sed 's/^/~/g; s/,/,~/g'`
+	fi
 fi
 
 ########################
@@ -82,24 +82,26 @@ fi
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: module_ssh_access - Not called by module_ssh_access.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_ssh_access - Not called by module_ssh_access.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: module_ssh_access - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_ssh_access - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: module_ssh_access - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_ssh_access - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $RESTRICT'null' = null ]
+
+if [ -z "$RESTRICT" ]
 then
-echo `date`: module_ssh_access - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: module_ssh_access - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 else
-echo `date`: module_ssh_access - Setting up $SERVERNAME "for" $RESTRICT by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: module_ssh_access - Setting up $SERVERNAME "for" $RESTRICT by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
 ########################
 #Language
@@ -120,38 +122,38 @@ source /opt/karoshi/serversetup/variables/distro
 MODCHECK=`grep -c pdc_ssh_rule /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
-echo "<li>"$RESTRICT $OPENPORTMSG"</li>"
-LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-if [ $RESTRICT'null' != null ]
-then
-sed $LINENUM'c'\ACCEPT'	'net:$RESTRICT'	'fw'	'tcp'	'22'	'-'#'pdc_ssh_rule /etc/shorewall/rules > /etc/shorewall/rulestemp
-else
-sed $LINENUM'c'\ACCEPT'	'fw'	'tcp'	'22'	'-'#'pdc_ssh_rule /etc/shorewall/rules > /etc/shorewall/rulestemp
-fi
-rm -f /etc/shorewall/rules
-mv /etc/shorewall/rulestemp /etc/shorewall/rules
-echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	echo "<li>"$RESTRICT $OPENPORTMSG"</li>"
+	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+	if [ $RESTRICT'null' != null ]
+	then
+		sed $LINENUM'c'\ACCEPT'	'net:$RESTRICT'	'fw'	'tcp'	'22'	'-'#'pdc_ssh_rule /etc/shorewall/rules > /etc/shorewall/rulestemp
+	else
+		sed $LINENUM'c'\ACCEPT'	'fw'	'tcp'	'22'	'-'#'pdc_ssh_rule /etc/shorewall/rules > /etc/shorewall/rulestemp
+	fi
+	rm -f /etc/shorewall/rules
+	mv /etc/shorewall/rulestemp /etc/shorewall/rules
+	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 fi
 
 if [ $MODCHECK != 0 ]
 then
-LINENUM=`grep -n '#pdc_ssh_rule' /etc/shorewall/rules | cut -d: -f1`
-if [ $RESTRICT'null' != null ]
-then
-sed $LINENUM'c'\ACCEPT'	'net:$RESTRICT'	'fw'	'tcp'	'22'	'-'#'pdc_ssh_rule /etc/shorewall/rules > /etc/shorewall/rulestemp
-else
-sed $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'22'	'-'#'pdc_ssh_rule /etc/shorewall/rules > /etc/shorewall/rulestemp
-fi
-rm -f /etc/shorewall/rules
-mv /etc/shorewall/rulestemp /etc/shorewall/rules
+	LINENUM=`grep -n '#pdc_ssh_rule' /etc/shorewall/rules | cut -d: -f1`
+	if [ ! -z "$RESTRICT" ]
+	then
+		sed $LINENUM'c'\ACCEPT'	'net:$RESTRICT'	'fw'	'tcp'	'22'	'-'#'pdc_ssh_rule /etc/shorewall/rules > /etc/shorewall/rulestemp
+	else
+		sed $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'22'	'-'#'pdc_ssh_rule /etc/shorewall/rules > /etc/shorewall/rulestemp
+	fi
+	rm -f /etc/shorewall/rules
+	mv /etc/shorewall/rulestemp /etc/shorewall/rules
 fi
 ######################
 #Restart shorewall
 ######################
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
-sleep 0.5
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
 
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+sleep 0.5
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 
 ######################
 #Add ssh line to hosts.allow
@@ -159,16 +161,16 @@ sleep 0.5
 MODCHECK=`grep -c sshd':' /etc/hosts.allow`
 if [ $MODCHECK = 0 ]
 then
-if [ $RESTRICT'null' != null ]
-then
-echo sshd: 127.0.0.1 , $RESTRICT >> /etc/hosts.allow
-fi
+	if [ ! -z "$RESTRICT" ]
+	then
+		echo sshd: 127.0.0.1 , $RESTRICT >> /etc/hosts.allow
+	fi
 fi
 
 #############################
 #copy in config file
 #############################
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ssh_stop
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ssh_stop 1>/dev/null
 mv /etc/ssh/sshd_config /etc/ssh/sshd_configbackup
 cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/extra_server/configfiles/sshd_config /etc/ssh/
 sleep .5
@@ -181,27 +183,22 @@ chmod 0700 /root/.ssh
 
 #Check that timeout has been set
 TIMEOUTSTATUS=`grep -c '#''   'ConnectTimeout' '0 /etc/ssh/ssh_config`
-if [ $TIMEOUTSTATUS != 0 ]
-then
-sed -i 's/#   ConnectTimeout 0/ConnectTimeout 4/g' /etc/ssh/ssh_config
-fi
+[ "$TIMEOUTSTATUS" != 0 ] && sed -i 's/#   ConnectTimeout 0/ConnectTimeout 4/g' /etc/ssh/ssh_config
+
 #Check that StrictHostkeychecking is set to no
 HOSTKEYSTATUS=`grep -c '#''   'StrictHostKeyChecking' 'ask /etc/ssh/ssh_config`
-if [ $HOSTKEYSTATUS != 0 ]
-then
-sed -i 's/#   StrictHostKeyChecking ask/StrictHostKeyChecking no/g' /etc/ssh/ssh_config
-fi
+[ $HOSTKEYSTATUS != 0 ] && sed -i 's/#   StrictHostKeyChecking ask/StrictHostKeyChecking no/g' /etc/ssh/ssh_config
 
 #Stop ssh if it is running
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ssh_status
-if [ `echo $?` = 0 ]
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ssh_status 1>/dev/null
+if [ $? = 0 ]
 then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ssh_stop
-sleep 1
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ssh_stop 1>/dev/null
+	sleep 1
 fi
 
 #Start ssh
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ssh_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ssh_start 1>/dev/null
 
 #############################
 #Ensure that ssh is running on boot
@@ -212,19 +209,16 @@ fi
 #Add role information
 #############################
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
-if [ $RESTRICT'null' = null ]
+if [ -z "$RESTRICT" ]
 then
-echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/remote_ssh
+	echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/remote_ssh
 else
-RESTRICT=`echo $RESTRICT | sed 's/~//g; s/-/:/g; s/,/, /g'`
-echo $ROLE $RESTRICT"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/remote_ssh
+	RESTRICT=`echo $RESTRICT | sed 's/~//g; s/-/:/g; s/,/, /g'`
+	echo $ROLE $RESTRICT"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/remote_ssh
 fi
 
 #Add in monitoring for the server
-if [ -f /opt/karoshi/server_network/monitoringserver ]
-then
-/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVERNAME
-fi
+[ -f /opt/karoshi/server_network/monitoringserver ] && /opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVERNAME
 
 exit
 
