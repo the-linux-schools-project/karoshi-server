@@ -1,20 +1,20 @@
 #!/bin/bash
 #Copyright (C) 2007 Paul Sharrad
 
-#This file is part of Karoshi Server.
+#This file is part of Karoshi SERVERNAME.
 #
-#Karoshi Server is free software: you can redistribute it and/or modify
+#Karoshi SERVERNAME is free software: you can redistribute it and/or modify
 #it under the terms of the GNU Affero General Public License as published by
 #the Free Software Foundation, either version 3 of the License, or
 #(at your option) any later version.
 #
-#Karoshi Server is distributed in the hope that it will be useful,
+#Karoshi SERVERNAME is distributed in the hope that it will be useful,
 #but WITHOUT ANY WARRANTY; without even the implied warranty of
 #MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #GNU Affero General Public License for more details.
 #
 #You should have received a copy of the GNU Affero General Public License
-#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+#along with Karoshi SERVERNAME.  If not, see <http://www.gnu.org/licenses/>.
 
 #
 #The Karoshi Team can be contacted at: 
@@ -49,15 +49,15 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 #########################
 END_POINT=22
 
-#Assign SERVER
+#Assign SERVERNAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
 DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERcheck ]
+if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
 then
 let COUNTER=$COUNTER+1
-SERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
 break
 fi
 let COUNTER=$COUNTER+1
@@ -110,8 +110,8 @@ fi
 #########################
 #Check data
 #########################
-#Check to see that a server has been chosen
-if [ $SERVER'null' = null ]
+#Check to see that a SERVERNAME has been chosen
+if [ $SERVERNAME'null' = null ]
 then
 MESSAGE=$ERRORMSG1
 show_status
@@ -156,10 +156,16 @@ fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$KAROSHI_SERVER: $VIEWLOGMSG1 $DAY-$MONTH-$YEAR'</div><br><div id=infobox>'
+echo '<div id="actionbox3"><div id="titlebox">
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr><td style="vertical-align: top;"><div class="sectiontitle">'$SERVERNAME: $VIEWLOGMSG1 $DAY-$MONTH-$YEAR'</div></td><td style="vertical-align: top;">
+<a href="/cgi-bin/admin/backup_view_logs_fm.cgi"><input class="button" type="button" name="" value="'$CHOOSESERVERMSG'"></a>
+</td></tr></tbody></table>
+
+
+</div><br><div id="infobox">'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_view_logs.cgi | cut -d' ' -f1`
 #View logs
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DAY:$MONTH:$YEAR:$SERVER" | sudo -H /opt/karoshi/web_controls/exec/backup_view_logs
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DAY:$MONTH:$YEAR:$SERVERNAME" | sudo -H /opt/karoshi/web_controls/exec/backup_view_logs
 echo "</div></div></div></body></html>"
 exit

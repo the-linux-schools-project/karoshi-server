@@ -88,7 +88,7 @@ then
 fi
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$DATEMSG'</td><td>'
+<tr><td style="width: 180px;"><b>'$DATEMSG'</b></td><td>'
 echo "	<!-- calendar attaches to existing form element -->
 	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxsize=10 name=\"_DATE_\" /></td><td style=\"vertical-align: top; text-align: center;\">
 	<script language=\"JavaScript\">
