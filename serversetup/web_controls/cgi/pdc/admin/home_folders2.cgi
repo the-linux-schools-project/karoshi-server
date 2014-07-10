@@ -26,7 +26,7 @@
 ########################
 #Required input variables
 ########################
-#  _NEWSERVER_
+#  _SERVERNAME_
 #  _CURRENTSERVER_
 #  _PRIGROUP_
 #  _COPYHOMEAREAS_
@@ -66,58 +66,57 @@ END_POINT=12
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = CURRENTSERVERcheck ]
-then
-let COUNTER=$COUNTER+1
-CURRENTSERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = CURRENTSERVERcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		CURRENTSERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
-#Assign NEWSERVER
+#Assign SERVERNAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = NEWSERVERcheck ]
-then
-let COUNTER=$COUNTER+1
-NEWSERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign PRIGROUP
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = PRIGROUPcheck ]
-then
-let COUNTER=$COUNTER+1
-PRIGROUP=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = PRIGROUPcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		PRIGROUP=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign COPYHOMEAREAS
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = COPYHOMEAREAScheck ]
-then
-let COUNTER=$COUNTER+1
-COPYHOMEAREAS=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = COPYHOMEAREAScheck ]
+	then
+		let COUNTER=$COUNTER+1
+		COPYHOMEAREAS=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
-
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
@@ -141,61 +140,62 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
-show_status
+	export MESSAGE=$HTTPS_ERROR
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
-show_status
+	MESSAGE=$ACCESS_ERROR1
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
-show_status
+	MESSAGE=$ACCESS_ERROR1
+	show_status
 fi
 #########################
 #Check data
 #########################
-#Check to see that NEWSERVER is not blank
-if [ $NEWSERVER'null' = null ]
+#Check to see that SERVERNAME is not blank
+if [ -z "$SERVERNAME" ]
 then
-MESSAGE=$ERRORMSG5
-show_status
+	MESSAGE=$ERRORMSG5
+	show_status
 fi
 #Check to see that CURRENTSERVER is not blank
-if [ $CURRENTSERVER'null' = null ]
+if [ -z "$CURRENTSERVER" ]
 then
-MESSAGE=$ERRORMSG1
-show_status
+	MESSAGE=$ERRORMSG1
+	show_status
 fi
 #Check to see that PRIGROUP is not blank
-if [ $PRIGROUP'null' = null ]
+if [ -z "$PRIGROUP" ]
 then
-MESSAGE=$ERRORMSG2
-show_status
+	MESSAGE=$ERRORMSG2
+	show_status
 fi
 
 #Check to see that the new server is available
-if [ $NEWSERVER != `hostname-fqdn` ]
+if [ $SERVERNAME != `hostname-fqdn` ]
 then
-if [ ! -f /opt/karoshi/server_network/servers/$NEWSERVER/fileserver ]
-then
-MESSAGE=$ERRORMSG5
-show_status
+	if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/fileserver ]
+	then
+		MESSAGE=$ERRORMSG5
+		show_status
+	fi
 fi
-fi
+
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/home_folders2.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$CURRENTSERVER:$NEWSERVER:$PRIGROUP:$COPYHOMEAREAS" | sudo -H /opt/karoshi/web_controls/exec/home_folders
-STATUS=`echo $?`
-if [ $STATUS = 101 ]
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$CURRENTSERVER:$SERVERNAME:$PRIGROUP:$COPYHOMEAREAS" | sudo -H /opt/karoshi/web_controls/exec/home_folders
+
+if [ $? = 101 ]
 then
-MESSAGE=`echo $PROBLEMMSG $LOGMSG`
-show_status
+	MESSAGE=`echo $PROBLEMMSG $LOGMSG`
+	show_status
 fi
 completed
 echo '</div></div></div></body></html>'

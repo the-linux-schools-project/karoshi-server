@@ -4,7 +4,7 @@ MOBILE=`echo $1 | tr -cd a-z`
 VIEW=`echo $2 | tr -cd a-z`
 ACTIONMSG=`echo $3 | tr -cd "A-Za-z\n-/"`
 ACTION=`echo $4 | tr -cd "A-Za-z"`
-CUSTOM=`echo $5 | tr -cd "A-Za-z"`
+CUSTOM=`echo $5 | tr -cd "A-Za-z."`
 SEPARATOR=`echo $6 | tr -cd "_"`
 
 ############################
@@ -33,7 +33,7 @@ then
 	usage
 fi
 
-if [ $VIEW != all ] && [ $VIEW != internal ] && [ $VIEW != pdc ] && [ $VIEW != servers ] && [ $VIEW != adc ] && [ $VIEW != addslaveups ] && [ $VIEW != web ] && [ $VIEW != email ]
+if [ $VIEW != all ] && [ $VIEW != internal ] && [ $VIEW != pdc ] && [ $VIEW != servers ] && [ $VIEW != adc ] && [ $VIEW != addslaveups ] && [ $VIEW != web ] && [ $VIEW != email ] && [ $VIEW != fileservers ]
 then
 	usage
 fi
@@ -191,7 +191,20 @@ for SERVERS in /opt/karoshi/server_network/servers/*
 done
 }
 
-
+function show_file_servers {
+INFOPATH=/opt/karoshi/server_network/servers
+SERVERTYPE=network
+SERVERMASTER=notset
+for SERVERS in /opt/karoshi/server_network/servers/*
+do
+	FILLCOLOUR=green
+	SERVER=`basename $SERVERS`
+	if [ $CUSTOM != $SERVER ]
+	then
+		[ -f /opt/karoshi/server_network/servers/$SERVER/fileserver ] && show_server
+	fi
+done
+}
 
 function addslaveups {
 FILLCOLOUR=green
@@ -204,9 +217,6 @@ do
 	[ ! -d /opt/karoshi/server_network/ups/master/$SERVER ] && show_server
 done
 }
-
-
-
 
 function show_dmz_servers {
 FILLCOLOUR=orange
@@ -281,7 +291,7 @@ then
 	addslaveups
 else
 	#Show pdc
-	if [ $VIEW != web ] && [ $VIEW != email ]
+	if [ $VIEW != web ] && [ $VIEW != email ] && [ $VIEW != fileservers ]
 	then
 		show_pdc
 	fi
@@ -312,6 +322,12 @@ fi
 if [ $VIEW = email ]
 then
 	show_email_servers
+fi
+
+#Show file servers
+if [ $VIEW = fileservers ]
+then
+	show_file_servers
 fi
 
 #Show all option

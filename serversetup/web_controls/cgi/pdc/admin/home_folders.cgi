@@ -65,30 +65,28 @@ END_POINT=6
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign PRIGROUP
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = PRIGROUPcheck ]
-then
-let COUNTER=$COUNTER+1
-PRIGROUP=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = PRIGROUPcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		PRIGROUP=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
-
-
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
@@ -103,67 +101,66 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
-show_status
+	export MESSAGE=$HTTPS_ERROR
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
-show_status
+	MESSAGE=$ACCESS_ERROR1
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
-show_status
+	MESSAGE=$ACCESS_ERROR1
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that SERVER is not blank
-if [ $SERVER'null' = null ]
+if [ -z "$SERVER" ]
 then
-MESSAGE=$ERRORMSG1
-show_status
+	MESSAGE=$ERRORMSG1
+	show_status
 fi
 #Check to see that PRIGROUP is not blank
-if [ $PRIGROUP'null' = null ]
+if [ -z "$PRIGROUP" ]
 then
-MESSAGE=$ERRORMSG2
-show_status
+	MESSAGE=$ERRORMSG2
+	show_status
 fi
 
 #Check to see that there are other karoshi servers available
 if [ ! -d /opt/karoshi/server_network/servers/ ]
 then
-MESSAGE=$ERRORMSG3
-show_status
+	MESSAGE=$ERRORMSG3
+	show_status
 fi
 
 if [ `ls -1 /opt/karoshi/server_network/servers/ | wc -l` = 0 ]
 then
-MESSAGE=$ERRORMSG3
-show_status
+	MESSAGE=$ERRORMSG3
+	show_status
 fi
 
 FILESERVERCOUNT=0
 for KAROSHI_SERVER in /opt/karoshi/server_network/servers/*
 do
-KAROSHI_SERVER=`basename $KAROSHI_SERVER`
-if [ -f /opt/karoshi/server_network/servers/$KAROSHI_SERVER/fileserver ]
-then
-SERVERARRAY[$FILESERVERCOUNT]=$KAROSHI_SERVER
-let FILESERVERCOUNT=$FILESERVERCOUNT+1
-fi
+	KAROSHI_SERVER=`basename $KAROSHI_SERVER`
+	if [ -f /opt/karoshi/server_network/servers/$KAROSHI_SERVER/fileserver ]
+	then
+		let FILESERVERCOUNT=$FILESERVERCOUNT+1
+	fi
 done
 
 if [ $FILESERVERCOUNT -le 1 ]
 then
-MESSAGE=$ERRORMSG4
-show_status
+	MESSAGE=$ERRORMSG4
+	show_status
 fi
 
 echo '<img alt="Warning" src="/images/warnings/warning.png"> '$LOGGEDINWARNMSG'<br><br>
@@ -176,21 +173,10 @@ echo '<img alt="Warning" src="/images/warnings/warning.png"> '$LOGGEDINWARNMSG'<
 <tr><td>'$PRIGROUPMSG'</td><td>'$PRIGROUP'</td></tr>
 <tr><td>'$COPYHOMEAREASMSG'</td><td><input name="_COPYHOMEAREAS_" value="yes" type="checkbox"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a></td></tr></tbody></table><br><br><b>'$NEWSERVERMSG'</b><br>'
 
-#Display list of file servers
-COUNTER=0
-SERVERICON="/images/submenus/system/computer.png"
-SERVERICON2="/images/submenus/system/all_computers.png"
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr>'
-while [ $COUNTER -lt $FILESERVERCOUNT ]
-do
-if [ $SERVER != ${SERVERARRAY[$COUNTER]} ]
-then
-echo '<td style="width: 90px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_NEWSERVER_'${SERVERARRAY[$COUNTER]}'_" type="image" class="images" src="'$SERVERICON'" value="_NEWSERVER_'${SERVERARRAY[$COUNTER]}'_"><span>'${SERVERARRAY[$COUNTER]}'</span></a><br>'${SERVERARRAY[$COUNTER]}'</td>'
-[ $COUNTER = 5 ] && echo '</tr><tr>'
-fi
-let COUNTER=$COUNTER+1
-done 
+#Show list of file servers.
+MOBILE=no
+/opt/karoshi/web_controls/show_servers $MOBILE fileservers "$ACTIONMSG" $SERVER
 
-echo '</tr></tbody></table></form></div></div></body></html>'
+echo '</form></div></div></body></html>'
 exit
 
