@@ -57,27 +57,27 @@ END_POINT=5
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign BACKUPSERVER
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = BACKUPSERVERcheck ]
-then
-let COUNTER=$COUNTER+1
-BACKUPSERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 
@@ -94,8 +94,8 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
-show_status
+	export MESSAGE=$HTTPS_ERROR
+	show_status
 fi
 #########################
 #Check user accessing this script
@@ -108,31 +108,31 @@ fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
-show_status
+	MESSAGE=$ACCESS_ERROR1
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that SERVER is not blank
-if [ $SERVER'null' = null ]
+if [ -z "$SERVER" ]
 then
-MESSAGE=$ERRORMSG1
-show_status
+	MESSAGE=$ERRORMSG1
+	show_status
 fi
 #Check to see that BACKUPSERVER is not blank
-if [ $BACKUPSERVER'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-MESSAGE=$ERRORMSG3
-show_status
+	MESSAGE=$ERRORMSG3
+	show_status
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_assign.cgi | cut -d' ' -f1`
 #Add user
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER:$BACKUPSERVER:" | sudo -H /opt/karoshi/web_controls/exec/backup_assign
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/backup_assign
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 101 ]
 then
-MESSAGE=`echo $PROBLEMMSG $LOGMSG`
+	MESSAGE=`echo $PROBLEMMSG $LOGMSG`
 fi
 exit

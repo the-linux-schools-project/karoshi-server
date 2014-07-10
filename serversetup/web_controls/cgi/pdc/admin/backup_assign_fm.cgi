@@ -39,7 +39,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -63,14 +63,14 @@ END_POINT=5
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -86,60 +86,49 @@ exit
 #Check data
 #########################
 #Check to see that servername is not blank
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-MESSAGE=$ERRORMSG1
-show_status
+	MESSAGE=$ERRORMSG1
+	show_status
 fi
 
 #Check to see that a backup server has been configured
 if [ ! -d /opt/karoshi/server_network/backup_servers/servers ]
 then
-MESSAGE=$ERRORMSG2
-show_status
+	MESSAGE=$ERRORMSG2
+	show_status
 fi
 
 if [ `ls -1 /opt/karoshi/server_network/backup_servers/servers | wc -l` = 0 ]
 then
-MESSAGE=$ERRORMSG2
-show_status
+	MESSAGE=$ERRORMSG2
+	show_status
 fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '
-<form action="/cgi-bin/admin/backup_assign.cgi" method="post">
+echo '<form action="/cgi-bin/admin/backup_assign.cgi" method="post">
 <div id="actionbox">
 
-<span style="font-weight: bold;">'$TITLE - $SERVERNAME'</span> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a><br><br>
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr><td style="vertical-align: top;"><div class="sectiontitle">'$TITLE - $SERVERNAME'</div></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td></tr></tbody></table><br>
+
 <input name="_SERVER_" value="'$SERVERNAME'" type="hidden">
 '
 
-#Show list of backup servers
-SERVERLISTARRAY=( `ls -1 /opt/karoshi/server_network/backup_servers/servers` )
-SERVERLISTCOUNT=${#SERVERLISTARRAY[@]}
-SERVERCOUNTER=0
-SERVERICON="/images/submenus/system/computer.png"
-SERVERICON2="/images/submenus/system/all_computers.png"
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
-
-while [ $SERVERCOUNTER -lt $SERVERLISTCOUNT ]
-do
-KAROSHISERVER=${SERVERLISTARRAY[$SERVERCOUNTER]}
-if [ $KAROSHISERVER != $SERVERNAME ]
+if [ -d /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME ]
 then
-echo '<td style="width: 90px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_BACKUPSERVER_'$KAROSHISERVER'_" type="image" class="images" src="'$SERVERICON'" value="_BACKUPSERVER_'$KAROSHISERVER'"><span>'$KAROSHISERVER'</span></a><br>'$KAROSHISERVER'</td>'
+CURRENTBSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backupserver`
+
+echo '<br><br><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<tbody>
+<tr><td style="width: 10px; vertical-align: top; text-align: left;"></td><td style="width: 250px; vertical-align: top; text-align: left;">'$CURRENTBSERVERMSG'</td><td style="width: 250px; vertical-align: top; text-align: left;">'$CURRENTBSERVER'</td><td style="vertical-align: top; text-align: left;">
+<input name="_SERVERNAME_removebackupoption_" type="submit" class="button" value="'$NOBACKUPMSG'">
+</td></tr></tbody></table><br><br>'
 fi
 
-[ $SERVERCOUNTER = 5 ] && echo '</tr><tr>'
-let SERVERCOUNTER=$SERVERCOUNTER+1
-done
-
-echo '</tr>'
-
-[ -d /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME ] && echo '<tr><td><a class="info" href="javascript:void(0)"><input name="_BACKUPSERVER_removebackupoption_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$NOBACKUPMSG'</span></a><br>'$NOBACKUPMSG'</td></tr>'
-
+MOBILE=no
+/opt/karoshi/web_controls/show_servers $MOBILE backupservers "$CHOOSESERVERMSG" backupserver $SERVERNAME
 
 echo '</tbody></table></div></form></div></body></html>'
 exit

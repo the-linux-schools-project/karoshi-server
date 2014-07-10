@@ -33,15 +33,15 @@ then
 	usage
 fi
 
-if [ $VIEW != all ] && [ $VIEW != internal ] && [ $VIEW != pdc ] && [ $VIEW != servers ] && [ $VIEW != adc ] && [ $VIEW != addslaveups ] && [ $VIEW != web ] && [ $VIEW != email ] && [ $VIEW != fileservers ] && [ $VIEW != backups ]
+if [ $VIEW != all ] && [ $VIEW != internal ] && [ $VIEW != pdc ] && [ $VIEW != servers ] && [ $VIEW != adc ] && [ $VIEW != addslaveups ] && [ $VIEW != web ] && [ $VIEW != email ] && [ $VIEW != fileservers ] && [ $VIEW != backups ] && [ $VIEW != backupservers ]
 then
 	usage
 fi
 
 if [ $MOBILE = no ]
 then
-	WIDTH1=200
-	WIDTH2=200
+	WIDTH1=250
+	WIDTH2=250
 	WIDTH3=80
 	WIDTH4=120
 	HEIGHT1=50
@@ -199,10 +199,7 @@ for SERVERS in /opt/karoshi/server_network/servers/*
 do
 	FILLCOLOUR=green
 	SERVER=`basename $SERVERS`
-	if [ $CUSTOM != $SERVER ]
-	then
-		[ -f /opt/karoshi/server_network/servers/$SERVER/fileserver ] && show_server
-	fi
+	[ $CUSTOM != $SERVER ] && [ -f /opt/karoshi/server_network/servers/$SERVER/fileserver ] && show_server
 done
 }
 
@@ -218,6 +215,20 @@ do
 	show_server
 done
 }
+
+function show_backupservers {
+INFOPATH=/opt/karoshi/server_network/servers
+SERVERTYPE=network
+SERVERMASTER=notset
+for SERVERS in /opt/karoshi/server_network/backup_servers/servers/*
+do
+	FILLCOLOUR=green
+	SERVER=`basename $SERVERS`
+	[ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ] && FILLCOLOUR=orange
+	[ $CUSTOM != $SERVER ] && show_server
+done
+}
+
 
 function addslaveups {
 FILLCOLOUR=green
@@ -303,7 +314,7 @@ then
 	addslaveups
 else
 	#Show pdc
-	if [ $VIEW != web ] && [ $VIEW != email ] && [ $VIEW != fileservers ] && [ $VIEW != backups ]
+	if [ $VIEW != web ] && [ $VIEW != email ] && [ $VIEW != fileservers ] && [ $VIEW != backups ] && [ $VIEW != backupservers ]
 	then
 		show_pdc
 	fi
@@ -325,34 +336,23 @@ then
 fi
 
 #Show web servers
-if [ $VIEW = web ]
-then
-	show_web_servers
-fi
+[ $VIEW = web ] && show_web_servers
 
 #Show email servers
-if [ $VIEW = email ]
-then
-	show_email_servers
-fi
+[ $VIEW = email ] && show_email_servers
 
 #Show file servers
-if [ $VIEW = fileservers ]
-then
-	show_file_servers
-fi
+[ $VIEW = fileservers ] && show_file_servers
+
 
 #Show backups
-if [ $VIEW = backups ]
-then
-	show_backups
-fi
+[ $VIEW = backups ] && show_backups
+
+#Show backup servers
+[ $VIEW = backupservers ] && show_backupservers
 
 #Show all option
-if [ $VIEW = all ]
-then
-	show_all_option
-fi
+[ $VIEW = all ] && show_all_option
 
 #End table
 tablebottom
