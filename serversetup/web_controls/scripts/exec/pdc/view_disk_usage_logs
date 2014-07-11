@@ -58,6 +58,7 @@ DAY=`echo $* | cut -s -d: -f5`
 MONTH=`echo $* | cut -s -d: -f6`
 YEAR=`echo $* | cut -s -d: -f7`
 KAROSHI_SERVER=`echo $* | cut -s -d: -f8`
+MOBILE=`echo $* | cut -s -d: -f9`
 ########################
 #Check data
 ########################

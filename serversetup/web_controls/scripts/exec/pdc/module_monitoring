@@ -107,6 +107,7 @@ then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 [ ! -d /opt/karoshi/server_network/mon/ ] && mkdir -p /opt/karoshi/server_network/mon/
 '
+
 scp -p -r /opt/karoshi/server_network/mon/monitors root@$SERVERNAME:/opt/karoshi/server_network/mon/ 1> /dev/null
 #Create monitor log folders
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
@@ -117,6 +118,12 @@ mkdir -p /opt/karoshi/server_network/mon/events/$MONITOR
 chown mon /opt/karoshi/server_network/mon/events/$MONITOR
 done
 '
+fi
+
+#Copy in email alert contacts
+if [ -d /opt/karoshi/server_network/mon/email_alerts ]
+then
+	scp -p -r /opt/karoshi/server_network/mon/email_alerts/ root@$SERVERNAME:/opt/karoshi/server_network/mon/ 1>/dev/null
 fi
 
 #Run module

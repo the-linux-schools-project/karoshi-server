@@ -585,9 +585,4 @@ echo `date`: configure_authentication - completed "for" $SERVERNAME by $REMOTE_U
 [ ! -d /opt/karoshi/server_network/zones/$ZONE/servers ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/servers
 touch /opt/karoshi/server_network/zones/$ZONE/servers/$SERVERNAME
 
-#Add in monitoring for the server
-if [ -f /opt/karoshi/server_network/monitoringserver ]
-then
-/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVERNAME
-fi
 exit
