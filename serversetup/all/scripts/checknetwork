@@ -109,7 +109,7 @@ function getnetworksettings {
 
 if [ $SCARDCOUNT -gt 1 ]
 then
-	DATA=`yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --field="$SERVERNAMEMSG" "$NAMECUSTOM" --field="$TCPIPMSG" "$TCPIPCUSTOM" --field="$NETMASKMSG" "$NETMASKCUSTOM" --field="$NAMESERVERMSG" "$NAMESERVERCUSTOM" --field="$GATEWAYMSG" "$GATEWAYCUSTOM" --field="Bond mode:CB" "" "" "" "" "" 'mode0!mode1!mode4!' --button="gtk-ok"`
+	DATA=`yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --field="$SERVERNAMEMSG" "$NAMECUSTOM" --field="$TCPIPMSG" "$TCPIPCUSTOM" --field="$NETMASKMSG" "$NETMASKCUSTOM" --field="$NAMESERVERMSG" "$NAMESERVERCUSTOM" --field="$GATEWAYMSG" "$GATEWAYCUSTOM" --field="Bond mode:CB" 'mode0!mode1!mode4' --button="gtk-ok"`
 else
 	DATA=`yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --text "$SETTINGSMSG" --field="$SERVERNAMEMSG" "$NAMECUSTOM" --field="$TCPIPMSG" "$TCPIPCUSTOM" --field="$NETMASKMSG" "$NETMASKCUSTOM" --field="$NAMESERVERMSG" "$NAMESERVERCUSTOM" --field="$GATEWAYMSG" "$GATEWAYCUSTOM" --button="gtk-ok" 2>/dev/null`
 fi
@@ -226,6 +226,17 @@ do
 			fi
 			if [ $GETSETTINGS = yes ]
 			then
+				ERRORMSG=$ERRORMSG1
+				inputwarning
+			fi
+		fi
+		if [ $SCARDCOUNT -gt 1 ]
+		then
+			#Check that a bond mode has been selected
+			if [ -z "$BONDMODE" ] 
+			then
+				GETSETTINGS=yes
+				INPUTCHECK=fail
 				ERRORMSG=$ERRORMSG1
 				inputwarning
 			fi
