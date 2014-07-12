@@ -11,9 +11,5 @@ d-i user-setup/allow-password-weak boolean true
 d-i user-setup/encrypt-home boolean false
 # Avoid that last message about the install being complete.
 d-i finish-install/reboot_in_progress note
-
-#if you want to start commands after the installation
-ubiquity ubiquity/success_command string shutdown -r now
-
-d-i debian-installer/exit/poweroff boolean true
+#d-i debian-installer/exit/poweroff boolean true
 d-i cdrom-detect/eject boolean false
