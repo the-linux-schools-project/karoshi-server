@@ -101,7 +101,7 @@ ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $MONITORING_SERVER '
 if [ -f /opt/karoshi/server_network/mon/email_alerts/'$NAME' ]
 then
 source /opt/karoshi/server_network/mon/email_alerts/'$NAME'
-echo "<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">"
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 /opt/karoshi/server_network/mon/smtp-cli --verbose --host="$EMAILSERVER" --from "$SENDER" --to "$EMAILADDRESS" --subject "Karoshi Network Monitoring" --body-plain "Karoshi Monitoring - tested by '$REMOTE_USER'."
 echo "</pre>"
 else
