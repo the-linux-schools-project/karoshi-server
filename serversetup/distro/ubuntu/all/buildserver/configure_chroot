@@ -1,38 +1,51 @@
 #!/bin/bash
+
 mount none -t proc /proc
 mount none -t sysfs /sys
 mount none -t devpts /dev/pts
 export HOME=/root
 export LC_ALL=C
-#sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 12345678  #Substitute "12345678" with the PPA's OpenPGP ID.
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 16126D3A3E5C1192
+
+echo -e "Chroot: updating apt\n"
+sleep 1	
 apt-get update
+echo -e "\nChroot: installing dbus\n"
+sleep 1	
 apt-get install --yes dbus
 dbus-uuidgen > /var/lib/dbus/machine-id
 dpkg-divert --local --rename --add /sbin/initctl
 
 #Install Packages needed for the live system
-echo -e "Installing packages for the live system\n"
+echo -e "\nChroot: Installing packages for the live system\n"
 sleep 1	
 apt-get install --yes ubuntu-minimal casper lupin-casper
-echo -e "Installing discover and os-prober\n"
+echo -e "\nChroot: Installing discover and os-prober\n"
 sleep 1	
 apt-get install --yes discover os-prober
-echo -e "Installing linux-generic\n"
+echo -e "\nChroot: Installing linux-generic\n"
 sleep 1	
 apt-get install --yes linux-generic
-echo -e "Installing grub2 and plymouth-x11\n"
+echo -e "\nChroot: Installing grub2 and plymouth-x11\n"
 sleep 1	
 apt-get install --yes grub2 plymouth-x11
-echo -e "ubiquity-frontend-gtk"
-sleep 1
-apt-get install ubiquity-frontend-gtk
+
+#Update grub
+update-grub
 
 #Install and configure Karoshi
-/opt/karoshi/serversetup/distro/ubuntu/all/buildserver/buildserver
+echo -e "\nChroot: Do you want to run the karoshi Server build process? (y/n)"
+read choice
+
+[ "$choice" = y ] && /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/buildserver
+
+echo -e "\nChroot: ubiquity-frontend-gtk\n"
+sleep 1
+apt-get install --yes ubiquity-frontend-gtk
 
 #Chroot clean up
 rm /var/lib/dbus/machine-id
-rm /sbin/initctl
+[ -f /sbin/initctl ] && rm /sbin/initctl
 dpkg-divert --rename --remove /sbin/initctl
 
 #Remove old linux kernels if there are more than one

@@ -9,6 +9,8 @@ RELEASE=trusty
 
 clear
 
+echo -e "Karoshi Server Remaster Utility\n"
+
 #Install debootstrap
 which debootstrap 1>/dev/null
 if [ $? != 0 ]
@@ -18,81 +20,147 @@ then
 	sudo apt-get install debootstrap
 fi
 
+echo -e "Making the chroot environment for $KAROSHIVER based on $RELEASE.\n"
+sleep 1
+
 #Create the chroot folder
-if [ ! -d $BUILDPATH/chroot ]
+if [ -d $BUILDPATH/chroot ]
 then
+	echo -e "$BUILDPATH/chroot exits\n\n1: Delete this folder and make the chroot environment\n2: Skip this step\n"
+	read choice
+	case $choice in
+		1)
+		RUNDEBOOSTRAP=yes
+		rm -f -R $BUILDPATH/chroot
+		;;
+		2)
+		RUNDEBOOSTRAP=no;;
+	esac
+
+else
+	RUNDEBOOSTRAP=yes
 	echo -e "Creating $BUILDPATH/chroot\n"
 	sleep 1	
 	mkdir -p $BUILDPATH/chroot
 fi
 
 #Chroot into the folder
+
 cd $BUILDPATH
-#sudo debootstrap --arch=$ARCH $RELEASE chroot
+
+[ $RUNDEBOOSTRAP = yes ] && sudo debootstrap --arch=$ARCH $RELEASE chroot
+
+echo -e "\nDownload serversetup\n"
+sleep 1
+if [ -d chroot/opt/karoshi/serversetup ]
+then
+	echo -e "$BUILDPATH/chroot/opt/karoshi/serversetup exits\n\n1: Delete this folder and download the latest version\n2: Skip this step\n"
+	read choice
+	case $choice in
+		1)
+		getserversetup=yes
+		rm -f -R chroot/opt/karoshi/serversetup
+		;;
+		2)
+		getserversetup=no
+		;;
+	esac
+else
+	getserversetup=yes
+fi
+
+#Download master.zip and extract to chroot
+
+if [ $getserversetup = yes ]
+then
+	[ -f /tmp/master.zip ] && rm -f /tmp/master.zip
+	cd /tmp
+	echo -e "\nDownloading master.zip from github.\n"
+	sleep 1
+	wget https://github.com/the-linux-schools-project/karoshi-server/archive/master.zip
+	if [ $? != 0 ]
+	then
+		echo -e "There was a problem downloading master.zip - exiting now."
+		exit
+	fi
+
+	echo -e "Unziping master.zip to $BUILDPATH/chroot/opt/karoshi\n"
+	sleep 1
+	sudo unzip master.zip  -d $BUILDPATH/chroot/opt/karoshi/
+	if [ $? != 0 ]
+	then
+		echo -e "There was a problem unziping master.zip - exiting now."
+		exit
+	fi
+
+	sudo mv $BUILDPATH/chroot/opt/karoshi/karoshi-server-master/serversetup $BUILDPATH/chroot/opt/karoshi/
+	sudo rm -f -R $BUILDPATH/chroot/opt/karoshi/karoshi-server-master
+
+	cd $BUILDPATH
+fi
+
 
 #Mount dev folder
 
-echo -e "Mounting $BUILDPATH/chroot\n"
+echo -e "\nMounting $BUILDPATH/chroot\n"
 sleep 1	
 sudo mount --bind /dev chroot/dev
 
+
 #Copy in system files for network configuration for the chroot
 
-echo -e "Copying /etc/hosts /etc/resolv.conf\n"
-sleep 1	
+echo -e "Copying /etc/hosts\n"
 sudo cp /etc/hosts chroot/etc/hosts
+echo -e "Copying /etc/resolv.conf\n"
 sudo cp /etc/resolv.conf chroot/etc/resolv.conf
-sudo cp /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/sources.list chroot/etc/apt/sources.list
-
-#Copy in serversetup
-sudo mkdir -p chroot/opt/karoshi
-sudo unzip /tmp/master.zip -d chroot/opt/karoshi/
+sudo cp chroot/opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/sources.list chroot/etc/apt/sources.list
 
 #Backup /sbin/initctl
 sudo cp /sbin/initctl /sbin/initctl.$$
 
-#Copy in script to run in the chroot
-sudo cp /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configure_chroot chroot/tmp/
+#Copy in in configure_chroot - REMOVE LATER
+cp -f -R /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configure_chroot chroot/opt/karoshi/serversetup/distro/ubuntu/all/buildserver/
 
-sudo chmod 0755 chroot/tmp/configure_chroot
+sudo chmod 0755 chroot/opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configure_chroot
+sudo chroot chroot /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configure_chroot
 
-sudo chroot chroot /tmp/configure_chroot
+sudo umount $BUILDPATH/chroot/dev 
 
-sudo umount /dev
+echo -e "\nCreate ISO image\n"
 
 #Install software to create the cd image
 echo -e "Installing syslinux squashfs-tools and genisoimage\n"
 sleep 1	
-sudo apt-get install syslinux squashfs-tools genisoimage
+sudo apt-get install --yes syslinux squashfs-tools genisoimage
 
 #Remove existing image directory
 if [ -d image ]
 then
-	echo -e "Deleting existing image directory\n"
+	echo -e "\nDeleting existing image directory\n"
 	sleep 1	
 	rm -f -R image
 fi
 
 #Create image directory
-echo -e "Creating image directory\n"
+echo -e "\nCreating image directory\n"
 sleep 1	
 
 mkdir -p image/{casper,isolinux,install}
 
 #Copy in the kernel built with the casper scripts
-echo -e "Copying in the kernel built with casper scripts\n"
+echo -e "\nCopying in the kernel built with casper scripts\n"
 sleep 1	
 cp chroot/boot/vmlinuz-3.13.**-**-generic image/casper/vmlinuz
 cp chroot/boot/initrd.img-3.13.**-**-generic image/casper/initrd.lz
 
 #Copy in isolinux and memtest binaries
-echo -e "Copying in isolinux and memtest binaries\n"
+echo -e "\nCopying in isolinux and memtest binaries\n"
 sleep 1	
 cp /usr/lib/syslinux/isolinux.bin image/isolinux/
 cp /boot/memtest86+.bin image/install/memtest
 
 #Create boot instructions
-echo -e "Creating boot instructions\n"
+echo -e "\nCreating boot instructions\n"
 sleep 1	
 echo 'splash.rle
 
@@ -107,7 +175,7 @@ For the default live system, enter "live".  To run memtest86+, enter "memtest"
 #Create isolinux.cfg
 echo -e "Creating isolinux.cfg\n"
 sleep 1	
-echo 'default vesamenu.c32
+echo 'default install
 prompt 0
 timeout 100
 
@@ -132,7 +200,7 @@ label hd
 ' > image/isolinux/isolinux.cfg
 
 #Create manifest
-echo -e "Creating manifest\n"
+echo -e "\nCreating manifest\n"
 
 sudo chroot chroot dpkg-query -W --showformat='${Package} ${Version}\n' | sudo tee image/casper/filesystem.manifest
 sudo cp -v image/casper/filesystem.manifest image/casper/filesystem.manifest-desktop
@@ -142,12 +210,12 @@ do
         sudo sed -i "/${i}/d" image/casper/filesystem.manifest-desktop
 done
 
-echo -e "Compressing chroot\n"
+echo -e "\nCompressing chroot\n"
 sleep 1
 #Compress the chroot
 sudo mksquashfs chroot image/casper/filesystem.squashfs 
 #Write the filesystem size - needed by the installer
-echo -e "Writing the filesystem size\n"
+echo -e "\nWriting the filesystem size\n"
 sleep 1
 printf $(sudo du -sx --block-size=1 chroot | cut -f1) > image/casper/filesystem.size
 
@@ -174,14 +242,20 @@ echo "http//www.linuxschools.com" > release_notes_url
 cd ../..
 
 #Calculate MD5
-echo -e "Calculating MD5\n"
+echo -e "\nCalculating MD5\n"
 sleep 1
-sudo -s (cd image && find . -type f -print0 | xargs -0 md5sum | grep -v "\./md5sum.txt" > md5sum.txt)
-
-echo -e "Creating the iso image\n"
+cd $BUILDPATH/image
+sudo find . -type f -print0 | xargs -0 md5sum | grep -v "\./md5sum.txt" > md5sum.txt
+echo -e "\nCreating the iso image\n"
 sleep 1
 #Create iso image for the live CD
 cd image
+
+[ -f $BUILDPATH/$KAROSHIVER.iso ] && rm -f $BUILDPATH/$KAROSHIVER.iso
+
 sudo mkisofs -r -V "$KAROSHIVER" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ../$KAROSHIVER.iso .
 cd ..
+
+echo -e "\nThe iso has been created at: $BUILDPATH/$KAROSHIVER.iso\n"
+
 exit
