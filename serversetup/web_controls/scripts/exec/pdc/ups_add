@@ -336,20 +336,18 @@ if [ $SERVER = `hostname-fqdn` ]
 then
 source /opt/karoshi/serversetup/variables/distro
 
-/etc/init.d/nut stop
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nut_stop 1>/dev/null
 sleep 1
-/etc/init.d/nut start
-
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nut
-
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nut_start 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nut 1>/dev/null
 else
 ssh -x -o PasswordAuthentication=no $SERVER '
-/etc/init.d/nut stop
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nut_stop 1>/dev/null
 sleep 1
-/etc/init.d/nut start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nut_start 1>/dev/null
 #source /opt/karoshi/serversetup/variables/distro
-#/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nut
-chkconfig -f nut on 1>/dev/null 2>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nut 1>/dev/null
 ' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
 

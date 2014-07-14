@@ -162,23 +162,25 @@ fi
 echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 if [ $SERVER = `hostname-fqdn` ]
 then
-/etc/init.d/nut stop
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nut_stop 1>/dev/null
 sleep 1
 if [ $UPS = yes ]
 then
-/etc/init.d/nut start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nut_start 1>/dev/null
 else
-chkconfig -f nut off 1>/dev/null 2>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/nut 1>/dev/null
 fi
 else
 ssh -x -o PasswordAuthentication=no $SERVER '
-/etc/init.d/nut stop
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nut_stop 1>/dev/null
 sleep 1
 if [ '$UPS' = yes ]
 then
-/etc/init.d/nut start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nut_start 1>/dev/null
 else
-chkconfig -f nut off 1>/dev/null 2>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/nut 1>/dev/null
 fi
 ' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
