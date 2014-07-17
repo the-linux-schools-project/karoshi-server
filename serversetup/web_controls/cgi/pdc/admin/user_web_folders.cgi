@@ -200,7 +200,7 @@ echo '</div><div id="infobox">
 /opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: '$WIDTH2'px;">/g'
 echo '</td>
 <td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_web_folders"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td>
-</tr></tbody></table><br>
+</tr></tbody></table><br><br>
 '
 [ $MOBILE = no ] && echo '</div></div><div id="submitbox">'
 echo '<input value="'$SUBMITMSG'" class="button" type="submit">

@@ -201,17 +201,21 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 <tbody><tr>
 <td style="vertical-align: top;">
 <form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
-<input name="_ACTION_activatechanges_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$ACTIVATECHANGESMSG'">
+<input name="_ACTION_enableall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$ENABLEALLMSG'">
 </form></td>
 <td style="vertical-align: top;">
 <form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
 <input name="_ACTION_resetall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$RESETALLMSG'">
 </form></td></tr>
-<tr><td style="vertical-align: top;">
+<tr>
+<td style="vertical-align: top;">
+<form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
+<input name="_ACTION_activatechanges_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$ACTIVATECHANGESMSG'">
+</form></td>
+<td style="vertical-align: top;">
 <form action="/cgi-bin/admin/asset_register_view.cgi" method="post">
 <input name="_ACTION_view_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$TITLE18'">
-</form>
-</td>
+</form></td>
 </tr></tbody></table>'
 
 else
@@ -228,6 +232,10 @@ echo '<b>'$TITLE6' - '$LOCATION'</b><br><br><table class="'$TABLECLASS'" style="
 <td style="vertical-align: top;">
 <form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
 <input name="_ACTION_activatechanges_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$ACTIVATECHANGESMSG'">
+</form></td>
+<td style="vertical-align: top;">
+<form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
+<input name="_ACTION_enableall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$ENABLEALLMSG'">
 </form></td>
 <td style="vertical-align: top;">
 <form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
