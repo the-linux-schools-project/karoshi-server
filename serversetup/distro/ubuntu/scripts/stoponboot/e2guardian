@@ -1,0 +1,5 @@
+#!/bin/bash
+#Stop dansguardian on boot
+/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status e2guardian off 1>/dev/null 2>/dev/null
+
+

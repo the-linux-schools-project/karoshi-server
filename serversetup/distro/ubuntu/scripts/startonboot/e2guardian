@@ -1,0 +1,4 @@
+#!/bin/bash
+#Start e2guardian on boot
+/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status e2guardian on 1>/dev/null 2>/dev/null
+
