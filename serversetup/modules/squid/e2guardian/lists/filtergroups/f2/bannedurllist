@@ -25,7 +25,7 @@
 #listcategory: "Banned URLs"
 
 #List other URLs to block:
-.Include</etc/e2guardian/lists/bannedurls_f3>
+.Include</etc/e2guardian/lists/filtergroups/f2/bannedurls>
 members.home.net/uporn
 
 # The squidGuard advert domain/URL lists are now included by default.
@@ -38,17 +38,17 @@ members.home.net/uporn
 .Include</etc/e2guardian/lists/blacklists/adv/urls>
 .Include</etc/e2guardian/lists/blacklists/aggressive/urls>
 #.Include</etc/e2guardian/lists/blacklists/alcohol/urls>
-#.Include</etc/e2guardian/lists/blacklists/chat/urls>
+.Include</etc/e2guardian/lists/blacklists/chat/urls>
 #.Include</etc/e2guardian/lists/blacklists/dating/urls>
-#.Include</etc/e2guardian/lists/blacklists/downloads/urls>
+.Include</etc/e2guardian/lists/blacklists/downloads/urls>
 #.Include</etc/e2guardian/lists/blacklists/drugs/urls>
-#.Include</etc/e2guardian/lists/blacklists/fortunetelling/urls>
+.Include</etc/e2guardian/lists/blacklists/fortunetelling/urls>
 #.Include</etc/e2guardian/lists/blacklists/forum/urls>
 #.Include</etc/e2guardian/lists/blacklists/gamble/urls>
 .Include</etc/e2guardian/lists/blacklists/hacking/urls>
 .Include</etc/e2guardian/lists/blacklists/porn/urls>
 .Include</etc/e2guardian/lists/blacklists/redirector/urls>
 #.Include</etc/e2guardian/lists/blacklists/sex/lingerie/urls>
-#.Include</etc/e2guardian/lists/blacklists/violence/urls>
+.Include</etc/e2guardian/lists/blacklists/violence/urls>
 .Include</etc/e2guardian/lists/blacklists/warez/urls>
 # You will need to edit to add and remove categories you want
