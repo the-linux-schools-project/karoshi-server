@@ -23,22 +23,25 @@
 ##################
 if [ -f /opt/karoshi/serversetup/variables/stop_staff_filter ]
 then
-echo > /etc/dansguardian/filtergroupslist
+echo > /etc/e2guardian/lists/filtergroupslist
 exit
 fi
 ##################
 #get hostname
 ##################
-[ -d /etc/dansguardian/filter_lists ] || mkdir -p /etc/dansguardian/filter_lists
-getent passwd | grep /home/users/itadminstaff/ | cut -d: -f1 | sed 's/$/=filter3/g' > /etc/dansguardian/filter_lists/itadminstaff
-getent passwd | grep /home/users/staff/ | cut -d: -f1 | sed 's/$/=filter3/g' > /etc/dansguardian/filter_lists/staff
-getent passwd | grep /home/users/officestaff/ | cut -d: -f1 | sed 's/$/=filter3/g' > /etc/dansguardian/filter_lists/officestaff
-getent passwd | grep /home/users/techstaff/ | cut -d: -f1 | sed 's/$/=filter3/g' > /etc/dansguardian/filter_lists/techstaff
-getent passwd | grep /home/users/studentstaff/ | cut -d: -f1 | sed 's/$/=filter3/g' > /etc/dansguardian/filter_lists/studentstaff
-getent passwd | grep /home/users/nonteachingstaff/ | cut -d: -f1 | sed 's/$/=filter3/g' > /etc/dansguardian/filter_lists/nonteachingstaff
-chmod 0600 /etc/dansguardian/filter_lists/*
-cat /etc/dansguardian/filter_lists/* > /etc/dansguardian/filtergroupslist
+[ -d /etc/e2guardian/filter_lists ] || mkdir -p /etc/e2guardian/filter_lists
+getent passwd | grep /home/users/itadminstaff/ | cut -d: -f1 | sed 's/$/=filter3/g' > /etc/e2guardian/filter_lists/itadminstaff
+getent passwd | grep /home/users/staff/ | cut -d: -f1 | sed 's/$/=filter3/g' > /etc/e2guardian/filter_lists/staff
+getent passwd | grep /home/users/officestaff/ | cut -d: -f1 | sed 's/$/=filter3/g' > /etc/e2guardian/filter_lists/officestaff
+getent passwd | grep /home/users/techstaff/ | cut -d: -f1 | sed 's/$/=filter3/g' > /etc/e2guardian/filter_lists/techstaff
+getent passwd | grep /home/users/studentstaff/ | cut -d: -f1 | sed 's/$/=filter3/g' > /etc/e2guardian/filter_lists/studentstaff
+getent passwd | grep /home/users/nonteachingstaff/ | cut -d: -f1 | sed 's/$/=filter3/g' > /etc/e2guardian/filter_lists/nonteachingstaff
+
+#Add in custom groups to filter 2
+if [ -f 
+chmod 0600 /etc/e2guardian/filter_lists/*
+cat /etc/e2guardian/filter_lists/* > /etc/e2guardian/lists/filtergroupslist
 #Create stafflist for squid
 echo samplestaffuser > /etc/squid/stafflist
-cat /etc/dansguardian/filtergroupslist | cut -d"=" -f1 >> /etc/squid/stafflist
+cat /etc/e2guardian/filtergroupslist | cut -d"=" -f1 >> /etc/squid/stafflist
 

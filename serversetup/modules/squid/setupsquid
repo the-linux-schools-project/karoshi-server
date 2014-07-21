@@ -54,28 +54,28 @@ echo '<b>'$TITLE - $HOSTNAME'</b><br><br>'
 
 if [ -z "$REMOTE_USER" ]
 then
-echo `date`: setupsquid - Blank remote user."<br>"
-exit 101
+	echo `date`: setupsquid - Blank remote user."<br>"
+	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: setupsquid - Blank remote tcpip address."<br>"
-exit 101
+	echo `date`: setupsquid - Blank remote tcpip address."<br>"
+	exit 101
 fi
 
 if [ -z "$PDCSERVER" ]
 then
-echo `date`: setupsquid - Blank PDC."<br>"
-exit 101
+	echo `date`: setupsquid - Blank PDC."<br>"
+	exit 101
 fi
 
 if [ $PDCSERVER != `hostname-fqdn` ]
 then
-if [ -z "$PDCIP" ]
-then
-echo `date`: setupsquid - Blank TCPIP."<br>"
-exit 101
-fi
+	if [ -z "$PDCIP" ]
+	then
+		echo `date`: setupsquid - Blank TCPIP."<br>"
+		exit 101
+	fi
 fi
 
 #############################
@@ -90,10 +90,10 @@ SQUIDVER=squid3
 fi
 
 #############################
-#Ensure that squid and dansguardian are running on boot
+#Ensure that squid and e2guardian are running on boot
 #############################
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/squid
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/dansguardian
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/e2guardian
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/squiddebproxy
 
@@ -113,39 +113,42 @@ date >> /opt/karoshi/serversetup/install_log
 touch /opt/karoshi/serversetup/setuplog
 if [ `grep -c "$TITLE" /opt/karoshi/serversetup/setuplog` = 0 ]
 then
-echo setupsquidinternetproxyserver:$TITLE:/opt/karoshi/serversetup/hal/scripts/setupsquidinternetproxyserver >> /opt/karoshi/serversetup/setuplog
-chmod 0600 /opt/karoshi/serversetup/setuplog
+	echo setupsquidinternetproxyserver:$TITLE:/opt/karoshi/serversetup/hal/scripts/setupsquidinternetproxyserver >> /opt/karoshi/serversetup/setuplog
+	chmod 0600 /opt/karoshi/serversetup/setuplog
 fi
-
-###########################
-#Check to see if ssl data is present and run sslcertificatedata if not
-###########################
-[ -f /opt/karoshi/serversetup/variables/ssldata ] || ( /opt/karoshi/serversetup/scripts/sslcertificatedata ; /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert )
 
 #########################
 #Stopping Squid and Apache if they are running
 #########################
 
-DANSTATUS=`ps -e | grep -c -w $DANSGUARDIANVER`
+DANSTATUS=`ps -e | grep -c -w e2guardian`
 if [ $DANSTATUS != 0 ]
 then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dansguardian_stop  1>/dev/null
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/e2guardian_stop  1>/dev/null
 fi
 
 APACHESTATUS=`ps -e | grep -c -w $$APACHEVER`
 if [ $APACHESTATUS != 0 ]
 then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null
 fi
 
 SQUIDSTATUS=`ps -e | grep -c -w $SQUIDVER`
 if [ $SQUIDSTATUS != 0 ]
 then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_stop 1>/dev/null
 fi
 
 #Configure squid to use a different krb5
 [ -d /etc/default ] && echo export KRB5_KTNAME=/etc/keytabs/squid.keytab > /etc/default/squid3
+
+#Configure e2guardian to be able to have more open files
+
+if [ `grep -c e2guardian /etc/security/limits.conf` = 0 ]
+then
+	echo "e2guardian	soft	nofile		16384" >> /etc/security/limits.con
+	echo "e2guardian	hard	nofile		32768" >> /etc/security/limits.con
+fi
 
 #########################
 #Copying in files
@@ -162,34 +165,34 @@ then
 
 if [ -f /usr/lib/squid3/basic_msnt_auth ]
 then
-cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/squid3/karoshi10-squid3.conf /etc/squid/squid.conf
+	cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/squid3/karoshi10-squid3.conf /etc/squid/squid.conf
 else
-cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/squid3/squid.conf /etc/squid/
+	cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/squid3/squid.conf /etc/squid/
 fi
 
 if [ ! -f /etc/squid/location_tcpip.list ]
 then
-echo 1.1.1.1 > /etc/squid/location_tcpip.list
+	echo 1.1.1.1 > /etc/squid/location_tcpip.list
 fi
 
 if [ ! -f /etc/squid/location_white.list ]
 then
-echo 4.4.4.4 > /etc/squid/location_white.list
+	echo 4.4.4.4 > /etc/squid/location_white.list
 fi
 
-if [ ! -f /etc/dansguardian/exceptioniplist ]
+if [ ! -f /etc/e2guardian/exceptioniplist ]
 then
-echo 4.4.4.4 > /etc/dansguardian/exceptioniplist
+	echo 4.4.4.4 > /etc/e2guardian/exceptioniplist
 fi
 
-if [ `grep -v ^# /etc/dansguardian/exceptioniplist | sed "/^$/d" | wc -l` = 0 ]
+if [ `grep -v ^# /etc/e2guardian/exceptioniplist | sed "/^$/d" | wc -l` = 0 ]
 then
-echo 4.4.4.4 > /etc/dansguardian/exceptioniplist
+	echo 4.4.4.4 > /etc/e2guardian/exceptioniplist
 fi
 
 if [ ! -f /etc/squid/location_banned_sites.list ]
 then
-echo -e ".youtube.com
+	echo -e ".youtube.com
 .mtv.co.uk
 .mtv.com
 .last.fm
@@ -201,19 +204,11 @@ echo -e ".youtube.com
 .sharethis.com" > /etc/squid/location_banned_sites.list
 fi
 
-cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/errors/en/* /usr/share/squid3/errors/en/
-cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/karoshi_kerb_auth /usr/lib/squid3
-chmod 755 /usr/lib/squid3/karoshi_kerb_auth
+	cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/errors/en/* /usr/share/squid3/errors/en/
+	cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/karoshi_kerb_auth /usr/lib/squid3
+	chmod 755 /usr/lib/squid3/karoshi_kerb_auth
 else
-cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/errors/en/* /usr/share/squid/errors/en/
-fi
-
-if [ ! -d /var/lib/dansguardian ]
-then
-mkdir /var/lib/dansguardian
-mkdir /var/lib/dansguardian/tmp
-chown -R root.dansguardian /var/lib/dansguardian
-chmod 0775 -R /var/lib/dansguardian
+	cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/errors/en/* /usr/share/squid/errors/en/
 fi
 
 #Create msntauth.conf
@@ -232,13 +227,17 @@ sed -i 's/REALM/'$REALM'/g' /etc/squid/squid.conf
 #########################
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/extra_server/scripts/squidconfig
 #########################
-#Copy in Dansguardian files
+#Copy in e2guardian files
 #########################
 
-cp -f -R /opt/karoshi/serversetup/modules/squid/dansguardian /etc
-sed -i 's/YOURSERVER.YOURDOMAIN/'$HOSTNAME.$REALM'/g' /etc/dansguardian/dansguardian.conf
-cd /etc/dansguardian/
-tar -xvzf /opt/karoshi/serversetup/modules/squid/dansguardian/blacklists_archive.tar.gz 1>/dev/null
+cp -f -R /opt/karoshi/serversetup/modules/squid/e2guardian /etc
+sed -i 's/YOURSERVER.YOURDOMAIN/'$HOSTNAME.$REALM'/g' /etc/e2guardian/e2guardian.conf
+cd /etc/e2guardian/
+
+#Install blacklists
+tar -xvzf /opt/karoshi/serversetup/modules/squid/shallalist.tar.gz 1>/dev/null
+cp /etc/e2guardian/BL/* /etc/e2guardian/lists/blacklists/
+rm -f -R /etc/e2guardian/BL
 
 #########################
 #Scheduling loggging
@@ -256,11 +255,11 @@ sed -i 's/127.0.0.1/'$PDCIP'/g' /opt/karoshi/"useful scripts"/dgupdatefilterlist
 #############################
 /opt/karoshi/"useful scripts"/dgupdatefilterlist
 
-#Start squid and dansguardian.
+#Start squid and e2guardian.
 echo '<li>'$STARTSQUIDMSG'</li><br>'
 /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/squid_start 1>/dev/null
 echo '<li>'$STARTDGMSG'</li><br>'
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/dansguardian_start 1>/dev/null
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/e2guardian_start 1>/dev/null
 echo '<li>'$STARTAPACHEMSG'</li><br>'
 /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_start 1>/dev/null
 
@@ -268,7 +267,7 @@ echo '<li>'$STARTAPACHEMSG'</li><br>'
 
 echo 58 23 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/archive_internet_logs > /opt/karoshi/cronjobs/jobs/archive_internet_logs.cron
 echo 50 23 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/dgupdatefilterlist > /opt/karoshi/cronjobs/jobs/dgupdatefilterlist.cron
-echo 55 23 '*' '*' '*' /etc/init.d/dansguardian restart > /opt/karoshi/cronjobs/jobs/restart_dansguardian.cron
+echo 55 23 '*' '*' '*' /etc/init.d/e2guardian restart > /opt/karoshi/cronjobs/jobs/restart_e2guardian.cron
 echo '*'/5 '*' '*' '*' '*' "nice -n 20" /opt/karoshi/'"'useful scripts'"'/internet_log_gen > /opt/karoshi/cronjobs/jobs/internet_log_gen.cron
 echo 0 22 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/activate_filter_changes > /opt/karoshi/cronjobs/jobs/activate_filter_changes.cron
 echo 0 5 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/internet_log_compress > /opt/karoshi/cronjobs/jobs/internet_log_compress.cron
@@ -276,17 +275,17 @@ echo 0 5 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/internet_log_compress > /
 
 
 ############################
-#Check that Squid and Dansguardian are running
+#Check that Squid and e2guardian are running
 ############################
 SQUIDSTATUS=`ps -e | grep -c $SQUIDVER`
 if [ $SQUIDSTATUS = 0 ]
 then
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_start 1>/dev/null
 fi
-DANSGUARDIANSTATUS=`ps -e | grep -c $DANSGUARDIANVER`
-if [ $DANSGUARDIANSTATUS = 0 ]
+E2GUARDIANSTATUS=`ps -e | grep -c $E2GUARDIANVER`
+if [ $E2GUARDIANSTATUS = 0 ]
 then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dansguardian_start 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/e2guardian_start 1>/dev/null
 fi
 
 #Setup squid-deb-proxy
@@ -307,7 +306,7 @@ sleep 1
 
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squiddebproxy_start 1>/dev/null
 ###########################
-#Open shorewall ports for dansguardian
+#Open shorewall ports for proxy access
 ###########################
 
 MODCHECK=`grep -c -w squid_proxy_rule /etc/shorewall/rules`
@@ -343,19 +342,6 @@ echo '<li>'$RESTARTSWMSG'</li><br>'
 sleep 1
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
-
-######################
-#Configure Fail2ban
-######################
-
-#[ ! -d /opt/karoshi/server_network/security/fail2ban ] && mkdir -p /opt/karoshi/server_network/security/fail2ban
-#[ ! -f /opt/karoshi/server_network/security/fail2ban/squid ] && cp -f /opt/karoshi/serversetup/all/fail2ban/jails/squid /opt/karoshi/server_network/security/fail2ban/
-#cat /opt/karoshi/server_network/security/fail2ban/* > /etc/fail2ban/jail.local
-#[ ! -f /etc/fail2ban/filters/squid-auth.conf ] && cp /opt/karoshi/serversetup/all/fail2ban/filters/squid-auth.conf /etc/fail2ban/filter.d
-#/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_stop
-#sleep 1
-#/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_start
-#/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/fail2ban
 
 exit
 
