@@ -38,10 +38,11 @@ getent passwd | grep /home/users/studentstaff/ | cut -d: -f1 | sed 's/$/=filter3
 getent passwd | grep /home/users/nonteachingstaff/ | cut -d: -f1 | sed 's/$/=filter3/g' > /etc/e2guardian/filter_lists/nonteachingstaff
 
 #Add in custom groups to filter 2
-if [ -f 
+
+#Cat filterlists to master list
 chmod 0600 /etc/e2guardian/filter_lists/*
 cat /etc/e2guardian/filter_lists/* > /etc/e2guardian/lists/filtergroupslist
 #Create stafflist for squid
 echo samplestaffuser > /etc/squid/stafflist
-cat /etc/e2guardian/filtergroupslist | cut -d"=" -f1 >> /etc/squid/stafflist
+cat /etc/e2guardian/lists/filtergroupslist | cut -d"=" -f1 >> /etc/squid/stafflist
 

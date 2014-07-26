@@ -41,8 +41,6 @@ REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 PDCSERVER=`echo "$DATA" | cut -s -d: -f4`
 PDCIP=`echo "$DATA" | cut -s -d: -f5`
-AUTHTYPE=`echo "$DATA" | cut -s -d: -f6`
-PASSWORD=`echo "$DATA" | cut -s -d: -f7`
 
 source /opt/karoshi/serversetup/variables/language
 source /opt/karoshi/serversetup/variables/distro
@@ -121,23 +119,14 @@ fi
 #Stopping Squid and Apache if they are running
 #########################
 
-DANSTATUS=`ps -e | grep -c -w e2guardian`
-if [ $DANSTATUS != 0 ]
-then
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/e2guardian_stop  1>/dev/null
-fi
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/e2guardian_status 1>/dev/null
+[ $? = 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/e2guardian_stop 1>/dev/null
 
-APACHESTATUS=`ps -e | grep -c -w $$APACHEVER`
-if [ $APACHESTATUS != 0 ]
-then
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null
-fi
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_status 1>/dev/null
+[ $? = 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null
 
-SQUIDSTATUS=`ps -e | grep -c -w $SQUIDVER`
-if [ $SQUIDSTATUS != 0 ]
-then
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_stop 1>/dev/null
-fi
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_status 1>/dev/null
+[ $? = 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_stop 1>/dev/null
 
 #Configure squid to use a different krb5
 [ -d /etc/default ] && echo export KRB5_KTNAME=/etc/keytabs/squid.keytab > /etc/default/squid3
@@ -153,7 +142,6 @@ fi
 #########################
 #Copying in files
 #########################
-
 
 cp -f -R  /opt/karoshi/serversetup/modules/squid/squidfiles/squid/* /etc/squid
 
@@ -236,7 +224,7 @@ cd /etc/e2guardian/
 
 #Install blacklists
 tar -xvzf /opt/karoshi/serversetup/modules/squid/shallalist.tar.gz 1>/dev/null
-cp /etc/e2guardian/BL/* /etc/e2guardian/lists/blacklists/
+cp -f -R /etc/e2guardian/BL/* /etc/e2guardian/lists/blacklists/
 rm -f -R /etc/e2guardian/BL
 
 #########################
@@ -277,16 +265,12 @@ echo 0 5 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/internet_log_compress > /
 ############################
 #Check that Squid and e2guardian are running
 ############################
-SQUIDSTATUS=`ps -e | grep -c $SQUIDVER`
-if [ $SQUIDSTATUS = 0 ]
-then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_start 1>/dev/null
-fi
-E2GUARDIANSTATUS=`ps -e | grep -c $E2GUARDIANVER`
-if [ $E2GUARDIANSTATUS = 0 ]
-then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/e2guardian_start 1>/dev/null
-fi
+
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_status 1>/dev/null
+[ $? != 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_start 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/e2guardian_status 1>/dev/null
+[ $? != 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/e2guardian_start 1>/dev/null
+
 
 #Setup squid-deb-proxy
 echo www.remastersys.com > /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
@@ -337,10 +321,10 @@ fi
 ######################
 if [ $RESTART_SHOREWALL = yes ]
 then
-echo '<li>'$RESTARTSWMSG'</li><br>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+	echo '<li>'$RESTARTSWMSG'</li><br>'
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+	sleep 1
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
 exit

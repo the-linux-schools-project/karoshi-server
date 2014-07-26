@@ -213,7 +213,7 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 <td style="vertical-align: top;"><b>'$TITLE' - '$SERVERNAME'</b></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Usage"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td>
 <td style="vertical-align: top;"><a href="disk_usage_fm.cgi"><input class="button" type="button" name="" value="'$CHOOSESERVERMSG'"></a></td>
-</tr></tbody></table><br></div<div id="infobox">
+</tr></tbody></table><br></div><div id="infobox">
 '
 fi
 

@@ -1,0 +1,693 @@
+#!/bin/bash
+#Copyright (C) 2014 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+FAILED_SERVER=no
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/e2g_filtergroups_cgi
+then
+echo `date`: e2g_filtergroups - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/e2g_filtergroups_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/e2g_filtergroups.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $e2g_filtergroups_cgi'check' ]
+then
+echo `date`: e2g_filtergroups - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: e2g_filtergroups - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-+'`
+if [ $DATA'null' = null ]
+then
+echo `date`: e2g_filtergroups - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+ACTION=`echo "$DATA" | cut -s -d: -f4`
+FILTERNAME=`echo "$DATA" | cut -s -d: -f5`
+FILTERLABEL=`echo "$DATA" | cut -s -d: -f6`
+FILTERDESC=`echo "$DATA" | cut -s -d: -f7`
+FILTERCLONE=`echo "$DATA" | cut -s -d: -f8`
+
+#echo action is $ACTION"<br>"
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+	echo `date`: e2g_filtergroups - Not called by e2g_filtergroups.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+then
+	echo `date`: e2g_filtergroups - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+	echo `date`: e2g_filtergroups - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$ACTION" ]
+then
+	echo `date`: e2g_filtergroups - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ "$ACTION" = reallyadd ]
+then
+	if [ -z "$FILTERLABEL" ]
+	then
+		echo `date`: e2g_filtergroups - Blank filter label by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
+	if [ -z "$FILTERDESC" ]
+	then
+		echo `date`: e2g_filtergroups - Blank fiter description by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
+	if [ -z "$FILTERCLONE" ]
+	then
+		echo `date`: e2g_filtergroups - Blank filter clone by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
+fi
+
+if [ "$ACTION" = editlabel ]
+then
+	if [ -z "$FILTERNAME" ]
+	then
+		echo `date`: e2g_filtergroups - Blank filtername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
+fi
+
+if [ $ACTION = reallyeditlabel ]
+then
+	if [ -z "$FILTERDESC" ]
+	then
+		echo `date`: e2g_filtergroups - Blank filter description by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
+	if [ -z "$FILTERLABEL" ]
+	then
+		echo `date`: e2g_filtergroups - Blank filter label by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi	
+
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: e2g_filtergroups - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+##########################
+#Language
+##########################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/e2g_filtergroups ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/e2g_filtergroups
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+source /opt/karoshi/server_network/domain_information/domain_name
+
+
+function viewfilters {
+#Show add filtergroup button
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<tr><td style="vertical-align: top;"><div class="sectiontitle">'$TITLE1'</div></td>
+<td style="vertical-align: top;">
+<input name="_ACTION_add_" type="submit" class="button" value="'$ADDFGROUP'">
+</td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td></tr></tbody></table><br>'
+
+#Show existing filtergroups
+
+echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+<tr><td style=\"width: 40px;\"><b>$FILTERNAMEMSG</b></td><td style=\"width: 120px;\"><b>$FILTERLABELMSG</b></td><td style=\"width: 140px;\"><b>$FILTERDESCMSG</b></td><td style=\"width: 120px;\"><b>$ASSIGNEDGROUPSMSG</b></td></tr>
+"
+
+for FILTERGROUPS in /etc/e2guardian/lists/filtergroups/*
+do
+	FILTERGROUP=`basename $FILTERGROUPS`
+	source /etc/e2guardian/lists/filtergroups/$FILTERGROUP/details
+	echo "<tr><td style=\"height: 40px;\" valign=\"top\">$FILTERGROUP</td><td valign=\"top\">$FILTERLABEL</td><td valign=\"top\">$FILTERDESC</td><td valign=\"top\">"
+
+	#Get list of assigned groups
+
+	if [ $FILTERGROUP = f1 ]
+	then
+		echo $DEFAULTGROUPMSG
+	else
+		if [ -d /etc/e2guardian/lists/filtergroups/$FILTERGROUP/assigned_groups ]
+		then
+			for ASSIGNEDGROUPS in /etc/e2guardian/lists/filtergroups/$FILTERGROUP/assigned_groups/*
+			do
+				ASSIGNEDGROUP=`basename $ASSIGNEDGROUPS`
+				echo $ASSIGNEDGROUP"<br>"
+			done
+		fi
+	fi
+	#Show actions for the filter groups
+	echo "</td><td style=\"vertical-align: top;\"><input name=\"_ACTION_editlabel_FILTERNAME_"$FILTERGROUP"_\" type=\"submit\" class=\"button\" value=\"$EDITLABELMSG\"></td>"
+	if [ $FILTERGROUP != f1 ]
+	then
+		echo "<td style=\"vertical-align: top;\"><input name=\"_ACTION_editassignedgroups_FILTERNAME_"$FILTERGROUP"_\" type=\"submit\" class=\"button\" value=\"$ASSIGNEDGROUPSMSG2\"></td><td style=\"vertical-align: top;\"><input name=\"_ACTION_filtercategories_FILTERNAME_"$FILTERGROUP"_\" type=\"submit\" class=\"button\" value=\"$FILTERLISTSMSG\"></td><td style=\"vertical-align: top;\"><input name=\"_ACTION_deletefiltergroup_FILTERNAME_"$FILTERGROUP"_\" type=\"submit\" class=\"button\" value=\"$DELETEFILTERGROUPMSG\"></td>"
+	else
+	echo "<td><td style=\"vertical-align: top;\"><input name=\"_ACTION_filtercategories_FILTERNAME_"$FILTERGROUP"_\" type=\"submit\" class=\"button\" value=\"$FILTERLISTSMSG\"></td></td>"
+	fi
+	echo "</tr>"
+done
+echo "</tbody></table>"
+}
+
+
+function editlabels {
+#Show view filtergroup button
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<tr><td style="vertical-align: top;"><div class="sectiontitle">'$TITLE3' - '$FILTERNAME'</div></td><td style="vertical-align: top;">
+<input name="_ACTION_view_" type="submit" class="button" value="'$VIEWFGROUPS'">
+</td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td>
+</tr></tbody></table><br>'
+
+source /etc/e2guardian/lists/filtergroups/$FILTERNAME/details
+
+echo "<input type=\"hidden\" name=\"_FILTERNAME_\" value=\"$FILTERNAME\"><input type=\"hidden\" name=\"_ACTION_\" value=\"reallyeditlable\"><table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+<tr><td style=\"width: 180px;\">$FILTERLABELMSG</td><td><input tabindex= \"1\" value=\"$FILTERLABEL\" name=\"_FILTERLABEL_\" style=\"width: 200px;\" size=\"20\" type=\"text\"></td></tr>
+<tr><td>$FILTERDESCMSG</td><td><input tabindex= \"2\" value=\"$FILTERDESC\" name=\"_FILTERDESC_\" style=\"width: 200px;\" size=\"20\" type=\"text\"></td></tr></tbody></table><br><br><input value=\"$SUBMITMSG\" class=\"button\" type=\"submit\"> <input value=\"$RESETMSG\" class=\"button\" type=\"reset\">"
+
+}
+
+function reallyeditlabels {
+FILTERLABEL=`echo $FILTERLABEL | sed "s/+/ /g"`
+FILTERDESC=`echo $FILTERDESC | sed "s/+/ /g"`
+echo "FILTERLABEL=\"$FILTERLABEL\"" > /etc/e2guardian/lists/filtergroups/$FILTERNAME/details
+echo "FILTERDESC=\"$FILTERDESC\"" >> /etc/e2guardian/lists/filtergroups/$FILTERNAME/details
+}
+
+function addfiltergroup {
+#Show view filtergroup button
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<tr><td style="vertical-align: top;"><div class="sectiontitle">'$TITLE2'</div></td><td style="vertical-align: top;">
+<input name="_ACTION_view_" type="submit" class="button" value="'$VIEWFGROUPS'">
+</td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td>
+</tr></tbody></table><br>'
+
+echo '<input type="hidden" name="_ACTION_" value="reallyadd"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: 180px;">'$FILTERLABELMSG'</td><td><input tabindex= "1" name="_FILTERLABEL_" style="width: 200px;" size="20" type="text"></td></tr>
+<tr><td style="width: 180px;">'$FILTERDESCMSG'</td><td><input tabindex= "1" name="_FILTERDESC_" style="width: 200px;" size="20" type="text"></td></tr>
+<tr><td style="width: 180px;">'$FILTERCLONEMSG'</td><td><select name="_FILTERCLONE_" style="width: 200px;">'
+
+for FILTERGROUPS in /etc/e2guardian/lists/filtergroups/*
+do
+FILTERGROUP=`basename $FILTERGROUPS`
+echo "<option value=\"$FILTERGROUP\" $FILTERGROUP>$FILTERGROUP</option>"
+done
+
+echo '</select></tbody></table><br><br><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+'
+
+}
+
+function reallyaddfiltergroup {
+#Get name of new filter group
+FILTERCOUNT=`ls -1 /etc/e2guardian/lists/filtergroups/ | wc -l`
+let FILTERCOUNT=$FILTERCOUNT+1
+#Copy filter group config folder
+cp -f -R /etc/e2guardian/lists/filtergroups/$FILTERCLONE /etc/e2guardian/lists/filtergroups/f$FILTERCOUNT
+
+#Modify details file
+FILTERNAME=f$FILTERCOUNT
+reallyeditlabels
+
+#Copy e2guardian config file
+cp -f /etc/e2guardian/e2guardian$FILTERCLONE.conf /etc/e2guardian/e2guardianf$FILTERCOUNT.conf
+#Edit e2guardian config file to look at the correct filter folder
+sed -i "s/$FILTERCLONE/f$FILTERCOUNT/g" /etc/e2guardian/e2guardianf$FILTERCOUNT.conf
+
+#Modifiy e2guardian.conf for correct number of filters
+FILTERLINENO=`grep -n ^"filtergroups =" /etc/e2guardian/e2guardian.conf | cut -d: -f1`
+sed -i $FILTERLINENO"c""filtergroups = $FILTERCOUNT" /etc/e2guardian/e2guardian.conf
+
+
+#Restart e2guardian
+
+}
+
+function deletefiltergroup {
+#Show view filtergroup button
+source /etc/e2guardian/lists/filtergroups/$FILTERNAME/details
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<tr><td style="vertical-align: top;"><div class="sectiontitle">'$TITLE4'</div></td><td style="vertical-align: top;">
+<input name="_ACTION_view_" type="submit" class="button" value="'$VIEWFGROUPS'">
+</td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td>
+</tr></tbody></table><br>
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<tr><td style="width: 180px;">'$FILTERNAMEMSG'</td><td>'$FILTERNAME'</td></tr>
+<tr><td>'$FILTERLABELMSG'</td><td>'$FILTERLABEL'</td></tr>
+<tr><td>'$FILTERDESCMSG'</td><td>'$FILTERDESC'</td></tr></tbody></table><br>
+'$CONFIRMDELETEMSG'<br><br><input type="hidden" name="_ACTION_" value="reallydelete"><br><input type="hidden" name="_FILTERNAME_" value="'$FILTERNAME'"><input value="'$SUBMITMSG'" class="button" type="submit">'
+}
+
+function reallydelete {
+#Delete filter folder
+rm -f -R /etc/e2guardian/lists/filtergroups/$FILTERNAME
+#Delete e2guardian config file
+rm -f /etc/e2guardian/e2guardian$FILTERNAME.conf
+#Modify e2guardian.conf with correct filter count.
+FILTERCOUNT=`ls -1 /etc/e2guardian/lists/filtergroups/ | wc -l`
+FILTERLINENO=`grep -n ^"filtergroups =" /etc/e2guardian/e2guardian.conf | cut -d: -f1`
+sed -i $FILTERLINENO"c""filtergroups = $FILTERCOUNT" /etc/e2guardian/e2guardian.conf
+
+#Rename all filter groups so that they are in sequence
+COUNTER=1
+for FILTERGROUPS in /etc/e2guardian/lists/filtergroups/*
+do
+FILTERGROUP=`basename $FILTERGROUPS`
+#Check that the filtergroup name is correct
+if [ $FILTERGROUP != f$COUNTER ]
+then
+mv /etc/e2guardian/lists/filtergroups/$FILTERGROUP /etc/e2guardian/lists/filtergroups/f$COUNTER
+sed -i "s/$FILTERGROUP/f$COUNTER/g" /etc/e2guardian/e2guardian$FILTERGROUP.conf
+mv /etc/e2guardian/e2guardian$FILTERGROUP.conf /etc/e2guardian/e2guardianf$COUNTER.conf
+fi
+let COUNTER=$COUNTER+1
+done 
+
+#Restart e2guardian
+viewfilters
+}
+
+
+[ "$ACTION" = editlabel ] && editlabels 
+[ "$ACTION" = reallyeditlable ] && ( reallyeditlabels ; viewfilters )
+[ "$ACTION" = add ] && addfiltergroup 
+[ "$ACTION" = reallyadd ] && ( reallyaddfiltergroup ; viewfilters )
+[ "$ACTION" = deletefiltergroup ] && deletefiltergroup
+[ "$ACTION" = reallydelete ] && reallydelete
+[ "$ACTION" = view ] && viewfilters
+
+exit
+
+############################
+#Create user home area on extra fileserver
+############################
+if [ $SERVER != `hostname-fqdn` ]
+then
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+[ ! -d '$HOMEPATH''/''$NEWUSERNAME' ] && mkdir -p '$HOMEPATH''/''$NEWUSERNAME'
+chown -R '$USERID':root '$HOMEPATH''/''$NEWUSERNAME'
+chmod -R 0600 '$HOMEPATH''/''$NEWUSERNAME'
+[ `echo '$HOMEPATH' | grep -c students` -gt 0 ] && setfacl -Rm group:staff:r-x,d:group:staff:r-x '$HOMEPATH'/'$NEWUSERNAME'/
+setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
+'
+SSHSTATUS=$?
+if [ $SSHSTATUS != 0 ]
+then
+echo `date`: e2g_filtergroups - $NEWUSERNAME ssh failure on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo $SERVER,fileserver >> /opt/karoshi/server_network/offline_servers/e2g_filtergroupss/$NEWUSERNAME
+FAILED_SERVER=yes
+FAILEDSERVERLIST=$FAILEDSERVERLIST,$SERVER
+fi
+fi
+
+###########################
+#Create email folder on email server
+###########################
+if [ -f /opt/karoshi/server_network/emailserver ]
+then
+EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+if [ $EMAILSERVER != `hostname-fqdn` ]
+then 
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+[ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
+[ ! -d /home/users/email/'$NEWUSERNAME' ] && mkdir /home/users/email/'$NEWUSERNAME'
+chown -R '$USERID':root /home/users/email/'$NEWUSERNAME'
+chmod -R 0600 /home/users/email/'$NEWUSERNAME'
+chmod -R u+X /home/users/email/'$NEWUSERNAME'
+
+[ ! -d '$HOMEPATH''/''$NEWUSERNAME' ] && mkdir -p '$HOMEPATH''/''$NEWUSERNAME'
+chown -R '$USERID':root '$HOMEPATH''/''$NEWUSERNAME'
+chmod -R 0600 '$HOMEPATH''/''$NEWUSERNAME'
+setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
+'
+SSHSTATUS=`echo $?`
+if [ $SSHSTATUS != 0 ]
+then
+echo `date`: e2g_filtergroups - $NEWUSERNAME ssh failure on $EMAILSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo $EMAILSERVER,emailserver >> /opt/karoshi/server_network/offline_servers/e2g_filtergroupss/$NEWUSERNAME
+FAILED_SERVER=yes
+FAILEDSERVERLIST=$FAILEDSERVERLIST,$EMAILSERVER
+fi
+else
+[ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
+mkdir /home/users/email/$NEWUSERNAME
+chown $NEWUSERNAME -R /home/users/email/$NEWUSERNAME
+chmod 0600 -R /home/users/email/$NEWUSERNAME
+chmod u+X -R /home/users/email/$NEWUSERNAME
+fi
+fi
+
+######################
+#Add user to any federated servers
+######################
+if [ $FEDERATED_LDAP_SERVERS = yes ]
+then
+
+for FEDERATEDSERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
+do
+FEDERATEDSERVER=`basename $FEDERATEDSERVERS`
+######################
+#Export ldif file to add to the federated server
+######################
+echo `date`: e2g_filtergroups \(federated mode\) - exporting $NEWUSERNAME to $FEDERATEDSERVER from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $FEDERATEDSERVER '
+######################
+#Create user on federated server
+######################
+
+SECONDARYGROUP=""
+source /opt/karoshi/server_network/group_information/'$PRIMARYGROUP'
+source /opt/karoshi/server_network/domain_information/domain_name
+GROUPLIST=$SECONDARYGROUP
+
+echo `date`: e2g_filtergroups \(federated mode\) - creating '$NEWUSERNAME', Primary group: '$PRIMARYGROUP' from '$REMOTE_ADDR' by '$REMOTE_USER' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+
+#Add user to samba4 ldap
+samba-tool user add '$NEWUSERNAME' --userou="OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People" --profile-path=\\\\$HOSTNAME\\applications\\profiles\\'$NEWUSERNAME' --script-path=logon.bat --surname='$SURNAME' --given-name='$FIRSTNAME' --use-username-as-cn  --random-password --mail-address='$NEWUSERNAME'@$REALM 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+
+#Change password
+samba-tool user setpassword '$NEWUSERNAME' --newpassword='$NEWUSERPASSWORD' 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+
+#Add user to primary group
+samba-tool group addmembers "'$PRIMARYGROUP'" '$NEWUSERNAME'  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+
+#Add user to supplementary groups
+if [ `echo "'$SECONDARYGROUP'"null | sed "s/ //g"` != null ]
+then
+SECONDARYGROUP=`echo '$SECONDARYGROUP' | sed "s/,/ /g"`
+for EXTRAGROUP in '$SECONDARYGROUP'
+do
+samba-tool group addmembers "'$EXTRAGROUP'" '$NEWUSERNAME'  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+done
+fi
+
+#Add tech and itadmin users to the domain admins group
+if [ '$PRIMARYGROUP' = itadmin ] || [ '$PRIMARYGROUP' = tech ]
+then
+samba-tool group addmembers "Domain Admins" '$NEWUSERNAME'  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+fi
+
+#Get samba 4 database password
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+
+#Change primarygroupid and add unixhomedirectory - have to use ldapmodify at this time since samba-tool does not seem to have this option!
+#This is hideous why cant samba4 ldap do this all in one go??
+echo -e "dn: CN='$NEWUSERNAME',OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People,$LDAPBASE
+changetype: modify
+add: objectclass
+objectclass: posixaccount
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+PRIGROUPID=`getent group '$PRIMARYGROUP' | cut -d: -f3`
+
+echo -e "dn: CN='$NEWUSERNAME',OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People,$LDAPBASE
+changetype: modify
+add: gidnumber
+gidnumber: '$PRIGROUPID'
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+UIDNUMBER=`getent passwd '$NEWUSERNAME' | cut -d: -f3`
+
+echo -e "dn: CN='$NEWUSERNAME',OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People,$LDAPBASE
+changetype: modify
+add: uidnumber
+uidnumber: $UIDNUMBER
+-
+add: division
+division: '$PRIMARYGROUP'
+-
+add: loginshell
+loginshell: /bin/bash
+-
+add: unixhomedirectory
+unixhomedirectory: '$HOMEPATH'/'$NEWUSERNAME'
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+#echo -e "dn: CN='$NEWUSERNAME',OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People,$LDAPBASE
+#changetype: modify
+#replace: primaryGroupID
+#primaryGroupID: $PRIGROUPID
+#-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+if [ ! -z $ENROLLMENTNUMBER ]
+then
+#Add in employee number if it has been set
+echo -e "dn: CN='$NEWUSERNAME',OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People,$LDAPBASE
+changetype: modify
+add: employeeNumber
+employeeNumber: '$ENROLLMENTNUMBER'
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+
+[ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
+/opt/karoshi/"useful scripts"/createmailfolders
+mkdir -p '$HOMEPATH'/'$NEWUSERNAME'/Mail
+/opt/karoshi/"useful scripts"/createmailfolders
+cp /opt/karoshi/.tempdata/INBOX.* '$HOMEPATH'/'$NEWUSERNAME'/Mail/
+cp /opt/karoshi/.tempdata/.mailboxlist '$HOMEPATH'/'$NEWUSERNAME'
+chown -R '$NEWUSERNAME:$PRIMARYGROUP' '$HOMEPATH'/'$NEWUSERNAME'/
+chmod -R 0600 '$HOMEPATH'/'$NEWUSERNAME'/
+setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
+
+#Create home folder
+if [ $SERVER = `hostname-fqdn` ]
+then
+mkdir -p '$HOMEPATH'/'$NEWUSERNAME'/
+chown -R '$NEWUSERNAME':root '$HOMEPATH'/'$NEWUSERNAME'/
+chmod -R 0600 '$HOMEPATH'/'$NEWUSERNAME'/
+setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER "
+mkdir -p '$HOMEPATH'/'$NEWUSERNAME'/
+chown -R '$NEWUSERNAME':root '$HOMEPATH'/'$NEWUSERNAME'/
+chmod -R 0600 '$HOMEPATH'/'$NEWUSERNAME'/
+setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
+"
+fi
+
+#Create folder on email server
+if [ -f /opt/karoshi/server_network/emailserver ]
+then
+EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+if [ $EMAILSERVER != `hostname-fqdn` ]
+then 
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '\''
+[ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
+mkdir /home/users/email/'$NEWUSERNAME'
+chown '$NEWUSERNAME' /home/users/email/'$NEWUSERNAME'
+chmod 0700 /home/users/email/'$NEWUSERNAME'
+'\''
+
+SSHSTATUS=`echo $?`
+if [ $SSHSTATUS != 0 ]
+then
+echo `date`: e2g_filtergroups - '$NEWUSERNAME' ssh failure on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+echo $SERVER,emailserver >> /opt/karoshi/server_network/offline_servers/'$NEWUSERNAME'
+FAILED_SERVER=yes
+FAILEDSERVERLIST=$FAILEDSERVERLIST,$SERVER
+fi
+else
+[ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
+mkdir /home/users/email/'$NEWUSERNAME'
+chown '$NEWUSERNAME' /home/users/email/'$NEWUSERNAME'
+chmod 0700 /home/users/email/'$NEWUSERNAME'
+fi
+fi
+
+#Allow new user to join clients to the domain if they are a member of the itadmin group
+if [ '$PRIMARYGROUP' = itadmin ]
+then
+echo `date`: e2g_filtergroups \(federated mode\) - allowing '$NEWUSERNAME' to "join" clients to the domain by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+#Get domain name
+SAMBADOMAIN=`grep -w "workgroup = " /etc/samba/smb.conf | cut -d= -f2 | sed "s/ //g"`
+net rpc rights grant -U '$NEWUSERNAME'%'$NEWUSERPASSWORD' "$SAMBADOMAIN\Domain Admins" SeMachineAccountPrivilege \
+SePrintOperatorPrivilege SeAddUsersPrivilege SeDiskOperatorPrivilege SeRemoteShutdownPrivilege 1>/dev/null
+fi
+
+#Add details to primarygroup.txt - workaround for windows 7 bug not getting primary group correctly causing kixtart login scripts to fail.
+echo '$NEWUSERNAME','$PRIMARYGROUP' >> /var/lib/samba/netlogon/primarygroups.txt
+' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+SSHSTATUS=`echo $?`
+if [ $SSHSTATUS != 0 ]
+then
+echo `date`: e2g_filtergroups - $NEWUSERNAME ssh failure on $FEDERATEDSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo $FEDERATEDSERVER,federatedserver >> /opt/karoshi/server_network/offline_servers/e2g_filtergroupss/$NEWUSERNAME
+FAILED_SERVER=yes
+FAILEDSERVERLIST=$FAILEDSERVERLIST,$FEDERATEDSERVER
+fi
+done
+fi
+
+#Delete request file if this user has been requested by a member of staff
+if [ $REQUESTFILE'null' != null ]
+then
+if [ -f /opt/karoshi/user_requests/new_users/$REQUESTFILE ]
+then
+rm -f /opt/karoshi/user_requests/new_users/$REQUESTFILE
+NEWUSERCOUNT=`ls -1 /opt/karoshi/user_requests/new_users/ | wc -l`
+if [ $NEWUSERCOUNT = 0 ]
+then
+#Update warnings
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete request_new_users
+fi
+fi
+fi
+if [ $GRACE_TIME = yes ]
+then
+#Generate page warning
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add acceptable_use_authorisations /cgi-bin/admin/acceptable_use.cgi "$ACCEPTABLEUSEWARNINGMSG" 1
+fi
+
+if [ $BULKUSERCREATION'null' != null ]
+then
+if [ ! -d /opt/karoshi/bulk_user_creation/$PRIMARYGROUP ]
+then
+mkdir -p /opt/karoshi/bulk_user_creation/$PRIMARYGROUP
+chmod 0700 /opt/karoshi/bulk_user_creation/$PRIMARYGROUP
+fi
+echo >> /opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt
+echo $FIRSTNAME $SURNAME >> /opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt
+echo Username: $NEWUSERNAME Password: $NEWUSERPASSWORD >> /opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt
+echo >> /opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt
+echo ----------------------------------------------------- >> /opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt
+fi
+
+#Show servers that are offline
+
+if [ $FAILED_SERVER = yes ]
+then
+FAILEDSERVERLIST=`echo $FAILEDSERVERLIST | sed 's/^,//g' | sed 's/,/, /g'`
+MESSAGE="The following servers were not online:\n\n$FAILEDSERVERLIST\n\nThe system will automatically attempt to repair this problem at 6.00 am every morning."
+echo '<script type="text/javascript">'
+echo 'alert("'$MESSAGE'");'
+echo '</script>'
+echo "</body></html>"
+fi
+
+#Ban email use if needed
+if [ -f /opt/karoshi/server_network/email_restrictions/$PRIMARYGROUP ]
+then
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$NEWUSERNAME:$PRIMARYGROUP:deny:" | sudo -H /opt/karoshi/web_controls/exec/email_access
+fi
+
+#Add in windows profile support
+if [ ! -d /home/applications/profiles/$PRIMARYGROUP ]
+then
+if [ -d /home/applications/profiles/defaultprofile ]
+then
+echo $PRIMARYGROUP - $COPYPROFILEMSG2"<br>"
+cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/$PRIMARYGROUP
+chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP
+chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP
+chmod u+X,g+X,o+X -R /home/applications/profiles/$PRIMARYGROUP
+fi
+fi
+
+if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V2 ]
+then
+if [ -d /home/applications/profiles/defaultprofile.V2 ]
+then
+echo $PRIMARYGROUP - $COPYPROFILEMSGV2"<br>"
+cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/$PRIMARYGROUP.V2
+chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V2
+chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V2
+chmod u+X,g+X,o+X -R /home/applications/profiles/$PRIMARYGROUP.V2
+fi
+fi
+
+if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V3 ]
+then
+if [ -d /home/applications/profiles/defaultprofile.V3 ]
+then
+echo $PRIMARYGROUP - $COPYPROFILEMSGV3"<br>"
+cp -f -R /home/applications/profiles/defaultprofile.V3 /home/applications/profiles/$PRIMARYGROUP.V3
+chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V3
+chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V3
+chmod u+X,g+X,o+X -R /home/applications/profiles/$PRIMARYGROUP.V3
+fi
+fi
+
+if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V4 ]
+then
+if [ -d /home/applications/profiles/defaultprofile.V4 ]
+then
+echo $PRIMARYGROUP - $COPYPROFILEMSGV4"<br>"
+cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/$PRIMARYGROUP.V4
+chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V4
+chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V4
+chmod u+X,g+X,o+X -R /home/applications/profiles/$PRIMARYGROUP.V4
+fi
+fi
+
+if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V5 ]
+then
+if [ -d /home/applications/profiles/defaultprofile.V5 ]
+then
+echo $PRIMARYGROUP - $COPYPROFILEMSGV5"<br>"
+cp -f -R /home/applications/profiles/defaultprofile.V5 /home/applications/profiles/$PRIMARYGROUP.V5
+chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V5
+chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V5
+chmod u+X,g+X,o+X -R /home/applications/profiles/$PRIMARYGROUP.V5
+fi
+fi
+exit $CREATE_USER_STATUS
