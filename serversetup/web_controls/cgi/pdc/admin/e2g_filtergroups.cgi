@@ -95,7 +95,6 @@ do
 	let COUNTER=$COUNTER+1
 done
 
-END_POINT=11
 #Assign FILTERNAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
@@ -110,7 +109,6 @@ do
 	let COUNTER=$COUNTER+1
 done
 
-END_POINT=11
 #Assign FILTERDESC
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
@@ -139,8 +137,6 @@ do
 	let COUNTER=$COUNTER+1
 done
 
-
-END_POINT=11
 #Assign FILTERCLONE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
@@ -155,6 +151,20 @@ do
 	let COUNTER=$COUNTER+1
 done
 
+#Assign FILTERGROUP
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = FILTERGROUPcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		FILTERGROUP=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
 
 #########################
 #Check data
@@ -164,7 +174,7 @@ done
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-	DIV_ID=actionbox
+	DIV_ID=actionbox3
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -182,12 +192,12 @@ then
 	</div></div>
 '
 else
-	echo '<div id="'$DIV_ID'">'
+	echo '<div id="'$DIV_ID'"><div id=titlebox>'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/e2g_filtergroups.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$FILTERNAME:$FILTERLABEL:$FILTERDESC:$FILTERCLONE:" | sudo -H /opt/karoshi/web_controls/exec/e2g_filtergroups
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$FILTERNAME:$FILTERLABEL:$FILTERDESC:$FILTERCLONE:$FILTERGROUP:" | sudo -H /opt/karoshi/web_controls/exec/e2g_filtergroups
 
-echo '</div></form></div></body></html>'
+echo '</div></div></form></div></body></html>'
 exit
 
