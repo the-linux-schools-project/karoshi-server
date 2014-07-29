@@ -165,6 +165,48 @@ do
 	let COUNTER=$COUNTER+1
 done
 
+#Assign FILTERDATA
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = FILTERDATAcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		FILTERDATA=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
+#Assign FILTERDATA2
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = FILTERDATA2check ]
+	then
+		let COUNTER=$COUNTER+1
+		FILTERDATA2=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
+#Assign FILTERDATA3
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = FILTERDATA3check ]
+	then
+		let COUNTER=$COUNTER+1
+		FILTERDATA3=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
 
 #########################
 #Check data
@@ -196,7 +238,7 @@ else
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/e2g_filtergroups.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$FILTERNAME:$FILTERLABEL:$FILTERDESC:$FILTERCLONE:$FILTERGROUP:" | sudo -H /opt/karoshi/web_controls/exec/e2g_filtergroups
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$FILTERNAME:$FILTERLABEL:$FILTERDESC:$FILTERCLONE:$FILTERGROUP:$FILTERDATA:$FILTERDATA2:$FILTERDATA3:" | sudo -H /opt/karoshi/web_controls/exec/e2g_filtergroups
 
 echo '</div></div></form></div></body></html>'
 exit
