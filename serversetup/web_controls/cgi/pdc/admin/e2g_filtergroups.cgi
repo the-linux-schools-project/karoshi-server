@@ -74,7 +74,7 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-+'`
+DATA=`cat | tr -cd 'A-Za-z0-9\._:\-+%'`
 
 #########################
 #Assign data to variables
@@ -104,62 +104,6 @@ do
 	then
 		let COUNTER=$COUNTER+1
 		FILTERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
-
-#Assign FILTERDESC
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = FILTERDESCcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		FILTERDESC=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
-
-#Assign FILTERLABEL
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = FILTERLABELcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		FILTERLABEL=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
-
-#Assign FILTERCLONE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = FILTERCLONEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		FILTERCLONE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
-
-#Assign FILTERGROUP
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = FILTERGROUPcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		FILTERGROUP=`echo $DATA | cut -s -d'_' -f$COUNTER`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -222,7 +166,6 @@ then
 else
 	DIV_ID=actionbox
 fi
-echo '<form name="myform" action="/cgi-bin/admin/e2g_filtergroups.cgi" method="post">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -238,8 +181,8 @@ else
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/e2g_filtergroups.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$FILTERNAME:$FILTERLABEL:$FILTERDESC:$FILTERCLONE:$FILTERGROUP:$FILTERDATA:$FILTERDATA2:$FILTERDATA3:" | sudo -H /opt/karoshi/web_controls/exec/e2g_filtergroups
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$FILTERNAME:$FILTERDATA:$FILTERDATA2:$FILTERDATA3:" | sudo -H /opt/karoshi/web_controls/exec/e2g_filtergroups
 
-echo '</div></div></form></div></body></html>'
+echo '</div></div></div></body></html>'
 exit
 

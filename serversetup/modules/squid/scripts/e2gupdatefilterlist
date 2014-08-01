@@ -1,0 +1,47 @@
+#!/bin/bash
+#dgupdatefilterlist
+#Copyright (C) 2006  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contact either at mpsharrad@karoshi.org.uk or jharris@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+#Delete the current filtergroups list.
+[ -f /etc/e2guardian/lists/filtergroupslist ] && rm -f /etc/e2guardian/lists/filtergroupslist
+
+for FILTERGROUPS in /etc/e2guardian/lists/filtergroups/*
+do
+FILTERGROUP=`basename $FILTERGROUPS`
+FILTERNUMBER=`echo $FILTERGROUP | tr -cd "0-9"`
+if [ $FILTERGROUP != f1 ]
+then
+	#Check to see if any groups have been assigned to this filtergroup.
+	if [ -d /etc/e2guardian/lists/filtergroups/$FILTERGROUP/assigned_groups ] 
+	then
+		for ASSIGNEDGROUPS in /etc/e2guardian/lists/filtergroups/$FILTERGROUP/assigned_groups/*
+		do
+			ASSIGNEDGROUP=`basename $ASSIGNEDGROUPS`
+			echo $FILTERGROUP $ASSIGNEDGROUP $FILTERNUMBER
+			#Modify the assigned group if it is an anomaly.
+			[ "$ASSIGNEDGROUP" = itadmin ] && ASSIGNEDGROUP=itadminstaff
+			#Get all of the members of the group and update filtergroups file
+			getent passwd | grep /$ASSIGNEDGROUP/ | cut -d: -f1 | sed "s/$/=filter$FILTERNUMBER/g" >> /etc/e2guardian/lists/filtergroupslist
+		done
+	fi
+fi
+done
+exit
+
