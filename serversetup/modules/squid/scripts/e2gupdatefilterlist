@@ -37,6 +37,7 @@ then
 			echo $FILTERGROUP $ASSIGNEDGROUP $FILTERNUMBER
 			#Modify the assigned group if it is an anomaly.
 			[ "$ASSIGNEDGROUP" = itadmin ] && ASSIGNEDGROUP=itadminstaff
+			[ "$ASSIGNEDGROUP" = tech ] && ASSIGNEDGROUP=techstaff
 			#Get all of the members of the group and update filtergroups file
 			getent passwd | grep /$ASSIGNEDGROUP/ | cut -d: -f1 | sed "s/$/=filter$FILTERNUMBER/g" >> /etc/e2guardian/lists/filtergroupslist
 		done
