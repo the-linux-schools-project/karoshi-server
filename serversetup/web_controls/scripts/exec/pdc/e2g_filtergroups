@@ -230,7 +230,7 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
 
 		if [ $FILTERGROUP = f1 ]
 		then
-			echo $DEFAULTGROUPMSG
+			echo '$DEFAULTGROUPMSG'
 		else
 			if [ -d /etc/e2guardian/lists/filtergroups/$FILTERGROUP/assigned_groups ]
 			then
@@ -242,13 +242,12 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
 			fi
 		fi
 		#Show actions for the filter groups
+		echo "<td style=\"vertical-align: top;\"><input name=\"_ACTION_editfiltergroup_FILTERNAME_"$FILTERGROUP"_\" type=\"submit\" class=\"button\" value=\"'$EDITFILTERGROUPMSG'\"></td><td style=\"vertical-align: top;\">"
 		if [ $FILTERGROUP != f1 ]
 		then
-			echo "<td style=\"vertical-align: top;\"><input name=\"_ACTION_editfiltergroup_FILTERNAME_"$FILTERGROUP"_\" type=\"submit\" class=\"button\" value=\"'$EDITFILTERGROUPMSG'\"></td><td style=\"vertical-align: top;\"><input name=\"_ACTION_filtercategories_FILTERNAME_"$FILTERGROUP"_\" type=\"submit\" class=\"button\" value=\"'$FILTERLISTSMSG'\"></td><td style=\"vertical-align: top;\"><input name=\"_ACTION_deletefiltergroup_FILTERNAME_"$FILTERGROUP"_\" type=\"submit\" class=\"button\" value=\"'$DELETEFILTERGROUPMSG'\"></td>"
-		else
-		echo "<td></td><td style=\"vertical-align: top;\"><input name=\"_ACTION_filtercategories_FILTERNAME_"$FILTERGROUP"_\" type=\"submit\" class=\"button\" value=\"'$FILTERLISTSMSG'\"></td>"
+			echo "<input name=\"_ACTION_deletefiltergroup_FILTERNAME_"$FILTERGROUP"_\" type=\"submit\" class=\"button\" value=\"'$DELETEFILTERGROUPMSG'\">"
 		fi
-		echo "</tr>"
+		echo "</td></tr>"
 	done
 '
 fi
@@ -259,15 +258,18 @@ function reallyeditlabels {
 FILTERLABEL=`echo $FILTERDATA | sed "s/+/ /g"`
 FILTERDESC=`echo $FILTERDATA2 | sed "s/+/ /g"`
 
-if [ $PROXYSERVER = `hostname-fqdn` ]
+if [ ! -z "$FILTERLABEL" ] && [ ! -z "$FILTERDESC" ] 
 then
-	echo "FILTERLABEL=\"$FILTERLABEL\"" > /etc/e2guardian/lists/filtergroups/$FILTERNAME/details
-	echo "FILTERDESC=\"$FILTERDESC\"" >> /etc/e2guardian/lists/filtergroups/$FILTERNAME/details
-else
-	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
-	echo "FILTERLABEL=\"'$FILTERLABEL'\"" > /etc/e2guardian/lists/filtergroups/'$FILTERNAME'/details
-	echo "FILTERDESC=\"'$FILTERDESC'\"" >> /etc/e2guardian/lists/filtergroups/'$FILTERNAME'/details
-'
+	if [ $PROXYSERVER = `hostname-fqdn` ]
+	then
+		echo "FILTERLABEL=\"$FILTERLABEL\"" > /etc/e2guardian/lists/filtergroups/$FILTERNAME/details
+		echo "FILTERDESC=\"$FILTERDESC\"" >> /etc/e2guardian/lists/filtergroups/$FILTERNAME/details
+	else
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
+		echo "FILTERLABEL=\"'$FILTERLABEL'\"" > /etc/e2guardian/lists/filtergroups/'$FILTERNAME'/details
+		echo "FILTERDESC=\"'$FILTERDESC'\"" >> /etc/e2guardian/lists/filtergroups/'$FILTERNAME'/details
+	'
+	fi
 fi
 }
 
@@ -685,28 +687,52 @@ echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpad
 
 
 #Show categories that are currently active
+if [ $PROXYSERVER = `hostname-fqdn` ]
+then
+	for CATEGORIES in `grep ^".Include</etc/e2guardian/lists/$SEARCHTERM/" /etc/e2guardian/lists/filtergroups/$FILTERNAME/$FILENAME | sed "s/>//g" | sed "s/<//g"`
+	do
+		CATEGORY=`echo "$CATEGORIES" | cut -d"/" -f$COL1`
+		SUBCATEGORY=`echo "$CATEGORIES" | cut -d"/" -f$COL2`
+		CATEGORYNAME="$CATEGORY"
+		[ $SUBCATEGORY != $FILTERTYPE ] && CATEGORYNAME="$CATEGORY/$SUBCATEGORY"
 
-for CATEGORIES in `grep ^".Include</etc/e2guardian/lists/$SEARCHTERM/" /etc/e2guardian/lists/filtergroups/$FILTERNAME/$FILENAME | sed "s/>//g" | sed "s/<//g"`
-do
-	CATEGORY=`echo "$CATEGORIES" | cut -d"/" -f$COL1`
-	SUBCATEGORY=`echo "$CATEGORIES" | cut -d"/" -f$COL2`
-	CATEGORYNAME="$CATEGORY"
-	[ $SUBCATEGORY != $FILTERTYPE ] && CATEGORYNAME="$CATEGORY/$SUBCATEGORY"
+		echo "<tr><td>$CATEGORYNAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_reallyeditfilterlists_FILTERNAME_$FILTERNAME"_"FILTERDATA_$FILTERDATA"_"FILTERDATA2"_"$CATEGORYNAME"_"FILTERDATA3_deactivate_\" type=\"image\" class=\"images\" src=\"$ICON2\" value=\"\"><span>$CATEGORYNAME<br><br>$REMOVEMSGLISTMSG</span></a></td></tr>"
+	done
 
-	echo "<tr><td>$CATEGORYNAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_reallyeditfilterlists_FILTERNAME_$FILTERNAME"_"FILTERDATA_$FILTERDATA"_"FILTERDATA2"_"$CATEGORYNAME"_"FILTERDATA3_deactivate_\" type=\"image\" class=\"images\" src=\"$ICON2\" value=\"\"><span>$CATEGORYNAME<br><br>$REMOVEMSGLISTMSG</span></a></td></tr>"
-done
+	#Show inactive categories
+	for CATEGORIES in `grep ^"#.Include</etc/e2guardian/lists/$SEARCHTERM/" /etc/e2guardian/lists/filtergroups/$FILTERNAME/$FILENAME | sed "s/>//g" | sed "s/<//g"`
+	do
+		CATEGORY=`echo "$CATEGORIES" | cut -d"/" -f$COL1`
+		SUBCATEGORY=`echo "$CATEGORIES" | cut -d"/" -f$COL2`
+		CATEGORYNAME="$CATEGORY"
+		[ $SUBCATEGORY != $FILTERTYPE ] && CATEGORYNAME="$CATEGORY/$SUBCATEGORY"
 
-#Show inactive categories
-for CATEGORIES in `grep ^"#.Include</etc/e2guardian/lists/$SEARCHTERM/" /etc/e2guardian/lists/filtergroups/$FILTERNAME/$FILENAME | sed "s/>//g" | sed "s/<//g"`
-do
-	CATEGORY=`echo "$CATEGORIES" | cut -d"/" -f$COL1`
-	SUBCATEGORY=`echo "$CATEGORIES" | cut -d"/" -f$COL2`
-	CATEGORYNAME="$CATEGORY"
-	[ $SUBCATEGORY != $FILTERTYPE ] && CATEGORYNAME="$CATEGORY/$SUBCATEGORY"
+		echo "<tr><td>$CATEGORYNAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_reallyeditfilterlists_FILTERNAME_$FILTERNAME"_"FILTERDATA_$FILTERDATA"_"FILTERDATA2"_"$CATEGORYNAME"_"FILTERDATA3_activate_\" type=\"image\" class=\"images\" src=\"$ICON3\" value=\"\"><span>$CATEGORYNAME<br><br>$ADDSGLISTMSG</span></a></td></tr>"
+	done
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
+	for CATEGORIES in `grep ^".Include</etc/e2guardian/lists/'$SEARCHTERM'/" /etc/e2guardian/lists/filtergroups/'$FILTERNAME'/'$FILENAME' | sed "s/>//g" | sed "s/<//g"`
+	do
+		CATEGORY=`echo "$CATEGORIES" | cut -d"/" -f'$COL1'`
+		SUBCATEGORY=`echo "$CATEGORIES" | cut -d"/" -f'$COL2'`
+		CATEGORYNAME="$CATEGORY"
+		[ $SUBCATEGORY != '$FILTERTYPE' ] && CATEGORYNAME="$CATEGORY/$SUBCATEGORY"
 
-	echo "<tr><td>$CATEGORYNAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_reallyeditfilterlists_FILTERNAME_$FILTERNAME"_"FILTERDATA_$FILTERDATA"_"FILTERDATA2"_"$CATEGORYNAME"_"FILTERDATA3_activate_\" type=\"image\" class=\"images\" src=\"$ICON3\" value=\"\"><span>$CATEGORYNAME<br><br>$ADDSGLISTMSG</span></a></td></tr>"
-done
+		echo "<tr><td>$CATEGORYNAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_reallyeditfilterlists_FILTERNAME_'$FILTERNAME'"_"FILTERDATA_'$FILTERDATA'"_"FILTERDATA2"_"$CATEGORYNAME"_"FILTERDATA3_deactivate_\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>$CATEGORYNAME<br><br>'$REMOVEMSGLISTMSG'</span></a></td></tr>"
+	done
 
+	#Show inactive categories
+	for CATEGORIES in `grep ^"#.Include</etc/e2guardian/lists/'$SEARCHTERM'/" /etc/e2guardian/lists/filtergroups/'$FILTERNAME'/'$FILENAME' | sed "s/>//g" | sed "s/<//g"`
+	do
+		CATEGORY=`echo "$CATEGORIES" | cut -d"/" -f'$COL1'`
+		SUBCATEGORY=`echo "$CATEGORIES" | cut -d"/" -f'$COL2'`
+		CATEGORYNAME="$CATEGORY"
+		[ $SUBCATEGORY != '$FILTERTYPE' ] && CATEGORYNAME="$CATEGORY/$SUBCATEGORY"
+
+		echo "<tr><td>$CATEGORYNAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_reallyeditfilterlists_FILTERNAME_'$FILTERNAME'"_"FILTERDATA_'$FILTERDATA'"_"FILTERDATA2"_"$CATEGORYNAME"_"FILTERDATA3_activate_\" type=\"image\" class=\"images\" src=\"'$ICON3'\" value=\"\"><span>$CATEGORYNAME<br><br>'$ADDSGLISTMSG'</span></a></td></tr>"
+	done
+'
+fi
 echo "</tbody></table></form>"
 }
 
@@ -724,7 +750,7 @@ then
 	LINENUM=`grep -n "/$FILTERDATA2" /etc/e2guardian/lists/filtergroups/$FILTERNAME/$FILENAME | cut -d: -f1 | sed -n 1,1p`
 
 	#Modify config file
-	if [ ! -z $LINENUM ]
+	if [ ! -z "$LINENUM" ]
 	then
 		[ $FILTERDATA3 = deactivate ] && sed -i "$LINENUM"s"/^.Include/#.Include/" /etc/e2guardian/lists/filtergroups/$FILTERNAME/$FILENAME 
 		[ $FILTERDATA3 = activate ] && sed -i "$LINENUM"s"/^#.Include/.Include/" /etc/e2guardian/lists/filtergroups/$FILTERNAME/$FILENAME
@@ -739,9 +765,8 @@ else
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
 	#Get the line number of list
 	LINENUM=`grep -n "/'$FILTERDATA2'" /etc/e2guardian/lists/filtergroups/'$FILTERNAME'/'$FILENAME' | cut -d: -f1 | sed -n 1,1p`
-
 	#Modify config file
-	if [ ! -z $LINENUM ]
+	if [ ! -z "$LINENUM" ]
 	then
 		[ '$FILTERDATA3' = deactivate ] && sed -i "$LINENUM"s"/^.Include/#.Include/" /etc/e2guardian/lists/filtergroups/'$FILTERNAME'/'$FILENAME'
 		[ '$FILTERDATA3' = activate ] && sed -i "$LINENUM"s"/^#.Include/.Include/" /etc/e2guardian/lists/filtergroups/'$FILTERNAME'/'$FILENAME'
@@ -802,15 +827,15 @@ else
 		LINEDATA=`echo "$EXTENSIONS" | sed "s/_/ /g"`
 		FILEEXTENSION=`echo $LINEDATA | sed "s/ //g" | cut -d"#" -f2 | sed "s/\.//g"`
 		DESCRIPTION=`echo $LINEDATA | cut -d"#" -f3`
-		[ ! -z $FILEEXTENSION ] && echo "<tr><td style=\"vertical-align:top\">$FILEEXTENSION</td><td>$DESCRIPTION</td><td style=\"vertical-align:top\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_modifybannedextensionlists_FILTERNAME_$FILTERNAME"_"FILTERDATA_$FILEEXTENSION"_"FILTERDATA2_activate_\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>$FILEEXTENSION<br><br>'$DENYFILEEXTMSG'</span></a></td></tr>"
+		[ ! -z $FILEEXTENSION ] && echo "<tr><td style=\"vertical-align:top\">$FILEEXTENSION</td><td>$DESCRIPTION</td><td style=\"vertical-align:top\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_modifybannedextensionlists_FILTERNAME_'$FILTERNAME'"_"FILTERDATA_$FILEEXTENSION"_"FILTERDATA2_activate_\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>$FILEEXTENSION<br><br>'$DENYFILEEXTMSG'</span></a></td></tr>"
 	done
 	#Show denied extensions
-	for EXTENSIONS in `grep ^"\." /etc/e2guardian/lists/filtergroups/$FILTERNAME/bannedextensionlist | sed "s/ /_/g"`
+	for EXTENSIONS in `grep ^"\." /etc/e2guardian/lists/filtergroups/'$FILTERNAME'/bannedextensionlist | sed "s/ /_/g"`
 	do
 		LINEDATA=`echo "$EXTENSIONS" | sed "s/_/ /g"`
 		FILEEXTENSION=`echo $LINEDATA | sed "s/ //g" | cut -d"#" -f1 | sed "s/\.//g"`
 		DESCRIPTION=`echo $LINEDATA | cut -d"#" -f2`
-		[ ! -z $FILEEXTENSION ] && echo "<tr><td style=\"vertical-align:top\">$FILEEXTENSION</td><td>$DESCRIPTION</td><td style=\"vertical-align:top\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_modifybannedextensionlists_FILTERNAME_$FILTERNAME"_"FILTERDATA_$FILEEXTENSION"_"FILTERDATA2_deactivate_\" type=\"image\" class=\"images\" src=\"'$ICON3'\" value=\"\"><span>$FILEEXTENSION<br><br>'$ALLOWFILEEXTMSG'</span></a></td></tr>"
+		[ ! -z $FILEEXTENSION ] && echo "<tr><td style=\"vertical-align:top\">$FILEEXTENSION</td><td>$DESCRIPTION</td><td style=\"vertical-align:top\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_modifybannedextensionlists_FILTERNAME_'$FILTERNAME'"_"FILTERDATA_$FILEEXTENSION"_"FILTERDATA2_deactivate_\" type=\"image\" class=\"images\" src=\"'$ICON3'\" value=\"\"><span>$FILEEXTENSION<br><br>'$ALLOWFILEEXTMSG'</span></a></td></tr>"
 	done
 '
 fi
@@ -890,7 +915,7 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
 	#Show denied mimetypes
 	for MIMETYPE in `grep -v ^"#" /etc/e2guardian/lists/filtergroups/'$FILTERNAME'/bannedmimetypelist | sed "s/#//g" | sed 1d | sort`
 	do
-		[ ! -z "$MIMETYPE" ] && echo "<tr><td style=\"vertical-align:top\">$MIMETYPE</td><td style=\"vertical-align:top\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_modifybannedmimetypes_FILTERNAME_$FILTERNAME"_"FILTERDATA_$MIMETYPE"_"FILTERDATA2_deactivate_\" type=\"image\" class=\"images\" src=\"'$ICON3'\" value=\"\"><span>$MIMETYPE<br><br>'$ALLOWMIMETYPEMSG'</span></a></td></tr>"
+		[ ! -z "$MIMETYPE" ] && echo "<tr><td style=\"vertical-align:top\">$MIMETYPE</td><td style=\"vertical-align:top\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_modifybannedmimetypes_FILTERNAME_'$FILTERNAME'"_"FILTERDATA_$MIMETYPE"_"FILTERDATA2_deactivate_\" type=\"image\" class=\"images\" src=\"'$ICON3'\" value=\"\"><span>$MIMETYPE<br><br>'$ALLOWMIMETYPEMSG'</span></a></td></tr>"
 	done
 '
 fi
