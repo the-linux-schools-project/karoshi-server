@@ -41,6 +41,66 @@ mkdir -p /opt/karoshi/logs/server_upgrades/
 chmod 0700 /opt/karoshi/logs/server_upgrades/
 fi
 
+CONFIGFILE_ARRAY=( apache,/etc/apache2/apache2.conf cups,/etc/cups/cupsd.conf dhcp,/etc/dhcp/dhcpd.conf dovecot,/etc/dovecot/dovecot.conf e2guardian,/etc/e2guardian/e2guardian.conf fail2ban,/etc/fail2ban/fail2ban.conf mysql,/etc/mysql/my.cnf nslcd,/etc/nslcd.conf ntp,/etc/ntp.conf nut,/etc/nut/nut.conf postfix,/etc/postfix/main.cf postfix,/etc/postfix/master.cf samba,/etc/samba/smb.conf ssh,/etc/ssh/sshd_config squid,/etc/squid/squid.conf )
+
+function backup_config_files {
+#Backup service config files
+COUNTER=0
+ARRAY_COUNT=${#CONFIGFILE_ARRAY[@]}
+while [ $COUNTER -lt $ARRAY_COUNT ]
+do
+	CONFIGFILEDATA=${CONFIGFILE_ARRAY[$COUNTER]}
+	CONFIGPATH=`echo "$CONFIGFILEDATA" | cut -d, -f2`
+
+	[ -f $CONFIGPATH ] && cp -f $CONFIGPATH $CONFIGPATH.$LOG_DATE
+
+	let COUNTER=$COUNTER+1
+done
+}
+
+function check_config_files {
+#Check that config files have not changed during the update process.
+echo -e "$HOSTNAME: `date` - Checking config files have not been altered by the update process.\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
+COUNTER=0
+ARRAY_COUNT=${#CONFIGFILE_ARRAY[@]}
+while [ $COUNTER -lt $ARRAY_COUNT ]
+do
+	CONFIGFILEDATA=${CONFIGFILE_ARRAY[$COUNTER]}
+	CONFIGPATH=`echo "$CONFIGFILEDATA" | cut -d, -f2`
+	SERVICENAME=`echo "$CONFIGFILEDATA" | cut -d, -f1`
+
+	if [ -f "$CONFIGPATH" ] && [ -f "$CONFIGPATH.$LOG_DATE" ]
+	then
+		#Get md5sum and check against the backup config file
+		if [ `md5sum "$CONFIGPATH" | cut -d" " -f1` != `md5sum "$CONFIGPATH.$LOG_DATE" | cut -d" " -f1` ]
+		then
+			echo -e "$HOSTNAME: `date` - $CONFIGPATH has been altered.\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
+			#Copy current config file
+			cp -f "$CONFIGPATH" "$CONFIGPATH.$LOG_DATE.postupdate"
+
+			#Restore backed up config file
+			echo -e "$HOSTNAME: `date` - Restoring the original config file.\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
+			echo -e "$HOSTNAME: `date` - Inspect $CONFIGPATH.$LOG_DATE and $CONFIGPATH.$LOG_DATE.postupdate for changes.\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
+			cp -f "$CONFIGPATH.$LOG_DATE" "$CONFIGPATH"
+			#Restart the service if it is running
+			/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$SERVICENAME"_"status
+			if [ $? = 0 ]
+			then
+				echo -e "$HOSTNAME: `date` - Restarting $SERVICENAME.\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
+				/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$SERVICENAME"_"stop
+				sleep 1
+				/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$SERVICENAME"_"start
+			fi
+		else
+			#Delete the backed up config files
+			rm -f "$CONFIGPATH.$LOG_DATE"
+		fi
+	fi
+	let COUNTER=$COUNTER+1
+done
+}
+backup_config_files
+
 #Update non apt packages
 /opt/karoshi/serversetup/all/samba4/samba4install
 
@@ -49,13 +109,13 @@ fi
 SSHSERVICE=yes
 if [ -d /opt/karoshi/web_controls ]
 then
-#This server is the main server and may not need ssh so fall back to normal check.
-SSHSERVICE=no
-if [ -f /opt/karoshi/server_network/servers/$HOSTNAME/federated_server ]
-then
-#This server is a federated server and must have ssh.
-SSHSERVICE=yes
-fi
+	#This server is the main server and may not need ssh so fall back to normal check.
+	SSHSERVICE=no
+	if [ -f /opt/karoshi/server_network/servers/$HOSTNAME/federated_server ]
+	then
+		#This server is a federated server and must have ssh.
+		SSHSERVICE=yes
+	fi
 fi
 
 #Make sure we are using sysv scripts before we check which services should still be running after the update.
@@ -72,10 +132,10 @@ STATUS=off
 #Make sure status is correct for ssh
 if [ $SERVICENAME = ssh ]
 then
-if [ $SSHSERVICE = yes ]
-then
-STATUS=on
-fi
+	if [ $SSHSERVICE = yes ]
+	then
+		STATUS=on
+	fi
 fi
 STATUS_ARRAY[$COUNTER]=$STATUS
 echo -e "$SERVICENAME $STATUS" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
@@ -84,15 +144,15 @@ echo -e "$SERVICENAME $STATUS" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
 #######################
 #Check which services should be running on this server.
 #######################
-SERVICE_ARRAY=( apache apache_karoshi clamd cron cups dansguardian dhcp dns glusterfs mailscanner monitorix memcached mon mysql nfs nginx postfix portmap proftpd radius rpcbind samba squid nut ssh tftpd xinetd )
+SERVICE_ARRAY=( apache apache_karoshi clamd cron cups dansguardian dovecot dhcp dns glusterfs mailscanner monitorix memcached mon mysql nfs nginx postfix portmap proftpd radius rpcbind samba squid nut ssh tftpd xinetd )
 echo -e "$HOSTNAME: `date` - Checking which services are currently set to run on boot.\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
 COUNTER=0
 ARRAY_COUNT=${#SERVICE_ARRAY[@]}
 while [ $COUNTER -lt $ARRAY_COUNT ]
 do
-SERVICENAME=${SERVICE_ARRAY[$COUNTER]}
-check_status
-let COUNTER=$COUNTER+1
+	SERVICENAME=${SERVICE_ARRAY[$COUNTER]}
+	check_status
+	let COUNTER=$COUNTER+1
 done
 echo -e "_________________________________________________\n" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
 
@@ -117,9 +177,9 @@ echo -e "_________________________________________________\n" >> /opt/karoshi/lo
 #######################
 if [ $INSTALLTYPE = scheduled ]
 then
-echo Holding Cron from updating
-echo cron hold | dpkg --set-selections
-echo apache2 install | dpkg --set-selections
+	echo Holding Cron from updating
+	echo cron hold | dpkg --set-selections
+	echo apache2 install | dpkg --set-selections
 fi
 #######################
 #Remove any init.d scripts that would stop an update from taking place!
@@ -130,11 +190,11 @@ fi
 #######################
 echo -e "Checking that the upgrade will be successfull.\n" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
 apt-get -s dist-upgrade >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
-if [ `echo $?` != 0 ]
+if [ $? != 0 ]
 then
-echo -e "Apt-get is reporting an upgrade problem. Upgrade NOT carried out.\n" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
-/opt/karoshi/serversetup/distro/ubuntu/scripts/sysvsupport
-exit
+	echo -e "Apt-get is reporting an upgrade problem. Upgrade NOT carried out.\n" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/sysvsupport
+	exit
 fi
 echo -e "_________________________________________________\n" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
 #######################
@@ -153,6 +213,9 @@ apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-co
 echo -e "\n$HOSTNAME: `date` - Upgrade completed\n\n" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
 echo -e "_________________________________________________\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
 
+#Check sysv
+/opt/karoshi/serversetup/distro/ubuntu/scripts/sysvsupport
+
 #######################
 #Make sure that only the correct services are running.
 #######################
@@ -165,74 +228,84 @@ SERVICESTATUS=`echo $?`
 #Make sure services are stopped if they were not running before the update.
 if [ $STATUS = off ]
 then
-[ $SERVICESTATUS = 0 ] && /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$SERVICENAME"_"stop
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/$SERVICENAME
+	[ $SERVICESTATUS = 0 ] && /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$SERVICENAME"_"stop
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/$SERVICENAME
 fi
 #Make sure services are started if they were running before the update.
 if [ $STATUS = on ]
 then
-[ $SERVICESTATUS = 1 ] && /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$SERVICENAME"_"start
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/$SERVICENAME
+	[ $SERVICESTATUS = 1 ] && /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$SERVICENAME"_"start
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/$SERVICENAME
 fi
 
 #Make sure ssh is running
 if [ $SERVICENAME = ssh ]
 then
-if [ $SSHSERVICE = yes ]
-then
-if [ `ps -e | grep -c sshd` = 0 ]
-then
-echo starting ssh >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ssh_start
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/ssh
-fi
-fi
+	if [ $SSHSERVICE = yes ]
+	then
+		if [ `ps -e | grep -c sshd` = 0 ]
+		then
+			echo starting ssh >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
+			/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ssh_start
+			/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/ssh
+		fi
+	fi
 fi
 }
-
+############################
+#Make sure that services running before the update are still running.
+############################
 echo -e "$HOSTNAME: `date` - Setting services to run on boot.\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
 COUNTER=0
 while [ $COUNTER -lt $ARRAY_COUNT ]
 do
-STATUS=${STATUS_ARRAY[$COUNTER]}
-SERVICENAME=${SERVICE_ARRAY[$COUNTER]}
-echo Setting $SERVICENAME $STATUS
-echo -e "$SERVICENAME $STATUS" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
-controlservices
-let COUNTER=$COUNTER+1
+	STATUS=${STATUS_ARRAY[$COUNTER]}
+	SERVICENAME=${SERVICE_ARRAY[$COUNTER]}
+	echo Setting $SERVICENAME $STATUS
+	echo -e "$SERVICENAME $STATUS" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
+	controlservices
+	let COUNTER=$COUNTER+1
 done
 echo -e "_________________________________________________\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
 
-#Check sysv
-/opt/karoshi/serversetup/distro/ubuntu/scripts/sysvsupport
+###########################
+#Make sure that config files have not been changed.
+###########################
+check_config_files
 
-#Remove old kernels 
-if [ $REMOVE_OLD_KERNELS = yes ]
-then
-apt-get purge $(dpkg -l 'linux-*' | sed '/^ii/!d;/'"$(uname -r | sed "s/\(.*\)-\([^0-9]\+\)/\1/")"'/d;s/^[^ ]* [^ ]* \([^ ]*\).*/\1/;/[0-9]/!d' | head -n -1) --assume-yes
-fi
-#######################
-#Check to see if server needs a reboot.
-#######################
+###########################
+#Remove old kernels
+###########################
+[ $REMOVE_OLD_KERNELS = yes ] && apt-get purge $(dpkg -l 'linux-*' | sed '/^ii/!d;/'"$(uname -r | sed "s/\(.*\)-\([^0-9]\+\)/\1/")"'/d;s/^[^ ]* [^ ]* \([^ ]*\).*/\1/;/[0-9]/!d' | head -n -1) --assume-yes
+
+###########################
+#Check to see if the server needs a reboot.
+###########################
 if [ -f /var/run/reboot-required ]
 then
-#Let any services restart and stabilise
-sleep 30
-echo "A reboot is required."
-echo -e "$HOSTNAME: `date` - A reboot is required, rebooting now.\nA reboot has not occurred unless there is a reboot entry below this." >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
-#Add in script to record reboot time
-echo '#!/bin/bash' > /etc/rc2.d/S99recordreboot
-echo 'echo -e "$HOSTNAME: `date` - This server has now rebooted.\n" >>/opt/karoshi/logs/server_upgrades/'$LOG_DATE'' >> /etc/rc2.d/S99recordreboot
-echo 'rm -f /etc/rc2.d/S99recordreboot' >> /etc/rc2.d/S99recordreboot
-chmod 0700 /etc/rc2.d/S99recordreboot
-#Check if kexec is installed
-#if [ -e /etc/init.d/kexec ]
-#then
-#Load kernel into memory before rebooting
-#kexec -l /vmlinuz --initrd=/initrd.img --reuse-cmdline
-#fi
-shutdown -r now 1>> /opt/karoshi/logs/server_upgrades/$LOG_DATE 2>> /opt/karoshi/logs/server_upgrades/$LOG_DATE
-exit
+	#Let any services restart and stabilise
+	sleep 30
+	echo "A reboot is required."
+	echo -e "$HOSTNAME: `date` - A reboot is required, rebooting now.\nA reboot has not occurred unless there is a reboot entry below this." >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
+	#Add in script to record reboot time
+	echo '#!/bin/bash' > /etc/rc2.d/S99recordreboot
+	echo 'echo -e "$HOSTNAME: `date` - This server has now rebooted.\n" >>/opt/karoshi/logs/server_upgrades/'$LOG_DATE'' >> /etc/rc2.d/S99recordreboot
+	echo 'rm -f /etc/rc2.d/S99recordreboot' >> /etc/rc2.d/S99recordreboot
+	chmod 0700 /etc/rc2.d/S99recordreboot
+	#Check if kexec is installed
+	#if [ -e /etc/init.d/kexec ]
+	#then
+	#Load kernel into memory before rebooting
+	#kexec -l /vmlinuz --initrd=/initrd.img --reuse-cmdline
+	#fi
+	shutdown -r now 1>> /opt/karoshi/logs/server_upgrades/$LOG_DATE 2>> /opt/karoshi/logs/server_upgrades/$LOG_DATE
+	exit
+fi
+
+#Make sure that apache2_karoshi is running on the main server.
+if [ `ps aux | grep -c apache2_karoshi` -lt 2 ] && [ -d /opt/karoshi/web_controls ]
+then
+	service apache2_karoshi start
 fi
 exit
 
