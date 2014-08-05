@@ -148,7 +148,7 @@ fi
 #Internet
 if [ $INTERNETCTRL = yes ]
 then
-echo '	<li class="top"><a href="/cgi-bin/tech/activate_internet_changes_fm.cgi" id="Internet" class="top_link"><span class="down">Internet</span></a>
+echo '	<li class="top"><a href="/cgi-bin/tech/dg_banned_sites_fm.cgi" id="Internet" class="top_link"><span class="down">Internet</span></a>
 		<ul class="sub">
 <li class="mid"><a href="/cgi-bin/tech/dg_view_banned_users_fm.cgi" class="fly">'$VIEWMSG'</a>
 					<ul>
@@ -157,7 +157,6 @@ echo '	<li class="top"><a href="/cgi-bin/tech/activate_internet_changes_fm.cgi" 
 						<li><a href="/cgi-bin/tech/dg_view_part_allowed_sites_fm.cgi">'$VIEWPALLOWEDSITES'</a></li>
 						<li><a href="/cgi-bin/tech/dg_view_banned_sites_fm.cgi">'$VIEWBANNEDSITES'</a></li>
 						<li><a href="/cgi-bin/tech/dg_view_part_banned_sites_fm.cgi">'$VIEWPBANNEDSITES'</a></li>
-						<li><a href="/cgi-bin/tech/dg_view_wildcard_bans_fm.cgi">'$VIEWWCARDBANS'</a></li>
 						<li><a href="/cgi-bin/tech/dg_view_user_logs_fm.cgi">'$VIEWUSERLOGS'</a></li>
 						<li><a href="/cgi-bin/tech/dg_view_user_usage_fm.cgi">'$VIEWUSERUSAGE'</a></li>
 						<li><a href="/cgi-bin/tech/dg_view_global_usage_fm.cgi">'$VIEWINTERNETUSAGE'</a></li>
@@ -171,7 +170,6 @@ echo '	<li class="top"><a href="/cgi-bin/tech/activate_internet_changes_fm.cgi" 
 						<li><a href="/cgi-bin/tech/dg_ban_user.cgi">'$BANUSER'</a></li>
 						<li><a href="/cgi-bin/tech/dg_banned_sites_fm.cgi">'$ADDBANNESITES'</a></li>
 						<li><a href="/cgi-bin/tech/dg_part_banned_sites_fm.cgi">'$ADDPBANNEDSITES'</a></li>
-						<li><a href="/cgi-bin/tech/dg_wildcard_ban_fm.cgi">'$WCARDBAN'</a></li>
 						<li><a href="/cgi-bin/tech/dg_ban_location_fm.cgi">'$BANLOCATION'</a></li>
 					</ul>
 			</li>
@@ -182,9 +180,7 @@ echo '	<li class="top"><a href="/cgi-bin/tech/activate_internet_changes_fm.cgi" 
 						<li><a href="/cgi-bin/tech/dg_bypass.cgi">'$DGBYPASS'</a></li>
 					</ul>
 			</li>
-			<li><a href="/cgi-bin/tech/dg_media_controls_fm.cgi">'$MEDIACONTROLS'</a></li>
 			<li><a href="/cgi-bin/tech/dg_room_controls_fm.cgi">'$ROOMCONTROLS'</a></li>
-			<li><a href="/cgi-bin/tech/activate_internet_changes_fm.cgi">'$ACTIVATECHANGES'</a></li>
 		</ul>
 	</li>'
 fi

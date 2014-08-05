@@ -413,7 +413,6 @@ echo '	<li class="top"><a href="/cgi-bin/admin/activate_internet_changes_fm.cgi"
 						<li><a href="/cgi-bin/admin/dg_view_part_allowed_sites_fm.cgi">'$VIEWPALLOWEDSITES'</a></li>
 						<li><a href="/cgi-bin/admin/dg_view_banned_sites_fm.cgi">'$VIEWBANNEDSITES'</a></li>
 						<li><a href="/cgi-bin/admin/dg_view_part_banned_sites_fm.cgi">'$VIEWPBANNEDSITES'</a></li>
-						<li><a href="/cgi-bin/admin/dg_view_wildcard_bans_fm.cgi">'$VIEWWCARDBANS'</a></li>
 						<li><a href="/cgi-bin/admin/dg_view_user_logs_fm.cgi">'$VIEWUSERLOGS'</a></li>
 						<li><a href="/cgi-bin/admin/dg_view_user_usage_fm.cgi">'$VIEWUSERUSAGE'</a></li>
 						<li><a href="/cgi-bin/admin/dg_view_global_usage_fm.cgi">'$VIEWINTERNETUSAGE'</a></li>
@@ -427,7 +426,6 @@ echo '	<li class="top"><a href="/cgi-bin/admin/activate_internet_changes_fm.cgi"
 						<li><a href="/cgi-bin/admin/dg_ban_user.cgi">'$BANUSER'</a></li>
 						<li><a href="/cgi-bin/admin/dg_banned_sites_fm.cgi">'$ADDBANNESITES'</a></li>
 						<li><a href="/cgi-bin/admin/dg_part_banned_sites_fm.cgi">'$ADDPBANNEDSITES'</a></li>
-						<li><a href="/cgi-bin/admin/dg_wildcard_ban_fm.cgi">'$WCARDBAN'</a></li>
 					</ul>
 			</li>
 			<li class="mid"><a href="/cgi-bin/admin/dg_allowed_sites_fm.cgi" class="fly">'$ALLOWMSG'</a>
@@ -436,21 +434,9 @@ echo '	<li class="top"><a href="/cgi-bin/admin/activate_internet_changes_fm.cgi"
 						<li><a href="/cgi-bin/admin/dg_part_allowed_sites_fm.cgi">'$ADDPALLOWEDSITES'</a></li>
 					</ul>
 			</li>
-			<li class="mid"><a href="/cgi-bin/admin/dg_upload_pbl_fm.cgi" class="fly">'$PROXYBYPASSLIST'</a>
-					<ul>
-						<li><a href="/cgi-bin/admin/dg_add_pbl_fm.cgi">'$ADDPROXYBYPASS'</a></li>
-						<li><a href="/cgi-bin/admin/dg_upload_pbl_fm.cgi">'$UPLOADPROXYBYPASSLIST'</a></li>
-						<li><a href="/cgi-bin/admin/dg_download_pbl_fm.cgi">'$DOWNLOADPROXYBYPASSLIST'</a></li>
-						<li><a href="/cgi-bin/admin/dg_clear_pbl_fm.cgi">'$CLEARPROXYBYPASSLIST'</a></li>
-					</ul>
-			</li>
 			<li><a href="/cgi-bin/admin/dg_bypass.cgi">'$DGBYPASS'</a></li>
-			<li><a href="/cgi-bin/admin/dg_extensions_fm.cgi">'$ALLOWEDFILEEXTENSIONS'</a></li>
-			<li><a href="/cgi-bin/admin/dg_media_controls_fm.cgi">'$MEDIACONTROLS'</a></li>
-			<li><a href="/cgi-bin/admin/dg_staff_filters_fm.cgi">'$STAFFFILTERS'</a></li>
 			<li><a href="/cgi-bin/admin/dg_room_controls_fm.cgi">'$ROOMCONTROLS'</a></li>
 			<li><a href="/cgi-bin/admin/dg_reset_room_controls_fm.cgi">'$RESETROOMCONTROLS'</a></li>
-			<li><a href="/cgi-bin/admin/activate_internet_changes_fm.cgi">'$ACTIVATECHANGES'</a></li>
 </ul></li>
 '
 fi

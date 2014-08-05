@@ -167,19 +167,26 @@ echo '<td style="vertical-align: top;"><input name="_ACTION_editfiltergroup_FILT
 fi
 
 echo '<td style="vertical-align: top;"><input name="_ACTION_view_" type="submit" class="button" value="'$VIEWFGROUPS'"></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG'</span></a></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Filter_Management'$SUBTITLE'"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG'</span></a></td>
 </tr></tbody></table><br></form></div><div id="infobox">'
 }
+
 
 function viewfilters {
 #Show add filtergroup button
 echo '<form name="myform" action="/cgi-bin/admin/e2g_filtergroups.cgi" method="post">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tr><td style="vertical-align: top;"><div class="sectiontitle">'$TITLE1'</div></td>
+<tr><td style="width: 180px; vertical-align: top;"><div class="sectiontitle">'$TITLE1'</div></td>
 <td style="vertical-align: top;">
 <input name="_ACTION_add_" type="submit" class="button" value="'$ADDFGROUP'">
-</td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td></tr></tbody></table><br>'
+</td>'
+
+#Button disabled unless really needed.
+#echo '<td style="vertical-align: top;">
+#<input name="_ACTION_activatechanges_" type="submit" class="button" value="'$ACTIVATECHANGESMSG'">
+#</td>'
+
+echo '<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Filter_Management"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td></tr></tbody></table><br>'
 
 #Show existing filtergroups
 
@@ -277,6 +284,7 @@ function addfiltergroup {
 #Show view filtergroup button
 TITLE="$TITLE2"
 HELPMSG="$HELPMSG2"
+SUBTITLE="#Adding_extra_filter_groups"
 showtitle
 
 echo '<form name="myform" action="/cgi-bin/admin/e2g_filtergroups.cgi" method="post">'$FILTERWARNINGMSG'<br><br><input type="hidden" name="_ACTION_" value="reallyadd"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
@@ -370,7 +378,7 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/e2guardian_start 1>/dev/null
 '
 fi
-
+restarte2guardian
 #Modify details file
 FILTERNAME=f$FILTERCOUNT
 reallyeditlabels
@@ -464,12 +472,14 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/e2guardian_start 1>/dev/null
 '
 fi
+restarte2guardian
 }
 
 function editfiltergroup {
 
 TITLE="$TITLE5"
 HELPMSG="$HELPMSG5"
+SUBTITLE="#Edit_Filter_Group"
 showtitle
 
 if [ $PROXYSERVER = `hostname-fqdn` ]
@@ -641,7 +651,6 @@ fi
 
 function editfilterlists {
 
-
 FILENAME=bannedsitelist
 FILTERTYPE=domains
 SEARCHTERM=blacklists
@@ -667,6 +676,7 @@ then
 	HELPMSG="$HELPMSG8"
 fi
 
+SUBTITLE="#Filter_Group_Options"
 showtitle
 
 if [ $PROXYSERVER = `hostname-fqdn` ]
@@ -754,12 +764,6 @@ then
 	then
 		[ $FILTERDATA3 = deactivate ] && sed -i "$LINENUM"s"/^.Include/#.Include/" /etc/e2guardian/lists/filtergroups/$FILTERNAME/$FILENAME 
 		[ $FILTERDATA3 = activate ] && sed -i "$LINENUM"s"/^#.Include/.Include/" /etc/e2guardian/lists/filtergroups/$FILTERNAME/$FILENAME
-	 
-		#Restart e2guardian
-		#source /opt/karoshi/serversetup/variables/distro
-		#/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/e2guardian_stop 1>/dev/null
-		#sleep 1
-		#/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/e2guardian_start 1>/dev/null
 	fi
 else
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
@@ -770,21 +774,17 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
 	then
 		[ '$FILTERDATA3' = deactivate ] && sed -i "$LINENUM"s"/^.Include/#.Include/" /etc/e2guardian/lists/filtergroups/'$FILTERNAME'/'$FILENAME'
 		[ '$FILTERDATA3' = activate ] && sed -i "$LINENUM"s"/^#.Include/.Include/" /etc/e2guardian/lists/filtergroups/'$FILTERNAME'/'$FILENAME'
-	 
-		#Restart e2guardian
-		#source /opt/karoshi/serversetup/variables/distro
-		#/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/e2guardian_stop 1>/dev/null
-		#sleep 1
-		#/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/e2guardian_start 1>/dev/null
 	fi
 '
 fi
+activatechanges
 ACTION=editfilterlists
 }
 
 function bannedextensionlists {
 TITLE="$TITLE9"
 HELPMSG="$HELPMSG9"
+SUBTITLE="#Filter_Group_Options"
 showtitle
 
 #Show details for the group
@@ -867,12 +867,14 @@ else
 	fi
 '
 fi
+activatechanges
 ACTION=bannedextensionlists
 }
 
 function bannedmimetypelists {
 TITLE="$TITLE10"
 HELPMSG="$HELPMSG10"
+SUBTITLE="#Filter_Group_Options"
 showtitle
 
 #Show details for the group
@@ -948,7 +950,40 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
 	fi
 '
 fi
+activatechanges
 ACTION=bannedmimetypelists
+}
+
+function activatechanges {
+if [ $PROXYSERVER = `hostname-fqdn` ]
+then
+e2guardian -g
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
+e2guardian -g
+'
+fi
+}
+
+activatechanges restarte2guardian
+function restarte2guardian {
+#Restart e2guardian to activate any changes made.
+if [ $PROXYSERVER = `hostname-fqdn` ]
+then
+	#Restart e2guardian
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/e2guardian_stop 1>/dev/null
+	sleep 1
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/e2guardian_start 1>/dev/null
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
+	#Restart e2guardian
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/e2guardian_stop 1>/dev/null
+	sleep 1
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/e2guardian_start 1>/dev/null
+'
+fi
 }
 
 [ "$ACTION" = reallyeditlable ] && ( reallyeditlabels ; viewfilters )
@@ -966,7 +1001,7 @@ ACTION=bannedmimetypelists
 [ "$ACTION" = bannedmimetypelists ] && bannedmimetypelists
 [ "$ACTION" = modifybannedmimetypes ] && ( modifybannedmimetypes ; bannedmimetypelists )
 [ "$ACTION" = view ] && viewfilters
-
+[ "$ACTION" = activatechanges ] && ( activatechanges ; viewfilters )
 
 exit
 
