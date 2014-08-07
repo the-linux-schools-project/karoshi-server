@@ -75,12 +75,11 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #Get data input
 #########################
 DATA=`cat | tr -cd 'A-Za-z0-9\._:\-+%'`
-
 #########################
 #Assign data to variables
 #########################
-
-END_POINT=11
+#echo $DATA"<br>"
+END_POINT=12
 #Assign ACTION
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
@@ -151,7 +150,25 @@ do
 	let COUNTER=$COUNTER+1
 done
 
-
+if [ ! -z "$ACTION" ]
+then
+	if [ $ACTION = modifycustomsite ]
+	then
+		END_POINT=30
+		#Assign FILTERDATA4
+		COUNTER=2
+		while [ $COUNTER -le $END_POINT ]
+		do
+			DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			if [ `echo $DATAHEADER'check'` = FILTERDATA4check ]
+			then
+				let COUNTER=$COUNTER+1
+				FILTERDATA4=$FILTERDATA4\_`echo $DATA | cut -s -d'_' -f$COUNTER`
+			fi
+			let COUNTER=$COUNTER+1
+		done
+	fi
+fi
 #########################
 #Check data
 #########################
@@ -181,7 +198,7 @@ else
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/e2g_filtergroups.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$FILTERNAME:$FILTERDATA:$FILTERDATA2:$FILTERDATA3:" | sudo -H /opt/karoshi/web_controls/exec/e2g_filtergroups
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$FILTERNAME:$FILTERDATA:$FILTERDATA2:$FILTERDATA3:$FILTERDATA4:" | sudo -H /opt/karoshi/web_controls/exec/e2g_filtergroups
 
 echo '</div></div></div></body></html>'
 exit

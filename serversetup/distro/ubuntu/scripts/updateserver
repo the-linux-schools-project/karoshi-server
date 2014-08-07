@@ -274,6 +274,15 @@ echo -e "_________________________________________________\n" >>/opt/karoshi/log
 check_config_files
 
 ###########################
+#Make sure that apache2_karoshi is running on the main server.
+###########################
+if [ `ps aux | grep -c apache2_karoshi` -lt 2 ] && [ -d /opt/karoshi/web_controls ]
+then
+	echo -e "$HOSTNAME: `date` - Starting apache2_karoshi since it was not running." >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
+	service apache2_karoshi start
+fi
+
+###########################
 #Remove old kernels
 ###########################
 [ $REMOVE_OLD_KERNELS = yes ] && apt-get purge $(dpkg -l 'linux-*' | sed '/^ii/!d;/'"$(uname -r | sed "s/\(.*\)-\([^0-9]\+\)/\1/")"'/d;s/^[^ ]* [^ ]* \([^ ]*\).*/\1/;/[0-9]/!d' | head -n -1) --assume-yes
@@ -302,10 +311,5 @@ then
 	exit
 fi
 
-#Make sure that apache2_karoshi is running on the main server.
-if [ `ps aux | grep -c apache2_karoshi` -lt 2 ] && [ -d /opt/karoshi/web_controls ]
-then
-	service apache2_karoshi start
-fi
 exit
 

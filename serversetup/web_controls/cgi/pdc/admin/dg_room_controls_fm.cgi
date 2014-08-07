@@ -125,6 +125,9 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tr><td style="vertical-align: top;"><b>'$TITLE' - '$CHOOSELOCATIONMSG'</b></td>
+<td valign=top>
+<a href="dg_reset_room_controls_fm.cgi"><input class="button" type="button" name="" value="'$RESETTIMESMSG'"></a>
+</td>
 <td valign=top><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Room_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td></tr></tbody></table><br>'
 
 fi
