@@ -1,0 +1,314 @@
+#!/bin/bash
+#Copyright (C) 2014 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+ICON1=/images/submenus/internet/internet_allow.png
+ICON2=/images/submenus/system/edit.png
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/user_internet_access_cgi
+then
+echo `date`: user_internet_access - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/user_internet_access_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/user_internet_access.cgi | cut -d' ' -f1`
+[ $MD5SUM'null' = null ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $user_internet_access_cgi'check' ]
+then
+echo `date`: user_internet_access - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+echo `date`: user_internet_access - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-+%'`
+
+if [ $DATA'null' = null ]
+then
+echo `date`: user_internet_access - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+ACTION=`echo "$DATA" | cut -s -d: -f4`
+USERNAMES=`echo "$DATA" | cut -s -d: -f5`
+HOUR=`echo "$DATA" | cut -s -d: -f6`
+MINUTES=`echo "$DATA" | cut -s -d: -f7`
+DAY=`echo "$DATA" | cut -s -d: -f8`
+MONTH=`echo "$DATA" | cut -s -d: -f9`
+YEAR=`echo "$DATA" | cut -s -d: -f10`
+BANLENGTH=`echo "$DATA" | cut -s -d: -f11`
+INCIDENT=`echo "$DATA" | cut -s -d: -f12`
+ACTIONTAKEN=`echo "$DATA" | cut -s -d: -f13`
+
+PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+	echo `date`: user_internet_access - Not called by user_internet_access.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+then
+	echo `date`: user_internet_access - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+	echo `date`: user_internet_access - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$ACTION" ]
+then
+	echo `date`: user_internet_access - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+echo `date`: user_internet_access - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+
+########################
+#Create log file
+########################
+[ -d /opt/karoshi/logs/incident_logs ] || mkdir -p /opt/karoshi/logs/incident_logs
+[ -d /opt/karoshi/logs/banned_user_internet_durations/ ] || mkdir -p /opt/karoshi/logs/banned_user_internet_durations/
+chmod -R 0600 /opt/karoshi/logs
+chmod -R u+X /opt/karoshi/logs
+chown -R root.root /opt/karoshi/logs
+##########################
+#Language
+##########################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/user_internet_access ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/user_internet_access
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+
+function activate_changes {
+if [ $PROXYSERVER = `hostname-fqdn` ]
+then
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/squid_reload
+else
+ssh -x -o PasswordAuthentication=no $PROXYSERVER '
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/squid_reload
+'
+fi
+}
+
+function viewbannedusers {
+
+DATE_INFO=`date +%F`
+[ $DAY'null' = null ] && DAY=`echo $DATE_INFO | cut -d- -f3`
+[ $MONTH'null' = null ] && MONTH=`echo $DATE_INFO | cut -d- -f2`
+[ $YEAR'null' = null ] && YEAR=`echo $DATE_INFO | cut -d- -f1`
+
+TIME_INFO=`date +%T`
+[ $HOUR'null' = null ] && HOUR=`echo $TIME_INFO | cut -d: -f1`
+[ $MINUTES'null' = null ] && MINUTES=`echo $TIME_INFO | cut -d: -f2`
+
+BANLENGTH=7
+
+#Show form to add in banned users.
+
+echo '<b>'$TITLE2'</b><br><br><form name="myform" action="/cgi-bin/admin/user_internet_access.cgi" method="post">
+<input type="hidden" name="_ACTION_" value="banusers">
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<tr><td style="width: 180px;">'$USERNAMESMSG'</td><td style="width: 140px;"><input value="'$STUDENTS'" name="_USERNAMES_" style="width: 300px;" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td></tr>
+<tr><td>'$DATAMSG'</td><td><input name="_HOUR_" value="'$HOUR'" size="2" maxlength="2" type="text">:<input name="_MINUTES_" value="'$MINUTES'" size="2" maxlength="2" type="text"> <input name="_DAY_" value="'$DAY'" size="2" maxlength="2" type="text"><input name="_MONTH_" value="'$MONTH'" size="2" maxlength="2" type="text"><input name="_YEAR_" value="'$YEAR'" size="4" maxlength="4 type="text"></td></tr>
+<tr><td>'$DURATIONMSG'</td><td><input name="_BANLENGTH_" value="'$BANLENGTH'" size="2" maxlength="3" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td></tr>
+<tr><td valign="top">'$INCREPMSG'</td><td><textarea style="width: 300px;" cols="45" rows="1" name="_INCIDENT_">'$INCIDENT'</textarea></td></tr>
+<tr><td valign="top">'$ACTIONMSG'</td><td><textarea style="width: 300px;" cols="45" rows="1" name="_ACTIONTAKEN_">'$ACTIONTAKENMSG'</textarea></td></tr>
+</tbody></table>
+<br><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+</form><br>
+<form name="myform" action="/cgi-bin/admin/user_internet_access.cgi" method="post">'
+
+#Show any currently banned users.
+if [ `cat /etc/squid/badusers.list | wc -l` -gt 0 ]
+then
+echo "<b>$TITLE3</b><br><br><table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+<tr><td style=\"width: 180px;\"><b>$BANNEDUSERMSG</b></td><td><b>$DURATIONMSG2</b></td><td><b>$VIEWINCIDENTSMSG</b></td><td><b>$ALLOWMSG</b></td></tr>"
+
+for BADUSER in `cat /etc/squid/badusers.list`
+do
+BANLENGTH="-"
+[ -f /opt/karoshi/logs/banned_user_internet_durations/$BADUSER ] && BANLENGTH=`sed -n 1,1p /opt/karoshi/logs/banned_user_internet_durations/$BADUSER`
+echo "<tr><td>$BADUSER</td><td>$BANLENGTH</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_viewincidents_USERNAMES_$BADUSER"_"\" type=\"image\" class=\"images\" src=\"$ICON2\" value=\"\"><span>$BADUSER<br>$VIEWINCIDENTSMSG</span></a></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_allowuser_USERNAMES_$BADUSER"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$BADUSER<br>$VIEWINCIDENTSMSG</span></a></td></tr>"
+done
+echo "</tbody></table>"
+fi
+echo '</form>'
+}
+
+
+function banusers {
+ACTIONTAKEN=`echo "$ACTIONTAKEN" | sed 's/+/ /g'`
+INCIDENT=`echo "$INCIDENT" | sed 's/+/ /g'`
+USERNAME_ARRAY=( `echo $USERNAMES | sed 's/+/ /g'` )
+USERNAME_ARRAY_COUNT=`echo ${#USERNAME_ARRAY[@]}`
+COUNTER=0
+while [ $COUNTER -lt $USERNAME_ARRAY_COUNT ]
+do
+	USERNAME=`echo ${USERNAME_ARRAY[$COUNTER]}`
+
+	#Check to see that the user exists
+	getent passwd "$USERNAME" 1>/dev/null 2>/dev/null
+	if [ $? != 0 ] # Put this right later
+	then
+		#Record ban details
+		if [ ! -z "$BANLENGTH" ]
+		then
+			echo `date`: user_internet_access - $USERNAME banned "for" $BANLENGTH days by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			echo $BANLENGTH > /opt/karoshi/logs/banned_user_internet_durations/$USERNAME
+			echo `date | sed 's/:/-/g'`:$DAY:$MONTH:$YEAR:$HOUR:$MINUTES:$INCIDENT:"$ACTIONTAKEN" $DURATIONMSG $BANLENGTH $DAYSMSG:$STUDENTS >> /opt/karoshi/logs/incident_logs/$USERNAME
+		else
+			echo `date`: user_internet_access - $USERNAME banned by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			echo `date | sed 's/:/-/g'`:$DAY:$MONTH:$YEAR:$HOUR:$MINUTES:$INCIDENT:$ACTIONTAKEN:$STUDENTS >> /opt/karoshi/logs/incident_logs/$USERNAME
+		fi
+
+		#Ban the user
+		if [ $PROXYSERVER = `hostname-fqdn` ]
+		then
+			touch /etc/squid/badusers.list
+			if [ `grep -c -w ^$USERNAME /etc/squid/badusers.list` = 0 ]
+			then
+			echo $USERNAME >> /etc/squid/badusers.list
+			sort /etc/squid/badusers.list > /etc/squid/badusers.list1
+			mv -f /etc/squid/badusers.list1 /etc/squid/badusers.list
+			fi
+		else
+			ssh -x -o PasswordAuthentication=no $PROXYSERVER '
+			touch /etc/squid/badusers.list
+			if [ `grep -c -w ^'$USERNAME' /etc/squid/badusers.list` = 0 ]
+			then
+			echo '$USERNAME' >> /etc/squid/badusers.list
+			sort /etc/squid/badusers.list > /etc/squid/badusers.list1
+			mv -f /etc/squid/badusers.list1 /etc/squid/badusers.list
+			fi
+			'
+		fi
+	fi
+	let COUNTER=$COUNTER+1
+done
+
+#Activate the changes
+activate_changes
+}
+
+function allowuser {
+echo `date`: user_internet_access - allowing $USERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+if [ $PROXYSERVER = `hostname-fqdn` ]
+then
+	USERNAME=$USERNAMES
+	#Remove the username from the list
+	USERLINENUMBER=`grep -n -w ^$USERNAME /etc/squid/badusers.list | cut -d: -f1`
+	[ ! -z "$USERLINENUMBER" ] && sed -i $USERLINENUMBER"d" /etc/squid/badusers.list
+	#Remove the username from the auto ban
+	[ -f /opt/karoshi/logs/banned_user_internet_durations/$USERNAME ] && rm -f /opt/karoshi/logs/banned_user_internet_durations/$USERNAME
+	#Remove blank lines
+	sed -i "/^$/d" /etc/squid/badusers.list
+	#Make sure that the list is not empty
+	SITECOUNT=`cat /etc/squid/badusers.list | wc -l`
+	[ $SITECOUNT = 0 ] && echo sampleuser > /etc/squid/badusers.list
+else
+ssh -x -o PasswordAuthentication=no $PROXYSERVER '
+	USERNAME='$USERNAMES'
+	#Remove the username from the list
+	USERLINENUMBER=`grep -n -w ^$USERNAME /etc/squid/badusers.list | cut -d: -f1`
+	[ ! -z "$USERLINENUMBER" ] && sed -i $USERLINENUMBER"d" /etc/squid/badusers.list
+	#Remove the username from the auto ban
+	[ -f /opt/karoshi/logs/banned_user_internet_durations/$USERNAME ] && rm -f /opt/karoshi/logs/banned_user_internet_durations/$USERNAME
+	#Remove blank lines
+	sed -i "/^$/d" /etc/squid/badusers.list
+	#Make sure that the list is not empty
+	SITECOUNT=`cat /etc/squid/badusers.list | wc -l`
+	[ $SITECOUNT = 0 ] && echo sampleuser > /etc/squid/badusers.list
+'
+fi
+#Activate the changes
+activate_changes
+}
+
+function viewincidents {
+USERNAME=$USERNAMES
+
+echo '<form name="myform" action="/cgi-bin/admin/user_internet_access.cgi" method="post"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<tr><td style="width: 180px; vertical-align: top;"><b>'$TITLE4' - '$USERNAME'</b></td>
+<td style="vertical-align: top;"><input name="_ACTION_view_" type="submit" class="button" value="'$VIEWBANNEDUSERSMSG'"></td></tr></tbody></table></form>'
+
+if [ -f /opt/karoshi/logs/incident_logs/$USERNAME ]
+then
+	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	<tr><td style="width:70px;"><b>'$DATEMSG'</b></td><td style="width: 45px;"><b>'$TIMEMSG'</b></td><td><b>'$INCIDENTMSG'</b></td><td><b>'$ACTIONMSG'</b></td></tr>'
+	LOGCOUNT=`cat /opt/karoshi/logs/incident_logs/$USERNAME | wc -l`
+	COUNTER=1
+	while [ $COUNTER -le $LOGCOUNT ]
+	do
+		LOGDATA=`sed -n $COUNTER,$COUNTER"p" /opt/karoshi/logs/incident_logs/$USERNAME`
+		DATE=`echo $LOGDATA | cut -d: -f2-4`
+		TIME=`echo $LOGDATA | cut -d: -f5-6`
+		INCIDENT=`echo $LOGDATA | cut -d: -f7`
+		ACTION=`echo $LOGDATA | cut -d: -f8`
+		echo '<tr><td>'$DATE'</td><td>'$TIME'</td><td>'$INCIDENT'</td><td>'$ACTION'</td></tr>'
+		let COUNTER=$COUNTER+1
+	done
+	echo '</tbody></table>'
+fi
+
+}
+
+[ "$ACTION" = viewincidents ] && viewincidents
+[ "$ACTION" = allowuser ] && ( allowuser ; viewbannedusers )
+[ "$ACTION" = banusers ] && ( banusers ; viewbannedusers )
+[ "$ACTION" = view ] && viewbannedusers
+
+exit
+
+

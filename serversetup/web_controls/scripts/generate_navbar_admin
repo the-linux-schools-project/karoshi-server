@@ -404,18 +404,8 @@ fi
 
 if [ $INTERNETCTRL = yes ]
 then
-echo '	<li class="top"><a href="/cgi-bin/admin/activate_internet_changes_fm.cgi" id="Internet" class="top_link"><span class="down">Internet</span></a>
+echo '	<li class="top"><a href="/cgi-bin/admin/e2g_filtergroups.cgi" id="Internet" class="top_link"><span class="down">Internet</span></a>
 		<ul class="sub">
-			<li class="mid"><a href="/cgi-bin/admin/dg_view_banned_users_fm.cgi" class="fly">'$VIEWMSG'</a>
-					<ul>
-						<li><a href="/cgi-bin/admin/dg_view_banned_users_fm.cgi">'$VIEWBANNEDUSERS'</a></li>
-					</ul>
-			</li>
-			<li class="mid"><a href="/cgi-bin/admin/dg_banned_sites_fm.cgi" class="fly">'$BANMSG'</a>
-					<ul>
-						<li><a href="/cgi-bin/admin/dg_ban_user.cgi">'$BANUSER'</a></li>
-					</ul>
-			</li>
 			<li class="mid"><a href="/cgi-bin/admin/dg_view_user_logs_fm.cgi" class="fly">'$INTERNETLOGS'</a>
 					<ul>
 						<li><a href="/cgi-bin/admin/dg_view_user_logs_fm.cgi">'$VIEWUSERLOGS'</a></li>
@@ -427,6 +417,7 @@ echo '	<li class="top"><a href="/cgi-bin/admin/activate_internet_changes_fm.cgi"
 					</ul>
 			</li>
 			<li><a href="/cgi-bin/admin/e2g_filtergroups.cgi">'$FILTERMANAGEMENT'</a></li>
+			<li><a href="/cgi-bin/admin/user_internet_access.cgi">'$USERINTERNETACCESS'</a></li>
 			<li><a href="/cgi-bin/admin/dg_bypass.cgi">'$DGBYPASS'</a></li>
 			<li><a href="/cgi-bin/admin/dg_room_controls_fm.cgi">'$ROOMCONTROLS'</a></li>
 </ul></li>
