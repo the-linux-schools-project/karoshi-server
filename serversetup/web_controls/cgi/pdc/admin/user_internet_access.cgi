@@ -250,16 +250,16 @@ if [ $MOBILE = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 		<div class="expanded">
-		<span>'$TITLE'</span>
+		<span>'$TITLE1'</span>
 	<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
-	</div></div>
+	</div></div><div id="mobileactionbox">
 '
 else
 	echo '<div id="'$DIV_ID'"><div id=titlebox>'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/user_internet_access.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$USERNAMES:$HOUR:$MINUTES:$DAY:$MONTH:$YEAR:$BANLENGTH:$INCIDENT:$ACTIONTAKEN:" | sudo -H /opt/karoshi/web_controls/exec/user_internet_access
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$USERNAMES:$HOUR:$MINUTES:$DAY:$MONTH:$YEAR:$BANLENGTH:$INCIDENT:$ACTIONTAKEN:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/user_internet_access
 
 echo '</div></div></div></body></html>'
 exit

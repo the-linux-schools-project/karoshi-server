@@ -172,15 +172,9 @@ echo '      <div class="collapsed">
         <a href="/cgi-bin/admin/dg_view_user_logs_fm.cgi">'$VIEWUSERLOGS'</a>
         <a href="/cgi-bin/admin/dg_view_site_logs_fm.cgi">'$VIEWSITELOGS'</a>
         <a href="/cgi-bin/admin/dg_view_computer_logs_fm.cgi">'$VIEWCOMPUTERLOGS'</a>
-        <a href="/cgi-bin/admin/dg_ban_user.cgi">'$BANUSER'</a>
-        <a href="/cgi-bin/admin/dg_banned_sites_fm.cgi">'$ADDBANNESITES'</a>
-        <a href="/cgi-bin/admin/dg_part_banned_sites_fm.cgi">'$ADDPBANNEDSITES'</a>
-        <a href="/cgi-bin/admin/dg_wildcard_ban_fm.cgi">'$WCARDBAN'</a>
-        <a href="/cgi-bin/admin/dg_allowed_sites_fm.cgi">'$ADDALLOWEDSITES'</a>
-        <a href="/cgi-bin/admin/dg_part_allowed_sites_fm.cgi">'$ADDPALLOWEDSITES'</a>
+        <a href="/cgi-bin/admin/user_internet_access.cgi">'$USERINTERNETACCESS'</a>
         <a href="/cgi-bin/admin/dg_room_controls_fm.cgi">'$ROOMCONTROLS'</a>
         <a href="/cgi-bin/admin/dg_bypass.cgi">'$DGBYPASS'</a>
-        <a href="/cgi-bin/admin/activate_internet_changes_fm.cgi">'$ACTIVATECHANGES'</a>
       </div>'
 fi
 echo '<div class="a.current">

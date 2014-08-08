@@ -24,8 +24,7 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-ICON1=/images/submenus/internet/internet_allow.png
-ICON2=/images/submenus/system/edit.png
+
 ########################
 #Check md5checksum
 ########################
@@ -74,6 +73,7 @@ YEAR=`echo "$DATA" | cut -s -d: -f10`
 BANLENGTH=`echo "$DATA" | cut -s -d: -f11`
 INCIDENT=`echo "$DATA" | cut -s -d: -f12`
 ACTIONTAKEN=`echo "$DATA" | cut -s -d: -f13`
+MOBILE=`echo "$DATA" | cut -s -d: -f14`
 
 PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
 
@@ -108,6 +108,22 @@ exit 101
 fi
 
 PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+
+TABLECLASS=standard
+WIDTH1=180
+WIDTH2=300
+WIDTH3=40
+ICON1=/images/submenus/internet/internet_allow.png
+ICON2=/images/submenus/system/edit.png
+if [ $MOBILE = yes ]
+then
+	TABLECLASS=mobilestandard
+	WIDTH1=90
+	WIDTH2=190
+	WIDTH3=25
+	ICON1=/images/submenus/internet/internet_allowm.png
+	ICON2=/images/submenus/system/editm.png
+fi
 
 ########################
 #Create log file
@@ -159,12 +175,20 @@ BANLENGTH=7
 
 echo '<b>'$TITLE2'</b><br><br><form name="myform" action="/cgi-bin/admin/user_internet_access.cgi" method="post">
 <input type="hidden" name="_ACTION_" value="banusers">
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tr><td style="width: 180px;">'$USERNAMESMSG'</td><td style="width: 140px;"><input value="'$STUDENTS'" name="_USERNAMES_" style="width: 300px;" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td></tr>
-<tr><td>'$DATAMSG'</td><td><input name="_HOUR_" value="'$HOUR'" size="2" maxlength="2" type="text">:<input name="_MINUTES_" value="'$MINUTES'" size="2" maxlength="2" type="text"> <input name="_DAY_" value="'$DAY'" size="2" maxlength="2" type="text"><input name="_MONTH_" value="'$MONTH'" size="2" maxlength="2" type="text"><input name="_YEAR_" value="'$YEAR'" size="4" maxlength="4 type="text"></td></tr>
-<tr><td>'$DURATIONMSG'</td><td><input name="_BANLENGTH_" value="'$BANLENGTH'" size="2" maxlength="3" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td></tr>
-<tr><td valign="top">'$INCREPMSG'</td><td><textarea style="width: 300px;" cols="45" rows="1" name="_INCIDENT_">'$INCIDENT'</textarea></td></tr>
-<tr><td valign="top">'$ACTIONMSG'</td><td><textarea style="width: 300px;" cols="45" rows="1" name="_ACTIONTAKEN_">'$ACTIONTAKENMSG'</textarea></td></tr>
+<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<tr><td style="width: '$WIDTH1'px;">'$USERNAMESMSG'</td><td style="width: 140px;"><input value="'$STUDENTS'" name="_USERNAMES_" style="width: '$WIDTH2'px;" type="text"></td>'
+
+[ $MOBILE = no ] && echo '<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON3'"><span>'$HELPMSG1'</span></a></td>'
+
+echo '</tr>
+<tr><td>'$DATAMSG'</td><td><input style="width: '$WIDTH3'px;" name="_HOUR_" value="'$HOUR'" size="2" maxlength="2" type="text">:<input style="width: '$WIDTH3'px;" name="_MINUTES_" value="'$MINUTES'" size="2" maxlength="2" type="text"> <input style="width: '$WIDTH3'px;" name="_DAY_" value="'$DAY'" size="2" maxlength="2" type="text">-<input style="width: '$WIDTH3'px;" name="_MONTH_" value="'$MONTH'" size="2" maxlength="2" type="text">-<input name="_YEAR_" value="'$YEAR'" size="4" maxlength="4 type="text"></td></tr>
+<tr><td>'$DURATIONMSG'</td><td><input style="width: '$WIDTH3'px;" name="_BANLENGTH_" value="'$BANLENGTH'" size="2" maxlength="3" type="text"></td>'
+
+[ $MOBILE = no ] && echo '<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON3'"><span>'$HELPMSG2'</span></a></td>'
+
+echo '</tr>
+<tr><td valign="top">'$INCREPMSG'</td><td><textarea style="width: '$WIDTH2'px;" cols="45" rows="2" name="_INCIDENT_">'$INCIDENT'</textarea></td></tr>
+<tr><td valign="top">'$ACTIONMSG'</td><td><textarea style="width: '$WIDTH2'px;" cols="45" rows="2" name="_ACTIONTAKEN_">'$ACTIONTAKENMSG'</textarea></td></tr>
 </tbody></table>
 <br><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
 </form><br>
@@ -173,8 +197,8 @@ echo '<b>'$TITLE2'</b><br><br><form name="myform" action="/cgi-bin/admin/user_in
 #Show any currently banned users.
 if [ `cat /etc/squid/badusers.list | wc -l` -gt 0 ]
 then
-echo "<b>$TITLE3</b><br><br><table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\"><b>$BANNEDUSERMSG</b></td><td><b>$DURATIONMSG2</b></td><td><b>$VIEWINCIDENTSMSG</b></td><td><b>$ALLOWMSG</b></td></tr>"
+echo "<b>$TITLE3</b><br><br><table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+<tr><td style=\"width: $WIDTH1"px";\"><b>$BANNEDUSERMSG</b></td><td><b>$DURATIONMSG2</b></td><td><b>$VIEWINCIDENTSMSG</b></td><td><b>$ALLOWMSG</b></td></tr>"
 
 for BADUSER in `cat /etc/squid/badusers.list`
 do
@@ -279,13 +303,13 @@ activate_changes
 function viewincidents {
 USERNAME=$USERNAMES
 
-echo '<form name="myform" action="/cgi-bin/admin/user_internet_access.cgi" method="post"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo '<form name="myform" action="/cgi-bin/admin/user_internet_access.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tr><td style="width: 180px; vertical-align: top;"><b>'$TITLE4' - '$USERNAME'</b></td>
 <td style="vertical-align: top;"><input name="_ACTION_view_" type="submit" class="button" value="'$VIEWBANNEDUSERSMSG'"></td></tr></tbody></table></form>'
 
 if [ -f /opt/karoshi/logs/incident_logs/$USERNAME ]
 then
-	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 	<tr><td style="width:70px;"><b>'$DATEMSG'</b></td><td style="width: 45px;"><b>'$TIMEMSG'</b></td><td><b>'$INCIDENTMSG'</b></td><td><b>'$ACTIONMSG'</b></td></tr>'
 	LOGCOUNT=`cat /opt/karoshi/logs/incident_logs/$USERNAME | wc -l`
 	COUNTER=1
