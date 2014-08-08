@@ -191,11 +191,8 @@ chmod $DIRMASK$OTHERDIRMASK "/home/$FOLDERNAME"
 [ ! -d /opt/karoshi/server_network/extra_network_shares/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/extra_network_shares/$SERVERNAME
 echo "[$FOLDERNAME]" > /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
 echo "	path = \"/home/$FOLDERNAME\"" >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
-echo "	force group = +$GROUP" >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
 echo "	invalid users = root" >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
 echo "	read only = No" >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
-echo "	create mask =" $CREATEMASK$OTHERMASK >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
-echo "	directory mask =" $DIRMASK$OTHERDIRMASK >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
 echo "	browseable = Yes" >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
 echo >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
 #Add include line to smb.conf
@@ -205,9 +202,9 @@ echo  >> /etc/samba/smb.conf
 echo include = /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf >> /etc/samba/smb.conf
 #Restart samba
 source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null 2>/dev/null
 fi
 fi
 fi
@@ -257,11 +254,8 @@ chmod $DIRMASK$OTHERDIRMASK "/home/'$FOLDERNAME'"
 [ ! -d /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME' ] && mkdir -p /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'
 echo "['$FOLDERNAME']" > /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
 echo "	path = \"/home/'$FOLDERNAME'\"" >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
-echo "	force group = +'$GROUP'" >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
 echo "	invalid users = root" >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
 echo "	read only = No" >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
-echo "	create mask =" $CREATEMASK$OTHERMASK >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
-echo "	directory mask =" $DIRMASK$OTHERDIRMASK >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
 echo "	browseable = Yes" >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
 echo >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
 #Add include to smb.conf
@@ -271,9 +265,9 @@ echo  >> /etc/samba/smb.conf
 echo include = /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf >> /etc/samba/smb.conf
 #Restart samba
 source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null 2>/dev/null
 fi
 fi
 fi
@@ -341,11 +335,8 @@ chmod $DIRMASK$OTHERDIRMASK "/home/'$FOLDERNAME'"
 [ ! -d /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME' ] && mkdir -p /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'
 echo "['$FOLDERNAME']" > /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
 echo "	path = \"/home/'$FOLDERNAME'\"" >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
-echo "	force group = +'$GROUP'" >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
 echo "	invalid users = root" >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
 echo "	read only = No" >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
-echo "	create mask =" $CREATEMASK$OTHERMASK >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
-echo "	directory mask =" $DIRMASK$OTHERDIRMASK >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
 echo "	browseable = Yes" >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
 echo >> /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf
 #Add include to smb.conf
@@ -355,9 +346,9 @@ echo  >> /etc/samba/smb.conf
 echo include = /opt/karoshi/server_network/extra_network_shares/'$SERVERNAME'/"'$FOLDERNAME'".conf >> /etc/samba/smb.conf
 #Restart samba
 source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null 2>/dev/null
 fi
 fi
 fi
@@ -372,11 +363,8 @@ then
 [ ! -d /opt/karoshi/server_network/extra_network_shares/$SERVERNAME ] && mkdir /opt/karoshi/server_network/extra_network_shares/$SERVERNAME
 echo "[$FOLDERNAME]" > /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
 echo "	path = \"/home/$FOLDERNAME\"" >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
-echo "	force group = +$GROUP" >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
 echo "	invalid users = root" >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
 echo "	read only = No" >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
-echo "	create mask =" $CREATEMASK$OTHERMASK >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
-echo "	directory mask =" $DIRMASK$OTHERDIRMASK >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
 echo "	browseable = Yes" >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
 echo >> /opt/karoshi/server_network/extra_network_shares/$SERVERNAME/"$FOLDERNAME".conf
 fi
