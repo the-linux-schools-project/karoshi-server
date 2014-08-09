@@ -48,7 +48,7 @@ cp /var/log/squid/access.log /home/internetdata/rawinternetlogs/squid_access.log
 [ ! -f /home/internetdata/rawinternetlogs/dg_access.log3 ] || mv /home/internetdata/rawinternetlogs/dg_access.log3 /home/internetdata/rawinternetlogs/dg_access.log4
 [ ! -f /home/internetdata/rawinternetlogs/dg_access.log2 ] || mv /home/internetdata/rawinternetlogs/dg_access.log2 /home/internetdata/rawinternetlogs/dg_access.log3
 [ ! -f /home/internetdata/rawinternetlogs/dg_access.log1 ] || mv /home/internetdata/rawinternetlogs/dg_access.log1 /home/internetdata/rawinternetlogs/dg_access.log2
-cp /var/log/dansguardian/access.log /home/internetdata/rawinternetlogs/dg_access.log1
+cp /var/log/e2guardian/access.log /home/internetdata/rawinternetlogs/dg_access.log1
 
 ############################
 #Clear logs

@@ -172,6 +172,7 @@ echo '      <div class="collapsed">
         <a href="/cgi-bin/admin/dg_view_user_logs_fm.cgi">'$VIEWUSERLOGS'</a>
         <a href="/cgi-bin/admin/dg_view_site_logs_fm.cgi">'$VIEWSITELOGS'</a>
         <a href="/cgi-bin/admin/dg_view_computer_logs_fm.cgi">'$VIEWCOMPUTERLOGS'</a>
+        <a href="/cgi-bin/admin/e2g_filtergroups.cgi">'$FILTERMANAGEMENT'</a>
         <a href="/cgi-bin/admin/user_internet_access.cgi">'$USERINTERNETACCESS'</a>
         <a href="/cgi-bin/admin/dg_room_controls_fm.cgi">'$ROOMCONTROLS'</a>
         <a href="/cgi-bin/admin/dg_bypass.cgi">'$DGBYPASS'</a>

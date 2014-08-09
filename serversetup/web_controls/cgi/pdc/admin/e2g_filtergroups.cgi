@@ -189,17 +189,17 @@ if [ $MOBILE = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 		<div class="expanded">
-		<span>'$TITLE'</span>
+		<span>'$TITLE1'</span>
 	<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
-	</div></div>
+	</div></div><div id="mobileactionbox">
 '
 else
 	echo '<div id="'$DIV_ID'"><div id=titlebox>'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/e2g_filtergroups.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$FILTERNAME:$FILTERDATA:$FILTERDATA2:$FILTERDATA3:$FILTERDATA4:" | sudo -H /opt/karoshi/web_controls/exec/e2g_filtergroups
-
-echo '</div></div></div></body></html>'
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$FILTERNAME:$FILTERDATA:$FILTERDATA2:$FILTERDATA3:$FILTERDATA4:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/e2g_filtergroups
+[ $MOBILE = no ] && echo '</div>'
+echo '</div></div></body></html>'
 exit
 
