@@ -234,7 +234,6 @@ cp -f /opt/karoshi/serversetup/modules/squid/scripts/internet_log_gen /opt/karos
 cp -f /opt/karoshi/serversetup/modules/squid/scripts/archive_internet_logs /opt/karoshi/"useful scripts"/
 cp -f /opt/karoshi/serversetup/modules/squid/scripts/e2gupdatefilterlist /opt/karoshi/"useful scripts"/
 cp -f /opt/karoshi/serversetup/modules/squid/scripts/internet_log_compress /opt/karoshi/"useful scripts"/
-cp -f /opt/karoshi/serversetup/modules/squid/scripts/activate_filter_changes /opt/karoshi/"useful scripts"/
 
 #############################
 #Generate filter lists
@@ -255,7 +254,6 @@ echo 58 23 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/archive_internet_logs >
 echo 50 23 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/e2gupdatefilterlist > /opt/karoshi/cronjobs/jobs/e2gupdatefilterlist.cron
 echo 55 23 '*' '*' '*' /etc/init.d/e2guardian restart > /opt/karoshi/cronjobs/jobs/restart_e2guardian.cron
 echo '*'/5 '*' '*' '*' '*' "nice -n 20" /opt/karoshi/'"'useful scripts'"'/internet_log_gen > /opt/karoshi/cronjobs/jobs/internet_log_gen.cron
-echo 0 22 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/activate_filter_changes > /opt/karoshi/cronjobs/jobs/activate_filter_changes.cron
 echo 0 5 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/internet_log_compress > /opt/karoshi/cronjobs/jobs/internet_log_compress.cron
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 

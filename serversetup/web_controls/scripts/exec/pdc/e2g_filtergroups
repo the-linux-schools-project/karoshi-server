@@ -35,10 +35,24 @@ exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/e2g_filtergroups_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/e2g_filtergroups.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $e2g_filtergroups_cgi'check' ]
 then
 echo `date`: e2g_filtergroups - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/e2g_filtergroups_cgi
+then
+echo `date`: e2g_filtergroups - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+source /opt/karoshi/web_controls/checksums/tech_checksums/e2g_filtergroups_cgi
+MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/e2g_filtergroups.cgi | cut -d' ' -f1`
+[ -z "$MD5SUM2" ] && MD5SUM2=not_set
+if [ $MD5SUM2'check' != $e2g_filtergroups_cgi'check' ]
+then
+echo `date`: e2g_filtergroups - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 
@@ -103,7 +117,7 @@ fi
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
 then
 	echo `date`: e2g_filtergroups - Not called by e2g_filtergroups.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
@@ -166,7 +180,7 @@ then
 
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
 then
 echo `date`: e2g_filtergroups - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -186,7 +200,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 source /opt/karoshi/server_network/domain_information/domain_name
 
 function showtitle {
-echo '<form name="myform" action="/cgi-bin/admin/e2g_filtergroups.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo '<form name="myform" action="e2g_filtergroups.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tr>' 
 if [ $MOBILE = no ]
 then
@@ -209,7 +223,7 @@ echo '<td style="vertical-align: top;"><input name="_ACTION_view_" type="submit"
 
 function viewfilters {
 #Show add filtergroup button
-echo '<form name="myform" action="/cgi-bin/admin/e2g_filtergroups.cgi" method="post">
+echo '<form name="myform" action="e2g_filtergroups.cgi" method="post">
 <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tr><td style="width: 180px; vertical-align: top;"><div class="sectiontitle">'$TITLE1'</div></td>
 <td style="vertical-align: top;">
@@ -325,7 +339,7 @@ HELPMSG="$HELPMSG2"
 SUBTITLE="#Adding_extra_filter_groups"
 showtitle
 
-echo '<form name="myform" action="/cgi-bin/admin/e2g_filtergroups.cgi" method="post">'$FILTERWARNINGMSG'<br><br><input type="hidden" name="_ACTION_" value="reallyadd"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<form name="myform" action="e2g_filtergroups.cgi" method="post">'$FILTERWARNINGMSG'<br><br><input type="hidden" name="_ACTION_" value="reallyadd"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 180px;">'$FILTERLABELMSG'</td><td><input tabindex= "1" name="_FILTERDATA_" style="width: 200px;" size="20" type="text"></td></tr>
 <tr><td style="width: 180px;">'$FILTERDESCMSG'</td><td><input tabindex= "1" name="_FILTERDATA2_" style="width: 200px;" size="20" type="text"></td></tr>
 <tr><td style="width: 180px;">'$FILTERCLONEMSG'</td><td><select name="_FILTERDATA3_" style="width: 200px;">'
@@ -434,7 +448,7 @@ then
 else
 	source <(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER cat /etc/e2guardian/lists/filtergroups/$FILTERNAME/details)
 fi
-echo '<form name="myform" action="/cgi-bin/admin/e2g_filtergroups.cgi" method="post">
+echo '<form name="myform" action="e2g_filtergroups.cgi" method="post">
 <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tr><td style="width: 180px;">'$FILTERNAMEMSG'</td><td>'$FILTERNAME'</td></tr>
 <tr><td>'$FILTERLABELMSG'</td><td>'$FILTERLABEL'</td></tr>
@@ -528,12 +542,12 @@ else
 fi
 
 #Show details for the group
-echo "<form name=\"myform\" action=\"/cgi-bin/admin/e2g_filtergroups.cgi\" method=\"post\"><input type=\"hidden\" name=\"_FILTERNAME_\" value=\"$FILTERNAME\"><input type=\"hidden\" name=\"_ACTION_\" value=\"reallyeditlable\"><table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+echo "<form name=\"myform\" action=\"e2g_filtergroups.cgi\" method=\"post\"><input type=\"hidden\" name=\"_FILTERNAME_\" value=\"$FILTERNAME\"><input type=\"hidden\" name=\"_ACTION_\" value=\"reallyeditlable\"><table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
 <tr><td style=\"width: $WIDTH1"px";\">$FILTERNAMEMSG</td><td>$FILTERNAME</td></tr><tr><td>$FILTERLABELMSG</td><td><input tabindex= \"1\" value=\"$FILTERLABEL\" name=\"_FILTERDATA_\" style=\"width: $WIDTH2"px";\" size=\"20\" type=\"text\"></td><td><input value=\"$SUBMITMSG\" class=\"button\" type=\"submit\"></td></tr>
 <tr><td>$FILTERDESCMSG</td><td><input tabindex= \"2\" value=\"$FILTERDESC\" name=\"_FILTERDATA2_\" style=\"width: $WIDTH2"px";\" size=\"20\" type=\"text\"></td></tr></tbody></table><br>"
 
 #Show option to edit banned site lists and part banned site lists
-echo "</form><form name=\"myform\" action=\"/cgi-bin/admin/e2g_filtergroups.cgi\" method=\"post\">
+echo "</form><form name=\"myform\" action=\"e2g_filtergroups.cgi\" method=\"post\">
 <input type=\"hidden\" name=\"_FILTERNAME_\" value=\"$FILTERNAME\">
 <table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
 <tr><td style=\"width: $WIDTH3"px";\"><b>$FILTEROPTIONSMSG</b></td><td><b>$EDITMSG</b></td></tr>
@@ -567,7 +581,7 @@ echo "</form><form name=\"myform\" action=\"/cgi-bin/admin/e2g_filtergroups.cgi\
 </tbody></table><br>
 "
 
-echo '</form><form name="myform" action="/cgi-bin/admin/e2g_filtergroups.cgi" method="post">'
+echo '</form><form name="myform" action="e2g_filtergroups.cgi" method="post">'
 
 if [ $FILTERNAME != f1 ]
 then
@@ -580,7 +594,7 @@ then
 
 	echo "</td><td><input value="$ADDGROUPMSG" class=\"button\" type=\"submit\"></td></tr></tbody></table><br>"
 
-	echo '</form><form name="myform" action="/cgi-bin/admin/e2g_filtergroups.cgi" method="post">'
+	echo '</form><form name="myform" action="e2g_filtergroups.cgi" method="post">'
 
 
 	#Show any existing groups that have been assigned.
@@ -738,7 +752,7 @@ fi
 
 #Show details for the group
 
-echo "<form name=\"myform\" action=\"/cgi-bin/admin/e2g_filtergroups.cgi\" method=\"post\"><table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+echo "<form name=\"myform\" action=\"e2g_filtergroups.cgi\" method=\"post\"><table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
 <tr><td style=\"width: 180px;\">$FILTERNAMEMSG</td><td>$FILTERNAME</td></tr><tr><td style=\"width: 180px;\">$FILTERLABELMSG</td><td>$FILTERLABEL</td></tr>
 <tr><td>$FILTERDESCMSG</td><td>$FILTERDESC</td></tr></tbody></table><br><br>"
 
@@ -844,7 +858,7 @@ else
 	source <(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER cat /etc/e2guardian/lists/filtergroups/$FILTERNAME/details)
 fi
 
-echo "<form name=\"myform\" action=\"/cgi-bin/admin/e2g_filtergroups.cgi\" method=\"post\"><table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+echo "<form name=\"myform\" action=\"e2g_filtergroups.cgi\" method=\"post\"><table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
 <tr><td style=\"width: 180px;\">$FILTERNAMEMSG</td><td>$FILTERNAME</td></tr><tr><td style=\"width: 180px;\">$FILTERLABELMSG</td><td>$FILTERLABEL</td></tr>
 <tr><td>$FILTERDESCMSG</td><td>$FILTERDESC</td></tr></tbody></table><br>"
 
@@ -956,7 +970,7 @@ else
 	source <(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER cat /etc/e2guardian/lists/filtergroups/$FILTERNAME/details)
 fi
 
-echo "<form name=\"myform\" action=\"/cgi-bin/admin/e2g_filtergroups.cgi\" method=\"post\"><table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+echo "<form name=\"myform\" action=\"e2g_filtergroups.cgi\" method=\"post\"><table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
 <tr><td style=\"width: 180px;\">$FILTERNAMEMSG</td><td>$FILTERNAME</td></tr><tr><td style=\"width: 180px;\">$FILTERLABELMSG</td><td>$FILTERLABEL</td></tr>
 <tr><td>$FILTERDESCMSG</td><td>$FILTERDESC</td></tr></tbody></table><br>"
 
@@ -1106,7 +1120,7 @@ echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cell
 SEARCH="$FILTERDATA2"
 
 #Show option to edit banned site lists and part banned site lists
-echo "<form name=\"myform\" action=\"/cgi-bin/admin/e2g_filtergroups.cgi\" method=\"post\">
+echo "<form name=\"myform\" action=\"e2g_filtergroups.cgi\" method=\"post\">
 <input type=\"hidden\" name=\"_FILTERNAME_\" value=\"$FILTERNAME\">
 <input type=\"hidden\" name=\"_FILTERDATA_\" value=\"$FILTERDATA\">
 <table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
@@ -1134,14 +1148,14 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
 fi
 echo "</td></tr></tbody></table></form>
 
-<form name=\"myform\" action=\"/cgi-bin/admin/e2g_filtergroups.cgi\" method=\"post\">
+<form name=\"myform\" action=\"e2g_filtergroups.cgi\" method=\"post\">
 <input type=\"hidden\" name=\"_FILTERNAME_\" value=\"$FILTERNAME\">
 <input type=\"hidden\" name=\"_FILTERDATA_\" value=\"$FILTERDATA\">
 <table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
 
 <tr><td style=\"width: $WIDTH1"px";\">Search</td><td><input tabindex= \"2\" name=\"_ACTION_viewcustomsites_FILTERDATA2_\" value=\"$SEARCH\" style=\"width: $WIDTH2"px";\" size=\"20\" type=\"text\"></td><td><input value=\"Submit\" class=\"button\" type=\"submit\"></td></tr>
 </tbody></table><br></form>
-<form name=\"myform\" action=\"/cgi-bin/admin/e2g_filtergroups.cgi\" method=\"post\">
+<form name=\"myform\" action=\"e2g_filtergroups.cgi\" method=\"post\">
 <input type=\"hidden\" name=\"_FILTERNAME_\" value=\"$FILTERNAME\">
 <input type=\"hidden\" name=\"_FILTERDATA_\" value=\"$FILTERDATA\">
 <input type=\"hidden\" name=\"_FILTERDATA3_\" value=\"delete\">
