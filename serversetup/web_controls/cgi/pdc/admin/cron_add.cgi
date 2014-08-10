@@ -204,7 +204,7 @@ exit
 function show_jobs {
 echo "
 <form action=\"/cgi-bin/admin/cron_view.cgi\" method=\"post\" id=\"showdns\">
-<input type="hidden" name="_SERVERNAME_$SERVERNAME"_"SERVERTYPE_$SERVERTYPE"_"" value=''>
+<input type=\"hidden\" name=\"_SERVERNAME_$SERVERNAME"_"SERVERTYPE_$SERVERTYPE"_"\" value=\"\">
 </form>
 <script language=\"JavaScript\" type=\"text/javascript\">
 <!--

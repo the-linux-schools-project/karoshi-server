@@ -1,0 +1,59 @@
+#!/bin/bash
+#Copyright (C) 2014 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+
+TARGET=http://www.shallalist.de/Downloads/shallalist.tar.gz
+LOGFILEDIR=/opt/karoshi/logs/download_blacklists
+LOG_DATE=`date +%F`
+
+[ ! -d $LOGFILEDIR ] && mkdir -p $LOGFILEDIR
+
+function downloadlist {
+#Delete any existing downloads
+[ -f /tmp/shallalist.tar.gz ] && rm -f /tmp/shallalist.tar.gz
+
+#Download the list
+cd /tmp
+echo `date`: downloadblacklists - downloading $TARGET >> $LOGFILEDIR/$LOG_DATE
+wget $TARGET
+if [ $? = 0 ]
+then
+	echo `date`: downloadblacklists - failed to download $TARGET >> $LOGFILEDIR/$LOG_DATE
+	exit
+fi
+}
+
+function extractlist {
+
+[ ! -d /etc/e2guardian/lists/blacklists ] && mkdir -p /etc/e2guardian/lists/blacklists
+
+#Extract the list
+echo `date`: downloadblacklists - extracting /tmp/shallalist.tar.gz to /etc/e2guardian/lists/blacklists >> $LOGFILEDIR/$LOG_DATE
+tar -xvzf /tmp/shallalist.tar.gz -C /etc/e2guardian/lists/blacklists --strip-components=1
+[ $? != 0 ] && echo `date`: downloadblacklists - failed to extract /tmp/shallalist.tar.gz >> $LOGFILEDIR/$LOG_DATE
+}
+
+downloadlist
+extractlist

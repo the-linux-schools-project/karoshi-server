@@ -87,6 +87,16 @@ SQUIDVER=squid3
 [ ! -e /etc/squid ] && ln -s /etc/squid3 /etc/squid
 fi
 
+#Make sure that e2guardian is installed
+dpkg -l e2guardian 1>/dev/null 2>/dev/null
+if [ $? != 0 ]
+then
+	#Install dependencies
+	apt-get update
+	apt-get install libtommath0
+	dpkg -i /opt/karoshi/serversetup/modules/squid/e2guardian_3.0.3_wheezy_amd64.deb
+fi
+
 #############################
 #Ensure that squid and e2guardian are running on boot
 #############################
@@ -250,13 +260,17 @@ echo '<li>'$STARTAPACHEMSG'</li><br>'
 
 [ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
 
+let MINUTES=$(($RANDOM%59))
+let HOURS=$(($RANDOM%24))
+let DAY=$(($RANDOM%7))
+
 echo 58 23 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/archive_internet_logs > /opt/karoshi/cronjobs/jobs/archive_internet_logs.cron
 echo 50 23 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/e2gupdatefilterlist > /opt/karoshi/cronjobs/jobs/e2gupdatefilterlist.cron
 echo 55 23 '*' '*' '*' /etc/init.d/e2guardian restart > /opt/karoshi/cronjobs/jobs/restart_e2guardian.cron
 echo '*'/5 '*' '*' '*' '*' "nice -n 20" /opt/karoshi/'"'useful scripts'"'/internet_log_gen > /opt/karoshi/cronjobs/jobs/internet_log_gen.cron
 echo 0 5 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/internet_log_compress > /opt/karoshi/cronjobs/jobs/internet_log_compress.cron
+echo $MINUTES $HOURS '*' '*' $DAY /opt/karoshi/serversetup/modules/squid/scripts/downloadblacklists > /opt/karoshi/cronjobs/jobs/downloadblacklists.cron
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
-
 
 ############################
 #Check that Squid and e2guardian are running

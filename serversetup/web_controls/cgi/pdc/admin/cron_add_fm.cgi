@@ -114,6 +114,8 @@ TABLECLASS=mobilestandard
 STYLEWIDTH=120
 fi
 
+echo '<form action="/cgi-bin/admin/cron_add.cgi" method="post">'
+
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
@@ -124,7 +126,6 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
 </div>
 </div><div id="mobileactionbox">
-<form action="/cgi-bin/admin/cron_view_fm.cgi" method="post">
 <input name="" type="submit" class="button" value="'$TITLE2'">
 </form><br>
 '
@@ -140,7 +141,6 @@ echo '<div id="'$DIV_ID'"><div id="titlebox">
 </tr></table></div><div id ="infobox">'
 fi
 
-echo '<form action="/cgi-bin/admin/cron_add.cgi" name="selectservers" method="post">'
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
       <tr>
@@ -281,7 +281,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
       </td></tr></tbody></table><br><br>'
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE servers "$ACTIONMSG2"
+/opt/karoshi/web_controls/show_servers $MOBILE servers "$ACTIONMSG2" notset notset ___
 
 [ $MOBILE = no ] && echo '</div>'
 
