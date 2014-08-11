@@ -132,8 +132,12 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 TABLECLASS=standard
-[ $MOBILE = yes ] && TABLECLASS=mobilestandard
-
+MAXCOUNT=3
+if [ $MOBILE = yes ]
+then
+	MAXCOUNT=2
+	TABLECLASS=mobilestandard
+fi
 #Get squid server name
 [ ! -f /opt/karoshi/server_network/proxyserver ] && exit 101
 PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
@@ -167,9 +171,9 @@ then
 echo \<tr\>
 fi
 echo \<td\>\<img class=\"images\" alt=\"\" src=\"/images/warnings/internet_denied.png\"\>\</td\>\<td\>\<input name=\"_WEBSITE_\" value=\""$WEBSITE2"\" type=\"radio\"\>\</td\>\<td\>"$WEBSITE2"\</td\>
-[ $SITECOUNT -gt 3 ] && echo \</tr\>
+[ $SITECOUNT -gt '$MAXCOUNT' ] && echo \</tr\>
 let SITECOUNT=$SITECOUNT+1
-[ $SITECOUNT -gt 3 ] && SITECOUNT=1
+[ $SITECOUNT -gt '$MAXCOUNT' ] && SITECOUNT=1
 done
 fi
 
@@ -186,9 +190,9 @@ then
 echo \<tr\>
 fi
 echo \<td\>\<img class=\"images\" alt=\"\" src=\"/images/warnings/internet_allowed.png\"\>\</td\>\<td\>\<input name=\"_WEBSITE_\" value=\""$WEBSITE2"\" type=\"radio\"\>\</td\>\<td\>"$WEBSITE2"\</td\>
-[ $SITECOUNT -gt 3 ] && echo \</tr\>
+[ $SITECOUNT -gt '$MAXCOUNT' ] && echo \</tr\>
 let SITECOUNT=$SITECOUNT+1
-[ $SITECOUNT -gt 3 ] && SITECOUNT=1
+[ $SITECOUNT -gt '$MAXCOUNT' ] && SITECOUNT=1
 done
 fi
 
@@ -196,7 +200,7 @@ echo \</tbody\>\</table\>
 #Show submit box if search results are positive
 if [ $SHOWSUBMIT = yes ]
 then
-echo \<br\>\<input value=\"'$SUBMITMSG'\" type=\"submit\"\>
+echo \<br\>\<input class=\"button\" value=\"'$SUBMITMSG'\" type=\"submit\"\>
 else
 exit 103
 fi
@@ -232,9 +236,9 @@ then
 echo \<tr\>
 fi
 echo \<td\>\<img class=\"images\" alt=\"\" src=\"/images/warnings/internet_denied.png\"\>\</td\>\<td\>\<input name=\"_WEBSITE_\" value=\""$WEBSITE2"\" type=\"radio\"\>\</td\>\<td\>"$WEBSITE2"\</td\>
-[ $SITECOUNT -gt 3 ] && echo \</tr\>
+[ $SITECOUNT -gt $MAXCOUNT ] && echo \</tr\>
 let SITECOUNT=$SITECOUNT+1
-[ $SITECOUNT -gt 3 ] && SITECOUNT=1
+[ $SITECOUNT -gt $MAXCOUNT ] && SITECOUNT=1
 done
 fi
 
@@ -252,16 +256,16 @@ then
 echo \<tr\>
 fi
 echo \<td\>\<img class=\"images\" alt=\"\" src=\"/images/warnings/internet_allowed.png\"\>\</td\>\<td\>\<input name=\"_WEBSITE_\" value=\""$WEBSITE2"\" type=\"radio\"\>\</td\>\<td\>"$WEBSITE2"\</td\>
-[ $SITECOUNT -gt 3 ] && echo \</tr\>
+[ $SITECOUNT -gt $MAXCOUNT ] && echo \</tr\>
 let SITECOUNT=$SITECOUNT+1
-[ $SITECOUNT -gt 3 ] && SITECOUNT=1
+[ $SITECOUNT -gt $MAXCOUNT ] && SITECOUNT=1
 done
 fi
 echo \</tbody\>\</table\>
 #Show submit box if search results are positive
 if [ $SHOWSUBMIT = yes ]
 then
-echo \<br\>\<input value=\"$SUBMITMSG\" type=\"submit\"\>
+echo \<br\>\<input class=\"button\" value=\"$SUBMITMSG\" type=\"submit\"\>
 else
 exit 103
 fi

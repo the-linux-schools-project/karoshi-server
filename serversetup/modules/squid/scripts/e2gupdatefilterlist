@@ -34,7 +34,6 @@ then
 		for ASSIGNEDGROUPS in /etc/e2guardian/lists/filtergroups/$FILTERGROUP/assigned_groups/*
 		do
 			ASSIGNEDGROUP=`basename $ASSIGNEDGROUPS`
-			echo $FILTERGROUP $ASSIGNEDGROUP $FILTERNUMBER
 			#Modify the assigned group if it is an anomaly.
 			[ "$ASSIGNEDGROUP" = itadmin ] && ASSIGNEDGROUP=itadminstaff
 			[ "$ASSIGNEDGROUP" = tech ] && ASSIGNEDGROUP=techstaff
@@ -44,5 +43,12 @@ then
 	fi
 fi
 done
+
+#Create stafflist for squid
+echo samplestaffuser > /etc/squid/stafflist
+getent passwd | grep /home/users/tech | cut -d: -f1 >> /etc/squid/stafflist
+getent passwd | grep /home/users/itadmin | cut -d: -f1 >> /etc/squid/stafflist
+getent passwd | grep /home/users/staff | cut -d: -f1 >> /etc/squid/stafflist
+getent passwd | grep /home/users/officestaff | cut -d: -f1 >> /etc/squid/stafflist
 exit
 

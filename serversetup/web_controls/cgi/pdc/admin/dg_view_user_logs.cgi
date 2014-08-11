@@ -280,7 +280,7 @@ then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/dg_view_user_logs_fm.cgi">'$USERNAME'</a>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
 </div></div><div id="mobilecontent"><div id="mobileactionbox2">
 '
 fi

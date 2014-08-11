@@ -79,6 +79,7 @@ REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 WEBSITE=`echo "$DATA" | cut -s -d: -f4`
 LOGDATE=`echo "$DATA" | cut -s -d: -f5`
+MOBILE=`echo "$DATA" | cut -s -d: -f6`
 ########################
 #Check data
 ########################
@@ -122,6 +123,19 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
+TABLECLASS=standard
+WIDTH1=60
+WIDTH2=90
+WIDTH3=110
+if [ $MOBILE = yes ]
+then
+	TABLECLASS=mobilestandard
+	FILTERMSG=""
+	WIDTH1=30
+	WIDTH2=60
+	WIDTH3=90
+fi
+
 #Get squid server name
 [ ! -f /opt/karoshi/server_network/proxyserver ] && exit 101
 PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
@@ -135,12 +149,21 @@ LOGTYPE=NOTSET
 [ -f /opt/karoshi/logs/internetlogs/"'$LOGDATE'"/sites/allowed/"'$WEBSITE'".tar.gz ] && LOGTYPE=archive
 [ $LOGTYPE = NOTSET ] && exit 102
 #Create table header
-echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>'$TITLE2' '$WEBSITE' '$LOGDATE'</b></td><td style=\"vertical-align: top;\"><form action=\"/cgi-bin/admin/dg_banned_sites_fm.cgi\" method=\"post\" target=\"_blank\">
+if [ '$MOBILE' = no ]
+then
+echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>'$TITLE2' '$WEBSITE' '$LOGDATE'</b></td><td style=\"vertical-align: top;\"><form action=\"/cgi-bin/admin/dg_banned_sites_fm.cgi\" method=\"post\" target=\"_blank\">
 <input name=\"_WEBSITE_'$WEBSITE'"_"\" type=\"submit\" class=\"button\" value=\"'$BANSITEMSG'\">
-</form></td></tr></tbody></table><br></div><div id=\"infobox\">"
+</form></td></tr></tbody></table><br>"
+else
+echo "<b>'$TITLE2' '$WEBSITE' '$LOGDATE'</b><br><form action=\"/cgi-bin/admin/dg_banned_sites_fm.cgi\" method=\"post\" target=\"_blank\">
+<input name=\"_WEBSITE_'$WEBSITE'"_"\" type=\"submit\" class=\"button\" value=\"'$BANSITEMSG'\">
+</form><br>"
+fi
 
-echo \<table class=\"standard\" style=\"text-align: left\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>\<tbody\>
-echo \<tr\>\<td style\=\"width: 60px\;\"\>\<b\>'$FILTERMSG'\<\/b\>\<td style\=\"width: 90px\;\"\>\<b\>'$TIMEMSG'\<\/b\>\</td\>\<td\>\</td\>\<td style\=\"width: 120px\;\"\>\<b\>'$USERNAMEMSG'\<\/b\>\</td\>\<td\>\</td\>\<td\>\<b\>'$COMPIP'\<\/b\>\</td\>\</tr\>
+[ '$MOBILE' = no ] && echo "</div><div id=\"infobox\">"
+
+echo \<table class=\"'$TABLECLASS'\" style=\"text-align: left\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>\<tbody\>
+echo \<tr\>\<td style\=\"width: '$WIDTH1'px\;\"\>\<b\>'$FILTERMSG'\<\/b\>\<td style\=\"width: '$WIDTH2'px\;\"\>\<b\>'$TIMEMSG'\<\/b\>\</td\>\<td\>\</td\>\<td style\=\"width: '$WIDTH3'px\;\"\>\<b\>'$USERNAMEMSG'\<\/b\>\</td\>\<td\>\</td\>\<td\>\<b\>'$COMPIP'\<\/b\>\</td\>\</tr\>
 if [ $LOGTYPE = text ]
 then
 [ -f /opt/karoshi/logs/internetlogs/'$LOGDATE'/sites/denied/'$WEBSITE' ] && cat /opt/karoshi/logs/internetlogs/'$LOGDATE'/sites/denied/'$WEBSITE'
@@ -152,21 +175,28 @@ fi
 #end table
 echo \<\/tbody\>\<\/table\>
 '
-[ `echo $?` = 102 ] && exit 102
+[ $? = 102 ] && exit 102
 else
 #Check to see if a log for this site exists on the date given
 LOGTYPE=NOTSET
 [ -f /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/allowed/"$WEBSITE" ] && LOGTYPE=text
 [ -f /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/allowed/"$WEBSITE".tar.gz ] && LOGTYPE=archive
 [ $LOGTYPE = NOTSET ] && exit 102
-#Create table header
-#Create table header
-echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>$TITLE2 $WEBSITE $LOGDATE</b></td><td style=\"vertical-align: top;\"><form action=\"/cgi-bin/admin/dg_banned_sites_fm.cgi\" method=\"post\" target=\"_blank\">
-<input name=\"_WEBSITE_$WEBSITE"_"\" type=\"submit\" class=\"button\" value=\"$BANSITEMSG\">
-</form></td></tr></tbody></table><br></div><div id=\"infobox\">"
 
-echo \<table class=\"standard\" style=\"text-align: left\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>\<tbody\>
-echo \<tr\>\<td style\=\"width: 60px\;\"\>\<b\>$FILTERMSG\<\/b\>\</td\>\<td style\=\"width: 90px\;\"\>\<b\>$TIMEMSG\<\/b\>\</td\>\<td\>\</td\>\<td style\=\"width: 120px\;\"\>\<b\>$USERNAMEMSG\<\/b\>\</td\>\<td\>\</td\>\<td\>\<b\>$COMPIP\<\/b\>\</td\>\</tr\>
+if [ $MOBILE = no ]
+then
+echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>$TITLE2 $WEBSITE $LOGDATE</b></td><td style=\"vertical-align: top;\"><form action=\"/cgi-bin/admin/e2g_filtergroups.cgi\" method=\"post\" target=\"_blank\">
+<input name=\"_FILTERNAME_f1_ACTION_viewcustomsites_FILTERDATA_banned_FILTERDATA2_$WEBSITE"_"\" type=\"submit\" class=\"button\" value=\"$BANSITEMSG\">
+</form></td></tr></tbody></table><br>"
+else
+echo '<b>'$TITLE2' '$WEBSITE' '$LOGDATE'</b><br><form action="/cgi-bin/admin/e2g_filtergroups.cgi" method="post" target="_blank">
+<input name="_FILTERNAME_f1_ACTION_viewcustomsites_FILTERDATA_banned_FILTERDATA2_'$WEBSITE'_" type="submit" class="button" value="'$BANSITEMSG'">
+</form><br>'
+fi
+[ $MOBILE = no ] && echo "</div><div id=\"infobox\">"
+
+echo \<table class=\"$TABLECLASS\" style=\"text-align: left\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>\<tbody\>
+echo \<tr\>\<td style\=\"width: $WIDTH1"px"\;\"\>\<b\>$FILTERMSG\<\/b\>\</td\>\<td style\=\"width: $WIDTH2"px"\;\"\>\<b\>$TIMEMSG\<\/b\>\</td\>\<td\>\</td\>\<td style\=\"width: $WIDTH3"px"\;\"\>\<b\>$USERNAMEMSG\<\/b\>\</td\>\<td\>\</td\>\<td\>\<b\>$COMPIP\<\/b\>\</td\>\</tr\>
 if [ $LOGTYPE = text ]
 then
 [ -f /opt/karoshi/logs/internetlogs/$LOGDATE/sites/denied/$WEBSITE ] && cat /opt/karoshi/logs/internetlogs/$LOGDATE/sites/denied/$WEBSITE

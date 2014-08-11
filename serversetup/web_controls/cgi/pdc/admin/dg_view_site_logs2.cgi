@@ -30,6 +30,11 @@
 # _DAY_
 # _MONTH_
 # _YEAR_
+
+#Detect mobile browser
+MOBILE=no
+source /opt/karoshi/web_controls/detect_mobile_browser
+
 ##########################
 #Language
 ##########################
@@ -45,10 +50,42 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE2'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE2'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+
+if [ $MOBILE = yes ]
+then
+echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+		/***********************************************
+		* Slashdot Menu script- By DimX
+		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
+		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+		***********************************************/
+	</script>
+	<script type="text/javascript">
+	// <![CDATA[
+	var myMenu;
+	window.onload = function() {
+		myMenu = new SDMenu("my_menu");
+		myMenu.init();
+	};
+	// ]]>
+	</script>'
+fi
+
+echo '</head><body><div id="pagecontainer">'
+
+#Generate navigation bar
+if [ $MOBILE = no ]
+then
+DIV_ID=actionbox3
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox3"><div id="titlebox">'
+else
+DIV_ID=actionbox2
+fi
+
 #########################
 #Get data input
 #########################
@@ -134,9 +171,21 @@ MESSAGE=$ERRORMSG10
 show_status
 fi
 
+#Show back button for mobiles
+if [ $MOBILE = yes ]
+then
+echo '<div style="float: center" id="my_menu" class="sdmenu">
+	<div class="expanded">
+	<span>'$TITLE2'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+</div></div><div id="mobilecontent"><div id="mobileactionbox">
+'
+fi
+
+
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_site_logs2.cgi | cut -d' ' -f1`
 #View logs
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$WEBSITE:$LOGDATE:" | sudo -H /opt/karoshi/web_controls/exec/dg_view_site_logs2
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$WEBSITE:$LOGDATE:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/dg_view_site_logs2
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 102 ]
 then
@@ -148,6 +197,6 @@ then
 MESSAGE=`echo $ERRORMSG7`
 show_status
 fi
-[ $MOBILE = no ] && echo '</div>'
-echo '</div></div></body></html>'
+
+echo '</div></div></div></body></html>'
 exit

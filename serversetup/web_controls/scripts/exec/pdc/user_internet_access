@@ -163,11 +163,11 @@ function activate_changes {
 if [ $PROXYSERVER = `hostname-fqdn` ]
 then
 	source /opt/karoshi/serversetup/variables/distro
-	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/squid_reload
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/squid_reload 1>/dev/null 2>/dev/null
 else
 ssh -x -o PasswordAuthentication=no $PROXYSERVER '
 	source /opt/karoshi/serversetup/variables/distro
-	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/squid_reload
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/squid_reload 1>/dev/null 2>/dev/null
 '
 fi
 }
@@ -187,18 +187,18 @@ BANLENGTH=7
 
 #Show form to add in banned users.
 
-echo '<b>'$TITLE2'</b><br><br><form name="myform" action="user_internet_access.cgi" method="post">
+echo '<b>'$TITLE2'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_Internet_Access"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a><br><br><form name="myform" action="user_internet_access.cgi" method="post">
 <input type="hidden" name="_ACTION_" value="banusers">
 <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tr><td style="width: '$WIDTH1'px;">'$USERNAMESMSG'</td><td style="width: 140px;"><input value="'$STUDENTS'" name="_USERNAMES_" style="width: '$WIDTH2'px;" type="text"></td>'
 
-[ $MOBILE = no ] && echo '<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON3'"><span>'$HELPMSG1'</span></a></td>'
+[ $MOBILE = no ] && echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_Internet_Access"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td>'
 
 echo '</tr>
 <tr><td>'$DATAMSG'</td><td><input style="width: '$WIDTH3'px;" name="_HOUR_" value="'$HOUR'" size="2" maxlength="2" type="text">:<input style="width: '$WIDTH3'px;" name="_MINUTES_" value="'$MINUTES'" size="2" maxlength="2" type="text"> <input style="width: '$WIDTH3'px;" name="_DAY_" value="'$DAY'" size="2" maxlength="2" type="text">-<input style="width: '$WIDTH3'px;" name="_MONTH_" value="'$MONTH'" size="2" maxlength="2" type="text">-<input name="_YEAR_" value="'$YEAR'" size="4" maxlength="4 type="text"></td></tr>
 <tr><td>'$DURATIONMSG'</td><td><input style="width: '$WIDTH3'px;" name="_BANLENGTH_" value="'$BANLENGTH'" size="2" maxlength="3" type="text"></td>'
 
-[ $MOBILE = no ] && echo '<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON3'"><span>'$HELPMSG2'</span></a></td>'
+[ $MOBILE = no ] && echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_Internet_Access"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td>'
 
 echo '</tr>
 <tr><td valign="top">'$INCREPMSG'</td><td><textarea style="width: '$WIDTH2'px;" cols="45" rows="2" name="_INCIDENT_">'$INCIDENT'</textarea></td></tr>
@@ -209,18 +209,37 @@ echo '</tr>
 <form name="myform" action="user_internet_access.cgi" method="post">'
 
 #Show any currently banned users.
-if [ `cat /etc/squid/badusers.list | wc -l` -gt 0 ]
+if [ $PROXYSERVER = `hostname-fqdn` ]
 then
-echo "<b>$TITLE3</b><br><br><table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: $WIDTH1"px";\"><b>$BANNEDUSERMSG</b></td><td><b>$DURATIONMSG2</b></td><td><b>$VIEWINCIDENTSMSG</b></td><td><b>$ALLOWMSG</b></td></tr>"
+	if [ `cat /etc/squid/badusers.list | wc -l` -gt 0 ]
+	then
+		echo "<b>$TITLE3</b><br><br><table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+		<tr><td style=\"width: $WIDTH1"px";\"><b>$BANNEDUSERMSG</b></td><td><b>$DURATIONMSG2</b></td><td><b>$VIEWINCIDENTSMSG</b></td><td><b>$ALLOWMSG</b></td></tr>"
 
-for BADUSER in `cat /etc/squid/badusers.list`
-do
-BANLENGTH="-"
-[ -f /opt/karoshi/logs/banned_user_internet_durations/$BADUSER ] && BANLENGTH=`sed -n 1,1p /opt/karoshi/logs/banned_user_internet_durations/$BADUSER`
-echo "<tr><td>$BADUSER</td><td>$BANLENGTH</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_viewincidents_USERNAMES_$BADUSER"_"\" type=\"image\" class=\"images\" src=\"$ICON2\" value=\"\"><span>$BADUSER<br>$VIEWINCIDENTSMSG</span></a></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_allowuser_USERNAMES_$BADUSER"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$BADUSER<br>$VIEWINCIDENTSMSG</span></a></td></tr>"
-done
-echo "</tbody></table>"
+		for BADUSER in `cat /etc/squid/badusers.list`
+		do
+			BANLENGTH="-"
+			[ -f /opt/karoshi/logs/banned_user_internet_durations/$BADUSER ] && BANLENGTH=`sed -n 1,1p /opt/karoshi/logs/banned_user_internet_durations/$BADUSER`
+			echo "<tr><td>$BADUSER</td><td>$BANLENGTH</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_viewincidents_USERNAMES_$BADUSER"_"\" type=\"image\" class=\"images\" src=\"$ICON2\" value=\"\"><span>$BADUSER<br>$VIEWINCIDENTSMSG</span></a></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_allowuser_USERNAMES_$BADUSER"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$BADUSER<br>$ALLOWUSERMSG</span></a></td></tr>"
+		done
+		echo "</tbody></table>"
+	fi
+else
+ssh -x -o PasswordAuthentication=no $PROXYSERVER '
+	if [ `cat /etc/squid/badusers.list | wc -l` -gt 0 ]
+	then
+		echo "<b>'$TITLE3'</b><br><br><table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+		<tr><td style=\"width: '$WIDTH1'"px";\"><b>'$BANNEDUSERMSG'</b></td><td><b>'$DURATIONMSG2'</b></td><td><b>'$VIEWINCIDENTSMSG'</b></td><td><b>'$ALLOWMSG'</b></td></tr>"
+
+		for BADUSER in `cat /etc/squid/badusers.list`
+		do
+			BANLENGTH="-"
+			[ -f /opt/karoshi/logs/banned_user_internet_durations/$BADUSER ] && BANLENGTH=`sed -n 1,1p /opt/karoshi/logs/banned_user_internet_durations/$BADUSER`
+			echo "<tr><td>$BADUSER</td><td>$BANLENGTH</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_viewincidents_USERNAMES_$BADUSER"_"\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>$BADUSER<br>'$VIEWINCIDENTSMSG'</span></a></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_allowuser_USERNAMES_$BADUSER"_"\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>$BADUSER<br>'$ALLOWUSERMSG'</span></a></td></tr>"
+		done
+		echo "</tbody></table>"
+	fi
+'
 fi
 echo '</form>'
 }

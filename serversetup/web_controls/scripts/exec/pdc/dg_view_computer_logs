@@ -30,30 +30,30 @@ LOG_DATE=`date +%F`
 
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dg_view_computer_logs_cgi
 then
-echo `date`: dg_view_computer_logs - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_computer_logs - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/dg_view_computer_logs_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_computer_logs.cgi | cut -d' ' -f1`
 [ $MD5SUM'null' = null ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $dg_view_computer_logs_cgi'check' ]
 then
-echo `date`: dg_view_computer_logs - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_computer_logs - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/dg_view_computer_logs_cgi
 then
-echo `date`: dg_view_computer_logs - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_computer_logs - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/dg_view_computer_logs_cgi
 MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/dg_view_computer_logs.cgi | cut -d' ' -f1`
 [ $MD5SUM2'null' = null ] && MD5SUM2=not_set
 if [ $MD5SUM2'check' != $dg_view_computer_logs_cgi'check' ]
 then
-echo `date`: dg_view_computer_logs - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_computer_logs - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -61,16 +61,16 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: dg_view_computer_logs - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_computer_logs - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
 if [ $DATA'null' = null ]
 then
-echo `date`: dg_view_computer_logs - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_computer_logs - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -86,49 +86,49 @@ MOBILE=`echo "$DATA" | cut -s -d: -f9`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
 then
-echo `date`: dg_view_computer_logs - Not called by dg_computer_logs.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_computer_logs - Not called by dg_computer_logs.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ $REMOTE_USER'null' = null ]
 then
-echo `date`: dg_view_computer_logs - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_computer_logs - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ $REMOTE_ADDR'null' = null ]
 then
-echo `date`: dg_view_computer_logs - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_computer_logs - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ $TCPIP'null' = null ]
 then
-echo `date`: dg_view_computer_logs - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: dg_view_computer_logs - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
 if [ $DAY'null' = null ]
 then
-echo `date`: dg_view_computer_logs - Blank day by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: dg_view_computer_logs - Blank day by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
 if [ $MONTH'null' = null ]
 then
-echo `date`: dg_view_computer_logs - Blank month by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: dg_view_computer_logs - Blank month by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
 if [ $YEAR'null' = null ]
 then
-echo `date`: dg_view_computer_logs - Blank year by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_computer_logs - Blank year by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ $DETAILED'null' = null ]
 then
-echo `date`: dg_view_user_logs - Blank detail by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_user_logs - Blank detail by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
 then
-echo `date`: dg_view_computer_logs - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_computer_logs - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 echo `date`: dg_view_computer_logs - Viewing logs "for" $TCPIP $DAY-$MONTH-$YEAR by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -139,20 +139,31 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 TABLECLASS=standard
-[ $MOBILE = yes ] && TABLECLASS=mobilestandard
+WIDTH1=60
+WIDTH2=90
+WIDTH3=110
+if [ $MOBILE = yes ]
+then
+	TABLECLASS=mobilestandard
+	FILTERMSG=""
+	WIDTH1=30
+	WIDTH2=60
+	WIDTH3=90
+fi
+
 #Set detailed path
 
 if [ $DETAILED = yes ]
 then
-MACHINES=machines_detailed
-DETAIL_ICON=normal_logs.png
-DETAILED2=no
-DETAILEDLOGSMSG=$DETAILEDLOGSMSG2
+	MACHINES=machines_detailed
+	DETAIL_ICON=normal_logs.png
+	DETAILED2=no
+	DETAILEDLOGSMSG=$DETAILEDLOGSMSG2
 else
-MACHINES=machines
-DETAIL_ICON=detailed_logs.png
-DETAILED2=yes
-DETAILEDLOGSMSG=$DETAILEDLOGSMSG1
+	MACHINES=machines
+	DETAIL_ICON=detailed_logs.png
+	DETAILED2=yes
+	DETAILEDLOGSMSG=$DETAILEDLOGSMSG1
 fi
 
 #Get squid server name
@@ -168,15 +179,17 @@ LOGTYPE=NOTSET
 [ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$MACHINES'/'$TCPIP'.tar.gz ] && LOGTYPE=archive
 [ $LOGTYPE = NOTSET ] && exit 102
 #Create table header
-
+if [ '$MOBILE' = no ]
+then
 echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>'$TITLE5' '$TCPIP' '$DAY'-'$MONTH'-'$YEAR'</b></td><td style=\"vertical-align: top; width: 25px;\"> <form action=\"/cgi-bin/admin/dg_view_computer_logs.cgi\" method=\"post\" target=\"_top\">
 <input name=\"_TCPIP_'$TCPIP'"_"DATE_'$DAY'-'$MONTH'-'$YEAR'"_"DETAILED_'$DETAILED2'"_"\" type=\"submit\" class=\"button\" value=\"'$DETAILEDLOGSMSG'\">
-</form></td></tr></tbody></table><br>"
-
-[ '$MOBILE' = no ] && echo "</div><div id=\"infobox\">"
+</form></td></tr></tbody></table><br></div><div id=\"infobox\">"
+else
+echo "<b>'$TITLE5' '$TCPIP' '$DAY'-'$MONTH'-'$YEAR'</b><br><br>"
+fi
 
 echo \<table class=\"'$TABLECLASS'\" style=\"text-align: left\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>\<tbody\>
-echo \<tr\>\<td style\=\"width: 60px\;\"\>\<b\>'$FILTERMSG'\<\/b\>\</td\>\<td style\=\"width: 90px\;\"\>\<b\>'$TIMEMSG'\<\/b\>\</td\>\<td\>\</td\>\<td style\=\"width: 120px\;\"\>\<b\>'$USERNAMEMSG'\<\/b\>\</td\>\<td\>\</td\>\<td\>\<b\>'$WEBURL'\<\/b\>\</td\>\</tr\>
+echo \<tr\>\<td style\=\"width: '$WIDTH1'px\;\"\>\<b\>'$FILTERMSG'\<\/b\>\</td\>\<td style\=\"width: '$WIDTH2'px\;\"\>\<b\>'$TIMEMSG'\<\/b\>\</td\>\<td\>\</td\>\<td style\=\"width: '$WIDTH3'px\;\"\>\<b\>'$USERNAMEMSG'\<\/b\>\</td\>\<td\>\</td\>\<td\>\<b\>'$WEBURL'\<\/b\>\</td\>\</tr\>
 if [ $LOGTYPE = text ]
 then
 cat /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$MACHINES'/'$TCPIP'
@@ -194,15 +207,17 @@ LOGTYPE=NOTSET
 [ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$MACHINES/$TCPIP.tar.gz ] && LOGTYPE=archive
 [ $LOGTYPE = NOTSET ] && exit 102
 #Create table header
-
+if [ $MOBILE = no ]
+then
 echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>$TITLE5 $TCPIP $DAY-$MONTH-$YEAR</b></td><td style=\"vertical-align: top; width: 25px;\"> <form action=\"/cgi-bin/admin/dg_view_computer_logs.cgi\" method=\"post\" target=\"_top\">
 <input name=\"_TCPIP_$TCPIP"_"DATE_$DAY-$MONTH-$YEAR"_"DETAILED_$DETAILED2"_"\" type=\"submit\" class=\"button\" value=\"$DETAILEDLOGSMSG\">
-</form></td></tr></tbody></table><br>"
-
-[ $MOBILE = no ] && echo "</div><div id=\"infobox\">"
+</form></td></tr></tbody></table><br></div><div id=\"infobox\">"
+else
+echo "<b>$TITLE5 $TCPIP $DAY-$MONTH-$YEAR</b><br><br>"
+fi
 
 echo \<table class=\"$TABLECLASS\" style=\"text-align: left\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>\<tbody\>
-echo \<tr\>\<td style\=\"width: 60px\;\"\>\<b\>$FILTERMSG\<\/b\>\</td\>\<td style\=\"width: 90px\;\"\>\<b\>$TIMEMSG\<\/b\>\</td\>\</td\>\<td\>\<td style\=\"width: 120px\;\"\>\<b\>$USERNAMEMSG\<\/b\>\</td\>\<td\>\</td\>\<td\>\<b\>$WEBURL\<\/b\>\</td\>\</tr\>
+echo \<tr\>\<td style\=\"width: $WIDTH1"px"\;\"\>\<b\>$FILTERMSG\<\/b\>\</td\>\<td style\=\"width: $WIDTH2"px"\;\"\>\<b\>$TIMEMSG\<\/b\>\</td\>\<td\>\<td style\=\"width: $WIDTH3"px"\;\"\>\<b\>$USERNAMEMSG\<\/b\>\</td\>\<td\>\</td\>\<td\>\<b\>$WEBURL\<\/b\>\</td\>\</tr\>
 if [ $LOGTYPE = text ]
 then
 cat /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$MACHINES/$TCPIP

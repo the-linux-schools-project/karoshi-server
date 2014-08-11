@@ -278,7 +278,7 @@ then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE5'</span>
-<a href="/cgi-bin/admin/dg_view_computer_logs_fm.cgi">'$TCPIP'</a>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
 </div></div><div id="mobilecontent"><div id="mobileactionbox2">
 '
 fi

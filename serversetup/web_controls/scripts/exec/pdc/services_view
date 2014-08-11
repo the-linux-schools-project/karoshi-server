@@ -146,7 +146,7 @@ DSERVICES=cron,monitorix
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/distributionserver ] && DSERVICES=$DSERVICES,nfs,tftpd
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver ] && DSERVICES=$DSERVICES,apache,mysql,mailscanner,memcached,postfix,dovecot,sogo,clamd
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/homeaccess ] && DSERVICES=$DSERVICES,apache
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/squid ] && DSERVICES=$DSERVICES,apache,dansguardian,squid,squiddebproxy
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/squid ] && DSERVICES=$DSERVICES,apache,e2guardian,squid,squiddebproxy
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/printserver ] && DSERVICES=$DSERVICES,cups,samba
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/radiusserver ] && DSERVICES=$DSERVICES,radius
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ] && DSERVICES=$DSERVICES,nginx
@@ -170,7 +170,7 @@ DSERVICES=cron,monitorix
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/distributionserver ] && DSERVICES=$DSERVICES,nfs,tftpd
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/emailserver ] && DSERVICES=$DSERVICES,apache,mysql,memcached,mailscanner,postfix,dovecot,sogo,clamd
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/homeaccess ] && DSERVICES=$DSERVICES,apache
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/squid ] && DSERVICES=$DSERVICES,apache,dansguardian,squid,squiddebproxy
+[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/squid ] && DSERVICES=$DSERVICES,apache,e2guardian,squid,squiddebproxy
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/printserver ] && DSERVICES=$DSERVICES,cups,samba
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/radiusserver ] && DSERVICES=$DSERVICES,radius
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/reverseproxyserver ] && DSERVICES=$DSERVICES,nginx
@@ -194,7 +194,7 @@ DSERVICES=cron,monitorix
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/distributionserver ] && DSERVICES=$DSERVICES,nfs,tftpd
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/emailserver ] && DSERVICES=$DSERVICES,apache,mysql,memcached,mailscanner,postfix,dovecot,sogo,clamd
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/homeaccess ] && DSERVICES=$DSERVICES,apache
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/squid ] && DSERVICES=$DSERVICES,apache,dansguardian,squid,squiddebproxy
+[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/squid ] && DSERVICES=$DSERVICES,apache,e2guardian,squid,squiddebproxy
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/printserver ] && DSERVICES=$DSERVICES,cups,samba
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/radiusserver ] && DSERVICES=$DSERVICES,radius
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/reverseproxyserver ] && DSERVICES=$DSERVICES,nginx
@@ -232,7 +232,7 @@ DSERVICES=$DSERVICES2
 DSERVICES=`echo -e "$DSERVICES" | sed "s/,/\n/g" | sort`
 
 #List of all services to check
-ALLSERVICES="apache clamd cups cron dansguardian dhcp dns dovecot glusterfs mailscanner memcached mon monitorix mysql nfs nginx nslcd openvpn postfix radius samba sogo squid squiddebproxy vsftpd"
+ALLSERVICES="apache clamd cups cron e2guardian dhcp dns dovecot glusterfs mailscanner memcached mon monitorix mysql nfs nginx nslcd openvpn postfix radius samba sogo squid squiddebproxy vsftpd"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 function check_status {
@@ -280,7 +280,7 @@ apache="'$apache'"
 clamd="'$clamd'"
 cups="'$cups'"
 cron="'$cron'"
-dansguardian="'$dansguardian'"
+e2guardian="'$e2guardian'"
 dhcp="'$dhcp'"
 dns="'$dns'"
 dovecot="'$dovecot'"

@@ -225,8 +225,8 @@ then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE2'</span>
-<a href="/cgi-bin/admin/dg_view_user_logs_fm.cgi">'$SEARCH'</a>
-</div></div><div id="mobilecontent"><div id="mobileactionbox2">
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+</div></div><div id="mobilecontent"><div id="mobileactionbox">
 '
 
 else

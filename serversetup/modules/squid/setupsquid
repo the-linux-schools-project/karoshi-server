@@ -91,10 +91,15 @@ fi
 dpkg -l e2guardian 1>/dev/null 2>/dev/null
 if [ $? != 0 ]
 then
+	echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 	#Install dependencies
+	echo '<li>'$HOSTNAME - Updating repositories'</li>'
 	apt-get update
+	echo '<br><li>'$HOSTNAME -Installing dependencies "for" e2guardian'</li>'
 	apt-get install libtommath0
+	echo '<br><li>'$HOSTNAME - Installing e2guardian'</li>'
 	dpkg -i /opt/karoshi/serversetup/modules/squid/e2guardian_3.0.3_wheezy_amd64.deb
+	echo '</pre><br>'
 fi
 
 #############################
@@ -237,6 +242,9 @@ tar -xvzf /opt/karoshi/serversetup/modules/squid/shallalist.tar.gz 1>/dev/null
 cp -f -R /etc/e2guardian/BL/* /etc/e2guardian/lists/blacklists/
 rm -f -R /etc/e2guardian/BL
 
+#Copy in template
+cp -f /opt/karoshi/serversetup/modules/squid/template.html /etc/e2guardian/languages/ukenglish/
+
 #########################
 #Scheduling loggging
 #########################
@@ -253,7 +261,7 @@ cp -f /opt/karoshi/serversetup/modules/squid/scripts/internet_log_compress /opt/
 #Start squid and e2guardian.
 echo '<li>'$STARTSQUIDMSG'</li><br>'
 /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/squid_start 1>/dev/null
-echo '<li>'$STARTDGMSG'</li><br>'
+echo '<li>'$STARTE2GMSG'</li><br>'
 /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/e2guardian_start 1>/dev/null
 echo '<li>'$STARTAPACHEMSG'</li><br>'
 /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_start 1>/dev/null
