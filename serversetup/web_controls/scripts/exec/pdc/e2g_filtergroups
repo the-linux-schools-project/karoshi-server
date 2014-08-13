@@ -400,11 +400,11 @@ then
 	FILTERLINENO=`grep -n ^"filtergroups =" /etc/e2guardian/e2guardian.conf | cut -d: -f1`
 	sed -i $FILTERLINENO"c""filtergroups = $FILTERCOUNT" /etc/e2guardian/e2guardian.conf
 
-	#Restart e2guardian
-	source /opt/karoshi/serversetup/variables/distro
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/e2guardian_stop 1>/dev/null
-	sleep 1
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/e2guardian_start 1>/dev/null
+	#Modify config files to point at the correct filter group
+	sed -i "s%/etc/e2guardian/lists/filtergroups/$FILTERCLONE/%/etc/e2guardian/lists/filtergroups/f$FILTERCOUNT/%g" /etc/e2guardian/lists/filtergroups/f$FILTERCOUNT/bannedsitelist
+	sed -i "s%/etc/e2guardian/lists/filtergroups/$FILTERCLONE/%/etc/e2guardian/lists/filtergroups/f$FILTERCOUNT/%g" /etc/e2guardian/lists/filtergroups/f$FILTERCOUNT/bannedurllist
+	sed -i "s%/etc/e2guardian/lists/filtergroups/$FILTERCLONE/%/etc/e2guardian/lists/filtergroups/f$FILTERCOUNT/%g" /etc/e2guardian/lists/filtergroups/f$FILTERCOUNT/exceptionsitelist
+	sed -i "s%/etc/e2guardian/lists/filtergroups/$FILTERCLONE/%/etc/e2guardian/lists/filtergroups/f$FILTERCOUNT/%g" /etc/e2guardian/lists/filtergroups/f$FILTERCOUNT/exceptionurllist
 else
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
 
@@ -423,11 +423,11 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
 	FILTERLINENO=`grep -n ^"filtergroups =" /etc/e2guardian/e2guardian.conf | cut -d: -f1`
 	sed -i $FILTERLINENO"c""filtergroups = '$FILTERCOUNT'" /etc/e2guardian/e2guardian.conf
 
-	#Restart e2guardian
-	source /opt/karoshi/serversetup/variables/distro
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/e2guardian_stop 1>/dev/null
-	sleep 1
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/e2guardian_start 1>/dev/null
+	#Modify config files to point at the correct filter group
+	sed -i "s%/etc/e2guardian/lists/filtergroups/'$FILTERCLONE'/%/etc/e2guardian/lists/filtergroups/f'$FILTERCOUNT'/%g" /etc/e2guardian/lists/filtergroups/f'$FILTERCOUNT'/bannedsitelist
+	sed -i "s%/etc/e2guardian/lists/filtergroups/'$FILTERCLONE'/%/etc/e2guardian/lists/filtergroups/f'$FILTERCOUNT'/%g" /etc/e2guardian/lists/filtergroups/f'$FILTERCOUNT'/bannedurllist
+	sed -i "s%/etc/e2guardian/lists/filtergroups/'$FILTERCLONE'/%/etc/e2guardian/lists/filtergroups/f'$FILTERCOUNT'/%g" /etc/e2guardian/lists/filtergroups/f'$FILTERCOUNT'/exceptionsitelist
+	sed -i "s%/etc/e2guardian/lists/filtergroups/'$FILTERCLONE'/%/etc/e2guardian/lists/filtergroups/f'$FILTERCOUNT'/%g" /etc/e2guardian/lists/filtergroups/f'$FILTERCOUNT'/exceptionurllist
 '
 fi
 restarte2guardian
@@ -480,16 +480,19 @@ then
 			mv /etc/e2guardian/lists/filtergroups/$FILTERGROUP /etc/e2guardian/lists/filtergroups/f$COUNTER
 			sed -i "s/$FILTERGROUP/f$COUNTER/g" /etc/e2guardian/e2guardian$FILTERGROUP.conf
 			mv /etc/e2guardian/e2guardian$FILTERGROUP.conf /etc/e2guardian/e2guardianf$COUNTER.conf
+
+			#Modify config files to point at the correct filter group
+			sed -i "s%/etc/e2guardian/lists/filtergroups/$FILTERGROUP/%/etc/e2guardian/lists/filtergroups/f$COUNTER/%g" /etc/e2guardian/lists/filtergroups/f$COUNTER/bannedsitelist
+			sed -i "s%/etc/e2guardian/lists/filtergroups/$FILTERGROUP/%/etc/e2guardian/lists/filtergroups/f$COUNTER/%g" /etc/e2guardian/lists/filtergroups/f$COUNTER/bannedurllist
+			sed -i "s%/etc/e2guardian/lists/filtergroups/$FILTERGROUP/%/etc/e2guardian/lists/filtergroups/f$COUNTER/%g" /etc/e2guardian/lists/filtergroups/f$COUNTER/exceptionsitelist
+			sed -i "s%/etc/e2guardian/lists/filtergroups/$FILTERGROUP/%/etc/e2guardian/lists/filtergroups/f$COUNTER/%g" /etc/e2guardian/lists/filtergroups/f$COUNTER/exceptionurllist
+
 		fi
 		let COUNTER=$COUNTER+1
 	done 
+
 	#Regenerate filter lists
 	/opt/karoshi/"useful scripts"/e2gupdatefilterlist
-	#Restart e2guardian
-	source /opt/karoshi/serversetup/variables/distro
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/e2guardian_stop 1>/dev/null
-	sleep 1
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/e2guardian_start 1>/dev/null
 else
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
 	#Delete filter folder
@@ -512,16 +515,19 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
 			mv /etc/e2guardian/lists/filtergroups/$FILTERGROUP /etc/e2guardian/lists/filtergroups/f$COUNTER
 			sed -i "s/$FILTERGROUP/f$COUNTER/g" /etc/e2guardian/e2guardian$FILTERGROUP.conf
 			mv /etc/e2guardian/e2guardian$FILTERGROUP.conf /etc/e2guardian/e2guardianf$COUNTER.conf
+
+			#Modify config files to point at the correct filter group
+			sed -i "s%/etc/e2guardian/lists/filtergroups/$FILTERGROUP/%/etc/e2guardian/lists/filtergroups/f$COUNTER/%g" /etc/e2guardian/lists/filtergroups/f$COUNTER/bannedsitelist
+			sed -i "s%/etc/e2guardian/lists/filtergroups/$FILTERGROUP/%/etc/e2guardian/lists/filtergroups/f$COUNTER/%g" /etc/e2guardian/lists/filtergroups/f$COUNTER/bannedurllist
+			sed -i "s%/etc/e2guardian/lists/filtergroups/$FILTERGROUP/%/etc/e2guardian/lists/filtergroups/f$COUNTER/%g" /etc/e2guardian/lists/filtergroups/f$COUNTER/exceptionsitelist
+			sed -i "s%/etc/e2guardian/lists/filtergroups/$FILTERGROUP/%/etc/e2guardian/lists/filtergroups/f$COUNTER/%g" /etc/e2guardian/lists/filtergroups/f$COUNTER/exceptionurllist
+
 		fi
 		let COUNTER=$COUNTER+1
 	done 
+
 	#Regenerate filter lists
 	/opt/karoshi/"useful scripts"/e2gupdatefilterlist
-	#Restart e2guardian
-	source /opt/karoshi/serversetup/variables/distro
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/e2guardian_stop 1>/dev/null
-	sleep 1
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/e2guardian_start 1>/dev/null
 '
 fi
 restarte2guardian

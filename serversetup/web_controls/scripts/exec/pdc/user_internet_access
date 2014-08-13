@@ -190,7 +190,7 @@ BANLENGTH=7
 echo '<b>'$TITLE2'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_Internet_Access"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a><br><br><form name="myform" action="user_internet_access.cgi" method="post">
 <input type="hidden" name="_ACTION_" value="banusers">
 <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tr><td style="width: '$WIDTH1'px;">'$USERNAMESMSG'</td><td style="width: 140px;"><input value="'$STUDENTS'" name="_USERNAMES_" style="width: '$WIDTH2'px;" type="text"></td>'
+<tr><td style="width: '$WIDTH1'px;">'$USERNAMESMSG'</td><td style="width: 140px;"><input value="'$USERNAMES'" name="_USERNAMES_" style="width: '$WIDTH2'px;" type="text"></td>'
 
 [ $MOBILE = no ] && echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_Internet_Access"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td>'
 
@@ -209,38 +209,21 @@ echo '</tr>
 <form name="myform" action="user_internet_access.cgi" method="post">'
 
 #Show any currently banned users.
-if [ $PROXYSERVER = `hostname-fqdn` ]
+
+if [ `cat /etc/squid/badusers.list | wc -l` -gt 0 ]
 then
-	if [ `cat /etc/squid/badusers.list | wc -l` -gt 0 ]
-	then
-		echo "<b>$TITLE3</b><br><br><table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-		<tr><td style=\"width: $WIDTH1"px";\"><b>$BANNEDUSERMSG</b></td><td><b>$DURATIONMSG2</b></td><td><b>$VIEWINCIDENTSMSG</b></td><td><b>$ALLOWMSG</b></td></tr>"
+	echo "<b>$TITLE3</b><br><br><table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+	<tr><td style=\"width: $WIDTH1"px";\"><b>$BANNEDUSERMSG</b></td><td><b>$DURATIONMSG2</b></td><td><b>$VIEWINCIDENTSMSG</b></td><td><b>$ALLOWMSG</b></td></tr>"
 
-		for BADUSER in `cat /etc/squid/badusers.list`
-		do
-			BANLENGTH="-"
-			[ -f /opt/karoshi/logs/banned_user_internet_durations/$BADUSER ] && BANLENGTH=`sed -n 1,1p /opt/karoshi/logs/banned_user_internet_durations/$BADUSER`
-			echo "<tr><td>$BADUSER</td><td>$BANLENGTH</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_viewincidents_USERNAMES_$BADUSER"_"\" type=\"image\" class=\"images\" src=\"$ICON2\" value=\"\"><span>$BADUSER<br>$VIEWINCIDENTSMSG</span></a></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_allowuser_USERNAMES_$BADUSER"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$BADUSER<br>$ALLOWUSERMSG</span></a></td></tr>"
-		done
-		echo "</tbody></table>"
-	fi
-else
-ssh -x -o PasswordAuthentication=no $PROXYSERVER '
-	if [ `cat /etc/squid/badusers.list | wc -l` -gt 0 ]
-	then
-		echo "<b>'$TITLE3'</b><br><br><table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-		<tr><td style=\"width: '$WIDTH1'"px";\"><b>'$BANNEDUSERMSG'</b></td><td><b>'$DURATIONMSG2'</b></td><td><b>'$VIEWINCIDENTSMSG'</b></td><td><b>'$ALLOWMSG'</b></td></tr>"
-
-		for BADUSER in `cat /etc/squid/badusers.list`
-		do
-			BANLENGTH="-"
-			[ -f /opt/karoshi/logs/banned_user_internet_durations/$BADUSER ] && BANLENGTH=`sed -n 1,1p /opt/karoshi/logs/banned_user_internet_durations/$BADUSER`
-			echo "<tr><td>$BADUSER</td><td>$BANLENGTH</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_viewincidents_USERNAMES_$BADUSER"_"\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>$BADUSER<br>'$VIEWINCIDENTSMSG'</span></a></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_allowuser_USERNAMES_$BADUSER"_"\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>$BADUSER<br>'$ALLOWUSERMSG'</span></a></td></tr>"
-		done
-		echo "</tbody></table>"
-	fi
-'
+	for BADUSER in `cat /etc/squid/badusers.list`
+	do
+		BANLENGTH="-"
+		[ -f /opt/karoshi/logs/banned_user_internet_durations/$BADUSER ] && BANLENGTH=`sed -n 1,1p /opt/karoshi/logs/banned_user_internet_durations/$BADUSER`
+		echo "<tr><td>$BADUSER</td><td>$BANLENGTH</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_viewincidents_USERNAMES_$BADUSER"_"\" type=\"image\" class=\"images\" src=\"$ICON2\" value=\"\"><span>$BADUSER<br>$VIEWINCIDENTSMSG</span></a></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_allowuser_USERNAMES_$BADUSER"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$BADUSER<br>$ALLOWUSERMSG</span></a></td></tr>"
+	done
+	echo "</tbody></table>"
 fi
+
 echo '</form>'
 }
 
@@ -248,13 +231,14 @@ echo '</form>'
 function banusers {
 ACTIONTAKEN=`echo "$ACTIONTAKEN" | sed 's/+/ /g'`
 INCIDENT=`echo "$INCIDENT" | sed 's/+/ /g'`
+
 USERNAME_ARRAY=( `echo $USERNAMES | sed 's/+/ /g'` )
 USERNAME_ARRAY_COUNT=`echo ${#USERNAME_ARRAY[@]}`
 COUNTER=0
+
 while [ $COUNTER -lt $USERNAME_ARRAY_COUNT ]
 do
 	USERNAME=`echo ${USERNAME_ARRAY[$COUNTER]}`
-
 	#Check to see that the user exists
 	getent passwd "$USERNAME" 1>/dev/null 2>/dev/null
 	if [ $? = 0 ]
@@ -295,15 +279,19 @@ do
 	let COUNTER=$COUNTER+1
 done
 
+#Copy badusers.list back to the main server
+[ $PROXYSERVER != `hostname-fqdn` ] && scp root@$PROXYSERVER:/etc/squid/badusers.list /etc/squid/
 #Activate the changes
 activate_changes
 }
 
 function allowuser {
+USERNAME=$USERNAMES
 echo `date`: user_internet_access - allowing $USERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
 if [ $PROXYSERVER = `hostname-fqdn` ]
 then
-	USERNAME=$USERNAMES
+	
 	#Remove the username from the list
 	USERLINENUMBER=`grep -n -w ^$USERNAME /etc/squid/badusers.list | cut -d: -f1`
 	[ ! -z "$USERLINENUMBER" ] && sed -i $USERLINENUMBER"d" /etc/squid/badusers.list
@@ -329,6 +317,10 @@ ssh -x -o PasswordAuthentication=no $PROXYSERVER '
 	[ $SITECOUNT = 0 ] && echo sampleuser > /etc/squid/badusers.list
 '
 fi
+
+#Copy badusers.list back to the main server
+[ $PROXYSERVER != `hostname-fqdn` ] && scp root@$PROXYSERVER:/etc/squid/badusers.list /etc/squid/
+
 #Activate the changes
 activate_changes
 }
@@ -367,5 +359,4 @@ fi
 [ "$ACTION" = view ] && viewbannedusers
 
 exit
-
 

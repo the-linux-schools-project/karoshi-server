@@ -260,11 +260,11 @@ cp -f /opt/karoshi/serversetup/modules/squid/scripts/internet_log_compress /opt/
 
 #Start squid and e2guardian.
 echo '<li>'$STARTSQUIDMSG'</li><br>'
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/squid_start 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_start 1>/dev/null
 echo '<li>'$STARTE2GMSG'</li><br>'
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/e2guardian_start 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/e2guardian_start 1>/dev/null
 echo '<li>'$STARTAPACHEMSG'</li><br>'
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_start 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 
 [ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
 

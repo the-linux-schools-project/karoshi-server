@@ -151,12 +151,12 @@ LOGTYPE=NOTSET
 #Create table header
 if [ '$MOBILE' = no ]
 then
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>'$TITLE2' '$WEBSITE' '$LOGDATE'</b></td><td style=\"vertical-align: top;\"><form action=\"/cgi-bin/admin/dg_banned_sites_fm.cgi\" method=\"post\" target=\"_blank\">
-<input name=\"_WEBSITE_'$WEBSITE'"_"\" type=\"submit\" class=\"button\" value=\"'$BANSITEMSG'\">
+echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>'$TITLE2' '$WEBSITE' '$LOGDATE'</b></td><td style=\"vertical-align: top;\"><form action=\"/cgi-bin/admin/e2g_filtergroups.cgi\" method=\"post\" target=\"_blank\">
+<input name=\"_FILTERNAME_f1_ACTION_viewcustomsites_FILTERDATA_banned_FILTERDATA2_'$WEBSITE'"_"\" type=\"submit\" class=\"button\" value=\"'$BANSITEMSG'\">
 </form></td></tr></tbody></table><br>"
 else
-echo "<b>'$TITLE2' '$WEBSITE' '$LOGDATE'</b><br><form action=\"/cgi-bin/admin/dg_banned_sites_fm.cgi\" method=\"post\" target=\"_blank\">
-<input name=\"_WEBSITE_'$WEBSITE'"_"\" type=\"submit\" class=\"button\" value=\"'$BANSITEMSG'\">
+echo "<b>'$TITLE2' '$WEBSITE' '$LOGDATE'</b><br><form action=\"/cgi-bin/admin/e2g_filtergroups.cgi\" method=\"post\" target=\"_blank\">
+<input name=\"_FILTERNAME_f1_ACTION_viewcustomsites_FILTERDATA_banned_FILTERDATA2_'$WEBSITE'"_"\" type=\"submit\" class=\"button\" value=\"'$BANSITEMSG'\">
 </form><br>"
 fi
 

@@ -21,6 +21,7 @@
 
 #Delete the current filtergroups list.
 [ -f /etc/e2guardian/lists/filtergroupslist ] && rm -f /etc/e2guardian/lists/filtergroupslist
+touch /etc/e2guardian/lists/filtergroupslist
 
 for FILTERGROUPS in /etc/e2guardian/lists/filtergroups/*
 do

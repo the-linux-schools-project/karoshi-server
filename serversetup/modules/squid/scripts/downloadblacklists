@@ -38,7 +38,7 @@ function downloadlist {
 cd /tmp
 echo `date`: downloadblacklists - downloading $TARGET >> $LOGFILEDIR/$LOG_DATE
 wget $TARGET
-if [ $? = 0 ]
+if [ $? != 0 ]
 then
 	echo `date`: downloadblacklists - failed to download $TARGET >> $LOGFILEDIR/$LOG_DATE
 	exit
