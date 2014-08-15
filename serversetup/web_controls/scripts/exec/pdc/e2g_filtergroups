@@ -139,11 +139,6 @@ then
 fi
 if [ "$ACTION" = reallyadd ]
 then
-	if [ -z "$FILTERDATA" ]
-	then
-		echo `date`: e2g_filtergroups - Blank filter label by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-		exit 101
-	fi
 	if [ -z "$FILTERDATA2" ]
 	then
 		echo `date`: e2g_filtergroups - Blank fiter description by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -240,7 +235,7 @@ echo '<td style="vertical-align: top;"><a class="info" target="_blank" href="htt
 #Show existing filtergroups
 
 echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">"
-[ $MOBILE = no ] && echo "<tr><td style=\"width: 40px;\"><b>$FILTERNAMEMSG</b></td><td style=\"width: 120px;\"><b>$FILTERLABELMSG</b></td><td style=\"width: 140px;\"><b>$FILTERDESCMSG</b></td><td style=\"width: 120px;\"><b>$ASSIGNEDGROUPSMSG</b></td></tr>"
+[ $MOBILE = no ] && echo "<tr><td style=\"width: 40px;\"><b>$FILTERNAMEMSG</b></td><td style=\"width: 140px;\"><b>$FILTERDESCMSG</b></td><td style=\"width: 120px;\"><b>$ASSIGNEDGROUPSMSG</b></td></tr>"
 
 if [ $PROXYSERVER = `hostname-fqdn` ]
 then
@@ -249,7 +244,7 @@ then
 		FILTERGROUP=`basename $FILTERGROUPS`
 		source /etc/e2guardian/lists/filtergroups/$FILTERGROUP/details
 		echo "<tr><td style=\"height: 40px;\" valign=\"top\">$FILTERGROUP</td>" 
-		[ $MOBILE = no ] && echo "<td valign=\"top\">$FILTERLABEL</td><td valign=\"top\">$FILTERDESC</td>" 
+		[ $MOBILE = no ] && echo "<td valign=\"top\">$FILTERDESC</td>" 
 		echo "<td valign=\"top\">"
 
 		#Get list of assigned groups
@@ -282,7 +277,7 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
 		FILTERGROUP=`basename $FILTERGROUPS`
 		source /etc/e2guardian/lists/filtergroups/$FILTERGROUP/details
 		echo "<tr><td style=\"height: 40px;\" valign=\"top\">$FILTERGROUP</td>"
-		[ '$MOBILE' = no ] && echo "<td valign=\"top\">$FILTERLABEL</td><td valign=\"top\">$FILTERDESC</td>" 
+		[ '$MOBILE' = no ] && echo "<td valign=\"top\">$FILTERDESC</td>" 
 		echo "<td valign=\"top\">"
 
 		#Get list of assigned groups
@@ -314,19 +309,17 @@ echo "</tbody></table></form>"
 }
 
 function reallyeditlabels {
-FILTERLABEL=`echo $FILTERDATA | sed "s/+/ /g"`
+
 FILTERDESC=`echo $FILTERDATA2 | sed "s/+/ /g"`
 
-if [ ! -z "$FILTERLABEL" ] && [ ! -z "$FILTERDESC" ] 
+if [ ! -z "$FILTERDESC" ] 
 then
 	if [ $PROXYSERVER = `hostname-fqdn` ]
 	then
-		echo "FILTERLABEL=\"$FILTERLABEL\"" > /etc/e2guardian/lists/filtergroups/$FILTERNAME/details
-		echo "FILTERDESC=\"$FILTERDESC\"" >> /etc/e2guardian/lists/filtergroups/$FILTERNAME/details
+		echo "FILTERDESC=\"$FILTERDESC\"" > /etc/e2guardian/lists/filtergroups/$FILTERNAME/details
 	else
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
-		echo "FILTERLABEL=\"'$FILTERLABEL'\"" > /etc/e2guardian/lists/filtergroups/'$FILTERNAME'/details
-		echo "FILTERDESC=\"'$FILTERDESC'\"" >> /etc/e2guardian/lists/filtergroups/'$FILTERNAME'/details
+		echo "FILTERDESC=\"'$FILTERDESC'\"" > /etc/e2guardian/lists/filtergroups/'$FILTERNAME'/details
 	'
 	fi
 fi
@@ -340,7 +333,6 @@ SUBTITLE="#Adding_extra_filter_groups"
 showtitle
 
 echo '<form name="myform" action="e2g_filtergroups.cgi" method="post">'$FILTERWARNINGMSG'<br><br><input type="hidden" name="_ACTION_" value="reallyadd"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$FILTERLABELMSG'</td><td><input tabindex= "1" name="_FILTERDATA_" style="width: 200px;" size="20" type="text"></td></tr>
 <tr><td style="width: 180px;">'$FILTERDESCMSG'</td><td><input tabindex= "1" name="_FILTERDATA2_" style="width: 200px;" size="20" type="text"></td></tr>
 <tr><td style="width: 180px;">'$FILTERCLONEMSG'</td><td><select name="_FILTERDATA3_" style="width: 200px;">'
 
@@ -451,7 +443,6 @@ fi
 echo '<form name="myform" action="e2g_filtergroups.cgi" method="post">
 <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tr><td style="width: 180px;">'$FILTERNAMEMSG'</td><td>'$FILTERNAME'</td></tr>
-<tr><td>'$FILTERLABELMSG'</td><td>'$FILTERLABEL'</td></tr>
 <tr><td>'$FILTERDESCMSG'</td><td>'$FILTERDESC'</td></tr></tbody></table><br>
 '$CONFIRMDELETEMSG'<br><br><input type="hidden" name="_ACTION_" value="reallydelete"><br><input type="hidden" name="_FILTERNAME_" value="'$FILTERNAME'"><input value="'$SUBMITMSG'" class="button" type="submit"></form>'
 }
@@ -549,8 +540,7 @@ fi
 
 #Show details for the group
 echo "<form name=\"myform\" action=\"e2g_filtergroups.cgi\" method=\"post\"><input type=\"hidden\" name=\"_FILTERNAME_\" value=\"$FILTERNAME\"><input type=\"hidden\" name=\"_ACTION_\" value=\"reallyeditlable\"><table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: $WIDTH1"px";\">$FILTERNAMEMSG</td><td>$FILTERNAME</td></tr><tr><td>$FILTERLABELMSG</td><td><input tabindex= \"1\" value=\"$FILTERLABEL\" name=\"_FILTERDATA_\" style=\"width: $WIDTH2"px";\" size=\"20\" type=\"text\"></td><td><input value=\"$SUBMITMSG\" class=\"button\" type=\"submit\"></td></tr>
-<tr><td>$FILTERDESCMSG</td><td><input tabindex= \"2\" value=\"$FILTERDESC\" name=\"_FILTERDATA2_\" style=\"width: $WIDTH2"px";\" size=\"20\" type=\"text\"></td></tr></tbody></table><br>"
+<tr><td style=\"width: $WIDTH1"px";\">$FILTERDESCMSG</td><td><input tabindex= \"2\" value=\"$FILTERDESC\" name=\"_FILTERDATA2_\" style=\"width: $WIDTH2"px";\" size=\"20\" type=\"text\"></td><td><input value=\"$SUBMITMSG\" class=\"button\" type=\"submit\"></td></tr></tbody></table><br>"
 
 #Show option to edit banned site lists and part banned site lists
 echo "</form><form name=\"myform\" action=\"e2g_filtergroups.cgi\" method=\"post\">
@@ -560,22 +550,14 @@ echo "</form><form name=\"myform\" action=\"e2g_filtergroups.cgi\" method=\"post
 <tr><td>$CUSTOMALLOWSEDSITESMSG</td><td style=\"vertical-align: top;\">
 <a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_viewcustomsites_FILTERDATA_allowed_\" type=\"image\" class=\"images\" src=\"$ICON4\" value=\"\"><span>$EDITMSG<br>$CUSTOMALLOWSEDSITESMSG</span></a>
 </td></tr>
-<tr><td>$CUSTOMPARTALLOWSEDSITESMSG</td><td style=\"vertical-align: top;\">
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_viewcustomsites_FILTERDATA_partallowed_\" type=\"image\" class=\"images\" src=\"$ICON4\" value=\"\"><span>$EDITMSG<br>$CUSTOMPARTALLOWSEDSITESMSG</span></a>
-</td></tr>
 <tr><td>$CUSTOMBANNEDSITESMSG</td><td style=\"vertical-align: top;\">
 <a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_viewcustomsites_FILTERDATA_banned_\" type=\"image\" class=\"images\" src=\"$ICON4\" value=\"\"><span>$EDITMSG<br>$CUSTOMBANNEDSITESMSG</span></a>
 </td></tr>
-<tr><td>$CUSTOMPARTBANNEDSITESMSG</td><td style=\"vertical-align: top;\">
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_viewcustomsites_FILTERDATA_partbanned_\" type=\"image\" class=\"images\" src=\"$ICON4\" value=\"\"><span>$EDITMSG<br>$CUSTOMPARTBANNEDSITESMSG</span></a>
-</td></tr>
 <tr><td>$BANNEDLISTSMSG</td><td style=\"vertical-align: top;\">
 <a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_editfilterlists_FILTERDATA_domains_\" type=\"image\" class=\"images\" src=\"$ICON4\" value=\"\"><span>$EDITMSG<br>$BANNEDLISTSMSG</span></a>
-</td></tr>
-<tr><td>$PARTBANNEDLISTSMSG</td><td style=\"vertical-align: top;\">
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_editfilterlists_FILTERDATA_urls_\" type=\"image\" class=\"images\" src=\"$ICON4\" value=\"\"><span>$EDITMSG<br>$PARTBANNEDLISTSMSG</span></a>
-</td></tr>
-<tr><td>$BANNEDPHRASELISTSMSG</td><td style=\"vertical-align: top;\">
+</td></tr>"
+#echo "<tr><td>$PARTBANNEDLISTSMSG</td><td style=\"vertical-align: top;\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_editfilterlists_FILTERDATA_urls_\" type=\"image\" class=\"images\" src=\"$ICON4\" value=\"\"><span>$EDITMSG<br>$PARTBANNEDLISTSMSG</span></a></td></tr>"
+echo "<tr><td>$BANNEDPHRASELISTSMSG</td><td style=\"vertical-align: top;\">
 <a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_editfilterlists_FILTERDATA_phraselists_\" type=\"image\" class=\"images\" src=\"$ICON4\" value=\"\"><span>$EDITMSG<br>$BANNEDPHRASELISTSMSG</span></a>
 </td></tr>
 <tr><td>$BANNEDEXTENSIONLISTSMSG</td><td style=\"vertical-align: top;\">
@@ -759,7 +741,7 @@ fi
 #Show details for the group
 
 echo "<form name=\"myform\" action=\"e2g_filtergroups.cgi\" method=\"post\"><table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\">$FILTERNAMEMSG</td><td>$FILTERNAME</td></tr><tr><td style=\"width: 180px;\">$FILTERLABELMSG</td><td>$FILTERLABEL</td></tr>
+<tr><td style=\"width: 180px;\">$FILTERNAMEMSG</td><td>$FILTERNAME</td></tr>
 <tr><td>$FILTERDESCMSG</td><td>$FILTERDESC</td></tr></tbody></table><br><br>"
 
 echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
@@ -834,6 +816,19 @@ then
 		[ $FILTERDATA3 = deactivate ] && sed -i "$LINENUM"s"/^.Include/#.Include/" /etc/e2guardian/lists/filtergroups/$FILTERNAME/$FILENAME 
 		[ $FILTERDATA3 = activate ] && sed -i "$LINENUM"s"/^#.Include/.Include/" /etc/e2guardian/lists/filtergroups/$FILTERNAME/$FILENAME
 	fi
+
+	if [ $FILENAME = bannedsitelist ]
+	then
+		#Do part banned sites as well
+		#Get the line number of list
+		LINENUM=`grep -n "/$FILTERDATA2" /etc/e2guardian/lists/filtergroups/$FILTERNAME/bannedurllist | cut -d: -f1 | sed -n 1,1p`
+		if [ ! -z "$LINENUM" ]
+		then
+			[ $FILTERDATA3 = deactivate ] && sed -i "$LINENUM"s"/^.Include/#.Include/" /etc/e2guardian/lists/filtergroups/$FILTERNAME/bannedurllist
+			[ $FILTERDATA3 = activate ] && sed -i "$LINENUM"s"/^#.Include/.Include/" /etc/e2guardian/lists/filtergroups/$FILTERNAME/bannedurllist
+		fi
+	fi
+
 else
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
 	#Get the line number of list
@@ -844,6 +839,19 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
 		[ '$FILTERDATA3' = deactivate ] && sed -i "$LINENUM"s"/^.Include/#.Include/" /etc/e2guardian/lists/filtergroups/'$FILTERNAME'/'$FILENAME'
 		[ '$FILTERDATA3' = activate ] && sed -i "$LINENUM"s"/^#.Include/.Include/" /etc/e2guardian/lists/filtergroups/'$FILTERNAME'/'$FILENAME'
 	fi
+
+	if [ '$FILENAME' = bannedsitelist ]
+	then
+		#Do part banned sites as well
+		#Get the line number of list
+		LINENUM=`grep -n "/'$FILTERDATA2'" /etc/e2guardian/lists/filtergroups/'$FILTERNAME'/bannedurllist | cut -d: -f1 | sed -n 1,1p`
+		if [ ! -z "$LINENUM" ]
+		then
+			[ '$FILTERDATA3' = deactivate ] && sed -i "$LINENUM"s"/^.Include/#.Include/" /etc/e2guardian/lists/filtergroups/'$FILTERNAME'/bannedurllist
+			[ '$FILTERDATA3' = activate ] && sed -i "$LINENUM"s"/^#.Include/.Include/" /etc/e2guardian/lists/filtergroups/'$FILTERNAME'/bannedurllist
+		fi
+	fi
+
 '
 fi
 activatechanges
@@ -865,7 +873,7 @@ else
 fi
 
 echo "<form name=\"myform\" action=\"e2g_filtergroups.cgi\" method=\"post\"><table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\">$FILTERNAMEMSG</td><td>$FILTERNAME</td></tr><tr><td style=\"width: 180px;\">$FILTERLABELMSG</td><td>$FILTERLABEL</td></tr>
+<tr><td style=\"width: 180px;\">$FILTERNAMEMSG</td><td>$FILTERNAME</td></tr>
 <tr><td>$FILTERDESCMSG</td><td>$FILTERDESC</td></tr></tbody></table><br>"
 
 #Show allowed extensions
@@ -977,7 +985,7 @@ else
 fi
 
 echo "<form name=\"myform\" action=\"e2g_filtergroups.cgi\" method=\"post\"><table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\">$FILTERNAMEMSG</td><td>$FILTERNAME</td></tr><tr><td style=\"width: 180px;\">$FILTERLABELMSG</td><td>$FILTERLABEL</td></tr>
+<tr><td style=\"width: 180px;\">$FILTERNAMEMSG</td><td>$FILTERNAME</td></tr>
 <tr><td>$FILTERDESCMSG</td><td>$FILTERDESC</td></tr></tbody></table><br>"
 
 echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
@@ -1086,7 +1094,8 @@ if [ $FILTERDATA = banned ]
 then
 	TITLE="$TITLE11"
 	HELPMSG="$HELPMSG11"
-	CUSTOMFILE=bannedsites
+	CUSTOMFILE1=bannedsites
+	CUSTOMFILE2=bannedurls
 	if [ ! -z "$FILTERDATA2" ]
 	then
 		[ `echo $FILTERDATA2 | grep -F -c "."` -gt 0 ] && BANSITE=$FILTERDATA2
@@ -1097,7 +1106,8 @@ if [ $FILTERDATA = allowed ]
 then
 	TITLE="$TITLE12"
 	HELPMSG="$HELPMSG12"
-	CUSTOMFILE=exceptionsites
+	CUSTOMFILE1=exceptionsites
+	CUSTOMFILE1=exceptionurls
 fi
 
 if [ $FILTERDATA = partallowed ]
@@ -1127,7 +1137,7 @@ fi
 #Show details for the group
 
 echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: $WIDTH1"px";\">$FILTERNAMEMSG</td><td>$FILTERNAME</td></tr><tr><td style=\"width: $WIDTH1"px";\">$FILTERLABELMSG</td><td>$FILTERLABEL</td></tr>
+<tr><td style=\"width: $WIDTH1"px";\">$FILTERNAMEMSG</td><td>$FILTERNAME</td></tr>
 <tr><td>$FILTERDESCMSG</td><td>$FILTERDESC</td></tr></tbody></table><br><br>"
 
 #Show banned sites for the chosen filtergroup
@@ -1139,8 +1149,8 @@ echo "<form name=\"myform\" action=\"e2g_filtergroups.cgi\" method=\"post\">
 <input type=\"hidden\" name=\"_FILTERDATA_\" value=\"$FILTERDATA\">
 <table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
 <tr><td style=\"width: $WIDTH1"px";\">Add Site</td><td><input tabindex= \"1\" name=\"_ACTION_modifycustomsite_FILTERDATA3_add_FILTERDATA2_\" style=\"width: $WIDTH2"px";\" value=\"$BANSITE\" size=\"20\" type=\"text\"></td>
-<td></td><td><input value=\"Submit\" class=\"button\" type=\"submit\"></td>
-</tr><tr><td></td><td>"
+<td><input value=\"Submit\" class=\"button\" type=\"submit\"></td><td style=\"vertical-align: top;\"><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Filter_Management\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$HELPMSG15</span></a></td></tr>
+<tr><td></td><td colspan=\"2\">"
 
 if [ $PROXYSERVER = `hostname-fqdn` ]
 then
@@ -1167,7 +1177,7 @@ echo "</td></tr></tbody></table></form>
 <input type=\"hidden\" name=\"_FILTERDATA_\" value=\"$FILTERDATA\">
 <table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
 
-<tr><td style=\"width: $WIDTH1"px";\">Search</td><td><input tabindex= \"2\" name=\"_ACTION_viewcustomsites_FILTERDATA2_\" value=\"$SEARCH\" style=\"width: $WIDTH2"px";\" size=\"20\" type=\"text\"></td><td><input value=\"Submit\" class=\"button\" type=\"submit\"></td></tr>
+<tr><td style=\"width: $WIDTH1"px";\">Search</td><td><input tabindex= \"2\" name=\"_ACTION_viewcustomsites_FILTERDATA2_\" value=\"$SEARCH\" style=\"width: $WIDTH2"px";\" size=\"20\" type=\"text\"></td><td><input value=\"Submit\" class=\"button\" type=\"submit\"></td><td style=\"vertical-align: top;\"><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Filter_Management\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$HELPMSG16</span></a></td></tr>
 </tbody></table><br></form>
 <form name=\"myform\" action=\"e2g_filtergroups.cgi\" method=\"post\">
 <input type=\"hidden\" name=\"_FILTERNAME_\" value=\"$FILTERNAME\">
@@ -1179,28 +1189,22 @@ echo "</td></tr></tbody></table></form>
 
 if [ $PROXYSERVER = `hostname-fqdn` ]
 then
-	if [ `cat /etc/e2guardian/lists/filtergroups/$FILTERNAME/$CUSTOMFILE | wc -l` -gt 0 ]
-	then
-		echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-	<tr><td style=\"width: $WIDTH3"px";\"><b>Site</b></td><td><b>Remove</b></td></tr>"
-		for SITE in `cat /etc/e2guardian/lists/filtergroups/$FILTERNAME/$CUSTOMFILE | grep ^"$SEARCH"`
-		do
-			echo "<tr><td>$SITE</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_FILTERDATA2_$SITE"_"\" type=\"image\" class=\"images\" src=\"$ICON5\" value=\"\"><span>$DELETEMSG $SITE</span></a></td></tr>"
-		done
-		echo "</tbody></table>"
-	fi
+	echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+<tr><td style=\"width: $WIDTH3"px";\"><b>Site</b></td><td><b>Remove</b></td></tr>"
+	for SITE in `cat /etc/e2guardian/lists/filtergroups/$FILTERNAME/$CUSTOMFILE1 /etc/e2guardian/lists/filtergroups/$FILTERNAME/$CUSTOMFILE2 | sort | grep "$SEARCH"`
+	do
+		echo "<tr><td>$SITE</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_FILTERDATA2_$SITE"_"\" type=\"image\" class=\"images\" src=\"$ICON5\" value=\"\"><span>$DELETEMSG $SITE</span></a></td></tr>"
+	done
+	echo "</tbody></table>"
 else
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
-	if [ `cat /etc/e2guardian/lists/filtergroups/'$FILTERNAME'/'$CUSTOMFILE' | wc -l` -gt 0 ]
-	then
-		echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-	<tr><td style=\"width: '$WIDTH3'"px";\"><b>Site</b></td><td><b>Remove</b></td></tr>"
-		for SITE in `cat /etc/e2guardian/lists/filtergroups/'$FILTERNAME'/'$CUSTOMFILE' | grep ^"'$SEARCH'"`
-		do
-			echo "<tr><td>$SITE</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_FILTERDATA2_$SITE"_"\" type=\"image\" class=\"images\" src=\"'$ICON5'\" value=\"\"><span>'$DELETEMSG' $SITE</span></a></td></tr>"
-		done
-		echo "</tbody></table>"
-	fi
+	echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+<tr><td style=\"width: '$WIDTH3'"px";\"><b>Site</b></td><td><b>Remove</b></td></tr>"
+	for SITE in `cat /etc/e2guardian/lists/filtergroups/'$FILTERNAME'/'$CUSTOMFILE1' /etc/e2guardian/lists/filtergroups/'$FILTERNAME'/'$CUSTOMFILE2' | sort | grep "'$SEARCH'"`
+	do
+		echo "<tr><td>$SITE</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_FILTERDATA2_$SITE"_"\" type=\"image\" class=\"images\" src=\"'$ICON5'\" value=\"\"><span>'$DELETEMSG' $SITE</span></a></td></tr>"
+	done
+	echo "</tbody></table>"
 '
 fi
 echo "</form>"
@@ -1208,54 +1212,42 @@ echo "</form>"
 
 function modifycustomsite {
 
-[ $FILTERDATA = partbanned ] && CUSTOMFILE=bannedurls
-[ $FILTERDATA = banned ] && CUSTOMFILE=bannedsites
-[ $FILTERDATA = allowed ] && CUSTOMFILE=exceptionsites
-[ $FILTERDATA = partallowed ] && CUSTOMFILE=exceptionurls
-
-
 if [ ! -z "$FILTERNAME" ] && [ ! -z "$FILTERDATA" ] && [ ! -z "$FILTERDATA2" ] && [ ! -z "$FILTERDATA4" ]
 then
 	FILTERDATA2=`echo $FILTERDATA2 | sed "s/^https//g" | sed "s/^http//g" | sed "s/%3A//g" | sed "s/%2F%2F//g" | sed "s/^www.//g" | sed "s/%2F/\//g"`
 	#Check url
-	ADDURL=yes
-	[ `echo $FILTERDATA2 | grep -F -c "."` = 0 ] && ADDURL=no
 
-	if [ "$FILTERDATA" = partbanned ] || [ "$FILTERDATA" = partallowed ]
+	if [ $FILTERDATA = banned ]
 	then
-		[ `echo $FILTERDATA2 | grep -F -c "/"` = 0 ] && ADDURL=no
+		CUSTOMFILE=bannedsites
+		[ `echo $FILTERDATA2 | grep -F -c "/"` != 0 ] && CUSTOMFILE=bannedurls
 	fi
 
-	if [ "$FILTERDATA" = banned ] || [ "$FILTERDATA" = allowed ]
+	if [ $FILTERDATA = allowed ]
 	then
-		[ `echo $FILTERDATA2 | grep -F -c "/"` != 0 ] && ADDURL=no
+		CUSTOMFILE=exceptionsites
+		[ `echo $FILTERDATA2 | grep -F -c "/"` != 0 ] && CUSTOMFILE=exceptionurls
 	fi
-
-
-	[ $ADDURL = no ] && echo `date`: e2g_filtergroups - incorrect url $FILTERDATA2 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 	#Add site to the banned or allowed lists
 	if [ "$FILTERDATA" = banned ] || [ "$FILTERDATA" = partbanned ] || [ "$FILTERDATA" = allowed ] || [ "$FILTERDATA" = partallowed ]
 	then
 		if [ $FILTERDATA3 = add ]
 		then
-			if [ $ADDURL = yes ]
-			then
-				for FILTERGROUP in `echo $FILTERDATA4 | sed "s/_/ /g" | sed "s/^ //g"`
-				do
-					echo `date`: e2g_filtergroups - adding $FILTERDATA2 to $FILTERGROUP $CUSTOMFILE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-					if [ $PROXYSERVER = `hostname-fqdn` ]
-					then
-						echo $FILTERDATA2 >> /etc/e2guardian/lists/filtergroups/$FILTERGROUP/$CUSTOMFILE
-						sort --unique /etc/e2guardian/lists/filtergroups/$FILTERGROUP/$CUSTOMFILE -o /etc/e2guardian/lists/filtergroups/$FILTERGROUP/$CUSTOMFILE
-					else
-					ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
-						echo '$FILTERDATA2' >> /etc/e2guardian/lists/filtergroups/'$FILTERGROUP'/'$CUSTOMFILE'
-						sort --unique /etc/e2guardian/lists/filtergroups/'$FILTERGROUP'/'$CUSTOMFILE' -o /etc/e2guardian/lists/filtergroups/'$FILTERGROUP'/'$CUSTOMFILE'
-					'
-					fi
-				done
-			fi
+			for FILTERGROUP in `echo $FILTERDATA4 | sed "s/_/ /g" | sed "s/^ //g"`
+			do
+				echo `date`: e2g_filtergroups - adding $FILTERDATA2 to $FILTERGROUP $CUSTOMFILE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+				if [ $PROXYSERVER = `hostname-fqdn` ]
+				then
+					echo $FILTERDATA2 >> /etc/e2guardian/lists/filtergroups/$FILTERGROUP/$CUSTOMFILE
+					sort --unique /etc/e2guardian/lists/filtergroups/$FILTERGROUP/$CUSTOMFILE -o /etc/e2guardian/lists/filtergroups/$FILTERGROUP/$CUSTOMFILE
+				else
+				ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
+					echo '$FILTERDATA2' >> /etc/e2guardian/lists/filtergroups/'$FILTERGROUP'/'$CUSTOMFILE'
+					sort --unique /etc/e2guardian/lists/filtergroups/'$FILTERGROUP'/'$CUSTOMFILE' -o /etc/e2guardian/lists/filtergroups/'$FILTERGROUP'/'$CUSTOMFILE'
+				'
+				fi
+			done
 		fi
 
 		#Delete site from the banned list
@@ -1324,5 +1316,4 @@ activatechanges
 [ "$ACTION" = activatechanges ] && ( activatechanges ; viewfilters )
 
 exit
-
 
