@@ -1,103 +1,154 @@
 #!/bin/bash
 
-#####################
-#Set user permissions
-#################### 
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+#
+#Website: http://www.karoshi.org.uk
 
+#Array of folders to check for user home areas
 HOMEPATH[1]=/home/users/staff
 HOMEPATH[2]=/home/users/itadminstaff
 HOMEPATH[3]=/home/users/officestaff
 HOMEPATH[4]=/home/users/techstaff
 HOMEPATH[5]=/home/users/exams
-HOMEPATH[6]=/home/users/guests
+HOMEPATH[6]=/home/users/guestusers
 HOMEPATH[7]=/home/users/nonteachingstaff
 HOMEPATH[8]=/home/users/studentstaff
 HOMEPATH[9]=/home/users/techstaff
-HOMEPATH[10]=/home/users/students/yr1999
-HOMEPATH[11]=/home/users/students/yr2000
-HOMEPATH[12]=/home/users/students/yr2001
-HOMEPATH[13]=/home/users/students/yr2002
-HOMEPATH[14]=/home/users/students/yr2003
-HOMEPATH[15]=/home/users/students/yr2004
-HOMEPATH[16]=/home/users/students/yr2005
-HOMEPATH[17]=/home/users/students/yr2006
-HOMEPATH[18]=/home/users/students/yr2007
-HOMEPATH[19]=/home/users/students/yr2008
-HOMEPATH[20]=/home/users/students/yr2009
-HOMEPATH[21]=/home/users/students/yr2010
-HOMEPATH[22]=/home/users/students/yr2011
-HOMEPATH[23]=/home/users/students/yr2012
+HOMEPATH[10]=/home/users/students/yr2006
+HOMEPATH[11]=/home/users/students/yr2007
+HOMEPATH[12]=/home/users/students/yr2008
+HOMEPATH[13]=/home/users/students/yr2009
+HOMEPATH[14]=/home/users/students/yr2010
+HOMEPATH[15]=/home/users/students/yr2011
+HOMEPATH[16]=/home/users/students/yr2012
+HOMEPATH[17]=/home/users/students/yr2013
+HOMEPATH[18]=/home/users/students/yr2014
+HOMEPATH[19]=/home/users/students/yr2015
+HOMEPATH[20]=/home/users/students/yr2016
+HOMEPATH[21]=/home/users/students/yr2017
+HOMEPATH[22]=/home/users/students/yr2018
+HOMEPATH[23]=/home/users/students/yr2019
+HOMEPATH[23]=/home/users/students/yr2020
 
 
+#Set permisions on user home areas
 COUNTER=1
 ARRAYCOUNT=`echo ${#HOMEPATH[@]}`
-sleep 0.5
 while [ $COUNTER -le $ARRAYCOUNT ]
 do
-FOLDERHOMEPATH=${HOMEPATH[$COUNTER]}
-echo -e "Processing $FOLDERHOMEPATH"
-if [ -d $FOLDERHOMEPATH ]
-then
-FOLDERCOUNT=`ls -1 $FOLDERHOMEPATH | wc -l`
-echo -e "Number of users - $FOLDERCOUNT\n"
-sleep 1
-if [ $FOLDERCOUNT != 0 ]
-then
-for FOLDERS in $FOLDERHOMEPATH/*
-do
-USERNAME=`basename $FOLDERS`
-echo Username - $USERNAME
-echo Home folder - $FOLDERS
-if [ `echo $FOLDERS | grep -c /home/users` = 1 ]
-then
-chown -R $USERNAME $FOLDERS
-else
-echo
-echo WARNING - Error code 411c for $USERNAME
-echo with folder $FOLDERS
-echo
-echo Press the enter key to continue
-read pause
-fi
-STATUS=`echo $?`
-if [ $STATUS != 0 ]
-then
-echo
-echo WARNING - Error code 411b for $USERNAME
-echo with folder $FOLDERS
-echo
-echo Press the enter key to continue
-read pause
-fi
-echo
+	FOLDERHOMEPATH=${HOMEPATH[$COUNTER]}
+	echo -e "Processing $FOLDERHOMEPATH"
+	if [ -d $FOLDERHOMEPATH ]
+	then
+		chown root.root $FOLDERHOMEPATH
+		chmod 0755 $FOLDERHOMEPATH
+		FOLDERCOUNT=`ls -1 $FOLDERHOMEPATH | wc -l`
+		echo -e "Number of users - $FOLDERCOUNT\n"
+		sleep 1
+		if [ $FOLDERCOUNT != 0 ]
+		then
+			for FOLDER in $FOLDERHOMEPATH/*
+			do
+			USERNAME=`basename $FOLDER`
+			echo Username - $USERNAME Home folder - $FOLDER
+			chown -R $USERNAME.root $FOLDER
+			chmod -R 0600 $FOLDER
+			chmod -R u+X $FOLDER
+			if [ $? != 0 ]
+			then
+				echo -e "\nWARNING - Problem in setting the permissions for $USERNAME $FOLDER\n\nPress a key to continue\n"
+				read pause
+			fi
+
+			#Set permissions for the user's email folder if it exists
+			if [ -d /home/users/email/$USERNAME ]
+			then
+				echo Username - $USERNAME Email folder - /home/users/email/$USERNAME
+				chown -R $USERNAME.root /home/users/email/$USERNAME
+				chmod -R 0600 /home/users/email/$USERNAME
+				chmod -R u+X /home/users/email/$USERNAME
+			fi
+			done
+		fi
+	fi
+	echo -e "_________________________________________\n"
+	let COUNTER=$COUNTER+1
 done
+
+#Set acls for student folders to allow staff read only access
+if [ -d /home/users/students ]
+then
+	echo -e "\nSettting staff access to student home areas\n"
+	chown root.root /home/users/students
+	chmod 0750 /home/users/students
+	setfacl -R -m g:staff:r-x,d:g:staff:r-x /home/users/students
 fi
-fi
+
 echo -e "_________________________________________\n"
-let COUNTER=$COUNTER+1
-done
 
-exit
-
-#crap version
-
-getent passwd > /opt/karoshi/.tempdata/userdata.$$
-COUNTER=1
-USERCOUNT=`cat /opt/karoshi/.tempdata/userdata.$$ | wc -l`
-while [ $COUNTER -le $USERCOUNT ]
-do
-USERINFO=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/.tempdata/userdata.$$`
-USERNAME=`echo $USERINFO | cut -d: -f1`
-USERHOMEPATH=`echo $USERINFO | cut -d: -f6`
-USERID=`echo $USERINFO | cut -d: -f3`
-if [ $USERID -gt 6000 ] && [ `echo $USERHOMEPATH | grep -c /home/users` -gt 0 ] && [ -d $USERHOMEPATH ]
+#Set permissions on staffshare folder
+if [ -d /home/staffshare ]
 then
-echo Setting permissions for $USERNAME
-echo Home path - $USERHOMEPATH
-chown -R $USERNAME $USERHOMEPATH
+	echo -e "\nSetting permissions on staffshare\n"
+	chown root.staff -R /home/staffshare
+	chmod 0750 /home/staffshare
+	chmod -R 0660 /home/staffshare/*
+	chmod -R u+X,g+X /home/staffshare/*
+	setfacl -Rm u::rwx,g::---,o::---,g:staff:rwx,d:u::rwx,d:g::---,d:o::---,d:g:staff:rwx /home/staffshare
+	setfacl -m g:staff:r-x,u::r-x /home/staffshare
+	setfacl -bR /home/staffshare/smt
+	setfacl -Rm u::rwx,g::---,o::---,g:smt:rwx,d:u::rwx,d:g::---,d:o::---,d:g:smt:rwx /home/staffshare/smt
 fi
-let COUNTER=$COUNTER+1
-done
-rm -f /opt/karoshi/.tempdata/userdata.$$
-echo Completed
+
+echo -e "_________________________________________\n"
+
+#Set permissions on subjects folder
+if [ -d /home/subjects ]
+then
+	echo -e "\nSetting permissions on subjects\n"
+	chown root.staff -R /home/subjects
+	chmod 0755 /home/subjects
+	chmod -R 0664 /home/subjects/*
+	chmod -R u+X,g+X,o+X /home/subjects/*
+	setfacl -Rm u::rwx,g::r-x,o::r-x,g:staff:rwx,d:u::rwx,d:g::r-x,d:o::r-x,d:g:staff:rwx /home/subjects
+	setfacl -m g:staff:r-x,u::r-x /home/subjects
+fi
+
+echo -e "_________________________________________\n"
+
+#Set permissions on officestaff folder
+if [ -d /home/officeshare ]
+then
+	echo -e "\nSetting permissions on officestaff\n"
+	chmod 2660 -R /home/officeshare
+	chmod u+X,g+X -R /home/officeshare
+	chown -R root.officestaff /home/officeshare
+	setfacl -Rm u::rwx,g::---,o::---,g:officestaff:rwx,d:u::rwx,d:g::---,d:o::---,d:g:officestaff:rwx /home/officeshare
+fi
+
+echo -e "_________________________________________\n"
+
+#Set permission on email folder
+if [ -d /home/users/email ]
+then
+	echo -e "\nSetting permissions on /home/users/email\n"
+	chown root.root /home/users/email
+	chmod 0755 /home/users/email
+fi
+
 exit
+
+

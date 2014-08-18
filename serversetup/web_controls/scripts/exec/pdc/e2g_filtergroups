@@ -905,7 +905,7 @@ then
 		if [ ! -z "$FILEEXTENSION" ]
 		then
 		echo "<tr><td style=\"vertical-align:top\">$FILEEXTENSION</td>"
-		[ $MOBILE = no ] && [ echo "<td>$DESCRIPTION</td>"
+		[ $MOBILE = no ] && echo "<td>$DESCRIPTION</td>"
 		echo "<td style=\"vertical-align:top\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_modifybannedextensionlists_FILTERNAME_$FILTERNAME"_"FILTERDATA_$FILEEXTENSION"_"FILTERDATA2_deactivate_\" type=\"image\" class=\"images\" src=\"$ICON3\" value=\"\"><span>$FILEEXTENSION<br><br>$ALLOWFILEEXTMSG</span></a></td></tr>"
 		fi
 	done
@@ -1149,7 +1149,7 @@ echo "<form name=\"myform\" action=\"e2g_filtergroups.cgi\" method=\"post\">
 <input type=\"hidden\" name=\"_FILTERDATA_\" value=\"$FILTERDATA\">
 <table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
 <tr><td style=\"width: $WIDTH1"px";\">Add Site</td><td><input tabindex= \"1\" name=\"_ACTION_modifycustomsite_FILTERDATA3_add_FILTERDATA2_\" style=\"width: $WIDTH2"px";\" value=\"$BANSITE\" size=\"20\" type=\"text\"></td>
-<td><input value=\"Submit\" class=\"button\" type=\"submit\"></td><td style=\"vertical-align: top;\"><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Filter_Management\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$HELPMSG15</span></a></td></tr>
+<td><input value=\"Submit\" class=\"button\" type=\"submit\"></td><td style=\"vertical-align: top;\"><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Filter_Management#Filter_Group_Options\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$HELPMSG15</span></a></td></tr>
 <tr><td></td><td colspan=\"2\">"
 
 if [ $PROXYSERVER = `hostname-fqdn` ]
@@ -1177,7 +1177,7 @@ echo "</td></tr></tbody></table></form>
 <input type=\"hidden\" name=\"_FILTERDATA_\" value=\"$FILTERDATA\">
 <table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
 
-<tr><td style=\"width: $WIDTH1"px";\">Search</td><td><input tabindex= \"2\" name=\"_ACTION_viewcustomsites_FILTERDATA2_\" value=\"$SEARCH\" style=\"width: $WIDTH2"px";\" size=\"20\" type=\"text\"></td><td><input value=\"Submit\" class=\"button\" type=\"submit\"></td><td style=\"vertical-align: top;\"><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Filter_Management\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$HELPMSG16</span></a></td></tr>
+<tr><td style=\"width: $WIDTH1"px";\">Search</td><td><input tabindex= \"2\" name=\"_ACTION_viewcustomsites_FILTERDATA2_\" value=\"$SEARCH\" style=\"width: $WIDTH2"px";\" size=\"20\" type=\"text\"></td><td><input value=\"Submit\" class=\"button\" type=\"submit\"></td><td style=\"vertical-align: top;\"><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Filter_Management#Filter_Group_Options\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$HELPMSG16</span></a></td></tr>
 </tbody></table><br></form>
 <form name=\"myform\" action=\"e2g_filtergroups.cgi\" method=\"post\">
 <input type=\"hidden\" name=\"_FILTERNAME_\" value=\"$FILTERNAME\">
