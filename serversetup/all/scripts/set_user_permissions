@@ -129,10 +129,10 @@ fi
 
 echo -e "_________________________________________\n"
 
-#Set permissions on officestaff folder
+#Set permissions on officeshare folder
 if [ -d /home/officeshare ]
 then
-	echo -e "\nSetting permissions on officestaff\n"
+	echo -e "\nSetting permissions on officeshare\n"
 	chmod 2660 -R /home/officeshare
 	chmod u+X,g+X -R /home/officeshare
 	chown -R root.officestaff /home/officeshare

@@ -107,7 +107,7 @@ then
 	#Link default-ssl to default-ssl.conf for later versions of apache on Ubuntu 14.04
 	if [ `grep -c "IncludeOptional sites-enabled/\*.conf" /etc/apache2/apache2.conf` -gt 0 ]
 	then
-		ln -s /etc/apache2/sites-enabled/default-ssl /etc/apache2/sites-enabled/default-ssl.conf
+		[ ! -e /etc/apache2/sites-enabled/default-ssl.conf ] && ln -s /etc/apache2/sites-enabled/default-ssl /etc/apache2/sites-enabled/default-ssl.conf
 	fi
 
 	#Point config file at the correct certificate

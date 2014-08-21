@@ -1,0 +1,174 @@
+#!/bin/bash
+#setupwebsite
+#Copyright (C) 2014  Paul Sharrad
+
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+[ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
+[ -d /var/www/html ] || mkdir -p /var/www/html
+[ ! -e /opt/karoshi/.tempdata/mysqlpasswordstatus ] || rm -f /opt/karoshi/.tempdata/mysqlpasswordstatus
+
+LANGCHOICE=englishuk
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/kanboard/setupkanboard ] || LANGCHOICE=englishuk
+source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/kanboard/setupkanboard
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+source /opt/karoshi/server_network/domain_information/domain_name
+
+########################
+#Ensure htaccess is enabled
+########################
+/opt/karoshi/serversetup/scripts/apache_htaccess
+
+###########################
+#make sure that mysql and apache are running
+###########################
+MYSQLSTATUS=`ps -e | grep -c $MYSQLDVER`
+APACHESTATUS=`ps -e | grep -c $APACHEVER`
+
+if [ $MYSQLSTATUS = 0 ]
+then
+	echo '<li>'$STARTMYSQLMSG'</li><br>'
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start 1>/dev/null
+fi
+if [ $APACHESTATUS = 0 ]
+then
+	echo '<li>'$STARTAPACHEMSG'</li><br>'
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
+fi
+
+
+#####################
+#Create kanboard mysql password for the new database
+#####################
+echo '<li>'$MYSQLMSG'</li><br>'
+RANGE=61
+COUNTER=1
+while [ $COUNTER -lt 16 ]
+do
+	row[$COUNTER]=$RANDOM
+	let "row[$COUNTER] %= $RANGE"
+	while [ ${row[$COUNTER]} = 0 ]
+	do
+		row[$COUNTER]=$RANDOM
+		let "row[$COUNTER] %= $RANGE"
+	done
+	CHARACTER[$COUNTER]=`sed -n ${row[$COUNTER]},1p /opt/karoshi/serversetup/pdc/"useful scripts"/.alphabet`
+	let COUNTER=COUNTER+1
+done
+
+WBPASS=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
+
+#############################
+#Make sure that we know the root mysql password
+#############################
+
+/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
+#Get root mysql password
+MYSQLPASS=`sed -n 1,1p /etc/mysql.secret`
+########################
+#Drop kanboard database if exists, create a new one and pipe in the data
+########################
+mysqladmin -f --password=$MYSQLPASS drop kanboard 1>/dev/null 2>/dev/null
+mysqladmin --password=$MYSQLPASS create kanboard 1>/dev/null
+CONNECT_STATUS=`echo $?`
+#mysql --password=$MYSQLPASS kanboard < /opt/karoshi/serversetup/modules/kanboard/kanboard.sql
+echo GRANT ALL PRIVILEGES ON kanboard.\* TO "'"kanboard_user"'"@"'"localhost"'" IDENTIFIED BY "'"$WBPASS"'"';' > /opt/karoshi/.tempdata/wbperms.sql
+mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/wbperms.sql
+rm -f /opt/karoshi/.tempdata/wbperms.sql
+##########################
+#Extract kanboard
+##########################
+echo '<li>'$EXTRACTMSG'</li><br>'
+cd /var/www/html/
+tar -xzf /opt/karoshi/serversetup/modules/kanboard/kanboard.tar.gz
+
+echo '<li>'$SETPERMS'</li><br>'
+
+chown -R root.$APACHEUSER /var/www/html/kanboard
+chmod -R 0640 /var/www/html/kanboard
+chmod -R u+X,g+X /var/www/html/kanboard
+chmod 0770 /var/www/html/kanboard/data
+
+######################
+#Modyfy config.php for kanboard
+######################
+
+LDAPSERVER=127.0.0.1
+#Get ldap server to use
+[ `grep -c -w "kdc" /etc/krb5.conf` -gt 0 ] && LDAPSERVER=`grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | cut -d"=" -f2`
+
+#CHANGE THIS - needs to point at the correct server.
+sed -i 's/CHANGETHISSERVER/'$LDAPSERVER'/g' /var/www/html/kanboard/config.php
+sed -i 's/CHANGETHISLDAPPATH/'$LDAPBASE'/g' /var/www/html/kanboard/config.php
+sed -i 's/CHANGETHISPASS/'$WBPASS'/g' /var/www/html/kanboard/config.php
+
+#####################################
+#Ensure that apache ports are open in shorewall
+#####################################
+MODCHECK=`grep -c -w 80 /etc/shorewall/rules`
+MODCHECK2=`grep -c -w 443 /etc/shorewall/rules`
+
+MOD_SHOREWALL=no
+if [ $MODCHECK = 0 ]
+then
+	MOD_SHOREWALL=yes
+	PORTS="80"
+fi
+
+if [ $MODCHECK2 = 0 ]
+then
+	MOD_SHOREWALL=yes
+	PORTS="443"
+fi
+
+if [ $MODCHECK = 0 ] && [ $MODCHECK2 = 0 ]
+then
+	MOD_SHOREWALL=yes
+	PORTS="80,443"
+fi
+
+if [ $MOD_SHOREWALL = yes ]
+then
+	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'apacherule /etc/shorewall/rules
+	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+fi
+
+######################
+#Restart shorewall
+######################
+if [ $MOD_SHOREWALL = yes ]
+then
+	echo '<li>'$RESTARTSWMSG'</li><br>'
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+fi
+
+#############################
+#Ensure that apache and mysql are running on boot
+#############################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mysql
+
+exit
+
+
