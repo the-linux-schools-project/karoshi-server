@@ -93,7 +93,7 @@ if [ -d /home/users/students ]
 then
 	echo -e "\nSettting staff access to student home areas\n"
 	chown root.root /home/users/students
-	chmod 0750 /home/users/students
+	chmod 0755 /home/users/students
 	setfacl -R -m g:staff:r-x,d:g:staff:r-x /home/users/students
 fi
 
