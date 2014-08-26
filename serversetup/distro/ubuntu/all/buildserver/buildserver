@@ -9,6 +9,8 @@ ADD_REPOS=yes
 UPDATE_REPOS=yes
 #Install xorg support - the initial karoshi setup will no run without graphical support.
 INSTALL_XORG=yes
+#Install e2guardian - internet filtering.
+INSTALL_E2GUARDIAN=yes
 #Install a lightwieght desktop environment.
 INSTALL_XFCE=yes
 #Install lightdm gtk display manager.
@@ -47,7 +49,7 @@ TURN_OFF_SERVICES=yes
 REBOOT=yes
 
 #Main list of packages to install (apart from samba4 and SOGo which are compiled).
-packages="glusterfs-server apache2-mpm-prefork libapache2-mod-php5 libapache2-mod-auth-kerb libssl-dev apache2-utils mysql-server php5-mysql php5-ldap php5-sqlite php-pear php5-cli php5-common php5-imap php5-mcrypt php5-curl php5-fpm php5-gd php5-intl php5-xmlrpc postfix postfix-ldap mb2md clamav clamav-daemon clamav-freshclam memcached dovecot-core dovecot-gssapi dovecot-imapd maildrop squid3 squid-deb-proxy dansguardian nginx shorewall mon isc-dhcp-server openvpn cups printer-driver-hpijs printer-driver-hpcups ghostscript-cups printer-driver-gutenprint ghostscript-cups tftpd-hpa nfs-kernel-server openssh-server openssh-client rsync unison squashfs-tools zip unzip libarchive-zip-perl perl nut-server spamassassin ntp monitorix freeradius libawl-php php5-xsl"
+packages="glusterfs-server apache2-mpm-prefork libapache2-mod-php5 libapache2-mod-auth-kerb libssl-dev apache2-utils mysql-server php5-mysql php5-ldap php5-sqlite php-pear php5-cli php5-common php5-imap php5-mcrypt php5-curl php5-fpm php5-gd php5-intl php5-xmlrpc postfix postfix-ldap mb2md clamav clamav-daemon clamav-freshclam memcached dovecot-core dovecot-gssapi dovecot-imapd maildrop squid3 squid-deb-proxy nginx shorewall mon isc-dhcp-server openvpn cups printer-driver-hpijs printer-driver-hpcups ghostscript-cups printer-driver-gutenprint ghostscript-cups tftpd-hpa nfs-kernel-server openssh-server openssh-client rsync unison squashfs-tools zip unzip libarchive-zip-perl perl nut-server spamassassin ntp monitorix freeradius libawl-php php5-xsl"
 
 #Utilities and other extras to install.
 extrapackages="libapache2-mod-suphp apache2-suexec wakeonlan git xarchiver nmap easy-rsa libmime-lite-perl libfile-type-perl hpijs-ppds hp-ppd openprinting-ppds printer-driver-cjet cups-bsd smartmontools libnet-snmp-perl snmp fonts-liberation ipcalc libnss3-tools nslcd fail2ban ldap-utils shimmer-themes gtk2-engines light-themes mate-icon-theme tango-icon-theme firefox xscreensaver virtualbox-guest-x11 gksu yad gedit synaptic plymouth plymouth-label zip unzip bleachbit lynx gnome-terminal libgtk2.0-bin sshfs ifenslave libtommath0"
@@ -252,7 +254,7 @@ chmod 0550 /etc/sudoers
 function turn_off_services {
 echo -e "\nStopping Services\n"
 sleep 1
-services="apache apache_karoshi clamd cron cups dansguardian dhcp dns fail2ban glusterfs mailscanner memcached mon monitorix mysql nfs nginx nslcd nut openvpn postfix portmap proftpd radius rpcbind samba squid ssh tftpd xinetd"
+services="apache apache_karoshi clamd cron cups e2guardian dhcp dns fail2ban glusterfs mailscanner memcached mon monitorix mysql nfs nginx nslcd nut openvpn postfix portmap proftpd radius rpcbind samba squid ssh tftpd xinetd"
 for service in `echo $services`
 do
 echo -e "\nStopping $service\n"
@@ -432,11 +434,17 @@ touch /etc/postfix/main.cf
 [ -f /opt/karoshi/serversetup/install_log ] && rm -f /opt/karoshi/serversetup/install_log
 }
 
+function install_e2guardian {
+echo -e "\nInstalling e2guardian\n"
+dpkg -i /opt/karoshi/serversetup/modules/squid/e2guardian_3.0.3_wheezy_amd64.deb
+}
+
 #Run functions
 [ $CREATE_KAROSHI_USER = yes ] && create_karoshi_user
 [ $ADD_REPOS = yes ] && add_repos
 [ $UPDATE_REPOS = yes ] && update_repos
 [ $INSTALL_XORG = yes ] && install_xorg
+[ $INSTALL_E2GUARDIAN = yes ] && install_e2guardian
 [ $INSTALL_XFCE = yes ] && install_xfce4
 [ $INSTALL_DM = yes ] && install_dm
 [ $INSTALL_REMASTERSYS = yes ] && install_remastersys

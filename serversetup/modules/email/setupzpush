@@ -53,9 +53,29 @@ then
 	INSTALL_PHPXSL=yes
 fi
 
-[ $UPDATEREPO = yes ] && apt-get update
-[ $INSTALL_LIBAWL = yes ] && apt-get install -y libawl-php
-[ $INSTALL_PHPXSL = yes ] && apt-get install -y php5-xsl
+if [ $UPDATEREPO = yes ]
+then
+	echo "<li>$UPDATEREPOSMGS</li><br>"
+	echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+	apt-get update
+	echo '</pre>'
+fi
+
+if [ $INSTALL_LIBAWL = yes ]
+then
+	echo "<li>Installing libawl-php</li><br>"
+	echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+	apt-get install -y libawl-php
+	echo '</pre>'
+fi
+
+if [ $INSTALL_PHPXSL = yes ]
+then
+	echo "<li>Installing php5-xsl</li><br>"
+	echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+	apt-get install -y php5-xsl
+	echo '</pre>'
+fi
 
 #Activate libawl-php in php.conf
 if [ `grep -c /usr/share/awl/inc /etc/php5/apache2/php.ini` = 0 ]
