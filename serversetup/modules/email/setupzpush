@@ -1,0 +1,113 @@
+#!/bin/bash
+#setupzpush
+#Copyright (C) 2005 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+LANGCHOICE=englishuk
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/email/setupemail ] || LANGCHOICE=englishuk
+source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/email/setupemail
+source /opt/karoshi/server_network/domain_information/domain_name
+
+ALIAS=$1
+
+if [ -z "$ALIAS" ]
+then
+	echo "Blank alias ... exiting now."
+	exit
+fi
+
+#Make sure that the required software is installed
+UPDATEREPO=no
+INSTALL_LIBAWL=no
+INSTALL_PHPXSL=no
+
+dpkg -l libawl-php 1>/dev/null 2>/dev/null
+if [ $? != 0 ]
+then
+	UPDATEREPO=yes
+	INSTALL_LIBAWL=yes
+fi
+
+dpkg -l php5-xsl 1>/dev/null 2>/dev/null
+if [ $? != 0 ]
+then
+	UPDATEREPO=yes
+	INSTALL_PHPXSL=yes
+fi
+
+[ $UPDATEREPO = yes ] && apt-get update
+[ $INSTALL_LIBAWL = yes ] && apt-get install -y libawl-php
+[ $INSTALL_PHPXSL = yes ] && apt-get install -y php5-xsl
+
+#Activate libawl-php in php.conf
+if [ `grep -c /usr/share/awl/inc /etc/php5/apache2/php.ini` = 0 ]
+then
+	echo "<li>$ACTIVATELIBAWL</li><br>"
+	echo include_path = ".:/usr/share/php:/usr/share/awl/inc" >> /etc/php5/apache2/php.ini
+fi
+
+echo "<li>$INSTALLZPUSH</li><br>"
+
+LDAPSERVER=127.0.0.1
+#Get ldap server to use
+[ `grep -c -w "kdc" /etc/krb5.conf` -gt 0 ] && LDAPSERVER=`grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | cut -d"=" -f2`
+
+#Create folders needed for z-push
+[ ! -d /var/lib/z-push ] && mkdir -p /var/lib/z-push
+[ ! -d /var/log/z-push ] && mkdir -p /var/log/z-push
+chmod 0770 /var/lib/z-push
+chmod 0770 /var/log/z-push
+chown root.www-data /var/lib/z-push
+chown root.www-data /var/log/z-push
+
+#Copy in z-push folder to /usr/share/
+cp -f -R /opt/karoshi/serversetup/modules/email/activesync/z-push /usr/share/
+
+#Modify z-push with the correct ldap settings
+sed -i 's/CHANGETHISSERVER/'$LDAPSERVER'/g' /usr/share/z-push/backend/ldap/config.php
+sed -i 's/CHANGETHISBASEDN/'$LDAPBASE'/g' /usr/share/z-push/backend/ldap/config.php
+
+#Add in z-push configuration file to apache
+[ -d /etc/apache2/conf.d ] && cp -f /opt/karoshi/serversetup/modules/email/activesync/z-push.conf /etc/apache2/conf.d/
+[ -d /etc/apache2/conf-enabled ] && cp -f /opt/karoshi/serversetup/modules/email/activesync/z-push.conf /etc/apache2/conf-enabled/
+
+#Add in sogoactivesync.conf to apache
+[ -d /etc/apache2/conf.d ] && SOGoPath=/etc/apache2/conf.d
+[ -d /etc/apache2/conf-enabled ] && SOGoPath=/etc/apache2/conf-enabled
+
+[ -d /etc/apache2/conf.d ] && cp -f /opt/karoshi/serversetup/modules/email/activesync/sogoactivesync.conf $SOGoPath/sogoactivesync.conf
+[ -d /etc/apache2/conf-enabled ] && cp -f /opt/karoshi/serversetup/modules/email/activesync/sogoactivesync-2.4.conf $SOGoPath/sogoactivesync.conf
+
+sed -i 's/CHANGETHISWEBDOMAIN/'$ALIAS.$REALM'/g' $SOGoPath/sogoactivesync.conf
+sed -i 's/CHANGETHISKRBPATH/'$HOSTNAME.$REALM'/g' $SOGoPath/sogoactivesync.conf
+sed -i 's/CHANGETHISSERVERNAME/'$HOSTNAME'/g' $SOGoPath/sogoactivesync.conf
+sed -i 's/CHANGETHISLDAPSERVER/'$LDAPSERVER'/g' $SOGoPath/sogoactivesync.conf
+sed -i 's/CHANGETHISBASEDN/'$LDAPBASE'/g' $SOGoPath/sogoactivesync.conf
+
+#Symlink sogoactivesync
+[ ! -e /usr/local/lib/GNUstep/sogoactivesync ] && ln -s /usr/local/lib/GNUstep/SOGo /usr/local/lib/GNUstep/sogoactivesync
+
+#Activate extra apache modules
+[ ! -e /etc/apache2/mods-enabled/authnz_ldap.load ] && ln -s /etc/apache2/mods-available/authnz_ldap.load /etc/apache2/mods-enabled/authnz_ldap.load
+
+#Enable php5-imap
+[ -d /etc/apache2/conf-enabled ] && php5enmod imap 1>/dev/null
+

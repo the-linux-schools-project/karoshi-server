@@ -386,6 +386,9 @@ a2enmod proxy_http 1>/dev/null
 a2enmod headers 1>/dev/null
 a2enmod rewrite 1>/dev/null
 
+#Setup z-push for SOGo
+/opt/karoshi/serversetup/modules/email/setupzpush $ALIAS
+
 #Restart apache
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null 2>/dev/null
 sleep 1
