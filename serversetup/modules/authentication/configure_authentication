@@ -182,7 +182,7 @@ echo -e "#karoshi_member_server
 	workgroup = '$SAMBADOMAIN'
 	security = ADS
 	realm = '$REALM'
-	encrypt passwords = yes
+	encrypt passwords = true
 
 " > /etc/samba/smb.conf
 
