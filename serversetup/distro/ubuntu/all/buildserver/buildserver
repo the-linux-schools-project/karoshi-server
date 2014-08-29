@@ -439,6 +439,13 @@ echo -e "\nInstalling e2guardian\n"
 dpkg -i /opt/karoshi/serversetup/modules/squid/e2guardian_3.0.3_wheezy_amd64.deb
 }
 
+
+function reboot_server {
+#Dont shutdown if running in a chroot since it will reboot the host os.
+ischroot
+[ $? != 0 ] && shutdown -r now
+}
+
 #Run functions
 [ $CREATE_KAROSHI_USER = yes ] && create_karoshi_user
 [ $ADD_REPOS = yes ] && add_repos
@@ -462,5 +469,5 @@ dpkg -i /opt/karoshi/serversetup/modules/squid/e2guardian_3.0.3_wheezy_amd64.deb
 [ $TIDYPACKAGES = yes ] && tidy_packages
 [ $TURN_OFF_SERVICES = yes ] && turn_off_services
 [ $UPDATE_SERVER = yes ] && update_server
-[ $REBOOT = yes ] && shutdown -r now
+[ $REBOOT = yes ] && reboot_server
 
