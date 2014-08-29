@@ -120,7 +120,12 @@ echo -e "Copying /etc/hosts\n"
 cp /etc/hosts chroot/etc/hosts
 echo -e "Copying /etc/resolv.conf\n"
 cp /etc/resolv.conf chroot/etc/resolv.conf
-#cp chroot/opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/sources.list chroot/etc/apt/sources.list
+
+#Copy in sources.list if only a minimal list is there
+if [ `cat chroot/etc/apt/sources.list | wc -l` -lt 2 ]
+then
+	cp chroot/opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/sources.list chroot/etc/apt/sources.list
+fi
 
 #Backup /sbin/initctl
 cp /sbin/initctl /sbin/initctl.$$
