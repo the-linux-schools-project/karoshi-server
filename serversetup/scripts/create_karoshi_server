@@ -9,6 +9,13 @@ RELEASE=trusty
 
 clear
 
+#Exit if this is not the root user
+if [ `id -u` != 0 ]
+then
+	echo -e "Karoshi Server Remaster Utility\n\nThis script must be run as root."
+	exit
+fi
+
 echo -e "Karoshi Server Remaster Utility\n"
 
 #Install debootstrap
@@ -17,7 +24,7 @@ if [ $? != 0 ]
 then
 	echo -e "Installing debootstrap\n"
 	sleep 1
-	sudo apt-get install debootstrap
+	apt-get install debootstrap
 fi
 
 echo -e "Making the chroot environment for $KAROSHIVER based on $RELEASE.\n"
@@ -48,7 +55,7 @@ fi
 
 cd $BUILDPATH
 
-[ $RUNDEBOOSTRAP = yes ] && sudo debootstrap --arch=$ARCH $RELEASE chroot
+[ $RUNDEBOOSTRAP = yes ] && debootstrap --arch=$ARCH $RELEASE chroot
 
 echo -e "\nDownload serversetup\n"
 sleep 1
@@ -86,15 +93,15 @@ then
 
 	echo -e "Unziping master.zip to $BUILDPATH/chroot/opt/karoshi\n"
 	sleep 1
-	sudo unzip master.zip  -d $BUILDPATH/chroot/opt/karoshi/
+	unzip master.zip  -d $BUILDPATH/chroot/opt/karoshi/
 	if [ $? != 0 ]
 	then
 		echo -e "There was a problem unziping master.zip - exiting now."
 		exit
 	fi
 
-	sudo mv $BUILDPATH/chroot/opt/karoshi/karoshi-server-master/serversetup $BUILDPATH/chroot/opt/karoshi/
-	sudo rm -f -R $BUILDPATH/chroot/opt/karoshi/karoshi-server-master
+	mv $BUILDPATH/chroot/opt/karoshi/karoshi-server-master/serversetup $BUILDPATH/chroot/opt/karoshi/
+	rm -f -R $BUILDPATH/chroot/opt/karoshi/karoshi-server-master
 
 	cd $BUILDPATH
 fi
@@ -104,34 +111,31 @@ fi
 
 echo -e "\nMounting $BUILDPATH/chroot\n"
 sleep 1	
-sudo mount --bind /dev chroot/dev
+mount --bind /dev chroot/dev
 
 
 #Copy in system files for network configuration for the chroot
 
 echo -e "Copying /etc/hosts\n"
-sudo cp /etc/hosts chroot/etc/hosts
+cp /etc/hosts chroot/etc/hosts
 echo -e "Copying /etc/resolv.conf\n"
-sudo cp /etc/resolv.conf chroot/etc/resolv.conf
-sudo cp chroot/opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/sources.list chroot/etc/apt/sources.list
+cp /etc/resolv.conf chroot/etc/resolv.conf
+#cp chroot/opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/sources.list chroot/etc/apt/sources.list
 
 #Backup /sbin/initctl
-sudo cp /sbin/initctl /sbin/initctl.$$
+cp /sbin/initctl /sbin/initctl.$$
 
-#Copy in in configure_chroot - REMOVE LATER
-cp -f -R /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configure_chroot chroot/opt/karoshi/serversetup/distro/ubuntu/all/buildserver/
+#Run configure chroot
+chroot chroot /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configure_chroot
 
-sudo chmod 0755 chroot/opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configure_chroot
-sudo chroot chroot /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configure_chroot
-
-sudo umount $BUILDPATH/chroot/dev 
+umount $BUILDPATH/chroot/dev 
 
 echo -e "\nCreate ISO image\n"
 
 #Install software to create the cd image
 echo -e "Installing syslinux squashfs-tools and genisoimage\n"
 sleep 1	
-sudo apt-get install --yes syslinux squashfs-tools genisoimage
+apt-get install --yes syslinux squashfs-tools genisoimage
 
 #Remove existing image directory
 if [ -d image ]
@@ -158,6 +162,10 @@ echo -e "\nCopying in isolinux and memtest binaries\n"
 sleep 1	
 cp /usr/lib/syslinux/isolinux.bin image/isolinux/
 cp /boot/memtest86+.bin image/install/memtest
+cp /usr/lib/syslinux/vesamenu.c32 image/isolinux/
+
+#Copy in boot splash
+cp -f chroot/opt/karoshi/serversetup/all/backgrounds/bootmenu.png image/isolinux/splash.png
 
 #Create boot instructions
 echo -e "\nCreating boot instructions\n"
@@ -199,6 +207,25 @@ label hd
   append -
 ' > image/isolinux/isolinux.cfg
 
+#Create preseed
+[ ! -d image/preseed ] && mkdir -p image/preseed
+
+echo "# Only install the standard system and language packs.
+tasksel	tasksel/first	multiselect
+d-i	pkgsel/language-pack-patterns	string
+# No language support packages.
+d-i	pkgsel/install-language-support	boolean false
+d-i passwd/user-fullname string karoshi
+d-i passwd/username string karoshi
+d-i passwd/user-password password karoshi
+d-i passwd/user-password-again password karoshi
+d-i user-setup/allow-password-weak boolean true
+d-i user-setup/encrypt-home boolean false
+# Avoid that last message about the install being complete.
+d-i finish-install/reboot_in_progress note
+#d-i debian-installer/exit/poweroff boolean true
+d-i cdrom-detect/eject boolean false" > image/preseed/custom.seed
+
 #Create manifest
 echo -e "\nCreating manifest\n"
 
@@ -210,10 +237,13 @@ do
         sudo sed -i "/${i}/d" image/casper/filesystem.manifest-desktop
 done
 
+#Set permissions on vmlinuz
+chmod 0644 image/casper/vmlinuz
+
 echo -e "\nCompressing chroot\n"
 sleep 1
 #Compress the chroot
-sudo mksquashfs chroot image/casper/filesystem.squashfs 
+mksquashfs chroot image/casper/filesystem.squashfs 
 #Write the filesystem size - needed by the installer
 echo -e "\nWriting the filesystem size\n"
 sleep 1
@@ -231,6 +261,8 @@ echo '#define DISKNAME  '$KAROSHIVER'
 #define TOTALNUM0  1
 ' > image/README.diskdefines
 
+cp -f image/README.diskdefines image/casper/
+
 #Recognition as a Ubuntu remix
 touch image/ubuntu
 mkdir image/.disk
@@ -241,6 +273,9 @@ echo "$KAROSHIVER" > info
 echo "http//www.linuxschools.com" > release_notes_url
 cd ../..
 
+#Set permissions on vmlinuz
+chmod 0644 image/casper/vmlinuz
+
 #Calculate MD5
 echo -e "\nCalculating MD5\n"
 sleep 1
@@ -249,7 +284,6 @@ sudo find . -type f -print0 | xargs -0 md5sum | grep -v "\./md5sum.txt" > md5sum
 echo -e "\nCreating the iso image\n"
 sleep 1
 #Create iso image for the live CD
-cd image
 
 [ -f $BUILDPATH/$KAROSHIVER.iso ] && rm -f $BUILDPATH/$KAROSHIVER.iso
 

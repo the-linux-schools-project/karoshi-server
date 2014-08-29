@@ -268,7 +268,8 @@ function sysvsupport {
 }
 
 function install_mailscanner {
-apt-get -y install mailscanner
+#MailScanner repository key has expired - temporary fix only.
+apt-get -y install mailscanner --force-yes
 }
 
 function install_zfs {
