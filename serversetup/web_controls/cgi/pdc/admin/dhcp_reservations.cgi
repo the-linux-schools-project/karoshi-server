@@ -1,5 +1,4 @@
 #!/bin/bash
-#Change password
 #Copyright (C) 2014  Paul Sharrad
 
 #This file is part of Karoshi Server.

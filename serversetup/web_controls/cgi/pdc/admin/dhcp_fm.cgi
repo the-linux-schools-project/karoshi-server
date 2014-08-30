@@ -42,7 +42,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -70,7 +70,9 @@ FILE=`echo $DATA | cut -s -d_ -f7`
 echo '<form action="/cgi-bin/admin/dhcp.cgi" method="post"><div id="actionbox3"><div id="titlebox">
 
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tr><td style="vertical-align: top; width:180px"><div class="sectiontitle">'$TITLE'</div></td><td style="vertical-align: top;"><a href="dhcp_view_leases.cgi"><input class="button" type="button" name="" value="'$TITLE2'"></a></td><td style="vertical-align: top;"><a href="dhcp_reservations.cgi"><input class="button" type="button" name="" value="'$TITLE3'"></a></td>
+<tr><td style="vertical-align: top; width:180px"><div class="sectiontitle">'$TITLE'</div></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_DHCP"><img class="images" alt="" src="/images/help/info.png"><span>'$CONFIGUREDHCPHELP'</span></a></td>
+<td style="vertical-align: top;"><a href="dhcp_view_leases.cgi"><input class="button" type="button" name="" value="'$TITLE2'"></a></td><td style="vertical-align: top;"><a href="dhcp_reservations.cgi"><input class="button" type="button" name="" value="'$TITLE3'"></a></td>
 </tr>
 </tbody></table><br><br></div><div id="infobox">'
 
@@ -78,20 +80,20 @@ echo '<form action="/cgi-bin/admin/dhcp.cgi" method="post"><div id="actionbox3">
 
 if [ -f /opt/karoshi/server_network/dhcp/dhcp_settings ]
 then
-source /opt/karoshi/server_network/dhcp/dhcp_settings
+	source /opt/karoshi/server_network/dhcp/dhcp_settings
 else
-#Guess some useful numbers
-#Domain name server - use this server ip
-DOMAINNAMESERVER=`net lookup $HOSTNAME`
-#Use this server ip
-NETBIOSSERVER=$DOMAINNAMESERVER
-ROUTER=`grep gateway /etc/network/interfaces | sed -n 1,1p | cut -d' ' -f2`
-SUBNET=`echo $DOMAINNAMESERVER | cut -d. -f1-2 | sed 's/$/.0.0/g'`
-SUBNETMASK=`grep netmask /etc/network/interfaces | sed -n 1,1p | cut -d' ' -f2`
-STARTADDRESS=
-ENDADDRESS=
-DEFAULTLEASETIME=21600
-MAXLEASETIME=43200
+	#Guess some useful numbers
+	#Domain name server - use this server ip
+	DOMAINNAMESERVER=`net lookup $HOSTNAME`
+	#Use this server ip
+	NETBIOSSERVER=$DOMAINNAMESERVER
+	ROUTER=`grep gateway /etc/network/interfaces | sed -n 1,1p | cut -d' ' -f2`
+	SUBNET=`echo $DOMAINNAMESERVER | cut -d. -f1-2 | sed 's/$/.0.0/g'`
+	SUBNETMASK=`grep netmask /etc/network/interfaces | sed -n 1,1p | cut -d' ' -f2`
+	STARTADDRESS=
+	ENDADDRESS=
+	DEFAULTLEASETIME=21600
+	MAXLEASETIME=43200
 fi
 
 echo '
@@ -100,12 +102,12 @@ echo '
       <tr>
         <td style="width: 180px;">
 '$DNSMSG'</td>
-        <td><input value="'$DOMAINNAMESERVER'" name="_DOMAINNAMESERVER_" tabindex= "1" size="20" type="text"></td><td>
+        <td><input value="'$DOMAINNAMESERVER'" name="_DOMAINNAMESERVER_" tabindex= "1" size="20" type="text" readonly="readonly"></td><td>
       </td></tr>
 	<tr>
         <td>
 '$NETBIOSMSG'</td>
-        <td><input tabindex= "1" value="'$NETBIOSSERVER'" name="_NETBIOSSERVER_" size="20" type="text"></td><td>
+        <td><input tabindex= "1" value="'$NETBIOSSERVER'" name="_NETBIOSSERVER_" size="20" type="text" readonly="readonly"></td><td>
       </td></tr>
       <tr>
         <td>
@@ -115,12 +117,12 @@ echo '
 	<tr>
         <td>
 '$SUBNETMSG'</td>
-        <td><input value="'$SUBNET'" name="_SUBNET_" size="20" tabindex= "3" type="text"></td><td>
+        <td><input value="'$SUBNET'" name="_SUBNET_" size="20" tabindex= "3" type="text" readonly="readonly"></td><td>
       </td></tr>
       <tr>
         <td>
 '$SUBNETMASKMSG'</td>
-        <td><input value="'$SUBNETMASK'" name="_SUBNETMASK_" size="20" tabindex= "3" type="text"></td><td>
+        <td><input value="'$SUBNETMASK'" name="_SUBNETMASK_" size="20" tabindex= "3" type="text" readonly="readonly"></td><td>
       </td></tr>
       <tr>
         <td>
@@ -136,13 +138,13 @@ echo '
         <td>
 '$DEFAULTLEASEMSG'</td>
         <td><input tabindex= "6" value="'$DEFAULTLEASETIME'" name="_DEFAULTLEASETIME_" size="20" type="text"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$DEFAULTLEASEHELP'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_DHCP"><img class="images" alt="" src="/images/help/info.png"><span>'$DEFAULTLEASEHELP'</span></a>
       </td></tr>
       <tr>
         <td>
 '$MAXLEASEMSG'</td>
         <td><input tabindex= "7" value="'$MAXLEASETIME'" name="_MAXLEASETIME_" size="20" type="text"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$MAXLEASEHELP'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_DHCP"><img class="images" alt="" src="/images/help/info.png"><span>'$MAXLEASEHELP'</span></a>
       </td></tr>
     </tbody>
   </table><br><br>

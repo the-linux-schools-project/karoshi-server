@@ -91,7 +91,8 @@ LDAPSERVER=127.0.0.1
 [ `grep -c -w "kdc" /etc/krb5.conf` -gt 0 ] && LDAPSERVER=`grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | cut -d"=" -f2`
 
 #Create folders needed for z-push
-[ ! -d /var/lib/z-push ] && mkdir -p /var/lib/z-push
+[ -d /var/lib/z-push ] && rm -f -R /var/lib/z-push
+mkdir -p /var/lib/z-push
 [ ! -d /var/log/z-push ] && mkdir -p /var/log/z-push
 chmod 0770 /var/lib/z-push
 chmod 0770 /var/log/z-push

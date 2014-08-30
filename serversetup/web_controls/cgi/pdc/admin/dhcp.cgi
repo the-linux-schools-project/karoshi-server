@@ -62,120 +62,125 @@ END_POINT=30
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = DOMAINNAMESERVERcheck ]
-then
-let COUNTER=$COUNTER+1
-DOMAINNAMESERVER=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = DOMAINNAMESERVERcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		DOMAINNAMESERVER=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
+
 #Assign _NETBIOSSERVER_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = NETBIOSSERVERcheck ]
-then
-let COUNTER=$COUNTER+1
-NETBIOSSERVER=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = NETBIOSSERVERcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		NETBIOSSERVER=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
+
 #Assign _ROUTER_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ROUTERcheck ]
-then
-let COUNTER=$COUNTER+1
-ROUTER=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = ROUTERcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		ROUTER=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign _SUBNET_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SUBNETcheck ]
-then
-let COUNTER=$COUNTER+1
-SUBNET=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SUBNETcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SUBNET=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign _SUBNETMASK_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SUBNETMASKcheck ]
-then
-let COUNTER=$COUNTER+1
-SUBNETMASK=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SUBNETMASKcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SUBNETMASK=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
+
 #Assign _STARTADDRESS_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = STARTADDRESScheck ]
-then
-let COUNTER=$COUNTER+1
-STARTADDRESS=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = STARTADDRESScheck ]
+	then
+		let COUNTER=$COUNTER+1
+		STARTADDRESS=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
+
 #Assign _ENDADDRESS_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ENDADDRESScheck ]
-then
-let COUNTER=$COUNTER+1
-ENDADDRESS=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = ENDADDRESScheck ]
+	then
+		let COUNTER=$COUNTER+1
+		ENDADDRESS=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign _DEFAULTLEASETIME_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = DEFAULTLEASETIMEcheck ]
-then
-let COUNTER=$COUNTER+1
-DEFAULTLEASETIME=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = DEFAULTLEASETIMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		DEFAULTLEASETIME=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
+
 #Assign _MAXLEASETIME_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = MAXLEASETIMEcheck ]
-then
-let COUNTER=$COUNTER+1
-MAXLEASETIME=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = MAXLEASETIMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		MAXLEASETIME=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 
@@ -194,13 +199,27 @@ INPUTCHECK=pass
 #Check dots
 if [ `echo $IPDATA | sed 's/\./\n /g'  | sed /^$/d | wc -l` != 4 ]
 then
-INPUTCHECK=fail
+	INPUTCHECK=fail
 fi
 #Check that no number is greater than 255
 HIGHESTNUMBER=`echo $IPDATA | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p`
 if [ $HIGHESTNUMBER -gt 255 ]
 then
-INPUTCHECK=fail
+	INPUTCHECK=fail
+fi
+}
+
+function check_address {
+PDCIP=`net lookup $HOSTNAME`
+#Get netmask
+MASK=`ifconfig | grep $PDCIP | cut -d: -f4`
+ZONEINFO1=`ipcalc -n $PDCIP/$MASK | grep ^Network | sed "s/ * / /g" | cut -d" " -f2`
+ZONEINFO2=`ipcalc -n $ADDRESS/$MASK | grep ^Network | sed "s/ * / /g" | cut -d" " -f2`
+
+if [[ "$ZONEINFO1" != "$ZONEINFO2" ]]
+then
+	MESSAGE=$ERRORMSG17
+	show_status
 fi
 }
 
@@ -209,136 +228,146 @@ fi
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
-show_status
+	export MESSAGE=$HTTPS_ERROR
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
-show_status
+	MESSAGE=$ACCESS_ERROR1
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
-show_status
+	MESSAGE=$ACCESS_ERROR1
+	show_status
 fi
 #########################
 #Check data
 #########################
 
 #Check to see that DOMAINNAMESERVER is not blank
-if [ $DOMAINNAMESERVER'null' = null ]
+if [ -z "$DOMAINNAMESERVER" ]
 then
-MESSAGE=$ERRORMSG1
-show_status
+	MESSAGE=$ERRORMSG1
+	show_status
 fi
 IPDATA=$DOMAINNAMESERVER
 check_tcpip
 if [ $INPUTCHECK = fail ]
 then
-MESSAGE=$ERRORMSG1
-show_status
+	MESSAGE=$ERRORMSG1
+	show_status
 fi
 #Check to see that NETBIOSSERVER is not blank
-if [ $NETBIOSSERVER'null' = null ]
+if [ -z "$NETBIOSSERVER" ]
 then
-MESSAGE=$ERRORMSG2
-show_status
+	MESSAGE=$ERRORMSG2
+	show_status
 fi
 IPDATA=$NETBIOSSERVER
 check_tcpip
 if [ $INPUTCHECK = fail ]
 then
-MESSAGE=$ERRORMSG2
-show_status
+	MESSAGE=$ERRORMSG2
+	show_status
 fi
 #Check to see that ROUTER is not blank
-if [ $ROUTER'null' = null ]
+if [ -z "$ROUTER" ]
 then
-MESSAGE=$ERRORMSG3
-show_status
+	MESSAGE=$ERRORMSG3
+	show_status
 fi
 IPDATA=$ROUTER
 check_tcpip
 if [ $INPUTCHECK = fail ]
 then
-MESSAGE=$ERRORMSG3
-show_status
+	MESSAGE=$ERRORMSG3
+	show_status
 fi
 #Check to see that SUBNET is not blank
-if [ $SUBNET'null' = null ]
+if [ -z "$SUBNET" ]
 then
-MESSAGE=$ERRORMSG8
-show_status
+	MESSAGE=$ERRORMSG8
+	show_status
 fi
 IPDATA=$SUBNET
 check_tcpip
 if [ $INPUTCHECK = fail ]
 then
-MESSAGE=$ERRORMSG8
-show_status
+	MESSAGE=$ERRORMSG8
+	show_status
 fi
 #Check to see that SUBNETMASK is not blank
-if [ $SUBNETMASK'null' = null ]
+if [ -z "$SUBNETMASK" ]
 then
-MESSAGE=$ERRORMSG4
-show_status
+	MESSAGE=$ERRORMSG4
+	show_status
 fi
-IPDATA=$SUBNETMASK
-check_tcpip
+	IPDATA=$SUBNETMASK
+	check_tcpip
 if [ $INPUTCHECK = fail ]
 then
-MESSAGE=$ERRORMSG4
-show_status
+	MESSAGE=$ERRORMSG4
+	show_status
 fi
 #Check to see that STARTADDRESS is not blank
-if [ $STARTADDRESS'null' = null ]
+if [ -z "$STARTADDRESS" ]
 then
-MESSAGE=$ERRORMSG5
-show_status
+	MESSAGE=$ERRORMSG5
+	show_status
 fi
 IPDATA=$STARTADDRESS
 check_tcpip
 if [ $INPUTCHECK = fail ]
 then
-MESSAGE=$ERRORMSG5
-show_status
+	MESSAGE=$ERRORMSG5
+	show_status
 fi
 #Check to see that ENDADDRESS is not blank
 if [ $ENDADDRESS'null' = null ]
 then
-MESSAGE=$ERRORMSG5
-show_status
+	MESSAGE=$ERRORMSG5
+	show_status
 fi
 IPDATA=$ENDADDRESS
 check_tcpip
 if [ $INPUTCHECK = fail ]
 then
-MESSAGE=$ERRORMSG5
-show_status
+	MESSAGE=$ERRORMSG5
+	show_status
 fi
+
+
+#Check that the start address is in the same range as the server.
+ADDRESS=$STARTADDRESS
+check_address
+
+#Check that the end address is in the same range as the server.
+ADDRESS=$ENDADDRESS
+check_address
+
 #Check to see that DEFAULTLEASETIME is not blank
-if [ $DEFAULTLEASETIME'null' = null ]
+if [ -z "$DEFAULTLEASETIME" ]
 then
-MESSAGE=$ERRORMSG6
-show_status
+	MESSAGE=$ERRORMSG6
+	show_status
 fi
 
 #Check to see that MAXLEASETIME is not blank
 if [ $MAXLEASETIME'null' = null ]
 then
-MESSAGE=$ERRORMSG6
-show_status
+	MESSAGE=$ERRORMSG6
+	show_status
 fi
 
 if [ $DEFAULTLEASETIME -gt $MAXLEASETIME ]
 then
-MESSAGE=$ERRORMSG7
-show_status
+	MESSAGE=$ERRORMSG7
+	show_status
 fi
 
 #Generate navigation bar

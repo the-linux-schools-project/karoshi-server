@@ -338,6 +338,7 @@ Exec=exo-open --launch MailReader' > /var/lib/samba/netlogon/linuxclient/$LINUXC
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
 echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/emailserver
 echo '<a href="https://'$ALIAS'.'$REALM'/SOGo" target="_blank">https://'$ALIAS'.'$REALM'/SOGo</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/emailserver
+echo '<a href="https://'$ALIAS'.'$REALM'/Microsoft-Server-ActiveSync" target="_blank">https://'$ALIAS'.'$REALM'/Microsoft-Server-ActiveSync</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/emailserver
 echo $DOMAINPATH > /opt/karoshi/server_network/emaildomain
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
 echo $ROLE2"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver

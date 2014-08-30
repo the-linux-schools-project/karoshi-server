@@ -71,7 +71,7 @@ LEASEPATH=/var/lib/dhcp/dhcpd.leases
 
 if [ ! -f $LEASEPATH ]
 then
-echo $ERRORMSG1
+echo $ERRORMSG18
 echo '</div></div></body></html>'
 exit
 fi
