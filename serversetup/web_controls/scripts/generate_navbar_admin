@@ -438,8 +438,7 @@ echo '
 fi
 if [ $REVERSEPROXYCTRL = yes ]
 then
-echo '			<li><a href="/cgi-bin/admin/reverse_proxy_add_fm.cgi">'$RPROXYADD'</a></li>
-			<li><a href="/cgi-bin/admin/reverse_proxy_view_fm.cgi">'$RPROXYVIEW'</a></li>'
+echo '<li><a href="/cgi-bin/admin/reverse_proxy_view_fm.cgi">'$RPROXYVIEW'</a></li>'
 fi
 echo '		</ul>
 	</li>'

@@ -39,7 +39,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="0; URL=reverse_proxy_view_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="0; URL=reverse_proxy_view_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body>'
 #########################
 #Get data input
 #########################
@@ -53,32 +53,28 @@ END_POINT=5
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = TARGETcheck ]
-then
-let COUNTER=$COUNTER+1
-TARGET=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = TARGETcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		TARGET=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign DESTINATION
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = DESTINATIONcheck ]
-then
-let COUNTER=$COUNTER+1
-DESTINATION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = DESTINATIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		DESTINATION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
-
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox">'
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
@@ -92,44 +88,54 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
-show_status
+	export MESSAGE=$HTTPS_ERROR
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
-show_status
+	MESSAGE=$ACCESS_ERROR1
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
-show_status
+	MESSAGE=$ACCESS_ERROR1
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that TARGET is not blank
-if [ $TARGET'null' = null ]
+if [ -z "$TARGET" ]
 then
-TARGET=webrootdir
+	TARGET=webrootdir
 fi
 #Check to see that DESTINATION is not blank
-if [ $DESTINATION'null' = null ]
+if [ -z "$DESTINATION" ]
 then
-MESSAGE=$ERRORMSG2
-show_status
+	MESSAGE=$ERRORMSG2
+	show_status
 fi
 #Check that the web TARGET is not already being redirected
 if [ -f /opt/karoshi/server_network/reverseproxy/sites/$TARGET ]
 then
-MESSAGE=`echo $TARGET - $ERRORMSG3`
-show_status
+	MESSAGE=`echo $TARGET - $ERRORMSG3`
+	show_status
 fi
+
+#Make sure that the destination starts with http or https
+if [ `echo "$DESTINATION" | grep -c ^http` = 0 ] && [ `echo "$DESTINATION" | grep -c ^https` = 0 ]
+then
+	MESSAGE=`echo "$DESTINATION" - $ERRORMSG4`
+	show_status
+fi
+
+
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/reverse_proxy_add.cgi | cut -d' ' -f1`
 #Add proxy
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$TARGET:$DESTINATION:" | sudo -H /opt/karoshi/web_controls/exec/reverse_proxy_add
+echo '</body></html>'
 exit

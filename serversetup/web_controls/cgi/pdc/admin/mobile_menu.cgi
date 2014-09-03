@@ -178,6 +178,15 @@ echo '      <div class="collapsed">
         <a href="/cgi-bin/admin/dg_bypass.cgi">'$DGBYPASS'</a>
       </div>'
 fi
+
+if [ $REVERSEPROXYCTRL = yes ]
+then
+echo '      <div class="collapsed">
+        <span>Web</span>
+        <a href="/cgi-bin/admin/reverse_proxy_view_fm.cgi">'$RPROXYVIEW'</a>
+      </div>'
+fi
+
 echo '<div class="a.current">
 <small><small>
 '$VERSIONMSG' : '$VERSION'

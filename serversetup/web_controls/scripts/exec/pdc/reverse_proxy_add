@@ -61,7 +61,7 @@ fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-TARGET=`echo "$DATA" | cut -s -d: -f4 | sed 's/^http//g' | tr -cd 'A-Za-z0-9'`
+TARGET=`echo "$DATA" | cut -s -d: -f4 | sed 's/^http//g' | tr -cd 'A-Za-z0-9-'`
 #TARGET2=`echo $TARGET | sed 's/%3A//g' | sed 's/%2F/\//g' | sed 's/\/\///g'`
 DESTINATION=`echo "$DATA" | cut -s -d: -f5`
 DESTINATION=`echo $DESTINATION | sed 's/%3A/:/g' | sed 's/%2F/\//g'`

@@ -55,7 +55,7 @@ fi
 
 if [ $UPDATEREPO = yes ]
 then
-	echo "<li>$UPDATEREPOSMGS</li><br>"
+	echo "<li>$UPDATEREPOSMGS</li>"
 	echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 	apt-get update
 	echo '</pre>'
@@ -63,7 +63,7 @@ fi
 
 if [ $INSTALL_LIBAWL = yes ]
 then
-	echo "<li>Installing libawl-php</li><br>"
+	echo "<li>Installing libawl-php</li>"
 	echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 	apt-get install -y libawl-php
 	echo '</pre>'
@@ -71,7 +71,7 @@ fi
 
 if [ $INSTALL_PHPXSL = yes ]
 then
-	echo "<li>Installing php5-xsl</li><br>"
+	echo "<li>Installing php5-xsl</li>"
 	echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 	apt-get install -y php5-xsl
 	echo '</pre>'
@@ -80,11 +80,11 @@ fi
 #Activate libawl-php in php.conf
 if [ `grep -c /usr/share/awl/inc /etc/php5/apache2/php.ini` = 0 ]
 then
-	echo "<li>$ACTIVATELIBAWL</li><br>"
+	echo "<li>$ACTIVATELIBAWL</li>"
 	echo include_path = ".:/usr/share/php:/usr/share/awl/inc" >> /etc/php5/apache2/php.ini
 fi
 
-echo "<li>$INSTALLZPUSH</li><br>"
+echo "<li>$INSTALLZPUSH</li>"
 
 LDAPSERVER=127.0.0.1
 #Get ldap server to use

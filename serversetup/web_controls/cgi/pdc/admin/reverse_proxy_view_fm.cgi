@@ -23,6 +23,11 @@
 
 #
 #Website: http://www.karoshi.org.uk
+
+#Detect mobile browser
+MOBILE=no
+source /opt/karoshi/web_controls/detect_mobile_browser
+
 ############################
 #Language
 ############################
@@ -38,8 +43,23 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
+
+WIDTH1=180
+WIDTH2=180
+WIDTH3=250
+TABLECLASS=standard
+ICON1=/images/submenus/web/delete.png
+if [ $MOBILE = yes ]
+then
+	WIDTH1=180
+	WIDTH2=90
+	WIDTH3=300
+	TABLECLASS=mobilestandard
+	ICON1=/images/submenus/web/deletem.png
+fi
+
 ############################
 #Show page
 ############################
@@ -49,11 +69,31 @@ echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
-<script src="/all/stuHover.js" type="text/javascript"></script>
-</head>
+<script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+
+if [ $MOBILE = yes ]
+then
+echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+		/***********************************************
+		* Slashdot Menu script- By DimX
+		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
+		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+		***********************************************/
+	</script>
+	<script type="text/javascript">
+	// <![CDATA[
+	var myMenu;
+	window.onload = function() {
+		myMenu = new SDMenu("my_menu");
+		myMenu.init();
+	};
+	// ]]>
+	</script>'
+fi
+
+echo '</head>
 <body onLoad="start()"><div id="pagecontainer">'
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
@@ -67,45 +107,77 @@ exit
 #Check to see if there are any proxy sites
 if [ ! -d /opt/karoshi/server_network/reverseproxy/sites/ ]
 then
-MESSAGE=$ERRORMSG3
-show_status
+	MESSAGE=$ERRORMSG3
+	show_status
 fi
 
 if [ `ls -1 /opt/karoshi/server_network/reverseproxy/sites/ | wc -l` = 0 ]
 then
-MESSAGE=$ERRORMSG3
-show_status
+	MESSAGE=$ERRORMSG3
+	show_status
 fi
 
 #Get reverse proxy server
 PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/reverseproxyserver | sed 's/ //g'`
 
-if [ $PROXYSERVER'null' = null ]
+if [ -z "$PROXYSERVER" ]
 then
-MESSAGE=$ERRORMSG4
-show_status
+	MESSAGE=$ERRORMSG4
+	show_status
 fi
 
-echo '<form action="/cgi-bin/admin/reverse_proxy_view.cgi" method="post">
-<div id="actionbox">
-<b>'$TITLE' - '$PROXYSERVER'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$PROXYSERVER - $WEBHELP1'</span></a><br>
-  <br>
-      <tr><td style="vertical-align: top;">
-  <table class="standard" style="text-align: left; height: 40px;" border="0" cellpadding="2" cellspacing="2">
-    <tbody>
-      <tr><td style="width: 120px;"><b>'$TARGETMSG'</b></td><td style="width: 300px;"><b>'$DESTINATIONMSG'</b></td><td><b>'$DELETETITLE'</b></td></tr>'
+#Generate navigation bar
+if [ $MOBILE = no ]
+then
+	DIV_ID=actionbox3
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
+else
+	DIV_ID=actionbox
+fi
+
+echo '<form action="/cgi-bin/admin/reverse_proxy_view.cgi" method="post">'
+
+#Show back button for mobiles
+if [ $MOBILE = yes ]
+then
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
+		<div class="expanded">
+		<span>'$TITLE'</span>
+	<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+	</div></div><div id="mobileactionbox">
+'
+else
+	echo '<div id="'$DIV_ID'"><div id="titlebox">'
+fi
+
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr>'
+[ $MOBILE = no ] && echo '<td style="width: '$WIDTH1'px; vertical-align: top;"><div class="sectiontitle">'$TITLE'</div></td>'
+echo '<td style="vertical-align: top;"><a href="reverse_proxy_add_fm.cgi"><input class="button" type="button" name="" value="'$ADDREVERSEPROXYMSG'"></a></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reverse_Proxy_Server#Viewing_and_Deleting_Reverse_Proxy_Entries"><img class="images" alt="" src="/images/help/info.png"><span>'$WEBHELP1'</span></a></td>
+</tr></tbody></table><br>'
+
+[ $MOBILE = no ] && echo '</div><div id="infobox">'
+
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+
+[ $MOBILE = no ] && echo '<td style="width: '$WIDTH2'px;"><b>'$TARGETMSG'</b></td>'
+echo '<td style="width: '$WIDTH3'px;"><b>'$DESTINATIONMSG'</b></td><td><b>'$DELETETITLE'</b></td></tr>'
 
 for SITES in /opt/karoshi/server_network/reverseproxy/sites/*
 do
-SITE=`basename $SITES`
-SITE2=`echo $SITE | sed 's/%3A//g' | sed 's/%2F/\//g' | sed 's/\/\///g'`
-REDIRECT=`sed -n 6,6p /opt/karoshi/server_network/reverseproxy/sites/$SITE | cut -d' ' -f2- | sed 's/;//g'`
-echo '<tr><td>'$SITE2'</td><td>'$REDIRECT'</td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_DELETE_FOLDER_'$SITE'_" type="image" class="images" src="/images/submenus/web/delete.png" value="_ACTION_DELETE_FOLDER_'$SITE'_"><span>'$DELETETITLE $SITE2'</span></a></td></tr>'
+	SITE=`basename $SITES`
+	SITE2=`echo $SITE | sed 's/%3A//g' | sed 's/%2F/\//g' | sed 's/\/\///g'`
+	REDIRECT=`sed -n 6,6p /opt/karoshi/server_network/reverseproxy/sites/$SITE | cut -d' ' -f2- | sed 's/;//g'`
+	echo '<tr>'
+	[ $MOBILE = no ] && echo '<td>'$SITE2'</td>'
+	echo '<td>'$REDIRECT'</td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_DELETE_FOLDER_'$SITE'_" type="image" class="images" src="'$ICON1'" value="_ACTION_DELETE_FOLDER_'$SITE'_"><span>'$DELETETITLE $SITE2'</span></a></td></tr>'
 done
 
-echo '</tbody></table>
-</form>
-</div></body>
-</html>
+echo '</tbody></table><br></div>'
+
+[ $MOBILE = no ] && echo '</div>'
+
+echo '</form></div></body></html>
 '
 exit

@@ -275,7 +275,7 @@ fi
 echo '</tbody></table><br>'
 
 #Advanced Modules
-echo '<b>'$TITLE3' - '$SERVERNAME'</b><br><br><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<div class="sectiontitle">'$TITLE3' - '$SERVERNAME'</div><br><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="vertical-align: top; width: 180px; height: 40px;">'$CUSTOMSERVERMSG'</td>
 <td style="vertical-align: top; width: 80px;"><form action="/cgi-bin/admin/module_custom_fm.cgi" method="post">
 <input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$CUSTOMSERVERHELPMSG'</span></a></form></td>'

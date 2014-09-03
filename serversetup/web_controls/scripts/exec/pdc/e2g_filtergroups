@@ -1056,14 +1056,10 @@ ACTION=bannedmimetypelists
 function activatechanges {
 if [ $PROXYSERVER = `hostname-fqdn` ]
 then
-e2guardian -g
-sleep 1
-e2guardian -g
+service e2guardian reload 1>/dev/null
 else
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
-e2guardian -g
-sleep 1
-e2guardian -g
+service e2guardian reload 1>/dev/null
 '
 fi
 }
@@ -1107,7 +1103,7 @@ then
 	TITLE="$TITLE12"
 	HELPMSG="$HELPMSG12"
 	CUSTOMFILE1=exceptionsites
-	CUSTOMFILE1=exceptionurls
+	CUSTOMFILE2=exceptionurls
 fi
 
 if [ $FILTERDATA = partallowed ]

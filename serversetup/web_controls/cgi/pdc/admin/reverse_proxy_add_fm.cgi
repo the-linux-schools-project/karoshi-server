@@ -23,6 +23,11 @@
 
 #
 #Website: http://www.karoshi.org.uk
+
+#Detect mobile browser
+MOBILE=no
+source /opt/karoshi/web_controls/detect_mobile_browser
+
 ############################
 #Language
 ############################
@@ -38,7 +43,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -49,40 +54,106 @@ echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
-<script src="/all/stuHover.js" type="text/javascript"></script>
-</head>
+<script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+
+if [ $MOBILE = yes ]
+then
+	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+		/***********************************************
+		* Slashdot Menu script- By DimX
+		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
+		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+		***********************************************/
+	</script>
+	<script type="text/javascript">
+	// <![CDATA[
+	var myMenu;
+	window.onload = function() {
+		myMenu = new SDMenu("my_menu");
+		myMenu.init();
+	};
+	// ]]>
+	</script>'
+fi
+
+echo '</head>
 <body onLoad="start()"><div id="pagecontainer">'
+
+WIDTH1=180
+WIDTH2=180
+WIDTH3=250
+SIZE1=20
+SIZE2=40
+TABLECLASS=standard
+if [ $MOBILE = yes ]
+then
+	WIDTH1=180
+	WIDTH2=90
+	WIDTH3=300
+	SIZE1=20
+	SIZE2=30
+	TABLECLASS=mobilestandard
+fi
+
 #Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+if [ $MOBILE = no ]
+then
+	DIV_ID=actionbox3
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
+else
+	DIV_ID=actionbox
+fi
+
+echo '<form action="/cgi-bin/admin/reverse_proxy_add.cgi" method="post">'
+
+#Show back button for mobiles
+if [ $MOBILE = yes ]
+then
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
+		<div class="expanded">
+		<span>'$TITLE'</span>
+	<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+	</div></div><div id="mobileactionbox">
+'
+else
+	echo '<div id="'$DIV_ID'"><div id=titlebox>'
+fi
 
 #Get reverse proxy server
 PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/reverseproxyserver | sed 's/ //g'`
 
-echo '<form action="/cgi-bin/admin/reverse_proxy_add.cgi" method="post">
-<div id="actionbox">
-<b>'$TITLE - $PROXYSERVER'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$WEBHELP1'<br><br>'$WEBHELP2'</span></a><br>
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr>'
+[ $MOBILE = no ] && echo '<td style="width: '$WIDTH1'px; vertical-align: top;"><div class="sectiontitle">'$TITLE'</div></td>'
+echo '<td style="vertical-align: top;"><a href="reverse_proxy_view_fm.cgi"><input class="button" type="button" name="" value="'$VIEWPROXIESMSG'"></a></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reverse_Proxy_Server#Adding_Reverse_Proxy_Entries"><img class="images" alt="" src="/images/help/info.png"><span>'$WEBHELP1'<br><br>'$WEBHELP2'</span></a></td>
+</tr></tbody></table><br>
   <br>
-  <table class="standard" style="text-align: left; height: 40px;" border="0" cellpadding="2" cellspacing="2">
+  <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
       <tr>
-        <td style="height: 25px; width: 180px;">
+        <td style="width: '$WIDTH2'px;">
 '$TARGETMSG'</td>
-        <td><input tabindex= "1" name="_TARGET_" size="20" type="text"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$WEBHELP3'<br><br>'$EXAMPLEMSG1'<br><br>'$EXAMPLEMSG2'<br><br>'$EXAMPLEMSG3'</span></a>
+        <td><input tabindex= "1" name="_TARGET_" size="'$SIZE1'" type="text"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reverse_Proxy_Server#Adding_Reverse_Proxy_Entries"><img class="images" alt="" src="/images/help/info.png"><span>'$WEBHELP3'<br><br>'$EXAMPLEMSG1'<br><br>'$EXAMPLEMSG2'<br><br>'$EXAMPLEMSG3'</span></a>
       </td>
 </tr>
       <tr>
         <td>
 '$DESTINATIONMSG'</td>
-        <td><input tabindex= "2" name="_DESTINATION_" size="40" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$WEBHELP4'<br><br>'$EXAMPLEMSG1'<br><br>'$EXAMPLEMSG2'<br><br>'$EXAMPLEMSG3'</span></a></td>
+        <td><input tabindex= "2" name="_DESTINATION_" size="'$SIZE2'" type="text"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reverse_Proxy_Server#Adding_Reverse_Proxy_Entries"><img class="images" alt="" src="/images/help/info.png"><span>'$WEBHELP4'<br><br>'$EXAMPLEMSG1'<br><br>'$EXAMPLEMSG2'<br><br>'$EXAMPLEMSG3'</span></a>
+</td>
       </tr>
     </tbody>
-  </table>
-</div>
-<div id="submitbox">
+  </table><br>
 <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
-</div>
-</form>
+</div>'
+
+[ $MOBILE = no ] && echo '</div>'
+
+echo '</form>
 </div></body>
 </html>
 '
