@@ -102,7 +102,12 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form id="form1" name="combobox" action="/cgi-bin/admin/module_xibo.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE' - '$SERVERNAME'</div><br>
+echo '<form id="form1" name="combobox" action="/cgi-bin/admin/module_xibo.cgi" method="post"><div id="actionbox">
+
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr><td style=vertical-align: top;"><div class="sectiontitle">'$TITLE' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Xibo"><img class="images" alt="" src="/images/help/info.png"><span>'$ALIASHELP'</span></a>
+</td></tr></tbody></table><br>
+
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$DESCRIPTIONMSG'</b><br><br>
 '$HELPMSG1'<br><br>

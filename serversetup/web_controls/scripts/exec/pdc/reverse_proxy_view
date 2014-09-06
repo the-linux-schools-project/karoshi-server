@@ -104,8 +104,8 @@ fi
 LANGCHOICE=englishuk
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/reverse_proxy_view ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/reverse_proxy_view
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/web/reverse_proxy_view ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/web/reverse_proxy_view
 [ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 

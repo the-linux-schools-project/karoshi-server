@@ -48,7 +48,7 @@ fi
 
 WIDTH1=180
 WIDTH2=180
-WIDTH3=250
+WIDTH3=300
 TABLECLASS=standard
 ICON1=/images/submenus/web/delete.png
 if [ $MOBILE = yes ]

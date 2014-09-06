@@ -103,8 +103,7 @@ source /opt/karoshi/server_network/domain_information/domain_name
 
 echo '<form name="combobox" action="/cgi-bin/admin/module_reverse_proxy.cgi" method="post"><div id="actionbox">
 
-
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr><td style="width: '$WIDTH1'px; vertical-align: top;"><div class="sectiontitle">'$TITLE' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr><td style=vertical-align: top;"><div class="sectiontitle">'$TITLE' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reverse_Proxy_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$ALIASHELP'</span></a>
 </td></tr></tbody></table><br>
 
