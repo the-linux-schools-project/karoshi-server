@@ -139,25 +139,25 @@ echo '<form action="/cgi-bin/admin/monitors_add_email_alert.cgi" method="post"><
         <td style="width: 180px;">
 '$CONTACTNAMEMSG'</td>
         <td><input tabindex= "1" name="_NAME_" value="'$NAME'" size="35" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_eMail_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG6'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG6'</span></a>
       </td></tr>
       <tr>
         <td>
 '$EMAILTOMSG'</td>
         <td><input tabindex= "1" name="_EMAILTO_" value="'$EMAILTO'" size="35" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_eMail_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
       </td></tr>
       <tr>
         <td>
 '$EMAILFROMMSG'</td>
         <td><input tabindex= "2" name="_EMAILFROM_" value="'$EMAILFROM'" size="35" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_eMail_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a>
       </td></tr>
       <tr>
         <td>
 '$MAILSERVERMSG'</td>
         <td><input tabindex= "3" name="_MAILSERVER_" value="'$MAILSERVER'" size="20" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_eMail_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG5'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG5'</span></a>
       </td></tr>
     </tbody>
   </table><br><br>

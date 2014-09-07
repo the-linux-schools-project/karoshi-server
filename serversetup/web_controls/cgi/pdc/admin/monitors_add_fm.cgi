@@ -131,7 +131,7 @@ done
 
 echo '<div id="actionbox">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top; width: 110px;"><b>'"$TITLE"'</b></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td>
 <td style="vertical-align: top;">
 <a href="/cgi-bin/admin/mon_status.cgi"><input class="button" type="button" name="" value="'$NETWORKSTATUSMSG'"></a>
 </td>
@@ -223,7 +223,7 @@ echo '<b>'$MONITOR'</b>'
 echo '<input name="_GROUPNAME_" value="'$MONITOR'" type="hidden">'
 fi
 echo '</td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a>
       </td>
       </tr>
 
@@ -232,7 +232,7 @@ echo '</td><td>
 '$ALTERAFTERMSG'</td>
         <td><input tabindex="2" name="_ALERTAFTER_" value="'$ALERTAFTER'" maxlength="1" size="1" type="text" style="width: 80px;"></td>
         <td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG9'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG9'</span></a>
       </td>
       </tr>
       <tr>
@@ -240,7 +240,7 @@ echo '</td><td>
 '$MONINTMSG'</td>
         <td><input tabindex="2" name="_INTERVAL_" value="'$INTERVAL'" maxlength="2" size="2" type="text" style="width: 80px;"></td>
         <td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG4'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG4'</span></a>
       </td>
       </tr>
 
@@ -266,7 +266,7 @@ echo '</td><td>
 <option>Sat</option>
 <option>Sun</option>
 </select>
-</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG7'</span></a></td></tr>
+</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG7'</span></a></td></tr>
 
 <tr><td>'$TIMEMSG'</td><td>
 <select name="_HOURSTART_" style="width: 80px;">
@@ -300,10 +300,10 @@ echo '</td><td>
 <option>11pm</option>
 <option>12pm</option>
 </select>
-</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG8'</span></a></td></tr>
+</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG8'</span></a></td></tr>
 <tr><td>'$TCPIPMSG'</td><td><input tabindex="2" name="_TCPIP_" value="'$TCPIPS'" type="text" style="width: 300px;"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a></td></tr></tbody></table>
-<br><br><b>'$SERVICESMSG'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG5'</span></a><br><br>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a></td></tr></tbody></table>
+<br><br><b>'$SERVICESMSG'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG5'</span></a><br><br>
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 180px;"><input type="checkbox" name="_MONITORTYPES_" '$PING' value="ping"> ping <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG6'</span></a>
 </td><td style="width: 200px;"><input type="checkbox" name="_MONITORTYPES_" '$POP3' value="pop3"> pop3

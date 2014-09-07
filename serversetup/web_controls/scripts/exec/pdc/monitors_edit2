@@ -24,7 +24,7 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 MD5ERROR="Incorrect MD5 checksum for this patch."
 
 ########################
@@ -40,8 +40,8 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/monitors_edit2.cgi | cut -d' ' -f1
 [ $MD5SUM'null' = null ] && MD5SUM=not_set1
 if [ $MD5SUM'check' != $monitors_edit2_cgi'check' ]
 then
-echo `date`: monitors_edit2 - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_edit2 - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -49,8 +49,8 @@ fi
 numArgs=$#
 if [ $numArgs != 1 ]
 then
-echo `date`: monitors_edit2 - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_edit2 - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo $* | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | cut -s -d: -f2`
@@ -68,48 +68,48 @@ MONITORTYPES=( `echo $* | cut -s -d: -f11- | sed 's/:/ /g'` )
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: monitors_edit2 - Not called by monitors_edit2.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_edit2 - Not called by monitors_edit2.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: monitors_edit2 - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_edit2 - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: monitors_edit2 - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_edit2 - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: monitors_edit2 - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_edit2 - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $GROUPNAME'null' = null ]
+if [ -z "$GROUPNAME" ]
 then
-echo `date`: monitors_edit2 - Blank groupname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_edit2 - Blank groupname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $TCPIP'null' = null ]
+if [ -z "$TCPIP" ]
 then
-echo `date`: monitors_edit2 - Blank tcpip by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_edit2 - Blank tcpip by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 TCPIP=`echo $TCPIP | sed 's/+/ /g'`
 
-if [ $INTERVAL'null' = null ]
+if [ -z "$INTERVAL" ]
 then
-INTERVAL=5
+	INTERVAL=5
 fi
 
 if [ $MONITORTYPES'null' = null ]
 then
-echo `date`: monitors_edit2 - Blank monitortypes by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_edit2 - Blank monitortypes by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 #Exit if no monitoring server has been set up.
 [ ! -f /opt/karoshi/server_network/monitoringserver ] && exit 103
@@ -123,10 +123,10 @@ echo `date`: monitors_edit2 - Editing $GROUPNAME by $REMOTE_USER from $REMOTE_AD
 #Create mon file for this custom group
 ################################
 
-[ $DAYSTART'null' = null ] && DAYSTART=Sun
-[ $DAYEND'null' = null ] && DAYEND=Sat
+[ -z "$DAYSTART" ] && DAYSTART=Sun
+[ -z "$DAYEND" ] && DAYEND=Sat
 
-if [ $HOURSTART'null' = null ] && [ $HOUREND'null' = null ]
+if [ -z "$HOURSTART" ] && [ -z "$HOUREND" ]
 then
 MON_PERIOD=""
 else
@@ -280,23 +280,33 @@ cat /opt/karoshi/server_network/mon/global /opt/karoshi/server_network/mon/monit
 #Check that ssh is working
 #Check that ssh is enabled for the backup server
 MONITORING_SERVER=`sed -n 1,1p /opt/karoshi/server_network/monitoringserver`
-ssh -o PasswordAuthentication=no -o ConnectTimeout=2 -o ConnectTimeout=2 $MONITORING_SERVER ls 1>/dev/null
-SSHSTATUS=`echo $?`
-if [ $SSHSTATUS != 0 ]
-then
-echo `date`: monitors_edit2 - ssh is not working 'for' $MONITORING_SERVER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
 
-scp -o PasswordAuthentication=no -o ConnectTimeout=3 /opt/karoshi/server_network/mon/mon.cf root@$MONITORING_SERVER:/etc/mon/ 2>&1
-###############################
-#Restart Mon
-###############################
-ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $MONITORING_SERVER '
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_stop 1>/dev/null
-sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_start 1>/dev/null
-'
+if [ $MONITORING_SERVER = `hostname-fqdn` ]
+then
+	cp -f /opt/karoshi/server_network/mon/mon.cf /etc/mon/
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_stop 1>/dev/null
+	sleep 1
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_start 1>/dev/null
+	else
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=2 -o ConnectTimeout=2 $MONITORING_SERVER ls 1>/dev/null
+	SSHSTATUS=`echo $?`
+	if [ $SSHSTATUS != 0 ]
+	then
+		echo `date`: monitors_edit2 - ssh is not working 'for' $MONITORING_SERVER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
+
+	scp -o PasswordAuthentication=no -o ConnectTimeout=3 /opt/karoshi/server_network/mon/mon.cf root@$MONITORING_SERVER:/etc/mon/ 2>&1
+	###############################
+	#Restart Mon
+	###############################
+	ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $MONITORING_SERVER '
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_stop 1>/dev/null
+	sleep 1
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_start 1>/dev/null
+	'
+fi
 exit
 

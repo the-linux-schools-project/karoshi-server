@@ -45,14 +45,12 @@ then
 	for karoshi_servers in /opt/karoshi/server_network/servers/*
 	do
 		SERVERNAME=`basename $karoshi_servers`
-		if [ $SERVERNAME != $MONITORING_SERVER ]
-		then
-			GROUPNAME=`echo $SERVERNAME | cut -d. -f1`
-			#Get ip of the server
-			TCPIP=`net lookup $SERVERNAME`
-			get_monitors
-			sudo -H /opt/karoshi/web_controls/exec/monitors_add $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$GROUPNAME:$TCPIP:$ALERTAFTER:$INTERVAL:$DAYSTART:$DAYEND:$HOURSTART:$HOUREND:$MONITORS 1> /dev/null
-		fi
+		GROUPNAME=`echo $SERVERNAME | cut -d. -f1`
+		#Get ip of the server
+		TCPIP=`net lookup $SERVERNAME`
+		get_monitors
+		#Dont get the monitoring server to ping it self
+		sudo -H /opt/karoshi/web_controls/exec/monitors_add $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$GROUPNAME:$TCPIP:$ALERTAFTER:$INTERVAL:$DAYSTART:$DAYEND:$HOURSTART:$HOUREND:$MONITORS 1> /dev/null
 	done
 else
 	SERVERNAME=$SERVER

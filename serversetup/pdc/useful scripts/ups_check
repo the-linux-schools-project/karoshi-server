@@ -1,43 +1,74 @@
 #!/bin/bash
 UPDATE_ALERTS=no
 
-#Clear any previous update warning messages
+function send_email_alert {
+
+if [ -f /opt/karoshi/server_network/emailserver ]
+then
+	EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+	if [ -d /opt/karoshi/server_network/mon/email_alerts/ ]
+	then
+		if [ `ls -1 /opt/karoshi/server_network/mon/email_alerts/ | wc -l` -gt 0 ]
+		then
+			SERVERSHORT=`echo $SERVER | cut -d. -f1`
+			for EMAILCONTACT in /opt/karoshi/server_network/mon/email_alerts/*
+			do
+				EMAILCONTACT=`basename $EMAILCONTACT`
+				source /opt/karoshi/server_network/mon/email_alerts/$EMAILCONTACT
+/opt/karoshi/serversetup/modules/monitoring/mon/alerts/smtp-cli --verbose --host="$EMAILSERVER" --from "$SENDER" --to "$EMAILADDRESS" --subject "Karoshi UPS Warning" --body-plain "UPS Warning: $SERVERSHORT
+This UPS is running on battery power.
+"
+			done
+		fi
+	fi
+fi
+}
+
+#Clear any previous update warning messages.
 /opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete ups
 
 [ ! -d /opt/karoshi/server_network/ups/master/ ] && exit
 
 for SERVERS in /opt/karoshi/server_network/ups/master/*
 do
-SERVER=`basename $SERVERS`
-#Get UPSMODELS
-for UPSMODELS in /opt/karoshi/server_network/ups/master/$SERVER/drivers/*
-do
-UPSMODEL=`basename $UPSMODELS`
+	SERVER=`basename $SERVERS`
+	#Get UPSMODELS
+	for UPSMODELS in /opt/karoshi/server_network/ups/master/$SERVER/drivers/*
+	do
+		UPSMODEL=`basename $UPSMODELS`
 
-ON_BATTERY=no
-REPLACE_BATTERY=no
+		ON_BATTERY=no
+		REPLACE_BATTERY=no
 
-#Get ups data
-if [ $SERVER = `hostname-fqdn` ]
-then
-UPSDATA=`upsc $UPSMODEL | grep ups.status`
-else
-UPSDATA=`ssh -x -o PasswordAuthentication=no $SERVER '
-upsc '$UPSMODEL' | grep ups.status
-'`
-fi
+		#Get ups data
+		if [ $SERVER = `hostname-fqdn` ]
+		then
+			UPSDATA=`upsc $UPSMODEL | grep ups.status`
+		else
+			UPSDATA=`ssh -x -o PasswordAuthentication=no $SERVER '
+			upsc '$UPSMODEL' | grep ups.status
+		'`
+		fi
 
-#Check replace battery
-[ `echo $UPSDATA | grep -c RB` -gt 0 ] && ON_BATTERY=yes 
-#Check on battery
-[ `echo $UPSDATA | grep -c OB` -gt 0 ] && REPLACE_BATTERY=yes
+		#Check on battery
+		[ `echo $UPSDATA | grep -c RB` -gt 0 ] && ON_BATTERY=yes 
+		#Check replace battery
+		[ `echo $UPSDATA | grep -c OB` -gt 0 ] && REPLACE_BATTERY=yes
 
-#Create web management alert
-if [ $ON_BATTERY = yes ] || [ $REPLACE_BATTERY = yes ]
-then
-UPDATE_ALERTS=yes
-/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add disk_usage ups_status.cgi "UPS Warning - $SERVER" 2
-fi
-done
+		#Create web management alert
+		if [ $REPLACE_BATTERY = yes ]
+		then
+			UPDATE_ALERTS=yes
+			/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add disk_usage ups_status.cgi "UPS Warning - $SERVER" 2
+		fi
+		
+		if [ $ON_BATTERY = yes ]
+		then
+			UPDATE_ALERTS=yes
+			/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add disk_usage ups_status.cgi "UPS Warning - $SERVER" 3
+			#Send a warning alert if there is a monitoring server.
+			send_email_alert
+		fi
+	done
 done
 exit

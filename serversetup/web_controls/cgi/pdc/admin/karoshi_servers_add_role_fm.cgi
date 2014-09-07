@@ -38,7 +38,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -87,10 +87,10 @@ exit
 }
 
 #Check to see that servername is not blank
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-MESSAGE=$ERRORMSG1
-show_status
+	MESSAGE=$ERRORMSG1
+	show_status
 fi
 
 ICON=/images/warnings/server.png
@@ -224,7 +224,7 @@ echo '</td></tr>'
 echo '<tr><td style="vertical-align: top; height: 40px;">'$MONITORSERVERMSG'</td>
 <td style="vertical-align: top; height: 40px;">
 '
-if [ $SERVERNAME != `hostname-fqdn` ] && [ -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME ] && [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
+if [ -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME ] && [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
 then
 	echo '<form action="/cgi-bin/admin/module_monitoring_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$MONITORSERVERHELPMSG'</span></a></form>'
 else

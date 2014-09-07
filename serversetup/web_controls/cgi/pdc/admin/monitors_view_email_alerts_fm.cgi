@@ -67,7 +67,7 @@ FILE=`echo $DATA | cut -s -d_ -f7`
 echo '<div id="actionbox"><table class="standard" style="text-align: left; " border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="vertical-align: top;"><b>'$TITLE2'</b></td>
 <td style="vertical-align: top;">
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_eMail_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG7'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Viewing_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG7'</span></a>
 </td>
 <td style="vertical-align: top;">
 <a href="/cgi-bin/admin/monitors_add_email_alert_fm.cgi"><input class="button" type="button" name="" value="'$ADDEMAILALERTMSG'"></a>

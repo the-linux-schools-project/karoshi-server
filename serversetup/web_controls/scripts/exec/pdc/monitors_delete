@@ -31,16 +31,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/monitors_delete_cgi
 then
-echo `date`: monitors_delete - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_delete - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/monitors_delete_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/monitors_delete.cgi | cut -d' ' -f1`
 [ $MD5SUM'null' = null ] && MD5SUM=not_set1
 if [ $MD5SUM'check' != $monitors_delete_cgi'check' ]
 then
-echo `date`: monitors_delete - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_delete - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 
@@ -50,16 +50,16 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: add_user - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: add_user - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-%'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: add_user - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: add_user - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -70,30 +70,30 @@ MONITOR=`echo "$DATA" | cut -s -d: -f4 | sed 's/+/_/g'`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: monitors_delete - Not called by monitors_delete.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_delete - Not called by monitors_delete.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: monitors_delete - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_delete - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: monitors_delete - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_delete - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: monitors_delete - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_delete - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $MONITOR'null' = null ]
+if [ -z "$MONITOR" ]
 then
-echo `date`: monitors_delete - Blank monitor by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_delete - Blank monitor by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 #Exit if no monitoring server has been set up.
@@ -133,15 +133,25 @@ cat /opt/karoshi/server_network/mon/global /opt/karoshi/server_network/mon/monit
 #Transfer mon.cf to the monitoring server
 ###############################
 MONITORING_SERVER=`sed -n 1,1p /opt/karoshi/server_network/monitoringserver`
-scp -o PasswordAuthentication=no -o ConnectTimeout=3 /opt/karoshi/server_network/mon/mon.cf root@$MONITORING_SERVER:/etc/mon/ 2>&1
-###############################
-#Restart Mon
-###############################
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $MONITORING_SERVER '
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_stop 1>/dev/null
-sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_start 1>/dev/null
-'
+
+if [ $MONITORING_SERVER = `hostname-fqdn` ]
+then
+	cp -f /opt/karoshi/server_network/mon/mon.cf /etc/mon/
+	source /opt/karoshi/serversetup/variables/distro
+	#Restart Mon
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_stop 1>/dev/null
+	sleep 1
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_start 1>/dev/null
+else
+	scp -o PasswordAuthentication=no -o ConnectTimeout=3 /opt/karoshi/server_network/mon/mon.cf root@$MONITORING_SERVER:/etc/mon/ 2>&1
+	#Restart Mon
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $MONITORING_SERVER '
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_stop 1>/dev/null
+	sleep 1
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_start 1>/dev/null
+	'
+fi
+
 exit
 

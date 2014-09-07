@@ -32,16 +32,16 @@ MD5ERROR="Incorrect MD5 checksum for this patch."
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/monitors_enable_disable_cgi
 then
-echo `date`: monitors_enable_disable - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_enable_disable - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/monitors_enable_disable_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/monitors_enable_disable.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set1
+[ -z "$MD5SUM" ] && MD5SUM=not_set1
 if [ $MD5SUM'check' != $monitors_enable_disable_cgi'check' ]
 then
-echo `date`: monitors_enable_disable - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_enable_disable - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -49,16 +49,16 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: monitor_enable_disable - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitor_enable_disable - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: monitor_enable_disable - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitor_enable_disable - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -70,30 +70,30 @@ GROUPNAME=`echo $DATA | cut -s -d: -f4 | sed 's/+/_/g'`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: monitors_enable_disable - Not called by monitors_enable_disable.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_enable_disable - Not called by monitors_enable_disable.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: monitors_enable_disable - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_enable_disable - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: monitors_enable_disable - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_enable_disable - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: monitors_enable_disable - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_enable_disable - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $GROUPNAME'null' = null ]
+if [ -z "$GROUPNAME" ]
 then
-echo `date`: monitors_enable_disable - Blank groupname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_enable_disable - Blank groupname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 
@@ -108,11 +108,11 @@ fi
 ######################
 if [ -f /opt/karoshi/server_network/mon/monitors/$GROUPNAME ]
 then
-echo `date`: monitors_enable_disable - disabling $GROUPNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-mv /opt/karoshi/server_network/mon/monitors/$GROUPNAME /opt/karoshi/server_network/mon/monitors_disabled/$GROUPNAME
+	echo `date`: monitors_enable_disable - disabling $GROUPNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	mv /opt/karoshi/server_network/mon/monitors/$GROUPNAME /opt/karoshi/server_network/mon/monitors_disabled/$GROUPNAME
 else
-echo `date`: monitors_enable_disable - enabling $GROUPNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-mv /opt/karoshi/server_network/mon/monitors_disabled/$GROUPNAME /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+	echo `date`: monitors_enable_disable - enabling $GROUPNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	mv /opt/karoshi/server_network/mon/monitors_disabled/$GROUPNAME /opt/karoshi/server_network/mon/monitors/$GROUPNAME
 fi
 
 ######################
@@ -145,23 +145,39 @@ cat /opt/karoshi/server_network/mon/global /opt/karoshi/server_network/mon/monit
 #Transfer mon.cf to the monitoring server
 ###############################
 MONITORING_SERVER=`sed -n 1,1p /opt/karoshi/server_network/monitoringserver`
-scp -o PasswordAuthentication=no -o ConnectTimeout=3 /opt/karoshi/server_network/mon/mon.cf root@$MONITORING_SERVER:/etc/mon/ 2>&1
-###############################
-#Restart Mon
-###############################
 
-ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $MONITORING_SERVER '
-if [ ! -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' ]
+if [ $MONITORING_SERVER = `hostname-fqdn` ]
 then
-mkdir -p /opt/karoshi/server_network/mon/events/'$GROUPNAME'
-chown mon /opt/karoshi/server_network/mon/events/'$GROUPNAME'
-fi
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_stop 1>/dev/null
-sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_start 1>/dev/null
-sleep 1
-#Refresh display
-/opt/karoshi/"useful scripts"/gen_status
+cp -f /opt/karoshi/server_network/mon/mon.cf /etc/mon/
+#Restart mon
+	if [ ! -d /opt/karoshi/server_network/mon/events/$GROUPNAME ]
+	then
+	mkdir -p /opt/karoshi/server_network/mon/events/$GROUPNAME
+	chown mon /opt/karoshi/server_network/mon/events/$GROUPNAME
+	fi
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_stop 1>/dev/null
+	sleep 1
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_start 1>/dev/null
+	sleep 1
+	#Refresh display
+	/opt/karoshi/"useful scripts"/gen_status
+else
+	scp -o PasswordAuthentication=no -o ConnectTimeout=3 /opt/karoshi/server_network/mon/mon.cf root@$MONITORING_SERVER:/etc/mon/ 2>&1
+	#Restart Mon
+	ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $MONITORING_SERVER '
+	if [ ! -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' ]
+	then
+	mkdir -p /opt/karoshi/server_network/mon/events/'$GROUPNAME'
+	chown mon /opt/karoshi/server_network/mon/events/'$GROUPNAME'
+	fi
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_stop 1>/dev/null
+	sleep 1
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_start 1>/dev/null
+	sleep 1
+	#Refresh display
+	/opt/karoshi/"useful scripts"/gen_status
 '
+fi
 exit

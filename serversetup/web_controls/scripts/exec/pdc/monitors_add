@@ -69,55 +69,55 @@ MONITORTYPES=( `echo $* | cut -s -d: -f12- | sed 's/:/ /g'` )
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: monitors_add - Not called by monitors_add.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_add - Not called by monitors_add.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: monitors_add - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_add - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: monitors_add - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_add - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ $REMOTE_USER != karoshi ]
 then
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
-then
-echo `date`: monitors_add - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
-fi
-
-if [ $GROUPNAME'null' = null ]
-then
-echo `date`: monitors_add - Blank groupname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+	then
+		echo `date`: monitors_add - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
 fi
 
-if [ $TCPIP'null' = null ]
+if [ -z "$GROUPNAME" ]
 then
-echo `date`: monitors_add - Blank tcpip by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_add - Blank groupname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+if [ -z "$TCPIP" ]
+then
+	echo `date`: monitors_add - Blank tcpip by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 TCPIP=`echo $TCPIP | sed 's/+/ /g'`
 
-if [ $INTERVAL'null' = null ]
+if [ -z "$INTERVAL" ]
 then
-INTERVAL=5
+	INTERVAL=5
 fi
 
-if [ $ALERTAFTER'null' = null ]
+if [ -z "$ALERTAFTER" ]
 then
-ALTERAFTER=1
+	ALTERAFTER=1
 fi
 
-if [ $MONITORTYPES'null' = null ]
+if [ -z "$MONITORTYPES" ]
 then
-echo `date`: monitors_add - Blank monitortypes by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_add - Blank monitortypes by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 #Exit if no monitoring server has been set up.
 [ ! -f /opt/karoshi/server_network/monitoringserver ] && exit 103
@@ -365,20 +365,34 @@ cat /opt/karoshi/server_network/mon/global /opt/karoshi/server_network/mon/monit
 #Transfer mon.cf to the monitoring server
 ###############################
 MONITORING_SERVER=`sed -n 1,1p /opt/karoshi/server_network/monitoringserver`
-scp -o PasswordAuthentication=no -o ConnectTimeout=3 /opt/karoshi/server_network/mon/mon.cf root@$MONITORING_SERVER:/etc/mon/ 2>&1
-###############################
-#Restart Mon
-###############################
-ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $MONITORING_SERVER '
-if [ ! -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' ]
+if [ $MONITORING_SERVER = `hostname-fqdn` ]
 then
-mkdir -p /opt/karoshi/server_network/mon/events/'$GROUPNAME'
-chown mon /opt/karoshi/server_network/mon/events/'$GROUPNAME'
-fi
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_stop 1>/dev/null
-sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_start 1>/dev/null
-/opt/karoshi/"useful scripts"/gen_status
+	cp -f /opt/karoshi/server_network/mon/mon.cf /etc/mon/
+	if [ ! -d /opt/karoshi/server_network/mon/events/$GROUPNAME ]
+	then
+		mkdir -p /opt/karoshi/server_network/mon/events/$GROUPNAME
+		chown mon /opt/karoshi/server_network/mon/events/$GROUPNAME
+	fi
+	source /opt/karoshi/serversetup/variables/distro
+	#Restart Mon
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_stop 1>/dev/null
+	sleep 1
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_start 1>/dev/null
+	/opt/karoshi/"useful scripts"/gen_status
+else
+	scp -o PasswordAuthentication=no -o ConnectTimeout=3 /opt/karoshi/server_network/mon/mon.cf root@$MONITORING_SERVER:/etc/mon/ 2>&1
+	ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $MONITORING_SERVER '
+	if [ ! -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' ]
+	then
+		mkdir -p /opt/karoshi/server_network/mon/events/'$GROUPNAME'
+		chown mon /opt/karoshi/server_network/mon/events/'$GROUPNAME'
+	fi
+	source /opt/karoshi/serversetup/variables/distro
+	#Restart Mon
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_stop 1>/dev/null
+	sleep 1
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_start 1>/dev/null
+	/opt/karoshi/"useful scripts"/gen_status
 '
+fi
 exit
