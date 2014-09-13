@@ -16,13 +16,13 @@ PACKAGELLIST="gnustep-make gnustep-base-runtime libgnustep-base-dev libgnustep-b
 function install_deps {
 for package in `echo "$PACKAGELLIST"`
 do
-echo -e "\n\nInstalling $package\n"
-apt-get -y install $package
-if [ $? != 0 ]
-then
-echo There was a problem installing $package.
-read pause
-fi
+	echo -e "\n\nInstalling $package\n"
+	apt-get -y install $package
+	if [ $? != 0 ]
+	then
+		echo There was a problem installing $package.
+		read pause
+	fi
 done
 }
 
@@ -61,6 +61,9 @@ make clean
 make install
 }
 
+#Backup logo
+[ -f /usr/local/lib/GNUstep/SOGo/WebServerResources/sogo-logo.png ] && cp -f /usr/local/lib/GNUstep/SOGo/WebServerResources/sogo-logo.png /tmp/sogo-logo.png.$$
+
 install_deps
 get_sogo
 compile_sope
@@ -69,6 +72,9 @@ compile_sogo
 
 #Copy in init.d script
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/sogo /etc/init.d/
+
+#Copy existing logo back
+[ -f /tmp/sogo-logo.png.$$ ] && mv -f /tmp/sogo-logo.png.$$ /usr/local/lib/GNUstep/SOGo/WebServerResources/sogo-logo.png
 
 #Tidy up
 rm -f -R $BUILDPATH
