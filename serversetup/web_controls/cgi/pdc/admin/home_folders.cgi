@@ -55,7 +55,12 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 #Generate navigation bar
 #########################
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><b>'$TITLE2'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a><br><br>'
+
+echo '<div id="actionbox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<td style="vertical-align: top;"><div class="sectiontitle">'$TITLE2'</div></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Home_Folders"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a>
+</td></tr></tbody></table>'
+
 
 #########################
 #Assign data to variables
@@ -163,7 +168,7 @@ then
 	show_status
 fi
 
-echo '<img alt="Warning" src="/images/warnings/warning.png"> '$LOGGEDINWARNMSG'<br><br>
+echo '<p><img height="16" width="16" alt="Warning" src="/images/warnings/warning.png"> '$LOGGEDINWARNMSG'</p><br>
 <form action="/cgi-bin/admin/home_folders2.cgi" method="post">
 <input name="_CURRENTSERVER_" value="'$SERVER'" type="hidden">
 <input name="_PRIGROUP_" value="'$PRIGROUP'" type="hidden">
@@ -171,11 +176,13 @@ echo '<img alt="Warning" src="/images/warnings/warning.png"> '$LOGGEDINWARNMSG'<
 
 <tr><td style="width: 180px;">'$CURRENTSERVERMSG'</td><td>'$SERVER'</td></tr>
 <tr><td>'$PRIGROUPMSG'</td><td>'$PRIGROUP'</td></tr>
-<tr><td>'$COPYHOMEAREASMSG'</td><td><input name="_COPYHOMEAREAS_" value="yes" type="checkbox"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a></td></tr></tbody></table><br><br><b>'$NEWSERVERMSG'</b><br>'
+<tr><td>'$COPYHOMEAREASMSG'</td><td><input name="_COPYHOMEAREAS_" value="yes" type="checkbox"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a></td></tr>
+<tr><td style="height:50px"><b>'$NEWSERVERMSG'</b></td></tr>
+</tbody></table>'
 
 #Show list of file servers.
 MOBILE=no
-/opt/karoshi/web_controls/show_servers $MOBILE fileservers "$ACTIONMSG" $SERVER
+/opt/karoshi/web_controls/show_servers $MOBILE fileservers "$ACTIONMSG" notset $SERVER
 
 echo '</form></div></div></body></html>'
 exit

@@ -73,10 +73,10 @@ source /opt/karoshi/server_network/group_information/$PRI_GROUP
 
 if [ $START_LINE = yes ]
 then
-echo '<tr><td>'$PRI_GROUP'</td><td>'$SERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_"><span>'$PRI_GROUP - $SERVER'<br><br>'$CHANGESERVERMSG'</span></a></td>'
+echo '<tr><td>'$PRI_GROUP'</td><td>'$SERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_"><span>'$CHANGESERVERMSG2'<br><br>'$PRI_GROUP - $SERVER'</span></a></td>'
 START_LINE=no
 else
-echo '<td>'$PRI_GROUP'</td><td>'$SERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_"><span>'$PRI_GROUP - $SERVER'<br><br>'$CHANGESERVERMSG'</span></a></td></tr>'
+echo '<td>'$PRI_GROUP'</td><td>'$SERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_"><span>'$CHANGESERVERMSG2'<br><br>'$PRI_GROUP - $SERVER'</span></a></td></tr>'
 START_LINE=yes
 fi
 done
