@@ -58,14 +58,14 @@ END_POINT=5
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = EXCEPTIONLISTcheck ]
-then
-let COUNTER=$COUNTER+1
-EXCEPTIONLIST=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = EXCEPTIONLISTcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		EXCEPTIONLIST=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -81,27 +81,27 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
-show_status
+	export MESSAGE=$HTTPS_ERROR
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
-show_status
+	MESSAGE=$ACCESS_ERROR1
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
-show_status
+	MESSAGE=$ACCESS_ERROR1
+	show_status
 fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>'
+echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$TITLE'</div></div><div id="infobox"><br>'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/exam_accounts_reset_passwords.cgi | cut -d' ' -f1`
 #Reset passwords
@@ -109,7 +109,8 @@ sudo -H /opt/karoshi/web_controls/exec/exam_accounts_reset_passwords $REMOTE_USE
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS != 0 ]
 then
-MESSAGE=`echo $ERRORMSG1`
-show_status
+	MESSAGE=`echo $ERRORMSG1`
+	show_status
 fi
+echo '</div></div></div></body></html>'
 exit

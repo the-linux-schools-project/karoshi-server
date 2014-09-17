@@ -1,0 +1,49 @@
+#!/bin/bash
+
+#Copyright (C) 2014 Paul Sharrad
+
+#This file is part of Karoshi Client.
+#
+#Karoshi Client is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Client is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Client.  If not, see <http://www.gnu.org/licenses/>.
+
+while read -r line; do
+	if [[ $line == MediaAvailable:*false ]]; then
+		unset device
+		unset media
+		#Remove any desktop icons for the device
+		[ -f ~/Desktop/karoshi-$filename.desktop ] && rm -f ~/Desktop/karoshi-$filename.desktop
+	fi
+
+	[[ $line == *Symlinks:* ]] && device=${line##*Symlinks:* }
+
+	[[ $line == MediaAvailable:*true ]] && media=yes
+
+
+	if [[ $media = yes ]] && [[ $device ]]; then
+		if dd if=$device count=2048 2>/dev/null | grep -q VIDEO_TS; then
+			#Create Desktop icon
+			cat > ~/Desktop/karoshi-$filename.desktop << EOF
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Play Movie
+Exec=vlc $device
+Icon=vlc
+Terminal=false
+StartupNotify=false
+EOF
+			chmod 0755 ~/Desktop/karoshi-$filename.desktop
+		fi
+	fi
+done < <(udisksctl monitor)

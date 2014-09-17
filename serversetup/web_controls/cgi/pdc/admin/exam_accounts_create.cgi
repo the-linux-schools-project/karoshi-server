@@ -58,14 +58,14 @@ END_POINT=3
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = NEWEXAMScheck ]
-then
-let COUNTER=$COUNTER+1
-NEWEXAMS=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9\n'`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = NEWEXAMScheck ]
+	then
+		let COUNTER=$COUNTER+1
+		NEWEXAMS=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9\n'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -73,7 +73,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo 'window.location = "/cgi-bin/admin/exam_accounts_create_fm.cgi";'
 echo '</script>'
-echo "</div></div></body></html>"
+echo "</div></div></div></body></html>"
 exit
 }
 #########################
@@ -81,42 +81,42 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
-show_status
+	export MESSAGE=$HTTPS_ERROR
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
-show_status
+	MESSAGE=$ACCESS_ERROR1
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
-show_status
+	MESSAGE=$ACCESS_ERROR1
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that NEWEXAMS is not blank.
-if [ $NEWEXAMS'null' = null ]
+if [ -z "$NEWEXAMS" ]
 then
-MESSAGE=$ERRORMSG1
-show_status
+	MESSAGE=$ERRORMSG1
+	show_status
 fi
 #Check that NEWEXAMS is below 1000
 if [ $NEWEXAMS -gt 999 ]
 then
-MESSAGE=$ERRORMSG2
-show_status
+	MESSAGE=$ERRORMSG2
+	show_status
 fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo "<div id="actionbox">"
+echo '<div id="actionbox3"><div id=infobox>'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/exam_accounts_create.cgi | cut -d' ' -f1`
 #Enable or disable all exam accounts
 sudo -H /opt/karoshi/web_controls/exec/exam_accounts_create $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$NEWEXAMS
