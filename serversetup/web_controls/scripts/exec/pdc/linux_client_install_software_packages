@@ -125,7 +125,7 @@ mv /var/lib/samba/netlogon/linuxclient/$VERSION/$LISTCHOICE.$$ /var/lib/samba/ne
 
 if [ $ACTION = add ]
 then
-if [ `grep -c $SOFTWARE /var/lib/samba/netlogon/linuxclient/$VERSION/install_list` = 0 ] && [ `grep -c $SOFTWARE /var/lib/samba/netlogon/linuxclient/$VERSION/remove_list` = 0 ]
+if [ `grep -c -w $SOFTWARE /var/lib/samba/netlogon/linuxclient/$VERSION/install_list` = 0 ] && [ `grep -c -w $SOFTWARE /var/lib/samba/netlogon/linuxclient/$VERSION/remove_list` = 0 ]
 then
 echo $SOFTWARE >> /var/lib/samba/netlogon/linuxclient/$VERSION/$LIST
 LISTCHOICE=LIST
@@ -149,7 +149,7 @@ sed -i 's/'$SOFTWARE'//g' /var/lib/samba/netlogon/linuxclient/$VERSION/install_l
 #Remove blank lines
 sed -i '/^$/d' /var/lib/samba/netlogon/linuxclient/$VERSION/install_list
 #Add package to the remove list
-if [ `grep -c $SOFTWARE /var/lib/samba/netlogon/linuxclient/$VERSION/install_list` = 0 ] && [ `grep -c $SOFTWARE /var/lib/samba/netlogon/linuxclient/$VERSION/remove_list` = 0 ]
+if [ `grep -c -w $SOFTWARE /var/lib/samba/netlogon/linuxclient/$VERSION/install_list` = 0 ] && [ `grep -c -w $SOFTWARE /var/lib/samba/netlogon/linuxclient/$VERSION/remove_list` = 0 ]
 then
 echo $SOFTWARE >> /var/lib/samba/netlogon/linuxclient/$VERSION/remove_list
 LISTCHOICE=remove_list
@@ -165,7 +165,7 @@ sed -i 's/'$SOFTWARE'//g' /var/lib/samba/netlogon/linuxclient/$VERSION/remove_li
 #Remove blank lines
 sed -i '/^$/d' /var/lib/samba/netlogon/linuxclient/$VERSION/remove_list
 #Add package to the install list
-if [ `grep -c $SOFTWARE /var/lib/samba/netlogon/linuxclient/$VERSION/install_list` = 0 ] && [ `grep -c $SOFTWARE /var/lib/samba/netlogon/linuxclient/$VERSION/remove_list` = 0 ]
+if [ `grep -c -w $SOFTWARE /var/lib/samba/netlogon/linuxclient/$VERSION/install_list` = 0 ] && [ `grep -c -w $SOFTWARE /var/lib/samba/netlogon/linuxclient/$VERSION/remove_list` = 0 ]
 then
 echo $SOFTWARE >> /var/lib/samba/netlogon/linuxclient/$VERSION/install_list
 LISTCHOICE=install_list
