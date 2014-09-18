@@ -194,14 +194,14 @@ LINEDATA=`echo "$LINEDATA" | sed "s/Mounted On/Mounted-On/g" | sed "s/^/\<tr\>\<
 echo $LINEDATA >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
 else
 USAGE=`echo $LINEDATA | cut -d' ' -f5 | sed "s/\%//g"`
-#Colour code data red for 90% or over
-if [ $USAGE -ge 90 ]
+#Colour code data red for 95% or over
+if [ $USAGE -ge 95 ]
 then
 LINEDATA=`echo "$LINEDATA" | sed "s/ /\<\/span\>\<\/td\>\<td\>\<span style=\"color: rgb\(255, 0, 0\)\; font-weight: bold\;\"\>/g" | sed "s/^/\<tr\>\<td\>\<span style=\"color: rgb\(255, 0, 0\)\; font-weight: bold\;\"\>/g" | sed "s/$/\<\/span\>\<\/td\>\<\/tr\>/"`
 echo $LINEDATA >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
 [ `echo $LINEDATA | grep -c /media` = 0 ] && DISKWARN=yes
-#Colour code data orange for 70% or over
-elif [ $USAGE -ge 70 ]
+#Colour code data orange for 85% or over
+elif [ $USAGE -ge 85 ]
 then
 LINEDATA=`echo "$LINEDATA" | sed "s/ /\<\/span\>\<\/td\>\<td\>\<span style=\"color: rgb\(255, 153, 0\)\; font-weight: bold\;\"\>/g" | sed "s/^/\<tr\>\<td\>\<span style=\"color: rgb\(255, 153, 0\)\; font-weight: bold\;\"\>/g" | sed "s/$/\<\/span\>\<\/td\>\<\/tr\>/"`
 echo $LINEDATA >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
@@ -259,14 +259,14 @@ LINEDATA=`echo "$LINEDATA" | sed "s/Mounted On/Mounted-On/g" | sed "s/^/\<tr\>\<
 echo $LINEDATA >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
 else
 USAGE=`echo $LINEDATA | cut -d" " -f5 | sed "s/\%//g"`
-#Colour code data red for 90% or over
-if [ $USAGE -ge 90 ]
+#Colour code data red for 95% or over
+if [ $USAGE -ge 95 ]
 then
 LINEDATA=`echo "$LINEDATA" | sed "s/ /\<\/span\>\<\/td\>\<td\>\<span style=\"color: rgb\(255, 0, 0\)\; font-weight: bold\;\"\>/g" | sed "s/^/\<tr\>\<td\>\<span style=\"color: rgb\(255, 0, 0\)\; font-weight: bold\;\"\>/g" | sed "s/$/\<\/span\>\<\/td\>\<\/tr\>/"`
 echo $LINEDATA >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
 [ `echo $LINEDATA | grep -c /media` = 0 ] && DISKWARN=yes
-#Colour code data orange for 70% or over
-elif [ $USAGE -ge 70 ]
+#Colour code data orange for 85% or over
+elif [ $USAGE -ge 85 ]
 then
 LINEDATA=`echo "$LINEDATA" | sed "s/ /\<\/span\>\<\/td\>\<td\>\<span style=\"color: rgb\(255, 153, 0\)\; font-weight: bold\;\"\>/g" | sed "s/^/\<tr\>\<td\>\<span style=\"color: rgb\(255, 153, 0\)\; font-weight: bold\;\"\>/g" | sed "s/$/\<\/span\>\<\/td\>\<\/tr\>/"`
 echo $LINEDATA >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
