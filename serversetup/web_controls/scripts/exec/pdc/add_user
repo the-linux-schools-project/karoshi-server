@@ -378,36 +378,36 @@ fi
 ###########################
 if [ -f /opt/karoshi/server_network/emailserver ]
 then
-EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
-if [ $EMAILSERVER != `hostname-fqdn` ]
-then 
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
-[ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
-[ ! -d /home/users/email/'$NEWUSERNAME' ] && mkdir /home/users/email/'$NEWUSERNAME'
-chown -R '$USERID':root /home/users/email/'$NEWUSERNAME'
-chmod -R 0600 /home/users/email/'$NEWUSERNAME'
-chmod -R u+X /home/users/email/'$NEWUSERNAME'
+	EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+	if [ $EMAILSERVER != `hostname-fqdn` ]
+	then 
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+		[ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
+		[ ! -d /home/users/email/'$NEWUSERNAME' ] && mkdir /home/users/email/'$NEWUSERNAME'
+		chown -R '$USERID':root /home/users/email/'$NEWUSERNAME'
+		chmod -R 0600 /home/users/email/'$NEWUSERNAME'
+		chmod -R u+X /home/users/email/'$NEWUSERNAME'
 
-[ ! -d '$HOMEPATH''/''$NEWUSERNAME' ] && mkdir -p '$HOMEPATH''/''$NEWUSERNAME'
-chown -R '$USERID':root '$HOMEPATH''/''$NEWUSERNAME'
-chmod -R 0600 '$HOMEPATH''/''$NEWUSERNAME'
-setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
-'
-SSHSTATUS=`echo $?`
-if [ $SSHSTATUS != 0 ]
-then
-echo `date`: add_user - $NEWUSERNAME ssh failure on $EMAILSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $EMAILSERVER,emailserver >> /opt/karoshi/server_network/offline_servers/add_users/$NEWUSERNAME
-FAILED_SERVER=yes
-FAILEDSERVERLIST=$FAILEDSERVERLIST,$EMAILSERVER
-fi
-else
-[ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
-mkdir /home/users/email/$NEWUSERNAME
-chown $NEWUSERNAME -R /home/users/email/$NEWUSERNAME
-chmod 0600 -R /home/users/email/$NEWUSERNAME
-chmod u+X -R /home/users/email/$NEWUSERNAME
-fi
+		[ ! -d '$HOMEPATH''/''$NEWUSERNAME' ] && mkdir -p '$HOMEPATH''/''$NEWUSERNAME'
+		chown -R '$USERID':root '$HOMEPATH''/''$NEWUSERNAME'
+		chmod -R 0600 '$HOMEPATH''/''$NEWUSERNAME'
+		setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
+		'
+		SSHSTATUS=`echo $?`
+		if [ $SSHSTATUS != 0 ]
+		then
+			echo `date`: add_user - $NEWUSERNAME ssh failure on $EMAILSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			echo $EMAILSERVER,emailserver >> /opt/karoshi/server_network/offline_servers/add_users/$NEWUSERNAME
+			FAILED_SERVER=yes
+		FAILEDSERVERLIST=$FAILEDSERVERLIST,$EMAILSERVER
+		fi
+	else
+		[ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
+		mkdir /home/users/email/$NEWUSERNAME
+		chown $NEWUSERNAME -R /home/users/email/$NEWUSERNAME
+		chmod 0600 -R /home/users/email/$NEWUSERNAME
+		chmod u+X -R /home/users/email/$NEWUSERNAME
+	fi
 fi
 
 ######################

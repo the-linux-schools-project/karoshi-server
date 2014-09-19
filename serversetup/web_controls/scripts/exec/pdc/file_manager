@@ -1522,7 +1522,7 @@ echo '
 ' 
 
 echo "<br><br><textarea cols=\"$COLSIZE\" rows=\"$ROWSIZE\" name=\"_TEXTDATA_\">"
-echo "`cat "$LOCATION"`</textarea>"
+echo "`cat "$LOCATION" | sed "s/&/&amp/g"`</textarea>"
 else
 echo "<a href=\"javascript:history.go(-1)\"> <img src=\"/images/submenus/file/back.gif\" alt=\"back\" border=\"0\"></a><br><br>"$EDITERRORMSG
 fi
@@ -1547,7 +1547,7 @@ if [ `echo "$FILETYPEDATA" | grep -c ASCII` -gt 0 ] || [ `echo "$FILETYPEDATA" |
 then
 echo "<input type=\"image\" src=\"/images/submenus/file/go.gif\" name=\"_ACTION_REALLYEDIT_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_\" value=\"\"><a href=\"javascript:history.go(-1)\"> <img src=\"/images/submenus/file/back.gif\" alt=\"back\" border=\"0\"></a><br><br><textarea cols=\"95\" rows=\"28\" name=\"_TEXTDATA_\">"
 [ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - viewing "'$LOCATION'" on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-echo "`cat "'$LOCATION'"`</textarea>"
+echo "`cat "'$LOCATION'" | sed "s/&/&amp/g"`</textarea>"
 else
 echo "<a href=\"javascript:history.go(-1)\"> <img src=\"/images/submenus/file/back.gif\" alt=\"back\" border=\"0\"></a><br><br>"'$EDITERRORMSG'
 fi
@@ -1572,7 +1572,7 @@ FILETYPEDATA=`file "'$LOCATION'"`
 if [ `echo "$FILETYPEDATA" | grep -c ASCII` -gt 0 ] || [ `echo "$FILETYPEDATA" | grep -c Bourne-Again` -gt 0 ] || [ `echo "$FILETYPEDATA" | grep -c PHP` -gt 0 ] || [ `echo "$FILETYPEDATA" | grep -c XML` -gt 0 ] && [ $EDITCHECK = ok ]
 then
 echo "<input type=\"image\" src=\"/images/submenus/file/go.gif\" name=\"_ACTION_REALLYEDIT_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_\" value=\"\"><a href=\"javascript:history.go(-1)\"> <img src=\"/images/submenus/file/back.gif\" alt=\"back\" border=\"0\"></a><br><br><textarea cols=\"95\" rows=\"28\" name=\"_TEXTDATA_\">"
-echo "`cat "'$LOCATION'"`</textarea>"
+echo "`cat "'$LOCATION'" | sed "s/&/&amp/g"`</textarea>"
 else
 echo "<a href=\"javascript:history.go(-1)\"> <img src=\"/images/submenus/file/back.gif\" alt=\"back\" border=\"0\"></a><br><br>"'$EDITERRORMSG'
 fi

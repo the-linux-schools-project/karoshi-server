@@ -29,16 +29,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/exam_accounts_create_cgi
 then
-echo `date`: exam_accounts_create - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: exam_accounts_create - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/exam_accounts_create_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/exam_accounts_create.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $exam_accounts_create_cgi'check' ]
 then
-echo `date`: exam_accounts_create - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: exam_accounts_create - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -47,8 +47,8 @@ fi
 numArgs=$#
 if [ $numArgs != 1 ]
 then
-echo `date`: exam_accounts_create - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: exam_accounts_create - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo $* | cut -s -d: -f1 | tr -cd 'A-Za-z0-9\._:\-'`
 REMOTE_ADDR=`echo $* | cut -s -d: -f2 | tr -cd 'A-Za-z0-9\._:\-'`
@@ -59,28 +59,28 @@ NEWEXAMS=`echo $* | cut -s -d: -f4 | tr -cd 'A-Za-z0-9\._:\-'`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
 then
-echo `date`: exam_accounts_create - Not called by exam_accounts_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: exam_accounts_create - Not called by exam_accounts_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: exam_accounts_create - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: exam_accounts_create - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: exam_accounts_create - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: exam_accounts_create - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $NEWEXAMS'null' = null ]
+if [ -z "$NEWEXAMS" ]
 then
-echo `date`: exam_accounts_create - Blank newexams by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: exam_accounts_create - Blank newexams by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
 then
-echo `date`: exam_accounts_create - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: exam_accounts_create - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ############################
 #Language
@@ -94,8 +94,6 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/user/exam_accounts_create
 source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 source /opt/karoshi/server_network/domain_information/domain_name
 
-#Create default mail boxes
-/opt/karoshi/"useful scripts"/createmailfolders
 #Get current number of exam accounts
 COUNTER=`ls -1 /home/users/exams/ | wc -l`
 let EXAMSTOTAL=$COUNTER+$NEWEXAMS
@@ -152,14 +150,49 @@ unixhomedirectory: /home/users/exams/exam$COUNTER
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 
-#Create mail folder
-mkdir -p /home/users/exams/exam$COUNTER/Mail
-cp /opt/karoshi/.tempdata/INBOX.* /home/users/exams/exam$COUNTER/Mail/
-cp /opt/karoshi/.tempdata/.mailboxlist /home/users/exams/exam$COUNTER/
-#Set permissions
+###########################
+#Create email folder on email server
+###########################
+if [ -f /opt/karoshi/server_network/emailserver ]
+then
+	EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+	if [ $EMAILSERVER != `hostname-fqdn` ]
+	then 
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+		[ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
+		[ ! -d /home/users/email/exam'$COUNTER' ] && mkdir /home/users/email/exam'$COUNTER'
+		chown -R exam'$COUNTER':root /home/users/email/exam'$COUNTER'
+		chmod -R 0600 /home/users/email/exam'$COUNTER'
+		chmod -R u+X /home/users/email/exam'$COUNTER'
+
+		[ ! -d /home/users/exams/exam'$COUNTER' ] && mkdir -p /home/users/exams/exam'$COUNTER'
+		chown -R exam'$COUNTER':root /home/users/exams/exam'$COUNTER'
+		chmod -R 0600 /home/users/exams/exam'$COUNTER'
+		setfacl -m u::rwx,g::---,o::---,m::r-x /home/users/exams/exam'$COUNTER'
+		'
+		SSHSTATUS=`echo $?`
+		if [ $SSHSTATUS != 0 ]
+		then
+			echo `date`: add_user - $NEWUSERNAME ssh failure on $EMAILSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			echo $EMAILSERVER,emailserver >> /opt/karoshi/server_network/offline_servers/add_users/$NEWUSERNAME
+			FAILED_SERVER=yes
+		FAILEDSERVERLIST=$FAILEDSERVERLIST,$EMAILSERVER
+		fi
+	else
+		[ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
+		mkdir /home/users/email/exam$COUNTER
+		chown $NEWUSERNAME -R /home/users/email/exam$COUNTER
+		chmod 0600 -R /home/users/email/exam$COUNTER
+		chmod u+X -R /home/users/email/exam$COUNTER
+	fi
+fi
+
+#Create home area and set permissions
+[ ! -d /home/users/exams/exam$COUNTER ] && mkdir -p /home/users/exams/exam$COUNTER
 chown -R exam$COUNTER:exams /home/users/exams/exam$COUNTER
 chmod -R 0600 /home/users/exams/exam$COUNTER
 chmod u+X -R /home/users/exams/exam$COUNTER
+
 let COUNTER=$COUNTER+1
 done
 echo '</tbody></table>'
