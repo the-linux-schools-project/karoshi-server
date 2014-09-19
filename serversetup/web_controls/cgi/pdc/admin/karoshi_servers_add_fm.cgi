@@ -88,8 +88,8 @@ function showDiv(divName) {
 #Get data input
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-' | sed 's/__/_ _/g'`
-
+#DATA=`cat | tr -cd 'A-Za-z0-9\._:\-' | sed 's/__/_ _/g'`
+DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%*+-' | sed 's/*/%1123/g' | sed 's/____/QUADRUPLEUNDERSCORE/g' | sed 's/_/REPLACEUNDERSCORE/g' | sed 's/QUADRUPLEUNDERSCORE/_/g'`
 #########################
 #Assign data to variables
 #########################
@@ -200,14 +200,14 @@ echo '<form id="FormName" action="/cgi-bin/admin/karoshi_servers_add.cgi" method
 </tr></tbody></table>
 <br>
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$SERVERMSG'</td><td><input tabindex= "1" style="width: 200px;" name="_SERVERNAME_" value="'$SERVERNAME'" size="23" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a>
-</td></tr><tr><td style="width: 180px;">'$TCPIPMSG'</td><td><input tabindex= "2" style="width: 200px;" name="_TCPIPNUMBER_" size="23" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a>
+<tr><td style="width: 180px;">'$SERVERMSG'</td><td><input tabindex= "1" style="width: 200px;" name="____SERVERNAME____" value="'$SERVERNAME'" size="23" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a>
+</td></tr><tr><td style="width: 180px;">'$TCPIPMSG'</td><td><input tabindex= "2" style="width: 200px;" name="____TCPIPNUMBER____" size="23" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a>
 </td></tr>
-<tr><td style="width: 180px;">'$ROOTMSG'</td><td><input tabindex= "3" style="width: 200px;" name="_PASSWORD1_" value="'$PASSWORD1'" size="23" type="password"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG4'</span></a>
+<tr><td style="width: 180px;">'$ROOTMSG'</td><td><input tabindex= "3" style="width: 200px;" name="____PASSWORD1____" value="'$PASSWORD1'" size="23" type="password"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG4'</span></a>
 </td></tr>
-<tr><td>'$CONFIRMMSG'</td><td><input tabindex= "4" style="width: 200px;" name="_PASSWORD2_" value="'$PASSWORD2'" size="23" type="password"></td></tr>
+<tr><td>'$CONFIRMMSG'</td><td><input tabindex= "4" style="width: 200px;" name="____PASSWORD2____" value="'$PASSWORD2'" size="23" type="password"></td></tr>
 <tr><td style="width: 180px;">Zone</td><td>
-<select name="_ZONE_" style="width: 200px;">
+<select name="____ZONE____" style="width: 200px;">
 <option '$ZONESELECT1'>internal</option>
 <option '$ZONESELECT2'>dmz</option>
 <option '$ZONESELECT3'>external</option>
@@ -220,19 +220,19 @@ echo '<form id="FormName" action="/cgi-bin/admin/karoshi_servers_add.cgi" method
 <tr><td>
 <div class="sectiontitle">'$AUTHTYPEMSG'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Authentication_Type"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG11'</span></a></td></tr></tbody></table><br>
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$ADCMSG'</td><td><input type="radio" name="_AUTHENTICATION_" value="adc" '$CHECKED1' onchange="showDiv(this.value);"></td><td>
+<tr><td style="width: 180px;">'$ADCMSG'</td><td><input type="radio" name="____AUTHENTICATION____" value="adc" '$CHECKED1' onchange="showDiv(this.value);"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Authentication_Type"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG5'</span></a>
 </td></tr>
-<tr><td>'$RODCMSG'</td><td><input type="radio" name="_AUTHENTICATION_" value="rodc" '$CHECKED2' onchange="showDiv(this.value);"></td><td>
+<tr><td>'$RODCMSG'</td><td><input type="radio" name="____AUTHENTICATION____" value="rodc" '$CHECKED2' onchange="showDiv(this.value);"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Authentication_Type"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG6'</span></a>
 </td></tr>
-<tr><td>'$DMMSG'</td><td><input type="radio" name="_AUTHENTICATION_" value="member" '$CHECKED3' onchange="showDiv(this.value);"></td><td>
+<tr><td>'$DMMSG'</td><td><input type="radio" name="____AUTHENTICATION____" value="member" '$CHECKED3' onchange="showDiv(this.value);"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Authentication_Type"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG7'</span></a>
 </td></tr>
-<tr><td>'$UAGMSG'</td><td><input type="radio" name="_AUTHENTICATION_" value="usersandgroups" '$CHECKED4' onchange="showDiv(this.value);"></td><td>
+<tr><td>'$UAGMSG'</td><td><input type="radio" name="____AUTHENTICATION____" value="usersandgroups" '$CHECKED4' onchange="showDiv(this.value);"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Authentication_Type"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG8'</span></a>
 </td></tr>
-<tr><td>'$NOAUTHMSG'</td><td><input type="radio" name="_AUTHENTICATION_" value="none" '$CHECKED5' onchange="showDiv(this.value);"></td><td>
+<tr><td>'$NOAUTHMSG'</td><td><input type="radio" name="____AUTHENTICATION____" value="none" '$CHECKED5' onchange="showDiv(this.value);"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Authentication_Type"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG9'</span></a>
 </td></tr></tbody></table>
 <br><br>

@@ -112,7 +112,10 @@ exit
 #Get data input
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-' | sed 's/__/_ _/g'`
+#DATA=`cat | tr -cd 'A-Za-z0-9\._:\-' | sed 's/__/_ _/g'`
+DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%*+-' | sed 's/*/%1123/g' | sed 's/____/QUADRUPLEUNDERSCORE/g' | sed 's/_/REPLACEUNDERSCORE/g' | sed 's/QUADRUPLEUNDERSCORE/_/g'`
+
+
 #########################
 #Assign data to variables
 #########################
@@ -122,82 +125,84 @@ END_POINT=13
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign TCPIPNUMBER
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = TCPIPNUMBERcheck ]
-then
-let COUNTER=$COUNTER+1
-TCPIPNUMBER=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = TCPIPNUMBERcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		TCPIPNUMBER=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign password1
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = PASSWORD1check ]
-then
-let COUNTER=$COUNTER+1
-PASSWORD1=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = PASSWORD1check ]
+	then
+		let COUNTER=$COUNTER+1
+		PASSWORD1=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
+
 #Assign password2
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = PASSWORD2check ]
-then
-let COUNTER=$COUNTER+1
-PASSWORD2=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = PASSWORD2check ]
+	then
+		let COUNTER=$COUNTER+1
+		PASSWORD2=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
+
 #Assign authentication
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = AUTHENTICATIONcheck ]
-then
-let COUNTER=$COUNTER+1
-AUTHENTICATION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = AUTHENTICATIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		AUTHENTICATION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign ZONE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ZONEcheck ]
-then
-let COUNTER=$COUNTER+1
-ZONE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = ZONEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		ZONE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #########################
@@ -205,67 +210,64 @@ done
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
-show_status
+	export MESSAGE=$HTTPS_ERROR
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
-show_status
+	MESSAGE=$ACCESS_ERROR1
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
-show_status
+	MESSAGE=$ACCESS_ERROR1
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that servername is not blank
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-MESSAGE=$ERRORMSG1
-show_status
+	MESSAGE=$ERRORMSG1
+	show_status
 fi
 
 #Check to see that password fields are not blank
-if [ $PASSWORD1'null' = null ]
+if [ -z "$PASSWORD1" ]
 then
-MESSAGE=$ERRORMSG2
-show_status
+	MESSAGE=$ERRORMSG2
+	show_status
 fi
-if [ $PASSWORD2'null' = null ]
+if [ -z "$PASSWORD2" ]
 then
-MESSAGE=$ERRORMSG2
-show_status
+	MESSAGE=$ERRORMSG2
+	show_status
 fi
 #Check that password has been entered correctly
-if [ $PASSWORD1 != $PASSWORD2 ]
+if [ "$PASSWORD1" != "$PASSWORD2" ]
 then
-MESSAGE=$ERRORMSG3
-show_status
+	MESSAGE=$ERRORMSG3
+	show_status
 fi
 
 #Check to see that authentication is not blank
-if [ $AUTHENTICATION'null' = null ]
+if [ -z "$AUTHENTICATION" ]
 then
-MESSAGE=$ERRORMSG7
-show_status
+	MESSAGE=$ERRORMSG7
+	show_status
 fi
 
 #Check to see that authentication is not blank
-if [ $ZONE'null' = null ]
+if [ -z "$ZONE" ]
 then
-MESSAGE=$ERRORMSG7
-show_status
+	MESSAGE=$ERRORMSG7
+	show_status
 fi
-
-
-
 
 function get_data {
 #Send data back to form and ask for tcpip number
@@ -291,37 +293,29 @@ exit
 #If tcpip is blank check to see that we know the tcpip number
 if [ $TCPIPNUMBER'null' = null ]
 then
-host -r -t A $SERVERNAME 1>/dev/null
-if [ `echo $?` != 0 ]
-then
-get_data
-fi
+	host -r -t A $SERVERNAME 1>/dev/null
+	[ $? != 0 ] && get_data
 fi
 
-if [ $TCPIPNUMBER'null' != null ]
+if [ -z "$TCPIPNUMBER" ]
 then
-########################
-#Check that the tcpip number has been entered correctly
-########################
-#Check dots
-if [ `echo $TCPIPNUMBER | sed 's/\./\n /g'  | sed /^$/d | wc -l` != 4 ]
-then
-get_data
-fi
-#Check that no number is greater than 255
-HIGHESTNUMBER=`echo $TCPIPNUMBER | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p`
-if [ $HIGHESTNUMBER -gt 255 ]
-then
-get_data
-fi
+	########################
+	#Check that the tcpip number has been entered correctly
+	########################
+	#Check dots
+	[ `echo $TCPIPNUMBER | sed 's/\./\n /g'  | sed /^$/d | wc -l` != 4 ] && get_data
+
+	#Check that no number is greater than 255
+	HIGHESTNUMBER=`echo $TCPIPNUMBER | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p`
+	[ $HIGHESTNUMBER -gt 255 ] && get_data
 fi
 
 #Check to see that this is not the tcpip number of the main server.
 MAINSERVERIP=`net lookup $HOSTNAME`
 if [ "$MAINSERVERIP" = "$TCPIPNUMBER" ]
 then
-MESSAGE=$ERRORMSG6
-show_status
+	MESSAGE=$ERRORMSG6
+	show_status
 fi
 
 echo '<div id="titlebox"><div class="sectiontitle">'$TITLE' - '$SERVERNAME'</div><br></div><div id="infobox">'
@@ -333,8 +327,8 @@ EXEC_STATUS=`echo $?`
 MESSAGE=`echo $SERVERNAME - $COMPLETEDMSG`
 if [ $EXEC_STATUS = 101 ]
 then
-MESSAGE=`echo $SERVERNAME - $ERRORMSG5`
-show_status
+	MESSAGE=`echo $SERVERNAME - $ERRORMSG5`
+	show_status
 fi
 test_connections
 exit
