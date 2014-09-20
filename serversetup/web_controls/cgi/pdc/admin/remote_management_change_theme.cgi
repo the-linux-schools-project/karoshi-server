@@ -84,7 +84,7 @@ if [ $MOBILE = no ]
 then
 DIV_ID=actionbox3
 TABLECLASS=standard
-MAXSTYLES=5
+MAXSTYLES=4
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else

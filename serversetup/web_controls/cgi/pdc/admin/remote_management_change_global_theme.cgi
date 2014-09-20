@@ -69,7 +69,7 @@ STYLESHEETCHOICE=`basename $THEMES | sed 's/.png//g'`
 echo '<td style="width: 90px; vertical-align: top; height: 160px; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_THEMECHOICE_'$STYLESHEETCHOICE'_" type="image" class="images" src="/images/theme_preview/'$STYLESHEETCHOICE'.png" value="_THEMECHOICE_'$STYLESHEETCHOICE'_"><span>'$STYLESHEETCHOICE'</span></a></td>'
 let STYLECOUNT=$STYLECOUNT+1
 
-if [ $STYLECOUNT = 5 ]
+if [ $STYLECOUNT = 4 ]
 then
 echo '</tr><tr>'
 STYLECOUNT=1
