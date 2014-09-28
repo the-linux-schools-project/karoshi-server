@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/bulk_user_creation ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/bulk_user_creation
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -47,7 +45,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <TITLE>'$TITLE'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+    <TITLE>'$"Bulk User Creation"'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </HEAD>
@@ -57,14 +55,14 @@ echo '
 echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/bulk_user_creation_upload.cgi" METHOD="POST"><div id="actionbox">
 
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="vertical-align: top;"><div class="sectiontitle">'$TITLE'</div></td>
-<td style="vertical-align: top;"><a href="bulk_user_creation_view_passwords_fm.cgi"><input class="button" type="button" name="" value="'$VIEWPASSWORDSMSG'"></td>
-<td style="vertical-align: top;"><a href="bulk_user_creation_import_enrollment_numbers_fm.cgi"><input class="button" type="button" name="" value="'$IMPORTENROLLNUMBERS'"></td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Upload_CSV"><img class="images" alt="" src="/images/help/info.png"><span>'$CSVHELPMSG1':<br><br>'$CSVHELPMSG2'</span></a></td></tr></tbody></table><br>
+<tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Bulk User Creation"'</div></td>
+<td style="vertical-align: top;"><a href="bulk_user_creation_view_passwords_fm.cgi"><input class="button" type="button" name="" value="'$"View new passwords"'"></td>
+<td style="vertical-align: top;"><a href="bulk_user_creation_import_enrollment_numbers_fm.cgi"><input class="button" type="button" name="" value="'$"Import enrolment numbers"'"></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Upload_CSV"><img class="images" alt="" src="/images/help/info.png"><span>'$"The CSV file format is"':<br><br>'$"forename, surname, password (optional), Enrolment Number or staff code (optional)"'</span></a></td></tr></tbody></table><br>
   
         <table class="standard" border=0>
         <tr>
-            <td style="width: 180px;">'$CSVMSG'
+            <td style="width: 180px;">'$"Upload CSV file"'
             </td>
             <td>
                 <INPUT TYPE="FILE"  NAME="file-to-upload-01" SIZE="35">
@@ -75,7 +73,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/bulk_user_creat
 </div>
 
 <div id="submitbox">
-  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+  <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>
         </FORM>
 </BODY>

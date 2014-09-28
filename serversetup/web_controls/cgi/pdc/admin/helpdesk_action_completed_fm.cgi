@@ -27,13 +27,11 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/helpdesk ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/helpdesk
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
@@ -43,7 +41,7 @@ echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><title>'$TITLE'</title></head><body onLoad="start()"><div id="pagecontainer">'
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><title>'$"Help Desk"'</title></head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -80,7 +78,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 
@@ -90,13 +88,13 @@ fi
 #Check to see that JOBNAME is not blank
 if [ $JOBNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG8
+MESSAGE=$"The job name cannot be blank."
 show_status
 fi
 
 if [ ! -f /opt/karoshi/helpdesk/completed/$JOBNAME ]
 then
-MESSAGE=$ERRORMSG9
+MESSAGE=$"This job does not exist."
 show_status
 fi
 
@@ -108,23 +106,23 @@ fi
 source /opt/karoshi/helpdesk/completed/$JOBNAME
 
 #Show job data
-echo '<form action="/cgi-bin/admin/helpdesk_action.cgi" method="post"><div id="actionbox"><b>'$TITLE' - '$TITLE3'</b><br><br>
+echo '<form action="/cgi-bin/admin/helpdesk_action.cgi" method="post"><div id="actionbox"><b>'$"Help Desk"' - '$"Action Request"'</b><br><br>
 <input name="_JOBNAME_" value="'$JOBNAME'" type="hidden">
 <table class="standard" style="text-align: left; height: 91px;" border="0" cellpadding="2" cellspacing="2">
 <tbody>
-<tr><td style="width: 180px;">'$JOBTITLEMMSG'</td><td>'$JOBTITLE'</td></tr>
-<tr><td>'$NAMEMSG'</td><td>'$NAME'</td></tr>
-<tr><td>'$LOCATIONMSG'</td><td>'$LOCATION'</td></tr>
-<tr><td>'$DEPARTMENTMSG'</td><td>'$DEPARTMENT'</td></tr>
-<tr><td>'$CATEGORYMSG'</td><td>'$CATEGORY'</td></tr>
-<tr><td>'$USERPROBLEMMSG'</td><td>'$REQUEST'</td></tr>
-<tr><td>'$COMPLETEDMSG2'</td><td><input name="_ACTION_" value="notcompleted" type="checkbox"></td></tr>
-<tr><td>'$ASSIGNEDMSG'</td><td>'$ASSIGNED'</td></tr>
-<tr><td>'$PRIORITYMSG'</td><td>'$PRIORITY'</td></tr>
-<tr><td>'$FEEDBACKMSG'</td><td>'$FEEDBACK'</td></tr>
+<tr><td style="width: 180px;">'$"Request Summary"'</td><td>'$JOBTITLE'</td></tr>
+<tr><td>'$"Name"'</td><td>'$NAME'</td></tr>
+<tr><td>'$"Location"'</td><td>'$LOCATION'</td></tr>
+<tr><td>'$"Department"'</td><td>'$DEPARTMENT'</td></tr>
+<tr><td>'$"Category"'</td><td>'$CATEGORY'</td></tr>
+<tr><td>'$"Extended Details"'</td><td>'$REQUEST'</td></tr>
+<tr><td>'$"Not completed"'</td><td><input name="_ACTION_" value="notcompleted" type="checkbox"></td></tr>
+<tr><td>'$"Assigned to"'</td><td>'$ASSIGNED'</td></tr>
+<tr><td>'$"Priority"'</td><td>'$PRIORITY'</td></tr>
+<tr><td>'$"Feedback"'</td><td>'$FEEDBACK'</td></tr>
 </tbody></table></div>
 <div id="submitbox">
-<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div></form></div></body></html>'
 exit
 

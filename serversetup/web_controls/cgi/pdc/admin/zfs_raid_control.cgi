@@ -32,13 +32,11 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/software_raid ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/software_raid
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
@@ -52,7 +50,7 @@ exit
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE4'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"ZFS Status"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body><div id="pagecontainer">'
 
 #########################
 #Get data input
@@ -69,42 +67,42 @@ END_POINT=30
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign SERVERTYPE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERTYPEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERTYPEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign SERVERMASTER
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERMASTERcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERMASTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERMASTERcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERMASTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #########################
@@ -112,48 +110,48 @@ done
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
-MESSAGE=$ACCESS_ERROR1
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that SERVERNAME is not blank
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-MESSAGE=$ERRORMSG1
-show_status
+	MESSAGE=$"The server cannot be blank."
+	show_status
 fi
 
 #Check to see that SERVERTYPE is not blank
-if [ $SERVERTYPE'null' = null ]
+if [ -z "$SERVERTYPE" ]
 then
-MESSAGE=$ERRORMSG15
-show_status
+	MESSAGE=$"The servertype cannot be blank."
+	show_status
 fi
 
 #Check to see that SERVERMASTER is not blank
 if [ $SERVERTYPE = federatedslave ]
 then
-if [ $SERVERMASTER'null' = null ]
-then
-MESSAGE=$ERRORMSG16
-show_status
-fi
+	if [ -z "$SERVERMASTER" ]
+	then
+		MESSAGE=$"The servermaster cannot be blank."
+		show_status
+	fi
 fi
 
 MOBILE=no
@@ -162,11 +160,11 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=menubox
+	DIV_ID=menubox
 fi
 
 echo '<div id="'$DIV_ID'"><div id="titlebox">'
@@ -175,17 +173,17 @@ echo '<div id="'$DIV_ID'"><div id="titlebox">'
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
-<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$TITLE4 - $SERVERNAME'</b></a></td></tr></tbody></table>'
+	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
+	<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"'"></a></td>
+	<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"ZFS Status" - $SERVERNAME'</b></a></td></tr></tbody></table>'
 else
-echo '
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr>
-<td style="vertical-align: top;"><b>'$TITLE4' - '$SERVERNAME'</b></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>"'$HELPMSG5'"</span></a></td>
-<td style="vertical-align: top;"><a href="zfs_raid_control_fm.cgi"><input class="button" type="button" name="" value="'$CHOOSESERVERMSG'"></a></td>
-</tr></table><br>'
+	echo '
+	<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	<tr>
+	<td style="vertical-align: top;"><b>'$"ZFS Status"' - '$SERVERNAME'</b></td>
+	<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>'$"This page shows the status of your software raid. You can also add and remove drives from the raid array here."'</span></a></td>
+	<td style="vertical-align: top;"><a href="zfs_raid_control_fm.cgi"><input class="button" type="button" name="" value="'$"Select server"'"></a></td>
+	</tr></table><br>'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/zfs_raid_control.cgi | cut -d' ' -f1`

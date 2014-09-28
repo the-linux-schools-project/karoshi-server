@@ -32,27 +32,22 @@
 
 source /opt/karoshi/serversetup/variables/language
 source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/language/$LANGCHOICE/extra_server/setupshorewall
-source /opt/karoshi/serversetup/language/$LANGCHOICE/softwareinstall
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/extra_server/software
+
+TEXTDOMAIN=karoshi-server
+locale 1>/dev/null
 
 #########################
 #Add log entry
 #########################
 echo `date`: '##############'setupshorewall'##############' >> /opt/karoshi/serversetup/install_log
-touch /opt/karoshi/serversetup/setuplog
-if [ `grep -c "$TITLE" /opt/karoshi/serversetup/setuplog` = 0 ]
-then
-echo setupshorewall:$TITLE:/opt/karoshi/serversetup/extra_server/scripts/setupshorewall >> /opt/karoshi/serversetup/setuplog
-chmod 0600 /opt/karoshi/serversetup/setuplog
-fi
 ######################
-#Final ssh Install check
+#Final Shorewall Install check
 ######################
-if ! test -f /etc/init.d/$SSHVER
+if ! test -f /etc/init.d/$SHOREWALLVER
 then
-echo /etc/init.d/$SSHVER does not exist >> /opt/karoshi/serversetup/install_log
-yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=4 --text="$SHOREWALLVER $NOTINSTALLED" --no-buttons 2>/dev/null
+echo /etc/init.d/$SHOREWALLVER does not exist >> /opt/karoshi/serversetup/install_log
+yad --title ''$"Setup"' '$"Shorewall"'' --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=4 --text='Shorewall - '$"This package is not installed."'' --no-buttons 2>/dev/null
 exit 101
 fi
 

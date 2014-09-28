@@ -27,13 +27,11 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printer_accounting ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printer_accounting
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 
 #########################
@@ -65,7 +63,7 @@ done
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE9'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View Printer Quota Logs"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body><div id="pagecontainer">'
 
 
 function show_status {
@@ -82,7 +80,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -90,13 +88,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -105,7 +103,7 @@ fi
 #Check to see that LOGTYPE is not blank
 if [ $LOGTYPE'null' = null ]
 then
-MESSAGE=$ERRORMSG7
+MESSAGE=$"The name cannot be blank."
 show_status
 fi
 
@@ -124,7 +122,7 @@ else
 DIV_ID=menubox
 fi
 echo '<div id="'$DIV_ID'">'
-echo '<b>'$TITLE9'</b><br><br>'
+echo '<b>'$"View Printer Quota Logs"'</b><br><br>'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printer_accounting_view_logs.cgi | cut -d' ' -f1`
 #View printer logs
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOGTYPE:" | sudo -H /opt/karoshi/web_controls/exec/printer_accounting_view_logs

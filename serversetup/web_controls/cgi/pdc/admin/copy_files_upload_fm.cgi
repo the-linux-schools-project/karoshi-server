@@ -27,15 +27,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/copy_files ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/copy_files
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -48,7 +46,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <TITLE>'$TITLE1'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+    <TITLE>'$"Copy Files - upload"'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -58,19 +56,19 @@ echo '
 echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/copy_files_upload.cgi" METHOD="POST"><div id="actionbox">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr>
-<td style="vertical-align: top;"><b>'$TITLE1'</b></td>
-<td style="vertical-align: top;"><a href="/cgi-bin/admin/groups.cgi"><input class="button" type="button" name="" value="'$VIEWGROUPSMSG'"></a></td>
+<td style="vertical-align: top;"><b>'$"Copy Files - upload"'</b></td>
+<td style="vertical-align: top;"><a href="/cgi-bin/admin/groups.cgi"><input class="button" type="button" name="" value="'$"View Groups"'"></a></td>
 <td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Label_Groups"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td></tr></tbody></table><br>
 
 
 <P>
-'$UPLOADMSG':
+'$"Please select the files that you want to upload to a group"':
 <P>
         
         <table class="standard" style="text-align: left; height: 91px;" border="0" cellpadding="2" cellspacing="2">
         <TR>
             <TD ALIGN=RIGHT>
-                '$FILEMSG' 1:
+                '$"File"' 1:
             </TD>
             <TD>
                 <INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="35">
@@ -78,7 +76,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/copy_files_uplo
         </TR>
         <TR>
             <TD ALIGN=RIGHT>
-                '$FILEMSG' 2:
+                '$"File"' 2:
             </TD>
             <TD>
                 <INPUT TYPE="FILE" NAME="file-to-upload-02" SIZE="35">
@@ -86,7 +84,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/copy_files_uplo
         </TR>
         <TR>
             <TD ALIGN=RIGHT>
-                '$FILEMSG' 3:
+                '$"File"' 3:
             </TD>
             <TD>
                 <INPUT TYPE="FILE" NAME="file-to-upload-03" SIZE="35">
@@ -94,7 +92,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/copy_files_uplo
         </TR>
         <TR>
             <TD ALIGN=RIGHT>
-                '$FILEMSG' 4:
+                '$"File"' 4:
             </TD>
             <TD>
                 <INPUT TYPE="FILE" NAME="file-to-upload-04" SIZE="35">
@@ -103,7 +101,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/copy_files_uplo
         </TABLE>
 </div>
 <div id="submitbox">
-<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>
 </FORM>
 </div>

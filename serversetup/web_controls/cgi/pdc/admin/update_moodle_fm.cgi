@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/update_moodle ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/update_moodle
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -47,7 +45,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <TITLE>'$TITLE'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+    <TITLE>'$"Update Moodle"'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </HEAD>
@@ -55,36 +53,36 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/update_moodle.cgi" METHOD="POST"><div id="actionbox">
-<B>'$TITLE'</B> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG4'</span></a> <br><br>
+<B>'$"Update Moodle"'</B> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"You will need to download a new version of moodle for the update. Use the link provided below."'</span></a> <br><br>
 <table class="standard" style="text-align: left; width: 700px; height: 40px;"
  border="0" cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="width: 300px;"><b>'$LINKSMSG'</b></td>
-      <td><b>'$DESCMSG'</b></td>
+      <td style="width: 300px;"><b>'$"Useful Links"'</b></td>
+      <td><b>'$"Description"'</b></td>
     </tr>
     <tr>
       <td style="width: 300px;"><a href="http://download.moodle.org/" target="_blank">http://download.moodle.org/</a></td>
-      <td>'$HELPMSG2'</td>
+      <td>'$"Latest Moodle Versions"'</td>
     </tr>
     <tr>
       <td><a href="http://docs.moodle.org/en/Upgrading" target="_blank">http://docs.moodle.org/en/Upgrading</a></td>
-      <td>'$HELPMSG3'</td>
+      <td>'$"Moodle update guide which this feature automates."'</td>
     </tr>
   </tbody>
 </table>
 <br><br>
-'$UPDATEWARNINGMSG':<br><br>
+'$"IMPORTANT - Make sure that you have a working backup of the following areas on your moodle server before carrying out an upgrade"':<br><br>
 /var/www/moodle-data<br>
 /var/www/html/moodle<br>
 moodle mysql database
-<br><br>'$UPLOADMSG'<br><br>
+<br><br>'$"Choose the moodle archive to upgrade from. The archive MUST be a .tgz."'<br><br>
         
 
                 <INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="35">
   </div>
 <div id="submitbox">
-  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+  <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>
         </FORM>
 </BODY>

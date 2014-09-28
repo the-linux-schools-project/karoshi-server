@@ -38,19 +38,17 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE2'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Site Internet Logs"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -137,7 +135,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -145,13 +143,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -160,14 +158,14 @@ fi
 #Check to see that WEBSITE is not blank
 if [ $WEBSITE'null' = null ]
 then
-MESSAGE=$ERRORMSG9
+MESSAGE=$"You must choose a website to view the logs for."
 show_status
 fi
 
 #Check to see that LOGDATE is not blank
 if [ $LOGDATE'null' = null ]
 then
-MESSAGE=$ERRORMSG10
+MESSAGE=$"The log date must not be blank."
 show_status
 fi
 
@@ -176,8 +174,8 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE2'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+	<span>'$"Site Internet Logs"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobilecontent"><div id="mobileactionbox">
 '
 fi
@@ -189,12 +187,12 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$WEBSITE:$LOGDATE:$MOBILE:" | sudo -H /o
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 102 ]
 then
-MESSAGE=`echo $ERRORMSG8`
+MESSAGE=`echo $"No log exists for this date."`
 show_status
 fi
 if [ $EXEC_STATUS = 103 ]
 then
-MESSAGE=`echo $ERRORMSG7`
+MESSAGE=`echo $"No sites for this search exist in this log."`
 show_status
 fi
 

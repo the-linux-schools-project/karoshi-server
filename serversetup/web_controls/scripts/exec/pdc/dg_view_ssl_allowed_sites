@@ -72,11 +72,11 @@ then
 echo `date`: dg_view_ssl_allowed_sites - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
-ALPHABET=`echo $* | cut -s -d: -f4`
-GROUP=`echo $* | cut -s -d: -f5`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
+ALPHABET=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
+GROUP=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5`
 ALPHABET2=`echo $ALPHABET | tr 'A-Z' 'a-z'`
 ########################
 #Check data

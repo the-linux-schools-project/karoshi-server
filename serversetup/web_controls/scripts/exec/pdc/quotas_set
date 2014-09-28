@@ -127,10 +127,6 @@ let MAXSIZE2=$MAXSIZE2*1024
 let MAXSIZE1=$MAXSIZE2*95/100
 let MAXFILES1=$MAXFILES2*95/100
 
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/file/quotas_set ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/file/quotas_set
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 #Check for federated servers
 FEDERATED_SERVERS=no
@@ -154,7 +150,7 @@ source /opt/karoshi/server_network/group_information/$PRIMARYGROUP
 
 echo '<table class="standard" style="text-align: left; width: 630px; height: 58px;" border="0" cellpadding="2" cellspacing="2">
 <tbody>
- <tr><td style="width: 80px;"><b>'$USERNAMEMSG'</b></td><td style="width: 80px;"><b>'$SERVERMSG'</b></td><td style="width: 100px;"><b>'$GROUPMSG'</b></td><td style="width: 120px;"><b>'$SIZELIMITMSG'1</b></td><td style="width: 120px;"><b>'$SIZELIMITMSG'2</b></td><td style="width: 110px;"><b>'$MAXFILESMSG'1</b></td><td style="width: 110px;"><b>'$MAXFILESMSG'2</b></td></tr>'
+ <tr><td style="width: 80px;"><b>'$"Username"'</b></td><td style="width: 80px;"><b>'$"Server"'</b></td><td style="width: 100px;"><b>'$"Group"'</b></td><td style="width: 120px;"><b>'$"Size Limit"'1</b></td><td style="width: 120px;"><b>'$"Size Limit"'2</b></td><td style="width: 110px;"><b>'$"Max Files"'1</b></td><td style="width: 110px;"><b>'$"Max Files"'2</b></td></tr>'
 
 #Check if quotas are enabled on the server
 
@@ -196,7 +192,7 @@ fi
 
 if [ $QUOTASENABLED = no ]
 then
-echo "<tr><td><b>'$WARNINGMSG'</b></td><TH COLSPAN=5>"$SERVER" - '$NOQUOTASMSG'</th></tr>"
+echo "<tr><td><b>'$"Warning"'</b></td><TH COLSPAN=5>"$SERVER" - '$"Quotas are not enabled for this server"'</th></tr>"
 fi
 
 if [ $FEDERATED_SERVERS = yes ]
@@ -232,7 +228,7 @@ fi
 
 if [ $QUOTASENABLED = no ]
 then
-echo "<tr><td><b>'$WARNINGMSG'</b></td><TH COLSPAN=5>"$SERVER" - '$NOQUOTASMSG'</th></tr>"
+echo "<tr><td><b>'$"Warning"'</b></td><TH COLSPAN=5>"$SERVER" - '$"Quotas are not enabled for this server"'</th></tr>"
 fi
 
 if [ $QUOTASENABLED = yes ]

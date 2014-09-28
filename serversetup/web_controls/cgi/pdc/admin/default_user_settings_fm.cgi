@@ -26,16 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/default_user_settings ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/add_user
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/default_user_settings
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -48,7 +45,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Default User Settings"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -61,7 +58,7 @@ echo '
 #Get current settings
 ##########################
 
-echo '<form action="/cgi-bin/admin/default_user_settings.cgi" method="post"><div id="actionbox"><b>'$TITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$LOCKOUTSETTINGSHELP1'</span></a>
+echo '<form action="/cgi-bin/admin/default_user_settings.cgi" method="post"><div id="actionbox"><b>'$"Add a New User"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$LOCKOUTSETTINGSHELP1'</span></a>
 <br><br>'
 #Get lockout settings
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/default_user_settings_fm.cgi | cut -d' ' -f1`
@@ -71,7 +68,7 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:GETDATA" | sudo -H /opt/karoshi/web_cont
 echo '<br><br>
 </div>
 <div id="submitbox">
-<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>
 </form>
 </div></body>

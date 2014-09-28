@@ -31,19 +31,17 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/refresh_karoshi_update_list ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/refresh_karoshi_update_list
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="0;url=/cgi-bin/admin/update_karoshi_fm.cgi">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Refresh Update List"'</title><meta http-equiv="REFRESH" content="0;url=/cgi-bin/admin/update_karoshi_fm.cgi">'
 echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
@@ -74,13 +72,13 @@ echo '</head><body><div id="pagecontainer">'
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
@@ -101,12 +99,12 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+	<span>'$"Refresh Update List"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobilecontent"><div id="mobileactionbox2">
 '
 else
-echo '<div class="sectiontitle">'$TITLE'</div><br>'
+echo '<div class="sectiontitle">'$"Refresh Update List"'</div><br>'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/refresh_karoshi_update_list.cgi | cut -d' ' -f1`

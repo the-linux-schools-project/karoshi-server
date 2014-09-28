@@ -53,10 +53,10 @@ then
 echo `date`: monitors_view - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
-ALPHABET=`echo $* | cut -s -d: -f4`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
+ALPHABET=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
 ALPHABET2=`echo $ALPHABET | tr 'A-Z' 'a-z'`
 ########################
 #Check data
@@ -84,10 +84,8 @@ exit 101
 fi
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/monitors_view ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/monitors_view
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 echo `date`: monitors_view - viewing custom monitors by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
@@ -105,8 +103,8 @@ if [ $MONITORCOUNT -gt 0 ]
 then
 #Show table of sites
 echo '<table class="standard" style="text-align: left; width: 800px; height: 100px;" border="0" cellpadding="2" cellspacing="2">'
-echo "<tbody>"
-echo "<tr><td" style='"width: 180px;"'"><b>"$MONITORMSG"</b></td><td><b>"$EDITMSG"</b></td><td><b>"$DELETEMSG"</b></td><td>"'<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>'"</td></tr>"
+echo '<tbody>
+<tr><td style="width: 180px;"><b>'$"Monitors"'</b></td><td><b>'$"Edit"'</b></td><td><b>'$"Delete"'</b></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Deleting a monitor will stop the monitoring server from monitoring the monitor group."'</span></a></td></tr>'
 while [ $COUNTER -le $MONITORCOUNT ]
 do
 MONITORDATA=`sed -n $COUNTER,$COUNTER"p" /opt/karoshi/.tempdata/monitor_list.$$`
@@ -117,7 +115,7 @@ SERVICE_TCPIPS=`sed -n 4,4p /opt/karoshi/server_network/mon/monitors/$MONITORNAM
 MONITORNAME=`echo $MONITORNAME | sed 's/_/ /g'`
 
 
-echo '<tr><td>'$MONITORNAME'</td><td><a class="info" href="javascript:void(0)"><input name="_MONITOR_'$MONITORNAME'_MONITORACTION_edit_" type="image" class="images" src="/images/submenus/system/edit.png" value="_MONITOR_'$MONITORNAME'_MONITORACTION_edit_"><span>'$EDITMSG' - '$MONITORNAME'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="_MONITOR_'$MONITORNAME'_MONITORACTION_delete_" type="image" class="images" src="/images/submenus/system/delete.png" value="_MONITOR_'$MONITORNAME'_MONITORACTION_delete_"><span>'$DELETEMSG' - '$MONITORNAME'</span></a></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$TCPIPS_MONITORED:'<br>'$SERVICE_TCPIPS'<br>'$MONITOREDMSG:'<br>'$MONITOR_SERVICES'</span></a></td></tr>'
+echo '<tr><td>'$MONITORNAME'</td><td><a class="info" href="javascript:void(0)"><input name="_MONITOR_'$MONITORNAME'_MONITORACTION_edit_" type="image" class="images" src="/images/submenus/system/edit.png" value="_MONITOR_'$MONITORNAME'_MONITORACTION_edit_"><span>'$"Edit function not implemented yet."' - '$MONITORNAME'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="_MONITOR_'$MONITORNAME'_MONITORACTION_delete_" type="image" class="images" src="/images/submenus/system/delete.png" value="_MONITOR_'$MONITORNAME'_MONITORACTION_delete_"><span>'$"Delete"' - '$MONITORNAME'</span></a></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"TCPIP numbers monitored":'<br>'$SERVICE_TCPIPS'<br>'$"Services Monitored":'<br>'$MONITOR_SERVICES'</span></a></td></tr>'
 let COUNTER=$COUNTER+1
 done
 echo "</tbody>"

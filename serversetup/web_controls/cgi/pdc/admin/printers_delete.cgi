@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printers_delete ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printers_delete
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -45,7 +43,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Delete a Network Printer"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -65,7 +63,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -73,13 +71,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
@@ -89,7 +87,7 @@ fi
 #Check that a print server has been declared
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$PRINTSERVERERRORMSG'")';
+echo 'alert("'$"A print server has not yet been set up."'")';
 echo 'window.location = "karoshi_servers_view.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -99,16 +97,16 @@ exit
 [ ! -f /opt/karoshi/server_network/printserver ] && show_status
 
 echo '<div id="actionbox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="vertical-align: top;"><b>'$TITLE'</b></td>
+<tr><td style="vertical-align: top;"><b>'$"Delete a Network Printer"'</b></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG1"'</span></a></td>
 <td style="vertical-align: top;"><form action="/cgi-bin/admin/printers.cgi" name="printers" method="post">
-<input name="SHOWPRINTERS" type="submit" class="button" value="'$SHOWPRINTERSMSG'">
+<input name="SHOWPRINTERS" type="submit" class="button" value="'$"Show Printers"'">
 </form></td>
 <td style="vertical-align: top;"><form action="/cgi-bin/admin/printers_add_fm.cgi" name="printers" method="post">
-<input name="ADDPRINTER" type="submit" class="button" value="'$ADDPRINTERMSG'">
+<input name="ADDPRINTER" type="submit" class="button" value="'$"Add Printer"'">
 </form></td>
 <td style="vertical-align: top;"><form action="/cgi-bin/admin/locations.cgi" name="printers" method="post">
-<input name="ADDLOCATION" type="submit" class="button" value="'$ADDLOCATIONMSG'">
+<input name="ADDLOCATION" type="submit" class="button" value="'$"Add Location"'">
 </form></td>
 </tr></tbody></table><br>
 '
@@ -118,7 +116,7 @@ PRINTERLIST=( `sudo -H /opt/karoshi/web_controls/exec/printers_show_queues` )
 PRINTERCOUNT=${#PRINTERLIST[@]}
 if [ $PRINTERCOUNT = 0 ]
 then
-echo $NOPRINTERSMSG'<br>'
+echo $"There are no printer queues to delete."'<br>'
 echo "</div>"
 echo '</div></body></html>'
 exit
@@ -127,7 +125,7 @@ fi
 echo '  <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
       <tr>
-        <td style="width: 180px;">'$PRINTERMSG'</td><td>'
+        <td style="width: 180px;">'$"Printer"'</td><td>'
 COUNTER=0
 echo '<select name="_PRINTERNAME_" style="width: 200px;"><option value=""></option>'
 while [ $COUNTER -lt $PRINTERCOUNT ]
@@ -139,7 +137,7 @@ echo '<option value="'$PRINTERNAME'">'$PRINTERNAME'</option>'
 let COUNTER=$COUNTER+1
 done
 echo '</select></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Delete_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'"$CHOOSEPRINTERMSG"'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Delete_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please choose the printer you want to delete."'</span></a>
 </td></tr></tbody></table></div><div id="submitbox"><input class="button" value="Submit" type="submit">'
 echo '</form></div></div></body></html>'
 exit

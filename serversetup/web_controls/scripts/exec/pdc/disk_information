@@ -51,13 +51,13 @@ then
 echo `date`: disk_information - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
-SERVER=`echo $* | cut -s -d: -f4`
-SERVERTYPE=`echo $* | cut -s -d: -f5`
-SERVERMASTER=`echo $* | cut -s -d: -f6`
-MOBILE=`echo $* | cut -s -d: -f7`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
+SERVER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
+SERVERTYPE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5`
+SERVERMASTER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f6`
+MOBILE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f7`
 ########################
 #Check data
 ########################
@@ -113,13 +113,11 @@ fi
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/disk_information ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/disk_information
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 KAROSHI_SERVER=$SERVER
 
@@ -216,32 +214,32 @@ DRIVESCALE=TB
 fi
 
 echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: $WIDTH3"px";\">$MODELFAMILIYMSG</td><td>$MODELFAMILY</td></tr>
-<tr><td>$DEVICEMODELMSG</td><td>$DEVICEMODEL</td></tr>
-<tr><td>$SERIALNOMSG</td><td>$SERIALNO</td></tr>
-<tr><td>$FIRMWAREMSG</td><td>$FIRMWARE</td></tr>
-<tr><td>$CAPACITYMSG</td><td>$CAPACITY $DRIVESCALE</td></tr>
-<tr><td>$SMARTENABLEDMSG</td><td>$SMARTENABLED</td></tr>
-<tr><td>$SMARTSTATUSMSG</td><td>$SMARTSTATUS</td></tr>"
+<tr><td style=\"width: $WIDTH3"px";\">$"Model Family"</td><td>$MODELFAMILY</td></tr>
+<tr><td>$"Device Model"</td><td>$DEVICEMODEL</td></tr>
+<tr><td>$"Serial Number"</td><td>$SERIALNO</td></tr>
+<tr><td>$"Firmware Version"</td><td>$FIRMWARE</td></tr>
+<tr><td>$"Capacity"</td><td>$CAPACITY $DRIVESCALE</td></tr>
+<tr><td>$"Smart Enabled"</td><td>$SMARTENABLED</td></tr>
+<tr><td>$"Smart Status"</td><td>$SMARTSTATUS</td></tr>"
 
 if [ ! -z "$PENDINGSECTORS" ]
 then
 if [ $PENDINGSECTORS -gt 0 ]
 then
-echo "<tr><td><FONT COLOR=\"red\"><b>$PENDINGSECTORSMSG</b></font></td><td><FONT COLOR=\"red\"><b>$PENDINGSECTORS</b></font></td></tr>"
+echo "<tr><td><FONT COLOR=\"red\"><b>$"Pending Sectors"</b></font></td><td><FONT COLOR=\"red\"><b>$PENDINGSECTORS</b></font></td></tr>"
 else
-echo "<tr><td>$PENDINGSECTORSMSG</td><td>$PENDINGSECTORS</td></tr>"
+echo "<tr><td>$"Pending Sectors"</td><td>$PENDINGSECTORS</td></tr>"
 fi
 fi
 
 if [ $DISKTEMP -gt 50 ]
 then
-echo "<tr><td><FONT COLOR=\"red\"><b>$DISKTEMPMSG</b></font></td><td><FONT COLOR=\"red\"><b>$DISKTEMP <sup>o</sup>C</b></font></td></tr>"
+echo "<tr><td><FONT COLOR=\"red\"><b>$"Disk temperature"</b></font></td><td><FONT COLOR=\"red\"><b>$DISKTEMP <sup>o</sup>C</b></font></td></tr>"
 elif [ $DISKTEMP -gt 40 ]
 then
-echo "<tr><td><FONT COLOR=\"orange\">$DISKTEMPMSG</font></td><td><FONT COLOR=\"orange\">$DISKTEMP <sup>o</sup>C</font></td></tr>"
+echo "<tr><td><FONT COLOR=\"orange\">$"Disk temperature"</font></td><td><FONT COLOR=\"orange\">$DISKTEMP <sup>o</sup>C</font></td></tr>"
 else
-echo "<tr><td>$DISKTEMPMSG</td><td>$DISKTEMP <sup>o</sup>C</td></tr>"
+echo "<tr><td>$"Disk temperature"</td><td>$DISKTEMP <sup>o</sup>C</td></tr>"
 fi
 
 echo "</tbody></table><br>"
@@ -252,7 +250,7 @@ done
 if [ `grep -c ^"#Software raid" /etc/fstab` -gt 0 ]
 then
 RAIDMOUNTPOINT=`mdadm --detail --scan 2>/dev/null | cut -d" " -f2`
-echo "<img src=\"/images/submenus/system/raid.png\" alt=\"Software Raid\"> <b>$SOFTWARERAIDMSG</b><br>"
+echo "<img src=\"/images/submenus/system/raid.png\" alt=\"Software Raid\"> <b>$"Software Raid"</b><br>"
 
 MDADMDATA=`mdadm --detail $RAIDMOUNTPOINT`
 ACTIVE_RAID_DISKS=`echo -e "$MDADMDATA" | grep "active sync" | sed "s/ * / /g" | cut -d" " -f8`
@@ -274,22 +272,22 @@ CHUNKSIZE=`echo -e "$MDADMDATA" | grep "Chunk Size :" | cut -d: -f2 | sed "s/^ /
 UUID=`echo -e "$MDADMDATA" | grep "UUID :" | cut -d: -f2- | sed "s/^ //g"`
 
 echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: $WIDTH3"px";\">$RAIDLEVELMSG</td><td>$RAIDLEVEL</td></tr>
-<tr><td>$RAIDSIZEMSG</td><td>$ARRAYSIZE</td></tr>
-<tr><td>$USEDSIZEMSG</td><td>$USEDSIZE</td></tr>
-<tr><td>$RAIDSTATUSMSG</td><td>$RAIDSTATUS</td></tr>"
+<tr><td style=\"width: $WIDTH3"px";\">$"Raid Level"</td><td>$RAIDLEVEL</td></tr>
+<tr><td>$"Raid Size"</td><td>$ARRAYSIZE</td></tr>
+<tr><td>$"Used Size"</td><td>$USEDSIZE</td></tr>
+<tr><td>$"Raid Status"</td><td>$RAIDSTATUS</td></tr>"
 [ ! -z "$REBUILDSTATUS" ] && echo "<tr><td>Rebuild Status</td><td>$REBUILDSTATUS</td></tr>"
-echo "<tr><td>$RAIDDRIVESMSG</td><td>$RAIDDEVICES</td></tr>
-<tr><td>$USEDDRIVESMSG</td><td>$TOTALDEVICES</td></tr>
-<tr><td>$ACTIVEDEVICESMSG</td><td>$ACTIVEDEVICES</td></tr>
-<tr><td>$WORKINGDEVICESMSG</td><td>$WORKINGDEVICES</td></tr>
-<tr><td>$FAILEDDEVICESMSG</td><td>$FAILEDDEVICES</td></tr>
-<tr><td>$SPAREDEVICESMSG</td><td>$SPAREDEVICES</td></tr>
-<tr><td>$LAYOUTMSG</td><td>$LAYOUT</td></tr>
-<tr><td>$CHUNKSIZEMSG</td><td>$CHUNKSIZE</td></tr>
-<tr><td>$ACTIVEDISKSMSG</td><td>$ACTIVE_RAID_DISKS</td></tr>
-<tr><td>$REBUILDINGDISKSMSG</td><td>$REBUILDING_RAID_DISKS</td></tr>
-<tr><td>$SPAREDISKSMSG</td><td>$SPARE_RAID_DISKS</td></tr>
+echo "<tr><td>$"Raid Drives"</td><td>$RAIDDEVICES</td></tr>
+<tr><td>$"Used Drives"</td><td>$TOTALDEVICES</td></tr>
+<tr><td>$"Active Devices"</td><td>$ACTIVEDEVICES</td></tr>
+<tr><td>$"Working Devices"</td><td>$WORKINGDEVICES</td></tr>
+<tr><td>$"Failed Devices"</td><td>$FAILEDDEVICES</td></tr>
+<tr><td>$"Spare Devices"</td><td>$SPAREDEVICES</td></tr>
+<tr><td>$"Layout"</td><td>$LAYOUT</td></tr>
+<tr><td>$"Chunk Size"</td><td>$CHUNKSIZE</td></tr>
+<tr><td>$"Active Disks"</td><td>$ACTIVE_RAID_DISKS</td></tr>
+<tr><td>$"Rebuilding Disks"</td><td>$REBUILDING_RAID_DISKS</td></tr>
+<tr><td>$"Spare Disks"</td><td>$SPARE_RAID_DISKS</td></tr>
 <tr><td>UUID</td><td>$UUID</td></tr>
 </tbody></table>"
 fi
@@ -375,32 +373,32 @@ DRIVESCALE=TB
 fi
 
 echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\">'$MODELFAMILIYMSG'</td><td>$MODELFAMILY</td></tr>
-<tr><td style=\"width: 180px;\">'$DEVICEMODELMSG'</td><td>$DEVICEMODEL</td></tr>
-<tr><td style=\"width: 180px;\">'$SERIALNOMSG'</td><td>$SERIALNO</td></tr>
-<tr><td style=\"width: 180px;\">'$FIRMWAREMSG'</td><td>$FIRMWARE</td></tr>
-<tr><td style=\"width: 180px;\">'$CAPACITYMSG'</td><td>$CAPACITY $DRIVESCALE</td></tr>
-<tr><td style=\"width: 180px;\">'$SMARTENABLEDMSG'</td><td>$SMARTENABLED</td></tr>
-<tr><td style=\"width: 180px;\">'$SMARTSTATUSMSG'</td><td>$SMARTSTATUS</td></tr>"
+<tr><td style=\"width: 180px;\">'$"Model Family"'</td><td>$MODELFAMILY</td></tr>
+<tr><td style=\"width: 180px;\">'$"Device Model"'</td><td>$DEVICEMODEL</td></tr>
+<tr><td style=\"width: 180px;\">'$"Serial Number"'</td><td>$SERIALNO</td></tr>
+<tr><td style=\"width: 180px;\">'$"Firmware Version"'</td><td>$FIRMWARE</td></tr>
+<tr><td style=\"width: 180px;\">'$"Capacity"'</td><td>$CAPACITY $DRIVESCALE</td></tr>
+<tr><td style=\"width: 180px;\">'$"Smart Enabled"'</td><td>$SMARTENABLED</td></tr>
+<tr><td style=\"width: 180px;\">'$"Smart Status"'</td><td>$SMARTSTATUS</td></tr>"
 
 if [ ! -z "$PENDINGSECTORS" ]
 then
 if [ $PENDINGSECTORS -gt 0 ]
 then
-echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"red\"><b>'$PENDINGSECTORSMSG'</b></font></td><td><FONT COLOR=\"red\"><b>$PENDINGSECTORS</b></font></td></tr>"
+echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"red\"><b>'$"Pending Sectors"'</b></font></td><td><FONT COLOR=\"red\"><b>$PENDINGSECTORS</b></font></td></tr>"
 else
-echo "<tr><td style=\"width: 180px;\">'$PENDINGSECTORSMSG'</td><td>$PENDINGSECTORS</td></tr>"
+echo "<tr><td style=\"width: 180px;\">'$"Pending Sectors"'</td><td>$PENDINGSECTORS</td></tr>"
 fi
 fi
 
 if [ $DISKTEMP -gt 50 ]
 then
-echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"red\"><b>'$DISKTEMPMSG'</b></font></td><td><FONT COLOR=\"red\"><b>$DISKTEMP <sup>o</sup>C</b></font></td></tr>"
+echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"red\"><b>'$"Disk temperature"'</b></font></td><td><FONT COLOR=\"red\"><b>$DISKTEMP <sup>o</sup>C</b></font></td></tr>"
 elif [ $DISKTEMP -gt 40 ]
 then
-echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"orange\">'$DISKTEMPMSG'</font></td><td><FONT COLOR=\"orange\">$DISKTEMP <sup>o</sup>C</font></td></tr>"
+echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"orange\">'$"Disk temperature"'</font></td><td><FONT COLOR=\"orange\">$DISKTEMP <sup>o</sup>C</font></td></tr>"
 else
-echo "<tr><td style=\"width: 180px;\">'$DISKTEMPMSG'</td><td>$DISKTEMP <sup>o</sup>C</td></tr>"
+echo "<tr><td style=\"width: 180px;\">'$"Disk temperature"'</td><td>$DISKTEMP <sup>o</sup>C</td></tr>"
 fi
 
 echo "</tbody></table><br>"
@@ -411,7 +409,7 @@ done
 if [ `grep -c ^"#Software raid" /etc/fstab` -gt 0 ]
 then
 RAIDMOUNTPOINT=`mdadm --detail --scan 2>/dev/null | cut -d" " -f2`
-echo "<img src=\"/images/submenus/system/raid.png\" alt=\"Software Raid\"> <b>$SOFTWARERAIDMSG</b><br>"
+echo "<img src=\"/images/submenus/system/raid.png\" alt=\"Software Raid\"> <b>$"Software Raid"</b><br>"
 
 MDADMDATA=`mdadm --detail $RAIDMOUNTPOINT`
 ACTIVE_RAID_DISKS=`echo -e "$MDADMDATA" | grep "active sync" | sed "s/ * / /g" | cut -d" " -f8`
@@ -433,22 +431,22 @@ CHUNKSIZE=`echo -e "$MDADMDATA" | grep "Chunk Size :" | cut -d: -f2 | sed "s/^ /
 UUID=`echo -e "$MDADMDATA" | grep "UUID :" | cut -d: -f2- | sed "s/^ //g"`
 
 echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: '$WIDTH3'px;\">'$RAIDLEVELMSG'</td><td>$RAIDLEVEL</td></tr>
-<tr><td>'$RAIDSIZEMSG'</td><td>$ARRAYSIZE</td></tr>
-<tr><td>'$USEDSIZEMSG'</td><td>$USEDSIZE</td></tr>
-<tr><td>'$RAIDSTATUSMSG'</td><td>$RAIDSTATUS</td></tr>"
+<tr><td style=\"width: '$WIDTH3'px;\">'$"Raid Level"'</td><td>$RAIDLEVEL</td></tr>
+<tr><td>'$"Raid Size"'</td><td>$ARRAYSIZE</td></tr>
+<tr><td>'$"Used Size"'</td><td>$USEDSIZE</td></tr>
+<tr><td>'$"Raid Status"'</td><td>$RAIDSTATUS</td></tr>"
 [ ! -z "$REBUILDSTATUS" ] && echo "<tr><td>Rebuild Status</td><td>$REBUILDSTATUS</td></tr>"
-echo "<tr><td>'$RAIDDRIVESMSG'</td><td>$RAIDDEVICES</td></tr>
-<tr><td>'$USEDDRIVESMSG'</td><td>$TOTALDEVICES</td></tr>
-<tr><td>'$ACTIVEDEVICESMSG'</td><td>$ACTIVEDEVICES</td></tr>
-<tr><td>'$WORKINGDEVICESMSG'</td><td>$WORKINGDEVICES</td></tr>
-<tr><td>'$FAILEDDEVICESMSG'</td><td>$FAILEDDEVICES</td></tr>
-<tr><td>'$SPAREDEVICESMSG'</td><td>$SPAREDEVICES</td></tr>
-<tr><td>'$LAYOUTMSG'</td><td>$LAYOUT</td></tr>
-<tr><td>'$CHUNKSIZEMSG'</td><td>$CHUNKSIZE</td></tr>
-<tr><td>'$ACTIVEDISKSMSG'</td><td>$ACTIVE_RAID_DISKS</td></tr>
-<tr><td>'$REBUILDINGDISKSMSG'</td><td>$REBUILDING_RAID_DISKS</td></tr>
-<tr><td>'$SPAREDISKSMSG'</td><td>$SPARE_RAID_DISKS</td></tr>
+echo "<tr><td>'$"Raid Drives"'</td><td>$RAIDDEVICES</td></tr>
+<tr><td>'$"Used Drives"'</td><td>$TOTALDEVICES</td></tr>
+<tr><td>'$"Active Devices"'</td><td>$ACTIVEDEVICES</td></tr>
+<tr><td>'$"Working Devices"'</td><td>$WORKINGDEVICES</td></tr>
+<tr><td>'$"Failed Devices"'</td><td>$FAILEDDEVICES</td></tr>
+<tr><td>'$"Spare Devices"'</td><td>$SPAREDEVICES</td></tr>
+<tr><td>'$"Layout"'</td><td>$LAYOUT</td></tr>
+<tr><td>'$"Chunk Size"'</td><td>$CHUNKSIZE</td></tr>
+<tr><td>'$"Active Disks"'</td><td>$ACTIVE_RAID_DISKS</td></tr>
+<tr><td>'$"Rebuilding Disks"'</td><td>$REBUILDING_RAID_DISKS</td></tr>
+<tr><td>'$"Spare Disks"'</td><td>$SPARE_RAID_DISKS</td></tr>
 <tr><td>UUID</td><td>$UUID</td></tr>
 </tbody></table>"
 fi
@@ -539,32 +537,32 @@ DRIVESCALE=TB
 fi
 
 echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\">'$MODELFAMILIYMSG'</td><td>$MODELFAMILY</td></tr>
-<tr><td style=\"width: 180px;\">'$DEVICEMODELMSG'</td><td>$DEVICEMODEL</td></tr>
-<tr><td style=\"width: 180px;\">'$SERIALNOMSG'</td><td>$SERIALNO</td></tr>
-<tr><td style=\"width: 180px;\">'$FIRMWAREMSG'</td><td>$FIRMWARE</td></tr>
-<tr><td style=\"width: 180px;\">'$CAPACITYMSG'</td><td>$CAPACITY $DRIVESCALE</td></tr>
-<tr><td style=\"width: 180px;\">'$SMARTENABLEDMSG'</td><td>$SMARTENABLED</td></tr>
-<tr><td style=\"width: 180px;\">'$SMARTSTATUSMSG'</td><td>$SMARTSTATUS</td></tr>"
+<tr><td style=\"width: 180px;\">'$"Model Family"'</td><td>$MODELFAMILY</td></tr>
+<tr><td style=\"width: 180px;\">'$"Device Model"'</td><td>$DEVICEMODEL</td></tr>
+<tr><td style=\"width: 180px;\">'$"Serial Number"'</td><td>$SERIALNO</td></tr>
+<tr><td style=\"width: 180px;\">'$"Firmware Version"'</td><td>$FIRMWARE</td></tr>
+<tr><td style=\"width: 180px;\">'$"Capacity"'</td><td>$CAPACITY $DRIVESCALE</td></tr>
+<tr><td style=\"width: 180px;\">'$"Smart Enabled"'</td><td>$SMARTENABLED</td></tr>
+<tr><td style=\"width: 180px;\">'$"Smart Status"'</td><td>$SMARTSTATUS</td></tr>"
 
 if [ ! -z "$PENDINGSECTORS" ]
 then
 if [ $PENDINGSECTORS -gt 0 ]
 then
-echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"red\"><b>'$PENDINGSECTORSMSG'</b></font></td><td><FONT COLOR=\"red\"><b>$PENDINGSECTORS</b></font></td></tr>"
+echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"red\"><b>'$"Pending Sectors"'</b></font></td><td><FONT COLOR=\"red\"><b>$PENDINGSECTORS</b></font></td></tr>"
 else
-echo "<tr><td style=\"width: 180px;\">'$PENDINGSECTORSMSG'</td><td>$PENDINGSECTORS</td></tr>"
+echo "<tr><td style=\"width: 180px;\">'$"Pending Sectors"'</td><td>$PENDINGSECTORS</td></tr>"
 fi
 fi
 
 if [ $DISKTEMP -gt 50 ]
 then
-echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"red\"><b>'$DISKTEMPMSG'</b></font></td><td><FONT COLOR=\"red\"><b>$DISKTEMP <sup>o</sup>C</b></font></td></tr>"
+echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"red\"><b>'$"Disk temperature"'</b></font></td><td><FONT COLOR=\"red\"><b>$DISKTEMP <sup>o</sup>C</b></font></td></tr>"
 elif [ $DISKTEMP -gt 40 ]
 then
-echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"orange\">'$DISKTEMPMSG'</font></td><td><FONT COLOR=\"orange\">$DISKTEMP <sup>o</sup>C</font></td></tr>"
+echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"orange\">'$"Disk temperature"'</font></td><td><FONT COLOR=\"orange\">$DISKTEMP <sup>o</sup>C</font></td></tr>"
 else
-echo "<tr><td style=\"width: 180px;\">'$DISKTEMPMSG'</td><td>$DISKTEMP <sup>o</sup>C</td></tr>"
+echo "<tr><td style=\"width: 180px;\">'$"Disk temperature"'</td><td>$DISKTEMP <sup>o</sup>C</td></tr>"
 fi
 
 echo "</tbody></table><br>"
@@ -575,7 +573,7 @@ done
 if [ `grep -c ^"#Software raid" /etc/fstab` -gt 0 ]
 then
 RAIDMOUNTPOINT=`mdadm --detail --scan 2>/dev/null | cut -d" " -f2`
-echo "<img src=\"/images/submenus/system/raid.png\" alt=\"Software Raid\"> <b>$SOFTWARERAIDMSG</b><br>"
+echo "<img src=\"/images/submenus/system/raid.png\" alt=\"Software Raid\"> <b>$"Software Raid"</b><br>"
 
 MDADMDATA=`mdadm --detail $RAIDMOUNTPOINT`
 ACTIVE_RAID_DISKS=`echo -e "$MDADMDATA" | grep "active sync" | sed "s/ * / /g" | cut -d" " -f8`
@@ -597,22 +595,22 @@ CHUNKSIZE=`echo -e "$MDADMDATA" | grep "Chunk Size :" | cut -d: -f2 | sed "s/^ /
 UUID=`echo -e "$MDADMDATA" | grep "UUID :" | cut -d: -f2- | sed "s/^ //g"`
 
 echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: '$WIDTH3'px;\">'$RAIDLEVELMSG'</td><td>$RAIDLEVEL</td></tr>
-<tr><td>'$RAIDSIZEMSG'</td><td>$ARRAYSIZE</td></tr>
-<tr><td>'$USEDSIZEMSG'</td><td>$USEDSIZE</td></tr>
-<tr><td>'$RAIDSTATUSMSG'</td><td>$RAIDSTATUS</td></tr>"
+<tr><td style=\"width: '$WIDTH3'px;\">'$"Raid Level"'</td><td>$RAIDLEVEL</td></tr>
+<tr><td>'$"Raid Size"'</td><td>$ARRAYSIZE</td></tr>
+<tr><td>'$"Used Size"'</td><td>$USEDSIZE</td></tr>
+<tr><td>'$"Raid Status"'</td><td>$RAIDSTATUS</td></tr>"
 [ ! -z "$REBUILDSTATUS" ] && echo "<tr><td>Rebuild Status</td><td>$REBUILDSTATUS</td></tr>"
-echo "<tr><td>'$RAIDDRIVESMSG'</td><td>$RAIDDEVICES</td></tr>
-<tr><td>'$USEDDRIVESMSG'</td><td>$TOTALDEVICES</td></tr>
-<tr><td>'$ACTIVEDEVICESMSG'</td><td>$ACTIVEDEVICES</td></tr>
-<tr><td>'$WORKINGDEVICESMSG'</td><td>$WORKINGDEVICES</td></tr>
-<tr><td>'$FAILEDDEVICESMSG'</td><td>$FAILEDDEVICES</td></tr>
-<tr><td>'$SPAREDEVICESMSG'</td><td>$SPAREDEVICES</td></tr>
-<tr><td>'$LAYOUTMSG'</td><td>$LAYOUT</td></tr>
-<tr><td>'$CHUNKSIZEMSG'</td><td>$CHUNKSIZE</td></tr>
-<tr><td>'$ACTIVEDISKSMSG'</td><td>$ACTIVE_RAID_DISKS</td></tr>
-<tr><td>'$REBUILDINGDISKSMSG'</td><td>$REBUILDING_RAID_DISKS</td></tr>
-<tr><td>'$SPAREDISKSMSG'</td><td>$SPARE_RAID_DISKS</td></tr>
+echo "<tr><td>'$"Raid Drives"'</td><td>$RAIDDEVICES</td></tr>
+<tr><td>'$"Used Drives"'</td><td>$TOTALDEVICES</td></tr>
+<tr><td>'$"Active Devices"'</td><td>$ACTIVEDEVICES</td></tr>
+<tr><td>'$"Working Devices"'</td><td>$WORKINGDEVICES</td></tr>
+<tr><td>'$"Failed Devices"'</td><td>$FAILEDDEVICES</td></tr>
+<tr><td>'$"Spare Devices"'</td><td>$SPAREDEVICES</td></tr>
+<tr><td>'$"Layout"'</td><td>$LAYOUT</td></tr>
+<tr><td>'$"Chunk Size"'</td><td>$CHUNKSIZE</td></tr>
+<tr><td>'$"Active Disks"'</td><td>$ACTIVE_RAID_DISKS</td></tr>
+<tr><td>'$"Rebuilding Disks"'</td><td>$REBUILDING_RAID_DISKS</td></tr>
+<tr><td>'$"Spare Disks"'</td><td>$SPARE_RAID_DISKS</td></tr>
 <tr><td>UUID</td><td>$UUID</td></tr>
 </tbody></table>"
 fi

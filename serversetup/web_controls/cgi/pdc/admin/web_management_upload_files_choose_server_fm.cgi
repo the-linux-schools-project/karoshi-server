@@ -29,15 +29,13 @@
 #Language
 ############################
 MOBILE=no
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/web/upload_files ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/web/upload_files
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -48,14 +46,14 @@ fi
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head>"
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Web Management - Upload Files"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head>"
 <body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Check https access
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -63,18 +61,18 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><form action="/cgi-bin/admin/web_management_upload_files_select_fm.cgi" name="tstest" method="post"><b>'$TITLE'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG4'</span></a><br><br>'
+echo '<div id="actionbox"><form action="/cgi-bin/admin/web_management_upload_files_select_fm.cgi" name="tstest" method="post"><b>'$"Web Management - Upload Files"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the web server that you want to upload the files to."'</span></a><br><br>'
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
@@ -87,19 +85,19 @@ exit
 #Check that there are some web servers
 if [ ! -d /opt/karoshi/server_network/webservers ]
 then
-MESSAGE=$ERRORMSG6
+MESSAGE=$"There are no web servers to upload files to."
 show_status
 fi
 
 #Check that there are some web servers
 if [ `ls -1 /opt/karoshi/server_network/webservers | wc -l` = 0 ]
 then
-MESSAGE=$ERRORMSG6
+MESSAGE=$"There are no web servers to upload files to."
 show_status
 fi
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE web "$ACTIONMSG"
+/opt/karoshi/web_controls/show_servers $MOBILE web $"Choose server"
 
 echo '</form></div></div></body></html>'
 exit

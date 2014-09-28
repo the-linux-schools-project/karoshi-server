@@ -32,15 +32,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 #Language
 ############################
 UPDATECHOICE=updatelist.html
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/update_karoshi ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/update_karoshi
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -53,7 +51,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Update Web Management"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
 <script type="text/javascript">
 <!--
@@ -141,12 +139,12 @@ then
 UPDATELIST=updatelist_all.html
 ICON=/images/submenus/system/updates.png
 ACTION=UPDATES
-MESSAGE=$SHOWUPDATESMSG1
+MESSAGE=$"Available updates"
 else
 UPDATELIST=updatelist.html
 ICON=/images/submenus/system/updates_all.png
 ACTION=ALL
-MESSAGE=$SHOWUPDATESMSG2
+MESSAGE=$"All updates"
 fi
 
 #Show back button for mobiles
@@ -156,12 +154,12 @@ MOBILEACTIONBOX=mobileactionbox2
 [ ! -f /opt/karoshi/updates/$UPDATELIST ] && MOBILEACTIONBOX=mobileactionbox
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+	<span>'$"Update Web Management"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobilecontent"><div id="'$MOBILEACTIONBOX'">'
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
-<td style="vertical-align: top;"><div class="sectiontitle">'$TITLE'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Linux_Schools_Server_System"><img class="images" alt="" src="/images/help/info.png"><span>'$UPDATELSSERVERHELP'</span></a></td></tr></tbody></table><br>'
+<td style="vertical-align: top;"><div class="sectiontitle">'$"Update Web Management"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Linux_Schools_Server_System"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows any Linux Schools Server patches that are available."'</span></a></td></tr></tbody></table><br>'
 fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
@@ -170,7 +168,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 <input name="_ACTION_'$ACTION'_" type="submit" class="button" value="'$MESSAGE'">
 </form></td><td>
 <form action="/cgi-bin/admin/refresh_karoshi_update_list.cgi" name="selectservers" method="post">
-<input name="" type="submit" class="button" value="'$REFRESHLISTMSG'">
+<input name="" type="submit" class="button" value="'$"Refresh list"'">
 </form></td></tr></tbody></table>'
 
 echo '<form action="/cgi-bin/admin/update_karoshi.cgi" name="selectservers" method="post">'
@@ -184,7 +182,7 @@ else
 cat /opt/karoshi/updates/$UPDATELIST
 fi
 else
-echo $NO_UPDATES_MSG'<br>'
+echo $"No updates are available."'<br>'
 fi
 
 echo '</form></div></div>'

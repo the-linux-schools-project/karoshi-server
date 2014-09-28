@@ -35,19 +35,17 @@
 ########################
 #Language
 ########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/show_user_info ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/show_user_info
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #########################
 #Show page
 #########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE1'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Show User Information"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
@@ -134,7 +132,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -142,13 +140,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -157,21 +155,21 @@ fi
 #Check to see that username is not blank
 if [ $USERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The username must not be blank."
 show_status
 fi
 
 #Check to see that SERVERNAME is not blank
 if [ $SERVERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG10
+MESSAGE=$"The servername cannot be blank."
 show_status
 fi
 
 #Check to see that SERVERTYPE is not blank
 if [ $SERVERTYPE'null' = null ]
 then
-MESSAGE=$ERRORMSG11
+MESSAGE=$"The servertype cannot be blank."
 show_status
 fi
 
@@ -180,7 +178,7 @@ if [ $SERVERTYPE = federatedslave ]
 then
 if [ $SERVERMASTER'null' = null ]
 then
-MESSAGE=$ERRORMSG12
+MESSAGE=$"The servermaster cannot be blank."
 show_status
 fi
 fi
@@ -190,13 +188,13 @@ echo "$MD5SUM:$USERNAME" | sudo -H /opt/karoshi/web_controls/exec/existcheck_use
 USEREXISTSTATUS=`echo $?`
 if [ $USEREXISTSTATUS = 111 ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"This username does not exist."
 show_status
 fi
 #Check that there are no spaces in the password
 #if [ `echo $PASSWORD1 | grep -c +` != 0 ]
 #then
-#MESSAGE=$ERRORMSG6
+#MESSAGE=$"The display name name cannot be blank."
 #show_status
 #fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/show_user_info.cgi | cut -d' ' -f1`
@@ -204,8 +202,8 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/show_user_info.cgi | cut -d' ' -f1
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr>
-<td style="vertical-align: top;"><b>'$TITLE2'</b></td>
-<td style="vertical-align: top;"><a href="/cgi-bin/admin/show_user_info_fm.cgi"><input class="button" type="button" name="" value="'$CHOOSEUSERMSG'"></a></td>
+<td style="vertical-align: top;"><b>'$"User Information"'</b></td>
+<td style="vertical-align: top;"><a href="/cgi-bin/admin/show_user_info_fm.cgi"><input class="button" type="button" name="" value="'$"Choose user"'"></a></td>
 </tr></table><br><br>'
 
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:" | sudo -H /opt/karoshi/web_controls/exec/show_user_info

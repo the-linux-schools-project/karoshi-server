@@ -30,15 +30,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/dhcp ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/dhcp
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -51,7 +49,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE3'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"DHCP Reservations"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ $MOBILE = yes ]
@@ -159,7 +157,7 @@ then
 	if [ -z "$CLIENTHOSTNAME" ]
 	then
 	ACTION=view
-	MESSAGE="$ERRORMSG12"
+	MESSAGE=$"You have not entered in a client name."
 	show_warnings
 	fi
 fi
@@ -170,7 +168,7 @@ then
 	if [ -z "$TCPIPADDRESS" ]
 	then
 		ACTION=view
-		MESSAGE="$ERRORMSG10"
+		MESSAGE=$"You have not entered in a TCPIP address."
 		show_warnings
 	else
 		#Check that the tcpip number has been entered correctly
@@ -178,7 +176,7 @@ then
 		if [ `echo $TCPIPADDRESS | sed 's/\./\n /g'  | sed /^$/d | wc -l` != 4 ]
 		then
 			ACTION=view
-			MESSAGE="$ERRORMSG11"
+			MESSAGE=$"You have not entered in a correct tcpip address."
 			show_warnings
 		fi
 		#Check that no number is greater than 255
@@ -186,7 +184,7 @@ then
 		if [ $HIGHESTNUMBER -gt 255 ]
 		then
 			ACTION=view
-			MESSAGE="$ERRORMSG11"
+			MESSAGE=$"You have not entered in a correct tcpip address."
 			show_warnings
 		fi
 		#Check to see that the tcpip number has not already been added
@@ -195,7 +193,7 @@ then
 			if [ `grep -R -w "$TCPIPADDRESS" /opt/karoshi/server_network/dhcp/reservations | wc -l` -gt 0 ]
 			then
 				ACTION=view
-				MESSAGE="$ERRORMSG15"
+				MESSAGE=$"This TCPIP address is already in use."
 				show_warnings		
 			fi
 		fi
@@ -204,7 +202,7 @@ then
 	if [ -z "$MACADDRESS" ]
 	then
 		ACTION=view
-		MESSAGE="$ERRORMSG13"
+		MESSAGE=$"You have not entered a mac address."
 		show_warnings
 	else
 		#Check that the mac address is formatted correctly
@@ -212,7 +210,7 @@ then
 		if [ `echo "$MACADDRESS" | sed 's/:/\n/g' | wc -l` != 6 ]
 		then
 			ACTION=view
-			MESSAGE="$ERRORMSG14"
+			MESSAGE=$"You have not entered in a valid mac address."
 			show_warnings	
 		fi
 		#Check max chars
@@ -221,7 +219,7 @@ then
 			if [ `echo "$LINEDATA" | wc -L` != 2 ]
 			then
 				ACTION=view
-				MESSAGE="$ERRORMSG14"
+				MESSAGE=$"You have not entered in a valid mac address."
 				show_warnings
 			fi
 		done
@@ -231,7 +229,7 @@ then
 			if [ `grep -R -w "$MACADDRESS" /opt/karoshi/server_network/dhcp/reservations | wc -l` -gt 0 ]
 			then
 				ACTION=view
-				MESSAGE="$ERRORMSG16"
+				MESSAGE=$"This mac address is already in use."
 				show_warnings		
 			fi
 		fi
@@ -271,29 +269,29 @@ if [ $MOBILE = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 		<div class="expanded">
-		<span>'$TITLE3'</span>
-	<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+		<span>'$"DHCP Reservations"'</span>
+	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 	</div></div><div id="mobileactionbox">
 '
 	if [ $ACTION = view ]
 	then
-		echo '<input name="_ACTION_add_reservation_" type="submit" class="button" value="'$ADDRESERVATION'"><br><br>'
+		echo '<input name="_ACTION_add_reservation_" type="submit" class="button" value="'$"Add DHCP Reservation"'"><br><br>'
 	else
-		echo '<input name="_ACTION_view_" type="submit" class="button" value="'$VIEWRESERVATIONS'"><br><br>'
+		echo '<input name="_ACTION_view_" type="submit" class="button" value="'$"View DHCP Reservations"'"><br><br>'
 	fi
 else
 	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
-	<td style="vertical-align: top; width:180px"><div class="sectiontitle">'$TITLE3'</div></td>
-	<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Reservation"><img class="images" alt="" src="/images/help/info.png"><span>'$RESERVATIONHELP'</span></a></td>
+	<td style="vertical-align: top; width:180px"><div class="sectiontitle">'$"DHCP Reservations"'</div></td>
+	<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Reservation"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to add in reserved tcpip addresses for client devices."'</span></a></td>
 	<td style="vertical-align: top;">'
 
 	if [ $ACTION = view ]
 	then
-		echo '<input name="_ACTION_add_reservation_" type="submit" class="button" value="'$ADDRESERVATION'">'
+		echo '<input name="_ACTION_add_reservation_" type="submit" class="button" value="'$"Add DHCP Reservation"'">'
 	else
-		echo '<input name="_ACTION_view_" type="submit" class="button" value="'$VIEWRESERVATIONS'">'
+		echo '<input name="_ACTION_view_" type="submit" class="button" value="'$"View DHCP Reservations"'">'
 	fi
-	echo '</td><td style="vertical-align: top;"><a href="dhcp_view_leases.cgi"><input class="button" type="button" name="" value="'$TITLE2'"></a></td><td style="vertical-align: top;"><a href="dhcp_fm.cgi"><input class="button" type="button" name="" value="'$TITLE'"></a></td></tr></tbody></table></div><div id="infobox">
+	echo '</td><td style="vertical-align: top;"><a href="dhcp_view_leases.cgi"><input class="button" type="button" name="" value="'$"View DHCP Leases"'"></a></td><td style="vertical-align: top;"><a href="dhcp_fm.cgi"><input class="button" type="button" name="" value="'$"Configure DHCP"'"></a></td></tr></tbody></table></div><div id="infobox">
 	'
 fi
 
@@ -306,7 +304,7 @@ then
 		then
 		SHOWENTRIES=yes
 		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-		<tr><td style="width: '$WIDTH1'px;"><b>'$HOSTNAMEMSG'</b></td><td style="width: '$WIDTH2'px;"><b>'$MACMSG'</b></td><td style="width:'$WIDTH3'px;"><b>'$TCPMSG'</b></td></tr>'
+		<tr><td style="width: '$WIDTH1'px;"><b>'$"Host name"'</b></td><td style="width: '$WIDTH2'px;"><b>'$"Mac Address"'</b></td><td style="width:'$WIDTH3'px;"><b>'$"TCPIP address"'</b></td></tr>'
 
 		for CLIENTHOSTNAMES in /opt/karoshi/server_network/dhcp/reservations/*
 			do
@@ -314,9 +312,9 @@ then
 			#Get details
 			source $CLIENTHOSTNAMES
 			echo '<tr><td>'$CLIENTHOSTNAME'</td><td>'$MACADDRESS'</td><td>'$TCPIPADDRESS'</td><td>
-			<a class="info" href="javascript:void(0)"><input name="_ACTION_edit_'$CLIENTHOSTNAME'_CLIENTHOSTNAME_'$CLIENTHOSTNAME'_MACADDRESS_'$MACADDRESS'_TCPIPADDRESS_'$TCPIPADDRESS'_" type="image" class="images" src="'$ICON1'" value=""><span>'$EDITMSG'</span></a>
+			<a class="info" href="javascript:void(0)"><input name="_ACTION_edit_'$CLIENTHOSTNAME'_CLIENTHOSTNAME_'$CLIENTHOSTNAME'_MACADDRESS_'$MACADDRESS'_TCPIPADDRESS_'$TCPIPADDRESS'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Edit reservation"'</span></a>
 			</td><td>
-			<a class="info" href="javascript:void(0)"><input name="_ACTION_delete_CLIENTHOSTNAME_'$CLIENTHOSTNAME'_" type="image" class="images" src="'$ICON2'" value=""><span>'$DELETEMSG'</span></a>
+			<a class="info" href="javascript:void(0)"><input name="_ACTION_delete_CLIENTHOSTNAME_'$CLIENTHOSTNAME'_" type="image" class="images" src="'$ICON2'" value=""><span>'$"Delete reservation"'</span></a>
 			</td></tr>'
 			done
 		echo '</tbody></table><br>'
@@ -325,25 +323,25 @@ fi
 
 if [ $SHOWENTRIES = no ]
 then
-echo $ERRORMSG9"<br>"
+echo $"There are no current dhcp reservations.""<br>"
 fi
 }
 
 function add_reservation {
 
 echo '<input type="hidden" name="_ACTION_reallyadd_" value="English"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: '$WIDTH1'px;">'$HOSTNAMEMSG'</td>
+<tr><td style="width: '$WIDTH1'px;">'$"Host name"'</td>
 <td><input tabindex= "1" style="width: '$WIDTH4'px;" name="_CLIENTHOSTNAME_" value="'$CLIENTHOSTNAME'" 
- size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Reservation"><img class="images" alt="" src="/images/help/info.png"><span>'$HOSTNAMEHELP'</span></a></td></tr>
-<tr><td>'$MACMSG'</td><td><input tabindex= "2" style="width: '$WIDTH4'px;" name="_MACADDRESS_" value="'$MACADDRESS'"
- size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Reservation"><img class="images" alt="" src="/images/help/info.png"><span>'$MACHELP'</span></a></td></tr>
-<tr><td>'$TCPMSG'</td><td><input tabindex= "2" style="width: '$WIDTH4'px;" name="_TCPIPADDRESS_"  value="'$TCPIPADDRESS'"
- size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Reservation"><img class="images" alt="" src="/images/help/info.png"><span>'$TCPHELP'</span></a></td></tr> 
+ size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Reservation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the host name of the client computer or device that you want to give a static tcpip address to."'</span></a></td></tr>
+<tr><td>'$"Mac Address"'</td><td><input tabindex= "2" style="width: '$WIDTH4'px;" name="_MACADDRESS_" value="'$MACADDRESS'"
+ size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Reservation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the mac address of the client computer or device that you want to give a static tcpip address to."'</span></a></td></tr>
+<tr><td>'$"TCPIP address"'</td><td><input tabindex= "2" style="width: '$WIDTH4'px;" name="_TCPIPADDRESS_"  value="'$TCPIPADDRESS'"
+ size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Reservation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the tcpip address that you want the client computer or device to have."'</span></a></td></tr> 
 </tbody></table><br>'
 
 echo '<br>'
 
-echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></div>'
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div>'
 }
 
 [ $ACTION = view ] && view_reservations

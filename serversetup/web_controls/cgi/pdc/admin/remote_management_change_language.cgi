@@ -31,15 +31,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_change_language ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_change_language
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -52,7 +50,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Web Management Language"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
@@ -99,17 +97,17 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+	<span>'$"Web Management Language"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">
 '
 else
-echo '<div class="sectiontitle">'$TITLE'</div><br>'
+echo '<div class="sectiontitle">'$"Web Management Language"'</div><br>'
 fi
 
 if [ $MOBILE = yes ]
 then
-echo ''$LANGMSG'<br>
+echo ''$"Language"'<br>
 <select name="_LANGCHOICE_" style="width: 160px;">
 '
 #Generate dropdown list of langauges
@@ -128,19 +126,31 @@ echo '</select><br><br>'
 else
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$LANGMSG'</td><td><select name="_LANGCHOICE_" style="width: 185px;">'
+<tr><td style="width: 180px;">'$"Language"'</td><td><select name="_LANGCHOICE_" style="width: 185px;">'
 #Generate dropdown list of langauges
-for LANGDIR in /opt/karoshi/web_controls/language/*
-do
-LANG=`basename $LANGDIR`
-if [ $LANG'check' = $LANGCHOICE'check' ]
-then
-echo '<option selected="selected">'$LANG'</option>'
-else
-echo '<option>'$LANG'</option>'
-fi
-done
-echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'<br><br>'$HELPMSG2'</span></a></td>
+echo '
+<option value="ar.UTF-8">'$"Arabic"'</option>
+<option value="cs.UTF-8">'$"Czech"'</option>
+<option value="da.UTF-8">'$"Danish"'</option>
+<option value="de.UTF-8">'$"German"'</option>
+<option value="el.UTF-8">'$"Greek"'</option>
+<option value="en.UTF-8">'$"English"'</option>
+<option value="es.UTF-8">'$"Spanish"'</option>
+<option value="fr.UTF-8">'$"French"'</option>
+<option value="hi.UTF-8">'$"Hindi"'</option>
+<option value="he.UTF-8">'$"Hebrew"'</option>
+<option value="it.UTF-8">'$"Italian"'</option>
+<option value="ko.UTF-8">'$"Korean"'</option>
+<option value="nb.UTF-8">'$"Norwegian"'</option>
+<option value="nl.UTF-8">'$"Dutch"'</option>
+<option value="pl.UTF-8">'$"Polish"'</option>
+<option value="pt.UTF-8">'$"Portugese"'</option>
+<option value="ru.UTF-8">'$"Russian"'</option>
+<option value="sw.UTF-8">'$"Swedish"'</option>
+<option value="sw.UTF-8">'$"Swahili"'</option>
+<option value="zh.UTF-8">'$"Chinese"'</option> ' | sort -t ">" -k 2
+
+echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the language that you want for the Web Management."'<br><br>'$"This will not affect other web management users."'</span></a></td>
       </tr>
     </tbody>
   </table>
@@ -153,5 +163,5 @@ then
 echo '</div><div id="submitbox">'
 fi
 
-echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></div></form></div></body></html>'
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div></form></div></body></html>'
 exit

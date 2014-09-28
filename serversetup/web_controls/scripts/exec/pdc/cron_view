@@ -29,16 +29,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/cron_view_cgi
 then
-echo `date`: cron_view - No Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: cron_view - No Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/cron_view_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/cron_view.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $cron_view_cgi'check' ]
 then
-echo `date`: cron_view - Incorrect Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: cron_view - Incorrect Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -47,16 +47,16 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: cron_view - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: cron_view - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\/*%+"-' | sed 's/%2F/\//g' | sed 's/%22//g'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: cron_view - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: cron_view - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
@@ -69,58 +69,58 @@ MOBILE=`echo "$DATA" | cut -s -d: -f7`
 ########################
 #Check data
 ########################
-if [ "$REMOTE_MD5"'null' = null ]
+if [ -z "$REMOTE_MD5" ]
 then
-echo `date`: cron_add - Blank remote MD5 >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: cron_add - Blank remote MD5 >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ "$REMOTE_MD5"'check' != $MD5SUM'check' ]
 then
-echo `date`: cron_view - Not called by cron_view.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: cron_view - Not called by cron_view.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ "$REMOTE_USER"'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: cron_view - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: cron_view - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ "$REMOTE_ADDR"'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: cron_view - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
-
-if [ $SERVERNAME'null' = null ]
-then
-echo `date`: cron_view - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: cron_view - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $SERVERTYPE'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-echo `date`: cron_view - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: cron_view - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+if [ -z "$SERVERTYPE" ]
+then
+	echo `date`: cron_view - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ $SERVERTYPE != network ] && [ $SERVERTYPE != federated ] && [ $SERVERTYPE != federatedslave ]
 then
-echo `date`: cron_view - Incorrect servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: cron_view - Incorrect servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ $SERVERTYPE = federatedslave ]
 then
-if [ $SERVERMASTER'null' = null ]
-then
-echo `date`: cron_view - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
+	if [ -z "$SERVERMASTER" ]
+	then
+		echo `date`: cron_view - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: cron_add - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: cron_add - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 echo `date`: cron_view - showing cron "jobs" "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -128,25 +128,23 @@ echo `date`: cron_view - showing cron "jobs" "for" $SERVERNAME by $REMOTE_USER f
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/cron ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/cron
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 if [ $MOBILE = no ]
 then
-TABLECLASS=standard
-EDITICON=/images/submenus/system/cron/cron_edit.png
-DELETEICON=/images/submenus/system/cron/cron_delete.png
-INFOICON=/images/help/info.png
+	TABLECLASS=standard
+	EDITICON=/images/submenus/system/cron/cron_edit.png
+	DELETEICON=/images/submenus/system/cron/cron_delete.png
+	INFOICON=/images/help/info.png
 else
-TABLECLASS=mobilestandard
-EDITICON=/images/submenus/system/cron/cron_editm.png
-DELETEICON=/images/submenus/system/cron/cron_deletem.png
-INFOICON=/images/help/info.png
+	TABLECLASS=mobilestandard
+	EDITICON=/images/submenus/system/cron/cron_editm.png
+	DELETEICON=/images/submenus/system/cron/cron_deletem.png
+	INFOICON=/images/help/info.png
 fi
 
 
@@ -154,8 +152,7 @@ fi
 #Show cron jobs for pdc
 ##################################
 
-echo "<table class=\"$TABLECLASS\" style=\"text-align: left\;\"><tbody>"
-echo "<tr><td style=\"width: 40px;\"></td><td style=\"width: 180px;\"><b>$COMMANDMSG</b></td><td></td><td></td></tr>"
+echo '<table class="'$TABLECLASS'" style="text-align: left\;"><tbody><tr><td style="width: 40px;"></td><td style="width: 180px;"><b>'$"Command"'</b></td><td></td><td></td></tr>'
 
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
@@ -185,14 +182,14 @@ SHORTCOMMAND=`basename "$SHORTCOMMAND" | sed "s/SLASHWILDCARD/\/\*/g" | sed "s/\
 echo '<tr><td>
 
 <a class="info3" href="javascript:void(0)"><img class="images" alt="" src="'$INFOICON'"><span>
-'$MINUTESMSG2' : '$MINUTES'<br>'$HOURMSG' : '$HOUR'<br>'$DAYOFWEEKMSG2' : '$DAYMSG'<br>'$MONTHMSG' : '$MONTH'<br>'$DAYOFWEEKMSG2' : '$DOFW'<br><br>
-'$COMMANDMSG'<br>'$COMMAND'<br><br>
+'$Mins' : '$MINUTES'<br>'$"Hour"' : '$HOUR'<br>'$"Weekday"' : '$"Day"'<br>'$"Month"' : '$MONTH'<br>'$"Weekday"' : '$DOFW'<br><br>
+'$"Command"'<br>'$COMMAND'<br><br>
 </span></a></td><td>'$CRON_NAME'</td>
-<td><a class="info" href="javascript:void(0)"><input name="___ACTION___EDIT___JOBNAME___'$CRON_NAME'___SERVERTYPE___network___SERVERNAME___'$SERVERNAME'___" type="image" class="images" src="'$EDITICON'" value=""><span>'$EDITMSG'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="___ACTION___DELETE___JOBNAME___'$CRON_NAME'___SERVERTYPE___network___SERVERNAME___'$SERVERNAME'___" type="image" class="images" src="'$DELETEICON'" value=""><span>'$DELETEMSG'</span></a></td></tr>'
+<td><a class="info" href="javascript:void(0)"><input name="___ACTION___EDIT___JOBNAME___'$CRON_NAME'___SERVERTYPE___network___SERVERNAME___'$SERVERNAME'___" type="image" class="images" src="'$EDITICON'" value=""><span>'$"Edit the scheduled job."'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="___ACTION___DELETE___JOBNAME___'$CRON_NAME'___SERVERTYPE___network___SERVERNAME___'$SERVERNAME'___" type="image" class="images" src="'$DELETEICON'" value=""><span>'$"Delete the scheduled job."'</span></a></td></tr>'
 
 done
 else
-echo '<tr><td><b>'$NOJOBSMSG'</b></td><td></td><td></td><td></td><td></td><td></td></tr>'
+echo '<tr><td><b>'$"No Scheduled jobs."'</b></td><td></td><td></td><td></td><td></td><td></td></tr>'
 fi
 fi
 
@@ -226,14 +223,14 @@ SHORTCOMMAND=`basename "$SHORTCOMMAND" | sed "s/SLASHWILDCARD/\/\*/g" | sed "s/\
 
 echo "<tr><td style=\"width: 40px;\">
 <a class=\"info3\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"'$INFOICON'\"><span>
-'$MINUTESMSG2' : $MINUTES<br>'$HOURMSG' : $HOUR<br>'$DAYOFWEEKMSG2' : $DAYMSG<br>'$MONTHMSG' : $MONTH<br>'$DAYOFWEEKMSG2' : $DOFW<br><br>
-'$COMMANDMSG'<br>$COMMAND<br><br>
+'$Mins' : $MINUTES<br>'$"Hour"' : $HOUR<br>'$"Weekday"' : $"Day"<br>'$"Month"' : $MONTH<br>'$"Weekday"' : $DOFW<br><br>
+'$"Command"'<br>$COMMAND<br><br>
 </span></a>
-</td><td>$CRON_NAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"___ACTION___EDIT___JOBNAME___"$CRON_NAME"___SERVERTYPE___federated___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\" type=\"image\" class=\"images\" src=\"'$EDITICON'\" value=\"\"><span>'$EDITMSG'</span></a></td><td>
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"___ACTION___DELETE___JOBNAME___"$CRON_NAME"___SERVERTYPE___federated___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\" type=\"image\" class=\"images\" src=\"'$DELETEICON'\" value=\"\"><span>'$DELETEMSG'</span></a></td></tr>"
+</td><td>$CRON_NAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"___ACTION___EDIT___JOBNAME___"$CRON_NAME"___SERVERTYPE___federated___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\" type=\"image\" class=\"images\" src=\"'$EDITICON'\" value=\"\"><span>'$"Edit the scheduled job."'</span></a></td><td>
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"___ACTION___DELETE___JOBNAME___"$CRON_NAME"___SERVERTYPE___federated___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\" type=\"image\" class=\"images\" src=\"'$DELETEICON'\" value=\"\"><span>'$"Delete the scheduled job."'</span></a></td></tr>"
 done
 else
-echo"<tr><td><b>'$NOJOBSMSG'</b></td><td></td><td></td><td></td><td></td><td></td></tr>"
+echo"<tr><td><b>'$"No Scheduled jobs."'</b></td><td></td><td></td><td></td><td></td><td></td></tr>"
 fi
 ' 2>/dev/null
 fi
@@ -268,14 +265,14 @@ SHORTCOMMAND=`basename "$SHORTCOMMAND" | sed "s/SLASHWILDCARD/\/\*/g" | sed "s/\
 
 echo "<tr><td style=\"width: 40px;\">
 <a class=\"info3\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"'$INFOICON'\"><span>
-'$MINUTESMSG2' : $MINUTES<br>'$HOURMSG' : $HOUR<br>'$DAYOFWEEKMSG2' : $DAYMSG<br>'$MONTHMSG' : $MONTH<br>'$DAYOFWEEKMSG2' : $DOFW<br><br>
-'$COMMANDMSG'<br>$COMMAND<br><br>
+'$Mins' : $MINUTES<br>'$"Hour"' : $HOUR<br>'$"Weekday"' : $"Day"<br>'$"Month"' : $MONTH<br>'$"Weekday"' : $DOFW<br><br>
+'$"Command"'<br>$COMMAND<br><br>
 </span></a>
-</td><td>$CRON_NAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"___ACTION___EDIT___JOBNAME___"$CRON_NAME"___SERVERTYPE___federatedslave___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\" type=\"image\" class=\"images\" src=\"'$EDITICON'\" value=\"\"><span>'$EDITMSG'</span></a></td><td>
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"___ACTION___DELETE___JOBNAME___"$CRON_NAME"___SERVERTYPE___federatedslave___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\" type=\"image\" class=\"images\" src=\"'$DELETEICON'\" value=\"\"><span>'$DELETEMSG'</span></a></td></tr>"
+</td><td>$CRON_NAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"___ACTION___EDIT___JOBNAME___"$CRON_NAME"___SERVERTYPE___federatedslave___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\" type=\"image\" class=\"images\" src=\"'$EDITICON'\" value=\"\"><span>'$"Edit the scheduled job."'</span></a></td><td>
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"___ACTION___DELETE___JOBNAME___"$CRON_NAME"___SERVERTYPE___federatedslave___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\" type=\"image\" class=\"images\" src=\"'$DELETEICON'\" value=\"\"><span>'$"Delete the scheduled job."'</span></a></td></tr>"
 done
 else
-echo"<tr><td><b>'$NOJOBSMSG'</b></td><td></td><td></td><td></td><td></td><td></td></tr>"
+echo"<tr><td><b>'$"No Scheduled jobs."'</b></td><td></td><td></td><td></td><td></td><td></td></tr>"
 fi
 '\''
 ' 2>/dev/null

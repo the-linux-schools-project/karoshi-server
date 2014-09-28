@@ -31,19 +31,17 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_restrict ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_restrict
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Restrict access to Karoshi Remote Management"'<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -139,7 +137,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -147,13 +145,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -168,7 +166,7 @@ fi
 #Check to see that action is correct
 if [ $ACTION != add ] && [ $ACTION != remove ] && [ $ACTION != view ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"Incorrect action."
 show_status
 fi
 #Check to see that TCPADDRESS is not blank
@@ -181,7 +179,7 @@ then
 TCPADDRESS=$DELTCPADDRESS
 if [ $TCPADDRESS = $REMOTE_ADDR ]
 then
-MESSAGE=$ERRORMSG7
+MESSAGE=$"You cannot remove your own TCPIP address."
 show_status
 fi
 fi
@@ -190,12 +188,12 @@ then
 #Check to see that PRIMARYADMIN is not blank
 if [ $PRIMARYADMIN'null' = null ]
 then
-MESSAGE=$ADMINLEVELERROR
+MESSAGE=$"The admin level must not be blank."
 show_status
 fi
 if [ $TCPADDRESS'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The TCPIP address must not be blank."
 show_status
 fi
 fi
@@ -209,22 +207,22 @@ EXEC_STATUS=`echo $?`
 echo "</div>"
 if [ $EXEC_STATUS = 100 ]
 then
-MESSAGE=$ERRORMSG8
+MESSAGE=$"There was an error processing this request. Please view the Karoshi remote management logs."
 show_status
 fi
 if [ $EXEC_STATUS = 101 ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The TCPIP address was already added."
 show_status
 fi
 if [ $EXEC_STATUS = 102 ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"The TCPIP address was not in the list."
 show_status
 fi
 if [ $EXEC_STATUS = 103 ]
 then
-MESSAGE=$ERRORMSG6
+MESSAGE=$"The list is empty. All TCPIP addresses are allowed."
 show_status
 fi
 if [ $EXEC_STATUS = 104 ]

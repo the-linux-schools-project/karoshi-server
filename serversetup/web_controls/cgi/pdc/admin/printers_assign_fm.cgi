@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printers_assign ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printers_assign
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -47,7 +45,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Assign Printers to Locations"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
 </head>
@@ -98,7 +96,7 @@ done
 #Check to see that PRINTER is not blank
 if [ $PRINTERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"You have not chosen any printers."
 show_status
 fi
 
@@ -122,17 +120,17 @@ echo '<form action="/cgi-bin/admin/printers_assign.cgi" method="post"><div id="'
 if [ $MOBILE = yes ]
 then
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
-<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$TITLE'</b></a></td></tr></tbody></table>'
+<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
+<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Assign Printers to Locations"'</b></a></td></tr></tbody></table>'
 else
-echo '<div class="sectiontitle">'$TITLE'</div><br>'
+echo '<div class="sectiontitle">'$"Assign Printers to Locations"'</div><br>'
 fi
 
 
 #Check to see that locations.txt exists
 if [ ! -f /var/lib/samba/netlogon/locations.txt ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"No locations have been created."
 no_locations
 exit
 fi
@@ -148,7 +146,7 @@ LOCATION_COUNT=0
 fi
 
 echo '<input type="hidden" name="_PRINTERNAME_" value="'$PRINTERNAME'"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: 180px;">Printer</td><td>'$PRINTERNAME'</td></tr>
-</tbody></table><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: 180px; vertical-align: top;">'$LOCATIONMSG'</td><td>'
+</tbody></table><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: 180px; vertical-align: top;">'$"Location"'</td><td>'
 echo '<select multiple="multiple" size="5" name="_LOCATION_">'
 COUNTER=1
 while [ $COUNTER -le $LOCATION_COUNT ]
@@ -171,5 +169,5 @@ then
 echo '</div><div id="submitbox">'
 fi
 
-echo '<input value="'$SUBMITMSG'" class="button" type="submit"></form></div></body></html>'
+echo '<input value="'$"Submit"'" class="button" type="submit"></form></div></body></html>'
 exit

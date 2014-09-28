@@ -111,13 +111,11 @@ fi
 
 echo `date`: disk_usage $CHOICE $SERVERNAME - by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/file/disk_usage ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/file/disk_usage
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 [ $CHOICE'null' = null ] && CHOICE=/home
 CHOICE=`echo $CHOICE | sed 's/+/ /g'`
@@ -133,7 +131,7 @@ else
 cat /opt/karoshi/server_network/disk_usage/"$CHOICE".html | sed "s/class=\"standard\"/class=\"mobilestandard\"/g"
 fi
 else
-echo $ERRORMSG3
+echo $"No disk data has been generated."
 fi
 fi
 
@@ -149,7 +147,7 @@ else
 cat /opt/karoshi/server_network/disk_usage/"'$CHOICE'".html | sed "s/class=\"standard\"/class=\"mobilestandard\"/g"
 fi
 else
-echo '$ERRORMSG3'
+echo '$"No disk data has been generated."'
 fi
 '
 fi

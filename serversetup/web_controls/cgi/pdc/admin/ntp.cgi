@@ -30,15 +30,13 @@ MOBILE=no
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/ntp ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/ntp
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -63,7 +61,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script type="text/javascript">
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Configure NTP"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script type="text/javascript">
 <!--
 function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 {
@@ -89,7 +87,7 @@ echo '<body onLoad="start()"><div id="pagecontainer">'
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -97,25 +95,25 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/ntp2.cgi" name="selectservers" method="post"><div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$TITLE'</div><br>
+echo '<form action="/cgi-bin/admin/ntp2.cgi" name="selectservers" method="post"><div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Configure NTP"'</div><br>
 <table class="standard" style="text-align: left; height: 50px;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="width: 180px;">'$NTPMSG'</td>
-<td><input name="_NTPSERVER_" size="25" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=Configure_NTP"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
+<tbody><tr><td style="width: 180px;">'$"NTP Server"'</td>
+<td><input name="_NTPSERVER_" size="25" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=Configure_NTP"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the NTP server address that you want the servers to get the time from."'</span></a>
 </td></tr></tbody></table></div><div id="infobox">'
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE pdc "$ACTIONMSG"
+/opt/karoshi/web_controls/show_servers $MOBILE pdc $"Set Time"
 
 [ $MOBILE = no ] && echo '</div>'
 

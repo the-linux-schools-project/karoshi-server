@@ -27,19 +27,17 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/radius ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/radius
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE2'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View Access Points"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -91,7 +89,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -99,13 +97,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -115,14 +113,14 @@ fi
 #Check to see that SHORTNAME is not blank
 if [ $SHORTNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The shortname cannot be blank."
 show_status
 fi
 
 #Check to see that ACTION is not blank
 if [ $ACTION'null' = null ]
 then
-MESSAGE=$ERRORMSG7
+MESSAGE=$"The action cannot be blank."
 show_status
 fi
 
@@ -140,13 +138,13 @@ else
 DIV_ID=menubox
 fi
 
-echo '<div id="'$DIV_ID'"><div class="sectiontitle">'$TITLE2'</div><br>'
+echo '<div id="'$DIV_ID'"><div class="sectiontitle">'$"View Access Points"'</div><br>'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/radius_control_access_pt.cgi | cut -d' ' -f1`
 #Control access point
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$SHORTNAME:" | sudo -H /opt/karoshi/web_controls/exec/radius_control_access_pt
 SHORTNAME=`echo $SHORTNAME | sed 's/+/ /g'`
-[ $ACTION = delete ] && MESSAGE=`echo $DELETEDMSG "$SHORTNAME"`
+[ $ACTION = delete ] && MESSAGE=`echo $"Deleted" "$SHORTNAME"`
 
 
 

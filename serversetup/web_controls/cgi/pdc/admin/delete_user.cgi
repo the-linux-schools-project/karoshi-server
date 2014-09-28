@@ -31,19 +31,17 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/delete_user ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/delete_user
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="0; URL=delete_user_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Delete User"'</title><meta http-equiv="REFRESH" content="0; URL=delete_user_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -149,7 +147,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -157,13 +155,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -172,7 +170,7 @@ fi
 #Check to see that username is not blank
 if [ $USERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The username must not be blank."
 show_status
 fi
 #Check to see that the user exists
@@ -180,7 +178,7 @@ getent passwd "$USERNAME" 1>/dev/null 2>/dev/null
 USEREXISTSTATUS=`echo $?`
 if [ $USEREXISTSTATUS != 0 ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"This user does not exist."
 show_status
 fi
 
@@ -202,19 +200,19 @@ fi
 #Check to see that SHUTDOWNCODE is not blank
 if [ $SHUTDOWNCODE'null' = null ]
 then
-MESSAGE=$ERRORMSG6
+MESSAGE=$"The shutdown code must not be blank."
 show_status
 fi
 #Check to see that FORMCODE is not blank
 if [ $FORMCODE'null' = null ]
 then
-MESSAGE=$ERRORMSG7
+MESSAGE=$"The form code must not be blank."
 show_status
 fi
 #Make sure that FORMCODE and SHUTDOWNCODE matches
 if [ $FORMCODE != $SHUTDOWNCODE ]
 then
-MESSAGE=$ERRORMSG8
+MESSAGE=$"Incorrect shutdown code."
 show_status
 fi
 
@@ -223,19 +221,19 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$DOMAINPASSWORD:$REQUESTFILE:$
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 105 ]
 then
-MESSAGE=`echo $SERVERDOWNMSG $LOGMSG`
+MESSAGE=`echo $"A server required for this action was offline." $"Please check the karoshi web administration logs for more details."`
 show_status
 fi
 if [ $EXEC_STATUS = 102 ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"Incorrect domain password."
 show_status
 fi
 if [ $EXEC_STATUS = 0 ]
 then
-MESSAGE=`echo $USERNAME: $COMPLETEDMSG`
+MESSAGE=`echo $USERNAME: $"Deleted"`
 else
-MESSAGE=`echo $USERNAME: $ERRORMSG5`
+MESSAGE=`echo $USERNAME: $"The user was not deleted."`
 fi
 show_status
 

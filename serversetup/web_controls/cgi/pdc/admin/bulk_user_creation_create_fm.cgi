@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/bulk_user_creation ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/bulk_user_creation
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 #Select the default username style
 if [ -f /opt/karoshi/server_network/default_username_style ]
@@ -65,22 +63,22 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Bulk User Creation"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><form action="/cgi-bin/admin/bulk_user_creation_create.cgi" method="post"><div class="sectiontitle">'$TITLE'</div>
+echo '<div id="actionbox"><form action="/cgi-bin/admin/bulk_user_creation_create.cgi" method="post"><div class="sectiontitle">'$"Bulk User Creation"'</div>
   <br>
-'$OPENINGMSG':<br>
+'$"Please select the following options to create your users"':<br>
   <br>'
 
 #Check that this server is not part of a federated setup
 if [ -f /opt/karoshi/server_network/servers/$HOSTNAME/federated_server ]
 then
-echo $ERRORMSG18 '</div></div></body></html>'
+echo $"This server is part of a federated system. Users must be created on the main federation server." '</div></div></body></html>'
 exit
 fi
 
@@ -88,25 +86,25 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
     <tbody>
       <tr>
         <td style="width: 150px;">
-'$USERNAMEMSG'</td><td>
+'$"Username"'</td><td>
 <select name="_USERNAMESTYLE_" style="width: 200px;">
-        <option value="userstyleS1" '$SELECT1'>'$STYLE1MSG': '$STYLE1MSGEX'</option>
-        <option value="userstyleS2" '$SELECT2'>'$STYLE2MSG': '$STYLE2MSGEX'</option>
-        <option value="userstyleS3" '$SELECT3'>'$STYLE3MSG': '$STYLE3MSGEX'</option>
-        <option value="userstyleS4" '$SELECT4'>'$STYLE4MSG': '$STYLE4MSGEX'</option>
-        <option value="userstyleS5" '$SELECT5'>'$STYLE5MSG': '$STYLE5MSGEX'</option>
-        <option value="userstyleS6" '$SELECT6'>'$STYLE6MSG': '$STYLE6MSGEX'</option>
-        <option value="userstyleS7" '$SELECT7'>'$STYLE7MSG': '$STYLE7MSGEX'</option>
-        <option value="userstyleS8" '$SELECT8'>'$STYLE8MSG': '$STYLE8MSGEX'</option>
-        <option value="userstyleS9" '$SELECT9'>'$STYLE9MSG': '$STYLE9MSGEX'</option>
+        <option value="userstyleS1" '$SELECT1'>'$"Style 1"': '$"astudent09"'</option>
+        <option value="userstyleS2" '$SELECT2'>'$"Style 2"': '$"09astudent"'</option>
+        <option value="userstyleS3" '$SELECT3'>'$"Style 3"': '$"studenta09"'</option>
+        <option value="userstyleS4" '$SELECT4'>'$"Style 4"': '$"arnold.student09"'</option>
+        <option value="userstyleS5" '$SELECT5'>'$"Style 5"': '$"student.arnold09"'</option>
+        <option value="userstyleS6" '$SELECT6'>'$"Style 6"': '$"09studenta"'</option>
+        <option value="userstyleS7" '$SELECT7'>'$"Style 7"': '$"09arnolds"'</option>
+        <option value="userstyleS8" '$SELECT8'>'$"Style 8"': '$"arnolds"'</option>
+        <option value="userstyleS9" '$SELECT9'>'$"Style 9"': '$"Enrollment number as username."'</option>
 </select></td></tr>
-<tr><td>'$PRIGROUPMSG'</td>
+<tr><td>'$"Primary Group"'</td>
 </td><td>'
 /opt/karoshi/web_controls/group_dropdown_list
 echo '</td></tr></tbody></table>
 </div>
 <div id="submitbox">
-  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+  <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>
 </form>
 </div></body>

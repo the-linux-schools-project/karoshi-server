@@ -31,15 +31,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/view_disk_usage_logs ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/view_disk_usage_logs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -48,7 +46,7 @@ fi
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script language="JavaScript" src="/all/calendar2/calendar_eu.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View Disk Usage Logs"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script language="JavaScript" src="/all/calendar2/calendar_eu.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -96,7 +94,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -104,13 +102,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
@@ -135,16 +133,16 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+	<span>'$"View Disk Usage Logs"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div>
 <div id="mobileactionbox">
 '
 else
 echo '
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
-<td style="vertical-align: top;"><b>'$TITLE'</b></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Usage_Logs"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td>
+<td style="vertical-align: top;"><b>'$"View Disk Usage Logs"'</b></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Usage_Logs"><img class="images" alt="" src="/images/help/info.png"><span>'$"The disk usage logs show the overall usage for each partition on your server."'</span></a></td>
 </tr></tbody></table><br>
 '
 fi
@@ -152,7 +150,7 @@ fi
 
 if [ $MOBILE = yes ]
 then
-echo ''$DATEMSG'<br>'
+echo ''$"Log Date"'<br>'
 echo "<!-- calendar attaches to existing form element -->
 	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxlength=10 name=\"_DATE_\"></td><td style=\"vertical-align: top; text-align: center;\">
 	<script language=\"JavaScript\">
@@ -166,15 +164,15 @@ echo "<!-- calendar attaches to existing form element -->
 	</script><br>
 "
 
-echo ''$VIEWLOGSMSG1'<br>
+echo ''$"View logs by date"'<br>
 <input checked="checked" name="_LOGVIEW_" value="today" type="radio"><br>
-'$VIEWLOGSMSG2'<br>
+'$"View logs by month"'<br>
 <input name="_LOGVIEW_" value="month" type="radio"><br><br>
 '
 
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$DATEMSG'</td><td>'
+<tr><td style="width: 180px;">'$"Log Date"'</td><td>'
 echo "	<!-- calendar attaches to existing form element -->
 	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxlength=10 name=\"_DATE_\"></td><td style=\"vertical-align: top; text-align: center;\">
 	<script type=\"text/javascript\">
@@ -187,13 +185,13 @@ echo "	<!-- calendar attaches to existing form element -->
 
 	</script></td></tr>"
 
-echo "<tr><td>$VIEWLOGSMSG1</td><td></td><td><div style=\"text-align: center;\"><input checked=\"checked\" name=\"_LOGVIEW_\" value=\"today\" type=\"radio\"></div></td></tr><tr><td>$VIEWLOGSMSG2</td><td></td><td style=\"vertical-align: top;\"><div style=\"text-align: center;\"><input name=\"_LOGVIEW_\" value=\"month\" type=\"radio\"></div></td></tr></tbody></table><br>"
+echo "<tr><td>$"View logs by date"</td><td></td><td><div style=\"text-align: center;\"><input checked=\"checked\" name=\"_LOGVIEW_\" value=\"today\" type=\"radio\"></div></td></tr><tr><td>$"View logs by month"</td><td></td><td style=\"vertical-align: top;\"><div style=\"text-align: center;\"><input name=\"_LOGVIEW_\" value=\"month\" type=\"radio\"></div></td></tr></tbody></table><br>"
 fi
 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE servers "$ACTIONMSG"
+/opt/karoshi/web_controls/show_servers $MOBILE servers $"View disk logs"
 
 [ $MOBILE = no ] && echo '</div>'
 

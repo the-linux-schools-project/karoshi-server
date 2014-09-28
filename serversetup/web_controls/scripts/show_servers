@@ -10,10 +10,11 @@ SEPARATOR=`echo $6 | tr -cd "_"`
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/show_servers ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/show_servers
+locale 1>/dev/null
+TEXTDOMAIN=karoshi-server
+
 
 #Check data
 
@@ -61,13 +62,13 @@ fi
 
 function tabletop {
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="vertical-align: top; width: 10px;"></td><td style="vertical-align: top; width: '$WIDTH1'px;"><b>'$SERVERMSG'</b></td>'
+<tr><td style="vertical-align: top; width: 10px;"></td><td style="vertical-align: top; width: '$WIDTH1'px;"><b>'$Server'</b></td>'
 
-[ $MOBILE = no ] && echo '<td style="vertical-align: top; width: '$WIDTH2'px;"><b>'$ROLESMSG'</b></td>'
+[ $MOBILE = no ] && echo '<td style="vertical-align: top; width: '$WIDTH2'px;"><b>'$Role'</b></td>'
 
 if [ $CUSTOM = updateserver ]
 then
-	echo '<td style="vertical-align: top; text-align: left; width: '$WIDTH4'px;"><b>'$UPGRADEMSG'</b></td>'
+	echo '<td style="vertical-align: top; text-align: left; width: '$WIDTH4'px;"><b>'$"Update Time"'</b></td>'
 fi
 
 if [ $CUSTOM = commercialsslcert ]

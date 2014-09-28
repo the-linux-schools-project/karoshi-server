@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_access ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_access
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -47,7 +45,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"E-Mail Access"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -57,19 +55,19 @@ echo '
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox3"><div id="titlebox"><form action="/cgi-bin/admin/email_access.cgi" method="post"><b>'$TITLE'</b>
-<a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
+echo '<div id="actionbox3"><div id="titlebox"><form action="/cgi-bin/admin/email_access.cgi" method="post"><b>'$"E-Mail Access"'</b>
+<a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will allow or deny email access for your users."'</span></a>
 <br><br></div><div id="infobox">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody>
-<tr><td style="width: 180px;">'$USERNAMEMSG'</td><td><input tabindex= "1" name="_EMAILUSER_" style="width: 200px;" size="20" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls#Banning_and_Allowing_Users"><img class="images" alt="" src="/images/help/info.png"><span>'$USERHELP1'</span></a></td></tr>
+<tr><td style="width: 180px;">'$"Username"'</td><td><input tabindex= "1" name="_EMAILUSER_" style="width: 200px;" size="20" type="text"></td><td>
+<a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls#Banning_and_Allowing_Users"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to ban email use for. Leave this blank if you want to ban email use for a group of users."'</span></a></td></tr>
 <tr><td>Ban</td><td><input checked="checked" name="_ACTION_" value="deny" type="radio"></td></tr>
 <tr><td>Allow</td><td><input name="_ACTION_" value="allow" type="radio"></td></tr></tbody></table><br><br>
-<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </form><br>
 <form action="/cgi-bin/admin/email_access.cgi" method="post"><table class="standard" style="text-align: left" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;"><b>'$PRIGROUPMSG'</b></td><td style="width: 180px;"><b>'$CHANGEMSG'</b></td><td style="width: 180px;"><b>'$PRIGROUPMSG'</b></td><td><b>'$CHANGEMSG'</b></td></tr><tr>
+<tr><td style="width: 180px;"><b>'$"Primary Group"'</b></td><td style="width: 180px;"><b>'$"Change"'</b></td><td style="width: 180px;"><b>'$"Primary Group"'</b></td><td><b>'$"Change"'</b></td></tr><tr>
 '
 COUNTER=0
 ICON1=/images/submenus/email/email_allow.png
@@ -84,11 +82,11 @@ if [ -f /opt/karoshi/server_network/email_restrictions/$PRI_GROUP ]
 then
 ICON=$ICON2
 ACTION=allow
-MESSAGE=`echo $PRI_GROUP: $DENYMSG`
+MESSAGE=`echo $PRI_GROUP: $"Deny E-Mail access for this group"`
 else
 ICON=$ICON1
 ACTION=deny
-MESSAGE=`echo $PRI_GROUP: $ALLOWMSG`
+MESSAGE=`echo $PRI_GROUP: $"Allow E-Mail access for this group."`
 fi
 
 echo '<td>'$PRI_GROUP'</td><td><a class="info" href="javascript:void(0)"><input name="_GROUP_'$PRI_GROUP'_ACTION_'$ACTION'_" type="image" class="images" src="'$ICON'" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_"><span>'$MESSAGE'</span></a></td>'

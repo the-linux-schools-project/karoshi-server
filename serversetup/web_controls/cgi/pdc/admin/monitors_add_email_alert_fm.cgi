@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/monitors_email_alert ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/monitors_email_alert
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -50,7 +48,7 @@ echo '
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"E-Mail - SMS Alerts"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -124,12 +122,12 @@ if [ -f /opt/karoshi/server_network/monitoringserver ]
 then
 echo '<form action="/cgi-bin/admin/monitors_add_email_alert.cgi" method="post"><div id="actionbox">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="vertical-align: top; width: 130px;"><b>'$TITLE'</b></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_eMail_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG8'</span></a></td>
+<tbody><tr><td style="vertical-align: top; width: 130px;"><b>'$"E-Mail - SMS Alerts"'</b></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_eMail_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to send e-mail alerts in the event of a network failure."'</span></a></td>
 <td style="vertical-align: top;">
-<a href="/cgi-bin/admin/monitors_view_email_alerts_fm.cgi"><input class="button" type="button" name="" value="'$EMAILARERTSMSG'"></a>
+<a href="/cgi-bin/admin/monitors_view_email_alerts_fm.cgi"><input class="button" type="button" name="" value="'$"E-Mail Alerts"'"></a>
 </td>
 <td style="vertical-align: top;">
-<a href="/cgi-bin/admin/mon_status.cgi"><input class="button" type="button" name="" value="'$NETWORKSTATUSMSG'"></a>
+<a href="/cgi-bin/admin/mon_status.cgi"><input class="button" type="button" name="" value="'$"Network Status"'"></a>
 </td>
 </tr></tbody></table>
 <br>
@@ -137,37 +135,37 @@ echo '<form action="/cgi-bin/admin/monitors_add_email_alert.cgi" method="post"><
     <tbody>
 	<tr>
         <td style="width: 180px;">
-'$CONTACTNAMEMSG'</td>
+'$"Contact Name"'</td>
         <td><input tabindex= "1" name="_NAME_" value="'$NAME'" size="35" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG6'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter a short name for this E-Mail alert."'</span></a>
       </td></tr>
       <tr>
         <td>
-'$EMAILTOMSG'</td>
+'$"Send E-Mail to"'</td>
         <td><input tabindex= "1" name="_EMAILTO_" value="'$EMAILTO'" size="35" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the email address you want the alert sent to."'</span></a>
       </td></tr>
       <tr>
         <td>
-'$EMAILFROMMSG'</td>
+'$"E-Mail from"'</td>
         <td><input tabindex= "2" name="_EMAILFROM_" value="'$EMAILFROM'" size="35" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the email address of the sender."'</span></a>
       </td></tr>
       <tr>
         <td>
-'$MAILSERVERMSG'</td>
+'$"E-Mail Server"'</td>
         <td><input tabindex= "3" name="_MAILSERVER_" value="'$MAILSERVER'" size="20" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG5'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the address of the mail server that you want to send the email to."'</span></a>
       </td></tr>
     </tbody>
   </table><br><br>
 </div>
 <div id="submitbox">
-<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>
 </form>'
 else
-echo '<div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>'$ERRORMSG5'<br><br></div>'
+echo '<div id="actionbox"><div class="sectiontitle">'$"E-Mail - SMS Alerts"'</div><br>'$"A monitoring server has not been setup."'<br><br></div>'
 fi
 echo '</div></body>
 </html>

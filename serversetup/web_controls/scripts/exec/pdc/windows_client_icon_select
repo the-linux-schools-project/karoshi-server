@@ -51,11 +51,11 @@ then
 echo `date`: windows_client_icon_select - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1 | tr -cd 'A-Za-z0-9\._:\-'`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2 | tr -cd 'A-Za-z0-9\._:\-'`
-REMOTE_MD5=`echo $* | cut -s -d: -f3 | tr -cd 'A-Za-z0-9\._:\-'`
-WINDOWSVER=`echo $* | cut -s -d: -f4 | tr -cd 'A-Za-z0-9\._:\-'`
-PRIGROUP=( `echo $* | cut -s -d: -f5- | sed 's/:/ /g'` )
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
+WINDOWSVER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
+PRIGROUP=( `echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5- | sed 's/:/ /g'` )
 ########################
 #Check data
 ########################
@@ -124,13 +124,11 @@ fi
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/windows_icon_upload ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/windows_icon_upload
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 #Check windows version
 PROFILEVER=""
@@ -148,7 +146,7 @@ do
 CURRENTGROUP=`echo ${PRIGROUP[$COUNTER]}`
 #Log event
 echo `date`: windows_client_icon_select - copying icons to $CURRENTGROUP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $COPYMSG : $CURRENTGROUP$PROFILEVER'<br><br>'
+echo $"Copying icons to" : $CURRENTGROUP$PROFILEVER'<br><br>'
 [ -d /home/applications/profiles/$CURRENTGROUP$PROFILEVER/Desktop ] || mkdir -p /home/applications/profiles/$CURRENTGROUP$PROFILEVER/Desktop
 cp -f /opt/karoshi/.tempdata/win_icon_upload.$$/*.lnk /home/applications/profiles/$CURRENTGROUP$PROFILEVER/Desktop/ 2>/dev/null
 cp -f /opt/karoshi/.tempdata/win_icon_upload.$$/*.LNK /home/applications/profiles/$CURRENTGROUP$PROFILEVER/Desktop/ 2>/dev/null

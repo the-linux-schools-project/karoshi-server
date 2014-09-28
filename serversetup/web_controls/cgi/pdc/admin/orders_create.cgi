@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/orders ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/orders
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -48,7 +46,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE1'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Create Order"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <link rel="stylesheet" type="text/css" href="/css/print.css" media="print" />
 <script language="JavaScript" src="/all/calendar2/calendar_eu.js"></script>
@@ -153,28 +151,28 @@ exit
 #Check to see that department is not blank
 if [ `echo $DEPARTMENT'null' | sed 's/ //g;'` = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The department must not be blank."
 show_status
 fi
 
 #Check to see that supplier is not blank
 if [ `echo $SUPPLIER'null' | sed 's/ //g'` = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The supplier must not be blank."
 show_status
 fi
 
 #Check to see that the date is not blank
 if [ $DATE'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The date must not be blank."
 show_status
 fi
 
 #Check to see that the BHOLDER is not blank
 if [ `echo $BHOLDER'null' | sed 's/ //g'` = null ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The budget holder must not be blank."
 show_status
 fi
 
@@ -274,13 +272,13 @@ echo '</div><div id="actionbox">
 
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
-<tr><td style="width: 150px;"><b>'$DEPMSG'</b></td><td style="width: 240px;">'$DEPARTMENT'</td><td style="width: 120px;"><b>'$DATEMSG'</b></td><td style="width: 200px;">'$DATE'</td></tr>
-<tr><td><b>'$SUPPLIERMSG'</b></td><td>'$SUPPLIER'</td><td><b>'$BHOLDERMSG'</b></td><td>'$BHOLDER'</td></tr>
-<tr><td><b>'$ORDERREFMSG'</b></td><td>'$ORDERREF'</td></tr>
+<tr><td style="width: 150px;"><b>'$"Department"'</b></td><td style="width: 240px;">'$DEPARTMENT'</td><td style="width: 120px;"><b>'$"Date"'</b></td><td style="width: 200px;">'$DATE'</td></tr>
+<tr><td><b>'$"Supplier"'</b></td><td>'$SUPPLIER'</td><td><b>'$"Budget Holder"'</b></td><td>'$BHOLDER'</td></tr>
+<tr><td><b>'$"Order Ref"'</b></td><td>'$ORDERREF'</td></tr>
 </tbody></table><br>
   <table class="standard" style="text-align: left;" border="2" cellpadding="2" cellspacing="2">
     <tbody>
-<tr><td style="vertical-align: top; width: 250px;"><b>'$REFMSG'</b></td><td style="vertical-align: top; width: 70px;"><b>'$QUANTITYMSG'</b></td><td style="vertical-align: top; width: 400px;"><b>'$DESCRIPTIONMSG'</b></td><td style="vertical-align: top; width: 90px;"><b>'$UNITPRICEMSG'</b></td><td style="vertical-align: top; width: 80px;"><b>'$TOTALMSG'</b></td></tr>
+<tr><td style="vertical-align: top; width: 250px;"><b>'$"Ref"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Qty"'</b></td><td style="vertical-align: top; width: 400px;"><b>'$"Description"'</b></td><td style="vertical-align: top; width: 90px;"><b>'$"Unit Price"'</b></td><td style="vertical-align: top; width: 80px;"><b>'$"Total"'</b></td></tr>
 <tr><td>'$REF1'</td><td>'$QUANTITY1'</td><td>'$DESC1'</td><td>'$PPU1'</td><td>'$TOTAL1'</td></tr>
 <tr><td>'$REF2'</td><td>'$QUANTITY2'</td><td>'$DESC2'</td><td>'$PPU2'</td><td>'$TOTAL2'</td></tr>
 <tr><td>'$REF3'</td><td>'$QUANTITY3'</td><td>'$DESC3'</td><td>'$PPU3'</td><td>'$TOTAL3'</td></tr>
@@ -296,7 +294,7 @@ echo '</div><div id="actionbox">
 <tr><td>'$REF13'</td><td>'$QUANTITY13'</td><td>'$DESC13'</td><td>'$PPU13'</td><td>'$TOTAL13'</td></tr>
 <tr><td>'$REF14'</td><td>'$QUANTITY14'</td><td>'$DESC14'</td><td>'$PPU14'</td><td>'$TOTAL14'</td></tr>
 <tr><td>'$REF15'</td><td>'$QUANTITY15'</td><td>'$DESC15'</td><td>'$PPU15'</td><td>'$TOTAL15'</td></tr>
-<tr><td></td><td></td><td></td><td><b>'$SUBTOTALMSG'</b></td><td>'$SUBTOTAL'</td></tr>
+<tr><td></td><td></td><td></td><td><b>'$"Sub Total"'</b></td><td>'$SUBTOTAL'</td></tr>
 <tr><td></td><td></td><td></td><td><b>P+P</b></td><td>'$PANDP'</td></tr>
 <tr><td></td><td></td><td></td><td><b>Total</b></td><td><b>'$GRANDTOTAL'</b></td></tr>
 </tbody></table><br>

@@ -114,13 +114,11 @@ fi
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/software_raid ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/software_raid
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 ICON1=/images/submenus/system/hdd_add.png
 ICON2=/images/submenus/system/hdd_add_spare.png
@@ -134,14 +132,14 @@ then
 
 if [ ! -f /etc/mdadm/mdadm.conf ]
 then
-echo $ERRORMSG14
+echo $"A software raid has not been set up on this server."
 sleep 5
 exit
 fi
 
 if [ `grep -c ^ARRAY /etc/mdadm/mdadm.conf` = 0 ]
 then
-echo $ERRORMSG14
+echo $"A software raid has not been set up on this server."
 sleep 5
 exit
 fi
@@ -154,15 +152,15 @@ RAID_DEVICE=`blkid | grep $RAID_UUID | cut -d: -f1`
 #Check that the raid is running
 if [ `mdadm --detail --scan | grep -c ARRAY` = 0 ]
 then
-echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\">$RAIDUUIDMSG</td><td>$RAID_UUID</td></tr>
-<tr><td>$RAIDSTATEMSG</td><td>$ERRORMSG12</td></tr>
-<tr><td>$CUSTOMCOMMANDMSG</td><td><form action=\"/cgi-bin/admin/software_raid_control2.cgi\" method=\"post\">
-<input tabindex= \"1\" value=\"mdadm --assemble --scan\" name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'"_"SERVERMASTER_'$SERVERMASTER'"_"ACTION_custom_RAIDDEVICE_null_DRIVE_\" size=\"30\" type=\"text\"></form></td>
-<td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$CUSTOMCOMMANDHELPMSG</span></a></td></tr>
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: 180px;">$"Raid UUID"</td><td>'$RAID_UUID'</td></tr>
+<tr><td>'$"Raid State"'</td><td>'$"The sofware raid is not running."'</td></tr>
+<tr><td>'$"Custom command"'</td><td><form action="/cgi-bin/admin/software_raid_control2.cgi" method="post">
+<input tabindex= "1" value="mdadm --assemble --scan" name="_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_ACTION_custom_RAIDDEVICE_null_DRIVE_" size="30" type="text"></form></td>
+<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a custom mdadm command to control your raid."'</span></a></td></tr>
 </tbody></table><br><br>
-<input value=\"$SUBMITMSG\" type=\"submit\"> <input value=\"$RESETMSG\" type=\"reset\">
-"
+<input value='$"Submit"' type="submit"> <input value='$"Reset"' type="reset">
+'
 exit
 fi
 #Get list of all drives
@@ -207,7 +205,7 @@ get_drive_info
 
 if [ $SHOW_MENU = yes ]
 then
-echo "<b>$SPAREDISKSMSG</b><br><br><table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+echo "<b>$"Spare Disks"</b><br><br><table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
 <tbody>"
 SHOW_MENU=no
 SHOW_SUBMIT=yes
@@ -217,7 +215,7 @@ fi
 if [ $DRIVE_STATUS = ok ]
 then
 echo "<tr><td style=\"width: 180px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br><br>$SMART_INFO</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td>
-<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'"_"SERVERMASTER_'$SERVERMASTER'"_"ACTION_add_DRIVE_$DRIVE"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$ADD_DISKMSG</span></a></td>
+<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'"_"SERVERMASTER_'$SERVERMASTER'"_"ACTION_add_DRIVE_$DRIVE"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$"Add this disk to a raid."</span></a></td>
 </tr>"
 else
 echo "<tr><td style=\"width: 180px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br><br>$SMART_INFO</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td></tr>"
@@ -244,15 +242,15 @@ RAID_SIZE=`echo -e "$RAID_SIZE" | sed "s/ * / /g" | sed -n 2,2p | cut -d" " -f2`
 
 RAID_STATE=`mdadm --detail $RAID_DEVICE | grep "State :" | sed "s/ * / /g" | cut -d: -f2 | sed "s/^ //g"`
 REBUILDSTATUS=`mdadm --detail $RAID_DEVICE | grep "Rebuild Status :" | cut -d: -f2 | sed "s/^ //g"`
-echo "<b>"$RAIDINFOMSG"</b><br><br>"
-echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\">$RAIDNAMEMSG</td><td>$RAID_DEVICE</td></tr>
-<tr><td>$RAIDUUIDMSG</td><td>$RAID_UUID</td></tr>
-<tr><td>$RAIDTYPEMSG</td><td>$RAID_TYPE</td></tr>
-<tr><td>$RAIDSIZEMSG</td><td>$RAID_SIZE</td></tr>
-<tr><td>$RAIDSTATEMSG</td><td>$RAID_STATE</td></tr>
-"
-[ ! -z "$REBUILDSTATUS" ] && echo "<tr><td style=\"width: 180px;\">Rebuild Status</td><td>$REBUILDSTATUS</td></tr>"
+echo '<b>'$"Raid Information"'</b><br><br>
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: 180px;">'$"Raid Name"'</td><td>'$RAID_DEVICE'</td></tr>
+<tr><td>'$"Raid UUID"'</td><td>'$RAID_UUID'</td></tr>
+<tr><td>'$"Raid Type"'</td><td>'$RAID_TYPE'</td></tr>
+<tr><td>'$"Raid Size"'</td><td>'$RAID_SIZE'</td></tr>
+<tr><td>'$"Raid State"'</td><td>'$RAID_STATE'</td></tr>
+'
+[ ! -z "$REBUILDSTATUS" ] && echo '<tr><td style="width: 180px;">'$"Rebuild Status"'</td><td>'$REBUILDSTATUS'</td></tr>'
 
 #Get a list of active drives in the array
 RAID_DISKS=( `mdadm --detail $RAID_DEVICE 2>/dev/null | grep "active sync" | sed "s/ * / /g" | cut -d" " -f8` )
@@ -264,9 +262,9 @@ RAID_DISK=${RAID_DISKS[$COUNTER]}
 ICON=$ICON3
 DRIVE=$RAID_DISK
 get_drive_info
-echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>"$RAID_DISK - $ACTIVEMSG"</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'"_"SERVERMASTER_'$SERVERMASTER'"_"ACTION_remove_DRIVE_$RAID_DISK"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>$REMOVEDISKMSG</span></a>
-</td></tr>"
+echo '<tr><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$DISKICON'"><span>'$DRIVE' - '$DISKSIZE'<br><br>'$SMART_INFO'</span></a>'$RAID_DISK' - '$"active"'</td><td style="width: 260px;">'$MAKER $DRIVE_SN'</td><td>
+<a class="info" href="javascript:void(0)"><input name="_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'"_"SERVERMASTER_'$SERVERMASTER'"_"ACTION_remove_DRIVE_$RAID_DISK"_"RAIDDEVICE_$RAID_DEVICE"_" type="image" class="images" src="'$ICON'" value=""><span>'$"Remove this disk from the raid."'</span></a>
+</td></tr>'
 let COUNTER=$COUNTER+1
 done
 
@@ -280,8 +278,8 @@ RAID_DISK=${RAID_DISKS[$COUNTER]}
 ICON=$ICON3
 DRIVE=$RAID_DISK
 get_drive_info
-echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>"$RAID_DISK - $SPAREREBUILDINGMSG"</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_$SERVERTYPE"_"SERVERMASTER_$SERVERMASTER"_"ACTION_remove_DRIVE_$RAID_DISK"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>$REMOVEDISKMSG</span></a>
+echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>"$RAID_DISK - $"spare rebuilding""</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_$SERVERTYPE"_"SERVERMASTER_$SERVERMASTER"_"ACTION_remove_DRIVE_$RAID_DISK"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>$"Remove this disk from the raid."</span></a>
 </td></tr>"
 let COUNTER=$COUNTER+1
 done
@@ -296,8 +294,8 @@ RAID_DISK=${RAID_DISKS[$COUNTER]}
 ICON=$ICON3
 DRIVE=$RAID_DISK
 get_drive_info
-echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>"$RAID_DISK - $SPAREMSG"</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_$SERVERTYPE"_"SERVERMASTER_$SERVERMASTER"_"ACTION_remove_DRIVE_$RAID_DISK"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>$REMOVEDISKMSG</span></a>
+echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>"$RAID_DISK - $"spare""</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_$SERVERTYPE"_"SERVERMASTER_$SERVERMASTER"_"ACTION_remove_DRIVE_$RAID_DISK"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>$"Remove this disk from the raid."</span></a>
 </td></tr>"
 let COUNTER=$COUNTER+1
 done
@@ -312,8 +310,8 @@ RAID_DISK=${RAID_DISKS[$COUNTER]}
 ICON=$ICON4
 DRIVE=$RAID_DISK
 get_drive_info
-echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>"$RAID_DISK - $FAULTYSPAREMSG"</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_$SERVERTYPE"_"SERVERMASTER_$SERVERMASTER"_"ACTION_remove_DRIVE_$RAID_DISK"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>$REMOVEDISKMSG</span></a>
+echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>"$RAID_DISK - $"faulty spare""</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_$SERVERTYPE"_"SERVERMASTER_$SERVERMASTER"_"ACTION_remove_DRIVE_$RAID_DISK"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>$"Remove this disk from the raid."</span></a>
 </td></tr>"
 let COUNTER=$COUNTER+1
 done
@@ -329,14 +327,14 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 
 if [ ! -f /etc/mdadm/mdadm.conf ]
 then
-echo '$ERRORMSG14'
+echo '$"A software raid has not been set up on this server."'
 sleep 5
 exit
 fi
 
 if [ `grep -c ^ARRAY /etc/mdadm/mdadm.conf` = 0 ]
 then
-echo '$ERRORMSG14'
+echo '$"A software raid has not been set up on this server."'
 sleep 5
 exit
 fi
@@ -353,13 +351,13 @@ RAID_DEVICE=`blkid | grep $RAID_UUID | cut -d: -f1`
 if [ `mdadm --detail --scan | grep -c ARRAY` = 0 ]
 then
 echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\">'$RAIDUUIDMSG'</td><td>$RAID_UUID</td></tr>
-<tr><td>'$RAIDSTATEMSG'</td><td>'$ERRORMSG12'</td></tr>
-<tr><td>'$CUSTOMCOMMANDMSG'</td><td><form action=\"/cgi-bin/admin/software_raid_control2.cgi\" method=\"post\">
+<tr><td style=\"width: 180px;\">'$"Raid UUID"'</td><td>$RAID_UUID</td></tr>
+<tr><td>'$"Raid State"'</td><td>'$"The sofware raid is not running."'</td></tr>
+<tr><td>'$"Custom command"'</td><td><form action=\"/cgi-bin/admin/software_raid_control2.cgi\" method=\"post\">
 <input tabindex= \"1\" value=\"mdadm --assemble --scan\" name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'"_"SERVERMASTER_'$SERVERMASTER'"_"ACTION_custom_RAIDDEVICE_null_DRIVE_\" size=\"30\" type=\"text\"></form></td>
-<td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$CUSTOMCOMMANDHELPMSG'</span></a></td></tr>
+<td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$"Enter in a custom mdadm command to control your raid."'</span></a></td></tr>
 </tbody></table><br><br>
-<input value=\"'$SUBMITMSG'\" type=\"submit\"> <input value=\"'$RESETMSG'\" type=\"reset\">
+<input value=\"'$"Submit"'\" type=\"submit\"> <input value=\"'$"Reset"'\" type=\"reset\">
 "
 exit
 fi
@@ -405,7 +403,7 @@ get_drive_info
 
 if [ $SHOW_MENU = yes ]
 then
-echo "<b>'$SPAREDISKSMSG'</b><br><br><table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+echo "<b>'$"Spare Disks"'</b><br><br><table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
 <tbody>"
 SHOW_MENU=no
 SHOW_SUBMIT=yes
@@ -415,7 +413,7 @@ fi
 if [ $DRIVE_STATUS = ok ]
 then
 echo "<tr><td style=\"width: 180px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td>
-<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'"_"SERVERMASTER_'$SERVERMASTER'"_"ACTION_add_DRIVE_$DRIVE"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>'$ADD_DISKMSG'</span></a></td>
+<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'"_"SERVERMASTER_'$SERVERMASTER'"_"ACTION_add_DRIVE_$DRIVE"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>'$"Add this disk to a raid."'</span></a></td>
 </tr>"
 else
 echo "<tr><td style=\"width: 180px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td></tr>"
@@ -441,13 +439,13 @@ RAID_SIZE=`echo -e "$RAID_SIZE" | sed "s/ * / /g" | sed -n 2,2p | cut -d" " -f2`
 RAID_STATE=`mdadm --detail $RAID_DEVICE | grep "State :" | sed "s/ * / /g" | cut -d: -f2 | sed "s/^ //g"`
 REBUILDSTATUS=`mdadm --detail $RAID_DEVICE | grep "Rebuild Status :" | cut -d: -f2 | sed "s/^ //g"`
 
-echo "<b>"'$RAIDINFOMSG'"</b><br><br>"
+echo "<b>"'$"Raid Information"'"</b><br><br>"
 echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\">'$RAIDNAMEMSG'</td><td>$RAID_DEVICE</td></tr>
-<tr><td>'$RAIDUUIDMSG'</td><td>$RAID_UUID</td></tr>
-<tr><td>'$RAIDTYPEMSG'</td><td>$RAID_TYPE</td></tr>
-<tr><td>'$RAIDSIZEMSG'</td><td>$RAID_SIZE</td></tr>
-<tr><td>'$RAIDSTATEMSG'</td><td>$RAID_STATE</td></tr>
+<tr><td style=\"width: 180px;\">'$"Raid Name"'</td><td>$RAID_DEVICE</td></tr>
+<tr><td>'$"Raid UUID"'</td><td>$RAID_UUID</td></tr>
+<tr><td>'$"Raid Type"'</td><td>$RAID_TYPE</td></tr>
+<tr><td>'$"Raid Size"'</td><td>$RAID_SIZE</td></tr>
+<tr><td>'$"Raid State"'</td><td>$RAID_STATE</td></tr>
 "
 [ ! -z "$REBUILDSTATUS" ] && echo "<tr><td style=\"width: 180px;\">Rebuild Status</td><td>$REBUILDSTATUS</td></tr>"
 
@@ -461,8 +459,8 @@ RAID_DISK=${RAID_DISKS[$COUNTER]}
 ICON=$ICON3
 DRIVE=$RAID_DISK
 get_drive_info
-echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>"$RAID_DISK - '$ACTIVEMSG'"</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'"_"SERVERMASTER_'$SERVERMASTER'"_"ACTION_remove_DRIVE_$RAID_DISK"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>'$REMOVEDISKMSG'</span></a>
+echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>"$RAID_DISK - '$"active"'"</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'"_"SERVERMASTER_'$SERVERMASTER'"_"ACTION_remove_DRIVE_$RAID_DISK"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>'$"Remove this disk from the raid."'</span></a>
 </td></tr>"
 let COUNTER=$COUNTER+1
 done
@@ -477,8 +475,8 @@ RAID_DISK=${RAID_DISKS[$COUNTER]}
 ICON=$ICON3
 DRIVE=$RAID_DISK
 get_drive_info
-echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>"$RAID_DISK - '$SPAREREBUILDINGMSG'"</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'"_"SERVERMASTER_'$SERVERMASTER'"_"ACTION_remove_DRIVE_$RAID_DISK"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>'$REMOVEDISKMSG'</span></a>
+echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>"$RAID_DISK - '$"spare rebuilding"'"</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'"_"SERVERMASTER_'$SERVERMASTER'"_"ACTION_remove_DRIVE_$RAID_DISK"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>'$"Remove this disk from the raid."'</span></a>
 </td></tr>"
 let COUNTER=$COUNTER+1
 done
@@ -493,8 +491,8 @@ RAID_DISK=${RAID_DISKS[$COUNTER]}
 ICON=$ICON3
 DRIVE=$RAID_DISK
 get_drive_info
-echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>"$RAID_DISK - '$SPAREMSG'"</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'"_"SERVERMASTER_'$SERVERMASTER'"_"ACTION_remove_DRIVE_$RAID_DISK"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>'$REMOVEDISKMSG'</span></a>
+echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>"$RAID_DISK - '$"spare"'"</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'"_"SERVERMASTER_'$SERVERMASTER'"_"ACTION_remove_DRIVE_$RAID_DISK"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>'$"Remove this disk from the raid."'</span></a>
 </td></tr>"
 let COUNTER=$COUNTER+1
 done
@@ -509,8 +507,8 @@ RAID_DISK=${RAID_DISKS[$COUNTER]}
 ICON=$ICON4
 DRIVE=$RAID_DISK
 get_drive_info
-echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>"$RAID_DISK - '$FAULTYSPAREMSG'"</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'"_"SERVERMASTER_'$SERVERMASTER'"_"ACTION_remove_DRIVE_$RAID_DISK"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>'$REMOVEDISKMSG'</span></a>
+echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>"$RAID_DISK - '$"faulty spare"'"</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'"_"SERVERMASTER_'$SERVERMASTER'"_"ACTION_remove_DRIVE_$RAID_DISK"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>'$"Remove this disk from the raid."'</span></a>
 </td></tr>"
 let COUNTER=$COUNTER+1
 done
@@ -531,14 +529,14 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
 
 if [ ! -f /etc/mdadm/mdadm.conf ]
 then
-echo '$ERRORMSG14'
+echo '$"A software raid has not been set up on this server."'
 sleep 5
 exit
 fi
 
 if [ `grep -c ^ARRAY /etc/mdadm/mdadm.conf` = 0 ]
 then
-echo '$ERRORMSG14'
+echo '$"A software raid has not been set up on this server."'
 sleep 5
 exit
 fi
@@ -555,13 +553,13 @@ RAID_DEVICE=`blkid | grep $RAID_UUID | cut -d: -f1`
 if [ `mdadm --detail --scan | grep -c ARRAY` = 0 ]
 then
 echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\">'$RAIDUUIDMSG'</td><td>$RAID_UUID</td></tr>
-<tr><td>'$RAIDSTATEMSG'</td><td>'$ERRORMSG12'</td></tr>
-<tr><td>'$CUSTOMCOMMANDMSG'</td><td><form action=\"/cgi-bin/admin/software_raid_control2.cgi\" method=\"post\">
+<tr><td style=\"width: 180px;\">'$"Raid UUID"'</td><td>$RAID_UUID</td></tr>
+<tr><td>'$"Raid State"'</td><td>'$"The sofware raid is not running."'</td></tr>
+<tr><td>'$"Custom command"'</td><td><form action=\"/cgi-bin/admin/software_raid_control2.cgi\" method=\"post\">
 <input tabindex= \"1\" value=\"mdadm --assemble --scan\" name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'"_"SERVERMASTER_'$SERVERMASTER'"_"ACTION_custom_RAIDDEVICE_null_DRIVE_\" size=\"30\" type=\"text\"></form></td>
-<td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$CUSTOMCOMMANDHELPMSG'</span></a></td></tr>
+<td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$"Enter in a custom mdadm command to control your raid."'</span></a></td></tr>
 </tbody></table><br><br>
-<input value=\"'$SUBMITMSG'\" type=\"submit\"> <input value=\"'$RESETMSG'\" type=\"reset\">
+<input value=\"'$"Submit"'\" type=\"submit\"> <input value=\"'$"Reset"'\" type=\"reset\">
 "
 exit
 fi
@@ -607,7 +605,7 @@ get_drive_info
 
 if [ $SHOW_MENU = yes ]
 then
-echo "<b>'$SPAREDISKSMSG'</b><br><br><table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+echo "<b>'$"Spare Disks"'</b><br><br><table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
 <tbody>"
 SHOW_MENU=no
 SHOW_SUBMIT=yes
@@ -617,7 +615,7 @@ fi
 if [ $DRIVE_STATUS = ok ]
 then
 echo "<tr><td style=\"width: 180px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td>
-<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'"_"SERVERMASTER_'$SERVERMASTER'"_"ACTION_add_DRIVE_$DRIVE"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>'$ADD_DISKMSG'</span></a></td>
+<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'"_"SERVERMASTER_'$SERVERMASTER'"_"ACTION_add_DRIVE_$DRIVE"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>'$"Add this disk to a raid."'</span></a></td>
 </tr>"
 else
 echo "<tr><td style=\"width: 180px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td></tr>"
@@ -641,13 +639,13 @@ RAID_TYPE=`mdadm --query $RAID_DEVICE 2>/dev/null | cut -d" " -f3`
 RAID_SIZE=`df -h $RAID_DEVICE`
 RAID_SIZE=`echo -e "$RAID_SIZE" | sed "s/ * / /g" | sed -n 2,2p | cut -d" " -f2`
 RAID_STATE=`mdadm --detail $RAID_DEVICE | grep "State :" | sed "s/ * / /g" | cut -d: -f2 | sed "s/^ //g"`
-echo "<b>"'$RAIDINFOMSG'"</b><br><br>"
+echo "<b>"'$"Raid Information"'"</b><br><br>"
 echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\">'$RAIDNAMEMSG'</td><td>$RAID_DEVICE</td></tr>
-<tr><td>'$RAIDUUIDMSG'</td><td>$RAID_UUID</td></tr>
-<tr><td>'$RAIDTYPEMSG'</td><td>$RAID_TYPE</td></tr>
-<tr><td>'$RAIDSIZEMSG'</td><td>$RAID_SIZE</td></tr>
-<tr><td>'$RAIDSTATEMSG'</td><td>$RAID_STATE</td></tr>
+<tr><td style=\"width: 180px;\">'$"Raid Name"'</td><td>$RAID_DEVICE</td></tr>
+<tr><td>'$"Raid UUID"'</td><td>$RAID_UUID</td></tr>
+<tr><td>'$"Raid Type"'</td><td>$RAID_TYPE</td></tr>
+<tr><td>'$"Raid Size"'</td><td>$RAID_SIZE</td></tr>
+<tr><td>'$"Raid State"'</td><td>$RAID_STATE</td></tr>
 "
 
 #Get a list of active drives in the array
@@ -660,8 +658,8 @@ RAID_DISK=${RAID_DISKS[$COUNTER]}
 ICON=$ICON3
 DRIVE=$RAID_DISK
 get_drive_info
-echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>"$RAID_DISK - '$ACTIVEMSG'"</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'"_"SERVERMASTER_'$SERVERMASTER'"_"ACTION_remove_DRIVE_$RAID_DISK"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>'$REMOVEDISKMSG'</span></a>
+echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>"$RAID_DISK - '$"active"'"</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'"_"SERVERMASTER_'$SERVERMASTER'"_"ACTION_remove_DRIVE_$RAID_DISK"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>'$"Remove this disk from the raid."'</span></a>
 </td></tr>"
 let COUNTER=$COUNTER+1
 done
@@ -676,8 +674,8 @@ RAID_DISK=${RAID_DISKS[$COUNTER]}
 ICON=$ICON3
 DRIVE=$RAID_DISK
 get_drive_info
-echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>"$RAID_DISK - '$SPAREREBUILDINGMSG'"</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'"_"SERVERMASTER_'$SERVERMASTER'"_"ACTION_remove_DRIVE_$RAID_DISK"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>'$REMOVEDISKMSG'</span></a>
+echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>"$RAID_DISK - '$"spare rebuilding"'"</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'"_"SERVERMASTER_'$SERVERMASTER'"_"ACTION_remove_DRIVE_$RAID_DISK"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>'$"Remove this disk from the raid."'</span></a>
 </td></tr>"
 let COUNTER=$COUNTER+1
 done
@@ -692,8 +690,8 @@ RAID_DISK=${RAID_DISKS[$COUNTER]}
 ICON=$ICON3
 DRIVE=$RAID_DISK
 get_drive_info
-echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>"$RAID_DISK - '$SPAREMSG'"</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'"_"SERVERMASTER_'$SERVERMASTER'"_"ACTION_remove_DRIVE_$RAID_DISK"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>'$REMOVEDISKMSG'</span></a>
+echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>"$RAID_DISK - '$"spare"'"</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'"_"SERVERMASTER_'$SERVERMASTER'"_"ACTION_remove_DRIVE_$RAID_DISK"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>'$"Remove this disk from the raid."'</span></a>
 </td></tr>"
 let COUNTER=$COUNTER+1
 done
@@ -708,8 +706,8 @@ RAID_DISK=${RAID_DISKS[$COUNTER]}
 ICON=$ICON4
 DRIVE=$RAID_DISK
 get_drive_info
-echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>"$RAID_DISK - '$FAULTYSPAREMSG'"</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'"_"SERVERMASTER_'$SERVERMASTER'"_"ACTION_remove_DRIVE_$RAID_DISK"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>'$REMOVEDISKMSG'</span></a>
+echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>"$RAID_DISK - '$"faulty spare"'"</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'"_"SERVERMASTER_'$SERVERMASTER'"_"ACTION_remove_DRIVE_$RAID_DISK"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>'$"Remove this disk from the raid."'</span></a>
 </td></tr>"
 let COUNTER=$COUNTER+1
 done

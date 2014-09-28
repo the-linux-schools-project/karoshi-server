@@ -104,13 +104,11 @@ echo `date`: update_moodle - using archive "$ARCHIVENAME" by $REMOTE_USER from $
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/update_moodle ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/update_moodle
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 
@@ -163,37 +161,38 @@ fi
 ################################
 #Create backup folder
 ################################
-MESSAGE="$BACKUPPATHMSG $BACKUPFOLDER/$DAY-$MONTH-$YEAR/moodle"
+MESSAGE=''$"Backing up moodle to the following path:"' '$BACKUPFOLDER'/'$DAY'-'$MONTH'-'$YEAR'/moodle'
+
 show_message
 if [ $MOODLESERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $MOODLESERVER '
-[ -d '$BACKUPFOLDER'/'$DAY-$MONTH-$YEAR' ] && rm -f -R '$BACKUPFOLDER'/'$DAY-$MONTH-$YEAR'
-[ ! -d '$BACKUPFOLDER'/'$DAY-$MONTH-$YEAR' ] &&  mkdir -p '$BACKUPFOLDER'/'$DAY-$MONTH-$YEAR'
+[ -d '$"Back"UPFOLDER'/'$DAY-$MONTH-$YEAR' ] && rm -f -R '$"Back"UPFOLDER'/'$DAY-$MONTH-$YEAR'
+[ ! -d '$"Back"UPFOLDER'/'$DAY-$MONTH-$YEAR' ] &&  mkdir -p '$"Back"UPFOLDER'/'$DAY-$MONTH-$YEAR'
 '
 else
-[ -d $BACKUPFOLDER/$DAY-$MONTH-$YEAR ] && rm -f -R $BACKUPFOLDER/$DAY-$MONTH-$YEAR
-[ ! -d $BACKUPFOLDER/$DAY-$MONTH-$YEAR ] &&  mkdir -p $BACKUPFOLDER/$DAY-$MONTH-$YEAR
+[ -d $"Back"UPFOLDER/$DAY-$MONTH-$YEAR ] && rm -f -R $"Back"UPFOLDER/$DAY-$MONTH-$YEAR
+[ ! -d $"Back"UPFOLDER/$DAY-$MONTH-$YEAR ] &&  mkdir -p $"Back"UPFOLDER/$DAY-$MONTH-$YEAR
 fi
 ################################
 #Copy /var/www/html/moodle
 ################################
-MESSAGE="$MOVEMOODLEMSG"
+MESSAGE=$"Copying the current moodle folder."
 show_message
 if [ $MOODLESERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $MOODLESERVER '
-cp -f -R /var/www/html/moodle '$BACKUPFOLDER'/'$DAY'-'$MONTH'-'$YEAR'/moodle
+cp -f -R /var/www/html/moodle '$"Back"UPFOLDER'/'$DAY'-'$MONTH'-'$YEAR'/moodle
 COPYSTATUS=`echo $?`
 exit $COPYSTATUS
 '
 else
-cp -f -R /var/www/html/moodle $BACKUPFOLDER/$DAY-$MONTH-$YEAR/moodle
+cp -f -R /var/www/html/moodle $"Back"UPFOLDER/$DAY-$MONTH-$YEAR/moodle
 fi
 
 if [ `echo $?` != 0 ]
 then
-MESSAGE="$INSTALLERRORMSG"
+MESSAGE=$"There was a problem updating moodle."
 show_warning_message
 exit 103
 fi
@@ -201,17 +200,17 @@ fi
 #Backup /var/www/moodle-data
 ################################
 #Not backing up moodle data due to possible large size. Admins need to check moodle backup is in place.
-#MESSAGE=$BACKUPDATAMSG
+#MESSAGE=$"Backing up moodle data."
 #show_message
-#cp -f -R -v /var/www/moodle-data $BACKUPFOLDER/$DAY-$MONTH-$YEAR/
+#cp -f -R -v /var/www/moodle-data $"Back"UPFOLDER/$DAY-$MONTH-$YEAR/
 ################################
 #Backup moodle database
 ################################
-MESSAGE=$BACKUPDBMSG
+MESSAGE=$"Backing up the moodle database."
 show_message
 if [ $MOODLESERVER != `hostname-fqdn` ]
 then
-scp root@$MOODLESERVER:$BACKUPFOLDER/$DAY-$MONTH-$YEAR/moodle/config.php /opt/karoshi/.tempdata/config.php.$$
+scp root@$MOODLESERVER:$"Back"UPFOLDER/$DAY-$MONTH-$YEAR/moodle/config.php /opt/karoshi/.tempdata/config.php.$$
 MOODLEPASS=`grep CFG-\>dbpass /opt/karoshi/.tempdata/config.php.$$ | cut -d\' -f2`
 rm -f /opt/karoshi/.tempdata/config.php.$$
 if [ $MOODLEPASS'null' != null ]
@@ -223,13 +222,13 @@ ssh -x -o PasswordAuthentication=no $MOODLESERVER '
 echo ALTER DATABASE moodle DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci';' > /opt/karoshi/.tempdata/mysqlperms.sql
 mysql --user=moodle_user --password=$MOODLEPASS < /opt/karoshi/.tempdata/mysqlperms.sql
 rm -f /opt/karoshi/.tempdata/mysqlperms.sql
-mysqldump -u moodle_user --password="'$MOODLEPASS'" moodle > '$BACKUPFOLDER'/'$DAY-$MONTH-$YEAR'/moodle.sql
+mysqldump -u moodle_user --password="'$MOODLEPASS'" moodle > '$"Back"UPFOLDER'/'$DAY-$MONTH-$YEAR'/moodle.sql
 DUMPSTATUS=`echo $?`
 exit $DUMPSTATUS
 '
 fi
 else
-MOODLEPASS=`grep CFG-\>dbpass '$BACKUPFOLDER'/'$DAY'-'$MONTH'-'$YEAR'/moodle/config.php | cut -d\' -f2`
+MOODLEPASS=`grep CFG-\>dbpass '$"Back"UPFOLDER'/'$DAY'-'$MONTH'-'$YEAR'/moodle/config.php | cut -d\' -f2`
 if [ $MOODLEPASS'null' != null ]
 then
 #############################
@@ -238,13 +237,13 @@ then
 echo ALTER DATABASE moodle DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci';' > /opt/karoshi/.tempdata/mysqlperms.sql
 mysql --user=moodle_user --password=$MOODLEPASS < /opt/karoshi/.tempdata/mysqlperms.sql
 rm -f /opt/karoshi/.tempdata/mysqlperms.sql
-mysqldump -u moodle_user --password="$MOODLEPASS" moodle > $BACKUPFOLDER/$DAY-$MONTH-$YEAR/moodle.sql
+mysqldump -u moodle_user --password="$MOODLEPASS" moodle > $"Back"UPFOLDER/$DAY-$MONTH-$YEAR/moodle.sql
 fi
 fi
 
 if [ `echo $?` != 0 ]
 then
-MESSAGE="$INSTALLERRORMSG"
+MESSAGE=$"There was a problem updating moodle."
 show_warning_message
 exit 103
 fi
@@ -252,7 +251,7 @@ fi
 ################################
 #Extract new moodle archive
 ################################
-MESSAGE=$EXTRACTMOODLEMSG
+MESSAGE=$"Extracting the new moodle archive."
 show_message
 if [ $MOODLESERVER != `hostname-fqdn` ]
 then
@@ -277,19 +276,19 @@ fi
 
 if [ $EXTRACTSTATUS != 0 ]
 then
-MESSAGE="$INSTALLERRORMSG"
+MESSAGE=$"There was a problem updating moodle."
 show_warning_message
 #Restore old version
 if [ $MOODLESERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $MOODLESERVER '
 [ -d /var/www/html/moodle/ ] && rm -f -R /var/www/html/moodle/
-cp -f -R '$BACKUPFOLDER'/'$DAY'-'$MONTH'-'$YEAR'/moodle /var/www/html/moodle
+cp -f -R '$"Back"UPFOLDER'/'$DAY'-'$MONTH'-'$YEAR'/moodle /var/www/html/moodle
 exit 103
 '
 else
 [ -d /var/www/html/moodle/ ] && rm -f -R /var/www/html/moodle/
-cp -f -R  $BACKUPFOLDER/$DAY-$MONTH-$YEAR/moodle /var/www/html/moodle
+cp -f -R  $"Back"UPFOLDER/$DAY-$MONTH-$YEAR/moodle /var/www/html/moodle
 fi
 exit 103
 fi
@@ -297,13 +296,13 @@ fi
 ################################
 #Copy in config.php and themes
 ################################
-MESSAGE=$COPYCONFIGMSG
+MESSAGE=$"Copying in the existing moodle config file and any custom themes."
 show_message
 if [ $MOODLESERVER != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $MOODLESERVER '
-cp -f '$BACKUPFOLDER'/'$DAY'-'$MONTH'-'$YEAR'/moodle/config.php /var/www/html/moodle/
-for THEMEPATH in '$BACKUPFOLDER'/'$DAY'-'$MONTH'-'$YEAR'/moodle/theme/*
+cp -f '$"Back"UPFOLDER'/'$DAY'-'$MONTH'-'$YEAR'/moodle/config.php /var/www/html/moodle/
+for THEMEPATH in '$"Back"UPFOLDER'/'$DAY'-'$MONTH'-'$YEAR'/moodle/theme/*
 do
 THEMENAME=`basename $THEMEPATH`
 if [ ! -d /var/www/html/moodle/theme/$THEMENAME ]
@@ -317,8 +316,8 @@ fi
 done
 '
 else
-cp -f $BACKUPFOLDER/$DAY-$MONTH-$YEAR/moodle/config.php /var/www/html/moodle/
-for THEMEPATH in $BACKUPFOLDER/$DAY-$MONTH-$YEAR/moodle/theme/*
+cp -f $"Back"UPFOLDER/$DAY-$MONTH-$YEAR/moodle/config.php /var/www/html/moodle/
+for THEMEPATH in $"Back"UPFOLDER/$DAY-$MONTH-$YEAR/moodle/theme/*
 do
 THEMENAME=`basename $THEMEPATH`
 if [ ! -d /var/www/html/moodle/theme/$THEMENAME ]
@@ -335,7 +334,7 @@ fi
 ################################
 #Set permissions
 ################################
-MESSAGE=$SETPERMSMSG
+MESSAGE=$"Setting permissions on the new moodle installation."
 show_message
 if [ $MOODLESERVER != `hostname-fqdn` ]
 then
@@ -352,12 +351,12 @@ fi
 ################################
 #Visit admin page to complete the update
 ################################
-MESSAGE=$COMPLETEDMSG
+MESSAGE=$"The moodle files have now been updated."
 show_message
 #Visit admin page to complete update
 if [ $MOODLESERVER != `hostname-fqdn` ]
 then
-scp root@$MOODLESERVER:$BACKUPFOLDER/$DAY-$MONTH-$YEAR/moodle/config.php /opt/karoshi/.tempdata/config.php.$$
+scp root@$MOODLESERVER:$"Back"UPFOLDER/$DAY-$MONTH-$YEAR/moodle/config.php /opt/karoshi/.tempdata/config.php.$$
 MOODLEDOMAIN=`grep CFG-\>wwwroot /opt/karoshi/.tempdata/config.php.$$ | cut -d\' -f2`
 rm -f /opt/karoshi/.tempdata/config.php.$$
 else
@@ -366,7 +365,7 @@ fi
 
 if [ $MOODLEDOMAIN'null' != null ]
 then
-echo \<a href=\"$MOODLEDOMAIN/admin/\" target=\"_blank\"\>$VISITADMINPAGEMSG\</a\>\<br\>
+echo \<a href=\"$MOODLEDOMAIN/admin/\" target=\"_blank\"\>$"Click Here to visit the moodle admin page to complete the installation."\</a\>\<br\>
 fi
 echo '</div></body></html>'
 exit

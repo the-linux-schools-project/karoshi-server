@@ -27,19 +27,17 @@
 ########################
 #Language
 ########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/show_user_info ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/show_user_info
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #########################
 #Show page
 #########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE1'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Show User Information"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -173,7 +171,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -181,13 +179,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/change_user_info.cgi | cut -d' ' -f1`
@@ -197,42 +195,38 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/change_user_info.cgi | cut -d' ' -
 
 if [ $CN'null' = null ]
 then
-MESSAGE="$ERRORMSG3"
+MESSAGE=$"The common name cannot be blank."
 show_status
 fi
 if [ $SN'null' = null ]
 then
-MESSAGE="$ERRORMSG4"
+MESSAGE=$"The surname cannot be blank."
 show_status
 fi
 if [ $GIVENNAME'null' = null ]
 then
-MESSAGE="$ERRORMSG5"
+MESSAGE=$"The given name cannot be blank."
 show_status
 fi
 if [ $DISPLAYNAME'null' = null ]
 then
-MESSAGE="$ERRORMSG6"
+MESSAGE=$"The display name name cannot be blank."
 show_status
 fi
-#if [ $MAILLOCALADDRESS'null' = null ]
-#then
-#MESSAGE="$ERRORMSG7"
-#show_status
-#fi
+
 if [ $MAIL'null' = null ]
 then
-MESSAGE="$ERRORMSG8"
+MESSAGE=$"The mail address cannot be blank."
 show_status
 fi
 if [ $USERNAME'null' = null ]
 then
-MESSAGE="$ERRORMSG2"
+MESSAGE=$"The username must not be blank."
 show_status
 fi
 
 #Change information
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$CN:$SN:$GIVENNAME:$DISPLAYNAME:$EMPLOYEENUMBER:$MAILLOCALADDRESS:$MAIL" | sudo -H /opt/karoshi/web_controls/exec/change_user_info
-MESSAGE="$USERNAME - $COMPLETEDMSG"
+MESSAGE="$USERNAME - $"information changed.""
 show_status
 exit

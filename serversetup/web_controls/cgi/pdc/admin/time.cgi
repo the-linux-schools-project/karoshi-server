@@ -35,19 +35,17 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/time ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/time
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Set Server Time"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -117,7 +115,7 @@ done
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo "<div id="actionbox">"'<div class="sectiontitle">'$TITLE'</div><br>'
+echo "<div id="actionbox">"'<div class="sectiontitle">'$"Set Server Time"'</div><br>'
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
@@ -132,7 +130,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -140,13 +138,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -155,103 +153,103 @@ fi
 #Check to see that hours is not blank
 if [ $HOUR'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"You cannot leave the date or time blank."
 show_status
 fi
 #Check to see that minutes is not blank
 if [ $MINUTES'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"You cannot leave the date or time blank."
 show_status
 fi
 #Check to see that SECS is not blank
 if [ $SECS'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"You cannot leave the date or time blank."
 show_status
 fi
 if [ $DAY'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"You cannot leave the date or time blank."
 show_status
 fi
 if [ $MONTH'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"You cannot leave the date or time blank."
 show_status
 fi
 if [ $YEAR'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"You cannot leave the date or time blank."
 show_status
 fi
 if [ $SERVERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG8
+MESSAGE=$"You must choose a server."
 show_status
 fi
 
 #Check that the month is in range
 if [ $MONTH -gt 12 ] || [ $MONTH -lt 1 ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"You have not entered a correct month."
 show_status
 fi
 
 #Check that the day is in range
 if [ $DAY -gt 31 ] || [ $DAY -lt 1 ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"You have not entered a correct day."
 show_status
 fi
 
 #Check that the year is in range
 if [ $YEAR -gt 2200 ] || [ $YEAR -lt 2009 ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"You have not entered a correct year."
 show_status
 fi
 
 #Check that the hour is in range
 if [ $HOUR -gt 23 ] || [ $HOUR -lt 0 ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"You have not entered a correct hour."
 show_status
 fi
 
 #Check that the minutes is in range
 if [ $MINUTES -gt 59 ] || [ $MINUTES -lt 0 ]
 then
-MESSAGE=$ERRORMSG6
+MESSAGE=$"You have not entered the correct minutes."
 show_status
 fi
 
 #Check that the SECS is in range
 if [ $SECS -gt 59 ] || [ $SECS -lt 0 ]
 then
-MESSAGE=$ERRORMSG7
+MESSAGE=$"You have not entered the correct seconds."
 show_status
 fi
 
 #Extra day check
 if [ $MONTH = 02 ] && [ $DAY -gt 28 ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"You have not entered a correct day."
 fi
 
 if [ $MONTH = 04 ] && [ $DAY -gt 30 ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"You have not entered a correct day."
 fi
 
 if [ $MONTH = 09 ] && [ $DAY -gt 30 ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"You have not entered a correct day."
 fi
 
 if [ $MONTH = 11 ] && [ $DAY -gt 30 ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"You have not entered a correct day."
 fi
 
 if [ `echo $MESSAGE'null' | sed 's/ //g'` != null ]
@@ -262,14 +260,14 @@ fi
 #Check to see that SERVERNAME is not blank
 if [ $SERVERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"You cannot leave the date or time blank."
 show_status
 fi
 
 #Check to see that SERVERTYPE is not blank
 if [ $SERVERTYPE'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"You have not entered a correct day."
 show_status
 fi
 

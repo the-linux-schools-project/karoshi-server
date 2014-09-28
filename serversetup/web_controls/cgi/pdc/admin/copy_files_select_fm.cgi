@@ -27,15 +27,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/copy_files ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/copy_files
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -48,7 +46,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE2'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Copy Files - Select"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -57,7 +55,7 @@ echo '
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox">
 <form action="/cgi-bin/admin/copy_files_select.cgi" method="post"><span style="font-weight: bold;">
-'$TITLE2'</span><br>
+'$"Copy Files - Select"'</span><br>
   <br>
   <br>
 '
@@ -65,11 +63,11 @@ echo '<div id="actionbox">
 if [ `ls -1 /var/www/karoshi/web_upload | wc -l` = 0 ]
 then
 echo '
-'$ERRORMSG4'</div></div></body></html>
+'$"No files have been uploaded to copy to user accounts."'</div></div></body></html>
 '
 else
 echo '
-'$GROUPMSG'
+'$"Please select the group that you want to copy the data to."'
   <br>
   <br>
         <select name="_GROUP_">
@@ -97,7 +95,7 @@ echo '
         </select>
   <br>
   <br>
-  <input value="'$SUBMITMSG'" class="button" type="submit">
+  <input value="'$"Submit"'" class="button" type="submit">
 </form>
 </div>
 </div></body>

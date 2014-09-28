@@ -31,15 +31,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/server_info ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/server_info
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -52,7 +50,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Server Information"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script type="text/javascript">
 <!--
@@ -122,40 +120,40 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+	<span>'$"Server Information"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">'
 else
-echo '<div class="sectiontitle">'$TITLE'</div><br>'
+echo '<div class="sectiontitle">'$"Server Information"'</div><br>'
 fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
       <tr>
-        <td style="width: '$WIDTH'px;">'$HARDDISKMSG'</td>
+        <td style="width: '$WIDTH'px;">'$"Disk drives"'</td>
         <td><input name="_INFO_" value="harddrive" checked="checked" type="radio"></td>
-<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$HELPICON'"><span>'$HELPMSG1'</span></a></td>
+<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$HELPICON'"><span>'$"Show information about the hard disk drives on the selected servers."'</span></a></td>
       </tr>
       <tr>
-        <td>'$CPUMSG'</td>
+        <td>'$"CPU usage"'</td>
         <td><input name="_INFO_" value="cpu" type="radio"></td>
-<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$HELPICON'"><span>'$HELPMSG2'</span></a></td>
+<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$HELPICON'"><span>'$"Show cpu information on the selected servers."'</span></a></td>
       </tr>
       <tr>
-        <td>'$KERNELMSG'</td>
+        <td>'$"Kernel"'</td>
         <td><input name="_INFO_" value="kernel" type="radio"></td>
-<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$HELPICON'"><span>'$HELPMSG3'</span></a></td>
+<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$HELPICON'"><span>'$"Show the running kernel for the selected servers."'</span></a></td>
       </tr>
       <tr>
-        <td>'$SAMBAMSG'</td>
+        <td>'$"Samba Status"'</td>
         <td><input name="_INFO_" value="samba" type="radio"></td>
-<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$HELPICON'"><span>'$HELPMSG4'</span></a></td>
+<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$HELPICON'"><span>'$"Show the samba status for the selected servers."'</span></a></td>
       </tr></tbody></table><br><br>'
 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE all "$ACTIONMSG"
+/opt/karoshi/web_controls/show_servers $MOBILE all $"Show server info"
 
 [ $MOBILE = no ] && echo '</div>'
 

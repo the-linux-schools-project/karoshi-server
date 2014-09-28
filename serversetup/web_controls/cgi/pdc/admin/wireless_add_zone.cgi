@@ -34,20 +34,18 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/wireless_add_zone ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/wireless_add_zone
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE2'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add Wireless Zone"2'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -114,7 +112,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -122,13 +120,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -137,13 +135,13 @@ fi
 
 if [ $CLIENTNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The Access name cannot be blank."
 show_status
 fi
 
 if [ $TCPIP'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The TCPIP range cannot be blank."
 show_status
 fi
 
@@ -167,13 +165,13 @@ fi
 #Check key length
 if [ `echo $WPAKEY | wc -c` -le 10 ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The key you have entered is not long enough."
 show_status
 fi
 
 if [ `echo $WPAKEY | wc -c` -gt 64 ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The key you have entered is too long."
 show_status
 fi
 
@@ -184,9 +182,9 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/wireless_add_zone.cgi | cut -d' ' 
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$CLIENTNAME:$TCPIP:$WPAKEY:" | sudo -H /opt/karoshi/web_controls/exec/wireless_add_zone
 if [ `echo $?` = 101 ]
 then
-MESSAGE=`echo $PROBLEMMSG $LOGMSG`
+MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`
 else
-MESSAGE=`echo $WPAKEY '\n\n' $COMPLETEDMSG`
+MESSAGE=`echo $WPAKEY '\n\n' $"This secret key has been added. Please ensure that it is also added to your wireless access points."`
 fi
 show_status
 exit

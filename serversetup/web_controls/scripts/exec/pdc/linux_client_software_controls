@@ -50,16 +50,16 @@ then
 echo `date`: linux_client_software_controls - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
-VERSION=`echo $* | cut -s -d: -f4`
-SOFTWARE=`echo $* | cut -s -d: -f5`
-UPDATES=`echo $* | cut -s -d: -f6`
-AUTO=`echo $* | cut -s -d: -f7`
-GRAPHICS=`echo $* | cut -s -d: -f8`
-RESTRICTED=`echo $* | cut -s -d: -f9`
-FIRMWARE=`echo $* | cut -s -d: -f10`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
+VERSION=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
+SOFTWARE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5`
+UPDATES=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f6`
+AUTO=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f7`
+GRAPHICS=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f8`
+RESTRICTED=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f9`
+FIRMWARE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f10`
 
 ########################
 #Check data

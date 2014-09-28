@@ -67,14 +67,12 @@ fi
 [ -d /var/www/html ] || mkdir -p /var/www/html
 [ ! -e /opt/karoshi/.tempdata/mysqlpasswordstatus ] || rm -f /opt/karoshi/.tempdata/mysqlpasswordstatus
 
-
-LANGCHOICE=englishuk
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/xibo/setupxibo ] || LANGCHOICE=englishuk
-source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/xibo/setupxibo
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 source /opt/karoshi/server_network/domain_information/domain_name
 
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+TEXTDOMAIN=karoshi-server
 
 #############################
 #Ensure that apache and mysql are running on boot
@@ -86,7 +84,7 @@ source /opt/karoshi/server_network/domain_information/domain_name
 #####################
 #Create xibo mysql password for the new database
 #####################
-echo '<li>'$MYSQLMSG'</li><br>'
+echo '<li>'$"Creating the Xibo database in mysql"'</li><br>'
 RANGE=61
 COUNTER=1
 while [ $COUNTER -lt 16 ]
@@ -148,7 +146,7 @@ fi
 #Extract xibo
 ###########################
 cd /var/www/html/
-echo '<li>'$EXTRACTXiboMSG'</li><br>'
+echo '<li>'$"Extracting Xibo"'</li><br>'
 [ -d /var/www/html/xibo ] && rm -f -R /var/www/html/xibo
 tar -xzf /opt/karoshi/serversetup/modules/xibo/xibo.tar.gz
 
@@ -160,7 +158,7 @@ tar -xzf /opt/karoshi/serversetup/modules/xibo/xibo-library.tar.gz
 
 ln -s /home/xibo-library /var/www/xibo-library
 
-echo '<li>'$SETXiboPERMS'</li><br>'
+echo '<li>'$"Setting permissions"'</li><br>'
 chmod 0640 -R /var/www/html/xibo
 chmod u+X,g+X -R /var/www/html/xibo
 chmod 0750 -R /home/xibo-library
@@ -212,7 +210,7 @@ fi
 ######################
 if [ $MOD_SHOREWALL = yes ]
 then
-echo '<li>'$RESTARTSWMSG'</li><br>'
+echo '<li>'$"Restarting shorewall"'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
@@ -233,7 +231,7 @@ fi
 #########################
 #Show completed message
 ###########################
-echo '<br>'$ACCESSMSG - '<a href="http://'$ALIAS.$REALM'/xibo" target="_blank">'$ALIAS.$REALM'/xibo</a>'
-echo '<br>'$ACCESSMSG2:xibo_admin - $PASSWORDMSG: admin
-echo '<br><p style="font-weight:bold; font-size:20px;">'$COMPLETEDMSG3'</p><br>'
+echo '<br>'$"Xibo has been installed and can be accessed from" - '<a href="http://'$ALIAS.$REALM'/xibo" target="_blank">'$ALIAS.$REALM'/xibo</a>'
+echo '<br>'$"username":xibo_admin - $"password": admin
+echo '<br><p style="font-weight:bold; font-size:20px;">'$"Please login and change this password immediately."'</p><br>'
 exit

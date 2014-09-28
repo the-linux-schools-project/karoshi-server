@@ -50,10 +50,10 @@ then
 	echo `date`: exam_accounts_create - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1 | tr -cd 'A-Za-z0-9\._:\-'`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2 | tr -cd 'A-Za-z0-9\._:\-'`
-REMOTE_MD5=`echo $* | cut -s -d: -f3 | tr -cd 'A-Za-z0-9\._:\-'`
-NEWEXAMS=`echo $* | cut -s -d: -f4 | tr -cd 'A-Za-z0-9\._:\-'`
+REMOTE_USER=`echo $*  | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
+NEWEXAMS=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
 ########################
 #Check data
 ########################
@@ -85,13 +85,11 @@ fi
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/exam_accounts_create ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/exam_accounts_create
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 source /opt/karoshi/server_network/domain_information/domain_name
 
 #Get current number of exam accounts
@@ -99,7 +97,7 @@ COUNTER=`ls -1 /home/users/exams/ | wc -l`
 let EXAMSTOTAL=$COUNTER+$NEWEXAMS
 let COUNTER=$COUNTER+1
 echo '<table class="standard" style="text-align: left; width: 600px;" border="0" cellpadding="2" cellspacing="2"><tbody>'
-echo '<tr><td style="width: 300px;"><b>'$CREATINGMSG'</b></td><td style="width: 300px;"><b>'$HOMEPATHMSG'</b></td></tr>'
+echo '<tr><td style="width: 300px;"><b>'$"New Exam Account"'</b></td><td style="width: 300px;"><b>'$"Homepath"'</b></td></tr>'
 
 while [ $COUNTER -le $EXAMSTOTAL ]
 do

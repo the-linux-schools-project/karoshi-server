@@ -31,15 +31,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/group_membership ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/group_membership
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -52,7 +50,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE1'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Group Membership"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script type="text/javascript" src="/all/js/jquery.js"></script>
 <script type="text/javascript" src="/all/js/script.js"></script>
@@ -98,15 +96,15 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE1'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+	<span>'$"Group Membership"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div>
 '
 else
 echo '
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr>
-<td style="vertical-align: top;"><div class="sectiontitle">'$TITLE1'</div></td>
+<td style="vertical-align: top;"><div class="sectiontitle">'$"Group Membership"'</div></td>
 </tr></tbody></table>
 <br></div><div id="infobox">'
 fi
@@ -115,16 +113,16 @@ if [ $MOBILE = yes ]
 then
 echo '<div id="mobileactionbox">
 <div id="suggestions"></div>
-'$USERNAMEMSG'<br>
+'$"Username"'<br>
 <input tabindex= "1" style="width: 160px;" name="____USERNAME____" 
  value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br>
 '
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$USERNAMEMSG'</td><td><div id="suggestions"></div>
+<tr><td style="width: 180px;">'$"Username"'</td><td><div id="suggestions"></div>
 <input tabindex= "1" style="width: 200px;" name="____USERNAME____" 
  value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Membership"><img class="images" alt="" src="/images/help/info.png"><span>'$USERNAMEHELP'</span></a></td></tr>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Membership"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please enter in the username you want to change the groups for."'</span></a></td></tr>
 </tbody></table>'
 fi
 
@@ -134,7 +132,7 @@ echo '</div></div><div id="submitbox">'
 else
 echo '<br>'
 fi
-echo '<input value="'$SUBMITMSG'" class="button" type="submit"></div>'
+echo '<input value="'$"Submit"'" class="button" type="submit"></div>'
 [ $MOBILE = no ] && echo '</div>'
 echo '</form></div></body></html>'
 exit

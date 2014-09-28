@@ -93,10 +93,6 @@ echo `date`: quotas_view_over_usage - access denied to $REMOTE_USER from $REMOTE
 exit 101
 fi
 echo `date`: quotas_view_over_usage - viewing by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/file/quotas_view_usage ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/file/quotas_view_usage
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 #Check for federated servers
 FEDERATED_SERVERS=no

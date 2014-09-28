@@ -30,19 +30,17 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_change_language ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_change_language
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE2'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Change Global Language"'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -56,14 +54,14 @@ END_POINT=5
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = LANGCHOICEcheck ]
-then
-let COUNTER=$COUNTER+1
-LANGCHOICE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = LANGCHOICEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		LANGCHOICE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -78,50 +76,45 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
-show_status
+	MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that LANGCHOICE is not blank
-if [ $LANGCHOICE'null' = null ]
+if [ -z "$LANGCHOICE" ]
 then
-MESSAGE=$ERRORMSG1
-show_status
+	MESSAGE=$"The language choice must not be blank."
+	show_status
 fi
-#Check that language choice folder exists
-if [ ! -d /opt/karoshi/web_controls/language/$LANGCHOICE ]
-then
-MESSAGE=$ERRORMSG2
-show_status
-fi
+
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_change_global_language2.cgi | cut -d' ' -f1`
 #Change language
 sudo -H /opt/karoshi/web_controls/exec/remote_management_change_global_language $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LANGCHOICE
 LANGSTATUS=`echo $?`
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_change_language ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_change_language
+TEXTDOMAIN=karoshi-server
+
 if [ $LANGSTATUS = 101 ]
 then
-MESSAGE=`echo $ERRORMSG3 $LOGMSG`
+	MESSAGE=`echo $"There was a problem changing the language." $"Please check the karoshi web administration logs for more details."`
 else
-MESSAGE=$COMPLETEDMSG2
+	MESSAGE=$"The global language preference has been saved."
 fi
 show_status
 exit

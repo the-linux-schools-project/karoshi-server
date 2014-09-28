@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/reverseproxy/setupreverseproxy ] || LANGCHOICE=englishuk
-source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/reverseproxy/setupreverseproxy
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
@@ -48,7 +46,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Setup Reverse Proxy"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -93,7 +91,7 @@ exit
 #Check to see that servername is not blank
 if [ $SERVERNAME'null' = null ]
 then
-	MESSAGE=$ERRORMSG1
+	MESSAGE=$"The servername cannot be blank."
 	show_status
 fi
 
@@ -103,18 +101,18 @@ source /opt/karoshi/server_network/domain_information/domain_name
 
 echo '<form name="combobox" action="/cgi-bin/admin/module_reverse_proxy.cgi" method="post"><div id="actionbox">
 
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr><td style=vertical-align: top;"><div class="sectiontitle">'$TITLE' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reverse_Proxy_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$ALIASHELP'</span></a>
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr><td style=vertical-align: top;"><div class="sectiontitle">'$"Setup Reverse Proxy"' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reverse_Proxy_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"You will need to choose an alias for this server for web access. Either enter in a custom alias or choose one from the dropdown list."'</span></a>
 </td></tr></tbody></table><br>
 
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
-<b>'$DESCRIPTIONMSG'</b><br><br>
-'$HELPMSG1'<br><br>
-<b>'$PARAMETERSMSG'</b><br><br>
+<b>'$"Description"'</b><br><br>
+'$"The reverse proxy allows incoming web traffic to be redirected to other servers on your network. The redirect is based on the trailing slash and folder name after the end of the domain of your site. Web sites to be redirected are added in on the web management ( web - add reverse proxy )."'<br><br>
+<b>'$"Parameters"'</b><br><br>
 <table class="standard" style="text-align: left; height: 15px;" border="0" cellpadding="2" cellspacing="0">
-<tbody><tr><td valign="middle" style="width: 180px;">'$DOMAINMSG'</td><td>'
+<tbody><tr><td valign="middle" style="width: 180px;">'$"Reverse Proxy Domain"'</td><td>'
 
-echo '<input type="text" name="_ALIAS_" style="width: 200px;" value="" size="10"></td><td valign="middle">.'$REALM'</td><td valign="middle"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reverse_Proxy_Server#Applying_the_Reverse_Proxy_Module"><img class="images" alt="" src="/images/help/info.png"><span>'$ALIASHELP'</span></a></td></tr>
+echo '<input type="text" name="_ALIAS_" style="width: 200px;" value="" size="10"></td><td valign="middle">.'$REALM'</td><td valign="middle"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reverse_Proxy_Server#Applying_the_Reverse_Proxy_Module"><img class="images" alt="" src="/images/help/info.png"><span>'$"You will need to choose an alias for this server for web access. Either enter in a custom alias or choose one from the dropdown list."'</span></a></td></tr>
 
 <tr><td></td><td><select name="_ALIASLIST_" style="width: 200px;" size="1" onchange="document.combobox._ALIAS_.value = document.combobox._ALIASLIST_.options[document.combobox._ALIASLIST_.selectedIndex].value;document.combobox._ALIASLIST_.value=&#39;&#39;">
 <option value="" selected="selected"></option>'
@@ -124,12 +122,12 @@ echo '<input type="text" name="_ALIAS_" style="width: 200px;" value="" size="10"
 if [ -f /opt/karoshi/server_network/aliases/$SERVERNAME ]
 then
 #Show any custom aliases that have been assigned
-echo '<option style="color:black ; font-weight:bold" value="">'$ALIASMSG1'</option>'
+echo '<option style="color:black ; font-weight:bold" value="">'$"Assigned Aliases"'</option>'
 for CUSTOM_ALIAS in `cat /opt/karoshi/server_network/aliases/$SERVERNAME`
 do
 echo '<option style="color:green">'$CUSTOM_ALIAS'</option>'
 done
-echo '<option style="color:black ; font-weight:bold" value="">'$ALIASMSG2'</option>'
+echo '<option style="color:black ; font-weight:bold" value="">'$"Unassigned Aliases"'</option>'
 fi
 
 #Get a set of available aliases to check
@@ -142,6 +140,6 @@ do
 	[ `nslookup www$COUNTER.$REALM 127.0.0.1 | grep -c ^Name:` = 0 ] && echo '<option>www'$COUNTER'</option>'
 	let COUNTER=$COUNTER+1
 done
-echo '</select></td></tr></tbody></table><br></div><div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit"></div></form></div></body></html>'
+echo '</select></td></tr></tbody></table><br></div><div id="submitbox"><input value="'$"Submit"'" class="button" type="submit"></div></form></div></body></html>'
 exit
 

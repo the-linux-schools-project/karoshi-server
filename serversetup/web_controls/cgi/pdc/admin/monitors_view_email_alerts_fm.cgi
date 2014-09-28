@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/monitors_email_alert ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/monitors_email_alert
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -47,7 +45,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE2'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"View E-Mail - SMS Alerts"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -65,22 +63,22 @@ FILE=`echo $DATA | cut -s -d_ -f7`
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<div id="actionbox"><table class="standard" style="text-align: left; " border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="vertical-align: top;"><b>'$TITLE2'</b></td>
+<tr><td style="vertical-align: top;"><b>'$"View E-Mail - SMS Alerts"'</b></td>
 <td style="vertical-align: top;">
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Viewing_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG7'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Viewing_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"The following accounts will be sent details of any network failures."'</span></a>
 </td>
 <td style="vertical-align: top;">
-<a href="/cgi-bin/admin/monitors_add_email_alert_fm.cgi"><input class="button" type="button" name="" value="'$ADDEMAILALERTMSG'"></a>
+<a href="/cgi-bin/admin/monitors_add_email_alert_fm.cgi"><input class="button" type="button" name="" value="'$"Add E-Mail Alert"'"></a>
 </td>
 <td style="vertical-align: top;">
-<a href="/cgi-bin/admin/mon_status.cgi"><input class="button" type="button" name="" value="'$NETWORKSTATUSMSG'"></a>
+<a href="/cgi-bin/admin/mon_status.cgi"><input class="button" type="button" name="" value="'$"Network Status"'"></a>
 </td>
 </tr></tbody></table>
 <br>'
 
 echo '<table class="standard" style="text-align: left; " border="0" cellpadding="2" cellspacing="2">
     <tbody>
-<tr><td style="width: 120px;"><b>'$CONTACTNAMEMSG'</b></td><td style="width: 180px;"><b>'$EMAILMSG'</b></td><td style="width: 180px;"><b>'$SENDERMSG'</b></td><td style="width: 140px;"><b>'$MAILSERVERMSG'</b></td><td><b>'$ENABLEDMSG'</b></td><td><b>'$EDITTITLE'</b></td><td><b>'$DELETETITLE'</b></td><td><b>'$TESTMSG'</b></td></tr>'
+<tr><td style="width: 120px;"><b>'$"Contact Name"'</b></td><td style="width: 180px;"><b>'$"E-Mail"'</b></td><td style="width: 180px;"><b>'$"Sender"'</b></td><td style="width: 140px;"><b>'$"E-Mail Server"'</b></td><td><b>'$"Enabled"'</b></td><td><b>'$"Edit"'</b></td><td><b>'$"Delete"'</b></td><td><b>'$"Test"'</b></td></tr>'
 
 #Enabled alerts
 if [ -d /opt/karoshi/server_network/mon/email_alerts/ ]
@@ -95,16 +93,16 @@ source /opt/karoshi/server_network/mon/email_alerts/$EMAILALERT
 echo '<tr><td style="vertical-align: top;">'$EMAILALERT'</td><td style="vertical-align: top;">'$EMAILADDRESS'</td><td style="vertical-align: top;">'$SENDER'</td><td style="vertical-align: top;">'$EMAILSERVER'</td>
 
 <td><form action="/cgi-bin/admin/monitors_disable_email_alert.cgi" method="post">
-<a class="info" href="javascript:void(0)"><input name="_NAME_'$EMAILALERT'_" type="image" class="images" src="/images/submenus/system/enable_monitor.png" value=""><span>'$DISABLEMSG' '$EMAILALERT'</span></a></form></td>
+<a class="info" href="javascript:void(0)"><input name="_NAME_'$EMAILALERT'_" type="image" class="images" src="/images/submenus/system/enable_monitor.png" value=""><span>'$"Disable"' '$EMAILALERT'</span></a></form></td>
 
 <td><form action="/cgi-bin/admin/monitors_add_email_alert_fm.cgi" method="post">
-<a class="info" href="javascript:void(0)"><input name="_NAME_'$EMAILALERT'_EMAILTO_'$EMAILADDRESS'_EMAILFROM_'$SENDER'_MAILSERVER_'$EMAILSERVER'_" type="image" class="images" src="/images/submenus/system/edit.png" value=""><span>'$EDITTITLE' '$EMAILALERT'</span></a></form></td>
+<a class="info" href="javascript:void(0)"><input name="_NAME_'$EMAILALERT'_EMAILTO_'$EMAILADDRESS'_EMAILFROM_'$SENDER'_MAILSERVER_'$EMAILSERVER'_" type="image" class="images" src="/images/submenus/system/edit.png" value=""><span>'$"Edit"' '$EMAILALERT'</span></a></form></td>
 
 <td><form action="/cgi-bin/admin/monitors_delete_email_alert.cgi" method="post">
-<a class="info" href="javascript:void(0)"><input name="_NAME_'$EMAILALERT'_" type="image" class="images" src="/images/submenus/system/delete.png" value=""><span>'$DELETETITLE' '$EMAILALERT'</span></a></form></td>
+<a class="info" href="javascript:void(0)"><input name="_NAME_'$EMAILALERT'_" type="image" class="images" src="/images/submenus/system/delete.png" value=""><span>'$"Delete"' '$EMAILALERT'</span></a></form></td>
 
 <td><form action="/cgi-bin/admin/monitors_test_email_alert.cgi" method="post">
-<a class="info" href="javascript:void(0)"><input name="_NAME_'$EMAILALERT'_" type="image" class="images" src="/images/submenus/system/test.png" value=""><span>'$TESTMSG' '$EMAILALERT'</span></a></form></td>
+<a class="info" href="javascript:void(0)"><input name="_NAME_'$EMAILALERT'_" type="image" class="images" src="/images/submenus/system/test.png" value=""><span>'$"Test"' '$EMAILALERT'</span></a></form></td>
 
 </tr>'
 done
@@ -124,16 +122,16 @@ source /opt/karoshi/server_network/mon/email_alerts_disabled/$EMAILALERT
 echo '<tr><td style="vertical-align: top;">'$EMAILALERT'</td><td style="vertical-align: top;">'$EMAILADDRESS'</td><td style="vertical-align: top;">'$SENDER'</td><td style="vertical-align: top;">'$EMAILSERVER'</td>
 
 <td><form action="/cgi-bin/admin/monitors_disable_email_alert.cgi" method="post">
-<a class="info" href="javascript:void(0)"><input name="_NAME_'$EMAILALERT'_" type="image" class="images" src="/images/submenus/system/disable_monitor.png" value=""><span>'$ENABLEMSG' '$EMAILALERT'</span></a></form></td>
+<a class="info" href="javascript:void(0)"><input name="_NAME_'$EMAILALERT'_" type="image" class="images" src="/images/submenus/system/disable_monitor.png" value=""><span>'$"Enable"' '$EMAILALERT'</span></a></form></td>
 
 <td><form action="/cgi-bin/admin/monitors_add_email_alert_fm.cgi" method="post">
-<a class="info" href="javascript:void(0)"><input name="_NAME_'$EMAILALERT'_EMAILTO_'$EMAILADDRESS'_EMAILFROM_'$SENDER'_MAILSERVER_'$EMAILSERVER'_" type="image" class="images" src="/images/submenus/system/edit.png" value=""><span>'$EDITTITLE' '$EMAILALERT'</span></a></form></td>
+<a class="info" href="javascript:void(0)"><input name="_NAME_'$EMAILALERT'_EMAILTO_'$EMAILADDRESS'_EMAILFROM_'$SENDER'_MAILSERVER_'$EMAILSERVER'_" type="image" class="images" src="/images/submenus/system/edit.png" value=""><span>'$"Edit"' '$EMAILALERT'</span></a></form></td>
 
 <td><form action="/cgi-bin/admin/monitors_delete_email_alert.cgi" method="post">
-<a class="info" href="javascript:void(0)"><input name="_NAME_'$EMAILALERT'_" type="image" class="images" src="/images/submenus/system/delete.png" value=""><span>'$DELETETITLE' '$EMAILALERT'</span></a></form></td>
+<a class="info" href="javascript:void(0)"><input name="_NAME_'$EMAILALERT'_" type="image" class="images" src="/images/submenus/system/delete.png" value=""><span>'$"Delete"' '$EMAILALERT'</span></a></form></td>
 
 <td><form action="/cgi-bin/admin/monitors_test_email_alert.cgi" method="post">
-<a class="info" href="javascript:void(0)"><input name="_NAME_'$EMAILALERT'_" type="image" class="images" src="/images/submenus/system/test.png" value=""><span>'$TESTMSG' '$EMAILALERT'</span></a></form></td>
+<a class="info" href="javascript:void(0)"><input name="_NAME_'$EMAILALERT'_" type="image" class="images" src="/images/submenus/system/test.png" value=""><span>'$"Test"' '$EMAILALERT'</span></a></form></td>
 
 </tr>'
 done

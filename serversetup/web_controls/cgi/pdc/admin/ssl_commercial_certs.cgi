@@ -27,19 +27,17 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/ssl_certs ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/ssl_certs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE1'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Create Commercial Certificate"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -48,9 +46,6 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%+*' | sed 's/___/TRIPLESCORED/g' | sed 's/_/
 #########################
 #Assign data to variables
 #########################
-
-BACKMSG=Back
-
 
 END_POINT=26
 #Assign SERVERNAME
@@ -248,7 +243,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-	export MESSAGE=$HTTPS_ERROR
+	export MESSAGE=$"You must access this page via https."
 	show_status
 fi
 #########################
@@ -256,13 +251,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-	MESSAGE=$ACCESS_ERROR1
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-	MESSAGE=$ACCESS_ERROR1
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 #########################
@@ -272,7 +267,7 @@ fi
 
 if [ -z "$SERVERNAME" ]
 then
-	MESSAGE=$ERRORMSG1
+	MESSAGE=$"The server option cannot be blank."
 	show_status
 fi
 
@@ -281,43 +276,43 @@ then
 	#Check to see that COUNTRYCODE is not blank
 	if [ $COUNTRYCODE'null' = null ]
 	then
-		MESSAGE=$ERRORMSG2
+		MESSAGE=$"The country code option cannot be blank."
 		show_status
 	fi
 	#Check to see that STATE is not blank
 	if [ $STATE'null' = null ]
 	then
-		MESSAGE=$ERRORMSG3
+		MESSAGE=$"The state option cannot be blank."
 		show_status
 	fi
 	#Check to see that LOCALITY is not blank
 	if [ $LOCALITY'null' = null ]
 	then
-		MESSAGE=$ERRORMSG4
+		MESSAGE=$"The locality option cannot be blank."
 		show_status
 	fi
 	#Check to see that INSTITUTENAME is not blank
 	if [ $INSTITUTENAME'null' = null ]
 	then
-		MESSAGE=$ERRORMSG5
+		MESSAGE=$"The institute name option cannot be blank."
 		show_status
 	fi
 	#Check to see that DEPARTMENT is not blank
 	if [ $DEPARTMENT'null' = null ]
 	then
-		MESSAGE=$ERRORMSG6
+		MESSAGE=$"The department name cannot be blank."
 		show_status
 	fi
 	#Check to see that COMMONNAME is not blank
 	if [ $COMMONNAME'null' = null ]
 	then
-		MESSAGE=$ERRORMSG7
+		MESSAGE=$"The common name option cannot be blank."
 		show_status
 	fi
 	#Check to see that EMAIL is not blank
 	if [ $EMAIL'null' = null ]
 	then
-		MESSAGE=$ERRORMSG8
+		MESSAGE=$"The e-mail option cannot be blank."
 		show_status
 	fi
 
@@ -335,17 +330,17 @@ then
 	#Check to see that CERTTYPE is not blank
 	if [ -z "$CERTTYPE" ]
 	then
-		MESSAGE=$ERRORMSG17
+		MESSAGE=$"The certificate type cannot be blank."
 		show_status
 	fi
 	if [ -z "$CACERT" ]
 	then
-		MESSAGE=$ERRORMSG15
+		MESSAGE=$"The CA Certificate cannot be blank."
 		show_status
 	fi
 	if [ -z "$SSLCERT" ]
 	then
-		MESSAGE=$ERRORMSG16
+		MESSAGE=$"The SSL Certificate cannot be blank."
 		show_status
 	fi
 fi
@@ -358,7 +353,7 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ssl_commercial_certs.cgi | cut -d'
 
 if [ $ACTION = getcertdetails ]
 then
-	echo "<b>"$TITLE1 - $SERVERNAME"</b><br><br>"
+	echo '<b>'$"Create Commercial Certificate"' - '$SERVERNAME'</b><br><br>'
 	#Get current certificate data if it has been set
 	source /etc/default/locale
 	source /opt/karoshi/server_network/domain_information/domain_name
@@ -387,54 +382,54 @@ then
 	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$REALM:checkservercsr:" | sudo -H /opt/karoshi/web_controls/exec/ssl_commercial_certs
 	if [ $? = 105 ]
 	then
-		echo '<font color="red"><b>'$WARNINGMSG'<br><br>'$ERRORMSG18'<br>'$ERRORMSG19'</b></font><br><br>'
+		echo '<font color="red"><b>'$"WARNING"'<br><br>'$"A server.csr has already been created for this server."'<br>'$"Do not proceed unless you want to re-generate the certificate."'</b></font><br><br>'
 	fi
 
 	echo '<form action="/cgi-bin/admin/ssl_commercial_certs.cgi" name="selectservers" method="post">
 	<input type="hidden" name="___ACTION___" value="createcert"><input name="___SERVERNAME___" value="'$SERVERNAME'" type="hidden">
 	<table class="standard"><tbody>'
-	echo '<tr><td style="width: 180px;">'$COUNTRYCODEMSG'</td><td><input tabindex= "1" value="'$COUNTRYCODE'" name="___COUNTRYCODE___" maxlength="2" size="30" type="text"></td>
-	<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$COUNTRYCODEHELP'<br><br>'$COMMONNAMEHELP2'</span></a></td></tr>
-	<tr><td>'$STATEMSG'</td><td><input tabindex= "2" value="'$STATE'" name="___STATE___" size="30" type="text"></td></tr>
-	<tr><td>'$CITYMSG'</td><td><input tabindex= "3" value="'$LOCALITY'" name="___LOCALITY___" size="30" type="text"></td></tr>
-	<tr><td>'$SCHOOLMSG'</td><td><input tabindex= "4" value="'$ORGANISATIONNAME'" name="___INSTITUTENAME___" size="30" type="text"></td></tr>
-	<tr><td>'$DEPTNAMEMSG'</td><td><input tabindex= "5" value="'$UNITNAME'" name="___DEPARTMENT___" size="30" type="text"></td></tr>
-	<tr><td>'$COMMONNAMEMSG'</td><td><input tabindex= "6" value="'$COMMONNAME'" name="___COMMONNAME___" size="30" type="text"></td>
-	<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$COMMONNAMEHELP'<br><br>'$COMMONNAMEHELP2'</span></a></td></tr>
-	<tr><td>'$EMAILMSG'</td><td><input tabindex= "7" value="'$CONTACTEMAIL'" name="___EMAIL___" size="30" type="text"></td></tr>
+	echo '<tr><td style="width: 180px;">'$"Two digit Country Code"'</td><td><input tabindex= "1" value="'$COUNTRYCODE'" name="___COUNTRYCODE___" maxlength="2" size="30" type="text"></td>
+	<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the two digit ISO country code for your country."'<br><br>'$"Example *.yoursite.com"'</span></a></td></tr>
+	<tr><td>'$"State or Province name"'</td><td><input tabindex= "2" value="'$STATE'" name="___STATE___" size="30" type="text"></td></tr>
+	<tr><td>'$"City or town"'</td><td><input tabindex= "3" value="'$LOCALITY'" name="___LOCALITY___" size="30" type="text"></td></tr>
+	<tr><td>'$"School Name"'</td><td><input tabindex= "4" value="'$ORGANISATIONNAME'" name="___INSTITUTENAME___" size="30" type="text"></td></tr>
+	<tr><td>'$"Department Name"'</td><td><input tabindex= "5" value="'$UNITNAME'" name="___DEPARTMENT___" size="30" type="text"></td></tr>
+	<tr><td>'$"Common name (URL)"'</td><td><input tabindex= "6" value="'$COMMONNAME'" name="___COMMONNAME___" size="30" type="text"></td>
+	<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This needs to be the fully qualified domain name of your website without the http or https. The *. wildcard will match all sub domains."'<br><br>'$"Example *.yoursite.com"'</span></a></td></tr>
+	<tr><td>'$"Email contact address"'</td><td><input tabindex= "7" value="'$CONTACTEMAIL'" name="___EMAIL___" size="30" type="text"></td></tr>
 	</tbody></table><br><br>
-	<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"> <a href="ssl_commercial_certs_fm.cgi"><input class="button" type="button" name="" value="'$BACKMSG'"></a>
+	<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"> <a href="ssl_commercial_certs_fm.cgi"><input class="button" type="button" name="" value="'$"Back"'"></a>
 	</form></div></div></div></body></html>'
 	exit
 fi
 
 if [ $ACTION = copycertinfo ]
 then
-	echo "<b>"$TITLE5 - $SERVERNAME"</b><br><br>$HELPMSG5<br><br>"
+	echo '<b>'$"Copy Certificate Contact Information"' - '$SERVERNAME'</b><br><br>'$"Server.csr - generated by apache mod ssl. You will need to copy this information to your commercial signing authority."'<br><br>'
 	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ACTION:" | sudo -H /opt/karoshi/web_controls/exec/ssl_commercial_certs
-	echo '<br><br><a href="ssl_commercial_certs_fm.cgi"><input class="button" type="button" name="" value="'$BACKMSG'"></a></div></div></div></body></html>'
+	echo '<br><br><a href="ssl_commercial_certs_fm.cgi"><input class="button" type="button" name="" value="'$"Back"'"></a></div></div></div></body></html>'
 	exit
 fi
 
 if [ $ACTION = getinstallcertinfo ]
 then
-echo '<b>'$TITLE7' - '$SERVERNAME'</b><br><br>'$HELPMSG6'<br><br></div><div id="infobox"><form action="/cgi-bin/admin/ssl_commercial_certs.cgi" name="selectservers" method="post">'
+echo '<b>'$"Install Commercial Certificate"' - '$SERVERNAME'</b><br><br>'$"You will need to copy in the certificates you have received from your certificate supplier."'<br><br></div><div id="infobox"><form action="/cgi-bin/admin/ssl_commercial_certs.cgi" name="selectservers" method="post">'
 
 #Drop down choice for cert types
 
 echo '<input type="hidden" name="___ACTION___" value="installcertinfo"><input name="___SERVERNAME___" value="'$SERVERNAME'" type="hidden"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="width: 360px;"><b>'$CERTTYPEMSG'</b></td><td>
+<tbody><tr><td style="width: 360px;"><b>'$"Intermediate certificate or bundle"'</b></td><td>
 <select name="___CERTTYPE___" style="width: 200px;">
 	<option></option>
-        <option value="intcert">'$INTERMEDIATECERTMSG'</option>
-        <option value="bundle">'$CERTBUNDLEMSG'</option>
+        <option value="intcert">'$"Intermediate Certificate"'</option>
+        <option value="bundle">'$"Certificate Bundle"'</option>
 </select></td></tr></tbody></table>
 '
 
 echo '<textarea cols="80" rows="14" name="___CACERT___"></textarea><br><br>'
-echo "<b>"$SSLCERTMSG"</b><br><br>"
-echo '<textarea cols="80" rows="14" name="___SSLCERT___"></textarea><br><br><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
-<a href="ssl_commercial_certs_fm.cgi"><input class="button" type="button" name="" value="'$BACKMSG'"></a>
+echo '<b>'$"SSL Certificate"'</b><br><br>'
+echo '<textarea cols="80" rows="14" name="___SSLCERT___"></textarea><br><br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
+<a href="ssl_commercial_certs_fm.cgi"><input class="button" type="button" name="" value="'$"Back"'"></a>
 '
 echo '</form></div></div></div></body></html>'
 exit
@@ -443,7 +438,7 @@ fi
 if [ $ACTION = installcertinfo ]
 then
 	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ACTION::::::::$CERTTYPE:$CACERT:$SSLCERT:" | sudo -H /opt/karoshi/web_controls/exec/ssl_commercial_certs
-	MESSAGE="$COMPLETEDMSG"
+	MESSAGE=$"The SSL Certificate has been installed."
 	show_status
 	exit
 fi
@@ -452,7 +447,7 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ACTION:$COUNTRYCODE:$STATE:
 
 if [ $ACTION = createcert ]
 then
-MESSAGE="$HELPMSG3"
+MESSAGE=$"The Commercial SSl Certificate has now been created. Please proceed to step two."
 show_status
 fi
 

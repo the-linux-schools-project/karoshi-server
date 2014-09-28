@@ -31,15 +31,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/asset_register ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/asset_register
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -50,7 +48,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE6'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Boot Controls"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -93,7 +91,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -101,13 +99,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
@@ -136,12 +134,12 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE6'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+	<span>'$"Client Boot Controls"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">
 '
 else
-echo '<b>'$TITLE6'</b><br><br></div><div id="infobox">'
+echo '<b>'$"Client Boot Controls"'</b><br><br></div><div id="infobox">'
 fi
 
 if [ -f /var/lib/samba/netlogon/locations.txt ]
@@ -164,17 +162,17 @@ WIDTH=90
 [ $MOBILE = yes ] && WIDTH=70
 
 echo '<form action="/cgi-bin/admin/client_boot_controls.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: '$WIDTH'px;">'$SEARCHMSG'</td><td><input tabindex= "1" name="_LOCATION_SEARCHNOTVALID_SEARCH_" style="width: '$SEARCHW'px;" size="20" type="text"></td><td><a class="info" href="javascript:void(0)"><input name="_BUTTON_" type="image" class="images" src="'$ICON6'" value=""><span>'$SEARCHMSG'</span></a></td></tr></tbody></table></form><br>'
+<tr><td style="width: '$WIDTH'px;">'$"Search"'</td><td><input tabindex= "1" name="_LOCATION_SEARCHNOTVALID_SEARCH_" style="width: '$SEARCHW'px;" size="20" type="text"></td><td><a class="info" href="javascript:void(0)"><input name="_BUTTON_" type="image" class="images" src="'$ICON6'" value=""><span>'$"Search"'</span></a></td></tr></tbody></table></form><br>'
 
 
-echo ''$CHOOSELOCATIONMSG'<br><form action="/cgi-bin/admin/client_boot_controls.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+echo ''$"Choose Location"'<br><form action="/cgi-bin/admin/client_boot_controls.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
 LOCCOUNTER=1
 
 for LOCATIONS in /opt/karoshi/asset_register/locations/*
 do
 LOCATION=`basename "$LOCATIONS"`
 
-echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON1'" value=""><span>'$TITLE6'<br>'$LOCATION'</span></a><br>'$LOCATION'</td>'
+echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Client Boot Controls"'<br>'$LOCATION'</span></a><br>'$LOCATION'</td>'
 [ $LOCCOUNTER = $ROWCOUNT ] && echo '</tr><tr>'
 let LOCCOUNTER=$LOCCOUNTER+1
 [ $LOCCOUNTER -gt $ROWCOUNT ] && LOCCOUNTER=1
@@ -183,10 +181,10 @@ done
 echo "</tr></tbody></table></form><br>"
 fi
 else
-echo $ERRORMSG18
+echo $"The asset register is not in use."
 fi
 else
-echo $ERRORMSG18
+echo $"The asset register is not in use."
 fi
 [ $MOBILE = no ] && echo '</div">'
 echo '</div></div></body></html>'

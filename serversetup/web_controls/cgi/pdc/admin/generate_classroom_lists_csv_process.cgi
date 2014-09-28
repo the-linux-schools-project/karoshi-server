@@ -33,19 +33,17 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/generate_classroom_lists_csv ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/generate_classroom_lists_csv
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="0; URL=/cgi-bin/admin/generate_classroom_lists_csv_upload_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Generate Classroom Lists - CSV"'</title><meta http-equiv="REFRESH" content="0; URL=/cgi-bin/admin/generate_classroom_lists_csv_upload_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -66,7 +64,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -74,13 +72,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -92,7 +90,7 @@ chmod 0700 /var/www/karoshi/
 chmod 0700 /var/www/karoshi/classroom_lists
 if [ `dir /var/www/karoshi/classroom_lists --format=single-column | wc -l` != 1 ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"You have not uploaded a file."
 show_status
 fi
 CSVFILE=`ls /var/www/karoshi/classroom_lists`
@@ -115,31 +113,31 @@ CLIENTMAC=`echo $DATA | cut -d, -f5`
 #Check that client location is not blank
 if [ $LOCATION'null' = null ]
 then
-MESSAGE=`echo $LINEMSG $COUNTER - $LOCATIONERROR.`
+MESSAGE=`echo $"Line" $COUNTER - $"Blank location".`
 show_status
 fi
 #Check that client hostname is not blank
 if [ $CLIENTHOSTNAME'null' = null ]
 then
-MESSAGE=`echo $LINEMSG $COUNTER - $CLIENTHOSTNAMEERROR.`
+MESSAGE=`echo $"Line" $COUNTER - $"Blank client hostname".`
 show_status
 fi
 #Check that type is correct
-if [ $TYPE'check' != `echo $STUDENTTYPE'check' | sed 's/ //g'` ] && [ $TYPE'check' != `echo $STAFFTYPE'check' | sed 's/ //g'` ]
+if [ $TYPE'check' != `echo $"student"'check' | sed 's/ //g'` ] && [ $TYPE'check' != `echo $"staff"'check' | sed 's/ //g'` ]
 then
-MESSAGE=`echo $LINEMSG $COUNTER - $TYPEERROR1. $TYPEERROR2 - $STUDENTTYPE,$STAFFTYPE.`
+MESSAGE=`echo $"Line" $COUNTER - $"Incorrect computer type". $"Correct types" - $"student",$"staff".`
 show_status
 fi
 #Check to see that TCPIP number has correct dots
 if [ `echo $CLIENTTCPIP | sed 's/\./\n/g'  | sed /^$/d | wc -l` != 4 ]
 then
-MESSAGE=`echo $LINEMSG $COUNTER - $TCPIPERROR.`
+MESSAGE=`echo $"Line" $COUNTER - $"TCPIP error".`
 show_status
 fi
 #Check to see that MAC address has correct colons
 if [ `echo $CLIENTMAC | sed 's/:/\n/g'  | sed /^$/d | wc -l` != 6 ]
 then
-MESSAGE=`echo $LINEMSG $COUNTER - $MACERROR.`
+MESSAGE=`echo $"Line" $COUNTER - $"MAC Address error".`
 show_status
 fi
 

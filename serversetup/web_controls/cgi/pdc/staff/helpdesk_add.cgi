@@ -24,13 +24,9 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/helpdesk ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/helpdesk
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 ##########################
 #Show page
 ##########################
@@ -40,7 +36,7 @@ echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta http-equiv="REFRESH" content="0;url=helpdesk_view_fm.cgi"><title>'$TITLE'</title></head><body><div id="pagecontainer">'
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta http-equiv="REFRESH" content="0;url=helpdesk_view_fm.cgi"><title>'$"Help Desk"'</title></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -146,35 +142,35 @@ exit
 #Check to see that CATEGORY is not blank
 #if [ $CATEGORY'null' = null ]
 #then
-#MESSAGE=$ERRORMSG2
+#MESSAGE=$"You have not chosen a category."
 #show_status
 #fi
 
 #Check that REQUEST is not blank
 #if [ $REQUEST'null' = null ]
 #then
-#MESSAGE=$ERRORMSG3
+#MESSAGE=$"You have not entered in a request or problem."
 #show_status
 #fi
 
 #Check that JOBTITLE is not blank
 if [ $JOBTITLE'null' = null ]
 then
-MESSAGE=$ERRORMSG7
+MESSAGE=$"You have not entered in a title for this job."
 show_status
 fi
 
 #Check that DEPARTMENT is not blank
 #if [ $DEPARTMENT'null' = null ]
 #then
-#MESSAGE=$ERRORMSG4
+#MESSAGE=$"You have not chosen a department."
 #show_status
 #fi
 
 #Check that LOCATION is not blank
 #if [ $LOCATION'null' = null ]
 #then
-#MESSAGE=$ERRORMSG5
+#MESSAGE=$"You have not entered in a location."
 #show_status
 #fi
 

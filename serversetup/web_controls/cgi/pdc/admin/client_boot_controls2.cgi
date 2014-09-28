@@ -40,19 +40,17 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/asset_register ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/asset_register
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE6'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Boot Controls"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -183,7 +181,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -191,13 +189,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -206,29 +204,29 @@ fi
 #Check to see that LOCATION is not blank
 if [ $LOCATION'null' = null ]
 then
-MESSAGE=$ERRORMSG7
+MESSAGE=$"You have not chosen a location."
 show_status
 fi
 #Check to see that ACTION is not blank
 if [ $ACTION'null' = null ]
 then
-MESSAGE=$ERRORMSG10
+MESSAGE=$"The action cannot be blank."
 show_status
 fi
 #Check to see ASSET is not blank.
 if [ $ASSET'null' = null ]
 then
-MESSAGE=$ERRORMSG8
+MESSAGE=$"You have not chosen an asset type."
 show_status
 fi
 if [ $TCPIP'null' = null ]
 then
-MESSAGE=$ERRORMSG11
+MESSAGE=$"The TCP IP address cannot be blank."
 show_status
 fi
-if [ $MACADDRESS'null' = null ]
+if [ $"Mac Address"'null' = null ]
 then
-MESSAGE=$ERRORMSG12
+MESSAGE=$"The mac address cannot be blank."
 show_status
 fi
 
@@ -250,12 +248,12 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE6'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+	<span>'$"Client Boot Controls"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">
 '
 else
-echo '<b>'$TITLE6'</b><br><br>'
+echo '<b>'$"Client Boot Controls"'</b><br><br>'
 fi
 
 echo '<form name="myForm" id="myForm" action="/cgi-bin/admin/client_boot_controls.cgi" method="post"><input name="_LOCATION_" value="'$LOCATION'" type="hidden">''<input name="_ASSETTYPE_" value="'$ASSETTYPE'" type="hidden"></form>

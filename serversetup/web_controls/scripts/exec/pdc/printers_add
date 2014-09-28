@@ -54,16 +54,16 @@ echo `date`: printers_add - incorrect number of arguments >> /opt/karoshi/logs/k
 exit 101
 fi
 
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
-PRINTERNAME=`echo $* | cut -s -d: -f4 | sed 's/+//g'`
-LOCATION=`echo $* | cut -s -d: -f5 | sed 's/+/ /g'`
-PRINTERADDRESS=`echo $* | cut -s -d: -f6 | sed 's/+//g'`
-PRINTERQUEUE=`echo $* | cut -s -d: -f7 | sed 's/+//g'`
-PRINTERDESC=`echo $* | cut -s -d: -f8 | sed 's/+/ /g'`
-PRINTERTYPE=`echo $* | cut -s -d: -f9 | sed 's/+//g'`
-PRINTERPORT=`echo $* | cut -s -d: -f10 | sed 's/+//g'`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f3`
+PRINTERNAME=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f4 | sed 's/+//g'`
+LOCATION=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f5 | sed 's/+/ /g'`
+PRINTERADDRESS=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f6 | sed 's/+//g'`
+PRINTERQUEUE=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f7 | sed 's/+//g'`
+PRINTERDESC=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f8 | sed 's/+/ /g'`
+PRINTERTYPE=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f9 | sed 's/+//g'`
+PRINTERPORT=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f10 | sed 's/+//g'`
 
 ########################
 #Check data

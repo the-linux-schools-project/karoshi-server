@@ -31,19 +31,17 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/linux_client_set_repository ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/linux_client_set_repository
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Linux Client set repository"'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -132,7 +130,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -140,13 +138,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -155,26 +153,26 @@ fi
 #Check to see that LINUXVERSION is not blank
 if [ $LINUXVERSION'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The linux version must not be blank."
 show_status
 fi
 URI
 #Check to see that URI is not blank
 if [ $URI'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The URI cannot be blank."
 show_status
 fi
 #Check to see that DISTRIBUTION is not blank
 if [ $DISTRIBUTION'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The distribution cannot be blank."
 show_status
 fi
 #Check to see that SECTIONS is not blank
 if [ $SECTIONS'null' = null ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"There was a problem setting the repository. Please check the Karoshi web management logs."
 show_status
 fi
 
@@ -184,11 +182,11 @@ SOFTWARESTATUS=`echo $?`
 MESSAGE=`echo $LINUXVERSION: $COMPLETEDMSG`
 if [ $SOFTWARESTATUS = 101 ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"There was a problem setting the repository. Please check the Karoshi web management logs."
 fi
 if [ $SOFTWARESTATUS = 102 ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"There was a problem setting the repository. Please check the Karoshi web management logs."
 fi
 show_status
 exit

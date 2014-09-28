@@ -31,15 +31,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_aliases ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_aliases
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -50,7 +48,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"E-Mail Aliases"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script type="text/javascript"></script><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
@@ -141,7 +139,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$ERRORMSG1
+export MESSAGE=$"The action cannot be blank."
 show_status
 fi
 #########################
@@ -149,13 +147,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -166,19 +164,19 @@ if [ $ACTION = delete ] || [ $ACTION = reallyadd ]
 then
 	if [ -z "$ALIAS" ]
 	then
-	MESSAGE=$ERRORMSG2
+	MESSAGE=$"You have not entered an alias."
 	show_status
 	fi
 	if [ -z "$USERNAME" ]
 	then
-	MESSAGE=$ERRORMSG3
+	MESSAGE=$"You have not entered a username."
 	show_status
 	fi
 #Check that the username exists
 getent passwd $USERNAME 1>/dev/null
 if [ $? != 0 ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The username does not exist."
 	show_status
 fi
 fi
@@ -198,8 +196,8 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+	<span>'$"E-Mail Aliases"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox"><form action="/cgi-bin/admin/email_aliases.cgi" method="post">
 '
 else
@@ -209,16 +207,16 @@ if [ $ACTION = add ]
 then
 ACTION2=view
 ICON=$ICON3
-MESSAGE=$VIEWALIASESMSG
-HELPMSG=$HELPMSG2
+MESSAGE=$"View Aliases"
+HELPMSG=$"Adding an alias will allow emails to be sent to the alias address rather than the actual username."
 else
 ACTION2=add
 ICON=$ICON2
-MESSAGE=$ADDALIASMSG
-HELPMSG=$HELPMSG1
+MESSAGE=$"Add an alias"
+HELPMSG=$"These are the email aliases that are currently active for your email system."
 fi
 echo '<div id="'$DIV_ID'"><form action="/cgi-bin/admin/email_aliases.cgi" method="post">
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: middle; height: 20px;"><b>'$TITLE'</b></td>
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: middle; height: 20px;"><div class="sectiontitle">'$"E-Mail Aliases"'</div></td>
 <td style="vertical-align: middle;">
 <input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$MESSAGE'">
 </td><td style="vertical-align: middle;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG'</span></a>

@@ -31,13 +31,11 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/disk_information ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/disk_information
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
@@ -103,7 +101,7 @@ done
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Disk Information"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -133,7 +131,7 @@ echo '</head><body><div id="pagecontainer">'
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -141,13 +139,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -156,7 +154,7 @@ fi
 #Check to see that SERVERNAME is not blank
 if [ $SERVERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"You must choose a server."
 show_status
 fi
 
@@ -185,13 +183,13 @@ SERVERNAME2=`echo "${SERVERNAME:0:9}" | cut -d. -f1`
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$SERVERNAME2'</span>
-<a href="/cgi-bin/admin/disk_information_fm.cgi">'$TITLE'</a>
+<a href="/cgi-bin/admin/disk_information_fm.cgi">'$"Disk Information"'</a>
 </div></div><div id="mobileactionbox">'
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
-<td style="vertical-align: top;"><b>'$TITLE' - '$SERVERNAME'</b></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Information"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td>
-<td style="vertical-align: top;"><a href="disk_information_fm.cgi"><input class="button" type="button" name="" value="'$CHOOSESERVERMSG'"></a></td>
+<td style="vertical-align: top;"><b>'$"Disk Information"' - '$SERVERNAME'</b></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Information"><img class="images" alt="" src="/images/help/info.png"><span>'$"Show information about the hard disk drives on the selected servers."'</span></a></td>
+<td style="vertical-align: top;"><a href="disk_information_fm.cgi"><input class="button" type="button" name="" value="'$"Select server"'"></a></td>
 </tr></tbody></table><br></div><div id="infobox">
 '
 fi
@@ -202,7 +200,7 @@ EXEC_STATUS=`echo $?`
 
 if [ $EXEC_STATUS = 102 ]
 then
-MESSAGE=`echo $COMPLETEDMSG $LOGMSG`
+MESSAGE=`echo $COMPLETEDMSG $"Please check the karoshi web administration logs for more details."`
 show_status
 fi
 

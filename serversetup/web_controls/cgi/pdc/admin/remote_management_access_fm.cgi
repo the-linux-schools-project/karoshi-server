@@ -26,7 +26,7 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
@@ -37,10 +37,8 @@ ICON3=/images/submenus/system/cert_disabled.png
 ICON4=/images/submenus/system/cert_create.png
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_access ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_access
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -62,7 +60,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Remote Management Secure Access"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -71,7 +69,7 @@ echo '
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<form action="/cgi-bin/admin/remote_management_access.cgi" method="post">
-<div id="actionbox"><span style="font-weight: bold;">'$TITLE'</span><br><br>'
+<div id="actionbox"><span style="font-weight: bold;">'$"Remote Management Secure Access"'</span><br><br>'
 
 #Check to see the level of user
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_access_fm.cgi | cut -d' ' -f1`
@@ -82,7 +80,7 @@ USERLEVEL=`echo $?`
 
 if [ $USERLEVEL != 201 ] && [ $USERLEVEL != 202 ] && [ $USERLEVEL != 203 ]
 then
-MESSAGE="$ERRORMSG1"
+MESSAGE=$"Incorrect user level."
 show_status
 fi
 
@@ -104,20 +102,20 @@ echo '<td style="width: 180px;">'$ADMIN_USER'</td>'
 if [ -d /opt/karoshi/server_network/ssl/web_management/client_certs/$ADMIN_USER ]
 then
 #Show client cert details icon
-echo '<td style="vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_ACTION_SHOWDETAILS_USER_'$ADMIN_USER'_" type="image" class="images" src="'$ICON1'" value=""><span>'$ADMIN_USER' - '$SHOWCERTMSG'</span></a></td>'
+echo '<td style="vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_ACTION_SHOWDETAILS_USER_'$ADMIN_USER'_" type="image" class="images" src="'$ICON1'" value=""><span>'$ADMIN_USER' - '$"Show certificate details"'</span></a></td>'
 
 if [ -d /opt/karoshi/server_network/ssl/web_management/client_certs_revoked/$ADMIN_USER ]
 then
 #Show enable cert icon
-echo '<td style="vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_ACTION_ENABLECERT_USER_'$ADMIN_USER'_" type="image" class="images" src="'$ICON2'" value=""><span>'$ADMIN_USER' - '$ENABLECERTMSG'</span></a></td>'
+echo '<td style="vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_ACTION_ENABLECERT_USER_'$ADMIN_USER'_" type="image" class="images" src="'$ICON2'" value=""><span>'$ADMIN_USER' - '$"Enable client certificate"'</span></a></td>'
 else
 #Show disable cert icon
-echo '<td style="vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_ACTION_DISABLECERT_USER_'$ADMIN_USER'_" type="image" class="images" src="'$ICON3'" value=""><span>'$ADMIN_USER' - '$DISABLECERTMSG'</span></a></td>'
+echo '<td style="vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_ACTION_DISABLECERT_USER_'$ADMIN_USER'_" type="image" class="images" src="'$ICON3'" value=""><span>'$ADMIN_USER' - '$"Disable client certificate"'</span></a></td>'
 fi
 
 else
 #Show create certificate icon
-echo '<td style="vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_ACTION_CREATECERT_USER_'$ADMIN_USER'_" type="image" class="images" src="'$ICON4'" value=""><span>'$ADMIN_USER' - '$CREATECERTMSG'</span></a></td>'
+echo '<td style="vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_ACTION_CREATECERT_USER_'$ADMIN_USER'_" type="image" class="images" src="'$ICON4'" value=""><span>'$ADMIN_USER' - '$"Create client certificate"'</span></a></td>'
 fi
 
 echo "</tr>"
@@ -136,30 +134,30 @@ fi
 exit
 echo '<form action="/cgi-bin/admin/remote_management_change_password.cgi" method="post">
 <div id="actionbox">
-<span style="font-weight: bold;">'$TITLE'</span><br>
+<span style="font-weight: bold;">'$"Remote Management Secure Access"'</span><br>
   <br>
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
       <tr>
         <td style="width: 180px;">
-'$USERNAMEMSG'</td>
+'$"Username"'</td>
         <td><input name="_USERNAME_" value="'$REMOTE_USER'" size="20" type="text"></td>
       </tr>
       <tr>
         <td>
-'$PASSWORDMSG'</td>
+'$"Password"'</td>
         <td><input name="_PASSWORD1_" size="20" type="password"></td>
       </tr>
       <tr>
         <td>
-'$CONFIRMMSG'</td>
+'$"Confirm"'</td>
         <td><input name="_PASSWORD2_" size="20" type="password"></td>
       </tr>
     </tbody>
   </table>
 </div>
 <div id="submitbox">
-  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+  <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>
 </form>
 </div></body>

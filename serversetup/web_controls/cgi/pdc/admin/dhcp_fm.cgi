@@ -26,7 +26,7 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
@@ -35,10 +35,8 @@ DHCPCONFPATH=/etc/dhcpd.conf
 [ -f /etc/dhcp3/dhcpd.conf ] && DHCPCONFPATH=/etc/dhcp3/dhcpd.conf
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/dhcp ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/dhcp
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -51,7 +49,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Configure DHCP"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -70,9 +68,9 @@ FILE=`echo $DATA | cut -s -d_ -f7`
 echo '<form action="/cgi-bin/admin/dhcp.cgi" method="post"><div id="actionbox3"><div id="titlebox">
 
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tr><td style="vertical-align: top; width:180px"><div class="sectiontitle">'$TITLE'</div></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_DHCP"><img class="images" alt="" src="/images/help/info.png"><span>'$CONFIGUREDHCPHELP'</span></a></td>
-<td style="vertical-align: top;"><a href="dhcp_view_leases.cgi"><input class="button" type="button" name="" value="'$TITLE2'"></a></td><td style="vertical-align: top;"><a href="dhcp_reservations.cgi"><input class="button" type="button" name="" value="'$TITLE3'"></a></td>
+<tr><td style="vertical-align: top; width:180px"><div class="sectiontitle">'$"Configure DHCP"'</div></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_DHCP"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the settings that you want to use for your client devices."'</span></a></td>
+<td style="vertical-align: top;"><a href="dhcp_view_leases.cgi"><input class="button" type="button" name="" value="'$"View DHCP Leases"'"></a></td><td style="vertical-align: top;"><a href="dhcp_reservations.cgi"><input class="button" type="button" name="" value="'$"DHCP Reservations"'"></a></td>
 </tr>
 </tbody></table><br><br></div><div id="infobox">'
 
@@ -101,54 +99,54 @@ echo '
     <tbody>
       <tr>
         <td style="width: 180px;">
-'$DNSMSG'</td>
+'$"DNS Server IP"'</td>
         <td><input value="'$DOMAINNAMESERVER'" name="_DOMAINNAMESERVER_" tabindex= "1" size="20" type="text" readonly="readonly"></td><td>
       </td></tr>
 	<tr>
         <td>
-'$NETBIOSMSG'</td>
+'$"Netbios Name Server"'</td>
         <td><input tabindex= "1" value="'$NETBIOSSERVER'" name="_NETBIOSSERVER_" size="20" type="text" readonly="readonly"></td><td>
       </td></tr>
       <tr>
         <td>
-'$GATEWAYMSG'</td>
+'$"Gateway"'</td>
         <td><input tabindex= "2" value="'$ROUTER'" name="_ROUTER_" size="20" type="text"></td><td>
       </td></tr>
 	<tr>
         <td>
-'$SUBNETMSG'</td>
+'$"Subnet"'</td>
         <td><input value="'$SUBNET'" name="_SUBNET_" size="20" tabindex= "3" type="text" readonly="readonly"></td><td>
       </td></tr>
       <tr>
         <td>
-'$SUBNETMASKMSG'</td>
+'$"Subnet Mask"'</td>
         <td><input value="'$SUBNETMASK'" name="_SUBNETMASK_" size="20" tabindex= "3" type="text" readonly="readonly"></td><td>
       </td></tr>
       <tr>
         <td>
-'$STARTADDRMSG'</td>
+'$"Start Address"'</td>
         <td><input tabindex= "4" value="'$STARTADDRESS'" name="_STARTADDRESS_" size="20" type="text"></td><td>
       </td></tr>
       <tr>
         <td>
-'$ENDADDRMSG'</td>
+'$"End Address"'</td>
         <td><input tabindex= "5" value="'$ENDADDRESS'" name="_ENDADDRESS_" size="20" type="text"></td><td>
       </td></tr>
       <tr>
         <td>
-'$DEFAULTLEASEMSG'</td>
+'$"Default Lease Time"'</td>
         <td><input tabindex= "6" value="'$DEFAULTLEASETIME'" name="_DEFAULTLEASETIME_" size="20" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_DHCP"><img class="images" alt="" src="/images/help/info.png"><span>'$DEFAULTLEASEHELP'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_DHCP"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the default lease time in seconds."'</span></a>
       </td></tr>
       <tr>
         <td>
-'$MAXLEASEMSG'</td>
+'$"Max Lease Time"'</td>
         <td><input tabindex= "7" value="'$MAXLEASETIME'" name="_MAXLEASETIME_" size="20" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_DHCP"><img class="images" alt="" src="/images/help/info.png"><span>'$MAXLEASEHELP'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_DHCP"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the maximum lease time in seconds."'</span></a>
       </td></tr>
     </tbody>
   </table><br><br>
-<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div></div>
 </form>
 </div></body>

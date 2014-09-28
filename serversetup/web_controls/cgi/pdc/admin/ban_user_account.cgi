@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/ban_user_account ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/ban_user_account
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -46,7 +44,7 @@ fi
 BANLENGTH=7
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Ban User Account"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 
 #########################
 #Get data input
@@ -196,7 +194,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -204,13 +202,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
@@ -219,9 +217,9 @@ fi
 
 echo '<form action="/cgi-bin/admin/ban_user_account2.cgi" method="post">'
 echo '<div id="actionbox">'
-echo '<div class="sectiontitle">'$TITLE'</div>'
+echo '<div class="sectiontitle">'$"Ban User Account"'</div>'
 echo '<table class="standard" style="text-align: left; top: 207px; left: 232px; width: 674px; height: 61px;" border="0" cellpadding="0" cellspacing="0">'
-echo '<tbody><tr><td>'$DATEMSG'</td><td>'
+echo '<tbody><tr><td>'$"Incident Time and Date"'</td><td>'
 #HOUR
 echo '<input name="_HOUR_" value="'$HOUR'" size="2" maxlength="2" type="text">:'
 echo '<input name="_MINUTES_" value="'$MINUTES'" size="2" maxlength="2" type="text">'
@@ -229,17 +227,17 @@ echo '</td><td>'
 echo '<input name="_DAY_" value="'$DAY'" size="2" maxlength="2" type="text">'
 echo '<input name="_MONTH_" value="'$MONTH'" size="2" maxlength="2" type="text">'
 echo '<input name="_YEAR_" value="'$YEAR'" size="4" maxlength="4" type="text">'
-echo '</td></tr><tr><td>'$DURATIONMSG'</td><td>'
-echo '<input name="_BANLENGTH_" value="'$BANLENGTH'" size="2" maxlength="3" type="text"> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Acceptable_Use"><img class="images" alt="" src="/images/help/info.png"><span>'$BANLENGTHHELP'</span></a>
+echo '</td></tr><tr><td>'$"Ban duration in days - leave blank for a permanent ban."'</td><td>'
+echo '<input name="_BANLENGTH_" value="'$BANLENGTH'" size="2" maxlength="3" type="text"> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Acceptable_Use"><img class="images" alt="" src="/images/help/info.png"><span>'$"Users are automatically allowed after their ban duration is up. The ban duration will include weekends and holidays."'</span></a>
 '
 echo '</td></tr></tbody></table>'
 #Students involved
-echo '<br>'$USERNAMESMSG'<br><br>'
+echo '<br>'$"Please enter the usernames you want to ban from the system separated by spaces:"'<br><br>'
 echo '<input value="'$STUDENTS'" name="_STUDENTS_" size="53" type="text">'
 #Incident and action taken
 echo '<br><br>Incident Report<br>'
 echo '<textarea cols="77" rows="4" name="_INCIDENT_">'$INCIDENT'</textarea><br><br>Action Taken<br>'
-echo '<textarea cols="77" rows="4" name="_ACTIONTAKEN_">'$ACTIONTAKEN'</textarea>'
+echo '<textarea cols="77" rows="4" name="_ACTIONTAKEN_">'$"User account banned."'</textarea>'
 
 echo '</div><div id="submitbox"> <input value="Submit" class="button" type="submit"> <input value="Reset" class="button" type="reset"> </div></form></div></body></html>'
 exit

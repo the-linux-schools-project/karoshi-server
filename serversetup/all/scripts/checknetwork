@@ -41,10 +41,12 @@ fi
 
 source /opt/karoshi/serversetup/variables/language
 source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/language/$LANGCHOICE/all/checknetwork
+
+TEXTDOMAIN=karoshi-server
+locale 1>/dev/null
 
 function inputwarning {
-yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --text="$ERRORMSG" --button=OK 2>/dev/null
+yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --text="$ERRORMSG" --button=OK 2>/dev/null
 }
 
 function getcardlist {
@@ -53,7 +55,7 @@ NICARRAY=( `ls /sys/class/net | sed 's/lo//g'` )
 NIC_COUNT=${#NICARRAY[@]}
 if [ $NIC_COUNT = 0 ]
 then
-	ERRORMSG="$ERRORMSG2"
+	ERRORMSG="$"No network cards have been detected.""
 	inputwarning
 	exit 101
 fi
@@ -70,7 +72,7 @@ do
 	let COUNTER=$COUNTER+1
 done
 
-CARDCHOICE=`yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --form --text="$MULTIPLECARDMSG1\n\n$MULTIPLECARDMSG2" $YADNICS --button=OK`
+CARDCHOICE=`yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --form --text=''$"Multiple network cards have been detected."' '$"Select the network card that you want to configure."'\n\n'$"Choose multiple cards if you want to bond the cards together."' '$YADNICS'' --button=OK`
 
 #Check which cards have been selected
 
@@ -95,7 +97,7 @@ CARDSELECTION=`echo $CARDSELECTION | sed 's/^,//g'`
 function checkcardselection {
 if [ -z "$CARDSELECTION" ]
 then
-	ERRORMSG="$ERRORMSG3"
+	ERRORMSG=$"No network cards have been selected."
 	inputwarning
 else
 	SHOW_NICKS=no
@@ -109,9 +111,9 @@ function getnetworksettings {
 
 if [ $SCARDCOUNT -gt 1 ]
 then
-	DATA=`yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --field="$SERVERNAMEMSG" "$NAMECUSTOM" --field="$TCPIPMSG" "$TCPIPCUSTOM" --field="$NETMASKMSG" "$NETMASKCUSTOM" --field="$NAMESERVERMSG" "$NAMESERVERCUSTOM" --field="$GATEWAYMSG" "$GATEWAYCUSTOM" --field="Bond mode:CB" 'mode0!mode1!mode4' --button="gtk-ok"`
+	DATA=`yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --field=$"Server name" "$NAMECUSTOM" --field=$"TCPIP" "$TCPIPCUSTOM" --field=$"Netmask" "$NETMASKCUSTOM" --field=$"Name Server" "$NAMESERVERCUSTOM" --field=$"Gateway" "$GATEWAYCUSTOM" --field=$"Bond mode:CB" 'mode0!mode1!mode4' --button="gtk-ok"`
 else
-	DATA=`yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --text "$SETTINGSMSG" --field="$SERVERNAMEMSG" "$NAMECUSTOM" --field="$TCPIPMSG" "$TCPIPCUSTOM" --field="$NETMASKMSG" "$NETMASKCUSTOM" --field="$NAMESERVERMSG" "$NAMESERVERCUSTOM" --field="$GATEWAYMSG" "$GATEWAYCUSTOM" --button="gtk-ok" 2>/dev/null`
+	DATA=`yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --field=$"Server name" "$NAMECUSTOM" --field=$"TCPIP" "$TCPIPCUSTOM" --field=$"Netmask" "$NETMASKCUSTOM" --field=$"Name Server" "$NAMESERVERCUSTOM" --field=$"Gateway" "$GATEWAYCUSTOM" --button="gtk-ok" 2>/dev/null`
 fi
 
 NAMECUSTOM=`echo $DATA | cut -d"|" -f1 | tr -cd 'A-Za-z1-9-' | sed 's/^-//g' | sed 's/-$//g' | tr 'A-Z' 'a-z'`
@@ -131,8 +133,8 @@ fi
 function confirmchoice {
 BONDMSG=""
 [ $SCARDCOUNT -gt 1 ] && BONDMSG="\nBond Mode:\t\t$BONDMODE"
-DATA=`yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 250 \
-    --text "$NETWORKSET \n\n$SERVERNAMEMSG:\t\t$NAMECUSTOM \n$TCPIPMSG:\t\t\t$TCPIPCUSTOM \n$NETMASKMSG:\t\t$NETMASKCUSTOM \n$NAMESERVERMSG:\t\t$NAMESERVERCUSTOM \n$GATEWAYMSG:\t\t$GATEWAYCUSTOM \n$CARDSELMSG:\t$CARDSELECTION$BONDMSG" 2>/dev/null`
+DATA=`yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 250 \
+    --text ''$"Network Settings"' \n\n'$"Server name"':\t\t'$NAMECUSTOM' \n'$"TCPIP"':\t\t\t'$TCPIPCUSTOM' \n'$"Netmask"':\t\t'$NETMASKCUSTOM' \n'$"Name Server"':\t\t'$NAMESERVERCUSTOM' \n'$"Gateway"':\t\t'$GATEWAYCUSTOM' \n'$"Card selection"':\t'$CARDSELECTION''$BONDMSG'' 2>/dev/null`
 CHOICE=$?
 [ $CHOICE = 0 ] && CHOICE=commit
 [ $CHOICE = 1 ] && CHOICE=configure
@@ -202,7 +204,7 @@ do
 		if [ -z "$NAMECUSTOM" ]
 		then
 				GETSETTINGS=yes
-				ERRORMSG="$ERRORMSG4"
+				ERRORMSG="$"You have not entered in a server name.""
 				inputwarning	
 		else 
 			INPUTCHECK=ok
@@ -226,7 +228,7 @@ do
 			fi
 			if [ $GETSETTINGS = yes ]
 			then
-				ERRORMSG=$ERRORMSG1
+				ERRORMSG=$"Incorrect network setting have been entered."
 				inputwarning
 			fi
 		fi
@@ -237,7 +239,7 @@ do
 			then
 				GETSETTINGS=yes
 				INPUTCHECK=fail
-				ERRORMSG=$ERRORMSG1
+				ERRORMSG=$"Incorrect network setting have been entered."
 				inputwarning
 			fi
 		fi

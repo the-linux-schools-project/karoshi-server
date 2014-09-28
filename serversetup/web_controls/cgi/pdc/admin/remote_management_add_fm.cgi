@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_add ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_add
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -47,7 +45,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Add a new Web Management User"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -59,9 +57,9 @@ echo '
   <div id="actionbox">
 
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
-<td style="vertical-align: top;"><b>'$TITLE'</b></td>
-<td style="vertical-align: top;"><a href="remote_management_view.cgi"><input class="button" type="button" name="" value="'$VIEWMANUSERMSG'"></a></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_a_Remote_Admin"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG4'</span></a>
+<td style="vertical-align: top;"><b>'$"Add a new Web Management User"'</b></td>
+<td style="vertical-align: top;"><a href="remote_management_view.cgi"><input class="button" type="button" name="" value="'$"View"'"></a></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_a_Remote_Admin"><img class="images" alt="" src="/images/help/info.png"><span>'$"These accounts are used by your technical staff to access the web managagement. The usernames and passwords used here are totally separate from normal network users."'</span></a>
 </td>
 </tr></tbody></table>
   <br>
@@ -81,36 +79,36 @@ echo '
       </tr>
       <tr>
         <td>
-'$USERNAMEMSG'</td>
+'$"Username"'</td>
         <td><input name="_USERNAME_" style="width: 200px;" size="20" type="text"></td>
       </tr>
       <tr>
         <td>
-'$PASSWORDMSG'</td>
+'$"Password"'</td>
         <td><input name="_PASSWORD1_" style="width: 200px;" size="20" type="password"></td>
       </tr>
       <tr>
         <td>
-'$CONFIRMMSG'</td>
+'$"Confirm"'</td>
         <td><input name="_PASSWORD2_" style="width: 200px;" size="20" type="password"></td>
       </tr>
       <tr>
-        <td>'$ACCESSLVLMSG'</td><td>
+        <td>'$"Access Level"'</td><td>
         <select name="_PRIMARYADMIN_" style="width: 200px;">
 <option value=""></option>
-<option value="1">'$PRADMINMSG'</option>
-<option value="2">'$ADMINMSG'</option>
-<option value="3">'$TECHMSG'</option>        
+<option value="1">'$"Primary Admin"'</option>
+<option value="2">'$"Admin"'</option>
+<option value="3">'$"Technician"'</option>        
         </select>
         </td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_a_Remote_Admin"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'<br><br>'$HELPMSG2'<br><br>'$HELPMSG3'</span></a>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_a_Remote_Admin"><img class="images" alt="" src="/images/help/info.png"><span>'$"Primary Admins have full control of the web management."'<br><br>'$"Admins have full control of the web management but cannot add or delete other admins."'<br><br>'$"Technicians can access a limited set of controls for day to day running of the system such as changing passwords."'</span></a>
 </td>
       </tr>
     </tbody>
   </table>
   </div>
   <div id="submitbox">
-  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+  <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
   </div>
 </form>
 </div></body>

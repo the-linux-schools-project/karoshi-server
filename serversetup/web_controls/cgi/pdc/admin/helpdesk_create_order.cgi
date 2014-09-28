@@ -26,7 +26,7 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
@@ -35,10 +35,8 @@ DAY=`echo $DATE_INFO | cut -d- -f3`
 MONTH=`echo $DATE_INFO | cut -d- -f2`
 YEAR=`echo $DATE_INFO | cut -d- -f1`
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/orders ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/orders
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -51,7 +49,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Create Order"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script language="JavaScript" src="/all/calendar2/calendar_eu.js"></script>
         <!-- Timestamp input popup (European Format) -->
@@ -196,10 +194,10 @@ done
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/helpdesk_create_order.cgi" name="testform" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>'$DATA''
+echo '<form action="/cgi-bin/admin/helpdesk_create_order.cgi" name="testform" method="post"><div id="actionbox"><div class="sectiontitle">'$"Create Order"'</div><br>'$DATA''
 
 #Show calendar
-echo "<table class=\"standard\" style=\"text-align: left; width: 100%;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tr><td>$ORDERDATEMSG</td><td>
+echo "<table class=\"standard\" style=\"text-align: left; width: 100%;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tr><td>$"Date"</td><td>
 <!-- calendar attaches to existing form element -->
 	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxsize=10 name=\"_DATE_\" />
 	<script language=\"JavaScript\">
@@ -210,12 +208,12 @@ echo "<table class=\"standard\" style=\"text-align: left; width: 100%;\" border=
 		'controlname': '_DATE_'
 	});
 
-	</script></td><td>$ORDERNUMBERMSG</td><td><input tabindex= \"1\" name=\"_ORDERNO_\" size=\"14\" type=\"text\"></td></tr><tr><td>$PERSONMSG</td><td><input tabindex= \"1\" name=\"_PERSON_\" size=\"14\" type=\"text\"></td><td>$BUDGETMSG</td><td><input tabindex= \"1\" name=\"_BUDGET_\" size=\"14\" type=\"text\"></td></tr><tr><td>$SUPPLIERMSG</td><td><input tabindex= \"1\" name=\"_SUPPLIER_\" size=\"14\" type=\"text\"></td><td>$PACKMSG</td><td><input tabindex= \"1\" name=\"_PANDP_\" size=\"14\" type=\"text\"></td></tr><tr><td></td><td></td><td>$TOTALMSG</td><td><b>$TOTAL</b></td></tr></tbody></table>"
+	</script></td><td>$"Order Number"</td><td><input tabindex= \"1\" name=\"_ORDERNO_\" size=\"14\" type=\"text\"></td></tr><tr><td>$"Person"</td><td><input tabindex= \"1\" name=\"_PERSON_\" size=\"14\" type=\"text\"></td><td>$"Budget"</td><td><input tabindex= \"1\" name=\"_BUDGET_\" size=\"14\" type=\"text\"></td></tr><tr><td>$"Supplier"</td><td><input tabindex= \"1\" name=\"_SUPPLIER_\" size=\"14\" type=\"text\"></td><td>$"Post and Packaging"</td><td><input tabindex= \"1\" name=\"_PANDP_\" size=\"14\" type=\"text\"></td></tr><tr><td></td><td></td><td>$TOTALMSG</td><td><b>$TOTAL</b></td></tr></tbody></table>"
 
 
 echo '<table class="standard" style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="vertical-align: top;">'$ADDITEMMSG'</td>
-<td style="vertical-align: top; width: 80px;">'$QUANTITYMSG'</td>
+<tr><td style="vertical-align: top;">'$"Add item"'</td>
+<td style="vertical-align: top; width: 80px;">'$"Quantity"'</td>
 <td style="vertical-align: top; width: 80px;">Unit Price</td>
 <td style="vertical-align: top; width: 80px;"></td></tr>
 <tr><td><input tabindex= "2" name="_NEWITEM_" size="60" type="text"></td>

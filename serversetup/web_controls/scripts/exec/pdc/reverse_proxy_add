@@ -104,13 +104,11 @@ fi
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/web/reverse_proxy_add ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/web/reverse_proxy_add
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 
 #Get reverse proxy server
@@ -122,7 +120,7 @@ exit 101
 fi
 
 #Add the proxy information information
-echo `date`: reverse_proxy_add - $TARGETMSG : $TARGET $DESTINATIONMSG : $DESTINATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: reverse_proxy_add - $"Target folder" : $TARGET $"Destination" : $DESTINATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 [ ! -d /opt/karoshi/server_network/reverseproxy/sites ] && mkdir -p /opt/karoshi/server_network/reverseproxy/sites
 

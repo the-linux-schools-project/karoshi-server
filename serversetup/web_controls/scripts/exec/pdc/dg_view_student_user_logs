@@ -125,10 +125,6 @@ fi
 
 echo `date`: dg_view_student_user_logs - Viewing logs "for" $USERNAME $DAY-$MONTH-$YEAR by $MYUSERNAME from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #View logs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 #Get squid server name
 [ ! -f /opt/karoshi/server_network/proxyserver ] && exit 101
@@ -143,9 +139,9 @@ LOGTYPE=NOTSET
 [ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/users/'$USERNAME'.tar.gz ] && LOGTYPE=archive
 [ $LOGTYPE = NOTSET ] && exit 102
 #Create table header
-echo \<b\>'$INTERNETLOGMSG' '$USERNAME' '$DAY'-'$MONTH'-'$YEAR'\<\/b\>\<br\>\<br\>
+echo \<b\>'$"Internet Log"' '$USERNAME' '$DAY'-'$MONTH'-'$YEAR'\<\/b\>\<br\>\<br\>
 echo \<table class=\"'$TABLECLASS'\" style=\"text-align: left\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>\<tbody\>
-echo \<tr\>\<td\>\<b\>'$FILTERMSG'\<\/b\>\</td\>\<td\>\<b\>'$TIMEMSG'\<\/b\>\</td\>\<td\>\<b\>'$COMPIP'\<\/b\>\</td\>\<td\>\<b\>'$WEBURL'\<\/b\>\</td\>\</tr\>
+echo \<tr\>\<td\>\<b\>'$"Filter"'\<\/b\>\</td\>\<td\>\<b\>'$"Time"'\<\/b\>\</td\>\<td\>\<b\>'$"Client"'\<\/b\>\</td\>\<td\>\<b\>'$"Website"'\<\/b\>\</td\>\</tr\>
 if [ $LOGTYPE = text ]
 then
 cat /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/users/'$USERNAME'
@@ -163,9 +159,9 @@ LOGTYPE=NOTSET
 [ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/users/$USERNAME.tar.gz ] && LOGTYPE=archive
 [ $LOGTYPE = NOTSET ] && exit 102
 #Create table header
-echo \<b\>$INTERNETLOGMSG $USERNAME $DAY-$MONTH-$YEAR\<\/b\>\<br\>\<br\>
+echo \<b\>$"Internet Log" $USERNAME $DAY-$MONTH-$YEAR\<\/b\>\<br\>\<br\>
 echo \<table class=\"$TABLECLASS\" style=\"text-align: left\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>\<tbody\>
-echo \<tr\>\<td\>\<b\>$FILTERMSG\<\/b\>\</td\>\<td\>\<b\>$TIMEMSG\<\/b\>\</td\>\<td\>\<b\>$COMPIP\<\/b\>\</td\>\<td\>\<b\>$WEBURL\<\/b\>\</td\>\</tr\>
+echo \<tr\>\<td\>\<b\>$"Filter"\<\/b\>\</td\>\<td\>\<b\>$"Time"\<\/b\>\</td\>\<td\>\<b\>$"Client"\<\/b\>\</td\>\<td\>\<b\>$"Website"\<\/b\>\</td\>\</tr\>
 if [ $LOGTYPE = text ]
 then
 cat /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/users/$USERNAME

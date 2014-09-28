@@ -23,13 +23,9 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/change_student_password ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/change_student_password
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 ############################
 #Show page
 ############################
@@ -39,7 +35,7 @@ echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE2'</title>
+  <title>'$"Reset a Student's Password"'</title>
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script type="text/javascript" src="/all/js/jquery.js"></script>
 <script type="text/javascript" src="/all/js/script.js"></script>
@@ -76,18 +72,18 @@ done
 /opt/karoshi/web_controls/generate_navbar_staff
 echo '<form action="/cgi-bin/staff/reset_student_password.cgi" method="post">
   <div id="actionbox">
-<b>'$TITLE2'</b><br><br><div id="suggestions"></div>
+<b>'$"Reset a Student's Password"'</b><br><br><div id="suggestions"></div>
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
       <tr>
-        <td style="width: 180px;">'$SUSERNAMEMSG'</td>
+        <td style="width: 180px;">'$"Student Username"'</td>
         <td><input name="_USERNAME_" value="'$USERNAME'" size="20" AUTOCOMPLETE = "off" style="width: 200px;" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG5'</span></a>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will reset the password of the user for access to all servers on the Karoshi system including moodle and email. The new password will be displayed on the screen."'</span></a>
       </td>
       </tr>
 <tr>
         <td>
-'$VIEWIMAGEMSG'</td>
+'$"View User Image"'</td>
         <td><input tabindex= "6" name="_VIEWIMAGE_" value="yes" size="20" type="checkbox"></td>
       </tr>
     </tbody>
@@ -101,7 +97,7 @@ fi
 echo '
   </div>
   <div id="submitbox">
-  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+  <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
   </div>
 </form>
 </div></body>

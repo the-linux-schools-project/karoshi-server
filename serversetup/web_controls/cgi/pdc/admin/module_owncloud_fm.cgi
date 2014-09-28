@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/owncloud/setupowncloud ] || LANGCHOICE=englishuk
-source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/owncloud/setupowncloud
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 source /opt/karoshi/server_network/domain_information/domain_name
 
@@ -50,7 +48,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Setup Owncloud"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -95,7 +93,7 @@ exit
 #Check to see that servername is not blank
 if [ $SERVERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The server cannot be blank."
 show_status
 fi
 
@@ -104,20 +102,20 @@ fi
 
 echo '<form id="form1" name="combobox" action="/cgi-bin/admin/module_owncloud.cgi" method="post"><div id="actionbox">
 
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr><td style=vertical-align: top;"><div class="sectiontitle">'$TITLE' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Owncloud"><img class="images" alt="" src="/images/help/info.png"><span>'$ALIASHELP'</span></a>
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr><td style=vertical-align: top;"><div class="sectiontitle">'$"Setup Owncloud"' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Owncloud"><img class="images" alt="" src="/images/help/info.png"><span>'$"You will need to choose an alias for this server for web access. Either enter in a custom alias or choose one from the dropdown list."'</span></a>
 </td></tr></tbody></table><br>
 
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
-<b>'$DESCRIPTIONMSG'</b><br><br>
-'$HELPMSG1'<br><br>
-<b>'$PARAMETERSMSG'</b><br><br>
+<b>'$"Description"'</b><br><br>
+'$"This will setup the Owncloud storage system for your users."'<br><br>
+<b>'$"Parameters"'</b><br><br>
   <table class="standard" style="text-align: left; height: 15px;" border="0" cellpadding="2" cellspacing="0">
     <tbody>
       <tr>
-        <td valign="middle" style="width: 180px;">'$DOMAINMSG'</td><td>'
+        <td valign="middle" style="width: 180px;">'$"Owncloud Domain"'</td><td>'
 
-echo '<input type="text" name="_ALIAS_" style="width: 200px;" value="" size="10"></td><td valign="middle">.'$REALM'</td><td valign="middle"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Owncloud"><img class="images" alt="" src="/images/help/info.png"><span>'$ALIASHELP'</span></a></td></tr>
+echo '<input type="text" name="_ALIAS_" style="width: 200px;" value="" size="10"></td><td valign="middle">.'$REALM'</td><td valign="middle"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Owncloud"><img class="images" alt="" src="/images/help/info.png"><span>'$"You will need to choose an alias for this server for web access. Either enter in a custom alias or choose one from the dropdown list."'</span></a></td></tr>
 <tr><td></td><td><select name="_ALIASLIST_" style="width: 200px;" size="1" onchange="document.combobox._ALIAS_.value = document.combobox._ALIASLIST_.options[document.combobox._ALIASLIST_.selectedIndex].value;document.combobox._ALIASLIST_.value=&#39;&#39;">
 <option value="" selected="selected"></option>'
             
@@ -126,12 +124,12 @@ echo '<input type="text" name="_ALIAS_" style="width: 200px;" value="" size="10"
 if [ -f /opt/karoshi/server_network/aliases/$SERVERNAME ]
 then
 #Show any custom aliases that have been assigned
-echo '<option style="color:black ; font-weight:bold" value="">'$ALIASMSG1'</option>'
+echo '<option style="color:black ; font-weight:bold" value="">'$"Assigned Aliases"'</option>'
 for CUSTOM_ALIAS in `cat /opt/karoshi/server_network/aliases/$SERVERNAME`
 do
 echo '<option style="color:green">'$CUSTOM_ALIAS'</option>'
 done
-echo '<option style="color:black ; font-weight:bold" value="">'$ALIASMSG2'</option>'
+echo '<option style="color:black ; font-weight:bold" value="">'$"Unassigned Aliases"'</option>'
 fi
 
 #Get a set of available aliases to check
@@ -145,6 +143,6 @@ do
 let COUNTER=$COUNTER+1
 done
 echo '</select></td></tr>
-</tbody></table><br><br></div><div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit"></div></form></div></body></html>'
+</tbody></table><br><br></div><div id="submitbox"><input value="'$"Submit"'" class="button" type="submit"></div></form></div></body></html>'
 exit
 

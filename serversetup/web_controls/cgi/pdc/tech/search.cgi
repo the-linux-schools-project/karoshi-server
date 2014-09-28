@@ -27,13 +27,11 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/search ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/search
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
@@ -70,7 +68,7 @@ done
 
 echo "Content-type: text/html"
 echo ""
-echo "<html><head><title>$TITLE</title></head>"
+echo "<html><head><title>$"Search Karoshi Web Management"</title></head>"
 echo "<link rel="stylesheet" href="/css/$STYLESHEET">"
 echo "</head>"
 echo "<body><div id='pagecontainer'>"
@@ -79,7 +77,7 @@ echo "<body><div id='pagecontainer'>"
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -87,13 +85,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_tech ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c $REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -103,14 +101,14 @@ fi
 #Check to see that SEARCH is not blank
 if [ $SEARCH'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The search criteria cannot be blank."
 show_status
 fi
 
 #make sure that the search criteria has at least three spaces
 if [ ${#SEARCH} -le 2 ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The search phrase must be at least three characters long."
 show_status
 fi
 
@@ -121,7 +119,7 @@ echo "<div id="menubox">"
 echo "<iframe src="/cgi-bin/tech/menu.cgi" name="main" frameborder="0" width="950" height="150" scrolling="no" marginwidth="0" marginheight="0">"
 echo "</iframe><br><br>"
 
-echo '<b>'$TITLE - "$SEARCH"'</b><br><br>'
+echo '<b>'$"Search Karoshi Web Management" - "$SEARCH"'</b><br><br>'
 
 #Do search
 #User

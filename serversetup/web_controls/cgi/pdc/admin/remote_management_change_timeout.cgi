@@ -30,19 +30,17 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_change_timeout ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_change_timeout
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="0; URL=remote_management_change_timeout_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Change Timeout"'</title><meta http-equiv="REFRESH" content="0; URL=remote_management_change_timeout_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -92,7 +90,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -100,13 +98,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -115,14 +113,14 @@ fi
 #Check to see that TIMEOUT is not blank
 if [ $TIMEOUT'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The timeout value must not be blank."
 show_status
 fi
 #Check to see that TIMEOUT is a number
 TIMEOUT=`echo $TIMEOUT | tr -cd '0-9\n'`
 if [ $TIMEOUT'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The timeout value must be a number between 1 and 99."
 show_status
 fi
 #Make sure that NOTIMEOUT is a number
@@ -131,7 +129,7 @@ NOTIMEOUT=`echo $NOTIMEOUT | tr -cd '0-9.\n'`
 #Check that timeout is between 1 and 99
 if [ $TIMEOUT -lt 1 ] || [ $TIMEOUT -gt 99 ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The timeout value must be a number between 1 and 99."
 show_status
 fi
 
@@ -141,9 +139,9 @@ sudo -H /opt/karoshi/web_controls/exec/remote_management_change_timeout $REMOTE_
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 101 ]
 then
-MESSAGE=`echo $PROBLEMMSG $LOGMSG`
+MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`
 else
-MESSAGE=$COMPLETEDMSG
+MESSAGE=$"Your timeout setting has been changed."
 fi
 show_status
 exit

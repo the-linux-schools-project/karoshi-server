@@ -30,16 +30,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/locations2_cgi
 then
-echo `date`: locations2 - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: locations2 - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/locations2_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/locations2.cgi | cut -d' ' -f1`
 [ $MD5SUM'null' = null ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $locations2_cgi'check' ]
 then
-echo `date`: locations2 - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: locations2 - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -48,42 +48,42 @@ fi
 numArgs=$#
 if [ $numArgs != 1 ]
 then
-echo `date`: locations - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: locations - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
-DELETE=`echo $* | cut -s -d: -f4`
-NEWLOCATION=`echo $* | cut -s -d: -f5`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
+DELETE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
+NEWLOCATION=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5`
 
 ########################
 #Check data
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: locations - Not called by locations.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: locations - Not called by locations.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: locations - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: locations - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: locations - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: locations - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $DELETE'null' = null ] && [ $NEWLOCATION'null' = null ]
+if [ -z "$DELETE" ] && [ -z "$NEWLOCATION" ]
 then
-echo `date`: locations - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: locations - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: locations - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: locations - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 touch /var/lib/samba/netlogon/locations.txt
@@ -91,25 +91,25 @@ chmod 0644 /var/lib/samba/netlogon/locations.txt
 ###########################
 #Add location
 ###########################
-if [ $NEWLOCATION'null' != null ]
+if [ ! -z "$NEWLOCATION" ]
 then
-ROOMCHECK=`grep -c -w $NEWLOCATION /var/lib/samba/netlogon/locations.txt`
-if [ $ROOMCHECK = 0 ]
-then
-#Modify locations.txt
-echo >> /var/lib/samba/netlogon/locations.txt
-sed -i '/^$/d' /var/lib/samba/netlogon/locations.txt
-echo $NEWLOCATION >> /var/lib/samba/netlogon/locations.txt
-fi
+	ROOMCHECK=`grep -c -w $NEWLOCATION /var/lib/samba/netlogon/locations.txt`
+	if [ $ROOMCHECK = 0 ]
+	then
+	#Modify locations.txt
+		echo >> /var/lib/samba/netlogon/locations.txt
+		sed -i '/^$/d' /var/lib/samba/netlogon/locations.txt
+		echo $NEWLOCATION >> /var/lib/samba/netlogon/locations.txt
+	fi
 fi
 ###########################
 #Remove location
 ###########################
-if [ $DELETE'null' != null ]
+if [ ! -z "$DELETE" ]
 then
-sed 's/^'$DELETE'$//g' /var/lib/samba/netlogon/locations.txt > /var/lib/samba/netlogon/locations.txt1
-sed '/^$/d' /var/lib/samba/netlogon/locations.txt1 > /var/lib/samba/netlogon/locations.txt
-rm -f /var/lib/samba/netlogon/locations.txt1
+	sed 's/^'$DELETE'$//g' /var/lib/samba/netlogon/locations.txt > /var/lib/samba/netlogon/locations.txt1
+	sed '/^$/d' /var/lib/samba/netlogon/locations.txt1 > /var/lib/samba/netlogon/locations.txt
+	rm -f /var/lib/samba/netlogon/locations.txt1
 fi
 
 
@@ -125,9 +125,9 @@ rm -f /var/lib/samba/netlogon/locations.tmp
 #Check that locations.txt is not empty
 if [ `cat /var/lib/samba/netlogon/locations.txt | wc -l` -gt 1 ]
 then
-KIXLOCATIONLIST=`cat /var/lib/samba/netlogon/locations.txt | tr '\n' ','  | sed 's/,,/,/g' | sed 's/,/","/g' ; echo NoGroup`
+	KIXLOCATIONLIST=`cat /var/lib/samba/netlogon/locations.txt | tr '\n' ','  | sed 's/,,/,/g' | sed 's/,/","/g' ; echo NoGroup`
 else
-KIXLOCATIONLIST=No_Locations_Set,NoGroup
+	KIXLOCATIONLIST=No_Locations_Set,NoGroup
 fi
 ###########################
 #Modify wsetup.kix
@@ -140,6 +140,6 @@ chmod 0644 /var/lib/samba/netlogon/kix/WSsetup.kix
 LOCCHECK=`cat /var/lib/samba/netlogon/locations.txt | wc -l`
 if [ $LOCCHECK = 0 ]
 then
-rm -f /var/lib/samba/netlogon/locations.txt
+	rm -f /var/lib/samba/netlogon/locations.txt
 fi
 exit

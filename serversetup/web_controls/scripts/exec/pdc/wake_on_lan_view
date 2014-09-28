@@ -49,9 +49,9 @@ then
 echo `date`: wake_on_lan_view - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
 ########################
 #Check data
 ########################
@@ -79,34 +79,32 @@ fi
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/wake_on_lan_view ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/wake_on_lan_view
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #######################
 #wake on lan
 #######################
 if [ ! -f /opt/karoshi/cronjobs/jobs/wake_on_lan.cron ]
 then
-echo '<b>'$ERRORMSG1'</b>'
+echo '<b>'$"There are no locations scheduled for wake on lan."'</b>'
 exit 101
 fi
 if [ ! -d /opt/karoshi/cronjobs/wake_on_lan ]
 then
-echo '<b>'$ERRORMSG1'</b>'
+echo '<b>'$"There are no locations scheduled for wake on lan."'</b>'
 exit 101
 fi
 if [ `ls -1 /opt/karoshi/cronjobs/wake_on_lan/ | wc -l` = 0 ]
 then
-echo '<b>'$ERRORMSG1'</b>'
+echo '<b>'$"There are no locations scheduled for wake on lan."'</b>'
 exit 101
 fi
-echo '<input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset"> <input type="button" onclick="SetAllCheckBoxes('\'selectwol\'', '\'_ENABLE_\'', true);" value="'$ENABLEALLMSG'"> <input type="button" onclick="SetAllCheckBoxes('\'selectwol\'', '\'_DISABLE_\'', true);" value="'$DISABLEALLMSG'">'
+echo '<input value="'$"Submit"'" type="submit"> <input value="'$"Reset"'" type="reset"> <input type="button" onclick="SetAllCheckBoxes('\'selectwol\'', '\'_ENABLE_\'', true);" value="'$"Enable All"'"> <input type="button" onclick="SetAllCheckBoxes('\'selectwol\'', '\'_DISABLE_\'', true);" value="'$"Disable All"'">'
 echo '<table class="standard" style="text-align: left; width: 600px; height: 60px;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="width: 220px;"><b>'$LOCATIONMSG'</b></td><td style="width: 220px;"><b>'$TIMEMSG'</b></td><td style="width: 100px;"><b>'$STATUSMSG'</b></td><td style="width: 100px;"><b>'$ENABLEMSG'</b></td><td style="width: 100px;"><b>'$DISABLEMSG'</b></td><td style="width: 100px;"><b>'$REMOVEMSG'</b></td></tr><tr>'
+<tbody><tr><td style="width: 220px;"><b>'$"Location"'</b></td><td style="width: 220px;"><b>'$"Time"'</b></td><td style="width: 100px;"><b>'$"Status"'</b></td><td style="width: 100px;"><b>'$"Enable"'</b></td><td style="width: 100px;"><b>'$"Disable"'</b></td><td style="width: 100px;"><b>'$"Remove"'</b></td></tr><tr>'
 
 for LOCATION in /opt/karoshi/cronjobs/wake_on_lan/*
 do
@@ -123,5 +121,5 @@ echo '<td>'$NAME'</td><td style="width: 220px;">'$HOUR' : '$MINUTES'</td><td><im
 fi
 done
 echo '</tbody></table>'
-echo '<input value="'$SUBMITMSG'" type="submit"> <input value="'$RESETMSG'" type="reset"> <input type="button" onclick="SetAllCheckBoxes('\'selectwol\'', '\'_ENABLE_\'', true);" value="'$ENABLEALLMSG'"> <input type="button" onclick="SetAllCheckBoxes('\'selectwol\'', '\'_DISABLE_\'', true);" value="'$DISABLEALLMSG'">'
+echo '<input value="'$"Submit"'" type="submit"> <input value="'$"Reset"'" type="reset"> <input type="button" onclick="SetAllCheckBoxes('\'selectwol\'', '\'_ENABLE_\'', true);" value="'$"Enable All"'"> <input type="button" onclick="SetAllCheckBoxes('\'selectwol\'', '\'_DISABLE_\'', true);" value="'$"Disable All"'">'
 exit

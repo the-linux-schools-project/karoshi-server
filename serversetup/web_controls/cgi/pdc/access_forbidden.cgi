@@ -23,12 +23,9 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/access_denied ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/access_denied
-source /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
 source /opt/karoshi/web_controls/version
 ############################
 #Show page
@@ -41,7 +38,7 @@ echo '
 <head>
   <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
 <META HTTP-EQUIV="refresh" CONTENT="300; URL=/cgi-bin/blank.cgi">
-  <title>'$WARNINGMSG'</title>
+  <title>'$"Access Denied"'</title>
 <link href="/css/'$STYLESHEET'" rel="stylesheet" type="text/css">
 </head>
 <body><div id="pagecontainer"><div id="header">'
@@ -61,7 +58,7 @@ echo '</div><div id="navbar"><span class="preload1"></span>
 '
 
 echo '<div id="actionbox">
-<b>'$ERRORMSG 401 - $DENIEDMSG1'</b><br>
+<b>'$ERRORMSG 401 - $"Authentication required"'</b><br>
 </div></div>
 </body>
 </html>

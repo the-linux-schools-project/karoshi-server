@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/radius ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/radius
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -46,7 +44,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE1'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add Access Point"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head>
 <body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
@@ -76,13 +74,13 @@ echo '<div id="'$DIV_ID'">'
 if [ $MOBILE = yes ]
 then
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
-<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$TITLE1'</b></a></td></tr></tbody></table>'
+<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
+<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Add Access Point"'</b></a></td></tr></tbody></table>'
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="vertical-align: middle;"><b>'$TITLE1'</b></td>
+<tr><td style="vertical-align: middle;"><b>'$"Add Access Point"'</b></td>
 <td style="vertical-align: top;">
-<a href="/cgi-bin/admin/radius_view_access_pt_fm.cgi"><input class="button" type="button" name="" value="'$TITLE2'"></a>
+<a href="/cgi-bin/admin/radius_view_access_pt_fm.cgi"><input class="button" type="button" name="" value="'$"View Access Points"'"></a>
 </td>
 </tr></tbody></table><br>
 '
@@ -93,29 +91,29 @@ echo '<form action="/cgi-bin/admin/radius_add_access_pt.cgi" method="post">
     <tbody>
       <tr>
         <td style="width: 180px;">
-'$TCPIPMSG'</td>
+'$"TCPIP"'</td>
         <td><input tabindex= "1" value="'$FORENAME'" name="_TCPIP_" size="20" type="text"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$TCPIPHELP'</span></a>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the tcpip address of your wireless access point. You can also allow a range of addresses if you enter in a tcpip range. 172.30.0.0/16 would allow all devices in that range."'</span></a>
       </td></tr>
       <tr>
         <td>
-'$SHORTNAMEMSG'</td>
+'$"Short name"'</td>
         <td><input tabindex= "2" value="'$SURNAME'" name="_SHORTNAME_" size="20" type="text"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$SHORTNAMEHELP'</span></a>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a name for this access point. This will appear in the logs."'</span></a>
       </td></tr>
       <tr>
         <td>
-'$SECRETKEYMSG'</td>
+'$"Secret Key"'</td>
         <td><input tabindex= "3" name="_SECRETKEY_" size="20" type="password"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$SECRETKEYHELP'</span></a>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the secret key that you want. This will also need to be entered into your wireless access points."'</span></a>
       </td></tr>
       <tr>
         <td>
-'$CONFIRMMSG'</td>
+'$"Confirm"'</td>
         <td><input tabindex= "4" name="_SECRETKEY2_" size="20" type="password"></td>
       </tr>
     </tbody>
-  </table><br><br><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+  </table><br><br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </form></div></div></body></html>
 '
 exit

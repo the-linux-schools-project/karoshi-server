@@ -26,19 +26,17 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/backup_view_logs ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/backup_view_logs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View Network Backup Logs"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -90,7 +88,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -98,13 +96,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -113,14 +111,14 @@ fi
 #Check to see that a SERVERNAME has been chosen
 if [ $SERVERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"You must choose a server to enable or disable."
 show_status
 fi
 
 #Check to see that DATE is not blank
 if [ $DATE'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"No karoshi backup servers have been enabled for ssh."
 show_status
 fi
 
@@ -132,33 +130,33 @@ YEAR=`echo $DATE | cut -d- -f3`
 #Check to see that DAY, MONTH or YEAR is not blank
 if [ $DAY'null' = null ] || [ $MONTH'null' = null ] || [ $YEAR'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The date cannot be blank."
 show_status
 fi
 
 if [ $DAY -gt 31 ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"Incorrect date format."
 show_status
 fi
 
 if [ $MONTH -gt 12 ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"Incorrect date format."
 show_status
 fi
 
 if [ $YEAR -lt 2006 ] || [ $YEAR -gt 3006 ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"Incorrect date format."
 show_status
 fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox3"><div id="titlebox">
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr><td style="vertical-align: top;"><div class="sectiontitle">'$SERVERNAME: $VIEWLOGMSG1 $DAY-$MONTH-$YEAR'</div></td><td style="vertical-align: top;">
-<a href="/cgi-bin/admin/backup_view_logs_fm.cgi"><input class="button" type="button" name="" value="'$CHOOSESERVERMSG'"></a>
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr><td style="vertical-align: top;"><div class="sectiontitle">'$SERVERNAME: $"Backup logs" $DAY-$MONTH-$YEAR'</div></td><td style="vertical-align: top;">
+<a href="/cgi-bin/admin/backup_view_logs_fm.cgi"><input class="button" type="button" name="" value="'$"Select server"'"></a>
 </td></tr></tbody></table>
 
 

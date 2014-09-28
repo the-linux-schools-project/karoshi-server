@@ -112,13 +112,11 @@ fi
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_aliases ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_aliases
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
 if [ $MOBILE = no ]
@@ -150,10 +148,10 @@ then
 
 if [ $MOBILE = yes ]
 then
-echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_add_" type="image" class="images" src="'$ICON2'" value=""><span>'$ADDALIASMSG'</span></a>'
+echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_add_" type="image" class="images" src="'$ICON2'" value=""><span>'$"Add an alias"'</span></a>'
 fi
 
-echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody><tr><td style=\"width: 120px;\"><b>$ALIASMSG</b></td><td style=\"width: 120px;\"><b>$USERNAMEMSG</b></td><td><b>$DELETEMSG</b></td></tr>"
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: 120px;"><b>'$"Alias"'</b></td><td style="width: 120px;"><b>'$"Username"'</b></td><td><b>'$"Delete"'</b></td></tr>'
 	if [ $EMAILSERVER = `hostname-fqdn` ]
 	then
 	#Check that alias file is there
@@ -206,15 +204,15 @@ if [ $ACTION = add ]
 then
 if [ $MOBILE = yes ]
 then
-echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_view_" type="image" class="images" src="'$ICON3'" value=""><span>'$VIEWALIASESMSG'</span></a>'
+echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_view_" type="image" class="images" src="'$ICON3'" value=""><span>'$"View Aliases"'</span></a>'
 fi
 echo '
 <input name="_ACTION_" value="reallyadd" type="hidden"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="width: 180px;">'$USERNAMEMSG'</td>
+<tbody><tr><td style="width: 180px;">'$"Username"'</td>
 <td><input tabindex= "1" name="_USERNAME_" style="width: '$WIDTH1'px;" size="20" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$ALIASHELP1'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to add an alias to. This username has to exist on the system."'</span></a>
 </td></tr>
- <tr><td>'$ALIASMSG'</td><td><input tabindex= "2" name="_ALIAS_" style="width: '$WIDTH1'px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$ALIASHELP2'</span></a></td></tr>
+ <tr><td>'$"Alias"'</td><td><input tabindex= "2" name="_ALIAS_" style="width: '$WIDTH1'px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the alias that you want for the username."'</span></a></td></tr>
 </tbody></table>'
 
 if [ $MOBILE = yes ]
@@ -223,7 +221,7 @@ echo "<br>"
 else
 echo '</div> <div id="submitbox">'
 fi
-echo '<input value="'$SUBMITMSG'" type="submit">'
+echo '<input value="'$"Submit"'" type="submit">'
 fi
 
 if [ $ACTION = reallyadd ]

@@ -29,13 +29,11 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/helpdesk ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/helpdesk
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
@@ -45,7 +43,7 @@ echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><title>'$TITLE'</title><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><title>'$"Help Desk"'</title><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
@@ -103,7 +101,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 
@@ -113,13 +111,13 @@ fi
 #Check to see that JOBNAME is not blank
 if [ $JOBNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG8
+MESSAGE=$"The job name cannot be blank."
 show_status
 fi
 
 if [ ! -f /opt/karoshi/helpdesk/todo/$JOBNAME ]
 then
-MESSAGE=$ERRORMSG9
+MESSAGE=$"This job does not exist."
 show_status
 fi
 
@@ -153,11 +151,11 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE' - '$TITLE3'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$HELPDESKMENUMSG'</a>
+	<span>'$"Help Desk"' - '$"Action Request"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Helpdesk"'</a>
 </div></div><div id="mobileactionbox">'
 else
-echo '<b>'$TITLE' - '$TITLE3'</b><br><br>'
+echo '<b>'$"Help Desk"' - '$"Action Request"'</b><br><br>'
 fi
 
 
@@ -172,15 +170,15 @@ echo '<input name="_JOBNAME_" value="'$JOBNAME'" type="hidden">
 <input name="_ASSIGNED_" value="'$ASSIGNED'" type="hidden">
 <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody>
-<tr><td style="width: '$WIDTH1'px;">'$JOBTITLEMMSG'</td><td>'$JOBTITLE'</td></tr>
-<tr><td>'$NAMEMSG'</td><td>'$NAME'</td></tr>
-<tr><td>'$LOCATIONMSG'</td><td>'$LOCATION'</td></tr>
-<tr><td>'$DEPARTMENTMSG'</td><td>'$DEPARTMENT'</td></tr>
-<tr><td>'$CATEGORYMSG'</td><td>'$CATEGORY'</td></tr>
-<tr><td>'$USERPROBLEMMSG'</td><td>'$REQUEST'</td></tr>
-<tr><td>'$UPDATEMSG'</td><td><input tabindex= "1" name="_ACTION_"  checked="checked" value="update" type="radio"></td></tr>
-<tr><td>'$COMPLETEDMSG'</td><td><input tabindex= "3" name="_ACTION_" value="completed" type="radio"></td></tr>
-<tr><td>'$FEEDBACKMSG'</td><td><textarea style="width: '$WIDTH3'px;" tabindex= "7" cols="'$COLS'" rows="'$ROWS'" name="_FEEDBACK_">'$FEEDBACK'</textarea></td></tr>
+<tr><td style="width: '$WIDTH1'px;">'$"Request Summary"'</td><td>'$JOBTITLE'</td></tr>
+<tr><td>'$"Name"'</td><td>'$NAME'</td></tr>
+<tr><td>'$"Location"'</td><td>'$LOCATION'</td></tr>
+<tr><td>'$"Department"'</td><td>'$DEPARTMENT'</td></tr>
+<tr><td>'$"Category"'</td><td>'$CATEGORY'</td></tr>
+<tr><td>'$"Extended Details"'</td><td>'$REQUEST'</td></tr>
+<tr><td>'$"Update"'</td><td><input tabindex= "1" name="_ACTION_"  checked="checked" value="update" type="radio"></td></tr>
+<tr><td>'$"Completed"'</td><td><input tabindex= "3" name="_ACTION_" value="completed" type="radio"></td></tr>
+<tr><td>'$"Feedback"'</td><td><textarea style="width: '$WIDTH3'px;" tabindex= "7" cols="'$COLS'" rows="'$ROWS'" name="_FEEDBACK_">'$FEEDBACK'</textarea></td></tr>
 </tbody></table>'
 
 if [ $MOBILE = no ]
@@ -188,7 +186,7 @@ then
 echo '</div><div id="submitbox">'
 fi
 
-echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div></form></div></body></html>'
 exit
 

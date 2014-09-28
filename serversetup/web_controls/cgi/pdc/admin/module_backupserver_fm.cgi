@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/serversetup/language/$LANGCHOICE/modules/backupserver/setupbackupserver ] || LANGCHOICE=englishuk
-source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/backupserver/setupbackupserver
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -47,7 +45,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Setup Backup Server"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -101,13 +99,13 @@ fi
 
 echo '
 <form action="/cgi-bin/admin/module_backupserver.cgi" method="post">
-<div id="actionbox"><div class="sectiontitle">'$TITLE' - '$SERVERNAME'</div><br>
+<div id="actionbox"><div class="sectiontitle">'$"Setup Backup Server"' - '$SERVERNAME'</div><br>
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
-<b>'$DESCRIPTIONMSG'</b><br><br>
-'$HELPMSG1'
+<b>'$"Description"'</b><br><br>
+'$"This will provide a backup server for your network that other servers can backup to. Servers are assigned to their backup servers in the web management (servers - show servers). The backup is fully automated and backups take place every week night."'
 </div>
 <div id="submitbox">
-<input value="'$SUBMITMSG'" class="button" type="submit">
+<input value="'$"Submit"'" class="button" type="submit">
 </div>
 </form>
 </div></body>

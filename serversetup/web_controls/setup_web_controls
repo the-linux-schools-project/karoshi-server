@@ -44,6 +44,10 @@ echo '##############'setup_web_controls'##############' >> /opt/karoshi/serverse
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 source /opt/karoshi/server_network/domain_information/domain_name
+
+TEXTDOMAIN=karoshi-server
+locale 1>/dev/null
+
 ###########################
 #Demo mode - disables some functions
 ###########################
@@ -63,33 +67,9 @@ fi
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/scripts/configure_karoshi_web_management
 #Get School Name
 source /opt/karoshi/server_network/domain_information/domain_name
-#Add school name to language file
-NAMELINENO=`grep -n ^SCHOOL_NAME= /opt/karoshi/serversetup/web_controls/language/englishuk/menus/menu | cut -d: -f1`
-sed -i $NAMELINENO'c'\SCHOOL_NAME=\""$SHORTNAME"\" /opt/karoshi/serversetup/web_controls/language/englishuk/menus/menu
 
 KAROSHI_SERVER=`hostname`
 
-#Language
-TITLE="Setup Linux Schools Web Management"
-PLEASE=Please
-WAIT=Wait
-STATUSMSG1="Copying web management files"
-EMAILGMSG="Enter in your email domain."
-EMAILHELP="This is email used to form the email address for each user which is stored in the LDAP database."
-COMPLETEDMSG="Completed"
-CONNECTIONMSG1="The web management tools can be accessed from:"
-CONNECTIONMSG2="https://pdc.internal:50001 - internal access"
-CONNECTIONMSG3="https://pdc.internal:50002 - external access"
-CONNECTIONMSG4="Port 50002 needs a client certificate available in the itadmin share."
-DEMOWARNMSG="WARNING - Web Management is in DEMO mode."
-IMPORTANTMSG="IMPORTANT - Web Management Access."
-CREATEUSERMSG="You will need to create a web management user to administer the server network."
-USERNAMEMSG="Username"
-PASSWORDMSG="Password"
-CONFIRMMSG="Confirm"
-ERRORMSG1="The username cannot be blank."
-ERRORMSG2="The password cannot be blank."
-ERRORMSG3="The passwords do not match."
 
 #Create root ssh folder
 if [ ! -d /root/.ssh ]
@@ -472,15 +452,11 @@ cp -f -R /opt/karoshi/serversetup/web_controls/scripts/exec/pdc/* /opt/karoshi/w
 [ $DEMO_MODE = yes ] && cp -f -R /opt/karoshi/serversetup/web_controls/scripts/exec/pdc_demo/* /opt/karoshi/web_controls/exec/
 
 cp -f /opt/karoshi/serversetup/web_controls/allowed_custom_commands /opt/karoshi/web_controls
-cp -f -R /opt/karoshi/serversetup/web_controls/language /opt/karoshi/web_controls/
 chmod 0755 /opt/karoshi/web_controls
 chmod 0700 /opt/karoshi/web_controls/rotate_log
 chmod 0700 /opt/karoshi/web_controls/generate_md5sums
 chmod 0600 /opt/karoshi/web_controls/allowed_custom_commands
 chmod -R 0700 /opt/karoshi/web_controls/exec
-chmod -R 0640 /opt/karoshi/web_controls/language
-chmod -R u+X,g+X /opt/karoshi/web_controls/language
-chown -R root:apache_karoshi /opt/karoshi/web_controls/language
 chmod -R 0660 /opt/karoshi/web_controls/user_prefs
 chmod -R u+X,g+X /opt/karoshi/web_controls/user_prefs
 chown -R root:apache_karoshi /opt/karoshi/web_controls/user_prefs
@@ -540,7 +516,7 @@ if [ $CREATE_MANAGEMENT_USER = yes ]
 then
 #Get details for new web management user.
 function get_new_user {
-DATA=`yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo3.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --form --text "$CREATEUSERMSG" --field="$USERNAMEMSG" --field="$PASSWORDMSG:H" --field="$CONFIRMMSG:H" --button=Ok`
+DATA=`yad --title ''$"Setup"' '$"Web Management"'' --image="/opt/karoshi/serversetup/essentials/smalllogo3.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --form --text ''$"You will need to create a web management user to administer the server network."'' --field=$"Username" --field=$"Password":H --field=$"Confirm":H --button=Ok`
 NEWUSERNAME=`echo $DATA | cut -d"|" -f1`
 NEWUSERPASSWORD=`echo $DATA | cut -d"|" -f2`
 CHECKUSERPASSWORD=`echo $DATA | cut -d"|" -f3`
@@ -548,18 +524,18 @@ CHECKUSERPASSWORD=`echo $DATA | cut -d"|" -f3`
 
 function check_user_details {
 DETAILCHECK=ok
-if [ $NEWUSERNAME'null' = null ]
+if [ -z "$NEWUSERNAME" ]
 then
 DETAILCHECK=error
-yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo3.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=3  --text="$ERRORMSG1" --no-buttons
-elif [ $NEWUSERPASSWORD'null' = null ] || [ $CHECKUSERPASSWORD'null' = null ]
+yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo3.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=3  --text=$"The username cannot be blank." --no-buttons
+elif [ -z "$NEWUSERPASSWORD" ] || [ $CHECKUSERPASSWORD'null' = null ]
 then
 DETAILCHECK=error
-yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo3.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=3 --text="$ERRORMSG2" --no-buttons
+yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo3.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=3 --text=$"The password cannot be blank." --no-buttons
 elif [ $NEWUSERPASSWORD != $CHECKUSERPASSWORD ]
 then
 DETAILCHECK=error
-yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo3.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=3 --text="$ERRORMSG3" --no-buttons
+yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo3.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=3 --text=$"The passwords do not match." --no-buttons
 fi
 }
 
@@ -945,6 +921,6 @@ karoshi-uptime.sh reset
 ############################
 #Display completed message
 ############################
-echo -e "$CONNECTIONMSG1\n\n$CONNECTIONMSG2\n$CONNECTIONMSG3\n\n$CONNECTIONMSG4\n\n"
+echo -e ''$"Web management access"':\n\nhttps://pdc.internal:50001 - '$"internal access"'\nhttps://pdc.internal:50002 - '$"external access"'\n\n'$"Port 50002 needs a client certificate available in the itadmin share."'\n\n'
 exit
 

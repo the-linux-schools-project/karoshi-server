@@ -27,15 +27,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/restore_files ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/restore_files
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -46,7 +44,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Restore Files"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body onLoad="start()"><div id="pagecontainer">'
 
 
@@ -63,13 +61,13 @@ exit
 #Check to see that a backup server has been configured
 if [ ! -d /opt/karoshi/server_network/backup_servers/backup_settings ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"No backup servers have been configured."
 show_status
 fi
 
 if [ `ls -1 /opt/karoshi/server_network/backup_servers/backup_settings | wc -l` = 0 ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"No backup servers have been configured."
 show_status
 fi
 
@@ -83,7 +81,7 @@ echo '
 #############################
 #Show list of servers to restore to
 #############################
-echo '<b>'$SYSTEMRESTOREMSG'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a><br><br></div><div id="infobox">'
+echo '<b>'$"Restore system files and folders"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the server that you want to restore system files to."'</span></a><br><br></div><div id="infobox">'
 SERVERLISTARRAY=( `ls -1 /opt/karoshi/server_network/backup_servers/backup_settings/` )
 SERVERLISTCOUNT=${#SERVERLISTARRAY[@]}
 SERVERCOUNTER=0
@@ -100,7 +98,7 @@ BACKUPPATH=/home/backups/$KAROSHISERVER
 #Get backup server
 BACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/$KAROSHISERVER/backupserver`
 
-echo '<td style="width: 90px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'$BACKUPSERVER'_LOCATION_'$BACKUPPATH'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$KAROSHISERVER'<br><br>'
+echo '<td style="width: 90px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'$"Back"UPSERVER'_LOCATION_'$"Back"UPPATH'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$KAROSHISERVER'<br><br>'
 
 cat /opt/karoshi/server_network/servers/$KAROSHISERVER/* | sed '/<a href/c'"&nbsp"
 
@@ -115,8 +113,8 @@ echo '</tr></tbody></table><br>'
 #Show list of primary groups to restore from.
 #############################
 
-echo '<b>'$USERRESTOREMSG'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a><br><br><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 120px;"><b>'$PRIGROUPMSG'</b></td><td style="width:200px;"><b>'$SERVERMSG'</b></td><td style="width: 120px;"><b>'$RESTOREMSG'</b></td><td style="width: 120px;"><b>'$PRIGROUPMSG'</b></td><td style="width: 200px;"><b>'$SERVERMSG'</b></td><td><b>'$RESTOREMSG'</b></td></tr>
+echo '<b>'$"Restore User Files and Folders"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the primary group that you want to restore user files to."'</span></a><br><br><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: 120px;"><b>'$"Primary Group"'</b></td><td style="width:200px;"><b>'$"Server"'</b></td><td style="width: 120px;"><b>'$"Restore"'</b></td><td style="width: 120px;"><b>'$"Primary Group"'</b></td><td style="width: 200px;"><b>'$"Server"'</b></td><td><b>'$"Restore"'</b></td></tr>
 '
 START_LINE=yes
 ICON1=/images/submenus/system/computer.png
@@ -134,10 +132,10 @@ BACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_sett
 BACKUPPATH=/home/backups/$SERVER/$PRI_GROUP
 if [ $START_LINE = yes ]
 then
-echo '<tr><td>'$PRI_GROUP'</td><td>'$SERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'$BACKUPSERVER'_LOCATION_'$BACKUPPATH'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVERNAME_'$SERVER'_"><span>'$RESTOREMSG'<br>'$SERVER' - '$PRI_GROUP'</span></a></td>'
+echo '<tr><td>'$PRI_GROUP'</td><td>'$SERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'$"Back"UPSERVER'_LOCATION_'$"Back"UPPATH'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVERNAME_'$SERVER'_"><span>'$"Restore"'<br>'$SERVER' - '$PRI_GROUP'</span></a></td>'
 START_LINE=no
 else
-echo '<td>'$PRI_GROUP'</td><td>'$SERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'$BACKUPSERVER'_LOCATION_'$BACKUPPATH'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVERNAME_'$SERVER'_"><span>'$RESTOREMSG'<br>'$SERVER' - '$PRI_GROUP'</span></a></td></tr>'
+echo '<td>'$PRI_GROUP'</td><td>'$SERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'$"Back"UPSERVER'_LOCATION_'$"Back"UPPATH'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVERNAME_'$SERVER'_"><span>'$"Restore"'<br>'$SERVER' - '$PRI_GROUP'</span></a></td></tr>'
 START_LINE=yes
 fi
 fi

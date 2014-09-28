@@ -27,11 +27,11 @@
 [ -d /var/www/html ] || mkdir -p /var/www/html
 [ ! -e /opt/karoshi/.tempdata/mysqlpasswordstatus ] || rm -f /opt/karoshi/.tempdata/mysqlpasswordstatus
 
-LANGCHOICE=englishuk
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/joomla/setupjoomla ] || LANGCHOICE=englishuk
-source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/joomla/setupjoomla
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+TEXTDOMAIN=karoshi-server
 
 ########################
 #Ensure htaccess is enabled
@@ -45,12 +45,12 @@ MYSQLSTATUS=`ps -e | grep -c $MYSQLDVER`
 APACHESTATUS=`ps -e | grep -c $APACHEVER`
 if [ $MYSQLSTATUS = 0 ]
 then
-echo '<li>'$STARTMYSQLMSG'</li><br>'
+echo '<li>'$"Starting MYSQL"'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start 1>/dev/null
 fi
 if [ $APACHESTATUS = 0 ]
 then
-echo '<li>'$STARTAPACHEMSG'</li><br>'
+echo '<li>'$"Starting Apache"'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 fi
 
@@ -58,7 +58,7 @@ fi
 #####################
 #Create joomla mysql password for the new database
 #####################
-echo '<li>'$MYSQLMSG'</li><br>'
+echo '<li>'$"Creating the joomla database in mysql"'</li><br>'
 RANGE=61
 COUNTER=1
 while [ $COUNTER -lt 16 ]
@@ -121,11 +121,11 @@ mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/wbperms.sql
 ##########################
 #Extract joomla
 ##########################
-echo '<li>'$EXTRACTJOOMLAMSG'</li><br>'
+echo '<li>'$"Extracting Joomla"'</li><br>'
 cd /var/www/html/
 tar -xzf /opt/karoshi/serversetup/modules/joomla/joomla.tar.gz
 
-echo '<li>'$SETJOOMLAPERMS'</li><br>'
+echo '<li>'$"Setting permissions"'</li><br>'
 #chown -R root.$APACHEUSER /var/www/html/joomla
 #chmod 0440 -R /var/www/html/joomla
 #chmod u+X,g+X -R /var/www/html/joomla
@@ -187,7 +187,7 @@ fi
 ######################
 if [ $MOD_SHOREWALL = yes ]
 then
-echo '<li>'$RESTARTSWMSG'</li><br>'
+echo '<li>'$"Restarting shorewall"'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi

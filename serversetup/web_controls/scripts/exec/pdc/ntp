@@ -54,13 +54,13 @@ then
 echo `date`: ntp - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
-NTPSERVER=`echo $* | cut -s -d: -f4`
-SERVERNAME=`echo $* | cut -s -d: -f5`
-SERVERTYPE=`echo $* | cut -s -d: -f6`
-SERVERMASTER=`echo $* | cut -s -d: -f7`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
+NTPSERVER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
+SERVERNAME=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5`
+SERVERTYPE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f6`
+SERVERMASTER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f7`
 ########################
 #Check data
 ########################
@@ -116,12 +116,10 @@ fi
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/ntp ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/ntp
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ###########################
 #Apply settings
 ###########################
@@ -136,7 +134,7 @@ source /opt/karoshi/serversetup/variables/distro
 #pdc
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
-echo $HOSTNAME - $STOPNTP"<br><br>"
+echo $HOSTNAME - $"Stopping NTP Service""<br><br>"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_stop 1> /dev/null
 #Ensure drift file is created
 if [ ! -d /etc/ntp/ ]
@@ -159,16 +157,16 @@ echo multicastclient >> /etc/ntp.conf
 echo broadcastdelay	0.008 >> /etc/ntp.conf
 echo authenticate no >> /etc/ntp.conf
 #Do initial time syncronisation
-echo $SYNCNTP"<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+echo $"Syncing Server""<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 ntpdate -t 3 $NTPSERVER 2>/dev/null
-echo "</pre><br>"$HOSTNAME - $STARTNTP"<br><br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+echo "</pre><br>"$HOSTNAME - $"Starting NTP Service""<br><br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_start 2>/dev/null
 echo "</pre>"
 #Ensure that NTP is running on boot
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/ntp
 #Show ntp status
-echo $NTPSTATUS"<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+echo $"NTP Status""<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 ntpq -p 2>/dev/null
 echo \</pre\>\<br\>
 fi
@@ -178,7 +176,7 @@ then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 [ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: ntp \(federated mode\) - Setting '$SERVERNAME' to '$NTPSERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
 source /opt/karoshi/serversetup/variables/distro
-echo $HOSTNAME - '$STOPNTP'"<br><br>"
+echo $HOSTNAME - '$"Stopping NTP Service"'"<br><br>"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_stop 1> /dev/null
 #Ensure drift file is created
 if [ ! -d /etc/ntp/ ]
@@ -200,14 +198,14 @@ echo multicastclient >> /etc/ntp.conf
 echo broadcastdelay	0.008 >> /etc/ntp.conf
 echo authenticate no >> /etc/ntp.conf
 #Do initial time syncronisation
-echo '$SYNCNTP'"<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+echo '$"Syncing Server"'"<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 ntpdate -t 3 '$NTPSERVER' 2>/dev/null
-echo "</pre><br>"$HOSTNAME - '$STARTNTP'"<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+echo "</pre><br>"$HOSTNAME - '$"Starting NTP Service"'"<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_start 2>/dev/null
 echo "</pre>"
 #Ensure that NTP is running on boot
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/ntp
-echo '$NTPSTATUS'"<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+echo '$"NTP Status"'"<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 ntpq -p 2>/dev/null
 echo \</pre\>\<br\>
 '
@@ -219,7 +217,7 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER PasswordAuthe
 echo `date`: ntp \(federated mode\) - Setting '$SERVERNAME' to '$NTPSERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
 source /opt/karoshi/serversetup/variables/distro
-echo $HOSTNAME - '$STOPNTP'"<br><br>"
+echo $HOSTNAME - '$"Stopping NTP Service"'"<br><br>"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_stop 1> /dev/null
 #Ensure drift file is created
 if [ ! -d /etc/ntp/ ]
@@ -241,14 +239,14 @@ echo multicastclient >> /etc/ntp.conf
 echo broadcastdelay	0.008 >> /etc/ntp.conf
 echo authenticate no >> /etc/ntp.conf
 #Do initial time syncronisation
-echo '$SYNCNTP'"<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+echo '$"Syncing Server"'"<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 ntpdate -t 3 '$NTPSERVER' 2>/dev/null
-echo "</pre><br>"$HOSTNAME - '$STARTNTP'"<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+echo "</pre><br>"$HOSTNAME - '$"Starting NTP Service"'"<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_start 2>/dev/null
 echo "</pre>"
 #Ensure that NTP is running on boot
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/ntp
-echo '$NTPSTATUS'"<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+echo '$"NTP Status"'"<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 ntpq -p 2>/dev/null
 echo \</pre\>\<br\>
 '\''

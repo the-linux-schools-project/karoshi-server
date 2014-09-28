@@ -98,13 +98,13 @@ echo `date`: module_ksso - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE_A
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/serversetup/language/$LANGCHOICE/modules/ksso/setupksso ] || LANGCHOICE=englishuk
+TEXTDOMAIN=karoshi-server
+
+[ -f /opt/karoshi/serversetup/language/$LANGCHOICE/modules/ksso/setupksso ] || 
 source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/ksso/setupksso
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 if [ $SERVERNAME = `hostname-fqdn` ]
 then

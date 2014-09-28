@@ -27,19 +27,17 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/linux_client_upload_distro ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/linux_client_upload_distro
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE2'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Linux Client - Choose Distribution"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -102,7 +100,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -110,13 +108,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -125,7 +123,7 @@ fi
 #Check to see that DISTROCHOICE is not blank
 if [ $DISTROCHOICE'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"This folder does not contain any iso images."
 show_status
 fi
 
@@ -133,7 +131,7 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<div id="actionbox3"><div id="titlebox">
-<div class="sectiontitle">'$TITLE2'<br></div><div id="infobox>"'
+<div class="sectiontitle">'$"Linux Client - Choose Distribution"'<br></div><div id="infobox>"'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/linux_client_choose_distro.cgi | cut -d' ' -f1`
 #Copy iso
@@ -142,9 +140,9 @@ EXEC_STATUS=`echo $?`
 
 if [ $CONTROL = copy ]
 then
-MESSAGE="$COMPLETEDMSG2"
+MESSAGE=$"The iso image has been copied to the distribution server."
 else
-MESSAGE="$DISTROCHOICE - $DELETEDMSG"
+MESSAGE="$DISTROCHOICE - $"deleted""
 fi
 
 if [ $EXEC_STATUS != 0 ]

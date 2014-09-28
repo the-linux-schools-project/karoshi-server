@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/windows_profile_upload ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/windows_profile_upload
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -47,7 +45,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <TITLE>'$TITLE'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+    <TITLE>'$"Windows Profile - Upload"'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </HEAD>
@@ -56,23 +54,23 @@ echo '
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<div id="actionbox">
-<B>'$TITLE'</B> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Upload_a_new_profile"><img class="images" alt="" src="/images/help/info.png"><span>'$CREATEPROFILEHELP1'<br><br>'$CREATEPROFILEHELP2'<br><br>'$CREATEPROFILEHELP3'<br><br>'$CREATEPROFILEHELP4'</span></a>
+<B>'$"Windows Profile - Upload"'</B> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Upload_a_new_profile"><img class="images" alt="" src="/images/help/info.png"><span>'$"To create a windows profile you can use the profileuser account. This is the only user on the karoshi system that has a roaming profile by default. All other users use mandatory profiles."'<br><br>'$"To create a windows profile you need to right click on My Computer - Properties - Advanced - User Profile Settings."'<br><br>'$"Copy your chosen profile to a suitable location."'<br><br>'$"Make sure that you change the windows permissions on your chosen profile to all users."'</span></a>
 <P>
-'$UPLOADMSG':
+'$"Select the compressed profile that you want to upload in .zip or .tar.gz format."':
 <P>
         <FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/windows_client_profile_upload.cgi" METHOD="POST">
         <TABLE class="standard" BORDER="0" cellpadding="2" cellspacing="2">
         <TR>
             <TD style="width: 200px;" ALIGN=LEFT>
-                '$FILEMSG':
+                '$"Compressed profile"':
             </TD>
-            <TD> <INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="35"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Upload_a_new_profile"><img class="images" alt="" src="/images/help/info.png"><span>'$ARCHIVEHELP1'<br><br>'$ARCHIVEHELP2'</span></a>
+            <TD> <INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="35"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Upload_a_new_profile"><img class="images" alt="" src="/images/help/info.png"><span>'$"You need to upload a zip or tar.gz file of your chosen profile."'<br><br>'$"There should be one folder in the top level of the created archive which is the name of your profile."'</span></a>
 </TD>
         </TR>
         </TABLE>
 </div>
 <div id="submitbox">
-<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>
 </form></BODY>
 </HTML>

@@ -28,15 +28,13 @@
 #Language
 ############################
 MOD_CODE=`echo ${RANDOM:0:3}`
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/modify_groups ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/modify_groups
+TEXTDOMAIN=karoshi-server
+
 
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
@@ -50,7 +48,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Bulk User Actions"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -59,35 +57,35 @@ echo '
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/modify_groups.cgi" method="post">
   <div id="actionbox">
-  <b>'$TITLE'</b> 
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Bulk_User_Actions"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
+  <b>'$"Bulk User Actions"'</b> 
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Bulk_User_Actions"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will affect a group of users."'</span></a>
 <br><br>
   <table class="standard" style="text-align: left; left: 232px;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
 <tr><td style="width: 180px;">
-'$PRIGROUPMSG'</td><td>'
+'$"Primary Group"'</td><td>'
 /opt/karoshi/web_controls/group_dropdown_list
 echo '</td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Bulk_User_Actions"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Bulk_User_Actions"><img class="images" alt="" src="/images/help/info.png"><span>'$"All users in the group you select will be affected by the action you choose from this menu."'</span></a>
 </td></tr>
-<tr><td>'$OPTIONMSG'</td><td>
+<tr><td>'$"Option"'</td><td>
 <select name="_OPTIONCHOICE_" style="width: 200px;">
-<option value="enable">'$ENABLEMSG'</option>
-<option value="disable">'$DISABLEMSG'</option>
-<option value="deleteaccounts">'$DELETEMSG'</option>
-<option value="deleteaccounts2">'$DELETEMSG2'</option>
-<option value="resetpasswords">'$RESETPASSMSG'</option>
+<option value="enable">'$"Enable"'</option>
+<option value="disable">'$"Disable"'</option>
+<option value="deleteaccounts">'$"Delete accounts"'</option>
+<option value="deleteaccounts2">'$"Archive and delete accounts"'</option>
+<option value="resetpasswords">'$"Reset passwords"'</option>
 </select></td></tr>
 <tr><td style="width: 180px;">
-'$EXECPTIONMSG'
+'$"Exceptions"'
 </td><td>
 <input tabindex= "1" name="_EXCEPTIONLIST_" style="width: 200px;" size="20" type="text">
 </td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Bulk_User_Actions"><img class="images" alt="" src="/images/help/info.png"><span>'$EXCEPTIONHELP'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Bulk_User_Actions"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in any user accounts that you do not want to modify separated by spaces."'</span></a>
 </td></tr>
-<tr><td>'$CODEMSG'</td><td style="vertical-align: top; text-align: left;"><b>'$MOD_CODE'</b></td></tr>
-<tr><td>'$CONFIRMMSG'</td><td style="vertical-align: top; text-align: left;"><input name="_MODCODE_" maxlength="3" size="3" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Modify_Groups"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a>
+<tr><td>'$"Modify Code"'</td><td style="vertical-align: top; text-align: left;"><b>'$MOD_CODE'</b></td></tr>
+<tr><td>'$"Confirm"'</td><td style="vertical-align: top; text-align: left;"><input name="_MODCODE_" maxlength="3" size="3" type="text"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Modify_Groups"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the code displayed on the page to confirm this action."'</span></a>
 
 </td></tr>
     </tbody>
@@ -95,7 +93,7 @@ echo '</td><td>
 <input name="_FORMCODE_" value="'$MOD_CODE'" type="hidden">
   </div>
   <div id="submitbox">
-  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+  <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
   </div>
 </form>
 </div></body>

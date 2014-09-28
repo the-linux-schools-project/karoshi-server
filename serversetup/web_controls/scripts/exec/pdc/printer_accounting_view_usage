@@ -108,10 +108,8 @@ fi
 echo `date`: printer_accounting_view_usage "for" $NAME $MONTH $YEAR by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printer_accounting ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printer_accounting
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 ICON1=/images/submenus/printer/edit_printer_limits.png
 PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/printserver`
@@ -133,7 +131,7 @@ WIDTH1=85
 TABLECLASS=mobilestandard
 fi
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: '$WIDTH1'px;"><b>'$USERNAMEMSG'</b></td><td><b>'$YEARMSG'</b></td><td><b>'$MONTHMSG'</b></td><td><b>'$TOTALMSG'</b></td></tr>'
+<tr><td style="width: '$WIDTH1'px;"><b>'$"Username"'</b></td><td><b>'$"Year"'</b></td><td><b>'$"Month"'</b></td><td><b>'$"Print Total"'</b></td></tr>'
 
 if [ $PRINTSERVER = `hostname-fqdn` ] && [ $TYPE = user ]
 then
@@ -145,21 +143,21 @@ grep ^$YEAR, /opt/karoshi/server_network/printer_accounting/usage/$NAME | cut -d
 TOTALUSAGE=`sed -n 1,1p /opt/karoshi/server_network/printer_accounting/accounting/$NAME | tr -cd 0-9`
 
 echo "<tr><td style=\"vertical-align: top; height: 15px;\"></td></tr>
-<tr><td style=\"vertical-align: top; \"><b>$USERLIMITMSG</b></td><td></td><td></td><td style=\"vertical-align: top; \">$LIMIT</td>
+<tr><td style=\"vertical-align: top; \"><b>$"User Limit"</b></td><td></td><td></td><td style=\"vertical-align: top; \">$LIMIT</td>
 <td style=\"vertical-align: top; \">
 <form name=\"myform\" action=\"printer_accounting_edit_limits_fm.cgi\" method=\"post\">
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_NAME_$NAME"_"TYPE_user_LIMIT"_"$LIMIT"_"TOTAL_$TOTALUSAGE"_"GROUPLIMIT_$GROUPLIMIT"_"\" type="image" class="images" src=\"$ICON1\" value=\"\"><span>$EDITLIMITMSG2</span></a></form></td>
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_NAME_$NAME"_"TYPE_user_LIMIT"_"$LIMIT"_"TOTAL_$TOTALUSAGE"_"GROUPLIMIT_$GROUPLIMIT"_"\" type="image" class="images" src=\"$ICON1\" value=\"\"><span>$"Edit User Limit"</span></a></form></td>
 </tr>
-<tr><td style=\"vertical-align: top; \"><b>$GROUPLIMITMSG</b></td><td></td><td></td><td style=\"vertical-align: top; \">$GROUPLIMIT</td>
+<tr><td style=\"vertical-align: top; \"><b>$"Group Limit"</b></td><td></td><td></td><td style=\"vertical-align: top; \">$GROUPLIMIT</td>
 <td style=\"vertical-align: top; \">
 <form name=\"myform\" action=\"printer_accounting_edit_limits_fm.cgi\" method=\"post\">
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_NAME_$PRIMARYGROUP"_"TYPE_group_LIMIT"_"$GROUPLIMIT"_"\" type="image" class="images" src=\"$ICON1\" value=\"\"><span>$EDITLIMITMSG3</span></a></form></td>
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_NAME_$PRIMARYGROUP"_"TYPE_group_LIMIT"_"$GROUPLIMIT"_"\" type="image" class="images" src=\"$ICON1\" value=\"\"><span>$"Edit Group Limit"</span></a></form></td>
 </tr>
-<tr><td><b>$TOTALMSG</b></td><td></td><td></td><td><b>$TOTALUSAGE</b></td></tr>
+<tr><td><b>$"Print Total"</b></td><td></td><td></td><td><b>$TOTALUSAGE</b></td></tr>
 "
 
 else
-echo "<tr><td>"$ERRORMSG9"</td></tr>"
+echo '<tr><td>'$"No printer data exists for this user."'</td></tr>'
 fi
 else
 if [ -f /opt/karoshi/server_network/printer_accounting/usage/$NAME ]
@@ -167,19 +165,19 @@ then
 TOTALUSAGE=`sed -n 1,1p /opt/karoshi/server_network/printer_accounting/accounting/$NAME | tr -cd 0-9`
 grep ^$YEAR,$MONTH, /opt/karoshi/server_network/printer_accounting/usage/$NAME | cut -d, -f1-3 | sed "s/^/<tr><td>$NAME<\/td><td>/g" | sed "s/,/<\/td><td>/g" | sed "s/$/<\/td><\/tr>/g"
 echo "<tr><td style=\"vertical-align: top; height: 15px;\"></td></tr>
-<tr><td style=\"vertical-align: top; \"><b>$USERLIMITMSG</b></td><td></td><td></td><td style=\"vertical-align: top; \">$LIMIT</td>
+<tr><td style=\"vertical-align: top; \"><b>$"User Limit"</b></td><td></td><td></td><td style=\"vertical-align: top; \">$LIMIT</td>
 <td style=\"vertical-align: top; \">
 <form name=\"myform\" action=\"printer_accounting_edit_limits_fm.cgi\" method=\"post\">
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_NAME_$NAME"_"TYPE_user_LIMIT"_"$LIMIT"_"TOTAL_$TOTALUSAGE"_"GROUPLIMIT_$GROUPLIMIT"_"\" type="image" class="images" src=\"$ICON1\" value=\"\"><span>$EDITLIMITMSG2</span></a></form></td>
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_NAME_$NAME"_"TYPE_user_LIMIT"_"$LIMIT"_"TOTAL_$TOTALUSAGE"_"GROUPLIMIT_$GROUPLIMIT"_"\" type="image" class="images" src=\"$ICON1\" value=\"\"><span>$"Edit User Limit"</span></a></form></td>
 </tr>
-<tr><td style=\"vertical-align: top; \"><b>$GROUPLIMITMSG</b></td><td></td><td></td><td style=\"vertical-align: top; \">$GROUPLIMIT</td>
+<tr><td style=\"vertical-align: top; \"><b>$"Group Limit"</b></td><td></td><td></td><td style=\"vertical-align: top; \">$GROUPLIMIT</td>
 <td style=\"vertical-align: top; \">
 <form name=\"myform\" action=\"printer_accounting_edit_limits_fm.cgi\" method=\"post\">
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_NAME_$PRIMARYGROUP"_"TYPE_group_LIMIT"_"$GROUPLIMIT"_"\" type="image" class="images" src=\"$ICON1\" value=\"\"><span>$EDITLIMITMSG2</span></a></form></td>
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_NAME_$PRIMARYGROUP"_"TYPE_group_LIMIT"_"$GROUPLIMIT"_"\" type="image" class="images" src=\"$ICON1\" value=\"\"><span>$"Edit User Limit"</span></a></form></td>
 </tr>
-<tr><td><b>$TOTALMSG</b></td><td></td><td></td><td><b>$TOTALUSAGE</b></td></tr>"
+<tr><td><b>$"Print Total"</b></td><td></td><td></td><td><b>$TOTALUSAGE</b></td></tr>"
 else
-echo "<tr><td>"$ERRORMSG9"</td></tr>"
+echo '<tr><td>'$"No printer data exists for this user."'</td></tr>'
 fi
 fi
 fi
@@ -219,21 +217,21 @@ grep ^'$YEAR', /opt/karoshi/server_network/printer_accounting/usage/'$NAME' | cu
 TOTALUSAGE=`sed -n 1,1p /opt/karoshi/server_network/printer_accounting/accounting/'$NAME' | tr -cd 0-9`
 
 echo "<tr><td style=\"vertical-align: top; height: 15px;\"></td></tr>
-<tr><td style=\"vertical-align: top; \"><b>'$USERLIMITMSG'</b></td><td></td><td></td><td style=\"vertical-align: top; \">'$LIMIT'</td>
+<tr><td style=\"vertical-align: top; \"><b>'$"User Limit"'</b></td><td></td><td></td><td style=\"vertical-align: top; \">'$LIMIT'</td>
 <td style=\"vertical-align: top; \">
 <form name=\"myform\" action=\"printer_accounting_edit_limits_fm.cgi\" method=\"post\">
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_NAME_'$NAME'"_"TYPE_user_LIMIT"_"'$LIMIT'"_"TOTAL_$TOTALUSAGE"_"GROUPLIMIT_'$GROUPLIMIT'"_"\" type="image" class="images" src=\"'$ICON1'\" value=\"\"><span>'$EDITLIMITMSG2'</span></a></form></td>
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_NAME_'$NAME'"_"TYPE_user_LIMIT"_"'$LIMIT'"_"TOTAL_$TOTALUSAGE"_"GROUPLIMIT_'$GROUPLIMIT'"_"\" type="image" class="images" src=\"'$ICON1'\" value=\"\"><span>'$"Edit User Limit"'</span></a></form></td>
 </tr>
-<tr><td style=\"vertical-align: top; \"><b>'$GROUPLIMITMSG'</b></td><td></td><td></td><td style=\"vertical-align: top; \">'$GROUPLIMIT'</td>
+<tr><td style=\"vertical-align: top; \"><b>'$"Group Limit"'</b></td><td></td><td></td><td style=\"vertical-align: top; \">'$GROUPLIMIT'</td>
 <td style=\"vertical-align: top; \">
 <form name=\"myform\" action=\"printer_accounting_edit_limits_fm.cgi\" method=\"post\">
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_NAME_'$PRIMARYGROUP'"_"TYPE_group_LIMIT"_"'$GROUPLIMIT'"_"\" type="image" class="images" src=\"'$ICON1'\" value=\"\"><span>'$EDITLIMITMSG3'</span></a></form></td>
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_NAME_'$PRIMARYGROUP'"_"TYPE_group_LIMIT"_"'$GROUPLIMIT'"_"\" type="image" class="images" src=\"'$ICON1'\" value=\"\"><span>'$"Edit Group Limit"'</span></a></form></td>
 </tr>
-<tr><td><b>'$TOTALMSG'</b></td><td></td><td></td><td><b>$TOTALUSAGE</b></td></tr>"
+<tr><td><b>'$"Print Total"'</b></td><td></td><td></td><td><b>$TOTALUSAGE</b></td></tr>"
 
 else
 
-echo "<tr><td>"'$ERRORMSG9'"</td></tr>"
+echo "<tr><td>"'$"No printer data exists for this user."'"</td></tr>"
 fi
 else
 if [ -f /opt/karoshi/server_network/printer_accounting/usage/'$NAME' ]
@@ -243,21 +241,21 @@ grep ^'$YEAR','$MONTH', /opt/karoshi/server_network/printer_accounting/usage/'$N
 TOTALUSAGE=`sed -n 1,1p /opt/karoshi/server_network/printer_accounting/accounting/'$NAME' | tr -cd 0-9`
 
 echo "<tr><td style=\"vertical-align: top; height: 15px;\"></td></tr>
-<tr><td style=\"vertical-align: top; \"><b>'$USERLIMITMSG'</b></td><td></td><td></td><td style=\"vertical-align: top; \">'$LIMIT'</td>
+<tr><td style=\"vertical-align: top; \"><b>'$"User Limit"'</b></td><td></td><td></td><td style=\"vertical-align: top; \">'$LIMIT'</td>
 <td style=\"vertical-align: top; \">
 <form name=\"myform\" action=\"printer_accounting_edit_limits_fm.cgi\" method=\"post\">
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_NAME_'$NAME'"_"TYPE_user_LIMIT"_"'$LIMIT'"_"TOTAL_$TOTALUSAGE"_"GROUPLIMIT_'$GROUPLIMIT'"_"\" type="image" class="images" src=\"'$ICON1'\" value=\"\"><span>'$EDITLIMITMSG2'</span></a></form></td>
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_NAME_'$NAME'"_"TYPE_user_LIMIT"_"'$LIMIT'"_"TOTAL_$TOTALUSAGE"_"GROUPLIMIT_'$GROUPLIMIT'"_"\" type="image" class="images" src=\"'$ICON1'\" value=\"\"><span>'$"Edit User Limit"'</span></a></form></td>
 </tr>
-<tr><td style=\"vertical-align: top; \"><b>'$GROUPLIMITMSG'</b></td><td></td><td></td><td style=\"vertical-align: top; \">'$GROUPLIMIT'</td>
+<tr><td style=\"vertical-align: top; \"><b>'$"Group Limit"'</b></td><td></td><td></td><td style=\"vertical-align: top; \">'$GROUPLIMIT'</td>
 <td style=\"vertical-align: top; \">
 <form name=\"myform\" action=\"printer_accounting_edit_limits_fm.cgi\" method=\"post\">
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_NAME_'$PRIMARYGROUP'"_"TYPE_group_LIMIT"_"'$GROUPLIMIT'"_"\" type="image" class="images" src=\"'$ICON1'\" value=\"\"><span>'$EDITLIMITMSG3'</span></a></form></td>
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_NAME_'$PRIMARYGROUP'"_"TYPE_group_LIMIT"_"'$GROUPLIMIT'"_"\" type="image" class="images" src=\"'$ICON1'\" value=\"\"><span>'$"Edit Group Limit"'</span></a></form></td>
 </tr>
-<tr><td><b>'$TOTALMSG'</b></td><td></td><td></td><td><b>$TOTALUSAGE</b></td></tr>"
+<tr><td><b>'$"Print Total"'</b></td><td></td><td></td><td><b>$TOTALUSAGE</b></td></tr>"
 
 
 else
-echo "<tr><td>"'$ERRORMSG9'"</td></tr>"
+echo "<tr><td>"'$"No printer data exists for this user."'"</td></tr>"
 fi
 fi
 '

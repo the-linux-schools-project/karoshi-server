@@ -29,16 +29,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/software_raid_create_cgi
 then
-echo `date`: software_raid_create - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: software_raid_create - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/software_raid_create_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/software_raid_create.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $software_raid_create_cgi'check' ]
 then
-echo `date`: software_raid_create - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: software_raid_create - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -53,10 +53,10 @@ fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: software_raid_create - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: software_raid_create - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -69,108 +69,106 @@ SERVERMASTER=`echo "$DATA" | cut -s -d: -f6`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: software_raid_create - Not called by software_raid_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: software_raid_create - Not called by software_raid_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: software_raid_create - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: software_raid_create - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: software_raid_create - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: software_raid_create - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-echo `date`: software_raid_create - Blank server >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: software_raid_create - Blank server >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $SERVERTYPE'null' = null ]
+if [ -z "$SERVERTYPE" ]
 then
-echo `date`: software_raid_create - Blank servertype >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: software_raid_create - Blank servertype >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ $SERVERTYPE = federatedslave ]
 then
-if [ $SERVERMASTER'null' = null ]
-then
-echo `date`: software_raid_create - Blank servermaster >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
+	if [ -z "$SERVERMASTER" ]
+	then
+		echo `date`: software_raid_create - Blank servermaster >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: software_raid_create - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: software_raid_create - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/software_raid ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/software_raid
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 source /opt/karoshi/serversetup/variables/distro
 
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
-#Check to see that a raid has not already been created on this server
-if [ `grep -c "#Software raid" /etc/fstab` -gt 0 ]
-then
-echo $ERRORMSG13
-sleep 5
-exit
+	#Check to see that a raid has not already been created on this server
+	if [ `grep -c "#Software raid" /etc/fstab` -gt 0 ]
+	then
+	echo $"A software raid has already been setup on this server."
+	sleep 5
+	exit
 fi 
 
 #Check to see if mdadm is installed
 UPDATEREPOS=yes
 RELOADPAGE=no
 which mdadm 1>/dev/null
-if [ `echo $?` != 0 ]
+if [ $? != 0 ]
 then
-RELOADPAGE=yes
-echo "<li>"Updating repositories"</li>"
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-apt-get update
-echo "</pre>"
-UPDATEREPOS=no
-echo "<li>"Installing mdadm"</li>"
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-apt-get install -y mdadm
-echo "</pre>"
+	RELOADPAGE=yes
+	echo "<li>"Updating repositories"</li>"
+	echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+	apt-get update
+	echo "</pre>"
+	UPDATEREPOS=no
+	echo "<li>"Installing mdadm"</li>"
+	echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+	apt-get install -y mdadm
+	echo "</pre>"
 fi
 
 #Check to see if smartmontools are installed
 which smartctl 1>/dev/null
-if [ `echo $?` != 0 ]
+if [ $? != 0 ]
 then
-RELOADPAGE=yes
-if [ $UPDATEREPOS = yes ]
-then
-UPDATEREPOS=no
-echo "<li>"Updating repositories"</li>"
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-apt-get update
-echo "</pre>"
-fi
-echo "<li>"Installing smartmontools"</li>"
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-apt-get install -y smartmontools
-echo "</pre>"
+	RELOADPAGE=yes
+	if [ $UPDATEREPOS = yes ]
+	then
+		UPDATEREPOS=no
+		echo "<li>"Updating repositories"</li>"
+		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+		apt-get update
+		echo "</pre>"
+	fi
+	echo "<li>"Installing smartmontools"</li>"
+	echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+	apt-get install -y smartmontools
+	echo "</pre>"
 fi
 
 if [ $RELOADPAGE = yes ]
 then
-echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/software_raid_create.cgi\" target=\"_top\" name = \"frm\">
+	echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/software_raid_create.cgi\" target=\"_top\" name = \"frm\">
 <input type=\"hidden\" name=\"_SERVERNAME_\" value=\"$SERVERNAME\">
 <input type=\"hidden\" name=\"_SERVERTYPE_\" value=\"$SERVERTYPE\">
 <input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"$SERVERMASTER\">
@@ -179,7 +177,7 @@ echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/software_raid_create.cgi\
 document.frm.submit();
 </script><form>
 "
-exit
+	exit
 fi
 
 #Check to see if any raid has been previously created from an earlier install
@@ -188,16 +186,16 @@ RAIDINFO=`mdadm --detail --scan`
 SHOWRESTORE=no
 if [ `echo $RAIDINFO'null' | sed "s/ //g"` != null ]
 then
-RAIDNAME=`echo $RAIDINFO | cut -d" " -f2`
-RAIDUUID=`blkid $RAIDNAME | cut -d" " -f2`
-SHOWRESTORE=yes
-fi
+	RAIDNAME=`echo $RAIDINFO | cut -d" " -f2`
+	RAIDUUID=`blkid $RAIDNAME | cut -d" " -f2`
+	SHOWRESTORE=yes
+	fi
 #Stop any running raid
 mdadm --stop --scan
 
 
 #Get list of all drives
-ALL_DRIVES=( `parted -l -s | grep Disk | sed "s/Error: //g" | sed "s/Disk //g" | grep /dev/sd | cut -d: -f1 | tr -cd "A-Za-z0-9/\n "` )
+ALL_DRIVES=( /dev/sd? )
 ALL_DRIVES_COUNT=${#ALL_DRIVES[@]}
 
 #Get list of all unmounted drives and display properties
@@ -228,25 +226,25 @@ fi
 
 if [ $SHOW_MENU = yes ]
 then
-echo "
-<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+echo '
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody>
-<tr><td style=\"width: 180px;\"><b>"$MOUNTMSG"</b></td><td><input tabindex= \"1\" value=\"/home\" name=\"_MOUNTPOINT_\" size=\"20\" style=\"width: 200px;\" type=\"text\"></td><td>
-<a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Software_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$HELPMSG1</span></a>
+<tr><td style="width: 180px;"><b>'$"Mount point"'</b></td><td><input tabindex= "1" value="/home" name="_MOUNTPOINT_" size="20" style="width: 200px;" type="text"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Software_Raid"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the mount point that you want the raid array to be mounted on."' '$"Allowed mount points are /home or subfolders of /media, /mnt, /var, and /home"'</span></a>
 </td></tr>
-<tr><td><b>"$RAIDTYPEMSG"</b></td><td>
-<select name=\"_RAIDTYPE_\" style=\"width: 200px;\">
-<option value=\"raid1\">Raid 1</option>"
+<tr><td><b>'$"Raid Type"'</b></td><td>
+<select name="_RAIDTYPE_" style="width: 200px;">
+<option value="raid1">Raid 1</option>'
 
 if [ $SHOWRESTORE = yes ]
 then
 echo "<option value=\"raid5\">Raid 5</option>
 <option selected=\"selected\" value=\"restore\">Restore Existing Raid</option>
 "
-RAIDHELP=$HELPMSG6
+RAIDHELP=$"You do not have to pick any drives if you choose the restore option. This is the only option that does not result in data loss. Choosing any other option will result in data loss on all of the drives chosen."
 else
 echo "<option selected=\"selected\" value=\"raid5\">Raid 5</option>"
-RAIDHELP=$HELPMSG7
+RAIDHELP=$"All chosen disks will be formatted and any existing data will be lost from the chosen disk drives."
 fi
 
 echo "</select>
@@ -254,10 +252,10 @@ echo "</select>
 <td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Software_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$RAIDHELP</span></a></td>
 </tr>
 </tbody></table>"
-echo "<br><br><table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
-<tbody><tr><td style=\"width: 180px;\"><b>$DISKMSG</b></td><td style=\"width: 80px;\"><b>$SIZEMSG</b></td><td>
-<a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Software_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$HELPMSG2<br><br>$HELPMSG3<br><br>$HELPMSG4</span></a>
-</td></tr>"
+echo '<br><br><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<tbody><tr><td style="width: 180px;"><b>'$"Disk"'</b></td><td style="width: 80px;"><b>'$"Size"'</b></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Software_Raid"><img class="images" alt="" src="/images/help/info.png"><span>'$"Select the drives that you want to be added to the raid array."'<br><br>'$"Drives will only be shown if they are currently not mounted and are not already being used in a raid."'<br><br>'$"Spare drives can be added after the raid has been created."'</span></a>
+</td></tr>'
 SHOW_MENU=no
 SHOW_SUBMIT=yes
 fi
@@ -275,9 +273,9 @@ done
 if [ $SHOW_SUBMIT = yes ]
 then
 echo "</tbody></table><br><br>"
-echo "<input value=\"$SUBMITMSG\" class=\"button\" type=\"submit\"> <input value=\"$RESETMSG\" class=\"button\" type=\"reset\">"
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">'
 else
-echo $ERRORMSG8"<br><br>"
+echo $"No spare drives are available to create a raid array.""<br><br>"
 fi
 
 fi
@@ -290,7 +288,7 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 #Check to see that a raid has not already been created on this server
 if [ `grep -c "#Software raid" /etc/fstab` -gt 0 ]
 then
-echo '$ERRORMSG13'
+echo '$"A software raid has already been setup on this server."'
 sleep 5
 exit
 fi 
@@ -361,7 +359,7 @@ fi
 mdadm --stop --scan
 
 #Get list of all drives
-ALL_DRIVES=( `parted -l -s | grep Disk | sed "s/Error: //g" | sed "s/Disk //g" | grep /dev/sd | cut -d: -f1 | tr -cd "A-Za-z0-9/\n "` )
+ALL_DRIVES=( /dev/sd? )
 ALL_DRIVES_COUNT=${#ALL_DRIVES[@]}
 
 #Get list of all unmounted drives and display properties
@@ -395,10 +393,10 @@ then
 echo "
 <table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
 <tbody>
-<tr><td style=\"width: 180px;\"><b>"'$MOUNTMSG'"</b></td><td><input tabindex= \"1\" value=\"/home\" name=\"_MOUNTPOINT_\" size=\"20\" style=\"width: 200px;\" type=\"text\"></td><td>
-<a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Software_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$HELPMSG1'</span></a>
+<tr><td style=\"width: 180px;\"><b>"'$"Mount point"'"</b></td><td><input tabindex= \"1\" value=\"/home\" name=\"_MOUNTPOINT_\" size=\"20\" style=\"width: 200px;\" type=\"text\"></td><td>
+<a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Software_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$"Enter in the mount point that you want the raid array to be mounted on. Allowed mount points are /home or subfolders of /media, /mnt, /var, and /home"'</span></a>
 </td></tr>
-<tr><td><b>"'$RAIDTYPEMSG'"</b></td><td>
+<tr><td><b>"'$"Raid Type"'"</b></td><td>
 <select name=\"_RAIDTYPE_\" style=\"width: 200px;\">
 <option value=\"raid1\">Raid 1</option>"
 
@@ -415,16 +413,16 @@ echo "</select>
 <td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Software_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>"
 if [ $SHOWRESTORE = yes ]
 then
-echo '$HELPMSG6'
+echo '$"You do not have to pick any drives if you choose the restore option. This is the only option that does not result in data loss. Choosing any other option will result in data loss on all of the drives chosen."'
 else
-echo '$HELPMSG7'
+echo '$"All chosen disks will be formatted and any existing data will be lost from the chosen disk drives."'
 fi
 echo "</span></a></td>
 </tr>
 </tbody></table>"
 echo "<br><br><table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
-<tbody><tr><td style=\"width: 180px;\"><b>'$DISKMSG'</b></td><td style=\"width: 80px;\"><b>'$SIZEMSG'</b></td><td>
-<a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Software_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$HELPMSG2'<br><br>'$HELPMSG3'<br><br>'$HELPMSG4'</span></a>
+<tbody><tr><td style=\"width: 180px;\"><b>'$"Disk"'</b></td><td style=\"width: 80px;\"><b>'$"Size"'</b></td><td>
+<a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Software_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$"Select the drives that you want to be added to the raid array."'<br><br>'$"Drives will only be shown if they are currently not mounted and are not already being used in a raid."'<br><br>'$"Spare drives can be added after the raid has been created."'</span></a>
 </td></tr>"
 SHOW_MENU=no
 SHOW_SUBMIT=yes
@@ -443,9 +441,9 @@ done
 if [ $SHOW_SUBMIT = yes ]
 then
 echo "</tbody></table><br><br>"
-echo "<input value=\"'$SUBMITMSG'\" class=\"button\" type=\"submit\"> <input value=\"'$RESETMSG'\" class=\"button\" type=\"reset\">"
+echo "<input value=\"'$"Submit"'\" class=\"button\" type=\"submit\"> <input value=\"'$"Reset"'\" class=\"button\" type=\"reset\">"
 else
-echo '$ERRORMSG8'"<br><br>"
+echo '$"No spare drives are available to create a raid array."'"<br><br>"
 fi
 '
 fi
@@ -458,7 +456,7 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
 #Check to see that a raid has not already been created on this server
 if [ `grep -c "#Software raid" /etc/fstab` -gt 0 ]
 then
-echo '$ERRORMSG13'
+echo '$"A software raid has already been setup on this server."'
 sleep 5
 exit
 fi 
@@ -529,7 +527,7 @@ fi
 mdadm --stop --scan
 
 #Get list of all drives
-ALL_DRIVES=( `parted -l | sed "s/Error: //g" | sed "s/Disk //g" | grep /dev/sd | cut -d: -f1 | tr -cd "A-Za-z0-9/\n "` )
+ALL_DRIVES=( /dev/sd? )
 ALL_DRIVES_COUNT=${#ALL_DRIVES[@]}
 
 #Get list of all unmounted drives and display properties
@@ -563,10 +561,10 @@ then
 echo "
 <table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
 <tbody>
-<tr><td style=\"width: 180px;\"><b>"'$MOUNTMSG'"</b></td><td><input tabindex= \"1\" value=\"/home\" name=\"_MOUNTPOINT_\" size=\"20\" style=\"width: 200px;\" type=\"text\"></td><td>
-<a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Software_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$HELPMSG1'</span></a>
+<tr><td style=\"width: 180px;\"><b>"'$"Mount point"'"</b></td><td><input tabindex= \"1\" value=\"/home\" name=\"_MOUNTPOINT_\" size=\"20\" style=\"width: 200px;\" type=\"text\"></td><td>
+<a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Software_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$"Enter in the mount point that you want the raid array to be mounted on. Allowed mount points are /home or subfolders of /media, /mnt, /var, and /home"'</span></a>
 </td></tr>
-<tr><td><b>"'$RAIDTYPEMSG'"</b></td><td>
+<tr><td><b>"'$"Raid Type"'"</b></td><td>
 <select name=\"_RAIDTYPE_\" style=\"width: 200px;\">
 <option value=\"raid1\">Raid 1</option>"
 
@@ -583,16 +581,16 @@ echo "</select>
 <td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Software_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>"
 if [ $SHOWRESTORE = yes ]
 then
-echo '$HELPMSG6'
+echo '$"You do not have to pick any drives if you choose the restore option. This is the only option that does not result in data loss. Choosing any other option will result in data loss on all of the drives chosen."'
 else
-echo '$HELPMSG7'
+echo '$"All chosen disks will be formatted and any existing data will be lost from the chosen disk drives."'
 fi
 echo "</span></a></td>
 </tr>
 </tbody></table>"
 echo "<br><br><table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
-<tbody><tr><td style=\"width: 180px;\"><b>'$DISKMSG'</b></td><td style=\"width: 80px;\"><b>'$SIZEMSG'</b></td><td>
-<a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Software_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$HELPMSG2'<br><br>'$HELPMSG3'<br><br>'$HELPMSG4'</span></a>
+<tbody><tr><td style=\"width: 180px;\"><b>'$"Disk"'</b></td><td style=\"width: 80px;\"><b>'$"Size"'</b></td><td>
+<a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Software_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$"Select the drives that you want to be added to the raid array."'<br><br>'$"Drives will only be shown if they are currently not mounted and are not already being used in a raid."'<br><br>'$"Spare drives can be added after the raid has been created."'</span></a>
 </td></tr>"
 SHOW_MENU=no
 SHOW_SUBMIT=yes
@@ -611,9 +609,9 @@ done
 if [ $SHOW_SUBMIT = yes ]
 then
 echo "</tbody></table><br><br>"
-echo "<input value=\"'$SUBMITMSG'\" class=\"button\" type=\"submit\"> <input class=\"button\" value=\"'$RESETMSG'\" type=\"reset\">"
+echo "<input value=\"'$"Submit"'\" class=\"button\" type=\"submit\"> <input class=\"button\" value=\"'$"Reset"'\" type=\"reset\">"
 else
-echo '$ERRORMSG8'"<br><br>"
+echo '$"No spare drives are available to create a raid array."'"<br><br>"
 fi
 '\''
 '

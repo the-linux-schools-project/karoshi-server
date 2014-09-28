@@ -31,15 +31,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printer_accounting ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printer_accounting
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -51,7 +49,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE8'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add User Printer Limit"'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
@@ -103,31 +101,31 @@ then
 
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE8'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+	<span>'$"Add User Printer Limit"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div>
 '
 else
-echo '<b>'$TITLE8'</b><br><br>'
+echo '<b>'$"Add User Printer Limit"'</b><br><br>'
 fi
 
 if [ $MOBILE = yes ]
 then
 echo '<div id="mobileactionbox">'
-echo ''$USERNAMEMSG'<br>
+echo ''$"Username"'<br>
 <input name="_TYPE_" value="user" type="hidden">
 <input tabindex= "1" name="_NAME_" style="width: 160px;" size="20" type="text"><br>
-'$LIMITMSG'<br>
+'$"Limit"'<br>
 <input tabindex= "1" name="_LIMIT_" style="width: 160px;" size="20" type="text"><br><br>
 '
 else
 echo '<input name="_TYPE_" value="user" type="hidden">
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
-<tr><td style="width: '$WIDTH'px;">'$USERNAMEMSG'</td><td><input tabindex= "1" name="_NAME_" style="width: 200px;" size="20" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Accounting#User_Limits"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG10"'</span></a></td></tr>
-<tr><td style="width: 180px;">'$LIMITMSG'</td><td><input tabindex= "1" name="_LIMIT_" style="width: 200px;" size="20" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Accounting#User_Limits"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG5"'</span></a></td></tr>
+<tr><td style="width: '$WIDTH'px;">'$"Username"'</td><td><input tabindex= "1" name="_NAME_" style="width: 200px;" size="20" type="text"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Accounting#User_Limits"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to add a printer limit for."'</span></a></td></tr>
+<tr><td style="width: 180px;">'$"Limit"'</td><td><input tabindex= "1" name="_LIMIT_" style="width: 200px;" size="20" type="text"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Accounting#User_Limits"><img class="images" alt="" src="/images/help/info.png"><span>'$"Set the page limits that you want for each user or group."'</span></a></td></tr>
 </tbody></table><br>'
 fi
 
@@ -135,7 +133,7 @@ if [ $MOBILE = no ]
 then
 echo '</div><div id="submitbox">'
 fi
-echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div></form></div></body></html>
 '
 exit

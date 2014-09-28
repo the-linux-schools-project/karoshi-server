@@ -32,15 +32,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 #Language
 ############################
 SHUTDOWN_CODE=`echo ${RANDOM:0:3}`
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/update_server_proxy_settings ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/update_server_proxy_settings
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -53,7 +51,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE1'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Configure Server Proxy Settings"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
   <script type="text/javascript">
 <!--
@@ -97,14 +95,14 @@ echo '<form action="/cgi-bin/admin/update_server_proxy_settings_fm.cgi" name="se
 if [ $MOBILE = yes ]
 then
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
-<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$TITLE1'</b></a></td></tr></tbody></table><br>'
+<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"'"></a></td>
+<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Configure Server Proxy Settings"'</b></a></td></tr></tbody></table><br>'
 else
-echo '<div class="sectiontitle">'$TITLE1'</div><br></div><div id="infobox">'
+echo '<div class="sectiontitle">'$"Configure Server Proxy Settings"'</div><br></div><div id="infobox">'
 fi
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE servers "$ACTIONMSG"
+/opt/karoshi/web_controls/show_servers $MOBILE servers $"Set Proxy"
 
 [ $MOBILE = no ] && echo '</div>'
 

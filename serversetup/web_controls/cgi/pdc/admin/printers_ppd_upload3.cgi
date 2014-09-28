@@ -36,19 +36,17 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printers_ppd_upload ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printers_ppd_upload
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<html><head><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<html><head><title>'$"Upload PPD file"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -61,7 +59,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:%/+-'`
 #Get printer details
 if [ ! -f /var/www/karoshi/uploadppd ]
 then
-MESSAGE=$ERRORMSG7
+MESSAGE=$"No Printer details found."
 show_status
 fi
 source /var/www/karoshi/uploadppd
@@ -89,7 +87,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -97,13 +95,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
@@ -113,14 +111,14 @@ chmod 0700 /var/www/karoshi/
 chmod 0700 /var/www/karoshi/ppd_files
 if [ `dir /var/www/karoshi/ppd_files --format=single-column | wc -l` != 1 ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"There is no PPD file available."
 show_status
 fi
 PPDFILE=`ls /var/www/karoshi/ppd_files`
 #Check file extension
 if [ `echo $PPDFILE | grep -c .ppd` = 0 ]
 then
-MESSAGE=$ERRORMSG6
+MESSAGE=$"The file you have chosen does not have a ppd extension."
 show_status
 fi
 #Create MD5 sum for the ppd file
@@ -134,19 +132,19 @@ md5sum /var/www/karoshi/ppd_files/"$PPDFILE" > /var/www/karoshi/ppd_files/ppdche
 #Check to see that PRINTERNAME is not blank
 if [ $PRINTERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The printer name cannot be blank."
 show_status
 fi
 #Check to see that PAGESIZE is not blank
 if [ $PAGESIZE'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The page size cannot be blank."
 show_status
 fi
 #Check to see that Colour is not blank
 if [ $COLOUR'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The colour option cannot be blank."
 show_status
 fi
 
@@ -157,10 +155,10 @@ sudo -H /opt/karoshi/web_controls/exec/printers_ppd_add $REMOTE_USER:$REMOTE_ADD
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 101 ]
 then
-MESSAGE=`echo $ERRORMSG4`
+MESSAGE=`echo $"There was a problem adding this ppd. Please consult the Karoshi web administration logs."`
 show_status
 fi
-MESSAGE=`echo $COMPLETEDMSG $PRINTERNAME`
+MESSAGE=`echo $"The ppd file was added to" $PRINTERNAME`
 show_status
 echo "</div>"
 echo "</div></body></html>"

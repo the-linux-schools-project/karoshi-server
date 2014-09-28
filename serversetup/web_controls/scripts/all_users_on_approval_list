@@ -34,14 +34,10 @@ rm -f /opt/karoshi/.tempdata/userlist.$$
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/add_user ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/add_user
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
 #############################
 #Generate page warning
 #############################
-/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add acceptable_use_authorisations /cgi-bin/admin/view_acceptable_use_authorisations_fm.cgi "$ACCEPTABLEUSEWARNINGMSG" 1
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add acceptable_use_authorisations /cgi-bin/admin/view_acceptable_use_authorisations_fm.cgi $"Users have yet to sign an acceptable use policy." 1
 
 exit

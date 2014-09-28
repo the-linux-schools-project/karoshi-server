@@ -27,15 +27,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/backup_assign ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/backup_assign
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -46,7 +44,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Assign Backup Server"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
@@ -88,20 +86,20 @@ exit
 #Check to see that servername is not blank
 if [ -z "$SERVERNAME" ]
 then
-	MESSAGE=$ERRORMSG1
+	MESSAGE=$"The server cannot be blank."
 	show_status
 fi
 
 #Check to see that a backup server has been configured
 if [ ! -d /opt/karoshi/server_network/backup_servers/servers ]
 then
-	MESSAGE=$ERRORMSG2
+	MESSAGE=$"No backup servers have been configured."
 	show_status
 fi
 
 if [ `ls -1 /opt/karoshi/server_network/backup_servers/servers | wc -l` = 0 ]
 then
-	MESSAGE=$ERRORMSG2
+	MESSAGE=$"No backup servers have been configured."
 	show_status
 fi
 
@@ -111,7 +109,7 @@ fi
 echo '<form action="/cgi-bin/admin/backup_assign.cgi" method="post">
 <div id="actionbox">
 
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr><td style="vertical-align: top;"><div class="sectiontitle">'$TITLE - $SERVERNAME'</div></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td></tr></tbody></table><br>
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Assign Backup Server" - $SERVERNAME'</div></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the server that you want to backup to."'</span></a></td></tr></tbody></table><br>
 
 <input name="_SERVER_" value="'$SERVERNAME'" type="hidden">
 '
@@ -122,13 +120,13 @@ CURRENTBSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_se
 
 echo '<br><br><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody>
-<tr><td style="width: 10px; vertical-align: top; text-align: left;"></td><td style="width: 250px; vertical-align: top; text-align: left;">'$CURRENTBSERVERMSG'</td><td style="width: 250px; vertical-align: top; text-align: left;">'$CURRENTBSERVER'</td><td style="vertical-align: top; text-align: left;">
-<input name="_SERVERNAME_removebackupoption_" type="submit" class="button" value="'$NOBACKUPMSG'">
+<tr><td style="width: 10px; vertical-align: top; text-align: left;"></td><td style="width: 250px; vertical-align: top; text-align: left;">'$"Current backup server"'</td><td style="width: 250px; vertical-align: top; text-align: left;">'$CURRENTBSERVER'</td><td style="vertical-align: top; text-align: left;">
+<input name="_SERVERNAME_removebackupoption_" type="submit" class="button" value="'$"Un-assign"'">
 </td></tr></tbody></table><br><br>'
 fi
 
 MOBILE=no
-/opt/karoshi/web_controls/show_servers $MOBILE backupservers "$CHOOSESERVERMSG" backupserver $SERVERNAME
+/opt/karoshi/web_controls/show_servers $MOBILE backupservers $"Select server" backupserver $SERVERNAME
 
 echo '</tbody></table></div></form></div></body></html>'
 exit

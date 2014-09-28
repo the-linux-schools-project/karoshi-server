@@ -39,19 +39,17 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE5'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Computer Logs"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -163,7 +161,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -171,13 +169,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -186,13 +184,13 @@ fi
 #Check to see that TPCIP is not blank
 if [ $TCPIP'null' = null ]
 then
-MESSAGE=$ERRORMSG18
+MESSAGE=$"The tcpip number must not be blank."
 show_status
 fi
 #Check to see that DATE is not blank
 if [ $DATE'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The date cannot be blank."
 show_status
 fi
 
@@ -209,7 +207,7 @@ fi
 #Check that DAYCOUNT is not greater than 99
 if [ $DAYCOUNT -gt 99 ]
 then
-MESSAGE=$ERRORMSG15
+MESSAGE=$"Your username or password was not correct."
 show_status
 fi
 
@@ -220,35 +218,35 @@ do
 #Check to see that DAY is not blank
 if [ $DAY'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The date cannot be blank."
 show_status
 fi
 
 #Check to see that MONTH is not blank
 if [ $MONTH'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The date cannot be blank."
 show_status
 fi
 
 #Check to see that YEAR is not blank
 if [ $YEAR'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The date cannot be blank."
 show_status
 fi
 
 #Check that day is not greater than 31
 if [ $DAY -gt 31 ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"Date input error."
 show_status
 fi
 
 #Check that the month is not greater than 12
 if [ $MONTH -gt 12 ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"Date input error."
 show_status
 fi
 
@@ -260,14 +258,14 @@ else
 #Check that DETAILED is yes
 if [ $DETAILED != yes ] && [ $DETAILED != no ]
 then
-MESSAGE=$ERRORMSG20
+MESSAGE=$"Incorrect detail value."
 show_status
 fi
 fi
 
 if [ $YEAR -lt 2006 ] || [ $YEAR -gt 3006 ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The year is not valid."
 show_status
 fi
 
@@ -277,8 +275,8 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE5'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+	<span>'$"Computer Logs"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobilecontent"><div id="mobileactionbox2">
 '
 fi
@@ -289,12 +287,12 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$TCPIP:$DAY:$MONTH:$YEAR:$DETAILED:$MOBI
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 101 ]
 then
-MESSAGE=`echo $PROBLEMMSG $LOGMSG`
+MESSAGE=`echo $"There was a problem with this action." $"Internet Logs for"`
 show_status
 fi
 if [ $EXEC_STATUS = 102 ]
 then
-echo $TCPIP $DAY-$MONTH-$YEAR : $ERRORMSG5'<br><br>'
+echo $TCPIP $DAY-$MONTH-$YEAR : $"No log for this date."'<br><br>'
 fi
 
 # Add one to the day

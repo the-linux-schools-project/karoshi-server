@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/serversetup/language/$LANGCHOICE/modules/printserver/setupprintserver ] || LANGCHOICE=englishuk
-source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/printserver/setupprintserver
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -48,7 +46,7 @@ echo ""
 echo '
 <html>
 <head>
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Setup Print Server"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -93,7 +91,7 @@ exit
 #Check to see that servername is not blank
 if [ $SERVERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The servername cannot be blank."
 show_status
 fi
 
@@ -104,16 +102,16 @@ echo '
 <form action="/cgi-bin/admin/module_printserver.cgi" method="post">
 <div id="actionbox">
 
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr><td style="vertical-align: top;"><div class="sectiontitle">'$TITLE' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Print_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Setup Print Server"' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Print_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will set up a print server for your network allowing printer queues to be created and controlled. Printer drivers can be added to the printer queues so that your client computers do not need to have the printer drivers installed on them."'</span></a>
 </td></tr></tbody></table><br>
 
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
-<b>'$DESCRIPTIONMSG'</b><br><br>
-'$HELPMSG1'
+<b>'$"Description"'</b><br><br>
+'$"This will set up a print server for your network allowing printer queues to be created and controlled. Printer drivers can be added to the printer queues so that your client computers do not need to have the printer drivers installed on them."'
 </div>
 <div id="submitbox">
-<input value="'$SUBMITMSG'" class="button" type="submit">
+<input value="'$"Submit"'" class="button" type="submit">
 </div>
 </form>
 </div></body>

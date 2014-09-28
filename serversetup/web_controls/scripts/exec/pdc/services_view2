@@ -128,12 +128,10 @@ echo `date`: services_view2 $SERVERNAME $SERVICE $ACTION - by $REMOTE_USER from 
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/services ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/services
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 source /opt/karoshi/serversetup/variables/distro
 
 function redirect {

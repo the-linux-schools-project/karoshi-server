@@ -38,19 +38,17 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE2'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Site Internet Logs"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -134,7 +132,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -142,13 +140,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -157,14 +155,14 @@ fi
 #Check to see that SEARCH is not blank
 if [ $SEARCH'null' = null ]
 then
-MESSAGE=$ERRORMSG6
+MESSAGE=$"The log search cannot be blank."
 show_status
 fi
 
 #Check to see that DATE is not blank
 if [ $DATE'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The date cannot be blank."
 show_status
 fi
 
@@ -175,42 +173,42 @@ YEAR=`echo $DATE | cut -d- -f3`
 #Check to see that DAY is not blank
 if [ $DAY'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The date cannot be blank."
 show_status
 fi
 
 #Check to see that MONTH is not blank
 if [ $MONTH'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The date cannot be blank."
 show_status
 fi
 
 #Check to see that YEAR is not blank
 if [ $YEAR'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The date cannot be blank."
 show_status
 fi
 
 #Check that day is not greater than 31
 if [ $DAY -gt 31 ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"Date input error."
 show_status
 fi
 
 #Check that the month is not greater than 12
 if [ $MONTH -gt 12 ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"Date input error."
 show_status
 fi
 
 #Check that the year is in range
 if [ $YEAR -lt 2006 ] || [ $YEAR -gt 3006 ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The year is not valid."
 show_status
 fi
 
@@ -224,13 +222,13 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE2'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+	<span>'$"Site Internet Logs"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobilecontent"><div id="mobileactionbox">
 '
 
 else
-echo '<div id="'$DIV_ID'"><div id="titlebox"><b>'$TITLE2'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
+echo '<div id="'$DIV_ID'"><div id="titlebox"><b>'$"Site Internet Logs"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Internet logs are updated every three minutes."'</span></a>
 <br><br></div><div id="infobox">'
 fi
 
@@ -238,12 +236,12 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SEARCH:$DAY:$MONTH:$YEAR:$MOBILE:" | su
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 102 ]
 then
-MESSAGE=`echo $ERRORMSG8`
+MESSAGE=`echo $"No log exists for this date."`
 show_status
 fi
 if [ $EXEC_STATUS = 103 ]
 then
-MESSAGE=`echo $ERRORMSG7`
+MESSAGE=`echo $"No sites for this search exist in this log."`
 show_status
 fi
 

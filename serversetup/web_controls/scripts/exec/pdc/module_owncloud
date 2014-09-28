@@ -29,16 +29,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/module_owncloud_cgi
 then
-echo `date`: module_owncloud - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_owncloud - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_owncloud_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_owncloud.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $module_owncloud_cgi'check' ]
 then
-echo `date`: module_owncloud - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_owncloud - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -47,16 +47,16 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: module_owncloud - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_owncloud - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-%'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: module_owncloud - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_owncloud - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -68,13 +68,13 @@ SERVERNAME=`echo "$DATA" | cut -s -d: -f5`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: module_owncloud - Not called by module_owncloud.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_owncloud - Not called by module_owncloud.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-echo `date`: module_owncloud - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_owncloud - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
@@ -83,18 +83,18 @@ exit 101
 fi
 if [ -z "$ALIAS" ]
 then
-echo `date`: module_owncloud - Blank alias by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: module_owncloud - Blank alias by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
 if [ -z "$SERVERNAME" ]
 then
-echo `date`: module_owncloud - Blank domain by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: module_owncloud - Blank domain by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: module_owncloud - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_owncloud - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 echo `date`: module_owncloud - setting up owncloud on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
@@ -105,17 +105,17 @@ source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/owncloud/setupowncl
 #Check that this server has been setup with the correct authentication
 if [ $SERVERNAME != `hostname-fqdn` ]
 then
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:users:" | /opt/karoshi/serversetup/modules/authentication/check_auth
-if [ $? = 101 ]
-then
-echo $AUTHENTICATIONFAILMSG"<br><br>"
-echo `date`: module_owncloud - $SERVERNAME does not have the correct authentication "for" this module by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-sleep 2
-exit 101
-fi
+	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:users:" | /opt/karoshi/serversetup/modules/authentication/check_auth
+	if [ $? = 101 ]
+	then
+		echo $"This server does not have the correct authentication set up on it.""<br><br>"
+		echo `date`: module_owncloud - $SERVERNAME does not have the correct authentication "for" this module by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		sleep 2
+		exit 101
+	fi
 fi
 
-echo '<div class="sectiontitle">'$TITLE' - '$SERVERNAME'</div><br></div><div id="infobox">'
+echo '<div class="sectiontitle">'$"Setup"' Owncloud - '$SERVERNAME'</div><br></div><div id="infobox">'
 
 source /opt/karoshi/server_network/domain_information/domain_name
 source /opt/karoshi/serversetup/variables/distro
@@ -204,10 +204,10 @@ fi
 
 function add_role_information {
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
-echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/owncloud
+echo $"Owncloud Server""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/owncloud
 echo '<a href="https://'$ALIAS.$REALM'/owncloud" target="_blank">https://'$ALIAS.$REALM'/owncloud</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/owncloud
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
-echo $ROLE2"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver
+echo $"Apache Web Server""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver
 echo $SERVERNAME > /opt/karoshi/server_network/owncloudserver
 echo $DOMAINPATH > /opt/karoshi/server_network/moodledomain
 [ ! -d /opt/karoshi/server_network/webservers/ ] && mkdir -p /opt/karoshi/server_network/webservers

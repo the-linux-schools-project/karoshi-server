@@ -38,19 +38,17 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/incident_log ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/incident_log
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Record Incident"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -191,7 +189,7 @@ echo '<input type="hidden" id="_MINUTES_" name="_MINUTES_" value="'$MINUTES'" />
 echo '<input type="hidden" id="_STUDENTS_" name="_STUDENTS_" value="'$STUDENTS'" />'
 echo '<input type="hidden" id="_INCIDENT_" name="_INCIDENT_" value="'$INCIDENT'" />'
 echo '<input type="hidden" id="_ACTIONTAKEN_" name="_ACTIONTAKEN_" value="'$ACTIONTAKEN'" />'
-echo '</div><div id="submitbox"> <input value='$BACK' type="submit"></div></form></div></body></html>'
+echo '</div><div id="submitbox"> <input value='$Back' type="submit"></div></form></div></body></html>'
 exit
 }
 
@@ -200,7 +198,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -208,13 +206,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -223,69 +221,69 @@ fi
 #Check to see that HOUR is not blank
 if [ $HOUR'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The time must not be blank."
 input_error
 fi
 #Check to see that MINUTES is not blank
 if [ $MINUTES'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The time must not be blank."
 input_error
 fi
 #Check to see that DAY is not blank
 if [ $DAY'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The date must not be blank."
 input_error
 fi
 #Check to see that MONTH is not blank
 if [ $MONTH'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The date must not be blank."
 input_error
 fi
 #Check to see that YEAR is not blank
 if [ $YEAR'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The date must not be blank."
 input_error
 fi
 #Check to see that INCIDENT is not blank
 if [ $INCIDENT'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The incident must not be blank."
 input_error
 fi
 #Check to see that ACTIONTAKEN is not blank
 if [ $ACTIONTAKEN'null' = null ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The action taken must not be blank."
 input_error
 fi
 #Check to see that STUDENTS is not blank
 if [ $STUDENTS'null' = null ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"You have not entered any students."
 input_error
 fi
 #Check that HOUR has two digits
 if [ `echo ${#HOUR}` != 2 ]
 then
-MESSAGE=$ERRORMSG6
+MESSAGE=$"The hour must have two digits."
 HOUR="??"
 input_error
 fi
 #Check that MINUTES has two digits
 if [ `echo ${#MINUTES}` != 2 ]
 then
-MESSAGE=$ERRORMSG7
+MESSAGE=$"The minutes must have two digits."
 MINUTES=""
 input_error
 fi
 #Check that day has two digits
 if [ `echo ${#DAY}` != 2 ]
 then
-MESSAGE=$ERRORMSG8
+MESSAGE=$"The day must have two digits."
 DAY="??"
 input_error
 fi
@@ -293,21 +291,21 @@ fi
 #Check that month has two digits
 if [ `echo ${#MONTH}` != 2 ]
 then
-MESSAGE=$ERRORMSG9
+MESSAGE=$"The month must have two digits."
 MONTH="??"
 input_error
 fi
 #Check that year has four digits
 if [ `echo ${#YEAR}` != 4 ]
 then
-MESSAGE=$ERRORMSG10
+MESSAGE=$"The year must have four digits."
 YEAR="????"
 input_error
 fi
 #Check that date and time does not have question marks in it!
 if [ `echo $DAY$MONTH$YEAR$HOUR$MINUTES | grep -c ?` != 0 ]
 then
-MESSAGE=$ERRORMSG11
+MESSAGE=$"Please correct the date error."
 input_error
 fi
 #Check that student usernames exist
@@ -321,13 +319,13 @@ STUDENT_USERNAME=`echo ${STUDENT_ARRAY[$COUNTER]}`
 getent passwd $STUDENT_USERNAME 1>/dev/null
 if [ `echo $?` != 0 ]
 then
-MESSAGE=`echo $STUDENT_USERNAME: $ERRORMSG12`
+MESSAGE=`echo $STUDENT_USERNAME: $"This user does not exist."`
 input_error
 fi
 let COUNTER=$COUNTER+1
 done
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/incident_log_add2.cgi | cut -d' ' -f1`
 sudo -H /opt/karoshi/web_controls/exec/incident_log_add $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DAY:$MONTH:$YEAR:$HOUR:$MINUTES:$INCIDENT:$ACTIONTAKEN:$STUDENTS
-MESSAGE=$COMPLETEDMSG
+MESSAGE=$"This incident has been added to the logs."
 show_status
 exit

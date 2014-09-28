@@ -51,9 +51,9 @@ then
 echo `date`: email_over_quota_report - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
 ########################
 #Check data
 ########################
@@ -81,13 +81,11 @@ echo `date`: email_over_quota_report - viewing by $REMOTE_USER from $REMOTE_ADDR
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_over_quota_report ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_over_quota_report
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 ############################
 #View over quota log
@@ -109,10 +107,10 @@ then
 LINECOUNT=`cat /opt/karoshi/postfixdata/quota_warnings | wc -l`
 if [ $LINECOUNT = 0 ]
 then
-echo "<b>"'$ERRORMSG2'"</b>"
+echo "<b>"'$"No users are over quota."'"</b>"
 exit
 fi
-echo \<table class=\"standard\"\>\<tbody\>\<tr\>\<td style=\"width: 200px\;\"\>\<b\>"'$USERTITLE'"\</b\>\</td\>\<td style=\"width: 150px\;\"\>\<b\>"'$LEVELTITLE'"\</b\>\<td\>\<td style=\"width: 150px\;\"\>\<b\>"'$SIZETITLE'"\</b\>\<td\>\<td\>\<b\>"'$DAYSTITLE'"\</b\>\<td\>\</tr\>
+echo \<table class=\"standard\"\>\<tbody\>\<tr\>\<td style=\"width: 200px\;\"\>\<b\>"'$"Username"'"\</b\>\</td\>\<td style=\"width: 150px\;\"\>\<b\>"'$"Threshold Level"'"\</b\>\<td\>\<td style=\"width: 150px\;\"\>\<b\>"'$"Inbox Size (MB)"'"\</b\>\<td\>\<td\>\<b\>"'$"Days to next warning"'"\</b\>\<td\>\</tr\>
 COUNTER=1
 while [ $COUNTER -le $LINECOUNT ]
 do
@@ -126,7 +124,7 @@ let COUNTER=$COUNTER+1
 done
 echo \</tbody\>\</table\>
 else
-echo "<b>"'$ERRORMSG1'"</b>"
+echo "<b>"'$"The quota log does not exist."'"</b>"
 exit
 fi
 '
@@ -136,10 +134,10 @@ then
 LINECOUNT=`cat /opt/karoshi/postfixdata/quota_warnings | wc -l`
 if [ $LINECOUNT = 0 ]
 then
-echo "<b>"$ERRORMSG2"</b>"
+echo '<b>'$"No users are over quota."'</b>'
 exit
 fi
-echo \<table class=\"standard\"\>\<tbody\>\<tr\>\<td style=\"width: 200px\;\"\>\<b\>"$USERTITLE"\</b\>\</td\>\<td style=\"width: 150px\;\"\>\<b\>"$LEVELTITLE"\</b\>\<td\>\<td style=\"width: 150px\;\"\>\<b\>"$SIZETITLE"\</b\>\<td\>\<td\>\<b\>"$DAYSTITLE"\</b\>\<td\>\</tr\>
+echo '<table class="standard"><tbody><tr><td style="width: 200px;"><b>'$"Username"'</b></td><td style="width: 150px;"><b>'$"Threshold Level"'</b><td><td style="width: 150px;"><b>'$"Inbox Size"' (MB)</b></td><td><b>'$"Days to next warning"'</b></td></tr>'
 COUNTER=1
 while [ $COUNTER -le $LINECOUNT ]
 do
@@ -151,9 +149,9 @@ DAYS=`echo $DATA | cut -d, -f4`
 echo \<tr\>\<td\>"$EMAILADDRESS"\</td\>\<td\>"$LEVEL"\<td\>\<td\>"$MBOXSIZE"\<td\>\<td\>"$DAYS"\<td\>\</tr\>
 let COUNTER=$COUNTER+1
 done
-echo \</tbody\>\</table\>
+echo '</tbody></table>'
 else
-echo "<b>"$ERRORMSG1"</b>"
+echo '<b>'$"The quota log does not exist."'</b>'
 exit
 fi
 fi

@@ -67,14 +67,11 @@ fi
 [ -d /var/www/html ] || mkdir -p /var/www/html
 [ ! -e /opt/karoshi/.tempdata/mysqlpasswordstatus ] || rm -f /opt/karoshi/.tempdata/mysqlpasswordstatus
 
-
-LANGCHOICE=englishuk
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/moodle/setupmoodle ] || LANGCHOICE=englishuk
-source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/moodle/setupmoodle
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 source /opt/karoshi/server_network/domain_information/domain_name
-
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+TEXTDOMAIN=karoshi-server
 
 LDAPSERVER=127.0.0.1
 #Get ldap server to use
@@ -131,7 +128,7 @@ fi
 #####################
 #Create moodle mysql password for the new database
 #####################
-echo '<li>'$MYSQLMSG'</li><br>'
+echo '<li>'$"Creating the moodle database in mysql"'</li><br>'
 RANGE=61
 COUNTER=1
 while [ $COUNTER -lt 16 ]
@@ -219,7 +216,7 @@ then
 fi
 if [ $APACHESTATUS = 0 ]
 then
-echo "<li>"Apache was not running"</li"
+echo '<li>"'$"Apache was not running"'</li'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 echo "<br>"
 fi
@@ -232,11 +229,11 @@ fi
 #Extract moodle
 ###########################
 cd /var/www/html/
-echo '<li>'$EXTRACTMOODLEMSG'</li><br>'
+echo '<li>'$"Extracting moodle"'</li><br>'
 [ -d /var/www/html/moodle ] && rm -f -R /var/www/html/moodle
 tar -xzf /opt/karoshi/serversetup/modules/moodle/moodle.tar.gz
 cp -f -R /opt/karoshi/serversetup/modules/moodle/moodle-data /var/www
-echo '<li>'$SETMOODLEPERMS'</li><br>'
+echo '<li>'$"Setting permissions"'</li><br>'
 chmod 0440 -R /var/www/html/moodle
 chmod u+X,g+X -R /var/www/html/moodle
 chmod 0600 -R /var/www/moodle-data
@@ -288,7 +285,7 @@ fi
 
 if [ $MOD_SHOREWALL = yes ]
 then
-echo '<li>'$SHOREWALLMSG' - tcp 80,443</li><br>'
+echo '<li>'$"The following extra ports are being allowed"' - tcp 80,443</li><br>'
 LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'apacherule /etc/shorewall/rules
 echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
@@ -303,7 +300,7 @@ chmod 0700 /opt/karoshi/"useful scripts"/moodle_export_grades
 ######################
 if [ $MOD_SHOREWALL = yes ]
 then
-echo '<li>'$RESTARTSWMSG'</li><br>'
+echo '<li>'$"Restarting shorewall"'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
@@ -326,7 +323,7 @@ sudo -u www-data php /var/www/html/moodle/admin/cli/purge_caches.php
 ###########################
 #Show completed message
 ###########################
-echo ''$ACCESSMSG - '<a href="https://'$ALIAS.$REALM'/moodle" target="_blank">'$ALIAS.$REALM'/moodle</a>'
-echo '<br>'$ACCESSMSG2:admin - $PASSWORDMSG: admin
-echo '<br><p style="font-weight:bold; font-size:20px;">'$COMPLETEDMSG3'</p><br>'
+echo ''$"Moodle has been installed and can be accessed from" - '<a href="https://'$ALIAS.$REALM'/moodle" target="_blank">'$ALIAS.$REALM'/moodle</a>'
+echo '<br>'$"username":admin - $"password": admin
+echo '<br><p style="font-weight:bold; font-size:20px;">'$"Please login and change this password immediately."'</p><br>'
 exit

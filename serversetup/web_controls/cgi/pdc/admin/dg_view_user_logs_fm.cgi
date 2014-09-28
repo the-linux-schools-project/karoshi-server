@@ -31,7 +31,7 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 DATE_INFO=`date +%F`
@@ -40,10 +40,8 @@ MONTH=`echo $DATE_INFO | cut -d- -f2`
 YEAR=`echo $DATE_INFO | cut -d- -f1`
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
@@ -51,7 +49,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"User Internet Logs"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script language="JavaScript" src="/all/calendar2/calendar_eu.js" type="text/javascript"></script>
         <!-- Timestamp input popup (European Format) -->
@@ -104,22 +102,22 @@ then
 
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+	<span>'$"User Internet Logs"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">
 '
 
 else
-echo '<b>'$TITLE'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
+echo '<b>'$"User Internet Logs"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Internet logs are updated every three minutes."'</span></a>
 <br><br>'
 fi
 
 if [ $MOBILE = yes ]
 then
 echo '<div id="suggestions"></div>
-'$USERNAMEMSG'<br>
+'$"Username"'<br>
 <input tabindex= "1" name="_USERNAME_" size="14" style="width: 160px;" type="text" id="inputString" onkeyup="lookup(this.value);"><br>
-'$WEBLOGDATE'<br>'
+'$"Log Date"'<br>'
 echo "<!-- calendar attaches to existing form element -->
 	<input type=\"text\" style=\"width: 160px;\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxlength=10 name=\"_DATE_\">
 	<script language=\"JavaScript\" type=\"text/javascript\">
@@ -131,15 +129,16 @@ echo "<!-- calendar attaches to existing form element -->
 	});
 
 	</script><br>"
-echo ''$LOGCOUNTMSG'<br>
+echo ''$"Number of days to view"'<br>
 <input tabindex= "1" name="_DAYCOUNT_" maxlength="2" size="2" value="1" type="text"><br><br>
 '
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
-<tr><td style="width: 180px;">'$USERNAMEMSG'</td><td><div id="suggestions"></div><input tabindex= "1" name="_USERNAME_" size="14" style="width: 200px;" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td style="vertical-align: top; text-align: center;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td></tr>'
-echo "<tr><td>$WEBLOGDATE</td><td>
-<!-- calendar attaches to existing form element -->
+<tr><td style="width: 180px;">'$"Username"'</td><td><div id="suggestions"></div><input tabindex= "1" name="_USERNAME_" size="14" style="width: 200px;" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td style="vertical-align: top; text-align: center;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to check the internet logs for."'</span></a></td></tr>'
+echo '<tr><td>'$"Log Date"'</td><td>'
+
+echo "<!-- calendar attaches to existing form element -->
 	<input type=\"text\" style=\"width: 200px;\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxlength=10 name=\"_DATE_\"></td><td style=\"vertical-align: top;\">
 	<script language=\"JavaScript\" type=\"text/javascript\">
 	new tcal ({
@@ -153,7 +152,7 @@ echo "<tr><td>$WEBLOGDATE</td><td>
 
 
 
-echo '<tr><td>'$LOGCOUNTMSG'</td><td><input tabindex= "1" name="_DAYCOUNT_" maxlength="2" size="2" value="1" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a></td></tr>
+echo '<tr><td>'$"Number of days to view"'</td><td><input tabindex= "1" name="_DAYCOUNT_" maxlength="2" size="2" value="1" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the number of sites a user has visited."'</span></a></td></tr>
 
 </tbody></table><br>'
 fi
@@ -163,5 +162,5 @@ then
 echo '</div><div id="submitbox">'
 fi
 
-echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></div></form></div></body></html>'
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div></form></div></body></html>'
 exit

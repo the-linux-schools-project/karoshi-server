@@ -74,18 +74,18 @@ then
 echo `date`: ban_user_account - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-DAY=`echo "$DATA" | cut -s -d: -f4`
-MONTH=`echo "$DATA" | cut -s -d: -f5`
-YEAR=`echo "$DATA" | cut -s -d: -f6`
-HOUR=`echo "$DATA" | cut -s -d: -f7`
-MINUTES=`echo "$DATA" | cut -s -d: -f8`
-INCIDENT=`echo "$DATA" | cut -s -d: -f9`
-ACTIONTAKEN=`echo "$DATA"$* | cut -s -d: -f10`
-STUDENTS=`echo "$DATA" | cut -s -d: -f11`
-BANLENGTH=`echo "$DATA" | cut -s -d: -f12`
+REMOTE_USER=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f3`
+DAY=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f4`
+MONTH=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f5`
+YEAR=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f6`
+HOUR=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f7`
+MINUTES=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f8`
+INCIDENT=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f9`
+ACTIONTAKEN=`echo "$DATA"$* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f10`
+STUDENTS=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f11`
+BANLENGTH=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f12`
 ########################
 #Check data
 ########################

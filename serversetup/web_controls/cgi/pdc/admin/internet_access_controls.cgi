@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/internet_access_controls ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/internet_access_controls
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -45,7 +43,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Internet Access Controls"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -89,13 +87,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -134,14 +132,14 @@ ICON1=/images/submenus/internet/internet_banm.png
 ICON2=/images/submenus/internet/internet_allowm.png
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/internet_access_controls_fm.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
-<td style="vertical-align: middle;"><b>'$LOCATION'</b> <a class="info" href="javascript:void(0)"><input name="_ACTION_banall_ASSET_none_TCPIP_none_MACADDRESS_none_" type="image" class="images" src="'$ICON1'" value=""><span>'$BAN_ALLMSG'</span></a> <a class="info" href="javascript:void(0)"><input name="_ACTION_allowall_ASSET_none_TCPIP_none_MACADDRESS_none_" type="image" class="images" src="'$ICON2'" value=""><span>'$ALLOWALLMSG'</span></a></td></tr></tbody></table>'
+<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/internet_access_controls_fm.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
+<td style="vertical-align: middle;"><b>'$LOCATION'</b> <a class="info" href="javascript:void(0)"><input name="_ACTION_banall_ASSET_none_TCPIP_none_MACADDRESS_none_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Ban all computers in this location."'</span></a> <a class="info" href="javascript:void(0)"><input name="_ACTION_allowall_ASSET_none_TCPIP_none_MACADDRESS_none_" type="image" class="images" src="'$ICON2'" value=""><span>'$"Allow all computers in this location."'</span></a></td></tr></tbody></table>'
 else
 
 ICON1=/images/submenus/internet/internet_ban.png
 ICON2=/images/submenus/internet/internet_allow.png
 
-echo '<b>'$LOCATION'</b> <a class="info" href="javascript:void(0)"><a class="info" href="javascript:void(0)"><input name="_ACTION_banall_ASSET_none_TCPIP_none_MACADDRESS_none_" type="image" class="images" src="'$ICON1'" value=""><span>'$BAN_ALLMSG'</span></a> <a class="info" href="javascript:void(0)"><input name="_ACTION_allowall_ASSET_none_TCPIP_none_MACADDRESS_none_" type="image" class="images" src="'$ICON2'" value=""><span>'$ALLOWALLMSG'</span></a><br><br>'
+echo '<b>'$LOCATION'</b> <a class="info" href="javascript:void(0)"><a class="info" href="javascript:void(0)"><input name="_ACTION_banall_ASSET_none_TCPIP_none_MACADDRESS_none_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Ban all computers in this location."'</span></a> <a class="info" href="javascript:void(0)"><input name="_ACTION_allowall_ASSET_none_TCPIP_none_MACADDRESS_none_" type="image" class="images" src="'$ICON2'" value=""><span>'$"Allow all computers in this location."'</span></a><br><br>'
 fi
 #Get location data
 sudo -H /opt/karoshi/web_controls/exec/internet_access_controls $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOCATION:$MOBILE

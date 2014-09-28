@@ -31,19 +31,17 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/mon_status ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/mon_status
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><META HTTP-EQUIV="refresh" CONTENT="120"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"System Status"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><META HTTP-EQUIV="refresh" CONTENT="120"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -99,7 +97,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -107,13 +105,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
@@ -122,21 +120,21 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+	<span>'$"System Status"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">
 '
 else
 #Show title
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="vertical-align: top; width: 110px;"><div class="sectiontitle">'$TITLE'</div></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#System_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td><td style="vertical-align: top;">
-<a href="/cgi-bin/admin/monitors_add_fm.cgi"><input class="button" type="button" name="" value="'$ADDMONITORMSG'"></a>
+<tbody><tr><td style="vertical-align: top; width: 110px;"><div class="sectiontitle">'$"System Status"'</div></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#System_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"Network Monitoring can be used to monitor any device connected to your network."'</span></a></td><td style="vertical-align: top;">
+<a href="/cgi-bin/admin/monitors_add_fm.cgi"><input class="button" type="button" name="" value="'$"Add Monitor"'"></a>
 </td>
 <td style="vertical-align: top;">
-<a href="/cgi-bin/admin/monitors_view.cgi"><input class="button" type="button" name="" value="'$VIEWMONITORMSG'"></a>
+<a href="/cgi-bin/admin/monitors_view.cgi"><input class="button" type="button" name="" value="'$"View Monitors"'"></a>
 </td>
 <td style="vertical-align: top;">
-<a href="/cgi-bin/admin/monitors_view_email_alerts_fm.cgi"><input class="button" type="button" name="" value="'$EMAILARERTSMSG'"></a>
+<a href="/cgi-bin/admin/monitors_view_email_alerts_fm.cgi"><input class="button" type="button" name="" value="'$"E-Mail Alerts"'"></a>
 </td>
 </tr></tbody></table></div><div id="infobox">'
 fi
@@ -145,7 +143,7 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/mon_status.cgi | cut -d' ' -f1`
 sudo -H /opt/karoshi/web_controls/exec/mon_status $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:
 if [ `echo $?` = 102 ]
 then
-echo '<br><br>'$SSH_ERROR1'<br>'
+echo '<br><br>'$"A monitoring server has not been setup."'<br>'
 fi
 [ $MOBILE = no ] && echo '</div>'
 echo "</div></div></body></html>"

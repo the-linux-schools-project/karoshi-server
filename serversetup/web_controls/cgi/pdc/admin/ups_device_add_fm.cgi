@@ -28,15 +28,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/ups ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/ups
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -69,7 +67,7 @@ exit
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE5'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script language="JavaScript" src="/all/calendar/ts_picker.js" type="text/javascript"></script>
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add a slave UPS"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script language="JavaScript" src="/all/calendar/ts_picker.js" type="text/javascript"></script>
         <!-- Timestamp input popup (European Format) --><script src="/all/stuHover.js" type="text/javascript"></script>'
 echo "</head>"
 echo '<body onLoad="start()"><div id="pagecontainer">'
@@ -78,7 +76,7 @@ echo '<body onLoad="start()"><div id="pagecontainer">'
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -86,36 +84,36 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/ups_device_add.cgi" name="tstest" method="post"><div id="actionbox"><b>'$TITLE6'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELP5'<br><br>'$HELP6'</span></a><br><br>'
+echo '<form action="/cgi-bin/admin/ups_device_add.cgi" name="tstest" method="post"><div id="actionbox"><b>'$"Add a device"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will add a device to the ups list to show that it is phsyically plugged into the ups. It will not configure the device."'<br><br>'$"This could be a network switch or a non Karoshi server."'</span></a><br><br>'
 
 
 #Check to see if there are any master ups available
 
 if [ ! -d /opt/karoshi/server_network/ups/master ]
 then
-MESSAGE=$ERRORMSG7
+MESSAGE=$"There are no master UPS devices available."
 show_status
 fi
 
 if [ `ls -1 /opt/karoshi/server_network/ups/master/ | wc -l` = 0 ]
 then
-MESSAGE=$ERRORMSG7
+MESSAGE=$"There are no master UPS devices available."
 show_status
 fi
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$MASTERUPSMSG'</td>
+<tr><td style="width: 180px;">'$"Master UPS"'</td>
         <td>'
 #Generate list of UPC data
 echo '<select name="_UPSSERVER_" style="width: 200px;"><option> </option>'
@@ -135,12 +133,12 @@ done
 fi
 fi
 done
-echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELP4'</span></a></td></tr>
-<tr><td>'$DEVICENAMEMSG'</td><td>
+echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose a master UPS device from the list."'</span></a></td></tr>
+<tr><td>'$"Device"'</td><td>
 <input tabindex= "2" name="_DEVICENAME_" style="width: 200px;" size="20" type="text">
 </tbody></table><br><br>
 </div><div id="submitbox">
-<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div></form></div></body></html>'
 exit
 

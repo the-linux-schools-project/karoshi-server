@@ -85,10 +85,6 @@ echo `date`: quotas_view_partitions - access denied to $REMOTE_USER from $REMOTE
 exit 101
 fi
 echo `date`: quotas_view_partitions - Viewing by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/file/quotas_view_partitions ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/file/quotas_view_partitions
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 #Check for quotas on home partition
 
 ADDSERVERICON=/images/warnings/server.png
@@ -99,10 +95,10 @@ source /opt/karoshi/server_network/info
 LOCATION_NAME="- $LOCATION_NAME"
 fi
 
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="6"><tbody><tr><td style="vertical-align: top;"><img src='"$ADDSERVERICON"'></td><td style="vertical-align: top;"><b>'$MYSERVERSMSG' '$LOCATION_NAME'</b></td></tr></tbody></table>'
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="6"><tbody><tr><td style="vertical-align: top;"><img src='"$ADDSERVERICON"'></td><td style="vertical-align: top;"><b>'$"My Servers"' '$LOCATION_NAME'</b></td></tr></tbody></table>'
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;">
-<tr><td style="vertical-align: top; width: 120px; height: 40px;"><b>'$SERVERMSG'</b></td><td style="vertical-align: top; width: 80px;"><b>'$SERVERIPMSG'</b></td><td style="vertical-align: top; width: 320px;"><b>'$ROLESMSG'</b></td><td style="vertical-align: top; width: 80px;"><b>'$STATUSMSG'</b></td></tr>
+<tr><td style="vertical-align: top; width: 120px; height: 40px;"><b>'$"Server"'</b></td><td style="vertical-align: top; width: 80px;"><b>'$"TCPIP"'</b></td><td style="vertical-align: top; width: 320px;"><b>'$"Role"'</b></td><td style="vertical-align: top; width: 80px;"><b>'$"Quota status"'</b></td></tr>
 '
 
 #Check main server
@@ -120,7 +116,7 @@ if [ $QUOTASTATUS = on ]
 then
 echo "</td><td style=\"vertical-align: top;\"><img src=\"$QUOTAICON\" alt=\"quota status\"></td></tr>"
 else
-echo "</td><td style=\"vertical-align: top;\"><form action=\"/cgi-bin/admin/quotas_enable.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERTYPE_network_SERVERNAME_$HOSTNAME"_"\" type=\"image\" class=\"images\" src=\"$QUOTAICON\" value=\"\"><span>$HOSTNAME - $ENABLE_QUOTASMSG</span></a></form></td></tr>"
+echo "</td><td style=\"vertical-align: top;\"><form action=\"/cgi-bin/admin/quotas_enable.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERTYPE_network_SERVERNAME_$HOSTNAME"_"\" type=\"image\" class=\"images\" src=\"$QUOTAICON\" value=\"\"><span>$HOSTNAME - $"Enable quotas on this server."</span></a></form></td></tr>"
 fi
 #Check slave servers
 for SERVERS in /opt/karoshi/server_network/servers/*
@@ -143,7 +139,7 @@ if [ $QUOTASTATUS = on ]
 then
 echo "</td><td style=\"vertical-align: top;\"><img src=\"$QUOTAICON\" alt=\"quota status\"></td></tr>"
 else
-echo "</td><td style=\"vertical-align: top;\"><form action=\"/cgi-bin/admin/quotas_enable.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERTYPE_network_SERVERNAME_'$SERVER'_\" type=\"image\" class=\"images\" src=\"$QUOTAICON\" value=\"\"><span>'$SERVER' - '$ENABLE_QUOTASMSG'</span></a></form></td></tr>"
+echo "</td><td style=\"vertical-align: top;\"><form action=\"/cgi-bin/admin/quotas_enable.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERTYPE_network_SERVERNAME_'$SERVER'_\" type=\"image\" class=\"images\" src=\"$QUOTAICON\" value=\"\"><span>'$SERVER' - '$"Enable quotas on this server."'</span></a></form></td></tr>"
 fi
 '
 fi
@@ -170,10 +166,10 @@ source /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/info
 LOCATION_NAME="- $LOCATION_NAME"
 fi
 
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="6"><tbody><tr><td style="vertical-align: top;"><img src='"$ADDSERVERICON"'></td><td style="vertical-align: top;"><b>'$FEDERATEDSERVERSMSG' '$LOCATION_NAME'</b></td></tr></tbody></table>'
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="6"><tbody><tr><td style="vertical-align: top;"><img src='"$ADDSERVERICON"'></td><td style="vertical-align: top;"><b>'$"Federated Servers"' '$LOCATION_NAME'</b></td></tr></tbody></table>'
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;">
-<tr><td style="vertical-align: top; width: 120px; height: 40px;"><b>'$SERVERMSG'</b></td><td style="vertical-align: top; width: 80px;"><b>'$SERVERIPMSG'</b></td><td style="vertical-align: top; width: 320px;"><b>'$ROLESMSG'</b></td><td style="vertical-align: top; width: 80px;"><b>'$STATUSMSG'</b></td></tr>'
+<tr><td style="vertical-align: top; width: 120px; height: 40px;"><b>'$"Server"'</b></td><td style="vertical-align: top; width: 80px;"><b>'$"TCPIP"'</b></td><td style="vertical-align: top; width: 320px;"><b>'$"Role"'</b></td><td style="vertical-align: top; width: 80px;"><b>'$"Quota status"'</b></td></tr>'
 
 ssh -o PasswordAuthentication=no -o ConnectTimeout=2  $FEDERATED_SERVER '
 QUOTAICON=/images/submenus/file/quotas_disabled.png
@@ -190,7 +186,7 @@ if [ $QUOTASTATUS = on ]
 then
 echo "</td><td style=\"vertical-align: top;\"><img src=\"$QUOTAICON\" alt=\"quota status\"></td></tr>"
 else
-echo "</td><td style=\"vertical-align: top;\"><form action=\"/cgi-bin/admin/quotas_enable.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERTYPE_federated_SERVERNAME_'$FEDERATED_SERVER'_\" type=\"image\" class=\"images\" src=\"$QUOTAICON\" value=\"\"><span>'$FEDERATED_SERVER' - '$ENABLE_QUOTASMSG'</span></a></form></td></tr>"
+echo "</td><td style=\"vertical-align: top;\"><form action=\"/cgi-bin/admin/quotas_enable.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERTYPE_federated_SERVERNAME_'$FEDERATED_SERVER'_\" type=\"image\" class=\"images\" src=\"$QUOTAICON\" value=\"\"><span>'$FEDERATED_SERVER' - '$"Enable quotas on this server."'</span></a></form></td></tr>"
 fi
 #Check federated slave servers
 for SERVERS in /opt/karoshi/server_network/servers/*
@@ -213,7 +209,7 @@ if [ $QUOTASTATUS = on ]
 then
 echo "</td><td style=\"vertical-align: top;\"><img src=\"$QUOTAICON\" alt=\"quota status\"></td></tr>"
 else
-echo "</td><td style=\"vertical-align: top;\"><form action=\"/cgi-bin/admin/quotas_enable.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERTYPE_federatedslave_SERVERMASTER_'$FEDERATED_SERVER'_SERVERNAME_'\''$SERVER'\''_\" type=\"image\" class=\"images\" src=\"$QUOTAICON\" value=\"\"><span>'\''$SERVER'\'' - '$ENABLE_QUOTASMSG'</span></a></form></td></tr>"
+echo "</td><td style=\"vertical-align: top;\"><form action=\"/cgi-bin/admin/quotas_enable.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERTYPE_federatedslave_SERVERMASTER_'$FEDERATED_SERVER'_SERVERNAME_'\''$SERVER'\''_\" type=\"image\" class=\"images\" src=\"$QUOTAICON\" value=\"\"><span>'\''$SERVER'\'' - '$"Enable quotas on this server."'</span></a></form></td></tr>"
 fi
 '\''
 fi

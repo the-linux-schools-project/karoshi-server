@@ -40,19 +40,17 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_quota_settings ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_quota_settings
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"E-Mail Quota Warning Settings"'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -193,7 +191,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -201,13 +199,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -216,69 +214,69 @@ fi
 #Check to see that ADMINEMAIL is not blank
 if [ $ADMINEMAIL'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The administrator account must not be blank."
 show_status
 fi
 #Check to see that THRESHOLD1 is not blank
 if [ $THRESHOLD1'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"Incorrect data entry for Level 1."
 show_status
 fi
 #Check to see that THRESHOLD2 is not blank
 if [ $THRESHOLD2'null' = null ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"Incorrect data entry for Level 2."
 show_status
 fi
 #Check to see that THRESHOLD3 is not blank
 if [ $THRESHOLD3'null' = null ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"Incorrect data entry for Level 3."
 show_status
 fi
 #Check to see that THRESHOLD4 is not blank
 if [ $THRESHOLD4'null' = null ]
 then
-MESSAGE=$ERRORMSG6
+MESSAGE=$"Incorrect data entry for Level 4."
 show_status
 fi
 #Check to see that INTERVAL1 is not blank
 if [ $INTERVAL1'null' = null ]
 then
-MESSAGE=$ERRORMSG7
+MESSAGE=$"Incorrect data entry for Interval 1."
 show_status
 fi
 #Check to see that INTERVAL2 is not blank
 if [ $INTERVAL2'null' = null ]
 then
-MESSAGE=$ERRORMSG8
+MESSAGE=$"Incorrect data entry for Interval 2."
 show_status
 fi
 #Check to see that INTERVAL3 is not blank
 if [ $INTERVAL3'null' = null ]
 then
-MESSAGE=$ERRORMSG9
+MESSAGE=$"Incorrect data entry for Interval 3."
 show_status
 fi
 #Check to see that INTERVAL4 is not blank
 if [ $INTERVAL4'null' = null ]
 then
-MESSAGE=$ERRORMSG10
+MESSAGE=$"Incorrect data entry for Interval 4."
 show_status
 fi
 
 #Check to see that THRESHOLDs are in the correct order
 if [ $THRESHOLD1 -gt $THRESHOLD2 ] || [ $THRESHOLD2 -gt $THRESHOLD3 ] || [ $THRESHOLD3 -gt $THRESHOLD4 ]
 then
-MESSAGE=$ERRORMSG11
+MESSAGE=$"The Levels must be in the correct order."
 show_status
 fi
 
 #Check that the intervals are in the correct order
 if [ $INTERVAL1 -lt $INTERVAL2 ] || [ $INTERVAL2 -lt $INTERVAL3 ] || [ $INTERVAL3 -lt $INTERVAL4 ]
 then
-MESSAGE=$ERRORMSG12
+MESSAGE=$"The warning intervals must be in the correct order."
 show_status
 fi
 
@@ -286,6 +284,6 @@ fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_quota_settings2.cgi | cut -d' ' -f1`
 #Create config file
 sudo -H /opt/karoshi/web_controls/exec/email_quota_settings_apply $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ADMINEMAIL:$THRESHOLD1:$THRESHOLD2:$THRESHOLD3:$THRESHOLD4:$INTERVAL1:$INTERVAL2:$INTERVAL3:$INTERVAL4
-MESSAGE=$COMPLETEDMSG
+MESSAGE=$"E-mail quota warning settings have been applied."
 show_status
 exit

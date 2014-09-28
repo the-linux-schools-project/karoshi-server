@@ -24,7 +24,7 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 MD5ERROR="Incorrect MD5 checksum for this patch."
 
 ########################
@@ -32,16 +32,16 @@ MD5ERROR="Incorrect MD5 checksum for this patch."
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/monitors_add_cgi
 then
-echo `date`: monitors_add - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_add - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/monitors_add_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/monitors_add.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set1
+[ -z "$MD5SUM" ] && MD5SUM=not_set1
 if [ $MD5SUM'check' != $monitors_add_cgi'check' ]
 then
-echo `date`: monitors_add - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_add - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -49,21 +49,21 @@ fi
 numArgs=$#
 if [ $numArgs != 1 ]
 then
-echo `date`: monitors_add - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_add - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
-GROUPNAME=`echo $* | cut -s -d: -f4 | sed 's/+/-/g'`
-TCPIP=`echo $* | cut -s -d: -f5`
-ALERTAFTER=`echo $* | cut -s -d: -f6`
-INTERVAL=`echo $* | cut -s -d: -f7`
-DAYSTART=`echo $* | cut -s -d: -f8`
-DAYEND=`echo $* | cut -s -d: -f9`
-HOURSTART=`echo $* | cut -s -d: -f10`
-HOUREND=`echo $* | cut -s -d: -f11`
-MONITORTYPES=( `echo $* | cut -s -d: -f12- | sed 's/:/ /g'` )
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f3`
+GROUPNAME=`echo $* | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f4 | sed 's/+/-/g'`
+TCPIP=`echo $* | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f5`
+ALERTAFTER=`echo $* | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f6`
+INTERVAL=`echo $* | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f7`
+DAYSTART=`echo $* | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f8`
+DAYEND=`echo $* | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f9`
+HOURSTART=`echo $* | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f10`
+HOUREND=`echo $* | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f11`
+MONITORTYPES=( `echo $* | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f12- | sed 's/:/ /g'` )
 ########################
 #Check data
 ########################
@@ -132,14 +132,14 @@ echo `date`: monitors_add - Adding $GROUPNAME by $REMOTE_USER from $REMOTE_ADDR 
 #Create mon file for this custom group
 ################################
 
-[ $DAYSTART'null' = null ] && DAYSTART=Sun
-[ $DAYEND'null' = null ] && DAYEND=Sat
+[ -z "$DAYSTART" ] && DAYSTART=Sun
+[ -z "$DAYEND" ] && DAYEND=Sat
 
-if [ $HOURSTART'null' = null ] && [ $HOUREND'null' = null ]
+if [ -z "$HOURSTART" ] && [ -z "$HOUREND" ]
 then
-MON_PERIOD=""
+	MON_PERIOD=""
 else
-MON_PERIOD="hr {$HOURSTART-$HOUREND}"
+	MON_PERIOD="hr {$HOURSTART-$HOUREND}"
 fi
 
 #Create header
@@ -154,179 +154,177 @@ COUNTER=0
 CHECKCOUNT=`echo ${#MONITORTYPES[@]}`
 while [ $COUNTER -lt $CHECKCOUNT ] 
 do
-MONITORTYPE=`echo ${MONITORTYPES[$COUNTER]}`
-#Ping
-if [ $MONITORTYPE = ping ]
-then
-echo ' 	service ping' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		description Network Connection' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		interval '$INTERVAL'm' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		monitor ping.monitor' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		period wd {'$DAYSTART-$DAYEND'}' $MON_PERIOD >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alertafter '$ALERTAFTER'' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' ping.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alert send_mail.alert :SERVICE:Ping:GROUP:'$GROUPNAME':LOGNAME:ping.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			upalert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' ping.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alertevery 480m' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-fi
-#Pop3
-if [ $MONITORTYPE = pop3 ]
-then
-echo ' 	service pop' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		description Pop3' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		interval '$INTERVAL'm' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		monitor pop3.monitor' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		period wd {'$DAYSTART-$DAYEND'}' $MON_PERIOD >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alertafter '$ALERTAFTER'' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' pop3.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alert send_mail.alert :SERVICE:Pop3:GROUP:'$GROUPNAME':LOGNAME:pop3.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			upalert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' pop3.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alertevery 480m' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-fi
-#Pop3s
-if [ $MONITORTYPE = pop3s ]
-then
-echo ' 	service pop3s' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		description Secure Pop3' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		interval '$INTERVAL'm' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		monitor tcp.monitor -p 995' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		period wd {'$DAYSTART-$DAYEND'}' $MON_PERIOD >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alertafter '$ALERTAFTER'' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' pop3s.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alert send_mail.alert :SERVICE:Pop3S:GROUP:'$GROUPNAME':LOGNAME:pop3s.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			upalert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' pop3s.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alertevery 480m' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-fi
-#imap
-if [ $MONITORTYPE = imap ]
-then
-echo ' 	service imap' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		description UW Imap' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		interval '$INTERVAL'm' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		monitor tcp.monitor -p 143' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		period wd {'$DAYSTART-$DAYEND'}' $MON_PERIOD >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alertafter '$ALERTAFTER'' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' imap.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alert send_mail.alert :SERVICE:imap:GROUP:'$GROUPNAME':LOGNAME:imap.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			upalert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' imap.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alertevery 480m' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-fi
-#imaps
-if [ $MONITORTYPE = imaps ]
-then
-echo ' 	service imaps' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		description UW Imap over SSL' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		interval '$INTERVAL'm' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		monitor tcp.monitor -p 993' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		period wd {'$DAYSTART-$DAYEND'}' $MON_PERIOD >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alertafter '$ALERTAFTER'' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' imaps.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alert send_mail.alert :SERVICE:ImapS:GROUP:'$GROUPNAME':LOGNAME:imaps.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			upalert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' imaps.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alertevery 480m' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-fi
-#samba
-if [ $MONITORTYPE = samba ]
-then
-echo ' 	service samba' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		description Samba' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		interval '$INTERVAL'm' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		monitor tcp.monitor -p 139' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		period wd {'$DAYSTART-$DAYEND'}' $MON_PERIOD >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alertafter '$ALERTAFTER'' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' samba.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alert send_mail.alert :SERVICE:Samba:GROUP:'$GROUPNAME':LOGNAME:samba.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			upalert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' samba.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alertevery 480m' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-fi
-#http
-if [ $MONITORTYPE = http ]
-then
-echo ' 	service http' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		description Webserver' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		interval '$INTERVAL'm' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		monitor tcp.monitor -p 80' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		allow_empty_group' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		period wd {'$DAYSTART-$DAYEND'}' $MON_PERIOD >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alertafter '$ALERTAFTER'' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' http.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alert send_mail.alert :SERVICE:Http:GROUP:'$GROUPNAME':LOGNAME:http.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			upalert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' http.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alertevery 480m' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-fi
-#https
-if [ $MONITORTYPE = https ]
-then
-echo ' 	service https' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		description Secure Webserver' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		interval '$INTERVAL'm' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		monitor tcp.monitor -p 443' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		period wd {'$DAYSTART-$DAYEND'}' $MON_PERIOD >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alertafter '$ALERTAFTER'' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' https.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alert send_mail.alert :SERVICE:HttpS:GROUP:'$GROUPNAME':LOGNAME:https.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			upalert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' https.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alertevery 480m' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-fi
-#smtp
-if [ $MONITORTYPE = smtp ]
-then
-echo ' 	service smtp' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		description Simple Mail Transfer Protocol' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		interval '$INTERVAL'm' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		monitor smtp.monitor' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		period wd {'$DAYSTART-$DAYEND'}' $MON_PERIOD >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alertafter '$ALERTAFTER'' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' smtp.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alert send_mail.alert :SERVICE:Smtp:GROUP:'$GROUPNAME':LOGNAME:smtp.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			upalert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' smtp.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alertevery 480m' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-fi
-#cups
-if [ $MONITORTYPE = cups ]
-then
-echo ' 	service cups' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		description Common Unix Printing System' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		interval '$INTERVAL'm' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		monitor tcp.monitor -p 631' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		period wd {'$DAYSTART-$DAYEND'}' $MON_PERIOD >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alertafter '$ALERTAFTER'' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' cups.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alert send_mail.alert :SERVICE:Cups:GROUP:'$GROUPNAME':LOGNAME:cups.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			upalert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' cups.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alertevery 480m' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-fi
-#dansguardian
-if [ $MONITORTYPE = proxy ]
-then
-echo ' 	service proxy' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		description Proxy Server' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		interval '$INTERVAL'm' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		monitor tcp.monitor -p 3128' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		period wd {'$DAYSTART-$DAYEND'}' $MON_PERIOD >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alertafter '$ALERTAFTER'' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' dansguardian.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alert send_mail.alert :SERVICE:Dansguardian:GROUP:'$GROUPNAME':LOGNAME:dansguardian.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			upalert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' dansguardian.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alertevery 480m' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-fi
-#dns
-if [ $MONITORTYPE = dns ]
-then
-echo ' 	service dns' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		description dns' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		interval '$INTERVAL'm' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		monitor tcp.monitor -p 53' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '		period wd {'$DAYSTART-$DAYEND'}' $MON_PERIOD >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alertafter '$ALERTAFTER'' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' dns.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alert send_mail.alert :SERVICE:dns:GROUP:'$GROUPNAME':LOGNAME:dns.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			upalert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' dns.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-echo '			alertevery 480m' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
-fi
-
-
-let COUNTER=$COUNTER+1
+	MONITORTYPE=`echo ${MONITORTYPES[$COUNTER]}`
+	#Ping
+	if [ $MONITORTYPE = ping ]
+	then
+		echo ' 	service ping' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		description Network Connection' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		interval '$INTERVAL'm' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		monitor ping.monitor' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		period wd {'$DAYSTART-$DAYEND'}' $MON_PERIOD >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alertafter '$ALERTAFTER'' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' ping.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alert send_mail.alert :SERVICE:Ping:GROUP:'$GROUPNAME':LOGNAME:ping.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			upalert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' ping.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alertevery 480m' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+	fi
+	#Pop3
+	if [ $MONITORTYPE = pop3 ]
+	then
+		echo ' 	service pop' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		description Pop3' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		interval '$INTERVAL'm' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		monitor pop3.monitor' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		period wd {'$DAYSTART-$DAYEND'}' $MON_PERIOD >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alertafter '$ALERTAFTER'' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' pop3.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alert send_mail.alert :SERVICE:Pop3:GROUP:'$GROUPNAME':LOGNAME:pop3.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			upalert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' pop3.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alertevery 480m' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+	fi
+	#Pop3s
+	if [ $MONITORTYPE = pop3s ]
+	then
+		echo ' 	service pop3s' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		description Secure Pop3' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		interval '$INTERVAL'm' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		monitor tcp.monitor -p 995' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		period wd {'$DAYSTART-$DAYEND'}' $MON_PERIOD >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alertafter '$ALERTAFTER'' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' pop3s.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alert send_mail.alert :SERVICE:Pop3S:GROUP:'$GROUPNAME':LOGNAME:pop3s.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			upalert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' pop3s.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alertevery 480m' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+	fi
+	#imap
+	if [ $MONITORTYPE = imap ]
+	then
+		echo ' 	service imap' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		description UW Imap' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		interval '$INTERVAL'm' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		monitor tcp.monitor -p 143' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		period wd {'$DAYSTART-$DAYEND'}' $MON_PERIOD >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alertafter '$ALERTAFTER'' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' imap.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alert send_mail.alert :SERVICE:imap:GROUP:'$GROUPNAME':LOGNAME:imap.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			upalert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' imap.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alertevery 480m' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+	fi
+	#imaps
+	if [ $MONITORTYPE = imaps ]
+	then
+		echo ' 	service imaps' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		description UW Imap over SSL' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		interval '$INTERVAL'm' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		monitor tcp.monitor -p 993' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		period wd {'$DAYSTART-$DAYEND'}' $MON_PERIOD >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alertafter '$ALERTAFTER'' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' imaps.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alert send_mail.alert :SERVICE:ImapS:GROUP:'$GROUPNAME':LOGNAME:imaps.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			upalert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' imaps.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alertevery 480m' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+	fi
+	#samba
+	if [ $MONITORTYPE = samba ]
+	then
+		echo ' 	service samba' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		description Samba' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		interval '$INTERVAL'm' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		monitor tcp.monitor -p 139' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		period wd {'$DAYSTART-$DAYEND'}' $MON_PERIOD >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alertafter '$ALERTAFTER'' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' samba.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alert send_mail.alert :SERVICE:Samba:GROUP:'$GROUPNAME':LOGNAME:samba.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			upalert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' samba.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alertevery 480m' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+	fi
+	#http
+	if [ $MONITORTYPE = http ]
+	then
+		echo ' 	service http' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		description Webserver' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		interval '$INTERVAL'm' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		monitor tcp.monitor -p 80' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		allow_empty_group' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		period wd {'$DAYSTART-$DAYEND'}' $MON_PERIOD >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alertafter '$ALERTAFTER'' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' http.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alert send_mail.alert :SERVICE:Http:GROUP:'$GROUPNAME':LOGNAME:http.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			upalert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' http.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alertevery 480m' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+	fi
+	#https
+	if [ $MONITORTYPE = https ]
+	then
+		echo ' 	service https' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		description Secure Webserver' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		interval '$INTERVAL'm' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		monitor tcp.monitor -p 443' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		period wd {'$DAYSTART-$DAYEND'}' $MON_PERIOD >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alertafter '$ALERTAFTER'' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' https.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alert send_mail.alert :SERVICE:HttpS:GROUP:'$GROUPNAME':LOGNAME:https.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			upalert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' https.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alertevery 480m' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+	fi
+	#smtp
+	if [ $MONITORTYPE = smtp ]
+	then
+		echo ' 	service smtp' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		description Simple Mail Transfer Protocol' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		interval '$INTERVAL'm' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		monitor smtp.monitor' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		period wd {'$DAYSTART-$DAYEND'}' $MON_PERIOD >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alertafter '$ALERTAFTER'' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' smtp.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alert send_mail.alert :SERVICE:Smtp:GROUP:'$GROUPNAME':LOGNAME:smtp.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			upalert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' smtp.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alertevery 480m' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+	fi
+	#cups
+	if [ $MONITORTYPE = cups ]
+	then
+		echo ' 	service cups' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		description Common Unix Printing System' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		interval '$INTERVAL'm' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		monitor tcp.monitor -p 631' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		period wd {'$DAYSTART-$DAYEND'}' $MON_PERIOD >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alertafter '$ALERTAFTER'' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' cups.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alert send_mail.alert :SERVICE:Cups:GROUP:'$GROUPNAME':LOGNAME:cups.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			upalert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' cups.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alertevery 480m' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+	fi
+	#dansguardian
+	if [ $MONITORTYPE = proxy ]
+	then
+		echo ' 	service proxy' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		description Proxy Server' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		interval '$INTERVAL'm' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		monitor tcp.monitor -p 3128' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		period wd {'$DAYSTART-$DAYEND'}' $MON_PERIOD >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alertafter '$ALERTAFTER'' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' dansguardian.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alert send_mail.alert :SERVICE:Dansguardian:GROUP:'$GROUPNAME':LOGNAME:dansguardian.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			upalert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' dansguardian.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alertevery 480m' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+	fi
+	#dns
+	if [ $MONITORTYPE = dns ]
+	then
+		echo ' 	service dns' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		description dns' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		interval '$INTERVAL'm' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		monitor tcp.monitor -p 53' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '		period wd {'$DAYSTART-$DAYEND'}' $MON_PERIOD >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alertafter '$ALERTAFTER'' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' dns.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alert send_mail.alert :SERVICE:dns:GROUP:'$GROUPNAME':LOGNAME:dns.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			upalert file.alert -d /opt/karoshi/server_network/mon/events/'$GROUPNAME' dns.log' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+		echo '			alertevery 480m' >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
+	fi
+	let COUNTER=$COUNTER+1
 done
 echo >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
 echo >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
@@ -340,24 +338,24 @@ echo >> /opt/karoshi/server_network/mon/monitors/$GROUPNAME
 ######################
 if [ ! -f /opt/karoshi/server_network/mon/global ]
 then
-#Make mon global file
-######################
-# global options
-######################
-echo 'cfbasedir   = /etc/mon' > /opt/karoshi/server_network/mon/global
-echo 'pidfile     = /var/run/mon/mon.pid' >> /opt/karoshi/server_network/mon/global
-echo 'statedir    = /var/lib/mon/state.d' >> /opt/karoshi/server_network/mon/global
-echo 'logdir      = /var/lib/mon/log.d' >> /opt/karoshi/server_network/mon/global
-echo 'dtlogfile   = /var/lib/mon/log.d/downtime.log' >> /opt/karoshi/server_network/mon/global
-echo 'alertdir    = /usr/lib/mon/alert.d' >> /opt/karoshi/server_network/mon/global
-echo 'mondir      = /usr/lib/mon/mon.d' >> /opt/karoshi/server_network/mon/global
-echo 'maxprocs    = 20' >> /opt/karoshi/server_network/mon/global
-echo 'histlength  = 100' >> /opt/karoshi/server_network/mon/global
-echo 'randstart   = 60s' >> /opt/karoshi/server_network/mon/global
-echo 'authtype    = pam' >> /opt/karoshi/server_network/mon/global
-echo 'userfile    = /etc/mon/userfile' >> /opt/karoshi/server_network/mon/global
-echo 'dtlogging   = yes' >> /opt/karoshi/server_network/mon/global
-echo  >> /opt/karoshi/server_network/mon/global
+	#Make mon global file
+	######################
+	# global options
+	######################
+	echo 'cfbasedir   = /etc/mon' > /opt/karoshi/server_network/mon/global
+	echo 'pidfile     = /var/run/mon/mon.pid' >> /opt/karoshi/server_network/mon/global
+	echo 'statedir    = /var/lib/mon/state.d' >> /opt/karoshi/server_network/mon/global
+	echo 'logdir      = /var/lib/mon/log.d' >> /opt/karoshi/server_network/mon/global
+	echo 'dtlogfile   = /var/lib/mon/log.d/downtime.log' >> /opt/karoshi/server_network/mon/global
+	echo 'alertdir    = /usr/lib/mon/alert.d' >> /opt/karoshi/server_network/mon/global
+	echo 'mondir      = /usr/lib/mon/mon.d' >> /opt/karoshi/server_network/mon/global
+	echo 'maxprocs    = 20' >> /opt/karoshi/server_network/mon/global
+	echo 'histlength  = 100' >> /opt/karoshi/server_network/mon/global
+	echo 'randstart   = 60s' >> /opt/karoshi/server_network/mon/global
+	echo 'authtype    = pam' >> /opt/karoshi/server_network/mon/global
+	echo 'userfile    = /etc/mon/userfile' >> /opt/karoshi/server_network/mon/global
+	echo 'dtlogging   = yes' >> /opt/karoshi/server_network/mon/global
+	echo  >> /opt/karoshi/server_network/mon/global
 fi
 cat /opt/karoshi/server_network/mon/global /opt/karoshi/server_network/mon/monitors/* > /opt/karoshi/server_network/mon/mon.cf 2>/dev/null
 

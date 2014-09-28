@@ -37,19 +37,17 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_add ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_add
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add a new Web Management User"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -177,7 +175,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -185,13 +183,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -200,36 +198,36 @@ fi
 #Check to see that username is not blank
 if [ $USERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The username must not be blank."
 show_status
 fi
 #Check to see that password fields are not blank
 if [ $PASSWORD1'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The password must not be blank."
 show_status
 fi
 if [ $PASSWORD2'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The password must not be blank."
 show_status
 fi
 #Check that password has been entered correctly
 if [ $PASSWORD1 != $PASSWORD2 ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The passwords do not match."
 show_status
 fi
 # Check that PRIMARYADMIN is not blank
 if [ $PRIMARYADMIN'null' = null ]
 then
-MESSAGE=$ERRORMSG8
+MESSAGE=$"The access level must not be blank."
 show_status
 fi
 #Check that primary admin has the correct data
 if [ $PRIMARYADMIN != 1 ] && [ $PRIMARYADMIN != 2 ] && [ $PRIMARYADMIN != 3 ]
 then
-MESSAGE=$ERRORMSG9
+MESSAGE=$"Incorrect input for the admin level."
 show_status
 fi
 
@@ -241,18 +239,18 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_add.cgi | cut -d
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$JOBTITLE:$FORENAME:$SURNAME:$USERNAME:$PASSWORD1:$PRIMARYADMIN:$TCPACCESS" | sudo -H /opt/karoshi/web_controls/exec/remote_management_add
 
 EXEC_STATUS=`echo $?`
-MESSAGE=`echo $USERNAME $COMPLETEDMSG`
+MESSAGE=`echo $USERNAME $"has been created as a web management user."`
 if [ $EXEC_STATUS = 103 ]
 then
-MESSAGE=$ERRORMSG6
+MESSAGE=$"You can only do this if you are a primary admin."
 fi
 if [ $EXEC_STATUS = 102 ]
 then
-MESSAGE=`echo $USERNAME: $ERRORMSG1`
+MESSAGE=`echo $USERNAME: $"This user already exists."`
 fi
 if [ $EXEC_STATUS = 101 ]
 then
-MESSAGE=`echo $USERNAME: $ERRORMSG5`
+MESSAGE=`echo $USERNAME: $"Not created."`
 fi
 show_status
 echo '</div></body></html>'

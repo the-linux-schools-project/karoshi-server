@@ -31,15 +31,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/file/file_manager ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/file/file_manager
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -52,7 +50,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"File Manager"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ $MOBILE = yes ]
@@ -186,7 +184,7 @@ fi
 #########################
 if [ $ACTION != ENTER ] && [ $ACTION != DELETE ] && [ $ACTION != REALLYDELETE ] && [ $ACTION != SETPERMS ] && [ $ACTION != REALLYSETPERMS ] && [ $ACTION != MOVE ] && [ $ACTION != REALLYMOVE ] && [ $ACTION != REALLYCOPY ] && [ $ACTION != CANCELCOPY ] && [ $ACTION != RENAME ] && [ $ACTION != REALLYRENAME ] && [ $ACTION != EDIT ] && [ $ACTION != REALLYEDIT ] && [ $ACTION != CREATEDIR ] && [ $ACTION != REALLYCREATEDIR ] && [ $ACTION != CREATEFILE ] && [ $ACTION != REALLYCREATEFILE ] && [ $ACTION != RESTORE ] && [ $ACTION != REALLYRESTORE ] && [ $ACTION != notset ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"You have not entered a correct action."
 show_status
 fi
 
@@ -491,14 +489,14 @@ done
 #Check to see that owner is not blank
 if [ $OWNER'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The owner cannot be blank."
 show_status
 fi
 
 #Check to see that group is not blank
 if [ $GROUP'null' = null ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The group cannot be blank."
 show_status
 fi
 fi
@@ -545,12 +543,12 @@ if [ $MOBILE = yes ]
 then
 echo '<form action="/cgi-bin/admin/file_manager.cgi" method="post"><div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE' '$SERVER2'</span>'
+	<span>'$"File Manager"' '$SERVER2'</span>'
 if [ $SERVERNAME != notset ]
 then
-echo '<a href="/cgi-bin/admin/file_manager.cgi">'$CHOOSESERVERMSG'</a>'
+echo '<a href="/cgi-bin/admin/file_manager.cgi">'$"Choose Server"'</a>'
 else
-echo '<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>'
+echo '<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>'
 fi
 echo '</div></div>
 <div id="'$DIV_ID'">
@@ -560,13 +558,13 @@ else
 echo '<form action="/cgi-bin/admin/file_manager.cgi" method="post"><div id="'$DIV_ID'"><div id="titlebox">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr>
-<td style="vertical-align: top;"><div class="sectiontitle">'$TITLE' '$SERVER2'</div></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG1"'</span></a></td>'
+<td style="vertical-align: top;"><div class="sectiontitle">'$"File Manager"' '$SERVER2'</div></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img class="images" alt="" src="/images/help/info.png"><span>'$"File Manager"'</span></a></td>'
 
 if [ $SERVERNAME != notset ]
 then
 echo '
-<td style="vertical-align: top;"><input name="_SERVER_notset_ACTION_notset_" type="submit" class="button" value="'$CHOOSESERVERMSG'"></td>
+<td style="vertical-align: top;"><input name="_SERVER_notset_ACTION_notset_" type="submit" class="button" value="'$"Choose Server"'"></td>
 '
 fi
 echo '</tr></tbody></table></div><div id="infobox">'

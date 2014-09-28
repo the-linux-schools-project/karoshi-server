@@ -25,12 +25,14 @@
 ##########################
 source /opt/karoshi/server_network/menusettings
 source /opt/karoshi/web_controls/version
+source /opt/karoshi/server_network/domain_information/domain_name
 #Website: http://www.karoshi.org.uk
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
-echo '<div id="header"><img src="/images/small_logo.png" alt="logo" align="top"> <font style="font-weight: bold;" size="+2">Web Management '$SCHOOL_NAME'</font> <small><small>
-'$VERSIONMSG' : '$VERSION'
+locale 1>/dev/null
+TEXTDOMAIN=karoshi-server
+
+echo '<div id="header"><img src="/images/small_logo.png" alt="logo" align="top"> <font style="font-weight: bold;" size="+2">'$"Web Management"' '$SHORTNAME'</font> <small><small>
+'$"Version"' : '$VERSION'
 </small></small>
 <div id="searchbar"><form name="searchform" action="/cgi-bin/staff/search.cgi" method="post">
 <input name="_SEARCH_" tabindex= "1" style="width: 200px;" size="20" type="text">
@@ -43,34 +45,34 @@ echo '<div id="navbar"><span class="preload1"></span>
 
 <ul id="nav">
 	<li class="top"><a href="/cgi-bin/menu.cgi" class="top_link"><span>Home</span></a></li>
-	<li class="top"><a href="/cgi-bin/staff/helpdesk_add_fm.cgi" id="helpdesk" class="top_link"><span class="down">'$HELPDESKSMSG'</span></a>
+	<li class="top"><a href="/cgi-bin/staff/helpdesk_add_fm.cgi" id="helpdesk" class="top_link"><span class="down">'$"Helpdesk"'</span></a>
 		<ul class="sub">
-			<li><a href="/cgi-bin/staff/helpdesk_add_fm.cgi">'$HELPDESKADDMSG'</a></li>
-			<li><a href="/cgi-bin/staff/helpdesk_view_fm.cgi">'$HELPDESKVIEWMSG'</a></li>
+			<li><a href="/cgi-bin/staff/helpdesk_add_fm.cgi">'$"Add Request"'</a></li>
+			<li><a href="/cgi-bin/staff/helpdesk_view_fm.cgi">'$"View Requests"'</a></li>
 		</ul>
 	</li>
-	<li class="top"><a href="/cgi-bin/staff/change_student_password_fm.cgi" id="menu" class="top_link"><span class="down">'$USERMSG'</span></a>
+	<li class="top"><a href="/cgi-bin/staff/change_student_password_fm.cgi" id="menu" class="top_link"><span class="down">'$"Users and Groups"'</span></a>
 		<ul class="sub">
-			<li><a href="/cgi-bin/staff/change_student_password_fm.cgi">'$CHANGEPASSMSG'</a></li>
-			<li><a href="/cgi-bin/staff/reset_student_password_fm.cgi">'$RESETPASSMSG'</a></li>
-			<li><a href="/cgi-bin/staff/lockout_reset_fm.cgi">'$LOCKOUTRESETMSG'</a></li>
-			<li><a href="/cgi-bin/staff/request_new_users_fm.cgi">'$REQUESTNEWUSERSMSG'</a></li>
-			<li><a href="/cgi-bin/staff/request_delete_users_fm.cgi">'$REQUESTDELETEUSERSMSG'</a></li>
+			<li><a href="/cgi-bin/staff/change_student_password_fm.cgi">'$"Change Password"'</a></li>
+			<li><a href="/cgi-bin/staff/reset_student_password_fm.cgi">'$"Reset Password"'</a></li>
+			<li><a href="/cgi-bin/staff/lockout_reset_fm.cgi">'$"Reset User Lockout"'</a></li>
+			<li><a href="/cgi-bin/staff/request_new_users_fm.cgi">'$"Request New Users"'</a></li>
+			<li><a href="/cgi-bin/staff/request_delete_users_fm.cgi">'$"Request Delete Users"'</a></li>
 		</ul>
 	</li>
 '
 #Printers
 if [ $PRINTERCTRL = yes ]
 then
-echo '	<li class="top"><a href="/cgi-bin/staff/printers.cgi" class="top_link"><span>'$PRINTERMSG'</span></a></li>'
+echo '	<li class="top"><a href="/cgi-bin/staff/printers.cgi" class="top_link"><span>'$"Printer"'</span></a></li>'
 fi
 #Internet
 if [ $INTERNETCTRL = yes ]
 then
 echo '	<li class="top"><a href="/cgi-bin/staff/dg_view_student_user_logs_fm.cgi" id="Internet" class="top_link"><span class="down">Internet</span></a>
 		<ul class="sub">
-			<li><a href="/cgi-bin/staff/dg_room_controls_fm.cgi">'$ROOMCONTROLS'</a></li>
-			<li><a href="/cgi-bin/staff/dg_view_student_user_logs_fm.cgi">'$VIEWLOGS'</a></li>
+			<li><a href="/cgi-bin/staff/dg_room_controls_fm.cgi">'$"Room controls"'</a></li>
+			<li><a href="/cgi-bin/staff/dg_view_student_user_logs_fm.cgi">'$"Internet Logs"'</a></li>
 		</ul>
 	</li>'
 fi

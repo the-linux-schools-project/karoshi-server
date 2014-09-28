@@ -31,15 +31,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/change_management_passwords ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/change_management_passwords
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -52,7 +50,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Management Passwords"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
@@ -103,11 +101,11 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+	<span>'$"Management Passwords"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">'
 else
-echo '<b>'$TITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Management_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG6'</span></a>
+echo '<b>'$"Management Passwords"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Management_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is used to change important passwords on your system that are needed to access specific services."'</span></a>
 <br><br>'
 fi
 
@@ -121,20 +119,20 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 '
 #<option value="sambaroot">Samba Root</option>
 echo '<option>root</option>
-</select></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Management_Passwords"><img class="images" alt="" src="/images/help/info.png"><span><b>Karoshi</b> - '$HELPMSG1'<br><br><b>administrator</b> - '$HELPMSG2'<br><br><b>Root</b> - '$HELPMSG3'</span></a>
+</select></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Management_Passwords"><img class="images" alt="" src="/images/help/info.png"><span><b>Karoshi</b> - '$"This is the account used to log in locally to the servers."'<br><br><b>administrator</b> - '$"This password is needed to join the clients to the domain."'<br><br><b>Root</b> - '$"You should not normally need to use this password."'</span></a>
 </td></tr>
-<tr><td>'$NEWPASSMSG'</td><td><input name="____PASSWORD1____"  tabindex="2" size="20" style="width: '$WIDTH'px;" type="password"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Management_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$PASSWORDHELP1'<br><br><b>'$SPECIALCHARSMSG'</b><br><br>'$CHARACTERHELP' space !	"	# 	$	%	& 	(	) 	*	+	, 	-	.	/ 	:
+<tr><td>'$"New Password"'</td><td><input name="____PASSWORD1____"  tabindex="2" size="20" style="width: '$WIDTH'px;" type="password"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Management_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the pasword that you want to use."'<br><br><b>'$"Special Characters"'</b><br><br>'$CHARACTERHELP' space !	"	# 	$	%	& 	(	) 	*	+	, 	-	.	/ 	:
 ;	<	=	>	?	@ 	[	\	]	^	_	` 	{	|	}	~
 </span></a>
 </td></tr>
-<tr><td>'$CONFIRMPASSMSG'</td><td><input name="____PASSWORD2____"  tabindex="3" size="20" style="width: '$WIDTH'px;" type="password"></td></tr>
+<tr><td>'$"Confirm Password"'</td><td><input name="____PASSWORD2____"  tabindex="3" size="20" style="width: '$WIDTH'px;" type="password"></td></tr>
 </tbody></table><br><br>'
 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE all "$ACTIONMSG" no no ____
+/opt/karoshi/web_controls/show_servers $MOBILE all $"Change password" no no ____
 
 [ $MOBILE = no ] && echo '</div>'
 

@@ -63,9 +63,9 @@ then
 echo `date`: domain_information - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
 ########################
 #Check data
 ########################
@@ -144,38 +144,36 @@ DEFAULTGATEWAY=`ip route show | grep default | cut -d' ' -f3`
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/domain_information ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/domain_information
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 source /opt/karoshi/server_network/domain_information/domain_name
 
 ####################
 #Show domain information
 ####################
-echo '<div class="sectiontitle">'$TITLE'</div><br>'
+echo '<div class="sectiontitle">'$"Domain Information"'</div><br>'
 
 echo '
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;"><b>'$DOMAINMSG'</b></td><td>'$SAMBADOMAIN'</td></tr>
-<tr><td style="width: 180px;"><b>'$REALMMSG'</b></td><td>'$REALM'</td></tr>
-<tr><td style="width: 180px;"><b>'$GATEWAYMSG'</b></td><td>'$DEFAULTGATEWAY'</td></tr>
-<tr><td style="width: 180px;"><b>'$NAMESERVERMSG'</b></td><td>'$NAMESERVER'</td></tr>
-<tr><td style="width: 180px;"><b>'$NTPSERVERMSG'</b></td><td>'$NTPSERVER'</td></tr>
+<tr><td style="width: 180px;"><b>'$"Domain"'</b></td><td>'$SAMBADOMAIN'</td></tr>
+<tr><td style="width: 180px;"><b>'$"Realm"'</b></td><td>'$REALM'</td></tr>
+<tr><td style="width: 180px;"><b>'$"Gateway"'</b></td><td>'$DEFAULTGATEWAY'</td></tr>
+<tr><td style="width: 180px;"><b>'$"Name Server"'</b></td><td>'$NAMESERVER'</td></tr>
+<tr><td style="width: 180px;"><b>'$"NTP Server"'</b></td><td>'$NTPSERVER'</td></tr>
 '
 
 if [ $SHOWDHCP = yes ]
 then
 echo '
-<tr><td valign="bottom" style="width: 180px; height: 40px;"><b>'$DHCPSETTINGSMSG'</b></td><td></td></tr>
-<tr><td style="width: 180px;"><b>'$NAMESERVERMSG'</b></td><td>'$CURRENTDOMAINSERVERS'</td></tr>
-<tr><td style="width: 180px;"><b>'$DHCPRANGEMSG'</b></td><td>'$STARTADDRESS - $ENDADDRESS'</td></tr>
+<tr><td valign="bottom" style="width: 180px; height: 40px;"><b>'$"DHCP Settings"'</b></td><td></td></tr>
+<tr><td style="width: 180px;"><b>'$"Name Server"'</b></td><td>'$CURRENTDOMAINSERVERS'</td></tr>
+<tr><td style="width: 180px;"><b>'$"DHCP Range"'</b></td><td>'$STARTADDRESS - $ENDADDRESS'</td></tr>
 '
 fi
 echo '</tbody></table>'

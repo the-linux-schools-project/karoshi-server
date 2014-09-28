@@ -26,7 +26,7 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
@@ -35,10 +35,8 @@ ICON2=/images/submenus/system/disabled.png
 ICON3=/images/submenus/system/delete.png
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/samba_shares ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/samba_shares
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -50,7 +48,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE2'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View Additional Network Shares"'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head>
 <body onLoad="start()"><div id="pagecontainer">'
 
 #Detect mobile browser
@@ -72,15 +70,15 @@ echo '<form name="myform" action="/cgi-bin/admin/samba_view_shares.cgi" method="
 if [ $MOBILE = yes ]
 then
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
-<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$TITLE2'</b></a></td></tr></tbody></table><br>'
+<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
+<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"View Additional Network Shares"'</b></a></td></tr></tbody></table><br>'
 else
-echo '<div class="sectiontitle">'$TITLE2'</div><br>'
+echo '<div class="sectiontitle">'$"View Additional Network Shares"'</div><br>'
 fi
 
 echo '
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="width: 180px;"><b>'$SERVERMSG'</b></td><td style="width: 90px;"><b>'$SHAREMSG'</b></td><td style="width: 90px;"><b>'$GROUPMSG'</b></td><td style="width: 90px;"><b>'$GROUPPERMSMSG'</b></td><td style="width: 90px;"><b>'$OTHERSPERMSMSG'</b></td><td style="width: 30px;"></td><td style="width: 30px;"></td></tr>'
+<tbody><tr><td style="width: 180px;"><b>'$"Server"'</b></td><td style="width: 90px;"><b>'$"Share"'</b></td><td style="width: 90px;"><b>'$"Group"'</b></td><td style="width: 90px;"><b>'$"Group Permissions"'</b></td><td style="width: 90px;"><b>'$"Others Permissions"'</b></td><td style="width: 30px;"></td><td style="width: 30px;"></td></tr>'
 
 for SERVERS in /opt/karoshi/server_network/extra_network_shares/*
 do
@@ -92,12 +90,12 @@ SHARE=`basename "$SHARES" | sed 's/.conf$//g'`
 GROUP=`grep "force group" /opt/karoshi/server_network/extra_network_shares/$SERVER/"$SHARE.conf" | cut -d= -f2 | sed 's/ +//g'`
 CREATEMASK=`grep "create mask" /opt/karoshi/server_network/extra_network_shares/$SERVER/"$SHARE.conf" | cut -d= -f2 | sed 's/ //g'`
 
-GROUPPERMS=$READONLYMSG
-[ $CREATEMASK = 0664 ] && GROUPPERMS=$FULLACCESSMSG 
-[ $CREATEMASK = 0666 ] && GROUPPERMS=$FULLACCESSMSG
+GROUPPERMS=$"Read only"
+[ $CREATEMASK = 0664 ] && GROUPPERMS=$"Full Access" 
+[ $CREATEMASK = 0666 ] && GROUPPERMS=$"Full Access"
 
-OTHERPERMS=$READONLYMSG
-[ $CREATEMASK = 0666 ] && OTHERPERMS=$FULLACCESSMSG
+OTHERPERMS=$"Read only"
+[ $CREATEMASK = 0666 ] && OTHERPERMS=$"Full Access"
 
 #Get server data
 source /opt/karoshi/server_network/extra_network_shares/$SERVER/"$SHARE.info"
@@ -105,11 +103,11 @@ echo '<tr><td>'$SERVER'</td><td>'$SHARE'</td><td>'$GROUP'</td><td>'$GROUPPERMS'<
 
 if [ ! -f /opt/karoshi/server_network/extra_network_shares/$SERVER/"$SHARE".disabled ]
 then
-echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_disable_SHARE_'$SHARE'_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVER'_SERVERMASTER_'$SERVERMASTER'_" type="image" class="images" src="'$ICON1'" value=""><span>'$DISABLEMSG' '$SHARE'</span></a>'
+echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_disable_SHARE_'$SHARE'_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVER'_SERVERMASTER_'$SERVERMASTER'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Disable"' '$SHARE'</span></a>'
 else
-echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_enable_SHARE_'$SHARE'_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVER'_SERVERMASTER_'$SERVERMASTER'_" type="image" class="images" src="'$ICON2'" value=""><span>'$ENABLEMSG' '$SHARE'</span></a>'
+echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_enable_SHARE_'$SHARE'_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVER'_SERVERMASTER_'$SERVERMASTER'_" type="image" class="images" src="'$ICON2'" value=""><span>'$"Enable"' '$SHARE'</span></a>'
 fi
-echo '</td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_delete_SHARE_'$SHARE'_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVER'_SERVERMASTER_'$SERVERMASTER'_" type="image" class="images" src="'$ICON3'" value=""><span>'$DELETEMSG' '$SHARE'</span></a></td></tr>'
+echo '</td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_delete_SHARE_'$SHARE'_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVER'_SERVERMASTER_'$SERVERMASTER'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Delete"' '$SHARE'</span></a></td></tr>'
 
 done
 done

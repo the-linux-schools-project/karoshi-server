@@ -31,13 +31,11 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/ntp ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/ntp
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 
 function show_status {
@@ -117,13 +115,13 @@ done
 
 echo "Content-type: text/html"
 echo ""
-echo '<html><head><title>'$TITLE'</title></head><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<html><head><title>'$"Configure NTP"'</title></head><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Check https access
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -131,13 +129,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -146,21 +144,21 @@ fi
 #Check to see that servername is not blank
 if [ $SERVERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"You need to choose at least one server."
 show_status
 fi
 
 #Check to see that NTPSERVER is not blank
 if [ $NTPSERVER'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"You have not entered in an NTP server address to get the time from."
 show_status
 fi
 
 #Check to see that SERVERTYPE is not blank
 if [ $SERVERTYPE'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The servertype cannot be blank."
 show_status
 fi
 
@@ -173,7 +171,7 @@ EXEC_STATUS=`echo $?`
 
 if [ $EXEC_STATUS = 102 ]
 then
-MESSAGE=`echo $COMPLETEDMSG $LOGMSG`
+MESSAGE=`echo $COMPLETEDMSG $"Please check the karoshi web administration logs for more details."`
 show_status
 fi
 

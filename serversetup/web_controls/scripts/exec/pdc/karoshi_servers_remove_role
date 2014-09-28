@@ -101,13 +101,11 @@ fi
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/karoshi_servers_add_role ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/karoshi_servers_add_role
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 
@@ -125,7 +123,7 @@ then
 fi
 fi
 
-echo "<li>"$SERVERNAME: $REMOVECOMPLETED"</li><br>"
+echo "<li>"$SERVERNAME: $"The module has been removed.""</li><br>"
 sleep 5
 exit
 }
@@ -171,7 +169,7 @@ sleep 0.5
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
 '
 fi
-echo "<li>"$SERVERNAME: $REVERSEPROXYMSG - $UNFLAGMSG"</li><br>"
+echo "<li>"$SERVERNAME: $"Reverse Proxy Server" - $"Designation removed.""</li><br>"
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/apachereverseproxyserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/apachereverseproxyserver
 completed
 fi
@@ -182,7 +180,7 @@ fi
 ##########################
 if [ $MODULE = apacheserver ]
 then
-echo "<li>"$SERVERNAME: $WEBSERVERMSG - $UNFLAGMSG"</li><br>"
+echo "<li>"$SERVERNAME: $"Web Server" - $"Designation removed.""</li><br>"
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver
 completed
 fi
@@ -193,7 +191,7 @@ fi
 ##########################
 if [ $MODULE = distributionserver ]
 then
-echo "<li>"$SERVERNAME: $DISTRIBUTIONSERVERMSG - $UNFLAGMSG"</li><br>"
+echo "<li>"$SERVERNAME: $"Distribution Server" - $"Designation removed.""</li><br>"
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/distributionserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/distributionserver
 completed
 fi
@@ -205,7 +203,7 @@ fi
 ##########################
 if [ $MODULE = federated_server ]
 then
-echo "<li>"$SERVERNAME: $FEDERATIONSERVERREMOVEMSG"</li><br>"
+echo "<li>"$SERVERNAME: $"Removing federated server.""</li><br>"
 
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 #Remove federated server flag
@@ -225,7 +223,7 @@ echo "<br><br>"
 fi
 
 #Unflag server
-echo "<li>"$SERVERNAME: $FEDERATIONCONTROLMSG - $UNFLAGMSG"</li><br>"
+echo "<li>"$SERVERNAME: $"Federated Server" - $"Designation removed.""</li><br>"
 [ -d /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME ] && rm -f -R /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME
 completed
 fi
@@ -237,7 +235,7 @@ fi
 if [ $MODULE = backupserver ]
 then
 #Unflag backup server
-echo "<li>"$SERVERNAME: $BACKUPSERVERMSG - $UNFLAGMSG"</li><br>"
+echo "<li>"$SERVERNAME: $"Backup Server" - $"Designation removed.""</li><br>"
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/backupserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/backupserver
 [ -f /opt/karoshi/server_network/backup_servers/servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/backup_servers/servers/$SERVERNAME
 #Check to see if any other servers are backing up to this server
@@ -249,8 +247,9 @@ for BACKUP_CLIENTS in `grep -l -w $SERVERNAME -R /opt/karoshi/server_network/bac
 do
 BACKUP_CLIENT=`echo $BACKUP_CLIENTS | cut -d/ -f7`
 rm -f $BACKUP_CLIENTS
-echo "<li>"$BACKUP_CLIENT: $BACKUPDISABLEDMSG"</li><br>"
-echo `date`: karoshi_servers_remove_role - $BACKUP_CLIENT backup disabled by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo '<li>'$BACKUP_CLIENT': '$"Backup disabled"'</li><br>'
+
+echo `date`: karoshi_servers_remove_role - $"Back"UP_CLIENT backup disabled by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 done
 fi
 fi
@@ -276,7 +275,7 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 [ -d /var/www/html/smbwebclient ] && rm -f -R /var/www/html/smbwebclient
 '
 fi
-echo "<li>"$SERVERNAME: $HOMEACCESSSERVERMSG - $UNFLAGMSG"</li><br>"
+echo "<li>"$SERVERNAME: $"Home Access Server" - $"Designation removed.""</li><br>"
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/homeaccess ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/homeaccess
 [ -f /opt/karoshi/server_network/homeaccess ] && rm -f /opt/karoshi/server_network/homeaccess
 completed
@@ -309,7 +308,7 @@ mysqladmin -f --password=$MYSQLPASS drop rubycas 1>/dev/null 2>/dev/null
 '
 fi
 
-echo "<li>"$SERVERNAME: $CASSERVERMSG - $UNFLAGMSG"</li><br>"
+echo "<li>"$SERVERNAME: $"Ruby CAS Server" - $"Designation removed.""</li><br>"
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/casserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/casserver
 [ -f /opt/karoshi/server_network/casserver ] && rm -f /opt/karoshi/server_network/casserver
 completed
@@ -322,7 +321,7 @@ fi
 ##########################
 if [ $MODULE = dhcp_server ]
 then
-echo "<li>"$SERVERNAME: $DHCPSERVERMSG - $UNFLAGMSG"</li><br>"
+echo "<li>"$SERVERNAME: $"DHCP Server" - $"Designation removed.""</li><br>"
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/dhcp_server ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/dhcp_server
 [ -f /opt/karoshi/server_network/dhcp_server ] && rm -f /opt/karoshi/server_network/dhcp_server
 #Stop dhcpd
@@ -341,13 +340,13 @@ if [ $MODULE = emailserver ]
 then
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
-echo "<li>"$SERVERNAME: $SQUIRRELREMOVE"</li><br>"
+echo "<li>"$SERVERNAME: $"Removing Squirrelmail.""</li><br>"
 [ -d /var/www/html/squirrelmail ] && rm -f -R /var/www/html/squirrelmail
 [ -d /var/www/squirrelmail-attachments ] && rm -f -R /var/www/squirrelmail-attachments
 [ -d /var/www/squirrelmail-data ] && rm -f -R /var/www/squirrelmail-datacalendar_data
 [ -d /var/www/squirrelmail-datacalendar_data ] && rm -f -R /var/www/squirrelmail-datacalendar_data
 [ -f /var/www/global_address_book ] && rm -f /var/www/global_address_book
-echo "<li>"$SERVERNAME: $EGROUPWAREREMOVE"</li><br>"
+echo "<li>"$SERVERNAME: $"Removing Egroupware.""</li><br>"
 [ -d /var/www/html/egroupware ] && rm -f -R /var/www/html/egroupware
 [ -d /var/www/egroupware-files ] && rm -f -R /var/www/egroupware-files
 
@@ -371,13 +370,13 @@ mysqladmin -f --password=$MYSQLPASS drop egroupware 1>/dev/null 2>/dev/null
 else
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 source /opt/karoshi/serversetup/variables/distro
-echo "<li>"'$SERVERNAME': '$SQUIRRELREMOVE'"</li><br>"
+echo "<li>"'$SERVERNAME': '$"Removing Squirrelmail."'"</li><br>"
 [ -d /var/www/html/squirrelmail ] && rm -f -R /var/www/html/squirrelmail
 [ -d /var/www/squirrelmail-attachments ] && rm -f -R /var/www/squirrelmail-attachments
 [ -d /var/www/squirrelmail-data ] && rm -f -R /var/www/squirrelmail-data
 [ -d /var/www/squirrelmail-datacalendar_data ] && rm -f -R /var/www/squirrelmail-datacalendar_data
 [ -f /var/www/global_address_book ] && rm -f /var/www/global_address_book
-echo "<li>"'$SERVERNAME': '$EGROUPWAREREMOVE'"</li><br>"
+echo "<li>"'$SERVERNAME': '$"Removing Egroupware."'"</li><br>"
 [ -d /var/www/html/egroupware ] && rm -f -R /var/www/html/egroupware
 [ -d /var/www/egroupware-files ] && rm -f -R /var/www/egroupware-files
 
@@ -401,7 +400,7 @@ mysqladmin -f --password=$MYSQLPASS drop egroupware 1>/dev/null 2>/dev/null
 fi
 
 #Unflag server
-echo "<li>"$SERVERNAME: $EMAILSERVERMSG - $UNFLAGMSG"</li><br>"
+echo "<li>"$SERVERNAME: $"E-Mail Server" - $"Designation removed.""</li><br>"
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver
 [ -f /opt/karoshi/server_network/emailserver ] && rm -f /opt/karoshi/server_network/emailserver
 completed
@@ -415,7 +414,7 @@ fi
 
 if [ $MODULE = joomlaserver ]
 then
-echo "<li>"$SERVERNAME: $JOOMLAREMOVE"</li><br>"
+echo "<li>"$SERVERNAME: $"Removing Joomla.""</li><br>"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 [ -d /var/www/html/joomla ] && rm -f -R /var/www/html/joomla
@@ -433,7 +432,7 @@ mysqladmin -f --password=$MYSQLPASS drop joomla 1>/dev/null 2>/dev/null
 '
 fi
 #Unflag server
-echo "<li>"$SERVERNAME: $JOOMLAMSG - $UNFLAGMSG"</li><br>"
+echo "<li>"$SERVERNAME: $"Joomla" - $"Designation removed.""</li><br>"
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/joomlaserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/joomlaserver
 completed
 fi
@@ -445,7 +444,7 @@ fi
 
 if [ $MODULE = radioserver ]
 then
-echo "<li>"$SERVERNAME: $RADIOREMOVE"</li><br>"
+echo "<li>"$SERVERNAME: $"Removing Icecast radio server.""</li><br>"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 #Stop icecast server
@@ -463,7 +462,7 @@ source /opt/karoshi/serversetup/variables/distro
 '
 fi
 #Unflag server
-echo "<li>"$SERVERNAME: $RADIOSERVERMSG - $UNFLAGMSG"</li><br>"
+echo "<li>"$SERVERNAME: $"Internet Radio Server" - $"Designation removed.""</li><br>"
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/radioserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/radioserver
 [ -f /opt/karoshi/server_network/radioserver ] && rm -f /opt/karoshi/server_network/radioserver
 completed
@@ -476,7 +475,7 @@ fi
 
 if [ $MODULE = remote_ssh ]
 then
-echo "<li>"$SERVERNAME: $SSHACCESSREMOVE"</li><br>"
+echo "<li>"$SERVERNAME: $"Removing ssh access.""</li><br>"
 #Change firewall rules to stop ssh access
 MODCHECK=`grep -c pdc_ssh_rule /etc/shorewall/rules`
 if [ $MODCHECK != 0 ]
@@ -490,7 +489,7 @@ sleep 0.5
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
 fi
 #Unflag server
-echo "<li>"$SERVERNAME: $SSHACCESSMSG - $UNFLAGMSG"</li><br>"
+echo "<li>"$SERVERNAME: $"Remote SSH Access" - $"Designation removed.""</li><br>"
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/remote_ssh ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/remote_ssh
 completed
 fi
@@ -503,7 +502,7 @@ fi
 
 if [ $MODULE = moodleserver ]
 then
-echo "<li>"$SERVERNAME: $MOODLEREMOVE"</li><br>"
+echo "<li>"$SERVERNAME: $"Removing Moodle.""</li><br>"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 [ -d /var/www/html/moodle ] && rm -f -R /var/www/html/moodle
@@ -531,7 +530,7 @@ mysqladmin -f --password=$MYSQLPASS drop moodle 1>/dev/null 2>/dev/null
 '
 fi
 #Unflag server
-echo "<li>"$SERVERNAME: $MOODLESERVERMSG - $UNFLAGMSG"</li><br>"
+echo "<li>"$SERVERNAME: $"Moodle Server" - $"Designation removed.""</li><br>"
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/moodleserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/moodleserver
 [ -f /opt/karoshi/server_network/moodleserver ] && rm -f /opt/karoshi/server_network/moodleserver
 completed
@@ -544,7 +543,7 @@ fi
 
 if [ $MODULE = ocsserver ]
 then
-echo "<li>"$SERVERNAME: $OCSREMOVE"</li><br>"
+echo "<li>"$SERVERNAME: $"Removing OCS-Inventory.""</li><br>"
 
 [ -d /var/www/html_karoshi/admin/ocs ] && rm -f -R /var/www/html_karoshi/admin/ocs
 [ -d /var/www/html_karoshi/tech/ocs ] && rm -f -R /var/www/html_karoshi/tech/ocs
@@ -585,7 +584,7 @@ sleep 0.5
 '
 fi
 #Unflag server
-echo "<li>"$SERVERNAME: $OCSSERVERMSG - $UNFLAGMSG"</li><br>"
+echo "<li>"$SERVERNAME: $"OCS Inventory" - $"Designation removed.""</li><br>"
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/ocsserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/ocsserver
 [ -f /opt/karoshi/server_network/ocs_server ] && rm -f /opt/karoshi/server_network/ocs_server
 #Remove ocs item from the web management menu
@@ -600,7 +599,7 @@ fi
 
 if [ $MODULE = printserver ]
 then
-echo "<li>"$SERVERNAME: $PRINTREMOVE"</li><br>"
+echo "<li>"$SERVERNAME: $"Removing Print Server.""</li><br>"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 #Stop Cups
@@ -615,7 +614,7 @@ source /opt/karoshi/serversetup/variables/distro
 '
 fi
 #Unflag server
-echo "<li>"$SERVERNAME: $PRINTSERVERMSG - $UNFLAGMSG"</li><br>"
+echo "<li>"$SERVERNAME: $"Print Server" - $"Designation removed.""</li><br>"
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/printserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/printserver
 [ -f /opt/karoshi/server_network/printserver ] && rm -f /opt/karoshi/server_network/printserver
 
@@ -632,7 +631,7 @@ fi
 ##########################
 if [ $MODULE = squid ]
 then
-echo "<li>"$SERVERNAME: $SQUIDREMOVE"</li><br>"
+echo "<li>"$SERVERNAME: $"Removing Squid.""</li><br>"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 #Stop squid and dansguardian
@@ -668,7 +667,7 @@ source /opt/karoshi/serversetup/variables/distro
 '
 fi
 #Unflag server
-echo "<li>"$SERVERNAME: $SQUIDSERVERMSG - $UNFLAGMSG"</li><br>"
+echo "<li>"$SERVERNAME: $"Squid Internet Proxy" - $"Designation removed.""</li><br>"
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/squid ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/squid
 [ -f /opt/karoshi/server_network/proxyserver ] && rm -f /opt/karoshi/server_network/proxyserver
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/apt-cacher-ng ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/apt-cacher-ng
@@ -681,7 +680,7 @@ fi
 ##########################
 if [ $MODULE = monitoring ]
 then
-echo "<li>"$SERVERNAME: $MONREMOVE"</li><br>"
+echo "<li>"$SERVERNAME: $"Removing Mon.""</li><br>"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 #Stop mon
@@ -707,7 +706,7 @@ source /opt/karoshi/serversetup/variables/distro
 '
 fi
 #Unflag server
-echo "<li>"$SERVERNAME: $MONITORSERVERMSG - $UNFLAGMSG"</li><br>"
+echo "<li>"$SERVERNAME: $"Monitor Server" - $"Designation removed.""</li><br>"
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/monitoring ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/monitoring
 [ -f /opt/karoshi/server_network/monitoringserver ] && rm -f /opt/karoshi/server_network/monitoringserver
 
@@ -723,7 +722,7 @@ fi
 ##########################
 if [ $MODULE = fileserver ]
 then
-echo "<li>"$SERVERNAME: $FILESERVREMOVE"</li><br>"
+echo "<li>"$SERVERNAME: $"Removing File Server.""</li><br>"
 
 #Change group information
 for GROUPFILES in /opt/karoshi/server_network/group_information/*
@@ -735,7 +734,7 @@ done
 sed -i 's/'$SERVERNAME'/'$HOSTNAME'/g' /var/lib/samba/netlogon/groups.txt
 
 #Unflag server
-echo "<li>"$SERVERNAME: $FILESERVERMSG - $UNFLAGMSG"</li><br>"
+echo "<li>"$SERVERNAME: $"File Server" - $"Designation removed.""</li><br>"
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/fileserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/fileserver
 completed
 fi
@@ -743,7 +742,7 @@ fi
 
 if [ $MODULE = REMOVESERVER ]
 then
-echo "<li>"$SERVERNAME: $SERVERREMOVE"</li><br>"
+echo "<li>"$SERVERNAME: $"Removing Server.""</li><br>"
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 source /opt/karoshi/server_network/domain_information/domain_name
 
@@ -778,7 +777,7 @@ done
 sed -i 's/'$SERVERNAME'/'$HOSTNAME'/g' /var/lib/samba/netlogon/groups.txt
 
 #Unflag server
-echo "<li>"$SERVERNAME: $UNFLAGMSG"</li><br>"
+echo "<li>"$SERVERNAME: $"Designation removed.""</li><br>"
 [ -d /opt/karoshi/server_network/servers/$SERVERNAME ] && rm -f -R /opt/karoshi/server_network/servers/$SERVERNAME
 [ -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME
 [ -f /opt/karoshi/server_network/ldap_clients/$SERVERNAME ] && rm -f /opt/karoshi/server_network/ldap_clients/$SERVERNAME
@@ -793,8 +792,8 @@ for BACKUP_CLIENTS in `grep -l -w $SERVERNAME -R /opt/karoshi/server_network/bac
 do
 BACKUP_CLIENT=`echo $BACKUP_CLIENTS | cut -d/ -f7`
 rm -f $BACKUP_CLIENTS
-echo "<li>"$BACKUP_CLIENT: $BACKUPDISABLEDMSG"</li><br>"
-echo `date`: karoshi_servers_remove_role - $BACKUP_CLIENT backup disabled by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo '<li>'$BACKUP_CLIENT': '$"Backup disabled"'</li><br>'
+echo `date`: karoshi_servers_remove_role - $"Back"UP_CLIENT backup disabled by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 done
 fi
 fi
@@ -806,10 +805,10 @@ fi
 ##########################
 if [ $MODULE = ldapserver ]
 then
-echo "<li>"$SERVERNAME: $LDAPREMOVE"</li><br>"
+echo "<li>"$SERVERNAME: $"Removing LDAP Server.""</li><br>"
 
 #Unflag server
-echo "<li>"$SERVERNAME: $UNFLAGMSG"</li><br>"
+echo "<li>"$SERVERNAME: $"Designation removed.""</li><br>"
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/ldapserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/ldapserver
 [ -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME
 
@@ -823,7 +822,7 @@ completed
 fi
 
 #Unflag server
-echo "<li>"$SERVERNAME: $UNFLAGMSG"</li><br>"
+echo "<li>"$SERVERNAME: $"Designation removed.""</li><br>"
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/$MODULE ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/$MODULE
 
 completed

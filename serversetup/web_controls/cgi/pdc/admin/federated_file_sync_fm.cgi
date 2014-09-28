@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/file/federated_file_sync ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/file/federated_file_sync
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 source /opt/karoshi/serversetup/variables/years
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
@@ -47,7 +45,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Federated File Synchronisation"'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
 #########################
@@ -82,22 +80,22 @@ echo '<form name="myform" action="/cgi-bin/admin/federated_file_sync.cgi" method
 if [ $MOBILE = yes ]
 then
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
-<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$TITLE'</b></a></td></tr></tbody></table>'
+<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
+<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Federated File Synchronisation"'</b></a></td></tr></tbody></table>'
 else
-echo '<b>'$TITLE'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a><br><br>'
+echo '<b>'$"Federated File Synchronisation"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will allow you to synchronise files between federated server systems. Roaming profile users are automatically synchronised."'</span></a><br><br>'
 fi
 
 #Check that this server is a federated server
 if [ ! -d  /opt/karoshi/server_network/federated_ldap_servers ]
 then
-echo $ERRORMSG1 '</div></div></body></html>'
+echo $"This server is not a master federation server." '</div></div></body></html>'
 exit
 fi
 
 if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers | wc -l` = 0 ]
 then
-echo $ERRORMSG1 '</div></div></body></html>'
+echo $"This server is not a master federation server." '</div></div></body></html>'
 exit
 fi
 
@@ -117,12 +115,12 @@ then
 
 ICON=/images/submenus/user/nosync.png
 ACTION=sync
-MESSAGE="$PGROUP - $ENABLESYNCMSG"
+MESSAGE="$PGROUP - $"Enable file synchronisation""
 if [ -f /opt/karoshi/server_network/federated_file_sync/$PGROUP ]
 then
 ACTION=nosync
 ICON=/images/submenus/user/sync.png
-MESSAGE="$PGROUP - $DISABLESYNCMSG"
+MESSAGE="$PGROUP - $"Disable file synchronisation""
 fi
 echo '<td><a class="info" href="javascript:void(0)"><input name="___GROUP___'$PGROUP'___ACTION___'$ACTION'___" type="image" class="images" src="'$ICON'" value=""><span>'$MESSAGE'</span></a></td><td style="width: '$WIDTH'px;">'$PGROUP'</td>'
 let COLCOUNT=$COLCOUNT+1
@@ -134,7 +132,7 @@ fi
 fi
 done
 
-echo '</tbody></table><br><br><b>'$CUSTOMFOLDERSMSG'</b><br><br>'
+echo '</tbody></table><br><br><b>'$"Custom Folders"'</b><br><br>'
 
 #Show list of custom folders to sync
 if [ -d /opt/karoshi/server_network/federated_file_sync_custom ]
@@ -147,7 +145,7 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 for CUSTOMFOLDERS in /opt/karoshi/server_network/federated_file_sync_custom/*
 do
 CUSTOMFOLDER=`basename "$CUSTOMFOLDERS"`
-echo '<td><a class="info" href="javascript:void(0)"><input name="___GROUP___'$CUSTOMFOLDER'___ACTION___customdelete___" type="image" class="images" src="'$ICON'" value=""><span>'$CUSTOMFOLDER' - '$DISABLESYNCMSG'</span></a></td><td style="width: '$WIDTH'px;">'$CUSTOMFOLDER'</td>'
+echo '<td><a class="info" href="javascript:void(0)"><input name="___GROUP___'$CUSTOMFOLDER'___ACTION___customdelete___" type="image" class="images" src="'$ICON'" value=""><span>'$CUSTOMFOLDER' - '$"Disable file synchronisation"'</span></a></td><td style="width: '$WIDTH'px;">'$CUSTOMFOLDER'</td>'
 let COLCOUNT=$COLCOUNT+1
 if [ $COLCOUNT -gt $MAXCOLS ]
 then
@@ -179,7 +177,7 @@ fi
 fi
 fi
 done
-echo '</select></td><td><input value="'$SUBMITMSG'" class="button" type="submit"></td></tr></tbody></table>'
+echo '</select></td><td><input value="'$"Submit"'" class="button" type="submit"></td></tr></tbody></table>'
 
 echo '</div></form></div></body></html>'
 exit

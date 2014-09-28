@@ -27,19 +27,15 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_location_controls ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_location_controls
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo "<html><head><title>$TITLE2</title><meta http-equiv='"'REFRESH'"' content='"'0; URL='$HTTP_REFERER''"'>"
+echo "<html><head><title>$"Allow Room"</title><meta http-equiv='"'REFRESH'"' content='"'0; URL='$HTTP_REFERER''"'>"
 echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
@@ -80,13 +76,13 @@ exit
 #Check to see that location is not blank
 if [ $LOCATION'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The location must not be blank."
 show_status
 fi
 #Check to see that location is banned
 if [ `ls -1 /opt/karoshi/internet_controls/banned_locations | grep -c $LOCATION` = 0 ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"This location is not banned."
 show_status
 fi
 
@@ -97,7 +93,7 @@ if [ `grep -c -w $REMOTE_USER /opt/karoshi/web_controls/staff_restrictions.txt` 
 then
 sudo -H /opt/karoshi/web_controls/exec/record_staff_error $REMOTE_USER:$REMOTE_ADDR:$REMOTE_USER
 sleep $SLEEPTIME
-MESSAGE=$ERRORMSG12
+MESSAGE=$"You do not have permissions to control internet access."
 show_status
 fi
 fi
@@ -106,6 +102,6 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/staff/dg_allow_location.cgi | cut -d' ' 
 #Ban location
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOCATION:" | sudo -H /opt/karoshi/web_controls/exec/dg_allow_location
 BAN_STATUS=`echo $?`
-MESSAGE=`echo $LOCATION - $COMPLETEDMSG2`
+MESSAGE=`echo $LOCATION - $"Internet access allowed."`
 show_status
 exit

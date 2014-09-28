@@ -41,15 +41,13 @@ LEVEL3="Technican"
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_view ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_view
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 ########################
 #Check md5checksum
@@ -76,9 +74,9 @@ then
 echo `date`: remote_management_view - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
 
 ########################
 #Check data
@@ -124,19 +122,19 @@ if [ $PRIADMINSTATUS = yes ]
 then
 echo '<form action="/cgi-bin/admin/remote_management_process.cgi" method="post">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
-<td style="vertical-align: top;"><div class="sectiontitle">'$WEBADMINMSG1'</div></td>
-<td style="vertical-align: top;"><a href="remote_management_add_fm.cgi"><input class="button" type="button" name="" value="'$ADDMANUSERMSG'"></a></td>
+<td style="vertical-align: top;"><div class="sectiontitle">'$"Web Management Access"'</div></td>
+<td style="vertical-align: top;"><a href="remote_management_add_fm.cgi"><input class="button" type="button" name="" value="'$"Add"'"></a></td>
 </tr></tbody></table>
 '
 else
 echo '
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
-<td style="vertical-align: top;"><div class="sectiontitle">'$WEBADMINMSG1'</div></td>
+<td style="vertical-align: top;"><div class="sectiontitle">'$"Web Management Access"'</div></td>
 </tr></tbody></table>
 '
 fi
 
-echo '<br>'$WEBADMINMSG2'<br><br></div><div id="infobox">'
+echo '<br>'$"The following accounts have web admin access:"'<br><br></div><div id="infobox">'
 
 while [ $COUNTER -le $REMOTE_USER_COUNT ]
 do
@@ -188,7 +186,7 @@ echo '<tbody>'
 echo '<tr><td style="width: 180px;">'$JOBTITLEMSG':</td><td>'$JOBTITLE'</td></tr>'
 echo '<tr><td style="width: 180px;">'$FORENAMEMSG':</td><td>'$FORENAME'</td></tr>'
 echo '<tr><td style="width: 180px;">'$SURNAMEMSG':</td><td>'$SURNAME'</td></tr>'
-echo '<tr><td style="width: 180px;">'$USERNAMEMSG':</td><td>'$USERNAME'</td></tr>'
+echo '<tr><td style="width: 180px;">'$"Username"':</td><td>'$USERNAME'</td></tr>'
 echo '<tr><td style="width: 180px;">'$PRIADMINMSG':</td><td>'$PRIADMIN'</td></tr>'
 echo '<tr><td style="width: 180px;">'$ADMINLEVELMSG':</td><td>'$ADMIN_LEVEL'</td></tr>'
 echo '</tbody>'

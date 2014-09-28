@@ -33,19 +33,17 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_quota_messages ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_quota_messages
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"E-Mail Quota Warning Messages"'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -120,7 +118,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -128,46 +126,46 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that LEVEL1 is not blank
-if [ $LEVEL1'null' = null ]
+if [ -z "$LEVEL1" ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The level description is blank."
 show_status
 fi
 #Check to see that LEVEL2 is not blank
-if [ $LEVEL2'null' = null ]
+if [ -z "$LEVEL2" ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The level description is blank."
 show_status
 fi
 #Check to see that LEVEL3 is not blank
-if [ $LEVEL3'null' = null ]
+if [ -z "$LEVEL3" ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The level description is blank."
 show_status
 fi
 #Check to see that LEVEL4 is not blank
-if [ $LEVEL4'null' = null ]
+if [ -z "$LEVEL4" ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The level description is blank."
 show_status
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_quota_messages2.cgi | cut -d' ' -f1`
 #Apply changes
-sudo -H /opt/karoshi/web_controls/exec/email_quota_messages_apply $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LEVEL1:$LEVEL2:$LEVEL3:$LEVEL4
+sudo -H /opt/karoshi/web_controls/exec/email_quota_messages_apply $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:"$LEVEL1":"$LEVEL2":"$LEVEL3":"$LEVEL4":
 EXEC_STATUS=`echo $?`
-MESSAGE=$COMPLETEDMSG
+MESSAGE=$"E-Mail Quota Warning messages have been saved."
 show_status

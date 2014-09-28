@@ -114,13 +114,11 @@ echo `date`: home_folders - Changing $PRIGROUP from $CURRENTSERVER to $NEWSERVER
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/home_folders ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/home_folders
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 
 ###########################
@@ -229,12 +227,12 @@ if [ ! -z "$COPYHOMEAREAS" ]
 then
 	if [ $COPYHOMEAREAS = yes ]
 	then
-		echo $COPYHOMEAREASMSG2'<br><br>'
+		echo $"Copying Home Areas"'<br><br>'
 		echo '
 		<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-		<tr><td style="width: 180px;">'$PRIGROUPMSG'</td><td>'$PRIGROUP'</td></tr>
-		<tr><td style="width: 180px;">'$CURRENTSERVERMSG'</td><td>'$CURRENTSERVER'</td></tr>
-		<tr><td style="width: 180px;">'$NEWSERVERMSG'</td><td>'$NEWSERVER'</td></tr>
+		<tr><td style="width: 180px;">'$"Primary Group"'</td><td>'$PRIGROUP'</td></tr>
+		<tr><td style="width: 180px;">'$"Current Server"'</td><td>'$CURRENTSERVER'</td></tr>
+		<tr><td style="width: 180px;">'$"New Server"'</td><td>'$NEWSERVER'</td></tr>
 		</tbody></table><br><br>
 		'
 

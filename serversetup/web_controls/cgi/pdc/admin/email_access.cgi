@@ -27,19 +27,17 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_access ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_access
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"E-Mail Access"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -123,7 +121,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -131,13 +129,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -146,21 +144,21 @@ fi
 #Check to see that EMAILUSER or group is not blank
 if [ $EMAILUSER'null' = null ] && [ $GROUP'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"You need to enter in a username or choose a group."
 show_status
 fi
 
 #Check that action is not blank
 if [ $ACTION'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The action cannot be blank."
 show_status
 fi
 
 #Check that the action has the correct value
 if [ $ACTION != deny ] && [ $ACTION != allow ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The action does not have the correct value."
 show_status
 fi
 
@@ -172,7 +170,7 @@ id -u "$EMAILUSER" 1>/dev/null 2>/dev/null
 if [ `echo $?` != 0 ]
 then
 #User does not exist
-MESSAGE=`echo $EMAILUSER - $ERRORMSG2`
+MESSAGE=`echo $EMAILUSER - $"This user does not exist."`
 show_status
 fi
 fi
@@ -184,16 +182,16 @@ if [ $EMAILUSER'null' != null ]
 then
 if [ $ACTION = deny ]
 then
-MESSAGE=`echo $EMAILUSER - $COMPLETEDMSG1`
+MESSAGE=`echo $EMAILUSER - $"Email use banned for this user."`
 else
-MESSAGE=`echo $EMAILUSER - $COMPLETEDMSG3`
+MESSAGE=`echo $EMAILUSER - $"Email use allowed for this user."`
 fi
 else
 if [ $ACTION = deny ]
 then
-MESSAGE=`echo $GROUP - $COMPLETEDMSG2`
+MESSAGE=`echo $GROUP - $"Email use banned for this group."`
 else
-MESSAGE=`echo $GROUP - $COMPLETEDMSG4`
+MESSAGE=`echo $GROUP - $"Email use allowed for this group."`
 fi
 fi
 show_status

@@ -27,19 +27,17 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/karoshi_servers_add_role ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/karoshi_servers_add_role
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta http-equiv="REFRESH" content="0;url=/cgi-bin/admin/karoshi_servers_view.cgi"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add Server Role"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta http-equiv="REFRESH" content="0;url=/cgi-bin/admin/karoshi_servers_view.cgi"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -115,7 +113,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -123,13 +121,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -138,36 +136,36 @@ fi
 #Check to see that SERVERNAME is not blank
 if [ $SERVERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The servername cannot be blank."
 show_status
 fi
 #Check to see that MODULE is not blank
 if [ $MODULE'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The module cannot be blank."
 show_status
 fi
 #Check to see that FORMCODE is not blank
 if [ $FORMCODE'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The code cannot be blank."
 show_status
 fi
 if [ $MODULECODE'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The code cannot be blank."
 show_status
 fi
 
 if [ $MODULECODE != $FORMCODE ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The code did not match."
 show_status
 fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><b>'$TITLE2' - '$SERVERNAME'</b><br><br>'
+echo '<div id="actionbox"><b>'$"Remove Server Role"' - '$SERVERNAME'</b><br><br>'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/karoshi_servers_remove_role.cgi | cut -d' ' -f1`
 #Remove module

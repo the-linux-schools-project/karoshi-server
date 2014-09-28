@@ -95,19 +95,17 @@ fi
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/backup_now ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/backup_now
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 [ -d /opt/karoshi/backup_server/ ] || ( mkdir /opt/karoshi/backup_server/ ; chmod 0700 /opt/karoshi/backup_server/ )
 
 function backup_pdc {
 echo '<PRE STYLE="font-size: small; font-family:'Arial, Times, Georgia, Times New Roman, Times, serif'">'
 /opt/karoshi/serversetup/all/"useful scripts"/backup_servers/backup_servers 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 echo "</pre>"
-echo '<br><br>'$KAROSHI_SERVER - $COMPLETEDMSG'<br><br>'
+echo '<br><br>'$KAROSHI_SERVER - $"The network backup has been completed."'<br><br>'
 }
 
 function backup_other_servers {
@@ -131,7 +129,7 @@ echo "</pre>"
 }
 
 echo `date`: backup_now - $KAROSHI_SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo '<span style="font-weight: bold;">'$KAROSHI_SERVER': '$BACKUPNOWMSG'</span>'
+echo '<span style="font-weight: bold;">'$KAROSHI_SERVER': '$"Backing up now - Please wait."'</span>'
 echo `date`: backup_now - $KAROSHI_SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 if [ $KAROSHI_SERVER = `hostname-fqdn` ]

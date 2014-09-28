@@ -50,16 +50,16 @@ then
 echo `date`: email_statistics - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
-LOGVIEW=`echo $* | cut -s -d: -f4`
-DAY=`echo $* | cut -s -d: -f5`
-MONTH=`echo $* | cut -s -d: -f6`
-YEAR=`echo $* | cut -s -d: -f7`
-SERVERNAME=`echo $* | cut -s -d: -f8`
-SERVERTYPE=`echo $* | cut -s -d: -f9`
-SERVERMASTER=`echo $* | cut -s -d: -f10`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
+LOGVIEW=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
+DAY=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5`
+MONTH=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f6`
+YEAR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f7`
+SERVERNAME=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f8`
+SERVERTYPE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f9`
+SERVERMASTER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f10`
 ########################
 #Check data
 ########################

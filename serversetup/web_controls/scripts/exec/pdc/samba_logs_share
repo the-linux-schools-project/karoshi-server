@@ -128,10 +128,6 @@ fi
 
 echo `date`: samba_logs_share - Viewing logs "for" $SHARE $DAY-$MONTH-$YEAR by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #View logs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/samba_view_logs ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/samba_view_logs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 
 #Check to see if a log for this share exists on the date given
@@ -140,10 +136,10 @@ LOGTYPE=NOTSET
 [ -f /opt/karoshi/logs/connections/$DAY-$MONTH-$YEAR/shares/$SHARE.tar.gz ] && LOGTYPE=archive
 [ $LOGTYPE = NOTSET ] && exit 102
 #Create table header
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td style="vertical-align: top;"><b>'$TITLE3' '$MACHINE' '$DAY'-'$MONTH'-'$YEAR'</b></td></tr></tbody></table><br>'
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td style="vertical-align: top;"><b>'$"Network Share Logs"' '$MACHINE' '$DAY'-'$MONTH'-'$YEAR'</b></td></tr></tbody></table><br>'
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>'
-echo '<tr><td style="width: 120px;"><b>'$TIMEMSG'</b></td><td style="width: 20px;"></td><td style="width: 120px;"><b>'$USERNAMEMSG'</b></td><td style="width: 20px;"></td><td style="width: 120px;"><b>'$COMPUTERMSG'</b></td><td style="width: 20px;"></td><td><b>'$COMPIP'</b></td></tr>'
+echo '<tr><td style="width: 120px;"><b>'$"Time"'</b></td><td style="width: 20px;"></td><td style="width: 120px;"><b>'$"Username"'</b></td><td style="width: 20px;"></td><td style="width: 120px;"><b>'$"Computer"'</b></td><td style="width: 20px;"></td><td><b>'$"TCPIP"'</b></td></tr>'
 if [ $LOGTYPE = text ]
 then
 cat /opt/karoshi/logs/connections/$DAY-$MONTH-$YEAR/shares/$SHARE

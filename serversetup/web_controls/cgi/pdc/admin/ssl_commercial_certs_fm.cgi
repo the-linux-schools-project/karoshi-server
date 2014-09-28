@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/ssl_certs ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/ssl_certs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 source /opt/karoshi/server_network/domain_information/domain_name
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
@@ -50,7 +48,7 @@ echo '
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
-<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE4'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body onLoad="start()"><div id="pagecontainer">'
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Commercial SSL Certificates"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body onLoad="start()"><div id="pagecontainer">'
 
 #########################
 #Get data input
@@ -87,7 +85,7 @@ done
 echo '
 <form action="/cgi-bin/admin/ssl_commercial_certs.cgi" name="selectservers" method="post">
 <div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
-<td style="vertical-align: top;"><div class="sectiontitle">'$TITLE1'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Commercial_SSL_Certificate"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG2"'</span></a></td></tr></tbody></table>
+<td style="vertical-align: top;"><div class="sectiontitle">'$"Create Commercial Certificate"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Commercial_SSL_Certificate"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is a three stage process to create and install a commercial SSL certificate for your domain."'</span></a></td></tr></tbody></table>
 <br></div><div id="infobox">'
 MOBILE=no
 
@@ -95,14 +93,14 @@ MOBILE=no
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody>
-<tr><td height="50" style="width: 180px;">'$COMMERCIALSSLSTEP1'</td><td><input name="___SERVERNAME___'$REALM'___SERVERTYPE___network___SERVERMASTER___notset___ACTION___getcertdetails___" type="submit" class="button" value="'$CREATECERTMSG'"></td></tr>
+<tr><td height="50" style="width: 180px;">'$"Step 1"'</td><td><input name="___SERVERNAME___'$REALM'___SERVERTYPE___network___SERVERMASTER___notset___ACTION___getcertdetails___" type="submit" class="button" value="'$"Create Certificate"'"></td></tr>
 '
 
 if [ -f /opt/karoshi/server_network/ssl/commercial_ssl_certs/$REALM ]
 then
 echo '
-<tr><td height="50" style="width: 180px;">'$COMMERCIALSSLSTEP2'</td><td><input name="___SERVERNAME___'$REALM'___SERVERTYPE___network___SERVERMASTER___notset___ACTION___copycertinfo___" type="submit" class="button" value="'$COPYCERTMSG'"></td></tr>
-<tr><td height="50" style="width: 180px;">'$COMMERCIALSSLSTEP3'</td><td>'$INSTALLCERTMSG'</td></tr>
+<tr><td height="50" style="width: 180px;">'$"Step 2"'</td><td><input name="___SERVERNAME___'$REALM'___SERVERTYPE___network___SERVERMASTER___notset___ACTION___copycertinfo___" type="submit" class="button" value="'$"Copy Certificate"'"></td></tr>
+<tr><td height="50" style="width: 180px;">'$"Step 3"'</td><td>'$"Install certificate"'</td></tr>
 '
 fi
 
@@ -111,7 +109,7 @@ echo '</tbody></table><br><br>'
 if [ -f /opt/karoshi/server_network/ssl/commercial_ssl_certs/$REALM ]
 then
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE servers "$INSTALLCERTMSG" getinstallcertinfo no ___
+/opt/karoshi/web_controls/show_servers $MOBILE servers $"Install certificate" getinstallcertinfo no ___
 fi
 
 echo '</div></div></form></div></body></html>'

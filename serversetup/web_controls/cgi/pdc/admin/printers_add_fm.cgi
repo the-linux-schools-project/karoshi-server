@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printers_add ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printers_add
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -47,7 +45,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Add Network Printer"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -58,7 +56,7 @@ echo '
 #Check that a print server has been declared
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$PRINTSERVERERRORMSG'")';
+echo 'alert("'$"A print server has not yet been set up."'")';
 echo 'window.location = "karoshi_servers_view.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -68,16 +66,16 @@ exit
 [ ! -f /opt/karoshi/server_network/printserver ] && show_status
 
 echo '<div id="actionbox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="vertical-align: top;"><b>'$TITLE'</b></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG1"'</span></a></td>
+<tr><td style="vertical-align: top;"><b>'$"Add Network Printer"'</b></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Add a network printer for your client computers."'</span></a></td>
 <td style="vertical-align: top;"><form action="/cgi-bin/admin/printers.cgi" name="printers" method="post">
-<input name="SHOWPRINTERS" type="submit" class="button" value="'$SHOWPRINTERSMSG'">
+<input name="SHOWPRINTERS" type="submit" class="button" value="'$"Show Printers"'">
 </form></td>
 <td style="vertical-align: top;"><form action="/cgi-bin/admin/printers_delete.cgi" name="printers" method="post">
-<input name="DELETEPRINTER" type="submit" class="button" value="'$DELETEPRINTERMSG'">
+<input name="DELETEPRINTER" type="submit" class="button" value="'$"Delete Printer"'">
 </form></td>
 <td style="vertical-align: top;"><form action="/cgi-bin/admin/locations.cgi" name="printers" method="post">
-<input name="ADDLOCATION" type="submit" class="button" value="'$ADDLOCATIONMSG'">
+<input name="ADDLOCATION" type="submit" class="button" value="'$"Add Location"'">
 </form></td>
 </tr></tbody></table><br>
 '
@@ -87,21 +85,21 @@ echo '<form action="/cgi-bin/admin/printers_add.cgi" method="post">'
 #Check that a print server has been assigned
 if [ ! -f /opt/karoshi/server_network/printserver ]
 then
-echo $PRINTSERVERERRORMSG
+echo $"A print server has not yet been set up."
 fi
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
       <tr>
         <td style="width: 180px;">
-'$PRINTERNAMEMSG'</td>
+'$"Printer Name"'</td>
         <td><input name="_PRINTERNAME_" maxlength="15" style="width: 200px;" size="20" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'"$PRINTERNAMEHELP"'</span></a>
+<a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name that you want for this printer."'</span></a>
 </td>
       </tr>
       <tr>
         <td>
-'$LOCATIONMSG'</td>
+'$"Location"'</td>
         <td>'
 
 ###############################
@@ -124,25 +122,25 @@ echo '<option value="'$LOCATION'">'$LOCATION'</option>'
 let COUNTER=$COUNTER+1
 done
 echo '</select></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'"$LOCATIONHELP"'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the location of this printer. Click on the add locations icon above to add locations."'</span></a>
 </td></tr>'
-echo '<tr><td>'$ADDRESSMSG'</td><td><input name="_PRINTERADDRESS_" maxlength="15" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'"$ADDRESSHELP"'</span></a>
+echo '<tr><td>'$"Printer Address"'</td><td><input name="_PRINTERADDRESS_" maxlength="15" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the tcpip number of the printer."'</span></a>
 </td></tr>
-<tr><td>'$QUEUEMSG'</td><td><input name="_PRINTERQUEUE_" style="width: 200px;" size="20" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'"$QUEUEHELP"'</span></a>
+<tr><td>'$"Queue (LPD only)"'</td><td><input name="_PRINTERQUEUE_" style="width: 200px;" size="20" type="text"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the network queue."'</span></a>
 </td></tr>
-<tr><td>'$DESCMSG'</td><td><input name="_PRINTERDESC_" style="width: 200px;" size="20" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'"$DESCHELP"'</span></a>
+<tr><td>'$"Description"'</td><td><input name="_PRINTERDESC_" style="width: 200px;" size="20" type="text"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a description of the printer hardware."'</span></a>
 </td></tr>
       <tr>
-        <td>'$NETTYPEMSG'</td>
+        <td>'$"Network Type"'</td>
         <td>
         <select name="_PRINTERTYPE_" style="width: 200px;">
-        <option>'$TYPE1MSG'</option>
-        <option>'$TYPE2MSG'</option>
-        <option>'$TYPE3MSG'</option>
+        <option>'$"Network Printer TCP"'</option>
+        <option>'$"Network Printer IPP"'</option>
+        <option>'$"Remote LPD queue"'</option>
         </select></td></tr>
-<tr><td>'$PORTMSG'</td><td>
+<tr><td>'$"Port"'</td><td>
         <select name="_PRINTERPORT_" style="width: 200px;">
         <option>9100</option>
         <option>9101</option>
@@ -153,7 +151,7 @@ echo '<tr><td>'$ADDRESSMSG'</td><td><input name="_PRINTERADDRESS_" maxlength="15
       </tr>
     </tbody>
   </table><br><br>
-  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+  <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </form>
 </div>
 </div></body>

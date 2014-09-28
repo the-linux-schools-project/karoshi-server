@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/windows_servers_add ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/windows_servers_add
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -48,7 +46,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Add Windows Server"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
 </head><body onLoad="start()"><div id="pagecontainer">'
 
@@ -62,19 +60,19 @@ ASKIP=no
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/windows_servers_add.cgi" method="post"><div id="actionbox"><b>'$TITLE'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
+echo '<form action="/cgi-bin/admin/windows_servers_add.cgi" method="post"><div id="actionbox"><b>'$"Add Windows Server"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will add the details required to remotely run commands on a windows server."'</span></a>
 <br><br>
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$SERVERNAMEMSG'</td><td><input tabindex= "1" name="_SERVERNAME_" size="23" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$SERVERNAMEHELP'</span></a></td></tr>
-<tr><td style="width: 180px;">'$TCPIPMSG'</td><td><input tabindex= "2" maxlength="15" name="_TCPIPNUMBER_" size="23" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$TCPIPHELP'</span></a></td></tr>
-<tr><td>'$ADMINUSERMSG'</td><td><input tabindex= "3" name="_ADMINUSER_" size="23" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$ADMINPASSHELP'</span></a></td></tr>
-<tr><td>'$ADMINPASSMSG'</td><td><input tabindex= "4" name="_PASSWORD1_" size="23" type="password"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$ADMINPASSHELP'</span></a></td></tr>
-<tr><td>'$CONFIRMMSG'</td><td><input tabindex= "5" name="_PASSWORD2_" size="23" type="password"></td></tr>
-<tr><td>'$ROLEMSG'</td><td><textarea  tabindex= "6" cols="50" rows="4" name="_ROLE_"></textarea></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$ROLEHELP'</span></a></td></tr>
+<tr><td style="width: 180px;">'$"Server name"'</td><td><input tabindex= "1" name="_SERVERNAME_" size="23" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the windows server you want to add."'</span></a></td></tr>
+<tr><td style="width: 180px;">'$"TCPIP number"'</td><td><input tabindex= "2" maxlength="15" name="_TCPIPNUMBER_" size="23" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the tcpip number of the server you want to add."'</span></a></td></tr>
+<tr><td>'$"Administrator user"'</td><td><input tabindex= "3" name="_ADMINUSER_" size="23" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the administrator password. This will be stored in an encycripted file for later use in controlling the server. If you change the password on the server you will need to change it here as well."'</span></a></td></tr>
+<tr><td>'$"Administrator password"'</td><td><input tabindex= "4" name="_PASSWORD1_" size="23" type="password"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the administrator password. This will be stored in an encycripted file for later use in controlling the server. If you change the password on the server you will need to change it here as well."'</span></a></td></tr>
+<tr><td>'$"Confirm"'</td><td><input tabindex= "5" name="_PASSWORD2_" size="23" type="password"></td></tr>
+<tr><td>'$"Role"'</td><td><textarea  tabindex= "6" cols="50" rows="4" name="_ROLE_"></textarea></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a description of the role of the server."'</span></a></td></tr>
 </tbody></table>
 <br><br></div>
 <div id="submitbox">
-<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>
 </form></div></body></html>'
 exit

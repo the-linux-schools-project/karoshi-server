@@ -31,15 +31,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/user_web_folders ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/user_web_folders
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 
 #Check if timout should be disabled
@@ -53,7 +51,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"User Web Folders"'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
@@ -165,11 +163,11 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE'</span>'
+	<span>'$"User Web Folders"'</span>'
 
 if [ -z "$GROUP" ]
 then
-echo '<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>'
+echo '<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>'
 else
 echo '<a href="/cgi-bin/admin/user_web_folders.cgi">'$GROUP'</a>'
 fi
@@ -181,9 +179,9 @@ echo '<div id="'$DIV_ID'"><div id="titlebox">'
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr>
 <td style="vertical-align: top;">
-<div class="sectiontitle">'$TITLE'</div>
+<div class="sectiontitle">'$"User Web Folders"'</div>
 </td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_web_folders"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG1"'</span></a></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_web_folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows users to have web folders hosted from their home areas. Any files and folders in a public_html folder in the user's home area will be available via apache on their server."'</span></a></td>
 <td style="vertical-align: top;">'
 [ ! -z "$GROUP" ] && echo '<a href="user_web_folders.cgi"><input class="button" type="button" name="" value="Choose group"></a>'
 echo '</td>
@@ -193,17 +191,17 @@ fi
 #Show list of groups to check
 if [ -z "$GROUP" ]
 then
-echo '</div><div id="infobox">
-  <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-    <tbody><tr><td style="width: '$WIDTH1'px;">'$PRIGROUPMSG'</td>
+[ $MOBILE = no ] && '</div><div id="infobox">'
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+    <tbody><tr><td style="width: '$WIDTH1'px;">'$"Primary Group"'</td>
 <td>'
 /opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: '$WIDTH2'px;">/g'
 echo '</td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_web_folders"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_web_folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to set the web folder status for."'</span></a></td>
 </tr></tbody></table><br><br>
 '
 [ $MOBILE = no ] && echo '</div></div><div id="submitbox">'
-echo '<input value="'$SUBMITMSG'" class="button" type="submit">
+echo '<input value="'$"Submit"'" class="button" type="submit">
 </div></form></div></body></html>
 '
 exit

@@ -32,19 +32,17 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/web/upload_files ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/web/upload_files
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE2'</title><meta http-equiv="REFRESH" content="0; URL=/cgi-bin/admin/web_management_upload_files_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head>
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Web Management - Upload Files"2'</title><meta http-equiv="REFRESH" content="0; URL=/cgi-bin/admin/web_management_upload_files_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head>
 <body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
@@ -108,7 +106,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -116,13 +114,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -131,19 +129,19 @@ fi
 #Check to see that UPLOADFOLDER is not blank
 if [ -z "$UPLOADFOLDER" ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The upload folder cannot be blank."
 show_status
 fi
 #Check to see that UPLOADID is not blank
 if [ -z "$UPLOADID" ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The upload id cannot be blank."
 show_status
 fi
 #Check to see that SERVERNAME is not blank
 if [ -z "$SERVERNAME" ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"The server cannot be blank."
 show_status
 fi
 
@@ -156,6 +154,6 @@ echo '<div id="actionbox3"><div id="infobox">'
 sudo -H /opt/karoshi/web_controls/exec/web_management_upload_files $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$UPLOADFOLDER:$UPLOADID:$SERVERNAME:
 
 UPLOADFOLDER=`echo $UPLOADFOLDER | sed 's/UNDERSCORE/_/g'`
-MESSAGE=`echo $COMPLETEDMSG : $UPLOADFOLDER`
+MESSAGE=`echo $"The files have been uploaded to the following path" : $UPLOADFOLDER`
 show_status
 exit

@@ -144,8 +144,6 @@ fi
 
 
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/request_new_users ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/request_new_users
 
 #Do something with the data!
 
@@ -169,6 +167,6 @@ SESSIONNAME=`date +%s`.$$
 [ $FORENAME10'null' != null ] && echo $FORENAME10:$SURNAME10:$GROUP10:$ADNO10:$MYUSERNAME: > /opt/karoshi/user_requests/new_users/$SESSIONNAME.10
 
 #Add web management alert
-/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add request_new_users /cgi-bin/admin/request_new_users_fm.cgi "$NEWREQUESTMSG" 1
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add request_new_users /cgi-bin/admin/request_new_users_fm.cgi $"New users have been requested." 1
 
 exit $CHANGE_PASS_STATUS

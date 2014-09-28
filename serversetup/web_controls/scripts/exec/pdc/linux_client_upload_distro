@@ -110,10 +110,8 @@ exit 101
 fi
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/linux_client_upload_distro ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/linux_client_upload_distro
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 ISONAME=`ls -1 /var/www/karoshi/linuxiso | sed -n 1,1p`
 
@@ -140,7 +138,7 @@ fi
 #Mount iso
 [ ! -d /home/distributions/linux_iso ] && mkdir -p /home/distributions/linux_iso
 
-echo "<li>"$COPYISOMSG2 /home/itadminshare/distributions/linux/"</li><br>"
+echo '<li>'$"Copying iso to"' /home/itadminshare/distributions/linux/</li><br>'
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 cp -v -f /var/www/karoshi/linuxiso/"$ISONAME" /home/itadminshare/distributions/linux/
 echo "</pre>"
@@ -156,19 +154,19 @@ then
 [ ! -d /media/iso ] && mkdir -p /media/iso
 [ ! -d /home/distributions/linux_distro/ ] && mkdir -p /home/distributions/linux_distro/
 #Mount iso
-echo "<li>"$DISTRIBUTIONSERVER - $MOUNTISOMSG"</li><br>"
+echo "<li>"$DISTRIBUTIONSERVER - $"Mounting iso""</li><br>"
 mount /home/distributions/linux_iso/linux_pxe_client.iso /media/iso -o loop
 #Copy files
-echo "<li>"$DISTRIBUTIONSERVER - $COPYFILESMSG"</li>"
+echo "<li>"$DISTRIBUTIONSERVER - $"Copying files out of the iso image""</li>"
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 cp -v -a /media/iso/* /home/distributions/linux_distro/
 cp -v -a -f -R /media/iso/.disk /home/distributions/linux_distro/
 echo "</pre>"
 #Unmount iso
-echo "<li>"$DISTRIBUTIONSERVER - $UNMOUNTISOMSG"</li><br>"
+echo "<li>"$DISTRIBUTIONSERVER - $"Unmounting iso""</li><br>"
 umount /media/iso
 #Copy out files
-echo "<li>"$DISTRIBUTIONSERVER - $COPYOUTFILESMSG"</li>"
+echo "<li>"$DISTRIBUTIONSERVER - $"Copying out files""</li>"
 rm -f /home/tftpboot/images/ubuntu/initrd.*
 [ -f /home/tftpboot/images/ubuntu/vmlinuz ] && rm -f /home/tftpboot/images/ubuntu/vmlinuz
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
@@ -185,7 +183,7 @@ sed -i "s/initrd.lz/initrd.gz/g" /home/tftpboot/pxelinux.cfg/default
 fi
 
 #Restart nfs server
-echo "<li>"$DISTRIBUTIONSERVER - $RESTARTNFSMSG"</li><br>"
+echo "<li>"$DISTRIBUTIONSERVER - $"Restarting NFS Server""</li><br>"
 source /opt/karoshi/serversetup/variables/distro
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop
@@ -198,7 +196,7 @@ ssh -x -o PasswordAuthentication=no $DISTRIBUTIONSERVER '
 [ -d /home/distributions/linux_iso ] && rm -f -R /home/distributions/linux_iso
 mkdir -p /home/distributions/linux_iso
 '
-echo "<li>"$COPYISOMSG $HOSTNAME $TOMSG $DISTRIBUTIONSERVER"</li><br>"
+echo '<li>'$"Copying iso from"' $HOSTNAME '$"to"' '$DISTRIBUTIONSERVER'</li><br>'
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 rsync -avL /home/distributions/linux_iso/linux_pxe_client.iso root@$DISTRIBUTIONSERVER:"/home/distributions/linux_iso/"
 echo "</pre>"
@@ -209,19 +207,19 @@ ssh -x -o PasswordAuthentication=no $DISTRIBUTIONSERVER '
 [ ! -d /media/iso ] && mkdir -p /media/iso
 [ ! -d /home/distributions/linux_distro/ ] && mkdir -p /home/distributions/linux_distro/
 #Mount iso
-echo "<li>"'$DISTRIBUTIONSERVER - $MOUNTISOMSG'"</li><br>"
+echo "<li>"'$DISTRIBUTIONSERVER - $"Mounting iso"'"</li><br>"
 mount /home/distributions/linux_iso/linux_pxe_client.iso /media/iso -o loop
 #Copy files
-echo "<li>"'$DISTRIBUTIONSERVER - $COPYFILESMSG'"</li>"
+echo "<li>"'$DISTRIBUTIONSERVER - $"Copying files out of the iso image"'"</li>"
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 cp -v -a /media/iso/* /home/distributions/linux_distro/
 cp -v -a -f -R /media/iso/.disk /home/distributions/linux_distro/
 echo "</pre>"
 #Unmount iso
-echo "<li>"'$DISTRIBUTIONSERVER - $UNMOUNTISOMSG'"</li><br>"
+echo "<li>"'$DISTRIBUTIONSERVER - $"Unmounting iso"'"</li><br>"
 umount /media/iso
 #Copy out files
-echo "<li>"'$DISTRIBUTIONSERVER - $COPYOUTFILESMSG'"</li>"
+echo "<li>"'$DISTRIBUTIONSERVER - $"Copying out files"'"</li>"
 rm -f /home/tftpboot/images/ubuntu/initrd.*
 [ -f /home/tftpboot/images/ubuntu/vmlinuz ] && rm -f /home/tftpboot/images/ubuntu/vmlinuz
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
@@ -237,7 +235,7 @@ else
 sed -i "s/initrd.lz/initrd.gz/g" /home/tftpboot/pxelinux.cfg/default
 fi
 #Restart nfs server
-echo "<li>"'$DISTRIBUTIONSERVER - $RESTARTNFSMSG'"</li><br>"
+echo "<li>"'$DISTRIBUTIONSERVER - $"Restarting NFS Server"'"</li><br>"
 source /opt/karoshi/serversetup/variables/distro
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop

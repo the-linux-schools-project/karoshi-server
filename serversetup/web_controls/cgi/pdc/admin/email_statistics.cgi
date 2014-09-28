@@ -41,15 +41,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/email/email_statistics ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_statistics
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -58,7 +56,7 @@ fi
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View E-Mail Statistics"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>'
 
 if [ $MOBILE = yes ]
 then
@@ -172,7 +170,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -180,13 +178,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -195,13 +193,13 @@ fi
 #Check to see that LOGVIEW is not blank
 if [ $LOGVIEW'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The log view must not be blank."
 show_status
 fi
 #Check to see that DATE is not blank
 if [ $DATE'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The date must not be blank."
 show_status
 fi
 
@@ -212,37 +210,37 @@ YEAR=`echo $DATE | cut -d- -f3`
 
 if [ $DAY'null' = null ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"Incorrect date format."
 show_status
 fi
 
 if [ $MONTH'null' = null ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"Incorrect date format."
 show_status
 fi
 
 if [ $YEAR'null' = null ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"Incorrect date format."
 show_status
 fi
 
 if [ $DAY -gt 31 ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"Incorrect date format."
 show_status
 fi
 
 if [ $MONTH -gt 12 ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"Incorrect date format."
 show_status
 fi
 
 if [ $YEAR -lt 2006 ] || [ $YEAR -gt 3006 ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"Incorrect date format."
 show_status
 fi
 
@@ -269,18 +267,18 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
-</div></div><div id="mobilecontent"><div id="mobileactionbox2"><div class="sectiontitle">'$TITLE'</div> 
+	<span>'$"View E-Mail Statistics"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
+</div></div><div id="mobilecontent"><div id="mobileactionbox2"><div class="sectiontitle">'$"View E-Mail Statistics"'</div> 
 '
 else
 echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 if [ $LOGVIEW = today ]
 then
-echo '<b>'$TITLE $SERVERNAME $DAY-$MONTH-$YEAR'</b><br><br>'
+echo '<b>'$"View E-Mail Statistics" $SERVERNAME $DAY-$MONTH-$YEAR'</b><br><br>'
 else
-echo '<b>'$TITLE $SERVERNAME $MONTH-$YEAR'</b><br><br>'
+echo '<b>'$"View E-Mail Statistics" $SERVERNAME $MONTH-$YEAR'</b><br><br>'
 fi
 echo '</div><div id="infobox">'
 fi
@@ -290,12 +288,12 @@ sudo -H /opt/karoshi/web_controls/exec/email_statistics $REMOTE_USER:$REMOTE_ADD
 LOG_STATUS=`echo $?`
 if [ $LOG_STATUS = 101 ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"There is no log available for this date."
 show_status
 fi
 if [ $LOG_STATUS = 102 ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"There are no logs available for this month."
 show_status
 fi
 echo '</div></div></div></body></html>'

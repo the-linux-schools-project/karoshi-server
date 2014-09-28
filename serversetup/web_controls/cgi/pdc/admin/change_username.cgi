@@ -30,19 +30,17 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/change_username ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/change_username
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="0; URL=change_username_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Change a Username"'</title><meta http-equiv="REFRESH" content="0; URL=change_username_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -117,7 +115,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -125,13 +123,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -140,46 +138,46 @@ fi
 #Check to see that username is not blank
 if [ -z "$USERNAME" ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The username must not be blank."
 show_status
 fi
 #Check to see if the user exists
 getent passwd $USERNAME 1>/dev/null
 if [ $? != 0 ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The username does not exist."
 show_status
 fi
 #Check to see that newusername is not blank
 if [ -z "$NEWUSERNAME"  ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The new username must not be blank."
 show_status
 fi
 #Check to see if the newusername exists
 getent passwd $NEWUSERNAME 1>/dev/null
 if [ $? = 0 ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The new username is already in use."
 show_status
 fi
 #Check to see that firstname is not blank
 if [ -z $FIRSTNAME ]
 then
-MESSAGE=$ERRORMSG11
+MESSAGE=$"You have not entered in a forename."
 show_status
 fi
 #Check to see that surname is not blank
 if [ -z "$SURNAME" ]
 then
-MESSAGE=$ERRORMSG12
+MESSAGE=$"You have not entered in a surname."
 show_status
 fi
 
 #Don't change username for certain users
 if [ $USERNAME = root ] || [ $USERNAME = karoshi ]
 then
-MESSAGE=$ERRORMSG6
+MESSAGE=$"You cannot change that username."
 show_status
 fi
 
@@ -188,7 +186,7 @@ USER_ID=`id -g $USERNAME`
 
 if [ $USER_ID -lt 500 ]
 then
-MESSAGE=$ERRORMSG7
+MESSAGE=$"You cannot change the name of a system user."
 show_status
 exit
 fi
@@ -199,8 +197,8 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$NEWUSERNAME:$FIRSTNAME:$SURNA
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 0 ]
 then
-MESSAGE=`echo $COMPLETEDMSG: $USERNAME - $NEWUSERNAME`
+MESSAGE=`echo $"Username changed": $USERNAME - $NEWUSERNAME`
 else
-MESSAGE=`echo $ERRORMSG5 $USERNAME`
+MESSAGE=`echo $"There was a problem changing the username." $USERNAME`
 fi
 show_status

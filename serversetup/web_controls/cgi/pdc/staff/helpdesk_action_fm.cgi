@@ -24,13 +24,9 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/helpdesk ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/helpdesk
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 ##########################
 #Show page
 ##########################
@@ -40,7 +36,7 @@ echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><title>'$TITLE'</title></head><body><div id="pagecontainer">'
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><title>'$"Help Desk"'</title></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -79,13 +75,13 @@ exit
 #Check to see that JOBNAME is not blank
 if [ $JOBNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG8
+MESSAGE=$"The job name cannot be blank."
 show_status
 fi
 
 if [ ! -f /opt/karoshi/helpdesk/todo/$JOBNAME ]
 then
-MESSAGE=$ERRORMSG9
+MESSAGE=$"This job does not exist."
 show_status
 fi
 
@@ -97,20 +93,20 @@ fi
 source /opt/karoshi/helpdesk/todo/$JOBNAME
 
 #Show job data
-echo '<form action="/cgi-bin/staff/helpdesk_view_fm.cgi" method="post"><div id="actionbox"><b>'$TITLE' - '$TITLE3'</b><br><br>
+echo '<form action="/cgi-bin/staff/helpdesk_view_fm.cgi" method="post"><div id="actionbox"><b>'$"Help Desk"' - '$"Action Request"'</b><br><br>
 
 <table class="standard" style="text-align: left; height: 91px;" border="0" cellpadding="2" cellspacing="2">
 <tbody>
-<tr><td style="width: 180px;">'$JOBTITLEMMSG'</td><td>'$JOBTITLE'</td></tr>
-<tr><td>'$NAMEMSG'</td><td>'$NAME'</td></tr>
-<tr><td>'$LOCATIONMSG'</td><td>'$LOCATION'</td></tr>
-<tr><td>'$DEPARTMENTMSG'</td><td>'$DEPARTMENT'</td></tr>
-<tr><td>'$CATEGORYMSG'</td><td>'$CATEGORY'</td></tr>
-<tr><td>'$USERPROBLEMMSG'</td><td>'$REQUEST'</td></tr>
-<tr><td>'$FEEDBACKMSG'</td><td>'$FEEDBACK'</td></tr>
+<tr><td style="width: 180px;">'$"Request Summary"'</td><td>'$JOBTITLE'</td></tr>
+<tr><td>'$"Name"'</td><td>'$NAME'</td></tr>
+<tr><td>'$"Location"'</td><td>'$LOCATION'</td></tr>
+<tr><td>'$"Department"'</td><td>'$DEPARTMENT'</td></tr>
+<tr><td>'$"Category"'</td><td>'$CATEGORY'</td></tr>
+<tr><td>'$"Extended Details"'</td><td>'$REQUEST'</td></tr>
+<tr><td>'$"Feedback"'</td><td>'$FEEDBACK'</td></tr>
 </tbody></table></div>
 <div id="submitbox">
-<input value="'$BACKMSG'" type="submit">
+<input value="'$"Back"'" type="submit">
 </div></form></div></body></html>'
 exit
 

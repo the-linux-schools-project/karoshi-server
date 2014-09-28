@@ -23,11 +23,9 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
 
 #Detect mobile browser
 MOBILE=no
@@ -45,7 +43,7 @@ echo '
   <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
 <META HTTP-EQUIV="refresh" CONTENT="300; URL=/cgi-bin/blank.cgi">
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
-  <title>'$TITLE'</title>
+  <title>'$"Web Management"'</title>
 <link href="/css/'$STYLESHEET'?d=`date +%F`" rel="stylesheet" type="text/css">
 <script src="/all/stuHover.js" type="text/javascript"></script>'
 
@@ -82,14 +80,14 @@ source /opt/karoshi/web_controls/version
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 
       <div class="expanded">
-       <span>TLSP '$SCHOOL_NAME'</span>
-        <a href="/cgi-bin/all/change_my_password_fm.cgi">'$ALLMSG'</a>
-        <a href="/cgi-bin/staff/mobile_menu.cgi">'$STAFFMSG'</a>
-        <a href="/cgi-bin/tech/mobile_menu.cgi">'$TECHMSG'</a>
-        <a href="/cgi-bin/admin/mobile_menu.cgi">'$NMANMSG'</a>
+       <span>TLSP '$"DE"'</span>
+        <a href="/cgi-bin/all/change_my_password_fm.cgi">'$"All"'</a>
+        <a href="/cgi-bin/staff/mobile_menu.cgi">'$"Staff"'</a>
+        <a href="/cgi-bin/tech/mobile_menu.cgi">'$"Technician"'</a>
+        <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Administrator"'</a>
      <div class="a.current">
 <small><small>
-'$VERSIONMSG' : '$VERSION'
+'$"Version"' : '$VERSION'
 </small></small>
 </div>
 </div>

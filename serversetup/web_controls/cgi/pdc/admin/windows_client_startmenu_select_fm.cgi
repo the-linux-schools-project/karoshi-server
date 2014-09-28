@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/windows_startmenu_upload ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/windows_startmenu_upload
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -50,7 +48,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE2'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Windows Start menu - Select"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script type="text/javascript">
 <!--
@@ -79,7 +77,7 @@ function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 
 echo '<div id="actionbox">
 <form action="/cgi-bin/admin/windows_client_startmenu_select.cgi" name="selectgroups" method="post"><span style="font-weight: bold;">
-'$TITLE2'</span><br>
+'$"Windows Start menu - Select"'</span><br>
   <br>
 '
 #Check to see if any files have been uploaded
@@ -94,13 +92,13 @@ fi
 
 if [ $FILECOUNT != 1 ]
 then
-echo ''$ERRORMSG1'</div></div></body></html>'
+echo ''$"An incorrect number of files have been uploaded."'</div></div></body></html>'
 exit
 fi
 
 if [ `echo $FILENAME'null' | sed 's/ //g'` = null ]
 then
-echo ''$ERRORMSG2'</div></div></body></html>'
+echo ''$"You have not uploaded a zip or tar.gz archive."'</div></div></body></html>'
 exit
 else
 FILENAME=`ls -1 /var/www/karoshi/win_startmenu_upload/ | sed -n 1,1p`
@@ -111,8 +109,8 @@ fi
 #Show list of profiles to choose from
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$UPLOADEDFILEMSG'</td><td>'$FILENAME'</td></tr>
-<tr><td>'$WINVERMSG'</td><td>
+<tr><td style="width: 180px;">'$"Uploaded file"'</td><td>'$FILENAME'</td></tr>
+<tr><td>'$"Windows Version"'</td><td>
 <select name="_WINDOWSVER_" style="width: 200px;">
 <option value="windowsxp">Windows XP</option>
 <option value="windows7">Windows 7</option>
@@ -129,7 +127,7 @@ echo '
   <br>
 
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
- <tbody><tr><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td></tr>'
+ <tbody><tr><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$"Group"'</b></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$"Group"'</b></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$"Group"'</b></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$"Group"'</b></td></tr>'
 
 COUNTER=1
 for GROUPNAMES in /opt/karoshi/server_network/group_information/*
@@ -153,7 +151,7 @@ echo '</tbody></table><br>
 
 </div>
 <div id="submitbox">
-  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"> <input type="button" class="button" onclick="SetAllCheckBoxes('\'selectgroups\'', '\'_PRIGROUP_\'', true);" value="'$SELECTMSG'">
+  <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"> <input type="button" class="button" onclick="SetAllCheckBoxes('\'selectgroups\'', '\'_PRIGROUP_\'', true);" value="'$"Select all"'">
 </div>
 </form>
 </div></body>

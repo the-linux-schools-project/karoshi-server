@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/generate_classroom_lists_csv ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/generate_classroom_lists_csv
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -47,7 +45,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <TITLE>'$TITLE'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+    <TITLE>'$"Generate Classroom Lists - CSV"'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </HEAD>
@@ -56,9 +54,9 @@ echo '
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<div id="actionbox">
-<B>'$TITLE'</B>
+<B>'$"Generate Classroom Lists - CSV"'</B>
 <P>
-'$CSVMSG' <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$CSVHELPMSG1':<br>'$CSVHELPMSG1b'<br>'$CSVHELPMSG1c'<br><br>'$CSVHELPMSG2 - $STUDENTTYPE $STAFFTYPE'<br><br>'$CSVHELPMSG3'</span></a>
+'$"Please upload a csv file containing the client computer information."' <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"The csv file format is"':<br>'$"location,type,hostname,"'<br>'$"tcpip,mac address."'<br><br>'$"Allowed types" - $"student" $"staff"'<br><br>'$"Example - Room1,student,rm1computer1,172.30.5.1,11:12:13:14:15:16"'</span></a>
 <br><br>
 <P>
         <FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/generate_classroom_lists_csv_upload.cgi" METHOD="POST">
@@ -73,7 +71,7 @@ echo '<div id="actionbox">
         </TABLE>
   </div>
 <div id="submitbox">
-  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+  <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>
         </FORM>
 </BODY>

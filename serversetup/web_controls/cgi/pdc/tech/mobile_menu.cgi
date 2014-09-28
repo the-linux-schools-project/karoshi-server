@@ -36,15 +36,13 @@ source /opt/karoshi/web_controls/version
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -56,7 +54,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Web Management"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 	<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css" />
 	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
@@ -78,60 +76,60 @@ echo '
 <body>
     <div style="float: center" id="my_menu" class="sdmenu">
 	<div class="collapsed">
-	<span>TLSP '$SCHOOL_NAME'</span>
-<a href="/cgi-bin/menu.cgi">'$MAINMENUMSG'</a>
-<a href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Main_Page">'$DOCUMENTATIONMSG'</a>
+	<span>TLSP '$"DE"'</span>
+<a href="/cgi-bin/menu.cgi">'$"Main Menu"'</a>
+<a href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Main_Page">'$"Documentation"'</a>
  	</div>
        <div class="collapsed">
-        <span>'$HELPDESKSMSG'</span>
-        <a href="/cgi-bin/admin/helpdesk_view_fm.cgi">'$HELPDESKVIEWMSG'</a>
-        <a href="/cgi-bin/admin/helpdesk_add_fm.cgi">'$HELPDESKADDMSG'</a>
+        <span>'$"Helpdesk"'</span>
+        <a href="/cgi-bin/admin/helpdesk_view_fm.cgi">'$"View Requests"'</a>
+        <a href="/cgi-bin/admin/helpdesk_add_fm.cgi">'$"Add Request"'</a>
         </div> 
       <div class="collapsed">
-        <span>'$USERMSG'</span>
-        <a href="/cgi-bin/admin/add_user_fm.cgi">'$ADDUSERMSG'</a>
-        <a href="/cgi-bin/admin/change_password_fm.cgi">'$CHANGEPASSMSG'</a>
+        <span>'$"Users and Groups"'</span>
+        <a href="/cgi-bin/admin/add_user_fm.cgi">'$"Add User"'</a>
+        <a href="/cgi-bin/admin/change_password_fm.cgi">'$"Change Password"'</a>
       </div>
       <div class="collapsed">
-        <span>'$CLIENTMSG'</span>
-	<a href="/cgi-bin/admin/client_boot_controls_fm.cgi">'$CLIENTBOOTCONTROLS'</a>
+        <span>'$"Client"'</span>
+	<a href="/cgi-bin/admin/client_boot_controls_fm.cgi">'$"Client Boot Controls"'</a>
       </div>
       <div class="collapsed">
-        <span>'$INFRASTRUCTURESMSG'</span>
-	<a href="/cgi-bin/admin/asset_register_view.cgi">'$ASSETREGISTER'</a>'
-[ $MONITORINGCTRL = yes ] && echo '	<a href="/cgi-bin/admin/mon_status.cgi">'$SERVERSTATUSMSG'</a>'
+        <span>'$"Infrastructure"'</span>
+	<a href="/cgi-bin/admin/asset_register_view.cgi">'$"Asset Register"'</a>'
+[ $MONITORINGCTRL = yes ] && echo '	<a href="/cgi-bin/admin/mon_status.cgi">'$"Network Status"'</a>'
 echo 	'</div>'
 
 if [ $PRINTERCTRL = yes ]
 then
 echo '       <div class="collapsed">
-        <span>'$PRINTERMSG'</span>
-        <a href="/cgi-bin/admin/printers.cgi">'$VIEWQUEUES'</a>
-        <a href="/cgi-bin/admin/printer_accounting_view_user_usage_fm.cgi">'$USERPRINTERUSAGE'</a>
-        <a href="/cgi-bin/admin/printer_accounting_view_group_usage_fm.cgi">'$GROUPPRINTERUSAGE'</a>
-        <a href="/cgi-bin/admin/printer_accounting_add_user_limit_fm.cgi">'$ADDUSERPRINTERLIMIT'</a>
-        <a href="/cgi-bin/admin/printer_accounting_user_limits_fm.cgi">'$USERPRINTERLIMITS'</a>
-        <a href="/cgi-bin/admin/printer_accounting_group_limits_fm.cgi">'$ACCOUNTINGGROUPLIMITS'</a>
+        <span>'$"Printer"'</span>
+        <a href="/cgi-bin/admin/printers.cgi">'$"Manage Print Queues"'</a>
+        <a href="/cgi-bin/admin/printer_accounting_view_user_usage_fm.cgi">'$"User Printer Usage"'</a>
+        <a href="/cgi-bin/admin/printer_accounting_view_group_usage_fm.cgi">'$"Group Printer Usage"'</a>
+        <a href="/cgi-bin/admin/printer_accounting_add_user_limit_fm.cgi">'$"Add User Limit"'</a>
+        <a href="/cgi-bin/admin/printer_accounting_user_limits_fm.cgi">'$"User Printer Limits"'</a>
+        <a href="/cgi-bin/admin/printer_accounting_group_limits_fm.cgi">'$"Group Printer Limits"'</a>
       </div>'
 fi
 echo '  <div class="collapsed">
         <span>Internet</span>
-        <a href="/cgi-bin/admin/dg_view_user_logs_fm.cgi">'$VIEWUSERLOGS'</a>
-        <a href="/cgi-bin/admin/dg_view_site_logs_fm.cgi">'$VIEWSITELOGS'</a>
-        <a href="/cgi-bin/admin/dg_view_computer_logs_fm.cgi">'$VIEWCOMPUTERLOGS'</a>
-        <a href="/cgi-bin/admin/dg_ban_user.cgi">'$BANUSER'</a>
+        <a href="/cgi-bin/admin/dg_view_user_logs_fm.cgi">'$"User logs"'</a>
+        <a href="/cgi-bin/admin/dg_view_site_logs_fm.cgi">'$"Site Logs"'</a>
+        <a href="/cgi-bin/admin/dg_view_computer_logs_fm.cgi">'$"Computer Logs"'</a>
+        <a href="/cgi-bin/admin/dg_ban_user.cgi">'$"Ban User Internet Access"'</a>
         <a href="/cgi-bin/admin/dg_banned_sites_fm.cgi">'$ADDBANNESITES'</a>
         <a href="/cgi-bin/admin/dg_part_banned_sites_fm.cgi">'$ADDPBANNEDSITES'</a>
         <a href="/cgi-bin/admin/dg_wildcard_ban_fm.cgi">'$WCARDBAN'</a>
         <a href="/cgi-bin/admin/dg_allowed_sites_fm.cgi">'$ADDALLOWEDSITES'</a>
         <a href="/cgi-bin/admin/dg_part_allowed_sites_fm.cgi">'$ADDPALLOWEDSITES'</a>
-        <a href="/cgi-bin/admin/dg_room_controls_fm.cgi">'$ROOMCONTROLS'</a>
-	<a href="/cgi-bin/admin/dg_bypass.cgi">'$DGBYPASS'</a>
+        <a href="/cgi-bin/admin/dg_room_controls_fm.cgi">'$"Room controls"'</a>
+	<a href="/cgi-bin/admin/dg_bypass.cgi">'$"Client Bypass Controls"'</a>
         <a href="/cgi-bin/admin/activate_internet_changes_fm.cgi">'$ACTIVATECHANGES'</a>
       </div>
 <div class="a.current">
 <small><small>
-'$VERSIONMSG' : '$VERSION'
+'$"Version"' : '$VERSION'
 </small></small>
 </span></div>
     </div>

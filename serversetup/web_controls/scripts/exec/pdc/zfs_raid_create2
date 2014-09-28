@@ -52,7 +52,7 @@ exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9:._,/'`
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9:._,/-'`
 if [ $DATA'null' = null ]
 then
 echo `date`: zfs_raid_create2 - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -161,13 +161,11 @@ fi
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/software_raid ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/software_raid
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
@@ -176,8 +174,8 @@ if [ $CREATETYPE = create ]
 then
 DRIVELIST=`echo $DRIVELIST | sed "s/,/ /g"`
 #Create the zfs raid
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-echo "<li>Creating ZFS raid z$PARITY</li>"
+echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+echo '<li>'$"Creating ZFS raid"' z'$PARITY'</li>'
 
 if [ ! -z $SPAREDRIVELIST ]
 then
@@ -191,7 +189,7 @@ fi
 zpool status $HOSTNAME-data
 if [ `echo $?` != 0 ]
 then
-echo $ERRORMSG18"<br>"
+echo $"A ZFS raid has not been set up on this server.""<br>"
 sleep 3
 exit 101
 fi
@@ -218,18 +216,18 @@ zfs create -V $ZFSSIZE$STORAGEUNIT $HOSTNAME-data/storage
 STATUS=$?
 done
 
-echo "<li>$CREATEARTITIONMSG - $ZFSSIZE$STORAGEUNIT</li>"
+echo '<li>'$"Creating ZFS partition"' - '$ZFSSIZE''$STORAGEUNIT'</li>'
 
 COUNTER=1
 while [ $COUNTER -lt 30 ]
 do
-[ -e /'$ZPOOLTOPPATH'/$HOSTNAME-data/storage ] && break
+[ -e /$ZPOOLTOPPATH/$HOSTNAME-data/storage ] && break
 sleep 1
 let COUNTER=$COUNTER+1
 done
 
 #Format the partition as ext4
-echo "<li>$FORMATMSG</li>"
+echo '<li>'$"Formating the partition"' - ext4</li>'
 mkfs.ext4 /$ZPOOLTOPPATH/$HOSTNAME-data/storage
 #Mount partition on a temporary mount point
 [ ! -d $MOUNTPOINT.$$ ] && mkdir -p $MOUNTPOINT.$$
@@ -238,7 +236,7 @@ mount /$ZPOOLTOPPATH/$HOSTNAME-data/storage $MOUNTPOINT.$$
 #Copy data to new array
 if [ -d $MOUNTPOINT ]
 then
-echo "<br><li>"$COPYDATAMSG"</b></li>"
+echo '<br><li>'$"Copying existing data onto the raid."'</b></li>'
 sleep 2
 rsync --timeout=30 --verbose --dirs --recursive --links --compress --delete --backup --times --perms --executability --owner --group -o $MOUNTPOINT/ $MOUNTPOINT.$$/
 fi
@@ -247,7 +245,7 @@ fi
 if [ `grep -c -w $MOUNTPOINT /etc/fstab` -gt 0 ]
 then
 #Umount the partition
-echo "<li>"$MOUNTPOINT- $UMOUNTPARTITIONMSG"</li>"
+echo '<li>'$MOUNTPOINT'- '$"Un mounting existing partition"'</li>'
 umount $MOUNTPOINT
 
 #Backup /etc/fstab
@@ -323,7 +321,7 @@ then
 DRIVELIST=`echo '$DRIVELIST' | sed "s/,/ /g"`
 #Create the zfs raid
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-echo "<li>Creating ZFS raid z'$PARITY'</li>"
+echo "<li>'$"Creating ZFS raid"' z'$PARITY'</li>"
 
 if [ ! -z '$SPAREDRIVELIST' ]
 then
@@ -337,7 +335,7 @@ fi
 zpool status $HOSTNAME-data
 if [ `echo $?` != 0 ]
 then
-echo '$ERRORMSG18'"<br>"
+echo '$"A ZFS raid has not been set up on this server."'"<br>"
 sleep 3
 exit 101
 fi
@@ -364,7 +362,7 @@ zfs create -V $ZFSSIZE$STORAGEUNIT $HOSTNAME-data/storage
 STATUS=$?
 done
 
-echo "<li>'$CREATEARTITIONMSG' - $ZFSSIZE$STORAGEUNIT</li>"
+echo "<li>'$"Creating ZFS partition"' - $ZFSSIZE$STORAGEUNIT</li>"
 
 #Wait for zfs to catch up
 
@@ -378,7 +376,7 @@ done
 
 
 #Format the partition as ext4
-echo "<li>'$FORMATMSG'</li>"
+echo "<li>'$"Formating the partition"' - ext4</li>"
 mkfs.ext4 /'$ZPOOLTOPPATH'/$HOSTNAME-data/storage
 #Mount partition on a temporary mount point
 [ ! -d '$MOUNTPOINT'.'$$' ] && mkdir -p '$MOUNTPOINT'.'$$'
@@ -387,7 +385,7 @@ mount /'$ZPOOLTOPPATH'/$HOSTNAME-data/storage '$MOUNTPOINT'.'$$'
 #Copy data to new array
 if [ -d '$MOUNTPOINT' ]
 then
-echo "<br><li>"'$COPYDATAMSG'"</b></li>"
+echo "<br><li>"'$"Copying existing data onto the raid."'"</b></li>"
 sleep 2
 rsync --timeout=30 --verbose --dirs --recursive --links --compress --delete --backup --times --perms --executability --owner --group -o '$MOUNTPOINT'/ '$MOUNTPOINT'.'$$'/
 fi
@@ -396,7 +394,7 @@ fi
 if [ `grep -c -w '$MOUNTPOINT' /etc/fstab` -gt 0 ]
 then
 #Umount the partition
-echo "<li>"'$MOUNTPOINT'- '$UMOUNTPARTITIONMSG'"</li>"
+echo "<li>"'$MOUNTPOINT'- '$"Un mounting existing partition"'"</li>"
 umount '$MOUNTPOINT'
 
 #Backup /etc/fstab

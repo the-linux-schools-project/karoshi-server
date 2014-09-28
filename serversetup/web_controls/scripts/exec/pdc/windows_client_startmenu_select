@@ -51,12 +51,12 @@ then
 echo `date`: windows_client_startmenu_select - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1 | tr -cd 'A-Za-z0-9\._:\-'`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2 | tr -cd 'A-Za-z0-9\._:\-'`
-REMOTE_MD5=`echo $* | cut -s -d: -f3 | tr -cd 'A-Za-z0-9\._:\-'`
-FILENAME=`echo $* | cut -s -d: -f4 | tr -cd 'A-Za-z0-9\._:\-'`
-WINDOWSVER=`echo $* | cut -s -d: -f5 | tr -cd 'A-Za-z0-9\._:\-'`
-PRIGROUP=( `echo $* | cut -s -d: -f6- | sed 's/:/ /g'` )
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
+FILENAME=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
+WINDOWSVER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5`
+PRIGROUP=( `echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f6- | sed 's/:/ /g'` )
 ########################
 #Check data
 ########################
@@ -121,17 +121,15 @@ rm -f -R /var/www/karoshi/win_startmenu_upload/
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/windows_startmenu_upload ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/windows_startmenu_upload
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #######################
 #Check that compressed profile is valid
 #######################
-echo '<b>'$CHECKSTATUSMSG'</b><br><br>'
+echo '<b>'$"Archive Check"'</b><br><br>'
 if [ `echo $FILENAME | grep -c '\<zip\>'` = 1 ]
 then
 ARCHIVE_TYPE=zip
@@ -148,12 +146,12 @@ ARCHIVE_STATUS=`echo $?`
 fi
 if [ $ARCHIVE_STATUS != 0 ]
 then
-echo $FILENAME : $BADARCHIVEMSG'<br><br>'
+echo $FILENAME : $"The archive is not valid."'<br><br>'
 echo `date`: windows_client_startmenu_select - The archive format is not valid by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 else
 FILENAME2=`echo $FILENAME | sed 's/SPACECORRECT/ /g'`
-echo $FILENAME2 : $ARCHIVEOKMSG'<br><br>'
+echo $FILENAME2 : $"No errors detected in this archive."'<br><br>'
 fi
 #######################
 #Extract startmenu
@@ -214,7 +212,7 @@ if [ $CURRENTGROUP'null' != null ]
 then
 #Log event
 echo `date`: windows_client_startmenu_select - copying $FILENAME2 to $CURRENTGROUP$PROFILEVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $COPYMSG : $CURRENTGROUP$PROFILEVER'<br><br>'
+echo $"Copying start menu to" : $CURRENTGROUP$PROFILEVER'<br><br>'
 [ ! -d /home/applications/profiles/$CURRENTGROUP$PROFILEVER/$STARTMENUPATH ] && mkdir -p /home/applications/profiles/$CURRENTGROUP$PROFILEVER/$STARTMENUPATH
 [ -d /home/applications/profiles/$CURRENTGROUP$PROFILEVER/"Start Menu" ] && rm -f -R /home/applications/profiles/$CURRENTGROUP$PROFILEVER/$STARTMENUPATH"Start Menu"
 cp -f -R /opt/karoshi/.tempdata/win_startmenu_new.$$/"$TOPDIRNAME" /home/applications/profiles/$CURRENTGROUP$PROFILEVER/$STARTMENUPATH/$STARTMENUPATH"Start Menu"

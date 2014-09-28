@@ -40,7 +40,10 @@ then
 fi
 
 source /opt/karoshi/serversetup/variables/language
-source /opt/karoshi/serversetup/language/$LANGCHOICE/all/configurenetwork
+TEXTDOMAIN=karoshi-server
+locale 1>/dev/null
+
+
 
 
 function dnscheck {
@@ -70,7 +73,7 @@ LOOKUPCHECK=$?
 if [ $PINGCHECK != 0 ] || [ $LOOKUPCHECK != 0 ]
 then
 	#Show warning message
-	yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=8 --text="$WARNINGMSG1: $NAMESERVER\n\n$WARNINGMSG2" --no-buttons
+	yad --title $"Configure Network" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=8 --text=''$"The dns server could not be contacted on"': '$NAMESERVER'\n\n'$"The DNS has been changed to 8.8.8.8."' '$"The performance of this server will be affected if it cannot contact a dns server."'' --no-buttons
 	#Change DNS if default is not available
 	NAMESERVER=8.8.8.8
 	echo `date`: "The dns server has been changed to $NAMESERVER." >> /opt/karoshi/serversetup/install_log
@@ -253,7 +256,7 @@ fi
 ###########################
 
 #Warn about reboot
-yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=4 --text="$REBOOTMSG" --no-buttons
+yad --title $"Configure Network" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=4 --text=''$"Rebooting to change the server name and TCPIP address."' '$"Please wait"...'' --no-buttons
 
 #Set Computer name
 echo $KAROSHISERVER > /etc/hostname

@@ -27,13 +27,11 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/software_raid ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/software_raid
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
@@ -41,13 +39,13 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE1'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Create Software Raid"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\_\-%'`
+DATA=`cat | tr -cd 'A-Za-z0-9\._:%/+-'`
 #########################
 #Assign data to variables
 #########################
@@ -184,7 +182,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -192,13 +190,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -208,14 +206,14 @@ fi
 #Check to see that SERVERNAME is not blank
 if [ $SERVERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The server cannot be blank."
 show_status
 fi
 
 #Check to see that SERVERTYPE is not blank
 if [ $SERVERTYPE'null' = null ]
 then
-MESSAGE=$ERRORMSG15
+MESSAGE=$"The servertype cannot be blank."
 show_status
 fi
 
@@ -224,7 +222,7 @@ if [ $SERVERTYPE = federatedslave ]
 then
 if [ $SERVERMASTER'null' = null ]
 then
-MESSAGE=$ERRORMSG16
+MESSAGE=$"The servermaster cannot be blank."
 show_status
 fi
 fi
@@ -232,7 +230,7 @@ fi
 #Check to see that RAIDTYPE is not blank
 if [ $RAIDTYPE'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The raid type cannot be blank."
 show_status
 fi
 
@@ -241,7 +239,7 @@ if [ $RAIDTYPE != restore ]
 then
 if [ $DRIVES'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"No drives have been selected."
 show_status
 fi
 fi
@@ -249,7 +247,7 @@ fi
 #Check to see that MOUNTPOINT is not blank
 if [ $MOUNTPOINT'null' = null ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"The mount point cannot be blank."
 show_status
 fi
 
@@ -257,7 +255,7 @@ fi
 #Check that MOUNTPOINT is in an allowed area
 if [ `echo $MOUNTPOINT | grep -c ^/home` = 0 ] && [ `echo $MOUNTPOINT | grep -c ^/media/` = 0 ] && [ `echo $MOUNTPOINT | grep -c ^/mnt/` = 0 ] && [ `echo $MOUNTPOINT | grep -c ^/var/` = 0 ]
 then
-MESSAGE=$ERRORMSG6
+MESSAGE=$"The mount point does not contain an allowed path."
 show_status
 fi
 
@@ -266,7 +264,7 @@ if [ $RAIDTYPE = raid1 ]
 then
 if [ `echo $DRIVES | sed 's/,/\n/g' | wc -l` -lt 2 ]
 then
-MESSAGE=$ERRORMSG7
+MESSAGE=$"You have not selected enough drives for this raid type."
 show_status
 fi
 fi
@@ -274,7 +272,7 @@ if [ $RAIDTYPE = raid5 ]
 then
 if [ `echo $DRIVES | sed 's/,/\n/g' | wc -l` -lt 3 ]
 then
-MESSAGE=$ERRORMSG7
+MESSAGE=$"You have not selected enough drives for this raid type."
 show_status
 fi
 fi
@@ -298,10 +296,10 @@ echo '<div id="'$DIV_ID'">'
 if [ $MOBILE = yes ]
 then
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
-<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$TITLE1 - $SERVER'</b></a></td></tr></tbody></table>'
+<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
+<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Create Software Raid" - $SERVER'</b></a></td></tr></tbody></table>'
 else
-echo '<b>'$TITLE1 - $SERVERNAME'</b><br><br>'
+echo '<b>'$"Create Software Raid" - $SERVERNAME'</b><br><br>'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/software_raid_create2.cgi | cut -d' ' -f1`

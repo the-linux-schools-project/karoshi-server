@@ -32,22 +32,20 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/change_management_passwords ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/change_management_passwords
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Management Passwords"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>'
+echo '<div id="actionbox"><div class="sectiontitle">'$"Management Passwords"'</div><br>'
 #########################
 #Get data input
 #########################
@@ -152,7 +150,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -160,13 +158,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -175,38 +173,38 @@ fi
 #Check to see that SERVERNAME is not blank
 if [ $SERVERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The server cannot be blank."
 show_status
 fi
 
 #Check to see that SERVERTYPE is not blank
 if [ $SERVERTYPE'null' = null ]
 then
-MESSAGE=$ERRORMSG8
+MESSAGE=$"The server type cannot be blank."
 show_status
 fi
 
 #Check to see that the useraccount is not blank
 if [ $USERACCOUNT'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The user account must not be blank."
 show_status
 fi
 #Check to see that the password fields are not blank
 if [ $PASSWORD1'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The password must not be blank."
 show_status
 fi
 if [ $PASSWORD2'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The password must not be blank."
 show_status
 fi
 #Check that the password has been entered correctly
 if [ $PASSWORD1 != $PASSWORD2 ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The passwords do not match."
 show_status
 fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/change_management_passwords.cgi | cut -d' ' -f1`
@@ -216,9 +214,9 @@ EXEC_STATUS=`echo $?`
 
 if [ $EXEC_STATUS = 0 ]
 then
-[ $SERVERNAME = allservers ] && SERVERNAME=$ALLSERVERMSG
-MESSAGE=`echo $SERVERNAME - $COMPLETEDMSG $USERACCOUNT.`
+[ $SERVERNAME = allservers ] && SERVERNAME=$"All Servers"
+MESSAGE=`echo $SERVERNAME - $"Password changed for" $USERACCOUNT.`
 else
-MESSAGE=`echo $ERRORMSG5 $USERACCOUNT`
+MESSAGE=`echo $"There was an error changing the password for" $USERACCOUNT`
 fi
 show_status

@@ -32,19 +32,17 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/default_user_settings ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/default_user_settings
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Default User Settings"'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -130,7 +128,7 @@ SHADOWMAX=`echo $SHADOWMAX | tr -cd '0-9\n'`
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>'
+echo '<div id="actionbox"><div class="sectiontitle">'$"Default User Settings"'</div><br>'
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
@@ -144,7 +142,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -152,13 +150,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -167,33 +165,33 @@ fi
 #Check to see that LOCKOUTDURATION is not blank
 if [ $LOCKOUTDURATION'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The lockout duration cannot be blank."
 show_status
 fi
 #Check to see that LOCKOUTTHRESHOLD is not blank
 if [ $LOCKOUTTHRESHOLD'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The lockout threshold cannot be blank."
 show_status
 fi
 #Check to see that LOCKOUTOBS is not blank
 if [ $LOCKOUTOBS'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The lockout observation period cannot be blank."
 show_status
 fi
 
 #Check to see that SHADOWMAX is not blank
 if [ $SHADOWMAX'null' = null ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The shadowmax parameter cannot be blank."
 show_status
 fi
 
 #Check to see that USERNAMESTYLE is not blank
 if [ $USERNAMESTYLE'null' = null ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"The username style cannot be blank."
 show_status
 fi
 
@@ -203,9 +201,9 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:SETDATA:$LOCKOUTDURATION:$LOCKOUTTHRESHO
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 0 ]
 then
-MESSAGE=$COMPLETEDMSG
+MESSAGE=$"The lockout settings have been saved."
 else
-MESSAGE=`echo $PROBLEMMSG $LOGMSG`
+MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`
 fi
 show_status
 exit

@@ -52,12 +52,12 @@ echo `date`: printers_ppd_add - incorrect number of arguments >> /opt/karoshi/lo
 exit 101
 fi
 
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
-PRINTERNAME=`echo $* | cut -s -d: -f4 | sed 's/+//g'`
-PAGESIZE=`echo $* | cut -s -d: -f5`
-COLOUR=`echo $* | cut -s -d: -f6`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f3`
+PRINTERNAME=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f4 | sed 's/+//g'`
+PAGESIZE=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f5`
+COLOUR=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f6`
 ########################
 #Check data
 ########################

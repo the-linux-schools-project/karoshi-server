@@ -38,19 +38,17 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ########################
 #Language
 ########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/monitorix ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/monitorix
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #########################
 #Show page
 #########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Monitorix System Monitor"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -101,7 +99,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -109,13 +107,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
@@ -126,13 +124,13 @@ fi
 #Check to see that username is not blank
 if [ -z "$SERVERNAME" ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The servername cannot be blank."
 show_status
 fi
 
 if [ -z "$INTERVAL" ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The interval cannot be blank."
 show_status
 fi
 
@@ -158,13 +156,13 @@ source /opt/karoshi/server_network/domain_information/domain_name
 echo '
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr>
-<td style="vertical-align: top;"><div class="sectiontitle">'$TITLE'</div></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=System_Monitoring"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td>
-<td style="vertical-align: top;"><a href="/cgi-bin/admin/monitorix_fm.cgi"><input class="button" type="button" name="" value="'$CHOOSESERVERMSG'"></a></td>
+<td style="vertical-align: top;"><div class="sectiontitle">'$"Monitorix System Monitor"'</div></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=System_Monitoring"><img class="images" alt="" src="/images/help/info.png"><span>'$"Monitorix is a system monitoring tool."'</span></a></td>
+<td style="vertical-align: top;"><a href="/cgi-bin/admin/monitorix_fm.cgi"><input class="button" type="button" name="" value="'$"Select server"'"></a></td>
 </tr></table><br></div><div id="infobox">'
 #Show monitorix data
 
-echo '<iframe src="https://manage.'$REALM':'$ACCESSPORT'/monitorix-'$SERVERNAME'/monitorix.cgi?mode=localhost&amp;graph=all&amp;when='$INTERVAL'&amp;color=black" frameborder="0" width="1200" height="3000" scrolling="no"></iframe>'
+echo '<iframe src="https://manage.'$REALM':'$ACCESSPORT'/monitorix-'$SERVERNAME'/monitorix.cgi?mode=localhost&amp;graph=all&amp;when='$INTERVAL'&amp;color=white" frameborder="0" width="1200" height="3000" scrolling="no"></iframe>'
 
 
 echo '</div></div></div></body></html>'

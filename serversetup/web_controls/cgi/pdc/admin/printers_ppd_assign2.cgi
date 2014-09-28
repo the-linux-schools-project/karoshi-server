@@ -36,19 +36,17 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printers_ppd_assign ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printers_ppd_assign
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Assign PPD File"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -134,7 +132,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -142,13 +140,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
@@ -158,25 +156,25 @@ fi
 #Check to see that PRINTERNAME is not blank
 if [ $PRINTERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The printer name cannot be blank."
 show_status
 fi
 #Check to see that PAGESIZE is not blank
 if [ $PAGESIZE'null' = null ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The page size cannot be blank."
 show_status
 fi
 #Check to see that Colour is not blank
 if [ $COLOUR'null' = null ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"The colour option cannot be blank."
 show_status
 fi
 #Check to see that PRINTERPPD is not blank
 if [ $PRINTERPPD'null' = null ]
 then
-MESSAGE=$ERRORMSG7
+MESSAGE=$"The printer ppd cannot be blank."
 show_status
 fi
 #Check to see if we are uploading a ppd
@@ -203,10 +201,10 @@ sudo -H /opt/karoshi/web_controls/exec/printers_ppd_assign $REMOTE_USER:$REMOTE_
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 101 ]
 then
-MESSAGE=`echo $ERRORMSG6`
+MESSAGE=`echo $"There was a problem adding this ppd. Please consult the Karoshi web administration logs."`
 show_status
 fi
-MESSAGE=`echo $COMPLETEDMSG $PRINTERNAME`
+MESSAGE=`echo $"The ppd file was added to" $PRINTERNAME`
 show_status
 
 echo "</div></body></html>"

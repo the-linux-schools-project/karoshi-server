@@ -31,15 +31,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_room_controls ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_room_controls
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -50,7 +48,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Internet Controls"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -93,7 +91,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 
@@ -118,17 +116,17 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE'</span>
-<a href="mobile_menu.cgi">'$MENUMSG'</a>
+	<span>'$"Client Internet Controls"'</span>
+<a href="mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">
 '
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tr><td style="vertical-align: top;"><b>'$TITLE' - '$CHOOSELOCATIONMSG'</b></td>
+<tr><td style="vertical-align: top;"><b>'$"Client Internet Controls"' - '$"Location"'</b></td>
 <td valign=top>
-<a href="dg_reset_room_controls_fm.cgi"><input class="button" type="button" name="" value="'$RESETTIMESMSG'"></a>
+<a href="dg_reset_room_controls_fm.cgi"><input class="button" type="button" name="" value="'$"Reset times"'"></a>
 </td>
-<td valign=top><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Room_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td></tr></tbody></table><br>'
+<td valign=top><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Room_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the location that you want to allow or deny internet access for."'</span></a></td></tr></tbody></table><br>'
 
 fi
 
@@ -158,7 +156,7 @@ for LOCATIONS in /opt/karoshi/asset_register/locations/*
 do
 LOCATION=`basename "$LOCATIONS"`
 
-echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON1'" value=""><span>'$TITLE'<br>'$LOCATION'</span></a><br>'$LOCATION'</td>'
+echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Client Internet Controls"'<br>'$LOCATION'</span></a><br>'$LOCATION'</td>'
 [ $LOCCOUNTER = $ROWCOUNT ] && echo '</tr><tr>'
 let LOCCOUNTER=$LOCCOUNTER+1
 [ $LOCCOUNTER -gt $ROWCOUNT ] && LOCCOUNTER=1
@@ -167,10 +165,10 @@ done
 echo "</tr></tbody></table></form><br>"
 fi
 else
-echo $ERRORMSG18
+echo $"You have not chosen a location."8
 fi
 else
-echo $ERRORMSG18
+echo $"You have not chosen a location."8
 fi
 echo '</div></div></body></html>'
 exit

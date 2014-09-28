@@ -26,12 +26,10 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/internet_access_controls ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/internet_access_controls
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 LOG_DATE=`date +%F`
 ########################
 #Check md5checksum
@@ -89,11 +87,11 @@ then
 echo `date`: internet_access_controls - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
-LOCATION=`echo $* | cut -s -d: -f4`
-MOBILE=`echo $* | cut -s -d: -f5`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:%\+-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:%\+-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:%\+-' | cut -s -d: -f3`
+LOCATION=`echo $* | tr -cd 'A-Za-z0-9\._:%\+-' | cut -s -d: -f4`
+MOBILE=`echo $* | tr -cd 'A-Za-z0-9\._:%\+-' | cut -s -d: -f5`
 ########################
 #Check data
 ########################
@@ -140,13 +138,13 @@ then
 if [ `ls -1 /opt/karoshi/asset_register/locations/$LOCATION/1/ | wc -l` -gt 0 ]
 then
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="width: 60px;"><b>'$ASSETNUMBERMSG'</b></td>'
+<tbody><tr><td style="width: 60px;"><b>'$"Asset"'</b></td>'
 
 if [ $MOBILE = no ]
 then
-echo '<td style="width: 120px;"><b>'$MACADDRESS'</b></td><td style="width: 120px;"><b>'$TCPIP'</b></td>'
+echo '<td style="width: 120px;"><b>'$"Mac address"'</b></td><td style="width: 120px;"><b>'$"TCPIP"'</b></td>'
 fi
-echo "<td><b>$STATUSMSG</b></td></tr>"
+echo "<td><b>$"Status"</b></td></tr>"
 for ASSETS in "/opt/karoshi/asset_register/locations/$LOCATION/1/"*
 do
 ASSET=`basename $ASSETS`
@@ -154,7 +152,7 @@ TCPIP=`sed -n 7,7p "/opt/karoshi/asset_register/locations/$LOCATION/1/$ASSET" | 
 MACADDRESS=`sed -n 8,8p "/opt/karoshi/asset_register/locations/$LOCATION/1/$ASSET" | cut -d: -f2- | sed 's/ //g'`
 if [ $MOBILE = no ]
 then
-echo '<tr><td>'$ASSET'</td><td>'$TCPIP'</td><td>'$MACADDRESS'</td>'
+echo '<tr><td>'$ASSET'</td><td>'$"TCPIP"'</td><td>'$"Mac address"'</td>'
 else
 echo '<tr><td>'$ASSET'</td>'
 fi
@@ -168,12 +166,12 @@ fi
 
 if [ $INTERNETSTATUS = allowed ]
 then
-echo '<td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_ACTION_ban_ASSET_'$ASSET'_TCPIP_'$TCPIP'_MACADDRESS_'$MACADDRESS'_" type="image" class="images" src="'$ICON1'" value=""><span>'$BANMSG'</span></a></td></tr>'
+echo '<td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_ACTION_ban_ASSET_'$ASSET'_TCPIP_'$"TCPIP"'_MACADDRESS_'$"Mac address"'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Ban this computer."'</span></a></td></tr>'
 fi
 
 if [ $INTERNETSTATUS = denied ]
 then
-echo '<td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_ACTION_allow_ASSET_'$ASSET'_TCPIP_'$TCPIP'_MACADDRESS_'$MACADDRESS'_" type="image" class="images" src="'$ICON3'" value=""><span>'$ALLOWMSG'</span></a></td></tr>'
+echo '<td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_ACTION_allow_ASSET_'$ASSET'_TCPIP_'$"TCPIP"'_MACADDRESS_'$"Mac address"'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Allow this computer."'</span></a></td></tr>'
 fi
 
 done

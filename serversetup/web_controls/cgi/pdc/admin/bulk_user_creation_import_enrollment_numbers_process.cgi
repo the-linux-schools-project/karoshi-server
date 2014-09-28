@@ -33,23 +33,21 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/bulk_user_creation ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/bulk_user_creation
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE3'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Bulk User Creation - Import Enrolment Numbers or staff codes"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox">
-<B>'$TITLE3'</B>
+<B>'$"Bulk User Creation - Import Enrolment Numbers or staff codes"'</B>
 <br><br>'
 #########################
 #Get data input
@@ -72,7 +70,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -80,13 +78,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -98,7 +96,7 @@ chmod 0700 /var/www/karoshi/
 chmod 0700 /var/www/karoshi/bulk_user_creation_enrollment_numbers
 if [ `dir /var/www/karoshi/bulk_user_creation_enrollment_numbers --format=single-column | wc -l` != 1 ]
 then
-MESSAGE=$ERRORMSG12
+MESSAGE=$"File upload error."
 show_status
 fi
 CSVFILE=`ls /var/www/karoshi/bulk_user_creation_enrollment_numbers`
@@ -117,7 +115,7 @@ ENROLLMENT_NO=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation_e
 if [ $USERNAME'null' = null ] || [ $ENROLLMENT_NO'null' = null ]
 then
 echo Error on line $COUNTER'<br>'
-MESSAGE=`echo $ERRORMSG13`
+MESSAGE=`echo $"The CSV file you have chosen is not formatted correctly."`
 show_status
 fi
 echo "$USERNAME","$ENROLLMENT_NO" >> /var/www/karoshi/bulk_user_creation_enrollment_numbers/karoshi_enrollmentnumbers.csv

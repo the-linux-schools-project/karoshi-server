@@ -37,17 +37,15 @@
 ########################
 #Language
 ########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_edit] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_edit
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 echo "Content-type: text/html"
 echo ""
-echo "<html><head><title>$TITLE</title><meta http-equiv='"'REFRESH'"' content='"'0; URL='/cgi-bin/admin/remote_management_view.cgi''"'>"
+echo "<html><head><title>$"Karoshi Web Management - Edit a Karoshi Remote Management User"</title><meta http-equiv='"'REFRESH'"' content='"'0; URL='/cgi-bin/admin/remote_management_view.cgi''"'>"
 echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
@@ -177,7 +175,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -185,13 +183,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -200,7 +198,7 @@ fi
 #Check to see that username is not blank
 if [ $USERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The username must not be blank."
 show_status
 fi
 
@@ -209,7 +207,7 @@ if [ $PASSWORD1'null' != null ] || [ $PASSWORD2'null' != null ]
 then
 if [ $PASSWORD1'check' != $PASSWORD2'check' ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The passwords do not match."
 show_status
 fi
 fi
@@ -217,25 +215,25 @@ fi
 #Check that duplicate data has not been added
 if [ $USERNAME'check' = $FORENAME'check' ] || [ $USERNAME'check' = $SURNAME'check' ] || [ $USERNAME'check' = $JOBTITLE'check' ]
 then
-MESSAGE=$ERRORMSG7
+MESSAGE=$"You have entered duplicate data."
 show_status
 fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_edit.cgi | cut -d' ' -f1`
 #add remote management user
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$JOBTITLE:$FORENAME:$SURNAME:$USERNAME:$PASSWORD1:$PRIMARYADMIN:$TCPACCESS" | sudo -H /opt/karoshi/web_controls/exec/remote_management_edit
 EXEC_STATUS=`echo $?`
-MESSAGE=`echo $USERNAME $COMPLETEDMSG`
+MESSAGE=`echo $USERNAME $"has been edited."`
 if [ $EXEC_STATUS = 103 ]
 then
-MESSAGE=$ERRORMSG6
+MESSAGE=$"You can only do this if you are a primary admin."
 fi
 if [ $EXEC_STATUS = 102 ]
 then
-MESSAGE=`echo $USERNAME: $ERRORMSG1`
+MESSAGE=`echo $USERNAME: $"This user does not exist."`
 fi
 if [ $EXEC_STATUS = 101 ]
 then
-MESSAGE=`echo $USERNAME: $ERRORMSG5`
+MESSAGE=`echo $USERNAME: $"There was a problem editing the details for this user."`
 fi
 show_status
 exit

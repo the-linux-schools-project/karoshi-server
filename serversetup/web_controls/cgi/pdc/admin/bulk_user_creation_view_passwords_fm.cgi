@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/bulk_user_creation ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/bulk_user_creation
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -47,7 +45,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE2'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Bulk User Creation - View Passwords"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
@@ -56,16 +54,16 @@ echo '
 echo '<form action="/cgi-bin/admin/bulk_user_creation_view_passwords.cgi" method="post"><div id="actionbox">
 
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="vertical-align: top;"><b>'$TITLE2'</b></td>
-<td style="vertical-align: top;"><a href="bulk_user_creation_upload_fm.cgi"><input class="button" type="button" name="" value="'$TITLE'"></td>
-<td style="vertical-align: top;"><a href="bulk_user_creation_import_enrollment_numbers_fm.cgi"><input class="button" type="button" name="" value="'$IMPORTENROLLNUMBERS'"></td></tr>
+<tr><td style="vertical-align: top;"><b>'$"Bulk User Creation - View Passwords"'</b></td>
+<td style="vertical-align: top;"><a href="bulk_user_creation_upload_fm.cgi"><input class="button" type="button" name="" value="'$"Bulk User Creation"'"></td>
+<td style="vertical-align: top;"><a href="bulk_user_creation_import_enrollment_numbers_fm.cgi"><input class="button" type="button" name="" value="'$"Import enrolment numbers"'"></td></tr>
 </tbody></table><br>
-'$VIEWPASSMSG2'<br>
+'$"View the new passwords for a group of users."'<br>
   <br>
   <table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
     <tbody>
       <tr>
-        <td style="width: 180px;">'$PRIGROUPMSG'</td>
+        <td style="width: 180px;">'$"Primary Group"'</td>
         <td>'
 /opt/karoshi/web_controls/group_dropdown_list
 echo '
@@ -75,7 +73,7 @@ echo '
   </table>
 </div>
 <div id="submitbox">
-  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+  <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>
 </form>
 </div></body>

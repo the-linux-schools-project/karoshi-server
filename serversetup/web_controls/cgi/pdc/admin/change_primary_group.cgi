@@ -34,19 +34,17 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/change_primary_group ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/change_primary_group
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="0; URL=change_primary_group_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Change Primary Group"'</title><meta http-equiv="REFRESH" content="0; URL=change_primary_group_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -95,7 +93,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -103,13 +101,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -118,7 +116,7 @@ fi
 #Check to see that username is not blank
 if [ $USERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The username must not be blank."
 show_status
 fi
 #Check to see if the user exists
@@ -126,33 +124,33 @@ echo "$MD5SUM:$USERNAME" | sudo -H /opt/karoshi/web_controls/exec/existcheck_use
 USEREXISTSTATUS=`echo $?`
 if [ $USEREXISTSTATUS = 111 ]
 then
-MESSAGE=`echo $USERNAME: $ERRORMSG1`
+MESSAGE=`echo $USERNAME: $"This username does not exist."`
 show_status
 fi
 #Check that the user is not a system user
 USER_ID=`id -g $USERNAME`
 if [ $USER_ID -lt 500 ]
 then
-MESSAGE=`echo $ERRORMSG5`
+MESSAGE=`echo $"You cannot change the primary group for a system user."`
 show_status
 fi
 #Check that the user is not karoshi
 if [ $USERNAME = karoshi ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The new primary group must not be blank."
 show_status
 fi
 #Check to see that group is not blank
 if [ $GROUP'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The new primary group must not be blank."
 show_status
 fi
 #Check that the group exists
 getent group $GROUP 1>/dev/null
 if [ $? != 0 ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The new primary group does not exist."
 show_status
 fi
 
@@ -162,8 +160,8 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$GROUP" | sudo -H /opt/karoshi
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 0 ]
 then
-MESSAGE=`echo $COMPLETEDMSG $USERNAME.`
+MESSAGE=`echo $"Primary group changed for" $USERNAME.`
 else
-MESSAGE=`echo $PROBLEMMSG $LOGMSG`
+MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`
 fi
 show_status

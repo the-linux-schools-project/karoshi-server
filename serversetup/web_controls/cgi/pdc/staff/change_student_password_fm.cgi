@@ -23,13 +23,9 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/change_student_password ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/change_student_password
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 #Detect mobile browser
 MOBILE=no
@@ -44,7 +40,7 @@ echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title>
+  <title>'$"Change a Student's Password"'</title>
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script type="text/javascript" src="/all/js/jquery.js"></script>
 <script type="text/javascript" src="/all/js/script.js"></script>
@@ -143,47 +139,47 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE'</span>
-<a href="/cgi-bin/staff/mobile_menu.cgi">'$USERMENUMSG'</a>
+	<span>'$"Change a Student's Password"'</span>
+<a href="/cgi-bin/staff/mobile_menu.cgi">'$"User Menu"'</a>
 </div></div>
 '
 else
-echo '<div id="'$DIV_ID'"><b>'$TITLE'</b><br><br>'
+echo '<div id="'$DIV_ID'"><b>'$"Change a Student's Password"'</b><br><br>'
 fi
 
 if [ $MOBILE = yes ]
 then
-echo '<div id="mobileactionbox"><div id="suggestions"></div>'$SUSERNAMEMSG'<br>
+echo '<div id="mobileactionbox"><div id="suggestions"></div>'$"Student Username"'<br>
 <input tabindex= "3" name="_USERNAME_" AUTOCOMPLETE = "off" style="width: 200px;" value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br>
-'$SPASSWORDMSG'<br>
+'$"Student Password"'<br>
 <input tabindex= "4" name="_PASSWORD1_" style="width: 200px;" value="'$PASSWORD1'" size="20" type="password"><br>
-'$CONFIRMMSG'<br>
+'$"Confirm Password"'<br>
 <input tabindex= "5" name="_PASSWORD2_" style="width: 200px;" value="'$PASSWORD2'" size="20" type="password"><br>
-'$VIEWIMAGEMSG'<br>
-<a class="info" href="javascript:void(0)"><input name="_VIEWIMAGE_yes_" type="image" class="images" src="/images/submenus/user/user_photo.png" value=""><span>'$VIEWIMAGEMSG'</span></a><br><br>
+'$"View User Image"'<br>
+<a class="info" href="javascript:void(0)"><input name="_VIEWIMAGE_yes_" type="image" class="images" src="/images/submenus/user/user_photo.png" value=""><span>'$"View User Image"'</span></a><br><br>
 '
 else
 echo '<div id="suggestions"></div><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
       <tr>
-        <td style="width: 180px;">'$SUSERNAMEMSG'</td>
+        <td style="width: 180px;">'$"Student Username"'</td>
         <td><input tabindex= "3" name="_USERNAME_" AUTOCOMPLETE = "off" style="width: 200px;" value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will change the password of the user for access to all servers on the Karoshi system including moodle and email."'</span></a>
       </td></tr>
       <tr>
         <td>
-'$SPASSWORDMSG'</td>
-        <td><input tabindex= "4" name="_PASSWORD1_" style="width: 200px;" value="'$PASSWORD1'" size="20" type="password"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'<br><br>'$HELPMSG4':<br><br>space ! # $ & ( ) + - =  %</span></a></td>
+'$"Student Password"'</td>
+        <td><input tabindex= "4" name="_PASSWORD1_" style="width: 200px;" value="'$PASSWORD1'" size="20" type="password"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new password that you want the user to have."'<br><br>'$"The following special characters are allowed"':<br><br>space ! # $ & ( ) + - =  %</span></a></td>
       </tr>
       <tr>
         <td>
-'$CONFIRMMSG'</td>
+'$"Confirm Password"'</td>
         <td><input tabindex= "5" name="_PASSWORD2_" style="width: 200px;" value="'$PASSWORD2'" size="20" type="password"></td>
       </tr>
 <tr>
         <td>
-'$VIEWIMAGEMSG'</td>
-        <td><a class="info" href="javascript:void(0)"><input name="_VIEWIMAGE_yes_" type="image" class="images" src="/images/submenus/user/user_photo.png" value=""><span>'$VIEWIMAGEMSG'</span></a></td>
+'$"View User Image"'</td>
+        <td><a class="info" href="javascript:void(0)"><input name="_VIEWIMAGE_yes_" type="image" class="images" src="/images/submenus/user/user_photo.png" value=""><span>'$"View User Image"'</span></a></td>
       </tr>
     </tbody>
   </table>'
@@ -203,5 +199,5 @@ echo '</div><div id="submitbox">'
 else
 echo '<br>'
 fi
-echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></div></form></div></body></html>'
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div></form></div></body></html>'
 exit

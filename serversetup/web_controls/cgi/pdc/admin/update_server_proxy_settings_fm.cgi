@@ -27,15 +27,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/update_server_proxy_settings ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/update_server_proxy_settings
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -48,7 +46,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE1'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Configure Server Proxy Settings"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script type="text/javascript" src="/all/js/jquery.js"></script>
 <script type="text/javascript" src="/all/js/script.js"></script>
@@ -120,13 +118,13 @@ done
 #Check to see that a server has been picked to shut down
 if [ $SERVERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The servername cannot be blank."
 show_status
 fi
 #Check to see that a server type is not blank
 if [ $SERVERTYPE'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The servertype cannot be blank."
 show_status
 fi
 
@@ -154,45 +152,45 @@ echo '<form action="/cgi-bin/admin/update_server_proxy_settings.cgi" method="pos
 if [ $MOBILE = yes ]
 then
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
-<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$TITLE1' - '$SERVERNAME'</b></a></td></tr></tbody></table><br>'
+<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
+<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Configure Server Proxy Settings"' - '$SERVERNAME'</b></a></td></tr></tbody></table><br>'
 else
-echo '<b>'$TITLE1' - '$SERVERNAME'</b><br><br>'
+echo '<b>'$"Configure Server Proxy Settings"' - '$SERVERNAME'</b><br><br>'
 fi
 
 if [ $MOBILE = yes ]
 then
 echo '
-'$TCPIPMSG'<br>
+'$"Proxy name/TCPIP"'<br>
 <input tabindex= "1" style="width: 160px;" name="_TCPIP_" value="'$TCPIP'" size="20" type="text"><br>
-'$PORTMSG'<br>
+'$"Proxy Port"'<br>
 <input tabindex= "2" style="width: 160px;" name="_PORT_" value="'$PORT'" size="20" type="text"><br>
-'$USERNAMEMSG'<br>
+'$"Username"'<br>
 <input tabindex= "3" style="width: 160px;" name="_USERNAME_" 
  value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br>
-'$PASSWORDMSG'<br>
+'$"Enter in the password needed to connect to the proxy server."'<br>
 <input tabindex= "4" style="width: 160px;" name="_PASSWORD_" value="'$PASSWORD'" size="20" type="password"><br>
 '
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
-<tr><td style="width: 180px;">'$TCPIPMSG'</td><td><input tabindex= "1" value="'$TCPIP'" style="width: 200px;" name="_TCPIP_"  size="20" type="text"></td>
-<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$TCPIPHELP'</span></a></td>
+<tr><td style="width: 180px;">'$"Proxy name/TCPIP"'</td><td><input tabindex= "1" value="'$TCPIP'" style="width: 200px;" name="_TCPIP_"  size="20" type="text"></td>
+<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name or tcpip number of the internet proxy server that you want this server to use for updates."'</span></a></td>
 </tr>
-<tr><td style="width: 180px;">'$PORTMSG'</td><td><input tabindex= "2" value="'$PORT'" style="width: 200px;" name="_PORT_"  size="20" type="text"></td>
-<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$PORTHELP'</span></a></td>
+<tr><td style="width: 180px;">'$"Proxy Port"'</td><td><input tabindex= "2" value="'$PORT'" style="width: 200px;" name="_PORT_"  size="20" type="text"></td>
+<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the port number of the internet proxy server."'</span></a></td>
 </tr>
       <tr>
         <td style="width: 180px;">
-'$USERNAMEMSG'</td>
+'$"Username"'</td>
         <td>
 <input tabindex= "3" style="width: 200px;" name="_USERNAME_" 
- value="'$USERNAME'" size="20" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$USERNAMEHELP'</span></a></td>
+ value="'$USERNAME'" size="20" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a username to connect to the proxy server. Leave this blank if it is not needed."'</span></a></td>
 </tr>
       <tr>
         <td>
-'$PASSWORDMSG'</td>
-        <td><input tabindex= "4" style="width: 200px;" value="'$PASSWORD'" name="_PASSWORD_" size="20" type="password"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$PASSWORDHELP'<br><br>'$CHARACTERHELP':<br><br>space ! # $ & ( ) + - =  %</span></a></td>
+'$"Enter in the password needed to connect to the proxy server."'</td>
+        <td><input tabindex= "4" style="width: 200px;" value="'$PASSWORD'" name="_PASSWORD_" size="20" type="password"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new password that you want the user to have."'<br><br>'$"The following special characters are allowed"':<br><br>space ! # $ & ( ) + - =  %</span></a></td>
       </tr>
     </tbody>
   </table>'
@@ -208,5 +206,5 @@ echo '</div><div id="submitbox">'
 else
 echo '<br>'
 fi
-echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></div></form></div></body></html>'
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div></form></div></body></html>'
 exit

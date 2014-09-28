@@ -25,11 +25,9 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/request_new_users ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/request_new_users
 ############################
 #Show page
 ############################
@@ -38,7 +36,7 @@ SLEEPTIME=5
 
 echo "Content-type: text/html"
 echo ""
-echo '<html><head><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<html><head><title>'$"Request New Users"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -128,14 +126,14 @@ echo '<div id="actionbox">'
 #Check some fornames have been entered
 if [ `echo $FORENAME1$FORENAME2$FORENAME3$FORENAME4$FORENAME5$FORENAME6$FORENAME7$FORENAME8$FORENAME9$FORENAME10'null'` = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"You have not enterered any forenames."
 show_status
 fi
 
 #Check some surnames have been entered
 if [ `echo $SURNAME1$SURNAME2$SURNAME3$SURNAME4$SURNAME5$SURNAME6$SURNAME7$SURNAME8$SURNAME9$SURNAME10'null'` = null ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"You have not enterered any surnames."
 show_status
 fi
 
@@ -143,12 +141,12 @@ if [ $FORENAME1'null' != null ]
 then
 if [ $SURNAME1'null' = null ]
 then
-MESSAGE=`echo $FORENAME1 - $ERRORMSG5`
+MESSAGE=`echo $FORENAME1 - $"Missing surname."`
 show_status
 fi
 if [ $GROUP1'null' = null ]
 then
-MESSAGE=`echo $FORENAME1 $SURNAME1 - $ERRORMSG6`
+MESSAGE=`echo $FORENAME1 $SURNAME1 - $"You need to set the group for this user."`
 show_status
 fi
 fi
@@ -157,12 +155,12 @@ if [ $FORENAME2'null' != null ]
 then
 if [ $SURNAME2'null' = null ]
 then
-MESSAGE=`echo $FORENAME2 - $ERRORMSG5`
+MESSAGE=`echo $FORENAME2 - $"Missing surname."`
 show_status
 fi
 if [ $GROUP2'null' = null ]
 then
-MESSAGE=`echo $FORENAME2 $SURNAME2 - $ERRORMSG6`
+MESSAGE=`echo $FORENAME2 $SURNAME2 - $"You need to set the group for this user."`
 show_status
 fi
 fi
@@ -171,12 +169,12 @@ if [ $FORENAME3'null' != null ]
 then
 if [ $SURNAME3'null' = null ]
 then
-MESSAGE=`echo $FORENAME3 - $ERRORMSG5`
+MESSAGE=`echo $FORENAME3 - $"Missing surname."`
 show_status
 fi
 if [ $GROUP3'null' = null ]
 then
-MESSAGE=`echo $FORENAME3 $SURNAME3 - $ERRORMSG6`
+MESSAGE=`echo $FORENAME3 $SURNAME3 - $"You need to set the group for this user."`
 show_status
 fi
 fi
@@ -185,12 +183,12 @@ if [ $FORENAME4'null' != null ]
 then
 if [ $SURNAME4'null' = null ]
 then
-MESSAGE=`echo $FORENAME4 - $ERRORMSG5`
+MESSAGE=`echo $FORENAME4 - $"Missing surname."`
 show_status
 fi
 if [ $GROUP4'null' = null ]
 then
-MESSAGE=`echo $FORENAME4 $SURNAME4 - $ERRORMSG6`
+MESSAGE=`echo $FORENAME4 $SURNAME4 - $"You need to set the group for this user."`
 show_status
 fi
 fi
@@ -199,12 +197,12 @@ if [ $FORENAME5'null' != null ]
 then
 if [ $SURNAME5'null' = null ]
 then
-MESSAGE=`echo $FORENAME5 - $ERRORMSG5`
+MESSAGE=`echo $FORENAME5 - $"Missing surname."`
 show_status
 fi
 if [ $GROUP5'null' = null ]
 then
-MESSAGE=`echo $FORENAME5 $SURNAME5 - $ERRORMSG6`
+MESSAGE=`echo $FORENAME5 $SURNAME5 - $"You need to set the group for this user."`
 show_status
 fi
 fi
@@ -213,12 +211,12 @@ if [ $FORENAME6'null' != null ]
 then
 if [ $SURNAME6'null' = null ]
 then
-MESSAGE=`echo $FORENAME6 - $ERRORMSG5`
+MESSAGE=`echo $FORENAME6 - $"Missing surname."`
 show_status
 fi
 if [ $GROUP6'null' = null ]
 then
-MESSAGE=`echo $FORENAME6 $SURNAME6 - $ERRORMSG6`
+MESSAGE=`echo $FORENAME6 $SURNAME6 - $"You need to set the group for this user."`
 show_status
 fi
 fi
@@ -227,12 +225,12 @@ if [ $FORENAME7'null' != null ]
 then
 if [ $SURNAME7'null' = null ]
 then
-MESSAGE=`echo $FORENAME7 - $ERRORMSG5`
+MESSAGE=`echo $FORENAME7 - $"Missing surname."`
 show_status
 fi
 if [ $GROUP7'null' = null ]
 then
-MESSAGE=`echo $FORENAME7 $SURNAME7 - $ERRORMSG6`
+MESSAGE=`echo $FORENAME7 $SURNAME7 - $"You need to set the group for this user."`
 show_status
 fi
 fi
@@ -241,12 +239,12 @@ if [ $FORENAME8'null' != null ]
 then
 if [ $SURNAME8'null' = null ]
 then
-MESSAGE=`echo $FORENAME8 - $ERRORMSG5`
+MESSAGE=`echo $FORENAME8 - $"Missing surname."`
 show_status
 fi
 if [ $GROUP8'null' = null ]
 then
-MESSAGE=`echo $FORENAME8 $SURNAME8 - $ERRORMSG6`
+MESSAGE=`echo $FORENAME8 $SURNAME8 - $"You need to set the group for this user."`
 show_status
 fi
 fi
@@ -255,12 +253,12 @@ if [ $FORENAME9'null' != null ]
 then
 if [ $SURNAME9'null' = null ]
 then
-MESSAGE=`echo $FORENAME9 - $ERRORMSG5`
+MESSAGE=`echo $FORENAME9 - $"Missing surname."`
 show_status
 fi
 if [ $GROUP9'null' = null ]
 then
-MESSAGE=`echo $FORENAME9 $SURNAME9 - $ERRORMSG6`
+MESSAGE=`echo $FORENAME9 $SURNAME9 - $"You need to set the group for this user."`
 show_status
 fi
 fi
@@ -272,7 +270,7 @@ if [ `grep -c -w $REMOTE_USER /opt/karoshi/web_controls/staff_restrictions.txt` 
 then
 sudo -H /opt/karoshi/web_controls/exec/record_staff_error $REMOTE_USER:$REMOTE_ADDR:$MYUSERNAME
 sleep $SLEEPTIME
-MESSAGE=$ERRORMSG10
+MESSAGE=$"Authentication failure."
 show_status
 fi
 fi
@@ -281,6 +279,6 @@ fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/staff/request_new_users.cgi | cut -d' ' -f1`
 #Change student password
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$REMOTE_USER:$FORENAME1:$SURNAME1:$GROUP1:$ADNO1:$FORENAME2:$SURNAME2:$GROUP2:$ADNO2:$FORENAME3:$SURNAME3:$GROUP3:$ADNO3:$FORENAME4:$SURNAME4:$GROUP4:$ADNO4:$FORENAME5:$SURNAME5:$GROUP5:$ADNO5:$FORENAME6:$SURNAME6:$GROUP6:$ADNO6:$FORENAME7:$SURNAME7:$GROUP7:$ADNO7:$FORENAME8:$SURNAME8:$GROUP8:$ADNO8:$FORENAME9:$SURNAME9:$GROUP9:$ADNO9:$FORENAME10:$SURNAME10:$GROUP10:$ADNO10:" | sudo -H /opt/karoshi/web_controls/exec/request_new_users
-MESSAGE=`echo $COMPLETEDMSG`
+MESSAGE=`echo $"The users you have requested have been added to the list."`
 show_status2
 exit

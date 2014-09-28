@@ -23,15 +23,11 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_location_controls ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_location_controls
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -42,7 +38,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<html><head><title>'$TITLE2'</title><META HTTP-EQUIV="refresh" CONTENT="300; URL=/cgi-bin/blank.cgi">'
+echo '<html><head><title>'$"Allow Room"'</title><META HTTP-EQUIV="refresh" CONTENT="300; URL=/cgi-bin/blank.cgi">'
 echo "<link rel="stylesheet" href="/css/$STYLESHEET"><script src=\"/all/stuHover.js\" type=\"text/javascript\"></script>"
 echo "</head><body><div id='pagecontainer'>"
 #########################
@@ -62,11 +58,11 @@ exit
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_staff
-echo '<form action="/cgi-bin/staff/dg_allow_location.cgi" method="post"><div id="actionbox"><b>'$TITLE2'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a><br><br>'
+echo '<form action="/cgi-bin/staff/dg_allow_location.cgi" method="post"><div id="actionbox"><b>'$"Allow Room"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will allow internet access for all student devices that are currently banned."'</span></a><br><br>'
 
 #Show currently banned locations
 echo '<table class="standard"><tbody>
-<tr><td style="width: 180px;">'$LOCATIONBANMSG'</td><td>'
+<tr><td style="width: 180px;">'$"Location"'</td><td>'
 echo '<select name="_LOCATION_">'
 if [ `ls -1 /opt/karoshi/internet_controls/banned_locations | wc -l` != 0 ]
 then

@@ -30,7 +30,7 @@ VIEWMODE=notset
 [ $VIEWMODE = staff ] && LOCATIONDATA=`echo "$2" | sed 's/123SPACE123/\\n/g'`
 
 MOBILE=$3
-[ $MOBILE'null' = null ] && MOBILE=no
+[ -z "$MOBILE" ] && MOBILE=no
 
 
 ICON1=/images/help/printer_spool.png
@@ -70,13 +70,10 @@ WIDTH1=130
 WIDTH2=50
 echo '<div id="mobileactionbox">'
 fi
-##########################
-#Language
-##########################
-LANGCHOICE=englishuk
+
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
-[ -f /opt/karoshi/serversetup/web_controls/language/$LANGCHOICE/printer/printers ] || LANGCHOICE=englishuk
-source /opt/karoshi/serversetup/web_controls/language/$LANGCHOICE/printer/printers
+TEXTDOMAIN=karoshi-server
+
 #Get status off print queues 5 array entries per printer
 PRINTER_INFO=( `lpc status all | sed 's/ /_/g' | grep -v printer_is` )
 PRINTER_INFO_COUNT=${#PRINTER_INFO[@]}
@@ -98,20 +95,20 @@ then
 echo '<tr><tr><td colspan=100% style="height: 10px;"></td></tr>
 <tr><td colspan=100%><p style="border-style: solid; border-color: black; border-radius: 5px; border-width:1px;">
 <table class="mobilestandard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
-echo '<td style="width: 60px;"><b>'$USERNAMEMSG'</b></td>'
-echo '<td style="width: 60px;"><b>'$TIMEMSG'</b></td>'
-echo '<td style="width: 60px;"><b>'$DATEMSG'</b></td>'
+echo '<td style="width: 60px;"><b>'$"Username"'</b></td>'
+echo '<td style="width: 60px;"><b>'$"Time"'</b></td>'
+echo '<td style="width: 60px;"><b>'$"Date"'</b></td>'
 echo '</tr>'
 else
 echo '<tr><td colspan=100% style="height: 10px;"></td></tr>
-<tr><td colspan=100% ><p style="border-style: solid; border-color: white; border-radius: 5px; border-width:1px;">
+<tr><td colspan=100% ><p style="border-style: solid; border-color: white; border-radius: 5px; border-width:3px;">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
-echo '<td colspan="2" style="width: 90px;"><b>'$JOB_COUNT'</b></td>'
-echo '<td style="width: 70px;"><b>'$JOB_ID_MSG'</b></td>'
-echo '<td style="width: 100px;"><b>'$USERNAMEMSG'</b></td>'
-echo '<td style="width: 90px;"><b>'$SIZEMSG' (KB)</b></td>'
-echo '<td style="width: 110px;"><b>'$TIMEMSG'</b></td>'
-echo '<td style="width: 90px;"><b>'$DATEMSG'</b></td>'
+echo '<td colspan="2" style="width: 90px;"><b>'$"Queue No."'</b></td>'
+echo '<td style="width: 70px;"><b>'$"Job ID"'</b></td>'
+echo '<td style="width: 100px;"><b>'$"Username"'</b></td>'
+echo '<td style="width: 90px;"><b>'$"Size"' (KB)</b></td>'
+echo '<td style="width: 110px;"><b>'$"Time"'</b></td>'
+echo '<td style="width: 90px;"><b>'$"Date"'</b></td>'
 echo '</tr>'
 fi
 QUEUE_COUNTER=0
@@ -209,7 +206,7 @@ then
 PPDNICKNAME=`grep ^*NickName: /etc/cups/ppd/$PRINTER_NAME.ppd | cut -d' ' -f2- | sed 's/"//g'`
 PPDSET=yes
 else
-PPDNICKNAME=$PPDINFOMSG2
+PPDNICKNAME=$"No PPD file set for this printer."
 PPDSET=no
 PRINTER_ICON=/images/help/printer_info_no_ppd.png
 fi
@@ -220,21 +217,21 @@ fi
 echo '<tr><td style="width: '$WIDTH1'px; height: 35px;"><b>'$PDNAME'</b></td>'
 if [ $VIEWMODE = admin ] && [ $MOBILE = no ]
 then
-echo '<td style="width: '$WIDTH2'px;"><a class="info" href="javascript:void(0)"><input name="_'$PRINTER_NAME'_setppd_" type="image" class="images" src="'$PRINTER_ICON'" value=""><span>'$PRINTER_STATE_MSG'<br>'$JOBS_MSG: $QUEUE_COUNT'<br>' $ACCEPTING_JOBS_MSG: $QUEUE_STATUS'<br>'$PRINTER_STATE_MSG : $PRINTING_STATUS'<br>'$PRINTER_DEST'<br>'$PPDNICKNAME'</span></a></td>'
+echo '<td style="width: '$WIDTH2'px;"><a class="info" href="javascript:void(0)"><input name="_'$PRINTER_NAME'_setppd_" type="image" class="images" src="'$PRINTER_ICON'" value=""><span>'$"Spool status"'<br>'$Jobs: $QUEUE_COUNT'<br>' $"Accepting jobs": $QUEUE_STATUS'<br>'$"Spool status" : $PRINTING_STATUS'<br>'$PRINTER_DEST'<br>'$PPDNICKNAME'</span></a></td>'
 fi
 
 #Show printer location
 PRINTER_LOCATIONS=`echo -e "$LOCATIONDATA" | grep -w $PRINTER_NAME | cut -d, -f1`
 if [ `echo $PRINTER_LOCATIONS'null' | sed 's/ //g'` = null ]
 then
-PRINTER_LOCATIONS="$PRINTERASSIGNEDMSG2"
+PRINTER_LOCATIONS=$"This printer has not been assigned to a location."
 PRINTER_LOCATION_ICON=$ICON10
 fi
 
 if [ $VIEWMODE = admin ] && [ $MOBILE = no ]
 then
 echo '
-<td style="width: '$WIDTH2'px;"><a class="info" href="javascript:void(0)"><input class="images" name="_'$PRINTER_NAME'_setlocation_" type="image" src="'$PRINTER_LOCATION_ICON'" value=""><span>'$PRINTERASSIGNEDMSG':<br>'$PRINTER_LOCATIONS'</span></a></td>'
+<td style="width: '$WIDTH2'px;"><a class="info" href="javascript:void(0)"><input class="images" name="_'$PRINTER_NAME'_setlocation_" type="image" src="'$PRINTER_LOCATION_ICON'" value=""><span>'$"Printer assigned to"':<br>'$PRINTER_LOCATIONS'</span></a></td>'
 fi
 if [ $PRINTER_STATUS = 1 ]
 then

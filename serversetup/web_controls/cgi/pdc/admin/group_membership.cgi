@@ -36,19 +36,17 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ########################
 #Language
 ########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/group_membership ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/group_membership
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #########################
 #Show page
 #########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE1'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Group Membership"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -109,7 +107,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -117,13 +115,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/group_membership.cgi | cut -d' ' -f1`
@@ -133,7 +131,7 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/group_membership.cgi | cut -d' ' -
 #Check to see that username is not blank
 if [ $USERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"You have not entered in a username."
 show_status
 fi
 #Check to see that the user exists
@@ -141,7 +139,7 @@ getent passwd "$USERNAME" 1>/dev/null 2>/dev/null
 USEREXISTSTATUS=`echo $?`
 if [ $USEREXISTSTATUS != 0 ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"This user does not exist."
 show_status
 fi
 
@@ -160,16 +158,16 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE1'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
-</div></div><div id="mobileactionbox">
+	<span>'$"Group Membership"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
+</div></div><div id="mobileactionbox"><b>'$USERNAME'</b><br>
 '
 else
 echo '<div id="'$DIV_ID'"><div id="titlebox">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr>
-<td style="vertical-align: top;"><b>'$TITLE1' - '$USERNAME'</b></td>
-<td style="vertical-align: top;"><a href="group_membership_fm.cgi"><input class="button" type="button" name="" value="'$CHOOSEUSERMSG'"></a></td>
+<td style="vertical-align: top;"><b>'$"Group Membership"' - '$USERNAME'</b></td>
+<td style="vertical-align: top;"><a href="group_membership_fm.cgi"><input class="button" type="button" name="" value="'$"Choose User"'"></a></td>
 </tr></tbody></table></div><div id="infobox">'
 fi
 

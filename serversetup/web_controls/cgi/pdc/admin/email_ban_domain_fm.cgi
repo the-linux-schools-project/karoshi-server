@@ -31,15 +31,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_banned_domains ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_banned_domains
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -51,7 +49,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE1'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Ban E-Mail Domain"'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -97,27 +95,27 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE1'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
-</div></div><div id="mobileactionbox"><a class="info" target="_top" href="email_view_banned_domains_fm.cgi"><img class="images" alt="" src="/images/submenus/email/email_ban_domain.png"><span>'$TITLE2'</span></a><br>
+	<span>'$"Ban E-Mail Domain"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
+</div></div><div id="mobileactionbox"><a class="info" target="_top" href="email_view_banned_domains_fm.cgi"><img class="images" alt="" src="/images/submenus/email/email_ban_domain.png"><span>'$"Banned E-mail Domains"'</span></a><br>
 '
 else
 echo '<div id="'$DIV_ID'">
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: middle; height: 20px;"><b>'$TITLE1'</b></td>
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: middle; height: 20px;"><b>'$"Ban E-Mail Domain"'</b></td>
 <td style="vertical-align: top;">
-<a href="email_view_banned_domains_fm.cgi"><input class="button" type="button" name="" value="'$VIEWBANDOMAINMSG'"></a>
+<a href="email_view_banned_domains_fm.cgi"><input class="button" type="button" name="" value="'$"Banned Domains"'"></a>
 </td></tr>
 </tbody></table><br>'
 fi
 
 echo '
 <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="width: 180px;">'$EMAILDOMAINMSG'</td><td><input tabindex= "1" name="_EMAILDOMAIN_" style="width: '$WIDTH1'px;" size="20" type="text"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'<br><br>'$HELPMSG2'</span></a></td></tr>
-<tr><td>'$REJECTMSG'</td><td><input type="radio" name="_DROPTYPE_" value="REJECT" checked></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$REJECTHELP'</span></a></td></tr>
-<tr><td>'$DISCARDMSG'</td><td><input type="radio" name="_DROPTYPE_" value="DISCARD"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$DISCARDHELP'</span></a></td></tr>
+<tbody><tr><td style="width: 180px;">'$"E-Mail Domain"'</td><td><input tabindex= "1" name="_EMAILDOMAIN_" style="width: '$WIDTH1'px;" size="20" type="text"></td><td>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the E-mail domain that you want to ban."'<br><br>'$"This will stop emails from being delivered from the domain."'</span></a></td></tr>
+<tr><td>'$"Reject"'</td><td><input type="radio" name="_DROPTYPE_" value="REJECT" checked></td><td>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This option will send a rejected message back to the sender."'</span></a></td></tr>
+<tr><td>'$"Discard"'</td><td><input type="radio" name="_DROPTYPE_" value="DISCARD"></td><td>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This option will silently drop messages without delivering them or notifying the sender."'</span></a></td></tr>
 </tbody></table><br>'
 
 
@@ -125,7 +123,7 @@ if [ $MOBILE = no ]
 then
 echo '</div><div id="submitbox">'
 fi
-echo '<input value="'$SUBMITMSG'" class="button" type="submit">
+echo '<input value="'$"Submit"'" class="button" type="submit">
 </div></form></div></body></html>
 '
 exit

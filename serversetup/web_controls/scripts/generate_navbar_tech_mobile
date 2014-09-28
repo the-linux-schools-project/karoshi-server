@@ -22,14 +22,17 @@
 
 #Website: http://www.karoshi.org.uk
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
+locale 1>/dev/null
+TEXTDOMAIN=karoshi-server
+
 source /opt/karoshi/web_controls/version
+source /opt/karoshi/server_network/domain_information/domain_name
+
 echo '
 <table style="table-layout:fixed" class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
 <td style="vertical-align: top; text-align: center;">
-<img src="/images/mobile_logo.png" alt="logo" align="top"></td><td><font style="font-weight: bold;" size="+1">Web Management '$SCHOOL_NAME'</font><br><small><small>
-'$VERSIONMSG' : '$VERSION'
+<img src="/images/mobile_logo.png" alt="logo" align="top"></td><td><font style="font-weight: bold;" size="+1">Web Management '$SHORTNAME'</font><br><small><small>
+'$"Version"' : '$VERSION'
 </small></small></td></tr></tbody></table>
 '
 exit

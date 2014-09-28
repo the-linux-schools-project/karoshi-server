@@ -28,7 +28,7 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 DATE_INFO=`date +%F`
@@ -37,10 +37,6 @@ MONTH=`echo $DATE_INFO | cut -d- -f2`
 YEAR=`echo $DATE_INFO | cut -d- -f1`
 
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 ############################
 #Show page
 ############################
@@ -49,7 +45,7 @@ echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
-  <title>'$TITLE4'</title><META HTTP-EQUIV="refresh" CONTENT="300; URL=/cgi-bin/blank.cgi">
+  <title>'$"Student Internet Logs"'</title><META HTTP-EQUIV="refresh" CONTENT="300; URL=/cgi-bin/blank.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script type="text/javascript" src="/all/js/jquery.js"></script>
 <script type="text/javascript" src="/all/js/script.js"></script>
@@ -99,21 +95,21 @@ then
 
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$INTERNETMENUMSG'</a>
+	<span>'$"User Internet Logs"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Internet Menu"'</a>
 </div></div><div id="mobileactionbox">
 '
 else
-echo '<div id="'$DIV_ID'"><b>'$TITLE4'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
+echo '<div id="'$DIV_ID'"><b>'$"Student Internet Logs"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Internet logs are updated every three minutes."'</span></a>
 <br><br>'
 fi
 
 if [ $MOBILE = yes ]
 then
 echo '<div id="suggestions"></div>
-'$USERNAMEMSG'<br>
+'$"Username"'<br>
 <input tabindex= "3" style="width: 200px;" name="_USERNAME_" AUTOCOMPLETE = "off" size="14" type="text" id="inputString" onkeyup="lookup(this.value);"><br>
-'$WEBLOGDATE'<br>'
+'$"Log Date"'<br>'
 
 echo "
 <!-- calendar attaches to existing form element -->
@@ -132,8 +128,8 @@ echo "
 else
 echo '<div id="suggestions"></div><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody>
-<tr><td style="width: 180px;">'$USERNAMEMSG'</td><td><input tabindex= "3" style="width: 200px;" name="_USERNAME_" AUTOCOMPLETE = "off" size="14" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$STUDENTHELPMSG1'</span></a></td></tr>'
-echo "<tr><td>$WEBLOGDATE</td><td>
+<tr><td style="width: 180px;">'$"Username"'</td><td><input tabindex= "3" style="width: 200px;" name="_USERNAME_" AUTOCOMPLETE = "off" size="14" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the student that you want to check the internet logs for."'</span></a></td></tr>'
+echo "<tr><td>$"Log Date"</td><td>
 <!-- calendar attaches to existing form element -->
 	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxsize=10 name=\"_DATE_\" /></td><td style=\"vertical-align: top; text-align: center;\">
 	<script language=\"JavaScript\">
@@ -152,5 +148,5 @@ then
 echo '</div><div id="submitbox">'
 fi
 
-echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></div></form></div></body></html>'
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div></form></div></body></html>'
 exit

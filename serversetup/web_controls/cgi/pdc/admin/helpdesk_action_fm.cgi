@@ -32,13 +32,11 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/helpdesk ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/helpdesk
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
@@ -48,7 +46,7 @@ echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><title>'$TITLE'</title><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><title>'$"Help Desk"'</title><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
@@ -106,7 +104,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 
@@ -116,13 +114,13 @@ fi
 #Check to see that JOBNAME is not blank
 if [ $JOBNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG8
+MESSAGE=$"The job name cannot be blank."
 show_status
 fi
 
 if [ ! -f /opt/karoshi/helpdesk/todo/$JOBNAME ]
 then
-MESSAGE=$ERRORMSG9
+MESSAGE=$"This job does not exist."
 show_status
 fi
 
@@ -156,11 +154,11 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE' - '$TITLE3'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+	<span>'$"Help Desk"' - '$"Action Request"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">'
 else
-echo '<b>'$TITLE' - '$TITLE3'</b><br><br>'
+echo '<b>'$"Help Desk"' - '$"Action Request"'</b><br><br>'
 fi
 
 
@@ -173,16 +171,16 @@ source /opt/karoshi/helpdesk/todo/$JOBNAME
 echo '<input name="_JOBNAME_" value="'$JOBNAME'" type="hidden">
 <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody>
-<tr><td style="width: '$WIDTH1'px;">'$JOBTITLEMMSG'</td><td>'$JOBTITLE'</td></tr>
-<tr><td>'$NAMEMSG'</td><td>'$NAME'</td></tr>
-<tr><td>'$LOCATIONMSG'</td><td>'$LOCATION'</td></tr>
-<tr><td>'$DEPARTMENTMSG'</td><td>'$DEPARTMENT'</td></tr>
-<tr><td>'$CATEGORYMSG'</td><td>'$CATEGORY'</td></tr>
-<tr><td>'$USERPROBLEMMSG'</td><td>'$REQUEST'</td></tr>
-<tr><td>'$UPDATEMSG'</td><td><input tabindex= "1" name="_ACTION_"  checked="checked" value="update" type="radio"></td></tr>
-<tr><td>'$DELETEMSG'</td><td><input tabindex= "2" name="_ACTION_" value="delete" type="radio"></td></tr>
-<tr><td>'$COMPLETEDMSG'</td><td><input tabindex= "3" name="_ACTION_" value="completed" type="radio"></td></tr>
-<tr><td>'$ASSIGNEDMSG'</td><td>'
+<tr><td style="width: '$WIDTH1'px;">'$"Request Summary"'</td><td>'$JOBTITLE'</td></tr>
+<tr><td>'$"Name"'</td><td>'$NAME'</td></tr>
+<tr><td>'$"Location"'</td><td>'$LOCATION'</td></tr>
+<tr><td>'$"Department"'</td><td>'$DEPARTMENT'</td></tr>
+<tr><td>'$"Category"'</td><td>'$CATEGORY'</td></tr>
+<tr><td>'$"Extended Details"'</td><td>'$REQUEST'</td></tr>
+<tr><td>'$"Update"'</td><td><input tabindex= "1" name="_ACTION_"  checked="checked" value="update" type="radio"></td></tr>
+<tr><td>'$"Delete"'</td><td><input tabindex= "2" name="_ACTION_" value="delete" type="radio"></td></tr>
+<tr><td>'$"Completed"'</td><td><input tabindex= "3" name="_ACTION_" value="completed" type="radio"></td></tr>
+<tr><td>'$"Assigned to"'</td><td>'
 #Show list of technical staff
 echo '<select tabindex= "4" style="width: '$WIDTH2'px;" name="_ASSIGNED_"><option>'$ASSIGNED'</option>'
 cat /opt/karoshi/web_controls/web_access_admin | cut -d: -f1 | sed 's/^/<option>/g' | sed 's/$/<\/option>/g'
@@ -190,22 +188,22 @@ cat /opt/karoshi/web_controls/web_access_tech | cut -d: -f1 | sed 's/^/<option>/
 echo '<option value=""></option></select>'
 
 echo '</td></tr>
-<tr><td>'$ASSIGNEDMSG3'</td><td><input tabindex= "5" name="_ASSIGNED2_" style="width: '$WIDTH2'px;" size="20" type="text"></td></tr>
-<tr><td>'$PRIORITYMSG'</td><td>'
+<tr><td>'$"Alternative assign"'</td><td><input tabindex= "5" name="_ASSIGNED2_" style="width: '$WIDTH2'px;" size="20" type="text"></td></tr>
+<tr><td>'$"Priority"'</td><td>'
 
 #Show priorities
 echo '
 <select tabindex= "6" style="width: '$WIDTH2'px;" name="_PRIORITY_">
 <option value="'$PRIORITY'">'$PRIORITY'</option>
-<option value="$PRIORITY1">'$PRIORITY1'</option>
-<option value="$PRIORITY2">'$PRIORITY2'</option>
-<option value="$PRIORITY3">'$PRIORITY3'</option>
-<option value="$PRIORITY4">'$PRIORITY4'</option>
+<option value="'$"Urgent"'">'$"Urgent"'</option>
+<option value="'$"High"'">'$"High"'</option>
+<option value="'$"Medium"'">'$"Medium"'</option>
+<option value="'$"Low"'">'$"Low"'</option>
 <option value=""></option></select>
 '
 
 echo '</td></tr>
-<tr><td>'$FEEDBACKMSG'</td><td><textarea style="width: '$WIDTH3'px;" tabindex= "7" cols="'$COLS'" rows="'$ROWS'" name="_FEEDBACK_">'$FEEDBACK'</textarea></td></tr>
+<tr><td>'$"Feedback"'</td><td><textarea style="width: '$WIDTH3'px;" tabindex= "7" cols="'$COLS'" rows="'$ROWS'" name="_FEEDBACK_">'$FEEDBACK'</textarea></td></tr>
 </tbody></table>'
 
 if [ $MOBILE = no ]
@@ -213,7 +211,7 @@ then
 echo '</div><div id="submitbox">'
 fi
 
-echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div></form></div></body></html>'
 exit
 

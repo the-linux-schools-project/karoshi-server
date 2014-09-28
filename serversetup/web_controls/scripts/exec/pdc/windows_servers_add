@@ -51,14 +51,14 @@ then
 echo `date`: windows_servers_add - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
-SERVERNAME=`echo $* | cut -s -d: -f4`
-PASSWORD=`echo $* | cut -s -d: -f5`
-TCPIPNUMBER=`echo $* | cut -s -d: -f6`
-ADMINUSER=`echo $* | cut -s -d: -f7`
-ROLE=`echo $* | cut -s -d: -f8`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\+%-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\+%-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\+%-' | cut -s -d: -f3`
+SERVERNAME=`echo $* | tr -cd 'A-Za-z0-9\._:\+%-' | cut -s -d: -f4`
+PASSWORD=`echo $* | tr -cd 'A-Za-z0-9\._:\+%-' | cut -s -d: -f5`
+TCPIPNUMBER=`echo $* | tr -cd 'A-Za-z0-9\._:\+%-' | cut -s -d: -f6`
+ADMINUSER=`echo $* | tr -cd 'A-Za-z0-9\._:\+%-' | cut -s -d: -f7`
+ROLE=`echo $* | tr -cd 'A-Za-z0-9\._:\+%-' | cut -s -d: -f8`
 ########################
 #Check data
 ########################
@@ -100,12 +100,10 @@ fi
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/windows_servers_add ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/windows_servers_add
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 ############################
 #Check connection details

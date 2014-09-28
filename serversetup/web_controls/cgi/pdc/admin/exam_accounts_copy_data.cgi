@@ -32,19 +32,17 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/exam_accounts_copy_data ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/exam_accounts_copy_data
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE2'</title><meta http-equiv="REFRESH" content="0; URL=/cgi-bin/admin/exam_accounts_upload_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Exam Accounts - Copy Data"'</title><meta http-equiv="REFRESH" content="0; URL=/cgi-bin/admin/exam_accounts_upload_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -119,7 +117,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -127,13 +125,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -144,14 +142,14 @@ if [ $EXAMSTART'null' = null ] || [ $EXAMEND'null' = null ]
 then
 if [ $ALL'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"You must either select ALL or a range of exam accounts."
 show_status
 fi
 fi
 #Check that data is numbers
 if [ `echo $EXAMSTART | grep -c [^0-9.' ']` != 0 ] || [ `echo $EXAMEND | grep -c [^0-9.' ']` != 0 ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"You must enter numbers for the exam accounts."
 show_status
 fi
 #Check that numbers are within range of exam accounts
@@ -159,13 +157,13 @@ if [ $ALL'check' != all'check' ]
 then
 if [ $EXAMSTART -gt $EXAMEND ] || [ $EXAMSTART -le 0 ]
 then
-MESSAGE=`echo $ERRORMSG6 $ERRORMSG7':' $EXAMACCOUNTS`
+MESSAGE=`echo $"The input is out of range." $"Total number of exam accounts"':' $EXAMACCOUNTS`
 show_status
 fi
 fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><div class="sectiontitle">'$TITLE2'</div><br>'
+echo '<div id="actionbox"><div class="sectiontitle">'$"Exam Accounts - Copy Data"'</div><br>'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/exam_accounts_copy_data.cgi | cut -d' ' -f1`
 #Copy data to exam accounts
 
@@ -179,7 +177,7 @@ ZIPFILECOUNT=${#ZIPFILES[@]}
 COUNTER=0
 while [ $COUNTER -lt $ZIPFILECOUNT ]
 do
-echo "<b>"$EXTRACTMSG ${ZIPFILES[$COUNTER]}"</b><br><br>"
+echo '<b>'$"Extracting"' '${ZIPFILES[$COUNTER]}'</b><br><br>'
 cd /var/www/karoshi/exam_upload 
 [ -f ${ZIPFILES[$COUNTER]} ] && unzip ${ZIPFILES[$COUNTER]} 1>/dev/null
 [ -f ${ZIPFILES[$COUNTER]} ] && rm -f ${ZIPFILES[$COUNTER]}
@@ -193,7 +191,7 @@ TARFILECOUNT=${#TARFILES[@]}
 COUNTER=0
 while [ $COUNTER -lt $TARFILECOUNT ]
 do
-echo "<b>"$EXTRACTMSG ${TARFILES[$COUNTER]}"</b><br><br>"
+echo '<b>'$"Extracting"' '${TARFILES[$COUNTER]}'</b><br><br>'
 cd /var/www/karoshi/exam_upload 
 [ -f ${TARFILES[$COUNTER]} ] && tar xzf ${TARFILES[$COUNTER]}
 [ -f ${TARFILES[$COUNTER]} ] && rm -f ${TARFILES[$COUNTER]}
@@ -206,12 +204,12 @@ if [ $EXEC_STATUS = 0 ]
 then
 if [ $ALL'check' = all'check' ]
 then
-MESSAGE=`echo $COMPLETEDMSG1`
+MESSAGE=$"The data has been copied to all exam accounts."
 else
-MESSAGE=`echo $COMPLETEDMSG2: exam$EXAMSTART - exam$EXAMEND`
+MESSAGE="The data has been copied to the following exam accounts": exam$EXAMSTART - exam$EXAMEND
 fi
 else
-MESSAGE=`echo $ERRORMSG5`
+MESSAGE=$"The data was not copied."
 fi
 show_status
 exit

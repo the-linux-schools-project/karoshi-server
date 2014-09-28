@@ -37,19 +37,17 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/apply_ssl_certificate ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/apply_ssl_certificate
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE2'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Apply Self Signed SSL Certificate"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -226,7 +224,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -234,13 +232,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -249,71 +247,71 @@ fi
 #Check to see that SERVER is not blank
 if [ $SERVER'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The server option cannot be blank."
 show_status
 fi
 
 #Check to see that COUNTRYCODE is not blank
 if [ $COUNTRYCODE'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The country code option cannot be blank."
 show_status
 fi
 #Check to see that STATE is not blank
 if [ $STATE'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The state option cannot be blank."
 show_status
 fi
 #Check to see that LOCALITY is not blank
 if [ $LOCALITY'null' = null ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The locality option cannot be blank."
 show_status
 fi
 #Check to see that INSTITUTENAME is not blank
 if [ $INSTITUTENAME'null' = null ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"The institute name option cannot be blank."
 show_status
 fi
 #Check to see that DEPARTMENT is not blank
 if [ $DEPARTMENT'null' = null ]
 then
-MESSAGE=$ERRORMSG6
+MESSAGE=$"The department name cannot be blank."
 show_status
 fi
 #Check to see that COMMONNAME is not blank
 if [ $COMMONNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG7
+MESSAGE=$"The common name option cannot be blank."
 show_status
 fi
 #Check to see that EMAIL is not blank
 if [ $EMAIL'null' = null ]
 then
-MESSAGE=$ERRORMSG8
+MESSAGE=$"The e-mail option cannot be blank."
 show_status
 fi
 
 #Check to see that WEBCERT is not blank
 if [ $WEBCERT'null' = null ]
 then
-MESSAGE=$ERRORMSG14
+MESSAGE=$"There was an error with the certificate option type."
 show_status
 fi
 
 #Check to see that EMAILCERT is not blank
 if [ $EMAILCERT'null' = null ]
 then
-MESSAGE=$ERRORMSG14
+MESSAGE=$"There was an error with the certificate option type."
 show_status
 fi
 
 #Check to see that CERTTYPE is not blank
 if [ $CERTTYPE'null' = null ]
 then
-MESSAGE=$ERRORMSG14
+MESSAGE=$"There was an error with the certificate option type."
 show_status
 fi
 
@@ -330,23 +328,23 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/apply_ssl_certificate2.cgi | cut -
 echo '<div id="actionbox">'
 if [ $WEBCERT = yes ]
 then
-echo "<b>"$SERVER - $WEBCERTMSG"</b><br><br>"
+echo "<b>"$SERVER - $"Web Certificate""</b><br><br>"
 else
-echo "<b>"$SERVER - $EMAILCERTMSG"</b><br><br>"
+echo "<b>"$SERVER - $"E-mail Certificate""</b><br><br>"
 fi
 
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER:$COUNTRYCODE:$STATE:$LOCALITY:$INSTITUTENAME:$DEPARTMENT:$COMMONNAME:$EMAIL:$EMAILCERT:$WEBCERT:$CERTTYPE" | sudo -H /opt/karoshi/web_controls/exec/apply_ssl_certificate
 STATUS=`echo $?`
 if [ $STATUS = 101 ]
 then
-MESSAGE=$ERRORMSG9
+MESSAGE=$"There was a problem applying the certificate. Please check the Karoshi Web Management logs."
 show_status
 fi
 if [ $STATUS = 102 ]
 then
-MESSAGE=$SSHWARNMSG
+MESSAGE=$"SSH is not enabled for this server."
 show_status
 fi
-MESSAGE=$COMPLETEDMSG
+MESSAGE=$"The SSL Certificate has been applied."
 show_status
 exit

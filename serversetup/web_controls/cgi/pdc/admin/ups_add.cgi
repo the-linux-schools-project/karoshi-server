@@ -27,13 +27,11 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/ups ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/ups
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
@@ -103,7 +101,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -111,13 +109,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -126,39 +124,39 @@ fi
 #Check to see that UPSDRIVER is not blank
 if [ $UPSDRIVER'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The UPS driver cannot be blank."
 show_status
 fi
 #Check to see that UPSPORT is not blank
 if [ $UPSPORT'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The UPS port cannot be blank."
 show_status
 fi
 #Check to see that SERVERNAME is not blank
 if [ $SERVERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The server cannot be blank."
 show_status
 fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><div class="sectiontitle">'$TITLE1'</div><br>'$UPSMODEL $SERVER.''
+echo '<div id="actionbox"><div class="sectiontitle">'$"Add a UPS"'</div><br>'$UPSMODEL $SERVER.''
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ups_add.cgi | cut -d' ' -f1`
 #Add UPS
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$UPSDRIVER:$UPSPORT:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/ups_add
 EXEC_STATUS=`echo $?`
-MESSAGE=`echo $SERVER - $COMPLETEDMSG`
+MESSAGE=`echo $SERVER - $"The UPS has been added."`
 if [ $EXEC_STATUS = 101 ]
 then
-MESSAGE=`echo $PROBLEMMSG $LOGMSG`
+MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`
 show_status
 fi
 
 if [ $EXEC_STATUS = 105 ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The UPS could not be contacted on that port."
 show_status
 fi
 exit

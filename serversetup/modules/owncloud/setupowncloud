@@ -63,13 +63,12 @@ echo `date`: setupowncloud - Blank alias"<br>"
 exit 101
 fi
 
-LANGCHOICE=englishuk
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/owncloud/setupowncloud ] || LANGCHOICE=englishuk
-source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/owncloud/setupowncloud
-
 #Ensure that apache and mysql are running on boot
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/server_network/domain_information/domain_name
+
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+TEXTDOMAIN=karoshi-server
 
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mysql
@@ -83,7 +82,7 @@ fi
 
 #Extract archive
 
-echo '<li>'$EXTRACTOWNCLOUDMSG'</li><br>'
+echo '<li>'$"Extracting Owncloud"'</li><br>'
 [ -d /var/www/html/owncloud ] && rm -f -R /var/www/html/owncloud
 tar -xzf /opt/karoshi/serversetup/modules/owncloud/owncloud.tar.gz --directory /var/www/html
 
@@ -153,7 +152,7 @@ sleep 1
 #####################
 #Create owncloud mysql password for the new database
 #####################
-echo '<li>'$CREATEDBMSG'</li><br>'
+echo '<li>'$"Create mysql database for Owncloud"'</li><br>'
 RANGE=61
 COUNTER=1
 while [ $COUNTER -lt 16 ]
@@ -243,7 +242,7 @@ then
 LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'443'	'-'#'apacherule /etc/shorewall/rules
 echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
-echo '<li>'$RESTARTSWMSG'</li><br>'
+echo '<li>'$"Restarting shorewall"'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
@@ -251,9 +250,9 @@ fi
 ###########################
 #Show completed message
 ###########################
-echo '<br>'$ACCESSMSG - '<a href="https://'$ALIAS.$REALM'/owncloud" target="_blank">'$ALIAS.$REALM'/owncloud</a>'
-echo '<br>'$ACCESSMSG2:admin - $PASSWORDMSG: admin
-echo '<br><p style="font-weight:bold; font-size:20px;">'$WARNINGMSG1'</p><br>'
+echo '<br>'$"Owncloud has been installed and can be accessed from" - '<a href="https://'$ALIAS.$REALM'/owncloud" target="_blank">'$ALIAS.$REALM'/owncloud</a>'
+echo '<br>'$"username":admin - $"password": admin
+echo '<br><p style="font-weight:bold; font-size:20px;">'$"Please change the admin password immediately."'</p><br>'
 exit
 
 

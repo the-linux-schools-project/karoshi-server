@@ -29,16 +29,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dhcp_cgi
 then
-echo `date`: dhcp - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dhcp - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/dhcp_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dhcp.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $dhcp_cgi'check' ]
 then
-echo `date`: dhcp - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dhcp - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -53,10 +53,10 @@ fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: dhcp - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dhcp - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
@@ -77,99 +77,97 @@ NEWMAXLEASETIME=`echo "$DATA" | cut -s -d: -f12`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
 then
-echo `date`: dhcp - Not called by dhcp.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dhcp - Not called by dhcp.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: dhcp - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dhcp - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: dhcp - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dhcp - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $NEWDOMAINNAMESERVER'null' = null ]
+if [ -z "$NEWDOMAINNAMESERVER" ]
 then
-echo `date`: dhcp - Blank domain server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dhcp - Blank domain server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $NEWNETBIOSSERVER'null' = null ]
+if [ -z "$NEWNETBIOSSERVER" ]
 then
-echo `date`: dhcp - Blank netbios server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dhcp - Blank netbios server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $NEWROUTER'null' = null ]
+if [ -z "$NEWROUTER" ]
 then
-echo `date`: dhcp - Blank router by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dhcp - Blank router by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $NEWSUBNET'null' = null ]
+if [ -z "$NEWSUBNET" ]
 then
-echo `date`: dhcp - Blank subnet by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dhcp - Blank subnet by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $NEWSUBNETMASK'null' = null ]
+if [ -z "$NEWSUBNETMASK" ]
 then
-echo `date`: dhcp - Blank subnet mask by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dhcp - Blank subnet mask by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $NEWSTARTADDRESS'null' = null ]
+if [ -z "$NEWSTARTADDRESS" ]
 then
-echo `date`: dhcp - Blank range 1 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dhcp - Blank range 1 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $NEWENDADDRESS'null' = null ]
+if [ -z "$NEWENDADDRESS" ]
 then
 echo `date`: dhcp - Blank range 2 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-if [ $NEWDEFAULTLEASETIME'null' = null ]
+if [ -z "$NEWDEFAULTLEASETIME" ]
 then
-echo `date`: dhcp - Blank default lease time by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dhcp - Blank default lease time by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $NEWMAXLEASETIME'null' = null ]
+if [ -z "$NEWMAXLEASETIME" ]
 then
-echo `date`: dhcp - Blank max lease time by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dhcp - Blank max lease time by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/dhcp ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/dhcp
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 #########################
 #Write data to /opt/karoshi/server_network/dhcp/dhcp_settings
 #########################
 if [ ! -d /opt/karoshi/server_network/dhcp ]
 then
-mkdir -p /opt/karoshi/server_network/dhcp
-chown root.apache_karoshi /opt/karoshi/server_network/dhcp
-chmod 0750 /opt/karoshi/server_network/dhcp
+	mkdir -p /opt/karoshi/server_network/dhcp
+	chown root.apache_karoshi /opt/karoshi/server_network/dhcp
+	chmod 0750 /opt/karoshi/server_network/dhcp
 fi
 
 if [ ! -f /opt/karoshi/server_network/dhcp/dhcp_settings ]
 then
-touch /opt/karoshi/server_network/dhcp/dhcp_settings
-chown root.apache_karoshi /opt/karoshi/server_network/dhcp/dhcp_settings
-chmod 0640 /opt/karoshi/server_network/dhcp/dhcp_settings
+	touch /opt/karoshi/server_network/dhcp/dhcp_settings
+	chown root.apache_karoshi /opt/karoshi/server_network/dhcp/dhcp_settings
+	chmod 0640 /opt/karoshi/server_network/dhcp/dhcp_settings
 fi
 
 if [ ! -f /opt/karoshi/server_network/dhcp/dhcp_extra_settings ]
 then
-touch /opt/karoshi/server_network/dhcp/dhcp_extra_settings
-chown root.apache_karoshi /opt/karoshi/server_network/dhcp/dhcp_extra_settings
-chmod 0640 /opt/karoshi/server_network/dhcp/dhcp_extra_settings
+	touch /opt/karoshi/server_network/dhcp/dhcp_extra_settings
+	chown root.apache_karoshi /opt/karoshi/server_network/dhcp/dhcp_extra_settings
+	chmod 0640 /opt/karoshi/server_network/dhcp/dhcp_extra_settings
 fi
 
 echo DOMAINNAMESERVER=$NEWDOMAINNAMESERVER > /opt/karoshi/server_network/dhcp/dhcp_settings
@@ -213,12 +211,12 @@ source /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/software
 #Restart DHCP
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_stop 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_start 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-[ `echo $?` != 0 ] && exit 101
+[ $? != 0 ] && exit 101
 #Start DHCP on boot
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/dhcp
 
 #Add role information
-echo "DHCP Server<br>" > /opt/karoshi/server_network/servers/`hostname-fqdn`/dhcpserver
+echo $"DHCP Server""<br>" > /opt/karoshi/server_network/servers/`hostname-fqdn`/dhcpserver
 echo `hostname-fqdn` > /opt/karoshi/server_network/dhcpserver
 sed -i 's/DHCPCTRL=no/DHCPCTRL=yes/g' /opt/karoshi/server_network/menusettings
 

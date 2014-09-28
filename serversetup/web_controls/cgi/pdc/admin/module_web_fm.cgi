@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/web/setupweb ] || LANGCHOICE=englishuk
-source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/web/setupweb
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
@@ -48,7 +46,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Setup Web Server"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -93,24 +91,24 @@ exit
 #Check to see that servername is not blank
 if [ $SERVERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The server cannot be blank."
 show_status
 fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/module_web.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE' - '$SERVERNAME'</div><br>
+echo '<form action="/cgi-bin/admin/module_web.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$"Setup Web Server"' - '$SERVERNAME'</div><br>
 <input name="___SERVERNAME___" value="'$SERVERNAME'" type="hidden">
-<b>'$DESCRIPTIONMSG'</b><br><br>
-'$HELPMSG1'<br><br>
-<b>'$PARAMETERSMSG'</b><br><br>
+<b>'$"Description"'</b><br><br>
+'$"This will ensure that apache and mysql are running on the server and that the correct ports are open. It will also create a mysql database of your choice to use with your website. Leave these fields blank if you do not require a database to be created."'<br><br>
+<b>'$"Parameters"'</b><br><br>
   <table class="standard" style="text-align: left; height: 15px;" border="0" cellpadding="2" cellspacing="0">
-    <tbody><tr><td style="width: 180px;">'$MYSQLDBMSG'</td><td><input tabindex= "1" name="___MYSQLDB___" size="20" type="text" style="width: 200px;"></td>
-<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$DBNAMEMSG'</span></a></td></tr>
-<tr><td style="width: 180px;">'$MYSQLUMSG'</td><td><input tabindex= "1" name="___MYSQLUSER___" size="20" type="text" style="width: 200px;"></td>
-<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$DBUSERNAMEMSG'</span></a></td></tr>
-<tr><td style="width: 180px;">'$MYSQLPASSMSG'</td><td><input tabindex= "1" name="___MYSQLPASS___" size="20" type="password" style="width: 200px;"></td>
-<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$DBPASSMSG'</span></a></td></tr>
-</tbody></table><br><br></div><div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit">  <input value="'$RESETMSG'" class="button" type="reset"></div></form></div></body></html>'
+    <tbody><tr><td style="width: 180px;">'$"Mysql database"'</td><td><input tabindex= "1" name="___MYSQLDB___" size="20" type="text" style="width: 200px;"></td>
+<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the database that you want to use with your website."'</span></a></td></tr>
+<tr><td style="width: 180px;">'$"Mysql Username"'</td><td><input tabindex= "1" name="___MYSQLUSER___" size="20" type="text" style="width: 200px;"></td>
+<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username for the database that you want to use with your website."'</span></a></td></tr>
+<tr><td style="width: 180px;">'$"Mysql Password"'</td><td><input tabindex= "1" name="___MYSQLPASS___" size="20" type="password" style="width: 200px;"></td>
+<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the password for the database."'</span></a></td></tr>
+</tbody></table><br><br></div><div id="submitbox"><input value="'$"Submit"'" class="button" type="submit">  <input value="'$"Reset"'" class="button" type="reset"></div></form></div></body></html>'
 exit

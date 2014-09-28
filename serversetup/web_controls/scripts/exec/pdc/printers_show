@@ -93,10 +93,6 @@ then
 echo `date`: printers_show - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printers_assign ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printers_assign
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 ####################
 #Show the printers
 ####################
@@ -110,17 +106,17 @@ PRINTERSARRAY=( `lpstat -a | cut -d" " -f1 | sed "s/Paused//g"` )
 ARRAYCOUNT=${#PRINTERSARRAY[@]}
 if [ $ARRAYCOUNT = 0 ]
 then
-echo '$ERRORMSG3'\<br\>
+echo '$"No Printers are available."'\<br\>
 exit 101
 fi
-echo \<table class=\"standard\" style=\"text-align: left\;\"\>\<tbody\>\<tr\>\<td style=\"width: 200px\;\"\>\<b\>'$PRINTERMSG':\</b\>\</td\>\<td\>'$SELECTPRINTERMSG'\</td\>\<td\>\</tr\>
+echo \<table class=\"standard\" style=\"text-align: left\;\"\>\<tbody\>\<tr\>\<td style=\"width: 200px\;\"\>\<b\>'$"Printer"':\</b\>\</td\>\<td\>'$"Select"'\</td\>\<td\>\</tr\>
 COUNTER=0
 while [ $COUNTER -lt $ARRAYCOUNT ]
 do
 echo \<tr\>\<td\>${PRINTERSARRAY[$COUNTER]}\</td\>\<td\>\<input name=\"_PRINTER_\" value=\"${PRINTERSARRAY[$COUNTER]}\"\ type=\"checkbox\"\>\</td\>\</tr\>
 let COUNTER=$COUNTER+1
 done
-echo \</tbody\>\</table\>\<input value=\"'$SUBMITMSG'\" type=\"submit\"\> \<input value=\"'$RESETMSG'\" type=\"reset\"\>
+echo \</tbody\>\</table\>\<input value=\"'$"Submit"'\" type=\"submit\"\> \<input value=\"'$"Reset"'\" type=\"reset\"\>
 fi
 '
 STATUS=`echo $?`
@@ -131,16 +127,16 @@ PRINTERSARRAY=( `lpstat -a | cut -d' ' -f1 | sed "s/Paused//g"` )
 ARRAYCOUNT=${#PRINTERSARRAY[@]}
 if [ $ARRAYCOUNT = 0 ]
 then
-echo $ERRORMSG3\<br\>
+echo $"No Printers are available."\<br\>
 exit 101
 fi
-echo \<table class=\"standard\" style=\"text-align: left\;\"\>\<tbody\>\<tr\>\<td style=\"width: 200px\;\"\>\<b\>$PRINTERMSG:\</b\>\</td\>\<td\>$SELECTPRINTERMSG\</td\>\<td\>\</tr\>
+echo \<table class=\"standard\" style=\"text-align: left\;\"\>\<tbody\>\<tr\>\<td style=\"width: 200px\;\"\>\<b\>$"Printer":\</b\>\</td\>\<td\>$"Select"\</td\>\<td\>\</tr\>
 COUNTER=0
 while [ $COUNTER -lt $ARRAYCOUNT ]
 do
 echo \<tr\>\<td\>${PRINTERSARRAY[$COUNTER]}\</td\>\<td\>\<input name=\"_PRINTER_\" value=\"${PRINTERSARRAY[$COUNTER]}\"\ type=\"checkbox\"\>\</td\>\</tr\>
 let COUNTER=$COUNTER+1
 done
-echo \</tbody\>\</table\>\<input value=\"$SUBMITMSG\" type=\"submit\"\> \<input value=\"$RESETMSG\" type=\"reset\"\>
+echo '</tbody><table><input value='$"Submit"' type="submit"> <input value='$"Reset"' type="reset">'
 fi
 exit

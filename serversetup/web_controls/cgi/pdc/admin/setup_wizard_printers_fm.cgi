@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/setup_wizard ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/setup_wizard
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -46,7 +44,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Setup Wizard"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head>
 <body onLoad="start()"><div id="pagecontainer">'
 
 #Detect mobile browser
@@ -68,29 +66,29 @@ echo '<div id="'$DIV_ID'">'
 if [ $MOBILE = yes ]
 then
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
-<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$TITLE'</b></a></td></tr></tbody></table>'
+<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
+<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Setup Wizard"'</b></a></td></tr></tbody></table>'
 else
-echo '<b>'$SETUPPRINTERSMSG'</b><br><br>'$PRINTERSHELP1'<br><br>'$PRINTERSHELP2'<br><br><br><br>
+echo '<b>'$"Setup Printers"'</b><br><br>'$"If you have not already done so you may want to add a printer server to your network so that you can control printing for your clients."'<br><br>'$"The show servers link below will show all available servers. Choose the server that you want to add the printer module to by clicking on the add role button."'<br><br><br><br>
 
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody><tr VALIGN=TOP><td style="width: 30px;">
 <a href="karoshi_servers_view.cgi"><img src="/images/submenus/system/computer.png" width="16" height="16" border="0" /></a>
 <br><br>
 </td><td>
-<a href="karoshi_servers_view.cgi">'$SHOWSERVERSMSG'</a>
+<a href="karoshi_servers_view.cgi">'$"Show Servers"'</a>
 </td></tr>
 <tr VALIGN=TOP><td>
 <a href="printers_add_fm.cgi"><img src="/images/submenus/printer/add_printer.png" border="0" /></a>
 <br><br>
 </td><td>
-<a href="printers_add_fm.cgi">'$ADDPRINTERMSG'</a>
+<a href="printers_add_fm.cgi">'$"Add Printer"'</a>
 </td></tr>
 <tr VALIGN=TOP><td>
 <a href="printers.cgi"><img src="/images/submenus/printer/view_print_queues.png" border="0" /></a>
 <br><br>
 </td><td>
-<a href="printers.cgi">'$CONTROLPRINTERSMSG'</a>
+<a href="printers.cgi">'$"Control Printers"'</a>
 </td></tr>
 
 </tbody></table>

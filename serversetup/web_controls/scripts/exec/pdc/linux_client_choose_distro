@@ -89,13 +89,11 @@ fi
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/linux_client_upload_distro ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/linux_client_upload_distro
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 #Make sure the folders exist
 
@@ -117,10 +115,10 @@ fi
 
 if [ ! -d /home/itadminshare/distributions/linux ]
 then
-echo /home/itadminshare/distributions/linux/ - $ERRORMSG1
+echo /home/itadminshare/distributions/linux/ - $"This folder does not contain any iso images."
 fi
 
-echo "<b>$ITADMINSHAREMSG</b><br><br>"
+echo '<b>Itadminshare '$"ISO Images"'</b><br><br>'
 if [ `ls -1 /home/itadminshare/distributions/linux/ | wc -l` -gt 0 ]
 then
 #Show list of distros in itadminshare
@@ -132,19 +130,19 @@ do
 ISOIMAGE=`basename "$ISOIMAGES"`
 
 echo '<tr><td style="width: 250px; vertical-align: top;">'$ISOIMAGE'</td><td style="vertical-align: top;">
-<a class="info" href="javascript:void(0)"><input name="___DISTROCHOICE___'$ISOIMAGE'___CONTROL___copy___" type="image" class="images" src="/images/submenus/client/copy_iso.png" value=""><span>'$ISOIMAGE' - '$HELPMSG5'</span></a>
+<a class="info" href="javascript:void(0)"><input name="___DISTROCHOICE___'$ISOIMAGE'___CONTROL___copy___" type="image" class="images" src="/images/submenus/client/copy_iso.png" value=""><span>'$ISOIMAGE' - '$"Copy the iso to the distribution server and make it available for network installation."'</span></a>
 </td></tr>
 '
 done
 echo '</tbody></table>'
 else
-echo "$NOISOIMAGES<br>"
+echo ''$"There are no iso images in this area."'<br>'
 fi
 
 #Show a list of distributions on the distribution server
 DISTROSERVER=`sed -n 1,1p /opt/karoshi/server_network/distribution_server`
 
-echo "<br><br><b>$DISTROSERVERISOMSG</b><br><br>"
+echo '<br><br><b>'$"Distribution Server"' '$"ISO Images"'</b><br><br>'
 
 
 if [ $DISTROSERVER = `hostname-fqdn` ]
@@ -158,14 +156,14 @@ for ISOIMAGES in /home/distributions/linux_iso/*.iso
 do
 ISOIMAGE=`basename "$ISOIMAGES"`
 
-echo "<tr><td style=\"width: 250px; vertical-align: top;\">$ISOIMAGE</td>
-<td style=\"vertical-align: top;\">
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"___DISTROCHOICE___'$ISOIMAGE'___CONTROL___delete___\" type=\"image\" class=\"images\" src=\"/images/submenus/client/delete_iso.png\" value=""><span>$ISOIMAGE - '$HELPMSG6'</span></a>
+echo '<tr><td style=\"width: 250px; vertical-align: top;\">'$ISOIMAGE'</td>
+<td style="vertical-align: top;">
+<a class="info" href="javascript:void(0)"><input name="___DISTROCHOICE___'$ISOIMAGE'___CONTROL___delete___" type="image" class="images" src="/images/submenus/client/delete_iso.png" value=""><span>'$ISOIMAGE' - '$"Delete the iso from the distribution server."'</span></a>
 </td></tr>
-"
+'
 done
 else
-echo "$NOISOIMAGES<br>"
+echo ''$"There are no iso images in this area."'<br>'
 fi
 
 else
@@ -181,12 +179,12 @@ do
 ISOIMAGE=`basename "$ISOIMAGES"`
 echo "<tr><td style=\"width: 250px; vertical-align: top;\">$ISOIMAGE</td>
 <td style=\"vertical-align: top;\">
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"___DISTROCHOICE___${ISOIMAGE}___CONTROL___delete___\" type=\"image\" class=\"images\" src=\"/images/submenus/client/delete_iso.png\" value=""><span>$ISOIMAGE - '$HELPMSG6'</span></a>
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"___DISTROCHOICE___${ISOIMAGE}___CONTROL___delete___\" type=\"image\" class=\"images\" src=\"/images/submenus/client/delete_iso.png\" value=""><span>$ISOIMAGE - '$"Delete the iso from the distribution server."'</span></a>
 </td></tr>
 "
 done
 else
-echo "<br>'$NOISOIMAGES'<br>"
+echo "<br>'$"There are no iso images in this area."'<br>"
 fi
 '
 fi

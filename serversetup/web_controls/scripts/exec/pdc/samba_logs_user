@@ -115,10 +115,6 @@ SEARCHDATE=`echo $DAY $MONTH $YEAR | sed 's/ /:/g'`
 
 echo `date`: samba_logs_user - Viewing logs "for" $USERNAME $SEARCHDATE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #View logs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/samba_view_logs ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/samba_view_logs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 #Get primary group for user
 PRI_GROUP=`id -g -n $USERNAME`
@@ -127,12 +123,12 @@ PRI_GROUP=`id -g -n $USERNAME`
 source /opt/karoshi/server_network/group_information/$PRI_GROUP
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;"><b>'$USERNAMEMSG'</b></td><td>'$USERNAME'</td></tr>
-<tr><td><b>'$HOMESERVERMSG'</b></td><td>'$SERVER'</td></tr>'
-[ $SEARCHDATE'null' != null ] && echo '<tr><td><b>'$LOGDATE'</b></td><td>'$SEARCHDATE'</td></tr>'
+<tr><td style="width: 180px;"><b>'$"Username"'</b></td><td>'$USERNAME'</td></tr>
+<tr><td><b>'$"Home Server"'</b></td><td>'$SERVER'</td></tr>'
+[ $SEARCHDATE'null' != null ] && echo '<tr><td><b>'$"Log Date"'</b></td><td>'$SEARCHDATE'</td></tr>'
 
 echo '</tbody></table><br>
-<b>'$SHOWLOGMSG'</b><br><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+<b>'$"Log Results"'</b><br><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 
 if [ $SERVER = `hostname-fqdn` ]
 then

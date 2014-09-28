@@ -26,7 +26,7 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 DATE_INFO=`date +%F`
@@ -39,10 +39,8 @@ let EPOCH_YESTERDAY=$EPOCH_TODAY-$ONEDAY
 LOG_DATE=`date +%d-%m-%Y -d @$EPOCH_YESTERDAY`
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
@@ -50,7 +48,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE7'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Global Internet Usage"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script language="JavaScript" src="/all/calendar2/calendar_eu.js" type="text/javascript"></script>
         <!-- Timestamp input popup (European Format) -->
@@ -62,14 +60,14 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/dg_view_global_usage.cgi" name="testform" method="post"><b></b>
-  <div id="actionbox"><b>'$TITLE7'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG4'</span></a>
+  <div id="actionbox"><b>'$"Global Internet Usage"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Internet Usage logs are updated at the end of every day."'</span></a>
 <br><br>
 
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
 '
-echo "<tr><td style=\"width: 180px;\">$WEBLOGDATE</td><td>
-<!-- calendar attaches to existing form element -->
+echo '<tr><td style="width: 180px;">'$"Log Date"'</td><td>'
+echo "<!-- calendar attaches to existing form element -->
 	<input type=\"text\" value=\"$LOG_DATE\" size=14 maxlength=10 name=\"_DATE_\"></td><td style=\"vertical-align: top;\">
 	<script language=\"JavaScript\" type=\"text/javascript\">
 	new tcal ({
@@ -86,7 +84,7 @@ echo "<tr><td style=\"width: 180px;\">$WEBLOGDATE</td><td>
 echo '</tbody></table>
   </div>
   <div id="submitbox">
-  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+  <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
   </div>
 </form>
 </div></body>

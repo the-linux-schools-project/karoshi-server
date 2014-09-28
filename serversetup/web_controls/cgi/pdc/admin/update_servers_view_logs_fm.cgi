@@ -31,7 +31,7 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
@@ -45,10 +45,8 @@ MINUTES=`date +%M`
 SECONDS=`date +%S`
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/update_servers_view_logs ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/update_servers_view_logs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -57,7 +55,7 @@ fi
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View Server Update Logs"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">'
 echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script language="JavaScript" type="text/javascript" src="/all/calendar2/calendar_eu.js"></script>
         <!-- Timestamp input popup (European Format) --><link rel="stylesheet" href="/all/calendar2/calendar.css"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
@@ -100,7 +98,7 @@ YEAR=`echo $DATE_INFO | cut -d- -f1`
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -108,13 +106,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
@@ -138,16 +136,16 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+	<span>'$"View Server Update Logs"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="'$DIV_ID'">
 '
 else
 echo '<div id="'$DIV_ID'"><div id="titlebox">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr>
-<td style="vertical-align: top;"><div class="sectiontitle">'$TITLE'</div></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Viewing_Update_Logs"><img class="images" alt="" src="/images/help/info.png"><span>'"$UPDATESERVERLOGSHELP"'</span></a></td>
+<td style="vertical-align: top;"><div class="sectiontitle">'$"View Server Update Logs"'</div></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Viewing_Update_Logs"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the date that you want to view the update logs for."'</span></a></td>
 </tr></table>' 
 fi
 
@@ -155,7 +153,7 @@ fi
 
 if [ $MOBILE = yes ]
 then
-echo ''$DATEMSG'<br>'
+echo ''$"Log date"'<br>'
 
 echo "	<!-- calendar attaches to existing form element -->
 	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxlength=10 name=\"_DATE_\">
@@ -167,16 +165,16 @@ echo "	<!-- calendar attaches to existing form element -->
 		'controlname': '_DATE_'
 	});
 
-	</script><br>
+	</script><br>"
 
-$VIEWLOGSMSG1<br>
-<input checked=\"checked\" name=\"_LOGVIEW_\" value=\"today\" type=\"radio\"><br>
-$VIEWLOGSMSG2<br>
-<input name=\"_LOGVIEW_\" value=\"month\" type=\"radio\"><br><br>"
+echo ''$"View logs by date"'<br>
+<input checked="checked" name="_LOGVIEW_" value="today" type="radio"><br>
+'$"View logs by month"'<br>
+<input name="_LOGVIEW_" value="month" type="radio"><br><br>'
 
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$DATEMSG'</td><td>'
+<tr><td style="width: 180px;">'$"Log date"'</td><td>'
 echo "	<!-- calendar attaches to existing form element -->
 	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxlength=10 name=\"_DATE_\"></td><td style=\"vertical-align: top; text-align: center;\">
 	<script type=\"text/javascript\" language=\"JavaScript\">
@@ -187,13 +185,15 @@ echo "	<!-- calendar attaches to existing form element -->
 		'controlname': '_DATE_'
 	});
 
-	</script></td></tr><tr><td>$VIEWLOGSMSG1</td><td></td><td style=\"vertical-align: top; text-align: center;\"><input checked=\"checked\" name=\"_LOGVIEW_\" value=\"today\" type=\"radio\"></td></tr><tr><td>$VIEWLOGSMSG2</td><td></td><td style=\"vertical-align: top; text-align: center;\"><input name=\"_LOGVIEW_\" value=\"month\" type=\"radio\"></td></tr></tbody></table><br><br>"
+	</script>"
+
+echo '</td></tr><tr><td>'$"View logs by date"'</td><td></td><td style="vertical-align: top; text-align: center;"><input checked="checked" name="_LOGVIEW_" value="today" type="radio"></td></tr><tr><td>$"View logs by month"</td><td></td><td style="vertical-align: top; text-align: center;"><input name="_LOGVIEW_" value="month" type="radio"></td></tr></tbody></table><br><br>'
 fi
 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE servers "$ACTIONMSG"
+/opt/karoshi/web_controls/show_servers $MOBILE servers $"Show logs"
 
 [ $MOBILE = no ] && echo '</div>'
 

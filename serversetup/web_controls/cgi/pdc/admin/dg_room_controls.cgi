@@ -31,15 +31,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_room_controls ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_room_controls
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -50,7 +48,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Internet Controls"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -122,7 +120,7 @@ fi
 #Check to see that LOCATION is not blank
 if [ $LOCATION'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"You have not chosen a location."
 show_status
 fi
 
@@ -135,13 +133,13 @@ TABLECLASS=standard
 WIDTH=60
 WIDTH2=120
 WIDTH3=120
-TABLETITLE="$TITLE - $LOCATION"
+TABLETITLE=''$"Client Internet Controls"' - '$LOCATION''
 ICON1=/images/submenus/internet/client_allowed.png
 ICON2=/images/submenus/internet/client_denied.png
 ICON3=/images/assets/location.png
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="'$DIV_ID'"><div id="titlebox"><b>'$TABLETITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Room_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a><br>'
+echo '<div id="'$DIV_ID'"><div id="titlebox"><b>'$TABLETITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Room_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the client computers that you want to allow or deny internet access to."'</span></a><br>'
 else
 DIV_ID=menubox
 TABLECLASS=mobilestandard
@@ -155,7 +153,7 @@ ICON3=/images/assets/locationm.png
 
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE'</span>
+	<span>'$"Client Internet Controls"'</span>
 <a href="/cgi-bin/admin/dg_room_controls_fm.cgi">'$LOCATION'</a>
 </div></div><div id="mobileactionbox">
 '
@@ -163,28 +161,28 @@ fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tr><td style="vertical-align: top;"><form action="/cgi-bin/admin/dg_room_controls_fm.cgi" method="post">
-<input name="" type="submit" class="button" value="'$CHOOSELOCATIONMSG'">
+<input name="" type="submit" class="button" value="'$"Location"'">
 </form></td>
 <td valign=top>
-<a href="dg_reset_room_controls_fm.cgi"><input class="button" type="button" name="" value="'$RESETTIMESMSG'"></a>
+<a href="dg_reset_room_controls_fm.cgi"><input class="button" type="button" name="" value="'$"Reset times"'"></a>
 </td>'
 
 [ $MOBILE = yes ] && echo '</tr><tr>'
 
 echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post">
-<input name="_LOCATION_'$LOCATION'_ACTION_allowall_ASSET_na_" type="submit" class="button" value="'$ALLOWALLMSG'">
+<input name="_LOCATION_'$LOCATION'_ACTION_allowall_ASSET_na_" type="submit" class="button" value="'$"Allow all"'">
 </form></td>
 <td style="vertical-align: top;"><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post">
-<input name="_LOCATION_'$LOCATION'_ACTION_denyall_ASSET_na_" type="submit" class="button" value="'$DENYALLMSG'">
+<input name="_LOCATION_'$LOCATION'_ACTION_denyall_ASSET_na_" type="submit" class="button" value="'$"Deny all"'">
 </form></td>'
 
 [ $MOBILE = yes ] && echo '</tr><tr>'
 
 echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post">
-<input name="_LOCATION_'$LOCATION'_ACTION_allowallmedia_ASSET_na_" type="submit" class="button" value="'$ALLOWALLMSG2'">
+<input name="_LOCATION_'$LOCATION'_ACTION_allowallmedia_ASSET_na_" type="submit" class="button" value="'$"Allow all media"'">
 </form></td>
 <td style="vertical-align: top;"><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post">
-<input name="_LOCATION_'$LOCATION'_ACTION_denyallmedia_ASSET_na_" type="submit" class="button" value="'$DENYALLMSG2'">
+<input name="_LOCATION_'$LOCATION'_ACTION_denyallmedia_ASSET_na_" type="submit" class="button" value="'$"Deny all media"'">
 </form></td>'
 
 echo '</tr></table><br>'
@@ -196,11 +194,11 @@ then
 if [ `ls -1 /opt/karoshi/asset_register/locations/$LOCATION/ | wc -l` -gt 0 ]
 then
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="width: '$WIDTH'px;"><b>'$ASSETMSG'</b></td>'
+<tbody><tr><td style="width: '$WIDTH'px;"><b>'$"Asset"'</b></td>'
 
-[ $MOBILE = no ] && echo '<td style="width: '$WIDTH2'px;"><b>'$MACADDRESSMSG'</b></td>'
+[ $MOBILE = no ] && echo '<td style="width: '$WIDTH2'px;"><b>'$"Mac-address"'</b></td>'
 
-echo '<td style="width: '$WIDTH3'px;"><b>'$TCPIPMSG'</b></td><td><b>'$ACTIONMSG'</b></td></tr>'
+echo '<td style="width: '$WIDTH3'px;"><b>'$"Tcpip"'</b></td><td><b>'$"Action"'</b></td></tr>'
 
 for ASSETS in "/opt/karoshi/asset_register/locations/$LOCATION/"*
 do
@@ -209,22 +207,22 @@ source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
 #Only show certain asset types
 if [ $ASSETTYPE = 1 ] || [ $ASSETTYPE = 3 ] || [ $ASSETTYPE = 5 ] || [ $ASSETTYPE = 7 ] || [ $ASSETTYPE = 9 ]
 then
-CONTROLMSG=$DENYMSG
+CONTROLMSG=$"Deny access"
 COLOUR=#11BE26
 ACTION=deny
 if [ -f /opt/karoshi/server_network/internet_room_controls/$LOCATION/$ASSET ]
 then
-CONTROLMSG=$ALLOWMSG
+CONTROLMSG=$"Allow access"
 COLOUR=#FF0000
 ACTION=allow
 fi
 
-CONTROLMSG2=$DENYMSG2
+CONTROLMSG2=$"Deny media access"
 COLOUR2=#11BE26
 ACTION2=denymedia
 if [ -f /opt/karoshi/server_network/internet_media_room_controls/$LOCATION/$ASSET"_"media ]
 then
-CONTROLMSG2=$ALLOWMSG2
+CONTROLMSG2=$"Allow media access"
 COLOUR2=#FF0000
 ACTION2=allowmedia
 fi

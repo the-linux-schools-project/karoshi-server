@@ -26,17 +26,15 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printers_ppd_upload ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printers_ppd_upload
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [ `echo $REMOTE_ADDR | grep -c $NoTIMEOUT` = 1 ]
 then
 TIMEOUT=86400
 fi
@@ -47,7 +45,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <TITLE>'$TITLE'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+    <TITLE>'$"Upload PPD file"'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </HEAD>
@@ -66,25 +64,25 @@ exit
 #Get printer details
 if [ ! -f /var/www/karoshi/uploadppd ]
 then
-MESSAGE=$ERRORMSG7
+MESSAGE=$"No Printer details found."
 show_status
 fi
 source /var/www/karoshi/uploadppd
 
 echo '<div id="actionbox">
-<B>'$TITLE'</B> <a target="_blank" href="http://openprinting.org/printer_list.cgi"><img src="/images/help/info.png" border="0"></a>
+<B>'$"Upload PPD file"'</B> <a target="_blank" href="http://openprinting.org/printer_list.cgi"><img src="/images/help/info.png" border="0"></a>
 <br><br>
 <table class="standard" style="text-align: left; height: 120px;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="vertical-align: middle; width: 180px;">'$PRINTERMSG'</td><td>'$PRINTERNAME'</td></tr>
-<tr><td style="vertical-align: middle;">'$PAGESIZEMSG'</td><td>'$PAGESIZE'</td></tr>
-<tr><td style="vertical-align: middle;">'$COLOURMSG'</td><td>'$COLOUR'</td></tr>
-<tr><td style="vertical-align: top;">'$PRINTERPPDMSG'</td><td style="vertical-align: middle;"><FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/printers_ppd_upload.cgi" METHOD="POST">
+<tr><td style="vertical-align: middle; width: 180px;">'$"Printer"'</td><td>'$PRINTERNAME'</td></tr>
+<tr><td style="vertical-align: middle;">'$"Default Page Size"'</td><td>'$PAGESIZE'</td></tr>
+<tr><td style="vertical-align: middle;">'$"Print in Colour?"'</td><td>'$COLOUR'</td></tr>
+<tr><td style="vertical-align: top;">'$"Printer PPD"'</td><td style="vertical-align: middle;"><FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/printers_ppd_upload.cgi" METHOD="POST">
  <INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="25">
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td></tr>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"If you are using a Linux client with cups installed you can find ppd files in /usr/share/cups/models or /usr/share/ppd."'</span></a></td></tr>
 </tbody></table><br>
   </div>
 <div id="submitbox">
-  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+  <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>
         </FORM>
 </BODY>

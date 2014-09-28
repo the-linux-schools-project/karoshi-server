@@ -126,10 +126,6 @@ fi
 
 echo `date`: dg_view_site_logs - Viewing logs "for" $DAY-$MONTH-$YEAR - $SEARCH by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #View logs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 TABLECLASS=standard
 MAXCOUNT=3
@@ -200,7 +196,7 @@ echo \</tbody\>\</table\>
 #Show submit box if search results are positive
 if [ $SHOWSUBMIT = yes ]
 then
-echo \<br\>\<input class=\"button\" value=\"'$SUBMITMSG'\" type=\"submit\"\>
+echo \<br\>\<input class=\"button\" value=\"'$"Submit"'\" type=\"submit\"\>
 else
 exit 103
 fi
@@ -265,7 +261,7 @@ echo \</tbody\>\</table\>
 #Show submit box if search results are positive
 if [ $SHOWSUBMIT = yes ]
 then
-echo \<br\>\<input class=\"button\" value=\"$SUBMITMSG\" type=\"submit\"\>
+echo '<br><input class="button" value='$"Submit"' type="submit">'
 else
 exit 103
 fi

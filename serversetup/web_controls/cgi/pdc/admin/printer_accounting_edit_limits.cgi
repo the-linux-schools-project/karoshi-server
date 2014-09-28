@@ -27,13 +27,11 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printer_accounting ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printer_accounting
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 TYPE=group
 
@@ -94,7 +92,7 @@ done
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE3'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta http-equiv="REFRESH" content="0;url='$STARTPAGE'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Edit Printer Limits"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta http-equiv="REFRESH" content="0;url='$STARTPAGE'"></head><body><div id="pagecontainer">'
 
 
 function show_status {
@@ -111,7 +109,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -119,13 +117,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -134,19 +132,19 @@ fi
 #Check to see that NAME is not blank
 if [ $NAME'null' = null ]
 then
-MESSAGE=$ERRORMSG7
+MESSAGE=$"The name cannot be blank."
 show_status
 fi
 #Check to see that TYPE is not blank
 if [ $TYPE'null' = null ]
 then
-MESSAGE=$ERRORMSG6
+MESSAGE=$"The type cannot be blank."
 show_status
 fi
 #Check to see that LIMIT is not blank
 if [ $LIMIT'null' = null ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"The limit cannot be blank."
 show_status
 fi
 
@@ -157,7 +155,7 @@ then
 getent passwd $NAME 1>/dev/null
 if [ `echo $?` != 0 ]
 then
-MESSAGE=$ERRORMSG10
+MESSAGE=$"This user does not exist."
 show_status
 fi
 fi

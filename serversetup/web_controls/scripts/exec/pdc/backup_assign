@@ -87,7 +87,7 @@ then
 echo `date`: backup_assign - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit
 fi
-if [ $BACKUPSERVER'null' = null ]
+if [ $"Back"UPSERVER'null' = null ]
 then
 echo `date`: backup_assign - Blank backup server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit
@@ -99,7 +99,7 @@ echo `date`: backup_assign - access denied to $REMOTE_USER from $REMOTE_ADDR >> 
 exit 101
 fi
 
-if [ $BACKUPSERVER = removebackupoption ]
+if [ $"Back"UPSERVER = removebackupoption ]
 then
 echo `date`: backup_assign - removing backup option "for" $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 [ -d /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER ] && rm -f -R /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER
@@ -109,15 +109,13 @@ fi
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/backup_assign ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/backup_assign
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
 
-echo `date`: backup_assign - assigning $SERVER to $BACKUPSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+echo `date`: backup_assign - assigning $SERVER to $"Back"UPSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 
 #Enable ssh from the server to the backup server
@@ -153,8 +151,8 @@ chmod 0600 /root/.ssh_servers/authorized_keys'$SERVER'
 #Get server ip
 KAROSHISERVERTCPIP=`net lookup $SERVER`
 scp -o PasswordAuthentication=no -r $SERVER:/root/.ssh_servers/authorized_keys$SERVER /root/.ssh_servers
-scp -o PasswordAuthentication=no -r /root/.ssh_servers/authorized_keys$SERVER $BACKUPSERVER:/root/.ssh
-ssh -x -o PasswordAuthentication=no $BACKUPSERVER '
+scp -o PasswordAuthentication=no -r /root/.ssh_servers/authorized_keys$SERVER $"Back"UPSERVER:/root/.ssh
+ssh -x -o PasswordAuthentication=no $"Back"UPSERVER '
 sed "/root@'$SERVER'/d" /root/.ssh/authorized_keys2 > /root/.ssh/authorized_keys2.$$
 rm -f /root/.ssh/authorized_keys2
 mv /root/.ssh/authorized_keys2.$$ /root/.ssh/authorized_keys2
@@ -184,7 +182,7 @@ fi
 
 #Write backup config
 [ ! -d /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER ] && mkdir -p /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER ]
-echo $BACKUPSERVER > /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backupserver
+echo $"Back"UPSERVER > /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backupserver
 
 #Write default backup paths
 if [ ! -f /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders ]

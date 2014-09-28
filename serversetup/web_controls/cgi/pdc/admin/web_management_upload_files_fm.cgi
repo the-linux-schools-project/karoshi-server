@@ -27,15 +27,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/web/upload_files ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/web/upload_files
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -48,7 +46,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <TITLE>'$TITLE'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+    <TITLE>'$"Web Management - Upload Files"'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </HEAD>
@@ -57,15 +55,15 @@ echo '
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<div id="actionbox">
-<B>'$TITLE'</B> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'<br><br>'$HELPMSG3'</span></a>
+<B>'$"Web Management - Upload Files"'</B> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will upload files so that they are available on a web server You can choose the server you wish to upload the files to."'<br><br>'$"Use the create subfolders option to create extra locations."'</span></a>
 <P>
-'$UPLOADMSG'
+'$"Please choose the files that you want to upload to the web area."'
 <P>
         <FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/web_management_upload_files.cgi" METHOD="POST">
         <TABLE class="standard" BORDER=0 WIDTH="470">
         <TR>
             <TD ALIGN=LEFT>
-                '$FILEMSG' 1:
+                '$"File"' 1:
             </TD>
             <TD>
                 <INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="25">
@@ -73,7 +71,7 @@ echo '<div id="actionbox">
         </TR>
         <TR>
             <TD ALIGN=LEFT>
-                '$FILEMSG' 2:
+                '$"File"' 2:
             </TD>
             <TD>
                 <INPUT TYPE="FILE" NAME="file-to-upload-02" SIZE="25">
@@ -81,7 +79,7 @@ echo '<div id="actionbox">
         </TR>
         <TR>
             <TD ALIGN=LEFT>
-                '$FILEMSG' 3:
+                '$"File"' 3:
             </TD>
             <TD>
                 <INPUT TYPE="FILE" NAME="file-to-upload-03" SIZE="25">
@@ -89,7 +87,7 @@ echo '<div id="actionbox">
         </TR>
         <TR>
             <TD ALIGN=LEFT>
-                '$FILEMSG' 4:
+                '$"File"' 4:
             </TD>
             <TD>
                 <INPUT TYPE="FILE" NAME="file-to-upload-04" SIZE="25">
@@ -97,7 +95,7 @@ echo '<div id="actionbox">
         </TR>
         <TR>
             <TD ALIGN=LEFT>
-                '$FILEMSG' 5:
+                '$"File"' 5:
             </TD>
             <TD>
                 <INPUT TYPE="FILE" NAME="file-to-upload-05" SIZE="25">
@@ -105,7 +103,7 @@ echo '<div id="actionbox">
         </TR>
         <TR>
             <TD ALIGN=LEFT>
-                '$FILEMSG' 6:
+                '$"File"' 6:
             </TD>
             <TD>
                 <INPUT TYPE="FILE" NAME="file-to-upload-06" SIZE="25">
@@ -113,7 +111,7 @@ echo '<div id="actionbox">
         </TR>
         <TR>
             <TD ALIGN=LEFT>
-                '$FILEMSG' 7:
+                '$"File"' 7:
             </TD>
             <TD>
                 <INPUT TYPE="FILE" NAME="file-to-upload-07" SIZE="25">
@@ -121,7 +119,7 @@ echo '<div id="actionbox">
         </TR>
         <TR>
             <TD ALIGN=LEFT>
-                '$FILEMSG' 8:
+                '$"File"' 8:
             </TD>
             <TD>
                 <INPUT TYPE="FILE" NAME="file-to-upload-08" SIZE="25">
@@ -132,7 +130,7 @@ echo '<div id="actionbox">
 		</TR>
         </TABLE>
 </div><div id="submitbox">
-<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>
         </FORM>
 </div></div>

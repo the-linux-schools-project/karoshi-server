@@ -150,13 +150,11 @@ chown -R root.root /opt/karoshi/logs
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/user_internet_access ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/user_internet_access
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 
 function activate_changes {
@@ -187,24 +185,24 @@ BANLENGTH=7
 
 #Show form to add in banned users.
 
-echo '<b>'$TITLE2'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_Internet_Access"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a><br><br><form name="myform" action="user_internet_access.cgi" method="post">
+echo '<b>'$"Ban User Internet Access"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_Internet_Access"><img class="images" alt="" src="/images/help/info.png"><span>'$"This page allows you to ban or allow user internet access."'</span></a><br><br><form name="myform" action="user_internet_access.cgi" method="post">
 <input type="hidden" name="_ACTION_" value="banusers">
 <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tr><td style="width: '$WIDTH1'px;">'$USERNAMESMSG'</td><td style="width: 140px;"><input value="'$USERNAMES'" name="_USERNAMES_" style="width: '$WIDTH2'px;" type="text"></td>'
+<tr><td style="width: '$WIDTH1'px;">'$"Usernames"'</td><td style="width: 140px;"><input value="'$USERNAMES'" name="_USERNAMES_" style="width: '$WIDTH2'px;" type="text"></td>'
 
-[ $MOBILE = no ] && echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_Internet_Access"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td>'
-
-echo '</tr>
-<tr><td>'$DATAMSG'</td><td><input style="width: '$WIDTH3'px;" name="_HOUR_" value="'$HOUR'" size="2" maxlength="2" type="text">:<input style="width: '$WIDTH3'px;" name="_MINUTES_" value="'$MINUTES'" size="2" maxlength="2" type="text"> <input style="width: '$WIDTH3'px;" name="_DAY_" value="'$DAY'" size="2" maxlength="2" type="text">-<input style="width: '$WIDTH3'px;" name="_MONTH_" value="'$MONTH'" size="2" maxlength="2" type="text">-<input name="_YEAR_" value="'$YEAR'" size="4" maxlength="4 type="text"></td></tr>
-<tr><td>'$DURATIONMSG'</td><td><input style="width: '$WIDTH3'px;" name="_BANLENGTH_" value="'$BANLENGTH'" size="2" maxlength="3" type="text"></td>'
-
-[ $MOBILE = no ] && echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_Internet_Access"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td>'
+[ $MOBILE = no ] && echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_Internet_Access"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the usernames that you want to ban from the internet separated by spaces."'</span></a></td>'
 
 echo '</tr>
-<tr><td valign="top">'$INCREPMSG'</td><td><textarea style="width: '$WIDTH2'px;" cols="45" rows="2" name="_INCIDENT_">'$INCIDENT'</textarea></td></tr>
-<tr><td valign="top">'$ACTIONMSG'</td><td><textarea style="width: '$WIDTH2'px;" cols="45" rows="2" name="_ACTIONTAKEN_">'$ACTIONTAKENMSG'</textarea></td></tr>
+<tr><td>'$"Date"'</td><td><input style="width: '$WIDTH3'px;" name="_HOUR_" value="'$HOUR'" size="2" maxlength="2" type="text">:<input style="width: '$WIDTH3'px;" name="_MINUTES_" value="'$MINUTES'" size="2" maxlength="2" type="text"> <input style="width: '$WIDTH3'px;" name="_DAY_" value="'$DAY'" size="2" maxlength="2" type="text">-<input style="width: '$WIDTH3'px;" name="_MONTH_" value="'$MONTH'" size="2" maxlength="2" type="text">-<input name="_YEAR_" value="'$YEAR'" size="4" maxlength="4 type="text"></td></tr>
+<tr><td>'$"Ban duration"'</td><td><input style="width: '$WIDTH3'px;" name="_BANLENGTH_" value="'$BANLENGTH'" size="2" maxlength="3" type="text"></td>'
+
+[ $MOBILE = no ] && echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_Internet_Access"><img class="images" alt="" src="/images/help/info.png"><span>'$"Ban duration in days - leave blank for a permanent ban."'</span></a></td>'
+
+echo '</tr>
+<tr><td valign="top">'$"Incident Report"'</td><td><textarea style="width: '$WIDTH2'px;" cols="45" rows="2" name="_INCIDENT_">'$INCIDENT'</textarea></td></tr>
+<tr><td valign="top">'$"Action Taken"'</td><td><textarea style="width: '$WIDTH2'px;" cols="45" rows="2" name="_ACTIONTAKEN_">'$"Internet Access banned."'</textarea></td></tr>
 </tbody></table>
-<br><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+<br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </form><br>
 <form name="myform" action="user_internet_access.cgi" method="post">'
 
@@ -212,14 +210,14 @@ echo '</tr>
 
 if [ `cat /etc/squid/badusers.list | wc -l` -gt 0 ]
 then
-	echo "<b>$TITLE3</b><br><br><table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-	<tr><td style=\"width: $WIDTH1"px";\"><b>$BANNEDUSERMSG</b></td><td><b>$DURATIONMSG2</b></td><td><b>$VIEWINCIDENTSMSG</b></td><td><b>$ALLOWMSG</b></td></tr>"
+	echo '<b>'$"Banned Users"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	<tr><td style="width: '$WIDTH1'px;"><b>'$"Users"'</b></td><td><b>'$"Duration"'</b></td><td><b>'$"View Incidents"'</b></td><td><b>'$"Allow"'</b></td></tr>'
 
 	for BADUSER in `cat /etc/squid/badusers.list`
 	do
 		BANLENGTH="-"
 		[ -f /opt/karoshi/logs/banned_user_internet_durations/$BADUSER ] && BANLENGTH=`sed -n 1,1p /opt/karoshi/logs/banned_user_internet_durations/$BADUSER`
-		echo "<tr><td>$BADUSER</td><td>$BANLENGTH</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_viewincidents_USERNAMES_$BADUSER"_"\" type=\"image\" class=\"images\" src=\"$ICON2\" value=\"\"><span>$BADUSER<br>$VIEWINCIDENTSMSG</span></a></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_allowuser_USERNAMES_$BADUSER"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$BADUSER<br>$ALLOWUSERMSG</span></a></td></tr>"
+		echo '<tr><td>'$BADUSER'</td><td>'$BANLENGTH'</td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_viewincidents_USERNAMES_'$BADUSER'_" type="image" class="images" src="'$ICON2'" value=""><span>'$BADUSER'<br>'$"View Incidents"'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_allowuser_USERNAMES_'$BADUSER'_" type="image" class="images" src="'$ICON1'" value=""><span>'$BADUSER'<br>'$"Allow internet access?"'</span></a></td></tr>'
 	done
 	echo "</tbody></table>"
 fi
@@ -248,7 +246,7 @@ do
 		then
 			echo `date`: user_internet_access - $USERNAME banned "for" $BANLENGTH days by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 			echo $BANLENGTH > /opt/karoshi/logs/banned_user_internet_durations/$USERNAME
-			echo `date | sed 's/:/-/g'`:$DAY:$MONTH:$YEAR:$HOUR:$MINUTES:$INCIDENT:"$ACTIONTAKEN" $DURATIONMSG $BANLENGTH $DAYSMSG:$STUDENTS >> /opt/karoshi/logs/incident_logs/$USERNAME
+			echo `date | sed 's/:/-/g'`:$DAY:$MONTH:$YEAR:$HOUR:$MINUTES:$INCIDENT:"$ACTIONTAKEN" $"Ban duration" $BANLENGTH $DAYSMSG:$STUDENTS >> /opt/karoshi/logs/incident_logs/$USERNAME
 		else
 			echo `date`: user_internet_access - $USERNAME banned by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 			echo `date | sed 's/:/-/g'`:$DAY:$MONTH:$YEAR:$HOUR:$MINUTES:$INCIDENT:$ACTIONTAKEN:$STUDENTS >> /opt/karoshi/logs/incident_logs/$USERNAME
@@ -329,13 +327,13 @@ function viewincidents {
 USERNAME=$USERNAMES
 
 echo '<form name="myform" action="user_internet_access.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tr><td style="width: 180px; vertical-align: top;"><b>'$TITLE4' - '$USERNAME'</b></td>
-<td style="vertical-align: top;"><input name="_ACTION_view_" type="submit" class="button" value="'$VIEWBANNEDUSERSMSG'"></td></tr></tbody></table></form>'
+<tr><td style="width: 180px; vertical-align: top;"><b>'$"View Incidents"' - '$USERNAME'</b></td>
+<td style="vertical-align: top;"><input name="_ACTION_view_" type="submit" class="button" value="'$"View Banned Users"'"></td></tr></tbody></table></form>'
 
 if [ -f /opt/karoshi/logs/incident_logs/$USERNAME ]
 then
 	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-	<tr><td style="width:70px;"><b>'$DATEMSG'</b></td><td style="width: 45px;"><b>'$TIMEMSG'</b></td><td><b>'$INCIDENTMSG'</b></td><td><b>'$ACTIONMSG'</b></td></tr>'
+	<tr><td style="width:70px;"><b>'$"Date"'</b></td><td style="width: 45px;"><b>'$"Time"'</b></td><td><b>'$"Incident"'</b></td><td><b>'$"Action Taken"'</b></td></tr>'
 	LOGCOUNT=`cat /opt/karoshi/logs/incident_logs/$USERNAME | wc -l`
 	COUNTER=1
 	while [ $COUNTER -le $LOGCOUNT ]

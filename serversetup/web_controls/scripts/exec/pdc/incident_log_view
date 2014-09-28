@@ -66,10 +66,10 @@ then
 echo `date`: incident_log_view - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
-ALPHABET=`echo $* | cut -s -d: -f4`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
+ALPHABET=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
 ALPHABET2=`echo $ALPHABET | tr 'A-Z' 'a-z'`
 ########################
 #Check data
@@ -102,7 +102,7 @@ echo `date`: incident_log_view - No letter chosen by $REMOTE_USER from $REMOTE_A
 exit 101
 fi
 
-echo `date`: incident_log_view - viewing incident log for the letter $ALPHABET by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: "incident_log_view - viewing incident log for the letter $ALPHABET by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 [ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
 chmod 0700 /opt/karoshi/.tempdata
@@ -121,12 +121,10 @@ fi
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/incident_log ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/incident_log
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
@@ -135,9 +133,9 @@ COUNTER=1
 if [ $LOGCOUNT -gt 0 ]
 then
 #Show table of sites
-echo "<table class="standard" style="text-align: left';' width: 1000px';' height: 100px';'" border="0" cellpadding="2" cellspacing="2">"
+echo '<table class="standard" style="text-align: left; width: 1000px; height: 100px;" border="0" cellpadding="2" cellspacing="2">"
 echo "<tbody>"
-echo "<tr><td" style='"width: 70px;"'"><b>"$DATEMSG2"</b></td><td" style='"width: 45px;"'"><b>"$TIMEMSG"</b></td><td><b>"$INCIDENTMSG"</b></td><td><b>"$ACTIONMSG"</b></td><td><b>"$USERSMSG"</b></td></tr>"
+echo "<tr><td" style='"width: 70px;"'"><b>"$Date"</b></td><td" style='"width: 45px;"'"><b>"$Time"</b></td><td><b>"$Incident"</b></td><td><b>'$"Action Taken"'</b></td><td><b>'$"Users Involved"'</b></td></tr>'
 while [ $COUNTER -le $LOGCOUNT ]
 do
 LOGDATA=`sed -n $COUNTER,$COUNTER"p" /opt/karoshi/.tempdata/incident_log.$$`
@@ -150,11 +148,10 @@ USERS=`echo $LOGDATA | cut -d: -f9`
 echo "<tr><td" style='"width: 70px;"'">"$DATE"</td><td" style='"width: 45px;"'">"$TIME"</td><td>"$INCIDENT"</td><td>"$ACTION"</td><td>"$USERS"</td></tr>"
 let COUNTER=$COUNTER+1
 done
-echo "</tbody>"
-echo "</table>"
+echo '</tbody></table>'
 rm -f /opt/karoshi/.tempdata/incident_log.$$
 else
-echo $ERRORMSG14'<br>'
+echo $"There are no incident logs available."'<br>'
 rm -f /opt/karoshi/.tempdata/incident_log.$$
 exit 101
 fi

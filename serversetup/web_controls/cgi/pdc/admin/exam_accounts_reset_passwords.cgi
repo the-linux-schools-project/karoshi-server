@@ -32,19 +32,17 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/exam_accounts_reset_passwords ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/exam_accounts_reset_passwords
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="0; URL=exam_accounts_view_reset_passwords.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Exam Accounts - Reset Passwords"'</title><meta http-equiv="REFRESH" content="0; URL=exam_accounts_view_reset_passwords.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -81,7 +79,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-	export MESSAGE=$HTTPS_ERROR
+	export MESSAGE=$"You must access this page via https."
 	show_status
 fi
 #########################
@@ -89,19 +87,19 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-	MESSAGE=$ACCESS_ERROR1
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-	MESSAGE=$ACCESS_ERROR1
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$TITLE'</div></div><div id="infobox"><br>'
+echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Exam Accounts - Reset Passwords"'</div></div><div id="infobox"><br>'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/exam_accounts_reset_passwords.cgi | cut -d' ' -f1`
 #Reset passwords
@@ -109,7 +107,7 @@ sudo -H /opt/karoshi/web_controls/exec/exam_accounts_reset_passwords $REMOTE_USE
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS != 0 ]
 then
-	MESSAGE=`echo $ERRORMSG1`
+	MESSAGE=`echo $"The passwords were not reset for all the exam accounts."`
 	show_status
 fi
 echo '</div></div></div></body></html>'

@@ -137,11 +137,7 @@ else
 echo `date`: update_server - disabling updates "for" $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
 
-LANGCHOICE=englishuk
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/update_servers ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/update_servers
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
 
 function recordtime {
 FOLDER=servers
@@ -153,14 +149,14 @@ FOLDER=servers
 #Add in time information
 if [ $DAY != never ]
 then
-[ $DAY = 1 ] && DAY2=$MONMSG
-[ $DAY = 2 ] && DAY2=$TUESMSG
-[ $DAY = 3 ] && DAY2=$WEDMSG
-[ $DAY = 4 ] && DAY2=$THURSMSG
-[ $DAY = 5 ] && DAY2=$FRIMSG
-[ $DAY = 6 ] && DAY2=$SATMSG
-[ $DAY = 7 ] && DAY2=$SUNMSG
-[ $DAY = 8 ] && DAY2=$EVERYDAYMSG
+[ $DAY = 1 ] && DAY2=$"Monday"
+[ $DAY = 2 ] && DAY2=$"Tuesday"
+[ $DAY = 3 ] && DAY2=$"Wednesday"
+[ $DAY = 4 ] && DAY2=$"Thursday"
+[ $DAY = 5 ] && DAY2=$"Friday"
+[ $DAY = 6 ] && DAY2=$"Saturday"
+[ $DAY = 7 ] && DAY2=$"Sunday"
+[ $DAY = 8 ] && DAY2=$"Every day"
 
 echo "$DAY2 - $HOURS:$MINUTES" > /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME
 else

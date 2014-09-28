@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/file/file_manager ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/file/file_manager
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -47,7 +45,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"File Manager"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -128,28 +126,28 @@ done
 #Check to see that owner is not blank
 if [ $OWNER'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The owner cannot be blank."
 show_status
 fi
 
 #Check to see that group is not blank
 if [ $GROUP'null' = null ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The group cannot be blank."
 show_status
 fi
 #Check that the owner exists
 #getent passwd "$OWNER" 1>/dev/null
 #if [ `echo $?` != 0 ]
 #then
-#MESSAGE=$ERRORMSG5
+#MESSAGE=$"This user does not exist."
 #show_status
 #fi
 #Check that the group exists
 #getent group "$GROUP" 1>/dev/null
 #if [ `echo $?` != 0 ]
 #then
-#MESSAGE=$ERRORMSG6
+#MESSAGE=$"This group does not exist."
 #show_status
 #fi
 fi
@@ -157,13 +155,13 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 SERVER2=$SERVER
 [ $SERVER2 = pdc ] && SERVER2=$HOSTNAME
-echo '<form action="/cgi-bin/admin/file_manager.cgi" method="post"><div id="actionbox"><b>'$TITLE' - '$SERVER2'</b><br><br>'
+echo '<form action="/cgi-bin/admin/file_manager.cgi" method="post"><div id="actionbox"><b>'$"File Manager"' - '$SERVER2'</b><br><br>'
 #########################
 #Check data
 #########################
 if [ $ACTION != ENTER ] && [ $ACTION != DELETE ] && [ $ACTION != REALLYDELETE ] && [ $ACTION != SETPERMS ] && [ $ACTION != REALLYSETPERMS ] && [ $ACTION != MOVE ] && [ $ACTION != REALLYMOVE ] && [ $ACTION != REALLYCOPY ] && [ $ACTION != CANCELCOPY ] && [ $ACTION != RENAME ] && [ $ACTION != REALLYRENAME ] && [ $ACTION != EDIT ] && [ $ACTION != REALLYEDIT ] && [ $ACTION != CREATEDIR ] && [ $ACTION != REALLYCREATEDIR ] && [ $ACTION != RESTORE ] && [ $ACTION != REALLYRESTORE ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"You have not entered a correct action."
 show_status
 fi
 #echo $DATA'<br>'

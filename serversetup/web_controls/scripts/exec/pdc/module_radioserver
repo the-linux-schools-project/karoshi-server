@@ -108,10 +108,10 @@ fi
 echo `date`: module_radioserver - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/serversetup/language/$LANGCHOICE/modules/radioserver/setupradioserver ] || LANGCHOICE=englishuk
+TEXTDOMAIN=karoshi-server
+
+[ -f /opt/karoshi/serversetup/language/$LANGCHOICE/modules/radioserver/setupradioserver ] || 
 source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/radioserver/setupradioserver
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 
 if [ $SERVERNAME = `hostname-fqdn` ]

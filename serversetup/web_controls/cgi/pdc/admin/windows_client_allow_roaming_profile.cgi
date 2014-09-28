@@ -33,19 +33,17 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/allow_roaming_profile ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/allow_roaming_profile
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Allow Roaming Profile"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Required data
 #########################
@@ -86,7 +84,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -94,13 +92,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -109,7 +107,7 @@ fi
 #Check to see that username is not blank
 if [ $USERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The user name should not be blank."
 show_status
 fi
 
@@ -117,14 +115,14 @@ fi
 getent passwd $USERNAME 1>/dev/null 
 if [ `echo $?` != 0 ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"This user does not exist."
 show_status
 fi
 
 #Check that the username is not for a system account
 if [ `id -u $USERNAME` -lt 500 ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"You cannot use a roaming profile with a system account."
 show_status
 fi
 
@@ -132,14 +130,14 @@ fi
 #Check that the username is not the karoshi user
 if [ $USERNAME = karoshi ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"You cannot use a roaming profile for the karoshi user."
 show_status
 fi
 
 #Check to see that this user does not already have a roaming profile
 if [ -d /home/applications/profiles/$USERNAME ]
 then
-MESSAGE=$ERRORMSG6
+MESSAGE=$"This user already has a roaming profile."
 show_status
 fi 
 
@@ -149,8 +147,8 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:" | sudo -H /opt/karoshi/web_c
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 0 ]
 then
-MESSAGE=`echo $COMPLETEDMSG $USERNAME.`
+MESSAGE=`echo $"A roaming profile has been enabled for" $USERNAME.`
 else
-MESSAGE=`echo $ERRORMSG5 $USERNAME.`
+MESSAGE=`echo $"There was a problem enabling a roaming profile for" $USERNAME.`
 fi
 show_status

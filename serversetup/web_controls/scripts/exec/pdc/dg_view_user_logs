@@ -142,10 +142,6 @@ fi
 
 echo `date`: dg_view_user_logs - Viewing logs "for" $USERNAME $DAY-$MONTH-$YEAR by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #View logs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 WIDTH1=60
 WIDTH2=90
@@ -165,15 +161,15 @@ fi
 
 if [ $DETAILED = yes ]
 then
-USERS=users_detailed
-DETAIL_ICON=normal_logs.png
-DETAILED2=no
-DETAILEDLOGSMSG=$DETAILEDLOGSMSG2
+	USERS=users_detailed
+	DETAIL_ICON=normal_logs.png
+	DETAILED2=no
+	DETAILEDLOGSMSG=$"Normal logs"
 else
-USERS=users
-DETAIL_ICON=detailed_logs.png
-DETAILED2=yes
-DETAILEDLOGSMSG=$DETAILEDLOGSMSG1
+	USERS=users
+	DETAIL_ICON=detailed_logs.png
+	DETAILED2=yes
+	DETAILEDLOGSMSG=$"Detailed logs"
 fi
 
 
@@ -192,24 +188,24 @@ LOGTYPE=NOTSET
 #Create table header
 if [ '$MOBILE' = no ]
 then
-	echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>'$TITLE' '$USERNAME' '$DAY'-'$MONTH'-'$YEAR'</b></td><td style=\"vertical-align: top; width: 25px;\"><form action=\"user_internet_access.cgi\" method=\"post\" target=\"_blank\">
-<input name=\"_ACTION_view_USERNAMES_'$USERNAME'_\" type=\"submit\" class=\"button\" value=\"'$BANMSG'\">
+	echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>'$"User Internet Logs"' '$USERNAME' '$DAY'-'$MONTH'-'$YEAR'</b></td><td style=\"vertical-align: top; width: 25px;\"><form action=\"user_internet_access.cgi\" method=\"post\" target=\"_blank\">
+<input name=\"_ACTION_view_USERNAMES_'$USERNAME'_\" type=\"submit\" class=\"button\" value=\"'$"Ban User"'\">
 </form></td><td style=\"vertical-align: top; width: 25px;\"><form action=\"dg_view_user_logs.cgi\" method=\"post\" target=\"_top\">
 <input name=\"_ACTION_view_USERNAME_'$USERNAME'_DATE_'$DAY'-'$MONTH'-'$YEAR'_DETAILED_'$DETAILED2'_\" type=\"submit\" class=\"button\" value=\"'$DETAILEDLOGSMSG'\">
 </form></td><td style=\"vertical-align: top; width: 25px;\"><form action=\"dg_view_user_usage.cgi\" method=\"post\" target=\"_top\">
-<input name=\"_USERNAME_'$USERNAME'_\" type=\"submit\" class=\"button\" value=\"'$VIEWUSAGEMSG'\">
+<input name=\"_USERNAME_'$USERNAME'_\" type=\"submit\" class=\"button\" value=\"'$"Internet usage"'\">
 </form></td></tr></tbody></table><br></div><div id=\"infobox\">"
 else
-	echo "<b>'$TITLE' '$USERNAME' '$DAY'-'$MONTH'-'$YEAR'</b><br><table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody>
+	echo "<b>'$"User Internet Logs"' '$USERNAME' '$DAY'-'$MONTH'-'$YEAR'</b><br><table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody>
 <tr><td style=\"vertical-align: top; width: 25px;\"><form action=\"user_internet_access.cgi\" method=\"post\" target=\"_blank\">
-<input name=\"_USERNAMES_'$USERNAME'_\" type=\"submit\" class=\"button\" value=\"'$BANMSG'\">
+<input name=\"_ACTION_view_USERNAMES_'$USERNAME'_\" type=\"submit\" class=\"button\" value=\"'$"Ban User"'\">
 </form></td><td style=\"vertical-align: top; width: 25px;\"><form action=\"dg_view_user_usage.cgi\" method=\"post\" target=\"_top\">
-<input name=\"_USERNAME_'$USERNAME'_\" type=\"submit\" class=\"button\" value=\"'$VIEWUSAGEMSG'\">
+<input name=\"_USERNAME_'$USERNAME'_\" type=\"submit\" class=\"button\" value=\"'$"Internet usage"'\">
 </form></td></tr></tbody></table><br>"
 fi
 
 echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: '$WIDTH1'px;\"><b>'$FILTERMSG'</b></td><td style=\"width: '$WIDTH2'px;\"><b>'$TIMEMSG'</b></td><td></td><td style=\"width: '$WIDTH3'px;\"><b>'$COMPIP'</b></td><td></td><td><b>'$WEBURL'</b></td></tr>"
+<tr><td style=\"width: '$WIDTH1'px;\"><b>'$"Filter"'</b></td><td style=\"width: '$WIDTH2'px;\"><b>'$"Time"'</b></td><td></td><td style=\"width: '$WIDTH3'px;\"><b>'$"Client"'</b></td><td></td><td><b>'$"Website"'</b></td></tr>"
 if [ $LOGTYPE = text ]
 then
 cat /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$USERS'/'$USERNAME'
@@ -229,25 +225,24 @@ LOGTYPE=NOTSET
 #Create table header
 if [ $MOBILE = no ]
 then
-	echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>$TITLE $USERNAME $DAY-$MONTH-$YEAR</b></td><td style=\"vertical-align: top; width: 25px;\"><form action=\"user_internet_access.cgi\" method=\"post\" target=\"_blank\">
-<input name=\"_ACTION_view_USERNAMES_$USERNAME"_"\" type=\"submit\" class=\"button\" value=\"$BANMSG\">
-</form></td><td style=\"vertical-align: top; width: 25px;\"><form action=\"dg_view_user_logs.cgi\" method=\"post\" target=\"_top\">
-<input name=\"_USERNAME_$USERNAME"_"DATE_$DAY-$MONTH-$YEAR"_"DETAILED_$DETAILED2"_"\" type=\"submit\" class=\"button\" value=\"$DETAILEDLOGSMSG\">
-</form></td><td style=\"vertical-align: top; width: 25px;\"><form action=\"dg_view_user_usage.cgi\" method=\"post\" target=\"_top\">
-<input name=\"_USERNAME_$USERNAME"_"\" type=\"submit\" class=\"button\" value=\"$VIEWUSAGEMSG\">
-</form></td></tr></tbody></table><br></div><div id=\"infobox\">"
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td style="vertical-align: top;\"><b>'$"User Internet Logs"' '$USERNAME' '$DAY'-'$MONTH'-'$YEAR'</b></td><td style="vertical-align: top; width: 25px;"><form action="user_internet_access.cgi" method="post" target="_blank">
+<input name="_ACTION_view_USERNAMES_'$USERNAME'_" type="submit" class="button" value="'$"Ban User"'">
+</form></td><td style="vertical-align: top; width: 25px;"><form action="dg_view_user_logs.cgi" method="post" target="_top">
+<input name="_USERNAME_'$USERNAME'_DATE_'$DAY'-'$MONTH'-'$YEAR'_DETAILED_'$DETAILED2'_" type="submit" class="button" value="'$"Detailed logs"'">
+</form></td><td style="vertical-align: top; width: 25px;"><form action="dg_view_user_usage.cgi" method=\"post" target="_top">
+<input name="_USERNAME_'$USERNAME'_" type="submit" class="button" value="'$"Internet usage"'">
+</form></td></tr></tbody></table><br></div><div id="infobox">'
 else
-	echo "<b>$TITLE $USERNAME $DAY-$MONTH-$YEAR</b><br><table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody>
-<tr><td style=\"vertical-align: top; width: 25px;\"><form action=\"user_internet_access.cgi\" method=\"post\" target=\"_blank\">
-<input name=\"_ACTION_view_USERNAMES_$USERNAME"_"\" type=\"submit\" class=\"button\" value=\"$BANMSG\">
-</form></td><td style=\"vertical-align: top; width: 25px;\"><form action=\"dg_view_user_usage.cgi\" method=\"post\" target=\"_top\">
-<input name=\"_USERNAME_$USERNAME"_"\" type=\"submit\" class=\"button\" value=\"$VIEWUSAGEMSG\">
-</form></td></tr></tbody></table><br>"
+	echo '<b>'$"User Internet Logs"' '$USERNAME' '$DAY'-'$MONTH'-'$YEAR'</b><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="0" cellspacing="0"><tbody>
+<tr><td style="vertical-align: top; width: 25px;"><form action="user_internet_access.cgi" method="post" target="_blank">
+<input name="_ACTION_view_USERNAMES_'$USERNAME'_" type="submit" class="button" value="'$"Ban User"'">
+</form></td><td style="vertical-align: top; width: 25px;"><form action="dg_view_user_usage.cgi" method="post" target="_top">
+<input name="_USERNAME_'$USERNAME'_" type="submit" class="button" value="'$"Internet usage"'">
+</form></td></tr></tbody></table><br>'
 fi
 
-
-echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: $WIDTH1"px";\"><b>$FILTERMSG</b></td><td style=\"width: $WIDTH2"px";\"><b>$TIMEMSG</b></td><td></td><td style=\"width: $WIDTH3"px";\"><b>$COMPIP</b></td><td></td><td><b>$WEBURL</b></td></tr>"
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: '$WIDTH1'px;"><b>'$"Filter"'</b></td><td style="width: '$WIDTH2'px;"><b>'$"Time"'</b></td><td></td><td style="width: '$WIDTH3'px;"><b>'$"Client"'</b></td><td></td><td><b>'$"Website"'</b></td></tr>'
 if [ $LOGTYPE = text ]
 then
 	cat /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME

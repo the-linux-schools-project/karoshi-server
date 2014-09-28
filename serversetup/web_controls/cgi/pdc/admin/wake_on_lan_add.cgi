@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/wake_on_lan_add ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/wake_on_lan_add
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -45,7 +43,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Wake on Lan - Schedule"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">'
 echo "<link rel="stylesheet" href="/css/$STYLESHEET"><script src=\"/all/stuHover.js\" type=\"text/javascript\"></script>"
 echo "</head><body><div id='pagecontainer'>"
 #########################
@@ -67,7 +65,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -75,24 +73,24 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/wake_on_lan_add2.cgi" method="post"><div id="actionbox"><b>'$TITLE'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$WOLHELP'<br><br>'$WOLHELP2'</span></a><br><br>'
+echo '<form action="/cgi-bin/admin/wake_on_lan_add2.cgi" method="post"><div id="actionbox"><b>'$"Wake on Lan - Schedule"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will schedule all of the computers in your selected location to be turned on."'<br><br>'$"The computers have to be declared in the asset register with a valid mac address."'</span></a><br><br>'
 #Time to wake location up
 echo '<table class="standard" style="text-align: left; height: 60px;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
-<tr><td style="width: 200px;"><b>'$TIMEMSG'</b></td><td>'
-echo '<input maxlength="2" size="2" name="_HOUR_" value="08"> : <input maxlength="2" size="2" name="_MINUTES_" value="15"> </td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$TIMEHELP'</span></a></td></tr><tr><td><b>'$LOCATIONMSG'</b></td><td>'
+<tr><td style="width: 200px;"><b>'$"Time"'</b></td><td>'
+echo '<input maxlength="2" size="2" name="_HOUR_" value="08"> : <input maxlength="2" size="2" name="_MINUTES_" value="15"> </td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please enter in the time that you want the computers in your selected location to be turned on."'</span></a></td></tr><tr><td><b>'$"Location"'</b></td><td>'
 #Show current rooms
 LOCATION_COUNT=`cat /var/lib/samba/netlogon/locations.txt | wc -l`
 if [ $LOCATION_COUNT -gt 0 ]
@@ -105,12 +103,12 @@ LOCATION=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/locations.txt`
 echo '<option value="'$LOCATION'">'$LOCATION'</option>'
 let COUNTER=$COUNTER+1
 done
-echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$LOCATIONHELP'</span></a></td></tr></tbody></table>'
+echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Select the location that you want. All computers in this location will be turned on at the time you specify."'</span></a></td></tr></tbody></table>'
 else
-MESSAGE=$ERROR_MESSAGE1
+MESSAGE=$"There are no locations to schedule."
 show_status
 fi
 echo "</div>"
-echo '<div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></div>'
+echo '<div id="submitbox"><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div>'
 echo '</form></div></body></html>'
 exit

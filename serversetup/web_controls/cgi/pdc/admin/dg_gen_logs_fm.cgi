@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_gen_logs ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_gen_logs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -50,7 +48,7 @@ echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Generate Internet Logs"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -58,12 +56,12 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/dg_gen_logs.cgi" name="selectedsites" method="post"><b></b>
-  <div id="actionbox"><div class="sectiontitle">'$TITLE'</div>
+  <div id="actionbox"><div class="sectiontitle">'$"Generate Internet Logs"'</div>
   <br>
-'$GENLOGSMSG' <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$GENLOGHELP1'<br>'$GENLOGHELP2'</span></a><br>
+'$"Generate today's internet logs."' <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Internet logs are normally generated at midnight at the end of every day."'<br>'$"Use this feature only if you urgently need to see today's internet logs."'</span></a><br>
   </div>
   <div id="submitbox">
-  <input value="'$SUBMITMSG'" class="button" type="submit">
+  <input value="'$"Submit"'" class="button" type="submit">
   </div>
 </form>
 </div></body>

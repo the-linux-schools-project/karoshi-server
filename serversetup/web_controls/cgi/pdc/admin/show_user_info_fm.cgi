@@ -32,15 +32,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/show_user_info ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/show_user_info
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -53,7 +51,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE1'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Show User Information"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script type="text/javascript" src="/all/js/jquery.js"></script>
 <script type="text/javascript" src="/all/js/script.js"></script>
@@ -78,22 +76,22 @@ echo '<form action="/cgi-bin/admin/show_user_info.cgi" method="post">'
 
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id ="titlebox">'
 
-echo '<div class="sectiontitle">'$TITLE1'</div>
+echo '<div class="sectiontitle">'$"Show User Information"'</div>
   <br>
   <table class="standard" style="text-align: left; height: 40px;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
       <tr>
         <td style="width: 180px;">
-'$USERNAMEMSG'</td>
+'$"Username"'</td>
         <td><div id="suggestions"></div><input tabindex= "1" style="width: 200px;" name="_USERNAME_" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Show_User_Information"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Show_User_Information"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will show the LDAP information for that user."'</span></a>
       </td></tr>
     </tbody>
   </table><br>'
 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'
 
-/opt/karoshi/web_controls/show_servers $MOBILE adc "$ACTIONMSG"
+/opt/karoshi/web_controls/show_servers $MOBILE adc $"Show user info"
 
 echo '</div></form></div></body></html>'
 exit

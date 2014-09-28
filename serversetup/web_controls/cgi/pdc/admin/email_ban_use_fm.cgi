@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_ban_use ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_ban_use
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -70,7 +68,7 @@ echo '<form name="myform" action="/cgi-bin/admin/email_ban_use.cgi" method="post
 if [ $MOBILE = yes ]
 then
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
+<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$TITLE'</b></a></td></tr></tbody></table><br>'
 else
 echo '<div class="sectiontitle">'$TITLE'</div><br>'
@@ -78,7 +76,7 @@ fi
 
 if [ $MOBILE = yes ]
 then
-echo ''$USERNAMEMSG'<br>
+echo ''$"Username"'<br>
 <input tabindex= "1" name="_USERNAME_" style="width: 160px;" size="20" type="text"><br>'
 
 /opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: 160px;" onClick="rewriteselect();">/g'
@@ -91,7 +89,7 @@ echo '
     <tbody>
       <tr>
         <td style="width: 180px;">
-'$USERNAMEMSG'</td>
+'$"Username"'</td>
         <td><input tabindex= "1" name="_EMAILUSER_" style="width: 200px;" size="20" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$USERHELP1'</span></a>
       </td></tr>
@@ -106,7 +104,7 @@ echo '
 </tbody></table><br>
 </div><div id="submitbox">'
 fi
-echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div></form></div></body></html>
 '
 exit

@@ -30,24 +30,22 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/file/quotas_enable ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/file/quotas_enable
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<html><head><title>'$TITLE'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+echo '<html><head><title>'$"Enable Quotas on Partitions"'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>'
+echo '<div id="actionbox"><div class="sectiontitle">'$"Enable Quotas on Partitions"'</div><br>'
 #########################
 #Get data input
 #########################
@@ -112,7 +110,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -120,13 +118,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -135,37 +133,37 @@ fi
 #Check to see that SERVER is not blank
 if [ $SERVERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"You have not chosen a server."
 show_status
 fi
 if [ $SERVERTYPE'null' = null ]
 then
-MESSAGE=$ERRORMSG6
+MESSAGE=$"The server type cannot be blank."
 show_status
 fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/quotas_enable.cgi | cut -d' ' -f1`
 #Add user
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:" | sudo -H /opt/karoshi/web_controls/exec/quotas_enable
 EXEC_STATUS=`echo $?`
-MESSAGE="$SERVERNAME - $COMPLETEDMSG"
+MESSAGE="$SERVERNAME - $"Quotas have been enabled on /home for this server.""
 if [ $EXEC_STATUS = 101 ]
 then
-MESSAGE=`echo $PROBLEMMSG $LOGMSG`
+MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`
 fi
 if [ $EXEC_STATUS = 102 ]
 then
-MESSAGE="$SERVERNAME - $ERRORMSG3"
+MESSAGE="$SERVERNAME - $"You do not have a partition for /home on this server.""
 fi
 if [ $EXEC_STATUS = 103 ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The /home partition is listed more than once in fstab on this server."
 fi
 if [ $EXEC_STATUS = 104 ]
 then
-MESSAGE="$SERVERNAME - $ERRORMSG5"
+MESSAGE="$SERVERNAME - $"Quotas are already enabled for the /home partition on this server.""
 fi
 if [ $EXEC_STATUS = 105 ]
 then
-MESSAGE=$SSHWARNMSG
+MESSAGE=$"SSH is not enabled for this server."
 fi
 show_status

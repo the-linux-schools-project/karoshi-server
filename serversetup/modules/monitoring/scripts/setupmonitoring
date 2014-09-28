@@ -24,14 +24,12 @@
 
 [ -d $HOME/.tempdata ] || mkdir $HOME/.tempdata
 
-[ -e /opt/karoshi/serversetup/variables/language ] || /opt/karoshi/serversetup/changelanguage
-[ -e /opt/karoshi/serversetup/variables/distro ] || /opt/karoshi/serversetup/changedistro
-
 source /opt/karoshi/serversetup/variables/language
 source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/monitoring/setupmonitoring
-source /opt/karoshi/serversetup/language/$LANGCHOICE/softwareinstall
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/extra_server/software
+
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+TEXTDOMAIN=karoshi-server
 
 #########################
 #Add log entry
@@ -39,9 +37,9 @@ source /opt/karoshi/serversetup/distro/$DISTROCHOICE/extra_server/software
 touch /opt/karoshi/serversetup/setuplog
 echo '##############'setupmonitoring'##############' >> /opt/karoshi/serversetup/install_log
 date >> /opt/karoshi/serversetup/install_log
-if [ `grep -c "$TITLE" /opt/karoshi/serversetup/setuplog` = 0 ]
+if [ `grep -c "$"Setup Server Monitoring"" /opt/karoshi/serversetup/setuplog` = 0 ]
 then
-	echo setupmonitoring:$TITLE://opt/karoshi/serversetup/extra_server/scripts/setupmonitoring >> /opt/karoshi/serversetup/setuplog
+	echo setupmonitoring:$"Setup Server Monitoring"://opt/karoshi/serversetup/extra_server/scripts/setupmonitoring >> /opt/karoshi/serversetup/setuplog
 	chmod 0600 /opt/karoshi/serversetup/setuplog
 fi
 
@@ -63,7 +61,7 @@ fi
 #Copy in config files for mon
 #############################
 
-echo '<li>'$CONFIGUREMONMSG'</li><br>'
+echo '<li>'$"Configuring the monitoring system."'</li><br>'
 [ -d /var/www/html/mon/ ] || ( mkdir -p /var/www/html/mon/ ; chmod 0755 -R /var/www/html/mon/ )
 [ -d /opt/karoshi/server_network/mon/events ] || ( mkdir -p /opt/karoshi/server_network/mon/events ; chmod 0755 -R /opt/karoshi/server_network/mon ; chown mon /opt/karoshi/server_network/mon/events )
 [ -d /opt/karoshi/server_network/mon/messages ] || ( mkdir -p /opt/karoshi/server_network/mon/messages ; chmod 0755 -R /opt/karoshi/server_network/mon ; chown mon /opt/karoshi/server_network/mon/messages )
@@ -126,7 +124,7 @@ fi
 #############################
 #Ensure that apache, mon are running
 ##############################
-echo '<li>'$STARTMONMSG'</li><br>'
+echo '<li>'$"Starting Mon"'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_stop 1>/dev/null 2>/dev/null
 sleep 1
 
@@ -134,7 +132,7 @@ sleep 1
 APACHESTATUS=`ps -e | grep -c -w $APACHEVER`
 if [ $APACHESTATUS = 0 ]
 then
-	echo '<li>'$STARTAPACHEMSG'</li><br>'
+	echo '<li>'$"Starting Apache"'</li><br>'
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 fi
 

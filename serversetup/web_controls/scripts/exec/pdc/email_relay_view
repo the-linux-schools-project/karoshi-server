@@ -30,16 +30,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/email_relay_cgi
 then
-echo `date`: email_relay_view - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_relay_view - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/email_relay_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_relay.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $email_relay_cgi'check' ]
 then
-echo `date`: email_relay_view - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_relay_view - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -51,38 +51,38 @@ then
 echo `date`: email_relay_view - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
 ########################
 #Check data
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: email_relay_view - Not called by email_relay_view.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_relay_view - Not called by email_relay_view.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: email_relay_view - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_relay_view - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: email_relay_view - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_relay_view - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: email_relay_view - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_relay_view - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 echo `date`: email_relay_view - by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_relay ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_relay
+TEXTDOMAIN=karoshi-server
+
 
 ############################
 #Apply relay settings
@@ -91,8 +91,8 @@ EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
 
 if [ `echo $EMAILSERVER'null' | sed 's/ //g'` = null ] 
 then
-echo `date`: email_over_quota_report - blank email server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_over_quota_report - blank email server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 
@@ -112,9 +112,9 @@ else
 CHECK1="checked=\"checked\""
 fi
 
-echo "<table class=\"standard\" style=\"text-align: left\; \" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody><tr><td style=\"width: 180px;\" colspan=\"1\" rowspan=\"1\">'$SEND_DIRECT'</td><td><input name=\"_RELAY_\" value=\"direct\" $CHECK1 type=\"radio\"></td><td></td><td></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Use_E-Mail_Relay#Send_E-Mail_directly\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$HELPMSG1'</span></a></td></tr>
-<tr><td>'$USE_RELAY'</td><td><input name=\"_RELAY_\" value=\"relay\" $CHECK2 type=\"radio\"></td><td>Relay</td>
-<td><span style=\"font-weight: bold;\"><input name=\"_RADDRESS_\" size=\"30\" type=\"text\" value=\"$RELAYHOST\"></span></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Use_E-Mail_Relay#Use_E-Mail_relay\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$HELPMSG2'</span></a></td></tr></tbody></table><br>"
+echo "<table class=\"standard\" style=\"text-align: left\; \" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody><tr><td style=\"width: 180px;\" colspan=\"1\" rowspan=\"1\">'$"Send E-mail directly"'</td><td><input name=\"_RELAY_\" value=\"direct\" $CHECK1 type=\"radio\"></td><td></td><td></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Use_E-Mail_Relay#Send_E-Mail_directly\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$"Choose this option of you want to send your emails directly out to the internet."'</span></a></td></tr>
+<tr><td>'$"Use E-mail relay"'</td><td><input name=\"_RELAY_\" value=\"relay\" $CHECK2 type=\"radio\"></td><td>Relay</td>
+<td><span style=\"font-weight: bold;\"><input name=\"_RADDRESS_\" size=\"30\" type=\"text\" value=\"$RELAYHOST\"></span></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Use_E-Mail_Relay#Use_E-Mail_relay\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$"This is address of the email relay that you want all the email sent to."'</span></a></td></tr></tbody></table><br>"
 
 
 
@@ -133,8 +133,8 @@ else
 CHECK1="checked=\"checked\""
 fi
 
-echo "<table class=\"standard\" style=\"text-align: left\; \" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody><tr><td style=\"width: 180px;\" colspan=\"1\" rowspan=\"1\">$SEND_DIRECT</td><td><input name=\"_RELAY_\" value=\"direct\" $CHECK1 type=\"radio\"></td><td></td><td></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Use_E-Mail_Relay#Send_E-Mail_directly\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$HELPMSG1</span></a></td></tr>
-<tr><td>$USE_RELAY</td><td><input name=\"_RELAY_\" value=\"relay\" $CHECK2 type=\"radio\"></td><td>Relay</td>
-<td><span style=\"font-weight: bold;\"><input name=\"_RADDRESS_\" size=\"30\" type=\"text\" value=\"$RELAYHOST\"></span></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Use_E-Mail_Relay#Use_E-Mail_relay\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$HELPMSG2</span></a></td></tr></tbody></table><br>"
+echo '<table class="standard" style="text-align: left; " border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: 180px;" colspan="1" rowspan="1">'$"Send E-mail directly"'</td><td><input name="_RELAY_" value="direct" '$CHECK1' type="radio"></td><td></td><td></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Use_E-Mail_Relay#Send_E-Mail_directly"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose this option of you want to send your emails directly out to the internet."'</span></a></td></tr>
+<tr><td>'$"Use E-mail relay"'</td><td><input name="_RELAY_" value="relay" '$CHECK2' type="radio"></td><td>'$"Relay"'</td>
+<td><span style="font-weight: bold;"><input name="_RADDRESS_" size="30" type="text" value="'$RELAYHOST'"></span></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Use_E-Mail_Relay#Use_E-Mail_relay"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is address of the email relay that you want all the email sent to."'</span></a></td></tr></tbody></table><br>'
 fi
 

@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/update_moodle ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/update_moodle
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -57,7 +55,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <TITLE>'$TITLE'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+    <TITLE>'$"Update Moodle"'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </HEAD>
@@ -65,7 +63,7 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox">
-<b>'$TITLE'</b>
+<b>'$"Update Moodle"'</b>
 <br><br>'
 
 ########################
@@ -75,14 +73,14 @@ echo '<div id="actionbox">
 #Check that a file has been uploaded
 if [ `ls -1 /var/www/karoshi/moodle | wc -l` = 0 ]
 then
-MESSAGE=$UPLOADERROR1
+MESSAGE=$"You have not uploaded a file."
 show_status
 fi
 
 #Check that only one file has been uploaded
 if [ `ls -1 /var/www/karoshi/moodle | wc -l` -gt 1 ]
 then
-MESSAGE=$UPLOADERROR2
+MESSAGE=$"More than one file has been uploaded."
 show_status
 fi
 
@@ -92,7 +90,7 @@ MOODLEARCHIVE=`ls -1 /var/www/karoshi/moodle | sed -n 1,1p`
 #Check that it has a .tgz file extension
 if [ `echo "$MOODLEARCHIVE" | grep -c .tgz$` != 1 ]
 then
-MESSAGE=$TGZERROR1
+MESSAGE=$"The file you have uploaded does not have a .tgz file extension."
 show_status
 fi
 
@@ -101,37 +99,37 @@ tar --list --file=/var/www/karoshi/moodle/"$MOODLEARCHIVE" > /var/www/karoshi/mo
 ARCHIVESTATUS=`echo $?`
 if [ $ARCHIVESTATUS != 0 ]
 then
-MESSAGE=$CORRUPTARCHIVEMSG
+MESSAGE=$"The archive you have uploaded is corrupt."
 show_status
 fi
 
 if [ `grep -c moodle/config-dist.php$ /var/www/karoshi/moodle_archive_list.txt` != 1 ]
 then
-MESSAGE=`echo $TGZERROR2 - config-dist.php`
+MESSAGE=`echo $"This is not a correct moodle archive and is missing files" - config-dist.php`
 show_status
 fi
 
 if [ `grep -c moodle/version.php$ /var/www/karoshi/moodle_archive_list.txt` != 1 ]
 then
-MESSAGE=`echo $TGZERROR2 - version.php`
+MESSAGE=`echo $"This is not a correct moodle archive and is missing files" - version.php`
 show_status
 fi
 
 if [ `grep -c moodle/install.php$ /var/www/karoshi/moodle_archive_list.txt` != 1 ]
 then
-MESSAGE=`echo $TGZERROR2 - install.php`
+MESSAGE=`echo $"This is not a correct moodle archive and is missing files" - install.php`
 show_status
 fi
 
 if [ `grep -c moodle/index.php$ /var/www/karoshi/moodle_archive_list.txt` != 1 ]
 then
-MESSAGE=`echo $TGZERROR2 - index.php`
+MESSAGE=`echo $"This is not a correct moodle archive and is missing files" - index.php`
 show_status
 fi
 
 if [ `grep -c moodle/backup/backup.php$ /var/www/karoshi/moodle_archive_list.txt` != 1 ]
 then
-MESSAGE=`echo $TGZERROR2 - backup.php`
+MESSAGE=`echo $"This is not a correct moodle archive and is missing files" - backup.php`
 show_status
 fi
 
@@ -142,7 +140,7 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ARCHIVEMD5:$MOODLEARCHIVE:" | sudo -H /
 EXITSTATUS=`echo $?`
 if [ $EXITSTATUS = 102 ]
 then
-MESSAGE=$NOTINSTALLEDMSG
+MESSAGE=$"Moodle is not installed."
 show_status
 fi
 exit

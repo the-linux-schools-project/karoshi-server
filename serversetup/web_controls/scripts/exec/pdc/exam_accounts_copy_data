@@ -50,13 +50,13 @@ then
 echo `date`: exam_accounts_copy_data - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
-EXAM_START=`echo $* | cut -s -d: -f4`
-EXAM_END=`echo $* | cut -s -d: -f5`
-ALL=`echo $* | cut -s -d: -f6`
-READONLY=`echo $* | cut -s -d: -f7`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
+EXAM_START=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
+EXAM_END=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5`
+ALL=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f6`
+READONLY=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f7`
 [ $READONLY'null' = null ] && READONLY=no
 ########################
 #Check data
@@ -88,10 +88,8 @@ exit 101
 fi
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/exam_accounts_copy_data ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/exam_accounts_copy_data
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 ########################
 #Check the accounts to copy to
@@ -116,7 +114,7 @@ fi
 COUNTER=$EXAMSTART
 while [ $COUNTER -le $EXAMEND ]
 do
-echo $COPYDATAMSG2 exam$COUNTER'<br>'
+echo $"Copying files to" exam$COUNTER'<br>'
 
 if [ ! -d /home/users/exams/exam$COUNTER ]
 then

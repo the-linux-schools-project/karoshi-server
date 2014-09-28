@@ -67,13 +67,13 @@ then
 echo `date`: remote_management_restrict - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
-ACTION=`echo $* | cut -s -d: -f4`
-TCPADDRESS=`echo $* | cut -s -d: -f5`
-TCPCOMMENT=`echo $* | cut -s -d: -f6 | sed 's/+/ /g'`
-ADMINLEVEL=`echo $* | cut -s -d: -f7`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\%+-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\%+-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\%+-' | cut -s -d: -f3`
+ACTION=`echo $* | tr -cd 'A-Za-z0-9\._:\%+-' | cut -s -d: -f4`
+TCPADDRESS=`echo $* | tr -cd 'A-Za-z0-9\._:\%+-' | cut -s -d: -f5`
+TCPCOMMENT=`echo $* | tr -cd 'A-Za-z0-9\._:\%+-' | cut -s -d: -f6 | sed 's/+/ /g'`
+ADMINLEVEL=`echo $* | tr -cd 'A-Za-z0-9\._:\%+-' | cut -s -d: -f7`
 ########################
 #Check data
 ########################
@@ -125,15 +125,13 @@ fi
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_restrict ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_restrict
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 #Check to see if primary admin
 ADMIN_DATA=`grep ^$REMOTE_USER: /opt/karoshi/web_controls/remote_management_users`
@@ -208,7 +206,7 @@ echo $TCPADDRESS:"$TCPCOMMENT" >> /opt/karoshi/web_controls/web_admin_restrictio
 if [ `grep -c -w ^$REMOTE_ADDR /opt/karoshi/web_controls/web_admin_restrictions` = 0 ]
 then
 #Make sure that not locked out
-echo $REMOTE_ADDR:"$LOCKCOMMENT" >> /opt/karoshi/web_controls/web_admin_restrictions
+echo $REMOTE_ADDR:$"Added to prevent this computer from being locked out." >> /opt/karoshi/web_controls/web_admin_restrictions
 fi
 fi
 fi
@@ -273,13 +271,13 @@ then
 TCPIPLINE=`grep -n $TCPADDRESS /opt/karoshi/web_controls/web_tech_restrictions | cut -d: -f1`
 COMMENT=`sed -n $TCPIPLINE,$TCPIPLINE'p' /opt/karoshi/web_controls/web_tech_restrictions | cut -d: -f2`
 fi
-echo '<b>'$EDIT_TITLE'</b><br><br>'
+echo '<b>'$"Edit Remote Administration Access"'</b><br><br>'
 echo '<form action="/cgi-bin/admin/remote_management_restrict3.cgi" method="post">'
 echo '<input name="_CURRENTTCPIP_" value="'$TCPADDRESS'" type="hidden">'
 echo '<input name="_ADMINLEVEL_" value="'$ADMINLEVEL'" type="hidden">'
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>'
-echo '<tr><td style="width: 180px;">'$TCPMSG'</td><td><input maxlength="15" name="_TCPADDRESS_" value="'$TCPADDRESS'" size="15"></td></tr>'
-echo '<tr><td>'$COMMENTMSG'</td><td><input maxlength="30" name="_TCPCOMMENT_" value="'$COMMENT'" size="30"></td></tr></tbody></table><br><br>'
+echo '<tr><td style="width: 180px;">'$"TCPIP address"'</td><td><input maxlength="15" name="_TCPADDRESS_" value="'$TCPADDRESS'" size="15"></td></tr>'
+echo '<tr><td>'$"Comment"'</td><td><input maxlength="30" name="_TCPCOMMENT_" value="'$COMMENT'" size="30"></td></tr></tbody></table><br><br>'
 echo '<input value="Submit" type="submit"> <input value="Reset" type="reset"></form>'
 exit
 fi
@@ -298,15 +296,15 @@ echo '<form action="/cgi-bin/admin/remote_management_restrict2.cgi" method="post
 fi
 echo '<table class="headings" style="text-align: left;" border="0" cellpadding="2" cellspacing="0">'
 echo '<tbody><tr><td>'
-echo '<span style="font-weight: bold;">'$VIEWMSG'</span></td>'
+echo '<span style="font-weight: bold;">'$"Viewing the allowed TCPIP list for levels 1 and 2."'</span></td>'
 if [ $PRIADMINSTATUS = yes ]
 then
-echo '<td><a class="info" href="javascript:void(0)"><input name="_USERACTION_addip_" type="image" class="images" src="/images/submenus/file/details.png" value=""><span>'$ADDENTRYMSG'</span></a></td>'
+echo '<td><a class="info" href="javascript:void(0)"><input name="_USERACTION_addip_" type="image" class="images" src="/images/submenus/file/details.png" value=""><span>'$"Add Entry"'</span></a></td>'
 fi
 echo '</tr></tbody></table><br>'
 if [ $RESTRICT_STATUS = off ]
 then
-echo $NO_TCPIP_RESTRICTIONS'<br><br>'
+echo $"There are no tcpip restrictions in place."'<br><br>'
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="0">'
 echo '<tbody><tr><td style="width: 180px;"><b>TCPIP</b><td><b>Comment</b></td></tr>'
@@ -333,10 +331,10 @@ fi
 #Web tech restrictions
 echo '<table class="headings" style="text-align: left;" border="0" cellpadding="2" cellspacing="0">'
 echo '<tbody><tr><td>'
-echo '<span style="font-weight: bold;">'$VIEWMSG2'</span></td>'
+echo '<span style="font-weight: bold;">'$"Viewing the allowed TCPIP list for level 3."'</span></td>'
 if [ $PRIADMINSTATUS = yes ]
 then
-echo '<td><a class="info" href="javascript:void(0)"><input name="_USERACTION_addip_" type="image" class="images" src="/images/submenus/file/details.png" value=""><span>'$ADDENTRYMSG'</span></a></td>'
+echo '<td><a class="info" href="javascript:void(0)"><input name="_USERACTION_addip_" type="image" class="images" src="/images/submenus/file/details.png" value=""><span>'$"Add Entry"'</span></a></td>'
 fi
 echo '</tr></tbody></table><br>'
 if [ `cat /opt/karoshi/web_controls/web_tech_restrictions | wc -l` = 0 ]
@@ -347,7 +345,7 @@ RESTRICT_STATUS=on
 fi
 if [ $RESTRICT_STATUS = off ]
 then
-echo $NO_TCPIP_RESTRICTIONS'<br><br>'
+echo $"There are no tcpip restrictions in place."'<br><br>'
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="0">'
 echo '<tbody><tr><td style="width: 180px;"><b>TCPIP</b><td><b>Comment</b></td></tr>'

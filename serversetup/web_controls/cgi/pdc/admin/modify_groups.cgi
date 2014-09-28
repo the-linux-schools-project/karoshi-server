@@ -32,19 +32,17 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/modify_groups ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/modify_groups
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Bulk user actions"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
 <SCRIPT language=JavaScript1.2>
 //change 5 to another integer to alter the scroll speed. Greater is faster
 var speed=1
@@ -203,7 +201,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -211,13 +209,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -226,13 +224,13 @@ fi
 #Check to see that optionchoice is not blank
 if [ $OPTIONCHOICE'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The option choice must not be blank."
 show_status
 fi
 #Check to see that the group is not blank
 if [ $GROUP'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The group must not be blank."
 show_status
 fi
 
@@ -240,33 +238,33 @@ fi
 getent group $GROUP 1>/dev/null
 if [ $? != 0 ]
 then
-MESSAGE=$ERRORMSG6
+MESSAGE=$"This group does not exist."
 show_status
 fi
 
 #Check to see that the option choice is correct
 if [ $OPTIONCHOICE != enable ] && [ $OPTIONCHOICE != disable ] && [ $OPTIONCHOICE != changepasswords ] && [ $OPTIONCHOICE != resetpasswords ] && [ $OPTIONCHOICE != deleteaccounts ] && [ $OPTIONCHOICE != deleteaccounts2 ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"Incorrect option chosen."
 show_status
 fi
 
 #Check to see that MODCODE is not blank
 if [ $MODCODE'null' = null ]
 then
-MESSAGE=$ERRORMSG7
+MESSAGE=$"The modify code must not be blank."
 show_status
 fi
 #Check to see that FORMCODE is not blank
 if [ $FORMCODE'null' = null ]
 then
-MESSAGE=$ERRORMSG8
+MESSAGE=$"The form code must not be blank."
 show_status
 fi
 #Make sure that FORMCODE and MODCODE matches
 if [ $FORMCODE != $MODCODE ]
 then
-MESSAGE=$ERRORMSG9
+MESSAGE=$"Incorrect modify code."
 show_status
 fi
 
@@ -275,39 +273,39 @@ if [ $OPTIONCHOICE = changepasswords ]
 then
 if [ $PASSWORD1'null' = null ] || [ $PASSWORD2'null' = null ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The passwords must not be blank."
 show_status
 fi
 if [ $PASSWORD1 != $PASSWORD2 ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"The passwords do not match."
 show_status
 fi
 fi
 
 if [ $OPTIONCHOICE = enable ]
 then
-MESSAGE=`echo $ACTION1 $GROUP`
+MESSAGE=`echo $"Enable all users in group" $GROUP`
 fi
 if [ $OPTIONCHOICE = disable ]
 then
-MESSAGE=`echo $ACTION2 $GROUP`
+MESSAGE=`echo $"Disable all users in group" $GROUP`
 fi
 if [ $OPTIONCHOICE = changepasswords ]
 then
-MESSAGE=`echo $ACTION3 $GROUP`
+MESSAGE=`echo $"Change passwords for all users in group" $GROUP`
 fi
 if [ $OPTIONCHOICE = resetpasswords ]
 then
-MESSAGE=`echo $ACTION4 $GROUP`
+MESSAGE=`echo $"Reset passwords all users in group" $GROUP`
 fi
 if [ $OPTIONCHOICE = deleteaccounts ]
 then
-MESSAGE=`echo $ACTION5 $GROUP`
+MESSAGE=`echo $"Delete all users in group" $GROUP`
 fi
 if [ $OPTIONCHOICE = deleteaccounts2 ]
 then
-MESSAGE=`echo $ACTION6 $GROUP`
+MESSAGE=`echo $"Archive and delete all users in group" $GROUP`
 fi
 
 #Generate navigation bar
@@ -318,16 +316,16 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$OPTIONCHOICE:$GROUP:$PASSWORD1:$EXCEPTI
 MODIFY_STATUS=`echo $?`
 if [ $MODIFY_STATUS = 102 ]
 then
-MESSAGE=$ERRORMSG8
+MESSAGE=$"The form code must not be blank."
 show_status
 fi
 
 if [ $OPTIONCHOICE != resetpasswords ]
 then
-MESSAGE=`echo $COMPLETEDMSG $GROUP.`
+MESSAGE=`echo $"Action completed for" $GROUP.`
 show_status
 else
-echo '<br><br>'$COMPLETEDMSG $GROUP'<br>'
+echo '<br><br>'$"Action completed for" $GROUP'<br>'
 echo "</div>"
 fi
 exit

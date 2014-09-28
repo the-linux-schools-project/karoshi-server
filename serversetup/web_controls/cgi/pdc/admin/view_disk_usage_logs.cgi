@@ -32,13 +32,11 @@
 MOBILE=no
 source /opt/karoshi/web_controls/detect_mobile_browser
 
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/view_disk_usage_logs ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/view_disk_usage_logs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
@@ -103,7 +101,7 @@ done
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View Disk Usage Logs"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
@@ -130,7 +128,7 @@ echo '</head><body><div id="pagecontainer">'
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -138,13 +136,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -154,13 +152,13 @@ fi
 #Check to see that LOGVIEW is not blank
 if [ $LOGVIEW'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The logview cannot be blank."
 show_status
 fi
 #Check to see that DATE is not blank
 if [ $DATE'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The date cannot be blank."
 show_status
 fi
 
@@ -173,38 +171,38 @@ YEAR=`echo $DATE | cut -d- -f3`
 #Check to see that MONTH is not blank
 if [ $MONTH'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The date cannot be blank."
 show_status
 fi
 #Check to see that YEAR is not blank
 if [ $YEAR'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The date cannot be blank."
 show_status
 fi
 
 if [ $DAY -gt 31 ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"Incorrect date format."
 show_status
 fi
 
 if [ $MONTH -gt 12 ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"Incorrect date format."
 show_status
 fi
 
 if [ $YEAR -lt 2006 ] || [ $YEAR -gt 3006 ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"Incorrect date format."
 show_status
 fi
 
 #Check to see that server is not blank
 if [ $SERVER'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"You have not chosen any servers."
 show_status
 fi
 
@@ -227,16 +225,16 @@ SERVER2=`echo "${SERVER:0:9}" | cut -d. -f1`
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$SERVER2'</span>
-<a href="/cgi-bin/admin/view_disk_usage_logs_fm.cgi">'$TITLE'</a>
+<a href="/cgi-bin/admin/view_disk_usage_logs_fm.cgi">'$"View Disk Usage Logs"'</a>
 </div></div>
 <div id="mobileactionbox">
 '
 
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
-<td style="vertical-align: top;"><b>'$TITLE'</b></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Usage_Logs"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td>
-<td style="vertical-align: top;"><a href="view_disk_usage_logs_fm.cgi"><input class="button" type="button" name="" value="'$CHOOSESERVERMSG'"></a></td>
+<td style="vertical-align: top;"><b>'$"View Disk Usage Logs"'</b></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Usage_Logs"><img class="images" alt="" src="/images/help/info.png"><span>'$"The disk usage logs show the overall usage for each partition on your server."'</span></a></td>
+<td style="vertical-align: top;"><a href="view_disk_usage_logs_fm.cgi"><input class="button" type="button" name="" value="'$"Select server"'"></a></td>
 </tr></tbody></table><br>
 '
 fi

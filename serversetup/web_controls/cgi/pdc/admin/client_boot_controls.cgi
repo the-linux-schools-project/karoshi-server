@@ -31,15 +31,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/asset_register ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/asset_register
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -50,7 +48,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE6'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Boot Controls"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -130,7 +128,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$ERRORMSG7
+export MESSAGE=$"You have not chosen a location."
 show_status
 fi
 #########################
@@ -138,13 +136,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -154,7 +152,7 @@ fi
 #Check to see that LOCATION is not blank
 if [ $LOCATION'null' = null ]
 then
-MESSAGE=$ERRORMSG7
+MESSAGE=$"You have not chosen a location."
 show_status
 fi
 
@@ -163,7 +161,7 @@ then
 #Check to see that SEARCH is not blank
 if [ $SEARCH'null' = null ]
 then
-MESSAGE=$ERRORMSG9
+MESSAGE=$"The asset search cannot be blank."
 show_status
 fi
 LOCATION=$SEARCH
@@ -188,7 +186,7 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE6'</span>
+	<span>'$"Client Boot Controls"'</span>
 <a href="/cgi-bin/admin/client_boot_controls_fm.cgi">'$LOCATION'</a>
 </div></div><div id="mobileactionbox">
 '
@@ -201,20 +199,20 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 <tbody><tr>
 <td style="vertical-align: top;">
 <form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
-<input name="_ACTION_enableall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$ENABLEALLMSG'">
+<input name="_ACTION_enableall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$"Enable All"'">
 </form></td>
 <td style="vertical-align: top;">
 <form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
-<input name="_ACTION_resetall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$RESETALLMSG'">
+<input name="_ACTION_resetall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$"Reset All"'">
 </form></td></tr>
 <tr>
 <td style="vertical-align: top;">
 <form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
-<input name="_ACTION_activatechanges_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$ACTIVATECHANGESMSG'">
+<input name="_ACTION_activatechanges_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$"Activate Changes"'">
 </form></td>
 <td style="vertical-align: top;">
 <form action="/cgi-bin/admin/asset_register_view.cgi" method="post">
-<input name="_ACTION_view_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$TITLE18'">
+<input name="_ACTION_view_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$"Asset Register"'">
 </form></td>
 </tr></tbody></table>'
 
@@ -224,30 +222,30 @@ ICON2=/images/submenus/client/wakeupall.png
 ICON3=/images/submenus/client/reset_all.png
 ICON4=/images/assets/location.png
 
-echo '<b>'$TITLE6' - '$LOCATION'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo '<b>'$"Client Boot Controls"' - '$LOCATION'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tr><td style="vertical-align: top;">
 <form action="/cgi-bin/admin/client_boot_controls_fm.cgi" method="post">
-<input name="_LOCATION_NOTSET_" type="submit" class="button" value="'$CHOOSELOCATIONMSG'">
+<input name="_LOCATION_NOTSET_" type="submit" class="button" value="'$"Choose Location"'">
 </form></td>
 <td style="vertical-align: top;">
 <form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
-<input name="_ACTION_activatechanges_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$ACTIVATECHANGESMSG'">
+<input name="_ACTION_activatechanges_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$"Activate Changes"'">
 </form></td>
 <td style="vertical-align: top;">
 <form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
-<input name="_ACTION_enableall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$ENABLEALLMSG'">
+<input name="_ACTION_enableall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$"Enable All"'">
 </form></td>
 <td style="vertical-align: top;">
 <form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
-<input name="_ACTION_resetall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$RESETALLMSG'">
+<input name="_ACTION_resetall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$"Reset All"'">
 </form></td>
 <td style="vertical-align: top;">
 <form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
-<input name="_ACTION_wakeonlanall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$WAKEONLANALLMSG'">
+<input name="_ACTION_wakeonlanall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$"Wake location"'">
 </form></td>
 <td style="vertical-align: top;">
 <form action="/cgi-bin/admin/asset_register_view.cgi" method="post">
-<input name="_ACTION_view_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$TITLE18'">
+<input name="_ACTION_view_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$"Asset Register"'">
 </form>
 </td>
 </tr></table>'

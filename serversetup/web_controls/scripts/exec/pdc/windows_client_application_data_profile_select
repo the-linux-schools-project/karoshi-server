@@ -51,12 +51,12 @@ then
 echo `date`: windows_client_application_data_profile_select - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1 | tr -cd 'A-Za-z0-9\._:\-'`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2 | tr -cd 'A-Za-z0-9\._:\-'`
-REMOTE_MD5=`echo $* | cut -s -d: -f3 | tr -cd 'A-Za-z0-9\._:\-'`
-FILENAME=`echo $* | cut -s -d: -f4 | tr -cd 'A-Za-z0-9\._:\-'`
-WINDOWSVER=`echo $* | cut -s -d: -f5 | tr -cd 'A-Za-z0-9\._:\-'`
-PRIGROUP=( `echo $* | cut -s -d: -f6- | sed 's/:/ /g'` )
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
+FILENAME=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
+WINDOWSVER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5`
+PRIGROUP=( `echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f6- | sed 's/:/ /g'` )
 ########################
 #Check data
 ########################
@@ -122,18 +122,16 @@ rm -f -R /var/www/karoshi/win_application_data_upload/
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/windows_client_application_data_upload ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/windows_client_application_data_upload
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #######################
 #Check that compressed profile is valid
 #######################
 FILENAME2=`echo $FILENAME | sed 's/SPACECORRECT/ /g'`
-echo '<b>'$CHECKSTATUSMSG'</b><br><br>'
+echo '<b>'$"Archive Check"'</b><br><br>'
 if [ `echo $FILENAME | grep -c '\<zip\>'` = 1 ]
 then
 ARCHIVE_TYPE=zip
@@ -150,11 +148,11 @@ ARCHIVE_STATUS=`echo $?`
 fi
 if [ $ARCHIVE_STATUS != 0 ]
 then
-echo $FILENAME2 : $BADARCHIVEMSG'<br><br>'
+echo $FILENAME2 : $"The archive is not valid."'<br><br>'
 echo `date`: windows_client_application_data_profile_select - The archive format is not valid by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 else
-echo $FILENAME2 : $ARCHIVEOKMSG'<br><br>'
+echo $FILENAME2 : $"No errors detected in this archive."'<br><br>'
 fi
 #######################
 #Extract profile
@@ -197,7 +195,7 @@ do
 FOLDER=`basename "$FOLDERS"`
 #Log event
 echo `date`: windows_client_application_data_profile_select - copying "$FOLDER" to $CURRENTGROUP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $FOLDER: $COPYMSG $CURRENTGROUP$PROFILEVER'<br><br>'
+echo $FOLDER: $"Copying to" $CURRENTGROUP$PROFILEVER'<br><br>'
 [ ! -d "/home/applications/profiles/$CURRENTGROUP$PROFILEVER/Application Data" ] && mkdir -p "/home/applications/profiles/$CURRENTGROUP$PROFILEVER/Application Data"
 [ -d "/home/applications/profiles/$CURRENTGROUP$PROFILEVER/Application Data/$FOLDER" ] && rm -f -R "/home/applications/profiles/$CURRENTGROUP$PROFILEVER/Application Data/$FOLDER"
 cp -f -R /opt/karoshi/.tempdata/win_application_data_new.$$/"$FOLDER" "/home/applications/profiles/$CURRENTGROUP$PROFILEVER/Application Data/"

@@ -35,19 +35,17 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/samba_shares ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/samba_shares
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE1'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add Additional Network Share"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -182,7 +180,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -190,13 +188,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -205,37 +203,37 @@ fi
 #Check to see that FOLDERNAME is not blank
 if [ $FOLDERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"You have not entered a folder name."
 show_status
 fi
 #Check to see that GROUP is not blank
 if [ $GROUP'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"You have not entered a group."
 show_status
 fi
 #Check to see that GROUPPERMS is not blank
 if [ $GROUPPERMS'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"You have not chosen any group permissions."
 show_status
 fi
 #Check to see that OTHERSPERMS is not blank
 if [ $OTHERSPERMS'null' = null ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"You have not chosen any permissions for other users."
 show_status
 fi
 #Check to see that SERVERNAME is not blank
 if [ $SERVERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"You have not chosen a server name."
 show_status
 fi
 #Check to see that SERVERTYPE is not blank
 if [ $SERVERTYPE'null' = null ]
 then
-MESSAGE=$ERRORMSG6
+MESSAGE=$"You have not chosen a server type."
 show_status
 fi
 
@@ -243,7 +241,7 @@ if [ $SERVERTYPE = federatedslave ]
 then
 if [ $SERVERMASTER'null' = null ]
 then
-MESSAGE=$ERRORMSG7
+MESSAGE=$"You have not chosen a server master."
 show_status
 fi
 fi
@@ -253,16 +251,16 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$COMMENT:$FOLDERNAME:$GROUP:$GROUPPERMS:
 STATUS=`echo $?`
 if [ $STATUS = 102 ]
 then
-MESSAGE=$ERRORMSG8
+MESSAGE=$"The folder you have chosen already exists in /home."
 show_status
 fi
 if [ $STATUS = 103 ]
 then
-MESSAGE=$ERRORMSG9
+MESSAGE=$"This share is already declared in the samba configuration file."
 show_status
 fi
 
-MESSAGE=`echo ''$SERVERMSG': '$HOSTNAME'\\n'$SHAREMSG': '$FOLDERNAME'\\n\\n'$ADDEDSHAREMSG''`
+MESSAGE=`echo ''$"Server"': '$HOSTNAME'\\n'$"Share"': '$FOLDERNAME'\\n\\n'$"This share has been added."''`
 echo "$MESSAGE"
 show_status
 exit

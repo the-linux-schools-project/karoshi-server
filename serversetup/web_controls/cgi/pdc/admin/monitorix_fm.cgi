@@ -32,15 +32,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 #Language
 ############################
 SHUTDOWN_CODE=`echo ${RANDOM:0:3}`
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/monitorix ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/monitorix
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -53,7 +51,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Monitorix System Monitor"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
@@ -104,34 +102,34 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+	<span>'$"Monitorix System Monitor"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">'
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr>
-<td style="vertical-align: top;"><div class="sectiontitle">'$TITLE'</div></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=System_Monitoring"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td></tr></tbody></table><br></div><div id="infobox">'
+<td style="vertical-align: top;"><div class="sectiontitle">'$"Monitorix System Monitor"'</div></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=System_Monitoring"><img class="images" alt="" src="/images/help/info.png"><span>'$"Monitorix is a system monitoring tool."'</span></a></td></tr></tbody></table><br></div><div id="infobox">'
 fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
       <tr>
-        <td style="width: '$WIDTH'px;">'$INTERVALMSG'</td>
+        <td style="width: '$WIDTH'px;">'$"Monitor Interval"'</td>
         <td style="vertical-align: top; text-align: left;">
 
 <select name="____INTERVAL____">
-<option value="D">'$DAILYMSG'</option>
-<option value="W">'$WEEKLYMSG'</option>
-<option value="M">'$MONTHLYMSG'</option>
-<option value="Y">'$YEARLYMSG'</option>
+<option value="D">'$"Daily"'</option>
+<option value="W">'$"Weekly"'</option>
+<option value="M">'$"Monthly"'</option>
+<option value="Y">'$"Yearly"'</option>
 </select>
 </td></tr>
 </tbody></table><br>
 '
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE servers "$ACTIONMSG" no no ____
+/opt/karoshi/web_controls/show_servers $MOBILE servers $"Show statistics" no no ____
 
 [ $MOBILE = no ] && echo '</div>'
 

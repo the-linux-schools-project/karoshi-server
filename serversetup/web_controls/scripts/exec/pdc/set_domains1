@@ -48,10 +48,8 @@ REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 
 echo `date`: set_domains1 - Getting data "for" $REMOTE_USER at $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/web/set_domains ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/web/set_domains
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 #Get moodle domain
 if [ -f /var/www/html/moodle/config.php ]
@@ -70,11 +68,11 @@ MOODLEDOMAIN=`ssh -x -o PasswordAuthentication=no $SERVER grep wwwroot /var/www/
 fi
 
 echo '<table class="standard" style="text-align: left; height: 20px;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="width: 200px;"><b>'$SERVICEMSG'</b></td><td><b>'$DOMAINMSG'</b></td><td></td><td>'$SUBFOLDERMSG'</td></tr>
+<tbody><tr><td style="width: 200px;"><b>'$"Web Service"'</b></td><td><b>'$"Domain"'</b></td><td></td><td>'$"Sub Folder"'</td></tr>
 <tr><td style="width: 200px;">
-'$MOODLEDOMAINMSG'</td>
+'$"Moodle - E Learning"'</td>
         <td><input tabindex= "1" name="_MOODLEDOMAIN_" size="35" type="text" value="'$MOODLEDOMAIN'"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png" /><span>'$MOODLEDOMAINHELP'</span></a>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png" /><span>'$"This is the domain for the elearning platform."'</span></a>
       </td><td>moodle</td></tr>
     </tbody>
   </table><br><br>'

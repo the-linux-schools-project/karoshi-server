@@ -136,13 +136,11 @@ echo `date`: software_raid_control2 - server $SERVER action $ACTION raiddevice $
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/software_raid ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/software_raid
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 
 if [ $SERVERNAME = `hostname-fqdn` ]
@@ -162,7 +160,7 @@ DRIVE2=`echo $DRIVE | sed "s/1//g"`
 #If status is faulty just remove the drive
 if [ $STATUS = faulty ]
 then
-echo $DRIVE - $REMOVINGDISKMSG"<br><br>"
+echo $DRIVE - $"Removing this disk from the raid.""<br><br>"
 mdadm --manage $RAIDDEVICE --remove $DRIVE
 parted -s $DRIVE2 mklabel gpt
 parted -s $DRIVE2 mkpart primary 0 100%
@@ -180,13 +178,13 @@ MINDRIVES=1
 
 if [ $DEVICE_COUNT -gt $MINDRIVES ]
 then
-echo $DRIVE - $REMOVINGDISKMSG"<br><br>"
+echo $DRIVE - $"Removing this disk from the raid.""<br><br>"
 mdadm $RAIDDEVICE --fail $DRIVE --remove $DRIVE
 parted -s $DRIVE2 mklabel gpt
 parted -s $DRIVE2 mkpart primary 0 100%
 sleep 4
 else
-echo $DRIVE - $ERRORMSG11
+echo $DRIVE - $"This drive cannot be removed because there will not be enough drives left in the raid array."
 sleep 4
 fi
 fi
@@ -194,7 +192,7 @@ fi
 
 if [ $ACTION = add ]
 then
-echo $DRIVE - $ADDDINGDISKMSG"<br><br>"
+echo $DRIVE - $"Adding this disk to the raid.""<br><br>"
 parted -s $DRIVE mklabel gpt
 parted -s $DRIVE mkpart primary 0 100%
 parted -s $DRIVE set 1 raid on
@@ -230,7 +228,7 @@ DRIVE2=`echo '$DRIVE' | sed "s/1//g"`
 #If status is faulty just remove the drive
 if [ $STATUS = faulty ]
 then
-echo '$DRIVE' - '$REMOVINGDISKMSG'"<br><br>"
+echo '$DRIVE' - '$"Removing this disk from the raid."'"<br><br>"
 mdadm --manage '$RAIDDEVICE' --remove '$DRIVE'
 parted -s $DRIVE2 mklabel gpt
 parted -s $DRIVE2 mkpart primary 0 100%
@@ -248,13 +246,13 @@ MINDRIVES=1
 
 if [ $DEVICE_COUNT -gt $MINDRIVES ]
 then
-echo '$DRIVE' - '$REMOVINGDISKMSG'"<br><br>"
+echo '$DRIVE' - '$"Removing this disk from the raid."'"<br><br>"
 mdadm '$RAIDDEVICE' --fail '$DRIVE' --remove '$DRIVE'
 parted -s $DRIVE2 mklabel gpt
 parted -s $DRIVE2 mkpart primary 0 100%
 sleep 4
 else
-echo '$DRIVE' - '$ERRORMSG11'
+echo '$DRIVE' - '$"This drive cannot be removed because there will not be enough drives left in the raid array."'
 sleep 4
 fi
 fi
@@ -262,7 +260,7 @@ fi
 
 if [ '$ACTION' = add ]
 then
-echo '$DRIVE' - '$ADDDINGDISKMSG'"<br><br>"
+echo '$DRIVE' - '$"Adding this disk to the raid."'"<br><br>"
 parted -s '$DRIVE' mklabel gpt
 parted -s '$DRIVE' mkpart primary 0 100%
 parted -s '$DRIVE' set 1 raid on
@@ -301,7 +299,7 @@ DRIVE2=`echo '$DRIVE' | sed "s/1//g"`
 #If status is faulty just remove the drive
 if [ $STATUS = faulty ]
 then
-echo '$DRIVE' - '$REMOVINGDISKMSG'"<br><br>"
+echo '$DRIVE' - '$"Removing this disk from the raid."'"<br><br>"
 mdadm --manage '$RAIDDEVICE' --remove '$DRIVE'
 parted -s $DRIVE2 mklabel gpt
 parted -s $DRIVE2 mkpart primary 0 100%
@@ -319,13 +317,13 @@ MINDRIVES=1
 
 if [ $DEVICE_COUNT -gt $MINDRIVES ]
 then
-echo '$DRIVE' - '$REMOVINGDISKMSG'"<br><br>"
+echo '$DRIVE' - '$"Removing this disk from the raid."'"<br><br>"
 mdadm '$RAIDDEVICE' --fail '$DRIVE' --remove '$DRIVE'
 parted -s $DRIVE2 mklabel gpt
 parted -s $DRIVE2 mkpart primary 0 100%
 sleep 4
 else
-echo '$DRIVE' - '$ERRORMSG11'
+echo '$DRIVE' - '$"This drive cannot be removed because there will not be enough drives left in the raid array."'
 sleep 4
 fi
 fi
@@ -333,7 +331,7 @@ fi
 
 if [ '$ACTION' = add ]
 then
-echo '$DRIVE' - '$ADDDINGDISKMSG'"<br><br>"
+echo '$DRIVE' - '$"Adding this disk to the raid."'"<br><br>"
 parted -s '$DRIVE' mklabel gpt
 parted -s '$DRIVE' mkpart primary 0 100%
 parted -s '$DRIVE' set 1 raid on

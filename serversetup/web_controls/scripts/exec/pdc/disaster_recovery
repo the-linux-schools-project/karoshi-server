@@ -111,12 +111,10 @@ fi
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/disaster_recovery ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/disaster_recovery
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 TABLECLASS=standard
 [ $MOBILE = yes ] && TABLECLASS=mobilestandard
@@ -125,7 +123,7 @@ TABLECLASS=standard
 #Check that a backup server has been assigned for the selected server.
 if [ ! -f /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backupserver ]
 then
-echo $SERVERNAME - $ERRORMSG4
+echo $SERVERNAME - $"A backup server has not been assigned for this server."
 exit
 fi
 
@@ -133,7 +131,7 @@ fi
 
 BACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backupserver`
 
-RESTOREOPTIONS=$(ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $BACKUPSERVER '
+RESTOREOPTIONS=$(ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $"Back"UPSERVER '
 
 RESTOREOPTIONS=""
 
@@ -211,68 +209,68 @@ echo $RESTOREOPTIONS
 echo '
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody>
-<tr><td style="width: 180px;"><b>'$RECOVERYOPTION'</b></td><td><b>'$SELECT'</b></td></tr>'
+<tr><td style="width: 180px;"><b>'$"Recovery Option"'</b></td><td><b>'$"Select"'</b></td></tr>'
 
 #inbox
 if [ `echo $RESTOREOPTIONS | grep -c inbox` -gt 0 ]
 then
-echo '<tr><td>'$EMAIL'</td><td><input name="_RESTOREOPTIONS_" value="inbox" type="checkbox"></td></tr>'
+echo '<tr><td>'$"E-Mail - User Inboxes"'</td><td><input name="_RESTOREOPTIONS_" value="inbox" type="checkbox"></td></tr>'
 fi
 #ldap
 if [ `echo $RESTOREOPTIONS | grep -c -w ldap` -gt 0 ]
 then
-echo '<tr><td>'$LDAPDATA'</td><td><input name="_RESTOREOPTIONS_" value="ldap" type="checkbox"></td></tr>'
+echo '<tr><td>'$"Ldap - User and Machine Data"'</td><td><input name="_RESTOREOPTIONS_" value="ldap" type="checkbox"></td></tr>'
 fi
 #Home folders
 if [ `echo $RESTOREOPTIONS | grep -c -w homefolders` -gt 0 ]
 then
-echo '<tr><td>'$HOMEFOLDERS'</td><td><input name="_RESTOREOPTIONS_" value="homefolders" type="checkbox"></td></tr>'
+echo '<tr><td>'$"Home Folders"'</td><td><input name="_RESTOREOPTIONS_" value="homefolders" type="checkbox"></td></tr>'
 fi
 
 #Subjects
 if [ `echo $RESTOREOPTIONS | grep -c -w subjects` -gt 0 ]
 then
-echo '<tr><td>'$SUBJECTSHARE'</td><td><input name="_RESTOREOPTIONS_" value="subjects" type="checkbox"></td></tr>'
+echo '<tr><td>'$"Subjects Share"'</td><td><input name="_RESTOREOPTIONS_" value="subjects" type="checkbox"></td></tr>'
 fi
 #Staffshare
 if [ `echo $RESTOREOPTIONS | grep -c -w staffshare` -gt 0 ]
 then
-echo '<tr><td>'$STAFFSHARE'</td><td><input name="_RESTOREOPTIONS_" value="staffshare" type="checkbox"></td></tr>'
+echo '<tr><td>'$"Staff Share"'</td><td><input name="_RESTOREOPTIONS_" value="staffshare" type="checkbox"></td></tr>'
 fi
 #Officeshare
 if [ `echo $RESTOREOPTIONS | grep -c -w officeshare` -gt 0 ]
 then
-echo '<tr><td>'$OFFICESHARE'</td><td><input name="_RESTOREOPTIONS_" value="officeshare" type="checkbox"></td></tr>'
+echo '<tr><td>'$"Office Share"'</td><td><input name="_RESTOREOPTIONS_" value="officeshare" type="checkbox"></td></tr>'
 fi
 #itadminshare
 if [ `echo $RESTOREOPTIONS | grep -c -w itadminshare` -gt 0 ]
 then
-echo '<tr><td>'$ITADMINSHARE'</td><td><input name="_RESTOREOPTIONS_" value="itadminshare" type="checkbox"></td></tr>'
+echo '<tr><td>'$"Itadmin Share"'</td><td><input name="_RESTOREOPTIONS_" value="itadminshare" type="checkbox"></td></tr>'
 fi
 #Cups
 if [ `echo $RESTOREOPTIONS | grep -c -w cups` -gt 0 ]
 then
-echo '<tr><td>'$CUPSPRINTING'</td><td><input name="_RESTOREOPTIONS_" value="cups" type="checkbox"></td></tr>'
+echo '<tr><td>'$"Cups Printing"'</td><td><input name="_RESTOREOPTIONS_" value="cups" type="checkbox"></td></tr>'
 fi
 #html
 if [ `echo $RESTOREOPTIONS | grep -c -w html` -gt 0 ]
 then
-echo '<tr><td>'$WEBSITES'</td><td><input name="_RESTOREOPTIONS_" value="html" type="checkbox"></td></tr>'
+echo '<tr><td>'$"Web Sites"'</td><td><input name="_RESTOREOPTIONS_" value="html" type="checkbox"></td></tr>'
 fi
 #mysql
 if [ `echo $RESTOREOPTIONS | grep -c -w mysql` -gt 0 ]
 then
-echo '<tr><td>'$MYSQLDATABASES'</td><td><input name="_RESTOREOPTIONS_" value="mysql" type="checkbox"></td></tr>'
+echo '<tr><td>'$"Mysql Databases"'</td><td><input name="_RESTOREOPTIONS_" value="mysql" type="checkbox"></td></tr>'
 fi
 #Profiles
 if [ `echo $RESTOREOPTIONS | grep -c -w profiles` -gt 0 ]
 then
-echo '<tr><td>'$WINDOWSPROFILES'</td><td><input name="_RESTOREOPTIONS_" value="profiles" type="checkbox"></td></tr>'
+echo '<tr><td>'$"Windows Profiles"'</td><td><input name="_RESTOREOPTIONS_" value="profiles" type="checkbox"></td></tr>'
 fi
 #Netlogon
 if [ `echo $RESTOREOPTIONS | grep -c -w netlogon` -gt 0 ]
 then
-echo '<tr><td>'$NETLOGONFOLDER'</td><td><input name="_RESTOREOPTIONS_" value="netlogon" type="checkbox"></td></tr>'
+echo '<tr><td>'$"Netlogon Folder"'</td><td><input name="_RESTOREOPTIONS_" value="netlogon" type="checkbox"></td></tr>'
 fi
 echo '</tbody></table>'
 

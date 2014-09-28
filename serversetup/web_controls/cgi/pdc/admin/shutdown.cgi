@@ -37,19 +37,17 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/shutdown ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/shutdown
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Shutdown-Reboot Server"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -179,7 +177,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -187,13 +185,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -202,26 +200,26 @@ fi
 #Check to see that shutdown option is not blank
 if [ $SHUTDOWN_OPTION'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"No shutdown option."
 show_status
 fi
 
 #Only allow shutdown and reboot.
 if [ $SHUTDOWN_OPTION != shutdown ] && [ $SHUTDOWN_OPTION != reboot ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"You must only choose shutdown or reboot."
 show_status
 fi
 #Check to see that a server has been picked to shut down
 if [ $SERVERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"You must choose a server to shut down."
 show_status
 fi
 #Check to see that a server type is not blank
 if [ $SERVERTYPE'null' = null ]
 then
-MESSAGE=$ERRORMSG8
+MESSAGE=$"The server type cannot be blank."
 show_status
 fi
 
@@ -229,19 +227,19 @@ fi
 #Check to see that SHUTDOWNCODE is not blank
 if [ $SHUTDOWNCODE'null' = null ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"The shutdown code must not be blank."
 show_status
 fi
 #Check to see that FORMCODE is not blank
 if [ $FORMCODE'null' = null ]
 then
-MESSAGE=$ERRORMSG6
+MESSAGE=$"The form code must not be blank."
 show_status
 fi
 #Make sure that FORMCODE and SHUTDOWNCODE matches
 if [ $FORMCODE != $SHUTDOWNCODE ]
 then
-MESSAGE=$ERRORMSG7
+MESSAGE=$"Incorrect shutdown code."
 show_status
 fi
 
@@ -262,11 +260,11 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE'</span>
+	<span>'$"Shutdown-Reboot Server"'</span>
 <a href="/cgi-bin/admin/shutdown_fm.cgi">'$SERVERNAME'</a>
 </div></div><div id="mobileactionbox">'
 else
-echo '<div class="sectiontitle">'$TITLE'</div><br>'
+echo '<div class="sectiontitle">'$"Shutdown-Reboot Server"'</div><br>'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/shutdown.cgi | cut -d' ' -f1`
@@ -275,7 +273,7 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SHUTDOWN_OPTION:$SERVERNAME:$SERVERTYPE
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 102 ]
 then
-MESSAGE=$ERRORMSG6
+MESSAGE=$"The form code must not be blank."
 show_status
 fi
 echo "</div>"

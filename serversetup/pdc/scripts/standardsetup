@@ -3,7 +3,10 @@ export DEBIAN_FRONTEND=noninteractive
 source /opt/karoshi/serversetup/variables/choice
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/variables/language
-source /opt/karoshi/serversetup/language/$LANGCHOICE/standardsetup
+
+TEXTDOMAIN=karoshi-server
+locale 1>/dev/null
+
 #baseinstallpdc
 BASEINSTALLPATH=/opt/karoshi/serversetup/pdc/scripts
 BASEINSTALLPATH2=/opt/karoshi/serversetup/web_controls
@@ -17,7 +20,7 @@ function checkstatus {
 EXITSTATUS=`echo $?`
 if [ $EXITSTATUS = 101 ]
 then
-yad --title "$TITLE $VERSION" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --text="$ERRORMSG1" --timeout=3 --no-buttons 2>/dev/null
+yad --title $"Main Server Setup" $VERSION --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --text=''$"The standard setup has not completed correctly."'' --timeout=3 --no-buttons 2>/dev/null
 exit
 fi
 if [ $EXITSTATUS = 103 ]
@@ -28,45 +31,45 @@ fi
 
 function do_setup {
 echo "1"
-echo "# $NETWORKCHECK"
+echo '# '$"Checking Network"''
 $BASEINSTALLPATH3/checknetwork pdc 1>>$KAROSHILOG 2>>$KAROSHILOG
 checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
 echo "17"
-echo "# $SETUP $SHOREWALL"
+echo '# '$"Setup"' '$"Shorewall"''
 $BASEINSTALLPATH/setupshorewall 1>>$KAROSHILOG 2>>$KAROSHILOG
 checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
 echo "34"
-echo "# $SETUP $NTP"
+echo '# '$"Setup"' '$"NTP"''
 $BASEINSTALLPATH/setupntp 1>>$KAROSHILOG 2>>$KAROSHILOG
 checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
 echo "51"
-echo "# $SETUP $SAMBA"
+echo '# '$"Setup"' '$"Samba"''
 $BASEINSTALLPATH/setupsamba 1>>$KAROSHILOG 2>>$KAROSHILOG
 checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
 echo "68"
-echo "# $SETUP $ROOTCA"
+echo '# '$"Setup"' '$"Root CA for SSL"''
 $BASEINSTALLPATH/setup_root-ca 1>>$KAROSHILOG 2>>$KAROSHILOG
 checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
 echo "85"
-echo "# $SETUP $WEBCONTROLS"
+echo '# '$"Setup"' '$"Web Management"''
 $BASEINSTALLPATH2/setup_web_controls interactive 1>>$KAROSHILOG 2>>$KAROSHILOG
 checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
 echo "90"
-echo "# $SETUP $MONITORIX"
+echo '# '$"Setup"' '$"Monitorix"''
 /opt/karoshi/serversetup/modules/monitoring/monitorix/setupmonitorix 1>>$KAROSHILOG 2>>$KAROSHILOG
 checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
 echo "95"
-echo "# $SETUP $MONITORIXWEBMANAGEMENT"
+echo '# '$"Setup"' '$"Monitorix Web Management"''
 /opt/karoshi/serversetup/web_controls/scripts/monitorixwebmanagement 1>>$KAROSHILOG 2>>$KAROSHILOG
 checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
 echo "100"
-echo "# $SETUP $KAROSHIDESKTOP"
+echo '# '$"Setup"' '$"Karoshi Desktop"''
 $BASEINSTALLPATH/setupkaroshidesktop 1>>$KAROSHILOG 2>>$KAROSHILOG
 #Kill status bar
 killall yad
 }
 
-do_setup | yad --title "$TITLE" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --geometry=400x100+0+10 --no-buttons --text "Main Server Setup\n\n\n$STATUS" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --progress 2>/dev/null
+do_setup | yad --title $"Main Server Setup" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --geometry=400x100+0+10 --no-buttons --text $"Main Server Setup""\n\n\n$STATUS" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --progress 2>/dev/null
 
 #Configure /opt/karoshi/serversetup for git in case this is a development server
 /opt/karoshi/serversetup/all/scripts/configure_git 1>>$KAROSHILOG 2>>$KAROSHILOG

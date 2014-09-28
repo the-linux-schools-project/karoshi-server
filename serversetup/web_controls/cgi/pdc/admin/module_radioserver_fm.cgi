@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/serversetup/language/$LANGCHOICE/modules/radioserver/setupradioserver ] || LANGCHOICE=englishuk
-source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/radioserver/setupradioserver
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -48,7 +46,7 @@ echo ""
 echo '
 <html>
 <head>
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Setup Internet Radio Server"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -93,7 +91,7 @@ exit
 #Check to see that servername is not blank
 if [ $SERVERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The server cannot be blank."
 show_status
 fi
 
@@ -103,30 +101,30 @@ fi
 echo '
 <form action="/cgi-bin/admin/module_radioserver.cgi" method="post">
 <div id="actionbox">
-<div class="sectiontitle">'$TITLE - $SERVERNAME'</div><br>
+<div class="sectiontitle">'$"Setup Internet Radio Server" - $SERVERNAME'</div><br>
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
-<b>'$DESCRIPTIONMSG'</b><br><br>
-'$HELPMSG1'<br><br>
-<b>'$PARAMETERSMSG'</b><br><br>
+<b>'$"Description"'</b><br><br>
+'$"This will set up an Internet Radio Server for your network."'<br><br>
+<b>'$"Parameters"'</b><br><br>
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="0">
     <tbody>
       <tr>
         <td style="width: 180px;">
-'$ADMINPASSMSG'</td>
+'$"Admin Password"'</td>
         <td><input tabindex= "1"  name="_ADMINPASS_" style="width: 200px;" size="20" type="password"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$ADMINPASSHELP'</span></a>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is used to access the icecast server as the admin user."'</span></a>
       </td></tr>
       <tr>
         <td style="width: 180px;">
-'$SOURCEPASSMSG'</td>
+'$"Source Password"'</td>
         <td><input tabindex= "1"  name="_SOURCEPASS_" style="width: 200px;" size="20" type="password"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$SOURCEPASSHELP'</span></a>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is needed by the program that you are using to stream your sound to the icecast server."'</span></a>
       </td></tr>
       <tr>
         <td style="width: 180px;">
-'$RELAYPASSMSG'</td>
+'$"Relay Password"'</td>
         <td><input tabindex= "1" name="_RELAYPASS_" style="width: 200px;" size="20" type="password"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$RELAYPASSHELP'</span></a>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is needed if you want to use your icecast server as a relay."'</span></a>
       </td></tr>
 
 
@@ -135,7 +133,7 @@ echo '
 '
 echo '</div>
 <div id="submitbox">
-<input value="'$SUBMITMSG'" class="button" type="submit">
+<input value="'$"Submit"'" class="button" type="submit">
 </div>
 </form>
 </div></body>

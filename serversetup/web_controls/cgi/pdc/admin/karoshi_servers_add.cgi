@@ -33,17 +33,15 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/karoshi_servers_add ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/karoshi_servers_add
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add Server"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
 <SCRIPT language=JavaScript1.2>
 //change 5 to another integer to alter the scroll speed. Greater is faster
 var speed=1
@@ -210,7 +208,7 @@ done
 #########################
 if [ https_$HTTPS != https_on ]
 then
-	export MESSAGE=$HTTPS_ERROR
+	export MESSAGE=$"You must access this page via https."
 	show_status
 fi
 #########################
@@ -218,13 +216,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-	MESSAGE=$ACCESS_ERROR1
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-	MESSAGE=$ACCESS_ERROR1
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 #########################
@@ -233,39 +231,39 @@ fi
 #Check to see that servername is not blank
 if [ -z "$SERVERNAME" ]
 then
-	MESSAGE=$ERRORMSG1
+	MESSAGE=$"The server must not be blank."
 	show_status
 fi
 
 #Check to see that password fields are not blank
 if [ -z "$PASSWORD1" ]
 then
-	MESSAGE=$ERRORMSG2
+	MESSAGE=$"The password must not be blank."
 	show_status
 fi
 if [ -z "$PASSWORD2" ]
 then
-	MESSAGE=$ERRORMSG2
+	MESSAGE=$"The password must not be blank."
 	show_status
 fi
 #Check that password has been entered correctly
 if [ "$PASSWORD1" != "$PASSWORD2" ]
 then
-	MESSAGE=$ERRORMSG3
+	MESSAGE=$"The passwords do not match."
 	show_status
 fi
 
 #Check to see that authentication is not blank
 if [ -z "$AUTHENTICATION" ]
 then
-	MESSAGE=$ERRORMSG7
+	MESSAGE=$"You have not picked an authentication type."
 	show_status
 fi
 
 #Check to see that authentication is not blank
 if [ -z "$ZONE" ]
 then
-	MESSAGE=$ERRORMSG7
+	MESSAGE=$"You have not picked an authentication type."
 	show_status
 fi
 
@@ -314,20 +312,20 @@ fi
 MAINSERVERIP=`net lookup $HOSTNAME`
 if [ "$MAINSERVERIP" = "$TCPIPNUMBER" ]
 then
-	MESSAGE=$ERRORMSG6
+	MESSAGE=$"You have entered in the same TCPIP address as the main server."
 	show_status
 fi
 
-echo '<div id="titlebox"><div class="sectiontitle">'$TITLE' - '$SERVERNAME'</div><br></div><div id="infobox">'
+echo '<div id="titlebox"><div class="sectiontitle">'$"Add Server"' - '$SERVERNAME'</div><br></div><div id="infobox">'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/karoshi_servers_add.cgi | cut -d' ' -f1`
 sudo -H /opt/karoshi/web_controls/exec/karoshi_servers_add $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$PASSWORD1:$TCPIPNUMBER:$AUTHENTICATION:$ZONE
 EXEC_STATUS=`echo $?`
 
-MESSAGE=`echo $SERVERNAME - $COMPLETEDMSG`
+MESSAGE=`echo $SERVERNAME - $"ssh has been enabled."`
 if [ $EXEC_STATUS = 101 ]
 then
-	MESSAGE=`echo $SERVERNAME - $ERRORMSG5`
+	MESSAGE=`echo $SERVERNAME - $"There was a problem enabling ssh for this server. Please check the web administration logs."`
 	show_status
 fi
 test_connections

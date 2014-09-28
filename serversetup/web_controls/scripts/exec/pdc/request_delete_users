@@ -143,8 +143,6 @@ fi
 
 
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/request_delete_users ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/request_delete_users
 
 #Do something with the data!
 
@@ -168,7 +166,7 @@ SESSIONNAME=`date +%s`.$$
 [ $FORENAME10'null' != null ] && echo $FORENAME10:$SURNAME10:$GROUP10:$ADNO10:$MYUSERNAME: > /opt/karoshi/user_requests/delete_users/$SESSIONNAME.10
 
 
-echo '<a href="/cgi-bin/admin/request_delete_users_fm.cgi" target="_top">'$DELETEREQUESTMSG'</a>' > /opt/karoshi/web_controls/warnings/messages/request_delete_users
-/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add request_delete_users /cgi-bin/admin/request_delete_users_fm.cgi "$DELETEREQUESTMSG" webwarning2.gif
+echo '<a href="/cgi-bin/admin/request_delete_users_fm.cgi" target="_top">'$"Request for user deletion."'</a>' > /opt/karoshi/web_controls/warnings/messages/request_delete_users
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add request_delete_users /cgi-bin/admin/request_delete_users_fm.cgi $"Request for user deletion." webwarning2.gif
 
 exit $CHANGE_PASS_STATUS

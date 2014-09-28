@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/exam_accounts_copy_data ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/exam_accounts_copy_data
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -49,7 +47,7 @@ echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <title>'$TITLE2'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Exam Accounts - Copy Data"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -57,12 +55,12 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/exam_accounts_copy_data.cgi" method="post"><div id="actionbox">
-<b>'$TITLE2'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$COPYDATAMSG'</span></a><br><br>'
+<b>'$"Exam Accounts - Copy Data"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please select the exam accounts that you want to copy the data to."'</span></a><br><br>'
 #Check to see if any data has been uploaded
 if [ `ls -1 /var/www/karoshi/exam_upload | wc -l` = 0 ]
 then
 echo '
-'$ERRORMSG1'
+'$"No files have been uploaded to copy to the exam accounts."'
 </div></div></body></html>
 '
 else
@@ -70,14 +68,14 @@ echo '
   <br>
   <table class="standard" style="text-align: left; border="0" cellpadding="2" cellspacing="2">
     <tbody>
-<tr><td style="width: 180px;"><span style="font-weight: bold;">'$STARTACCOUNTMSG'</span></td><td>'$EXAMMSG'</td><td><input name="_EXAMSTART_" maxlength="3" size="3" value="1" type="text"></td></tr>
-<tr><td><span style="font-weight: bold;">'$ENDACCOUNTMSG'</span></td><td>'$EXAMMSG'</td><td><input name="_EXAMEND_" maxlength="3" size="3" value="10" type="text"></td></tr>
-<tr><td><span style="font-weight: bold;">'$ALLMSG'</span></td><td></td><td><input name="_ALL_" value="all" type="checkbox"></td></tr>
-<tr><td><span style="font-weight: bold;">'$READONLYMSG'</span></td><td></td><td><input name="_READONLY_" value="readonly" type="checkbox"> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$UPLOADHELP2'</span></a></td></tr>
+<tr><td style="width: 180px;"><span style="font-weight: bold;">'$"Start Account"'</span></td><td>'$"exam"'</td><td><input name="_EXAMSTART_" maxlength="3" size="3" value="1" type="text"></td></tr>
+<tr><td><span style="font-weight: bold;">'$"End Account"'</span></td><td>'$"exam"'</td><td><input name="_EXAMEND_" maxlength="3" size="3" value="10" type="text"></td></tr>
+<tr><td><span style="font-weight: bold;">'$"All"'</span></td><td></td><td><input name="_ALL_" value="all" type="checkbox"></td></tr>
+<tr><td><span style="font-weight: bold;">'$"Read only"'</span></td><td></td><td><input name="_READONLY_" value="readonly" type="checkbox"> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will set the exam_files folder and the uploaded files to read only in each account. Students will need to copy the files out of the folder to use them."'</span></a></td></tr>
 </tbody></table>
 </div>
 <div id="submitbox">
-  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+  <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>
 </form>
 </div></body>

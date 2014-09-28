@@ -50,14 +50,14 @@ then
 	echo `date`: karoshi_servers_add - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
-SERVER=`echo $* | cut -s -d: -f4`
-PASSWORD=`echo $* | cut -s -d: -f5`
-TCPIPNUMBER=`echo $* | cut -s -d: -f6`
-AUTHENTICATION=`echo $* | cut -s -d: -f7`
-ZONE=`echo $* | cut -s -d: -f8`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-%+-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-%+-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-%+-' | cut -s -d: -f3`
+SERVER=`echo $* | tr -cd 'A-Za-z0-9\._:\-%+-' | cut -s -d: -f4`
+PASSWORD=`echo $* | tr -cd 'A-Za-z0-9\._:\-%+-' | cut -s -d: -f5`
+TCPIPNUMBER=`echo $* | tr -cd 'A-Za-z0-9\._:\-%+-' | cut -s -d: -f6`
+AUTHENTICATION=`echo $* | tr -cd 'A-Za-z0-9\._:\-%+-' | cut -s -d: -f7`
+ZONE=`echo $* | tr -cd 'A-Za-z0-9\._:\-%+-' | cut -s -d: -f8`
 ########################
 #Check data
 ########################
@@ -97,19 +97,17 @@ source /opt/karoshi/serversetup/variables/distro
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/karoshi_servers_add ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/karoshi_servers_add
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 source /opt/karoshi/server_network/domain_information/domain_name
 
 if [ "$SERVER" = "$REALM" ]
 then
-	echo "<li>$SERVER - $ERRORMSG8</li>"
-	echo `date`: karoshi_servers_add - $SERVER - $ERRORMSG8 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "<li>$SERVER - $"The server name cannot be the same as the domain."</li>"
+	echo `date`: karoshi_servers_add - $SERVER - $"The server name cannot be the same as the domain." by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	sleep 3
 	exit 101
 fi
@@ -130,7 +128,7 @@ chmod 0700 /root/.ssh
 if ! test -f $HOME/.ssh/id_ecdsa || ! test -f $HOME/.ssh/id_ecdsa.pub
 then
 	echo `date`: karoshi_servers_add - creating ssh keys by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	echo "<li><b>$CREATESSHKEYMSG - $CREATESSHKEYMSG2</b></li><br>"
+	echo "<li><b>$"Creating server ssh key" - $"This will take some time."</b></li><br>"
 	#Check that timeout has been set
 	TIMEOUTSTATUS=`grep -c '#''   'ConnectTimeout' '0 /etc/ssh/ssh_config`
 	[ $TIMEOUTSTATUS != 0 ] && sed -i 's/#   ConnectTimeout 0/ConnectTimeout 4/g' /etc/ssh/ssh_config
@@ -249,8 +247,8 @@ fi
 if [ $SSHRESULT = 103 ]
 then
 	#TCPIP zone information is not correct
-	echo "<li>$SERVER - $ERRORMSG9</li>"
-	echo `date`: karoshi_servers_add - $SERVER: $ZONE "$ERRORMSG9" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo '<li>'$SERVER' - '$"network settings for this server show that it should not be in the same zone as the main server."'</li>'
+	echo `date`: karoshi_servers_add - $SERVER: $ZONE $"Network settings for this server show that it should not be in the same zone as the main server." by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	sleep 3
 	exit 101
 fi
@@ -258,22 +256,22 @@ fi
 if [ $SSHRESULT = 104 ]
 then
 	#TCPIP zone information is not correct
-	echo "<li>$SERVER - $ERRORMSG10</li>"
-	echo `date`: karoshi_servers_add - $SERVER: $ZONE "$ERRORMSG10" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo '<li>$SERVER - '$"network settings for this server show that it should be in the same zone as the main server."'</li>'
+	echo `date`: karoshi_servers_add - $SERVER: $ZONE $"network settings for this server show that it should be in the same zone as the main server." by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	sleep 3
 	exit 101
 fi
 
 if [ $SSHRESULT != 0 ]
 then
-	echo "<li>$SERVER - $ERRORMSG11</li>"
-	echo `date`: karoshi_servers_add - $SERVER: $ZONE $ERRORMSG11 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo '<li>'$SERVER' - '$"SSH connection failure"'</li>'
+	echo `date`: karoshi_servers_add - $SERVER: $ZONE $"SSH connection failure" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	sleep 3
 	exit 101
 fi
 
 #Check to see if the server is in a different domain.
-echo `date`: karoshi_servers_add - checking that $SERVER is "in" the same domain by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: "karoshi_servers_add - checking that $SERVER is in the same domain by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 REALM2=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $TCPIPNUMBER '
 if [ -f /etc/hostname-fqdn ]
 then
@@ -331,8 +329,8 @@ then
 	if [ $SERVERID1 != $SERVERID2 ]
 	then
 		#Show warning that this server has been re-installed and roles will have to be re-added.
-		echo "<ul><li>$SERVER - $REINSTALLWARNING</li></ul>"
-		echo "<br>$REINSTALLWARNING2<br><br>"
+		echo "<ul><li>$SERVER - $"This server has been re-installed"</li></ul>"
+		echo "<br>$"You will need to re-install all of the modules for this server."<br><br>"
 		sleep 4
 		#Modify role information
 		if [ -d /opt/karoshi/server_network/servers/$SERVER.$REALM ]
@@ -497,7 +495,7 @@ then
 	if [ ! -d /opt/karoshi/server_network/servers/$SERVER.$REALM ]
 	then
 		mkdir -p /opt/karoshi/server_network/servers/$SERVER.$REALM
-		echo $NO_ROLEMSG > /opt/karoshi/server_network/servers/$SERVER.$REALM/no_role
+		echo $"No Role" > /opt/karoshi/server_network/servers/$SERVER.$REALM/no_role
 	fi
 fi
 
@@ -597,7 +595,7 @@ source /opt/karoshi/serversetup/variables/distro
 MODCHECK=`grep -c -w \#monitorix /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
-	echo '$SHOREWALLMSG' - tcp 50005"<br><br>"
+	echo '$"The following extra ports are being allowed"' - tcp 50005"<br><br>"
 	LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 	sed -i $LINENUM"c"\ACCEPT"	"net:'$PDCIP'"	"fw"	"tcp"	"50005"	"-"#"monitorix /etc/shorewall/rules
 	echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules

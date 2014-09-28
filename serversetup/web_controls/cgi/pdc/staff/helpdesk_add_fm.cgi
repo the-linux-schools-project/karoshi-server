@@ -28,15 +28,11 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/helpdesk ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/helpdesk
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -52,7 +48,7 @@ echo '
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title>
+  <title>'$"Help Desk"'</title>
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
 </head>
@@ -75,17 +71,17 @@ echo '<form action="/cgi-bin/staff/helpdesk_add.cgi" method="post"><div id="'$DI
 if [ $MOBILE = yes ]
 then
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/staff/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
-<td style="vertical-align: middle;"><a href="/cgi-bin/staff/mobile_user_menu.cgi"><b>'$TITLE'</b></a></td></tr></tbody></table><br>'
+<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/staff/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"'"></a></td>
+<td style="vertical-align: middle;"><a href="/cgi-bin/staff/mobile_user_menu.cgi"><b>'$"Help Desk"'</b></a></td></tr></tbody></table><br>'
 else
-echo '<b>'$TITLE'</b><br><br>'
+echo '<b>'$"Help Desk"'</b><br><br>'
 fi
 
 echo '<table class="standard" style="text-align: left; height: 91px;" border="0" cellpadding="2" cellspacing="2">
 <tbody>
-<tr><td style="width: 180px;">'$JOBTITLEMMSG'</td><td><input tabindex= "1" maxlength="24" style="width: 200px;" size="20" name="_JOBTITLE_"> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td></tr>
-<tr><td style="width: 180px;">'$ASSETNUMBERMSG'</td><td><input tabindex= "3" maxlength="10" style="width: 200px;" size="20" name="_ASSETNUMBER_">  <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td></tr>
-<tr><td>'$LOCATIONMSG'</td><td>
+<tr><td style="width: 180px;">'$"Request Summary"'</td><td><input tabindex= "1" maxlength="24" style="width: 200px;" size="20" name="_JOBTITLE_"> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a title or summary for the job that you want completed."'</span></a></td></tr>
+<tr><td style="width: 180px;">'$"Computer Number"'</td><td><input tabindex= "3" maxlength="10" style="width: 200px;" size="20" name="_ASSETNUMBER_">  <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"The computer number is used to help identify where it is situated in the room. This can be left blank."'</span></a></td></tr>
+<tr><td>'$"Location"'</td><td>
 '
 
 ###############################
@@ -107,52 +103,52 @@ echo '<option>'$LOCATION'</option>'
 let COUNTER=$COUNTER+1
 done
 echo '</select></td></tr>'
-echo '<tr><td>'$DEPARTMENTMSG'</td>
+echo '<tr><td>'$"Department"'</td>
 <td>
 <select tabindex= "3" style="width: 200px;" name="_DEPARTMENT_">
 <option value=""></option>
-<option value="'$DEPARTMENT1'">'$DEPARTMENT1'</option>
-<option value="'$DEPARTMENT2'">'$DEPARTMENT2'</option>
-<option value="'$DEPARTMENT3'">'$DEPARTMENT3'</option>
-<option value="'$DEPARTMENT4'">'$DEPARTMENT4'</option>
-<option value="'$DEPARTMENT5'">'$DEPARTMENT5'</option>
-<option value="'$DEPARTMENT6'">'$DEPARTMENT6'</option>
-<option value="'$DEPARTMENT7'">'$DEPARTMENT7'</option>
-<option value="'$DEPARTMENT8'">'$DEPARTMENT8'</option>
-<option value="'$DEPARTMENT9'">'$DEPARTMENT9'</option>
-<option value="'$DEPARTMENT10'">'$DEPARTMENT10'</option>
-<option value="'$DEPARTMENT11'">'$DEPARTMENT11'</option>
-<option value="'$DEPARTMENT12'">'$DEPARTMENT12'</option>
-<option value="'$DEPARTMENT13'">'$DEPARTMENT13'</option>
-<option value="'$DEPARTMENT14'">'$DEPARTMENT14'</option>
-<option value="'$DEPARTMENT15'">'$DEPARTMENT15'</option>
-<option value="'$DEPARTMENT16'">'$DEPARTMENT16'</option>
-<option value="'$DEPARTMENT17'">'$DEPARTMENT17'</option>
-<option value="'$DEPARTMENT18'">'$DEPARTMENT18'</option>
-<option value="'$DEPARTMENT19'">'$DEPARTMENT19'</option>
-<option value="'$DEPARTMENT20'">'$DEPARTMENT20'</option>
+<option value="'$"Art"'">'$"Art"'</option>
+<option value="'$"Business Studies"'">'$"Business Studies"'</option>
+<option value="'$"Citizenship"'">'$"Citizenship"'</option>
+<option value="'$"Economics"'">'$"Economics"'</option>
+<option value="'$"English"'">'$"English"'</option>
+<option value="'$"Languages"'">'$"Languages"'</option>
+<option value="'$"Geography"'">'$"Geography"'</option>
+<option value="'$"History"'">'$"History"'</option>
+<option value="'$"ICT"'">'$"ICT"'</option>
+<option value="'$"Mathematics"'">'$"Mathematics"'</option>
+<option value="'$"Media Studies"'">'$"Media Studies"'</option>
+<option value="'$"Music"'">'$"Music"'</option>
+<option value="'$"Physical Education"'">'$"Physical Education"'</option>
+<option value="'$"Personal and Social Education"'">'$"Personal and Social Education"'</option>
+<option value="'$"Religious Studies"'">'$"Religious Studies"'</option>
+<option value="'$"Science"'">'$"Science"'</option>
+<option value="'$"Technology"'">'$"Technology"'</option>
+<option value="'$"Office Staff"'">'$"Office Staff"'</option>
+<option value="'$"Other"'">'$"Other"'</option>
+<option value="'$""'">'$""'</option>
 </select>
 </td></tr>
-<tr><td>'$CATEGORYMSG'</td>
+<tr><td>'$"Category"'</td>
 <td>
 <select tabindex= "4" style="width: 200px;" name="_CATEGORY_">
 <option value=""></option>
-<option value="'$CATEGORY1'">'$CATEGORY1'</option>
-<option value="'$CATEGORY2'">'$CATEGORY2'</option>
-<option value="'$CATEGORY3'">'$CATEGORY3'</option>
-<option value="'$CATEGORY4'">'$CATEGORY4'</option>
-<option value="'$CATEGORY5'">'$CATEGORY5'</option>
-<option value="'$CATEGORY6'">'$CATEGORY6'</option>
-<option value="'$CATEGORY7'">'$CATEGORY7'</option>
-<option value="'$CATEGORY8'">'$CATEGORY8'</option>
-<option value="'$CATEGORY9'">'$CATEGORY9'</option>
-<option value="'$CATEGORY10'">'$CATEGORY10'</option>
-<option value="'$CATEGORY11'">'$CATEGORY11'</option>
+<option value="'$"Hardware"'">'$"Hardware"'</option>
+<option value="'$"Software"'">'$"Software"'</option>
+<option value="'$"Internet"'">'$"Internet"'</option>
+<option value="'$"Printing"'">'$"Printing"'</option>
+<option value="'$"Whiteboard"'">'$"Whiteboard"'</option>
+<option value="'$"Projector"'">'$"Projector"'</option>
+<option value="'$"Wireless"'">'$"Wireless"'</option>
+<option value="'$"Laptop"'">'$"Laptop"'</option>
+<option value="'$"Online Classroom"'">'$"Online Classroom"'</option>
+<option value="'$"Website"'">'$"Website"'</option>
+<option value="'$"Other"'">'$"Other"'</option>
 </select> 
- <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a>
+ <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the category for the problem."'</span></a>
 </td></tr>
-<tr><td>'$USERPROBLEMMSG'</td><td><textarea tabindex= "5" cols="70" rows="8" name="_REQUEST_"></textarea></td>
-<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG4'</span></a></td></tr>
+<tr><td>'$"Extended Details"'</td><td><textarea tabindex= "5" cols="70" rows="8" name="_REQUEST_"></textarea></td>
+<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the details for the help request."'</span></a></td></tr>
 </tbody></table><br>'
 
 if [ $MOBILE = no ]
@@ -160,5 +156,5 @@ then
 echo '</div><div id="submitbox">'
 fi
 
-echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></div></form></div></body></html>'
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div></form></div></body></html>'
 exit

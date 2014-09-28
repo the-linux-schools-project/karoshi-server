@@ -50,10 +50,10 @@ then
 echo `date`: printer_driver_gen2 - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
-MOBILE=`echo $* | cut -s -d: -f4`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
+MOBILE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
 ########################
 #Check data
 ########################
@@ -84,10 +84,6 @@ source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 source /opt/karoshi/server_network/domain_information/domain_name
 
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printer_driver_gen ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printer_driver_gen
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/printserver`
@@ -146,7 +142,7 @@ fi
 '
 SSHSTATUS=`echo $?`
 [ $SSHSTATUS = 103 ] && exit 103
-echo '<br><b>'$PRINTERGENMSG'</b><br>'
+echo '<br><b>'$"Generating Windows Printer Drivers"'</b><br>'
 [ $MOBILE = no ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 ssh -x -o PasswordAuthentication=no $PRINTSERVER '
 #Make sure /var/lib/samba/printers/ exists and has correct permissions
@@ -225,7 +221,7 @@ fi
 #rm -f -R /var/lib/samba/printers/WIN40
 #rm -f -R /var/lib/samba/printers/x64
 #Generate drivers
-echo '<br><b>'$PRINTERGENMSG'</b><br><br>'
+echo '<br><b>'$"Generating Windows Printer Drivers"'</b><br><br>'
 [ $MOBILE = no ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 
 #Make sure /var/lib/samba/printers/ exists and has correct permissions

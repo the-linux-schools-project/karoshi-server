@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/set_default_page ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/set_default_page
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -46,7 +44,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Set Default Page"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head>
 <body onLoad="start()"><div id="pagecontainer">'
 
 #Detect mobile browser
@@ -68,11 +66,11 @@ echo '<form action="/cgi-bin/admin/set_default_page.cgi" method="post"><div id="
 if [ $MOBILE = yes ]
 then
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
-<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$TITLE'</b></a> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td></tr></tbody></table>'
+<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
+<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Set Default Page"'</b></a> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the default page that you want to have for this section of the web management."'</span></a></td></tr></tbody></table>'
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
-<td style="vertical-align: top;"><div class="sectiontitle">'$TITLE'</div></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td></tr></tbody></table><br>'
+<td style="vertical-align: top;"><div class="sectiontitle">'$"Set Default Page"'</div></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the default page that you want to have for this section of the web management."'</span></a></td></tr></tbody></table><br>'
 fi
 
 echo '
@@ -81,28 +79,28 @@ echo '
     <tbody>
       <tr>
         <td style="width: 180px;">
-'$CHOICEMSG'</td>
+'$"Default Page"'</td>
         <td>
 
 <select name="_DEFAULTPAGE_" style="width: 200px;">
 	<option></option>
-        <option value="add_user_fm.cgi">'$ADDUSERMSG'</option>
-        <option value="change_password_fm.cgi">'$CHANGEPASSWORDMSG'</option>
-        <option value="show_user_info_fm.cgi">'$SHOWUSERINFOMSG'</option>
-        <option value="lockout_reset_fm.cgi">'$RESETLOCKOUTMSG'</option>
-        <option value="incident_log_view_fm.cgi">'$VIEWINCIDENTLOGSMSG'</option>
+        <option value="add_user_fm.cgi">'$"Add Users"'</option>
+        <option value="change_password_fm.cgi">'$"Change User Passwords"'</option>
+        <option value="show_user_info_fm.cgi">'$"Show User Information"'</option>
+        <option value="lockout_reset_fm.cgi">'$"Reset User Lockout"'</option>
+        <option value="incident_log_view_fm.cgi">'$"View Incident Logs"'</option>
 
 
-        <option value="helpdesk_view_fm.cgi">'$HELPDESKMSG'</option>
-        <option value="view_karoshi_web_management_logs.cgi">'$WEBMANAGEMENTLOGSMSG'</option>
-	<option value="file_manager.cgi">'$FILEMANAGERMSG'</option>'
+        <option value="helpdesk_view_fm.cgi">'$"Help Desk Requests"'</option>
+        <option value="view_karoshi_web_management_logs.cgi">'$"Web Management Logs"'</option>
+	<option value="file_manager.cgi">'$"Web File Manager"'</option>'
 
 
 
 
-[ -f /opt/karoshi/server_network/printserver ] && echo '<option value="printers.cgi">'$PRINTERQUEUEMSG'</option>'
-[ -f /opt/karoshi/server_network/monitoringserver ] &&	echo '<option value="mon_status.cgi">'$SYSTEMMONITORMSG'</option>'
-[ -f /opt/karoshi/server_network/proxyserver ] && echo '<option value="dg_view_top_sites_fm.cgi">'$TOPINTERNETSITESMSG'</option>'
+[ -f /opt/karoshi/server_network/printserver ] && echo '<option value="printers.cgi">'$"Printer Queues"'</option>'
+[ -f /opt/karoshi/server_network/monitoringserver ] &&	echo '<option value="mon_status.cgi">'$"System Monitoring"'</option>'
+[ -f /opt/karoshi/server_network/proxyserver ] && echo '<option value="dg_view_top_sites_fm.cgi">'$"Top User Internet Sites"'</option>'
 
 echo '</select></td></tr></tbody></table>
 '
@@ -110,7 +108,7 @@ if [ $MOBILE = no ]
 then
 echo '</div><div id="submitbox">'
 fi
-echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div></form></div></body></html>
 '
 exit

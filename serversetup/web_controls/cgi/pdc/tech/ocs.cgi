@@ -23,13 +23,11 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/ocs ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/ocs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 #Check to see if OCS is enabled
 OCSENABLED=no
@@ -40,7 +38,7 @@ OCSENABLED=no
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo "<html><head><title>$TITLE</title>"
+echo "<html><head><title>$"OCS"</title>"
 [ $OCSENABLED = yes ] && echo '<meta http-equiv="REFRESH" content="0;url=/tech/ocs/">'
 
 echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
@@ -49,7 +47,7 @@ if [ $OCSENABLED = no ]
 then
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_tech
-echo '<div id="actionbox"><b>'$TITLE'</b><br><br>'$ERRORMSG1''
+echo '<div id="actionbox"><b>'$"OCS"'</b><br><br>'$"The OCS module has not been installed. You can install it in the modules section."''
 fi
 
 echo '</div></body></html>'

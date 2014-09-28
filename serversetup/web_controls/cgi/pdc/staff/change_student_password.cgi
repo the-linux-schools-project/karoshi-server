@@ -33,11 +33,9 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/change_student_password ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/change_student_password
 ############################
 #Show page
 ############################
@@ -46,7 +44,7 @@ SLEEPTIME=5
 
 echo "Content-type: text/html"
 echo ""
-echo "<html><head><title>$TITLE</title><meta http-equiv='"'REFRESH'"' content='"'0; URL='$HTTP_REFERER''"'><link rel="stylesheet" href="/css/$STYLESHEET"></head><body><div id='pagecontainer'>"
+echo "<html><head><title>$"Change a Student's Password"</title><meta http-equiv='"'REFRESH'"' content='"'0; URL='$HTTP_REFERER''"'><link rel="stylesheet" href="/css/$STYLESHEET"></head><body><div id='pagecontainer'>"
 #########################
 #Get data input
 #########################
@@ -125,7 +123,7 @@ exit
 #Check to see that username is not blank
 if [ $USERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The username must not be blank."
 show_status
 fi
 
@@ -137,7 +135,7 @@ if [ `grep -c -w $MYUSERNAME /opt/karoshi/web_controls/staff_restrictions.txt` -
 then
 sudo -H /opt/karoshi/web_controls/exec/record_staff_error $REMOTE_USER:$REMOTE_ADDR:$MYUSERNAME
 sleep $SLEEPTIME
-MESSAGE=$ERRORMSG10
+MESSAGE=$"Authentication failure."
 show_status
 fi
 fi
@@ -147,7 +145,7 @@ echo "$MD5SUM:$USERNAME" | sudo -H /opt/karoshi/web_controls/exec/existcheck_use
 USEREXISTSTATUS=`echo $?`
 if [ $USEREXISTSTATUS != 112 ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The username does not exist."
 show_status
 fi
 #Check to see if the user for password change is a student.
@@ -155,7 +153,7 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$USERNAME" | sudo -H /opt/karoshi/web_controls/e
 STUDENTEXITSTATUS=`echo $?`
 if [ $STUDENTEXITSTATUS != 111 ]
 then
-MESSAGE=$ERRORMSG9
+MESSAGE=$"You can only change passwords for students."
 show_status
 fi
 
@@ -185,7 +183,7 @@ GRACE_TIME=`sed -n 1,1p /opt/karoshi/acceptable_use_authorisations/pending/$USER
 [ $GRACE_TIME'null' = null ] && GRACE_TIME=0
 if [ $GRACE_TIME = 0 ]
 then
-MESSAGE=`echo $USERNAME - $ERRORMSG12`
+MESSAGE=`echo $USERNAME - $"This user has not signed an acceptable use policy and their account has now been suspended."`
 show_status
 fi
 fi
@@ -193,18 +191,18 @@ fi
 #Check to see that password fields are not blank
 if [ "$PASSWORD1"'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The password must not be blank."
 show_status
 fi
 if [ "$PASSWORD2"'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The password must not be blank."
 show_status
 fi
 #Check that password has been entered correctly
 if [ "$PASSWORD1" != "$PASSWORD2" ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The passwords do not match."
 show_status
 fi
 
@@ -215,9 +213,9 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$PASSWORD1:" | sudo -H /opt/ka
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 0 ]
 then
-MESSAGE=`echo $COMPLETEDMSG $USERNAME.`
+MESSAGE=`echo $"Password changed for" $USERNAME.`
 else
-MESSAGE=`echo $ERRORMSG5 $USERNAME.`
+MESSAGE=`echo $"The password was not changed for" $USERNAME.`
 fi
 show_status
 exit

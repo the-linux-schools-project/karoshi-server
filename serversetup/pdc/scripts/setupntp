@@ -32,9 +32,11 @@
 
 source /opt/karoshi/serversetup/variables/language
 source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/language/$LANGCHOICE/pdc/setupntp
-source /opt/karoshi/serversetup/language/$LANGCHOICE/softwareinstall
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/software
+
+TEXTDOMAIN=karoshi-server
+locale 1>/dev/null
+
 NTPSERVERIP=$NTPSERVER
 
 #########################
@@ -43,12 +45,6 @@ NTPSERVERIP=$NTPSERVER
 touch /opt/karoshi/serversetup/setuplog
 echo `date`: '##############'setupntp'##############' >> /opt/karoshi/serversetup/install_log
 
-if [ `grep -c "$TITLE" /opt/karoshi/serversetup/setuplog` = 0 ]
-then
-echo setupntp:$TITLE:/opt/karoshi/serversetup/pdc/scripts/setupntp >> /opt/karoshi/serversetup/setuplog
-chmod 0600 /opt/karoshi/serversetup/setuplog
-fi
-
 ######################
 #Final ntp Install check
 ######################
@@ -56,7 +52,7 @@ fi
 if ! test -f /etc/init.d/$NTPVER
 then
 echo /etc/init.d/$NTPVER does not exist >> /opt/karoshi/serversetup/install_log
-yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=4 --image=dialog-question --text="$NTPVER $NOTINSTALLED" --no-buttons 2>/dev/null
+yad --title ''$"Setup"' '$"NTP"'' --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=4 --image=dialog-question --text='NTP - '$"This package is not installed."'' --no-buttons 2>/dev/null
 exit 101
 fi
 

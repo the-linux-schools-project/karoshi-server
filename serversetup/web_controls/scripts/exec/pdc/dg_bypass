@@ -80,10 +80,6 @@ TCPIP=`echo "$DATA" | cut -s -d: -f5 | tr -cd '0-9.'`
 MOBILE=`echo "$DATA" | cut -s -d: -f6`
 
 
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_bypass ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_bypass
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 ########################
 #Check data
@@ -138,7 +134,7 @@ fi
 if [ $INPUTCHECK = fail ]
 then
 echo `date`: dg_bypass - Incorrect tcpip by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $ERRORMSG1"<br><br>"
+echo $"An incorrect TCPIP address has been entered.""<br><br>"
 ACTION=view
 fi
 fi
@@ -197,11 +193,11 @@ then
 if [ `grep -v "^#" /etc/e2guardian/exceptioniplist | sed "/^$/d" | wc -l` != 0 ]
 then
 echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\"><b>$TCPIPMSG</b></td><td><b>$DELETEMSG</b></td></tr>"
+<tr><td style=\"width: 180px;\"><b>$"TCPIP Number"</b></td><td><b>$"Delete"</b></td></tr>"
 for tcpipnumber in `grep -v "^#" /etc/e2guardian/exceptioniplist`
 do
 echo "<tr><td>$tcpipnumber</td><td>
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_TCPIP_$tcpipnumber"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$DELETEMSG<br>$tcpipnumber</span></a>
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_TCPIP_$tcpipnumber"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$"Delete"<br>$tcpipnumber</span></a>
 </td></tr>"
 done
 echo "</tbody></table>"
@@ -246,11 +242,11 @@ then
 if [ `grep -v "^#" /etc/e2guardian/exceptioniplist | sed "/^$/d" | wc -l` != 0 ]
 then
 echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\"><b>'$TCPIPMSG'</b></td><td><b>'$DELETEMSG'</b></td></tr>"
+<tr><td style=\"width: 180px;\"><b>'$"TCPIP Number"'</b></td><td><b>'$"Delete"'</b></td></tr>"
 for tcpipnumber in `grep -v "^#" /etc/e2guardian/exceptioniplist`
 do
 echo "<tr><td>$tcpipnumber</td><td>
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_TCPIP_$tcpipnumber"_"\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$DELETEMSG'<br>$tcpipnumber</span></a>
+<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_TCPIP_$tcpipnumber"_"\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$"Delete"'<br>$tcpipnumber</span></a>
 </td></tr>"
 done
 echo "</tbody></table>"

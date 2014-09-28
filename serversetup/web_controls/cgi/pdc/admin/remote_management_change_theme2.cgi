@@ -30,19 +30,17 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_change_theme ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_change_theme
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta http-equiv="REFRESH" content="0;url=remote_management_change_theme.cgi"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Change Theme"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta http-equiv="REFRESH" content="0;url=remote_management_change_theme.cgi"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -79,7 +77,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -87,13 +85,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -102,13 +100,13 @@ fi
 #Check to see that THEMECHOICE is not blank
 if [ $THEMECHOICE'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The theme choice must not be blank."
 show_status
 fi
 #Check that theme choice exists
 if [ ! -f /var/www/html_karoshi/css/$THEMECHOICE.css ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"This theme choice does not exist."
 show_status
 fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_change_theme2.cgi | cut -d' ' -f1`
@@ -117,7 +115,7 @@ sudo -H /opt/karoshi/web_controls/exec/remote_management_change_theme $REMOTE_US
 THEMESTATUS=`echo $?`
 if [ $THEMESTATUS = 101 ]
 then
-MESSAGE=`echo $ERRORMSG3 $LOGMSG`
+MESSAGE=`echo $"There was a problem changing the theme." $"Please check the karoshi web administration logs for more details."`
 show_status
 fi
 echo '</div></body></html>'

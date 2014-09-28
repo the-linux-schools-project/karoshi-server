@@ -30,62 +30,62 @@ FAILED_SERVER=no
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/add_user_cgi
 then
-echo `date`: add_user - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: add_user - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/add_user_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/add_user.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $add_user_cgi'check' ]
+[[ -z "$MD5SUM" ]] && MD5SUM=not_set
+if [[ $MD5SUM'check' != $add_user_cgi'check' ]]
 then
-echo `date`: add_user - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: add_user - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/add_user_cgi
 then
-echo `date`: add_user - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: add_user - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/add_user_cgi
 MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/add_user.cgi | cut -d' ' -f1`
-[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
-if [ $MD5SUM2'check' != $add_user_cgi'check' ]
+[[ -z "$MD5SUM2" ]] && MD5SUM2=not_set
+if [[ $MD5SUM2'check' != $add_user_cgi'check' ]]
 then
-echo `date`: add_user - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: add_user - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if ! test -f /var/www/cgi-bin_karoshi/admin/bulk_user_creation_create.cgi
 then
-echo `date`: add_user - No admin bulk user creation MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: add_user - No admin bulk user creation MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/bulk_user_creation_create_cgi
 MD5SUM3=`md5sum /var/www/cgi-bin_karoshi/admin/bulk_user_creation_create.cgi | cut -d' ' -f1`
-[ $MD5SUM3'null' = null ] && MD5SUM3=not_set
-if [ $MD5SUM3'check' != $bulk_user_creation_create_cgi'check' ]
+[[ -z "$MD5SUM3" ]] && MD5SUM3=not_set
+if [[ $MD5SUM3'check' != $bulk_user_creation_create_cgi'check' ]]
 then
-echo `date`: add_user - Incorrect admin bulk user creation MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: add_user - Incorrect admin bulk user creation MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [[ $numArgs != 0 ]]
 then
-echo `date`: add_user - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: add_user - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
-if [ $DATA'null' = null ]
+if [[ -z "$DATA" ]]
 then
-echo `date`: add_user - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: add_user - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -176,13 +176,11 @@ fi
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/add_user ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/add_user
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 source /opt/karoshi/server_network/domain_information/domain_name
 
@@ -609,7 +607,7 @@ fi
 if [ $GRACE_TIME = yes ]
 then
 #Generate page warning
-/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add acceptable_use_authorisations /cgi-bin/admin/acceptable_use.cgi "$ACCEPTABLEUSEWARNINGMSG" 1
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add acceptable_use_authorisations /cgi-bin/admin/acceptable_use.cgi $"Users have yet to sign an acceptable use policy." 1
 fi
 
 if [ $BULKUSERCREATION'null' != null ]
@@ -650,7 +648,7 @@ if [ ! -d /home/applications/profiles/$PRIMARYGROUP ]
 then
 if [ -d /home/applications/profiles/defaultprofile ]
 then
-echo $PRIMARYGROUP - $COPYPROFILEMSG2"<br>"
+echo $PRIMARYGROUP - $"Creating an XP profile""<br>"
 cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/$PRIMARYGROUP
 chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP
 chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP
@@ -662,7 +660,7 @@ if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V2 ]
 then
 if [ -d /home/applications/profiles/defaultprofile.V2 ]
 then
-echo $PRIMARYGROUP - $COPYPROFILEMSGV2"<br>"
+echo $PRIMARYGROUP - $"Creating a Windows 7 profile""<br>"
 cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/$PRIMARYGROUP.V2
 chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V2
 chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V2
@@ -674,7 +672,7 @@ if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V3 ]
 then
 if [ -d /home/applications/profiles/defaultprofile.V3 ]
 then
-echo $PRIMARYGROUP - $COPYPROFILEMSGV3"<br>"
+echo $PRIMARYGROUP - $"Creating a Windows 8.0 profile""<br>"
 cp -f -R /home/applications/profiles/defaultprofile.V3 /home/applications/profiles/$PRIMARYGROUP.V3
 chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V3
 chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V3
@@ -686,7 +684,7 @@ if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V4 ]
 then
 if [ -d /home/applications/profiles/defaultprofile.V4 ]
 then
-echo $PRIMARYGROUP - $COPYPROFILEMSGV4"<br>"
+echo $PRIMARYGROUP - $"Creating a Windows 8.1 profile""<br>"
 cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/$PRIMARYGROUP.V4
 chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V4
 chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V4
@@ -698,7 +696,7 @@ if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V5 ]
 then
 if [ -d /home/applications/profiles/defaultprofile.V5 ]
 then
-echo $PRIMARYGROUP - $COPYPROFILEMSGV5"<br>"
+echo $PRIMARYGROUP - $"Creating a Windows 8.2 profile""<br>"
 cp -f -R /home/applications/profiles/defaultprofile.V5 /home/applications/profiles/$PRIMARYGROUP.V5
 chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V5
 chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V5

@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/windows_icon_upload ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/windows_icon_upload
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -50,7 +48,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE2'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Windows Desktop Icons - Select"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script type="text/javascript">
 <!--
@@ -78,7 +76,7 @@ function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<form action="/cgi-bin/admin/windows_client_icon_select.cgi" name="selectgroups" method="post"><div id="actionbox"><span style="font-weight: bold;">
-'$TITLE2'</span> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Upload_Desktop_Icons"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a><br>
+'$"Windows Desktop Icons - Select"'</span> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Upload_Desktop_Icons"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the profiles that you want to upload the desktop icons to."'</span></a><br>
   <br>
 '
 WIDTH1=15
@@ -93,20 +91,20 @@ fi
 
 if [ $FILECOUNT -gt 4 ]
 then
-echo ''$ERRORMSG1'</div></div></body></html>'
+echo ''$"An incorrect number of files have been uploaded."'</div></div></body></html>'
 exit
 fi
 if [ $FILECOUNT -lt 1 ]
 then
-echo ''$ERRORMSG2'</div></div></body></html>'
+echo ''$"You have not uploaded a file."'</div></div></body></html>'
 exit
 fi
 
 #Show list of profiles to choose from
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$UPLOADEDFILEMSG'</td><td>'$FILENAME'</td></tr>
-<tr><td>'$WINVERMSG'</td><td>
+<tr><td style="width: 180px;">'$"Uploaded file"'</td><td>'$FILENAME'</td></tr>
+<tr><td>'$"Windows Version"'</td><td>
 <select name="___WINDOWSVER___" style="width: 200px;">
 <option value="windowsxp">Windows XP</option>
 <option value="windows7">Windows 7</option>
@@ -117,9 +115,9 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 </tbody></table>
 '
 
-echo '<br>'$GROUPMSG'<br><br>
+echo '<br>'$"Please select the groups that you want to copy the icons to."'<br><br>
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
- <tbody><tr><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td><td style="width: '$WIDTH1'px;"><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$GROUPMSG2'</b></td></tr>'
+ <tbody><tr><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$"Group"'</b></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$"Group"'</b></td><td style="width: '$WIDTH1'px;"><td style="width: '$WIDTH2'px;"><b>'$"Group"'</b></td></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$"Group"'</b></td></tr>'
 
 COUNTER=1
 for GROUPNAMES in /opt/karoshi/server_network/group_information/*
@@ -143,7 +141,7 @@ fi
 done
 
 echo '</tbody></table><br>
-  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"> <input type="button" class="button" onclick="SetAllCheckBoxes('\'selectgroups\'', '\'___PRIGROUP___\'', true);" value="'$SELECTMSG'">
+  <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"> <input type="button" class="button" onclick="SetAllCheckBoxes('\'selectgroups\'', '\'___PRIGROUP___\'', true);" value="'$"Select all"'">
 </form>
 </div>
 </div></body>

@@ -17,7 +17,6 @@
 #
 
 LANGCHOICE=englishuk
-source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/authentication/authentication
 ########################
 #Get variables
 ########################
@@ -100,7 +99,7 @@ echo exit 0 >> /etc/rc.local
 mount -t tmpfs tmpfs /run/lock -o remount,size=50M
 fi
 
-echo "<li><b>'$JOINDOMAINMSG'</b></li><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+echo "<li><b>'$"Join Domain"'</b></li><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 
 #Join the domain
 if [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ]
@@ -112,7 +111,7 @@ samba-tool domain join '$REALM' '$JOINTYPE' --server='$HOSTNAME' --username=Admi
 JOINDOMAINSTATUS=`echo $?`
 if [ $JOINDOMAINSTATUS != 0 ]
 then
-echo '$ERRORMSG1'"<br><br>"
+echo '$"There was a problem with joining the domain."'"<br><br>"
 exit 101
 fi
 echo "</pre><br><br>"
@@ -201,19 +200,19 @@ echo "<br>"
 MODCHECK=`grep -c -w auth_rule /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
-echo "<li><b>'$ADDSWALLPORTSMSG'</b></li><br><b>tcp</b> '$TCPPORTS'<br><b>udp</b> '$UDPPORTS'<br><br>"
+echo "<li><b>'$"Adding shorewall ports"'</b></li><br><b>tcp</b> '$TCPPORTS'<br><b>udp</b> '$UDPPORTS'<br><br>"
 LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"'$TCPPORTS'"	"-"#"auth_rule /etc/shorewall/rules
 echo ACCEPT"	"net"	"fw"	"udp"	"'$UDPPORTS'"	"-"#"auth_rule >> /etc/shorewall/rules
 echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 
 #Restart shorewall
-echo "<li><b>"$HOSTNAME - '$RESTARTSHWALLMSG'"</b></li><br>"
+echo "<li><b>"$HOSTNAME - '$"Restarting Shorewall"'"</b></li><br>"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
-echo "<li><b>"$HOSTNAME - '$RESTARTSMBAMSG'"</b></li><br>"
+echo "<li><b>"$HOSTNAME - '$"Restarting Samba"'"</b></li><br>"
 #Stop samba
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 sleep 1
@@ -225,7 +224,7 @@ sleep 1
 #Exit if the server did not join the domain
 if [ $? = 101 ]
 then
-echo $ERRORMSG1"<br>"
+echo $"There was a problem with joining the domain.""<br>"
 sleep 4
 exit 101
 fi
@@ -303,7 +302,7 @@ fi
 if [ $SERVERNAME != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
-echo "<li><b>'$CONFIGUREAUTHMSG'</b></li><br>"
+echo "<li><b>'$"Configure Authentication"'</b></li><br>"
 
 source /opt/karoshi/serversetup/variables/distro
 
@@ -384,7 +383,7 @@ fi
 echo ldap_server=$KRBSERVER > /opt/karoshi/server_network/zones/$ZONE/ldap_clients/$SERVERNAME
 
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
-echo $USERSGROUPSMSG"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/2users-groups
+echo $"Users and Groups""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/2users-groups
 }
 
 function choose_krbserver {
@@ -501,7 +500,7 @@ EXITCHECK=$?
 if [ $EXITCHECK != 0 ]
 then
 echo `date`: configure_authentication - Error connecting to $PDCIP on port $EXITCHECK "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo '<li>'$CONNECTIONERRORMSG -  $PDCIP: $EXITCHECK '</li><br>'
+echo '<li>'$"Connection error" -  $PDCIP: $EXITCHECK '</li><br>'
 sleep 4
 exit $EXITCHECK
 fi
@@ -511,7 +510,7 @@ echo '<br><br>'
 
 
 function configure_ntp {
-echo '<li><b>'$CONFIGURENTPMSG'</b></li><br>'
+echo '<li><b>'$"Configuring NTP"'</b></li><br>'
 NTPSERVER=$KRBSERVER
 if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
 then

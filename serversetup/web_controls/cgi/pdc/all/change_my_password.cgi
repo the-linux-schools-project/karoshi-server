@@ -32,19 +32,15 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/change_password ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/change_password
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE3'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Change My Password"'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -118,7 +114,7 @@ exit
 #Check to see that username is not blank
 if [ $USERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The username must not be blank."
 show_status
 fi
 #Check to see that the user exists
@@ -126,19 +122,19 @@ getent passwd "$USERNAME" 1>/dev/null 2>/dev/null
 USERSTATUS=`echo $?`
 if [ $USERSTATUS != 0 ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"This username does not exist."
 show_status
 fi
 #Check to see that password fields are not blank
 if [ $PASSWORD1'null' = null ] || [ $PASSWORD2'null' = null ] || [ $PASSWORD3'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The password must not be blank."
 show_status
 fi
 #Check that password has been entered correctly
 if [ $PASSWORD2 != $PASSWORD3 ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The passwords do not match."
 show_status
 fi
 
@@ -161,11 +157,11 @@ fi
 LENGTHCHECK=ok
 CASECHECK=ok
 CHARCHECK=ok
-LENGTHCHECK2="$OKMSG"
-CASECHECK2="$OKMSG"
-CHARCHECK2="$OKMSG"
-[ $UPPER_AND_LOWER_CASE = no ] && CASECHECK2=$NA_MSG
-[ $CHARS_AND_NUMBERS = no ] && CHARCHECK2=$NA_MSG
+LENGTHCHECK2=$"Ok"
+CASECHECK2=$"Ok"
+CHARCHECK2=$"Ok"
+[ $UPPER_AND_LOWER_CASE = no ] && CASECHECK2=$"N.A."
+[ $CHARS_AND_NUMBERS = no ] && CHARCHECK2=$"N.A."
 
 ########################
 #Convert special characters back for new password to check password strength
@@ -180,7 +176,7 @@ PASSLENGTH=${#NEW_PASSWORD}
 if [ $PASSLENGTH -lt $MINPASSLENGTH ]
 then
 LENGTHCHECK=fail
-LENGTHCHECK2="$FAILMSG"
+LENGTHCHECK2=$"Failed"
 fi
 
 #Check that the password has a combination of characters and numbers
@@ -189,12 +185,12 @@ then
 if [ `echo "$NEW_PASSWORD"'1' | tr -cd '0-9\n'` = 1 ]
 then
 CHARCHECK=fail
-CHARCHECK2="$FAILMSG"
+CHARCHECK2=$"Failed"
 fi
 if [ `echo "$NEW_PASSWORD"'A' | tr -cd 'A-Za-z\n'` = A ]
 then
 CHARCHECK=fail
-CHARCHECK2="$FAILMSG"
+CHARCHECK2=$"Failed"
 fi
 fi
 
@@ -204,21 +200,21 @@ then
 if [ `echo "$NEW_PASSWORD"'A' | tr -cd 'A-Z\n'` = A ]
 then
 CASECHECK=fail
-CASECHECK2="$FAILMSG"
+CASECHECK2=$"Failed"
 fi
 if [ `echo "$NEW_PASSWORD"'a' | tr -cd 'a-z\n'` = a ]
 then
 CASECHECK=fail
-CASECHECK2="$FAILMSG"
+CASECHECK2=$"Failed"
 fi
 fi
 
 if [ $LENGTHCHECK = fail ] || [ $CASECHECK = fail ] || [ $CHARCHECK = fail ]
 then
-MESSAGE="$LENGTHMSG2: $PASSLENGTH\n$LENGTHMSG: $MINPASSLENGTH - $LENGTHCHECK2"
+MESSAGE=''$"Your password length"': '$PASSLENGTH'\n'$"Required password length"': '$MINPASSLENGTH' - '$LENGTHCHECK2''
 
-[ $CHARS_AND_NUMBERS = yes ] && MESSAGE=`echo "$MESSAGE\n$CHARCHECKMSG - $CHARCHECK2"`
-[ $UPPER_AND_LOWER_CASE = yes ] && MESSAGE=`echo "$MESSAGE\n$CASECHECKMSG - $CASECHECK2"`
+[ $CHARS_AND_NUMBERS = yes ] && MESSAGE=''$MESSAGE'\n'$"Characters and numbers required."' - '$CHARCHECK2''
+[ $UPPER_AND_LOWER_CASE = yes ] && MESSAGE=''$MESSAGE'\n'$"Upper and lower case characters required."' - '$CASECHECK2''
 
 show_status
 fi
@@ -227,11 +223,11 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/all/change_my_password.cgi | cut -d' ' -
 #Change password
 echo "$REMOTE_ADDR:$MD5SUM:$USERNAME:$PASSWORD1:$PASSWORD2" | sudo -H /opt/karoshi/web_controls/exec/change_my_password
 EXEC_STATUS=`echo $?`
-MESSAGE=`echo $COMPLETEDMSG1 $USERNAME.`
+MESSAGE=`echo $"Password changed for" $USERNAME.`
 if [ $EXEC_STATUS = 102 ]
 then
 sleep 4
-MESSAGE=`echo $ERRORMSG7 $USERNAME.`
+MESSAGE=`echo $"Incorrect username or password supplied for" $USERNAME.`
 fi
 
 show_status

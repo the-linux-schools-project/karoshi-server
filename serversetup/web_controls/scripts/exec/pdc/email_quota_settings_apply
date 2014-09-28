@@ -50,18 +50,18 @@ then
 echo `date`: email_quota_settings_apply - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo "$*" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$*" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$*" | cut -s -d: -f3`
-ADMIN_EMAIL=`echo "$*" | cut -s -d: -f4`
-THRESHOLD1=`echo "$*" | cut -s -d: -f5`
-THRESHOLD2=`echo "$*" | cut -s -d: -f6`
-THRESHOLD3=`echo "$*" | cut -s -d: -f7`
-THRESHOLD4=`echo "$*" | cut -s -d: -f8`
-INTERVAL1=`echo "$*" | cut -s -d: -f9`
-INTERVAL2=`echo "$*" | cut -s -d: -f10`
-INTERVAL3=`echo "$*" | cut -s -d: -f11`
-INTERVAL4=`echo "$*" | cut -s -d: -f12`
+REMOTE_USER=`echo "$*" | tr -cd 'A-Za-z0-9\._:\%-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$*" | tr -cd 'A-Za-z0-9\._:\%-' | cut -s -d: -f2`
+REMOTE_MD5=`echo "$*" | tr -cd 'A-Za-z0-9\._:\%-' | cut -s -d: -f3`
+ADMIN_EMAIL=`echo "$*" | tr -cd 'A-Za-z0-9\._:\%-' | cut -s -d: -f4`
+THRESHOLD1=`echo "$*" | tr -cd 'A-Za-z0-9\._:\%-' | cut -s -d: -f5`
+THRESHOLD2=`echo "$*" | tr -cd 'A-Za-z0-9\._:\%-' | cut -s -d: -f6`
+THRESHOLD3=`echo "$*" | tr -cd 'A-Za-z0-9\._:\%-' | cut -s -d: -f7`
+THRESHOLD4=`echo "$*" | tr -cd 'A-Za-z0-9\._:\%-' | cut -s -d: -f8`
+INTERVAL1=`echo "$*" | tr -cd 'A-Za-z0-9\._:\%-' | cut -s -d: -f9`
+INTERVAL2=`echo "$*" | tr -cd 'A-Za-z0-9\._:\%-' | cut -s -d: -f10`
+INTERVAL3=`echo "$*" | tr -cd 'A-Za-z0-9\._:\%-' | cut -s -d: -f11`
+INTERVAL4=`echo "$*" | tr -cd 'A-Za-z0-9\._:\%-' | cut -s -d: -f12`
 
 ########################
 #Check data

@@ -50,12 +50,12 @@ then
 echo `date`: web_management_upload_files - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
-UPLOADFOLDER=`echo $* | cut -s -d: -f4`
-UPLOADID=`echo $* | cut -s -d: -f5`
-SERVERNAME=`echo $* | cut -s -d: -f6`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\_:\-.%' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\_:\-.%' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\_:\-.%' | cut -s -d: -f3`
+UPLOADFOLDER=`echo $* | tr -cd 'A-Za-z0-9\_:\-.%' | cut -s -d: -f4`
+UPLOADID=`echo $* | tr -cd 'A-Za-z0-9\_:\-.%' | cut -s -d: -f5`
+SERVERNAME=`echo $* | tr -cd 'A-Za-z0-9\_:\-.%' | cut -s -d: -f6`
 ########################
 #Check data
 ########################
@@ -100,13 +100,11 @@ fi
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/web/upload_files ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/web/upload_files
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 UPLOADFOLDER=`echo $UPLOADFOLDER | sed 's/UNDERSCORE/_/g'`
 
@@ -119,7 +117,7 @@ mv /var/www/karoshi/webfiles /var/www/karoshi/webfiles.$UPLOADID
 ########################
 if [ `sed -n 1,1p /var/www/karoshi/webfiles.$UPLOADID/web_management_upload_id` != $UPLOADID ]
 then
-echo '<b>'$ERRORMSG4'</b><br>'
+echo '<b>'$"The upload file process has been overwritten by another admin user."'</b><br>'
 echo `date`: web_management_upload_files - file overwrite "for" $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
@@ -163,13 +161,13 @@ FILENAME=`echo $FILENAME | sed "s/ /_/g"`
 if [ $FILENAME"null" != null ]
 then
 #Copy file and change permissions
-echo "<li>'$SERVERNAME' - '$COPYMSG' $FILENAME</li>"
+echo "<li>'$SERVERNAME' - '$"Copying"' $FILENAME</li>"
 cp -f $UPLOADEDFILE '$UPLOADFOLDER'/
 
 #Extract file if it is a zip or tar.gz
 if [ `echo "$FILENAME" | grep -c .tar.gz` -gt 0 ]
 then
-echo "<li>'$SERVERNAME' - '$EXTRACTMSG' $FILENAME</li>"
+echo "<li>'$SERVERNAME' - '$"Extracting"' $FILENAME</li>"
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 tar -zxvf '$UPLOADFOLDER'/"$FILENAME" -C /var/www/html/
 echo "</pre>"
@@ -195,13 +193,13 @@ FILENAME=`echo $FILENAME | sed "s/ /_/g"`
 #Copy file and change permissions
 if [ $FILENAME"null" != null ]
 then
-echo "<li>$SERVERNAME - $COPYMSG $FILENAME</li>"
+echo "<li>$SERVERNAME - $"Copying" $FILENAME</li>"
 cp -f $UPLOADEDFILE "$UPLOADFOLDER"/
 
 #Extract file if it is a zip or tar.gz
 if [ `echo "$FILENAME" | grep -c .tar.gz` -gt 0 ]
 then
-echo "<li>$SERVERNAME - $EXTRACTMSG $FILENAME</li>"
+echo "<li>$SERVERNAME - $"Extracting" $FILENAME</li>"
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 tar -zxvf $UPLOADFOLDER/"$FILENAME" -C /var/www/html/
 echo "</pre>"

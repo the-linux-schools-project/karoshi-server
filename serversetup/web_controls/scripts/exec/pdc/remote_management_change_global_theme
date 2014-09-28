@@ -50,11 +50,11 @@ then
 echo `date`: remote_management_change_global_theme - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
-THEMECHOICE=`echo $* | cut -s -d: -f4`
-THEMECHOICE=`echo $THEMECHOICE.css`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
+THEMECHOICE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
+THEMECHOICE="$THEMECHOICE.css"
 ########################
 #Check data
 ########################
@@ -80,7 +80,7 @@ exit
 fi
 if [ ! -f /var/www/html_karoshi/css/$THEMECHOICE ]
 then
-echo `date`: remote_management_change_global_theme - no cgi theme for $THEMECHOICE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: "remote_management_change_global_theme - no cgi theme for $THEMECHOICE by $REMOTE_USER" from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]

@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/clear_warnings ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/clear_warnings
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -47,19 +45,19 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Clear Web Management Warning Messages"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/clear_warnings.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>
-'$CLEARWARNINGSMSG' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Clear_Warning_Messages"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG1"'</span></a>
+echo '<form action="/cgi-bin/admin/clear_warnings.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$"Clear Web Management Warning Messages"'</div><br>
+'$"Clear web management warning messages?"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Clear_Warning_Messages"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will clear the warning messages that appear at the top of the web management pages. If the warnings have not been dealt with they will re-appear the next day."'</span></a>
 <br>
 </div>
 <div id="submitbox">
-<input value="'$SUBMITMSG'" class="button" type="submit">
+<input value="'$"Submit"'" class="button" type="submit">
 </div>
 </form>
 </div></body>

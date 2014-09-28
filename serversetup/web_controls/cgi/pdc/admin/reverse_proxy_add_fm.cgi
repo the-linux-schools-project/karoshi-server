@@ -31,15 +31,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/web/reverse_proxy_add ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/web/reverse_proxy_add
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -52,7 +50,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Add Reverse Proxy"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
@@ -113,8 +111,8 @@ if [ $MOBILE = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 		<div class="expanded">
-		<span>'$TITLE'</span>
-	<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+		<span>'$"Add Reverse Proxy"'</span>
+	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 	</div></div><div id="mobileactionbox">
 '
 else
@@ -125,30 +123,30 @@ fi
 PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/reverseproxyserver | sed 's/ //g'`
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr>'
-[ $MOBILE = no ] && echo '<td style="width: '$WIDTH1'px; vertical-align: top;"><div class="sectiontitle">'$TITLE'</div></td>'
-echo '<td style="vertical-align: top;"><a href="reverse_proxy_view_fm.cgi"><input class="button" type="button" name="" value="'$VIEWPROXIESMSG'"></a></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reverse_Proxy_Server#Adding_Reverse_Proxy_Entries"><img class="images" alt="" src="/images/help/info.png"><span>'$WEBHELP1'<br><br>'$WEBHELP2'</span></a></td>
+[ $MOBILE = no ] && echo '<td style="width: '$WIDTH1'px; vertical-align: top;"><div class="sectiontitle">'$"Add Reverse Proxy"'</div></td>'
+echo '<td style="vertical-align: top;"><a href="reverse_proxy_view_fm.cgi"><input class="button" type="button" name="" value="'$"View Reverse Proxies"'"></a></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reverse_Proxy_Server#Adding_Reverse_Proxy_Entries"><img class="images" alt="" src="/images/help/info.png"><span>'$"The reverse proxy feature allows incoming web connections on port 80 and 443 to pass through the reverse proxy to other servers on your network."'<br><br>'$"This bypasses the need for sub domains and alias tcpip numbers for external access and will also allow all external ssl traffic to use one ssl certificate to authenticate the sites."'</span></a></td>
 </tr></tbody></table><br>
   <br>
   <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
       <tr>
         <td style="width: '$WIDTH2'px;">
-'$TARGETMSG'</td>
+'$"Target folder"'</td>
         <td><input tabindex= "1" name="_TARGET_" size="'$SIZE1'" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reverse_Proxy_Server#Adding_Reverse_Proxy_Entries"><img class="images" alt="" src="/images/help/info.png"><span>'$WEBHELP3'<br><br>'$EXAMPLEMSG1'<br><br>'$EXAMPLEMSG2'<br><br>'$EXAMPLEMSG3'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reverse_Proxy_Server#Adding_Reverse_Proxy_Entries"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the web folder that you want redirected. Leave blank to re-direct the top directory."'<br><br>'$"Example: Joomla is installed at http://www.mysite/joomla"'<br><br>'$"Target folder - joomla"'<br><br>'$"Destination - http://www.mysite"'</span></a>
       </td>
 </tr>
       <tr>
         <td>
-'$DESTINATIONMSG'</td>
+'$"Destination"'</td>
         <td><input tabindex= "2" name="_DESTINATION_" size="'$SIZE2'" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reverse_Proxy_Server#Adding_Reverse_Proxy_Entries"><img class="images" alt="" src="/images/help/info.png"><span>'$WEBHELP4'<br><br>'$EXAMPLEMSG1'<br><br>'$EXAMPLEMSG2'<br><br>'$EXAMPLEMSG3'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reverse_Proxy_Server#Adding_Reverse_Proxy_Entries"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the web address that you want to redirect to."'<br><br>'$"Example: Joomla is installed at http://www.mysite/joomla"'<br><br>'$"Target folder - joomla"'<br><br>'$"Destination - http://www.mysite"'</span></a>
 </td>
       </tr>
     </tbody>
   </table><br>
-<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>'
 
 [ $MOBILE = no ] && echo '</div>'

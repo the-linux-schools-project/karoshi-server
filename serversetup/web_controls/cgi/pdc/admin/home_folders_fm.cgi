@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/home_folders ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/home_folders
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -47,7 +45,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Home Folders"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -58,11 +56,11 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/home_folders.cgi" method="post"><div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
-<td style="vertical-align: top;"><div class="sectiontitle">'$TITLE'</div></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Home_Folders"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
+<td style="vertical-align: top;"><div class="sectiontitle">'$"Home Folders"'</div></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Home_Folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"This displays the server that hosts the home folders for each group."'</span></a>
 </td></tr></tbody></table><br></div><div id="infobox">
   <table class="standard" style="text-align: left; height: 91px;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 140px;"><b>'$PRIGROUPMSG'</b></td><td style="width: 180px;"><b>'$SERVERMSG'</b></td><td style="width: 180px;"><b>'$CHANGESERVERMSG'</b></td><td style="width: 140px;"><b>'$PRIGROUPMSG'</b></td><td style="width: 180px;"><b>'$SERVERMSG'</b></td><td><b>'$CHANGESERVERMSG'</b></td></tr>
+<tr><td style="width: 140px;"><b>'$"Primary Group"'</b></td><td style="width: 180px;"><b>'$"Server"'</b></td><td style="width: 180px;"><b>'$"Change"'</b></td><td style="width: 140px;"><b>'$"Primary Group"'</b></td><td style="width: 180px;"><b>'$"Server"'</b></td><td><b>'$"Change"'</b></td></tr>
 '
 START_LINE=yes
 ICON1=/images/submenus/system/computer.png
@@ -73,10 +71,10 @@ source /opt/karoshi/server_network/group_information/$PRI_GROUP
 
 if [ $START_LINE = yes ]
 then
-echo '<tr><td>'$PRI_GROUP'</td><td>'$SERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_"><span>'$CHANGESERVERMSG2'<br><br>'$PRI_GROUP - $SERVER'</span></a></td>'
+echo '<tr><td>'$PRI_GROUP'</td><td>'$SERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_"><span>'$"Change Server"'<br><br>'$PRI_GROUP - $SERVER'</span></a></td>'
 START_LINE=no
 else
-echo '<td>'$PRI_GROUP'</td><td>'$SERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_"><span>'$CHANGESERVERMSG2'<br><br>'$PRI_GROUP - $SERVER'</span></a></td></tr>'
+echo '<td>'$PRI_GROUP'</td><td>'$SERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_"><span>'$"Change Server"'<br><br>'$PRI_GROUP - $SERVER'</span></a></td></tr>'
 START_LINE=yes
 fi
 done

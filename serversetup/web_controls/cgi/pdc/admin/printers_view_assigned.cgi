@@ -30,19 +30,17 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printers_view_assigned ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printers_view_assigned
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View Assigned Printers"'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -78,7 +76,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -86,13 +84,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -101,7 +99,7 @@ fi
 #Check to see that PRINTACTION is not blank
 if [ $PRINTACTION'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"No Printers have been assigned to a location."
 show_status
 fi
 PRINTACTION=`echo $PRINTACTION | sed 's/%3A/:/g'`
@@ -112,59 +110,59 @@ PRINTER=`echo $PRINTACTION | cut -d: -f3`
 #Check to see that ACTION is not blank
 if [ $ACTION'null' = null ]
 then
-MESSAGE=$ERRORMSG9
+MESSAGE=$"You have not chosen a print action."
 show_status
 fi
 #Check to see that LOCATION is not blank
 if [ $LOCATION'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The location must not be blank."
 show_status
 fi
 #Check to see that PRINTER is not blank
 if [ $PRINTER'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The printer must not be blank."
 show_status
 fi
 #Check to see that ACTION is corect
 if [ $ACTION != delete ] && [ $ACTION != default ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The action type is not correct."
 show_status
 fi
 #Check to see that location.txt exists
 if [ ! -f /var/lib/samba/netlogon/locations.txt ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"The location file does not exit."
 show_status
 fi
 
 #Check to see that LOCATION exists
 if [ `grep -c $LOCATION /var/lib/samba/netlogon/locations.txt` = 0 ]
 then
-MESSAGE=$ERRORMSG6
+MESSAGE=$"This location does not exist."
 show_status
 fi
 
 #Check to see that printer.txt exists
 if [ ! -f /var/lib/samba/netlogon/printers.txt ]
 then
-MESSAGE=$ERRORMSG7
+MESSAGE=$"The printer file does not exist."
 show_status
 fi
 
 #Check to see that PRINTER queue exits
 if [ `grep -c ,$PRINTER,` /var/lib/samba/netlogon/printers.txt = 0 ]
 then
-MESSAGE=$ERRORMSG8
+MESSAGE=$"The printer queue does not exist."
 show_status
 fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printers_view_assigned.cgi | cut -d' ' -f1`
 sudo -H /opt/karoshi/web_controls/exec/printers_view_assigned $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$LOCATION:$PRINTER
 if [ `echo $?` = 101 ]
 then
-MESSAGE=`echo $PROBLEMMSG $LOGMSG`
+MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`
 show_status
 fi
 exit

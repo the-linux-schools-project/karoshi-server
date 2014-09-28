@@ -24,13 +24,9 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/change_password ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/change_password
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 ############################
 #Show page
 ############################
@@ -40,7 +36,7 @@ echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE3'</title>
+  <title>'$"Change My Password"'</title>
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <META HTTP-EQUIV="refresh" CONTENT="300; URL=/cgi-bin/blank.cgi">
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
@@ -67,50 +63,50 @@ source /opt/karoshi/server_network/security/password_settings
 
 if [ $STAFF_UPPER_AND_LOWER_CASE = yes ]
 then
-STAFFCASECHECKMSG=$CASECHECKMSG
+STAFFCASECHECKMSG=$"Upper and lower case characters required."
 else
-STAFFCASECHECKMSG=$CASECHECKMSG2
+STAFFCASECHECKMSG=$"Upper and lower case characters not required."
 fi
 
 if [ $STUDENT_UPPER_AND_LOWER_CASE = yes ]
 then
-STUDENTCASECHECKMSG=$CASECHECKMSG
+STUDENTCASECHECKMSG=$"Upper and lower case characters required."
 else
-STUDENTCASECHECKMSG=$CASECHECKMSG2
+STUDENTCASECHECKMSG=$"Upper and lower case characters not required."
 fi
 
 if [ $STAFF_CHARS_AND_NUMBERS = yes ]
 then
-STAFFCHARCHECKMSG=$CHARCHECKMSG
+STAFFCHARCHECKMSG=$"Characters and numbers required."
 else
-STAFFCHARCHECKMSG=$CHARCHECKMSG2
+STAFFCHARCHECKMSG=$"Characters and numbers not required."
 fi
 
 if [ $STUDENT_CHARS_AND_NUMBERS = yes ]
 then
-STUDENTCHARCHECKMSG=$CHARCHECKMSG
+STUDENTCHARCHECKMSG=$"Characters and numbers required."
 else
-STUDENTCHARCHECKMSG=$CHARCHECKMSG2
+STUDENTCHARCHECKMSG=$"Characters and numbers not required."
 fi
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
-<td style="vertical-align: middle;"><a href="/cgi-bin/menu.cgi"><b>'$TITLE3'</b></a></td></tr></tbody></table><br>'
+<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
+<td style="vertical-align: middle;"><a href="/cgi-bin/menu.cgi"><b>'$"Change My Password"'</b></a></td></tr></tbody></table><br>'
 else
-echo '<b>'$TITLE3'</b><br><br>'
+echo '<b>'$"Change My Password"'</b><br><br>'
 fi
 
 if [ $MOBILE = yes ]
 then
 
-echo ''$USERNAMEMSG'<br>
+echo ''$"Username"'<br>
 <input tabindex= "1" name="_USERNAME_" size="20" type="text"><br>
-'$PASSWORDMSG1'<br>
+'$"Current Password"'<br>
 <input tabindex= "2" name="_PASSWORD1_" size="20" type="password"><br>
-'$PASSWORDMSG2'<br>
+'$"New Password"'<br>
 <input tabindex= "3" name="_PASSWORD2_" size="20" type="password"><br><br>
 '
 
@@ -120,25 +116,25 @@ echo '<table class="standard" style="text-align: left; width: 399px; height: 76p
     <tbody>
       <tr>
         <td>
-'$USERNAMEMSG'</td>
+'$"Username"'</td>
 
-        <td><input tabindex= "1" name="____USERNAME____" size="20" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$USERNAMEHELP'</span></a></td>
+        <td><input tabindex= "1" name="____USERNAME____" size="20" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please enter in your username."'</span></a></td>
       </tr>
       <tr>
         <td>
-'$PASSWORDMSG1'</td>
-        <td><input tabindex= "2" name="____PASSWORD1____" size="20" type="password"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$PASSWORDHELP1'</span></a></td>
+'$"Current Password"'</td>
+        <td><input tabindex= "2" name="____PASSWORD1____" size="20" type="password"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the password that you use to log into the system."'</span></a></td>
       </tr>
       <tr>
         <td>
-'$PASSWORDMSG2'</td>
-        <td><input tabindex= "3" name="____PASSWORD2____" size="20" type="password"></td><td><a class="info2" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$PASSWORDHELP2'<br><br><b>'$PASSWORDHELP7'</b><br><br>'$LENGTHMSG': '$STUDENT_MINPASSLENGTH'<br>'$STUDENTCASECHECKMSG'<br>'$STUDENTCHARCHECKMSG'<br><br><b>'$PASSWORDHELP8'</b><br><br>'$LENGTHMSG': '$STAFF_MINPASSLENGTH'<br>'$STAFFCASECHECKMSG'<br>'$STAFFCHARCHECKMSG'<br><br><b>'$SPECIALCHARSMSG'</b><br><br>'$CHARACTERHELP'<br><br> space !	"	# 	$	%	& 	(	) 	*	+	, 	-	.	/ 	:
+'$"New Password"'</td>
+        <td><input tabindex= "3" name="____PASSWORD2____" size="20" type="password"></td><td><a class="info2" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new password that you want to have."'<br><br><b>'$"Student Password Requirements"'</b><br><br>'$"Required password length"': '$STUDENT_MINPASSLENGTH'<br>'$STUDENTCASECHECKMSG'<br>'$STUDENTCHARCHECKMSG'<br><br><b>'$"Staff Password Requirements"'</b><br><br>'$"Required password length"': '$STAFF_MINPASSLENGTH'<br>'$STAFFCASECHECKMSG'<br>'$STAFFCHARCHECKMSG'<br><br><b>'$"Allowed Special Characters"'</b><br><br>'$"The following special characters are allowed"'<br><br> space !	"	# 	$	%	& 	(	) 	*	+	, 	-	.	/ 	:
 ;	<	=	>	?	@ 	[	\	]	^	_	` 	{	|	}	~</span></a></td>
       </tr>
        <tr>
         <td>
-'$PASSWORDMSG3'</td>
-        <td><input tabindex= "4" name="____PASSWORD3____" size="20" type="password"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$PASSWORDHELP3'</span></a></td>
+'$"Confirm New Password"'</td>
+        <td><input tabindex= "4" name="____PASSWORD3____" size="20" type="password"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in your new password again here."'</span></a></td>
       </tr>
     </tbody>
   </table>
@@ -150,5 +146,5 @@ then
 echo '</div><div id="submitbox">'
 fi
 
-echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></div></form></div></body></html>'
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div></form></div></body></html>'
 exit

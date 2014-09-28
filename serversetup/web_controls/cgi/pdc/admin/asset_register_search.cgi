@@ -40,21 +40,19 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/asset_register ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/asset_register
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE18'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Asset Register"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -98,7 +96,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 
@@ -107,20 +105,20 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 #Check that asset has been set
 if [ -z $ASSET ]
 then
-MESSAGE=$ERRORMSG20
+MESSAGE=$"You have not entered in an asset number."
 show_status
 fi
 
@@ -131,7 +129,7 @@ ASSETPATH=`find /opt/karoshi/asset_register/locations -name $ASSET`
 
 if [ -z $ASSETPATH ]
 then
-MESSAGE=$ERRORMSG19
+MESSAGE=$"This asset does not exist in the asset register."
 show_status
 fi
 
@@ -152,22 +150,22 @@ then
 TABLECLASS=mobilestandard
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE13'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+	<span>'$"Asset Register"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">
 '
 
 fi
 
-echo "<b>"$TITLE18"</b><br><br>"
+echo '<b>'$"Asset Register"'</b><br><br>'
 
 #Give a choice of seeing the asset in the asset register or viewing its internet logs if available.
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$LOCATIONMSG'</td><td>'$LOCATION'</td></tr>
-<tr><td>'$ASSETNUMMSG'</td><td>'$ASSET'</td></tr>
-<tr><td>'$VIEWASSETMSG'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_edit_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="/images/assets/edit.png" value=""><span>'$VIEWASSETMSG'</span></a></td></tr>
-<tr><td>'$VIEWLOGSMSG'</td><td style="vertical-align: top;">
+<tr><td style="width: 180px;">'$"Location"'</td><td>'$LOCATION'</td></tr>
+<tr><td>'$"Asset Number"'</td><td>'$ASSET'</td></tr>
+<tr><td>'$"View asset"'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_edit_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="/images/assets/edit.png" value=""><span>'$"View asset"'</span></a></td></tr>
+<tr><td>'$"View internet logs"'</td><td style="vertical-align: top;">
 <a class="info" href="javascript:void(0)"><input name="_ACTION_showlogs_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="/images/assets/client_logs.png" value=""><span>View internet logs</span></a></td></tr>
 </tbody></table></form></div></div></body></html>'
 exit

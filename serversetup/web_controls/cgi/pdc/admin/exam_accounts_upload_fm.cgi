@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/exam_accounts_copy_data ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/exam_accounts_copy_data
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -47,7 +45,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <TITLE>'$TITLE1'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+    <TITLE>'$"Exam Accounts - Upload Files"'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </HEAD>
@@ -55,15 +53,15 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/exam_accounts_upload.cgi" METHOD="POST"><div id="actionbox">
-<B>'$TITLE1'</B> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Copy_Data_to_Exam_Accounts"><img class="images" alt="" src="/images/help/info.png"><td><span>'$UPLOADHELP1'<br><br>'$UPLOADHELP3'</span></a>
+<B>'$"Exam Accounts - Upload Files"'</B> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Copy_Data_to_Exam_Accounts"><img class="images" alt="" src="/images/help/info.png"><td><span>'$"The uploaded files will be copied to a folder called exam_files in each exam account."'<br><br>'$"Any .zip or .tar.gz files will automatically be extracted in each exam home folder."'</span></a>
 <P>
-'$OPENINGMSG':
+'$"Please select the files that you want to upload for the exam accounts"':
 <P>
        
         <TABLE class="standard" BORDER=0 WIDTH="500">
         <TR>
             <TD ALIGN=RIGHT>
-                '$FILEMSG' 1:
+                '$"File"' 1:
             </TD>
             <TD>
                 <INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="35">
@@ -71,7 +69,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/exam_accounts_u
         </TR>
         <TR>
             <TD ALIGN=RIGHT>
-                '$FILEMSG' 2:
+                '$"File"' 2:
             </TD>
             <TD>
                 <INPUT TYPE="FILE" NAME="file-to-upload-02" SIZE="35">
@@ -79,7 +77,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/exam_accounts_u
         </TR>
         <TR>
             <TD ALIGN=RIGHT>
-                '$FILEMSG' 3:
+                '$"File"' 3:
             </TD>
             <TD>
                 <INPUT TYPE="FILE" NAME="file-to-upload-03" SIZE="35">
@@ -87,7 +85,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/exam_accounts_u
         </TR>
         <TR>
             <TD ALIGN=RIGHT>
-                '$FILEMSG' 4:
+                '$"File"' 4:
             </TD>
             <TD>
                 <INPUT TYPE="FILE" NAME="file-to-upload-04" SIZE="35">
@@ -95,7 +93,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/exam_accounts_u
         </TR>
         <TR>
             <TD ALIGN=RIGHT>
-                '$FILEMSG' 5:
+                '$"File"' 5:
             </TD>
             <TD>
                 <INPUT TYPE="FILE" NAME="file-to-upload-05" SIZE="35">
@@ -103,7 +101,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/exam_accounts_u
         </TR>
         <TR>
             <TD ALIGN=RIGHT>
-                '$FILEMSG' 6:
+                '$"File"' 6:
             </TD>
             <TD>
                 <INPUT TYPE="FILE" NAME="file-to-upload-06" SIZE="35">
@@ -111,7 +109,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/exam_accounts_u
         </TR>
         <TR>
             <TD ALIGN=RIGHT>
-                '$FILEMSG' 7:
+                '$"File"' 7:
             </TD>
             <TD>
                 <INPUT TYPE="FILE" NAME="file-to-upload-07" SIZE="35">
@@ -119,7 +117,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/exam_accounts_u
         </TR>
         <TR>
             <TD ALIGN=RIGHT>
-                '$FILEMSG' 8:
+                '$"File"' 8:
             </TD>
             <TD>
                 <INPUT TYPE="FILE" NAME="file-to-upload-08" SIZE="35">
@@ -127,7 +125,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/exam_accounts_u
         </TR>
         <TR>
             <TD ALIGN=RIGHT>
-                '$FILEMSG' 9:
+                '$"File"' 9:
             </TD>
             <TD>
                 <INPUT TYPE="FILE" NAME="file-to-upload-09" SIZE="35">
@@ -135,7 +133,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/exam_accounts_u
         </TR>
         <TR>
             <TD ALIGN=RIGHT>
-                '$FILEMSG' 10:
+                '$"File"' 10:
             </TD>
             <TD>
                 <INPUT TYPE="FILE" NAME="file-to-upload-10" SIZE="35">
@@ -143,7 +141,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/exam_accounts_u
         </TR>
         <TR>
             <TD ALIGN=RIGHT>
-                '$FILEMSG' 11:
+                '$"File"' 11:
             </TD>
             <TD>
                 <INPUT TYPE="FILE" NAME="file-to-upload-11" SIZE="35">
@@ -151,7 +149,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/exam_accounts_u
         </TR>
         <TR>
             <TD ALIGN=RIGHT>
-                '$FILEMSG' 12:
+                '$"File"' 12:
             </TD>
             <TD>
                 <INPUT TYPE="FILE" NAME="file-to-upload-12" SIZE="35">
@@ -159,7 +157,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/exam_accounts_u
         </TR>
         <TR>
             <TD ALIGN=RIGHT>
-                '$FILEMSG' 13:
+                '$"File"' 13:
             </TD>
             <TD>
                 <INPUT TYPE="FILE" NAME="file-to-upload-13" SIZE="35">
@@ -167,7 +165,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/exam_accounts_u
         </TR>
         <TR>
             <TD ALIGN=RIGHT>
-                '$FILEMSG' 14:
+                '$"File"' 14:
             </TD>
             <TD>
                 <INPUT TYPE="FILE" NAME="file-to-upload-14" SIZE="35">
@@ -177,7 +175,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/exam_accounts_u
 			<TD COLSPAN=2>&nbsp;<BR></TD>
 		</TR>
         </TABLE>
-  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+  <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>
         </FORM>
 </BODY>

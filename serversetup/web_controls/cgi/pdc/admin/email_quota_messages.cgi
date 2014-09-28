@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_quota_messages ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/email/email_quota_messages
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -61,13 +59,13 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"E-Mail Quota Warning Messages"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #########################
 #Check https access
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 
@@ -75,7 +73,7 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<form action="/cgi-bin/admin/email_quota_messages2.cgi" method="post">'
-echo '<div id="actionbox"><b>'$TITLE'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG'</span></a><br><br><input value="Submit" class="button" type="submit"><input value="Reset" class="button" type="reset"><br><br>'
+echo '<div id="actionbox3"><div id="titlebox"><b>'$"E-Mail Quota Warning Messages"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"These are the messages that are sent to users who have reached a certain level on their mailbox."'</span></a><br><br></div><div id="infobox">'
 ###########################
 #Get current email messages
 ###########################
@@ -87,7 +85,7 @@ sudo -H /opt/karoshi/web_controls/exec/email_get_quota_messages $REMOTE_USER:$RE
 fi
 
 #Level1
-echo "<b>"$LEVEL1"</b><br>"
+echo '<b>'$"Level"' 1</b><br>'
 if [ -f /opt/karoshi/postfixdata/warning_messages/level1 ]
 then
 echo -e \<textarea cols=\"80\" rows=\"10\" name=\"_LEVEL1_\"\>
@@ -97,7 +95,7 @@ else
 echo \<textarea cols=\"80\" rows=\"10\" name=\"_LEVEL1_\"\>\</textarea\>
 fi
 #Level2
-echo "<br><br><b>"$LEVEL2"</b><br>"
+echo '<br><br><b>'$"Level"' 2</b><br>'
 if [ -f /opt/karoshi/postfixdata/warning_messages/level2 ]
 then
 echo -e \<textarea cols=\"80\" rows=\"10\" name=\"_LEVEL2_\"\>
@@ -107,7 +105,7 @@ else
 echo \<textarea cols=\"80\" rows=\"10\" name=\"_LEVEL2_\"\>\</textarea\>
 fi
 #Level3
-echo "<br><br><b>"$LEVEL3"</b><br>"
+echo '<br><br><b>'$"Level"' 3</b><br>'
 if [ -f /opt/karoshi/postfixdata/warning_messages/level3 ]
 then
 echo -e \<textarea cols=\"80\" rows=\"10\" name=\"_LEVEL3_\"\>
@@ -117,7 +115,7 @@ else
 echo \<textarea cols=\"80\" rows=\"10\" name=\"_LEVEL3_\"\>\</textarea\>
 fi
 #Level4
-echo "<br><br><b>"$LEVEL4"</b><br>"
+echo '<br><br><b>'$"Level"' 4</b><br>'
 if [ -f /opt/karoshi/postfixdata/warning_messages/level4 ]
 then
 echo -e \<textarea cols=\"80\" rows=\"8\" name=\"_LEVEL4_\"\>
@@ -127,5 +125,5 @@ else
 echo \<textarea cols=\"80\" rows=\"8\" name=\"_LEVEL4_\"\>\</textarea\>
 fi
 echo '<br><br><input value="Submit" class="button" type="submit"><input value="Reset" class="button" type="reset">
-</div></form></div></body></html>'
+</div></form></div></div></body></html>'
 exit

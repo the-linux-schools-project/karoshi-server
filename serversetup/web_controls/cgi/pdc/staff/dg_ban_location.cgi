@@ -27,20 +27,16 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 SLEEPTIME=5
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_location_controls ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_location_controls
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo "<html><head><title>$TITLE1</title><meta http-equiv='"'REFRESH'"' content='"'0; URL='$HTTP_REFERER''"'>"
+echo "<html><head><title>$"Ban Room"</title><meta http-equiv='"'REFRESH'"' content='"'0; URL='$HTTP_REFERER''"'>"
 echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
@@ -80,13 +76,13 @@ exit
 #Check to see that location is not blank
 if [ $LOCATION'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The location must not be blank."
 show_status
 fi
 #Check to see that location is listed 
 if [ `grep -c $LOCATION /var/lib/samba/netlogon/locations.txt` = 0 ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"This location does not exist."
 show_status
 fi
 
@@ -97,7 +93,7 @@ if [ `grep -c -w $REMOTE_USER /opt/karoshi/web_controls/staff_restrictions.txt` 
 then
 sudo -H /opt/karoshi/web_controls/exec/record_staff_error $REMOTE_USER:$REMOTE_ADDR:$REMOTE_USER
 sleep $SLEEPTIME
-MESSAGE=$ERRORMSG12
+MESSAGE=$"You do not have permissions to control internet access."
 show_status
 fi
 fi
@@ -106,8 +102,8 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/staff/dg_ban_location.cgi | cut -d' ' -f
 #Ban location
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOCATION:" | sudo -H /opt/karoshi/web_controls/exec/dg_ban_location
 BAN_STATUS=`echo $?`
-MESSAGE=`echo $LOCATION - $COMPLETEDMSG1`
-[ $BAN_STATUS = 105 ] && MESSAGE=`echo $LOCATION - $ERRORMSG3`
-[ $BAN_STATUS = 106 ] && MESSAGE=`echo $LOCATION - $ERRORMSG3`
+MESSAGE=`echo $LOCATION - $"Internet access banned."`
+[ $BAN_STATUS = 105 ] && MESSAGE=`echo $LOCATION - $"There is no computer data for this room."`
+[ $BAN_STATUS = 106 ] && MESSAGE=`echo $LOCATION - $"There is no computer data for this room."`
 show_status
 exit

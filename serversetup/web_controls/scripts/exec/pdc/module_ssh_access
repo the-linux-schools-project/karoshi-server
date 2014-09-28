@@ -24,7 +24,7 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
@@ -35,7 +35,7 @@ then
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_ssh_access_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_ssh_access.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $module_ssh_access_cgi'check' ]
 then
 	echo `date`: module_ssh_access - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -54,7 +54,7 @@ fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
 	echo `date`: module_ssh_access - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
@@ -106,13 +106,13 @@ fi
 ########################
 #Language
 ########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/serversetup/language/$LANGCHOICE/modules/ssh_access/setupssh ] || LANGCHOICE=englishuk
+TEXTDOMAIN=karoshi-server
+
+[ -f /opt/karoshi/serversetup/language/$LANGCHOICE/modules/ssh_access/setupssh ] || 
 source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/ssh_access/setupssh
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 source /opt/karoshi/serversetup/variables/distro
 #########################
@@ -122,9 +122,9 @@ source /opt/karoshi/serversetup/variables/distro
 MODCHECK=`grep -c pdc_ssh_rule /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
-	echo "<li>"$RESTRICT $OPENPORTMSG"</li>"
+	echo '<li>"'$RESTRICT' '$"Allowing access on port 22."'"</li>'
 	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-	if [ $RESTRICT'null' != null ]
+	if [ ! -z "$RESTRICT" ]
 	then
 		sed $LINENUM'c'\ACCEPT'	'net:$RESTRICT'	'fw'	'tcp'	'22'	'-'#'pdc_ssh_rule /etc/shorewall/rules > /etc/shorewall/rulestemp
 	else
@@ -211,10 +211,10 @@ fi
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
 if [ -z "$RESTRICT" ]
 then
-	echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/remote_ssh
+	echo $"Remote SSH Access""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/remote_ssh
 else
 	RESTRICT=`echo $RESTRICT | sed 's/~//g; s/-/:/g; s/,/, /g'`
-	echo $ROLE $RESTRICT"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/remote_ssh
+	echo $"Remote SSH Access" $RESTRICT"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/remote_ssh
 fi
 
 #Add in monitoring for the server

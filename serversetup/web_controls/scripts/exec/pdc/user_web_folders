@@ -111,13 +111,11 @@ echo `date`: user_web_folders -  Username: $USERNAME, Group: $GROUP, Action: $AC
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/user_web_folders ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/user_web_folders
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 ########################
 #Get server and home path for new user
@@ -234,10 +232,10 @@ then
 #Make sure suphp is installed
 if [ ! -f /etc/apache2/mods-available/suphp.load ]
 then
-echo "<li>"$UPDATEREPOMSG"</li><br><br>"
+echo '<li>'$"Updating the repository"'</li><br><br>'
 sleep 1
 apt-get update
-echo "<br><br><li>"$INSTALLMSG"</li><br><br>"
+echo '<br><br><li>'$"Installing suphp and suexec"'</li><br><br>'
 apt-get install -y libapache2-mod-suphp apache2-suexec
 fi
 
@@ -277,10 +275,10 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 #Make sure suphp is installed
 if [ ! -f /etc/apache2/mods-available/suphp.load ]
 then
-echo "<li>"'$UPDATEREPOMSG'"</li><br><br>"
+echo "<li>"'$"Updating the repository"'"</li><br><br>"
 sleep 1
 apt-get update
-echo "<br><br><li>"'$INSTALLMSG'"</li><br><br>"
+echo "<br><br><li>"'$"Installing suphp and suexec"'"</li><br><br>"
 apt-get -y install libapache2-mod-suphp apache2-suexec
 fi
 
@@ -309,7 +307,7 @@ fi
 
 '
 fi
-echo $ROLEMSG"<br>" > /opt/karoshi/server_network/servers/$SERVER/user_web_folders
+echo $"User web folders""<br>" > /opt/karoshi/server_network/servers/$SERVER/user_web_folders
 #reload form
 echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/user_web_folders.cgi\" target=\"_top\" name = \"frm\">
 <input type=\"hidden\" name=\"_GROUP_\" value=\"$GROUP\">
@@ -375,29 +373,29 @@ fi
 
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: '$WIDTH1'px;"><b>'$SERVERMSG'</b> '$SERVER'</td><td>
+<tr><td style="width: '$WIDTH1'px;"><b>'$"Server"'</b> '$SERVER'</td><td>
 '
 
 if [ ! -f /opt/karoshi/server_network/servers/$SERVER/user_web_folders ]
 then
-echo '<input name="_GROUP_'$GROUP'_ACTION_enablehosting_USERNAME_none_" type="submit" class="button" value="'$ENABLEHOSTINGMSG'">'
+echo '<input name="_GROUP_'$GROUP'_ACTION_enablehosting_USERNAME_none_" type="submit" class="button" value="'$"Start user hosting"'">'
 else
-echo '<input name="_GROUP_'$GROUP'_ACTION_disablehosting_USERNAME_none_" type="submit" class="button" value="'$DISABLEHOSTINGMSG'">'
+echo '<input name="_GROUP_'$GROUP'_ACTION_disablehosting_USERNAME_none_" type="submit" class="button" value="'$"Stop user hosting"'">'
 fi
 
 #Show global options
-echo '<tr><td><b>'$PRIGROUPMSG'</b> '$GROUP'</td><td>
-<input name="_GROUP_'$GROUP'_ACTION_enable_USERNAME_all_" type="submit" class="button" value="'$ENABLEALLMSG'">
+echo '<tr><td><b>'$"Primary Group"'</b> '$GROUP'</td><td>
+<input name="_GROUP_'$GROUP'_ACTION_enable_USERNAME_all_" type="submit" class="button" value="'$"Enable all users"'">
 </td></tr>
 <tr><td></td><td>
-<input name="_GROUP_'$GROUP'_ACTION_disable_USERNAME_all_" type="submit" class="button" value="'$DISABLEALLMSG'">
+<input name="_GROUP_'$GROUP'_ACTION_disable_USERNAME_all_" type="submit" class="button" value="'$"Disable all users"'">
 </td></tr></tbody></table>
 <br>'
 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: '$WIDTH1'px;"><b>'$USERNAMEMSG'</b></td><td><b>'$STATUSMSG'</b></td></tr>'
+<tr><td style="width: '$WIDTH1'px;"><b>'$"Username"'</b></td><td><b>'$"Status"'</b></td></tr>'
 
 if [ $SERVER = `hostname-fqdn` ]
 then
@@ -412,11 +410,11 @@ sudo -u www-data /bin/bash << ENDOFTEST
 	for folder in ${folders[@]}; do
 		FOLDERACTION=enable
 		STATUSICON=$ICON2
-		MESSAGE="$ENABLEFOLDERMSG"
+		MESSAGE=''$"Enable user web folder"''
 		if [[ -r \$folder/public_html ]]; then
 			STATUSICON=$ICON1
 			FOLDERACTION=disable
-			MESSAGE="$DISABLEFOLDERMSG"
+			MESSAGE=''$"Disable user web folder"''
 		fi
 		USERNAME=\${folder##*/}
 		echo "<tr><td>\$USERNAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_USERNAME_\$USERNAME"_"GROUP_$GROUP"_"ACTION_\$FOLDERACTION"_"\" type=\"image\" class=\"images\" src=\"\$STATUSICON\" value=\"\"><span>\$MESSAGE<br><br>\$USERNAME</span></a></td></tr>"
@@ -438,11 +436,11 @@ sudo -u www-data /bin/bash << ENDOFTEST
 	for folder in ${folders[@]}; do
 		FOLDERACTION=enable
 		STATUSICON='$ICON2'
-		MESSAGE="'$ENABLEFOLDERMSG'"
+		MESSAGE="'$"Enable user web folder"'"
 		if [[ -r \$folder/public_html ]]; then
 			STATUSICON='$ICON1'
 			FOLDERACTION=disable
-			MESSAGE="'$DISABLEFOLDERMSG'"
+			MESSAGE="'$"Disable user web folder"'"
 		fi
 		USERNAME=\${folder##*/}
 		echo "<tr><td>\$USERNAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_USERNAME_\$USERNAME"_"GROUP_'$GROUP'"_"ACTION_\$FOLDERACTION"_"\" type=\"image\" class=\"images\" src=\"\$STATUSICON\" value=\"\"><span>\$MESSAGE<br><br>\$USERNAME</span></a></td></tr>"

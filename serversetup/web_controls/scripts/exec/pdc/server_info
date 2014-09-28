@@ -51,14 +51,14 @@ then
 echo `date`: server_info - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
-INFO=`echo $* | cut -s -d: -f4`
-SERVER=`echo $* | cut -s -d: -f5`
-SERVERTYPE=`echo $* | cut -s -d: -f6`
-SERVERMASTER=`echo $* | cut -s -d: -f7`
-MOBILE=`echo $* | cut -s -d: -f8`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
+INFO=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
+SERVER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5`
+SERVERTYPE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f6`
+SERVERMASTER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f7`
+MOBILE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f8`
 ########################
 #Check data
 ########################
@@ -120,13 +120,11 @@ fi
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/server_info ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/server_info
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 KAROSHI_SERVER=$SERVER
 TABLECLASS=standard
@@ -138,7 +136,7 @@ then
 if [ $INFO = harddrive ]
 then
 #Show free space
-echo '<b>'$FREESPACEMSG'</b><br>'
+echo '<b>'$"Free Space"'</b><br>'
 
 echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>"
 
@@ -172,15 +170,15 @@ CAPACITY=`echo "scale=0; $CAPACITY/1024" | bc`
 DRIVESCALE=TB
 fi
 
-echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\">$MODELFAMILIYMSG</td><td>$MODELFAMILY</td></tr>
-<tr><td style=\"width: 180px;\">$DEVICEMODELMSG</td><td>$DEVICEMODEL</td></tr>
-<tr><td style=\"width: 180px;\">$SERIALNOMSG</td><td>$SERIALNO</td></tr>
-<tr><td style=\"width: 180px;\">$FIRMWAREMSG</td><td>$FIRMWARE</td></tr>
-<tr><td style=\"width: 180px;\">$CAPACITYMSG</td><td>$CAPACITY $DRIVESCALE</td></tr>
-<tr><td style=\"width: 180px;\">$SMARTENABLEDMSG</td><td>$SMARTENABLED</td></tr>
-<tr><td style=\"width: 180px;\">$SMARTSTATUSMSG</td><td>$SMARTSTATUS</td></tr>
-</tbody></table><br>"
+echo '<table class='"$TABLECLASS"' style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: 180px;">'$"Model Family"'</td><td>'$MODELFAMILY'</td></tr>
+<tr><td style="width: 180px;">'$"Device Model"'</td><td>'$DEVICEMODEL'</td></tr>
+<tr><td style="width: 180px;">'$"Serial Number"'</td><td>'$SERIALNO'</td></tr>
+<tr><td style="width: 180px;">'$"Firmware Version"'</td><td>'$FIRMWARE'</td></tr>
+<tr><td style="width: 180px;">'$"Capacity"'</td><td>'$CAPACITY' '$DRIVESCALE'</td></tr>
+<tr><td style="width: 180px;">'$"Smart Enabled"'</td><td>'$SMARTENABLED'</td></tr>
+<tr><td style="width: 180px;">'$"Smart Status"'</td><td>'$SMARTSTATUS'</td></tr>
+</tbody></table><br>'
 
 done
 
@@ -188,7 +186,7 @@ done
 if [ `grep -c ^"#Software raid" /etc/fstab` -gt 0 ]
 then
 RAIDMOUNTPOINT=`mdadm --detail --scan 2>/dev/null | cut -d" " -f2`
-echo "<img src=\"/images/submenus/system/raid.png\" alt=\"Software Raid\"> <b>$SOFTWARERAIDMSG</b><br>"
+echo "<img src=\"/images/submenus/system/raid.png\" alt=\"Software Raid\"> <b>$"Software Raid"</b><br>"
 
 MDADMDATA=`mdadm --detail $RAIDMOUNTPOINT`
 REBUILDSTATUS=`echo -e "$MDADMDATA" | grep "Rebuild Status :" | cut -d: -f2 | sed "s/^ //g"`
@@ -207,19 +205,19 @@ CHUNKSIZE=`echo -e "$MDADMDATA" | grep "Chunk Size :" | cut -d: -f2 | sed "s/^ /
 UUID=`echo -e "$MDADMDATA" | grep "UUID :" | cut -d: -f2- | sed "s/^ //g"`
 
 echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\">$RAIDLEVELMSG</td><td>$RAIDLEVEL</td></tr>
-<tr><td style=\"width: 180px;\">$RAIDSIZEMSG</td><td>$ARRAYSIZE</td></tr>
-<tr><td style=\"width: 180px;\">$USEDSIZEMSG</td><td>$USEDSIZE</td></tr>
-<tr><td style=\"width: 180px;\">$RAIDSTATUSMSG</td><td>$RAIDSTATUS</td></tr>"
+<tr><td style=\"width: 180px;\">$"Raid Level"</td><td>$RAIDLEVEL</td></tr>
+<tr><td style=\"width: 180px;\">$"Raid Size"</td><td>$ARRAYSIZE</td></tr>
+<tr><td style=\"width: 180px;\">$"Used Size"</td><td>$USEDSIZE</td></tr>
+<tr><td style=\"width: 180px;\">$"Raid Status"</td><td>$RAIDSTATUS</td></tr>"
 [ ! -z "$REBUILDSTATUS" ] && echo "<tr><td style=\"width: 180px;\">Rebuild Status</td><td>$REBUILDSTATUS</td></tr>"
-echo "<tr><td style=\"width: 180px;\">$RAIDDRIVESMSG</td><td>$RAIDDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">$USEDDRIVESMSG</td><td>$TOTALDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">$ACTIVEDEVICESMSG</td><td>$ACTIVEDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">$WORKINGDEVICESMSG</td><td>$WORKINGDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">$FAILEDDEVICESMSG</td><td>$FAILEDDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">$SPAREDEVICESMSG</td><td>$SPAREDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">$LAYOUTMSG</td><td>$LAYOUT</td></tr>
-<tr><td style=\"width: 180px;\">$CHUNKSIZEMSG</td><td>$CHUNKSIZE</td></tr>
+echo "<tr><td style=\"width: 180px;\">$"Raid Drives"</td><td>$RAIDDEVICES</td></tr>
+<tr><td style=\"width: 180px;\">$"Used Drives"</td><td>$TOTALDEVICES</td></tr>
+<tr><td style=\"width: 180px;\">$"Active Devices"</td><td>$ACTIVEDEVICES</td></tr>
+<tr><td style=\"width: 180px;\">$"Working Devices"</td><td>$WORKINGDEVICES</td></tr>
+<tr><td style=\"width: 180px;\">$"Failed Devices"</td><td>$FAILEDDEVICES</td></tr>
+<tr><td style=\"width: 180px;\">$"Spare Devices"</td><td>$SPAREDEVICES</td></tr>
+<tr><td style=\"width: 180px;\">$"Layout"</td><td>$LAYOUT</td></tr>
+<tr><td style=\"width: 180px;\">$"Chunk Size"</td><td>$CHUNKSIZE</td></tr>
 <tr><td style=\"width: 180px;\">UUID</td><td>$UUID</td></tr>
 </tbody></table>"
 fi
@@ -228,7 +226,7 @@ fi
 #Show cpu usage
 if [ $INFO = cpu ]
 then
-echo \<b\>$CPUUSAGEMSG\</b\>\<br\>
+echo \<b\>$"CPU Usage"\</b\>\<br\>
 echo \<table class=\"$TABLECLASS\"\>\<tbody\>
 #                        Replace spaces with single space  Add column start and ends           End row                      start row
 top -b -n 1 | sed 1,2d | sed "s/^ * //g" | sed "s/ * / /g" | sed "s/ * /\<\/td\>\<td\>/g" | sed "s/$ /\<\/td\>\<\/tr\>/g" | sed "s/^/\<tr\>\<td\>/g"
@@ -238,7 +236,7 @@ fi
 #Show running kernel
 if [ $INFO = kernel ]
 then
-echo \<b\>$KERNELMSG\</b\>\<br\>
+echo \<b\>$"Kernel"\</b\>\<br\>
 echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 uname -a
 echo '</pre>'
@@ -247,7 +245,7 @@ fi
 #Show samba status
 if [ $INFO = samba ]
 then
-echo \<b\>$SAMBAMSG\</b\>\<br\>
+echo \<b\>$"Samba Status"\</b\>\<br\>
 echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 smbstatus
 echo '</pre>'
@@ -261,7 +259,7 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $KAROSHI_SERVER '
 if [ '$INFO' = harddrive ]
 then
 #Show free space
-echo \<b\>'$FREESPACEMSG'\</b\>\<br\>
+echo \<b\>'$"Free Space"'\</b\>\<br\>
 
 echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>"
 
@@ -298,13 +296,13 @@ DRIVESCALE=TB
 fi
 
 echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\">'$MODELFAMILIYMSG'</td><td>$MODELFAMILY</td></tr>
-<tr><td style=\"width: 180px;\">'$DEVICEMODELMSG'</td><td>$DEVICEMODEL</td></tr>
-<tr><td style=\"width: 180px;\">'$SERIALNOMSG'</td><td>$SERIALNO</td></tr>
-<tr><td style=\"width: 180px;\">'$FIRMWAREMSG'</td><td>$FIRMWARE</td></tr>
-<tr><td style=\"width: 180px;\">'$CAPACITYMSG'</td><td>$CAPACITY $DRIVESCALE</td></tr>
-<tr><td style=\"width: 180px;\">'$SMARTENABLEDMSG'</td><td>$SMARTENABLED</td></tr>
-<tr><td style=\"width: 180px;\">'$SMARTSTATUSMSG'</td><td>$SMARTSTATUS</td></tr>
+<tr><td style=\"width: 180px;\">'$"Model Family"'</td><td>$MODELFAMILY</td></tr>
+<tr><td style=\"width: 180px;\">'$"Device Model"'</td><td>$DEVICEMODEL</td></tr>
+<tr><td style=\"width: 180px;\">'$"Serial Number"'</td><td>$SERIALNO</td></tr>
+<tr><td style=\"width: 180px;\">'$"Firmware Version"'</td><td>$FIRMWARE</td></tr>
+<tr><td style=\"width: 180px;\">'$"Capacity"'</td><td>$CAPACITY $DRIVESCALE</td></tr>
+<tr><td style=\"width: 180px;\">'$"Smart Enabled"'</td><td>$SMARTENABLED</td></tr>
+<tr><td style=\"width: 180px;\">'$"Smart Status"'</td><td>$SMARTSTATUS</td></tr>
 </tbody></table><br>"
 
 done
@@ -313,7 +311,7 @@ done
 if [ `grep -c ^"#Software raid" /etc/fstab` -gt 0 ]
 then
 RAIDMOUNTPOINT=`mdadm --detail --scan 2>/dev/null | cut -d" " -f2`
-echo "<img src=\"/images/submenus/system/raid.png\" alt=\"Software Raid\"> <b>'$SOFTWARERAIDMSG'</b><br>"
+echo "<img src=\"/images/submenus/system/raid.png\" alt=\"Software Raid\"> <b>'$"Software Raid"'</b><br>"
 
 MDADMDATA=`mdadm --detail $RAIDMOUNTPOINT`
 REBUILDSTATUS=`echo -e "$MDADMDATA" | grep "Rebuild Status :" | cut -d: -f2 | sed "s/^ //g"`
@@ -332,19 +330,19 @@ CHUNKSIZE=`echo -e "$MDADMDATA" | grep "Chunk Size :" | cut -d: -f2 | sed "s/^ /
 UUID=`echo -e "$MDADMDATA" | grep "UUID :" | cut -d: -f2- | sed "s/^ //g"`
 
 echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\">'$RAIDLEVELMSG'</td><td>$RAIDLEVEL</td></tr>
-<tr><td style=\"width: 180px;\">'$RAIDSIZEMSG'</td><td>$ARRAYSIZE</td></tr>
-<tr><td style=\"width: 180px;\">'$USEDSIZEMSG'</td><td>$USEDSIZE</td></tr>
-<tr><td style=\"width: 180px;\">'$RAIDSTATUSMSG'</td><td>$RAIDSTATUS</td></tr>"
+<tr><td style=\"width: 180px;\">'$"Raid Level"'</td><td>$RAIDLEVEL</td></tr>
+<tr><td style=\"width: 180px;\">'$"Raid Size"'</td><td>$ARRAYSIZE</td></tr>
+<tr><td style=\"width: 180px;\">'$"Used Size"'</td><td>$USEDSIZE</td></tr>
+<tr><td style=\"width: 180px;\">'$"Raid Status"'</td><td>$RAIDSTATUS</td></tr>"
 [ ! -z "$REBUILDSTATUS" ] && echo "<tr><td style=\"width: 180px;\">Rebuild Status</td><td>$REBUILDSTATUS</td></tr>"
-echo "<tr><td style=\"width: 180px;\">'$RAIDDRIVESMSG'</td><td>$RAIDDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">'$USEDDRIVESMSG'</td><td>$TOTALDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">'$ACTIVEDEVICESMSG'</td><td>$ACTIVEDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">'$WORKINGDEVICESMSG'</td><td>$WORKINGDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">'$FAILEDDEVICESMSG'</td><td>$FAILEDDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">'$SPAREDEVICESMSG'</td><td>$SPAREDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">'$LAYOUTMSG'</td><td>$LAYOUT</td></tr>
-<tr><td style=\"width: 180px;\">'$CHUNKSIZEMSG'</td><td>$CHUNKSIZE</td></tr>
+echo "<tr><td style=\"width: 180px;\">'$"Raid Drives"'</td><td>$RAIDDEVICES</td></tr>
+<tr><td style=\"width: 180px;\">'$"Used Drives"'</td><td>$TOTALDEVICES</td></tr>
+<tr><td style=\"width: 180px;\">'$"Active Devices"'</td><td>$ACTIVEDEVICES</td></tr>
+<tr><td style=\"width: 180px;\">'$"Working Devices"'</td><td>$WORKINGDEVICES</td></tr>
+<tr><td style=\"width: 180px;\">'$"Failed Devices"'</td><td>$FAILEDDEVICES</td></tr>
+<tr><td style=\"width: 180px;\">'$"Spare Devices"'</td><td>$SPAREDEVICES</td></tr>
+<tr><td style=\"width: 180px;\">'$"Layout"'</td><td>$LAYOUT</td></tr>
+<tr><td style=\"width: 180px;\">'$"Chunk Size"'</td><td>$CHUNKSIZE</td></tr>
 <tr><td style=\"width: 180px;\">UUID</td><td>$UUID</td></tr>
 </tbody></table>"
 fi
@@ -353,7 +351,7 @@ fi
 #Show cpu usage
 if [ '$INFO' = cpu ]
 then
-echo \<b\>'$CPUUSAGEMSG'\</b\>\<br\>
+echo \<b\>'$"CPU Usage"'\</b\>\<br\>
 echo \<table class=\"'$TABLECLASS'\"\>\<tbody\>
 #                        Replace spaces with single space  Add column start and ends           End row                      start row
 top -b -n 1 | sed 1,2d | sed "s/^ * //g" | sed "s/ * / /g" | sed "s/ * /\<\/td\>\<td\>/g" | sed "s/$ /\<\/td\>\<\/tr\>/g" | sed "s/^/\<tr\>\<td\>/g"
@@ -363,7 +361,7 @@ fi
 #Show running kernel
 if [ '$INFO' = kernel ]
 then
-echo \<b\>'$KERNELMSG'\</b\>\<br\>
+echo \<b\>'$"Kernel"'\</b\>\<br\>
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 uname -a
 echo "</pre>"
@@ -372,7 +370,7 @@ fi
 #Show samba status
 if [ '$INFO' = samba ]
 then
-echo \<b\>'$SAMBAMSG'\</b\>\<br\>
+echo \<b\>'$"Samba Status"'\</b\>\<br\>
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 smbstatus
 echo "</pre>"
@@ -390,7 +388,7 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$KAROSHI_SERVER' '\''
 if [ '$INFO' = harddrive ]
 then
 #Show free space
-echo \<img src=\"/images/submenus/system/computer.png\" alt=\"Server\"\> \<b\>'$FREESPACEMSG'\</b\>\<br\>
+echo \<img src=\"/images/submenus/system/computer.png\" alt=\"Server\"\> \<b\>'$"Free Space"'\</b\>\<br\>
 
 echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>"
 
@@ -429,13 +427,13 @@ DRIVESCALE=TB
 fi
 
 echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\">'$MODELFAMILIYMSG'</td><td>$MODELFAMILY</td></tr>
-<tr><td style=\"width: 180px;\">'$DEVICEMODELMSG'</td><td>$DEVICEMODEL</td></tr>
-<tr><td style=\"width: 180px;\">'$SERIALNOMSG'</td><td>$SERIALNO</td></tr>
-<tr><td style=\"width: 180px;\">'$FIRMWAREMSG'</td><td>$FIRMWARE</td></tr>
-<tr><td style=\"width: 180px;\">'$CAPACITYMSG'</td><td>$CAPACITY $DRIVESCALE</td></tr>
-<tr><td style=\"width: 180px;\">'$SMARTENABLEDMSG'</td><td>$SMARTENABLED</td></tr>
-<tr><td style=\"width: 180px;\">'$SMARTSTATUSMSG'</td><td>$SMARTSTATUS</td></tr>
+<tr><td style=\"width: 180px;\">'$"Model Family"'</td><td>$MODELFAMILY</td></tr>
+<tr><td style=\"width: 180px;\">'$"Device Model"'</td><td>$DEVICEMODEL</td></tr>
+<tr><td style=\"width: 180px;\">'$"Serial Number"'</td><td>$SERIALNO</td></tr>
+<tr><td style=\"width: 180px;\">'$"Firmware Version"'</td><td>$FIRMWARE</td></tr>
+<tr><td style=\"width: 180px;\">'$"Capacity"'</td><td>$CAPACITY $DRIVESCALE</td></tr>
+<tr><td style=\"width: 180px;\">'$"Smart Enabled"'</td><td>$SMARTENABLED</td></tr>
+<tr><td style=\"width: 180px;\">'$"Smart Status"'</td><td>$SMARTSTATUS</td></tr>
 </tbody></table><br>"
 
 done
@@ -444,7 +442,7 @@ done
 if [ `grep -c ^"#Software raid" /etc/fstab` -gt 0 ]
 then
 RAIDMOUNTPOINT=`mdadm --detail --scan 2>/dev/null | cut -d" " -f2`
-echo "<img src=\"/images/submenus/system/raid.png\" alt=\"Software Raid\"> <b>'$SOFTWARERAIDMSG'</b><br>"
+echo "<img src=\"/images/submenus/system/raid.png\" alt=\"Software Raid\"> <b>'$"Software Raid"'</b><br>"
 
 MDADMDATA=`mdadm --detail $RAIDMOUNTPOINT`
 RAIDLEVEL=`echo -e "$MDADMDATA" | grep "Raid Level :" | cut -d: -f2 | sed "s/^ //g"`
@@ -462,18 +460,18 @@ CHUNKSIZE=`echo -e "$MDADMDATA" | grep "Chunk Size :" | cut -d: -f2 | sed "s/^ /
 UUID=`echo -e "$MDADMDATA" | grep "UUID :" | cut -d: -f2- | sed "s/^ //g"`
 
 echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\">'$RAIDLEVELMSG'</td><td>$RAIDLEVEL</td></tr>
-<tr><td style=\"width: 180px;\">'$RAIDSIZEMSG'</td><td>$ARRAYSIZE</td></tr>
-<tr><td style=\"width: 180px;\">'$USEDSIZEMSG'</td><td>$USEDSIZE</td></tr>
-<tr><td style=\"width: 180px;\">'$RAIDSTATUSMSG'</td><td>$RAIDSTATUS</td></tr>
-<tr><td style=\"width: 180px;\">'$RAIDDRIVESMSG'</td><td>$RAIDDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">'$USEDDRIVESMSG'</td><td>$TOTALDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">'$ACTIVEDEVICESMSG'</td><td>$ACTIVEDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">'$WORKINGDEVICESMSG'</td><td>$WORKINGDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">'$FAILEDDEVICESMSG'</td><td>$FAILEDDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">'$SPAREDEVICESMSG'</td><td>$SPAREDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">'$LAYOUTMSG'</td><td>$LAYOUT</td></tr>
-<tr><td style=\"width: 180px;\">'$CHUNKSIZEMSG'</td><td>$CHUNKSIZE</td></tr>
+<tr><td style=\"width: 180px;\">'$"Raid Level"'</td><td>$RAIDLEVEL</td></tr>
+<tr><td style=\"width: 180px;\">'$"Raid Size"'</td><td>$ARRAYSIZE</td></tr>
+<tr><td style=\"width: 180px;\">'$"Used Size"'</td><td>$USEDSIZE</td></tr>
+<tr><td style=\"width: 180px;\">'$"Raid Status"'</td><td>$RAIDSTATUS</td></tr>
+<tr><td style=\"width: 180px;\">'$"Raid Drives"'</td><td>$RAIDDEVICES</td></tr>
+<tr><td style=\"width: 180px;\">'$"Used Drives"'</td><td>$TOTALDEVICES</td></tr>
+<tr><td style=\"width: 180px;\">'$"Active Devices"'</td><td>$ACTIVEDEVICES</td></tr>
+<tr><td style=\"width: 180px;\">'$"Working Devices"'</td><td>$WORKINGDEVICES</td></tr>
+<tr><td style=\"width: 180px;\">'$"Failed Devices"'</td><td>$FAILEDDEVICES</td></tr>
+<tr><td style=\"width: 180px;\">'$"Spare Devices"'</td><td>$SPAREDEVICES</td></tr>
+<tr><td style=\"width: 180px;\">'$"Layout"'</td><td>$LAYOUT</td></tr>
+<tr><td style=\"width: 180px;\">'$"Chunk Size"'</td><td>$CHUNKSIZE</td></tr>
 <tr><td style=\"width: 180px;\">UUID</td><td>$UUID</td></tr>
 </tbody></table>"
 fi
@@ -482,7 +480,7 @@ fi
 #Show cpu usage
 if [ '$INFO' = cpu ]
 then
-echo \<b\>'$CPUUSAGEMSG'\</b\>\<br\>
+echo \<b\>'$"CPU Usage"'\</b\>\<br\>
 echo \<table class=\"'$TABLECLASS'\"\>\<tbody\>
 #                        Replace spaces with single space  Add column start and ends           End row                      start row
 top -b -n 1 | sed 1,2d | sed "s/^ * //g" | sed "s/ * / /g" | sed "s/ * /\<\/td\>\<td\>/g" | sed "s/$ /\<\/td\>\<\/tr\>/g" | sed "s/^/\<tr\>\<td\>/g"
@@ -492,7 +490,7 @@ fi
 #Show running kernel
 if [ '$INFO' = kernel ]
 then
-echo \<b\>'$KERNELMSG'\</b\>\<br\>
+echo \<b\>'$"Kernel"'\</b\>\<br\>
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 uname -a
 echo "</pre>"
@@ -501,7 +499,7 @@ fi
 #Show samba status
 if [ '$INFO' = samba ]
 then
-echo \<b\>'$SAMBAMSG'\</b\>\<br\>
+echo \<b\>'$"Samba Status"'\</b\>\<br\>
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 smbstatus
 echo "</pre>"

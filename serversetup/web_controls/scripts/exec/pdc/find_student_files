@@ -130,17 +130,15 @@ WIDTH=180
 ########################
 #Language
 ########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/file/find_student_files ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/file/find_student_files
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: '$WIDTH'px;"><b>'$SERVERMSG'</b></td><td>'$SERVERNAME'</td></tr>
-<tr><td><b>'$SEARCHMSG'</b></td><td>'$FILENAME'</td></tr></tbody></table>
+<tr><td style="width: '$WIDTH'px;"><b>'$"Server"'</b></td><td>'$SERVERNAME'</td></tr>
+<tr><td><b>'$"Search term"'</b></td><td>'$FILENAME'</td></tr></tbody></table>
 '
 echo '<pre style=font-family:Arial, Times, Georgia, "Times New Roman", Times, serif>'
 if [ $SERVERNAME = `hostname-fqdn` ]

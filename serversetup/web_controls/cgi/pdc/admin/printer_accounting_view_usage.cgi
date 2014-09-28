@@ -31,13 +31,11 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printer_accounting ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printer_accounting
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 TYPE=group
 
@@ -106,13 +104,13 @@ done
 if [ $TYPE = user ]
 then
 STARTPAGE=printer_accounting_view_user_usage_fm.cgi
-TITLE="$TITLE6 - $NAME"
+TITLE=''$"Printer Usage"' - '$NAME''
 fi
 
 if [ $TYPE = group ]
 then
 STARTPAGE=printer_accounting_view_group_usage_fm.cgi
-TITLE="$TITLE7 - $NAME"
+TITLE=''$"Group Printer Usage"' - '$NAME''
 fi
 
 ##########################
@@ -157,7 +155,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -165,13 +163,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -180,19 +178,19 @@ fi
 #Check to see that NAME is not blank
 if [ $NAME'null' = null ]
 then
-MESSAGE=$ERRORMSG7
+MESSAGE=$"The name cannot be blank."
 show_status
 fi
 #Check to see that TYPE is not blank
 if [ $TYPE'null' = null ]
 then
-MESSAGE=$ERRORMSG6
+MESSAGE=$"The type cannot be blank."
 show_status
 fi
 #Check to see that YEAR is not blank
 if [ $YEAR'null' = null ]
 then
-MESSAGE=$ERRORMSG8
+MESSAGE=$"The year canot be blank."
 show_status
 fi
 
@@ -216,12 +214,12 @@ then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div>
 '
 echo '<div id="mobileactionbox">'
 else
-echo '<b>'$TITLE'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG12'</span></a><br><br>'
+echo '<b>'$TITLE'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Monthly printer totals are re-calculated at the end of every day."'</span></a><br><br>'
 fi
 
 

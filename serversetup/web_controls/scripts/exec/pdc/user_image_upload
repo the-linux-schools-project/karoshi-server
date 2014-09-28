@@ -186,17 +186,15 @@ ls -1 /opt/karoshi/.tempdata/user_image_upload.$$/ > /opt/karoshi/.tempdata/user
 IMAGE_COUNT=`cat /opt/karoshi/.tempdata/user_image_upload_list.$$ | wc -l`
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/user_image_upload ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/user_image_upload
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
 
-echo '<b>'$TITLE'</b><br><br>'
+
+echo '<b>'$"Upload User Image"'</b><br><br>'
 
 if [ $IMAGE_COUNT = 0 ]
 then
-echo `date`: user_image_upload - $ERRORMSG4 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $ERRORMSG4
+echo `date`: user_image_upload - $"No image files to process" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo $"No image files to process"
 exit 101
 fi
 
@@ -237,14 +235,14 @@ fi
 mv /opt/karoshi/.tempdata/user_image_upload.$$/$IMAGE_NAME /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg
 chown root.apache_karoshi /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg
 chmod 0440 /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg
-echo $USERNAME - $IMAGE_NAME - $PRIMARYGROUP - $IMAGECOPYMSG'<br>'
+echo $USERNAME - $IMAGE_NAME - $PRIMARYGROUP - $"Image copied."'<br>'
 else
-echo `date`: user_image_upload - $IMAGE_NAME - $ERRORMSG6 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $IMAGE_NAME - $ERRORMSG6'<br>'
+echo `date`: user_image_upload - $IMAGE_NAME - $"This image does not match a username." by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo $IMAGE_NAME - $"This image does not match a username."'<br>'
 fi
 else
-echo `date`: user_image_upload - $IMAGE_NAME - $ERRORMSG5 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $IMAGE_NAME - $ERRORMSG5'<br>'
+echo `date`: user_image_upload - $IMAGE_NAME - $"Incorrect file type" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo $IMAGE_NAME - $"Incorrect file type"'<br>'
 fi
 let COUNTER=$COUNTER+1
 done

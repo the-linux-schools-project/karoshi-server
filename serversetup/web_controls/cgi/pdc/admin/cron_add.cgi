@@ -35,19 +35,17 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/cron ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/cron
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Schedule Job"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body><div id="pagecontainer">'
 #Detect mobile browser
 MOBILE=no
 source /opt/karoshi/web_controls/detect_mobile_browser
@@ -221,7 +219,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -229,13 +227,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
@@ -245,50 +243,50 @@ fi
 #Check to see that MINUTES is not blank
 if [ "$MINUTES"'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The minutes must not be blank."
 show_status
 fi
 #Check to see that HOUR is not blank
 if [ "$HOUR"'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The hour must not be blank."
 show_status
 fi
 #Check to see DAY is not blank
 if [ "$DAY"'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The day must not be blank."
 show_status
 fi
 #Check to see MONTH is not blank
 if [ "$MONTH"'null' = null ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The month must not be blank."
 show_status
 fi
 #Check to see DOFW is not blank
 if [ "$DOFW"'null' = null ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"The day of week must not be blank."
 show_status
 fi
 #Check to see COMMAND is not blank
 if [ "$COMMAND"'null' = null ]
 then
-MESSAGE=$ERRORMSG6
+MESSAGE=$"The command must not be blank."
 show_status
 fi
 #Check to see SERVERNAME is not blank
 if [ "$SERVERNAME"'null' = null ]
 then
-MESSAGE=$ERRORMSG7
+MESSAGE=$"The server must not be blank."
 show_status
 fi
 
 #Check to see that SERVERTYPE is not blank
 if [ $SERVERTYPE'null' = null ]
 then
-MESSAGE=$ERRORMSG9
+MESSAGE=$"The server cannot be blank."
 show_status
 fi
 

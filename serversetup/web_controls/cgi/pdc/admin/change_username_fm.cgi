@@ -29,15 +29,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/change_username ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/change_username
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -50,7 +48,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Change a Username"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script type="text/javascript" src="/all/js/jquery.js"></script>
 <script type="text/javascript" src="/all/js/script.js"></script>
@@ -101,37 +99,37 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+	<span>'$"Change a Username"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="'$DIV_ID'">
 '
 else
-echo '<div id="'$DIV_ID'"><div class="sectiontitle">'$TITLE'</div><br>'
+echo '<div id="'$DIV_ID'"><div class="sectiontitle">'$"Change a Username"'</div><br>'
 fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left; height: 30px;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
       <tr>
         <td style="width: 180px;">
-'$USERNAMEMSG'</td>
+'$"Username"'</td>
         <td><div id="suggestions"></div><input tabindex= "1" name="_USERNAME_" size="20" style="width: '$WIDTH'px;" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Username"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Username"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to change."'</span></a>
 </td></tr>
-<tr><td>'$NEWUSERNAMEMSG'</td><td><input tabindex= "2" name="_NEWUSERNAME_" size="20" style="width: '$WIDTH'px;" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Username"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td>
+<tr><td>'$"New Username"'</td><td><input tabindex= "2" name="_NEWUSERNAME_" size="20" style="width: '$WIDTH'px;" type="text"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Username"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new username for this user."'</span></a></td>
       </tr>
-<tr><td>'$NEWFIRSTNAMEMSG'</td><td><input tabindex= "3" name="_FIRSTNAME_" size="20"  style="width: '$WIDTH'px;" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Username"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td>
+<tr><td>'$"New forename"'</td><td><input tabindex= "3" name="_FIRSTNAME_" size="20"  style="width: '$WIDTH'px;" type="text"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Username"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new username for this user."'</span></a></td>
       </tr>
-<tr><td>'$NEWSURNAMEMSG'</td><td><input tabindex= "4" name="_SURNAME_" size="20"  style="width: '$WIDTH'px;" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Username"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td>
+<tr><td>'$"New surname"'</td><td><input tabindex= "4" name="_SURNAME_" size="20"  style="width: '$WIDTH'px;" type="text"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Username"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new username for this user."'</span></a></td>
       </tr>
     </tbody>
   </table>
   <br>'
 
 [ $MOBILE = no ] && echo '</div><div id="submitbox">'
-echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div></form></div></body></html>
 '
 exit

@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/add_user ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/add_user
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -52,7 +50,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Add a New User"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -98,7 +96,7 @@ function check_choice() {
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form name="demoform" onsubmit="return valid(this.menu,this.choicetext)" action="/cgi-bin/admin/add_user.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br><form action="/cgi-bin/admin/add_user.cgi" method="post">'
+echo '<form name="demoform" onsubmit="return valid(this.menu,this.choicetext)" action="/cgi-bin/admin/add_user.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$"Add a New User"'</div><br><form action="/cgi-bin/admin/add_user.cgi" method="post">'
 
 echo '
   <table class="standard" style="text-align: left; height: 91px;" border="0" cellpadding="2" cellspacing="2">
@@ -153,29 +151,29 @@ echo '</select></div>
       </td></tr>
       <tr>
         <td>
-'$SURNAMEMSG'</td>
+'$"Surname"'</td>
         <td><input tabindex= "2" value="'$SURNAME'" name="_SURNAME_" size="20" type="text"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$USERHELP2'</span></a>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please enter the surname for this user."'</span></a>
       </td></tr>
       <tr>
         <td>
-'$PASSWORDMSG'</td>
+'$"Password"'</td>
         <td><input tabindex= "3" name="_PASSWORD1_" size="20" type="password"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$PASSWORDHELP'</span></a>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please enter a password and confirm it in the box below."'</span></a>
       </td></tr>
       <tr>
         <td>
-'$CONFIRMMSG'</td>
+'$"Confirm Password"'</td>
         <td><input tabindex= "4" name="_PASSWORD2_" size="20" type="password"></td>
       </tr>
 <tr>
         <td>
-'$ENROLLMENTNUMBERMSG'</td>
+'$"Enrolment number / staff code"'</td>
         <td><input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="_ENROLLMENTNUMBER_" size="20" type="text"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$ENROLLHELP'</span></a>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Student enrolment number or staff code. This field can be left blank."'</span></a>
       </td></tr>
       <tr>
-        <td>'$PRIGROUPMSG'</td>
+        <td>'$"Primary group"'</td>
         <td>'
 if [ $FILE'null' = null ]
 then
@@ -186,10 +184,10 @@ fi
 
 echo '
         </td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$GROUPHELPMSG'</span></a>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"The groups give different levels of access. The itadmin group is for the network administrator. Only members of itadmin and the tech groups gain administrator access to windows computers joined to the domain."'</span></a>
       </td></tr>
 <tr>
-        <td>'$USERSTYLEMSG'</td>
+        <td>'$"Username style"'</td>
         <td>
         <select name="_USERNAMESTYLE_">
         <option value="userstyleS1">'$DEFAULTMSG'</option>
@@ -200,13 +198,13 @@ echo '
 	<option value="">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </option></select>
         </select>
         </td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$USERNAMESTYLEHELP1'<br><br>'$USERNAMESTYLEHELP2'<br><br>'$DEFAULTMSG' - jjones09<br><br>'$YRFIRSTMSG' - 09jjones<br><br>'$SNAMEFIRSTMSG' - jonesj09<br><br>'$FULLNAMEMSG' - john.jones09<br><br>'$FNSNAMEFIRSTMSG' - jones.john09</span></a>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the username style you require."'<br><br>'$USERNAMESTYLEHELP2'<br><br>'$DEFAULTMSG' - jjones09<br><br>'$YRFIRSTMSG' - 09jjones<br><br>'$SNAMEFIRSTMSG' - jonesj09<br><br>'$FULLNAMEMSG' - john.jones09<br><br>'$FNSNAMEFIRSTMSG' - jones.john09</span></a>
       </td></tr>
     </tbody>
   </table><br><br>
 </div>
 <div id="submitbox">
-<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>
 </form>
 </div></body>

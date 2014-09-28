@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/email/setupemail ] || LANGCHOICE=englishuk
-source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/email/setupemail
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 source /opt/karoshi/server_network/domain_information/domain_name
 
@@ -50,7 +48,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Setup E-mail"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -99,21 +97,21 @@ exit
 #Check to see that servername is not blank
 if [ $SERVERNAME'null' = null ]
 then
-MESSAGE=$BLANKSERVERMSG
+MESSAGE=$"The server cannot be blank."
 show_status
 fi
 
 echo '<form id="form1" name="combobox" action="/cgi-bin/admin/module_email.cgi" method="post"><div id="actionbox">
 
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr><td style="vertical-align: top;"><div class="sectiontitle">'$TITLE' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Server""><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Setup E-mail"' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Server""><img class="images" alt="" src="/images/help/info.png"><span>'$"This will set up an email server for your network. The email system uses clamav and spamassasin for anti virus and anti spam. Access to the email system is through a web browser using SOGo which is automatically set up as part of the setup. Emails can also be accessed via an imap or pop3 email client."'</span></a>
 </td></tr></tbody></table><br>
 
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <input name="_DOMAINPATH_" value="'$REALM'" type="hidden">
-<b>'$DESCRIPTIONMSG'</b><br><br>
-'$HELPMSG1'<br><br>
-<b>'$PARAMETERSMSG'</b><br><br>
+<b>'$"Description"'</b><br><br>
+'$"This will set up an email server for your network. The email system uses clamav and spamassasin for anti virus and anti spam. Access to the email system is through a web browser using SOGo which is automatically set up as part of the setup. Emails can also be accessed via an imap or pop3 email client."'<br><br>
+<b>'$"Parameters"'</b><br><br>
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="0">
     <tbody>'
 
@@ -123,20 +121,20 @@ then
 CURRENTEMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver | sed 's/ //g'`
 if [ $CURRENTEMAILSERVER != $SERVERNAME ]
 then
-echo '<tr><td style="width: 180px;">'$CURRRENTMAILSERVERMSG'</td><td>'$CURRENTEMAILSERVER'</td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$CURRENTSERVERHELP1'</span></a></td></tr>
-<tr><td>'$COPYMAILMSG'</td><td><input name="_COPYEMAIL_" value="yes" type="checkbox"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$CURRENTSERVERHELP2'</span></a></td></tr>'
+echo '<tr><td style="width: 180px;">'$"Current Email Server"'</td><td>'$CURRENTEMAILSERVER'</td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"A server is already being used for E-Mail."'</span></a></td></tr>
+<tr><td>'$"Copy existing E-Mail"'</td><td><input name="_COPYEMAIL_" value="yes" type="checkbox"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enabling this will migrate your existing email, Egroupware, and Squirrrelmail to the new server."'</span></a></td></tr>'
 fi
 fi
 
 echo '<tr><td valign="top" style="width: 180px;">
-'$DOMAINMSG'</td>
+'$"E-Mail domain"'</td>
         <td style="vertical-align: top; text-align: right;">mail</td><td>.'$REALM'</td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$EMAILDOMAINHELP'</span></a>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in your choice of mail domain without http://www. Example myemaildomain.com"'</span></a>
       </td></tr>
 <tr><td valign="middle">Web Mail Access</td><td>'
 
 
-echo '<input type="text" name="_ALIAS_" style="width: 200px;" value="" size="10"></td><td valign="middle">.'$REALM'</td><td valign="middle"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$ALIASHELP'</span></a></td></tr>
+echo '<input type="text" name="_ALIAS_" style="width: 200px;" value="" size="10"></td><td valign="middle">.'$REALM'</td><td valign="middle"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"You will need to choose an alias for this server for web access. Either enter in a custom alias or choose one from the dropdown list."'</span></a></td></tr>
 <tr><td></td><td><select name="_ALIASLIST_" style="width: 200px;" size="1" onchange="document.combobox._ALIAS_.value = document.combobox._ALIASLIST_.options[document.combobox._ALIASLIST_.selectedIndex].value;document.combobox._ALIASLIST_.value=&#39;&#39;">
 <option value="" selected="selected"></option>'
             
@@ -145,12 +143,12 @@ echo '<input type="text" name="_ALIAS_" style="width: 200px;" value="" size="10"
 if [ -f /opt/karoshi/server_network/aliases/$SERVERNAME ]
 then
 #Show any custom aliases that have been assigned
-echo '<option style="color:black ; font-weight:bold" value="">'$ALIASMSG1'</option>'
+echo '<option style="color:black ; font-weight:bold" value="">'$"Assigned Aliases"'</option>'
 for CUSTOM_ALIAS in `cat /opt/karoshi/server_network/aliases/$SERVERNAME`
 do
 echo '<option style="color:green">'$CUSTOM_ALIAS'</option>'
 done
-echo '<option style="color:black ; font-weight:bold" value="">'$ALIASMSG2'</option>'
+echo '<option style="color:black ; font-weight:bold" value="">'$"Unassigned Aliases"'</option>'
 fi
 
 #Get a set of available aliases to check
@@ -169,7 +167,7 @@ echo
 echo '</tbody></table><br><br>
 </div>
 <div id="submitbox">
-<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>
 </form>
 </div></body>

@@ -109,13 +109,11 @@ echo `date`: remote_management_name - access denied to $REMOTE_USER from $REMOTE
 exit 101
 fi
 
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_name ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_name
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 if [ ! -d /opt/karoshi/server_network/web_controls ]
 then
@@ -139,11 +137,8 @@ sed -i $SHORTNAMELINENO'c'\SHORTNAME=\""$SHORTNAME"\" /opt/karoshi/server_networ
 LONGNAMELINENO=`grep -n ^LONGNAME= /opt/karoshi/server_network/domain_information/domain_name | cut -d: -f1`
 sed -i $LONGNAMELINENO'c'\LONGNAME=\""$LONGNAME"\" /opt/karoshi/server_network/domain_information/domain_name
 #Add name to language files
-for LANGUAGE in /opt/karoshi/web_controls/language/*
 do
 LANGCHOICE=`basename $LANGUAGE`
-NAMELINENO=`grep -n ^SCHOOL_NAME= /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu | cut -d: -f1`
-sed -i $NAMELINENO'c'\SCHOOL_NAME=\""$SHORTNAME"\" /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
 done
 
 #Change the name on the monitoring server
@@ -151,11 +146,8 @@ if [ -f /opt/karoshi/server_network/monitoringserver ]
 then
 MONITORING_SERVER=`sed -n 1,1p /opt/karoshi/server_network/monitoringserver`
 ssh -x -o PasswordAuthentication=no $MONITORING_SERVER '
-for LANGUAGE in /opt/karoshi/web_controls/language/*
 do
 LANGCHOICE=`basename $LANGUAGE`
-NAMELINENO=`grep -n ^SCHOOL_NAME= /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu | cut -d: -f1`
-sed -i $NAMELINENO"c"\SCHOOL_NAME=\""'$SHORTNAME'"\" /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
 done
 '
 fi

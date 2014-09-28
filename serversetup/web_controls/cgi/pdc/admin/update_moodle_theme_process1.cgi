@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/update_moodle_theme ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/update_moodle_theme
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -57,7 +55,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <TITLE>'$TITLE'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+    <TITLE>'$"Upload a Moodle Theme"'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 </HEAD>
 <BODY>
@@ -70,14 +68,14 @@ echo '
 #Check that a file has been uploaded
 if [ `ls -1 /var/www/karoshi/moodle_theme | wc -l` = 0 ]
 then
-MESSAGE=$UPLOADERROR1
+MESSAGE=$"You hve not uploaded a moodle theme."
 show_status
 fi
 
 #Check that only one file has been uploaded
 if [ `ls -1 /var/www/karoshi/moodle_theme | wc -l` -gt 1 ]
 then
-MESSAGE=$UPLOADERROR2
+MESSAGE=$"You have uploaded more than one file."
 show_status
 fi
 
@@ -87,7 +85,7 @@ MOODLETHEME=`ls -1 /var/www/karoshi/moodle_theme | sed -n 1,1p`
 #Check that it has a .zip file extension
 if [ `echo "$MOODLETHEME" | grep -c .zip$` != 1 ]
 then
-MESSAGE=$ZIPERROR1
+MESSAGE=$"The file that you have uploaded is not a zip file."
 show_status
 fi
 
@@ -96,31 +94,31 @@ unzip -l /var/www/karoshi/moodle_theme/"$MOODLETHEME" > /var/www/karoshi/moodle_
 ARCHIVESTATUS=`echo $?`
 if [ $ARCHIVESTATUS != 0 ]
 then
-MESSAGE=$CORRUPTARCHIVEMSG
+MESSAGE=$"You have uploaded a corrupt archive."
 show_status
 fi
 
 if [ `grep -c config.php$ /var/www/karoshi/moodle_theme_list.txt` = 0 ]
 then
-MESSAGE=`echo $ZIPERROR2 - config.php`
+MESSAGE=`echo $"The zip file is faulty." - config.php`
 show_status
 fi
 
 if [ `grep -c styles.php$ /var/www/karoshi/moodle_theme_list.txt` = 0 ]
 then
-MESSAGE=`echo $ZIPERROR2 - styles.php`
+MESSAGE=`echo $"The zip file is faulty." - styles.php`
 show_status
 fi
 
 if [ `grep -c header.html$ /var/www/karoshi/moodle_theme_list.txt` = 0 ]
 then
-MESSAGE=`echo $ZIPERROR2 - header.html`
+MESSAGE=`echo $"The zip file is faulty." - header.html`
 show_status
 fi
 
 if [ `grep -c footer.html$ /var/www/karoshi/moodle_theme_list.txt` = 0 ]
 then
-MESSAGE=`echo $ZIPERROR2 - footer.html`
+MESSAGE=`echo $"The zip file is faulty." - footer.html`
 show_status
 fi
 
@@ -132,7 +130,7 @@ EXITSTATUS=`echo $?`
 MESSAGE=`echo "$MOODLETHEME" : $COMPLETEDMSG`
 if [ $EXITSTATUS = 102 ]
 then
-MESSAGE=$NOTINSTALLEDMSG
+MESSAGE=$"Moodle is not installed."
 fi
 show_status
 exit

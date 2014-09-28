@@ -27,13 +27,11 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printer_accounting ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printer_accounting
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 #########################
 #Get data input
@@ -139,7 +137,7 @@ exit
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE3'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Edit Printer Limits"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 </head><body onLoad="start()"><div id="pagecontainer">'
 
 #########################
@@ -147,7 +145,7 @@ echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -155,13 +153,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -170,13 +168,13 @@ fi
 #Check to see that NAME is not blank
 if [ $NAME'null' = null ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The user or group name cannot be blank."
 show_status
 fi
 #Check to see that LIMIT is not blank
 if [ $LIMIT'null' = null ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"The limit cannot be blank."
 show_status
 fi
 
@@ -198,10 +196,10 @@ echo '<form name="myform" id="myform" action="/cgi-bin/admin/printer_accounting_
 if [ $MOBILE = yes ]
 then
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
-<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$TITLE3'</b></a></td></tr></tbody></table>'
+<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
+<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Edit Printer Limits"'</b></a></td></tr></tbody></table>'
 else
-echo '<b>'$TITLE3'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'<br><br>'$HELPMSG4'</span></a><br><br>'
+echo '<b>'$"Edit Printer Limits"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Each Primary Group has a limit set for the amount of printing that each user can do in that group."'<br><br>'$"User limits override group limits."'</span></a><br><br>'
 fi
 
 echo '
@@ -212,19 +210,19 @@ if [ $TYPE != userdelete ] && [ $TYPE = user ]
 then
 echo '
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$USERNAMEMSG'</td><td>'$NAME'</td></tr>
-<tr><td>'$USERLIMITMSG'</td><td>'$LIMIT'</td></tr>
-<tr><td>'$GROUPLIMITMSG'</td><td>'$GROUPLIMIT'</td></tr>
-<tr><td>'$TOTALMSG'</td><td>'$TOTAL'</td></tr>
-<tr><td>'$ADDITIONALCREDITSMSG'</td><td><input maxlength="10" size="10" name="_LIMIT_" value=""> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG11'<br><br>'$HELPMSG4'</span></a></td></tr></tbody></table>
+<tr><td style="width: 180px;">'$"Username"'</td><td>'$NAME'</td></tr>
+<tr><td>'$"User Limit"'</td><td>'$LIMIT'</td></tr>
+<tr><td>'$"Group Limit"'</td><td>'$GROUPLIMIT'</td></tr>
+<tr><td>'$"Print Total"'</td><td>'$TOTAL'</td></tr>
+<tr><td>'$"Additional Credits"'</td><td><input maxlength="10" size="10" name="_LIMIT_" value=""> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the amount of additional printer credits that you want this user to have."'<br><br>'$"User limits override group limits."'</span></a></td></tr></tbody></table>
 '
 fi
 
 if [ $TYPE != userdelete ] && [ $TYPE = group ]
 then
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;"><b>'$PRIMARYGROUPMSG2'</b></td><td><b>'$LIMITMSG'</b></td></tr>
-<tr><td>'$NAME'</td><td><input maxlength="10" size="10" name="_LIMIT_" value="'$LIMIT'"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG5'</span></a></td></tr></tbody></table>
+<tr><td style="width: 180px;"><b>'$"User or Primary Group"'</b></td><td><b>'$"Limit"'</b></td></tr>
+<tr><td>'$NAME'</td><td><input maxlength="10" size="10" name="_LIMIT_" value="'$LIMIT'"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Set the page limits that you want for each user or group."'</span></a></td></tr></tbody></table>
 '
 fi
 
@@ -245,7 +243,7 @@ if [ $MOBILE = no ]
 then
 echo '</div><div id="submitbox">'
 fi
-echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div></form></div></body></html>
 '
 exit

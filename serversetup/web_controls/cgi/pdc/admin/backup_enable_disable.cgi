@@ -31,19 +31,17 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/backup_enable_disable ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/backup_enable_disable
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo "<html><head><title>$TITLE</title>"
+echo "<html><head><title>$"Enable - Disable Network Backup"</title>"
 echo "<link rel="stylesheet" href="/css/$STYLESHEET"><script src=\"/all/stuHover.js\" type=\"text/javascript\"></script>"
 echo '<meta http-equiv="REFRESH" content="0;url=/cgi-bin/admin/backup_enable_disable_fm.cgi">'
 echo "</head>"
@@ -74,7 +72,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -82,13 +80,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -97,13 +95,13 @@ fi
 #Check to see that the server is not blank
 if [ $KAROSHI_SERVER'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"You have not chosen a server to enable or disable."
 show_status
 fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>'
+echo '<div id="actionbox"><div class="sectiontitle">'$"Enable - Disable Network Backup"'</div><br>'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_enable_disable.cgi | cut -d' ' -f1`
 #Enable - disable backup
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$KAROSHI_SERVER:" | sudo -H /opt/karoshi/web_controls/exec/backup_enable_disable

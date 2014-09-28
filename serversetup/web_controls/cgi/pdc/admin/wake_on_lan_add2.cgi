@@ -32,19 +32,17 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/wake_on_lan_add ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/wake_on_lan_add
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Wake on Lan - Schedule"'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -107,7 +105,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -115,13 +113,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -130,30 +128,30 @@ fi
 #Check to see that HOUR is not blank
 if [ $HOUR'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The hour cannot be blank."
 show_status
 fi
 #Check to see that MINUTES is not blank
 if [ $MINUTES'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The minutes cannot be blank."
 show_status
 fi
 #Check to see that LOCATION fields are not blank
 if [ $LOCATION'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The location cannot be blank."
 show_status
 fi
 #Check that hour and minutes are correct
 if [ $HOUR -gt 24 ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The time has not be entered correctly."
 show_status
 fi
 if [ $MINUTES -gt 60 ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The time has not be entered correctly."
 show_status
 fi
 #Add in wake on lan
@@ -161,9 +159,9 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/wake_on_lan_add.cgi | cut -d' ' -f
 sudo -H /opt/karoshi/web_controls/exec/wake_on_lan_add $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$HOUR:$MINUTES:$LOCATION
 if [ `echo $?` = 0 ]
 then
-MESSAGE=`echo $LOCATION - $COMPLETEDMSG`
+MESSAGE=`echo $LOCATION - $"Wake on Lan Schedule completed."`
 else
-MESSAGE=$ERRORMSG5
+MESSAGE=$"There was an error scheduling this job. Please check that Karoshi Web Management logs."
 fi
 show_status
 exit

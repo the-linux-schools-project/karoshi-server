@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/monitors_add ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/monitors_add
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -48,7 +46,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Add Monitors"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
  <script type="text/javascript">
 <!--
@@ -130,13 +128,13 @@ done
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<div id="actionbox">
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top; width: 110px;"><b>'"$TITLE"'</b></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td>
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top; width: 110px;"><b>'$"Add Monitors"'</b></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"You will need to have a monitoring server set up to use this feature. This will allow you to add in extra monitors for your network."'</span></a></td>
 <td style="vertical-align: top;">
-<a href="/cgi-bin/admin/mon_status.cgi"><input class="button" type="button" name="" value="'$NETWORKSTATUSMSG'"></a>
+<a href="/cgi-bin/admin/mon_status.cgi"><input class="button" type="button" name="" value="'$"Network Status"'"></a>
 </td>
 <td style="vertical-align: top;">
-<a href="/cgi-bin/admin/monitors_view.cgi"><input class="button" type="button" name="" value="'$VIEWMONITORSMSG'"></a>
+<a href="/cgi-bin/admin/monitors_view.cgi"><input class="button" type="button" name="" value="'$"View Monitors"'"></a>
 </td>
 </tr></tbody></table><br>
 <form action="/cgi-bin/admin/monitors_add.cgi" method="post" name="selectmonitors">'
@@ -206,13 +204,14 @@ GROUPDATA=`sed -n 4,4p  /opt/karoshi/server_network/mon/$MONFOLDER/$MONITOR`
 TCPIPS=`echo $GROUPDATA | cut -d' ' -f3-`
 else
 MONITOR=$NAME
+INTERVAL=5
 fi
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
       <tr>
         <td style="width: 180px;">
-'$GRPMSG'</td>
+'$"Group name"'</td>
         <td>'
 
 if [ $EDITMODE = no ]
@@ -223,28 +222,28 @@ echo '<b>'$MONITOR'</b>'
 echo '<input name="_GROUPNAME_" value="'$MONITOR'" type="hidden">'
 fi
 echo '</td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"This can be the name of the group of equipment that you want to monitor. Examples: switches, wireless access points."'</span></a>
       </td>
       </tr>
 
 <tr>
         <td>
-'$ALTERAFTERMSG'</td>
+'$"Alert after"'</td>
         <td><input tabindex="2" name="_ALERTAFTER_" value="'$ALERTAFTER'" maxlength="1" size="1" type="text" style="width: 80px;"></td>
         <td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG9'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"The number of times a failure is detected before sending an alert."'</span></a>
       </td>
       </tr>
       <tr>
         <td>
-'$MONINTMSG'</td>
+'$"Monitor check interval"'</td>
         <td><input tabindex="2" name="_INTERVAL_" value="'$INTERVAL'" maxlength="2" size="2" type="text" style="width: 80px;"></td>
         <td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG4'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"The monitoring service will wait this amount of time in minutes between each check for this group."'</span></a>
       </td>
       </tr>
 
-<tr><td>'$DAYMSG'</td><td>
+<tr><td>'$"Monitor day interval"'</td><td>
 <select name="_DAYSTART_" style="width: 80px;">
 <option value=""></option>
 <option>Mon</option>
@@ -266,9 +265,9 @@ echo '</td><td>
 <option>Sat</option>
 <option>Sun</option>
 </select>
-</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG7'</span></a></td></tr>
+</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"Leave blank for continuous monitoring or add in the start and end days."'</span></a></td></tr>
 
-<tr><td>'$TIMEMSG'</td><td>
+<tr><td>'$"Monitor time interval"'</td><td>
 <select name="_HOURSTART_" style="width: 80px;">
 <option value=""></option>
 <option>1am</option>
@@ -300,12 +299,12 @@ echo '</td><td>
 <option>11pm</option>
 <option>12pm</option>
 </select>
-</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG8'</span></a></td></tr>
-<tr><td>'$TCPIPMSG'</td><td><input tabindex="2" name="_TCPIP_" value="'$TCPIPS'" type="text" style="width: 300px;"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a></td></tr></tbody></table>
-<br><br><b>'$SERVICESMSG'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG5'</span></a><br><br>
+</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"Leave blank for continuous monitoring or add in the hour start and end times."'</span></a></td></tr>
+<tr><td>'$"TCPIP numbers"'</td><td><input tabindex="2" name="_TCPIP_" value="'$TCPIPS'" type="text" style="width: 300px;"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"You need to enter in the TCPIP numbers separated by spaces of the devices that you want to monitor."'</span></a></td></tr></tbody></table>
+<br><br><b>'$"Services to monitor"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"Pick the services that you want monitored for this group."'</span></a><br><br>
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;"><input type="checkbox" name="_MONITORTYPES_" '$PING' value="ping"> ping <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG6'</span></a>
+<tr><td style="width: 180px;"><input type="checkbox" name="_MONITORTYPES_" '$PING' value="ping"> ping <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is the most basic monitor type. Most devices will respond to a ping request."'</span></a>
 </td><td style="width: 200px;"><input type="checkbox" name="_MONITORTYPES_" '$POP3' value="pop3"> pop3
 </td></tr>
 <tr><td>
@@ -337,10 +336,10 @@ echo '</td><td>
 </td>
 </tr>
 </tbody></table><br>
-  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"> <input type="button" class="button" onclick="SetAllCheckBoxes('\'selectmonitors\'', '\'_MONITORTYPES_\'', true);" value="'$SELECTMSG'">
+  <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"> <input type="button" class="button" onclick="SetAllCheckBoxes('\'selectmonitors\'', '\'_MONITORTYPES_\'', true);" value="'$"Select all"'">
 '
 else
-echo $ERRORMSG6
+echo $"A monitoring server has not been added to the network."
 fi
 echo '</form></div></div></body></html>'
 exit

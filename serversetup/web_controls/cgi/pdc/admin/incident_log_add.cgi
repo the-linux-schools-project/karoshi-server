@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/incident_log ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/incident_log
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -45,7 +43,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body onLoad="start()"><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Record Incident"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -182,7 +180,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -190,22 +188,22 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/incident_log_add2.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>'
+echo '<form action="/cgi-bin/admin/incident_log_add2.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$"Record Incident"'</div><br>'
 echo '<table class="standard" style="text-align: left; top: 207px; left: 232px; width: 674px; height: 61px;" border="0" cellpadding="2" cellspacing="2">'
-echo '<tbody><tr><td>'$DATEMSG'</td><td>'
+echo '<tbody><tr><td>'$"Incident Time and Date"'</td><td>'
 #HOUR
 echo '<input name="_HOUR_" value="'$HOUR'" size="2" maxlength="2" type="text">:'
 echo '<input name="_MINUTES_" value="'$MINUTES'" size="2" maxlength="2" type="text">'
@@ -215,12 +213,12 @@ echo '<input name="_MONTH_" value="'$MONTH'" size="2" maxlength="2" type="text">
 echo '<input name="_YEAR_" value="'$YEAR'" size="4" maxlength="4" type="text">'
 echo '</td></tr></tbody></table>'
 #Students involved
-echo $USERNAMEMSG'<br><br>'
+echo $"Please enter the usernames involved separated by spaces."'<br><br>'
 echo '<input value="'$STUDENTS'" name="_STUDENTS_" size="53" type="text">'
 
 #Incident and action taken
 echo '<br>Incident Report<br>'
 echo '<textarea cols="77" rows="5" name="_INCIDENT_">'$INCIDENT'</textarea><br><br>Action Taken<br>'
 echo '<textarea cols="77" rows="5" name="_ACTIONTAKEN_">'$ACTIONTAKEN'</textarea>'
-echo '</div><div id="submitbox"> <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"> </div></form></div></body></html>'
+echo '</div><div id="submitbox"> <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"> </div></form></div></body></html>'
 exit

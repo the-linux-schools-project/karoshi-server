@@ -26,19 +26,17 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_allowed_sites ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_allowed_sites
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View Allowed Sites"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -59,7 +57,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$ERRORMSG3
+export MESSAGE=$"You have not chosen any sites."
 show_status
 fi
 #########################
@@ -67,13 +65,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -82,7 +80,7 @@ fi
 #Check to see that SITEARRAY is not blank
 if [ $SITEARRAY'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"You have not chosen any sites."
 show_status
 fi
 
@@ -90,7 +88,7 @@ fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_ssl_allowed_sites2.cgi | cut -d' ' -f1`
 #Delete sites
 sudo -H /opt/karoshi/web_controls/exec/dg_view_ssl_allowed_sites2 $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:`echo ${SITEARRAY[@]:0} | sed 's/ /:/g'`
-MESSAGE=$COMPLETEDMSG
+MESSAGE=$"The selected sites have been deleted."
 show_status
 echo '</form>'
 echo "</div></body></html>"

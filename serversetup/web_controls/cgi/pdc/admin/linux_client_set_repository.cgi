@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/linux_client_set_repository ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/linux_client_set_repository
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -46,7 +44,7 @@ fi
 URIENTRY="http://172.30.0.5/mirrors/pclinuxos/apt/"
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Linux Client set repository"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -65,7 +63,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -73,20 +71,20 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/linux_client_set_repository2.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>'
+echo '<form action="/cgi-bin/admin/linux_client_set_repository2.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$"Linux Client set repository"'</div><br>'
 
 if [ -f /var/lib/samba/netlogon/linuxclient/versions.txt ]
 then
@@ -100,8 +98,8 @@ if [ $LINUXVERSION_COUNT -gt 0 ]
 then
 echo '<table class="standard" style="text-align: left; width: 60%;" border="0"
  cellpadding="2" cellspacing="2"
-><tbody><tr><td>'$URIMSG'</td><td><input size="40" value="'$URIENTRY'" name="___URI___"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$URIHELP'</span></a></td></tr><tr><td>'$DISTRIBUTIONMSG'</td><td><input size="40" value="'$DISTROENTRY'" name="___DISTRIBUTION___"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$DISTRIBUTIONHELP'</span></a></td></tr><tr><td>'$SECTIONMSG'</td><td><input size="40" value="'$SECTIONENTRY'" name="___SECTIONS___"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$SECTIONHELP'</span></a></td></tr>'
-echo '<tr><td>'$CHOOSEVERSION'</td><td><select name="___LINUXVERSION___">'
+><tbody><tr><td>'$"URI"'</td><td><input size="40" value="'$URIENTRY'" name="___URI___"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the full address of the linux client repository. This is used for installing and updating the Linux clients."'</span></a></td></tr><tr><td>'$"Distribution"'</td><td><input size="40" value="'$"pclinuxos/2007"'" name="___DISTRIBUTION___"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the distribution you are using."'</span></a></td></tr><tr><td>'$"Sections"'</td><td><input size="40" value="'$"main extra nonfree kde gnome"'" name="___SECTIONS___"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the sections that you want to use in the repository."'</span></a></td></tr>'
+echo '<tr><td>'$"Linux Version"'</td><td><select name="___LINUXVERSION___">'
 COUNTER=1
 while [ $COUNTER -le $LINUXVERSION_COUNT ]
 do
@@ -109,9 +107,9 @@ LINUXVERSION=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/linuxclient/ve
 echo '<option value="'$LINUXVERSION'">'$LINUXVERSION'</option>'
 let COUNTER=$COUNTER+1
 done
-echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$VERSIONHELP'</span></a></td></tr></tbody></table>'
+echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please choose the linux version you want to edit."'</span></a></td></tr></tbody></table>'
 else
-echo $ERRORMSG7'<br>'
+echo $"You have no linux client configurations."'<br>'
 fi
 
 echo "</div>"

@@ -29,30 +29,30 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/default_user_settings_fm_cgi
 then
-echo `date`: default_user_settings - No form MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: default_user_settings - No form MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/default_user_settings_fm_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/default_user_settings_fm.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $default_user_settings_fm_cgi'check' ]
 then
-echo `date`: default_user_settings - Incorrect form MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: default_user_settings - Incorrect form MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/default_user_settings_cgi
 then
-echo `date`: default_user_settings - No cgi MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: default_user_settings - No cgi MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/default_user_settings_cgi
 MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/admin/default_user_settings.cgi | cut -d' ' -f1`
-[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+[ -z "$MD5SUM2" ] && MD5SUM2=not_set
 if [ $MD5SUM2'check' != $default_user_settings_cgi'check' ]
 then
-echo `date`: default_user_settings - Incorrect cgi MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: default_user_settings - Incorrect cgi MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -61,10 +61,10 @@ fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: default_user_settings - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: default_user_settings - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -76,40 +76,37 @@ ACTION=`echo "$DATA" | cut -s -d: -f4`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
 then
-echo `date`: default_user_settings - Not called by default_user_settings.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: default_user_settings - Not called by default_user_settings.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: default_user_settings - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: default_user_settings - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: default_user_settings - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: default_user_settings - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $ACTION'null' = null ]
+if [ -z "$ACTION" ]
 then
-echo `date`: default_user_settings - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: default_user_settings - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
 
 if [ $ACTION != GETDATA ] && [ $ACTION != SETDATA ]
 then
-echo `date`: default_user_settings - Incorrect action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: default_user_settings - Incorrect action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
 DOMAINNAME=`cat /etc/samba/smb.conf | sed 's/ //g' | sed 's/\t//g' | grep ^workgroup= | cut -d= -f2`
 
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/default_user_settings ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/add_user
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/default_user_settings
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 #Get default username style
 if [ -f /opt/karoshi/server_network/default_username_style ]
@@ -145,42 +142,42 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
     <tbody>
       <tr>
         <td style="width: 180px;">
-'$LOCKOUTDURATIONMSG'</td>
+'$"Lockout duration"'</td>
         <td><input tabindex= "1" name="_LOCKOUTDURATION_" maxlength="3" size="3" type="text" value="'$LOCKOUTDURATION'"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Set the duration to the amount of time in minutes that you want a user to be locked out of the system for."'</span></a>
 
       </td></tr>
       <tr>
         <td>
-'$LOCKOUTTHRESHOLDMSG'</td>
+'$"Lockout threshold"'</td>
         <td><input tabindex= "1" name="_LOCKOUTTHRESHOLD_" maxlength="3" size="3" type="text" value="'$LOCKOUTTHRESHOLD'"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Set the number of login attempts to trigger the lockout."'</span></a>
       </td></tr>
       <tr>
         <td>
-'$LOCKOUTOBSMSG'</td>
+'$"Lockout observation period"'</td>
         <td><input tabindex= "2" name="_LOCKOUTOBS_" maxlength="3" size="3" type="text" value="'$LOCKOUTOBS'"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Set the time duration that the login attempts are monitored over."'</span></a>
       </td></tr>
  <tr>
         <td>
-'$SHADOWMAXSMSG'</td>
+'$"Password change time"'</td>
         <td><input tabindex= "2" name="_SHADOWMAX_" maxlength="4" size="3" type="text" value="'$SHADOWMAX'"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG4'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Set the time in days until a user needs to reset a password."'</span></a>
       </td></tr>
-<tr><td>'$USERSTYLEMSG'</td>
+<tr><td>'$"Username style"'</td>
 
 <td>
         <select name="_USERNAMESTYLE_" style="width: 200px;" onClick="rewriteselect();">
-        <option value="userstyleS1" '$SELECT1'>'$STYLE1MSG': '$STYLE1MSGEX'</option>
-        <option value="userstyleS2" '$SELECT2'>'$STYLE2MSG': '$STYLE2MSGEX'</option>
-        <option value="userstyleS3" '$SELECT3'>'$STYLE3MSG': '$STYLE3MSGEX'</option>
-        <option value="userstyleS4" '$SELECT4'>'$STYLE4MSG': '$STYLE4MSGEX'</option>
-        <option value="userstyleS5" '$SELECT5'>'$STYLE5MSG': '$STYLE5MSGEX'</option>
-        <option value="userstyleS6" '$SELECT6'>'$STYLE6MSG': '$STYLE6MSGEX'</option>
-        <option value="userstyleS7" '$SELECT7'>'$STYLE7MSG': '$STYLE7MSGEX'</option>
-        <option value="userstyleS8" '$SELECT8'>'$STYLE8MSG': '$STYLE8MSGEX'</option>
-        <option value="userstyleS9" '$SELECT9'>'$STYLE9MSG': '$STYLE9MSGEX'</option>
+        <option value="userstyleS1" '$SELECT1'>'$"Style" 1': '$"astudent09"'</option>
+        <option value="userstyleS2" '$SELECT2'>'$"Style" 2': '$"09astudent"'</option>
+        <option value="userstyleS3" '$SELECT3'>'$"Style" 3': '$"studenta09"'</option>
+        <option value="userstyleS4" '$SELECT4'>'$"Style" 4': '$"arnold.student09"'</option>
+        <option value="userstyleS5" '$SELECT5'>'$"Style" 5': '$"student.arnold09"'</option>
+        <option value="userstyleS6" '$SELECT6'>'$"Style" 6': '$"09studenta"'</option>
+        <option value="userstyleS7" '$SELECT7'>'$"Style" 7': '$"09arnolds"'</option>
+        <option value="userstyleS8" '$SELECT8'>'$"Style" 8': '$"arnolds"'</option>
+        <option value="userstyleS9" '$SELECT9'>'$"Style" 9': '$"Enrollment number as username."'</option>
 	</select></td>
 <td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG5'</span></a></td>
 </tr>
@@ -197,32 +194,32 @@ LOCKOUTOBS=`echo "$DATA" | cut -s -d: -f7`
 SHADOWMAX=`echo "$DATA" | cut -s -d: -f8`
 USERNAMESTYLE=`echo "$DATA" | cut -s -d: -f9`
 
-if [ $LOCKOUTDURATION'null' = null ]
+if [ -z "$LOCKOUTDURATION" ]
 then
-echo `date`: default_user_settings - Blank lockout duration by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: default_user_settings - Blank lockout duration by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $LOCKOUTTHRESHOLD'null' = null ]
+if [ -z "$LOCKOUTTHRESHOLD" ]
 then
-echo `date`: default_user_settings - Blank lockout threshold by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: default_user_settings - Blank lockout threshold by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $LOCKOUTOBS'null' = null ]
+if [ -z "$LOCKOUTOBS" ]
 then
-echo `date`: default_user_settings - Blank lockout observation window by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
-
-if [ $SHADOWMAX'null' = null ]
-then
-echo `date`: default_user_settings - Blank shadowmax by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: default_user_settings - Blank lockout observation window by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $USERNAMESTYLE'null' = null ]
+if [ -z "$SHADOWMAX" ]
 then
-echo `date`: default_user_settings - Blank usernamestyle by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: default_user_settings - Blank shadowmax by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+if [ -z "$USERNAMESTYLE" ]
+then
+	echo `date`: default_user_settings - Blank usernamestyle by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 

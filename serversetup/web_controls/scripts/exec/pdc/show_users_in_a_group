@@ -99,10 +99,8 @@ fi
 echo `date`: show_users_in_a_group - "for" $PRIMARYGROUP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/show_user_info ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/show_user_info
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 
@@ -110,7 +108,7 @@ source /opt/karoshi/server_network/group_information/$PRIMARYGROUP
 source /opt/karoshi/server_network/domain_information/domain_name
 
 echo '<form action="show_user_info.cgi" target="_blank" method="post"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="vertical-align: top; width: 140px;"><b>'$USERNAMEMSG'</b></td><td style="vertical-align: top; width: 60px;"><b>'$USERIDMSG'</b></td><td style="vertical-align: top; width: 60px;"><b>'$ENROLMENTMSG'</b></td><td style="vertical-align: top; width: 80px;"><b>'$FORNAMEMSG'</b></td><td style="vertical-align: top; width: 120px;"><b>Surname</b></td><td style="vertical-align: top; width: 300px;"><b>'$EMAILMSG'</b></td></tr>
+<tr><td style="vertical-align: top; width: 140px;"><b>'$"Username"'</b></td><td style="vertical-align: top; width: 60px;"><b>'$"user ID"'</b></td><td style="vertical-align: top; width: 60px;"><b>'$"Enrolment Number / staff code"'</b></td><td style="vertical-align: top; width: 80px;"><b>'$"Forename"'</b></td><td style="vertical-align: top; width: 120px;"><b>Surname</b></td><td style="vertical-align: top; width: 300px;"><b>'$"E-Mail address"'</b></td></tr>
 '
 
 function get_ldap_info {

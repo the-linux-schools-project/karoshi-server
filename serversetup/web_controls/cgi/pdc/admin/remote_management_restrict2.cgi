@@ -31,19 +31,17 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_restrict ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/remote_management_restrict
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Restrict access to Karoshi Remote Management"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -96,7 +94,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-MESSAGE=$HTTPS_ERROR
+MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -104,13 +102,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -119,7 +117,7 @@ fi
 #Check to see that USERACTION is not blank
 if [ $USERACTION'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The Action must not be blank."
 show_status
 fi
 
@@ -145,7 +143,7 @@ fi
 #Check to see that action is correct
 if [ $ACTION != edit ] && [ $ACTION != remove ] && [ $ACTION != add ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"Incorrect action."
 show_status
 fi
 if [ $ACTION = add ]
@@ -173,7 +171,7 @@ sudo -H /opt/karoshi/web_controls/exec/remote_management_restrict $REMOTE_USER:$
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 102 ]
 then
-MESSAGE=$ERRORMSG7
+MESSAGE=$"You cannot remove your own TCPIP address."
 show_status
 fi
 view_tcpip

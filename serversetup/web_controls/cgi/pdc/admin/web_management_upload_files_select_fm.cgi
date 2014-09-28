@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/web/upload_files ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/web/upload_files
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -50,7 +48,7 @@ echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Web Management - Upload Files"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -93,7 +91,7 @@ exit
 
 
 echo '<form action="/cgi-bin/admin/web_management_upload_files_select.cgi" method="post"><div id="actionbox"><span style="font-weight: bold;">
-'$TITLE' - '$SERVERNAME'</span><br>
+'$"Web Management - Upload Files"' - '$SERVERNAME'</span><br>
   <br>
   <br>
 '
@@ -104,14 +102,14 @@ echo '<form action="/cgi-bin/admin/web_management_upload_files_select.cgi" metho
 #Check to see that SERVERNAME is not blank
 if [ -z "$SERVERNAME" ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"The server cannot be blank."
 show_status
 fi
 
 #Check to see if any files have been uploaded
 if [ `ls -1 /var/www/karoshi/webfiles | wc -l` = 0 ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"You have not uploaded any files"
 show_status
 else
 ###########################
@@ -125,17 +123,17 @@ echo '<input name="___SERVERNAME___" value="'$SERVERNAME'" type="hidden">'
 echo '<input name="___UPLOADID___" value="'$UPLOADID'" type="hidden">'
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="width: 180px;">'$FOLDERMSG'</td><td><select name="___UPLOADFOLDER___" style="width: 185px;">'
+<tbody><tr><td style="width: 180px;">'$"Web Folder"'</td><td><select name="___UPLOADFOLDER___" style="width: 185px;">'
 
 #Create folder list
 echo '<option>/var/www/html</option>'
 sudo -H /opt/karoshi/web_controls/exec/web_management_create_folder_list $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:
 
 echo '
-</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$FOLDERHELPMSG'</span></a></td></tr></tbody></table>
+</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please select the folder that you want to upload the files to."'</span></a></td></tr></tbody></table>
 </div>
 <div id="submitbox">
-<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div></form>
 </div></body>
 </html>

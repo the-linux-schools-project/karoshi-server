@@ -27,19 +27,17 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/helpdesk ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/helpdesk
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta http-equiv="REFRESH" content="0;url=helpdesk_view_fm.cgi"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Help Desk"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta http-equiv="REFRESH" content="0;url=helpdesk_view_fm.cgi"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -144,7 +142,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 
@@ -154,7 +152,7 @@ fi
 #Check that ACTION is not blank
 if [ $ACTION'null' = null ]
 then
-MESSAGE=$ERRORMSG12
+MESSAGE=$"The action cannot be blank."
 show_status
 fi
 
@@ -163,20 +161,20 @@ then
 #Check to see that ASSIGNED is not blank
 if [ $ASSIGNED'null' = null ] && [ $ASSIGNED2'null' = null ]
 then
-MESSAGE=$ERRORMSG11
+MESSAGE=$"You have not assigned anyone to this request."
 show_status
 fi
 #Check to see that PRIORITY is not blank
 if [ $PRIORITY'null' = null ]
 then
-MESSAGE=$ERRORMSG10
+MESSAGE=$"The priority must not be blank."
 show_status
 fi
 
 #Check that JOBNAME is not blank
 if [ $JOBNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG8
+MESSAGE=$"The job name cannot be blank."
 show_status
 fi
 

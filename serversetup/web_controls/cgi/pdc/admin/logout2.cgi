@@ -26,11 +26,11 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/logout ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/logout
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
@@ -38,7 +38,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title>
+  <title>'$"Karoshi Web Management - Logout"'</title>
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 </head>
 <body>

@@ -27,19 +27,17 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/web/reverse_proxy_add ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/web/reverse_proxy_add
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="0; URL=reverse_proxy_view_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add Reverse Proxy"'</title><meta http-equiv="REFRESH" content="0; URL=reverse_proxy_view_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body>'
 #########################
 #Get data input
 #########################
@@ -88,7 +86,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-	export MESSAGE=$HTTPS_ERROR
+	export MESSAGE=$"You must access this page via https."
 	show_status
 fi
 #########################
@@ -96,13 +94,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-	MESSAGE=$ACCESS_ERROR1
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-	MESSAGE=$ACCESS_ERROR1
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 #########################
@@ -116,20 +114,20 @@ fi
 #Check to see that DESTINATION is not blank
 if [ -z "$DESTINATION" ]
 then
-	MESSAGE=$ERRORMSG2
+	MESSAGE=$"The web address to redirect to must not be blank."
 	show_status
 fi
 #Check that the web TARGET is not already being redirected
 if [ -f /opt/karoshi/server_network/reverseproxy/sites/$TARGET ]
 then
-	MESSAGE=`echo $TARGET - $ERRORMSG3`
+	MESSAGE=`echo $TARGET - $"This address is already being redirected."`
 	show_status
 fi
 
 #Make sure that the destination starts with http or https
 if [ `echo "$DESTINATION" | grep -c ^http` = 0 ] && [ `echo "$DESTINATION" | grep -c ^https` = 0 ]
 then
-	MESSAGE=`echo "$DESTINATION" - $ERRORMSG4`
+	MESSAGE=`echo "$DESTINATION" - $"The destination must start with http or https."`
 	show_status
 fi
 

@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_allowed_sites ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_allowed_sites
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -45,7 +43,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE2'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View SSL Allowed Sites"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">'
 echo "<link rel="stylesheet" href="/css/$STYLESHEET">"
 echo '<script type="text/javascript">'
 echo '<!--'
@@ -103,7 +101,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$ERRORMSG1
+export MESSAGE=$"You must choose a letter."
 show_status
 fi
 #########################
@@ -111,13 +109,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -126,13 +124,13 @@ fi
 #Check to see that ALPHABET is not blank
 if [ $ALPHABET'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"You must choose a letter."
 show_status
 fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/dg_view_ssl_allowed_sites2.cgi" name="selectedsites" method="post"><b></b><div id="actionbox3"><div id="titlebox"><b>'$TITLE2'</b><br><br></div><div id="infobox">'
+echo '<form action="/cgi-bin/admin/dg_view_ssl_allowed_sites2.cgi" name="selectedsites" method="post"><b></b><div id="actionbox3"><div id="titlebox"><b>'$"View SSL Allowed Sites"'</b><br><br></div><div id="infobox">'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_ssl_allowed_sites.cgi | cut -d' ' -f1`
 #Show sites
@@ -143,12 +141,12 @@ sudo -H /opt/karoshi/web_controls/exec/dg_view_ssl_allowed_sites $REMOTE_USER:$R
 SITESTATUS=`echo $?`
 if [ $SITESTATUS = 101 ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"No sites available."
 show_status
 fi
 #echo "</div>"
 #echo '<div id="submitbox">'
-echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"> '
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"> '
 echo '<'input class='"'button'"' type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedsites"'", "'"_SITENAME_"'", true')'';''"' value='"'Select all'"''>'
 echo '</div></div></form></div></body></html>'
 exit

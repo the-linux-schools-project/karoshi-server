@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/request_delete_users ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/request_delete_users
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -47,7 +45,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE2'</title>
+  <title>'$"Requested Deleted Users"'</title>
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 </head>
 <script src="/all/stuHover.js" type="text/javascript"></script>
@@ -56,13 +54,13 @@ echo '
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<div id="actionbox">
-<div class="sectiontitle">'$TITLE2'</div><br>'
+<div class="sectiontitle">'$"Requested Deleted Users"'</div><br>'
 if [ -d /opt/karoshi/user_requests/delete_users ]
 then
 if [ `ls -1 /opt/karoshi/user_requests/delete_users | wc -l` -gt 0  ]
 then
 echo '<table class="standard" style="text-align: left; width: 690px;" border="0" cellpadding="2" cellspacing="2"><tbody>'
-echo '<tr><td style="vertical-align: top;">'$FORENAMEMSG'</td><td style="vertical-align: top;">'$SURNAMEMSG'</td><td style="vertical-align: top;">'$YEARGROUPMSG'</td><td style="vertical-align: top;">'$ADNOMSG'</td><td style="vertical-align: top;">'$REQUESTUSERMSG'</td><td style="vertical-align: top;">'$ACTIONMSG'</td><td style="vertical-align: top;">'$DELETEMSG'</td></tr>'
+echo '<tr><td style="vertical-align: top;">'$"Forename"'</td><td style="vertical-align: top;">'$"Surname"'</td><td style="vertical-align: top;">'$"Primary Group"'</td><td style="vertical-align: top;">'$"Admission Number"'</td><td style="vertical-align: top;">'$"Requested by"'</td><td style="vertical-align: top;">'$"Delete"'</td><td style="vertical-align: top;">'$"Remove"'</td></tr>'
 for DELETE_USER in /opt/karoshi/user_requests/delete_users/*
 do
 DELETE_USER_DATA=`sed -n 1,1p $DELETE_USER`
@@ -76,7 +74,7 @@ echo '<tr><td style="vertical-align: top;">'$FORENAME'</td><td style="vertical-a
 done
 echo '</tbody></table>'
 else
-echo $NOREQUESTSMSG'<br>'
+echo $"All requested users have been dealt with."'<br>'
 fi
 fi
 echo '</div</div></body></html>'

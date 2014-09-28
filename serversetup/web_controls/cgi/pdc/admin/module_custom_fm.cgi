@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/custom/setupcustom ] || LANGCHOICE=englishuk
-source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/custom/setupcustom
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 if [ -f /opt/karoshi/serversetup/variables/maindomain ]
 then
 SUGGGESTDOMAIN=`sed -n 1,1p /opt/karoshi/serversetup/variables/maindomain`
@@ -57,7 +55,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Custom Application"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -106,24 +104,24 @@ exit
 #Check to see that servername is not blank
 if [ $SERVERNAME'null' = null ]
 then
-MESSAGE=$BLANKSERVERMSG
+MESSAGE=$"The server cannot be blank."
 show_status
 fi
 
-echo '<form action="/cgi-bin/admin/module_custom.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE' - '$SERVERNAME'</div><br>
-<b>'$DESCRIPTIONMSG'</b><br><br>
-'$HELPMSG1'
+echo '<form action="/cgi-bin/admin/module_custom.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$"Custom Application"' - '$SERVERNAME'</div><br>
+<b>'$"Description"'</b><br><br>
+'$"This will add in the name of a custom role that you have added to this server. The only purpose of this feature is to record the custom role on the show servers page in the web management."'
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
-<br><br><b>'$PARAMETERSMSG'</b><br><br>
+<br><br><b>'$"Parameters"'</b><br><br>
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="0">
     <tbody>
 <tr><td style="width: 180px;">
-'$CUSTOMMSG'</td>
+'$"Custom Application"'</td>
 <td><input tabindex= "2" name="_CUSTOM_" size="20" type="text"></td><td>
 </td></tr></tbody></table><br><br>
 </div>
 <div id="submitbox">
-<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>
 </form>
 </div></body>

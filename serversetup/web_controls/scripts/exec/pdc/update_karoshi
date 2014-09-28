@@ -51,11 +51,11 @@ then
 echo `date`: update_karoshi - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
-PATCHNAME=`echo $* | cut -s -d: -f4`
-MOBILE=`echo $* | cut -s -d: -f5`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
+PATCHNAME=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
+MOBILE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5`
 ########################
 #Check data
 ########################
@@ -107,20 +107,18 @@ source /opt/karoshi/serversetup/variables/updatesource
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/update_karoshi ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/update_karoshi
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 ##########################
 #Apply Patch
 ##########################
 function apply_patch {
 echo `date`: update_karoshi - Applying $PATCHNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo '<b>'$APPLYINGMSG - $PATCHNAME'</b><br>'
+echo '<b>'$"Applying update" - $PATCHNAME'</b><br>'
 echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 chmod 0700 /opt/karoshi/updates/$PATCHNAME.sh
 /opt/karoshi/updates/$PATCHNAME.sh
@@ -147,7 +145,7 @@ fi
 [ -f /opt/karoshi/updates/$PATCHNAME.sh ] && rm -f /opt/karoshi/updates/$PATCHNAME.sh
 [ -f /opt/karoshi/updates/$PATCHNAME.txt ] && rm -f /opt/karoshi/updates/$PATCHNAME.txt
 cd /opt/karoshi/updates/
-echo '<b>'$DOWNLOADMSG2'</b>'
+echo '<b>'$"Downloading update"'</b>'
 echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 wget --no-cache --progress=dot:mega --read-timeout=5 --connect-timeout=5 $UPDATESOURCE/$VERSION/$PATCHNAME.sh 2>&1
 wget --no-cache --progress=dot:mega --read-timeout=5 --connect-timeout=5 $UPDATESOURCE/$VERSION/$PATCHNAME.sh.sig 2>&1
@@ -164,21 +162,21 @@ function check_data {
 
 if [ `echo $MD5SUM'null' | sed 's/ //g'` = null ]
 then
-echo $BLANKMD5'<br>'
+echo $"The MD5 data is not set."'<br>'
 break
 else
 echo MD5: $MD5SUM'<br>'
 fi
 if [ `echo $SERVERARRAY'null' | sed 's/ //g'` = null ]
 then
-echo $BLANKSERVER'<br>'
+echo $"The server data is not set."'<br>'
 break
 else
 echo Servers: ${SERVERARRAY[@]:0}'<br>'
 fi
 if [ `echo $DESCRIPTION'null' | sed 's/ //g'` = null ]
 then
-echo $BLANKDESC'<br>'
+echo $"The description data is not set."'<br>'
 break
 else
 echo $DESCRIPTION'<br><br>'
@@ -189,7 +187,7 @@ download_patch
 #Check that files have downloaded
 if [ ! -f /opt/karoshi/updates/$PATCHNAME.txt ] || [ ! -f /opt/karoshi/updates/$PATCHNAME.sh ]
 then
-echo $ERRORMSG7'<br>'
+echo $"The patch file did not have a .sh file extension."'<br>'
 break
 fi
 
@@ -199,14 +197,14 @@ MD5SUMFILE=`md5sum /opt/karoshi/updates/$PATCHNAME.sh | cut -d' ' -f1`
 [ $MD5SUMTXT'null' = null ] && MD5SUMTXT=txtsumnotset
 if [ $MD5SUMTXT != $MD5SUM ] || [ $MD5SUMFILE != $MD5SUM ]
 then
-echo $MD5ERROR'<br>'
+echo $"Incorrect MD5 checksum for this patch."'<br>'
 break
 fi
 
 #Check key sign
 if [ ! -f /opt/karoshi/updates/"$PATCHNAME.sh.sig" ]
 then
-echo $ERRORMSG10'<br>'
+echo $"There is no signature file for this patch."'<br>'
 break
 fi
 
@@ -214,7 +212,7 @@ gpg /opt/karoshi/updates/"$PATCHNAME.sh.sig"
 GPGSTATUS=`echo $?`
 if [ $GPGSTATUS != 0 ]
 then
-echo $ERRORMSG9'<br>'
+echo $"The patch file did not verify correctly."'<br>'
 break
 fi
 
@@ -228,7 +226,7 @@ apply_patch
 MD5SUM=notset
 
 
-echo \<b\>$PROCESINGMSG - $PATCHNAME\</b\>\<br\>\<br\>
+echo \<b\>$"Processing update" - $PATCHNAME\</b\>\<br\>\<br\>
 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'
 #Get information on patch
@@ -240,7 +238,7 @@ SERVERARRAY=( `sed -n $PATCHDATALINE,$PATCHDATALINE'p' /opt/karoshi/updates/upda
 DESCRIPTION=`sed -n $PATCHDATALINE,$PATCHDATALINE'p' /opt/karoshi/updates/updatelist | cut -f4`
 check_data
 else
-echo $ERRORMSG6
+echo $"The update type must not be blank."
 fi
 
 #Update html list

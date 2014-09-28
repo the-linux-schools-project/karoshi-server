@@ -29,20 +29,15 @@
 source /opt/karoshi/serversetup/variables/language
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/variables/years
-source /opt/karoshi/serversetup/language/$LANGCHOICE/pdc/setupsamba
-source /opt/karoshi/serversetup/language/$LANGCHOICE/softwareinstall
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/software
+
+TEXTDOMAIN=karoshi-server
+locale 1>/dev/null
 
 #########################
 #Add log entry
 #########################
 echo `date`: '##############'setupsamba'##############' >> /opt/karoshi/serversetup/install_log
-touch /opt/karoshi/serversetup/setuplog
-if [ `grep -c "$TITLE" /opt/karoshi/serversetup/setuplog` = 0 ]
-then
-echo setupsamba:$TITLE:/opt/karoshi/serversetup/pdc/scripts/setupsamba >> /opt/karoshi/serversetup/setuplog
-chmod 0600 /opt/karoshi/serversetup/setuplog
-fi
 
 THISYEAR=`date +%Y`
 GUESTACCOUNTS=30
@@ -59,7 +54,7 @@ LINUXCLIENTVERSION=karoshi4
 if [ ! -f /usr/local/sbin/samba ]
 then
 echo /usr/local/sbin/samba does not exist >> /opt/karoshi/serversetup/install_log
-yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --timeout=4 --text="samba4 $NOTINSTALLED" --no-buttons 2>/dev/null
+yad --title ''$"Setup"' '$"Samba"'' --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --timeout=4 --text='Samba - '$"This package is not installed."'' --no-buttons 2>/dev/null
 exit
 fi
 
@@ -73,7 +68,7 @@ fi
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/scripts/serverlevelsecurity
 
 function show_info {
-yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 800 --height 230 --tail --no-buttons --text-info 2>/dev/null
+yad --title ''$"Setup"' '$"Samba"'' --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 800 --height 230 --tail --no-buttons --text-info 2>/dev/null
 }
 
 function check_ldap_port {
@@ -101,7 +96,7 @@ YADPID=`ps aux | grep yad | grep '\--tail' | sed 's/ * / /g' | cut -d' ' -f2`
 ###############################
 function getrootsmbpasswd {
 echo `date`: "Asking the user a new root samba password" >> /opt/karoshi/serversetup/install_log
-DATA=`yad --image="/opt/karoshi/serversetup/essentials/smalllogo2.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title="$TITLE" --width 400 --wrap --text "$ROOTPASSWDMSG" --field="$ROOTPASSWDMSG4":H --field="$ROOTPASSWDMSG5":H --button=Ok 2>/dev/null`
+DATA=`yad --image="/opt/karoshi/serversetup/essentials/smalllogo2.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title=''$"Setup"' '$"Samba"'' --width 400 --wrap --text "$ROOTPASSWDMSG" --field=$"Password":H --field=$"Confirm":H --button=Ok 2>/dev/null`
 SAMBAROOTPASSWORD1=`echo $DATA | cut -d"|" -f1`
 SAMBAROOTPASSWORD2=`echo $DATA | cut -d"|" -f2`
 
@@ -113,7 +108,7 @@ echo $SAMBAROOTPASSWORD1 > /opt/karoshi/.tempdata/sambapassword
 ###############################
 function getdomainname {
 echo `date`: "Asking the user for the new domain name" >> /opt/karoshi/serversetup/install_log
-DATA=`yad --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title="$TITLE" --width 500 --wrap --text "$DOMAINNAMEMSG1\n$DOMAINNAMEMSG2\n\n$EXAMPLEMSG\n\n$DOMAINNAMEMSG3:\t\ttestdomain.example.com\n$SITENAMEMSG:\tExample Institute of Technology\nShort Name:\tEIT\n\n$DOMAINERRORMSG" --field="$DOMAINNAMEMSG3" --field="$SITENAMEMSG" --field="$SHORTSITENAMEMSG" --button="gtk-ok" 2>/dev/null`
+DATA=`yad --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title=''$"Setup"' '$"Samba"'' --width 500 --wrap --text ''$"Please enter your fully qualifed domain name."'\n'$"This could be the same as your web address."'\n\n'$"Example"'\n\n'$"Domain"':\t\ttestdomain.example.com\n'$"Site Name"':\tExample Institute of Technology\n'$"Short Name"':\tEIT\n\n'$DOMAINERRORMSG'' --field=$"Domain" --field=$"Site Name" --field=$"Short Site Name" --button="gtk-ok" 2>/dev/null`
 WEBADDRESS=`echo $DATA | cut -d"|" -f1 | tr -cd 'A-Za-z0-9.:/' | tr 'A-Z' 'a-z' | sed 's/^https:\/\///' | sed 's/^http:\/\///' | sed 's/^www.//g'`
 LONGNAME=`echo $DATA | cut -d"|" -f2 | tr -cd 'A-Za-z0-9.: /' | sed 's/^https:\/\///' | sed 's/^http:\/\///' | sed 's/^www.//g'`
 SHORTNAME=`echo $DATA | cut -d"|" -f3 | tr -cd 'A-Za-z0-9.: /' | sed 's/^https:\/\///' | sed 's/^http:\/\///' | sed 's/^www.//g'`
@@ -131,33 +126,33 @@ getdomainname
 #Check to see if the domain name has been set
 if [ -z "$WEBADDRESS" ]
 then
-DOMAINERRORMSG="$DOMAINERRORMSG3"
+DOMAINERRORMSG=$"You have not entered a fully qualified domain name."
 CHECK_DOMAIN=yes
 else
 #Check to see if the domain name is the same as the hostname
 if [ "$WEBADDRESS" = $HOSTNAME ]
 then
-DOMAINERRORMSG="$DOMAINERRORMSG1"
+DOMAINERRORMSG=$"The domain name cannot be the same as the hostname."
 CHECK_DOMAIN=yes
 fi
 #Check to see if the first part of the domain name is the same as the hostname
 if [ `echo $WEBADDRESS | cut -d"." -f1` = $HOSTNAME ]
 then
-DOMAINERRORMSG="$DOMAINERRORMSG4"
+DOMAINERRORMSG=$"The first part of the domain name cannot be the same as the hostname."
 CHECK_DOMAIN=yes
 fi 
 #Check to see if any part of the domain name is longer than 15 chars
 LENGTHCHECK=`echo -e "$WEBADDRESS" | sed 's/\./\n/g' | wc -L`
 if [ $LENGTHCHECK -gt 15 ]
 then
-DOMAINERRORMSG="$DOMAINERRORMSG2"
+DOMAINERRORMSG=$"The maximum character length between dots is 15."
 CHECK_DOMAIN=yes
 fi
 #Check for fqdn
 DOTCHECK=`echo $WEBADDRESS | grep -c "\."`
 if [ $DOTCHECK = 0 ]
 then
-DOMAINERRORMSG="$DOMAINERRORMSG3"
+DOMAINERRORMSG=$"You have not entered a fully qualified domain name."
 CHECK_DOMAIN=yes
 fi
 fi
@@ -189,20 +184,20 @@ echo LINUXCLIENTVER=\"$LINUXCLIENTVERSION\" >> /opt/karoshi/server_network/domai
 
 function check_password {
 #Check that passwords have been set
-[ $SAMBAROOTPASSWORD1'null' = null ] && SAMBAROOTPASSWORD1=notset1
-[ $SAMBAROOTPASSWORD2'null' = null ] && SAMBAROOTPASSWORD2=notset2
+[ -z "$SAMBAROOTPASSWORD1" ] && SAMBAROOTPASSWORD1=notset1
+[ -z "$SAMBAROOTPASSWORD2" ] && SAMBAROOTPASSWORD2=notset2
 
 #Check that passwords match
 if [ "$SAMBAROOTPASSWORD1" != "$SAMBAROOTPASSWORD2" ]
 then
-ROOTPASSWDMSG=`echo $ERRORMSG3 $ROOTPASSWDMSG1`
+ROOTPASSWDMSG=`echo $"The passwords do not match." $"Please enter the root and administrator password."`
 fi
 
 #Get password length
 PASSLENGTH=${#SAMBAROOTPASSWORD1}
 if [ $PASSLENGTH -lt 8 ]
 then
-ROOTPASSWDMSG="$PASSWARN1"
+ROOTPASSWDMSG=$"The password must be at least 8 characters long and have a combination of upper and lower case letters and numbers."
 SAMBAROOTPASSWORD2=$RANDOM
 fi
 
@@ -210,23 +205,23 @@ fi
 if [ `echo "$SAMBAROOTPASSWORD1"'A' | tr -cd 'A-Z\n'` = A ]
 then
 SAMBAROOTPASSWORD2=$RANDOM
-ROOTPASSWDMSG="$PASSWARN1"
+ROOTPASSWDMSG=$"The password must be at least 8 characters long and have a combination of upper and lower case letters and numbers."
 fi
 if [ `echo "$SAMBAROOTPASSWORD1"'a' | tr -cd 'a-z\n'` = a ]
 then
-ROOTPASSWDMSG="$PASSWARN1"
+ROOTPASSWDMSG=$"The password must be at least 8 characters long and have a combination of upper and lower case letters and numbers."
 SAMBAROOTPASSWORD2=$RANDOM
 fi
 #Check for numbers
 if [ `echo "$SAMBAROOTPASSWORD1"'1' | tr -cd '0-9\n'` = 1 ]
 then
-ROOTPASSWDMSG="$PASSWARN1"
+ROOTPASSWDMSG=$"The password must be at least 8 characters long and have a combination of upper and lower case letters and numbers."
 SAMBAROOTPASSWORD2=$RANDOM
 fi
 }
 
 #get samba root password
-ROOTPASSWDMSG=`echo $ROOTPASSWDMSG1 $ROOTPASSWDMSG3`
+ROOTPASSWDMSG=`echo $"Please enter the root and administrator password." $"Minimum 8 characters, numbers, upper and lower case letters."`
 getrootsmbpasswd
 check_password
 while [ "$SAMBAROOTPASSWORD1" != "$SAMBAROOTPASSWORD2" ]
@@ -267,7 +262,7 @@ samba-tool domain provision --use-rfc2307 --realm=$REALM --domain=$SAMBADOMAIN -
 function provisionsamba {
 provision_samba4
 getyadpid
-if [ $YADPID'null' != null ]
+if [ ! -z "$YADPID" ]
 then
 kill $YADPID
 fi
@@ -281,7 +276,7 @@ echo DOMAINSID=\"$DOMAINSID\" >> /opt/karoshi/server_network/domain_information/
 
 #Show domain information box
 
-yad --title "Domain Information" --button="gtk-ok" --geometry=400x100-40+10 --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --text="$PROVISONMSG\n\n$INFORMATIONMSG :\n\n$FQDMSG\n$REALM\n\n$SHORTDOMAINMSG\n$SAMBADOMAIN\n\n$BASEDNMSG\n$LDAPBASE\n" 2>/dev/null &
+yad --title $"Domain Information" --button="gtk-ok" --geometry=400x100-40+10 --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --text=''$"Your samba domain has now been provisioned."'\n\n'$"You will need this information"' :\n\n'$"Fully qualified domain"'\n'$REALM'\n\n'$"Short domain name"'\n'$SAMBADOMAIN'\n\n'$"Base Dn"'\n'$LDAPBASE'\n' 2>/dev/null &
 
 #Configure kerberos
 echo `date`: "Configuring Kerberos" >> /opt/karoshi/serversetup/install_log
@@ -639,79 +634,79 @@ echo `date`: "Making folders and groups" >> /opt/karoshi/serversetup/install_log
 #Make Groups
 COUNTER=$STARTYEAR
 while [  $COUNTER -le $ENDYEAR ]; do
-echo -e "$GROUPADDMSG yr$COUNTER"
+echo -e "$"Adding group" yr$COUNTER"
 NEWGROUP=yr$COUNTER
 NEWGROUPDISP="Year $COUNTER"
 add_samba4_group
 let COUNTER=COUNTER+1
 done
 
-echo -e "$GROUPADDMSG staff"
+echo -e "$"Adding group" staff"
 NEWGROUP=staff
 NEWGROUPDISP=Staff
 add_samba4_group
 
-echo -e "$GROUPADDMSG nonteachingstaff"
+echo -e "$"Adding group" nonteachingstaff"
 NEWGROUP=nonteachingstaff
 NEWGROUPDISP="Non teaching staff"
 add_samba4_group
 
-echo -e "$GROUPADDMSG studentstaff"
+echo -e "$"Adding group" studentstaff"
 NEWGROUP=studentstaff
 NEWGROUPDISP="Student Staff"
 add_samba4_group
 
-echo -e "$GROUPADDMSG guestusers"
+echo -e "$"Adding group" guestusers"
 NEWGROUP=guestusers
 NEWGROUPDISP="Guest Users"
 add_samba4_group
 
-echo -e "$GROUPADDMSG exams"
+echo -e "$"Adding group" exams"
 NEWGROUP=exams
 NEWGROUPDISP="Exam Users"
 add_samba4_group
 
-echo -e "$GROUPADDMSG itadmin"
+echo -e "$"Adding group" itadmin"
 NEWGROUP=itadmin
 NEWGROUPDISP="Itadmin Users"
 add_samba4_group
 
-echo "$GROUPADDMSG tech"
+echo "$"Adding group" tech"
 NEWGROUP=tech
 NEWGROUPDISP="Tech Users"
 add_samba4_group
 
-echo -e "$GROUPADDMSG officestaff"
+echo -e "$"Adding group" officestaff"
 NEWGROUP=officestaff
 NEWGROUPDISP="Office Staff"
 add_samba4_group
 
-echo -e "$GROUPADDMSG bursar"
+echo -e "$"Adding group" bursar"
 NEWGROUP=bursar
 NEWGROUPDISP="Bursars"
 add_samba4_group
 
-echo -e "$GROUPADDMSG smt"
+echo -e "$"Adding group" smt"
 NEWGROUP=smt
 NEWGROUPDISP="Senior Management"
 add_samba4_group
 
-echo -e "$GROUPADDMSG governors"
+echo -e "$"Adding group" governors"
 NEWGROUP=governors
 NEWGROUPDISP="Governors"
 add_samba4_group
 
-echo -e "$GROUPADDMSG guardians"
+echo -e "$"Adding group" guardians"
 NEWGROUP=guardians
 NEWGROUPDISP="Guardians"
 add_samba4_group
 
-echo -e "$GROUPADDMSG profilemanagement"
+echo -e "$"Adding group" profilemanagement"
 NEWGROUP=profilemanagement
 NEWGROUPDISP="Profile Management"
 add_samba4_group
 
-echo $CREATEHOMEFOLDERSMSG
+echo $"Creating home folders"
 #Make top level user area
 chmod 0755 /home
 chown root.root /home
@@ -784,7 +779,7 @@ chmod 0750 /home/users/exams
 chown root.exams /home/users/exams
 chown .exams -R /home/users/exams
 #Applications area - windows profiles
-echo $CREATEFOLDERMSG applications
+echo $"Creating" applications
 [ -d /home/applications ] || mkdir /home/applications
 if ! test -d /home/applications/backgrounds
 then
@@ -810,7 +805,7 @@ chmod u+X,g+X,o+X -R /home/applications
 chown root.itadmin -R /home/applications
 #Subjects area
 echo `date`: "Creating subjects area" >> /opt/karoshi/serversetup/install_log
-echo $CREATEFOLDERMSG subjects
+
 if ! test -d /home/subjects
 then
 mkdir /home/subjects /home/subjects/"work experience" /home/subjects/art /home/subjects/"business studies" /home/subjects/careers
@@ -826,7 +821,7 @@ chmod u+X,g+X,o+X -R  /home/subjects
 chown root.itadmin -R /home/subjects
 #Staffshare area
 echo `date`: "Creating staffshare area" >> /opt/karoshi/serversetup/install_log
-echo $CREATEFOLDERMSG staffshare
+echo $"Creating" staffshare
 [ -d /home/staffshare ] || mkdir /home/staffshare
 [ -d /home/staffshare/temp ] || mkdir /home/staffshare/temp
 [ -d /home/staffshare/"useful documents" ] || mkdir /home/staffshare/"useful documents"
@@ -863,7 +858,7 @@ chown -R root.itadmin /home/staffshare
 
 #Officeshare area
 echo `date`: "Creating officeshare area" >> /opt/karoshi/serversetup/install_log
-echo $CREATEFOLDERMSG officeshare
+echo $"Creating" officeshare
 [ -d /home/officeshare ] || mkdir /home/officeshare
 [ -d /home/officeshare/temp ] || mkdir /home/officeshare/temp
 [ -d /home/officeshare/bursar ] || mkdir /home/officeshare/bursar
@@ -874,7 +869,7 @@ chown -R root.officestaff /home/officeshare
 chown root.bursar -R /home/officeshare/bursar
 #Itadminshare area
 echo `date`: "Creating itadminshare area" >> /opt/karoshi/serversetup/install_log
-echo $CREATEFOLDERMSG itadminshare
+echo $"Creating" itadminshare
 [ -d /home/itadminshare ] || mkdir /home/itadminshare
 [ -d /home/itadminshare/"bulk user creation"/"input files" ] || mkdir -p /home/itadminshare/"bulk user creation"/"input files"
 [ -d /home/itadminshare/documentation ] || mkdir /home/itadminshare/documentation
@@ -893,7 +888,7 @@ chown root.itadmin -R /var/log/karoshilogs
 #############################
 #Copy in netlogon files
 #############################
-echo $COPYLOGONFILESMSG
+echo $"Copying in logon files"
 echo `date`: "Copying in netlogon files" >> /opt/karoshi/serversetup/install_log
 [ -d /var/lib/samba/netlogon ] && cp -R /var/lib/samba/netlogon /var/lib/samba/netlogon_`date +%s`
 [ ! -d /var/lib/samba/netlogon ] && mkdir /var/lib/samba/netlogon
@@ -1057,17 +1052,17 @@ echo `date`: "Creating windows profiles" >> /opt/karoshi/serversetup/install_log
 #Copying profiles
 ###################################
 [ -d /home/remastersys ] && rm -f -R /home/remastersys
-echo $COPYPROFILEMSG
+echo $"Copying in windows client profiles"
 
 #Extract profiles
 
 [ ! -d /home/applications/profiles ] && mkdir /home/applications/profiles
 
-echo $EXTRACTPROFILEMSG1
+echo $"Extracting Windows XP Profile"
 tar -zxf /opt/karoshi/serversetup/pdc/profiles/defaultprofile.tar.gz -C /home/applications/profiles/
-echo $EXTRACTPROFILEMSG2
+echo $"Extracting Windows 7 Profile"
 tar -zxf /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V2.tar.gz -C /home/applications/profiles/
-echo $EXTRACTPROFILEMSG4
+echo $"Extracting Windows 8.1 Profile"
 tar -zxf /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V4.tar.gz -C /home/applications/profiles/
 
 #We dont have a windows 8.0 profile so make an empty folder for it
@@ -1119,7 +1114,7 @@ cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profil
 [ ! -d /home/applications/profiles/default_roaming_profile.V3 ] && mkdir /home/applications/profiles/default_roaming_profile.V3
 [ ! -d /home/applications/profiles/default_roaming_profile.V4 ] && mkdir /home/applications/profiles/default_roaming_profile.V4
 
-echo $SETPROFILEPERMSMSG
+echo $"Setting profile permissions"
 chown -R root.itadmin /home/applications/profiles
 chmod 0664 -R /home/applications/profiles
 chmod u+X,g+X,o+X -R /home/applications/profiles
@@ -1336,7 +1331,7 @@ setfolderpermissions
 make_default_users
 make_profiles
 getyadpid
-if [ $YADPID'null' != null ]
+if [ ! -z "$YADPID" ]
 then
 kill $YADPID
 fi

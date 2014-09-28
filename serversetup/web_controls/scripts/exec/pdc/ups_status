@@ -98,12 +98,10 @@ echo `date`: ups_status by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/k
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/ups ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/ups
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 DELETEICON=/images/submenus/file/delete.png
 RESTARTICON=/images/submenus/system/ups_restart.png
 
@@ -111,7 +109,7 @@ RESTARTICON=/images/submenus/system/ups_restart.png
 #Create table header
 ########################
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 160px; height: 30px;"><b>'$SERVERMSG'</b></td><td style="width: 160px;"><b>'$UPSMODELMSG'</b></td><td style="width: 60px;"><b>Status</b></td><td style="width: 60px;"><b>'$CHARGEMSG'</b></td><td style="width: 60px;"><b>Volts</b></td><td style="width: 60px;"><b>'$LOADMSG'</b></td><td style="width: 60px;"><b>'$TEMPMSG'</b></td><td style="width: 60px;"><b>'$RUNTIMEMSG'</b></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$DELETEICON'"><span>'$DELETEMSG'</span></a></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$RESTARTICON'"><span>'$RESTARTMSG'</span></a></td></tr>
+<tr><td style="width: 160px; height: 30px;"><b>'$"Server"'</b></td><td style="width: 160px;"><b>'$"UPS Model"'</b></td><td style="width: 60px;"><b>Status</b></td><td style="width: 60px;"><b>'$"Charge"'</b></td><td style="width: 60px;"><b>Volts</b></td><td style="width: 60px;"><b>'$"Load"'</b></td><td style="width: 60px;"><b>'$"Temp"'</b></td><td style="width: 60px;"><b>'$"Run time"'</b></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$DELETEICON'"><span>'$"Delete"'</span></a></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$RESTARTICON'"><span>'$"Restart UPS deamon"'</span></a></td></tr>
 '
 
 function process_ups_data {
@@ -186,7 +184,7 @@ UPSLOAD=`echo $UPSLOAD%`
 else
 UPSLOAD=-
 fi
-[ $STATUS'null' = null ] && STATUS2=$NODATAMSG
+[ $STATUS'null' = null ] && STATUS2=$"No UPS Data"
 if [ $BATTERYCHARGE'null' = null ]
 then
 BATTERYCHARGE=-
@@ -196,7 +194,7 @@ fi
 
 #Show data
 
-echo '<tr><td style="vertical-align: top;"><b><i>'$SERVER'</i></b></td><td style="vertical-align: top;">'$UPSMODEL'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$STATUSICON'"><span>'$SERVER' - '$STATUS2'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$BATTCHARGEICON'"><span>'$SERVER' - '$BATTERYCHARGE'</span></a></td><td style="vertical-align: top;">'$UTILITYV1'</td><td style="vertical-align: top;">'$UPSLOAD'</td><td style="vertical-align: top;">'"$UPSTEMP"'</td><td style="vertical-align: top;">'"$BATTRUNTIME"'</td><td><form action="/cgi-bin/admin/ups_delete.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_MASTER_SERVER_'$SERVER'_UPSMODEL_'$UPSMODEL'_" type="image" class="images" src="'$DELETEICON'" value=""><span>'$SERVER' - '$DELETEMSG $UPSMODEL'</span></form></a></td><td style="vertical-align: top;"><form action="/cgi-bin/admin/ups_restart.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SERVER_'$SERVER'_" type="image" class="images" src="'$RESTARTICON'" value=""><span>'$SERVER' -'$RESTARTMSG'</span></form></a></td></tr>'
+echo '<tr><td style="vertical-align: top;"><b><i>'$SERVER'</i></b></td><td style="vertical-align: top;">'$UPSMODEL'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$STATUSICON'"><span>'$SERVER' - '$STATUS2'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$BATTCHARGEICON'"><span>'$SERVER' - '$BATTERYCHARGE'</span></a></td><td style="vertical-align: top;">'$UTILITYV1'</td><td style="vertical-align: top;">'$UPSLOAD'</td><td style="vertical-align: top;">'"$UPSTEMP"'</td><td style="vertical-align: top;">'"$BATTRUNTIME"'</td><td><form action="/cgi-bin/admin/ups_delete.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_MASTER_SERVER_'$SERVER'_UPSMODEL_'$UPSMODEL'_" type="image" class="images" src="'$DELETEICON'" value=""><span>'$SERVER' - '$"Delete" $UPSMODEL'</span></form></a></td><td style="vertical-align: top;"><form action="/cgi-bin/admin/ups_restart.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SERVER_'$SERVER'_" type="image" class="images" src="'$RESTARTICON'" value=""><span>'$SERVER' -'$"Restart UPS deamon"'</span></form></a></td></tr>'
 }
 
 ########################
@@ -239,7 +237,7 @@ STATUSICON=battery_on_power.png
 STATUS2="Online"
 fi
 
-echo '<tr><td style="vertical-align: top;"><div style="margin-left: 40px;">'$SLAVESERVER'</div></td><td style="vertical-align: top;">UPS Slave</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$STATUSICON'"><span>'$SLAVESERVER' - '$STATUS2'</span></a></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td><form action="/cgi-bin/admin/ups_delete.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_SLAVE_SERVERMASTER_'$SERVER'_SERVER_'$SLAVESERVER'_UPSMODEL_'$UPSMODEL'_" type="image" class="images" src="'$DELETEICON'" value=""><span>'$SLAVESERVER' - '$DELETEMSG $UPSMODEL'</span></form></a></td><td style="vertical-align: top;"><form action="/cgi-bin/admin/ups_restart.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SLAVE_SERVER_'$SLAVESERVER'_" type="image" class="images" src="'$RESTARTICON'" value=""><span>'$SLAVESERVER' - '$RESTARTMSG'</span></form></a></td></tr>'
+echo '<tr><td style="vertical-align: top;"><div style="margin-left: 40px;">'$SLAVESERVER'</div></td><td style="vertical-align: top;">UPS Slave</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$STATUSICON'"><span>'$SLAVESERVER' - '$STATUS2'</span></a></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td><form action="/cgi-bin/admin/ups_delete.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_SLAVE_SERVERMASTER_'$SERVER'_SERVER_'$SLAVESERVER'_UPSMODEL_'$UPSMODEL'_" type="image" class="images" src="'$DELETEICON'" value=""><span>'$SLAVESERVER' - '$"Delete" $UPSMODEL'</span></form></a></td><td style="vertical-align: top;"><form action="/cgi-bin/admin/ups_restart.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SLAVE_SERVER_'$SLAVESERVER'_" type="image" class="images" src="'$RESTARTICON'" value=""><span>'$SLAVESERVER' - '$"Restart UPS deamon"'</span></form></a></td></tr>'
 
 done
 
@@ -250,7 +248,7 @@ then
 for DEVICES in /opt/karoshi/server_network/ups/master/$SERVER/extra_devices/*
 do
 DEVICE=`basename $DEVICES | sed 's/+/ /g'`
-echo '<tr><td style="vertical-align: top;"><div style="margin-left: 40px;">'$DEVICE'</div></td><td style="vertical-align: top;">UPS Device</td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td><form action="/cgi-bin/admin/ups_delete.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_DEVICE_SERVERMASTER_'$SERVER'_SERVER_'$DEVICE'_UPSMODEL_'$UPSMODEL'_" type="image" class="images" src="'$DELETEICON'" value=""><span>'$DEVICE' - '$DELETEMSG $UPSMODEL'</span></form></a></td><td style="vertical-align: top;"></td></tr>'
+echo '<tr><td style="vertical-align: top;"><div style="margin-left: 40px;">'$DEVICE'</div></td><td style="vertical-align: top;">UPS Device</td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td><form action="/cgi-bin/admin/ups_delete.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_DEVICE_SERVERMASTER_'$SERVER'_SERVER_'$DEVICE'_UPSMODEL_'$UPSMODEL'_" type="image" class="images" src="'$DELETEICON'" value=""><span>'$DEVICE' - '$"Delete" $UPSMODEL'</span></form></a></td><td style="vertical-align: top;"></td></tr>'
 done
 fi
 

@@ -31,15 +31,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printer_driver_gen ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printer_driver_gen
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -54,7 +52,7 @@ echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE1'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Windows Printer Driver Generation"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 
   
@@ -171,8 +169,8 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE2'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+	<span>'$"Printer Driver Generation"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">
 '
 fi
@@ -180,17 +178,17 @@ if [ $MOBILE = yes ]
 then
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td>
-<b>'$TITLE1'</b></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Driver_Generation"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td></tr>
+<b>'$"Windows Printer Driver Generation"'</b></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Driver_Generation"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is used to enable or disable automated windows printer driver generation for your print queues."'</span></a></td></tr>
 </tbody></table><br>
-<input name="_ACTION_enableall_PRINTQUEUE_all_" type="submit" class="button" value="'$ENABLEALLMSG'">
-<input name="_ACTION_disableall_PRINTQUEUE_all_" type="submit" class="button" value="'$DISABLEALLMSG'"><br>
-<input name="_ACTION_gendrivers_PRINTQUEUE_all_" type="submit" class="button" value="'$GENDRIVERSMSG'"><br><br>
+<input name="_ACTION_enableall_PRINTQUEUE_all_" type="submit" class="button" value="'$"Enable all"'">
+<input name="_ACTION_disableall_PRINTQUEUE_all_" type="submit" class="button" value="'$"Disable all"'"><br>
+<input name="_ACTION_gendrivers_PRINTQUEUE_all_" type="submit" class="button" value="'$"Generate Drivers"'"><br><br>
 '
 else
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr>
-<td style="vertical-align: top;"><b>'$TITLE1'</b></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Driver_Generation"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td><td><input name="_ACTION_enableall_PRINTQUEUE_all_" type="submit" class="button" value="'$ENABLEALLMSG'"></td><td><input name="_ACTION_disableall_PRINTQUEUE_all_" type="submit" class="button" value="'$DISABLEALLMSG'"></td><td><input name="_ACTION_gendrivers_PRINTQUEUE_all_" type="submit" class="button" value="'$GENDRIVERSMSG'"></td></tr></table><br>
+<td style="vertical-align: top;"><b>'$"Windows Printer Driver Generation"'</b></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Driver_Generation"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is used to enable or disable automated windows printer driver generation for your print queues."'</span></a></td><td><input name="_ACTION_enableall_PRINTQUEUE_all_" type="submit" class="button" value="'$"Enable all"'"></td><td><input name="_ACTION_disableall_PRINTQUEUE_all_" type="submit" class="button" value="'$"Disable all"'"></td><td><input name="_ACTION_gendrivers_PRINTQUEUE_all_" type="submit" class="button" value="'$"Generate Drivers"'"></td></tr></table><br>
 </div><div id="infobox">'
 fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printer_driver_gen.cgi | cut -d' ' -f1`
@@ -198,15 +196,15 @@ if [ $ACTION = gendrivers ]
 then
 sudo -H /opt/karoshi/web_controls/exec/printer_driver_gen2 $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:
 EXEC_STATUS=$?
-[ $EXEC_STATUS = 0 ] && MESSAGE=$COMPLETEDMSG
+[ $EXEC_STATUS = 0 ] && MESSAGE=$"Windows printer driver generation completed."
 
 if [ $EXEC_STATUS = 102 ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The samba root password was incorrect."
 fi
 if [ $EXEC_STATUS = 103 ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The windows dll files needed to generate the windows printer drivers are missing. The dlls needed in /usr/share/cups/drivers/ are pscript5.dll, ps5ui.dll, pscript.hlp, pscript.ntf."
 fi
 show_status
 else

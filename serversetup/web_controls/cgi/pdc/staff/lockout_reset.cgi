@@ -32,19 +32,17 @@ SLEEPTIME=5
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/lockout_reset ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/lockout_reset
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo "<html><head><title>$TITLE</title><meta http-equiv='"'REFRESH'"' content='"'0; URL='$HTTP_REFERER''"'>"
+echo "<html><head><title>$"Reset User Lockout"</title><meta http-equiv='"'REFRESH'"' content='"'0; URL='$HTTP_REFERER''"'>"
 echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
@@ -110,7 +108,7 @@ exit
 #Check to see that USERNAME is not blank
 if [ $USERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The username must not be blank."
 show_status
 fi
 
@@ -119,7 +117,7 @@ echo "$MD5SUM:$USERNAME" | sudo -H /opt/karoshi/web_controls/exec/existcheck_use
 USEREXISTSTATUS=`echo $?`
 if [ $USEREXISTSTATUS = 111 ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"This user does not exist."
 show_status
 fi
 
@@ -130,7 +128,7 @@ if [ `grep -c -w $REMOTE_USER /opt/karoshi/web_controls/staff_restrictions.txt` 
 then
 sudo -H /opt/karoshi/web_controls/exec/record_staff_error $REMOTE_USER:$REMOTE_ADDR:$REMOTE_USER
 sleep $SLEEPTIME
-MESSAGE=$ERRORMSG6
+MESSAGE=$"Your access to this feature has been restricted."
 show_status
 fi
 fi
@@ -141,8 +139,8 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:" | sudo -H /opt/karoshi/web_c
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 0 ]
 then
-MESSAGE=`echo $USERNAME: $COMPLETEDMSG`
+MESSAGE=`echo $USERNAME: $"Lockout attempts reset."`
 else
-MESSAGE=`echo $USERNAME: $PROBLEMMSG $LOGMSG`
+MESSAGE=`echo $USERNAME: $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`
 fi
 show_status

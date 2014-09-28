@@ -50,13 +50,13 @@ then
 echo `date`: linux_client_set_repository - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
-LINUXVERSION=`echo $* | cut -s -d: -f4`
-URI=`echo $* | cut -s -d: -f5 | sed 's/%2F/\//g' | sed 's/%3A/:/g'`
-DISTRIBUTION=`echo $* | cut -s -d: -f6 | sed 's/%2F/\//g'`
-SECTIONS=`echo $* | cut -s -d: -f7 | sed 's/+/ /g'`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\%+-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\%+-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\%+-' | cut -s -d: -f3`
+LINUXVERSION=`echo $* | tr -cd 'A-Za-z0-9\._:\%+-' | cut -s -d: -f4`
+URI=`echo $* | tr -cd 'A-Za-z0-9\._:\%+-' | cut -s -d: -f5 | sed 's/%2F/\//g' | sed 's/%3A/:/g'`
+DISTRIBUTION=`echo $* | tr -cd 'A-Za-z0-9\._:\%+-' | cut -s -d: -f6 | sed 's/%2F/\//g'`
+SECTIONS=`echo $* | tr -cd 'A-Za-z0-9\._:\%+-' | cut -s -d: -f7 | sed 's/+/ /g'`
 
 ########################
 #Check data

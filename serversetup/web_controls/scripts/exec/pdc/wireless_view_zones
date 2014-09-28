@@ -90,10 +90,8 @@ exit 101
 fi
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/wireless_view_zones ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/wireless_view_zones
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 ########################
 #View zones
@@ -109,12 +107,12 @@ fi
 
 if [ `ls -1 /opt/karoshi/wireless_network/access/ | wc -l` -lt 1 ]
 then
-echo $ERRORMSG1
+echo $"No wireless zones have been added."
 exit
 fi
 
 echo '<table class="standard" style="text-align: left; height: 10px;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="width: 200px;"><b>'$ZONEMSG'</b></td><td><b>'$EDITMSG'</b></td><td><b>'$DELETEMSG'</b></td></tr>'
+<tbody><tr><td style="width: 200px;"><b>'$"Wireless Zones"'</b></td><td><b>'$"Edit"'</b></td><td><b>'$"Delete"'</b></td></tr>'
 
 for ZONE in /opt/karoshi/wireless_network/access/*txt
 do

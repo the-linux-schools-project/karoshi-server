@@ -64,17 +64,17 @@ then
 echo `date`: incident_log_add - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
-DAY=`echo $* | cut -s -d: -f4`
-MONTH=`echo $* | cut -s -d: -f5`
-YEAR=`echo $* | cut -s -d: -f6`
-HOUR=`echo $* | cut -s -d: -f7`
-MINUTES=`echo $* | cut -s -d: -f8`
-INCIDENT=`echo $* | cut -s -d: -f9`
-ACTIONTAKEN=`echo $* | cut -s -d: -f10`
-STUDENTS=`echo $* | cut -s -d: -f11`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f3`
+DAY=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f4`
+MONTH=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f5`
+YEAR=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f6`
+HOUR=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f7`
+MINUTES=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f8`
+INCIDENT=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f9`
+ACTIONTAKEN=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f10`
+STUDENTS=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f11`
 ########################
 #Check data
 ########################

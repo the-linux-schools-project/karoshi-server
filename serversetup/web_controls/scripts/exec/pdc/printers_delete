@@ -28,12 +28,10 @@ LOG_DATE=`date +%F`
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printers_delete ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printers_delete
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ########################
 #Check md5checksum
 ########################
@@ -61,10 +59,10 @@ echo `date`: printers_delete - incorrect number of arguments >> /opt/karoshi/log
 exit 101
 fi
 
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
-PRINTERNAME=`echo $* | cut -s -d: -f4 | sed 's/123456789/_/g'`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f3`
+PRINTERNAME=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f4 | sed 's/123456789/_/g'`
 
 ########################
 #Check data

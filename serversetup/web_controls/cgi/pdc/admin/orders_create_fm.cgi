@@ -26,7 +26,7 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
@@ -36,10 +36,8 @@ MONTH=`echo $DATE_INFO | cut -d- -f2`
 YEAR=`echo $DATE_INFO | cut -d- -f1`
 DATE=`echo $DAY-$MONTH-$YEAR`
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/orders ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/orders
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -240,7 +238,7 @@ fi
 echo '<div id="actionbox"><form name="testform" action="/cgi-bin/admin/orders_create_fm.cgi" method="post">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
-<tr><td style="width: 90px;"><b>'$DEPMSG'</b></td><td style="width: 300px;"><input value="'$DEPARTMENT'" maxlength="20" size="20" name="___DEPARTMENT___"></td><td style="width: 120px;"><b>'$DATEMSG'</b></td><td style="width: 200px;">'
+<tr><td style="width: 90px;"><b>'$"Department"'</b></td><td style="width: 300px;"><input value="'$DEPARTMENT'" maxlength="20" size="20" name="___DEPARTMENT___"></td><td style="width: 120px;"><b>'$"Date"'</b></td><td style="width: 200px;">'
 
 echo "
 <!-- calendar attaches to existing form element -->
@@ -257,10 +255,10 @@ echo "
 
 
 echo '</td></tr>
-<tr><td><b>'$SUPPLIERMSG'</b></td><td><input value="'$SUPPLIER'" maxlength="20" size="20" name="___SUPPLIER___"></td><td><b>'$BHOLDERMSG'</b></td><td><input value="'$BHOLDER'" maxlength="16" size="16" name="___BHOLDER___"></td></tr></tbody></table><br>
+<tr><td><b>'$"Supplier"'</b></td><td><input value="'$SUPPLIER'" maxlength="20" size="20" name="___SUPPLIER___"></td><td><b>'$"Budget Holder"'</b></td><td><input value="'$BHOLDER'" maxlength="16" size="16" name="___BHOLDER___"></td></tr></tbody></table><br>
   <table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
     <tbody>
-<tr><td><b>'$REFMSG'</b></td><td><b>'$QUANTITYMSG'</b></td><td><b>'$DESCRIPTIONMSG'</b></td><td><b>'$UNITPRICEMSG'</b></td><td><b>'$TOTALMSG'</b></td></tr>
+<tr><td><b>'$"Ref"'</b></td><td><b>'$"Qty"'</b></td><td><b>'$"Description"'</b></td><td><b>'$"Unit Price"'</b></td><td><b>'$"Total"'</b></td></tr>
 <tr><td><input value="'$REF1'" maxlength="20" size="20" name="___REF1___"></td><td><input value="'$QUANTITY1'" maxlength="4" size="4" name="___QUANTITY1___"></td><td><input value="'$DESC1'" maxlength="30" size="30" name="___DESC1___"></td><td><input value="'$PPU1'" maxlength="8" size="8" name="___PPU1___"></td><td>'$TOTAL1'</td></tr>
 <tr><td><input value="'$REF2'" maxlength="20" size="20" name="___REF2___"></td><td><input value="'$QUANTITY2'" maxlength="4" size="4" name="___QUANTITY2___"></td><td><input value="'$DESC2'" maxlength="30" size="30" name="___DESC2___"></td><td><input value="'$PPU2'" maxlength="8" size="8" name="___PPU2___"></td><td>'$TOTAL2'</td></tr>
 <tr><td><input value="'$REF3'" maxlength="20" size="20" name="___REF3___"></td><td><input value="'$QUANTITY3'" maxlength="4" size="4" name="___QUANTITY3___"></td><td><input value="'$DESC3'" maxlength="30" size="30" name="___DESC3___"></td><td><input value="'$PPU3'" maxlength="8" size="8" name="___PPU3___"></td><td>'$TOTAL3'</td></tr>
@@ -277,11 +275,11 @@ echo '</td></tr>
 <tr><td><input value="'$REF14'" maxlength="20" size="20" name="___REF14___"></td><td><input value="'$QUANTITY14'" maxlength="4" size="4" name="___QUANTITY14___"></td><td><input value="'$DESC14'" maxlength="30" size="30" name="___DESC14___"></td><td><input value="'$PPU14'" maxlength="8" size="8" name="___PPU14___"></td><td>'$TOTAL14'</td></tr>
 <tr><td><input value="'$REF15'" maxlength="20" size="20" name="___REF15___"></td><td><input value="'$QUANTITY15'" maxlength="4" size="4" name="___QUANTITY15___"></td><td><input value="'$DESC15'" maxlength="30" size="30" name="___DESC15___"></td><td><input value="'$PPU15'" maxlength="8" size="8" name="___PPU15___"></td><td>'$TOTAL15'</td></tr>
 
-<tr><td></td><td></td><td></td><td><b>'$SUBTOTALMSG'</b></td><td>'$SUBTOTAL'</td></tr>
+<tr><td></td><td></td><td></td><td><b>'$"Sub Total"'</b></td><td>'$SUBTOTAL'</td></tr>
 <tr><td></td><td></td><td></td><td><b>P+P</b></td><td><input value="'$PANDP'" maxlength="4" size="4" name="___PANDP___"></td></tr>
 <tr><td></td><td></td><td></td><td><b>Total</b></td><td><b>'$GRANDTOTAL'</b></td></tr>
 </tbody></table><br>
-<input value="'$CALCMSG'" type="submit"> </form><form action="/cgi-bin/admin/orders_create.cgi" method="post">
+<input value="'$"Calculate"'" type="submit"> </form><form action="/cgi-bin/admin/orders_create.cgi" method="post">
 <input name="___DEPARTMENT___" value="'$DEPARTMENT'" type="hidden">
 <input name="___DATE___" value="'$DATE'" type="hidden">
 <input name="___SUPPLIER___" value="'$SUPPLIER'" type="hidden">
@@ -351,7 +349,7 @@ echo '</td></tr>
 
 if [ $GRANDTOTAL != 0 ] && [ `echo $SUPPLIER'null' | sed 's/ //g'` != null ] && [ `echo $BHOLDER'null' | sed 's/ //g'` != null ] && [ `echo $DEPARTMENT'null' | sed 's/ //g'` != null ]
 then
-echo '<input value="'$SUBMITMSG'" class="button" type="submit">'
+echo '<input value="'$"Submit"'" class="button" type="submit">'
 fi
 echo '
 </div>

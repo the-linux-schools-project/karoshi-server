@@ -94,13 +94,11 @@ fi
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/software_raid ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/software_raid
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 echo software raid inc "<br>"
 
@@ -136,30 +134,30 @@ fi
 
 if [ $SHOW_MENU = yes ]
 then
-echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody>
-<tr><td>"$RAIDTYPEMSG"</td><td>"$RAIDNAMEMSG"</td></tr>
+<tr><td>'$"Raid Type"'</td><td>'$"Raid Name"'</td></tr>
 <tr><td>
-<select name=\"_RAIDTYPE_\" style=\"width: 185px;\">
-<option value=\"raid1\">Raid 1</option>
-<option value=\"raid5\">Raid 5</option>
+<select name="_RAIDTYPE_" style="width: 185px;">
+<option value="raid1">Raid 1</option>
+<option value="raid5">Raid 5</option>
 </select>
 </td><td>
-<select name=\"_RAIDNAME_\" style=\"width: 185px;\">
-<option value=\"raid1\">/dev/md0</option>
-<option value=\"raid5\">/dev/md1</option>
-<option value=\"raid5\">/dev/md2</option>
+<select name="_RAIDNAME_" style="width: 185px;">
+<option value="raid1">/dev/md0</option>
+<option value="raid5">/dev/md1</option>
+<option value="raid5">/dev/md2</option>
 </select>
-</td></tr></tbody</table>"
-echo "<br><br>"
+</td></tr></tbody</table><br><br>'
+
 SHOW_MENU=no
 fi
 
 #Show drive information
 if [ $DRIVE_STATUS = ok ]
 then
-echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
-<tbody><tr><td><img src=\"/images/submenus/system/$DISKICON\" alt=\"some_text\"> </td><td>"$DRIVE"</td><td>"$DISKSIZE"</td><td>"DISK OPTIONS"</td></tr>"
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<tbody><tr><td><img src="/images/submenus/system/'$DISKICON'" alt=""> </td><td>"'$DRIVE'"</td><td>"'$DISKSIZE'"</td><td>'$"Disk Options"'</td></tr>'
 fi
 fi
 let COUNTER=$COUNTER+1

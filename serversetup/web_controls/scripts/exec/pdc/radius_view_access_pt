@@ -95,37 +95,35 @@ ICON2=/images/submenus/system/wireless_delete.png
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/radius ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/radius
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 #Check to see if any access points have been added
 if [ ! -d /opt/karoshi/server_network/radius/wireless_access_points/ ]
 then
-echo $ERRORMSG6"<br><br>"
+echo $"No access points have been configured.""<br><br>"
 exit
 fi
 
 if [ `ls -1 /opt/karoshi/server_network/radius/wireless_access_points/ | wc -l` = 0 ]
 then
-echo $ERRORMSG6"<br><br>"
+echo $"No access points have been configured.""<br><br>"
 exit
 fi
 #Show access points
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="width: 180px;"><b>'$SHORTNAMEMSG'</b></td><td><b>'$TCPIPMSG'</b></td><td></td></tr>'
+<tbody><tr><td style="width: 180px;"><b>'$"Short name"'</b></td><td><b>'$"TCPIP"'</b></td><td></td></tr>'
 for ACCESSPOINTS in /opt/karoshi/server_network/radius/wireless_access_points/*
 do
 ACCESSPOINT=`basename "$ACCESSPOINTS"`
 TCPIP=`sed -n 1,1p /opt/karoshi/server_network/radius/wireless_access_points/"$ACCESSPOINT" | cut -d' ' -f2` 
 echo '<tr><td>'$ACCESSPOINT'</td><td>'$TCPIP'</td><td>'
-#echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_edit_SHORTNAME_'$ACCESSPOINT'_" type="image" class="images" src="'$ICON1'" value=""><span>'$EDITMSG'</span></a>'
+#echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_edit_SHORTNAME_'$ACCESSPOINT'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Edit"'</span></a>'
 
-echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_delete_SHORTNAME_'$ACCESSPOINT'_" type="image" class="images" src="'$ICON2'" value=""><span>'$DELETEMSG'</span></a>
+echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_delete_SHORTNAME_'$ACCESSPOINT'_" type="image" class="images" src="'$ICON2'" value=""><span>'$"Delete"'</span></a>
 
 </td></tr>'
 

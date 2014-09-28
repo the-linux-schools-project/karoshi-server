@@ -31,15 +31,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/helpdesk ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/helpdesk
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -55,7 +53,7 @@ echo '
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE' - '$TITLE2'</title><META HTTP-EQUIV="refresh" CONTENT="300">
+  <title>'$"Help Desk"' - '$"Requests"'</title><META HTTP-EQUIV="refresh" CONTENT="300">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ $MOBILE = yes ]
@@ -118,35 +116,35 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE' - '$TITLE2'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+	<span>'$"Help Desk"' - '$"Requests"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">
 <form action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_ASSIGNED_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_ASSIGNED_"><span>All</span></a></form>'
 else
-echo '<b>'$TITLE' - '$TITLE2'</b> </div><div id="infobox"><form action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_ASSIGNED_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_ASSIGNED_"><span>All</span></a></form>'
+echo '<b>'$"Help Desk"' - '$"Requests"'</b> </div><div id="infobox"><form action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_ASSIGNED_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_ASSIGNED_"><span>All</span></a></form>'
 fi
 
 [ $SEARCHCRITERIA'null' = null ] && SEARCHCRITERIA=ASSIGNED
 #Check to see if there are any new jobs
 if [ ! -d /opt/karoshi/helpdesk/todo/ ]
 then
-echo $ERRORMSG6'</div></div></body></html>'
+echo $"There are no new requests to view."'</div></div></body></html>'
 exit
 fi
 
 if [ `ls -1 /opt/karoshi/helpdesk/todo/ | wc -l` = 0 ]
 then
-echo $ERRORMSG6'</div></div></body></html>'
+echo $"There are no new requests to view."'</div></div></body></html>'
 exit
 fi
 if [ $MOBILE = yes ]
 then
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="width: 90px;"><b>Date</b></td><td style="width: 120px;"><b>'$LOCATIONMSG'</b></td><td style="width: 30px;"></td><td style="width: 60px;"><b>'$ACTIONMSG'</b></td></tr>
+<tbody><tr><td style="width: 90px;"><b>Date</b></td><td style="width: 120px;"><b>'$"Location"'</b></td><td style="width: 30px;"></td><td style="width: 60px;"><b>'$"Action"'</b></td></tr>
 '
 else
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="width: 90px;"><b>Date</b></td><td style="width: 130px;"><b>'$NAMEMSG'</b></td><td style="width: 120px;"><b>'$JOBTITLEMMSG'</b></td><td style="width: 120px;"><b>'$LOCATIONMSG'</b></td><td style="width: 90px;"><b>'$WAITTIMEMSG'</b></td><td style="width: 90px;"><b>'$PRIORITYMSG'</b></td><td style="width: 100px;"><b>'$ASSIGNEDMSG'</b></td><td style="width: 30px;"></td><td style="width: 60px;"><b>'$ACTIONMSG'</b></td></tr>
+<tbody><tr><td style="width: 90px;"><b>Date</b></td><td style="width: 130px;"><b>'$"Name"'</b></td><td style="width: 120px;"><b>'$"Request Summary"'</b></td><td style="width: 120px;"><b>'$"Location"'</b></td><td style="width: 90px;"><b>'$"Wait Time"'</b></td><td style="width: 90px;"><b>'$"Priority"'</b></td><td style="width: 100px;"><b>'$"Assigned to"'</b></td><td style="width: 30px;"></td><td style="width: 60px;"><b>'$"Action"'</b></td></tr>
 '
 fi
 
@@ -164,9 +162,9 @@ then
 #Show time in seconds
 if [ $WAITTIME = 1 ]
 then 
-WAITTIME=`echo $WAITTIME $SECSMSG1`
+WAITTIME=`echo $WAITTIME $"second"`
 else
-WAITTIME=`echo $WAITTIME $SECSMSG2`
+WAITTIME=`echo $WAITTIME $"seconds"`
 fi
 else
 #Convert to minutes
@@ -176,9 +174,9 @@ then
 #Show time in minutes
 if [ $WAITTIME = 1 ]
 then
-WAITTIME=`echo $WAITTIME $MINSMSG1`
+WAITTIME=`echo $WAITTIME $"minute"`
 else
-WAITTIME=`echo $WAITTIME $MINSMSG2`
+WAITTIME=`echo $WAITTIME $"minutes"`
 fi
 else
 #Convert time to hours
@@ -188,31 +186,31 @@ then
 #Show time in hours
 if [ $WAITTIME = 1 ]
 then
-WAITTIME=`echo $WAITTIME $HOURSMSG1`
+WAITTIME=`echo $WAITTIME $"hour"`
 else
-WAITTIME=`echo $WAITTIME $HOURSMSG2`
+WAITTIME=`echo $WAITTIME $"hours"`
 fi
 else
 #Covert time to days
 let WAITTIME=$WAITTIME/24
 if [ $WAITTIME = 1 ]
 then
-WAITTIME=`echo $WAITTIME $DAYMSG1`
+WAITTIME=`echo $WAITTIME $"day"`
 else
-WAITTIME=`echo $WAITTIME $DAYMSG2`
+WAITTIME=`echo $WAITTIME $"days"`
 fi
 fi
 fi
 fi
 
 ASSIGNED2=$ASSIGNED
-[ $ASSIGNED2'null' = null ] && ASSIGNED2=$ASSIGNEDMSG2
+[ $ASSIGNED2'null' = null ] && ASSIGNED2=$"Not Assigned"
 
 if [ $MOBILE = yes ]
 then
 echo '<tr><td style="vertical-align: top;">'$DATE'<br>'$TIME'</td><td style="vertical-align: top;">'$LOCATION'</td><td>
 <form action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_ASSIGNED='$ASSIGNED'_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_ASSIGNED='$ASSIGNED'_"><span>'$ASSIGNED2'</span></a></form></td><td><form action="/cgi-bin/admin/helpdesk_action_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_JOBNAME_'$NEWJOB'_" type="image" class="images" src="/images/submenus/user/helpdesk/action.png" value="_JOBNAME_'$NEWJOB'_">
-<span><b>'$NAMEMSG'</b><br>'$NAME'<br><br><b>'$PRIORITYMSG'</b><br>'$PRIORITY'<br><br><b>'$LOCATIONMSG'</b><br>'$LOCATION'<br><br><b>'$JOBTITLEMMSG'</b><br>'$JOBTITLE'</span></a></form></td></tr>'
+<span><b>'$"Name"'</b><br>'$NAME'<br><br><b>'$"Priority"'</b><br>'$PRIORITY'<br><br><b>'$"Location"'</b><br>'$LOCATION'<br><br><b>'$"Request Summary"'</b><br>'$JOBTITLE'</span></a></form></td></tr>'
 else
 echo '<tr><td style="vertical-align: top;">'$DATE'<br>'$TIME'</td><td style="vertical-align: top;">'$NAME'</td><td style="vertical-align: top;">'$JOBTITLE'</td><td style="vertical-align: top;">'$LOCATION'</td><td style="vertical-align: top;">'$WAITTIME'</td><td style="vertical-align: top;">'$PRIORITY'</td><td style="vertical-align: top;">'$ASSIGNED'</td><td>
 <form action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_ASSIGNED='$ASSIGNED'_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_ASSIGNED='$ASSIGNED'_"><span>'$ASSIGNED2'</span></a></form></td><td><form action="/cgi-bin/admin/helpdesk_action_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_JOBNAME_'$NEWJOB'_" type="image" class="images" src="/images/submenus/user/helpdesk/action.png" value="_JOBNAME_'$NEWJOB'_"><span>'$JOBTITLE'</span></a></form></td></tr>'

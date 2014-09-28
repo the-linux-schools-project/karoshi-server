@@ -31,15 +31,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_bypass ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_bypass
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -54,7 +52,7 @@ echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE2'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Client Bypass Controls"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 
   
@@ -163,15 +161,15 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$TCPIP:$MOBILE:" | sudo -H /opt/
 }
 
 
-TITLE=$TITLE2
+TITLE=$"Client Bypass Controls"
 BUTTONACTION=add
-BUTTONMSG=$ADDIPMSG
+BUTTONMSG=$"Add IP number"
 
 if [ $ACTION = add ]
 then
-TITLE=$TITLE1
+TITLE=$"Add Bypass"
 BUTTONACTION=view
-BUTTONMSG=$VIEWNUMBERSMSG
+BUTTONMSG=$"View IP numbers"
 fi
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -179,7 +177,7 @@ then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">
 '
 fi
@@ -187,7 +185,7 @@ fi
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr>
 <td style="vertical-align: top;"><b>'$TITLE'</b></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Bypass_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Bypass_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"This can be used for client devices to bypass the internet filtering."'</span></a></td>
 <td style="vertical-align: top;">
 <input name="_ACTION_'$BUTTONACTION'_" type="submit" class="button" value="'$BUTTONMSG'">
 </td>
@@ -209,21 +207,21 @@ echo '<input type="hidden" name="_ACTION_" value="reallyadd">'
 if [ $MOBILE = yes ]
 then
 echo '
-'$TCPIPMSG'<br>
+'$"TCPIP Number"'<br>
 <input name="_TCPIP_" style="width: 160px;" value="'$TCPIP_ADDR'" size="20"><br><br>
 '
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
       <tr>
-        <td style="width: 200px;">'$TCPIPMSG'</td>
-        <td><input name="_TCPIP_" value="'$TCPIP_ADDR'" style="width: 200px;" size="20"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a></td>
+        <td style="width: 200px;">'$"TCPIP Number"'</td>
+        <td><input name="_TCPIP_" value="'$TCPIP_ADDR'" style="width: 200px;" size="20"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the tcpip number of the client computer that you want to set to bypass the filtering."'</span></a></td>
       </tr>
     </tbody>
   </table>
   <br></div><div id="submitbox">'
 fi
-echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset"></div>'
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div>'
 fi
 
 echo '</div></form></div></body></html>'

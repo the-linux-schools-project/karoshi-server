@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/karoshi_servers_add ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/karoshi_servers_add
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -53,7 +51,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Add Server"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
 
 
@@ -190,22 +188,22 @@ fi
 echo '<form id="FormName" action="/cgi-bin/admin/karoshi_servers_add.cgi" method="post"><div id="actionbox3"><div id="titlebox">
 
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
-<td style="vertical-align: top;"></td><td><div class="sectiontitle">'$TITLE'</div></td>
+<td style="vertical-align: top;"></td><td><div class="sectiontitle">'$"Add Server"'</div></td>
 <td style="vertical-align: top;">
-<a href="karoshi_servers_view.cgi"><input class="button" type="button" name="" value="'$SHOWSERVERMSG'"></a> 
+<a href="karoshi_servers_view.cgi"><input class="button" type="button" name="" value="'$"Show servers"'"></a> 
 </td>
 <td style="vertical-align: top;">
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Information"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Information"><img class="images" alt="" src="/images/help/info.png"><span>'$"Setup an ssh connection to a Linux Schools server so that it can be controlled by the web management."'</span></a>
 </td>
 </tr></tbody></table>
 <br>
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$SERVERMSG'</td><td><input tabindex= "1" style="width: 200px;" name="____SERVERNAME____" value="'$SERVERNAME'" size="23" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a>
-</td></tr><tr><td style="width: 180px;">'$TCPIPMSG'</td><td><input tabindex= "2" style="width: 200px;" name="____TCPIPNUMBER____" size="23" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a>
+<tr><td style="width: 180px;">'$"Server"'</td><td><input tabindex= "1" style="width: 200px;" name="____SERVERNAME____" value="'$SERVERNAME'" size="23" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the server you want to enable ssh for."'</span></a>
+</td></tr><tr><td style="width: 180px;">'$"TCPIP number"'</td><td><input tabindex= "2" style="width: 200px;" name="____TCPIPNUMBER____" size="23" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the tcpip number of the server that you are connecting to."'</span></a>
 </td></tr>
-<tr><td style="width: 180px;">'$ROOTMSG'</td><td><input tabindex= "3" style="width: 200px;" name="____PASSWORD1____" value="'$PASSWORD1'" size="23" type="password"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG4'</span></a>
+<tr><td style="width: 180px;">'$"Root Password"'</td><td><input tabindex= "3" style="width: 200px;" name="____PASSWORD1____" value="'$PASSWORD1'" size="23" type="password"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the root password for the server you are setting up ssh for and confirm it in the box below."'</span></a>
 </td></tr>
-<tr><td>'$CONFIRMMSG'</td><td><input tabindex= "4" style="width: 200px;" name="____PASSWORD2____" value="'$PASSWORD2'" size="23" type="password"></td></tr>
+<tr><td>'$"Confirm Root Password"'</td><td><input tabindex= "4" style="width: 200px;" name="____PASSWORD2____" value="'$PASSWORD2'" size="23" type="password"></td></tr>
 <tr><td style="width: 180px;">Zone</td><td>
 <select name="____ZONE____" style="width: 200px;">
 <option '$ZONESELECT1'>internal</option>
@@ -213,39 +211,39 @@ echo '<form id="FormName" action="/cgi-bin/admin/karoshi_servers_add.cgi" method
 <option '$ZONESELECT3'>external</option>
 </select>
 </td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Zone"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG10'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Zone"><img class="images" alt="" src="/images/help/info.png"><span>'$"Your server is in a dmz firewall zone and will be set up with a vpn tunnel to the main server."'</span></a>
 </td></tr>
 </tbody></table><br>
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td>
-<div class="sectiontitle">'$AUTHTYPEMSG'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Authentication_Type"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG11'</span></a></td></tr></tbody></table><br>
+<div class="sectiontitle">'$"Authentication type"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Authentication_Type"><img class="images" alt="" src="/images/help/info.png"><span>'$"In most cases your extra server will need to recognise your network users and groups."'</span></a></td></tr></tbody></table><br>
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$ADCMSG'</td><td><input type="radio" name="____AUTHENTICATION____" value="adc" '$CHECKED1' onchange="showDiv(this.value);"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Authentication_Type"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG5'</span></a>
+<tr><td style="width: 180px;">'$"Additional domain controller"'</td><td><input type="radio" name="____AUTHENTICATION____" value="adc" '$CHECKED1' onchange="showDiv(this.value);"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Authentication_Type"><img class="images" alt="" src="/images/help/info.png"><span>'$"Reduncancy in the case of failure of your main domain controller and for additional file servers."'</span></a>
 </td></tr>
-<tr><td>'$RODCMSG'</td><td><input type="radio" name="____AUTHENTICATION____" value="rodc" '$CHECKED2' onchange="showDiv(this.value);"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Authentication_Type"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG6'</span></a>
+<tr><td>'$"Read only domain controller"'</td><td><input type="radio" name="____AUTHENTICATION____" value="rodc" '$CHECKED2' onchange="showDiv(this.value);"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Authentication_Type"><img class="images" alt="" src="/images/help/info.png"><span>'$"Useful in dmz firewall zones."'</span></a>
 </td></tr>
-<tr><td>'$DMMSG'</td><td><input type="radio" name="____AUTHENTICATION____" value="member" '$CHECKED3' onchange="showDiv(this.value);"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Authentication_Type"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG7'</span></a>
+<tr><td>'$"Domain member"'</td><td><input type="radio" name="____AUTHENTICATION____" value="member" '$CHECKED3' onchange="showDiv(this.value);"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Authentication_Type"><img class="images" alt="" src="/images/help/info.png"><span>'$"Used for file servers."'</span></a>
 </td></tr>
-<tr><td>'$UAGMSG'</td><td><input type="radio" name="____AUTHENTICATION____" value="usersandgroups" '$CHECKED4' onchange="showDiv(this.value);"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Authentication_Type"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG8'</span></a>
+<tr><td>'$"Users and groups"'</td><td><input type="radio" name="____AUTHENTICATION____" value="usersandgroups" '$CHECKED4' onchange="showDiv(this.value);"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Authentication_Type"><img class="images" alt="" src="/images/help/info.png"><span>'$"Your server will recognise all of your users and groups but will not be joined to the domain."'</span></a>
 </td></tr>
-<tr><td>'$NOAUTHMSG'</td><td><input type="radio" name="____AUTHENTICATION____" value="none" '$CHECKED5' onchange="showDiv(this.value);"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Authentication_Type"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG9'</span></a>
+<tr><td>'$"None"'</td><td><input type="radio" name="____AUTHENTICATION____" value="none" '$CHECKED5' onchange="showDiv(this.value);"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Authentication_Type"><img class="images" alt="" src="/images/help/info.png"><span>'$"The server will not recognise any of your users. This is suitable for a backup server role."'</span></a>
 </td></tr></tbody></table>
 <br><br>
 
-<p id="adc" class="hiddenDiv"><b>'$MODULESMSG':</b> '$FILESERVERMSG', '$PRINTSERVERMSG', '$SQUIDSERVERMSG', '$EMAILSERVERMSG', '$HOMEACCESSSERVERMSG', '$MOODLESERVERMSG'</p>
-<p id="rodc" class="hiddenDiv"><b>'$MODULESMSG':</b> '$FILESERVERMSG', '$PRINTSERVERMSG', '$SQUIDSERVERMSG', '$EMAILSERVERMSG', '$HOMEACCESSSERVERMSG', '$MOODLESERVERMSG'</p>
-<p id="member" class="hiddenDiv"><b>'$MODULESMSG':</b> '$FILESERVERMSG', '$PRINTSERVERMSG', '$SQUIDSERVERMSG', '$EMAILSERVERMSG', '$HOMEACCESSSERVERMSG', '$MOODLESERVERMSG'</p>
-<p id="usersandgroups" class="hiddenDiv"><b>'$MODULESMSG':</b> '$SQUIDSERVERMSG', '$EMAILSERVERMSG', '$HOMEACCESSSERVERMSG', '$MOODLESERVERMSG', '$WEBSERVERMSG', '$JOOMLAMSG', '$DISTRIBUTIONSERVERMSG'</p>
-<p id="none" class="hiddenDiv"><b>'$MODULESMSG':</b> '$BACKUPSERVERMSG', '$MONITORSERVERMSG', '$REVERSEPROXYMSG', '$DISTRIBUTIONSERVERMSG', '$WEBSERVERMSG', '$JOOMLAMSG'</p>
+<p id="adc" class="hiddenDiv"><b>'$"Suggested modules"':</b> '$"File Server"', '$"Print Server"', '$"Squid Internet Proxy"', '$"E-Mail Server"', '$"Home Access Server"', '$"Moodle Server"'</p>
+<p id="rodc" class="hiddenDiv"><b>'$"Suggested modules"':</b> '$"File Server"', '$"Print Server"', '$"Squid Internet Proxy"', '$"E-Mail Server"', '$"Home Access Server"', '$"Moodle Server"'</p>
+<p id="member" class="hiddenDiv"><b>'$"Suggested modules"':</b> '$"File Server"', '$"Print Server"', '$"Squid Internet Proxy"', '$"E-Mail Server"', '$"Home Access Server"', '$"Moodle Server"'</p>
+<p id="usersandgroups" class="hiddenDiv"><b>'$"Suggested modules"':</b> '$"Squid Internet Proxy"', '$"E-Mail Server"', '$"Home Access Server"', '$"Moodle Server"', '$"Web Server"', '$"Joomla"', '$"Distribution Server"'</p>
+<p id="none" class="hiddenDiv"><b>'$"Suggested modules"':</b> '$"Backup Server"', '$"Monitor Server"', '$"Reverse Proxy Server"', '$"Distribution Server"', '$"Web Server"', '$"Joomla"'</p>
 
 </div>
 <div id="submitbox">
-<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div></div>
 </form>
 </div></body></html>'

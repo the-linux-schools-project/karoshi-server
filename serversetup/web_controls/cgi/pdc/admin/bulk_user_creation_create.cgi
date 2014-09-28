@@ -31,22 +31,20 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/bulk_user_creation ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/bulk_user_creation
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title></head><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Bulk User Creation"'</title></head><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>'
+echo '<div id="actionbox"><div class="sectiontitle">'$"Bulk User Creation"'</div><br>'
 #########################
 #Get data input
 #########################
@@ -105,7 +103,7 @@ echo '</script>'
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -113,13 +111,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
@@ -129,19 +127,19 @@ fi
 #Check to see that user style is not blank
 if [ $USER_STYLE'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The user style must not be blank."
 show_status
 fi
 #Check that primary group is not blank
 if [ $PRI_GROUP'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The primary group must not be blank."
 show_status
 fi
 #Check to see that userstyle is correct
 if [ $USER_STYLE != userstyleS1 ] && [ $USER_STYLE != userstyleS2 ] && [ $USER_STYLE != userstyleS3 ] && [ $USER_STYLE != userstyleS4 ] && [ $USER_STYLE != userstyleS5 ] && [ $USER_STYLE != userstyleS6 ] && [ $USER_STYLE != userstyleS7 ] && [ $USER_STYLE != userstyleS8 ] && [ $USER_STYLE != userstyleS9 ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"Incorrect username style."
 show_status
 fi
 
@@ -149,19 +147,19 @@ function datacheck {
 CREATEUSER=yes
 if [ $FORENAME'null' = null ]
 then
-echo $LINEMSG: $COUNTER - $ERRORMSG19"<br>"
+echo $"Line": $COUNTER - $"Blank forename""<br>"
 CREATEUSER=no
 fi
 if [ $SURNAME'null' = null ]
 then
-echo $LINEMSG: $COUNTER - $ERRORMSG20"<br>"
+echo $"Line": $COUNTER - $"Blank surname""<br>"
 CREATEUSER=no
 fi
 if [ $USER_STYLE = userstyleS9 ]
 then
 if [ $ENROLMENT_NO'null' = null ]
 then
-echo $LINEMSG: $COUNTER - $ERRORMSG21"<br>"
+echo $"Line": $COUNTER - $"Blank enrolment number""<br>"
 CREATEUSER=no
 fi
 fi
@@ -176,7 +174,7 @@ chmod 0700 /var/www/karoshi/
 chmod 0700 /var/www/karoshi/bulk_user_creation
 if [ `dir /var/www/karoshi/bulk_user_creation --format=single-column | wc -l` != 1 ]
 then
-MESSAGE=$ERRORMSG12
+MESSAGE=$"File upload error."
 show_status
 fi
 CSVFILE=`ls /var/www/karoshi/bulk_user_creation`
@@ -196,7 +194,7 @@ datacheck
 
 if [ $CREATEUSER = no ]
 then
-MESSAGE=`echo $ERRORMSG13`
+MESSAGE=`echo $"The CSV file you have chosen is not formatted correctly."`
 show_status
 fi
 echo "$FORENAME","$SURNAME","$PASSWORD","$ENROLMENT_NO" >> /var/www/karoshi/bulk_user_creation/karoshi_web_user_create.csv
@@ -208,7 +206,7 @@ function create_username {
 datacheck
 if [ $CREATEUSER = no ]
 then
-MESSAGE=`echo $ERRORMSG5`
+MESSAGE=`echo $"CSV file error."`
 show_status
 fi
 if [ $USER_STYLE = userstyleS2 ]
@@ -285,7 +283,7 @@ do
 id -u "$USERNAME" 1>/dev/null 2>/dev/null
 if [ `echo $?` = 0 ]
 then
-echo $USERNAME - $USEREXISTSMSG"<br>"
+echo $USERNAME - $"This username is already in use.""<br>"
 [ $DUPLICATECOUNTER'null' = null ] && DUPLICATECOUNTER=1
 create_username
 let DUPLICATECOUNTER=$DUPLICATECOUNTER+1
@@ -302,7 +300,7 @@ then
 datacheck
 if [ $CREATEUSER = yes ]
 then
-echo $USERCREATIONMSG $USERNAME - $FORENAME $SURNAME $ENROLMENT_NO'<br><br>'
+echo $"Creating" $USERNAME - $FORENAME $SURNAME $ENROLMENT_NO'<br><br>'
 [ $PASSWORD'null' = null ] && PASSWORD=$RANDOM
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$FORENAME:$SURNAME:$USERNAME:$PASSWORD:$PRI_GROUP:$USER_STYLE:$ENROLMENT_NO:$REQUESTFILE":bulkusercreation | sudo -H /opt/karoshi/web_controls/exec/add_user
 fi
@@ -310,7 +308,7 @@ fi
 let COUNTER=$COUNTER+1
 done
 [ -f /var/www/karoshi/bulk_user_creation/"$CSVFILE" ] && rm -f /var/www/karoshi/bulk_user_creation/"$CSVFILE"
-MESSAGE=$COMPLETEDMSG
+MESSAGE=$"Bulk user creation completed."
 show_status
 echo "</div>"
 echo "</div></body></html>"

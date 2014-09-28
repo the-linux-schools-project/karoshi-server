@@ -2,11 +2,13 @@
 export DEBIAN_FRONTEND=noninteractive
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/variables/language
-source /opt/karoshi/serversetup/language/$LANGCHOICE/standardsetup
-#baseinstallorac
+#baseinstall
 BASEINSTALLPATH=/opt/karoshi/serversetup/extra_server/scripts
 BASEINSTALLPATH2=/opt/karoshi/serversetup/all/scripts
 KAROSHILOG=/opt/karoshi/serversetup/install_log
+
+TEXTDOMAIN=karoshi-server
+locale 1>/dev/null
 
 #Set timezone in php.ini
 [ -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/set_php_timezone ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/set_php_timezone
@@ -18,7 +20,7 @@ function checkstatus {
 EXITSTATUS=`echo $?`
 if [ $EXITSTATUS = 101 ]
 then
-yad --title "$TITLE $VERSION" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --text="$ERRORMSG1" --timeout=3 --no-buttons 2>/dev/null
+yad --title ''$"Extra Server Setup"' '$VERSION'' --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --text=$"The standard setup has not completed correctly." --timeout=3 --no-buttons 2>/dev/null
 exit
 fi
 if [ $EXITSTATUS = 103 ]
@@ -29,21 +31,22 @@ fi
 
 function do_setup {
 echo "1"
-echo "# $NETWORKCHECK"
+echo '# '$"Checking Network"''
 $BASEINSTALLPATH2/checknetwork extra_server 1>>$KAROSHILOG 2>>$KAROSHILOG
 checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
 echo "28"
-echo "# $SETUP $SHOREWALL"
+echo '# '$"Setup" $"Shorewall"''
 $BASEINSTALLPATH/setupshorewall 1>>$KAROSHILOG 2>>$KAROSHILOG
 checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
 echo "56"
-echo "# $SETUP $NTP"
+echo '# '$"Setup" $"NTP"''
 $BASEINSTALLPATH/setupntp 1>>$KAROSHILOG 2>>$KAROSHILOG
 checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
 echo "84"
-echo "# $SETUP $SSH"
+echo '# '$"Setup" $"Karoshi Desktop"''
 $BASEINSTALLPATH/setupkaroshidesktop 1>>$KAROSHILOG 2>>$KAROSHILOG
 echo "100"
+echo '# '$"Setup" $"SSH"''
 $BASEINSTALLPATH/setupssh 1>>$KAROSHILOG 2>>$KAROSHILOG
 checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
 #Kill status bar
@@ -51,7 +54,7 @@ killall yad
 }
 
 
-do_setup | yad --title "$TITLE2" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --geometry=400x100+0+0 --no-buttons --text "Extra Server Setup\n\n\n$STATUS" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --progress
+do_setup | yad --title $"Extra Server Setup" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --geometry=400x100+0+0 --no-buttons --text ''$"Extra Server Setup"'\n\n\n'$STATUS'' --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --progress
 
 
 #Configure /opt/karoshi/serversetup for git in case this is a development server
@@ -60,7 +63,7 @@ do_setup | yad --title "$TITLE2" --window-icon="/opt/karoshi/serversetup/essenti
 ###########################
 #Display completed message
 ############################
-yad --title "$TITLE2" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 100 --timeout=10 --text="$FINALMSG" --no-buttons
+yad --title $"Extra Server Setup" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 100 --timeout=10 --text=''$"The standard setup is now complete."' '$"Please join this server to the system using the web management on your main server."'' --no-buttons
 
 #Create initial disk usage report
 /opt/karoshi/serversetup/all/"useful scripts"/disk_usage

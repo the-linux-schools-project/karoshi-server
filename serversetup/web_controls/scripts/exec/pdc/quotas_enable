@@ -100,10 +100,6 @@ echo `date`: quotas_enable - access denied to $REMOTE_USER from $REMOTE_ADDR >> 
 exit 101
 fi
 echo `date`: quotas_enable - Enabling quotas on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/file/quotas_enable ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/file/quotas_enable
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 #Enable quotas for home partition
 if [ $SERVERNAME = `hostname-fqdn` ]
@@ -140,7 +136,7 @@ sed -i $LINENUMBER"c"\\"$FSTABNEW" /etc/fstab
 #remount partition
 mount -o remount /home
 #Turn on quotas
-echo $SERVERNAME - $ENABLEQUOTAMSG\<br\>\<br\>
+echo $SERVERNAME - $"Enabling quotas for the /home partition - this may take some time."\<br\>\<br\>
 quotacheck -mfcug /home
 quotaon /home
 #Create cron job to schedule auto update of quotas
@@ -182,7 +178,7 @@ sed -i $LINENUMBER"c"\\"$FSTABNEW" /etc/fstab
 #remount partition
 mount -o remount /home
 #Turn on quotas
-echo '$SERVERNAME' - '$ENABLEQUOTAMSG'\<br\>\<br\>
+echo '$SERVERNAME' - '$"Enabling quotas for the /home partition - this may take some time."'\<br\>\<br\>
 quotacheck -mfcug /home
 quotaon /home
 #Create cron job to schedule auto update of quotas
@@ -228,7 +224,7 @@ sed -i $LINENUMBER"c"\\"$FSTABNEW" /etc/fstab
 #remount partition
 mount -o remount /home
 #Turn on quotas
-echo '$ENABLEQUOTAMSG'\<br\>\<br\>
+echo '$"Enabling quotas for the /home partition - this may take some time."'\<br\>\<br\>
 quotacheck -mfcug /home
 quotaon /home
 #Create cron job to schedule auto update of quotas

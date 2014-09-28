@@ -28,20 +28,12 @@
 [ -d $HOME/.tempdata ] || mkdir $HOME/.tempdata
 source /opt/karoshi/serversetup/variables/language
 source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/language/$LANGCHOICE/extra_server/setupssh
-source /opt/karoshi/serversetup/language/$LANGCHOICE/softwareinstall
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/extra_server/software
 
 #########################
 #Add log entry
 #########################
 echo `date`: '##############'setupssh'##############' >> /opt/karoshi/serversetup/install_log
-touch /opt/karoshi/serversetup/setuplog
-if [ `grep -c "$TITLE" /opt/karoshi/serversetup/setuplog` = 0 ]
-then
-echo setupssh:$TITLE:/opt/karoshi/serversetup/extra_server/scripts/setupssh >> /opt/karoshi/serversetup/setuplog
-chmod 0600 /opt/karoshi/serversetup/setuplog
-fi
 
 #Create ssh folder
 [ ! -d /root/.ssh ] && mkdir /root/.ssh

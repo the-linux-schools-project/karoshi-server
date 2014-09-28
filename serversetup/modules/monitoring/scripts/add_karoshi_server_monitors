@@ -1,6 +1,6 @@
 #!/bin/bash
 SERVER=$1
-if [ -z $SERVER ]
+if [ -z "$SERVER" ]
 then
 	echo -e "Usage: add_karoshi_server_monitors: (all / servername)\n\nEither enter in the name of the server you want to add monitors for or enter all to generate a monitor for all servers."
 	exit

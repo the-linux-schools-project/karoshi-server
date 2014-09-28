@@ -36,19 +36,17 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ########################
 #Language
 ########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/group_membership ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/group_membership
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #########################
 #Show page
 #########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE1'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Group Membership"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -114,7 +112,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -122,13 +120,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/group_membership2.cgi | cut -d' ' -f1`
@@ -138,28 +136,28 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/group_membership2.cgi | cut -d' ' 
 #Check to see that username is not blank
 if [ $USERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"You have not entered in a username."
 show_status
 fi
 
 #Check to see that action is not blank
 if [ $ACTION'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"The action cannot be blank."
 show_status
 fi
 
 #Check to see that the action  is correct
 if [ $ACTION != ADD ] && [ $ACTION != REMOVE ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"Incorrect action."
 show_status
 fi
 
 #Check to see that group is not blank
 if [ `echo "$GROUP"'null' | sed 's/ //g'` = null ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"The group cannot be blank."
 show_status
 fi
 
@@ -168,7 +166,7 @@ getent passwd "$USERNAME" 1>/dev/null 2>/dev/null
 USEREXISTSTATUS=`echo $?`
 if [ $USEREXISTSTATUS != 0 ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"This user does not exist."
 show_status
 fi
 

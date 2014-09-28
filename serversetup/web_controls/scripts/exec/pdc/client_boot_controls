@@ -26,12 +26,10 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/asset_register ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/asset_register
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 LOG_DATE=`date +%F`
 ########################
 #Check md5checksum
@@ -72,12 +70,12 @@ then
 echo `date`: client_boot_controls - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
-LOCATION=`echo $* | cut -s -d: -f4`
-SEARCH=`echo $* | cut -s -d: -f5`
-MOBILE=`echo $* | cut -s -d: -f6`
+REMOTE_USER=`echo $* | cut -s -d: -f1 | tr -cd 'A-Za-z0-9\._:%\+-'`
+REMOTE_ADDR=`echo $* | cut -s -d: -f2 | tr -cd 'A-Za-z0-9\._:%\+-'`
+REMOTE_MD5=`echo $* | cut -s -d: -f3 | tr -cd 'A-Za-z0-9\._:%\+-'`
+LOCATION=`echo $* | cut -s -d: -f4 | tr -cd 'A-Za-z0-9\._:%\+-'`
+SEARCH=`echo $* | cut -s -d: -f5 | tr -cd 'A-Za-z0-9\._:%\+-'`
+MOBILE=`echo $* | cut -s -d: -f6 | tr -cd 'A-Za-z0-9\._:%\+-'`
 ########################
 #Check data
 ########################
@@ -138,13 +136,13 @@ then
 if [ `ls -1 /opt/karoshi/asset_register/locations/$LOCATION/ | wc -l` -gt 0 ]
 then
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="width: 60px;"><b>'$ASSETNUMBERMSG'</b></td>'
+<tbody><tr><td style="width: 60px;"><b>'$"Asset"'</b></td>'
 
 if [ $MOBILE = no ]
 then
-echo '<td style="width: 120px;"><b>'$MACADDRESS'</b></td><td style="width: 120px;"><b>'$TCPIP'</b></td>'
+echo '<td style="width: 120px;"><b>'$"Mac Address"'</b></td><td style="width: 120px;"><b>'$TCPIP'</b></td>'
 fi
-echo "<td><b>$BOOTSTATUSMSG</b></td></tr>"
+echo '<td><b>'$"Boot status"'</b></td></tr>'
 for ASSETS in "/opt/karoshi/asset_register/locations/$LOCATION/"*
 do
 ASSET=`basename $ASSETS`
@@ -184,30 +182,30 @@ fi
 
 if [ $BOOTSTATUS = normal ]
 then
-echo '<td style="width: 100px;">'$NORMALBOOT'</td><td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_install_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON1'" value=""><span>'$NETWORKINSTALLMSG'</span></a></td>'
+echo '<td style="width: 100px;">'$"Normal Boot"'</td><td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_install_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Network Install"'</span></a></td>'
 fi
 
 if [ $BOOTSTATUS = memtest ]
 then
-echo '<td style="width: 100px;">'$MEMTEST'</td><td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_install_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON1'" value=""><span>'$NETWORKINSTALLMSG'</span></a></td><td style="width: 20px;"></td>
+echo '<td style="width: 100px;">'$"Memtest"'</td><td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_install_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Network Install"'</span></a></td><td style="width: 20px;"></td>
 
-<td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_normal_ASSET_'$ASSET'_TCPIP_'$TCPIP'_MACADDRESS_'$MACADDRESS'_" type="image" class="images" src="'$ICON3'" value=""><span>'$NORMALBOOT'</span></a></td>'
+<td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_normal_ASSET_'$ASSET'_TCPIP_'$TCPIP'_MACADDRESS_'$"Mac Address"'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Normal Boot"'</span></a></td>'
 fi
 
 if [ $BOOTSTATUS = install ]
 then
-echo '<td style="width: 100px;"><FONT COLOR="#11BE26"><b>'$NETWORKINSTALLMSG'</b></font></td><td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_normal_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON3'" value=""><span>'$NORMALBOOT'</span></a></td>'
+echo '<td style="width: 100px;"><FONT COLOR="#11BE26"><b>'$"Network Install"'</b></font></td><td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_normal_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Normal Boot"'</span></a></td>'
 fi
 
-echo '<td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_wakeonlan_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON4'" value=""><span>'$WAKEONLANMSG'</span></a></td></tr>'
+echo '<td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_wakeonlan_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON4'" value=""><span>'$"Wake on lan"'</span></a></td></tr>'
 fi
 done
 echo '</tbody></table><br>'
 else
-echo $NO_ASSETSMSG'<br><br>'
+echo $"No assets of this type."'<br><br>'
 fi
 else
-echo $NO_ASSETSMSG'<br><br>'
+echo $"No assets of this type."'<br><br>'
 fi
 
 else
@@ -215,13 +213,13 @@ else
 #Search
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="width: 60px;"><b>'$ASSETNUMBERMSG'</b></td>'
+<tbody><tr><td style="width: 60px;"><b>'$"Asset"'</b></td>'
 
 if [ $MOBILE = no ]
 then
-echo '<td style="width: 120px;"><b>'$MACADDRESS'</b></td><td style="width: 120px;"><b>'$TCPIP'</b></td>'
+echo '<td style="width: 120px;"><b>'$"Mac Address"'</b></td><td style="width: 120px;"><b>'$TCPIP'</b></td>'
 fi
-echo "<td><b>$BOOTSTATUSMSG</b></td></tr>"
+echo "<td><b>$"Boot status"</b></td></tr>"
 
 for ASSETS in `grep -l -R $SEARCH /opt/karoshi/asset_register/locations/*`
 do
@@ -252,22 +250,22 @@ fi
 
 if [ $BOOTSTATUS = normal ]
 then
-echo '<td style="width: 100px;">'$NORMALBOOT'</td><td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_install_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON1'" value=""><span>'$NETWORKINSTALLMSG'</span></a></td>'
+echo '<td style="width: 100px;">'$"Normal Boot"'</td><td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_install_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Network Install"'</span></a></td>'
 fi
 
 if [ $BOOTSTATUS = memtest ]
 then
-echo '<td style="width: 100px;">'$MEMTEST'</td><td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_install_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON1'" value=""><span>'$NETWORKINSTALLMSG'</span></a></td><td style="width: 20px;"></td>
+echo '<td style="width: 100px;">'$"Memtest"'</td><td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_install_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Network Install"'</span></a></td><td style="width: 20px;"></td>
 
-<td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_normal_ASSET_'$ASSET'_TCPIP_'$TCPIP'_MACADDRESS_'$MACADDRESS'_" type="image" class="images" src="'$ICON3'" value=""><span>'$NORMALBOOT'</span></a></td>'
+<td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_normal_ASSET_'$ASSET'_TCPIP_'$TCPIP'_MACADDRESS_'$"Mac Address"'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Normal Boot"'</span></a></td>'
 fi
 
 if [ $BOOTSTATUS = install ]
 then
-echo '<td style="width: 100px;">'$NETWORKINSTALLMSG'</td><td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_normal_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON3'" value=""><span>'$NORMALBOOT'</span></a></td>'
+echo '<td style="width: 100px;">'$"Network Install"'</td><td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_normal_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Normal Boot"'</span></a></td>'
 fi
 
-echo '<td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_wakeonlan_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON4'" value=""><span>'$WAKEONLANMSG'</span></a></td></tr>'
+echo '<td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_wakeonlan_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON4'" value=""><span>'$"Wake on lan"'</span></a></td></tr>'
 fi
 done
 echo '</tbody></table><br>'

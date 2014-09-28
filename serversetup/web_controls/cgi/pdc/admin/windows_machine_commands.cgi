@@ -32,19 +32,17 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/windows_machine_commands ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/windows_machine_commands
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Windows Commands"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -109,7 +107,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -117,13 +115,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -132,13 +130,13 @@ fi
 #Check to see that server is not blank
 if [ $SERVER'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The server cannot be blank."
 show_status
 fi
 #Check to see that the command is not blank
 if [ $COMMAND'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The command cannot be blank."
 show_status
 fi
 
@@ -158,24 +156,24 @@ fi
 echo '<div id="'$DIV_ID'">'
 
 
-[ $COMMAND = startservice ] && COMMAND2=$STARTSERVICEMSG
-[ $COMMAND = stopservice ] && COMMAND2=$STOPSERVICEMSG
-[ $COMMAND = servicestatus ] && COMMAND2=$SERVICESTATUSMSG
-[ $COMMAND = shutdown ] && COMMAND2=$SHUTDOWNMSG
-[ $COMMAND = restart ] && COMMAND2=$RESTARTMSG
-[ $COMMAND = abortshutdown ] && COMMAND2=$ABORTSHUTDOWNMSG
-[ $COMMAND = showprinters ] && COMMAND2=$SHOWPRINTERSMSG
-[ $COMMAND = showshares ] && COMMAND2=$SHOWSHARESMSG
-[ $COMMAND = showfiles ] && COMMAND2=$SHOWFILESMSG
+[ $COMMAND = startservice ] && COMMAND2=$"Start service"
+[ $COMMAND = stopservice ] && COMMAND2=$"Stop service"
+[ $COMMAND = servicestatus ] && COMMAND2=$"Service status"
+[ $COMMAND = shutdown ] && COMMAND2=$"Shutdown"
+[ $COMMAND = restart ] && COMMAND2=$"Restart"
+[ $COMMAND = abortshutdown ] && COMMAND2=$"Abort shutdown"
+[ $COMMAND = showprinters ] && COMMAND2=$"Show printers"
+[ $COMMAND = showshares ] && COMMAND2=$"Show shares"
+[ $COMMAND = showfiles ] && COMMAND2=$"Show open files"
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
-<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$TITLE' - '$COMMAND2' '$TCPIP'</b></a></td></tr></tbody></table>'
+<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
+<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Windows Commands"' - '$COMMAND2' '$TCPIP'</b></a></td></tr></tbody></table>'
 else
-echo '<b>'$TITLE' - '$COMMAND2' '$TCPIP'</b><br><br>'
+echo '<b>'$"Windows Commands"' - '$COMMAND2' '$TCPIP'</b><br><br>'
 fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/windows_machine_commands.cgi | cut -d' ' -f1`
 #Run command
@@ -184,7 +182,7 @@ EXEC_STATUS=`echo $?`
 
 if [ $EXEC_STATUS = 101 ]
 then
-MESSAGE=`echo $PROBLEMMSG $LOGMSG`
+MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`
 fi
 
 exit

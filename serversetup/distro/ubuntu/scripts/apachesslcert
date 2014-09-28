@@ -40,13 +40,8 @@ then
 	exit 101
 fi
 
-LANGCHOICE=englishuk
-
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/apply_ssl_certificate ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/apply_ssl_certificate
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
 
 function create_cert {
 echo `date`: apachesslcert - creating a certificate "for" "*."$REALM from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -75,7 +70,7 @@ LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 
 cd /etc/ssl/apache
 #Create host certificate
-echo "<li>"$CREATESSLCERTMSG"</li><br>"
+echo '<li>'$"Creating an SSL certificate"'</li><br>'
 echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\n""*."$REALM"\n""*."$REALM"\n"$EMAILADDRESS"\n"webserver"\n" | openssl req -newkey rsa:8192 -days 3650 -keyout $REALM.key -nodes -out $REALM.req
 
 chmod 0600 /etc/ssl/apache/$REALM.key

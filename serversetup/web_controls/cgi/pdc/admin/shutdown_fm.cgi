@@ -32,15 +32,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 #Language
 ############################
 SHUTDOWN_CODE=`echo ${RANDOM:0:3}`
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/shutdown ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/shutdown
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -53,7 +51,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Shutdown-Reboot Server"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
   <script type="text/javascript">
 <!--
@@ -123,41 +121,41 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+	<span>'$"Shutdown-Reboot Server"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">'
 else
-echo '<div class="sectiontitle">'$TITLE'</div><br></div><div id="infobox">'
+echo '<div class="sectiontitle">'$"Shutdown-Reboot Server"'</div><br></div><div id="infobox">'
 fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
       <tr>
-        <td style="width: '$WIDTH'px;">'$SHUTDOWNMSG'</td>
+        <td style="width: '$WIDTH'px;">'$"Shutdown"'</td>
         <td style="vertical-align: top; text-align: left;"><input name="_SHUTDOWN_" value="shutdown" checked="checked" type="radio"></td>
         <td></td>
         <td></td>
       </tr>
       <tr>
-        <td>'$REBBOTMSG'</td>
+        <td>'$"Reboot"'</td>
         <td style="vertical-align: top; text-align: left;"><input name="_SHUTDOWN_" value="reboot" type="radio"></td>
         <td></td>
         <td></td>
       </tr>
-<tr><td>'$CODEMSG'</td>
+<tr><td>'$"Shutdown Code"'</td>
         <td style="vertical-align: top; text-align: left;"><b>'$SHUTDOWN_CODE'</b></td>
         <td></td>
         <td></td>
       </tr>
-<tr><td>'$CONFIRMMSG'</td>
+<tr><td>'$"Confirm"'</td>
         <td style="vertical-align: top; text-align: left;"><input name="_SHUTDOWNCODE_" maxlength="3" size="3" type="text"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Type in the number displayed to shutdown a server."'</span></a>
 </td></tr></tbody></table><br>
 <input name="_FORMCODE_" value="'$SHUTDOWN_CODE'" type="hidden">
 '
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE all "$ACTIONMSG"
+/opt/karoshi/web_controls/show_servers $MOBILE all $"Shutdown/Reboot"
 
 [ $MOBILE = no ] && echo '</div>'
 

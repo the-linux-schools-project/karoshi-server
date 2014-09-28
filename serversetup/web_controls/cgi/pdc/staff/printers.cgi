@@ -28,13 +28,9 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printers ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printers
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 ############################
 #Show page
 ############################
@@ -52,7 +48,7 @@ exit
 TCPIP_ADDR=$REMOTE_ADDR
 echo "Content-type: text/html"
 echo ""
-echo "<html><head><title>$TITLE1</title></head>"
+echo "<html><head><title>$"Manage Print Queues"</title></head>"
 echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>'
 echo '<meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
@@ -99,12 +95,12 @@ then
 
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE1'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$PRINTMENUMSG'</a>
+	<span>'$"Manage Print Queues"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Print Menu"'</a>
 </div></div>
 '
 else
-echo '<b>'$TITLE1'</b><br><br>'
+echo '<b>'$"Manage Print Queues"'</b><br><br>'
 fi
 
 sudo -H /opt/karoshi/web_controls/exec/printers_staff $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:

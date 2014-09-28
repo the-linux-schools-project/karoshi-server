@@ -120,10 +120,8 @@ fi
 echo `date`: ups_slave_add - adding $UPSMODEL on $UPSSERVER to $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/ups ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/ups
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 ########################
 #Modify master configuration upsd.users
@@ -187,7 +185,7 @@ RESTART_SHOREWALL=no
 if [ $MODCHECK = 0 ]
 then
 RESTART_SHOREWALL=yes
-echo ''$SHOREWALLMSG - tcp 3493"<br><br>"
+echo ''$"The following ports need to be opened on shorewall" - tcp 3493"<br><br>"
 
 LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM"c"\ACCEPT"	"net:$SERVERTPCIP"	"fw"	"tcp"	"3493"	"-"#"UPS_rule_$SERVER /etc/shorewall/rules
@@ -198,7 +196,7 @@ fi
 ######################
 if [ $RESTART_SHOREWALL = yes ]
 then
-echo "<br>"$RESTARTSWMSG
+echo '<br>'$"Restarting Shorewall"''
 source /opt/karoshi/serversetup/variables/distro
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
 echo "<br><br>"
@@ -212,7 +210,7 @@ RESTART_SHOREWALL=no
 if [ $MODCHECK = 0 ]
 then
 RESTART_SHOREWALL=yes
-echo '''$SHOREWALLMSG' - tcp 3493"<br><br>"
+echo '''$"The following ports need to be opened on shorewall"' - tcp 3493"<br><br>"
 
 LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM"c"\ACCEPT"	"net:'$SERVERTPCIP'"	"fw"	"tcp"	"3493"	"-"#"UPS_rule_'$SERVER' /etc/shorewall/rules
@@ -223,7 +221,7 @@ fi
 ######################
 if [ $RESTART_SHOREWALL = yes ]
 then
-echo "<br>"'$RESTARTSWMSG'
+echo "<br>"'$"Restarting Shorewall"'
 source /opt/karoshi/serversetup/variables/distro
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
 echo "<br><br>"

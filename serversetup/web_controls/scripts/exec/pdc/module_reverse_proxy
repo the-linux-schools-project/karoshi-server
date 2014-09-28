@@ -29,16 +29,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/module_reverse_proxy_cgi
 then
-echo `date`: module_reverse_proxy - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_reverse_proxy - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_reverse_proxy_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_reverse_proxy.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $module_reverse_proxy_cgi'check' ]
 then
-echo `date`: module_reverse_proxy - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_reverse_proxy - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -47,16 +47,16 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: module_reverse_proxy - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_reverse_proxy - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-%'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: module_reverse_proxy - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_reverse_proxy - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -68,35 +68,33 @@ ALIAS=`echo "$DATA" | cut -s -d: -f5 | sed 's/%3A/:/g' | sed 's/%2F/\//g'`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: module_reverse_proxy - Not called by module_reverse_proxy.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_reverse_proxy - Not called by module_reverse_proxy.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: module_reverse_proxy - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_reverse_proxy - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: module_reverse_proxy - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_reverse_proxy - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $WEBSERVER'null' = null ]
+if [ -z "$WEBSERVER" ]
 then
-echo `date`: module_reverse_proxy - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_reverse_proxy - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: module_reverse_proxy - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_reverse_proxy - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 echo `date`: setupmoodle by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/reverseproxy/setupreverseproxy ] || LANGCHOICE=englishuk
-source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/reverseproxy/setupreverseproxy
-
+TEXTDOMAIN=karoshi-server
 
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
@@ -118,9 +116,9 @@ fi
 
 if [ $WEBSERVER = `hostname-fqdn` ]
 then
-echo "<li>"$ERRORMSG2"</li>"
-echo `date`: module_reverse_proxy not allowed to set this up on $HOSTNNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo '<li>'$"You cannot setup a reverse proxy on the main server."'</li>'
+	echo `date`: module_reverse_proxy not allowed to set this up on $HOSTNNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 #Copy in language files
@@ -155,31 +153,31 @@ MODCHECK2=`grep -c -w 443 /etc/shorewall/rules`
 MOD_SHOREWALL=no
 if [ $MODCHECK = 0 ]
 then
-MOD_SHOREWALL=yes
-PORTS="80"
+	MOD_SHOREWALL=yes
+	PORTS="80"
 fi
 
 if [ $MODCHECK2 = 0 ]
 then
-MOD_SHOREWALL=yes
-PORTS="443"
+	MOD_SHOREWALL=yes
+	PORTS="443"
 fi
 
 if [ $MODCHECK = 0 ] && [ $MODCHECK2 = 0 ]
 then
-MOD_SHOREWALL=yes
-PORTS="80,443"
+	MOD_SHOREWALL=yes
+	PORTS="80,443"
 fi
 
 if [ $MOD_SHOREWALL = yes ]
 then
-echo "<br>"'$SHOREWALLMSG'
-LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"$PORTS"	"-"#"apacherule /etc/shorewall/rules
-echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
-echo "<br>"'$RESTARTSWMSG'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+	echo "<br>"'$"Modifying shorewall rules to allow ports 80 and 443."'
+	LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
+	sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"$PORTS"	"-"#"apacherule /etc/shorewall/rules
+	echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	echo "<br>"'$"Restarting shorewall"'
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
 #Copy in config files
@@ -203,7 +201,7 @@ source /opt/karoshi/serversetup/variables/distro
 ##########################
 #Install nginx
 ##########################
-echo "<li>"'$INSTALLMSG'"</li><br>"
+echo "<li>"'$"Checking for modules"'"</li><br>"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/reverseproxy/software
 
 ###########################
@@ -226,29 +224,29 @@ touch /etc/nginx/proxysites
 ###########################
 #Show completed message
 ###########################
-echo "<br><li>'$COMPLETEDMSG'</li><br>"
+echo "<br><li>'$"Setup Reverse Proxy Completed"'</li><br>"
 '
 
 #Add in any existing reverse proxy rules
 if [ -d /opt/karoshi/server_network/reverseproxy/sites ]
 then
-if [ `ls -1 /opt/karoshi/server_network/reverseproxy/sites | wc -l` -gt 0 ]
-then
-cat /opt/karoshi/server_network/reverseproxy/sites/* > /opt/karoshi/server_network/reverseproxy/proxysites
-#Copy proxysites to /etc/nginx
-scp /opt/karoshi/server_network/reverseproxy/proxysites root@$WEBSERVER:"/etc/nginx/"
-ssh -x -o PasswordAuthentication=no $WEBSERVER '
-#Reload nginx
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nginx_reload
-'
-fi
+	if [ `ls -1 /opt/karoshi/server_network/reverseproxy/sites | wc -l` -gt 0 ]
+	then
+		cat /opt/karoshi/server_network/reverseproxy/sites/* > /opt/karoshi/server_network/reverseproxy/proxysites
+		#Copy proxysites to /etc/nginx
+		scp /opt/karoshi/server_network/reverseproxy/proxysites root@$WEBSERVER:"/etc/nginx/"
+		ssh -x -o PasswordAuthentication=no $WEBSERVER '
+		#Reload nginx
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nginx_reload
+		'
+	fi
 fi
 
 #########################
 #Add role information
 #########################
-echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$WEBSERVER/reverseproxyserver
+echo $"Reverse Proxy Server""<br>" > /opt/karoshi/server_network/servers/$WEBSERVER/reverseproxyserver
 [ -f /opt/karoshi/server_network/servers/$WEBSERVER/no_role ] && rm -f /opt/karoshi/server_network/servers/$WEBSERVER/no_role
 echo $WEBSERVER > /opt/karoshi/server_network/reverseproxyserver
 sed -i 's/REVERSEPROXYCTRL=no/REVERSEPROXYCTRL=yes/g' /opt/karoshi/server_network/menusettings

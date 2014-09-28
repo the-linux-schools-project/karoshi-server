@@ -31,15 +31,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/samba_shares ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/samba_shares
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -51,7 +49,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE1'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add Additional Network Share"'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head>
 <body onLoad="start()"><div id="pagecontainer">'
 
 #Generate navigation bar
@@ -69,10 +67,10 @@ echo '<form name="myform" action="/cgi-bin/admin/samba_add_share.cgi" method="po
 if [ $MOBILE = yes ]
 then
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
-<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$TITLE1'</b></a></td></tr></tbody></table><br>'
+<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
+<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Add Additional Network Share"'</b></a></td></tr></tbody></table><br>'
 else
-echo '<div id="titlebox"><div class="sectiontitle">'$TITLE1'</div><br>'
+echo '<div id="titlebox"><div class="sectiontitle">'$"Add Additional Network Share"'</div><br>'
 fi
 
 echo '
@@ -80,38 +78,38 @@ echo '
     <tbody>
       <tr>
         <td style="width: 180px;">
-'$COMMENTMSG'</td>
+'$"Comment"'</td>
         <td><input tabindex= "1" name="_COMMENT_" style="width: 200px;" size="20" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$COMMENTHELP'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"This show as information for your clients when they look at the network share."'</span></a>
       </td></tr>
       <tr>
         <td>
-'$FOLDERNAMEMSG'</td>
+'$"Folder Name"'</td>
         <td><input tabindex= "2"  name="_FOLDERNAME_" style="width: 200px;" size="20" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$FOLDERNAMEHELP'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will create a folder in /home with the name that you specify."'</span></a>
       </td></tr>
       <tr>
         <td>
-'$GROUPMSG'</td>
+'$"Group"'</td>
         <td>'
 /opt/karoshi/web_controls/group_dropdown_list
 
 echo '</td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$GROUPHELP'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the group that you want to allow access to the folder."'</span></a>
 </td></tr>
-<tr><td>'$GROUPPERMSMSG'</td></tr>
-<tr><td>'$READONLYMSG'</td><td><input name="_GROUPPERMS_" value="readonly" type="radio"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$GROUPPERMSHELP'</span></a></td></tr>
-<tr><td>'$FULLACCESSMSG'</td><td><input name="_GROUPPERMS_" checked="checked" value="fullaccess" type="radio"></td></tr>
-<tr><td>'$OTHERSPERMSMSG'</td></tr>
-<tr><td>'$NONEMSG'</td><td><input name="_OTHERSPERMS_" value="none" type="radio"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$OTHERSPERMSHELP'</span></a></td></tr>
-<tr><td>'$READONLYMSG'</td><td><input name="_OTHERSPERMS_" checked="checked" value="readonly" type="radio"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$OTHERSPERMSHELP'</span></a></td></tr>
-<tr><td>'$FULLACCESSMSG'</td><td><input name="_OTHERSPERMS_" value="fullaccess" type="radio"></td></tr>
+<tr><td>'$"Group Permissions"'</td></tr>
+<tr><td>'$"Read only"'</td><td><input name="_GROUPPERMS_" value="readonly" type="radio"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the permissions that you want to set for this group for the share."'</span></a></td></tr>
+<tr><td>'$"Full Access"'</td><td><input name="_GROUPPERMS_" checked="checked" value="fullaccess" type="radio"></td></tr>
+<tr><td>'$"Others Permissions"'</td></tr>
+<tr><td>'$"No access"'</td><td><input name="_OTHERSPERMS_" value="none" type="radio"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the permissions that you want to allow for anyone else not in the group."'</span></a></td></tr>
+<tr><td>'$"Read only"'</td><td><input name="_OTHERSPERMS_" checked="checked" value="readonly" type="radio"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the permissions that you want to allow for anyone else not in the group."'</span></a></td></tr>
+<tr><td>'$"Full Access"'</td><td><input name="_OTHERSPERMS_" value="fullaccess" type="radio"></td></tr>
 </tbody></table><br>'
 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE servers "$ADDSHAREMSG"
+/opt/karoshi/web_controls/show_servers $MOBILE servers $"Add share"
 
 [ $MOBILE = no ] && echo '</div>'
 

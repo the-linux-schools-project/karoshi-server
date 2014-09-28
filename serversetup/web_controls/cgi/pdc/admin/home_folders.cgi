@@ -31,19 +31,17 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/home_folders ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/home_folders
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE2'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Change Home Server"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 
 #########################
 #Get data input
@@ -57,8 +55,8 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<div id="actionbox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
-<td style="vertical-align: top;"><div class="sectiontitle">'$TITLE2'</div></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Home_Folders"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a>
+<td style="vertical-align: top;"><div class="sectiontitle">'$"Change Home Server"'</div></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Home_Folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"Change the home server for this group of users."'</span></a>
 </td></tr></tbody></table>'
 
 
@@ -106,7 +104,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-	export MESSAGE=$HTTPS_ERROR
+	export MESSAGE=$"You must access this page via https."
 	show_status
 fi
 #########################
@@ -114,13 +112,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-	MESSAGE=$ACCESS_ERROR1
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-	MESSAGE=$ACCESS_ERROR1
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 #########################
@@ -129,26 +127,26 @@ fi
 #Check to see that SERVER is not blank
 if [ -z "$SERVER" ]
 then
-	MESSAGE=$ERRORMSG1
+	MESSAGE=$"The home server cannot be blank."
 	show_status
 fi
 #Check to see that PRIGROUP is not blank
 if [ -z "$PRIGROUP" ]
 then
-	MESSAGE=$ERRORMSG2
+	MESSAGE=$"The primary group cannot be blank."
 	show_status
 fi
 
 #Check to see that there are other karoshi servers available
 if [ ! -d /opt/karoshi/server_network/servers/ ]
 then
-	MESSAGE=$ERRORMSG3
+	MESSAGE=$"No other Karoshi servers have been set up."
 	show_status
 fi
 
 if [ `ls -1 /opt/karoshi/server_network/servers/ | wc -l` = 0 ]
 then
-	MESSAGE=$ERRORMSG3
+	MESSAGE=$"No other Karoshi servers have been set up."
 	show_status
 fi
 
@@ -164,25 +162,25 @@ done
 
 if [ $FILESERVERCOUNT -le 1 ]
 then
-	MESSAGE=$ERRORMSG4
+	MESSAGE=$"No other Karoshi servers have been enabled as file servers."
 	show_status
 fi
 
-echo '<p><img height="16" width="16" alt="Warning" src="/images/warnings/warning.png"> '$LOGGEDINWARNMSG'</p><br>
+echo '<p><img height="16" width="16" alt="Warning" src="/images/warnings/warning.png"> '$"IMPORTANT - Please ensure that users are not logged to ensure no data loss."'</p><br>
 <form action="/cgi-bin/admin/home_folders2.cgi" method="post">
 <input name="_CURRENTSERVER_" value="'$SERVER'" type="hidden">
 <input name="_PRIGROUP_" value="'$PRIGROUP'" type="hidden">
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 
-<tr><td style="width: 180px;">'$CURRENTSERVERMSG'</td><td>'$SERVER'</td></tr>
-<tr><td>'$PRIGROUPMSG'</td><td>'$PRIGROUP'</td></tr>
-<tr><td>'$COPYHOMEAREASMSG'</td><td><input name="_COPYHOMEAREAS_" value="yes" type="checkbox"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'</span></a></td></tr>
-<tr><td style="height:50px"><b>'$NEWSERVERMSG'</b></td></tr>
+<tr><td style="width: 180px;">'$"Current Server"'</td><td>'$SERVER'</td></tr>
+<tr><td>'$"Primary Group"'</td><td>'$PRIGROUP'</td></tr>
+<tr><td>'$"Copy Home Areas"'</td><td><input name="_COPYHOMEAREAS_" value="yes" type="checkbox"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will copy any existing user home areas to the new server. This could take some time if there are a large amount of files to transfer."'</span></a></td></tr>
+<tr><td style="height:50px"><b>'$"New Server"'</b></td></tr>
 </tbody></table>'
 
 #Show list of file servers.
 MOBILE=no
-/opt/karoshi/web_controls/show_servers $MOBILE fileservers "$ACTIONMSG" notset $SERVER
+/opt/karoshi/web_controls/show_servers $MOBILE fileservers $"Choose server" notset $SERVER
 
 echo '</form></div></div></body></html>'
 exit

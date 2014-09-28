@@ -100,12 +100,12 @@ fi
 echo `date`: setup_kanboard by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/serversetup/language/$LANGCHOICE/modules/kanboard/setupkanboard ] || LANGCHOICE=englishuk
-source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/kanboard/setupkanboard
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+
+TEXTDOMAIN=karoshi-server
 
 #Add entry to samba4 dns
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
@@ -156,9 +156,9 @@ fi
 #########################
 [ ! -d /opt/karoshi/server_network/servers/$KANBOARDSERVER ] && mkdir -p /opt/karoshi/server_network/servers/$KANBOARDSERVER
 [ -f /opt/karoshi/server_network/servers/$KANBOARDSERVER/no_role ] && rm -f /opt/karoshi/server_network/servers/$KANBOARDSERVER/no_role
-echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$KANBOARDSERVER/kanboardserver
+echo $"Kanboard Project Management""<br>" > /opt/karoshi/server_network/servers/$KANBOARDSERVER/kanboardserver
 echo '<a href="http://'$ALIAS.$REALM'/kanboard" target="_blank">http://'$ALIAS.$REALM'/kanboard</a><br>' >> /opt/karoshi/server_network/servers/$KANBOARDSERVER/kanboardserver
-echo $ROLE2"<br>" > /opt/karoshi/server_network/servers/$KANBOARDSERVER/apacheserver
+echo $"Apache Web Server""<br>" > /opt/karoshi/server_network/servers/$KANBOARDSERVER/apacheserver
 
 [ ! -d /opt/karoshi/server_network/webservers/ ] && mkdir -p /opt/karoshi/server_network/webservers
 echo $KANBOARDSERVER > /opt/karoshi/server_network/webservers/$KANBOARDSERVER
@@ -171,8 +171,8 @@ sed -i 's/WEBCTRL=no/WEBCTRL=yes/g' /opt/karoshi/server_network/menusettings
 ###########################
 #Show completed message
 ###########################
-echo '<br>'$ACCESSMSG - '<a href="http://'$ALIAS.$REALM'/kanboard" target="_blank">http://'$ALIAS.$REALM'/kanboard</a>'
-echo '<br>'$ACCESSMSG2:admin - $PASSWORDMSG: admin
-echo '<br><p style="font-weight:bold; font-size:20px;">'$COMPLETEDMSG3'</p><br>'
+echo '<br>'$"Kanboard has been installed and can be accessed from" - '<a href="http://'$ALIAS.$REALM'/kanboard" target="_blank">http://'$ALIAS.$REALM'/kanboard</a>'
+echo '<br>'$"Username":admin - $"password": admin
+echo '<br><p style="font-weight:bold; font-size:20px;">'$"Please login and change this password immediately."'</p><br>'
 exit
 

@@ -29,16 +29,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/module_email_cgi
 then
-echo `date`: module_email - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_email - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_email_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_email.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $module_email_cgi'check' ]
 then
-echo `date`: module_email - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_email - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -47,77 +47,75 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: module_email - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_email - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-%'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: module_email - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_email - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 ALIAS=`echo "$DATA" | cut -s -d: -f4 | sed 's/%3A/:/g' | sed 's/%2F/\//g'`
 COPYEMAIL=`echo "$DATA" | cut -s -d: -f5`
-[ $COPYEMAIL'null' = null ] && COPYEMAIL=no
+[ -z "$COPYEMAIL" ] && COPYEMAIL=no
 SERVERNAME=`echo "$DATA" | cut -s -d: -f6`
 ########################
 #Check data
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: module_email - Not called by module_email.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_email - Not called by module_email.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: module_email - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_email - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: module_email - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_email - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $ALIAS'null' = null ]
+if [ -z "$ALIAS" ]
 then
-echo `date`: module_email - Blank alias by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: module_email - Blank alias by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-echo `date`: module_email - Blank domain by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: module_email - Blank domain by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: module_email - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_email - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 echo `date`: setupemail "for" $DOMAINPATH on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/email/setupemail ] || LANGCHOICE=englishuk
-source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/email/setupemail
 source /opt/karoshi/server_network/domain_information/domain_name
 source /opt/karoshi/serversetup/variables/distro
-
+TEXTDOMAIN=karoshi-server
 
 #Check that this server has been setup with the correct authentication
 if [ $SERVERNAME != `hostname-fqdn` ]
 then
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:users:" | /opt/karoshi/serversetup/modules/authentication/check_auth
-if [ $? = 101 ]
-then
-echo $AUTHENTICATIONFAILMSG"<br><br>"
-echo `date`: module_email - $SERVERNAME does not have the correct authentication "for" this module by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-sleep 2
-exit 101
-fi
+	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:users:" | /opt/karoshi/serversetup/modules/authentication/check_auth
+	if [ $? = 101 ]
+	then
+		echo $"This server does not have the correct authentication set up on it.""<br><br>"
+		echo `date`: module_email - $SERVERNAME does not have the correct authentication "for" this module by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		sleep 2
+		exit 101
+	fi
 fi
 
 #Update alias entry for the server
@@ -137,8 +135,8 @@ echo `date`: module_email - checking "if" $DOMAINPATH is "in" the dns records by
 samba-tool dns query 127.0.0.1 $REALM $ALIAS.$REALM CNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 if [ `echo $?` != 0 ]
 then
-echo `date`: dnsadd - adding $ALIAS.$REALM $SERVERNAME to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-samba-tool dns add 127.0.0.1 $REALM $ALIAS CNAME $SERVERNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: dnsadd - adding $ALIAS.$REALM $SERVERNAME to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	samba-tool dns add 127.0.0.1 $REALM $ALIAS CNAME $SERVERNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
 
 #Add entry to samba4 dns for mail alias
@@ -146,11 +144,10 @@ LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 source /opt/karoshi/server_network/domain_information/domain_name
 echo `date`: module_email - checking "if" $DOMAINPATH is "in" the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 samba-tool dns query 127.0.0.1 $REALM mail.$REALM CNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ `echo $?` != 0 ]
+if [ $? != 0 ]
 then
-echo `date`: dnsadd - adding mail.$REALM to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-samba-tool dns add 127.0.0.1 $REALM mail CNAME $SERVERNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
+	echo `date`: dnsadd - adding mail.$REALM to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	samba-tool dns add 127.0.0.1 $REALM mail CNAME $SERVERNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
 
 #Create keytab for mail
@@ -166,8 +163,8 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:enablecert:" | /opt/karoshi/serverse
 #Create ssl certificate for mail access
 if [ ! -f /etc/ssl/mail/dovecot.key ]
 then
-echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:mail.$REALM:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/mailsslcert
-[ `echo $?` != 0 ] && exit 101 
+	echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:mail.$REALM:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/mailsslcert
+	[ $? != 0 ] && exit 101
 fi
 
 #########################
@@ -336,12 +333,12 @@ Exec=exo-open --launch MailReader' > /var/lib/samba/netlogon/linuxclient/$LINUXC
 
 #Add role information
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
-echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/emailserver
+echo $"E-Mail Server""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/emailserver
 echo '<a href="https://'$ALIAS'.'$REALM'/SOGo" target="_blank">https://'$ALIAS'.'$REALM'/SOGo</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/emailserver
 echo '<a href="https://'$ALIAS'.'$REALM'/Microsoft-Server-ActiveSync" target="_blank">https://'$ALIAS'.'$REALM'/Microsoft-Server-ActiveSync</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/emailserver
 echo $DOMAINPATH > /opt/karoshi/server_network/emaildomain
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
-echo $ROLE2"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver
+echo $"Apache Web Server""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver
 echo $SERVERNAME > /opt/karoshi/server_network/emailserver
 [ ! -d /opt/karoshi/server_network/webservers/ ] && mkdir -p /opt/karoshi/server_network/webservers
 echo $SERVERNAME > /opt/karoshi/server_network/webservers/$SERVERNAME

@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printers_assign ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/printer/printers_assign
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -45,7 +43,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta http-equiv="REFRESH" content="0;url=/cgi-bin/admin/printers.cgi"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Assign Printers to Locations"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta http-equiv="REFRESH" content="0;url=/cgi-bin/admin/printers.cgi"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -71,7 +69,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$ERRORMSG3
+export MESSAGE=$"No Printers are available."
 show_status
 fi
 #########################
@@ -79,13 +77,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -94,19 +92,19 @@ fi
 #Check to see that LOCATION is not blank
 if [ $LOCATIONS'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"You have not chosen a location."
 show_status
 fi
 #Check to see that PRINTER is not blank
 if [ $PRINTER'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"You have not chosen any printers."
 show_status
 fi
 #Check to see that LOCATION exists
 if [ ! -f /var/lib/samba/netlogon/locations.txt ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"No Printers are available."
 show_status
 fi
 
@@ -117,7 +115,7 @@ do
 LOCATION=`echo ${LOCATIONS[$COUNTER]}`
 if [ `grep -c "$LOCATION" /var/lib/samba/netlogon/locations.txt` = 0 ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"No Printers are available."
 show_status
 fi
 let COUNTER=$COUNTER+1

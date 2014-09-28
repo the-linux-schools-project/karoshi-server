@@ -31,15 +31,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/linux_client_install_software_packages ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/linux_client_install_software_packages
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -50,7 +48,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Linux Client software packages"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -93,7 +91,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-	export MESSAGE=$HTTPS_ERROR
+	export MESSAGE=$"You must access this page via https."
 	show_status
 fi
 #########################
@@ -101,13 +99,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-	MESSAGE=$ACCESS_ERROR1
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-	MESSAGE=$ACCESS_ERROR1
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
@@ -151,7 +149,7 @@ fi
 #Check to see that VERSION is not blank
 if [ -z $VERSION ]
 then
-	MESSAGE=$ERRORMSG1
+	MESSAGE=$"Blank version"
 	show_status
 fi
 
@@ -162,11 +160,11 @@ if [ $MOBILE = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 <div class="expanded">
-<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+<span>'$"Linux Client software packages"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">'
 else
-	echo '<b>'$TITLE' - '$VERSION'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Linux_Client_Software_Packages"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a><br><br>'
+	echo '<b>'$"Linux Client software packages"' - '$VERSION'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Linux_Client_Software_Packages"><img class="images" alt="" src="/images/help/info.png"><span>'$"The software shown below will either be installed or removed by your linux client computers on boot."'</span></a><br><br>'
 fi
 
 #Show a table of current software to install and remove
@@ -179,10 +177,21 @@ ICON3=/images/submenus/client/delete_software.png
 
 #Show input box
 echo '<form action="/cgi-bin/admin/linux_client_install_software_packages2.cgi" name="selectservers" method="post"><input name="___VERSION___" value="'$VERSION'" type="hidden">
-<b>'$ADDSOFTWAREPKG'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: '$WIDTH'px;">'$SOFTWAREMSG'</td><td><input tabindex= "1" name="___ACTION___add___SOFTWARE___" style="width: '$WIDTH'px;" size="20" type="text"></td>
-<td><input name="___LIST___install___" type="submit" class="button" value="'$INSTALLMSG'"></td><td><input name="___LIST___remove___" type="submit" class="button" value="'$REMOVEMSG'"></td></tr>
-</tbody></table><br></form>'
+<b>'$"Add software package"'</b><br><br>'
+
+if [ $MOBILE = no ]
+then
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: '$WIDTH'px;">'$"Software Package"'</td><td><input tabindex= "1" name="___ACTION___add___SOFTWARE___" style="width: '$WIDTH'px;" size="20" type="text"></td>
+<td><input name="___LIST___install___" type="submit" class="button" value="'$"Install"'"></td><td><input name="___LIST___remove___" type="submit" class="button" value="'$"Remove"'"></td></tr>
+</tbody></table>'
+else
+echo '
+'$"Software Package"' <input tabindex= "1" name="___ACTION___add___SOFTWARE___" style="width: '$WIDTH'px;" size="20" type="text"><br>
+<input name="___LIST___install___" type="submit" class="button" value="'$"Install"'"> <input name="___LIST___remove___" type="submit" class="button" value="'$"Remove"'"><br><br>
+'
+fi
+echo '<br></form>'
 
 #Show install list
 if [ -f /var/lib/samba/netlogon/linuxclient/$VERSION/install_list ]
@@ -191,11 +200,11 @@ then
 	then
 		echo '<form action="/cgi-bin/admin/linux_client_install_software_packages2.cgi" name="selectservers" method="post">
 		<input name="___VERSION___" value="'$VERSION'" type="hidden">
-		<b>'$INSTALLLISTMSG'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-		<tr><td style="width: '$WIDTH'px;"><b>'$SOFTWAREMSG'</b></td><td style="width: '$WIDTH2'px;"><b>'$INSTALLMSG'</b></td><td><b>'$DELETEMSG'</b></td></tr>'
+		<b>'$"Install List"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+		<tr><td style="width: '$WIDTH'px;"><b>'$"Software Package"'</b></td><td style="width: '$WIDTH2'px;"><b>'$"Install"'</b></td><td><b>'$"Delete"'</b></td></tr>'
 		for SOFTWARE in `cat /var/lib/samba/netlogon/linuxclient/$VERSION/install_list`
 		do
-			echo '<tr><td>'$SOFTWARE'</td><td><a class="info" href="javascript:void(0)"><input name="___LIST___install___ACTION___remove___SOFTWARE___'$SOFTWARE'___" type="image" class="images" src="'$ICON1'" value=""><span>'$INSTALLMSG $SOFTWARE'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="___LIST___install___ACTION___delete___SOFTWARE___'$SOFTWARE'___" type="image" class="images" src="'$ICON3'" value=""><span>'$DELETEMSG $SOFTWARE'</span></a></td></tr>'
+			echo '<tr><td>'$SOFTWARE'</td><td><a class="info" href="javascript:void(0)"><input name="___LIST___install___ACTION___remove___SOFTWARE___'$SOFTWARE'___" type="image" class="images" src="'$ICON1'" value=""><span>'$"Install" $SOFTWARE'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="___LIST___install___ACTION___delete___SOFTWARE___'$SOFTWARE'___" type="image" class="images" src="'$ICON3'" value=""><span>'$"Delete" $SOFTWARE'</span></a></td></tr>'
 		done
 		echo '</tbody></table><br></form>'
 	fi
@@ -208,11 +217,11 @@ then
 	then
 		echo '<form action="/cgi-bin/admin/linux_client_install_software_packages2.cgi" name="selectservers" method="post">
 		<input name="___VERSION___" value="'$VERSION'" type="hidden">
-		<b>'$REMOVELISTMSG'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-		<tr><td style="width: '$WIDTH'px;"><b>'$SOFTWAREMSG'</b></td><td style="width: '$WIDTH2'px;"><b>'$REMOVEMSG'</b></td><td><b>'$DELETEMSG'</b></td></tr>'
+		<b>'$"Remove list"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+		<tr><td style="width: '$WIDTH'px;"><b>'$"Software Package"'</b></td><td style="width: '$WIDTH2'px;"><b>'$"Remove"'</b></td><td><b>'$"Delete"'</b></td></tr>'
 		for SOFTWARE in `cat /var/lib/samba/netlogon/linuxclient/$VERSION/remove_list`
 		do
-			echo '<tr><td>'$SOFTWARE'</td><td><a class="info" href="javascript:void(0)"><input name="___LIST___remove___ACTION___install___SOFTWARE___'$SOFTWARE'___" type="image" class="images" src="'$ICON1'" value=""><span>'$INSTALLMSG $SOFTWARE'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="___LIST___remove___ACTION___delete___SOFTWARE___'$SOFTWARE'___" type="image" class="images" src="'$ICON3'" value=""><span>'$DELETEMSG $SOFTWARE'</span></a></td></tr>'
+			echo '<tr><td>'$SOFTWARE'</td><td><a class="info" href="javascript:void(0)"><input name="___LIST___remove___ACTION___install___SOFTWARE___'$SOFTWARE'___" type="image" class="images" src="'$ICON1'" value=""><span>'$"Install" $SOFTWARE'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="___LIST___remove___ACTION___delete___SOFTWARE___'$SOFTWARE'___" type="image" class="images" src="'$ICON3'" value=""><span>'$"Delete" $SOFTWARE'</span></a></td></tr>'
 		done
 		echo '</tbody></table></form>'
 	fi

@@ -35,19 +35,17 @@
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/dhcp ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/dhcp
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Configure DHCP"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -218,7 +216,7 @@ ZONEINFO2=`ipcalc -n $ADDRESS/$MASK | grep ^Network | sed "s/ * / /g" | cut -d" 
 
 if [[ "$ZONEINFO1" != "$ZONEINFO2" ]]
 then
-	MESSAGE=$ERRORMSG17
+	MESSAGE=$"The start address and the end address have to be in the same range as the server address."
 	show_status
 fi
 }
@@ -228,7 +226,7 @@ fi
 #########################
 if [ https_$HTTPS != https_on ]
 then
-	export MESSAGE=$HTTPS_ERROR
+	export MESSAGE=$"You must access this page via https."
 	show_status
 fi
 #########################
@@ -236,13 +234,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-	MESSAGE=$ACCESS_ERROR1
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-	MESSAGE=$ACCESS_ERROR1
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 #########################
@@ -252,92 +250,92 @@ fi
 #Check to see that DOMAINNAMESERVER is not blank
 if [ -z "$DOMAINNAMESERVER" ]
 then
-	MESSAGE=$ERRORMSG1
+	MESSAGE=$"Name Server Error"
 	show_status
 fi
 IPDATA=$DOMAINNAMESERVER
 check_tcpip
 if [ $INPUTCHECK = fail ]
 then
-	MESSAGE=$ERRORMSG1
+	MESSAGE=$"Name Server Error"
 	show_status
 fi
 #Check to see that NETBIOSSERVER is not blank
 if [ -z "$NETBIOSSERVER" ]
 then
-	MESSAGE=$ERRORMSG2
+	MESSAGE=$"Net Bios Server Error"
 	show_status
 fi
 IPDATA=$NETBIOSSERVER
 check_tcpip
 if [ $INPUTCHECK = fail ]
 then
-	MESSAGE=$ERRORMSG2
+	MESSAGE=$"Net Bios Server Error"
 	show_status
 fi
 #Check to see that ROUTER is not blank
 if [ -z "$ROUTER" ]
 then
-	MESSAGE=$ERRORMSG3
+	MESSAGE=$"Router Error"
 	show_status
 fi
 IPDATA=$ROUTER
 check_tcpip
 if [ $INPUTCHECK = fail ]
 then
-	MESSAGE=$ERRORMSG3
+	MESSAGE=$"Router Error"
 	show_status
 fi
 #Check to see that SUBNET is not blank
 if [ -z "$SUBNET" ]
 then
-	MESSAGE=$ERRORMSG8
+	MESSAGE=$"Subnet Error"
 	show_status
 fi
 IPDATA=$SUBNET
 check_tcpip
 if [ $INPUTCHECK = fail ]
 then
-	MESSAGE=$ERRORMSG8
+	MESSAGE=$"Subnet Error"
 	show_status
 fi
 #Check to see that SUBNETMASK is not blank
 if [ -z "$SUBNETMASK" ]
 then
-	MESSAGE=$ERRORMSG4
+	MESSAGE=$"Subnet Mask Error"
 	show_status
 fi
 	IPDATA=$SUBNETMASK
 	check_tcpip
 if [ $INPUTCHECK = fail ]
 then
-	MESSAGE=$ERRORMSG4
+	MESSAGE=$"Subnet Mask Error"
 	show_status
 fi
 #Check to see that STARTADDRESS is not blank
 if [ -z "$STARTADDRESS" ]
 then
-	MESSAGE=$ERRORMSG5
+	MESSAGE=$"Range Error"
 	show_status
 fi
 IPDATA=$STARTADDRESS
 check_tcpip
 if [ $INPUTCHECK = fail ]
 then
-	MESSAGE=$ERRORMSG5
+	MESSAGE=$"Range Error"
 	show_status
 fi
 #Check to see that ENDADDRESS is not blank
 if [ $ENDADDRESS'null' = null ]
 then
-	MESSAGE=$ERRORMSG5
+	MESSAGE=$"Range Error"
 	show_status
 fi
 IPDATA=$ENDADDRESS
 check_tcpip
 if [ $INPUTCHECK = fail ]
 then
-	MESSAGE=$ERRORMSG5
+	MESSAGE=$"Range Error"
 	show_status
 fi
 
@@ -353,30 +351,30 @@ check_address
 #Check to see that DEFAULTLEASETIME is not blank
 if [ -z "$DEFAULTLEASETIME" ]
 then
-	MESSAGE=$ERRORMSG6
+	MESSAGE=$"Lease Time Error"
 	show_status
 fi
 
 #Check to see that MAXLEASETIME is not blank
 if [ $MAXLEASETIME'null' = null ]
 then
-	MESSAGE=$ERRORMSG6
+	MESSAGE=$"Lease Time Error"
 	show_status
 fi
 
 if [ $DEFAULTLEASETIME -gt $MAXLEASETIME ]
 then
-	MESSAGE=$ERRORMSG7
+	MESSAGE=$"The default lease time cannot be greater than the maximum lease time."
 	show_status
 fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>'
+echo '<div id="actionbox"><div class="sectiontitle">'$"Configure DHCP"'</div><br>'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dhcp.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DOMAINNAMESERVER:$NETBIOSSERVER:$ROUTER:$SUBNET:$SUBNETMASK:$STARTADDRESS:$ENDADDRESS:$DEFAULTLEASETIME:$MAXLEASETIME" | sudo -H /opt/karoshi/web_controls/exec/dhcp
-MESSAGE=$COMPLETEDMSG
+MESSAGE=$"The DHCP changes have been applied."
 show_status
 exit
 

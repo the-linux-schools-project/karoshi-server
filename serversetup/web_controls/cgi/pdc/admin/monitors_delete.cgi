@@ -34,19 +34,17 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/monitors_view ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/monitors_view
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE2'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Edit Karoshi Monitors"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -83,7 +81,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -91,13 +89,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -106,7 +104,7 @@ fi
 #Check to see that MONITOR is not blank
 if [ $MONITOR'null' = null ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"The group name must not be blank."
 show_status
 fi
 
@@ -118,18 +116,18 @@ MONITOR=`echo $MONITOR | sed 's/%25%25%25%25%25/_/g'`
 
 EXEC_STATUS=`echo $?`
 MONITOR=`echo $MONITOR | sed 's/+/ /g'`
-MESSAGE=`echo $MONITOR - $DELETEDMSG`
+MESSAGE=`echo $MONITOR - $"Deleted"`
 if [ $EXEC_STATUS = 101 ]
 then
-MESSAGE=$ERRORMSG8
+MESSAGE=$"There was a problem adding this monitor. Please check the Karoshi Web administration Logs."
 fi
 if [ $EXEC_STATUS = 102 ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"The group name must not be blank."
 fi
 if [ $EXEC_STATUS = 103 ]
 then
-MESSAGE=$ERRORMSG9
+MESSAGE=$"A monitoring server has not been setup."
 fi
 show_status
 exit

@@ -27,15 +27,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/change_primary_group ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/change_primary_group
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -48,7 +46,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Change Primary Group"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script type="text/javascript" src="/all/js/jquery.js"></script>
 <script type="text/javascript" src="/all/js/script.js"></script>
@@ -59,14 +57,14 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/change_primary_group.cgi" method="post"><div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$TITLE'</div>
+echo '<form action="/cgi-bin/admin/change_primary_group.cgi" method="post"><div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Change Primary Group"'</div>
   <br></div><div id="infobox">
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
       <tr>
         <td style="width: 180px;">
-'$USERNAMEMSG'</td>
-        <td><div id="suggestions"></div> <input name="_USERNAME_" size="20" style="width: 200px;" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Primary_Group"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a>
+'$"Username"'</td>
+        <td><div id="suggestions"></div> <input name="_USERNAME_" size="20" style="width: 200px;" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Primary_Group"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a username that you want to change the primary group for."'</span></a>
 
 </td>
       </tr>
@@ -75,7 +73,7 @@ echo '<form action="/cgi-bin/admin/change_primary_group.cgi" method="post"><div 
         <td>'
 /opt/karoshi/web_controls/group_dropdown_list
 echo '
-        </td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Primary_Group"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG2'</span></a>
+        </td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Primary_Group"><img class="images" alt="" src="/images/help/info.png"><span>'$"The user home area will be moved to the new group location."'</span></a>
 </td>
       </tr>
     </tbody>
@@ -83,7 +81,7 @@ echo '
   <br>
 </div>
 <div id="submitbox">
-  <input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+  <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>
 </form>
 </div></div></body>

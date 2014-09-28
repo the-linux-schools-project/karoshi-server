@@ -131,12 +131,10 @@ fi
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/banned_users_view ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/banned_users_view
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 USERCOUNT=`cat /opt/karoshi/.tempdata/badusers.$$ | wc -l`
 COUNTER=1
@@ -147,9 +145,8 @@ echo '<input value="Submit" type="submit">'
 echo '<input value="Reset" type="reset">'
 echo '<'input type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedusers"'", "'"_USERNAME_"'", true')'';''"' value='"'Select all'"''>'
 #Show table of sites
-echo "<table class="standard" style="text-align: left';' width: 800px';' height: 100px';'" border="0" cellpadding="2" cellspacing="2">"
-echo "<tbody>"
-echo "<tr><td" style='"width: 250px;"'"><b>"$USERMSG"</b></td><td" style='"width: 70px;"' "><b>"$BANLENGTHMSG"</b></td><td><b>"$VIEWINCIDENTMSG"</b></td><td><b>"$ALLOWMSG"</b></td></tr>"
+echo '<table class="standard" style="text-align: left; width: 800px; height: 100px;" border="0" cellpadding="2" cellspacing="2">
+<tbody><tr><td" style="width: 250px;"><b>"'$"Banned Users"'</b></td><td" style="width: 70px;"><b>'$"Duration"'</b></td><td><b>'$"View Incidents"'</b></td><td><b>$'$"Allow"'</b></td></tr>'
 while [ $COUNTER -le $USERCOUNT ]
 do
 USERDATA=`sed -n $COUNTER,$COUNTER"p" /opt/karoshi/.tempdata/badusers.$$`
@@ -161,8 +158,8 @@ let COUNTER=$COUNTER+1
 done
 echo "</tbody>"
 echo "</table>"
-echo '<input value="'$SUBMITMSG'" type="submit">'
-echo '<input value="'$RESETMSG'" type="reset">'
+echo '<input value='$"Submit"' type="submit">'
+echo '<input value='$"Reset"' type="reset">'
 echo '<'input type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedusers"'", "'"_USERNAME_"'", true')'';''"' value='"'Select all'"''>'
 rm -f /opt/karoshi/.tempdata/badusers.$$
 else

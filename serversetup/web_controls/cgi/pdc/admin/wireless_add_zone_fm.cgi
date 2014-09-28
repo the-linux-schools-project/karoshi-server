@@ -27,15 +27,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/wireless_add_zone ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/wireless_add_zone
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -48,7 +46,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Add Wireless Zone"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -56,16 +54,16 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/wireless_add_zone.cgi" method="post"><div id="actionbox"><b>'$TITLE'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'<br><br>'$HELPMSG2'</span></a><br>
+echo '<form action="/cgi-bin/admin/wireless_add_zone.cgi" method="post"><div id="actionbox"><b>'$"Add Wireless Zone"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows WPA II enterprise wireless access points to be used. This key will need to match the key supplied to the wireless access points."'<br><br>'$"The wireless access points will authenticate using usernames and passwords via a radius server and LDAP on the PDC."'</span></a><br>
   <br>
   <table class="standard" style="text-align: left; height: 10px;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
-<tr><td style="width: 180px;">'$CLIENTNAMEMSG'</td><td><input name="_CLIENTNAME_" size="20" type="text"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$CLIENTHELPMSG1'</span></a></td></tr>
-<tr><td style="width: 180px;">'$TCPIPMSG'</td><td><input name="_TCPIP_" maxlength="20" size="20" type="text"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$TCPIPHELPMSG1'<br><br>'$TCPIPHELPMSG2'</span></a></td></tr>
-<tr><td style="width: 180px;">'$WPAMSG'</td><td><input name="_WPAKEY_" maxlength="63" size="63" type="text"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG3'<br><br>'$HELPMSG4'</span></a>
+<tr><td style="width: 180px;">'$"Access Name"'</td><td><input name="_CLIENTNAME_" size="20" type="text"></td><td>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a name for your set of wireless access points."'</span></a></td></tr>
+<tr><td style="width: 180px;">'$"TCPIP"'</td><td><input name="_TCPIP_" maxlength="20" size="20" type="text"></td><td>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the tcpip number or range you require."'<br><br>'$"Example 172.30.0.0/16"'</span></a></td></tr>
+<tr><td style="width: 180px;">'$"Secret Key"'</td><td><input name="_WPAKEY_" maxlength="63" size="63" type="text"></td><td>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a WPA key or leave blank to auto generate a key."'<br><br>'$"The key must be between 20 and 63 characters long."'</span></a>
 </td></tr></tbody></table>
   <br>
   <br>

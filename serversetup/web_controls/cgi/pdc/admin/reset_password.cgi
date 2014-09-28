@@ -34,20 +34,18 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/change_password ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/change_password
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE2'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Reset a User Password"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -99,7 +97,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -107,13 +105,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -122,14 +120,14 @@ fi
 #Check to see that username is not blank
 if [ $USERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The username must not be blank."
 show_status
 fi
 
 #Dont change passwords for certain users
 if [ $USERNAME = karoshi ] || [ $USERNAME = root ]
 then
-MESSAGE=$ERRORMSG8
+MESSAGE=$"You can not change the password for this user."
 show_status
 fi
 
@@ -138,7 +136,7 @@ echo "$MD5SUM:$USERNAME" | sudo -H /opt/karoshi/web_controls/exec/existcheck_use
 USEREXISTSTATUS=`echo $?`
 if [ $USEREXISTSTATUS = 111 ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"This username does not exist."
 show_status
 fi
 
@@ -165,7 +163,7 @@ GRACE_TIME=`sed -n 1,1p /opt/karoshi/acceptable_use_authorisations/pending/$USER
 [ $GRACE_TIME'null' = null ] && GRACE_TIME=0
 if [ $GRACE_TIME = 0 ]
 then
-MESSAGE=`echo $USERNAME - $ERRORMSG12`
+MESSAGE=`echo $USERNAME - $"This user has not signed an acceptable use policy and their account has now been suspended."`
 show_status
 fi
 fi
@@ -180,13 +178,13 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$PASSWORD1" | sudo -H /opt/kar
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 0 ]
 then
-MESSAGE=`echo $USERNAME: $COMPLETEDMSG2 $PASSWORD1`
+MESSAGE=`echo $USERNAME: $"Password reset to" $PASSWORD1`
 else
-MESSAGE=`echo $ERRORMSG6 $USERNAME`
+MESSAGE=`echo $"The password was not reset for" $USERNAME`
 fi
 if [ $EXEC_STATUS = 102 ]
 then
-MESSAGE=`echo $USERNAME - $ERRORMSG13.`
+MESSAGE=`echo $USERNAME - $"This user account has been suspended.".`
 fi
 show_status
 exit

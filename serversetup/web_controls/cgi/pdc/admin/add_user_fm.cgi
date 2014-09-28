@@ -30,15 +30,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/add_user ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/add_user
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 if [ -f /opt/karoshi/server_network/default_username_style ]
 then
@@ -68,7 +66,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add a New User"'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
@@ -195,18 +193,18 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+	<span>'$"Add a New User"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div>
 '
 else
-echo '<div id="'$DIV_ID'"><div class="sectiontitle">'$TITLE'</div><br>'
+echo '<div id="'$DIV_ID'"><div class="sectiontitle">'$"Add a New User"'</div><br>'
 fi
 
 #Check that this server is not part of a federated setup
 if [ -f /opt/karoshi/server_network/servers/$HOSTNAME/federated_server ]
 then
-echo $ERRORMSG11 '</div></div></body></html>'
+echo $"This server is part of a federated system. Users must be created on the main federation server." '</div></div></body></html>'
 exit
 fi
 
@@ -227,17 +225,17 @@ fi
 if [ $MOBILE = yes ]
 then
 echo '<div id="mobileactionbox">'
-echo ''$FIRSTNAMEMSG'<br>
+echo ''$"Forename"'<br>
 <input tabindex= "1" value="'$FORENAME'" name="_FIRSTNAME_" style="width: 200px;" size="20" type="text"><br>
-'$SURNAMEMSG'<br>
+'$"Surname"'<br>
 <input tabindex= "2" value="'$SURNAME'" name="_SURNAME_" style="width: 200px;" size="20" type="text"><br>
-'$PASSWORDMSG'<br>
+'$"Password"'<br>
 <input tabindex= "3" name="_PASSWORD1_" style="width: 200px;" size="20" type="password"><br>
-'$CONFIRMMSG'<br>
+'$"Confirm Password"'<br>
 <input tabindex= "4" name="_PASSWORD2_" style="width: 200px;" size="20" type="password"><br>
-'$ENROLLMENTNUMBERMSG'<br>
+'$"Enrolment number / staff code"'<br>
 <input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="_ENROLLMENTNUMBER_" style="width: 200px;" size="20" type="text"><br>
-'$PRIGROUPMSG'<br>
+'$"Primary group"'<br>
 '
 
 
@@ -248,17 +246,17 @@ else
 /opt/karoshi/web_controls/group_dropdown_list | sed 's/<option><\/option>/<option selected="selected">'$GROUP'<\/option>/g'
 fi
 echo '<br>
-'$USERSTYLEMSG'<br>
+'$"Username style"'<br>
   <select name="_USERNAMESTYLE_" style="width: 200px;" onClick="rewriteselect();">
-        <option value="userstyleS1" '$SELECT1'>'$STYLE1MSG': '$STYLE1MSGEX'</option>
-        <option value="userstyleS2" '$SELECT2'>'$STYLE2MSG': '$STYLE2MSGEX'</option>
-        <option value="userstyleS3" '$SELECT3'>'$STYLE3MSG': '$STYLE3MSGEX'</option>
-        <option value="userstyleS4" '$SELECT4'>'$STYLE4MSG': '$STYLE4MSGEX'</option>
-        <option value="userstyleS5" '$SELECT5'>'$STYLE5MSG': '$STYLE5MSGEX'</option>
-        <option value="userstyleS6" '$SELECT6'>'$STYLE6MSG': '$STYLE6MSGEX'</option>
-        <option value="userstyleS7" '$SELECT7'>'$STYLE7MSG': '$STYLE7MSGEX'</option>
-        <option value="userstyleS8" '$SELECT8'>'$STYLE8MSG': '$STYLE8MSGEX'</option>
-        <option value="userstyleS9" '$SELECT9'>'$STYLE9MSG': '$STYLE9MSGEX'</option>
+        <option value="userstyleS1" '$SELECT1'>'$"Style 1"': '$"astudent09"'</option>
+        <option value="userstyleS2" '$SELECT2'>'$"Style 2"': '$"09astudent"'</option>
+        <option value="userstyleS3" '$SELECT3'>'$"Style 3"': '$"studenta09"'</option>
+        <option value="userstyleS4" '$SELECT4'>'$"Style 4"': '$"arnold.student09"'</option>
+        <option value="userstyleS5" '$SELECT5'>'$"Style 5"': '$"student.arnold09"'</option>
+        <option value="userstyleS6" '$SELECT6'>'$"Style 6"': '$"09studenta"'</option>
+        <option value="userstyleS7" '$SELECT7'>'$"Style 7"': '$"09arnolds"'</option>
+        <option value="userstyleS8" '$SELECT8'>'$"Style 8"': '$"arnolds"'</option>
+        <option value="userstyleS9" '$SELECT9'>'$"Style 9"': '$"Enrollment number as username."'</option>
 	</select><br><br>
 '
 else
@@ -268,35 +266,35 @@ echo '
     <tbody>
       <tr>
         <td style="width: 180px;">
-'$FIRSTNAMEMSG'</td>
+'$"Forename"'</td>
         <td><input tabindex= "1" value="'$FORENAME'" name="_FIRSTNAME_" style="width: 200px;" size="20" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$USERHELP1'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please enter the firstname for this user."'</span></a>
       </td></tr>
       <tr>
         <td>
-'$SURNAMEMSG'</td>
+'$"Surname"'</td>
         <td><input tabindex= "2" value="'$SURNAME'" name="_SURNAME_" style="width: 200px;" size="20" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$USERHELP2'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please enter the surname for this user."'</span></a>
       </td></tr>
       <tr>
         <td>
-'$PASSWORDMSG'</td>
+'$"Password"'</td>
         <td><input tabindex= "3" name="_PASSWORD1_" style="width: 200px;" size="20" type="password"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$PASSWORDHELP'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please enter a password and confirm it in the box below."'</span></a>
       </td></tr>
       <tr>
         <td>
-'$CONFIRMMSG'</td>
+'$"Confirm Password"'</td>
         <td><input tabindex= "4" name="_PASSWORD2_" style="width: 200px;" size="20" type="password"></td>
       </tr>
 <tr>
         <td>
-'$ENROLLMENTNUMBERMSG'</td>
+'$"Enrolment number / staff code"'</td>
         <td><input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="_ENROLLMENTNUMBER_" style="width: 200px;" size="20" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$ENROLLHELP'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Student enrolment number or staff code. This field can be left blank."'</span></a>
       </td></tr>
       <tr>
-        <td>'$PRIGROUPMSG'</td>
+        <td>'$"Primary group"'</td>
         <td>'
 if [ $FILE'null' = null ]
 then
@@ -307,28 +305,28 @@ fi
 
 echo '
         </td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$GROUPHELPMSG'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The groups give different levels of access. The itadmin group is for the network administrator. Only members of itadmin and the tech groups gain administrator access to windows computers joined to the domain."'</span></a>
       </td></tr>
 <tr>
-        <td>'$USERSTYLEMSG'</td>
+        <td>'$"Username style"'</td>
         <td>
         <select name="_USERNAMESTYLE_" style="width: 200px;" onClick="rewriteselect();">
-        <option value="userstyleS1" '$SELECT1'>'$STYLE1MSG': '$STYLE1MSGEX'</option>
-        <option value="userstyleS2" '$SELECT2'>'$STYLE2MSG': '$STYLE2MSGEX'</option>
-        <option value="userstyleS3" '$SELECT3'>'$STYLE3MSG': '$STYLE3MSGEX'</option>
-        <option value="userstyleS4" '$SELECT4'>'$STYLE4MSG': '$STYLE4MSGEX'</option>
-        <option value="userstyleS5" '$SELECT5'>'$STYLE5MSG': '$STYLE5MSGEX'</option>
-        <option value="userstyleS6" '$SELECT6'>'$STYLE6MSG': '$STYLE6MSGEX'</option>
-        <option value="userstyleS7" '$SELECT7'>'$STYLE7MSG': '$STYLE7MSGEX'</option>
-        <option value="userstyleS8" '$SELECT8'>'$STYLE8MSG': '$STYLE8MSGEX'</option>
-        <option value="userstyleS9" '$SELECT9'>'$STYLE9MSG': '$STYLE9MSGEX'</option>
+        <option value="userstyleS1" '$SELECT1'>'$"Style 1"': '$"astudent09"'</option>
+        <option value="userstyleS2" '$SELECT2'>'$"Style 2"': '$"09astudent"'</option>
+        <option value="userstyleS3" '$SELECT3'>'$"Style 3"': '$"studenta09"'</option>
+        <option value="userstyleS4" '$SELECT4'>'$"Style 4"': '$"arnold.student09"'</option>
+        <option value="userstyleS5" '$SELECT5'>'$"Style 5"': '$"student.arnold09"'</option>
+        <option value="userstyleS6" '$SELECT6'>'$"Style 6"': '$"09studenta"'</option>
+        <option value="userstyleS7" '$SELECT7'>'$"Style 7"': '$"09arnolds"'</option>
+        <option value="userstyleS8" '$SELECT8'>'$"Style 8"': '$"arnolds"'</option>
+        <option value="userstyleS9" '$SELECT9'>'$"Style 9"': '$"Enrollment number as username."'</option>
 	</select></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Username_Styles"><img class="images" alt="" src="/images/help/info.png"><span>'$USERNAMESTYLEHELP1'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Username_Styles"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the username style you require."'</span></a>
       </td></tr></tbody></table><br>
 
 </div><div id="submitbox">'
 fi
-echo '<input value="'$SUBMITMSG'" class="button" type="submit"> <input value="'$RESETMSG'" class="button" type="reset">
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div></form></div></body></html>
 '
 exit

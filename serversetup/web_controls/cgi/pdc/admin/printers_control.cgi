@@ -24,20 +24,9 @@
 #
 #Website: http://www.karoshi.org.uk
 
-#Language
-TITLE="Manage Print Queues"
-HTTPS_ERROR="You must access this page via https."
-ACCESS_ERROR1="You must be a Karoshi Management User to complete this action."
-DELETEPRINTMSG="Deleting print job"
-CLEARQUEUEMSG="Clearing the printer queue."
-ENABLEMSG="Enabling the printer queue."
-DISABLEMSG="Disabling the printer queue."
-TESTMSG="Testing the printer queue."
-
-LANGCHOICE=englishuk
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-
+TEXTDOMAIN=karoshi-server
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
@@ -55,7 +44,7 @@ TCPIP_ADDR=$REMOTE_ADDR
 DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="0; URL=printers.cgi"></head><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Manage Print Queues"'</title><meta http-equiv="REFRESH" content="0; URL=printers.cgi"></head><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body><div id="pagecontainer">'
 #########################
 #Assign data
 ########################
@@ -65,7 +54,7 @@ PRINTER_COMMAND_DATA=`echo $DATA | sed 's/_QUEUENAME_/ QUEUENAME_/g'`
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -73,13 +62,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
@@ -104,22 +93,22 @@ PRINTERNAME=`echo $PRINTDATA | cut -d_ -f2 | sed 's/123456789/_/g'`
 if [ `echo $PRINTDATA | grep -c _enable_` = 1 ]
 then
 PRINTER_ACTION=enable
-PRINTMSG=$ENABLEMSG
+PRINTMSG=$"Enabling the printer queue."
 fi
 if [ `echo $PRINTDATA | grep -c _disable_` = 1 ]
 then
 PRINTER_ACTION=disable
-PRINTMSG=$DISABLEMSG
+PRINTMSG=$"Disabling the printer queue."
 fi
 if [ `echo $PRINTDATA | grep -c _test_` = 1 ]
 then
 PRINTER_ACTION=test
-PRINTMSG=$TESTMSG
+PRINTMSG=$"Testing the printer queue."
 fi
 if [ `echo $PRINTDATA | grep -c _setlocation_` = 1 ]
 then
 PRINTER_ACTION=setlocation
-PRINTMSG=$TESTMSG
+PRINTMSG=$"Testing the printer queue."
 fi
 if [ `echo $PRINTDATA | grep -c _setppd_` = 1 ]
 then
@@ -128,7 +117,7 @@ fi
 if [ `echo $PRINTDATA | grep -c _clearqueue_` = 1 ]
 then
 PRINTER_ACTION=clearqueue
-PRINTMSG=$CLEARQUEUEMSG
+PRINTMSG=$"Clearing the printer queue."
 fi
 if [ `echo $PRINTDATA | grep -c _jobid_` = 1 ]
 then
@@ -149,7 +138,7 @@ let JOBCOUNTER=$JOBCOUNTER+1
 done
 if [ $JOBID'null' != null ]
 then
-PRINTMSG=`echo $DELETEPRINTMSG $JOBID.`
+PRINTMSG=`echo ''$"Deleting print job"' '$JOBID'.'`
 fi
 fi
 

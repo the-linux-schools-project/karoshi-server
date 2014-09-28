@@ -26,11 +26,11 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
+TEXTDOMAIN=karoshi-server
+
 source /opt/karoshi/web_controls/version
 ############################
 #Show page
@@ -42,7 +42,7 @@ echo '
 <html>
 <head>
   <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-  <title>'$TITLE'</title>
+  <title>'$"Web Management"'</title>
 <link href="/css/'$STYLESHEET'?d='`date +%F`'" rel="stylesheet" type="text/css">
 </head>
 <body>
@@ -50,28 +50,28 @@ echo '
   <tbody>
     <tr>
       <td style="height: 90px; width: 110px; text-align: center;"><a href="/cgi-bin/admin/change_password_fm.cgi" target="_top"><img style="border: 0px solid ; width: 48px; height: 48px;" alt="" src="/images/user.png"><br>
-'$USERMSG'</a></td>
+'$"Users and Groups"'</a></td>
       <td style="height: 90px; width: 110px; text-align: center;"><a href="/cgi-bin/admin/change_management_passwords_fm.cgi" target="_top"><img style="border: 0px solid ; width: 48px; height: 48px;" alt="" src="/images/system.png"><br>
-'$SYSTEMMSG'</a></td>
+'$"System"'</a></td>
       <td style="height: 90px; width: 110px; text-align: center;"><a href="/cgi-bin/admin/domain_information.cgi" target="_top"><img style="border: 0px solid ; width: 48px; height: 48px;" alt="" src="/images/client.png"><br>
-'$CLIENTMSG'</a></td>
+'$"Client"'</a></td>
       <td style="height: 90px; width: 110px; text-align: center;"><a href="/cgi-bin/admin/printers.cgi" target="_top"><img style="border: 0px solid ; width: 48px; height: 48px;" alt="" src="/images/printer.png"><br>
-'$PRINTERMSG'</a></td>
+'$"Printer"'</a></td>
       <td style="height: 90px; width: 110px; text-align: center;"><a href="/cgi-bin/admin/file_manager.cgi" target="_top"><img style="border: 0px solid ; width: 48px; height: 48px;" alt="" src="/images/file.png"><br>
-'$FILEMSG'</a></td>
+'$"File"'</a></td>
       <td style="height: 90px; width: 110px; text-align: center;"><a href="/cgi-bin/admin/email_add_alias_fm.cgi" target="_top"><img style="border: 0px solid ; width: 48px; height: 48px;" alt="" src="/images/email.png"><br>
-'$EMAILMSG'</a></td>
+'$"E-Mail"'</a></td>
       <td style="height: 90px; width: 110px; text-align: center;"><a href="/cgi-bin/admin/activate_internet_changes_fm.cgi" target="_top"><img style="border: 0px solid ; width: 48px; height: 48px;" alt="" src="/images/internet.png"><br>
-'$INTERNETMSG'</a></td>
+'$"Internet"'</a></td>
       <td style="height: 90px; width: 110px; text-align: center;"><a href="/cgi-bin/admin/web_management_upload_files_fm.cgi" target="_top"><img style="border: 0px solid ; width: 48px; height: 48px;" alt="" src="/images/web.png"><br>
-'$WEBMSG'</a></td>
+'$"Web"'</a></td>
     </tr>
   </tbody>
 </table>
 
 <div id="headerbar">
 	<div id="headerbar1">
-&nbsp;&nbsp;<a href="/cgi-bin/menu.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/home.png"></a>&nbsp;&nbsp;<a href="/cgi-bin/admin/search_fm.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/search.png"></a>&nbsp;&nbsp;'$SCHOOL_NAME'&nbsp;&nbsp; - &nbsp;&nbsp;'$TITLE' <small><small>'$VERSIONMSG' : '$VERSION'</small></small>
+&nbsp;&nbsp;<a href="/cgi-bin/menu.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/home.png"></a>&nbsp;&nbsp;<a href="/cgi-bin/admin/search_fm.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/search.png"></a>&nbsp;&nbsp;'$"DE"'&nbsp;&nbsp; - &nbsp;&nbsp;'$"Web Management"' <small><small>'$"Version"' : '$VERSION'</small></small>
 	</div>'
 
 if [ -f /opt/karoshi/information ]

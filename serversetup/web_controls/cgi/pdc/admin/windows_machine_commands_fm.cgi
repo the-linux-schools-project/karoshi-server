@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/windows_machine_commands ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/windows_machine_commands
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -46,7 +44,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Windows Commands"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head>
 <body onLoad="start()"><div id="pagecontainer">'
 
 #Detect mobile browser
@@ -68,36 +66,36 @@ echo '<form action="/cgi-bin/admin/windows_machine_commands.cgi" method="post"><
 if [ $MOBILE = yes ]
 then
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$BACKMSG'"></a></td>
-<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$TITLE'</b></a></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td></tr></tbody></table>'
+<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
+<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Windows Commands"'</b></a></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will send commands to a windows machine joined to your network."'</span></a></td></tr></tbody></table>'
 else
-echo '<b>'$TITLE'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a><br><br>'
+echo '<b>'$"Windows Commands"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will send commands to a windows machine joined to your network."'</span></a><br><br>'
 fi
 
 echo '
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
 <tr>
-         <td style="width: 180px;">'$COMMANDMSG'</td>
+         <td style="width: 180px;">'$"Command"'</td>
         <td>
         <select name="_COMMAND_" style="width: 200px;">
         <option></option>
-	<option value="shutdown">'$SHUTDOWNMSG'</option>
-        <option value="restart">'$RESTARTMSG'</option>
-	<option value="abortshutdown">'$ABORTSHUTDOWNMSG'</option>
-	<option value="startservice">'$STARTSERVICEMSG'</option>
-	<option value="stopservice">'$STOPSERVICEMSG'</option>
-	<option value="servicestatus">'$SERVICESTATUSMSG'</option>'
-#	<option value="showprinters">'$SHOWPRINTERSMSG'</option>
-echo	'<option value="showshares">'$SHOWSHARESMSG'</option>
-	<option value="showfiles">'$SHOWFILESMSG'</option>
+	<option value="shutdown">'$"Shutdown"'</option>
+        <option value="restart">'$"Restart"'</option>
+	<option value="abortshutdown">'$"Abort shutdown"'</option>
+	<option value="startservice">'$"Start service"'</option>
+	<option value="stopservice">'$"Stop service"'</option>
+	<option value="servicestatus">'$"Service status"'</option>'
+#	<option value="showprinters">'$"Show printers"'</option>
+echo	'<option value="showshares">'$"Show shares"'</option>
+	<option value="showfiles">'$"Show open files"'</option>
 	</select></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG4'</span></a>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the command that you want to be carried out."'</span></a>
       </td></tr>
       <tr>
-        <td>'$EXTRAOPTIONSMSG'</td>
+        <td>'$"Extra options"'</td>
         <td><input tabindex= "5" name="_OPTIONS_" style="width: 200px;" size="20" type="text"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG5'</span></a>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"If a command needs extra options you can add them here."'</span></a>
       </td>
       </tr>
     </tbody>
@@ -117,7 +115,7 @@ echo '<td style="width: 90px; vertical-align: top; text-align: left;"><a class="
 [ $SERVERCOUNTER = 5 ] && echo '</tr><tr>'
 let SERVERCOUNTER=$SERVERCOUNTER+1
 done
-echo '</tr><tr><td style="width: 90px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_allservers_" type="image" class="images" src="'$SERVERICON2'" value="_SERVER_allservers_"><span>'$ALLSERVERMSG'</span></a><br>'$ALLSERVERMSG'</td>'
+echo '</tr><tr><td style="width: 90px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_allservers_" type="image" class="images" src="'$SERVERICON2'" value="_SERVER_allservers_"><span>'$"All Servers"'</span></a><br>'$"All Servers"'</td>'
 echo '</tr></tbody></table></div></form></div></body></html>'
 
 exit

@@ -35,17 +35,17 @@
 ##########################
 source /opt/karoshi/server_network/menusettings
 source /opt/karoshi/web_controls/version
+source /opt/karoshi/server_network/domain_information/domain_name
+
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 ############################
 #Show page
@@ -53,7 +53,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Web Management"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 	<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
@@ -75,81 +75,81 @@ echo '
 <body><div id="pagecontainer">
     <div style="float: center" id="my_menu" class="sdmenu">
 	<div class="collapsed">
-	<span>TLSP '$SCHOOL_NAME'</span>
-<a href="/cgi-bin/menu.cgi">'$MAINMENUMSG'</a>
-<a href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Main_Page">'$DOCUMENTATIONMSG'</a>
+	<span>'$SHORTNAME'</span>
+<a href="/cgi-bin/menu.cgi">'$"Main Menu"'</a>
+<a href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Main_Page">'$"Documentation"'</a>
  	</div>
        <div class="collapsed">
-        <span>'$HELPDESKSMSG'</span>
-        <a href="/cgi-bin/admin/helpdesk_view_fm.cgi">'$HELPDESKVIEWMSG'</a>
-        <a href="/cgi-bin/admin/helpdesk_add_fm.cgi">'$HELPDESKADDMSG'</a>
+        <span>'$"Helpdesk"'</span>
+        <a href="/cgi-bin/admin/helpdesk_view_fm.cgi">'$"View Requests"'</a>
+        <a href="/cgi-bin/admin/helpdesk_add_fm.cgi">'$"Add Request"'</a>
         </div>     
 	<div class="collapsed">
-        <span>'$USERMSG'</span>'
+        <span>'$"Users and Groups"'</span>'
 if [ $ADDUSERCTRL = yes ]
 then
-echo '        <a href="/cgi-bin/admin/add_user_fm.cgi">'$ADDUSERMSG'</a>
-        <a href="/cgi-bin/admin/delete_user_fm.cgi">'$DELETEUSERMSG'</a>
-	<a href="/cgi-bin/admin/change_username_fm.cgi">'$CHANGEUSERNAMEMSG'</a>
+echo '        <a href="/cgi-bin/admin/add_user_fm.cgi">'$"Add User"'</a>
+        <a href="/cgi-bin/admin/delete_user_fm.cgi">'$"Delete User"'</a>
+	<a href="/cgi-bin/admin/change_username_fm.cgi">'$"Change Username"'</a>
 '
 fi
-echo '	<a href="/cgi-bin/admin/change_password_fm.cgi">'$CHANGEPASSMSG'</a>
-	<a href="/cgi-bin/admin/group_membership_fm.cgi">'$CHANGESECGRPMSG'</a>
+echo '	<a href="/cgi-bin/admin/change_password_fm.cgi">'$"Change Password"'</a>
+	<a href="/cgi-bin/admin/group_membership_fm.cgi">'$"Group Membership"'</a>
       </div>
       <div class="collapsed">
-        <span>'$SYSTEMMSG'</span>
-        <a href="/cgi-bin/admin/file_manager.cgi">'$FILEMANAGER'</a>
-        <a href="/cgi-bin/admin/server_info_fm.cgi">'$SERVERINFOMSG'</a>
-        <a href="/cgi-bin/admin/update_servers_fm.cgi">'$UPDATESERVERSMSG'</a>
-        <a href="/cgi-bin/admin/update_servers_view_logs_fm.cgi">'$UPDATESERVERLOGSMSG'</a>
-        <a href="/cgi-bin/admin/update_karoshi_fm.cgi">'$UPDATEKAROSHIMSG'</a>
-        <a href="/cgi-bin/admin/uptime_fm.cgi">'$UPTIMEMSG'</a>
-        <a href="/cgi-bin/admin/view_karoshi_web_management_logs.cgi">'$WEBLOGSMSG'</a>
-        <a href="/cgi-bin/admin/cron_view_fm.cgi">'$CRONCONTROLS'</a>
-        <a href="/cgi-bin/admin/remote_management_change_language.cgi">'$CHANGELANG'</a>
-        <a href="/cgi-bin/admin/remote_management_change_theme.cgi">'$CHANGETHEME'</a>
-        <a href="/cgi-bin/admin/custom_command_fm.cgi">'$CUSTOMMSG'</a>
-        <a href="/cgi-bin/admin/services_view_fm.cgi">'$SERVICESMSG'</a>
-        <a href="/cgi-bin/admin/change_management_passwords_fm.cgi">'$SYSPASSMSG'</a>
-        <a href="/cgi-bin/admin/shutdown_fm.cgi">'$SHUTDOWNMSG'</a>
+        <span>'$"System"'</span>
+        <a href="/cgi-bin/admin/file_manager.cgi">'$"File Manager"'</a>
+        <a href="/cgi-bin/admin/server_info_fm.cgi">'$"Server Information"'</a>
+        <a href="/cgi-bin/admin/update_servers_fm.cgi">'$"Update Servers"'</a>
+        <a href="/cgi-bin/admin/update_servers_view_logs_fm.cgi">'$"Update logs"'</a>
+        <a href="/cgi-bin/admin/update_karoshi_fm.cgi">'$"Update Web Management"'</a>
+        <a href="/cgi-bin/admin/uptime_fm.cgi">'$"Uptime"'</a>
+        <a href="/cgi-bin/admin/view_karoshi_web_management_logs.cgi">'$"Management Logs"'</a>
+        <a href="/cgi-bin/admin/cron_view_fm.cgi">'$"Cron"'</a>
+        <a href="/cgi-bin/admin/remote_management_change_language.cgi">'$"Change Language"'</a>
+        <a href="/cgi-bin/admin/remote_management_change_theme.cgi">'$"Change Theme"'</a>
+        <a href="/cgi-bin/admin/custom_command_fm.cgi">'$"Custom Command"'</a>
+        <a href="/cgi-bin/admin/services_view_fm.cgi">'$"Control Services"'</a>
+        <a href="/cgi-bin/admin/change_management_passwords_fm.cgi">'$"Management Passwords"'</a>
+        <a href="/cgi-bin/admin/shutdown_fm.cgi">'$"Shutdown"'</a>
       </div>
 	<div class="collapsed">
-        <span>'$STORAGEMSG'</span>
-        <a href="/cgi-bin/admin/disk_information_fm.cgi">'$DISKINFORMATION'</a>
-        <a href="/cgi-bin/admin/disk_usage_fm.cgi">'$DISKUSAGE'</a>
-        <a href="/cgi-bin/admin/view_disk_usage_logs_fm.cgi">'$DISKUSAGELOGS'</a>
-	<a href="/cgi-bin/admin/user_web_folders.cgi">'$USERWEBFOLDERS'</a>
+        <span>'$"Storage"'</span>
+        <a href="/cgi-bin/admin/disk_information_fm.cgi">'$"Disk Information"'</a>
+        <a href="/cgi-bin/admin/disk_usage_fm.cgi">'$"Disk Usage"'</a>
+        <a href="/cgi-bin/admin/view_disk_usage_logs_fm.cgi">'$"Disk Usage Logs"'</a>
+	<a href="/cgi-bin/admin/user_web_folders.cgi">'$"User Web Folders"'</a>
       </div>
       <div class="collapsed">
-        <span>'$CLIENTMSG'</span>
-	<a href="/cgi-bin/admin/client_boot_controls_fm.cgi">'$CLIENTBOOTCONTROLS'</a>
-	<a href="/cgi-bin/admin/client_wireless_settings_fm.cgi">'$CLIENTWIRELESS'</a>
-	<a href="/cgi-bin/admin/client_shutdown_time.cgi">'$CSHUTDOWNTIME'</a>
-	<a href="/cgi-bin/admin/linux_client_choose_background_fm.cgi">'$CHOOSEBACKGROUND'</a>
-	<a href="/cgi-bin/admin/linux_client_software_controls_fm.cgi">'$LSOFTWARECONTROLS'</a>
-	<a href="/cgi-bin/admin/linux_client_install_software_packages_fm.cgi">'$LINSTALLSOFTWARE'</a>
+        <span>'$"Client"'</span>
+	<a href="/cgi-bin/admin/client_boot_controls_fm.cgi">'$"Client Boot Controls"'</a>
+	<a href="/cgi-bin/admin/client_wireless_settings_fm.cgi">'$"Client Wireless Settings"'</a>
+	<a href="/cgi-bin/admin/client_shutdown_time.cgi">'$"Client Shutdown Time"'</a>
+	<a href="/cgi-bin/admin/linux_client_choose_background_fm.cgi">'$"Linux Client Background"'</a>
+	<a href="/cgi-bin/admin/linux_client_software_controls_fm.cgi">'$"Linux Client Software Controls"'</a>
+	<a href="/cgi-bin/admin/linux_client_install_software_packages_fm.cgi">'$"Linux Client Software Packages"'</a>
       </div>
 
  <div class="collapsed">
-        <span>'$INFRASTRUCTURESMSG'</span>
-        <a href="/cgi-bin/admin/asset_register_view.cgi">'$ASSETREGISTER'</a>'
-[ $DHCPCTRL = yes ] && echo '	<a href="/cgi-bin/admin/dhcp_reservations.cgi">'$DHCPRESERVATIONSMSG'</a>'
-[ $MONITORINGCTRL = yes ] && echo '	<a href="/cgi-bin/admin/mon_status.cgi">'$SERVERSTATUSMSG'</a>'
-echo '<a href="/cgi-bin/admin/dnsview_fm.cgi">'$DNSCONTROLS'</a>
+        <span>'$"Infrastructure"'</span>
+        <a href="/cgi-bin/admin/asset_register_view.cgi">'$"Asset Register"'</a>'
+[ $DHCPCTRL = yes ] && echo '	<a href="/cgi-bin/admin/dhcp_reservations.cgi">'$"DHCP Reservations"'</a>'
+[ $MONITORINGCTRL = yes ] && echo '	<a href="/cgi-bin/admin/mon_status.cgi">'$"Network Status"'</a>'
+echo '<a href="/cgi-bin/admin/dnsview_fm.cgi">'$"DNS"'</a>
 </div>'
 
 
 if [ $PRINTERCTRL = yes ]
 then
 echo '      <div class="collapsed">
-        <span>'$PRINTERMSG'</span>
-        <a href="/cgi-bin/admin/printers.cgi">'$VIEWQUEUES'</a>
-        <a href="/cgi-bin/admin/printer_accounting_view_user_usage_fm.cgi">'$USERPRINTERUSAGE'</a>
-        <a href="/cgi-bin/admin/printer_accounting_view_group_usage_fm.cgi">'$GROUPPRINTERUSAGE'</a>
-        <a href="/cgi-bin/admin/printer_accounting_add_user_limit_fm.cgi">'$ADDUSERPRINTERLIMIT'</a>
-        <a href="/cgi-bin/admin/printer_accounting_user_limits_fm.cgi">'$USERPRINTERLIMITS'</a>
-        <a href="/cgi-bin/admin/printer_accounting_group_limits_fm.cgi">'$ACCOUNTINGGROUPLIMITS'</a>
-        <a href="/cgi-bin/admin/printer_driver_gen.cgi">'$PRINTERDRIVERGEN'</a>
+        <span>'$"Printer"'</span>
+        <a href="/cgi-bin/admin/printers.cgi">'$"Manage Print Queues"'</a>
+        <a href="/cgi-bin/admin/printer_accounting_view_user_usage_fm.cgi">'$"User Printer Usage"'</a>
+        <a href="/cgi-bin/admin/printer_accounting_view_group_usage_fm.cgi">'$"Group Printer Usage"'</a>
+        <a href="/cgi-bin/admin/printer_accounting_add_user_limit_fm.cgi">'$"Add User Limit"'</a>
+        <a href="/cgi-bin/admin/printer_accounting_user_limits_fm.cgi">'$"User Printer Limits"'</a>
+        <a href="/cgi-bin/admin/printer_accounting_group_limits_fm.cgi">'$"Group Printer Limits"'</a>
+        <a href="/cgi-bin/admin/printer_driver_gen.cgi">'$"Printer Driver Generation"'</a>
       </div>'
 fi
 
@@ -157,11 +157,11 @@ if [ $EMAILCTRL = yes ]
 then
 echo '      <div class="collapsed">
         <span>E-Mail</span>
-        <a href="/cgi-bin/admin/email_aliases.cgi">'$ALIASES'</a>
-	<a href="/cgi-bin/admin/email_view_banned_domains_fm.cgi">'$VIEWBANNEDEMAILDOMAINS'</a>
-	<a href="/cgi-bin/admin/email_limits.cgi">'$EMAILLIMITS'</a>
-	<a href="/cgi-bin/admin/email_show_queue_fm.cgi">'$EMAILSHOWQUEUE'</a>
-	<a href="/cgi-bin/admin/email_statistics_fm.cgi">'$EMAILSTATS'</a>
+        <a href="/cgi-bin/admin/email_aliases.cgi">'$"E-Mail Aliases"'</a>
+	<a href="/cgi-bin/admin/email_view_banned_domains_fm.cgi">'$"Banned E-Mail domains"'</a>
+	<a href="/cgi-bin/admin/email_limits.cgi">'$"E-Mail limits"'</a>
+	<a href="/cgi-bin/admin/email_show_queue_fm.cgi">'$"E-Mail queue"'</a>
+	<a href="/cgi-bin/admin/email_statistics_fm.cgi">'$"E-Mail Statistics"'</a>
       </div>'
 fi
 
@@ -169,13 +169,13 @@ if [ $INTERNETCTRL = yes ]
 then
 echo '      <div class="collapsed">
         <span>Internet</span>
-        <a href="/cgi-bin/admin/dg_view_user_logs_fm.cgi">'$VIEWUSERLOGS'</a>
-        <a href="/cgi-bin/admin/dg_view_site_logs_fm.cgi">'$VIEWSITELOGS'</a>
-        <a href="/cgi-bin/admin/dg_view_computer_logs_fm.cgi">'$VIEWCOMPUTERLOGS'</a>
-        <a href="/cgi-bin/admin/e2g_filtergroups.cgi">'$FILTERMANAGEMENT'</a>
-        <a href="/cgi-bin/admin/user_internet_access.cgi">'$USERINTERNETACCESS'</a>
-        <a href="/cgi-bin/admin/dg_room_controls_fm.cgi">'$ROOMCONTROLS'</a>
-        <a href="/cgi-bin/admin/dg_bypass.cgi">'$DGBYPASS'</a>
+        <a href="/cgi-bin/admin/dg_view_user_logs_fm.cgi">'$"User logs"'</a>
+        <a href="/cgi-bin/admin/dg_view_site_logs_fm.cgi">'$"Site Logs"'</a>
+        <a href="/cgi-bin/admin/dg_view_computer_logs_fm.cgi">'$"Computer Logs"'</a>
+        <a href="/cgi-bin/admin/e2g_filtergroups.cgi">'$"Filter Management"'</a>
+        <a href="/cgi-bin/admin/user_internet_access.cgi">'$"Ban User"'</a>
+        <a href="/cgi-bin/admin/dg_room_controls_fm.cgi">'$"Room controls"'</a>
+        <a href="/cgi-bin/admin/dg_bypass.cgi">'$"Client Bypass Controls"'</a>
       </div>'
 fi
 
@@ -183,13 +183,13 @@ if [ $REVERSEPROXYCTRL = yes ]
 then
 echo '      <div class="collapsed">
         <span>Web</span>
-        <a href="/cgi-bin/admin/reverse_proxy_view_fm.cgi">'$RPROXYVIEW'</a>
+        <a href="/cgi-bin/admin/reverse_proxy_view_fm.cgi">'$"Reverse Proxy Sites"'</a>
       </div>'
 fi
 
 echo '<div class="a.current">
 <small><small>
-'$VERSIONMSG' : '$VERSION'
+'$"Version"' : '$VERSION'
 </small></small>
 </div>
 </div></div></body></html>

@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/dhcp ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/dhcp
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -47,7 +45,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Configure DHCP"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -61,7 +59,7 @@ echo '<div id="actionbox3"><div id="titlebox">
 
 
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tr><td style="vertical-align: top; width:180px"><div class="sectiontitle">'$TITLE2'</div></td><td style="vertical-align: top;"><a href="dhcp_fm.cgi"><input class="button" type="button" name="" value="'$TITLE'"></a></td><td style="vertical-align: top;"><a href="dhcp_reservations.cgi"><input class="button" type="button" name="" value="'$TITLE3'"></a></td>
+<tr><td style="vertical-align: top; width:180px"><div class="sectiontitle">'$"View DHCP Leases"'</div></td><td style="vertical-align: top;"><a href="dhcp_fm.cgi"><input class="button" type="button" name="" value="'$"Configure DHCP"'"></a></td><td style="vertical-align: top;"><a href="dhcp_reservations.cgi"><input class="button" type="button" name="" value="'$"DHCP Reservations"'"></a></td>
 </tr>
 </tbody></table><br>
 </div><div id="infobox"><br>'
@@ -71,7 +69,7 @@ LEASEPATH=/var/lib/dhcp/dhcpd.leases
 
 if [ ! -f $LEASEPATH ]
 then
-echo $ERRORMSG18
+echo $"No leases have been enabled."
 echo '</div></div></body></html>'
 exit
 fi
@@ -91,7 +89,7 @@ BINDINGSTATES=( `grep -w " binding state" $LEASEPATH | cut -d' ' -f 5 | sed 's/;
 LEASECOUNT=${#IPNUMBERS[@]}
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tr><td style="width: 120px;"><b>'$TCPIPMSG'</b></td><td style="width: 170px;"><b>'$STARTMSG'</b></td><td style="width: 170px;"><b>'$ENDMSG'</b></td><td style="width: 130px;"><b>'$MACMSG'</b></td><td style="width: 80px;"><b>'$STATUSMSG'</b></td></tr>'
+<tr><td style="width: 120px;"><b>'$"TCPIP Number"'</b></td><td style="width: 170px;"><b>'$"Start Date"'</b></td><td style="width: 170px;"><b>'$"End Date"'</b></td><td style="width: 130px;"><b>'$"Mac Address"'</b></td><td style="width: 80px;"><b>'$"Status"'</b></td></tr>'
 #Show active leases
 COUNTER=0
 while [ $COUNTER -lt $LEASECOUNT ]

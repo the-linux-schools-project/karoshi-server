@@ -23,24 +23,23 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/menus/menu
 source /opt/karoshi/web_controls/version
-echo '<div id="header"><img src="/images/small_logo.png" alt="logo" align="top"> <font style="font-weight: bold;" size="+2">Web Management '$SCHOOL_NAME'</font> <small><small>
-'$VERSIONMSG' : '$VERSION'
+source /opt/karoshi/server_network/domain_information/domain_name
+echo '<div id="header"><img src="/images/small_logo.png" alt="logo" align="top"> <font style="font-weight: bold;" size="+2">'$"Web Management"' '$SHORTNAME'</font> <small><small>
+'$"Version"' : '$VERSION'
 </small></small>'
 
 echo '<div id="navbar"><span class="preload1"></span>
 <span class="preload2"></span>
 
 <ul id="nav">
-	<li class="top"><a href="/cgi-bin/all/change_my_password_fm.cgi" class="top_link"><span>'$ALLMSG'</span></a></li>
-	<li class="top"><a href="/cgi-bin/staff/change_student_password_fm.cgi" class="top_link"><span>'$STAFFMSG'</span></a></li>
-	<li class="top"><a href="/cgi-bin/tech/redirect.cgi" class="top_link"><span>'$TECHMSG'</span></a></li>
-	<li class="top"><a href="/cgi-bin/admin/redirect.cgi" class="top_link"><span>'$NMANMSG'</span></a></li>
+	<li class="top"><a href="/cgi-bin/all/change_my_password_fm.cgi" class="top_link"><span>'$"All"'</span></a></li>
+	<li class="top"><a href="/cgi-bin/staff/change_student_password_fm.cgi" class="top_link"><span>'$"Staff"'</span></a></li>
+	<li class="top"><a href="/cgi-bin/tech/redirect.cgi" class="top_link"><span>'$"Technician"'</span></a></li>
+	<li class="top"><a href="/cgi-bin/admin/redirect.cgi" class="top_link"><span>'$"Administrator"'</span></a></li>
 </ul>
 </div></div>
 '

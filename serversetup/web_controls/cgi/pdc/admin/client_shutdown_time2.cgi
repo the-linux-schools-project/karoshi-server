@@ -32,19 +32,17 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/client_shutdown_time ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/client_shutdown_time
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Shutdown time"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -109,7 +107,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -117,13 +115,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 #########################
@@ -133,25 +131,25 @@ fi
 #Check to see that HOUR is not blank
 if [ $HOUR'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"You have not entered a value for the hour."
 show_status
 fi
 
 if [ $MINUTES'null' = null ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"You have not entered a value for the minutes."
 show_status
 fi
 
 #Check hour and minutes
 if [ $HOUR -gt 22 ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"Incorrect hour value."
 show_status
 fi
 if [ $MINUTES -gt 59 ]
 then
-MESSAGE=$ERRORMSG5
+MESSAGE=$"Incorrect minute value."
 show_status
 fi
 
@@ -160,9 +158,9 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/client_shutdown_time2.cgi | cut -d
 sudo -H /opt/karoshi/web_controls/exec/client_shutdown_time $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$HOUR:$MINUTES:$IDLETIME:
 if [ `echo $?` = 101 ]
 then
-MESSAGE=$ERRORMSG6
+MESSAGE=$"There was a problem changing the shutdown time. Please check the Karoshi web administration logs."
 else
-MESSAGE=`echo "$TIMEMSG - $HOUR:$MINUTES\n\n$IDLETIMEMSG - $IDLETIME\n\n$COMPLETEDMSG"`
+MESSAGE=''$"Shutdown time"' - '$HOUR':'$MINUTES'\n\n'$"Idle time"' - '$IDLETIME'\n\n'$"The shutdown time has been set for the clients."''
 show_status
 fi
 exit

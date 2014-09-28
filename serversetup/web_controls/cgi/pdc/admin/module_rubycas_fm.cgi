@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/rubycas/setuprubycas ] || LANGCHOICE=englishuk
-source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/rubycas/setuprubycas
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 if [ -f /opt/karoshi/server_network/moodledomain ]
 then
 SUGGGESTDOMAIN=`sed -n 1,1p /opt/karoshi/server_network/moodledomain`
@@ -53,7 +51,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Set up Ruby CAS Authentication"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -98,16 +96,16 @@ exit
 #Check to see that servername is not blank
 if [ $SERVERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The server cannot be blank."
 show_status
 fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/module_rubycas.cgi" method="post"><div id="actionbox"><b>'$TITLE' - '$SERVERNAME'</b><br><br>
-<b>'$DESCRIPTIONMSG'</b><br><br>
-'$HELPMSG1'<br><br>'$INTERNETWARNMSG'<br><br>
+echo '<form action="/cgi-bin/admin/module_rubycas.cgi" method="post"><div id="actionbox"><b>'$"Set up Ruby CAS Authentication"' - '$SERVERNAME'</b><br><br>
+<b>'$"Description"'</b><br><br>
+'$"This will setup up the CAS single sign on solution."'<br><br>'$"WARNING - An internet connect is required to install this module."'<br><br>
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 '
 
@@ -129,7 +127,7 @@ fi
 
 if [ $SHOW_LDAP = yes ]
 then
-echo '<b>'$PARAMETERSMSG'</b><br><br>
+echo '<b>'$"Parameters"'</b><br><br>
 <table class="standard" style="text-align: left; height: 15px;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 180px;">'$LDAPSERVERMSG1'</td><td>'
 #Generate list of ldap servers for authentication
@@ -155,5 +153,5 @@ else
 echo '<input name="_LDAPSERVER_" value="noldap" type="hidden">'
 fi
 
-echo '<br><br></div><div id="submitbox"><input value="'$SUBMITMSG'" class="button" type="submit"></div></form></div></body></html>'
+echo '<br><br></div><div id="submitbox"><input value="'$"Submit"'" class="button" type="submit"></div></form></div></body></html>'
 exit

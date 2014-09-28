@@ -133,10 +133,6 @@ fi
 
 echo `date`: dg_view_computer_logs - Viewing logs "for" $TCPIP $DAY-$MONTH-$YEAR by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #View logs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 TABLECLASS=standard
 WIDTH1=60
@@ -158,12 +154,12 @@ then
 	MACHINES=machines_detailed
 	DETAIL_ICON=normal_logs.png
 	DETAILED2=no
-	DETAILEDLOGSMSG=$DETAILEDLOGSMSG2
+	DETAILEDLOGSMSG=$"Normal logs"
 else
 	MACHINES=machines
 	DETAIL_ICON=detailed_logs.png
 	DETAILED2=yes
-	DETAILEDLOGSMSG=$DETAILEDLOGSMSG1
+	DETAILEDLOGSMSG=$"Detailed logs"
 fi
 
 #Get squid server name
@@ -181,15 +177,15 @@ LOGTYPE=NOTSET
 #Create table header
 if [ '$MOBILE' = no ]
 then
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>'$TITLE5' '$TCPIP' '$DAY'-'$MONTH'-'$YEAR'</b></td><td style=\"vertical-align: top; width: 25px;\"> <form action=\"/cgi-bin/admin/dg_view_computer_logs.cgi\" method=\"post\" target=\"_top\">
+echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>'$"Computer Logs"' '$TCPIP' '$DAY'-'$MONTH'-'$YEAR'</b></td><td style=\"vertical-align: top; width: 25px;\"> <form action=\"/cgi-bin/admin/dg_view_computer_logs.cgi\" method=\"post\" target=\"_top\">
 <input name=\"_TCPIP_'$TCPIP'"_"DATE_'$DAY'-'$MONTH'-'$YEAR'"_"DETAILED_'$DETAILED2'"_"\" type=\"submit\" class=\"button\" value=\"'$DETAILEDLOGSMSG'\">
 </form></td></tr></tbody></table><br></div><div id=\"infobox\">"
 else
-echo "<b>'$TITLE5' '$TCPIP' '$DAY'-'$MONTH'-'$YEAR'</b><br><br>"
+echo "<b>'$"Computer Logs"' '$TCPIP' '$DAY'-'$MONTH'-'$YEAR'</b><br><br>"
 fi
 
 echo \<table class=\"'$TABLECLASS'\" style=\"text-align: left\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>\<tbody\>
-echo \<tr\>\<td style\=\"width: '$WIDTH1'px\;\"\>\<b\>'$FILTERMSG'\<\/b\>\</td\>\<td style\=\"width: '$WIDTH2'px\;\"\>\<b\>'$TIMEMSG'\<\/b\>\</td\>\<td\>\</td\>\<td style\=\"width: '$WIDTH3'px\;\"\>\<b\>'$USERNAMEMSG'\<\/b\>\</td\>\<td\>\</td\>\<td\>\<b\>'$WEBURL'\<\/b\>\</td\>\</tr\>
+echo \<tr\>\<td style\=\"width: '$WIDTH1'px\;\"\>\<b\>'$"Filter"'\<\/b\>\</td\>\<td style\=\"width: '$WIDTH2'px\;\"\>\<b\>'$"Time"'\<\/b\>\</td\>\<td\>\</td\>\<td style\=\"width: '$WIDTH3'px\;\"\>\<b\>'$"Username"'\<\/b\>\</td\>\<td\>\</td\>\<td\>\<b\>'$"Website"'\<\/b\>\</td\>\</tr\>
 if [ $LOGTYPE = text ]
 then
 cat /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$MACHINES'/'$TCPIP'
@@ -209,15 +205,15 @@ LOGTYPE=NOTSET
 #Create table header
 if [ $MOBILE = no ]
 then
-echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>$TITLE5 $TCPIP $DAY-$MONTH-$YEAR</b></td><td style=\"vertical-align: top; width: 25px;\"> <form action=\"/cgi-bin/admin/dg_view_computer_logs.cgi\" method=\"post\" target=\"_top\">
+echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>$"Computer Logs" $TCPIP $DAY-$MONTH-$YEAR</b></td><td style=\"vertical-align: top; width: 25px;\"> <form action=\"/cgi-bin/admin/dg_view_computer_logs.cgi\" method=\"post\" target=\"_top\">
 <input name=\"_TCPIP_$TCPIP"_"DATE_$DAY-$MONTH-$YEAR"_"DETAILED_$DETAILED2"_"\" type=\"submit\" class=\"button\" value=\"$DETAILEDLOGSMSG\">
 </form></td></tr></tbody></table><br></div><div id=\"infobox\">"
 else
-echo "<b>$TITLE5 $TCPIP $DAY-$MONTH-$YEAR</b><br><br>"
+echo "<b>$"Computer Logs" $TCPIP $DAY-$MONTH-$YEAR</b><br><br>"
 fi
 
 echo \<table class=\"$TABLECLASS\" style=\"text-align: left\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>\<tbody\>
-echo \<tr\>\<td style\=\"width: $WIDTH1"px"\;\"\>\<b\>$FILTERMSG\<\/b\>\</td\>\<td style\=\"width: $WIDTH2"px"\;\"\>\<b\>$TIMEMSG\<\/b\>\</td\>\<td\>\<td style\=\"width: $WIDTH3"px"\;\"\>\<b\>$USERNAMEMSG\<\/b\>\</td\>\<td\>\</td\>\<td\>\<b\>$WEBURL\<\/b\>\</td\>\</tr\>
+echo \<tr\>\<td style\=\"width: $WIDTH1"px"\;\"\>\<b\>$"Filter"\<\/b\>\</td\>\<td style\=\"width: $WIDTH2"px"\;\"\>\<b\>$"Time"\<\/b\>\</td\>\<td\>\<td style\=\"width: $WIDTH3"px"\;\"\>\<b\>$"Username"\<\/b\>\</td\>\<td\>\</td\>\<td\>\<b\>$"Website"\<\/b\>\</td\>\</tr\>
 if [ $LOGTYPE = text ]
 then
 cat /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$MACHINES/$TCPIP

@@ -116,10 +116,6 @@ then
 echo `date`: bulk_user_creation_import_enrollment_numbers - Incorrect MD5sum "for" the CSV file by $REMOTE_USER from $REMOTE_ADDR>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/bulk_user_creation ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/user/bulk_user_creation
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 echo `date`: bulk_user_creation_import_enrollment_numbers - by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 
@@ -143,7 +139,7 @@ getent passwd $USERNAME 1>/dev/null
 USEREXISTCHECK=`echo $?`
 if [ $USEREXISTCHECK != 0 ]
 then
-echo $USERNOTEXIST'<br>'
+echo $"This user does not exist"'<br>'
 ADD_ENROLLMENT=no
 fi
 
@@ -153,7 +149,7 @@ if [ $DUPLICATECOUNT != 1 ]
 then
 DUPLICATEENROLLUSER=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" employeeNumber=$ENROLLMENTNUMBER | grep ^uid: | sed 's/uid: //g'`
 echo `date`: bulk_user_creation_import_enrollment_numbers - Duplicate enrollment number used by $DUPLICATEENROLLUSER when creating $NEWUSERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $DUPLICATEENROLLNO $DUPLICATEENROLLUSER'<br>'
+echo $"This code is already in use by" $DUPLICATEENROLLUSER'<br>'
 ADD_ENROLLMENT=no
 fi
 
@@ -240,9 +236,9 @@ fi
 fi
 
 [ -f /opt/karoshi/.tempdata/import_enrollment_numbers.$$ ] && rm -f /opt/karoshi/.tempdata/import_enrollment_numbers.$$
-echo $ENROLLMENTNUMADD'<br>'
+echo $"Enrolment number or staff code added"'<br>'
 fi
 let COUNTER=$COUNTER+1
 done
 
-echo '<br>'$TITLE3 - $COMPLETEMSG'<br>'
+echo '<br>'$"Bulk User Creation - Import Enrolment Numbers or staff codes" - $"Completed"'<br>'

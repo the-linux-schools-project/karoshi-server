@@ -65,12 +65,13 @@ exit 101
 fi
 
 APACHEGROUP=apache
-LANGCHOICE=englishuk
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/smbwebclient/setupsmbwebclient ] || LANGCHOICE=englishuk
-source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/smbwebclient/setupsmbwebclient
+
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 source /opt/karoshi/server_network/domain_information/domain_name
+
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+TEXTDOMAIN=karoshi-server
 
 #################################
 #Ensure that apache starts on boot
@@ -80,7 +81,7 @@ source /opt/karoshi/server_network/domain_information/domain_name
 #####################################
 #Extract in smbwebclient and set permisions
 #####################################
-echo '<li>'$EXTRACTMSG'</li><br>'
+echo '<li>'$"Extracting files and setting permissions."'</li><br>'
 
 [ -d /var/www/html/smbwebclient ] || rm -f -R /var/www/html/smbwebclient
 mkdir -p /var/www/html/smbwebclient
@@ -125,7 +126,7 @@ MODCHECK=`grep -c -w 50000 /etc/shorewall/rules`
 
 if [ $MODCHECK = 0 ]
 then
-echo '<li>'$SHOREWALLMSG'</li><br>'
+echo '<li>'$"Modifying shorewall rules to allow port 50000."'</li><br>'
 LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'50000'	'-'#'smbwebclientrule /etc/shorewall/rules
 echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
@@ -135,7 +136,7 @@ fi
 ######################
 if [ $MODCHECK = 0 ]
 then
-echo '<li>'$RESTARTSWMSG'</li><br>'
+echo '<li>'$"Restarting shorewall"'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
@@ -155,12 +156,12 @@ fi
 #################################
 #Configure virtual server on port 50000 for smbwebclient
 #################################
-echo '<li>'$VIRTUALSERVERMSG'</li><br>'
+echo '<li>'$"Configuring apache to run a virtual server on port 50000."'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/smbwebclientvhost $REALM
 #################################
 #Restart apache
 #################################
-echo '<li>'$RESTARTAPACHEMSG'</li><br>'
+echo '<li>'$"Restarting Apache."'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 
@@ -168,7 +169,7 @@ echo '<li>'$RESTARTAPACHEMSG'</li><br>'
 ###########################
 #Show completed message
 ###########################
-echo '<br>'$ACCESSMSG - '<a href="https://'$WEBPATH':50000/smbwebclient" target="_blank">https://'$WEBPATH':50000/smbwebclient</a>'
-echo '<br><br>'$FIREWALLHELP
-echo '<br><br><b>'$COMPLETEDMSG'</b>'
+echo '<br>'$"smbwebclient can be accessed from the following address" - '<a href="https://'$WEBPATH':50000/smbwebclient" target="_blank">https://'$WEBPATH':50000/smbwebclient</a>'
+echo '<br><br>'$"You will need to add a port forwarding rule to your firewall for users to be able to access smbwebclient over the internet."
+echo '<br><br><b>'$"Setup smbwebclient completed."'</b>'
 exit

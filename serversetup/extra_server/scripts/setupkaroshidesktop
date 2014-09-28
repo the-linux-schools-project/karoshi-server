@@ -28,19 +28,14 @@
 [ -d $HOME/.tempdata ] || mkdir $HOME/.tempdata
 source /opt/karoshi/serversetup/variables/language
 source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/language/$LANGCHOICE/extra_server/setupkaroshidesktop
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/extra_server/software
+
+TEXTDOMAIN=karoshi-server
+locale 1>/dev/null
 
 #########################
 #Add log entry
 #########################
-
-touch /opt/karoshi/serversetup/setuplog
-if [ `grep -c "$TITLE" /opt/karoshi/serversetup/setuplog` = 0 ]
-then
-echo setupkaroshidesktop:$TITLE:/opt/karoshi/serversetup/extra_server/scripts/setupkaroshidesktop >> /opt/karoshi/serversetup/setuplog
-chmod 0600 /opt/karoshi/serversetup/setuplog
-fi
 echo `date`: '##############'setupkaroshidesktop'##############' >> /opt/karoshi/serversetup/install_log
 date >> /opt/karoshi/serversetup/install_log
 ###########################
@@ -168,7 +163,7 @@ chmod 0700 /opt/karoshi/karoshimanagement/admin_file_manager
 ###########################
 echo `date`: "Setting karoshi and root passwords" >> /opt/karoshi/serversetup/install_log
 function getpassword {
-DATA=`yad --image="/opt/karoshi/serversetup/essentials/smalllogo2.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title="$TITLE" --width 400 --wrap --text "$ERRORMSG $PASSWDMSG1" --field="$PASSWDMSG3":H --field="$CONFIRMMSG":H --button=Ok 2>/dev/null`
+DATA=`yad --image="/opt/karoshi/serversetup/essentials/smalllogo2.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title=$"Setup Karoshi Desktop" --width 400 --wrap --text ''$ERRORMSG' '$"Please enter your choice for the karoshi and system password."'' --field=$"Password":H --field=$"Confirm":H --button=Ok 2>/dev/null`
 PASSWORD1=`echo $DATA | cut -d"|" -f1`
 PASSWORD2=`echo $DATA | cut -d"|" -f2`
 
@@ -179,7 +174,7 @@ PASSWORD2=`echo $DATA | cut -d"|" -f2`
 getpassword
 while [ $PASSWORD1 != $PASSWORD2 ]
 do
-ERRORMSG=`echo $ERRORMSG1`
+ERRORMSG=`echo $"The passwords do not match."`
 getpassword
 
 done

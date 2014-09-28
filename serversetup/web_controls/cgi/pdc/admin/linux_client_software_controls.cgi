@@ -31,15 +31,13 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/client/linux_client_software_controls ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/client/linux_client_software_controls
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -50,7 +48,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Linux Client Software Controls"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -93,7 +91,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -101,13 +99,13 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
@@ -149,7 +147,7 @@ fi
 #Check to see that VERSION is not blank
 if [ -z $VERSION ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The linux version must not be blank."
 show_status
 fi
 
@@ -161,11 +159,11 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$MENUMSG'</a>
+	<span>'$"Linux Client Software Controls"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">'
 else
-echo '<b>'$TITLE' - '$VERSION'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Linux_Client_Software_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a><br><br>'
+echo '<b>'$"Linux Client Software Controls"' - '$VERSION'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Linux_Client_Software_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the linux client version that you want to set the software settings for."'</span></a><br><br>'
 fi
 
 #Check current settings
@@ -220,12 +218,12 @@ fi
 
 #Show controls for auto, graphics drivers and restricted extras
 echo '<input name="_VERSION_" value="'$VERSION'" type="hidden"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$AUTOSMSG'</td><td><a class="info" href="javascript:void(0)"><input name="_AUTO_'$ASTATUS'_" type="image" class="images" src="'$AICON'" value=""><span>'$AUTOHELPMSG'</span></a></td></tr>
-<tr><td style="width: 180px;">'$GRAPHICSDRVERSMSG'</td><td><a class="info" href="javascript:void(0)"><input name="_GRAPHICS_'$GSTATUS'_" type="image" class="images" src="'$GICON'" value=""><span>'$GRAPHICSDRVERSHELPMSG'</span></a></td></tr>
-<tr><td style="width: 180px;">'$RESTRICTEDSMSG'</td><td><a class="info" href="javascript:void(0)"><input name="_RESTRICTED_'$RSTATUS'_" type="image" class="images" src="'$RICON'" value=""><span>'$RESTRICTEDHELPSMSG'</span></a></td></tr>
-<tr><td style="width: 180px;">'$FIRRMWAREMSG'</td><td><a class="info" href="javascript:void(0)"><input name="_FIRMWARE_'$FSTATUS'_" type="image" class="images" src="'$FICON'" value=""><span>'$FIRMWAREHELPMSG'</span></a></td></tr>
-<tr><td style="width: 180px;">'$ENABLEINSTALLMSG'</td><td><a class="info" href="javascript:void(0)"><input name="_SOFTWARE_'$SSTATUS'_" type="image" class="images" src="'$SICON'" value=""><span>'$INSTALLHELP'</span></a></td></tr>
-<tr><td style="width: 180px;">'$ENABLEUPDATESMSG'</td><td><a class="info" href="javascript:void(0)"><input name="_UPDATES_'$USTATUS'_" type="image" class="images" src="'$UICON'" value=""><span>'$UPDATEHELP'</span></a></td></tr>
+<tr><td style="width: 180px;">'$"Auto"'</td><td><a class="info" href="javascript:void(0)"><input name="_AUTO_'$ASTATUS'_" type="image" class="images" src="'$AICON'" value=""><span>'$"Set this to auto to hide the software control dialog from appearing when setting up the clients."'</span></a></td></tr>
+<tr><td style="width: 180px;">'$"Proprietary graphics"'</td><td><a class="info" href="javascript:void(0)"><input name="_GRAPHICS_'$GSTATUS'_" type="image" class="images" src="'$GICON'" value=""><span>'$"This will tell the linux clients to install the relevant proprietary graphics driver for the client."'</span></a></td></tr>
+<tr><td style="width: 180px;">'$"Restricted extras"'</td><td><a class="info" href="javascript:void(0)"><input name="_RESTRICTED_'$RSTATUS'_" type="image" class="images" src="'$RICON'" value=""><span>'$"This will install software that in a few countries licenses may be required."'</span></a></td></tr>
+<tr><td style="width: 180px;">'$"Firmware"'</td><td><a class="info" href="javascript:void(0)"><input name="_FIRMWARE_'$FSTATUS'_" type="image" class="images" src="'$FICON'" value=""><span>'$"This will install proprietary firmware."'</span></a></td></tr>
+<tr><td style="width: 180px;">'$"Enable Software install"'</td><td><a class="info" href="javascript:void(0)"><input name="_SOFTWARE_'$SSTATUS'_" type="image" class="images" src="'$SICON'" value=""><span>'$"This will make the Linux clients install and remove any software in the software install and remove lists on boot up."'</span></a></td></tr>
+<tr><td style="width: 180px;">'$"Enable updates"'</td><td><a class="info" href="javascript:void(0)"><input name="_UPDATES_'$USTATUS'_" type="image" class="images" src="'$UICON'" value=""><span>'$"This will make the Linux clients update their software packages on boot up."'</span></a></td></tr>
 </tbody></table></div></form></div></body></html>'
 exit
 

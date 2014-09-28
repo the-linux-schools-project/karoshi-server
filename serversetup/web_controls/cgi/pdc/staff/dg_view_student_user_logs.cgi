@@ -36,19 +36,15 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/internet/dg_view_logs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo "<html><head><title>$TITLE4</title>"
+echo "<html><head><title>$"Student Internet Logs"</title>"
 echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
@@ -139,14 +135,14 @@ exit
 #Check to see that USERNAME is not blank
 if [ $USERNAME'null' = null ]
 then
-MESSAGE=$ERRORMSG1
+MESSAGE=$"The username cannot be blank."
 show_status
 fi
 
 #Check to see that DATE is not blank
 if [ $DATE'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The date cannot be blank."
 show_status
 fi
 
@@ -157,41 +153,41 @@ YEAR=`echo $DATE | cut -d- -f3`
 #Check to see that DAY is not blank
 if [ $DAY'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The date cannot be blank."
 show_status
 fi
 
 #Check to see that MONTH is not blank
 if [ $MONTH'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The date cannot be blank."
 show_status
 fi
 
 #Check to see that YEAR is not blank
 if [ $YEAR'null' = null ]
 then
-MESSAGE=$ERRORMSG2
+MESSAGE=$"The date cannot be blank."
 show_status
 fi
 
 #Check that day is not greater than 31
 if [ $DAY -gt 31 ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"Date input error."
 show_status
 fi
 
 #Check that the month is not greater than 12
 if [ $MONTH -gt 12 ]
 then
-MESSAGE=$ERRORMSG3
+MESSAGE=$"Date input error."
 show_status
 fi
 
 if [ $YEAR -lt 2006 ] || [ $YEAR -gt 3006 ]
 then
-MESSAGE=$ERRORMSG4
+MESSAGE=$"The year is not valid."
 show_status
 fi
 
@@ -199,7 +195,7 @@ fi
 getent passwd $USERNAME 1>/dev/null
 if [ `echo $?` != 0 ]
 then
-MESSAGE=`echo $USERNAME - $ERRORMSG17`
+MESSAGE=`echo $USERNAME - $"This user does not exist."`
 show_status
 fi
 
@@ -207,7 +203,7 @@ fi
 STUDENTGROUP=`id -g -n $USERNAME`
 if [ `echo $STUDENTGROUP | grep -c ^yr` = 0 ]
 then
-MESSAGE=$ERRORMSG16
+MESSAGE=$"You can only check the logs for a student."
 show_status
 fi
 
@@ -218,7 +214,7 @@ if [ `grep -c -w $REMOTE_USER /opt/karoshi/web_controls/staff_restrictions.txt` 
 then
 sudo -H /opt/karoshi/web_controls/exec/record_staff_error $REMOTE_USER:$REMOTE_ADDR:$REMOTE_USER
 sleep $SLEEPTIME
-MESSAGE=$ERRORMSG14
+MESSAGE=$"You are not allowed to use this feature."
 show_status
 fi
 fi
@@ -228,11 +224,11 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE'</span>
+	<span>'$"User Internet Logs"'</span>
 <a href="/cgi-bin/admin/dg_view_student_user_logs_fm.cgi">'$USERNAME'</a>
 </div></div><div id="mobileactionbox3">
 '
-echo '<b>'$TITLE4'</b><br><br>'
+echo '<b>'$"Student Internet Logs"'</b><br><br>'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/staff/dg_view_student_user_logs.cgi | cut -d' ' -f1`
@@ -241,12 +237,12 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$DAY:$MONTH:$YEAR:$REMOTE_USER
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 101 ]
 then
-MESSAGE=`echo $PROBLEMMSG $LOGMSG`
+MESSAGE=`echo $"There was a problem with this action." $"Internet Logs for"`
 show_status
 fi
 if [ $EXEC_STATUS = 102 ]
 then
-MESSAGE=`echo $USERNAME $DAY-$MONTH-$YEAR : $ERRORMSG5`
+MESSAGE=`echo $USERNAME $DAY-$MONTH-$YEAR : $"No log for this date."`
 show_status
 fi
 echo '</div></div></body></html>'

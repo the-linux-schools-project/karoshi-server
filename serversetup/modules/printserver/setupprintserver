@@ -79,17 +79,17 @@ then
 ping -c 2 $PDCIP 1>/dev/null
 if [[ $? != 0 ]]
 then
-echo `date` : setupprintserver - $PINGFAIL."<br>"
+echo `date` : setupprintserver - $"The main server cannot be contacted."."<br>"
 exit 101
 fi
 fi
 
-LANGCHOICE=englishuk
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/printserver/setupprintserver ] || LANGCHOICE=englishuk
-source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/printserver/setupprintserver
-
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+TEXTDOMAIN=karoshi-server
+
 SAMBADOMAINCAPS=`echo $SAMBADOMAIN | tr 'a-z' 'A-Z'`
 
 ######################
@@ -180,13 +180,13 @@ net rpc rights grant "itadmin" SePrintOperatorPrivilege -U $ROOTUSER%"$LDAPPASS"
 MODCHECK=`grep -c -w samba_fileserver_rule /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
-	echo '<li>'$SHOREWALLMSG - tcp 139,445 udp 137,138,445'</li><br>'
+	echo '<li>'$"The following extra ports are being allowed" - tcp 139,445 udp 137,138,445'</li><br>'
 	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
 	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'53,88,123,135,137,138,139,389,445,464,636,1024:1100,3268'	'-'#'samba_fileserver_rule /etc/shorewall/rules
 	echo ACCEPT'	'net'	'fw'	'udp'	'53,88,123,137,138,139,389,445,464,636,1024:1100'	'-'#'samba_fileserver_rule >> /etc/shorewall/rules
 	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 
-	echo '<li>'$RESTARTSWMSG'</li><br>'
+	echo '<li>'$"Restarting Shorewall"'</li><br>'
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
@@ -226,7 +226,7 @@ CUPSSTATUS=`ps -e | grep -c $CUPSVER`
 
 if [ $CUPSSTATUS = 0 ]
 then
-echo '<li>'$STARTCUPSMSG'</li><br>'
+echo '<li>'$"Starting Cups"'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/cups_start 1>/dev/null
 fi
 
@@ -234,7 +234,7 @@ SAMBASTATUS=`ps -e | grep -c $SMBVER`
 
 if [ $SAMBASTATUS = 0 ]
 then
-echo '<li>'$STARTSAMBAMSG'</li><br>'
+echo '<li>'$"Starting Samba"'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null
 fi
 

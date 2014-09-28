@@ -26,15 +26,13 @@
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/staff_restrictions ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/staff_restrictions
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -45,7 +43,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Staff Restrictions"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -65,7 +63,7 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
+export MESSAGE=$"You must access this page via https."
 show_status
 fi
 #########################
@@ -73,22 +71,22 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
+MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/staff_restrictions2.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$TITLE'</div><br>'
+echo '<form action="/cgi-bin/admin/staff_restrictions2.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$"Staff Restrictions"'</div><br>'
 echo '<table class="standard" style="text-align: left; height: 20px;" border="0" cellpadding="2" cellspacing="2">'
 echo '<tbody>'
-echo '<tr><td style="width: 180px;">'$ADDSTAFFMSG'</td><td><input name="_STAFFNAME_" size="25" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG1'</span></a></td></tr>'
+echo '<tr><td style="width: 180px;">'$"Add staff name"'</td><td><input name="_STAFFNAME_" size="25" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the usernames of any members of staff that you do not want to be able to access the staff section of the web management."'</span></a></td></tr>'
 echo '</tbody></table>'
 
 if [ -f /opt/karoshi/web_controls/staff_restrictions.txt ]
@@ -102,7 +100,7 @@ if [ $STAFF_COUNT -gt 0 ]
 then
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">'
 echo '<tbody>'
-echo '<tr><td style="width: 150px;"><b>'$RESTRICTEDMSG'</b></td><td><b>Remove</b></td></tr>'
+echo '<tr><td style="width: 150px;"><b>'$"Retricted Staff"'</b></td><td><b>Remove</b></td></tr>'
 echo '</tbody></table><br>'
 echo '<table class="standard" style="text-align: left; width: 334px;" border="0" cellpadding="2" cellspacing="2">'
 echo '<tbody>'

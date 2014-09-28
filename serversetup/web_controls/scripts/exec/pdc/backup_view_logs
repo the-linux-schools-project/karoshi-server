@@ -113,12 +113,10 @@ LOG_DATE=`echo $YEAR-$MONTH-$DAY`
 ############################
 #Language
 ############################
-LANGCHOICE=englishuk
+
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/backup_view_logs ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/backup_view_logs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 [ -d /opt/karoshi/backup_server/ ] || ( mkdir /opt/karoshi/backup_server/ ; chmod 0700 /opt/karoshi/backup_server/ )
 
@@ -130,7 +128,7 @@ echo '<PRE STYLE="font-size: small; font-family:'Arial, Times, Georgia, Times Ne
 cat /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
 echo "</pre>"
 else
-echo '<br>'$VIEWMSG5'<br>'
+echo '<br>'$"No log avaiable."'<br>'
 fi
 }
 
@@ -143,7 +141,7 @@ if [ -f /opt/karoshi/logs/backup_servers/'$LOG_DATE'/backup_log ]
 then
 cat /opt/karoshi/logs/backup_servers/'$LOG_DATE'/backup_log
 else
-echo '$VIEWMSG5'\<br\>
+echo '$"No log avaiable."'\<br\>
 fi
 ' 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 echo "</pre>"

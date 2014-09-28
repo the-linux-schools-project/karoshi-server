@@ -34,11 +34,11 @@ exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/zfs_raid_control_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/zfs_raid_control.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $zfs_raid_control_cgi'check' ]
 then
-echo `date`: zfs_raid_control - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_control - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -47,16 +47,16 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: zfs_raid_control - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_control - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: zfs_raid_control - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_control - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -69,58 +69,54 @@ SERVERMASTER=`echo "$DATA" | cut -s -d: -f6`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: zfs_raid_control - Not called by zfs_raid_control.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_control - Not called by zfs_raid_control.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: zfs_raid_control - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_control - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: zfs_raid_control - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_control - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-echo `date`: software_raid_create - Blank server >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: software_raid_create - Blank server >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $SERVERTYPE'null' = null ]
+if [ -z "$SERVERTYPE" ]
 then
-echo `date`: software_raid_create - Blank servertype >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: software_raid_create - Blank servertype >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ $SERVERTYPE = federatedslave ]
 then
-if [ $SERVERMASTER'null' = null ]
-then
-echo `date`: software_raid_create - Blank servermaster >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	if [ -z "$SERVERMASTER" ]
+	then
+		echo `date`: software_raid_create - Blank servermaster >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
 fi
-fi
-
-
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: zfs_raid_control - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_control - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ##########################
 #Language
 ##########################
-LANGCHOICE=englishuk
+
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/software_raid ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/software_raid
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+TEXTDOMAIN=karoshi-server
+
 
 ICON1=/images/submenus/system/hdd_add.png
 ICON2=/images/submenus/system/hdd_add_spare.png
@@ -136,8 +132,8 @@ then
 
 if [ `zpool status | grep -c $HOSTNAME-data` = 0 ]
 then
-echo $ERRORMSG18
-exit
+	echo $"A ZFS raid has not been set up on this server."
+	exit
 fi
 
 #Get list of all drives
@@ -160,9 +156,9 @@ CAPACITY=`echo "scale=0; $CAPACITYBYTES/1024/1024/1024" | bc`
 DRIVESCALE=GB
 if [ $CAPACITY -gt 1000 ]
 then
-#Covert capacity to terabytes
-CAPACITY=`echo "scale=2; $CAPACITY/1024" | bc`
-DRIVESCALE=TB
+	#Covert capacity to terabytes
+	CAPACITY=`echo "scale=2; $CAPACITY/1024" | bc`
+	DRIVESCALE=TB
 fi
 
 DISKSIZE=`echo $CAPACITY$DRIVESCALE`
@@ -176,9 +172,9 @@ DRIVE_SN=`echo -e "$HDDATA" | grep SerialNo= | cut -d= -f2`
 DISKICON=hdd.png
 if [ $SMARTSTATUS = 24 ]
 then
-#Drive failing
-DRIVE_STATUS=fail
-DISKICON=hdd_fail.png
+	#Drive failing
+	DRIVE_STATUS=fail
+	DISKICON=hdd_fail.png
 fi
 }
 
@@ -199,10 +195,10 @@ get_drive_info
 
 if [ $SHOW_MENU = yes ]
 then
-echo "<b>$AVAILABLEMSG</b><br><br><table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
-<tbody>"
-SHOW_MENU=no
-SHOW_SUBMIT=yes
+	echo '<b>'$"Available Disks"'</b><br><br><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	<tbody>'
+	SHOW_MENU=no
+	SHOW_SUBMIT=yes
 fi
 
 #Show drive information
@@ -211,17 +207,17 @@ then
 echo "<tr><td style=\"width: 180px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>"
 
 #Create list of drives in array to replace
-echo "<select name=\"select\"><option value=\"_ACTION_addspare_DRIVE_$DRIVE"_"DRIVE2_notset"_"\">$ADD_SPAREDISKMSG</option>"
+echo "<select name=\"select\"><option value=\"_ACTION_addspare_DRIVE_$DRIVE"_"DRIVE2_notset"_"\">$"Add this disk as a spare."</option>"
 
 RAIDCOUNTER=0
 while [ $RAIDCOUNTER -lt $RAID_DISKS_COUNT ]
 do
 RAID_DISK=`echo /dev/${RAID_DISKS[$RAIDCOUNTER]}`
-echo "<option value=\"_ACTION_replace_DRIVE_$DRIVE"_"DRIVE2_$RAID_DISK"_"\">$REPLACEDISKMSG - $RAID_DISK</option>"
+echo "<option value=\"_ACTION_replace_DRIVE_$DRIVE"_"DRIVE2_$RAID_DISK"_"\">$"Replace" - $RAID_DISK</option>"
 let RAIDCOUNTER=$RAIDCOUNTER+1
 done
 
-echo "</select></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"submit\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$ADD_DISKMSG</span></a></td></tr>"
+echo "</select></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"submit\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$"Add this disk to a raid."</span></a></td></tr>"
 else
 echo "<tr><td style=\"width: 180px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td></tr>"
 fi
@@ -229,10 +225,7 @@ fi
 let COUNTER=$COUNTER+1
 done
 
-if [ $SHOW_SUBMIT = yes ]
-then
-echo "</tbody></table><br><br>"
-fi
+[ $SHOW_SUBMIT = yes ] && echo "</tbody></table><br><br>"
 
 #Show raid information
 MOUNTPOINT=`cat /etc/rc2.d/S99zfs-mount | cut -d" " -f3`
@@ -243,49 +236,48 @@ RAID_STATE=`echo -e $ZPOOLINFO | cut -d" " -f7`
 SCANINFORMATION=`echo -e "$ZPOOLSTATUS" | grep scan: | cut -d: -f2`
 RAID_TYPE=`zpool status | grep raidz | tr -cd "A-Za-z0-9- " | sed "s/^ * //g" | cut -d" " -f1`
 
-echo "<b>"$RAIDINFOMSG"</b><br><br>"
-echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\">$RAIDNAMEMSG</td><td>$HOSTNAME-data</td></tr>
-<tr><td>$RAIDTYPEMSG</td><td>$RAID_TYPE</td></tr>
-<tr><td>$RAIDSIZEMSG</td><td>$RAID_SIZE</td></tr>
-<tr><td>$RAIDSTATEMSG</td><td>$RAID_STATE</td></tr>
-<tr><td valign=\"top\">$SCANINFOMSG</td><td>$SCANINFORMATION</td></tr>
-"
-
+echo '<b>'$"Raid Information"'</b><br><br>
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: 180px;">'$"Raid Name"'</td><td>'$HOSTNAME'-data</td></tr>
+<tr><td>'$"Raid Type"'</td><td>'$RAID_TYPE'</td></tr>
+<tr><td>'$"Raid Size"'</td><td>'$RAID_SIZE'</td></tr>
+<tr><td>'$"Raid State"'</td><td>'$RAID_STATE'</td></tr>
+<tr><td valign=\"top\">'$"Scan Information"'</td><td>'$SCANINFORMATION'</td></tr>
+'
 
 STATUSSTARTLINE=`echo -e "$ZPOOLSTATUS" | grep -n -w status: | cut -d: -f1`
 if [ ! -z $STATUSSTARTLINE ]
 then
-ACTIONSTARTLINE=`echo -e "$ZPOOLSTATUS" | grep -n -w action: | cut -d: -f1`
-if [ $ACTIONSTARTLINE ]
-then
-let STATUSENDLINE=$ACTIONSTARTLINE-1
-SCANSTARTLINE=`echo -e "$ZPOOLSTATUS" | grep -n -w scan: | cut -d: -f1`
-if [ ! -z $SCANSTARTLINE ]
-then
-let ACTIONENDLINE=$SCANSTARTLINE-1
-#Show extra data on zfs raid
-RAID_STATUS=`echo -e "$ZPOOLSTATUS" | sed -n $STATUSSTARTLINE,$STATUSENDLINE"p" | sed "s/^status: //g"`
-RAID_ACTION=`echo -e "$ZPOOLSTATUS" | sed -n $ACTIONSTARTLINE,$ACTIONENDLINE"p" | sed "s/^action: //g"`
-echo "<tr><td valign=\"top\">$RAIDSTATUSMSG</td><td>$RAID_STATUS</td></tr>"
-echo "<tr><td valign=\"top\">$RAIDACTIONMSG</td><td>$RAID_ACTION</td></tr>"
-fi
-fi
+	ACTIONSTARTLINE=`echo -e "$ZPOOLSTATUS" | grep -n -w action: | cut -d: -f1`
+	if [ $ACTIONSTARTLINE ]
+	then
+		let STATUSENDLINE=$ACTIONSTARTLINE-1
+		SCANSTARTLINE=`echo -e "$ZPOOLSTATUS" | grep -n -w scan: | cut -d: -f1`
+		if [ ! -z $SCANSTARTLINE ]
+		then
+			let ACTIONENDLINE=$SCANSTARTLINE-1
+			#Show extra data on zfs raid
+			RAID_STATUS=`echo -e "$ZPOOLSTATUS" | sed -n $STATUSSTARTLINE,$STATUSENDLINE"p" | sed "s/^status: //g"`
+			RAID_ACTION=`echo -e "$ZPOOLSTATUS" | sed -n $ACTIONSTARTLINE,$ACTIONENDLINE"p" | sed "s/^action: //g"`
+			echo '<tr><td valign=\"top\">'$"Raid Status"'</td><td>'$RAID_STATUS'</td></tr>'
+			echo '<tr><td valign=\"top\">'$"Raid Action"'</td><td>'$RAID_ACTION'</td></tr>'
+		fi
+	fi
 fi
 
 COUNTER=0
 while [ $COUNTER -lt $RAID_DISKS_COUNT ]
 do
-RAID_DISK=`echo /dev/${RAID_DISKS[$COUNTER]}`
-#Get disk status
-DISKSTATUS=$ACTIVEMSG
-[ `echo -e "$ZPOOLSTATUS" | grep ${RAID_DISKS[$COUNTER]} | grep -c OFFLINE` -gt 0 ] && DISKSTATUS=$OFFLINEMSG
-[ `echo -e "$ZPOOLSTATUS" | grep ${RAID_DISKS[$COUNTER]} | grep -c AVAIL` -gt 0 ] && DISKSTATUS=$SPAREMSG
-ICON=$ICON3
-DRIVE=$RAID_DISK
-get_drive_info
-echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a>"$RAID_DISK - $DISKSTATUS"</td><td>$MAKER $DRIVE_SN</td></tr>"
-let COUNTER=$COUNTER+1
+	RAID_DISK=`echo /dev/${RAID_DISKS[$COUNTER]}`
+	#Get disk status
+	DISKSTATUS=$"active"
+	[ `echo -e "$ZPOOLSTATUS" | grep ${RAID_DISKS[$COUNTER]} | grep -c OFFLINE` -gt 0 ] && DISKSTATUS=$"offline"
+	[ `echo -e "$ZPOOLSTATUS" | grep ${RAID_DISKS[$COUNTER]} | grep -c AVAIL` -gt 0 ] && DISKSTATUS=$"spare"
+	ICON=$ICON3
+	DRIVE=$RAID_DISK
+	get_drive_info
+	echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a>"$RAID_DISK - $DISKSTATUS"</td><td>$MAKER $DRIVE_SN</td></tr>"
+	let COUNTER=$COUNTER+1
 done
 echo "</tbody></table><br>"
 fi
@@ -298,8 +290,8 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 
 if [ `zpool status | grep -c $HOSTNAME-data` = 0 ]
 then
-echo '$ERRORMSG18'
-exit
+	echo '$"A ZFS raid has not been set up on this server."'
+	exit
 fi
 
 #Get list of all drives
@@ -361,7 +353,7 @@ get_drive_info
 
 if [ $SHOW_MENU = yes ]
 then
-echo "<b>'$AVAILABLEMSG'</b><br><br><table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+echo "<b>'$"Available Disks"'</b><br><br><table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
 <tbody>"
 SHOW_MENU=no
 SHOW_SUBMIT=yes
@@ -373,17 +365,17 @@ then
 echo "<tr><td style=\"width: 180px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>"
 
 #Create list of drives in array to replace
-echo "<select name=\"select\"><option value=\"_ACTION_addspare_DRIVE_$DRIVE"_"DRIVE2_notset"_"\">'$ADD_SPAREDISKMSG'</option>"
+echo "<select name=\"select\"><option value=\"_ACTION_addspare_DRIVE_$DRIVE"_"DRIVE2_notset"_"\">'$"Add this disk as a spare."'</option>"
 
 RAIDCOUNTER=0
 while [ $RAIDCOUNTER -lt $RAID_DISKS_COUNT ]
 do
 RAID_DISK=`echo /dev/${RAID_DISKS[$RAIDCOUNTER]}`
-echo "<option value=\"_ACTION_replace_DRIVE_$DRIVE"_"DRIVE2_$RAID_DISK"_"\">'$REPLACEDISKMSG' - $RAID_DISK</option>"
+echo "<option value=\"_ACTION_replace_DRIVE_$DRIVE"_"DRIVE2_$RAID_DISK"_"\">'$"Replace"' - $RAID_DISK</option>"
 let RAIDCOUNTER=$RAIDCOUNTER+1
 done
 
-echo "</select></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"submit\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$ADD_DISKMSG'</span></a></td></tr>"
+echo "</select></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"submit\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$"Add this disk to a raid."'</span></a></td></tr>"
 else
 echo "<tr><td style=\"width: 180px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td></tr>"
 fi
@@ -405,13 +397,13 @@ RAID_STATE=`echo -e $ZPOOLINFO | cut -d" " -f7`
 SCANINFORMATION=`echo -e "$ZPOOLSTATUS" | grep scan: | cut -d: -f2`
 RAID_TYPE=`zpool status | grep raidz | tr -cd "A-Za-z0-9- " | sed "s/^ * //g" | cut -d" " -f1`
 
-echo "<b>"'$RAIDINFOMSG'"</b><br><br>"
+echo "<b>"'$"Raid Information"'"</b><br><br>"
 echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\">'$RAIDNAMEMSG'</td><td>$HOSTNAME-data</td></tr>
-<tr><td>'$RAIDTYPEMSG'</td><td>$RAID_TYPE</td></tr>
-<tr><td>'$RAIDSIZEMSG'</td><td>$RAID_SIZE</td></tr>
-<tr><td>'$RAIDSTATEMSG'</td><td>$RAID_STATE</td></tr>
-<tr><td valign=\"top\">'$SCANINFOMSG'</td><td>$SCANINFORMATION</td></tr>
+<tr><td style=\"width: 180px;\">'$"Raid Name"'</td><td>$HOSTNAME-data</td></tr>
+<tr><td>'$"Raid Type"'</td><td>$RAID_TYPE</td></tr>
+<tr><td>'$"Raid Size"'</td><td>$RAID_SIZE</td></tr>
+<tr><td>'$"Raid State"'</td><td>$RAID_STATE</td></tr>
+<tr><td valign=\"top\">'$"Scan Information"'</td><td>$SCANINFORMATION</td></tr>
 "
 
 
@@ -429,8 +421,8 @@ let ACTIONENDLINE=$SCANSTARTLINE-1
 #Show extra data on zfs raid
 RAID_STATUS=`echo -e "$ZPOOLSTATUS" | sed -n $STATUSSTARTLINE,$STATUSENDLINE"p" | sed "s/^status: //g"`
 RAID_ACTION=`echo -e "$ZPOOLSTATUS" | sed -n $ACTIONSTARTLINE,$ACTIONENDLINE"p" | sed "s/^action: //g"`
-echo "<tr><td valign=\"top\">'$RAIDSTATUSMSG'</td><td>$RAID_STATUS</td></tr>"
-echo "<tr><td valign=\"top\">'$RAIDACTIONMSG'</td><td>$RAID_ACTION</td></tr>"
+echo "<tr><td valign=\"top\">'$"Raid Status"'</td><td>$RAID_STATUS</td></tr>"
+echo "<tr><td valign=\"top\">'$"Raid Action"'</td><td>$RAID_ACTION</td></tr>"
 fi
 fi
 fi
@@ -440,9 +432,9 @@ while [ $COUNTER -lt $RAID_DISKS_COUNT ]
 do
 RAID_DISK=`echo /dev/${RAID_DISKS[$COUNTER]}`
 #Get disk status
-DISKSTATUS='$ACTIVEMSG'
-[ `echo -e "$ZPOOLSTATUS" | grep ${RAID_DISKS[$COUNTER]} | grep -c OFFLINE` -gt 0 ] && DISKSTATUS='$OFFLINEMSG'
-[ `echo -e "$ZPOOLSTATUS" | grep ${RAID_DISKS[$COUNTER]} | grep -c AVAIL` -gt 0 ] && DISKSTATUS='$SPAREMSG'
+DISKSTATUS='$"active"'
+[ `echo -e "$ZPOOLSTATUS" | grep ${RAID_DISKS[$COUNTER]} | grep -c OFFLINE` -gt 0 ] && DISKSTATUS='$"offline"'
+[ `echo -e "$ZPOOLSTATUS" | grep ${RAID_DISKS[$COUNTER]} | grep -c AVAIL` -gt 0 ] && DISKSTATUS='$"spare"'
 ICON=$ICON3
 DRIVE=$RAID_DISK
 get_drive_info

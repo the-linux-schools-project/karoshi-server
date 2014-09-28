@@ -50,15 +50,15 @@ then
 echo `date`: view_disk_usage_logs - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | cut -s -d: -f3`
-LOGVIEW=`echo $* | cut -s -d: -f4`
-DAY=`echo $* | cut -s -d: -f5`
-MONTH=`echo $* | cut -s -d: -f6`
-YEAR=`echo $* | cut -s -d: -f7`
-KAROSHI_SERVER=`echo $* | cut -s -d: -f8`
-MOBILE=`echo $* | cut -s -d: -f9`
+REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
+REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
+REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
+LOGVIEW=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
+DAY=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5`
+MONTH=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f6`
+YEAR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f7`
+KAROSHI_SERVER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f8`
+MOBILE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f9`
 ########################
 #Check data
 ########################
@@ -112,10 +112,6 @@ fi
 
 echo `date`: view_disk_usage_logs - viewing from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/view_disk_usage_logs ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/view_disk_usage_logs
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 
 if [ $KAROSHI_SERVER = `hostname-fqdn` ]
@@ -152,7 +148,7 @@ cat /opt/karoshi/logs/disk_usage/$YEAR-$MONTH-$DAY/disk_usage
 fi
 echo "<br>"
 else
-echo $KAROSHI_SERVER: $DAY-$MONTH-$YEAR $ERRORMSG4
+echo $KAROSHI_SERVER: $DAY-$MONTH-$YEAR $"No disk log exists for this date."
 echo "<br>"
 fi
 fi
@@ -192,14 +188,14 @@ cat /opt/karoshi/logs/disk_usage/'$YEAR'-'$MONTH'-'$DAY'/disk_usage
 fi
 echo "<br>"
 else
-echo '$DAY'-'$MONTH'-'$YEAR' '$ERRORMSG4'
+echo '$DAY'-'$MONTH'-'$YEAR' '$"No disk log exists for this date."'
 echo "<br>"
 fi
 fi
 ' 2>&1
 echo '<br><br>'
 else
-echo $KAROSHI_SERVER: $SSHWARNMSG'<br><br>'
+echo $KAROSHI_SERVER: $"SSH is not enabled for this server."'<br><br>'
 fi
 fi
 

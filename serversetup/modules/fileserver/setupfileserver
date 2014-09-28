@@ -71,13 +71,13 @@ echo `date` : setupfileserver - Cannot ping the PDC."<br>"
 exit 101
 fi
 
-LANGCHOICE=englishuk
-[ ! -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/fileserver/setupfileserver ] && LANGCHOICE=englishuk
-source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/fileserver/setupfileserver
 
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 source /opt/karoshi/server_network/domain_information/domain_name
+
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+TEXTDOMAIN=karoshi-server
 
 ######################
 #Final samba Install check
@@ -85,7 +85,7 @@ source /opt/karoshi/server_network/domain_information/domain_name
 if ! test -f /etc/init.d/$SMBVER
 then
 echo /etc/init.d/$SMBVER does not exist >> /opt/karoshi/serversetup/install_log
-echo $SAMBANOTINSTALLED'<br><br>'
+echo $"Samba is not installed"'<br><br>'
 exit 101
 fi
 
@@ -96,7 +96,7 @@ fi
 ######################
 #Setup Samba
 ######################
-echo '<b>'$TITLE - $HOSTNAME'</b><br><br>'
+echo '<b>'$"Setup File Server" - $HOSTNAME'</b><br><br>'
 
 
 #Restart shorewall
@@ -122,7 +122,7 @@ fi
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 sleep 1
 #start samba
-echo "<li>"$STARTSAMBAMSG"</li><br>"
+echo "<li>"$"Starting Samba""</li><br>"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null
 #Create the folders
 chmod 0755 /home
@@ -144,7 +144,7 @@ setfacl -R -m g:staff:r-x,d:g:staff:r-x /home/users/students
 ###########################
 #Show completed message
 ###########################
-echo '<br><b>'$COMPLETEDMSG'</b>'
+echo '<br><b>'$"Setup File Server" $"Completed"'</b>'
 sleep 2
 exit
 
