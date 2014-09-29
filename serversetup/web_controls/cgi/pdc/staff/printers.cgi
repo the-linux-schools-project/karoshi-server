@@ -48,8 +48,7 @@ exit
 TCPIP_ADDR=$REMOTE_ADDR
 echo "Content-type: text/html"
 echo ""
-echo "<html><head><title>$"Manage Print Queues"</title></head>"
-echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>'
+echo '<html><head><title>'$"Manage Print Queues"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>'
 echo '<meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
@@ -79,14 +78,14 @@ echo '</head><body><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox3
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
 DIV_ID=actionbox2
 fi
 
-echo '<form action="/cgi-bin/staff/printers_control.cgi" method="post"><div id="'$DIV_ID'">'
+echo '<div id="'$DIV_ID'">'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/staff/printers.cgi | cut -d' ' -f1`
 
 #Show back button for mobiles
@@ -100,10 +99,11 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div>
 '
 else
-echo '<b>'$"Manage Print Queues"'</b><br><br>'
+echo '<div id="titlebox"><b>'$"Manage Print Queues"'</b><br><br></div><div id="infobox">'
 fi
 
 sudo -H /opt/karoshi/web_controls/exec/printers_staff $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:
-echo '</div></form>'
-echo '</div></body></html>'
+
+[ $MOBILE = no ] && echo '</div>'
+echo '</div></form></div></body></html>'
 exit

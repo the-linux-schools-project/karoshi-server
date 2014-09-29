@@ -129,8 +129,8 @@ else
 echo '<div id="suggestions"></div><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody>
 <tr><td style="width: 180px;">'$"Username"'</td><td><input tabindex= "3" style="width: 200px;" name="_USERNAME_" AUTOCOMPLETE = "off" size="14" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the student that you want to check the internet logs for."'</span></a></td></tr>'
-echo "<tr><td>$"Log Date"</td><td>
-<!-- calendar attaches to existing form element -->
+echo '<tr><td>'$"Log Date"'</td><td>'
+echo "<!-- calendar attaches to existing form element -->
 	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxsize=10 name=\"_DATE_\" /></td><td style=\"vertical-align: top; text-align: center;\">
 	<script language=\"JavaScript\">
 	new tcal ({

@@ -61,92 +61,96 @@ END_POINT=14
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = PRINTERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-PRINTERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER |  tr -cd 'A-Za-z0-9_'`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = PRINTERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		PRINTERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER |  tr -cd 'A-Za-z0-9_'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
+
 #Assign LOCATION
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = LOCATIONcheck ]
-then
-let COUNTER=$COUNTER+1
-LOCATION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = LOCATIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		LOCATION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
+
 #Assign PRINTERADDRESS
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = PRINTERADDRESScheck ]
-then
-let COUNTER=$COUNTER+1
-PRINTERADDRESS=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = PRINTERADDRESScheck ]
+	then
+		let COUNTER=$COUNTER+1
+		PRINTERADDRESS=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
+
 #Assign PRINTERQUEUE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = PRINTERQUEUEcheck ]
-then
-let COUNTER=$COUNTER+1
-PRINTERQUEUE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = PRINTERQUEUEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		PRINTERQUEUE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign PRINTERTYPE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = PRINTERTYPEcheck ]
-then
-let COUNTER=$COUNTER+1
-PRINTERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = PRINTERTYPEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		PRINTERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign PRINTERDESC
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = PRINTERDESCcheck ]
-then
-let COUNTER=$COUNTER+1
-PRINTERDESC=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = PRINTERDESCcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		PRINTERDESC=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
+
 #Assign PRINTERPORT
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = PRINTERPORTcheck ]
-then
-let COUNTER=$COUNTER+1
-PRINTERPORT=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = PRINTERPORTcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		PRINTERPORT=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_printers {
@@ -180,47 +184,47 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 #########################
 #Check data
 #########################
 #Check to see that PRINTERNAME is not blank
-if [ $PRINTERNAME'null' = null ]
+if [ -z "$PRINTERNAME" ]
 then
-MESSAGE=$"The printer name cannot be blank."
-show_status
+	MESSAGE=$"The printer name cannot be blank."
+	show_status
 fi
 #Check to see that PRINTERADDRESS is not blank
-if [ $PRINTERADDRESS'null' = null ]
+if [ -z "$PRINTERADDRESS" ]
 then
-MESSAGE=$"The printer address cannot be blank."
-show_status
+	MESSAGE=$"The printer address cannot be blank."
+	show_status
 fi
 #Check to see that PRINTERTYPE is not blank
-if [ $PRINTERTYPE'null' = null ]
+if [ -z "$PRINTERTYPE" ]
 then
-MESSAGE=$"The printer type cannot be blank."
-show_status
+	MESSAGE=$"The printer type cannot be blank."
+	show_status
 fi
 #Check to see that PRINTERPORT is not blank
-if [ $PRINTERPORT'null' = null ]
+if [ -z "$PRINTERPORT" ]
 then
 MESSAGE=$"The printer port cannot be blank."
 show_status
@@ -229,8 +233,8 @@ fi
 #Check that this printer has not already been added
 if [ `lpstat -a | grep -c -w ^$PRINTERNAME` != 0 ]
 then
-MESSAGE=$"This printer queue already exists."
-show_status
+	MESSAGE=$"This printer queue already exists."
+	show_status
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printers_add.cgi | cut -d' ' -f1`
@@ -239,9 +243,8 @@ sudo -H /opt/karoshi/web_controls/exec/printers_add $REMOTE_USER:$REMOTE_ADDR:$M
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 101 ]
 then
-MESSAGE=`echo $"There was a problem with this action.": $"Please check the karoshi web administration logs for more details."`
-else
-MESSAGE=`echo $PRINTERNAME - $"Printer added."`
+	MESSAGE=`echo $"There was a problem with this action.": $"Please check the karoshi web administration logs for more details."`
+	show_status
 fi
 show_printers
 echo "</div></body></html>"
