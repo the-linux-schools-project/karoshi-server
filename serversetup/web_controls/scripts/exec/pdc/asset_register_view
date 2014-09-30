@@ -863,7 +863,7 @@ echo '<tr><td>'$"OS Type"'</td><td>
 </td>'
 fi
 #Assigned to
-echo '<td>'$"Assigned to"'</td><td><input size="17" name="_USERNAME_" value="'$ASSIGNED'" style="width: 200px;" tabindex= "11"></td></tr>'
+echo '<td>'$"Assigned to"'</td><td><input size="17" name="_ASSIGNED_" value="'$ASSIGNED'" style="width: 200px;" tabindex= "11"></td></tr>'
 #Budget
 echo '<tr><td><a href="/cgi-bin/admin/asset_register_add_budget_fm.cgi">'$"Budget"'</a></td><td><select name="_BUDGET_" style="width: 200px;" tabindex= "4">'
 echo '<option value="'$BUDGET'">'$BUDGET'</option>'
@@ -887,17 +887,17 @@ echo '<option value="'$SUPPLIER'">'$SUPPLIER'</option>'
 [ -f /opt/karoshi/asset_register/supplier_list ] && cat /opt/karoshi/asset_register/supplier_list
 echo '<option value=""></option></select></td></tr>'
 #TCPIP1
-echo '<tr><td>'$TCPIP' 1</td><td><input maxlength="15" size="17" name="_TCPIP1_" value="'$TCPIP1'" style="width: 200px;" tabindex= "6"></td>'
+echo '<tr><td>TCPIP 1</td><td><input maxlength="15" size="17" name="_TCPIP1_" value="'$TCPIP1'" style="width: 200px;" tabindex= "6"></td>'
 #MAC Address1
-echo '<td>'$"Mac Address"' 1</td><td><input maxlength="17" size="17" name="_MACADDRESS1_" value="'$MAC1'" style="width: 200px;" tabindex= "14"></td></tr>'
+echo '<td>'$"Mac Address"' 1</td><td><input maxlength="17" size="17" name="_MAC1_" value="'$MAC1'" style="width: 200px;" tabindex= "14"></td></tr>'
 #TCPIP2
-echo '<tr><td>'$TCPIP' 2</td><td><input maxlength="15" size="17" name="_TCPIP2_" value="'$TCPIP2'" style="width: 200px;" tabindex= "7"></td>'
+echo '<tr><td>TCPIP 2</td><td><input maxlength="15" size="17" name="_TCPIP2_" value="'$TCPIP2'" style="width: 200px;" tabindex= "7"></td>'
 #MAC address2
-echo '<td>'$"Mac Address"' 2</td><td><input maxlength="17" size="17" name="_MACADDRESS2_" value="'$MAC2'" style="width: 200px;" tabindex= "15"></td></tr>'
+echo '<td>'$"Mac Address"' 2</td><td><input maxlength="17" size="17" name="_MAC2_" value="'$MAC2'" style="width: 200px;" tabindex= "15"></td></tr>'
 #TCPIP3
-echo '<tr><td>'$TCPIP' 3</td><td><input maxlength="15" size="17" name="_TCPIP3_" value="'$TCPIP3'" style="width: 200px;" tabindex= "8"></td>'
+echo '<tr><td>TCPIP 3</td><td><input maxlength="15" size="17" name="_TCPIP3_" value="'$TCPIP3'" style="width: 200px;" tabindex= "8"></td>'
 #MAC address3
-echo '<td>'$"Mac Address"' 3</td><td><input maxlength="17" size="17" name="_MACADDRESS3_" value="'$MAC3'" style="width: 200px;" tabindex= "16"></td></tr>'
+echo '<td>'$"Mac Address"' 3</td><td><input maxlength="17" size="17" name="_MAC3_" value="'$MAC3'" style="width: 200px;" tabindex= "16"></td></tr>'
 #Extra information
 echo '<tr><td style="vertical-align: top;">'$"Extra Information"'</td><td colspan="3" rowspan="1" style="vertical-align: top;"><textarea style="width: 200px;" tabindex= "17" cols="100" rows="1" name="_EXTRAINFO_">'$EXTRAINFO'</textarea>
 </td></tr>'
@@ -932,14 +932,14 @@ ASSETTYPE=`echo "$DATA" | cut -s -d: -f10 | tr cd '0-9'`
 TCPIP1=`echo "$DATA" | cut -s -d: -f11`
 TCPIP2=`echo "$DATA" | cut -s -d: -f12`
 TCPIP3=`echo "$DATA" | cut -s -d: -f13`
-MACADDRESS1=`echo "$DATA" | cut -s -d: -f14 | sed 's/%3A/:/g' | sed 's/-/:/g'`
-MACADDRESS2=`echo "$DATA" | cut -s -d: -f15 | sed 's/%3A/:/g' | sed 's/-/:/g'`
-MACADDRESS3=`echo "$DATA" | cut -s -d: -f16 | sed 's/%3A/:/g' | sed 's/-/:/g'`
+MAC1=`echo "$DATA" | cut -s -d: -f14 | sed 's/%3A/:/g' | sed 's/-/:/g'`
+MAC2=`echo "$DATA" | cut -s -d: -f15 | sed 's/%3A/:/g' | sed 's/-/:/g'`
+MAC3=`echo "$DATA" | cut -s -d: -f16 | sed 's/%3A/:/g' | sed 's/-/:/g'`
 SERIALKEY=`echo "$DATA" | cut -s -d: -f17`
 PURCHASEDATE=`echo "$DATA" | cut -s -d: -f18`
 IDENTITY=`echo "$DATA" | cut -s -d: -f19 | sed 's/+/ /g' | sed 's/%3A/:/g'`
 DESCRIPTION=`echo "$DATA" | cut -s -d: -f20 | sed 's/+/ /g' | sed 's/%3A/:/g'`
-USERNAME=`echo "$DATA" | cut -s -d: -f21 | sed 's/+/ /g'`
+ASSIGNED=`echo "$DATA" | cut -s -d: -f21 | sed 's/+/ /g'`
 VALUE=`echo "$DATA" | cut -s -d: -f22 | sed 's/+/ /g' | sed 's/%A3/\&\#163;/g' | sed 's/%C2&#163;/£/g'`
 SUPPLIER=`echo "$DATA" | cut -s -d: -f23 | sed 's/+/ /g' | sed 's/%3A/:/g'`
 BUDGET=`echo "$DATA" | cut -s -d: -f24 | sed 's/+/ /g' | sed 's/%3A/:/g'`
@@ -954,14 +954,14 @@ function write_asset_data {
 echo ASSETTYPE=\""$ASSETTYPE"\" > "/opt/karoshi/asset_register/locations/$LOCATION/$ASSET"
 echo DESCRIPTION=\""$DESCRIPTION"\" >> "/opt/karoshi/asset_register/locations/$LOCATION/$ASSET"
 echo IDENTITY=\""$IDENTITY"\" >> "/opt/karoshi/asset_register/locations/$LOCATION/$ASSET"
-echo ASSIGNED=\""$"Assigned to""\" >> "/opt/karoshi/asset_register/locations/$LOCATION/$ASSET"
+echo ASSIGNED=\""$ASSIGNED"\" >> "/opt/karoshi/asset_register/locations/$LOCATION/$ASSET"
 echo TCPIP1=\""$TCPIP1"\" >> "/opt/karoshi/asset_register/locations/$LOCATION/$ASSET"
 echo TCPIP2=\""$TCPIP2"\" >> "/opt/karoshi/asset_register/locations/$LOCATION/$ASSET"
 echo TCPIP3=\""$TCPIP3"\" >> "/opt/karoshi/asset_register/locations/$LOCATION/$ASSET"
-echo MAC1=\""$"Mac Address"1"\" >> "/opt/karoshi/asset_register/locations/$LOCATION/$ASSET"
-echo MAC2=\""$"Mac Address"2"\" >> "/opt/karoshi/asset_register/locations/$LOCATION/$ASSET"
-echo MAC3=\""$"Mac Address"3"\" >> "/opt/karoshi/asset_register/locations/$LOCATION/$ASSET"
-echo SERIAL=\""$"Serial Number""\" >> "/opt/karoshi/asset_register/locations/$LOCATION/$ASSET"
+echo MAC1=\""$MAC1"\" >> "/opt/karoshi/asset_register/locations/$LOCATION/$ASSET"
+echo MAC2=\""$MAC2"\" >> "/opt/karoshi/asset_register/locations/$LOCATION/$ASSET"
+echo MAC3=\""$MAC3"\" >> "/opt/karoshi/asset_register/locations/$LOCATION/$ASSET"
+echo SERIAL=\""$SERIALKEY"\" >> "/opt/karoshi/asset_register/locations/$LOCATION/$ASSET"
 echo PURCHASEDATE=\""$PURCHASEDATE"\" >> "/opt/karoshi/asset_register/locations/$LOCATION/$ASSET"
 echo VALUE=\""$VALUE"\" >> "/opt/karoshi/asset_register/locations/$LOCATION/$ASSET"
 echo SUPPLIER=\""$SUPPLIER"\" >> "/opt/karoshi/asset_register/locations/$LOCATION/$ASSET"
@@ -969,26 +969,26 @@ echo BUDGET=\""$BUDGET"\" >> "/opt/karoshi/asset_register/locations/$LOCATION/$A
 echo EXTRAINFO=\""$EXTRAINFO"\" >> "/opt/karoshi/asset_register/locations/$LOCATION/$ASSET"
 
 #Add details to netlogon
-if [ $"Mac Address"1'null' != null ]
+if [ ! -z "$MAC1" ]
 then
-if [ $"Mac Address"1 != N.A. ]
+if [ $MAC1 != N.A. ]
 then
 if [ ! -d /var/lib/samba/netlogon/clients ]
 then
 mkdir /var/lib/samba/netlogon/clients
 fi
-CLIENTMAC=`echo $"Mac Address"1 | sed 's/://g'`
+CLIENTMAC=`echo $MAC1 | sed 's/://g'`
 echo $IDENTITY > /var/lib/samba/netlogon/clients/"$CLIENTMAC"
 echo $TCPIP1 >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
 echo $LOCATION >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
 fi
 fi
 
-if [ $"Mac Address"2'null' != null ]
+if [ ! -z "$MAC2" ]
 then
-if [ $"Mac Address"2 != N.A. ]
+if [ $MAC2 != N.A. ]
 then
-CLIENTMAC=`echo $"Mac Address"2 | sed 's/://g'`
+CLIENTMAC=`echo $MAC2 | sed 's/://g'`
 echo $IDENTITY > /var/lib/samba/netlogon/clients/"$CLIENTMAC"
 echo $TCPIP2 >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
 echo $LOCATION >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
@@ -996,11 +996,11 @@ fi
 fi
 
 
-if [ $"Mac Address"3'null' != null ]
+if [ ! -z "$MAC3" ]
 then
-if [ $"Mac Address"3 != N.A. ]
+if [ $MAC3 != N.A. ]
 then
-CLIENTMAC=`echo $"Mac Address"3 | sed 's/://g'`
+CLIENTMAC=`echo $MAC3 | sed 's/://g'`
 echo $IDENTITY > /var/lib/samba/netlogon/clients/"$CLIENTMAC"
 echo $TCPIP3 >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
 echo $LOCATION >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
@@ -1360,16 +1360,16 @@ TCPIP2=`echo $TCPIPDATA | cut -s -d+ -f2`
 TCPIP3=`echo $TCPIPDATA | cut -s -d+ -f3`
 
 MACDATA=`echo "$DATALINE" | cut -s -d, -f6 | sed 's/+/ /g' | sed 's/%3A/:/g'`
-MACADDRESS1=`echo $MACDATA | cut -s -d' ' -f1`
-MACADDRESS2=`echo $MACDATA | cut -s -d' ' -f2`
-MACADDRESS3=`echo $MACDATA | cut -s -d' ' -f3`
+MAC1=`echo $MACDATA | cut -s -d' ' -f1`
+MAC2=`echo $MACDATA | cut -s -d' ' -f2`
+MAC3=`echo $MACDATA | cut -s -d' ' -f3`
 
 SERIALKEY=`echo "$DATALINE" | cut -s -d, -f7`
 PURCHASEDATE=`echo "$DATALINE" | cut -s -d, -f8`
 VALUE=`echo "$DATALINE" | cut -s -d, -f9 | sed 's/+/ /g' | sed 's/%A3/\&\#163;/g' | sed 's/%C2&#163;/£/g'`
 SUPPLIER=`echo "$DATALINE" | cut -s -d, -f10 | sed 's/+/ /g' | sed 's/%3A/:/g'`
 BUDGET=`echo "$DATALINE" | cut -s -d, -f11 | sed 's/+/ /g' | sed 's/%3A/:/g'`
-USERNAME=`echo "$DATALINE" | cut -s -d, -f12 | sed 's/+/ /g'`
+ASSIGNED=`echo "$DATALINE" | cut -s -d, -f12 | sed 's/+/ /g'`
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody><tr><td style="width: 180px;"><b>'$"Adding Asset"'</b></td><td><b>'$COUNTER'/'$TOTALCOUNT'"</b></td></tr>
@@ -1380,15 +1380,15 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 <tr><td>'$TCPIP' 1</td><td>'$TCPIP1'</td></tr>
 <tr><td>'$TCPIP' 2</td><td>'$TCPIP2'</td></tr>
 <tr><td>'$TCPIP' 3</td><td>'$TCPIP3'</td></tr>
-<tr><td>'$"Mac Address"' 1</td><td>'$"Mac Address"1'</td></tr>
-<tr><td>'$"Mac Address"' 2</td><td>'$"Mac Address"2'</td></tr>
-<tr><td>'$"Mac Address"' 3</td><td>'$"Mac Address"3'</td></tr>
-<tr><td>'$"Serial Number"'</td><td>'$"Serial Number"'</td></tr>
+<tr><td>'$"Mac Address"' 1</td><td>'$MAC1'</td></tr>
+<tr><td>'$"Mac Address"' 2</td><td>'$MAC2'</td></tr>
+<tr><td>'$"Mac Address"' 3</td><td>'$MAC3'</td></tr>
+<tr><td>'$"Serial Number"'</td><td>'$SERIALKEY'</td></tr>
 <tr><td>'$"Purchased"'</td><td>'$PURCHASEDATE'</td></tr>
 <tr><td>'$"Value"'</td><td>'$VALUE'</td></tr>
 <tr><td>'$"Supplier"'</td><td>'$SUPPLIER'</td></tr>
 <tr><td>'$"Budget"'</td><td>'$BUDGET'</td></tr>
-<tr><td>'$"Assigned to"'</td><td>'$"Assigned to"'</td></tr>
+<tr><td>'$"Assigned to"'</td><td>'$ASSIGNED'</td></tr>
 </tbody></table><br>
 '
 #######################

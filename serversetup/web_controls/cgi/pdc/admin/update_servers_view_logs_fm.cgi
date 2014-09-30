@@ -187,7 +187,7 @@ echo "	<!-- calendar attaches to existing form element -->
 
 	</script>"
 
-echo '</td></tr><tr><td>'$"View logs by date"'</td><td></td><td style="vertical-align: top; text-align: center;"><input checked="checked" name="_LOGVIEW_" value="today" type="radio"></td></tr><tr><td>$"View logs by month"</td><td></td><td style="vertical-align: top; text-align: center;"><input name="_LOGVIEW_" value="month" type="radio"></td></tr></tbody></table><br><br>'
+echo '</td></tr><tr><td>'$"View logs by date"'</td><td></td><td style="vertical-align: top; text-align: center;"><input checked="checked" name="_LOGVIEW_" value="today" type="radio"></td></tr><tr><td>'$"View logs by month"'</td><td></td><td style="vertical-align: top; text-align: center;"><input name="_LOGVIEW_" value="month" type="radio"></td></tr></tbody></table><br><br>'
 fi
 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'

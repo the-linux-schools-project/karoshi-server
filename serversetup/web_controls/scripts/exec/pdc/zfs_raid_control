@@ -270,7 +270,7 @@ while [ $COUNTER -lt $RAID_DISKS_COUNT ]
 do
 	RAID_DISK=`echo /dev/${RAID_DISKS[$COUNTER]}`
 	#Get disk status
-	DISKSTATUS=$"active"
+	DISKSTATUS=$"Active"
 	[ `echo -e "$ZPOOLSTATUS" | grep ${RAID_DISKS[$COUNTER]} | grep -c OFFLINE` -gt 0 ] && DISKSTATUS=$"offline"
 	[ `echo -e "$ZPOOLSTATUS" | grep ${RAID_DISKS[$COUNTER]} | grep -c AVAIL` -gt 0 ] && DISKSTATUS=$"spare"
 	ICON=$ICON3
@@ -432,7 +432,7 @@ while [ $COUNTER -lt $RAID_DISKS_COUNT ]
 do
 RAID_DISK=`echo /dev/${RAID_DISKS[$COUNTER]}`
 #Get disk status
-DISKSTATUS='$"active"'
+DISKSTATUS='$"Active"'
 [ `echo -e "$ZPOOLSTATUS" | grep ${RAID_DISKS[$COUNTER]} | grep -c OFFLINE` -gt 0 ] && DISKSTATUS='$"offline"'
 [ `echo -e "$ZPOOLSTATUS" | grep ${RAID_DISKS[$COUNTER]} | grep -c AVAIL` -gt 0 ] && DISKSTATUS='$"spare"'
 ICON=$ICON3

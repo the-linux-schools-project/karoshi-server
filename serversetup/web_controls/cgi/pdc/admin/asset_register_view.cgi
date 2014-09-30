@@ -243,10 +243,10 @@ COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
 DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = MACADDRESS1check ]
+if [ `echo $DATAHEADER'check'` = MAC1check ]
 then
 let COUNTER=$COUNTER+1
-MACADDRESS1=`echo $DATA | cut -s -d'_' -f$COUNTER`
+MAC1=`echo $DATA | cut -s -d'_' -f$COUNTER`
 break
 fi
 let COUNTER=$COUNTER+1
@@ -257,10 +257,10 @@ COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
 DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = MACADDRESS2check ]
+if [ `echo $DATAHEADER'check'` = MAC2check ]
 then
 let COUNTER=$COUNTER+1
-MACADDRESS2=`echo $DATA | cut -s -d'_' -f$COUNTER`
+MAC2=`echo $DATA | cut -s -d'_' -f$COUNTER`
 break
 fi
 let COUNTER=$COUNTER+1
@@ -271,10 +271,10 @@ COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
 DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = MACADDRESS3check ]
+if [ `echo $DATAHEADER'check'` = MAC3check ]
 then
 let COUNTER=$COUNTER+1
-MACADDRESS3=`echo $DATA | cut -s -d'_' -f$COUNTER`
+MAC3=`echo $DATA | cut -s -d'_' -f$COUNTER`
 break
 fi
 let COUNTER=$COUNTER+1
@@ -332,15 +332,15 @@ break
 fi
 let COUNTER=$COUNTER+1
 done
-#Assign _USERNAME_
+#Assign _ASSIGNED_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
 DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
+if [ `echo $DATAHEADER'check'` = ASSIGNEDcheck ]
 then
 let COUNTER=$COUNTER+1
-USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+ASSIGNED=`echo $DATA | cut -s -d'_' -f$COUNTER`
 break
 fi
 let COUNTER=$COUNTER+1
@@ -481,7 +481,7 @@ echo '<div id="actionbox3"><div id="titlebox">'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/asset_register_view.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$LOCATION:$ACTION:$ASSET:$OPTION:$ASSETCHOICE:$ASSETTYPE:$TCPIP1:$TCPIP2:$TCPIP3:$"Mac Address"1:$"Mac Address"2:$"Mac Address"3:$"Serial Number":$PURCHASEDATE:$IDENTITY:$DESCRIPTION:$"Assigned to":$VALUE:$SUPPLIER:$BUDGET:$IMPORTDATA:$EXTRAINFO" | sudo -H /opt/karoshi/web_controls/exec/asset_register_view
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$LOCATION:$ACTION:$ASSET:$OPTION:$ASSETCHOICE:$ASSETTYPE:$TCPIP1:$TCPIP2:$TCPIP3:$MAC1:$MAC2:$MAC3:$SERIALKEY:$PURCHASEDATE:$IDENTITY:$DESCRIPTION:$ASSIGNED:$VALUE:$SUPPLIER:$BUDGET:$IMPORTDATA:$EXTRAINFO" | sudo -H /opt/karoshi/web_controls/exec/asset_register_view
 
 echo '</div>'
 echo '</div></form></div></body></html>'
