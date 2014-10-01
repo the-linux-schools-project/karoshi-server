@@ -146,7 +146,7 @@ echo '
 <option value="pl.UTF-8">'$"Polish"'</option>
 <option value="pt.UTF-8">'$"Portugese"'</option>
 <option value="ru.UTF-8">'$"Russian"'</option>
-<option value="sw.UTF-8">'$"Swedish"'</option>
+<option value="sv.UTF-8">'$"Swedish"'</option>
 <option value="sw.UTF-8">'$"Swahili"'</option>
 <option value="zh.UTF-8">'$"Chinese"'</option> ' | sort -t ">" -k 2
 

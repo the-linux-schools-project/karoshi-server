@@ -44,7 +44,7 @@ SLEEPTIME=5
 
 echo "Content-type: text/html"
 echo ""
-echo "<html><head><title>$"Change a Student's Password"</title><meta http-equiv='"'REFRESH'"' content='"'0; URL='$HTTP_REFERER''"'><link rel="stylesheet" href="/css/$STYLESHEET"></head><body><div id='pagecontainer'>"
+echo '<html><head><title>'$"Change a Student's Password"'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"><link rel="stylesheet" href="/css/'$STYLESHEET'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
