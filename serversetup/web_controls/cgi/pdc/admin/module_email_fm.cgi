@@ -104,13 +104,13 @@ fi
 echo '<form id="form1" name="combobox" action="/cgi-bin/admin/module_email.cgi" method="post"><div id="actionbox">
 
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Setup E-mail"' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Server""><img class="images" alt="" src="/images/help/info.png"><span>'$"This will set up an email server for your network. The email system uses clamav and spamassasin for anti virus and anti spam. Access to the email system is through a web browser using SOGo which is automatically set up as part of the setup. Emails can also be accessed via an imap or pop3 email client."'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Server""><img class="images" alt="" src="/images/help/info.png"><span>'$"This will set up an email server for your network."' '$"The email system uses clamav and spamassasin for anti virus and anti spam. Access to the email system is through a web browser using SOGo which is automatically set up as part of the setup."' '$" Emails can also be accessed via an imap or pop3 email client."'</span></a>
 </td></tr></tbody></table><br>
 
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <input name="_DOMAINPATH_" value="'$REALM'" type="hidden">
 <b>'$"Description"'</b><br><br>
-'$"This will set up an email server for your network. The email system uses clamav and spamassasin for anti virus and anti spam. Access to the email system is through a web browser using SOGo which is automatically set up as part of the setup. Emails can also be accessed via an imap or pop3 email client."'<br><br>
+'$"This will set up an email server for your network."' '$"The email system uses clamav and spamassasin for anti virus and anti spam."' '$"Access to the email system is through a web browser using SOGo which is automatically set up as part of the setup."' '$"Emails can also be accessed via an imap or pop3 email client."'<br><br>
 <b>'$"Parameters"'</b><br><br>
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="0">
     <tbody>'

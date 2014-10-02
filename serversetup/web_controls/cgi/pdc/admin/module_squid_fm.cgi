@@ -103,7 +103,7 @@ echo '
 <div class="sectiontitle">'$"Setup Internet Proxy Server"' - '$SERVERNAME'</div><br>
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$"Description"'</b><br><br>
-'$"This will setup a a squid proxy server for providing access to the internet for the client computers on the network. Internet filtering is provided by Dans Guardian and all internet access through the system is logged. Logs for all user internet access can be viewed in the web management."'
+'$"This will setup a a squid proxy server for providing access to the internet for the client computers on the network."' '$"Internet filtering is provided by E2Guardian and all internet access through the system is logged."' '$"Logs for all user internet access can be viewed in the web management."'
 </div>
 <div id="submitbox">
 <input value="'$"Submit"'" class="button" type="submit">

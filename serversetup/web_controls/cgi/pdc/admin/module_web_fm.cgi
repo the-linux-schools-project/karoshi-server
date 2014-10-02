@@ -101,7 +101,7 @@ fi
 echo '<form action="/cgi-bin/admin/module_web.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$"Setup Web Server"' - '$SERVERNAME'</div><br>
 <input name="___SERVERNAME___" value="'$SERVERNAME'" type="hidden">
 <b>'$"Description"'</b><br><br>
-'$"This will ensure that apache and mysql are running on the server and that the correct ports are open. It will also create a mysql database of your choice to use with your website. Leave these fields blank if you do not require a database to be created."'<br><br>
+'$"This will ensure that apache and mysql are running on the server and that the correct ports are open. It will also create a mysql database of your choice to use with your website."' '$"Leave the database fields blank if you do not require a database to be created."'<br><br>
 <b>'$"Parameters"'</b><br><br>
   <table class="standard" style="text-align: left; height: 15px;" border="0" cellpadding="2" cellspacing="0">
     <tbody><tr><td style="width: 180px;">'$"Mysql database"'</td><td><input tabindex= "1" name="___MYSQLDB___" size="20" type="text" style="width: 200px;"></td>

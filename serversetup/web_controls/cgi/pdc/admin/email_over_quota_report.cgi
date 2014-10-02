@@ -86,7 +86,7 @@ fi
 echo "<div id="actionbox">"
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_over_quota_report.cgi | cut -d' ' -f1`
 #Show report
-echo '<b>'$"E-Mail Over Quota Report"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"E-mail quota checks are run on E-mail inboxes for all users three times a day at 01:00, 09:00, and 17:00."'<br><br>'$"Users who are over quota receive an E-mail warning them."'<br><br>'$"Quota values are set in the E-mail limits section."'</span></a><br><br>'
+echo '<b>'$"E-Mail Over Quota Report"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"E-mail quota checks are run on E-mail inboxes for all users three times a day."'<br><br>'$"Users who are over quota receive an E-mail warning them."'<br><br>'$"Quota values are set in the E-mail limits section."'</span></a><br><br>'
 sudo -H /opt/karoshi/web_controls/exec/email_over_quota_report $REMOTE_USER:$REMOTE_ADDR:$MD5SUM
 echo "</div>"
 echo "</div></body></html>"

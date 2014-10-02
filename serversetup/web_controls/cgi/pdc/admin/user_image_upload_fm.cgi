@@ -69,7 +69,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/user_image_uplo
                 <INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="35">
             </TD>
 <td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_Images"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose a jpg image which corresponds to a user name or enrollment number or choose a zip or tar.gz file that contains multiple images."'<br><br>'$"Example - jjones.jpg or 10111.jpg."'<br><br>'$"User images default to width 120px height 150px."'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_Images"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose a jpg image which corresponds to a user name or enrollment number or choose a zip or tar.gz file that contains multiple images."'<br><br>'$"Example"' - jjones.jpg - 10111.jpg.<br><br>'$"User images default to width 120px height 150px."'</span></a>
 
 </td>
         </TR>

@@ -102,7 +102,7 @@ echo '
 <div id="actionbox"><div class="sectiontitle">'$"Setup Distribution Server" - $SERVERNAME'</div><br>
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$"Description"'</b><br><br>
-'$"This will setup a distribution server for centralised linux client installations. To use this feature you will need to add or import your client data into the asset register. Clients are given the instructions for network booting via the web management ( client - client boot controls)."'
+'$"This will setup a distribution server for centralised linux client installations."' '$" To use this feature you will need to add or import your client data into the asset register."'
 </div>
 <div id="submitbox">
 <input value="'$"Submit"'" class="button" type="submit">

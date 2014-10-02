@@ -1143,7 +1143,7 @@ echo '<form name="myform" action="e2g_filtergroups.cgi" method="post">
 <input type="hidden" name="_FILTERDATA_" value="'$FILTERDATA'">
 <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: '$WIDTH1'px;">'$"Add Site"'</td><td><input tabindex= "1" name="_ACTION_modifycustomsite_FILTERDATA3_add_FILTERDATA2_" style="width: '$WIDTH2'px;" value="'$BANSITE'" size="20" type="text"></td>
-<td><input value="Submit" class="button" type="submit"></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Filter_Management#Filter_Group_Options"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the site that you want to ban or allow without the http://"'</span></a></td></tr>
+<td><input value="Submit" class="button" type="submit"></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Filter_Management#Filter_Group_Options"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the site that you want to ban or allow."'</span></a></td></tr>
 <tr><td></td><td colspan="2">'
 
 if [ $PROXYSERVER = `hostname-fqdn` ]

@@ -55,7 +55,7 @@ echo '
 echo '<form action="/cgi-bin/admin/remote_management_restrict.cgi" method="post">
   <div id="actionbox">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Restrict access to Karoshi Remote Management"'</div></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Access can be restricted by a complete tcpip number or by a partial number for a range. For example 172.30.4. will allow all computers from 172.30.4.1 to 172.30.4.254."'</span></a></td></tr></tbody></table>
+<tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Restrict access to Karoshi Remote Management"'</div></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Access can be restricted by a complete tcpip number or by a partial number for a range."' '$"For example 172.30.4. will allow all computers from 172.30.4.1 to 172.30.4.254."'</span></a></td></tr></tbody></table>
   <br><br>
 <input name="_ACTION_" value="add" type="hidden">
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">

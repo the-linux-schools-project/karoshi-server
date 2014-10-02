@@ -108,7 +108,7 @@ echo '<form id="form1" name="combobox" action="/cgi-bin/admin/module_joomla.cgi"
 
 <br><input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$"Description"'</b><br><br>
-'$"This will setup the Joomla content management system as a website for your school. if you would like all staff to be able to log in and add information to the website enable the ldap authentication module in the Plug in Manager section."'<br><br>
+'$"This will setup the Joomla content management system as a website for your school."' '$"if you would like all staff to be able to log in and add information to the website enable the ldap authentication module in the Plug in Manager section."'<br><br>
 <b>'$"Parameters"'</b><br><br>
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="0">
     <tbody>

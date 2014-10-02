@@ -110,7 +110,7 @@ then
 echo "<b>"'$"No users are over quota."'"</b>"
 exit
 fi
-echo \<table class=\"standard\"\>\<tbody\>\<tr\>\<td style=\"width: 200px\;\"\>\<b\>"'$"Username"'"\</b\>\</td\>\<td style=\"width: 150px\;\"\>\<b\>"'$"Threshold Level"'"\</b\>\<td\>\<td style=\"width: 150px\;\"\>\<b\>"'$"Inbox Size (MB)"'"\</b\>\<td\>\<td\>\<b\>"'$"Days to next warning"'"\</b\>\<td\>\</tr\>
+echo \<table class=\"standard\"\>\<tbody\>\<tr\>\<td style=\"width: 200px\;\"\>\<b\>"'$"Username"'"\</b\>\</td\>\<td style=\"width: 150px\;\"\>\<b\>"'$"Threshold Level"'"\</b\>\<td\>\<td style=\"width: 150px\;\"\>\<b\>"'$"Inbox Size"' "(MB)"\</b\>\<td\>\<td\>\<b\>"'$"Days to next warning"'"\</b\>\<td\>\</tr\>
 COUNTER=1
 while [ $COUNTER -le $LINECOUNT ]
 do

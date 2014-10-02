@@ -56,7 +56,7 @@ echo '
 echo '<div id="actionbox">
 <B>'$"Generate Classroom Lists - CSV"'</B>
 <P>
-'$"Please upload a csv file containing the client computer information."' <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"The csv file format is"':<br>'$"location,type,hostname,"'<br>'$"tcpip,mac address."'<br><br>'$"Allowed types" - $"student" $"staff"'<br><br>'$"Example - Room1,student,rm1computer1,172.30.5.1,11:12:13:14:15:16"'</span></a>
+'$"Please upload a csv file containing the client computer information."' <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"The csv file format is"':<br>'$"location,type,hostname,"'<br>'$"tcpip,mac address."'<br><br>'$"Allowed types" - $"student" $"staff"'<br><br>'$"Example"' - Room1,student,rm1computer1,172.30.5.1,11:12:13:14:15:16</span></a>
 <br><br>
 <P>
         <FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/generate_classroom_lists_csv_upload.cgi" METHOD="POST">

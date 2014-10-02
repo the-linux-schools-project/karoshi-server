@@ -220,49 +220,49 @@ fi
 #Check to see that THRESHOLD1 is not blank
 if [ $THRESHOLD1'null' = null ]
 then
-MESSAGE=$"Incorrect data entry for Level 1."
+MESSAGE=''$"Level"' 1 - '$"Incorrect data entry."''
 show_status
 fi
 #Check to see that THRESHOLD2 is not blank
 if [ $THRESHOLD2'null' = null ]
 then
-MESSAGE=$"Incorrect data entry for Level 2."
+MESSAGE=''$"Level"' 2 - '$"Incorrect data entry."''
 show_status
 fi
 #Check to see that THRESHOLD3 is not blank
 if [ $THRESHOLD3'null' = null ]
 then
-MESSAGE=$"Incorrect data entry for Level 3."
+MESSAGE=''$"Level"' 3 - '$"Incorrect data entry."''
 show_status
 fi
 #Check to see that THRESHOLD4 is not blank
 if [ $THRESHOLD4'null' = null ]
 then
-MESSAGE=$"Incorrect data entry for Level 4."
+MESSAGE=''$"Level"' 4 - '$"Incorrect data entry."''
 show_status
 fi
 #Check to see that INTERVAL1 is not blank
 if [ $INTERVAL1'null' = null ]
 then
-MESSAGE=$"Incorrect data entry for Interval 1."
+MESSAGE=''$"Interval"' 1 - '$"Incorrect data entry."''
 show_status
 fi
 #Check to see that INTERVAL2 is not blank
 if [ $INTERVAL2'null' = null ]
 then
-MESSAGE=$"Incorrect data entry for Interval 2."
+MESSAGE=''$"Interval"' 1 - '$"Incorrect data entry."''
 show_status
 fi
 #Check to see that INTERVAL3 is not blank
 if [ $INTERVAL3'null' = null ]
 then
-MESSAGE=$"Incorrect data entry for Interval 3."
+MESSAGE=''$"Interval"' 1 - '$"Incorrect data entry."''
 show_status
 fi
 #Check to see that INTERVAL4 is not blank
 if [ $INTERVAL4'null' = null ]
 then
-MESSAGE=$"Incorrect data entry for Interval 4."
+MESSAGE=''$"Interval"' 1 - '$"Incorrect data entry."''
 show_status
 fi
 

@@ -124,9 +124,9 @@ echo '</td><td style="vertical-align: top; width: 180px; height: 40px;">'$"File 
 
 if [ $SERVERNAME != `hostname-fqdn` ] && [ ! -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME ]
 then
-	echo '<form action="/cgi-bin/admin/module_fileserver_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup a server to provide home areas for selected groups of users. By default the primary domain controller provides home areas for all users. Using this feature will allow you to spread the server load in larger networks."'</span></a></form>'
+	echo '<form action="/cgi-bin/admin/module_fileserver_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup a server to provide home areas for selected groups of users. By default the primary domain controller provides home areas for all users."' '$"Using this feature will allow you to spread the server load in larger networks."'</span></a></form>'
 else
-	echo '<a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup a server to provide home areas for selected groups of users. By default the primary domain controller provides home areas for all users. Using this feature will allow you to spread the server load in larger networks."'<br><br>'$"The main server already acts as a file server."'</span></a>'
+	echo '<a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup a server to provide home areas for selected groups of users. By default the primary domain controller provides home areas for all users."' '$"Using this feature will allow you to spread the server load in larger networks."'<br><br>'$"The main server already acts as a file server."'</span></a>'
 fi
 
 echo '</td></tr>'
@@ -157,9 +157,9 @@ echo '</td></tr>'
 
 if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver ] && [ $SERVERNAME != `hostname-fqdn` ]
 then
-	echo '<tr><td style="vertical-align: top; height: 40px;">'$"Reverse Proxy Server"'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_reverse_proxy_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup a reverse proxy server that allows incoming web traffic to be redirected to other servers on your network. The redirect is based on the trailing slash after the end of the domain of your site."'</span></a></form></td>'
+	echo '<tr><td style="vertical-align: top; height: 40px;">'$"Reverse Proxy Server"'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_reverse_proxy_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup a reverse proxy server that allows incoming web traffic to be redirected to other servers on your network."' '$"The redirect is based on the trailing slash after the end of the domain of your site."'</span></a></form></td>'
 else
-	echo '<tr><td style="vertical-align: top; height: 40px;">'$"Reverse Proxy Server"'</td><td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup a reverse proxy server that allows incoming web traffic to be redirected to other servers on your network. The redirect is based on the trailing slash after the end of the domain of your site."'<br><br>'$"This module cannot be applied to a server running modules that use the apache web server."'</span></a></td>'
+	echo '<tr><td style="vertical-align: top; height: 40px;">'$"Reverse Proxy Server"'</td><td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup a reverse proxy server that allows incoming web traffic to be redirected to other servers on your network."' '$"The redirect is based on the trailing slash after the end of the domain of your site."'<br><br>'$"This module cannot be applied to a server running modules that use the apache web server."'</span></a></td>'
 fi
 
 if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
@@ -294,7 +294,7 @@ if [ $SERVERNAME = `hostname-fqdn` ]
 then
 	echo '<form action="/cgi-bin/admin/module_ssh_access_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will allow remote ssh access to your main server. This can also be used to join this server up to another karoshi system so that users created on the master server will also be created here."'</span></a></form>'
 else
-	echo '<a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will allow remote ssh access to your main server. This can also be used to join this server up to another karoshi system so that users created on the master server will also be created here."'</span></a>'
+	echo '<a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will allow remote ssh access to your main server."' '$"This can also be used to join this server up to another karoshi system so that users created on the master server will also be created here."'</span></a>'
 fi
 #echo '</td><td style="vertical-align: top; width: 180px; height: 40px;">'$"Shell Access"'</td><td style="vertical-align: top; width: 80px;">'
 
@@ -312,9 +312,9 @@ then
 	echo '<td style="vertical-align: top; width: 180px; height: 40px;">'$"Federated Server"'</td><td style="vertical-align: top; width: 80px;">'
 	if [ $SERVERNAME != `hostname-fqdn` ]
 	then
-		echo '<form action="/cgi-bin/admin/module_federation_control_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will modify a Karoshi main server to be part of a federation so that all users created on the main system are also created on the federated systems. This module can only be applied to a main server."'</span></a></form>'
+		echo '<form action="/cgi-bin/admin/module_federation_control_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will modify a Karoshi main server to be part of a federation so that all users created on the main system are also created on the federated systems."' '$"This module can only be applied to a main server."'</span></a></form>'
 	else
-		echo '<a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will modify a Karoshi main server to be part of a federation so that all users created on the main system are also created on the federated systems. This module can only be applied to a main server."'<br><br>'$"This module cannot be applied to your main server."'</span></a>'
+		echo '<a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will modify a Karoshi main server to be part of a federation so that all users created on the main system are also created on the federated systems."' '$"This module can only be applied to a main server."'<br><br>'$"This module cannot be applied to your main server."'</span></a>'
 	fi
 fi
 

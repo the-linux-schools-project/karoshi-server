@@ -58,7 +58,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/bulk_user_creat
 <tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Bulk User Creation"'</div></td>
 <td style="vertical-align: top;"><a href="bulk_user_creation_view_passwords_fm.cgi"><input class="button" type="button" name="" value="'$"View new passwords"'"></td>
 <td style="vertical-align: top;"><a href="bulk_user_creation_import_enrollment_numbers_fm.cgi"><input class="button" type="button" name="" value="'$"Import enrolment numbers"'"></td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Upload_CSV"><img class="images" alt="" src="/images/help/info.png"><span>'$"The CSV file format is"':<br><br>'$"forename, surname, password (optional), Enrolment Number or staff code (optional)"'</span></a></td></tr></tbody></table><br>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Upload_CSV"><img class="images" alt="" src="/images/help/info.png"><span>'$"The CSV file format is"':<br><br>'$"forename, surname, password - optional, Enrolment Number or staff code - optional"'</span></a></td></tr></tbody></table><br>
   
         <table class="standard" border=0>
         <tr>

@@ -107,7 +107,7 @@ echo '<form name="combobox" action="/cgi-bin/admin/module_reverse_proxy.cgi" met
 
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$"Description"'</b><br><br>
-'$"The reverse proxy allows incoming web traffic to be redirected to other servers on your network. The redirect is based on the trailing slash and folder name after the end of the domain of your site. Web sites to be redirected are added in on the web management ( web - add reverse proxy )."'<br><br>
+'$"The reverse proxy allows incoming web traffic to be redirected to other servers on your network."' '$"The redirect is based on the trailing slash and folder name after the end of the domain of your site."' '$"Web sites to be redirected are added in on the web management."'<br><br>
 <b>'$"Parameters"'</b><br><br>
 <table class="standard" style="text-align: left; height: 15px;" border="0" cellpadding="2" cellspacing="0">
 <tbody><tr><td valign="middle" style="width: 180px;">'$"Reverse Proxy Domain"'</td><td>'

@@ -102,7 +102,7 @@ echo '
 <div id="actionbox"><div class="sectiontitle">'$"Setup Backup Server"' - '$SERVERNAME'</div><br>
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$"Description"'</b><br><br>
-'$"This will provide a backup server for your network that other servers can backup to. Servers are assigned to their backup servers in the web management (servers - show servers). The backup is fully automated and backups take place every week night."'
+'$"This will provide a backup server for your network that other servers can backup to."' '$"Servers are assigned to their backup servers in the web management."' '$"The backup is fully automated and backups take place every week night."'
 </div>
 <div id="submitbox">
 <input value="'$"Submit"'" class="button" type="submit">

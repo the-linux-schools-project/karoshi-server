@@ -103,12 +103,12 @@ echo '
 <div id="actionbox">
 
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr><td style=vertical-align: top;"><div class="sectiontitle">'$"Setup Server Monitoring"' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will provide a monitoring server for your network. The monitor server provides visual, email, and text alerts for any devices that are offline. You can add devices to be monitored in the web management (system - network monitoring - add monitors)."'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will provide a monitoring server for your network."' '$"The monitor server provides visual, email, and text alerts for any devices that are offline. You can add devices to be monitored in the web management."'</span></a>
 </td></tr></tbody></table><br>
 
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$"Description"'</b><br><br>
-'$"This will provide a monitoring server for your network. The monitor server provides visual, email, and text alerts for any devices that are offline. You can add devices to be monitored in the web management (system - network monitoring - add monitors)."'
+'$"This will provide a monitoring server for your network."' '$"The monitor server provides visual, email, and text alerts for any devices that are offline. You can add devices to be monitored in the web management."'
 </div>
 <div id="submitbox">
 <input value="'$"Submit"'" class="button" type="submit">

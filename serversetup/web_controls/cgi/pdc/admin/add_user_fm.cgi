@@ -248,15 +248,15 @@ fi
 echo '<br>
 '$"Username style"'<br>
   <select name="_USERNAMESTYLE_" style="width: 200px;" onClick="rewriteselect();">
-        <option value="userstyleS1" '$SELECT1'>'$"Style 1"': '$"astudent09"'</option>
-        <option value="userstyleS2" '$SELECT2'>'$"Style 2"': '$"09astudent"'</option>
-        <option value="userstyleS3" '$SELECT3'>'$"Style 3"': '$"studenta09"'</option>
-        <option value="userstyleS4" '$SELECT4'>'$"Style 4"': '$"arnold.student09"'</option>
-        <option value="userstyleS5" '$SELECT5'>'$"Style 5"': '$"student.arnold09"'</option>
-        <option value="userstyleS6" '$SELECT6'>'$"Style 6"': '$"09studenta"'</option>
-        <option value="userstyleS7" '$SELECT7'>'$"Style 7"': '$"09arnolds"'</option>
-        <option value="userstyleS8" '$SELECT8'>'$"Style 8"': '$"arnolds"'</option>
-        <option value="userstyleS9" '$SELECT9'>'$"Style 9"': '$"Enrollment number as username."'</option>
+        <option value="userstyleS1" '$SELECT1'>'$"Style"' 1: '$"astudent09"'</option>
+        <option value="userstyleS2" '$SELECT2'>'$"Style"' 2: '$"09astudent"'</option>
+        <option value="userstyleS3" '$SELECT3'>'$"Style"' 3: '$"studenta09"'</option>
+        <option value="userstyleS4" '$SELECT4'>'$"Style"' 4: '$"arnold.student09"'</option>
+        <option value="userstyleS5" '$SELECT5'>'$"Style"' 5: '$"student.arnold09"'</option>
+        <option value="userstyleS6" '$SELECT6'>'$"Style"' 6: '$"09studenta"'</option>
+        <option value="userstyleS7" '$SELECT7'>'$"Style"' 7: '$"09arnolds"'</option>
+        <option value="userstyleS8" '$SELECT8'>'$"Style"' 8: '$"arnolds"'</option>
+        <option value="userstyleS9" '$SELECT9'>'$"Style"' 9: '$"Enrollment number as username."'</option>
 	</select><br><br>
 '
 else
@@ -305,21 +305,21 @@ fi
 
 echo '
         </td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The groups give different levels of access. The itadmin group is for the network administrator. Only members of itadmin and the tech groups gain administrator access to windows computers joined to the domain."'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The groups give different levels of access."' '$"The itadmin group is for the network administrator."' '$"Only members of itadmin and the tech groups gain administrator access to windows computers joined to the domain."'</span></a>
       </td></tr>
 <tr>
         <td>'$"Username style"'</td>
         <td>
         <select name="_USERNAMESTYLE_" style="width: 200px;" onClick="rewriteselect();">
-        <option value="userstyleS1" '$SELECT1'>'$"Style 1"': '$"astudent09"'</option>
-        <option value="userstyleS2" '$SELECT2'>'$"Style 2"': '$"09astudent"'</option>
-        <option value="userstyleS3" '$SELECT3'>'$"Style 3"': '$"studenta09"'</option>
-        <option value="userstyleS4" '$SELECT4'>'$"Style 4"': '$"arnold.student09"'</option>
-        <option value="userstyleS5" '$SELECT5'>'$"Style 5"': '$"student.arnold09"'</option>
-        <option value="userstyleS6" '$SELECT6'>'$"Style 6"': '$"09studenta"'</option>
-        <option value="userstyleS7" '$SELECT7'>'$"Style 7"': '$"09arnolds"'</option>
-        <option value="userstyleS8" '$SELECT8'>'$"Style 8"': '$"arnolds"'</option>
-        <option value="userstyleS9" '$SELECT9'>'$"Style 9"': '$"Enrollment number as username."'</option>
+        <option value="userstyleS1" '$SELECT1'>'$"Style"' 1: '$"astudent09"'</option>
+        <option value="userstyleS2" '$SELECT2'>'$"Style"' 2: '$"09astudent"'</option>
+        <option value="userstyleS3" '$SELECT3'>'$"Style"' 3: '$"studenta09"'</option>
+        <option value="userstyleS4" '$SELECT4'>'$"Style"' 4: '$"arnold.student09"'</option>
+        <option value="userstyleS5" '$SELECT5'>'$"Style"' 5: '$"student.arnold09"'</option>
+        <option value="userstyleS6" '$SELECT6'>'$"Style"' 6: '$"09studenta"'</option>
+        <option value="userstyleS7" '$SELECT7'>'$"Style"' 7: '$"09arnolds"'</option>
+        <option value="userstyleS8" '$SELECT8'>'$"Style"' 8: '$"arnolds"'</option>
+        <option value="userstyleS9" '$SELECT9'>'$"Style"' 9: '$"Enrollment number as username."'</option>
 	</select></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Username_Styles"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the username style you require."'</span></a>
       </td></tr></tbody></table><br>

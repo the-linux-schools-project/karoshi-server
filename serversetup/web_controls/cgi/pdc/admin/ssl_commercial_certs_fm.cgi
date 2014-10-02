@@ -93,14 +93,14 @@ MOBILE=no
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody>
-<tr><td height="50" style="width: 180px;">'$"Step 1"'</td><td><input name="___SERVERNAME___'$REALM'___SERVERTYPE___network___SERVERMASTER___notset___ACTION___getcertdetails___" type="submit" class="button" value="'$"Create Certificate"'"></td></tr>
+<tr><td height="50" style="width: 180px;">'$"Step"' 1</td><td><input name="___SERVERNAME___'$REALM'___SERVERTYPE___network___SERVERMASTER___notset___ACTION___getcertdetails___" type="submit" class="button" value="'$"Create Certificate"'"></td></tr>
 '
 
 if [ -f /opt/karoshi/server_network/ssl/commercial_ssl_certs/$REALM ]
 then
 echo '
-<tr><td height="50" style="width: 180px;">'$"Step 2"'</td><td><input name="___SERVERNAME___'$REALM'___SERVERTYPE___network___SERVERMASTER___notset___ACTION___copycertinfo___" type="submit" class="button" value="'$"Copy Certificate"'"></td></tr>
-<tr><td height="50" style="width: 180px;">'$"Step 3"'</td><td>'$"Install certificate"'</td></tr>
+<tr><td height="50" style="width: 180px;">'$"Step"' 2</td><td><input name="___SERVERNAME___'$REALM'___SERVERTYPE___network___SERVERMASTER___notset___ACTION___copycertinfo___" type="submit" class="button" value="'$"Copy Certificate"'"></td></tr>
+<tr><td height="50" style="width: 180px;">'$"Step"' 3</td><td>'$"Install certificate"'</td></tr>
 '
 fi
 

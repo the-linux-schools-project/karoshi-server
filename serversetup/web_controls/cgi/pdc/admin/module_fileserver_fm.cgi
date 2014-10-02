@@ -104,7 +104,7 @@ echo '
 <div class="sectiontitle">'$"Setup a File Server"' - '$SERVERNAME'</div><br>
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$"Description"'</b><br><br>
-'$"This will set up a server to be an additional file server for your network. This is useful for increasing the network and storage capacity of your network. Once you have added your file server you will be able to assign groups to this server in the web management (system - servers - home folders). Existing user folders can be automatically copied to the new server and home folders for each user are automatically created."'
+'$"This will set up a server to be an additional file server for your network."' '$"This is useful for increasing the network and storage capacity of your network."' '$"Once you have added your file server you will be able to assign groups to this server in the web management."' '$"Existing user folders can be automatically copied to the new server and home folders for each user are automatically created."'
 </div>
 <div id="submitbox">
 <input value="'$"Submit"'" class="button" type="submit">

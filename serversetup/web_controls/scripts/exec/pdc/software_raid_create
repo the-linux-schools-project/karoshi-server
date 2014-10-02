@@ -241,7 +241,7 @@ then
 echo "<option value=\"raid5\">Raid 5</option>
 <option selected=\"selected\" value=\"restore\">Restore Existing Raid</option>
 "
-RAIDHELP=$"You do not have to pick any drives if you choose the restore option. This is the only option that does not result in data loss. Choosing any other option will result in data loss on all of the drives chosen."
+RAIDHELP=''$"You do not have to pick any drives if you choose the restore option."' '$"This is the only option that does not result in data loss."' '$"Choosing any other option will result in data loss on all of the drives chosen."''
 else
 echo "<option selected=\"selected\" value=\"raid5\">Raid 5</option>"
 RAIDHELP=$"All chosen disks will be formatted and any existing data will be lost from the chosen disk drives."
@@ -413,7 +413,7 @@ echo "</select>
 <td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Software_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>"
 if [ $SHOWRESTORE = yes ]
 then
-echo '$"You do not have to pick any drives if you choose the restore option. This is the only option that does not result in data loss. Choosing any other option will result in data loss on all of the drives chosen."'
+echo '$"You do not have to pick any drives if you choose the restore option."' '$"This is the only option that does not result in data loss."' '$" Choosing any other option will result in data loss on all of the drives chosen."'
 else
 echo '$"All chosen disks will be formatted and any existing data will be lost from the chosen disk drives."'
 fi

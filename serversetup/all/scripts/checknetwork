@@ -111,7 +111,7 @@ function getnetworksettings {
 
 if [ $SCARDCOUNT -gt 1 ]
 then
-	DATA=`yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --field=$"Server name" "$NAMECUSTOM" --field=$"TCPIP" "$TCPIPCUSTOM" --field=$"Netmask" "$NETMASKCUSTOM" --field=$"Name Server" "$NAMESERVERCUSTOM" --field=$"Gateway" "$GATEWAYCUSTOM" --field=$"Bond mode:CB" 'mode0!mode1!mode4' --button="gtk-ok"`
+	DATA=`yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --field=$"Server name" "$NAMECUSTOM" --field=$"TCPIP" "$TCPIPCUSTOM" --field=$"Netmask" "$NETMASKCUSTOM" --field=$"Name Server" "$NAMESERVERCUSTOM" --field=$"Gateway" "$GATEWAYCUSTOM" --field=$"Bond mode":CB 'mode0!mode1!mode4' --button="gtk-ok"`
 else
 	DATA=`yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --field=$"Server name" "$NAMECUSTOM" --field=$"TCPIP" "$TCPIPCUSTOM" --field=$"Netmask" "$NETMASKCUSTOM" --field=$"Name Server" "$NAMESERVERCUSTOM" --field=$"Gateway" "$GATEWAYCUSTOM" --button="gtk-ok" 2>/dev/null`
 fi

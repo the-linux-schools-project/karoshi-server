@@ -126,7 +126,7 @@ echo '</select></td><td>
 </td></tr>'
 echo '<tr><td>'$"Printer Address"'</td><td><input name="_PRINTERADDRESS_" maxlength="15" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the tcpip number of the printer."'</span></a>
 </td></tr>
-<tr><td>'$"Queue (LPD only)"'</td><td><input name="_PRINTERQUEUE_" style="width: 200px;" size="20" type="text"></td><td>
+<tr><td>'$"Queue - LPD only"'</td><td><input name="_PRINTERQUEUE_" style="width: 200px;" size="20" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the network queue."'</span></a>
 </td></tr>
 <tr><td>'$"Description"'</td><td><input name="_PRINTERDESC_" style="width: 200px;" size="20" type="text"></td><td>

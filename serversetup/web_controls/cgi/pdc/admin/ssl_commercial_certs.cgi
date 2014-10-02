@@ -394,7 +394,7 @@ then
 	<tr><td>'$"City or town"'</td><td><input tabindex= "3" value="'$LOCALITY'" name="___LOCALITY___" size="30" type="text"></td></tr>
 	<tr><td>'$"School Name"'</td><td><input tabindex= "4" value="'$ORGANISATIONNAME'" name="___INSTITUTENAME___" size="30" type="text"></td></tr>
 	<tr><td>'$"Department Name"'</td><td><input tabindex= "5" value="'$UNITNAME'" name="___DEPARTMENT___" size="30" type="text"></td></tr>
-	<tr><td>'$"Common name (URL)"'</td><td><input tabindex= "6" value="'$COMMONNAME'" name="___COMMONNAME___" size="30" type="text"></td>
+	<tr><td>'$"Common name - URL"'</td><td><input tabindex= "6" value="'$COMMONNAME'" name="___COMMONNAME___" size="30" type="text"></td>
 	<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This needs to be the fully qualified domain name of your website without the http or https. The *. wildcard will match all sub domains."'<br><br>'$"Example *.yoursite.com"'</span></a></td></tr>
 	<tr><td>'$"Email contact address"'</td><td><input tabindex= "7" value="'$CONTACTEMAIL'" name="___EMAIL___" size="30" type="text"></td></tr>
 	</tbody></table><br><br>
