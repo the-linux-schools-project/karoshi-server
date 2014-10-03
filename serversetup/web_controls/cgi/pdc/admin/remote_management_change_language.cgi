@@ -129,26 +129,26 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 <tr><td style="width: 180px;">'$"Language"'</td><td><select name="_LANGCHOICE_" style="width: 185px;">'
 #Generate dropdown list of langauges
 echo '
-<option value="ar.UTF-8">'$"Arabic"'</option>
-<option value="cs.UTF-8">'$"Czech"'</option>
-<option value="da.UTF-8">'$"Danish"'</option>
-<option value="de.UTF-8">'$"German"'</option>
-<option value="el.UTF-8">'$"Greek"'</option>
-<option value="en.UTF-8">'$"English"'</option>
-<option value="es.UTF-8">'$"Spanish"'</option>
-<option value="fr.UTF-8">'$"French"'</option>
-<option value="hi.UTF-8">'$"Hindi"'</option>
-<option value="he.UTF-8">'$"Hebrew"'</option>
-<option value="it.UTF-8">'$"Italian"'</option>
-<option value="ko.UTF-8">'$"Korean"'</option>
-<option value="nb.UTF-8">'$"Norwegian"'</option>
-<option value="nl.UTF-8">'$"Dutch"'</option>
-<option value="pl.UTF-8">'$"Polish"'</option>
-<option value="pt.UTF-8">'$"Portugese"'</option>
-<option value="ru.UTF-8">'$"Russian"'</option>
-<option value="sv.UTF-8">'$"Swedish"'</option>
-<option value="sw.UTF-8">'$"Swahili"'</option>
-<option value="zh.UTF-8">'$"Chinese"'</option> ' | sort -t ">" -k 2
+<option value="ar.UTF-8">العربية</option>
+<option value="cs.UTF-8">Čeština</option>
+<option value="da.UTF-8">Dansk</option>
+<option value="de.UTF-8">Deutsch</option>
+<option value="el.UTF-8">Eλληνικά</option>
+<option value="en.UTF-8">English</option>
+<option value="es.UTF-8">Español</option>
+<option value="fr.UTF-8">Français</option>
+<option value="hi.UTF-8">हिन्द</option>
+<option value="he.UTF-8">עברית</option>
+<option value="it.UTF-8">Italiano</option>
+<option value="ko.UTF-8">한국어</option>
+<option value="nb.UTF-8">Bokmål</option>
+<option value="nl.UTF-8">Nederlands</option>
+<option value="pl.UTF-8">Polski</option>
+<option value="pt.UTF-8">Português</option>
+<option value="ru.UTF-8">Pусский</option>
+<option value="sv.UTF-8">Svenska</option>
+<option value="sw.UTF-8">Kiswahili</option>
+<option value="zh.UTF-8">语</option> ' | sort -t ">" -k 2
 
 echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the language that you want for the Web Management."'<br><br>'$"This will not affect other web management users."'</span></a></td>
       </tr>
