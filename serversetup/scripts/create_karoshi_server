@@ -2,7 +2,7 @@
 
 #This script has been developed from the information at https://help.ubuntu.com/community/LiveCDCustomizationFromScratch
 
-KAROSHIVER=karoshiV10.0.1
+KAROSHIVER=karoshiV10.0.2
 BUILDPATH=/home/karoshi/$KAROSHIVER
 ARCH=amd64
 RELEASE=trusty
@@ -18,6 +18,18 @@ fi
 
 echo -e "Karoshi Server Remaster Utility\n"
 
+which unzip 1>/dev/null
+if [ $? != 0 ]
+then
+echo -e "Installing unzip\n"
+sudo apt-get install unzip
+	if [ $? != 0 ]
+	then
+		echo -e "There was a problem installing unzip - exiting now."
+		exit
+	fi
+fi
+
 #Install debootstrap
 which debootstrap 1>/dev/null
 if [ $? != 0 ]
@@ -29,6 +41,7 @@ fi
 
 echo -e "Making the chroot environment for $KAROSHIVER based on $RELEASE.\n"
 sleep 1
+
 
 #Create the chroot folder
 if [ -d $BUILDPATH/chroot ]
