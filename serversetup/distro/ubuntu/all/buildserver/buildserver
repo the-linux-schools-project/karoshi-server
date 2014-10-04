@@ -45,6 +45,8 @@ CONFIGURE_SYSTEM=yes
 UPDATE_SERVER=no
 #Services are started and set to run on boot when installed so lets turn them all back off for now until they are actually needed.
 TURN_OFF_SERVICES=yes
+
+
 #Reboot the machine to auto log in to the karoshi user.
 REBOOT=yes
 
@@ -430,6 +432,9 @@ fi
 
 #Create an empty main.cf to stop postconf from moaning.
 touch /etc/postfix/main.cf
+
+#Install karoshi language packs
+/opt/karoshi/serversetup/scripts/language/create_karoshi_locale
 
 #Delete install_log
 [ -f /opt/karoshi/serversetup/install_log ] && rm -f /opt/karoshi/serversetup/install_log

@@ -1,0 +1,60 @@
+#!/bin/bash
+
+
+CREATE_TEMPLATE=no
+CREATEPOFILES=yes
+
+function createtemplate {
+#Create a karoshi server language template
+[ -f /opt/karoshi/serversetup/language/karoshi-server.pot ] && rm -f /opt/karoshi/serversetup/language/karoshi-server.pot
+grep -l -r "TEXTDOMAIN=karoshi-server" /opt/karoshi/serversetup | xargs xgettext -w 200 --no-location -o /opt/karoshi/serversetup/language/karoshi-server.pot -L shell 2>/dev/null
+}
+
+function translatetxt {
+TRANSDATA=`trs {en=$LANGLIST} "$MSGIDTEXT"`
+if [ $? != 0 ]
+then
+	echo An error has been detected.
+	read pause
+fi
+
+COUNTER=1
+for KLANG in `echo $LANGLIST | sed 's/+/ /g'`
+do
+	echo msgid \""$MSGIDTEXT"\"  >> /opt/karoshi/serversetup/language/$KLANG.po
+	echo msgstr \"`echo -e "$TRANSDATA" | sed -n $COUNTER,$COUNTER"p"`\" >> /opt/karoshi/serversetup/language/$KLANG.po
+	echo >> /opt/karoshi/serversetup/language/$KLANG.po
+	let COUNTER=$COUNTER+1
+done
+}
+
+function createpofiles {
+#Translate the pot to a po for each language
+#LANGLIST="ar+cs+da+de+el+es+fr+hi+he+it+ko+nb+nl+pl+pt+ru+sv+sw+zh"
+LANGLIST="nl"
+#rm -f /opt/karoshi/serversetup/language/*.po
+
+for MSGIDDATA in `grep ^msgid /opt/karoshi/serversetup/language/karoshi-server.pot | sed 's/ /___/g'`
+do
+	MSGIDTEXT=`echo $MSGIDDATA | cut -d'"' -f2 | sed 's/___/ /g'`
+	if [[ ! -z "$MSGIDTEXT" ]]
+	then
+		echo $MSGIDTEXT
+		translatetxt
+		sleep 1
+	fi
+done
+}
+
+[ "$CREATE_TEMPLATE" = yes ] && createtemplate
+[ "$CREATEPOFILES" = yes ] && createpofiles
+
+exit
+
+
+
+
+
+
+
+
