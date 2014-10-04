@@ -29,30 +29,30 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_change_language2_cgi
 then
-echo `date`: remote_management_change_language - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_change_language - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_change_language2_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_change_language2.cgi | cut -d' ' -f1`
 [ $MD5SUM'null' = null ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $remote_management_change_language2_cgi'check' ]
 then
-echo `date`: remote_management_change_language - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_change_language - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/remote_management_change_language2_cgi
 then
-echo `date`: remote_management_change_language - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_change_language - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/remote_management_change_language2_cgi
 MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/remote_management_change_language2.cgi | cut -d' ' -f1`
 [ $MD5SUM2'null' = null ] && MD5SUM2=not_set
 if [ $MD5SUM2'check' != $remote_management_change_language2_cgi'check' ]
 then
-echo `date`: remote_management_change_language - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_change_language - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -60,8 +60,8 @@ fi
 numArgs=$#
 if [ $numArgs != 1 ]
 then
-echo `date`: remote_management_change_language - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_change_language - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
@@ -72,49 +72,49 @@ LANGCHOICE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
 then
-echo `date`: remote_management_change_language - Not called by remote_management_change_language.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_change_language - Not called by remote_management_change_language.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: remote_management_change_language - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_change_language - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: remote_management_change_language - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_change_language - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $LANGCHOICE'null' = null ]
+if [ -z "$LANGCHOICE" ]
 then
-echo `date`: remote_management_change_language - Blank firstname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: remote_management_change_language - Blank firstname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
 if [ ! -d /opt/karoshi/web_controls/language/$LANGCHOICE ]
 then
-echo `date`: remote_management_change_language - no language folder "for" $LANGCHOICE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: remote_management_change_language - no language folder "for" $LANGCHOICE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
 then
-echo `date`: remote_management_change_language - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_change_language - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 #####################
 #Change language for user
 #####################
 if [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ]
 then
-LINENUMBER=`grep -n ^LANGCHOICE= /opt/karoshi/web_controls/user_prefs/$REMOTE_USER | cut -d: -f1`
-if [ $LINENUMBER'null' != null ]
-then
-#Delete variable
-sed -i $LINENUMBER'd' /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-fi
-#Delete empty lines
- sed -i '/^$/d' /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+	LINENUMBER=`grep -n ^"export LANG=" /opt/karoshi/web_controls/user_prefs/$REMOTE_USER | cut -d: -f1`
+	if [ ! -z "$LINENUMBER" ]
+	then
+		#Delete variable
+		sed -i $LINENUMBER'd' /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+	fi
+	#Delete empty lines
+	 sed -i '/^$/d' /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 fi
 #Add variable
-echo LANGCHOICE=$LANGCHOICE >> /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+echo export LANG=\"$LANGCHOICE\" >> /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 chmod 0640 /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 chown root.apache_karoshi /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 exit

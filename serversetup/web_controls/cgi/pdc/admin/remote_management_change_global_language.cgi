@@ -60,8 +60,12 @@ echo '<form action="/cgi-bin/admin/remote_management_change_global_language2.cgi
 '$"Language"'</td>
         <td><select name="_LANGCHOICE_">'
 
-echo '
-<option value="ar.UTF-8">العربية</option>
+
+[ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
+
+#Generate dropdown list of langauges
+echo '<option></option>'
+echo '<option value="ar.UTF-8">العربية</option>
 <option value="cs.UTF-8">Čeština</option>
 <option value="da.UTF-8">Dansk</option>
 <option value="de.UTF-8">Deutsch</option>
@@ -80,7 +84,7 @@ echo '
 <option value="ru.UTF-8">Pусский</option>
 <option value="sv.UTF-8">Svenska</option>
 <option value="sw.UTF-8">Kiswahili</option>
-<option value="zh.UTF-8">语</option> ' | sort -t ">" -k 2
+<option value="zh.UTF-8">语</option> ' | sort -t ">" -k 2 | sed 's/"'$LANGCHOICE'"/"'$LANGCHOICE'" selected="selected" style="color:green"/g'
 
 echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the language that you want for the Web Management."'<br><br>'$"This will affect all general web management pages."'</span></a></td>
       </tr>

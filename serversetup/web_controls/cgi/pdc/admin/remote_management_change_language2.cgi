@@ -45,7 +45,7 @@ echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head
 #Get data input
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=`cat | tr -cd 'A-Za-z0-9\._:\-' | sed 's/___/TRIPLEUNDERSCORE/g' | sed 's/_/UNDERSCORE/g' | sed 's/TRIPLEUNDERSCORE/_/g'`
 #########################
 #Assign data to variables
 #########################
@@ -58,7 +58,7 @@ do
 	if [ `echo $DATAHEADER'check'` = LANGCHOICEcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		LANGCHOICE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		LANGCHOICE=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/UNDERSCORE/_/g'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -72,6 +72,15 @@ echo '</script>'
 echo "</div></body></html>"
 exit
 }
+
+function showlangchoice {
+echo '<SCRIPT language="Javascript">'
+echo 'window.location = "remote_management_change_language.cgi"'
+echo '</script>'
+echo "</div></body></html>"
+exit
+}
+
 #########################
 #Check https access
 #########################
@@ -115,8 +124,7 @@ TEXTDOMAIN=karoshi-server
 if [ $LANGSTATUS = 101 ]
 then
 	MESSAGE=`echo $"There was a problem changing the language." $"Please check the karoshi web administration logs for more details."`
-else
-	MESSAGE=$"Your language preference has been saved."
+	show_status
 fi
-show_status
+showlangchoice
 exit

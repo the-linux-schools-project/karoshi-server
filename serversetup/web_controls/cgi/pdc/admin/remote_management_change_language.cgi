@@ -105,56 +105,49 @@ else
 echo '<div class="sectiontitle">'$"Web Management Language"'</div><br>'
 fi
 
+[ -z "$LANG" ] && LANG="en.UTF-8"
+
+function create_lang_list {
+#Generate dropdown list of langauges
+echo '<select name="___LANGCHOICE___" style="width: 185px;"><option></option>'
+echo '<option value="ar_AE.UTF-8">العربية</option>
+<option value="cs_CZ.UTF-8">Čeština</option>
+<option value="da_DK.UTF-8">Dansk</option>
+<option value="de_DE.UTF-8">Deutsch</option>
+<option value="el_GR.UTF-8">Eλληνικά</option>
+<option value="en_EN.UTF-8">English</option>
+<option value="es_ES.UTF-8">Español</option>
+<option value="fr_FR.UTF-8">Français</option>
+<option value="hi_IN.UTF-8">हिन्द</option>
+<option value="he_IL.UTF-8">עברית</option>
+<option value="it_IT.UTF-8">Italiano</option>
+<option value="ko_KO.UTF-8">한국어</option>
+<option value="nb_NO.UTF-8">Bokmål</option>
+<option value="nl_NL.UTF-8">Nederlands</option>
+<option value="pl_PL.UTF-8">Polski</option>
+<option value="pt_PT.UTF-8">Português</option>
+<option value="ru_RU.UTF-8">Pусский</option>
+<option value="sv_FI.UTF-8">Svenska</option>
+<option value="sw_KE.UTF-8">Kiswahili</option>
+<option value="zh_CN.UTF-8">语</option> ' | sed 's/"'$LANG'"/"'$LANG'" selected="selected" style="color:green"/g'
+echo '</select>'
+}
+
 if [ $MOBILE = yes ]
 then
 echo ''$"Language"'<br>
-<select name="_LANGCHOICE_" style="width: 160px;">
 '
-#Generate dropdown list of langauges
-for LANGDIR in /opt/karoshi/web_controls/language/*
-do
-LANG=`basename $LANGDIR`
-if [ $LANG'check' = $LANGCHOICE'check' ]
-then
-echo '<option selected="selected">'$LANG'</option>'
-else
-echo '<option>'$LANG'</option>'
-fi
-done
-echo '</select><br><br>'
+create_lang_list
+echo '<br><br>'
 
 else
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$"Language"'</td><td><select name="_LANGCHOICE_" style="width: 185px;">'
-#Generate dropdown list of langauges
-echo '
-<option value="ar.UTF-8">العربية</option>
-<option value="cs.UTF-8">Čeština</option>
-<option value="da.UTF-8">Dansk</option>
-<option value="de.UTF-8">Deutsch</option>
-<option value="el.UTF-8">Eλληνικά</option>
-<option value="en.UTF-8">English</option>
-<option value="es.UTF-8">Español</option>
-<option value="fr.UTF-8">Français</option>
-<option value="hi.UTF-8">हिन्द</option>
-<option value="he.UTF-8">עברית</option>
-<option value="it.UTF-8">Italiano</option>
-<option value="ko.UTF-8">한국어</option>
-<option value="nb.UTF-8">Bokmål</option>
-<option value="nl.UTF-8">Nederlands</option>
-<option value="pl.UTF-8">Polski</option>
-<option value="pt.UTF-8">Português</option>
-<option value="ru.UTF-8">Pусский</option>
-<option value="sv.UTF-8">Svenska</option>
-<option value="sw.UTF-8">Kiswahili</option>
-<option value="zh.UTF-8">语</option> ' | sort -t ">" -k 2
+<tr><td style="width: 180px;">'$"Language"'</td><td>'
 
-echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the language that you want for the Web Management."'<br><br>'$"This will not affect other web management users."'</span></a></td>
-      </tr>
-    </tbody>
-  </table>
-  <br>'
+create_lang_list
+
+echo '</td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the language that you want for the Web Management."'<br><br>'$"This will not affect other web management users."'</span></a></td></tr></tbody></table><br>'
 
 fi
 
