@@ -133,6 +133,13 @@ fi
 [ -d /opt/karoshi/logs/karoshi_web_management ] || mkdir -p /opt/karoshi/logs/karoshi_web_management
 [ -d /var/www/ocs.$$ ] && mv /var/www/ocs.$$ /var/www/html_karoshi/admin/ocs
 
+#Create global prefs
+if [ ! -f /opt/karoshi/web_controls/global_prefs ]
+then
+	echo export LANG=\"$LANG\" > /opt/karoshi/web_controls/global_prefs
+	echo STYLESHEET=lightblue.css >> /opt/karoshi/web_controls/global_prefs
+fi
+
 chmod 0600 -R /opt/karoshi/logs
 chmod u+X -R /opt/karoshi/logs
 chown -R root:root /opt/karoshi/logs

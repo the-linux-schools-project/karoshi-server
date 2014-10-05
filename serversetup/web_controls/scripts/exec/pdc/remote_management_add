@@ -24,22 +24,22 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_add_cgi
 then
-echo `date`: remote_management_add - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_add - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_add_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_add.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $remote_management_add_cgi'check' ]
+[ -z "$MD5SUM" ] && MD5SUM=not_set
+if [ "$MD5SUM"'check' != $remote_management_add_cgi'check' ]
 then
-echo `date`: remote_management_add - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_add - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -47,16 +47,16 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: remote_management_add - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_add - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-+'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: remote_management_add - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_add - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
@@ -75,74 +75,67 @@ TCPACCESS=`echo "$DATA" | cut -s -d: -f10`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: remote_management_add - Not called by remote_management_add.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_add - Not called by remote_management_add.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: remote_management_add - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_add - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: remote_management_add - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_add - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $USERNAME'null' = null ]
+if [ -z "$USERNAME" ]
 then
-echo `date`: remote_management_add - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: remote_management_add - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
-if [ $PASSWORD'null' = null ]
+if [ -z "$PASSWORD" ]
 then
-echo `date`: remote_management_add - Blank password by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_add - Blank password by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $PRIMARYADMIN'null' = null ]
+if [ -z "$PRIMARYADMIN" ]
 then
-echo `date`: remote_management_add - Blank access level by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_add - Blank access level by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/remote_management_users` != 1 ]
 then
-echo `date`: remote_management_add - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_add - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 #Check that primary admin has the correct data
 if [ $PRIMARYADMIN != 1 ] && [ $PRIMARYADMIN != 2 ] && [ $PRIMARYADMIN != 3 ]
 then
-echo `date`: remote_management_add - Incorrect admin level by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_add - Incorrect admin level by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $JOBTITLE'null' != null ]
-then
-JOBTITLE=`echo $JOBTITLE | sed 's/+/ /g'`
-fi
-if [ $FORENAME'null' != null ]
-then
-FORENAME=`echo $FORENAME | sed 's/+/ /g'`
-fi
-if [ $SURNAME'null' != null ]
-then
-SURNAME=`echo $SURNAME | sed 's/+/ /g'`
-fi
+
+[ ! -z "$JOBTITLE" ] && JOBTITLE=`echo $JOBTITLE | sed 's/+/ /g'`
+[ ! -z "$FORENAME" ] && FORENAME=`echo $FORENAME | sed 's/+/ /g'`
+[ ! -z "$SURNAME" ] && SURNAME=`echo $SURNAME | sed 's/+/ /g'`
+
 
 [ ! -f /opt/karoshi/web_controls/remote_management_users ] && ( touch /opt/karoshi/web_controls/remote_management_users ; chmod 0600 /opt/karoshi/web_controls/remote_management_users )
 #Check that user is a primary admin
 PRISTATUS=`grep $REMOTE_USER: /opt/karoshi/web_controls/remote_management_users | cut -d: -f5`
-if [ $PRISTATUS'null' = null ]
+if [ -z "$PRISTATUS" ]
 then
-PRISTATUS=no
+	PRISTATUS=no
 fi
-if [ $PRISTATUS != yes ]
+if [ $PRISTATUS = no ]
 then
-echo `date`: remote_management_add - $REMOTE_USER is not a primary admin trying to create $USERNAME level $PRIMARYADMIN from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 103
+	echo `date`: remote_management_add - $REMOTE_USER is not a primary admin trying to create $USERNAME level $PRIMARYADMIN from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 103
 fi
 #Check the remote management user does not already exist.
 if [ `cut -d: -f1 /opt/karoshi/web_controls/remote_management_users | grep -c -w $USERNAME` != 0 ]
 then
-exit 102
+	exit 102
 fi
 
 if [ $PRIMARYADMIN = 1 ]
@@ -157,23 +150,23 @@ echo $USERNAME:"$FORENAME":"$SURNAME":"$JOBTITLE":$PRIMARYADMINSTATUS:$PRIMARYAD
 #Add entry to htpasswd list
 if [ $PRIMARYADMIN = 1 ] || [ $PRIMARYADMIN = 2 ]
 then
-htpasswd -b /opt/karoshi/web_controls/web_access_admin $USERNAME $PASSWORD 2>/dev/null
+	htpasswd -b /opt/karoshi/web_controls/web_access_admin $USERNAME $PASSWORD 2>/dev/null
 fi
 if [ $PRIMARYADMIN = 3 ]
 then
-htpasswd -b /opt/karoshi/web_controls/web_access_tech $USERNAME $PASSWORD 2>/dev/null
+	htpasswd -b /opt/karoshi/web_controls/web_access_tech $USERNAME $PASSWORD 2>/dev/null
 fi
 #Copy in user prefs
 if [ -f /opt/karoshi/web_controls/global_prefs ]
 then
-if [ ! -d /opt/karoshi/web_controls/user_prefs ]
-then
-mkdir /opt/karoshi/web_controls/user_prefs
-chmod 0750 /opt/karoshi/web_controls/user_prefs
-chown root.apache_karoshi /opt/karoshi/web_controls/user_prefs
-fi
-cp -f /opt/karoshi/web_controls/global_prefs /opt/karoshi/web_controls/user_prefs/$USERNAME
-chmod 0640 /opt/karoshi/web_controls/user_prefs/$USERNAME
-chown root.apache_karoshi /opt/karoshi/web_controls/user_prefs/$USERNAME
+	if [ ! -d /opt/karoshi/web_controls/user_prefs ]
+	then
+		mkdir /opt/karoshi/web_controls/user_prefs
+		chmod 0750 /opt/karoshi/web_controls/user_prefs
+		chown root.apache_karoshi /opt/karoshi/web_controls/user_prefs
+	fi
+	cp -f /opt/karoshi/web_controls/global_prefs /opt/karoshi/web_controls/user_prefs/$USERNAME
+	chmod 0640 /opt/karoshi/web_controls/user_prefs/$USERNAME
+	chown root.apache_karoshi /opt/karoshi/web_controls/user_prefs/$USERNAME
 fi
 exit
