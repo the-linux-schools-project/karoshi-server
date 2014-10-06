@@ -28,10 +28,10 @@ source /opt/karoshi/serversetup/variables/version
 source /opt/karoshi/serversetup/variables/distro
 if [ -e /opt/karoshi/serversetup/variables/language ]
 then
-source /opt/karoshi/serversetup/variables/language
+	source /opt/karoshi/serversetup/variables/language
 else
-source /opt/karoshi/serversetup/language/englishuk/serverselection
-echo LANGCHOICE=englishuk > /opt/karoshi/serversetup/variables/language
+	source /opt/karoshi/serversetup/language/englishuk/serverselection
+	echo LANGCHOICE=englishuk > /opt/karoshi/serversetup/variables/language
 fi
 
 TEXTDOMAIN=karoshi-server
@@ -43,8 +43,8 @@ locale 1>/dev/null
 USERSTATUS=`id -u`
 if [ $USERSTATUS != 0 ]
 then
-konsole -e sh /opt/karoshi/serversetup/essentials/rootwarningserversetup
-exit
+	konsole -e sh /opt/karoshi/serversetup/essentials/rootwarningserversetup
+	exit
 fi
 
 #############################
@@ -64,37 +64,26 @@ STATUS=`echo $?`
 
 if [ $LICENCE = yes ]
 then
-ACCEPTDATE=`date`
-echo GPL_Karoshi_Licence_Accepted > /opt/karoshi/serversetup/variables/acceptlicence
-echo $ACCEPTDATE >> /opt/karoshi/serversetup/variables/acceptlicence
+	ACCEPTDATE=`date`
+	echo GPL_Karoshi_Licence_Accepted > /opt/karoshi/serversetup/variables/acceptlicence
+	echo $ACCEPTDATE >> /opt/karoshi/serversetup/variables/acceptlicence
 else
-yad --title ''$"Linux Schools Server Setup"' '$VERSION'' --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --text=$"The Linux Schools Server Setup has been cancelled." --timeout=3 --no-buttons 2>/dev/null
-exit
+	yad --title ''$"Linux Schools Server Setup"' '$VERSION'' --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --text=$"The Linux Schools Server Setup has been cancelled." --timeout=3 --no-buttons 2>/dev/null
+	exit
 fi
 
-while [ -z $SELECTCHOICE ]
+while [ -z "$CHOICE" ]
 do
-SELECTCHOICE=$(yad --wrap --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --width 400 --entry --title $"Linux Schools Server Setup" \
-    --image="/opt/karoshi/serversetup/essentials/smalllogo.png" \
-    --button=Ok \
-    --text ''$"Choose the type of server you want to install"'.\n\n\n\n\n' \
-    --entry-text \
-    "" $"Setup the main server" $"Setup an extra server")
-[ `echo $?` != 0 ] && exit
-SELECTCHOICE=`echo $SELECTCHOICE | tr -cd 'A-Za-z'`
+
+yad --title $"Linux Schools Server Setup" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 180 \
+   --button=''$"Setup the main server"':2'  --button=''$"Setup an extra server"':1' --text $"Choose the type of server you want to install"
+CHOICE="$?"
 done
 
 #Setup cronjobs common to all servers
 [ ! -d /opt/karoshi/cronjobs/jobs ] && mkdir -p /opt/karoshi/cronjobs/jobs
 
-if [ $SELECTCHOICE = Setupthemainserver ]
-then
-/opt/karoshi/serversetup/pdc/scripts/standardsetup
-fi
-
-if [ $SELECTCHOICE = Setupanextraserver ]
-then
-/opt/karoshi/serversetup/extra_server/scripts/standardsetup
-fi
+[ "$CHOICE" = 2 ] && /opt/karoshi/serversetup/pdc/scripts/standardsetup 
+[ "$CHOICE" = 1 ] && /opt/karoshi/serversetup/extra_server/scripts/standardsetup
 
 exit

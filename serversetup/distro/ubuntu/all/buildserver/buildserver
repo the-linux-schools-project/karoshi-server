@@ -63,14 +63,14 @@ removepackages="wpasupplicant apparmor resolvconf nscd byobu xterm orage xfce4-m
 
 if [ `id -u` != 0 ]
 then
-echo This script must be run as root.
-exit
+	echo This script must be run as root.
+	exit
 fi
 
 if [ $AUTO = no ]
 then
-echo -e "\nThis will convert your Ubuntu 14.04 server into a karoshi server.\n\nGuidance - some software will prompt for action when installed: \n\nMysql - Set the password to karoshi.\nPostfix - Choose the no configuration option.\nDovecot - Do not create a certificate - one will be created later.\nNSLCD - Set to 127.0.0.1\ndc=example,dc=net - leave this as it is.\nLeave all name services to configure unselected.\nKerberos - Leave blank.\n\nOn reboot the username and passsword is karoshi.\n\nPress a key to continue\n"
-read pause
+	echo -e "\nThis will convert your Ubuntu 14.04 server into a karoshi server.\n\nGuidance - some software will prompt for action when installed: \n\nMysql - Set the password to karoshi.\nPostfix - Choose the no configuration option.\nDovecot - Do not create a certificate - one will be created later.\nNSLCD - Set to 127.0.0.1\ndc=example,dc=net - leave this as it is.\nLeave all name services to configure unselected.\nKerberos - Leave blank.\n\nOn reboot the username and passsword is karoshi.\n\nPress a key to continue\n"
+	read pause
 fi
 
 function create_karoshi_user { 
@@ -78,30 +78,30 @@ function create_karoshi_user {
 getent passwd karoshi 1>/dev/null
 if [ $? != 0 ]
 then
-echo -e "Creating karoshi user\n"
-sleep 1
-useradd -d /opt/karoshi/karoshi_user -s /bin/bash -m karoshi
-#Set password to karoshi
-echo -e "\nSetting karoshi user password to karoshi\n"
-sleep 1
-echo -e "karoshi\nkaroshi\n" | passwd karoshi
+	echo -e "Creating karoshi user\n"
+	sleep 1
+	useradd -d /opt/karoshi/karoshi_user -s /bin/bash -m karoshi
+	#Set password to karoshi
+	echo -e "\nSetting karoshi user password to karoshi\n"
+	sleep 1
+	echo -e "karoshi\nkaroshi\n" | passwd karoshi
 
-#Extract karoshi home area
-echo -e "\nExtracting karoshi home area folder\n"
-sleep 1
-cd /
-tar -xvzf /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/karoshi_user.tar.gz
-chmod 0600 -R /opt/karoshi/karoshi_user
-chmod u+X -R /opt/karoshi/karoshi_user
-chown karoshi -R /opt/karoshi/karoshi_user
-chmod 0750 /opt/karoshi/karoshi_user/karoshi_setup
+	#Extract karoshi home area
+	echo -e "\nExtracting karoshi home area folder\n"
+	sleep 1
+	cd /
+	tar -xvzf /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/karoshi_user.tar.gz
+	chmod 0600 -R /opt/karoshi/karoshi_user
+	chmod u+X -R /opt/karoshi/karoshi_user
+	chown karoshi -R /opt/karoshi/karoshi_user
+	chmod 0750 /opt/karoshi/karoshi_user/karoshi_setup
 
-#Make sure that there is an admin group
-getent group admin 1>/dev/null
-[ $? != 0 ] && groupadd admin
+	#Make sure that there is an admin group
+	getent group admin 1>/dev/null
+	[ $? != 0 ] && groupadd admin
 
-#Add karoshi user to the admin group
-usermod -a -G admin karoshi
+	#Add karoshi user to the admin group
+	usermod -a -G admin karoshi
 fi
 
 #Create synaptic-warning
@@ -196,14 +196,14 @@ function install_additional_software {
 
 for package in `echo $extrapackages`
 do
-echo -e "\nInstalling $package\n"
-sleep 1
-apt-get -y install $package
-if [ $? != 0 ]
-then
-echo $package: There was a problem installing this package. Press return to continue.
-[ $AUTO = no ] && read pause
-fi
+	echo -e "\nInstalling $package\n"
+	sleep 1
+	apt-get -y install $package
+	if [ $? != 0 ]
+	then
+		echo $package: There was a problem installing this package. Press return to continue.
+		[ $AUTO = no ] && read pause
+	fi
 done
 }
 
@@ -216,14 +216,14 @@ sleep 1
 
 for package in `echo $packages`
 do
-echo -e "\nInstalling $package\n"
-sleep 1
-apt-get -y install $package
-if [ $? != 0 ]
-then
-echo $package: There was a problem installing this package. Press return to continue.
-[ $AUTO = no ] && read pause
-fi
+	echo -e "\nInstalling $package\n"
+	sleep 1
+	apt-get -y install $package
+	if [ $? != 0 ]
+	then
+		echo $package: There was a problem installing this package. Press return to continue.
+		[ $AUTO = no ] && read pause
+	fi
 done
 }
 
@@ -234,8 +234,8 @@ sleep 1
 /opt/karoshi/serversetup/all/samba4/samba4install
 if [ $? != 0 ]
 then
-echo Samba4: There was a problem installing this package. Press return to continue.
-[ $AUTO = no ] && read pause
+	echo Samba4: There was a problem installing this package. Press return to continue.
+	[ $AUTO = no ] && read pause
 fi
 #Remove download folder
 [ -d /opt/karoshi/serversetup/all/samba4/download ] && rm -f -R /opt/karoshi/serversetup/all/samba4/download
@@ -259,9 +259,9 @@ sleep 1
 services="apache apache_karoshi clamd cron cups e2guardian dhcp dns fail2ban glusterfs mailscanner memcached mon monitorix mysql nfs nginx nslcd nut openvpn postfix portmap proftpd radius rpcbind samba squid ssh tftpd xinetd"
 for service in `echo $services`
 do
-echo -e "\nStopping $service\n"
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$service"_"stop
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/$service
+	echo -e "\nStopping $service\n"
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$service"_"stop
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/$service
 done
 }
 
@@ -314,8 +314,8 @@ sleep 1
 apt-get -y purge $package
 if [ $? != 0 ]
 then
-echo $package: There was a problem removing this package. Press return to continue.
-[ $AUTO = no ] && read pause
+	echo $package: There was a problem removing this package. Press return to continue.
+	[ $AUTO = no ] && read pause
 fi
 done
 
@@ -350,14 +350,14 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/remaste
 #Import public gpg keys - needed for official patches to be applied later.
 for PUBLIC_KEY in /opt/karoshi/serversetup/all/keys/*
 do
-KEYNAME=`basename $PUBLIC_KEY`
-KEY=`echo $KEYNAME | sed 's/.key$//g'`
-echo Importing key :$KEY
-gpg --import $PUBLIC_KEY
-#Get fingerprint
-FINGERPRINT=`gpg --fingerprint $KEY | grep fingerprint | sed 's/ //g' | cut -d"=" -f2`
-#Set ownertrust to 6
-echo $FINGERPRINT:6: | gpg --import-ownertrust
+	KEYNAME=`basename $PUBLIC_KEY`
+	KEY=`echo $KEYNAME | sed 's/.key$//g'`
+	echo Importing key :$KEY
+	gpg --import $PUBLIC_KEY
+	#Get fingerprint
+	FINGERPRINT=`gpg --fingerprint $KEY | grep fingerprint | sed 's/ //g' | cut -d"=" -f2`
+	#Set ownertrust to 6
+	echo $FINGERPRINT:6: | gpg --import-ownertrust
 done
 
 #Make sure that apt is happy - something was causing a problem and thunar was getting removed - this may have been caused by remastersys later on.
@@ -427,7 +427,7 @@ sed -i 's/Inherits=gnome,crystalsvg/Inherits=gnome,crystalsvg,mate/g' /usr/share
 #Configure mount.d to run on 33777
 if [ `grep -c 33777 /etc/default/nfs-kernel-server` = 0 ]
 then
-sed -i 's/--manage-gids/--manage-gids -p 33777/g' /etc/default/nfs-kernel-server
+	sed -i 's/--manage-gids/--manage-gids -p 33777/g' /etc/default/nfs-kernel-server
 fi
 
 #Create an empty main.cf to stop postconf from moaning.
@@ -437,8 +437,8 @@ touch /etc/postfix/main.cf
 /opt/karoshi/serversetup/scripts/language/create_karoshi_locale
 
 #Modify langlist for ubiquity installer
-mv /usr/share/localechooser/languagelist /usr/share/localechooser/languagelist.$$
-cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/languagelist /usr/share/localechooser
+#mv /usr/share/localechooser/languagelist /usr/share/localechooser/languagelist.$$
+#cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/languagelist /usr/share/localechooser
 
 #Delete install_log
 [ -f /opt/karoshi/serversetup/install_log ] && rm -f /opt/karoshi/serversetup/install_log

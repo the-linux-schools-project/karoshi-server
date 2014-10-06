@@ -634,34 +634,34 @@ echo `date`: "Making folders and groups" >> /opt/karoshi/serversetup/install_log
 #Make Groups
 COUNTER=$STARTYEAR
 while [  $COUNTER -le $ENDYEAR ]; do
-echo -e "$"Adding group" yr$COUNTER"
+echo -e ''$"Adding group"' 'yr$COUNTER''
 NEWGROUP=yr$COUNTER
 NEWGROUPDISP="Year $COUNTER"
 add_samba4_group
 let COUNTER=COUNTER+1
 done
 
-echo -e "$"Adding group" staff"
+echo -e ''$"Adding group"' staff'
 NEWGROUP=staff
 NEWGROUPDISP=Staff
 add_samba4_group
 
-echo -e "$"Adding group" nonteachingstaff"
+echo -e ''$"Adding group"' nonteachingstaff'
 NEWGROUP=nonteachingstaff
 NEWGROUPDISP="Non teaching staff"
 add_samba4_group
 
-echo -e "$"Adding group" studentstaff"
+echo -e ''$"Adding group"' studentstaff'
 NEWGROUP=studentstaff
 NEWGROUPDISP="Student Staff"
 add_samba4_group
 
-echo -e "$"Adding group" guestusers"
+echo -e ''$"Adding group"' guestusers'
 NEWGROUP=guestusers
 NEWGROUPDISP="Guest Users"
 add_samba4_group
 
-echo -e "$"Adding group" exams"
+echo -e ''$"Adding group"' exams'
 NEWGROUP=exams
 NEWGROUPDISP="Exam Users"
 add_samba4_group
@@ -676,32 +676,32 @@ NEWGROUP=tech
 NEWGROUPDISP="Tech Users"
 add_samba4_group
 
-echo -e "$"Adding group" officestaff"
+echo -e ''$"Adding group"' officestaff'
 NEWGROUP=officestaff
 NEWGROUPDISP="Office Staff"
 add_samba4_group
 
-echo -e "$"Adding group" bursar"
+echo -e ''$"Adding group"' bursar'
 NEWGROUP=bursar
 NEWGROUPDISP="Bursars"
 add_samba4_group
 
-echo -e "$"Adding group" smt"
+echo -e ''$"Adding group"' smt'
 NEWGROUP=smt
 NEWGROUPDISP="Senior Management"
 add_samba4_group
 
-echo -e "$"Adding group" governors"
+echo -e ''$"Adding group"' governors'
 NEWGROUP=governors
 NEWGROUPDISP="Governors"
 add_samba4_group
 
-echo -e "$"Adding group" guardians"
+echo -e ''$"Adding group"' guardians'
 NEWGROUP=guardians
 NEWGROUPDISP="Guardians"
 add_samba4_group
 
-echo -e "$"Adding group" profilemanagement"
+echo -e ''$"Adding group"' profilemanagement'
 NEWGROUP=profilemanagement
 NEWGROUPDISP="Profile Management"
 add_samba4_group

@@ -29,16 +29,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/linux_client_choose_distro_cgi
 then
-echo `date`: linux_client_choose_distro - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: linux_client_choose_distro - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/linux_client_choose_distro_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/linux_client_choose_distro.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $linux_client_choose_distro_cgi'check' ]
 then
-echo `date`: linux_client_choose_distro - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: linux_client_choose_distro - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -47,16 +47,16 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: linux_client_choose_distro - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: linux_client_choose_distro - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: linux_client_choose_distro - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: linux_client_choose_distro - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -68,29 +68,29 @@ CONTROL=`echo "$DATA" | cut -s -d: -f5`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: linux_client_choose_distro - Not called by linux_client_choose_distro.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: linux_client_choose_distro - Not called by linux_client_choose_distro.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
 echo `date`: linux_client_choose_distro - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
 echo `date`: linux_client_choose_distro - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-if [ $DISTROCHOICE'null' = null ]
+if [ -z "$DISTROCHOICE" ]
 then
-echo `date`: linux_client_choose_distro - Blank distribution choice by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: linux_client_choose_distro - Blank distribution choice by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: linux_client_choose_distro - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: linux_client_choose_distro - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ##########################
@@ -241,7 +241,7 @@ echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 cp -v -f /home/distributions/linux_distro/'$DISTROFOLDER'/casper/initrd.* /home/tftpboot/images/'$DISTROFOLDER'/
 cp -v -f /home/distributions/linux_distro/'$DISTROFOLDER'/casper/vmlinuz /home/tftpboot/images/'$DISTROFOLDER'/
 [ ! -f /home/tftpboot/preseed.cfg ] && cp /opt/karoshi/serversetup/modules/distributionserver/tftpboot/images/ubuntu/preseed.cfg /home/tftpboot/
-cp -v -f /home/tftpboot/preseed.cfg cp -v -f /home/tftpboot/preseed.cfg /home/distributions/linux_distro/'$DISTROFOLDER'/casper/
+cp -v -f /home/tftpboot/preseed.cfg /home/distributions/linux_distro/'$DISTROFOLDER'/casper/
 sed -i "s/CHANGETHISLOCALE/$LANG/" /home/distributions/linux_distro/$DISTROFOLDER/casper/preseed.cfg
 
 echo "</pre>"

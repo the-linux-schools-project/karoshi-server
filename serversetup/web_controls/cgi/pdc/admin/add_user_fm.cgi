@@ -156,15 +156,15 @@ if (enrollmentValue == "") {
 	enrollmentValue = "Enrollment number as username";
 }
 
-document.myform._USERNAMESTYLE_.options[0]=new Option("Style 1: " + firstnameValue[0] + surnameValue + yearValue, "userstyleS1", false, status1);
-document.myform._USERNAMESTYLE_.options[1]=new Option("Style 2: " + yearValue + firstnameValue[0] + surnameValue, "userstyleS2", false, status2);
-document.myform._USERNAMESTYLE_.options[2]=new Option("Style 3: " + surnameValue + firstnameValue[0] + yearValue, "userstyleS3", false, status3);
-document.myform._USERNAMESTYLE_.options[3]=new Option("Style 4: " + firstnameValue + "." + surnameValue + yearValue, "userstyleS4", false, status4);
-document.myform._USERNAMESTYLE_.options[4]=new Option("Style 5: " + surnameValue + "." + firstnameValue + yearValue, "userstyleS5", false, status5);
-document.myform._USERNAMESTYLE_.options[5]=new Option("Style 6: " + yearValue + surnameValue + firstnameValue[0], "userstyleS6", false, status6);
-document.myform._USERNAMESTYLE_.options[6]=new Option("Style 7: " + yearValue + firstnameValue + surnameValue[0], "userstyleS7", false, status7);
-document.myform._USERNAMESTYLE_.options[7]=new Option("Style 8: " + firstnameValue + surnameValue[0], "userstyleS8", false, status8);
-document.myform._USERNAMESTYLE_.options[8]=new Option("Style 9: " + enrollmentValue, "userstyleS9", false, status9);
+document.myform._USERNAMESTYLE_.options[0]=new Option("'$"Style"' 1: " + firstnameValue[0] + surnameValue + yearValue, "userstyleS1", false, status1);
+document.myform._USERNAMESTYLE_.options[1]=new Option("'$"Style"' 2: " + yearValue + firstnameValue[0] + surnameValue, "userstyleS2", false, status2);
+document.myform._USERNAMESTYLE_.options[2]=new Option("'$"Style"' 3: " + surnameValue + firstnameValue[0] + yearValue, "userstyleS3", false, status3);
+document.myform._USERNAMESTYLE_.options[3]=new Option("'$"Style"' 4: " + firstnameValue + "." + surnameValue + yearValue, "userstyleS4", false, status4);
+document.myform._USERNAMESTYLE_.options[4]=new Option("'$"Style"' 5: " + surnameValue + "." + firstnameValue + yearValue, "userstyleS5", false, status5);
+document.myform._USERNAMESTYLE_.options[5]=new Option("'$"Style"' 6: " + yearValue + surnameValue + firstnameValue[0], "userstyleS6", false, status6);
+document.myform._USERNAMESTYLE_.options[6]=new Option("'$"Style"' 7: " + yearValue + firstnameValue + surnameValue[0], "userstyleS7", false, status7);
+document.myform._USERNAMESTYLE_.options[7]=new Option("'$"Style"' 8: " + firstnameValue + surnameValue[0], "userstyleS8", false, status8);
+document.myform._USERNAMESTYLE_.options[8]=new Option("'$"Style"' 9: " + enrollmentValue, "userstyleS9", false, status9);
 }
 </script>
 </head><body onLoad="start()"><div id="pagecontainer">'

@@ -555,7 +555,22 @@ check_user_details
 done
 
 htpasswd -b /opt/karoshi/web_controls/web_access_admin $NEWUSERNAME $NEWUSERPASSWORD
-echo DEFAULTPAGE=setup_wizard.cgi > /opt/karoshi/web_controls/user_prefs/$NEWUSERNAME
+
+#Copy in user prefs
+if [ -f /opt/karoshi/web_controls/global_prefs ]
+then
+	if [ ! -d /opt/karoshi/web_controls/user_prefs ]
+	then
+		mkdir /opt/karoshi/web_controls/user_prefs
+		chmod 0750 /opt/karoshi/web_controls/user_prefs
+		chown root.apache_karoshi /opt/karoshi/web_controls/user_prefs
+	fi
+	cp -f /opt/karoshi/web_controls/global_prefs /opt/karoshi/web_controls/user_prefs/$NEWUSERNAME
+	chmod 0640 /opt/karoshi/web_controls/user_prefs/$NEWUSERNAME
+	chown root.apache_karoshi /opt/karoshi/web_controls/user_prefs/$NEWUSERNAME
+fi
+
+echo DEFAULTPAGE=setup_wizard.cgi >> /opt/karoshi/web_controls/user_prefs/$NEWUSERNAME
 chown apache_karoshi /opt/karoshi/web_controls/user_prefs/$NEWUSERNAME
 
 ###########################
