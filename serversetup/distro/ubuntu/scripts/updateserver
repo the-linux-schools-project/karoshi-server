@@ -273,6 +273,11 @@ echo -e "_________________________________________________\n" >>/opt/karoshi/log
 ###########################
 check_config_files
 
+##########################
+#Modify mon ping monitor
+##########################
+#Default is to just ping once - this change will cause the ping check to keep trying up to six times over 3 seconds - the check will report a success at the first successful ping.
+sed -i 's/PING="ping -c 1"/PING="ping -i 0.5 -c 1 -w 3"/g' /usr/lib/mon/mon.d/ping.monitor
 ###########################
 #Make sure that apache2_karoshi is running on the main server.
 ###########################

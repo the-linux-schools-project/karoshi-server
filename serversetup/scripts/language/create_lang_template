@@ -30,8 +30,7 @@ done
 
 function createpofiles {
 #Translate the pot to a po for each language
-#LANGLIST="ar+cs+da+de+el+es+fr+hi+he+it+ko+nb+nl+pl+pt+ru+sv+sw+zh"
-LANGLIST="nl"
+LANGLIST="ar+cs+da+de+el+es+fr+hi+he+it+ko+nb+nl+pl+pt+ru+sv+zh"
 #rm -f /opt/karoshi/serversetup/language/*.po
 
 for MSGIDDATA in `grep ^msgid /opt/karoshi/serversetup/language/karoshi-server.pot | sed 's/ /___/g'`

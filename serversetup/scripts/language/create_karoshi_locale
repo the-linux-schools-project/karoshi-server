@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LANGLIST="ar+cs+da+de+el+es+fr+hi+he+it+ko+nb+nl+pl+pt+ru+sv+sw+zh"
+LANGLIST="ar+cs+da+de+el+es+fr+hi+he+it+ko+nb+nl+pl+pt+ru+sv+zh"
 
 for LANGFILE in `echo $LANGLIST | sed 's/+/ /g'`
 do

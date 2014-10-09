@@ -128,7 +128,6 @@ echo '<option value="ar_AE.UTF-8">العربية</option>
 <option value="pt_PT.UTF-8">Português</option>
 <option value="ru_RU.UTF-8">Pусский</option>
 <option value="sv_FI.UTF-8">Svenska</option>
-<option value="sw_KE.UTF-8">Kiswahili</option>
 <option value="zh_CN.UTF-8">语</option> ' | sed 's/"'$LANG'"/"'$LANG'" selected="selected" style="color:green"/g'
 echo '</select>'
 }

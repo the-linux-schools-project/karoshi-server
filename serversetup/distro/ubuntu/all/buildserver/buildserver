@@ -430,6 +430,12 @@ then
 	sed -i 's/--manage-gids/--manage-gids -p 33777/g' /etc/default/nfs-kernel-server
 fi
 
+#Modify mon ping monitor - default is to just ping once - this change will cause the ping check to keep trying up to six times over 3 seconds - the check will report a success at the first successful ping.
+sed -i 's/PING="ping -c 1"/PING="ping -i 0.5 -c 1 -w 3"/g' /usr/lib/mon/mon.d/ping.monitor
+
+#Configure casper
+sed -i 's/export USERNAME="ubuntu"/export USERNAME="karoshi"/g' /etc/casper.conf
+
 #Create an empty main.cf to stop postconf from moaning.
 touch /etc/postfix/main.cf
 
