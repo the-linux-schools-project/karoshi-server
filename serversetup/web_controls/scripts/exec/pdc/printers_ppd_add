@@ -178,8 +178,6 @@ mv "$PPDFILE" "$PPDFILE2"
 PPDFILE=$PPDFILE2
 PPDFILE=`basename $PPDFILE`
 
-echo files are >> /tmp/data
-ls /var/www/karoshi/ppd_files/ >> /tmp/data
 ####################
 #add ppd file to printer
 ####################
@@ -211,7 +209,7 @@ sed -i "s/DefaultImageableArea: Letter/DefaultImageableArea: '$PAGESIZE'/g" /etc
 sed -i "s/DefaultColorModel: Gray/DefaultColorModel: '$COLOUROPTION'/g" /etc/cups/ppd/'$PRINTERNAME'.ppd
 [ ! -d /var/lib/samba/netlogon/linuxclient/printer_drivers/ ] && mkdir -p /var/lib/samba/netlogon/linuxclient/printer_drivers/
 ' 2>&1
-scp root@$PRINTERSERVER:"/etc/cups/ppd/'$PRINTERNAME'.ppd" /var/lib/samba/netlogon/linuxclient/printer_drivers/
+scp root@$PRINTSERVER:"/etc/cups/ppd/$PRINTERNAME.ppd" /var/lib/samba/netlogon/linuxclient/printer_drivers/
 else
 lpadmin -p $PRINTERNAME -P  /var/www/karoshi/ppd_files/$PPDFILE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
@@ -230,5 +228,5 @@ sed -i "s/DefaultColorModel: Gray/DefaultColorModel: $COLOUROPTION/g" /etc/cups/
 cp -f /etc/cups/ppd/$PRINTERNAME.ppd /var/lib/samba/netlogon/linuxclient/printer_drivers/
 fi
 
-rm -f /var/www/karoshi/ppd_files/
+rm -f -R /var/www/karoshi/ppd_files/
 exit

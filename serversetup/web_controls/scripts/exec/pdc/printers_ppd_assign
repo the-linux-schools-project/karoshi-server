@@ -154,7 +154,7 @@ sed -i "s/DefaultImageableArea: Letter/DefaultImageableArea: '$PAGESIZE'/g" /etc
 sed -i "s/DefaultColorModel: Gray/DefaultColorModel: '$COLOUROPTION'/g" /etc/cups/ppd/'$PRINTERNAME'.ppd
 [ ! -d /var/lib/samba/netlogon/linuxclient/printer_drivers/ ] && mkdir -p /var/lib/samba/netlogon/linuxclient/printer_drivers/
 ' 2>&1
-scp root@$PRINTERSERVER:"/etc/cups/ppd/'$PRINTERNAME'.ppd" /var/lib/samba/netlogon/linuxclient/printer_drivers/
+scp root@$PRINTERSERVER:"/etc/cups/ppd/$PRINTERNAME.ppd" /var/lib/samba/netlogon/linuxclient/printer_drivers/
 else
 if [ -f $PRINTERPPD ]
 then

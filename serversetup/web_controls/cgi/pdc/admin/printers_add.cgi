@@ -155,7 +155,6 @@ done
 
 function show_printers {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/admin/printers.cgi";'
 echo '</script>'
 echo "</div></body></html>"

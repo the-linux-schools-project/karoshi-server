@@ -34,7 +34,7 @@ NOTIMEOUT=127.0.0.1
 TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NoTIMEOUT` = 1 ]
+if [ `echo $REMOTE_ADDR | grep -c "$NOTIMEOUT"` = 1 ]
 then
 TIMEOUT=86400
 fi
@@ -48,8 +48,8 @@ echo '
     <TITLE>'$"Upload PPD file"'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
-</HEAD>
-<BODY>'
+</head>
+<body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
@@ -84,8 +84,8 @@ echo '<div id="actionbox">
 <div id="submitbox">
   <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>
-        </FORM>
-</BODY>
-</HTML>
+        </form>
+</div></body>
+</html>
 '
 exit
