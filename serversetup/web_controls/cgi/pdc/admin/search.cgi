@@ -108,22 +108,8 @@ echo '<div id="actionbox3"><div id="titlebox">'
 
 echo '<b>'$"Search"' '$"Web Management"' - "'$SEARCH'"</b><br><br></div><div id="infobox">'
 
-#Get array of results
-RESULTS=( `cat /opt/karoshi/web_controls/language/englishuk/menus/menu | grep -v "#" | grep -i "$SEARCH" | sed 's/"//g' | sed 's/ /+/g'` )
-RESULTCOUNT=${#RESULTS[@]}
-COUNTER=0
+/opt/karoshi/web_controls/generate_navbar_admin | grep "href=" | grep \"*$SEARCH | grep -v 'class="mid"' | grep -v 'class="top"' | sed 's/">/" class="searchlink">/g' | sed 's/<li>//g' | sed 's/<\/li>//g'
 
-while [ $COUNTER -lt $RESULTCOUNT ]
-do
-SEARCHENTRY=${RESULTS[$COUNTER]}
-RESULT=`echo $SEARCHENTRY | cut -d"=" -f2 | sed 's/+/ /g'`
-LANGVAR=`echo $SEARCHENTRY | cut -d"=" -f1 | sed 's/+/ /g'`
-#Get html link for each result
-LINK=`grep -v 'class="mid"' /opt/karoshi/web_controls/generate_navbar_admin | grep -w $LANGVAR | cut -d'"' -f2`
-[ $LINK'null' != null ] && echo '<a href="'$LINK'" class="searchlink">'$RESULT'</a><br>'
-
-let COUNTER=$COUNTER+1
-done
 echo '</div></div></div></body></html>'
 exit
 

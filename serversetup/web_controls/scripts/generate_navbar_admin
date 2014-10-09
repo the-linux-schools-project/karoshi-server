@@ -248,7 +248,7 @@ echo '			<li class="mid"><a href="/cgi-bin/admin/ntp.cgi" class="fly">'$"Time"'<
 						<li><a href="/cgi-bin/admin/cron_view_fm.cgi">'$"Scheduled jobs"'</a></li>
 					</ul>
 			</li>'
-if [ $"Back"UPCTRL = yes ]
+if [ $BACKUPCTRL = yes ]
 then
 echo '			<li class="mid"><a href="/cgi-bin/admin/backup_enable_disable_fm.cgi" class="fly">'$"Backup Controls"'</a>
 					<ul>

@@ -4,7 +4,7 @@ LANGLIST="ar+cs+da+de+el+es+fr+hi+he+it+ko+nb+nl+pl+pt+ru+sv+zh"
 
 for LANGFILE in `echo $LANGLIST | sed 's/+/ /g'`
 do
-echo $LANGFILE
-msgfmt -o /usr/share/locale/$LANGFILE/LC_MESSAGES/karoshi-server.mo /opt/karoshi/serversetup/language/$LANGFILE.po
+	echo $LANGFILE
+	msgfmt -o /usr/share/locale/$LANGFILE/LC_MESSAGES/karoshi-server.mo /opt/karoshi/serversetup/language/$LANGFILE.po
 done
 dpkg-reconfigure locales
