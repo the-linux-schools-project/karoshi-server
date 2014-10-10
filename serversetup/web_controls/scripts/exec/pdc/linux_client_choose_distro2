@@ -164,9 +164,9 @@ else
 INITRD=initrd.gz
 fi
 
-
+DEFAULTISO=no
 [ ! -f /home/tftpboot/default_iso ] && echo DEFAULTIMAGE=notset > /home/tftpboot/default_iso
-if [ $DEFAULTISO = yes ]
+if [ "$DEFAULTISO" = yes ]
 then
 echo DEFAULTIMAGE=\"$DISTROFOLDER\" > /home/tftpboot/default_iso
 fi

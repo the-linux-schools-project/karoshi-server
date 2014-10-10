@@ -65,7 +65,7 @@ do
 	if [ `echo $DATAHEADER'check'` = PRINTERNAMEcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		PRINTERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER |  tr -cd 'A-Za-z0-9_'`
+		PRINTERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER |  tr -cd 'A-Za-z0-9_-'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -225,14 +225,7 @@ fi
 #Check to see that PRINTERPORT is not blank
 if [ -z "$PRINTERPORT" ]
 then
-MESSAGE=$"The printer port cannot be blank."
-show_status
-fi
-
-#Check that this printer has not already been added
-if [ `lpstat -a | grep -c -w ^$PRINTERNAME` != 0 ]
-then
-	MESSAGE=$"This printer queue already exists."
+	MESSAGE=$"The printer port cannot be blank."
 	show_status
 fi
 
@@ -243,6 +236,11 @@ EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 101 ]
 then
 	MESSAGE=`echo $"There was a problem with this action.": $"Please check the karoshi web administration logs for more details."`
+	show_status
+fi
+if [ $EXEC_STATUS = 102 ]
+then
+	MESSAGE=`echo $"A printer queue with this name already exists."`
 	show_status
 fi
 show_printers

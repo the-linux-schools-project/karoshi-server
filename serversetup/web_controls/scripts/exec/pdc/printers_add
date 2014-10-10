@@ -24,7 +24,7 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 
 SSHWARNMSG="SSH is not enabled for this server."
 ########################
@@ -32,16 +32,16 @@ SSHWARNMSG="SSH is not enabled for this server."
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/printers_add_cgi
 then
-echo `date`: printers_add - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_add - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/printers_add_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printers_add.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $printers_add_cgi'check' ]
 then
-echo `date`: printers_add - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_add - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -70,50 +70,49 @@ PRINTERPORT=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f10 | sed 's/+//
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
 then
-echo `date`: printers_add - Not called by printers_add.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_add - Not called by printers_add.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: printers_add - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_add - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: printers_add - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_add - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 #Check to see that PRINTERNAME is not blank
-if [ $PRINTERNAME'null' = null ]
+if [ -z "$PRINTERNAME" ]
 then
-echo `date`: printers_add - Blank Printername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_add - Blank Printername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 #Check to see that PRINTERADDRESS is not blank
-if [ $PRINTERADDRESS'null' = null ]
+if [ -z "$PRINTERADDRESS" ]
 then
-echo `date`: printers_add - Blank Printer address by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_add - Blank Printer address by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 #Check to see that PRINTERTYPE is not blank
-if [ $PRINTERTYPE'null' = null ]
+if [ -z "$PRINTERTYPE" ]
 then
-echo `date`: printers_add - Blank Printer type by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_add - Blank Printer type by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 #Check to see that PRINTERPORT is not blank
-if [ $PRINTERPORT'null' = null ]
+if [ -z "$PRINTERPORT" ]
 then
-echo `date`: printers_add - Blank Printer port by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_add - Blank Printer port by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
 then
-echo `date`: printers_add - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_add - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ####################
 #add printer
@@ -129,75 +128,96 @@ fi
 PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/printserver`
 if [ $PRINTSERVER != `hostname-fqdn` ]
 then
-USESSH=yes
+	USESSH=yes
 else
-USESSH=no
+	USESSH=no
 fi
 
 #Check to see that PRINTSERVER is not blank
-if [ $PRINTSERVER'null' = null ]
+if [ -z "$PRINTSERVER" ]
 then
-echo `date`: printers_add - No print servers have been setup by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_add - No print servers have been setup by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
+#Check that this printer has not already been added
+if [ $USESSH = yes ]
+then
+ssh -x -o PasswordAuthentication=no $PRINTSERVER '
+	if [ `lpstat -a | grep -c -w ^'$PRINTERNAME'` != 0 ]
+	then
+		exit 102
+	fi
+'
+	if [ $? = 102 ] 
+	then
+			echo `date`: printers_add - This printer queue already exists by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE	
+			exit 102
+	fi
+else
+	if [ `lpstat -a | grep -c -w ^$PRINTERNAME` != 0 ]
+	then
+		echo `date`: printers_add - This printer queue already exists by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 102
+	fi
+fi
 
 echo `date`: printers_add - Adding $PRINTERNAME:$PRINTERADDRESS:$PRINTERTYPE:$PRINTERPORT by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #Add printer
 #Network TCP
 if [ $PRINTERTYPE = NetworkPrinterTCP ]
 then
-if [ $USESSH = yes ]
-then
-ssh -x -o PasswordAuthentication=no $PRINTSERVER '
-lpadmin -p '$PRINTERNAME' -v socket://'$PRINTERADDRESS':'$PRINTERPORT'/ -E
-' 2>&1
-else
-lpadmin -p $PRINTERNAME -v socket://$PRINTERADDRESS:$PRINTERPORT/ -E
-fi
+	if [ $USESSH = yes ]
+	then
+		ssh -x -o PasswordAuthentication=no $PRINTSERVER '
+	lpadmin -p '$PRINTERNAME' -v socket://'$PRINTERADDRESS':'$PRINTERPORT'/ -E
+	' 2>&1
+	else
+		lpadmin -p $PRINTERNAME -v socket://$PRINTERADDRESS:$PRINTERPORT/ -E
+	fi
 fi
 #Network ipp
 if [ $PRINTERTYPE = NetworkPrinterIPP ]
 then
-if [ $USESSH = yes ]
-then
-ssh -x -o PasswordAuthentication=no $PRINTSERVER '
-lpadmin -p '$PRINTERNAME' -v ipp://'$PRINTERADDRESS':631/ipp -E
-' 2>&1
-else
-lpadmin -p $PRINTERNAME -v ipp://$PRINTERADDRESS:631/ipp -E
-fi
+	if [ $USESSH = yes ]
+	then
+		ssh -x -o PasswordAuthentication=no $PRINTSERVER '
+	lpadmin -p '$PRINTERNAME' -v ipp://'$PRINTERADDRESS':631/ipp -E
+	' 2>&1
+	else
+		lpadmin -p $PRINTERNAME -v ipp://$PRINTERADDRESS:631/ipp -E
+	fi
 fi
 # LPD queue
 if [ $PRINTERTYPE = RemoteLPDqueue ]
 then
-if [ $USESSH = yes ]
-then
-ssh -x -o PasswordAuthentication=no $PRINTSERVER '
-lpadmin -p '$PRINTERNAME' -v lpd://'$PRINTERADDRESS'/'$PRINTERQUEUE' -E
-' 2>&1
-else
-lpadmin -p $PRINTERNAME -v lpd://$PRINTERADDRESS/$PRINTERQUEUE -E
-fi
+	if [ $USESSH = yes ]
+	then
+		ssh -x -o PasswordAuthentication=no $PRINTSERVER '
+	lpadmin -p '$PRINTERNAME' -v lpd://'$PRINTERADDRESS'/'$PRINTERQUEUE' -E
+	' 2>&1
+	else
+		lpadmin -p $PRINTERNAME -v lpd://$PRINTERADDRESS/$PRINTERQUEUE -E
+	fi
 fi
 #Add location and printer desc
 if [ $USESSH = yes ]
 then
-ssh -x -o PasswordAuthentication=no $PRINTSERVER '
+	ssh -x -o PasswordAuthentication=no $PRINTSERVER '
 lpadmin -p '$PRINTERNAME' -L "'$LOCATION'" -D "'$PRINTERDESC'"
 ' 2>&1
 else
-lpadmin -p $PRINTERNAME -L "$LOCATION" -D "$PRINTERDESC"
+	lpadmin -p $PRINTERNAME -L "$LOCATION" -D "$PRINTERDESC"
 fi
 
 #Reload samba configuration to enable samba print share
 if [ $USESSH = yes ]
 then
-ssh -x -o PasswordAuthentication=no $PRINTSERVER '
+	ssh -x -o PasswordAuthentication=no $PRINTSERVER '
 killall -HUP smbd nmbd 2>/dev/null
 '
 else
-killall -HUP smbd nmbd 2>/dev/null
+	killall -HUP smbd nmbd 2>/dev/null
 fi
 
 function sortprinterstxt {
@@ -218,45 +238,45 @@ rm -f /var/lib/samba/netlogon/printers_data.txt
 #Create printers.txt if it doesnt exist
 if [ ! -f /var/lib/samba/netlogon/printers.txt ]
 then
-echo '**********************************************************************' > /var/lib/samba/netlogon/printers.txt
-echo '*'Printer names must match share names on skynet >> /var/lib/samba/netlogon/printers.txt
-echo '*'Supports a maximum of 10 printers per location >> /var/lib/samba/netlogon/printers.txt
-echo '*'List your printers below the start marker >> /var/lib/samba/netlogon/printers.txt
-echo '*'Do NOT remove or alter start marker >> /var/lib/samba/netlogon/printers.txt
-echo '*' >> /var/lib/samba/netlogon/printers.txt
-echo '*'Format: Location,Numberofprinters,Printer1,Printer2,....,DefaultPrinter >> /var/lib/samba/netlogon/printers.txt
-echo '*'Example: R101,2,R101_BW,R101_CL,R101_BW >> /var/lib/samba/netlogon/printers.txt
-echo '**********************************************************************' >> /var/lib/samba/netlogon/printers.txt
-echo >> /var/lib/samba/netlogon/printers.txt
-echo --start-- >> /var/lib/samba/netlogon/printers.txt
-chmod 0644 /var/lib/samba/netlogon/printers.txt
+	echo '**********************************************************************' > /var/lib/samba/netlogon/printers.txt
+	echo '*'Printer names must match share names on skynet >> /var/lib/samba/netlogon/printers.txt
+	echo '*'Supports a maximum of 10 printers per location >> /var/lib/samba/netlogon/printers.txt
+	echo '*'List your printers below the start marker >> /var/lib/samba/netlogon/printers.txt
+	echo '*'Do NOT remove or alter start marker >> /var/lib/samba/netlogon/printers.txt
+	echo '*' >> /var/lib/samba/netlogon/printers.txt
+	echo '*'Format: Location,Numberofprinters,Printer1,Printer2,....,DefaultPrinter >> /var/lib/samba/netlogon/printers.txt
+	echo '*'Example: R101,2,R101_BW,R101_CL,R101_BW >> /var/lib/samba/netlogon/printers.txt
+	echo '**********************************************************************' >> /var/lib/samba/netlogon/printers.txt
+	echo >> /var/lib/samba/netlogon/printers.txt
+	echo --start-- >> /var/lib/samba/netlogon/printers.txt
+	chmod 0644 /var/lib/samba/netlogon/printers.txt
 fi
 
 #####################
 #Modify /var/lib/samba/netlogon/printers.txt
 #####################
-if [ $LOCATION'null' != null ]
+if [ ! -z "$LOCATION" ]
 then
-#Check to see if location is in list
-DUPLICATECOUNT=`grep -c ^$LOCATION, /var/lib/samba/netlogon/printers.txt`
-if [ $DUPLICATECOUNT = 0 ]
-then
-echo $LOCATION,1,$PRINTERNAME,$PRINTERNAME >> /var/lib/samba/netlogon/printers.txt
-else
-#Get location linenumber
-LOCATIONLINENO=`grep -n ^$LOCATION, /var/lib/samba/netlogon/printers.txt | cut -d: -f1`
-#Get printer info for location
-LOCATIONINFO=`sed -n $LOCATIONLINENO,$LOCATIONLINENO'p' /var/lib/samba/netlogon/printers.txt`
-PRINTERCOUNT=`echo $LOCATIONINFO | cut -d, -f2`
-let PRINTERCOUNT=$PRINTERCOUNT+1
-PRINTERS=`echo $LOCATIONINFO | cut -d, -f3-`
-#Remove existing line
-sed -i $LOCATIONLINENO'd' /var/lib/samba/netlogon/printers.txt
-#Delete empty lines
-sed -i '/^$/d' /var/lib/samba/netlogon/printers.txt
-#Add in location
-echo $LOCATION,$PRINTERCOUNT,$PRINTERNAME,$PRINTERS >> /var/lib/samba/netlogon/printers.txt
-fi
+	#Check to see if location is in list
+	DUPLICATECOUNT=`grep -c ^$LOCATION, /var/lib/samba/netlogon/printers.txt`
+	if [ $DUPLICATECOUNT = 0 ]
+	then
+		echo $LOCATION,1,$PRINTERNAME,$PRINTERNAME >> /var/lib/samba/netlogon/printers.txt
+	else
+		#Get location linenumber
+		LOCATIONLINENO=`grep -n ^$LOCATION, /var/lib/samba/netlogon/printers.txt | cut -d: -f1`
+		#Get printer info for location
+		LOCATIONINFO=`sed -n $LOCATIONLINENO,$LOCATIONLINENO'p' /var/lib/samba/netlogon/printers.txt`
+		PRINTERCOUNT=`echo $LOCATIONINFO | cut -d, -f2`
+		let PRINTERCOUNT=$PRINTERCOUNT+1
+		PRINTERS=`echo $LOCATIONINFO | cut -d, -f3-`
+		#Remove existing line
+		sed -i $LOCATIONLINENO'd' /var/lib/samba/netlogon/printers.txt
+		#Delete empty lines
+		sed -i '/^$/d' /var/lib/samba/netlogon/printers.txt
+		#Add in location
+		echo $LOCATION,$PRINTERCOUNT,$PRINTERNAME,$PRINTERS >> /var/lib/samba/netlogon/printers.txt
+	fi
 fi
 sortprinterstxt
 exit
