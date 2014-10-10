@@ -96,8 +96,6 @@ fi
 
 echo `date`: module_web on $WEBSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/web/setupweb
-
 #Check to see if we need to create a database
 
 if [ ! -z "$WEBDB" ] && [ ! -z "$WEBDBUSER" ] && [ ! -z "$WEBDBPASS" ]
@@ -114,7 +112,6 @@ fi
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
 
-source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/moodle/setupmoodle
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 

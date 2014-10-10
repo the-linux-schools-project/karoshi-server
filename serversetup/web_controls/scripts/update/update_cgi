@@ -39,14 +39,6 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/$1/$script | cut -d' ' -f1`
 echo $SCRIPTNAME=$MD5SUM > /opt/karoshi/web_controls/checksums/$1_checksums/$SCRIPTNAME
 chmod 0400 /opt/karoshi/web_controls/checksums/$1_checksums/$SCRIPTNAME
 
-#Update language file for script
-LANGPATH=`grep "LANGCHOICE/" /opt/karoshi/serversetup/web_controls/cgi/pdc/$1/$script | cut -d" " -f3 | sed -n 1,1p | sed 's/\/opt\/karoshi\/web_controls\/language\/$LANGCHOICE//g'`
-if [ -f /opt/karoshi/serversetup/web_controls/language/englishuk/$LANGPATH ]
-then
-cp -f /opt/karoshi/serversetup/web_controls/language/englishuk/$LANGPATH /opt/karoshi/web_controls/language/englishuk/$LANGPATH
-chmod 0640 /opt/karoshi/web_controls/language/englishuk/$LANGPATH
-chown root:apache_karoshi /opt/karoshi/web_controls/language/englishuk/$LANGPATH
-fi
 fi
 done
 fi

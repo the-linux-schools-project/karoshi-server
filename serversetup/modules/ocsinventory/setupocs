@@ -56,10 +56,6 @@ fi
 [ -d /var/www/html ] || mkdir -p /var/www/html
 [ ! -e /opt/karoshi/.tempdata/mysqlpasswordstatus ] || rm -f /opt/karoshi/.tempdata/mysqlpasswordstatus
 
-
-LANGCHOICE=englishuk
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/ocsinventory/setupocs ] || LANGCHOICE=englishuk
-source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/ocsinventory/setupocs
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 

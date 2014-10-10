@@ -90,10 +90,7 @@ then
 	echo `date`: remote_management_change_language - Blank firstname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit
 fi
-if [ ! -d /opt/karoshi/web_controls/language/$LANGCHOICE ]
-then
-	echo `date`: remote_management_change_language - no language folder "for" $LANGCHOICE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-fi
+
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
 then
 	echo `date`: remote_management_change_language - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE

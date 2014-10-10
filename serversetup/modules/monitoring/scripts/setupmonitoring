@@ -86,7 +86,6 @@ cp -f -R /opt/karoshi/serversetup/modules/monitoring/mon/admin /var/www/cgi-bin/
 cp -f /opt/karoshi/serversetup/modules/monitoring/"useful scripts"/gen_status "/opt/karoshi/useful scripts/"
 cp -f -R "/opt/karoshi/serversetup/web_controls/html/pdc/css/" "/var/www/html/"
 cp -f -R "/opt/karoshi/serversetup/web_controls/images" "/var/www/html/"
-cp -f -R "/opt/karoshi/serversetup/web_controls/language/" "/opt/karoshi/web_controls/"
 cp -f "/opt/karoshi/serversetup/web_controls/scripts/generate_navbar_mon" "/opt/karoshi/web_controls/"
 
 cp -f /opt/karoshi/serversetup/modules/monitoring/mon/alerts/smtp-cli /opt/karoshi/server_network/mon/

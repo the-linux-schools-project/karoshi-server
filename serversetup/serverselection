@@ -26,13 +26,6 @@
 source /opt/karoshi/serversetup/variables/version
 [ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
 source /opt/karoshi/serversetup/variables/distro
-if [ -e /opt/karoshi/serversetup/variables/language ]
-then
-	source /opt/karoshi/serversetup/variables/language
-else
-	source /opt/karoshi/serversetup/language/englishuk/serverselection
-	echo LANGCHOICE=englishuk > /opt/karoshi/serversetup/variables/language
-fi
 
 TEXTDOMAIN=karoshi-server
 locale 1>/dev/null

@@ -97,9 +97,6 @@ STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
 
-[ -f /opt/karoshi/serversetup/language/$LANGCHOICE/modules/backupserver/setupbackupserver ] || 
-source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/backupserver/setupbackupserver
-
 #Add role information
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
 echo $"Backup Server""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/backupserver

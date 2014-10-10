@@ -74,9 +74,6 @@ fi
 [ ! -d /opt/karoshi/.tempdata ] && mkdir /opt/karoshi/.tempdata
 [ ! -d /var/www/html ] && mkdir -p /var/www/html
 
-
-
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/email/setupemail ] || 
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 TEXTDOMAIN=karoshi-server

@@ -112,10 +112,6 @@ exit 101
 fi
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/file/file_manager ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/file/file_manager
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 
 #Show server choice
 if [ $LOCATION'null' = null ] && [ $ACTION = ENTER ]

@@ -110,10 +110,6 @@ echo `date`: module_radioserver - Setting up $SERVERNAME by $REMOTE_USER from $R
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
 
-[ -f /opt/karoshi/serversetup/language/$LANGCHOICE/modules/radioserver/setupradioserver ] || 
-source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/radioserver/setupradioserver
-
-
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 
@@ -179,7 +175,6 @@ scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/icecas
 scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/icecast_stop root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
 scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/icecast root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/ 1> /dev/null
 scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/icecast root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/ 1> /dev/null
-scp -p -r /opt/karoshi/serversetup/language/englishuk/modules/radioserver/ root@$SERVERNAME:/opt/karoshi/serversetup/language/englishuk/modules 1> /dev/null
 scp -p -r /opt/karoshi/serversetup/distro/ubuntu/modules/radioserver root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/modules/ 1> /dev/null
 
 

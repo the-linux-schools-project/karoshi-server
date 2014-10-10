@@ -30,11 +30,7 @@
 ############################
 LANGCHOICE=englishuk
 STYLESHEET=monstyle.css
-LANGCHOICE=englishuk
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/system/mon_status ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/system/mon_status
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
-source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
 ############################
 #Show page
 ############################

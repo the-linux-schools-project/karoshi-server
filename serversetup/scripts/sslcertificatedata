@@ -19,10 +19,8 @@
 #
 #Website: http://www.karoshi.org.uk
 [ -d $HOME/.tempdata ] || mkdir $HOME/.tempdata
-source /opt/karoshi/serversetup/variables/language
 source /opt/karoshi/serversetup/variables/xdialog
 source /opt/karoshi/serversetup/variables/years
-source /opt/karoshi/serversetup/language/$LANGCHOICE/sslcertificatedata
 echo go > $HOME/.tempdata/sslstop 
 
 #####################

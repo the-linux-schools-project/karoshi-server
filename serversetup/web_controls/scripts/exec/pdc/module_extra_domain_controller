@@ -107,8 +107,6 @@ fi
 echo `date`: module_extra_domain_controller by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/modules/extra_domain_controller/setupextradomaincontroller ] || LANGCHOICE=englishuk
-source /opt/karoshi/serversetup/language/$LANGCHOICE/modules/extra_domain_controller/setupextradomaincontroller
 
 #Setup shorewall
 
