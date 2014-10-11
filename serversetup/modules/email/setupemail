@@ -168,12 +168,12 @@ sed -i 's/CHANGETHISLDAPSERVER/'$LDAPSERVER'/g' /etc/postfix/ldap.cf
 #Change dovecot limits
 if [ `grep -c ^"#default_process_limit = 100" /etc/dovecot/conf.d/10-master.conf` -gt 0 ]
 then
-sed -i "s/^#default_process_limit = 100/default_process_limit = 1000/g" default_process_limit /etc/dovecot/conf.d/10-master.conf
+sed -i "s/^#default_process_limit = 100/default_process_limit = 1000/g"  /etc/dovecot/conf.d/10-master.conf
 fi
 
 if [ `grep -c ^"#default_client_limit = 1000" /etc/dovecot/conf.d/10-master.conf` -gt 0 ]
 then
-sed -i "s/^#default_client_limit = 1000/default_client_limit = 2003/g" default_process_limit /etc/dovecot/conf.d/10-master.conf
+sed -i "s/^#default_client_limit = 1000/default_client_limit = 2003/g" /etc/dovecot/conf.d/10-master.conf
 fi
 
 if [ `grep -c ^mail_location /etc/dovecot/dovecot.conf` = 0 ]
