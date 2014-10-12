@@ -51,28 +51,28 @@ END_POINT=8
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign LOGACTION
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = LOGACTIONcheck ]
-then
-let COUNTER=$COUNTER+1
-LOGACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = LOGACTIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		LOGACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -88,39 +88,38 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that a server has been chosen
-if [ $SERVER'null' = null ]
+if [ -z "$SERVER" ]
 then
-MESSAGE=$"You must choose a server to backup."
-show_status
+	MESSAGE=$"You must choose a server to backup."
+	show_status
 fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo "<div id="actionbox">"
+echo '<div id="actionbox3"><div id="infobox">'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_now.cgi | cut -d' ' -f1`
 #backup now
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER" | sudo -H /opt/karoshi/web_controls/exec/backup_now
-echo "</div>"
-echo "</div></body></html>"
+echo "</div></div></div></body></html>"
 exit

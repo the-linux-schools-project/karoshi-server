@@ -1842,7 +1842,7 @@ BACKUPNAME=`echo $LOCATION | cut -d/ -f5`
 BACKUPINFOPATH=/home/backups/$RESTORESERVER/$BACKUPNAME/backup_information
 #Read info file
 BACKUPINFO=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-[ -f "'$"Back"UPINFOPATH'" ] && cat '$"Back"UPINFOPATH'
+[ -f "'$BACKUPINFOPATH'" ] && cat '$BACKUPINFOPATH'
 '`
 
 TOPRESTOREPATH=`echo -e "$BACKUPINFO" | sed -n 4,4p`
