@@ -29,16 +29,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/backup_assign_cgi
 then
-echo `date`: backup_assign - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: backup_assign - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/backup_assign_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_assign.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $backup_assign_cgi'check' ]
 then
-echo `date`: backup_assign - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: backup_assign - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -53,10 +53,10 @@ fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: backup_assign - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: backup_assign - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -69,41 +69,41 @@ BACKUPSERVER=`echo "$DATA" | cut -s -d: -f5`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: backup_assign - Not called by backup_assign.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: backup_assign - Not called by backup_assign.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: backup_assign - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: backup_assign - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: backup_assign - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: backup_assign - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $SERVER'null' = null ]
+if [ -z "$SERVER" ]
 then
-echo `date`: backup_assign - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: backup_assign - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
-if [ $"Back"UPSERVER'null' = null ]
+if [ -z "$BACKUPSERVER" ]
 then
-echo `date`: backup_assign - Blank backup server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: backup_assign - Blank backup server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: backup_assign - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: backup_assign - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $"Back"UPSERVER = removebackupoption ]
+if [ $BACKUPSERVERR = removebackupoption ]
 then
-echo `date`: backup_assign - removing backup option "for" $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-[ -d /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER ] && rm -f -R /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER
-exit
+	echo `date`: backup_assign - removing backup option "for" $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	[ -d /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER ] && rm -f -R /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER
+	exit
 fi
 
 ##########################
@@ -115,7 +115,7 @@ STYLESHEET=defaultstyle.css
 TEXTDOMAIN=karoshi-server
 
 
-echo `date`: backup_assign - assigning $SERVER to $"Back"UPSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: backup_assign - assigning $SERVER to $$BACKUPSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 
 #Enable ssh from the server to the backup server
@@ -151,8 +151,8 @@ chmod 0600 /root/.ssh_servers/authorized_keys'$SERVER'
 #Get server ip
 KAROSHISERVERTCPIP=`net lookup $SERVER`
 scp -o PasswordAuthentication=no -r $SERVER:/root/.ssh_servers/authorized_keys$SERVER /root/.ssh_servers
-scp -o PasswordAuthentication=no -r /root/.ssh_servers/authorized_keys$SERVER $"Back"UPSERVER:/root/.ssh
-ssh -x -o PasswordAuthentication=no $"Back"UPSERVER '
+scp -o PasswordAuthentication=no -r /root/.ssh_servers/authorized_keys$SERVER $BACKUPSERVER:/root/.ssh
+ssh -x -o PasswordAuthentication=no $BACKUPSERVER '
 sed "/root@'$SERVER'/d" /root/.ssh/authorized_keys2 > /root/.ssh/authorized_keys2.$$
 rm -f /root/.ssh/authorized_keys2
 mv /root/.ssh/authorized_keys2.$$ /root/.ssh/authorized_keys2
@@ -182,81 +182,81 @@ fi
 
 #Write backup config
 [ ! -d /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER ] && mkdir -p /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER ]
-echo $"Back"UPSERVER > /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backupserver
+echo $BACKUPSERVER > /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backupserver
 
 #Write default backup paths
 if [ ! -f /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders ]
 then
-echo /etc,etc,21 > /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /opt/karoshi,karoshi,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/itadminstaff,itadminstaff,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/staff,staff,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/officestaff,officestaff,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/nonteachingstaff,nonteachingstaff,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/studentstaff,studentstaff,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/exams,exams,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/techstaff,techstaff,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/guests,guests,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/subjects,subjects,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/applications,applications,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/staffshare,staffshare,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/officeshare,officeshare,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/itadminshare,itadminshare,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2000,yr2000,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2001,yr2001,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2002,yr2002,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2003,yr2003,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2004,yr2004,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2005,yr2005,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2006,yr2006,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2007,yr2007,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2008,yr2008,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2009,yr2009,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2010,yr2010,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2011,yr2011,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2012,yr2012,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2013,yr2013,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2014,yr2014,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2015,yr2015,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2016,yr2016,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2017,yr2017,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2018,yr2018,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2019,yr2019,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2020,yr2020,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2021,yr2021,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2022,yr2022,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2023,yr2023,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2024,yr2024,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2025,yr2025,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2026,yr2026,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2027,yr2027,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2028,yr2028,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2029,yr2029,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2030,yr2030,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2031,yr2031,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2032,yr2032,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2033,yr2033,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2034,yr2034,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2035,yr2035,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2036,yr2036,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2037,yr2037,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2038,yr2038,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2039,yr2039,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2040,yr2040,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2041,yr2041,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2042,yr2042,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2043,yr2043,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2044,yr2044,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2045,yr2045,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2046,yr2046,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2047,yr2047,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2048,yr2048,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/students/yr2049,yr2049,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /var/lib/samba/,samba,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /home/users/email,email,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /var/www/html,html,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /var/www/moodle-data,moodle-data,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-echo /var/lib/mysql,mysql,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /etc,etc,21 > /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /opt/karoshi,karoshi,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/itadminstaff,itadminstaff,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/staff,staff,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/officestaff,officestaff,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/nonteachingstaff,nonteachingstaff,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/studentstaff,studentstaff,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/exams,exams,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/techstaff,techstaff,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/guests,guests,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/subjects,subjects,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/applications,applications,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/staffshare,staffshare,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/officeshare,officeshare,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/itadminshare,itadminshare,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2000,yr2000,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2001,yr2001,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2002,yr2002,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2003,yr2003,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2004,yr2004,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2005,yr2005,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2006,yr2006,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2007,yr2007,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2008,yr2008,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2009,yr2009,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2010,yr2010,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2011,yr2011,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2012,yr2012,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2013,yr2013,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2014,yr2014,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2015,yr2015,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2016,yr2016,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2017,yr2017,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2018,yr2018,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2019,yr2019,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2020,yr2020,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2021,yr2021,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2022,yr2022,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2023,yr2023,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2024,yr2024,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2025,yr2025,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2026,yr2026,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2027,yr2027,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2028,yr2028,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2029,yr2029,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2030,yr2030,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2031,yr2031,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2032,yr2032,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2033,yr2033,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2034,yr2034,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2035,yr2035,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2036,yr2036,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2037,yr2037,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2038,yr2038,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2039,yr2039,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2040,yr2040,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2041,yr2041,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2042,yr2042,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2043,yr2043,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2044,yr2044,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2045,yr2045,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2046,yr2046,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2047,yr2047,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2048,yr2048,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/students/yr2049,yr2049,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /var/lib/samba/,samba,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /home/users/email,email,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /var/www/html,html,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /var/www/moodle-data,moodle-data,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /var/lib/mysql,mysql,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
 fi
 exit
 
