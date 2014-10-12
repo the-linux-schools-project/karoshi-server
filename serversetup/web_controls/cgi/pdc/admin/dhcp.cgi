@@ -243,6 +243,10 @@ then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
+
+#Make sure we have ifconfig in the path
+PATH=/usr/local/bin:/usr/bin:/bin:/sbin:/bin
+
 #########################
 #Check data
 #########################
