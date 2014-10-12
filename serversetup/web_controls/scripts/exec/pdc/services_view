@@ -24,23 +24,23 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/services_view_cgi
 then
-echo `date`: services_view - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: services_view - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/services_view_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/services_view.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $services_view_cgi'check' ]
 then
-echo `date`: services_view - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: services_view - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -48,15 +48,15 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: services_view - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: services_view - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: services_view - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: services_view - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -d: -f2`
@@ -74,38 +74,38 @@ then
 echo `date`: services_view - Not called by services_view.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: services_view - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: services_view - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: services_view - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: services_view - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-echo `date`: services_view - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: services_view - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $SERVERTYPE'null' = null ]
+if [ -z "$SERVERTYPE" ]
 then
-echo `date`: services_view - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: services_view - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ $SERVERTYPE = federatedslave ]
 then
-if [ $SERVERMASTER'null' = null ]
+if [ -z "$SERVERMASTER" ]
 then
-echo `date`: services_view - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: services_view - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: services_view - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: services_view - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 echo `date`: services_view $SERVERNAME - by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -122,11 +122,11 @@ source /opt/karoshi/serversetup/variables/distro
 
 if [ $MOBILE = no ]
 then
-ICON1=/images/submenus/system/service_running.png
-ICON2=/images/submenus/system/service_stopped.png
+	ICON1=/images/submenus/system/service_running.png
+	ICON2=/images/submenus/system/service_stopped.png
 else
-ICON1=/images/submenus/system/service_runningm.png
-ICON2=/images/submenus/system/service_stoppedm.png
+	ICON1=/images/submenus/system/service_runningm.png
+	ICON2=/images/submenus/system/service_stoppedm.png
 fi
 
 function get_status {
@@ -141,7 +141,7 @@ DSERVICES=cron,monitorix
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/2users-groups ] && DSERVICES=$DSERVICES,nslcd
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver ] && DSERVICES=$DSERVICES,apache,mysql
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/casserver ] && DSERVICES=$DSERVICES,apache
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/distributionserver ] && DSERVICES=$DSERVICES,nfs,tftpd
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/distributionserver ] && DSERVICES=$DSERVICES,nfs,rpcbind,tftpd
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver ] && DSERVICES=$DSERVICES,apache,mysql,mailscanner,memcached,postfix,dovecot,sogo,clamd
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/homeaccess ] && DSERVICES=$DSERVICES,apache
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/squid ] && DSERVICES=$DSERVICES,apache,e2guardian,squid,squiddebproxy
@@ -165,7 +165,7 @@ DSERVICES=cron,monitorix
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/2users-groups ] && DSERVICES=$DSERVICES,nslcd
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/apacheserver ] && DSERVICES=$DSERVICES,apache,mysql
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/casserver ] && DSERVICES=$DSERVICES,apache
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/distributionserver ] && DSERVICES=$DSERVICES,nfs,tftpd
+[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/distributionserver ] && DSERVICES=$DSERVICES,nfs,rpcbind,tftpd
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/emailserver ] && DSERVICES=$DSERVICES,apache,mysql,memcached,mailscanner,postfix,dovecot,sogo,clamd
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/homeaccess ] && DSERVICES=$DSERVICES,apache
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/squid ] && DSERVICES=$DSERVICES,apache,e2guardian,squid,squiddebproxy
@@ -189,7 +189,7 @@ DSERVICES=cron,monitorix
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/2users-groups ] && DSERVICES=$DSERVICES,nslcd
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/apacheserver ] && DSERVICES=$DSERVICES,apache,mysql
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/casserver ] && DSERVICES=$DSERVICES,apache
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/distributionserver ] && DSERVICES=$DSERVICES,nfs,tftpd
+[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/distributionserver ] && DSERVICES=$DSERVICES,nfs,rpcbind,tftpd
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/emailserver ] && DSERVICES=$DSERVICES,apache,mysql,memcached,mailscanner,postfix,dovecot,sogo,clamd
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/homeaccess ] && DSERVICES=$DSERVICES,apache
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/squid ] && DSERVICES=$DSERVICES,apache,e2guardian,squid,squiddebproxy
@@ -227,7 +227,7 @@ DSERVICES=$DSERVICES2
 DSERVICES=`echo -e "$DSERVICES" | sed "s/,/\n/g" | sort`
 
 #List of all services to check
-ALLSERVICES="apache clamd cups cron e2guardian dhcp dns dovecot glusterfs mailscanner memcached mon monitorix mysql nfs nginx nslcd openvpn postfix radius samba sogo squid squiddebproxy vsftpd"
+ALLSERVICES="apache clamd cups cron e2guardian dhcp dns dovecot glusterfs mailscanner memcached mon monitorix mysql nfs nginx nslcd openvpn postfix radius rpcbind samba sogo squid squiddebproxy vsftpd"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 function check_status {
