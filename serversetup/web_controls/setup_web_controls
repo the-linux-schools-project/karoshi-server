@@ -137,6 +137,7 @@ fi
 if [ ! -f /opt/karoshi/web_controls/global_prefs ]
 then
 	echo export LANG=\"$LANG\" > /opt/karoshi/web_controls/global_prefs
+	echo export LC_ALL=\"C\" >> /opt/karoshi/web_controls/global_prefs
 	echo STYLESHEET=lightblue.css >> /opt/karoshi/web_controls/global_prefs
 fi
 
