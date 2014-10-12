@@ -1781,11 +1781,11 @@ LOCATIONFOLDER=`echo $LOCATION | cut -d/ -f6-`
 RESTORESERVER=`echo $LOCATION | cut -d/ -f4`
 [ `echo $RESTORESERVER'null' | sed 's/ //g'` = null ] && RESTORESERVER=notset
 BACKUPNAME=`echo $LOCATION | cut -d/ -f5`
-[ `echo $"Back"UPNAME'null' | sed 's/ //g'` = null ] && BACKUPNAME=notset
-BACKUPINFOPATH=/home/backups/$RESTORESERVER/$"Back"UPNAME/backup_information
+[ `echo $BACKUPNAME'null' | sed 's/ //g'` = null ] && BACKUPNAME=notset
+BACKUPINFOPATH=/home/backups/$RESTORESERVER/$BACKUPNAME/backup_information
 #Read info file
 BACKUPINFO=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-[ -f "'$"Back"UPINFOPATH'" ] && cat '$"Back"UPINFOPATH'
+[ -f "'$BACKUPINFOPATH'" ] && cat '$BACKUPINFOPATH'
 '`
 
 TOPRESTOREPATH=`echo -e "$BACKUPINFO" | sed -n 4,4p`
@@ -1838,8 +1838,8 @@ LOCATIONFOLDER=`echo $LOCATION | cut -d/ -f6-`
 RESTORESERVER=`echo $LOCATION | cut -d/ -f4`
 [ `echo $RESTORESERVER'null' | sed 's/ //g'` = null ] && RESTORESERVER=notset
 BACKUPNAME=`echo $LOCATION | cut -d/ -f5`
-[ `echo $"Back"UPNAME'null' | sed 's/ //g'` = null ] && BACKUPNAME=notset
-BACKUPINFOPATH=/home/backups/$RESTORESERVER/$"Back"UPNAME/backup_information
+[ `echo $BACKUPNAME'null' | sed 's/ //g'` = null ] && BACKUPNAME=notset
+BACKUPINFOPATH=/home/backups/$RESTORESERVER/$BACKUPNAME/backup_information
 #Read info file
 BACKUPINFO=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 [ -f "'$"Back"UPINFOPATH'" ] && cat '$"Back"UPINFOPATH'
