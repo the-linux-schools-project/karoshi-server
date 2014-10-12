@@ -248,7 +248,7 @@ then
 	#Ensure services start on boot
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nfs
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/tftpd
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/portmap
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/rpcbind
 else
 
 #Copy in start on boot files
@@ -392,7 +392,7 @@ fi
 #Ensure services start on boot
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nfs
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/tftpd
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/portmap
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/rpcbind
 
 '
 fi
