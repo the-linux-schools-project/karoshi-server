@@ -19,6 +19,8 @@ ln -s /bin/true /tmp/fake/start-stop-daemon
 ln -s /bin/true /tmp/fake/service
 
 export PATH=/tmp/fake:$PATH
+export DEBIAN_FRONTEND=noninteractive
+
 
 #Make sure that dpkg is happy
 dpkg --configure -a
@@ -47,6 +49,7 @@ apt-get install --yes linux-generic
 
 echo -e "\nChroot: Installing grub2 and plymouth-x11\n"
 sleep 1	
+
 apt-get install --yes grub-pc grub-pc-bin grub2-common grub-common grub-gfxpayload-lists plymouth-x11
 
 echo -e "\nChroot: Installing python-software-properties\n"

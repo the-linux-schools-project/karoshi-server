@@ -245,6 +245,39 @@ MESSAGE=$"stop service"
 FONTCOLOR=#11BE26
 fi
 }
+
+apache=$"Web server"
+clamd=$"Clamav daemon"
+cups=$"Print server"
+cron=$"Schedular"
+e2guardian=$"Internet filtering"
+dhcp=$"DHCP server"
+dns=$"Domain name resolution"
+dovecot=$"Dovecot imap server"
+mailscanner=$"E-mail server"
+memcached=$"Memcache"
+mon=$"Network monitoring"
+monitorix=$"System Monitor"
+mysql=$"Web server database"
+nfs=$"Distribution server"
+nginx=$"Reverse proxy server"
+nslcd=$"Name service daemon"
+openvpn=$"Open VPN service"
+portmap=$"Portmap"
+postfix=$"E-mail server"
+radius=$"Authentication service"
+rpcbind=$"Port Mapper"
+samba=$"File and print server"
+sogo=$"SOGo E-Mail"
+squid=$"Internet proxy server"
+squiddebproxy=$"Squid deb proxy"
+tftpd=$"Distribution server"
+dovecot=$"Dovecot imap server"
+proftpd=$"FTP server"
+vsftpd=$"FTP server"
+glusterfs=$"Distributed FS Server"
+
+
 ############################
 #Check suggested services
 ############################
@@ -291,6 +324,7 @@ openvpn="'$"Open VPN service"'"
 portmap="'$"Portmap"'"
 postfix="'$"E-mail server"'"
 radius="'$"Authentication service"'"
+rpcbind="'$"Port Mapper"'"
 samba="'$"File and print server"'"
 sogo="'$"SOGo E-Mail"'"
 squid="'$"Internet proxy server"'"
