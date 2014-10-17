@@ -319,7 +319,7 @@ fi
 
 if [ $ACTION = reallyadd ]
 then
-NAME=`echo $NAME | tr -cd 'A-Za-z0-9'`
+NAME=`echo $NAME | tr -cd 'A-Za-z0-9.'`
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 echo `date`: dnsview - adding $NAME $DNSENTRY to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
