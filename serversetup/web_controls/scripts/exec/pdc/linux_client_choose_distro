@@ -148,7 +148,7 @@ echo '<br><br><b>'$"Distribution Server"' '$"ISO Images"'</b><br><br>'
 if [ $DISTROSERVER = `hostname-fqdn` ]
 then
 [ ! -d /home/distributions/linux_iso ] && mkdir /home/distributions/linux_iso
-if [ `ls -1 /home/distributions/linux_iso/*.iso 2>/dev/null | wc -l` -gt 0 ]
+if [ `ls -1 /home/distributions/linux_iso/ 2>/dev/null | wc -l` -gt 0 ]
 then
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody>'
@@ -169,7 +169,7 @@ fi
 else
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3  $DISTROSERVER '
 [ ! -d /home/distributions/linux_iso ] && mkdir /home/distributions/linux_iso
-if [ `ls -1 /home/distributions/linux_iso/*.iso | wc -l` -gt 0 ]
+if [ `ls -1 /home/distributions/linux_iso/ | wc -l` -gt 0 ]
 then
 echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
 <tbody>"
