@@ -185,16 +185,15 @@ TIMEOUT=10
 [ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 1 ] && TIMEOUT=200
 
 [ -f /home/tftpboot/imagelist.cfg ] && rm -f /home/tftpboot/imagelist.cfg
-for MENUITEMS in /home/tftpboot/menus/*
-do
-MENUITEM=`basename $MENUITEMS`
-cat /home/tftpboot/menus/$MENUITEM >> /home/tftpboot/imagelist.cfg
-if [ $DEFAULTIMAGE = $MENUITEM ]
+if [ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 0 ]
 then
-echo '	menu default' >> /home/tftpboot/imagelist.cfg
+	for MENUITEMS in /home/tftpboot/menus/*
+	do
+		MENUITEM=`basename $MENUITEMS`
+		cat /home/tftpboot/menus/$MENUITEM >> /home/tftpboot/imagelist.cfg
+		echo >> /home/tftpboot/imagelist.cfg
+	done
 fi
-echo >> /home/tftpboot/imagelist.cfg
-done
 
 #Restart nfs server
 echo "<li>"$DISTRIBUTIONSERVER - $"Restarting NFS Server""</li><br>"
@@ -274,16 +273,15 @@ TIMEOUT=10
 [ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 1 ] && TIMEOUT=200
 
 [ -f /home/tftpboot/imagelist.cfg ] && rm -f /home/tftpboot/imagelist.cfg
-for MENUITEMS in /home/tftpboot/menus/*
-do
-MENUITEM=`basename $MENUITEMS`
-cat /home/tftpboot/menus/$MENUITEM >> /home/tftpboot/imagelist.cfg
-if [ $DEFAULTIMAGE = $MENUITEM ]
+if [ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 0 ]
 then
-echo "	menu default" >> /home/tftpboot/imagelist.cfg
+	for MENUITEMS in /home/tftpboot/menus/*
+	do
+		MENUITEM=`basename $MENUITEMS`
+		cat /home/tftpboot/menus/$MENUITEM >> /home/tftpboot/imagelist.cfg
+		echo >> /home/tftpboot/imagelist.cfg
+	done
 fi
-echo >> /home/tftpboot/imagelist.cfg
-done
 
 #Restart nfs server
 echo "<li>"'$DISTRIBUTIONSERVER' - '$"Restarting NFS Server"'"</li><br>"
@@ -305,7 +303,7 @@ then
 #Delete symlink
 [ -e /home/distributions/linux_iso/"$DISTROCHOICE" ] && rm -f /home/distributions/linux_iso/"$DISTROCHOICE"
 
-if [ $$DISTRIBUTIONSERVER = `hostname-fqdn` ]
+if [ $DISTRIBUTIONSERVER = `hostname-fqdn` ]
 then
 [ -d /home/tftpboot/images/$DISTROFOLDER/ ] && rm -f -R /home/tftpboot/images/$DISTROFOLDER/
 [ -e /home/tftpboot/menus/$DISTROFOLDER ] && rm -f /home/tftpboot/menus/$DISTROFOLDER
@@ -314,16 +312,15 @@ TIMEOUT=10
 [ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 1 ] && TIMEOUT=200
 
 [ -f /home/tftpboot/imagelist.cfg ] && rm -f /home/tftpboot/imagelist.cfg
-for MENUITEMS in /home/tftpboot/menus/*
-do
-MENUITEM=`basename $MENUITEMS`
-cat /home/tftpboot/menus/$MENUITEM >> /home/tftpboot/imagelist.cfg
-if [ $DEFAULTIMAGE = $MENUITEM ]
+if [ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 0 ]
 then
-echo '	menu default' >> /home/tftpboot/imagelist.cfg
+	for MENUITEMS in /home/tftpboot/menus/*
+	do
+		MENUITEM=`basename $MENUITEMS`
+		cat /home/tftpboot/menus/$MENUITEM >> /home/tftpboot/imagelist.cfg
+		echo >> /home/tftpboot/imagelist.cfg
+	done
 fi
-echo >> /home/tftpboot/imagelist.cfg
-done
 
 #Restart nfs server
 echo "<li>"$DISTRIBUTIONSERVER - $"Restarting NFS Server""</li><br>"
@@ -344,16 +341,15 @@ TIMEOUT=10
 [ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 1 ] && TIMEOUT=200
 
 [ -f /home/tftpboot/imagelist.cfg ] && rm -f /home/tftpboot/imagelist.cfg
-for MENUITEMS in /home/tftpboot/menus/*
-do
-MENUITEM=`basename $MENUITEMS`
-cat /home/tftpboot/menus/$MENUITEM >> /home/tftpboot/imagelist.cfg
-if [ $DEFAULTIMAGE = $MENUITEM ]
+if [ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 0 ]
 then
-echo "	menu default" >> /home/tftpboot/imagelist.cfg
+	for MENUITEMS in /home/tftpboot/menus/*
+	do
+		MENUITEM=`basename $MENUITEMS`
+		cat /home/tftpboot/menus/$MENUITEM >> /home/tftpboot/imagelist.cfg
+		echo >> /home/tftpboot/imagelist.cfg
+	done
 fi
-echo >> /home/tftpboot/imagelist.cfg
-done
 
 #Restart nfs server
 echo "<li>"'$DISTRIBUTIONSERVER' - '$"Restarting NFS Server"'"</li><br>"
