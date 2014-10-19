@@ -22,6 +22,22 @@ PIDFILE=/var/run/$NAME.pid
 CONFIG=/etc/squid-deb-proxy/squid-deb-proxy.conf
 SQUID_ARGS="-YC -f $CONFIG"
 
+#Make sure that cache and log files exist and are owned by the proxy user
+if [ ! -d /var/cache/squid-deb-proxy ]
+then
+	mkdir -p /var/cache/squid-deb-proxy
+	chown proxy.proxy /var/cache/squid-deb-proxy
+	chmod 0750 /var/cache/squid-deb-proxy
+fi
+
+if [ ! -d /var/log/squid-deb-proxy ]
+then
+	mkdir -p /var/log/squid-deb-proxy
+	chown proxy.proxy /var/log/squid-deb-proxy
+	chmod 0750 /var/log/squid-deb-proxy
+fi
+
+
 [ ! -f /etc/default/squid-deb-proxy ] || . /etc/default/squid-deb-proxy
 
 . /lib/lsb/init-functions
