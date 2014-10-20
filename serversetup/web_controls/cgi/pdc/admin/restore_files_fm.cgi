@@ -61,14 +61,14 @@ exit
 #Check to see that a backup server has been configured
 if [ ! -d /opt/karoshi/server_network/backup_servers/backup_settings ]
 then
-MESSAGE=$"No backup servers have been configured."
-show_status
+	MESSAGE=$"No backup servers have been configured."
+	show_status
 fi
 
 if [ `ls -1 /opt/karoshi/server_network/backup_servers/backup_settings | wc -l` = 0 ]
 then
-MESSAGE=$"No backup servers have been configured."
-show_status
+	MESSAGE=$"No backup servers have been configured."
+	show_status
 fi
 
 #Generate navigation bar
@@ -82,30 +82,40 @@ echo '
 #Show list of servers to restore to
 #############################
 echo '<b>'$"Restore system files and folders"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the server that you want to restore system files to."'</span></a><br><br></div><div id="infobox">'
+
 SERVERLISTARRAY=( `ls -1 /opt/karoshi/server_network/backup_servers/backup_settings/` )
 SERVERLISTCOUNT=${#SERVERLISTARRAY[@]}
-SERVERCOUNTER=0
+SERVERCOUNTER=1
+LINECOUNTER=1
 SERVERICON="/images/submenus/system/computer.png"
 SERVERICON2="/images/submenus/system/all_computers.png"
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: 378px; vertical-align: top; text-align: left;"><b>'$"Server"'</b></td><td style="width: 70px; vertical-align: top; text-align: left;"><b>'$"Restore"'</b></td><td style="width: 378px; vertical-align: top; text-align: left;"><b>'$"Server"'</b></td><td style="width: 70px; vertical-align: top; text-align: left;"><b>'$"Restore"'</b></td></tr><tr>'
+
 
 while [ $SERVERCOUNTER -lt $SERVERLISTCOUNT ]
 do
-KAROSHISERVER=${SERVERLISTARRAY[$SERVERCOUNTER]}
+	KAROSHISERVER=${SERVERLISTARRAY[$SERVERCOUNTER]}
 
-#Get backup path
-BACKUPPATH=/home/backups/$KAROSHISERVER
-#Get backup server
-BACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/$KAROSHISERVER/backupserver`
+	#Get backup path
+	BACKUPPATH=/home/backups/$KAROSHISERVER
+	#Get backup server
+	BACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/$KAROSHISERVER/backupserver`
 
-echo '<td style="width: 90px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'$"Back"UPSERVER'_LOCATION_'$"Back"UPPATH'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$KAROSHISERVER'<br><br>'
+	echo '<td style="vertical-align: top; text-align: left;">'$KAROSHISERVER'</td><td style="vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'$BACKUPSERVER'_LOCATION_'$BACKUPPATH'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$KAROSHISERVER'<br><br>'
 
-cat /opt/karoshi/server_network/servers/$KAROSHISERVER/* | sed '/<a href/c'"&nbsp"
+	cat /opt/karoshi/server_network/servers/$KAROSHISERVER/* | sed '/<a href/c'"&nbsp"
 
-echo '</span></a><br>'$KAROSHISERVER'</td>'
+	echo '</span></a></td>'
 
-[ $SERVERCOUNTER = 3 ] && echo '</tr><tr>'
-let SERVERCOUNTER=$SERVERCOUNTER+1
+	let SERVERCOUNTER=$SERVERCOUNTER+1
+	let LINECOUNTER=$LINECOUNTER+1
+
+	if [ $LINECOUNTER = 3 ]
+	then	
+		echo '</tr><tr>'
+		LINECOUNTER=1
+	fi	
+
 done
 echo '</tr></tbody></table><br>'
 
@@ -114,31 +124,32 @@ echo '</tr></tbody></table><br>'
 #############################
 
 echo '<b>'$"Restore User Files and Folders"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the primary group that you want to restore user files to."'</span></a><br><br><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 120px;"><b>'$"Primary Group"'</b></td><td style="width:200px;"><b>'$"Server"'</b></td><td style="width: 120px;"><b>'$"Restore"'</b></td><td style="width: 120px;"><b>'$"Primary Group"'</b></td><td style="width: 200px;"><b>'$"Server"'</b></td><td><b>'$"Restore"'</b></td></tr>
+<tr><td style="width: 120px;"><b>'$"Primary Group"'</b></td><td style="width:250px;"><b>'$"Server"'</b></td><td style="width: 70px;"><b>'$"Restore"'</b></td><td style="width: 120px;"><b>'$"Primary Group"'</b></td><td style="width: 250px;"><b>'$"Server"'</b></td><td><b>'$"Restore"'</b></td></tr>
 '
 START_LINE=yes
 ICON1=/images/submenus/system/computer.png
 for PRI_GROUP in /opt/karoshi/server_network/group_information/*
 do
-PRI_GROUP=`basename $PRI_GROUP`
-source /opt/karoshi/server_network/group_information/$PRI_GROUP
+	PRI_GROUP=`basename $PRI_GROUP`
+	source /opt/karoshi/server_network/group_information/$PRI_GROUP
 
 
-if [ -d /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/ ]
-then
-#Get backup server
-BACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backupserver`
-#Get backup path
-BACKUPPATH=/home/backups/$SERVER/$PRI_GROUP
-if [ $START_LINE = yes ]
-then
-echo '<tr><td>'$PRI_GROUP'</td><td>'$SERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'$BACKUPSERVER'_LOCATION_'$BACKUPPATH'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVERNAME_'$SERVER'_"><span>'$"Restore"'<br>'$SERVER' - '$PRI_GROUP'</span></a></td>'
-START_LINE=no
-else
-echo '<td>'$PRI_GROUP'</td><td>'$SERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'$BACKUPSERVER'_LOCATION_'$BACKUPPATH'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVERNAME_'$SERVER'_"><span>'$"Restore"'<br>'$SERVER' - '$PRI_GROUP'</span></a></td></tr>'
-START_LINE=yes
-fi
-fi
+	if [ -d /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/ ]
+	then
+		#Get backup server
+		BACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backupserver`
+		#Get backup path
+		[ $PRI_GROUP = itadmin ] && PRI_GROUP=itadminstaff
+		BACKUPPATH=/home/backups/$SERVER/$PRI_GROUP
+		if [ $START_LINE = yes ]
+		then
+			echo '<tr><td>'$PRI_GROUP'</td><td>'$SERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'$BACKUPSERVER'_LOCATION_'$BACKUPPATH'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVERNAME_'$SERVER'_"><span>'$"Restore"'<br>'$SERVER' - '$PRI_GROUP'</span></a></td>'
+			START_LINE=no
+			else
+			echo '<td>'$PRI_GROUP'</td><td>'$SERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'$BACKUPSERVER'_LOCATION_'$BACKUPPATH'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVERNAME_'$SERVER'_"><span>'$"Restore"'<br>'$SERVER' - '$PRI_GROUP'</span></a></td></tr>'
+			START_LINE=yes
+			fi
+	fi
 done
 echo '</tbody></table><br>'
 

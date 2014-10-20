@@ -18,7 +18,7 @@ TEXTDOMAIN=karoshi-server
 #Check data
 
 function usage {
-echo -e "show_servers usage\n\nshow_servers mobile(yes/no) view(all/internal/pdc/servers/adc/web/email) actionmsg action custom separator" 
+echo -e "show_servers usage\n\nshow_servers mobile(yes/no) view(all/internal/pdc/servers/adc/web/email/backups/backupservers/restore) actionmsg action custom separator" 
 exit
 }
 
@@ -33,7 +33,7 @@ then
 	usage
 fi
 
-if [ $VIEW != all ] && [ $VIEW != internal ] && [ $VIEW != pdc ] && [ $VIEW != servers ] && [ $VIEW != adc ] && [ $VIEW != addslaveups ] && [ $VIEW != web ] && [ $VIEW != email ] && [ $VIEW != fileservers ] && [ $VIEW != backups ] && [ $VIEW != backupservers ]
+if [ $VIEW != all ] && [ $VIEW != internal ] && [ $VIEW != pdc ] && [ $VIEW != servers ] && [ $VIEW != adc ] && [ $VIEW != addslaveups ] && [ $VIEW != web ] && [ $VIEW != email ] && [ $VIEW != fileservers ] && [ $VIEW != backups ] && [ $VIEW != backupservers ] && [ $VIEW != restore ]
 then
 	usage
 fi
@@ -229,6 +229,18 @@ do
 done
 }
 
+function show_restore {
+INFOPATH=/opt/karoshi/server_network/servers
+SERVERTYPE=network
+SERVERMASTER=notset
+for SERVERS in /opt/karoshi/server_network/backup_servers/backup_settings/*
+do
+	FILLCOLOUR=green
+	SERVER=`basename $SERVERS`
+	[ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ] && FILLCOLOUR=orange
+	[ $CUSTOM != $SERVER ] && show_server
+done
+}
 
 function addslaveups {
 FILLCOLOUR=green
@@ -350,6 +362,9 @@ fi
 
 #Show backup servers
 [ $VIEW = backupservers ] && show_backupservers
+
+#Show restore
+[ $VIEW = restore ] && show_restore
 
 #Show all option
 [ $VIEW = all ] && show_all_option
