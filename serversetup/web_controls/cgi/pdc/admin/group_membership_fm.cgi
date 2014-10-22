@@ -80,7 +80,7 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
+DIV_ID=actionbox
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -89,7 +89,7 @@ fi
 
 echo '<form action="/cgi-bin/admin/group_membership.cgi" method="post">'
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -106,7 +106,7 @@ echo '
 <tr>
 <td style="vertical-align: top;"><div class="sectiontitle">'$"Group Membership"'</div></td>
 </tr></tbody></table>
-<br></div><div id="infobox">'
+<br>'
 fi
 
 if [ $MOBILE = yes ]
@@ -128,11 +128,10 @@ fi
 
 if [ $MOBILE = no ]
 then
-echo '</div></div><div id="submitbox">'
+echo '</div><div id="submitbox">'
 else
 echo '<br>'
 fi
 echo '<input value="'$"Submit"'" class="button" type="submit"></div>'
-[ $MOBILE = no ] && echo '</div>'
 echo '</form></div></body></html>'
 exit

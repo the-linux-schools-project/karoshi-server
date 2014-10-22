@@ -57,8 +57,8 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/change_primary_group.cgi" method="post"><div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Change Primary Group"'</div>
-  <br></div><div id="infobox">
+echo '<form action="/cgi-bin/admin/change_primary_group.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$"Change Primary Group"'</div>
+  <br>
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
       <tr>
@@ -79,12 +79,9 @@ echo '
     </tbody>
   </table>
   <br>
-</div>
-<div id="submitbox">
+</div><div id="submitbox">
   <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</div>
-</form>
-</div></div></body>
+</div></form></div></body>
 </html>
 '
 exit
