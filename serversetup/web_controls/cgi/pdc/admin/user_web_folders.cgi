@@ -43,7 +43,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -87,53 +87,53 @@ END_POINT=11
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = GROUPcheck ]
-then
-let COUNTER=$COUNTER+1
-GROUP=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = GROUPcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		GROUP=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign action
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-then
-let COUNTER=$COUNTER+1
-ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign USERNAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign SERVICECHECK
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVICECHECKcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVICECHECK=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVICECHECKcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVICECHECK=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 [ -z "$ACTION" ] && ACTION=check
@@ -143,18 +143,18 @@ done
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
-[ -z "$GROUP" ] && DIV_ID=actionbox
-TABLECLASS=standard
-WIDTH1=180
-WIDTH2=200
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	[ -z "$GROUP" ] && DIV_ID=actionbox
+	TABLECLASS=standard
+	WIDTH1=180
+	WIDTH2=200
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox
-TABLECLASS=mobilestandard
-WIDTH1=120
-WIDTH2=140
+	DIV_ID=actionbox
+	TABLECLASS=mobilestandard
+	WIDTH1=120
+	WIDTH2=140
 fi
 echo '<form name="myform" action="/cgi-bin/admin/user_web_folders.cgi" method="post">'
 
@@ -191,20 +191,20 @@ fi
 #Show list of groups to check
 if [ -z "$GROUP" ]
 then
-[ $MOBILE = no ] && '</div><div id="infobox">'
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-    <tbody><tr><td style="width: '$WIDTH1'px;">'$"Primary Group"'</td>
-<td>'
-/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: '$WIDTH2'px;">/g'
-echo '</td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_web_folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to set the web folder status for."'</span></a></td>
-</tr></tbody></table><br><br>
-'
-[ $MOBILE = no ] && echo '</div></div><div id="submitbox">'
-echo '<input value="'$"Submit"'" class="button" type="submit">
-</div></form></div></body></html>
-'
-exit
+	[ $MOBILE = no ] && echo '</div><div id="infobox">'
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	    <tbody><tr><td style="width: '$WIDTH1'px;">'$"Primary Group"'</td>
+	<td>'
+	/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: '$WIDTH2'px;">/g'
+	echo '</td>
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_web_folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to set the web folder status for."'</span></a></td>
+	</tr></tbody></table><br><br>
+	'
+	[ $MOBILE = no ] && echo '</div></div><div id="submitbox">'
+	echo '<input value="'$"Submit"'" class="button" type="submit">
+	</div></form></div></body></html>
+	'
+	exit
 fi
 
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$GROUP:$ACTION:$USERNAME:$SERVICECHECK:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/user_web_folders
