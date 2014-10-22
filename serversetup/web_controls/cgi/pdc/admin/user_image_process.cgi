@@ -43,13 +43,15 @@ TEXTDOMAIN=karoshi-server
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Upload User Image"'</title><meta http-equiv="REFRESH" content="0; URL=/cgi-bin/admin/user_image_upload_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Upload User Image"'</title><meta http-equiv="REFRESH" content="0; URL=/cgi-bin/admin/user_image_upload_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body onLoad="start()"><div id="pagecontainer">'
+
+#Generate navigation bar
+/opt/karoshi/web_controls/generate_navbar_admin
+echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Upload User Image"'</div><br></div><div id="infobox">'
 #########################
 #Get data input
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
-#DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
-#GROUP=`echo $DATA | cut -d'_' -f3`
 
 function show_status {
 
@@ -64,22 +66,22 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
@@ -91,15 +93,15 @@ chmod 0700 /var/www/karoshi/user_image_upload
 #Check to see that only one file has been uploaded
 if [ `dir /var/www/karoshi/user_image_upload --format=single-column | wc -l` != 1 ]
 then
-MESSAGE=$"Upload image error."
-show_status
+	MESSAGE=$"Upload image error."
+	show_status
 fi
 IMAGEFILE=`ls -1 /var/www/karoshi/user_image_upload | sed -n 1,1p`
 #Check to see if image is a .jpg / zip / tar.gz
 if [ `echo $IMAGEFILE | grep -c .jpg$` != 1 ] && [ `echo $IMAGEFILE | grep -c .zip$` != 1 ] && [ `echo $IMAGEFILE | grep -c .tar.gz$` != 1 ]
 then
-MESSAGE=$"The file you have uploaded does not have a suitable file extension."
-show_status
+	MESSAGE=$"The file you have uploaded does not have a suitable file extension."
+	show_status
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/user_image_process.cgi | cut -d' ' -f1`
@@ -109,11 +111,11 @@ MESSAGE=`echo $IMAGEFILE - $"User Image uploaded."`
 
 if [ $STATUS = 101 ]
 then
-MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`
+	MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`
 fi
 if [ $STATUS = 103 ]
 then
-MESSAGE=`echo $IMAGEFILE - $"The name of this image does not match a username or enrollment number."`
+	MESSAGE=`echo $IMAGEFILE - $"The name of this image does not match a username or enrollment number."`
 fi
 show_status
-echo "</div></body></html>"
+echo "</div></div></body></html>"

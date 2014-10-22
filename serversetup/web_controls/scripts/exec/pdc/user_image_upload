@@ -29,30 +29,30 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/user_image_process_cgi
 then
-echo `date`: user_image_process - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: user_image_process - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/user_image_process_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/user_image_process.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $user_image_process_cgi'check' ]
 then
-echo `date`: user_image_process - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: user_image_process - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/user_image_process_cgi
 then
-echo `date`: user_image_process - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: user_image_process - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/user_image_process_cgi
 MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/user_image_process.cgi | cut -d' ' -f1`
-[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+[ -z "$MD5SUM2" ] && MD5SUM2=not_set
 if [ $MD5SUM2'check' != $user_image_process_cgi'check' ]
 then
-echo `date`: user_image_process - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: user_image_process - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -61,16 +61,16 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: user_image_upload - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: user_image_upload - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: user_image_upload - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: user_image_upload - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -82,172 +82,181 @@ IMAGEFILE=`echo "$DATA" | cut -s -d: -f4`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
 then
-echo `date`: user_image_upload - Not called by user_image_upload.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: user_image_upload - Not called by user_image_upload.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: user_image_upload - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: user_image_upload - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: user_image_upload - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: user_image_upload - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $IMAGEFILE'null' = null ]
+if [ -z "$IMAGEFILE" ]
 then
-echo `date`: user_image_upload - Blank imagefile by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: user_image_upload - Blank imagefile by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
 then
-echo `date`: user_image_upload - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: user_image_upload - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
+source /opt/karoshi/server_network/domain_information/domain_name
 
 #Process individual file
 if [ `echo $IMAGEFILE | grep -c .jpg$` = 1 ]
 then
-#Check to see if image matches a username
-IMAGESTYLE=notset
-FILENAME_NO_EXT=`echo $IMAGEFILE | sed 's/.jpg//g'| sed 's/ /space/g'`
-id -g $FILENAME_NO_EXT 1>/dev/null
-if [ `echo $?` = 0 ]
-then
-USERNAME=$FILENAME_NO_EXT
-IMAGESTYLE=usernamematch
-fi
-#Check to see if image matches an enrollment number
-if [ $IMAGESTYLE = notset ]
-then
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-USERNAME=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" employeeNumber=$FILENAME_NO_EXT | grep ^uid: | sed 's/uid: //g'`
-[ $USERNAME'null' != null ] && IMAGESTYLE=enrollmentmatch
-fi
-[ $IMAGESTYLE = notset ] && exit 103
+	#Check to see if image matches a username
+	IMAGESTYLE=notset
+	FILENAME_NO_EXT=`echo $IMAGEFILE | sed 's/.jpg//g'| sed 's/ /space/g'`
+	id -g $FILENAME_NO_EXT 1>/dev/null
+	if [ $? = 0 ]
+	then
+		USERNAME=$FILENAME_NO_EXT
+		IMAGESTYLE=usernamematch
+	fi
+	#Check to see if image matches an enrollment number
+	if [ $IMAGESTYLE = notset ]
+	then
+		LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+		USERNAME=`ldapsearch -x -D "CN=Administrator,CN=Users,$LDAPBASE" -b "OU=People,$LDAPBASE" -w $LDAPPASS employeeNumber=$FILENAME_NO_EXT | grep ^cn: | sed 's/cn: //g'`
+		[ -z "$USERNAME" ] && IMAGESTYLE=enrollmentmatch
+	fi
+	[ $IMAGESTYLE = notset ] && exit 103
 
-if [ -f /var/www/karoshi/user_image_upload/$IMAGEFILE ]
-then
-PRIMARYGROUP=`id -g -n $USERNAME`
-if [ ! -d /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/ ]
-then
-mkdir -p /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/
-chmod 0770 /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/
-chown root.apache_karoshi /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/
+	if [ -f /var/www/karoshi/user_image_upload/$IMAGEFILE ]
+	then
+		PRIMARYGROUP=`id -g -n $USERNAME 2>/dev/null`
+		[ $? != 0 ] && exit 103
+		if [ ! -d /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/ ]
+		then
+			mkdir -p /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/
+			chmod 0770 /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/
+			chown root.apache_karoshi /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/
+		fi
+		echo `date`: user_image_upload - $IMAGEFILE "for" user $USERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		cp -f /var/www/karoshi/user_image_upload/$IMAGEFILE /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg
+		chown root.apache_karoshi /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg
+		chmod 0440 /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg
+	else
+		echo `date`: user_image_upload - upload error "for" $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
 fi
-echo `date`: user_image_upload - $IMAGEFILE "for" user $USERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-cp -f /var/www/karoshi/user_image_upload/$IMAGEFILE /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg
-chown root.apache_karoshi /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg
-chmod 0440 /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg
-else
-echo `date`: user_image_upload - upload error "for" $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
-fi
-
-
 
 
 #Process compressed file
 if [ `echo $IMAGEFILE | grep -c .tar.gz$` = 1 ] || [ `echo $IMAGEFILE | grep -c .zip$` = 1 ]
-then
-COMPRESSEDFILE=$IMAGEFILE
+	then
+	COMPRESSEDFILE=$IMAGEFILE
 
-#Process compressed file
-[ -d /opt/karoshi/.tempdata/user_image_bulk_upload.$$ ] && rm -f -R /opt/karoshi/.tempdata/user_image_bulk_upload.$$
-mkdir -p /opt/karoshi/.tempdata/user_image_bulk_upload.$$
-mv /var/www/karoshi/user_image_bulk_upload/$COMPRESSEDFILE /opt/karoshi/.tempdata/user_image_bulk_upload.$$/
-cd /opt/karoshi/.tempdata/user_image_bulk_upload.$$
+	#Process compressed file
+	[ -d /opt/karoshi/.tempdata/user_image_upload.$$ ] && rm -f -R /opt/karoshi/.tempdata/user_image_upload.$$
+	mkdir -p /opt/karoshi/.tempdata/user_image_upload.$$
+	mv /var/www/karoshi/user_image_upload/$COMPRESSEDFILE /opt/karoshi/.tempdata/user_image_upload.$$/
+	cd /opt/karoshi/.tempdata/user_image_upload.$$
 
-COMPRESSIONTYPE=NOT_SET
-[ `echo $COMPRESSEDFILE | grep -c .tar.gz$` = 1 ] && COMPRESSIONTYPE=TARGZ
-[ `echo $COMPRESSEDFILE | grep -c .zip$` = 1 ] && COMPRESSIONTYPE=ZIP
+	COMPRESSIONTYPE=NOT_SET
+	[ `echo $COMPRESSEDFILE | grep -c .tar.gz$` = 1 ] && COMPRESSIONTYPE=TARGZ
+	[ `echo $COMPRESSEDFILE | grep -c .zip$` = 1 ] && COMPRESSIONTYPE=ZIP
 
-if [ $COMPRESSIONTYPE = NOT_SET ]
-then
-echo `date`: user_image_upload - Incorrect compressed file type by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi 
+	if [ $COMPRESSIONTYPE = NOT_SET ]
+	then
+		echo `date`: user_image_upload - Incorrect compressed file type by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi 
 
-echo `date`: user_image_upload - $COMPRESSEDFILE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-#Uncompress file
-[ $COMPRESSIONTYPE = TARGZ ] && tar -xf /opt/karoshi/.tempdata/user_image_upload.$$/$COMPRESSEDFILE
-[ $COMPRESSIONTYPE = ZIP ] && unzip /opt/karoshi/.tempdata/user_image_upload.$$/$COMPRESSEDFILE 1>/dev/null
-rm -f /opt/karoshi/.tempdata/user_image_upload.$$/$COMPRESSEDFILE
+	echo `date`: user_image_upload - $COMPRESSEDFILE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	#Uncompress file
+	[ $COMPRESSIONTYPE = TARGZ ] && tar -xf /opt/karoshi/.tempdata/user_image_upload.$$/$COMPRESSEDFILE
+	[ $COMPRESSIONTYPE = ZIP ] && unzip /opt/karoshi/.tempdata/user_image_upload.$$/$COMPRESSEDFILE 1>/dev/null
+	rm -f /opt/karoshi/.tempdata/user_image_upload.$$/$COMPRESSEDFILE
 
-#Check users exist and move images to correct location
+	#Check users exist and move images to correct location
 
-ls -1 /opt/karoshi/.tempdata/user_image_upload.$$/ > /opt/karoshi/.tempdata/user_image_upload_list.$$
+	ls -1 /opt/karoshi/.tempdata/user_image_upload.$$/ > /opt/karoshi/.tempdata/user_image_upload_list.$$
 
-IMAGE_COUNT=`cat /opt/karoshi/.tempdata/user_image_upload_list.$$ | wc -l`
+	IMAGE_COUNT=`cat /opt/karoshi/.tempdata/user_image_upload_list.$$ | wc -l`
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+	[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+	TEXTDOMAIN=karoshi-server
 
+	if [ $IMAGE_COUNT = 0 ]
+	then
+		echo `date`: user_image_upload - $"No image files to process" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo $"No image files to process"
+		exit 101
+	fi
 
-echo '<b>'$"Upload User Image"'</b><br><br>'
+	#Create table header - username image primary group status
+	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	<tr><td style="width: 180px;"><b>'$"Username"'</b></td><td style="width: 100px;"><b>'$"Image"'</b></td><td style="width: 100px;"><b>'$"Primary Group"'</b></td><td><b>'$"Status"'</b></td></tr>'
 
-if [ $IMAGE_COUNT = 0 ]
-then
-echo `date`: user_image_upload - $"No image files to process" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $"No image files to process"
-exit 101
-fi
+	LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+	COUNTER=1
+	while [ $COUNTER -le $IMAGE_COUNT ]
+	do
+		IMAGE_NAME=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/.tempdata/user_image_upload_list.$$`
+		#Check image
+		if [ `echo $IMAGE_NAME | grep -c .jpg$` = 1 ]
+		then
+			FILENAME_NO_EXT=`echo $IMAGE_NAME | sed 's/.jpg//g' | sed 's/ /space/g'`
 
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-COUNTER=1
-while [ $COUNTER -le $IMAGE_COUNT ]
-do
-IMAGE_NAME=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/.tempdata/user_image_upload_list.$$`
-#Check image
-if [ `echo $IMAGE_NAME | grep -c .jpg$` = 1 ]
-then
-FILENAME_NO_EXT=`echo $IMAGE_NAME | sed 's/.jpg//g' | sed 's/ /space/g'`
+			#Check to see if username or enrollment number is being used
+			IMAGESTYLE=notset
+			id -g $FILENAME_NO_EXT 1>/dev/null 2>/dev/null
+			if [ $? = 0 ]
+				then
+				USERNAME=$FILENAME_NO_EXT
+				IMAGESTYLE=usernamematch
+			fi
 
-#Check to see if username or enrollment number is being used
-IMAGESTYLE=notset
-id -g $FILENAME_NO_EXT 1>/dev/null
-if [ `echo $?` = 0 ]
-then
-USERNAME=$FILENAME_NO_EXT
-IMAGESTYLE=usernamematch
-fi
+			if [ $IMAGESTYLE = notset ]
+			then
+				USERNAME=`ldapsearch -x -D "CN=Administrator,CN=Users,$LDAPBASE" -b "OU=People,$LDAPBASE" -w $LDAPPASS employeeNumber=$FILENAME_NO_EXT | grep ^cn: | sed 's/cn: //g'`
+				[ ! -z "$USERNAME" ] && IMAGESTYLE=enrollmentmatch
+			fi
 
-if [ $IMAGESTYLE = notset ]
-then
-USERNAME=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" employeeNumber=$FILENAME_NO_EXT | grep ^uid: | sed 's/uid: //g'`
-[ $USERNAME'null' != null ] && IMAGESTYLE=enrollmentmatch
-fi
-
-if [ $IMAGESTYLE != notset ]
-then
-PRIMARYGROUP=`id -g -n $USERNAME`
-if [ ! -d /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/ ]
-then
-mkdir -p /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/
-chown root.apache_karoshi /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/
-chmod 0550 /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/
-fi
-mv /opt/karoshi/.tempdata/user_image_upload.$$/$IMAGE_NAME /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg
-chown root.apache_karoshi /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg
-chmod 0440 /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg
-echo $USERNAME - $IMAGE_NAME - $PRIMARYGROUP - $"Image copied."'<br>'
-else
-echo `date`: user_image_upload - $IMAGE_NAME - $"This image does not match a username." by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $IMAGE_NAME - $"This image does not match a username."'<br>'
-fi
-else
-echo `date`: user_image_upload - $IMAGE_NAME - $"Incorrect file type" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $IMAGE_NAME - $"Incorrect file type"'<br>'
-fi
-let COUNTER=$COUNTER+1
-done
-rm -f /opt/karoshi/.tempdata/user_image_upload_list.$$
-rm -f -R /opt/karoshi/.tempdata/user_image_upload.$$
+			if [ $IMAGESTYLE != notset ]
+			then
+				PRIMARYGROUP=`id -g -n $USERNAME 2>/dev/null`
+				if [ $? = 0 ]
+				then
+				if [ ! -d /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/ ]
+				then
+					mkdir -p /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/
+					chown root.apache_karoshi /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/
+					chmod 0550 /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/
+				fi
+				mv /opt/karoshi/.tempdata/user_image_upload.$$/$IMAGE_NAME /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg
+				chown root.apache_karoshi /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg
+				chmod 0440 /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg
+				STATUSMSG=$"Image copied."
+				else
+					echo `date`: user_image_upload - $IMAGE_NAME - $"This image does not match a username." by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+					STATUSMSG=$"This image does not match a username."	
+				fi
+			else
+				echo `date`: user_image_upload - $IMAGE_NAME - $"This image does not match a username." by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+				STATUSMSG=$"This image does not match a username."
+			fi
+			else
+			echo `date`: user_image_upload - $IMAGE_NAME - $"Incorrect file type" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			STATUSMSG=$"Incorrect file type"
+		fi
+		echo '<tr><td>'"$USERNAME"'</td><td>'"$IMAGE_NAME"'</td><td>'"$PRIMARYGROUP"'</td><td>'"$STATUSMSG"'</td></tr>'
+		let COUNTER=$COUNTER+1
+	done
+	echo "</tbody></table>"
+	rm -f /opt/karoshi/.tempdata/user_image_upload_list.$$
+	rm -f -R /opt/karoshi/.tempdata/user_image_upload.$$
 fi
 rm -f -R /var/www/karoshi/user_image_upload
 exit
