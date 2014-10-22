@@ -24,22 +24,22 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/show_users_in_a_group_cgi
 then
-echo `date`: show_users_in_a_group - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: show_users_in_a_group - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/show_users_in_a_group_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/show_users_in_a_group.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $show_users_in_a_group_cgi'check' ]
 then
-echo `date`: show_users_in_a_group - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: show_users_in_a_group - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -48,16 +48,16 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: show_users_in_a_group - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: show_users_in_a_group - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: show_users_in_a_group - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: show_users_in_a_group - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -68,29 +68,29 @@ PRIMARYGROUP=`echo "$DATA" | cut -s -d: -f4`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: show_users_in_a_group - Not called by show_users_in_a_group.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: show_users_in_a_group - Not called by show_users_in_a_group.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: show_users_in_a_group - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: show_users_in_a_group - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: show_users_in_a_group - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: show_users_in_a_group - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $PRIMARYGROUP'null' = null ]
+if [ -z "$PRIMARYGROUP" ]
 then
-echo `date`: show_users_in_a_group - Blank primarygroup by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: show_users_in_a_group - Blank primarygroup by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: show_users_in_a_group - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: show_users_in_a_group - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -112,7 +112,7 @@ echo '<form action="show_user_info.cgi" target="_blank" method="post"><table cla
 '
 
 function get_ldap_info {
-LDAPDATA=`ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME`
+LDAPDATA=`ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME  | tr -cd "A-Za-z0-9\n=:"`
 UIDNUMBER=`echo -e "$LDAPDATA" | grep ^uidNumber: | cut -d: -f2 | sed 's/^ //g'`
 EMPLOYEENUMBER=`echo -e "$LDAPDATA" | grep ^employeeNumber: | cut -d: -f2 | sed 's/^ //g'`
 MAIL=`echo -e "$LDAPDATA" | grep ^mail: | cut -d: -f2 | sed 's/^ //g'`
@@ -124,11 +124,10 @@ GIVENNAME=`echo -e "$LDAPDATA" | grep ^givenName: | cut -d: -f2 | sed 's/^ //g'`
 
 for USERNAME in `getent passwd | grep /$PRIMARYGROUP/ | cut -d: -f1`
 do
-get_ldap_info
-echo '<tr><td>'$USERNAME'</td><td>'$UIDNUMBER'</td><td>'$EMPLOYEENUMBER'</td><td>'$GIVENNAME'</td><td>'$SN'</td><td>'$MAIL'</td>
-<td><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_SERVERNAME_'$HOSTNAME'_USERNAME_'$USERNAME'_" type="image" class="images" src="/images/submenus/user/edit_user_info.png" value=""><span>Edit '$USERNAME'</span></a>
-</td></tr>'
-
+	get_ldap_info
+	echo '<tr><td>'$USERNAME'</td><td>'$UIDNUMBER'</td><td>'$EMPLOYEENUMBER'</td><td>'$GIVENNAME'</td><td>'$SN'</td><td>'$MAIL'</td>
+	<td><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_SERVERNAME_'$HOSTNAME'_USERNAME_'$USERNAME'_" type="image" class="images" src="/images/submenus/user/edit_user_info.png" value=""><span>Edit '$USERNAME'</span></a>
+	</td></tr>'
 done
 echo '</tbody></table></form>'
 exit
