@@ -63,6 +63,7 @@ REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 PRIMARYGROUP=`echo "$DATA" | cut -s -d: -f4`
+SERVERNAME=`hostname-fqdn`
 ########################
 #Check data
 ########################
@@ -112,7 +113,7 @@ echo '<form action="show_user_info.cgi" target="_blank" method="post"><table cla
 '
 
 function get_ldap_info {
-LDAPDATA=`ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME  | tr -cd "A-Za-z0-9\n=:"`
+LDAPDATA=`ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME  | tr -cd "A-Za-z0-9\n=:@"`
 UIDNUMBER=`echo -e "$LDAPDATA" | grep ^uidNumber: | cut -d: -f2 | sed 's/^ //g'`
 EMPLOYEENUMBER=`echo -e "$LDAPDATA" | grep ^employeeNumber: | cut -d: -f2 | sed 's/^ //g'`
 MAIL=`echo -e "$LDAPDATA" | grep ^mail: | cut -d: -f2 | sed 's/^ //g'`
@@ -126,7 +127,7 @@ for USERNAME in `getent passwd | grep /$PRIMARYGROUP/ | cut -d: -f1`
 do
 	get_ldap_info
 	echo '<tr><td>'$USERNAME'</td><td>'$UIDNUMBER'</td><td>'$EMPLOYEENUMBER'</td><td>'$GIVENNAME'</td><td>'$SN'</td><td>'$MAIL'</td>
-	<td><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_SERVERNAME_'$HOSTNAME'_USERNAME_'$USERNAME'_" type="image" class="images" src="/images/submenus/user/edit_user_info.png" value=""><span>Edit '$USERNAME'</span></a>
+	<td><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_SERVERNAME_'$SERVERNAME'_USERNAME_'$USERNAME'_" type="image" class="images" src="/images/submenus/user/edit_user_info.png" value=""><span>Edit '$USERNAME'</span></a>
 	</td></tr>'
 done
 echo '</tbody></table></form>'
