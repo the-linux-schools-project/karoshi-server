@@ -198,10 +198,21 @@ SAMBAKICKOFFTIME=`perl -e 'print scalar(localtime('$SAMBAKICKOFFTIME')), "\n"'`
 #Show user information
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
-echo '<form name="myform" action="/cgi-bin/admin/change_user_info.cgi" method="post"><table class="standard" style="text-align: left; height: 40px;" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td valign="top">
-<input type="hidden" name="_USERNAME_" value="'$USERNAME'" /><table class="standard" style="text-align: left; height: 40px;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<form name="myform" action="/cgi-bin/admin/change_user_info.cgi" method="post">
+<input type="hidden" name="_USERNAME_" value="'$USERNAME'">
+<table class="standard" style="text-align: left; height: 40px;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 180px;" valign="top"><b>'$"Basic Information"'</b></td></tr>
-<tr><td>'$"Username"'</td><td>'$USERNAME'</td></tr>
+<tr><td valign="top">'$"Username"'</td><td valign="top">'$USERNAME'<br>'
+
+#Show user image
+if [ -f /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg ]
+then
+echo '<img src="/images/user_images/'$PRIMARYGROUP'/'$USERNAME'.jpg" width="120" height="150">'
+else
+echo '<img src="/images/blank_user_image.jpg" width="120" height="150">'
+fi
+
+echo '</td></tr>
 <tr><td>'$"Home Server"'</td><td>'$SERVER'</td></tr>
 <tr><td>'$"Unix Home Directory"'</td><td>'$HOMEDIRECTORY'</td></tr>
 <tr><td>'$"Windows Home Directory"'</td><td>'$HOMEDIRECTORY2'</td></tr>
@@ -219,14 +230,7 @@ echo '<form name="myform" action="/cgi-bin/admin/change_user_info.cgi" method="p
 <tr><td>'$"Password last changed"'</td><td>'$SAMBAPWDLASTSET'</td></tr>
 </tbody></table>
 '
-echo '</td><td valign="top">'
-if [ -f /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg ]
-then
-echo '<p><img src="/images/user_images/'$PRIMARYGROUP'/'$USERNAME'.jpg" width="120" height="150"></p>'
-else
-echo '<p><img src="/images/blank_user_image.jpg" width="120" height="150"></p>'
-fi
-echo '</td></tr></tbody></table><br><br><input value="Submit" type="submit"> <input value="Reset" type="reset"></form>'
+echo '<br><br><input value="Submit" type="submit"> <input value="Reset" type="reset"></form>'
 else
 
 echo '<table class="standard" style="text-align: left; height: 40px;" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td valign="top">
