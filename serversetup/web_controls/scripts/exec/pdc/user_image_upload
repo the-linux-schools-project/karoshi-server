@@ -127,7 +127,7 @@ then
 	then
 		LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 		USERNAME=`ldapsearch -x -D "CN=Administrator,CN=Users,$LDAPBASE" -b "OU=People,$LDAPBASE" -w $LDAPPASS employeeNumber=$FILENAME_NO_EXT | grep ^cn: | sed 's/cn: //g'`
-		[ -z "$USERNAME" ] && IMAGESTYLE=enrollmentmatch
+		[ ! -z "$USERNAME" ] && IMAGESTYLE=enrollmentmatch
 	fi
 	[ $IMAGESTYLE = notset ] && exit 103
 

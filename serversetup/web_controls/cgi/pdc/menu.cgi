@@ -74,10 +74,10 @@ echo '</head><body><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-/opt/karoshi/web_controls/generate_navbar_top
+	/opt/karoshi/web_controls/generate_navbar_top
 else
-source /opt/karoshi/web_controls/version
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	source /opt/karoshi/web_controls/version
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 
       <div class="expanded">
        <span>TLSP '$"DE"'</span>
@@ -98,11 +98,11 @@ fi
 
 if [ $MOBILE = no ]
 then
-echo '<div id="actionbox">'
-[ -f /var/www/html_karoshi/statistics.html ] && cat /var/www/html_karoshi/statistics.html
-echo '<br><br><br><img src="/images/valid-html401-blue.png" alt="Valid HTML 4.01 Transitional"></div>'
+	echo '<div id="actionbox3"><div id="infobox">'
+	[ -f /var/www/html_karoshi/statistics.html ] && cat /var/www/html_karoshi/statistics.html
+	echo '<br><br><br><img src="/images/valid-html401-blue.png" alt="Valid HTML 4.01 Transitional"></div>'
 else
-echo "<br><br>"
+	echo "<br><br>"
 fi
-echo '</div></body></html>'
+echo '</div></div></body></html>'
 exit

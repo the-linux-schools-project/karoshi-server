@@ -68,14 +68,14 @@ END_POINT=3
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Generate navigation bar
@@ -91,21 +91,20 @@ echo '
         <td><div id="suggestions"></div><input name="_USERNAME_" value="'$USERNAME'" style="width: 200px;" size="20" AUTOCOMPLETE = "off" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reset_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will change the password for a user to a random number that will be displayed on the screen."'</span></a>
 
-      </td></tr>
-        <tr><td>
-'$"View User Image"'</td><td>
-<a class="info" href="javascript:void(0)"><input name="_VIEWIMAGE_yes_" type="image" class="images" src="/images/submenus/user/user_photo.png" value=""><span>'$"View User Image"'</span></a>
-</td></tr>
-    </tbody></table>'
-#Get user image
+      </td>'
+
+#Show user photo
+echo '<td colspan="1" rowspan="2" style="vertical-align: top;">'
 if [ $USERNAME'blank' != blank ]
 then
-echo '<br>'
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:" | sudo -H /opt/karoshi/web_controls/exec/show_user_image
+	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:" | sudo -H /opt/karoshi/web_controls/exec/show_user_image
 fi
-echo '
-  <br>
-  <br>
+echo '</td></tr>
+        <tr><td style="vertical-align: top; height: 180px;">
+'$"View User Image"'</td><td style="vertical-align: top;">
+<a class="info" href="javascript:void(0)"><input name="_VIEWIMAGE_yes_" type="image" class="images" src="/images/submenus/user/user_photo.png" value=""><span>'$"View User Image"'</span></a>
+</td></tr>
+    </tbody></table>	
 </div><div id="submitbox">
 <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div></form></div></body></html>

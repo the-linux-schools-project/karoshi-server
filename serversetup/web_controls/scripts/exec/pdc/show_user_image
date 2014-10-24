@@ -73,8 +73,9 @@ PRIMARYGROUP=`id -g -n $USERNAME`
 
 if [ -f /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg ]
 then
-echo "<p><img src="/images/user_images/$PRIMARYGROUP/$USERNAME.jpg" width="120" height="150"></p>"
+
+echo '<div id="photobox"><img src="/images/user_images/'$PRIMARYGROUP'/'$USERNAME'.jpg" style="width:140px;height:180px"></div>'
 else
-echo "<p><img src="/images/blank_user_image.jpg" width="120" height="150"></p>"
+echo '<div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180"></div>'
 fi
 exit
