@@ -14,6 +14,9 @@
 # ... and add 'safe=vss'
 #"(^http://[0-9a-z]+\.google\.[a-z]+[-/%.0-9a-z]*/images\?)"->"\1safe=vss&"
 
+#Bing video search
+"(http[s]?://[0-9a-z]+.bing.com/(images|videos)/search\?.*)"->"\1&adlt=strict"
+
 # Singingfish - remove 'ff=...' and add 'ff=1'
 #"(^http://search\.singingfish\.com/[-/%.0-9a-z]*\?)(.*)(&?)(ff=[^&]*)"->"\1\2\3"
 
