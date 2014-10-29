@@ -106,7 +106,9 @@ SEARCH=`echo $SEARCH | sed 's/+/ /g'`
 
 echo '<div id="actionbox3"><div id="titlebox">'
 
-echo '<b>'$"Search"' '$"Web Management"' - '$SEARCH'</b><br><br></div><div id="infobox">'
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Search"' '$"Web Management"' - '$SEARCH'</div></td></tr></tbody></table><br>
+</div><div id="infobox">'
 
 /opt/karoshi/web_controls/generate_navbar_admin | grep "href=" | grep \"*$SEARCH | grep -v 'class="mid"' | grep -v 'class="top"' | sed 's/">/" class="searchlink">/g' | sed 's/<li>//g' | sed 's/<\/li>//g'
 
