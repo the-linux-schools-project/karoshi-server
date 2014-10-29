@@ -76,6 +76,11 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/sogo /etc/init
 #Copy existing logo back
 [ -f /tmp/sogo-logo.png.$$ ] && mv -f /tmp/sogo-logo.png.$$ /usr/local/lib/GNUstep/SOGo/WebServerResources/sogo-logo.png
 
+#Add in missing symlinks - may not be needed in future versions
+[ ! -e /usr/local/lib/sogo/libSOGo.so.2 ] && ln -s /usr/local/lib/sogo/libSOGo.so.2 /usr/local/lib/libSOGo.so.2
+[ ! -e /usr/local/lib/sogo/libGDLContentStore.so.4.9 ] && ln -s /usr/local/lib/sogo/libGDLContentStore.so.4.9 /usr/local/lib/libGDLContentStore.so.4.9
+[ ! -e /usr/local/lib/sogo/libNGCards.so.4.9 ] && ln -s /usr/local/lib/sogo/libNGCards.so.4.9 /usr/local/lib/libNGCards.so.4.9
+
 #Tidy up
 rm -f -R $BUILDPATH
 exit

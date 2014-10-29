@@ -202,7 +202,7 @@ For the default live system, enter "live".  To run memtest86+, enter "memtest"
 echo -e "Creating isolinux.cfg\n"
 sleep 1	
 echo 'default install
-prompt 1
+prompt 0
 timeout 100
 
 menu title __LIVECDLABEL__

@@ -69,7 +69,7 @@ while [ -z "$CHOICE" ]
 do
 
 yad --title $"Linux Schools Server Setup" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 180 \
-   --button=''$"Setup the main server"':2'  --button=''$"Setup an extra server"':1' --text $"Choose the type of server you want to install"
+   --button=''$"Setup the main server"':2'  --button=''$"Setup an extra server"':1' --text $"Choose the type of server you want to install."
 CHOICE="$?"
 done
 

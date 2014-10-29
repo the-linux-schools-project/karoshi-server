@@ -75,13 +75,13 @@ LOGINSTATUS=$?
 
 if [ $LOGINSTATUS != 0 ]
 then
-#Check if this is the first time that mysql has been used and the password is still karoshi
-mysqladmin --password="karoshi" status 1>/dev/null 2>/dev/null
+#Check if this is the first time that mysql has been used and the password is blank.
+mysqladmin status 1>/dev/null 2>/dev/null
 LOGINSTATUS=$?
 if [ $LOGINSTATUS = 0 ]
 then
 #Change mysql password to random password
-mysqladmin -u root -pkaroshi password ''$ROOTMYSQLPASS''
+mysqladmin -u root password ''$ROOTMYSQLPASS''
 mysqladmin --password="$ROOTMYSQLPASS" status 1>/dev/null 2>/dev/null
 LOGINSTATUS=$?
 fi
