@@ -199,7 +199,7 @@ while [ $COUNTER -lt $ALL_DRIVES_COUNT ]
 do
 DRIVE=${ALL_DRIVES[$COUNTER]}
 DRIVE_SHORT=`echo $DRIVE | sed "s/\/dev\///g"` 
-if [ `mount | grep -c $DRIVE` = 0 ] && [ `cat /proc/mdstat | grep -c $DRIVE_SHORT` = 0 ]
+if [ `mount | grep -c $DRIVE` = 0 ] && [ `cat /proc/mdstat | grep -c $DRIVE_SHORT` = 0 ] && [ `zpool status | grep -c -w $DRIVE_SHORT` = 0 ]
 then
 get_drive_info
 
@@ -214,9 +214,9 @@ fi
 #Show drive information
 if [ $DRIVE_STATUS = ok ]
 then
-echo "<tr><td style=\"width: 180px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br><br>$SMART_INFO</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td>
-<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_'$SERVERTYPE'"_"SERVERMASTER_'$SERVERMASTER'"_"ACTION_add_DRIVE_$DRIVE"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$"Add this disk to a raid."</span></a></td>
-</tr>"
+echo '<tr><td style="width: 180px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$DISKICON'"><span>'$DRIVE' - '$DISKSIZE'<br><br><br>'$SMART_INFO'</span></a>'$DRIVE'</td><td style="width: 260px;">'$MAKER' '$DRIVE_SN'</td>
+<td><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$HOSTNAME'_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_ACTION_add_DRIVE_'$DRIVE'_RAIDDEVICE_'$RAID_DEVICE'_\ type="image" class="images" src="'$ICON1'" value=""><span>'$"Add this disk to a raid."'</span></a></td>
+</tr>'
 else
 echo "<tr><td style=\"width: 180px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br><br>$SMART_INFO</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td></tr>"
 fi
@@ -278,9 +278,9 @@ RAID_DISK=${RAID_DISKS[$COUNTER]}
 ICON=$ICON3
 DRIVE=$RAID_DISK
 get_drive_info
-echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>"$RAID_DISK - $"spare rebuilding""</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_$SERVERTYPE"_"SERVERMASTER_$SERVERMASTER"_"ACTION_remove_DRIVE_$RAID_DISK"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>$"Remove this disk from the raid."</span></a>
-</td></tr>"
+echo '<tr><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$DISKICON'"><span>'$DRIVE' - '$DISKSIZE'<br><br>'$SMART_INFO'</span></a>'$RAID_DISK' - '$"spare rebuilding"'</td><td style="width: 260px;">$MAKER $DRIVE_SN</td><td>
+<a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$HOSTNAME'_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_ACTION_remove_DRIVE_'$RAID_DISK'_RAIDDEVICE_'$RAID_DEVICE'_" type="image" class="images" src="'$ICON'" value=""><span>'$"Remove this disk from the raid."'</span></a>
+</td></tr>'
 let COUNTER=$COUNTER+1
 done
 
@@ -294,9 +294,9 @@ RAID_DISK=${RAID_DISKS[$COUNTER]}
 ICON=$ICON3
 DRIVE=$RAID_DISK
 get_drive_info
-echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>"$RAID_DISK - $"spare""</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_$SERVERTYPE"_"SERVERMASTER_$SERVERMASTER"_"ACTION_remove_DRIVE_$RAID_DISK"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>$"Remove this disk from the raid."</span></a>
-</td></tr>"
+echo '<tr><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$DISKICON'"><span>'$DRIVE' - '$DISKSIZE'<br><br>'$SMART_INFO'</span></a>'$RAID_DISK' - '$"spare"'</td><td style="width: 260px;">'$MAKER $DRIVE_SN'</td><td>
+<a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$HOSTNAME'_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_ACTION_remove_DRIVE_'$RAID_DISK'_RAIDDEVICE_'$RAID_DEVICE'_" type="image" class="images" src="'$ICON'" value=""><span>'$"Remove this disk from the raid."'</span></a>
+</td></tr>'
 let COUNTER=$COUNTER+1
 done
 
@@ -310,9 +310,9 @@ RAID_DISK=${RAID_DISKS[$COUNTER]}
 ICON=$ICON4
 DRIVE=$RAID_DISK
 get_drive_info
-echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE<br><br>$SMART_INFO</span></a>"$RAID_DISK - $"faulty spare""</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$HOSTNAME"_"SERVERTYPE_$SERVERTYPE"_"SERVERMASTER_$SERVERMASTER"_"ACTION_remove_DRIVE_$RAID_DISK"_"RAIDDEVICE_$RAID_DEVICE"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>$"Remove this disk from the raid."</span></a>
-</td></tr>"
+echo '<tr><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$DISKICON'"><span>'$DRIVE' - '$DISKSIZE'<br><br>'$SMART_INFO'</span></a>'$RAID_DISK' - '$"faulty spare"'</td><td style="width: 260px;">'$MAKER $DRIVE_SN'</td><td>
+<a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$HOSTNAME'_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_ACTION_remove_DRIVE_'$RAID_DISK'_RAIDDEVICE_'$RAID_DEVICE'_" type="image" class="images" src="'$ICON'" value=""><span>'$"Remove this disk from the raid."'</span></a>
+</td></tr>'
 let COUNTER=$COUNTER+1
 done
 fi
@@ -397,7 +397,7 @@ while [ $COUNTER -lt $ALL_DRIVES_COUNT ]
 do
 DRIVE=${ALL_DRIVES[$COUNTER]}
 DRIVE_SHORT=`echo $DRIVE | sed "s/\/dev\///g"` 
-if [ `mount | grep -c $DRIVE` = 0 ] && [ `cat /proc/mdstat | grep -c $DRIVE_SHORT` = 0 ]
+if [ `mount | grep -c $DRIVE` = 0 ] && [ `cat /proc/mdstat | grep -c $DRIVE_SHORT` = 0 ] && [ `zpool status | grep -c -w $DRIVE_SHORT` = 0 ]
 then
 get_drive_info
 
@@ -599,7 +599,7 @@ while [ $COUNTER -lt $ALL_DRIVES_COUNT ]
 do
 DRIVE=${ALL_DRIVES[$COUNTER]}
 DRIVE_SHORT=`echo $DRIVE | sed "s/\/dev\///g"` 
-if [ `mount | grep -c $DRIVE` = 0 ] && [ `cat /proc/mdstat | grep -c $DRIVE_SHORT` = 0 ]
+if [ `mount | grep -c $DRIVE` = 0 ] && [ `cat /proc/mdstat | grep -c $DRIVE_SHORT` = 0 ] && [ `zpool status | grep -c -w $DRIVE_SHORT` = 0 ]
 then
 get_drive_info
 

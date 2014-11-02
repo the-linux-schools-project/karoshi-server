@@ -77,7 +77,7 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox3
 TABLECLASS=standard
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin

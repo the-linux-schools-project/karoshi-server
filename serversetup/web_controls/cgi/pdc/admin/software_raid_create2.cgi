@@ -253,7 +253,7 @@ fi
 
 
 #Check that MOUNTPOINT is in an allowed area
-if [ `echo $MOUNTPOINT | grep -c ^/home` = 0 ] && [ `echo $MOUNTPOINT | grep -c ^/media/` = 0 ] && [ `echo $MOUNTPOINT | grep -c ^/mnt/` = 0 ] && [ `echo $MOUNTPOINT | grep -c ^/var/` = 0 ]
+if [ `echo $MOUNTPOINT | grep -c ^/home` = 0 ] && [ `echo $MOUNTPOINT | grep -c ^/media/` = 0 ] && [ `echo $MOUNTPOINT | grep -c ^/mnt/` = 0 ] && [ `echo $MOUNTPOINT | grep -c ^/var` = 0 ]
 then
 MESSAGE=$"The mount point does not contain an allowed path."
 show_status
@@ -283,14 +283,14 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox2
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
 DIV_ID=menubox
 fi
 
-echo '<div id="'$DIV_ID'">'
+echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -299,10 +299,11 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 <tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Create Software Raid" - $SERVER'</b></a></td></tr></tbody></table>'
 else
-echo '<b>'$"Create Software Raid" - $SERVERNAME'</b><br><br>'
+echo '<b>'$"Create Software Raid" - $SERVERNAME'</b><br><br></div><div id="infobox">'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/software_raid_create2.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$ACTION:$RAIDTYPE:$DRIVES:$MOUNTPOINT" | sudo -H /opt/karoshi/web_controls/exec/software_raid_create2
 control_raid
+echo '</div></div></body></html>'
 exit

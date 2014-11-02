@@ -160,7 +160,7 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-	DIV_ID=actionbox
+	DIV_ID=actionbox3
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -182,8 +182,8 @@ else
 	<tr>
 	<td style="vertical-align: top;"><b>'$"ZFS Status"' - '$SERVERNAME'</b></td>
 	<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>'$"This page shows the status of your software raid. You can also add and remove drives from the raid array here."'</span></a></td>
-	<td style="vertical-align: top;"><a href="zfs_raid_control_fm.cgi"><input class="button" type="button" name="" value="'$"Select server"'"></a></td>
-	</tr></table><br>'
+	<td style="vertical-align: top;"><a href="zfs_raid_control_fm.cgi"><input class="button" type="button" name="" value="'$"Select server"'"></a></td><td style="vertical-align: top;"><a href="zfs_raid_create_fm.cgi"><input class="button" type="button" name="" value="'$"Create ZFS Raid"'"></a></td>
+	</tr></table><br></div><div id="infobox">'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/zfs_raid_control.cgi | cut -d' ' -f1`

@@ -209,7 +209,7 @@ function add_role_information {
 echo ''$"Moodle E-Learning Server"'<br>' > /opt/karoshi/server_network/servers/$SERVERNAME/moodle
 echo '<a href="https://'$ALIAS.$REALM'/moodle" target="_blank">https://'$ALIAS.$REALM'/moodle</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/moodle
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
-echo '$"Apache Web Server"'"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver
+echo $"Apache Web Server""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver
 echo $SERVERNAME > /opt/karoshi/server_network/moodleserver
 echo $DOMAINPATH > /opt/karoshi/server_network/moodledomain
 [ ! -d /opt/karoshi/server_network/webservers/ ] && mkdir -p /opt/karoshi/server_network/webservers

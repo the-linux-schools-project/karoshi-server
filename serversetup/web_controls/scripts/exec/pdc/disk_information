@@ -24,23 +24,23 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/disk_information_cgi
 then
-echo `date`: disk_information - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: disk_information - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/disk_information_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/disk_information.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set1
+[ -z "$MD5SUM" ] && MD5SUM=not_set1
 if [ $MD5SUM'check' != $disk_information_cgi'check' ]
 then
-echo `date`: disk_information - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: disk_information - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -48,8 +48,8 @@ fi
 numArgs=$#
 if [ $numArgs != 1 ]
 then
-echo `date`: disk_information - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: disk_information - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
@@ -63,51 +63,51 @@ MOBILE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f7`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: disk_information - Not called by disk_information.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: disk_information - Not called by disk_information.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: disk_information - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: disk_information - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: disk_information - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: disk_information - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: disk_information - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: disk_information - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $SERVER'null' = null ]
+if [ -z "$SERVER" ]
 then
-echo `date`: disk_information - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: disk_information - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $SERVERTYPE'null' = null ]
+if [ -z "$SERVERTYPE" ]
 then
-echo `date`: disk_information - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: disk_information - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ $SERVERTYPE != network ] && [ $SERVERTYPE != federated ] && [ $SERVERTYPE != federatedslave ]
 then
-echo `date`: disk_information - Incorrect servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: disk_information - Incorrect servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ $SERVERTYPE = federatedslave ]
 then
-if [ $SERVERMASTER'null' = null ]
-then
-echo `date`: disk_information - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
+	if [ -z "$SERVERMASTER" ]
+	then
+		echo `date`: disk_information - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
 fi
 
 ############################
@@ -123,17 +123,17 @@ KAROSHI_SERVER=$SERVER
 
 if [ $MOBILE = yes ]
 then
-MULTI=1
-WIDTH1=100
-WIDTH2=40
-WIDTH3=100
-TABLECLASS=mobilestandard
+	MULTI=1
+	WIDTH1=100
+	WIDTH2=40
+	WIDTH3=100
+	TABLECLASS=mobilestandard
 else
-MULTI=5
-WIDTH1=180
-WIDTH2=86
-WIDTH3=180
-TABLECLASS=standard
+	MULTI=5
+	WIDTH1=180
+	WIDTH2=86
+	WIDTH3=180
+	TABLECLASS=standard
 fi
 echo `date`: disk_information - checking $INFO "for" $KAROSHI_SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 if [ $KAROSHI_SERVER = `hostname-fqdn` ]
@@ -213,33 +213,33 @@ CAPACITY=`echo "scale=2; $CAPACITY/1024" | bc`
 DRIVESCALE=TB
 fi
 
-echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: $WIDTH3"px";\">$"Model Family"</td><td>$MODELFAMILY</td></tr>
-<tr><td>$"Device Model"</td><td>$DEVICEMODEL</td></tr>
-<tr><td>$"Serial Number"</td><td>$SERIALNO</td></tr>
-<tr><td>$"Firmware Version"</td><td>$FIRMWARE</td></tr>
-<tr><td>$"Capacity"</td><td>$CAPACITY $DRIVESCALE</td></tr>
-<tr><td>$"Smart Enabled"</td><td>$SMARTENABLED</td></tr>
-<tr><td>$"Smart Status"</td><td>$SMARTSTATUS</td></tr>"
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: '$WIDTH3'px;">'$"Model Family"'</td><td>'$MODELFAMILY'</td></tr>
+<tr><td>'$"Device Model"'</td><td>'$DEVICEMODEL'</td></tr>
+<tr><td>'$"Serial Number"'</td><td>'$SERIALNO'</td></tr>
+<tr><td>'$"Firmware Version"'</td><td>'$FIRMWARE'</td></tr>
+<tr><td>'$"Capacity"'</td><td>'$CAPACITY $DRIVESCALE'</td></tr>
+<tr><td>'$"Smart Enabled"'</td><td>'$SMARTENABLED'</td></tr>
+<tr><td>'$"Smart Status"'</td><td>'$SMARTSTATUS'</td></tr>'
 
 if [ ! -z "$PENDINGSECTORS" ]
 then
 if [ $PENDINGSECTORS -gt 0 ]
 then
-echo "<tr><td><FONT COLOR=\"red\"><b>$"Pending Sectors"</b></font></td><td><FONT COLOR=\"red\"><b>$PENDINGSECTORS</b></font></td></tr>"
+echo '<tr><td><FONT COLOR="red"><b>'$"Pending Sectors"'</b></font></td><td><FONT COLOR="red"><b>'$PENDINGSECTORS'</b></font></td></tr>'
 else
-echo "<tr><td>$"Pending Sectors"</td><td>$PENDINGSECTORS</td></tr>"
+echo '<tr><td>'$"Pending Sectors"'</td><td>'$PENDINGSECTORS'</td></tr>'
 fi
 fi
 
 if [ $DISKTEMP -gt 50 ]
 then
-echo "<tr><td><FONT COLOR=\"red\"><b>$"Disk temperature"</b></font></td><td><FONT COLOR=\"red\"><b>$DISKTEMP <sup>o</sup>C</b></font></td></tr>"
+echo '<tr><td><FONT COLOR="red"><b>'$"Disk temperature"'</b></font></td><td><FONT COLOR="red"><b>'$DISKTEMP' <sup>o</sup>C</b></font></td></tr>'
 elif [ $DISKTEMP -gt 40 ]
 then
-echo "<tr><td><FONT COLOR=\"orange\">$"Disk temperature"</font></td><td><FONT COLOR=\"orange\">$DISKTEMP <sup>o</sup>C</font></td></tr>"
+echo '<tr><td><FONT COLOR="orange">'$"Disk temperature"'</font></td><td><FONT COLOR="orange">'$DISKTEMP' <sup>o</sup>C</font></td></tr>'
 else
-echo "<tr><td>$"Disk temperature"</td><td>$DISKTEMP <sup>o</sup>C</td></tr>"
+echo '<tr><td>'$"Disk temperature"'</td><td>'$DISKTEMP' <sup>o</sup>C</td></tr>'
 fi
 
 echo "</tbody></table><br>"
@@ -250,7 +250,7 @@ done
 if [ `grep -c ^"#Software raid" /etc/fstab` -gt 0 ]
 then
 RAIDMOUNTPOINT=`mdadm --detail --scan 2>/dev/null | cut -d" " -f2`
-echo "<img src=\"/images/submenus/system/raid.png\" alt=\"Software Raid\"> <b>$"Software Raid"</b><br>"
+echo '<img src="/images/submenus/system/raid.png" alt="Software Raid"> <b>'$"Software Raid"'</b><br>'
 
 MDADMDATA=`mdadm --detail $RAIDMOUNTPOINT`
 ACTIVE_RAID_DISKS=`echo -e "$MDADMDATA" | grep "active sync" | sed "s/ * / /g" | cut -d" " -f8`
@@ -271,25 +271,25 @@ LAYOUT=`echo -e "$MDADMDATA" | grep "Layout :" | cut -d: -f2 | sed "s/^ //g"`
 CHUNKSIZE=`echo -e "$MDADMDATA" | grep "Chunk Size :" | cut -d: -f2 | sed "s/^ //g"`
 UUID=`echo -e "$MDADMDATA" | grep "UUID :" | cut -d: -f2- | sed "s/^ //g"`
 
-echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: $WIDTH3"px";\">$"Raid Level"</td><td>$RAIDLEVEL</td></tr>
-<tr><td>$"Raid Size"</td><td>$ARRAYSIZE</td></tr>
-<tr><td>$"Used Size"</td><td>$USEDSIZE</td></tr>
-<tr><td>$"Raid Status"</td><td>$RAIDSTATUS</td></tr>"
-[ ! -z "$REBUILDSTATUS" ] && echo "<tr><td>Rebuild Status</td><td>$REBUILDSTATUS</td></tr>"
-echo "<tr><td>$"Raid Drives"</td><td>$RAIDDEVICES</td></tr>
-<tr><td>$"Used Drives"</td><td>$TOTALDEVICES</td></tr>
-<tr><td>$"Active Devices"</td><td>$ACTIVEDEVICES</td></tr>
-<tr><td>$"Working Devices"</td><td>$WORKINGDEVICES</td></tr>
-<tr><td>$"Failed Devices"</td><td>$FAILEDDEVICES</td></tr>
-<tr><td>$"Spare Devices"</td><td>$SPAREDEVICES</td></tr>
-<tr><td>$"Layout"</td><td>$LAYOUT</td></tr>
-<tr><td>$"Chunk Size"</td><td>$CHUNKSIZE</td></tr>
-<tr><td>$"Active Disks"</td><td>$ACTIVE_RAID_DISKS</td></tr>
-<tr><td>$"Rebuilding Disks"</td><td>$REBUILDING_RAID_DISKS</td></tr>
-<tr><td>$"Spare Disks"</td><td>$SPARE_RAID_DISKS</td></tr>
-<tr><td>UUID</td><td>$UUID</td></tr>
-</tbody></table>"
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: '$WIDTH3'"px";">'$"Raid Level"'</td><td>'$RAIDLEVEL'</td></tr>
+<tr><td>'$"Raid Size"'</td><td>'$ARRAYSIZE'</td></tr>
+<tr><td>'$"Used Size"'</td><td>'$USEDSIZE'</td></tr>
+<tr><td>'$"Raid Status"'</td><td>'$RAIDSTATUS'</td></tr>"
+[ ! -z "$REBUILDSTATUS" ] && echo "<tr><td>'$"Rebuild Status"'</td><td>'$REBUILDSTATUS'</td></tr>"
+echo "<tr><td>'$"Raid Drives"'</td><td>'$RAIDDEVICES'</td></tr>
+<tr><td>'$"Used Drives"'</td><td>'$TOTALDEVICES'</td></tr>
+<tr><td>'$"Active Devices"'</td><td>'$ACTIVEDEVICES'</td></tr>
+<tr><td>'$"Working Devices"'</td><td>'$WORKINGDEVICES'</td></tr>
+<tr><td>'$"Failed Devices"'</td><td>'$FAILEDDEVICES'</td></tr>
+<tr><td>'$"Spare Devices"'</td><td>'$SPAREDEVICES'</td></tr>
+<tr><td>'$"Layout"'</td><td>'$LAYOUT'</td></tr>
+<tr><td>'$"Chunk Size"'</td><td>'$CHUNKSIZE'</td></tr>
+<tr><td>'$"Active Disks"'</td><td>'$ACTIVE_RAID_DISKS'</td></tr>
+<tr><td>'$"Rebuilding Disks"'</td><td>'$REBUILDING_RAID_DISKS'</td></tr>
+<tr><td>'$"Spare Disks"'</td><td>'$SPARE_RAID_DISKS'</td></tr>
+<tr><td>UUID</td><td>'$UUID'</td></tr>
+</tbody></table>'
 fi
 fi
 
@@ -409,7 +409,7 @@ done
 if [ `grep -c ^"#Software raid" /etc/fstab` -gt 0 ]
 then
 RAIDMOUNTPOINT=`mdadm --detail --scan 2>/dev/null | cut -d" " -f2`
-echo "<img src=\"/images/submenus/system/raid.png\" alt=\"Software Raid\"> <b>$"Software Raid"</b><br>"
+echo "<img src=\"/images/submenus/system/raid.png\" alt=\"Software Raid\"> <b>'$"Software Raid"'</b><br>"
 
 MDADMDATA=`mdadm --detail $RAIDMOUNTPOINT`
 ACTIVE_RAID_DISKS=`echo -e "$MDADMDATA" | grep "active sync" | sed "s/ * / /g" | cut -d" " -f8`
@@ -573,7 +573,7 @@ done
 if [ `grep -c ^"#Software raid" /etc/fstab` -gt 0 ]
 then
 RAIDMOUNTPOINT=`mdadm --detail --scan 2>/dev/null | cut -d" " -f2`
-echo "<img src=\"/images/submenus/system/raid.png\" alt=\"Software Raid\"> <b>$"Software Raid"</b><br>"
+echo "<img src=\"/images/submenus/system/raid.png\" alt=\"Software Raid\"> <b>'$"Software Raid"'</b><br>"
 
 MDADMDATA=`mdadm --detail $RAIDMOUNTPOINT`
 ACTIVE_RAID_DISKS=`echo -e "$MDADMDATA" | grep "active sync" | sed "s/ * / /g" | cut -d" " -f8`

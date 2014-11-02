@@ -29,16 +29,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/zfs_raid_create2_cgi
 then
-echo `date`: zfs_raid_create2 - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_create2 - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/zfs_raid_create2_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/zfs_raid_create2.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $zfs_raid_create2_cgi'check' ]
 then
-echo `date`: zfs_raid_create2 - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_create2 - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -47,16 +47,16 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: zfs_raid_create2 - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_create2 - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9:._,/-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: zfs_raid_create2 - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_create2 - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -78,76 +78,75 @@ ZPOOLTOPPATH=dev/zvol
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: zfs_raid_create2 - Not called by zfs_raid_create2.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_create2 - Not called by zfs_raid_create2.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: zfs_raid_create2 - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_create2 - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: zfs_raid_create2 - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_create2 - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-echo `date`: zfs_raid_create2 - Blank server >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_create2 - Blank server >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $SERVERTYPE'null' = null ]
+if [ -z "$SERVERTYPE" ]
 then
-echo `date`: zfs_raid_create2 - Blank servertype >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_create2 - Blank servertype >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ $SERVERTYPE = federatedslave ]
 then
-if [ $SERVERMASTER'null' = null ]
-then
-echo `date`: zfs_raid_create2 - Blank servermaster >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
+	if [ -z "$SERVERMASTER" ]
+	then
+		echo `date`: zfs_raid_create2 - Blank servermaster >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
 fi
 
-if [ $CREATETYPE'null' = null ]
+if [ -z "$CREATETYPE" ]
 then
-echo `date`: zfs_raid_create2 - Blank createtype >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_create2 - Blank createtype >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ $CREATETYPE != restore ] && [ $CREATETYPE != create ] && [ $CREATETYPE != reuse ]
 then
-echo `date`: zfs_raid_create2 - incorrect createtype >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_create2 - incorrect createtype >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ $CREATETYPE = create ]
 then
+	if [ -z "$PARITY" ]
+	then
+		echo `date`: zfs_raid_create2 - Blank parity >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
 
-if [ $PARITY'null' = null ]
-then
-echo `date`: zfs_raid_create2 - Blank parity >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
+	if [ -z "$DRIVELIST" ]
+	then
+		echo `date`: zfs_raid_create2 - Blank drives >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
 
-if [ $DRIVELIST'null' = null ]
-then
-echo `date`: zfs_raid_create2 - Blank drives >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
-
-if [ $MOUNTPOINT'null' = null ]
-then
-echo `date`: zfs_raid_create2 - Blank mountpoint >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
+	if [ -z "$MOUNTPOINT" ]
+	then
+		echo `date`: zfs_raid_create2 - Blank mountpoint >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: zfs_raid_create2 - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_create2 - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 
@@ -167,297 +166,300 @@ STYLESHEET=defaultstyle.css
 TEXTDOMAIN=karoshi-server
 
 
+POOLNAME=`echo zfs"$MOUNTPOINT" | sed 's/\//-/g'`
+
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
+	if [ $CREATETYPE = create ]
+	then
+		DRIVELIST=`echo $DRIVELIST | sed "s/,/ /g"`
+		#Create the zfs raid
+		echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+		echo '<li>'$"Creating ZFS raid"' z'$PARITY'</li>'
+		#Check that there is not already a pool created for this zfs raid
+		if [ `zpool status | grep -c -w $POOLNAME` -gt 0 ]
+		then
+			echo $POOLNAME - $"A ZFS raid has already been set up for this pool.""<br>"
+			sleep 3
+			exit 101
+		fi
+		if [ ! -z "$SPAREDRIVELIST" ]
+		then
+			SPAREDRIVELIST=`echo $SPAREDRIVELIST | sed "s/,/ /g"`
+			zpool create -o ashift=12 -f $POOLNAME raidz$PARITY $DRIVELIST spare $SPAREDRIVELIST
+		else
+			zpool create -o ashift=12 -f $POOLNAME raidz$PARITY $DRIVELIST
+		fi
 
-if [ $CREATETYPE = create ]
-then
-DRIVELIST=`echo $DRIVELIST | sed "s/,/ /g"`
-#Create the zfs raid
-echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-echo '<li>'$"Creating ZFS raid"' z'$PARITY'</li>'
+		#Check zfs raid has been created
+		zpool status $POOLNAME
+		if [ $? != 0 ]
+		then
+			echo $"A ZFS raid has not been set up on this server.""<br>"
+			sleep 3
+			exit 101
+		fi
 
-if [ ! -z $SPAREDRIVELIST ]
-then
-SPAREDRIVELIST=`echo $SPAREDRIVELIST | sed "s/,/ /g"`
-zpool create -o ashift=12 -f $HOSTNAME-data raidz$PARITY $DRIVELIST spare $SPAREDRIVELIST
-else
-zpool create -o ashift=12 -f $HOSTNAME-data raidz$PARITY $DRIVELIST
-fi
+		#Get size of zfs raid
+		ZFSSIZEDATA=`zfs list $POOLNAME | sed -n 2,2p | sed "s/ * / /g" | cut -d" " -f3`
+		#Get rid of decimal places
+		ZFSSIZE=`echo $ZFSSIZEDATA | cut -d"." -f1`
+		STORAGEUNIT=`echo $ZFSSIZEDATA | tr -cd "A-Z"`
+		#Convert to gigabytes if reported in terabytes
+		if [ $STORAGEUNIT = T ]
+		then
+			STORAGEUNIT=G
+			let ZFSSIZE=$ZFSSIZE*1024
+		fi
+		#Create partition on zfs raid
+		zfs create -V $ZFSSIZE$STORAGEUNIT $POOLNAME/storage
+		STATUS=$?
+		#Check zfs partition has been created
+		while [ $STATUS != 0 ]
+		do
+			let ZFSSIZE=$ZFSSIZE-1
+			zfs create -V $ZFSSIZE$STORAGEUNIT $POOLNAME/storage
+			STATUS=$?
+		done
 
-#Check zfs raid has been created
-zpool status $HOSTNAME-data
-if [ `echo $?` != 0 ]
-then
-echo $"A ZFS raid has not been set up on this server.""<br>"
-sleep 3
-exit 101
-fi
+		echo '<li>'$"Creating ZFS partition"' - '$ZFSSIZE''$STORAGEUNIT'</li>'
 
-#Get size of zfs raid
-ZFSSIZEDATA=`zfs list $HOSTNAME-data | sed -n 2,2p | sed "s/ * / /g" | cut -d" " -f3`
-#Get rid of decimal places
-ZFSSIZE=`echo $ZFSSIZEDATA | cut -d"." -f1`
-STORAGEUNIT=`echo $ZFSSIZEDATA | tr -cd "A-Z"`
-#Convert to gigabytes if reported in terabytes
-if [ $STORAGEUNIT = T ]
-then
-STORAGEUNIT=G
-let ZFSSIZE=$ZFSSIZE*1024
-fi
-#Create partition on zfs raid
-zfs create -V $ZFSSIZE$STORAGEUNIT $HOSTNAME-data/storage
-STATUS=$?
-#Check zfs partition has been created
-while [ $STATUS != 0 ]
-do
-let ZFSSIZE=$ZFSSIZE-1
-zfs create -V $ZFSSIZE$STORAGEUNIT $HOSTNAME-data/storage
-STATUS=$?
-done
+		COUNTER=1
+		while [ $COUNTER -lt 30 ]
+		do
+			[ -e /$ZPOOLTOPPATH/$POOLNAME/storage ] && break
+			sleep 1
+			let COUNTER=$COUNTER+1
+		done
 
-echo '<li>'$"Creating ZFS partition"' - '$ZFSSIZE''$STORAGEUNIT'</li>'
+		#Format the partition as ext4
+		echo '<li>'$"Formating the partition"' - ext4</li>'
+		mkfs.ext4 /$ZPOOLTOPPATH/$POOLNAME/storage
+		#Mount partition on a temporary mount point
+		[ ! -d $MOUNTPOINT.$$ ] && mkdir -p $MOUNTPOINT.$$
+		mount /$ZPOOLTOPPATH/$POOLNAME/storage $MOUNTPOINT.$$
 
-COUNTER=1
-while [ $COUNTER -lt 30 ]
-do
-[ -e /$ZPOOLTOPPATH/$HOSTNAME-data/storage ] && break
-sleep 1
-let COUNTER=$COUNTER+1
-done
+		#Copy data to new array
+		if [ -d $MOUNTPOINT ]
+		then
+			echo '<br><li>'$"Copying existing data onto the raid."'</b></li>'
+			sleep 2
+			rsync --timeout=30 --verbose --dirs --recursive --links --compress --delete --backup --times --perms --executability --owner --group -o $MOUNTPOINT/ $MOUNTPOINT.$$/
+		fi
 
-#Format the partition as ext4
-echo '<li>'$"Formating the partition"' - ext4</li>'
-mkfs.ext4 /$ZPOOLTOPPATH/$HOSTNAME-data/storage
-#Mount partition on a temporary mount point
-[ ! -d $MOUNTPOINT.$$ ] && mkdir -p $MOUNTPOINT.$$
-mount /$ZPOOLTOPPATH/$HOSTNAME-data/storage $MOUNTPOINT.$$
+		#Remove any existing partitions from fstab
+		if [ `grep -c -w $MOUNTPOINT /etc/fstab` -gt 0 ]
+		then
+			#Umount the partition
+			echo '<li>'$MOUNTPOINT'- '$"Un mounting existing partition"'</li>'
+			umount $MOUNTPOINT
 
-#Copy data to new array
-if [ -d $MOUNTPOINT ]
-then
-echo '<br><li>'$"Copying existing data onto the raid."'</b></li>'
-sleep 2
-rsync --timeout=30 --verbose --dirs --recursive --links --compress --delete --backup --times --perms --executability --owner --group -o $MOUNTPOINT/ $MOUNTPOINT.$$/
-fi
+			#Backup /etc/fstab
+			echo "<li>"Backing up fstab"</li>"
+			cp /etc/fstab /etc/fstab-backup.$$
 
-#Remove any existing partitions from fstab
-if [ `grep -c -w $MOUNTPOINT /etc/fstab` -gt 0 ]
-then
-#Umount the partition
-echo '<li>'$MOUNTPOINT'- '$"Un mounting existing partition"'</li>'
-umount $MOUNTPOINT
+			#Remove entry from fstab
+			LINENO=`grep -n $MOUNTPOINT /etc/fstab`
+			sed -i $LINENO"d" /etc/fstab
+		fi
 
-#Backup /etc/fstab
-echo "<li>"Backing up fstab"</li>"
-cp /etc/fstab /etc/fstab-backup.$$
+		#Unmount zfs partition and mount as /home
+		umount $MOUNTPOINT.$$
+		mount /$ZPOOLTOPPATH/$POOLNAME/storage $MOUNTPOINT
 
-#Remove entry from fstab
-LINENO=`grep -n $MOUNTPOINT /etc/fstab`
-sed -i $LINENO"d" /etc/fstab
-fi
+		#Remove temporary mount point
+		[ -d $MOUNTPOINT.$$ ] && rm -f -R $MOUNTPOINT.$$
+		echo "</pre>"
 
-#Unmount zfs partition and mount as /home
-umount $MOUNTPOINT.$$
-mount /$ZPOOLTOPPATH/$HOSTNAME-data/storage $MOUNTPOINT
+		#Mount partition on boot
+		echo mount /$ZPOOLTOPPATH/$POOLNAME/storage $MOUNTPOINT > /etc/rc2.d/S99zfs-mount-$POOLNAME
+		chmod 0700 /etc/rc2.d/S99zfs-mount-$POOLNAME
+	fi
 
-#Remove temporary mount point
-[ -d $MOUNTPOINT.$$ ] && rm -f -R $MOUNTPOINT.$$
-echo "</pre>"
+	#Restore existing zfs raid
+	if [ $CREATETYPE = restore ]
+	then
+		zpool import -D -f $POOLNAME
 
-#Mount partition on boot
-echo mount /$ZPOOLTOPPATH/$HOSTNAME-data/storage $MOUNTPOINT > /etc/rc2.d/S99zfs-mount
-chmod 0700 /etc/rc2.d/S99zfs-mount
-fi
+		COUNTER=1
+		while [ $COUNTER -lt 30 ]
+		do
+			[ -e /$ZPOOLTOPPATH/$POOLNAME/storage ] && break
+			sleep 1
+			let COUNTER=$COUNTER+1
+		done
 
-#Restore existing zfs raid
-if [ $CREATETYPE = restore ]
-then
-zpool import -D -f $HOSTNAME-data
+		mount /$ZPOOLTOPPATH/$POOLNAME/storage $MOUNTPOINT
+		#Mount partition on boot
+		echo mount /$ZPOOLTOPPATH/$POOLNAME/storage $MOUNTPOINT > /etc/rc2.d/S99zfs-mount-$POOLNAME
+		chmod 0700 /etc/rc2.d/S99zfs-mount-$POOLNAME
+	fi
 
-COUNTER=1
-while [ $COUNTER -lt 30 ]
-do
-[ -e /$ZPOOLTOPPATH/$HOSTNAME-data/storage ] && break
-sleep 1
-let COUNTER=$COUNTER+1
-done
-
-mount /$ZPOOLTOPPATH/$HOSTNAME-data/storage $MOUNTPOINT
-#Mount partition on boot
-echo mount /$ZPOOLTOPPATH/$HOSTNAME-data/storage $MOUNTPOINT > /etc/rc2.d/S99zfs-mount
-chmod 0700 /etc/rc2.d/S99zfs-mount
-fi
-
-#Reuse existing zfs raid
-if [ $CREATETYPE = reuse ]
-then
-echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/zfs_raid_create.cgi\" target=\"_top\" name = \"frm\">
+	#Reuse existing zfs raid
+	if [ $CREATETYPE = reuse ]
+	then
+		echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/zfs_raid_create.cgi\" target=\"_top\" name = \"frm\">
 <input type=\"hidden\" name=\"_SERVERNAME_\" value=\"$SERVERNAME\">
 <input type=\"hidden\" name=\"_SERVERTYPE_\" value=\"$SERVERTYPE\">
 <input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"$SERVERMASTER\">
 <input type=\"hidden\" name=\"_CREATETYPE_\" value=\"reuse\">
-</form>
-<script>
-document.frm.submit();
-</script><form>
-"
-fi
+</form><script>document.frm.submit();</script><form>"
+	fi
 
-#Add cron job for zpool scrub
-[ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
-echo 0 0 '*' '*' 0,2,4 zpool scrub $HOSTNAME-data > /opt/karoshi/cronjobs/jobs/zpool_scrub.cron
-/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
-echo "<br>"
-
+	#Add cron job for zpool scrub
+	[ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
+	echo 0 0 '*' '*' 0,2,4 zpool scrub $POOLNAME > /opt/karoshi/cronjobs/jobs/zpool_scrub_$POOLNAME.cron
+	/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
+	echo "<br>"
 fi
 
 if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ] && [ $SERVERNAME != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
-
-if [ '$CREATETYPE' = create ]
-then
-DRIVELIST=`echo '$DRIVELIST' | sed "s/,/ /g"`
-#Create the zfs raid
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-echo "<li>'$"Creating ZFS raid"' z'$PARITY'</li>"
-
-if [ ! -z '$SPAREDRIVELIST' ]
-then
-SPAREDRIVELIST=`echo '$SPAREDRIVELIST' | sed "s/,/ /g"`
-zpool create -o ashift=12 -f $HOSTNAME-data raidz'$PARITY' $DRIVELIST spare $SPAREDRIVELIST
-else
-zpool create -o ashift=12 -f $HOSTNAME-data raidz'$PARITY' $DRIVELIST
-fi
-
-#Check zfs raid has been created
-zpool status $HOSTNAME-data
-if [ `echo $?` != 0 ]
-then
-echo '$"A ZFS raid has not been set up on this server."'"<br>"
-sleep 3
-exit 101
-fi
-
-#Get size of zfs raid
-ZFSSIZEDATA=`zfs list $HOSTNAME-data | sed -n 2,2p | sed "s/ * / /g" | cut -d" " -f3`
-#Get rid of decimal places
-ZFSSIZE=`echo $ZFSSIZEDATA | cut -d"." -f1`
-STORAGEUNIT=`echo $ZFSSIZEDATA | tr -cd "A-Z"`
-#Convert to gigabytes if reported in terabytes
-if [ $STORAGEUNIT = T ]
-then
-STORAGEUNIT=G
-let ZFSSIZE=$ZFSSIZE*1024
-fi
-#Create partition on zfs raid
-zfs create -V $ZFSSIZE$STORAGEUNIT $HOSTNAME-data/storage
-STATUS=$?
-#Check zfs partition has been created
-while [ $STATUS != 0 ]
-do
-let ZFSSIZE=$ZFSSIZE-1
-zfs create -V $ZFSSIZE$STORAGEUNIT $HOSTNAME-data/storage
-STATUS=$?
-done
-
-echo "<li>'$"Creating ZFS partition"' - $ZFSSIZE$STORAGEUNIT</li>"
-
-#Wait for zfs to catch up
-
-COUNTER=1
-while [ $COUNTER -lt 30 ]
-do
-[ -e /'$ZPOOLTOPPATH'/$HOSTNAME-data/storage ] && break
-sleep 1
-let COUNTER=$COUNTER+1
-done
+	if [ '$CREATETYPE' = create ]
+	then
+		DRIVELIST=`echo '$DRIVELIST' | sed "s/,/ /g"`
+		#Create the zfs raid
+		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+		echo "<li>'$"Creating ZFS raid"' z'$PARITY'</li>"
+		#Check that there is not already a pool created for this zfs raid
+		if [ `zpool status | grep -c -w '$POOLNAME'` -gt 0 ]
+		then
+			echo '$POOLNAME' - $"A ZFS raid has already been set up for this pool.""<br>"
+			sleep 3
+			exit 101
+		fi
 
 
-#Format the partition as ext4
-echo "<li>'$"Formating the partition"' - ext4</li>"
-mkfs.ext4 /'$ZPOOLTOPPATH'/$HOSTNAME-data/storage
-#Mount partition on a temporary mount point
-[ ! -d '$MOUNTPOINT'.'$$' ] && mkdir -p '$MOUNTPOINT'.'$$'
-mount /'$ZPOOLTOPPATH'/$HOSTNAME-data/storage '$MOUNTPOINT'.'$$'
 
-#Copy data to new array
-if [ -d '$MOUNTPOINT' ]
-then
-echo "<br><li>"'$"Copying existing data onto the raid."'"</b></li>"
-sleep 2
-rsync --timeout=30 --verbose --dirs --recursive --links --compress --delete --backup --times --perms --executability --owner --group -o '$MOUNTPOINT'/ '$MOUNTPOINT'.'$$'/
-fi
+		if [ ! -z "'$SPAREDRIVELIST'" ]
+		then
+			SPAREDRIVELIST=`echo '$SPAREDRIVELIST' | sed "s/,/ /g"`
+			zpool create -o ashift=12 -f '$POOLNAME' raidz'$PARITY' $DRIVELIST spare $SPAREDRIVELIST
+		else
+			zpool create -o ashift=12 -f '$POOLNAME' raidz'$PARITY' $DRIVELIST
+		fi
 
-#Remove any existing partitions from fstab
-if [ `grep -c -w '$MOUNTPOINT' /etc/fstab` -gt 0 ]
-then
-#Umount the partition
-echo "<li>"'$MOUNTPOINT'- '$"Un mounting existing partition"'"</li>"
-umount '$MOUNTPOINT'
+		#Check zfs raid has been created
+		zpool status '$POOLNAME'
+		if [ $? != 0 ]
+		then
+			echo $"A ZFS raid has not been set up on this server.""<br>"
+			sleep 3
+			exit 101
+		fi
 
-#Backup /etc/fstab
-echo "<li>"Backing up fstab"</li>"
-cp /etc/fstab /etc/fstab-backup.$$
+		#Get size of zfs raid
+		ZFSSIZEDATA=`zfs list '$POOLNAME' | sed -n 2,2p | sed "s/ * / /g" | cut -d" " -f3`
+		#Get rid of decimal places
+		ZFSSIZE=`echo $ZFSSIZEDATA | cut -d"." -f1`
+		STORAGEUNIT=`echo $ZFSSIZEDATA | tr -cd "A-Z"`
+		#Convert to gigabytes if reported in terabytes
+		if [ $STORAGEUNIT = T ]
+		then
+			STORAGEUNIT=G
+			let ZFSSIZE=$ZFSSIZE*1024
+		fi
+		#Create partition on zfs raid
+		zfs create -V $ZFSSIZE$STORAGEUNIT '$POOLNAME'/storage
+		STATUS=$?
+		#Check zfs partition has been created
+		while [ $STATUS != 0 ]
+		do
+			let ZFSSIZE=$ZFSSIZE-1
+			zfs create -V $ZFSSIZE$STORAGEUNIT '$POOLNAME'/storage
+			STATUS=$?
+		done
 
-#Remove entry from fstab
-LINENO=`grep -n '$MOUNTPOINT' /etc/fstab`
-sed -i $LINENO"d" /etc/fstab
-fi
+		echo "<li>'$"Creating ZFS partition"' - '$ZFSSIZE''$STORAGEUNIT'</li>"
 
-#Unmount zfs partition and mount on correct mount point
-umount '$MOUNTPOINT'.'$$'
-mount /'$ZPOOLTOPPATH'/$HOSTNAME-data/storage '$MOUNTPOINT'
+		COUNTER=1
+		while [ $COUNTER -lt 30 ]
+		do
+			[ -e /'$ZPOOLTOPPATH'/'$POOLNAME'/storage ] && break
+			sleep 1
+			let COUNTER=$COUNTER+1
+		done
 
-#Remove temporary mount point
-[ -d '$MOUNTPOINT'.'$$' ] && rm -f -R '$MOUNTPOINT'.'$$'
-echo "</pre>"
+		#Format the partition as ext4
+		echo "<li>'$"Formating the partition"' - ext4</li>"
+		mkfs.ext4 /'$ZPOOLTOPPATH'/'$POOLNAME'/storage
+		#Mount partition on a temporary mount point
+		[ ! -d '$MOUNTPOINT'.'$$' ] && mkdir -p '$MOUNTPOINT'.'$$'
+		mount /'$ZPOOLTOPPATH'/'$POOLNAME'/storage '$MOUNTPOINT'.'$$'
 
-#Mount partition on boot
-echo mount /'$ZPOOLTOPPATH'/$HOSTNAME-data/storage '$MOUNTPOINT' > /etc/rc2.d/S99zfs-mount
-chmod 0700 /etc/rc2.d/S99zfs-mount
-fi
+		#Copy data to new array
+		if [ -d '$MOUNTPOINT' ]
+		then
+			echo "<br><li>'$"Copying existing data onto the raid."'</b></li>"
+			sleep 2
+			rsync --timeout=30 --verbose --dirs --recursive --links --compress --delete --backup --times --perms --executability --owner --group -o '$MOUNTPOINT'/ '$MOUNTPOINT'.'$$'/
+		fi
 
-#Restore existing zfs raid
-if [ '$CREATETYPE' = restore ]
-then
-zpool import -D -f $HOSTNAME-data
+		#Remove any existing partitions from fstab
+		if [ `grep -c -w '$MOUNTPOINT' /etc/fstab` -gt 0 ]
+		then
+			#Umount the partition
+			echo "<li>'$MOUNTPOINT'- '$"Un mounting existing partition"'</li>"
+			umount $MOUNTPOINT
 
-COUNTER=1
-while [ $COUNTER -lt 30 ]
-do
-[ -e /'$ZPOOLTOPPATH'/$HOSTNAME-data/storage ] && break
-sleep 1
-let COUNTER=$COUNTER+1
-done
+			#Backup /etc/fstab
+			echo "<li>"Backing up fstab"</li>"
+			cp /etc/fstab /etc/fstab-backup.'$$'
 
-mount /'$ZPOOLTOPPATH'/$HOSTNAME-data/storage '$MOUNTPOINT'
-#Mount partition on boot
-echo mount /'$ZPOOLTOPPATH'/$HOSTNAME-data/storage '$MOUNTPOINT' > /etc/rc2.d/S99zfs-mount
-chmod 0700 /etc/rc2.d/S99zfs-mount
-fi
+			#Remove entry from fstab
+			LINENO=`grep -n '$MOUNTPOINT' /etc/fstab`
+			sed -i $LINENO"d" /etc/fstab
+		fi
 
-#Reuse existing zfs raid
-if [ '$CREATETYPE' = reuse ]
-then
-echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/zfs_raid_create.cgi\" target=\"_top\" name = \"frm\">
+		#Unmount zfs partition and mount as /home
+		umount '$MOUNTPOINT'.'$$'
+		mount /'$ZPOOLTOPPATH'/'$POOLNAME'/storage '$MOUNTPOINT'
+
+		#Remove temporary mount point
+		[ -d '$MOUNTPOINT'.'$$' ] && rm -f -R '$MOUNTPOINT'.'$$'
+		echo "</pre>"
+
+		#Mount partition on boot
+		echo mount /'$ZPOOLTOPPATH'/'$POOLNAME'/storage '$MOUNTPOINT' > /etc/rc2.d/S99zfs-mount-'$POOLNAME'
+		chmod 0700 /etc/rc2.d/S99zfs-mount-'$POOLNAME'
+	fi
+
+	#Restore existing zfs raid
+	if [ '$CREATETYPE' = restore ]
+	then
+		zpool import -D -f '$POOLNAME'
+
+		COUNTER=1
+		while [ $COUNTER -lt 30 ]
+		do
+			[ -e /'$ZPOOLTOPPATH'/'$POOLNAME'/storage ] && break
+			sleep 1
+			let COUNTER=$COUNTER+1
+		done
+
+		mount /'$ZPOOLTOPPATH'/'$POOLNAME'/storage '$MOUNTPOINT'
+		#Mount partition on boot
+		echo mount /'$ZPOOLTOPPATH'/'$POOLNAME'/storage '$MOUNTPOINT' > /etc/rc2.d/S99zfs-mount-'$POOLNAME'
+		chmod 0700 /etc/rc2.d/S99zfs-mount-'$POOLNAME'
+	fi
+
+	#Reuse existing zfs raid
+	if [ '$CREATETYPE' = reuse ]
+	then
+		echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/zfs_raid_create.cgi\" target=\"_top\" name = \"frm\">
 <input type=\"hidden\" name=\"_SERVERNAME_\" value=\"'$SERVERNAME'\">
 <input type=\"hidden\" name=\"_SERVERTYPE_\" value=\"'$SERVERTYPE'\">
 <input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"'$SERVERMASTER'\">
 <input type=\"hidden\" name=\"_CREATETYPE_\" value=\"reuse\">
-</form>
-<script>
-document.frm.submit();
-</script><form>
-"
-fi
+</form><script>document.frm.submit();</script><form>"
+	fi
 
-#Add cron job for zpool scrub
-[ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
-echo 0 0 "*" "*" 0,2,4 zpool scrub $HOSTNAME-data > /opt/karoshi/cronjobs/jobs/zpool_scrub.cron
-/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
-echo "<br>"
+	#Add cron job for zpool scrub
+	[ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
+	echo 0 0 "*" "*" 0,2,4 zpool scrub '$POOLNAME' > /opt/karoshi/cronjobs/jobs/zpool_scrub_'$POOLNAME'.cron
+	/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
+	echo "<br>"
 '
 fi
 

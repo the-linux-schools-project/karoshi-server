@@ -185,6 +185,8 @@ LINE_COUNT=`wc -l /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage.$$ | cut -d'
 COUNTER=1
 echo \<b\>$SERVER `date`\</b\>\<br\> > /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
 echo \<table class=\"standard\" style=\"text-align: left\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>\<tbody\> >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
+echo '<tr><td style="vertical-align: top; width: 180px;"></td><td style="vertical-align: top; width: 50px;"></td><td style="vertical-align: top; width: 50px;"></td><td style="vertical-align: top; width: 50px;"></td><td style="vertical-align: top; width: 50px;"></td><td style="vertical-align: top; width: 100px;"></td></tr>' >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
+
 while [ $COUNTER -le $LINE_COUNT ]
 do
 LINEDATA=`sed -n $COUNTER,$COUNTER"p" /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage.$$`
@@ -250,6 +252,9 @@ LINE_COUNT=`wc -l /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage.$$ | cut -
 COUNTER=1
 echo \<b\>'$SERVER' `date`\</b\>\<br\> > /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
 echo \<table class=\"standard\" style=\"text-align: left\; height: 91px\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>\<tbody\> >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
+
+echo "<tr><td style=\"vertical-align: top; width: 180px;\"></td><td style=\"vertical-align: top; width: 50px;\"></td><td style=\"vertical-align: top; width: 50px;\"></td><td style=\"vertical-align: top; width: 50px;\"></td><td style=\"vertical-align: top; width: 50px;\"></td><td style=\"vertical-align: top; width: 100px;\"></td></tr>" >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
+
 while [ $COUNTER -le $LINE_COUNT ]
 do
 LINEDATA=`sed -n $COUNTER,$COUNTER"p" /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage.$$`

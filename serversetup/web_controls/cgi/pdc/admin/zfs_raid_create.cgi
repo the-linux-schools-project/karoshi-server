@@ -190,7 +190,8 @@ if [ $MOBILE = yes ]
 then
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
 <tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
-<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Create ZFS Raid" - $SERVERNAME'</b></a></td></tr></tbody></table>'
+<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Create ZFS Raid" - $SERVERNAME'</b></a></td>
+</tr></tbody></table>'
 else
 
 echo '<div id="titlebox">
@@ -199,7 +200,7 @@ echo '<div id="titlebox">
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>"'$"Choose the server you want to view the raid information for."'"</span></a></td>
 <td style="vertical-align: top;">
 <a href="/cgi-bin/admin/zfs_raid_create_fm.cgi"><input class="button" type="button" name="" value="'$"Create ZFS Raid"'"></a>
-</td>
+</td><td style="vertical-align: top;"><a href="zfs_raid_control_fm.cgi"><input class="button" type="button" name="" value="'$"ZFS Status"'"></a></td>
 </tr></tbody></table><br></div><div id="infobox">
 <br>'
 

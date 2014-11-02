@@ -29,16 +29,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/zfs_raid_create_cgi
 then
-echo `date`: zfs_raid_create - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_create - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/zfs_raid_create_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/zfs_raid_create.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $zfs_raid_create_cgi'check' ]
 then
-echo `date`: zfs_raid_create - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_create - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -47,16 +47,16 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: zfs_raid_create - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_create - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: zfs_raid_create - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_create - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -66,51 +66,51 @@ SERVERTYPE=`echo "$DATA" | cut -s -d: -f5`
 SERVERMASTER=`echo "$DATA" | cut -s -d: -f6`
 CREATETYPE=`echo "$DATA" | cut -s -d: -f7`
 
-[ -z $CREATETYPE ] && CREATETYPE=restore
+[ -z "$CREATETYPE" ] && CREATETYPE=restore
 
 ########################
 #Check data
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: zfs_raid_create - Not called by zfs_raid_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_create - Not called by zfs_raid_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: zfs_raid_create - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_create - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: zfs_raid_create - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_create - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-echo `date`: zfs_raid_create - Blank server >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_create - Blank server >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $SERVERTYPE'null' = null ]
+if [ -z "$SERVERTYPE" ]
 then
-echo `date`: zfs_raid_create - Blank servertype >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_create - Blank servertype >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ $SERVERTYPE = federatedslave ]
 then
-if [ $SERVERMASTER'null' = null ]
-then
-echo `date`: zfs_raid_create - Blank servermaster >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
+	if [ -z "$SERVERMASTER" ]
+	then
+		echo `date`: zfs_raid_create - Blank servermaster >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: zfs_raid_create - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: zfs_raid_create - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 echo `date`: zfs_raid_create - by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -127,371 +127,369 @@ source /opt/karoshi/serversetup/variables/distro
 
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
-#Check to see if zfs is installed
-UPDATEREPOS=yes
-RELOADPAGE=no
+	#Check to see if zfs is installed
+	UPDATEREPOS=yes
+	RELOADPAGE=no
 
-which zfs 1>/dev/null
-if [ `echo $?` != 0 ]
-then
-add-apt-repository -y ppa:zfs-native/stable 1>/dev/null
-RELOADPAGE=yes
-echo "<li>"Updating repositories"</li>"
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-apt-get update
-echo "</pre>"
-UPDATEREPOS=no
-echo '<li>'$"Installing ZFS - this can take a long time"'</li>'
-sleep 2
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-apt-get install -y ubuntu-zfs
-echo "</pre>"
-fi
+	which zfs 1>/dev/null
+	if [ $? != 0 ]
+	then
+		add-apt-repository -y ppa:zfs-native/stable 1>/dev/null
+		RELOADPAGE=yes
+		echo '<li>Updating repositories</li><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+		apt-get update
+		echo '</pre>'
+		UPDATEREPOS=no
+		echo '<li>'$"Installing ZFS - this can take a long time"'</li>'
+		sleep 2
+		echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+		apt-get install -y ubuntu-zfs
+		echo '</pre>'
+	fi
 
-#Check to see if smartmontools are installed
-which smartctl 1>/dev/null
-if [ `echo $?` != 0 ]
-then
-RELOADPAGE=yes
-if [ $UPDATEREPOS = yes ]
-then
-UPDATEREPOS=no
-echo "<li>"Updating repositories"</li>"
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-apt-get update
-echo "</pre>"
-fi
-echo "<li>"Installing smartmontools"</li>"
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-apt-get install -y smartmontools
-echo "</pre>"
-fi
+	#Check to see if smartmontools are installed
+	which smartctl 1>/dev/null
+	if [ $? != 0 ]
+	then
+		RELOADPAGE=yes
+		if [ $UPDATEREPOS = yes ]
+		then
+			UPDATEREPOS=no
+			echo '<li>Updating repositories</li><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+			apt-get update
+			echo '</pre>'
+		fi
+		echo '<li>Installing smartmontools</li><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+		apt-get install -y smartmontools
+		echo '</pre>'
+	fi
 
-if [ $RELOADPAGE = yes ]
-then
-echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/zfs_raid_create.cgi\" target=\"_top\" name = \"frm\">
-<input type=\"hidden\" name=\"_SERVERNAME_\" value=\"$SERVERNAME\">
-<input type=\"hidden\" name=\"_SERVERTYPE_\" value=\"$SERVERTYPE\">
-<input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"$SERVERMASTER\">
-</form>
-<script>
-document.frm.submit();
-</script><form>
-"
-exit
-fi
+	if [ $RELOADPAGE = yes ]
+	then
+		echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/zfs_raid_create.cgi\" target=\"_top\" name = \"frm\">
+		<input type=\"hidden\" name=\"_SERVERNAME_\" value=\"$SERVERNAME\">
+		<input type=\"hidden\" name=\"_SERVERTYPE_\" value=\"$SERVERTYPE\">
+		<input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"$SERVERMASTER\">
+		</form>
+		<script>
+		document.frm.submit();
+		</script><form>
+		"
+		exit
+	fi
 
-echo "<input type=\"hidden\" name=\"_SERVERNAME_\" value=\"$SERVERNAME\">"
-echo "<input type=\"hidden\" name=\"_SERVERTYPE_\" value=\"$SERVERTYPE\">"
-echo "<input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"$SERVERMASTER\">"
+	echo "<input type=\"hidden\" name=\"_SERVERNAME_\" value=\"$SERVERNAME\"><input type=\"hidden\" name=\"_SERVERTYPE_\" value=\"$SERVERTYPE\"><input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"$SERVERMASTER\">"
 
-#Check that a running raid is not present
-if [ `zpool status | grep -c $HOSTNAME-data` -gt 0 ]
-then
-echo $"A ZFS raid is already running on this server."
-exit
-fi
+	#Check to see that a raid has not already been created on this server
+	if [ $CREATETYPE != reuse ]
+	then
+		IMPORTDATA=`zpool import 2>/dev/null`
+	else
+		false
+	fi
 
-#Check to see that a raid has not already been created on this server
-if [ $CREATETYPE != reuse ]
-then
-IMPORTDATA=`zpool import`
-else
-false
-fi
+	#Ask to restore an existing array
+	if [ $? = 0 ]
+	then
 
-#Ask to restore an existing array
-if [ `echo $?` = 0 ]
-then
+		#Get zpool import information
+		IMPORTINFO=`zpool import -D | sed "s/^ * //g"`
+		MOUNTPOINT=`echo -e "$IMPORTINFO" | grep pool: | cut -d: -f2 | sed "s/ zfs-/\//g" | sed "s/-/\//g"`
+		#Count how many raids are available to restore		
+		RCOUNT=`echo -e "$IMPORTINFO" | grep -c pool:`
 
-echo '<b>'$"Restore existing raid"'</b><br><br>'
-echo '$"An existing ZFS raid array has been detected. Do you want this array to be restored?"<br><br>
-<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
-<tbody>
-<tr><td style=\"width: 180px;\"><b>$"Reuse Drives for a new array"</b></td><td><input type=\"radio\" name=\"_CREATETYPE_\" value=\"reuse\"></td></tr>
-<tr><td><b>'$"Restore ZFS Array"'</b></td><td><input type=\"radio\" name=\"_CREATETYPE_\" value=\"restore\"></td></tr>
-<tr><td><b>'$"Mount point"'</b></td><td><input tabindex= \"1\" value=\"/home\" name=\"_MOUNTPOINT_\" size=\"20\" style=\"width: 200px;\" type=\"text\"></td><td>
-<a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$"Enter in the mount point that you want the raid array to be mounted on. Allowed mount points are /home or subfolders of /media, /mnt, /var, and /home"'</span></a>
-</td></tr>
-<tr><td style=\"Vertical-align: top;\"><b>$"Raid information"</b></td></tr></tbody></table><br>"
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-zpool import -D | sed "s/^ * //g"
-echo "</pre><br><br>
-<input class="button" value='$"Submit"'" type="submit"> <input class="button" value='$"Reset"' type="reset">'
+		if [ $RCOUNT = 1 ]
+		then
+			echo '<b>'$"Restore existing raid"'</b><br><br>'
+			echo ''$"An existing ZFS raid array has been detected. Do you want this array to be restored?"'<br><br>'
+		else
+			echo '<b>'$"Restore existing raids"'</b><br><br>'
+			echo ''$"Existing ZFS raid arrays have been detected. You can either choose to restore the arrays or use the drives for a new array."'<br><br>'
+		fi
 
-else
+		echo '<b>'$"Raid information"'</b><br><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+		echo -e "$IMPORTINFO"
+		echo '</pre><br>'
 
-echo '<input type="hidden" name="_CREATETYPE_" value="create">'
+		for MOUNTPOINT in `echo -e "$IMPORTINFO" | grep pool: | cut -d: -f2 | sed "s/ zfs-/\//g" | sed "s/-/\//g"`
+		do
+			echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/zfs_raid_create2.cgi\" target=\"_top\" name = \"frm\">"
+			echo "<input type=\"hidden\" name=\"_SERVERNAME_\" value=\"$SERVERNAME\"><input type=\"hidden\" name=\"_SERVERTYPE_\" value=\"$SERVERTYPE\"><input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"$SERVERMASTER\">"
 
-#Get list of all drives
-ALL_DRIVES=( /dev/sd? )
-ALL_DRIVES_COUNT=${#ALL_DRIVES[@]}
+			POOL=`echo zfs$MOUNTPOINT | sed "s/\//-/g"`
+			echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: 180px;"><b>'$POOL'</b></td></tr>
+<tr><td style="width: 180px;">'$"Reuse Drives for a new array"'</td><td><input type="radio" name="_CREATETYPE_" value="reuse"></td></tr>
+<tr><td>'$"Restore ZFS Array"'</td><td><input type="radio" name="_CREATETYPE_" value="restore"></td></tr>
+<tr><td>'$"Mount point"'</td><td><input tabindex= "1" value="'$MOUNTPOINT'" name="_MOUNTPOINT_" size="20" style="width: 200px;" type="text"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the mount point that you want the raid array to be mounted on. Allowed mount points are /home /var or subfolders of /media, /mnt, /var, and /home"'</span></a></td></tr>
+</tbody></table><br>
+<input class="button" value='$"Submit"' type="submit"><br><br>'
+		done
+		else
 
-#Get list of all unmounted drives and display properties
-COUNTER=0
-SHOW_MENU=yes
-SHOW_SUBMIT=no
+		echo '<input type="hidden" name="_CREATETYPE_" value="create">'
 
-while [ $COUNTER -lt $ALL_DRIVES_COUNT ]
-do
-DRIVE=${ALL_DRIVES[$COUNTER]}
-DRIVE_SHORT=`echo $DRIVE | sed "s/\/dev\///g"` 
-if [ `mount | grep -c $DRIVE` = 0 ] && [ `zpool status | grep -c $DRIVE_SHORT` = 0 ]
-then
-#Get drive information
+		#Get list of all drives
+		ALL_DRIVES=( /dev/sd? )
+		ALL_DRIVES_COUNT=${#ALL_DRIVES[@]}
 
-SMARTINFO=`smartctl -i $DRIVE | tr -cd "A-Za-z0-9:=,/\n "`
-CAPACITYBYTES=`echo -e "$SMARTINFO" | grep ^User | sed "s/ * / /g" | cut -d" " -f3 | tr -cd "0-9"`
-#Convert capacity to gigabytes
-CAPACITY=`echo "scale=0; $CAPACITYBYTES/1024/1024/1024" | bc`
-DRIVESCALE=GB
-if [ $CAPACITY -gt 1000 ]
-then
-#Covert capacity to terabytes
-CAPACITY=`echo "scale=2; $CAPACITY/1024" | bc`
-DRIVESCALE=TB
-fi
+		#Get list of all unmounted drives and display properties
+		COUNTER=0
+		SHOW_MENU=yes
+		SHOW_SUBMIT=no
 
-DRIVE_STATUS=ok
-SMART_INFO=`smartctl -Hc $DRIVE`
+		while [ $COUNTER -lt $ALL_DRIVES_COUNT ]
+		do
+			DRIVE=${ALL_DRIVES[$COUNTER]}
+			DRIVE_SHORT=`echo $DRIVE | sed "s/\/dev\///g"` 
+			if [ `mount | grep -c $DRIVE` = 0 ] && [ `zpool status 2>/dev/null | grep -c $DRIVE_SHORT` = 0 ] && [ `cat /proc/mdstat | grep -c $DRIVE_SHORT` = 0 ]
+			then
+				#Get drive information
+				SMARTINFO=`smartctl -i $DRIVE | tr -cd "A-Za-z0-9:=,/\n "`
+				CAPACITYBYTES=`echo -e "$SMARTINFO" | grep ^User | sed "s/ * / /g" | cut -d" " -f3 | tr -cd "0-9"`
+				#Convert capacity to gigabytes
+				CAPACITY=`echo "scale=0; $CAPACITYBYTES/1024/1024/1024" | bc`
+				DRIVESCALE=GB
+				if [ $CAPACITY -gt 1000 ]
+				then
+					#Covert capacity to terabytes
+					CAPACITY=`echo "scale=2; $CAPACITY/1024" | bc`
+					DRIVESCALE=TB
+				fi
 
-DISKICON=hdd.png
-if [ `echo $?` = 24 ]
-then
-#Drive failing
-DRIVE_STATUS=fail
-DISKICON=hdd_fail.png
-fi
+				DRIVE_STATUS=ok
+				DISKICON=hdd.png
+				SMART_INFO=`smartctl -Hc $DRIVE`
+				if [ $? = 24 ]
+				then
+					#Drive failing
+					DRIVE_STATUS=fail
+					DISKICON=hdd_fail.png
+				fi
 
-if [ $SHOW_MENU = yes ]
-then
-echo '
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody>
-<tr><td style="width: 180px;"><b>'$"Mount point"'</b></td><td><input tabindex= "1" value="/home" name="_MOUNTPOINT_" size="20" style="width: 200px;" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the mount point that you want the raid array to be mounted on. Allowed mount points are /home or subfolders of /media, /mnt, /var, and /home"'</span></a>
-</td></tr>
-<tr><td><b>'$"Raid Type"'</b></td><td>
-<select name="_PARITY_" style="width: 200px;">
-<option selected="selected" value="1">'$"Single Redundancy"'</option>
-<option value="2">'$"Double Redundancy"'</option>
-<option value="3">'$"Triple Redundancy"'</option>
-</select>
-</td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the redundancy type that you want."'<br>'$"Single redundancy allows for the failure of one active drive without losing any data."'<br><br>'$"Double redundancy allows for the failure of two active drive without losing any data."'</span></a></td>
-</tr>
-</tbody></table>
-<br><br><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="width: 180px;"><b>'$"Disk"'</b></td><td style="width: 90px;"><b>'$"Size"'</b></td><td style="width: 70px;"><b>'$"Use"'</b></td><td><b>'$"Hot Spare"'</b></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>'$"Select the drives that you want to be added to the raid array."'<br><br>'$"Drives will only be shown if they are currently not mounted and are not already being used in a raid."'</span></a>
-</td></tr>'
-SHOW_MENU=no
-SHOW_SUBMIT=yes
-fi
+				if [ $SHOW_MENU = yes ]
+				then
+					echo '
+					<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+		<tr><td style="width: 180px;"><b>'$"Mount point"'</b></td><td><input tabindex= "1" value="/home" name="_MOUNTPOINT_" size="20" style="width: 200px;" type="text"></td><td>
+		<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the mount point that you want the raid array to be mounted on. Allowed mount points are /home /var or subfolders of /media, /mnt, /var, and /home"'</span></a>
+		</td></tr>
+		<tr><td><b>'$"Raid Type"'</b></td><td>
+		<select name="_PARITY_" style="width: 200px;">
+		<option selected="selected" value="1">'$"Single Redundancy"'</option>
+		<option value="2">'$"Double Redundancy"'</option>
+		<option value="3">'$"Triple Redundancy"'</option>
+		</select></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the redundancy type that you want."'<br>'$"Single redundancy allows for the failure of one active drive without losing any data."'<br><br>'$"Double redundancy allows for the failure of two active drive without losing any data."'</span></a></td>
+		</tr></tbody></table>
+		<br><br><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+		<tbody><tr><td style="width: 180px;"><b>'$"Disk"'</b></td><td style="width: 90px;"><b>'$"Size"'</b></td><td style="width: 70px;"><b>'$"Use"'</b></td><td><b>'$"Hot Spare"'</b></td><td>
+		<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>'$"Select the drives that you want to be added to the raid array."'<br><br>'$"Drives will only be shown if they are currently not mounted and are not already being used in a raid."'</span></a>
+					</td></tr>'
+					SHOW_MENU=no
+					SHOW_SUBMIT=yes
+				fi
 
-#Show drive information
-if [ $DRIVE_STATUS = ok ]
-then
-echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>'$SMART_INFO'</span></a>$DRIVE</td><td>"$CAPACITY $DRIVESCALE"</td>
-<td><input type=\"radio\" name=\"_DRIVE_$DRIVE\" value=\"use\"></td><td><input type=\"radio\" name=\"_DRIVE_$DRIVE\" value=\"spare\"></td></tr>"
-fi
-fi
-let COUNTER=$COUNTER+1
-done
+				#Show drive information
+				if [ $DRIVE_STATUS = ok ]
+				then
+					echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>'$SMART_INFO'</span></a>$DRIVE</td><td>"$CAPACITY $DRIVESCALE"</td><td><input type=\"radio\" name=\"_DRIVE_$DRIVE\" value=\"use\"></td><td><input type=\"radio\" name=\"_DRIVE_$DRIVE\" value=\"spare\"></td></tr>"
+				fi
+			fi
+			let COUNTER=$COUNTER+1
+		done
 
-if [ $SHOW_SUBMIT = yes ]
-then
-echo '</tbody></table><br><br><input class="button" value='$"Submit"' type="submit"> <input class="button" value='$"Reset"' type="reset">'
-else
-echo ''$"No spare drives are available to create a raid array."'<br><br>'
-fi
-fi
+		if [ $SHOW_SUBMIT = yes ]
+		then
+			echo '</tbody></table><br><br><input class="button" value='$"Submit"' type="submit"> <input class="button" value='$"Reset"' type="reset">'
+		else
+			echo ''$"No spare drives are available to create a raid array."'<br><br>'
+		fi
+	fi
 fi
 
 if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ] && [ $SERVERNAME != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
-#Check to see if zfs is installed
-UPDATEREPOS=yes
-RELOADPAGE=no
+	#Check to see if zfs is installed
+	UPDATEREPOS=yes
+	RELOADPAGE=no
 
-which zfs 1>/dev/null
-if [ `echo $?` != 0 ]
-then
-add-apt-repository -y ppa:zfs-native/stable 1>/dev/null
-RELOADPAGE=yes
-echo "<li>"Updating repositories"</li>"
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-apt-get update
-echo "</pre>"
-UPDATEREPOS=no
-echo "<li>"'$"Installing ZFS - this can take a long time"'"</li>"
-sleep 2
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-apt-get install -y ubuntu-zfs
-echo "</pre>"
-fi
+	which zfs 1>/dev/null
+	if [ $? != 0 ]
+	then
+		add-apt-repository -y ppa:zfs-native/stable 1>/dev/null
+		RELOADPAGE=yes
+		echo "<li>Updating repositories</li><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+		apt-get update
+		echo "</pre>"
+		UPDATEREPOS=no
+		echo "<li>'$"Installing ZFS - this can take a long time"'</li>"
+		sleep 2
+		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+		apt-get install -y ubuntu-zfs
+		echo "</pre>"
+	fi
 
-#Check to see if smartmontools are installed
-which smartctl 1>/dev/null
-if [ `echo $?` != 0 ]
-then
-RELOADPAGE=yes
-if [ $UPDATEREPOS = yes ]
-then
-UPDATEREPOS=no
-echo "<li>"Updating repositories"</li>"
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-apt-get update
-echo "</pre>"
-fi
-echo "<li>"Installing smartmontools"</li>"
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-apt-get install -y smartmontools
-echo "</pre>"
-fi
+	#Check to see if smartmontools are installed
+	which smartctl 1>/dev/null
+	if [ $? != 0 ]
+	then
+		RELOADPAGE=yes
+		if [ $UPDATEREPOS = yes ]
+		then
+			UPDATEREPOS=no
+			echo "<li>Updating repositories</li><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+			apt-get update
+			echo "</pre>"
+		fi
+		echo "<li>Installing smartmontools</li><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+		apt-get install -y smartmontools
+		echo "</pre>"
+	fi
 
-if [ $RELOADPAGE = yes ]
-then
-echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/zfs_raid_create.cgi\" target=\"_top\" name = \"frm\">
-<input type=\"hidden\" name=\"_SERVERNAME_\" value=\"'$SERVERNAME'\">
-<input type=\"hidden\" name=\"_SERVERTYPE_\" value=\"'$SERVERTYPE'\">
-<input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"'$SERVERMASTER'\">
-</form>
-<script>
-document.frm.submit();
-</script><form>
-"
-exit
-fi
+	if [ $RELOADPAGE = yes ]
+	then
+		echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/zfs_raid_create.cgi\" target=\"_top\" name = \"frm\">
+		<input type=\"hidden\" name=\"_SERVERNAME_\" value=\"'$SERVERNAME'\">
+		<input type=\"hidden\" name=\"_SERVERTYPE_\" value=\"'$SERVERTYPE'\">
+		<input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"'$SERVERMASTER'\">
+		</form>
+		<script>
+		document.frm.submit();
+		</script><form>
+		"
+		exit
+	fi
 
-echo "<input type=\"hidden\" name=\"_SERVERNAME_\" value=\"'$SERVERNAME'\">"
-echo "<input type=\"hidden\" name=\"_SERVERTYPE_\" value=\"'$SERVERTYPE'\">"
-echo "<input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"'$SERVERMASTER'\">"
+	echo "<input type=\"hidden\" name=\"_SERVERNAME_\" value=\"'$SERVERNAME'\"><input type=\"hidden\" name=\"_SERVERTYPE_\" value=\"'$SERVERTYPE'\"><input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"'$SERVERMASTER'\">"
 
-#Check that a running raid is not present
-if [ `zpool status | grep -c $HOSTNAME-data` -gt 0 ]
-then
-echo '$"A ZFS raid is already running on this server."'
-exit
-fi
+	#Check to see that a raid has not already been created on this server
+	if [ '$CREATETYPE' != reuse ]
+	then
+		IMPORTDATA=`zpool import 2>/dev/null`
+	else
+		false
+	fi
 
-#Check to see that a raid has not already been created on this server
-if [ '$CREATETYPE' != reuse ]
-then
-IMPORTDATA=`zpool import`
-else
-false
-fi
+	#Ask to restore an existing array
+	if [ $? = 0 ]
+	then
 
-#Ask to restore an existing array
-if [ `echo $?` = 0 ]
-then
+		#Get zpool import information
+		IMPORTINFO=`zpool import -D | sed "s/^ * //g"`
+		MOUNTPOINT=`echo -e "$IMPORTINFO" | grep pool: | cut -d: -f2 | sed "s/ zfs-/\//g" | sed "s/-/\//g"`
+		#Count how many raids are available to restore		
+		RCOUNT=`echo -e "$IMPORTINFO" | grep -c pool:`
 
-echo "<b>"'$"Restore existing raid"'"</b><br><br>"
-echo "'$"An existing ZFS raid array has been detected. Do you want this array to be restored?"'<br><br>
-<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
-<tbody>
-<tr><td style=\"width: 180px;\"><b>'$"Reuse Drives for a new array"'</b></td><td><input type=\"radio\" name=\"_CREATETYPE_\" value=\"reuse\"></td></tr>
-<tr><td><b>'$"Restore ZFS Array"'</b></td><td><input type=\"radio\" name=\"_CREATETYPE_\" value=\"restore\"></td></tr>
-<tr><td><b>"'$"Mount point"'"</b></td><td><input tabindex= \"1\" value=\"/home\" name=\"_MOUNTPOINT_\" size=\"20\" style=\"width: 200px;\" type=\"text\"></td><td>
-<a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$"Enter in the mount point that you want the raid array to be mounted on. Allowed mount points are /home or subfolders of /media, /mnt, /var, and /home"'</span></a>
-</td></tr>
+		if [ $RCOUNT = 1 ]
+		then
+			echo "<b>'$"Restore existing raid"'</b><br><br>"
+			echo "'$"An existing ZFS raid array has been detected. Do you want this array to be restored?"'<br><br>"
+		else
+			echo "<b>'$"Restore existing raids"'</b><br><br>"
+			echo "'$"Existing ZFS raid arrays have been detected. You can either choose to restore the arrays or use the drives for a new array."'<br><br>"
+		fi
 
-<tr><td style=\"Vertical-align: top;\"><b>'$"Raid information"'</b></td></tr></tr></tbody></table><br>"
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-zpool import -D | sed "s/^ * //g"
-echo "</pre><br><br>
-<input class=\"button\" value=\"'$"Submit"'\" type=\"submit\"> <input class=\"button\" value=\"'$"Reset"'\" type=\"reset\">"
+		echo "<b>'$"Raid information"'</b><br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+		echo -e "$IMPORTINFO"
+		echo "</pre><br>"
 
-else
+		for MOUNTPOINT in `echo -e "$IMPORTINFO" | grep pool: | cut -d: -f2 | sed "s/ zfs-/\//g" | sed "s/-/\//g"`
+		do
+			echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/zfs_raid_create2.cgi\" target=\"_top\" name = \"frm\">"
+			echo "<input type=\"hidden\" name=\"_SERVERNAME_\" value=\"'$SERVERNAME'\"><input type=\"hidden\" name=\"_SERVERTYPE_\" value=\"'$SERVERTYPE'\"><input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"'$SERVERMASTER'\">"
 
-echo "<input type=\"hidden\" name=\"_CREATETYPE_\" value=\"create\">"
+			POOL=`echo zfs$MOUNTPOINT | sed "s/\//-/g"`
+			echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+<tr><td style=\"width: 180px;\"><b>$POOL</b></td></tr>
+<tr><td style=\"width: 180px;\">'$"Reuse Drives for a new array"'</td><td><input type=\"radio\" name=\"_CREATETYPE_\" value=\"reuse\"></td></tr>
+<tr><td>'$"Restore ZFS Array"'</td><td><input type=\"radio\" name="_CREATETYPE_" value="restore"></td></tr>
+<tr><td>'$"Mount point"'</td><td><input tabindex= \"1\" value=\"$MOUNTPOINT\" name=\"_MOUNTPOINT_\" size=\"20\" style=\"width: 200px;\" type=\"text\"></td><td>
+<a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$"Enter in the mount point that you want the raid array to be mounted on. Allowed mount points are /home /var or subfolders of /media, /mnt, /var, and /home"'</span></a></td></tr>
+</tbody></table><br>
+<input class=\"button\" value='$"Submit"' type=\"submit\"><br><br>"
+		done
+		else
 
-#Get list of all drives
-ALL_DRIVES=( /dev/sd? )
-ALL_DRIVES_COUNT=${#ALL_DRIVES[@]}
+		echo "<input type="hidden" name="_CREATETYPE_" value="create">"
 
-#Get list of all unmounted drives and display properties
-COUNTER=0
-SHOW_MENU=yes
-SHOW_SUBMIT=no
+		#Get list of all drives
+		ALL_DRIVES=( /dev/sd? )
+		ALL_DRIVES_COUNT=${#ALL_DRIVES[@]}
 
-while [ $COUNTER -lt $ALL_DRIVES_COUNT ]
-do
-DRIVE=${ALL_DRIVES[$COUNTER]}
-DRIVE_SHORT=`echo $DRIVE | sed "s/\/dev\///g"` 
-if [ `mount | grep -c $DRIVE` = 0 ] && [ `zpool status | grep -c $DRIVE_SHORT` = 0 ]
-then
-#Get drive information
+		#Get list of all unmounted drives and display properties
+		COUNTER=0
+		SHOW_MENU=yes
+		SHOW_SUBMIT=no
 
-SMARTINFO=`smartctl -i $DRIVE | tr -cd "A-Za-z0-9:=,/\n "`
-CAPACITYBYTES=`echo -e "$SMARTINFO" | grep ^User | sed "s/ * / /g" | cut -d" " -f3 | tr -cd "0-9"`
-#Convert capacity to gigabytes
-CAPACITY=`echo "scale=0; $CAPACITYBYTES/1024/1024/1024" | bc`
-DRIVESCALE=GB
-if [ $CAPACITY -gt 1000 ]
-then
-#Covert capacity to terabytes
-CAPACITY=`echo "scale=2; $CAPACITY/1024" | bc`
-DRIVESCALE=TB
-fi
+		while [ $COUNTER -lt $ALL_DRIVES_COUNT ]
+		do
+			DRIVE=${ALL_DRIVES[$COUNTER]}
+			DRIVE_SHORT=`echo $DRIVE | sed "s/\/dev\///g"` 
+			if [ `mount | grep -c $DRIVE` = 0 ] && [ `zpool status 2>/dev/null | grep -c $DRIVE_SHORT` = 0 ] && [ `cat /proc/mdstat | grep -c $DRIVE_SHORT` = 0 ]
+			then
+				#Get drive information
+				SMARTINFO=`smartctl -i $DRIVE | tr -cd "A-Za-z0-9:=,/\n "`
+				CAPACITYBYTES=`echo -e "$SMARTINFO" | grep ^User | sed "s/ * / /g" | cut -d" " -f3 | tr -cd "0-9"`
+				#Convert capacity to gigabytes
+				CAPACITY=`echo "scale=0; $CAPACITYBYTES/1024/1024/1024" | bc`
+				DRIVESCALE=GB
+				if [ $CAPACITY -gt 1000 ]
+				then
+					#Covert capacity to terabytes
+					CAPACITY=`echo "scale=2; $CAPACITY/1024" | bc`
+					DRIVESCALE=TB
+				fi
 
-DRIVE_STATUS=ok
-SMART_INFO=`smartctl -Hc $DRIVE`
+				DRIVE_STATUS=ok
+				DISKICON=hdd.png
+				SMART_INFO=`smartctl -Hc $DRIVE`
+				if [ $? = 24 ]
+				then
+					#Drive failing
+					DRIVE_STATUS=fail
+					DISKICON=hdd_fail.png
+				fi
 
-DISKICON=hdd.png
-if [ `echo $?` = 24 ]
-then
-#Drive failing
-DRIVE_STATUS=fail
-DISKICON=hdd_fail.png
-fi
+				if [ $SHOW_MENU = yes ]
+				then
+					echo "
+					<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+		<tr><td style=\"width: 180px;\"><b>'$"Mount point"'</b></td><td><input tabindex= \"1\" value=\"/home\" name=\"_MOUNTPOINT_\" size=\"20\" style=\"width: 200px;\" type=\"text\"></td><td>
+		<a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid\"><img class="images" alt=\"\" src=\"/images/help/info.png\"><span>'$"Enter in the mount point that you want the raid array to be mounted on. Allowed mount points are /home /var or subfolders of /media, /mnt, /var, and /home"'</span></a>
+		</td></tr>
+		<tr><td><b>'$"Raid Type"'</b></td><td>
+		<select name=\"_PARITY_\" style=\"width: 200px;\">
+		<option selected=\"selected\" value=\"1\">'$"Single Redundancy"'</option>
+		<option value=\"2\">'$"Double Redundancy"'</option>
+		<option value=\"3\">'$"Triple Redundancy"'</option>
+		</select></td><td><a class="info" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$"Choose the redundancy type that you want."'<br>'$"Single redundancy allows for the failure of one active drive without losing any data."'<br><br>'$"Double redundancy allows for the failure of two active drive without losing any data."'</span></a></td>
+		</tr></tbody></table>
+		<br><br><table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+		<tbody><tr><td style=\"width: 180px;\"><b>'$"Disk"'</b></td><td style=\"width: 90px;\"><b>'$"Size"'</b></td><td style=\"width: 70px;\"><b>'$"Use"'</b></td><td><b>'$"Hot Spare"'</b></td><td>
+		<a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$"Select the drives that you want to be added to the raid array."'<br><br>'$"Drives will only be shown if they are currently not mounted and are not already being used in a raid."'</span></a>
+					</td></tr>"
+					SHOW_MENU=no
+					SHOW_SUBMIT=yes
+				fi
 
-if [ $SHOW_MENU = yes ]
-then
-echo "
-<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
-<tbody>
-<tr><td style=\"width: 180px;\"><b>"'$"Mount point"'"</b></td><td><input tabindex= \"1\" value=\"/home\" name=\"_MOUNTPOINT_\" size=\"20\" style=\"width: 200px;\" type=\"text\"></td><td>
-<a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$"Enter in the mount point that you want the raid array to be mounted on. Allowed mount points are /home or subfolders of /media, /mnt, /var, and /home"'</span></a>
-</td></tr>
-<tr><td><b>"'$"Raid Type"'"</b></td><td>
-<select name=\"_PARITY_\" style=\"width: 200px;\">
-<option selected=\"selected\" value=\"1\">'$"Single Redundancy"'</option>
-<option value=\"2\">'$"Double Redundancy"'</option>
-<option value=\"3\">'$"Triple Redundancy"'</option>
-</select>
-</td>
-<td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$"Choose the redundancy type that you want."'<br>'$"Single redundancy allows for the failure of one active drive without losing any data."'<br><br>'$"Double redundancy allows for the failure of two active drive without losing any data."'</span></a></td>
-</tr>
-</tbody></table>"
-echo "<br><br><table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
-<tbody><tr><td style=\"width: 180px;\"><b>'$"Disk"'</b></td><td style=\"width: 90px;\"><b>'$"Size"'</b></td><td style=\"width: 70px;\"><b>'$"Use"'</b></td><td><b>'$"Hot Spare"'</b></td><td>
-<a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$"Select the drives that you want to be added to the raid array."'<br><br>'$"Drives will only be shown if they are currently not mounted and are not already being used in a raid."'</span></a>
-</td></tr>"
-SHOW_MENU=no
-SHOW_SUBMIT=yes
-fi
+				#Show drive information
+				if [ $DRIVE_STATUS = ok ]
+				then
+					echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$SMART_INFO</span></a>$DRIVE</td><td>"$CAPACITY $DRIVESCALE"</td><td><input type=\"radio\" name=\"_DRIVE_$DRIVE\" value=\"use\"></td><td><input type=\"radio\" name=\"_DRIVE_$DRIVE\" value=\"spare\"></td></tr>"
+				fi
+			fi
+			let COUNTER=$COUNTER+1
+		done
 
-#Show drive information
-if [ $DRIVE_STATUS = ok ]
-then
-echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$SMART_INFO</span></a>$DRIVE</td><td>"$CAPACITY $DRIVESCALE"</td>
-<td><input type=\"radio\" name=\"_DRIVE_$DRIVE\" value=\"use\"></td><td><input type=\"radio\" name=\"_DRIVE_$DRIVE\" value=\"spare\"></td></tr>"
-fi
-fi
-let COUNTER=$COUNTER+1
-done
-
-if [ $SHOW_SUBMIT = yes ]
-then
-echo "</tbody></table><br><br>"
-echo "<input class=\"button\" value=\"'$"Submit"'\" type=\"submit\"> <input class=\"button\" value=\"'$"Reset"'\" type=\"reset\">"
-else
-echo '$"No spare drives are available to create a raid array."'"<br><br>"
-fi
-fi
+		if [ $SHOW_SUBMIT = yes ]
+		then
+			echo "</tbody></table><br><br><input class=\"button\" value='$"Submit"' type=\"submit\"> <input class=\"button\" value='$"Reset"' type=\"reset\">"
+		else
+			echo "'$"No spare drives are available to create a raid array."'<br><br>"
+		fi
+	fi
 '
 fi
 

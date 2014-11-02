@@ -24,23 +24,23 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/uptime_cgi
 then
-echo `date`: uptime - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: uptime - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/uptime_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/uptime.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $uptime_cgi'check' ]
 then
-echo `date`: uptime - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: uptime - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -48,15 +48,15 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: uptime - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: uptime - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n--+'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: uptime - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: uptime - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -d: -f2`
@@ -71,41 +71,41 @@ MOBILE=`echo "$DATA" | cut -s -d: -f7`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: uptime - Not called by uptime.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: uptime - Not called by uptime.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: uptime - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: uptime - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: uptime - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: uptime - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-echo `date`: uptime - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: uptime - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $SERVERTYPE'null' = null ]
+if [ -z "$SERVERTYPE" ]
 then
-echo `date`: uptime - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: uptime - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ $SERVERTYPE = federatedslave ]
 then
-if [ $SERVERMASTER'null' = null ]
-then
-echo `date`: uptime - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
+	if [ -z "$SERVERMASTER" ]
+	then
+		echo `date`: uptime - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: uptime - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: uptime - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 echo `date`: uptime - "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -131,31 +131,31 @@ TEXTDOMAIN=karoshi-server
 function table_top {
 if [ $SERVERTYPE = network ]
 then
-LABEL=$"My Servers"
-if [ -f /opt/karoshi/server_network/info ]
-then
-source /opt/karoshi/server_network/info
-LOCATION_NAME="- $LOCATION_NAME"
-fi
+	LABEL=$"My Servers"
+	if [ -f /opt/karoshi/server_network/info ]
+	then
+		source /opt/karoshi/server_network/info
+		LOCATION_NAME="- $LOCATION_NAME"
+	fi
 fi
 
 if [ $SERVERTYPE = federated ]
 then
-LABEL=$"Federated Servers"
-if [ -f /opt/karoshi/server_network/federated_ldap_servers/$DISPLAY_NAME/info ]
-then
-source /opt/karoshi/server_network/federated_ldap_servers/$DISPLAY_NAME/info
-LOCATION_NAME="- $LOCATION_NAME"
-fi
+	LABEL=$"Federated Servers"
+	if [ -f /opt/karoshi/server_network/federated_ldap_servers/$DISPLAY_NAME/info ]
+	then
+		source /opt/karoshi/server_network/federated_ldap_servers/$DISPLAY_NAME/info
+		LOCATION_NAME="- $LOCATION_NAME"
+	fi
 fi
 
 if [ $MOBILE = yes ]
 then
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 90px;"><b>'$"Server"'</b></td><td style="width: 80px;"><b>'$"Uptime"'</b></td></tr>'
 else
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 200px;"><b>'$"Server"'</b></td><td style="width: 80px;"><b>'$"Uptime"'</b></td><td style="width: 140px;"><b>'$"Est. Downtime  Year"'</b></td><td><b>'$"Start Date"'</b></td><td>'$"Reset"'</tr>'
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: 250px;"><b>'$"Server"'</b></td><td style="width: 80px;"><b>'$"Uptime"'</b></td><td style="width: 140px;"><b>'$"Est. Downtime  Year"'</b></td><td><b>'$"Start Date"'</b></td><td>'$"Reset"'</tr>'
 fi
 }
 
@@ -168,23 +168,23 @@ CHECK=`echo $DPY | cut -d'.' -f1`
 #Convert to minutes
 if [ $CHECK -gt 60 ]
 then
-DPY=`echo "scale=5; $DPY / 60;" | bc`
-SUFFIX=minutes
+	DPY=`echo "scale=5; $DPY / 60;" | bc`
+	SUFFIX=minutes
 fi
 
 
 #Convert to hours
 if [ $CHECK -gt 3600 ]
 then
-DPY=`echo "scale=5; $DPY / 60;" | bc`
-SUFFIX=hours
+	DPY=`echo "scale=5; $DPY / 60;" | bc`
+	SUFFIX=hours
 fi
 
 #Convert to days
 if [ $CHECK -gt 86400 ]
 then
-DPY=`echo "scale=5; $DPY / 24;" | bc`
-SUFFIX=days
+	DPY=`echo "scale=5; $DPY / 24;" | bc`
+	SUFFIX=days
 fi
 
 #Round to 2 dp
@@ -204,19 +204,19 @@ SYMBOL=%
 UPPRCENT2=`echo $UPPRCENT | cut -d. -f1`
 if [ $UPPRCENT2 -gt 100 ]
 then
-UPPRCENT=-
-DPY=-
-SUFFIX=-
-SYMBOL=-
+	UPPRCENT=-
+	DPY=-
+	SUFFIX=-
+	SYMBOL=-
 else
-downtime
+	downtime
 fi
 
 if [ $MOBILE = yes ]
 then
-echo '<tr><td valign="top">'$DISPLAY_NAME'</td><td valign="top">'$UPPRCENT''$SYMBOL'</td>'
+	echo '<tr><td valign="top">'$DISPLAY_NAME'</td><td valign="top">'$UPPRCENT''$SYMBOL'</td>'
 else
-echo '<tr><td valign="top">'$DISPLAY_NAME'</td><td valign="top">'$UPPRCENT''$SYMBOL'</td><td valign="top">'$DPY' '$SUFFIX'</td><td valign="top">'$START_TIME'</td>'
+	echo '<tr><td valign="top">'$DISPLAY_NAME'</td><td valign="top">'$UPPRCENT''$SYMBOL'</td><td valign="top">'$DPY' '$SUFFIX'</td><td valign="top">'$START_TIME'</td>'
 fi
 
 echo '<td valign="top"> 
@@ -234,156 +234,153 @@ echo '<tr><td> '$DISPLAY_NAME'</td><td>'$"Offline"'</td><td>'$"Offline"'</td><td
 #Show uptime this server
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
-UPTIMEDATA=`karoshi-uptime.sh -p uptime ; echo , ; karoshi-uptime.sh -n start-time`
+	UPTIMEDATA=`karoshi-uptime.sh -p uptime ; echo , ; karoshi-uptime.sh -n start-time`
 
-if [ $MOBILE = yes ]
-then
-DISPLAY_NAME=`echo $SERVERNAME | cut -d. -f1`
-else
-DISPLAY_NAME=$SERVERNAME
-fi
-table_top
-show_data
-table_bottom
+	if [ $MOBILE = yes ]
+	then
+		DISPLAY_NAME=`echo $SERVERNAME | cut -d. -f1`
+	else
+		DISPLAY_NAME=$SERVERNAME
+	fi
+	table_top
+	show_data
+	table_bottom
 fi
 
 #Slave servers and federated servers
 if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ] && [ $SERVERNAME != allservers ] && [ $SERVERNAME != `hostname-fqdn` ]
 then
+	UPTIMEDATA=`ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+	karoshi-uptime.sh -p uptime ; echo , ; karoshi-uptime.sh -n start-time
+	'`
+	STATUS=`echo $?`
 
-UPTIMEDATA=`ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-karoshi-uptime.sh -p uptime ; echo , ; karoshi-uptime.sh -n start-time
-'`
-STATUS=`echo $?`
+	if [ $MOBILE = yes ]
+	then
+		DISPLAY_NAME=`echo $SERVERNAME | cut -d. -f1`
+	else
+		DISPLAY_NAME=$SERVERNAME
+	fi
 
-if [ $MOBILE = yes ]
-then
-DISPLAY_NAME=`echo $SERVERNAME | cut -d. -f1`
-else
-DISPLAY_NAME=$SERVERNAME
-fi
-
-table_top
-if [ $STATUS = 0 ]
-then
-show_data
-else
-offline
-fi
-table_bottom
+	table_top
+	if [ $STATUS = 0 ]
+	then
+		show_data
+	else
+		offline
+	fi
+	table_bottom
 fi
 
 #Federated slave servers
 if [ $SERVERTYPE = federatedslave ] && [ $SERVERNAME != allservers ]
 then
-UPTIMEDATA=`ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3  $SERVERMASTER '
-ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
-karoshi-uptime.sh -p uptime ; echo , ; karoshi-uptime.sh -n start-time
-'\''
-'`
-STATUS=`echo $?`
+	UPTIMEDATA=`ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3  $SERVERMASTER '
+	ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
+	karoshi-uptime.sh -p uptime ; echo , ; karoshi-uptime.sh -n start-time
+	'\''
+	'`
+	STATUS=`echo $?`
 
-if [ $MOBILE = yes ]
-then
-DISPLAY_NAME=`echo $SERVERNAME | cut -d. -f1`
-else
-DISPLAY_NAME=$SERVERNAME
-fi
+	if [ $MOBILE = yes ]
+	then
+		DISPLAY_NAME=`echo $SERVERNAME | cut -d. -f1`
+	else
+		DISPLAY_NAME=$SERVERNAME
+	fi
 
-SERVERTYPE=federated
-table_top
-if [ $STATUS = 0 ]
-then
-show_data
-else
-offline
-fi
-table_bottom
+	SERVERTYPE=federated
+	table_top
+	if [ $STATUS = 0 ]
+	then
+		show_data
+	else
+		offline
+	fi
+	table_bottom
 fi
 
 #All servers
 if [ $SERVERNAME = allservers ]
 then
-table_top
-for SERVERNAMES in /opt/karoshi/server_network/servers/*
-do
-SERVERNAME=`basename $SERVERNAMES`
+	table_top
+	for SERVERNAMES in /opt/karoshi/server_network/servers/*
+	do
+	SERVERNAME=`basename $SERVERNAMES`
 
-if [ $MOBILE = yes ]
-then
-DISPLAY_NAME=`echo $SERVERNAME | cut -d. -f1`
-else
-DISPLAY_NAME=$SERVERNAME
-fi
+	if [ $MOBILE = yes ]
+	then
+		DISPLAY_NAME=`echo $SERVERNAME | cut -d. -f1`
+	else
+		DISPLAY_NAME=$SERVERNAME
+	fi
 
-if [ $SERVERNAME = `hostname-fqdn` ]
-then
-UPTIMEDATA=`karoshi-uptime.sh -p uptime`,`karoshi-uptime.sh -n start-time`
+	if [ $SERVERNAME = `hostname-fqdn` ]
+	then
+		UPTIMEDATA=`karoshi-uptime.sh -p uptime`,`karoshi-uptime.sh -n start-time`
+		SERVERTYPE=network
+		show_data
+	else
+		UPTIMEDATA=`ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+	karoshi-uptime.sh -p uptime ; echo , ; karoshi-uptime.sh -n start-time
+	'`
+		STATUS=$?
+		if [ $STATUS = 0 ]
+		then
+			show_data
+		else
+			offline
+		fi
+	fi
+	done
+	table_bottom
 
-SERVERTYPE=network
-show_data
-else
-UPTIMEDATA=`ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-karoshi-uptime.sh -p uptime ; echo , ; karoshi-uptime.sh -n start-time
-'`
-STATUS=`echo $?`
+	if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
+	then
+		if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
+		then
+		for SERVERNAMES in /opt/karoshi/server_network/federated_ldap_servers/*
+		do
+			SERVERNAME=`basename $SERVERNAMES`
+			if [ $MOBILE = yes ]
+			then
+				DISPLAY_NAME=`echo $SERVERNAME | cut -d. -f1`
+			else
+				DISPLAY_NAME=$SERVERNAME
+			fi
 
-if [ $STATUS = 0 ]
-then
-show_data
-else
-offline
-fi
-fi
-done
-table_bottom
+			UPTIMEDATA=`ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+			karoshi-uptime.sh -p uptime ; echo , ; karoshi-uptime.sh -n start-time
+			'`
+			STATUS=`echo $?`
 
-if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
-then
-if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
-then
-for SERVERNAMES in /opt/karoshi/server_network/federated_ldap_servers/*
-do
-SERVERNAME=`basename $SERVERNAMES`
-if [ $MOBILE = yes ]
-then
-DISPLAY_NAME=`echo $SERVERNAME | cut -d. -f1`
-else
-DISPLAY_NAME=$SERVERNAME
-fi
-
-UPTIMEDATA=`ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-karoshi-uptime.sh -p uptime ; echo , ; karoshi-uptime.sh -n start-time
-'`
-STATUS=`echo $?`
-
-SERVERTYPE=federated
-table_top
-if [ $STATUS = 0 ]
-then
-show_data
-for FEDERATED_SLAVE_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/*
-do
-FEDERATED_SLAVE_SERVER=`basename $FEDERATED_SLAVE_SERVERS`
-if [ $FEDERATED_SLAVE_SERVER != $SERVERNAME ]
-then
-UPTIMEDATA=`ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3  $SERVERNAME '
-ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 '$FEDERATED_SLAVE_SERVER' '\''
-karoshi-uptime.sh -p uptime ; echo , ; karoshi-uptime.sh -n start-time
-'\''
-'`
-DISPLAY_NAME=$FEDERATED_SLAVE_SERVER
-SERVERTYPE=federated
-show_data
-fi
-done
-else
-offline
-fi
-table_bottom
-done
-fi
-fi
+			SERVERTYPE=federated
+			table_top
+			if [ $STATUS = 0 ]
+			then
+			show_data
+			for FEDERATED_SLAVE_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/*
+			do
+				FEDERATED_SLAVE_SERVER=`basename $FEDERATED_SLAVE_SERVERS`
+				if [ $FEDERATED_SLAVE_SERVER != $SERVERNAME ]
+				then
+					UPTIMEDATA=`ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3  $SERVERNAME '
+					ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 '$FEDERATED_SLAVE_SERVER' '\''
+					karoshi-uptime.sh -p uptime ; echo , ; karoshi-uptime.sh -n start-time
+					'\''
+					'`
+					DISPLAY_NAME=$FEDERATED_SLAVE_SERVER
+					SERVERTYPE=federated
+					show_data
+				fi
+			done
+			else
+				offline
+			fi
+			table_bottom
+		done
+		fi
+	fi
 fi
 
 exit

@@ -209,7 +209,7 @@ while [ $COUNTER -lt $ALL_DRIVES_COUNT ]
 do
 DRIVE=${ALL_DRIVES[$COUNTER]}
 DRIVE_SHORT=`echo $DRIVE | sed "s/\/dev\///g"` 
-if [ `mount | grep -c $DRIVE` = 0 ] && [ `cat /proc/mdstat | grep -c $DRIVE_SHORT` = 0 ]
+if [ `mount | grep -c $DRIVE` = 0 ] && [ `cat /proc/mdstat | grep -c $DRIVE_SHORT` = 0 ] && [ `zpool status | grep -c -w $DRIVE_SHORT` = 0 ]
 then
 #Get drive information
 DISKSIZE=`df -h $DRIVE | sed 's/ * / /g' | cut -d" " -f4 | sed -n 2,2p`
@@ -373,7 +373,7 @@ while [ $COUNTER -lt $ALL_DRIVES_COUNT ]
 do
 DRIVE=${ALL_DRIVES[$COUNTER]}
 DRIVE_SHORT=`echo $DRIVE | sed "s/\/dev\///g"` 
-if [ `mount | grep -c $DRIVE` = 0 ] && [ `cat /proc/mdstat | grep -c $DRIVE_SHORT` = 0 ]
+if [ `mount | grep -c $DRIVE` = 0 ] && [ `cat /proc/mdstat | grep -c $DRIVE_SHORT` = 0 ] && [ `zpool status | grep -c -w $DRIVE_SHORT` = 0 ]
 then
 #Get drive information
 DISKSIZE=`df -h $DRIVE | sed "s/ * / /g" | cut -d" " -f4 | sed -n 2,2p`
@@ -541,7 +541,7 @@ while [ $COUNTER -lt $ALL_DRIVES_COUNT ]
 do
 DRIVE=${ALL_DRIVES[$COUNTER]}
 DRIVE_SHORT=`echo $DRIVE | sed "s/\/dev\///g"` 
-if [ `mount | grep -c $DRIVE` = 0 ] && [ `cat /proc/mdstat | grep -c $DRIVE_SHORT` = 0 ]
+if [ `mount | grep -c $DRIVE` = 0 ] && [ `cat /proc/mdstat | grep -c $DRIVE_SHORT` = 0 ] && [ `zpool status | grep -c -w $DRIVE_SHORT` = 0 ]
 then
 #Get drive information
 DISKSIZE=`df -h $DRIVE | sed "s/ * / /g" | cut -d" " -f4 | sed -n 2,2p`

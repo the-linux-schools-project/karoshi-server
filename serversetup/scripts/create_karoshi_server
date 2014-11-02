@@ -242,7 +242,9 @@ d-i user-setup/encrypt-home boolean false
 # Avoid that last message about the install being complete.
 d-i finish-install/reboot_in_progress note
 #d-i debian-installer/exit/poweroff boolean true
-d-i cdrom-detect/eject boolean false" > image/preseed/custom.seed
+d-i cdrom-detect/eject boolean false
+ ubiquity ubiquity/reboot boolean true
+ ubiquity ubiquity/poweroff boolean true" > image/preseed/custom.seed
 
 #Create manifest
 echo -e "\nCreating manifest\n"
