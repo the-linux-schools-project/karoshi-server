@@ -158,7 +158,7 @@ fi
 #Replace a disk
 if [ $ACTION = replace ]
 then
-	zpool replace $POOL $DRIVE2 $DRIVE
+	zpool replace -f $POOL $DRIVE2 $DRIVE
 fi
 
 
@@ -182,7 +182,7 @@ fi
 #Replace a disk
 if [ '$ACTION' = replace ]
 then
-	zpool replace '$POOL' '$DRIVE2' '$DRIVE'
+	zpool replace -f '$POOL' '$DRIVE2' '$DRIVE'
 fi
 
 '

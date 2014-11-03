@@ -135,8 +135,6 @@ cp -f /opt/karoshi/serversetup/pdc/"useful scripts"/* /opt/karoshi/"useful scrip
 cp -f /opt/karoshi/serversetup/pdc/"useful scripts"/.alphabet /opt/karoshi/"useful scripts"/
 chmod -R 0700 /opt/karoshi/"useful scripts"
 
-sed -i 's/CHANGETHISDOMAINNAME/'$SAMBADOMAINlcase'/g' /opt/karoshi/"useful scripts"/ldap_add_machine
-
 #Import SSL root certificate into firefox
 echo `date`: "Importing ssl root certificate into firefox" >> /opt/karoshi/serversetup/install_log
 FIREFOXPROFILE=`ls /opt/karoshi/karoshi_user/.mozilla/firefox | grep .default`
