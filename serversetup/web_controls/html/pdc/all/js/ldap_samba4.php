@@ -30,7 +30,7 @@
 				if($ldapconnected == 1){
 	         					$attributes= array("gidNumber","cn","name");
                                                         $lookupString = "cn=$queryString*";                               
-	         					if($userresults=@ldap_search($ldapconnection, "OU=People,LDAPBASE",$lookupString, $attributes)){
+	         					if($userresults=@ldap_search($ldapconnection, "OU=People,LDAPBASE,$lookupString, $attributes)){
                                                             // While there are results loop through them - fetching an Object.
                                                            $info=@ldap_get_entries($ldapconnection, $userresults);
                                                             // Generate the category id
@@ -49,20 +49,28 @@
                                                                
                                                                     $userName = (@ldap_get_values($ldapconnection,$entry,'name'));
                                                                     $groupDisplayName = array("Unknown");                              
-                                                                                $gidNumber = (@ldap_get_values($ldapconnection,$entry,'gidNumber'));
-                                                                                $attributes= array("name");
-                                                                                $gidNumber = $gidNumber[0];
-                                                                                $primarygroupnameresults=@ldap_search($ldapconnection, "OU=People,LDAPBASE", "(&(objectClass=group)(gidNumber=$gidNumber))", $attributes);
-                                                                                if($entry2=@ldap_first_entry($ldapconnection,$primarygroupnameresults)){
-                                                                                    $groupDisplayName = (@ldap_get_values($ldapconnection,$entry2,'name'));
-                                                                                }
-                                                                    echo '<a href="javascript:void" onclick="javascript:document.getElementById(\'inputString\').value = \''.$userName[0].'\'">';
-									$url = "/var/www/html_karoshi/images/user_images/$groupDisplayName[0]/$userName[0].jpg";		
-									if(file_exists($url)){
-                                                                    echo '<img src="/images/user_images/'.$groupDisplayName[0].'/'.$userName[0].'.jpg"alt="" height="50" width="40"/>';
-} else {
-echo '<img src="/images/blank_user_image.jpg"alt="" height="50" width="40"/>';
-}
+                                                                    $gidNumber = (@ldap_get_values($ldapconnection,$entry,'gidNumber'));
+                                                                    $attributes= array("name");
+                                                                    $gidNumber = $gidNumber[0];
+                                                                    $primarygroupnameresults=@ldap_search($ldapconnection, "OU=People,DC=LDAPBASE", "(&(objectClass=group)(gidNumber=$gidNumber))", $attributes);
+                                                                    if($entry2=@ldap_first_entry($ldapconnection,$primarygroupnameresults)){
+                                                                      $groupDisplayName = (@ldap_get_values($ldapconnection,$entry2,'name'));
+                                                                    }
+								    
+								    //Start RTB Code
+								    $url = "/var/www/html_karoshi/images/user_images/$groupDisplayName[0]/$userName[0].jpg";		
+								    if(file_exists($url)){
+                                                                      $photo = "/images/user_images/$groupDisplayName[0]/$userName[0].jpg";
+								    } else {
+								      $photo = "/images/blank_user_image.jpg";
+								    }
+								    echo '<a href="javascript:void" onclick="updateForm(\''.$userName[0].'\',\''.$photo.'\')">'; 
+								    // End RTB Code		
+								    if(file_exists($url)){
+                                                                      echo '<img src="/images/user_images/'.$groupDisplayName[0].'/'.$userName[0].'.jpg" alt="" height="50" width="40"/>';
+								    } else {
+								      echo '<img src="/images/blank_user_image.jpg" alt="" height="50" width="40"/>';
+								    }
                                                                     echo '<span class="searchheading">'.$name.'</span>';
                                                                 $description = "Username: $userName[0] PrimaryGroup: $groupDisplayName[0]";
                                                                 

@@ -95,18 +95,15 @@ echo '
 
 #Show user photo
 echo '<td colspan="1" rowspan="2" style="vertical-align: top;">'
-if [ $USERNAME'blank' != blank ]
-then
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:" | sudo -H /opt/karoshi/web_controls/exec/show_user_image
-fi
+echo '<div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180"></div>'
+
 echo '</td></tr>
         <tr><td style="vertical-align: top; height: 180px;">
-'$"View User Image"'</td><td style="vertical-align: top;">
-<a class="info" href="javascript:void(0)"><input name="_VIEWIMAGE_yes_" type="image" class="images" src="/images/submenus/user/user_photo.png" value=""><span>'$"View User Image"'</span></a>
-</td></tr>
+	</td></tr>
     </tbody></table>	
 </div><div id="submitbox">
 <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div></form></div></body></html>
 '
 exit
+

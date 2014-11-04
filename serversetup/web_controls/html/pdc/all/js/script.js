@@ -15,6 +15,7 @@ $(document).ready(function()
 function lookup(inputString) {
        if(inputString.length == 0) {
                $('#suggestions').fadeOut(); // Hide the suggestions box
+	       $('#photobox').html('<img src="/images/blank_user_image.jpg" width="140" height="180"/>');
        } else {
                $.post("/all/js/ldap.php", {queryString: ""+inputString+""}, function(data)
 { // Do an AJAX call
@@ -22,4 +23,9 @@ function lookup(inputString) {
                        $('#suggestions').html(data); // Fill the suggestions box
                });
        }
+}
+//RTB Code
+function updateForm(username,photo) {
+	document.getElementById('inputString').value = username; // Fill in the username
+	$('#photobox').html('<img src="'+ photo  +'" alt="" height="180" width="140" />'); // Show the photo	
 }

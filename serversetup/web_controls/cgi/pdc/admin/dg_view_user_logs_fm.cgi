@@ -134,8 +134,21 @@ echo ''$"Number of days to view"'<br>
 '
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-    <tbody>
-<tr><td style="width: 180px;">'$"Username"'</td><td><div id="suggestions"></div><input tabindex= "1" name="_USERNAME_" size="14" style="width: 200px;" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td style="vertical-align: top; text-align: center;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to check the internet logs for."'</span></a></td></tr>'
+	<tbody>
+	  <tr>
+	    <td style="width: 180px;">
+		'$"Username"'
+	    </td>
+	    <td>
+		<div id="suggestions"></div><input tabindex= "1" name="_USERNAME_" size="14" style="width: 200px;" type="text" id="inputString" onkeyup="lookup(this.value);">
+	    </td>
+	    <td style="vertical-align: top; text-align: center;">
+		<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to check the internet logs for."'</span></a>
+	    </td>
+        	<td colspan="1" rowspan="7" style="vertical-align: top;">
+	 		<div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180"></div>
+		</td>
+	  </tr>'
 echo '<tr><td>'$"Log Date"'</td><td>'
 
 echo "<!-- calendar attaches to existing form element -->
@@ -153,7 +166,10 @@ echo "<!-- calendar attaches to existing form element -->
 
 
 echo '<tr><td>'$"Number of days to view"'</td><td><input tabindex= "1" name="_DAYCOUNT_" maxlength="2" size="2" value="1" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the number of sites a user has visited."'</span></a></td></tr>
-
+<tr><td>&nbsp;</td></tr>
+<tr><td>&nbsp;</td></tr>
+<tr><td>&nbsp;</td></tr>
+<tr><td>&nbsp;</td></tr>
 </tbody></table><br>'
 fi
 
@@ -164,3 +180,4 @@ fi
 
 echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div></form></div></body></html>'
 exit
+
