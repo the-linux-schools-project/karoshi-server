@@ -1,5 +1,16 @@
 @echo off
 
+if exist c:\kix\kix32.exe (
+    goto legacy
+) else (
+    goto standard
+)
+
+:legacy
+start c:\kix\wkix32 %logonserver%\netlogon\logonform.kix $pgroup=%1
+exit
+
+:standard
 if not exist c:\"Program Files"\kix\kix32.exe goto kixinstall
 
 :normal

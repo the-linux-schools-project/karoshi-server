@@ -30,7 +30,7 @@
 				if($ldapconnected == 1){
 	         					$attributes= array("gidNumber","cn","name");
                                                         $lookupString = "cn=$queryString*";                               
-	         					if($userresults=@ldap_search($ldapconnection, "OU=People,LDAPBASE,$lookupString, $attributes)){
+	         					if($userresults=@ldap_search($ldapconnection, "OU=People,LDAPBASE",$lookupString, $attributes)){
                                                             // While there are results loop through them - fetching an Object.
                                                            $info=@ldap_get_entries($ldapconnection, $userresults);
                                                             // Generate the category id
@@ -52,11 +52,11 @@
                                                                     $gidNumber = (@ldap_get_values($ldapconnection,$entry,'gidNumber'));
                                                                     $attributes= array("name");
                                                                     $gidNumber = $gidNumber[0];
-                                                                    $primarygroupnameresults=@ldap_search($ldapconnection, "OU=People,DC=LDAPBASE", "(&(objectClass=group)(gidNumber=$gidNumber))", $attributes);
+                                                                    $primarygroupnameresults=@ldap_search($ldapconnection, "OU=People,LDAPBASE", "(&(objectClass=group)(gidNumber=$gidNumber))", $attributes);
                                                                     if($entry2=@ldap_first_entry($ldapconnection,$primarygroupnameresults)){
                                                                       $groupDisplayName = (@ldap_get_values($ldapconnection,$entry2,'name'));
                                                                     }
-								    
+
 								    //Start RTB Code
 								    $url = "/var/www/html_karoshi/images/user_images/$groupDisplayName[0]/$userName[0].jpg";		
 								    if(file_exists($url)){

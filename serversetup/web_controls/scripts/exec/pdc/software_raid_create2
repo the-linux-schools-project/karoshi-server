@@ -197,6 +197,32 @@ echo "$RAIDUUID    $MOUNTPOINT    ext4   defaults,errors=remount-ro 0 1" >> /etc
 fi
 fi
 
+
+#Stop services if the mount point is /var
+if [ `echo $MOUNTPOINT | grep -c /var` -gt 0 ]
+then
+	source /opt/karoshi/serversetup/variables/distro
+
+	SERVICEARRAY=( apache dansguardian mysql samba squid )
+	SERVICEARRAYCOUNT=${#SERVICEARRAY[@]}
+
+	#Stop services if they are running
+	COUNTER=0
+	while [ $COUNTER -lt $SERVICEARRAYCOUNT ]
+	do
+		#Check if the service is running
+		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"${SERVICEARRAY[$COUNTER]}"_status
+		STATUSARRAY[$COUNTER]=$?
+		#Stop service if it is running
+		if [ ${STATUSARRAY[$COUNTER]} = 0 ]
+		then
+			echo '<li>${SERVICEARRAY[$COUNTER]} - '$"Stopping this service."'</li>'
+			/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"${SERVICEARRAY[$COUNTER]}"_stop
+		fi
+		let COUNTER=$COUNTER+1
+	done 
+fi
+
 if [ ! -d $MOUNTPOINT ]
 then
 #Create folder
@@ -215,6 +241,22 @@ rm -f -R $MOUNTPOINT.$$
 fi
 #Mount drive
 mount $RAIDNAME $MOUNTPOINT
+
+#Start services if they were previously running and were stopped to create a raid on /var
+if [ `echo $MOUNTPOINT | grep -c /var` -gt 0 ]
+then
+	COUNTER=0
+	while [ $COUNTER -lt $SERVICEARRAYCOUNT ]
+	do
+		if [ ${STATUSARRAY[$COUNTER]} = 0 ]
+		then
+			echo '<li>${SERVICEARRAY[$COUNTER]} - '$"Starting this service."'</li>'
+			/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"${SERVICEARRAY[$COUNTER]}"_start
+		fi
+		let COUNTER=$COUNTER+1
+	done
+fi 
+
 else
 #######################
 #Restore existing raid array
@@ -307,6 +349,31 @@ echo "$RAIDUUID       '$MOUNTPOINT'               ext4    defaults,errors=remoun
 fi
 fi
 
+#Stop services if the mount point is /var
+if [ `echo '$MOUNTPOINT' | grep -c /var` -gt 0 ]
+then
+	source /opt/karoshi/serversetup/variables/distro
+
+	SERVICEARRAY=( apache dansguardian mysql samba squid )
+	SERVICEARRAYCOUNT=${#SERVICEARRAY[@]}
+
+	#Stop services if they are running
+	COUNTER=0
+	while [ $COUNTER -lt $SERVICEARRAYCOUNT ]
+	do
+		#Check if the service is running
+		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"${SERVICEARRAY[$COUNTER]}"_status
+		STATUSARRAY[$COUNTER]=$?
+		#Stop service if it is running
+		if [ ${STATUSARRAY[$COUNTER]} = 0 ]
+		then
+			echo "<li>${SERVICEARRAY[$COUNTER]} - '$"Stopping this service."'</li>"
+			/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"${SERVICEARRAY[$COUNTER]}"_stop
+		fi
+		let COUNTER=$COUNTER+1
+	done 
+fi
+
 if [ ! -d '$MOUNTPOINT' ]
 then
 #Create folder
@@ -325,6 +392,22 @@ rm -f -R '$MOUNTPOINT'.'$$'
 fi
 #Mount drive
 mount '$RAIDNAME' '$MOUNTPOINT'
+
+#Start services if they were previously running and were stopped to create a raid on /var
+if [ `echo '$MOUNTPOINT' | grep -c /var` -gt 0 ]
+then
+	COUNTER=0
+	while [ $COUNTER -lt $SERVICEARRAYCOUNT ]
+	do
+		if [ ${STATUSARRAY[$COUNTER]} = 0 ]
+		then
+			echo "<li>${SERVICEARRAY[$COUNTER]} - '$"Starting this service."'</li>"
+			/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"${SERVICEARRAY[$COUNTER]}"_start
+		fi
+		let COUNTER=$COUNTER+1
+	done
+fi
+
 else
 #######################
 #Restore existing raid array

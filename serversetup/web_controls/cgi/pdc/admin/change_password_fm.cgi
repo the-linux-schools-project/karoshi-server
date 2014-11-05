@@ -166,8 +166,7 @@ echo '<div id="mobileactionbox">
 <input tabindex= "2" style="width: 160px;" name="____PASSWORD1____" value="'$PASSWORD1'" size="20" type="password"><br>
 '$"Confirm New Password"'<br>
 <input tabindex= "3" style="width: 160px;" name="____PASSWORD2____" value="'$PASSWORD2'" size="20" type="password"><br><br>
-'$"View User Image"'<br>
-<a class="info" href="javascript:void(0)"><input name="____VIEWIMAGE____yes____" type="image" class="images" src="/images/submenus/user/user_photo.png" value=""><span>'$"View User Image"'</span></a><br>
+<div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180"></div>
 '
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">

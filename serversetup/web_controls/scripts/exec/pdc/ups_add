@@ -92,7 +92,7 @@ then
 	echo `date`: ups_add - Blank model by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
-if [ "$UPSDRIVER" ]
+if [ -z "$UPSDRIVER" ]
 then
 	echo `date`: ups_add - Blank driver by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
