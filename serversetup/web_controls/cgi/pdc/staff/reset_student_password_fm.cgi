@@ -72,22 +72,29 @@ done
 /opt/karoshi/web_controls/generate_navbar_staff
 echo '<form action="/cgi-bin/staff/reset_student_password.cgi" method="post">
   <div id="actionbox">
-<b>'$"Reset a Student's Password"'</b><br><br><div id="suggestions"></div>
-  <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-    <tbody>
-      <tr>
-        <td style="width: 180px;">'$"Student Username"'</td>
-        <td><input name="_USERNAME_" value="'$USERNAME'" size="20" AUTOCOMPLETE = "off" style="width: 200px;" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will reset the password of the user for access to all servers on the Karoshi system including moodle and email. The new password will be displayed on the screen."'</span></a>
-      </td>
-      </tr>
-<tr>
-        <td>
-'$"View User Image"'</td>
-        <td><input tabindex= "6" name="_VIEWIMAGE_" value="yes" size="20" type="checkbox"></td>
-      </tr>
-    </tbody>
-  </table>'
+<b>'$"Reset a Student's Password"'</b><br><br>
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	<tbody>
+		<tr>
+			<td style="width: 180px; height: 35px">
+				'$"Student Username"'
+			</td>
+			<td>
+				<div id="suggestions"></div>
+				<input name="_USERNAME_" value="'$USERNAME'" size="20" AUTOCOMPLETE = "off" style="width: 200px;" type="text" id="inputString" onkeyup="lookup(this.value);">
+			</td>
+			<td>
+				<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will reset the password of the user for access to all servers on the Karoshi system including moodle and email. The new password will be displayed on the screen."'</span></a>
+			</td>
+			<td colspan="1" rowspan="4" style="vertical-align: top;">
+				<div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180"></div>
+			</td>
+		</tr>
+		<tr><td colspan="3">&nbsp;</td></tr>
+		<tr><td colspan="3">&nbsp;</td></tr>
+		<tr><td colspan="3">&nbsp;</td></tr>
+	</tbody>
+</table>'
 #Get user image
 if [ $USERNAME'blank' != blank ]
 then
@@ -104,3 +111,8 @@ echo '
 </html>
 '
 exit
+
+########################
+#Unique key
+########################
+#2dgoPCiuQ6xRJAKbjOCb7Rb-Z

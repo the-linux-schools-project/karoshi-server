@@ -96,7 +96,7 @@ then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"User Internet Logs"'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Internet Menu"'</a>
+<a href="/cgi-bin/staff/mobile_menu.cgi">'$"Internet Menu"'</a>
 </div></div><div id="mobileactionbox">
 '
 else
@@ -126,10 +126,24 @@ echo "
 "
 
 else
-echo '<div id="suggestions"></div><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody>
-<tr><td style="width: 180px;">'$"Username"'</td><td><input tabindex= "3" style="width: 200px;" name="_USERNAME_" AUTOCOMPLETE = "off" size="14" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the student that you want to check the internet logs for."'</span></a></td></tr>'
-echo '<tr><td>'$"Log Date"'</td><td>'
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	<tbody>
+		<tr>
+			<td style="width: 180px; height: 35px">
+				'$"Username"'
+			</td>
+			<td>
+				<div id="suggestions"></div>
+				<input tabindex= "3" style="width: 200px;" name="_USERNAME_" AUTOCOMPLETE = "off" size="14" type="text" id="inputString" onkeyup="lookup(this.value);">
+			</td>
+			<td>
+				<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the student that you want to check the internet logs for."'</span></a>
+			</td>
+			<td colspan="1" rowspan="4" style="vertical-align: top;">
+				<div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180"></div>
+			</td>
+		</tr>'
+echo '<tr><td style="vertical-align: top;">'$"Log Date"'</td><td style="vertical-align: top;">'
 echo "<!-- calendar attaches to existing form element -->
 	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxsize=10 name=\"_DATE_\" /></td><td style=\"vertical-align: top; text-align: center;\">
 	<script language=\"JavaScript\">
@@ -140,7 +154,12 @@ echo "<!-- calendar attaches to existing form element -->
 		'controlname': '_DATE_'
 	});
 
-	</script></td></tr></tbody></table><br>"
+	</script></td></tr>
+		<tr><td colspan="3">&nbsp;</td></tr>
+		<tr><td colspan="3">&nbsp;</td></tr>
+	</tbody>
+</table>
+<br>"
 fi
 
 if [ $MOBILE = no ]
@@ -150,3 +169,8 @@ fi
 
 echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div></form></div></body></html>'
 exit
+
+########################
+#Unique key
+########################
+#EXna_590_5SdCl8Pl1JpOIxgZ
