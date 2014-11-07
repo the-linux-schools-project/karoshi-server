@@ -257,7 +257,7 @@ then
 				#Stop service if it is running
 				if [ ${STATUSARRAY[$COUNTER]} = 0 ]
 				then
-					echo '<li>${SERVICEARRAY[$COUNTER]} - '$"Stopping this service."'</li>'
+					echo '<li>'${SERVICEARRAY[$COUNTER]}' - '$"Stopping this service."'</li>'
 					/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"${SERVICEARRAY[$COUNTER]}"_stop
 				fi
 				let COUNTER=$COUNTER+1
@@ -309,7 +309,7 @@ then
 			do
 				if [ ${STATUSARRAY[$COUNTER]} = 0 ]
 				then
-					echo '<li>${SERVICEARRAY[$COUNTER]} - '$"Starting this service."'</li>'
+					echo '<li>'${SERVICEARRAY[$COUNTER]}' - '$"Starting this service."'</li>'
 					/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"${SERVICEARRAY[$COUNTER]}"_start
 				fi
 				let COUNTER=$COUNTER+1

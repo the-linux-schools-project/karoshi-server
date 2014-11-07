@@ -60,28 +60,28 @@ END_POINT=5
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign _VIEWIMAGE_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = VIEWIMAGEcheck ]
-then
-let COUNTER=$COUNTER+1
-VIEWIMAGE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = VIEWIMAGEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		VIEWIMAGE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -103,22 +103,22 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that username is not blank
-if [ $USERNAME'null' = null ]
+if [ -z "$USERNAME" ]
 then
 MESSAGE=$"The username must not be blank."
 show_status
@@ -127,8 +127,8 @@ fi
 #Dont change passwords for certain users
 if [ $USERNAME = karoshi ] || [ $USERNAME = root ]
 then
-MESSAGE=$"You can not change the password for this user."
-show_status
+	MESSAGE=$"You can not change the password for this user."
+	show_status
 fi
 
 #Check to see that the user exists
@@ -136,8 +136,8 @@ echo "$MD5SUM:$USERNAME" | sudo -H /opt/karoshi/web_controls/exec/existcheck_use
 USEREXISTSTATUS=`echo $?`
 if [ $USEREXISTSTATUS = 111 ]
 then
-MESSAGE=$"This username does not exist."
-show_status
+	MESSAGE=$"This username does not exist."
+	show_status
 fi
 
 #Check view image tick box
@@ -159,8 +159,8 @@ fi
 if [ -f /opt/karoshi/acceptable_use_authorisations/pending/$USERNAME ]
 then
 #Check to see how many days of trial are left
-GRACE_TIME=`sed -n 1,1p /opt/karoshi/acceptable_use_authorisations/pending/$USERNAME | tr -cd 0-9`
-[ $GRACE_TIME'null' = null ] && GRACE_TIME=0
+GRACE_TIME=`sed -n 1,1p /opt/karoshi/acceptable_use_authorisations/pending/$USERNAME cut -d, -f1 | tr -cd 0-9`
+[ -z "$GRACE_TIME" ] && GRACE_TIME=0
 if [ $GRACE_TIME = 0 ]
 then
 MESSAGE=`echo $USERNAME - $"This user has not signed an acceptable use policy and their account has now been suspended."`
@@ -178,13 +178,13 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$PASSWORD1" | sudo -H /opt/kar
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 0 ]
 then
-MESSAGE=`echo $USERNAME: $"Password reset to" $PASSWORD1`
+	MESSAGE=`echo $USERNAME: $"Password reset to" $PASSWORD1`
 else
-MESSAGE=`echo $"The password was not reset for" $USERNAME`
+	MESSAGE=`echo $"The password was not reset for" $USERNAME`
 fi
 if [ $EXEC_STATUS = 102 ]
 then
-MESSAGE=`echo $USERNAME - $"This user account has been suspended.".`
+	MESSAGE=`echo $USERNAME - $"This user account has been suspended.".`
 fi
 show_status
 exit

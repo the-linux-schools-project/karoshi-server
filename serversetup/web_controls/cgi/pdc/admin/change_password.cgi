@@ -60,54 +60,54 @@ END_POINT=12
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign PASSWORD1
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = PASSWORD1check ]
-then
-let COUNTER=$COUNTER+1
-PASSWORD1=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = PASSWORD1check ]
+	then
+		let COUNTER=$COUNTER+1
+		PASSWORD1=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign PASSWORD2
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = PASSWORD2check ]
-then
-let COUNTER=$COUNTER+1
-PASSWORD2=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = PASSWORD2check ]
+	then
+		let COUNTER=$COUNTER+1
+		PASSWORD2=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign _VIEWIMAGE_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = VIEWIMAGEcheck ]
-then
-let COUNTER=$COUNTER+1
-VIEWIMAGE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = VIEWIMAGEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		VIEWIMAGE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -145,25 +145,25 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/change_password.cgi | cut -d' ' -f
 #Check data
 #########################
 #Check to see that username is not blank
-if [ $USERNAME'null' = null ]
+if [ -z "$USERNAME" ]
 then
-MESSAGE=$"The username must not be blank."
-show_status
+	MESSAGE=$"The username must not be blank."
+	show_status
 fi
 #Check to see that the user exists
 getent passwd "$USERNAME" 1>/dev/null 2>/dev/null
 USEREXISTSTATUS=`echo $?`
 if [ $USEREXISTSTATUS != 0 ]
 then
-MESSAGE=$"This username does not exist."
-show_status
+	MESSAGE=$"This username does not exist."
+	show_status
 fi
 
 #Dont change passwords for certain users
 if [ $USERNAME = karoshi ] || [ $USERNAME = root ]
 then
-MESSAGE=$"You can not change the password for this user."
-show_status
+	MESSAGE=$"You can not change the password for this user."
+	show_status
 fi
 
 #Check view image tick box
@@ -185,32 +185,32 @@ fi
 #Check to see that the user is not in acceptable use category
 if [ -f /opt/karoshi/acceptable_use_authorisations/pending/$USERNAME ]
 then
-#Check to see how many days of trial are left
-GRACE_TIME=`sed -n 1,1p /opt/karoshi/acceptable_use_authorisations/pending/$USERNAME | tr -cd 0-9`
-[ $GRACE_TIME'null' = null ] && GRACE_TIME=0
-if [ $GRACE_TIME = 0 ]
-then
-MESSAGE=`echo $USERNAME - $"This user has not signed an acceptable use policy and their account has now been suspended."`
-show_status
-fi
+	#Check to see how many days of trial are left
+	GRACE_TIME=`sed -n 1,1p /opt/karoshi/acceptable_use_authorisations/pending/$USERNAME cut -d, -f1 | tr -cd 0-9`
+	[ -z "$GRACE_TIME" ] && GRACE_TIME=0
+	if [ $GRACE_TIME = 0 ]
+	then
+		MESSAGE=`echo $USERNAME - $"This user has not signed an acceptable use policy and their account has now been suspended."`
+		show_status
+	fi
 fi
 
 #Check to see that password fields are not blank
-if [ $PASSWORD1'null' = null ]
+if [ -z "$PASSWORD1" ]
 then
-MESSAGE=$"The password must not be blank."
-show_status
+	MESSAGE=$"The password must not be blank."
+	show_status
 fi
-if [ $PASSWORD2'null' = null ]
+if [ -z "$PASSWORD2" ]
 then
-MESSAGE=$"The password must not be blank."
-show_status
+	MESSAGE=$"The password must not be blank."
+	show_status
 fi
 #Check that password has been entered correctly
 if [ $PASSWORD1 != $PASSWORD2 ]
 then
-MESSAGE=$"The passwords do not match."
-show_status
+	MESSAGE=$"The passwords do not match."
+	show_status
 fi
 
 #Check that there are no spaces in the password
@@ -220,20 +220,18 @@ fi
 #show_status
 #fi
 
-
-
 #Change password
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$PASSWORD1" | sudo -H /opt/karoshi/web_controls/exec/change_password
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 0 ]
 then
-MESSAGE=`echo $"Password changed for" $USERNAME.`
+	MESSAGE=`echo $"Password changed for" $USERNAME.`
 else
-MESSAGE=`echo $"The password was not changed for" $USERNAME.`
+	MESSAGE=`echo $"The password was not changed for" $USERNAME.`
 fi
 if [ $EXEC_STATUS = 102 ]
 then
-MESSAGE=`echo $USERNAME - $"This user account has been suspended."`
+	MESSAGE=`echo $USERNAME - $"This user account has been suspended."`
 fi
 show_status
 exit

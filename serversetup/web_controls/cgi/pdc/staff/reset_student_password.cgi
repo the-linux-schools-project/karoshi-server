@@ -44,7 +44,7 @@ SLEEPTIME=5
 
 echo "Content-type: text/html"
 echo ""
-echo "<html><head><title>$"Reset a Student's Password"</title><meta http-equiv='"'REFRESH'"' content='"'0; URL='$HTTP_REFERER''"'><link rel="stylesheet" href="/css/$STYLESHEET"></head><body><div id='pagecontainer'>"
+echo '<html><head><title>'$"Reset a Student's Password"'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"><link rel="stylesheet" href="/css/'$STYLESHEET'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -59,27 +59,27 @@ END_POINT=8
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-if [ `echo $DATA | cut -s -d'_' -f$COUNTER` = USERNAME ]
-then
-let COUNTER=$COUNTER+1
-USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	if [ `echo $DATA | cut -s -d'_' -f$COUNTER` = USERNAME ]
+	then
+		let COUNTER=$COUNTER+1
+		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign _VIEWIMAGE_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = VIEWIMAGEcheck ]
-then
-let COUNTER=$COUNTER+1
-VIEWIMAGE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = VIEWIMAGEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		VIEWIMAGE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -94,22 +94,22 @@ exit
 #Check data
 #########################
 #Check to see that username is not blank
-if [ $USERNAME'null' = null ]
+if [ -z "$USERNAME" ]
 then
-MESSAGE=$"The username must not be blank."
-show_status
+	MESSAGE=$"The username must not be blank."
+	show_status
 fi
 
 #Check to see that the member of staff is not restricted
 if [ -f /opt/karoshi/web_controls/staff_restrictions.txt ]
 then
-if [ `grep -c -w $MYUSERNAME /opt/karoshi/web_controls/staff_restrictions.txt` -gt 0 ]
-then
-sudo -H /opt/karoshi/web_controls/exec/record_staff_error $REMOTE_USER:$REMOTE_ADDR:$MYUSERNAME
-sleep $SLEEPTIME
-MESSAGE=$"Authentication failure."
-show_status
-fi
+	if [ `grep -c -w $MYUSERNAME /opt/karoshi/web_controls/staff_restrictions.txt` -gt 0 ]
+	then
+		sudo -H /opt/karoshi/web_controls/exec/record_staff_error $REMOTE_USER:$REMOTE_ADDR:$MYUSERNAME
+		sleep $SLEEPTIME
+		MESSAGE=$"Authentication failure."
+		show_status
+	fi
 fi
 
 #Check to see that the user exists
@@ -117,16 +117,29 @@ echo "$MD5SUM:$USERNAME" | sudo -H /opt/karoshi/web_controls/exec/existcheck_use
 USEREXISTSTATUS=`echo $?`
 if [ $USEREXISTSTATUS != 112 ]
 then
-MESSAGE=$"The username does not exist."
-show_status
+	MESSAGE=$"The username does not exist."
+	show_status
 fi
 #Check to see if the user for password change is a student.
 echo "$REMOTE_USER:$REMOTE_ADDR:$USERNAME" | sudo -H /opt/karoshi/web_controls/exec/check_student
 STUDENTEXITSTATUS=`echo $?`
 if [ $STUDENTEXITSTATUS != 111 ]
 then
-MESSAGE=$"You can only change passwords for students."
-show_status
+	MESSAGE=$"You can only change passwords for students."
+	show_status
+fi
+
+#Check to see that the user is not in acceptable use category
+if [ -f /opt/karoshi/acceptable_use_authorisations/pending/$USERNAME ]
+then
+	#Check to see how many days of trial are left
+	GRACE_TIME=`sed -n 1,1p /opt/karoshi/acceptable_use_authorisations/pending/$USERNAME cut -d, -f1 | tr -cd 0-9`
+	[ -z "$GRACE_TIME" ] && GRACE_TIME=0
+	if [ $GRACE_TIME = 0 ]
+	then
+		MESSAGE=`echo $USERNAME - $"This user has not signed an acceptable use policy and their account has now been suspended."`
+		show_status
+	fi
 fi
 
 #Check view image tick box
@@ -153,8 +166,8 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$PASSWORD1:" | sudo -H /opt/ka
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 0 ]
 then
-MESSAGE=`echo $USERNAME: $"Password changed to" $PASSWORD1.`
+	MESSAGE=`echo $USERNAME: $"Password changed to" $PASSWORD1.`
 else
-MESSAGE=`echo $"The password was not changed for" $USERNAME.`
+	MESSAGE=`echo $"The password was not changed for" $USERNAME.`
 fi
 show_status

@@ -48,114 +48,102 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+'`
 #Assign data to variables
 #########################
 END_POINT=17
-#Assign _CN_
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = CNcheck ]
-then
-let COUNTER=$COUNTER+1
-CN=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
+
 #Assign SN
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SNcheck ]
-then
-let COUNTER=$COUNTER+1
-SN=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SNcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SN=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign GIVENNAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = GIVENNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-GIVENNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = GIVENNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		GIVENNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign _EMPLOYEENUMBER_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = EMPLOYEENUMBERcheck ]
-then
-let COUNTER=$COUNTER+1
-EMPLOYEENUMBER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = EMPLOYEENUMBERcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		EMPLOYEENUMBER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign _DISPLAYNAME_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = DISPLAYNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-DISPLAYNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = DISPLAYNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		DISPLAYNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign _MAILLOCALADDRESS_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = MAILLOCALADDRESScheck ]
-then
-let COUNTER=$COUNTER+1
-MAILLOCALADDRESS=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = MAILLOCALADDRESScheck ]
+	then
+		let COUNTER=$COUNTER+1
+		MAILLOCALADDRESS=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign _MAIL_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = MAILcheck ]
-then
-let COUNTER=$COUNTER+1
-MAIL=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = MAILcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		MAIL=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign _USERNAME_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -171,62 +159,57 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/change_user_info.cgi | cut -d' ' -f1`
 #########################
 #Check data
 #########################
 
-if [ $CN'null' = null ]
+if [ -z "$SN" ]
 then
-MESSAGE=$"The common name cannot be blank."
-show_status
+	MESSAGE=$"The surname cannot be blank."
+	show_status
 fi
-if [ $SN'null' = null ]
+if [ -z "$GIVENNAME" ]
 then
-MESSAGE=$"The surname cannot be blank."
-show_status
+	MESSAGE=$"The given name cannot be blank."
+	show_status
 fi
-if [ $GIVENNAME'null' = null ]
+if [ -z "$DISPLAYNAME" ]
 then
-MESSAGE=$"The given name cannot be blank."
-show_status
-fi
-if [ $DISPLAYNAME'null' = null ]
-then
-MESSAGE=$"The display name name cannot be blank."
-show_status
+	MESSAGE=$"The display name name cannot be blank."
+	show_status
 fi
 
-if [ $MAIL'null' = null ]
+if [ -z "$MAIL" ]
 then
-MESSAGE=$"The mail address cannot be blank."
-show_status
+	MESSAGE=$"The mail address cannot be blank."
+	show_status
 fi
-if [ $USERNAME'null' = null ]
+if [ -z "$USERNAME" ]
 then
-MESSAGE=$"The username must not be blank."
-show_status
+	MESSAGE=$"The username must not be blank."
+	show_status
 fi
 
 #Change information
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$CN:$SN:$GIVENNAME:$DISPLAYNAME:$EMPLOYEENUMBER:$MAILLOCALADDRESS:$MAIL" | sudo -H /opt/karoshi/web_controls/exec/change_user_info
-MESSAGE="$USERNAME - $"information changed.""
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$SN:$GIVENNAME:$DISPLAYNAME:$EMPLOYEENUMBER:$MAILLOCALADDRESS:$MAIL" | sudo -H /opt/karoshi/web_controls/exec/change_user_info
+MESSAGE=''$USERNAME' - '$"information changed."''
 show_status
 exit

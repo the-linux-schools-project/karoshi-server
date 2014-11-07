@@ -462,7 +462,7 @@ echo  '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpad
 
 [ $MOBILE = no ] && echo '<td style="width: '$WIDTH2'px;"><b>'$"Group id"'</b></td><td style="width: '$WIDTH2'px;"><b>'$"User count"'</b></td>'
 
-echo '<td style="width: '$WIDTH2'px;"><b>'$"Type"'</b></td><td style="width: '$WIDTH3'px;"><b>'$"Change the extra groups associated with this group."'</b></td><td><b>'$"Edit"'</b></td><td><b>'$"Delete this group."'</b></td></tr>'
+echo '<td style="width: '$WIDTH2'px;"><b>'$"Type"'</b></td><td style="width: '$WIDTH3'px;"><b>'$"Associated groups"'</b></td><td><b>'$"Edit"'</b></td><td><b>'$"Delete"'</b></td></tr>'
 
 while [ $COUNTER -lt $GROUPCOUNT ]
 do
@@ -496,7 +496,7 @@ PROTECTED=no
 [ `echo $PROTECTEDLIST | grep -c $GROUPNAME` -gt 0 ] && PROTECTED=yes
 if [ $MEMBERCOUNT = 0 ] || [ $TYPE = secondary ] && [ $PROTECTED = no ]
 then
-echo '<a class="info" href="javascript:void(0)"><input name="____ACTION____delete____GROUPNAME____'$GROUPNAME'____TYPE____'$TYPE'____" type="image" class="images" src="'$ICON1'" value=""><span>'$"Delete this group."' '$GROUPNAME'</span></a>'
+echo '<a class="info" href="javascript:void(0)"><input name="____ACTION____delete____GROUPNAME____'$GROUPNAME'____TYPE____'$TYPE'____" type="image" class="images" src="'$ICON1'" value=""><span>'$GROUPNAME' - '$"delete this group."'</span></a>'
 fi
 echo '</td></tr>'
 fi

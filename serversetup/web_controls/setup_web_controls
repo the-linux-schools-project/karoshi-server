@@ -252,6 +252,7 @@ done
 #################################
 #Copy in tech cgi scripts
 #################################
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/irc_help.cgi /var/www/cgi-bin_karoshi/tech/
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/search.cgi /var/www/cgi-bin_karoshi/tech/
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/redirect.cgi /var/www/cgi-bin_karoshi/tech/
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/set_default_page.cgi /var/www/cgi-bin_karoshi/tech/

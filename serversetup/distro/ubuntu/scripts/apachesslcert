@@ -8,7 +8,7 @@ source /opt/karoshi/server_network/domain_information/domain_name
 #Assign variables
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
 exit 101
 fi

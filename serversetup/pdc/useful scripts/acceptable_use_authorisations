@@ -1,11 +1,15 @@
 #!/bin/bash
 LOG_DATE=`date +%F`
+
+#Check if acceptable use is enabled
+[ -f /opt/karoshi/acceptable_use_authorisations/grace_time_disabled ] && exit
+
 #Create folders
 if [ ! -d /opt/karoshi/acceptable_use_authorisations/pending ]
 then
-mkdir -p /opt/karoshi/acceptable_use_authorisations/pending
-chmod -R 0750 /opt/karoshi/acceptable_use_authorisations
-chown -R root.apache_karoshi /opt/karoshi/acceptable_use_authorisations
+	mkdir -p /opt/karoshi/acceptable_use_authorisations/pending
+	chmod -R 0750 /opt/karoshi/acceptable_use_authorisations
+	chown -R root.apache_karoshi /opt/karoshi/acceptable_use_authorisations
 fi
 
 #Check if there are any users pending
@@ -24,21 +28,21 @@ USER_GRACE_TIME=`echo $PENDING_USER_DATA | cut -d, -f1 | tr -cd 0-9`
 USER_CREATOR=`echo $PENDING_USER_DATA | cut -d, -f2`
 CREATION_DATE=`echo $PENDING_USER_DATA | cut -d, -f3`
 
-[ $USER_GRACE_TIME'null' = null ] && USER_GRACE_TIME=0
+[ -z "$USER_GRACE_TIME" ] && USER_GRACE_TIME=0
 
 if [ $USER_GRACE_TIME != 0 ]
 then
-let USER_GRACE_TIME=$USER_GRACE_TIME-1
-echo $USER_GRACE_TIME,$USER_CREATOR,$CREATION_DATE > /opt/karoshi/acceptable_use_authorisations/pending/$PENDING_USERNAME
+	let USER_GRACE_TIME=$USER_GRACE_TIME-1
+	echo $USER_GRACE_TIME,$USER_CREATOR,$CREATION_DATE > /opt/karoshi/acceptable_use_authorisations/pending/$PENDING_USERNAME
 fi
 if [ $USER_GRACE_TIME = 0 ]
 then
-#Suspend user
-echo `date`: acceptable_use_authorisations - suspending $PENDING_USERNAME >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-smbpasswd -d $PENDING_USERNAME
-#Change password
-PASSWORD=`echo $RANDOM`
-
-samba-tool user setpassword $USERNAME --newpassword="$PASSWORD" 1>/dev/null 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
- 
+	#Suspend user
+	echo `date`: acceptable_use_authorisations - suspending $PENDING_USERNAME >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	samba-tool user disable $PENDING_USERNAME
+	#Change password
+	#PASSWORD=`echo $RANDOM`
+	#samba-tool user setpassword $USERNAME --newpassword="$PASSWORD" 1>/dev/null 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+done
 exit

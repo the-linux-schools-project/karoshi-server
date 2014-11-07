@@ -219,6 +219,19 @@ MESSAGE=''$"Your password length"': '$PASSLENGTH'\n'$"Required password length"'
 show_status
 fi
 
+#Check to see that the user is not in acceptable use category
+if [ -f /opt/karoshi/acceptable_use_authorisations/pending/$USERNAME ]
+then
+	#Check to see how many days of trial are left
+	GRACE_TIME=`sed -n 1,1p /opt/karoshi/acceptable_use_authorisations/pending/$USERNAME cut -d, -f1 | tr -cd 0-9`
+	[ -z "$GRACE_TIME" ] && GRACE_TIME=0
+	if [ $GRACE_TIME = 0 ]
+		then
+		MESSAGE=`echo $USERNAME - $"This user has not signed an acceptable use policy and their account has now been suspended."`
+		show_status
+	fi
+fi
+
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/all/change_my_password.cgi | cut -d' ' -f1`
 #Change password
 echo "$REMOTE_ADDR:$MD5SUM:$USERNAME:$PASSWORD1:$PASSWORD2" | sudo -H /opt/karoshi/web_controls/exec/change_my_password

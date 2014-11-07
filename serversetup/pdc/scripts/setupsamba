@@ -898,11 +898,11 @@ cp -R /opt/karoshi/serversetup/pdc/logonscripts/logo.bmp /var/lib/samba/netlogon
 cp -R /opt/karoshi/serversetup/pdc/logonscripts/logon.bat /var/lib/samba/netlogon/
 cp -R /opt/karoshi/serversetup/pdc/logonscripts/logonform.kix /var/lib/samba/netlogon/
 
-sed -i 's/CHANGETHISSERVER/'$HOSTNAME'/g' /var/lib/samba/netlogon/logonform.kix
-sed -i 's/CHANGETHISSERVER/'$HOSTNAME'/g' /var/lib/samba/netlogon/logon.bat
-sed -i 's/CHANGETHISSERVER/'$HOSTNAME'/g' /var/lib/samba/netlogon/kix/getdll.bat
-sed -i 's/CHANGETHISSERVER/'$HOSTNAME'/g' /var/lib/samba/netlogon/kix/kixinstall.bat
-sed -i 's/CHANGETHISSERVER/'$HOSTNAME'/g' /var/lib/samba/netlogon/kix/Setup_Workstation.bat
+sed -i 's/CHANGETHISSERVER/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon/logonform.kix
+sed -i 's/CHANGETHISSERVER/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon/logon.bat
+sed -i 's/CHANGETHISSERVER/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon/kix/getdll.bat
+sed -i 's/CHANGETHISSERVER/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon/kix/kixinstall.bat
+sed -i 's/CHANGETHISSERVER/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon/kix/Setup_Workstation.bat
 
 chmod 0644 /var/lib/samba/netlogon/*
 chmod 0755 /var/lib/samba/netlogon/logon.bat

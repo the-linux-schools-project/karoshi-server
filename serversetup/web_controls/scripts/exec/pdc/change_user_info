@@ -24,22 +24,22 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/change_user_info_cgi
 then
-echo `date`: change_user_info - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_user_info - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/change_user_info_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/change_user_info.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $change_user_info_cgi'check' ]
 then
-echo `date`: change_user_info - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_user_info - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -48,91 +48,85 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: change_user_info - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_user_info - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: change_user_info - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_user_info - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 USERNAME=`echo "$DATA" | cut -s -d: -f4`
-CN=`echo "$DATA" | cut -s -d: -f5`
-SN=`echo "$DATA" | cut -s -d: -f6`
-GIVENNAME=`echo "$DATA" | cut -s -d: -f7`
-DISPLAYNAME=`echo "$DATA" | cut -s -d: -f8`
-EMPLOYEENUMBER=`echo "$DATA" | cut -s -d: -f9`
-MAILLOCALADDRESS=`echo "$DATA" | cut -s -d: -f10`
-MAIL=`echo "$DATA" | cut -s -d: -f11`
+SN=`echo "$DATA" | cut -s -d: -f5`
+GIVENNAME=`echo "$DATA" | cut -s -d: -f6`
+DISPLAYNAME=`echo "$DATA" | cut -s -d: -f7`
+EMPLOYEENUMBER=`echo "$DATA" | cut -s -d: -f8`
+MAILLOCALADDRESS=`echo "$DATA" | cut -s -d: -f9`
+MAIL=`echo "$DATA" | cut -s -d: -f10`
 
 ########################
 #Check data
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
 then
-echo `date`: change_user_info - Not called by change_user_info.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_user_info - Not called by change_user_info.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: change_user_info - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_user_info - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: change_user_info - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_user_info - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $CN'null' = null ]
+if [ -z "$SN" ]
 then
-echo `date`: change_user_info - Blank common name by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_user_info - Blank surname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $SN'null' = null ]
+if [ -z "$GIVENNAME" ]
 then
-echo `date`: change_user_info - Blank surname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_user_info - Blank given name by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $GIVENNAME'null' = null ]
+if [ -z "$DISPLAYNAME" ]
 then
-echo `date`: change_user_info - Blank given name by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
-if [ $DISPLAYNAME'null' = null ]
-then
-echo `date`: change_user_info - Blank display name by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_user_info - Blank display name by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $USERNAME'null' = null ]
+if [ -z "$USERNAME" ]
 then
-echo `date`: change_user_info - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_user_info - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $EMPLOYEENUMBER'null' = null ]
+if [ -z "$EMPLOYEENUMBER" ]
 then
-EMPLOYEENUMBER=null
+	EMPLOYEENUMBER=`echo ${GIVENNAME:0:1}${SN:0:1} | tr 'A-Z' 'a-z'`
 fi
 
 
-if [ $MAIL'null' = null ]
+if [ -z "$MAIL" ]
 then
-echo `date`: change_user_info - Blank email address by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_user_info - Blank email address by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: change_user_info - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_user_info - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -146,23 +140,17 @@ DISPLAYNAME=`echo $DISPLAYNAME | sed 's/+/ /g'`
 
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 source /opt/karoshi/server_network/domain_information/domain_name
-USERDN=`ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME | grep ^dn:`
+USERDN=`ldapsearch -o ldif-wrap=no -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME | grep ^dn:`
 ENROLLMENTCHECK=`ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME | grep -c employeeNumber:`
 
 if [ $ENROLLMENTCHECK = 0 ]
 then
-ACTION=add
+	ACTION=add
 else
-ACTION=replace
+	ACTION=replace
 fi
 
 echo -e "$USERDN\nchangetype: modify\n$ACTION: employeeNumber\nemployeeNumber: $EMPLOYEENUMBER\n-\nreplace: sn\nsn: $SN\n-\nreplace: givenName\ngivenName: $GIVENNAME\n-\nreplace: displayName\ndisplayName: $DISPLAYNAME\n-\nreplace: mail\nmail: $MAIL\n-" | ldapmodify -x -w $LDAPPASS -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null
-
-echo "<pre>"
-
-echo -e "$USERDN\nchangetype: modify\n$ACTION: employeeNumber\nemployeeNumber: $EMPLOYEENUMBER\n-\nreplace: sn\nsn: $SN\n-\nreplace: givenName\ngivenName: $GIVENNAME\n-\nreplace: displayName\ndisplayName: $DISPLAYNAME\n-\nreplace: mail\nmail: $MAIL\n-"
-
-echo "</pre>"
 
 #Change info on federated ldap servers
 if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
