@@ -144,73 +144,60 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div>
 '
 else
-echo '<div id="'$DIV_ID'"><b>'$"Change a Student's Password"'</b><br><br>'
+echo '<div id="'$DIV_ID'"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td><div class="sectiontitle">'$"Change a Student's Password"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will change the password of the user for access to all servers on the Karoshi system."'</span></a></td></tr></tbody></table><br>'
 fi
 
 if [ $MOBILE = yes ]
 then
-echo '<div id="mobileactionbox"><div id="suggestions"></div>'$"Student Username"'<br>
-<input tabindex= "3" name="_USERNAME_" AUTOCOMPLETE = "off" style="width: 200px;" value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br>
-'$"Student Password"'<br>
-<input tabindex= "4" name="_PASSWORD1_" style="width: 200px;" value="'$PASSWORD1'" size="20" type="password"><br>
-'$"Confirm Password"'<br>
-<input tabindex= "5" name="_PASSWORD2_" style="width: 200px;" value="'$PASSWORD2'" size="20" type="password"><br>
-'$"View User Image"'<br>
-<a class="info" href="javascript:void(0)"><input name="_VIEWIMAGE_yes_" type="image" class="images" src="/images/submenus/user/user_photo.png" value=""><span>'$"View User Image"'</span></a><br><br>
+echo '<div id="mobileactionbox">
+<div id="suggestions"></div>
+'$"Username"'<br>
+<input tabindex= "1" style="width: 160px;" name="____USERNAME____" 
+ value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br>
+'$"New Password"'<br>
+<input tabindex= "2" style="width: 160px;" name="____PASSWORD1____" value="'$PASSWORD1'" size="20" type="password"><br>
+'$"Confirm New Password"'<br>
+<input tabindex= "3" style="width: 160px;" name="____PASSWORD2____" value="'$PASSWORD2'" size="20" type="password"><br><br>
+<div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180"></div>
 '
 else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-	<tbody>
-		<tr>
-			<td style="width: 180px;">
-				'$"Student Username"'
-			</td>
-			<td>
-				<div id="suggestions"></div>
-				<input tabindex= "3" name="_USERNAME_" AUTOCOMPLETE = "off" style="width: 200px;" value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);">
-			</td>
-			<td>
-				<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will change the password of the user for access to all servers on the Karoshi system including moodle and email."'</span></a>
-			</td>
-			<td colspan="1" rowspan="4" style="vertical-align: top;">
-				<div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180"></div>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				'$"Student Password"'
-			</td>
-			<td>
-				<input tabindex= "4" name="_PASSWORD1_" style="width: 200px;" value="'$PASSWORD1'" size="20" type="password">
-			</td>
-			<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new password that you want the user to have."'<br><br>'$"The following special characters are allowed"':<br><br>space ! # $ & ( ) + - =  %</span></a>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				'$"Confirm Password"'
-			</td>
-			<td>
-				<input tabindex= "5" name="_PASSWORD2_" style="width: 200px;" value="'$PASSWORD2'" size="20" type="password">
-			</td>
-		</tr>
-		<tr>
-			<td>
-				'$"View User Image"'
-			</td>
-			<td>
-				<a class="info" href="javascript:void(0)"><input name="_VIEWIMAGE_yes_" type="image" class="images" src="/images/submenus/user/user_photo.png" value=""><span>'$"View User Image"'</span></a>
-			</td>
-      		</tr>
-	</tbody>
-  </table>'
-fi
+    <tbody>
+      <tr>
+        <td style="width: 180px;">
+'$"Username"'</td>
+        <td><div id="suggestions"></div>
+<input tabindex= "1" style="width: 200px;" name="____USERNAME____" 
+ value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to change the password for."'</span></a>
+</td>'
 
-#Get user image
-if [ $USERNAME'blank' != blank ]
-then
-echo '<br>'
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:" | sudo -H /opt/karoshi/web_controls/exec/show_user_image
+#Show user photo
+echo '<td colspan="1" rowspan="4" style="vertical-align: top;">'
+echo '<div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180"></div>'
+
+echo '</td></tr>
+      <tr>
+        <td>
+'$"New Password"'</td>
+        <td><input tabindex= "2" style="width: 200px;" name="____PASSWORD1____" value="'$PASSWORD1'" size="20" type="password"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new password that you want the user to have."'<br><br>'$"The following special characters are allowed"'<br><br> space !	"	# 	$	%	& 	(	) 	*	+	, 	-	.	/ 	:
+;	<	=	>	?	@ 	[	\	]	^	_	` 	{	|	}	~</span></a>
+</td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">
+'$"Confirm New Password"'</td>
+        <td style="vertical-align: top;"><input tabindex= "3" style="width: 200px;" name="____PASSWORD2____" value="'$PASSWORD2'" size="20" type="password"></td>
+      </tr>
+<tr>
+     <td style="vertical-align: top; height: 120px;">
+</td>
+      </tr>
+    </tbody>
+  </table>
+'
 fi
 
 
