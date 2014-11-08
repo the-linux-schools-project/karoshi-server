@@ -21,11 +21,32 @@ echo '[core]
 	merge = refs/heads/cups-testing
 ' > /opt/karoshi/.git/config
 
-echo '[user]
+choice=n
+echo -e "\nYou will need to enter in a name and E-Mail address for pushing to github."
+while [ $choice = n ]
+do
+	echo -e "\nEnter your name\n"
+	read name
+	echo -e "\nEnter your email address\n"
+	read email
+	echo -e "\nName: $name\nE-Mail: $email\n\nAdd these details correct?(y/n)\n"
+	read choice
+
+	if [ $choice = y ]
+	then
+		echo '[user]
 	name = Change Me
 	email = changeme@changethis.com
 [push]
 	default = simple
 ' > /root/.gitconfig
 
+	git config --global user.name "$name"
+    	git config --global user.email $email
+	fi
+done
+
 cp -f /opt/karoshi/serversetup/all/scripts/gitsync /usr/sbin/
+
+cd /opt/karoshi
+git init
