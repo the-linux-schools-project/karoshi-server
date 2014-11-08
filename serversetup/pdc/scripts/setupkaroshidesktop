@@ -140,6 +140,9 @@ echo `date`: "Importing ssl root certificate into firefox" >> /opt/karoshi/serve
 FIREFOXPROFILE=`ls /opt/karoshi/karoshi_user/.mozilla/firefox | grep .default`
 #su karoshi -c 'certutil -A -n "Karoshi Web Management" -addstore root -t "CTu,CTu,CTu" -i /var/lib/samba/netlogon/domain_information/cacert.pem -d /opt/karoshi/karoshi_user/.mozilla/firefox/'$FIREFOXPROFILE''
 
+#Delete existing cert db
+[ -f /opt/karoshi/karoshi_user/.mozilla/firefox/$FIREFOXPROFILE/cert8.db ] && rm -f /opt/karoshi/karoshi_user/.mozilla/firefox/$FIREFOXPROFILE/cert8.db
+
 certutil -A -n "Karoshi Web Management" -addstore root -t "CTu,CTu,CTu" -i /var/lib/samba/netlogon/domain_information/cacert.pem -d /opt/karoshi/karoshi_user/.mozilla/firefox/$FIREFOXPROFILE
 
 #Modify web management to point at the domain path instead of 127.0.0.1
