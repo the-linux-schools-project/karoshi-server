@@ -201,8 +201,9 @@ For the default live system, enter "live".  To run memtest86+, enter "memtest"
 #Create isolinux.cfg
 echo -e "Creating isolinux.cfg\n"
 sleep 1	
-echo 'default install
-prompt 0
+echo '
+default vesamenu.c32
+prompt 1
 timeout 100
 
 menu title __LIVECDLABEL__
@@ -213,6 +214,11 @@ label install
   menu label install - Install The Linux Schools Project Server
   kernel /casper/vmlinuz
   append  file=/cdrom/preseed/custom.seed boot=casper automatic-ubiquity initrd=/casper/initrd.lz quiet splash --
+
+LABEL Live-CD
+  menu label Install from a live CD
+  kernel /casper/vmlinuz
+  append  file=/cdrom/preseed/ubuntu.seed boot=casper initrd=/casper/initrd.lz quiet splash --
 
 label memtest
   menu label memtest - Run memtest
@@ -239,12 +245,10 @@ d-i passwd/user-password password karoshi
 d-i passwd/user-password-again password karoshi
 d-i user-setup/allow-password-weak boolean true
 d-i user-setup/encrypt-home boolean false
-# Avoid that last message about the install being complete.
 d-i finish-install/reboot_in_progress note
-#d-i debian-installer/exit/poweroff boolean true
-d-i cdrom-detect/eject boolean false
- ubiquity ubiquity/reboot boolean true
- ubiquity ubiquity/poweroff boolean true" > image/preseed/custom.seed
+ubiquity ubiquity/summary note
+
+" > image/preseed/custom.seed
 
 #Create manifest
 echo -e "\nCreating manifest\n"
