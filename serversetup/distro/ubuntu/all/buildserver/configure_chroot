@@ -37,7 +37,7 @@ dpkg-divert --local --rename --add /sbin/initctl
 #Install Packages needed for the live system
 echo -e "\nChroot: Installing packages for the live system\n"
 sleep 1	
-apt-get install --yes ubuntu-minimal casper lupin-casper ubiquity-casper
+apt-get install --yes ubuntu-minimal casper lupin-casper ubiquity-casper ubiquity-frontend-gtk
 
 echo -e "\nChroot: Installing discover and os-prober\n"
 sleep 1	

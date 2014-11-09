@@ -450,8 +450,8 @@ touch /etc/postfix/main.cf
 /opt/karoshi/serversetup/scripts/language/create_karoshi_locale
 
 #Modify langlist for ubiquity installer
-#mv /usr/share/localechooser/languagelist /usr/share/localechooser/languagelist.$$
-#cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/languagelist /usr/share/localechooser
+mv /usr/lib/ubiquity/localechooser/languagelist /usr/lib/ubiquity/localechooser/languagelist.$$
+cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/languagelist /usr/lib/ubiquity/localechooser/languagelist
 
 #Delete install_log
 [ -f /opt/karoshi/serversetup/install_log ] && rm -f /opt/karoshi/serversetup/install_log
