@@ -472,6 +472,10 @@ touch /etc/postfix/main.cf
 mv /usr/lib/ubiquity/localechooser/languagelist /usr/lib/ubiquity/localechooser/languagelist.$$
 cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/languagelist /usr/lib/ubiquity/localechooser/languagelist
 
+#Copy in ubiquity-slideshow
+[ -d /usr/share/ubiquity-slideshow ] && rm -f -R /usr/share/ubiquity-slideshow
+cp -f -r /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/ubiquity-slideshow /usr/share/
+
 #Delete install_log
 [ -f /opt/karoshi/serversetup/install_log ] && rm -f /opt/karoshi/serversetup/install_log
 }

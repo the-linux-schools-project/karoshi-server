@@ -203,20 +203,20 @@ echo -e "Creating isolinux.cfg\n"
 sleep 1	
 echo '
 default vesamenu.c32
-prompt 1
+prompt 0
 timeout 100
 
-menu title __LIVECDLABEL__
+menu title Karoshi Server
 menu background splash.png
 menu color title 1;37;44 #c0ffffff #00000000 std
 
 label install
-  menu label install - Install The Linux Schools Project Server
+  menu label Install The Linux Schools Project Server
   kernel /casper/vmlinuz
   append  file=/cdrom/preseed/custom.seed boot=casper automatic-ubiquity initrd=/casper/initrd.lz quiet splash --
 
 LABEL Live-CD
-  menu label Install from a live CD
+  menu label Live CD
   kernel /casper/vmlinuz
   append  file=/cdrom/preseed/ubuntu.seed boot=casper initrd=/casper/initrd.lz quiet splash --
 
