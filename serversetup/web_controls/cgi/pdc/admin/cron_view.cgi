@@ -78,7 +78,7 @@ echo '</head><body><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-	DIV_ID=actionbox
+	DIV_ID=actionbox3
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -174,7 +174,7 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
