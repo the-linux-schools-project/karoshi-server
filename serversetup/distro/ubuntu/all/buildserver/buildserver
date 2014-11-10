@@ -459,8 +459,17 @@ fi
 #Modify mon ping monitor - default is to just ping once - this change will cause the ping check to keep trying up to six times over 3 seconds - the check will report a success at the first successful ping.
 sed -i 's/PING="ping -c 1"/PING="ping -i 0.5 -c 1 -w 3"/g' /usr/lib/mon/mon.d/ping.monitor
 
-#Configure casper
-sed -i 's/export USERNAME="ubuntu"/export USERNAME="karoshi"/g' /etc/casper.conf
+#Create casper.conf
+echo -e '# This file should go in /etc/casper.conf
+# Supported variables are:
+# USERNAME, USERFULLNAME, HOST, BUILD_SYSTEM, FLAVOUR
+
+export USERNAME="karoshi"
+export USERFULLNAME="Live session user"
+export HOST="karoshi-server"
+export BUILD_SYSTEM="Ubuntu"
+export FLAVOUR="Karoshi-Server"
+' > /etc/casper.conf
 
 #Create an empty main.cf to stop postconf from moaning.
 touch /etc/postfix/main.cf
