@@ -308,15 +308,15 @@ cp -f /opt/karoshi/serversetup/all/backgrounds/background.png /usr/share/backgro
 cp -f /opt/karoshi/serversetup/all/backgrounds/bootmenu.png /usr/share/backgrounds/karoshi/
 
 #Configure Plymouth
-#echo -e "\nAdding karoshi-gnome-logo theme to plymouth.\n"
-#cp -f -R /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/plymouth/karoshi-gnome-logo /lib/plymouth/themes/
-#update-alternatives --install /lib/plymouth/themes/default.plymouth default.plymouth /lib/plymouth/themes/karoshi-gnome-logo/karoshi-gnome-logo.plymouth 100
-#update-alternatives --config default.plymouth
+echo -e "\nAdding karoshi-gnome-logo theme to plymouth.\n"
+cp -f -R /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/plymouth/karoshi-gnome-logo /lib/plymouth/themes/
+update-alternatives --install /lib/plymouth/themes/default.plymouth default.plymouth /lib/plymouth/themes/karoshi-gnome-logo/karoshi-gnome-logo.plymouth 100
+update-alternatives --config default.plymouth
 #Get selection number for karoshi theme
-#SELECT=`update-alternatives --list default.plymouth | grep -n karoshi-gnome-logo | cut -d: -f1`
+SELECT=`update-alternatives --list default.plymouth | grep -n karoshi-gnome-logo | cut -d: -f1`
 #Set karoshi theme as the default theme
-#echo -e "\nSetting karoshi-gnome-logo theme as the default theme for plymouth.\n"
-#echo -e "$SELECT\n" | update-alternatives --config default.plymouth | grep karoshi-gnome-theme
+echo -e "\nSetting karoshi-gnome-logo theme as the default theme for plymouth.\n"
+echo -e "$SELECT\n" | update-alternatives --config default.plymouth | grep karoshi-gnome-theme
 
 #Load modules for initramfs
 #[ `grep -c ^fbcon /etc/initramfs-tools/modules` = 0 ] && echo "fbcon" >> /etc/initramfs-tools/modules
