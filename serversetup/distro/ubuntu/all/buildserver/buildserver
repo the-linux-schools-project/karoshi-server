@@ -317,8 +317,13 @@ SELECT=`update-alternatives --list default.plymouth | grep -n karoshi-gnome-logo
 #Set karoshi theme as the default theme
 echo -e "\nSetting karoshi-gnome-logo theme as the default theme for plymouth.\n"
 echo -e "$SELECT\n" | update-alternatives --config default.plymouth | grep karoshi-gnome-theme
+
+#Load modules for initramfs
+[ `grep -c ^fbcon /etc/initramfs-tools/modules` = 0 ] && echo "fbcon" >> /etc/initramfs-tools/modules
+[ `grep -c ^vesafb /etc/initramfs-tools/modules` = 0 ] && echo "vesafb" >> /etc/initramfs-tools/modules
+
 #Update initramfs
-sudo update-initramfs -u
+update-initramfs -u
 
 #Configure grub
 echo -e "\nConfiguring grub2.\n"
@@ -467,7 +472,7 @@ echo -e '# This file should go in /etc/casper.conf
 export USERNAME="karoshi"
 export USERFULLNAME="Live session user"
 export HOST="karoshi-server"
-export BUILD_SYSTEM="Ubuntu"
+export BUILD_SYSTEM="Karoshi-Server"
 export FLAVOUR="Karoshi-Server"
 ' > /etc/casper.conf
 
