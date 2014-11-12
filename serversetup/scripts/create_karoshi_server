@@ -288,12 +288,13 @@ echo '#define DISKNAME  '$KAROSHIVER'
 cp -f image/README.diskdefines image/casper/
 
 #Recognition as a Ubuntu remix
+KAROSHIVER2=`echo "$KAROSHIVER" | sed 's/-/ /g'`
 touch image/ubuntu
 mkdir image/.disk
 cd image/.disk
 touch base_installable
 echo "full_cd/single" > cd_type
-echo "$KAROSHIVER" > info
+echo "$KAROSHIVER2" > info
 echo "http://www.linuxschools.com" > release_notes_url
 cd ../..
 
