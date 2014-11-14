@@ -182,7 +182,7 @@ if [ $SERVERNAME = `hostname-fqdn` ]
 then
 	echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ALIAS: | /opt/karoshi/serversetup/modules/moodle/setupmoodle
 else
-echo '<li>'$SERVERNAME' - '$"Copying moodle module."'</li><br>'
+echo '<li>'$SERVERNAME' - '$"Copying module"'</li><br>'
 #Remote server
 #Copy in module
 scp -p -r /opt/karoshi/serversetup/modules/moodle root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null

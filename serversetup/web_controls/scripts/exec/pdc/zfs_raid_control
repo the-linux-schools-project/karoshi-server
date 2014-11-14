@@ -197,7 +197,7 @@ DRIVE=${ALL_DRIVES[$COUNTER]}
 DRIVE_SHORT=`echo $DRIVE | sed "s/\/dev\///g"` 
 
 
-if [ `mount | grep -c $DRIVE` = 0 ] && [ `zpool status | grep -c $DRIVE_SHORT` = 0 ] && [ `cat /proc/mdstat | grep -c $DRIVE_SHORT` = 0 ]
+if [ `mount | grep -c $DRIVE` = 0 ] && [ `zpool status | grep -c $DRIVE_SHORT` = 0 ] && [ `cat /proc/mdstat | grep -c $DRIVE_SHORT` = 0 ] || [ `zpool status | grep -w $DRIVE_SHORT | grep -c UNAVAIL` -gt 0 ]
 then
 get_drive_info
 
@@ -205,7 +205,7 @@ get_drive_info
 #Show drive information
 if [ $DRIVE_STATUS = ok ]
 then
-echo "<tr><td style=\"width: 180px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>"
+echo '<tr><td style="width: 180px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$DISKICON'"><span>'$DRIVE' - '$DISKSIZE'</span></a> '$"Available Drive"'</td><td style="width: 260px;">'$MAKER $DRIVE_SN'</td><td>'
 #Create list of drives in array to replace
 echo '<select name="select"><option value="_POOL_'$POOLNAME'_ACTION_addspare_DRIVE_'$DRIVE'_DRIVE2_notset_">'$"Add spare"'</option>'
 
@@ -259,15 +259,23 @@ for ZPOOLDRIVE in $ZPOOLDRIVES
 	#Get disk status
 	DISKSTATUS=$"Active"
 	SHOWREMOVE=no
-	[ `echo -e "$ZPOOLSTATUS" | grep $ZPOOLDRIVE | grep -c OFFLINE` -gt 0 ] && DISKSTATUS=$"Offline"
-	if [ `echo -e "$ZPOOLSTATUS" | grep $ZPOOLDRIVE | grep -c AVAIL` -gt 0 ]
+	[ `echo -e "$ZPOOLSTATUS" | grep $ZPOOLDRIVE | grep -c -w OFFLINE` -gt 0 ] && DISKSTATUS=$"Offline"
+
+	if [ `echo -e "$ZPOOLSTATUS" | grep $ZPOOLDRIVE | grep -c -w AVAIL` -gt 0 ]
 	then
 		DISKSTATUS=$"Spare"
 		SHOWREMOVE=yes
 	fi
 
-	get_drive_info
-	
+	if [ `echo -e "$ZPOOLSTATUS" | grep $ZPOOLDRIVE | grep -c -w UNAVAIL` -gt 0 ]
+	then	
+		DISKSTATUS=$"Unavailable"
+		DISKSIZE=$"Unknown"
+		MAKER=$"Drive Offline"
+		DRIVE_SN=""
+	else		
+		get_drive_info
+	fi
 	echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a> "$DRIVE - $DISKSTATUS"</td><td>$MAKER $DRIVE_SN</td>"
 [ $SHOWREMOVE = yes ] && echo "<td>
 <a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERTYPE_$SERVERTYPE"_"SERVERNAME_$SERVERNAME"_"ACTION_removespare_POOL_$POOLNAME"_"DRIVE_$DRIVE"_"DRIVE2_notset"_"\" type=\"image\" class=\"images\" src="$ICON3" value=\"\"><span>"$"Remove spare""</span></a>
@@ -356,7 +364,7 @@ DRIVE=${ALL_DRIVES[$COUNTER]}
 DRIVE_SHORT=`echo $DRIVE | sed "s/\/dev\///g"` 
 
 
-if [ `mount | grep -c $DRIVE` = 0 ] && [ `zpool status | grep -c $DRIVE_SHORT` = 0 ] && [ `cat /proc/mdstat | grep -c $DRIVE_SHORT` = 0 ]
+if [ `mount | grep -c $DRIVE` = 0 ] && [ `zpool status | grep -c $DRIVE_SHORT` = 0 ] && [ `cat /proc/mdstat | grep -c $DRIVE_SHORT` = 0 ] || [ `zpool status | grep -w $DRIVE_SHORT | grep -c UNAVAIL` -gt 0 ]
 then
 get_drive_info
 
@@ -364,7 +372,7 @@ get_drive_info
 #Show drive information
 if [ $DRIVE_STATUS = ok ]
 then
-echo "<tr><td style=\"width: 180px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>"
+echo "<tr><td style=\"width: 180px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a> '$"Available Drive"'</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>"
 #Create list of drives in array to replace
 echo "<select name=\"select\"><option value=\"_POOL_$POOLNAME"_"ACTION_addspare_DRIVE_$DRIVE"_"DRIVE2_notset_\">'$"Add spare"'</option>"
 
@@ -418,16 +426,23 @@ for ZPOOLDRIVE in $ZPOOLDRIVES
 	SHOWREMOVE=no
 	#Get disk status
 	DISKSTATUS=$"Active"
-	[ `echo -e "$ZPOOLSTATUS" | grep $DRIVE | grep -c OFFLINE` -gt 0 ] && DISKSTATUS=$"Offline"
+	[ `echo -e "$ZPOOLSTATUS" | grep $DRIVE | grep -c -w OFFLINE` -gt 0 ] && DISKSTATUS=$"Offline"
 
-	if [ `echo -e "$ZPOOLSTATUS" | grep $ZPOOLDRIVE | grep -c AVAIL` -gt 0 ]
+	if [ `echo -e "$ZPOOLSTATUS" | grep $ZPOOLDRIVE | grep -c -w AVAIL` -gt 0 ]
 	then
 		DISKSTATUS=$"Spare"
 		SHOWREMOVE=yes
 	fi
 
-
-	get_drive_info
+	if [ `echo -e "$ZPOOLSTATUS" | grep $ZPOOLDRIVE | grep -c -w UNAVAIL` -gt 0 ]
+	then	
+		DISKSTATUS=$"Unavailable"
+		DISKSIZE=$"Unknown"
+		MAKER=$"Drive Offline"
+		DRIVE_SN=""
+	else		
+		get_drive_info
+	fi
 	echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a> "$DRIVE - $DISKSTATUS"</td><td>$MAKER $DRIVE_SN</td>"
 
 [ $SHOWREMOVE = yes ] && echo "<td>

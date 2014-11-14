@@ -217,6 +217,24 @@ fi
 echo 'ssl_cert = </etc/ssl/mail/dovecot.pem' > /etc/dovecot/conf.d/10-ssl.conf
 echo 'ssl_key = </etc/ssl/mail/dovecot.key' >> /etc/dovecot/conf.d/10-ssl.conf
 
+#Configure imap password caching
+sed -i 's/^!include auth-system\.conf\.ext/#!include auth-system.conf.ext/g' /etc/dovecot/conf.d/10-auth.conf
+
+if [ `grep -c args = cache_key /etc/dovecot/dovecot.conf` = 0 ]
+then 
+	sed -i '/driver = pam/a\
+  args = cache_key=%u dovecot' /etc/dovecot/dovecot.conf
+fi
+
+if [ `grep -c "#Cache imap passwords" /etc/dovecot/dovecot.conf` = 0 ]
+then
+	echo "#Cache imap passwords
+	auth_cache_size = 10M
+	auth_cache_ttl = 3600
+	auth_cache_negative_ttl = 600" >> /etc/dovecot/dovecot.conf
+fi
+
+
 #Create folders for existing accounts
 [ ! -d /home/users/email ] && mkdir -p /home/users/email
 for USERNAME in `getent passwd | grep /home/users | cut -d: -f1`
