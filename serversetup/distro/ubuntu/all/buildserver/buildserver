@@ -164,7 +164,7 @@ apt-get -y install xorg
 }
 
 function install_dm {
-echo -e "\nInstalling slim display manager\n"
+echo -e "\nInstalling lightdm display manager\n"
 sleep 1
 apt-get -y install --no-install-recommends lightdm lightdm-gtk-greeter
 #Configure lightdm to auto login the karoshi user
