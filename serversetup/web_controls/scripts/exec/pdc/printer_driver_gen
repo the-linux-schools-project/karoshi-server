@@ -24,22 +24,22 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/printer_driver_gen_cgi
 then
-echo `date`: printer_driver_gen - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printer_driver_gen - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/printer_driver_gen_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printer_driver_gen.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $printer_driver_gen_cgi'check' ]
 then
-echo `date`: printer_driver_gen - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printer_driver_gen - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -48,16 +48,16 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: printer_driver_gen - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printer_driver_gen - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-' | sed 's/REPLACEUNDERSCORE/_/g'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: printer_driver_gen - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printer_driver_gen - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -72,45 +72,45 @@ MOBILE=`echo "$DATA" | cut -s -d: -f6`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: printer_driver_gen - Not called by printer_driver_gen.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printer_driver_gen - Not called by printer_driver_gen.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-echo `date`: printer_driver_gen - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printer_driver_gen - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: printer_driver_gen - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printer_driver_gen - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ -z "$ACTION" ]
 then
-echo `date`: printer_driver_gen - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printer_driver_gen - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ $ACTION != view ] && [ $ACTION != enable ] && [ $ACTION != disable ] && [ $ACTION != enableall ] && [ $ACTION != disableall ]
 then
-echo `date`: printer_driver_gen - Incorrect action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printer_driver_gen - Incorrect action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ $ACTION = enable ] || [ $ACTION = disable ]
 then
-if [ -z $QUEUE ]
-then
-echo `date`: printer_driver_gen - Blank queue by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
+	if [ -z $QUEUE ]
+	then
+		echo `date`: printer_driver_gen - Blank queue by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
 then
-echo `date`: printer_driver_gen - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printer_driver_gen - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 echo `date`: printer_driver_gen - action $ACTION Queue $QUEUE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -122,110 +122,110 @@ TABLECLASS=standard
 WIDTH1=180
 if [ $MOBILE = yes ]
 then
-ICON1=/images/submenus/printer/enable_printerm
-ICON2=/images/submenus/printer/disable_printerm
-TABLECLASS=mobilestandard
-WIDTH1=100
+	ICON1=/images/submenus/printer/enable_printerm
+	ICON2=/images/submenus/printer/disable_printerm
+	TABLECLASS=mobilestandard
+	WIDTH1=100
 fi
 
 if [ $PRINTSERVER = `hostname-fqdn` ]
 then
-if [ $ACTION = "enable" ] || [ $ACTION = "disable" ]
-then
-[ ! -d /opt/karoshi/server_network/printers/windows/stop_driver_gen ] && mkdir -p /opt/karoshi/server_network/printers/windows/stop_driver_gen
-if [ $ACTION = enable ]
-then
-[ -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$QUEUE ] && rm -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$QUEUE
-fi
-if [ $ACTION = disable ]
-then
-touch /opt/karoshi/server_network/printers/windows/stop_driver_gen/$QUEUE
-fi
-fi
+	if [ $ACTION = "enable" ] || [ $ACTION = "disable" ]
+	then
+		[ ! -d /opt/karoshi/server_network/printers/windows/stop_driver_gen ] && mkdir -p /opt/karoshi/server_network/printers/windows/stop_driver_gen
+		if [ $ACTION = enable ]
+		then
+			[ -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$QUEUE ] && rm -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$QUEUE
+		fi
+		if [ $ACTION = disable ]
+		then
+			touch /opt/karoshi/server_network/printers/windows/stop_driver_gen/$QUEUE
+		fi
+	fi
 
-if [ $ACTION = disableall ] || [ $ACTION = enableall ]
-then
-for PRINTQUEUE in `lpstat -a | cut -d" " -f1`
-do
-if [ $ACTION = enableall ]
-then
-[ -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE ] && rm -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE
+	if [ $ACTION = disableall ] || [ $ACTION = enableall ]
+	then
+		for PRINTQUEUE in `lpstat -a | cut -d" " -f1`
+		do
+			if [ $ACTION = enableall ]
+			then
+				[ -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE ] && rm -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE
+			else
+				[ ! -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE ] && touch /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE
+			fi
+		done
+	fi
+
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	<tr><td style="width: '$WIDTH1'"px";"><b>'$"Printer Queue"'</b></td><td><b>'$"Auto driver generation"'</b></td></tr>'
+
+	for PRINTQUEUE in `lpstat -a | cut -d" " -f1`
+	do
+		echo "<tr><td>$PRINTQUEUE</td><td>"
+
+		if [ -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE ]
+		then
+			ACTION1=enable
+			ICON=$ICON2
+			ACTIONMSG=$"Enable auto printer driver generation."
+		else
+			ACTION1=disable
+			ICON=$ICON1
+			ACTIONMSG=$"Disable auto printer driver generation."
+		fi
+		echo "<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_$ACTION1"_"QUEUE_$PRINTQUEUE"_"\" type="image" class=\"images\" src=\"$ICON\" value=\"\"><span>$PRINTQUEUE<br>$ACTIONMSG</span></a>"
+		echo "</td></tr>"
+	done
+	echo "</tbody></table><br><br><br>"
 else
-[ ! -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE ] && touch /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE
-fi
-done
-fi
+	ssh -x -o PasswordAuthentication=no $PRINTSERVER '
+	if [ '$ACTION' = "enable" ] || [ '$ACTION' = "disable" ]
+	then
+		[ ! -d /opt/karoshi/server_network/printers/windows/stop_driver_gen ] && mkdir -p /opt/karoshi/server_network/printers/windows/stop_driver_gen
+		if [ '$ACTION' = enable ]
+		then
+			[ -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/'$QUEUE' ] && rm -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/'$QUEUE'
+		fi
+		if [ '$ACTION' = disable ]
+		then
+			touch /opt/karoshi/server_network/printers/windows/stop_driver_gen/'$QUEUE'
+		fi
+	fi
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: '$WIDTH1'"px";"><b>'$"Printer Queue"'</b></td><td><b>'$"Auto driver generation"'</b></td></tr>'
+	if [ '$ACTION' = disableall ] || [ '$ACTION' = enableall ]
+	then
+		for PRINTQUEUE in `lpstat -a | cut -d" " -f1`
+		do
+			if [ '$ACTION' = enableall ]
+			then
+				[ -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE ] && rm -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE
+			else
+				[ ! -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE ] && touch /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE
+			fi
+		done
+	fi
 
-for PRINTQUEUE in `lpstat -a | cut -d" " -f1`
-do
-echo "<tr><td>$PRINTQUEUE</td><td>"
+	echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+	<tr><td style=\"width: 180px;\"><b>'$"Printer Queue"'</b></td><td><b>'$"Auto driver generation"'</b></td></tr>"
+	for PRINTQUEUE in `lpstat -a | cut -d" " -f1`
+	do
+		echo "<tr><td>$PRINTQUEUE</td><td>"
 
-if [ -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE ]
-then
-ACTION1=enable
-ICON=$ICON2
-ACTIONMSG=$"Enable auto printer driver generation."
-else
-ACTION1=disable
-ICON=$ICON1
-ACTIONMSG=$"Disable auto printer driver generation."
-fi
-echo "<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_$ACTION1"_"QUEUE_$PRINTQUEUE"_"\" type="image" class=\"images\" src=\"$ICON\" value=\"\"><span>$PRINTQUEUE<br>$ACTIONMSG</span></a>"
-echo "</td></tr>"
-done
-echo "</tbody></table><br><br><br>"
-else
-ssh -x -o PasswordAuthentication=no $PRINTSERVER '
-if [ '$ACTION' = "enable" ] || [ '$ACTION' = "disable" ]
-then
-[ ! -d /opt/karoshi/server_network/printers/windows/stop_driver_gen ] && mkdir -p /opt/karoshi/server_network/printers/windows/stop_driver_gen
-if [ '$ACTION' = enable ]
-then
-[ -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/'$QUEUE' ] && rm -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/'$QUEUE'
-fi
-if [ '$ACTION' = disable ]
-then
-touch /opt/karoshi/server_network/printers/windows/stop_driver_gen/'$QUEUE'
-fi
-fi
-
-if [ '$ACTION' = disableall ] || [ '$ACTION' = enableall ]
-then
-for PRINTQUEUE in `lpstat -a | cut -d" " -f1`
-do
-if [ '$ACTION' = enableall ]
-then
-[ -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE ] && rm -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE
-else
-[ ! -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE ] && touch /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE
-fi
-done
-fi
-
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\"><b>'$"Printer Queue"'</b></td><td><b>'$"Auto driver generation"'</b></td></tr>"
-for PRINTQUEUE in `lpstat -a | cut -d" " -f1`
-do
-echo "<tr><td>$PRINTQUEUE</td><td>"
-
-if [ -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE ]
-then
-ACTION1=enable
-ICON='$ICON2'
-ACTIONMSG="'$"Enable auto printer driver generation."'"
-else
-ACTION1=disable
-ICON='$ICON1'
-ACTIONMSG="'$"Disable auto printer driver generation."'"
-fi
-echo "<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_$ACTION1"_"QUEUE_$PRINTQUEUE"_"\" type="image" class=\"images\" src=\"$ICON\" value=\"\"><span>$PRINTQUEUE<br>$ACTIONMSG</span></a>"
-echo "</td></tr>"
-done
-echo "</tbody></table><br><br><br>"
-'
+		if [ -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE ]
+		then
+			ACTION1=enable
+			ICON='$ICON2'
+			ACTIONMSG="'$"Enable auto printer driver generation."'"
+		else
+			ACTION1=disable
+			ICON='$ICON1'
+			ACTIONMSG="'$"Disable auto printer driver generation."'"
+		fi
+		echo "<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_$ACTION1"_"QUEUE_$PRINTQUEUE"_"\" type="image" class=\"images\" src=\"$ICON\" value=\"\"><span>$PRINTQUEUE<br>$ACTIONMSG</span></a>"
+		echo "</td></tr>"
+	done
+	echo "</tbody></table><br><br><br>"
+	'
 fi
 exit
 

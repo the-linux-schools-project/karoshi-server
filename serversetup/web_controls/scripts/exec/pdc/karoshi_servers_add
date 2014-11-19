@@ -113,7 +113,7 @@ then
 fi
 
 #Get ip zone information
-PDCIP=`net lookup $HOSTNAME`
+PDCIP=$(net lookup `hostname-fqdn`)
 PDCZONEIP=`ip addr | grep $PDCIP | sed -n "s/[[:space:]]*inet \([^ ]*\).*/\1/p"`
 PDCZONEINFO=`ipcalc -n $PDCZONEIP | grep ^Network | sed "s/ * / /g" | cut -d" " -f2`
 
