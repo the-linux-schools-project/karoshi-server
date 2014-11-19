@@ -22,7 +22,7 @@ INSTALL_ADDITIONAL=yes
 #Install all of the main software packages needed such as apache and mysql.
 INSTALL_SOFTWARE=yes
 #Install all software in one go to save time - setting to no installs each package seperately to check for problems.
-INSTALL_BATCH=no
+INSTALL_BATCH=yes
 #Install mailscanner for the email system - kept separate because it is not in the standard repos.
 INSTALL_MAILSCANNER=yes
 #Install ZFS
