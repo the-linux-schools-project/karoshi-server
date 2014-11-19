@@ -156,8 +156,8 @@ fi
 done
 fi
 
-echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: $WIDTH1"px";\"><b>$"Printer Queue"</b></td><td><b>$"Auto driver generation"</b></td></tr>"
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: '$WIDTH1'"px";"><b>'$"Printer Queue"'</b></td><td><b>'$"Auto driver generation"'</b></td></tr>'
 
 for PRINTQUEUE in `lpstat -a | cut -d" " -f1`
 do
