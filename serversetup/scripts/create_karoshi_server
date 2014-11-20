@@ -9,9 +9,6 @@ RELEASE=trusty
 
 clear
 
-#Check for proxy server
-[ ! -z "$1" ] && APT_PROXY="$1"
-
 #Exit if this is not the root user
 if [ `id -u` != 0 ]
 then
@@ -147,7 +144,7 @@ fi
 cp /sbin/initctl /sbin/initctl.$$
 
 #Run configure chroot
-chroot chroot /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configure_chroot $APT_PROXY
+chroot chroot /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configure_chroot
 
 umount $BUILDPATH/chroot/dev 
 

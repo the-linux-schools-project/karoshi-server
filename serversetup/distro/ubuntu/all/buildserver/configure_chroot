@@ -7,9 +7,6 @@ export HOME=/root
 export LC_ALL=C
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 16126D3A3E5C1192
 
-#Check for proxy server
-[ ! -z "$1" ] && export http_proxy=http://$1:8000
-
 #Create /tmp/fake for symlinks to /bin/true
 mkdir /tmp/fake
 
