@@ -25,8 +25,8 @@ LOG_DATE=`date +%F`
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: configure_authentication - incorrect number of arguments."<br>"
-exit 101
+	echo `date`: configure_authentication - incorrect number of arguments."<br>"
+	exit 101
 fi
 read -t 3 DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/'`
@@ -40,39 +40,42 @@ ZONE=`echo "$DATA" | cut -s -d: -f6`
 
 if [ -z "$REMOTE_USER" ]
 then
-echo `date`: configure_authentication - Blank remote user."<br>"
-echo `date`: configure_authentication - Blank remote user from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-sleep 2
-exit 101
+	echo `date`: configure_authentication - Blank remote user."<br>"
+	echo `date`: configure_authentication - Blank remote user from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	sleep 2
+	exit 101
 fi
+
 if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: configure_authentication - Blank remote tcpip address."<br>"
-echo `date`: configure_authentication - Blank remote tcpip address by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-sleep 2
-exit 101
+	echo `date`: configure_authentication - Blank remote tcpip address."<br>"
+	echo `date`: configure_authentication - Blank remote tcpip address by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	sleep 2
+	exit 101
 fi
+
 if [ -z "$SERVERNAME" ]
 then
-echo `date`: configure_authentication - Blank servername."<br>"
-echo `date`: configure_authentication - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-sleep 2
-exit 101
+	echo `date`: configure_authentication - Blank servername."<br>"
+	echo `date`: configure_authentication - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	sleep 2
+	exit 101
 fi
+
 if [ -z "$AUTHTYPE" ]
 then
-echo `date`: configure_authentication - Blank authtype."<br>"
-echo `date`: configure_authentication - Blank authtype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-sleep 2
-exit 101
+	echo `date`: configure_authentication - Blank authtype."<br>"
+	echo `date`: configure_authentication - Blank authtype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	sleep 2
+	exit 101
 fi
 
 if [ -z "$ZONE" ]
 then
-echo `date`: configure_authentication - Blank zone."<br>"
-echo `date`: configure_authentication - Blank zone by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-sleep 2
-exit 101
+	echo `date`: configure_authentication - Blank zone."<br>"
+	echo `date`: configure_authentication - Blank zone by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	sleep 2
+	exit 101
 fi
 
 function configure_samba4 {
@@ -81,8 +84,8 @@ JOINTYPE=member
 SERVERROLE="domain member"
 if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
 then
-JOINTYPE=DC
-SERVERROLE="active directory domain controller"
+	JOINTYPE=DC
+	SERVERROLE="active directory domain controller"
 fi
 
 #Get samba 4 database password
@@ -541,8 +544,8 @@ done
 
 #Set variables
 source /opt/karoshi/server_network/domain_information/domain_name
-SERVERIP=`net lookup $SERVERNAME`
-PDCIP=`net lookup $HOSTNAME`
+SERVERIP=`net lookup $SERVERNAME.$REALM`
+PDCIP=`net lookup $HOSTNAME.$REALM`
 PORTSCANIP=$PDCIP
 
 #####################
