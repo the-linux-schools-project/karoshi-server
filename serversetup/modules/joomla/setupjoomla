@@ -59,25 +59,7 @@ fi
 #Create joomla mysql password for the new database
 #####################
 echo '<li>'$"Creating the joomla database in mysql"'</li><br>'
-RANGE=61
-COUNTER=1
-while [ $COUNTER -lt 16 ]
-do
-row[$COUNTER]=$RANDOM
-let "row[$COUNTER] %= $RANGE"
-while [ ${row[$COUNTER]} = 0 ]
-do
-row[$COUNTER]=$RANDOM
-let "row[$COUNTER] %= $RANGE"
-done
-CHARACTER[$COUNTER]=`sed -n ${row[$COUNTER]},1p /opt/karoshi/serversetup/pdc/"useful scripts"/.alphabet`
-
-let COUNTER=COUNTER+1
-
-done
-
-WBPASS=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
-
+WBPASS=`openssl rand -hex 16`
 #####################
 #Create secret key
 #####################
@@ -99,7 +81,6 @@ let COUNTER=COUNTER+1
 done
 
 SECRETKEY=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
-
 
 #############################
 #Make sure that we know the root mysql password

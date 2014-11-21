@@ -3,27 +3,6 @@
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 
-######################
-#Generate random password
-######################
-
-function gen_rand_pass {
-ALPHABET=( A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z 1 2 3 4 5 6 7 8 9 0 )
-
-RANGE=61
-COUNTER=0
-while [ $COUNTER -lt 20 ]
-do
-RAND=$RANDOM
-
-let "RAND %= $RANGE"
-
-RANDPASS=$RANDPASS${ALPHABET[$RAND]}  
-
-let COUNTER=$COUNTER+1
-done
-}
-
 function start_mysql {
 
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start 1>/dev/null
@@ -32,16 +11,15 @@ function start_mysql {
 STARTCOUNT=0
 while [ $STARTCOUNT -lt 50 ]
 do
-
-MYSQLSTATUS=`ps -e | grep -c $MYSQLDVER`
-if [ $MYSQLSTATUS = 0 ]
-then
-sleep 1
-else
-STARTCOUNT=50
-fi
-sleep 1
-let STARTCOUNT=$STARTCOUNT+1
+	MYSQLSTATUS=`ps -e | grep -c $MYSQLDVER`
+	if [ $MYSQLSTATUS = 0 ]
+	then
+		sleep 1
+	else
+		STARTCOUNT=50
+	fi
+	sleep 1
+	let STARTCOUNT=$STARTCOUNT+1
 done
 
 }
@@ -52,11 +30,11 @@ done
 
 if [ ! -f /etc/mysql.secret ]
 then
-gen_rand_pass
-touch /etc/mysql.secret
-chmod 0600 /etc/mysql.secret
-chown root.root /etc/mysql.secret
-echo $RANDPASS > /etc/mysql.secret
+	RANDPASS=`openssl rand -hex 16`
+	touch /etc/mysql.secret
+	chmod 0600 /etc/mysql.secret
+	chown root.root /etc/mysql.secret
+	echo $RANDPASS > /etc/mysql.secret
 fi
 
 ######################
@@ -75,16 +53,16 @@ LOGINSTATUS=$?
 
 if [ $LOGINSTATUS != 0 ]
 then
-#Check if this is the first time that mysql has been used and the password is blank.
-mysqladmin status 1>/dev/null 2>/dev/null
-LOGINSTATUS=$?
-if [ $LOGINSTATUS = 0 ]
-then
-#Change mysql password to random password
-mysqladmin -u root password ''$ROOTMYSQLPASS''
-mysqladmin --password="$ROOTMYSQLPASS" status 1>/dev/null 2>/dev/null
-LOGINSTATUS=$?
-fi
+	#Check if this is the first time that mysql has been used and the password is blank.
+	mysqladmin status 1>/dev/null 2>/dev/null
+	LOGINSTATUS=$?
+	if [ $LOGINSTATUS = 0 ]
+	then
+		#Change mysql password to random password
+		mysqladmin -u root password ''$ROOTMYSQLPASS''
+		mysqladmin --password="$ROOTMYSQLPASS" status 1>/dev/null 2>/dev/null
+		LOGINSTATUS=$?
+	fi
 fi
 
 ######################
@@ -93,57 +71,53 @@ fi
 
 if [ $LOGINSTATUS != 0 ]
 then
-#Stop the mysql database
-MYSQLSTATUS=`ps -e | grep -c $MYSQLDVER`
-if [ $MYSQLSTATUS != 0 ]
-then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_stop
+	#Stop the mysql database
+	MYSQLSTATUS=`ps -e | grep -c $MYSQLDVER`
+	if [ $MYSQLSTATUS != 0 ]
+	then
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_stop
+	fi
+	#Start with -skip-grant-tables
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/mysql_no_passwd
+	sleep 2
+	#Make sure the mysql database is started
+	STARTCOUNT=0
+	while [ $STARTCOUNT -lt 50 ]
+	do
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_status
+		if [ $? = 1 ]
+		then
+			sleep 1
+		else
+			STARTCOUNT=50
+		fi
+		sleep 1
+		let STARTCOUNT=$STARTCOUNT+1
+	done
+	#mysqladmin -h localhost -u root password ''$MYSQLPASS''
+	echo use mysql\; > /opt/karoshi/.tempdata/setmysqlpass.sql
+	echo UPDATE user SET Password=PASSWORD\(\'$ROOTMYSQLPASS\'\) WHERE User=\'root\'\; >> /opt/karoshi/.tempdata/setmysqlpass.sql
+	echo FLUSH PRIVILEGES\; >> /opt/karoshi/.tempdata/setmysqlpass.sql
+	mysql < /opt/karoshi/.tempdata/setmysqlpass.sql
+	rm -f /opt/karoshi/.tempdata/setmysqlpass.sql
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_stop
+	sleep 1
+
+	#Make sure the mysql database is stopped
+	STOPCOUNT=0
+	while [ $STOPCOUNT -lt 50 ]
+	do
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_status
+		if [ $? = 0 ]
+		then
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_stop
+		else
+			STOPCOUNT=50
+		fi
+		sleep 1
+		let STOPCOUNT=$STOPCOUNT+1
+	done
+	start_mysql
 fi
-#Start with -skip-grant-tables
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/mysql_no_passwd
-sleep 2
-#Make sure the mysql database is started
-STARTCOUNT=0
-while [ $STARTCOUNT -lt 50 ]
-do
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_status
-if [ $? = 1 ]
-then
-sleep 1
-else
-STARTCOUNT=50
-fi
-sleep 1
-let STARTCOUNT=$STARTCOUNT+1
-done
-#mysqladmin -h localhost -u root password ''$MYSQLPASS''
-echo use mysql\; > /opt/karoshi/.tempdata/setmysqlpass.sql
-echo UPDATE user SET Password=PASSWORD\(\'$ROOTMYSQLPASS\'\) WHERE User=\'root\'\; >> /opt/karoshi/.tempdata/setmysqlpass.sql
-echo FLUSH PRIVILEGES\; >> /opt/karoshi/.tempdata/setmysqlpass.sql
-mysql < /opt/karoshi/.tempdata/setmysqlpass.sql
-rm -f /opt/karoshi/.tempdata/setmysqlpass.sql
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_stop
-sleep 1
-
-#Make sure the mysql database is stopped
-STOPCOUNT=0
-while [ $STOPCOUNT -lt 50 ]
-do
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_status
-if [ $? = 0 ]
-then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_stop
-else
-STOPCOUNT=50
-fi
-sleep 1
-let STOPCOUNT=$STOPCOUNT+1
-done
-
-start_mysql
-
-fi
-
-
 
 

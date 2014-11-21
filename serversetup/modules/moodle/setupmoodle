@@ -129,43 +129,10 @@ fi
 #Create moodle mysql password for the new database
 #####################
 echo '<li>'$"Creating the moodle database in mysql"'</li><br>'
-RANGE=61
-COUNTER=1
-while [ $COUNTER -lt 16 ]
-do
-row[$COUNTER]=$RANDOM
-let "row[$COUNTER] %= $RANGE"
-while [ ${row[$COUNTER]} = 0 ]
-do
-row[$COUNTER]=$RANDOM
-let "row[$COUNTER] %= $RANGE"
-done
-CHARACTER[$COUNTER]=`sed -n ${row[$COUNTER]},1p /opt/karoshi/serversetup/pdc/"useful scripts"/.alphabet`
-let COUNTER=COUNTER+1
-done
 
-MOODLEPASS=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
-
-#####################
+MOODLEPASS=`openssl rand -hex 16`
 #Create moodle badge hash
-#####################
-RANGE=61
-COUNTER=1
-while [ $COUNTER -lt 10 ]
-do
-row[$COUNTER]=$RANDOM
-let "row[$COUNTER] %= $RANGE"
-while [ ${row[$COUNTER]} = 0 ]
-do
-row[$COUNTER]=$RANDOM
-let "row[$COUNTER] %= $RANGE"
-done
-CHARACTER[$COUNTER]=`sed -n ${row[$COUNTER]},1p /opt/karoshi/serversetup/pdc/"useful scripts"/.alphabet`
-let COUNTER=COUNTER+1
-done
-
-BADGEHASH=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
-
+BADGEHASH=`openssl rand -hex 16`
 
 #############################
 #Make sure that we know the root mysql password
