@@ -30,9 +30,9 @@ INSTALL_ZFS=yes
 #We are currently using sysv startup scripts instead of upstart.
 SYSVSUPPORT=yes
 #Download and compile samba4 - we are staying with a compiled version rather than the version from the repos for backward compatibily with Karoshi V9.
-INSTALL_SAMBA4=yes
+#INSTALL_SAMBA4=yes
 #Download and install sogo email 
-INSTALL_SOGO=yes
+#INSTALL_SOGO=yes
 #Configure sudoers to allow the karoshi user to sudo.
 CONFIGURE_SUDOERS=yes
 #Remove a few extra packages that are installed with xfce that are not needed.
@@ -53,10 +53,10 @@ TURN_OFF_SERVICES=yes
 REBOOT=yes
 
 #Main list of packages to install (apart from samba4 and SOGo which are compiled).
-packages="glusterfs-server apache2-mpm-prefork libapache2-mod-php5 libapache2-mod-auth-kerb libssl-dev apache2-utils mysql-server php5-mysql php5-ldap php5-sqlite php-pear php5-cli php5-common php5-imap php5-mcrypt php5-curl php5-fpm php5-gd php5-intl php5-xmlrpc postfix postfix-ldap mb2md clamav clamav-daemon clamav-freshclam memcached dovecot-core dovecot-gssapi dovecot-imapd maildrop squid3 squid-deb-proxy nginx shorewall mon isc-dhcp-server openvpn cups printer-driver-hpijs printer-driver-hpcups ghostscript-cups printer-driver-gutenprint ghostscript-cups tftpd-hpa nfs-kernel-server openssh-server openssh-client rsync unison squashfs-tools zip unzip libarchive-zip-perl perl nut-server spamassassin ntp monitorix freeradius libawl-php php5-xsl"
+packages="glusterfs-server apache2-mpm-prefork libapache2-mod-php5 libapache2-mod-auth-kerb libssl-dev apache2-utils mysql-server php5-mysql php5-ldap php5-sqlite php-pear php5-cli php5-common php5-imap php5-mcrypt php5-curl php5-fpm php5-gd php5-intl php5-xmlrpc postfix postfix-ldap mb2md clamav clamav-daemon clamav-freshclam memcached dovecot-core dovecot-gssapi dovecot-imapd maildrop squid3 squid-deb-proxy nginx shorewall mon isc-dhcp-server openvpn cups printer-driver-hpijs printer-driver-hpcups ghostscript-cups printer-driver-gutenprint ghostscript-cups tftpd-hpa nfs-kernel-server openssh-server openssh-client rsync unison squashfs-tools zip unzip libarchive-zip-perl perl nut-server spamassassin ntp monitorix freeradius libawl-php php5-xsl samba openchangeserver sogo"
 
 #Utilities and other extras to install.
-extrapackages="nano libapache2-mod-suphp apache2-suexec wakeonlan git xarchiver nmap easy-rsa libmime-lite-perl libfile-type-perl hpijs-ppds hp-ppd openprinting-ppds printer-driver-cjet cups-bsd smartmontools libnet-snmp-perl snmp fonts-liberation ipcalc libnss3-tools nslcd fail2ban ldap-utils shimmer-themes gtk2-engines light-themes mate-icon-theme tango-icon-theme firefox xscreensaver virtualbox-guest-x11 gksu yad gedit synaptic plymouth plymouth-label zip unzip bleachbit lynx gnome-terminal libgtk2.0-bin sshfs ifenslave libtommath0 language-pack-nl firefox-locale-nl language-pack-de firefox-locale-de language-pack-pl firefox-locale-pl language-pack-fr firefox-locale-fr language-pack-sv firefox-locale-sv language-pack-da firefox-locale-da language-pack-fi firefox-locale-fi language-pack-es firefox-locale-es language-pack-it firefox-locale-it language-pack-pt firefox-locale-pt language-pack-cs firefox-locale-cs language-pack-el firefox-locale-el language-pack-ru firefox-locale-ru language-pack-nb firefox-locale-nb language-pack-zh-hans firefox-locale-zh-hans language-pack-ko firefox-locale-ko language-pack-id firefox-locale-id language-pack-ar firefox-locale-ar language-pack-he firefox-locale-he language-pack-hi firefox-locale-hi language-pack-sw firefox-locale-sw fonts-droid fonts-nanum-coding fonts-gargi hdparm mdadm"
+extrapackages="nano libapache2-mod-suphp apache2-suexec wakeonlan git xarchiver nmap easy-rsa libmime-lite-perl libfile-type-perl hpijs-ppds hp-ppd openprinting-ppds printer-driver-cjet cups-bsd smartmontools libnet-snmp-perl snmp fonts-liberation ipcalc libnss3-tools nslcd fail2ban ldap-utils shimmer-themes gtk2-engines light-themes mate-icon-theme tango-icon-theme firefox xscreensaver virtualbox-guest-x11 gksu yad gedit synaptic plymouth plymouth-label zip unzip bleachbit lynx gnome-terminal libgtk2.0-bin sshfs ifenslave libtommath0 language-pack-nl firefox-locale-nl language-pack-de firefox-locale-de language-pack-pl firefox-locale-pl language-pack-fr firefox-locale-fr language-pack-sv firefox-locale-sv language-pack-da firefox-locale-da language-pack-fi firefox-locale-fi language-pack-es firefox-locale-es language-pack-it firefox-locale-it language-pack-pt firefox-locale-pt language-pack-cs firefox-locale-cs language-pack-el firefox-locale-el language-pack-ru firefox-locale-ru language-pack-nb firefox-locale-nb language-pack-zh-hans firefox-locale-zh-hans language-pack-ko firefox-locale-ko language-pack-id firefox-locale-id language-pack-ar firefox-locale-ar language-pack-he firefox-locale-he language-pack-hi firefox-locale-hi language-pack-sw firefox-locale-sw fonts-droid fonts-nanum-coding fonts-gargi hdparm mdadm printer-driver-escpr"
 
 #Packages to remove
 removepackages="wpasupplicant apparmor resolvconf nscd byobu xterm orage xfce4-mixer ppp php5-fpm landscape-common avahi-daemon gnome-user-guide libsane gstreamer1.0-plugins-good geoip-database libgphoto2-6 libsane-common w3m libcdparanoia0 vim-runtime vim wireless-tools pcscd libccid"
@@ -151,6 +151,10 @@ gpg --keyserver keyserver.ubuntu.com --recv-key 1196ba81f6b0fc61
 gpg -a --export F6B0FC61 | sudo apt-key add -
 add-apt-repository -y "deb http://ppa.launchpad.net/zfs-native/stable/ubuntu trusty main"
 add-apt-repository -y "deb-src http://ppa.launchpad.net/zfs-native/stable/ubuntu trusty main"
+
+#Linux Schools backports
+add-apt-repository -y "ppa:linux-schools/backports"
+
 }
 
 function update_repos {
@@ -253,14 +257,7 @@ function install_samba4 {
 #Install samba4
 echo -e "\nInstalling Samba4\n"
 sleep 1
-/opt/karoshi/serversetup/all/samba4/samba4install
-if [ $? != 0 ]
-then
-	echo Samba4: There was a problem installing this package. Press return to continue.
-	[ $AUTO = no ] && read pause
-fi
-#Remove download folder
-[ -d /opt/karoshi/serversetup/all/samba4/download ] && rm -f -R /opt/karoshi/serversetup/all/samba4/download
+apt-get -y install samba
 }
 
 function update_server {
@@ -517,9 +514,9 @@ ischroot
 [ $INSTALL_MAILSCANNER = yes ] && install_mailscanner
 [ $INSTALL_E2GUARDIAN = yes ] && install_e2guardian
 [ $INSTALL_ZFS = yes ] && install_zfs
+#[ $INSTALL_SAMBA4 = yes ] && install_samba4
+#[ $INSTALL_SOGO = yes ] && install_sogo
 [ $SYSVSUPPORT = yes ] && sysvsupport
-[ $INSTALL_SAMBA4 = yes ] && install_samba4
-[ $INSTALL_SOGO = yes ] && install_sogo
 [ $CONFIGURE_SUDOERS = yes ] && configure_sudoers
 [ $REMOVE_SOFTWARE = yes ] && remove_software
 [ $SET_THEME = yes ] && set_theme
