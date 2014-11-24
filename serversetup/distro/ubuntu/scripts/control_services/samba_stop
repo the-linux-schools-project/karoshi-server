@@ -1,5 +1,3 @@
 #!/bin/bash
-SAMBAVER=samba
-[ -f /usr/local/sbin/samba ] && SAMBAVER=samba4
-service $SAMBAVER stop
+service samba4 stop
 

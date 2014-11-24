@@ -47,16 +47,6 @@ TRAININGACCOUNTS=30
 DAY=`date +%d`
 MONTH=`date +%m`
 LINUXCLIENTVERSION=karoshi4
-######################
-#Final samba Install check
-######################
-
-if [ ! -f /usr/local/sbin/samba ]
-then
-echo /usr/local/sbin/samba does not exist >> /opt/karoshi/serversetup/install_log
-yad --title ''$"Setup"' '$"Samba"'' --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --timeout=4 --text='Samba - '$"This package is not installed."'' --no-buttons 2>/dev/null
-exit
-fi
 
 #######################
 #Ensure that samba is running on boot

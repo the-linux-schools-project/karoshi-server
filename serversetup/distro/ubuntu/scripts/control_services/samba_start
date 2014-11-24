@@ -1,21 +1,18 @@
 #!/bin/bash
-#Check which version of samba we are using
-SAMBAVER=samba
-[ -f /usr/local/sbin/samba ] && SAMBAVER=samba4
+service samba4 start
 
-service $SAMBAVER start
-
-if [ $SAMBAVER = samba4 ]
+#Check to see if this is a pdc or adc
+if [ `grep -w -c sysvol /etc/samba/smb.conf` -gt 0 ]
 then
-#Check that samba 4 is ready for ldap requests
-LDAPCHECK=0
-COUNTER=0
-while [ $LDAPCHECK = 0 ]
-do
-LDAPCHECK=`netstat -vatn | grep -c -w 389`
-sleep 1
-#Give up after 60 seconds
-[ $COUNTER = 60 ] && exit 101
-let COUNTER=$COUNTER+1
-done
+	#Check that samba 4 is ready for ldap requests
+	LDAPCHECK=0
+	COUNTER=0
+	while [ $LDAPCHECK = 0 ]
+	do
+		LDAPCHECK=`netstat -vatn | grep -c -w 389`
+		sleep 1
+		#Give up after 60 seconds
+		[ $COUNTER = 60 ] && exit 101
+		let COUNTER=$COUNTER+1
+	done
 fi
