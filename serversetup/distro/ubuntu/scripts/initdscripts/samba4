@@ -32,7 +32,7 @@ SAMBAPID=$PIDDIR/samba.pid
 unset TMPDIR
 
 # See if the daemon and the config file are there
-test -x /usr/local/sbin/samba -a -r /etc/samba/smb.conf || exit 0
+test -x /usr/sbin/samba -a -r /etc/samba/smb.conf || exit 0
 
 . /lib/lsb/init-functions
 
@@ -42,7 +42,7 @@ case "$1" in
 		# Make sure we have our PIDDIR, even if it's on a tmpfs
 		install -o root -g root -m 755 -d $PIDDIR
 
-		if ! start-stop-daemon --start --quiet --oknodo --exec /usr/local/sbin/samba -- -D; then
+		if ! start-stop-daemon --start --quiet --oknodo --exec /usr/sbin/samba -- -D; then
 			log_end_msg 1
 			exit 1
 		fi
