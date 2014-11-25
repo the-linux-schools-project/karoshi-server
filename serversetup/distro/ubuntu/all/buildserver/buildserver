@@ -154,7 +154,7 @@ add-apt-repository -y "deb-src http://ppa.launchpad.net/zfs-native/stable/ubuntu
 
 #Linux Schools backports
 add-apt-repository -y "ppa:linux-schools/backports"
-
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 8E250180
 }
 
 function update_repos {
