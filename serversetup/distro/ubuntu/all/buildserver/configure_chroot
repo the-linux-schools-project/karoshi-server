@@ -75,12 +75,20 @@ apt-get install --yes ubiquity-frontend-gtk
 #useradd -u 999 -m -d /home/ubuntu ubuntu
 #read pause
 
-if [ -e /usr/lib/ubiquity/apt-setup/generators/40cdrom ]
-then
-	echo -e "\nChroot: Deleting /usr/lib/ubiquity/apt-setup/generators/40cdrom\n"
-	sleep 1		
-	rm /usr/lib/ubiquity/apt-setup/generators/40cdrom
-fi
+function disable_script {
+for arg in "$@"; do
+echo "Disabling $arg" >&2
+dpkg-divert --local --add "$arg"
+cat > "$arg" <<- EOF
+#!/bin/bash
+exit 0 #disabled
+EOF
+done
+}
+#Prevent CD being added as apt repository, and prevent attempted user creation
+disable_script /usr/share/ubiquity/apt-setup
+disable_script /usr/lib/ubiquity/user-setup/user-setup-apply
+disable_script /usr/share/initramfs-tools/scripts/casper-bottom/{25adduser,41apt_cdrom}
 
 #Chroot clean up
 rm /var/lib/dbus/machine-id
