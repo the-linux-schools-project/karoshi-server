@@ -1,12 +1,16 @@
 #!/bin/bash
 #Detect if running the live cd
-LOOPCHECK=`mount | grep -c /dev/loop`
-COWCHECK=`mount | grep -c /cow`
 
-if [ $LOOPCHECK -gt 0 ] && [ $COWCHECK -gt 0 ]
-then
+MOUNTOUT=$(mount | head -n 1)
+case "$MOUNTOUT" in
+*aufs*) ;;
+*overlayfs*) ;;
+*unionfs*) ;;
+*)
+	exit 0
+	;;
+esac
+
 ubiquity
 exit 101
-fi
-exit
 

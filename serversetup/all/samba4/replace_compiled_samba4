@@ -1,5 +1,27 @@
 #!/bin/bash
 
+#Add linux-schools/backports repository
+echo "<li>"$HOSTNAME - Adding in linux-schools/backports ppa"</li>"
+add-apt-repository -y "ppa:linux-schools/backports"
+if [ $? != 0 ]
+then
+	"<li>"$HOSTNAME - The ppa did not install correctly"</li>"
+	exit 101
+fi
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 8E250180
+if [ $? != 0 ]
+then
+	"<li>"$HOSTNAME - The ppa key did not install correctly"</li>"
+	exit 101
+fi
+
+
+echo "<li>"$HOSTNAME - Updating repositories"</li>"
+apt-get update
+
+#Check that we can install the expected version of samba 4
+apt
+
 echo "<li>"$HOSTNAME - Stopping samba4"</li>"
 #Stop samba 4
 /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/samba_stop
@@ -917,10 +939,12 @@ do
 [ -e $file ] && rm -f $file
 done
 
-echo "<li>"$HOSTNAME - starting samba4"</li>"
+
 #Copy in revised sysv script
 /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/samba4 /etc/init.d/
 
+#Start samba4
+echo "<li>"$HOSTNAME - starting samba4"</li>"
 service samba4 start
 
 exit
