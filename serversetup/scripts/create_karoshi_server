@@ -218,7 +218,7 @@ label install
 LABEL Live-CD
   menu label Live CD
   kernel /casper/vmlinuz
-  append  file=/cdrom/preseed/ubuntu.seed boot=casper initrd=/casper/initrd.gz quiet splash --
+  append  file=/cdrom/preseed/ubuntu.seed boot=casper initrd=/casper/initrd.gz --
 
 label memtest
   menu label memtest - Run memtest
