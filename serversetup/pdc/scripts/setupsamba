@@ -1384,12 +1384,10 @@ creategpos
 setfolderpermissions
 make_default_users
 make_profiles
-/opt/karoshi/serversetup/pdc/"useful scripts"/googlesafesearch add
+#Do businesses want google safesearch?
+[ $INSTALL_TYPE = education ] && /opt/karoshi/serversetup/pdc/"useful scripts"/googlesafesearch add
 getyadpid
-if [ ! -z "$YADPID" ]
-then
-kill $YADPID
-fi
+[ ! -z "$YADPID" ] && kill $YADPID
 }
 
 run_functions 2>> /opt/karoshi/serversetup/install_log | show_info

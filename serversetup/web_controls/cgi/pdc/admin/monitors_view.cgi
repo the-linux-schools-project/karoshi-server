@@ -146,7 +146,7 @@ echo '<tr>
 
 <td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_enable_disable.cgi" name="monitors" method="post"><a class="info" href="javascript:void(0)"><input name="_MONITOR_'$MONITORNAME2'_" type="image" class="images" src="/images/submenus/system/enable_monitor.png" value=""><span>'$"Disable"' - '$MONITORNAME'</span></a></form></td>
 
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_add_fm.cgi" name="monitors" method="post"><a class="info" href="javascript:void(0)"><input name="_MONITOR_'$MONITORNAME2'_" type="image" class="images" src="/images/submenus/system/edit.png" value=""><span>'$"Edit function not implemented yet."' - '$MONITORNAME'</span></a></form></td>
+<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_add_fm.cgi" name="monitors" method="post"><a class="info" href="javascript:void(0)"><input name="_MONITOR_'$MONITORNAME2'_" type="image" class="images" src="/images/submenus/system/edit.png" value=""><span>'$"Edit"' - '$MONITORNAME'</span></a></form></td>
 
 <td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_delete.cgi" name="monitors" method="post"><a class="info" href="javascript:void(0)"><input name="_MONITOR_'$MONITORNAME2'_" type="image" class="images" src="/images/submenus/system/delete.png" value=""><span>'$"Delete"' - '$MONITORNAME'</span></a></form></td>
 

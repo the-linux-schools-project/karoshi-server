@@ -28,6 +28,8 @@ then
 PIDDIR=/var/run/samba
 SAMBAPID=$PIDDIR/samba.pid
 
+[ -f /var/lib/samba/private/tls/key.pem ] && chmod 0600 /var/lib/samba/private/tls/key.pem
+
 # clear conflicting settings from the environment
 unset TMPDIR
 

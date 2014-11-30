@@ -10,6 +10,11 @@ RUNSTATUS=off
 /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/samba_status
 [ $? = 0 ] && RUNSTATUS=on
 
+#Check if sogo is running
+RUNSTATUS2=off
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/sogo_status
+[ $? = 0 ] && RUNSTATUS2=on
+
 #Add linux-schools/backports repository
 echo "<li>"$HOSTNAME - Adding in linux-schools/backports ppa"</li><br>"
 sleep 1
@@ -31,7 +36,7 @@ sleep 1
 apt-get update
 
 #Check that we can install the expected version of samba 4
-if [ `apt-cache madison samba | grep -c linuxschools2+trusty` = 0 ]
+if [ `apt-cache madison samba | grep -c linuxschools` = 0 ]
 then
 	echo "<br><li>"$HOSTNAME - The linuxschools samba4 backport is not available"</li><br>"
 	exit 101
@@ -65,9 +70,16 @@ mv /var/lib/samba /var/lib/samba.$$
 #Test install the version of samba4 from linux-schools backports
 echo "<br><li>"$HOSTNAME - Testing that Samba 4 can be installed from linux-schools backports"</li><br>"
 apt-get -s -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y install samba
-if [ $? != 0 ]
+INSTALLCHECK1=$?
+
+#Test install the version of sogo from linux-schools backports
+apt-get -s -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y install sogo
+INSTALLCHECK2=$?
+
+if [ $INSTALLCHECK1 != 0 ] ||  $INSTALLCHECK2 != 0 ]
 then
-	echo "<li>"$HOSTNAME - Samba will not install correctly"</li>"
+	[ $INSTALLCHECK1 != 0 ] && echo "<li>"$HOSTNAME - Samba will not install correctly"</li>"
+	[ $INSTALLCHECK2 != 0 ] && echo "<li>"$HOSTNAME - Sogo will not install correctly"</li>"
 	echo "<li>"$HOSTNAME - Aborting the installation and restarting the current samba4 service"</li>"
 	if [ -f /etc/resolv.conf.$$ ]
 	then
@@ -82,6 +94,14 @@ then
 	fi
 	[ $RUNSTATUS = on ] && /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/samba_start
 	exit
+fi
+
+if [ $RUNSTATUS2 = on ]
+then
+	echo "<br><li>"$HOSTNAME - stopping apache"</li>"
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_stop
+	echo "<br><li>"$HOSTNAME - stopping sogo"</li>"
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/sogo_stop
 fi
 
 echo "<br><li>"$HOSTNAME - Removing compiled samba4"</li>" 
@@ -118,6 +138,8 @@ then
 	[ -d /var/lib/samba ] && rm -f -R /var/lib/samba
 	mv /var/lib/samba.$$ /var/lib/samba
 fi
+#Make sure the permissions are correct on the key.
+chmod 0600 /var/lib/samba/private/tls/key.pem
 
 if [ $RUNSTATUS = on ]
 then
@@ -128,22 +150,8 @@ then
 	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/samba_start
 
 	#Set Samba4 to start on boot
-	/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/samba
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/samba4
 
-fi
-
-
-#Check if sogo is running
-RUNSTATUS=off
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/sogo_status
-[ $? = 0 ] && RUNSTATUS=on
-
-if [ $RUNSTATUS = on ]
-then
-	echo "<br><li>"$HOSTNAME - stopping apache"</li>"
-	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_stop
-	echo "<br><li>"$HOSTNAME - stopping sogo"</li>"
-	killall sogod
 fi
 
 #Install openchange
@@ -155,20 +163,6 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/sogo /etc/init
 
 #Install sogo
 apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y install sogo
-if [ $? != 0 ]
-then
-	echo "<li>"$HOSTNAME - Sogo  did not install correctly"</li>"
-	echo "<li>"$HOSTNAME - Aborting the installation and restarting the current sogo service"</li>"
-	
-	if [ $RUNSTATUS = on ]
-	then
-		echo "<br><li>"$HOSTNAME - starting apache"</li>"
-		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_start
-		echo "<br><li>"$HOSTNAME - starting sogo"</li>"
-		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/sogo_start
-	fi
-	exit 101
-fi
 
 SOGoPath=/etc/apache2/conf.d
 [ -d /etc/apache2/conf-enabled/ ] && SOGoPath=/etc/apache2/conf-enabled
@@ -187,7 +181,7 @@ sed -i 's/CHANGETHISSERVERNAME/'$HOSTNAME'/g' $SOGoPath/SOGo.conf
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/sogo /etc/init.d/
 
 #Start Apache2 and Sogo
-if [ $RUNSTATUS = on ]
+if [ $RUNSTATUS2 = on ]
 then
 	echo "<br><li>"$HOSTNAME - starting apache"</li>"
 	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_start
