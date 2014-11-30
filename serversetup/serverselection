@@ -76,7 +76,24 @@ done
 #Setup cronjobs common to all servers
 [ ! -d /opt/karoshi/cronjobs/jobs ] && mkdir -p /opt/karoshi/cronjobs/jobs
 
-[ "$CHOICE" = 2 ] && /opt/karoshi/serversetup/pdc/scripts/standardsetup 
+if [ "$CHOICE" = 2 ]
+then
+	#Ask if this is server installation is for education or business use.
+	yad --title $"Linux Schools Server Setup" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 180 \
+   	--button=''$"Education"':1'  --button=''$"Business"':2' --text $"Is this server for education or business use?"
+	SCHOICE="$?"
+
+	[ $SCHOICE = 1 ] && INSTALL_TYPE=education
+	[ $SCHOICE = 2 ] && INSTALL_TYPE=business
+	
+	[ ! -d /opt/karoshi/server_network ] && mkdir /opt/karoshi/server_network
+
+	echo $INSTALL_TYPE > /opt/karoshi/server_network/install_type
+	
+	#Run pdc standard setup
+	/opt/karoshi/serversetup/pdc/scripts/standardsetup 
+fi
+
 [ "$CHOICE" = 1 ] && /opt/karoshi/serversetup/extra_server/scripts/standardsetup
 
 exit

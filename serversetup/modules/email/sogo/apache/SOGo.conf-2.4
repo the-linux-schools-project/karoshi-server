@@ -1,11 +1,11 @@
 Alias /SOGo.woa/WebServerResources/ \
-      /usr/local/lib/GNUstep/SOGo/WebServerResources/
+      /usr/lib/GNUstep/SOGo/WebServerResources/
 Alias /SOGo/WebServerResources/ \
-      /usr/local/lib/GNUstep/SOGo/WebServerResources/
+      /usr/lib/GNUstep/SOGo/WebServerResources/
 AliasMatch /SOGo/so/ControlPanel/Products/(.*)/Resources/(.*) \
-           /usr/local/lib/GNUstep/SOGo/$1.SOGo/Resources/$2
+           /usr/lib/GNUstep/SOGo/$1.SOGo/Resources/$2
 
-<Directory /usr/local/lib/GNUstep/SOGo/>
+<Directory /usr/lib/GNUstep/SOGo/>
     AllowOverride None
     Require all granted
     Allow from all

@@ -104,6 +104,8 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/freeradius /et
 [ `ls /etc/init/glusterfs* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/glusterfs*
 [ `ls /etc/init/monitorix* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/monitorix*
 [ `ls /etc/init/freeradius* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/freeradius*
+[ `ls /etc/init/samba* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/samba*
+
 #May need to add more to this list.
 
 exit

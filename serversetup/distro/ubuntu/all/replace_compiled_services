@@ -1,0 +1,201 @@
+#!/bin/bash
+
+source /opt/karoshi/server_network/domain_information/domain_name
+
+#Make sure we do not get any prompts for software.
+export DEBIAN_FRONTEND=noninteractive
+
+#Check if samba 4 is running
+RUNSTATUS=off
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/samba_status
+[ $? = 0 ] && RUNSTATUS=on
+
+#Add linux-schools/backports repository
+echo "<li>"$HOSTNAME - Adding in linux-schools/backports ppa"</li><br>"
+sleep 1
+add-apt-repository -y "ppa:linux-schools/backports"
+if [ $? != 0 ]
+then
+	"<li>"$HOSTNAME - The ppa did not install correctly"</li>"
+	exit 101
+fi
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 8E250180
+if [ $? != 0 ]
+then
+	"<br><li>"$HOSTNAME - The ppa key did not install correctly"</li><br>"
+	exit 101
+fi
+
+echo "<br><li>"$HOSTNAME - Updating repositories"</li><br>"
+sleep 1
+apt-get update
+
+#Check that we can install the expected version of samba 4
+if [ `apt-cache madison samba | grep -c linuxschools2+trusty` = 0 ]
+then
+	echo "<br><li>"$HOSTNAME - The linuxschools samba4 backport is not available"</li><br>"
+	exit 101
+fi
+
+#Modify /etc/resolv.conf so that we can still get on the internet when samba 4 pdc or adc is stopped.
+if [ `grep -c "[sysvol]" /etc/samba/smb.conf` -gt 0 ]
+then
+	DNSFORDWARDER=`grep "dns forwarder =" /etc/samba/smb.conf | cut -d"=" -f2 | sed 's/ //g'`
+	if [ ! -z "$DNSFORDWARDER" ]
+	then
+		mv /etc/resolv.conf /etc/resolv.conf.$$
+		echo nameserver $DNSFORDWARDER > /etc/resolv.conf
+	else
+		echo "<li>"$HOSTNAME - Could not create /etc/resolv.conf"</li>"
+		exit 101		
+	fi
+fi
+
+
+#Stop samba 4
+if [ $RUNSTATUS = on ]
+then
+	echo "<br><li>"$HOSTNAME - Stopping samba4"</li>"
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/samba_stop
+fi
+
+#Move var lib samba
+mv /var/lib/samba /var/lib/samba.$$
+
+#Test install the version of samba4 from linux-schools backports
+echo "<br><li>"$HOSTNAME - Testing that Samba 4 can be installed from linux-schools backports"</li><br>"
+apt-get -s -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y install samba
+if [ $? != 0 ]
+then
+	echo "<li>"$HOSTNAME - Samba will not install correctly"</li>"
+	echo "<li>"$HOSTNAME - Aborting the installation and restarting the current samba4 service"</li>"
+	if [ -f /etc/resolv.conf.$$ ]
+	then
+		rm -f /etc/resolv.conf
+		mv /etc/resolv.conf.$$ /etc/resolv.conf
+	fi
+	#Restore /var/lib/samba
+	if [ -d /var/lib/samba.$$ ]
+	then
+		[ -d /var/lib/samba ] && rm -f -R /var/lib/samba
+		mv /var/lib/samba.$$ /var/lib/samba
+	fi
+	[ $RUNSTATUS = on ] && /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/samba_start
+	exit
+fi
+
+echo "<br><li>"$HOSTNAME - Removing compiled samba4"</li>" 
+
+#Tidy up /usr/local
+rm -f -R /usr/local/lib/*
+rm -f /usr/local/bin/*
+rm -f -R /usr/local/include/*
+rm -f -R /usr/local/sbin/*
+rm -f -R /usr/local/share/samba
+
+echo "<br><li>"$HOSTNAME - Installing Samba 4 from linux-schools backports"</li><br>" 
+
+#Install samba4
+apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y install samba
+
+#Copy in revised sysv script
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/samba4 /etc/init.d/
+
+#Restore /etc/resolv.conf
+if [ -f /etc/resolv.conf.$$ ]
+then
+	rm -f /etc/resolv.conf
+	mv /etc/resolv.conf.$$ /etc/resolv.conf
+fi
+
+#Remove init script for samba4
+[ -f /etc/init/samba-ad-dc.conf ] && rm -f /etc/init/samba-ad-dc.conf
+[ -f /etc/init/smbd ] && rm -f /etc/init/smbd
+
+#Restore /var/lib/samba
+if [ -d /var/lib/samba.$$ ]
+then
+	[ -d /var/lib/samba ] && rm -f -R /var/lib/samba
+	mv /var/lib/samba.$$ /var/lib/samba
+fi
+
+if [ $RUNSTATUS = on ]
+then
+	#Restart samba4
+	echo "<li>"$HOSTNAME - restarting samba4"</li>"
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/samba_stop
+	sleep 1
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/samba_start
+
+	#Set Samba4 to start on boot
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/samba
+
+fi
+
+
+#Check if sogo is running
+RUNSTATUS=off
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/sogo_status
+[ $? = 0 ] && RUNSTATUS=on
+
+if [ $RUNSTATUS = on ]
+then
+	echo "<br><li>"$HOSTNAME - stopping apache"</li>"
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_stop
+	echo "<br><li>"$HOSTNAME - stopping sogo"</li>"
+	killall sogod
+fi
+
+#Install openchange
+echo "<br><li>"$HOSTNAME - Installing openchange from linux-schools backports"</li><br>"
+apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y install openchangeserver
+
+#Copy in revised init.d script
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/sogo /etc/init.d/
+
+#Install sogo
+apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y install sogo
+if [ $? != 0 ]
+then
+	echo "<li>"$HOSTNAME - Sogo  did not install correctly"</li>"
+	echo "<li>"$HOSTNAME - Aborting the installation and restarting the current sogo service"</li>"
+	
+	if [ $RUNSTATUS = on ]
+	then
+		echo "<br><li>"$HOSTNAME - starting apache"</li>"
+		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_start
+		echo "<br><li>"$HOSTNAME - starting sogo"</li>"
+		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/sogo_start
+	fi
+	exit 101
+fi
+
+SOGoPath=/etc/apache2/conf.d
+[ -d /etc/apache2/conf-enabled/ ] && SOGoPath=/etc/apache2/conf-enabled
+
+ALIAS=`grep x-webobjects-server-url $SOGoPath/SOGo.conf | cut -d: -f2 | cut -d. -f1 | sed 's/\/\///g'`
+
+[ -d /etc/apache2/conf.d ] && cp -f /opt/karoshi/serversetup/modules/email/sogo/apache/SOGo.conf $SOGoPath
+[ -d /etc/apache2/conf-enabled ] && cp -f /opt/karoshi/serversetup/modules/email/sogo/apache/SOGo.conf-2.4 $SOGoPath/SOGo.conf
+
+#Modify /etc/apache2/conf.d/SOGo.conf
+sed -i 's/CHANGETHISWEBDOMAIN/'$ALIAS.$REALM'/g' $SOGoPath/SOGo.conf
+sed -i 's/CHANGETHISKRBPATH/'$HOSTNAME.$REALM'/g' $SOGoPath/SOGo.conf
+sed -i 's/CHANGETHISSERVERNAME/'$HOSTNAME'/g' $SOGoPath/SOGo.conf
+
+#Copy in revised init.d script
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/sogo /etc/init.d/
+
+#Start Apache2 and Sogo
+if [ $RUNSTATUS = on ]
+then
+	echo "<br><li>"$HOSTNAME - starting apache"</li>"
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_start
+	echo "<br><li>"$HOSTNAME - starting sogo"</li>"
+	killall sogod
+	sleep 1
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/sogo_start
+fi
+
+exit
+

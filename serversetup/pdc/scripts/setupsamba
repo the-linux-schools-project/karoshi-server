@@ -48,6 +48,12 @@ DAY=`date +%d`
 MONTH=`date +%m`
 LINUXCLIENTVERSION=karoshi4
 
+#Get install type
+INSTALL_TYPE=education
+if [ -f /opt/karoshi/server_network/install_type ]
+then
+	INSTALL_TYPE=`sed -n 1,1p /opt/karoshi/server_network/install_type`
+fi
 #######################
 #Ensure that samba is running on boot
 #######################
@@ -68,11 +74,11 @@ LDAPCHECK=0
 COUNTER=0
 while [ $LDAPCHECK = 0 ]
 do
-LDAPCHECK=`netstat -vatn | grep -c -w 389`
-sleep 1
-#Give up after 60 seconds
-[ $COUNTER = 60 ] && exit 101
-let COUNTER=$COUNTER+1
+	LDAPCHECK=`netstat -vatn | grep -c -w 389`
+	sleep 1
+	#Give up after 60 seconds
+	[ $COUNTER = 60 ] && exit 101
+	let COUNTER=$COUNTER+1
 done
 }
 
@@ -111,41 +117,41 @@ LENGTHCHECK=16
 DOTCHECK=0
 while [ $CHECK_DOMAIN = yes ]
 do
-CHECK_DOMAIN=no
-getdomainname
-#Check to see if the domain name has been set
-if [ -z "$WEBADDRESS" ]
-then
-DOMAINERRORMSG=$"You have not entered a fully qualified domain name."
-CHECK_DOMAIN=yes
-else
-#Check to see if the domain name is the same as the hostname
-if [ "$WEBADDRESS" = $HOSTNAME ]
-then
-DOMAINERRORMSG=$"The domain name cannot be the same as the hostname."
-CHECK_DOMAIN=yes
-fi
-#Check to see if the first part of the domain name is the same as the hostname
-if [ `echo $WEBADDRESS | cut -d"." -f1` = $HOSTNAME ]
-then
-DOMAINERRORMSG=$"The first part of the domain name cannot be the same as the hostname."
-CHECK_DOMAIN=yes
-fi 
-#Check to see if any part of the domain name is longer than 15 chars
-LENGTHCHECK=`echo -e "$WEBADDRESS" | sed 's/\./\n/g' | wc -L`
-if [ $LENGTHCHECK -gt 15 ]
-then
-DOMAINERRORMSG=$"The maximum character length between dots is 15."
-CHECK_DOMAIN=yes
-fi
-#Check for fqdn
-DOTCHECK=`echo $WEBADDRESS | grep -c "\."`
-if [ $DOTCHECK = 0 ]
-then
-DOMAINERRORMSG=$"You have not entered a fully qualified domain name."
-CHECK_DOMAIN=yes
-fi
-fi
+	CHECK_DOMAIN=no
+	getdomainname
+	#Check to see if the domain name has been set
+	if [ -z "$WEBADDRESS" ]
+	then
+		DOMAINERRORMSG=$"You have not entered a fully qualified domain name."
+		CHECK_DOMAIN=yes
+	else
+		#Check to see if the domain name is the same as the hostname
+		if [ "$WEBADDRESS" = $HOSTNAME ]
+		then
+			DOMAINERRORMSG=$"The domain name cannot be the same as the hostname."
+			CHECK_DOMAIN=yes
+		fi
+		#Check to see if the first part of the domain name is the same as the hostname
+		if [ `echo $WEBADDRESS | cut -d"." -f1` = $HOSTNAME ]
+		then
+			DOMAINERRORMSG=$"The first part of the domain name cannot be the same as the hostname."
+			CHECK_DOMAIN=yes
+		fi 
+		#Check to see if any part of the domain name is longer than 15 chars
+		LENGTHCHECK=`echo -e "$WEBADDRESS" | sed 's/\./\n/g' | wc -L`
+		if [ $LENGTHCHECK -gt 15 ]
+		then
+			DOMAINERRORMSG=$"The maximum character length between dots is 15."
+			CHECK_DOMAIN=yes
+		fi
+		#Check for fqdn
+		DOTCHECK=`echo $WEBADDRESS | grep -c "\."`
+		if [ $DOTCHECK = 0 ]
+		then
+			DOMAINERRORMSG=$"You have not entered a fully qualified domain name."
+			CHECK_DOMAIN=yes
+		fi
+	fi
 done
 
 #Create domain information
@@ -158,10 +164,8 @@ REALM=$WEBADDRESS
 REALMCAPS=`echo $WEBADDRESS | tr 'a-z' 'A-Z'`
 LDAPBASE=`echo $WEBADDRESS | sed 's/\./,DC=/g' | sed 's/^/DC=/g'`
 
-if [ ! -d /opt/karoshi/server_network/domain_information/ ]
-then	
-mkdir -p /opt/karoshi/server_network/domain_information/
-fi
+[ ! -d /opt/karoshi/server_network/domain_information/ ] && mkdir -p /opt/karoshi/server_network/domain_information/
+
 echo SAMBADOMAIN=\"$SAMBADOMAIN\" > /opt/karoshi/server_network/domain_information/domain_name
 echo SAMBADOMAINCAPS=\"$SAMBADOMAINCAPS\" >> /opt/karoshi/server_network/domain_information/domain_name
 echo WEBADDRESS=\"$WEBADDRESS\" >> /opt/karoshi/server_network/domain_information/domain_name
@@ -187,26 +191,26 @@ fi
 PASSLENGTH=${#SAMBAROOTPASSWORD1}
 if [ $PASSLENGTH -lt 8 ]
 then
-ROOTPASSWDMSG=$"The password must be at least 8 characters long and have a combination of upper and lower case letters and numbers."
-SAMBAROOTPASSWORD2=$RANDOM
+	ROOTPASSWDMSG=$"The password must be at least 8 characters long and have a combination of upper and lower case letters and numbers."
+	SAMBAROOTPASSWORD2=$RANDOM
 fi
 
 #Check for upper and lowercase
 if [ `echo "$SAMBAROOTPASSWORD1"'A' | tr -cd 'A-Z\n'` = A ]
 then
-SAMBAROOTPASSWORD2=$RANDOM
-ROOTPASSWDMSG=$"The password must be at least 8 characters long and have a combination of upper and lower case letters and numbers."
+	SAMBAROOTPASSWORD2=$RANDOM
+	ROOTPASSWDMSG=$"The password must be at least 8 characters long and have a combination of upper and lower case letters and numbers."
 fi
 if [ `echo "$SAMBAROOTPASSWORD1"'a' | tr -cd 'a-z\n'` = a ]
 then
-ROOTPASSWDMSG=$"The password must be at least 8 characters long and have a combination of upper and lower case letters and numbers."
-SAMBAROOTPASSWORD2=$RANDOM
+	ROOTPASSWDMSG=$"The password must be at least 8 characters long and have a combination of upper and lower case letters and numbers."
+	SAMBAROOTPASSWORD2=$RANDOM
 fi
 #Check for numbers
 if [ `echo "$SAMBAROOTPASSWORD1"'1' | tr -cd '0-9\n'` = 1 ]
 then
-ROOTPASSWDMSG=$"The password must be at least 8 characters long and have a combination of upper and lower case letters and numbers."
-SAMBAROOTPASSWORD2=$RANDOM
+	ROOTPASSWDMSG=$"The password must be at least 8 characters long and have a combination of upper and lower case letters and numbers."
+	SAMBAROOTPASSWORD2=$RANDOM
 fi
 }
 
@@ -214,11 +218,12 @@ fi
 ROOTPASSWDMSG=`echo $"Please enter the root and administrator password." $"Minimum 8 characters, numbers, upper and lower case letters."`
 getrootsmbpasswd
 check_password
+
 while [ "$SAMBAROOTPASSWORD1" != "$SAMBAROOTPASSWORD2" ]
 do
-#get samba root password
-getrootsmbpasswd
-check_password
+	#get samba root password
+	getrootsmbpasswd
+	check_password
 done
 
 LDAPPASS="$SAMBAROOTPASSWORD1"
@@ -252,10 +257,7 @@ samba-tool domain provision --use-rfc2307 --realm=$REALM --domain=$SAMBADOMAIN -
 function provisionsamba {
 provision_samba4
 getyadpid
-if [ ! -z "$YADPID" ]
-then
-kill $YADPID
-fi
+[ ! -z "$YADPID" ] & kill $YADPID
 }
 
 provisionsamba 2>> /opt/karoshi/serversetup/install_log | show_info
@@ -504,27 +506,9 @@ LDAPPATH="OU=staff,OU=personnel,OU=People,$LDAPBASE"
 add_organisational_unit
 creategpos
 
-NAME="studentstaff"
-DESC="Student staff"
-LDAPPATH="OU=studentstaff,OU=personnel,OU=People,$LDAPBASE"
-add_organisational_unit
-creategpos
-
 NAME="officestaff"
 DESC="Office staff"
 LDAPPATH="OU=officestaff,OU=personnel,OU=People,$LDAPBASE"
-add_organisational_unit
-creategpos
-
-NAME="nonteachingstaff"
-DESC="Non teaching staff"
-LDAPPATH="OU=nonteachingstaff,OU=personnel,OU=People,$LDAPBASE"
-add_organisational_unit
-creategpos
-
-NAME="governors"
-DESC="Governors"
-LDAPPATH="OU=governors,OU=personnel,OU=People,$LDAPBASE"
 add_organisational_unit
 creategpos
 
@@ -540,24 +524,45 @@ LDAPPATH="OU=tech,OU=personnel,OU=People,$LDAPBASE"
 add_organisational_unit
 creategpos
 
-#All student sub containers
 
-NAME="students"
-DESC="Student accounts"
-LDAPPATH="OU=students,OU=People,$LDAPBASE"
-add_organisational_unit
-creategpos
+if [ $INSTALL_TYPE = education ]
+then
+	NAME="studentstaff"
+	DESC="Student staff"
+	LDAPPATH="OU=studentstaff,OU=personnel,OU=People,$LDAPBASE"
+	add_organisational_unit
+	creategpos
 
-COUNTER=$STARTYEAR
-while [ $COUNTER -le $ENDYEAR ]
-do
-NAME="yr$COUNTER"
-DESC="Year $COUNTER"
-LDAPPATH="OU=yr$COUNTER,OU=students,OU=People,$LDAPBASE"
-add_organisational_unit
-creategpos
-let COUNTER=$COUNTER+1
-done
+	NAME="governors"
+	DESC="Governors"
+	LDAPPATH="OU=governors,OU=personnel,OU=People,$LDAPBASE"
+	add_organisational_unit
+	creategpos
+
+	NAME="nonteachingstaff"
+	DESC="Non teaching staff"
+	LDAPPATH="OU=nonteachingstaff,OU=personnel,OU=People,$LDAPBASE"
+	add_organisational_unit
+	creategpos
+
+	#All student sub containers
+	NAME="students"
+	DESC="Student accounts"
+	LDAPPATH="OU=students,OU=People,$LDAPBASE"
+	add_organisational_unit
+	creategpos
+
+	COUNTER=$STARTYEAR
+	while [ $COUNTER -le $ENDYEAR ]
+	do
+		NAME="yr$COUNTER"
+		DESC="Year $COUNTER"
+		LDAPPATH="OU=yr$COUNTER,OU=students,OU=People,$LDAPBASE"
+		add_organisational_unit
+		creategpos
+		let COUNTER=$COUNTER+1
+	done
+fi
 
 #All other subcontainers
 NAME="other"
@@ -566,11 +571,14 @@ LDAPPATH="OU=other,OU=People,$LDAPBASE"
 add_organisational_unit
 creategpos
 
-NAME="exams"
-DESC="Exam users"
-LDAPPATH="OU=exams,OU=other,OU=People,$LDAPBASE"
-add_organisational_unit
-creategpos
+if [ $INSTALL_TYPE = education ]
+then
+	NAME="exams"
+	DESC="Exam users"
+	LDAPPATH="OU=exams,OU=other,OU=People,$LDAPBASE"
+	add_organisational_unit
+	creategpos
+fi
 
 NAME="guestusers"
 DESC="Guest users"
@@ -621,39 +629,17 @@ gidnumber: $GIDNUMBER
 ##############################
 function makefoldersandgroups {
 echo `date`: "Making folders and groups" >> /opt/karoshi/serversetup/install_log
+
 #Make Groups
-COUNTER=$STARTYEAR
-while [  $COUNTER -le $ENDYEAR ]; do
-echo -e ''$"Adding group"' 'yr$COUNTER''
-NEWGROUP=yr$COUNTER
-NEWGROUPDISP="Year $COUNTER"
-add_samba4_group
-let COUNTER=COUNTER+1
-done
 
 echo -e ''$"Adding group"' staff'
 NEWGROUP=staff
 NEWGROUPDISP=Staff
 add_samba4_group
 
-echo -e ''$"Adding group"' nonteachingstaff'
-NEWGROUP=nonteachingstaff
-NEWGROUPDISP="Non teaching staff"
-add_samba4_group
-
-echo -e ''$"Adding group"' studentstaff'
-NEWGROUP=studentstaff
-NEWGROUPDISP="Student Staff"
-add_samba4_group
-
 echo -e ''$"Adding group"' guestusers'
 NEWGROUP=guestusers
 NEWGROUPDISP="Guest Users"
-add_samba4_group
-
-echo -e ''$"Adding group"' exams'
-NEWGROUP=exams
-NEWGROUPDISP="Exam Users"
 add_samba4_group
 
 echo -e "$"Adding group" itadmin"
@@ -676,25 +662,53 @@ NEWGROUP=bursar
 NEWGROUPDISP="Bursars"
 add_samba4_group
 
-echo -e ''$"Adding group"' smt'
-NEWGROUP=smt
-NEWGROUPDISP="Senior Management"
-add_samba4_group
-
-echo -e ''$"Adding group"' governors'
-NEWGROUP=governors
-NEWGROUPDISP="Governors"
-add_samba4_group
-
-echo -e ''$"Adding group"' guardians'
-NEWGROUP=guardians
-NEWGROUPDISP="Guardians"
-add_samba4_group
-
 echo -e ''$"Adding group"' profilemanagement'
 NEWGROUP=profilemanagement
 NEWGROUPDISP="Profile Management"
 add_samba4_group
+
+#Add education groups
+if [ $INSTALL_TYPE = education ]
+then
+	echo -e ''$"Adding group"' nonteachingstaff'
+	NEWGROUP=nonteachingstaff
+	NEWGROUPDISP="Non teaching staff"
+	add_samba4_group
+
+	echo -e ''$"Adding group"' studentstaff'
+	NEWGROUP=studentstaff
+	NEWGROUPDISP="Student Staff"
+	add_samba4_group
+
+	echo -e ''$"Adding group"' exams'
+	NEWGROUP=exams
+	NEWGROUPDISP="Exam Users"
+	add_samba4_group
+
+	echo -e ''$"Adding group"' smt'
+	NEWGROUP=smt
+	NEWGROUPDISP="Senior Management"
+	add_samba4_group
+
+	echo -e ''$"Adding group"' governors'
+	NEWGROUP=governors
+	NEWGROUPDISP="Governors"
+	add_samba4_group
+
+	echo -e ''$"Adding group"' guardians'
+	NEWGROUP=guardians
+	NEWGROUPDISP="Guardians"
+	add_samba4_group
+
+	COUNTER=$STARTYEAR
+	while [  $COUNTER -le $ENDYEAR ]; do
+		echo -e ''$"Adding group"' 'yr$COUNTER''
+		NEWGROUP=yr$COUNTER
+		NEWGROUPDISP="Year $COUNTER"
+		add_samba4_group
+		let COUNTER=COUNTER+1
+	done
+fi
 
 echo $"Creating home folders"
 #Make top level user area
@@ -703,46 +717,60 @@ chown root.root /home
 [ -d /home/users ] || mkdir /home/users
 chmod 0755 /home/users
 chown root.root /home/users
-#Student users home areas
-[ -d /home/users/students ] || mkdir /home/users/students
-chmod 0755 /home/users/students
-chown root.root /home/users/students
-COUNTER=$STARTYEAR
-while [  $COUNTER -le $ENDYEAR ]; do
-[ -d /home/users/students/yr$COUNTER ] || mkdir /home/users/students/yr$COUNTER
-chmod 0750 /home/users/students/yr$COUNTER
-chown root.yr$COUNTER /home/users/students/yr$COUNTER
-chown .yr$COUNTER -R /home/users/students/yr$COUNTER
-let COUNTER=COUNTER+1
-done
+
+#Add education home areas
+if [ $INSTALL_TYPE = education ]
+then
+	#Guardian users home areas
+	[ -d /home/users/guardians ] || mkdir /home/users/guardians
+	chmod 0750 /home/users/guardians
+	chown root.guardians /home/users/guardians
+	chown .guardians -R /home/users/guardians
+
+	#Governor users home areas
+	[ -d /home/users/governors ] || mkdir /home/users/governors
+	chmod 0750 /home/users/governors
+	chown root.governors /home/users/governors
+	chown .governors -R /home/users/governors
+
+	#Non teaching staff users home areas
+	[ -d /home/users/nonteachingstaff ] || mkdir /home/users/nonteachingstaff
+	chmod 0750 /home/users/nonteachingstaff
+	chown root.nonteachingstaff /home/users/nonteachingstaff
+	chown .nonteachingstaff -R /home/users/nonteachingstaff
+
+	#Exam users home area
+	[ -d /home/users/exams ] || mkdir /home/users/exams
+	chmod 0750 /home/users/exams
+	chown root.exams /home/users/exams
+	chown .exams -R /home/users/exams
+
+	#Studentstaff users home areas
+	[ -d /home/users/studentstaff ] || mkdir /home/users/studentstaff
+	chmod 0750 /home/users/studentstaff
+	chown root.studentstaff /home/users/studentstaff
+	chown .studentstaff -R /home/users/studentstaff
+
+	#Student users home areas
+	[ -d /home/users/students ] || mkdir /home/users/students
+	chmod 0755 /home/users/students
+	chown root.root /home/users/students
+	COUNTER=$STARTYEAR
+	while [  $COUNTER -le $ENDYEAR ]; do
+		[ -d /home/users/students/yr$COUNTER ] || mkdir /home/users/students/yr$COUNTER
+		chmod 0750 /home/users/students/yr$COUNTER
+		chown root.yr$COUNTER /home/users/students/yr$COUNTER
+		chown .yr$COUNTER -R /home/users/students/yr$COUNTER
+		let COUNTER=COUNTER+1
+	done
+fi
+
 #Staff users home areas
 [ -d /home/users/staff ] || mkdir /home/users/staff
 chmod 0750 /home/users/staff
 chown root.staff /home/users/staff
 chown .staff -R /home/users/staff
-#Studentstaff users home areas
-[ -d /home/users/studentstaff ] || mkdir /home/users/studentstaff
-chmod 0750 /home/users/studentstaff
-chown root.studentstaff /home/users/studentstaff
-chown .studentstaff -R /home/users/studentstaff
 
-#Guardian users home areas
-[ -d /home/users/guardians ] || mkdir /home/users/guardians
-chmod 0750 /home/users/guardians
-chown root.guardians /home/users/guardians
-chown .guardians -R /home/users/guardians
-
-#Governor users home areas
-[ -d /home/users/governors ] || mkdir /home/users/governors
-chmod 0750 /home/users/governors
-chown root.governors /home/users/governors
-chown .governors -R /home/users/governors
-
-#Non teaching staff users home areas
-[ -d /home/users/nonteachingstaff ] || mkdir /home/users/nonteachingstaff
-chmod 0750 /home/users/nonteachingstaff
-chown root.nonteachingstaff /home/users/nonteachingstaff
-chown .nonteachingstaff -R /home/users/nonteachingstaff
 #Office staff users home area
 [ -d /home/users/officestaff ] || mkdir /home/users/officestaff
 chmod 0750 /home/users/officestaff
@@ -763,19 +791,15 @@ chown .itadmin -R /home/users/itadminstaff
 chmod 0750 /home/users/guestusers
 chown root.guestusers /home/users/guestusers
 chown .guestusers -R /home/users/guestusers
-#Exam users home area
-[ -d /home/users/exams ] || mkdir /home/users/exams
-chmod 0750 /home/users/exams
-chown root.exams /home/users/exams
-chown .exams -R /home/users/exams
+
 #Applications area - windows profiles
 echo $"Creating" applications
 [ -d /home/applications ] || mkdir /home/applications
 if ! test -d /home/applications/backgrounds
 then
-mkdir /home/applications/backgrounds
-cp /opt/karoshi/serversetup/pdc/backgrounds/* /home/applications/backgrounds/
-cp /opt/karoshi/serversetup/all/backgrounds/* /home/applications/backgrounds/
+	mkdir /home/applications/backgrounds
+	cp /opt/karoshi/serversetup/pdc/backgrounds/* /home/applications/backgrounds/
+	cp /opt/karoshi/serversetup/all/backgrounds/* /home/applications/backgrounds/
 fi
 
 #Extract windows GPOs
@@ -786,61 +810,74 @@ unzip /opt/karoshi/serversetup/pdc/gpos/GPOs.zip -d /home/applications/
 [ -d /home/applications/news ] || mkdir /home/applications/news
 if ! test -f /home/applications/news/news.txt
 then
-echo Welcome to the Karoshi Network > /home/applications/news/news.txt
-echo >> /home/applications/news/news.txt
-echo http://www.karoshi.org.uk >> /home/applications/news/news.txt
+	echo Welcome to the Karoshi Network > /home/applications/news/news.txt
+	echo >> /home/applications/news/news.txt
+	echo http://www.karoshi.org.uk >> /home/applications/news/news.txt
 fi
 chmod 0664 -R /home/applications
 chmod u+X,g+X,o+X -R /home/applications
 chown root.itadmin -R /home/applications
+
+
 #Subjects area
 echo `date`: "Creating subjects area" >> /opt/karoshi/serversetup/install_log
 
+#Add education home areas
+if [ $INSTALL_TYPE = education ]
+then
+
 if ! test -d /home/subjects
 then
-mkdir /home/subjects /home/subjects/"work experience" /home/subjects/art /home/subjects/"business studies" /home/subjects/careers
-mkdir /home/subjects/childcare /home/subjects/citizenship /home/subjects/drama /home/subjects/english /home/subjects/french
-mkdir /home/subjects/geography /home/subjects/german /home/subjects/"health and social care" /home/subjects/history
-mkdir /home/subjects/ict /home/subjects/"leisure and tourism" /home/subjects/literacy /home/subjects/mathematics /home/subjects/"media studies"
-mkdir /home/subjects/music /home/subjects/olc /home/subjects/"physical education" /home/subjects/science /home/subjects/spanish
-mkdir /home/subjects/welsh /home/subjects/technology
+	mkdir /home/subjects /home/subjects/"work experience" /home/subjects/art /home/subjects/"business studies" /home/subjects/careers
+	mkdir /home/subjects/childcare /home/subjects/citizenship /home/subjects/drama /home/subjects/english /home/subjects/french
+	mkdir /home/subjects/geography /home/subjects/german /home/subjects/"health and social care" /home/subjects/history
+	mkdir /home/subjects/ict /home/subjects/"leisure and tourism" /home/subjects/literacy /home/subjects/mathematics /home/subjects/"media studies"
+	mkdir /home/subjects/music /home/subjects/olc /home/subjects/"physical education" /home/subjects/science /home/subjects/spanish
+	mkdir /home/subjects/welsh /home/subjects/technology
 fi
 
 chmod 2664 -R /home/subjects
 chmod u+X,g+X,o+X -R  /home/subjects
 chown root.itadmin -R /home/subjects
+fi
+
 #Staffshare area
 echo `date`: "Creating staffshare area" >> /opt/karoshi/serversetup/install_log
 echo $"Creating" staffshare
 [ -d /home/staffshare ] || mkdir /home/staffshare
-[ -d /home/staffshare/temp ] || mkdir /home/staffshare/temp
-[ -d /home/staffshare/"useful documents" ] || mkdir /home/staffshare/"useful documents"
-[ -d /home/staffshare/smt ] || mkdir /home/staffshare/smt
-[ -d /home/staffshare/"work experience" ] || mkdir /home/staffshare/"work experience"
-[ -d /home/staffshare/art ] || mkdir /home/staffshare/art
-[ -d /home/staffshare/"business studies" ] || mkdir /home/staffshare/"business studies"
-[ -d /home/staffshare/careers ] || mkdir /home/staffshare/careers
-[ -d /home/staffshare/childcare ] || mkdir /home/staffshare/childcare
-[ -d /home/staffshare/citizenship ] || mkdir /home/staffshare/citizenship
-[ -d /home/staffshare/drama ] || mkdir /home/staffshare/drama
-[ -d /home/staffshare/english ] || mkdir /home/staffshare/english
-[ -d /home/staffshare/french ] || mkdir /home/staffshare/french
-[ -d /home/staffshare/geography ] || mkdir /home/staffshare/geography
-[ -d /home/staffshare/german ] || mkdir /home/staffshare/german
-[ -d /home/staffshare/"health and social care" ] || mkdir /home/staffshare/"health and social care"
-[ -d /home/staffshare/history ] || mkdir /home/staffshare/history
-[ -d /home/staffshare/ict ] || mkdir /home/staffshare/ict
-[ -d /home/staffshare/"leisure and tourism" ] || mkdir /home/staffshare/"leisure and tourism"
-[ -d /home/staffshare/literacy ] || mkdir /home/staffshare/literacy
-[ -d /home/staffshare/mathematics ] || mkdir /home/staffshare/mathematics
-[ -d /home/staffshare/"media studies" ] || mkdir /home/staffshare/"media studies"
-[ -d /home/staffshare/music ] || mkdir /home/staffshare/music
-[ -d /home/staffshare/olc ] || mkdir /home/staffshare/olc
-[ -d /home/staffshare/"physical education" ] || mkdir /home/staffshare/"physical education"
-[ -d /home/staffshare/science ] || mkdir /home/staffshare/science
-[ -d /home/staffshare/spanish ] || mkdir /home/staffshare/spanish
-[ -d /home/staffshare/welsh ] || mkdir /home/staffshare/welsh
-[ -d /home/staffshare/technology ] || mkdir /home/staffshare/technology
+
+#Add education home areas
+if [ $INSTALL_TYPE = education ]
+then
+	[ -d /home/staffshare/temp ] || mkdir /home/staffshare/temp
+	[ -d /home/staffshare/"useful documents" ] || mkdir /home/staffshare/"useful documents"
+	[ -d /home/staffshare/smt ] || mkdir /home/staffshare/smt
+	[ -d /home/staffshare/"work experience" ] || mkdir /home/staffshare/"work experience"
+	[ -d /home/staffshare/art ] || mkdir /home/staffshare/art
+	[ -d /home/staffshare/"business studies" ] || mkdir /home/staffshare/"business studies"
+	[ -d /home/staffshare/careers ] || mkdir /home/staffshare/careers
+	[ -d /home/staffshare/childcare ] || mkdir /home/staffshare/childcare
+	[ -d /home/staffshare/citizenship ] || mkdir /home/staffshare/citizenship
+	[ -d /home/staffshare/drama ] || mkdir /home/staffshare/drama
+	[ -d /home/staffshare/english ] || mkdir /home/staffshare/english
+	[ -d /home/staffshare/french ] || mkdir /home/staffshare/french
+	[ -d /home/staffshare/geography ] || mkdir /home/staffshare/geography
+	[ -d /home/staffshare/german ] || mkdir /home/staffshare/german
+	[ -d /home/staffshare/"health and social care" ] || mkdir /home/staffshare/"health and social care"
+	[ -d /home/staffshare/history ] || mkdir /home/staffshare/history
+	[ -d /home/staffshare/ict ] || mkdir /home/staffshare/ict
+	[ -d /home/staffshare/"leisure and tourism" ] || mkdir /home/staffshare/"leisure and tourism"
+	[ -d /home/staffshare/literacy ] || mkdir /home/staffshare/literacy
+	[ -d /home/staffshare/mathematics ] || mkdir /home/staffshare/mathematics
+	[ -d /home/staffshare/"media studies" ] || mkdir /home/staffshare/"media studies"
+	[ -d /home/staffshare/music ] || mkdir /home/staffshare/music
+	[ -d /home/staffshare/olc ] || mkdir /home/staffshare/olc
+	[ -d /home/staffshare/"physical education" ] || mkdir /home/staffshare/"physical education"
+	[ -d /home/staffshare/science ] || mkdir /home/staffshare/science
+	[ -d /home/staffshare/spanish ] || mkdir /home/staffshare/spanish
+	[ -d /home/staffshare/welsh ] || mkdir /home/staffshare/welsh
+	[ -d /home/staffshare/technology ] || mkdir /home/staffshare/technology
+	fi
 
 chmod 2660 -R /home/staffshare
 chmod u+X,g+X /home/staffshare
@@ -910,36 +947,45 @@ sed -i 's/CHANGETHISREALM/'$REALM'/g' /var/lib/samba/netlogon/logonform.kix
 #############################
 #make group file information for kixtart windows logon script
 #############################
-echo exams,$HOSTNAME.$REALM > /var/lib/samba/netlogon/groups.txt
-echo itadmin,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
+
+echo itadmin,$HOSTNAME.$REALM > /var/lib/samba/netlogon/groups.txt
 echo guestusers,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
-echo guardians,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
-echo governors,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
-echo nonteachingstaff,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
 echo officestaff,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
 echo profileuser,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
 echo staff,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
-echo studentstaff,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
 echo Domain Admins,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
+if [ $INSTALL_TYPE = education ]
+then
+	echo exams,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
+	echo governors,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
+	echo nonteachingstaff,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
+	echo guardians,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
+	echo studentstaff,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
 
-COUNTER=$STARTYEAR
-         while [  $COUNTER -le $ENDYEAR ]; do
+	COUNTER=$STARTYEAR
+	while [  $COUNTER -le $ENDYEAR ]; do
 		echo yr$COUNTER,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
 		let COUNTER=COUNTER+1
-         done
+	done
+
+fi
 
 if [ ! -d /var/lib/samba/netlogon/windows_settings/drives ]
 then
-mkdir -p /var/lib/samba/netlogon/windows_settings/drives
-cp -f -R /opt/karoshi/serversetup/pdc/logonscripts/drives/* /var/lib/samba/netlogon/windows_settings/drives/
+	mkdir -p /var/lib/samba/netlogon/windows_settings/drives
 
-COUNTER=2000
-ENDYEAR=2050
-while [ $COUNTER -le $ENDYEAR ]
-do
-ln -s /var/lib/samba/netlogon/windows_settings/drives/students.kix /var/lib/samba/netlogon/windows_settings/drives/yr$COUNTER.kix
-let COUNTER=$COUNTER+1
-done
+	if [ $INSTALL_TYPE = education ]
+	then
+		cp -f -R /opt/karoshi/serversetup/pdc/logonscripts/drives/* /var/lib/samba/netlogon/windows_settings/drives/
+		COUNTER=$STARTYEAR
+		while [ $COUNTER -le $ENDYEAR ]
+		do
+			ln -s /var/lib/samba/netlogon/windows_settings/drives/students.kix /var/lib/samba/netlogon/windows_settings/drives/yr$COUNTER.kix
+			let COUNTER=$COUNTER+1
+		done
+	else
+		cp -f -R /opt/karoshi/serversetup/pdc/logonscripts/drives_business/* /var/lib/samba/netlogon/windows_settings/drives/
+	fi
 fi
 
 #############################
@@ -961,60 +1007,74 @@ PRIMARY_GROUP=profilemanagement
 SUBUNIT=other
 HOMEPATH=/home/users/
 make_primary_group_info
-PRIMARY_GROUP=exams
-SUBUNIT=other
-HOMEPATH=/home/users/exams
-make_primary_group_info
+
 PRIMARY_GROUP=guestusers
 SUBUNIT=other
 HOMEPATH=/home/users/guestusers
 make_primary_group_info
-PRIMARY_GROUP=governors
-SUBUNIT=personnel
-HOMEPATH=/home/users/governors
-make_primary_group_info
-PRIMARY_GROUP=guardians
-SUBUNIT=trustees
-HOMEPATH=/home/users/guardians
-make_primary_group_info
+
 PRIMARY_GROUP=staff
 SUBUNIT=personnel
 HOMEPATH=/home/users/staff
 make_primary_group_info
-PRIMARY_GROUP=nonteachingstaff
-SUBUNIT=personnel
-HOMEPATH=/home/users/nonteachingstaff
-make_primary_group_info
+
 PRIMARY_GROUP=officestaff
 SUBUNIT=personnel
 HOMEPATH=/home/users/officestaff
 SECONDARYGROUP=staff
 make_primary_group_info
-PRIMARY_GROUP=studentstaff
-SUBUNIT=personnel
-HOMEPATH=/home/users/studentstaff
-SECONDARYGROUP=staff
-make_primary_group_info
+
 PRIMARY_GROUP=tech
 SUBUNIT=personnel
 HOMEPATH=/home/users/techstaff
 make_primary_group_info
+
 PRIMARY_GROUP=itadmin
 SUBUNIT=personnel
 HOMEPATH=/home/users/itadminstaff
 SECONDARYGROUP="staff,tech,officestaff"
 make_primary_group_info
-COUNTER=$STARTYEAR
-SECONDARYGROUP=""
-while [ $COUNTER -le $ENDYEAR ]
-do
-PRIMARY_GROUP=yr$COUNTER
-SUBUNIT=students
-HOMEPATH=/home/users/students/yr$COUNTER
-YEARSUFFIX=${COUNTER:2}
-make_primary_group_info
-let COUNTER=$COUNTER+1
-done
+
+if [ $INSTALL_TYPE = education ]
+then
+	PRIMARY_GROUP=nonteachingstaff
+	SUBUNIT=personnel
+	HOMEPATH=/home/users/nonteachingstaff
+	make_primary_group_info
+
+	PRIMARY_GROUP=studentstaff
+	SUBUNIT=personnel
+	HOMEPATH=/home/users/studentstaff
+	SECONDARYGROUP=staff
+	make_primary_group_info
+
+	PRIMARY_GROUP=exams
+	SUBUNIT=other
+	HOMEPATH=/home/users/exams
+	make_primary_group_info
+
+	PRIMARY_GROUP=guardians
+	SUBUNIT=trustees
+	HOMEPATH=/home/users/guardians
+	make_primary_group_info
+
+	PRIMARY_GROUP=governors
+	SUBUNIT=personnel
+	HOMEPATH=/home/users/governors
+	make_primary_group_info
+
+	COUNTER=$STARTYEAR
+	SECONDARYGROUP=""
+	while [ $COUNTER -le $ENDYEAR ]
+	do
+		PRIMARY_GROUP=yr$COUNTER
+		SUBUNIT=students
+		HOMEPATH=/home/users/students/yr$COUNTER
+		YEARSUFFIX=${COUNTER:2}
+		make_primary_group_info
+		let COUNTER=$COUNTER+1
+	done
+fi
 
 #######################
 #Make printers.txt
@@ -1093,7 +1153,7 @@ cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Karoshi Web Management.url" /
 [ -f /home/applications/profiles/defaultprofile.V4/Desktop/"Change My Password.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V4/Desktop/"Change My Password.url"
 [ -f /home/applications/profiles/defaultprofile.V4/Desktop/"Karoshi Web Management.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V4/Desktop/"Karoshi Web Management.url"
 
-#Create tch profile
+#Create tech profile
 
 cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/tech
 cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/tech.V2
@@ -1239,43 +1299,46 @@ create_user
 COUNTER=1
 while [  $COUNTER -le 10 ]
 do
-NEWUSERNAME=guest$COUNTER
-NEWUSERPATH=/home/users/guestusers/guest$COUNTER
-SUBPATH='OU=guestusers,OU=other,OU=People'
-PRIMARYGROUP=guestusers
-PROFILEFOLDER=guestusers
-NEWUSERDISP="Guest $COUNTER"
-create_user
-let COUNTER=COUNTER+1
+	NEWUSERNAME=guest$COUNTER
+	NEWUSERPATH=/home/users/guestusers/guest$COUNTER
+	SUBPATH='OU=guestusers,OU=other,OU=People'
+	PRIMARYGROUP=guestusers
+	PROFILEFOLDER=guestusers
+	NEWUSERDISP="Guest $COUNTER"
+	create_user
+	let COUNTER=COUNTER+1
 done
 
 #Add tech accounts
 COUNTER=1
 while [  $COUNTER -le 4 ]
 do
-NEWUSERNAME=tech$COUNTER
-NEWUSERPATH=/home/users/techstaff/tech$COUNTER
-SUBPATH='OU=tech,OU=personnel,OU=People'
-PRIMARYGROUP=tech
-PROFILEFOLDER=tech
-NEWUSERDISP="Tech $COUNTER"
-create_user
-let COUNTER=COUNTER+1
+	NEWUSERNAME=tech$COUNTER
+	NEWUSERPATH=/home/users/techstaff/tech$COUNTER
+	SUBPATH='OU=tech,OU=personnel,OU=People'
+	PRIMARYGROUP=tech
+	PROFILEFOLDER=tech
+	NEWUSERDISP="Tech $COUNTER"
+	create_user
+	let COUNTER=COUNTER+1
 done
 
-#Add exam accounts
-COUNTER=1
-while [  $COUNTER -le 5 ]
-do
-NEWUSERNAME=exam$COUNTER
-NEWUSERPATH=/home/users/exams/exam$COUNTER
-SUBPATH='OU=exams,OU=other,OU=People'
-PRIMARYGROUP=exams
-PROFILEFOLDER=exams
-NEWUSERDISP="Exam $COUNTER"
-create_user
-let COUNTER=COUNTER+1
-done
+if [ $INSTALL_TYPE = education ]
+then
+	#Add exam accounts
+	COUNTER=1
+	while [  $COUNTER -le 5 ]
+	do
+		NEWUSERNAME=exam$COUNTER
+		NEWUSERPATH=/home/users/exams/exam$COUNTER
+		SUBPATH='OU=exams,OU=other,OU=People'
+		PRIMARYGROUP=exams
+		PROFILEFOLDER=exams
+		NEWUSERDISP="Exam $COUNTER"
+		create_user
+		let COUNTER=COUNTER+1
+	done
+fi
 
 #Add root account for domain member printing with cupsaddsmb
 echo `date`: "Adding root account for domain member printing with cupsaddsmb" >> /opt/karoshi/serversetup/install_log
