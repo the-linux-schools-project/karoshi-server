@@ -58,7 +58,7 @@ echo '
 #Get current settings
 ##########################
 
-echo '<form action="/cgi-bin/admin/default_user_settings.cgi" method="post"><div id="actionbox"><b>'$"Add a New User"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$LOCKOUTSETTINGSHELP1'</span></a>
+echo '<form action="/cgi-bin/admin/default_user_settings.cgi" method="post"><div id="actionbox"><b>'$"Default User Settings"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$LOCKOUTSETTINGSHELP1'</span></a>
 <br><br>'
 #Get lockout settings
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/default_user_settings_fm.cgi | cut -d' ' -f1`

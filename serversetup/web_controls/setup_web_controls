@@ -772,6 +772,13 @@ echo "Ldap Server<br>" > /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/ld
 #Configure Menus
 ############################
 
+EXAMCTRL=yes
+if [ -f /opt/karoshi/server_network/install_type ]
+then
+	INSTALL_TYPE=`sed -n 1,1p /opt/karoshi/server_network/install_type`
+	[ $INSTALL_TYPE = business ] && EXAMCTRL=no
+fi
+
 ADDUSERCTRL=yes
 [ -f /opt/karoshi/server_network/servers/$HOSTNAME/federated_server ] && ADDUSERCTRL=no
 
@@ -790,10 +797,10 @@ EMAILCTRL=no
 FEDERATEDCTL=no
 if [ -d /opt/karoshi/server_network/federated_ldap_servers ]
 then
-if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers | wc -l` -gt 0 ]
-then
-FEDERATEDCTL=yes
-fi
+	if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers | wc -l` -gt 0 ]
+	then
+		FEDERATEDCTL=yes
+	fi
 fi
 
 INTERNETCTRL=no
@@ -847,6 +854,7 @@ echo RADIUSCTRL=$RADIUSCTRL >> /opt/karoshi/server_network/menusettings
 echo REVERSEPROXYCTRL=$REVERSEPROXYCTRL >> /opt/karoshi/server_network/menusettings
 echo WEBCTRL=$WEBCTRL >> /opt/karoshi/server_network/menusettings
 echo SHELLCTRL=$SHELLCTRL >> /opt/karoshi/server_network/menusettings
+echo EXAMCTRL=$EXAMCTRL >> /opt/karoshi/server_network/menusettings
 
 ###########################
 #Check for updates

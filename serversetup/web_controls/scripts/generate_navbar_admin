@@ -143,10 +143,11 @@ echo '			<li class="mid"><a href="/cgi-bin/admin/change_password_fm.cgi" class="
 			<li><a href="/cgi-bin/admin/samba_logs_user_fm.cgi">'$"User Connection Logs"'</a></li>
 			<li><a href="/cgi-bin/admin/view_auto_reset_passwords_fm.cgi">'$"View auto reset passwords"'</a></li>
 				</ul>
-			</li>
+			</li>'
 
-
-			<li class="mid"><a href="/cgi-bin/admin/exam_accounts_enable_disable_fm.cgi" class="fly">'$"Exam Accounts"'</a>
+if [ $EXAMCTRL = yes ]
+then
+echo '			<li class="mid"><a href="/cgi-bin/admin/exam_accounts_enable_disable_fm.cgi" class="fly">'$"Exam Accounts"'</a>
 					<ul>
 						<li><a href="/cgi-bin/admin/exam_accounts_change_passwords_fm.cgi">'$"Change Password"'</a></li>
 						<li><a href="/cgi-bin/admin/exam_accounts_reset_passwords_fm.cgi">'$"Reset Password"'</a></li>
@@ -156,8 +157,9 @@ echo '			<li class="mid"><a href="/cgi-bin/admin/change_password_fm.cgi" class="
 						<li><a href="/cgi-bin/admin/exam_accounts_enable_disable_fm.cgi">'$"Enable - Disable Accounts"'</a></li>
 						<li><a href="/cgi-bin/admin/exam_accounts_create_fm.cgi">'$"Create extra accounts"'</a></li>
 					</ul>
-			</li>
-			<li><a href="/cgi-bin/admin/bulk_user_creation_upload_fm.cgi">'$"Bulk User Creation"'</a></li>
+			</li>'
+fi
+echo '			<li><a href="/cgi-bin/admin/bulk_user_creation_upload_fm.cgi">'$"Bulk User Creation"'</a></li>
 			<li><a href="/cgi-bin/admin/user_web_folders.cgi">'$"User Web Folders"'</a></li>
 		</ul>
 	</li>

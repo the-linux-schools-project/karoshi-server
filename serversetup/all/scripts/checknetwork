@@ -204,7 +204,7 @@ do
 		if [ -z "$NAMECUSTOM" ]
 		then
 				GETSETTINGS=yes
-				ERRORMSG="$"You have not entered in a server name.""
+				ERRORMSG=$"You have not entered in a server name."
 				inputwarning	
 		else 
 			INPUTCHECK=ok
