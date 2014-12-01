@@ -15,6 +15,14 @@ RUNSTATUS2=off
 /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/sogo_status
 [ $? = 0 ] && RUNSTATUS2=on
 
+#Remove sogo repository
+if [ `grep -c http://inverse.ca/ubuntu /etc/apt/sources.list` -gt 0 ]
+then
+	#Remove all sope packages
+	apt-get -y remove sope*
+	add-apt-repository -r "http://inverse.ca/ubuntu precise"
+fi
+
 #Add linux-schools/backports repository
 echo "<li>"$HOSTNAME - Adding in linux-schools/backports ppa"</li><br>"
 sleep 1
@@ -156,7 +164,7 @@ fi
 
 #Install openchange
 echo "<br><li>"$HOSTNAME - Installing openchange from linux-schools backports"</li><br>"
-apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y install openchangeserver
+apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y install openchangeserver python-mysqldb
 
 #Copy in revised init.d script
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/sogo /etc/init.d/

@@ -1,5 +1,4 @@
 #!/bin/bash
-
 #Copyright (C) 2014 Paul Sharrad
 #This program is free software; you can redistribute it and/or
 #modify it under the terms of the GNU General Public License
@@ -22,21 +21,53 @@
 #
 #Website: http://www.karoshi.org.uk
 
+source /opt/karoshi/serversetup/variables/distro
+
 TEXTDOMAIN=karoshi-server
-echo '<li>'$HOSTNAME - $"Provisioning samba4 for openchange"'</li><br>'
-openchange_provision
+#Provision Samba4 for openchange
+echo '<li>'$HOSTNAME' - '$"Provisioning Samba4 for openchange"'</li><br>'
+openchange_provision --standalone
+
+#Create database for openchange
+OPENCHANGEPASS=`openssl rand -hex 16`
+
+#Make sure that we know the root mysql password
+/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
+#Get root mysql password
+MYSQLPASS=`sed -n 1,1p /etc/mysql.secret`
+
+echo '<li>'$HOSTNAME' - '$"Creating a mysql database for openchange"'</li><br>'
+#Create openchange database
+mysqladmin --password=$MYSQLPASS create openchange 1>/dev/null
+
+#Grant permissions to openchange_user
+[ ! -d /opt/karoshi/.tempdata ] && mkdir -p /opt/karoshi/.tempdata
+echo GRANT ALL PRIVILEGES ON openchange.\* TO "'"openchange_user"'"@"'"localhost"'" IDENTIFIED BY "'"$OPENCHANGEPASS"'"';' > /opt/karoshi/.tempdata/mysqlperms.sql
+echo ALTER DATABASE openchange DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci';' >> /opt/karoshi/.tempdata/mysqlperms.sql
+mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/mysqlperms.sql
+rm -f /opt/karoshi/.tempdata/mysqlperms.sql
+
+echo '<li>'$HOSTNAME' - '$"Provisioning openchange for mysql."'</li><br>'
+#Provision openchange with mysql database
+openchange_provision --openchangedb --openchangedb-uri='mysql://openchange_user:'$OPENCHANGEPASS'@localhost/openchange'
 
 
-echo '<li>'$HOSTNAME - $"Adding dispather databases"'</li><br>'
-openchange_provision --openchangedb
+echo '<li>'$HOSTNAME' - '$"Adding openchange support for all existing users"'</li><br>'
+for user in `getent passwd | grep /home/users | cut -d: -f1`
+do
+	openchange_newuser --create $user
+done
 
-#Add users to openchange
-openchange_newuser --create <username>
+#Make sure that smb.conf can only be read by root
+chmod 0600 /etc/samba/smb.conf
 
+#Modify smb.conf with additional paramaters for openchange.
+sed -i '/\[global\]/a \\tmapistore:namedproperties = mysql\n\tnamedproperties:mysql_user = openchange_user\n\tnamedproperties:mysql_pass = '$OPENCHANGEPASS'\n\tnamedproperties:mysql_host = localhost\n\tnamedproperties:mysql_db = openchange\n\tmapistore:indexing_backend = mysql://openchange_user:'$OPENCHANGEPASS'@localhost/openchange\n\tmapiproxy:openchangedb = mysql://openchange_user:'$OPENCHANGEPASS'@localhost/openchange\n\tdcerpc endpoint servers = +epmapper, +mapiproxy\n\tdcerpc_mapiproxy:server = true\n\tdcerpc_mapiproxy:interfaces = exchange_emsmdb, exchange_nsp, exchange_ds_rfr' /etc/samba/smb.conf
 
-#Add to smb.conf
-### Configuration required by OpenChange server ###
-dcerpc endpoint servers = +mapiproxy
-dcerpc_mapiproxy:server = true
-dcerpc_mapiproxy:interfaces = exchange_emsmdb, exchange_nsp, exchange_ds_rfr
-### Configuration required by OpenChange server ###
+#Restart samba
+echo '<li>'$HOSTNAME' - '$"Restarting Samba4"'</li><br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
+exit
+
