@@ -29,9 +29,9 @@ LOG_DATE=`date +%F`
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: setupemail - incorrect number of arguments"<br>"
-echo `date`: setupemail - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: setupemail - incorrect number of arguments"<br>"
+	echo `date`: setupemail - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 read -t 3 DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/'`
@@ -43,17 +43,17 @@ SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
 ALIAS=`echo "$DATA" | cut -s -d: -f5`
 
 LOG_DATE=`date +%F`
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: setupemail - Blank remote user"<br>"
-echo `date`: setupemail - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: setupemail - Blank remote user"<br>"
+	echo `date`: setupemail - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: setupemail - Blank remote tcpip address"<br>"
-echo `date`: setupemail - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: setupemail - Blank remote tcpip address"<br>"
+	echo `date`: setupemail - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
@@ -63,12 +63,12 @@ TEXTDOMAIN=karoshi-server
 which memcached 1>/dev/null
 if [ $? != 0 ]
 then
-echo "<li>Installing memcached</li><br>"
-echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-apt-get update
-apt-get install -y memcached
-echo "</pre>"
-echo "<br>"
+	echo "<li>Installing memcached</li><br>"
+	echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+	apt-get update
+	apt-get install -y memcached
+	echo "</pre>"
+	echo "<br>"
 fi
 
 [ ! -d /opt/karoshi/.tempdata ] && mkdir /opt/karoshi/.tempdata
@@ -83,7 +83,7 @@ LDAPSERVER=127.0.0.1
 #Get ldap server to use
 if [ `grep -c -w "kdc" /etc/krb5.conf` -gt 0 ]
 then
-LDAPSERVER=`grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | cut -d"=" -f2`
+	LDAPSERVER=`grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | cut -d"=" -f2`
 fi
 
 #############################
@@ -178,13 +178,25 @@ fi
 
 if [ `grep -c ^mail_location /etc/dovecot/dovecot.conf` = 0 ]
 then
-echo >> /etc/dovecot/dovecot.conf
-echo mail_location = maildir:/home/users/email/"%u"/ >> /etc/dovecot/dovecot.conf
+	echo >> /etc/dovecot/dovecot.conf
+	echo mail_location = maildir:/home/users/email/"%u"/ >> /etc/dovecot/dovecot.conf
 fi
 if [ `grep -c ^set_maildir_very_dirty_syncs /etc/dovecot/dovecot.conf` = 0 ]
 then
-echo >> /etc/dovecot/dovecot.conf
-echo -e "maildir_very_dirty_syncs = yes\n\n" >> /etc/dovecot/dovecot.conf
+	echo >> /etc/dovecot/dovecot.conf
+	echo -e "maildir_very_dirty_syncs = yes\n\n" >> /etc/dovecot/dovecot.conf
+fi
+
+if [ `grep -c ^auth_username_format /etc/dovecot/dovecot.conf` = 0 ]
+then
+	echo >> /etc/dovecot/dovecot.conf
+	echo -e "auth_username_format = %Ln\n\n" >> /etc/dovecot/dovecot.conf
+fi
+
+if [ `grep -c "driver = static" /etc/dovecot/dovecot.conf` = 0 ]
+then
+	echo >> /etc/dovecot/dovecot.conf
+	echo -e "passdb {\n\tdriver = static\n\targs = nopassword=y allow_nets=127.0.0.1/8\n}\n" >> /etc/dovecot/dovecot.conf
 fi
 
 if [ `grep -c ^"#kerberos auth and sasl" /etc/dovecot/dovecot.conf` = 0 ]
@@ -375,10 +387,10 @@ SOGoPath=/etc/apache2/conf.d
 #Set sogo limits
 if [ -f /etc/default/sogo ]
 then
-if [ `grep -c ^"PREFORK=" /etc/default/sogo` = 0 ]
-then 
-echo PREFORK=5 >> /etc/default/sogo 
-fi
+	if [ `grep -c ^"PREFORK=" /etc/default/sogo` = 0 ]
+	then 
+		echo PREFORK=10 >> /etc/default/sogo 
+	fi
 fi
 
 #Modify /etc/sogo/sogo.conf
@@ -405,6 +417,9 @@ a2enmod rewrite 1>/dev/null
 
 #Setup z-push for SOGo
 /opt/karoshi/serversetup/modules/email/setupzpush $ALIAS
+
+#Setup openchange
+/opt/karoshi/serversetup/modules/email/setupopenchange
 
 #Restart apache
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null 2>/dev/null

@@ -390,6 +390,9 @@ then
 		chown -R '$USERID':root '$HOMEPATH''/''$NEWUSERNAME'
 		chmod -R 0600 '$HOMEPATH''/''$NEWUSERNAME'
 		setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
+		#Add in openchange data
+		openchange_newuser --create '$NEWUSERNAME'
+
 		'
 		SSHSTATUS=`echo $?`
 		if [ $SSHSTATUS != 0 ]
@@ -405,6 +408,8 @@ then
 		chown $NEWUSERNAME -R /home/users/email/$NEWUSERNAME
 		chmod 0600 -R /home/users/email/$NEWUSERNAME
 		chmod u+X -R /home/users/email/$NEWUSERNAME
+		#Add in openchange data
+		openchange_newuser --create $NEWUSERNAME
 	fi
 fi
 

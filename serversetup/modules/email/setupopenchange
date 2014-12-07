@@ -22,10 +22,12 @@
 #Website: http://www.karoshi.org.uk
 
 source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/server_network/domain_information/domain_name
 
 TEXTDOMAIN=karoshi-server
+
 #Provision Samba4 for openchange
-echo '<li>'$HOSTNAME' - '$"Provisioning Samba4 for openchange"'</li><br>'
+echo '<br><li>'$HOSTNAME' - '$"Provisioning Samba4 for openchange"'</li><br>'
 openchange_provision --standalone
 
 #Create database for openchange
@@ -36,7 +38,7 @@ OPENCHANGEPASS=`openssl rand -hex 16`
 #Get root mysql password
 MYSQLPASS=`sed -n 1,1p /etc/mysql.secret`
 
-echo '<li>'$HOSTNAME' - '$"Creating a mysql database for openchange"'</li><br>'
+echo '<br><li>'$HOSTNAME' - '$"Creating a mysql database for openchange"'</li><br>'
 #Create openchange database
 mysqladmin --password=$MYSQLPASS create openchange 1>/dev/null
 
@@ -51,8 +53,23 @@ echo '<li>'$HOSTNAME' - '$"Provisioning openchange for mysql."'</li><br>'
 #Provision openchange with mysql database
 openchange_provision --openchangedb --openchangedb-uri='mysql://openchange_user:'$OPENCHANGEPASS'@localhost/openchange'
 
+#Wait for samba if it has been restarted if this is a pdc or adc
+if [ `grep -w -c sysvol /etc/samba/smb.conf` -gt 0 ]
+then
+	#Check that samba 4 is ready for ldap requests
+	LDAPCHECK=0
+	COUNTER=0
+	while [ $LDAPCHECK = 0 ]
+	do
+		LDAPCHECK=`netstat -vatn | grep -c -w 389`
+		sleep 1
+		#Give up after 60 seconds
+		[ $COUNTER = 60 ] && exit 101
+		let COUNTER=$COUNTER+1
+	done
+fi
 
-echo '<li>'$HOSTNAME' - '$"Adding openchange support for all existing users"'</li><br>'
+echo '<br><li>'$HOSTNAME' - '$"Adding openchange support for all existing users"'</li><br>'
 for user in `getent passwd | grep /home/users | cut -d: -f1`
 do
 	openchange_newuser --create $user
@@ -65,9 +82,35 @@ chmod 0600 /etc/samba/smb.conf
 sed -i '/\[global\]/a \\tmapistore:namedproperties = mysql\n\tnamedproperties:mysql_user = openchange_user\n\tnamedproperties:mysql_pass = '$OPENCHANGEPASS'\n\tnamedproperties:mysql_host = localhost\n\tnamedproperties:mysql_db = openchange\n\tmapistore:indexing_backend = mysql://openchange_user:'$OPENCHANGEPASS'@localhost/openchange\n\tmapiproxy:openchangedb = mysql://openchange_user:'$OPENCHANGEPASS'@localhost/openchange\n\tdcerpc endpoint servers = +epmapper, +mapiproxy\n\tdcerpc_mapiproxy:server = true\n\tdcerpc_mapiproxy:interfaces = exchange_emsmdb, exchange_nsp, exchange_ds_rfr' /etc/samba/smb.conf
 
 #Restart samba
-echo '<li>'$HOSTNAME' - '$"Restarting Samba4"'</li><br>'
+echo '<br><li>'$HOSTNAME' - '$"Restarting Samba4"'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop
 sleep 1
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
+
+#Configure apache for https outlook https access
+[ ! -d o/etc/ocsmanager ] && mkdir -p /etc/ocsmanager
+cp -f /opt/karoshi/serversetup/modules/email/ocsmanager/ocsmanager.ini /etc/ocsmanager/ocsmanager.ini
+
+#Modify ocsmanager.ini with the correct information.
+sed -i 's/CHANGETHISDN/'$LDAPBASE'/g' /etc/ocsmanager/ocsmanager.ini
+
+#Copy in apache2 conf
+APACHEPath=/etc/apache2/conf.d
+[ -d /etc/apache2/conf-enabled/ ] && SOGoPath=/etc/apache2/conf-enabled
+[ -d /etc/apache2/conf.d ] && cp -f /opt/karoshi/serversetup/modules/email/ocsmanager/ocsmanager.conf $APACHEPath/
+[ -d /etc/apache2/conf-enabled ] && cp -f /opt/karoshi/serversetup/modules/email/ocsmanager/ocsmanager.conf $APACHEPath/
+
+#Restart apache
+echo '<li>'$HOSTNAME' - '$"Restarting Apache"'</li><br>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
+
+#Start ocsmanager
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ocsmanager_start
+
+#Set ocsmanager to run on boot
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/ocsmanager
+
 exit
 

@@ -2,6 +2,12 @@
 
 source /opt/karoshi/server_network/domain_information/domain_name
 
+#Delete old init.d script for samba
+[ -e /etc/init.d/samba ] && rm -f /etc/init.d/samba
+[ -e /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/samba ] && rm -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/samba
+
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/openchange-ocsmanager /etc/init.d/
+
 #Make sure we do not get any prompts for software.
 export DEBIAN_FRONTEND=noninteractive
 
@@ -24,7 +30,7 @@ then
 fi
 
 #Add linux-schools/backports repository
-echo "<li>"$HOSTNAME - Adding in linux-schools/backports ppa"</li><br>"
+echo "<br><li>"$HOSTNAME - Adding in linux-schools/backports ppa"</li><br>"
 sleep 1
 add-apt-repository -y "ppa:linux-schools/backports"
 if [ $? != 0 ]
@@ -84,7 +90,7 @@ INSTALLCHECK1=$?
 apt-get -s -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y install sogo
 INSTALLCHECK2=$?
 
-if [ $INSTALLCHECK1 != 0 ] ||  $INSTALLCHECK2 != 0 ]
+if [ $INSTALLCHECK1 != 0 ] || [ $INSTALLCHECK2 != 0 ]
 then
 	[ $INSTALLCHECK1 != 0 ] && echo "<li>"$HOSTNAME - Samba will not install correctly"</li>"
 	[ $INSTALLCHECK2 != 0 ] && echo "<li>"$HOSTNAME - Sogo will not install correctly"</li>"
@@ -125,16 +131,11 @@ echo "<br><li>"$HOSTNAME - Installing Samba 4 from linux-schools backports"</li>
 
 #Install samba4
 apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y install samba
+#Delete old init.d script for samba
+[ -e /etc/init.d/samba ] && rm -f /etc/init.d/samba
 
 #Copy in revised sysv script
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/samba4 /etc/init.d/
-
-#Restore /etc/resolv.conf
-if [ -f /etc/resolv.conf.$$ ]
-then
-	rm -f /etc/resolv.conf
-	mv /etc/resolv.conf.$$ /etc/resolv.conf
-fi
 
 #Remove init script for samba4
 [ -f /etc/init/samba-ad-dc.conf ] && rm -f /etc/init/samba-ad-dc.conf
@@ -149,28 +150,16 @@ fi
 #Make sure the permissions are correct on the key.
 chmod 0600 /var/lib/samba/private/tls/key.pem
 
-if [ $RUNSTATUS = on ]
-then
-	#Restart samba4
-	echo "<li>"$HOSTNAME - restarting samba4"</li>"
-	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/samba_stop
-	sleep 1
-	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/samba_start
-
-	#Set Samba4 to start on boot
-	/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/samba4
-
-fi
-
 #Install openchange
 echo "<br><li>"$HOSTNAME - Installing openchange from linux-schools backports"</li><br>"
-apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y install openchangeserver python-mysqldb
-
+apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y install openchangeserver python-mysqldb python-ocsmanager
+INSTALLCHECK3=$?
+[ $INSTALLCHECK3 != 0 ] && echo "<br><li>$HOSTNAME - openchangeserver did not install correctly</li>"  
 #Copy in revised init.d script
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/sogo /etc/init.d/
 
 #Install sogo
-apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y install sogo
+apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y install sogo sogo-openchange 
 
 SOGoPath=/etc/apache2/conf.d
 [ -d /etc/apache2/conf-enabled/ ] && SOGoPath=/etc/apache2/conf-enabled
@@ -188,6 +177,28 @@ sed -i 's/CHANGETHISSERVERNAME/'$HOSTNAME'/g' $SOGoPath/SOGo.conf
 #Copy in revised init.d script
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/sogo /etc/init.d/
 
+#Restore /etc/resolv.conf
+if [ -f /etc/resolv.conf.$$ ]
+then
+	rm -f /etc/resolv.conf
+	mv /etc/resolv.conf.$$ /etc/resolv.conf
+fi
+
+if [ $RUNSTATUS = on ]
+then
+	#Restart samba4
+	echo "<br><li>"$HOSTNAME - restarting samba4"</li>"
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/samba_stop
+	sleep 1
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/samba_start
+
+	#Set Samba4 to start on boot
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/samba
+	else
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/samba_stop
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/samba
+fi
+
 #Start Apache2 and Sogo
 if [ $RUNSTATUS2 = on ]
 then
@@ -197,7 +208,9 @@ then
 	killall sogod
 	sleep 1
 	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/sogo_start
+	else
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/sogo_stop
 fi
-
+[ $INSTALLCHECK3 != 0 ] && exit 101
 exit
 
