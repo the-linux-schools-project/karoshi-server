@@ -27,9 +27,9 @@ source /opt/karoshi/server_network/domain_information/domain_name
 TEXTDOMAIN=karoshi-server
 
 #Provision Samba4 for openchange
-echo '<br><li>'$HOSTNAME' - '$"Provisioning Samba4 for openchange"'</li><br>'
+echo '<br><li>'$HOSTNAME' - '$"Provisioning Samba4 for openchange"'</li><br><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 openchange_provision --standalone
-
+echo '</pre>'
 #Create database for openchange
 OPENCHANGEPASS=`openssl rand -hex 16`
 
@@ -51,30 +51,9 @@ rm -f /opt/karoshi/.tempdata/mysqlperms.sql
 
 echo '<li>'$HOSTNAME' - '$"Provisioning openchange for mysql."'</li><br>'
 #Provision openchange with mysql database
+echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 openchange_provision --openchangedb --openchangedb-uri='mysql://openchange_user:'$OPENCHANGEPASS'@localhost/openchange'
-
-#Wait for samba if it has been restarted if this is a pdc or adc
-if [ `grep -w -c sysvol /etc/samba/smb.conf` -gt 0 ]
-then
-	#Check that samba 4 is ready for ldap requests
-	LDAPCHECK=0
-	COUNTER=0
-	while [ $LDAPCHECK = 0 ]
-	do
-		LDAPCHECK=`netstat -vatn | grep -c -w 389`
-		sleep 1
-		#Give up after 60 seconds
-		[ $COUNTER = 60 ] && exit 101
-		let COUNTER=$COUNTER+1
-	done
-fi
-
-echo '<br><li>'$HOSTNAME' - '$"Adding openchange support for all existing users"'</li><br>'
-for user in `getent passwd | grep /home/users | cut -d: -f1`
-do
-	openchange_newuser --create $user
-done
-
+echo '</pre>'
 #Make sure that smb.conf can only be read by root
 chmod 0600 /etc/samba/smb.conf
 
@@ -101,7 +80,7 @@ APACHEPath=/etc/apache2/conf.d
 [ -d /etc/apache2/conf-enabled ] && cp -f /opt/karoshi/serversetup/modules/email/ocsmanager/ocsmanager.conf $APACHEPath/
 
 #Restart apache
-echo '<li>'$HOSTNAME' - '$"Restarting Apache"'</li><br>'
+echo '<br><li>'$HOSTNAME' - '$"Restarting Apache"'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop
 sleep 1
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
@@ -112,5 +91,22 @@ sleep 1
 #Set ocsmanager to run on boot
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/ocsmanager
 
+#Make sure that the server can see samba 4 users. It can take a while for nslcd to see the users after a samba4 restart - assume there is at least one user.
+USERCHECK=0
+echo '<br><li>'$HOSTNAME' - '$"Checking for users"'</li><br>'
+while [ `getent passwd | grep -c /home/users` = 0 ]
+do
+	let USERCHECK=$USERCHECK+1
+	[ $USERCHECK = 20 ] && break
+	sleep 1
+done
+
+#Add in openchange parameters for each user
+echo '<br><li>'$HOSTNAME' - '$"Adding openchange support for all existing users"'</li><br><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+for user in `getent passwd | grep /home/users | cut -d: -f1`
+do
+	openchange_newuser --create $user
+done
+echo '</pre>'
 exit
 

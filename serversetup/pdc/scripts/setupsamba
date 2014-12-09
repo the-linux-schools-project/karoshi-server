@@ -273,9 +273,15 @@ yad --title $"Domain Information" --button="gtk-ok" --geometry=400x100-40+10 --i
 #Configure kerberos
 echo `date`: "Configuring Kerberos" >> /opt/karoshi/serversetup/install_log
 echo Configuring kerberos >> /opt/karoshi/serversetup/install_log
-sed -i 's/${REALM}/'$REALMCAPS'/g' /usr/local/share/samba/setup/krb5.conf
-#Copy in krb5.conf to etc
-cp -f /usr/local/share/samba/setup/krb5.conf /etc/
+
+#Create /etc/krb5.conf
+
+echo '[libdefaults]
+	default_realm = '$REALMCAPS'
+	dns_lookup_realm = false
+	dns_lookup_kdc = true
+' > /etc/krb5.conf
+
 
 #Add in dns entries
 
