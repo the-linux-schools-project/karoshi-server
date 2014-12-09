@@ -246,6 +246,8 @@ d-i passwd/user-password password karoshi
 d-i passwd/user-password-again password karoshi
 d-i user-setup/allow-password-weak boolean true
 d-i user-setup/encrypt-home boolean false
+d-i finish-install/reboot_in_progress note
+ubiquity ubiquity/summary note
 
 " > image/preseed/custom.seed
 
