@@ -5,13 +5,7 @@ REALM=internal
 
 #Add in drive mount options
 function get_pri_group_number {
-if [ $SAMBAVER = samba ]
-then
-PRIGROUPNUM=`net groupmap list sid=$PRI_GROUP | cut -d- -f8 | tr -cd '0-9'`
-let PRIGROUPNUM=$PRIGROUPNUM+10000
-else
 PRIGROUPNUM=`getent group $PRI_GROUP | cut -d: -f3`
-fi
 }
 
 ###########################
@@ -59,11 +53,9 @@ done
 echo -e '\n</pam_mount>' >> /var/lib/samba/netlogon/linuxclient/$FILENAME
 }
 
-#Detect which version of samba we are using
 SAMBAVER=samba
 OPTIONS="sec=ntlmv2"
 FILENAME=pam_mount.conf.xml
-[ -f /usr/local/sbin/samba ] && SAMBAVER=samba4
 
 #Create standard file
 create_file

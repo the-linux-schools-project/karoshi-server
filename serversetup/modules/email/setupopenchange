@@ -75,7 +75,7 @@ sed -i 's/CHANGETHISDN/'$LDAPBASE'/g' /etc/ocsmanager/ocsmanager.ini
 
 #Copy in apache2 conf
 APACHEPath=/etc/apache2/conf.d
-[ -d /etc/apache2/conf-enabled/ ] && SOGoPath=/etc/apache2/conf-enabled
+[ -d /etc/apache2/conf-enabled/ ] && APACHEPath=/etc/apache2/conf-enabled
 [ -d /etc/apache2/conf.d ] && cp -f /opt/karoshi/serversetup/modules/email/ocsmanager/ocsmanager.conf $APACHEPath/
 [ -d /etc/apache2/conf-enabled ] && cp -f /opt/karoshi/serversetup/modules/email/ocsmanager/ocsmanager.conf $APACHEPath/
 
