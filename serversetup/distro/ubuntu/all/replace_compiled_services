@@ -29,6 +29,9 @@ then
 	add-apt-repository -r "http://inverse.ca/ubuntu precise"
 fi
 
+#Remove mapistore libraries
+apt-get -y remove libmapi0 libmapi-dev libmapistore0 libmapistore-dev libmapiproxy0 libmapiproxy-dev
+
 #Add linux-schools/backports repository
 echo "<br><li>"$HOSTNAME - Adding in linux-schools/backports ppa"</li><br>"
 sleep 1
@@ -74,6 +77,10 @@ fi
 #Stop samba 4
 if [ $RUNSTATUS = on ]
 then
+	#Stop nslcd
+	echo "<br><li>"$HOSTNAME - stopping nslcd"</li>"
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nslcd_stop
+	#Stop samba
 	echo "<br><li>"$HOSTNAME - Stopping samba4"</li>"
 	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/samba_stop
 fi
@@ -106,7 +113,11 @@ then
 		[ -d /var/lib/samba ] && rm -f -R /var/lib/samba
 		mv /var/lib/samba.$$ /var/lib/samba
 	fi
-	[ $RUNSTATUS = on ] && /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/samba_start
+	if [ $RUNSTATUS = on ]
+	then
+		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nslcd_start
+		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/samba_start
+	fi
 	exit
 fi
 
@@ -120,6 +131,10 @@ fi
 
 echo "<br><li>"$HOSTNAME - Removing compiled samba4"</li>" 
 
+#Remove sogo user
+userdel sogo
+sed -i '/^sogo/ d' /etc/group
+
 #Tidy up /usr/local
 rm -f -R /usr/local/lib/*
 rm -f /usr/local/bin/*
@@ -130,7 +145,8 @@ rm -f -R /usr/local/share/samba
 echo "<br><li>"$HOSTNAME - Installing Samba 4 from linux-schools backports"</li><br>" 
 
 #Install samba4
-apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y install samba
+apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y install samba libparse-pidl-perl libwbclient0
+apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y install libparse-pidl-perl libwbclient0
 #Delete old init.d script for samba
 [ -e /etc/init.d/samba ] && rm -f /etc/init.d/samba
 
@@ -191,7 +207,9 @@ then
 	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/samba_stop
 	sleep 1
 	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/samba_start
-
+	#Start nslcd
+	echo "<br><li>"$HOSTNAME - starting nslcd"</li>"
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nslcd_start
 	#Set Samba4 to start on boot
 	/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/samba
 	else

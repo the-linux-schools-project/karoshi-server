@@ -214,7 +214,7 @@ menu color title 1;37;44 #c0ffffff #00000000 std
 label install
   menu label Install The Linux Schools Project Server
   kernel /casper/vmlinuz
-  append  file=/cdrom/preseed/custom.seed boot=casper automatic-ubiquity initrd=/casper/initrd.gz quiet splash --
+  append  file=/cdrom/preseed/custom.seed boot=casper automatic-ubiquity initrd=/casper/initrd.gz --
 
 LABEL Live-CD
   menu label Live CD
