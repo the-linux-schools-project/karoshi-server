@@ -34,6 +34,9 @@ NAME=ocsmanager
 DAEMON=/usr/bin/paster
 DESC="OCSManager application"
 
+#Make sure that cache folder exists
+[ ! -d /var/cache/ntlmauthhandler ] && mkdir /var/cache/ntlmauthhandler
+
 # OCSManager must be run as root, for now
 USER=root
 
