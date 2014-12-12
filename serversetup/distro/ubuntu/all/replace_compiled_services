@@ -131,8 +131,16 @@ fi
 
 echo "<br><li>"$HOSTNAME - Removing compiled samba4"</li>" 
 
+apt-get -y remove gnustep-common
+apt-get -y remove libmapi-dev
+apt-get -y remove libmapi0
+apt-get -y remove libmapiproxy-dev
+apt-get -y remove libmapiproxy0
+apt-get -y remove libmapistore-dev
+apt-get -y remove libmapistore0
+
 #Remove sogo user
-userdel sogo
+sed -i '/^sogo/ d' /etc/passwd
 sed -i '/^sogo/ d' /etc/group
 
 #Tidy up /usr/local
@@ -145,8 +153,8 @@ rm -f -R /usr/local/share/samba
 echo "<br><li>"$HOSTNAME - Installing Samba 4 from linux-schools backports"</li><br>" 
 
 #Install samba4
-apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y install samba libparse-pidl-perl libwbclient0
-apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y install libparse-pidl-perl libwbclient0
+apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y install samba
+apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y install libparse-pidl-perl
 #Delete old init.d script for samba
 [ -e /etc/init.d/samba ] && rm -f /etc/init.d/samba
 
@@ -185,10 +193,14 @@ ALIAS=`grep x-webobjects-server-url $SOGoPath/SOGo.conf | cut -d: -f2 | cut -d. 
 [ -d /etc/apache2/conf.d ] && cp -f /opt/karoshi/serversetup/modules/email/sogo/apache/SOGo.conf $SOGoPath
 [ -d /etc/apache2/conf-enabled ] && cp -f /opt/karoshi/serversetup/modules/email/sogo/apache/SOGo.conf-2.4 $SOGoPath/SOGo.conf
 
-#Modify /etc/apache2/conf.d/SOGo.conf
-sed -i 's/CHANGETHISWEBDOMAIN/'$ALIAS.$REALM'/g' $SOGoPath/SOGo.conf
-sed -i 's/CHANGETHISKRBPATH/'$HOSTNAME.$REALM'/g' $SOGoPath/SOGo.conf
-sed -i 's/CHANGETHISSERVERNAME/'$HOSTNAME'/g' $SOGoPath/SOGo.conf
+
+if [ -f $SOGoPath/SOGo.conf ]
+then
+	#Modify /etc/apache2/conf.d/SOGo.conf
+	sed -i 's/CHANGETHISWEBDOMAIN/'$ALIAS.$REALM'/g' $SOGoPath/SOGo.conf
+	sed -i 's/CHANGETHISKRBPATH/'$HOSTNAME.$REALM'/g' $SOGoPath/SOGo.conf
+	sed -i 's/CHANGETHISSERVERNAME/'$HOSTNAME'/g' $SOGoPath/SOGo.conf
+fi
 
 #Copy in revised init.d script
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/sogo /etc/init.d/

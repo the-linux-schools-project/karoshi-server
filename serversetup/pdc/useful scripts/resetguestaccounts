@@ -37,26 +37,26 @@ let RANGE=$RANGE-1
 COUNTER=1
 while [ $COUNTER -le 6 ]
 do
-ARRAYCHOICE=$RANDOM
-let "ARRAYCHOICE %= $RANGE"
-RANDPASSWORD[$COUNTER]=`echo ${PASSCHOICE[$ARRAYCHOICE]} `
-let COUNTER=COUNTER+1
+	ARRAYCHOICE=$RANDOM
+	let "ARRAYCHOICE %= $RANGE"
+	RANDPASSWORD[$COUNTER]=`echo ${PASSCHOICE[$ARRAYCHOICE]} `
+	let COUNTER=COUNTER+1
 done
 PASSWORD=`echo ${RANDPASSWORD[@]:0} | sed 's/ //g'`
 }
 
 for GUESTUSERS in `getent passwd | grep /home/users/guests/guest | cut -d: -f1`
 do
-GUESTUSER=`basename $GUESTUSERS`
-#Get random password
-random_password
-#Change password
-echo -e $PASSWORD"\n"$PASSWORD|smbpasswd -s $GUESTUSER
-#Notify administrators and techs of password
-echo $GUESTUSER ':' $PASSWORD >> /opt/karoshi/logs/guest_passwords
-#Empty guest user account
-rm -f -R /home/users/guests/$GUESTUSER/*
+	GUESTUSER=`basename $GUESTUSERS`
+	#Get random password
+	random_password
+	#Change password
+	samba-tool user setpassword $GUESTUSER --newpassword=$PASSWORD 1>/dev/null
 
+	#Notify administrators and techs of password
+	echo $GUESTUSER ':' $PASSWORD >> /opt/karoshi/logs/guest_passwords
+	#Empty guest user account
+	rm -f -R /home/users/guests/$GUESTUSER/*
 done
 
 #Add date to log

@@ -26,6 +26,20 @@ source /opt/karoshi/server_network/domain_information/domain_name
 
 TEXTDOMAIN=karoshi-server
 
+function usercheck {
+#Make sure that the server can see samba 4 users. It can take a while for nslcd to see the users after a samba4 restart - assume there is at least one user.
+USERCHECK=0
+echo '<br><li>'$HOSTNAME' - '$"Checking for users"'</li><br>'
+while [ `getent passwd | grep -c /home/users` = 0 ]
+do
+	let USERCHECK=$USERCHECK+1
+	[ $USERCHECK = 20 ] && break
+	sleep 1
+done
+}
+
+usercheck
+
 #Provision Samba4 for openchange
 echo '<br><li>'$HOSTNAME' - '$"Provisioning Samba4 for openchange"'</li><br><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 openchange_provision --standalone
@@ -76,8 +90,8 @@ sed -i 's/CHANGETHISDN/'$LDAPBASE'/g' /etc/ocsmanager/ocsmanager.ini
 #Copy in apache2 conf
 APACHEPath=/etc/apache2/conf.d
 [ -d /etc/apache2/conf-enabled/ ] && APACHEPath=/etc/apache2/conf-enabled
-[ -d /etc/apache2/conf.d ] && cp -f /opt/karoshi/serversetup/modules/email/ocsmanager/ocsmanager.conf $APACHEPath/
-[ -d /etc/apache2/conf-enabled ] && cp -f /opt/karoshi/serversetup/modules/email/ocsmanager/ocsmanager.conf $APACHEPath/
+
+[ -f $APACHEPath/ocsmanager.conf ] && cp -f /opt/karoshi/serversetup/modules/email/ocsmanager/ocsmanager.conf $APACHEPath/
 
 #Restart apache
 echo '<br><li>'$HOSTNAME' - '$"Restarting Apache"'</li><br>'
@@ -86,20 +100,13 @@ sleep 1
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
 
 #Start ocsmanager
+echo '<br><li>'$HOSTNAME' - '$"Starting OCSManager"'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ocsmanager_start
 
 #Set ocsmanager to run on boot
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/ocsmanager
 
-#Make sure that the server can see samba 4 users. It can take a while for nslcd to see the users after a samba4 restart - assume there is at least one user.
-USERCHECK=0
-echo '<br><li>'$HOSTNAME' - '$"Checking for users"'</li><br>'
-while [ `getent passwd | grep -c /home/users` = 0 ]
-do
-	let USERCHECK=$USERCHECK+1
-	[ $USERCHECK = 20 ] && break
-	sleep 1
-done
+usercheck
 
 #Add in openchange parameters for each user
 echo '<br><li>'$HOSTNAME' - '$"Adding openchange support for all existing users"'</li><br><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'

@@ -36,23 +36,23 @@ let RANGE=$RANGE-1
 COUNTER=1
 while [ $COUNTER -le 6 ]
 do
-ARRAYCHOICE=$RANDOM
-let "ARRAYCHOICE %= $RANGE"
-RANDPASSWORD[$COUNTER]=`echo ${PASSCHOICE[$ARRAYCHOICE]} `
-let COUNTER=COUNTER+1
+	ARRAYCHOICE=$RANDOM
+	let "ARRAYCHOICE %= $RANGE"
+	RANDPASSWORD[$COUNTER]=`echo ${PASSCHOICE[$ARRAYCHOICE]} `
+	let COUNTER=COUNTER+1
 done
 PASSWORD=`echo ${RANDPASSWORD[@]:0} | sed 's/ //g'`
 }
 
 for TECHUSERS in `getent passwd | grep /home/users/techstaff/tech | cut -d: -f1`
 do
-TECHUSER=`basename $TECHUSERS`
-#Get random password
-random_password
-#Change password
-echo -e $PASSWORD"\n"$PASSWORD|smbpasswd -s $TECHUSER
-#Notify administrators and techs of password
-echo $TECHUSER ':' $PASSWORD >> /opt/karoshi/logs/tech_passwords
+	TECHUSER=`basename $TECHUSERS`
+	#Get random password
+	random_password
+	#Change password
+	samba-tool user setpassword $TECHUSER --newpassword=$PASSWORD 1>/dev/null
+	#Notify administrators and techs of password
+	echo $TECHUSER ':' $PASSWORD >> /opt/karoshi/logs/tech_passwords
 done
 
 #Add date to log
