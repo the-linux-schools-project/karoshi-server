@@ -1,4 +1,33 @@
 #!/bin/bash
+
+#Copyright (C) 2014  Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+#Detect mobile browser
+
+TEXTDOMAIN=karoshi-server
+
 [ ! -d /opt/karoshi/server_network/mon ] && mkdir -p /opt/karoshi/server_network/mon
 LAST_CHECKMSG="Last check"
 NEXT_CHECKMSG="Next check"
@@ -366,23 +395,23 @@ EVENTS=`grep -R "$TODAY" /opt/karoshi/server_network/mon/events/* | cut -d: -f2-
 if [ ! -z "$EVENTS" ]
 then
 echo '<br>
-<div class="row">
- <a href="#hide1" class="hide" id="hide1">Show Network Events Today</a>
- <a href="#show1" class="show" id="show1">Hide Network Events Today</a>
- <br><div class="list">
+<div class="row"><b>'$"Network Events"'</b>
+ <a href="#hide1" class="hide" id="hide1"><input class="button" type="button" name="" value="'$"Show"'"></a>
+ <a href="#show1" class="show" id="show1"><input class="button" type="button" name="" value="'$"Hide"'"></a>
+ <br><div class="list"><br>
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 110px;"><b>Host Group</b></td><td style="width: 100px;"><b>Monitor</b></td><td style="width: 100px;"><b>Time</b></td><td><b>IP Addresses</b></td></tr>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 
 echo '<br>
-<div class="row">
- <a href="#hide1" class="hide" id="hide1">Show Network Events Today</a>
- <a href="#show1" class="show" id="show1">Hide Network Events Today</a>
- <br><div class="list">
+<div class="row"><b>'$"Network Events"'</b>
+ <a href="#hide1" class="hide" id="hide1"><input class="button" type="button" name="" value="'$"Show"'"></a>
+ <a href="#show1" class="show" id="show1"><input class="button" type="button" name="" value="'$"Hide"'"></a>
+ <br><div class="list"><br>
 <table class="mobilestandard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>' >> /opt/karoshi/server_network/mon/mon_mobile_data_html_temp
 
 for eventdata in $EVENTS
 do
-COLOUR=#00FF3D
+COLOUR=#059428
 MOBILECOLOUR=#007E1E
 if [ `echo $eventdata | grep -c ^failure_` -gt 0 ]
 then
