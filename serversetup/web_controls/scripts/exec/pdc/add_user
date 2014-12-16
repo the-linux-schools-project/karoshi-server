@@ -391,7 +391,7 @@ then
 		chmod -R 0600 '$HOMEPATH''/''$NEWUSERNAME'
 		setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
 		#Add in openchange data
-		openchange_newuser --create '$NEWUSERNAME'
+		#openchange_newuser --create '$NEWUSERNAME'
 
 		'
 		SSHSTATUS=`echo $?`
@@ -409,7 +409,7 @@ then
 		chmod 0600 -R /home/users/email/$NEWUSERNAME
 		chmod u+X -R /home/users/email/$NEWUSERNAME
 		#Add in openchange data
-		openchange_newuser --create $NEWUSERNAME
+		#openchange_newuser --create $NEWUSERNAME
 	fi
 fi
 

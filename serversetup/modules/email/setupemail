@@ -419,7 +419,7 @@ a2enmod rewrite 1>/dev/null
 /opt/karoshi/serversetup/modules/email/setupzpush $ALIAS
 
 #Setup openchange
-/opt/karoshi/serversetup/modules/email/setupopenchange
+#/opt/karoshi/serversetup/modules/email/setupopenchange
 
 #Restart apache
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null 2>/dev/null

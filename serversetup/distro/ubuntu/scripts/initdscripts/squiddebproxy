@@ -43,7 +43,7 @@ fi
 . /lib/lsb/init-functions
 
 # get the common stuff
-. /usr/share/squid-deb-proxy/init-common.sh
+[ -f /usr/share/squid-deb-proxy/init-common.sh ] && . /usr/share/squid-deb-proxy/init-common.sh
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin
 
