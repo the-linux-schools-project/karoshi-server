@@ -64,7 +64,16 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	</script>'
 fi
 
-echo '</head><body onLoad="start()"><div id="pagecontainer">'
+echo '
+<style type="text/css">
+ .row { vertical-align: top; height:auto !important; }
+ .list {display:none; }
+ .show {display: none; }
+ .hide:target + .show {display: inline; }
+ .hide:target {display: none; }
+ .hide:target ~ .list {display:inline; }
+ @media print { .hide, .show { display: none; } }
+ </style></head><body onLoad="start()"><div id="pagecontainer">'
 
 
 #Generate navigation bar

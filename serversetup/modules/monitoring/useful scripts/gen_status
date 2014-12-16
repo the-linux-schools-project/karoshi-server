@@ -365,12 +365,20 @@ TODAY=`date "+%a %b %e" | sed 's/  / /g'`
 EVENTS=`grep -R "$TODAY" /opt/karoshi/server_network/mon/events/* | cut -d: -f2- | sed 's/ /_/g'`
 if [ ! -z "$EVENTS" ]
 then
-echo '<br><b>Network Events Today</b><br><br>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<br>
+<div class="row">
+ <a href="#hide1" class="hide" id="hide1">Show Network Events Today</a>
+ <a href="#show1" class="show" id="show1">Hide Network Events Today</a>
+ <br><div class="list">
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 110px;"><b>Host Group</b></td><td style="width: 100px;"><b>Monitor</b></td><td style="width: 100px;"><b>Time</b></td><td><b>IP Addresses</b></td></tr>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 
-echo '<br><b>Network Events Today</b><br><br>' >> /opt/karoshi/server_network/mon/mon_mobile_data_html_temp
-echo '<table class="mobilestandard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>' >> /opt/karoshi/server_network/mon/mon_mobile_data_html_temp
+echo '<br>
+<div class="row">
+ <a href="#hide1" class="hide" id="hide1">Show Network Events Today</a>
+ <a href="#show1" class="show" id="show1">Hide Network Events Today</a>
+ <br><div class="list">
+<table class="mobilestandard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>' >> /opt/karoshi/server_network/mon/mon_mobile_data_html_temp
 
 for eventdata in $EVENTS
 do
@@ -391,8 +399,8 @@ echo '<tr><td><font color="'$COLOUR'">'$HOSTGROUP'</font></td><td><font color="'
 echo '<tr><td style="width: 110px;"><font color="'$MOBILECOLOUR'">'$HOSTGROUP'</font></td><td><font color="'$MOBILECOLOUR'">'$EVENTTIME'</font></td></tr><tr><td style="width: 110px;"><font color="'$MOBILECOLOUR'">'$MONITOR'</font></td><td><font color="'$MOBILECOLOUR'">'$ADDRESSESS'</font></td></tr>' >> /opt/karoshi/server_network/mon/mon_mobile_data_html_temp
 
 done
-echo '</tbody></table>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
-echo '</tbody></table>' >> /opt/karoshi/server_network/mon/mon_mobile_data_html_temp
+echo '</tbody></table></div></div>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
+echo '</tbody></table></div></div>' >> /opt/karoshi/server_network/mon/mon_mobile_data_html_temp
 fi
 
 cp -f /opt/karoshi/server_network/mon/mon_data_html_temp /opt/karoshi/server_network/mon/mon_data_html
