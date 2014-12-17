@@ -54,12 +54,14 @@ define('CALDAV_PORT', '80');
 // Path
 define('CALDAV_PATH', '/sogoactivesync/dav/%u/Calendar/');
 
-// Personal CalDAV folder (calendar folder/principal)
+// Default CalDAV folder (calendar folder/principal). This will be marked as the default calendar in the mobile
 define('CALDAV_PERSONAL', 'personal');
 
 // If the CalDAV server supports the sync-collection operation
-// DAViCal and sogoactivesync support it
+// DAViCal, SOGo and SabreDav support it
+// SabreDav version must be at least 1.9.0, otherwise set this to false
 // Setting this to false will work with most servers, but it will be slower
 define('CALDAV_SUPPORTS_SYNC', true);
+
 
 ?>

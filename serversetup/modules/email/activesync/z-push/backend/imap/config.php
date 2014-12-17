@@ -99,8 +99,21 @@ define('IMAP_FROM_LDAP_FROM', '#givenname #sn <#mail>');
 define('IMAP_FROM_LDAP_FULLNAME', '#givenname #sn');
 
 
+// Root folder or prefix in your IMAP server (without the separator). For example, with courier it will be INBOX, and your folder will be INBOX.Sent
+//  You can use the real case
+define('IMAP_FOLDER_ROOT', 'INBOX');
+
 // copy outgoing mail to this folder. If not set z-push will try the default folders
-define('IMAP_SENTFOLDER', '');
+//  You can use the real case and the full path (INBOX.Sent)
+define('IMAP_FOLDER_SENT', '');
+
+// Draft folder
+//  You can use the real case and the full path (INBOX.Draft)
+define('IMAP_FOLDER_DRAFT', '');
+
+// Trash folder
+//  You can use the real case and the full path (INBOX.Trash)
+define('IMAP_FOLDER_TRASH', '');
 
 // forward messages inline (default true - inlined)
 define('IMAP_INLINE_FORWARD', true);
@@ -141,7 +154,7 @@ $imap_smtp_params = array();
 
 
 // If you are using IMAP_SMTP_METHOD = mail or sendmail and your sent messages are not correctly displayed you can change this to "\n".
-//   BUT, it doesn't with RFC 2822 and will break if using smp method
+//   BUT, it doesn't comply with RFC 2822 and will break if using smtp method
 define('MAIL_MIMEPART_CRLF', "\r\n");
 
 ?>

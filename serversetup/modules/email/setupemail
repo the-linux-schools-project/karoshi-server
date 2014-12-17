@@ -193,12 +193,6 @@ then
 	echo -e "auth_username_format = %Ln\n\n" >> /etc/dovecot/dovecot.conf
 fi
 
-if [ `grep -c "driver = static" /etc/dovecot/dovecot.conf` = 0 ]
-then
-	echo >> /etc/dovecot/dovecot.conf
-	echo -e "passdb {\n\tdriver = static\n\targs = nopassword=y allow_nets=127.0.0.1/8\n}\n" >> /etc/dovecot/dovecot.conf
-fi
-
 if [ `grep -c ^"#kerberos auth and sasl" /etc/dovecot/dovecot.conf` = 0 ]
 then
 echo '#kerberos auth and sasl

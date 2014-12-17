@@ -282,6 +282,10 @@ class ZPush {
         else if ((!is_int(SYNC_CONTACTS_MAXPICTURESIZE) || SYNC_CONTACTS_MAXPICTURESIZE < 1))
             throw new FatalMisconfigurationException("The SYNC_CONTACTS_MAXPICTURESIZE value must be a number higher than 0.");
 
+        if (!defined('USE_PARTIAL_FOLDERSYNC')) {
+            define('USE_PARTIAL_FOLDERSYNC', false);
+        }
+
         // the check on additional folders will not throw hard errors, as this is probably changed on live systems
         if (isset($additionalFolders) && !is_array($additionalFolders))
             ZLog::Write(LOGLEVEL_ERROR, "ZPush::CheckConfig() : The additional folders synchronization not available as array.");
@@ -682,7 +686,9 @@ END;
      * @return string
      */
     static public function GetSupportedProtocolVersions($valueOnly = false) {
-        $versions = implode(',', array_slice(self::$supportedASVersions, 0, (array_search(self::GetSupportedASVersion(), self::$supportedASVersions)+1)));
+        //$versions = implode(',', array_slice(self::$supportedASVersions, 0, (array_search(self::GetSupportedASVersion(), self::$supportedASVersions)+1)));
+        // Removing support for AS 1.0, 2.0, 2.1 - That will make Outlook 2013 works
+        $versions = implode(',', array_slice(self::$supportedASVersions, 3, (array_search(self::GetSupportedASVersion(), self::$supportedASVersions)+1)));
         ZLog::Write(LOGLEVEL_DEBUG, "ZPush::GetSupportedProtocolVersions(): " . $versions);
 
         if ($valueOnly === true)

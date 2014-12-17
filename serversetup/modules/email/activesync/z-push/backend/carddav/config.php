@@ -78,7 +78,7 @@ define('CARDDAV_DEFAULT_PATH', '/sogoactivesync/dav/%u/Contacts/personal/');
 // %u: replaced with the username
 // %d: replaced with the domain
 //  Add the trailing /
-//define('CARDDAV_GAL_PATH', '/sogoactivesync/dav/%u/Contacts/GAL/');
+//define('CARDDAV_GAL_PATH', '/caldav.php/%d/GAL/');
 
 // Minimal length for the search pattern to do the real search.
 define('CARDDAV_GAL_MIN_LENGTH', 5);
@@ -90,13 +90,14 @@ define('CARDDAV_CONTACTS_FOLDER_NAME', '%u Addressbook');
 
 
 // If the CardDAV server supports the sync-collection operation
-// DAViCal supports it, but SabreDav, Owncloud, sogoactivesync don't
+// DAViCal and SabreDav support it, but Owncloud, SOGo don't
+// SabreDav version must be at least 1.9.0, otherwise set this to false
 // Setting this to false will work with most servers, but it will be slower: 1 petition for the href of vcards, and 1 petition for each vcard
 define('CARDDAV_SUPPORTS_SYNC', false);
 
 
 // If the CardDAV server supports the FN attribute for searches
-// DAViCal supports it, but SabreDav, Owncloud and sogoactivesync don't
+// DAViCal supports it, but SabreDav, Owncloud and SOGo don't
 // Setting this to true will search by FN. If false will search by sn, givenName and email
 // It's safe to leave it as false
 define('CARDDAV_SUPPORTS_FN_SEARCH', false);
@@ -104,5 +105,5 @@ define('CARDDAV_SUPPORTS_FN_SEARCH', false);
 
 // If your carddav server needs to use file extension to recover a vcard.
 //    Davical needs it
-//    SOGo official demo online needs it, but some sogoactivesync installation don't need it, so test it
+//    SOGo official demo online needs it, but some SOGo installation don't need it, so test it
 define('CARDDAV_URL_VCARD_EXTENSION', '.vcf');

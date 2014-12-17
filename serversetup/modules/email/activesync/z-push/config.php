@@ -60,6 +60,15 @@
     // This setting specifies the owner parameter in the certificate to look at.
     define("CERTIFICATE_OWNER_PARAMETER", "SSL_CLIENT_S_DN_CN");
 
+    /*
+     * Whether to use the complete email address as a login name
+     * (e.g. user@company.com) or the username only (user).
+     * This is required for Z-Push to work properly after autodiscover.
+     * Possible values:
+     * false - use the username only (default).
+     * true - use the complete email address.
+     */
+    define('USE_FULLEMAIL_FOR_LOGIN', false);
 
 /**********************************************************************************
  * Device pre-authorization. Useful when using Z-Push as a standalone product.
@@ -133,7 +142,7 @@
     define('LOGFILEDIR', '/var/log/z-push/');
     define('LOGFILE', LOGFILEDIR . 'z-push.log');
     define('LOGERRORFILE', LOGFILEDIR . 'z-push-error.log');
-    define('LOGLEVEL', LOGLEVEL_ERROR);
+    define('LOGLEVEL', LOGLEVEL_INFO);
     define('LOGAUTHFAIL', false);
 
 
@@ -238,6 +247,13 @@
     // In multicompany environments this enable an admin user of any company to retrieve
     // this full list, so this feature is disabled by default. Enable with care.
     define('ALLOW_WEBSERVICE_USERS_ACCESS', false);
+
+    // Users with many folders can use the 'partial foldersync' feature, where the server
+    // actively stops processing the folder list if it takes too long. Other requests are
+    // then redirected to the FolderSync to synchronize the remaining items.
+    // Device compatibility for this procedure is not fully understood.
+    // NOTE: THIS IS AN EXPERIMENTAL FEATURE WHICH COULD PREVENT YOUR MOBILES FROM SYNCHRONIZING.
+    define('USE_PARTIAL_FOLDERSYNC', false);
 
 /**********************************************************************************
  *  Backend settings
