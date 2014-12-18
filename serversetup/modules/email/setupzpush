@@ -103,6 +103,8 @@ chown root.www-data /var/log/z-push
 
 #Copy in z-push folder to /usr/share/
 cp -f -R /opt/karoshi/serversetup/modules/email/activesync/z-push /usr/share/
+chmod 0644 -R /usr/share/z-push
+chmod u+X,g+X,o+X -R /usr/share/z-push
 
 #Modify z-push with the correct ldap settings
 sed -i 's/CHANGETHISSERVER/'$LDAPSERVER'/g' /usr/share/z-push/backend/ldap/config.php
@@ -126,19 +128,16 @@ sed -i 's/CHANGETHISLDAPSERVER/'$LDAPSERVER'/g' $SOGoPath/sogoactivesync.conf
 sed -i 's/CHANGETHISBASEDN/'$LDAPBASE'/g' $SOGoPath/sogoactivesync.conf
 
 #Modify sogo path
-if [ ! -d /usr/local/lib/GNUstep ]
+if [ -d /usr/local/lib/GNUstep ]
 then
+	#Symlink sogoactivesync
+	[ ! -e /usr/local/lib/GNUstep/sogoactivesync ] && ln -s /usr/local/lib/GNUstep/SOGo /usr/local/lib/GNUstep/sogoactivesync
+else
 	sed -i 's/\/usr\/local\/lib/\/usr\/lib/g' $SOGoPath/sogoactivesync.conf
 	#Symlink sogoactivesync
 	[ ! -e /usr/lib/GNUstep/sogoactivesync ] && ln -s /usr/lib/GNUstep/SOGo /usr/lib/GNUstep/sogoactivesync
-else
-	#Symlink sogoactivesync
-	[ ! -e /usr/local/lib/GNUstep/sogoactivesync ] && ln -s /usr/local/lib/GNUstep/SOGo /usr/local/lib/GNUstep/sogoactivesync
 fi
 
-
-#Symlink sogoactivesync
-[ ! -e /usr/local/lib/GNUstep/sogoactivesync ] && ln -s /usr/local/lib/GNUstep/SOGo /usr/local/lib/GNUstep/sogoactivesync
 
 #Activate extra apache modules
 [ ! -e /etc/apache2/mods-enabled/authnz_ldap.load ] && ln -s /etc/apache2/mods-available/authnz_ldap.load /etc/apache2/mods-enabled/authnz_ldap.load
