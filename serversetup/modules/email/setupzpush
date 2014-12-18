@@ -125,6 +125,18 @@ sed -i 's/CHANGETHISSERVERNAME/'$HOSTNAME'/g' $SOGoPath/sogoactivesync.conf
 sed -i 's/CHANGETHISLDAPSERVER/'$LDAPSERVER'/g' $SOGoPath/sogoactivesync.conf
 sed -i 's/CHANGETHISBASEDN/'$LDAPBASE'/g' $SOGoPath/sogoactivesync.conf
 
+#Modify sogo path
+if [ ! -d /usr/local/lib/GNUstep ]
+then
+	sed -i 's/\/usr\/local\/lib/\/usr\/lib/g' $SOGoPath/sogoactivesync.conf
+	#Symlink sogoactivesync
+	[ ! -e /usr/lib/GNUstep/sogoactivesync ] && ln -s /usr/lib/GNUstep/SOGo /usr/lib/GNUstep/sogoactivesync
+else
+	#Symlink sogoactivesync
+	[ ! -e /usr/local/lib/GNUstep/sogoactivesync ] && ln -s /usr/local/lib/GNUstep/SOGo /usr/local/lib/GNUstep/sogoactivesync
+fi
+
+
 #Symlink sogoactivesync
 [ ! -e /usr/local/lib/GNUstep/sogoactivesync ] && ln -s /usr/local/lib/GNUstep/SOGo /usr/local/lib/GNUstep/sogoactivesync
 
