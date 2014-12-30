@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2014-10-29 06:47+0000\n"
+"POT-Creation-Date: 2014-12-30 09:37+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,7 +27,7 @@ msgid "Checking Network"
 msgstr "확인 네트워크"
 
 msgid "Setup"
-msgstr "설치"
+msgstr "설정"
 
 msgid "Shorewall"
 msgstr "Shorewall"
@@ -53,9 +53,6 @@ msgstr "Monitorix 웹 관리"
 msgid "Karoshi Desktop"
 msgstr "과로사 바탕 화면"
 
-msgid "This package is not installed."
-msgstr "이 패키지는 설치되지 않습니다."
-
 msgid "Password"
 msgstr "암호"
 
@@ -63,7 +60,7 @@ msgid "Confirm"
 msgstr "확인"
 
 msgid "Please enter your fully qualifed domain name."
-msgstr "당신의 완벽 유자격 도메인 이름을 입력하십시오."
+msgstr "당신의 완전 유자격 도메인 이름을 입력하십시오."
 
 msgid "This could be the same as your web address."
 msgstr "이것은 당신의 웹 주소 와 동일 할 수 있습니다."
@@ -87,10 +84,10 @@ msgid "You have not entered a fully qualified domain name."
 msgstr "정규화 된 도메인 이름을 입력하지 않았습니다."
 
 msgid "The domain name cannot be the same as the hostname."
-msgstr "도메인 이름은호스트 이름 과 동일 할 수 없다."
+msgstr "도메인 이름은호스트 이름 과 동일하지 않을 수있다."
 
 msgid "The first part of the domain name cannot be the same as the hostname."
-msgstr "도메인 네임 의첫 번째 부분은호스트 이름 과 동일 할 수 없다."
+msgstr "도메인 네임 의첫 번째 부분은호스트 이름 과 동일하지 않을 수있다."
 
 msgid "The maximum character length between dots is 15."
 msgstr "점 사이의 최대 문자 길이 는 15입니다."
@@ -111,7 +108,7 @@ msgid "Domain Information"
 msgstr "도메인 정보"
 
 msgid "Your samba domain has now been provisioned."
-msgstr "삼바 도메인은 지금 프로비저닝 하고있다."
+msgstr "당신의 삼바 도메인은 지금 프로비저닝 하고있다."
 
 msgid "You will need this information"
 msgstr "이 정보가 필요합니다"
@@ -138,13 +135,13 @@ msgid "Copying in logon files"
 msgstr "로그온 파일의 복사"
 
 msgid "Copying in windows client profiles"
-msgstr "Windows 클라이언트 프로파일 에 복사"
+msgstr "윈도우 클라이언트 프로파일 에 복사"
 
 msgid "Extracting Windows XP Profile"
 msgstr "윈도우 XP 프로파일 을 추출"
 
 msgid "Extracting Windows 7 Profile"
-msgstr "압축이 풀리는 Windows 7 프로필"
+msgstr "압축 풀기 윈도우 7 프로필"
 
 msgid "Extracting Windows 8.1 Profile"
 msgstr "압축이 풀리는 Windows 8.1 프로필"
@@ -157,6 +154,18 @@ msgstr "표준 설정을 완료했습니다."
 
 msgid "Install extra modules and servers in the web managment modules section."
 msgstr "웹 Managment를 모듈 섹션에서 추가 모듈과 서버를 설치합니다."
+
+msgid "This package is not installed."
+msgstr "이 패키지는 설치되지 않습니다."
+
+msgid "Network Events"
+msgstr "네트워크 이벤트"
+
+msgid "Show"
+msgstr "표시"
+
+msgid "Hide"
+msgstr "숨기기"
 
 msgid "Setup Server Monitoring"
 msgstr "설치 서버 모니터링"
@@ -174,7 +183,7 @@ msgid "Starting MYSQL"
 msgstr "시작 MYSQL"
 
 msgid "Creating the kanboard database in mysql"
-msgstr "MySQL은kanboard 데이터베이스 작성"
+msgstr "MySQL의 에서 kanboard 데이터베이스 작성"
 
 msgid "Extracting Kanboard"
 msgstr "추출 Kanboard"
@@ -207,7 +216,7 @@ msgid "a volume with this name already exists"
 msgstr "이 이름을 가진 볼륨 이 이미 존재합니다"
 
 msgid "Opening ports for glusterfs"
-msgstr "glusterfs 에 대한 포트를 열기"
+msgstr "glusterfs 에 대한 포트 열기"
 
 msgid "Creating GlusterFS volume"
 msgstr "만들기 GlusterFS 볼륨"
@@ -219,7 +228,7 @@ msgid "Starting GlusterFS volume"
 msgstr "시작 GlusterFS 볼륨"
 
 msgid "There was a problem starting the volume"
-msgstr "볼륨을 시작 하는 데 문제가 발생했습니다"
+msgstr "볼륨을 시작 하는 동안 문제가 발생했습니다"
 
 msgid "Backing up"
 msgstr "백업"
@@ -228,7 +237,7 @@ msgid "mounting"
 msgstr "설치"
 
 msgid "Copying in existing data"
-msgstr "기존 데이터 의 복사"
+msgstr "기존 데이터 복사"
 
 msgid "Adding server to gluster volume"
 msgstr "gluster 볼륨에 서버 추가"
@@ -240,13 +249,13 @@ msgid "completed"
 msgstr "완료"
 
 msgid "getting brick count"
-msgstr "벽돌 의 수를 점점"
+msgstr "벽돌 수를 점점"
 
 msgid "adding"
 msgstr "첨가"
 
 msgid "Creating the joomla database in mysql"
-msgstr "MySQL은 줌라 데이터베이스 작성"
+msgstr "MySQL의 에서 줌라 데이터베이스 작성"
 
 msgid "Extracting Joomla"
 msgstr "줌라 를 추출"
@@ -270,10 +279,10 @@ msgid "password"
 msgstr "암호"
 
 msgid "Please change the admin password immediately."
-msgstr "즉시 관리자 암호를 변경하십시오."
+msgstr "즉시 관리자 암호를 변경 하시기 바랍니다."
 
 msgid "Creating the Xibo database in mysql"
-msgstr "MySQL은Xibo 데이터베이스 작성"
+msgstr "MySQL의 에서 Xibo 데이터베이스 작성"
 
 msgid "Extracting Xibo"
 msgstr "추출 Xibo"
@@ -285,7 +294,7 @@ msgid "Please login and change this password immediately."
 msgstr "로그인 및 바로 이 암호를 변경 하십시오."
 
 msgid "The main server cannot be contacted."
-msgstr "주 서버 에 연결할 수 없습니다."
+msgstr "메인 서버 에 연결할 수 없습니다."
 
 msgid "The following extra ports are being allowed"
 msgstr "다음 여분의 포트가 허용 되고있다"
@@ -314,6 +323,12 @@ msgstr "작업 ID"
 msgid "Size"
 msgstr "크기"
 
+msgid "Enabled"
+msgstr "사용"
+
+msgid "Test"
+msgstr "테스트"
+
 msgid "No PPD file set for this printer."
 msgstr "어떤 PPD 파일 이 프린터 설정 하지 않습니다."
 
@@ -324,13 +339,13 @@ msgid "Accepting jobs"
 msgstr "접수 작업"
 
 msgid "This printer has not been assigned to a location."
-msgstr "이 프린터는위치 에 할당 되지 않았습니다."
+msgstr "이 프린터는 위치 에 할당 되지 않았습니다."
 
 msgid "Printer assigned to"
-msgstr "프린터에 할당"
+msgstr "프린터 에 할당"
 
 msgid "Creating the moodle database in mysql"
-msgstr "MySQL은무 데이터베이스 작성"
+msgstr "MySQL의 에서 무 데이터베이스 작성"
 
 msgid "Apache was not running"
 msgstr "아파치는 실행 되지 않았다"
@@ -340,6 +355,30 @@ msgstr "추출 무"
 
 msgid "Moodle has been installed and can be accessed from"
 msgstr "무들은 설치하고 액세스 할 수 있습니다"
+
+msgid "Checking for users"
+msgstr "사용자 확인"
+
+msgid "Provisioning Samba4 for openchange"
+msgstr "openchange 에 대한 Samba4 프로비저닝"
+
+msgid "Creating a mysql database for openchange"
+msgstr "openchange 에 대한 MySQL 데이터베이스 만들기"
+
+msgid "Provisioning openchange for mysql."
+msgstr "MySQL을위한 openchange 프로비저닝."
+
+msgid "Restarting Samba4"
+msgstr "Samba4 를 다시 시작"
+
+msgid "Restarting Apache"
+msgstr "다시 시작 아파치"
+
+msgid "Starting OCSManager"
+msgstr "OCSManager 시작"
+
+msgid "Adding openchange support for all existing users"
+msgstr "기존의 모든 사용자에 대해 openchange 지원 추가"
 
 msgid "Updating the repositories"
 msgstr "저장소를 업데이트"
@@ -363,7 +402,7 @@ msgid "Starting Memcached"
 msgstr "시작 Memcached가"
 
 msgid "Starting SOGo"
-msgstr "소고 시작"
+msgstr "종합 시작"
 
 msgid "Starting Postfix"
 msgstr "후위 시작"
@@ -393,10 +432,10 @@ msgid "Starting Squid Deb Proxy"
 msgstr "오징어 뎁 프록시 시작"
 
 msgid "Extracting files and setting permissions."
-msgstr "파일을 추출하고 사용 권한을 설정."
+msgstr "파일을 추출 및 사용 권한을 설정."
 
 msgid "Modifying shorewall rules to allow port 50000."
-msgstr "shorewall 규칙을 수정 포트 50000 을 허용 합니다."
+msgstr "shorewall 규칙을 수정 포트 50000 을 허용합니다."
 
 msgid "Configuring apache to run a virtual server on port 50000."
 msgstr "아파치를 구성 포트 50000 에 가상 서버를 실행합니다."
@@ -420,7 +459,7 @@ msgid "Multiple network cards have been detected."
 msgstr "여러 네트워크 카드 가 감지 되고있다."
 
 msgid "Select the network card that you want to configure."
-msgstr "구성 할 네트워크 카드를 선택합니다."
+msgstr "구성하려는 네트워크 카드를 선택합니다."
 
 msgid "Choose multiple cards if you want to bond the cards together."
 msgstr "당신이 함께 카드를 결합 할 경우 여러 개의 카드 를 선택합니다."
@@ -449,8 +488,11 @@ msgstr "본드 모드"
 msgid "Card selection"
 msgstr "카드 선택"
 
+msgid "You have not entered in a server name."
+msgstr "당신은 서버 이름을 입력하지 않았습니다."
+
 msgid "Incorrect network setting have been entered."
-msgstr "잘못된 네트워크 설정이 입력 되었습니다."
+msgstr "잘못된 네트워크 설정 이 입력 되었습니다."
 
 msgid "Extra Server Setup"
 msgstr "추가 서버 설치"
@@ -459,10 +501,10 @@ msgid "SSH"
 msgstr "SSH"
 
 msgid "The standard setup is now complete."
-msgstr "표준 설치 가 완료되었습니다."
+msgstr "표준 설정 이 완료되었습니다."
 
 msgid "Please join this server to the system using the web management on your main server."
-msgstr "메인 서버의 웹 관리 를 사용하여 시스템 이 서버 에 참여 하시기 바랍니다."
+msgstr "메인 서버의 웹 관리 를 사용하여 시스템 이 서버 에 가입 하시기 바랍니다."
 
 msgid "Setup Karoshi Desktop"
 msgstr "설치 과로사 바탕 화면"
@@ -495,7 +537,7 @@ msgid "Linux Schools Server Setup"
 msgstr "리눅스 학교 서버 설치"
 
 msgid "The Linux Schools Server Project comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions."
-msgstr "리눅스 학교 서버 프로젝트 는 아무런 보증을하지 않습니다. 이 무료 소프트웨어입니다, 당신은 특정 조건 하에서 재배포 하실 수 있습니다."
+msgstr "리눅스 학교 서버 프로젝트 는 아무런 보증을하지 않습니다. 이것은 자유 소프트웨어입니다, 당신은 특정 조건 하에서 재배포 하실 수 있습니다."
 
 msgid "Confirm Licence"
 msgstr "라이센스 확인"
@@ -516,7 +558,16 @@ msgid "Setup an extra server"
 msgstr "별도의 서버 설치"
 
 msgid "Choose the type of server you want to install."
-msgstr "설치하려는 서버의 유형을 선택."
+msgstr "설치하려는 서버의 유형을 선택합니다."
+
+msgid "Education"
+msgstr "교육"
+
+msgid "Business"
+msgstr "사업"
+
+msgid "Is this server for education or business use?"
+msgstr "교육 또는 비즈니스 사용을 위해이 서버 인가?"
 
 msgid "Service Status"
 msgstr "서비스 상태"
@@ -525,19 +576,16 @@ msgid "You must access this page via https."
 msgstr "당신은 HTTPS 를 통해 이 페이지에 액세스 해야합니다."
 
 msgid "You must be a Karoshi Management User to complete this action."
-msgstr "당신은 이 작업을 완료 할 수있는 과로사 관리 사용자 여야합니다."
+msgstr "이 작업 을 완료하는 데 과로사 관리 사용자 여야합니다."
 
 msgid "The server name cannot be blank."
 msgstr "서버 이름은 비워 둘 수 없습니다."
 
 msgid "The server type cannot be blank."
-msgstr "서버 유형 은 비워 둘 수 없습니다."
+msgstr "서버 유형은 비워 둘 수 없습니다."
 
 msgid "Default User Settings"
 msgstr "기본 사용자 설정"
-
-msgid "Add a New User"
-msgstr "새 사용자 추가"
 
 msgid "Submit"
 msgstr "제출"
@@ -558,13 +606,13 @@ msgid "Back"
 msgstr "백"
 
 msgid "Web Management Password"
-msgstr "웹 관리 암호"
+msgstr "웹 관리 의 비밀"
 
 msgid "This will change your password for logging into the web management."
 msgstr "이웹 관리 에 로그인 암호를 변경 합니다."
 
 msgid "Enter in the new password that you want and confirm it on the line below."
-msgstr "원하는 새 암호를 입력하고 아래 라인 에 그것을 확인합니다."
+msgstr "당신이 원하는 새 암호를 입력하고 아래 라인 에 그것을 확인합니다."
 
 msgid "Delete User"
 msgstr "사용자 삭제"
@@ -576,7 +624,7 @@ msgid "This server is part of a federated system. Users must be deleted on the m
 msgstr "이 서버는 페더 레이 티드 시스템 의 일부입니다. 사용자는 기본 페더레이션 서버 에서 삭제 해야합니다."
 
 msgid "Delete Code"
-msgstr "코드를 삭제"
+msgstr "코드 삭제"
 
 msgid "View User Image"
 msgstr "보기 사용자 이미지"
@@ -591,13 +639,13 @@ msgid "Archive home area"
 msgstr "아카이브 홈 지역"
 
 msgid "This will archive the user home area to the archive folder in /home/users."
-msgstr "이 / 홈 / 사용자 의 보관 폴더 에 사용자 의 홈 지역 을 보관 합니다."
+msgstr "이 / 가정 / 사용자 의 보관 폴더 에 사용자 의 홈 지역 을 보관 합니다."
 
 msgid "Create Software Raid"
 msgstr "소프트웨어 RAID 만들기"
 
 msgid "Choose the server you want to view the raid information for."
-msgstr "당신 의 RAID 정보를 표시 할 서버를 선택합니다."
+msgstr "당신 의 RAID 정보를 볼 할 서버를 선택합니다."
 
 msgid "Control Software Raid"
 msgstr "제어 소프트웨어 RAID"
@@ -633,16 +681,16 @@ msgid "The passwords were not reset for all the exam accounts."
 msgstr "암호는 모든 시험 계정에 대한 재설정 되지 않았다."
 
 msgid "View SSL Allowed Sites"
-msgstr "보기 SSL 은 사이트 허용"
+msgstr "보기 SSL 이 사이트 를 허용"
 
 msgid "You must choose a letter."
 msgstr "당신은 편지 를 선택해야합니다."
 
 msgid "No sites available."
-msgstr "사이트 없음 사용할 수 있습니다."
+msgstr "사이트 없음 가능합니다."
 
 msgid "Change Global Theme"
-msgstr "글로벌 테마를 변경"
+msgstr "글로벌 테마 변경"
 
 msgid "The theme choice must not be blank."
 msgstr "테마 선택은 반드시 입력해야합니다."
@@ -651,10 +699,10 @@ msgid "This theme choice does not exist."
 msgstr "이 테마 의 선택은 존재하지 않습니다."
 
 msgid "There was a problem changing the theme."
-msgstr "테마를 변경 하는 데 문제가 발생했습니다."
+msgstr "테마를 변경 하는 과정에서 문제가 발생했습니다."
 
 msgid "Please check the karoshi web administration logs for more details."
-msgstr "자세한 내용은 과로사 웹 관리 로그를 확인하십시오."
+msgstr "자세한 내용은 과로사 의 웹 관리 로그를 확인하십시오."
 
 msgid "Users and Groups"
 msgstr "사용자 및 그룹"
@@ -720,7 +768,7 @@ msgid "The day must not be blank."
 msgstr "날은 반드시 입력해야합니다."
 
 msgid "The month must not be blank."
-msgstr "달 은 비워 둘 수 없습니다."
+msgstr "달 은 반드시 입력해야합니다."
 
 msgid "The day of week must not be blank."
 msgstr "요일 은 반드시 입력해야합니다."
@@ -750,13 +798,13 @@ msgid "Level"
 msgstr "수평"
 
 msgid "Set up Ruby CAS Authentication"
-msgstr "루비 CAS 인증을 설정"
+msgstr "루비 CAS 인증 을 설정"
 
 msgid "There was a problem with this action."
 msgstr "이 작업 에 문제가 발생했습니다."
 
 msgid "Reset a User Password"
-msgstr "사용자 암호를 재설정"
+msgstr "사용자 암호 재설정"
 
 msgid "The username must not be blank."
 msgstr "사용자 이름은 비워 둘 수 없습니다."
@@ -765,10 +813,10 @@ msgid "You can not change the password for this user."
 msgstr "이 사용자의 암호를 변경할 수 없습니다."
 
 msgid "This username does not exist."
-msgstr "이 사용자 이름은 존재하지 않습니다."
+msgstr "이 이름 은 존재하지 않습니다."
 
 msgid "This user has not signed an acceptable use policy and their account has now been suspended."
-msgstr "이 사용자는 허용 가능한 사용 정책 을 체결 하지 않았으며 자신의 계정 이 현재 일시 중지되었습니다."
+msgstr "이 사용자는 허용 가능한 사용 정책 을 체결 하지 않았으며 자신의 계정이 현재 일시 중지되었습니다."
 
 msgid "Password reset to"
 msgstr "에 암호 재설정"
@@ -777,7 +825,7 @@ msgid "The password was not reset for"
 msgstr "암호 에 대한 재설정 되지 않았습니다"
 
 msgid "This user account has been suspended."
-msgstr "이 사용자 계정 이 일시 중지되었습니다."
+msgstr "이 사용자 계정이 일시 중지되었습니다."
 
 msgid "Create Order"
 msgstr "오더 생성"
@@ -798,7 +846,7 @@ msgid "Department"
 msgstr "부"
 
 msgid "Supplier"
-msgstr "공급"
+msgstr "공급 업체"
 
 msgid "Budget Holder"
 msgstr "예산 홀더"
@@ -813,7 +861,7 @@ msgid "Qty"
 msgstr "수량"
 
 msgid "Unit Price"
-msgstr "단가"
+msgstr "단위 가격"
 
 msgid "Total"
 msgstr "합계"
@@ -843,7 +891,7 @@ msgid "Please choose the printer you want to delete."
 msgstr "삭제하려는 프린터를 선택하십시오."
 
 msgid "Add a slave UPS"
-msgstr "슬레이브 UPS 추가"
+msgstr "노예 UPS 추가"
 
 msgid "The UPS driver cannot be blank."
 msgstr "UPS 드라이버는 비워 둘 수 없습니다."
@@ -855,31 +903,31 @@ msgid "The UPS could not be contacted on that port."
 msgstr "UPS 는 해당 포트 에 연결할 수 없습니다."
 
 msgid "E-Mail - SMS Alerts"
-msgstr "E 메일 - SMS 알림"
+msgstr "전자 메일 - SMS 알림"
 
 msgid "You have not entered in a name for this alert."
 msgstr "이 경고 의 이름 에 입력 하지 않았습니다."
 
 msgid "An E-Mail alert has been sent."
-msgstr "전자 메일 경고 를 전송했습니다."
+msgstr "이메일 경고 를 전송했습니다."
 
 msgid "Network Share Logs"
 msgstr "네트워크 공유 로그"
 
 msgid "The share name must not be blank."
-msgstr "공유 이름은 반드시 입력해야합니다."
+msgstr "공유 이름은 비워 둘 수 없습니다."
 
 msgid "The date cannot be blank."
 msgstr "날짜는 비워 둘 수 없습니다."
 
 msgid "The daycount cannot be more than 99."
-msgstr "daycount 이상 99 수 없습니다."
+msgstr "daycount 는 99 개 이상의 수 없습니다."
 
 msgid "Date input error."
 msgstr "날짜 입력 오류."
 
 msgid "The year is not valid."
-msgstr "해 가 유효하지 않습니다."
+msgstr "올해는 유효하지 않습니다."
 
 msgid "No log for date."
 msgstr "날짜 에 대한 로그 가 없습니다."
@@ -890,29 +938,32 @@ msgstr "교실 목록을 생성 - 자산 등록"
 msgid "Change a User Password"
 msgstr "사용자 암호 변경"
 
+msgid "This will change the password of the user for access to all servers on the Karoshi system."
+msgstr "이과로사 시스템의 모든 서버에 액세스하기 위해사용자의 암호를 변경합니다."
+
 msgid "New Password"
 msgstr "새 암호"
 
 msgid "Confirm New Password"
 msgstr "새 암호 확인"
 
-msgid "This will change the password of the user for access to all servers on the Karoshi system including moodle and email."
-msgstr "이것은 무 및 이메일 을 포함하여 과로사 시스템의 모든 서버에 액세스하기 위해사용자의 암호를 변경합니다."
+msgid "Enter in the username that you want to change the password for."
+msgstr "당신 의 암호를 변경하려는 사용자 이름 을 입력합니다."
 
 msgid "Enter in the new password that you want the user to have."
 msgstr "당신은 사용자 에게 부여 할 새 암호를 입력합니다."
 
 msgid "The following special characters are allowed"
-msgstr "다음과 같은 특수 문자는 사용할 수 있습니다"
+msgstr "다음 특수 문자 가 허용됩니다"
 
 msgid "Windows Profile - Select"
 msgstr "Windows 프로필 - 선택"
 
 msgid "You have not selected any groups."
-msgstr "당신은 어떤 그룹을 선택하지 않았습니다."
+msgstr "당신은 어떤 그룹 을 선택하지 않았습니다."
 
 msgid "You have not chosen a windows version."
-msgstr "당신은 Windows 버전 을 선택 하지 않았습니다."
+msgstr "당신은 윈도우 버전 을 선택 하지 않았습니다."
 
 msgid "The filename cannot be blank."
 msgstr "파일 이름은 비워 둘 수 없습니다."
@@ -921,7 +972,7 @@ msgid "You have not uploaded a zip or tar.gz archive."
 msgstr "당신은 zip 또는 tar.gz의 압축 파일을 업로드 하지 않았습니다."
 
 msgid "The selected profile has been copied to all of the chosen groups."
-msgstr "선택된 프로파일이선택된 모든 그룹 에 복사 되고있다."
+msgstr "선택된 프로파일은선택된 모든 그룹 에 복사 되고있다."
 
 msgid "Wake on Lan - View"
 msgstr "Wake on LAN은 - 보기"
@@ -945,16 +996,16 @@ msgid "Internet logs are updated every three minutes."
 msgstr "인터넷 로그는 3 분마다 업데이트됩니다."
 
 msgid "No log exists for this date."
-msgstr "어떤 로그 는 이 날짜 가 없습니다."
+msgstr "어떤 로그 는 이 날짜 존재하지 않습니다."
 
 msgid "No sites for this search exist in this log."
 msgstr "이 검색 에 대한 사이트는 이 로그에 존재하지 않습니다."
 
 msgid "Setup Reverse Proxy"
-msgstr "설정 역방향 프록시"
+msgstr "설치 역방향 프록시"
 
 msgid "Setup Reverse Proxy Completed"
-msgstr "설치 역방향 프록시 완료"
+msgstr "설치 역방향 프록시 는 완료"
 
 msgid "Remote Management Secure Access"
 msgstr "원격 관리 보안 액세스"
@@ -978,7 +1029,7 @@ msgid "The relay password cannot be blank."
 msgstr "릴레이 암호는 비워 둘 수 없습니다."
 
 msgid "Request Delete Users"
-msgstr "사용자 를 삭제 요청"
+msgstr "사용자 삭제 요청"
 
 msgid "You have not chosen a requested user to delete."
 msgstr "당신은 삭제요청 된 사용자 를 선택하지 않은 경우."
@@ -993,10 +1044,10 @@ msgid "You have not chosen a server."
 msgstr "당신은 서버를 선택하지 않은 경우."
 
 msgid "This will setup a a squid proxy server for providing access to the internet for the client computers on the network."
-msgstr "네트워크상의클라이언트 컴퓨터의인터넷 액세스를 제공하기위한 셋업 이 의지 AA 오징어 프록시 서버."
+msgstr "네트워크상의클라이언트 시스템에 대한 인터넷 액세스를 제공하기위한 셋업 이 뜻 AA 오징어 프록시 서버."
 
 msgid "Internet filtering is provided by E2Guardian and all internet access through the system is logged."
-msgstr "인터넷 필터링 E2Guardian 의해 제공되며,시스템을 통해 모든 인터넷 사용료 가 기록 된다."
+msgstr "인터넷 필터링 E2Guardian 의해 제공되며,시스템을 통해 모든 인터넷 액세스 가 기록 된다."
 
 msgid "Logs for all user internet access can be viewed in the web management."
 msgstr "모든 사용자 의 인터넷 접속 에 대한 로그는 웹 관리 에서 볼 수 있습니다."
@@ -1023,13 +1074,13 @@ msgid "Restart"
 msgstr "다시 시작"
 
 msgid "Abort shutdown"
-msgstr "종료를 취소"
+msgstr "종료를 중단"
 
 msgid "Show printers"
 msgstr "프린터 표시"
 
 msgid "Show shares"
-msgstr "쇼 공유"
+msgstr "보기 주"
 
 msgid "Show open files"
 msgstr "열려있는 파일 보기"
@@ -1077,19 +1128,19 @@ msgid "Manage Print Queues"
 msgstr "인쇄 대기열 관리"
 
 msgid "Click on the icons to control the printers in each queue."
-msgstr "각 대기열 에서 프린터를 제어 할 수 있는 아이콘 을 클릭합니다."
+msgstr "각 큐 에서 프린터를 제어하기 위해 아이콘 을 클릭합니다."
 
 msgid "Delete Printer"
-msgstr "프린터를 삭제"
+msgstr "프린터 삭제"
 
 msgid "View E-Mail Statistics"
-msgstr "보기 이메일 통계"
+msgstr "보기 E 메일 통계"
 
 msgid "The log view must not be blank."
 msgstr "로그 보기는 비워 둘 수 없습니다."
 
 msgid "Incorrect date format."
-msgstr "잘못된 날짜 형식입니다."
+msgstr "잘못된 날짜 형식."
 
 msgid "There is no log available for this date."
 msgstr "이 날짜 에 사용할 수있는 로그 가 없습니다."
@@ -1101,13 +1152,13 @@ msgid "This will change the password for a user to a random number that will be 
 msgstr "이는화면에 표시되는난수사용자의패스워드를 변경 한다."
 
 msgid "E-Mail Limits"
-msgstr "이메일 제한"
+msgstr "E 메일 제한"
 
 msgid "The message size option must not be blank."
-msgstr "메시지 크기 옵션은 비워 둘 수 없습니다."
+msgstr "메시지 크기 옵션은 반드시 입력해야합니다."
 
 msgid "The mailbox size option must not be blank."
-msgstr "사서함 크기 옵션은 비워 둘 수 없습니다."
+msgstr "사서함 크기 옵션은 반드시 입력해야합니다."
 
 msgid "ZFS Status"
 msgstr "ZFS 상태"
@@ -1143,7 +1194,7 @@ msgid "Add staff name"
 msgstr "직원 이름을 추가"
 
 msgid "Enter in the usernames of any members of staff that you do not want to be able to access the staff section of the web management."
-msgstr "웹 관리의 직원 섹션 에 액세스 할 수 없도록하려면 직원 의 구성원의 사용자 이름 을 입력합니다."
+msgstr "당신은 웹 관리 의 직원 섹션 에 액세스 할 수 없도록하려면 직원 의 구성원의 사용자 이름 을 입력합니다."
 
 msgid "Retricted Staff"
 msgstr "Retricted 직원"
@@ -1155,7 +1206,7 @@ msgid "Group"
 msgstr "그룹"
 
 msgid "Month"
-msgstr "월"
+msgstr "달"
 
 msgid "Year"
 msgstr "년"
@@ -1176,7 +1227,7 @@ msgid "The password must not be blank."
 msgstr "암호는 비워 둘 수 없습니다."
 
 msgid "The access level must not be blank."
-msgstr "액세스 수준 은 반드시 입력해야합니다."
+msgstr "액세스 레벨 은 반드시 입력해야합니다."
 
 msgid "Incorrect input for the admin level."
 msgstr "관리 수준에 대한 잘못된 입력."
@@ -1191,7 +1242,7 @@ msgid "This user already exists."
 msgstr "이 사용자는 이미 존재합니다."
 
 msgid "Not created."
-msgstr "생성되지 않습니다."
+msgstr "생성 하지 않습니다."
 
 msgid "Setup OCS-Inventory"
 msgstr "설치 OCS - 재고"
@@ -1200,10 +1251,10 @@ msgid "The OCS server cannot be blank."
 msgstr "OCS 서버는 비워 둘 수 없습니다."
 
 msgid "OCS Inventory is a system that collects information about your client computers and stores it in a mysql database."
-msgstr "OCS 재고 는 MySQL 데이터베이스 에 클라이언트 컴퓨터 에 저장 을 에 대한 정보를 수집 하는 시스템입니다."
+msgstr "OCS 재고 는 MySQL 데이터베이스 에서 클라이언트 컴퓨터 에 저장 을 에 대한 정보를 수집 하는 시스템입니다."
 
 msgid "Upload Web Management Patch"
-msgstr "웹 관리 패치 를 업로드"
+msgstr "웹 관리 패치 업로드"
 
 msgid "This will allow you to upload and apply a web management updates to your server. You will also need the signature file to verify that it is a legitamate update."
 msgstr "이것은 당신이 업로드하고 서버에 웹 관리 업데이트를 적용 할 수 있습니다. 당신은 또한legitamate 업데이트가 있는지 확인하는 서명 파일 이 필요합니다."
@@ -1248,13 +1299,13 @@ msgid "The day must have two digits."
 msgstr "하루에 두 자리 가 있어야합니다."
 
 msgid "The month must have two digits."
-msgstr "달 은 두 자리 숫자 가 있어야합니다."
+msgstr "달에 두 자리 가 있어야합니다."
 
 msgid "The year must have four digits."
-msgstr "올해 는 네 자리 숫자 가 있어야합니다."
+msgstr "올해는 네 자리 숫자 가 있어야합니다."
 
 msgid "Please correct the date error."
-msgstr "날짜 오류를 해결 하십시오."
+msgstr "날짜 오류를 수정하십시오."
 
 msgid "This incident has been added to the logs."
 msgstr "이 사건 은 로그 에 추가되었습니다."
@@ -1275,7 +1326,7 @@ msgid "Copy Files - Select"
 msgstr "파일을 복사 - 선택"
 
 msgid "No files have been uploaded to copy to user accounts."
-msgstr "어떤 파일은 사용자 계정에 복사 할 업로드 되지 않았다."
+msgstr "어떤 파일은 사용자 계정에 복사 할 업로드 되지 않았습니다."
 
 msgid "Please select the group that you want to copy the data to."
 msgstr "당신이 데이터를 복사 할 그룹을 선택하십시오."
@@ -1287,7 +1338,7 @@ msgid "Blank version"
 msgstr "빈 버전"
 
 msgid "The software shown below will either be installed or removed by your linux client computers on boot."
-msgstr "아래의 소프트웨어 중 하나를 설치하거나 부팅 리눅스 클라이언트 컴퓨터 에 의해 제거됩니다."
+msgstr "아래의 소프트웨어 중 하나를 설치하거나 부팅 리눅스 클라이언트 컴퓨터에서 제거됩니다."
 
 msgid "Add software package"
 msgstr "소프트웨어 패키지를 추가"
@@ -1332,13 +1383,13 @@ msgid "Printer PPD"
 msgstr "프린터 PPD"
 
 msgid "If you are using a Linux client with cups installed you can find ppd files in /usr/share/cups/models or /usr/share/ppd."
-msgstr "설치 컵 리눅스 클라이언트를 사용하는 경우 PPD 파일을 찾을 수 는 / usr / share / 컵 / 모델 또는 은 / usr / share / PPD 에."
+msgstr "설치 컵 리눅스 클라이언트를 사용하는 경우 PPD 파일을 찾을 수 는 / usr / share / 컵 / 모델이나 는 / usr / share / PPD 에."
 
 msgid "Bulk User Creation - View Passwords"
-msgstr "대량 사용자 생성 - 보기 암호"
+msgstr "대량 사용자 만들기 - 보기 암호"
 
 msgid "The primary group must not be empty."
-msgstr "기본 그룹 은 비워 둘 수 없습니다."
+msgstr "주요 그룹은 비워 둘 수 없습니다."
 
 msgid "No password list is available for this group."
 msgstr "암호 목록 이 그룹에 대해 사용할 수 없습니다."
@@ -1362,7 +1413,7 @@ msgid "Global Internet Usage"
 msgstr "글로벌 인터넷 사용"
 
 msgid "Internet Usage logs are updated at the end of every day."
-msgstr "인터넷 사용 로그는 매일 의 말에 업데이트됩니다."
+msgstr "인터넷 사용 로그는 매일 의 끝에서 업데이트됩니다."
 
 msgid "Log Date"
 msgstr "로그인 날짜"
@@ -1374,7 +1425,7 @@ msgid "This job does not exist."
 msgstr "이 작업은 존재하지 않습니다."
 
 msgid "Action Request"
-msgstr "작업 요청"
+msgstr "조치 요청"
 
 msgid "Request Summary"
 msgstr "요청 요약"
@@ -1398,7 +1449,7 @@ msgid "Assigned to"
 msgstr "에 할당"
 
 msgid "Alternative assign"
-msgstr "대체 지정"
+msgstr "대체 할당"
 
 msgid "Priority"
 msgstr "우선"
@@ -1434,7 +1485,7 @@ msgid "Please select the exam accounts that you want to copy the data to."
 msgstr "당신이 데이터를 복사 할 시험 계정을 선택하십시오."
 
 msgid "No files have been uploaded to copy to the exam accounts."
-msgstr "어떤 파일이 시험 계정에 복사 할 업로드 되지 않았다."
+msgstr "어떤 파일은 시험 계정 에 복사 업로드 되지 않았습니다."
 
 msgid "Start Account"
 msgstr "계정 시작"
@@ -1452,13 +1503,13 @@ msgid "Read only"
 msgstr "읽기 전용"
 
 msgid "This will set the exam_files folder and the uploaded files to read only in each account. Students will need to copy the files out of the folder to use them."
-msgstr "이exam_files 폴더를 설정 하고 업로드 된 파일은 각 계정 에서 읽을 수 있습니다. 학생들은 그들을 사용하는 폴더 에서 파일을 복사 해야합니다."
+msgstr "이것은exam_files 폴더 를 설정 하며업로드 된 파일 은 각 계정 에 읽어. 학생들은 그들을 사용하는 폴더 에서 파일을 복사 해야합니다."
 
 msgid "View E-Mail - SMS Alerts"
 msgstr "보기 이메일 - SMS 알림"
 
 msgid "The following accounts will be sent details of any network failures."
-msgstr "다음 계정 은 네트워크 장애 의 세부 사항을 보내드립니다."
+msgstr "다음 계정 은 네트워크 장애 의 세부 정보를 전송됩니다."
 
 msgid "Add E-Mail Alert"
 msgstr "전자 메일 알림 추가"
@@ -1475,17 +1526,11 @@ msgstr "보내는 사람"
 msgid "E-Mail Server"
 msgstr "전자 메일 서버"
 
-msgid "Enabled"
-msgstr "사용"
-
 msgid "Edit"
 msgstr "편집"
 
-msgid "Test"
-msgstr "테스트"
-
 msgid "Disable"
-msgstr "비활성화"
+msgstr "해제"
 
 msgid "Enable"
 msgstr "사용"
@@ -1500,13 +1545,13 @@ msgid "All Servers"
 msgstr "모든 서버"
 
 msgid "Password changed for"
-msgstr "비밀번호 에 대해 변경"
+msgstr "비밀번호 가 변경"
 
 msgid "There was an error changing the password for"
 msgstr "암호 를 변경하는 중에 오류가 발생했습니다"
 
 msgid "Change Email domain for users"
-msgstr "사용자 변경 전자 메일 도메인"
+msgstr "사용자를위한 이메일 변경 도메인"
 
 msgid "You have not entered an email domain."
 msgstr "당신은 전자 메일 도메인 을 입력하지 않았습니다."
@@ -1527,19 +1572,19 @@ msgid "The username style cannot be blank."
 msgstr "사용자 이름 스타일은 비워 둘 수 없습니다."
 
 msgid "The lockout settings have been saved."
-msgstr "잠금 설정이 저장되었습니다."
+msgstr "잠금 설정이 저장 되어있다."
 
 msgid "Web Management Name"
 msgstr "웹 관리 이름"
 
 msgid "This will add the name of your institution to the top of the web management and to the show servers page."
-msgstr "이웹 관리 의 상단 과 쇼 서버 페이지 에 교육 기관 의 이름을 추가합니다."
+msgstr "이웹 관리 의 상단 과 쇼 서버 페이지 에 기관 의 이름을 추가합니다."
 
 msgid "Enter in the site name."
 msgstr "사이트 이름을 입력합니다."
 
 msgid "Enter in the short site name. This will be displayed in the web management."
-msgstr "짧은 사이트 이름 을 입력합니다. 이웹 관리 에 표시됩니다."
+msgstr "짧은 사이트 이름을 입력합니다. 이웹 관리 에 표시됩니다."
 
 msgid "My Servers"
 msgstr "내 서버"
@@ -1557,7 +1602,7 @@ msgid "The printer name cannot be blank."
 msgstr "프린터 이름 은 비워 둘 수 없습니다."
 
 msgid "There was a problem deleting this queue. Please consult the Karoshi web administration logs."
-msgstr "이 큐 를 삭제하는 문제가 발생했습니다. 과로사 웹 관리 로그를 참조하십시오."
+msgstr "이 큐 를 삭제하는 중에 문제가 발생했습니다. 과로사 웹 관리 로그를 참조하십시오."
 
 msgid "Apply Quota Settings"
 msgstr "할당량 설정 적용"
@@ -1569,7 +1614,7 @@ msgid "The size cannot be blank."
 msgstr "크기는 비워 둘 수 없습니다."
 
 msgid "The unit cannot be blank."
-msgstr "이 장치는 비워 둘 수 없습니다."
+msgstr "이 제품은 비워 둘 수 없습니다."
 
 msgid "The unit has not been set to the correct value."
 msgstr "유닛은올바른 값으로 설정 되지 않았다."
@@ -1584,7 +1629,7 @@ msgid "Computer Number"
 msgstr "컴퓨터 수"
 
 msgid "The computer number is used to help identify where it is situated in the room. This can be left blank."
-msgstr "컴퓨터 수는 이 방 에 위치 되는 경우 를 식별 하는 데 사용됩니다. 이 비워 둘 수 있습니다."
+msgstr "컴퓨터 수는 이 방에 위치해 곳 식별 하는 데 사용됩니다. 이 비워 둘 수 있습니다."
 
 msgid "Art"
 msgstr "예술"
@@ -1692,22 +1737,22 @@ msgid "View DNS entries"
 msgstr "보기 DNS 항목"
 
 msgid "Restrict access to Karoshi Remote Management"
-msgstr "과로사 원격 관리 에 대한 액세스를 제한합니다"
+msgstr "과로사 원격 관리 에 대한 액세스를 제한"
 
 msgid "The Action must not be blank."
-msgstr "이 동작은 반드시 입력해야합니다."
+msgstr "작업 은 반드시 입력해야합니다."
 
 msgid "Exam Accounts - View Reset Passwords"
-msgstr "시험 계정 - 보기 암호를 재설정"
+msgstr "시험 계정 - 보기 암호 재설정"
 
 msgid "View the passwords for the exam accounts if they have been reset."
-msgstr "가 재설정 된 경우 시험 이 계정에 대한 암호를 볼 수 있습니다."
+msgstr "그들은 재설정 된 경우 시험 이 계정에 대한 암호를 볼 수 있습니다."
 
 msgid "Windows Background - Upload"
 msgstr "윈도우 배경 - 업로드"
 
 msgid "This will replace the standard backgrounds with one of your choice. The backgrounds are applied by kixtart when the user logs into the client computer."
-msgstr "이것은 당신의 선택 중 하나를 사용하여 표준 배경 을 대체합니다. 유저가클라이언트 컴퓨터 에 로그온 할 때배경 은 KiXTart와 의해 도포 된다."
+msgstr "이것은 당신의 선택 중 하나를 사용하여 표준 배경을 대체합니다. 유저가클라이언트 컴퓨터 에 로그온 할 때KiXTart와 배경 이 적용 된다."
 
 msgid "Please select the background that you want to upload."
 msgstr "업로드 할 배경을 선택하세요."
@@ -1728,7 +1773,7 @@ msgid "Printer Name"
 msgstr "프린터 이름"
 
 msgid "Enter in the name that you want for this printer."
-msgstr "이 프린터 에 대해 원하는 이름을 입력합니다."
+msgstr "이 프린터 에 사용할 이름을 입력합니다."
 
 msgid "Choose the location of this printer. Click on the add locations icon above to add locations."
 msgstr "이 프린터의 위치를 선택합니다. 위치를 추가 하려면 위의 추가 위치 아이콘을 클릭합니다."
@@ -1743,13 +1788,13 @@ msgid "Queue - LPD only"
 msgstr "큐 - LPD 만"
 
 msgid "Enter in the network queue."
-msgstr "네트워크 대기열에 입력합니다."
+msgstr "네트워크 큐에 입력합니다."
 
 msgid "Enter in a description of the printer hardware."
 msgstr "프린터 하드웨어 의설명을 입력합니다."
 
 msgid "Network Type"
-msgstr "네트워크 유형"
+msgstr "네트워크 종류"
 
 msgid "Network Printer TCP"
 msgstr "네트워크 프린터 TCP"
@@ -1776,7 +1821,7 @@ msgid "Windows Version"
 msgstr "윈도우 버전"
 
 msgid "Select the groups that you want to copy this profile to."
-msgstr "당신 이 프로필을 복사 할 그룹 을 선택합니다."
+msgstr "당신이 이 프로필을 복사 할 그룹 을 선택합니다."
 
 msgid "Select all"
 msgstr "모든 선택"
@@ -1797,7 +1842,7 @@ msgid "Enable - Disable Network Backup"
 msgstr "사용 - 네트워크 백업 을 사용하지 않도록 설정"
 
 msgid "This will set up an Internet Radio Server for your network."
-msgstr "이 네트워크 에 대한 인터넷 라디오 서버를 설정 합니다."
+msgstr "이 네트워크에 인터넷 라디오 서버를 설정 합니다."
 
 msgid "Parameters"
 msgstr "매개 변수"
@@ -1812,7 +1857,7 @@ msgid "Source Password"
 msgstr "원본 암호"
 
 msgid "This is needed by the program that you are using to stream your sound to the icecast server."
-msgstr "이 작업은아이스 캐스트 서버에 사운드 를 스트리밍 하는 데 사용하는 프로그램이 필요합니다."
+msgstr "이 작업은아이스 캐스트 서버로 사운드 를 스트리밍 하는 데 사용하는 프로그램이 필요합니다."
 
 msgid "Relay Password"
 msgstr "릴레이 비밀번호"
@@ -1821,10 +1866,10 @@ msgid "This is needed if you want to use your icecast server as a relay."
 msgstr "당신이 릴레이 로 아이스 캐스트 서버를 사용 하려는 경우에 필요합니다."
 
 msgid "Access can be restricted by a complete tcpip number or by a partial number for a range."
-msgstr "액세스는 완전한 TCPIP 번호 또는 범위 에 대한 부분 수 에 의해 제한 될 수 있습니다."
+msgstr "액세스는 완전한 TCPIP 번호 또는 범위 에 대한 부분 숫자로 제한 할 수 있습니다."
 
 msgid "For example 172.30.4. will allow all computers from 172.30.4.1 to 172.30.4.254."
-msgstr "예 172.30.4 하십시오. 172.30.4.1 에서 172.30.4.254 에 모든 컴퓨터를 하실 수 있습니다."
+msgstr "예 172.30.4 하십시오. 172.30.4.1 에서 172.30.4.254 로 모든 컴퓨터를 하실 수 있습니다."
 
 msgid "Allowed tcpip address"
 msgstr "허용 TCPIP 주소"
@@ -1836,19 +1881,19 @@ msgid "Admin Level"
 msgstr "관리 수준"
 
 msgid "Add Wireless Zone"
-msgstr "무선 지역 추가"
+msgstr "무선 구역 추가"
 
 msgid "This allows WPA II enterprise wireless access points to be used. This key will need to match the key supplied to the wireless access points."
 msgstr "이 WPA II 엔터프라이즈 무선 액세스 포인트를 사용할 수 있습니다. 이 키는 무선 액세스 포인트 에 공급되는 키와 일치 해야합니다."
 
 msgid "The wireless access points will authenticate using usernames and passwords via a radius server and LDAP on the PDC."
-msgstr "무선 액세스 포인트는 PDC 에 RADIUS 서버 및 LDAP 를 통해 사용자 이름과 암호 를 사용하여 인증합니다."
+msgstr "무선 액세스 포인트는 PDC 에 RADIUS 서버 와 LDAP 를 통해 사용자 이름과 암호 를 사용하여 인증합니다."
 
 msgid "Access Name"
 msgstr "액세스 이름"
 
 msgid "Enter in a name for your set of wireless access points."
-msgstr "무선 액세스 포인트 의 당신의 세트의 이름 을 입력합니다."
+msgstr "무선 액세스 포인트 의 당신의 세트에 대한 이름을 입력합니다."
 
 msgid "Enter in the tcpip number or range you require."
 msgstr "TCPIP 번호를 입력하거나 필요한 다양합니다."
@@ -1860,16 +1905,16 @@ msgid "Secret Key"
 msgstr "비밀 키"
 
 msgid "Enter in a WPA key or leave blank to auto generate a key."
-msgstr "WPA 키 를 입력 하거나 키 를 자동 생성 하려면 공백으로 두십시오."
+msgstr "WPA 키에 입력하거나 키를 생성 자동 으로 비워 둡니다."
 
 msgid "The key must be between 20 and 63 characters long."
-msgstr "키 는 20 ~ 63 자 여야합니다."
+msgstr "키 는 20 ~ 63 자 이어야합니다."
 
 msgid "The shutdown code must not be blank."
 msgstr "종료 코드는 반드시 입력해야합니다."
 
 msgid "The form code must not be blank."
-msgstr "양식 코드 는 반드시 입력해야합니다."
+msgstr "양식 코드는 반드시 입력해야합니다."
 
 msgid "Incorrect shutdown code."
 msgstr "잘못된 종료 코드."
@@ -1920,13 +1965,13 @@ msgid "Shutdown-Reboot Server"
 msgstr "종료 재부팅 서버"
 
 msgid "No shutdown option."
-msgstr "어떤 종료 옵션 없습니다."
+msgstr "아니 종료 옵션 없습니다."
 
 msgid "You must only choose shutdown or reboot."
 msgstr "당신은 종료 또는 재부팅을 선택해야합니다."
 
 msgid "You must choose a server to shut down."
-msgstr "당신은 종료 할 서버를 선택해야합니다."
+msgstr "당신은 종료 서버를 선택해야합니다."
 
 msgid "View Banned Users"
 msgstr "보기 금지 된 사용자"
@@ -1938,7 +1983,7 @@ msgid "The uploaded files will be copied to a folder called exam_files in each e
 msgstr "업로드 된 파일은 각각의 시험 계정 에 exam_files 라는 폴더 에 복사됩니다."
 
 msgid "Any .zip or .tar.gz files will automatically be extracted in each exam home folder."
-msgstr "모든.ZIP 또는.tar.gz를 파일이 자동으로 각 시험 의 홈 폴더 에 압축이 풀립니다."
+msgstr "모든.ZIP 또는.tar.gz를 파일이 자동으로 각 시험 의 홈 폴더 에 압축 해제됩니다."
 
 msgid "Please select the files that you want to upload for the exam accounts"
 msgstr "당신이 시험 계정에 업로드 할 파일을 선택하세요"
@@ -2001,13 +2046,7 @@ msgid "Locations are used to assign printers."
 msgstr "위치 는 프린터를 지정 하는 데 사용됩니다."
 
 msgid "New location"
-msgstr "새 위치"
-
-msgid "View Access Points"
-msgstr "보기 액세스 포인트"
-
-msgid "Add Access Point"
-msgstr "액세스 포인트 를 추가"
+msgstr "새로운 위치"
 
 msgid "Setup Distribution Server"
 msgstr "설치 배포 서버"
@@ -2058,13 +2097,10 @@ msgid "All Web Servers"
 msgstr "모든 웹 서버"
 
 msgid "Not completed"
-msgstr "완료되지"
+msgstr "완료 되지 않음"
 
 msgid "Show User Information"
 msgstr "보기 사용자 정보"
-
-msgid "The common name cannot be blank."
-msgstr "일반 이름 은 비워 둘 수 없습니다."
 
 msgid "The surname cannot be blank."
 msgstr "성 (姓) 은 비워 둘 수 없습니다."
@@ -2078,8 +2114,11 @@ msgstr "표시 이름 이름은 비워 둘 수 없습니다."
 msgid "The mail address cannot be blank."
 msgstr "메일 주소 는 비워 둘 수 없습니다."
 
+msgid "information changed."
+msgstr "정보 가 변경되었습니다."
+
 msgid "This allows you to send e-mail alerts in the event of a network failure."
-msgstr "이렇게하면 네트워크 장애가 발생할 경우 전자 메일 경고 를 보낼 수 있습니다."
+msgstr "이렇게하면 네트워크 장애 발생시 전자 메일 경고 를 보낼 수 있습니다."
 
 msgid "E-Mail Alerts"
 msgstr "전자 메일 경고"
@@ -2103,10 +2142,10 @@ msgid "Enter in the address of the mail server that you want to send the email t
 msgstr "당신이 이메일을 보낼 메일 서버의 주소를 입력합니다."
 
 msgid "A monitoring server has not been setup."
-msgstr "모니터링 서버 가 설치 되지 않았습니다."
+msgstr "모니터링 서버가 설치 되지 않았습니다."
 
 msgid "You have entered duplicate data."
-msgstr "중복 데이터를 입력했습니다."
+msgstr "당신은 중복 된 데이터를 입력했습니다."
 
 msgid "has been edited."
 msgstr "편집 되었습니다."
@@ -2127,13 +2166,13 @@ msgid "Incident Time and Date"
 msgstr "사고 시간 및 날짜"
 
 msgid "Ban duration in days - leave blank for a permanent ban."
-msgstr "일 기간 금지 - 영구적 인 금지 를 위해 비워 둡니다."
+msgstr "일 의 기간을 금지 - 영구적 인 금지 를 위해 비워 둡니다."
 
 msgid "Users are automatically allowed after their ban duration is up. The ban duration will include weekends and holidays."
-msgstr "자신의 금지 기간은 최대 후 사용자 는 자동으로 사용할 수 있습니다. 금지 기간은 주말과 휴일 을 포함 할 것이다."
+msgstr "자신의 금지 기간은 최대 후 사용자 가 자동으로 사용할 수 있습니다. 금지 기간은 주말 및 공휴일 을 포함 할 것이다."
 
 msgid "Please enter the usernames you want to ban from the system separated by spaces:"
-msgstr "당신이 공백으로 구분하여 시스템에서 금지 하려는 사용자 이름을 입력하세요:"
+msgstr "공백 으로 구분 된 시스템에서 금지 하려는 사용자 이름을 입력하세요:"
 
 msgid "User account banned."
 msgstr "사용자 계정 금지."
@@ -2145,7 +2184,7 @@ msgid "This user is not a web management user."
 msgstr "이 사용자는웹 관리 사용자가 아닙니다."
 
 msgid "There was a problem deleting this user."
-msgstr "이 사용자를 삭제하는 문제가 발생했습니다."
+msgstr "이 사용자를 삭제하는 중에 문제가 발생했습니다."
 
 msgid "This web management user has been deleted."
 msgstr "이 웹 관리 사용자가 삭제되었습니다."
@@ -2169,7 +2208,7 @@ msgid "Skel archive uploaded."
 msgstr "skel이 아카이브는 업로드."
 
 msgid "There was a problem uploading the skel archive. Please check the Karoshi web management logs."
-msgstr "skel이 아카이브를 업로드 하는 데 문제가 발생했습니다. 과로사 웹 관리 로그를 확인하십시오."
+msgstr "skel이 압축 파일을 업로드 하는 중 문제가 발생했습니다. 과로사 웹 관리 로그를 확인하십시오."
 
 msgid "Bulk user actions"
 msgstr "대량 사용자 작업"
@@ -2196,7 +2235,7 @@ msgid "The passwords must not be blank."
 msgstr "암호는 비워 둘 수 없습니다."
 
 msgid "Enable all users in group"
-msgstr "그룹의 모든 사용자를 활성화"
+msgstr "그룹의 모든 사용자가 사용"
 
 msgid "Disable all users in group"
 msgstr "그룹의 모든 사용자를 비활성화"
@@ -2211,7 +2250,7 @@ msgid "Delete all users in group"
 msgstr "그룹의 모든 사용자를 삭제"
 
 msgid "Archive and delete all users in group"
-msgstr "아카이브 및 그룹의 모든 사용자를 삭제"
+msgstr "보관 및 그룹의 모든 사용자를 삭제"
 
 msgid "Action completed for"
 msgstr "작업 완료"
@@ -2232,7 +2271,7 @@ msgid "This will affect a group of users."
 msgstr "이 사용자 그룹 에 영향을 미칠 것이다."
 
 msgid "All users in the group you select will be affected by the action you choose from this menu."
-msgstr "선택한 그룹의 모든 사용자는 이 메뉴 를 선택할작용에 의해 영향을받을 것이다."
+msgstr "선택한 그룹의 모든 사용자는 이 메뉴 를 선택할작용에 의해 영향을받습니다."
 
 msgid "Option"
 msgstr "선택권"
@@ -2250,13 +2289,13 @@ msgid "Exceptions"
 msgstr "예외"
 
 msgid "Enter in any user accounts that you do not want to modify separated by spaces."
-msgstr "당신이 공백으로 구분 수정하지 않는 사용자 계정 을 입력합니다."
+msgstr "공백 으로 구분 수정하지 않는 사용자 계정 에 입력합니다."
 
 msgid "Modify Code"
-msgstr "코드를 수정"
+msgstr "코드 를 수정"
 
 msgid "Enter in the code displayed on the page to confirm this action."
-msgstr "이 작업을 확인하기 위해 페이지 에 표시되는 코드를 입력합니다."
+msgstr "이 작업을 확인하기 위해 페이지에 표시되는 코드를 입력합니다."
 
 msgid "Update Moodle"
 msgstr "업데이트 무"
@@ -2271,10 +2310,10 @@ msgid "Latest Moodle Versions"
 msgstr "최신 무 버전"
 
 msgid "Moodle update guide which this feature automates."
-msgstr "이 기능은 자동화 무 업데이트 가이드."
+msgstr "이 기능을 자동화 무 업데이트 가이드."
 
 msgid "IMPORTANT - Make sure that you have a working backup of the following areas on your moodle server before carrying out an upgrade"
-msgstr "중요 - 업그레이드를 수행하기 전에 무들 서버에 다음과 같은 분야 의 작업 백업 이 있는지 확인"
+msgstr "중요 - 업그레이드를 수행 하기 전에 무 서버에 다음과 같은 분야 의 작업 백업 이 있는지 확인"
 
 msgid "Choose the moodle archive to upgrade from. The archive MUST be a .tgz."
 msgstr "업그레이드 할 수있는 무 아카이브를 선택합니다. 아카이브는.tgz 일 이어야한다."
@@ -2286,16 +2325,16 @@ msgid "No drives have been selected."
 msgstr "어떤 드라이브를 선택하지 않았습니다."
 
 msgid "The raid name cannot be blank."
-msgstr "공격대 이름은 비워 둘 수 없습니다."
+msgstr "RAID 이름은 비워 둘 수 없습니다."
 
 msgid "Disk Information"
 msgstr "디스크 정보"
 
 msgid "You must choose a server."
-msgstr "당신은 서버를 선택해야합니다."
+msgstr "당신은 서버 를 선택해야합니다."
 
 msgid "Show information about the hard disk drives on the selected servers."
-msgstr "선택한 서버 의 하드 디스크 드라이브에 대한 정보를 표시합니다."
+msgstr "선택된 서버의 하드 디스크 드라이브에 대한 정보를 표시합니다."
 
 msgid "Select server"
 msgstr "서버 선택"
@@ -2316,7 +2355,7 @@ msgid "You have not chosen a location."
 msgstr "당신은 위치를 선택하지 않은 경우."
 
 msgid "The asset search cannot be blank."
-msgstr "자산 검색은 비워 둘 수 없습니다."
+msgstr "자산 검색 은 비워 둘 수 없습니다."
 
 msgid "Enable All"
 msgstr "모든 사용"
@@ -2337,7 +2376,7 @@ msgid "Scheduled Jobs"
 msgstr "예약 된 작업"
 
 msgid "Choose the servers you want to view the scheduled commands on."
-msgstr "당신이 예약 된 명령을 표시 할 서버를 선택합니다."
+msgstr "당신이 에 예약 된 명령을 보려는 서버를 선택합니다."
 
 msgid "Minutes"
 msgstr "분"
@@ -2352,7 +2391,7 @@ msgid "Every hour"
 msgstr "모든 시간"
 
 msgid "Day"
-msgstr "일"
+msgstr "하루"
 
 msgid "Every day"
 msgstr "매일"
@@ -2373,7 +2412,7 @@ msgid "Command"
 msgstr "명령"
 
 msgid "Enter in the command or path to the command that you want to run."
-msgstr "실행하려는명령에 대한 명령 또는 경로에 입력합니다."
+msgstr "실행하려는 명령에 명령 또는 경로에 입력합니다."
 
 msgid "Add Server"
 msgstr "서버 추가"
@@ -2382,7 +2421,7 @@ msgid "You have not picked an authentication type."
 msgstr "당신은 인증 유형을 포착 하지 않았습니다."
 
 msgid "You have entered in the same TCPIP address as the main server."
-msgstr "당신은 주 서버 와 같은 TCPIP 주소를 입력했습니다."
+msgstr "당신은 메인 서버와 동일한 TCPIP 주소를 입력했습니다."
 
 msgid "ssh has been enabled."
 msgstr "SSH 가 활성화되었습니다."
@@ -2394,7 +2433,7 @@ msgid "E-Mail Aliases"
 msgstr "전자 메일 별칭"
 
 msgid "You have not entered an alias."
-msgstr "당신은 별명을 입력 하지 않았습니다."
+msgstr "당신은 별명을 입력하지 않았습니다."
 
 msgid "You have not entered a username."
 msgstr "당신은 사용자 이름을 입력하지 않았습니다."
@@ -2406,22 +2445,22 @@ msgid "View Aliases"
 msgstr "보기 별칭"
 
 msgid "Adding an alias will allow emails to be sent to the alias address rather than the actual username."
-msgstr "별명 추가 이메일을에일 리 어스 어드레스 가 아닌실제 이름 으로 전송 될 수 있도록 한다."
+msgstr "별명 추가 이메일을에일 리 어스 어드레스 가 아닌실제의 경매 로 전송 될 수 있도록 한다."
 
 msgid "Add an alias"
-msgstr "별명 추가"
+msgstr "별칭을 추가"
 
 msgid "These are the email aliases that are currently active for your email system."
-msgstr "다음은 이메일 시스템 에 대해 현재 활성화 된 전자 메일 별칭 이다."
+msgstr "이들은 당신의 이메일 시스템 에 대해 현재 활성화 된 전자 메일 별칭 이다."
 
 msgid "This will upload files so that they are available on a web server You can choose the server you wish to upload the files to."
-msgstr "그들은 웹 서버 에서 사용할 수있는 당신이 당신이 파일을 업로드 할 서버를 선택할 수 있도록 파일을 업로드합니다."
+msgstr "그들은 웹 서버에서 사용할 수 있는지 당신은 당신이 파일을 업로드 할 서버를 선택할 수 있도록이 파일을 업로드 합니다."
 
 msgid "Use the create subfolders option to create extra locations."
-msgstr "추가 위치를 생성하기 위해 만들어 하위 폴더 옵션을 사용합니다."
+msgstr "추가 위치를 생성하기 위해 만드는 하위 폴더 옵션을 사용합니다."
 
 msgid "Please choose the files that you want to upload to the web area."
-msgstr "웹 영역 에 업로드 할 파일을 선택하십시오."
+msgstr "당신이 웹 영역 에 업로드 할 파일을 선택하십시오."
 
 msgid "Change Global Language"
 msgstr "변경 글로벌 언어"
@@ -2430,13 +2469,13 @@ msgid "The language choice must not be blank."
 msgstr "언어 선택은 반드시 입력해야합니다."
 
 msgid "There was a problem changing the language."
-msgstr "언어를 변경 문제가 발생했습니다."
+msgstr "언어를 변경 하는 과정에서 문제가 발생했습니다."
 
 msgid "The global language preference has been saved."
-msgstr "글로벌 언어 환경 설정이 저장되었습니다."
+msgstr "글로벌 언어 환경 설정 이 저장되었습니다."
 
 msgid "Bulk User Creation - Import Enrolment Numbers or staff codes"
-msgstr "대량 사용자 생성 - 가져 오기 입학 번호 또는 직원 코드"
+msgstr "대량 사용자 만들기 - 가져 오기 입학 번호 또는 직원 코드"
 
 msgid "File upload error."
 msgstr "업로드 오류 파일."
@@ -2454,7 +2493,7 @@ msgid "You have not chosen any servers."
 msgstr "당신은 어떤 서버를 선택하지 않은 경우."
 
 msgid "The disk usage logs show the overall usage for each partition on your server."
-msgstr "디스크 사용 로그는 서버의 각 파티션에 대한 전체 사용량을 보여줍니다."
+msgstr "디스크 사용 로그는 서버의 각 파티션의 전체 사용량을 보여줍니다."
 
 msgid "Requests"
 msgstr "요청"
@@ -2463,7 +2502,7 @@ msgid "There are no new requests to view."
 msgstr "볼 수있는 새 요청 이 없습니다."
 
 msgid "Action"
-msgstr "활동"
+msgstr "행동"
 
 msgid "Wait Time"
 msgstr "대기 시간"
@@ -2487,7 +2526,7 @@ msgid "hours"
 msgstr "시간"
 
 msgid "day"
-msgstr "일"
+msgstr "하루"
 
 msgid "days"
 msgstr "일"
@@ -2499,7 +2538,7 @@ msgid "Set Default Page"
 msgstr "설정 기본 페이지"
 
 msgid "Choose the default page that you want to have for this section of the web management."
-msgstr "웹 관리 의 이 섹션 이 할 기본 페이지를 선택합니다."
+msgstr "당신은 웹 관리 의이 부분 에 대해 갖고 싶어 기본 페이지를 선택합니다."
 
 msgid "Default Page"
 msgstr "기본 페이지"
@@ -2523,13 +2562,13 @@ msgid "Web File Manager"
 msgstr "웹 파일 매니저"
 
 msgid "Printer Queues"
-msgstr "프린터 대기 행렬"
+msgstr "프린터 대기열"
 
 msgid "System Monitoring"
 msgstr "시스템 모니터링"
 
 msgid "Top User Internet Sites"
-msgstr "최고 사용자 인터넷 사이트"
+msgstr "최고 사용자 의 인터넷 사이트"
 
 msgid "TCPIP Logs"
 msgstr "TCPIP 로그"
@@ -2541,7 +2580,7 @@ msgid "Client Shutdown time"
 msgstr "클라이언트 종료 시간"
 
 msgid "This sets the time that the client computers should turn off at the end of the day."
-msgstr "이는클라이언트 컴퓨터의 일단부에 해제 되어야 하는 시간 을 설정한다."
+msgstr "이는클라이언트 컴퓨터의 일단부에 해제 하도록시간을 설정한다."
 
 msgid "Shutdown time"
 msgstr "종료 시간"
@@ -2553,22 +2592,10 @@ msgid "Idle time"
 msgstr "유휴 시간"
 
 msgid "Time to wait before shutting down if not in use."
-msgstr "시간 사용하지 않을 경우 종료하기 전에 대기하는 시간."
+msgstr "시간 사용 하지 않을 경우 종료하기 전에 대기하는 시간."
 
 msgid "Please enter the usernames involved separated by spaces."
 msgstr "공백으로 구분하여 포함 된 사용자 이름을 입력하십시오."
-
-msgid "The shortname cannot be blank."
-msgstr "짧은 이름 은 비워 둘 수 없습니다."
-
-msgid "The secret key cannot be blank."
-msgstr "비밀 키 는 비워 둘 수 없습니다."
-
-msgid "The secret keys do do match."
-msgstr "비밀 키 는 일치 하지 않습니다."
-
-msgid "Added"
-msgstr "추가"
 
 msgid "Generate the italc lists from the asset register"
 msgstr "자산 레지스터로부터 으로 iTALC 목록을 생성"
@@ -2583,7 +2610,7 @@ msgid "The linux version must not be blank."
 msgstr "리눅스 버전은 반드시 입력해야합니다."
 
 msgid "Choose the linux client version that you want to set the software settings for."
-msgstr "당신이소프트웨어 설정을 설정하려는 리눅스 클라이언트 버전을 선택합니다."
+msgstr "당신이 소프트웨어 설정 을 설정하려면 리눅스 클라이언트 버전을 선택합니다."
 
 msgid "Auto"
 msgstr "자동"
@@ -2595,25 +2622,25 @@ msgid "Proprietary graphics"
 msgstr "독점 그래픽"
 
 msgid "This will tell the linux clients to install the relevant proprietary graphics driver for the client."
-msgstr "이 클라이언트에 대한 관련 독점 그래픽 드라이버를 설치하려면 리눅스 클라이언트를 말할 것이다."
+msgstr "이 클라이언트에 대한 관련 독점 그래픽 드라이버를 설치 리눅스 클라이언트를 말할 것이다."
 
 msgid "Restricted extras"
 msgstr "제한된 엑스트라"
 
 msgid "This will install software that in a few countries licenses may be required."
-msgstr "이 작업은 몇 개국에서 라이센스가 필요할 수 있습니다 소프트웨어를 설치합니다."
+msgstr "이 작업은 몇 개국에 라이센스가 필요할 수 있습니다 소프트웨어를 설치합니다."
 
 msgid "Firmware"
 msgstr "펌웨어"
 
 msgid "This will install proprietary firmware."
-msgstr "이것은 독점 펌웨어를 설치합니다."
+msgstr "이 독점 펌웨어를 설치합니다."
 
 msgid "Enable Software install"
 msgstr "설치 소프트웨어 사용"
 
 msgid "This will make the Linux clients install and remove any software in the software install and remove lists on boot up."
-msgstr "이것은 리눅스 클라이언트를 설치하고 부팅 까지 의 목록을 제거 설치하고 소프트웨어 의 모든 소프트웨어를 제거 할 것입니다."
+msgstr "이것은 리눅스 클라이언트 설치 및 부팅 해서 목록을 제거 설치하고 소프트웨어에서 소프트웨어를 제거 할 것입니다."
 
 msgid "Enable updates"
 msgstr "업데이트 사용"
@@ -2658,7 +2685,7 @@ msgid "Client TCPIP"
 msgstr "클라이언트 TCPIP"
 
 msgid "Number of days to view"
-msgstr "일 의 수 볼 수 있습니다"
+msgstr "일수 볼 수 있습니다"
 
 msgid "Enter in the username that you want to check the internet logs for."
 msgstr "당신이 인터넷 로그를 확인 하려는 사용자 이름 을 입력합니다."
@@ -2670,7 +2697,7 @@ msgid "Add Reverse Proxy"
 msgstr "역방향 프록시 추가"
 
 msgid "The web address to redirect to must not be blank."
-msgstr "웹 주소 는 비워 둘 수 없습니다 로 리디렉션."
+msgstr "웹 주소 는 반드시 입력해야 하는 리디렉션 합니다."
 
 msgid "This address is already being redirected."
 msgstr "이 주소는 이미 리디렉션 되고있다."
@@ -2685,7 +2712,7 @@ msgid "Windows Client Application Data - Select Profile"
 msgstr "윈도우 클라이언트 응용 프로그램 데이터 - 프로필 선택"
 
 msgid "Select the profile groups that you want to copy this application data folder to."
-msgstr "당신은 이 응용 프로그램 데이터 폴더를 복사 할 프로필 그룹을 선택합니다."
+msgstr "당신은 이 응용 프로그램 데이터 폴더를 복사 할 프로파일 그룹을 선택합니다."
 
 msgid "Add Server Role"
 msgstr "서버 역할을 추가"
@@ -2706,7 +2733,7 @@ msgid "File Server"
 msgstr "파일 서버"
 
 msgid "This will setup a server to provide home areas for selected groups of users. By default the primary domain controller provides home areas for all users."
-msgstr "이 의지 설정서버는 사용자 의 선택된 그룹에 대해 홈 영역을 제공한다. 기본적으로 주 도메인 컨트롤러 는 모든 사용자의 홈 영역을 제공합니다."
+msgstr "이러한 의사 설정서버는 사용자 의 선택된 그룹에 대해 홈 영역을 제공한다. 기본적으로 주 도메인 컨트롤러 는 모든 사용자의 홈 영역을 제공합니다."
 
 msgid "Using this feature will allow you to spread the server load in larger networks."
 msgstr "이 기능을 사용하면 더 큰 네트워크에서 서버 부하 를 분산 할 수 있습니다."
@@ -2718,7 +2745,7 @@ msgid "Print Server"
 msgstr "인쇄 서버"
 
 msgid "This will setup a server to provide network print queues."
-msgstr "이 의지 설치서버는 네트워크 인쇄 대기열 을 제공합니다."
+msgstr "이 뜻 설치서버는 네트워크 인쇄 대기열 을 제공합니다."
 
 msgid "Backup Server"
 msgstr "백업 서버"
@@ -2736,28 +2763,28 @@ msgid "This will setup a reverse proxy server that allows incoming web traffic t
 msgstr "들어오는 웹 트래픽을 허용 이 뜻을 설치 리버스 프록시 서버는 네트워크에서 다른 서버 로 리디렉션 합니다."
 
 msgid "The redirect is based on the trailing slash after the end of the domain of your site."
-msgstr "리다이렉트 는 사이트의 도메인 종료 후 후행 슬래시 를 기반으로합니다."
+msgstr "리다이렉트 는 사이트의 도메인 종료 후슬래시 를 기반으로합니다."
 
 msgid "This module cannot be applied to a server running modules that use the apache web server."
-msgstr "이 모듈은아파치 웹 서버 를 사용하는 모듈을 실행하는 서버 에 적용 할 수 없다."
+msgstr "이 모듈은아파치 웹 서버를 사용하여 모듈을 실행하는 서버 에 적용 할 수 없다."
 
 msgid "Squid Internet Proxy"
 msgstr "오징어 인터넷 프록시"
 
 msgid "This will setup squid and dansguardian to provide filtered internet access for the client computers."
-msgstr "이 의지 셋업 오징어 dansguardian 는클라이언트 컴퓨터 여과 인터넷 액세스를 제공한다."
+msgstr "이러한 의사 설치 오징어 dansguardian 는클라이언트 시스템에 대한 필터링 된 인터넷 액세스를 제공 한다."
 
 msgid "This module cannot be applied to a server running the reverse proxy module."
-msgstr "이 모듈은리버스 프록시 모듈 을 실행하는 서버 에 적용 할 수 없다."
+msgstr "이 모듈은리버스 프록시 모듈 을 실행하는서버에 적용 할 수 없다."
 
 msgid "This will setup a server to provide E-Mail services."
-msgstr "이 의지 설정서버는 E 메일 서비스 를 제공한다."
+msgstr "이러한 의사 설정서버는 전자 메일 서비스를 제공 한다."
 
 msgid "Home Access Server"
 msgstr "홈 액세스 서버"
 
 msgid "This will setup a server to provide web based access to home areas."
-msgstr "이 의지 설치서버는 홈 영역에 웹 기반 액세스 를 제공합니다."
+msgstr "이 뜻 설정서버는 홈 영역에 웹 기반 액세스 를 제공합니다."
 
 msgid "Moodle Server"
 msgstr "무 서버"
@@ -2769,19 +2796,19 @@ msgid "Owncloud Server"
 msgstr "Owncloud 서버"
 
 msgid "This will provide a cloud file storage system for web access to files."
-msgstr "이것은 파일에 대한 웹 액세스클라우드 파일 저장 시스템을 제공하는 것이다."
+msgstr "이것은 파일에 대한 액세스를위한 웹클라우드 파일 저장 시스템을 제공하는 것이다."
 
 msgid "Radius Server"
 msgstr "RADIUS 서버"
 
 msgid "This will setup a radius server which can be used for your wireless access points."
-msgstr "이 의지 설치 무선 액세스 포인트 에 사용될 수RADIUS 서버."
+msgstr "이러한 의사 설치 무선 액세스 포인트 에 사용될 수RADIUS 서버."
 
 msgid "Distribution Server"
 msgstr "배포 서버"
 
 msgid "This will setup a distribution server for centralised linux client installations."
-msgstr "이 뜻을 설치 중앙 리눅스 클라이언트 설치 를위한 배포 서버."
+msgstr "이 뜻 설정 중앙 리눅스 클라이언트 설치 를위한 배포 서버."
 
 msgid "This module needs the DHCP module functioning to allow the clients to be able to network boot."
 msgstr "이 모듈은 클라이언트가 네트워크 부팅을 할 수 있도록 기능을DHCP 모듈을 필요로한다."
@@ -2790,37 +2817,37 @@ msgid "Monitor Server"
 msgstr "모니터 서버"
 
 msgid "This will provide a monitoring server for you network that will alert you if there are any problems."
-msgstr "이것은 어떤 문제가 있는지 를 알려줍니다 당신 네트워크에 대한 모니터링 서버 를 제공합니다."
+msgstr "이것은 어떤 문제가 있는지 를 알려줍니다 당신이 네트워크에 대한 모니터링 서버 를 제공 할 것입니다."
 
 msgid "Joomla"
 msgstr "줌라"
 
 msgid "This will setup a server to provide Joomla content management."
-msgstr "이 뜻을 설치서버 의 Joomla 콘텐츠 관리 를 제공합니다."
+msgstr "이 뜻 설치서버 의 Joomla 콘텐츠 관리 를 제공한다."
 
 msgid "Internet Radio Server"
 msgstr "인터넷 라디오 서버"
 
 msgid "This will set up the server to act as an internet radio server using icecast."
-msgstr "이 아이스 캐스트 를 사용하여 인터넷 라디오 서버의 역할을하도록 서버를 설정합니다."
+msgstr "이 아이스 캐스트 를 사용하여 인터넷 라디오 서버 역할을 하도록 서버를 설정합니다."
 
 msgid "Xibo Server"
 msgstr "Xibo 서버"
 
 msgid "This will setup the Xibo Digital Signage system."
-msgstr "이 뜻을 설치Xibo 디지털 사이 니지 시스템."
+msgstr "이 뜻 설정Xibo 디지털 사이 니지 시스템."
 
 msgid "Kanboard"
 msgstr "Kanboard"
 
 msgid "This will setup Kanboard which is a web based project management system."
-msgstr "웹 기반 프로젝트 관리 시스템 이 뜻을 설치 Kanboard."
+msgstr "웹 기반 프로젝트 관리 시스템 이 의지 설정 Kanboard."
 
 msgid "Add Advanced Server Role"
 msgstr "고급 서버 역할을 추가"
 
 msgid "Custom application"
-msgstr "사용자 지정 응용 프로그램"
+msgstr "사용자 정의 응용 프로그램"
 
 msgid "This will add in a name of a non Karoshi application for your server."
 msgstr "이것은 당신의 서버 가 아닌 과로사 응용 프로그램 의 이름을 추가합니다."
@@ -2829,16 +2856,16 @@ msgid "Web Server"
 msgstr "웹 서버"
 
 msgid "This will setup a server to provide LAMP web services with ftp access."
-msgstr "이 의지 설정서버는 FTP 액세스 LAMP 웹 서비스 를 제공한다."
+msgstr "이러한 의사 설치FTP 서버는 액세스 LAMP 웹 서비스 를 제공한다."
 
 msgid "Remote SSH Access"
 msgstr "원격 SSH 액세스"
 
 msgid "This will allow remote ssh access to your main server. This can also be used to join this server up to another karoshi system so that users created on the master server will also be created here."
-msgstr "이것은 당신의 주 서버 에 원격 SSH 액세스 를 허용합니다. 이것은 또한 마스터 서버에서 만든 사용자 도 여기에 생성 될 수 있도록 다른 과로사 시스템 이 서버를 가입 할 수 있습니다."
+msgstr "이것은 당신의 메인 서버 에 대한 원격 SSH 액세스 를 허용합니다. 이것은 또한 마스터 서버에서 만든 사용자 도 여기에 생성 될 수 있도록 다른 과로사 시스템 이 서버를 가입 할 수 있습니다."
 
 msgid "This will allow remote ssh access to your main server."
-msgstr "이것은 당신의 주 서버 에 원격 SSH 액세스 를 허용합니다."
+msgstr "이것은 당신의 메인 서버 에 대한 원격 SSH 액세스 를 허용합니다."
 
 msgid "This can also be used to join this server up to another karoshi system so that users created on the master server will also be created here."
 msgstr "이것은 또한 마스터 서버에서 만든 사용자 도 여기에 생성 될 수 있도록 다른 과로사 시스템 이 서버를 가입 할 수 있습니다."
@@ -2847,13 +2874,13 @@ msgid "Federated Server"
 msgstr "페더 레이 티드 서버"
 
 msgid "This will modify a Karoshi main server to be part of a federation so that all users created on the main system are also created on the federated systems."
-msgstr "이과로사 주 서버 가 메인 시스템 에서 생성 된 모든 사용자가 또한 페더 레이 티드 시스템 에 생성 되도록연맹 의 일부가 수정됩니다."
+msgstr "이과로사 주 서버 가 메인 시스템 에 생성 된 모든 사용자가 또한 페더 레이 티드 시스템 에 생성 되도록연맹 의 일부가 수정됩니다."
 
 msgid "This module can only be applied to a main server."
 msgstr "이 모듈 은메인 서버 에 적용 할 수있다."
 
 msgid "Single Sign On"
-msgstr "단일 사인온"
+msgstr "싱글 사인온 (SSO)"
 
 msgid "Connection logs are generated each time a user connects to a share."
 msgstr "연결 로그 는 사용자가 공유에 연결될 때마다 생성됩니다."
@@ -2871,7 +2898,7 @@ msgid "No karoshi backup servers have been enabled."
 msgstr "어떤 과로사 의 백업 서버 가 활성화 되지 않았습니다."
 
 msgid "The default page cannot be blank."
-msgstr "기본 페이지 는 비워 둘 수 없습니다."
+msgstr "기본 페이지는 비워 둘 수 없습니다."
 
 msgid "Your default web management page has been set."
 msgstr "기본 웹 관리 페이지가 설정되어 있습니다."
@@ -2880,7 +2907,7 @@ msgid "View Quota Usage"
 msgstr "보기 할당량 사용"
 
 msgid "Choose the user that you want to check the quotas for. Leave this field blank if you want to check the quotas for a group."
-msgstr "당신이할당량을 확인하려는 사용자 를 선택합니다. 당신은 그룹에 대한 할당량을 확인 하려면이 필드를 비워 둡니다."
+msgstr "당신이할당량을 확인하려는 사용자 를 선택합니다. 당신이 그룹에 대한 할당량을 확인 하려면이 필드를 비워 둡니다."
 
 msgid "Choose the group that you want to check the quotas on."
 msgstr "당신이 할당량 에 확인 할 그룹을 선택합니다."
@@ -2895,10 +2922,10 @@ msgid "Use this feature with care."
 msgstr "주의 이 기능을 사용합니다."
 
 msgid "You have not entered in a valid E-Mail address to send the alert to."
-msgstr "당신 에게 경고를 보낼 수있는 유효한 전자 메일 주소를 입력하지 않았습니다."
+msgstr "당신 에게 경고를 보낼 수있는 유효한 이메일 주소를 입력하지 않았습니다."
 
 msgid "You have not entered in a valid E-Mail address sender."
-msgstr "당신은 유효한 전자 메일 주소 를 보낸 사람 에 입력 하지 않았습니다."
+msgstr "유효한 이메일 주소 를 보낸 사람 에 입력 하지 않았습니다."
 
 msgid "You have not entered in a valid E-Mail server."
 msgstr "유효한 전자 메일 서버 에 입력 하지 않았습니다."
@@ -2916,7 +2943,7 @@ msgid "Linux Client - Choose Distribution"
 msgstr "리눅스 클라이언트 - 배포 를 선택"
 
 msgid "Choose the linux client iso that you want to distribute to your linux clients over the network."
-msgstr "네트워크를 통해 리눅스 클라이언트에 배포 할 리눅스 클라이언트 ISO 를 선택합니다."
+msgstr "당신이 네트워크를 통해 리눅스 클라이언트에 배포 할 리눅스 클라이언트 ISO 를 선택합니다."
 
 msgid "Setup Kanboard"
 msgstr "설치 Kanboard"
@@ -2937,16 +2964,16 @@ msgid "Edit Karoshi Monitors"
 msgstr "편집 과로사 모니터"
 
 msgid "The group name must not be blank."
-msgstr "그룹 이름은 비워 둘 수 없습니다."
+msgstr "그룹 이름은 반드시 입력해야합니다."
 
 msgid "There was a problem adding this monitor. Please check the Karoshi Web administration Logs."
-msgstr "이 모니터를 추가하는 문제가 발생했습니다. 과로사 웹 관리 로그를 확인하십시오."
+msgstr "이 모니터를 추가하는 중에 문제가 발생했습니다. 과로사 웹 관리 로그를 확인하십시오."
 
 msgid "Linux Client - Upload Distribution"
 msgstr "리눅스 클라이언트 - 업로드 배포"
 
 msgid "This will upload a linux client iso for use in installing linux clients over the network."
-msgstr "이것은네트워크를 통해 리눅스 클라이언트 설치 에 사용하기 위해리눅스 클라이언트 이소 을 업로드 할 것이다."
+msgstr "이것은네트워크를 통해 리눅스 클라이언트 설치 에 사용하는 리눅스 클라이언트 ISO 를 업로드 할 것이다."
 
 msgid "You can copy in extra iso images to /home/itadminshare/distributions."
 msgstr "당신은 / 홈 / itadminshare / 배포판 에 추가 ISO 이미지 에 복사 할 수 있습니다."
@@ -2967,7 +2994,7 @@ msgid "All exam accounts have been archived to"
 msgstr "모든 시험 계정 에 보관 된"
 
 msgid "The exam accounts could not be archived"
-msgstr "시험 계정은 보관할 수 없습니다"
+msgstr "시험 계정은 아카이브 할 수 없습니다"
 
 msgid "Requested Deleted Users"
 msgstr "요청 삭제 된 사용자"
@@ -2979,7 +3006,7 @@ msgid "View Groups"
 msgstr "그룹보기"
 
 msgid "This will let you add labels to your groups. The labels are shown to help you choose the correct group when adding new users to the system."
-msgstr "이것은 당신이 당신의 그룹에 레이블을 추가 할 것입니다. 레이블은 시스템에 새로운 사용자를 추가 할 때 올바른 그룹을 선택하는 데 도움이 표시됩니다."
+msgstr "이것은 당신이 당신의 그룹에 레이블을 추가 할 것입니다. 라벨은 시스템에 새로운 사용자를 추가 할 때 올바른 그룹을 선택하는 데 도움이 표시됩니다."
 
 msgid "This is used to change important passwords on your system that are needed to access specific services."
 msgstr "이는 특정 서비스에 액세스 하는 데 필요한 시스템에 중요한 암호를 변경하는 데 사용됩니다."
@@ -2988,7 +3015,7 @@ msgid "This is the account used to log in locally to the servers."
 msgstr "이 서버 에 로컬로 로그인하는 데 사용되는 계정입니다."
 
 msgid "This password is needed to join the clients to the domain."
-msgstr "이 암호는클라이언트가 도메인에 가입 할 필요가있다."
+msgstr "이 암호는클라이언트가 도메인에가입 할 필요가있다."
 
 msgid "You should not normally need to use this password."
 msgstr "당신은 일반적으로 이 암호를 사용할 필요가 없습니다."
@@ -3000,7 +3027,7 @@ msgid "Special Characters"
 msgstr "특수 문자"
 
 msgid "Confirm Password"
-msgstr "암호 확인"
+msgstr "비밀번호 확인"
 
 msgid "Change password"
 msgstr "비밀번호 변경"
@@ -3018,7 +3045,7 @@ msgid "Disable file synchronisation"
 msgstr "사용 안 함 파일 동기화"
 
 msgid "Client Bypass Controls"
-msgstr "클라이언트 바이 패스 컨트롤"
+msgstr "클라이언트 바이 패스 제어"
 
 msgid "Add IP number"
 msgstr "IP 번호를 추가"
@@ -3030,7 +3057,7 @@ msgid "View IP numbers"
 msgstr "보기 IP 번호"
 
 msgid "This can be used for client devices to bypass the internet filtering."
-msgstr "이것은인터넷 필터링을 우회하도록 클라이언트 장치 에 사용될 수있다."
+msgstr "이것은인터넷 필터링을 우회하는 클라이언트 장치들 에 사용될 수있다."
 
 msgid "TCPIP Number"
 msgstr "TCPIP 번호"
@@ -3057,16 +3084,16 @@ msgid "The TCPIP address must not be blank."
 msgstr "TCPIP 주소는 반드시 입력해야합니다."
 
 msgid "There was an error processing this request. Please view the Karoshi remote management logs."
-msgstr "이 요청 을 처리하는 동안 오류가 발생했습니다. 과로사 원격 관리 로그를보고 하십시오."
+msgstr "이 요청을 처리하는 동안 오류가 발생했습니다. 과로사 원격 관리 로그를 참조하시기 바랍니다."
 
 msgid "The TCPIP address was already added."
 msgstr "TCPIP 주소는 이미 추가되었습니다."
 
 msgid "The TCPIP address was not in the list."
-msgstr "TCPIP 주소 가 목록에 없었다."
+msgstr "TCPIP 주소가 목록에없는 했다."
 
 msgid "The list is empty. All TCPIP addresses are allowed."
-msgstr "목록이 비어 있습니다. 모든 TCPIP 주소 가 허용됩니다."
+msgstr "목록이 비어 있습니다. 모든 TCPIP 주소는 허용됩니다."
 
 msgid "You have not uploaded a file."
 msgstr "당신은 파일을 업로드 하지 않았습니다."
@@ -3075,7 +3102,7 @@ msgid "More than one file has been uploaded."
 msgstr "하나 이상의 파일이 업로드 되었습니다."
 
 msgid "The file you have uploaded does not have a .tgz file extension."
-msgstr "업로드 한 파일은.tgz의 파일 확장자 가 없습니다."
+msgstr "당신이 업로드 한 파일은.tgz의 파일 확장자 가 없습니다."
 
 msgid "The archive you have uploaded is corrupt."
 msgstr "당신이 업로드 한 아카이브 가 손상되었습니다."
@@ -3093,13 +3120,13 @@ msgid "Setup Moodle"
 msgstr "설치 무"
 
 msgid "This will setup the moodle E-Learning system for your users. The moodle authentication is configured to recognise members of staff and allow access to them to create courses."
-msgstr "이 뜻을 설치 사용자 에 대한 무 E- 학습 시스템. 무 인증 과정 을 만들 그들 에 대한 액세스를 직원 의 구성원 을 인식 할 수 있도록 구성 되어있다."
+msgstr "이 뜻 설정 사용자 에 대한 무 E- 학습 시스템입니다. 무 인증 과정 을 만들 그들 에 대한 액세스를 직원 의 구성원 을 인식 할 수 있도록 구성 되어있다."
 
 msgid "Moodle Domain"
 msgstr "무 도메인"
 
 msgid "You will need to choose an alias for this server for web access. Either enter in a custom alias or choose one from the dropdown list."
-msgstr "당신은 웹 액세스를 위해 이 서버에 대한 별칭을 선택해야합니다. 어느 사용자 정의 별칭 에 입력하거나 드롭 다운 목록에서 하나를 선택합니다."
+msgstr "당신은 웹 액세스를 위해 이 서버에 대한 별칭을 선택해야합니다. 어느 사용자 정의 별칭 에 입력 하거나 드롭 다운 목록에서 하나를 선택합니다."
 
 msgid "Assigned Aliases"
 msgstr "할당 된 별칭"
@@ -3108,7 +3135,7 @@ msgid "Unassigned Aliases"
 msgstr "할당되지 않은 별칭"
 
 msgid "Web Management - View-delete files"
-msgstr "웹 관리 - 파일 보기 - 삭제"
+msgstr "웹 관리 - 파일을 보기 - 삭제"
 
 msgid "Choose the web server that you want to view the files on."
 msgstr "당신이 파일 에 표시 할 웹 서버를 선택합니다."
@@ -3120,13 +3147,13 @@ msgid "Enter"
 msgstr "입력"
 
 msgid "Bulk User Creation"
-msgstr "대량 사용자 생성"
+msgstr "대량 사용자 만들기"
 
 msgid "The user style must not be blank."
 msgstr "사용자 의 스타일은 반드시 입력해야합니다."
 
 msgid "The primary group must not be blank."
-msgstr "기본 그룹 은 반드시 입력해야합니다."
+msgstr "주요 그룹은 반드시 입력해야합니다."
 
 msgid "Incorrect username style."
 msgstr "올바른 사용자 명 스타일."
@@ -3147,13 +3174,13 @@ msgid "CSV file error."
 msgstr "CSV 파일 오류."
 
 msgid "This username is already in use."
-msgstr "이 사용자 이름은 이미 사용 중입니다."
+msgstr "이 이름 은 이미 사용 중입니다."
 
 msgid "Bulk user creation completed."
 msgstr "대량 사용자 생성 이 완료되었습니다."
 
 msgid "View new passwords"
-msgstr "새 암호 보기"
+msgstr "새 암호를 보기"
 
 msgid "CSV file"
 msgstr "CSV 파일"
@@ -3168,7 +3195,7 @@ msgid "This will configure a UPS device connected to a server."
 msgstr "이것은서버에 연결된UPS 장치를 구성 한다."
 
 msgid "There are no master UPS devices available."
-msgstr "가능한 마스터 UPS 장치 가 없습니다."
+msgstr "사용 가능한 마스터 UPS 장치 가 없습니다."
 
 msgid "Master UPS"
 msgstr "마스터 UPS"
@@ -3195,10 +3222,10 @@ msgid "Please enter a correct time."
 msgstr "정확한 ​​시간을 입력하세요."
 
 msgid "This will add the details required to remotely run commands on a windows server."
-msgstr "이 원격 Windows 서버 에서 명령을 실행하는 데 필요한 세부 사항을 추가 할 것입니다."
+msgstr "이 원격 Windows 서버 에서 명령을 실행하는 데 필요한 세부 사항을 추가합니다."
 
 msgid "Enter in the name of the windows server you want to add."
-msgstr "추가 할Windows 서버 의 이름을 입력합니다."
+msgstr "추가 할 윈도우 서버 의 이름을 입력합니다."
 
 msgid "TCPIP number"
 msgstr "TCPIP 번호"
@@ -3210,7 +3237,7 @@ msgid "Administrator user"
 msgstr "관리자 사용자"
 
 msgid "Enter in the administrator password. If you change the password on the server you will need to change it here as well."
-msgstr "관리자 암호를 입력합니다. 서버 에서 암호 를 변경하는 경우 당신은뿐만 아니라 여기 를 변경해야합니다."
+msgstr "관리자 암호를 입력합니다. 서버 의 암호 를 변경하는 경우 당신은뿐만 아니라 여기 변경해야합니다."
 
 msgid "Administrator password"
 msgstr "관리자 암호"
@@ -3240,7 +3267,7 @@ msgid "End Date"
 msgstr "종료 날짜"
 
 msgid "Mac Address"
-msgstr "맥 주소"
+msgstr "MAC 주소"
 
 msgid "Status"
 msgstr "지위"
@@ -3261,7 +3288,7 @@ msgid "The Server choice cannot be blank."
 msgstr "서버 선택은 비워 둘 수 없습니다."
 
 msgid "This will provide a monitoring server for your network."
-msgstr "이 네트워크 에 대한 모니터링 서버 를 제공합니다."
+msgstr "이 네트워크 에 대한 모니터링 서버 를 제공 할 것입니다."
 
 msgid "The monitor server provides visual, email, and text alerts for any devices that are offline. You can add devices to be monitored in the web management."
 msgstr "모니터 서버 가 오프라인 상태입니다 모든 장치 에 대한 시각, 이메일 및 문자 알림 을 제공합니다. 당신은 웹 관리 에서 모니터링 할 장치를 추가 할 수 있습니다."
@@ -3273,7 +3300,7 @@ msgid "Enable Quotas on Partitions"
 msgstr "파티션 에 할당량 을 활성화"
 
 msgid "Please choose the server that you want to enable the quotas on."
-msgstr "당신이 할당량 에 사용하려는 서버를 선택하십시오."
+msgstr "당신이 할당량을 에 사용하려는 서버를 선택하십시오."
 
 msgid "This will enable quotas on the /home partition of the chosen server."
 msgstr "이것은 선택된 서버의 / home 파티션 에 할당량을 가능하게 할 것이다."
@@ -3297,16 +3324,16 @@ msgid "Wake on Lan - Now"
 msgstr "Wake on LAN은 - 이제"
 
 msgid "This will turn on all of the computers in your selected location."
-msgstr "이것은 당신의 선택한 위치 에 있는 모든 컴퓨터 를 켜집니다."
+msgstr "이 선택한 위치에 있는 모든 컴퓨터 를 켜집니다."
 
 msgid "The computers have to be declared in the asset register with a valid mac address."
-msgstr "컴퓨터는 유효한 MAC 주소 와 자산 레지스터 에 선언 되어야한다."
+msgstr "컴퓨터는 유효한 MAC 주소 와 자산 레지스터 에 선언 해야합니다."
 
 msgid "Select the location that you want. All computers in this location will be turned on."
-msgstr "당신이 원하는 위치를 선택합니다. 이 위치에있는 모든 컴퓨터가 켜집니다."
+msgstr "원하는 위치를 선택합니다. 이 위치에있는 모든 컴퓨터가 켜집니다."
 
 msgid "There are no locations to schedule."
-msgstr "예약 할 곳 이 없습니다."
+msgstr "예약 할 사항 이 없습니다."
 
 msgid "User Internet Logs"
 msgstr "사용자 의 인터넷 로그"
@@ -3330,7 +3357,7 @@ msgid "Incorrect minute value."
 msgstr "잘못된 값 (분)."
 
 msgid "There was a problem changing the shutdown time. Please check the Karoshi web administration logs."
-msgstr "종료 시간을 변경 하는 데 문제가 발생했습니다. 과로사 웹 관리 로그를 확인하십시오."
+msgstr "종료 시간을 변경 하는 과정에서 문제가 발생했습니다. 과로사 웹 관리 로그를 확인하십시오."
 
 msgid "The shutdown time has been set for the clients."
 msgstr "종료 시간은클라이언트에 대해 설정되어있다."
@@ -3339,16 +3366,16 @@ msgid "Exam Accounts - Change Passwords"
 msgstr "시험 계정 - 암호 변경"
 
 msgid "Enter the password that you want all of the exam accounts changed to."
-msgstr "당신이 변경시험 모든 계정 을 원하는 암호를 입력합니다."
+msgstr "당신이 변경된 시험 의 모든 계정 을 원하는 암호를 입력합니다."
 
 msgid "Enter in any exam accounts that you do not want to have the passwords changed for separated by spaces."
-msgstr "당신이 공백으로 구분 을 위해 변경암호를 사용 하지 않으려는 시험 계정 을 입력합니다."
+msgstr "공백 으로 구분 대해 변경암호를 사용 하지 않으려는 시험 계정 에 입력합니다."
 
 msgid "Setup Web Server"
-msgstr "설치 웹 서버"
+msgstr "설정 웹 서버"
 
 msgid "This will ensure that apache and mysql are running on the server and that the correct ports are open. It will also create a mysql database of your choice to use with your website."
-msgstr "이것은 그 아파치를 확인 하고 MySQL은 서버에서 실행 하고 올바른 포트가 열려 있는지. 그것은 또한 당신의 웹 사이트 에 사용할 수 있도록 선택의 MySQL 데이터베이스를 생성합니다."
+msgstr "이것은 그 아파치를 확인 하고 MySQL은 서버에서 실행 하고 올바른 포트가 열려 있는지. 그것은 또한 당신의 웹 사이트 와 함께 사용하도록 선택의 MySQL 데이터베이스를 생성합니다."
 
 msgid "Leave the database fields blank if you do not require a database to be created."
 msgstr "당신이 생성 될 데이터베이스를 필요로하지 않는 경우 데이터베이스 필드를 비워 둡니다."
@@ -3405,7 +3432,7 @@ msgid "The locality option cannot be blank."
 msgstr "지역 옵션은 비워 둘 수 없습니다."
 
 msgid "The institute name option cannot be blank."
-msgstr "연구소 이름 옵션 은 비워 둘 수 없습니다."
+msgstr "연구소 이름 옵션은 비워 둘 수 없습니다."
 
 msgid "The department name cannot be blank."
 msgstr "부서 이름 은 비워 둘 수 없습니다."
@@ -3414,13 +3441,13 @@ msgid "The common name option cannot be blank."
 msgstr "일반 이름 옵션은 비워 둘 수 없습니다."
 
 msgid "The e-mail option cannot be blank."
-msgstr "전자 메일 옵션은 비워 둘 수 없습니다."
+msgstr "전자 메일 옵션을 비워 둘 수 없습니다."
 
 msgid "There was an error with the certificate option type."
 msgstr "인증서 옵션 유형의 오류가 발생했습니다."
 
 msgid "Web Certificate"
-msgstr "웹 인증서"
+msgstr "웹 인증"
 
 msgid "E-mail Certificate"
 msgstr "E 메일 증명서"
@@ -3432,13 +3459,13 @@ msgid "SSH is not enabled for this server."
 msgstr "SSH 는 이 서버 를 사용할 수 없습니다."
 
 msgid "The SSL Certificate has been applied."
-msgstr "SSL 인증서 적용되었습니다."
+msgstr "SSL 인증서 가 적용되었습니다."
 
 msgid "Search Criteria"
 msgstr "검색 조건"
 
 msgid "Enter in the start of the web address you want to search for."
-msgstr "당신이 검색 할 웹 주소 의 시작 부분 에 입력합니다."
+msgstr "당신이 검색 할 웹 주소 의 시작 에 입력합니다."
 
 msgid "View Karoshi Auth Errors"
 msgstr "과로사 인증 오류 보기"
@@ -3447,22 +3474,22 @@ msgid "Edit Printer Limits"
 msgstr "편집 프린터 제한"
 
 msgid "All of the user page count data has been reset."
-msgstr "사용자 페이지 카운트 모든 데이터는 리셋 되고있다."
+msgstr "사용자 페이지 카운트 데이터 모두 는 리셋 되고있다."
 
 msgid "Allow SSL Internet Sites"
-msgstr "SSL 인터넷 사이트 허용"
+msgstr "SSL 인터넷 사이트 를 허용"
 
 msgid "Please enter the site that you want to allow."
 msgstr "허용 할 사이트를 입력하세요."
 
 msgid "Do not include http or www."
-msgstr "HTTP 또는 WWW 를 포함하지 마십시오."
+msgstr "http 또는 www를 포함하지 마십시오."
 
 msgid "Example: mysite.com"
 msgstr "예: mysite.com"
 
 msgid "If you are denying access to all SSL websites you can individually allow sites here."
-msgstr "모든 SSL 웹 사이트 에 대한 액세스를 거부 하는 경우 는 개별적으로 여기 사이트를 허용 할 수 있습니다."
+msgstr "모든 SSL 웹 사이트 에 액세스를 거부 하는 경우 개별적으로 여기 사이트를 허용 할 수 있습니다."
 
 msgid "Site"
 msgstr "사이트"
@@ -3479,14 +3506,38 @@ msgstr "forename, 성, 비밀번호 - 선택, 입학 번호 또는 직원 코드
 msgid "Upload CSV file"
 msgstr "CSV 파일을 업로드"
 
+msgid "Radius Access Points"
+msgstr "반경 액세스 포인트"
+
+msgid "The shortname cannot be blank."
+msgstr "짧은 이름 은 비워 둘 수 없습니다."
+
+msgid "The secret key cannot be blank."
+msgstr "비밀 키 는 비워 둘 수 없습니다."
+
+msgid "The secret keys do not match."
+msgstr "비밀 키 가 일치하지 않습니다."
+
+msgid "The TCPIP address is incorrect."
+msgstr "TCPIP 주소 가 올바르지 않습니다."
+
+msgid "View Access Points"
+msgstr "보기 액세스 포인트"
+
+msgid "Add Access Point"
+msgstr "액세스 포인트 를 추가"
+
+msgid "Access Points"
+msgstr "액세스 포인트"
+
 msgid "Setup Print Server"
 msgstr "설치 프린트 서버"
 
 msgid "This will set up a print server for your network allowing printer queues to be created and controlled."
-msgstr "이 네트워크 프린터 대기열이 만들어지고 제어 할 수 있도록하기위한 프린트 서버를 설정합니다."
+msgstr "이 네트워크 프린터 대기열이 생성 을 제어 할 수 있도록하기위한 프린트 서버를 설정합니다."
 
 msgid "Printer drivers can be added to the printer queues so that your client computers do not need to have the printer drivers installed on them."
-msgstr "클라이언트 시스템 이 그들 에 설치된프린터 드라이버 가 필요 하지 않도록 프린터 드라이버는프린터 큐 에 추가 될 수있다."
+msgstr "클라이언트 시스템 이 그들 에 설치된프린터 드라이버가 필요 하지 않도록 프린터 드라이버는프린터 큐 에 추가 될 수있다."
 
 msgid "You must choose a server to enable or disable."
 msgstr "당신은 활성화 또는 비활성화 할 수있는 서버를 선택해야합니다."
@@ -3504,7 +3555,7 @@ msgid "Setup Owncloud"
 msgstr "설치 Owncloud"
 
 msgid "This will setup the Owncloud storage system for your users."
-msgstr "이 뜻을 설치 하여 사용자의 Owncloud 스토리지 시스템."
+msgstr "이 뜻을 설정 하여 사용자의 Owncloud 스토리지 시스템."
 
 msgid "Owncloud Domain"
 msgstr "Owncloud 도메인"
@@ -3522,7 +3573,7 @@ msgid "Weekly"
 msgstr "주간"
 
 msgid "Monthly"
-msgstr "월"
+msgstr "월별"
 
 msgid "Yearly"
 msgstr "매년"
@@ -3534,7 +3585,7 @@ msgid "Change Primary Group"
 msgstr "변경 주 그룹"
 
 msgid "You cannot change the primary group for a system user."
-msgstr "당신은 시스템 사용자의 기본 그룹을 변경할 수 없습니다."
+msgstr "당신은 시스템 사용자에 대한 기본 그룹 을 변경할 수 없습니다."
 
 msgid "The new primary group must not be blank."
 msgstr "새 기본 그룹은 반드시 입력해야합니다."
@@ -3546,7 +3597,7 @@ msgid "Primary group changed for"
 msgstr "기본 그룹 에 대한 변경"
 
 msgid "This page shows the status of your software raid. You can also add and remove drives from the raid array here."
-msgstr "이 페이지는 소프트웨어 RAID 의 상태를 보여줍니다. 당신은 또한 추가하고 여기에 RAID 어레이 에서 드라이브를 제거 할 수 있습니다."
+msgstr "이 페이지는 소프트웨어 RAID 의 상태를 보여줍니다. 또한 추가하고 여기에 RAID 어레이 에서 드라이브를 제거 할 수 있습니다."
 
 msgid "Show all users in a group"
 msgstr "그룹의 모든 사용자 보기"
@@ -3555,7 +3606,7 @@ msgid "Choose the primary group that you want to see all of the users in."
 msgstr "당신이 모든 사용자 를 표시 할 기본 그룹 을 선택합니다."
 
 msgid "Enter in the network share name that you want to check the logs for."
-msgstr "당신이 로그를 확인 하고자하는 네트워크 공유 이름을 입력합니다."
+msgstr "당신이 로그를 확인 하려면 네트워크 공유 이름을 입력합니다."
 
 msgid "E-Mail Queue"
 msgstr "전자 메일 큐"
@@ -3618,37 +3669,37 @@ msgid "There was a problem downloading the Linux skel archive. Please check the 
 msgstr "리눅스 skel이 아카이브를 다운로드하는 중에 문제가 발생했습니다. 과로사 웹 관리 로그를 확인하십시오."
 
 msgid "The /home partition is listed more than once in fstab on this server."
-msgstr "/ home 파티션 이 서버 에 fstab에 두 번 이상 나열됩니다."
+msgstr "/ home 파티션 은 이 서버에 fstab에 두 번 이상 나열됩니다."
 
 msgid "This will set up an email server for your network."
-msgstr "이 네트워크의전자 메일 서버 를 설정합니다."
+msgstr "이 네트워크 에 대한 이메일 서버를 설정합니다."
 
 msgid "The email system uses clamav and spamassasin for anti virus and anti spam. Access to the email system is through a web browser using SOGo which is automatically set up as part of the setup."
-msgstr "전자 메일 시스템은 안티 바이러스 및 안티 스팸 ClamAV를 하고 spamassasin 을 사용합니다. 이메일 시스템 에 대한 액세스는 자동설정 의 일부로서 설정되어 소고 를 이용하여웹 브라우저를 통해서이다."
+msgstr "전자 메일 시스템은 안티 바이러스 및 안티 스팸 ClamAV를 하고 spamassasin 을 사용합니다. 이메일 시스템 에 대한 액세스는 자동설정 의 일부로서 설정되어 소고 를 이용하여 웹 브라우저를 통해서이다."
 
 msgid " Emails can also be accessed via an imap or pop3 email client."
-msgstr "이메일 은IMAP 또는 POP3 이메일 클라이언트를 통해 액세스 할 수 있습니다."
+msgstr "이메일은 또한IMAP 또는 POP3 이메일 클라이언트를 통해 액세스 할 수 있습니다."
 
 msgid "The email system uses clamav and spamassasin for anti virus and anti spam."
 msgstr "전자 메일 시스템은 안티 바이러스 및 안티 스팸 ClamAV를 하고 spamassasin 을 사용합니다."
 
 msgid "Access to the email system is through a web browser using SOGo which is automatically set up as part of the setup."
-msgstr "이메일 시스템 에 대한 액세스는 자동설정 의 일부로서 설정되어 소고 를 이용하여웹 브라우저를 통해서이다."
+msgstr "이메일 시스템 에 대한 액세스는 자동설정 의 일부로서 설정되어 소고 를 이용하여 웹 브라우저를 통해서이다."
 
 msgid "Emails can also be accessed via an imap or pop3 email client."
-msgstr "이메일 은IMAP 또는 POP3 이메일 클라이언트를 통해 액세스 할 수 있습니다."
+msgstr "이메일은 또한IMAP 또는 POP3 이메일 클라이언트를 통해 액세스 할 수 있습니다."
 
 msgid "Current Email Server"
 msgstr "현재 이메일 서버"
 
 msgid "A server is already being used for E-Mail."
-msgstr "서버는 이미 E 메일 을 위해 사용되고있다."
+msgstr "서버는 이미 E 메일 에 사용되고 있다."
 
 msgid "Copy existing E-Mail"
 msgstr "기존의 전자 메일 복사"
 
 msgid "Enabling this will migrate your existing email, Egroupware, and Squirrrelmail to the new server."
-msgstr "이 을 사용하면 새 서버에 기존 이메일, Egroupware 및 Squirrrelmail 마이그레이션합니다."
+msgstr "이 을 사용하면 새 서버로 기존 이메일, Egroupware 및 Squirrrelmail 마이그레이션합니다."
 
 msgid "E-Mail domain"
 msgstr "전자 메일 도메인"
@@ -3672,10 +3723,10 @@ msgid "You have not chosen any printers."
 msgstr "당신은 어떤 프린터를 선택 하지 않았습니다."
 
 msgid "No users listed."
-msgstr "어떤 사용자는 표시되지."
+msgstr "어떤 사용자가 나열되지."
 
 msgid "Your username or password was not correct."
-msgstr "사용자 이름 이나 암호 가 잘못 이었다."
+msgstr "사용자 이름 또는 암호가 정확 하지 않았다."
 
 msgid "Setup Wizard"
 msgstr "설치 마법사"
@@ -3684,7 +3735,7 @@ msgid "Setup Printers"
 msgstr "설정 프린터"
 
 msgid "If you have not already done so you may want to add a printer server to your network so that you can control printing for your clients."
-msgstr "당신이 아직 하지 않은 경우 그래서 당신은 당신이 당신의 고객을 위해 인쇄를 제어 할 수 있도록 네트워크에 프린터 서버 를 추가 할 수 있습니다."
+msgstr "당신이 아직 수행하지 않은 경우 그래서 당신은 당신이 당신의 고객을 위해 인쇄를 제어 할 수 있도록 네트워크에 프린터 서버 를 추가 할 수 있습니다."
 
 msgid "The show servers link below will show all available servers. Choose the server that you want to add the printer module to by clicking on the add role button."
 msgstr "쇼 서버는 사용 가능한 모든 서버를 표시합니다 아래 링크를 클릭하십시오. 당신은 역할 추가 버튼을 클릭하여 프린터 모듈을 추가 할 서버를 선택합니다."
@@ -3711,7 +3762,7 @@ msgid "Refresh list"
 msgstr "새로 고침 목록"
 
 msgid "No updates are available."
-msgstr "어떠한 업데이트도 사용할 수 없습니다."
+msgstr "어떤 업데이트도 사용할 수 없습니다."
 
 msgid "You have not entered in a title for this job."
 msgstr "이 작업 제목 에 입력 하지 않았습니다."
@@ -3762,13 +3813,13 @@ msgid "Technician"
 msgstr "기술자"
 
 msgid "Primary Admins have full control of the web management."
-msgstr "기본 관리자 는 웹 관리 의 모든 권한 을 가지고있다."
+msgstr "기본 관리자 는 웹 관리 의 모든 권한을 가지고있다."
 
 msgid "Admins have full control of the web management but cannot add or delete other admins."
 msgstr "관리자 는 웹 관리 의 모든 권한 을 가지고 있지만 다른 관리자 를 추가하거나 삭제할 수 없습니다."
 
 msgid "Technicians can access a limited set of controls for day to day running of the system such as changing passwords."
-msgstr "기술자 는 암호 변경 으로 시스템 의 하루 실행 에 하루 컨트롤 의 제한된 액세스 할 수 있습니다."
+msgstr "기술자 는 암호 변경 으로 시스템 의 일 을 실행 에 하루 컨트롤 의 제한된 액세스 할 수 있습니다."
 
 msgid "View Additional Network Shares"
 msgstr "추가 네트워크 공유 보기"
@@ -3795,7 +3846,7 @@ msgid "Testing the printer queue."
 msgstr "프린터 대기열 을 테스트."
 
 msgid "Clearing the printer queue."
-msgstr "프린터 대기열 을 취소합니다."
+msgstr "프린터 대기열 을 삭제."
 
 msgid "Deleting print job"
 msgstr "인쇄 작업을 삭제"
@@ -3825,7 +3876,7 @@ msgid "The code cannot be blank."
 msgstr "코드는 비워 둘 수 없습니다."
 
 msgid "The code did not match."
-msgstr "코드는 일치하지 않습니다."
+msgstr "코드가 일치하지 않습니다."
 
 msgid "Remove Server Role"
 msgstr "서버 역할을 제거"
@@ -3834,7 +3885,7 @@ msgid "This folder does not contain any iso images."
 msgstr "이 폴더 는 ISO 이미지 가 포함되어 있지 않습니다."
 
 msgid "The iso image has been copied to the distribution server."
-msgstr "ISO 이미지 는 배포 서버 에 복사 되었습니다."
+msgstr "ISO 이미지 는 배포 서버 로 복사 되었습니다."
 
 msgid "Enable - Disable all exam accounts"
 msgstr "사용 - 모든 시험 계정을 비활성화"
@@ -3849,7 +3900,7 @@ msgid "enabled"
 msgstr "사용 가능"
 
 msgid "disabled"
-msgstr "장애인"
+msgstr "비활성화"
 
 msgid "Status not changed."
 msgstr "상태 는 변경되지 않습니다."
@@ -3867,13 +3918,13 @@ msgid "Change Home Server"
 msgstr "변경 홈 서버"
 
 msgid "Change the home server for this group of users."
-msgstr "이 그룹의 사용자 를위한 홈 서버 를 변경합니다."
+msgstr "사용자가 이 그룹 의 홈 서버를 변경합니다."
 
 msgid "The home server cannot be blank."
 msgstr "홈 서버 는 비워 둘 수 없습니다."
 
 msgid "The primary group cannot be blank."
-msgstr "기본 그룹 은 비워 둘 수 없습니다."
+msgstr "주요 그룹은 비워 둘 수 없습니다."
 
 msgid "No other Karoshi servers have been set up."
 msgstr "다른 과로사 서버 가 설정 되지 않았습니다."
@@ -3888,7 +3939,7 @@ msgid "Current Server"
 msgstr "현재 서버"
 
 msgid "Copy Home Areas"
-msgstr "복사 홈 지역"
+msgstr "복사 홈 분야"
 
 msgid "This will copy any existing user home areas to the new server. This could take some time if there are a large amount of files to transfer."
 msgstr "이 새 서버로 기존 사용자 홈 영역을 복사합니다. 전송할 파일 의양이 많은 경우이 약간의 시간이 걸릴 수있다."
@@ -3903,7 +3954,7 @@ msgid "Web Management Information"
 msgstr "웹 관리 정보"
 
 msgid "Unflags this server as an Apache reverse proxy server. Disables proxy module and restarts apache."
-msgstr "아파치 등 이 서버 Unflags 프록시 서버를 역. 프록시 모듈을 사용하지 않도록 설정하고 아파치를 다시 시작합니다."
+msgstr "아파치 등 이 서버 Unflags 프록시 서버를 역. 프록시 모듈 을 사용하지 않도록 설정 하고 아파치를 다시 시작합니다."
 
 msgid "Unflags this server as a distribution server."
 msgstr "배포 서버와 이 서버를 Unflags."
@@ -3921,10 +3972,10 @@ msgid "Unflags this server as a DHCP server. Stops the dhcp service from running
 msgstr "DHCP 서버로 이 서버를 Unflags. 이 서버에서 실행 에서 DHCP 서비스 를 중지합니다."
 
 msgid "Unflags this server as an E-Mail server. Removes Squirrelmail and egroupware, and stops Mailscanner from running on the server."
-msgstr "전자 메일 서버와 이 서버를 Unflags. 사용하는 SquirrelMail 및 egroupware 은 제거하고 서버 에서 실행 Mailscanner 을 중지합니다."
+msgstr "전자 메일 서버와 이 서버를 Unflags. 사용하는 SquirrelMail 및 egroupware 은 제거 하고 서버 에서 실행 Mailscanner 를 중지합니다."
 
 msgid "Unflags this server as a file server. Re-maps any groups using this server back to the main server."
-msgstr "파일 서버와 이 서버를 Unflags. 주 서버 로 다시 이 서버를 사용하는 모든 그룹을 다시 매핑합니다."
+msgstr "파일 서버와 이 서버를 Unflags. 메인 서버에 다시 이 서버 를 사용하여 그룹을 다시 매핑합니다."
 
 msgid "Unflags this server from using joomla. Deletes all joomla files and the joomla database."
 msgstr "줌라 를 사용하여 이 서버를 Unflags. 모든 줌라 파일과 줌라 데이터베이스를 삭제합니다."
@@ -3942,25 +3993,25 @@ msgid "Unflags this server as a print server. Stops cups on the server."
 msgstr "인쇄 서버와 이 서버를 Unflags. 서버에 컵 을 중지합니다."
 
 msgid "Unflags this server as an Internet Proxy server. Stops squid and dansguardian from running on the server."
-msgstr "인터넷 프록시 서버로 이 서버 Unflags. 서버 에서 실행 오징어와 dansguardian 을 중지합니다."
+msgstr "인터넷 프록시 서버와 이 서버 Unflags. 서버 에서 실행 오징어와 dansguardian 을 중지합니다."
 
 msgid "Unflags this server as a monitor server. Stops mon from running."
 msgstr "모니터 서버와 이 서버를 Unflags. 정지 가 실행 월."
 
 msgid "Unflags this server for allowing remote access. Firewall rules changed to stop ssh access to this server."
-msgstr "원격 액세스를 허용하기 위해이 서버 를 Unflags. 방화벽 규칙은 이 서버에 SSH 접속 을 중지 로 변경되었습니다."
+msgstr "원격 액세스를 허용하는 이 서버를 Unflags. 방화벽 규칙은 이 서버에 SSH 액세스 를 중지 로 변경되었습니다."
 
 msgid "Ruby CAS Server"
 msgstr "루비 CAS 서버"
 
 msgid "Unflags this server as a CAS single sign on server. Removes the cas link in /var/www/html and deletes the cas database."
-msgstr "서버에서 CAS 하나의 표시로 이 서버 Unflags. 의 / var / www /에서 HTML 의 CAS 링크를 제거하고 CAS 데이터베이스를 삭제합니다."
+msgstr "서버에서 CAS 하나의 표시로 이 서버 Unflags. 의 / var / www /에서 HTML로 캐스 링크를 제거하고 CAS 데이터베이스를 삭제합니다."
 
 msgid "Unflags this server as a radio server. Stops icecast-server from running on the server."
-msgstr "라디오 서버와 이 서버를 Unflags. 서버 에서 실행 아이스 캐스트 서버 를 정지합니다."
+msgstr "라디오 서버와 이 서버를 Unflags. 서버 에서 실행 아이스 캐스트 서버 를 중지합니다."
 
 msgid "Unflags this server as a federated server. Disables federated password synchronisation. Disables federated file synchronisation. Enables user creation in the webmanagement for this server."
-msgstr "페더 레이 티드 서버 로 이 서버를 Unflags. 연합 암호 동기화 를 사용 불가능하게합니다. 연합 파일 동기화 를 사용 불가능하게합니다. 이 서버의 webmanagement 에서 사용자 생성 을 활성화합니다."
+msgstr "페더 레이 티드 서버와 이 서버를 Unflags. 연합 암호 동기화 를 사용하지 않습니다. 페더 레이 티드 파일 동기화를 사용하지 않습니다. 이 서버의 webmanagement 에서 사용자 생성 을 활성화합니다."
 
 msgid "Slave LDAP server"
 msgstr "슬레이브 LDAP 서버"
@@ -3972,7 +4023,7 @@ msgid "WARNING"
 msgstr "경고"
 
 msgid "Removing modules assumes that you have backed up or do not need the data on the module you are removing."
-msgstr "모듈을 제거하면 백업 한 또는 제거 할 모듈의 데이터 를 필요로하지 않는 것으로 가정합니다."
+msgstr "모듈을 제거하면 백업 한 또는 제거 할 모듈의 데이터를 필요로하지 않는 것으로 가정합니다."
 
 msgid "Remove Server"
 msgstr "서버 제거"
@@ -4005,7 +4056,7 @@ msgid "Default priority"
 msgstr "기본 우선 순위"
 
 msgid "Choose the default priority that you want."
-msgstr "원하는 기본 우선 순위 를 선택합니다."
+msgstr "당신이 원하는 기본 우선 순위 를 선택합니다."
 
 msgid "Banned E-mail Domains"
 msgstr "금지 된 전자 메일 도메인"
@@ -4017,7 +4068,7 @@ msgid "Ban Domain"
 msgstr "반 도메인"
 
 msgid "Any E-mail domains shown in the list below are banned from e-mailing to your server."
-msgstr "목록에 표시된 모든 전자 메일 도메인은 아래 서버로 전자 메일 을 금지 하고 있습니다."
+msgstr "목록에 표시된 모든 전자 메일 도메인은 아래에 서버로 전자 메일 이 금지 된다."
 
 msgid "Search Karoshi Web Management"
 msgstr "검색 과로사 웹 관리"
@@ -4047,7 +4098,7 @@ msgid "This will set up a radius server for your network which can be used for s
 msgstr "이 WPA2 엔터프라이즈 를 사용하여 무선 액세스 포인트 를 설정하는 데 사용할 수 있습니다 네트워크에 RADIUS 서버 를 설정합니다."
 
 msgid "Windows Desktop Icons - Select"
-msgstr "윈도우 바탕 화면 아이콘 - 선택"
+msgstr "Windows 바탕 화면 아이콘 - 선택"
 
 msgid "The selected icons have been copied to all of the chosen groups."
 msgstr "선택한 아이콘이 선택된 모든 그룹 에 복사 되었습니다."
@@ -4062,13 +4113,16 @@ msgid "Add a device"
 msgstr "장치 추가"
 
 msgid "This will add a device to the ups list to show that it is phsyically plugged into the ups. It will not configure the device."
-msgstr "이것은 이 phsyicallyUPS 에 연결되어 있는지 표시하기 위해 UPS 목록 에 장치를 추가합니다. 이 장치를 구성 하지 않습니다."
+msgstr "이것은 이 phsyicallyUPS 에 연결되어 있는지 보여업 목록 에 장치를 추가합니다. 이 장치를 구성 하지 않습니다."
 
 msgid "This could be a network switch or a non Karoshi server."
 msgstr "이 네트워크 스위치 또는 비 과로사 서버가 될 수 있습니다."
 
 msgid "Device"
 msgstr "장치"
+
+msgid "Add a New User"
+msgstr "새 사용자 추가"
 
 msgid "The firstname must not be blank."
 msgstr "FIRSTNAME 은 반드시 입력해야합니다."
@@ -4101,25 +4155,25 @@ msgid "The distribution cannot be blank."
 msgstr "분포는 비워 둘 수 없습니다."
 
 msgid "There was a problem setting the repository. Please check the Karoshi web management logs."
-msgstr "저장소를 설정 하는 데 문제가 발생했습니다. 과로사 웹 관리 로그를 확인하십시오."
+msgstr "저장소를 설정 하는 과정에서 문제가 발생했습니다. 과로사 웹 관리 로그를 확인하십시오."
 
 msgid "View Assigned Printers"
 msgstr "보기 할당 된 프린터"
 
 msgid "No Printers have been assigned to a location."
-msgstr "프린터 는 어떤위치 에 할당 되지 않았다."
+msgstr "어떤 프린터 는 위치 에 할당 되지 않았습니다."
 
 msgid "You have not chosen a print action."
 msgstr "당신은 인쇄 작업을 선택하지 않은 경우."
 
 msgid "The location must not be blank."
-msgstr "위치는 비워 둘 수 없습니다."
+msgstr "위치는 반드시 입력해야합니다."
 
 msgid "The printer must not be blank."
 msgstr "프린터는 반드시 입력해야합니다."
 
 msgid "The action type is not correct."
-msgstr "조치 유형 이 올바르지 않습니다."
+msgstr "작업 유형 이 올바르지 않습니다."
 
 msgid "The location file does not exit."
 msgstr "위치 정보 파일 은 종료되지 않습니다."
@@ -4140,28 +4194,28 @@ msgid "The mount point cannot be blank."
 msgstr "마운트 지점은 비워 둘 수 없습니다."
 
 msgid "The mount point does not contain an allowed path."
-msgstr "마운트 지점은 허용 된 경로 가 포함되어 있지 않습니다."
+msgstr "마운트 지점은 허용 된 경로를 포함 하지 않습니다."
 
 msgid "You have not selected enough drives for this raid type."
 msgstr "이 RAID 유형 에 대한 충분한 드라이브를 선택하지 않았습니다."
 
 msgid "Acceptable Use"
-msgstr "허용 가능한 사용"
+msgstr "사용 제한"
 
 msgid "Disabled"
 msgstr "장애인"
 
 msgid "Enable acceptable use"
-msgstr "허용 가능한 사용 을 활성화"
+msgstr "허용 사용 활성화"
 
 msgid "Disable acceptable use"
-msgstr "허용 가능한 사용 을 해제"
+msgstr "허용 사용 안 함"
 
 msgid "The acceptable use policy gives new users a grace period to sign and return an acceptable use policy."
-msgstr "허용 가능한 사용 정책은 새로운 사용자에게 서명하고 허용 가능한 사용 정책을 반환하는 유예 기간 을 제공합니다."
+msgstr "사용 제한 정책은 새로운 사용자에게 로그인 및사용 제한 정책을 반환하는 유예 기간 을 제공합니다."
 
 msgid "User accounts are automatically disabled once the trial time is ended unless they are authorised."
-msgstr "그들이 권한을 부여 하지 않는시험 시간 이 종료 되면 사용자 계정은 자동으로 비활성화됩니다."
+msgstr "그들이 권한이 부여 되지 않는 한 시험 시간 이 종료 되면 사용자 계정은 자동으로 비활성화됩니다."
 
 msgid "Grace Time"
 msgstr "그레이스 시간"
@@ -4170,7 +4224,7 @@ msgid "Set Grace Time"
 msgstr "그레이스 시간 설정"
 
 msgid "The grace time is the amount of time a new user is allowed to log into the system before signing and returning the acceptable use policy. This time is set in days."
-msgstr "은혜 의 시간 은 새로운 사용자가 로그인하고허용 가능한 사용 정책을 반환하기 전에 시스템에 로그인 할 수 있습니다 시간 의 양입니다. 이 시간은 일 에 설정됩니다."
+msgstr "은혜 의 시간은 새로운 사용자가 서명 및사용 제한 정책을 반환하기 전에 시스템에 로그인 할 수 있습니다 시간 의 양입니다. 이 시간은 일 에 설정됩니다."
 
 msgid "Pending Users"
 msgstr "보류중인 사용자"
@@ -4194,7 +4248,7 @@ msgid "Shutdown Code"
 msgstr "종료 코드"
 
 msgid "Type in the number displayed to shutdown a server."
-msgstr "수의 유형은 서버 종료 로 표시됩니다."
+msgstr "수의 유형 은 서버 종료 에 표시됩니다."
 
 msgid "Shutdown/Reboot"
 msgstr "종료 / 재부팅"
@@ -4239,16 +4293,16 @@ msgid "Choose the web server that you want to upload the files to."
 msgstr "당신이 파일을 업로드 할 웹 서버를 선택합니다."
 
 msgid "There are no web servers to upload files to."
-msgstr "파일을 업로드 할 웹 서버 가 없습니다."
+msgstr "파일을 업로드 하는 웹 서버 가 없습니다."
 
 msgid "Setup Joomla Website"
 msgstr "설정 의 Joomla 웹 사이트"
 
 msgid "This will setup the Joomla content management system as a website for your school."
-msgstr "이 의지 설치 학교 의 웹 사이트 로 줌라 콘텐츠 관리 시스템."
+msgstr "이 뜻을 설치 하여 학교에 대한 웹 사이트 로 줌라 콘텐츠 관리 시스템."
 
 msgid "if you would like all staff to be able to log in and add information to the website enable the ldap authentication module in the Plug in Manager section."
-msgstr "모든 직원 을 좋아하면 관리자 섹션에서 플러그의 LDAP 인증 모듈을 활성화 에 로그인하고 웹 사이트 에 정보를 추가 할 수 있습니다."
+msgstr "모든 직원 을 좋아하면 관리자 섹션에서 플러그인 에 LDAP 인증 모듈을 활성화 에 로그인하고 웹 사이트 에 정보를 추가 할 수 있습니다."
 
 msgid "Web Domain"
 msgstr "웹 도메인"
@@ -4266,10 +4320,10 @@ msgid "The type cannot be blank."
 msgstr "유형은 비워 둘 수 없습니다."
 
 msgid "The year canot be blank."
-msgstr "올해 는 비어 canot."
+msgstr "올해는 비어 canot."
 
 msgid "Monthly printer totals are re-calculated at the end of every day."
-msgstr "월간 프린터 총계 는 매일 의 끝에 재 계산된다."
+msgstr "프린터 월별 합계 매일 의 끝에 재 계산된다."
 
 msgid "Set Server Time"
 msgstr "서버 시간 설정"
@@ -4278,13 +4332,13 @@ msgid "You cannot leave the date or time blank."
 msgstr "당신은 날짜 또는 시간 비워 둘 수 없습니다."
 
 msgid "You have not entered a correct month."
-msgstr "당신은 올바른 월 입력하지 않았습니다."
+msgstr "당신은 올바른 달 입력하지 않았습니다."
 
 msgid "You have not entered a correct day."
 msgstr "당신은 올바른 일 을 입력 하지 않았습니다."
 
 msgid "You have not entered a correct year."
-msgstr "당신은 정확 해 입력 하지 않았습니다."
+msgstr "당신은 올바른 올해 입력하지 않았습니다."
 
 msgid "You have not entered a correct hour."
 msgstr "당신은 올바른 시간 을 입력하지 않았습니다."
@@ -4302,7 +4356,7 @@ msgid "Proxy settings have been applied."
 msgstr "프록시 설정이 적용 되고있다."
 
 msgid "Use E-mail relay"
-msgstr "사용 E 메일 릴레이"
+msgstr "사용 E 메일 중계"
 
 msgid "View Monitor Logs"
 msgstr "보기 모니터 로그"
@@ -4326,16 +4380,16 @@ msgid "Windows Profile - Upload"
 msgstr "Windows 프로필 - 업로드"
 
 msgid "To create a windows profile you can use the profileuser account. This is the only user on the karoshi system that has a roaming profile by default. All other users use mandatory profiles."
-msgstr "창을 만들려면 당신이 profileuser 계정을 사용할 수 있습니다 프로필. 이것은 기본적으로 로밍 프로필 이있는 과로사 시스템 의 유일한 사용자입니다. 다른 모든 사용자 는 필수 프로필 을 사용합니다."
+msgstr "창을 만들려면 당신이 profileuser 계정을 사용할 수 있습니다 프로필. 이것은 기본적으로 로밍 프로필이과로사 시스템 의 유일한 사용자입니다. 다른 모든 사용자 가 필수 프로필 을 사용합니다."
 
 msgid "To create a windows profile you need to right click on My Computer - Properties - Advanced - User Profile Settings."
-msgstr "속성 - - 고급 - 사용자 프로필 설정 을 만들려면창을 내 컴퓨터 에 오른쪽 클릭 할 필요가 프로필."
+msgstr "속성 - - 고급 - 사용자 프로필 설정 을 만들려면창을 내 컴퓨터 에서 오른쪽 클릭 할 필요가 프로필."
 
 msgid "Copy your chosen profile to a suitable location."
 msgstr "적절한 위치로 선택한 프로파일을 복사합니다."
 
 msgid "Make sure that you change the windows permissions on your chosen profile to all users."
-msgstr "모든 사용자에게 선택한 프로필 의 Windows 권한을 변경 해야합니다."
+msgstr "모든 사용자에게 선택한 프로필 에 창문 권한 을 변경 해야합니다."
 
 msgid "Select the compressed profile that you want to upload in .zip or .tar.gz format."
 msgstr "당신이.ZIP 또는.tar.gz를 형식으로 업로드 할 압축 프로파일을 선택합니다."
@@ -4359,16 +4413,16 @@ msgid "URI"
 msgstr "URI"
 
 msgid "Enter the full address of the linux client repository. This is used for installing and updating the Linux clients."
-msgstr "리눅스 클라이언트 저장소 의 전체 주소를 입력합니다. 이것은리눅스 클라이언트를 설치하고 업데이트하는 데 있다."
+msgstr "리눅스 클라이언트 저장소 의 전체 주소를 입력합니다. 이것은리눅스 클라이언트를 설치 및 업데이트시 이용된다."
 
 msgid "Distribution"
-msgstr "분포"
+msgstr "분배"
 
 msgid "pclinuxos/2007"
 msgstr "/ 2007 pclinuxos"
 
 msgid "Enter in the distribution you are using."
-msgstr "당신이 사용하는 배포판에 입력합니다."
+msgstr "사용중인 배포판에 입력합니다."
 
 msgid "Sections"
 msgstr "섹션"
@@ -4380,13 +4434,13 @@ msgid "Enter in the sections that you want to use in the repository."
 msgstr "당신이 저장소 에 사용할 섹션에 입력합니다."
 
 msgid "Email domain"
-msgstr "전자 메일 도메인"
+msgstr "이메일 도메인"
 
 msgid "Enter in your new E-Mail domain. This is the part after the @ sign."
-msgstr "새 전자 메일 도메인 을 입력합니다. 이것은 @ 기호 후일부입니다."
+msgstr "새 전자 메일 도메인 을 입력합니다. 이것은 @ 기호 후 부분입니다."
 
 msgid "This will change the email domain for all user entries on all Karoshi ldap servers."
-msgstr "이 모든 과로사 LDAP 서버 의 모든 사용자 항목에 대한 전자 메일 도메인 을 변경합니다."
+msgstr "이것은 모든 과로사 LDAP 서버 의 모든 사용자 항목 에 대한 전자 메일 도메인을 변경 합니다."
 
 msgid "Custom Application"
 msgstr "사용자 정의 응용 프로그램"
@@ -4422,22 +4476,22 @@ msgid "This is the time delay before you are logged out of the Karoshi Web Manag
 msgstr "이것은 당신이 과로사 웹 관리 시스템 에서 로그 아웃 하기 전에 시간 지연 이다."
 
 msgid "Enter a time in minutes between 1 and 99. This is a per user setting and will not affect other users."
-msgstr "이것은 사용자 당 설정 1 과 99 사이의 분 의 시간을 입력하고 다른 사용자에게 영향을주지 않습니다."
+msgstr "이것은 사용자 당 설정 1 에서 99 사이의 시간 (분) 을 입력하고 다른 사용자에게 영향을주지 않습니다."
 
 msgid "The default value is 5 minutes."
-msgstr "기본값 은 5 분입니다."
+msgstr "기본값은 5 분입니다."
 
 msgid "Extend timeout from"
 msgstr "에서 제한 시간을 연장"
 
 msgid "Choose a tcpip number or range to extend the timeout from. The timeout setting will extend to 1 day for computers matching this value."
-msgstr "에서 제한 시간 을 연장TCPIP 번호 또는 범위를 선택합니다. 시간 제한 설정은이 값과 일치하는 컴퓨터에 대해 1 일 연장 됩니다."
+msgstr "에서 제한 시간 을 연장TCPIP 번호 또는 범위를 선택합니다. 제한 시간 설정은이 값과 일치하는 컴퓨터에 대한 1 일 연장 됩니다."
 
 msgid "Example1 - 172.30.3.1 - individual computer"
 msgstr "예 1 - 172.30.3.1 - 개별 컴퓨터"
 
 msgid "Example2 - 172.30.3 - all computers in this range"
-msgstr "예제 2 - 172.30.3 - 이 범위 에있는 모든 컴퓨터"
+msgstr "예 2 - 172.30.3 - 이 범위 에있는 모든 컴퓨터"
 
 msgid "This will show the uptime for your servers."
 msgstr "이 서버 의 가동 시간을 표시합니다."
@@ -4446,7 +4500,7 @@ msgid "Show Uptime"
 msgstr "쇼 가동 시간"
 
 msgid "View Web Admins"
-msgstr "뷰 웹 관리자"
+msgstr "보기 웹 관리자"
 
 msgid "UPS Name"
 msgstr "UPS 이름"
@@ -4455,7 +4509,7 @@ msgid "Choose a UPS device from the list."
 msgstr "목록에서 UPS 장치를 선택합니다."
 
 msgid "Choose auto for UPS devices connected via usb."
-msgstr "USB 를 통해 연결된 UPS 장치 에 대해 자동을 선택합니다."
+msgstr "USB 를 통해 연결된 UPS 장치에 대한 자동 을 선택합니다."
 
 msgid "Add ups"
 msgstr "업 추가"
@@ -4464,7 +4518,7 @@ msgid "Allow Roaming Profile"
 msgstr "프로필 로밍 허용"
 
 msgid "The user name should not be blank."
-msgstr "사용자 이름은 비워 둘 수 없습니다 해야합니다."
+msgstr "사용자 이름은 공백이되어서는 안 될 것이다."
 
 msgid "You cannot use a roaming profile with a system account."
 msgstr "당신은 시스템 계정으로 로밍 프로필 을 사용할 수 없습니다."
@@ -4479,7 +4533,7 @@ msgid "A roaming profile has been enabled for"
 msgstr "로밍 프로필 에 대해 활성화 된"
 
 msgid "There was a problem enabling a roaming profile for"
-msgstr "대한 로밍 프로필 을 가능하게하는 문제가 발생했습니다"
+msgstr "에 대한 로밍 프로필 을 가능하게하는 문제가 발생했습니다"
 
 msgid "The tcpip number must not be blank."
 msgstr "TCPIP 번호는 반드시 입력해야합니다."
@@ -4500,7 +4554,7 @@ msgid "Choose client version"
 msgstr "클라이언트 버전을 선택"
 
 msgid "Username or E-mail address"
-msgstr "사용자 이름 또는 전자 메일 주소"
+msgstr "아이디 또는 이메일 주소"
 
 msgid "Enter in the Username or email address you want to check the logs for."
 msgstr "당신이 로그를 확인 하려는 사용자 이름 또는 이메일 주소를 입력합니다."
@@ -4515,7 +4569,7 @@ msgid "Reset Room Controls"
 msgstr "룸 컨트롤 을 재설정"
 
 msgid "This will schedule times when all internet room controls are reset. This could be at the end of each lesson."
-msgstr "모든 인터넷 룸 컨트롤이 다시 설정됩니다 때 시간을 예약 합니다. 이것은 각 공과의끝에 있을 수있다."
+msgstr "모든 인터넷 룸 컨트롤이 다시 설정됩니다 때 시간 을 예약 할 것입니다. 이것은 각 공과의끝에 있을 수있다."
 
 msgid "Add reset time"
 msgstr "리셋 시간 추가"
@@ -4527,28 +4581,28 @@ msgid "Delete time"
 msgstr "시간 삭제"
 
 msgid "This will setup the Kanboard project management system."
-msgstr "이 뜻을 설치Kanboard 프로젝트 관리 시스템."
+msgstr "이 뜻 설정Kanboard 프로젝트 관리 시스템."
 
 msgid "Choose the profiles that you want to upload the desktop icons to."
-msgstr "당신이 바탕 화면 아이콘 을 업로드 할 프로파일을 선택합니다."
+msgstr "당신이 바탕 화면 아이콘 을 업로드 할 프로필을 선택합니다."
 
 msgid "Please select the groups that you want to copy the icons to."
 msgstr "당신이 아이콘을 복사 할 그룹을 선택하십시오."
 
 msgid "View Over Quota Usage"
-msgstr "할당량 사용 에보기"
+msgstr "할당량 사용 이상 보기"
 
 msgid "Please enter in the username you want to change the groups for."
-msgstr "당신이 그룹을 변경하려면 사용자 이름 에 입력하십시오."
+msgstr "당신이 그룹을 변경하려는 이름 에 입력하십시오."
 
 msgid "The password for each exam account will be changed to a different random number."
 msgstr "각 시험 계정의 암호 는 다른 임의의 숫자 로 변경됩니다."
 
 msgid "This will change all exam passwords to a random password."
-msgstr "이것은 임의의 암호 로 모든 시험 의 암호를 변경 합니다."
+msgstr "이 임의의 암호 로 모든 시험에 암호를 변경합니다."
 
 msgid "Enter in any exam accounts that you do not want to have the passwords reset for separated by spaces."
-msgstr "당신이 공백으로 구분 하기위한 암호를 재설정 해야 하지 않으려는 시험 계정 을 입력합니다."
+msgstr "공백 으로 구분 의 암호 재설정 이 하지 않으려는 시험 계정 에 입력합니다."
 
 msgid "E-Mail Access"
 msgstr "전자 메일 액세스"
@@ -4569,16 +4623,16 @@ msgid "Email use banned for this group."
 msgstr "이 그룹에 대한 금지 이메일 사용."
 
 msgid "Email use allowed for this group."
-msgstr "이메일 사용 이 그룹 에 허용."
+msgstr "이메일 사용 이 그룹 에 대해 허용."
 
 msgid "The asset cannot be blank."
 msgstr "자산 은 비워 둘 수 없습니다."
 
 msgid "Mac address"
-msgstr "맥 주소"
+msgstr "MAC 주소"
 
 msgid "This will add in the name of a custom role that you have added to this server. The only purpose of this feature is to record the custom role on the show servers page in the web management."
-msgstr "이것은 당신이 이 서버 에 추가 한사용자 지정 역할 의 이름을 추가합니다. 이 기능의 유일한 목적은웹 관리 에서 쇼 서버 페이지에서 사용자 지정 역할 을 기록하는 것입니다."
+msgstr "이것은 당신이 이 서버 에 추가 한 사용자 정의 역할 의 이름으로 추가합니다. 이 기능의 유일한 목적은웹 관리 에서 쇼 서버 페이지에서 사용자 지정 역할 을 기록하는 것입니다."
 
 msgid "Windows Background - Select"
 msgstr "윈도우 배경 - 선택"
@@ -4590,7 +4644,7 @@ msgid "Please select the groups that you want to copy the background to."
 msgstr "당신 의 배경 을 복사 할 그룹을 선택하십시오."
 
 msgid "This will show the LDAP information for that user."
-msgstr "이것은 해당 사용자의 LDAP 정보를 표시합니다."
+msgstr "이는 해당 사용자의 LDAP 정보를 표시합니다."
 
 msgid "Show user info"
 msgstr "보기 사용자 정보"
@@ -4611,7 +4665,7 @@ msgid "The printer ppd cannot be blank."
 msgstr "프린터 PPD 는 비워 둘 수 없습니다."
 
 msgid "There was a problem adding this ppd. Please consult the Karoshi web administration logs."
-msgstr "이 PPD를 추가하는 문제가 발생했습니다. 과로사 웹 관리 로그를 참조하십시오."
+msgstr "이 PPD를 추가하는 중에 문제가 발생했습니다. 과로사 웹 관리 로그를 참조하십시오."
 
 msgid "The ppd file was added to"
 msgstr "PPD 파일 이 추가되었습니다"
@@ -4635,10 +4689,10 @@ msgid "You hve not uploaded a moodle theme."
 msgstr "당신은 무 테마를 업로드 하지 HVE."
 
 msgid "You have uploaded more than one file."
-msgstr "둘 이상의 파일을 업로드 했다."
+msgstr "당신은 하나 이상의 파일 을 업로드했습니다."
 
 msgid "The file that you have uploaded is not a zip file."
-msgstr "업로드 한 파일은 압축 파일이 아닙니다."
+msgstr "당신이 업로드 한 파일은 압축 파일이 아닙니다."
 
 msgid "You have uploaded a corrupt archive."
 msgstr "당신은 손상된 압축 파일을 업로드했습니다."
@@ -4659,7 +4713,7 @@ msgid "The background has been copied to all of the chosen groups."
 msgstr "배경 은선택된 모든 그룹 에 복사 되고있다."
 
 msgid "Clear User Page Counts"
-msgstr "지우기 사용자 페이지 수"
+msgstr "클리어 사용자 페이지 수"
 
 msgid "Group Printer Limits"
 msgstr "그룹 프린터 제한"
@@ -4668,10 +4722,10 @@ msgid "Clear all of the user page count data."
 msgstr "사용자 의 페이지는 데이터의 모든 선택을 취소합니다."
 
 msgid "This should only be carried out at the end of your billing cycle."
-msgstr "이것은 단지 결제 주기 의끝에서 수행되어야한다."
+msgstr "이것은 단지 결제 사이클의 끝 에서 수행 되어야한다."
 
 msgid "Enabled Printers"
-msgstr "지원 프린터"
+msgstr "사용 프린터"
 
 msgid "This will allow you to track printing usage for all of your users."
 msgstr "이렇게하면 사용자 의 모든 인쇄 사용을 추적 할 수 있습니다."
@@ -4680,7 +4734,7 @@ msgid "Accounting Status"
 msgstr "회계 상태"
 
 msgid "You can choose to enable or disable accounting for each printer."
-msgstr "활성화 또는 각 프린터에 대한 회계 를 사용하지 않도록 선택할 수 있습니다."
+msgstr "활성화 또는 각 프린터 에 대한 회계 를 사용하지 않도록 선택할 수 있습니다."
 
 msgid "Enable accounting for this printer queue."
 msgstr "이 프린터 큐 를 차지 활성화합니다."
@@ -4692,16 +4746,16 @@ msgid "Setup Federation Control"
 msgstr "설치 연맹 제어"
 
 msgid "Warning - this will delete all existing users from this server and import all of the users from your main server."
-msgstr "경고 - 이 이 서버 에서 모든 기존 사용자를 삭제하고 주 서버 에서 모든 사용자 를 가져옵니다."
+msgstr "경고 - 이 이 서버 에서 모든 기존 사용자를 삭제하고 주요 서버에서 모든 사용자 를 가져옵니다."
 
 msgid "This show as information for your clients when they look at the network share."
-msgstr "고객 에 대한 정보 등 이 공연 은 네트워크 공유 를 볼 때."
+msgstr "고객 에 대한 정보 등 이 표시 는 네트워크 공유 를 볼 때."
 
 msgid "Folder Name"
 msgstr "폴더 이름"
 
 msgid "This will create a folder in /home with the name that you specify."
-msgstr "이 사용자가 지정한 이름 으로 / 홈폴더를 생성합니다."
+msgstr "이 사용자가 지정한 이름 에 / 홈폴더를 생성합니다."
 
 msgid "Enter in the name of the group that you want to allow access to the folder."
 msgstr "폴더 에 대한 액세스를 허용 할 그룹 의 이름을 입력합니다."
@@ -4716,7 +4770,7 @@ msgid "Choose the permissions that you want to allow for anyone else not in the 
 msgstr "당신이 없는 그룹의 다른 사람 에 허용 할 권한을 선택합니다."
 
 msgid "Add share"
-msgstr "공유를 추가"
+msgstr "주 추가"
 
 msgid "Disk drives"
 msgstr "디스크 드라이브"
@@ -4731,13 +4785,13 @@ msgid "Kernel"
 msgstr "커널"
 
 msgid "Show the running kernel for the selected servers."
-msgstr "선택한 서버의 실행중인 커널 을 표시합니다."
+msgstr "선택된 서버의 실행중인 커널 을 표시합니다."
 
 msgid "Samba Status"
 msgstr "삼바 상태"
 
 msgid "Show the samba status for the selected servers."
-msgstr "선택한 서버의 삼바 상태를 표시합니다."
+msgstr "선택된 서버의 삼바 상태를 표시합니다."
 
 msgid "Show server info"
 msgstr "보기 서버 정보"
@@ -4761,7 +4815,7 @@ msgid "Windows Client Application Data Upload"
 msgstr "윈도우 클라이언트 응용 프로그램 데이터 업로드"
 
 msgid "This will upload a compressed file containing a folder or folders from the application data folder in your profile."
-msgstr "이 프로파일의 응용 프로그램 데이터 폴더에서 폴더 또는 폴더를 포함하는 압축 파일 을 업로드합니다."
+msgstr "이 프로필에 응용 프로그램 데이터 폴더 에서 폴더 또는 폴더를 포함하는 압축 파일 을 업로드합니다."
 
 msgid "Select the compressed folder that you want to upload in .zip or .tar.gz format."
 msgstr "당신이.ZIP 또는.tar.gz를 형식으로 업로드 할 압축 폴더를 선택합니다."
@@ -4794,13 +4848,13 @@ msgid "The application data has been copied to all of the chosen profiles."
 msgstr "애플리케이션 데이터 는선택된 모든 프로필 에 복사 되고있다."
 
 msgid "This will allow users to access their files from home. Access is via a web browser and allows users to view, upload and download files to their home areas."
-msgstr "이것은 사용자가 집 에서 자신의 파일에 액세스 할 수 있습니다. 액세스 는 웹 브라우저를 통해 사용자가 보거나 업로드하고 자신의 홈 영역 에 파일을 다운로드 할 수 있습니다."
+msgstr "이것은 사용자가 집 에서 자신의 파일에 액세스 할 수 있습니다. 액세스 는 웹 브라우저를 통해 사용자가 보고, 업로드하고 자신의 홈 영역 에 파일을 다운로드 할 수 있습니다."
 
 msgid "Choose the date that you want to view the update logs for."
 msgstr "당신이 업데이트 로그를 보려면 원하는 날짜를 선택합니다."
 
 msgid "Allowed Mime Types"
-msgstr "허용 MIME 유형"
+msgstr "허용 마임 유형"
 
 msgid "You have not entered in a client name."
 msgstr "당신은 클라이언트 이름을 입력하지 않았습니다."
@@ -4818,10 +4872,10 @@ msgid "You have not entered a mac address."
 msgstr "당신은 MAC 주소를 입력하지 않았습니다."
 
 msgid "You have not entered in a valid mac address."
-msgstr "유효한 MAC 주소를 입력 하지 않았습니다."
+msgstr "유효한 맥 주소를 입력하지 않았습니다."
 
 msgid "This mac address is already in use."
-msgstr "이 MAC 주소는 이미 사용 중입니다."
+msgstr "이 MAC 주소 는 이미 사용 중입니다."
 
 msgid "Add DHCP Reservation"
 msgstr "DHCP 예약 추가"
@@ -4830,7 +4884,7 @@ msgid "View DHCP Reservations"
 msgstr "DHCP 예약 보기"
 
 msgid "This allows you to add in reserved tcpip addresses for client devices."
-msgstr "이렇게하면 클라이언트 장치에 대한 예약 TCPIP 주소 에 추가 할 수 있습니다."
+msgstr "이렇게하면 클라이언트 장치 에 대한 예약 TCPIP 주소 에 추가 할 수 있습니다."
 
 msgid "Host name"
 msgstr "호스트 이름"
@@ -4851,7 +4905,7 @@ msgid "Enter in the host name of the client computer or device that you want to 
 msgstr "당신 에 대한 정적 TCPIP 주소를 부여 할 클라이언트 컴퓨터 또는 장치 의 호스트 이름을 입력합니다."
 
 msgid "Enter in the mac address of the client computer or device that you want to give a static tcpip address to."
-msgstr "당신 에 대한 정적 TCPIP 주소를 부여 할 클라이언트 컴퓨터 또는 장치의 MAC 주소를 입력합니다."
+msgstr "당신 에 대한 정적 TCPIP 주소를 부여 할 클라이언트 컴퓨터 또는 장치 의 MAC 주소를 입력합니다."
 
 msgid "Enter in the tcpip address that you want the client computer or device to have."
 msgstr "클라이언트 컴퓨터 또는 장치가 갖고 싶어TCPIP 주소를 입력합니다."
@@ -4865,6 +4919,9 @@ msgstr "서명 파일은.sig 파일 확장자를 하지 않았다."
 msgid "The patch file did not verify correctly."
 msgstr "패치 파일이 제대로 확인하지 않았다."
 
+msgid "IRC Help"
+msgstr "IRC 도움말"
+
 msgid "The timeout value must not be blank."
 msgstr "시간 초과 값은 반드시 입력해야합니다."
 
@@ -4875,7 +4932,7 @@ msgid "Your timeout setting has been changed."
 msgstr "당신의 시간 제한 설정 이 변경되었습니다."
 
 msgid "This shows the jobs that are scheduled to run on this server."
-msgstr "이는 이 서버에서 실행되도록 예약 된 작업을 보여줍니다."
+msgstr "이것은 이 서버에서 실행되도록 예약 된 작업을 보여줍니다."
 
 msgid "View Monitors"
 msgstr "보기 모니터"
@@ -4884,10 +4941,10 @@ msgid "You must choose a monitor."
 msgstr "당신은 모니터를 선택해야합니다."
 
 msgid "Deleting a monitor will stop the monitoring server from monitoring the monitor group."
-msgstr "모니터를 삭제하면 모니터 그룹 을 모니터링하는 모니터링 서버를 중지 합니다."
+msgstr "모니터를 삭제하면 모니터 그룹 을 모니터링하는모니터링 서버 를 중지합니다."
 
 msgid "Add Monitor"
-msgstr "모니터 추가"
+msgstr "모니터를 추가"
 
 msgid "No monitors available."
 msgstr "아니 모니터를 사용할 수 있습니다."
@@ -4898,17 +4955,17 @@ msgstr "모니터"
 msgid "Info"
 msgstr "정보"
 
-msgid "Edit function not implemented yet."
-msgstr "편집 기능은 아직 구현되지 않았습니다."
-
 msgid "TCPIP numbers monitored"
 msgstr "TCPIP 번호는 모니터링"
 
 msgid "Services Monitored"
 msgstr "서비스 모니터링"
 
+msgid "Edit function not implemented yet."
+msgstr "편집 기능은 아직 구현되지 않았습니다."
+
 msgid "The device name cannot be blank."
-msgstr "장치 이름 은 비워 둘 수 없습니다."
+msgstr "디바이스 이름은 비워 둘 수 없습니다."
 
 msgid "E-Mail Quota Warning Settings"
 msgstr "E 메일 할당량 경고 설정"
@@ -4920,7 +4977,7 @@ msgid "Upload image error."
 msgstr "이미지 오류 를 업로드합니다."
 
 msgid "The file you have uploaded does not have a suitable file extension."
-msgstr "업로드 한 파일은 적절한 파일 확장자를 가지고 있지 않습니다."
+msgstr "당신이 업로드 한 파일은 적절한 파일 확장자를 가지고 있지 않습니다."
 
 msgid "User Image uploaded."
 msgstr "사용자 이미지 업로드."
@@ -4932,7 +4989,7 @@ msgid "Disk Usage"
 msgstr "디스크 사용"
 
 msgid "Disk usage data is generated once per week."
-msgstr "디스크 사용량 데이터는 일주일에 한 번 발생한다."
+msgstr "디스크 사용 데이터 는 일주일에 한 번 생성됩니다."
 
 msgid "The user or group name cannot be blank."
 msgstr "사용자 또는 그룹 이름 은 비워 둘 수 없습니다."
@@ -4941,7 +4998,7 @@ msgid "The limit cannot be blank."
 msgstr "한계는 비워 둘 수 없습니다."
 
 msgid "Each Primary Group has a limit set for the amount of printing that each user can do in that group."
-msgstr "각 주 그룹 은 각 사용자가 해당 그룹 에서 할 수있는 인쇄 의 양 에 대해 설정된제한이 있습니다."
+msgstr "각 주 그룹 은 각 사용자가 해당 그룹 에서 할 수있는 인쇄 의 양 에 대해 설정된 제한이 있습니다."
 
 msgid "User limits override group limits."
 msgstr "사용자 제한 그룹 제한을 무시합니다."
@@ -4971,13 +5028,13 @@ msgid "Set the page limits that you want for each user or group."
 msgstr "각 사용자 또는 그룹 에 대해 원하는 페이지 제한을 설정합니다."
 
 msgid "View the new passwords for a group of users."
-msgstr "사용자 그룹에 대한새 암호를 확인합니다."
+msgstr "사용자 그룹에 대한새 암호를 볼 수 있습니다."
 
 msgid "Choose the client computers that you want to allow or deny internet access to."
 msgstr "허용 또는 에 인터넷 액세스를 거부 할 클라이언트 컴퓨터 를 선택합니다."
 
 msgid "Allow all"
-msgstr "모든 허용"
+msgstr "모두 허용"
 
 msgid "Deny all"
 msgstr "모든 거부"
@@ -5010,22 +5067,22 @@ msgid "Allow media access"
 msgstr "미디어 액세스 허용"
 
 msgid "The reverse proxy allows incoming web traffic to be redirected to other servers on your network."
-msgstr "리버스 프록시 는 들어오는 웹 트래픽이 네트워크에있는 다른 서버 로 리디렉션 할 수 있습니다."
+msgstr "역방향 프록시 는 들어오는 웹 트래픽이 네트워크에있는 다른 서버 로 리디렉션 할 수 있습니다."
 
 msgid "The redirect is based on the trailing slash and folder name after the end of the domain of your site."
-msgstr "리다이렉트 는 사이트의 도메인 종료 후 후행 슬래시 및 폴더 이름을 기반으로합니다."
+msgstr "리다이렉트 는 사이트의 도메인 종료 후슬래시 및 폴더 이름을 기반으로합니다."
 
 msgid "Web sites to be redirected are added in on the web management."
-msgstr "리디렉션 할 웹 사이트는 웹 관리 에 추가된다."
+msgstr "리디렉션 할 웹 사이트는 웹 관리 에 에 추가됩니다."
 
 msgid "Reverse Proxy Domain"
-msgstr "프록시 도메인 반전"
+msgstr "프록시 도메인 역"
 
 msgid "Choose the server that you want to view the disk usage on."
 msgstr "당신 의 디스크 사용량을 표시 할 서버를 선택합니다."
 
 msgid "Show disk usage"
-msgstr "쇼 디스크 사용"
+msgstr "보기 디스크 사용"
 
 msgid "View Wireless Zones"
 msgstr "보기 무선 영역"
@@ -5037,7 +5094,7 @@ msgid "No locations have been created."
 msgstr "어떤 위치 가 생성 되지 않았습니다."
 
 msgid "This will send commands to a windows machine joined to your network."
-msgstr "이 네트워크 에 가입 된 Windows 컴퓨터 에 명령을 전송합니다."
+msgstr "이 네트워크 에 가입 윈도우 머신 에 명령을 전송합니다."
 
 msgid "Choose the command that you want to be carried out."
 msgstr "당신이 수행되어야 할 명령을 선택합니다."
@@ -5100,7 +5157,7 @@ msgid "Deleting"
 msgstr "삭제"
 
 msgid "The certificate type cannot be blank."
-msgstr "인증서 유형은 비워 둘 수 없습니다."
+msgstr "인증 유형은 비워 둘 수 없습니다."
 
 msgid "The CA Certificate cannot be blank."
 msgstr "CA 인증서 는 비워 둘 수 없습니다."
@@ -5109,13 +5166,13 @@ msgid "The SSL Certificate cannot be blank."
 msgstr "SSL 인증서는 비워 둘 수 없습니다."
 
 msgid "A server.csr has already been created for this server."
-msgstr "server.csr 은 이미 이 서버에 만들어졌습니다."
+msgstr "server.csr 이미 이 서버에 만들어졌습니다."
 
 msgid "Do not proceed unless you want to re-generate the certificate."
 msgstr "인증서를 다시 생성 하려는 경우가 아니면 진행하지 마십시오."
 
 msgid "Two digit Country Code"
-msgstr "두 자리의 국가 코드"
+msgstr "두 자리 국가 코드"
 
 msgid "Enter in the two digit ISO country code for your country."
 msgstr "해당 국가의두 자리 ISO 국가 코드를 입력합니다."
@@ -5124,7 +5181,7 @@ msgid "Example *.yoursite.com"
 msgstr "예 *.yoursite.com"
 
 msgid "State or Province name"
-msgstr "주 또는도 이름"
+msgstr "국가 또는 지방 이름"
 
 msgid "City or town"
 msgstr "도시 또는 마을"
@@ -5136,10 +5193,10 @@ msgid "Department Name"
 msgstr "부서 이름"
 
 msgid "Common name - URL"
-msgstr "일반 이름 - URL"
+msgstr "일반적인 이름 - URL"
 
 msgid "This needs to be the fully qualified domain name of your website without the http or https. The *. wildcard will match all sub domains."
-msgstr "이HTTP 또는 HTTPS 없이 웹 사이트 의 정규화 된 도메인 이름이 필요합니다. *. 와일드 카드 는 모든 하위 도메인을 일치합니다."
+msgstr "이는 HTTP 또는 HTTPS 없이 웹 사이트 의 정규화 된 도메인 이름이 필요합니다. *. 와일드 카드 는 모든 하위 도메인을 일치합니다."
 
 msgid "Email contact address"
 msgstr "이메일 연락처 주소"
@@ -5154,10 +5211,10 @@ msgid "Install Commercial Certificate"
 msgstr "상업용 인증서 설치"
 
 msgid "You will need to copy in the certificates you have received from your certificate supplier."
-msgstr "당신은 당신의 인증서 공급 업체 로부터 받은 인증서 에 복사해야합니다."
+msgstr "당신은 당신의 인증서 공급자로부터 받은 인증서 에 복사해야합니다."
 
 msgid "Intermediate certificate or bundle"
-msgstr "중간 인증서 또는 번들"
+msgstr "중급 인증서 또는 번들"
 
 msgid "Intermediate Certificate"
 msgstr "중간 인증서"
@@ -5187,7 +5244,7 @@ msgid "The owner cannot be blank."
 msgstr "소유자는 비워 둘 수 없습니다."
 
 msgid "Choose Server"
-msgstr "서버 를 선택"
+msgstr "서버를 선택"
 
 msgid "The new username must not be blank."
 msgstr "새 사용자 이름 은 비워 둘 수 없습니다."
@@ -5217,7 +5274,7 @@ msgid "User Web Folders"
 msgstr "사용자 웹 폴더"
 
 msgid "This allows users to have web folders hosted from their home areas. Any files and folders in a public_html folder in the user's home area will be available via apache on their server."
-msgstr "이를 통해 사용자는 자신의 홈 영역 에서 호스팅 웹 폴더를 가질 수 있습니다. 사용자의 홈 영역에 public_html이 폴더의 모든 파일 과 폴더는 서버 에 아파치 를 통해 사용할 수 있습니다."
+msgstr "이것은 사용자가 자신의 홈 지역 에서 호스팅 웹 폴더를 가질 수 있습니다. 사용자의 홈 영역에 public_html을 폴더에있는 모든 파일 과 폴더는 서버 에 아파치 를 통해 사용할 수 있습니다."
 
 msgid "Choose the group that you want to set the web folder status for."
 msgstr "당신 의 웹 폴더 상태를 설정 하려는 그룹을 선택합니다."
@@ -5229,7 +5286,7 @@ msgid "The printer type cannot be blank."
 msgstr "프린터 유형은 비워 둘 수 없습니다."
 
 msgid "The printer port cannot be blank."
-msgstr "프린터 포트 는 비워 둘 수 없습니다."
+msgstr "프린터 포트는 비워 둘 수 없습니다."
 
 msgid "A printer queue with this name already exists."
 msgstr "이 이름을 가진프린터 대기열 이 이미 있습니다."
@@ -5277,10 +5334,10 @@ msgid "Windows Clients"
 msgstr "Windows 클라이언트"
 
 msgid "Windows client computers are joined to the domain in the same way as for a windows network. "
-msgstr "Windows 클라이언트 시스템 은윈도우 네트워크 와 같은 방식도메인에 결합된다."
+msgstr "Windows 클라이언트 컴퓨터는Windows 네트워크 와 동일한 방식으로도메인에 결합된다."
 
 msgid "The username required to do this is Administrator. The password will be the system password that you chose earlier."
-msgstr "이 작업을 수행 하는 데 필요한 사용자 이름은 관리자입니다. 암호는 이전에 선택한 시스템 암호 될 것입니다."
+msgstr "이 작업을 수행 하는 데 필요한 사용자 이름 은 Administrator입니다. 암호는 이전에 선택한 시스템 암호 될 것입니다."
 
 msgid "You can also join client computers to the domain using any accounts that are members of the itadmin group."
 msgstr "또한 itadmin 그룹의 구성원 인 계정 을 사용하여 도메인 에 클라이언트 컴퓨터를 가입 할 수 있습니다."
@@ -5292,10 +5349,10 @@ msgid "Karoshi Linux Clients"
 msgstr "과로사 리눅스 클라이언트"
 
 msgid "Karoshi linux clients can be joined to the domain using the icons provided on the desktop for the local administrator user account on the linux client."
-msgstr "과로사 리눅스 클라이언트는 리눅스 클라이언트 에 로컬 관리자 사용자 계정의 바탕 화면 에서 제공하는 아이콘을 사용하여 도메인에 가입 할 수 있습니다."
+msgstr "과로사 리눅스 클라이언트는 리눅스 클라이언트에서 로컬 관리자 사용자 계정의 바탕 화면에 제공되는 아이콘을 사용하여 도메인에 가입 할 수 있습니다."
 
 msgid "Enter in the settings that you want to use for your client devices."
-msgstr "당신이 당신의 클라이언트 장치 에 사용할 설정 을 입력합니다."
+msgstr "당신이 당신의 클라이언트 장치 에 사용할 설정 에 입력합니다."
 
 msgid "DNS Server IP"
 msgstr "DNS 서버 IP"
@@ -5319,16 +5376,16 @@ msgid "Default Lease Time"
 msgstr "임대 시간 을 기본"
 
 msgid "Enter in the default lease time in seconds."
-msgstr "초 기본 임대 시간 을 입력합니다."
+msgstr "초 기본 임대 시간 에 입력합니다."
 
 msgid "Max Lease Time"
 msgstr "최대 임대 시간"
 
 msgid "Enter in the maximum lease time in seconds."
-msgstr "초 최대 임대 시간 을 입력합니다."
+msgstr "초 최대 임대 시간 에 입력합니다."
 
 msgid "This will set up a single sign on solution for logging into web applications."
-msgstr "이 웹 애플리케이션 에 로그인 할 솔루션 에 하나의 기호를 설정합니다."
+msgstr "이 웹 응용 프로그램 에 로그인 할 솔루션 에 하나의 기호를 설정합니다."
 
 msgid "Choose the server that you want to backup."
 msgstr "백업 할 서버를 선택합니다."
@@ -5337,7 +5394,7 @@ msgid "Update Locations"
 msgstr "업데이트 위치"
 
 msgid "This will update the location data from the asset register so that staff can ban locations by mac address or by tcpip numbers."
-msgstr "직원이 MAC 주소 또는 TCPIP 번호로 위치를 금지 할 수 있도록 이 자산 레지스터로부터 위치 데이터를 업데이트합니다."
+msgstr "직원이 MAC 주소 또는 TCPIP 번호 로 위치를 금지 할 수 있도록 자산 레지스터로부터 위치 데이터를 업데이트합니다."
 
 msgid "Update location data from the asset register."
 msgstr "자산 레지스터 에서 업데이트 위치 데이터."
@@ -5379,10 +5436,34 @@ msgid "Primary group"
 msgstr "기본 그룹"
 
 msgid "Username style"
-msgstr "사용자 이름 스타일"
+msgstr "아이디 스타일"
+
+msgid "auser09"
+msgstr "auser09"
+
+msgid "09auser"
+msgstr "09auser"
+
+msgid "usera09"
+msgstr "usera09"
+
+msgid "arnold.user09"
+msgstr "arnold.user09"
+
+msgid "user.arnold09"
+msgstr "user.arnold09"
+
+msgid "09usera"
+msgstr "09usera"
+
+msgid "09arnoldu"
+msgstr "09arnoldu"
+
+msgid "arnoldu"
+msgstr "arnoldu"
 
 msgid "Please enter the firstname for this user."
-msgstr "이 사용자에 대한 있는데 이름을 입력하십시오."
+msgstr "이 사용자에 대한FIRSTNAME 을 입력하세요."
 
 msgid "Please enter the surname for this user."
 msgstr "이 사용자의 성을 입력하세요."
@@ -5391,7 +5472,7 @@ msgid "Please enter a password and confirm it in the box below."
 msgstr "암호를 입력하고 아래의 상자 에서 확인하여주십시오."
 
 msgid "Student enrolment number or staff code. This field can be left blank."
-msgstr "학생 등록 번호 또는 직원 코드. 이 필드는 비워 둘 수 있습니다."
+msgstr "학생 등록 번호 또는 직원 코드입니다. 이 필드는 비워 둘 수 있습니다."
 
 msgid "The groups give different levels of access."
 msgstr "그룹은 서로 다른 수준의 액세스를 제공."
@@ -5406,7 +5487,7 @@ msgid "Choose the username style you require."
 msgstr "필요한 사용자 이름 스타일을 선택합니다."
 
 msgid "By default windows clients use mandatory profiles."
-msgstr "기본 Windows에서 클라이언트는 필수 프로필 을 사용합니다."
+msgstr "기본 창 으로 클라이언트는 필수 프로필 을 사용합니다."
 
 msgid "New profiles are created using the profileuser account."
 msgstr "새로운 프로파일은 profileuser 계정을 사용하여 만들어집니다."
@@ -5415,10 +5496,10 @@ msgid "The profileuser account uses a roaming profile that you can customise. "
 msgstr "profileuser 계정은 사용자 정의 할 수있는 로밍 프로필 을 사용합니다."
 
 msgid "Copy the profileuser profile by right clicking on My Computer and using the profile management tools."
-msgstr "내 컴퓨터를 마우스 오른쪽 버튼으로 클릭하고 프로파일 관리 도구를 사용하여 profileuser 프로파일을 복사합니다."
+msgstr "내 컴퓨터를 마우스 오른쪽 버튼으로 클릭하고 프로파일 관리 도구를 사용하여 profileuser 프로필을 복사합니다."
 
 msgid "It is essential that the permissions are changed on the profile to allow all users to use it."
-msgstr "이것은권한프로파일 변경 모든 사용자가 사용할 수 있도록 하는 것이 중요하다."
+msgstr "이는권한프로파일 에서 변경 하는 모든 사용자가 사용할 수있게 하는 것이 중요하다."
 
 msgid "The copied profile can be zipped up and uploaded to the web management."
 msgstr "복사 된 프로파일은 최대 압축 및웹 관리 에 업로드 할 수 있습니다."
@@ -5427,7 +5508,7 @@ msgid "Upload Windows Profile"
 msgstr "업로드 Windows 프로필"
 
 msgid "The Karoshi Linux clients download an updated skel from the main server each time that the client is booted. "
-msgstr "과로사 리눅스 클라이언트는 주 서버 에서 클라이언트 가 부팅 될 때마다 업데이트 된 skel이 를 다운로드합니다."
+msgstr "과로사 리눅스 클라이언트는 주 서버 에서 클라이언트 가 부팅 될 때마다 업데이트 skel이 를 다운로드합니다."
 
 msgid "Users logging onto the client then use the skel from the local machines."
 msgstr "클라이언트 에 로그온하는 사용자 는 로컬 컴퓨터 에서 skel이 를 사용합니다."
@@ -5457,7 +5538,7 @@ msgid "Please select the skel archive file you want to upload:"
 msgstr "업로드 할skel이 아카이브 파일을 선택하십시오:"
 
 msgid "The password was not changed for"
-msgstr "암호 에 대한 변경되지 않았습니다"
+msgstr "암호 가 변경 되지 않았습니다"
 
 msgid "The administrator account must not be blank."
 msgstr "관리자 계정 은 반드시 입력해야합니다."
@@ -5469,19 +5550,19 @@ msgid "Interval"
 msgstr "간격"
 
 msgid "The Levels must be in the correct order."
-msgstr "레벨 은 올바른 순서로 해야합니다."
+msgstr "레벨 은 올바른 순서로 있어야합니다."
 
 msgid "The warning intervals must be in the correct order."
-msgstr "경고 간격 은 올바른 순서로 해야합니다."
+msgstr "경고 간격 은 올바른 순서로 있어야합니다."
 
 msgid "E-mail quota warning settings have been applied."
 msgstr "E 메일 할당량 경고 설정이 적용 되어왔다."
 
 msgid "This will allow or deny email access for your users."
-msgstr "이 허용 또는 사용자 에 대한 이메일 액세스를 거부합니다."
+msgstr "이것은 허용하거나 사용자의 이메일 액세스를 거부합니다."
 
 msgid "Enter in the username that you want to ban email use for. Leave this blank if you want to ban email use for a group of users."
-msgstr "당신이 이메일 의 사용을 금지 할 사용자 이름 을 입력합니다. 당신이 사용자 그룹에 대한 이메일 사용을 금지 하려면이 필드를 비워 둡니다."
+msgstr "당신이 이메일 사용을 금지 하려는 사용자 이름 을 입력합니다. 당신이 사용자 그룹에 대한 이메일 사용을 금지 하려면이 필드를 비워 둡니다."
 
 msgid "Deny E-Mail access for this group"
 msgstr "이 그룹의 전자 메일 액세스 거부"
@@ -5496,25 +5577,25 @@ msgid "E-Mail Over Quota Report"
 msgstr "할당량 보고서 을 통해 전자 메일"
 
 msgid "E-mail quota checks are run on E-mail inboxes for all users three times a day."
-msgstr "E 메일 할당량 검사 는 모든 사용자에 대해 전자 메일 의받은 편지함 에 하루에 세 번 실행됩니다."
+msgstr "E 메일 할당량 검사 는 모든 사용자에 대해 전자 메일 받은 편지함 에 하루에 세 번 실행됩니다."
 
 msgid "Users who are over quota receive an E-mail warning them."
 msgstr "할당량을 초과 있는 사용자 를 경고 전자 메일 을받을 수 있습니다."
 
 msgid "Quota values are set in the E-mail limits section."
-msgstr "할당량 값E 메일 제한 부 에 설정된다."
+msgstr "할당량 값 은E 메일 제한 부 에 설정된다."
 
 msgid "This module is for advanced use for users that want ssh access to the main server."
-msgstr "이 모듈은 메인 서버 에 SSH 접속 을 원하는 사용자 를위한 고급 사용할 수 있습니다."
+msgstr "이 모듈은 메인 서버 에 SSH 액세스 를 원하는 사용자 를위한 고급 사용할 수 있습니다."
 
 msgid "It can also be used to join this server to another Karoshi system via the federated server module so that when users are created on the master system they will also be created here."
-msgstr "또한 사용자가 그들도 여기에 생성 될 마스터 시스템에서 작성 하는 경우 있도록 페더 레이 티드 서버 모듈을 통해 다른 과로사 시스템 이 서버 에 가입 할 수 있습니다."
+msgstr "또한 사용자가 그들도 여기에 생성 될 마스터 시스템에 생성 될 때 있도록 페더 레이 티드 서버 모듈을 통해 다른 과로사 시스템 이 서버 에 가입 할 수 있습니다."
 
 msgid "MAC"
 msgstr "MAC"
 
 msgid "Enter in TCPIP numbers or MAC addresses (separated by commas) for machines you want to restrict access to. Leave this blank for unrestricted access."
-msgstr "당신 에 대한 액세스를 제한하려는 기계 에 대한 TCPIP 번호 또는 쉼표로 구분 MAC 주소를 입력합니다. 무제한 액세스 권한 이 비워 둡니다."
+msgstr "당신 에 대한 액세스를 제한하려는 시스템에 대해 TCPIP 번호 또는 쉼표로 구분 MAC 주소 에 입력합니다. 무제한 액세스 권한 이 비워 둡니다."
 
 msgid "The level description is blank."
 msgstr "수준의 설명 이 비어 있습니다."
@@ -5523,7 +5604,7 @@ msgid "E-Mail Quota Warning messages have been saved."
 msgstr "E 메일 할당량 경고 메시지가 저장되었습니다."
 
 msgid "The new server you have chosen is not configured as a Karoshi file server."
-msgstr "당신이 선택한 새로운 서버는 과로사 파일 서버로 구성되어 있지 않습니다."
+msgstr "당신이 선택한새로운 서버는 과로사 파일 서버로 구성되어 있지 않습니다."
 
 msgid "Windows Printer Driver Generation"
 msgstr "윈도우 프린터 드라이버 생성"
@@ -5532,13 +5613,13 @@ msgid "Printer Driver Generation"
 msgstr "프린터 드라이버 생성"
 
 msgid "This is used to enable or disable automated windows printer driver generation for your print queues."
-msgstr "이것은 활성화 또는 인쇄 대기열에 대한 자동화 된 Windows 프린터 드라이버 생성 을 해제 하는 데 사용됩니다."
+msgstr "이 활성화 또는 인쇄 대기열에 대한 자동화 된 Windows 프린터 드라이버 생성 을 해제 하는 데 사용됩니다."
 
 msgid "Enable all"
 msgstr "모든 사용"
 
 msgid "Disable all"
-msgstr "모두 사용 안 함"
+msgstr "모두 해제"
 
 msgid "Generate Drivers"
 msgstr "드라이버 생성"
@@ -5547,19 +5628,19 @@ msgid "Windows printer driver generation completed."
 msgstr "윈도우 프린터 드라이버 생성 완료."
 
 msgid "The samba root password was incorrect."
-msgstr "삼바 루트 암호가 잘못되었습니다."
+msgstr "삼바 루트 암호 가 잘못 이었다."
 
 msgid "The windows dll files needed to generate the windows printer drivers are missing. The dlls needed in /usr/share/cups/drivers/ are pscript5.dll, ps5ui.dll, pscript.hlp, pscript.ntf."
-msgstr "윈도우 DLL 파일 은 프린터 드라이버 이없는 창을 생성하는 데 필요한. 는 / usr / share / 컵 / 드라이버 / 아르 pscript5.dll, ps5ui.dll, pscript.hlp, pscript.ntf 에 필요한 DLL을."
+msgstr "윈도우 DLL 파일 은 프린터 드라이버 가 누락 된 창을 생성하는 데 필요한. 는 / usr / share / 컵 / 드라이버 / 아르 pscript5.dll, ps5ui.dll, pscript.hlp, pscript.ntf 에 필요한 DLL을."
 
 msgid "The data has been copied to all accounts in the selected group."
 msgstr "데이터는선택된 그룹의 모든 계정 에 복사 되고있다."
 
 msgid "There was a problem copying the files to the group."
-msgstr "그룹에 파일을 복사하는 문제가 발생했습니다."
+msgstr "그룹에 파일을 복사 하는 과정에서 문제가 발생했습니다."
 
 msgid "There is no PPD file available."
-msgstr "가능한 PPD 파일이 없습니다."
+msgstr "사용 가능한 PPD 파일이 없습니다."
 
 msgid "The file you have chosen does not have a ppd extension."
 msgstr "당신이 선택한 파일은 PPD 확장 이 없습니다."
@@ -5583,22 +5664,22 @@ msgid "The number of times a failure is detected before sending an alert."
 msgstr "횟수고장경보 를 보내기 전에 검출된다."
 
 msgid "Monitor check interval"
-msgstr "모니터 검사 간격"
+msgstr "모니터 점검 간격"
 
 msgid "The monitoring service will wait this amount of time in minutes between each check for this group."
 msgstr "모니터링 서비스는이 그룹에 대한 각 검사 (분) 이 시간 을 기다립니다."
 
 msgid "Monitor day interval"
-msgstr "하루 간격 모니터"
+msgstr "일 간격 을 모니터링"
 
 msgid "Leave blank for continuous monitoring or add in the start and end days."
-msgstr "지속적으로 모니터링 비워 둡니다 또는 시작일과 종료일 에 추가합니다."
+msgstr "지속적인 모니터링을 위해 비워 둡니다 또는 시작일과 종료일 에 추가 할 수 있습니다."
 
 msgid "Monitor time interval"
-msgstr "시간 간격을 모니터링"
+msgstr "시간 간격 을 모니터링"
 
 msgid "Leave blank for continuous monitoring or add in the hour start and end times."
-msgstr "지속적으로 모니터링 비워 둡니다 또는 시간 시작 및 종료 시간 에 추가 할 수 있습니다."
+msgstr "지속적인 모니터링을 위해 비워 둡니다 또는시간의 시작 시간과 종료 시간 에 추가 할 수 있습니다."
 
 msgid "TCPIP numbers"
 msgstr "TCPIP 번호"
@@ -5676,28 +5757,28 @@ msgid "Lease Time Error"
 msgstr "임대 시간 오류"
 
 msgid "The default lease time cannot be greater than the maximum lease time."
-msgstr "기본 임대 기간 은 최대 임대 시간 보다 클 수 없습니다."
+msgstr "기본 임대 기간 은 최대 대여 시간 보다 클 수 없습니다."
 
 msgid "The DHCP changes have been applied."
 msgstr "DHCP 변경 이 적용 되고있다."
 
 msgid "The Access name cannot be blank."
-msgstr "액세스 이름 은 비워 둘 수 없습니다."
+msgstr "액세스 이름은 비워 둘 수 없습니다."
 
 msgid "The TCPIP range cannot be blank."
 msgstr "TCPIP 범위는 비워 둘 수 없습니다."
 
 msgid "The key you have entered is not long enough."
-msgstr "입력 한키 는 충분한 시간 이 아니다."
+msgstr "입력 한키 길이가 짧은."
 
 msgid "The key you have entered is too long."
 msgstr "입력 한키 가 너무 깁니다."
 
 msgid "This secret key has been added. Please ensure that it is also added to your wireless access points."
-msgstr "이 비밀 키 가 추가되었습니다. 또한 무선 액세스 포인트 에 추가되었는지 확인하십시오."
+msgstr "이 비밀 키 가 추가되었습니다. 그것은 또한 당신의 무선 액세스 포인트 에 추가되었는지 확인하십시오."
 
 msgid "Enter in the username that you want to apply these settings to."
-msgstr "당신이 이러한 설정을 적용 할 사용자 이름 을 입력합니다."
+msgstr "당신이 이 설정을 적용 할 사용자 이름 을 입력합니다."
 
 msgid "Leave this field blank if you want to apply the settings to a whole group of users."
 msgstr "당신은 사용자 의 전체 그룹 에 설정을 적용 하려면이 필드를 비워 둡니다."
@@ -5706,25 +5787,25 @@ msgid "Choose the group that you want to apply the quota settings to."
 msgstr "당신이 할당량 설정을 적용 할 그룹을 선택합니다."
 
 msgid "This is the maximum file size that users can have on the system."
-msgstr "이것은 사용자가시스템에 가질 수있는 최대 파일 크기 이다."
+msgstr "이것은 사용자가 시스템 에 미칠 수있는 최대 파일 크기입니다."
 
 msgid "Users who reach this limit will not be able to save any more files until they have deleted some files."
-msgstr "그들이 어떤 파일을 삭제 할 때까지이 한계에 도달 사용자 는 더 많은 파일을 저장할 수 없습니다."
+msgstr "그들이 어떤 파일을 삭제할 때까지이 한계에 도달 사용자 는 더 많은 파일을 저장할 수 없습니다."
 
 msgid "Setting this value to 0 will disable this option."
-msgstr "이 값을 0으로 설정하면 이 옵션 이 비활성화됩니다."
+msgstr "이 값을 0으로 설정하면 이 옵션을 사용할 수 없게됩니다."
 
 msgid "Max Files"
 msgstr "최대 파일"
 
 msgid "This is the maximum number of files that a user can save on the system."
-msgstr "이것은사용자가시스템에 저장할 수있는 파일의 최대 개수 이다."
+msgstr "이것은사용자가 시스템 에 저장할 수있는 파일의 최대 개수 이다."
 
 msgid "View Servers"
 msgstr "서버보기"
 
 msgid "No Karoshi Servers have been set up with ssh."
-msgstr "어떤 과로사 서버는 SSH 로 설정 되지 않았습니다."
+msgstr "어떤 과로사 서버 는 SSH 로 설정 되지 않았습니다."
 
 msgid "Restore Files"
 msgstr "파일 복원"
@@ -5751,13 +5832,13 @@ msgid "The monitor type cannot be blank."
 msgstr "모니터 종류가 비워 둘 수 없습니다."
 
 msgid "You must fill in all of the time interval boxes if you do not want continuous monitoring."
-msgstr "당신이 지속적인 모니터링 을 하지 않으려면 시간 간격 상자를 모두 기입 해야합니다."
+msgstr "당신은 지속적인 모니터링 을 원하지 않는 경우에는 시간 간격 상자를 모두 기입 해야합니다."
 
 msgid "Monitor added."
 msgstr "모니터 덧붙였다."
 
 msgid "A monitor group already exists with this name."
-msgstr "모니터 그룹 은 이미 이 이름으로 존재한다."
+msgstr "모니터 그룹이 이미 이 이름으로 존재한다."
 
 msgid "Choose the services that you want to start or stop."
 msgstr "시작 또는 중지 할 서비스를 선택합니다."
@@ -5769,16 +5850,16 @@ msgid "Click on the icons on the right to help you set up your system."
 msgstr "당신이 당신의 시스템을 설정하는 데 도움이 오른쪽에있는 아이콘 을 클릭합니다."
 
 msgid "The steps are all optional and can be carried out at any time in the web management."
-msgstr "모든 단계는 선택적이며웹 관리 에 언제든지 수행 될 수있다."
+msgstr "모든 단계는 선택적이며,웹 관리 에 언제든지 수행 될 수있다."
 
 msgid "You can cancel this wizard by changing your default page which is the last option on the right."
-msgstr "당신은 오른쪽에있는 마지막 옵션이 기본 페이지를 변경하여이 마법사를 취소 할 수 있습니다."
+msgstr "당신은 오른쪽에있는 마지막 옵션입니다 기본 페이지를 변경하여이 마법사를 취소 할 수 있습니다."
 
 msgid "Edit Printer Limit"
 msgstr "편집 프린터 제한"
 
 msgid "This will enable a user to have a roaming profile rather than a mandatory profile for use on a windows client computer."
-msgstr "이것은로밍 프로파일 보다는윈도우 클라이언트 컴퓨터에서 사용하기 위한필수 프로필 을 가지고사용자 를 가능하게 할 것이다."
+msgstr "이것은로밍 프로파일 보다는Windows 클라이언트 컴퓨터에서 사용하기 위한필수 프로필 을 가지고사용자 를 가능하게 할 것이다."
 
 msgid "This is not recommended due to the large size that roaming profiles can get to if users save work on their desktops."
 msgstr "이 때문에 로밍 프로필 은 사용자가 자신의 데스크톱에 작업을 저장 하는 경우 에 얻을 수있는 큰 크기로 사용하지 않는 것이 좋습니다."
@@ -5796,19 +5877,19 @@ msgid "The selected sites have been deleted."
 msgstr "선택된 사이트가 삭제되었습니다."
 
 msgid "Show disk info"
-msgstr "쇼 디스크 정보"
+msgstr "보기 디스크 정보"
 
 msgid "Find student files and folders"
 msgstr "학생 의 파일 및 폴더 찾기"
 
 msgid "This will search students home areas for files and folders."
-msgstr "이 파일과 폴더 에 대한 학생들 홈 영역을 검색합니다."
+msgstr "이 파일과 폴더 에 대한 학생들 의 홈 영역을 검색합니다."
 
 msgid "File / folder name"
 msgstr "파일 / 폴더 이름"
 
 msgid "Enter in the name of the file or folder you want to search for."
-msgstr "당신이 검색 할 파일 또는 폴더의 이름을 입력합니다."
+msgstr "당신이 검색 할 파일이나 폴더 의 이름을 입력합니다."
 
 msgid "Find"
 msgstr "발견"
@@ -5832,7 +5913,7 @@ msgid "Calculate"
 msgstr "계산"
 
 msgid "Select the Date and Time"
-msgstr "날짜와 시간 을 선택합니다"
+msgstr "날짜와 시간 을 선택"
 
 msgid "Set time"
 msgstr "시간 설정"
@@ -5841,7 +5922,7 @@ msgid "System Status"
 msgstr "시스템 상태"
 
 msgid "Network Monitoring can be used to monitor any device connected to your network."
-msgstr "네트워크 감시 는 네트워크에 연결된 임의의 장치 를 모니터 하는데 사용될 수있다."
+msgstr "네트워크 감시 는 네트워크에 연결된 임의의 장치 를 모니터링하기 위해 사용될 수있다."
 
 msgid "You have not entered an action."
 msgstr "당신은 작업을 입력 하지 않았습니다."
@@ -5850,7 +5931,7 @@ msgid "You have not entered a time."
 msgstr "당신은 시간을 입력하지 않았습니다."
 
 msgid "All data will be archived from the exam accounts to a sub folder in /home/staffshare/examfiles."
-msgstr "시험 이 / 홈 / staffshare / examfiles 의 하위 폴더에 계정의 모든 데이터가 보관됩니다."
+msgstr "시험은 / 집 / staffshare / examfiles 의 하위 폴더에 계정 에서 모든 데이터가 보관됩니다."
 
 msgid "Only a member of the itadmin group can access this folder."
 msgstr "만 itadmin 그룹의 구성원 이 폴더 에 액세스 할 수 있습니다."
@@ -5859,7 +5940,7 @@ msgid "This will archive the data from all of the exam accounts."
 msgstr "이시험 의 모든 계정 에서 데이터를 보관 합니다."
 
 msgid "Enter in any exam accounts that you do not want to be archived separated by spaces."
-msgstr "당신이 공백으로 구분 보관 하지 않으려는 시험 계정 을 입력합니다."
+msgstr "공백 으로 구분 보관 하지 않으려는 시험 계정 에 입력합니다."
 
 msgid "The option cannot be blank."
 msgstr "이 옵션은 비워 둘 수 없습니다."
@@ -5868,25 +5949,13 @@ msgid "The custom command must not be blank."
 msgstr "사용자 정의 명령 은 반드시 입력해야합니다."
 
 msgid "The server type must not be blank."
-msgstr "서버 유형 은 반드시 입력해야합니다."
+msgstr "서버 유형은 반드시 입력해야합니다."
 
 msgid "This custom command is not in the allowed custom command list."
 msgstr "이 사용자 정의 명령 이 허용 된 사용자 지정 명령 목록에 없습니다."
 
-msgid "Enter in the tcpip address of your wireless access point. You can also allow a range of addresses if you enter in a tcpip range. 172.30.0.0/16 would allow all devices in that range."
-msgstr "무선 액세스 포인트 의 TCPIP 주소를 입력합니다. 당신이 TCPIP 범위에서 입력하면 당신은 또한 주소 의 범위를 허용 할 수 있습니다. 172.30.0.0/16 해당 범위 에있는 모든 장치 를 허용합니다."
-
-msgid "Short name"
-msgstr "짧은 이름"
-
-msgid "Enter in a name for this access point. This will appear in the logs."
-msgstr "이 액세스 포인트 의 이름 을 입력합니다. 이 로그 에 나타납니다."
-
-msgid "Enter in the secret key that you want. This will also need to be entered into your wireless access points."
-msgstr "당신이 원하는 비밀 키를 입력합니다. 이것은 또한 무선 액세스 포인트 에 입력 해야합니다."
-
 msgid "By default the following user account passwords are are reset every night."
-msgstr "기본적으로 다음과 같은 사용자 계정 암호 는 매일 밤 재설정됩니다 있다."
+msgstr "기본적으로 다음과 같은 사용자 계정 암호 는 매일 밤 다시 설정됩니다 된다."
 
 msgid "The guest accounts also have any files in the accounts deleted."
 msgstr "게스트 계정 은 삭제 된 계정 의 모든 파일이 있습니다."
@@ -5901,19 +5970,19 @@ msgid "Tech Accounts"
 msgstr "기술 계정"
 
 msgid "The tech accounts are used to gain admin status on windows clients."
-msgstr "기술 계정은 Windows 클라이언트 에 대한 관리자 의 상태를 얻기 위해 사용된다."
+msgstr "기술 계정은 Windows 클라이언트 에 대한 관리자 상태를 얻기 위해 사용된다."
 
 msgid "Choose the server that you want to control services on."
 msgstr "당신이 서비스 에 제어 할 서버를 선택합니다."
 
 msgid "User Connection Logs"
-msgstr "사용자 연결 로그"
+msgstr "사용자 접속 로그"
 
 msgid "Enter in the username that you want to check the logs for."
 msgstr "당신이 로그를 확인 하려는 사용자 이름 을 입력합니다."
 
 msgid "The upload folder cannot be blank."
-msgstr "업로드 폴더 는 비워 둘 수 없습니다."
+msgstr "업로드 폴더가 비워 둘 수 없습니다."
 
 msgid "The upload id cannot be blank."
 msgstr "업로드 ID는 비워 둘 수 없습니다."
@@ -5922,7 +5991,7 @@ msgid "The files have been uploaded to the following path"
 msgstr "파일은다음 경로 에 업로드 된"
 
 msgid "Choose the location that you want to allow or deny internet access for."
-msgstr "허용 또는 인터넷 접속 을 거부 할위치를 선택합니다."
+msgstr "허용 또는 인터넷 접속 을 거부 할 위치를 선택합니다."
 
 msgid "Completed Requests"
 msgstr "완료 요청"
@@ -5934,7 +6003,7 @@ msgid "You have not chosen a backup server."
 msgstr "당신은 백업 서버 를 선택하지 않은 경우."
 
 msgid "An incorrect password has been added for the root samba account on the PDC or it is not responding"
-msgstr "잘못된 암호 는 PDC 의 루트 삼바 계정 에 대한 지원이 추가되었습니다 거나 응답하지 않습니다"
+msgstr "잘못된 암호는 PDC 의 루트 삼바 계정 에 대한 지원이 추가되었습니다 거나 응답하지 않습니다"
 
 msgid "Generate Classroom Lists - CSV"
 msgstr "교실 목록을 생성 - CSV 를"
@@ -5952,7 +6021,7 @@ msgid "tcpip,mac address."
 msgstr "TCPIP, MAC 주소."
 
 msgid "Allowed types"
-msgstr "허용 된 유형"
+msgstr "허용 유형"
 
 msgid "student"
 msgstr "학생"
@@ -5973,7 +6042,7 @@ msgid "You need to upload a zip or tar.gz file of your chosen start menu."
 msgstr "당신은 당신의 선택 시작 메뉴 의 zip 또는 tar.gz의 파일을 업로드 해야합니다."
 
 msgid "The top folder of the created archive should be Start Menu."
-msgstr "생성 한 아카이브 의 상위 폴더 는 시작 메뉴 이어야한다."
+msgstr "생성 한 아카이브 의 상위 폴더를 시작 메뉴 해야합니다."
 
 msgid "Proxy name/TCPIP"
 msgstr "프록시 이름 / TCPIP"
@@ -6000,7 +6069,7 @@ msgid "The updates have been completed."
 msgstr "업데이트가 완료되었습니다."
 
 msgid "Showing available updates completed."
-msgstr "완성 사용 가능한 업데이트 보기."
+msgstr "완성 사용 가능한 업데이트를 표시합니다."
 
 msgid "Exam Accounts - Create additional accounts"
 msgstr "시험 계정 - 추가 계정 만들기"
@@ -6027,7 +6096,7 @@ msgid "You must use a png format."
 msgstr "당신은 PNG 형식 을 사용해야합니다."
 
 msgid "Choose ALL to display all banned users or choose a letter to display the corresponding usernames."
-msgstr "모든 금지 된 사용자를 표시하거나 해당 사용자 이름 을 표시하는 편지 를 선택하는 모든 선택합니다."
+msgstr "모든 금지 사용자를 표시하거나 해당 사용자 이름을 표시하는 문자를 선택하는 모든 선택합니다."
 
 msgid "Group Management"
 msgstr "그룹 관리"
@@ -6045,7 +6114,7 @@ msgid "A user with that name already exists."
 msgstr "그 이름을 가진 사용자가 이미 존재합니다."
 
 msgid "New Primary Group"
-msgstr "새 기본 그룹"
+msgstr "새 차 그룹"
 
 msgid "New Secondary Group"
 msgstr "새로운 보조 그룹"
@@ -6057,7 +6126,7 @@ msgid "Extra Groups"
 msgstr "추가 그룹"
 
 msgid "New primary group"
-msgstr "새 기본 그룹"
+msgstr "새로운 기본 그룹"
 
 msgid "New secondary group"
 msgstr "새로운 보조 그룹"
@@ -6069,10 +6138,10 @@ msgid "View groups"
 msgstr "보기 그룹"
 
 msgid "This page lets you add and remove groups from your system."
-msgstr "이 페이지는 당신이 당신의 시스템에서 그룹을 추가하고 제거 할 수 있습니다."
+msgstr "이 페이지는 당신이 당신의 시스템에서 그룹을 추가 및 제거 할 수 있습니다."
 
 msgid "Primary groups are used when creating users. All users are assigned to a primary group."
-msgstr "사용자를 만들 때 기본 그룹 이 사용됩니다. 모든 사용자는 기본 그룹에 할당됩니다."
+msgstr "사용자를 만들 때 기본 그룹 이 사용됩니다. 모든 사용자는 기본 그룹 에 할당됩니다."
 
 msgid "Secondary groups can be used when creating sub folders and restricting access to certain groups."
 msgstr "서브 폴더를 생성하고 특정 그룹 에 대한 액세스를 제한 할 때 보조 기를 사용할 수있다."
@@ -6081,7 +6150,7 @@ msgid "Enter in the name of a new supplementary group that you want to create."
 msgstr "만들려는 새로운 부가 그룹 의 이름을 입력합니다."
 
 msgid "Secondary groups can be used for subfolders in existing shares to restrict access to memebers of the group."
-msgstr "보조 그룹은그룹의 멤버들 에 대한 액세스를 제한 기존 주 에서 하위 에 사용될 수있다."
+msgstr "이차 그룹의 그룹 멤버들 에 대한 액세스를 제한하는 기존 주 에서 하위 에 사용될 수있다."
 
 msgid "Primary group name"
 msgstr "기본 그룹 이름"
@@ -6090,19 +6159,19 @@ msgid "Enter in the name of the new primary group that you want to create."
 msgstr "만들려는 새 기본 그룹 의 이름을 입력합니다."
 
 msgid "This could be used where you need different profiles for staff and require more staff groups."
-msgstr "당신이 직원 에 대해 서로 다른 프로파일을 필요로 더 많은 직원 그룹을 필요로 하는 곳 이 사용될 수있다."
+msgstr "당신이 직원 에 대해 서로 다른 프로파일 이 필요하고 더 많은 직원 그룹을 필요로 하는 곳 이 사용될 수있다."
 
 msgid "Profile"
 msgstr "윤곽"
 
 msgid "Choose a profile to use for the new group. This can be modified later."
-msgstr "새 그룹 에 사용할 프로파일을 선택합니다. 이것은 나중에 수정할 수 있습니다."
+msgstr "새 그룹 에 사용할 프로파일을 선택합니다. 이것은 나중에 수정 될 수 있습니다."
 
 msgid "Home Server"
 msgstr "홈 서버"
 
 msgid "Choose the server you require for the home areas to be stored on for this group."
-msgstr "홈 영역이 이 그룹 에 저장 하는 데 필요한 서버를 선택합니다."
+msgstr "홈 영역이 이 그룹 에 저장 을 위해 필요한 서버를 선택합니다."
 
 msgid "Student"
 msgstr "학생"
@@ -6125,11 +6194,8 @@ msgstr "사용자 수"
 msgid "Type"
 msgstr "유형"
 
-msgid "Change the extra groups associated with this group."
-msgstr "이 그룹과 관련된 별도의 그룹을 변경합니다."
-
-msgid "Delete this group."
-msgstr "이 그룹 을 삭제합니다."
+msgid "Associated groups"
+msgstr "관련 단체"
 
 msgid "Secondary"
 msgstr "보조"
@@ -6137,23 +6203,29 @@ msgstr "보조"
 msgid "Primary"
 msgstr "차"
 
+msgid "Change the extra groups associated with this group."
+msgstr "이 그룹과 관련된 별도의 그룹을 변경합니다."
+
+msgid "delete this group."
+msgstr "이 그룹 을 삭제합니다."
+
 msgid "Are you sure that you want to delete this group?"
 msgstr "당신은 당신이 이 그룹 을 삭제 하시겠습니까?"
 
 msgid "Choose the extra groups that you want new users to be members of when the users are created."
-msgstr "당신이 새로운 사용자가 사용자가 생성 될 때 의 구성원이 될 하고자하는 여분의 그룹을 선택합니다."
+msgstr "새 사용자 는 사용자가 생성 될 때 의 구성원이 될 하고자하는 여분의 그룹을 선택합니다."
 
 msgid "Use this option to allow or deny access to all of the exam accounts."
 msgstr "허용하거나 시험 의 모든 계정 에 대한 액세스를 거부 하려면이 옵션을 사용합니다."
 
 msgid "Enter in any exam accounts that you do not want to be enabled or disabled."
-msgstr "당신이 사용하거나 사용하지 않도록 설정할 하지 않으려는 시험 계정 을 입력합니다."
+msgstr "당신이 사용하거나 사용하지 않도록 설정할 하지 않으려는 시험 계정 에 입력합니다."
 
 msgid "Show servers"
 msgstr "보기 서버"
 
 msgid "Setup an ssh connection to a Linux Schools server so that it can be controlled by the web management."
-msgstr "설정 이웹 관리 에 의해 제어 될 수 있도록리눅스 학교 서버SSH 연결."
+msgstr "설치 가웹 관리 에 의해 제어 될 수 있도록리눅스 학교 서버SSH 연결."
 
 msgid "Enter in the name of the server you want to enable ssh for."
 msgstr "당신이 SSH를 활성화 할 서버 의 이름을 입력합니다."
@@ -6168,16 +6240,16 @@ msgid "Enter the root password for the server you are setting up ssh for and con
 msgstr "당신이 SSH 를 설정하는 서버 의 루트 암호를 입력하고 아래의 상자에 확인합니다."
 
 msgid "Confirm Root Password"
-msgstr "루트 암호 확인"
+msgstr "루트 암호 를 확인"
 
 msgid "Your server is in a dmz firewall zone and will be set up with a vpn tunnel to the main server."
-msgstr "서버 는 DMZ 방화벽 영역에 메인 서버에 VPN 터널 로 설정 됩니다."
+msgstr "당신의 서버는 DMZ 방화벽 영역에 메인 서버에 VPN 터널 로 설정 됩니다."
 
 msgid "Authentication type"
 msgstr "인증 유형"
 
 msgid "In most cases your extra server will need to recognise your network users and groups."
-msgstr "대부분의 경우 에 여분의 서버는 네트워크 사용자 및 그룹을 인식 해야합니다."
+msgstr "대부분의 경우에 당신의 여분의 서버는 네트워크 사용자 및 그룹을 인식 해야합니다."
 
 msgid "Additional domain controller"
 msgstr "추가 도메인 컨트롤러"
@@ -6201,13 +6273,13 @@ msgid "Users and groups"
 msgstr "사용자 및 그룹"
 
 msgid "Your server will recognise all of your users and groups but will not be joined to the domain."
-msgstr "서버 는 사용자와 그룹을 모두 인식 하지만 도메인에 가입 되지 않습니다."
+msgstr "당신의 서버는 사용자와 그룹 을 모두 인식 할 수 있지만 도메인에 가입 되지 않습니다."
 
 msgid "None"
 msgstr "없음"
 
 msgid "The server will not recognise any of your users. This is suitable for a backup server role."
-msgstr "서버는 사용자 의 인식하지 못합니다. 이 백업 서버 역할 에 적합합니다."
+msgstr "서버는 사용자 의 인식하지 못합니다. 이 백업 서버 역할 에 적합하다."
 
 msgid "Suggested modules"
 msgstr "추천 모듈"
@@ -6219,13 +6291,13 @@ msgid "Exam account passwords changed."
 msgstr "시험 계정 암호 가 변경되었습니다."
 
 msgid "The password was not changed for all the exam accounts."
-msgstr "암호는 모든시험 계정에 대한 변경되지 않았습니다."
+msgstr "암호는 모든 시험 계정에 대한 변경되지 않았습니다."
 
 msgid "There are no warning messages to clear."
-msgstr "취소 할 경고 메시지가 없습니다."
+msgstr "취소 경고 메시지가 없습니다."
 
 msgid "The relay option must not be blank."
-msgstr "릴레이 옵션은 비워 둘 수 없습니다."
+msgstr "릴레이 옵션은 반드시 입력해야합니다."
 
 msgid "Incorrect Relay option."
 msgstr "잘못된 릴레이 옵션을 선택합니다."
@@ -6243,19 +6315,19 @@ msgid "You have not assigned anyone to this request."
 msgstr "이 요청에 사람 을 지정 하지 않았습니다."
 
 msgid "The priority must not be blank."
-msgstr "우선 순위는 비워 둘 수 없습니다."
+msgstr "우선 순위는 반드시 입력해야합니다."
 
 msgid "This will schedule all of the computers in your selected location to be turned on."
 msgstr "이 켜질 수 선택한 위치에 컴퓨터 의 모든 일정을 계획 할 것입니다."
 
 msgid "Please enter in the time that you want the computers in your selected location to be turned on."
-msgstr "당신이 선택한 위치에 컴퓨터가 켜져 있어야 할 시간에 입력하십시오."
+msgstr "당신이 선택한 위치에 컴퓨터가 켜져 있어야 할 시간을 입력하세요."
 
 msgid "Select the location that you want. All computers in this location will be turned on at the time you specify."
-msgstr "당신이 원하는 위치를 선택합니다. 이 위치에있는 모든 컴퓨터는 사용자가 지정한 시간에 켜집니다."
+msgstr "원하는 위치를 선택합니다. 이 위치에있는 모든 컴퓨터는 사용자가 지정한 시간에 켜집니다."
 
 msgid "A PPD is a linux printer driver. You will need to assign a printer driver to every printer queue that you set up."
-msgstr "PPD 는 리눅스 프린터 드라이버입니다. 당신은 당신이 설정 한 모든 프린터 대기열 에 프린터 드라이버를 할당해야합니다."
+msgstr "PPD 는 리눅스 프린터 드라이버입니다. 당신은 당신이 설정 한 모든 프린터 큐에 프린터 드라이버를 할당해야합니다."
 
 msgid "Choose the default page size for this printer."
 msgstr "이 프린터의 기본 페이지 크기를 선택합니다."
@@ -6276,7 +6348,7 @@ msgid "Upload PPD File"
 msgstr "PPD 파일을 업로드"
 
 msgid "Choose the make of your printer from this list. If the printer make is not listed you will need to get a PPD from the internet and use the Upload PPD option."
-msgstr "이 목록에서 프린터 의 제조업체 를 선택합니다. 프린터 제조업체 가 목록에없는 경우 인터넷에서PPD 를 얻고 업로드 PPD 옵션을 사용해야합니다."
+msgstr "이 목록에서 프린터 의 제조업체 를 선택합니다. 프린터 제조업체 가 목록에없는 경우 에는 인터넷에서PPD 를 얻고 업로드 PPD 옵션을 사용해야합니다."
 
 msgid "Wake on lan is disabled for this location."
 msgstr "Wake on LAN은 이 위치에 사용할 수 없습니다."
@@ -6285,16 +6357,16 @@ msgid "Setup Backup Server"
 msgstr "설정 백업 서버"
 
 msgid "This will provide a backup server for your network that other servers can backup to."
-msgstr "이것은 다른 서버에 백업 할 수 있도록 네트워크 에 대한 백업 서버를 제공 할 것입니다."
+msgstr "이것은 다른 서버에 백업 할 수 있습니다 에 네트워크 에 대한 백업 서버를 제공 할 것입니다."
 
 msgid "Servers are assigned to their backup servers in the web management."
-msgstr "서버는 웹 관리 에서 자신의 백업 서버 에 할당됩니다."
+msgstr "서버는 웹 관리 에서 자신의 백업 서버에 할당됩니다."
 
 msgid "The backup is fully automated and backups take place every week night."
-msgstr "백업은 완전 자동화 하고 백업은 매주 밤 개최 된다."
+msgstr "백업은 완전 자동화 및 백업 매주 밤 개최 된다."
 
 msgid "This will save the wifi information on the netlogon share for your clients to use when accessing wifi access points."
-msgstr "이 무선 랜 액세스 포인트 에 액세스 할 때 클라이언트 가 사용할 Netlogon 공유 에 와이파이 정보를 저장합니다."
+msgstr "이 와이파이 액세스 포인트 에 액세스 할 때 클라이언트 가 사용할 Netlogon 공유 에 와이파이 정보를 저장합니다."
 
 msgid "Wifi - SSID"
 msgstr "와이파이 - SSID"
@@ -6333,7 +6405,7 @@ msgid "Enter in a username that you want to change the primary group for."
 msgstr "당신이 차 그룹 을 변경하려면 사용자 이름 을 입력합니다."
 
 msgid "The user home area will be moved to the new group location."
-msgstr "사용자 홈 영역이 새 그룹 위치로 이동합니다."
+msgstr "사용자 홈 영역은새로운 그룹 의 위치로 이동 한다."
 
 msgid "Allowed special keys /+ -"
 msgstr "허용되는 특수 키 / -"
@@ -6351,7 +6423,7 @@ msgid "Main Menu"
 msgstr "메인 메뉴"
 
 msgid "Documentation"
-msgstr "문서"
+msgstr "설명서"
 
 msgid "Helpdesk"
 msgstr "헬프 데스크"
@@ -6426,7 +6498,7 @@ msgid "E-Mail Statistics"
 msgstr "E 메일 통계"
 
 msgid "User logs"
-msgstr "사용자가 로그인"
+msgstr "사용자 로그"
 
 msgid "Site Logs"
 msgstr "사이트 로그"
@@ -6438,13 +6510,13 @@ msgid "Room controls"
 msgstr "룸 컨트롤"
 
 msgid "This will setup the Xibo Digital Signage system for your site."
-msgstr "이 뜻을 설치 귀하의 사이트에 대한Xibo 디지털 사이 니지 시스템."
+msgstr "이 뜻을 설정 하여 사이트에 대한 Xibo 디지털 사이 니지 시스템."
 
 msgid "Xibo Domain"
 msgstr "Xibo 도메인"
 
 msgid "No web sites have been added to the reverse proxy list."
-msgstr "어떤 웹 사이트는리버스 프록시 리스트에 추가 되지 않았다."
+msgstr "어떠한 웹 사이트는리버스 프록시 리스트에 추가 되지 않았다."
 
 msgid "A reverse proxy server has not been setup."
 msgstr "역방향 프록시 서버가 설치 되지 않았습니다."
@@ -6462,16 +6534,16 @@ msgid "View Reverse Proxies"
 msgstr "보기 리버스 프록시"
 
 msgid "The reverse proxy feature allows incoming web connections on port 80 and 443 to pass through the reverse proxy to other servers on your network."
-msgstr "리버스 프록시 기능은 포트 80 과 443 에서 들어오는 웹 연결은 네트워크의 다른 서버로 역방향 프록시 를 통과 할 수 있습니다."
+msgstr "리버스 프록시 기능은 포트 80 과 443 에서 들어오는 웹 연결은 네트워크의 다른 서버에 역방향 프록시 를 통과 할 수 있습니다."
 
 msgid "This bypasses the need for sub domains and alias tcpip numbers for external access and will also allow all external ssl traffic to use one ssl certificate to authenticate the sites."
-msgstr "이것은 외부 액세스 에 대한 하위 도메인 별명 TCPIP 번호 에 대한 필요성을 무시하고 모든 외부 SSL 트래픽이 사이트 를 인증하는 하나의 SSL 인증서를 사용 할 수 있습니다."
+msgstr "이것은 외부 액세스 에 대한 하위 도메인 별명 TCPIP 번호 에 대한 필요성을 무시하고 모든 외부 SSL 트래픽이 사이트를 인증하기 위해 하나의 SSL 인증서를 사용 할 수 있습니다."
 
 msgid "Target folder"
 msgstr "대상 폴더"
 
 msgid "Enter in the web folder that you want redirected. Leave blank to re-direct the top directory."
-msgstr "당신이 리디렉션 할 웹 폴더에 입력합니다. 상단 디렉토리 를 다시 직접 비워 둡니다."
+msgstr "당신이 리디렉션 할 웹 폴더에 입력합니다. 맨 위 디렉토리 를 다시 직접 비워 둡니다."
 
 msgid "Example: Joomla is installed at http://www.mysite/joomla"
 msgstr "예: //www.mysite/joomla: 줌라 는 HTTP 에 설치"
@@ -6495,13 +6567,13 @@ msgid "Enable client certificate"
 msgstr "클라이언트 인증서 사용"
 
 msgid "Disable client certificate"
-msgstr "사용 안 함 클라이언트 인증서"
+msgstr "안 클라이언트 인증서"
 
 msgid "Create client certificate"
 msgstr "클라이언트 인증서를 만듭니다"
 
 msgid "This will setup up the CAS single sign on solution."
-msgstr "솔루션 에CAS 단일 가입 이 뜻을 설치."
+msgstr "솔루션 에CAS 단일 로그인 가입 이 의지 설정."
 
 msgid "WARNING - An internet connect is required to install this module."
 msgstr "경고 -인터넷 은 이 모듈을 설치하는 데 필요한 연결합니다."
@@ -6513,7 +6585,7 @@ msgid "E-Mail Domain"
 msgstr "전자 메일 도메인"
 
 msgid "Enter in the E-mail domain that you want to ban."
-msgstr "당신이 금지 하려는 전자 메일 도메인 을 입력합니다."
+msgstr "당신이 금지 하고자하는 전자 메일 도메인에 입력합니다."
 
 msgid "This will stop emails from being delivered from the domain."
 msgstr "이 도메인에서 전달 되는 이메일을 중지합니다."
@@ -6549,7 +6621,7 @@ msgid "The search phrase must be at least three characters long."
 msgstr "검색 구문 은 최소 3 자 이상이어야합니다."
 
 msgid "Please enter in the phrase that you want to search for."
-msgstr "당신이 검색 할 구 를 입력 하십시오."
+msgstr "당신이 검색 할 구 에 입력하십시오."
 
 msgid "Search phrase"
 msgstr "검색 구문"
@@ -6567,7 +6639,7 @@ msgid "Ban User Accounts"
 msgstr "반 사용자 계정"
 
 msgid "View-Enable banned users"
-msgstr "금지 된 사용자를 보기 - 활성화"
+msgstr "금지 사용자가 보기 - 활성화"
 
 msgid "User Images"
 msgstr "사용자 이미지"
@@ -6590,11 +6662,20 @@ msgstr "사용자 사용"
 msgid "Logout"
 msgstr "로그 아웃"
 
+msgid "Help"
+msgstr "도와주세요"
+
+msgid "Forum"
+msgstr "포럼"
+
+msgid "IRC"
+msgstr "IRC"
+
 msgid "View Completed Requests"
 msgstr "보기 완료 요청"
 
 msgid "Set defaults"
-msgstr "기본값 설정"
+msgstr "설정 기본값"
 
 msgid "Show user information"
 msgstr "보기 사용자 정보"
@@ -6633,7 +6714,7 @@ msgid "View enabled partitions"
 msgstr "보기 활성화 파티션"
 
 msgid "Apply Quota settings"
-msgstr "할당량 설정 적용"
+msgstr "할당량 설정을 적용합니다"
 
 msgid "ZFS Raid"
 msgstr "ZFS 레이드"
@@ -6645,7 +6726,7 @@ msgid "Find Student Files"
 msgstr "학생 파일 찾기"
 
 msgid "Add Network Share"
-msgstr "네트워크 공유를 추가"
+msgstr "네트워크 공유 추가"
 
 msgid "Federated File Sync"
 msgstr "연합 파일 동기화"
@@ -6677,9 +6758,6 @@ msgstr "업스트림 프록시"
 msgid "Upload Moodle Theme"
 msgstr "무 테마 를 업로드"
 
-msgid "Scheduled jobs"
-msgstr "예약 된 작업"
-
 msgid "Backup Controls"
 msgstr "백업 제어"
 
@@ -6704,17 +6782,14 @@ msgstr "DHCP"
 msgid "UPS"
 msgstr "UPS"
 
-msgid "Radius Access Points"
-msgstr "반경 액세스 포인트"
-
 msgid "Wake on Lan"
 msgstr "Wake on LAN은"
 
 msgid "Schedule a location"
-msgstr "위치 예약"
+msgstr "위치를 예약"
 
 msgid "Wake up a location now"
-msgstr "현재 위치를 일어나"
+msgstr "현재위치 일어나"
 
 msgid "View scheduled locations"
 msgstr "보기 예정 위치"
@@ -6735,13 +6810,13 @@ msgid "Upload a new profile"
 msgstr "새 프로필을 업로드"
 
 msgid "Upload application data"
-msgstr "애플리케이션 데이터 를 업로드"
+msgstr "애플리케이션 데이터를 업로드"
 
 msgid "Upload desktop icons"
 msgstr "바탕 화면 아이콘 을 업로드"
 
 msgid "Upload start menu"
-msgstr "시작 메뉴를 업로드"
+msgstr "시작 메뉴 를 업로드"
 
 msgid "Allow roaming profile"
 msgstr "로밍 프로필 허용"
@@ -6756,7 +6831,7 @@ msgid "Printer Accounting Logs"
 msgstr "프린터 회계 로그"
 
 msgid "Use E-Mail relay"
-msgstr "사용 전자 메일 릴레이"
+msgstr "사용 된 전자 메일 릴레이"
 
 msgid "E-Mail Access Controls"
 msgstr "전자 메일 액세스 제어"
@@ -6804,7 +6879,7 @@ msgid "Allow"
 msgstr "허용"
 
 msgid "Allowing access on port 22."
-msgstr "포트 22 에 대한 액세스 를 허용."
+msgstr "포트 22 에 대한 액세스를 허용."
 
 msgid "Kanboard Project Management"
 msgstr "Kanboard 프로젝트 관리"
@@ -6816,7 +6891,7 @@ msgid "Kanboard has been installed and can be accessed from"
 msgstr "Kanboard 는 설치하고 액세스 할 수 있습니다"
 
 msgid "Xibo has already been installed on this server."
-msgstr "Xibo 이미 이 서버에 설치되어 있습니다."
+msgstr "Xibo 이미 서버에 설치되어 있습니다."
 
 msgid "Copying module"
 msgstr "복사 모듈"
@@ -6834,13 +6909,13 @@ msgid "Mount point"
 msgstr "마운트 지점"
 
 msgid "Enter in the mount point that you want the raid array to be mounted on."
-msgstr "당신은 RAID 어레이 가 에 마운트 할 마운트 지점 을 입력합니다."
+msgstr "당신은 RAID 어레이 가 에 마운트 할 마운트 지점 에 입력합니다."
 
 msgid "Allowed mount points are /home or subfolders of /media, /mnt, /var, and /home"
-msgstr "허용 된 마운트 포인트 는 / 집 또는 하위 폴더 / 미디어 / MNT, / var 및 / 집 입니다"
+msgstr "허용 된 마운트 포인트 / 가정 또는 하위 폴더 / 미디어, 을 / mnt, / var 및 / 집 입니다"
 
 msgid "Raid Type"
-msgstr "RAID 유형"
+msgstr "레이드 유형"
 
 msgid "You do not have to pick any drives if you choose the restore option."
 msgstr "당신은 당신이 복원 옵션을 선택하면 모든 드라이브를 선택할 필요가 없습니다."
@@ -6852,7 +6927,7 @@ msgid "Choosing any other option will result in data loss on all of the drives c
 msgstr "다른 옵션을 선택하면 선택한 드라이브 의 모든 데이터 가 손실 될 수 있습니다."
 
 msgid "All chosen disks will be formatted and any existing data will be lost from the chosen disk drives."
-msgstr "선택한 모든 디스크 가 포맷 되고 기존 데이터 가 선택한 디스크 드라이브에서 손실됩니다."
+msgstr "모든 선택된 디스크 가 포맷 되고 기존 데이터 는 선택한 디스크 드라이브 에서 손실됩니다."
 
 msgid "Disk"
 msgstr "디스크"
@@ -6864,13 +6939,13 @@ msgid "Drives will only be shown if they are currently not mounted and are not a
 msgstr "드라이브 가 현재 마운트되지 않은 경우에만 표시됩니다 이미공격 에 사용 되지 않습니다."
 
 msgid "Spare drives can be added after the raid has been created."
-msgstr "RAID가 작성된 후 예비 드라이브 를 추가 할 수 있습니다."
+msgstr "습격 을 만든 후 예비 드라이브 를 추가 할 수 있습니다."
 
 msgid "No spare drives are available to create a raid array."
 msgstr "여분의 드라이브는 RAID 어레이를 생성 할 수 없습니다."
 
 msgid "Enter in the mount point that you want the raid array to be mounted on. Allowed mount points are /home or subfolders of /media, /mnt, /var, and /home"
-msgstr "당신은 RAID 어레이 가 에 마운트 할 마운트 지점 을 입력합니다. 허용 된 마운트 포인트 는 / 집 또는 하위 폴더 / 미디어 / MNT, / var 및 / 집 입니다"
+msgstr "당신은 RAID 어레이 가 에 마운트 할 마운트 지점 에 입력합니다. 허용 된 마운트 포인트 / 가정 또는 하위 폴더 / 미디어, 을 / mnt, / var 및 / 집 입니다"
 
 msgid " Choosing any other option will result in data loss on all of the drives chosen."
 msgstr "다른 옵션을 선택하면 선택한 드라이브 의 모든 데이터 가 손실 될 수 있습니다."
@@ -6885,13 +6960,13 @@ msgid "Administrator Account"
 msgstr "관리자 계정"
 
 msgid "Enter the username that you want e-mail warnings to be sent to for users who are at level 4."
-msgstr "전자 메일 경고 레벨 4 에 있는 사용자 로 전송 하려는 사용자 이름을 입력합니다."
+msgstr "전자 메일 경고 레벨 4 에 있는 사용자 로 전송 하고자하는 사용자 이름을 입력합니다."
 
 msgid "Level 1"
 msgstr "레벨 1"
 
 msgid "These are the levels which are used for determining if warning messages need to be sent and are percentages of the Mail Box size limit."
-msgstr "이러한 경고 메시지 가 전송 될 필요가 있고메일 박스 크기 제한 의 비율 인 경우 결정하기 위해 사용 되는수준 이다."
+msgstr "이러한 경고 메시지 가 전송 될 필요가 있고메일 박스 크기 제한 의 비율 인 경우 결정하기 위해 사용 되는레벨 이다."
 
 msgid "Level 2"
 msgstr "레벨 2"
@@ -6906,10 +6981,10 @@ msgid "Warning Interval 1"
 msgstr "간격 1 경고"
 
 msgid "These are the warning intervals in days before a user receives a repeat warning e-mail. Should a mail box increase into a higher level then a new e-mail will be sent."
-msgstr "사용자가반복 경고 전자 메일을 받기 전에 이러한 일경고 간격 이다. 메일 박스 는새로운 이메일이 전송 되는 것보다 높은 수준 으로 증가 한다."
+msgstr "사용자가반복 경고 전자 메일 을 수신 하기 전에 이러한 일경고 간격 이다. 메일 박스 는새로운 이메일이 전송 될더 높은 레벨 로 증가 한다."
 
 msgid "Warning Interval 2"
-msgstr "간격 2 경고"
+msgstr "간격 이 경고"
 
 msgid "Warning Interval 3"
 msgstr "간격 3 경고"
@@ -6942,7 +7017,7 @@ msgid "SSH failure for this server."
 msgstr "이 서버에 대한 SSH 실패."
 
 msgid "A server has not been configured for this server to backup to."
-msgstr "서버 에 백업 이 서버에 대해 구성되지 않았습니다."
+msgstr "서버 에 백업 이 서버에 구성되지 않았습니다."
 
 msgid "Add server"
 msgstr "서버 추가"
@@ -6999,13 +7074,13 @@ msgid "Enable all users"
 msgstr "모든 사용자가 사용"
 
 msgid "Disable all users"
-msgstr "모든 사용자를 비활성화"
+msgstr "모든 사용자를 해제"
 
 msgid "Enable user web folder"
-msgstr "사용자 웹 폴더 사용"
+msgstr "사용자 의 웹 폴더 사용"
 
 msgid "Disable user web folder"
-msgstr "사용 안 함 사용자 의 웹 폴더"
+msgstr "사용 안 함 사용자 웹 폴더"
 
 msgid "Archive Check"
 msgstr "아카이브 확인"
@@ -7014,10 +7089,10 @@ msgid "The archive is not valid."
 msgstr "아카이브 가 유효하지 않습니다."
 
 msgid "No errors detected in this archive."
-msgstr "오류 이 아카이브에 감지되지."
+msgstr "어떤 오류가이 아카이브에 감지되지."
 
 msgid "Copying to"
-msgstr "로 복사"
+msgstr "복사하기"
 
 msgid "Boot status"
 msgstr "부팅 상태"
@@ -7053,7 +7128,7 @@ msgid "ISO Images"
 msgstr "ISO 이미지"
 
 msgid "Copy the iso to the distribution server and make it available for network installation."
-msgstr "배포 서버 에ISO 를 복사하여 네트워크 설치 에 사용할 수 있도록."
+msgstr "배포 서버 에 ISO 를 복사하여 네트워크 설치를 위해 사용할 수 있도록."
 
 msgid "There are no iso images in this area."
 msgstr "이 지역 에는 ISO 이미지 가 없습니다."
@@ -7062,7 +7137,7 @@ msgid "Delete the iso from the distribution server."
 msgstr "배포 서버 에서 ISO 를 삭제합니다."
 
 msgid "Action Taken"
-msgstr "작업이 수행"
+msgstr "액션 촬영"
 
 msgid "Users Involved"
 msgstr "사용자 참여"
@@ -7077,10 +7152,10 @@ msgid "Backing up now - Please wait."
 msgstr "지금 백업 - 기다려주십시오."
 
 msgid "There are no locations scheduled for wake on lan."
-msgstr "Wake on LAN은 예정 아무 곳 이 없습니다."
+msgstr "Wake on LAN은 스케줄링 된 위치 가 없습니다."
 
 msgid "Disable All"
-msgstr "모두 사용 안 함"
+msgstr "모두 해제"
 
 msgid "Edit Filter Group"
 msgstr "필터 편집 그룹"
@@ -7107,10 +7182,10 @@ msgid "Enter in the label and description of new group that you want to create. 
 msgstr "라벨과 만들려는 새 그룹 의 설명을 입력합니다. 당신 의 설정을 복제 할 필터 그룹을 선택합니다."
 
 msgid "The filter lists are loaded into memory for each filter group so use as few filter groups as possible."
-msgstr "각 필터 그룹 그래서 가능한 적은 필터 그룹을 사용 위한필터 리스트는 메모리에로드 된다."
+msgstr "각 필터 기 때문에 가능한 적은 필터 그룹을 사용하기위한필터 리스트는 메모리에로드 된다."
 
 msgid "Filter group to clone from"
-msgstr "에서 복제 그룹 필터"
+msgstr "에서 복제 할 그룹 필터"
 
 msgid "This will delete all of the configuration settings for this group."
 msgstr "이것은 이 그룹 에 대한 구성 설정을 모두 삭제합니다."
@@ -7137,7 +7212,7 @@ msgid "Banned Phrase Categories"
 msgstr "금지 문구 카테고리"
 
 msgid "Banned Extensions"
-msgstr "금지 된 확장"
+msgstr "금지 확장"
 
 msgid "Banned Mime Types"
 msgstr "금지 된 MIME 타입"
@@ -7179,7 +7254,7 @@ msgid "allowed"
 msgstr "허용"
 
 msgid "Deny access for this filtering group?"
-msgstr "이 필터링 그룹에 대한 액세스 를 거부?"
+msgstr "이 필터링 그룹에 대한 액세스 거부?"
 
 msgid "Extension"
 msgstr "신장"
@@ -7203,7 +7278,7 @@ msgid "This allows you to view and add in parts of websites that you want to all
 msgstr "이것은 당신이 보고 당신 에 대한 액세스를 허용 할 웹 사이트 의 일부 에 추가 할 수 있습니다."
 
 msgid "Part Banned Sites"
-msgstr "부 금지 된 사이트"
+msgstr "파트 금지 사이트"
 
 msgid "This allows you to view and add in parts of websites that you want to deny access to."
 msgstr "이것은 당신이 보고 당신 에 대한 액세스를 거부 할 웹 사이트 의 일부 에 추가 할 수 있습니다."
@@ -7215,37 +7290,46 @@ msgid "Enter in the name of the site that you want to ban or allow."
 msgstr "당신이 금지 하거나 허용 할 사이트 의 이름을 입력합니다."
 
 msgid "Enter in a search term to filter the results."
-msgstr "결과를 필터링 검색어 에 입력합니다."
+msgstr "결과를 필터링 하는 검색 용어 에 입력합니다."
 
 msgid "The server name cannot be the same as the domain."
 msgstr "서버 이름도메인 과 동일하지 않을 수있다."
 
 msgid "Creating server ssh key"
-msgstr "서버 SSH 키를 생성"
+msgstr "서버 SSH 키 를 생성"
 
 msgid "This will take some time."
 msgstr "이것은 시간이 좀 걸릴 것입니다."
 
 msgid "network settings for this server show that it should not be in the same zone as the main server."
-msgstr "는 주 서버와 동일한 영역 에 있으면 안 이 서버 쇼를위한 네트워크 설정."
+msgstr "이 주 서버와 같은 영역 에 있으면 안 이 서버 쇼를위한 네트워크 설정."
 
 msgid "Network settings for this server show that it should not be in the same zone as the main server."
-msgstr "는 주 서버와 동일한 영역 에 있으면 안 이 서버 쇼를위한 네트워크 설정."
+msgstr "이 주 서버와 같은 영역 에 있으면 안 이 서버 쇼를위한 네트워크 설정."
 
 msgid "network settings for this server show that it should be in the same zone as the main server."
-msgstr "는 주 서버와 동일한 영역 에 있어야 이 서버 쇼를위한 네트워크 설정."
+msgstr "이 주 서버와 동일한 영역 에 있어야 이 서버 쇼를위한 네트워크 설정."
 
 msgid "SSH connection failure"
 msgstr "SSH 연결 실패"
 
 msgid "No Role"
-msgstr "어떤 역할 없음"
+msgstr "어떤 역할 없습니다"
 
 msgid "A ZFS raid has not been set up on this server."
 msgstr "ZFS 습격 이 서버 에 설치 되지 않았습니다."
 
-msgid "Available Disks"
-msgstr "사용 가능한 디스크"
+msgid "Available Drive"
+msgstr "사용 가능한 드라이브"
+
+msgid "Add spare"
+msgstr "예비 추가"
+
+msgid "Replace"
+msgstr "교체"
+
+msgid "Add this disk to a raid."
+msgstr "습격 에 이 디스크를 추가합니다."
 
 msgid "Raid Information"
 msgstr "정보 를 레이드"
@@ -7259,41 +7343,38 @@ msgstr "레이드 크기"
 msgid "Raid State"
 msgstr "레이드 상태"
 
+msgid "Mount Point"
+msgstr "마운트 지점"
+
 msgid "Scan Information"
 msgstr "스캔 정보"
-
-msgid "Raid Status"
-msgstr "RAID 상태"
-
-msgid "Raid Action"
-msgstr "레이드 액션"
 
 msgid "Active"
 msgstr "활동적인"
 
-msgid "offline"
+msgid "Offline"
 msgstr "오프라인"
 
-msgid "spare"
+msgid "Spare"
 msgstr "예비의"
 
-msgid "Add this disk as a spare."
-msgstr "스페어로 이 디스크를 추가합니다."
+msgid "Unavailable"
+msgstr "없는"
 
-msgid "Replace"
-msgstr "교체"
+msgid "Unknown"
+msgstr "알 수없는"
 
-msgid "Add this disk to a raid."
-msgstr "RAID 에 이 디스크를 추가합니다."
+msgid "Drive Offline"
+msgstr "드라이브를 오프라인"
 
-msgid "No access points have been configured."
-msgstr "어떤 액세스 포인트 가 구성 되지 않았습니다."
+msgid "Remove spare"
+msgstr "예비 제거"
 
 msgid "This printer does not support accounting."
 msgstr "이 프린터는 회계 를 지원하지 않습니다."
 
 msgid "This server does not have the correct authentication set up on it."
-msgstr "이 서버에는 서버 상에 설정 한 올바른 인증 이 없습니다."
+msgstr "이 서버는 에 설정 한 올바른 인증 이 없습니다."
 
 msgid "Squid Internet Proxy - port 3128"
 msgstr "오징어 인터넷 프록시 - 포트 3128"
@@ -7305,7 +7386,7 @@ msgid "Copying iso to"
 msgstr "ISO가 복사"
 
 msgid "Mounting iso"
-msgstr "설치 ISO"
+msgstr "설치 이소"
 
 msgid "Copying files out of the iso image"
 msgstr "ISO 이미지 에서 파일을 복사"
@@ -7320,7 +7401,7 @@ msgid "Restarting NFS Server"
 msgstr "다시 시작 NFS 서버"
 
 msgid "Copying iso from"
-msgstr "에서 ISO 를 복사"
+msgstr "에서 ISO 복사"
 
 msgid "to"
 msgstr "에"
@@ -7335,7 +7416,7 @@ msgid "Setting apache and mysql to start on boot."
 msgstr "아파치 와 MySQL 을 설정하면 부팅시 시작합니다."
 
 msgid "Checking shorewall ports."
-msgstr "shorewall 포트를 확인."
+msgstr "shorewall 포트를 확인하고 있습니다."
 
 msgid "Opening ports 80 and 443."
 msgstr "포트 80 과 443 을 엽니 다."
@@ -7356,13 +7437,13 @@ msgid "Delete the scheduled job."
 msgstr "예약 된 작업 을 삭제합니다."
 
 msgid "No Scheduled jobs."
-msgstr "어떤 작업을 예약 합니다."
+msgstr "어떤 작업을 예약 하지 않습니다."
 
 msgid "Copying Home Areas"
 msgstr "복사 홈 지역"
 
 msgid "Helpdesk - New request received"
-msgstr "헬프 데스크 - 받은 새 요청"
+msgstr "헬프 데스크 - 수신 된 새로운 요청"
 
 msgid "A software raid has not been set up on this server."
 msgstr "소프트웨어 RAID 는 이 서버 에 설치 되지 않았습니다."
@@ -7374,7 +7455,7 @@ msgid "Custom command"
 msgstr "사용자 정의 명령"
 
 msgid "Enter in a custom mdadm command to control your raid."
-msgstr "당신의 습격 을 제어 할 수있는 사용자 정의 는 mdadm 명령 을 입력합니다."
+msgstr "당신의 공격 을 제어 할 수있는 사용자 정의 는 mdadm 명령 을 입력합니다."
 
 msgid "Raid UUID"
 msgstr "레이드 UUID"
@@ -7388,11 +7469,14 @@ msgstr "RAID 에서 이 디스크를 제거합니다."
 msgid "spare rebuilding"
 msgstr "예비 재건"
 
+msgid "spare"
+msgstr "예비의"
+
 msgid "faulty spare"
 msgstr "결함이 예비"
 
 msgid "Spare Disks"
-msgstr "스페어 디스크"
+msgstr "예비 디스크"
 
 msgid "Service"
 msgstr "서비스"
@@ -7470,13 +7554,13 @@ msgid "File and print server"
 msgstr "파일 및 인쇄 서버"
 
 msgid "SOGo E-Mail"
-msgstr "종합 이메일"
+msgstr "종합 전자 메일"
 
 msgid "Internet proxy server"
 msgstr "인터넷 프록시 서버"
 
 msgid "Squid deb proxy"
-msgstr "오징어 DEB 프록시"
+msgstr "오징어 뎁 프록시"
 
 msgid "FTP server"
 msgstr "FTP 서버"
@@ -7521,7 +7605,7 @@ msgid "Curriculum Thin Client"
 msgstr "교육 과정 씬 클라이언트"
 
 msgid "Admin Thin Client"
-msgstr "관리자 씬 클라이언트"
+msgstr "관리 씬 클라이언트"
 
 msgid "Scanner"
 msgstr "스캐너"
@@ -7548,7 +7632,7 @@ msgid "Export Assets"
 msgstr "수출 자산"
 
 msgid "Show all assets"
-msgstr "모든 자산 보기"
+msgstr "모든 자산을 보기"
 
 msgid "S.N."
 msgstr "S.N."
@@ -7563,7 +7647,7 @@ msgid "Budget"
 msgstr "예산"
 
 msgid "Add description"
-msgstr "설명 추가"
+msgstr "설명을 추가합니다"
 
 msgid "Add in a description that you want to appear in the description drop down list."
 msgstr "당신이 설명 에 표시 드롭 다운 목록에서 원하는설명에 추가합니다."
@@ -7575,22 +7659,22 @@ msgid "Delete description"
 msgstr "설명을 삭제"
 
 msgid "Add supplier"
-msgstr "공급 업체 추가"
+msgstr "공급 업체에 추가"
 
 msgid "Add in the name of a supplier that you want to be available in the supplier drop down menu."
-msgstr "당신은 공급 업체 에서 드롭 다운 메뉴를 사용할 수있게하려면 공급 업체 의 이름으로 추가합니다."
+msgstr "당신은 공급 업체 에서 드롭 다운 메뉴를 사용할 수있게하려면 공급 업체 의 이름을 추가합니다."
 
 msgid "View Suppliers"
-msgstr "보기 공급 업체"
+msgstr "보기 공급자"
 
 msgid "Delete supplier"
-msgstr "공급 업체 를 삭제"
+msgstr "공급 업체에 삭제"
 
 msgid "Add budget"
 msgstr "예산 추가"
 
 msgid "Add in the name of a budget that you want to be available in the budget drop down menu."
-msgstr "당신이 예산 에 드롭 다운 메뉴를 사용할 수있게하려면예산 의 이름으로 추가합니다."
+msgstr "당신이 예산 에 드롭 다운 메뉴를 사용할 수있게하려면예산 의 이름을 추가합니다."
 
 msgid "View Budgets"
 msgstr "보기 예산"
@@ -7641,7 +7725,7 @@ msgid "Edit Asset"
 msgstr "편집 자산"
 
 msgid "This is already in use in the asset register."
-msgstr "이것은자산 레지스터에 이미 사용 된다."
+msgstr "이는 자산 레지스터 에서 이미 사용 중입니다."
 
 msgid "The asset register is locked."
 msgstr "자산 레지스터 가 잠겨 있습니다."
@@ -7659,7 +7743,7 @@ msgid "Search Assets"
 msgstr "검색 자산"
 
 msgid "Enter in the search criteria. This can be part of the mac address, serial number, purchase date, TCP-IP number etc."
-msgstr "검색 조건 을 입력합니다. 이 등 MAC 주소 의 일부, 일련 번호, 구입 날짜, TCP -IP 의 숫자가 될 수 있습니다"
+msgstr "검색 조건 에 입력합니다. 이 등MAC 주소 의 일부, 일련 번호, 구입 일자, TCP -IP 의 숫자가 될 수 있습니다"
 
 msgid "Adding Asset"
 msgstr "추가 자산"
@@ -7670,29 +7754,50 @@ msgstr "정체"
 msgid "No log file exists."
 msgstr "어떤 로그 파일은 존재하지 않습니다."
 
+msgid "Stopping this service."
+msgstr "이 서비스를 중지."
+
 msgid "Copying existing data onto the raid."
-msgstr "RAID 에 기존 데이터를 복사."
+msgstr "습격 에 기존 데이터를 복사."
+
+msgid "Starting this service."
+msgstr "이 서비스를 시작."
 
 msgid "Installing ZFS - this can take a long time"
-msgstr "ZFS 설치 - 이 시간이 오래 걸릴 수 있습니다"
-
-msgid "A ZFS raid is already running on this server."
-msgstr "ZFS RAID는 이미 이 서버 에서 실행되고 있습니다."
+msgstr "ZFS 설치 -이 시간이 오래 걸릴 수 있습니다"
 
 msgid "Restore existing raid"
-msgstr "기존의 RAID 복원"
+msgstr "기존의 공격에 복원"
+
+msgid "An existing ZFS raid array has been detected. Do you want this array to be restored?"
+msgstr "기존 ZFS RAID 어레이 가 감지되었습니다. 이 배열이 복원 하시겠습니까?"
+
+msgid "Restore existing raids"
+msgstr "기존의 급습 복원"
+
+msgid "Existing ZFS raid arrays have been detected. You can either choose to restore the arrays or use the drives for a new array."
+msgstr "기존 ZFS RAID 배열 이 감지 되고있다. 당신은 배열을 복원하거나 새로운 어레이의 드라이브를 사용하도록 선택할 수 있습니다."
+
+msgid "Raid information"
+msgstr "정보를 레이드"
+
+msgid "Reuse Drives for a new array"
+msgstr "새로운 배열 에 대한 재사용 드라이브"
 
 msgid "Restore ZFS Array"
 msgstr "ZFS 어레이 복원"
+
+msgid "Enter in the mount point that you want the raid array to be mounted on. Allowed mount points are /home /var or subfolders of /media, /mnt, /var, and /home"
+msgstr "당신은 RAID 어레이 가 에 마운트 할 마운트 지점 에 입력합니다. 허용 된 마운트 포인트 입니다 / 가정 의 / var 또는 미디어 / 의 하위 폴더, 을 / mnt, / var 및 / home"
 
 msgid "Single Redundancy"
 msgstr "단일 중복"
 
 msgid "Double Redundancy"
-msgstr "이중 중복"
+msgstr "두 번 중복"
 
 msgid "Triple Redundancy"
-msgstr "삼중 중복"
+msgstr "트리플 중복"
 
 msgid "Choose the redundancy type that you want."
 msgstr "원하는 중복 유형을 선택합니다."
@@ -7701,7 +7806,7 @@ msgid "Single redundancy allows for the failure of one active drive without losi
 msgstr "단일 중복 데이터를 손실하지 않고 하나의 활성 드라이브의 고장 수 있습니다."
 
 msgid "Double redundancy allows for the failure of two active drive without losing any data."
-msgstr "두 번 중복 데이터 의 손실없이 두 개의 활성 드라이브의 고장 수 있습니다."
+msgstr "두 번 중복 데이터를 손실없이 두 개의 활성 드라이브의 고장 수 있습니다."
 
 msgid "Use"
 msgstr "용도"
@@ -7709,23 +7814,14 @@ msgstr "용도"
 msgid "Hot Spare"
 msgstr "핫 스페어"
 
-msgid "An existing ZFS raid array has been detected. Do you want this array to be restored?"
-msgstr "기존 ZFS RAID 어레이 가 감지되었습니다. 이 배열 을 복원 하시겠습니까?"
-
-msgid "Reuse Drives for a new array"
-msgstr "새로운 어레이에 대한 재사용 드라이브"
-
-msgid "Raid information"
-msgstr "정보를 레이드"
-
 msgid "Copying icons to"
 msgstr "복사하기 아이콘"
 
 msgid "Users have yet to sign an acceptable use policy."
-msgstr "사용자 는 허용 가능한 사용 정책 에 서명 못하고있다."
+msgstr "사용자사용 제한 정책 에 서명 못하고있다."
 
 msgid "Creating an XP profile"
-msgstr "XP 프로파일 만들기"
+msgstr "XP 프로파일 작성"
 
 msgid "Creating a Windows 7 profile"
 msgstr "윈도우 7 프로파일 작성"
@@ -7773,7 +7869,7 @@ msgid "Send E-mail directly"
 msgstr "직접 전자 메일 보내기"
 
 msgid "Choose this option of you want to send your emails directly out to the internet."
-msgstr "당신이 직접 인터넷으로 이메일을 보낼 의 이 옵션을 선택합니다."
+msgstr "직접 인터넷으로 이메일을 보내려면 의 이 옵션을 선택합니다."
 
 msgid "This is address of the email relay that you want all the email sent to."
 msgstr "이렇게하면 모든 이메일 로 전송 하려는 이메일 릴레이의 주소입니다."
@@ -7797,7 +7893,7 @@ msgid "Incident Report"
 msgstr "사건 보고서"
 
 msgid "Internet Access banned."
-msgstr "인터넷 접속 은 금지."
+msgstr "인터넷 접속 금지."
 
 msgid "Users"
 msgstr "사용자"
@@ -7821,10 +7917,10 @@ msgid "You cannot setup a reverse proxy on the main server."
 msgstr "당신은 메인 서버 에 설치되지 않았 리버스 프록시 를 할 수 있습니다."
 
 msgid "Modifying shorewall rules to allow ports 80 and 443."
-msgstr "shorewall 규칙 을 수정하면 포트 80 과 443 을 허용합니다."
+msgstr "shorewall 규칙을 수정 포트 80 과 443 을 허용합니다."
 
 msgid "Checking for modules"
-msgstr "모듈 확인"
+msgstr "모듈에 대한 확인"
 
 msgid "Group ID"
 msgstr "그룹 ID"
@@ -7884,7 +7980,7 @@ msgid "Path"
 msgstr "통로"
 
 msgid "Last accessed"
-msgstr "마지막으로 액세스"
+msgstr "마지막 액세스"
 
 msgid "Last modified"
 msgstr "마지막으로 수정"
@@ -7911,10 +8007,10 @@ msgid "Special"
 msgstr "특별한"
 
 msgid "Set User ID"
-msgstr "설정된 사용자 ID"
+msgstr "설정 사용자 ID"
 
 msgid "Set Group ID"
-msgstr "그룹 ID를 설정"
+msgstr "그룹 ID 를 설정"
 
 msgid "Sticky"
 msgstr "끈적 끈적한"
@@ -7926,7 +8022,7 @@ msgid "Exec Files"
 msgstr "Exec에서 파일"
 
 msgid "An item with this name already exists."
-msgstr "이 이름을 가진항목 이 이미 존재합니다."
+msgstr "이 이름을 가진항목이 이미 존재합니다."
 
 msgid "This item is protected and cannot be renamed."
 msgstr "이 항목은 보호되며 이름을 바꿀 수 없습니다."
@@ -7938,13 +8034,13 @@ msgid "New Name"
 msgstr "새 이름"
 
 msgid "This is not an editable file."
-msgstr "이 편집 가능한 파일이 아닙니다."
+msgstr "이것은 편집 가능한 파일이 아닙니다."
 
 msgid "Files in this folder are not allowed to be edited."
 msgstr "이 폴더의 파일 은 편집 할 수 없습니다."
 
 msgid "Create folder"
-msgstr "폴더를 만듭니다"
+msgstr "폴더 만들기"
 
 msgid "Current Location"
 msgstr "현재 위치"
@@ -7989,7 +8085,7 @@ msgid "Lockout duration"
 msgstr "잠금 기간"
 
 msgid "Set the duration to the amount of time in minutes that you want a user to be locked out of the system for."
-msgstr "당신은 사용자 가 시스템에서 잠 을 분 에 시간 에 시간을 설정합니다."
+msgstr "당신은 사용자 의 시스템에서 잠 을 분 에 시간 에 시간을 설정합니다."
 
 msgid "Lockout threshold"
 msgstr "잠금 임계 값"
@@ -8001,7 +8097,7 @@ msgid "Lockout observation period"
 msgstr "잠금 관찰 기간"
 
 msgid "Set the time duration that the login attempts are monitored over."
-msgstr "로그인 시도 를 통해 모니터링되는 지속 시간 을 설정합니다."
+msgstr "로그인 시도 를 통해 모니터링 지속 시간 을 설정합니다."
 
 msgid "Password change time"
 msgstr "암호 변경 시간"
@@ -8013,10 +8109,10 @@ msgid "Backing up moodle to the following path:"
 msgstr "다음 경로 에 무 백업:"
 
 msgid "Copying the current moodle folder."
-msgstr "현재 무 폴더를 복사."
+msgstr "현재 무들 폴더를 복사."
 
 msgid "There was a problem updating moodle."
-msgstr "무 를 업데이트 하는 데 문제가 발생했습니다."
+msgstr "무들을 업데이트하는 중에 문제가 발생했습니다."
 
 msgid "Backing up the moodle database."
 msgstr "무 데이터베이스 백업."
@@ -8025,16 +8121,16 @@ msgid "Extracting the new moodle archive."
 msgstr "새로운 무 아카이브를 추출."
 
 msgid "Copying in the existing moodle config file and any custom themes."
-msgstr "기존의 무 설정 파일 및 사용자 정의 테마 에 복사."
+msgstr "기존의 무 설정 파일 및 사용자 지정 테마 에 복사."
 
 msgid "Setting permissions on the new moodle installation."
-msgstr "새로운 무들 설치 에 대한 사용 권한을 설정."
+msgstr "새로운 무 설치 에 대한 사용 권한을 설정."
 
 msgid "The moodle files have now been updated."
 msgstr "무 파일은 이제 업데이트되었습니다."
 
 msgid "Click Here to visit the moodle admin page to complete the installation."
-msgstr "설치를 완료합니다 무들 관리 페이지 를 방문하려면 여기를 클릭하십시오."
+msgstr "설치를 완료하기 위해 무 관리자 페이지 를 방문하려면 여기를 클릭하십시오."
 
 msgid "Disk Options"
 msgstr "디스크 옵션"
@@ -8044,6 +8140,21 @@ msgstr "새로운 시험 계정"
 
 msgid "Homepath"
 msgstr "HOMEPATH"
+
+msgid "Short name"
+msgstr "짧은 이름"
+
+msgid "Enter in a name for this access point. This will appear in the logs."
+msgstr "이 액세스 포인트에 대한이름을 입력합니다. 이 로그 에 나타납니다."
+
+msgid "Enter in the tcpip address of your wireless access point. You can also allow a range of addresses if you enter in a tcpip range. 172.30.0.0/16 would allow all devices in that range."
+msgstr "무선 액세스 포인트 의 TCPIP 주소를 입력합니다. 당신이 TCPIP 범위에서 입력하면 당신은 또한 주소 의 범위를 허용 할 수 있습니다. 172.30.0.0/16 해당 범위 에있는 모든 장치 를 허용합니다."
+
+msgid "Enter in the secret key that you want. This will also need to be entered into your wireless access points. This can be uppercase, lowercase, and numbers."
+msgstr "당신이 원하는 비밀 키를 입력합니다. 이것은 또한 무선 액세스 포인트 에 입력 해야합니다. 이것은 대문자, 소문자, 숫자 가 될 수 있습니다."
+
+msgid "No access points have been configured."
+msgstr "어떤 액세스 포인트 가 구성 되지 않았습니다."
 
 msgid "Modifying"
 msgstr "수정"
@@ -8058,7 +8169,7 @@ msgid "Entry"
 msgstr "기입"
 
 msgid "Enter in the name that you want. This can be the name of a server or an alias."
-msgstr "원하는 이름을 입력합니다. 이서버 또는 별칭 의 이름이 될 수 있습니다."
+msgstr "원하는 이름을 입력합니다. 이 서버 또는 별칭 의 이름이 될 수 있습니다."
 
 msgid "Enter in the dns information that you want. This would be a tcpip number for an A record or it would be an alias entry for a CNAME."
 msgstr "원하는 DNS 정보를 입력합니다. 이레코드에 대한 TCPIP 번호 것 아니면CNAME 별칭 항목 이 될 것이다."
@@ -8094,10 +8205,10 @@ msgid "Removing Egroupware."
 msgstr "Egroupware 제거."
 
 msgid "Removing Joomla."
-msgstr "줌라 제거."
+msgstr "Joomla를 제거."
 
 msgid "Removing Icecast radio server."
-msgstr "아이스 캐스트 라디오 서버를 제거."
+msgstr "아이스 캐스트 라디오 서버 제거."
 
 msgid "Removing ssh access."
 msgstr "SSH 액세스 를 제거."
@@ -8112,7 +8223,7 @@ msgid "Removing Print Server."
 msgstr "인쇄 서버 를 제거."
 
 msgid "Removing Squid."
-msgstr "오징어 를 제거."
+msgstr "오징어 제거."
 
 msgid "Removing Mon."
 msgstr "월 제거"
@@ -8148,7 +8259,7 @@ msgid "Samba account flags"
 msgstr "삼바 계정 플래그"
 
 msgid "Password last changed"
-msgstr "비밀번호 가 마지막으로 변경된"
+msgstr "암호 가 마지막으로 변경된"
 
 msgid "Unix Home Directory"
 msgstr "유닉스 홈 디렉터리"
@@ -8175,19 +8286,16 @@ msgid "There are no tcpip restrictions in place."
 msgstr "장소 에는 TCPIP 제한은 없습니다."
 
 msgid "Viewing the allowed TCPIP list for level 3."
-msgstr "레벨 3 의 허용 TCPIP 목록 보기."
+msgstr "레벨 3 에 대한 허용 TCPIP 목록 보기."
 
 msgid "This shows any E-Mails that are queued waiting to be sent."
-msgstr "이 전송 대기 큐에 모든 이메일 을 보여줍니다."
-
-msgid "The E-Mail Queue is empty"
-msgstr "전자 메일 큐 가 비어 있습니다"
+msgstr "이는 전송 대기 큐에 모든 이메일 을 보여줍니다."
 
 msgid "Flush E-Mail queue"
 msgstr "세척 E 메일 큐"
 
 msgid "Delete all queued E-Mails"
-msgstr "모든 전자 메일을 큐에 삭제"
+msgstr "모든 전자 메일을 대기 삭제"
 
 msgid "Mail ID"
 msgstr "메일 ID"
@@ -8196,10 +8304,16 @@ msgid "Recipient"
 msgstr "받는 사람"
 
 msgid "Delete E-Mail"
-msgstr "전자 메일을 삭제"
+msgstr "전자 메일 을 삭제합니다"
+
+msgid "The E-Mail Queue is empty"
+msgstr "전자 메일 큐 가 비어 있습니다"
 
 msgid "Creating ZFS raid"
-msgstr "ZFS RAID를 만들기"
+msgstr "ZFS 습격 만들기"
+
+msgid "A ZFS raid has already been set up for this pool."
+msgstr "ZFS 습격 은 이미 풀에 대해 설정되었습니다."
 
 msgid "Creating ZFS partition"
 msgstr "ZFS 파티션 만들기"
@@ -8235,13 +8349,13 @@ msgid "Capacity"
 msgstr "생산 능력"
 
 msgid "Smart Enabled"
-msgstr "스마트 가능"
+msgstr "스마트 사용"
 
 msgid "Smart Status"
-msgstr "SMART 상태"
+msgstr "스마트 상태"
 
 msgid "Pending Sectors"
-msgstr "분야 보류"
+msgstr "분야 를 보류"
 
 msgid "Disk temperature"
 msgstr "디스크 온도"
@@ -8252,11 +8366,14 @@ msgstr "RAID 레벨"
 msgid "Used Size"
 msgstr "중고 크기"
 
+msgid "Raid Status"
+msgstr "RAID 상태"
+
 msgid "Raid Drives"
 msgstr "RAID 드라이브"
 
 msgid "Used Drives"
-msgstr "사용되는 드라이브"
+msgstr "중고 드라이브"
 
 msgid "Active Devices"
 msgstr "활성 장치"
@@ -8283,7 +8400,7 @@ msgid "Rebuilding Disks"
 msgstr "디스크 재 구축"
 
 msgid "No disk data has been generated."
-msgstr "어떤 디스크 데이터 가 생성 되지 않았습니다."
+msgstr "어떤 디스크 데이터가 생성 되지 않았습니다."
 
 msgid "The following ports need to be opened on shorewall"
 msgstr "다음 포트 는 shorewall 에 열어야합니다"
@@ -8295,7 +8412,7 @@ msgid "Enter in the username that you want to add an alias to. This username has
 msgstr "당신이 별칭을 추가 할 사용자 이름 을 입력합니다. 이 이름 은 시스템에 존재 합니다."
 
 msgid "Enter in the alias that you want for the username."
-msgstr "당신은 사용자 이름 에 대해 원하는 별칭 을 입력합니다."
+msgstr "당신은 사용자 이름 에 대해 원하는 별명 에 입력합니다."
 
 msgid "Copying background to"
 msgstr "에 복사 배경"
@@ -8306,26 +8423,23 @@ msgstr "에 프로필을 복사"
 msgid "Est. Downtime  Year"
 msgstr "추정. 중지 시간"
 
-msgid "Offline"
-msgstr "오프라인"
-
 msgid "Free Space"
-msgstr "무료 공간"
+msgstr "여유 공간"
 
 msgid "CPU Usage"
 msgstr "CPU 사용"
 
 msgid "Applying update"
-msgstr "적용 갱신"
+msgstr "적용 업데이트"
 
 msgid "Downloading update"
-msgstr "다운로드 갱신"
+msgstr "다운로드 업데이트"
 
 msgid "The MD5 data is not set."
 msgstr "MD5 데이터가 설정되어 있지 않습니다."
 
 msgid "The server data is not set."
-msgstr "서버 의 데이터가 설정되어 있지 않습니다."
+msgstr "서버 데이터가 설정되어 있지 않습니다."
 
 msgid "The description data is not set."
 msgstr "기술 데이터는 설정되어 있지 않습니다."
@@ -8337,7 +8451,7 @@ msgid "There is no signature file for this patch."
 msgstr "이 패치 에 대한 서명 파일이 없습니다."
 
 msgid "Processing update"
-msgstr "처리 업데이트"
+msgstr "가공 업데이트"
 
 msgid "The update type must not be blank."
 msgstr "업데이트 유형은 반드시 입력해야합니다."
@@ -8346,13 +8460,13 @@ msgid "Removing this disk from the raid."
 msgstr "RAID 에서 이 디스크를 제거."
 
 msgid "This drive cannot be removed because there will not be enough drives left in the raid array."
-msgstr "RAID 어레이 에 남아있는 충분한 드라이브 가 없기 때문에 이 드라이브는 제거 할 수 없습니다."
+msgstr "RAID 배열 에 남아 충분한 드라이브 가 없기 때문에 이 드라이브는 제거 할 수 없습니다."
 
 msgid "Adding this disk to the raid."
-msgstr "RAID 에 이 디스크를 추가."
+msgstr "습격 이 디스크를 추가."
 
 msgid "You will need to create a web management user to administer the server network."
-msgstr "당신은 서버 네트워크 를 관리 할 수있는웹 관리 사용자 를 작성해야합니다."
+msgstr "당신은 서버 네트워크 를 관리 할 수있는웹 관리 사용자를 작성 해야합니다."
 
 msgid "Web management access"
 msgstr "웹 관리 액세스"

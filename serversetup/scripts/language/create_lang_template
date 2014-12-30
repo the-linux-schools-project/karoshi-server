@@ -8,7 +8,7 @@ LANGLIST="ar+cs+da+de+el+es+fr+hi+he+it+ko+nb+nl+pl+pt+ru+sv+zh"
 function createtemplate {
 #Create a karoshi server language template
 [ -f /opt/karoshi/serversetup/language/karoshi-server.pot ] && rm -f /opt/karoshi/serversetup/language/karoshi-server.pot
-grep -l -r "TEXTDOMAIN=karoshi-server" /opt/karoshi/serversetup | xargs xgettext -w 200 --no-wrap --copyright-holder="Paul Sharrad" --msgid-bugs-address=mpsharrad@karoshi.org.uk --language="bash" --package-name="Karoshi Server" --no-location -o /opt/karoshi/serversetup/language/karoshi-server.pot -L shell 2>/dev/null
+grep -l -r "TEXTDOMAIN=karoshi-server" /opt/karoshi/serversetup | sed 's/ /\\ /g' | xargs xgettext -w 200 --no-wrap --copyright-holder="Paul Sharrad" --msgid-bugs-address=mpsharrad@karoshi.org.uk --language="bash" --package-name="Karoshi Server" --no-location -o /opt/karoshi/serversetup/language/karoshi-server.pot -L shell 2>/dev/null
 
 #Replace SOME DESCRIPTIVE TITLE.
 sed -i 's/SOME DESCRIPTIVE TITLE./Karoshi Server Language Template/' /opt/karoshi/serversetup/language/karoshi-server.pot 
