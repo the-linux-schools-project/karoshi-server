@@ -167,7 +167,7 @@ authorize {
 	#
 	#  The ldap module will set Auth-Type to LDAP if it has not
 	#  already been set
-	ldap
+	#ldap
 
 	#
 	#  Enforce daily limits on time spent logged in.
@@ -239,6 +239,10 @@ authenticate {
 	Auth-Type PAP {
 		pap
 	}
+
+	Auth-Type Kerberos {
+		  krb5
+		}
 
 	#
 	#  Most people want CHAP authentication

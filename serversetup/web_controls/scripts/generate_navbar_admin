@@ -286,7 +286,7 @@ fi
 echo '						<li><a href="/cgi-bin/admin/ups_status.cgi">'$"UPS"'</a></li>'
 if [ $RADIUSCTRL = yes ]
 then
-echo '			<li><a href="/cgi-bin/admin/radius_view_access_pt_fm.cgi">'$"Radius Access Points"'</a></li>'
+echo '			<li><a href="/cgi-bin/admin/radius_access_points.cgi">'$"Radius Access Points"'</a></li>'
 fi
 
 echo '		</ul>

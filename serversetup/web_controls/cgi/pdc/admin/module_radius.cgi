@@ -75,7 +75,7 @@ exit
 
 function completed {
 echo '<SCRIPT language="Javascript">'
-echo 'window.location = "radius_add_access_pt_fm.cgi"'
+echo 'window.location = "radius_access_points.cgi"'
 echo '</script>'
 echo "</div></body></html>"
 exit

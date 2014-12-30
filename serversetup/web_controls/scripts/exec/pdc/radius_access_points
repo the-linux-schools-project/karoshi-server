@@ -1,0 +1,247 @@
+#!/bin/bash
+#Copyright (C) 2014 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/radius_access_points_cgi
+then
+	echo `date`: radius_access_points - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/radius_access_points_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/radius_access_points.cgi | cut -d' ' -f1`
+[ -z "$MD5SUM" ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $radius_access_points_cgi'check' ]
+then
+	echo `date`: radius_access_points - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ "$numArgs" != 0 ]
+then
+	echo `date`: radius_access_points - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+read DATA
+DATA=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\n-+-/' | sed 's/REPLACEUNDERSCORE/_/g'`
+if [ -z "$DATA" ]
+then
+	echo `date`: radius_access_points - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1 | tr -cd 'A-Za-z0-9\-'`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2 | tr -cd '0-9.'`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+MOBILE=`echo "$DATA" | cut -s -d: -f4 | tr -cd 'a-z'`
+ACTION=`echo "$DATA" | cut -s -d: -f5 | tr -cd 'a-z'`
+SHORTNAME=`echo "$DATA" | cut -s -d: -f6 | tr -cd 'A-Za-z0-9\-'`
+SECRETKEY=`echo "$DATA" | cut -s -d: -f7 | tr -cd 'A-Za-z0-9\-'`
+TCPIP=`echo "$DATA" | cut -s -d: -f8 | sed 's/%2/\//g' | tr -cd '0-9./'`
+
+[ -z "$ACTION" ] && ACTION=view
+
+WIDTH1=180
+WIDTH2=90
+WIDTH3=200
+TABLECLASS=standard
+if [ "$MOBILE" = yes ]
+then
+	WIDTH1=100
+	WIDTH2=90
+	WIDTH3=120
+	TABLECLASS=mobilestandard
+fi
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+	echo `date`: radius_access_points - Not called by radius_access_points.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+then
+	echo `date`: radius_access_points - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+	echo `date`: radius_access_points - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+	echo `date`: radius_access_points - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+echo `date`: radius_access_points by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+ICON1=/images/submenus/system/edit.png
+ICON2=/images/submenus/system/delete.png
+
+##########################
+#Language
+##########################
+
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+TEXTDOMAIN=karoshi-server
+
+function reload_radius {
+	#Reload radius
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/radius_stop 1>/dev/null
+	sleep 1
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/radius_start 1>/dev/null
+}
+
+#Show form to add access point
+if [ "$ACTION" = add ] || [ "$ACTION" = edit ]
+then
+	INPUTSTYLE=password
+	if [ "$ACTION" = edit ]
+	then
+		#Get access point data
+		if [ -f /opt/karoshi/server_network/radius/wireless_access_points/$SHORTNAME ]
+		then
+			INPUTSTYLE=text
+			ACCESSDATA=`sed 's/\t/ /g' /opt/karoshi/server_network/radius/wireless_access_points/$SHORTNAME | sed 's/ * / /g'`
+			TCPIP=`echo -e "$ACCESSDATA" | sed -n 1,1p | cut -d" " -f2`
+			SECRETKEY=`echo -e "$ACCESSDATA" | sed -n 2,2p | cut -d" " -f4`
+		fi
+	fi
+	echo '<input type="hidden" name="____ACTION____" value="reallyadd"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: '$WIDTH1'px;">'$"Short name"'</td><td>'
+
+	if [ "$ACTION" = add ]
+	then
+		echo '<input tabindex= "1" style="width: '$WIDTH3'px;" value="'$SHORTNAME'" name="____SHORTNAME____" size="20" type="text"></td><td>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a name for this access point. This will appear in the logs."'</span></a>'
+	else
+		echo '<input type="hidden" name="____SHORTNAME____" value="'$SHORTNAME'">'$SHORTNAME''
+	fi
+	echo '</td></tr>
+      <tr>
+        <td>
+'$"TCPIP"'</td>
+        <td><input tabindex= "2" style="width: '$WIDTH3'px;" value="'$TCPIP'" name="____TCPIP____" size="20" type="text"></td><td>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the tcpip address of your wireless access point. You can also allow a range of addresses if you enter in a tcpip range. 172.30.0.0/16 would allow all devices in that range."'</span></a>
+      </td></tr>
+      <tr>
+        <td>
+'$"Secret Key"'</td>
+        <td><input tabindex= "3" style="width: '$WIDTH3'px;" name="____SECRETKEY____" value="'$SECRETKEY'" size="20" type="'$INPUTSTYLE'"></td><td>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the secret key that you want. This will also need to be entered into your wireless access points. This can be uppercase, lowercase, and numbers."'</span></a>
+      </td></tr>
+      <tr>
+        <td>
+'$"Confirm"'</td>
+        <td><input tabindex= "4" style="width: '$WIDTH3'px;" name="____SECRETKEY2____" value="'$SECRETKEY'" size="20" type="'$INPUTSTYLE'"></td>
+      </tr>
+    </tbody>
+  </table><br><br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
+'
+fi
+
+#Add access point
+if [ "$ACTION" = reallyadd ]
+then
+	echo `date`: radius_access_points - adding "$SHORTNAME" on $TCPIP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+	if [ ! -d /opt/karoshi/server_network/radius/wireless_access_points ]
+	then
+		mkdir -p /opt/karoshi/server_network/radius/wireless_access_points
+		chown root.root /opt/karoshi/server_network/radius/wireless_access_points
+		chmod 0700 /opt/karoshi/server_network/radius/wireless_access_points
+	fi
+
+	echo client "$TCPIP" '{' > /opt/karoshi/server_network/radius/wireless_access_points/"$SHORTNAME" 
+	echo '	'secret' '= "$SECRETKEY" >> /opt/karoshi/server_network/radius/wireless_access_points/"$SHORTNAME"
+	echo '	'shortname' '= "$SHORTNAME" >> /opt/karoshi/server_network/radius/wireless_access_points/"$SHORTNAME"
+	echo '}' >> /opt/karoshi/server_network/radius/wireless_access_points/"$SHORTNAME"
+	echo >> /opt/karoshi/server_network/radius/wireless_access_points/"$SHORTNAME"
+	[ ! -d /etc/freeradius ] && mkdir -p /etc/freeradius
+	cat /opt/karoshi/server_network/radius/wireless_access_points/* > /etc/freeradius/clients.conf
+
+	#Reload radius
+	reload_radius
+	ACTION=view
+fi
+
+#Delete access point
+if [ "$ACTION" = delete ]
+then
+	echo `date`: radius_access_points - deleting "$SHORTNAME" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	rm -f /opt/karoshi/server_network/radius/wireless_access_points/"$SHORTNAME"
+	if [ `ls -1 /opt/karoshi/server_network/radius/wireless_access_points/ | wc -l` = 0 ]
+	then
+		echo > /etc/freeradius/clients.conf
+	else
+		cat /opt/karoshi/server_network/radius/wireless_access_points/* > /etc/freeradius/clients.conf
+	fi
+	reload_radius
+	ACTION=view
+fi
+
+#Show access points
+if [ "$ACTION" = view ]
+then
+	#Check to see if any access points have been added
+	if [ ! -d /opt/karoshi/server_network/radius/wireless_access_points/ ]
+	then
+		echo $"No access points have been configured.""<br><br>"
+		exit
+	fi
+
+	if [ `ls -1 /opt/karoshi/server_network/radius/wireless_access_points/ | wc -l` = 0 ]
+	then
+		echo $"No access points have been configured.""<br><br>"
+		exit
+	fi
+	#Show access points
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	<tbody><tr><td style="width: '$WIDTH1'px;"><b>'$"Short name"'</b></td><td style="width: '$WIDTH2'px;"><b>'$"TCPIP"'</b></td><td><b>'$"Edit"'</b></td><td><b>'$"Delete"'</b></td></tr>'
+	for ACCESSPOINTS in /opt/karoshi/server_network/radius/wireless_access_points/*
+	do
+		ACCESSPOINT=`basename "$ACCESSPOINTS"`
+		TCPIP=`sed -n 1,1p /opt/karoshi/server_network/radius/wireless_access_points/"$ACCESSPOINT" | cut -d' ' -f2` 
+		echo '<tr><td>'$ACCESSPOINT'</td><td>'$TCPIP'</td>
+		<td><a class="info" href="javascript:void(0)"><input name="____ACTION____edit____SHORTNAME____'$ACCESSPOINT'____" type="image" class="images" src="'$ICON1'" value=""><span>'$"Edit"'</span></a></td>
+		<td><a class="info" href="javascript:void(0)"><input name="____ACTION____delete____SHORTNAME____'$ACCESSPOINT'____" type="image" class="images" src="'$ICON2'" value=""><span>'$"Delete"'</span></a></td>
+		</tr>'
+	done
+	echo '</tbody></table>'
+fi
+

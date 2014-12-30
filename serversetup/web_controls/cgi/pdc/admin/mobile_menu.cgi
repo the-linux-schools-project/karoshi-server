@@ -135,6 +135,8 @@ echo '	<a href="/cgi-bin/admin/change_password_fm.cgi">'$"Change Password"'</a>
         <a href="/cgi-bin/admin/asset_register_view.cgi">'$"Asset Register"'</a>'
 [ $DHCPCTRL = yes ] && echo '	<a href="/cgi-bin/admin/dhcp_reservations.cgi">'$"DHCP Reservations"'</a>'
 [ $MONITORINGCTRL = yes ] && echo '	<a href="/cgi-bin/admin/mon_status.cgi">'$"Network Status"'</a>'
+[ $RADIUSCTRL = yes ] && echo '	<a href="/cgi-bin/admin/radius_access_points.cgi">'$"Radius Access Points"'</a>'
+
 echo '<a href="/cgi-bin/admin/dnsview_fm.cgi">'$"DNS"'</a>
 </div>'
 

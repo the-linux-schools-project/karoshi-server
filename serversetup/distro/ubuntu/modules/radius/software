@@ -1,46 +1,59 @@
 #!/bin/bash
 #softwareinstall
+
+source /opt/karoshi/server_network/domain_information/domain_name
+
 #Check for software
 INSTALL_DEPS=no
 INSTALLRADIUS=no
-INSTALLRADIUSLDAP=no
+INSTALLRADIUSKRB5=no
+
+echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 
 dpkg -S freeradius 1>/dev/null
-if [ `echo $?` != 0 ]
+if [ $? != 0 ]
 then
-INSTALLRADIUS=yes
-INSTALL_DEPS=yes
+	INSTALLRADIUS=yes
+	INSTALL_DEPS=yes
 fi
 
-dpkg -S freeradius-ldap 1>/dev/null
-if [ `echo $?` != 0 ]
+dpkg -S freeradius-krb5 1>/dev/null
+if [ $? != 0 ]
 then
-INSTALLRADIUSLDAP=yes
-INSTALL_DEPS=yes
+	INSTALLRADIUSKRB5=yes
+	INSTALL_DEPS=yes
 fi
 
 if [ $INSTALL_DEPS = yes ]
 then
-echo "<li>"Updating repository list"</li><br>"
-echo
-apt-get update
+	echo "<li>"Updating repository list"</li><br>"
+	apt-get update
 fi
 
 if [ $INSTALLRADIUS = yes ]
 then
-echo "<li>"Installing freeradius"</li><br>"
-echo 
-apt-get install -y freeradius
-echo
+	echo "<br><li>"Installing freeradius"</li><br>"
+	apt-get install -y freeradius
 fi
 
-if [ $INSTALLRADIUSLDAP = yes ]
+if [ $INSTALLRADIUSKRB5 = yes ]
 then
-echo "<li>"Installing freeradius-ldap"</li><br>"
-echo 
-apt-get install -y freeradius-ldap
-echo
+echo "<br><li>"Installing freeradius-krb5"</li><br>"
+	apt-get install -y freeradius-krb5
 fi
 
-cp -f /opt/karoshi/serversetup/distro/ubuntu/modules/radius/freeradius/modules/ldap /etc/freeradius/modules/
+echo '</pre>'
+
+#Copy in config files
 cp -f /opt/karoshi/serversetup/distro/ubuntu/modules/radius/freeradius/sites-available/default /etc/freeradius/sites-available/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/modules/radius/freeradius/sites-available/inner-tunnel /etc/freeradius/sites-available/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/modules/radius/freeradius/users /etc/freeradius/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/modules/radius/freeradius/eap.conf /etc/freeradius/
+
+#Create krb5 config file
+echo 'krb5 {
+	keytab = /etc/keytabs/radius.keytab
+	service_principal = radius/'$REALM'
+}' > /etc/freeradius/modules/krb5
+
+
