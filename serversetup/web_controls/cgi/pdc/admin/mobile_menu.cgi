@@ -76,8 +76,10 @@ echo '
     <div style="float: center" id="my_menu" class="sdmenu">
 	<div class="collapsed">
 	<span>'$SHORTNAME'</span>
-<a href="/cgi-bin/menu.cgi">'$"Main Menu"'</a>
-<a href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Main_Page">'$"Documentation"'</a>
+		<a href="/cgi-bin/menu.cgi">'$"Main Menu"'</a>
+		<a href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Main_Page" target="_blank">'$"Documentation"'</a>
+		<a href="http://www.linuxschools.com/forum/" target="_blank">'$"Forum"'</a>
+		<a href="irc_help.cgi" target="_blank">'$"IRC"'</a>
  	</div>
        <div class="collapsed">
         <span>'$"Helpdesk"'</span>
