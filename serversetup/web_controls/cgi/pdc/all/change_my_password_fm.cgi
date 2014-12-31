@@ -21,9 +21,10 @@
 
 #
 #Website: http://www.karoshi.org.uk
-############################
-#Language
-############################
+
+#Detect mobile browser
+MOBILE=no
+source /opt/karoshi/web_controls/detect_mobile_browser
 
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
@@ -39,12 +40,30 @@ echo '
   <title>'$"Change My Password"'</title>
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <META HTTP-EQUIV="refresh" CONTENT="300; URL=/cgi-bin/blank.cgi">
-<script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
-</head><body><div id="pagecontainer">'
+<script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-#Detect mobile browser
-MOBILE=no
-source /opt/karoshi/web_controls/detect_mobile_browser
+if [ "$MOBILE" = yes ]
+then
+echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+		/***********************************************
+		* Slashdot Menu script- By DimX
+		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
+		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+		***********************************************/
+	</script>
+	<script type="text/javascript">
+	// <![CDATA[
+	var myMenu;
+	window.onload = function() {
+		myMenu = new SDMenu("my_menu");
+		myMenu.init();
+	};
+	// ]]>
+	</script>'
+fi
+
+echo '</head><body><div id="pagecontainer">'
 
 #Generate navigation bar
 if [ $MOBILE = no ]
@@ -56,7 +75,7 @@ else
 DIV_ID=actionbox2
 fi
 
-echo '<form action="/cgi-bin/all/change_my_password.cgi" method="post"><div id="'$DIV_ID'">'
+echo '<form action="/cgi-bin/all/change_my_password.cgi" method="post">'
 
 #Get password strength settings
 source /opt/karoshi/server_network/security/password_settings
@@ -92,12 +111,16 @@ fi
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
-<td style="vertical-align: middle;"><a href="/cgi-bin/menu.cgi"><b>'$"Change My Password"'</b></a></td></tr></tbody></table><br>'
+echo '<div style="float: center" id="my_menu" class="sdmenu">
+	<div class="expanded">
+	<span>'$"Change My Password"'</span>
+<a href="/cgi-bin/menu.cgi">'$"Menu"'</a>
+</div></div><div id="mobileactionbox">
+'
 else
-echo '<b>'$"Change My Password"'</b><br><br>'
+echo '<div id="'$DIV_ID'"><b>'$"Change My Password"'</b><br><br>'
 fi
+
 
 if [ $MOBILE = yes ]
 then
