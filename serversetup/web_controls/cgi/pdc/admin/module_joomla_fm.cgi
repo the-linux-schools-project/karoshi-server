@@ -101,7 +101,7 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form id="form1" name="combobox" action="/cgi-bin/admin/module_joomla.cgi" method="post">
+echo '<form id="form1" name="combobox" action="/cgi-bin/admin/module_joomla.cgi" method="post"><div id="actionbox">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr><td style=vertical-align: top;"><div class="sectiontitle">'$"Setup Joomla Website"' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Joomla"><img class="images" alt="" src="/images/help/info.png"><span>'$"You will need to choose an alias for this server for web access. Either enter in a custom alias or choose one from the dropdown list."'</span></a>
 </td></tr></tbody></table><br>
