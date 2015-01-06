@@ -110,5 +110,7 @@ echo '<form action="/cgi-bin/admin/module_web.cgi" method="post"><div id="action
 <td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username for the database that you want to use with your website."'</span></a></td></tr>
 <tr><td style="width: 180px;">'$"Mysql Password"'</td><td><input tabindex= "1" name="___MYSQLPASS___" size="20" type="password" style="width: 200px;"></td>
 <td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the password for the database."'</span></a></td></tr>
+<tr><td style="width: 180px;">'$"Open Mysql Port"'</td><td><input name="___MYSQLPORT___" value="open" type="checkbox"></td>
+<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will open up port 3306 for mysql connections from remote devices."'</span></a></td></tr>
 </tbody></table><br><br></div><div id="submitbox"><input value="'$"Submit"'" class="button" type="submit">  <input value="'$"Reset"'" class="button" type="reset"></div></form></div></body></html>'
 exit

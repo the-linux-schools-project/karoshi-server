@@ -65,6 +65,7 @@ WEBSERVER=`echo "$DATA" | cut -s -d: -f4`
 WEBDB=`echo "$DATA" | cut -s -d: -f5`
 WEBDBUSER=`echo "$DATA" | cut -s -d: -f6`
 WEBDBPASS=`echo "$DATA" | cut -s -d: -f7`
+MYSQLPORT=`echo "$DATA" | cut -s -d: -f8`
 ########################
 #Check data
 ########################
@@ -134,7 +135,7 @@ then
 #############################
 #Ensure that apache and mysql are running on boot
 #############################
-echo "<li>"$"Setting apache and mysql to start on boot.""</li><br>"
+echo "<li>"$"Setting apache and mysql to start on boot""</li><br>"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mysql
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/tftpd
@@ -155,7 +156,7 @@ source /opt/karoshi/serversetup/variables/distro
 #############################
 #Ensure that apache and mysql are running on boot
 #############################
-echo "<li>"'$"Setting apache and mysql to start on boot."'"</li><br>"
+echo "<li>"'$"Setting apache and mysql to start on boot"'"</li><br>"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mysql
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/tftpd
@@ -163,7 +164,7 @@ echo "<li>"'$"Setting apache and mysql to start on boot."'"</li><br>"
 fi
 
 
-echo '<li>'$"Checking shorewall ports."'</li><br>'
+echo '<li>'$"Checking shorewall ports"'</li><br>'
 if [ $WEBSERVER = `hostname-fqdn` ]
 then
 #####################################
@@ -174,58 +175,80 @@ MODCHECK=`grep -c -w 80 /etc/shorewall/rules`
 MODCHECK2=`grep -c -w 443 /etc/shorewall/rules`
 MODCHECK3=`grep -c -w \#ftp_rule /etc/shorewall/rules`
 
+
 MOD_SHOREWALL=no
 ADD_APACHE_RULE=no
 ADD_FTP_RULE=no
 if [ $MODCHECK = 0 ]
 then
-MOD_SHOREWALL=yes
-ADD_APACHE_RULE=yes
-PORTS="80"
+	MOD_SHOREWALL=yes
+	ADD_APACHE_RULE=yes
+	PORTS="80"
 fi
 
 if [ $MODCHECK2 = 0 ]
 then
-MOD_SHOREWALL=yes
-ADD_APACHE_RULE=yes
-PORTS="443"
+	MOD_SHOREWALL=yes
+	ADD_APACHE_RULE=yes
+	PORTS="443"
 fi
 
 if [ $MODCHECK = 0 ] && [ $MODCHECK2 = 0 ]
 then
-MOD_SHOREWALL=yes
-ADD_APACHE_RULE=yes
-PORTS="80,443"
+	MOD_SHOREWALL=yes
+	ADD_APACHE_RULE=yes
+	PORTS="80,443"
 fi
 
 if [ $MODCHECK3 = 0 ]
 then
-MOD_SHOREWALL=yes
-ADD_FTP_RULE=yes
+	MOD_SHOREWALL=yes
+	ADD_FTP_RULE=yes
 fi
 
 if [ $ADD_APACHE_RULE = yes ]
 then
-echo '<li>'$"Opening ports 80 and 443."'</li><br>'
-LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'apache_webserver_rule /etc/shorewall/rules
-echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	echo '<li>'$"Opening ports 80 and 443"'</li><br>'
+	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'apache_webserver_rule /etc/shorewall/rules
+	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 fi
 
 if [ $ADD_FTP_RULE = yes ]
 then
-echo '<li>'$"Opening ports 20 and 21."'</li><br>'
-LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'20,21'	'-'#'ftp_rule /etc/shorewall/rules
-echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	echo '<li>'$"Opening ports 20 and 21"'</li><br>'
+	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'20,21'	'-'#'ftp_rule /etc/shorewall/rules
+	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+fi
+
+
+if [ ! -z "$MYSQLPORT" ]
+then
+	if [ `grep -c -w \#mysql_rule /etc/shorewall/rules` = 0 ]
+	then
+		echo '<li>'$"Opening port 3306"'</li><br>'
+		LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+		sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'3306'	'-'#'mysql_rule /etc/shorewall/rules
+		echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+		MOD_SHOREWALL=yes
+	fi
+else
+	if [ `grep -c -w \#mysql_rule /etc/shorewall/rules` -gt 0 ]
+	then
+		echo '<li>'$"Closing port 3306"'</li><br>'
+		LINENUM=`grep -n "mysql_rule" /etc/shorewall/rules | cut -d: -f1`
+		sed -i "$LINENUM"d /etc/shorewall/rules
+		MOD_SHOREWALL=yes
+	fi
 fi
 
 if [ $MOD_SHOREWALL = yes ]
 then
-echo '<li>'$"Restarting shorewall"'</li><br>'
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+	echo '<li>'$"Restarting shorewall"'</li><br>'
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
 else
@@ -246,55 +269,74 @@ ADD_FTP_RULE=no
 
 if [ $MODCHECK = 0 ]
 then
-ADD_APACHE_RULE=yes
-MOD_SHOREWALL=yes
-PORTS="80"
+	ADD_APACHE_RULE=yes
+	MOD_SHOREWALL=yes
+	PORTS="80"
 fi
 
 if [ $MODCHECK2 = 0 ]
 then
-ADD_APACHE_RULE=yes
-MOD_SHOREWALL=yes
-PORTS="443"
+	ADD_APACHE_RULE=yes
+	MOD_SHOREWALL=yes
+	PORTS="443"
 fi
 
 if [ $MODCHECK = 0 ] && [ $MODCHECK2 = 0 ]
 then
-ADD_APACHE_RULE=yes
-MOD_SHOREWALL=yes
-PORTS="80,443"
+	ADD_APACHE_RULE=yes
+	MOD_SHOREWALL=yes
+	PORTS="80,443"
 fi
 
 if [ $MODCHECK3 = 0 ]
 then
-MOD_SHOREWALL=yes
-ADD_FTP_RULE=yes
+	MOD_SHOREWALL=yes
+	ADD_FTP_RULE=yes
 fi
 
 
 if [ $ADD_APACHE_RULE = yes ]
 then
-echo "<li>"'$"Opening ports 80 and 443."'"</li><br>"
-LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"$PORTS"	"-"#"apache_webserver_rule /etc/shorewall/rules
-echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	echo "<li>"'$"Opening ports 80 and 443"'"</li><br>"
+	LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
+	sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"$PORTS"	"-"#"apache_webserver_rule /etc/shorewall/rules
+	echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 fi
 
 if [ $ADD_FTP_RULE = yes ]
 then
-echo "<li>"'$"Opening ports 20 and 21."'"</li><br>"
-LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"$PORTS"	"-"#"ftp_rule /etc/shorewall/rules
-echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	echo "<li>"'$"Opening ports 20 and 21"'"</li><br>"
+	LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
+	sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"$PORTS"	"-"#"ftp_rule /etc/shorewall/rules
+	echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 fi
 
+if [ ! -z "'$MYSQLPORT'" ]
+then
+	if [ `grep -c -w \#mysql_rule /etc/shorewall/rules` = 0 ]
+	then
+		echo "<li>"'$"Opening port 3306"'"</li><br>"
+		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
+		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"3306"	"-"#"mysql_rule /etc/shorewall/rules
+		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+		MOD_SHOREWALL=yes
+	fi
+else
+	if [ `grep -c -w \#mysql_rule /etc/shorewall/rules` -gt 0 ]
+	then
+		echo "<li>"'$"Closing port 3306"'"</li><br>"
+		LINENUM=`grep -n "mysql_rule" /etc/shorewall/rules | cut -d: -f1`
+		sed -i "$LINENUM"d /etc/shorewall/rules
+		MOD_SHOREWALL=yes
+	fi
+fi
 
 if [ $MOD_SHOREWALL = yes ]
 then
-echo "<li>"'$"Restarting shorewall"'"</li><br>"
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+	echo "<li>"'$"Restarting shorewall"'"</li><br>"
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
 '
 fi
@@ -304,7 +346,7 @@ fi
 #########################
 if [ $CREATEDB = yes ]
 then
-echo '<li>'$"Creating Database" $WEBDB username $WEBDBUSER.'</li><br>'
+echo '<li>'$"Creating Database" $WEBDB username $WEBDBUSER'</li><br>'
 if [ $WEBSERVER = `hostname-fqdn` ]
 then
 #Make sure that we know the root mysql password
