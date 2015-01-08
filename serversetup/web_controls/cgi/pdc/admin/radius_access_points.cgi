@@ -136,19 +136,6 @@ do
 	fi
 	let COUNTER=$COUNTER+1
 done
-#Assign SECRETKEY2
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SECRETKEY2check ]
-	then
-		let COUNTER=$COUNTER+1
-		SECRETKEY2=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
@@ -190,18 +177,6 @@ then
 	if [ -z "$SECRETKEY" ]
 	then
 		MESSAGE=$"The secret key cannot be blank."
-		show_status
-	fi
-	if [ -z "$SECRETKEY2" ]
-	then
-		MESSAGE=$"The secret key cannot be blank."
-		show_status
-	fi
-
-	#Check that the secret key has been entered correctly
-	if [ "$SECRETKEY" != "$SECRETKEY2" ]
-	then
-		MESSAGE=$"The secret keys do not match."
 		show_status
 	fi
 

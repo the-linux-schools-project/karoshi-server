@@ -24,43 +24,42 @@
 LOG_DATE=`date +%F`
 
 TYPE=replica
+MOUNTBASE=/gluster
+GLUSTERBASE=/home/gluster
 
 SERVERLIST=$1
 VOLUME=$2
-FOLDERPATH=$3
-ACTION=$4
-REMOTE_USER=$5
-REMOTE_ADDR=$6
+ACTION=$3
+REMOTE_USER=$4
+REMOTE_ADDR=$5
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
 
+#Create gluster folders
+[ ! -d $GLUSTERBASE ] && mkdir -p $GLUSTERBASE
+[ ! -d $MOUNTBASE ] && mkdir -p $MOUNTBASE
+
 function usage {
-echo -e "karoshi_gluster usage:\n\nkaroshi_gluster serverlist volume folderpath action\n\nserverlist - comma separated list of servers to create the gluster volume on.\n\nvolume - the name of the volume to create.\n\nfolderpath - the path to the that you want to convert to a glusterfs volume.\n\naction: create/add\n\ncreate: create a new gluster volume\nadd: add a new server to an existing volume.\n\nExample 1: Create a new glusterfs volume\n\nkaroshi_gluster server1.mydomain.com,server2.mydomain.com netlogon /var/lib/samba/netlogon create\n\nExample 2: An an extra server to a glusterfs volume\n\nkaroshi_gluster server3.mydomain.com netlogon /var/lib/samba/netlogon add\n"
+echo -e "karoshi_gluster usage:\n\nkaroshi_gluster serverlist volume action\n\nserverlist - comma separated list of servers to create the gluster volume on.\n\nvolume - the name of the volume to create.\\n\naction: create/add\n\ncreate: create a new gluster volume\nadd: add a new server to an existing volume.\n\nExample 1: Create a new glusterfs volume\n\nkaroshi_gluster server1.mydomain.com,server2.mydomain.com glustervol create\n\nExample 2: An an extra server to a glusterfs volume\n\nkaroshi_gluster server3.mydomain.com glustervol add\n"
 }
 
 if [ -z "$SERVERLIST" ]
 then
-usage
-exit 101
+	usage
+	exit 101
 fi
 
 if [ -z "$VOLUME" ]
 then
-usage
-exit 101
-fi
-
-if [ -z "$FOLDERPATH" ]
-then
-usage
-exit 101
+	usage
+	exit 101
 fi
 
 if [ -z "$ACTION" ]
 then
-usage
-exit 101
+	usage
+	exit 101
 fi
 
 echo `date`: karoshi_gluster serverlist:$SERVERLIST volume:$VOLUME folderpath:$FOLDERPATH action:$ACTION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -76,8 +75,8 @@ source /opt/karoshi/serversetup/variables/distro
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_status
 if [ $? != 0 ]
 then
-echo '<li>'$HOSTNAME'.'$REALM' - '$"starting glusterfs"'</li><br>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_start 1>/dev/null
+	echo '<li>'$HOSTNAME'.'$REALM' - '$"starting glusterfs"'</li><br>'
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_start 1>/dev/null
 fi
 
 ############################
@@ -86,233 +85,220 @@ fi
 
 if [ $ACTION = create ]
 then
-COUNTER=0
-#Check to see if a volume already exists with that name
-if [ `gluster volume info $VOLUME 2>/dev/null | grep -c $VOLUME` != 0 ]
-then
-echo '<li> '$SERVER': '$VOLUME' - '$"a volume with this name already exists"'</li><br>'
-exit 101
-fi
-
-for SERVERS in `echo $SERVERLIST | sed 's/,/ /g'`
-do
-
-SERVER=`basename $SERVERS`
-
-GLUSTERCLUSTER=`echo $GLUSTERCLUSTER $SERVER:$FOLDERPATH-gluster`
-
-if [ $SERVER = `hostname-fqdn` ]
-then
-#Open ports on firewall
-if [ `grep -c "#karoshi_gluster" /etc/shorewall/rules` = 0 ]
-then
-echo '<li>'$SERVER' - '$"Opening ports for glusterfs"'</li><br>'
-
-LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'karoshi_gluster /etc/shorewall/rules
-echo ACCEPT'	'net'	'fw'	'udp'	'$PORTS'	'-'#'karoshi_gluster >> /etc/shorewall/rules
-echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
-
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
-
-fi
-
-#Delete brick folder if it exists
-[ -d $FOLDERPATH-gluster ] && rm -f -R $FOLDERPATH-gluster
-
-else
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-
-source /opt/karoshi/serversetup/variables/distro
-
-#Open ports on firewall
-if [ `grep -c "#karoshi_gluster" /etc/shorewall/rules` = 0 ]
-then
-echo "<li>'$SERVER' - '$"Opening ports for glusterfs"'</li><br>"
-
-LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"'$PORTS'"	"-"#"karoshi_gluster /etc/shorewall/rules
-echo ACCEPT"	"net"	"fw"	"udp"	"'$PORTS'"	"-"#"karoshi_gluster >> /etc/shorewall/rules
-echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
-
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
-
-fi
-
-#Delete brick folder if it exists
-[ -d '$FOLDERPATH'-gluster ] && rm -f -R '$FOLDERPATH'-gluster
-
-#Make sure glusterfs is running
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/glusterfs
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_status
-if [ $? != 0 ]
-then
-echo "<li> '$SERVER' - '$"starting glusterfs"'</li><br>"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_start 1>/dev/null
-fi
-'
-gluster peer probe $SERVER 1>/dev/null
-
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-gluster peer probe '$HOSTNAME.$REALM' 1>/dev/null
-'
-#Make sure that peer probe is successfull
-PCOUNTER=1
-sleep 1
-while  [ `gluster peer status | grep -c $SERVER` = 0 ]
-do
-	sleep 1
-	let PCOUNTER=$PCOUNTER+1
-	if [ $PCOUNTER = 20 ]
+	COUNTER=0
+	#Check to see if a volume already exists with that name
+	if [ `gluster volume info $VOLUME 2>/dev/null | grep -c $VOLUME` != 0 ]
 	then
-		echo `date`: "karoshi_gluster peer probe failure for $SERVER" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo '<li> '$SERVER': '$VOLUME' - '$"a volume with this name already exists"'</li><br>'
 		exit 101
 	fi
-done
+
+	for SERVERS in `echo $SERVERLIST | sed 's/,/ /g'`
+	do
+
+		SERVER=`basename $SERVERS`
+		GLUSTERCLUSTER=`echo $GLUSTERCLUSTER $SERVER:$GLUSTERBASE/$VOLUME`
+
+		if [ $SERVER = `hostname-fqdn` ]
+		then
+			#Open ports on firewall
+			if [ `grep -c "karoshi_gluster" /etc/shorewall/rules` = 0 ]
+			then
+				echo '<li>'$SERVER' - '$"Opening ports for glusterfs"'</li><br>'
+
+				LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+				sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'karoshi_gluster /etc/shorewall/rules
+				echo ACCEPT'	'net'	'fw'	'udp'	'$PORTS'	'-'#'karoshi_gluster >> /etc/shorewall/rules
+				echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+
+				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+
+			fi
+
+		#Delete brick folder if it exists
+		[ -d $GLUSTERBASE/$VOLUME ] && rm -f -R $GLUSTERBASE/$VOLUME
+
+		else
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+
+			#Create gluster folders
+			[ ! -d '$GLUSTERBASE' ] && mkdir -p '$GLUSTERBASE'
+			[ ! -d '$MOUNTBASE' ] && mkdir -p '$MOUNTBASE'
+
+			source /opt/karoshi/serversetup/variables/distro
+
+			#Open ports on firewall
+			if [ `grep -c "karoshi_gluster" /etc/shorewall/rules` = 0 ]
+			then
+			echo "<li>'$SERVER' - '$"Opening ports for glusterfs"'</li><br>"
+
+			LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
+			sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"'$PORTS'"	"-"#"karoshi_gluster /etc/shorewall/rules
+			echo ACCEPT"	"net"	"fw"	"udp"	"'$PORTS'"	"-"#"karoshi_gluster >> /etc/shorewall/rules
+			echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+
+			fi
+
+			#Delete brick folder if it exists
+			[ -d '$GLUSTERBASE'/'$VOLUME' ] && rm -f -R '$GLUSTERBASE'/'$VOLUME'
+
+			#Make sure glusterfs is running
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/glusterfs
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_status
+			if [ $? != 0 ]
+			then
+			echo "<li>'$SERVER' - '$"starting glusterfs"'</li><br>"
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_start 1>/dev/null
+			fi
+			'
+			gluster peer probe $SERVER 1>/dev/null
+
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+			gluster peer probe '$HOSTNAME.$REALM' 1>/dev/null
+			'
+			#Make sure that peer probe is successfull
+			PCOUNTER=1
+			sleep 1
+			while  [ `gluster peer status | grep -c $SERVER` = 0 ]
+			do
+				sleep 1
+				let PCOUNTER=$PCOUNTER+1
+				if [ $PCOUNTER = 20 ]
+				then
+					echo `date`: "karoshi_gluster peer probe failure for $SERVER" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+					exit 101
+				fi
+			done
 
 
-fi
+		fi
 
-let COUNTER=$COUNTER+1
+		let COUNTER=$COUNTER+1
+	done
 
-done
+	#Create glusterfs volume
+	echo '<li>'$"Creating GlusterFS volume"' - '$VOLUME'</li><br>'
+	gluster volume create $VOLUME $TYPE $COUNTER $GLUSTERCLUSTER force 1>/dev/null 
+	if [ $? != 0 ]
+	then
+		echo '<li>'$"There was a problem creating the volume"' - '$VOLUME'</li><br>'
+		exit 101
+	fi
+	#Start Gluster volume
+	echo '<li>'$"Starting GlusterFS volume"' - '$VOLUME'</li>'
+	gluster volume start $VOLUME 1>/dev/null
+	if [ $? != 0 ]
+	then
+		echo '<li>'$"There was a problem starting the volume"' - '$VOLUME'</li><br>'
+		exit 101
+	fi
 
-#Create glusterfs volume
-echo '<li>'$"Creating GlusterFS volume"' - '$VOLUME'</li><br>'
-gluster volume create $VOLUME $TYPE $COUNTER $GLUSTERCLUSTER force 1>/dev/null 
-if [ $? != 0 ]
-then
-echo '<li>'$"There was a problem creating the volume"' - '$VOLUME'</li><br>'
-exit 101
-fi
-#Start Gluster volume
-echo '<li>'$"Starting GlusterFS volume"' - '$VOLUME'</li>'
-gluster volume start $VOLUME 1>/dev/null
-if [ $? != 0 ]
-then
-echo '<li>'$"There was a problem starting the volume"' - '$VOLUME'</li><br>'
-exit 101
-fi
+	for SERVERS in `echo $SERVERLIST | sed 's/,/ /g'`
+	do
 
-for SERVERS in `echo $SERVERLIST | sed 's/,/ /g'`
-do
+		SERVER=`basename $SERVERS`
 
-SERVER=`basename $SERVERS`
+		if [ $SERVER = `hostname-fqdn` ]
+		then
 
-if [ $SERVER = `hostname-fqdn` ]
-then
-#Move folder path if it exists
-if [ -d $FOLDERPATH ]
-then
-echo '<li>'$SERVER' - '$"Backing up"' '$FOLDERPATH'</li><br>'
-mv $FOLDERPATH $FOLDERPATH.pregluster.$$
-fi
+			#Create empty folder to mount to 
+			[ ! -d $MOUNTBASE/$VOLUME ] && mkdir -p $MOUNTBASE/$VOLUME
 
-#Create empty folder to mount to 
-[ ! -d $FOLDERPATH ] && mkdir -p $FOLDERPATH
-#Mount volume
-echo '<li>'$SERVER' - '$"mounting"' '$FOLDERPATH'</li><br>'
-mount -t glusterfs $SERVER:/$VOLUME $FOLDERPATH
+		
+			#Add entry to fstab
+			if [ `grep -c ^#glusterfs-$VOLUME /etc/fstab` = 0 ]
+			then
+				echo "#glusterfs-$VOLUME" >> /etc/fstab
+				echo "$SERVER:/$VOLUME $MOUNTBASE/$VOLUME glusterfs defaults,acl,_netdev 0 0" >> /etc/fstab
+			fi
 
-#Add entry to fstab
-if [ `grep -c ^#glusterfs-$VOLUME /etc/fstab` = 0 ]
-then
-echo "#glusterfs-$VOLUME" >> /etc/fstab
-echo "$SERVER:/$VOLUME $FOLDERPATH glusterfs defaults,_netdev 0 0" >> /etc/fstab
-fi
+			#Mount volume
+			echo '<li>'$SERVER' - '$"mounting"' '$MOUNTBASE/$VOLUME'</li><br>'
+			mount -a
 
-#Create mount command
-echo -e '#!/bin/bash
-#Check if glusterfs is needed
-if [ `grep -c gluster /etc/fstab` -gt 0 ]
-then
-#Wait for glusterfs to start
-source /opt/karoshi/serversetup/variables/distro
-STATUS=1
-COUNTER=0
-while [ $STATUS = 1 ] && [ $COUNTER != 120 ]
-do
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_status
-STATUS=$?
-sleep 1
+			#Create mount command
+			echo -e '#!/bin/bash
+			#Check if glusterfs is needed
+			if [ `grep -c gluster /etc/fstab` -gt 0 ]
+			then
+			#Wait for glusterfs to start
+			source /opt/karoshi/serversetup/variables/distro
+			STATUS=1
+			COUNTER=0
+			while [ $STATUS = 1 ] && [ $COUNTER != 120 ]
+			do
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_status
+			STATUS=$?
+			sleep 1
 
-if [ $STATUS = 0 ]
-then
-#Hopefully gluster is now started so mount the gluster shares
-mount -a
-exit
-fi
+			if [ $STATUS = 0 ]
+			then
+			#Hopefully gluster is now started so mount the gluster shares
+			mount -a
+			exit
+			fi
 
-let COUNTER=$COUNTER+1
-done
-fi
-exit' > /etc/rc2.d/S99mount_gluster_shares
-chmod 0755 /etc/rc2.d/S99mount_gluster_shares
+			let COUNTER=$COUNTER+1
+			done
+			fi
+			exit' > /etc/rc2.d/S99mount_gluster_shares
+			chmod 0755 /etc/rc2.d/S99mount_gluster_shares
 
-else
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-#Move folder path if it exists
-if [ -d '$FOLDERPATH' ]
-then
-echo "<li>'$SERVER' - '$"Backing up"' '$FOLDERPATH'</li><br>"
-mv '$FOLDERPATH' '$FOLDERPATH'.pregluster.'$$'
-fi
+		else
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 
-#Create empty folder to mount to 
-[ ! -d '$FOLDERPATH' ] && mkdir -p '$FOLDERPATH'
+			#Create empty folder to mount to 
+			[ ! -d '$MOUNTBASE'/'$VOLUME' ] && mkdir -p '$MOUNTBASE'/'$VOLUME'
 
-#Mount volume
-echo "<li>'$SERVER' - '$"mounting"' '$FOLDERPATH'</li><br>"
-mount -t glusterfs '$SERVER':/'$VOLUME' '$FOLDERPATH'
+			#Add entry to fstab
+			if [ `grep -c ^#glusterfs-'$VOLUME' /etc/fstab` = 0 ]
+			then
+				echo "#glusterfs-'$VOLUME'" >> /etc/fstab
+				echo "'$SERVER':/'$VOLUME' '$MOUNTBASE'/'$VOLUME' glusterfs defaults,acl,_netdev 0 0" >> /etc/fstab
+			fi
 
-#Add entry to fstab
-if [ `grep -c ^#glusterfs-'$VOLUME' /etc/fstab` = 0 ]
-then
-echo "#glusterfs-'$VOLUME'" >> /etc/fstab
-echo "'$SERVER':/'$VOLUME' '$FOLDERPATH' glusterfs defaults,_netdev 0 0" >> /etc/fstab
-fi
+			#Mount volume
+			echo "<li>'$SERVER' - '$"mounting"' '$MOUNTBASE'/'$VOLUME'</li><br>"
+			mount -a
 
-#Create mount command
-echo -e "#!/bin/bash
-#Check if glusterfs is needed
-if [ \`grep -c gluster /etc/fstab\` -gt 0 ]
-then
-#Wait for glusterfs to start
-source /opt/karoshi/serversetup/variables/distro
-STATUS=1
-COUNTER=0
-while [ \$STATUS = 1 ] && [ \$COUNTER != 120 ]
-do
-/opt/karoshi/serversetup/distro/\$DISTROCHOICE/scripts/control_services/glusterfs_status
-STATUS=$?
-sleep 1
+			#Create mount command
+			echo -e "#!/bin/bash
+			#Check if glusterfs is needed
+			if [ \`grep -c gluster /etc/fstab\` -gt 0 ]
+			then
+				#Wait for glusterfs to start
+				source /opt/karoshi/serversetup/variables/distro
+				STATUS=1
+				COUNTER=0
+				while [ \$STATUS = 1 ] && [ \$COUNTER != 120 ]
+				do
+					/opt/karoshi/serversetup/distro/\$DISTROCHOICE/scripts/control_services/glusterfs_status
+					STATUS=$?
+					sleep 1
 
-if [ \$STATUS = 0 ]
-then
-#Hopefully gluster is now started so mount the gluster shares
-mount -a
-exit
-fi
+					if [ \$STATUS = 0 ]
+					then
+						#Hopefully gluster is now started so mount the gluster shares
+						mount -a
+						exit
+					fi
 
-let COUNTER=\$COUNTER+1
-done
-fi
-exit" > /etc/rc2.d/S99mount_gluster_shares
-chmod 0755 /etc/rc2.d/S99mount_gluster_shares
-'
-fi
-echo GlusterFS Server"<br>" > /opt/karoshi/server_network/servers/$SERVER/glusterfs_server
-done
+					let COUNTER=\$COUNTER+1
+				done
+			fi
+			exit" > /etc/rc2.d/S99mount_gluster_shares
+			chmod 0755 /etc/rc2.d/S99mount_gluster_shares
+			'
+		fi
+		echo GlusterFS Server"<br>" > /opt/karoshi/server_network/servers/$SERVER/glusterfs_server
+	done
 
-#Restrict access to the gluster volume
-gluster volume set $VOLUME auth.allow 127.0.0.1
-
-#Copy in data to gluster cluster
-echo '<li>`hostname-fqdn` - '$"Copying in existing data"' - '$FOLDERPATH'</li><br>'
-cp -f -R $FOLDERPATH.pregluster.$$/* $FOLDERPATH/ 
-
+	#Restrict access to the gluster volume
+	gluster volume set $VOLUME auth.allow 127.0.0.1
 fi
 
 ###########################
@@ -326,10 +312,13 @@ echo '<li>'$SERVER' - '$"Adding server to gluster volume"' - '$VOLUME'</li><br>'
 #Start gluster on the remote server
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 
+[ ! -d '$GLUSTERBASE' ] && mkdir -p '$GLUSTERBASE'
+[ ! -d '$MOUNTBASE' ] && mkdir -p '$MOUNTBASE'
+
 source /opt/karoshi/serversetup/variables/distro
 
 #Open ports on firewall
-if [ `grep -c "#karoshi_gluster" /etc/shorewall/rules` = 0 ]
+if [ `grep -c "karoshi_gluster" /etc/shorewall/rules` = 0 ]
 then
 echo "<li>'$SERVER' - '$"Opening ports for glusterfs"'</li><br>"
 
@@ -361,7 +350,7 @@ exit 101
 fi
 
 #Delete brick folder if it exists
-[ -d '$FOLDERPATH'-gluster ] && rm -f -R '$FOLDERPATH'-gluster
+[ -d '$GLUSTERBASE'/'$VOLUME' ] && rm -f -R '$GLUSTERBASE'/'$VOLUME'
 
 '
 if [ $? = 101 ]
@@ -396,40 +385,31 @@ done
 
 echo '<li>'$SERVER' - '$"getting brick count"'</li><br>'
 #Get current number of bricks in the volume
-BRICKCOUNT=`gluster volume info $VOLUME | grep "Bricks: " | cut -d"=" -f2 | sed 's/ //g'`
+BRICKCOUNT=`ls -1 /var/lib/glusterd/vols/$VOLUME/bricks/ | wc -l`
 let BRICKCOUNT=$BRICKCOUNT+1
+echo '<li> '$SERVER' - '$"adding"' '$GLUSTERBASE'/'$VOLUME' $</li><br>'
 
-echo '<li> '$SERVER' - '$"adding"' '$FOLDERPATH'-gluster - '$VOLUME' $</li><br>'
-
-#gluster volume add-brick $VOLUME  replica $$BRICKCOUNT $SERVER:/$FOLDERPATH-gluster
-gluster volume add-brick $VOLUME replica $BRICKCOUNT $SERVER:$FOLDERPATH-gluster force
+gluster volume add-brick $VOLUME replica $BRICKCOUNT $SERVER:$GLUSTERBASE/$VOLUME force
 
 
 #Mount the drive
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 source /opt/karoshi/serversetup/variables/distro
 
-#Move folder path if it exists
-if [ -d '$FOLDERPATH' ]
-then
-echo "<li>'$SERVER' - '$"Backing up"' '$FOLDERPATH'</li><br>"
-mv '$FOLDERPATH' '$FOLDERPATH'.pregluster.'$$'
-fi
 
 #Create empty folder to mount to 
-[ ! -d '$FOLDERPATH' ] && mkdir -p '$FOLDERPATH'
-
-
-#Mount volume
-echo "<li>'$SERVER' - '$"mounting"' '$FOLDERPATH'</li><br>"
-mount -t glusterfs '$SERVER':/'$VOLUME' '$FOLDERPATH'
+[ ! -d '$MOUNTBASE'/'$VOLUME' ] && mkdir -p '$MOUNTBASE'/'$VOLUME'
 
 #Add entry to fstab
 if [ `grep -c ^#glusterfs-'$VOLUME' /etc/fstab` = 0 ]
 then
 echo "#glusterfs-'$VOLUME'" >> /etc/fstab
-echo "'$SERVER':/'$VOLUME' '$FOLDERPATH' glusterfs defaults,_netdev 0 0" >> /etc/fstab
+echo "'$SERVER':/'$VOLUME' '$MOUNTBASE'/'$VOLUME' glusterfs defaults,acl,_netdev 0 0" >> /etc/fstab
 fi
+
+#Mount volume
+echo "<li>'$SERVER' - '$"mounting"' '$MOUNTBASE'/'$VOLUME'</li><br>"
+mount -a
 
 #Create mount command
 echo -e "#!/bin/bash

@@ -507,51 +507,52 @@ grep "netmask " /etc/network/interfaces | sed -n 1,1p | cut -d" " -f2
 echo `date`: karoshi_servers_add - adding in reverse lookup "for" $SERVER to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 /opt/karoshi/serversetup/pdc/"useful scripts"/reverse-dns add $TCPIPNUMBER $SUBNET $SERVER.$REALM
 
-
-function glustervolume {
-#Check to see if a gluster volume exists
-gluster volume info $GLUSTERVOL 1>/dev/null 2>/dev/null
-if [ $? != 0 ]
-then
-	#Volume does not exist so create one
-	/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster $HOSTNAME.$REALM,$SERVER.$REALM $GLUSTERVOL $GLUSTERPATH create $REMOTE_USER $REMOTE_ADDR
-else
-	#Volume exists so add server to the volume if the server is not already in the volume
-	/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster $SERVER.$REALM $GLUSTERVOL $GLUSTERPATH add $REMOTE_USER $REMOTE_ADDR
-fi
-}
-
 #Configure replication for additional domain controllers
 if [ $AUTHENTICATION = adc ] || [ $AUTHENTICATION = rodc ] 
 then
 	if [ $ZONE = internal ] || [ $ZONE = dmz ]
 	then
-		if [ -f /opt/karoshi/serversetup/variables/glusterfs ]
+		#Create gluster volume
+		gluster volume info $GLUSTERVOL 1>/dev/null 2>/dev/null
+		if [ $? != 0 ]
 		then
-			#Start gluster
-			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/glusterfs
-			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_status
-			if [ $? != 0 ]
-			then
-				echo "<li> $HOSTNAME.$REALM - starting glusterfs</li>"
-				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_start 1>/dev/null
-			fi
-			GLUSTERVOL=netlogon
-			GLUSTERPATH=/var/lib/samba/netlogon
-			glustervolume
-			GLUSTERVOL=sysvol
-			GLUSTERPATH=/var/lib/samba/sysvol
-			glustervolume			
-			GLUSTERVOL=applications
-			GLUSTERPATH=/home/applications
-			glustervolume			
+			#Volume does not exist so create one
+			/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster $HOSTNAME.$REALM,$SERVER.$REALM DC-data create $REMOTE_USER $REMOTE_ADDR
+			GLUSTERSTATUS=$?
+			NEWVOL=yes
 		else
-			#Schedule adc_sync
-			echo '*''/'30 '*' '*' '*' 1-5 /opt/karoshi/'"'useful scripts'"'/adc_sync > /opt/karoshi/cronjobs/jobs/adc_sync.cron
-			/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+			#Volume exists so add server to the volume if the server is not already in the volume
+			/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster $SERVER.$REALM DC-data add $REMOTE_USER $REMOTE_ADDR
+			GLUSTERSTATUS=$?
+			NEWVOL=no
+		fi
 
-			#Sync adc now
-			nohup /opt/karoshi/"useful scripts"/adc_sync yes 2>/dev/null 1>/dev/null &
+		if [ $GLUSTERSTATUS = 0 ]
+		then
+			for FOLDER in /var/lib/samba/netlogon /var/lib/samba/sysvol /home/applications
+			do
+				FOLDER_SHORT=`basename $FOLDER`
+
+				if [ "$NEWVOL" = yes ]
+				then
+					#Copy in adc data to the gluster volume
+					echo "<li>"$SERVER - $"Copying" $FOLDER"</li><br>"
+					echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+					rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --executability --acls --owner --group -o $FOLDER /gluster/DC-data
+					echo '</pre>'
+					#Move existing folder
+					mv $FOLDER $FOLDER.pregluster.$$
+					#Symlink folder
+					ln -s /gluster/DC-data/$FOLDER_SHORT $FOLDER
+				fi
+				ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $TCPIPNUMBER '
+				#Move existing folder
+				mv '$FOLDER' '$FOLDER'.pregluster.'$$'
+				#Symlink folder
+				ln -s /gluster/DC-data/'$FOLDER_SHORT' '$FOLDER'
+				'
+
+			done
 		fi
 	fi
 fi

@@ -460,11 +460,11 @@ if [ '$ZONE' = internal ] || [ '$ZONE' = dmz ]
 then
 	if [ '$AUTHTYPE' != adc ] && [ '$AUTHTYPE' != rodc ]
 	then
-		echo domain '$REALM' > /etc/resolv.conf
-		echo nameserver '$KRBSERVERIP' >> /etc/resolv.conf
-		echo nameserver 8.8.8.8 >> /etc/resolv.conf
-		echo nameserver 8.8.4.4 >> /etc/resolv.conf
-		echo timeout:1 >> /etc/resolv.conf
+		echo "domain '$REALM'" > /etc/resolv.conf
+		echo "nameserver '$KRBSERVERIP'" >> /etc/resolv.conf
+		echo "nameserver 8.8.8.8" >> /etc/resolv.conf
+		echo "nameserver 8.8.4.4" >> /etc/resolv.conf
+		echo "timeout:1" >> /etc/resolv.conf
 	fi
 fi
 
