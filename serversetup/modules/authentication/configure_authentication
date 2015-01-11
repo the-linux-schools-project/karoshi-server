@@ -397,7 +397,7 @@ then
 [ $AUTHTYPE = adc ] && KRBSERVER=$SERVERNAME
 [ $AUTHTYPE = rodc ] && KRBSERVER=$SERVERNAME
 
-if [ $AUTHTYPE = member ] || [ $AUTHTYPE = users ] || [ $AUTHTYPE = none ]
+if [ $AUTHTYPE = member ] || [ $AUTHTYPE = usersandgroups ] || [ $AUTHTYPE = none ]
 then
 KRBSERVER=$HOSTNAME.$REALM
 if [ $ZONE != internal ]
@@ -417,7 +417,7 @@ KRBSERVERIP=`net lookup $KRBSERVER`
 
 if [ $ZONE = dmz ]
 then
-if [ $AUTHTYPE = users ] || [ $AUTHTYPE = member ]
+if [ $AUTHTYPE = usersandgroups ] || [ $AUTHTYPE = member ]
 then
 PORTSCANIP=$KRBSERVERIP
 fi

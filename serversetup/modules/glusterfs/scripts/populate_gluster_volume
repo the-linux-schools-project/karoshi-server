@@ -1,0 +1,107 @@
+#!/bin/bash
+#karoshi_gluster
+#Copyright (C) 2015  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+
+LOG_DATE=`date +%F`
+MOUNTBASE=/mnt-gluster
+GLUSTERBASE=/home/gluster-volumes
+
+SERVER=$1
+FOLDER=$2
+GLUSTERVOL=$3
+ACTION=$4
+
+
+function usage {
+echo -e "populate_gluster_volume usage:\n\npopulate_gluster_volume server folder glustervolume action (copypdata or blank)\n"
+}
+
+if [ -z "$SERVER" ]
+then
+	usage
+	exit 101
+fi
+
+if [ -z "$FOLDER" ]
+then
+	usage
+	exit 101
+fi
+
+if [ -z "$GLUSTERVOL" ]
+then
+	usage
+	exit 101
+fi
+
+[ -z "$ACTION" ] && ACTION=notset
+
+#Exit if a gluster folder does not exist for the volume.
+if [ ! -d $GLUSTERBASE/$GLUSTERVOL ]
+then
+	echo $GLUSTERBASE/$GLUSTERVOL - This folder does not exist"<br>"
+	exit 101	
+fi
+
+
+FOLDER_SHORT=`basename $FOLDER`
+
+if [ $ACTION = copydata ]
+then
+	#Copy in adc data to the gluster volume
+	echo "<li>"$SERVER - $"Copying" $FOLDER"</li><br>"
+	if [ $SERVER = `hostname-fqdn` ]
+	then
+		echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+		rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --executability --acls --owner --group -o "$FOLDER" /"$MOUNTBASE"/"$GLUSTERVOL"
+		echo '</pre>'
+	else
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+		rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --executability --acls --owner --group -o "'$FOLDER'" /"'$MOUNTBASE'"/"'$GLUSTERVOL'"
+		echo "</pre>"
+		'
+	fi
+fi
+
+
+if [ $SERVER = `hostname-fqdn` ]
+then
+	if [ ! -L "$FOLDER" ]
+	then
+		#Move existing folder
+		mv "$FOLDER" "$FOLDER".pregluster.$$
+		#Symlink folder
+		ln -s /"$MOUNTBASE"/"$GLUSTERVOL"/"$FOLDER_SHORT" "$FOLDER"
+	fi
+else
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+	if [ ! -L "'$FOLDER'" ]
+	then
+		#Move existing folder
+		mv "'$FOLDER'" "'$FOLDER'".pregluster.'$$'
+		#Symlink folder
+		ln -s /"'$MOUNTBASE'"/"'$GLUSTERVOL'"/"'$FOLDER_SHORT'" "'$FOLDER'"
+	fi
+'
+fi

@@ -329,8 +329,8 @@ then
 	if [ $SERVERID1 != $SERVERID2 ]
 	then
 		#Show warning that this server has been re-installed and roles will have to be re-added.
-		echo "<ul><li>$SERVER - $"This server has been re-installed"</li></ul>"
-		echo "<br>$"You will need to re-install all of the modules for this server."<br><br>"
+		echo '<ul><li>'$SERVER' - '$"This server has been re-installed"'</li></ul>'
+		echo '<br>'$"You will need to re-install all of the modules for this server."'<br><br>'
 		sleep 4
 		#Modify role information
 		if [ -d /opt/karoshi/server_network/servers/$SERVER.$REALM ]
@@ -517,41 +517,22 @@ then
 		if [ $? != 0 ]
 		then
 			#Volume does not exist so create one
-			/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster $HOSTNAME.$REALM,$SERVER.$REALM DC-data create $REMOTE_USER $REMOTE_ADDR
+			/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster "$HOSTNAME"."$REALM","$SERVER"."$REALM" DC-data create "$REMOTE_USER" "$REMOTE_ADDR"
 			GLUSTERSTATUS=$?
-			NEWVOL=yes
+			ACTION=copydata
 		else
 			#Volume exists so add server to the volume if the server is not already in the volume
-			/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster $SERVER.$REALM DC-data add $REMOTE_USER $REMOTE_ADDR
+			/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster $SERVER.$REALM DC-data add "$REMOTE_USER" "$REMOTE_ADDR"
 			GLUSTERSTATUS=$?
-			NEWVOL=no
+			ACTION=""
 		fi
 
 		if [ $GLUSTERSTATUS = 0 ]
 		then
 			for FOLDER in /var/lib/samba/netlogon /var/lib/samba/sysvol /home/applications
 			do
-				FOLDER_SHORT=`basename $FOLDER`
-
-				if [ "$NEWVOL" = yes ]
-				then
-					#Copy in adc data to the gluster volume
-					echo "<li>"$SERVER - $"Copying" $FOLDER"</li><br>"
-					echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-					rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --executability --acls --owner --group -o $FOLDER /gluster/DC-data
-					echo '</pre>'
-					#Move existing folder
-					mv $FOLDER $FOLDER.pregluster.$$
-					#Symlink folder
-					ln -s /gluster/DC-data/$FOLDER_SHORT $FOLDER
-				fi
-				ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $TCPIPNUMBER '
-				#Move existing folder
-				mv '$FOLDER' '$FOLDER'.pregluster.'$$'
-				#Symlink folder
-				ln -s /gluster/DC-data/'$FOLDER_SHORT' '$FOLDER'
-				'
-
+				/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume `hostname-fqdn` "$FOLDER" DC-data "$ACTION" 
+				/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume "$TCPIPNUMBER" "$FOLDER" DC-data "$ACTION" 
 			done
 		fi
 	fi
