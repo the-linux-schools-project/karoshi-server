@@ -544,7 +544,7 @@ done
 
 #Set variables
 source /opt/karoshi/server_network/domain_information/domain_name
-SERVERIP=`net lookup $SERVERNAME.$REALM`
+SERVERIP=`net lookup $SERVERNAME`
 PDCIP=`net lookup $HOSTNAME.$REALM`
 PORTSCANIP=$PDCIP
 

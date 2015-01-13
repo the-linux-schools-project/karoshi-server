@@ -90,7 +90,7 @@ then
 	if [ ! -L "$FOLDER" ]
 	then
 		#Move existing folder
-		mv "$FOLDER" "$FOLDER".pregluster.$$
+		[ -d "$FOLDER" ] && mv "$FOLDER" "$FOLDER".pregluster.$$
 		#Symlink folder
 		ln -s /"$MOUNTBASE"/"$GLUSTERVOL"/"$FOLDER_SHORT" "$FOLDER"
 	fi
@@ -99,7 +99,7 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 	if [ ! -L "'$FOLDER'" ]
 	then
 		#Move existing folder
-		mv "'$FOLDER'" "'$FOLDER'".pregluster.'$$'
+		[ -d "'$FOLDER'" ] && mv "'$FOLDER'" "'$FOLDER'".pregluster.'$$'
 		#Symlink folder
 		ln -s /"'$MOUNTBASE'"/"'$GLUSTERVOL'"/"'$FOLDER_SHORT'" "'$FOLDER'"
 	fi

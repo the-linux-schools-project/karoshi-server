@@ -513,26 +513,32 @@ then
 	if [ $ZONE = internal ] || [ $ZONE = dmz ]
 	then
 		#Create gluster volume
-		gluster volume info $GLUSTERVOL 1>/dev/null 2>/dev/null
-		if [ $? != 0 ]
+		if [ ! -d /opt/karoshi/server_network/gluster-volumes/DC-data/ ]
 		then
 			#Volume does not exist so create one
 			/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster "$HOSTNAME"."$REALM","$SERVER"."$REALM" DC-data create "$REMOTE_USER" "$REMOTE_ADDR"
 			GLUSTERSTATUS=$?
 			ACTION=copydata
 		else
-			#Volume exists so add server to the volume if the server is not already in the volume
-			/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster $SERVER.$REALM DC-data add "$REMOTE_USER" "$REMOTE_ADDR"
-			GLUSTERSTATUS=$?
 			ACTION=""
+			#Volume exists so either add or restore the server
+			if [ ! -f /opt/karoshi/server_network/gluster-volumes/DC-data/servers/$SERVER.$REALM ]
+			then
+				/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster $SERVER.$REALM DC-data add "$REMOTE_USER" "$REMOTE_ADDR"
+				GLUSTERSTATUS=$?
+			else
+				/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster $SERVER.$REALM DC-data restore "$REMOTE_USER" "$REMOTE_ADDR"
+				GLUSTERSTATUS=$?			
+			fi
+
 		fi
 
 		if [ $GLUSTERSTATUS = 0 ]
 		then
 			for FOLDER in /var/lib/samba/netlogon /var/lib/samba/sysvol /home/applications
 			do
-				/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume `hostname-fqdn` "$FOLDER" DC-data "$ACTION" 
-				/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume "$TCPIPNUMBER" "$FOLDER" DC-data "$ACTION" 
+				/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume `hostname-fqdn` "$FOLDER" DC-data "$ACTION"
+				/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume $SERVER.$REALM "$FOLDER" DC-data
 			done
 		fi
 	fi
