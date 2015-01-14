@@ -240,6 +240,28 @@ else
 fi
 }
 
+function detach_peer {
+#Detach a peer
+
+
+for PEERSERVER in `echo $SERVERLIST | sed 's/,/ /g'`
+do
+	if [ $SERVER != $PEERSERVER ]
+	then
+		if [ $PEERSERVER = `hostname-fqdn` ]
+		then
+			echo '<li>'$PEERSERVER' - '$"Detaching"' '$SERVER'</li><br>'
+			gluster peer detach $SERVER
+		else
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PEERSERVER '
+			echo "<li>'$PEERSERVER' - '$"Detaching"' '$SERVER'</li><br>"
+			gluster peer detach '$SERVER'
+		'
+		fi
+	fi
+done
+}
+
 function add_to_pool {
 
 #Add servers to pool
@@ -447,6 +469,8 @@ then
 	SERVERLIST=`ls -1 /opt/karoshi/server_network/gluster-volumes/$VOLUME/servers/`
 	#Open shorewall ports and make sure that glusterfs is running
 	openshorewall
+	sleep 2
+	detach_peer
 	sleep 2
 	add_to_pool
 
