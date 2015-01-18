@@ -57,33 +57,53 @@ fi
 [ -z "$ACTION" ] && ACTION=notset
 
 #Exit if a gluster folder does not exist for the volume.
-if [ ! -d $GLUSTERBASE/$GLUSTERVOL ]
+if [ "$SERVER" = `hostname-fqdn` ]
 then
-	echo $GLUSTERBASE/$GLUSTERVOL - This folder does not exist"<br>"
-	exit 101	
+	if [ ! -d "$GLUSTERBASE"/"$GLUSTERVOL" ]
+	then
+		echo "$GLUSTERBASE"/"$GLUSTERVOL" - This folder does not exist"<br>"
+		sleep 3
+		exit 101	
+	fi
+else
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+	if [ ! -d '$GLUSTERBASE'/'$GLUSTERVOL' ]
+	then
+		echo "'$GLUSTERBASE'"/"'$GLUSTERVOL'" - This folder does not exist"<br>"
+		sleep 3
+		exit 101	
+	fi	
+	'
+	[ $? = 101 ] && exit 101
 fi
 
 
-FOLDER_SHORT=`basename $FOLDER`
+FOLDER_SHORT=`basename "$FOLDER"`
 
-if [ $ACTION = copydata ]
+#Copy in data to the gluster volume or create an empty folder
+echo "<li>"$SERVER - $"Copying" $FOLDER"</li><br>"
+if [ $SERVER = `hostname-fqdn` ]
 then
-	#Copy in adc data to the gluster volume
-	echo "<li>"$SERVER - $"Copying" $FOLDER"</li><br>"
-	if [ $SERVER = `hostname-fqdn` ]
+	if [ $ACTION = copydata ]
 	then
-		echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-		rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --executability --acls --owner --group -o "$FOLDER" /"$MOUNTBASE"/"$GLUSTERVOL"
-		echo '</pre>'
+	echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+	rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --executability --acls --owner --group -o "$FOLDER" /"$MOUNTBASE"/"$GLUSTERVOL"
+	echo '</pre>'
 	else
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+	[ ! -d /"$MOUNTBASE"/"$GLUSTERVOL"/"$FOLDER" ] && mkdir -p /"$MOUNTBASE"/"$GLUSTERVOL"/"$FOLDER_SHORT"
+	fi
+else
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+	if [ $ACTION = copydata ]
+	then
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 		rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --executability --acls --owner --group -o "'$FOLDER'" /"'$MOUNTBASE'"/"'$GLUSTERVOL'"
-		echo "</pre>"
-		'
+	echo "</pre>"
+	else
+	[ ! -d /"'$MOUNTBASE'"/"'$GLUSTERVOL'"/"'$FOLDER'" ] && mkdir -p /"'$MOUNTBASE'"/"'$GLUSTERVOL'"/"'$FOLDER_SHORT'"
 	fi
+	'
 fi
-
 
 if [ $SERVER = `hostname-fqdn` ]
 then
@@ -105,3 +125,8 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 	fi
 '
 fi
+
+#Add in flag files
+[ ! -d /opt/karoshi/server_network/gluster-volumes/"$GLUSTERVOL"/folders ] && mkdir -p /opt/karoshi/server_network/gluster-volumes/"$GLUSTERVOL"/folders/
+FOLDERFLAG=`echo "$FOLDER" | sed 's/\//-/g'`
+touch /opt/karoshi/server_network/gluster-volumes/"$GLUSTERVOL"/folders/"$FOLDERFLAG"

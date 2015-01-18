@@ -1,0 +1,252 @@
+#!/bin/bash
+#Copyright (C) 2015 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+FAILED_SERVER=no
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/gluster_control_cgi
+then
+	echo `date`: gluster_control - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/gluster_control_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/gluster_control.cgi | cut -d' ' -f1`
+[[ -z "$MD5SUM" ]] && MD5SUM=not_set
+if [[ $MD5SUM'check' != $gluster_control_cgi'check' ]]
+then
+	echo `date`: gluster_control - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [[ $numArgs != 0 ]]
+then
+	echo `date`: gluster_control - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-%'`
+if [[ -z "$DATA" ]]
+then
+	echo `date`: gluster_control - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+ACTION=`echo "$DATA" | cut -s -d: -f4`
+VOLUME=`echo "$DATA" | cut -s -d: -f5`
+SERVER=`echo "$DATA" | cut -s -d: -f6`
+SERVERS=`echo "$DATA" | cut -s -d: -f7`
+FOLDER=`echo "$DATA" | cut -s -d: -f8 | sed 's/%2F/\//g'`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+	echo `date`: gluster_control - Not called by gluster_control.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+	then
+	echo `date`: gluster_control - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+	echo `date`: gluster_control - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$ACTION" ]
+then
+	echo `date`: gluster_control - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ "$ACTION" = reallycreate ]
+then
+	if [ -z "$VOLUME" ]
+	then
+		echo `date`: gluster_control - Blank volume by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
+fi
+##########################
+#Language
+##########################
+
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+TEXTDOMAIN=karoshi-server
+
+WIDTH1=200
+WIDTH2=200
+WIDTH3=180
+TABLECLASS=standard
+ICON1=/images/submenus/system/disabled.png
+ICON2=/images/submenus/system/enabled.png
+#echo volume is $VOLUME action is $ACTION"<br>"
+
+[ ! -d /opt/karoshi/server_network/gluster-volumes/ ] && mkdir -p /opt/karoshi/server_network/gluster-volumes/
+
+
+function reloadpage {
+echo '</form>
+<form action="gluster_control.cgi" method="post"></form>
+<SCRIPT LANGUAGE="JavaScript">document.forms[1].submit();</SCRIPT>
+'
+}
+
+#Add a folder to a volume
+if [ "$ACTION" = reallyaddfolder ]
+then
+	COPYACTION=copydata
+	for SERVERS in /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/*
+	do
+		SERVER=`basename $SERVERS`
+		/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume "$SERVER" "$FOLDER" "$VOLUME" $COPYACTION
+		#COPYACTION=""
+	done
+	#Reload gluster view
+	sleep 5
+	reloadpage
+	exit
+fi
+
+#Get folder path to add to a volume
+if [ $ACTION = addfolder ]
+then
+	echo '<input type="hidden" name="_VOLUME_" value="'$VOLUME'"><table class="'$TABLECLASS'" style="text-align: left; " border="0" cellpadding="2" cellspacing="2"><tbody>
+	<tr><td style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume"'</b></td><td style="width: '$WIDTH2'px; vertical-align: top;">'$VOLUME'</td></tr>
+<tr><td><b>'$"Folder Path"'</b></td><td style="vertical-align: top;"><input tabindex= "1" name="_FOLDER_" style="width: 200px;" size="20" type="text"></td>
+<td style="vertical-align: middle; text-align: left;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the full path that you want to add to the gluster volume."'</span></a></td>
+</tr>
+</tbody></table><br><br>
+<input name="_ACTION_reallyaddfolder_" value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
+'
+
+fi
+
+#Create a gluster volume
+if [ "$ACTION" = reallycreate ]
+then
+	SERVERS=`echo $SERVERS | sed 's/%2C/,/g'`
+	echo `date`: gluster_control - Creating gluster volume "$VOLUME" on "$SERVERS" by "$REMOTE_USER" from "$REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+		if [ ! -d /opt/karoshi/server_network/gluster-volumes/$VOLUME ]
+		then
+			#Volume does not exist so create one
+			/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster "$SERVERS" "$VOLUME" create "$REMOTE_USER" "$REMOTE_ADDR"
+		
+		else
+			exit 101
+		fi
+
+	#Reload gluster view
+	reloadpage
+
+fi
+
+#Show form for adding volumes
+if [ "$ACTION" = create ]
+then
+
+
+	if [ ! -z "$SERVER" ]
+	then
+		if [ `echo "$SERVERS" | grep -c "$SERVER"` = 0 ]
+		then
+			SERVERS=`echo "$SERVERS","$SERVER" | sed 's/%2C/,/g' | sed 's/^,//g'`
+		else
+			SERVERS=`echo "$SERVERS","$SERVER" | sed 's/'$SERVER'//g' | sed 's/%2C/,/g' | sed 's/^,//g'`
+		fi
+	
+	fi
+	SERVERS=`echo $SERVERS | sed 's/,,/,/g' | sed 's/,$//g'`
+	
+	MOBILE=no
+	/opt/karoshi/web_controls/show_servers $MOBILE servers $"Add Server" create | sed 's/SERVERNAME/SERVER/g'
+
+	#Show tick box of servers from zones to use
+	echo '<input type="hidden" name="_SERVERS_" value="'$SERVERS'"><br><table class="'$TABLECLASS'" style="text-align: left; " border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume Name"'</b></td><td style="vertical-align: top;"><input tabindex= "1" name="_VOLUME_" value="'$VOLUME'" style="width: 200px;" size="20" type="text"></td><td style="vertical-align: middle;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the name that you want for the volume."'</span></a></td></tr>'
+
+	if [ ! -z "$SERVERS" ]
+	then
+		echo '<tr><td style="vertical-align: top; height: 60px;"><b>'$"Servers"'</b></td><td style="vertical-align: top;">'
+		for CHOSENSERVER in `echo $SERVERS | sed 's/,/ /g'`
+		do
+			echo $CHOSENSERVER"<br>"
+		done
+		echo '</td></tr>'
+	else
+		echo '<tr><td style="vertical-align: top; height: 60px;"></td></tr>'
+	fi
+
+echo '</tbody></table><br><br>
+	<input name="_ACTION_reallycreate_" value="'$"Submit"'" class="button" type="submit">'
+fi
+
+#Show all gluster volumes
+if [ "$ACTION" = view ] 
+then
+	echo '<table class="'$TABLECLASS'" style="text-align: left; " border="0" cellpadding="2" cellspacing="2">
+	<tbody>
+	<tr><td style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume"'</b></td><td style="width: '$WIDTH2'px; vertical-align: top;"><b>'$"Servers"'</b></td><td style="width: '$WIDTH3'px; vertical-align: top;"><b>'$"Folders"'</b></tr>'
+	for VOLUMES in /opt/karoshi/server_network/gluster-volumes/*
+	do
+	#Get data
+	VOLUME=`basename $VOLUMES`
+	#Storage bricks
+	SERVERS=`ls -1 /opt/karoshi/server_network/gluster-volumes/$VOLUME/servers/`
+	echo '<tr><td style="vertical-align: top;">'$VOLUME'</td><td style="vertical-align: top;">'
+	for SERVER in `echo $SERVERS`
+	do
+		echo $SERVER'<br>'
+	done
+	echo '</td><td style="vertical-align: top;">'
+	if [ `ls -1 /opt/karoshi/server_network/gluster-volumes/$VOLUME/folders/ | wc -l` -gt 0 ]
+	then
+	for FOLDER in /opt/karoshi/server_network/gluster-volumes/$VOLUME/folders/-*
+	do
+		FOLDER=`basename "$FOLDER"`
+		FOLDER=`echo "$FOLDER" | sed 's/-/\//g'`
+		echo "$FOLDER"'<br>'
+	done
+	fi
+	echo '</td><td style="vertical-align: top;">'
+	[ "$VOLUME" != DC-data ] && echo '<input name="_ACTION_addfolder_VOLUME_'$VOLUME'_" type="submit" class="button" value="'$"Add folder"'">'
+	echo '</td></tr>'
+	done
+	echo '</tbody></table>'
+fi
+
+
