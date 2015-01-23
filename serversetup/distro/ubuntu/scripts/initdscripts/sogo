@@ -32,7 +32,8 @@
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
 NAME=sogo
-DAEMON=/usr/sbin/sogod
+DAEMON=/usr/local/sbin/sogod
+[ -f /usr/sbin/sogod ] && DAEMON=/usr/sbin/sogod
 DESC="SOGo"
 
 USER=$NAME

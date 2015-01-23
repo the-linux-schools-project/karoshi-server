@@ -63,7 +63,7 @@ REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 ACTION=`echo "$DATA" | cut -s -d: -f4`
-VOLUME=`echo "$DATA" | cut -s -d: -f5`
+VOLUME=`echo "$DATA" | cut -s -d: -f5 | tr 'A-Z' 'a-z'`
 SERVER=`echo "$DATA" | cut -s -d: -f6`
 SERVERS=`echo "$DATA" | cut -s -d: -f7`
 FOLDER=`echo "$DATA" | cut -s -d: -f8 | sed 's/%2F/\//g'`
@@ -243,7 +243,7 @@ then
 	done
 	fi
 	echo '</td><td style="vertical-align: top;">'
-	[ "$VOLUME" != DC-data ] && echo '<input name="_ACTION_addfolder_VOLUME_'$VOLUME'_" type="submit" class="button" value="'$"Add folder"'">'
+	[ "$VOLUME" != dc-data ] && echo '<input name="_ACTION_addfolder_VOLUME_'$VOLUME'_" type="submit" class="button" value="'$"Add folder"'">'
 	echo '</td></tr>'
 	done
 	echo '</tbody></table>'

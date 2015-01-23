@@ -13,6 +13,11 @@
 [ ! -d /run/samba-cache ] && mkdir -p /run/samba-cache 
 [ ! -e /run/lock/samba ] && ln -s /run/samba-cache /run/lock/samba
 
+#Set samba exec path
+
+[ -f /usr/local/sbin/samba ] && SAMBAPATH=/usr/local/sbin/
+[ -f /usr/sbin/samba ] && SAMBAPATH=/usr/sbin/
+
 #
 # Start/stops the Samba daemon (samba).
 # Adapted from the Samba 3 packages.
@@ -34,7 +39,7 @@ SAMBAPID=$PIDDIR/samba.pid
 unset TMPDIR
 
 # See if the daemon and the config file are there
-test -x /usr/sbin/samba -a -r /etc/samba/smb.conf || exit 0
+test -x $SAMBAPATH/samba -a -r /etc/samba/smb.conf || exit 0
 
 . /lib/lsb/init-functions
 
@@ -44,7 +49,7 @@ case "$1" in
 		# Make sure we have our PIDDIR, even if it's on a tmpfs
 		install -o root -g root -m 755 -d $PIDDIR
 
-		if ! start-stop-daemon --start --quiet --oknodo --exec /usr/sbin/samba -- -D; then
+		if ! start-stop-daemon --start --quiet --oknodo --exec $SAMBAPATH/samba -- -D; then
 			log_end_msg 1
 			exit 1
 		fi
@@ -106,7 +111,7 @@ SMBDPID=$PIDDIR/smbd.pid
 unset TMPDIR
 
 # See if the daemons are there
-test -x /usr/sbin/nmbd -a -x /usr/sbin/smbd || exit 0
+test -x $SAMBAPATH/nmbd -a -x $SAMBAPATH/smbd || exit 0
 
 . /lib/lsb/init-functions
 
@@ -119,7 +124,7 @@ case "$1" in
 		NMBD_DISABLED=`testparm -s --parameter-name='disable netbios' 2>/dev/null`
 		if [ "$NMBD_DISABLED" != 'Yes' ]; then
 			log_progress_msg "nmbd"
-			if ! start-stop-daemon --start --quiet --oknodo --exec /usr/sbin/nmbd -- -D
+			if ! start-stop-daemon --start --quiet --oknodo --exec $SAMBAPATH/nmbd -- -D
 			then
 				log_end_msg 1
 				exit 1
@@ -128,7 +133,7 @@ case "$1" in
 
 		if [ "$RUN_MODE" != "inetd" ]; then
 			log_progress_msg "smbd"
-			if ! start-stop-daemon --start --quiet --oknodo --exec /usr/sbin/smbd -- -D; then
+			if ! start-stop-daemon --start --quiet --oknodo --exec $SAMBAPATH/smbd -- -D; then
 				log_end_msg 1
 				exit 1
 			fi
@@ -182,10 +187,10 @@ case "$1" in
 		status="0"
 		NMBD_DISABLED=`testparm -s --parameter-name='disable netbios' 2>/dev/null`
 		if [ "$NMBD_DISABLED" != "Yes" ]; then
-			status_of_proc -p $NMBDPID /usr/sbin/nmbd nmbd || status=$?
+			status_of_proc -p $NMBDPID $SAMBAPATH/nmbd nmbd || status=$?
 		fi
 		if [ "$RUN_MODE" != "inetd" ]; then
-			status_of_proc -p $SMBDPID /usr/sbin/smbd smbd || status=$?
+			status_of_proc -p $SMBDPID $SAMBAPATH/smbd smbd || status=$?
 		fi
 		if [ "$NMBD_DISABLED" = "Yes" -a "$RUN_MODE" = "inetd" ]; then
 			status="4"

@@ -82,9 +82,9 @@ FOLDER_SHORT=`basename "$FOLDER"`
 
 #Copy in data to the gluster volume or create an empty folder
 echo "<li>"$SERVER - $"Copying" $FOLDER"</li><br>"
-if [ $SERVER = `hostname-fqdn` ]
+if [ "$SERVER" = `hostname-fqdn` ]
 then
-	if [ $ACTION = copydata ]
+	if [ "$ACTION" = copydata ]
 	then
 	echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 	rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --executability --acls --owner --group -o "$FOLDER" /"$MOUNTBASE"/"$GLUSTERVOL"
@@ -94,7 +94,7 @@ then
 	fi
 else
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-	if [ $ACTION = copydata ]
+	if [ "'$ACTION'" = copydata ]
 	then
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 		rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --executability --acls --owner --group -o "'$FOLDER'" /"'$MOUNTBASE'"/"'$GLUSTERVOL'"
@@ -105,7 +105,7 @@ else
 	'
 fi
 
-if [ $SERVER = `hostname-fqdn` ]
+if [ "$SERVER" = `hostname-fqdn` ]
 then
 	if [ ! -L "$FOLDER" ]
 	then
@@ -115,7 +115,7 @@ then
 		ln -s /"$MOUNTBASE"/"$GLUSTERVOL"/"$FOLDER_SHORT" "$FOLDER"
 	fi
 else
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
 	if [ ! -L "'$FOLDER'" ]
 	then
 		#Move existing folder

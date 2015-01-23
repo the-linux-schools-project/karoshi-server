@@ -70,17 +70,37 @@ PORTS=111,24007:24009,49152:49200,34865:34867
 echo '<br><br><li><b>'$"Configure"' GlusterFS - '$VOLUME'</b></li><br>'
 
 
-############################
-#Create a new gluster volume
-############################
-
+function create_cname_entries {
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+source /opt/karoshi/server_network/domain_information/domain_name
+for SERVER in `echo $SERVERLIST | sed 's/,/ /g'`
+do
+	SERVERSHORT=`echo $SERVER | cut -d"." -f1`
+	SERVERIP=$(net lookup $SERVER)
+	#echo `date`: karoshi_gluster adding $VOLUME.$SERVERSHORT CNAME $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: karoshi_gluster adding $VOLUME.$SERVERSHORT A $SERVERIP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	#samba-tool dns add 127.0.0.1 $REALM $VOLUME.$SERVERSHORT CNAME $SERVER --username=Administrator --password=$LDAPPASS
+	samba-tool dns add 127.0.0.1 $REALM $VOLUME.$SERVERSHORT A $SERVERIP --username=Administrator --password=$LDAPPASS
+	for EXTRASERVER in `echo $SERVERLIST | sed 's/,/ /g'`
+	do
+		if [ $SERVER != $EXTRASERVER ]
+		then
+			EXTRASERVERIP=$(net lookup $EXTRASERVER)
+			#echo `date`: karoshi_gluster adding $VOLUME.$SERVERSHORT CNAME $EXTRASERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			echo `date`: karoshi_gluster adding $VOLUME.$SERVERSHORT A $EXTRASERVERIP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			#samba-tool dns add 127.0.0.1 $REALM $VOLUME.$SERVERSHORT CNAME $EXTRASERVER --username=Administrator --password=$LDAPPASS
+			samba-tool dns add 127.0.0.1 $REALM $VOLUME.$SERVERSHORT A $EXTRASERVERIP --username=Administrator --password=$LDAPPASS
+		fi
+	done
+done
+}
 
 function mount_volume {
-if [ $SERVER = `hostname-fqdn` ]
+if [ "$SERVER" = `hostname-fqdn` ]
 then
 
 	#Create empty folder to mount to 
-	[ ! -d $MOUNTBASE/$VOLUME ] && mkdir -p $MOUNTBASE/$VOLUME
+	[ ! -d "$MOUNTBASE"/"$VOLUME" ] && mkdir -p "$MOUNTBASE"/"$VOLUME"
 
 
 	#Add entry to fstab
@@ -132,7 +152,7 @@ else
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 
 	#Create empty folder to mount to 
-	[ ! -d '$MOUNTBASE'/'$VOLUME' ] && mkdir -p '$MOUNTBASE'/'$VOLUME'
+	[ ! -d "'$MOUNTBASE'"/"'$VOLUME'" ] && mkdir -p "'$MOUNTBASE'"/"'$VOLUME'"
 
 	#Add entry to fstab
 	if [ `grep -c ^#glusterfs-'$VOLUME' /etc/fstab` = 0 ]
@@ -323,23 +343,23 @@ then
 		GLUSTERCLUSTER=`echo $GLUSTERCLUSTER $SERVER:$GLUSTERBASE/$VOLUME`
 		#Open shorewall ports and make sure that glusterfs is running
 		openshorewall
-		if [ $SERVER = `hostname-fqdn` ]
+		if [ "$SERVER" = `hostname-fqdn` ]
 		then
 			#Create gluster folders
-			[ ! -d $GLUSTERBASE ] && mkdir -p $GLUSTERBASE
-			[ ! -d $MOUNTBASE ] && mkdir -p $MOUNTBASE
+			[ ! -d "$GLUSTERBASE" ] && mkdir -p "$GLUSTERBASE"
+			[ ! -d "$MOUNTBASE" ] && mkdir -p "$MOUNTBASE"
 
 			#Delete brick folder if it exists
-			[ -d $GLUSTERBASE/$VOLUME ] && rm -f -R $GLUSTERBASE/$VOLUME
+			[ -d "$GLUSTERBASE"/"$VOLUME" ] && rm -f -R "$GLUSTERBASE"/"$VOLUME"
 		else
-			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
 
 			#Create gluster folders
-			[ ! -d '$GLUSTERBASE' ] && mkdir -p '$GLUSTERBASE'
-			[ ! -d '$MOUNTBASE' ] && mkdir -p '$MOUNTBASE'
+			[ ! -d "'$GLUSTERBASE'" ] && mkdir -p "'$GLUSTERBASE'"
+			[ ! -d "'$MOUNTBASE'" ] && mkdir -p "'$MOUNTBASE'"
 
 			#Delete brick folder if it exists
-			[ -d '$GLUSTERBASE'/'$VOLUME' ] && rm -f -R '$GLUSTERBASE'/'$VOLUME'
+			[ -d "'$GLUSTERBASE'"/"'$VOLUME'" ] && rm -f -R '$GLUSTERBASE'/'$VOLUME'
 			'
 		fi
 
@@ -349,7 +369,7 @@ then
 	#Add all listed servers to the pool
 	add_to_pool
 
-	if [ $FIRSTSERVER = `hostname-fqdn` ]
+	if [ "$FIRSTSERVER" = `hostname-fqdn` ]
 	then
 		#Create glusterfs volume
 		echo '<li>'$FIRSTSERVER' - '$"Creating GlusterFS volume"' - '$VOLUME'</li><br>'
@@ -405,6 +425,9 @@ then
 	do
 		touch /opt/karoshi/server_network/gluster-volumes/$VOLUME/servers/$SERVER
 	done
+
+	#Add in cname entries for each server
+	create_cname_entries
 fi
 
 ###########################
@@ -434,11 +457,11 @@ then
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 
 		#Create gluster folders
-		[ ! -d '$GLUSTERBASE' ] && mkdir -p '$GLUSTERBASE'
-		[ ! -d '$MOUNTBASE' ] && mkdir -p '$MOUNTBASE'
+		[ ! -d "'$GLUSTERBASE'" ] && mkdir -p "'$GLUSTERBASE'"
+		[ ! -d "'$MOUNTBASE'" ] && mkdir -p "'$MOUNTBASE'"
 
 		#Delete brick folder if it exists
-		[ -d '$GLUSTERBASE'/'$VOLUME' ] && rm -f -R '$GLUSTERBASE'/'$VOLUME'
+		[ -d "'$GLUSTERBASE'"/"'$VOLUME'" ] && rm -f -R "'$GLUSTERBASE'"/"'$VOLUME'"
 		'
 	fi
 
@@ -451,6 +474,9 @@ then
 
 	#Add gluster brick to volume
 	gluster volume add-brick $VOLUME replica $BRICKCOUNT $SERVER:$GLUSTERBASE/$VOLUME force
+
+	#Add in dns records
+	create_cname_entries
 
 	#Mount the drive
 	mount_volume
@@ -505,8 +531,8 @@ then
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 			source /opt/karoshi/serversetup/variables/distro
 			#Create folder for gluster volume
-			[ ! -d '$GLUSTERBASE'/'$VOLUME' ] && mkdir -p '$GLUSTERBASE'/'$VOLUME'
-			[ ! -d '$MOUNTBASE' ] && mkdir -p '$MOUNTBASE'
+			[ ! -d "'$GLUSTERBASE'"/"'$VOLUME'" ] && mkdir -p "'$GLUSTERBASE'"/"'$VOLUME'"
+			[ ! -d "'$MOUNTBASE'" ] && mkdir -p "'$MOUNTBASE'"
 
 			echo "<li>"$HOSTNAME.'$REALM' - '$"stopping glusterfs"'"</li><br>"
 			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_stop 1>/dev/null

@@ -382,7 +382,7 @@ fi
 scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services $TCPIPNUMBER:/opt/karoshi/serversetup/distro/ubuntu/scripts/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot $TCPIPNUMBER:/opt/karoshi/serversetup/distro/ubuntu/scripts/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot $TCPIPNUMBER:/opt/karoshi/serversetup/distro/ubuntu/scripts/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/initdscripts $TCPIPNUMBER:/opt/karoshi/serversetup/distro/ubuntu/scripts/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/initdscripts $TCPIPNUMBER:/opt/karoshi/serversetup/distro/ubuntu/scripts/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 #Copy in cacert.pem
 scp -r -o PasswordAuthentication=no /etc/ssl/root-ca/cacert.pem $TCPIPNUMBER:/etc/ssl/root-ca/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -513,21 +513,21 @@ then
 	if [ $ZONE = internal ] || [ $ZONE = dmz ]
 	then
 		#Create gluster volume
-		if [ ! -d /opt/karoshi/server_network/gluster-volumes/DC-data/ ]
+		if [ ! -d /opt/karoshi/server_network/gluster-volumes/dc-data/ ]
 		then
 			#Volume does not exist so create one
-			/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster "$HOSTNAME"."$REALM","$SERVER"."$REALM" DC-data create "$REMOTE_USER" "$REMOTE_ADDR"
+			/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster "$HOSTNAME"."$REALM","$SERVER"."$REALM" dc-data create "$REMOTE_USER" "$REMOTE_ADDR"
 			GLUSTERSTATUS=$?
 			ACTION=copydata
 		else
 			ACTION=""
 			#Volume exists so either add or restore the server
-			if [ ! -f /opt/karoshi/server_network/gluster-volumes/DC-data/servers/$SERVER.$REALM ]
+			if [ ! -f /opt/karoshi/server_network/gluster-volumes/dc-data/servers/$SERVER.$REALM ]
 			then
-				/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster $SERVER.$REALM DC-data add "$REMOTE_USER" "$REMOTE_ADDR"
+				/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster $SERVER.$REALM dc-data add "$REMOTE_USER" "$REMOTE_ADDR"
 				GLUSTERSTATUS=$?
 			else
-				/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster $SERVER.$REALM DC-data restore "$REMOTE_USER" "$REMOTE_ADDR"
+				/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster $SERVER.$REALM dc-data restore "$REMOTE_USER" "$REMOTE_ADDR"
 				GLUSTERSTATUS=$?			
 			fi
 
@@ -537,8 +537,8 @@ then
 		then
 			for FOLDER in /var/lib/samba/netlogon /var/lib/samba/sysvol /home/applications
 			do
-				/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume `hostname-fqdn` "$FOLDER" DC-data "$ACTION"
-				/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume $SERVER.$REALM "$FOLDER" DC-data
+				/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume `hostname-fqdn` "$FOLDER" dc-data "$ACTION"
+				/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume $SERVER.$REALM "$FOLDER" dc-data
 			done
 		fi
 	fi
