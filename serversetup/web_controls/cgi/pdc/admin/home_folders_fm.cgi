@@ -57,8 +57,7 @@ echo '
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/home_folders.cgi" method="post"><div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
 <td style="vertical-align: top;"><div class="sectiontitle">'$"Home Folders"'</div></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Home_Folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"This displays the server that hosts the home folders for each group."'</span></a>
-</td></tr></tbody></table><br></div><div id="infobox">
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Home_Folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"This displays the server that hosts the home folders for each group."'</span></a></td><td><a href="gluster_control.cgi"><input class="button" type="button" style="min-width: 135px;" name="" value="'$"Gluster Volume Control"'"></a></td></tr></tbody></table><br></div><div id="infobox">
   <table class="standard" style="text-align: left; height: 91px;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 140px;"><b>'$"Primary Group"'</b></td><td style="width: 180px;"><b>'$"Server"'</b></td><td style="width: 180px;"><b>'$"Change"'</b></td><td style="width: 140px;"><b>'$"Primary Group"'</b></td><td style="width: 180px;"><b>'$"Server"'</b></td><td><b>'$"Change"'</b></td></tr>
 '
@@ -69,12 +68,21 @@ do
 PRI_GROUP=`basename $PRI_GROUP`
 source /opt/karoshi/server_network/group_information/$PRI_GROUP
 
+#Check for gluster volume
+VOLUME=`echo $SERVER | cut -d. -f1`
+if [ -d /opt/karoshi/server_network/gluster-volumes/$VOLUME ]
+then
+	ICON1=/images/submenus/system/gluster.png
+else
+	ICON1=/images/submenus/system/computer.png
+fi
+
 if [ $START_LINE = yes ]
 then
-echo '<tr><td>'$PRI_GROUP'</td><td>'$SERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_"><span>'$"Change Server"'<br><br>'$PRI_GROUP - $SERVER'</span></a></td>'
+echo '<tr><td>'$PRI_GROUP'</td><td>'$SERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_"><span>'$"Change Server"'<br><br>'$PRI_GROUP'<br><br>'$SERVER'</span></a></td>'
 START_LINE=no
 else
-echo '<td>'$PRI_GROUP'</td><td>'$SERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_"><span>'$"Change Server"'<br><br>'$PRI_GROUP - $SERVER'</span></a></td></tr>'
+echo '<td>'$PRI_GROUP'</td><td>'$SERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_"><span>'$"Change Server"'<br><br>'$PRI_GROUP'<br><br><br>'$SERVER'</span></a></td></tr>'
 START_LINE=yes
 fi
 done

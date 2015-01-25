@@ -65,6 +65,10 @@ CURRENTSERVER=`echo "$DATA" | cut -s -d: -f4`
 NEWSERVER=`echo "$DATA" | cut -s -d: -f5`
 PRIGROUP=`echo "$DATA" | cut -s -d: -f6`
 COPYHOMEAREAS=`echo "$DATA" | cut -s -d: -f7`
+GLUSTER=`echo "$DATA" | cut -s -d: -f8`
+
+[ -z "$COPYHOMEAREAS" ] && COPYHOMEAREAS=no
+
 ########################
 #Check data
 ########################
@@ -109,6 +113,8 @@ then
 	exit 101
 fi
 
+[ -z "$GLUSTER" ] && GLUSTER=no
+
 echo `date`: home_folders - Changing $PRIGROUP from $CURRENTSERVER to $NEWSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 ##########################
@@ -118,8 +124,6 @@ echo `date`: home_folders - Changing $PRIGROUP from $CURRENTSERVER to $NEWSERVER
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
-
-
 
 ###########################
 #Modify group information for web management
@@ -138,7 +142,7 @@ fi
 ###########################
 #Delete current group line
 KIXLINENO=`grep -n -w ^$PRIGROUP /var/lib/samba/netlogon/groups.txt | cut -d: -f1`
-[ $KIXLINENO'null' != null ] && sed -i $KIXLINENO'd' /var/lib/samba/netlogon/groups.txt
+[ ! -z "$KIXLINENO" ] && sed -i $KIXLINENO'd' /var/lib/samba/netlogon/groups.txt
 #Delete any blank lines
 sed -i '/^$/d' /var/lib/samba/netlogon/groups.txt
 #Add group info
@@ -155,7 +159,7 @@ function set_perms {
 if [ -f /opt/karoshi/server_network/group_information/$PRIGROUP ]
 	then
 	source /opt/karoshi/server_network/group_information/$PRIGROUP
-	if [ $NEWSERVER = `hostname-fqdn` ]
+	if [ $NEWSERVER = `hostname-fqdn` ] && [ `echo $NEWSERVER | cut -d. -f2-` != `hostname-fqdn` ]
 	then
 		for USERFOLDER in `getent passwd | grep ":$HOMEPATH/" | cut -d: -f1`
 		do
@@ -203,6 +207,17 @@ do
 	let COUNTER=$COUNTER+1
 done
 
+#Enable Gluster Volume
+if [ "$GLUSTER" = yes ]
+then
+	VOLUME=`echo $NEWSERVER | cut -d. -f1`
+	for SERVERS in /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/*
+	do
+		GLUSTERSERVER=`basename $SERVERS`
+		/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume "$GLUSTERSERVER" "$HOMEPATH" "$VOLUME" copydata
+	done
+
+fi
 ###########################
 #Copy home areas
 ###########################
@@ -223,96 +238,96 @@ do
 done
 }
 
-if [ ! -z "$COPYHOMEAREAS" ]
+if [ $COPYHOMEAREAS = yes ]
 then
-	if [ $COPYHOMEAREAS = yes ]
+	echo $"Copying Home Areas"'<br><br>'
+	echo '
+	<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	<tr><td style="width: 180px;">'$"Primary Group"'</td><td>'$PRIGROUP'</td></tr>
+	<tr><td style="width: 180px;">'$"Current Server"'</td><td>'$CURRENTSERVER'</td></tr>
+	<tr><td style="width: 180px;">'$"New Server"'</td><td>'$NEWSERVER'</td></tr>
+	</tbody></table><br><br>
+	'
+
+	#Scroll the page
+	echo "    <script type = \"text/javascript\" >
+
+	    var x;
+	    function autoscroll(){
+	    self.scrollBy(0,x)
+	    }
+
+	    function playautoscroll(){
+	    x = 5;
+	    setInterval('autoscroll()',0.01);
+	    stop();}
+
+	    function onetozero(){
+	    x=0;
+	    }
+
+	    function stop(){
+	    setTimeout (\"onetozero()\",600000000);
+	    }
+	    window.onload=playautoscroll
+
+	    </script>"
+
+	COUNTER=0
+
+	if [ $NEWSERVER = `hostname-fqdn` ] || [ `echo $NEWSERVER | cut -d. -f2-` = `hostname-fqdn` ]
 	then
-		echo $"Copying Home Areas"'<br><br>'
-		echo '
-		<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-		<tr><td style="width: 180px;">'$"Primary Group"'</td><td>'$PRIGROUP'</td></tr>
-		<tr><td style="width: 180px;">'$"Current Server"'</td><td>'$CURRENTSERVER'</td></tr>
-		<tr><td style="width: 180px;">'$"New Server"'</td><td>'$NEWSERVER'</td></tr>
-		</tbody></table><br><br>
-		'
-
-		#Scroll the page
-		echo "    <script type = \"text/javascript\" >
-
-		    var x;
-		    function autoscroll(){
-		    self.scrollBy(0,x)
-		    }
-
-		    function playautoscroll(){
-		    x = 5;
-		    setInterval('autoscroll()',0.01);
-		    stop();}
-
-		    function onetozero(){
-		    x=0;
-		    }
-
-		    function stop(){
-		    setTimeout (\"onetozero()\",600000000);
-		    }
-		    window.onload=playautoscroll
-
-		    </script>"
-
-		COUNTER=0
-
-		if [ $NEWSERVER = `hostname-fqdn` ]
+		#Copy work back to this server
+		if [ $USERLISTCOUNT -gt 0 ]
 		then
-			#Copy work back to this server
-			if [ $USERLISTCOUNT -gt 0 ]
-			then
-				echo "<li>"$USERLISTCOUNT home folders. Please wait"</li><br>"
-				while  [ $COUNTER -lt $USERLISTCOUNT ]
-				do
-					USERNAME=${USERLIST[$COUNTER]}
-					echo "<li>"$(($COUNTER+1))/$USERLISTCOUNT: Copying $USERNAME
+			echo "<li>"$USERLISTCOUNT home folders. Please wait"</li><br>"
+			while  [ $COUNTER -lt $USERLISTCOUNT ]
+			do
+				USERNAME=${USERLIST[$COUNTER]}
+				echo "<li>"$(($COUNTER+1))/$USERLISTCOUNT: Copying $USERNAME
 
-					#rsync user folder to the pdc
-					echo `date`: home_folders - Copying $USERNAME from $CURRENTSERVER to $HOSTNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-					showdots &
-					PID1=$!
-					rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group  root@$CURRENTSERVER:/$HOMEPATH/$USERNAME "$HOMEPATH/" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-					kill $PID1
-					echo "</li><br>"
-					let COUNTER=$COUNTER+1
-				done
-			fi
+				#rsync user folder to the pdc
+				echo `date`: home_folders - Copying $USERNAME from $CURRENTSERVER to $HOSTNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+				showdots &
+				PID1=$!
+				rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group  root@$CURRENTSERVER:/$HOMEPATH/$USERNAME "$HOMEPATH/" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+				kill $PID1
+				echo "</li><br>"
+				let COUNTER=$COUNTER+1
+			done
 		fi
+	fi
 
-		if [ $CURRENTSERVER = `hostname-fqdn` ]
+	if [ $CURRENTSERVER = `hostname-fqdn` ] || [ `echo $CURRENTSERVER | cut -d. -f2-` = `hostname-fqdn` ]
+	then
+		#Copy from this server to a new server
+
+		if [ $USERLISTCOUNT -gt 0 ]
 		then
-			#Copy from this server to a new server
+			echo "<li>"$USERLISTCOUNT home folders. Please wait"</li><br>"
+			while  [ $COUNTER -lt $USERLISTCOUNT ]
+			do
 
-			if [ $USERLISTCOUNT -gt 0 ]
-			then
-				echo "<li>"$USERLISTCOUNT home folders. Please wait"</li><br>"
-				while  [ $COUNTER -lt $USERLISTCOUNT ]
-				do
+				USERNAME=${USERLIST[$COUNTER]}
+				echo "<li>"$(($COUNTER+1))/$USERLISTCOUNT: Copying $USERNAME""
 
-					USERNAME=${USERLIST[$COUNTER]}
-					echo "<li>"$(($COUNTER+1))/$USERLISTCOUNT: Copying $USERNAME""
+				#rsync user folders to the new server
+				echo `date`: home_folders - Copying $USERNAME from $HOSTNAME to $NEWSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-					#rsync user folders to the new server
-					echo `date`: home_folders - Copying $USERNAME from $HOSTNAME to $NEWSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-					showdots &
-					PID1=$!
-					rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group "$HOMEPATH"/"$USERNAME" root@$NEWSERVER:/$HOMEPATH/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-					kill $PID1
-					echo "</li><br>"
-					let COUNTER=$COUNTER+1
-				done
-			fi
+				showdots &
+				PID1=$!
+				rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group "$HOMEPATH"/"$USERNAME" root@$NEWSERVER:/$HOMEPATH/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+				kill $PID1
+				echo "</li><br>"
+				let COUNTER=$COUNTER+1
+			done
 		fi
+	fi
 
-		if [ $NEWSERVER != `hostname-fqdn` ] && [ $CURRENTSERVER != `hostname-fqdn` ]
-		then
+	if [ $NEWSERVER != `hostname-fqdn` ]  && [ $CURRENTSERVER != `hostname-fqdn` ]
+	then
+		if [ `echo $NEWSERVER | cut -d. -f2-` != `hostname-fqdn` ] && [ `echo $CURRENTSERVER | cut -d. -f2-` != `hostname-fqdn` ]
+		then		
 			ssh -x -o PasswordAuthentication=no $NEWSERVER '
 			[ ! -d '$HOMEPATH' ] && mkdir -p '$HOMEPATH'
 			'
@@ -359,36 +374,33 @@ then
 				fusermount -u /opt/karoshi/mount/$NEWSERVER/home 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 			fi
 
-
 		fi
 	fi
 fi
 
 set_perms
 
-if [ -z "$COPYHOMEAREAS" ]
+if [ "$COPYHOMEAREAS" = yes ]
 then
-	if [ $COPYHOMEAREAS = yes ]
+	#Move backup folder to the new server if it is on the same backup server
+	[ ! -f /opt/karoshi/server_network/backup_servers/backup_settings/$CURRENTSERVER/backupserver ] && exit
+	CURRENTBACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/$CURRENTSERVER/backupserver`
+	[ ! -f /opt/karoshi/server_network/backup_servers/backup_settings/$NEWSERVER/backupserver ] && exit
+	NEWBACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/$NEWSERVER/backupserver`
+
+	if [ $CURRENTBACKUPSERVER = $NEWBACKUPSERVER ]
 	then
-		#Move backup folder to the new server if it is on the same backup server
-		[ ! -f /opt/karoshi/server_network/backup_servers/backup_settings/$CURRENTSERVER/backupserver ] && exit
-		CURRENTBACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/$CURRENTSERVER/backupserver`
-		[ ! -f /opt/karoshi/server_network/backup_servers/backup_settings/$NEWSERVER/backupserver ] && exit
-		NEWBACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/$NEWSERVER/backupserver`
+		ssh -x -o PasswordAuthentication=no $NEWBACKUPSERVER '
 
-		if [ $CURRENTBACKUPSERVER = $NEWBACKUPSERVER ]
+		if [ -d /home/backups/'$CURRENTSERVER'/'$PRIGROUP' ] && [ ! -d /home/backups/'$NEWSERVER'/'$PRIGROUP' ]
 		then
-			ssh -x -o PasswordAuthentication=no $NEWBACKUPSERVER '
-
-			if [ -d /home/backups/'$CURRENTSERVER'/'$PRIGROUP' ] && [ ! -d /home/backups/'$NEWSERVER'/'$PRIGROUP' ]
-			then
-			[ ! -d /home/backups/'$NEWSERVER' ] && mkdir -p /home/backups/'$NEWSERVER'
-			mv /home/backups/'$CURRENTSERVER'/'$PRIGROUP' /home/backups/'$NEWSERVER'/'$PRIGROUP'
-			fi
-			'
+		[ ! -d /home/backups/'$NEWSERVER' ] && mkdir -p /home/backups/'$NEWSERVER'
+		mv /home/backups/'$CURRENTSERVER'/'$PRIGROUP' /home/backups/'$NEWSERVER'/'$PRIGROUP'
 		fi
+		'
 	fi
 fi
+
 
 exit
 

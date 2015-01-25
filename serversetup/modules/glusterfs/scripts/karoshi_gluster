@@ -80,7 +80,8 @@ do
 	#echo `date`: karoshi_gluster adding $VOLUME.$SERVERSHORT CNAME $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	echo `date`: karoshi_gluster adding $VOLUME.$SERVERSHORT A $SERVERIP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	#samba-tool dns add 127.0.0.1 $REALM $VOLUME.$SERVERSHORT CNAME $SERVER --username=Administrator --password=$LDAPPASS
-	samba-tool dns add 127.0.0.1 $REALM $VOLUME.$SERVERSHORT A $SERVERIP --username=Administrator --password=$LDAPPASS
+	samba-tool dns add 127.0.0.1 $REALM $VOLUME.$SERVERSHORT A $SERVERIP --username=Administrator --password=$LDAPPASS 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	[ $? = 0 ] && echo "<br>"
 	for EXTRASERVER in `echo $SERVERLIST | sed 's/,/ /g'`
 	do
 		if [ $SERVER != $EXTRASERVER ]
@@ -89,7 +90,8 @@ do
 			#echo `date`: karoshi_gluster adding $VOLUME.$SERVERSHORT CNAME $EXTRASERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 			echo `date`: karoshi_gluster adding $VOLUME.$SERVERSHORT A $EXTRASERVERIP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 			#samba-tool dns add 127.0.0.1 $REALM $VOLUME.$SERVERSHORT CNAME $EXTRASERVER --username=Administrator --password=$LDAPPASS
-			samba-tool dns add 127.0.0.1 $REALM $VOLUME.$SERVERSHORT A $EXTRASERVERIP --username=Administrator --password=$LDAPPASS
+			samba-tool dns add 127.0.0.1 $REALM $VOLUME.$SERVERSHORT A $EXTRASERVERIP --username=Administrator --password=$LDAPPASS 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			[ $? = 0 ] && echo "<br>"
 		fi
 	done
 done
@@ -377,6 +379,7 @@ then
 		if [ $? != 0 ]
 		then
 			echo '<li>'$"There was a problem creating the volume"' - '$VOLUME'</li><br>'
+			sleep 3
 			exit 101
 		fi
 		#Start Gluster volume
@@ -385,6 +388,7 @@ then
 		if [ $? != 0 ]
 		then
 			echo '<li>'$"There was a problem starting the volume"' - '$VOLUME'</li><br>'
+			sleep 3
 			exit 101
 		fi
 	else
@@ -395,6 +399,7 @@ then
 		if [ $? != 0 ]
 		then
 			echo "<li>'$"There was a problem creating the volume"' - '$VOLUME'</li><br>"
+			sleep 3
 			exit 101
 		fi
 		#Start Gluster volume
@@ -403,6 +408,7 @@ then
 		if [ $? != 0 ]
 		then
 			echo "<li>'$"There was a problem starting the volume"' - '$VOLUME'</li><br>"
+			sleep 3
 			exit 101
 		fi
 		'

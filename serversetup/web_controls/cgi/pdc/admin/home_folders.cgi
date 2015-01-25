@@ -180,7 +180,7 @@ echo '<p><img height="16" width="16" alt="Warning" src="/images/warnings/warning
 
 #Show list of file servers.
 MOBILE=no
-/opt/karoshi/web_controls/show_servers $MOBILE fileservers $"Choose server" notset $SERVER
+/opt/karoshi/web_controls/show_servers $MOBILE fileservers $"Select Server" notset $SERVER
 
 echo '</form></div></div></body></html>'
 exit

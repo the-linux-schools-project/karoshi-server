@@ -6,6 +6,7 @@ ACTIONMSG=`echo $3 | tr -cd "A-Za-z\n-/"`
 ACTION=`echo $4 | tr -cd "A-Za-z"`
 CUSTOM=`echo $5 | tr -cd "A-Za-z."`
 SEPARATOR=`echo $6 | tr -cd "_"`
+GLUSTER=no
 
 ############################
 #Language
@@ -101,7 +102,8 @@ echo '<tr><td style="background-color:'$FILLCOLOUR'; height: '$HEIGHT1'px;"></td
 if [ $MOBILE = no ]
 then
 	echo '<td style="vertical-align: top;">'
-	[ -d $INFOPATH/$SERVER ] && cat $INFOPATH/$SERVER/*
+	[ -d "$INFOPATH"/"$SERVER" ] && cat "$INFOPATH"/"$SERVER"/*
+	[ "$GLUSTER" = yes ] && echo "$GLUSTERINFO"
 	echo '</td>'
 fi
 
@@ -201,19 +203,29 @@ do
 	SERVER=`basename $SERVERS`
 	[ $CUSTOM != $SERVER ] && [ -f /opt/karoshi/server_network/servers/$SERVER/fileserver ] && show_server
 done
-}
 
-function show_backups {
-INFOPATH=/opt/karoshi/server_network/servers
-SERVERTYPE=network
-SERVERMASTER=notset
-for SERVERS in /opt/karoshi/server_network/backup_servers/backup_settings/*
-do
-	FILLCOLOUR=green
-	SERVER=`basename $SERVERS`
-	[ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ] && FILLCOLOUR=orange
-	show_server
-done
+#Show gluster volumes
+if [ -d /opt/karoshi/server_network/gluster-volumes/ ]
+then
+	GLUSTER=yes
+	FILLCOLOUR=blue
+	ACTIONMSG="Select Volume"
+	for GLUSTERVOLUMES in /opt/karoshi/server_network/gluster-volumes/*
+	do
+		GLUSTERVOLUME=`basename "$GLUSTERVOLUMES"`
+		if [ "$GLUSTERVOLUME" != dc-data ]
+		then
+			GLUSTERINFO="`echo $"Gluster Volume""<br>"` `ls /opt/karoshi/server_network/gluster-volumes/"$GLUSTERVOLUME"/servers/ | sed 's/ /\<br\>/g'`"
+			for GLUSTERSERVERS in /opt/karoshi/server_network/gluster-volumes/$GLUSTERVOLUME/servers/*
+			do
+				GLUSTERSERVER=`basename "$GLUSTERSERVERS"`
+				SERVER="$GLUSTERVOLUME"."$GLUSTERSERVER"
+				[ -f /opt/karoshi/server_network/servers/"$GLUSTERSERVER"/fileserver ] && show_server
+			done
+		fi
+	done
+	GLUSTER=no
+fi
 }
 
 function show_backupservers {

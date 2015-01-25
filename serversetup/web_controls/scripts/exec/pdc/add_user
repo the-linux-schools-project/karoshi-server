@@ -336,7 +336,7 @@ fi
 #Get userid
 USERID=`getent passwd $NEWUSERNAME | cut -d: -f3`
 
-if [ $SERVER = `hostname-fqdn` ]
+if [ $SERVER = `hostname-fqdn` ] || [ `echo $SERVER | cut -d. -f2-` = `hostname-fqdn` ]
 then
 ######################
 #Create home folder
@@ -352,7 +352,7 @@ fi
 ############################
 #Create user home area on extra fileserver
 ############################
-if [ $SERVER != `hostname-fqdn` ]
+if [ $SERVER != `hostname-fqdn` ] && [ `echo $SERVER | cut -d. -f2-` != `hostname-fqdn` ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 [ ! -d '$HOMEPATH''/''$NEWUSERNAME' ] && mkdir -p '$HOMEPATH''/''$NEWUSERNAME'
@@ -377,7 +377,7 @@ fi
 if [ -f /opt/karoshi/server_network/emailserver ]
 then
 	EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
-	if [ $EMAILSERVER != `hostname-fqdn` ]
+	if [ $EMAILSERVER != `hostname-fqdn` ] && [ `echo $EMAILSERVER | cut -d. -f2-` != `hostname-fqdn` ]
 	then 
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
 		[ ! -d /home/users/email/ ] && mkdir -p /home/users/email/

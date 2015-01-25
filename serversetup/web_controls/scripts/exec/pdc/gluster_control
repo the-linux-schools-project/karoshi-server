@@ -128,6 +128,20 @@ echo '</form>
 #Add a folder to a volume
 if [ "$ACTION" = reallyaddfolder ]
 then
+	#Check folder path
+	if [ `echo $FOLDER | grep -c /home` -gt 0 ]
+	then
+		echo ''$"$FOLDER - home areas need to be added to gluster volumes on the Home Folders page."'<br>'
+		sleep 3
+		#Redirect to home folders page
+		echo '<script type="text/javascript">
+		window.location = "home_folders_fm.cgi";
+		</script>'
+		[ $MOBILE = no ] && echo '</div>'
+		echo '</div></body></html>'
+		exit
+	fi
+
 	COPYACTION=copydata
 	for SERVERS in /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/*
 	do
@@ -147,7 +161,7 @@ then
 	echo '<input type="hidden" name="_VOLUME_" value="'$VOLUME'"><table class="'$TABLECLASS'" style="text-align: left; " border="0" cellpadding="2" cellspacing="2"><tbody>
 	<tr><td style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume"'</b></td><td style="width: '$WIDTH2'px; vertical-align: top;">'$VOLUME'</td></tr>
 <tr><td><b>'$"Folder Path"'</b></td><td style="vertical-align: top;"><input tabindex= "1" name="_FOLDER_" style="width: 200px;" size="20" type="text"></td>
-<td style="vertical-align: middle; text-align: left;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the full path that you want to add to the gluster volume."'</span></a></td>
+<td style="vertical-align: middle; text-align: left;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Gluster_Volumesr"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the full path that you want to add to the gluster volume."'</span></a></td>
 </tr>
 </tbody></table><br><br>
 <input name="_ACTION_reallyaddfolder_" value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
@@ -197,7 +211,7 @@ then
 
 	#Show tick box of servers from zones to use
 	echo '<input type="hidden" name="_SERVERS_" value="'$SERVERS'"><br><table class="'$TABLECLASS'" style="text-align: left; " border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume Name"'</b></td><td style="vertical-align: top;"><input tabindex= "1" name="_VOLUME_" value="'$VOLUME'" style="width: 200px;" size="20" type="text"></td><td style="vertical-align: middle;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the name that you want for the volume."'</span></a></td></tr>'
+<tr><td style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume Name"'</b></td><td style="vertical-align: top;"><input tabindex= "1" name="_VOLUME_" value="'$VOLUME'" style="width: 200px;" size="20" type="text"></td><td style="vertical-align: middle;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Gluster_Volumesr"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the name that you want for the volume."'</span></a></td></tr>'
 
 	if [ ! -z "$SERVERS" ]
 	then
@@ -211,8 +225,14 @@ then
 		echo '<tr><td style="vertical-align: top; height: 60px;"></td></tr>'
 	fi
 
-echo '</tbody></table><br><br>
-	<input name="_ACTION_reallycreate_" value="'$"Submit"'" class="button" type="submit">'
+echo '</tbody></table><br><br>'
+	if [ ! -z "$SERVERS" ]
+	then
+		if [ `echo "$SERVERS" | grep -c ","` -gt 0 ]
+		then
+			echo '<input name="_ACTION_reallycreate_" value="'$"Submit"'" class="button" type="submit">'
+		fi
+	fi
 fi
 
 #Show all gluster volumes
@@ -243,7 +263,11 @@ then
 	done
 	fi
 	echo '</td><td style="vertical-align: top;">'
-	[ "$VOLUME" != dc-data ] && echo '<input name="_ACTION_addfolder_VOLUME_'$VOLUME'_" type="submit" class="button" value="'$"Add folder"'">'
+	if [ "$VOLUME" != dc-data ]
+	then
+		echo '<input name="_ACTION_addfolder_VOLUME_'$VOLUME'_" type="submit" style="min-width: 135px;" class="button" value="'$"Add folder"'">
+		<br><a href="home_folders_fm.cgi"><input class="button" type="button" style="min-width: 135px;" name="" value="'$"Assign Home Folders"'"></a>'
+	fi
 	echo '</td></tr>'
 	done
 	echo '</tbody></table>'

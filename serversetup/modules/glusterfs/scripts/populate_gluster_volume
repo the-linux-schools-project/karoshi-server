@@ -89,9 +89,8 @@ then
 	echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 	rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --executability --acls --owner --group -o "$FOLDER" /"$MOUNTBASE"/"$GLUSTERVOL"
 	echo '</pre>'
-	else
-	[ ! -d /"$MOUNTBASE"/"$GLUSTERVOL"/"$FOLDER" ] && mkdir -p /"$MOUNTBASE"/"$GLUSTERVOL"/"$FOLDER_SHORT"
 	fi
+	[ ! -d /"$MOUNTBASE"/"$GLUSTERVOL"/"$FOLDER_SHORT" ] && mkdir -p /"$MOUNTBASE"/"$GLUSTERVOL"/"$FOLDER_SHORT"
 else
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 	if [ "'$ACTION'" = copydata ]
@@ -99,9 +98,8 @@ else
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 		rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --executability --acls --owner --group -o "'$FOLDER'" /"'$MOUNTBASE'"/"'$GLUSTERVOL'"
 	echo "</pre>"
-	else
-	[ ! -d /"'$MOUNTBASE'"/"'$GLUSTERVOL'"/"'$FOLDER'" ] && mkdir -p /"'$MOUNTBASE'"/"'$GLUSTERVOL'"/"'$FOLDER_SHORT'"
 	fi
+	[ ! -d /"'$MOUNTBASE'"/"'$GLUSTERVOL'"/"'$FOLDER_SHORT'" ] && mkdir -p /"'$MOUNTBASE'"/"'$GLUSTERVOL'"/"'$FOLDER_SHORT'"
 	'
 fi
 

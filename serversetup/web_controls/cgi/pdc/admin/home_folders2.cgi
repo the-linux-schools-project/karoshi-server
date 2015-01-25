@@ -177,18 +177,27 @@ then
 	show_status
 fi
 
+GLUSTER=no
+
 #Check to see that the new server is available
 if [ $SERVERNAME != `hostname-fqdn` ]
 then
 	if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/fileserver ]
 	then
-		MESSAGE=$"The new server you have chosen is not configured as a Karoshi file server."
-		show_status
+		#Check to see if this is a gluster volume
+		VOLUME=`echo $SERVERNAME | cut -d. -f1`
+		if [ ! -d /opt/karoshi/server_network/gluster-volumes/$VOLUME ]
+		then
+			MESSAGE=$"The new server you have chosen is not configured as a Karoshi file server."
+			show_status
+		else
+			GLUSTER=yes
+		fi
 	fi
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/home_folders2.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$CURRENTSERVER:$SERVERNAME:$PRIGROUP:$COPYHOMEAREAS" | sudo -H /opt/karoshi/web_controls/exec/home_folders
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$CURRENTSERVER:$SERVERNAME:$PRIGROUP:$COPYHOMEAREAS:$GLUSTER" | sudo -H /opt/karoshi/web_controls/exec/home_folders
 
 if [ $? = 101 ]
 then

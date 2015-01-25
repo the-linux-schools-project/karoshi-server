@@ -204,6 +204,13 @@ then
 		MESSAGE=$"You have to choose at least two servers to create a distributed volume."
 		show_status
 	fi
+
+	if [ -d /opt/karoshi/server_network/gluster-volumes/"$VOLUME" ]
+	then
+		MESSAGE=''$VOLUME' - '$"This volume has already been created."''
+		show_status
+	fi
+
 fi
 
 if [ "$ACTION" = reallyaddfolder ]
