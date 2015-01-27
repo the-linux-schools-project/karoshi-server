@@ -25,10 +25,10 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/sbin/e2guardian
 NAME=e2guardian
 DESC="e2guardian"
-
 CONFFILELOCATION=/etc/e2guardian/
-#BINARYLOCATION=/usr/sbin/
-#PIDDIR=/var/run/
+
+# Read configuration variable file if it is present
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
 
 grep -q ^UNCONFIGURED ${CONFFILELOCATION}e2guardian.conf && {
 cat <<EOF

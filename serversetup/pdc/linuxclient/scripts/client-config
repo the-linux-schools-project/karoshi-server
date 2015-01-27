@@ -65,16 +65,6 @@ if ! karoshi-manage-flags get offline_mode >/dev/null; then
 	samba4)
 		[[ -f /tmp/netlogon/linuxclient/pam_mount.conf.xml.krb5 ]] && cp -f /tmp/netlogon/linuxclient/pam_mount.conf.xml.krb5 /etc/security/pam_mount.conf.xml
 		;;
-	samba4_winbind)
-		[[ -f /tmp/netlogon/linuxclient/pam_mount.conf.xml.krb5 ]] && cp -f /tmp/netlogon/linuxclient/pam_mount.conf.xml.krb5 /etc/security/pam_mount.conf.xml
-		#Clear cache
-		find /var/cache/samba -mindepth 1 -delete
-		;;
-	samba3)
-		[[ -f /tmp/netlogon/linuxclient/pam_mount.conf.xml ]] && cp -f /tmp/netlogon/linuxclient/pam_mount.conf.xml /etc/security/pam_mount.conf.xml
-		#Clear cache
-		find /var/cache/samba -mindepth 1 -delete
-		;;
 	*)
 		echo "WARNING: Unrecognized domain type $DOMAINTYPE"
 		;;
@@ -151,11 +141,11 @@ if ! karoshi-manage-flags get no_update_other >/dev/null; then
 	[[ -d $KAROSHI_DATA/images ]] || mkdir -p "$KAROSHI_DATA"/images
 	if [[ -f /tmp/netlogon/linuxclient/background.png ]]; then
 		cp -f /tmp/netlogon/linuxclient/background.png "$KAROSHI_DATA"/images
-		update-alternatives --install /usr/share/backgrounds/karoshi.png karoshi-background "$KAROSHI_DATA"/images/background.png 50
+		update-alternatives --install /usr/share/backgrounds/karoshi.png karoshi-background "$KAROSHI_DATA"/images/background.png 150
 	fi
 	if [[ -f /tmp/netlogon/linuxclient/login-background.png ]]; then
 		cp -f /tmp/netlogon/linuxclient/login-background.png "$KAROSHI_DATA"/images
-		update-alternatives --install /usr/share/backgrounds/karoshi-login.png karoshi-login-background "$KAROSHI_DATA"/images/login-background.png 50
+		update-alternatives --install /usr/share/backgrounds/karoshi-login.png karoshi-login-background "$KAROSHI_DATA"/images/login-background.png 150
 	fi
 
 	#Clipboard sites for later on
@@ -183,39 +173,52 @@ if ! karoshi-manage-flags get no_update_other >/dev/null; then
 fi
 
 #######################
-#Thunderbird extensions
+#Mozilla extensions
 #######################
 
-#{3550f703-e582-4d05-9a08-453d09bdfdc6} is the app-id for Thunderbird
-thunderbird_extensionsdir=/usr/lib/mozilla/extensions/{3550f703-e582-4d05-9a08-453d09bdfdc6}
+# Mozilla app IDs
+declare -A mozilla_app_id=(
+	[firefox]="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
+	[thunderbird]="{3550f703-e582-4d05-9a08-453d09bdfdc6}"
+)
 
 function do_xpi_raw {
 	xpi_name=$1
 	xpi_dir=$2
+	app=$3
 
-	if [[ ! -d $xpi_dir ]]; then
-		echo "Error: No such directory $xpi_dir" >&2
-		return 1
+	if [[ ! -d /opt/karoshi/mozilla/extensions/$xpi_name ]]; then
+		if [[ ! -d $xpi_dir ]]; then
+			echo "Error: No such directory $xpi_dir" >&2
+			return 1
+		fi
+
+		cp -rT "$xpi_dir" /opt/karoshi/mozilla/extensions/"$xpi_name"
+		chown -R root: /opt/karoshi/mozilla/extensions/"$xpi_name"
+		chmod -R u=rwX,g=rX,o=rX /opt/karoshi/mozilla/extensions/"$xpi_name"
 	fi
-
-	cp -rT "$xpi_dir" /opt/karoshi/thunderbird/extensions/"$xpi_name"
 
 	xpi_id=$(xmlstarlet sel -N rdf=http://www.w3.org/1999/02/22-rdf-syntax-ns# -N em=http://www.mozilla.org/2004/em-rdf# \
 				-t -m "//rdf:Description[@about='urn:mozilla:install-manifest']" -i "em:id" -v "em:id" --else -v "@em:id" \
-				/opt/karoshi/thunderbird/extensions/"$xpi_name"/install.rdf)
+				/opt/karoshi/mozilla/extensions/"$xpi_name"/install.rdf)
 	#Check if we actually have a valid extension id
 	if [[ -z $xpi_id ]]; then
-		echo "Warning: Thunderbird extension $xpi_name is invalid" >&2
+		echo "Warning: Mozilla extension $xpi_name is invalid" >&2
 		return
 	fi
 
 	#Install extension
-	ln -Ts /opt/karoshi/thunderbird/extensions/"$xpi_name" "$thunderbird_extensionsdir"/"$xpi_id"
+	app_id=${mozilla_app_id["$app"]}
+	if [[ ! -d /usr/lib/mozilla/extensions/"$app_id" ]]; then
+		mkdir -p /usr/lib/mozilla/extensions/"$app_id"
+	fi
+	ln -Ts /opt/karoshi/mozilla/extensions/"$xpi_name" /usr/lib/mozilla/extensions/"$app_id"/"$xpi_id"
 }
 
 function do_xpi {
 	xpi_name=$(basename "$1")
 	xpi_name=${xpi_name%.xpi}
+	app=$2
 
 	if [[ -z $xpi_name ]]; then
 		echo "Warning: Something bad happened" >&2
@@ -225,41 +228,59 @@ function do_xpi {
 	temp_dir=$(mktemp -d)
 
 	unzip -q "$1" -d "$temp_dir"
-	do_xpi_raw "$xpi_name" "$temp_dir"
+	do_xpi_raw "$xpi_name" "$temp_dir" "$app"
 
 	rm -rf "$temp_dir"
 }
 
-if [[ $MAILSERVER ]]; then
-	[[ -d $thunderbird_extensionsdir ]] || mkdir -p "$thunderbird_extensionsdir"
-	[[ -d /opt/karoshi/thunderbird/extensions ]] || mkdir -p /opt/karoshi/thunderbird/extensions
+[[ -d /opt/karoshi/mozilla/extensions ]] || mkdir -p /opt/karoshi/mozilla/extensions
+#Clear all extensions
+find /opt/karoshi/mozilla/extensions -mindepth 1 -delete
+find /usr/lib/mozilla/extensions/* -maxdepth 1 -lname '/opt/karoshi/mozilla/extensions/*' -delete
 
-	echo "Clearing current Thunderbird extensions"
-	#Clear all extensions
-	find /opt/karoshi/thunderbird/extensions -mindepth 1 -delete
-	find "$thunderbird_extensionsdir" -maxdepth 1 -lname '/opt/karoshi/thunderbird/extensions/*' -delete
+# Thunderbird
+if [[ $MAILSERVER ]]; then
+	# LEGACY compatibility
+	find /usr/lib/mozilla/extensions/"${mozilla_app_id[thunderbird]}" -maxdepth 1 -lname '/opt/karoshi/thunderbird/extensions/*' -delete
+	[[ -e /opt/karoshi/thunderbird/extensions ]] && rm -rf /opt/karoshi/thunderbird/extensions
 
 	timezone=$(< /etc/timezone)
 	mailserver_alias=$(< /tmp/netlogon/domain_information/aliases/"$MAILSERVER")
 
 	#Install SOGo
-	do_xpi_raw sogo-connector /opt/karoshi/linuxclientsetup/config-files/thunderbird/sogo-connector
-	do_xpi_raw sogo-integrator /opt/karoshi/linuxclientsetup/config-files/thunderbird/sogo-integrator
-	if [[ -d /opt/karoshi/thunderbird/extensions/sogo-integrator ]]; then
+	do_xpi_raw sogo-connector /opt/karoshi/linuxclientsetup/config-files/thunderbird/sogo-connector thunderbird
+	do_xpi_raw sogo-integrator /opt/karoshi/linuxclientsetup/config-files/thunderbird/sogo-integrator thunderbird
+	if [[ -d /opt/karoshi/mozilla/extensions/sogo-integrator ]]; then
 		sed -i "s@CHANGETHISTIMEZONE@$timezone@" \
-			/opt/karoshi/thunderbird/extensions/sogo-integrator/defaults/preferences/site.js
+			/opt/karoshi/mozilla/extensions/sogo-integrator/defaults/preferences/site.js
 		sed -i "s@CHANGETHISSOGO@$mailserver_alias.$DNSSUFFIX@" \
-			/opt/karoshi/thunderbird/extensions/sogo-integrator/chrome/content/extensions.rdf
+			/opt/karoshi/mozilla/extensions/sogo-integrator/chrome/content/extensions.rdf
 	fi
 	#Install Firetray
-	do_xpi_raw firetray /opt/karoshi/linuxclientsetup/config-files/thunderbird/firetray
+	do_xpi /opt/karoshi/linuxclientsetup/config-files/thunderbird/firetray.xpi thunderbird
 
 	if [[ -d /tmp/netlogon/linuxclient/$LINUX_VERSION/thunderbird/extensions ]]; then
 		while read -r -d $'\0' xpi; do
 			echo "Found new extension: $xpi"
-			do_xpi "$xpi"
+			do_xpi "$xpi" thunderbird
 		done < <(find /tmp/netlogon/linuxclient/$LINUX_VERSION/thunderbird/extensions -maxdepth 1 -mindepth 1 -name '*.xpi' -print0)
 	fi
+fi
+
+# Firefox
+#Install Zotero
+do_xpi /opt/karoshi/linuxclientsetup/config-files/firefox/zotero-4.0.22.xpi firefox
+do_xpi /opt/karoshi/linuxclientsetup/config-files/firefox/Zotero-LibreOffice-Plugin-3.5.9.xpi firefox
+unopkg add --shared /opt/karoshi/mozilla/extensions/Zotero-LibreOffice-Plugin-3.5.9/install/Zotero_OpenOffice_Integration.oxt
+
+#Install Omnibar
+do_xpi /opt/karoshi/linuxclientsetup/config-files/firefox/omnibar.xpi firefox
+
+if [[ -d /tmp/netlogon/linuxclient/$LINUX_VERSION/firefox/extensions ]]; then
+	while read -r -d $'\0' xpi; do
+		echo "Found new extension: $xpi"
+		do_xpi "$xpi" firefox
+	done < <(find /tmp/netlogon/linuxclient/$LINUX_VERSION/firefox/extensions -maxdepth 1 -mindepth 1 -name '*.xpi' -print0)
 fi
 
 ###########################
@@ -464,3 +485,9 @@ done
 #Write new variables to file
 updateVariables
 
+#Install dictionaries
+dpkg -l myspell-en-gb
+if [[ $? != 0 ]]; then
+	apt-get update
+	apt-get install -y myspell-en-gb
+fi

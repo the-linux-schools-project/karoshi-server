@@ -445,8 +445,9 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/suphp.c
 sed -i "s/JobPrivateAccess default/JobPrivateAccess all/g" /etc/cups/cupsd.conf
 sed -i "s/JobPrivateValues default/JobPrivateValues none/g" /etc/cups/cupsd.conf
 
-#Configure dovecot
+#Configure dovecot and e2guardian max files
 echo ulimit -n 131072 > /etc/default/dovecot
+echo ulimit -n 10240 > /etc/default/e2guardian
 
 #Make sure that tango is inheriting icons 
 sed -i 's/Inherits=gnome,crystalsvg/Inherits=gnome,crystalsvg,mate/g' /usr/share/icons/Tango/index.theme

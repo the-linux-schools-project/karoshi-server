@@ -206,8 +206,7 @@ then
 	fi
 	SERVERS=`echo $SERVERS | sed 's/,,/,/g' | sed 's/,$//g'`
 	
-	MOBILE=no
-	/opt/karoshi/web_controls/show_servers $MOBILE servers $"Add Server" create | sed 's/SERVERNAME/SERVER/g'
+
 
 	#Show tick box of servers from zones to use
 	echo '<input type="hidden" name="_SERVERS_" value="'$SERVERS'"><br><table class="'$TABLECLASS'" style="text-align: left; " border="0" cellpadding="2" cellspacing="2"><tbody>
@@ -222,15 +221,19 @@ then
 		done
 		echo '</td></tr>'
 	else
-		echo '<tr><td style="vertical-align: top; height: 60px;"></td></tr>'
+		echo '<tr><td style="vertical-align: top; height: 40px;"></td></tr>'
 	fi
 
-echo '</tbody></table><br><br>'
+echo '</tbody></table><br>'
+
+	MOBILE=no
+	/opt/karoshi/web_controls/show_servers $MOBILE servers $"Add Server" create | sed 's/SERVERNAME/SERVER/g'
+
 	if [ ! -z "$SERVERS" ]
 	then
 		if [ `echo "$SERVERS" | grep -c ","` -gt 0 ]
 		then
-			echo '<input name="_ACTION_reallycreate_" value="'$"Submit"'" class="button" type="submit">'
+			echo '<br><br><input name="_ACTION_reallycreate_" value="'$"Submit"'" class="button" type="submit">'
 		fi
 	fi
 fi
