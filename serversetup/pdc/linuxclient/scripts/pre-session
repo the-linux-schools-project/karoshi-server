@@ -302,10 +302,11 @@ user_pref('browser.startup.homepage', '$PROXYSERVER.$DNSSUFFIX');" >> ~/.mozilla
 			echo "user_pref('network.negotiate-auth.trusted-uris', '$DNSSUFFIX');" >> ~/.mozilla/firefox/"$firefox_profile"/user.js
 			
 			#Set spellcheck language to machine language
-			if [[ -z $LANG ]]; then
+			SYSLANG=`dbus-send --print-reply --system --dest=org.freedesktop.locale1 /org/freedesktop/locale1 org.freedesktop.DBus.Properties.Get string:org.freedesktop.locale1 string:Locale | sed -n '/LANG=/s/.*LANG=\([^\.]*\)\..*/\1/p'`
+			if [[ -z $SYSLANG ]]; then
 				echo "user_pref('spellchecker.dictionary', 'en_US');" >> ~/.mozilla/firefox/"$firefox_profile"/user.js
 			else
-				spellLang="${LANG%.*}"
+				spellLang="${SYSLANG%.*}"
 				echo "user_pref('spellchecker.dictionary', '$spellLang');" >> ~/.mozilla/firefox/"$firefox_profile"/user.js
 			fi
 		fi

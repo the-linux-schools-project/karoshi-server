@@ -27,7 +27,10 @@ NAME=e2guardian
 DESC="e2guardian"
 CONFFILELOCATION=/etc/e2guardian/
 
-# Read configuration variable file if it is present
+#Make sure a configuration variable file is present
+[ ! -f /etc/default/$NAME ] && echo ulimit -n 10240 > /etc/default/$NAME
+
+# Read configuration variable file
 [ -r /etc/default/$NAME ] && . /etc/default/$NAME
 
 grep -q ^UNCONFIGURED ${CONFFILELOCATION}e2guardian.conf && {

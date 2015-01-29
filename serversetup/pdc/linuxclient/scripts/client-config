@@ -486,7 +486,7 @@ done
 updateVariables
 
 #Install dictionaries
-dpkg -l myspell-en-gb
+dpkg -s myspell-en-gb
 if [[ $? != 0 ]]; then
 	apt-get update
 	apt-get install -y myspell-en-gb
