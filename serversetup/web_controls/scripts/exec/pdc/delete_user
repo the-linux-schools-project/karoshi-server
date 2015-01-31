@@ -24,22 +24,22 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/delete_user_cgi
 then
-echo `date`: delete_user - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: delete_user - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/delete_user_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/delete_user.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $delete_user_cgi'check' ]
 then
-echo `date`: delete_user - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: delete_user - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -47,15 +47,15 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: delete_user - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: delete_user - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n\-+'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: delete_user - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: delete_user - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -69,24 +69,24 @@ ARCHIVE=`echo "$DATA" | cut -s -d: -f7`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: delete_user - Not called by delete_user.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: delete_user - Not called by delete_user.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-echo `date`: delete_user - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: delete_user - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: delete_user - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: delete_user - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: delete_user - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: delete_user - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 [ -z $ARCHIVE ] && ARCHIVE=no
@@ -95,10 +95,10 @@ fi
 FEDERATED_LDAP_SERVERS=no
 if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
 then
-if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
-then
-FEDERATED_LDAP_SERVERS=yes
-fi
+	if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
+	then
+		FEDERATED_LDAP_SERVERS=yes
+	fi
 fi
 
 #######################
@@ -107,11 +107,13 @@ fi
 PRIMARYGROUP=`id -G -n $DELETEUSER | cut -d' ' -f1`
 if [ ! -f /opt/karoshi/server_network/group_information/$PRIMARYGROUP ]
 then
-echo `date`: delete_user - no primary group information 'for' $PRIMARYGROUP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: delete_user - no primary group information 'for' $PRIMARYGROUP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 source /opt/karoshi/server_network/group_information/$PRIMARYGROUP
+SERVER=`echo $SERVER | cut -d, -f1`
+
 echo `date`: delete_user - deleting $DELETEUSER from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 #######################
@@ -125,39 +127,41 @@ samba-tool user delete $DELETEUSER 1>> /opt/karoshi/logs/karoshi_web_management/
 DELETE_USER_STATUS=`echo $?`
 if [ -d /home/applications/profiles/$DELETEUSER ]
 then
-#Delete profile if using a roaming profile
-rm -d -R -f /home/applications/profiles/$DELETEUSER
-rm -f /home/applications/profiles/$DELETEUSER.V2
-samba-tool group delete $DELETEUSER 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ `grep -w -c $DELETEUSER /opt/karoshi/server_network/windows_roaming_profile_users` -gt 0 ]
-then
-LINENUMBER=`grep -w -n ^$DELETEUSER /opt/karoshi/server_network/windows_roaming_profile_users | cut -d: -f1`
-#remove username
-sed -i $LINENUMBER'd' /opt/karoshi/server_network/windows_roaming_profile_users
-#Delete empty lines
-sed -i '/^$/d' /opt/karoshi/server_network/windows_roaming_profile_users
-fi
+	#Delete profile if using a roaming profile
+	rm -d -R -f /home/applications/profiles/$DELETEUSER
+	rm -f /home/applications/profiles/$DELETEUSER.V2
+	if [ `grep -w -c $DELETEUSER /opt/karoshi/server_network/windows_roaming_profile_users` -gt 0 ]
+	then
+		LINENUMBER=`grep -w -n ^$DELETEUSER /opt/karoshi/server_network/windows_roaming_profile_users | cut -d: -f1`
+		#remove username
+		sed -i $LINENUMBER'd' /opt/karoshi/server_network/windows_roaming_profile_users
+		#Delete empty lines
+		sed -i '/^$/d' /opt/karoshi/server_network/windows_roaming_profile_users
+	fi
 fi
 #Delete logon script
 [ -f /var/lib/samba/netlogon/windows_settings/drives/$DELETEUSER.kix ] && rm -f /var/lib/samba/netlogon/windows_settings/drives/$DELETEUSER.kix
 
 if [ $ARCHIVE = yes ]
 then
-#Archive home folder
-if [ -d $HOMEPATH/$DELETEUSER ]
-then
-[ ! -d /home/users/archive/$PRIMARYGROUP ] && mkdir -p /home/users/archive/$PRIMARYGROUP
-mv $HOMEPATH/$DELETEUSER /home/users/archive/$PRIMARYGROUP/$DELETEUSER
-chown -R root:itadmin /home/users/archive/$PRIMARYGROUP/$DELETEUSER
-fi
+	#Archive home folder
+	if [ -d $HOMEPATH/$DELETEUSER ]
+	then
+		[ ! -d /home/users/archive/$PRIMARYGROUP ] && mkdir -p /home/users/archive/$PRIMARYGROUP
+		mv $HOMEPATH/$DELETEUSER /home/users/archive/$PRIMARYGROUP/$DELETEUSER
+		chown -R root:itadmin /home/users/archive/$PRIMARYGROUP/$DELETEUSER
+	fi
 else
-#Delete home folder
-[ -d $HOMEPATH/$DELETEUSER ] && rm -f -R $HOMEPATH/$DELETEUSER
+	#Delete home folder
+	[ -d $HOMEPATH/$DELETEUSER ] && rm -f -R $HOMEPATH/$DELETEUSER
 fi
 
 #Delete group information
 
 [ -f /opt/karoshi/server_network/group_information/$DELETEUSER ] && rm -f /opt/karoshi/server_network/group_information/$DELETEUSER
+
+#Delete dfs link
+[ -e /var/lib/samba/dfs/homes/$DELETEUSER ] && rm -f /var/lib/samba/dfs/homes/$DELETEUSER
 
 #######################
 #Delete the folder on extra file server

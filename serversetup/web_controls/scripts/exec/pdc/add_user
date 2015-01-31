@@ -104,63 +104,63 @@ BULKUSERCREATION=`echo "$DATA" | cut -s -d: -f12`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ] && [ $REMOTE_MD5'check' != $MD5SUM3'check' ]
 then
-echo `date`: add_user - Not called by add_user.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: add_user - Not called by add_user.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-echo `date`: add_user - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: add_user - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: add_user - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: add_user - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$FIRSTNAME" ]
 then
-echo `date`: add_user - Blank firstname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: add_user - Blank firstname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$SURNAME" ]
 then
-echo `date`: add_user - Blank surname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: add_user - Blank surname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$NEWUSERNAME" ]
 then
-echo `date`: add_user - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: add_user - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$NEWUSERPASSWORD" ]
 then
-echo `date`: add_user - Blank password by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: add_user - Blank password by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$PRIMARYGROUP" ]
 then
-echo `date`: add_user - Blank group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: add_user - Blank group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ ! -f /opt/karoshi/server_network/group_information/$PRIMARYGROUP ]
 then
-echo `date`: add_user - no primary group information 'for' $PRIMARYGROUP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: add_user - no primary group information 'for' $PRIMARYGROUP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$USERNAMESTYLE" ]
 then
-echo `date`: add_user - Blank usernamestyle by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: add_user - Blank usernamestyle by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ $USERNAMESTYLE != userstyleS1 ] && [ $USERNAMESTYLE != userstyleS2 ] && [ $USERNAMESTYLE != userstyleS3 ] && [ $USERNAMESTYLE != userstyleS4 ] && [ $USERNAMESTYLE != userstyleS5 ] && [ $USERNAMESTYLE != userstyleS6 ] && [ $USERNAMESTYLE != userstyleS7 ] && [ $USERNAMESTYLE != userstyleS8 ] && [ $USERNAMESTYLE != userstyleS9 ]
 then
-echo `date`: add_user - Incorrect usernamestyle by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: add_user - Incorrect usernamestyle by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
 then
-echo `date`: add_user - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: add_user - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if getent passwd $NEWUSERNAME >/dev/null; then
 	echo `date`: add_user - User with the username $NEWUSERNAME already exists >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -190,10 +190,10 @@ source /opt/karoshi/server_network/domain_information/domain_name
 FEDERATED_LDAP_SERVERS=no
 if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
 then
-if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
-then
-FEDERATED_LDAP_SERVERS=yes
-fi
+	if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
+	then
+		FEDERATED_LDAP_SERVERS=yes
+	fi
 fi
 
 ########################
@@ -201,6 +201,7 @@ fi
 ########################
 SECONDARYGROUP=""
 source /opt/karoshi/server_network/group_information/$PRIMARYGROUP
+SERVER=`echo $$SERVER | cut -d, -f1`
 source /opt/karoshi/server_network/domain_information/domain_name
 GROUPLIST=$SECONDARYGROUP
 echo `date`: add_user - creating $NEWUSERNAME, Primary group: $PRIMARYGROUP from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -210,7 +211,7 @@ echo `date`: add_user - creating $NEWUSERNAME, Primary group: $PRIMARYGROUP from
 ######################
 
 PRIMARYGROUPID=`getent group | grep -w ^$PRIMARYGROUP | cut -d: -f3 | sed -n 1,1p`
-[ $PRIMARYGROUPID'null' = null ] && exit 101
+[ -z "$PRIMARYGROUPID" ] && exit 101
 
 #############################
 #Make sure first name and surname are capitalised
@@ -237,17 +238,17 @@ samba-tool group addmembers "$PRIMARYGROUP" $NEWUSERNAME  1>/dev/null 2>>/opt/ka
 #Add user to supplementary groups
 if [ `echo "$SECONDARYGROUP"null | sed 's/ //g'` != null ]
 then
-SECONDARYGROUP=`echo $SECONDARYGROUP | sed 's/,/ /g'`
-for EXTRAGROUP in $SECONDARYGROUP
-do
-samba-tool group addmembers "$EXTRAGROUP" $NEWUSERNAME  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-done
+	SECONDARYGROUP=`echo $SECONDARYGROUP | sed 's/,/ /g'`
+	for EXTRAGROUP in $SECONDARYGROUP
+	do
+		samba-tool group addmembers "$EXTRAGROUP" $NEWUSERNAME  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	done
 fi
 
 #Add tech and itadmin users to the domain admins group
 if [ $PRIMARYGROUP = itadmin ] || [ $PRIMARYGROUP = tech ]
 then
-samba-tool group addmembers "Domain Admins" $NEWUSERNAME  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	samba-tool group addmembers "Domain Admins" $NEWUSERNAME  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
 
 #Get samba 4 database password
@@ -317,9 +318,9 @@ fi
 ##########################
 if [ ! -d /opt/karoshi/acceptable_use_authorisations/pending ]
 then
-mkdir -p /opt/karoshi/acceptable_use_authorisations/pending
-chmod 0750 -R /opt/karoshi/acceptable_use_authorisations/
-chown -R root:apache_karoshi /opt/karoshi/acceptable_use_authorisations/
+	mkdir -p /opt/karoshi/acceptable_use_authorisations/pending
+	chmod 0750 -R /opt/karoshi/acceptable_use_authorisations/
+	chown -R root:apache_karoshi /opt/karoshi/acceptable_use_authorisations/
 fi
 #Check to see if grace time has been disabled
 GRACE_TIME=yes
@@ -328,7 +329,7 @@ if [ $GRACE_TIME = yes ]
 then
 #Get default grace time
 [ -f /opt/karoshi/acceptable_use_authorisations/grace_time ] && GRACE_TIMER=`sed -n 1,1p /opt/karoshi/acceptable_use_authorisations/grace_time | tr -cd 0-9`
-[ $GRACE_TIMER'null' = null ] && GRACE_TIMER=14
+[ -z "$GRACE_TIMER" ] && GRACE_TIMER=14
 #Add acceptable use
 echo $GRACE_TIMER,$REMOTE_USER,`date +%d-%m-%Y` > /opt/karoshi/acceptable_use_authorisations/pending/$NEWUSERNAME
 fi
@@ -348,6 +349,10 @@ chmod -R 0600 $HOMEPATH/$NEWUSERNAME/
 setfacl -m u::rwx,g::---,o::---,m::r-x $HOMEPATH/$NEWUSERNAME/
 [ `echo $HOMEPATH | grep -c students` -gt 0 ] && setfacl -Rm group:staff:r-x,d:group:staff:r-x $HOMEPATH/$NEWUSERNAME/
 fi
+
+#Add dfs path
+[ -e /var/lib/samba/dfs/homes/$NEWUSER ] && rm -f /var/lib/samba/dfs/homes/$NEWUSER
+ln -s msdfs:$SERVER\\$NEWUSER /var/lib/samba/dfs/homes/$NEWUSER
 
 ############################
 #Create user home area on extra fileserver

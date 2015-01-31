@@ -125,10 +125,33 @@ STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
 
+if [ $GLUSTER = yes ]
+then
+	if [ ! -d /opt/karoshi/server_network/gluster-volumes/$NEWSERVER/servers ]
+	then
+		echo "`date`: home_folders - no gluster servers for this volume by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101	
+	fi
+	GLUSTERVOL=$NEWSERVER
+	GLUSTERSERVERS=`ls -1 /opt/karoshi/server_network/gluster-volumes/$NEWSERVER/servers`
+	GLUSTERSERVERS=`echo $GLUSTERSERVERS | sed 's/ /,/g'`
+fi
+
 ###########################
 #Modify group information for web management
 ###########################
-sed -i 1cSERVER=$NEWSERVER /opt/karoshi/server_network/group_information/$PRIGROUP
+
+[ `grep -c GLUSTERVOL /opt/karoshi/server_network/group_information/$PRIGROUP` = 0 ] && echo GLUSTERVOL='""' >> /opt/karoshi/server_network/group_information/$PRIGROUP
+
+if [ $GLUSTER = yes ]
+then
+	sed -i 1cSERVER=$GLUSTERSERVERS /opt/karoshi/server_network/group_information/$PRIGROUP
+	sed -i 6cGLUSTERVOL=$GLUSTERVOL /opt/karoshi/server_network/group_information/$PRIGROUP
+else
+	sed -i 1cSERVER=$NEWSERVER /opt/karoshi/server_network/group_information/$PRIGROUP
+	sed -i 6cGLUSTERVOL='""' /opt/karoshi/server_network/group_information/$PRIGROUP
+fi
+
 #Copy server information to the home access server
 if [ -f /opt/karoshi/server_network/home_access_server ]
 then
@@ -136,6 +159,8 @@ then
 	#Copy group information to the home access server
 	scp -p -r /opt/karoshi/server_network/group_information root@$HOMEACCESS:/opt/karoshi/server_network/ 1> /dev/null
 fi
+
+[ $GLUSTER = yes ] && NEWSERVER=`echo $GLUSTERSERVERS | cut -d, -f1`
 
 ###########################
 #Edit kixtart groups.txt
@@ -210,11 +235,10 @@ done
 #Enable Gluster Volume
 if [ "$GLUSTER" = yes ]
 then
-	VOLUME=`echo $NEWSERVER | cut -d. -f1`
-	for SERVERS in /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/*
+	for SERVERS in /opt/karoshi/server_network/gluster-volumes/"$GLUSTERVOL"/servers/*
 	do
 		GLUSTERSERVER=`basename $SERVERS`
-		/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume "$GLUSTERSERVER" "$HOMEPATH" "$VOLUME" copydata
+		/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume "$GLUSTERSERVER" "$HOMEPATH" "$GLUSTERVOL" copydata
 	done
 
 fi
@@ -401,6 +425,25 @@ then
 	fi
 fi
 
+#Set dfs paths
+if [ -d /var/lib/samba/dfs/homes ]
+then
+	for USERNAME in `getent passwd | grep ":$HOMEPATH/" | cut -d: -f1`
+	do
+		if [ $GLUSTER = yes ]
+		then
+			for GLUSTERSERVER in `echo $GLUSTERSERVERS | sed 's/,/ /g'`
+			do
+				DFSPATH=$DFSPATH,msdfs:$GLUSTERSERVER\\$USERNAME
+			done
+			DFSPATH=`echo $DFSPATH | sed 's/^,//g'`
+		else
+			DFSPATH=msdfs:$NEWSERVER\\$USERNAME
+		fi
+		[ -e /var/lib/samba/dfs/homes/$NEWUSER ] && rm -f /var/lib/samba/dfs/homes/$USERNAME
+		ln -s "$DFSPATH" /var/lib/samba/dfs/homes/$USERNAME
+	done
 
+fi
 exit
 

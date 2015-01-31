@@ -66,11 +66,12 @@ ICON1=/images/submenus/system/computer.png
 for PRI_GROUP in /opt/karoshi/server_network/group_information/*
 do
 PRI_GROUP=`basename $PRI_GROUP`
+unset GLUSTERVOL
 source /opt/karoshi/server_network/group_information/$PRI_GROUP
 
 #Check for gluster volume
-VOLUME=`echo $SERVER | cut -d. -f1`
-if [ -d /opt/karoshi/server_network/gluster-volumes/$VOLUME ]
+[ -z "$GLUSTERVOL" ] && GLUSTERVOL=notset
+if [ -d /opt/karoshi/server_network/gluster-volumes/$GLUSTERVOL ]
 then
 	ICON1=/images/submenus/system/gluster.png
 else
@@ -79,10 +80,10 @@ fi
 
 if [ $START_LINE = yes ]
 then
-echo '<tr><td>'$PRI_GROUP'</td><td>'$SERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_"><span>'$"Change Server"'<br><br>'$PRI_GROUP'<br><br>'$SERVER'</span></a></td>'
+echo '<tr><td style="vertical-align: top;">'$PRI_GROUP'</td><td style="vertical-align: top;">'`echo $SERVER | sed 's/,/<br>/g'`'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_"><span>'$"Change Server"'<br><br>'$PRI_GROUP'<br><br>'`echo $SERVER | sed 's/,/<br>/g'`'</span></a></td>'
 START_LINE=no
 else
-echo '<td>'$PRI_GROUP'</td><td>'$SERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_"><span>'$"Change Server"'<br><br>'$PRI_GROUP'<br><br><br>'$SERVER'</span></a></td></tr>'
+echo '<td style="vertical-align: top;">'$PRI_GROUP'</td><td style="vertical-align: top;">'$SERVER'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_"><span>'$"Change Server"'<br><br>'$PRI_GROUP'<br><br><br>'`echo $SERVER | sed 's/,/<br>/g'`'</span></a></td></tr>'
 START_LINE=yes
 fi
 done

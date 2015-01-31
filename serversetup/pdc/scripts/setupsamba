@@ -306,6 +306,13 @@ echo -e '# Global parameters
 	log file = /var/log/samba/log.%U
 	# maximum size of 50KB per log file, then rotate:
 	max log size = 50
+	host msdfs = yes
+
+[dfs]
+	path = /var/lib/samba/dfs
+	msdfs root = yes
+	guest ok = Yes
+
 
 [sysvol]
 	comment = sysvol share
@@ -1475,6 +1482,7 @@ touch /opt/karoshi/server_network/zones/$ZONE/servers/$HOSTNAME.$REALM
 
 #Create information for linux clients
 [ ! -d /var/lib/samba/netlogon/domain_information ] && mkdir -p /var/lib/samba/netlogon/domain_information
+[ ! -d /var/lib/samba/dfs/homes ] && mkdir -p /var/lib/samba/dfs/homes
 touch /var/lib/samba/netlogon/domain_information/samba4
 echo $WEBADDRESS > /var/lib/samba/netlogon/domain_information/dns_domain
 echo $DOMAINSID > /var/lib/samba/netlogon/domain_information/domain_sid
@@ -1490,4 +1498,18 @@ sleep 1
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
 #Wait for port  on localhost to be available
 check_ldap_port
+
+#Create dfs links
+ln -s msdfs:$HOSTNAME.$REALM\\subjects /var/lib/samba/dfs/subjects
+ln -s msdfs:$HOSTNAME.$REALM\\subjects /var/lib/samba/dfs/subjects
+ln -s msdfs:$HOSTNAME.$REALM\\subjects /var/lib/samba/dfs/staffshare
+ln -s msdfs:$HOSTNAME.$REALM\\subjects /var/lib/samba/dfs/officeshare
+ln -s msdfs:$HOSTNAME.$REALM\\subjects /var/lib/samba/dfs/itadmin
+
+#Create dfs links for existing users
+for NEWUSERS in `getent passwd | grep /home/users` 
+do
+	NEWUSER=`echo $NEWUSERS | cut -d: -f1`
+	ln -s msdfs:$HOSTNAME.$REALM\\$NEWUSER /var/lib/samba/dfs/homes/$NEWUSER
+done
 exit

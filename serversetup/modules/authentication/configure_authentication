@@ -135,6 +135,13 @@ echo -e "# Global parameters
 	idmap_ldb:use rfc2307 = yes
 	acl:search=false
 	log level = 1
+	host msdfs = yes
+
+[dfs]
+	path = /var/lib/samba/dfs
+	msdfs root = yes
+	guest ok = Yes
+
 
 [netlogon]
 	comment = Netlogon Share

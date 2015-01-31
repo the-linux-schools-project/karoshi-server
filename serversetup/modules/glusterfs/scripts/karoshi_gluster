@@ -69,34 +69,6 @@ PORTS=111,24007:24009,49152:49200,34865:34867
 
 echo '<br><br><li><b>'$"Configure"' GlusterFS - '$VOLUME'</b></li><br>'
 
-
-function create_cname_entries {
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-source /opt/karoshi/server_network/domain_information/domain_name
-for SERVER in `echo $SERVERLIST | sed 's/,/ /g'`
-do
-	SERVERSHORT=`echo $SERVER | cut -d"." -f1`
-	SERVERIP=$(net lookup $SERVER)
-	#echo `date`: karoshi_gluster adding $VOLUME.$SERVERSHORT CNAME $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	echo `date`: karoshi_gluster adding $VOLUME.$SERVERSHORT A $SERVERIP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	#samba-tool dns add 127.0.0.1 $REALM $VOLUME.$SERVERSHORT CNAME $SERVER --username=Administrator --password=$LDAPPASS
-	samba-tool dns add 127.0.0.1 $REALM $VOLUME.$SERVERSHORT A $SERVERIP --username=Administrator --password=$LDAPPASS 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	[ $? = 0 ] && echo "<br>"
-	for EXTRASERVER in `echo $SERVERLIST | sed 's/,/ /g'`
-	do
-		if [ $SERVER != $EXTRASERVER ]
-		then
-			EXTRASERVERIP=$(net lookup $EXTRASERVER)
-			#echo `date`: karoshi_gluster adding $VOLUME.$SERVERSHORT CNAME $EXTRASERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-			echo `date`: karoshi_gluster adding $VOLUME.$SERVERSHORT A $EXTRASERVERIP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-			#samba-tool dns add 127.0.0.1 $REALM $VOLUME.$SERVERSHORT CNAME $EXTRASERVER --username=Administrator --password=$LDAPPASS
-			samba-tool dns add 127.0.0.1 $REALM $VOLUME.$SERVERSHORT A $EXTRASERVERIP --username=Administrator --password=$LDAPPASS 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-			[ $? = 0 ] && echo "<br>"
-		fi
-	done
-done
-}
-
 function mount_volume {
 if [ "$SERVER" = `hostname-fqdn` ]
 then
@@ -427,13 +399,11 @@ then
 
 	#Add in flag files for volume creation
 	[ ! -d /opt/karoshi/server_network/gluster-volumes/$VOLUME/servers ] && mkdir -p /opt/karoshi/server_network/gluster-volumes/$VOLUME/servers
+	[ ! -d /opt/karoshi/server_network/gluster-volumes/$VOLUME/folders ] && mkdir -p /opt/karoshi/server_network/gluster-volumes/$VOLUME/folders
 	for SERVER in `echo $SERVERLIST | sed 's/,/ /g'`
 	do
 		touch /opt/karoshi/server_network/gluster-volumes/$VOLUME/servers/$SERVER
 	done
-
-	#Add in cname entries for each server
-	create_cname_entries
 fi
 
 ###########################
@@ -480,9 +450,6 @@ then
 
 	#Add gluster brick to volume
 	gluster volume add-brick $VOLUME replica $BRICKCOUNT $SERVER:$GLUSTERBASE/$VOLUME force
-
-	#Add in dns records
-	create_cname_entries
 
 	#Mount the drive
 	mount_volume

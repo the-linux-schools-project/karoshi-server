@@ -212,6 +212,7 @@ then
 	ACTIONMSG="Select Volume"
 	for GLUSTERVOLUMES in /opt/karoshi/server_network/gluster-volumes/*
 	do
+		SHOWGLUSTER=yes
 		GLUSTERVOLUME=`basename "$GLUSTERVOLUMES"`
 		if [ "$GLUSTERVOLUME" != dc-data ]
 		then
@@ -219,9 +220,10 @@ then
 			for GLUSTERSERVERS in /opt/karoshi/server_network/gluster-volumes/$GLUSTERVOLUME/servers/*
 			do
 				GLUSTERSERVER=`basename "$GLUSTERSERVERS"`
-				SERVER="$GLUSTERVOLUME"."$GLUSTERSERVER"
-				[ -f /opt/karoshi/server_network/servers/"$GLUSTERSERVER"/fileserver ] && show_server
+				SERVER="$GLUSTERVOLUME"
+				[ ! -f /opt/karoshi/server_network/servers/"$GLUSTERSERVER"/fileserver ] && SHOWGLUSTER=no
 			done
+			 [ $SHOWGLUSTER = yes ] && show_server
 		fi
 	done
 	GLUSTER=no

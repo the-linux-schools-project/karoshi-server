@@ -535,7 +535,7 @@ then
 
 		if [ $GLUSTERSTATUS = 0 ]
 		then
-			for FOLDER in /var/lib/samba/netlogon /var/lib/samba/sysvol /home/applications
+			for FOLDER in /var/lib/samba/netlogon /var/lib/samba/sysvol /var/lib/samba/dfs /home/applications
 			do
 				/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume `hostname-fqdn` "$FOLDER" dc-data "$ACTION"
 				/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume $SERVER.$REALM "$FOLDER" dc-data
