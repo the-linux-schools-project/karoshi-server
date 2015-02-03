@@ -201,7 +201,7 @@ fi
 ########################
 SECONDARYGROUP=""
 source /opt/karoshi/server_network/group_information/$PRIMARYGROUP
-SERVER=`echo $$SERVER | cut -d, -f1`
+SERVER=`echo $SERVER | cut -d, -f1`
 source /opt/karoshi/server_network/domain_information/domain_name
 GROUPLIST=$SECONDARYGROUP
 echo `date`: add_user - creating $NEWUSERNAME, Primary group: $PRIMARYGROUP from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -351,8 +351,22 @@ setfacl -m u::rwx,g::---,o::---,m::r-x $HOMEPATH/$NEWUSERNAME/
 fi
 
 #Add dfs path
-[ -e /var/lib/samba/dfs/homes/$NEWUSER ] && rm -f /var/lib/samba/dfs/homes/$NEWUSER
-ln -s msdfs:$SERVER\\$NEWUSER /var/lib/samba/dfs/homes/$NEWUSER
+[ -L /var/lib/samba/dfs/homes/$NEWUSERNAME ] && rm -f /var/lib/samba/dfs/homes/$NEWUSERNAME
+if [ ! -z "$GLUSTERVOL" ]
+then
+	DFSPATH=""
+	for GLUSTERSERVERS in /opt/karoshi/server_network/gluster-volumes/"$GLUSTERVOL"/servers/*
+	do
+		GLUSTERSERVER=`basename "$GLUSTERSERVERS"`
+		DFSPATH=$DFSPATH,$GLUSTERSERVER\\$NEWUSERNAME
+	done
+	DFSPATH=`echo $DFSPATH | sed 's/^,//g'`
+	[ -L /var/lib/samba/dfs/$NEWUSERNAME ] && rm -f /var/lib/samba/dfs/homes/$NEWUSERNAME
+	ln -s msdfs:"$DFSPATH" /var/lib/samba/dfs/homes/$NEWUSERNAME
+
+else
+	ln -s msdfs:$SERVER\\$NEWUSERNAME /var/lib/samba/dfs/homes/$NEWUSERNAME
+fi
 
 ############################
 #Create user home area on extra fileserver

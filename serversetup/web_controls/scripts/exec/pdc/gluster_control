@@ -125,6 +125,79 @@ echo '</form>
 '
 }
 
+if [ "$ACTION" = assignhomefolders ]
+then
+	#Redirect to home_folders_fm.cgi
+	echo '<SCRIPT language="Javascript"> window.location = "home_folders_fm.cgi";</script></div></body></html>'
+	exit	
+fi
+
+if [ "$ACTION" = reallyassignshare ]
+then
+	FOLDERSHORT=`basename $FOLDER`
+
+	#Copy data to another server if the gluster volume is on remote servers.
+	for GLUSTERSERVER in `ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/`
+	do
+		DFSPATH="$DFSPATH,$GLUSTERSERVER\\$FOLDERSHORT"
+
+	done
+	DFSPATH=`echo $DFSPATH | sed 's/^,//g'`
+	if [ `echo $DFSPATH | grep -c "$SERVER"` = 0 ]
+	then
+		#Server is not in the volume so copy the data into the gluster volume after it has been created
+		COPYAFTER=yes
+	else
+		#Server is in the gluster volume so copy the data into the gluster volume during population.	
+		COPYAFTER=no
+	fi
+
+	#Modify the dfs link for the share
+	for GLUSTERSERVER in `ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/`
+	do
+		COPYDATA=""
+		[ $GLUSTERSERVER = $SERVER ] && COPYDATA=copydata
+		/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume "$GLUSTERSERVER" "$FOLDER" "$VOLUME" "$COPYDATA"
+	done
+
+	if [ $COPYAFTER = yes ]
+	then
+		FOLDERBASE=`echo $FOLDER | sed "s/\/$FOLDERSHORT//g"` 
+		echo ''$SERVER' - '$"Copying data to"' '$GLUSTERSERVER' '$FOLDERBASE''
+		rsync --timeout=30 --keep-dirlinks --dirs --recursive --links --compress --times --perms --acls --owner --group "$FOLDER" root@$GLUSTERSERVER:/"$FOLDERBASE"/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	fi
+
+	[ -L /var/lib/samba/dfs/"$FOLDERSHORT" ] && rm -f /var/lib/samba/dfs/"$FOLDERSHORT"
+	ln -s msdfs:"$DFSPATH" /var/lib/samba/dfs/"$FOLDERSHORT"
+	reloadpage
+fi
+
+
+if [ "$ACTION" = assignshare ]
+then
+	SERVERS=`ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/`
+	#Show network shares that can be assigned to a volume
+	echo '<input type="hidden" name="_VOLUME_" value="'$VOLUME'"><br><table class="'$TABLECLASS'" style="text-align: left; " border="0" cellpadding="2" cellspacing="2"><tbody>
+	<tr><td style="width: '$WIDTH1'px; vertical-align: top;">'$"Server"'</td><td>'`hostname-fqdn`'</td></tr>
+	<tr><td>'$"Gluster Volume"'</td><td>'$VOLUME'</td></tr>
+	<tr><td style="vertical-align: top;">'$"Servers"'</td><td>'`
+	for SERVER in $SERVERS
+	do
+		echo $SERVER'<br>'
+	done`
+	echo '</td></tr>
+	<tr><td>'$"Share Path"'</td><td><select name="_FOLDER_">'
+	for SMBSHARE in `grep "path = " /etc/samba/smb.conf | cut -d= -f2`
+	do
+		if [ $SMBSHARE != /var/lib/samba/dfs ] && [ $SMBSHARE != /var/lib/samba/sysvol ]  && [ $SMBSHARE != /var/lib/samba/netlogon ]
+		then
+			#Check that the share path is not already in the gluster volume.
+			[ `ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/folders/ | sed 's/-/\//g' | grep -c $SMBSHARE` = 0 ] && echo '<option>'$SMBSHARE'</option>'
+		fi
+	done
+	echo '</select></tr></tbody></table><br><br><input name="_SERVER_'`hostname-fqdn`'_ACTION_reallyassignshare_" value="'$"Submit"'" class="button" type="submit">'
+fi
+
 #Add a folder to a volume
 if [ "$ACTION" = reallyaddfolder ]
 then
@@ -161,7 +234,7 @@ then
 	echo '<input type="hidden" name="_VOLUME_" value="'$VOLUME'"><table class="'$TABLECLASS'" style="text-align: left; " border="0" cellpadding="2" cellspacing="2"><tbody>
 	<tr><td style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume"'</b></td><td style="width: '$WIDTH2'px; vertical-align: top;">'$VOLUME'</td></tr>
 <tr><td><b>'$"Folder Path"'</b></td><td style="vertical-align: top;"><input tabindex= "1" name="_FOLDER_" style="width: 200px;" size="20" type="text"></td>
-<td style="vertical-align: middle; text-align: left;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Gluster_Volumesr"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the full path that you want to add to the gluster volume."'</span></a></td>
+<td style="vertical-align: middle; text-align: left;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Gluster_Volumes"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the full path that you want to add to the gluster volume."'</span></a></td>
 </tr>
 </tbody></table><br><br>
 <input name="_ACTION_reallyaddfolder_" value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
@@ -206,11 +279,20 @@ then
 	fi
 	SERVERS=`echo $SERVERS | sed 's/,,/,/g' | sed 's/,$//g'`
 	
-
-
+	#Create a volume name for the server
+	GLUSTERDATA=`ls -1 /opt/karoshi/server_network//gluster-volumes/ | tr -cd "0-9\n"`
+	COUNTER=1
+	GLUSTERCOUNT=0
+	while [ $GLUSTERCOUNT = 0 ]
+	do
+		[ `echo $GLUSTERDATA | grep -c -w $COUNTER` = 0 ] && GLUSTERCOUNT=$COUNTER
+		let COUNTER=$COUNTER+1
+	done	
+	VOLUME=glustervol$GLUSTERCOUNT
 	#Show tick box of servers from zones to use
-	echo '<input type="hidden" name="_SERVERS_" value="'$SERVERS'"><br><table class="'$TABLECLASS'" style="text-align: left; " border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume Name"'</b></td><td style="vertical-align: top;"><input tabindex= "1" name="_VOLUME_" value="'$VOLUME'" style="width: 200px;" size="20" type="text"></td><td style="vertical-align: middle;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Gluster_Volumesr"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the name that you want for the volume."'</span></a></td></tr>'
+	echo '<input type="hidden" name="_VOLUME_" value="'$VOLUME'"><input type="hidden" name="_SERVERS_" value="'$SERVERS'"><br><table class="'$TABLECLASS'" style="text-align: left; " border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume Name"'</b></td><td style="vertical-align: top;">'$VOLUME'
+</td></tr>'
 
 	if [ ! -z "$SERVERS" ]
 	then
@@ -259,19 +341,24 @@ then
 	if [ `ls -1 /opt/karoshi/server_network/gluster-volumes/$VOLUME/folders/ | wc -l` -gt 0 ]
 	then
 	for FOLDER in /opt/karoshi/server_network/gluster-volumes/$VOLUME/folders/-*
-	do
-		FOLDER=`basename "$FOLDER"`
-		FOLDER=`echo "$FOLDER" | sed 's/-/\//g'`
-		echo "$FOLDER"'<br>'
-	done
+		do
+			FOLDER=`basename "$FOLDER"`
+			FOLDER=`echo "$FOLDER" | sed 's/-/\//g'`
+			echo "$FOLDER"'<br>'
+		done
+	else
+		echo $"No folders have been assigned."
 	fi
 	echo '</td><td style="vertical-align: top;">'
 	if [ "$VOLUME" != dc-data ]
 	then
-		echo '<input name="_ACTION_addfolder_VOLUME_'$VOLUME'_" type="submit" style="min-width: 135px;" class="button" value="'$"Add folder"'">
-		<br><a href="home_folders_fm.cgi"><input class="button" type="button" style="min-width: 135px;" name="" value="'$"Assign Home Folders"'"></a>'
+		echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_addfolder_VOLUME_'$VOLUME'_" type="image" class="images" src="/images/submenus/system/gluster_add_folder.png" value=""><span>'$"Add folder"'</span></a> 
+<a class="info" href="javascript:void(0)"><input name="_ACTION_assignshare_VOLUME_'$VOLUME'_" type="image" class="images" src="/images/submenus/system/gluster_add_network_share.png" value=""><span>'$"Assign Network Share"'</span></a> <a class="info" href="javascript:void(0)"><input name="_ACTION_assignhomefolders_" type="image" class="images" src="/images/submenus/system/gluster_assign_home_folders.png" value=""><span>'$"Assign Home Folders"'</span></a>
+
+
+'
 	fi
-	echo '</td></tr>'
+	echo '</td></tr><tr><td style="height: 20px;"></td></tr>'
 	done
 	echo '</tbody></table>'
 fi

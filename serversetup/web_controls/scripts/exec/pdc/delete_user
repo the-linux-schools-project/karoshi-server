@@ -161,7 +161,7 @@ fi
 [ -f /opt/karoshi/server_network/group_information/$DELETEUSER ] && rm -f /opt/karoshi/server_network/group_information/$DELETEUSER
 
 #Delete dfs link
-[ -e /var/lib/samba/dfs/homes/$DELETEUSER ] && rm -f /var/lib/samba/dfs/homes/$DELETEUSER
+[ -L /var/lib/samba/dfs/homes/$DELETEUSER ] && rm -f /var/lib/samba/dfs/homes/$DELETEUSER
 
 #######################
 #Delete the folder on extra file server

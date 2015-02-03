@@ -52,8 +52,8 @@ $logonspeed="300" ; 100 - quick 300 - medium 600 - slow
 $dologging="ON"
 $verfile = "c:\kix\sversion.ini"
 $scriptver="1.00"
-$lserver=@LSERVER
-$mainserver="\\CHANGETHISSERVER"
+$lserver=LCASE(@LSERVER)
+$realm=CHANGETHISREALM
 $pserver="\\franklin" ;programs server
 $printserver="ada"
 
@@ -395,22 +395,8 @@ EndFunction
 ;**  Connecting Home Drive
 ;***********************************************************************
 Function ConnectHomeDrive()
-	If Open(1,$groupsfile) = 0
-		$gspair = ReadLine(1)
-			While (@ERROR = 0) And ($pgroup <> $group)
-				$marker = InStr($gspair,",")
-				$group = Left($gspair,$marker-1)
-				$homesrvr = SubStr($gspair, $marker+1)
-	    			$gspair = ReadLine(1)
-			Loop
-	$res = Close (1)
-	Else
-		Beep
-		DBGMessage ("error","Groups file not opened, error code: [" + @ERROR + "]")
-	EndIf
 
-	$homeloc="\\"+$homesrvr+"\"+$username
-	ConnectShare("$homedrive, $homeloc")
+	ConnectShare("$homedrive, $lserver.$realm\dfs\homes\$username")
 
 EndFunction
 

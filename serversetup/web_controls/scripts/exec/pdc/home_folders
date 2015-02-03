@@ -426,24 +426,23 @@ then
 fi
 
 #Set dfs paths
-if [ -d /var/lib/samba/dfs/homes ]
-then
-	for USERNAME in `getent passwd | grep ":$HOMEPATH/" | cut -d: -f1`
-	do
-		if [ $GLUSTER = yes ]
-		then
-			for GLUSTERSERVER in `echo $GLUSTERSERVERS | sed 's/,/ /g'`
-			do
-				DFSPATH=$DFSPATH,msdfs:$GLUSTERSERVER\\$USERNAME
-			done
-			DFSPATH=`echo $DFSPATH | sed 's/^,//g'`
-		else
-			DFSPATH=msdfs:$NEWSERVER\\$USERNAME
-		fi
-		[ -e /var/lib/samba/dfs/homes/$NEWUSER ] && rm -f /var/lib/samba/dfs/homes/$USERNAME
-		ln -s "$DFSPATH" /var/lib/samba/dfs/homes/$USERNAME
-	done
+[ ! -d /var/lib/samba/dfs/homes ] && mkdir /var/lib/samba/dfs/homes
 
-fi
+for USERNAME in `getent passwd | grep ":$HOMEPATH/" | cut -d: -f1`
+do
+	if [ $GLUSTER = yes ]
+	then
+		for GLUSTERSERVER in `echo $GLUSTERSERVERS | sed 's/,/ /g'`
+		do
+			DFSPATH=$DFSPATH,$GLUSTERSERVER\\$USERNAME
+		done
+		DFSPATH=`echo $DFSPATH | sed 's/^,//g'`
+	else
+		DFSPATH=$NEWSERVER\\$USERNAME
+	fi
+	[ -L /var/lib/samba/dfs/homes/$USERNAME ] && rm -f /var/lib/samba/dfs/homes/$USERNAME
+	ln -s msdfs:"$DFSPATH" /var/lib/samba/dfs/homes/$USERNAME
+done
+
 exit
 

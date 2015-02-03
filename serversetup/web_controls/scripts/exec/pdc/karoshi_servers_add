@@ -535,12 +535,26 @@ then
 
 		if [ $GLUSTERSTATUS = 0 ]
 		then
-			for FOLDER in /var/lib/samba/netlogon /var/lib/samba/sysvol /var/lib/samba/dfs /home/applications
+			for FOLDER in /var/lib/samba/netlogon /var/lib/samba/sysvol /var/lib/samba/dfs
 			do
 				/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume `hostname-fqdn` "$FOLDER" dc-data "$ACTION"
 				/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume $SERVER.$REALM "$FOLDER" dc-data
 			done
 		fi
+	#Configure dfs
+	for SHAREPATH in netlogon sysvol
+	do
+		DFSPATH=""
+		for GLUSTERSERVERS in /opt/karoshi/server_network/gluster-volumes/dc-data/servers/*
+		do
+			GLUSTERSERVER=`basename "$GLUSTERSERVERS"`
+			DFSPATH=$DFSPATH,$GLUSTERSERVER\\$SHAREPATH
+		done
+		DFSPATH=`echo $DFSPATH | sed 's/^,//g'`
+		[ -L /var/lib/samba/dfs/$SHAREPATH ] && rm -f /var/lib/samba/dfs/$SHAREPATH
+		ln -s msdfs:"$DFSPATH" /var/lib/samba/dfs/$SHAREPATH
+	done
+
 	fi
 fi
 

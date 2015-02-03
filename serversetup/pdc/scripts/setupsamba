@@ -938,7 +938,7 @@ cp -R /opt/karoshi/serversetup/pdc/logonscripts/logo.bmp /var/lib/samba/netlogon
 cp -R /opt/karoshi/serversetup/pdc/logonscripts/logon.bat /var/lib/samba/netlogon/
 cp -R /opt/karoshi/serversetup/pdc/logonscripts/logonform.kix /var/lib/samba/netlogon/
 
-sed -i 's/CHANGETHISSERVER/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon/logonform.kix
+sed -i 's/CHANGETHISREALM/'$REALM'/g' /var/lib/samba/netlogon/logonform.kix
 sed -i 's/CHANGETHISSERVER/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon/logon.bat
 sed -i 's/CHANGETHISSERVER/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon/kix/getdll.bat
 sed -i 's/CHANGETHISSERVER/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon/kix/kixinstall.bat
@@ -951,11 +951,6 @@ chmod 0755 /var/lib/samba/netlogon/kix/getdll.bat
 chmod 0755 /var/lib/samba/netlogon/kix/kix32.exe
 chmod 0755 /var/lib/samba/netlogon/kix/wkix32.exe
 chmod 0755 /var/lib/samba/netlogon/kix
-#############################
-#Modify logon forms to match servername
-#############################
-sed -i "s/CHANGETHISDOMAINNAME/$SAMBADOMAIN/g" /var/lib/samba/netlogon/logonform.kix
-sed -i 's/CHANGETHISREALM/'$REALM'/g' /var/lib/samba/netlogon/logonform.kix
 
 #############################
 #make group file information for kixtart windows logon script
@@ -1500,16 +1495,15 @@ sleep 1
 check_ldap_port
 
 #Create dfs links
+ln -s msdfs:$HOSTNAME.$REALM\\applications /var/lib/samba/dfs/applications
 ln -s msdfs:$HOSTNAME.$REALM\\subjects /var/lib/samba/dfs/subjects
-ln -s msdfs:$HOSTNAME.$REALM\\subjects /var/lib/samba/dfs/subjects
-ln -s msdfs:$HOSTNAME.$REALM\\subjects /var/lib/samba/dfs/staffshare
-ln -s msdfs:$HOSTNAME.$REALM\\subjects /var/lib/samba/dfs/officeshare
-ln -s msdfs:$HOSTNAME.$REALM\\subjects /var/lib/samba/dfs/itadmin
+ln -s msdfs:$HOSTNAME.$REALM\\staffshare /var/lib/samba/dfs/staffshare
+ln -s msdfs:$HOSTNAME.$REALM\\officeshare /var/lib/samba/dfs/officeshare
+ln -s msdfs:$HOSTNAME.$REALM\\itadmin /var/lib/samba/dfs/itadmin
 
 #Create dfs links for existing users
-for NEWUSERS in `getent passwd | grep /home/users` 
+for NEWUSER in `getent passwd | grep /home/users | cut -d: -f1` 
 do
-	NEWUSER=`echo $NEWUSERS | cut -d: -f1`
 	ln -s msdfs:$HOSTNAME.$REALM\\$NEWUSER /var/lib/samba/dfs/homes/$NEWUSER
 done
 exit

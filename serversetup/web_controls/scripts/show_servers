@@ -216,7 +216,7 @@ then
 		GLUSTERVOLUME=`basename "$GLUSTERVOLUMES"`
 		if [ "$GLUSTERVOLUME" != dc-data ]
 		then
-			GLUSTERINFO="`echo $"Gluster Volume""<br>"` `ls /opt/karoshi/server_network/gluster-volumes/"$GLUSTERVOLUME"/servers/ | sed 's/ /\<br\>/g'`"
+			GLUSTERINFO="`echo $"Gluster Volume""<br>"` `ls -1 /opt/karoshi/server_network/gluster-volumes/"$GLUSTERVOLUME"/servers/ | sed 's/$/\<br\>/g'`"
 			for GLUSTERSERVERS in /opt/karoshi/server_network/gluster-volumes/$GLUSTERVOLUME/servers/*
 			do
 				GLUSTERSERVER=`basename "$GLUSTERSERVERS"`

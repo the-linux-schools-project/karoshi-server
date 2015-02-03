@@ -167,7 +167,7 @@ exit
 
 ACTION2=create
 ACTIONMSG=$"Create Gluster Volume"
-if [ "$ACTION" = create ] || [ "$ACTION" = addfolder ]
+if [ "$ACTION" = create ] || [ "$ACTION" = addfolder ] || [ "$ACTION" = assignshare ] 
 then
 ACTION2=view
 ACTIONMSG=$"View Gluster Volumes"
@@ -176,12 +176,13 @@ fi
 #Check data
 #########################
 TITLE="View Volumes"
-[ $ACTION = create ] && TITLE="Create Volume"
-[ $ACTION = reallycreate ] && TITLE="Creating Volume"
-[ $ACTION = addfolder ] && TITLE="Add Folder"
-[ $ACTION = reallyaddfolder ] && TITLE="Ading Folder"
+[ $ACTION = create ] && TITLE=$"Create Volume"
+[ $ACTION = reallycreate ] && TITLE=$"Creating Volume"
+[ $ACTION = addfolder ] && TITLE=$"Add Folder"
+[ $ACTION = reallyaddfolder ] && TITLE=$"Ading Folder"
+[ $ACTION = assignshare ] && TITLE=$"Assign Network Share"
 
-if [ "$ACTION" != create ] && [ "$ACTION" != reallycreate ] && [ "$ACTION" != restore ] && [ "$ACTION" != view ] && [ "$ACTION" != addfolder ] && [ "$ACTION" != reallyaddfolder ]
+if [ "$ACTION" != create ] && [ "$ACTION" != reallycreate ] && [ "$ACTION" != restore ] && [ "$ACTION" != view ] && [ "$ACTION" != addfolder ] && [ "$ACTION" != reallyaddfolder ] && [ "$ACTION" != assignshare ] && [ "$ACTION" != reallyassignshare ] && [ "$ACTION" != assignhomefolders ]
 then
 	MESSAGE=$"You have not entered a correct action."
 	show_status
@@ -210,7 +211,6 @@ then
 		MESSAGE=''$VOLUME' - '$"This volume has already been created."''
 		show_status
 	fi
-
 fi
 
 if [ "$ACTION" = reallyaddfolder ]
@@ -230,11 +230,11 @@ fi
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=mobileactionbox
+	DIV_ID=mobileactionbox
 fi
 
 
@@ -249,7 +249,7 @@ else
 <form action="/cgi-bin/admin/gluster_control.cgi" method="post"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="vertical-align: top;"><div class="sectiontitle">Gluster - '$TITLE'</div></td>
 <td><input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$ACTIONMSG'"></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img class="images" alt="" src="/images/help/info.png"><span>'$"Gluster Volumes"'</span></a></td></tr></tbody></table></form></div><div id="infobox">'
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Gluster_Volumes"><img class="images" alt="" src="/images/help/info.png"><span>'$"Gluster Volumes"'</span></a></td></tr></tbody></table></form></div><div id="infobox">'
 fi
 
 echo '<form action="/cgi-bin/admin/gluster_control.cgi" method="post">'
