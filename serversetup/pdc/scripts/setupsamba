@@ -312,7 +312,7 @@ echo -e '# Global parameters
 	path = /var/lib/samba/dfs
 	msdfs root = yes
 	guest ok = Yes
-
+	msdfs shuffle referrals = yes
 
 [sysvol]
 	comment = sysvol share

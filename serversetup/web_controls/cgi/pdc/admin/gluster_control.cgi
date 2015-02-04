@@ -182,7 +182,7 @@ TITLE="View Volumes"
 [ $ACTION = reallyaddfolder ] && TITLE=$"Ading Folder"
 [ $ACTION = assignshare ] && TITLE=$"Assign Network Share"
 
-if [ "$ACTION" != create ] && [ "$ACTION" != reallycreate ] && [ "$ACTION" != restore ] && [ "$ACTION" != view ] && [ "$ACTION" != addfolder ] && [ "$ACTION" != reallyaddfolder ] && [ "$ACTION" != assignshare ] && [ "$ACTION" != reallyassignshare ] && [ "$ACTION" != assignhomefolders ]
+if [ "$ACTION" != create ] && [ "$ACTION" != reallycreate ] && [ "$ACTION" != restore ] && [ "$ACTION" != view ] && [ "$ACTION" != addfolder ] && [ "$ACTION" != reallyaddfolder ] && [ "$ACTION" != assignshare ] && [ "$ACTION" != reallyassignshare ] && [ "$ACTION" != assignhomefolders ] && [ "$ACTION" != removefolder ] && [ "$ACTION" != reallyremovefolder ]
 then
 	MESSAGE=$"You have not entered a correct action."
 	show_status

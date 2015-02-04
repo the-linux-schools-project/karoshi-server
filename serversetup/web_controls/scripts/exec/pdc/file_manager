@@ -913,9 +913,9 @@ EXECENTERMSG=$"Enter"
 #Show ownership
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: '$WIDTH2px';"></td><td>'$"Read"'</td><td>'$"Write"'</td><td>'$EXECENTERMSG'</td><td>'$"Special"'</td></tr>
-<tr><td>'$"User"'</td><td><input name="_USERREAD_" '$USERREAD' value="1" type="checkbox"></td><td><input name="_USERWRITE_" '$USERWRITE' value="1" type="checkbox"></td><td><input name="_USEREXEC_" $USEREXEC value="1" type="checkbox"></td><td><input name="_SETUID_" '$SETUID' value="1" type="checkbox"></td><td>'$"Set User ID"'</td></tr>
-<tr><td>'$"Group"'</td><td><input name="_GROUPREAD_" '$GROUPREAD' value="1" type="checkbox"></td><td><input name="_GROUPWRITE_" '$GROUPWRITE' value="1" type="checkbox"></td><td><input name="_GROUPEXEC_" $GROUPEXEC value="1" type="checkbox"></td><td><input name="_SETGID_" $SETGID value="1" type="checkbox"></td><td>'$"Set Group ID"'</td></tr>
-<tr><td>'$"Other"'</td><td><input name="_OTHERREAD_" '$OTHERREAD' value="1" type="checkbox"></td><td><input name="_OTHERWRITE_" '$OTHERWRITE' value="1" type="checkbox"></td><td><input name="_OTHEREXEC_" $OTHEREXEC value="1" type="checkbox"></td><td><input name="_STICKY_" '$STICKY' value="1" type="checkbox"></td><td>'$"Sticky"'</td></tr></tbody></table><br>'
+<tr><td>'$"User"'</td><td><input name="_USERREAD_" '$USERREAD' value="1" type="checkbox"></td><td><input name="_USERWRITE_" '$USERWRITE' value="1" type="checkbox"></td><td><input name="_USEREXEC_" '$USEREXEC' value="1" type="checkbox"></td><td><input name="_SETUID_" '$SETUID' value="1" type="checkbox"></td><td>'$"Set User ID"'</td></tr>
+<tr><td>'$"Group"'</td><td><input name="_GROUPREAD_" '$GROUPREAD' value="1" type="checkbox"></td><td><input name="_GROUPWRITE_" '$GROUPWRITE' value="1" type="checkbox"></td><td><input name="_GROUPEXEC_" '$GROUPEXEC' value="1" type="checkbox"></td><td><input name="_SETGID_" $SETGID value="1" type="checkbox"></td><td>'$"Set Group ID"'</td></tr>
+<tr><td>'$"Other"'</td><td><input name="_OTHERREAD_" '$OTHERREAD' value="1" type="checkbox"></td><td><input name="_OTHERWRITE_" '$OTHERWRITE' value="1" type="checkbox"></td><td><input name="_OTHEREXEC_" '$OTHEREXEC' value="1" type="checkbox"></td><td><input name="_STICKY_" '$STICKY' value="1" type="checkbox"></td><td>'$"Sticky"'</td></tr></tbody></table><br>'
 
 #Show recursive options if the item is a directory
 if [ $DIRECTORY = yes ]

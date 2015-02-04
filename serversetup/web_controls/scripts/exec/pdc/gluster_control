@@ -163,8 +163,33 @@ then
 	if [ $COPYAFTER = yes ]
 	then
 		FOLDERBASE=`echo $FOLDER | sed "s/\/$FOLDERSHORT//g"` 
-		echo ''$SERVER' - '$"Copying data to"' '$GLUSTERSERVER' '$FOLDERBASE''
-		rsync --timeout=30 --keep-dirlinks --dirs --recursive --links --compress --times --perms --acls --owner --group "$FOLDER" root@$GLUSTERSERVER:/"$FOLDERBASE"/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo '<li>'$SERVER' - '$"Copying data to"' '$GLUSTERSERVER' '$FOLDERBASE'</li>'
+		if [ "$SERVER" = `hostname-fqdn` ]
+		then
+			rsync --timeout=30 --keep-dirlinks --dirs --recursive --links --compress --times --perms --acls --owner --group "$FOLDER" root@$GLUSTERSERVER:/"$FOLDERBASE"/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		fi
+
+		if [ "$GLUSTERSERVER" = `hostname-fqdn` ]
+		then
+			rsync --timeout=30 --keep-dirlinks --dirs --recursive --links --compress --times --perms --acls --owner --group root@$GLUSTERSERVER:/"$FOLDER" "$FOLDERBASE"/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		fi
+	
+		if [ "$SERVER" != `hostname-fqdn` ] && [ "$GLUSTERSERVER" != `hostname-fqdn` ]
+		then
+		
+			#Mount /home as sshfs on both servers
+			[ ! -d /opt/karoshi/mount/$GLUSTERSERVER/$FOLDERSHORT ] && mkdir -p /opt/karoshi/mount/$GLUSTERSERVER/$FOLDERSHORT
+			[ ! -d /opt/karoshi/mount/$SERVER/$FOLDERSHORT ] && mkdir -p /opt/karoshi/mount/$SERVER/$FOLDERSHORT
+			sshfs root@$GLUSTERSERVER/:/$FOLDERBASE /opt/karoshi/mount/$GLUSTERSERVER/$FOLDERSHORT 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			sshfs root@$SERVER:/$FOLDERBASE /opt/karoshi/mount/$SERVER/$FOLDERSHORT 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+			rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group /opt/karoshi/mount/$SERVER/$FOLDERSHORT/$FOLDERSHORT /opt/karoshi/mount/$GLUSTERSERVER/$FOLDERSHORT 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		
+			#Unmount sshfs shares
+			fusermount -u /opt/karoshi/mount/$GLUSTERSERVER/$FOLDERBASE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			fusermount -u /opt/karoshi/mount/$SERVER/$FOLDERBASE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	
+		fi
 	fi
 
 	[ -L /var/lib/samba/dfs/"$FOLDERSHORT" ] && rm -f /var/lib/samba/dfs/"$FOLDERSHORT"
@@ -353,7 +378,7 @@ then
 	if [ "$VOLUME" != dc-data ]
 	then
 		echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_addfolder_VOLUME_'$VOLUME'_" type="image" class="images" src="/images/submenus/system/gluster_add_folder.png" value=""><span>'$"Add folder"'</span></a> 
-<a class="info" href="javascript:void(0)"><input name="_ACTION_assignshare_VOLUME_'$VOLUME'_" type="image" class="images" src="/images/submenus/system/gluster_add_network_share.png" value=""><span>'$"Assign Network Share"'</span></a> <a class="info" href="javascript:void(0)"><input name="_ACTION_assignhomefolders_" type="image" class="images" src="/images/submenus/system/gluster_assign_home_folders.png" value=""><span>'$"Assign Home Folders"'</span></a>
+<a class="info" href="javascript:void(0)"><input name="_ACTION_assignshare_VOLUME_'$VOLUME'_" type="image" class="images" src="/images/submenus/system/gluster_add_network_share.png" value=""><span>'$"Assign Network Share"'</span></a> <a class="info" href="javascript:void(0)"><input name="_ACTION_assignhomefolders_" type="image" class="images" src="/images/submenus/system/gluster_assign_home_folders.png" value=""><span>'$"Assign Home Folders"'</span></a>  <a class="info" href="javascript:void(0)"><input name="_ACTION_removefolder_" type="image" class="images" src="/images/submenus/system/gluster_remove_folder.png" value=""><span>'$"Remove folder"'</span></a>
 
 
 '
