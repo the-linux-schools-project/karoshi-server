@@ -167,7 +167,7 @@ exit
 
 ACTION2=create
 ACTIONMSG=$"Create Gluster Volume"
-if [ "$ACTION" = create ] || [ "$ACTION" = addfolder ] || [ "$ACTION" = assignshare ] 
+if [ "$ACTION" = create ] || [ "$ACTION" = addfolder ] || [ "$ACTION" = assignshare ] || [ "$ACTION" = removefolder ] || [ "$ACTION" = confirmremovefolder ] || [ "$ACTION" = reallyremovefolder ]  
 then
 ACTION2=view
 ACTIONMSG=$"View Gluster Volumes"
@@ -181,8 +181,9 @@ TITLE="View Volumes"
 [ $ACTION = addfolder ] && TITLE=$"Add Folder"
 [ $ACTION = reallyaddfolder ] && TITLE=$"Ading Folder"
 [ $ACTION = assignshare ] && TITLE=$"Assign Network Share"
+[ $ACTION = removefolder ] && TITLE=$"Remove Folder"
 
-if [ "$ACTION" != create ] && [ "$ACTION" != reallycreate ] && [ "$ACTION" != restore ] && [ "$ACTION" != view ] && [ "$ACTION" != addfolder ] && [ "$ACTION" != reallyaddfolder ] && [ "$ACTION" != assignshare ] && [ "$ACTION" != reallyassignshare ] && [ "$ACTION" != assignhomefolders ] && [ "$ACTION" != removefolder ] && [ "$ACTION" != reallyremovefolder ]
+if [ "$ACTION" != create ] && [ "$ACTION" != reallycreate ] && [ "$ACTION" != restore ] && [ "$ACTION" != view ] && [ "$ACTION" != addfolder ] && [ "$ACTION" != reallyaddfolder ] && [ "$ACTION" != assignhomefolders ] && [ "$ACTION" != removefolder ] && [ "$ACTION" != reallyremovefolder ] && [ "$ACTION" != confirmremovefolder ]
 then
 	MESSAGE=$"You have not entered a correct action."
 	show_status
@@ -252,7 +253,7 @@ else
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Gluster_Volumes"><img class="images" alt="" src="/images/help/info.png"><span>'$"Gluster Volumes"'</span></a></td></tr></tbody></table></form></div><div id="infobox">'
 fi
 
-echo '<form action="/cgi-bin/admin/gluster_control.cgi" method="post">'
+echo '<form action="/cgi-bin/admin/gluster_control.cgi" method="post" id="form1" name="combobox">'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/gluster_control.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$VOLUME:$SERVER:$SERVERS:$FOLDER:" | sudo -H /opt/karoshi/web_controls/exec/gluster_control
 echo '</form>'

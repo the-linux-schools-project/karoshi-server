@@ -166,7 +166,7 @@ then
 	show_status
 fi
 
-echo '<p><img height="16" width="16" alt="Warning" src="/images/warnings/warning.png"> '$"IMPORTANT - Please ensure that users are not logged to ensure no data loss."'</p><br>
+echo '<p><img height="16" width="16" alt="Warning" src="/images/warnings/warning.png"> '$"IMPORTANT - Please ensure that users are not logged to ensure that data is not lost."'</p><br>
 <form action="/cgi-bin/admin/home_folders2.cgi" method="post">
 <input name="_CURRENTSERVER_" value="'$SERVER'" type="hidden">
 <input name="_PRIGROUP_" value="'$PRIGROUP'" type="hidden">
