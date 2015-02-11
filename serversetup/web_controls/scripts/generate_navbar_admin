@@ -389,11 +389,12 @@ if [ $EMAILCTRL = yes ]
 then
 echo '	<li class="top"><a href="/cgi-bin/admin/email_aliases.cgi" id="E-Mail" class="top_link"><span class="down">'$"E-Mail"'</span></a>
 		<ul class="sub">
-			<li><a href="/cgi-bin/admin/email_aliases.cgi">'$"E-Mail Aliases"'</a></li>
+			<li><a href="/cgi-bin/admin/email_aliases.cgi">'$"Aliases"'</a></li>
 			<li><a href="/cgi-bin/admin/email_relay.cgi">'$"Use E-Mail relay"'</a></li>
+			<li><a href="/cgi-bin/admin/email_whitelists.cgi">'$"Whitelists"'</a></li>
 			<li><a href="/cgi-bin/admin/email_view_banned_domains_fm.cgi">'$"Banned E-Mail domains"'</a></li>
-			<li><a href="/cgi-bin/admin/email_access_fm.cgi">'$"E-Mail Access Controls"'</a></li>
-			<li><a href="/cgi-bin/admin/email_limits.cgi">'$"E-Mail limits"'</a></li>
+			<li><a href="/cgi-bin/admin/email_access_fm.cgi">'$"Access Controls"'</a></li>
+			<li><a href="/cgi-bin/admin/email_limits.cgi">'$"Limits"'</a></li>
 			<li><a href="/cgi-bin/admin/email_search_logs_fm.cgi">'$"Search E-Mail Logs"'</a></li>
 			<li><a href="/cgi-bin/admin/email_over_quota_report.cgi">'$"Over Quota Report"'</a></li>
 			<li><a href="/cgi-bin/admin/email_quota_settings.cgi">'$"Quota Warning Settings"'</a></li>

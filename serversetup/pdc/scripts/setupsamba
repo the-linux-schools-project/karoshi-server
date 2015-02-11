@@ -1500,6 +1500,7 @@ ln -s msdfs:$HOSTNAME.$REALM\\subjects /var/lib/samba/dfs/subjects
 ln -s msdfs:$HOSTNAME.$REALM\\staffshare /var/lib/samba/dfs/staffshare
 ln -s msdfs:$HOSTNAME.$REALM\\officeshare /var/lib/samba/dfs/officeshare
 ln -s msdfs:$HOSTNAME.$REALM\\itadmin /var/lib/samba/dfs/itadmin
+ln -s msdfs:$HOSTNAME.$REALM\\netlogon /var/lib/samba/dfs/netlogon
 
 #Create dfs links for existing users
 for NEWUSER in `getent passwd | grep /home/users | cut -d: -f1` 
