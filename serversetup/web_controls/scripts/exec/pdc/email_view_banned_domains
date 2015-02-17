@@ -84,8 +84,12 @@ fi
 echo `date`: email_view_banned_domains_fm - by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 TABLECLASS=standard
-[ $MOBILE = yes ] && TABLECLASS=mobilestandard
-
+ICON1=/images/submenus/email/email_delete.png
+if [ $MOBILE = yes ]
+then
+	TABLECLASS=mobilestandard
+	ICON1=/images/submenus/email/email_deletem.png
+fi
 ############################
 #Language
 ############################
@@ -97,7 +101,7 @@ NOTIMEOUT=127.0.0.1
 TEXTDOMAIN=karoshi-server
 
 
-ICON1=/images/submenus/email/email_delete.png
+
 
 
 EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`

@@ -651,13 +651,13 @@ TOTAL21=`grep -h -R ASSETTYPE=\"21\" /opt/karoshi/asset_register/locations/$LOCA
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"View Assets"'<br>'$LOCATION'</span></a></td><td><b>'$"Totals" - $LOCATION'</b></td></tr></tbody></table><br>'
 
 echo '<table class="'$TABLECLASS'" style="text-align: left; width: 100%;"><tbody>'
-echo "<tr><td>$"Curriculum Computer"</td><td>$TOTAL1</td><td>$"Admin Computer"</td><td>$TOTAL2</td><td>$"Curriculum Laptop"</td><td>$TOTAL3</td><td>$"Admin Laptop"</td><td>$TOTAL4</td></tr>"
-echo "<tr><td>$"Curriculum Tablet"</td><td>$TOTAL5</td><td>$"Admin Tablet"</td><td>$TOTAL6</td><td>$"Curriculum PDA"</td><td>$TOTAL7</td><td>$"Admin PDA"</td><td>$TOTAL8</td></tr>"
-echo "<tr><td>$"Curriculum Thin Client"</td><td>$TOTAL9</td><td>$"Admin Thin Client"</td><td>$TOTAL10</td><td>$"Printer"</td><td>$TOTAL11</td><td>$"Scanner"</td><td>$TOTAL12</td></tr>"
-echo "<tr><td>$"Projector"</td><td>$TOTAL13</td><td>$"Whiteboard"</td><td>$TOTAL14</td><td>$"Network Switch"</td><td>$TOTAL15</td><td>$"Network Device"</td><td>$TOTAL16</td></tr>"
-echo "<tr><td>$"Wireless Access Point"</td><td>$TOTAL17</td><td>$"Audio Visual"</td><td>$TOTAL18</td><td>$"Monitor"</td><td>$TOTAL19</td><td>$"Software"</td><td>$TOTAL20</td></tr>"
-echo "<tr><td>$"Other"</td><td>$TOTAL21</td></tr>"
-echo "</tbody></table><br>"
+echo '<tr><td>'$"Curriculum Computer"'</td><td>'$TOTAL1'</td><td>'$"Admin Computer"'</td><td>'$TOTAL2'</td><td>'$"Curriculum Laptop"'</td><td>'$TOTAL3'</td><td>'$"Admin Laptop"'</td><td>'$TOTAL4'</td></tr>
+<tr><td>'$"Curriculum Tablet"'</td><td>'$TOTAL5'</td><td>'$"Admin Tablet"'</td><td>'$TOTAL6'</td><td>'$"Curriculum PDA"'</td><td>'$TOTAL7'</td><td>'$"Admin PDA"'</td><td>'$TOTAL8'</td></tr>
+<tr><td>'$"Curriculum Thin Client"'</td><td>'$TOTAL9'</td><td>'$"Admin Thin Client"'</td><td>'$TOTAL10'</td><td>'$"Printer"'</td><td>'$TOTAL11'</td><td>'$"Scanner"'</td><td>'$TOTAL12'</td></tr>
+<tr><td>'$"Projector"'</td><td>'$TOTAL13'</td><td>'$"Whiteboard"'</td><td>'$TOTAL14'</td><td>'$"Network Switch"'</td><td>'$TOTAL15'</td><td>'$"Network Device"'</td><td>'$TOTAL16'</td></tr>
+<tr><td>'$"Wireless Access Point"'</td><td>'$TOTAL17'</td><td>'$"Audio Visual"'</td><td>'$TOTAL18'</td><td>'$"Monitor"'</td><td>'$TOTAL19'</td><td>'$"Software"'</td><td>'$TOTAL20'</td></tr>
+<tr><td>'$"Other"'</td><td>'$TOTAL21'</td></tr>
+</tbody></table><br>'
 done
 
 #Total stats

@@ -24,23 +24,23 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/email_aliases_cgi
 then
-echo `date`: email_aliases - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_aliases - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/email_aliases_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_aliases.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $email_aliases_cgi'check' ]
 then
-echo `date`: email_aliases - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_aliases - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -55,10 +55,10 @@ fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: email_aliases - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_aliases - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -75,20 +75,20 @@ then
 echo `date`: email_aliases - Not called by email_aliases.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: email_aliases - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_aliases - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: email_aliases - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_aliases - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: email_aliases - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_aliases - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ ! -z $ACTION ]
 then
@@ -146,11 +146,6 @@ exit
 if [ $ACTION = view ]
 then
 
-if [ $MOBILE = yes ]
-then
-echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_add_" type="image" class="images" src="'$ICON2'" value=""><span>'$"Add an alias"'</span></a>'
-fi
-
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: 120px;"><b>'$"Alias"'</b></td><td style="width: 120px;"><b>'$"Username"'</b></td><td><b>'$"Delete"'</b></td></tr>'
 	if [ $EMAILSERVER = `hostname-fqdn` ]
 	then
@@ -202,10 +197,6 @@ fi
 
 if [ $ACTION = add ]
 then
-if [ $MOBILE = yes ]
-then
-echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_view_" type="image" class="images" src="'$ICON3'" value=""><span>'$"View Aliases"'</span></a>'
-fi
 echo '
 <input name="_ACTION_" value="reallyadd" type="hidden"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody><tr><td style="width: 180px;">'$"Username"'</td>
@@ -221,7 +212,7 @@ echo "<br>"
 else
 echo '</div> <div id="submitbox">'
 fi
-echo '<input value="'$"Submit"'" type="submit">'
+echo '<input class="button" value="'$"Submit"'" type="submit">'
 fi
 
 if [ $ACTION = reallyadd ]

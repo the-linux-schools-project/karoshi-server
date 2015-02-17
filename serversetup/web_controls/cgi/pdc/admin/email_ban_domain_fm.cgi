@@ -97,7 +97,11 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Ban E-Mail Domain"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
-</div></div><div id="mobileactionbox"><a class="info" target="_top" href="email_view_banned_domains_fm.cgi"><img class="images" alt="" src="/images/submenus/email/email_ban_domain.png"><span>'$"Banned E-mail Domains"'</span></a><br>
+</div></div><div id="mobileactionbox"><table class="mobilestandard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: middle; height: 20px;">
+<td style="vertical-align: top;">
+<a href="email_view_banned_domains_fm.cgi"><input class="button" type="button" name="" value="'$"Banned Domains"'"></a>
+</td></tr>
+</tbody></table><br>
 '
 else
 echo '<div id="'$DIV_ID'">

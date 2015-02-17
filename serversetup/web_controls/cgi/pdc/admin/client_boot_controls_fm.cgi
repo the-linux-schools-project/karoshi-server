@@ -112,7 +112,7 @@ fi
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox3
 TABLECLASS=standard
 ICON1=/images/assets/location.png
 ICON6=/images/assets/search.png
@@ -186,6 +186,6 @@ fi
 else
 echo $"The asset register is not in use."
 fi
-[ $MOBILE = no ] && echo '</div">'
+[ $MOBILE = no ] && echo '</div>'
 echo '</div></div></body></html>'
 exit

@@ -88,42 +88,42 @@ END_POINT=8
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-then
-let COUNTER=$COUNTER+1
-ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign ALIAS
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ALIAScheck ]
-then
-let COUNTER=$COUNTER+1
-ALIAS=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = ALIAScheck ]
+	then
+		let COUNTER=$COUNTER+1
+		ALIAS=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign USERNAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -139,22 +139,22 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"The action cannot be blank."
-show_status
+	export MESSAGE=$"The action cannot be blank."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
@@ -172,23 +172,38 @@ then
 	MESSAGE=$"You have not entered a username."
 	show_status
 	fi
-#Check that the username exists
-getent passwd $USERNAME 1>/dev/null
-if [ $? != 0 ]
-then
-MESSAGE=$"The username does not exist."
-	show_status
-fi
+	#Check that the username exists
+	getent passwd $USERNAME 1>/dev/null
+	if [ $? != 0 ]
+	then
+	MESSAGE=$"The username does not exist."
+		show_status
+	fi
 fi
 
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox
+	TABLECLASS=standard
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox
+	DIV_ID=actionbox
+	TABLECLASS=mobilestandard
+fi
+
+if [ "$ACTION" = add ]
+then
+	ACTION2=view
+	ICON=$ICON3
+	MESSAGE=$"View Aliases"
+	HELPMSG=$"Adding an alias will allow emails to be sent to the alias address rather than the actual username."
+else
+	ACTION2=add
+	ICON=$ICON2
+	MESSAGE=$"Add an alias"
+	HELPMSG=$"These are the email aliases that are currently active for your email system."
 fi
 
 #Show back button for mobiles
@@ -199,24 +214,17 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<span>'$"E-Mail Aliases"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox"><form action="/cgi-bin/admin/email_aliases.cgi" method="post">
+<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: middle;">
+<input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$MESSAGE'">
+</td></tr>
+</tbody></table><br>
 '
 else
 ICON2="/images/submenus/email/alias_add.png"
 ICON3="/images/submenus/email/alias_view.png"
-if [ $ACTION = add ]
-then
-ACTION2=view
-ICON=$ICON3
-MESSAGE=$"View Aliases"
-HELPMSG=$"Adding an alias will allow emails to be sent to the alias address rather than the actual username."
-else
-ACTION2=add
-ICON=$ICON2
-MESSAGE=$"Add an alias"
-HELPMSG=$"These are the email aliases that are currently active for your email system."
-fi
+
 echo '<div id="'$DIV_ID'"><form action="/cgi-bin/admin/email_aliases.cgi" method="post">
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: middle; height: 20px;"><div class="sectiontitle">'$"E-Mail Aliases"'</div></td>
+<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: middle; height: 20px;"><div class="sectiontitle">'$"E-Mail Aliases"'</div></td>
 <td style="vertical-align: middle;">
 <input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$MESSAGE'">
 </td><td style="vertical-align: middle;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG'</span></a>

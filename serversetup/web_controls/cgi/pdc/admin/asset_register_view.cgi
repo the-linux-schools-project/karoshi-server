@@ -85,14 +85,14 @@ END_POINT=14
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-then
-let COUNTER=$COUNTER+1
-ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 [ $ACTION'null' = null ] && ACTION=view
 #Assign LOCATION
@@ -113,42 +113,42 @@ done
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ASSETcheck ]
-then
-let COUNTER=$COUNTER+1
-ASSET=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = ASSETcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		ASSET=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign option
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = OPTIONcheck ]
-then
-let COUNTER=$COUNTER+1
-OPTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = OPTIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		OPTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign assetchoice
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ASSETCHOICEcheck ]
-then
-let COUNTER=$COUNTER+1
-ASSETCHOICE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = ASSETCHOICEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		ASSETCHOICE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 if [ $ACTION = reallyimport ]
@@ -158,14 +158,14 @@ END_POINT=20
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = IMPORTDATAcheck ]
-then
-let COUNTER=$COUNTER+1
-IMPORTDATA=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = IMPORTDATAcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		IMPORTDATA=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 fi
@@ -177,243 +177,243 @@ END_POINT=54
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ASSETTYPEcheck ]
-then
-let COUNTER=$COUNTER+1
-ASSETTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = ASSETTYPEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		ASSETTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign _LOCATION_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = LOCATIONcheck ]
-then
-let COUNTER=$COUNTER+1
-LOCATION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = LOCATIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		LOCATION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign _TCPIP1_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = TCPIP1check ]
-then
-let COUNTER=$COUNTER+1
-TCPIP1=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd 'NA0-9.\n'`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = TCPIP1check ]
+	then
+		let COUNTER=$COUNTER+1
+		TCPIP1=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd 'NA0-9.\n'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign _TCPIP2_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = TCPIP2check ]
-then
-let COUNTER=$COUNTER+1
-TCPIP2=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd 'NA0-9.\n'`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = TCPIP2check ]
+	then
+		let COUNTER=$COUNTER+1
+		TCPIP2=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd 'NA0-9.\n'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign _TCPIP3_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = TCPIP3check ]
-then
-let COUNTER=$COUNTER+1
-TCPIP3=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd 'NA0-9.\n'`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = TCPIP3check ]
+	then
+		let COUNTER=$COUNTER+1
+		TCPIP3=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd 'NA0-9.\n'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign _MACADDRESS1_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = MAC1check ]
-then
-let COUNTER=$COUNTER+1
-MAC1=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = MAC1check ]
+	then
+		let COUNTER=$COUNTER+1
+		MAC1=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign _MACADDRESS2_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = MAC2check ]
-then
-let COUNTER=$COUNTER+1
-MAC2=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = MAC2check ]
+	then
+		let COUNTER=$COUNTER+1
+		MAC2=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign _MACADDRESS3_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = MAC3check ]
-then
-let COUNTER=$COUNTER+1
-MAC3=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = MAC3check ]
+	then
+		let COUNTER=$COUNTER+1
+		MAC3=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign _SERIALKEY_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERIALKEYcheck ]
-then
-let COUNTER=$COUNTER+1
-SERIALKEY=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERIALKEYcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERIALKEY=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign _PURCHASEDATE_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = PURCHASEDATEcheck ]
-then
-let COUNTER=$COUNTER+1
-PURCHASEDATE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = PURCHASEDATEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		PURCHASEDATE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign _IDENTITY_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = IDENTITYcheck ]
-then
-let COUNTER=$COUNTER+1
-IDENTITY=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = IDENTITYcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		IDENTITY=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign _DESCRIPTION_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = DESCRIPTIONcheck ]
-then
-let COUNTER=$COUNTER+1
-DESCRIPTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = DESCRIPTIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		DESCRIPTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign _ASSIGNED_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ASSIGNEDcheck ]
-then
-let COUNTER=$COUNTER+1
-ASSIGNED=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = ASSIGNEDcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		ASSIGNED=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign _VALUE_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = VALUEcheck ]
-then
-let COUNTER=$COUNTER+1
-VALUE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = VALUEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		VALUE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign _SUPPLIER_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SUPPLIERcheck ]
-then
-let COUNTER=$COUNTER+1
-SUPPLIER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SUPPLIERcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SUPPLIER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign _BUDGET_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = BUDGETcheck ]
-then
-let COUNTER=$COUNTER+1
-BUDGET=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = BUDGETcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		BUDGET=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign _BOOTTYPE_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = BOOTTYPEcheck ]
-then
-let COUNTER=$COUNTER+1
-BOOTTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = BOOTTYPEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		BOOTTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign _EXTRAINFO_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = EXTRAINFOcheck ]
-then
-let COUNTER=$COUNTER+1
-EXTRAINFO=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = EXTRAINFOcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		EXTRAINFO=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 
@@ -455,8 +455,8 @@ fi
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 fi
 
 echo '<form action="/cgi-bin/admin/asset_register_view.cgi" method="post">'
@@ -467,14 +467,8 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Asset Register"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
-</div></div><div id="mobilecontent">
+</div></div><div id="mobileactionbox">
 '
-if [ $ACTION = add ] || [ $ACTION = edit ]
-then
-echo '<div id="mobileactionbox2">'
-else
-echo '<div id="mobileactionbox3">'
-fi
 
 else
 echo '<div id="actionbox3"><div id="titlebox">'
@@ -483,6 +477,5 @@ fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/asset_register_view.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$LOCATION:$ACTION:$ASSET:$OPTION:$ASSETCHOICE:$ASSETTYPE:$TCPIP1:$TCPIP2:$TCPIP3:$MAC1:$MAC2:$MAC3:$SERIALKEY:$PURCHASEDATE:$IDENTITY:$DESCRIPTION:$ASSIGNED:$VALUE:$SUPPLIER:$BUDGET:$IMPORTDATA:$EXTRAINFO" | sudo -H /opt/karoshi/web_controls/exec/asset_register_view
 
-echo '</div>'
-echo '</div></form></div></body></html>'
+echo '</div></div></form></div></body></html>'
 exit

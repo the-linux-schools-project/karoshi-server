@@ -189,7 +189,6 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox"><form action="/cgi-bin/admin/email_whitelists.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: middle;">
 <input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$MESSAGE'">
-</td><td style="vertical-align: middle;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_whitelists"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG'</span></a>
 </td></tr>
 </tbody></table><br>
 '

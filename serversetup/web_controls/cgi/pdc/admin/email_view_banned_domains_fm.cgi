@@ -93,7 +93,13 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Banned E-mail Domains"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
-</div></div><div id="mobileactionbox"><a class="info" target="_top" href="email_ban_domain_fm.cgi"><img class="images" alt="" src="/images/submenus/email/email_ban_domain.png"><span>'$"Ban E-Mail Domain"'</span></a><br>
+</div></div><div id="mobileactionbox">
+<table class="mobilestandard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<td style="vertical-align: top;">
+<a href="email_ban_domain_fm.cgi"><input class="button" type="button" name="" value="'$"Ban Domain"'"></a>
+</td><td style="vertical-align: middle;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Banned_E-Mail_Domains"><img class="images" alt="" src="/images/help/info.png"><span>'$"Any E-mail domains shown in the list below are banned from e-mailing to your server."'</span></a>
+</td></tr>
+</tbody></table><br>
 '
 else
 echo '<div id="'$DIV_ID'">
