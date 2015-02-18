@@ -54,6 +54,7 @@
 [ -L /etc/init.d/glusterfs-server ] && rm -f /etc/init.d/glusterfs-server
 [ -L /etc/init.d/monitorix ] && rm -f /etc/init.d/monitorix
 [ -L /etc/init.d/freeradius ] && rm -f /etc/init.d/freeradius
+[ -L /etc/init.d/dnsmasq ] && rm -f /etc/init.d/dnsmasq
 
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/apache2 /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/clamav-freshclam /etc/init.d/
@@ -85,6 +86,7 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/isc-dhcp-serve
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/glusterfs /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/monitorix /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/freeradius /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/dnsmasq /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/openchange-ocsmanager /etc/init.d/
 
 #Make sure no scripts have been added to /etc/init for upstart.
@@ -106,6 +108,7 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/openchange-ocs
 [ `ls /etc/init/monitorix* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/monitorix*
 [ `ls /etc/init/freeradius* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/freeradius*
 [ `ls /etc/init/samba* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/samba*
+[ `ls /etc/init/dnsmasq* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/dnsmasq*
 
 #May need to add more to this list.
 

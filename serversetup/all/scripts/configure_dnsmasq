@@ -1,0 +1,96 @@
+#!/bin/bash
+#Copyright (C) 2015  Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+
+
+#This will configure dnsmasq for all additional servers in the internal and dmz zones that are not additional domain controllers.
+#dnsmasq will be configured to point at all domain controllers for failover.
+
+LOG_DATE=`date +%F`
+source /opt/karoshi/server_network/domain_information/domain_name
+for ZONE in internal dmz
+do
+	if [ -d /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers ]
+	then
+		if [ $ZONE = internal ]
+		then
+			DNSSERVERLIST="`hostname-fqdn` `[ -d /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ ] && ls -1 /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/`"
+		else
+			if [ -d /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ ]
+			then
+				DNSSERVERLIST="`ls -1 /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/`"
+			else
+				DNSSERVERLIST=`hostname-fqdn`
+			fi
+		fi
+
+		#Create an ip list of servers
+		for DNSSERVER in $DNSSERVERLIST
+		do
+			DNSIP=`net lookup "$DNSSERVER"`
+			DNSIPLIST="$DNSIPLIST $DNSIP"
+
+		done
+		DNSIPLIST=`echo $DNSIPLIST | sed 's/^ //g'`
+
+
+		for SERVERNAME in `ls -1 /opt/karoshi/server_network/zones/"$ZONE"/servers/`
+		do
+			if [ $SERVERNAME != `hostname-fqdn` ] && [ ! -f /opt/karoshi/server_network/zones/"$ZONE"/additional_domain_controllers/$SERVERNAME ]
+			then
+				echo `date`: configure_dnsmasq - configuring $SERVERNAME to use $DNSIPLIST  >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+				ssh -x -o PasswordAuthentication=no $SERVERNAME '
+				#Make sure that dnsmasq is installed
+				which dnsmasq 1> /dev/null
+				if [ $? != 0 ]
+				then
+					echo "<li>'$SERVERNAME' installing dnsmasq</li><br>"
+					echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+					apt-get update
+					apt-get install -y dnsmasq
+					echo "</pre>"
+
+				fi
+				#Configure /etc/dnsmasq.conf
+				[ `grep -c "resolv-file=/etc/resolv.karoshi.conf" /etc/dnsmasq.conf` = 0 ] && echo resolv-file=/etc/resolv.karoshi.conf >> /etc/dnsmasq.conf
+				#Create /etc/resolv.karoshi.conf
+				echo domain '$REALM' > /etc/resolv.karoshi.conf
+				for DNSENTRY in '$DNSIPLIST'
+				do
+					echo nameserver $DNSENTRY >> /etc/resolv.karoshi.conf					
+				done
+					echo nameserver 8.8.8.8 >> /etc/resolv.karoshi.conf
+					echo nameserver 4.4.4.4 >> /etc/resolv.karoshi.conf
+				echo domain '$REALM' > /etc/resolv.conf
+				echo nameserver 127.0.0.1 >> /etc/resolv.conf
+				echo "<li>'$SERVERNAME' - '$"restarting"' dnsmasq</li>"
+				service dnsmasq restart
+				'
+			fi
+		done
+	fi
+done
+exit
+

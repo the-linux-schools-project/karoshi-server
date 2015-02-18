@@ -616,4 +616,7 @@ then
 	/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVER.$REALM
 fi
 
+#Configure dns for all servers
+/opt/karoshi/serversetup/all/scripts/configure_dnsmasq
+
 exit
