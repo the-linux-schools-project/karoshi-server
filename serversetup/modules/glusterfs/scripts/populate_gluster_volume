@@ -87,19 +87,19 @@ then
 	if [ "$ACTION" = copydata ]
 	then
 	echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-	rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --executability --acls --owner --group -o "$FOLDER" /"$MOUNTBASE"/"$GLUSTERVOL"
+	rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --executability --acls --owner --group -o "$FOLDER" "$MOUNTBASE"/"$GLUSTERVOL"
 	echo '</pre>'
 	fi
-	[ ! -d /"$MOUNTBASE"/"$GLUSTERVOL"/"$FOLDER_SHORT" ] && mkdir -p /"$MOUNTBASE"/"$GLUSTERVOL"/"$FOLDER_SHORT"
+	[ ! -d "$MOUNTBASE"/"$GLUSTERVOL"/"$FOLDER_SHORT" ] && mkdir -p /"$MOUNTBASE"/"$GLUSTERVOL"/"$FOLDER_SHORT"
 else
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 	if [ "'$ACTION'" = copydata ]
 	then
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-		rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --executability --acls --owner --group -o "'$FOLDER'" /"'$MOUNTBASE'"/"'$GLUSTERVOL'"
+		rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --executability --acls --owner --group -o "'$FOLDER'" "'$MOUNTBASE'"/"'$GLUSTERVOL'"
 	echo "</pre>"
 	fi
-	[ ! -d /"'$MOUNTBASE'"/"'$GLUSTERVOL'"/"'$FOLDER_SHORT'" ] && mkdir -p /"'$MOUNTBASE'"/"'$GLUSTERVOL'"/"'$FOLDER_SHORT'"
+	[ ! -d "'$MOUNTBASE'"/"'$GLUSTERVOL'"/"'$FOLDER_SHORT'" ] && mkdir -p "'$MOUNTBASE'"/"'$GLUSTERVOL'"/"'$FOLDER_SHORT'"
 	'
 fi
 
@@ -110,7 +110,7 @@ then
 		#Move existing folder
 		[ -d "$FOLDER" ] && mv "$FOLDER" "$FOLDER".pregluster.$$
 		#Symlink folder
-		ln -s /"$MOUNTBASE"/"$GLUSTERVOL"/"$FOLDER_SHORT" "$FOLDER"
+		ln -s "$MOUNTBASE"/"$GLUSTERVOL"/"$FOLDER_SHORT" "$FOLDER"
 	fi
 else
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
@@ -119,7 +119,7 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
 		#Move existing folder
 		[ -d "'$FOLDER'" ] && mv "'$FOLDER'" "'$FOLDER'".pregluster.'$$'
 		#Symlink folder
-		ln -s /"'$MOUNTBASE'"/"'$GLUSTERVOL'"/"'$FOLDER_SHORT'" "'$FOLDER'"
+		ln -s "'$MOUNTBASE'"/"'$GLUSTERVOL'"/"'$FOLDER_SHORT'" "'$FOLDER'"
 	fi
 '
 fi

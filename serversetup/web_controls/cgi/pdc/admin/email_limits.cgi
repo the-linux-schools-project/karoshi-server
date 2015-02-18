@@ -133,7 +133,7 @@ echo '<form action="/cgi-bin/admin/email_limits2.cgi" method="post"><table class
 #Get current email settings
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_limits.cgi | cut -d' ' -f1`
 sudo -H /opt/karoshi/web_controls/exec/email_limits_view $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:
-echo '</tbody></table>'
+echo '</tbody></table><br>'
 [ $MOBILE != yes ] && echo '</div><div id="submitbox">'
 echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </form></div></div></body></html>'

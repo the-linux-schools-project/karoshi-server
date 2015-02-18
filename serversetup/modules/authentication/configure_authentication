@@ -595,4 +595,6 @@ echo `date`: configure_authentication - completed "for" $SERVERNAME by $REMOTE_U
 [ ! -d /opt/karoshi/server_network/zones/$ZONE/servers ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/servers
 touch /opt/karoshi/server_network/zones/$ZONE/servers/$SERVERNAME
 
+#Reconfigure krb5.conf for all servers that are not domain controllers
+/opt/karoshi/serversetup/modules/authentication/configure_krb5.conf
 exit
