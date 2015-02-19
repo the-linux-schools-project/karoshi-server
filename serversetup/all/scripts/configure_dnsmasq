@@ -62,6 +62,7 @@ do
 			then
 				echo `date`: configure_dnsmasq - configuring $SERVERNAME to use $DNSIPLIST  >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 				ssh -x -o PasswordAuthentication=no $SERVERNAME '
+				source /opt/karoshi/serversetup/variables/distro
 				#Make sure that dnsmasq is installed
 				which dnsmasq 1> /dev/null
 				if [ $? != 0 ]
@@ -71,23 +72,32 @@ do
 					apt-get update
 					apt-get install -y dnsmasq
 					echo "</pre>"
-
+					cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/dnsmasq /etc/init.d
 				fi
-				#Configure /etc/dnsmasq.conf
-				[ `grep -c "resolv-file=/etc/resolv.karoshi.conf" /etc/dnsmasq.conf` = 0 ] && echo resolv-file=/etc/resolv.karoshi.conf >> /etc/dnsmasq.conf
-				#Create /etc/resolv.karoshi.conf
-				echo domain '$REALM' > /etc/resolv.karoshi.conf
-				for DNSENTRY in '$DNSIPLIST'
-				do
-					echo nameserver $DNSENTRY >> /etc/resolv.karoshi.conf					
-				done
-					echo nameserver 8.8.8.8 >> /etc/resolv.karoshi.conf
-					echo nameserver 4.4.4.4 >> /etc/resolv.karoshi.conf
-				echo domain '$REALM' > /etc/resolv.conf
-				echo nameserver 127.0.0.1 >> /etc/resolv.conf
-				echo "<li>'$SERVERNAME' - '$"restarting"' dnsmasq</li>"
-				service dnsmasq restart
+				which dnsmasq 1> /dev/null
+				if [ $? = 0 ]
+				then
+					#Configure /etc/dnsmasq.conf
+					[ `grep -c "resolv-file=/etc/resolv.karoshi.conf" /etc/dnsmasq.conf` = 0 ] && echo resolv-file=/etc/resolv.karoshi.conf >> /etc/dnsmasq.conf
+					#Create /etc/resolv.karoshi.conf
+					echo domain '$REALM' > /etc/resolv.karoshi.conf
+					for DNSENTRY in '$DNSIPLIST'
+					do
+						echo nameserver $DNSENTRY >> /etc/resolv.karoshi.conf					
+					done
+						echo nameserver 8.8.8.8 >> /etc/resolv.karoshi.conf
+						echo nameserver 4.4.4.4 >> /etc/resolv.karoshi.conf
+					echo domain '$REALM' > /etc/resolv.conf
+					echo nameserver 127.0.0.1 >> /etc/resolv.conf
+					echo "<li>'$SERVERNAME' - '$"restarting"' dnsmasq</li>"
+					service dnsmasq restart
+					#Make sure that dnsmasq is set to start on boot
+					/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/dnsmasq
+				fi
 				'
+				#Add in a flag for dnsmasq service
+				[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
+				echo Dnsmasq - DNS Service"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/dnsmasq
 			fi
 		done
 	fi

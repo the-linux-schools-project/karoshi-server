@@ -154,6 +154,7 @@ DSERVICES=cron,monitorix
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/userwebhosting ] && DSERVICES=$DSERVICES,apache,mysql,vsftpd
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/user_web_folders ] && DSERVICES=$DSERVICES,apache
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/glusterfs_server ] && DSERVICES=$DSERVICES,glusterfs
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/dnsmasq ] && DSERVICES=$DSERVICES,dnsmasq
 fi
 
 if [ $SERVERTYPE = federated ]
@@ -178,6 +179,7 @@ DSERVICES=cron,monitorix
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/openvpn ] && DSERVICES=$DSERVICES,openvpn
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/userwebhosting ] && DSERVICES=$DSERVICES,apache,mysql,vsftpd
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/glusterfs_server ] && DSERVICES=$DSERVICES,glusterfs
+[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/dnsmasq ] && DSERVICES=$DSERVICES,dnsmasq
 fi
 
 if [ $SERVERTYPE = federatedslave ]
@@ -202,6 +204,7 @@ DSERVICES=cron,monitorix
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/openvpn ] && DSERVICES=$DSERVICES,openvpn
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/userwebhosting ] && DSERVICES=$DSERVICES,apache,mysql,vsftpd
 [ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/glusterfs_server ] && DSERVICES=$DSERVICES,glusterfs
+[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/dnsmasq ] && DSERVICES=$DSERVICES,dnsmasq
 fi
 
 DSERVICES=`echo -e "$DSERVICES" | sed "s/,/\n/g"`
@@ -227,7 +230,7 @@ DSERVICES=$DSERVICES2
 DSERVICES=`echo -e "$DSERVICES" | sed "s/,/\n/g" | sort`
 
 #List of all services to check
-ALLSERVICES="apache clamd cups cron e2guardian dhcp dns dovecot glusterfs mailscanner memcached mon monitorix mysql nfs nginx nslcd openvpn postfix radius rpcbind samba sogo squid squiddebproxy vsftpd"
+ALLSERVICES="apache clamd cups cron e2guardian dhcp dns dovecot glusterfs mailscanner memcached mon monitorix mysql nfs nginx nslcd openvpn postfix radius rpcbind samba sogo squid squiddebproxy vsftpd dnsmasq"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 function check_status {
@@ -276,6 +279,7 @@ dovecot=$"Dovecot imap server"
 proftpd=$"FTP server"
 vsftpd=$"FTP server"
 glusterfs=$"Distributed FS Server"
+dnsmasq=$"Dnsmasq service"
 
 
 ############################
@@ -334,6 +338,7 @@ dovecot="'$"Dovecot imap server"'"
 proftpd="'$"FTP server"'"
 vsftpd="'$"FTP server"'"
 glusterfs="'$"Distributed FS Server"'"
+dnsmasq="'$"Dnsmasq service"'"
 
 source /opt/karoshi/serversetup/variables/distro
 function check_status {
