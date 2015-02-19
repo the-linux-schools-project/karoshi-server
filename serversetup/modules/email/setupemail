@@ -474,7 +474,7 @@ echo '<li>'$"Starting Postfix"'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_start  1>/dev/null
 if [ $APACHESTATUS = 0 ]
 then
-echo '<li>'$"Starting Fail2ban"'</li><br>'
+echo '<li>'$"Starting Apache"'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 fi
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mailscanner_stop 1>/dev/null 2>/dev/null

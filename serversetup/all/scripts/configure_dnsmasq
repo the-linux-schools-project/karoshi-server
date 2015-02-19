@@ -32,6 +32,7 @@ LOG_DATE=`date +%F`
 source /opt/karoshi/server_network/domain_information/domain_name
 for ZONE in internal dmz
 do
+	DNSIPLIST=""
 	if [ -d /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers ]
 	then
 		if [ $ZONE = internal ]
