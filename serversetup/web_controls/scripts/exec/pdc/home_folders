@@ -189,9 +189,12 @@ if [ -f /opt/karoshi/server_network/group_information/$PRIGROUP ]
 		for USERFOLDER in `getent passwd | grep ":$HOMEPATH/" | cut -d: -f1`
 		do
 			echo "<li>"$USERFOLDER: Setting Permissions"</li><br>"
-			[ ! -d $HOMEPATH/$USERFOLDER ] && mkdir -p $HOMEPATH/$USERFOLDER
-			#chmod 0600 -R $HOMEPATH/$USERFOLDER
-			#chmod u+X -R $HOMEPATH/$USERFOLDER
+			if [ ! -d $HOMEPATH/$USERFOLDER ]
+			then
+				mkdir -p $HOMEPATH/$USERFOLDER
+				chmod 0600 -R $HOMEPATH/$USERFOLDER
+				chmod u+X -R $HOMEPATH/$USERFOLDER
+			fi
 			chown -R $USERFOLDER $HOMEPATH/$USERFOLDER
 		done
 		else
@@ -199,9 +202,12 @@ if [ -f /opt/karoshi/server_network/group_information/$PRIGROUP ]
 		for USERFOLDER in `getent passwd | grep ":'$HOMEPATH'/" | cut -d: -f1`
 		do
 			echo "<li>"$USERFOLDER: Setting Permissions"</li><br>"
-			[ ! -d '$HOMEPATH'/$USERFOLDER ] && mkdir -p '$HOMEPATH'/$USERFOLDER
-			#chmod 0600 -R '$HOMEPATH'/$USERFOLDER
-			#chmod u+X -R '$HOMEPATH'/$USERFOLDER
+			if [ ! -d '$HOMEPATH'/$USERFOLDER ]
+				then
+				mkdir -p '$HOMEPATH'/$USERFOLDER
+				chmod 0600 -R '$HOMEPATH'/$USERFOLDER
+				chmod u+X -R '$HOMEPATH'/$USERFOLDER
+			fi
 			chown -R $USERFOLDER '$HOMEPATH'/$USERFOLDER
 		done
 		'
