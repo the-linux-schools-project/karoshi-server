@@ -380,7 +380,7 @@ then
 
 	if [ ! -z "$SERVERS" ]
 	then
-		echo '<tr><td style="vertical-align: top; height: 60px;"><b>'$"Servers"'</b></td><td style="vertical-align: top;">'
+		echo '<tr><td style="vertical-align: top; height: 40px;"><b>'$"Servers"'</b></td><td style="vertical-align: top;">'
 		for CHOSENSERVER in `echo $SERVERS | sed 's/,/ /g'`
 		do
 			echo $CHOSENSERVER"<br>"
