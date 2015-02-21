@@ -400,15 +400,20 @@ then
 	then 
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
 		[ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
-		[ ! -d /home/users/email/'$NEWUSERNAME' ] && mkdir /home/users/email/'$NEWUSERNAME'
-		chown -R '$USERID':root /home/users/email/'$NEWUSERNAME'
-		chmod -R 0600 /home/users/email/'$NEWUSERNAME'
-		chmod -R u+X /home/users/email/'$NEWUSERNAME'
-
-		[ ! -d '$HOMEPATH''/''$NEWUSERNAME' ] && mkdir -p '$HOMEPATH''/''$NEWUSERNAME'
-		chown -R '$USERID':root '$HOMEPATH''/''$NEWUSERNAME'
-		chmod -R 0600 '$HOMEPATH''/''$NEWUSERNAME'
-		setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
+		if [ ! -d /home/users/email/'$NEWUSERNAME' ]
+		then
+			mkdir /home/users/email/'$NEWUSERNAME'
+			chown -R '$USERID':root /home/users/email/'$NEWUSERNAME'
+			chmod -R 0600 /home/users/email/'$NEWUSERNAME'
+			chmod -R u+X /home/users/email/'$NEWUSERNAME'
+		fi
+		if [ ! -d '$HOMEPATH''/''$NEWUSERNAME' ]
+		then
+			mkdir -p '$HOMEPATH''/''$NEWUSERNAME'
+			chown -R '$USERID':root '$HOMEPATH''/''$NEWUSERNAME'
+			chmod -R 0600 '$HOMEPATH''/''$NEWUSERNAME'
+			setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
+		fi
 		#Add in openchange data
 		#openchange_newuser --create '$NEWUSERNAME'
 
