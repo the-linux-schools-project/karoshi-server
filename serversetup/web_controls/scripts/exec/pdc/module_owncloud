@@ -113,7 +113,11 @@ then
 	fi
 fi
 
-echo '<div class="sectiontitle">'$"Setup"' Owncloud - '$SERVERNAME'</div><br></div><div id="infobox">'
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Setup Owncloud"' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Owncloud"><img class="images" alt="" src="/images/help/info.png"><span>'$"Owncloud allows you to access and synchronise your data from multiple devices."'</span></a>
+</td></tr></tbody></table><br>
+
+</div><div id="infobox">'
 
 source /opt/karoshi/server_network/domain_information/domain_name
 source /opt/karoshi/serversetup/variables/distro
@@ -134,7 +138,7 @@ then
 if [ -d /var/www/html/owncloud ]
 then
 echo `date`: module_owncloud - owncloud is already installed on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $INSTERROR
+echo $SERVERNAME - $"Owncloud is already installed on this server."
 sleep 5
 exit
 fi
@@ -148,7 +152,7 @@ fi'
 if [ `echo $?` = 101 ]
 then
 echo `date`: module_owncloud - owncloud is already installed on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $INSTERROR
+echo $SERVERNAME - $"Owncloud is already installed on this server."
 sleep 5
 exit
 fi

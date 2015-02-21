@@ -219,7 +219,7 @@ sed -i 's/CHANGETHISREALM/'$ALIAS'.'$REALM'/g' /var/www/html/owncloud/config/con
 cp /opt/karoshi/serversetup/modules/owncloud/owncloud.sql /opt/karoshi/serversetup/modules/owncloud/owncloud_original.sql
 
 #Edit owncloud.sql with the correct realm information
-sed -i 's@CHANGETHISREALM@'$LDAPBASE'@g' /opt/karoshi/serversetup/modules/owncloud/owncloud.sql
+sed -i 's@CHANGETHISLDAPBASE@'$LDAPBASE'@g' /opt/karoshi/serversetup/modules/owncloud/owncloud.sql
 
 #Edit owncloud.sql with the correct ldap server information ( replace ldap://127.0.0.1 )
 sed -i 's/ldap:\/\/127.0.0.1/ldap:\/\/'$LDAPSERVER'/g' /opt/karoshi/serversetup/modules/owncloud/owncloud.sql
