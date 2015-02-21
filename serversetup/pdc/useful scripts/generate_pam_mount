@@ -122,6 +122,7 @@ echo '{
 
 #Staff info
 source /opt/karoshi/server_network/group_information/staff
+SERVER=`echo $SERVER | cut -d, -f1`
 echo '
 	"staff":{
 		"\/$user\/files\/home":{
@@ -143,6 +144,7 @@ echo '	},' >> /home/owncloud/data/mount.json
 
 #Itadmin info
 source /opt/karoshi/server_network/group_information/itadmin
+SERVER=`echo $SERVER | cut -d, -f1`
 echo '	"itadmin":{
 		"\/$user\/files\/home":{
 			"class":"\\OC\\Files\\Storage\\SMB_OC","options":{
@@ -162,6 +164,7 @@ echo '	},' >> /home/owncloud/data/mount.json
 
 #Officestaff
 source /opt/karoshi/server_network/group_information/officestaff
+SERVER=`echo $SERVER | cut -d, -f1`
 echo '	"officestaff":{
 		"\/$user\/files\/home":{
 			"class":"\\OC\\Files\\Storage\\SMB_OC","options":{
@@ -186,6 +189,7 @@ PRI_GROUP=`basename $PRI_GROUPS`
 if [ $PRI_GROUP != itadmin ] && [ $PRI_GROUP != staff ] && [ $PRI_GROUP != officestaff ]
 then
 source /opt/karoshi/server_network/group_information/$PRI_GROUP
+SERVER=`echo $SERVER | cut -d, -f1`
 echo '	'$COMMA'"'$PRI_GROUP'":{
 		"\/$user\/files\/home":{
 			"class":"\\OC\\Files\\Storage\\SMB_OC","options":{
