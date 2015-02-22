@@ -13,9 +13,9 @@ require_once('require/function_files.php');
 $form_name="insert_computers";
 $data_on['FILE']=$l->g(288);
 $data_on['MANUEL']=$l->g(1258);
-echo "<form name='".$form_name."' id='".$form_name."' method='POST' action=''>";
-$protectedPost['onglet']='FILE';
-//onglet($data_on,$form_name,"onglet",4);
+echo open_form($form_name);
+//$protectedPost['onglet']='FILE';
+onglet($data_on,$form_name,"onglet",4);
 echo "<div class='mlt_bordure' >";
 
 if ($protectedPost['onglet'] == 'FILE'){
@@ -82,13 +82,13 @@ if ($protectedPost['onglet'] == 'FILE'){
 				msg_error($l->g(1244));
 	}
 	printEntete("<i>".$l->g(560).": ".$server);
-	echo "</form>";
+	echo close_form();
 	echo "<br>";
-	echo "<form name='".$form_name1."' id='".$form_name1."' method='POST' action='' enctype='multipart/form-data' onsubmit=\"return verif_file_format('file_upload');\">";
+	echo open_form($form_name1,'',"enctype='multipart/form-data' onsubmit=\"return verif_file_format('file_upload');\"");
 	echo "<div class='".$css."' >";
 	echo $l->g(1048).": <input id='file_upload' name='file_upload' type='file' accept=''>";
 	echo "<br><br><input name='GO' id='GO' type='submit' value='".$l->g(13)."'>";
-	echo "</form>";
+	echo close_form();
 	echo "<br>";
 	echo "</div>";
 }else{
@@ -140,9 +140,11 @@ if ($protectedPost['onglet'] == 'FILE'){
 			$i=0;
 			while ($i < $protectedPost['NB_COMPUTERS']){
 				$id_computer=insert_manual_computer($protectedPost,$protectedPost['NB_COMPUTERS']);
-				if (is_array($fields))
-			 		insertinfo_computer($id_computer,$fields,$values_fields);
-				
+				if (!is_array($fields)){
+					$fields[]='TAG';
+					$values_fields[]='';
+				}
+				insertinfo_computer($id_computer,$fields,$values_fields);
 				$i++;			
 			}
 			msg_success($l->g(881));
@@ -165,10 +167,13 @@ if ($protectedPost['onglet'] == 'FILE'){
 		$i++;
 		$info_form['FIELDS']['name_field'][$i]=$key;
 		$info_form['FIELDS']['type_field'][$i]=0;
-		$info_form['FIELDS']['value_field'][$i]=$protectedPost[$key];
+		if ($key == 'ADDR_MAC_GENERIC')
+			$info_form['FIELDS']['value_field'][$i]=(isset($protectedPost[$key])? $protectedPost[$key]:RandomMAC()) ;
+		else
+			$info_form['FIELDS']['value_field'][$i]=(isset($protectedPost[$key])? $protectedPost[$key]:rand()) ;
 		$info_form['FIELDS']['tab_name'][$i]=$value."*";
 		$config[$i]['CONFIG']['SIZE']=30;
-		$other_data['COMMENT_BEHING'][$i]='';		
+		$other_data['COMMENT_BEHING'][$i]='_M';		
 	}
 		
 	$accountinfo_form=show_accountinfo('','COMPUTERS','5'); 
@@ -193,7 +198,7 @@ if ($protectedPost['onglet'] == 'FILE'){
 			tab_modif_values($info_form['FIELDS']['tab_name'],$tab_typ_champ,$tab_hidden);
 	}	
 	echo "</div>";
-	echo "</form>";
+	echo close_form();
 }
 
 ?>

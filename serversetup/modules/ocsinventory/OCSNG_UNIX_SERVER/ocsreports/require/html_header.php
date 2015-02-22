@@ -17,20 +17,19 @@ html_header();
 if( !isset($protectedGet["popup"] )) {
 	//si unlock de l'interface
 	if (isset($protectedPost['LOCK']) and $protectedPost['LOCK'] == 'RESET'){
-		 $_SESSION['OCS']["mesmachines"]=$_SESSION['OCS']["TRUE_mesmachines"];
+		if (isset($_SESSION['OCS']["TRUE_mesmachines"]) and $_SESSION['OCS']["TRUE_mesmachines"] != array())
+		 	$_SESSION['OCS']["mesmachines"]=$_SESSION['OCS']["TRUE_mesmachines"];
+		else
+			unset($_SESSION['OCS']["mesmachines"]);
 		unset($_SESSION['OCS']["TRUE_mesmachines"]);
 	}
 
 
-echo "<table  border='0' class='headfoot' ";
+echo "<table class='headfoot' ";
 if ($ban_head=='no') echo "style='display:none;'";
-echo "><tr><td align=left><a onclick='clic(\"index.php?first\",\"FIRST\");'>";
-
-if (!isset($_SESSION['OCS']['SUPPORT']) or $_SESSION['OCS']['SUPPORT'] == 1 or !isset($_SESSION['OCS']["loggeduser"])){
-	echo "<img src='image/logo OCS-ng-96.png'></a>";
-}else
-	echo "<img src='image/logo OCS-ng-96_registry.png'></a>";
-echo "</td><td width= 70%>";
+echo "><tr><td align=left>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a onclick='clic(\"index.php?first\",\"FIRST\");'>";
+echo "<img src='image/logo OCS-ng-96.png'></a>";
+echo "</td><td>";
  	
 if (isset($_SESSION['OCS']["loggeduser"]) && $_SESSION['OCS']['CONFIGURATION']['ALERTE_MSG']=='YES'){
 /**************************************************   ALERT MESSAGES ********************************************************/
@@ -101,7 +100,7 @@ if (isset($_SESSION['OCS']["TRUE_mesmachines"])){
 			msg_info($l->g(890));
 }
 
-echo "</td><td width= 10% align=center>
+echo "</td><td align=right><table><tr><td align=center>
 	Ver. <b>" . GUI_VER_SHOW . "</b><br>";
 	//pass in debug mode if plugin debug exist
 	if (isset($pages_refs['ms_debug'])){
@@ -119,41 +118,34 @@ echo "</td><td width= 10% align=center>
 }
 
 if(isset($_SESSION['OCS']["loggeduser"])&&!isset($protectedGet["popup"] )) {
-	if (!isset($_SERVER['PHP_AUTH_USER']) and !isset($_SERVER['HTTP_AUTH_USER'])){
-		echo "<a onclick='return pag(\"ON\",\"LOGOUT\",\"log_out\")'>";
-		echo "<img src='image/deconnexion.png' title='".$l->g(251)."' alt='".$l->g(251)."'>";
-		echo "</a>";
-	}
+	
+		if (!isset($_SERVER['PHP_AUTH_USER']) and !isset($_SERVER['HTTP_AUTH_USER'])){
+			echo "<a onclick='return pag(\"ON\",\"LOGOUT\",\"log_out\")'>";
+			echo "<img src='image/deconnexion.png' title='".$l->g(251)."' alt='".$l->g(251)."'>";
+			echo "</a>";
+		}
+		
 		if (isset($_SESSION['OCS']["TRUE_mesmachines"])){
 			echo "<a onclick='return pag(\"RESET\",\"LOCK\",\"log_out\")'>";
 			echo "<img src='image/cadena_op.png' title='".$l->g(891)."' alt='".$l->g(891)."' >";
 			echo "</a>";
 		}
+		
 		$javascript="OnClick='window.open(\"index.php?".PAG_INDEX."=".$pages_refs['ms_config_account']."&head=1\",\"debug\",\"location=0,status=0,scrollbars=0,menubar=0,resizable=0,width=650,height=650\")'";
 		echo "<a ".$javascript."><img src=".PLUGINS_DIR."/main_sections/img/ms_pass.png></a>";
-		echo "<form name='log_out' id='log_out' action='index.php' method='post'>";
+		echo open_form('log_out','index.php');
 		echo "<input type='hidden' name='LOGOUT' id='LOGOUT' value=''>";
 		echo "<input type='hidden' name='LOCK' id='LOCK' value=''>";
-		echo "</form>";			
+		echo close_form();	
 }
 
-echo "</td></tr>";
+echo "</td></tr></table></td></tr>";
 if (!isset($_SESSION['OCS']["loggeduser"])){
 	echo "<tr><td colspan=20 align=right>";
  require_once('plugins/language/language.php');
  	echo "</td></tr>";
 }
-if ($_SESSION['OCS']['RESTRICTION']['SUPPORT']=='NO' and $_SESSION['OCS']['SUPPORT'] == 1){
-	echo "<tr><td colspan=3 align=left>";
-	$support=support();
-	if ($support)
-		echo "<a href='index.php?".PAG_INDEX."=".$pages_refs['ms_help']."&TAB=4' ><img src='image/supported.png'></a>";
-	else
-		echo "<a href='index.php?".PAG_INDEX."=".$pages_refs['ms_help']."&TAB=5' ><img src='image/not_supported.png'></a>";
-	echo "</td></tr>";
-}
 echo "</table>";		
-//echo "<form name='reload_fuser' id='reload_fuser' action='' method='post'></form>";
 echo "<div class='fond'>";
 
 if ($_SESSION['OCS']["mesmachines"] == "NOTAG" 

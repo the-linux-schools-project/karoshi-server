@@ -18,13 +18,10 @@ dpkg -S php-soap 1>/dev/null
 
 if [ $INSTALL_DEPS = yes ]
 then
-echo Updating repository list
-echo
-apt-get update
-echo Installing libapache2-mod-perl2 libapache-dbi-perl libxml-simple-perl libsoap-lite-perl php5-gd php-soap
-echo 
-apt-get install -y libapache2-mod-perl2 libapache-dbi-perl libxml-simple-perl libsoap-lite-perl php5-gd php-soap
-echo
+	echo "<li>"Updating repository list"</li>"
+	apt-get update
+	echo "<li>"Installing libapache2-mod-perl2 libapache-dbi-perl libxml-simple-perl libsoap-lite-perl php5-gd php-soap"</li>"
+	apt-get install -y libapache2-mod-perl2 libapache-dbi-perl libxml-simple-perl libsoap-lite-perl php5-gd php-soap
 fi
 
 

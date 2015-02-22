@@ -121,12 +121,14 @@ else{ //affichage des p�riph�riques
 	if (isset($protectedGet['value'])){
 		if ($protectedGet['prov'] == "no_inv"){
 			$title=$l->g(947);
-			$sql="SELECT ip, mac, mask, date, name FROM netmap n 
+			$sql="SELECT ip, mac, mask, date, name
+				FROM netmap n 
 				LEFT JOIN networks ns ON ns.macaddr=n.mac
 				WHERE n.netid='%s' 
 				AND (ns.macaddr IS NULL OR ns.IPSUBNET <> n.netid) 
-				AND mac NOT IN (SELECT DISTINCT(macaddr) FROM network_devices)";
-			$tab_options['ARG_SQL']=array($protectedGet['value']);
+				AND mac NOT IN (SELECT DISTINCT(macaddr) FROM network_devices)
+				AND ns.HARDWARE_ID IS NULL";
+			$tab_options['ARG_SQL']=array($protectedGet['value'], $protectedGet['value']);
 			$list_fields= array($l->g(34) => 'ip','MAC'=>'mac',
 								$l->g(208)=>'mask',
 								$l->g(232)=>'date',
@@ -159,8 +161,8 @@ else{ //affichage des p�riph�riques
 				$default_fields= array($l->g(34)=>$l->g(34),$l->g(66)=>$l->g(66),$l->g(53)=>$l->g(53),
 									'MAC'=>'MAC',$l->g(232)=>$l->g(232),$l->g(369)=>$l->g(369),'SUP'=>'SUP','MODIF'=>'MODIF');
 
-		}elseif($protectedGet['prov'] == "inv"){
-			$title=$l->g(1271);
+		}elseif($protectedGet['prov'] == "inv" or $protectedGet['prov'] == "ipdiscover"){
+			
 			//BEGIN SHOW ACCOUNTINFO
 			require_once('require/function_admininfo.php');
 			$accountinfo_value=interprete_accountinfo($list_fields,$tab_options);
@@ -184,8 +186,16 @@ else{ //affichage des p�riph�riques
 			$list_fields=array_merge ($list_fields,$list_fields2);
 			$sql=prepare_sql_tab($list_fields);
 			$tab_options['ARG_SQL']=$sql['ARG'];
-			$sql=$sql['SQL']." from accountinfo a,hardware h LEFT JOIN networks n ON n.hardware_id=h.id
-				 where ipsubnet='%s' and status='Up' and a.hardware_id=h.id ";
+			if($protectedGet['prov'] == "inv"){
+				$title=$l->g(1271);
+				$sql=$sql['SQL']." from accountinfo a,hardware h LEFT JOIN networks n ON n.hardware_id=h.id";
+				$sql.=" where ipsubnet='%s' and status='Up' and a.hardware_id=h.id ";
+			}else{
+				$title=$l->g(492);
+				$sql=$sql['SQL']." from accountinfo a,hardware h left join devices d on d.hardware_id=h.id";
+				$sql.=" where a.hardware_id=h.id and (d.ivalue=1 or d.ivalue=2) and d.name='IPDISCOVER' and d.tvalue='%s'";
+			}
+				
 			array_push($tab_options['ARG_SQL'],$protectedGet['value']);
 			$default_fields['NAME']='NAME';
 			$default_fields[$l->g(34)]=$l->g(34);
@@ -206,7 +216,7 @@ else{ //affichage des p�riph�riques
 		$list_col_cant_del=array($l->g(66)=>$l->g(66),'SUP'=>'SUP','MODIF'=>'MODIF');
 		$table_name="IPDISCOVER_".$protectedGet['prov'];
 		$form_name=$table_name;
-		echo "<form name='".$form_name."' id='".$form_name."' action='' method='post'>";		
+		echo open_form($form_name);		
 		$result_exist=tab_req($table_name,$list_fields,$default_fields,$list_col_cant_del,$sql,$form_name,80,$tab_options); 
 			$fipdisc = "ipdiscover-util.pl" ;
 		$values=look_config_default_values(array('IPDISCOVER_IPD_DIR'));
@@ -227,7 +237,7 @@ else{ //affichage des p�riph�riques
 				msg_info($msg_info);
 			
 		}
-		echo "</form>";
+		echo close_form();
 	}
 }
 ?>

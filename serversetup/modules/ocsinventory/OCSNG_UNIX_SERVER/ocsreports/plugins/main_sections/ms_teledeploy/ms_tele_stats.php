@@ -12,35 +12,31 @@
 
 require('require/function_stats.php');
 
+if($_SESSION['OCS']['CONFIGURATION']['TELEDIFF']=="YES" 
+	and isset($protectedPost["ACTION"]) and $protectedPost["ACTION"] != ''){
 
-if($_SESSION['OCS']['CONFIGURATION']['TELEDIFF']=="YES"){
-
-	if( isset($protectedPost["ACTION"]) and $protectedPost["ACTION"] == "VAL_SUCC") {	
-		$sql="DELETE FROM devices WHERE name='DOWNLOAD' AND tvalue LIKE '%s' AND
-				ivalue IN (SELECT id FROM download_enable WHERE fileid='%s') 
-				AND hardware_id NOT IN (SELECT id FROM hardware WHERE deviceid='_SYSTEMGROUP_')";
-		$arg=array('SUCCESS%',$protectedGet["stat"]);
-		$resSupp = mysql2_query_secure($sql,$_SESSION['OCS']["writeServer"],$arg);
+	if( $protectedPost["ACTION"] == "VAL_SUCC") {	
+		$result_line_delete=find_device_line('SUCCESS%',$protectedGet["stat"]);
 	}
-	if( isset($protectedPost["ACTION"]) and $protectedPost["ACTION"] == "DEL_ALL") {	
-		$sql="DELETE FROM devices WHERE name='DOWNLOAD' AND tvalue IS NOT NULL AND
-				ivalue IN (SELECT id FROM download_enable WHERE fileid='%s') 
-				AND hardware_id NOT IN (SELECT id FROM hardware WHERE deviceid='_SYSTEMGROUP_')";
-		$arg=$protectedGet["stat"];
-		$resSupp = mysql2_query_secure($sql,$_SESSION['OCS']["writeServer"],$arg);
+	if( $protectedPost["ACTION"] == "DEL_ALL") {	
+		$result_line_delete=find_device_line('NOTNULL',$protectedGet["stat"]);
 	}
-	if( isset($protectedPost["ACTION"]) and $protectedPost["ACTION"] == "DEL_NOT") {	
-		$sql="DELETE FROM devices WHERE name='DOWNLOAD' AND tvalue IS NULL AND
-				ivalue IN (SELECT id FROM download_enable WHERE fileid='%s') 
-				AND hardware_id NOT IN (SELECT id FROM hardware WHERE deviceid='_SYSTEMGROUP_')";
-		$arg=$protectedGet["stat"];
-		$resSupp = mysql2_query_secure($sql,$_SESSION['OCS']["writeServer"],$arg);
+	if($protectedPost["ACTION"] == "DEL_NOT") {	
+		$result_line_delete=find_device_line('NULL',$protectedGet["stat"]);
 	}
+	
+	if (isset($result_line_delete) and is_array($result_line_delete)){
+		require('require/function_telediff.php');
+		desactive_packet($result_line_delete['HARDWARE_ID'],$result_line_delete['IVALUE'][0]);
+	}
+	
+	
+	
 }
 
 $form_name="show_stats";
 $table_name=$form_name;	
-echo "<form name='".$form_name."' id='".$form_name."' method='POST' action=''>";
+echo open_form($form_name);
 
 $sql="SELECT name FROM download_available WHERE fileid='%s'";
 $arg=$protectedGet["stat"];
@@ -199,6 +195,6 @@ while( $j<$i ) {
 }
 echo "<tr bgcolor='#C7D9F5'><td bgcolor='white'>&nbsp;</td><td><b>".$l->g(87)."</b></td><td><b>".$nb."</b></td></tr>";
 echo "</table><br><br>";
- echo "</form>";
+echo close_form();
   
 ?>

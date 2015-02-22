@@ -25,8 +25,10 @@ if(substr($_SERVER['DOCUMENT_ROOT'],-1) != '/'){
 }else{
 	define("DOCUMENT_ROOT",$_SERVER['DOCUMENT_ROOT']);
 }
-//echo DOCUMENT_ROOT."<br>".DOCUMENT_REAL_ROOT;
-//print_r($_SERVER);
+/********************************************FIND SERVER URL****************************************/
+$addr_server=explode('/',$_SERVER['HTTP_REFERER']);
+array_pop($addr_server);
+define("OCSREPORT_URL",implode('/',$addr_server));
 
 if ($_SESSION['OCS']['LOG_GUI'] == 1){	
 		define("LOG_FILE",$_SESSION['OCS']['LOG_DIR']."log.csv");
@@ -37,13 +39,11 @@ require_once('require/fichierConf.class.php');
 require_once('require/function_commun.php');
 require_once('require/aide_developpement.php');
 require_once('require/function_table_html.php');
-require_once('require/function_ssl.php');
 
 if (isset($_SESSION['OCS']['CONF_RESET'])){
 	unset($_SESSION['OCS']['LOG_GUI']);
 	unset($_SESSION['OCS']['CONF_DIRECTORY']);
 	unset($_SESSION['OCS']['URL']);
-	unset($_SESSION['OCS']['SUPPORT']);
 	unset($_SESSION['OCS']["usecache"]);
 	unset($_SESSION['OCS']["use_redistribution"]);
 	unset($_SESSION['OCS']['CONF_RESET']);
@@ -70,7 +70,6 @@ if (isset($_POST['LOGOUT']) and $_POST['LOGOUT'] == 'ON'){
 	unset($_SESSION['OCS']);
 	unset($_GET);
 }
-
 /***************************************************** First installation checking *********************************************************/
 if( (!$fconf=@fopen(CONF_MYSQL,"r")) 
 		|| (!function_exists('session_start')) 
@@ -197,6 +196,7 @@ if (!isset($_SESSION['OCS']['SQL_TABLE'])){
 		$sql="SHOW COLUMNS FROM %s";
 		$arg=$item[0];
 		$res_column=mysql2_query_secure($sql,$_SESSION['OCS']["readServer"],$arg);
+	//	echo "<i>".generate_secure_sql($sql,$arg)."</i><br>";
 		while ($item_column = mysql_fetch_row($res_column)){
 			
 			if ($item_column[0] == "HARDWARE_ID" 
@@ -347,9 +347,8 @@ if (!isset($_SESSION['OCS']["ipdiscover"])){
 if (!isset($_SESSION['OCS']["usecache"]) or !isset($_SESSION['OCS']["tabcache"])){
 	$conf_gui=array('usecache'=>'INVENTORY_CACHE_ENABLED',
 					'tabcache'=>'TAB_CACHE',
-					'SUPPORT'=>'SUPPORT',
 					'USE_NEW_SOFT_TABLES'=>'USE_NEW_SOFT_TABLES');
-	$default_value_conf=array('INVENTORY_CACHE_ENABLED'=>1,'TAB_CACHE'=>0,'SUPPORT'=>1,'USE_NEW_SOFT_TABLES' =>0);
+	$default_value_conf=array('INVENTORY_CACHE_ENABLED'=>1,'TAB_CACHE'=>0,'USE_NEW_SOFT_TABLES' =>0);
 	$values=look_config_default_values($conf_gui);
 	foreach ($conf_gui as $k=>$v){
 		if (isset($values['ivalue'][$v]))
@@ -420,7 +419,28 @@ if((!isset($_SESSION['OCS']["loggeduser"])
 	die();
 }
 
-if (isset($name[$protectedGet[PAG_INDEX]])){	
+if (isset($name[$protectedGet[PAG_INDEX]])){
+
+	//CSRF security
+	if($_SERVER['REQUEST_METHOD'] == 'POST')
+	{
+		$csrf=true;
+		if (isset($_SESSION['OCS']['CSRF'])){
+			foreach ($_SESSION['OCS']['CSRF'] as $k=>$v){
+				if ($v == $protectedPost['CSRF_'.$k])
+					$csrf=false;				
+			}			
+		}
+	    //Here we parse the form
+	    if($csrf){
+	       msg_error("<big>CSRF ATTACK!!!</big>");
+	       require_once(FOOTER_HTML);
+	       die();
+	    }
+	 
+	    //Do the rest of the processing here
+	}	
+	
 	if (isset($_SESSION['OCS']['DIRECTORY'][$name[$protectedGet[PAG_INDEX]]]))
 	$rep=$_SESSION['OCS']['DIRECTORY'][$name[$protectedGet[PAG_INDEX]]];
 	require (MAIN_SECTIONS_DIR.$rep."/".$name[$protectedGet[PAG_INDEX]].".php");

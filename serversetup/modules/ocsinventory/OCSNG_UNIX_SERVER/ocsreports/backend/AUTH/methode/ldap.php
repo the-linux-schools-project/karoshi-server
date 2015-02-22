@@ -58,20 +58,20 @@ function search_on_loginnt($login) {
     // search for the custom user level attributes if they're defined
     if ($f1_name != '')
     {
-        array_push($attributs, $f1_name);
+        array_push($attributs, strtolower($f1_name));
     }
 
     if ($f2_name != '')
     {
-        array_push($attributs, $f2_name);
+        array_push($attributs, strtolower($f2_name));
     }
 
     $ds = ldap_connection (); 
     $filtre = "(".LOGIN_FIELD."={$login})"; 
-    $sr = @ldap_search($ds,DN_BASE_LDAP,$filtre,$attributs); 
-    $lce = @ldap_count_entries($ds,$sr); 
-    $info = @ldap_get_entries($ds,$sr); 
-    @ldap_close($ds); 
+    $sr = ldap_search($ds,DN_BASE_LDAP,$filtre,$attributs); 
+    $lce = ldap_count_entries($ds,$sr); 
+    $info = ldap_get_entries($ds,$sr); 
+    ldap_close($ds); 
     $info["nbResultats"] = $lce;
 
     // save user fields in session
@@ -82,18 +82,6 @@ function search_on_loginnt($login) {
     $_SESSION['OCS']['details']['title']=$info[0]['title'][0];
 
     // if the extra attributes are there, save them as well
-    /*ORIGINAL CODE BEGINS
-    if ($info[0][$f1_name][0] != '') 
-    {
-    $_SESSION['OCS']['details'][$f1_name]=$info[0][$f1_name][0];
-    }
-
-    if ($info[0][$f2_name][0] != '') 
-    {
-        $_SESSION['OCS']['details'][$f2_name]=$info[0][$f2_name][0];
-    }
-    ORIGINAL CODE ENDS*/
-    //NEW CODE
     if ($info[0][$f1_name][0] != '')
     {
     //attribute name 'memberof' is for group searching
@@ -101,34 +89,33 @@ function search_on_loginnt($login) {
     if ($f1_name == "memberof")
     {    //this is to store the entire array instead of just the first string
         //may be redundant and could be simplified, but it works.
-        $_SESSION['OCS']['details'][$f1_name]=$info[0][$f1_name];
+        $_SESSION['OCS']['details'][$f1_name]=$info[0][strtolower($f1_name)];
     } else {
-        $_SESSION['OCS']['details'][$f1_name]=$info[0][$f1_name][0];
+        $_SESSION['OCS']['details'][$f1_name]=$info[0][strtolower($f1_name)][0];
     }
     }
 
-    if ($info[0][$f2_name][0] != '')
+    if ($info[0][strtolower($f2_name)][0] != '')
     {
     if ($f2_name == "memberof")
     {
-        $_SESSION['OCS']['details'][$f2_name]=$info[0][$f2_name];
+        $_SESSION['OCS']['details'][$f2_name]=$info[0][strtolower($f2_name)];
     } else {
-        $_SESSION['OCS']['details'][$f2_name]=$info[0][$f2_name][0];
+        $_SESSION['OCS']['details'][$f2_name]=$info[0][strtolower($f2_name)][0];
     }
     }
-    //END NEW CODE
     return $info; 
 } 
  
  
 function ldap_test_pw($dn, $pw) { 
     $ds = ldap_connection (); 
-    if (!$ds) { // avec ldap 2.x.x, ldap_connect est tjrs ok. La connection n'est ouverte qu'au bind 
-        $r = false; 
+    if (!$ds or !$pw) { // avec ldap 2.x.x, ldap_connect est tjrs ok. La connection n'est ouverte qu'au bind 
+        return false; 
     } else { 
-        @ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, LDAP_PROTOCOL_VERSION); 
-        $r = @ldap_bind($ds, $dn, $pw); 
-        @ldap_close($ds); 
+        ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, LDAP_PROTOCOL_VERSION); 
+        $r = ldap_bind($ds, $dn, $pw); 
+        ldap_close($ds); 
         return $r; 
     } 
 } 
@@ -137,12 +124,12 @@ function ldap_connection (){
     $ds = ldap_connect(LDAP_SERVEUR,LDAP_PORT); 
     // Set the LDAP version
     // add by acop http://forums.ocsinventory-ng.org/viewtopic.php?pid=35261
-    @ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, LDAP_PROTOCOL_VERSION);
-    @ldap_set_option($ds, LDAP_OPT_REFERRALS, 0);
-    if (ROOT_DN != ''){
-        $b = @ldap_bind($ds, ROOT_DN, ROOT_PW);         
+    ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, LDAP_PROTOCOL_VERSION);
+    ldap_set_option($ds, LDAP_OPT_REFERRALS, 0);
+    if (ROOT_DN != '' && defined('ROOT_DN')){
+        $b = ldap_bind($ds, ROOT_DN, ROOT_PW);         
     }else //Anonymous bind
-        $b = @ldap_bind($ds);
+        $b = ldap_bind($ds);
     if (!$b)
         return false;
     else

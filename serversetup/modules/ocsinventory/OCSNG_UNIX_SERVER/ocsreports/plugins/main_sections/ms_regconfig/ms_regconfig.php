@@ -15,7 +15,7 @@ $tab['VIEW']=$l->g(1059);
 $tab['ADD']=$l->g(1060);
 $form_name="registry";
 $table_name="registry";
-echo "<form name='".$form_name."' id='".$form_name."' method='POST' action=''>";
+echo open_form($form_name);
 
 if (isset($protectedPost['MODIF']) and $protectedPost['MODIF'] != ''){	
 		$protectedPost['tab'] = 'ADD';
@@ -34,16 +34,20 @@ if (isset($protectedPost['MODIF']) and $protectedPost['MODIF'] != ''){
 onglet($tab,$form_name,"tab",4);
 echo '<div class="mlt_bordure" >';
 if ($protectedPost['tab'] == 'VIEW'){
-	
-	//delete register key
-	if (isset($protectedPost['SUP_PROF']) and $protectedPost['SUP_PROF'] != ''
-		or isset($protectedPost['del_check']) and $protectedPost['del_check'] != ''){			
-			$del=$protectedPost['SUP_PROF'];
-			if ($del == '')
-				$del=$protectedPost['del_check'];
-			delkey($del);
-			$tab_options['CACHE']='RESET';
-	}	
+
+	// delete register key
+	if (isset($protectedPost['SUP_PROF']) and $protectedPost['SUP_PROF'] != '') {
+		// delete one row
+		delkey($protectedPost['SUP_PROF']);
+		$tab_options['CACHE'] = 'RESET';
+	} else if (isset($protectedPost['del_check']) and $protectedPost['del_check'] != '') {
+		// delete multiple selected rows
+		$ids = explode(',', $protectedPost['del_check']);
+		foreach ($ids as $id) {
+			delkey($id);
+		}
+		$tab_options['CACHE'] = 'RESET';
+	}
 	
 	$list_fields = array ( 'ID'   => "id", 
 						   $l->g(49) => "name", 
@@ -116,6 +120,6 @@ if ($protectedPost['tab'] == 'VIEW'){
 		
 }
 echo "</div>";
-echo "</form>";
+echo close_form();
 
 ?>

@@ -122,7 +122,7 @@ if (isset($protectedGet['prov']) and (!isset($protectedPost['GET']) or $protecte
 //initialisation du tableau
 //$list_fields_calcul=array();
 //ouverture du formulaire
-echo "<form name='".$form_name."' id='".$form_name."' method='post'>";
+echo open_form($form_name);
 if (isset($protectedPost['GET'])){
 	echo "<input type=hidden name='GET' value='".$protectedPost['GET']."'>";
 }
@@ -179,6 +179,7 @@ if ($protectedPost['SUP_PROF'] != ''){
 	//pour rejouer la requete et ne pas utiliser le cache
 	$protectedPost['Valid']="SUP";
 }
+
 //for save field and value
 if ($protectedPost['Valid-search'] and $protectedPost['Valid'] != ''){
 	foreach ($protectedPost as $key=>$value){
@@ -191,7 +192,8 @@ if ($protectedPost['Valid-search'] and $protectedPost['Valid'] != ''){
 }else{
 	foreach ($_SESSION['OCS'] as $key=>$value){
 		$valeur=explode("-", $key); 
-		if ($valeur[0] == "InputValue" or $valeur[0] == "SelFieldValue" or $valeur[0] == "SelFieldValue3"	or $valeur[0] == "SelAndOr" or $valeur[0] == "SelComp" )
+		// SelAndOr doesn't trigger form submit, so it wasn't saved in session
+		if ($valeur[0] == "InputValue" or $valeur[0] == "SelFieldValue" or $valeur[0] == "SelFieldValue3"	/*or $valeur[0] == "SelAndOr"*/ or $valeur[0] == "SelComp" )
 			$protectedPost[$key]=$value;
 	}
 	
@@ -797,7 +799,10 @@ if ($list_id != "")	{
 						$l->g(652).": ".$l->g(350)=>'h.PROCESSORT',
 						$l->g(652).": ".$l->g(50)=>'h.SWAP',
 						$l->g(652).": ".$l->g(111)=>'h.WINPRODKEY',
-						$l->g(652).": ".$l->g(553)=>'h.WINPRODID');
+						$l->g(652).": ".$l->g(553)=>'h.WINPRODID',
+						$l->g(652).": ".$l->g(286) => "h.OSCOMMENTS",
+						$l->g(25).": ".$l->g(277) => "h.OSVERSION",
+						$l->g(652).": ".$l->g(1247)=>'h.ARCH',);
 	$list_fields=array_merge ($list_fields_account_info,$list_fields);
 	
 	//BEGIN SHOW ACCOUNTINFO
@@ -952,13 +957,14 @@ $sort_list=array("NETWORKS-IPADDRESS" =>$l->g(82).": ".$l->g(34),
 			   	 "BIOS-BVERSION"=>$l->g(273).": ".$l->g(209),
 			     "HARDWARE-USERID"=>$l->g(243).": ".$l->g(49),
 			     "HARDWARE-OSCOMMENTS"=>$l->g(25).": ".$l->g(51),
+				 "HARDWARE-OSVERSION"=>$l->g(25).": ".$l->g(277),
 			     "NETWORKS-IPGATEWAY"=>$l->g(82).": ".$l->g(207),
 			     "NETWORKS-IPSUBNET"=>$l->g(82).": ".$l->g(331),
 			     "NETWORKS-IPDHCP"=>$l->g(82).": ".$l->g(281),
 			     "BIOS-SSN"=>$l->g(273).": ".$l->g(36),
 			     "BIOS-SMODEL"=>$l->g(273).": ".$l->g(65),
 			     "HARDWARE-NAME"=>$l->g(729).": ".$l->g(49),
-			     "HARDWARE-PROCESSORT"=>$l->g(54).": ".$l->g(66),
+			     "HARDWARE-PROCESSORT"=>$l->g(54)." (old): ".$l->g(66),
 			     "BIOS-SMANUFACTURER"=>$l->g(729).": ".$l->g(64),
 			     "MONITORS-SERIAL"=>$l->g(554),
 			     "MONITORS-DESCRIPTION"=>$l->g(556),
@@ -977,6 +983,21 @@ $sort_list=array("NETWORKS-IPADDRESS" =>$l->g(82).": ".$l->g(34),
 				 "PRINTERS-DRIVER"=>$l->g(79).": ".$l->g(278),
 				 "PRINTERS-PORT"=>$l->g(79).": ".$l->g(279),
 				 "PRINTERS-DESCRIPTION"=>$l->g(79).": ".$l->g(53),
+		         "PRINTERS-SERVERNAME"=>$l->g(79).": ".$l->g(1323),
+				 "PRINTERS-SHARENAME"=>$l->g(79).": ".$l->g(1324),
+				 "PRINTERS-RESOLUTION"=>$l->g(79).": ".$l->g(1325),
+				 "PRINTERS-COMMENT"=>$l->g(79).": ".$l->g(51),
+				 "HARDWARE-ARCH"=>$l->g(25).": ".$l->g(1247),
+				 "CPUS-MANUFACTURER"=>$l->g(54).": ".$l->g(64),
+				 "CPUS-TYPE"=>$l->g(54).": ".$l->g(66),
+				 "CPUS-SERIALNUMBER"=>$l->g(54).": ".$l->g(36),
+				 "CPUS-SPEED"=>$l->g(54).": ".$l->g(429),
+				 "CPUS-CORES"=>$l->g(54).": ".$l->g(1317),
+				 "CPUS-L2CACHESIZE"=>$l->g(54).": ".$l->g(1318),
+				 "CPUS-LOGICAL_CPUS"=>$l->g(54).": ".$l->g(1314),
+				 "CPUS-VOLTAGE"=>$l->g(54).": ".$l->g(1319),
+				 "CPUS-CURRENT_SPEED"=>$l->g(54).": ".$l->g(1315),
+				 "CPUS-SOCKET"=>$l->g(54).": ".$l->g(1316)
 				 );
 		
 		
@@ -992,6 +1013,7 @@ $optSelectField=array( "NETWORKS-IPADDRESS"=>$sort_list["NETWORKS-IPADDRESS"],
 			   "BIOS-BVERSION"=>$sort_list["BIOS-BVERSION"],//$l->g(273).": ".$l->g(209),
 			   "HARDWARE-USERID"=>$sort_list["HARDWARE-USERID"],//$l->g(243).": ".$l->g(49),
 			   "HARDWARE-OSCOMMENTS"=>$sort_list["HARDWARE-OSCOMMENTS"],//$l->g(25).": ".$l->g(51),
+			   "HARDWARE-OSVERSION"=>$sort_list["HARDWARE-OSVERSION"],
 			   "NETWORKS-IPGATEWAY"=>$sort_list["NETWORKS-IPGATEWAY"],//$l->g(82).": ".$l->g(207),
 			   "NETWORKS-IPSUBNET"=>$sort_list["NETWORKS-IPSUBNET"],//$l->g(82).": ".$l->g(331),
 			   "NETWORKS-IPDHCP"=>$sort_list["NETWORKS-IPDHCP"],//$l->g(82).": ".$l->g(281),
@@ -1011,6 +1033,11 @@ $optSelectField=array( "NETWORKS-IPADDRESS"=>$sort_list["NETWORKS-IPADDRESS"],
 			   "PRINTERS-DRIVER"=>$sort_list["PRINTERS-DRIVER"],
 			   "PRINTERS-PORT"=>$sort_list["PRINTERS-PORT"],
 			   "PRINTERS-DESCRIPTION"=>$sort_list['PRINTERS-DESCRIPTION'],
+			   "PRINTERS-SERVERNAME"=>$sort_list["PRINTERS-SERVERNAME"],
+			   "PRINTERS-SHARENAME"=>$sort_list["PRINTERS-SHARENAME"],
+			   "PRINTERS-RESOLUTION"=>$sort_list["PRINTERS-RESOLUTION"],
+		       "PRINTERS-COMMENT"=>$sort_list["PRINTERS-COMMENT"],
+			   "HARDWARE-ARCH"=>$l->g(25).": ".$l->g(1247),
 			   "HARDWARE-LASTDATE"=>$sort_list["HARDWARE-LASTDATE"],//"OCS: ".$l->g(46),
 			   "HARDWARE-LASTDATE-LBL"=>"calendar",
 			   "HARDWARE-LASTDATE-SELECT"=>array("small"=>$l->g(346),"tall"=>$l->g(347)),
@@ -1022,7 +1049,26 @@ $optSelectField=array( "NETWORKS-IPADDRESS"=>$sort_list["NETWORKS-IPADDRESS"],
 			   "STORAGES-SERIALNUMBER"=>$sort_list["STORAGES-SERIALNUMBER"],
 			   "STORAGES-DISKSIZE" =>$sort_list["STORAGES-DISKSIZE"],
 			   "STORAGES-DISKSIZE-SELECT"=>array("exact"=>$l->g(410),"small"=>$l->g(201),"tall"=>$l->g(202)),
-			   "STORAGES-DISKSIZE-LBL"=>"MB"
+			   "STORAGES-DISKSIZE-LBL"=>"MB",
+			   "HARDWARE-ARCH"=>$sort_list["HARDWARE-ARCH"],
+			   "CPUS-MANUFACTURER"=>$sort_list["CPUS-MANUFACTURER"],
+			   "CPUS-SERIALNUMBER"=>$sort_list["CPUS-SERIALNUMBER"],
+			   "CPUS-SOCKET"=>$sort_list["CPUS-SOCKET"],
+			   "CPUS-TYPE"=>$sort_list["CPUS-TYPE"],
+			   "CPUS-SPEED"=>$sort_list["CPUS-SPEED"],
+			   "CPUS-SPEED-SELECT"=>array("exact"=>$l->g(410),"small"=>$l->g(201),"tall"=>$l->g(202)),
+			   "CPUS-SPEED-LBL"=>"MHz",
+			   "CPUS-CORES"=>$sort_list["CPUS-CORES"],
+			   "CPUS-CORES-SELECT"=>array("exact"=>$l->g(410),"small"=>$l->g(201),"tall"=>$l->g(202)),
+			   "CPUS-L2CACHESIZE"=>$sort_list["CPUS-L2CACHESIZE"],
+			   "CPUS-L2CACHESIZE-SELECT"=>array("exact"=>$l->g(410),"small"=>$l->g(201),"tall"=>$l->g(202)),
+			   "CPUS-LOGICAL_CPUS"=>$sort_list["CPUS-LOGICAL_CPUS"],
+			   "CPUS-LOGICAL_CPUS-SELECT"=>array("exact"=>$l->g(410),"small"=>$l->g(201),"tall"=>$l->g(202)),
+			   "CPUS-CURRENT_SPEED"=>$sort_list["CPUS-CURRENT_SPEED"],
+			   "CPUS-CURRENT_SPEED-SELECT"=>array("exact"=>$l->g(410),"small"=>$l->g(201),"tall"=>$l->g(202)),
+			   "CPUS-CURRENT_SPEED-LBL"=>"MHz",
+			   "CPUS-VOLTAGE"=>$sort_list["CPUS-VOLTAGE"],
+			   "CPUS-VOLTAGE-SELECT"=>array("exact"=>$l->g(410),"small"=>$l->g(201),"tall"=>$l->g(202)),
 			   );
 
 	//ajout des champs de accountinfo
@@ -1072,11 +1118,14 @@ $sort_list_2Select=array("HARDWARE-USERAGENT"=>"OCS: ".$l->g(966),
 						 "STORAGES-TYPE"=>$l->g(63).": ".$l->g(66),
 						 "STORAGES-DESCRIPTION"=>$l->g(63).": ".$l->g(53),
 						 "STORAGES-MODEL"=>$l->g(63).": ".$l->g(65),
-			   			 "BIOS-TYPE"=>$l->g(273).": ".$l->g(66)
+			   			 "BIOS-TYPE"=>$l->g(273).": ".$l->g(66),
+			   			 "CPUS-CPUARCH"=>$l->g(54).": ".$l->g(1247),
+			   			 "CPUS-DATA_WIDTH"=>$l->g(54).": ".$l->g(1312),
+			   			 "CPUS-CURRENT_ADDRESS_WIDTH"=>$l->g(54).": ".$l->g(1313),
 						);
 
 $sql_history_download = "select FILEID as ID,NAME from download_available d_a";
-IF (isset($_SESSION['OCS']['RESTRICTION']['TELEDIFF_VISIBLE']) 
+if (isset($_SESSION['OCS']['RESTRICTION']['TELEDIFF_VISIBLE']) 
 		and $_SESSION['OCS']['RESTRICTION']['TELEDIFF_VISIBLE'] == "YES" )
 $sql_history_download .= " where d_a.comment not like '%[VISIBLE=0]%'";	
 $sql_history_download .= " order by 2";
@@ -1125,7 +1174,22 @@ $opt2Select=array("HARDWARE-USERAGENT"=>$sort_list_2Select["HARDWARE-USERAGENT"]
 				 "BIOS-TYPE-SQL1"=>"select distinct TYPE as ID,TYPE as NAME from bios order by 2",
 				 "BIOS-TYPE-SELECT"=>array('exact'=>$l->g(507)
 				 									,'diff'=>$l->g(508)
-				 									)
+				 									),
+				 "CPUS-CPUARCH"=>$sort_list_2Select["CPUS-CPUARCH"],//$l->g(107).": ".$l->g(312),
+				 "CPUS-CPUARCH-SQL1"=>array("32"=>"32bits","64"=>"64bits","128"=>"128bits"),
+				 "CPUS-CPUARCH-SELECT"=>array('exact'=>$l->g(410)
+				 									,'diff'=>$l->g(130)
+				 									),
+				 "CPUS-DATA_WIDTH"=>$sort_list_2Select["CPUS-DATA_WIDTH"],//$l->g(107).": ".$l->g(312),
+				 "CPUS-DATA_WIDTH-SQL1"=>array("32"=>"32bits","64"=>"64bits","128"=>"128bits"),
+				 "CPUS-DATA_WIDTH-SELECT"=>array('exact'=>$l->g(410)
+				 									,'diff'=>$l->g(130)
+				 									),
+				 "CPUS-CURRENT_ADDRESS_WIDTH"=>$sort_list_2Select["CPUS-CURRENT_ADDRESS_WIDTH"],//$l->g(107).": ".$l->g(312),
+				 "CPUS-CURRENT_ADDRESS_WIDTH-SQL1"=>array("32"=>"32bits","64"=>"64bits"),
+				 "CPUS-CURRENT_ADDRESS_WIDTH-SELECT"=>array('exact'=>$l->g(410)
+				 									,'diff'=>$l->g(130)
+				 									),
 				 );
 		//ajout des champs de accountinfo
 $opt2Select = array_merge($opt2Select_account,$opt2Select);			 
@@ -1145,7 +1209,7 @@ $lbl_default= array('exact'=> $l->g(410),'ressemble'=>$l->g(129)
 											  'between'=>"onclick='document.getElementById(\"FieldInput2-field_name\").style.display=\"inline\";'"));
 
 $sort_list_Select2Field=array("HARDWARE-MEMORY"=>$l->g(25).": ".$l->g(26),
-						 "HARDWARE-PROCESSORS"=>$l->g(54).": ".$l->g(377));
+						 "HARDWARE-PROCESSORS"=>$l->g(54)." (old): ".$l->g(377));
 
 $optSelect2Field=array("HARDWARE-MEMORY"=>$sort_list_Select2Field["HARDWARE-MEMORY"],//$l->g(25).": ".$l->g(26),
 					   "HARDWARE-MEMORY-LBL"=>"MB",
@@ -1195,7 +1259,7 @@ asort($optArray_trait);
  
 $protectedPost['multiSearch']=$l->g(32);
 $aff_field_search= $l->g(31).": ".show_modif($optArray_trait,'multiSearch',2,$form_name,array('DEFAULT'=>'NO'));
-$aff_field_search.="<img src='image/delete_all.png' onclick='pag(\"ok\",\"reset\",\"".$form_name."\");' alt='".$l->g(41)."'>";
+$aff_field_search.="<img src='image/delete_all.png' onclick='pag(\"ok\",\"reset\",\"".$form_name."\");' alt='".$l->g(41)."' style='margin-left:20px'>";
 echo "<table border=1 class='mlt_bordure'  WIDTH = '75%' ALIGN = 'Center' CELLPADDING='5'>";
 echo "<tr><td colspan=100 align=center bgcolor='#FFFFFF'>".$aff_field_search."</td></tr>";
 
@@ -1219,7 +1283,7 @@ if (isset($_SESSION['OCS']['multiSearch']) and $_SESSION['OCS']['multiSearch'] !
 echo "<input type=hidden name=delfield id=delfield value=''>";
 echo "<input type=hidden name='reset' id='reset' value=''>";
 echo "</td></tr></table>";
-echo "</form>";	
+echo close_form();
 echo $l->g(358);
 echo "<br>";
 

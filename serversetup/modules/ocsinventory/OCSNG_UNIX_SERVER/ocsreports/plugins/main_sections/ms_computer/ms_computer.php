@@ -35,10 +35,8 @@ $lbl_affich=array('NAME'=>$l->g(49),'WORKGROUP'=>$l->g(33),'USERDOMAIN'=>$l->g(5
 					'OSCOMMENTS'=>$l->g(286),'WINCOMPANY'=>$l->g(51),'WINOWNER'=>$l->g(348),
 					'WINPRODID'=>$l->g(111),'WINPRODKEY'=>$l->g(553),'USERAGENT'=>$l->g(357),
 					'MEMORY'=>$l->g(26),'LASTDATE'=>$l->g(46),'LASTCOME'=>$l->g(820),'DESCRIPTION'=>$l->g(53),
-					'NAME_RZ'=>$l->g(304),'VMTYPE'=>$l->g(1267),'UUID'=>$l->g(1268));			
-$values=look_config_default_values(array('QRCODE','EXPORT_OCS'));
-if(isset($values['ivalue']['QRCODE']) and $values['ivalue']['QRCODE'] == 1)
-	$lbl_affich['QRCODE']=$l->g(1299);
+					'NAME_RZ'=>$l->g(304),'VMTYPE'=>$l->g(1267),'UUID'=>$l->g(1268),'ARCH'=>$l->g(1247));			
+$values=look_config_default_values(array('EXPORT_OCS'));
 if(!isset($_SESSION['OCS']['RESTRICTION']['EXPORT_XML']) or $_SESSION['OCS']['RESTRICTION']['EXPORT_XML'] == "NO")	
 	$lbl_affich['EXPORT_OCS']=$l->g(1303);
 foreach ($lbl_affich as $key=>$lbl){
@@ -54,10 +52,6 @@ foreach ($lbl_affich as $key=>$lbl){
 		$data[$key]=$memory;
 	}elseif ($key == "LASTDATE" or $key == "LASTCOME"){
 		$data[$key]=dateTimeFromMysql($item->$key);
-	}
-	elseif($key == 'QRCODE'){
-		$data[$key] = "<a href=# onclick=window.open(\"index.php?".PAG_INDEX."=".$pages_refs['ms_qrcode']."&no_header=1&systemid=".$protectedGet['systemid']."\")>".$l->g(1300)."</a>";			
-		$link[$key]=true;
 	}elseif ($key == "NAME_RZ"){
 		$data[$key]="";
 		$data_RZ=subnet_name($systemid);
@@ -70,7 +64,7 @@ foreach ($lbl_affich as $key=>$lbl){
 			}	
 		}	
 	}elseif($key == "VMTYPE" and $item->UUID != ''){
-		$sqlVM = "select vm.hardware_id,vm.vmtype, h.name from virtualmachines vm left join hardware h on vm.hardware_id=h.id where vm.uuid='%s'";
+		$sqlVM = "select vm.hardware_id,vm.vmtype, h.name from virtualmachines vm left join hardware h on vm.hardware_id=h.id where vm.uuid='%s' order by h.name DESC";
 		$argVM = $item->UUID;
 		$resVM = mysql2_query_secure($sqlVM,$_SESSION['OCS']["readServer"],$argVM);		
 		$valVM = mysql_fetch_array( $resVM );
@@ -82,10 +76,35 @@ foreach ($lbl_affich as $key=>$lbl){
 	}elseif($key == "EXPORT_OCS"){
 		$data[$key] = "<a href=# onclick=window.open(\"index.php?".PAG_INDEX."=".$pages_refs['ms_export_ocs']."&no_header=1&systemid=".$protectedGet['systemid']."\")>".$l->g(1304)."</a>";			
 		$link[$key]=true;
+	}elseif($key == "IPADDR" 
+			and (!isset($_SESSION['OCS']['RESTRICTION']['WOL']) or $_SESSION['OCS']['RESTRICTION']['WOL']=="NO")){
+		$data[$key] = $item->$key." <a href=# OnClick='confirme(\"\",\"WOL\",\"bandeau\",\"WOL\",\"".$l->g(1283)."\");'><i>WOL</i></a>";
+		$link[$key]=true;
 	}elseif ($item->$key != '')
 		$data[$key]=$item->$key;
 }
+echo open_form("bandeau");
+//Wake On Lan function
+if (isset($protectedPost["WOL"]) and $protectedPost["WOL"] == 'WOL'
+	and (!isset($_SESSION['OCS']['RESTRICTION']['WOL']) or $_SESSION['OCS']['RESTRICTION']['WOL']=="NO")){
+		require_once('require/function_wol.php');
+		$wol = new Wol();
+		$sql="select MACADDR,IPADDRESS from networks WHERE (hardware_id=%s) and status='Up'";
+		$arg=array($systemid);
+		$resultDetails = mysql2_query_secure($sql, $_SESSION['OCS']["readServer"],$arg);
+		$msg="";
+		while ($item = mysql_fetch_object($resultDetails)){
+			$wol->wake($item->MACADDR,$item->IPADDRESS);
+			if ($wol->wol_send == $l->g(1282))
+				msg_info($wol->wol_send."=>".$item->MACADDR."/".$item->IPADDRESS);		
+			else
+				msg_error($wol->wol_send."=>".$item->MACADDR."/".$item->IPADDRESS);
+		}	
+		
+}
 $bandeau=bandeau($data,$lbl_affich,$link);
+echo "<input type='hidden' id='WOL' name='WOL' value=''>";
+	echo close_form();
 $Directory=PLUGINS_DIR."computer_detail/";
 $ms_cfg_file= $Directory."cd_config.txt";
 if (!isset($_SESSION['OCS']['DETAIL_COMPUTER'])){
@@ -107,8 +126,8 @@ if (!isset($protectedGet['option'])){
 	$protectedGet['option']="cd_admininfo";
 }
 $i=0;
-echo "<br><br><table width='90%' border=0 align='center'><tr align=center>";
-$nb_col=array(10,20,13);
+echo "<br><br><table width='80%' border=0 align='center'><tr align=center>";
+$nb_col=array(11,23,34,45,56);
 $j=0;
 $index_tab=0;
 //intitialisation du tableau de plugins
@@ -127,9 +146,9 @@ while ($list_plugins[$i]){
 	}
 	
 	if ($j == $nb_col[$index_tab]){
-		echo "</tr></table><table width='90%' border=0 align='center'><tr align=center>";
+		if ($index_tab%2 == 0) $tab_width="90%"; else $tab_width="80%";
+		echo "</tr></table>\n<table width='$tab_width' border=0 align='center'><tr align=center>";
 		$index_tab++;
-		$j=0;
 	}
 	//echo substr(substr($list_lbl[$list_plugins[$i]],2),0,-1);
 	echo "<td align=center>";

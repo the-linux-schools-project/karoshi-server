@@ -84,7 +84,6 @@ elseif (isset($_SESSION['OCS']['csv']['SQL'][$protectedGet['tablename']])){
 		while($_SESSION['OCS']['SQL_DATA_FIXE'][$protectedGet['tablename']][$i]){
 			$result=mysql_query($_SESSION['OCS']['SQL_DATA_FIXE'][$protectedGet['tablename']][$i], $link) or die(mysql_error($link));
 			while( $cont = mysql_fetch_array($result,MYSQL_ASSOC) ) {
-				//print_r($cont);
 				foreach ($col as $field => $lbl){
 					if (array_key_exists($lbl,$cont)){
 					
@@ -107,27 +106,50 @@ elseif (isset($_SESSION['OCS']['csv']['SQL'][$protectedGet['tablename']])){
 	require_once('require/function_admininfo.php');
 	$inter=interprete_accountinfo($col,array());
 	while( $cont = mysql_fetch_array($result,MYSQL_ASSOC) ) {
+						//p($cont);
 		foreach ($col as $field => $lbl){
 			if ($lbl == "name_of_machine" and !isset($cont[$field])){
 				$field='name';
 			}
-			if (isset($cont[$field])){
-				if ($field == 'TAG' or substr($field,0,7) == 'fields_'){
-					if (isset($inter['TAB_OPTIONS']['REPLACE_VALUE'][$lbl])){
-						$data[$i][$lbl]=$inter['TAB_OPTIONS']['REPLACE_VALUE'][$lbl][$cont[$field]];
-					}else				
-						$data[$i][$lbl]=$cont[$field];		
-				}else
-					$data[$i][$lbl]=$cont[$field];			
-			}elseif (isset($data_fixe[$cont['ID']][$field])){
-				$data[$i][$lbl]=$data_fixe[$cont['ID']][$field];
-			}else{
-				$data[$i][$lbl]="";
+			
+			$found = false;
+			// find value case-insensitive
+			foreach ($cont as $key => $val) {
+				if (strtolower($key) == strtolower($field)) {
+					if (($field == 'TAG' or substr($field,0,7) == 'fields_')
+							and isset($inter['TAB_OPTIONS']['REPLACE_VALUE'][$lbl])) {
+						// administrative data
+						$data[$i][$lbl]=$inter['TAB_OPTIONS']['REPLACE_VALUE'][$lbl][$val];
+					} else {
+						// normal data
+						$data[$i][$lbl]=$val;
+					}
+					
+					$found = true;
+					break;
+				}
+			}
+			
+			if (!$found) {
+				// find values case-insensitive
+				foreach ($data_fixe[$cont['ID']] as $key => $val) {
+					if (strtolower($key) == strtolower($field) && isset($data_fixe[$cont['ID']][$key])) {
+						$data[$i][$lbl]=$data_fixe[$cont['ID']][$key];
+						
+						$found = true;
+						break;
+					}
+				}
+				
+				if (!$found) {
+					$data[$i][$lbl]="";
+				}
 			}
 
 		}
 		$i++;
 	}
+	//p($data);
 	$i=0;
 	while ($data[$i]){
 		$toBeWritten .="\r\n";

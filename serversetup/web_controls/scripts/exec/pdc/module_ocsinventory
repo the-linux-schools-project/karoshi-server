@@ -29,16 +29,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/module_ocsinventory_cgi
 then
-echo `date`: module_ocsinventory - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_ocsinventory - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_ocsinventory_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_ocsinventory.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $module_ocsinventory_cgi'check' ]
 then
-echo `date`: module_ocsinventory - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_ocsinventory - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -47,16 +47,16 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: module_ocsinventory - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_ocsinventory - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-%'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: module_ocsinventory - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_ocsinventory - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -67,30 +67,30 @@ SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: module_ocsinventory - Not called by module_ocsinventory.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_ocsinventory - Not called by module_ocsinventory.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: module_ocsinventory - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_ocsinventory - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: module_ocsinventory - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_ocsinventory - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: module_ocsinventory - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_ocsinventory - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-echo `date`: module_ocsinventory - Blank OCS server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_ocsinventory - Blank OCS server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 echo `date`: setupocs on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -112,58 +112,57 @@ PDCIP=`net lookup $HOSTNAME`
 
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
-#Check to see if ocs is already installed
-if [ -d /var/www/html_karoshi/admin/ocs ]
-then
-echo `date`: module_ocsinventory - ocs is already installed on $OCS_SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $OCSINSTERROR
-exit
-fi
-#Install OCS
-echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PDCIP: | /opt/karoshi/serversetup/modules/ocsinventory/setupocs
+	#Check to see if ocs is already installed
+	if [ -d /var/www/html_karoshi/admin/ocs ]
+	then
+		echo `date`: module_ocsinventory - ocs is already installed on $OCS_SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo $OCSINSTERROR
+		exit
+	fi
+	#Install OCS
+	echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PDCIP: | /opt/karoshi/serversetup/modules/ocsinventory/setupocs
 fi
 
 if [ $SERVERNAME != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 #Check to see if ocs is already installed
-if [ -d /var/www/html/moodle ]
+if [ -d /var/www/html/ocs ]
 then
-echo '$OCSINSTERROR'
-exit 101
+	echo '$OCSINSTERROR'
+	exit 101
 fi
 [ ! -d /opt/karoshi/serversetup/modules/ ] && mkdir -p /opt/karoshi/serversetup/modules/
 '
 if [ `echo $?` = 101 ]
 then
-echo `date`: module_ocsinventory - OCS is already installed on $OCS_SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: module_ocsinventory - OCS is already installed on $OCS_SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
 
 #Copy in module
 scp -p -r /opt/karoshi/serversetup/modules/ocsinventory root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
-scp -p -r /opt/karoshi/serversetup/distro/pclinuxos/modules/ocsinventory root@$SERVERNAME:/opt/karoshi/serversetup/distro/pclinuxos/modules/ 1> /dev/null
 scp -p -r /opt/karoshi/serversetup/distro/ubuntu/modules/ocsinventory root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/modules/ 1> /dev/null
 #Copy in mysql_root_pass
 scp -p -r /opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass root@$SERVERNAME:"/opt/karoshi/serversetup/all/useful\ scripts/" 1> /dev/null
 #Install ocs
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 #Allow PDC to connect to remote mysql
-echo "<li>"'$MYSQLTCPMSG'"</li>"
+echo "<li>"'$SERVERNAME' - '$"Allowing network mysql connections"'"</li>"
 
 if [ -f /etc/my.cf ]
 then
-sed -i "s/skip-networking/#skip-networking/g" /etc/my.cnf
+	sed -i "s/skip-networking/#skip-networking/g" /etc/my.cnf
 fi
 
 if [ `grep -c 0.0.0.0 /etc/mysql/my.cnf` = 0 ]
 then
-sed -i "s/127.0.0.1/0.0.0.0/g" /etc/mysql/my.cnf
-#Restart mysql
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/'$DISTROCHOICE'/scripts/control_services/mysql_stop
-sleep 1
-/opt/karoshi/serversetup/distro/'$DISTROCHOICE'/scripts/control_services/mysql_start
+	sed -i "s/127.0.0.1/0.0.0.0/g" /etc/mysql/my.cnf
+	#Restart mysql
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/'$DISTROCHOICE'/scripts/control_services/mysql_stop
+	sleep 1
+	/opt/karoshi/serversetup/distro/'$DISTROCHOICE'/scripts/control_services/mysql_start
 fi
 
 #Setup OCS
@@ -174,7 +173,6 @@ echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PDCIP:' | /opt/karoshi/serversetup/modu
 MODCHECK=`grep -c -w 3306 /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
-echo "<br>"'$SHOREWALLMSG'
 LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM"c"\ACCEPT"	"net:'$PDCIP'"	"fw"	"tcp"	"3306"	"-"#"mysql /etc/shorewall/rules
 echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
@@ -182,7 +180,6 @@ fi
 MODCHECK2=`grep -c -w 80 /etc/shorewall/rules`
 if [ $MODCHECK2 = 0 ]
 then
-echo "<br>"'$SHOREWALLMSG2'
 LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"80"	"-"#"apache /etc/shorewall/rules
 echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
@@ -192,7 +189,7 @@ fi
 ######################
 if [ $MODCHECK = 0 ] || [ $MODCHECK2 = 0 ] 
 then
-echo "<br>"'$RESTARTSWMSG'"<br>"
+echo "<li>'$"Restarting shorewall"'</li><br>"
 /etc/init.d/'$SHOREWALLVER' stop 1>/dev/null
 /etc/init.d/'$SHOREWALLVER' start 1>/dev/null
 fi
@@ -206,12 +203,12 @@ fi
 #Add files to web management
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
-cp -f -R /usr/share/ocsinventory-reports/ocsreports /var/www/html_karoshi/admin/ocs
+	cp -f -R /usr/share/ocsinventory-reports/ocsreports /var/www/html_karoshi/admin/ocs
 else
-scp -p -r root@$SERVERNAME:/usr/share/ocsinventory-reports/ocsreports/ /var/www/html_karoshi/admin/ocs 1> /dev/null
-#Edit host path
-sed -i 's/localhost/'$SERVERNAME'/g' /var/www/html_karoshi/admin/ocs/dbconfig.inc.php
-sed -i 's/ocs/ocs2/g' /var/www/html_karoshi/admin/ocs/dbconfig.inc.php
+	scp -p -r root@$SERVERNAME:/usr/share/ocsinventory-reports/ocsreports/ /var/www/html_karoshi/admin/ocs 1> /dev/null
+	#Edit host path
+	sed -i 's/localhost/'$SERVERNAME'/g' /var/www/html_karoshi/admin/ocs/dbconfig.inc.php
+	sed -i 's/ocs/ocs2/g' /var/www/html_karoshi/admin/ocs/dbconfig.inc.php
 fi
 cp -f -R /var/www/html_karoshi/admin/ocs /var/www/html_karoshi/tech/ocs
 chown -R root.apache_karoshi /var/www/html_karoshi/admin/ocs
@@ -230,7 +227,5 @@ echo $SERVERNAME > /opt/karoshi/server_network/ocs_server
 
 #Modify web management menus
 sed -i 's/OCSCTRL=no/OCSCTRL=yes/g' /opt/karoshi/server_network/menusettings
-
 echo '<br><br><b>'$COMPLETEDMSG'</b><br>'
-
 exit

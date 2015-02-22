@@ -487,38 +487,37 @@ fi
 function check_ports {
 if [ $SERVERNAME != `hostname-fqdn` ]
 then
-#Set ports to check
-PORTCHECK=53,88,389
-TCPPORTS=139,445
-UDPPORTS=137,138,445
-if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
-then
-PORTCHECK=53,88,135,139,389,445,464,636,1024,3268
-TCPPORTS=53,88,123,135,137,138,139,389,445,464,636,1024:1100,3268
-UDPPORTS=53,88,123,135,137,138,139,389,445,464,636,1024:1100,3268
+	#Set ports to check
+	PORTCHECK=53,88,389
+	TCPPORTS=139,445
+	UDPPORTS=137,138,445
+	if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
+	then
+		PORTCHECK=53,88,135,139,389,445,464,636,1024,3268
+		TCPPORTS=53,88,123,135,137,138,139,389,445,464,636,1024:1100,3268
+		UDPPORTS=53,88,123,135,137,138,139,389,445,464,636,1024:1100,3268
+	fi
+	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	echo "<li><b>"Checking to see that '$PORTSCANIP' can be contacted on ports: '$PORTCHECK'"</b></li><br>"
+	for PORT in `echo '$PORTCHECK' | sed "s/,/ /g"`
+	do
+	echo Checking $PORT on server '$PORTSCANIP'"<br>"
+	nc -zv -w5 '$PORTSCANIP' $PORT
+	[ $? != 0 ] && exit $PORT
+	done
+	exit 0
+	' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	EXITCHECK=$?
+	if [ $EXITCHECK != 0 ]
+	then
+		echo `date`: configure_authentication - Error connecting to $PDCIP on port $EXITCHECK "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo '<li>'$"Connection error" -  $PDCIP: $EXITCHECK '</li><br>'
+		sleep 4
+		exit $EXITCHECK
+	fi
+	echo '<br><br>'
 fi
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-echo "<li><b>"Checking to see that '$PORTSCANIP' can be contacted on ports: '$PORTCHECK'"</b></li><br>"
-for PORT in `echo '$PORTCHECK' | sed "s/,/ /g"`
-do
-echo Checking $PORT on server '$PORTSCANIP'"<br>"
-nc -zv -w5 '$PORTSCANIP' $PORT
-[ $? != 0 ] && exit $PORT
-done
-exit 0
-' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-EXITCHECK=$?
-if [ $EXITCHECK != 0 ]
-then
-echo `date`: configure_authentication - Error connecting to $PDCIP on port $EXITCHECK "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo '<li>'$"Connection error" -  $PDCIP: $EXITCHECK '</li><br>'
-sleep 4
-exit $EXITCHECK
-fi
-fi
-echo '<br><br>'
 }
-
 
 function configure_ntp {
 echo '<li><b>'$"Configuring NTP"'</b></li><br>'

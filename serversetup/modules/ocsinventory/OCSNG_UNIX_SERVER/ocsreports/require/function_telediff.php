@@ -118,31 +118,48 @@ function champ_select_block($name,$input_name,$input_cache)
  	
  }
  
- 
- 
- function active_mach($list_id,$packid){
+ function desactive_option($name,$list_id,$packid){
  	global $l;
- 	desactive_mach($list_id,$packid);
- 	$id_pack=found_id_pack($packid);
- 	$sql_active="insert into devices (HARDWARE_ID, NAME, IVALUE) select ID,'DOWNLOAD','%s' from hardware where id in ";
-	$arg_active=array($packid);
-	$lbl_log=$l->g(601)." ".$id_pack." => ".$list_id;
+ 	$sql_desactive="delete from devices where name='%s' and ivalue=%s";
+ 	$arg_desactive=array($name,$packid);
+ 	if ($list_id != ''){
+ 		$sql_desactive.=" and hardware_id in ";
+ 		$sql=mysql2_prepare($sql_desactive,$arg_desactive,$list_id);
+ 		$res_desactive=mysql2_query_secure($sql['SQL'],$_SESSION['OCS']["writeServer"],$sql['ARG'],$l->g(512));
+ 	}else
+ 		$res_desactive=mysql2_query_secure($sql_desactive,$_SESSION['OCS']["writeServer"],$arg_desactive,$l->g(512));
+ 	return( mysql_affected_rows ( $_SESSION['OCS']["writeServer"] ) );
+ }
+ 
+ function active_option($name,$list_id,$packid,$tvalue=''){
+ 	global $l;
+ 	desactive_option($name,$list_id,$packid);
+ 	$sql_active="insert into devices (HARDWARE_ID, NAME, IVALUE,TVALUE) select ID,'%s','%s',";
+	if ($tvalue == ''){
+		$sql_active.="null from hardware where id in ";
+		$arg_active=array($name,$packid);
+	}else{
+		$sql_active.="'%s' from hardware where id in ";
+		$arg_active=array($name,$packid,$tvalue);
+	}
+	//$lbl_log=$l->g(601)." ".$id_pack." => ".$list_id;
 	$sql=mysql2_prepare($sql_active,$arg_active,$list_id);
 	$res_active=mysql2_query_secure($sql['SQL'],$_SESSION['OCS']["writeServer"],$sql['ARG'],$l->g(512));
 	return( mysql_affected_rows ( $_SESSION['OCS']["writeServer"] ) );
-
  }
  
- function desactive_mach($list_id,$packid){
- 	global $l;
-	$id_pack=found_id_pack($packid);
-	$sql_desactive="delete from devices where name='DOWNLOAD' and IVALUE=%s and hardware_id in ";
-	$arg_desactive=array($packid);
-	$lbl_log= $l->g(886)." ".$id_pack." => ".$list_id;	
-	$sql=mysql2_prepare($sql_desactive,$arg_desactive,$list_id);
-	$res_desactive=mysql2_query_secure($sql['SQL'],$_SESSION['OCS']["writeServer"],$sql['ARG'],$l->g(512));
-	return( mysql_affected_rows ( $_SESSION['OCS']["writeServer"] ) );
+ function desactive_download_option($list_id,$packid){
+ 	desactive_option('DOWNLOAD_FORCE',$list_id,$packid);
+ 	desactive_option('DOWNLOAD_SCHEDULE',$list_id,$packid);
+ 	desactive_option('DOWNLOAD_POSTCMD',$list_id,$packid); 	
  }
+ 
+ function desactive_packet($list_id,$packid){
+ 	desactive_download_option($list_id,$packid);
+ 	$nb_line=desactive_option('DOWNLOAD',$list_id,$packid); 
+ 	return $nb_line;	 	
+ }
+ 
  
  function found_id_pack($packid){
  	$sql_id_pack="select ID from download_enable where fileid=%s and ( group_id = '' or group_id is null)";
@@ -288,9 +305,9 @@ function del_pack($fileid){
 	}
 	//delete packet in DEVICES table
 	if ($list_id != ""){
-		$reqDelDevices = "DELETE FROM devices WHERE name='DOWNLOAD' AND ivalue in ";
-		$sql=mysql2_prepare($reqDelDevices,'',$list_id);
-		mysql2_query_secure($sql['SQL'], $_SESSION['OCS']["writeServer"],$sql['ARG']);
+		foreach ($list_id as $k=>$v){
+			desactive_packet('',$v);
+		}
 	}
 	//delete activation of this pack
 	$reqDelEnable = "DELETE FROM download_enable WHERE FILEID='%s'";
@@ -299,20 +316,39 @@ function del_pack($fileid){
 
 	//delete info of this pack
 	$reqDelAvailable = "DELETE FROM download_available WHERE FILEID='%s'";
-	$argDelAvailable = $fileid;	
+	$argDelAvailable = $fileid;
+	
 	mysql2_query_secure($reqDelAvailable, $_SESSION['OCS']["writeServer"],$argDelAvailable);
 	//what is the directory of this package?
 	$info=look_config_default_values('DOWNLOAD_PACK_DIR');
 	$document_root=$info['tvalue']['DOWNLOAD_PACK_DIR'];
 	//if no directory in base, take $_SERVER["DOCUMENT_ROOT"]
 	if (!isset($document_root))
-	$document_root = $_SERVER["DOCUMENT_ROOT"];
+		$document_root = $_SERVER["DOCUMENT_ROOT"];
+	
 	if (@opendir($document_root."/download/".$fileid)){
 		//delete all files from this package
 		if( ! @recursive_remove_directory( $document_root."/download/".$fileid ))  {
 			msg_error($l->g(472)." ".$document_root."/download/".$fileid);
 		}
 	}
+	
+	// delete redistribution package
+	$dl_rep_redist = look_config_default_values('DOWNLOAD_REP_CREAT');
+	$document_root = $dl_rep_redist['tvalue']['DOWNLOAD_REP_CREAT'];
+	
+	if (!$document_root) {
+		$document_root = $_SERVER["DOCUMENT_ROOT"].'/download/server';
+	}
+	$redist_package = realpath($document_root."/".$fileid);
+	
+	if ($redist_package and @opendir($redist_package)) {
+		//delete all files from this package
+		if(!@recursive_remove_directory($redist_package))  {
+			msg_error($l->g(472)." ".$redist_package);
+		}
+	}
+	
 	addLog($l->g(512), $l->g(888)." ".$fileid );
 }
 

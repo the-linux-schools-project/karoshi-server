@@ -8,17 +8,17 @@ ms_multi_search
 
 <ORDER_SECOND_TABLE>
 ms_teledeploy
-ms_dict
 ms_config
+ms_ipdiscover
 ms_regconfig
+ms_admininfo
+ms_doubles
+ms_dict
+ms_plugins
 ms_logs
 ms_stats
-ms_admininfo
-ms_ipdiscover
-ms_doubles
 ms_users
 ms_local
-ms_plugins
 ms_help
 </ORDER_SECOND_TABLE>
 
@@ -50,7 +50,7 @@ ms_admin_ipdiscover:g(1139)
 ms_snmp:g(1136)
 ms_update_new_tag:g(2100)
 ms_stats:g(1251)
-ms_plugins:g(6000)
+ms_plugins:g(1306)
 </LBL>
 
 <URL>
@@ -88,7 +88,6 @@ ms_tele_package:tele_package
 ms_tele_activate:tele_activate
 ms_tele_popup_active:tele_popup_active
 ms_tele_actives:tele_actives
-ms_tele_massaffect:tele_massaffect
 ms_tele_pack:tele_pack
 ms_rules_redistrib:rules_redistrib
 ms_custom_param:opt_param
@@ -124,8 +123,11 @@ jp_activity_stats:activity_stats
 ms_ipdiscover_analyse:ipdiscover_analyse
 ms_stats_connexion:stats_connexion
 ms_add_key:add_key
-ms_plugins:plugins
 ms_export_ocs:export_ocs
+ms_qrcode:qrcode
+ms_plugins:plugins
+ms_stats_top:stats_top
+ms_plugins_exemple:plugin_exemple
 </URL>
 
 <DIRECTORY>
@@ -171,7 +173,6 @@ ms_tele_popup_active:ms_teledeploy
 ms_tele_stats:ms_teledeploy
 ms_tele_compress:ms_teledeploy
 ms_speed_stat:ms_teledeploy
-ms_tele_massaffect:ms_teledeploy
 ms_upload_file:ms_upload_file
 ms_upload_file_popup:ms_upload_file
 ms_users:ms_users
@@ -194,8 +195,12 @@ jp_teledeploy_speed_stats:ms_stats
 ms_ipdiscover_analyse:ms_ipdiscover
 ms_stats_connexion:ms_stats
 ms_add_key:ms_config
-ms_plugins:ms_plugins
 ms_export_ocs:ms_export
+ms_qrcode:ms_computer
+ms_plugins:ms_plugins
+ms_wol:ms_config
+ms_stats_top:ms_stats
+ms_plugins_exemple:ms_plugins
 </DIRECTORY>
 
 
@@ -214,6 +219,7 @@ ms_search_soft:ms_multi_search
 ms_ipdiscover:ms_ipdiscover
 ms_snmp:ms_ipdiscover
 ms_admin_ipdiscover:ms_ipdiscover
+ms_plugins:ms_plugins
 </MENU>
 
 <MENU_NAME>
@@ -221,6 +227,7 @@ ms_teledeploy:teledeploy_smenu
 ms_config:config_smenu
 ms_multi_search:search_smenu
 ms_ipdiscover:ipdiscover_smenu
+ms_plugins:plugins_smenu
 </MENU_NAME>
 
 <MENU_TITLE>
@@ -228,6 +235,7 @@ ms_teledeploy:g(512)
 ms_config:g(107)
 ms_multi_search:g(1051)
 ms_ipdiscover:g(82)
+ms_plugins:g(6000)
 </MENU_TITLE>
 
 <JAVASCRIPT>

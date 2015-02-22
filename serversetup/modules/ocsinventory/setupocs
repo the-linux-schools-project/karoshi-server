@@ -29,8 +29,8 @@ LOG_DATE=`date +%F`
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: setupocs - incorrect number of arguments"<br>"
-exit 101
+	echo `date`: setupocs - incorrect number of arguments"<br>"
+	exit 101
 fi
 read -t 3 DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/'`
@@ -41,15 +41,15 @@ REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 PDCIP=`echo "$DATA" | cut -s -d: -f4`
 
 
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: setupocs - Blank remote user"<br>"
-exit 101
+	echo `date`: setupocs - Blank remote user"<br>"
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: setupocs - Blank remote tcpip address"<br>"
-exit 101
+	echo `date`: setupocs - Blank remote tcpip address"<br>"
+	exit 101
 fi
 
 [ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
@@ -79,17 +79,15 @@ RANGE=61
 COUNTER=1
 while [ $COUNTER -lt 16 ]
 do
-row[$COUNTER]=$RANDOM
-let "row[$COUNTER] %= $RANGE"
-while [ ${row[$COUNTER]} = 0 ]
-do
-row[$COUNTER]=$RANDOM
-let "row[$COUNTER] %= $RANGE"
-done
-CHARACTER[$COUNTER]=`sed -n ${row[$COUNTER]},1p /opt/karoshi/serversetup/pdc/"useful scripts"/.alphabet`
-
-let COUNTER=COUNTER+1
-
+	row[$COUNTER]=$RANDOM
+	let "row[$COUNTER] %= $RANGE"
+	while [ ${row[$COUNTER]} = 0 ]
+	do
+		row[$COUNTER]=$RANDOM
+		let "row[$COUNTER] %= $RANGE"
+	done
+	CHARACTER[$COUNTER]=`sed -n ${row[$COUNTER]},1p /opt/karoshi/serversetup/pdc/"useful scripts"/.alphabet`
+	let COUNTER=COUNTER+1
 done
 
 OCSPASS=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
@@ -122,14 +120,9 @@ rm -f /opt/karoshi/.tempdata/mysqlperms.sql
 ###########################
 MYSQLSTATUS=`ps -e | grep -c $MYSQLDVER`
 APACHESTATUS=`ps -e | grep -c $APACHEVER`
-if [ $MYSQLSTATUS = 0 ]
-then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start
-fi
-if [ $APACHESTATUS = 0 ]
-then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
-fi
+[ $MYSQLSTATUS = 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start
+[ $APACHESTATUS = 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
+
 ##########################
 #Run OCS installation script
 ##########################
@@ -142,20 +135,22 @@ echo '</pre>'
 #Change password in z-ocsinventory-server.conf
 if [ -f /etc/httpd/conf.d/z-ocsinventory-server.conf ]
 then
-sed -i 's/PerlSetVar OCS_DB_PWD ocs/PerlSetVar OCS_DB_PWD '$OCSPASS'/g' /etc/httpd/conf.d/z-ocsinventory-server.conf
+	sed -i 's/PerlSetVar OCS_DB_PWD ocs/PerlSetVar OCS_DB_PWD '$OCSPASS'/g' /etc/httpd/conf.d/z-ocsinventory-server.conf
 fi
 if [ -f /etc/apache2/conf.d/z-ocsinventory-server.conf ]
 then
-sed -i 's/PerlSetVar OCS_DB_PWD ocs/PerlSetVar OCS_DB_PWD '$OCSPASS'/g' /etc/apache2/conf.d/z-ocsinventory-server.conf
+	sed -i 's/PerlSetVar OCS_DB_PWD ocs/PerlSetVar OCS_DB_PWD '$OCSPASS'/g' /etc/apache2/conf.d/z-ocsinventory-server.conf
 fi
 
 #Create dbconfig.inc.php
 echo '<?php' > /usr/share/ocsinventory-reports/ocsreports/dbconfig.inc.php
-echo 'define("DB_NAME", "ocsweb");' >> /usr/share/ocsinventory-reports/ocsreports/dbconfig.inc.php
-echo 'define("SERVER_READ","localhost");' >> /usr/share/ocsinventory-reports/ocsreports/dbconfig.inc.php
-echo 'define("SERVER_WRITE","localhost");' >> /usr/share/ocsinventory-reports/ocsreports/dbconfig.inc.php
-echo 'define("COMPTE_BASE","ocs");' >> /usr/share/ocsinventory-reports/ocsreports/dbconfig.inc.php
-echo 'define("PSWD_BASE","'$OCSPASS'");' >> /usr/share/ocsinventory-reports/ocsreports/dbconfig.inc.php
+
+echo '$_SESSION["SERVEUR_SQL"]="localhost";' >> /usr/share/ocsinventory-reports/ocsreports/dbconfig.inc.php
+echo '$_SESSION["COMPTE_BASE"]="ocs";' >> /usr/share/ocsinventory-reports/ocsreports/dbconfig.inc.php
+echo '$_SESSION["DB_NAME"]="ocsweb";' >> /usr/share/ocsinventory-reports/ocsreports/dbconfig.inc.php
+echo '$_SESSION["SERVER_READ"]="localhost";' >> /usr/share/ocsinventory-reports/ocsreports/dbconfig.inc.php
+echo '$_SESSION["SERVER_WRITE"]="localhost";' >> /usr/share/ocsinventory-reports/ocsreports/dbconfig.inc.php
+echo '$_SESSION["PSWD_BASE"]="'$OCSPASS'";' >> /usr/share/ocsinventory-reports/ocsreports/dbconfig.inc.php
 echo '?>' >> /usr/share/ocsinventory-reports/ocsreports/dbconfig.inc.php
 
 #Make sure install.php is deleted

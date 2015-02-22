@@ -30,15 +30,32 @@ else{
 		$list_tab=find_all_account_tab('TAB_ACCOUNTAG','COMPUTERS',1);	
 		if ($list_tab != ''){
 			if ($protectedPost['Valid_modif_x'] != ""){
+				
+				if (!isset($protectedPost['onglet']) or $protectedPost['onglet'] == '' or ! is_numeric($protectedPost['onglet']))
+					$protectedPost['onglet'] = $list_tab['FIRST'];
+				
+				$sql_admin_info = "select ID, NAME_ACCOUNTINFO from accountinfo_config where ID_TAB = %s and account_type='COMPUTERS' order by SHOW_ORDER ASC";
+				$arg_admin_info = array($protectedPost['onglet']);
+				
+				$res_admin_info = mysql2_query_secure($sql_admin_info, $_SESSION['OCS']["readServer"], $arg_admin_info);
+				
+				while ( $val_admin_info = mysql_fetch_array($res_admin_info) ) {
+					if ($val_admin_info['NAME_ACCOUNTINFO']) {
+						$data_fields_account[$val_admin_info['NAME_ACCOUNTINFO']] = "";
+					} else {
+						$data_fields_account["fields_" . $val_admin_info["ID"]] = "";
+					}
+				}
+
 				foreach ($protectedPost as $field=>$value){
 					$temp_field=explode('_',$field);
 					if (array_key_exists( $temp_field[0] . '_' . $temp_field[1],$info_account_id) or $temp_field[0] == 'TAG'){
 						//cas of checkbox
 						if (isset($temp_field[2])){
-						$data_fields_account[$temp_field[0] . "_" . $temp_field[1]].=$temp_field[2] . "&&&";	
+							$data_fields_account[$temp_field[0] . "_" . $temp_field[1]].=$temp_field[2] . "&&&";	
 						}
 						else
-						$data_fields_account[$field]=$value;	
+							$data_fields_account[$field]=$value;	
 			
 					}
 				}
@@ -67,14 +84,14 @@ else{
 				 $protectedPost['onglet'] = $list_tab['FIRST'];
 			unset($list_tab['FIRST']);
 			
-			echo "<br><form name='".$form_name."' id='".$form_name."' method='POST'>";
+			echo "<br>".open_form($form_name);
 			if (!$show_all_column){
 				onglet($list_tab,$form_name,"onglet",6);
-				$sql_admin_info="select ID,TYPE,NAME,COMMENT,NAME_ACCOUNTINFO,SHOW_ORDER from accountinfo_config where ID_TAB = %s and account_type='COMPUTERS'
+				$sql_admin_info="select ID,TYPE,NAME,COMMENT,NAME_ACCOUNTINFO,SHOW_ORDER,DEFAULT_VALUE from accountinfo_config where ID_TAB = %s and account_type='COMPUTERS'
 								order by SHOW_ORDER ASC";
 				$arg_admin_info=array($protectedPost['onglet']);
 			}else{
-				$sql_admin_info="select ID,TYPE,NAME,COMMENT,NAME_ACCOUNTINFO,SHOW_ORDER from accountinfo_config where account_type='%s'
+				$sql_admin_info="select ID,TYPE,NAME,COMMENT,NAME_ACCOUNTINFO,SHOW_ORDER,DEFAULT_VALUE from accountinfo_config where account_type='%s'
 								order by SHOW_ORDER ASC";
 				$arg_admin_info=array('COMPUTERS');		
 			}
@@ -114,7 +131,7 @@ else{
 					$name_accountinfo='fields_' . $val_admin_info['ID'];
 				
 				$up_png="";
-					
+
 				if ($nb_row!=1)
 					$up_png.=updown($val_admin_info['ID'],'UP');
 					
@@ -122,7 +139,7 @@ else{
 					$up_png.=updown($val_admin_info['ID'],'DOWN');	
 				if ($val_admin_info['TYPE'] == 2 
 						or $val_admin_info['TYPE'] == 4
-						or $val_admin_info['TYPE'] == 7){
+						or $val_admin_info['TYPE'] == 7 ){
 						array_push($config['JAVASCRIPT'],'');
 						array_push($config['SIZE'],'');
 						if ($admin_accountinfo)
@@ -180,6 +197,18 @@ else{
 						array_push($config['SELECT_DEFAULT'],'');
 						array_push($config['JAVASCRIPT'],'');
 						array_push($config['SIZE'],'');
+					}elseif ($val_admin_info['TYPE'] == 8){ //QRCODE
+						
+						array_push($value_field,$info_account_id[$name_accountinfo]);
+						if ($admin_accountinfo){
+							
+							array_push($config['COMMENT_BEHING'],$up_png);
+						}else
+							array_push($config['COMMENT_BEHING'],"");
+						
+						array_push($config['SELECT_DEFAULT'],"index.php?".PAG_INDEX."=".$pages_refs['ms_qrcode']."&no_header=1&default_value=".$val_admin_info['DEFAULT_VALUE']."&systemid=".$protectedGet['systemid']);
+						array_push($config['JAVASCRIPT'],"onclick=window.open(\"index.php?".PAG_INDEX."=".$pages_refs['ms_qrcode']."&no_header=1&default_value=".$val_admin_info['DEFAULT_VALUE']."&systemid=".$protectedGet['systemid']."\")");
+						array_push($config['SIZE'],'width=80 height=80');
 						
 						
 					}else{
@@ -203,7 +232,6 @@ else{
 					
 				$nb_row++;
 			}	
-			
 				$tab_typ_champ=show_field($name_field,$type_field,$value_field,$config);
 				if ($_SESSION['OCS']['CONFIGURATION']['ACCOUNTINFO'] == 'YES')
 					$tab_hidden=array('ADMIN'=>'','UP'=>'','DOWN'=>'');
@@ -215,11 +243,10 @@ else{
 				
 				if ($_SESSION['OCS']['CONFIGURATION']['CHANGE_ACCOUNTINFO'] != "YES")
 					$showbutton=false;
-					
 				tab_modif_values($tab_name,$tab_typ_champ,$tab_hidden,$title="",$comment="",$name_button="modif",$showbutton,$form_name='NO_FORM',$show_admin_button);
 			
 			echo "</div>"; 
-			echo "</form>";
+			echo close_form();
 		}
 }
 ?>

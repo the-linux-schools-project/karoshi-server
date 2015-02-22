@@ -18,7 +18,7 @@ printEntete($l->g(312));
 echo "<br>";	
 
  $form_name='ipdiscover';
- echo "<form name='".$form_name."' id='".$form_name."' action='' method='post'>";
+echo open_form($form_name);
  	//delete a subnet
  	if (isset($protectedPost['SUP_PROF']) and $protectedPost['SUP_PROF'] != '' and $_SESSION['OCS']['CONFIGURATION']['IPDISCOVER'] == "YES"){
  		$sql_del="delete from subnet where netid='%s'";
@@ -51,7 +51,7 @@ echo "<br>";
 					  non_ident.c as 'NON_INVENTORIE',
 					  ipdiscover.c as 'IPDISCOVER',
 					  ident.c as 'IDENTIFIE',
-					  round(100-(non_ident.c*100/(ident.c+non_ident.c)),1) as 'pourcentage'
+					  CASE WHEN ident.c IS NULL and ipdiscover.c IS NULL THEN 100 WHEN ident.c IS NULL THEN 0 ELSE round(100-(non_ident.c*100/(ident.c+non_ident.c)),1) END as 'pourcentage'
 			  from (SELECT COUNT(DISTINCT hardware_id) as c,'IPDISCOVER' as TYPE,tvalue as RSX
 					FROM devices 
 					WHERE name='IPDISCOVER' and tvalue in  ";
@@ -76,6 +76,7 @@ echo "<br>";
 					LEFT JOIN networks ns ON ns.macaddr=n.mac
 					WHERE n.mac NOT IN (SELECT DISTINCT(macaddr) FROM network_devices) 
 						and (ns.macaddr IS NULL OR ns.IPSUBNET <> n.netid) 
+	 					and ns.HARDWARE_ID IS NULL
 						and n.netid in  ";
 	 	$arg=mysql2_prepare($arg['SQL'],$arg['ARG'],$array_rsx);
 	 	$arg['SQL'] .= " GROUP BY netid) 
@@ -153,9 +154,5 @@ echo "<br>";
 	$result_exist=tab_req($table_name,$list_fields,$default_fields,$list_col_cant_del,$arg['SQL'] ,$form_name,80,$tab_options); 
 
 }
-
-
-	
-
-echo "</form>";
+echo close_form();
 ?>

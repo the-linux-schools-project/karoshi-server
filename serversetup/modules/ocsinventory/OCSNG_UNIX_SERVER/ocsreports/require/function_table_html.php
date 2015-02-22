@@ -162,24 +162,23 @@ function escape_string($array){
 
 function xml_escape_string($array){
 	foreach ($array as $key=>$value){
-		$trait_array[$key]=xml_encode($value);
-		//$trait_array[$key]=mysql_real_escape_string($value);
+		$trait_array[$key]=utf8_encode($value);
+		$trait_array[$key]=htmlspecialchars($value,ENT_QUOTES);
 	}
 	return ($trait_array);
 }
 
 function xml_encode( $txt ) {
-		$cherche = array("&","<",">","\"","'","é","è","ô","Î","î","à","ç","ê","â");
-		$replace = array( "&amp;","&lt;","&gt;", "&quot;", "&apos;","&eacute;","&egrave;","&ocirc;","&Icirc;","&icirc;","&agrave;","&ccedil;","&ecirc;","&acirc;");
-		return str_replace($cherche, $replace, $txt);		
-	
+	$cherche = array("&","<",">","\"","'","é","è","ô","Î","î","à","ç","ê","â");
+	$replace = array( "&amp;","&lt;","&gt;", "&quot;", "&apos;","&eacute;","&egrave;","&ocirc;","&Icirc;","&icirc;","&agrave;","&ccedil;","&ecirc;","&acirc;");
+	return str_replace($cherche, $replace, $txt);		
+
 }
 
 function xml_decode( $txt ) {
-		$cherche = array( "&acirc;","&ecirc;","&ccedil;","&agrave;","&lt;","&gt;", "&quot;", "&apos;","&eacute;","&egrave;","&ocirc;","&Icirc;","&icirc;","&amp;");
-		$replace = array( "â","ê","ç","à","<",">","\"","'","é","è","ô","Î","î", "&" );
-		return str_replace($cherche, $replace, $txt);		
-	
+	$cherche = array( "&acirc;","&ecirc;","&ccedil;","&agrave;","&lt;","&gt;", "&quot;", "&apos;","&eacute;","&egrave;","&ocirc;","&Icirc;","&icirc;","&amp;");
+	$replace = array( "â","ê","ç","à","<",">","\"","'","é","è","ô","Î","î", "&" );
+	return str_replace($cherche, $replace, $txt);		
 }
 
 
@@ -340,16 +339,16 @@ function show_modif($name,$input_name,$input_type,$input_reload = "",$configinpu
 	}
 		if ($input_type == 1){
 			
-		return "<textarea name='".$input_name."' id='".$input_name."' cols='".$configinput['COLS']."' rows='".$configinput['ROWS']."'  class='down' \>".$name."</textarea>";
+		return "<textarea name='".$input_name."' id='".$input_name."' cols='".$configinput['COLS']."' rows='".$configinput['ROWS']."'  class='down' >".$name."</textarea>";
 	
 	}elseif ($input_type ==0)
 	return "<input type='text' name='".$input_name."' id='".$input_name."' SIZE='".$configinput['SIZE']."' MAXLENGTH='".$configinput['MAXLENGTH']."' value=\"".$name."\" class='down'\" ".$configinput['JAVASCRIPT'].">";
 	elseif($input_type ==2){
-		$champs="<select name='".$input_name."' id='".$input_name."' ".$configinput['JAVASCRIPT'];
+		$champs="<select name='".$input_name."' id='".$input_name."' ".(isset($configinput['JAVASCRIPT'])?$configinput['JAVASCRIPT']:'');
 		if ($input_reload != "") $champs.=" onChange='document.".$input_reload.".submit();'";
-		$champs.=" class='down' \>";
-		if ($configinput['DEFAULT'] == "YES")
-		$champs.= "<option value='' class='hi' \></option>";
+		$champs.=" class='down' >";
+		if (isset($configinput['DEFAULT']) and $configinput['DEFAULT'] == "YES")
+		$champs.= "<option value='' class='hi' ></option>";
 		$countHl=0;		
 		if ($name != ''){
 			natcasesort($name);
@@ -357,7 +356,7 @@ function show_modif($name,$input_name,$input_type,$input_reload = "",$configinpu
 				$champs.= "<option value=\"".$key."\"";
 				if ($protectedPost[$input_name] == $key )
 					$champs.= " selected";
-				$champs.= ($countHl%2==1?" class='hi'":" class='down'")." \>".$value."</option>";
+				$champs.= ($countHl%2==1?" class='hi'":" class='down'")." >".$value."</option>";
 				$countHl++;
 			}
 		}
@@ -368,7 +367,7 @@ function show_modif($name,$input_name,$input_type,$input_reload = "",$configinpu
 	//	echo $name."<br>";
 		return $name.$hid;
 	}elseif ($input_type == 4)
-	 return "<input size='".$configinput['SIZE']."' type='password' name='".$input_name."' class='hi' \>";
+	 return "<input size='".$configinput['SIZE']."' type='password' name='".$input_name."' class='hi' />";
 	elseif ($input_type == 5 and isset($name) and is_array($name)){	
 		foreach ($name as $key=>$value){
 			$champs.= "<input type='checkbox' name='".$input_name."_".$key."' id='".$input_name."_".$key."' ";
@@ -448,6 +447,21 @@ function show_modif($name,$input_name,$input_type,$input_reload = "",$configinpu
 			$champs.= " >" . $value . " <br>";
 		}
 		return $champs;		
+	}elseif($input_type == 12){ //IMG type
+		$champs="<img src='".$configinput['DEFAULT']."' ";
+		if ($configinput['SIZE'] != '20')
+			$champs.=$configinput['SIZE']." ";
+	
+		if ($configinput['JAVASCRIPT'] != '')
+			$champs.=$configinput['JAVASCRIPT']." ";
+		$champs.=">";
+		return $champs;
+		//"<img src='index.php?".PAG_INDEX."=".$pages_refs['ms_qrcode']."&no_header=1&systemid=".$protectedGet['systemid']."' width=60 height=60 onclick=window.open(\"index.php?".PAG_INDEX."=".$pages_refs['ms_qrcode']."&no_header=1&systemid=".$protectedGet['systemid']."\")>";
+		
+	}elseif($input_type == 13){
+		
+		return "<input id='".$input_name."' name='".$input_name."' type='file' accept='archive/zip'>";
+	
 	}
 }
 
@@ -459,8 +473,7 @@ function tab_modif_values($tab_name,$tab_typ_champ,$tab_hidden,$title="",$commen
 		$css="mvt_bordure";
 
 	if ($form_name != 'NO_FORM'){
-		echo "<form name='" . $form_name . "' id='" 
-			. $form_name . "' action='' method='POST'>";
+		echo open_form($form_name);
 	}
 	echo '<div class="'.$css.'" >';
 	if ($showbutton_action != '')
@@ -508,7 +521,7 @@ function tab_modif_values($tab_name,$tab_typ_champ,$tab_hidden,$title="",$commen
 		}
     }
     if ($form_name != 'NO_FORM')
-	echo "</form>";
+	echo close_form();
 }
 
 function show_field($name_field,$type_field,$value_field,$config=array()){
@@ -775,7 +788,7 @@ function onglet($def_onglets,$form_name,$post_name,$ligne)
 										$def_onglets[$l->g(628)]=$l->g(628); //Serveur de redistribution 
 		
 	behing this function put this lign:
-	echo "<form name='modif_onglet' id='modif_onglet' method='POST' action='index.php?multi=4'>";
+	echo open_form($form_name);
 	
 	At the end of your page, close this form
 	$post_name is the name of var will be post
@@ -1296,6 +1309,7 @@ function tab_req($table_name,$list_fields,$default_fields,$list_col_cant_del,$qu
 			echo "<input type='hidden' id='ACTIVE' name='ACTIVE' value=''>";
 			echo "<input type='hidden' id='CONFIRM_CHECK' name='CONFIRM_CHECK' value=''>";
 			echo "<input type='hidden' id='OTHER_BIS' name='OTHER_BIS' value=''>";
+			echo "<input type='hidden' id='OTHER_TER' name='OTHER_TER' value=''>";
 			return TRUE;
 		}else
 			return FALSE;
@@ -1411,7 +1425,7 @@ function gestion_donnees($sql_data,$list_fields,$tab_options,$form_name,$default
 						
 					}
 				}
-				
+
 				if (isset($tab_options['REPLACE_WITH_LIMIT']['UP'][$key])){
 					if ($value_of_field > $tab_options['REPLACE_WITH_LIMIT']['UP'][$key])
 						$value_of_field= $tab_options['REPLACE_WITH_LIMIT']['UPVALUE'][$key];
@@ -1429,7 +1443,7 @@ function gestion_donnees($sql_data,$list_fields,$tab_options,$form_name,$default
 							if ($key == "STAT" or $key == "SUP" or $key == "CHECK"){
 								$key2 = "NULL";
 							}else{
-								$data[$i][$num_col]=$value_of_field;
+								$data[$i][$num_col]=htmlspecialchars($value_of_field, ENT_QUOTES);
 								$affich="KO";
 							}
 						}
@@ -1471,9 +1485,9 @@ function gestion_donnees($sql_data,$list_fields,$tab_options,$form_name,$default
 					and (!isset($tab_options['NO_LIEN_CHAMP'][$key]) or !in_array($value_of_field,$tab_options['NO_LIEN_CHAMP'][$key]))){
 					$affich="KO";
 				
-					if (!isset($tab_options['LIEN_TYPE'][$key]))
+					if (!isset($tab_options['LIEN_TYPE'][$key])){
 						$data[$i][$num_col]="<a href='".$tab_options['LIEN_LBL'][$key].$donnees[$tab_options['LIEN_CHAMP'][$key]]."' target='_blank'>".$value_of_field."</a>";
-					else{
+					}else{
 						if (!isset($tab_options['POPUP_SIZE'][$key]))
 						$size="width=550,height=350";
 						else
@@ -1499,6 +1513,7 @@ function gestion_donnees($sql_data,$list_fields,$tab_options,$form_name,$default
 					$htmlentities=false;
 				}
 				if ($affich == 'OK'){
+					
 					$lbl_column=array("SUP"=>$l->g(122),
 									  "MODIF"=>$l->g(115),
 									  "CHECK"=>$l->g(1119) . "<input type='checkbox' name='ALL' id='ALL' Onclick='checkall();'>");
@@ -1583,6 +1598,8 @@ function gestion_donnees($sql_data,$list_fields,$tab_options,$form_name,$default
 							$end="<a href=# OnClick='pag(\"".htmlspecialchars($value_of_field, ENT_QUOTES)."\",\"OTHER\",\"".$form_name."\");'><img src=".$tab_options['OTHER']['IMG']."></a>";
 						}elseif (isset($tab_options['OTHER_BIS'][$key][$value_of_field])){
 							$end="<a href=# OnClick='pag(\"".htmlspecialchars($value_of_field, ENT_QUOTES)."\",\"OTHER_BIS\",\"".$form_name."\");'><img src=".$tab_options['OTHER_BIS']['IMG']."></a>";
+						}elseif (isset($tab_options['OTHER_TER'][$key][$value_of_field])){
+							$end="<a href=# OnClick='pag(\"".htmlspecialchars($value_of_field, ENT_QUOTES)."\",\"OTHER_TER\",\"".$form_name."\");'><img src=".$tab_options['OTHER_TER']['IMG']."></a>";
 						}else{
 							$end="";
 						}

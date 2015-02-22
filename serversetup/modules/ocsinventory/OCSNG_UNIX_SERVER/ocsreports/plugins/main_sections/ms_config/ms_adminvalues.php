@@ -43,7 +43,8 @@ if (isset($protectedPost['MODIF'])
 }
 
 
-echo "<br><form name='".$form_name."' id='".$form_name."' method='POST'>";
+echo "<br>";
+echo open_form($form_name);
 onglet($data_on,$form_name,"onglet",2);
 echo '<div class="mlt_bordure" >';
 
@@ -66,7 +67,7 @@ if ($protectedPost['onglet'] == 1){
 		delete($protectedGet['tag']."_".$protectedPost['SUP_PROF']);
 	}	
 	
-	$queryDetails ="select IVALUE,TVALUE from config where name like '".$protectedGet['tag']."_%'";
+	$queryDetails ="select IVALUE,TVALUE from config where name like '".$protectedGet['tag']."\_%'";
 
 	if (!isset($protectedPost['SHOW']))
 		$protectedPost['SHOW'] = 'NOSHOW';
@@ -173,7 +174,7 @@ if ($protectedPost['onglet'] == 1){
 
 
 echo "</div>"; 
-echo "</form>";
+echo close_form();
 
 ?>
 

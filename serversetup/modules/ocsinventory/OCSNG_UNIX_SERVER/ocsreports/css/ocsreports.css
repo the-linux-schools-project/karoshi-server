@@ -1,5 +1,22 @@
 /* OCSReports Style Sheet */
+table.qr
+{
+	border-collapse: collapse;
+	border: solid 1px black;
+	table-layout: fixed;
+}
 
+table.qr td
+{
+	width: 5px;
+	height: 5px;
+	font-size: 2px;
+}
+
+table.qr td.on
+{
+	background: #000000;
+}
 .conteneur {
 /*background-color: #C7D9F5;*/
 position: absolute;
@@ -140,7 +157,7 @@ table.Main
 
 table.headfoot 
 {
-	background-color: #D6DCF2;
+	background-color: #f2f2f2;
 	border-color: #000000;
 	border-spacing: 0px;
 	border-style: solid;
@@ -216,7 +233,7 @@ margin-top: 5px ;
 width: 17em;
 background: #D6DCF2;
 border: 1px solid gray;
--moz-border-radius: 1em;
+border-radius: 1em;
 -webkit-border-radius: 1em;
 }
 
@@ -298,7 +315,7 @@ th.ta:last-child {border-right: solid 1px #9894B5;}
 	width:75%;
     margin:0 auto 0 auto;
 	background-color: #f2f2f2;
-	-moz-border-radius: 1em;
+	border-radius: 1em;
 	-webkit-border-radius: 1em;
 	border: 2px solid #C7D9F5;
 	padding: 10px;
@@ -308,7 +325,7 @@ th.ta:last-child {border-right: solid 1px #9894B5;}
 	width:75%;
     margin:0 auto 0 auto;
 	background-color: #D6DCF2;
-	-moz-border-radius: 1em;
+	border-radius: 1em;
 	-webkit-border-radius: 1em;
 	border: 2px solid #D6DCF2;
 	padding: 10px;
@@ -317,7 +334,7 @@ th.ta:last-child {border-right: solid 1px #9894B5;}
 .mvt_tab {
     margin:0 auto 0 auto;
 	background-color: #D6DCF2;
-	-moz-border-radius: 1em;
+	border-radius: 1em;
 	-webkit-border-radius: 1em;
 	border: 2px solid #D6DCF2;
 	padding: 10px;

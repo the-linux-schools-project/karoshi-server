@@ -35,6 +35,10 @@ APACHE_ROOT_DOCUMENT=""
 APACHE_MOD_PERL_VERSION=""
 # Where are located OCS Communication server log files
 OCS_COM_SRV_LOG="/var/log/ocsinventory-server"
+# Where are located OCS Communication server plugins configuration files
+OCS_COM_SRV_PLUGINS_CONFIG_DIR="/etc/ocsinventory-server/plugins"
+# Where are located OCS Communication server plugins perl files 
+OCS_COM_SRV_PLUGINS_PERL_DIR="/etc/ocsinventory-server/perl"
 # Where is located perl interpreter
 PERL_BIN=`which perl 2>/dev/null`
 # Where is located make utility
@@ -60,6 +64,9 @@ ADM_SERVER_VAR_DIR="/var/lib/ocsinventory-reports"
 # Administration default packages directory and Apache alias
 ADM_SERVER_VAR_PACKAGES_DIR="download"
 ADM_SERVER_PACKAGES_ALIAS="/download"
+# Administration default snmp directory and Apache alias
+ADM_SERVER_VAR_SNMP_DIR="snmp"
+ADM_SERVER_SNMP_ALIAS="/snmp"
 # Administration console log files dir
 ADM_SERVER_VAR_LOGS_DIR="logs"
 # Administration console scripts log files dir
@@ -85,11 +92,12 @@ echo "Trying to determine whitch OS or Linux distribution you use"
 if [ -f /etc/redhat-release ]
 then
     UNIX_DISTRIBUTION="redhat"
-else
-    if [ -f /etc/debian_version ]
-    then
-	UNIX_DISTRIBUTION="debian"
-    fi
+elif [ -f /etc/debian_version ]
+then
+    UNIX_DISTRIBUTION="debian"
+elif [ -f /etc/SuSE-release ]
+then
+    UNIX_DISTRIBUTION="suse"
 fi
 
 # Check for Apache web server binaries
@@ -227,7 +235,11 @@ then
         if [ -z "$APACHE_BIN_FOUND" ]
         then
             APACHE_BIN_FOUND=`which apache2 2>/dev/null`
-        fi
+            if [ -z "$APACHE_BIN_FOUND" ]
+            then
+		APACHE_BIN_FOUND=`which httpd2 2>/dev/null`
+            fi
+	fi
     fi
 fi
 echo "Found Apache daemon $APACHE_BIN_FOUND" >> $SETUP_LOG
@@ -267,91 +279,24 @@ echo "+----------------------------------------------------------+"
 echo "| Checking for Apache main configuration file...           |"
 echo "+----------------------------------------------------------+"
 echo
+
 # Try to find Apache main configuration file
 echo "Checking for Apache main configuration file" >> $SETUP_LOG
-if [ -z "$APACHE_CONFIG_FILE" ]
-then
-    APACHE_ROOT=`eval $APACHE_BIN -V | grep "HTTPD_ROOT" | cut -d'=' -f2 | tr -d '"'`
-    echo "Found Apache HTTPD_ROOT $APACHE_ROOT" >> $SETUP_LOG
-    APACHE_CONFIG=`eval $APACHE_BIN -V | grep "SERVER_CONFIG_FILE" | cut -d'=' -f2 | tr -d '"'`
-    echo "Found Apache SERVER_CONFIG_FILE $APACHE_CONFIG" >> $SETUP_LOG
-    if [ -e $APACHE_CONFIG ]
-    then
-        APACHE_CONFIG_FILE_FOUND="$APACHE_CONFIG"
-    else
-        APACHE_CONFIG_FILE_FOUND="$APACHE_ROOT/$APACHE_CONFIG"
-    fi
-fi
+APACHE_CONFIG_FILE=/etc/apache2/apache2.conf
+APACHE_CONFIG_FILE_FOUND=/etc/apache2/apache2.conf
 echo "Found Apache main configuration file $APACHE_CONFIG_FILE_FOUND" >> $SETUP_LOG
-# Ask user's confirmation 
-res=0
-while [ $res -eq 0 ]
-do
-    echo -n "Where is Apache main configuration file [$APACHE_CONFIG_FILE_FOUND] ?"
-    ligne=""
-    if [ -z "$ligne" ]
-    then
-        APACHE_CONFIG_FILE=$APACHE_CONFIG_FILE_FOUND
-    else
-        APACHE_CONFIG_FILE="$ligne"
-    fi
-    # Ensure file is not a directory
-    if [ -d $APACHE_CONFIG_FILE ]
-    then 
-        echo "*** ERROR: $APACHE_CONFIG_FILE is a directory !"
-        res=0
-    fi
-    # Ensure file exists and is readable
-    if [ -r $APACHE_CONFIG_FILE ]
-    then
-        res=1
-    else
-        echo "*** ERROR: $APACHE_CONFIG_FILE is not readable !"
-        res=0
-    fi
-done
 echo "OK, using Apache main configuration file $APACHE_CONFIG_FILE ;-)"
 echo "Using Apache main configuration file $APACHE_CONFIG_FILE" >> $SETUP_LOG
 echo
-
 echo
 echo "+----------------------------------------------------------+"
 echo "| Checking for Apache user account...                      |"
 echo "+----------------------------------------------------------+"
 echo
-# Try to find Apache main configuration file
-echo "Checking for Apache user account" >> $SETUP_LOG
-if [ -z "$APACHE_USER" ]
-then
-    # Debian
-    if [ -f /etc/apache2/envvars ]; then
-        . /etc/apache2/envvars
-        APACHE_USER_FOUND=$APACHE_RUN_USER
-    else
-        APACHE_USER_FOUND=`cat $APACHE_CONFIG_FILE | grep "User " | tail -1 | cut -d' ' -f2`
-    fi
-fi
-echo "Found Apache user account $APACHE_USER_FOUND" >> $SETUP_LOG
-# Ask user's confirmation 
-res=0
-while [ $res -eq 0 ]
-do
-    echo -n "Which user account is running Apache web server [$APACHE_USER_FOUND] ?"
-    ligne=""
-    if [ -z "$ligne" ]
-    then
-        APACHE_USER=$APACHE_USER_FOUND
-    else
-        APACHE_USER="$ligne"
-    fi
-    # Ensure group exist in /etc/passwd
-    if [ `cat /etc/passwd | grep $APACHE_USER | wc -l` -eq 0 ]
-    then
-        echo "*** ERROR: account $APACHE_USER not found in system table /etc/passwd !"
-    else
-        res=1
-    fi
-done
+APACHE_USER=www-data
+APACHE_USER_FOUND=www-data
+APACHE_GROUP=www-data
+APACHE_GROUP_FOUND=www-data
 echo "OK, Apache is running under user account $APACHE_USER ;-)"
 echo "Using Apache user account $APACHE_USER" >> $SETUP_LOG
 echo
@@ -361,121 +306,24 @@ echo "+----------------------------------------------------------+"
 echo "| Checking for Apache group...                             |"
 echo "+----------------------------------------------------------+"
 echo
-# Try to find Apache main configuration file
-echo "Checking for Apache group" >> $SETUP_LOG
-if [ -z "$APACHE_GROUP" ]
-then
-    # Debian
-    if [ -f /etc/apache2/envvars ]; then
-        . /etc/apache2/envvars
-        APACHE_GROUP_FOUND=$APACHE_RUN_GROUP
-    else
-        APACHE_GROUP_FOUND=`cat $APACHE_CONFIG_FILE | grep "Group" | tail -1 | cut -d' ' -f2`
-    fi
-
-    if [ -z "$APACHE_GROUP_FOUND" ]
-    then
-        # No group found, assume group name is the same as account
-        echo "No Apache user group found, assuming group name is the same as user account" >> $SETUP_LOG
-        APACHE_GROUP_FOUND=$APACHE_USER
-    fi
-fi
 echo "Found Apache user group $APACHE_GROUP_FOUND" >> $SETUP_LOG
-# Ask user's confirmation 
-res=0
-while [ $res -eq 0 ]
-do
-    echo -n "Which user group is running Apache web server [$APACHE_GROUP_FOUND] ?"
-    ligne=""
-    if [ -z "$ligne" ]
-    then
-        APACHE_GROUP=$APACHE_GROUP_FOUND
-    else
-        APACHE_GROUP="$ligne"
-    fi
-    # Ensure group exist in /etc/group
-    if [ `cat /etc/group | grep $APACHE_GROUP | wc -l` -eq 0 ]
-    then
-        echo "*** ERROR: group $APACHE_GROUP not found in system table /etc/group !"
-    else
-        res=1
-    fi
-done
 echo "OK, Apache is running under users group $APACHE_GROUP ;-)"
 echo "Using Apache user group $APACHE_GROUP" >> $SETUP_LOG
 echo
-
-
 echo
 echo "+----------------------------------------------------------+"
 echo "| Checking for Apache Include configuration directory...   |"
 echo "+----------------------------------------------------------+"
 echo
 # Try to find Apache includes configuration directory
-echo "Checking for Apache Include configuration directory" >> $SETUP_LOG
-if [ -z "$APACHE_CONFIG_DIRECTORY" ]
-then
-    # Works on RH/Fedora/CentOS
-    CONFIG_DIRECTORY_FOUND=`eval cat $APACHE_CONFIG_FILE | grep Include | grep conf.d |head -1 | cut -d' ' -f2 | cut -d'*' -f1`
-    if [ -n "$CONFIG_DIRECTORY_FOUND" ]
-    then
-        APACHE_CONFIG_DIRECTORY_FOUND="$APACHE_ROOT/$CONFIG_DIRECTORY_FOUND"
-        echo "Redhat compliant Apache Include configuration directory $CONFIG_DIRECTORY_FOUND" >> $SETUP_LOG
-    else
-        APACHE_CONFIG_DIRECTORY_FOUND=""
-        echo "Not found Redhat compliant Apache Include configuration directory" >> $SETUP_LOG
-    fi
-    if ! [ -d $APACHE_CONFIG_DIRECTORY_FOUND ]
-    then
-        # Works on Debian/Ubuntu
-        CONFIG_DIRECTORY_FOUND=`eval cat $APACHE_CONFIG_FILE | grep Include | grep conf.d |head -1 | cut -d' ' -f2 | cut -d'[' -f1`
-        if [ -n "$CONFIG_DIRECTORY_FOUND" ]
-        then
-            APACHE_CONFIG_DIRECTORY_FOUND="$APACHE_ROOT/$CONFIG_DIRECTORY_FOUND"
-            echo "Debian compliant Apache Include configuration directory $CONFIG_DIRECTORY_FOUND" >> $SETUP_LOG
-        else
-            APACHE_CONFIG_DIRECTORY_FOUND=""
-            echo "Not found Debian compliant Apache Include configuration directory" >> $SETUP_LOG
-        fi
-    fi
-fi
+APACHE_CONFIG_DIRECTORY=/etc/apache2/conf-enabled/
+APACHE_CONFIG_DIRECTORY_FOUND=/etc/apache2/conf-enabled/
+
+
 echo "Found Apache Include configuration directory $APACHE_CONFIG_DIRECTORY_FOUND" >> $SETUP_LOG
-# Ask user's confirmation 
-echo "Setup found Apache Include configuration directory in"
-echo "$APACHE_CONFIG_DIRECTORY_FOUND."
-echo "Setup will put OCS Inventory NG Apache configuration in this directory."
-res=0
-while [ $res -eq 0 ]
-do
-    echo -n "Where is Apache Include configuration directory [$APACHE_CONFIG_DIRECTORY_FOUND] ?"
-    ligne=""
-    if [ -z "$ligne" ]
-    then
-        APACHE_CONFIG_DIRECTORY=$APACHE_CONFIG_DIRECTORY_FOUND
-    else
-        APACHE_CONFIG_DIRECTORY="$ligne"
-    fi
-    # Ensure file is a directory
-    if [ -d $APACHE_CONFIG_DIRECTORY ]
-    then
-        res=1
-    else
-        echo "*** ERROR: $APACHE_CONFIG_DIRECTORY is not a directory !"
-        res=0
-    fi
-    # Ensure directory exists and is writable
-    if [ -w $APACHE_CONFIG_DIRECTORY ]
-    then
-        res=1
-    else
-        echo "*** ERROR: $APACHE_CONFIG_DIRECTORY is not writable !"
-        res=0
-    fi
-done
 echo "OK, Apache Include configuration directory $APACHE_CONFIG_DIRECTORY found ;-)"
 echo "Using Apache Include configuration directory $APACHE_CONFIG_DIRECTORY" >> $SETUP_LOG
 echo
-
 
 echo
 echo "+----------------------------------------------------------+"
@@ -500,7 +348,6 @@ fi
 res=0
 while [ $res -eq 0 ]
 do
-    echo -n "Where is PERL Intrepreter binary [$PERL_BIN] ?"
     ligne=""
     if [ -n "$ligne" ]
     then
@@ -524,8 +371,6 @@ done
 echo "OK, using PERL Intrepreter $PERL_BIN ;-)"
 echo "Using PERL Intrepreter $PERL_BIN" >> $SETUP_LOG
 echo
-
-
 echo
 echo -n "Do you wish to setup Communication server on this computer ([y]/n)?"
 ligne=""
@@ -636,6 +481,52 @@ then
     echo "OK, Communication server will put logs into directory $OCS_COM_SRV_LOG ;-)"
     echo "Using $OCS_COM_SRV_LOG as Communication server log directory" >> $SETUP_LOG
     echo
+
+
+    echo "+----------------------------------------------------------------------------+"
+    echo "| Checking for Communication server plugins configuration directory...       |"
+    echo "+----------------------------------------------------------------------------+"
+    echo
+    echo "Checking for Communication server plugins configuration directory" >> $SETUP_LOG
+    # Ask user 
+    res=0
+    while [ $res -eq 0 ]
+    do
+        echo "Communication server need a directory for plugins configuration files. "
+        echo -n "Where to put Communication server plugins configuration files [$OCS_COM_SRV_PLUGINS_CONFIG_DIR] ?"
+        ligne=""
+        if [ -n "$ligne" ]
+        then
+            OCS_COM_SRV_PLUGINS_CONFIG_DIR=$ligne
+        fi
+        res=1
+    done
+    echo "OK, Communication server will put plugins configuration files into directory $OCS_COM_SRV_PLUGINS_CONFIG_DIR ;-)"
+    echo "Using $OCS_COM_SRV_PLUGINS_CONFIG_DIR as Communication server plugins configuration directory" >> $SETUP_LOG
+    echo
+
+
+    echo "+-------------------------------------------------------------------+"
+    echo "| Checking for Communication server plugins perl directory...       |"
+    echo "+-------------------------------------------------------------------+"
+    echo
+    echo "Checking for Communication server perl directory" >> $SETUP_LOG
+    # Ask user 
+    res=0
+    while [ $res -eq 0 ]
+    do
+        echo "Communication server need a directory for plugins Perl modules files."
+        echo -n "Where to put Communication server plugins Perl modules files [$OCS_COM_SRV_PLUGINS_PERL_DIR] ?"
+        ligne=""
+        if [ -n "$ligne" ]
+        then
+            OCS_COM_SRV_PLUGINS_PERL_DIR=$ligne
+        fi
+        res=1
+    done
+    echo "OK, Communication server will put plugins Perl modules files into directory $OCS_COM_SRV_PLUGINS_PERL_DIR ;-)"
+    echo "Using $OCS_COM_SRV_PLUGINS_PERL_DIR as Communication server plugins perl directory" >> $SETUP_LOG
+    echo
     
     # jump to communication server directory
     echo "Entering Apache sub directory" >> $SETUP_LOG
@@ -734,33 +625,33 @@ then
 	echo "OCS setup.sh can install perl module from packages for you"
 	echo "The script will use the native package from your operating system like apt or rpm"
 	echo -n "Do you wish to continue (y/[n])?"
-	ligne=""
+	ligne=y
 	if [ "$ligne" = "y" ] || [ "$ligne" = "Y" ]
 	then
             case $UNIX_DISTRIBUTION in
                  "redhat")
                      echo "RedHat based automatic installation"
-                     if [ $DBI=1 ]
+                     if [ $DBI -eq 1 ]
                      then
                          PACKAGE="$PACKAGE perl-DBI"
                      fi
-                     if [ $APACHE_DBI=1 ]
+                     if [ $APACHE_DBI -eq 1 ]
                      then
                          PACKAGE="$PACKAGE perl-Apache-DBI"
                      fi
-                     if [ $DBD_MYSQL=1 ]
+                     if [ $DBD_MYSQL -eq 1 ]
                      then
                          PACKAGE="$PACKAGE perl-DBD-MySQL"
                      fi
-                     if [ $COMPRESS_ZLIB=1 ]
+                     if [ $COMPRESS_ZLIB -eq 1 ]
                      then
                          PACKAGE="$PACKAGE perl-Compress-Zlib"
                      fi
-                     if [ $XML_SIMPLE=1 ]
+                     if [ $XML_SIMPLE -eq 1 ]
                      then
                          PACKAGE="$PACKAGE perl-XML-Simple"
                      fi
-                     if [ $NET_IP=1 ]
+                     if [ $NET_IP -eq 1 ]
                      then
                          PACKAGE="$PACKAGE perl-Net-IP"
                      fi
@@ -781,33 +672,33 @@ then
 		     if [ -f /usr/bin/apt-get ]
     	             then
 	 	         echo "Debian based automatic installation"
-		         if [ $DBI=1 ]
+		         if [ $DBI -eq 1 ]
 		         then
  			     PACKAGE="$PACKAGE libdbi-perl"
 		         fi
-		         if [ $APACHE_DBI=1 ]
+		         if [ $APACHE_DBI -eq 1 ]
 		         then
 			     PACKAGE="$PACKAGE libapache-dbi-perl"
 		         fi
-		         if [ $DBD_MYSQL=1 ]
+		         if [ $DBD_MYSQL -eq 1 ]
 		         then
 			     PACKAGE="$PACKAGE libdbd-mysql-perl"
 		         fi
-		         if [ $COMPRESS_ZLIB=1 ]
+		         if [ $COMPRESS_ZLIB -eq 1 ]
 		         then
                 	     PACKAGE="$PACKAGE libcompress-zlib-perl"
 		         fi
-		         if [ $XML_SIMPLE=1 ]
+		         if [ $XML_SIMPLE -eq 1 ]
 		         then
                 	     PACKAGE="$PACKAGE libxml-simple-perl"
 		         fi
-                         if [ $NET_IP=1 ]
+                         if [ $NET_IP -eq 1 ]
                          then
                 	     PACKAGE="$PACKAGE libnet-ip-perl"
 		         fi
 		         apt-get update
-		         apt-get install $PACKAGE
-		         if [ $? != 0 ]
+		         apt-get install -y $PACKAGE
+		         if [ $? -ne 0 ]
 		         then
 			     echo "Installation aborted !"
 			     echo "Installation script encounter problems to install packages !"
@@ -872,6 +763,28 @@ then
     else
         echo "Found that PERL module SOAP::Lite is available."
     fi
+    echo
+    echo "Checking for Apache2::SOAP PERL module..."
+    echo "Checking for Apache2::SOAP PERL module" >> $SETUP_LOG
+    $PERL_BIN -mApache2::SOAP -e 'print "PERL module Apache2::SOAP is available\n"' >> $SETUP_LOG 2>&1
+    if [ $? -ne 0 ]
+    then
+        echo "*** Warning: PERL module Apache2::SOAP is not installed !"
+        echo "This module is only required by OCS Inventory NG SOAP Web Service."
+        echo -n "Do you wish to continue ([y]/n] ?"
+        ligne=""
+        if [ -z "$ligne" ] || [ "$ligne" = "y" ]
+        then
+            echo "User choose to continue setup without PERL module SOAP::Apache2" >> $SETUP_LOG
+        else
+            echo
+            echo "Installation aborted !"
+            echo "User choose to abort installation !" >> $SETUP_LOG
+            exit 1
+        fi
+    else
+        echo "Found that PERL module SOAP::Apache2 is available."
+    fi
     echo "Checking for XML::Entities PERL module..."
     echo "Checking for XML::Entities PERL module" >> $SETUP_LOG
     $PERL_BIN -mXML::Entities -e 'print "PERL module XML::Entities is available\n"' >> $SETUP_LOG 2>&1
@@ -909,7 +822,7 @@ then
     if [ $? -ne 0 ]
     then
         echo -n "Warning: Prerequisites too old ! Do you wish to continue (y/[n])?"
-        ligne=y
+        read ligne
         if [ "$ligne" = "y" ]
         then
             echo "Maybe Communication server will encounter problems. Continuing anyway."
@@ -1031,18 +944,56 @@ then
     echo
     
     echo
-    echo "+----------------------------------------------------------+"
-    echo "| OK, Communication server log directory created ;-)       |"
-    echo "|                                                          |"
-    echo "| Now configuring Apache web server...                     |"
-    echo "+----------------------------------------------------------+"
+    echo "+-----------------------------------------------------------------------------+"
+    echo "| OK, Communication server log directory created ;-)                          |"
+    echo "|                                                                             |"
+    echo "| Creating Communication server plugins configuration directory...            |"
+    echo "+-----------------------------------------------------------------------------+"
+    echo
+    echo "Creating Communication server plugins configuration directory $OCS_COM_SRV_PLUGINS_CONFIG_DIR."
+    echo "Creating Communication server plugins configuration directory $OCS_COM_SRV_PLUGINS_CONFIG_DIR" >> $SETUP_LOG
+    mkdir -p $OCS_COM_SRV_PLUGINS_CONFIG_DIR >> $SETUP_LOG 2>&1
+    if [ $? -ne 0 ]
+    then
+        echo "*** ERROR: Unable to create plugins confguration directory, please look at error in $SETUP_LOG and fix !"
+        echo
+        echo "Installation aborted !"
+        exit 1
+    fi
+    echo
+
+    echo
+    echo "+-----------------------------------------------------------------------------+"
+    echo "| OK, Communication server plugins configuration directory created ;-)        |"
+    echo "|                                                                             |"
+    echo "| Creating Communication server plugins Perl directory...                     |"
+    echo "+-----------------------------------------------------------------------------+"
+    echo
+    echo "Creating Communication server plugins Perl directory $OCS_COM_SRV_PLUGINS_PERL_DIR."
+    echo "Creating Communication server plugins Perl directory $OCS_COM_SRV_PLUGINS_PERL_DIR" >> $SETUP_LOG
+    mkdir -p "$OCS_COM_SRV_PLUGINS_PERL_DIR/Apache/Ocsinventory/Plugins" >> $SETUP_LOG 2>&1
+    if [ $? -ne 0 ]
+    then
+        echo "*** ERROR: Unable to create plugins Perl directory, please look at error in $SETUP_LOG and fix !"
+        echo
+        echo "Installation aborted !"
+        exit 1
+    fi
+    echo
+
+    echo
+    echo "+-------------------------------------------------------------------+"
+    echo "| OK, Communication server plugins Perl directory created ;-)       |"
+    echo "|                                                                   |"
+    echo "| Now configuring Apache web server...                              |"
+    echo "+-------------------------------------------------------------------+"
     echo
     echo "To ensure Apache loads mod_perl before OCS Inventory NG Communication Server,"
     echo "Setup can name Communication Server Apache configuration file"
     echo "'z-$COM_SERVER_APACHE_CONF_FILE' instead of '$COM_SERVER_APACHE_CONF_FILE'."
     echo "Do you allow Setup renaming Communication Server Apache configuration file"
     echo -n "to 'z-$COM_SERVER_APACHE_CONF_FILE' ([y]/n) ?"
-    ligne=""
+    ligne=y
     if [ -z $ligne ] || [ "$ligne" = "y" ] || [ "$ligne" = "Y" ]
     then
         echo "OK, using 'z-$COM_SERVER_APACHE_CONF_FILE' as Communication Server Apache configuration file"
@@ -1059,6 +1010,8 @@ then
     $PERL_BIN -pi -e "s#DATABASE_PORT#$DB_SERVER_PORT#g" $COM_SERVER_APACHE_CONF_FILE.local
     $PERL_BIN -pi -e "s#VERSION_MP#$APACHE_MOD_PERL_VERSION#g" $COM_SERVER_APACHE_CONF_FILE.local
     $PERL_BIN -pi -e "s#PATH_TO_LOG_DIRECTORY#$OCS_COM_SRV_LOG#g" $COM_SERVER_APACHE_CONF_FILE.local
+    $PERL_BIN -pi -e "s#PATH_TO_PLUGINS_CONFIG_DIRECTORY#$OCS_COM_SRV_PLUGINS_CONFIG_DIR#g" $COM_SERVER_APACHE_CONF_FILE.local
+    $PERL_BIN -pi -e "s#PATH_TO_PLUGINS_PERL_DIRECTORY#$OCS_COM_SRV_PLUGINS_PERL_DIR#g" $COM_SERVER_APACHE_CONF_FILE.local
     echo "******** Begin updated $COM_SERVER_APACHE_CONF_FILE.local ***********" >> $SETUP_LOG
     cat $COM_SERVER_APACHE_CONF_FILE.local >> $SETUP_LOG
     echo "******** End updated $COM_SERVER_APACHE_CONF_FILE.local ***********" >> $SETUP_LOG
@@ -1101,7 +1054,7 @@ fi
 echo
 echo "Do you wish to setup Administration Server (Web Administration Console)"
 echo -n "on this computer ([y]/n)?"
-ligne=""
+ligne=y
 if [ -z "$ligne" ] || [ "$ligne" = "y" ] || [ "$ligne" = "Y" ]
 then
     # Install Administration server
@@ -1126,7 +1079,7 @@ then
     echo "$ADM_SERVER_VAR_DIR), especialy if you use deployement feature."
     echo
     echo -n "Do you wish to continue ([y]/n)?"
-    ligne=""
+    ligne=y
     if [ -z "$ligne" ] || [ "$ligne" = "y" ] || [ "$ligne" = "Y" ]
     then
         echo "Assuming directories 'ocsreports' and 'download' removed from"
@@ -1152,7 +1105,7 @@ then
     echo "Using directory $ADM_SERVER_STATIC_DIR for static files" >> $SETUP_LOG
     echo
     echo "Where to create writable/cache directories for deployement packages,"
-    echo -n "administration console logs, IPDiscover [$ADM_SERVER_VAR_DIR] ?"
+    echo -n "administration console logs, IPDiscover and SNMP [$ADM_SERVER_VAR_DIR] ?"
     ligne=""
     if test -z $ligne
     then
@@ -1335,6 +1288,7 @@ then
         echo "Installation aborted !"
         exit 1
     fi
+    #Create packages directory
     echo "Creating packages directory $ADM_SERVER_VAR_DIR/$ADM_SERVER_VAR_PACKAGES_DIR."
     echo "Creating packages directory $ADM_SERVER_VAR_DIR/$ADM_SERVER_VAR_PACKAGES_DIR" >> $SETUP_LOG
     mkdir -p $ADM_SERVER_VAR_DIR/$ADM_SERVER_VAR_PACKAGES_DIR >> $SETUP_LOG 2>&1
@@ -1365,6 +1319,38 @@ then
         echo "Installation aborted !"
         exit 1
     fi
+    # Create snmp custom mibs directory
+    echo "Creating snmp mibs directory $ADM_SERVER_VAR_DIR/$ADM_SERVER_VAR_SNMP_DIR."
+    echo "Creating snmp mibs directory $ADM_SERVER_VAR_DIR/$ADM_SERVER_VAR_SNMP_DIR" >> $SETUP_LOG
+    mkdir -p $ADM_SERVER_VAR_DIR/$ADM_SERVER_VAR_SNMP_DIR >> $SETUP_LOG 2>&1
+    if [ $? != 0 ]
+    then
+        echo "*** ERROR: Unable to create ADM_SERVER_VAR_DIR/$ADM_SERVER_VAR_SNMP_DIR, please look at error in $SETUP_LOG and fix !"
+        echo
+        echo "Installation aborted !"
+        exit 1
+    fi
+    echo "Fixing permissions on directory $ADM_SERVER_VAR_DIR/$ADM_SERVER_VAR_SNMP_DIR."
+    echo "Fixing permissions on directory $ADM_SERVER_VAR_DIR/$ADM_SERVER_VAR_SNMP_DIR" >> $SETUP_LOG
+    # Set snmp area owned by root, group Apache
+    chown -R root:$APACHE_GROUP $ADM_SERVER_VAR_DIR/$ADM_SERVER_VAR_SNMP_DIR >> $SETUP_LOG 2>&1
+    if [ $? -ne 0 ]
+    then
+        echo "*** ERROR: Unable to set permissions on $ADM_SERVER_VAR_DIR/$ADM_SERVER_VAR_SNMP_DIR, please look at error in $SETUP_LOG and fix !"
+        echo
+        echo "Installation aborted !"
+        exit 1
+    fi
+    # Set snmp area writable by root and Apache group only
+    chmod -R g+w,o-w $ADM_SERVER_VAR_DIR/$ADM_SERVER_VAR_SNMP_DIR >> $SETUP_LOG 2>&1
+    if [ $? -ne 0 ]
+    then
+        echo "*** ERROR: Unable to set permissions on $ADM_SERVER_VAR_DIR/$ADM_SERVER_VAR_SNMP_DIR, please look at error in $SETUP_LOG and fix !"
+        echo
+        echo "Installation aborted !"
+        exit 1
+    fi
+    # Create logs directory
     echo "Creating Administration server log files directory $ADM_SERVER_VAR_DIR/$ADM_SERVER_VAR_LOGS_DIR."
     echo "Creating Administration server log files directory $ADM_SERVER_VAR_DIR/$ADM_SERVER_VAR_LOGS_DIR" >> $SETUP_LOG
     mkdir -p $ADM_SERVER_VAR_DIR/$ADM_SERVER_VAR_LOGS_DIR >> $SETUP_LOG 2>&1
@@ -1470,6 +1456,8 @@ then
     $PERL_BIN -pi -e "s#PATH_TO_IPD_DIR#$ADM_SERVER_VAR_DIR/$ADM_SERVER_VAR_IPD_DIR#g" $ADM_SERVER_APACHE_CONF_FILE.local
     $PERL_BIN -pi -e "s#PACKAGES_ALIAS#$ADM_SERVER_PACKAGES_ALIAS#g" $ADM_SERVER_APACHE_CONF_FILE.local
     $PERL_BIN -pi -e "s#PATH_TO_PACKAGES_DIR#$ADM_SERVER_VAR_DIR/$ADM_SERVER_VAR_PACKAGES_DIR#g" $ADM_SERVER_APACHE_CONF_FILE.local
+    $PERL_BIN -pi -e "s#SNMP_ALIAS#$ADM_SERVER_SNMP_ALIAS#g" $ADM_SERVER_APACHE_CONF_FILE.local
+    $PERL_BIN -pi -e "s#PATH_TO_SNMP_DIR#$ADM_SERVER_VAR_DIR/$ADM_SERVER_VAR_SNMP_DIR#g" $ADM_SERVER_APACHE_CONF_FILE.local
     echo "******** Begin updated $ADM_SERVER_APACHE_CONF_FILE.local ***********" >> $SETUP_LOG
     cat $ADM_SERVER_APACHE_CONF_FILE.local >> $SETUP_LOG
     echo "******** End updated $ADM_SERVER_APACHE_CONF_FILE.local ***********" >> $SETUP_LOG

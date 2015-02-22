@@ -13,7 +13,7 @@ require_once('require/function_ipdiscover.php');
 require_once('require/function_files.php');
 $form_name='admin_ipdiscover';
 $table_name='admin_ipdiscover';
-echo "<form name='".$form_name."' id='".$form_name."' action='' method='post'>";
+echo open_form($form_name);
 if (isset($protectedGet['value']) and $protectedGet['value'] != ''){
 	if (!in_array($protectedGet['value'],$_SESSION['OCS']["subnet_ipdiscover"])){
 		msg_error($l->g(837));
@@ -102,7 +102,9 @@ if ($protectedPost['onglet'] == 'ADMIN_RSX'){
 				}
 			}else
 				$list_subnet=array();
-			array_unshift($list_subnet,"");	
+			
+			$list_subnet = array(0 => "") + $list_subnet;
+			
 			$default_values=array('RSX_NAME'=>$protectedPost['RSX_NAME'],
 								  'ID_NAME' =>$list_subnet,
 								  'ADD_IP'  =>$protectedPost['ADD_IP'],
@@ -217,7 +219,7 @@ if ($protectedPost['onglet'] == 'ADMIN_RSX'){
 			
 		if ($protectedPost['ADD_COMM'] == $l->g(116) or is_numeric($protectedPost['MODIF'])){
 				
-			$list_version=array('-1'=>'2c','1'=>'1','2'=>'2',/*'3'=>'3'*/);
+			$list_version=array('-1'=>'2c','1'=>'1','2'=>'2','3'=>'3');
 			$title=$l->g(1207);
 			if (isset($protectedPost['MODIF']) and is_numeric($protectedPost['MODIF']) and !isset($protectedPost['NAME'])){
 				$info_com=find_community_info($protectedPost['MODIF']);
@@ -271,6 +273,6 @@ if ($protectedPost['onglet'] == 'ADMIN_RSX'){
 } 
  
 echo '</div>';
-echo "</form>";
+echo close_form();
 
 ?>

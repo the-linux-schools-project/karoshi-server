@@ -54,12 +54,16 @@ if( isset( $protectedPost["VALID_END"] ) ) {
 	if ($protectedPost['REDISTRIB_USE'] == 1){
 		$timestamp_redistrib= time();
 		$server_dir=$protectedPost['download_rep_creat'];
+		$rep=$server_dir.$timestamp_redistrib;
 		//create zip file for redistribution servers
 		require_once("libraries/zip.lib.php");
 		$zipfile = new zipfile();
-		$rep = $protectedPost['document_root'].$sql_details['timestamp']."/";
-		@mkdir($server_dir);
-		@mkdir($server_dir.$timestamp_redistrib);
+		
+		if (!file_exists($server_dir)){
+			mkdir($server_dir);
+		}
+		if (!file_exists($server_dir.$timestamp_redistrib))
+			mkdir($rep);
 		$dir = opendir($rep);
 		while($f = readdir($dir)){
 		   if(is_file($rep.$f))
@@ -92,7 +96,7 @@ if( isset( $protectedPost["VALID_END"] ) ) {
 						'PROTO'=>$protectedPost['PROTOCOLE'],
 						'DIGEST_ALGO'=>$protectedPost["digest_algo"],
 						'DIGEST_ENCODE'=>$protectedPost["digest_encod"],
-						'PATH'=>$protectedPost['download_server_docroot'],
+						'PATH'=>$protectedPost['DOWNLOAD_SERVER_DOCROOT'],
 						'NAME'=>'',
 						'COMMAND'=>'',
 						'NOTIFY_USER'=>'0',
@@ -111,8 +115,7 @@ $lign_begin="<tr height='30px' bgcolor='white'><td>";
 $td_colspan2=":</td><td colspan='2'>";
 $lign_end="</td></tr>";
 $form_name="create_pack";
-
-echo "<form name='".$form_name."' id='".$form_name."' method='POST' action='' enctype='multipart/form-data'>";
+echo open_form($form_name,'',"enctype='multipart/form-data'");
 
 
 if (isset($protectedPost['valid'])){
@@ -426,7 +429,7 @@ if ($activate){
 		}
 		echo "<br><b>" . $l->g(1183) . ":</b>".show_modif($list_dde_creat,'LIST_DDE_CREAT',2,$form_name);
 		if (!$protectedPost['LIST_DDE_CREAT'] or $protectedPost['LIST_DDE_CREAT'] == ""){
-			echo "</form>";
+			echo close_form();
 			require_once(FOOTER_HTML);
 			die();
 		}else{
@@ -437,7 +440,7 @@ if ($activate){
 			
 		}
 	}else{
-		echo "</form>";
+		echo close_form();
 		require_once(FOOTER_HTML);
 		die();
 	}
@@ -506,12 +509,17 @@ if ($_SESSION['OCS']["use_redistribution"] == 1){
 	if (!$default['DOWNLOAD_REP_CREAT'])
 	$default['DOWNLOAD_REP_CREAT'] = $_SERVER["DOCUMENT_ROOT"]."/download/server/";
 
-	if (!$protectedPost['REDISTRIB_REP'])
-	$protectedPost['REDISTRIB_REP']=$default['DOWNLOAD_REP_CREAT'];
+/*	if (!$protectedPost['REDISTRIB_REP'])
+		$protectedPost['REDISTRIB_REP']=$default['DOWNLOAD_REP_CREAT'];*/
 	if (!$protectedPost['REDISTRIB_PRIORITY'])
-	$protectedPost['REDISTRIB_PRIORITY']=$default['DOWNLOAD_PRIORITY'];
+		$protectedPost['REDISTRIB_PRIORITY']=$default['DOWNLOAD_PRIORITY'];
+	if (!$protectedPost['DOWNLOAD_SERVER_DOCROOT'])
+		$protectedPost['DOWNLOAD_SERVER_DOCROOT']=$default['DOWNLOAD_SERVER_DOCROOT'];
 	$redistrib_rep=$lign_begin.$l->g(829).$td_colspan2.$default['DOWNLOAD_REP_CREAT'].$lign_end;
-	$redistrib_rep_distant=$lign_begin.$l->g(1009).$td_colspan2.$default['DOWNLOAD_SERVER_DOCROOT'].$lign_end;
+	$config_input=array('MAXLENGTH'=>255,'SIZE'=>25);
+	$redistrib_rep_distant=$lign_begin.$l->g(1009).$td_colspan2.show_modif($protectedPost['DOWNLOAD_SERVER_DOCROOT'],'DOWNLOAD_SERVER_DOCROOT','0','',$config_input).$lign_end;
+	
+	//$redistrib_rep_distant=$lign_begin.$l->g(1009).$td_colspan2.$default['DOWNLOAD_SERVER_DOCROOT'].$lign_end;
 	$redistrib_prio=$lign_begin.$l->g(440).$td_colspan2.show_modif($list_prio,'REDISTRIB_PRIORITY',2,'').$lign_end;
 	echo "<tr><td colspan='3' align=center><div id='REDISTRIB_USE_div' style='display:".($protectedPost["REDISTRIB_USE"] == 1 ? " block" : "none")."'>";
 	echo $sous_tab_beg;
@@ -527,7 +535,7 @@ echo "<table BGCOLOR='#C7D9F5' BORDER='0' WIDTH = '600px' ALIGN = 'Center' CELLP
 	echo $title_user.$notify_user;
 
 		$notify_txt=$lign_begin.$l->g(449).$td_colspan2.show_modif($_POST['NOTIFY_TEXT'],'NOTIFY_TEXT',1).$lign_end;
-		$notify_count_down=$lign_begin.$l->g(450).$td_colspan2.show_modif($protectedPost['NOTIFY_COUNTDOWN'],'NOTIFY_COUNTDOWN',0,'',array('MAXLENGTH'=>4,'SIZE'=>4)).$l->g(511).$lign_end;
+		$notify_count_down=$lign_begin.$l->g(450).$td_colspan2.show_modif($protectedPost['NOTIFY_COUNTDOWN'],'NOTIFY_COUNTDOWN',0,'',array('MAXLENGTH'=>4,'SIZE'=>4,'JAVASCRIPT'=>$chiffres)).$l->g(511).$lign_end;
 		$notify_can_abord=$lign_begin.$l->g(451).$td_colspan2.show_modif($yes_no,'NOTIFY_CAN_ABORT',2).$lign_end;
 		$notify_can_delay=$lign_begin.$l->g(452).$td_colspan2.show_modif($yes_no,'NOTIFY_CAN_DELAY',2).$lign_end;
 		echo "<tr><td colspan='3' align=center><div id='NOTIFY_USER_div' style='display:".($protectedPost["NOTIFY_USER"] == 1 ? " block" : "none")."'>";
@@ -552,10 +560,10 @@ echo "</table>";
 echo "<br><input type='submit' name='valid' id='valid' value='".$l->g(13)."' OnClick='return verif();' >";
 echo "<input type='hidden' id='digest_algo' name='digest_algo' value='MD5'>
 	  <input type='hidden' id='digest_encod' name='digest_encod' value='Hexa'>
-	  <input type='hidden' id='download_rep_creat' name='download_rep_creat' value='".$default['DOWNLOAD_REP_CREAT']."'>
-	  <input type='hidden' id='download_server_docroot' name='download_server_docroot' value='".$default['DOWNLOAD_SERVER_DOCROOT']."'>";
-	  
-echo "</form></div>";
+	  <input type='hidden' id='download_rep_creat' name='download_rep_creat' value='".$default['DOWNLOAD_REP_CREAT']."'>";
+//	  <input type='hidden' id='download_server_docroot' name='download_server_docroot' value='".$default['DOWNLOAD_SERVER_DOCROOT']."'>";
+echo close_form();	  
+echo "</div>";
 
 ?>
 

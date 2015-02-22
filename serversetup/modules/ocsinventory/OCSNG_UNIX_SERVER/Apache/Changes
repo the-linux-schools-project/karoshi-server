@@ -1,14 +1,46 @@
 Revision history for Apache::Ocsinventory
 
+2.1.2
+
+2.1.1
+        * Fix Bug #1315004 about MySQL replication broken using MySQL 5.6
+        * Fix Bug #1311852 and Bug #1296633 about CHECKSUM updated for all computers
+        * Fix a mistake for OCS_PLUGINS_PERL_DIR and OCS_PLUGINS_CONF_DIR options in ocsinventory-server.conf
+
+2.1
+        * Add new fields for printers table in Map.pm
+        * Fix Bug #1214436 about removing already registered hosts and add Mac support in ipdiscover-util.pl
+        * Add a new table for SNMP virtual machines data in Map.pm
+        * Fix Bug #1248582 about custom field names not decoded in SOAP ACCOUNTINFO 
+        * Fix Bug #1191791 about CHECKSUM value not updated when NOTIFY mode send new network changes
+        * New plugins system to be able to add new entries in Map.pm and more...
+
+2.1rc1
+        * Add availibility to specify a post command for a package deployment
+        * SOAP engine is now able to get SNMP devices inventory
+        * Add new 'sims' inventory section to get various SIM card data from phone devices	
+        * Add availibility to schedule a package deployment
+        * Remove OCS_OPT_SUPPORT configuration option and <SUPPORT_LOG> XML tag in PROLOG 
+        * Add availibility to reforce a package deployment
+        * Add availability to specify custom MIBS for SNMP scans
+        * Add availability to specify a custom network adress for SNMP scans 
+        * New OCS_OPT_DOWNLOAD_EXECUTION_TIMEOUT configuration option to prevent package commands to run indefinitely
+        * setup.sh script can now detect Suse/OpenSuse distributions      
+        * Add new 'cpus' inventory section to get various CPU data	
+        * Add a new field in hardware section to get the computer architecture	
+        * Add new fields for snmp_loadbalancer table in Map.pm
+        * Fix Bug #1085020 about ERR_ALREADY_IN_HISTORY message that should be success 
+        * Prevent bugs in NOTIFY mode with older XML behaviour
+
 2.0.5
         * Create "logs" and "scripts" directories for administration console in setup.sh
 
 2.0.4
 
 2.0.3
-        * Fix Bug #881406 about security issue due to snmp_com.txt file which is no longer used 
+        * Fix Bug #881406 about security issue due to snmp_com.txt file which is no longer used
         * Do not take care of comment lines when getting external useragents file content
-        * Fix various bugs in NOTIFY mode        
+        * Fix various bugs in NOTIFY mode
 
 2.0.2
         * Add availibilty to allow external useragents using a text file
@@ -16,7 +48,7 @@ Revision history for Apache::Ocsinventory
 2.0.1
         * Remove 'Satisfy any' Apache directive in ocsinventory-server.conf
         * Fix RPM packages names in setup.sh
-        * Fix Bug #800418 about subnet, gateway and IP DHCP informations disappearance from database  
+        * Fix Bug #800418 about subnet, gateway and IP DHCP informations disappearance from database
         * Increase php_value post_max_size and php_value upload_max_filesize values to 101 Mo and 100 Mo in ocsinventory-reports.conf
         * Change php_value to php_flag for magic_quotes_gpc setting in ocsinventory-reports.conf
         * Add new useragents for iOS and Android OCS agents in Useragent.pm
@@ -27,18 +59,18 @@ Revision history for Apache::Ocsinventory
         * Add a new module to manage OCS support: Support.pm
         * Add a <DHCP> XML tag in NOTIFY request to update IPDHCP field in database
 2.0 rc4
-        * Add a warning in setup.sh about what has to be done if the OS has newsyslog installed (BSD systems)
+        * Add a warning in setup.sh about what has to be done if the OS has newsyslog installed (BSD systems)               
         * Fix Bug #744022 about logrotate configuration in setup.sh even if the OS has not logrotate installed
         * Add availability to specify mysql socket in ipdiscover-util.pl
-        * Fix UTF8 problem while comparing accountinfo strings after inventory step 
+        * Fix UTF8 problem while comparing accountinfo strings after inventory step
 2.0 rc3
         * Use OCS_OPT_DBI_MYSQL_SOCKET in SOAP engine if needed
         * Ipdiscover now uses useragent instead of OSNAME for automatic election
         * Fix Bug #721278 about hardware_osname cache table. This table is now feeded by engine
-        * Verify that HARDWARE_ID are not groups when computing groups caches 
+        * Verify that HARDWARE_ID are not groups when computing groups caches
         * Disable MySQL strict mode by default
-        * Fix Bug #726522 about OCS_OPT_DBI_MYSQL_SOCKET option in ocsinventory-server.conf	
-        * Don't process the sections that are use for capacities special inventory in SOAP engine (but thats the way its meant to be) 
+        * Fix Bug #726522 about OCS_OPT_DBI_MYSQL_SOCKET option in ocsinventory-server.conf
+        * Don't process the sections that are use for capacities special inventory in SOAP engine (but thats the way its meant to be)
         * Fix a bug in Download.pm: ERR_ALREADY_IN_HISTORY message was never added in devices table
         * Fix SQL syntax error and add a capacities tables exclusion in Duplicate.pm
 

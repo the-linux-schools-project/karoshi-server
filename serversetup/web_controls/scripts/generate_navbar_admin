@@ -296,7 +296,7 @@ echo '		</ul>
 		<ul class="sub">
 			<li><a href="/cgi-bin/admin/domain_information.cgi">'$"Domain Information"'</a></li>'
 #OCS Inventory
-if [ $"OCS-Inventory"CTRL = yes ]
+if [ $OCSCTRL = yes ]
 then
 echo '			<li><a href="/cgi-bin/admin/ocs.cgi" target="_blank">'$"OCS-Inventory"'</a></li>'
 fi

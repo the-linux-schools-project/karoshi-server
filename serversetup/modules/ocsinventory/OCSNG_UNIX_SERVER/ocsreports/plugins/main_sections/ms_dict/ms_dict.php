@@ -23,7 +23,7 @@ else
 //form name
 $form_name='admin_param';
 //form open
-echo "<form name='".$form_name."' id='".$form_name."' method='POST' action=''>";
+echo open_form($form_name);
 //definition of onglet
 $def_onglets['CAT']=$l->g(1027); //Categories
 $def_onglets['NEW']=$l->g(1028); //nouveau logiciels
@@ -65,11 +65,11 @@ if($protectedPost['TRANS'] == "TRANS"){
 		}
 	}
 	if ($list_check != '')	
-	trans($protectedPost['onglet'],$list_check,$protectedPost['AFFECT_TYPE'],$protectedPost['NEW_CAT'],$protectedPost['EXIST_CAT']);	
+	trans_by_checksum($protectedPost['onglet'],$list_check,$protectedPost['AFFECT_TYPE'],$protectedPost['NEW_CAT'],$protectedPost['EXIST_CAT']);	
 }
 //delete a soft in list => return in 'NEW' liste
 if ($protectedPost['SUP_PROF'] != ""){
-	del_soft($protectedPost['onglet'],array($protectedPost['SUP_PROF']));
+	del_soft_by_checksum($protectedPost['onglet'], $protectedPost['SUP_PROF']);
 }
 /************************************END ACTION**************************************/
 
@@ -211,9 +211,10 @@ if ($protectedPost['onglet'] == 'NEW'){
  	$list_soft="''";
 
 	$list_fields= array('SOFT_NAME'=>'NAME',
+						'SOFT_NAME_CHECKSUM'=>'MD5(NAME) AS SOFT_NAME_CHECKSUM',
 						'ID'=>'ID',
 	 					 'QTE'=> 'QTE',
-    					 'CHECK'=>'ID');
+    					 'CHECK'=>'SOFT_NAME_CHECKSUM');
 	$table_name="CAT_NEW";
 	$default_fields= array('SOFT_NAME'=>'SOFT_NAME','QTE'=>'QTE','CHECK'=>'CHECK');
 	$list_col_cant_del=array('SOFT_NAME'=>'SOFT_NAME','CHECK'=>'CHECK');
@@ -232,13 +233,14 @@ if ($protectedPost['onglet'] == 'NEW'){
 /*******************************************************CAS OF IGNORED*******************************************************/
 if ($protectedPost['onglet'] == 'IGNORED'){
 	$list_fields= array('SOFT_NAME'=>'EXTRACTED',
+						'SOFT_NAME_CHECKSUM'=>'MD5(EXTRACTED) AS SOFT_NAME_CHECKSUM',
 						'ID'=>'ID',
-						'SUP'=>'ID',
-						'CHECK'=>'ID'
+						'SUP'=>'SOFT_NAME_CHECKSUM',
+						'CHECK'=>'SOFT_NAME_CHECKSUM'
 								);
 	$table_name="CAT_IGNORED";
 	$default_fields= array('SOFT_NAME'=>'SOFT_NAME','SUP'=>'SUP','CHECK'=>'CHECK');
-	$list_col_cant_del=array('SOFT_NAME'=>'SOFT_NAME','CHECK'=>'CHECK');
+	$list_col_cant_del=array('SOFT_NAME'=>'SOFT_NAME','SUP'=>'SUP','CHECK'=>'CHECK');
 	$querydico = 'SELECT ';
 	foreach ($list_fields as $key=>$value){
 		if($key != 'SUP' and $key != 'CHECK')
@@ -253,13 +255,14 @@ if ($protectedPost['onglet'] == 'IGNORED'){
 /*******************************************************CAS OF UNCHANGED*******************************************************/
 if ($protectedPost['onglet'] == 'UNCHANGED'){
 	$list_fields= array('SOFT_NAME'=>'EXTRACTED',
+						'SOFT_NAME_CHECKSUM'=>'MD5(EXTRACTED) AS SOFT_NAME_CHECKSUM',
 						'ID'=>'ID',
-						'SUP'=>'ID',
-						'CHECK'=>'ID'
+						'SUP'=>'SOFT_NAME_CHECKSUM',
+						'CHECK'=>'SOFT_NAME_CHECKSUM'
 								);
 	$table_name="CAT_UNCHANGE";
 	$default_fields= array('SOFT_NAME'=>'SOFT_NAME','SUP'=>'SUP','CHECK'=>'CHECK');
-	$list_col_cant_del=array('SOFT_NAME'=>'SOFT_NAME','CHECK'=>'CHECK');
+	$list_col_cant_del=array('SOFT_NAME'=>'SOFT_NAME','SUP'=>'SUP','CHECK'=>'CHECK');
 	$querydico = 'SELECT ';
 	foreach ($list_fields as $key=>$value){
 		if($key != 'SUP' and $key != 'CHECK')
@@ -271,6 +274,8 @@ if ($protectedPost['onglet'] == 'UNCHANGED'){
 }
 if (isset($querydico)){
 	$_SESSION['OCS']['query_dico']=$querydico;
+	$tab_options['LIEN_LBL']['QTE']='index.php?'.PAG_INDEX.'='.$pages_refs['ms_multi_search'].'&prov=allsoft&value=';
+	$tab_options['LIEN_CHAMP']['QTE']='NAME';
 	$tab_options['LBL']['SOFT_NAME']=$l->g(382);
 	$tab_options['LBL']['QTE']=$l->g(55);
 	$result_exist=tab_req($table_name,$list_fields,$default_fields,$list_col_cant_del,$querydico,$form_name,80,$tab_options); 
@@ -310,5 +315,5 @@ echo '</div>';
 echo "<input type='hidden' name='RESET' id='RESET' value=''>";
 echo "<input type='hidden' name='TRANS' id='TRANS' value=''>";
 echo "<input type='hidden' name='SUP_CAT' id='SUP_CAT' value=''>";
-echo "</form>";
+echo close_form();
 ?>
