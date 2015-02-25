@@ -57,107 +57,121 @@ END_POINT=17
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = VERSIONcheck ]
-then
-let COUNTER=$COUNTER+1
-VERSION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = VERSIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		VERSION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign SOFTWARE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SOFTWAREcheck ]
-then
-let COUNTER=$COUNTER+1
-SOFTWARE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SOFTWAREcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SOFTWARE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
+#Assign LOCATION
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = LOCATIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		LOCATION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
 #Assign GRAPHICS
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = GRAPHICScheck ]
-then
-let COUNTER=$COUNTER+1
-GRAPHICS=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = GRAPHICScheck ]
+	then
+		let COUNTER=$COUNTER+1
+		GRAPHICS=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign AUTO
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = AUTOcheck ]
-then
-let COUNTER=$COUNTER+1
-AUTO=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = AUTOcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		AUTO=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign RESTRICTED
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = RESTRICTEDcheck ]
-then
-let COUNTER=$COUNTER+1
-RESTRICTED=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = RESTRICTEDcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		RESTRICTED=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+	done
 
 #Assign FIRMWARE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = FIRMWAREcheck ]
-then
-let COUNTER=$COUNTER+1
-FIRMWARE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = FIRMWAREcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		FIRMWARE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign SOFTWARE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SOFTWAREcheck ]
-then
-let COUNTER=$COUNTER+1
-SOFTWARE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SOFTWAREcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SOFTWARE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign UPDATES
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = UPDATEScheck ]
-then
-let COUNTER=$COUNTER+1
-UPDATES=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = UPDATEScheck ]
+	then
+		let COUNTER=$COUNTER+1
+		UPDATES=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -180,22 +194,22 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
@@ -203,12 +217,20 @@ fi
 #Check to see that VERSION is not blank
 if [ -z "$VERSION" ]
 then
-MESSAGE=$ERRORMS1
-show_status
+	MESSAGE=$"The version has not been set."
+	show_status
+fi
+
+#Check to see that VERSION is not blank
+if [ -z "$LOCATION" ]
+then
+	MESSAGE=$"The location has not been set."
+	show_status
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/linux_client_software_controls2.cgi | cut -d' ' -f1`
 #Set software control options
-sudo -H /opt/karoshi/web_controls/exec/linux_client_software_controls $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$VERSION:$SOFTWARE:$UPDATES:$AUTO:$GRAPHICS:$RESTRICTED:$FIRMWARE:
+sudo -H /opt/karoshi/web_controls/exec/linux_client_software_controls $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$VERSION:$SOFTWARE:$UPDATES:$AUTO:$GRAPHICS:$RESTRICTED:$FIRMWARE:$LOCATION:
 completed
 exit
+

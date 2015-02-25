@@ -164,7 +164,9 @@ then
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">'
 else
-	echo '<b>'$"Linux Client software packages"' - '$VERSION'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Linux_Client_Software_Packages"><img class="images" alt="" src="/images/help/info.png"><span>'$"The software shown below will either be installed or removed by your linux client computers on boot."'</span></a><br><br>'
+	echo '<form action="/cgi-bin/admin/linux_client_software_controls.cgi"><input name="___VERSION___" value="'$VERSION'" type="hidden">
+<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td style="vertical-align: top;">
+<b>'$"Linux Client Software Controls"' - '$VERSION'</b></td><td style="vertical-align: top;"><input type="submit" class="button" value="'$"Linux Client software controls"'"></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Linux_Client_Software_Packages"><img class="images" alt="" src="/images/help/info.png"><span>'$"The software shown below will be installed by your linux client computers on boot."'</span></a></td></tr></tbody></table></form><br>'
 fi
 
 #Show a table of current software to install and remove
@@ -181,52 +183,54 @@ echo '<form action="/cgi-bin/admin/linux_client_install_software_packages2.cgi" 
 
 if [ $MOBILE = no ]
 then
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: '$WIDTH'px;">'$"Software Package"'</td><td><input tabindex= "1" name="___ACTION___add___SOFTWARE___" style="width: '$WIDTH'px;" size="20" type="text"></td>
-<td><input name="___LIST___install___" type="submit" class="button" value="'$"Install"'"></td><td><input name="___LIST___remove___" type="submit" class="button" value="'$"Remove"'"></td></tr>
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: '$WIDTH'px;">'$"Location"'</td><td>'
+
+if [ -f /var/lib/samba/netlogon/locations.txt ]
+then
+	LOCATION_COUNT=`cat /var/lib/samba/netlogon/locations.txt | wc -l`
+else
+	LOCATION_COUNT=0
+fi
+#Show current rooms
+echo '<select name="___LOCATION___" style="width: 200px;">'
+echo '<option value="all">'$"All locations"'</option>'
+COUNTER=1
+while [ $COUNTER -le $LOCATION_COUNT ]
+do
+	LOCATION=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/locations.txt`
+	echo '<option value="'$LOCATION'">'$LOCATION'</option>'
+	let COUNTER=$COUNTER+1
+done
+echo '</select></td></tr><tr>
+<td style="width: '$WIDTH'px;">'$"Software Package"'</td><td><input style="width: 200px;" tabindex= "1" name="___ACTION___add___SOFTWARE___" style="width: '$WIDTH'px;" size="20" type="text"></td>
+<td><input type="submit" class="button" value="'$"Install"'"></td></tr>
 </tbody></table>'
 else
 echo '
 '$"Software Package"' <input tabindex= "1" name="___ACTION___add___SOFTWARE___" style="width: '$WIDTH'px;" size="20" type="text"><br>
-<input name="___LIST___install___" type="submit" class="button" value="'$"Install"'"> <input name="___LIST___remove___" type="submit" class="button" value="'$"Remove"'"><br><br>
+<input type="submit" class="button" value="'$"Install"'"> <input type="submit" class="button" value="'$"Remove"'"><br><br>
 '
 fi
-echo '<br></form>'
+echo '<br></form><form action="/cgi-bin/admin/linux_client_install_software_packages2.cgi" name="selectservers" method="post"><input name="___VERSION___" value="'$VERSION'" type="hidden">'
 
-#Show install list
-if [ -f /var/lib/samba/netlogon/linuxclient/$VERSION/install_list ]
-then
-	if [ `cat /var/lib/samba/netlogon/linuxclient/$VERSION/install_list | wc -l` -gt 0 ]
-	then
-		echo '<form action="/cgi-bin/admin/linux_client_install_software_packages2.cgi" name="selectservers" method="post">
-		<input name="___VERSION___" value="'$VERSION'" type="hidden">
-		<b>'$"Install List"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-		<tr><td style="width: '$WIDTH'px;"><b>'$"Software Package"'</b></td><td style="width: '$WIDTH2'px;"><b>'$"Install"'</b></td><td><b>'$"Delete"'</b></td></tr>'
-		for SOFTWARE in `cat /var/lib/samba/netlogon/linuxclient/$VERSION/install_list`
-		do
-			echo '<tr><td>'$SOFTWARE'</td><td><a class="info" href="javascript:void(0)"><input name="___LIST___install___ACTION___remove___SOFTWARE___'$SOFTWARE'___" type="image" class="images" src="'$ICON1'" value=""><span>'$"Install" $SOFTWARE'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="___LIST___install___ACTION___delete___SOFTWARE___'$SOFTWARE'___" type="image" class="images" src="'$ICON3'" value=""><span>'$"Delete" $SOFTWARE'</span></a></td></tr>'
-		done
-		echo '</tbody></table><br></form>'
-	fi
-fi
 
-#Show remove list
-if [ -f /var/lib/samba/netlogon/linuxclient/$VERSION/remove_list ]
-then
-	if [ `cat /var/lib/samba/netlogon/linuxclient/$VERSION/remove_list | wc -l` -gt 0 ]
+for LOCATIONS in /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/*
+do
+	#Show install list
+	LOCATION=`basename $LOCATIONS`
+	if [ `cat /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/$LOCATION | wc -l` -gt 0 ]
 	then
-		echo '<form action="/cgi-bin/admin/linux_client_install_software_packages2.cgi" name="selectservers" method="post">
-		<input name="___VERSION___" value="'$VERSION'" type="hidden">
-		<b>'$"Remove list"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-		<tr><td style="width: '$WIDTH'px;"><b>'$"Software Package"'</b></td><td style="width: '$WIDTH2'px;"><b>'$"Remove"'</b></td><td><b>'$"Delete"'</b></td></tr>'
-		for SOFTWARE in `cat /var/lib/samba/netlogon/linuxclient/$VERSION/remove_list`
+		echo '
+		<b>'$"Location"' - '$LOCATION'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+		<tr><td style="width: '$WIDTH'px;"><b>'$"Software Package"'</b></td><td style="width: '$WIDTH2'px;"><b>'$"Delete"'</b></td></tr>'
+		for SOFTWARE in `cat /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/$LOCATION`
 		do
-			echo '<tr><td>'$SOFTWARE'</td><td><a class="info" href="javascript:void(0)"><input name="___LIST___remove___ACTION___install___SOFTWARE___'$SOFTWARE'___" type="image" class="images" src="'$ICON1'" value=""><span>'$"Install" $SOFTWARE'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="___LIST___remove___ACTION___delete___SOFTWARE___'$SOFTWARE'___" type="image" class="images" src="'$ICON3'" value=""><span>'$"Delete" $SOFTWARE'</span></a></td></tr>'
+			echo '<tr><td>'$SOFTWARE'</td><td><a class="info" href="javascript:void(0)"><input name="___ACTION___delete___SOFTWARE___'$SOFTWARE'___LOCATION___'$LOCATION'___" type="image" class="images" src="'$ICON3'" value=""><span>'$"Delete" $SOFTWARE'</span></a></td></tr>'
 		done
-		echo '</tbody></table></form>'
+		echo '</tbody></table><br>'
 	fi
-fi
-echo '</div></div></body></html>'
+
+done
+echo '</form></div></div></body></html>'
 exit
-
 

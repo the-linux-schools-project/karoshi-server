@@ -41,7 +41,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -91,22 +91,22 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 #########################
@@ -117,28 +117,28 @@ END_POINT=6
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = VERSIONcheck ]
-then
-let COUNTER=$COUNTER+1
-VERSION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = VERSIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		VERSION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-TABLECLASS=standard
-WIDTH=180
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	TABLECLASS=standard
+	WIDTH=180
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
-TABLECLASS=mobilestandard
-WIDTH=160
+	DIV_ID=actionbox2
+	TABLECLASS=mobilestandard
+	WIDTH=160
 fi
 
 #########################
@@ -147,15 +147,14 @@ fi
 #Check to see that VERSION is not blank
 if [ -z $VERSION ]
 then
-MESSAGE=$"The linux version must not be blank."
-show_status
+	MESSAGE=$"The linux version must not be blank."
+	show_status
 fi
 
-echo '<form action="/cgi-bin/admin/linux_client_software_controls2.cgi" name="selectservers" method="post">'
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
@@ -163,67 +162,100 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">'
 else
-echo '<b>'$"Linux Client Software Controls"' - '$VERSION'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Linux_Client_Software_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the linux client version that you want to set the software settings for."'</span></a><br><br>'
+echo '<form action="/cgi-bin/admin/linux_client_install_software_packages.cgi" name="selectservers" method="post">
+<input name="_VERSION_" value="'$VERSION'" type="hidden">
+
+<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td style="vertical-align: top;">
+<b>'$"Linux Client Software Controls"' - '$VERSION'</b></td><td style="vertical-align: top;"><input type="submit" class="button" value="'$"Linux Client software packages"'"></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Linux_Client_Software_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the locations that you want to enable updates and software installs for."'</span></a></td></tr></tbody></table></form></div><div id="infobox"><form action="/cgi-bin/admin/linux_client_software_controls2.cgi" name="selectservers" method="post">'
 fi
 
+function show_software_status {
 #Check current settings
-if [ -f /var/lib/samba/netlogon/linuxclient/nonfree/auto ]
+if [ -f /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_install ]
 then
-AICON="/images/submenus/client/allowed.png"
-ASTATUS=no
+	SICON="/images/submenus/client/allowed.png"
+	SSTATUS=no
 else
-AICON="/images/submenus/client/denied.png"
-ASTATUS=yes
+	SICON="/images/submenus/client/denied.png"
+	SSTATUS=yes
 fi
-if [ -f /var/lib/samba/netlogon/linuxclient/nonfree/graphics-drivers ]
+if [ -f /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_updates ]
 then
-GICON="/images/submenus/client/allowed.png"
-GSTATUS=no
+	UICON="/images/submenus/client/allowed.png"
+	USTATUS=no
 else
-GICON="/images/submenus/client/denied.png"
-GSTATUS=yes
+	UICON="/images/submenus/client/denied.png"
+	USTATUS=yes
 fi
-if [ -f /var/lib/samba/netlogon/linuxclient/nonfree/restricted-extras ]
-then
-RICON="/images/submenus/client/allowed.png"
-RSTATUS=no
-else
-RICON="/images/submenus/client/denied.png"
-RSTATUS=yes
-fi
-if [ -f /var/lib/samba/netlogon/linuxclient/nonfree/firmware-nonfree ]
-then
-FICON="/images/submenus/client/allowed.png"
-FSTATUS=no
-else
-FICON="/images/submenus/client/denied.png"
-FSTATUS=yes
-fi
-if [ -f /var/lib/samba/netlogon/linuxclient/$VERSION/enable_software_install ]
-then
-SICON="/images/submenus/client/allowed.png"
-SSTATUS=no
-else
-SICON="/images/submenus/client/denied.png"
-SSTATUS=yes
-fi
-if [ -f /var/lib/samba/netlogon/linuxclient/$VERSION/enable_updates ]
-then
-UICON="/images/submenus/client/allowed.png"
-USTATUS=no
-else
-UICON="/images/submenus/client/denied.png"
-USTATUS=yes
-fi
+
+#if [ -f /var/lib/samba/netlogon/linuxclient/nonfree/auto ]
+#then
+#	AICON="/images/submenus/client/allowed.png"
+#	ASTATUS=no
+#else
+#	AICON="/images/submenus/client/denied.png"
+#	ASTATUS=yes
+#fi
+#if [ -f /var/lib/samba/netlogon/linuxclient/nonfree/graphics-drivers ]
+#then
+#	GICON="/images/submenus/client/allowed.png"
+#	GSTATUS=no
+#else
+#	GICON="/images/submenus/client/denied.png"
+#	GSTATUS=yes
+#fi
+#if [ -f /var/lib/samba/netlogon/linuxclient/nonfree/restricted-extras ]
+#then
+#	RICON="/images/submenus/client/allowed.png"
+#	RSTATUS=no
+#else
+#	RICON="/images/submenus/client/denied.png"
+#	RSTATUS=yes
+#fi
+#if [ -f /var/lib/samba/netlogon/linuxclient/nonfree/firmware-nonfree ]
+#then
+#	FICON="/images/submenus/client/allowed.png"
+#	FSTATUS=no
+#else
+#	FICON="/images/submenus/client/denied.png"
+#	FSTATUS=yes
+#fi
+
+
+echo '<tr><td><b>'$"Location"'</b></td><td><b>'$LOCATION'</b></td></tr><tr><td style="width: 180px;">'$"Enable Software install"'</td><td><a class="info" href="javascript:void(0)"><input name="_SOFTWARE_'$SSTATUS'_LOCATION_'$LOCATION'_" type="image" class="images" src="'$SICON'" value=""><span>'$"This will make the Linux clients install any software in the software install lists on boot up."'</span></a></td></tr>
+<tr><td style="width: 180px;">'$"Enable updates"'</td><td><a class="info" href="javascript:void(0)"><input name="_UPDATES_'$USTATUS'_LOCATION_'$LOCATION'_" type="image" class="images" src="'$UICON'" value=""><span>'$"This will make the Linux clients update their software packages on boot up."'</span></a></td></tr>'
+
+#echo '<tr><td style="width: 180px;">'$"Auto"'</td><td><a class="info" href="javascript:void(0)"><input name="_AUTO_'$ASTATUS'_" type="image" class="images" src="'$AICON'" value=""><span>'$"Set this to auto to hide the software control dialog from appearing when setting up the clients."'</span></a></td></tr>
+#<tr><td style="width: 180px;">'$"Proprietary graphics"'</td><td><a class="info" href="javascript:void(0)"><input name="_GRAPHICS_'$GSTATUS'_" type="image" class="images" src="'$GICON'" value=""><span>'$"This will tell the linux clients to install the relevant proprietary graphics driver for the client."'</span></a></td></tr>
+#<tr><td style="width: 180px;">'$"Restricted extras"'</td><td><a class="info" href="javascript:void(0)"><input name="_RESTRICTED_'$RSTATUS'_" type="image" class="images" src="'$RICON'" value=""><span>'$"This will install software that in a few countries licenses may be required."'</span></a></td></tr>
+#<tr><td style="width: 180px;">'$"Firmware"'</td><td><a class="info" href="javascript:void(0)"><input name="_FIRMWARE_'$FSTATUS'_" type="image" class="images" src="'$FICON'" value=""><span>'$"This will install proprietary firmware."'</span></a></td></tr>'
+
+echo '<tr><td style="height:20px"></td></tr>'
+
+}
 
 #Show controls for auto, graphics drivers and restricted extras
-echo '<input name="_VERSION_" value="'$VERSION'" type="hidden"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$"Auto"'</td><td><a class="info" href="javascript:void(0)"><input name="_AUTO_'$ASTATUS'_" type="image" class="images" src="'$AICON'" value=""><span>'$"Set this to auto to hide the software control dialog from appearing when setting up the clients."'</span></a></td></tr>
-<tr><td style="width: 180px;">'$"Proprietary graphics"'</td><td><a class="info" href="javascript:void(0)"><input name="_GRAPHICS_'$GSTATUS'_" type="image" class="images" src="'$GICON'" value=""><span>'$"This will tell the linux clients to install the relevant proprietary graphics driver for the client."'</span></a></td></tr>
-<tr><td style="width: 180px;">'$"Restricted extras"'</td><td><a class="info" href="javascript:void(0)"><input name="_RESTRICTED_'$RSTATUS'_" type="image" class="images" src="'$RICON'" value=""><span>'$"This will install software that in a few countries licenses may be required."'</span></a></td></tr>
-<tr><td style="width: 180px;">'$"Firmware"'</td><td><a class="info" href="javascript:void(0)"><input name="_FIRMWARE_'$FSTATUS'_" type="image" class="images" src="'$FICON'" value=""><span>'$"This will install proprietary firmware."'</span></a></td></tr>
-<tr><td style="width: 180px;">'$"Enable Software install"'</td><td><a class="info" href="javascript:void(0)"><input name="_SOFTWARE_'$SSTATUS'_" type="image" class="images" src="'$SICON'" value=""><span>'$"This will make the Linux clients install and remove any software in the software install and remove lists on boot up."'</span></a></td></tr>
-<tr><td style="width: 180px;">'$"Enable updates"'</td><td><a class="info" href="javascript:void(0)"><input name="_UPDATES_'$USTATUS'_" type="image" class="images" src="'$UICON'" value=""><span>'$"This will make the Linux clients update their software packages on boot up."'</span></a></td></tr>
-</tbody></table></div></form></div></body></html>'
+echo '<input name="_VERSION_" value="'$VERSION'" type="hidden"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>'
+
+LOCATION=all
+show_software_status
+
+if [ -f /var/lib/samba/netlogon/locations.txt ]
+then
+	LOCATION_COUNT=`cat /var/lib/samba/netlogon/locations.txt | wc -l`
+else
+	LOCATION_COUNT=0
+fi
+
+COUNTER=1
+while [ $COUNTER -lt $LOCATION_COUNT ]
+do
+	LOCATION=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/locations.txt`
+	show_software_status
+	let COUNTER=$COUNTER+1
+done
+echo '</tbody></table></form></div>'
+[ $MOBILE = no ] && echo '</div>'
+echo '</div></body></html>'
 exit
 

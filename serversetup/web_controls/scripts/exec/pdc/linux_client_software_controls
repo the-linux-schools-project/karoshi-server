@@ -29,16 +29,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/linux_client_software_controls2_cgi
 then
-echo `date`: linux_client_software_controls - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: linux_client_software_controls - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/linux_client_software_controls2_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/linux_client_software_controls2.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $linux_client_software_controls2_cgi'check' ]
 then
-echo `date`: linux_client_software_controls - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: linux_client_software_controls - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 #########################
@@ -47,8 +47,8 @@ fi
 numArgs=$#
 if [ $numArgs != 1 ]
 then
-echo `date`: linux_client_software_controls - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: linux_client_software_controls - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
@@ -60,121 +60,129 @@ AUTO=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f7`
 GRAPHICS=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f8`
 RESTRICTED=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f9`
 FIRMWARE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f10`
+LOCATION=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f11`
 
 ########################
 #Check data
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: linux_client_software_controls - Not called by linux_client_software_controls.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: linux_client_software_controls - Not called by linux_client_software_controls.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-echo `date`: linux_client_software_controls - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: linux_client_software_controls - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: linux_client_software_controls - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: linux_client_software_controls - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$VERSION" ]
+then
+	echo `date`: linux_client_software_controls - Blank VERSION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
+fi
+if [ -z "$LOCATION" ]
 then
 echo `date`: linux_client_software_controls - Blank VERSION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: linux_client_software_controls - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: linux_client_software_controls - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 function log_action {
 echo "`date`: linux_client_software_controls - setting $ACTION: $SETTING for $VERSION by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 }
 
+[ ! -d  /var/lib/samba/netlogon/linuxclient/$VERSION/software/install ] && mkdir -p  /var/lib/samba/netlogon/linuxclient/$VERSION/software/install
+
 #Set SOFTWARE file flag
 if [ ! -z "$SOFTWARE" ]
 then
-echo "`date`: linux_client_software_controls - setting software: $SOFTWARE for $VERSION by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ $SOFTWARE = yes ]
-then
-touch /var/lib/samba/netlogon/linuxclient/$VERSION/enable_software_install
-chmod 0644 /var/lib/samba/netlogon/linuxclient/$VERSION/enable_software_install
-else
-rm -f /var/lib/samba/netlogon/linuxclient/$VERSION/enable_software_install
-fi
+	echo "`date`: linux_client_software_controls - setting software: $SOFTWARE for $VERSION by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	if [ $SOFTWARE = yes ]
+	then
+		touch /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_install
+		chmod 0644 /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_install
+	else
+		rm -f /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_install
+	fi
 fi
 #Set updates file flag
 if [ ! -z "$UPDATES" ]
 then
-ACTION=updates
-SETTING=$UPDATES
-log_action
-if [ $UPDATES = yes ]
-then
-touch /var/lib/samba/netlogon/linuxclient/$VERSION/enable_updates
-chmod 0644 /var/lib/samba/netlogon/linuxclient/$VERSION/enable_updates
-else
-rm -f /var/lib/samba/netlogon/linuxclient/$VERSION/enable_updates
-fi
+	ACTION=updates
+	SETTING=$UPDATES
+	log_action
+	if [ $UPDATES = yes ]
+	then
+		touch /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_updates
+		chmod 0644 /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_updates
+	else
+		rm -f /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_updates
+	fi
 fi
 [ ! -d /var/lib/samba/netlogon/linuxclient/nonfree/ ] && mkdir -p /var/lib/samba/netlogon/linuxclient/nonfree/
 #Set auto flag
 if [ ! -z "$AUTO" ]
 then
-ACTION=auto
-SETTING=$AUTO
-log_action
-if [ $AUTO = yes ]
-then
-touch /var/lib/samba/netlogon/linuxclient/nonfree/auto
-chmod 0644 /var/lib/samba/netlogon/linuxclient/nonfree/auto
-else
-rm -f /var/lib/samba/netlogon/linuxclient/nonfree/auto
-fi
+	ACTION=auto
+	SETTING=$AUTO
+	log_action
+	if [ $AUTO = yes ]
+	then
+		touch /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_nonfree
+		chmod /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_nonfree
+	else
+		rm -f /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_nonfree
+	fi
 fi
 #Set graphics flag
 if [ ! -z "$GRAPHICS" ]
 then
-ACTION=graphics
-SETTING=$GRAPHICS
-log_action
-if [ $GRAPHICS = yes ]
-then
-touch /var/lib/samba/netlogon/linuxclient/nonfree/graphics-drivers
-chmod 0644 /var/lib/samba/netlogon/linuxclient/nonfree/graphics-drivers
-else
-rm -f /var/lib/samba/netlogon/linuxclient/nonfree/graphics-drivers
-fi
+	ACTION=graphics
+	SETTING=$GRAPHICS
+	log_action
+	if [ $GRAPHICS = yes ]
+	then
+		touch /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_graphics-drivers
+		chmod 0644 /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_graphics-drivers
+	else
+		rm -f /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_graphics-drivers
+	fi
 fi
 #Set restricted flag
 if [ ! -z "$RESTRICTED" ]
 then
-ACTION=restricted
-SETTING=$RESTRICTED
-log_action
-if [ $RESTRICTED = yes ]
-then
-touch /var/lib/samba/netlogon/linuxclient/nonfree/restricted-extras
-chmod 0644 /var/lib/samba/netlogon/linuxclient/nonfree/restricted-extras
-else
-rm -f /var/lib/samba/netlogon/linuxclient/nonfree/restricted-extras
-fi
+	ACTION=restricted
+	SETTING=$RESTRICTED
+	log_action
+	if [ $RESTRICTED = yes ]
+	then
+		touch /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_restricted-extras
+		chmod 0644 /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_restricted-extras
+	else
+		rm -f /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_restricted-extras
+	fi
 fi
 #Set firmware flag
 if [ ! -z "$FIRMWARE" ]
 then
-ACTION=firmware
-SETTING=$FIRMWARE
-log_action
-if [ $FIRMWARE = yes ]
-then
-touch /var/lib/samba/netlogon/linuxclient/nonfree/firmware-nonfree
-chmod 0644 /var/lib/samba/netlogon/linuxclient/nonfree/firmware-nonfree
-else
-rm -f /var/lib/samba/netlogon/linuxclient/nonfree/firmware-nonfree
-fi
+	ACTION=firmware
+	SETTING=$FIRMWARE
+	log_action
+	if [ $FIRMWARE = yes ]
+	then
+		touch /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_firmware-nonfree
+		chmod 0644 /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_firmware-nonfree
+	else
+		rm -f /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_firmware-nonfree
+	fi
 fi
 exit

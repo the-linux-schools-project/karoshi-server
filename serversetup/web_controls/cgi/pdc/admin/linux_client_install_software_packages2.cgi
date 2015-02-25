@@ -57,53 +57,54 @@ END_POINT=17
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = VERSIONcheck ]
-then
-let COUNTER=$COUNTER+1
-VERSION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
-#Assign LIST
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = LISTcheck ]
-then
-let COUNTER=$COUNTER+1
-LIST=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = VERSIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		VERSION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign ACTION
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-then
-let COUNTER=$COUNTER+1
-ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+		fi
+	let COUNTER=$COUNTER+1
 done
 #Assign SOFTWARE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SOFTWAREcheck ]
-then
-let COUNTER=$COUNTER+1
-SOFTWARE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SOFTWAREcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SOFTWARE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
+#Assign LOCATION
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = LOCATIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		LOCATION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -134,14 +135,14 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
@@ -149,33 +150,33 @@ fi
 #Check to see that VERSION is not blank
 if [ -z "$VERSION" ]
 then
-MESSAGE=$"Blank version"
-show_status
-fi
-
-#Check to see that LIST is not blank
-if [ -z "$LIST" ]
-then
-MESSAGE=$"Blank list"
-show_status
+	MESSAGE=$"Blank version"
+	show_status
 fi
 
 #Check to see that ACTION is not blank
 if [ -z "$ACTION" ]
 then
-MESSAGE=$"Blank action"
-show_status
+	MESSAGE=$"Blank action"
+	show_status
 fi
 
 #Check to see that SOFTWARE is not blank
 if [ -z "$SOFTWARE" ]
 then
-MESSAGE=$"You have not entered in a software package."
-show_status
+	MESSAGE=$"You have not entered in a software package."
+	show_status
+fi
+
+#Check to see that LOCATION is not blank
+if [ -z "$LOCATION" ]
+then
+	MESSAGE=$"You have not entered in a location."
+	show_status
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/linux_client_install_software_packages2.cgi | cut -d' ' -f1`
 #Set software control options
-sudo -H /opt/karoshi/web_controls/exec/linux_client_install_software_packages $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$VERSION:$LIST:$ACTION:$SOFTWARE:
+sudo -H /opt/karoshi/web_controls/exec/linux_client_install_software_packages $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$VERSION:$ACTION:$SOFTWARE:$LOCATION:
 completed
 exit
