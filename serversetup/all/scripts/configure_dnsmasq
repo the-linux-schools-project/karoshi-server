@@ -86,8 +86,6 @@ do
 					do
 						echo nameserver $DNSENTRY >> /etc/resolv.karoshi.conf					
 					done
-						echo nameserver 8.8.8.8 >> /etc/resolv.karoshi.conf
-						echo nameserver 4.4.4.4 >> /etc/resolv.karoshi.conf
 					echo domain '$REALM' > /etc/resolv.conf
 					echo nameserver 127.0.0.1 >> /etc/resolv.conf
 					echo "<li>'$SERVERNAME' - '$"restarting"' dnsmasq</li>"
