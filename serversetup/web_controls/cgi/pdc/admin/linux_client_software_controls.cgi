@@ -165,8 +165,8 @@ else
 echo '<form action="/cgi-bin/admin/linux_client_install_software_packages.cgi" name="selectservers" method="post">
 <input name="_VERSION_" value="'$VERSION'" type="hidden">
 
-<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td style="vertical-align: top;">
-<b>'$"Linux Client Software Controls"' - '$VERSION'</b></td><td style="vertical-align: top;"><input type="submit" class="button" value="'$"Linux Client software packages"'"></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Linux_Client_Software_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the locations that you want to enable updates and software installs for."'</span></a></td></tr></tbody></table></form></div><div id="infobox"><form action="/cgi-bin/admin/linux_client_software_controls2.cgi" name="selectservers" method="post">'
+<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;">
+<b>'$"Linux Client Software Controls"' - '$VERSION'</b></td><td style="vertical-align: top;"><input type="submit" class="button" value="'$"Software Packages"'"></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Linux_Client_Software_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the locations that you want to enable updates and software installs for."'</span></a></td></tr></tbody></table></form></div><div id="infobox"><form action="/cgi-bin/admin/linux_client_software_controls2.cgi" name="selectservers" method="post">'
 fi
 
 function show_software_status {
@@ -222,7 +222,7 @@ fi
 #fi
 
 
-echo '<tr><td><b>'$"Location"'</b></td><td><b>'$LOCATION'</b></td></tr><tr><td style="width: 180px;">'$"Enable Software install"'</td><td><a class="info" href="javascript:void(0)"><input name="_SOFTWARE_'$SSTATUS'_LOCATION_'$LOCATION'_" type="image" class="images" src="'$SICON'" value=""><span>'$"This will make the Linux clients install any software in the software install lists on boot up."'</span></a></td></tr>
+echo '<tr><td><b>'$"Location"'</b></td><td><b>'$LOCATION'</b></td></tr><tr><td style="width: 180px;">'$"Enable software install"'</td><td><a class="info" href="javascript:void(0)"><input name="_SOFTWARE_'$SSTATUS'_LOCATION_'$LOCATION'_" type="image" class="images" src="'$SICON'" value=""><span>'$"This will make the Linux clients install any software in the software install lists on boot up."'</span></a></td></tr>
 <tr><td style="width: 180px;">'$"Enable updates"'</td><td><a class="info" href="javascript:void(0)"><input name="_UPDATES_'$USTATUS'_LOCATION_'$LOCATION'_" type="image" class="images" src="'$UICON'" value=""><span>'$"This will make the Linux clients update their software packages on boot up."'</span></a></td></tr>'
 
 #echo '<tr><td style="width: 180px;">'$"Auto"'</td><td><a class="info" href="javascript:void(0)"><input name="_AUTO_'$ASTATUS'_" type="image" class="images" src="'$AICON'" value=""><span>'$"Set this to auto to hide the software control dialog from appearing when setting up the clients."'</span></a></td></tr>

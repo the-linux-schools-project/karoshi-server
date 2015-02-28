@@ -96,8 +96,8 @@ show_status
 fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/ups_slave_add.cgi" name="tstest" method="post"><div id="actionbox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
-<td style="vertical-align: top;"><div class="sectiontitle">'$"Add a slave UPS"'</div></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will configure a UPS device connected to a server."'</span></a></td></tr></tbody></table><br>'
+echo '<form action="/cgi-bin/admin/ups_slave_add.cgi" name="tstest" method="post"><div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<td style="vertical-align: top;"><div class="sectiontitle">'$"Add a slave UPS"'</div></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will configure a UPS device connected to a server."'</span></a></td></tr></tbody></table><br></div><div id="infobox">'
 
 
 #Check to see if there are any master ups available
@@ -140,6 +140,6 @@ echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="im
 
 #Show list of ssh enabled servers that do not have a main UPS
 /opt/karoshi/web_controls/show_servers $MOBILE addslaveups $"Add slave ups"
-echo '</div></form></div></body></html>'
+echo '</div></div></form></div></body></html>'
 exit
 

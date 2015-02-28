@@ -114,7 +114,7 @@ echo '</select></td><td><a class="info" target="_blank" href="http://www.linuxsc
 </tbody></table><br><br>'
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers no servers $"Add ups"
+/opt/karoshi/web_controls/show_servers no servers $"Add UPS"
 
 echo '</div></div></form></div></body></html>'
 exit

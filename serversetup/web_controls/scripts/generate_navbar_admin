@@ -350,6 +350,11 @@ echo '			<li class="mid"><a href="/cgi-bin/admin/linux_client_choose_distro_fm.c
 					</ul>
 			</li>'
 fi
+
+if [ $INTERNETCTRL = yes ]
+then
+	echo '<li><a href="/cgi-bin/admin/package_cache_control.cgi">'$"Package Cache Control"'</a></li>'
+fi
 echo '					<li><a href="/cgi-bin/admin/client_wireless_settings_fm.cgi">'$"Client Wireless Settings"'</a></li>			
 					<li><a href="/cgi-bin/admin/client_shutdown_time.cgi">'$"Client Shutdown Time"'</a></li>
 			</ul>		

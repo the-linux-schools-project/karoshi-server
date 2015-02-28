@@ -74,7 +74,7 @@ TCPIP=`echo "$DATA" | cut -s -d: -f8 | sed 's/%2/\//g' | tr -cd '0-9./'`
 WIDTH1=180
 WIDTH2=90
 WIDTH3=200
-WIDTH4=280
+WIDTH4=320
 TABLECLASS=standard
 if [ "$MOBILE" = yes ]
 then
@@ -134,7 +134,7 @@ function reload_radius {
 if [ "$ACTION" = add ] || [ "$ACTION" = edit ]
 then
 	INPUTSTYLE=text
-	SECRETKEY=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 35 | head -n 1`
+	SECRETKEY=`date +%s | sha256sum | base64 | head -c 35 ; echo`
 	if [ "$ACTION" = edit ]
 	then
 		#Get access point data
@@ -164,7 +164,7 @@ then
       <tr>
         <td>
 '$"Secret Key"'</td>
-        <td><input tabindex= "3" style="width: '$WIDTH4'px;" name="____SECRETKEY____" value="'$SECRETKEY'" size="35" type="'$INPUTSTYLE'"></td><td>
+        <td><input tabindex= "3" style="width: '$WIDTH4'px;" name="____SECRETKEY____" value="'$SECRETKEY'" size="36" type="'$INPUTSTYLE'"></td><td>
 <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the secret key that you want. This will also need to be entered into your wireless access points. This can be uppercase, lowercase, and numbers."'</span></a>
       </td></tr>
     </tbody>

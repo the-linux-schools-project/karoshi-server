@@ -1,0 +1,225 @@
+#!/bin/bash
+#Copyright (C) 2014 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/package_cache_control_cgi
+then
+	echo `date`: package_cache_control - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/package_cache_control_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/package_cache_control.cgi | cut -d' ' -f1`
+[ -z "$MD5SUM" ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $package_cache_control_cgi'check' ]
+then
+	echo `date`: package_cache_control - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+	echo `date`: package_cache_control - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-+%'`
+
+if [ -z "$DATA" ]
+then
+	echo `date`: package_cache_control - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+ACTION=`echo "$DATA" | cut -s -d: -f4`
+FILTERDATA=`echo "$DATA" | cut -s -d: -f5`
+MOBILE=`echo "$DATA" | cut -s -d: -f6`
+
+PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+
+TABLECLASS=standard
+WIDTH1=180
+WIDTH2=180
+WIDTH3=200
+ICON1=/images/submenus/system/delete.png
+if [ $MOBILE = yes ]
+then
+	TABLECLASS=mobilestandard
+	WIDTH1=80
+	WIDTH2=180
+	WIDTH3=150
+	ICON1=/images/submenus/system/deletem.png
+fi
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+	echo `date`: package_cache_control - Not called by package_cache_control.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+then
+	echo `date`: package_cache_control - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+	echo `date`: package_cache_control - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$ACTION" ]
+then
+	echo `date`: package_cache_control - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ "$ACTION" = reallyadd ] || [ "$ACTION" = delete ]
+then
+	if [ -z "$FILTERDATA" ]
+	then
+		echo `date`: package_cache_control - Blank fiter description by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
+fi
+
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+	echo `date`: package_cache_control - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+TEXTDOMAIN=karoshi-server
+
+function addsite {
+echo `date`: package_cache_control - adding $FILTERDATA by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+if [ $PROXYSERVER = `hostname-fqdn` ]
+then
+	if [ `grep -c -w "$FILTERDATA" /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default` = 0 ]
+	then
+		echo "$FILTERDATA" >> /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
+		#Sort the data
+		sort /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default > /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default.$$
+		cat /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default.$$ > /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
+		rm -f /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default.$$
+
+		#Restart squid-deb-proxy
+		service squiddebproxy reload 1>/dev/null
+
+	fi
+else
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
+	if [ `grep -c -w "'$FILTERDATA'" /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default` = 0 ]
+	then
+		echo "'$FILTERDATA'" >> /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
+		#Sort the data
+		sort /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default > /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default.'$$'
+		cat /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default.'$$' > /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
+		rm -f /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default.'$$'
+
+		#Restart squid-deb-proxy
+		service squiddebproxy reload 1>/dev/nulll
+	fi
+	'
+fi
+}
+
+function deletesite {
+echo `date`: package_cache_control - deleting $FILTERDATA by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+if [ $PROXYSERVER = `hostname-fqdn` ]
+then
+	LINENUMBER=`grep -n -w ^$FILTERDATA /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default | cut -d: -f1`
+	[ ! -z "$LINENUMBER" ] && sed -i $LINENUMBER"d" /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
+	#Remove blank lines
+	sed -i "/^$/d" /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
+
+	#Restart squid-deb-proxy
+	service squiddebproxy reload 1>/dev/null
+else
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
+	LINENUMBER=`grep -n -w ^'$FILTERDATA' /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default | cut -d: -f1`
+	[ ! -z "$LINENUMBER" ] && sed -i $LINENUMBER"d" /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
+	#Remove blank lines
+	sed -i "/^$/d" /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
+
+	#Restart squid-deb-proxy
+	service squiddebproxy reload 1>/dev/null
+	'
+fi
+}
+
+function viewlist {
+
+#Show add site box
+echo '<form action="/cgi-bin/admin/package_cache_control.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: '$WIDTH1'px;"><b>'$"Add Site"'</b></td><td><input tabindex= "1" name="_ACTION_add_FILTERDATA_" style="width: '$WIDTH3'px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Package_Cache_Control"><img class="images" alt="" src="/images/help/info.png"><span>'$"Add in a site that you want to allow for the clients to connect to."'</span></a></td>'
+
+[ "$MOBILE" = yes ] && echo '</tr><tr><td></td>'
+
+echo '<td><input value="'$"Submit"'" class="button" type="submit"></td></tr></tbody></table><br></form><form action="/cgi-bin/admin/package_cache_control.cgi" method="post">'
+
+if [ $PROXYSERVER = `hostname-fqdn` ]
+then
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: '$WIDTH2'px;"><b>'$"Site"'</b></td><td></td></tr>'
+
+	for SITE in `cat /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default | sort`
+	do
+		echo '<tr><td>'$SITE'</td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_delete_FILTERDATA_'$SITE'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Delete"' '$SITE'</span></a></td></tr>'
+	done
+	echo '</tbody></table>'
+else
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
+	echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+<tr><td style=\"width: '$WIDTH1'"px";\"><b>Site</b></td><td></td></tr>"
+	for SITE in `cat /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default | sort`
+	do
+		echo "<tr><td>$SITE</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_FILTERDATA_$SITE"_"\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$"Delete"' $SITE</span></a></td></tr>"
+	done
+	echo "</tbody></table>"
+	'
+fi
+echo '</form>'
+}
+
+[ "$ACTION" = add ] && addsite
+[ "$ACTION" = delete ] && deletesite
+viewlist
+
+exit
+

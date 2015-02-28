@@ -104,23 +104,23 @@ fi
 
 #Make sure install and remove lists exist
 [ ! -d /var/lib/samba/netlogon/linuxclient/$VERSION/software/install ] && mkdir -p /var/lib/samba/netlogon/linuxclient/$VERSION/software/install
-touch /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"
+touch /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_software
 
 function log_action {
 echo "`date`: linux_client_install_software_packages - setting action: "$ACTION": software: $SOFTWARE location: $LOCATION for $VERSION by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 }
 
 function sort_list {
-sort /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/$LOCATION > /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/$LOCATION.$$
-rm /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/$LOCATION
-mv /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/$LOCATION.$$ /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/$LOCATION
+sort /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_software > /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_software.$$
+rm /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_software
+mv /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_software.$$ /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_software
 }
 
 if [ "$ACTION" = add ]
 then
-	if [ `grep -c -w $SOFTWARE /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"` = 0 ]
+	if [ `grep -c -w $SOFTWARE /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_software` = 0 ]
 	then
-		echo $SOFTWARE >> /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"
+		echo $SOFTWARE >> /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_software
 		sort_list
 		log_action
 	fi
@@ -128,9 +128,9 @@ fi
 
 if [ "$ACTION" = delete ]
 then
-	sed -i 's/'$SOFTWARE'//g' /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"
+	sed -i 's/'$SOFTWARE'//g' /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_software
 	#Remove blank lines
-	sed -i '/^$/d' /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"
+	sed -i '/^$/d' /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_software
 	log_action
 fi
 

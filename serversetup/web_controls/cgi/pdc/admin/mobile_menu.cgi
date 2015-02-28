@@ -126,8 +126,12 @@ echo '	<a href="/cgi-bin/admin/change_password_fm.cgi">'$"Change Password"'</a>
         <span>'$"Client"'</span>
 	<a href="/cgi-bin/admin/client_boot_controls_fm.cgi">'$"Client Boot Controls"'</a>
 	<a href="/cgi-bin/admin/client_wireless_settings_fm.cgi">'$"Client Wireless Settings"'</a>
-	<a href="/cgi-bin/admin/client_shutdown_time.cgi">'$"Client Shutdown Time"'</a>
-	<a href="/cgi-bin/admin/linux_client_choose_background_fm.cgi">'$"Linux Client Background"'</a>
+	<a href="/cgi-bin/admin/client_shutdown_time.cgi">'$"Client Shutdown Time"'</a>'
+	if [ $INTERNETCTRL = yes ]
+	then
+		echo '<a href="/cgi-bin/admin/package_cache_control.cgi">'$"Package Cache Control"'</a>'
+	fi
+echo '	<a href="/cgi-bin/admin/linux_client_choose_background_fm.cgi">'$"Linux Client Background"'</a>
 	<a href="/cgi-bin/admin/linux_client_software_controls_fm.cgi">'$"Linux Client Software Controls"'</a>
 	<a href="/cgi-bin/admin/linux_client_install_software_packages_fm.cgi">'$"Linux Client Software Packages"'</a>
       </div>
