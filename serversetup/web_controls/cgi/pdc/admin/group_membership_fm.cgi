@@ -114,7 +114,7 @@ then
 echo '<div id="mobileactionbox">
 <div id="suggestions"></div>
 '$"Username"'<br>
-<input tabindex= "1" style="width: 160px;" name="____USERNAME____" 
+<input tabindex= "1" style="width: 160px; height: 30px;" name="____USERNAME____" 
  value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br>
 '
 else
@@ -131,13 +131,6 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 	 		<div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180"></div>
 		</td>
 	</tr>
-	<tr><td>&nbsp;</td></tr>
-	<tr><td>&nbsp;</td></tr>
-	<tr><td>&nbsp;</td></tr>
-	<tr><td>&nbsp;</td></tr>
-	<tr><td>&nbsp;</td></tr>
-	<tr><td>&nbsp;</td></tr>
-	<tr><td>&nbsp;</td></tr>
    </tbody>
 </table>'
 fi

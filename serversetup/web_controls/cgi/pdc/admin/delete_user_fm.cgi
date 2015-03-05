@@ -186,10 +186,10 @@ then
 echo '<div id="mobileactionbox">'
 echo '<div id="suggestions"></div>
 '$"Username"'<br>
-<input tabindex= "1" style="width: 160px;" name="_USERNAME_" value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br><br>
+<input tabindex= "1" style="width: 160px; height: 30px;" name="_USERNAME_" value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br><br>
 '$"Delete Code"' '$SHUTDOWN_CODE'<br><br>
 '$"Confirm"'<br>
-<input tabindex= "2" name="_SHUTDOWNCODE_" maxlength="3" size="3" type="text"><br><br>
+<input tabindex= "2" style="width: 160px; height: 30px;" name="_SHUTDOWNCODE_" maxlength="3" size="3" type="text"><br><br>
 '$"View User Image"'<br>
 <a class="info" href="javascript:void(0)"><input name="_VIEWIMAGE_yes_" type="image" class="images" src="/images/submenus/user/user_photo.png" value=""><span>'$"View User Image"'</span></a>
 <br>

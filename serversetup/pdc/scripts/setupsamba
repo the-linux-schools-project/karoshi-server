@@ -985,12 +985,6 @@ then
 	if [ $INSTALL_TYPE = education ]
 	then
 		cp -f -R /opt/karoshi/serversetup/pdc/logonscripts/drives/* /var/lib/samba/netlogon/windows_settings/drives/
-		COUNTER=$STARTYEAR
-		while [ $COUNTER -le $ENDYEAR ]
-		do
-			ln -s /var/lib/samba/netlogon/windows_settings/drives/students.kix /var/lib/samba/netlogon/windows_settings/drives/yr$COUNTER.kix
-			let COUNTER=$COUNTER+1
-		done
 	else
 		cp -f -R /opt/karoshi/serversetup/pdc/logonscripts/drives_business/* /var/lib/samba/netlogon/windows_settings/drives/
 	fi
@@ -1440,8 +1434,8 @@ echo `date`: "Adding linux client support" >> /opt/karoshi/serversetup/install_l
 [ ! -d /var/lib/samba/netlogon/linuxclient ] && mkdir -p /var/lib/samba/netlogon/linuxclient
 cp -f -R /opt/karoshi/serversetup/pdc/linuxclient/$LINUXCLIENTVERSION /var/lib/samba/netlogon/linuxclient/
 
-#Create pam_mount.conf.xml
-/opt/karoshi/serversetup/pdc/"useful scripts"/generate_pam_mount
+#Create drive maps
+/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts
 
 cp -f /opt/karoshi/serversetup/all/backgrounds/linuxclient.png /var/lib/samba/netlogon/linuxclient/background.png
 

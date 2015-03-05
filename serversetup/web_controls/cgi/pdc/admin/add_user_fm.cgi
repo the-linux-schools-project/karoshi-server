@@ -226,28 +226,28 @@ if [ $MOBILE = yes ]
 then
 echo '<div id="mobileactionbox">'
 echo ''$"Forename"'<br>
-<input tabindex= "1" value="'$FORENAME'" name="_FIRSTNAME_" style="width: 200px;" size="20" type="text"><br>
+<input tabindex= "1" value="'$FORENAME'" name="_FIRSTNAME_" style="width: 200px; height: 30px;" size="20" type="text"><br>
 '$"Surname"'<br>
-<input tabindex= "2" value="'$SURNAME'" name="_SURNAME_" style="width: 200px;" size="20" type="text"><br>
+<input tabindex= "2" value="'$SURNAME'" name="_SURNAME_" style="width: 200px; height: 30px;" size="20" type="text"><br>
 '$"Password"'<br>
-<input tabindex= "3" name="_PASSWORD1_" style="width: 200px;" size="20" type="password"><br>
+<input tabindex= "3" name="_PASSWORD1_" style="width: 200px; height: 30px;" size="20" type="password"><br>
 '$"Confirm Password"'<br>
-<input tabindex= "4" name="_PASSWORD2_" style="width: 200px;" size="20" type="password"><br>
+<input tabindex= "4" name="_PASSWORD2_" style="width: 200px; height: 30px;" size="20" type="password"><br>
 '$"Enrolment number / staff code"'<br>
-<input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="_ENROLLMENTNUMBER_" style="width: 200px;" size="20" type="text"><br>
+<input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="_ENROLLMENTNUMBER_" style="width: 200px; height: 30px;" size="20" type="text"><br>
 '$"Primary group"'<br>
 '
 
 
 if [ $FILE'null' = null ]
 then
-/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: 200px;" onClick="rewriteselect();">/g'
+/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: 200px; height: 30px;" onClick="rewriteselect();">/g'
 else
 /opt/karoshi/web_controls/group_dropdown_list | sed 's/<option><\/option>/<option selected="selected">'$GROUP'<\/option>/g'
 fi
 echo '<br>
 '$"Username style"'<br>
-  <select name="_USERNAMESTYLE_" style="width: 200px;" onClick="rewriteselect();">
+  <select name="_USERNAMESTYLE_" style="width: 200px; height: 30px;" onClick="rewriteselect();">
         <option value="userstyleS1" '$SELECT1'>'$"Style"' 1: '$"auser09"'</option>
         <option value="userstyleS2" '$SELECT2'>'$"Style"' 2: '$"09auser"'</option>
         <option value="userstyleS3" '$SELECT3'>'$"Style"' 3: '$"usera09"'</option>

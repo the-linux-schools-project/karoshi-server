@@ -261,6 +261,5 @@ show_status
 fi
 
 MESSAGE=`echo ''$"Server"': '$HOSTNAME'\\n'$"Share"': '$FOLDERNAME'\\n\\n'$"This share has been added."''`
-echo "$MESSAGE"
 show_status
 exit

@@ -283,6 +283,16 @@ if [[ -d /tmp/netlogon/linuxclient/$LINUX_VERSION/firefox/extensions ]]; then
 	done < <(find /tmp/netlogon/linuxclient/$LINUX_VERSION/firefox/extensions -maxdepth 1 -mindepth 1 -name '*.xpi' -print0)
 fi
 
+#Remove unnecessary dictionaries
+machineLang=$(dbus-send --print-reply --system --dest=org.freedesktop.locale1 /org/freedesktop/locale1 org.freedesktop.DBus.Properties.Get string:org.freedesktop.locale1 string:Locale | sed -n '/LANG=/s/.*LANG=\([^\.]*\)\..*/\1/p')
+if [[ -L /usr/lib/firefox/dictionaries ]]; then
+	dpkg-divert --local --add /usr/lib/firefox/dictionaries
+	rm -rf /usr/lib/firefox/dictionaries
+	mkdir /usr/lib/firefox/dictionaries
+	ln -s /usr/share/hunspell/"$machineLang".dic /usr/lib/firefox/dictionaries/"$machineLang".dic
+	ln -s /usr/share/hunspell/"$machineLang".aff /usr/lib/firefox/dictionaries/"$machineLang".aff
+fi
+
 ###########################
 #Create cronjob to shut computer down
 ###########################
@@ -482,12 +492,9 @@ for device in /dev/sd*; do
 	fi
 done
 
+#Restart sssd to fix login problem
+echo "service sssd restart" > /etc/rc2.d/S99restartsssd
+chmod 0755 /etc/rc2.d/S99restartsssd
+
 #Write new variables to file
 updateVariables
-
-#Install dictionaries
-dpkg -s myspell-en-gb
-if [[ $? != 0 ]]; then
-	apt-get update
-	apt-get install -y myspell-en-gb
-fi

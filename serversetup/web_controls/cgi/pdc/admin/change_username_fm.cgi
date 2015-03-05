@@ -83,13 +83,17 @@ if [ $MOBILE = no ]
 then
 DIV_ID=actionbox
 TABLECLASS=standard
-WIDTH=200
+WIDTH1=180
+WIDTH2=200
+HEIGHT=20
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
 DIV_ID=mobileactionbox
 TABLECLASS=mobilestandard
-WIDTH=100
+WIDTH1=130
+WIDTH2=150
+HEIGHT=30
 fi
 
 echo '<form action="/cgi-bin/admin/change_username.cgi" method="post">'
@@ -110,18 +114,18 @@ fi
 echo '<table class="'$TABLECLASS'" style="text-align: left; height: 30px;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
       <tr>
-        <td style="width: 180px;">
+        <td style="width: '$WIDTH1'px;">
 '$"Username"'</td>
-        <td><div id="suggestions"></div><input tabindex= "1" name="_USERNAME_" size="20" style="width: '$WIDTH'px;" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
+        <td><div id="suggestions"></div><input tabindex= "1" name="_USERNAME_" size="20" style="width: '$WIDTH2'px; height: '$HEIGHT'px;" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Username"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to change."'</span></a>
 </td></tr>
-<tr><td>'$"New Username"'</td><td><input tabindex= "2" name="_NEWUSERNAME_" size="20" style="width: '$WIDTH'px;" type="text"></td><td>
+<tr><td>'$"New Username"'</td><td><input tabindex= "2" name="_NEWUSERNAME_" size="20" style="width: '$WIDTH2'px;  height: '$HEIGHT'px;" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Username"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new username for this user."'</span></a></td>
       </tr>
-<tr><td>'$"New forename"'</td><td><input tabindex= "3" name="_FIRSTNAME_" size="20"  style="width: '$WIDTH'px;" type="text"></td><td>
+<tr><td>'$"New forename"'</td><td><input tabindex= "3" name="_FIRSTNAME_" size="20"  style="width: '$WIDTH2'px;  height: '$HEIGHT'px;" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Username"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new username for this user."'</span></a></td>
       </tr>
-<tr><td>'$"New surname"'</td><td><input tabindex= "4" name="_SURNAME_" size="20"  style="width: '$WIDTH'px;" type="text"></td><td>
+<tr><td>'$"New surname"'</td><td><input tabindex= "4" name="_SURNAME_" size="20"  style="width: '$WIDTH2'px;  height: '$HEIGHT'px;" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Username"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new username for this user."'</span></a></td>
       </tr>
     </tbody>

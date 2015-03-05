@@ -178,7 +178,7 @@ mv /var/lib/samba/netlogon/groups.txt.$$ /var/lib/samba/netlogon/groups.txt
 echo >> /var/lib/samba/netlogon/groups.txt
 
 #Create pam_mount.conf.xml
-/opt/karoshi/serversetup/pdc/"useful scripts"/generate_pam_mount
+/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts
 
 function set_perms {
 if [ -f /opt/karoshi/server_network/group_information/$PRIGROUP ]

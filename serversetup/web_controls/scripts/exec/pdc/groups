@@ -237,8 +237,8 @@ echo SUBUNIT=$CATEGORY >> /opt/karoshi/server_network/group_information/$GROUPNA
 echo SECONDARYGROUP=$SECGROUP >> /opt/karoshi/server_network/group_information/$GROUPNAME
 echo YEARSUFFIX=$YEARSUFFIX >> /opt/karoshi/server_network/group_information/$GROUPNAME
 
-#Recreate pam mount for the linux clients
-/opt/karoshi/"useful scripts"/generate_pam_mount
+#Recreate logon scripts
+/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts
 
 fi
 
@@ -322,7 +322,7 @@ then
 [ -f /var/lib/samba/netlogon/windows_settings/drives/$GROUPNAME.kix ] && rm -f /var/lib/samba/netlogon/windows_settings/drives/$GROUPNAME.kix
 
 #Recreate pam mount for the linux clients
-/opt/karoshi/"useful scripts"/generate_pam_mount 
+/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts
 fi
 
 if [ $FEDERATED_LDAP_SERVERS = yes ]
@@ -345,7 +345,7 @@ then
 [ -f /var/lib/samba/netlogon/windows_settings/drives/'$GROUPNAME'.kix ] && rm -f /var/lib/samba/netlogon/windows_settings/drives/'$GROUPNAME'.kix
 
 #Recreate pam mount for the linux clients
-/opt/karoshi/"useful scripts"/generate_pam_mount 
+/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts
 fi
 '
 done

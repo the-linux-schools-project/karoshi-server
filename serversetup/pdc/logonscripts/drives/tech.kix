@@ -1,9 +1,5 @@
 $issimsws=ReadValue("HKEY_LOCAL_MACHINE\Software\karoshi","issimsws")
 
-ConnectShare("j:, $$lserver.$realm\dfs\applications")
-ConnectShare("k:, $$lserver.$realm\dfs\staffshare")
-ConnectShare("r:, $$lserver.$realm\dfs\subjects")
-
 If $iscmisws = "YES"
   ConnectShare("$cmisdrive, $cmisshare")
 EndIf

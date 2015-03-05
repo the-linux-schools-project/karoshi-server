@@ -161,12 +161,12 @@ then
 echo '<div id="mobileactionbox">
 <div id="suggestions"></div>
 '$"Username"'<br>
-<input tabindex= "1" style="width: 160px;" name="____USERNAME____" 
+<input tabindex= "1" style="width: 160px; height: 30px;" name="____USERNAME____" 
  value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br>
 '$"New Password"'<br>
-<input tabindex= "2" style="width: 160px;" name="____PASSWORD1____" value="'$PASSWORD1'" size="20" type="password"><br>
+<input tabindex= "2" style="width: 160px; height: 30px;" name="____PASSWORD1____" value="'$PASSWORD1'" size="20" type="password"><br>
 '$"Confirm New Password"'<br>
-<input tabindex= "3" style="width: 160px;" name="____PASSWORD2____" value="'$PASSWORD2'" size="20" type="password"><br><br>
+<input tabindex= "3" style="width: 160px; height: 30px;" name="____PASSWORD2____" value="'$PASSWORD2'" size="20" type="password"><br><br>
 <div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180"></div>
 '
 else

@@ -228,9 +228,9 @@ ACTION2=allowmedia
 fi
 
 
-echo '<tr><td valign="top"><b>'$ASSET'</b></td>'
+echo '<tr><td valign="top">'$ASSET'</td>'
 
-[ $MOBILE = no ] && echo '<td valign="top"><b>'$MAC1'</b></td><td valign="top"><b>'$TCPIP1'</b></td>'
+[ $MOBILE = no ] && echo '<td valign="top">'$MAC1'</td><td valign="top">'$TCPIP1'</td>'
 
 echo '<td valign="top"><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post">
 <input name="_ACTION_'$ACTION'_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="submit" class="button" style="color:'$COLOUR';" value="'$CONTROLMSG'"></form></td>

@@ -3,11 +3,9 @@
 REALM=internal
 [  -f /opt/karoshi/server_network/domain_information/domain_name ] && source /opt/karoshi/server_network/domain_information/domain_name
 
-
 #Check for dfs support
 DFS=no
 [ `grep -c "host msdfs = yes" /etc/samba/smb.conf` -gt 0 ] && DFS=yes
-
 
 #Add in drive mount options
 function get_pri_group_number {
@@ -54,6 +52,43 @@ then
 	#Home share
 	echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/home" path="dfs/homes/%(USER)" server="'$REALM'" gid="1103" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/$FILENAME
 
+	#Extra Network Shares
+	if [ -d /opt/karoshi/server_network/extra_network_shares/ ]
+	then
+		if [ `ls -1 /opt/karoshi/server_network/extra_network_shares | wc -l` -gt 0 ]
+		then
+			for SERVERNAMES in /opt/karoshi/server_network/extra_network_shares/*
+			do
+				SERVERNAME=`basename "$SERVERNAMES"`
+				for SHARENAMES in /opt/karoshi/server_network/extra_network_shares/"$SERVERNAME"/*
+				do
+					SHARENAME=`basename "$SHARENAMES"`
+					source /opt/karoshi/server_network/extra_network_shares/"$SERVERNAME"/"$SHARENAME"
+					if [ "$MASK" != 0770 ] && [ "$MASK" != 0750 ]
+					then
+						#Mount the share for all users.
+						echo '<volume options="'$OPTIONS',dir_mode=0700" mountpoint="~/network/'$SHARENAME'" path="dfs/'$SHARENAME'" server="'$REALM'" uid="1000-5000000" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/$FILENAME
+						#Add in windows kix drive mapping
+						for KIXGROUPS in /var/lib/samba/netlogon/windows_settings/drives/*
+						do
+							KIXGROUP=`basename "$KIXGROUPS"`
+							if [ `grep -F -c ''$REALM'\\dfs\\'$SHARENAME'' /var/lib/samba/netlogon/windows_settings/drives/"$KIXGROUP"`  = 0 ]
+							then
+								echo 'shell "net use * $lserver.'$REALM'\dfs\'$SHARENAME'"' >> /var/lib/samba/netlogon/windows_settings/drives/"$KIXGROUP"
+							fi
+						done
+					else
+						#Only mount the share for the primary group.
+						PRI_GROUP=$PRIMARYGROUP
+						get_pri_group_number
+						echo '<volume options="'$OPTIONS',dir_mode=0700" mountpoint="~/network/'$SHARENAME'" path="dfs/'$SHARENAME'" server="'$REALM'" gid="'$PRIGROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/$FILENAME
+					fi
+				#Create dfs share path
+				[ ! -L /var/lib/samba/dfs/$SHARENAME ] && ln -s msdfs:"$SERVERNAME\\$SHARENAME" /var/lib/samba/dfs/$SHARENAME
+				done
+			done
+		fi
+	fi
 else
 	#Subjects
 	echo '<volume options="'$OPTIONS',dir_mode=0700" mountpoint="~/network/subjects" path="subjects" server="'$HOSTNAME.$REALM'" uid="1000-5000000" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/$FILENAME
@@ -92,6 +127,36 @@ else
 			echo '<volume options="'$OPTIONS',dir_mode=0700" mountpoint="~/network/home" path="%(USER)" server="'$SERVER'" gid="'$PRIGROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/$FILENAME
 		fi
 	done
+
+	#Extra Network Shares
+	if [ -d /opt/karoshi/server_network/extra_network_shares/ ]
+	then
+		if [ `ls -1 /opt/karoshi/server_network/extra_network_shares | wc -l` -gt 0 ]
+		then
+			for SERVERNAMES in /opt/karoshi/server_network/extra_network_shares/*
+			do
+				SERVERNAME=`basename "$SERVERNAMES"`
+				for SHARENAMES in /opt/karoshi/server_network/extra_network_shares/"$SERVERNAME"/*
+				do
+					SHARENAME=`basename "$SHARENAMES"`
+					source /opt/karoshi/server_network/extra_network_shares/"$SERVERNAME"/"$SHARENAME"
+					if [ "$MASK" != 0770 ] && [ "$MASK" != 0750 ]
+					then
+						#Mount the share for all users.
+						echo '<volume options="'$OPTIONS',dir_mode=0700" mountpoint="~/network/'$SHARENAME'" path="'$SHARENAME'" server="'$SERVER'" uid="1000-5000000" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/$FILENAME
+					else
+						#Only mount the share for the primary group.
+						PRI_GROUP=$PRIMARYGROUP
+						get_pri_group_number
+						echo '<volume options="'$OPTIONS',dir_mode=0700" mountpoint="~/network/'$SHARENAME'" path="'$SHARENAME'" server="'$SERVER'" gid="'$PRIGROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/$FILENAME
+					fi
+				#Create dfs share path
+				[ ! -L /var/lib/samba/dfs/$SHARENAME ] && ln -s msdfs:"$SERVERNAME\\$SHARENAME" /var/lib/samba/dfs/$SHARENAME
+				done
+			done
+		fi
+	fi
+
 fi
 echo -e '\n</pam_mount>' >> /var/lib/samba/netlogon/linuxclient/$FILENAME
 }

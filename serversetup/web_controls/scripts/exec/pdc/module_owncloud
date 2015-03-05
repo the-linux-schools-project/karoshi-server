@@ -277,7 +277,7 @@ if [ -f /opt/karoshi/server_network/monitoringserver ]
 then
 /opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVERNAME
 fi
-
-/opt/karoshi/"useful scripts"/generate_pam_mount
+#Create mount.json for user home areas
+/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts
 exit
 

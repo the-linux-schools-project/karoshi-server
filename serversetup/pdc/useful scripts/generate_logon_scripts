@@ -1,0 +1,148 @@
+#!/bin/bash
+
+REALM=internal
+[  -f /opt/karoshi/server_network/domain_information/domain_name ] && source /opt/karoshi/server_network/domain_information/domain_name
+
+#Check for dfs support
+DFS=no
+[ `grep -c "host msdfs = yes" /etc/samba/smb.conf` -gt 0 ] && DFS=yes
+
+#Create linux client pam mount header.
+[ ! -d /var/lib/samba/netlogon/linuxclient ] && mkdir -p /var/lib/samba/netlogon/linuxclient
+[ ! -d /var/lib/samba/netlogon/windows_settings/drives/ ] && mkdir /var/lib/samba/netlogon/windows_settings/drives/
+cat /opt/karoshi/serversetup/pdc/linuxclient/pam_mount/pam_mount_header_xml > /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+
+#Get primary group
+function get_pri_group_number {
+GROUPNUM=`getent group "$GROUPNAME" | cut -d: -f3`
+}
+
+function add_drive_map {
+#Set paths to shares
+if [ "$DFS" = yes ]
+then
+	CLIENTPATH1=dfs/"$SHARE"
+	SMBSERVER="$REALM"
+	SMBSERVER2='$lserver.$realm'
+	CLIENTPATH2='\dfs\'$SHARE''
+else
+	LINUXCLIENTPATH="$SHARE"
+	SMBSERVER="$SERVER"
+	SMBSERVER2='\\'$SERVER''
+	CLIENTPATH2='\'$SHARE''
+fi
+
+if [ "$GROUPLIST" = all ]
+then
+	#Add in a drive map for all users
+	echo $SERVER - $SHARE all
+	#Add linux drive map
+	echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" uid="1000-5000000" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+	#Add windows drive map
+	for GROUPNAMES in /opt/karoshi/server_network/group_information/*
+	do
+		GROUPNAME=`basename "$GROUPNAMES"`
+		touch /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix
+		if [ `grep -F -c "$SMBSERVER2$CLIENTPATH2" /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix` = 0 ]
+		then
+			echo 'shell "net use * '$SMBSERVER2''$CLIENTPATH2'"' >> /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix
+		fi
+	done
+else
+	for GROUPNAME in `echo "$GROUPLIST"| sed 's/,/ /g'`
+	do
+		get_pri_group_number
+		echo $SERVER - $SHARE $GROUPNAME
+		#Add linux drive map
+		echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$LINUXCLIENTPATH'" server="'$SMBSERVER'" gid="'$GROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+		#Add windows drive map
+		touch /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix
+		if [ `grep -F -c "$SMBSERVER2$CLIENTPATH2" /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix` = 0 ]
+		then
+			echo 'shell "net use * '$SMBSERVER2''$CLIENTPATH2'"' >> /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix
+		fi
+	done
+fi
+}
+
+
+function get_shares {
+for SERVERS in /opt/karoshi/server_network/network_shares/*
+do
+	#Get names of servers with network shares
+	SERVER=`basename $SERVERS`
+	#Get data for network shares
+	for SHARES in /opt/karoshi/server_network/network_shares/$SERVER/*
+	do
+		SHARE=`basename $SHARES`
+		source /opt/karoshi/server_network/network_shares/$SERVER/$SHARE
+		add_drive_map
+	done
+done
+}
+
+get_shares 
+
+#Add in paths for home share on linux clients
+#Not needed on windows clients - handled by logonform.kix
+if [ "$DFS" = yes ]
+then
+	echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/home" path="dfs/homes/%(USER)" server="'$REALM'" gid="1103" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+else
+	for PRI_GROUPS in /opt/karoshi/server_network/group_information/*
+	do
+		PRI_GROUP=`basename $PRI_GROUPS`
+		source /opt/karoshi/server_network/group_information/$PRI_GROUP
+		get_pri_group_number
+		echo '<volume options="'$OPTIONS',dir_mode=0700" mountpoint="~/network/home" path="%(USER)" server="'$SERVER'" gid="'$PRIGROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+	done
+fi
+
+#Complete pam_mount.conf.xml.krb5
+echo -e '\n</pam_mount>' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+
+#Create mount information for owncloud
+
+if [ -f /opt/karoshi/server_network/owncloudserver ]
+then
+OWNCLOUDSERVER=`sed -n 1,1p /opt/karoshi/server_network/owncloudserver`
+[ ! -d /home/owncloud/data ] && mkdir -p /home/owncloud/data
+
+MAINSERVER=`hostname-fqdn`
+#Groups
+MAPEXTRASHARES=no
+echo '{
+"group":{' > /home/owncloud/data/mount.json
+
+
+for PRI_GROUPS in /opt/karoshi/server_network/group_information/*
+do
+	PRI_GROUP=`basename $PRI_GROUPS`
+	source /opt/karoshi/server_network/group_information/$PRI_GROUP
+	SERVER=`echo $SERVER | cut -d, -f1`
+	echo '
+	"'$PRI_GROUP'":{
+		"\/$user\/files\/home":{
+			"class":"\\OC\\Files\\Storage\\SMB_OC","options":{
+				"host":"'$SERVER'","username_as_share":"true","share":"","root":""
+			}
+		} ' >> /home/owncloud/data/mount.json
+done
+
+echo '}' >> /home/owncloud/data/mount.json
+
+chown www-data:www-data /home/owncloud/data/mount.json
+chmod 0640 /home/owncloud/data/mount.json
+
+if [ $OWNCLOUDSERVER != `hostname-fqdn` ]
+then
+scp -p -o PasswordAuthentication=no /home/owncloud/data/mount.json $OWNCLOUDSERVER:/home/owncloud/data/
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $OWNCLOUDSERVER '
+chown www-data /home/owncloud/data/mount.json
+'
+fi
+fi
+
+exit
+
+
