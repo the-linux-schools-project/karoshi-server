@@ -481,8 +481,8 @@ fi
 ##########################
 
 #Restrict cron and at to root
-echo root > /etc/cron.allow
-echo root > /etc/at.allow
+#echo root > /etc/cron.allow
+#echo root > /etc/at.allow
 
 #Enable trim support in fstab
 for device in /dev/sd*; do

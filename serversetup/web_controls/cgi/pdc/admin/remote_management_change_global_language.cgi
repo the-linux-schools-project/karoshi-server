@@ -32,7 +32,7 @@ TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
-
+HEIGHT=20
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -64,7 +64,7 @@ echo '<form action="/cgi-bin/admin/remote_management_change_global_language2.cgi
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
 
 #Generate dropdown list of langauges
-echo '<select name="___LANGCHOICE___" style="width: 185px;"><option></option>'
+echo '<select name="___LANGCHOICE___" style="width: 185px; height: '$HEIGHT'px;"><option></option>'
 echo '<option value="ar_AE.UTF-8">العربية</option>
 <option value="cs_CZ.UTF-8">Čeština</option>
 <option value="da_DK.UTF-8">Dansk</option>

@@ -191,16 +191,21 @@ then
 	#Show a list of folders to remove from the gluster volume.
 	if [ -d /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/folders ]
 	then
-		echo '<input type="hidden" name="_VOLUME_" value="'$VOLUME'"><table class="'$TABLECLASS'" style="text-align: left; " border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume"'</b></td><td>'$VOLUME'</td></tr>
+		if [ `ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/folders | wc -l` -gt 0 ]
+		then
+			echo '<input type="hidden" name="_VOLUME_" value="'$VOLUME'"><table class="'$TABLECLASS'" style="text-align: left; " border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume"'</b></td><td>'$VOLUME'</td></tr>
 <tr><td style="vertical-align: top; height: 20px;"></td></tr>
 <tr><td><b>'$"Folder"'</b></td><td><b>'$"Delete"'</b></td></tr>'
 
-		for FOLDERS in /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/folders/*
-		do
-			FOLDER=`basename $FOLDERS | sed 's/-/\//g'`
-			echo '<tr><td>'$FOLDER'</td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_confirmremovefolder_FOLDER_'$FOLDER'_" type="image" class="images" src="/images/submenus/file/delete.png" value=""><span>Delete<br>'$FOLDER'</span></a></td></tr>'
-		done
-		echo '</tbody></table><br>'
+			for FOLDERS in /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/folders/*
+			do
+				FOLDER=`basename $FOLDERS | sed 's/-/\//g'`
+				echo '<tr><td>'$FOLDER'</td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_confirmremovefolder_FOLDER_'$FOLDER'_" type="image" class="images" src="/images/submenus/file/delete.png" value=""><span>Delete<br>'$FOLDER'</span></a></td></tr>'
+			done
+			echo '</tbody></table><br>'
+		else
+			echo "$VOLUME" - $"No folders have been added to this volume."
+		fi
 	fi
 fi
 
@@ -298,7 +303,7 @@ fi
 #Get folder path to add to a volume
 if [ $ACTION = addfolder ]
 then
-	echo '<input type="hidden" name="_VOLUME_" value="'$VOLUME'"><p><img height="16" width="16" alt="Warning" src="/images/warnings/warning.png"> '$"IMPORTANT - Please ensure that users are not logged to ensure that data is not lost."'</p><br><table class="'$TABLECLASS'" style="text-align: left; " border="0" cellpadding="2" cellspacing="2"><tbody>
+	echo '<input type="hidden" name="_VOLUME_" value="'$VOLUME'"><p><img height="16" width="16" alt="Warning" src="/images/warnings/warning.png"> '$"IMPORTANT - Please ensure that users are not logged in to ensure that data is not lost."'</p><br><table class="'$TABLECLASS'" style="text-align: left; " border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume"'</b></td><td style="width: '$WIDTH2'px; vertical-align: top;">'$VOLUME'</td></tr>
 <tr><td><b>'$"Folder Path"'</b></td><td style="vertical-align: top;"><input tabindex= "1" name="_FOLDER_" value="'$FOLDER'" style="width: 200px;" size="20" type="text"></td>
 <td style="vertical-align: middle; text-align: left;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Gluster_Volumes"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the full path that you want to add to the gluster volume."'</span></a></td>
@@ -404,7 +409,7 @@ echo '</tbody></table><br>'
 	fi
 fi
 
-Show all gluster volumes
+#Show all gluster volumes
 if [ "$ACTION" = view ] 
 then
 	if [ `ls -1 /opt/karoshi/server_network/gluster-volumes/ | wc -l` -gt 0 ]

@@ -120,7 +120,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">
 <b>'$"Command"'</b><br>'$"Allowed special keys /+ -"'<br>
-<input name="_CUSTOMCOMMAND_" size="28" type="text"><br><br>
+<input style="height: 30px;" name="_CUSTOMCOMMAND_" size="28" type="text"><br><br>
 '
 
 else

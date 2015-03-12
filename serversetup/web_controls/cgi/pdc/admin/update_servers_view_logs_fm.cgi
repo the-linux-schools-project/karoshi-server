@@ -121,12 +121,16 @@ if [ $MOBILE = no ]
 then
 DIV_ID=actionbox3
 WIDTH=180
+WIDTH2=200
+HEIGHT=20
 TABLECLASS=standard
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
 DIV_ID=mobileactionbox
 WIDTH=160
+WIDTH2=200
+HEIGHT=30
 TABLECLASS=mobilestandard
 fi
 echo '<form name="testform" action="/cgi-bin/admin/update_servers_view_logs.cgi" method="post">'
@@ -176,7 +180,7 @@ else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 180px;">'$"Log date"'</td><td>'
 echo "	<!-- calendar attaches to existing form element -->
-	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxlength=10 name=\"_DATE_\"></td><td style=\"vertical-align: top; text-align: center;\">
+	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxlength=10 name=\"_DATE_\" style=\"width: "$WIDTH2"px;  height: "$HEIGHT"px;\"></td><td style=\"vertical-align: top; text-align: center;\">
 	<script type=\"text/javascript\" language=\"JavaScript\">
 	new tcal ({
 		// form name

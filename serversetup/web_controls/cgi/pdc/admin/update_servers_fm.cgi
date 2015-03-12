@@ -128,6 +128,7 @@ DIV_ID=actionbox3
 TABLECLASS=standard
 WIDTH1=180
 WIDTH2=200
+HEIGHT=20
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -135,6 +136,7 @@ DIV_ID=actionbox2
 TABLECLASS=mobilestandard
 WIDTH1=90
 WIDTH2=120
+HEIGHT=30
 fi
 
 echo '<form action="/cgi-bin/admin/update_servers.cgi" name="tstest" method="post">'
@@ -171,7 +173,7 @@ fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: '$WIDTH1'px;">'$"Day"'</td><td>
-<select style="width: '$WIDTH2'px;" name="_DAY_">
+<select style="width: '$WIDTH2'px; height: '$HEIGHT'px;" name="_DAY_">
 <option value=""></option>
 <option value="never">'$"Never"'</option>
 <option '$OP1' value="1">'$"Monday"'</option>
@@ -184,8 +186,8 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 <option '$OP8' value="8">'$"Every day"'</option>
 </select>
 </td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the day that you want your servers to update on."'</span></a></td></tr>
-<tr><td>'$"Hour"'</td><td><input tabindex= "1" value="'$HOUR'" name="_HOURS_" style="width: '$WIDTH2'px;" size="3" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the time that you want your servers to update on."'</span></a></td></tr>
-<tr><td>'$"Minutes"'</td><td><input tabindex= "1" value="'$MINUTES'" name="_MINUTES_" style="width: '$WIDTH2'px;" size="3" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the time that you want your servers to update on."'</span></a></td></tr>
+<tr><td>'$"Hour"'</td><td><input tabindex= "1" value="'$HOUR'" name="_HOURS_" style="width: '$WIDTH2'px; height: '$HEIGHT'px;" size="3" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the time that you want your servers to update on."'</span></a></td></tr>
+<tr><td>'$"Minutes"'</td><td><input tabindex= "1" value="'$MINUTES'" name="_MINUTES_" style="width: '$WIDTH2'px; height: '$HEIGHT'px;" size="3" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the time that you want your servers to update on."'</span></a></td></tr>
 </tbody></table><br>'
 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'

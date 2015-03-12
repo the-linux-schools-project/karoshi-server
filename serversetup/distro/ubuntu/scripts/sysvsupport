@@ -55,6 +55,7 @@
 [ -L /etc/init.d/monitorix ] && rm -f /etc/init.d/monitorix
 [ -L /etc/init.d/freeradius ] && rm -f /etc/init.d/freeradius
 [ -L /etc/init.d/dnsmasq ] && rm -f /etc/init.d/dnsmasq
+[ -L /etc/init.d/winbind ] && rm -f /etc/init.d/winbind
 
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/apache2 /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/clamav-freshclam /etc/init.d/
@@ -109,6 +110,7 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/openchange-ocs
 [ `ls /etc/init/freeradius* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/freeradius*
 [ `ls /etc/init/samba* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/samba*
 [ `ls /etc/init/dnsmasq* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/dnsmasq*
+[ `ls /etc/init/winbind* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/winbind*
 
 #May need to add more to this list.
 

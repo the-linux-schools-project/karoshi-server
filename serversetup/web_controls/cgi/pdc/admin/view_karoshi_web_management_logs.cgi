@@ -153,7 +153,7 @@ then
 echo ''$"Log Date"'<br>'
 
 echo "	<!-- calendar attaches to existing form element -->
-	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxlength=10 name=\"_DATE_\">
+	<input type=\"text\" style=\"height: 30px;\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxlength=10 name=\"_DATE_\">
 	<script type=\"text/javascript\" language=\"JavaScript\">
 	new tcal ({
 		// form name
@@ -164,7 +164,7 @@ echo "	<!-- calendar attaches to existing form element -->
 
 	</script><br>"
 
-echo '$'"View logs by date"'<br>
+echo ''$"View logs by date"'<br>
 <input checked="checked" name="_LOGVIEW_" value="today" type="radio"><br>
 '$"View logs by month"'<br>
 <input name="_LOGVIEW_" value="month" type="radio"><br><br>'

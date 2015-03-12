@@ -83,12 +83,14 @@ then
 DIV_ID=actionbox3
 TABLECLASS=standard
 WIDTH=200
+HEIGHT=20
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
 DIV_ID=actionbox
 TABLECLASS=mobilestandard
 WIDTH=140
+HEIGHT=30
 fi
 
 echo '<form action="/cgi-bin/admin/change_management_passwords.cgi" method="post">'
@@ -111,7 +113,7 @@ fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 180px;">System Password</td><td>
-<select name="____USERACCOUNT____"  tabindex="1" style="width: '$WIDTH'px;">
+<select name="____USERACCOUNT____"  tabindex="1" style="width: '$WIDTH'px; height: '$HEIGHT'px;">
 <option></option>
 <option>karoshi</option>
 <option>Administrator</option>
@@ -121,12 +123,12 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 echo '<option>root</option>
 </select></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Management_Passwords"><img class="images" alt="" src="/images/help/info.png"><span><b>Karoshi</b> - '$"This is the account used to log in locally to the servers."'<br><br><b>administrator</b> - '$"This password is needed to join the clients to the domain."'<br><br><b>Root</b> - '$"You should not normally need to use this password."'</span></a>
 </td></tr>
-<tr><td>'$"New Password"'</td><td><input name="____PASSWORD1____"  tabindex="2" size="20" style="width: '$WIDTH'px;" type="password"></td><td>
+<tr><td>'$"New Password"'</td><td><input name="____PASSWORD1____"  tabindex="2" size="20" style="width: '$WIDTH'px; height: '$HEIGHT'px;" type="password"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Management_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the pasword that you want to use."'<br><br><b>'$"Special Characters"'</b><br><br>'$CHARACTERHELP' space !	"	# 	$	%	& 	(	) 	*	+	, 	-	.	/ 	:
 ;	<	=	>	?	@ 	[	\	]	^	_	` 	{	|	}	~
 </span></a>
 </td></tr>
-<tr><td>'$"Confirm Password"'</td><td><input name="____PASSWORD2____"  tabindex="3" size="20" style="width: '$WIDTH'px;" type="password"></td></tr>
+<tr><td>'$"Confirm Password"'</td><td><input name="____PASSWORD2____"  tabindex="3" size="20" style="width: '$WIDTH'px; height: '$HEIGHT'px;" type="password"></td></tr>
 </tbody></table><br><br>'
 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'

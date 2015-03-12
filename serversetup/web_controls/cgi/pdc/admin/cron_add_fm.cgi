@@ -103,13 +103,17 @@ if [ $MOBILE = no ]
 then
 DIV_ID=actionbox3
 TABLECLASS=standard
-STYLEWIDTH=200
+WIDTH1=200
+WIDTH2=200
+HEIGHT=20
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
 DIV_ID=actionbox2
 TABLECLASS=mobilestandard
-STYLEWIDTH=120
+WIDTH1=140
+WIDTH2=160
+HEIGHT=30
 fi
 
 echo '<form action="/cgi-bin/admin/cron_add.cgi" method="post">'
@@ -142,9 +146,9 @@ fi
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
       <tr>
-        <td style="width: 180px;">
+        <td style="width: '$WIDTH1'px;">
 '$"Minutes"'</td>
-<td><select name="___MINUTES___" style="width: '$STYLEWIDTH'px;">
+<td><select name="___MINUTES___" style="width: '$STYLEWIDTH'px; height: '$HEIGHT'px;">
 <option value="0">0</option>
 <option value="5">5</option>
 <option value="10">10</option>
@@ -167,7 +171,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Scheduled_Job"><img class="images" alt="" src="/images/help/info.png"><span>'"$'Choose the minute you want the job to start on.'"'</span></a>
 </td></tr>
 <tr><td>'$"Hour"'</td>
-<td><select name="___HOUR___" style="width: '$STYLEWIDTH'px;">
+<td><select name="___HOUR___" style="width: '$WIDTH2'px; height: '$HEIGHT'px;">
 <option value="*">'$"Every hour"'</option>
 <option>0</option>
 <option>1</option>
@@ -198,7 +202,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Scheduled_Job"><img class="images" alt="" src="/images/help/info.png"><span>'"$'Choose the hour you want the job to start on.'"'</span></a>
       </td></tr>
 <tr><td>'$"Day"'</td>
-<td><select name="___DAY___" style="width: '$STYLEWIDTH'px;">
+<td><select name="___DAY___" style="width: '$WIDTH2'px; height: '$HEIGHT'px;">
 <option value="*">'$"Every day"'</option>
 <option>0</option>
 <option>1</option>
@@ -235,7 +239,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 <td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Scheduled_Job"><img class="images" alt="" src="/images/help/info.png"><span>'"$'Choose the day of the month you want the job to start on.'"'</span></a>
 </td></tr>
 <tr><td>'$"Month"'</td>
-<td><select name="___MONTH___" style="width: '$STYLEWIDTH'px;">
+<td><select name="___MONTH___" style="width: '$WIDTH2'px; height: '$HEIGHT'px;">
 <option value="*">'$"Every Month"'</option>
 <option>0</option>
 <option>1</option>
@@ -255,7 +259,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Scheduled_Job"><img class="images" alt="" src="/images/help/info.png"><span>'"$'Choose the month you want the job to start on.'"'</span></a>
 </td></tr>
 <tr><td>'$"Day of week"'</td>
-<td><select name="___DOFW___" style="width: '$STYLEWIDTH'px;">
+<td><select name="___DOFW___" style="width: '$WIDTH2'px; height: '$HEIGHT'px;">
 <option value="1-7">'$"Every day"'</option>
 <option value="1-5">'$"Every week day"'</option>
 <option value="6-7">'$Weekend'</option>
@@ -274,7 +278,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
       <tr>
         <td>
 '$"Command"'</td>
-        <td><input tabindex= "2" name="___COMMAND___" size="25" style="width: '$STYLEWIDTH'px;" type="text"></td><td>
+        <td><input tabindex= "2" name="___COMMAND___" size="25" style="width: '$WIDTH2'px; height: '$HEIGHT'px;" type="text"></td><td>
 <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the command or path to the command that you want to run."'</span></a>
       </td></tr></tbody></table><br><br>'
 

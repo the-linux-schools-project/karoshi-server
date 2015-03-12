@@ -91,10 +91,12 @@ do
 	let COUNTER=$COUNTER+1
 done
 
+SHOW_STATUS_LOC=home_folders_fm.cgi
+
 function show_status {
 echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
-echo 'window.location = "/cgi-bin/admin/home_folders_fm.cgi";'
+echo 'window.location = "/cgi-bin/admin/'$SHOW_STATUS_LOC'";'
 echo '</script>'
 echo "</div></body></html>"
 exit
@@ -140,12 +142,14 @@ fi
 #Check to see that there are other karoshi servers available
 if [ ! -d /opt/karoshi/server_network/servers/ ]
 then
+	SHOW_STATUS_LOC=karoshi_servers_view.cgi
 	MESSAGE=$"No other Karoshi servers have been set up."
 	show_status
 fi
 
 if [ `ls -1 /opt/karoshi/server_network/servers/ | wc -l` = 0 ]
 then
+	SHOW_STATUS_LOC=karoshi_servers_view.cgi
 	MESSAGE=$"No other Karoshi servers have been set up."
 	show_status
 fi
@@ -162,7 +166,8 @@ done
 
 if [ $FILESERVERCOUNT -le 1 ]
 then
-	MESSAGE=$"No other Karoshi servers have been enabled as file servers."
+	SHOW_STATUS_LOC=karoshi_servers_view.cgi
+	MESSAGE=$"No other Karoshi servers have been enabled as file servers. You will need to add the file server module to an additional server."
 	show_status
 fi
 

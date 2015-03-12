@@ -56,8 +56,13 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/home_folders.cgi" method="post"><div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
-<td style="vertical-align: top;"><div class="sectiontitle">'$"Home Folders"'</div></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Home_Folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"This displays the server that hosts the home folders for each group."'</span></a></td><td><a href="gluster_control.cgi"><input class="button" type="button" style="min-width: 135px;" name="" value="'$"Gluster Volume Control"'"></a></td></tr></tbody></table><br></div><div id="infobox">
+<td style="vertical-align: top;"><div class="sectiontitle">'$"Home Folders"'</div></td>'
+
+#Check for gluster support
+[ `grep -c dfs /etc/samba/smb.conf` -gt 0 ] && echo '<td><a href="gluster_control.cgi"><input class="button" type="button" style="min-width: 135px;" name="" value="'$"Gluster Volume Control"'"></a></td>'
+
+echo '<td><a href="samba_shares.cgi"><input class="button" type="button" style="min-width: 135px;" name="" value="'$"Network Shares"'"></a></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Home_Folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"This displays the server that hosts the home folders for each group."'</span></a></td></tr></tbody></table><br></div><div id="infobox">
   <table class="standard" style="text-align: left; height: 91px;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 140px;"><b>'$"Primary Group"'</b></td><td style="width: 180px;"><b>'$"Server"'</b></td><td style="width: 180px;"><b>'$"Change"'</b></td><td style="width: 140px;"><b>'$"Primary Group"'</b></td><td style="width: 180px;"><b>'$"Server"'</b></td><td><b>'$"Change"'</b></td></tr>
 '

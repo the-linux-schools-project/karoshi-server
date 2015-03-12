@@ -7,6 +7,13 @@ REALM=internal
 DFS=no
 [ `grep -c "host msdfs = yes" /etc/samba/smb.conf` -gt 0 ] && DFS=yes
 
+#Remove all auto generated kix entries.
+for KIXFILES in /var/lib/samba/netlogon/windows_settings/drives/*
+do
+	KIXFILE=`basename "$KIXFILES"`
+	sed -i '/;Karoshi_auto_generated/d' /var/lib/samba/netlogon/windows_settings/drives/"$KIXFILE"	
+done
+
 #Create linux client pam mount header.
 [ ! -d /var/lib/samba/netlogon/linuxclient ] && mkdir -p /var/lib/samba/netlogon/linuxclient
 [ ! -d /var/lib/samba/netlogon/windows_settings/drives/ ] && mkdir /var/lib/samba/netlogon/windows_settings/drives/
@@ -26,42 +33,40 @@ then
 	SMBSERVER2='$lserver.$realm'
 	CLIENTPATH2='\dfs\'$SHARE''
 else
-	LINUXCLIENTPATH="$SHARE"
+	CLIENTPATH1="$SHARE"
 	SMBSERVER="$SERVER"
 	SMBSERVER2='\\'$SERVER''
 	CLIENTPATH2='\'$SHARE''
 fi
 
-if [ "$GROUPLIST" = all ]
+if [ "$GROUPNAME" = all ]
 then
 	#Add in a drive map for all users
-	echo $SERVER - $SHARE all
+	#echo $SERVER - $SHARE all
 	#Add linux drive map
 	echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" uid="1000-5000000" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
 	#Add windows drive map
-	for GROUPNAMES in /opt/karoshi/server_network/group_information/*
+	for KIXFILES in /opt/karoshi/server_network/group_information/*
 	do
-		GROUPNAME=`basename "$GROUPNAMES"`
-		touch /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix
-		if [ `grep -F -c "$SMBSERVER2$CLIENTPATH2" /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix` = 0 ]
+		KIXFILE=`basename "$KIXFILES"`
+		touch /var/lib/samba/netlogon/windows_settings/drives/"$KIXFILE".kix
+		if [ `grep -F -c "$SMBSERVER2$CLIENTPATH2" /var/lib/samba/netlogon/windows_settings/drives/"$KIXFILE".kix` = 0 ]
 		then
-			echo 'shell "net use * '$SMBSERVER2''$CLIENTPATH2'"' >> /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix
+			echo 'shell "net use * '$SMBSERVER2''$CLIENTPATH2'" ;Karoshi_auto_generated' >> /var/lib/samba/netlogon/windows_settings/drives/"$KIXFILE".kix
 		fi
 	done
 else
-	for GROUPNAME in `echo "$GROUPLIST"| sed 's/,/ /g'`
-	do
-		get_pri_group_number
-		echo $SERVER - $SHARE $GROUPNAME
-		#Add linux drive map
-		echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$LINUXCLIENTPATH'" server="'$SMBSERVER'" gid="'$GROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
-		#Add windows drive map
-		touch /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix
-		if [ `grep -F -c "$SMBSERVER2$CLIENTPATH2" /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix` = 0 ]
-		then
-			echo 'shell "net use * '$SMBSERVER2''$CLIENTPATH2'"' >> /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix
-		fi
-	done
+	get_pri_group_number
+	#echo $SERVER - $SHARE $GROUPNAME
+	#Add linux drive map
+	echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" gid="'$GROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+	#Add windows drive map
+	touch /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix
+	if [ `grep -F -c "$SMBSERVER2$CLIENTPATH2" /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix` = 0 ]
+	then
+		echo 'shell "net use * '$SMBSERVER2''$CLIENTPATH2'" ;Karoshi_auto_generated' >> /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix
+	fi
+
 fi
 }
 
@@ -76,7 +81,19 @@ do
 	do
 		SHARE=`basename $SHARES`
 		source /opt/karoshi/server_network/network_shares/$SERVER/$SHARE
-		add_drive_map
+		GROUPNAMES=( `echo $GROUPLIST | sed 's/,/ /g'` )
+		MAP_DRIVES=( `echo $MAP_DRIVE | sed 's/,/ /g'` )
+		GROUPNAMECOUNT=${#GROUPNAMES[*]}
+		COUNTER=0
+		while [ "$COUNTER" -lt "$GROUPNAMECOUNT" ]
+		do
+			GROUPNAME=${GROUPNAMES[$COUNTER]}
+			DO_MAP=${MAP_DRIVES[$COUNTER]}
+			#echo $SHARE $GROUPNAME $DO_MAP
+			let COUNTER=$COUNTER+1
+			#add_drive_map
+			[ $DO_MAP = 1 ] && add_drive_map
+		done
 	done
 done
 }
@@ -94,7 +111,7 @@ else
 		PRI_GROUP=`basename $PRI_GROUPS`
 		source /opt/karoshi/server_network/group_information/$PRI_GROUP
 		get_pri_group_number
-		echo '<volume options="'$OPTIONS',dir_mode=0700" mountpoint="~/network/home" path="%(USER)" server="'$SERVER'" gid="'$PRIGROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+		echo '<volume options="sec=krb5,dir_mode=0700" mountpoint="~/network/home" path="%(USER)" server="'$SERVER'" gid="'$PRIGROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
 	done
 fi
 
@@ -136,10 +153,10 @@ chmod 0640 /home/owncloud/data/mount.json
 
 if [ $OWNCLOUDSERVER != `hostname-fqdn` ]
 then
-scp -p -o PasswordAuthentication=no /home/owncloud/data/mount.json $OWNCLOUDSERVER:/home/owncloud/data/
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $OWNCLOUDSERVER '
-chown www-data /home/owncloud/data/mount.json
-'
+	scp -p -o PasswordAuthentication=no /home/owncloud/data/mount.json $OWNCLOUDSERVER:/home/owncloud/data/
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $OWNCLOUDSERVER '
+	chown www-data /home/owncloud/data/mount.json
+	'
 fi
 fi
 

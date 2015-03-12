@@ -1434,9 +1434,6 @@ echo `date`: "Adding linux client support" >> /opt/karoshi/serversetup/install_l
 [ ! -d /var/lib/samba/netlogon/linuxclient ] && mkdir -p /var/lib/samba/netlogon/linuxclient
 cp -f -R /opt/karoshi/serversetup/pdc/linuxclient/$LINUXCLIENTVERSION /var/lib/samba/netlogon/linuxclient/
 
-#Create drive maps
-/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts
-
 cp -f /opt/karoshi/serversetup/all/backgrounds/linuxclient.png /var/lib/samba/netlogon/linuxclient/background.png
 
 #Create client info on netlogon
@@ -1501,4 +1498,89 @@ for NEWUSER in `getent passwd | grep /home/users | cut -d: -f1`
 do
 	ln -s msdfs:$HOSTNAME.$REALM\\$NEWUSER /var/lib/samba/dfs/homes/$NEWUSER
 done
+
+#Add in server declarations
+[ ! -d /opt/karoshi/server_network/network_shares ] && mkdir -p /opt/karoshi/server_network/network_shares
+SERVERNAME=`hostname-fqdn`
+[ ! -d /opt/karoshi/server_network/network_shares/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/network_shares/$SERVERNAME
+for SHARENAME in applications subjects staffshare sysvol itadmin officeshare netlogon
+do
+	if [ `grep -c "$SHARENAME" /etc/samba/smb.conf` -gt 0 ]
+	then
+		NETUSERS=""
+		NETGROUPS=""
+		MASK=0775
+		GROUPPERMS=5
+		MAP_DRIVE=1
+		if [ "$SHARENAME" = subjects ]
+		then
+			NETGROUPS="all,staff,officestaff,itadmin"
+			SHAREPATH="/home/subjects"
+			MASK=0755
+			GROUPPERMS="5,7,7,7"
+			MAP_DRIVE="1,0,0,0"
+		fi
+		if [ "$SHARENAME" = sysvol ]
+		then
+			NETGROUPS="all,itadmin"
+			SHAREPATH="/var/lib/samba/sysvol"
+			MASK=0755
+			GROUPPERMS="5,7"
+			MAP_DRIVE="0,1"
+		fi
+		if [ "$SHARENAME" = netlogon ]
+		then	
+			SHAREPATH="/var/lib/samba/netlogon"
+			MASK="0755"
+			MAP_DRIVE="0,1"
+			NETGROUPS="all,itadmin"
+			GROUPPERMS="5,7"
+			
+		fi
+		if [ "$SHARENAME" = staffshare ]
+		then	
+			NETGROUPS="staff,itadmin,officestaff"
+			SHAREPATH="/home/staffshare"
+			MASK="0770"
+			GROUPPERMS="7,7,7"
+			MAP_DRIVE="1,1,1"
+		fi
+		if [ "$SHARENAME" = itadmin ]
+		then
+			NETGROUPS="itadmin"
+			SHAREPATH="/home/itadminshare"
+			MASK="0770"
+			GROUPPERMS="7"
+			MAP_DRIVE="1"
+		fi
+		if [ "$SHARENAME" = applications ]
+		then
+			NETGROUPS="itadmin"
+			SHAREPATH="/home/applications"
+			GROUPPERMS="7"
+		fi
+		if [ "$SHARENAME" = officeshare ]
+		then
+			NETGROUPS="officestaff"
+			SHAREPATH="/home/officeshare"
+			GROUPPERMS="7"
+			MASK="0770"
+			MAP_DRIVE="1"
+		fi
+
+		echo SERVER='"'"$SERVERNAME"'"' > /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
+		echo HOMEPATH='"'"$SHAREPATH"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
+		echo USERLIST='"'"$NETUSERS"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
+		echo GROUPLIST='"'"$NETGROUPS"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
+		echo GROUPPERMS='"'"$GROUPPERMS"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
+		echo MAP_DRIVE='"'"$MAP_DRIVE"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
+		echo SERVERTYPE='"'network'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
+		echo SERVERMASTER='""' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
+		echo MASK='"'"$MASK"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
+	fi
+done
+
+#Create drive maps
+/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts
+
 exit

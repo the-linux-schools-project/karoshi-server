@@ -124,6 +124,7 @@ then
 	WIDTH1=100
 	WIDTH2=100
 	WIDTH3=250
+	HEIGHT=20
 	TABLECLASS=standard
 	ICON1=/images/submenus/system/edit.png
 	ICON2=/images/submenus/system/delete.png
@@ -132,6 +133,7 @@ else
 	WIDTH1=50
 	WIDTH2=50
 	WIDTH3=130
+	HEIGHT=30
 	TABLECLASS=mobilestandard
 	ICON1=/images/submenus/system/editm.png
 	ICON2=/images/submenus/system/deletem.png
@@ -303,11 +305,11 @@ then
 	SERVERICON="/images/submenus/system/computer.png"
 	echo '<form action="/cgi-bin/admin/dnsview.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 	<tbody>
-	<tr><td style="width: 180px;">'$"Name"'</td><td><input tabindex= "1" name="_NAME_"  style="width: 200px;" size="20" type="text"></td><td>
+	<tr><td style="width: '$WIDTH1'px;">'$"Name"'</td><td><input tabindex= "1" name="_NAME_"  style="width: 200px; height: '$HEIGHT'px;" size="20" type="text"></td><td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS#Adding_dns_entries"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name that you want. This can be the name of a server or an alias."'</span></a></td></tr>
-	<tr><td>'$"DNS Entry"'</td><td><input tabindex= "2" name="_ACTION_reallyadd_DNSENTRY_" value="'$DNSENTRY'" size="20" style="width: 200px;" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the dns information that you want. This would be a tcpip number for an A record or it would be an alias entry for a CNAME."'</span></a></td></tr>
-	<tr><td style="width: 180px;">'$"DNS Type"'</td><td>'$DNSTYPE'
-	<select name="_DNSTYPE_" style="width: 200px;">
+	<tr><td>'$"DNS Entry"'</td><td><input tabindex= "2" name="_ACTION_reallyadd_DNSENTRY_" value="'$DNSENTRY'" size="20" style="width: 200px; height: '$HEIGHT'px;" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the dns information that you want. This would be a tcpip number for an A record or it would be an alias entry for a CNAME."'</span></a></td></tr>
+	<tr><td>'$"DNS Type"'</td><td>'$DNSTYPE'
+	<select name="_DNSTYPE_" style="width: 200px; height: '$HEIGHT'px;">
 	<option value="CNAME">CNAME</option>
 	<option  selected="selected" value="A">A Record </option>
 	</select>

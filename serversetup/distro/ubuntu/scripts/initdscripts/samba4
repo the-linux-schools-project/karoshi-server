@@ -15,8 +15,8 @@
 
 #Set samba exec path
 
-[ -f /usr/local/sbin/samba ] && SAMBAPATH=/usr/local/sbin/
-[ -f /usr/sbin/samba ] && SAMBAPATH=/usr/sbin/
+[ -f /usr/local/sbin/samba ] && SAMBAPATH=/usr/local/sbin
+[ -f /usr/sbin/samba ] && SAMBAPATH=/usr/sbin
 
 #
 # Start/stops the Samba daemon (samba).

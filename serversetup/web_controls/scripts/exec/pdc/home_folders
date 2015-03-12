@@ -438,6 +438,7 @@ for USERNAME in `getent passwd | grep ":$HOMEPATH/" | cut -d: -f1`
 do
 	if [ $GLUSTER = yes ]
 	then
+		DFSPATH=""
 		for GLUSTERSERVER in `echo $GLUSTERSERVERS | sed 's/,/ /g'`
 		do
 			DFSPATH=$DFSPATH,$GLUSTERSERVER\\$USERNAME

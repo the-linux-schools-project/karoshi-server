@@ -123,12 +123,14 @@ if [ $MOBILE = no ]
 then
 TABLECLASS=standard
 WIDTH1=200
+HEIGHT=20
 ICON1="/images/submenus/email/email_delete.png"
 ICON2="/images/submenus/email/alias_add.png"
 ICON3="/images/submenus/email/alias_view.png"
 else
 TABLECLASS=mobilestandard
 WIDTH1=160
+HEIGHT=30
 ICON1="/images/submenus/email/email_deletem.png"
 ICON2="/images/submenus/email/alias_addm.png"
 ICON3="/images/submenus/email/alias_viewm.png"
@@ -199,11 +201,11 @@ if [ $ACTION = add ]
 then
 echo '
 <input name="_ACTION_" value="reallyadd" type="hidden"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="width: 180px;">'$"Username"'</td>
-<td><input tabindex= "1" name="_USERNAME_" style="width: '$WIDTH1'px;" size="20" type="text"></td><td>
+<tbody><tr><td style="width: '$WIDTH1'px;">'$"Username"'</td>
+<td><input tabindex= "1" name="_USERNAME_" style="width: '$WIDTH1'px; height: '$HEIGHT'px;" size="20" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to add an alias to. This username has to exist on the system."'</span></a>
 </td></tr>
- <tr><td>'$"Alias"'</td><td><input tabindex= "2" name="_ALIAS_" style="width: '$WIDTH1'px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the alias that you want for the username."'</span></a></td></tr>
+ <tr><td>'$"Alias"'</td><td><input tabindex= "2" name="_ALIAS_" style="width: '$WIDTH1'px; height: '$HEIGHT'px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the alias that you want for the username."'</span></a></td></tr>
 </tbody></table>'
 
 if [ $MOBILE = yes ]
