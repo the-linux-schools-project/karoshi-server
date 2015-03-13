@@ -50,7 +50,7 @@ then
 	do
 		KIXFILE=`basename "$KIXFILES"`
 		touch /var/lib/samba/netlogon/windows_settings/drives/"$KIXFILE".kix
-		if [ `grep -F -c "$SMBSERVER2$CLIENTPATH2" /var/lib/samba/netlogon/windows_settings/drives/"$KIXFILE".kix` = 0 ]
+		if [ `grep -F -c "$CLIENTPATH2" /var/lib/samba/netlogon/windows_settings/drives/"$KIXFILE".kix` = 0 ]
 		then
 			echo 'shell "net use * '$SMBSERVER2''$CLIENTPATH2'" ;Karoshi_auto_generated' >> /var/lib/samba/netlogon/windows_settings/drives/"$KIXFILE".kix
 		fi
@@ -62,7 +62,7 @@ else
 	echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" gid="'$GROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
 	#Add windows drive map
 	touch /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix
-	if [ `grep -F -c "$SMBSERVER2$CLIENTPATH2" /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix` = 0 ]
+	if [ `grep -F -c "$CLIENTPATH2" /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix` = 0 ]
 	then
 		echo 'shell "net use * '$SMBSERVER2''$CLIENTPATH2'" ;Karoshi_auto_generated' >> /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix
 	fi
@@ -108,10 +108,10 @@ then
 else
 	for PRI_GROUPS in /opt/karoshi/server_network/group_information/*
 	do
-		PRI_GROUP=`basename $PRI_GROUPS`
-		source /opt/karoshi/server_network/group_information/$PRI_GROUP
+		GROUPNAME=`basename $PRI_GROUPS`
+		source /opt/karoshi/server_network/group_information/$GROUPNAME
 		get_pri_group_number
-		echo '<volume options="sec=krb5,dir_mode=0700" mountpoint="~/network/home" path="%(USER)" server="'$SERVER'" gid="'$PRIGROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+		echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/home" path="%(USER)" server="'$SERVER'" gid="'$GROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
 	done
 fi
 
