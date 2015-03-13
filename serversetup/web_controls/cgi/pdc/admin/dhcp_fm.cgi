@@ -86,8 +86,8 @@ else
 	#Use this server ip
 	NETBIOSSERVER=$DOMAINNAMESERVER
 	ROUTER=`grep gateway /etc/network/interfaces | sed -n 1,1p | cut -d' ' -f2`
-	SUBNET=`echo $DOMAINNAMESERVER | cut -d. -f1-2 | sed 's/$/.0.0/g'`
 	SUBNETMASK=`grep netmask /etc/network/interfaces | sed -n 1,1p | cut -d' ' -f2`
+	SUBNET=`ipcalc -n $DOMAINNAMESERVER/$SUBNETMASK | grep ^Network: | sed 's/ * / /g' | cut -d' ' -f2 | cut -d"/" -f1`
 	STARTADDRESS=
 	ENDADDRESS=
 	DEFAULTLEASETIME=21600
@@ -115,12 +115,12 @@ echo '
 	<tr>
         <td>
 '$"Subnet"'</td>
-        <td><input value="'$SUBNET'" name="_SUBNET_" size="20" tabindex= "3" type="text" readonly="readonly"></td><td>
+        <td><input value="'$SUBNET'" name="_SUBNET_" size="20" tabindex= "3" type="text"></td><td>
       </td></tr>
       <tr>
         <td>
 '$"Subnet Mask"'</td>
-        <td><input value="'$SUBNETMASK'" name="_SUBNETMASK_" size="20" tabindex= "3" type="text" readonly="readonly"></td><td>
+        <td><input value="'$SUBNETMASK'" name="_SUBNETMASK_" size="20" tabindex= "3" type="text"></td><td>
       </td></tr>
       <tr>
         <td>

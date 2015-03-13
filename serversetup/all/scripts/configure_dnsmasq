@@ -56,6 +56,8 @@ do
 		done
 		DNSIPLIST=`echo $DNSIPLIST | sed 's/^ //g'`
 
+		#Create list of DNS servers for the clients to use
+		[ "$ZONE" = internal ] && echo $DNSIPLIST | sed 's/ /\n/g' > /var/lib/samba/netlogon/domain_information/dns_servers
 
 		for SERVERNAME in `ls -1 /opt/karoshi/server_network/zones/"$ZONE"/servers/`
 		do

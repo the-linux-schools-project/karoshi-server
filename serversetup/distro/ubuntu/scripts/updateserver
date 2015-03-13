@@ -102,7 +102,7 @@ done
 backup_config_files
 
 #Update non apt packages
-#/opt/karoshi/serversetup/all/samba4/samba4install
+[ -f /usr/local/sbin/samba ] && /opt/karoshi/serversetup/all/samba4/samba4install
 
 #Check to see if this server should have ssh - need to make sure this is running.
 

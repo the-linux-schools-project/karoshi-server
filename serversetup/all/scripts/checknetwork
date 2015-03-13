@@ -257,6 +257,9 @@ if [ $SERVERTYPE = pdc ]
 then
 	#Create script to update arp table on boot
 	ln -s /opt/karoshi/serversetup/pdc/"useful scripts"/update_server_arp /etc/rc2.d/S99update_server_arp
+	#Create list of DNS servers for the clients to use
+	echo $TCPIPCUSTOM | sed 's/ /\n/g' > /var/lib/samba/netlogon/domain_information/dns_servers
+	
 fi
 
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/configurenetwork $NAMECUSTOM $TCPIPCUSTOM $NETMASKCUSTOM $NAMESERVERCUSTOM $GATEWAYCUSTOM $SERVERTYPE $CARDSELECTION $BONDMODE

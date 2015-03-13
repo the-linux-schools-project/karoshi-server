@@ -15,8 +15,6 @@ INSTALL_E2GUARDIAN=yes
 INSTALL_XFCE=yes
 #Install lightdm gtk display manager.
 INSTALL_DM=yes
-#Install remastersys so that we can repackage an new server iso. May have to start looking for a replacement for this soon.
-INSTALL_REMASTERSYS=no
 #Install additional software utils.
 INSTALL_ADDITIONAL=yes
 #Install all of the main software packages needed such as apache and mysql.
@@ -127,13 +125,6 @@ function add_repos {
 #Add remastersys mailscanner, monitoriz,yad, and zfs repositories
 echo -e "\nAdding mailscanner, monitorix, yad, and zfs repositories\n"
 sleep 1
-
-if [ $INSTALL_REMASTERSYS = yes ]
-then
-	#Remastersys
-	wget -O - http://www.remastersys.com/ubuntu/remastersys.gpg.key | apt-key add -
-	add-apt-repository -y "deb http://www.remastersys.com/ubuntu/ precise main"
-fi
 
 #Monitorix
 wget -O - http://apt.izzysoft.de/izzysoft.asc | apt-key add -
