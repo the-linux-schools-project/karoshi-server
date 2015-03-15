@@ -183,6 +183,9 @@ echo '			<li><a href="/cgi-bin/admin/bulk_user_creation_upload_fm.cgi">'$"Bulk U
 					<ul>
 						<li><a href="/cgi-bin/admin/home_folders_fm.cgi">'$"Home Folders"'</a></li>
 						<li><a href="/cgi-bin/admin/samba_shares.cgi">'$"Network Shares"'</a></li>
+						<li><a href="/cgi-bin/admin/zfs_raid_control_fm.cgi">'$"ZFS Raid"'</a></li>
+						<li><a href="/cgi-bin/admin/software_raid_control_fm.cgi">'$"Software Raid"'</a></li>
+						<li><a href="/cgi-bin/admin/gluster_control.cgi">'$"Gluster Volumes"'</a></li>
 						<li><a href="/cgi-bin/admin/disk_information_fm.cgi">'$"Disk Information"'</a></li>
 						<li><a href="/cgi-bin/admin/disk_usage_fm.cgi">'$"Disk Usage"'</a></li>
 						<li><a href="/cgi-bin/admin/view_disk_usage_logs_fm.cgi">'$"Disk Usage Logs"'</a></li>
@@ -194,9 +197,6 @@ echo '			<li><a href="/cgi-bin/admin/bulk_user_creation_upload_fm.cgi">'$"Bulk U
 							<li><a href="/cgi-bin/admin/quotas_view_over_usage_fm.cgi">'$"View Over Quota Usage"'</a></li>
 							<li><a href="/cgi-bin/admin/quotas_set_fm.cgi">'$"Apply Quota settings"'</a></li>
 						</ul>
-						<li><a href="/cgi-bin/admin/zfs_raid_control_fm.cgi">'$"ZFS Raid"'</a></li>
-						<li><a href="/cgi-bin/admin/software_raid_control_fm.cgi">'$"Software Raid"'</a></li>
-						<li><a href="/cgi-bin/admin/gluster_control.cgi">'$"Gluster Volumes"'</a></li>
 						<li><a href="/cgi-bin/admin/find_student_files_fm.cgi">'$"Find Student Files"'</a></li>'
 if [ $FEDERATEDCTL = yes ]
 then
