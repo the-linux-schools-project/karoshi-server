@@ -42,9 +42,12 @@ fi
 if [ "$GROUPNAME" = all ]
 then
 	#Add in a drive map for all users
-	#echo $SERVER - $SHARE all
-	#Add linux drive map
-	echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" uid="1000-5000000" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+
+	#Check if line is uniqie and add linux drive map
+	if [ `grep -c '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" uid="1000-5000000" fstype="cifs" />' /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5` = 0 ]
+	then 
+		echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" uid="1000-5000000" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+	fi
 	#Add windows drive map
 	for KIXFILES in /opt/karoshi/server_network/group_information/*
 	do
@@ -57,9 +60,11 @@ then
 	done
 else
 	get_pri_group_number
-	#echo $SERVER - $SHARE $GROUPNAME
-	#Add linux drive map
-	echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" gid="'$GROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+	#Check if line is uniqie and add linux drive map
+	if [ `grep -c '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" gid="'$GROUPNUM'" fstype="cifs" />' /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5` = 0 ]
+	then
+		echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" gid="'$GROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+	fi
 	#Add windows drive map
 	touch /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix
 	if [ `grep -F -c "$CLIENTPATH2" /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix` = 0 ]

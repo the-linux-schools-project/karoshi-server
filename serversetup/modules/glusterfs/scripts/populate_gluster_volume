@@ -86,18 +86,24 @@ if [ "$SERVER" = `hostname-fqdn` ]
 then
 	if [ "$ACTION" = copydata ]
 	then
-	echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-	rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --executability --acls --owner --group -o "$FOLDER" "$MOUNTBASE"/"$GLUSTERVOL"
-	echo '</pre>'
+		if [ ! -L "$FOLDER" ]
+		then
+			echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+			rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --executability --acls --owner --group -o "$FOLDER" "$MOUNTBASE"/"$GLUSTERVOL"
+			echo '</pre>'
+		fi
 	fi
 	[ ! -d "$MOUNTBASE"/"$GLUSTERVOL"/"$FOLDER_SHORT" ] && mkdir -p /"$MOUNTBASE"/"$GLUSTERVOL"/"$FOLDER_SHORT"
 else
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 	if [ "'$ACTION'" = copydata ]
 	then
-		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-		rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --executability --acls --owner --group -o "'$FOLDER'" "'$MOUNTBASE'"/"'$GLUSTERVOL'"
-	echo "</pre>"
+		if [ ! -L "'$FOLDER'" ]
+		then
+			echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+			rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --executability --acls --owner --group -o "'$FOLDER'" "'$MOUNTBASE'"/"'$GLUSTERVOL'"
+		echo "</pre>"
+		fi
 	fi
 	[ ! -d "'$MOUNTBASE'"/"'$GLUSTERVOL'"/"'$FOLDER_SHORT'" ] && mkdir -p "'$MOUNTBASE'"/"'$GLUSTERVOL'"/"'$FOLDER_SHORT'"
 	'
