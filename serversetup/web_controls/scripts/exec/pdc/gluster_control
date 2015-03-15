@@ -220,28 +220,11 @@ then
 	for GLUSTERSERVER in `ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/`
 	do
 		DFSPATH="$DFSPATH,$GLUSTERSERVER\\$FOLDERSHORT"
-
-		SAMBASHARE=yes
-		if [ $SERVER = `hostname-fqdn` ]
-		then
-			[ `grep -c -w "$FOLDER" /etc/samba/smb.conf` = 0 ] && SAMBASHARE=no
-		else
-			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-			[ `grep -c -w "'$FOLDER'" /etc/samba/smb.conf` = 0 ] && exit 100
-			exit 0
-			'
-			[ $? = 100 ] && SAMBASHARE=no
-		fi
-
-
 	done
 	DFSPATH=`echo $DFSPATH | sed 's/^,//g'`
 
-	if [ $SAMBASHARE = yes ]
-	then
-		[ -L /var/lib/samba/dfs/"$FOLDERSHORT" ] && rm -f /var/lib/samba/dfs/"$FOLDERSHORT"
-		ln -s msdfs:"$DFSPATH" /var/lib/samba/dfs/"$FOLDERSHORT"
-	fi
+	[ -L /var/lib/samba/dfs/"$FOLDERSHORT" ] && rm -f /var/lib/samba/dfs/"$FOLDERSHORT"
+	ln -s msdfs:"$DFSPATH" /var/lib/samba/dfs/"$FOLDERSHORT"
 
 	#Copy data to another server if the gluster volume is on remote servers.
 	for GLUSTERSERVER in `ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/`
@@ -270,6 +253,9 @@ then
 	then
 		FOLDERBASE=`echo $FOLDER | sed "s/\/$FOLDERSHORT//g"` 
 		echo '<li>'$SERVER' - '$"Copying data to"' '$GLUSTERSERVER' '$FOLDERBASE'</li>'
+
+	
+	
 		if [ "$SERVER" = `hostname-fqdn` ]
 		then
 			rsync --timeout=30 --keep-dirlinks --dirs --recursive --links --compress --times --perms --acls --owner --group "$FOLDER" root@$GLUSTERSERVER:/"$FOLDERBASE"/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -282,7 +268,6 @@ then
 	
 		if [ "$SERVER" != `hostname-fqdn` ] && [ "$GLUSTERSERVER" != `hostname-fqdn` ]
 		then
-		
 			#Mount /home as sshfs on both servers
 			[ ! -d /opt/karoshi/mount/$GLUSTERSERVER/$FOLDERSHORT ] && mkdir -p /opt/karoshi/mount/$GLUSTERSERVER/$FOLDERSHORT
 			[ ! -d /opt/karoshi/mount/$SERVER/$FOLDERSHORT ] && mkdir -p /opt/karoshi/mount/$SERVER/$FOLDERSHORT
@@ -304,18 +289,25 @@ fi
 if [ $ACTION = addfolder ]
 then
 	echo '<input type="hidden" name="_VOLUME_" value="'$VOLUME'"><p><img height="16" width="16" alt="Warning" src="/images/warnings/warning.png"> '$"IMPORTANT - Please ensure that users are not logged in to ensure that data is not lost."'</p><br><table class="'$TABLECLASS'" style="text-align: left; " border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume"'</b></td><td style="width: '$WIDTH2'px; vertical-align: top;">'$VOLUME'</td></tr>
-<tr><td><b>'$"Folder Path"'</b></td><td style="vertical-align: top;"><input tabindex= "1" name="_FOLDER_" value="'$FOLDER'" style="width: 200px;" size="20" type="text"></td>
+<tr><td style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume"'</b></td><td style="width: '$WIDTH2'px; vertical-align: top;">'$VOLUME'</td></tr>'
+	if [ ! -z "$SERVER" ]
+	then
+		echo '<tr><td><b>'$"Folder Path"'</b></td><td style="vertical-align: top;"><input tabindex= "1" name="_FOLDER_" value="'$FOLDER'" style="width: 200px;" size="20" type="text"></td>
 <td style="vertical-align: middle; text-align: left;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Gluster_Volumes"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the full path that you want to add to the gluster volume."'</span></a></td>
 </tr>
 <tr><td></td><td><select name="_FOLDERLIST_" style="width: 200px;" size="1" onchange="document.combobox._FOLDER_.value = document.combobox._FOLDERLIST_.options[document.combobox._FOLDERLIST_.selectedIndex].value;document.combobox._FOLDERLIST_.value=&#39;&#39;">
-<option value=""></option>
-<option>/home/applications</option>
-<option>/home/itadminshare</option>
-<option>/home/officeshare</option>
-<option>/home/staffshare</option>
-<option>/home/subjects</option>
-</select></td></tr>'
+<option value=""></option>'
+	for SHARES in /opt/karoshi/server_network/network_shares/$SERVER/*
+	do
+		SHARE=`basename $SHARES`
+		if [ "$SHARE" != dfs ] && [ "$SHARE" != netlogon ] && [ "$SHARE" != sysvol ]
+		then
+			HOMEPATH=`grep "HOMEPATH=" /opt/karoshi/server_network/network_shares/$SERVER/"$SHARE" | cut -d"=" -f2 | sed 's/"//g'`
+			echo '<option value="'$HOMEPATH'">'$HOMEPATH'</option>'
+		fi
+	done
+	echo '</select></td></tr>'
+	fi
 
 	if [ ! -z "$SERVER" ]
 	then

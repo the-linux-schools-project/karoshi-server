@@ -610,6 +610,55 @@ fi
 '
 /opt/karoshi/serversetup/web_controls/scripts/monitorixwebmanagement
 
+#Add in network share declarations for additional domain controllers
+if [ $AUTHENTICATION = adc ] || [ $AUTHENTICATION = rodc ] 
+then
+	for SHARENAME in applications sysvol netlogon
+	do
+
+		NETUSERS=""
+		NETGROUPS=""
+		MASK=0775
+		GROUPPERMS=5
+		MAP_DRIVE=1
+
+		if [ "$SHARENAME" = sysvol ]
+		then
+			NETGROUPS="all,itadmin"
+			SHAREPATH="/var/lib/samba/sysvol"
+			MASK=0755
+			GROUPPERMS="5,7"
+			MAP_DRIVE="0,0"
+		fi
+		if [ "$SHARENAME" = netlogon ]
+		then	
+			SHAREPATH="/var/lib/samba/netlogon"
+			MASK="0755"
+			MAP_DRIVE="0,0"
+			NETGROUPS="all,itadmin"
+			GROUPPERMS="5,7"
+		
+		fi
+
+		if [ "$SHARENAME" = applications ]
+		then
+			NETGROUPS="itadmin"
+			SHAREPATH="/home/applications"
+			GROUPPERMS="7"
+			MAP_DRIVE=0
+		fi
+
+		echo SERVER='"'"$SERVER.$REALM"'"' > /opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME
+		echo HOMEPATH='"'"$SHAREPATH"'"' >> /opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME
+		echo USERLIST='"'"$NETUSERS"'"' >> /opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME
+		echo GROUPLIST='"'"$NETGROUPS"'"' >> /opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME
+		echo GROUPPERMS='"'"$GROUPPERMS"'"' >> /opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME
+		echo MAP_DRIVE='"'"$MAP_DRIVE"'"' >> /opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME
+		echo SERVERTYPE='"'network'"' >> /opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME
+		echo SERVERMASTER='""' >> /opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME
+		echo MASK='"'"$MASK"'"' >> /opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME
+	done
+fi
 #Add in monitoring for the server
 if [ -f /opt/karoshi/server_network/monitoringserver ]
 then

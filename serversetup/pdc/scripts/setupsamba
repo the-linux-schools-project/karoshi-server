@@ -1580,6 +1580,9 @@ do
 	fi
 done
 
+#Add in flag file for dfs
+touch /var/lib/samba/netlogon/domain_information/dfs_enabled
+
 #Create drive maps
 /opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts
 

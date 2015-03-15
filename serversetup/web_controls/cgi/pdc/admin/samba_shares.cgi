@@ -520,6 +520,7 @@ echo '<form action="/cgi-bin/admin/samba_shares.cgi" method="post"><table class=
 <td style="vertical-align: top;">
 <input name="____ACTION____'$ACTION2'____" type="submit" class="button" value="'$BUTTONTXT'">
 </td>
+<td><a href="gluster_control.cgi"><input class="button" type="button" name="" value="'$"Gluster Volume Control"'"></a></td>
 <td><a href="home_folders_fm.cgi"><input class="button" type="button" name="" value="'$"Home Folders"'"></a></td>
 <td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Access Points"'</span></a>
