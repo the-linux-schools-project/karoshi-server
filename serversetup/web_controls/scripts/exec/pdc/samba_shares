@@ -169,6 +169,23 @@ ICON1=/images/submenus/file/delete.png
 if [ "$ACTION" = reallyadd ]
 then
 	echo `date`: samba_shares - adding $FOLDERNAME as a share to $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+	#Check to see if this is a gluster volume
+	GLUSTER=no
+
+	if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/fileserver ]
+	then
+		#Check to see if this is a gluster volume
+		VOLUME=`echo $SERVERNAME | cut -d. -f1`
+		if [ ! -d /opt/karoshi/server_network/gluster-volumes/$VOLUME ]
+		then
+			MESSAGE=$"The new server you have chosen is not configured as a Karoshi file server."
+			show_status
+		else
+			GLUSTER=yes
+		fi
+	fi
+
 	#Check if all groups has been selected
 	ALLGROUPS=""
 	ALL_PERMS=""
@@ -196,7 +213,8 @@ then
 		MASK=077
 	fi
 	MASK=$MASK$ALLPERMS
-
+	
+	function create_network_share {
 	if [ "$SERVERNAME" = `hostname-fqdn` ]
 	then
 		#Create folder
@@ -375,13 +393,29 @@ then
 	echo SERVERTYPE='"'"$SERVERTYPE"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/"$FOLDERNAME"
 	echo SERVERMASTER='"'"$SERVERMASTER"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/"$FOLDERNAME"
 	echo MASK=$MASK >> /opt/karoshi/server_network/network_shares/$SERVERNAME/"$FOLDERNAME"
+	}
 
-	#Check for dfs support
-	DFS=no
-	[ `grep -c "host msdfs = yes" /etc/samba/smb.conf` -gt 0 ] && DFS=yes
+	if [ "$GLUSTER" = no ]
+	then
+		create_network_share
+		#Add in dfs link
+		ln -s msdfs:$SERVERNAME\\$FOLDERNAME /var/lib/samba/dfs/$FOLDERNAME
+	else
+		#Get a list of servers in the gluster volume.
+		GLUSTERSERVERS=`ls -1 /opt/karoshi/server_network/gluster-volumes/$SERVERNAME/servers`
+		GLUSTERVOL=$SERVERNAME
+		#GLUSTERSERVERS=`echo $GLUSTERSERVERS | sed 's/ /,/g'`
 
-	#Add in dfs link
-	[ $DFS = yes ] && ln -s msdfs:$SERVERNAME\\$FOLDERNAME /var/lib/samba/dfs/$FOLDERNAME
+		for SERVERNAME in $GLUSTERSERVERS
+		do
+			DFSPATH=$DFSPATH,$SERVERNAME\\$FOLDERNAME
+			create_network_share
+			/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume "$SERVERNAME" "/home/$FOLDERNAME" "$GLUSTERVOL" copydata 1>/dev/null
+		done
+		DFSPATH=`echo $DFSPATH | sed 's/^,//g'`
+		[ -L /var/lib/samba/dfs/"$FOLDERNAME" ] && rm -f /var/lib/samba/dfs/homes/"$FOLDERNAME"
+		ln -s msdfs:"$DFSPATH" /var/lib/samba/dfs/"$FOLDERNAME"
+	fi
 
 	#Regenerate pam mount to map drives
 	/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts
@@ -483,7 +517,7 @@ then
 	</tbody></table><br><br>'
 
 	#Show list of servers
-	/opt/karoshi/web_controls/show_servers $MOBILE servers $"Add share" none none ____
+	/opt/karoshi/web_controls/show_servers $MOBILE fileservers $"Add share" none none ____
 	echo '</form>'
 fi
 
