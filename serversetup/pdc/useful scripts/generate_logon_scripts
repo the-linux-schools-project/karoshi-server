@@ -133,25 +133,24 @@ OWNCLOUDSERVER=`sed -n 1,1p /opt/karoshi/server_network/owncloudserver`
 MAINSERVER=`hostname-fqdn`
 #Groups
 MAPEXTRASHARES=no
-echo '{
-"group":{' > /home/owncloud/data/mount.json
+echo '{"group":{' > /home/owncloud/data/mount.json
 
 
+#Get number of groups
+GROUPCOUNT=`ls /opt/karoshi/server_network/group_information/ | wc -l`
+COUNTER=1
+COMMA=","
 for PRI_GROUPS in /opt/karoshi/server_network/group_information/*
 do
 	PRI_GROUP=`basename $PRI_GROUPS`
 	source /opt/karoshi/server_network/group_information/$PRI_GROUP
 	SERVER=`echo $SERVER | cut -d, -f1`
-	echo '
-	"'$PRI_GROUP'":{
-		"\/$user\/files\/home":{
-			"class":"\\OC\\Files\\Storage\\SMB_OC","options":{
-				"host":"'$SERVER'","username_as_share":"true","share":"","root":""
-			}
-		} ' >> /home/owncloud/data/mount.json
+	[ "$COUNTER" = "$GROUPCOUNT" ] && COMMA=""
+	echo '"'$PRI_GROUP'":{"\/$user\/files\/home":{"class":"\\OC\\Files\\Storage\\SMB_OC","options":{"host":"'$SERVER'","username_as_share":"true","share":"","root":""}}}'$COMMA' ' >> /home/owncloud/data/mount.json
+	let COUNTER=$COUNTER+1
 done
 
-echo '}' >> /home/owncloud/data/mount.json
+echo '}}' >> /home/owncloud/data/mount.json
 
 chown www-data:www-data /home/owncloud/data/mount.json
 chmod 0640 /home/owncloud/data/mount.json
