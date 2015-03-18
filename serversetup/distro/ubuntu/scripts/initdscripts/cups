@@ -18,6 +18,8 @@ NAME=cupsd
 PIDFILE=/var/run/cups/$NAME.pid
 DESC="Common Unix Printing System"
 
+[ -f /etc/reserveports/cups ] && /usr/sbin/releaseports cups
+
 unset TMPDIR
 
 test -x $DAEMON || exit 0

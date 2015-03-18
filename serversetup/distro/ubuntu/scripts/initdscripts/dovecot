@@ -27,6 +27,8 @@ DAEMON_ARGS=""
 SCRIPTNAME=/etc/init.d/$NAME
 CONF=/etc/dovecot/${NAME}.conf
 
+[ -f /etc/reserveports/dovecot ] && /usr/sbin/releaseports dovecot
+
 # Read configuration variable file if it is present
 [ -r /etc/default/$NAME ] && . /etc/default/$NAME
 

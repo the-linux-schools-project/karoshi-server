@@ -1,0 +1,27 @@
+#!/bin/bash
+
+service=$1
+if [ -z "$service" ]
+then
+	echo "No service entered."
+	exit 1
+fi
+
+if [ ! -f /etc/reserveports/$service ]
+then
+	echo "No service definition."
+	exit 2
+fi
+
+#Kill nc listener
+for portdata in `cat /etc/reserveports/$service`
+do
+	port=`echo "$portdata" | cut -d, -f1`
+	type=`echo "$portdata" | cut -d, -f2`
+	processes=`ps aux | grep -w "nc" | grep "$port" | grep "\-$type" | sed 's/ * /,/g' | cut -d, -f2`
+	for process in $processes
+	do
+		kill $process
+	done
+done
+

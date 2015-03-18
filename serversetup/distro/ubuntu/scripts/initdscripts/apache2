@@ -13,6 +13,8 @@
 
 ENV="env -i LANG=C PATH=/usr/local/bin:/usr/bin:/bin"
 
+[ -f /etc/reserveports/apache2 ] && /usr/sbin/releaseports apache2
+
 #[ $(ls -1 /etc/apache2/sites-enabled/ | wc -l | sed -e 's/ *//;') -eq 0 ] && \
 #echo "You haven't enabled any sites yet, so I'm not starting apache2." && \
 #echo "To add and enable a host, use addhost and enhost." && exit 0

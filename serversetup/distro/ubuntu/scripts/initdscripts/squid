@@ -21,6 +21,8 @@ LIB=/usr/lib/squid
 PIDFILE=/var/run/$NAME.pid
 SQUID_ARGS="-D -YC"
 
+[ -f /etc/reserveports/squid ] && /usr/sbin/releaseports squid
+
 [ ! -f /etc/default/squid ] || . /etc/default/squid
 
 . /lib/lsb/init-functions

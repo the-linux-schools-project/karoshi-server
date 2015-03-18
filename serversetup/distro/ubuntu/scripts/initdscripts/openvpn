@@ -20,6 +20,8 @@
 # Modified for openvpn by Alberto Gonzalez Iniesta <agi@inittab.org>
 # Modified for restarting / starting / stopping single tunnels by Richard Mueller <mueller@teamix.net>
 
+[ -f /etc/reserveports/openvpn ] && /usr/sbin/releaseports openvpn
+
 . /lib/lsb/init-functions
 
 test $DEBIAN_SCRIPT_DEBUG && set -v -x

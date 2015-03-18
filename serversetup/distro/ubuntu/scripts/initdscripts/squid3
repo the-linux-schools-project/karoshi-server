@@ -22,6 +22,8 @@ PIDFILE=/var/run/$NAME.pid
 CONFIG=/etc/squid3/squid.conf
 SQUID_ARGS="-YC -f $CONFIG"
 
+[ -f /etc/reserveports/squid ] && /usr/sbin/releaseports squid
+
 [ ! -f /etc/default/squid3 ] || . /etc/default/squid3
 
 . /lib/lsb/init-functions

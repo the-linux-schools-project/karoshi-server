@@ -1,0 +1,13 @@
+#!/bin/bash
+
+for service in `ls -1 /etc/reserveports`
+do
+	#Attempt to reserve a port for each service listed
+	for portdata in `cat /etc/reserveports/$service`
+	do
+		port=`echo "$portdata" | cut -d, -f1`
+		type=`echo "$portdata" | cut -d, -f2`
+		nc -"$type"lk "$port" </dev/null >/dev/null 2>/dev/null &
+	done
+done
+exit

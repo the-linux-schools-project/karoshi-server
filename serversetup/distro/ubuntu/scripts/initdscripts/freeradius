@@ -21,6 +21,8 @@ PROGRAM="/usr/sbin/freeradius"
 PIDFILE="/var/run/freeradius/freeradius.pid"
 DESCR="FreeRADIUS daemon"
 
+[ -f /etc/reserveports/freeradius ] && /usr/sbin/releaseports freeradius
+
 if [ -r /etc/default/$PROG ]; then
   . /etc/default/$PROG
 fi

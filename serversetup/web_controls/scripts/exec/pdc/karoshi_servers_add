@@ -613,6 +613,8 @@ fi
 #Add in network share declarations for additional domain controllers
 if [ $AUTHENTICATION = adc ] || [ $AUTHENTICATION = rodc ] 
 then
+	[ ! -d /opt/karoshi/server_network/network_shares/$SERVER.$REALM ] && mkdir -p /opt/karoshi/server_network/network_shares/$SERVER.$REALM
+
 	for SHARENAME in applications sysvol netlogon
 	do
 

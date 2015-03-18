@@ -467,6 +467,12 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/languag
 [ -d /usr/share/ubiquity-slideshow ] && rm -f -R /usr/share/ubiquity-slideshow
 cp -f -r /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/ubiquity-slideshow /usr/share/
 
+#Setup reserve ports
+cp -f /opt/karoshi/serversetup/all/reserveports/reserveports /usr/sbin
+cp -f /opt/karoshi/serversetup/all/reserveports/releaseports /usr/sbin
+cp -f -r /opt/karoshi/serversetup/all/reserveports/services /etc/reserveports
+ln -s /usr/sbin/reserveports /etc/rc2.d/S17reserveports
+
 #Delete install_log
 [ -f /opt/karoshi/serversetup/install_log ] && rm -f /opt/karoshi/serversetup/install_log
 }

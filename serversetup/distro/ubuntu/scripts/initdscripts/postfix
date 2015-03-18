@@ -23,6 +23,8 @@ NAME=Postfix
 TZ=
 unset TZ
 
+[ -f /etc/reserveports/postfix ] && /usr/sbin/releaseports postfix
+
 # Defaults - don't touch, edit /etc/default/postfix
 SYNC_CHROOT="y"
 

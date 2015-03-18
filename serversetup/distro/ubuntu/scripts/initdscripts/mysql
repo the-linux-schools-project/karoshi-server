@@ -17,6 +17,8 @@ set -e
 set -u
 ${DEBIAN_SCRIPT_DEBUG:+ set -v -x}
 
+[ -f /etc/reserveports/mysql ] && /usr/sbin/releaseports mysql
+
 test -x /usr/sbin/mysqld || exit 0
 
 . /lib/lsb/init-functions

@@ -27,6 +27,8 @@ NAME=e2guardian
 DESC="e2guardian"
 CONFFILELOCATION=/etc/e2guardian/
 
+[ -f /etc/reserveports/e2guardian ] && /usr/sbin/releaseports e2guardian
+
 #Make sure a configuration variable file is present
 [ ! -f /etc/default/$NAME ] && echo ulimit -n 10240 > /etc/default/$NAME
 
