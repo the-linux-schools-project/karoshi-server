@@ -307,6 +307,7 @@ echo -e '# Global parameters
 	# maximum size of 50KB per log file, then rotate:
 	max log size = 50
 	host msdfs = yes
+	dns round robin = yes
 
 [dfs]
 	path = /var/lib/samba/dfs
