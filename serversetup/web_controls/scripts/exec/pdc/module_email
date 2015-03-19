@@ -322,8 +322,9 @@ echo '<b>'Domain'</b>': $DOMAINPATH >> /opt/karoshi/modules/email/installed_info
 
 echo $DOMAINPATH >  /opt/karoshi/serversetup/variables/emaildomain
 
-#Create thunderbird icon for the linux client
+[ ! -d /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVER/desktop-icons/all ] && mkdir -p /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVER/desktop-icons/all
 
+#Create thunderbird icon for the linux client
 echo '[Desktop Entry]
 Version=1.0
 Terminal=false

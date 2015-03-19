@@ -252,6 +252,7 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:enablecert:" | /opt/karoshi/serverse
 }
 
 function create_linux_client_icon {
+[ ! -d /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVER/desktop-icons/all ] && mkdir -p /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVER/desktop-icons/all
 echo '[Desktop Entry]
 Version=1.0
 Type=Link
