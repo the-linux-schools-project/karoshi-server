@@ -86,9 +86,11 @@ echo '<li>'$"Extracting Owncloud"'</li><br>'
 [ -d /var/www/html/owncloud ] && rm -f -R /var/www/html/owncloud
 tar -xzf /opt/karoshi/serversetup/modules/owncloud/owncloud.tar.gz --directory /var/www/html
 
-#Set ownership and permissions
+
+#Create data folder for owncloud
 [ ! -d /home/owncloud/data ] && mkdir -p /home/owncloud/data
 
+#Set ownership and permissions
 #chown -R root:www-data /var/www/html/owncloud
 chown -R www-data:www-data /var/www/html/owncloud
 chmod -R 0640 /var/www/html/owncloud
@@ -101,9 +103,6 @@ touch /home/owncloud/data/.ocdata
 chown -R www-data:www-data /home/owncloud
 chown -R www-data:www-data /var/www/html/owncloud/apps
 chown -R www-data:www-data /var/www/html/owncloud/config
-
-#Create data folder for owncloud
-[ ! -d /home/owncloud ] && mkdir /home/owncloud
 
 #Allow htaccess for owncloud
 if [ `grep -c "#owncloud" /etc/apache2/sites-enabled/default-ssl` = 0 ]

@@ -168,11 +168,6 @@ fi
 #Rename ppd file
 ###################
 PPDFILE2=`echo $PPDFILE.$$ | tr -cd 'A-Za-z0-9_/.'`
-echo PPDFILE is $PPDFILE > /tmp/data
-echo PPDFILE2 is $PPDFILE2 >> /tmp/data
-
-echo files are >> /tmp/data
-ls /var/www/karoshi/ppd_files/ >> /tmp/data
 [ -f "$PPDFILE2" ] && rm -f "$PPDFILE2"
 mv "$PPDFILE" "$PPDFILE2"
 PPDFILE=$PPDFILE2

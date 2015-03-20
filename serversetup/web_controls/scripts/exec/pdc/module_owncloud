@@ -183,7 +183,7 @@ echo `date`: module_owncloud - copying module language files to $SERVERNAME by $
 #Remote server
 #Copy in language files
 
-echo "<li>"$SERVERNAME - $COPYMODULEMSG"</li><br>"
+echo '<li>'$SERVERNAME' - '$"Copying module"'</li><br>'
 
 #Copy in module
 echo `date`: module_owncloud - copying module to $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE

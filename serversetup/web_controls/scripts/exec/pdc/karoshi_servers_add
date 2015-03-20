@@ -195,13 +195,8 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $TCPIPNUMBER '
 #Check that ip addresses match zones
 
 SERVERZONEIP=`ip addr | grep '$TCPIPNUMBER' | sed -n "s/[[:space:]]*inet \([^ ]*\).*/\1/p"`
-touch /tmp/data
-echo $SERVERZONEIP > /tmp/data
 SERVERZONEINFO=`ipcalc -n $SERVERZONEIP | grep ^Network | sed "s/ * / /g" | cut -d" " -f2`
 
-echo $SERVERZONEINFO >> /tmp/data
-echo '$PDCZONEINFO' >> /tmp/data
-echo '$ZONE' >> /tmp/data
 if [ '$ZONE' = internal ]
 then
 [ $SERVERZONEINFO != '$PDCZONEINFO' ] && exit 103
