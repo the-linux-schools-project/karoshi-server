@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2014-12-30 09:37+0000\n"
+"POT-Creation-Date: 2015-03-23 18:42+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -209,14 +209,20 @@ msgstr "الانتهاء"
 msgid "Configure"
 msgstr "تكوين"
 
-msgid "starting glusterfs"
-msgstr "بدءا glusterfs"
-
-msgid "a volume with this name already exists"
-msgstr "وبلغ حجم التداول مع هذا الاسم موجود مسبقا"
+msgid "mounting"
+msgstr "متزايد"
 
 msgid "Opening ports for glusterfs"
 msgstr "فتح المنافذ ل glusterfs"
+
+msgid "starting glusterfs"
+msgstr "بدءا glusterfs"
+
+msgid "Detaching"
+msgstr "فصل"
+
+msgid "Gluster peer probe failure"
+msgstr "Gluster فشل التحقيق الأقران"
 
 msgid "Creating GlusterFS volume"
 msgstr "خلق حجم GlusterFS"
@@ -230,29 +236,20 @@ msgstr "بدءا حجم GlusterFS"
 msgid "There was a problem starting the volume"
 msgstr "كانت هناك مشكلة بدءا حجم"
 
-msgid "Backing up"
-msgstr "النسخ الاحتياطي"
-
-msgid "mounting"
-msgstr "متزايد"
-
-msgid "Copying in existing data"
-msgstr "النسخ في البيانات الموجودة"
-
 msgid "Adding server to gluster volume"
 msgstr "مضيفا الخادم ل حجم gluster"
 
-msgid "probing server"
-msgstr "الخادم التحقيق"
+msgid "Restoring"
+msgstr "استعادة"
 
-msgid "completed"
-msgstr "الانتهاء"
+msgid "stopping glusterfs"
+msgstr "وقف glusterfs"
 
-msgid "getting brick count"
-msgstr "الحصول على عدد من الطوب"
+msgid "Starting glusterfs"
+msgstr "بدءا glusterfs"
 
-msgid "adding"
-msgstr "مضيفا"
+msgid "No volume information"
+msgstr "لا توجد معلومات حجم"
 
 msgid "Creating the joomla database in mysql"
 msgstr "إنشاء قاعدة بيانات جملة في الخلية"
@@ -407,14 +404,14 @@ msgstr "بدءا سوجو"
 msgid "Starting Postfix"
 msgstr "بدءا بوستفيكس"
 
-msgid "Starting Fail2ban"
-msgstr "بدءا Fail2ban"
-
 msgid "Starting ClamD"
 msgstr "بدءا ClamD"
 
 msgid "Starting MailScanner"
 msgstr "MailScanner أن تبدأ"
+
+msgid "Starting Fail2ban"
+msgstr "بدءا Fail2ban"
 
 msgid "SOGo has been installed and can be accessed from"
 msgstr "وقد تم تركيب سوجو و يمكن الوصول إليها من"
@@ -511,6 +508,9 @@ msgstr "الإعداد كاروشي سطح المكتب"
 
 msgid "Please enter your choice for the karoshi and system password."
 msgstr "من فضلك ادخل اختيارك ل كاروشي ونظام كلمة المرور."
+
+msgid "The passwords do not match. Please try again."
+msgstr "كلمات السر غير متطابقة. يرجى المحاولة مرة أخرى."
 
 msgid "Configure Network"
 msgstr "تكوين شبكة"
@@ -893,8 +893,8 @@ msgstr "الرجاء اختيار الطابعة التي تريد حذفها."
 msgid "Add a slave UPS"
 msgstr "إضافة UPS الرقيق"
 
-msgid "The UPS driver cannot be blank."
-msgstr "السائق UPS لا يمكن أن يكون فارغا."
+msgid "The UPS server cannot be blank."
+msgstr "لا يمكن أن يكون خادم UPS فارغة."
 
 msgid "The UPS has been added."
 msgstr "تمت إضافة UPS."
@@ -1085,45 +1085,6 @@ msgstr "مشاهدة سهم"
 msgid "Show open files"
 msgstr "إظهار الملفات المفتوحة"
 
-msgid "Add Additional Network Share"
-msgstr "إضافة شبكة حصة إضافية"
-
-msgid "You have not entered a folder name."
-msgstr "لم يتم إدخال اسم مجلد."
-
-msgid "You have not entered a group."
-msgstr "لم يتم إدخال مجموعة."
-
-msgid "You have not chosen any group permissions."
-msgstr "هل لم يختر أي أذونات المجموعة."
-
-msgid "You have not chosen any permissions for other users."
-msgstr "هل لم يختر أي أذونات للمستخدمين الآخرين."
-
-msgid "You have not chosen a server name."
-msgstr "كنت لم اختار اسم الملقم."
-
-msgid "You have not chosen a server type."
-msgstr "كنت لم اختار نوع الخادم."
-
-msgid "You have not chosen a server master."
-msgstr "كنت لم اختار سيد الخادم."
-
-msgid "The folder you have chosen already exists in /home."
-msgstr "المجلد الذي اخترته بالفعل موجود في / الوطن."
-
-msgid "This share is already declared in the samba configuration file."
-msgstr "و أعلنت هذه الحصة بالفعل في ملف التكوين السامبا."
-
-msgid "Server"
-msgstr "الخادم"
-
-msgid "Share"
-msgstr "حصة"
-
-msgid "This share has been added."
-msgstr "تمت إضافة هذه الحصة."
-
 msgid "Manage Print Queues"
 msgstr "إدارة قوائم انتظار الطباعة"
 
@@ -1159,6 +1120,60 @@ msgstr "يجب ألا يكون الخيار حجم الرسالة فارغ."
 
 msgid "The mailbox size option must not be blank."
 msgstr "يجب ألا يكون الخيار حجم علبة البريد فارغ."
+
+msgid "Gluster Volume Control"
+msgstr "Gluster التحكم بحجم الصوت"
+
+msgid "Create Gluster Volume"
+msgstr "خلق Gluster حجم"
+
+msgid "View Gluster Volumes"
+msgstr "عرض أحجام التداول Gluster"
+
+msgid "Create Volume"
+msgstr "إنشاء وحدة تخزين"
+
+msgid "Creating Volume"
+msgstr "إنشاء وحدة التخزين"
+
+msgid "Add Folder"
+msgstr "إضافة مجلد"
+
+msgid "Ading Folder"
+msgstr "مجلد ADING"
+
+msgid "Assign Network Share"
+msgstr "تعيين مشاركة شبكة الاتصال"
+
+msgid "Remove Folder"
+msgstr "إزالة مجلد"
+
+msgid "You have not entered a correct action."
+msgstr "هل لا دخل العمل الصحيح."
+
+msgid "You have not entered a volume name."
+msgstr "لم يتم إدخال اسم وحدة تخزين."
+
+msgid "You have not chosen any servers."
+msgstr "هل لم يختر أي الملقمات."
+
+msgid "You have to choose at least two servers to create a distributed volume."
+msgstr "عليك ان تختار اثنين على الأقل من الملقمات ل إنشاء وحدة تخزين موزعة."
+
+msgid "This volume has already been created."
+msgstr "وقد تم بالفعل إنشاء هذا الحجم."
+
+msgid "You have not chosen a folder path."
+msgstr "كنت لم اختار مسار المجلد."
+
+msgid "Gluster Controls"
+msgstr "ضوابط Gluster"
+
+msgid "Home Folders"
+msgstr "الصفحة الرئيسية المجلدات"
+
+msgid "Gluster Volumes"
+msgstr "أحجام التداول Gluster"
 
 msgid "ZFS Status"
 msgstr "ZFS الحالة"
@@ -1337,11 +1352,23 @@ msgstr "لينكس حزم برنامج عميل"
 msgid "Blank version"
 msgstr "نسخة فارغة"
 
-msgid "The software shown below will either be installed or removed by your linux client computers on boot."
-msgstr "إما أن يتم تثبيت البرنامج هو مبين أدناه أو إزالتها من قبل أجهزة الكمبيوتر العميلة لينكس في التمهيد."
+msgid "Linux Client Software Controls"
+msgstr "لينكس الضوابط البرامج عميل"
+
+msgid "Software Controls"
+msgstr "ضوابط البرمجيات"
+
+msgid "The software shown below will be installed by your linux client computers on boot."
+msgstr "سيتم تثبيت البرنامج هو مبين أدناه من قبل أجهزة الكمبيوتر العميلة لينكس في التمهيد."
 
 msgid "Add software package"
 msgstr "إضافة حزمة برامج"
+
+msgid "Location"
+msgstr "موقع"
+
+msgid "All locations"
+msgstr "جميع المواقع"
 
 msgid "Software Package"
 msgstr "برنامج حزمة"
@@ -1352,14 +1379,8 @@ msgstr "تثبيت"
 msgid "Remove"
 msgstr "نزع"
 
-msgid "Install List"
-msgstr "قائمة تثبيت"
-
 msgid "Delete"
 msgstr "حذف"
-
-msgid "Remove list"
-msgstr "إزالة قائمة"
 
 msgid "Computer Logs"
 msgstr "سجلات الكمبيوتر"
@@ -1433,9 +1454,6 @@ msgstr "طلب ملخص"
 msgid "Name"
 msgstr "اسم"
 
-msgid "Location"
-msgstr "موقع"
-
 msgid "Category"
 msgstr "فئة"
 
@@ -1471,6 +1489,9 @@ msgstr "ردود الفعل"
 
 msgid "Linux Client Background"
 msgstr "لينكس خلفية العميل"
+
+msgid "The UPS driver cannot be blank."
+msgstr "السائق UPS لا يمكن أن يكون فارغا."
 
 msgid "The UPS port cannot be blank."
 msgstr "ميناء UPS لا يمكن أن يكون فارغا."
@@ -2489,9 +2510,6 @@ msgstr "عرض سجلات استخدام القرص"
 msgid "The logview cannot be blank."
 msgstr "و logview لا يمكن أن يكون فارغا."
 
-msgid "You have not chosen any servers."
-msgstr "هل لم يختر أي الملقمات."
-
 msgid "The disk usage logs show the overall usage for each partition on your server."
 msgstr "وتشير سجلات استخدام القرص استخدام العام لكل قسم على الخادم الخاص بك."
 
@@ -2603,44 +2621,20 @@ msgstr "توليد قوائم italc من سجل الأصول"
 msgid "This will generate Italc files from the asset register."
 msgstr "هذا وسوف إنشاء ملفات Italc من سجل الأصول."
 
-msgid "Linux Client Software Controls"
-msgstr "لينكس الضوابط البرامج عميل"
-
 msgid "The linux version must not be blank."
 msgstr "يجب ألا يكون نسخة لينكس فارغة."
 
-msgid "Choose the linux client version that you want to set the software settings for."
-msgstr "اختيار إصدار عميل لينكس الذي تريد تعيين إعدادات البرنامج ل."
+msgid "Software Packages"
+msgstr "حزم البرمجيات"
 
-msgid "Auto"
-msgstr "السيارات"
+msgid "Choose the locations that you want to enable updates and software installs for."
+msgstr "اختيار المواقع التي تريد تمكين التحديثات و البرنامج بتثبيت ل."
 
-msgid "Set this to auto to hide the software control dialog from appearing when setting up the clients."
-msgstr "تعيين هذا إلى السيارات لإخفاء الحوار مراقبة البرامج من الظهور عند إعداد العملاء."
+msgid "Enable software install"
+msgstr "تمكين البرامج تثبيت"
 
-msgid "Proprietary graphics"
-msgstr "الرسومات الملكية"
-
-msgid "This will tell the linux clients to install the relevant proprietary graphics driver for the client."
-msgstr "هذا وسوف اقول العملاء لينكس لتثبيت برنامج تشغيل الرسومات الملكية ذات الصلة للعميل."
-
-msgid "Restricted extras"
-msgstr "اشياء مقيدة"
-
-msgid "This will install software that in a few countries licenses may be required."
-msgstr "هذا وسوف تثبيت البرامج التي في بعض البلدان قد تكون مطلوبة التراخيص."
-
-msgid "Firmware"
-msgstr "البرامج الثابتة"
-
-msgid "This will install proprietary firmware."
-msgstr "هذا وسوف تثبيت البرامج الثابتة المملوكة."
-
-msgid "Enable Software install"
-msgstr "تمكين تثبيت البرامج"
-
-msgid "This will make the Linux clients install and remove any software in the software install and remove lists on boot up."
-msgstr "وهذا سيجعل العملاء لينكس تثبيت وإزالة أي برنامج في برنامج تثبيت وإزالة القوائم على الحذاء."
+msgid "This will make the Linux clients install any software in the software install lists on boot up."
+msgstr "وهذا سيجعل العملاء لينكس تثبيت أي برنامج في البرنامج تثبيت القوائم على الحذاء."
 
 msgid "Enable updates"
 msgstr "تمكين التحديثات"
@@ -3398,6 +3392,12 @@ msgstr "الخلية كلمة المرور"
 msgid "Enter in the password for the database."
 msgstr "أدخل في كلمة المرور ل قاعدة البيانات."
 
+msgid "Open Mysql Port"
+msgstr "فتح منفذ ماي"
+
+msgid "This will open up port 3306 for mysql connections from remote devices."
+msgstr "هذا وسوف تفتح منفذ 3306 للاتصالات الخلية من الأجهزة البعيدة."
+
 msgid "Clear Web Management Warning Messages"
 msgstr "إدارة الويب واضحة رسائل تحذير"
 
@@ -3515,9 +3515,6 @@ msgstr "و shortname لا يمكن أن يكون فارغا."
 msgid "The secret key cannot be blank."
 msgstr "المفتاح السري لا يمكن أن يكون فارغا."
 
-msgid "The secret keys do not match."
-msgstr "مفاتيح سرية غير متطابقة."
-
 msgid "The TCPIP address is incorrect."
 msgstr "عنوان TCPIP غير صحيح."
 
@@ -3553,6 +3550,9 @@ msgstr "هل لم يختر اسم مستعار على شبكة الإنترنت 
 
 msgid "Setup Owncloud"
 msgstr "الإعداد Owncloud"
+
+msgid "Owncloud allows you to access and synchronise your data from multiple devices."
+msgstr "Owncloud يسمح لك للوصول إلى ومزامنة البيانات من أجهزة متعددة."
 
 msgid "This will setup the Owncloud storage system for your users."
 msgstr "إرادة هذا الإعداد نظام التخزين Owncloud للمستخدمين."
@@ -3710,9 +3710,6 @@ msgstr "أدخل في اختيارك لل مجال البريد بدون HTTP: /
 msgid "View Jobs"
 msgstr "عرض وظائف"
 
-msgid "You have not chosen a share."
-msgstr "هل لم يختر للسهم."
-
 msgid "Assign Printers to Locations"
 msgstr "تعيين الطابعات إلى المواقع"
 
@@ -3821,18 +3818,6 @@ msgstr "مدراء لها السيطرة الكاملة على إدارة الش
 msgid "Technicians can access a limited set of controls for day to day running of the system such as changing passwords."
 msgstr "يمكن الفنيين الوصول إلى مجموعة محدودة من الضوابط ل يوم ل يوم تشغيل النظام مثل تغيير كلمات المرور."
 
-msgid "View Additional Network Shares"
-msgstr "عرض أسهم شبكة إضافية"
-
-msgid "Group Permissions"
-msgstr "ضوابط المجموعة"
-
-msgid "Others Permissions"
-msgstr "ضوابط الآخرين"
-
-msgid "Full Access"
-msgstr "الوصول الكامل"
-
 msgid "Custom Command"
 msgstr "أمر مخصص"
 
@@ -3929,10 +3914,10 @@ msgstr "المجموعة الأساسية لا يمكن أن يكون فارغا
 msgid "No other Karoshi servers have been set up."
 msgstr "لم يتم وضع خوادم كاروشي أخرى تصل."
 
-msgid "No other Karoshi servers have been enabled as file servers."
-msgstr "تم تمكين أية ملقمات كاروشي غيرها من الملفات."
+msgid "No other Karoshi servers have been enabled as file servers. You will need to add the file server module to an additional server."
+msgstr "تم تمكين أية ملقمات كاروشي غيرها من الملفات. سوف تحتاج إلى إضافة وحدة خادم الملفات إلى ملقم إضافية."
 
-msgid "IMPORTANT - Please ensure that users are not logged to ensure no data loss."
+msgid "IMPORTANT - Please ensure that users are not logged to ensure that data is not lost."
 msgstr "هام - الرجاء التأكد من أن المستخدمين لم يتم تسجيل لضمان عدم فقدان البيانات."
 
 msgid "Current Server"
@@ -3947,8 +3932,8 @@ msgstr "هذا سوف نسخ أي مجال من المجالات الرئيسي�
 msgid "New Server"
 msgstr "Server جديد"
 
-msgid "Choose server"
-msgstr "اختر الخادم"
+msgid "Select Server"
+msgstr "حدد الملقم"
 
 msgid "Web Management Information"
 msgstr "المعلومات الإدارية على شبكة الإنترنت"
@@ -4060,9 +4045,6 @@ msgstr "اختيار الأولوية الافتراضي الذي تريده."
 
 msgid "Banned E-mail Domains"
 msgstr "حظرت مجالات البريد الإلكتروني"
-
-msgid "Ban E-Mail Domain"
-msgstr "حظر مجال البريد الإلكتروني"
 
 msgid "Ban Domain"
 msgstr "حظر المجال"
@@ -4295,6 +4277,9 @@ msgstr "اختيار خادم الويب الذي تريد تحميل الملف
 msgid "There are no web servers to upload files to."
 msgstr "لا توجد خوادم الويب لتحميل الملفات إلى."
 
+msgid "Choose server"
+msgstr "اختر الخادم"
+
 msgid "Setup Joomla Website"
 msgstr "إعداد جملة الموقع"
 
@@ -4348,6 +4333,9 @@ msgstr "لم يتم إدخال الدقائق الصحيحة."
 
 msgid "You have not entered the correct seconds."
 msgstr "لم يتم إدخال الثواني الصحيحة."
+
+msgid "Share"
+msgstr "حصة"
 
 msgid "Proxy settings have been removed."
 msgstr "تم إزالة إعدادات الوكيل."
@@ -4511,8 +4499,8 @@ msgstr "اختيار جهاز UPS من القائمة."
 msgid "Choose auto for UPS devices connected via usb."
 msgstr "اختيار السيارات لأجهزة UPS المتصلة عبر USB."
 
-msgid "Add ups"
-msgstr "إضافة الصعود"
+msgid "Add UPS"
+msgstr "إضافة UPS"
 
 msgid "Allow Roaming Profile"
 msgstr "تسمح خدمة التجوال الملف"
@@ -4552,6 +4540,9 @@ msgstr "تم تغيير إدارة على شبكة الإنترنت ل"
 
 msgid "Choose client version"
 msgstr "اختيار إصدار عميل"
+
+msgid "Choose the linux client version that you want to set the software settings for."
+msgstr "اختيار إصدار عميل لينكس الذي تريد تعيين إعدادات البرنامج ل."
 
 msgid "Username or E-mail address"
 msgstr "اسم المستخدم أو عنوان البريد الإلكتروني"
@@ -4706,6 +4697,9 @@ msgstr "القائمة ابدأ - اختر"
 msgid "The selected start menu has been copied to all of the chosen groups."
 msgstr "تم نسخها بداية القائمة المحدد على جميع المجموعات المختارة."
 
+msgid "The software shown below will either be installed or removed by your linux client computers on boot."
+msgstr "إما أن يتم تثبيت البرنامج هو مبين أدناه أو إزالتها من قبل أجهزة الكمبيوتر العميلة لينكس في التمهيد."
+
 msgid "Generate Internet Logs"
 msgstr "توليد سجلات الإنترنت"
 
@@ -4747,30 +4741,6 @@ msgstr "الإعداد تحكم الاتحاد"
 
 msgid "Warning - this will delete all existing users from this server and import all of the users from your main server."
 msgstr "تحذير - وهذا سيتم حذف جميع المستخدمين الحاليين من هذا الخادم و استيراد كافة المستخدمين من الخادم الرئيسي الخاص بك."
-
-msgid "This show as information for your clients when they look at the network share."
-msgstr "هذا العرض و المعلومات للعملاء الخاص بك عندما ننظر إلى مشاركة شبكة الاتصال."
-
-msgid "Folder Name"
-msgstr "اسم المجلد"
-
-msgid "This will create a folder in /home with the name that you specify."
-msgstr "هذا وسوف إنشاء مجلد في / الوطن مع الاسم الذي تحدده."
-
-msgid "Enter in the name of the group that you want to allow access to the folder."
-msgstr "أدخل في اسم المجموعة التي تريد للسماح بالوصول إلى المجلد."
-
-msgid "Choose the permissions that you want to set for this group for the share."
-msgstr "اختر الأذونات التي تريد تعيين لهذه المجموعة لل سهم."
-
-msgid "No access"
-msgstr "لا توجد شبكة"
-
-msgid "Choose the permissions that you want to allow for anyone else not in the group."
-msgstr "اختر الأذونات التي تريد السماح لأي شخص آخر ليس في المجموعة."
-
-msgid "Add share"
-msgstr "إضافة حصة"
 
 msgid "Disk drives"
 msgstr "محركات الأقراص"
@@ -4826,14 +4796,14 @@ msgstr "مجلد مضغوط"
 msgid "You need to upload a zip or tar.gz file of your chosen application data folders."
 msgstr "تحتاج إلى تحميل ملف مضغوط أو tar.gz من المجلدات بيانات التطبيق اخترتها."
 
-msgid "Blank list"
-msgstr "قائمة فارغة"
-
 msgid "Blank action"
 msgstr "عمل فارغة"
 
 msgid "You have not entered in a software package."
 msgstr "لم تدخل في مجموعة من البرامج."
+
+msgid "You have not entered in a location."
+msgstr "لم تدخل في الموقع."
 
 msgid "You must choose a website to view the logs for."
 msgstr "يجب عليك اختيار موقع على شبكة الانترنت لعرض السجلات ل."
@@ -5135,11 +5105,14 @@ msgstr "مشاهدة الأصول"
 msgid "View internet logs"
 msgstr "عرض سجلات الإنترنت"
 
-msgid "Home Folders"
-msgstr "الصفحة الرئيسية المجلدات"
+msgid "Network Shares"
+msgstr "شبكة سهم"
 
 msgid "This displays the server that hosts the home folders for each group."
 msgstr "يعرض هذا الخادم الذي يستضيف المجلدات الرئيسية لكل مجموعة."
+
+msgid "Server"
+msgstr "الخادم"
 
 msgid "Change"
 msgstr "تغيير"
@@ -5236,9 +5209,6 @@ msgstr "طلب المستخدمين الجدد"
 
 msgid "File Manager"
 msgstr "إدارة الملفات"
-
-msgid "You have not entered a correct action."
-msgstr "هل لا دخل العمل الصحيح."
 
 msgid "The owner cannot be blank."
 msgstr "المالك لا يمكن أن يكون فارغا."
@@ -5639,6 +5609,24 @@ msgstr "تم نسخ البيانات إلى جميع الحسابات في ال�
 msgid "There was a problem copying the files to the group."
 msgstr "كان هناك مشكلة في نسخ الملفات إلى المجموعة."
 
+msgid "You have not entered an email address."
+msgstr "لم يتم إدخال عنوان البريد الإلكتروني."
+
+msgid "View Whitelists"
+msgstr "عرض القوائم البيضاء"
+
+msgid "Adding a whitelist will allow emails to be recieved from the alias address without them being checked for spam."
+msgstr "و إضافة البيضاء سماح للبريد الإلكتروني ل كنت استلمت من عنوان اسم مستعار دون أن يتم التحقق من البريد المزعج."
+
+msgid "Add a Whitelist"
+msgstr "إضافة البيضاء"
+
+msgid "These are the email whitelists addresses that are currently active for your email system."
+msgstr "هذه هي عناوين البريد الإلكتروني قوائم بيضاء التي تنشط حاليا ل نظام البريد الإلكتروني الخاص بك."
+
+msgid "E-Mail Whitelists"
+msgstr "البريد الإلكتروني القوائم البيضاء"
+
 msgid "There is no PPD file available."
 msgstr "لا يوجد أي ملف PPD المتاحة."
 
@@ -5776,6 +5764,15 @@ msgstr "المفتاح الذي أدخلته طويل جدا."
 
 msgid "This secret key has been added. Please ensure that it is also added to your wireless access points."
 msgstr "تمت إضافة هذا المفتاح السري. يرجى التأكد من أنه يضاف أيضا إلى نقاط الوصول اللاسلكية."
+
+msgid "Package Cache Control"
+msgstr "حزمة ذاكرة التخزين المؤقت تحكم"
+
+msgid "The site must not be blank."
+msgstr "يجب أن لا يكون الموقع فارغ."
+
+msgid "This allows sites to be accessed via squid deb proxy for updating packages on client computers."
+msgstr "وهذا يسمح ل مواقع يمكن الوصول إليها عن طريق الحبار ديب وكيل لتحديث الحزم على أجهزة الكمبيوتر العميلة."
 
 msgid "Enter in the username that you want to apply these settings to."
 msgstr "أدخل في اسم المستخدم الذي تريد تطبيق هذه الإعدادات ل."
@@ -6001,6 +5998,12 @@ msgstr "لا توجد طلبات أكملت عرضها."
 
 msgid "You have not chosen a backup server."
 msgstr "كنت لم اختار الخدمة الاحتياطية."
+
+msgid "The version has not been set."
+msgstr "لم يتم تعيين الإصدار."
+
+msgid "The location has not been set."
+msgstr "لم يتم تعيين موقع."
 
 msgid "An incorrect password has been added for the root samba account on the PDC or it is not responding"
 msgstr "تمت إضافة كلمة مرور غير صحيحة لحساب السامبا الجذر على PDC أو أنه لا يستجيب"
@@ -6425,6 +6428,12 @@ msgstr "القائمة الرئيسية"
 msgid "Documentation"
 msgstr "توثيق"
 
+msgid "Forum"
+msgstr "المنتدى"
+
+msgid "IRC"
+msgstr "IRC"
+
 msgid "Helpdesk"
 msgstr "مكتب المساعدة"
 
@@ -6485,6 +6494,12 @@ msgstr "طابعة المستعمل الاستخدام"
 msgid "Add User Limit"
 msgstr "إضافة حد المستخدم"
 
+msgid "Aliases"
+msgstr "الأسماء المستعارة"
+
+msgid "Whitelists"
+msgstr "قوائم بيضاء"
+
 msgid "Banned E-Mail domains"
 msgstr "حظرت المجالات البريد الإلكتروني"
 
@@ -6514,6 +6529,39 @@ msgstr "إرادة هذا الإعداد النظام Xibo الإشارات ال
 
 msgid "Xibo Domain"
 msgstr "Xibo المجال"
+
+msgid "You have not entered a folder name."
+msgstr "لم يتم إدخال اسم مجلد."
+
+msgid "You have not entered a group."
+msgstr "لم يتم إدخال مجموعة."
+
+msgid "You have not chosen any group permissions."
+msgstr "هل لم يختر أي أذونات المجموعة."
+
+msgid "You have not chosen a server name."
+msgstr "كنت لم اختار اسم الملقم."
+
+msgid "You have not chosen a server type."
+msgstr "كنت لم اختار نوع الخادم."
+
+msgid "You have not chosen a server master."
+msgstr "كنت لم اختار سيد الخادم."
+
+msgid "View Network Shares"
+msgstr "مشاهدة الشبكة أسهم"
+
+msgid "Add Network Share"
+msgstr "إضافة مشاركة شبكة الاتصال"
+
+msgid "Delete Network Share"
+msgstr "حذف شبكة حصة"
+
+msgid "A folder with this name already exists."
+msgstr "مجلد بهذا الاسم موجود مسبقا."
+
+msgid "This share already exits in samba."
+msgstr "هذه الحصة يخرج بالفعل في سامبا."
 
 msgid "No web sites have been added to the reverse proxy list."
 msgstr "لم يتم إضافة أي مواقع ويب إلى قائمة كيل عكسي."
@@ -6578,6 +6626,9 @@ msgstr "إرادة هذا الإعداد حتى علامة واحدة CAS على
 msgid "WARNING - An internet connect is required to install this module."
 msgstr "تحذير - أحد على الاتصال بالإنترنت مطلوب لتثبيت هذه الوحدة."
 
+msgid "Ban E-Mail Domain"
+msgstr "حظر مجال البريد الإلكتروني"
+
 msgid "Banned Domains"
 msgstr "مجالات محظورة"
 
@@ -6610,9 +6661,6 @@ msgstr "لم تدخل في طلب أو مشكلة."
 
 msgid "You have not chosen a department."
 msgstr "كنت لم اختار القسم."
-
-msgid "You have not entered in a location."
-msgstr "لم تدخل في الموقع."
 
 msgid "The search criteria cannot be blank."
 msgstr "معايير البحث لا يمكن أن يكون فارغا."
@@ -6665,12 +6713,6 @@ msgstr "تسجيل الخروج"
 msgid "Help"
 msgstr "مساعدة"
 
-msgid "Forum"
-msgstr "المنتدى"
-
-msgid "IRC"
-msgstr "IRC"
-
 msgid "View Completed Requests"
 msgstr "مشاهدة المكتملة الطلبات"
 
@@ -6704,6 +6746,12 @@ msgstr "إنشاء حسابات إضافية"
 msgid "Servers"
 msgstr "خوادم"
 
+msgid "ZFS Raid"
+msgstr "ZFS رائد"
+
+msgid "Software Raid"
+msgstr "رائد البرمجيات"
+
 msgid "Disk Quotas"
 msgstr "الحصص النسبية للقرص"
 
@@ -6716,17 +6764,8 @@ msgstr "مشاهدة تمكين أقسام"
 msgid "Apply Quota settings"
 msgstr "تطبيق إعدادات الحصة"
 
-msgid "ZFS Raid"
-msgstr "ZFS رائد"
-
-msgid "Software Raid"
-msgstr "رائد البرمجيات"
-
 msgid "Find Student Files"
 msgstr "البحث عن الملفات الطلاب"
-
-msgid "Add Network Share"
-msgstr "إضافة مشاركة شبكة الاتصال"
 
 msgid "Federated File Sync"
 msgstr "اتحاد مزامنة ملف"
@@ -6833,8 +6872,11 @@ msgstr "سجلات المحاسبة طابعة"
 msgid "Use E-Mail relay"
 msgstr "استخدام البريد الإلكتروني التتابع"
 
-msgid "E-Mail Access Controls"
-msgstr "عناصر التحكم في الوصول البريد الإلكتروني"
+msgid "Access Controls"
+msgstr "عناصر التحكم في الوصول"
+
+msgid "Limits"
+msgstr "حدود"
 
 msgid "Search E-Mail Logs"
 msgstr "سجلات البحث البريد الإلكتروني"
@@ -6859,6 +6901,9 @@ msgstr "سجلات الإنترنت"
 
 msgid "Update Time"
 msgstr "تحديث الوقت"
+
+msgid "Gluster Volume"
+msgstr "Gluster حجم"
 
 msgid "Staff"
 msgstr "العاملين"
@@ -7094,6 +7139,75 @@ msgstr "عدم وجود أخطاء اكتشفت في هذا الأرشيف."
 msgid "Copying to"
 msgstr "النسخ ل"
 
+msgid "This show as information for your clients when they look at the network share."
+msgstr "هذا العرض و المعلومات للعملاء الخاص بك عندما ننظر إلى مشاركة شبكة الاتصال."
+
+msgid "Folder Name"
+msgstr "اسم المجلد"
+
+msgid "This will create a folder in /home with the name that you specify."
+msgstr "هذا وسوف إنشاء مجلد في / الوطن مع الاسم الذي تحدده."
+
+msgid "Enter in the name of the group that you want to allow access to the folder."
+msgstr "أدخل في اسم المجموعة التي تريد للسماح بالوصول إلى المجلد."
+
+msgid "Full Access"
+msgstr "الوصول الكامل"
+
+msgid "Choose the permissions that you want to set for this group for the share."
+msgstr "اختر الأذونات التي تريد تعيين لهذه المجموعة لل سهم."
+
+msgid "Map drive"
+msgstr "خريطة محرك"
+
+msgid "Do not map drive"
+msgstr "لا تعيين محرك الأقراص"
+
+msgid "All Users"
+msgstr "جميع الاعضاء"
+
+msgid "No Access"
+msgstr "لا توجد شبكة"
+
+msgid "Add share"
+msgstr "إضافة حصة"
+
+msgid "Network Share"
+msgstr "شبكة حصة"
+
+msgid "Path"
+msgstr "مسار"
+
+msgid "This will delete the share definition but will not delete the folder."
+msgstr "سيؤدي ذلك إلى حذف تعريف حصة لكنها لن حذف المجلد."
+
+msgid "Are you sure that you want to delete this share?"
+msgstr "هل أنت متأكد أنك تريد حذف هذه الحصة ؟"
+
+msgid "Delete Share"
+msgstr "حذف حصة"
+
+msgid "Cancel"
+msgstr "إلغاء"
+
+msgid "Server Path"
+msgstr "مسار الخادم"
+
+msgid "Groups"
+msgstr "مجموعات"
+
+msgid "Permissions"
+msgstr "ضوابط"
+
+msgid "Map Drive"
+msgstr "خريطة محرك"
+
+msgid "Read Only"
+msgstr "قراءة فقط"
+
+msgid "Yes"
+msgstr "نعم"
+
 msgid "Boot status"
 msgstr "وضع التمهيد"
 
@@ -7120,6 +7234,54 @@ msgstr "تحرير حد المستخدم"
 
 msgid "Edit Group Limit"
 msgstr "تحرير مجموعة الحد"
+
+msgid "Volume"
+msgstr "حجم"
+
+msgid "Folder"
+msgstr "ملف"
+
+msgid "This will delete all of the data in the folder."
+msgstr "سيؤدي ذلك إلى حذف كافة البيانات الموجودة في المجلد."
+
+msgid "Are you sure that you want to delete this folder?"
+msgstr "هل أنت متأكد أنك تريد حذف هذا المجلد ؟"
+
+msgid "No folders have been added to this volume."
+msgstr "لم يتم إضافة أي المجلدات إلى هذا المجلد."
+
+msgid "Copying data to"
+msgstr "نسخ البيانات إلى"
+
+msgid "IMPORTANT - Please ensure that users are not logged in to ensure that data is not lost."
+msgstr "هام - الرجاء التأكد من أن المستخدمين لم تقم بتسجيل الدخول لضمان عدم فقدان البيانات."
+
+msgid "Folder Path"
+msgstr "مسار مجلد"
+
+msgid "Enter in the full path that you want to add to the gluster volume."
+msgstr "أدخل في المسار الكامل الذي تريد إضافة إلى حجم gluster."
+
+msgid "Server data source"
+msgstr "مصدر بيانات الخادم"
+
+msgid "Volume Name"
+msgstr "اسم وحدة التخزين"
+
+msgid "Folders"
+msgstr "المجلدات"
+
+msgid "No folders have been assigned."
+msgstr "تم تعيين أي المجلدات."
+
+msgid "Add folder"
+msgstr "إضافة مجلد"
+
+msgid "Remove folder"
+msgstr "إزالة مجلد"
+
+msgid "Assign Home Folders"
+msgstr "تعيين الرئيسية المجلدات"
 
 msgid "Search term"
 msgstr "مصطلح البحث"
@@ -7313,6 +7475,12 @@ msgstr "إعدادات الشبكة لهذا المعرض الخادم أنه ي
 msgid "SSH connection failure"
 msgstr "فشل اتصال SSH"
 
+msgid "This server has been re-installed"
+msgstr "تم إعادة تركيبها هذا الخادم"
+
+msgid "You will need to re-install all of the modules for this server."
+msgstr "سوف تحتاج إلى إعادة تثبيت كل من وحدات لهذا الملقم."
+
 msgid "No Role"
 msgstr "لا دور"
 
@@ -7373,6 +7541,15 @@ msgstr "إزالة الغيار"
 msgid "This printer does not support accounting."
 msgstr "هذه الطابعة لا يدعم المحاسبة."
 
+msgid "Address"
+msgstr "عنوان"
+
+msgid "E-Mail Address or domain"
+msgstr "عنوان البريد الإلكتروني أو مجال"
+
+msgid "Enter in the E-Mail address or domain that you want to add to the whitelist."
+msgstr "أدخل عنوان البريد الإلكتروني أو المجال الذي تريد إضافته إلى القائمة البيضاء."
+
 msgid "This server does not have the correct authentication set up on it."
 msgstr "لم يكن هذا الملقم المصادقة الصحيحة وضعت على ذلك."
 
@@ -7412,17 +7589,23 @@ msgstr "تغيير كلمة المرور لهذا الحساب."
 msgid "Making sure that apache and mysql are running"
 msgstr "التأكد من أن اباتشي و الخلية تعمل"
 
-msgid "Setting apache and mysql to start on boot."
-msgstr "وضع اباتشي و الخلية أن تبدأ في التمهيد."
+msgid "Setting apache and mysql to start on boot"
+msgstr "وضع اباتشي و الخلية أن تبدأ في التمهيد"
 
-msgid "Checking shorewall ports."
-msgstr "فحص منافذ جدار حماية."
+msgid "Checking shorewall ports"
+msgstr "فحص منافذ جدار حماية"
 
-msgid "Opening ports 80 and 443."
-msgstr "فتح المنافذ 80 و 443."
+msgid "Opening ports 80 and 443"
+msgstr "الموانئ فتح 80 و 443"
 
-msgid "Opening ports 20 and 21."
-msgstr "فتح الموانئ 20 و 21."
+msgid "Opening ports 20 and 21"
+msgstr "الموانئ فتح 20 و 21"
+
+msgid "Opening port 3306"
+msgstr "فتح منفذ 3306"
+
+msgid "Closing port 3306"
+msgstr "ميناء إغلاق 3306"
 
 msgid "Creating Database"
 msgstr "إنشاء قاعدة بيانات"
@@ -7567,6 +7750,12 @@ msgstr "خادم FTP"
 
 msgid "Distributed FS Server"
 msgstr "وزعت خادم FS"
+
+msgid "Dnsmasq service"
+msgstr "خدمة Dnsmasq"
+
+msgid "Add in a site that you want to allow for the clients to connect to."
+msgstr "إضافة في الموقع الذي تريد السماح للعملاء للاتصال."
 
 msgid "Realm"
 msgstr "مملكة"
@@ -7952,9 +8141,6 @@ msgstr "الانتقال إلى هنا ؟"
 msgid "Copy here?"
 msgstr "نسخ هنا؟"
 
-msgid "Cancel"
-msgstr "إلغاء"
-
 msgid "This item is protected and cannot be moved or copied."
 msgstr "محمي هذا البند و لا يمكن نقل أو نسخ."
 
@@ -7976,9 +8162,6 @@ msgstr "تعيين أذونات"
 msgid "Basic Information"
 msgstr "معلومات بسيطة"
 
-msgid "Path"
-msgstr "مسار"
-
 msgid "Last accessed"
 msgstr "آخر الوصول إليها"
 
@@ -7990,9 +8173,6 @@ msgstr "ملكية"
 
 msgid "User"
 msgstr "المستخدم"
-
-msgid "Permissions"
-msgstr "ضوابط"
 
 msgid "Exec"
 msgstr "إكسيك"

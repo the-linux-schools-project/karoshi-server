@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2014-12-30 09:37+0000\n"
+"POT-Creation-Date: 2015-03-23 18:42+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -209,14 +209,20 @@ msgstr "terminé"
 msgid "Configure"
 msgstr "configurer"
 
-msgid "starting glusterfs"
-msgstr "à partir glusterfs"
-
-msgid "a volume with this name already exists"
-msgstr "un volume avec ce nom existe déjà"
+msgid "mounting"
+msgstr "montage"
 
 msgid "Opening ports for glusterfs"
 msgstr "L'ouverture des ports pour glusterfs"
+
+msgid "starting glusterfs"
+msgstr "à partir glusterfs"
+
+msgid "Detaching"
+msgstr "Retrait"
+
+msgid "Gluster peer probe failure"
+msgstr "Gluster panne de la sonde par les pairs"
 
 msgid "Creating GlusterFS volume"
 msgstr "Création du volume GlusterFS"
@@ -230,29 +236,20 @@ msgstr "Volume de départ GlusterFS"
 msgid "There was a problem starting the volume"
 msgstr "Il y avait un problème de démarrage le volume"
 
-msgid "Backing up"
-msgstr "sauvegarde"
-
-msgid "mounting"
-msgstr "montage"
-
-msgid "Copying in existing data"
-msgstr "Copie de données existantes"
-
 msgid "Adding server to gluster volume"
 msgstr "Ajout de serveur au volume de Gluster"
 
-msgid "probing server"
-msgstr "serveur de sondage"
+msgid "Restoring"
+msgstr "Restauration"
 
-msgid "completed"
-msgstr "terminé"
+msgid "stopping glusterfs"
+msgstr "arrêter glusterfs"
 
-msgid "getting brick count"
-msgstr "obtenir le nombre de briques"
+msgid "Starting glusterfs"
+msgstr "À partir glusterfs"
 
-msgid "adding"
-msgstr "ajoutant"
+msgid "No volume information"
+msgstr "Aucune information de volume"
 
 msgid "Creating the joomla database in mysql"
 msgstr "Création de la base de joomla dans mysql"
@@ -407,14 +404,14 @@ msgstr "À partir SOGo"
 msgid "Starting Postfix"
 msgstr "Démarrer postfix"
 
-msgid "Starting Fail2ban"
-msgstr "À partir Fail2ban"
-
 msgid "Starting ClamD"
 msgstr "À partir clamd"
 
 msgid "Starting MailScanner"
 msgstr "MailScanner partir"
+
+msgid "Starting Fail2ban"
+msgstr "À partir Fail2ban"
 
 msgid "SOGo has been installed and can be accessed from"
 msgstr "SOGo a été installé et peut être consultée à partir de"
@@ -511,6 +508,9 @@ msgstr "Configuration Karoshi bureau"
 
 msgid "Please enter your choice for the karoshi and system password."
 msgstr "Se il vous plaît entrez votre choix pour le karoshi et mot de passe système."
+
+msgid "The passwords do not match. Please try again."
+msgstr "Les mots de passe ne correspondent pas. Se il vous plaît essayer à nouveau."
 
 msgid "Configure Network"
 msgstr "Configurer le réseau"
@@ -893,8 +893,8 @@ msgstr "Se il vous plaît choisir l'imprimante que vous souhaitez supprimer."
 msgid "Add a slave UPS"
 msgstr "Ajouter un onduleur esclaves"
 
-msgid "The UPS driver cannot be blank."
-msgstr "Le chauffeur UPS ne peut être vide."
+msgid "The UPS server cannot be blank."
+msgstr "Le serveur de l'onduleur ne peut être vide."
 
 msgid "The UPS has been added."
 msgstr "L'ASI a été ajouté."
@@ -1085,45 +1085,6 @@ msgstr "Voir les actions"
 msgid "Show open files"
 msgstr "Afficher les fichiers ouverts"
 
-msgid "Add Additional Network Share"
-msgstr "Ajouter un réseau supplémentaires Partager"
-
-msgid "You have not entered a folder name."
-msgstr "Vous ne avez pas entré un nom de dossier."
-
-msgid "You have not entered a group."
-msgstr "Vous ne avez pas entré un groupe."
-
-msgid "You have not chosen any group permissions."
-msgstr "Vous ne avez pas choisi toutes les autorisations de groupe."
-
-msgid "You have not chosen any permissions for other users."
-msgstr "Vous ne avez pas choisi toutes les autorisations pour les autres utilisateurs."
-
-msgid "You have not chosen a server name."
-msgstr "Vous ne avez pas choisi un nom de serveur."
-
-msgid "You have not chosen a server type."
-msgstr "Vous ne avez pas choisi un type de serveur."
-
-msgid "You have not chosen a server master."
-msgstr "Vous ne avez pas choisi un maître du serveur."
-
-msgid "The folder you have chosen already exists in /home."
-msgstr "Le dossier que vous avez déjà choisi existe dans / home."
-
-msgid "This share is already declared in the samba configuration file."
-msgstr "Cette part est déjà déclarée dans le fichier de configuration de samba."
-
-msgid "Server"
-msgstr "serveur"
-
-msgid "Share"
-msgstr "part"
-
-msgid "This share has been added."
-msgstr "Cette part a été ajouté."
-
 msgid "Manage Print Queues"
 msgstr "Gérer files d'impression"
 
@@ -1159,6 +1120,60 @@ msgstr "L'option de taille de message ne ​​doit pas être vide."
 
 msgid "The mailbox size option must not be blank."
 msgstr "L' option de taille de boîte aux lettres ne doit pas être vide."
+
+msgid "Gluster Volume Control"
+msgstr "Contrôle du volume Gluster"
+
+msgid "Create Gluster Volume"
+msgstr "Créer Gluster Volume"
+
+msgid "View Gluster Volumes"
+msgstr "Voir Volumes Gluster"
+
+msgid "Create Volume"
+msgstr "Créer un volume"
+
+msgid "Creating Volume"
+msgstr "Volume Création"
+
+msgid "Add Folder"
+msgstr "Ajouter un dossier"
+
+msgid "Ading Folder"
+msgstr "Ading dossier"
+
+msgid "Assign Network Share"
+msgstr "Attribuer Réseau Partager"
+
+msgid "Remove Folder"
+msgstr "Supprimer le dossier"
+
+msgid "You have not entered a correct action."
+msgstr "Vous ne avez pas entré une action correcte."
+
+msgid "You have not entered a volume name."
+msgstr "Vous ne avez pas entré un nom de volume."
+
+msgid "You have not chosen any servers."
+msgstr "Vous ne avez pas choisi les serveurs."
+
+msgid "You have to choose at least two servers to create a distributed volume."
+msgstr "Vous devez choisir au moins deux serveurs pour créer un volume distribué."
+
+msgid "This volume has already been created."
+msgstr "Ce volume a déjà été créé."
+
+msgid "You have not chosen a folder path."
+msgstr "Vous ne avez pas choisi un chemin de dossier."
+
+msgid "Gluster Controls"
+msgstr "Contrôles de Gluster"
+
+msgid "Home Folders"
+msgstr "Accueil dossiers"
+
+msgid "Gluster Volumes"
+msgstr "Volumes de Gluster"
 
 msgid "ZFS Status"
 msgstr "ZFS Statut"
@@ -1337,11 +1352,23 @@ msgstr "Logiciels client Linux"
 msgid "Blank version"
 msgstr "version vierge"
 
-msgid "The software shown below will either be installed or removed by your linux client computers on boot."
-msgstr "Le logiciel ci-dessous sera soit installé ou retiré par vos ordinateurs clients Linux au démarrage."
+msgid "Linux Client Software Controls"
+msgstr "Commandes du logiciel client Linux"
+
+msgid "Software Controls"
+msgstr "Contrôles de logiciels"
+
+msgid "The software shown below will be installed by your linux client computers on boot."
+msgstr "Le logiciel ci-dessous sera installé par vos ordinateurs clients Linux au démarrage."
 
 msgid "Add software package"
 msgstr "Ajouter logiciel"
+
+msgid "Location"
+msgstr "emplacement"
+
+msgid "All locations"
+msgstr "tous les emplacements"
 
 msgid "Software Package"
 msgstr "Progiciel"
@@ -1352,14 +1379,8 @@ msgstr "installer"
 msgid "Remove"
 msgstr "supprimer"
 
-msgid "Install List"
-msgstr "Installez Liste"
-
 msgid "Delete"
 msgstr "effacer"
-
-msgid "Remove list"
-msgstr "Retirer la liste"
 
 msgid "Computer Logs"
 msgstr "Journaux informatiques"
@@ -1433,9 +1454,6 @@ msgstr "demande Résumé"
 msgid "Name"
 msgstr "nom"
 
-msgid "Location"
-msgstr "emplacement"
-
 msgid "Category"
 msgstr "catégorie"
 
@@ -1471,6 +1489,9 @@ msgstr "réaction"
 
 msgid "Linux Client Background"
 msgstr "Contexte client Linux"
+
+msgid "The UPS driver cannot be blank."
+msgstr "Le chauffeur UPS ne peut être vide."
 
 msgid "The UPS port cannot be blank."
 msgstr "Le port de l'onduleur ne peut être vide."
@@ -2489,9 +2510,6 @@ msgstr "Afficher les journaux d'utilisation de disque"
 msgid "The logview cannot be blank."
 msgstr "Le logview ne peut être vide."
 
-msgid "You have not chosen any servers."
-msgstr "Vous ne avez pas choisi les serveurs."
-
 msgid "The disk usage logs show the overall usage for each partition on your server."
 msgstr "Les journaux d'utilisation de disque montrent l' utilisation globale pour chaque partition sur votre serveur."
 
@@ -2603,44 +2621,20 @@ msgstr "Générer les listes iTALC du registre des actifs"
 msgid "This will generate Italc files from the asset register."
 msgstr "Cela va générer des fichiers italc du registre des actifs."
 
-msgid "Linux Client Software Controls"
-msgstr "Commandes du logiciel client Linux"
-
 msgid "The linux version must not be blank."
 msgstr "La version de linux ne doit pas être vide."
 
-msgid "Choose the linux client version that you want to set the software settings for."
-msgstr "Choisissez la version du client linux que vous souhaitez définir les paramètres du logiciel pour."
+msgid "Software Packages"
+msgstr "Progiciels"
 
-msgid "Auto"
-msgstr "auto"
+msgid "Choose the locations that you want to enable updates and software installs for."
+msgstr "Choisissez les endroits que vous souhaitez activer les mises à jour et des logiciels pour les installations."
 
-msgid "Set this to auto to hide the software control dialog from appearing when setting up the clients."
-msgstr "Réglez cette auto pour masquer la boîte de dialogue de configuration du logiciel d'apparaître lors de l'installation des clients."
+msgid "Enable software install"
+msgstr "Activer le logiciel installer"
 
-msgid "Proprietary graphics"
-msgstr "graphiques propriétaires"
-
-msgid "This will tell the linux clients to install the relevant proprietary graphics driver for the client."
-msgstr "Ceci va dire les clients Linux pour installer le pilote graphique propriétaire pertinente pour le client."
-
-msgid "Restricted extras"
-msgstr "extras restreintes"
-
-msgid "This will install software that in a few countries licenses may be required."
-msgstr "Cela permet d'installer le logiciel que dans quelques pays licences peuvent être nécessaires."
-
-msgid "Firmware"
-msgstr "firmware"
-
-msgid "This will install proprietary firmware."
-msgstr "Cela permet d'installer un firmware propriétaire."
-
-msgid "Enable Software install"
-msgstr "Activer Software Installer"
-
-msgid "This will make the Linux clients install and remove any software in the software install and remove lists on boot up."
-msgstr "Cela rendra les clients Linux Installer et supprimer tout logiciel dans le logiciel installer et supprimer des listes au démarrage."
+msgid "This will make the Linux clients install any software in the software install lists on boot up."
+msgstr "Cela rendra les clients Linux d'installer un logiciel dans le logiciel installer listes au démarrage."
 
 msgid "Enable updates"
 msgstr "activer les mises à jour"
@@ -3398,6 +3392,12 @@ msgstr "mysql Mot de passe"
 msgid "Enter in the password for the database."
 msgstr "Entrez le mot de passe pour la base de données."
 
+msgid "Open Mysql Port"
+msgstr "Ouvrir Port Mysql"
+
+msgid "This will open up port 3306 for mysql connections from remote devices."
+msgstr "Cela permettra d'ouvrir le port 3306 pour les connexions mysql de périphériques distants."
+
 msgid "Clear Web Management Warning Messages"
 msgstr "Effacer gestion Web Messages d'avertissement"
 
@@ -3515,9 +3515,6 @@ msgstr "Le nom court ne peut être vide."
 msgid "The secret key cannot be blank."
 msgstr "La clé secrète ne peut être vide."
 
-msgid "The secret keys do not match."
-msgstr "Les clés secrètes ne correspondent pas."
-
 msgid "The TCPIP address is incorrect."
 msgstr "L'adresse TCPIP est incorrect."
 
@@ -3553,6 +3550,9 @@ msgstr "Vous ne avez pas choisi un alias Web pour ce serveur."
 
 msgid "Setup Owncloud"
 msgstr "Configuration Owncloud"
+
+msgid "Owncloud allows you to access and synchronise your data from multiple devices."
+msgstr "Owncloud vous permet d'accéder et synchroniser vos données à partir de plusieurs périphériques."
 
 msgid "This will setup the Owncloud storage system for your users."
 msgstr "Cette volonté configurer le système de stockage Owncloud pour vos utilisateurs."
@@ -3710,9 +3710,6 @@ msgstr "Entrez dans votre choix de domaine de messagerie sans http: // www. exem
 msgid "View Jobs"
 msgstr "Voir les offres d'emploi"
 
-msgid "You have not chosen a share."
-msgstr "Vous ne avez pas choisi un part."
-
 msgid "Assign Printers to Locations"
 msgstr "Attribuer Imprimantes à des endroits"
 
@@ -3821,18 +3818,6 @@ msgstr "Administrateurs ont le plein contrôle de la gestion du Web, mais ne peu
 msgid "Technicians can access a limited set of controls for day to day running of the system such as changing passwords."
 msgstr "Les techniciens peuvent accéder à un ensemble limité de commandes de fonctionnement quotidien du système tels que l'évolution des mots de passe."
 
-msgid "View Additional Network Shares"
-msgstr "Voir Actions de réseau supplémentaires"
-
-msgid "Group Permissions"
-msgstr "Permissions de groupe"
-
-msgid "Others Permissions"
-msgstr "Autres permissions"
-
-msgid "Full Access"
-msgstr "Full Access"
-
 msgid "Custom Command"
 msgstr "Custom Command"
 
@@ -3929,11 +3914,11 @@ msgstr "Le groupe principal ne peut être vide."
 msgid "No other Karoshi servers have been set up."
 msgstr "Pas d'autres serveurs Karoshi ont été mis en place."
 
-msgid "No other Karoshi servers have been enabled as file servers."
-msgstr "Pas d'autres serveurs Karoshi ont été activées en tant que serveurs de fichiers."
+msgid "No other Karoshi servers have been enabled as file servers. You will need to add the file server module to an additional server."
+msgstr "Pas d'autres serveurs Karoshi ont été activées en tant que serveurs de fichiers. Vous aurez besoin d'ajouter le module de serveur de fichiers vers un serveur supplémentaire."
 
-msgid "IMPORTANT - Please ensure that users are not logged to ensure no data loss."
-msgstr "IMPORTANT - Se il vous plaît assurer que les utilisateurs ne sont pas connectés pour assurer aucune perte de données."
+msgid "IMPORTANT - Please ensure that users are not logged to ensure that data is not lost."
+msgstr "IMPORTANT - Se il vous plaît assurer que les utilisateurs ne sont pas connectés à assurer que les données ne sont pas perdues."
 
 msgid "Current Server"
 msgstr "serveur actuel"
@@ -3947,8 +3932,8 @@ msgstr "Cela va copier toutes les zones de départ des utilisateurs existants ve
 msgid "New Server"
 msgstr "Nouveau serveur"
 
-msgid "Choose server"
-msgstr "Choisissez Serveur"
+msgid "Select Server"
+msgstr "Sélectionnez Serveur"
 
 msgid "Web Management Information"
 msgstr "Gestion de l'information Web"
@@ -4060,9 +4045,6 @@ msgstr "Choisissez la priorité par défaut que vous voulez."
 
 msgid "Banned E-mail Domains"
 msgstr "Domaines E -mail interdits"
-
-msgid "Ban E-Mail Domain"
-msgstr "Ban E -Mail Domain"
 
 msgid "Ban Domain"
 msgstr "Ban Domain"
@@ -4295,6 +4277,9 @@ msgstr "Choisissez le serveur Web que vous souhaitez télécharger les fichiers.
 msgid "There are no web servers to upload files to."
 msgstr "Il n'y a pas de serveurs web pour télécharger des fichiers."
 
+msgid "Choose server"
+msgstr "Choisissez Serveur"
+
 msgid "Setup Joomla Website"
 msgstr "Configuration Joomla Site Web"
 
@@ -4348,6 +4333,9 @@ msgstr "Vous ne avez pas entré les minutes correctes."
 
 msgid "You have not entered the correct seconds."
 msgstr "Vous ne avez pas saisi le bon secondes."
+
+msgid "Share"
+msgstr "part"
 
 msgid "Proxy settings have been removed."
 msgstr "Les paramètres de proxy ont été enlevés."
@@ -4511,8 +4499,8 @@ msgstr "Choisissez un dispositif de UPS dans la liste."
 msgid "Choose auto for UPS devices connected via usb."
 msgstr "Choisissez automatique pour les dispositifs UPS connecté via USB."
 
-msgid "Add ups"
-msgstr "Ajouter ups"
+msgid "Add UPS"
+msgstr "Ajouter UPS"
 
 msgid "Allow Roaming Profile"
 msgstr "Autoriser l'itinérance profil"
@@ -4552,6 +4540,9 @@ msgstr "La gestion Web a été modifié pour"
 
 msgid "Choose client version"
 msgstr "Choisissez la version du client"
+
+msgid "Choose the linux client version that you want to set the software settings for."
+msgstr "Choisissez la version du client linux que vous souhaitez définir les paramètres du logiciel pour."
 
 msgid "Username or E-mail address"
 msgstr "Nom d'utilisateur ou adresse e-mail"
@@ -4706,6 +4697,9 @@ msgstr "Menu Démarrer de Windows - Sélectionnez"
 msgid "The selected start menu has been copied to all of the chosen groups."
 msgstr "Le menu de démarrage sélectionné a été copié à tous les groupes choisis."
 
+msgid "The software shown below will either be installed or removed by your linux client computers on boot."
+msgstr "Le logiciel ci-dessous sera soit installé ou retiré par vos ordinateurs clients Linux au démarrage."
+
 msgid "Generate Internet Logs"
 msgstr "Générer des journaux Internet"
 
@@ -4747,30 +4741,6 @@ msgstr "Configuration du contrôle de la Fédération"
 
 msgid "Warning - this will delete all existing users from this server and import all of the users from your main server."
 msgstr "Attention - cela supprimera tous les utilisateurs existants de ce serveur et importer tous les utilisateurs de votre serveur principal."
-
-msgid "This show as information for your clients when they look at the network share."
-msgstr "Ce spectacle à titre d'information pour vos clients quand ils regardent le partage réseau."
-
-msgid "Folder Name"
-msgstr "Nom du dossier"
-
-msgid "This will create a folder in /home with the name that you specify."
-msgstr "Cela va créer un dossier dans / home avec le nom que vous spécifiez."
-
-msgid "Enter in the name of the group that you want to allow access to the folder."
-msgstr "Entrez le nom du groupe que vous souhaitez autoriser l'accès au dossier."
-
-msgid "Choose the permissions that you want to set for this group for the share."
-msgstr "Choisissez les autorisations que vous souhaitez définir pour ce groupe pour la part."
-
-msgid "No access"
-msgstr "Pas d'accès"
-
-msgid "Choose the permissions that you want to allow for anyone else not in the group."
-msgstr "Choisissez les autorisations que vous souhaitez autoriser pour quelqu'un d'autre pas dans le groupe."
-
-msgid "Add share"
-msgstr "Ajouter part"
 
 msgid "Disk drives"
 msgstr "Lecteurs de disque"
@@ -4826,14 +4796,14 @@ msgstr "dossier compressé"
 msgid "You need to upload a zip or tar.gz file of your chosen application data folders."
 msgstr "Vous devez télécharger un fichier zip ou tar.gz de vos dossiers de données d'application choisis."
 
-msgid "Blank list"
-msgstr "liste vide"
-
 msgid "Blank action"
 msgstr "action vide"
 
 msgid "You have not entered in a software package."
 msgstr "Vous ne avez pas entré dans un logiciel."
+
+msgid "You have not entered in a location."
+msgstr "Vous ne avez pas entré dans un endroit."
 
 msgid "You must choose a website to view the logs for."
 msgstr "Vous devez choisir un site pour consulter les journaux pour."
@@ -5135,11 +5105,14 @@ msgstr "Voir actif"
 msgid "View internet logs"
 msgstr "Afficher les journaux d' Internet"
 
-msgid "Home Folders"
-msgstr "Accueil dossiers"
+msgid "Network Shares"
+msgstr "Partages réseau"
 
 msgid "This displays the server that hosts the home folders for each group."
 msgstr "Cette affiche le serveur qui héberge les dossiers de départ pour chaque groupe."
+
+msgid "Server"
+msgstr "serveur"
 
 msgid "Change"
 msgstr "changement"
@@ -5236,9 +5209,6 @@ msgstr "Demande de nouveaux utilisateurs"
 
 msgid "File Manager"
 msgstr "Gestionnaire de fichiers"
-
-msgid "You have not entered a correct action."
-msgstr "Vous ne avez pas entré une action correcte."
 
 msgid "The owner cannot be blank."
 msgstr "Le propriétaire ne peut pas être vide."
@@ -5639,6 +5609,24 @@ msgstr "Les données a été copié à tous les comptes du groupe sélectionné.
 msgid "There was a problem copying the files to the group."
 msgstr "Il y avait un problème de copier les fichiers dans le groupe."
 
+msgid "You have not entered an email address."
+msgstr "Vous ne avez pas entré une adresse email."
+
+msgid "View Whitelists"
+msgstr "Voir Whitelists"
+
+msgid "Adding a whitelist will allow emails to be recieved from the alias address without them being checked for spam."
+msgstr "Ajout d'une liste blanche permettra courriels à être reçu à partir de l'adresse d'alias sans qu'elles soient vérifiées pour le spam."
+
+msgid "Add a Whitelist"
+msgstr "Ajouter une liste blanche"
+
+msgid "These are the email whitelists addresses that are currently active for your email system."
+msgstr "Ce sont les adresses email de listes blanches qui sont actuellement actives pour votre système de messagerie."
+
+msgid "E-Mail Whitelists"
+msgstr "E-Mail Whitelists"
+
 msgid "There is no PPD file available."
 msgstr "Aucun fichier PPD disponibles."
 
@@ -5776,6 +5764,15 @@ msgstr "La clé que vous avez entré est trop long."
 
 msgid "This secret key has been added. Please ensure that it is also added to your wireless access points."
 msgstr "Cette clé secrète a été ajouté. Se il vous plaît assurez-vous qu'il est également ajouté à vos points d'accès sans fil."
+
+msgid "Package Cache Control"
+msgstr "Cache Control Package"
+
+msgid "The site must not be blank."
+msgstr "Le site ne doit pas être vide."
+
+msgid "This allows sites to be accessed via squid deb proxy for updating packages on client computers."
+msgstr "Cela permet à des sites accessibles via proxy squid deb pour mettre à jour des paquets sur les ordinateurs clients."
 
 msgid "Enter in the username that you want to apply these settings to."
 msgstr "Entrez le nom d'utilisateur que vous souhaitez appliquer ces paramètres pour."
@@ -6001,6 +5998,12 @@ msgstr "Il n'y a pas de demandes traitées à afficher."
 
 msgid "You have not chosen a backup server."
 msgstr "Vous ne avez pas choisi un serveur de sauvegarde."
+
+msgid "The version has not been set."
+msgstr "La version n'a pas été réglée."
+
+msgid "The location has not been set."
+msgstr "L'emplacement n'a pas été réglée."
 
 msgid "An incorrect password has been added for the root samba account on the PDC or it is not responding"
 msgstr "Un mot de passe incorrect a été ajoutée pour le compte de samba de racine sur le PDC ou il ne est pas répondre"
@@ -6425,6 +6428,12 @@ msgstr "Menu principal"
 msgid "Documentation"
 msgstr "documentation"
 
+msgid "Forum"
+msgstr "forum"
+
+msgid "IRC"
+msgstr "IRC"
+
 msgid "Helpdesk"
 msgstr "Helpdesk"
 
@@ -6485,6 +6494,12 @@ msgstr "Utilisation de l'imprimante Utilisation"
 msgid "Add User Limit"
 msgstr "Ajouter limite d'utilisateurs"
 
+msgid "Aliases"
+msgstr "alias"
+
+msgid "Whitelists"
+msgstr "Les listes blanches"
+
 msgid "Banned E-Mail domains"
 msgstr "Banned domaines E -Mail"
 
@@ -6514,6 +6529,39 @@ msgstr "Cette volonté configuration du système Xibo Digital Signage pour votre
 
 msgid "Xibo Domain"
 msgstr "Xibo Domain"
+
+msgid "You have not entered a folder name."
+msgstr "Vous ne avez pas entré un nom de dossier."
+
+msgid "You have not entered a group."
+msgstr "Vous ne avez pas entré un groupe."
+
+msgid "You have not chosen any group permissions."
+msgstr "Vous ne avez pas choisi toutes les autorisations de groupe."
+
+msgid "You have not chosen a server name."
+msgstr "Vous ne avez pas choisi un nom de serveur."
+
+msgid "You have not chosen a server type."
+msgstr "Vous ne avez pas choisi un type de serveur."
+
+msgid "You have not chosen a server master."
+msgstr "Vous ne avez pas choisi un maître du serveur."
+
+msgid "View Network Shares"
+msgstr "Voir partages réseau"
+
+msgid "Add Network Share"
+msgstr "Ajouter un réseau Partager"
+
+msgid "Delete Network Share"
+msgstr "Supprimer Réseau Partager"
+
+msgid "A folder with this name already exists."
+msgstr "Un dossier avec ce nom existe déjà."
+
+msgid "This share already exits in samba."
+msgstr "Cette part existe déjà dans la samba."
 
 msgid "No web sites have been added to the reverse proxy list."
 msgstr "Aucun des sites Web ont été ajoutés à la liste de proxy inverse."
@@ -6578,6 +6626,9 @@ msgstr "Cette configuration la connexion unique CAS sur la solution de volonté.
 msgid "WARNING - An internet connect is required to install this module."
 msgstr "AVERTISSEMENT - Un Connexion à Internet est nécessaire pour installer ce module."
 
+msgid "Ban E-Mail Domain"
+msgstr "Ban E -Mail Domain"
+
 msgid "Banned Domains"
 msgstr "domaines interdits"
 
@@ -6610,9 +6661,6 @@ msgstr "Vous ne avez pas entré dans une demande ou un problème."
 
 msgid "You have not chosen a department."
 msgstr "Vous ne avez pas choisi un département."
-
-msgid "You have not entered in a location."
-msgstr "Vous ne avez pas entré dans un endroit."
 
 msgid "The search criteria cannot be blank."
 msgstr "Les critères de recherche ne peuvent pas être vide."
@@ -6665,12 +6713,6 @@ msgstr "Déconnexion"
 msgid "Help"
 msgstr "Aidez-Moi"
 
-msgid "Forum"
-msgstr "forum"
-
-msgid "IRC"
-msgstr "IRC"
-
 msgid "View Completed Requests"
 msgstr "Voir Demandes traitées"
 
@@ -6704,6 +6746,12 @@ msgstr "Créer des comptes supplémentaires"
 msgid "Servers"
 msgstr "serveurs"
 
+msgid "ZFS Raid"
+msgstr "ZFS Raid"
+
+msgid "Software Raid"
+msgstr "RAID logiciel"
+
 msgid "Disk Quotas"
 msgstr "Quotas de disque"
 
@@ -6716,17 +6764,8 @@ msgstr "Voir permis partitions"
 msgid "Apply Quota settings"
 msgstr "Appliquer les paramètres de quota"
 
-msgid "ZFS Raid"
-msgstr "ZFS Raid"
-
-msgid "Software Raid"
-msgstr "RAID logiciel"
-
 msgid "Find Student Files"
 msgstr "Trouver les fichiers des étudiants"
-
-msgid "Add Network Share"
-msgstr "Ajouter un réseau Partager"
 
 msgid "Federated File Sync"
 msgstr "Fichier fédérés Sync"
@@ -6833,8 +6872,11 @@ msgstr "Journaux comptables de l'imprimante"
 msgid "Use E-Mail relay"
 msgstr "Utiliser E -Mail relais"
 
-msgid "E-Mail Access Controls"
-msgstr "Contrôles d'accès E -Mail"
+msgid "Access Controls"
+msgstr "Contrôles d'accès"
+
+msgid "Limits"
+msgstr "limites"
 
 msgid "Search E-Mail Logs"
 msgstr "Recherche E - mail se connecte"
@@ -6859,6 +6901,9 @@ msgstr "Journaux Internet"
 
 msgid "Update Time"
 msgstr "Mise à jour Temps"
+
+msgid "Gluster Volume"
+msgstr "Gluster Volume"
 
 msgid "Staff"
 msgstr "personnel"
@@ -7094,6 +7139,75 @@ msgstr "Aucune erreur détectés dans cette archive."
 msgid "Copying to"
 msgstr "copie à"
 
+msgid "This show as information for your clients when they look at the network share."
+msgstr "Ce spectacle à titre d'information pour vos clients quand ils regardent le partage réseau."
+
+msgid "Folder Name"
+msgstr "Nom du dossier"
+
+msgid "This will create a folder in /home with the name that you specify."
+msgstr "Cela va créer un dossier dans / home avec le nom que vous spécifiez."
+
+msgid "Enter in the name of the group that you want to allow access to the folder."
+msgstr "Entrez le nom du groupe que vous souhaitez autoriser l'accès au dossier."
+
+msgid "Full Access"
+msgstr "Full Access"
+
+msgid "Choose the permissions that you want to set for this group for the share."
+msgstr "Choisissez les autorisations que vous souhaitez définir pour ce groupe pour la part."
+
+msgid "Map drive"
+msgstr "Plan de route"
+
+msgid "Do not map drive"
+msgstr "Ne pas mapper le lecteur"
+
+msgid "All Users"
+msgstr "tous les utilisateurs"
+
+msgid "No Access"
+msgstr "Pas d'accès"
+
+msgid "Add share"
+msgstr "Ajouter part"
+
+msgid "Network Share"
+msgstr "Réseau Partager"
+
+msgid "Path"
+msgstr "chemin"
+
+msgid "This will delete the share definition but will not delete the folder."
+msgstr "Cette opération va supprimer la définition de l'action, mais ne supprimera pas le dossier."
+
+msgid "Are you sure that you want to delete this share?"
+msgstr "Etes-vous sûr que vous voulez supprimer cette part?"
+
+msgid "Delete Share"
+msgstr "supprimer Partager"
+
+msgid "Cancel"
+msgstr "annuler"
+
+msgid "Server Path"
+msgstr "Chemin du serveur"
+
+msgid "Groups"
+msgstr "groupes"
+
+msgid "Permissions"
+msgstr "autorisations"
+
+msgid "Map Drive"
+msgstr "Plan dur"
+
+msgid "Read Only"
+msgstr "Lecture seule"
+
+msgid "Yes"
+msgstr "oui"
+
 msgid "Boot status"
 msgstr "Statut de Boot"
 
@@ -7120,6 +7234,54 @@ msgstr "Modifier Limite de l'utilisateur"
 
 msgid "Edit Group Limit"
 msgstr "Modifier Limite Groupe"
+
+msgid "Volume"
+msgstr "volume"
+
+msgid "Folder"
+msgstr "dossier"
+
+msgid "This will delete all of the data in the folder."
+msgstr "Cette opération va supprimer toutes les données dans le dossier."
+
+msgid "Are you sure that you want to delete this folder?"
+msgstr "Etes-vous sûr que vous voulez supprimer ce dossier?"
+
+msgid "No folders have been added to this volume."
+msgstr "Aucun dossier ont été ajoutés à ce volume."
+
+msgid "Copying data to"
+msgstr "Copie de données à"
+
+msgid "IMPORTANT - Please ensure that users are not logged in to ensure that data is not lost."
+msgstr "IMPORTANT - Se il vous plaît assurer que les utilisateurs ne sont pas connectés à assurer que les données ne sont pas perdues."
+
+msgid "Folder Path"
+msgstr "Chemin du dossier"
+
+msgid "Enter in the full path that you want to add to the gluster volume."
+msgstr "Entrez dans le chemin d'accès complet que vous souhaitez ajouter au volume de Gluster."
+
+msgid "Server data source"
+msgstr "La source de données de serveur"
+
+msgid "Volume Name"
+msgstr "Nom du volume"
+
+msgid "Folders"
+msgstr "dossiers"
+
+msgid "No folders have been assigned."
+msgstr "Aucun dossier ont été assignés."
+
+msgid "Add folder"
+msgstr "Ajouter dossier"
+
+msgid "Remove folder"
+msgstr "Retirer le filtre"
+
+msgid "Assign Home Folders"
+msgstr "Attribuer Accueil Dossiers"
 
 msgid "Search term"
 msgstr "Le terme de recherche"
@@ -7313,6 +7475,12 @@ msgstr "paramètres réseau pour ce spectacle de serveur qui il devrait être da
 msgid "SSH connection failure"
 msgstr "Échec de la connexion SSH"
 
+msgid "This server has been re-installed"
+msgstr "Ce serveur a été réinstallé"
+
+msgid "You will need to re-install all of the modules for this server."
+msgstr "Vous aurez besoin de ré-installer tous les modules pour ce serveur."
+
 msgid "No Role"
 msgstr "Pas de Rôle"
 
@@ -7373,6 +7541,15 @@ msgstr "Retirer rechange"
 msgid "This printer does not support accounting."
 msgstr "Cette imprimante ne prend pas en charge la comptabilité."
 
+msgid "Address"
+msgstr "adresse"
+
+msgid "E-Mail Address or domain"
+msgstr "E -Mail ou le domaine"
+
+msgid "Enter in the E-Mail address or domain that you want to add to the whitelist."
+msgstr "Saisissez l'adresse E -Mail ou le domaine que vous souhaitez ajouter à la liste blanche."
+
 msgid "This server does not have the correct authentication set up on it."
 msgstr "Ce serveur n'a pas l'authentification correcte mis en place à ce sujet."
 
@@ -7412,17 +7589,23 @@ msgstr "Changer le mot de passe pour ce compte."
 msgid "Making sure that apache and mysql are running"
 msgstr "Faire en sorte que Apache et MySQL sont en cours d'exécution"
 
-msgid "Setting apache and mysql to start on boot."
-msgstr "Configuration apache et mysql pour lancer au démarrage."
+msgid "Setting apache and mysql to start on boot"
+msgstr "Configuration apache et mysql pour démarrer au démarrage"
 
-msgid "Checking shorewall ports."
-msgstr "Vérification ports shorewall."
+msgid "Checking shorewall ports"
+msgstr "Vérification ports shorewall"
 
-msgid "Opening ports 80 and 443."
-msgstr "L'ouverture des ports 80 et 443."
+msgid "Opening ports 80 and 443"
+msgstr "Ports d'ouverture 80 et 443"
 
-msgid "Opening ports 20 and 21."
-msgstr "L'ouverture des ports 20 et 21."
+msgid "Opening ports 20 and 21"
+msgstr "Ports d'ouverture 20 et 21"
+
+msgid "Opening port 3306"
+msgstr "Port d'ouverture 3306"
+
+msgid "Closing port 3306"
+msgstr "Orifice fermeture 3306"
 
 msgid "Creating Database"
 msgstr "Base de données Création"
@@ -7567,6 +7750,12 @@ msgstr "serveur FTP"
 
 msgid "Distributed FS Server"
 msgstr "Distribué FS serveur"
+
+msgid "Dnsmasq service"
+msgstr "Service dnsmasq"
+
+msgid "Add in a site that you want to allow for the clients to connect to."
+msgstr "Ajouter dans un site que vous souhaitez autoriser pour les clients de se connecter."
 
 msgid "Realm"
 msgstr "domaine"
@@ -7952,9 +8141,6 @@ msgstr "Déplacer ici?"
 msgid "Copy here?"
 msgstr "Copier ici?"
 
-msgid "Cancel"
-msgstr "annuler"
-
 msgid "This item is protected and cannot be moved or copied."
 msgstr "Cet article est protégé et ne peut être déplacé ou copié."
 
@@ -7976,9 +8162,6 @@ msgstr "Définir les autorisations"
 msgid "Basic Information"
 msgstr "Données de base"
 
-msgid "Path"
-msgstr "chemin"
-
 msgid "Last accessed"
 msgstr "dernière consultée"
 
@@ -7990,9 +8173,6 @@ msgstr "possession"
 
 msgid "User"
 msgstr "utilisateur"
-
-msgid "Permissions"
-msgstr "autorisations"
 
 msgid "Exec"
 msgstr "Exec"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2014-12-30 09:37+0000\n"
+"POT-Creation-Date: 2015-03-23 18:42+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -209,14 +209,20 @@ msgstr "Afsluttet"
 msgid "Configure"
 msgstr "Konfigurer"
 
-msgid "starting glusterfs"
-msgstr "starter glusterfs"
-
-msgid "a volume with this name already exists"
-msgstr "et volumen med dette navn findes allerede"
+msgid "mounting"
+msgstr "montering"
 
 msgid "Opening ports for glusterfs"
 msgstr "Åbning porte til glusterfs"
+
+msgid "starting glusterfs"
+msgstr "starter glusterfs"
+
+msgid "Detaching"
+msgstr "Aftagning"
+
+msgid "Gluster peer probe failure"
+msgstr "Gluster peer sonde fiasko"
 
 msgid "Creating GlusterFS volume"
 msgstr "Oprettelse GlusterFS volumen"
@@ -230,29 +236,20 @@ msgstr "Start GlusterFS volumen"
 msgid "There was a problem starting the volume"
 msgstr "Der var et problem med at starte volumen"
 
-msgid "Backing up"
-msgstr "Sikkerhedskopiering"
-
-msgid "mounting"
-msgstr "montering"
-
-msgid "Copying in existing data"
-msgstr "Kopiering i eksisterende data"
-
 msgid "Adding server to gluster volume"
 msgstr "Tilføjelse server til gluster volumen"
 
-msgid "probing server"
-msgstr "sondering server"
+msgid "Restoring"
+msgstr "Gendannelse"
 
-msgid "completed"
-msgstr "afsluttet"
+msgid "stopping glusterfs"
+msgstr "standsning glusterfs"
 
-msgid "getting brick count"
-msgstr "få mursten tæller"
+msgid "Starting glusterfs"
+msgstr "Start glusterfs"
 
-msgid "adding"
-msgstr "tilføjer"
+msgid "No volume information"
+msgstr "Ingen oplysninger volumen"
 
 msgid "Creating the joomla database in mysql"
 msgstr "Oprettelse af joomla database i MySQL"
@@ -407,14 +404,14 @@ msgstr "Start Sogo"
 msgid "Starting Postfix"
 msgstr "Start af Postfix"
 
-msgid "Starting Fail2ban"
-msgstr "Start fail2ban"
-
 msgid "Starting ClamD"
 msgstr "Start clamd"
 
 msgid "Starting MailScanner"
 msgstr "Start MailScanner"
+
+msgid "Starting Fail2ban"
+msgstr "Start fail2ban"
 
 msgid "SOGo has been installed and can be accessed from"
 msgstr "Sogo er blevet installeret og kan tilgås fra"
@@ -511,6 +508,9 @@ msgstr "Opsætning Karoshi Desktop"
 
 msgid "Please enter your choice for the karoshi and system password."
 msgstr "Indtast venligst dit valg for Karoshi og systemets adgangskode."
+
+msgid "The passwords do not match. Please try again."
+msgstr "Adgangskoderne stemmer ikke overens. Prøv venligst igen."
 
 msgid "Configure Network"
 msgstr "Indstil Network"
@@ -893,8 +893,8 @@ msgstr "Vælg den printer, du vil slette."
 msgid "Add a slave UPS"
 msgstr "Tilføj en slave UPS"
 
-msgid "The UPS driver cannot be blank."
-msgstr "UPS -driveren kan ikke være tom."
+msgid "The UPS server cannot be blank."
+msgstr "UPS -serveren kan ikke være tom."
 
 msgid "The UPS has been added."
 msgstr "UPS er blevet tilføjet."
@@ -1085,45 +1085,6 @@ msgstr "Vis aktier"
 msgid "Show open files"
 msgstr "Vis åbne filer"
 
-msgid "Add Additional Network Share"
-msgstr "Tilføj yderligere Network Share"
-
-msgid "You have not entered a folder name."
-msgstr "Du har ikke indtastet et mappenavn."
-
-msgid "You have not entered a group."
-msgstr "Du har ikke indtastet en gruppe."
-
-msgid "You have not chosen any group permissions."
-msgstr "Du har ikke valgt nogen gruppetilladelser."
-
-msgid "You have not chosen any permissions for other users."
-msgstr "Du har ikke valgt nogen tilladelser for andre brugere."
-
-msgid "You have not chosen a server name."
-msgstr "Du har ikke valgt et servernavn."
-
-msgid "You have not chosen a server type."
-msgstr "Du har ikke valgt en server type."
-
-msgid "You have not chosen a server master."
-msgstr "Du har ikke valgt en server mester."
-
-msgid "The folder you have chosen already exists in /home."
-msgstr "Mappen du har valgt allerede findes i / home."
-
-msgid "This share is already declared in the samba configuration file."
-msgstr "Denne andel er allerede erklæret i samba konfigurationsfil."
-
-msgid "Server"
-msgstr "Server"
-
-msgid "Share"
-msgstr "andel"
-
-msgid "This share has been added."
-msgstr "Denne andel er blevet tilføjet."
-
 msgid "Manage Print Queues"
 msgstr "Administrer udskriftskøer"
 
@@ -1159,6 +1120,60 @@ msgstr "Muligheden besked størrelse må ikke være tom."
 
 msgid "The mailbox size option must not be blank."
 msgstr "Muligheden postkassestørrelse skal udfyldes."
+
+msgid "Gluster Volume Control"
+msgstr "Gluster Volume Control"
+
+msgid "Create Gluster Volume"
+msgstr "Opret Gluster Volume"
+
+msgid "View Gluster Volumes"
+msgstr "Se Gluster Volumes"
+
+msgid "Create Volume"
+msgstr "Opret Volume"
+
+msgid "Creating Volume"
+msgstr "Oprettelse Volume"
+
+msgid "Add Folder"
+msgstr "Tilføj mappe"
+
+msgid "Ading Folder"
+msgstr "ading Folder"
+
+msgid "Assign Network Share"
+msgstr "Tildel Network Share"
+
+msgid "Remove Folder"
+msgstr "Fjern mappe"
+
+msgid "You have not entered a correct action."
+msgstr "Du har ikke indtastet en korrekt handling."
+
+msgid "You have not entered a volume name."
+msgstr "Du har ikke indtastet et volumen navn."
+
+msgid "You have not chosen any servers."
+msgstr "Du har ikke valgt nogen servere."
+
+msgid "You have to choose at least two servers to create a distributed volume."
+msgstr "Du skal vælge mindst to servere til at oprette en distribueret volumen."
+
+msgid "This volume has already been created."
+msgstr "Dette volumen er allerede oprettet."
+
+msgid "You have not chosen a folder path."
+msgstr "Du har ikke valgt en mappe sti."
+
+msgid "Gluster Controls"
+msgstr "Gluster Controls"
+
+msgid "Home Folders"
+msgstr "Hjem mapper"
+
+msgid "Gluster Volumes"
+msgstr "Gluster Mængder"
 
 msgid "ZFS Status"
 msgstr "ZFS status"
@@ -1337,11 +1352,23 @@ msgstr "Linux Client softwarepakker"
 msgid "Blank version"
 msgstr "Blank udgave"
 
-msgid "The software shown below will either be installed or removed by your linux client computers on boot."
-msgstr "Den software vist nedenfor vil enten blive installeret eller fjernet af dine Linux klientcomputere på boot."
+msgid "Linux Client Software Controls"
+msgstr "Linux Client Software Controls"
+
+msgid "Software Controls"
+msgstr "Software Controls"
+
+msgid "The software shown below will be installed by your linux client computers on boot."
+msgstr "Den software vist nedenfor vil blive installeret af dine Linux klientcomputere på boot."
 
 msgid "Add software package"
 msgstr "Tilføj softwarepakke"
+
+msgid "Location"
+msgstr "Beliggenhed"
+
+msgid "All locations"
+msgstr "Alle steder"
 
 msgid "Software Package"
 msgstr "softwarepakke"
@@ -1352,14 +1379,8 @@ msgstr "Installer"
 msgid "Remove"
 msgstr "fjerne"
 
-msgid "Install List"
-msgstr "Installer List"
-
 msgid "Delete"
 msgstr "Slet"
-
-msgid "Remove list"
-msgstr "Fjern liste"
 
 msgid "Computer Logs"
 msgstr "Computer Logs"
@@ -1433,9 +1454,6 @@ msgstr "Request Resumé"
 msgid "Name"
 msgstr "navn"
 
-msgid "Location"
-msgstr "Beliggenhed"
-
 msgid "Category"
 msgstr "Kategori"
 
@@ -1471,6 +1489,9 @@ msgstr "Feedback"
 
 msgid "Linux Client Background"
 msgstr "Linux klient Baggrund"
+
+msgid "The UPS driver cannot be blank."
+msgstr "UPS -driveren kan ikke være tom."
 
 msgid "The UPS port cannot be blank."
 msgstr "UPS -porten kan ikke være tom."
@@ -2489,9 +2510,6 @@ msgstr "Vis Disk Usage Logs"
 msgid "The logview cannot be blank."
 msgstr "Den LogView kan ikke være tom."
 
-msgid "You have not chosen any servers."
-msgstr "Du har ikke valgt nogen servere."
-
 msgid "The disk usage logs show the overall usage for each partition on your server."
 msgstr "De diskforbrug logs viser den generelle brug for hver partition på din server."
 
@@ -2603,44 +2621,20 @@ msgstr "Generer de italc lister fra aktivet register"
 msgid "This will generate Italc files from the asset register."
 msgstr "Dette vil generere Italc filer fra aktivet registret."
 
-msgid "Linux Client Software Controls"
-msgstr "Linux Client Software Controls"
-
 msgid "The linux version must not be blank."
 msgstr "Linux-versionen skal udfyldes."
 
-msgid "Choose the linux client version that you want to set the software settings for."
-msgstr "Vælg linux klient version, som du vil indstille softwareindstillingerne for."
+msgid "Software Packages"
+msgstr "Software pakker"
 
-msgid "Auto"
-msgstr "Auto"
+msgid "Choose the locations that you want to enable updates and software installs for."
+msgstr "Vælg de steder, du ønsker at aktivere opdateringer og software installeres for."
 
-msgid "Set this to auto to hide the software control dialog from appearing when setting up the clients."
-msgstr "Sæt denne til Auto for at skjule software dialogen kontrol vises ved oprettelsen af ​​klienter."
+msgid "Enable software install"
+msgstr "Aktiver installation af software"
 
-msgid "Proprietary graphics"
-msgstr "Farmaceutiske grafik"
-
-msgid "This will tell the linux clients to install the relevant proprietary graphics driver for the client."
-msgstr "Dette vil fortælle de Linux-klienter til at installere den relevante proprietære grafikdriver for klienten."
-
-msgid "Restricted extras"
-msgstr "begrænsede ekstramateriale"
-
-msgid "This will install software that in a few countries licenses may be required."
-msgstr "Dette vil installere software, som i nogle få lande kan være påkrævet licenser."
-
-msgid "Firmware"
-msgstr "Firmware"
-
-msgid "This will install proprietary firmware."
-msgstr "Dette vil installere proprietære firmware."
-
-msgid "Enable Software install"
-msgstr "Aktiver Software installation"
-
-msgid "This will make the Linux clients install and remove any software in the software install and remove lists on boot up."
-msgstr "Dette vil gøre Linux-klienter installere og fjerne software i software installere og fjerne lister på boot op."
+msgid "This will make the Linux clients install any software in the software install lists on boot up."
+msgstr "Dette vil gøre Linux-klienter installere software i softwaren installerer lister på boot op."
 
 msgid "Enable updates"
 msgstr "Aktiver opdateringer"
@@ -3398,6 +3392,12 @@ msgstr "mysql Password"
 msgid "Enter in the password for the database."
 msgstr "Indtast adgangskoden til databasen."
 
+msgid "Open Mysql Port"
+msgstr "Åbent Mysql Port"
+
+msgid "This will open up port 3306 for mysql connections from remote devices."
+msgstr "Dette vil åbne port 3306 til MySQL forbindelser fra eksterne enheder."
+
 msgid "Clear Web Management Warning Messages"
 msgstr "Klar Web Management Advarselsbeskeder"
 
@@ -3515,9 +3515,6 @@ msgstr "Det korte navn kan ikke være tom."
 msgid "The secret key cannot be blank."
 msgstr "Den hemmelige nøgle kan ikke være tom."
 
-msgid "The secret keys do not match."
-msgstr "De hemmelige nøgler ikke overens."
-
 msgid "The TCPIP address is incorrect."
 msgstr "Den TCPIP adresse er forkert."
 
@@ -3553,6 +3550,9 @@ msgstr "Du har ikke valgt en web alias for denne server."
 
 msgid "Setup Owncloud"
 msgstr "Opsætning Owncloud"
+
+msgid "Owncloud allows you to access and synchronise your data from multiple devices."
+msgstr "Owncloud giver dig adgang til og synkronisere dine data fra flere enheder."
 
 msgid "This will setup the Owncloud storage system for your users."
 msgstr "Dette vil opsætte Owncloud opbevaringssystem til dine brugere."
@@ -3710,9 +3710,6 @@ msgstr "Indtast i dit valg af mail-domæne uden http: // www. Eksempel myemaildo
 msgid "View Jobs"
 msgstr "Se jobs"
 
-msgid "You have not chosen a share."
-msgstr "Du har ikke valgt en aktie."
-
 msgid "Assign Printers to Locations"
 msgstr "Tildel Printere til steder"
 
@@ -3821,18 +3818,6 @@ msgstr "Admins har fuld kontrol over web management, men kan ikke tilføje eller
 msgid "Technicians can access a limited set of controls for day to day running of the system such as changing passwords."
 msgstr "Teknikere kan få adgang til et begrænset sæt kontroller for den daglige drift af systemet, såsom skiftende passwords."
 
-msgid "View Additional Network Shares"
-msgstr "Se Ekstra netværk aktier"
-
-msgid "Group Permissions"
-msgstr "Gruppe Tilladelser"
-
-msgid "Others Permissions"
-msgstr "andre Tilladelser"
-
-msgid "Full Access"
-msgstr "Fuld adgang"
-
 msgid "Custom Command"
 msgstr "Brugerdefineret Kommando"
 
@@ -3929,11 +3914,11 @@ msgstr "Den primære gruppe kan ikke være tom."
 msgid "No other Karoshi servers have been set up."
 msgstr "Ingen andre Karoshi servere er blevet oprettet."
 
-msgid "No other Karoshi servers have been enabled as file servers."
-msgstr "Ingen andre Karoshi servere er blevet aktiveret som filservere."
+msgid "No other Karoshi servers have been enabled as file servers. You will need to add the file server module to an additional server."
+msgstr "Ingen andre Karoshi servere er blevet aktiveret som filservere. Du bliver nødt til at tilføje filserveren modulet til en ekstra server."
 
-msgid "IMPORTANT - Please ensure that users are not logged to ensure no data loss."
-msgstr "VIGTIGT - Sørg for, at brugerne ikke er logget at sikre, at ingen tab af data."
+msgid "IMPORTANT - Please ensure that users are not logged to ensure that data is not lost."
+msgstr "VIGTIGT - Sørg for, at brugerne ikke er logget for at sikre, at data ikke går tabt."
 
 msgid "Current Server"
 msgstr "nuværende server"
@@ -3947,7 +3932,7 @@ msgstr "Dette vil kopiere alle eksisterende bruger hjemområder til den nye serv
 msgid "New Server"
 msgstr "ny server"
 
-msgid "Choose server"
+msgid "Select Server"
 msgstr "Vælg server"
 
 msgid "Web Management Information"
@@ -4060,9 +4045,6 @@ msgstr "Vælg standard prioritet, du ønsker."
 
 msgid "Banned E-mail Domains"
 msgstr "Banned E- mail- domæner"
-
-msgid "Ban E-Mail Domain"
-msgstr "Ban E -Mail Domain"
 
 msgid "Ban Domain"
 msgstr "Ban Domain"
@@ -4295,6 +4277,9 @@ msgstr "Vælg den webserver, du ønsker at overføre filerne til."
 msgid "There are no web servers to upload files to."
 msgstr "Der er ingen webservere til at uploade filer til."
 
+msgid "Choose server"
+msgstr "Vælg server"
+
 msgid "Setup Joomla Website"
 msgstr "Opsætning Joomla Website"
 
@@ -4348,6 +4333,9 @@ msgstr "Du har ikke indtastet de korrekte minutter."
 
 msgid "You have not entered the correct seconds."
 msgstr "Du har ikke indtastet de korrekte sekunder."
+
+msgid "Share"
+msgstr "andel"
 
 msgid "Proxy settings have been removed."
 msgstr "Proxy indstillinger er blevet fjernet."
@@ -4511,8 +4499,8 @@ msgstr "Vælg en UPS -enhed på listen."
 msgid "Choose auto for UPS devices connected via usb."
 msgstr "Vælg auto for UPS-enheder er tilsluttet via USB."
 
-msgid "Add ups"
-msgstr "Tilføj ups"
+msgid "Add UPS"
+msgstr "Tilføj UPS"
 
 msgid "Allow Roaming Profile"
 msgstr "Tillad roaming profil"
@@ -4552,6 +4540,9 @@ msgstr "Web Management er blevet ændret til"
 
 msgid "Choose client version"
 msgstr "Vælg klient -version"
+
+msgid "Choose the linux client version that you want to set the software settings for."
+msgstr "Vælg linux klient version, som du vil indstille softwareindstillingerne for."
 
 msgid "Username or E-mail address"
 msgstr "Brugernavn eller e -mail-adresse"
@@ -4706,6 +4697,9 @@ msgstr "Windows Start-menuen - Vælg"
 msgid "The selected start menu has been copied to all of the chosen groups."
 msgstr "Den valgte startmenuen er blevet kopieret til alle de valgte grupper."
 
+msgid "The software shown below will either be installed or removed by your linux client computers on boot."
+msgstr "Den software vist nedenfor vil enten blive installeret eller fjernet af dine Linux klientcomputere på boot."
+
 msgid "Generate Internet Logs"
 msgstr "Generer Internet Logs"
 
@@ -4747,30 +4741,6 @@ msgstr "Opsætning Federation Kontrol"
 
 msgid "Warning - this will delete all existing users from this server and import all of the users from your main server."
 msgstr "Advarsel - dette vil slette alle eksisterende brugere fra denne server og importere alle brugere fra din primære server."
-
-msgid "This show as information for your clients when they look at the network share."
-msgstr "Dette show som information til dine kunder, når de ser på netværksshare."
-
-msgid "Folder Name"
-msgstr "Folder Name"
-
-msgid "This will create a folder in /home with the name that you specify."
-msgstr "Dette vil oprette en mappe i / home med det navn, du angiver."
-
-msgid "Enter in the name of the group that you want to allow access to the folder."
-msgstr "Indtast navnet på den gruppe, du vil give adgang til mappen."
-
-msgid "Choose the permissions that you want to set for this group for the share."
-msgstr "Vælg de tilladelser, som du ønsker at sætte for denne gruppe for aktien."
-
-msgid "No access"
-msgstr "ingen adgang"
-
-msgid "Choose the permissions that you want to allow for anyone else not in the group."
-msgstr "Vælg de tilladelser, som du ønsker at give mulighed for nogen anden ikke i gruppen."
-
-msgid "Add share"
-msgstr "Tilføj aktie"
 
 msgid "Disk drives"
 msgstr "diskdrev"
@@ -4826,14 +4796,14 @@ msgstr "komprimeret mappe"
 msgid "You need to upload a zip or tar.gz file of your chosen application data folders."
 msgstr "Du er nødt til at uploade en zip eller tar.gz fil af det valgte program data mapper."
 
-msgid "Blank list"
-msgstr "Blank liste"
-
 msgid "Blank action"
 msgstr "Blank handling"
 
 msgid "You have not entered in a software package."
 msgstr "Du har ikke indtastet i en softwarepakke."
+
+msgid "You have not entered in a location."
+msgstr "Du har ikke indtastet på et sted."
 
 msgid "You must choose a website to view the logs for."
 msgstr "Du skal vælge en hjemmeside til at få vist logfiler for."
@@ -5135,11 +5105,14 @@ msgstr "Vis aktiv"
 msgid "View internet logs"
 msgstr "Vis internet logs"
 
-msgid "Home Folders"
-msgstr "Hjem mapper"
+msgid "Network Shares"
+msgstr "netværk aktier"
 
 msgid "This displays the server that hosts the home folders for each group."
 msgstr "Dette viser den server, der er vært for hjemmet mapper for hver gruppe."
+
+msgid "Server"
+msgstr "Server"
 
 msgid "Change"
 msgstr "Ændring"
@@ -5236,9 +5209,6 @@ msgstr "Anmod Nye brugere"
 
 msgid "File Manager"
 msgstr "File Manager"
-
-msgid "You have not entered a correct action."
-msgstr "Du har ikke indtastet en korrekt handling."
 
 msgid "The owner cannot be blank."
 msgstr "Ejeren kan ikke være tom."
@@ -5639,6 +5609,24 @@ msgstr "Dataene er blevet kopieret til alle konti i den valgte gruppe."
 msgid "There was a problem copying the files to the group."
 msgstr "Der opstod et problem at kopiere filerne til gruppen."
 
+msgid "You have not entered an email address."
+msgstr "Du har ikke indtastet en e-mail -adresse."
+
+msgid "View Whitelists"
+msgstr "Vis Whitelister"
+
+msgid "Adding a whitelist will allow emails to be recieved from the alias address without them being checked for spam."
+msgstr "Tilføjelse af en whitelist vil tillade e-mails, der skal modtaget fra alias adressen uden at de bliver kontrolleret for spam."
+
+msgid "Add a Whitelist"
+msgstr "Tilføj en whiteliste"
+
+msgid "These are the email whitelists addresses that are currently active for your email system."
+msgstr "Det er de e-mail- whitelister adresser, der i øjeblikket aktive i din e-mail -system."
+
+msgid "E-Mail Whitelists"
+msgstr "E-mail- Whitelister"
+
 msgid "There is no PPD file available."
 msgstr "Der er ingen PPD-fil til rådighed."
 
@@ -5776,6 +5764,15 @@ msgstr "Nøglen, du har indtastet, er for lang."
 
 msgid "This secret key has been added. Please ensure that it is also added to your wireless access points."
 msgstr "Denne hemmelige nøgle er blevet tilføjet. Sørg for, at det også er føjet til dine trådløse adgangspunkter."
+
+msgid "Package Cache Control"
+msgstr "Package Cache Kontrol"
+
+msgid "The site must not be blank."
+msgstr "Webstedet må ikke være tom."
+
+msgid "This allows sites to be accessed via squid deb proxy for updating packages on client computers."
+msgstr "Dette gør det muligt lokaliteter, der skal tilgås via blæksprutte deb proxy for opdatering af pakker på klientcomputere."
 
 msgid "Enter in the username that you want to apply these settings to."
 msgstr "Indtast det brugernavn, du vil anvende disse indstillinger til."
@@ -6001,6 +5998,12 @@ msgstr "Der er ingen afsluttede anmodninger om at se."
 
 msgid "You have not chosen a backup server."
 msgstr "Du har ikke valgt en backup -server."
+
+msgid "The version has not been set."
+msgstr "Versionen er ikke indstillet."
+
+msgid "The location has not been set."
+msgstr "Placeringen er ikke indstillet."
 
 msgid "An incorrect password has been added for the root samba account on the PDC or it is not responding"
 msgstr "En forkert adgangskode er blevet tilføjet til root samba konto på PDC eller ikke reagerer"
@@ -6425,6 +6428,12 @@ msgstr "Hovedmenu"
 msgid "Documentation"
 msgstr "Dokumentation"
 
+msgid "Forum"
+msgstr "Forum"
+
+msgid "IRC"
+msgstr "IRC"
+
 msgid "Helpdesk"
 msgstr "Helpdesk"
 
@@ -6485,6 +6494,12 @@ msgstr "Bruger Printerbrug"
 msgid "Add User Limit"
 msgstr "Tilføj bruger Limit"
 
+msgid "Aliases"
+msgstr "aliaser"
+
+msgid "Whitelists"
+msgstr "Whitelister"
+
 msgid "Banned E-Mail domains"
 msgstr "Banned E- mail-domæner"
 
@@ -6514,6 +6529,39 @@ msgstr "Dette vil opsætte Xibo Digital Signage system til dit websted."
 
 msgid "Xibo Domain"
 msgstr "Xibo Domain"
+
+msgid "You have not entered a folder name."
+msgstr "Du har ikke indtastet et mappenavn."
+
+msgid "You have not entered a group."
+msgstr "Du har ikke indtastet en gruppe."
+
+msgid "You have not chosen any group permissions."
+msgstr "Du har ikke valgt nogen gruppetilladelser."
+
+msgid "You have not chosen a server name."
+msgstr "Du har ikke valgt et servernavn."
+
+msgid "You have not chosen a server type."
+msgstr "Du har ikke valgt en server type."
+
+msgid "You have not chosen a server master."
+msgstr "Du har ikke valgt en server mester."
+
+msgid "View Network Shares"
+msgstr "View Network Aktier"
+
+msgid "Add Network Share"
+msgstr "Tilføj Network Share"
+
+msgid "Delete Network Share"
+msgstr "Slet Network Share"
+
+msgid "A folder with this name already exists."
+msgstr "En mappe med dette navn findes allerede."
+
+msgid "This share already exits in samba."
+msgstr "Denne andel allerede kommer ud i samba."
 
 msgid "No web sites have been added to the reverse proxy list."
 msgstr "Ingen websteder er blevet tilføjet til den reverse proxy liste."
@@ -6578,6 +6626,9 @@ msgstr "Dette vil setup op CAS single sign on opløsning."
 msgid "WARNING - An internet connect is required to install this module."
 msgstr "ADVARSEL - En internet Connect er påkrævet for at installere dette modul."
 
+msgid "Ban E-Mail Domain"
+msgstr "Ban E -Mail Domain"
+
 msgid "Banned Domains"
 msgstr "Forbudte domæner"
 
@@ -6610,9 +6661,6 @@ msgstr "Du har ikke indtastet i en anmodning eller et problem."
 
 msgid "You have not chosen a department."
 msgstr "Du har ikke valgt en afdeling."
-
-msgid "You have not entered in a location."
-msgstr "Du har ikke indtastet på et sted."
 
 msgid "The search criteria cannot be blank."
 msgstr "Søgekriterierne kan ikke være tom."
@@ -6665,12 +6713,6 @@ msgstr "Log af"
 msgid "Help"
 msgstr "Hjælp"
 
-msgid "Forum"
-msgstr "Forum"
-
-msgid "IRC"
-msgstr "IRC"
-
 msgid "View Completed Requests"
 msgstr "Se Afsluttet Anmodninger"
 
@@ -6704,6 +6746,12 @@ msgstr "Opret ekstra konti"
 msgid "Servers"
 msgstr "Servere"
 
+msgid "ZFS Raid"
+msgstr "ZFS Raid"
+
+msgid "Software Raid"
+msgstr "Software Raid"
+
 msgid "Disk Quotas"
 msgstr "Disk Kvoter"
 
@@ -6716,17 +6764,8 @@ msgstr "Se aktiveret partitioner"
 msgid "Apply Quota settings"
 msgstr "Anvend Kvote indstillinger"
 
-msgid "ZFS Raid"
-msgstr "ZFS Raid"
-
-msgid "Software Raid"
-msgstr "Software Raid"
-
 msgid "Find Student Files"
 msgstr "Find Student filer"
-
-msgid "Add Network Share"
-msgstr "Tilføj Network Share"
 
 msgid "Federated File Sync"
 msgstr "Federated File Sync"
@@ -6833,8 +6872,11 @@ msgstr "Printer Accounting Logs"
 msgid "Use E-Mail relay"
 msgstr "Brug E-mail- relæ"
 
-msgid "E-Mail Access Controls"
-msgstr "E- mail-adgang Controls"
+msgid "Access Controls"
+msgstr "Access Controls"
+
+msgid "Limits"
+msgstr "grænser"
 
 msgid "Search E-Mail Logs"
 msgstr "Søg E-mail- logfiler"
@@ -6859,6 +6901,9 @@ msgstr "Internet Logs"
 
 msgid "Update Time"
 msgstr "Opdateringstid"
+
+msgid "Gluster Volume"
+msgstr "Gluster Volume"
 
 msgid "Staff"
 msgstr "Personale"
@@ -7094,6 +7139,75 @@ msgstr "Ingen fejl fundet i dette arkiv."
 msgid "Copying to"
 msgstr "Kopiering til"
 
+msgid "This show as information for your clients when they look at the network share."
+msgstr "Dette show som information til dine kunder, når de ser på netværksshare."
+
+msgid "Folder Name"
+msgstr "Folder Name"
+
+msgid "This will create a folder in /home with the name that you specify."
+msgstr "Dette vil oprette en mappe i / home med det navn, du angiver."
+
+msgid "Enter in the name of the group that you want to allow access to the folder."
+msgstr "Indtast navnet på den gruppe, du vil give adgang til mappen."
+
+msgid "Full Access"
+msgstr "Fuld adgang"
+
+msgid "Choose the permissions that you want to set for this group for the share."
+msgstr "Vælg de tilladelser, som du ønsker at sætte for denne gruppe for aktien."
+
+msgid "Map drive"
+msgstr "Kort køretur"
+
+msgid "Do not map drive"
+msgstr "Må ikke kort drev"
+
+msgid "All Users"
+msgstr "Alle brugere"
+
+msgid "No Access"
+msgstr "ingen adgang"
+
+msgid "Add share"
+msgstr "Tilføj aktie"
+
+msgid "Network Share"
+msgstr "Netværk Share"
+
+msgid "Path"
+msgstr "Sti"
+
+msgid "This will delete the share definition but will not delete the folder."
+msgstr "Dette vil slette definition aktien, men vil ikke slette mappen."
+
+msgid "Are you sure that you want to delete this share?"
+msgstr "Er du sikker på at du vil slette denne aktie?"
+
+msgid "Delete Share"
+msgstr "Slet Del"
+
+msgid "Cancel"
+msgstr "afbestille"
+
+msgid "Server Path"
+msgstr "Server Path"
+
+msgid "Groups"
+msgstr "Grupper"
+
+msgid "Permissions"
+msgstr "Tilladelser"
+
+msgid "Map Drive"
+msgstr "Kort Drive"
+
+msgid "Read Only"
+msgstr "Skrivebeskyttet"
+
+msgid "Yes"
+msgstr "Ja"
+
 msgid "Boot status"
 msgstr "Boot status"
 
@@ -7120,6 +7234,54 @@ msgstr "Rediger bruger Limit"
 
 msgid "Edit Group Limit"
 msgstr "Rediger gruppe Limit"
+
+msgid "Volume"
+msgstr "Volumen"
+
+msgid "Folder"
+msgstr "Folder"
+
+msgid "This will delete all of the data in the folder."
+msgstr "Dette vil slette alle data i mappen."
+
+msgid "Are you sure that you want to delete this folder?"
+msgstr "Er du sikker på at du vil slette denne mappe?"
+
+msgid "No folders have been added to this volume."
+msgstr "Ingen mapper er blevet tilføjet til denne mængde."
+
+msgid "Copying data to"
+msgstr "Kopiering af data til"
+
+msgid "IMPORTANT - Please ensure that users are not logged in to ensure that data is not lost."
+msgstr "VIGTIGT - Sørg for, at brugerne ikke er logget ind for at sikre, at data ikke går tabt."
+
+msgid "Folder Path"
+msgstr "Folder Path"
+
+msgid "Enter in the full path that you want to add to the gluster volume."
+msgstr "Indtast i den fulde sti, som du vil føje til gluster volumen."
+
+msgid "Server data source"
+msgstr "Server datakilde"
+
+msgid "Volume Name"
+msgstr "Volume Name"
+
+msgid "Folders"
+msgstr "mapper"
+
+msgid "No folders have been assigned."
+msgstr "Ingen mapper er blevet tildelt."
+
+msgid "Add folder"
+msgstr "Tilføj mappe"
+
+msgid "Remove folder"
+msgstr "Fjern mappe"
+
+msgid "Assign Home Folders"
+msgstr "Tildel Hjem mapper"
 
 msgid "Search term"
 msgstr "Søg sigt"
@@ -7313,6 +7475,12 @@ msgstr "netværksindstillinger for denne server viser, at det bør være i den s
 msgid "SSH connection failure"
 msgstr "Svigt SSH -forbindelse"
 
+msgid "This server has been re-installed"
+msgstr "Denne server er blevet re- installeret"
+
+msgid "You will need to re-install all of the modules for this server."
+msgstr "Du skal geninstallere alle de moduler til denne server."
+
 msgid "No Role"
 msgstr "ingen rolle"
 
@@ -7373,6 +7541,15 @@ msgstr "Fjern reservedele"
 msgid "This printer does not support accounting."
 msgstr "Denne printer understøtter ikke regnskab."
 
+msgid "Address"
+msgstr "adresse"
+
+msgid "E-Mail Address or domain"
+msgstr "E - mail-adresse eller domæne"
+
+msgid "Enter in the E-Mail address or domain that you want to add to the whitelist."
+msgstr "Indtast i e-mail- adresse eller et domæne, som du vil føje til whitelisten."
+
 msgid "This server does not have the correct authentication set up on it."
 msgstr "Denne server har ikke den rigtige godkendelse oprettet på det."
 
@@ -7412,17 +7589,23 @@ msgstr "Ændring af adgangskoden til denne konto."
 msgid "Making sure that apache and mysql are running"
 msgstr "At sikre, at apache og mysql kører"
 
-msgid "Setting apache and mysql to start on boot."
-msgstr "Indstilling apache og mysql til at starte på boot."
+msgid "Setting apache and mysql to start on boot"
+msgstr "Indstilling apache og mysql til at starte på boot"
 
-msgid "Checking shorewall ports."
-msgstr "Kontrol shorewall havne."
+msgid "Checking shorewall ports"
+msgstr "Kontrol shorewall porte"
 
-msgid "Opening ports 80 and 443."
-msgstr "Åbning port 80 og 443."
+msgid "Opening ports 80 and 443"
+msgstr "Åbning port 80 og 443"
 
-msgid "Opening ports 20 and 21."
-msgstr "Åbning porte 20 og 21."
+msgid "Opening ports 20 and 21"
+msgstr "Åbning porte 20 og 21"
+
+msgid "Opening port 3306"
+msgstr "Åbning port 3306"
+
+msgid "Closing port 3306"
+msgstr "Lukning port 3306"
 
 msgid "Creating Database"
 msgstr "Oprettelse Database"
@@ -7567,6 +7750,12 @@ msgstr "FTP-server"
 
 msgid "Distributed FS Server"
 msgstr "Distribueret FS Server"
+
+msgid "Dnsmasq service"
+msgstr "Dnsmasq tjeneste"
+
+msgid "Add in a site that you want to allow for the clients to connect to."
+msgstr "Tilføj et websted, som du vil give mulighed for kunderne at oprette forbindelse til."
 
 msgid "Realm"
 msgstr "Realm"
@@ -7952,9 +8141,6 @@ msgstr "Flyt her?"
 msgid "Copy here?"
 msgstr "Kopier her?"
 
-msgid "Cancel"
-msgstr "afbestille"
-
 msgid "This item is protected and cannot be moved or copied."
 msgstr "Dette element er beskyttet og kan ikke flyttes eller kopieres."
 
@@ -7976,9 +8162,6 @@ msgstr "Angiv tilladelser"
 msgid "Basic Information"
 msgstr "Grundlæggende oplysninger"
 
-msgid "Path"
-msgstr "Sti"
-
 msgid "Last accessed"
 msgstr "Sidst adgang"
 
@@ -7990,9 +8173,6 @@ msgstr "Ejerskab"
 
 msgid "User"
 msgstr "Bruger"
-
-msgid "Permissions"
-msgstr "Tilladelser"
 
 msgid "Exec"
 msgstr "Exec"

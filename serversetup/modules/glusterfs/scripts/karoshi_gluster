@@ -226,7 +226,7 @@ else
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_status
 	if [ $? != 0 ]
 	then
-		echo "<li> '$SERVER' - '$"starting glusterfs"'</li><br>"
+		echo "<li>'$SERVER' - '$"starting glusterfs"'</li><br>"
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_start
 	fi
 '

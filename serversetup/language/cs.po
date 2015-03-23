@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2014-12-30 09:37+0000\n"
+"POT-Creation-Date: 2015-03-23 18:42+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -209,14 +209,20 @@ msgstr "dokončený"
 msgid "Configure"
 msgstr "Konfigurace"
 
-msgid "starting glusterfs"
-msgstr "výchozí GlusterFS"
-
-msgid "a volume with this name already exists"
-msgstr "svazek s tímto názvem již existuje"
+msgid "mounting"
+msgstr "montážní"
 
 msgid "Opening ports for glusterfs"
 msgstr "Otevření portů pro GlusterFS"
+
+msgid "starting glusterfs"
+msgstr "výchozí GlusterFS"
+
+msgid "Detaching"
+msgstr "Odpojení"
+
+msgid "Gluster peer probe failure"
+msgstr "Gluster selhání peer sonda"
 
 msgid "Creating GlusterFS volume"
 msgstr "Vytváření objem GlusterFS"
@@ -230,29 +236,20 @@ msgstr "Spuštění objem GlusterFS"
 msgid "There was a problem starting the volume"
 msgstr "Tam bylproblém se spuštěním hlasitosti"
 
-msgid "Backing up"
-msgstr "zálohování"
-
-msgid "mounting"
-msgstr "montážní"
-
-msgid "Copying in existing data"
-msgstr "Kopírování stávajících údajů"
-
 msgid "Adding server to gluster volume"
 msgstr "Přidání serveru do objemu gluster"
 
-msgid "probing server"
-msgstr "sondování serveru"
+msgid "Restoring"
+msgstr "Obnovení"
 
-msgid "completed"
-msgstr "dokončený"
+msgid "stopping glusterfs"
+msgstr "zastavení GlusterFS"
 
-msgid "getting brick count"
-msgstr "dostat cihlový počet"
+msgid "Starting glusterfs"
+msgstr "Spuštění GlusterFS"
 
-msgid "adding"
-msgstr "přidání"
+msgid "No volume information"
+msgstr "Žádné informace objem"
 
 msgid "Creating the joomla database in mysql"
 msgstr "Vytvoření databáze joomla v MySQL"
@@ -407,14 +404,14 @@ msgstr "Spuštění Sogo"
 msgid "Starting Postfix"
 msgstr "Spuštění Postfixu"
 
-msgid "Starting Fail2ban"
-msgstr "Spuštění fail2ban"
-
 msgid "Starting ClamD"
 msgstr "Spuštění ClamD"
 
 msgid "Starting MailScanner"
 msgstr "Spuštění MailScanner"
+
+msgid "Starting Fail2ban"
+msgstr "Spuštění fail2ban"
 
 msgid "SOGo has been installed and can be accessed from"
 msgstr "Sogo byl nainstalován a je přístupný z"
@@ -511,6 +508,9 @@ msgstr "Nastavení Karoshi Desktop"
 
 msgid "Please enter your choice for the karoshi and system password."
 msgstr "Prosím, zadejte svou volbu pro Karoshi a systémové heslo."
+
+msgid "The passwords do not match. Please try again."
+msgstr "Hesla se neshodují. Zkuste to prosím znovu."
 
 msgid "Configure Network"
 msgstr "Konfigurace sítě"
@@ -893,8 +893,8 @@ msgstr "Prosím, vyberte tiskárnu, kterou chcete odstranit."
 msgid "Add a slave UPS"
 msgstr "Přidat otrok UPS"
 
-msgid "The UPS driver cannot be blank."
-msgstr "Řidič UPS nemůže být prázdný."
+msgid "The UPS server cannot be blank."
+msgstr "Server UPS nemůže být prázdný."
 
 msgid "The UPS has been added."
 msgstr "UPS byla přidána."
@@ -1085,45 +1085,6 @@ msgstr "zobrazit akcie"
 msgid "Show open files"
 msgstr "Ukázat otevřených souborů"
 
-msgid "Add Additional Network Share"
-msgstr "Přidat další síťové Sdílet"
-
-msgid "You have not entered a folder name."
-msgstr "Nezadali jste název složky."
-
-msgid "You have not entered a group."
-msgstr "Nezadali jste skupinu."
-
-msgid "You have not chosen any group permissions."
-msgstr "Nemáte vybrány žádné oprávnění skupiny."
-
-msgid "You have not chosen any permissions for other users."
-msgstr "Nemáte vybrány žádné oprávnění pro ostatní uživatele."
-
-msgid "You have not chosen a server name."
-msgstr "Nevybrali jste jméno serveru."
-
-msgid "You have not chosen a server type."
-msgstr "Nevybrali jste typ serveru."
-
-msgid "You have not chosen a server master."
-msgstr "Jste si nevybrali master serveru."
-
-msgid "The folder you have chosen already exists in /home."
-msgstr "Složka jste zvolili již existuje v / home."
-
-msgid "This share is already declared in the samba configuration file."
-msgstr "Tento podíl se již deklarována v konfiguračním souboru samba."
-
-msgid "Server"
-msgstr "Server"
-
-msgid "Share"
-msgstr "podíl"
-
-msgid "This share has been added."
-msgstr "Tento podíl byl přidán."
-
 msgid "Manage Print Queues"
 msgstr "Správa tiskových front"
 
@@ -1159,6 +1120,60 @@ msgstr "Volba Velikost zprávy nesmí být prázdný."
 
 msgid "The mailbox size option must not be blank."
 msgstr "Volba velikosti poštovní schránky nesmí být prázdný."
+
+msgid "Gluster Volume Control"
+msgstr "Gluster Ovládání hlasitosti"
+
+msgid "Create Gluster Volume"
+msgstr "Vytvořit Gluster svazek"
+
+msgid "View Gluster Volumes"
+msgstr "Zobrazit Gluster svazků"
+
+msgid "Create Volume"
+msgstr "Vytvořit svazek"
+
+msgid "Creating Volume"
+msgstr "Vytváření Volume"
+
+msgid "Add Folder"
+msgstr "Přidat složku"
+
+msgid "Ading Folder"
+msgstr "Ading Folder"
+
+msgid "Assign Network Share"
+msgstr "Přiřazení síťového sdílení"
+
+msgid "Remove Folder"
+msgstr "Odstranit složku"
+
+msgid "You have not entered a correct action."
+msgstr "Nezadali jste správnou akci."
+
+msgid "You have not entered a volume name."
+msgstr "Nezadali jste název svazku."
+
+msgid "You have not chosen any servers."
+msgstr "Nemáte vybrány žádné servery."
+
+msgid "You have to choose at least two servers to create a distributed volume."
+msgstr "Musíte vybrat alespoň dva servery pro vytvoření distribuovaného množství."
+
+msgid "This volume has already been created."
+msgstr "Tento objem již byl vytvořen."
+
+msgid "You have not chosen a folder path."
+msgstr "Nevybrali jste cestu ke složce."
+
+msgid "Gluster Controls"
+msgstr "Gluster Controls"
+
+msgid "Home Folders"
+msgstr "Home složky"
+
+msgid "Gluster Volumes"
+msgstr "Gluster Svazky"
 
 msgid "ZFS Status"
 msgstr "ZFS Status"
@@ -1337,11 +1352,23 @@ msgstr "Klient softwarové balíčky pro Linux"
 msgid "Blank version"
 msgstr "Blank version"
 
-msgid "The software shown below will either be installed or removed by your linux client computers on boot."
-msgstr "Software je uvedeno níže buď nainstalován nebo odstranit klientských počítačích Linux na boty."
+msgid "Linux Client Software Controls"
+msgstr "Linux Client Software Controls"
+
+msgid "Software Controls"
+msgstr "Ovládací prvky Software"
+
+msgid "The software shown below will be installed by your linux client computers on boot."
+msgstr "Software je uvedeno níže budou instalovány v klientských počítačích Linux na boty."
 
 msgid "Add software package"
 msgstr "Přidat softwarový balík"
+
+msgid "Location"
+msgstr "umístění"
+
+msgid "All locations"
+msgstr "Všechny lokality"
 
 msgid "Software Package"
 msgstr "softwarový balík"
@@ -1352,14 +1379,8 @@ msgstr "instalovat"
 msgid "Remove"
 msgstr "odstranit"
 
-msgid "Install List"
-msgstr "Instalace Seznam"
-
 msgid "Delete"
 msgstr "vymazat"
-
-msgid "Remove list"
-msgstr "Odebrat"
 
 msgid "Computer Logs"
 msgstr "Počítačové Záznamy"
@@ -1433,9 +1454,6 @@ msgstr "Žádost o shrnutí"
 msgid "Name"
 msgstr "název"
 
-msgid "Location"
-msgstr "umístění"
-
 msgid "Category"
 msgstr "kategorie"
 
@@ -1471,6 +1489,9 @@ msgstr "zpětná vazba"
 
 msgid "Linux Client Background"
 msgstr "Linux Client Background"
+
+msgid "The UPS driver cannot be blank."
+msgstr "Řidič UPS nemůže být prázdný."
 
 msgid "The UPS port cannot be blank."
 msgstr "Port UPS nemůže být prázdný."
@@ -2489,9 +2510,6 @@ msgstr "Zobrazit využití disku Záznamy"
 msgid "The logview cannot be blank."
 msgstr "LogView nemůže být prázdný."
 
-msgid "You have not chosen any servers."
-msgstr "Nemáte vybrány žádné servery."
-
 msgid "The disk usage logs show the overall usage for each partition on your server."
 msgstr "Protokoly využití disku ukazují na celkové využití pro každý oddíl na vašem serveru."
 
@@ -2603,44 +2621,20 @@ msgstr "Generovat iTALC seznamy z registru majetku"
 msgid "This will generate Italc files from the asset register."
 msgstr "To bude generovat iTALC soubory z registru majetku."
 
-msgid "Linux Client Software Controls"
-msgstr "Linux Client Software Controls"
-
 msgid "The linux version must not be blank."
 msgstr "Verze pro Linux nesmí být prázdný."
 
-msgid "Choose the linux client version that you want to set the software settings for."
-msgstr "Zvolte linux verzi klienta, který chcete nastavit nastavení softwaru pro."
+msgid "Software Packages"
+msgstr "Softwarové balíčky"
 
-msgid "Auto"
-msgstr "auto"
+msgid "Choose the locations that you want to enable updates and software installs for."
+msgstr "Vyberte si místa, která chcete povolit aktualizace a software nainstaluje na."
 
-msgid "Set this to auto to hide the software control dialog from appearing when setting up the clients."
-msgstr "Nastavte na auto skrýt dialogové okno řídící software od zobrazení při nastavování klientů."
-
-msgid "Proprietary graphics"
-msgstr "Vlastní grafika"
-
-msgid "This will tell the linux clients to install the relevant proprietary graphics driver for the client."
-msgstr "To vám řekne, o linuxové klienty k instalaci příslušného proprietární grafický ovladač pro klienta."
-
-msgid "Restricted extras"
-msgstr "Zakázané doplňky"
-
-msgid "This will install software that in a few countries licenses may be required."
-msgstr "To bude instalovat software, který v několika málo zemích, může být zapotřebí licence."
-
-msgid "Firmware"
-msgstr "Firmware"
-
-msgid "This will install proprietary firmware."
-msgstr "To bude instalovat proprietární firmware."
-
-msgid "Enable Software install"
+msgid "Enable software install"
 msgstr "Nainstalovat software"
 
-msgid "This will make the Linux clients install and remove any software in the software install and remove lists on boot up."
-msgstr "To umožní, aby se klienti Linux nainstalovat a odstranit software software nainstalovat a odstranit seznamy na naběhnout."
+msgid "This will make the Linux clients install any software in the software install lists on boot up."
+msgstr "To umožní, aby se klienti Linux instalovat jakýkoli software v software nainstalovat seznamy na naběhnout."
 
 msgid "Enable updates"
 msgstr "Povolit aktualizace"
@@ -3398,6 +3392,12 @@ msgstr "Mysql Password"
 msgid "Enter in the password for the database."
 msgstr "Zadejte heslo pro databázi."
 
+msgid "Open Mysql Port"
+msgstr "Otevřený Mysql Port"
+
+msgid "This will open up port 3306 for mysql connections from remote devices."
+msgstr "Tím se otevře port 3306 pro MySQL spojení ze vzdálených zařízení."
+
 msgid "Clear Web Management Warning Messages"
 msgstr "Clear Web řízení Varovné zprávy"
 
@@ -3515,9 +3515,6 @@ msgstr "Krátký název nemůže být prázdný."
 msgid "The secret key cannot be blank."
 msgstr "Tajný klíč nemůže být prázdný."
 
-msgid "The secret keys do not match."
-msgstr "Tajné klíče neshodují."
-
 msgid "The TCPIP address is incorrect."
 msgstr "TCPIP adresa je nesprávná."
 
@@ -3553,6 +3550,9 @@ msgstr "Jste si nevybrali webové alias pro tento server."
 
 msgid "Setup Owncloud"
 msgstr "Nastavení ownCloud"
+
+msgid "Owncloud allows you to access and synchronise your data from multiple devices."
+msgstr "OwnCloud umožňuje přístup a synchronizaci dat z více zařízení."
 
 msgid "This will setup the Owncloud storage system for your users."
 msgstr "Toto nastavení budeúložný systém ownCloud pro vaše uživatele."
@@ -3710,9 +3710,6 @@ msgstr "Zadejte ve vašem výběru mailové domény bez http: // www. Příklad 
 msgid "View Jobs"
 msgstr "Zobrazit Jobs"
 
-msgid "You have not chosen a share."
-msgstr "Nevybrali jste podíl."
-
 msgid "Assign Printers to Locations"
 msgstr "Přiřazení tiskáren na místa"
 
@@ -3821,18 +3818,6 @@ msgstr "Správci mají plnou kontrolu webového managementu, ale není možné p
 msgid "Technicians can access a limited set of controls for day to day running of the system such as changing passwords."
 msgstr "Technici přístup omezenou sadu ovládacích prvků pro každodenní chod systému, jako je změna hesel."
 
-msgid "View Additional Network Shares"
-msgstr "Prohlédněte si další síťové akcií"
-
-msgid "Group Permissions"
-msgstr "oprávnění skupiny"
-
-msgid "Others Permissions"
-msgstr "Ostatní oprávnění"
-
-msgid "Full Access"
-msgstr "Plný přístup"
-
 msgid "Custom Command"
 msgstr "Custom Command"
 
@@ -3929,11 +3914,11 @@ msgstr "Primární skupina nemůže být prázdný."
 msgid "No other Karoshi servers have been set up."
 msgstr "Žádné další servery Karoshi byly zřízeny."
 
-msgid "No other Karoshi servers have been enabled as file servers."
-msgstr "Žádné další servery Karoshi byly povoleny jako souborové servery."
+msgid "No other Karoshi servers have been enabled as file servers. You will need to add the file server module to an additional server."
+msgstr "Žádné další servery Karoshi byly povoleny jako souborové servery. Budete muset přidat modul souborového serveru na další server."
 
-msgid "IMPORTANT - Please ensure that users are not logged to ensure no data loss."
-msgstr "DŮLEŽITÉ - Ujistěte se, že uživatelé nejsou přihlášeni, aby se zabránilo ztrátě dat."
+msgid "IMPORTANT - Please ensure that users are not logged to ensure that data is not lost."
+msgstr "DŮLEŽITÉ - Ujistěte se, že uživatelé nejsou přihlášeni, aby zajistily, že data nejsou ztracena."
 
 msgid "Current Server"
 msgstr "Aktuální Server"
@@ -3947,8 +3932,8 @@ msgstr "To bude kopírovat všechny existující uživatel domovských oblastí 
 msgid "New Server"
 msgstr "Nový server"
 
-msgid "Choose server"
-msgstr "Zvolte serveru"
+msgid "Select Server"
+msgstr "Select Server"
 
 msgid "Web Management Information"
 msgstr "Web Management Information"
@@ -4060,9 +4045,6 @@ msgstr "Vyberte si výchozí priority, které chcete."
 
 msgid "Banned E-mail Domains"
 msgstr "Banned E - mailových domén"
-
-msgid "Ban E-Mail Domain"
-msgstr "Ban E -Mail Domain"
 
 msgid "Ban Domain"
 msgstr "Ban Domain"
@@ -4295,6 +4277,9 @@ msgstr "Vyberte webový server, který chcete nahrát soubory."
 msgid "There are no web servers to upload files to."
 msgstr "Nejsou žádné webové servery do nahrávání souborů."
 
+msgid "Choose server"
+msgstr "Zvolte serveru"
+
 msgid "Setup Joomla Website"
 msgstr "Nastavení Joomla webové stránky"
 
@@ -4348,6 +4333,9 @@ msgstr "Nezadali jste správné minut."
 
 msgid "You have not entered the correct seconds."
 msgstr "Nezadali jste správné sekund."
+
+msgid "Share"
+msgstr "podíl"
 
 msgid "Proxy settings have been removed."
 msgstr "Nastavení proxy byly odstraněny."
@@ -4511,8 +4499,8 @@ msgstr "Vyberte si zařízení UPS ze seznamu."
 msgid "Choose auto for UPS devices connected via usb."
 msgstr "Vyberte si auto pro zařízení UPS připojené přes USB."
 
-msgid "Add ups"
-msgstr "Přidat ups"
+msgid "Add UPS"
+msgstr "Přidat UPS"
 
 msgid "Allow Roaming Profile"
 msgstr "Povolit roaming profil"
@@ -4552,6 +4540,9 @@ msgstr "Správa webu byl změněn na"
 
 msgid "Choose client version"
 msgstr "Vyberte si verzi klienta"
+
+msgid "Choose the linux client version that you want to set the software settings for."
+msgstr "Zvolte linux verzi klienta, který chcete nastavit nastavení softwaru pro."
 
 msgid "Username or E-mail address"
 msgstr "Uživatelské jméno nebo e -mailová adresa"
@@ -4706,6 +4697,9 @@ msgstr "Start systému Windows menu - Vybrat"
 msgid "The selected start menu has been copied to all of the chosen groups."
 msgstr "Nabídka vybraná Start byl zkopírován do všech vybraných skupin."
 
+msgid "The software shown below will either be installed or removed by your linux client computers on boot."
+msgstr "Software je uvedeno níže buď nainstalován nebo odstranit klientských počítačích Linux na boty."
+
 msgid "Generate Internet Logs"
 msgstr "Vytvořit Internet protokolů"
 
@@ -4747,30 +4741,6 @@ msgstr "Nastavení federace Control"
 
 msgid "Warning - this will delete all existing users from this server and import all of the users from your main server."
 msgstr "Pozor - to bude odstranit všechny stávající uživatele z tohoto serveru a importovat všechny uživatele z hlavního serveru."
-
-msgid "This show as information for your clients when they look at the network share."
-msgstr "Tato přehlídka jako informace pro své klienty, když se podíváte na sdílené síťové."
-
-msgid "Folder Name"
-msgstr "Název složky"
-
-msgid "This will create a folder in /home with the name that you specify."
-msgstr "Tím se vytvoří složku / home s názvem, který určíte."
-
-msgid "Enter in the name of the group that you want to allow access to the folder."
-msgstr "Zadejte název skupiny, kterou chcete povolit přístup k této složce."
-
-msgid "Choose the permissions that you want to set for this group for the share."
-msgstr "Vyberte oprávnění, které chcete nastavit pro tuto skupinu pro sdílení."
-
-msgid "No access"
-msgstr "Bez přístupu"
-
-msgid "Choose the permissions that you want to allow for anyone else not in the group."
-msgstr "Vyberte oprávnění, které chcete povolit pro nikoho jiného není ve skupině."
-
-msgid "Add share"
-msgstr "Přidat podíl"
 
 msgid "Disk drives"
 msgstr "Diskové jednotky"
@@ -4826,14 +4796,14 @@ msgstr "komprimované složky"
 msgid "You need to upload a zip or tar.gz file of your chosen application data folders."
 msgstr "Musíte nahrát zip nebo tar.gz soubor vybrané složky dat aplikací."
 
-msgid "Blank list"
-msgstr "Prázdný seznam"
-
 msgid "Blank action"
 msgstr "Blank akce"
 
 msgid "You have not entered in a software package."
 msgstr "Nezadali jste do softwarového balíku."
+
+msgid "You have not entered in a location."
+msgstr "Nezadali jste na místě."
 
 msgid "You must choose a website to view the logs for."
 msgstr "Musíte si vybrat webové stránky pro zobrazení protokoly."
@@ -5135,11 +5105,14 @@ msgstr "View aktivum"
 msgid "View internet logs"
 msgstr "View internetové protokoly"
 
-msgid "Home Folders"
-msgstr "Home složky"
+msgid "Network Shares"
+msgstr "Síťové Akcie"
 
 msgid "This displays the server that hosts the home folders for each group."
 msgstr "Zobrazí se server, který hostuje domovské adresáře pro každou skupinu."
+
+msgid "Server"
+msgstr "Server"
 
 msgid "Change"
 msgstr "změna"
@@ -5236,9 +5209,6 @@ msgstr "Žádost o nových uživatelů"
 
 msgid "File Manager"
 msgstr "Správce souborů"
-
-msgid "You have not entered a correct action."
-msgstr "Nezadali jste správnou akci."
 
 msgid "The owner cannot be blank."
 msgstr "Majitel nemůže být prázdný."
@@ -5639,6 +5609,24 @@ msgstr "Data byla zkopírována na všechny účty ve vybrané skupině."
 msgid "There was a problem copying the files to the group."
 msgstr "Tam bylproblém kopírování souborů do skupiny."
 
+msgid "You have not entered an email address."
+msgstr "Nezadali jste e-mailovou adresu."
+
+msgid "View Whitelists"
+msgstr "Zobrazit Whitelisty"
+
+msgid "Adding a whitelist will allow emails to be recieved from the alias address without them being checked for spam."
+msgstr "Přidání whitelist umožní e-maily, které mají být obdržel od alias adresy, aniž by jim být kontrolována spamu."
+
+msgid "Add a Whitelist"
+msgstr "Přidat Whitelist"
+
+msgid "These are the email whitelists addresses that are currently active for your email system."
+msgstr "Jedná se o e-mailové seznamy povolených adres, které jsou v současné době aktivní pro váš e-mailového systému."
+
+msgid "E-Mail Whitelists"
+msgstr "E-MAIL Whitelisty"
+
 msgid "There is no PPD file available."
 msgstr "Neexistuje žádný PPD soubor k dispozici."
 
@@ -5776,6 +5764,15 @@ msgstr "Klíč, který jste zadali, je příliš dlouhý."
 
 msgid "This secret key has been added. Please ensure that it is also added to your wireless access points."
 msgstr "Tento tajný klíč byl přidán. Ujistěte se, že je také přidat do bezdrátových přístupových bodů."
+
+msgid "Package Cache Control"
+msgstr "Balíček Cache Control"
+
+msgid "The site must not be blank."
+msgstr "Místo nesmí být prázdný."
+
+msgid "This allows sites to be accessed via squid deb proxy for updating packages on client computers."
+msgstr "To umožňuje místa musí být přístupné přes chobotnice deb proxy pro aktualizaci balíčků na klientských počítačích."
 
 msgid "Enter in the username that you want to apply these settings to."
 msgstr "Zadejte uživatelské jméno, které chcete použít tato nastavení."
@@ -6001,6 +5998,12 @@ msgstr "Neexistují žádné dokončené žádosti o zobrazení."
 
 msgid "You have not chosen a backup server."
 msgstr "Jste si nevybrali záložní server."
+
+msgid "The version has not been set."
+msgstr "Verze nebyl nastaven."
+
+msgid "The location has not been set."
+msgstr "Poloha nebyl nastaven."
 
 msgid "An incorrect password has been added for the root samba account on the PDC or it is not responding"
 msgstr "Nesprávné heslo byla přidána pro kořenový samba účtu na PDC nebo neodpovídá"
@@ -6425,6 +6428,12 @@ msgstr "Hlavní menu"
 msgid "Documentation"
 msgstr "dokumentace"
 
+msgid "Forum"
+msgstr "forum"
+
+msgid "IRC"
+msgstr "IRC"
+
 msgid "Helpdesk"
 msgstr "Helpdesk"
 
@@ -6485,6 +6494,12 @@ msgstr "Uživatel využití tiskárny"
 msgid "Add User Limit"
 msgstr "Přidat uživatele Limit"
 
+msgid "Aliases"
+msgstr "Aliasy"
+
+msgid "Whitelists"
+msgstr "Whitelisty"
+
 msgid "Banned E-Mail domains"
 msgstr "Banned domény E - Mail"
 
@@ -6514,6 +6529,39 @@ msgstr "Toto nastavení budesystém Xibo Digital Signage pro váš web."
 
 msgid "Xibo Domain"
 msgstr "Xibo Domain"
+
+msgid "You have not entered a folder name."
+msgstr "Nezadali jste název složky."
+
+msgid "You have not entered a group."
+msgstr "Nezadali jste skupinu."
+
+msgid "You have not chosen any group permissions."
+msgstr "Nemáte vybrány žádné oprávnění skupiny."
+
+msgid "You have not chosen a server name."
+msgstr "Nevybrali jste jméno serveru."
+
+msgid "You have not chosen a server type."
+msgstr "Nevybrali jste typ serveru."
+
+msgid "You have not chosen a server master."
+msgstr "Jste si nevybrali master serveru."
+
+msgid "View Network Shares"
+msgstr "View Network Akcie"
+
+msgid "Add Network Share"
+msgstr "Přidat síťového sdílení"
+
+msgid "Delete Network Share"
+msgstr "Smazat síťového sdílení"
+
+msgid "A folder with this name already exists."
+msgstr "Složka s tímto názvem již existuje."
+
+msgid "This share already exits in samba."
+msgstr "Tento podíl již ukončí v samba."
 
 msgid "No web sites have been added to the reverse proxy list."
 msgstr "Žádné webové stránky byly přidány do reverzní proxy seznamu."
@@ -6578,6 +6626,9 @@ msgstr "To bude nastavení nahoru CAS single sign-on řešení."
 msgid "WARNING - An internet connect is required to install this module."
 msgstr "POZOR -Připojení k Internetu je nutné k instalaci tohoto modulu."
 
+msgid "Ban E-Mail Domain"
+msgstr "Ban E -Mail Domain"
+
 msgid "Banned Domains"
 msgstr "Banned Domény"
 
@@ -6610,9 +6661,6 @@ msgstr "Nezadali jste v požadavku nebo problému."
 
 msgid "You have not chosen a department."
 msgstr "Nevybrali jste oddělení."
-
-msgid "You have not entered in a location."
-msgstr "Nezadali jste na místě."
 
 msgid "The search criteria cannot be blank."
 msgstr "Samotné vyhledávání nemůže být prázdný."
@@ -6665,12 +6713,6 @@ msgstr "Odhlášení"
 msgid "Help"
 msgstr "Pomoc"
 
-msgid "Forum"
-msgstr "forum"
-
-msgid "IRC"
-msgstr "IRC"
-
 msgid "View Completed Requests"
 msgstr "Zobrazit Dokončeno Žádosti"
 
@@ -6704,6 +6746,12 @@ msgstr "Vytvořit další účty"
 msgid "Servers"
 msgstr "Servery"
 
+msgid "ZFS Raid"
+msgstr "ZFS Raid"
+
+msgid "Software Raid"
+msgstr "Software Raid"
+
 msgid "Disk Quotas"
 msgstr "diskové kvóty"
 
@@ -6716,17 +6764,8 @@ msgstr "Zobrazit povoleno příčky"
 msgid "Apply Quota settings"
 msgstr "Použít nastavení kvót"
 
-msgid "ZFS Raid"
-msgstr "ZFS Raid"
-
-msgid "Software Raid"
-msgstr "Software Raid"
-
 msgid "Find Student Files"
 msgstr "Najít Student soubory"
-
-msgid "Add Network Share"
-msgstr "Přidat síťového sdílení"
 
 msgid "Federated File Sync"
 msgstr "Federativní File Sync"
@@ -6833,8 +6872,11 @@ msgstr "Tiskárna Účetní Záznamy"
 msgid "Use E-Mail relay"
 msgstr "Používání e - mail relay"
 
-msgid "E-Mail Access Controls"
-msgstr "Kontrola při vstupu E - Mail"
+msgid "Access Controls"
+msgstr "Access Controls"
+
+msgid "Limits"
+msgstr "Limity"
 
 msgid "Search E-Mail Logs"
 msgstr "Search E - Mail Protokoly"
@@ -6859,6 +6901,9 @@ msgstr "Internetové Záznamy"
 
 msgid "Update Time"
 msgstr "čas aktualizace"
+
+msgid "Gluster Volume"
+msgstr "Gluster Volume"
 
 msgid "Staff"
 msgstr "zaměstnanci"
@@ -7094,6 +7139,75 @@ msgstr "Zjištěny žádné chyby v tomto archivu."
 msgid "Copying to"
 msgstr "Kopírování"
 
+msgid "This show as information for your clients when they look at the network share."
+msgstr "Tato přehlídka jako informace pro své klienty, když se podíváte na sdílené síťové."
+
+msgid "Folder Name"
+msgstr "Název složky"
+
+msgid "This will create a folder in /home with the name that you specify."
+msgstr "Tím se vytvoří složku / home s názvem, který určíte."
+
+msgid "Enter in the name of the group that you want to allow access to the folder."
+msgstr "Zadejte název skupiny, kterou chcete povolit přístup k této složce."
+
+msgid "Full Access"
+msgstr "Plný přístup"
+
+msgid "Choose the permissions that you want to set for this group for the share."
+msgstr "Vyberte oprávnění, které chcete nastavit pro tuto skupinu pro sdílení."
+
+msgid "Map drive"
+msgstr "Mapa drive"
+
+msgid "Do not map drive"
+msgstr "Nenechte Pro jednotku"
+
+msgid "All Users"
+msgstr "Všichni uživatelé"
+
+msgid "No Access"
+msgstr "No Access"
+
+msgid "Add share"
+msgstr "Přidat podíl"
+
+msgid "Network Share"
+msgstr "Network Share"
+
+msgid "Path"
+msgstr "cesta"
+
+msgid "This will delete the share definition but will not delete the folder."
+msgstr "Tím dojde k vymazání definice akcii, ale neodstraní složku."
+
+msgid "Are you sure that you want to delete this share?"
+msgstr "Jste si jisti, že chcete smazat tento podíl?"
+
+msgid "Delete Share"
+msgstr "Smazat Sdílet"
+
+msgid "Cancel"
+msgstr "zrušit"
+
+msgid "Server Path"
+msgstr "Server Path"
+
+msgid "Groups"
+msgstr "skupiny"
+
+msgid "Permissions"
+msgstr "Oprávnění"
+
+msgid "Map Drive"
+msgstr "Mapa pohonu"
+
+msgid "Read Only"
+msgstr "jen pro čtení"
+
+msgid "Yes"
+msgstr "ano"
+
 msgid "Boot status"
 msgstr "stav Boot"
 
@@ -7120,6 +7234,54 @@ msgstr "Edit User Limit"
 
 msgid "Edit Group Limit"
 msgstr "Upravit skupinu Limit"
+
+msgid "Volume"
+msgstr "objem"
+
+msgid "Folder"
+msgstr "Folder"
+
+msgid "This will delete all of the data in the folder."
+msgstr "Tím dojde ke smazání všech dat ve složce."
+
+msgid "Are you sure that you want to delete this folder?"
+msgstr "Jste si jisti, že chcete smazat tuto složku?"
+
+msgid "No folders have been added to this volume."
+msgstr "Žádné složky byly přidány do tohoto objemu."
+
+msgid "Copying data to"
+msgstr "Kopírování dat na"
+
+msgid "IMPORTANT - Please ensure that users are not logged in to ensure that data is not lost."
+msgstr "DŮLEŽITÉ - Ujistěte se, že uživatelé nejsou přihlášeni k zajištění, že data nejsou ztracena."
+
+msgid "Folder Path"
+msgstr "Cesta Folder"
+
+msgid "Enter in the full path that you want to add to the gluster volume."
+msgstr "Zadejte plnou cestu, kterou chcete přidat do svazku gluster."
+
+msgid "Server data source"
+msgstr "Zdroj dat Server"
+
+msgid "Volume Name"
+msgstr "Volume Name"
+
+msgid "Folders"
+msgstr "Složky"
+
+msgid "No folders have been assigned."
+msgstr "Žádné složky byly přiřazeny."
+
+msgid "Add folder"
+msgstr "Přidat složku"
+
+msgid "Remove folder"
+msgstr "Odstranit složku"
+
+msgid "Assign Home Folders"
+msgstr "Přiřazení domovské složky"
 
 msgid "Search term"
 msgstr "Hledaný výraz"
@@ -7313,6 +7475,12 @@ msgstr "nastavení pro tento server vyplývá, že by měla být ve stejné zón
 msgid "SSH connection failure"
 msgstr "Selhání spojení SSH"
 
+msgid "This server has been re-installed"
+msgstr "Tento server byl znovu instalován"
+
+msgid "You will need to re-install all of the modules for this server."
+msgstr "Budete muset znovu nainstalovat všechny moduly pro tento server."
+
 msgid "No Role"
 msgstr "No Role"
 
@@ -7373,6 +7541,15 @@ msgstr "Odstranit náhradní"
 msgid "This printer does not support accounting."
 msgstr "Tato tiskárna nepodporuje účetnictví."
 
+msgid "Address"
+msgstr "adresa"
+
+msgid "E-Mail Address or domain"
+msgstr "E - mailová adresa nebo doména"
+
+msgid "Enter in the E-Mail address or domain that you want to add to the whitelist."
+msgstr "Zadejte E - mailovou adresu, nebo domény, který chcete přidat do whitelistu."
+
 msgid "This server does not have the correct authentication set up on it."
 msgstr "Tento server nemá správný ověřování nastaven na to."
 
@@ -7412,17 +7589,23 @@ msgstr "Změna hesla pro tento účet."
 msgid "Making sure that apache and mysql are running"
 msgstr "Ujistěte se, že apache a mysql běží"
 
-msgid "Setting apache and mysql to start on boot."
-msgstr "Nastavení Apache a MySQL po startu zapnutý."
+msgid "Setting apache and mysql to start on boot"
+msgstr "Nastavení Apache a MySQL po startu zapnutý"
 
-msgid "Checking shorewall ports."
-msgstr "Kontrola shorewall porty."
+msgid "Checking shorewall ports"
+msgstr "Kontrola shorewall portů"
 
-msgid "Opening ports 80 and 443."
-msgstr "Otevřené porty 80 a 443."
+msgid "Opening ports 80 and 443"
+msgstr "Otevřené porty 80 a 443"
 
-msgid "Opening ports 20 and 21."
-msgstr "Otevřené porty 20 a 21."
+msgid "Opening ports 20 and 21"
+msgstr "Otevřené porty 20 a 21"
+
+msgid "Opening port 3306"
+msgstr "Otevření portu 3306"
+
+msgid "Closing port 3306"
+msgstr "Uzavření port 3306"
 
 msgid "Creating Database"
 msgstr "Vytvoření databáze"
@@ -7567,6 +7750,12 @@ msgstr "FTP server"
 
 msgid "Distributed FS Server"
 msgstr "Distribuované FS Server"
+
+msgid "Dnsmasq service"
+msgstr "Dnsmasq servis"
+
+msgid "Add in a site that you want to allow for the clients to connect to."
+msgstr "Přidejte do místa, které chcete povolit klientům připojit."
 
 msgid "Realm"
 msgstr "říše"
@@ -7952,9 +8141,6 @@ msgstr "Přesunout tady?"
 msgid "Copy here?"
 msgstr "Kopírovat tady?"
 
-msgid "Cancel"
-msgstr "zrušit"
-
 msgid "This item is protected and cannot be moved or copied."
 msgstr "Tato položka je chráněn a nelze přesunout nebo zkopírovat."
 
@@ -7976,9 +8162,6 @@ msgstr "Nastavení oprávnění"
 msgid "Basic Information"
 msgstr "Základní informace"
 
-msgid "Path"
-msgstr "cesta"
-
 msgid "Last accessed"
 msgstr "Poslední přístup"
 
@@ -7990,9 +8173,6 @@ msgstr "vlastnictví"
 
 msgid "User"
 msgstr "uživatel"
-
-msgid "Permissions"
-msgstr "Oprávnění"
 
 msgid "Exec"
 msgstr "Exec"

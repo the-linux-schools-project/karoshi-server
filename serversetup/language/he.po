@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2014-12-30 09:37+0000\n"
+"POT-Creation-Date: 2015-03-23 18:42+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -209,14 +209,20 @@ msgstr "הושלם"
 msgid "Configure"
 msgstr "קביעת תצורה"
 
-msgid "starting glusterfs"
-msgstr "החל glusterfs"
-
-msgid "a volume with this name already exists"
-msgstr "נפח בשם זה כבר קיים"
+msgid "mounting"
+msgstr "הרכבה"
 
 msgid "Opening ports for glusterfs"
 msgstr "פתיחת יציאותלglusterfs"
+
+msgid "starting glusterfs"
+msgstr "החל glusterfs"
+
+msgid "Detaching"
+msgstr "ניתוק"
+
+msgid "Gluster peer probe failure"
+msgstr "כישלון בדיקה העמיתים Gluster"
 
 msgid "Creating GlusterFS volume"
 msgstr "יצירת GlusterFS נפח"
@@ -230,29 +236,20 @@ msgstr "החל GlusterFS נפח"
 msgid "There was a problem starting the volume"
 msgstr "הייתה בעיה מתחילההנפח"
 
-msgid "Backing up"
-msgstr "גיבוי"
-
-msgid "mounting"
-msgstr "הרכבה"
-
-msgid "Copying in existing data"
-msgstr "העתקהבנתונים קיימים"
-
 msgid "Adding server to gluster volume"
 msgstr "הוספת שרתלgluster נפח"
 
-msgid "probing server"
-msgstr "שרת חיטוט"
+msgid "Restoring"
+msgstr "שחזור"
 
-msgid "completed"
-msgstr "הושלם"
+msgid "stopping glusterfs"
+msgstr "עצירת glusterfs"
 
-msgid "getting brick count"
-msgstr "מקבל ספירה לבנה"
+msgid "Starting glusterfs"
+msgstr "החל glusterfs"
 
-msgid "adding"
-msgstr "הוספה"
+msgid "No volume information"
+msgstr "אין מידע נפח"
 
 msgid "Creating the joomla database in mysql"
 msgstr "יצירת מסד הנתונים של ג'ומלהבmysql"
@@ -407,14 +404,14 @@ msgstr "החל Sogo"
 msgid "Starting Postfix"
 msgstr "החל Postfix"
 
-msgid "Starting Fail2ban"
-msgstr "החל Fail2ban"
-
 msgid "Starting ClamD"
 msgstr "החל ClamD"
 
 msgid "Starting MailScanner"
 msgstr "MailScanner מתחיל"
+
+msgid "Starting Fail2ban"
+msgstr "החל Fail2ban"
 
 msgid "SOGo has been installed and can be accessed from"
 msgstr "סוגיו הותקנו, וניתן לגשת מ"
@@ -511,6 +508,9 @@ msgstr "התקנת קארושי שולחן עבודה"
 
 msgid "Please enter your choice for the karoshi and system password."
 msgstr "נא להזין את הבחירה שלךלסיסמא מערכת קארושיו."
+
+msgid "The passwords do not match. Please try again."
+msgstr "סיסמאות לא תואמות. אנא נסה שוב."
 
 msgid "Configure Network"
 msgstr "קביעת תצורה של רשת"
@@ -893,8 +893,8 @@ msgstr "בחר את המדפסת שברצונך למחוק."
 msgid "Add a slave UPS"
 msgstr "הוסף UPS עבדים"
 
-msgid "The UPS driver cannot be blank."
-msgstr "נהג UPS לא יכול להיות ריק."
+msgid "The UPS server cannot be blank."
+msgstr "שרת UPS לא יכול להיות ריק."
 
 msgid "The UPS has been added."
 msgstr "UPS כבר הוסיף."
@@ -1085,45 +1085,6 @@ msgstr "מניות הצג"
 msgid "Show open files"
 msgstr "הצג קבצים פתוחים"
 
-msgid "Add Additional Network Share"
-msgstr "הוסף רשת נוספות"
-
-msgid "You have not entered a folder name."
-msgstr "לא הכנסת אתשם תיקייה."
-
-msgid "You have not entered a group."
-msgstr "לא הכנסת אתקבוצה."
-
-msgid "You have not chosen any group permissions."
-msgstr "לא בחרת את כל הרשאות של קבוצה."
-
-msgid "You have not chosen any permissions for other users."
-msgstr "לא בחרת את הרשאות כל עבור משתמשים אחרים."
-
-msgid "You have not chosen a server name."
-msgstr "לא בחרת אתשם שרת."
-
-msgid "You have not chosen a server type."
-msgstr "לא בחרת אתסוג שרת."
-
-msgid "You have not chosen a server master."
-msgstr "לא בחרת אתהורים שרת."
-
-msgid "The folder you have chosen already exists in /home."
-msgstr "התיקייה שבחרת כבר קיים ב/ בית."
-
-msgid "This share is already declared in the samba configuration file."
-msgstr "נתח זה כבר הכריז בקובץ תצורת סמבה."
-
-msgid "Server"
-msgstr "שרת"
-
-msgid "Share"
-msgstr "שתף"
-
-msgid "This share has been added."
-msgstr "הנתח הזה התווסף."
-
 msgid "Manage Print Queues"
 msgstr "ניהול תור הדפסה"
 
@@ -1159,6 +1120,60 @@ msgstr "אפשרות גודל הודעה לא יכולה להיות ריקה."
 
 msgid "The mailbox size option must not be blank."
 msgstr "אפשרות גודל תיבת הדואר אינו יכולה להיות ריקה."
+
+msgid "Gluster Volume Control"
+msgstr "בקרת עצמת Gluster"
+
+msgid "Create Gluster Volume"
+msgstr "יצירת אמצעי אחסון Gluster"
+
+msgid "View Gluster Volumes"
+msgstr "צפה כרכי Gluster"
+
+msgid "Create Volume"
+msgstr "יצירת אמצעי אחסון"
+
+msgid "Creating Volume"
+msgstr "נפח יצירה"
+
+msgid "Add Folder"
+msgstr "הוסף תיקייה"
+
+msgid "Ading Folder"
+msgstr "ading תיקייה"
+
+msgid "Assign Network Share"
+msgstr "להקצות רשת שתף"
+
+msgid "Remove Folder"
+msgstr "הסר תיקייה"
+
+msgid "You have not entered a correct action."
+msgstr "לא הכנסת אתפעולה נכונה."
+
+msgid "You have not entered a volume name."
+msgstr "לא הכנסת אתשם נפח."
+
+msgid "You have not chosen any servers."
+msgstr "לא בחרת את כל שרתים."
+
+msgid "You have to choose at least two servers to create a distributed volume."
+msgstr "אתה צריך לבחור לפחות שני שרתים ליצירת אמצעי אחסון מבוזר."
+
+msgid "This volume has already been created."
+msgstr "כרך זה כבר נוצר."
+
+msgid "You have not chosen a folder path."
+msgstr "לא בחרת את נתיב של תיקייה."
+
+msgid "Gluster Controls"
+msgstr "בקרת Gluster"
+
+msgid "Home Folders"
+msgstr "בית תיקיות"
+
+msgid "Gluster Volumes"
+msgstr "כרכי Gluster"
 
 msgid "ZFS Status"
 msgstr "סטטוס ZFS"
@@ -1337,11 +1352,23 @@ msgstr "חבילות תוכנת לקוח Linux"
 msgid "Blank version"
 msgstr "גרסה ריקה"
 
-msgid "The software shown below will either be installed or removed by your linux client computers on boot."
-msgstr "התוכנה מוצגת להלן תהיה גם תהיה להתקין או להסיר על ידי מחשבי לקוח לינוקס על אתחול."
+msgid "Linux Client Software Controls"
+msgstr "בקרת תוכנת לקוח Linux"
+
+msgid "Software Controls"
+msgstr "בקרות תוכנה"
+
+msgid "The software shown below will be installed by your linux client computers on boot."
+msgstr "התוכנה מוצגת להלן תותקן על ידי מחשבי לקוח לינוקס על אתחול."
 
 msgid "Add software package"
 msgstr "להוסיף חבילת תוכנה"
+
+msgid "Location"
+msgstr "מיקום"
+
+msgid "All locations"
+msgstr "כל המקומות"
 
 msgid "Software Package"
 msgstr "חבילת תוכנה"
@@ -1352,14 +1379,8 @@ msgstr "התקן"
 msgid "Remove"
 msgstr "הסר"
 
-msgid "Install List"
-msgstr "התקן רשימה"
-
 msgid "Delete"
 msgstr "מחק"
-
-msgid "Remove list"
-msgstr "הסר רשימה"
 
 msgid "Computer Logs"
 msgstr "יומני מחשב"
@@ -1433,9 +1454,6 @@ msgstr "סיכום בקשה"
 msgid "Name"
 msgstr "שם"
 
-msgid "Location"
-msgstr "מיקום"
-
 msgid "Category"
 msgstr "קטגוריה"
 
@@ -1471,6 +1489,9 @@ msgstr "משוב"
 
 msgid "Linux Client Background"
 msgstr "רקע לקוח Linux"
+
+msgid "The UPS driver cannot be blank."
+msgstr "נהג UPS לא יכול להיות ריק."
 
 msgid "The UPS port cannot be blank."
 msgstr "נמל UPS לא יכול להיות ריק."
@@ -2489,9 +2510,6 @@ msgstr "יומני שימוש בדיסק צפה"
 msgid "The logview cannot be blank."
 msgstr "Logview לא יכול להיות ריק."
 
-msgid "You have not chosen any servers."
-msgstr "לא בחרת את כל שרתים."
-
 msgid "The disk usage logs show the overall usage for each partition on your server."
 msgstr "יומני השימוש בדיסק להראות את השימוש הכולל עבור כל מחיצה בשרת שלך."
 
@@ -2603,44 +2621,20 @@ msgstr "צוררשימות italc ממרשם הנכס"
 msgid "This will generate Italc files from the asset register."
 msgstr "זה יפיק קבצי Italc ממרשם הנכס."
 
-msgid "Linux Client Software Controls"
-msgstr "בקרת תוכנת לקוח Linux"
-
 msgid "The linux version must not be blank."
 msgstr "גרסת לינוקס לא יכולה להיות ריקה."
 
-msgid "Choose the linux client version that you want to set the software settings for."
-msgstr "בחר את גרסת הלקוח לינוקס שברצונך לקבוע את הגדרות תוכנהל."
+msgid "Software Packages"
+msgstr "חבילות תוכנה"
 
-msgid "Auto"
-msgstr "Auto"
+msgid "Choose the locations that you want to enable updates and software installs for."
+msgstr "בחר את המיקומים שברצונך לאפשר עדכוניםותוכנה מתקינהל."
 
-msgid "Set this to auto to hide the software control dialog from appearing when setting up the clients."
-msgstr "קבע את זה לאוטומטי כדי להסתיר את הדו-שיח שליטת תוכנה מלהופיע בעת הגדרתהלקוחות."
-
-msgid "Proprietary graphics"
-msgstr "גרפיקת קניינית"
-
-msgid "This will tell the linux clients to install the relevant proprietary graphics driver for the client."
-msgstr "זה יגיד לילקוחות לינוקס כדי להתקין את מנהל ההתקן גרפי קנייני הרלוונטיים עבור הלקוח."
-
-msgid "Restricted extras"
-msgstr "תוספות מוגבלות"
-
-msgid "This will install software that in a few countries licenses may be required."
-msgstr "זה יתקין תוכנה שבעוד כמה מדינות עשויים להידרש רישיונות."
-
-msgid "Firmware"
-msgstr "הקושחה"
-
-msgid "This will install proprietary firmware."
-msgstr "זה יתקין הקושחה קניינית."
-
-msgid "Enable Software install"
+msgid "Enable software install"
 msgstr "אפשר להתקין תוכנה"
 
-msgid "This will make the Linux clients install and remove any software in the software install and remove lists on boot up."
-msgstr "זה יהפוך את לקוחות Linux להתקין ולהסיר כל תוכנהבתוכנה להתקין ולהסיר רשימות על אתחול."
+msgid "This will make the Linux clients install any software in the software install lists on boot up."
+msgstr "זה יהפוך את לקוחות Linux להתקין כל תוכנהבתוכנה להתקין רשימות על אתחול."
 
 msgid "Enable updates"
 msgstr "אפשר עדכונים"
@@ -3398,6 +3392,12 @@ msgstr "סיסמא mysql"
 msgid "Enter in the password for the database."
 msgstr "הזן את הסיסמה עבור מסד הנתונים."
 
+msgid "Open Mysql Port"
+msgstr "נמל Mysql פתוח"
+
+msgid "This will open up port 3306 for mysql connections from remote devices."
+msgstr "הפעולה זו תפתח את היציאה 3306 לחיבורי mysqlמהתקנים מרוחקים."
+
 msgid "Clear Web Management Warning Messages"
 msgstr "הודעות אזהרה של ניהול אינטרנט ברור"
 
@@ -3515,9 +3515,6 @@ msgstr "המקוצר לא יכול להיות ריק."
 msgid "The secret key cannot be blank."
 msgstr "מפתח הסודי לא יכול להיות ריק."
 
-msgid "The secret keys do not match."
-msgstr "המפתחות הסודיים אינם תואמים."
-
 msgid "The TCPIP address is incorrect."
 msgstr "כתובת TCPIP אינה נכונה."
 
@@ -3553,6 +3550,9 @@ msgstr "לא בחרת אתכינוי אינטרנטלשרת זה."
 
 msgid "Setup Owncloud"
 msgstr "התקנת Owncloud"
+
+msgid "Owncloud allows you to access and synchronise your data from multiple devices."
+msgstr "Owncloud מאפשר לך לגשתולסנכרן את הנתונים שלךממספר התקנים."
 
 msgid "This will setup the Owncloud storage system for your users."
 msgstr "התקנה זומערכת אחסון Owncloud עבור המשתמשים שלך."
@@ -3710,9 +3710,6 @@ msgstr "הזן בבחירה של תחום דואר שלך ללא http: // www. �
 msgid "View Jobs"
 msgstr "צפה במשרות"
 
-msgid "You have not chosen a share."
-msgstr "לא בחרת אתנתח."
-
 msgid "Assign Printers to Locations"
 msgstr "להקצות מדפסותלמיקומים"
 
@@ -3821,18 +3818,6 @@ msgstr "יש מנהלים שליטה מלאה בניהול האינטרנט, א�
 msgid "Technicians can access a limited set of controls for day to day running of the system such as changing passwords."
 msgstr "טכנאים יכולים לגשתסט מוגבל של בקרותלניהול היום-יומי שלהמערכת כגון סיסמאות משתנות."
 
-msgid "View Additional Network Shares"
-msgstr "הצג את מניות רשת נוספות"
-
-msgid "Group Permissions"
-msgstr "הרשאות קבוצה"
-
-msgid "Others Permissions"
-msgstr "הרשאות אחרות"
-
-msgid "Full Access"
-msgstr "גישה מלאה"
-
 msgid "Custom Command"
 msgstr "מותאם אישית פיקוד"
 
@@ -3929,11 +3914,11 @@ msgstr "הקבוצה העיקרית אינה יכולה להיות ריקה."
 msgid "No other Karoshi servers have been set up."
 msgstr "אין שרתי קארושי אחרים הוקמו."
 
-msgid "No other Karoshi servers have been enabled as file servers."
-msgstr "אין שרתי קארושי אחרים כבר אפשרו שרתי קבצים."
+msgid "No other Karoshi servers have been enabled as file servers. You will need to add the file server module to an additional server."
+msgstr "אין שרתי קארושי אחרים כבר אפשרו שרתי קבצים. יהיה עליך להוסיף את מודול שרת קבציםלשרת נוסף."
 
-msgid "IMPORTANT - Please ensure that users are not logged to ensure no data loss."
-msgstr "חשוב - אנא ודא שמשתמשים אינם מחוברים כדי להבטיח שאין אובדן נתונים."
+msgid "IMPORTANT - Please ensure that users are not logged to ensure that data is not lost."
+msgstr "חשוב - אנא ודא שמשתמשים אינם מחוברים כדי להבטיח נתוניםשלא הולכים לאיבוד."
 
 msgid "Current Server"
 msgstr "שרת נוכחי"
@@ -3947,8 +3932,8 @@ msgstr "זה יהיה להעתיק אזורי משתמש ביתיים קיימי
 msgid "New Server"
 msgstr "שרת חדש"
 
-msgid "Choose server"
-msgstr "בחר שרת"
+msgid "Select Server"
+msgstr "בחירת שרת"
 
 msgid "Web Management Information"
 msgstr "ניהול מידע באינטרנט"
@@ -4060,9 +4045,6 @@ msgstr "בחר את עדיפות ברירת המחדלשאתה רוצה."
 
 msgid "Banned E-mail Domains"
 msgstr "תחומי דואר אלקטרוני אסרו"
-
-msgid "Ban E-Mail Domain"
-msgstr "איסור דואר אלקטרוני דומיין"
 
 msgid "Ban Domain"
 msgstr "באן דומיין"
@@ -4295,6 +4277,9 @@ msgstr "בחרשרת האינטרנט שברצונך להעלות את הקבצ�
 msgid "There are no web servers to upload files to."
 msgstr "אין שרתי אינטרנט כדי להעלות קבצים ל."
 
+msgid "Choose server"
+msgstr "בחר שרת"
+
 msgid "Setup Joomla Website"
 msgstr "אתר ג'ומלה התקנה"
 
@@ -4348,6 +4333,9 @@ msgstr "לא הכנסת אתדקות הנכונות."
 
 msgid "You have not entered the correct seconds."
 msgstr "לא הכנסת אתשניות הנכונות."
+
+msgid "Share"
+msgstr "שתף"
 
 msgid "Proxy settings have been removed."
 msgstr "הגדרות Proxy הוסרו."
@@ -4511,8 +4499,8 @@ msgstr "בחרמכשיר UPS מהרשימה."
 msgid "Choose auto for UPS devices connected via usb."
 msgstr "בחר אוטומטי למכשירי UPS מחוברים דרך USB."
 
-msgid "Add ups"
-msgstr "להוסיף עליות"
+msgid "Add UPS"
+msgstr "להוסיף UPS"
 
 msgid "Allow Roaming Profile"
 msgstr "לאפשר נדידה פרופיל"
@@ -4552,6 +4540,9 @@ msgstr "ניהול האינטרנט השתנה ל"
 
 msgid "Choose client version"
 msgstr "בחר גרסת הלקוח"
+
+msgid "Choose the linux client version that you want to set the software settings for."
+msgstr "בחר את גרסת הלקוח לינוקס שברצונך לקבוע את הגדרות תוכנהל."
 
 msgid "Username or E-mail address"
 msgstr "שם משתמש או כתובת דואר אלקטרוני"
@@ -4706,6 +4697,9 @@ msgstr "תפריט ההתחלה של Windows - בחר"
 msgid "The selected start menu has been copied to all of the chosen groups."
 msgstr "התפריט התחל נבחר הועתק לכל האחת מהקבוצות שנבחרו."
 
+msgid "The software shown below will either be installed or removed by your linux client computers on boot."
+msgstr "התוכנה מוצגת להלן תהיה גם תהיה להתקין או להסיר על ידי מחשבי לקוח לינוקס על אתחול."
+
 msgid "Generate Internet Logs"
 msgstr "צור יומני אינטרנט"
 
@@ -4747,30 +4741,6 @@ msgstr "בקרת פדרציה התקנה"
 
 msgid "Warning - this will delete all existing users from this server and import all of the users from your main server."
 msgstr "אזהרה - זה ימחק את כל המשתמשים הקיימיםמהשרת זהולייבא את כלהמשתמשיםמהשרת הראשי שלך."
-
-msgid "This show as information for your clients when they look at the network share."
-msgstr "תכנית זוכמידע עבור הלקוחות שלך כאשר הם מסתכלים עלהמיקום משותף ברשת."
-
-msgid "Folder Name"
-msgstr "שם תיקייה"
-
-msgid "This will create a folder in /home with the name that you specify."
-msgstr "פעולה זו תיצורתיקייהב/ בית עם השם שאתה מציין."
-
-msgid "Enter in the name of the group that you want to allow access to the folder."
-msgstr "הזן בשם הקבוצה שברצונך לאפשר גישהלתיקייה."
-
-msgid "Choose the permissions that you want to set for this group for the share."
-msgstr "בחר את ההרשאות שברצונך להגדירלקבוצה זולמניה."
-
-msgid "No access"
-msgstr "אין גישה"
-
-msgid "Choose the permissions that you want to allow for anyone else not in the group."
-msgstr "בחר את ההרשאות שברצונך לאפשר לכל מי שלא בקבוצה אחרת."
-
-msgid "Add share"
-msgstr "הוסף"
 
 msgid "Disk drives"
 msgstr "כונני דיסקים"
@@ -4826,14 +4796,14 @@ msgstr "תיקייה דחוסה"
 msgid "You need to upload a zip or tar.gz file of your chosen application data folders."
 msgstr "אתה צריך להעלות אתקובץ zip או tar.gz של תיקיות הנתונים שבחרתם יישום."
 
-msgid "Blank list"
-msgstr "רשימה ריקה"
-
 msgid "Blank action"
 msgstr "פעולה ריקה"
 
 msgid "You have not entered in a software package."
 msgstr "לא הכניסבחבילת תוכנה."
+
+msgid "You have not entered in a location."
+msgstr "לא הכניס במיקום."
 
 msgid "You must choose a website to view the logs for."
 msgstr "עליך לבחורבאתר כדי להציג את היומניםל."
@@ -5135,11 +5105,14 @@ msgstr "צפה בנכס"
 msgid "View internet logs"
 msgstr "הצגת יומני אינטרנט"
 
-msgid "Home Folders"
-msgstr "בית תיקיות"
+msgid "Network Shares"
+msgstr "מניות רשת"
 
 msgid "This displays the server that hosts the home folders for each group."
 msgstr "זה מציג את השרת שמארח את תיקיות הבית לכל קבוצה."
+
+msgid "Server"
+msgstr "שרת"
 
 msgid "Change"
 msgstr "שינוי"
@@ -5236,9 +5209,6 @@ msgstr "בקש משתמשים חדשים"
 
 msgid "File Manager"
 msgstr "מנהל קבצים"
-
-msgid "You have not entered a correct action."
-msgstr "לא הכנסת אתפעולה נכונה."
 
 msgid "The owner cannot be blank."
 msgstr "הבעלים לא יכולים להיות ריקים."
@@ -5639,6 +5609,24 @@ msgstr "הנתונים הועתקו לכל החשבונותבקבוצה שנבח
 msgid "There was a problem copying the files to the group."
 msgstr "הייתה בעיה בהעתקת הקבצים לקבוצה."
 
+msgid "You have not entered an email address."
+msgstr "לא הכנסת אתכתובת דואר אלקטרוני."
+
+msgid "View Whitelists"
+msgstr "צפה ברשימה לבנה"
+
+msgid "Adding a whitelist will allow emails to be recieved from the alias address without them being checked for spam."
+msgstr "הוספהלרשימה לבנה תאפשר מייליםשקבלו מכתובת הכינוי מבלי שבדקו אותםלדואר זבל."
+
+msgid "Add a Whitelist"
+msgstr "הוסף לרשימה לבנה"
+
+msgid "These are the email whitelists addresses that are currently active for your email system."
+msgstr "אלו הם כתובות הדוא"ל של הרשימות הלבנותשפועלים כיוםלמערכת הדואר האלקטרוני שלך."
+
+msgid "E-Mail Whitelists"
+msgstr "E-Mail רשימה לבנה"
+
 msgid "There is no PPD file available."
 msgstr "אין קובץ PPD זמין."
 
@@ -5776,6 +5764,15 @@ msgstr "המפתחשהזנת ארוך מדי."
 
 msgid "This secret key has been added. Please ensure that it is also added to your wireless access points."
 msgstr "המפתח הסודי הזה התווסף. אנא ודא כי הוא גם הוסיףלנקודות הגישה האלחוטית שלך."
+
+msgid "Package Cache Control"
+msgstr "חבילת בקרת מטמון"
+
+msgid "The site must not be blank."
+msgstr "האתר לא יכול להיות ריק."
+
+msgid "This allows sites to be accessed via squid deb proxy for updating packages on client computers."
+msgstr "זה מאפשר לאתרים הניתנים לגישה באמצעות proxy deb דיונון לעדכון חבילות במחשבי לקוח."
 
 msgid "Enter in the username that you want to apply these settings to."
 msgstr "הזן בשם המשתמש שברצונך להחיל הגדרות אלהל."
@@ -6001,6 +5998,12 @@ msgstr "אין בקשות מוכנות לצפייה."
 
 msgid "You have not chosen a backup server."
 msgstr "לא בחרת אתשרת גיבוי."
+
+msgid "The version has not been set."
+msgstr "הגרסה לא הוגדרה."
+
+msgid "The location has not been set."
+msgstr "המיקום לא הוגדר."
 
 msgid "An incorrect password has been added for the root samba account on the PDC or it is not responding"
 msgstr "סיסמא שגויה נוספהלחשבון סמבה השורשבPDC או שאינו מגיב"
@@ -6425,6 +6428,12 @@ msgstr "תפריט ראשי"
 msgid "Documentation"
 msgstr "תיעוד"
 
+msgid "Forum"
+msgstr "פורום"
+
+msgid "IRC"
+msgstr "IRC"
+
 msgid "Helpdesk"
 msgstr "מוקד תמיכה"
 
@@ -6485,6 +6494,12 @@ msgstr "שימוש במדפסת משתמש"
 msgid "Add User Limit"
 msgstr "להוסיף Limit המשתמש"
 
+msgid "Aliases"
+msgstr "כינויים"
+
+msgid "Whitelists"
+msgstr "רשימה לבנה"
+
 msgid "Banned E-Mail domains"
 msgstr "תחומים E -Mail אסרו"
 
@@ -6514,6 +6529,39 @@ msgstr "התקנה זומערכת Xibo השילוט הדיגיטלי עבור ה
 
 msgid "Xibo Domain"
 msgstr "Xibo דומיין"
+
+msgid "You have not entered a folder name."
+msgstr "לא הכנסת אתשם תיקייה."
+
+msgid "You have not entered a group."
+msgstr "לא הכנסת אתקבוצה."
+
+msgid "You have not chosen any group permissions."
+msgstr "לא בחרת את כל הרשאות של קבוצה."
+
+msgid "You have not chosen a server name."
+msgstr "לא בחרת אתשם שרת."
+
+msgid "You have not chosen a server type."
+msgstr "לא בחרת אתסוג שרת."
+
+msgid "You have not chosen a server master."
+msgstr "לא בחרת אתהורים שרת."
+
+msgid "View Network Shares"
+msgstr "צפה ברשת מניות"
+
+msgid "Add Network Share"
+msgstr "הוסף רשת שתף"
+
+msgid "Delete Network Share"
+msgstr "מחק רשת שתף"
+
+msgid "A folder with this name already exists."
+msgstr "תיקייה בשם זה כבר קיימת."
+
+msgid "This share already exits in samba."
+msgstr "נתח זה כבר יוצאבסמבה."
 
 msgid "No web sites have been added to the reverse proxy list."
 msgstr "אין אתרי אינטרנט נוספולרשימת פרוקסי ההפוכה."
@@ -6578,6 +6626,9 @@ msgstr "התקנת רצון זה את השלט הבודד CAS על פתרון."
 msgid "WARNING - An internet connect is required to install this module."
 msgstr "אזהרה -אינטרנט מתחברת נדרש להתקין מודול זה."
 
+msgid "Ban E-Mail Domain"
+msgstr "איסור דואר אלקטרוני דומיין"
+
 msgid "Banned Domains"
 msgstr "תחומים אסרו"
 
@@ -6610,9 +6661,6 @@ msgstr "לא הכניסבבקשה או בעיה."
 
 msgid "You have not chosen a department."
 msgstr "לא בחרת אתמחלקה."
-
-msgid "You have not entered in a location."
-msgstr "לא הכניס במיקום."
 
 msgid "The search criteria cannot be blank."
 msgstr "קריטריוני החיפוש לא יכולים להיות ריקים."
@@ -6665,12 +6713,6 @@ msgstr "התנתקות"
 msgid "Help"
 msgstr "עזרה"
 
-msgid "Forum"
-msgstr "פורום"
-
-msgid "IRC"
-msgstr "IRC"
-
 msgid "View Completed Requests"
 msgstr "בקשות צפה הושלם"
 
@@ -6704,6 +6746,12 @@ msgstr "ליצור חשבונות נוספים"
 msgid "Servers"
 msgstr "שרתים"
 
+msgid "ZFS Raid"
+msgstr "Raid ZFS"
+
+msgid "Software Raid"
+msgstr "Raid תוכנה"
+
 msgid "Disk Quotas"
 msgstr "מכסות דיסק"
 
@@ -6716,17 +6764,8 @@ msgstr "מחיצות צפה באפשרו"
 msgid "Apply Quota settings"
 msgstr "החל הגדרות Quota"
 
-msgid "ZFS Raid"
-msgstr "Raid ZFS"
-
-msgid "Software Raid"
-msgstr "Raid תוכנה"
-
 msgid "Find Student Files"
 msgstr "מצא את הסטודנטים קבצים"
-
-msgid "Add Network Share"
-msgstr "הוסף רשת שתף"
 
 msgid "Federated File Sync"
 msgstr "קובץ Federated Sync"
@@ -6833,8 +6872,11 @@ msgstr "יומני חשבונאות מדפסת"
 msgid "Use E-Mail relay"
 msgstr "שימוש בדואר אלקטרוני ממסר"
 
-msgid "E-Mail Access Controls"
-msgstr "בקרת גישה לדואר אלקטרוני"
+msgid "Access Controls"
+msgstr "בקרת גישה"
+
+msgid "Limits"
+msgstr "גבולות"
 
 msgid "Search E-Mail Logs"
 msgstr "יומני חיפוש E -Mail"
@@ -6859,6 +6901,9 @@ msgstr "יומני אינטרנט"
 
 msgid "Update Time"
 msgstr "זמן עדכון"
+
+msgid "Gluster Volume"
+msgstr "נפח Gluster"
 
 msgid "Staff"
 msgstr "צוות"
@@ -7094,6 +7139,75 @@ msgstr "אין שגיאות שהתגלובארכיון זה."
 msgid "Copying to"
 msgstr "העתקה ל"
 
+msgid "This show as information for your clients when they look at the network share."
+msgstr "תכנית זוכמידע עבור הלקוחות שלך כאשר הם מסתכלים עלהמיקום משותף ברשת."
+
+msgid "Folder Name"
+msgstr "שם תיקייה"
+
+msgid "This will create a folder in /home with the name that you specify."
+msgstr "פעולה זו תיצורתיקייהב/ בית עם השם שאתה מציין."
+
+msgid "Enter in the name of the group that you want to allow access to the folder."
+msgstr "הזן בשם הקבוצה שברצונך לאפשר גישהלתיקייה."
+
+msgid "Full Access"
+msgstr "גישה מלאה"
+
+msgid "Choose the permissions that you want to set for this group for the share."
+msgstr "בחר את ההרשאות שברצונך להגדירלקבוצה זולמניה."
+
+msgid "Map drive"
+msgstr "כונן מפה"
+
+msgid "Do not map drive"
+msgstr "אל מפת כונן"
+
+msgid "All Users"
+msgstr "כל המשתמשים"
+
+msgid "No Access"
+msgstr "אין גישה"
+
+msgid "Add share"
+msgstr "הוסף"
+
+msgid "Network Share"
+msgstr "שתף רשת"
+
+msgid "Path"
+msgstr "נתיב"
+
+msgid "This will delete the share definition but will not delete the folder."
+msgstr "הפעולה זו תמחק אתהגדרת מניה, אך לא למחוק את התיקייה."
+
+msgid "Are you sure that you want to delete this share?"
+msgstr "האם אתה בטוחשאתה רוצה למחוק את המנייה הזאת?"
+
+msgid "Delete Share"
+msgstr "מחק שתפו"
+
+msgid "Cancel"
+msgstr "לבטל"
+
+msgid "Server Path"
+msgstr "נתיב שרת"
+
+msgid "Groups"
+msgstr "קבוצות"
+
+msgid "Permissions"
+msgstr "הרשאות"
+
+msgid "Map Drive"
+msgstr "כונן מפה"
+
+msgid "Read Only"
+msgstr "קריאה בלבד"
+
+msgid "Yes"
+msgstr "כן"
+
 msgid "Boot status"
 msgstr "מצב אתחול"
 
@@ -7120,6 +7234,54 @@ msgstr "משתמש מגבלת עריכה"
 
 msgid "Edit Group Limit"
 msgstr "עריכת הקבוצה Limit"
+
+msgid "Volume"
+msgstr "נפח"
+
+msgid "Folder"
+msgstr "תיקייה"
+
+msgid "This will delete all of the data in the folder."
+msgstr "הפעולה זו תמחק את כל הנתונים בתיקייה."
+
+msgid "Are you sure that you want to delete this folder?"
+msgstr "האם אתה בטוחשאתה רוצה למחוק את התיקייה הזו?"
+
+msgid "No folders have been added to this volume."
+msgstr "אין תיקיות נוספו לכרך זה."
+
+msgid "Copying data to"
+msgstr "העתקת נתונים ל"
+
+msgid "IMPORTANT - Please ensure that users are not logged in to ensure that data is not lost."
+msgstr "חשוב - אנא ודא שמשתמשים אינם מחובר כדי להבטיח נתוניםשלא הכילו אבודים."
+
+msgid "Folder Path"
+msgstr "נתיב תיקייה"
+
+msgid "Enter in the full path that you want to add to the gluster volume."
+msgstr "הזן בנתיב המלא שברצונך להוסיף לgluster הנפח."
+
+msgid "Server data source"
+msgstr "מקור נתוני שרת"
+
+msgid "Volume Name"
+msgstr "שם נפח"
+
+msgid "Folders"
+msgstr "תיקיות"
+
+msgid "No folders have been assigned."
+msgstr "אין תיקיות הוקצו."
+
+msgid "Add folder"
+msgstr "הוספת תיקייה"
+
+msgid "Remove folder"
+msgstr "הסר תיקייה"
+
+msgid "Assign Home Folders"
+msgstr "להקצות בית תיקיות"
 
 msgid "Search term"
 msgstr "מונח חיפוש"
@@ -7313,6 +7475,12 @@ msgstr "הגדרות רשתלתכנית שרת זה שזה צריך להיות �
 msgid "SSH connection failure"
 msgstr "כשל בחיבור SSH"
 
+msgid "This server has been re-installed"
+msgstr "שרת זה כבר מחדש מותקן"
+
+msgid "You will need to re-install all of the modules for this server."
+msgstr "יהיה עליך להתקין מחדש את כל המודוליםלשרת זה."
+
 msgid "No Role"
 msgstr "אין תפקיד"
 
@@ -7373,6 +7541,15 @@ msgstr "הסר חילוף"
 msgid "This printer does not support accounting."
 msgstr "מדפסת זו אינה תומכת בחשבונאות."
 
+msgid "Address"
+msgstr "כתובת"
+
+msgid "E-Mail Address or domain"
+msgstr "כתובת דואר אלקטרוני או תחום"
+
+msgid "Enter in the E-Mail address or domain that you want to add to the whitelist."
+msgstr "הזן את כתובת הדואר אלקטרוני או תחוםשאתה רוצה להוסיף לרשימה הלבנה."
+
 msgid "This server does not have the correct authentication set up on it."
 msgstr "שרת זה איןהאימות הנכונה להגדיר אותו."
 
@@ -7412,17 +7589,23 @@ msgstr "שינוי הסיסמה עבור חשבון זה."
 msgid "Making sure that apache and mysql are running"
 msgstr "וודא כי Apache ו- MySQL פועלים"
 
-msgid "Setting apache and mysql to start on boot."
-msgstr "הגדרת Apache ו- MySQL להתחילבאתחול."
+msgid "Setting apache and mysql to start on boot"
+msgstr "הגדרת Apache ו- MySQL להתחילבאתחול"
 
-msgid "Checking shorewall ports."
-msgstr "בדיקת יציאות shorewall."
+msgid "Checking shorewall ports"
+msgstr "בדיקת יציאות shorewall"
 
-msgid "Opening ports 80 and 443."
-msgstr "פתיחת יציאות 80 ו -443."
+msgid "Opening ports 80 and 443"
+msgstr "פתיחת פורטים 80 ו -443"
 
-msgid "Opening ports 20 and 21."
-msgstr "פתיחת יציאות 20 ו -21."
+msgid "Opening ports 20 and 21"
+msgstr "פתיחת פורטים 20 ו -21"
+
+msgid "Opening port 3306"
+msgstr "נמל פתיחה 3306"
+
+msgid "Closing port 3306"
+msgstr "נמל סגירה 3306"
 
 msgid "Creating Database"
 msgstr "מסד נתונים יצירה"
@@ -7567,6 +7750,12 @@ msgstr "שרת FTP"
 
 msgid "Distributed FS Server"
 msgstr "שרת FS Distributed"
+
+msgid "Dnsmasq service"
+msgstr "שירות Dnsmasq"
+
+msgid "Add in a site that you want to allow for the clients to connect to."
+msgstr "להוסיףבאתר שברצונך לאפשרללקוחות להתחבר ל."
 
 msgid "Realm"
 msgstr "ממלכה"
@@ -7952,9 +8141,6 @@ msgstr "לעבור לכאן?"
 msgid "Copy here?"
 msgstr "העתק לכאן?"
 
-msgid "Cancel"
-msgstr "לבטל"
-
 msgid "This item is protected and cannot be moved or copied."
 msgstr "פריט זה מוגןולא ניתן להעביר או להעתיק."
 
@@ -7976,9 +8162,6 @@ msgstr "הגדרת הרשאות"
 msgid "Basic Information"
 msgstr "מידע בסיסי"
 
-msgid "Path"
-msgstr "נתיב"
-
 msgid "Last accessed"
 msgstr "גישה האחרונה"
 
@@ -7990,9 +8173,6 @@ msgstr "בעלות"
 
 msgid "User"
 msgstr "משתמש"
-
-msgid "Permissions"
-msgstr "הרשאות"
 
 msgid "Exec"
 msgstr "Exec"

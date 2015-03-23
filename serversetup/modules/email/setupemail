@@ -83,7 +83,7 @@ LDAPSERVER=127.0.0.1
 #Get ldap server to use
 if [ `grep -c -w "kdc" /etc/krb5.conf` -gt 0 ]
 then
-	LDAPSERVER=`grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | cut -d"=" -f2`
+	LDAPSERVER=`grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | sed -n 1,1p | cut -d"=" -f2`
 fi
 
 #############################

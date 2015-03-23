@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2014-12-30 09:37+0000\n"
+"POT-Creation-Date: 2015-03-23 18:42+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -209,14 +209,20 @@ msgstr "완료"
 msgid "Configure"
 msgstr "구성"
 
-msgid "starting glusterfs"
-msgstr "glusterfs 시작"
-
-msgid "a volume with this name already exists"
-msgstr "이 이름을 가진 볼륨 이 이미 존재합니다"
+msgid "mounting"
+msgstr "설치"
 
 msgid "Opening ports for glusterfs"
 msgstr "glusterfs 에 대한 포트 열기"
+
+msgid "starting glusterfs"
+msgstr "glusterfs 시작"
+
+msgid "Detaching"
+msgstr "분리"
+
+msgid "Gluster peer probe failure"
+msgstr "Gluster 피어 프로브 실패"
 
 msgid "Creating GlusterFS volume"
 msgstr "만들기 GlusterFS 볼륨"
@@ -230,29 +236,20 @@ msgstr "시작 GlusterFS 볼륨"
 msgid "There was a problem starting the volume"
 msgstr "볼륨을 시작 하는 동안 문제가 발생했습니다"
 
-msgid "Backing up"
-msgstr "백업"
-
-msgid "mounting"
-msgstr "설치"
-
-msgid "Copying in existing data"
-msgstr "기존 데이터 복사"
-
 msgid "Adding server to gluster volume"
 msgstr "gluster 볼륨에 서버 추가"
 
-msgid "probing server"
-msgstr "프로빙 서버"
+msgid "Restoring"
+msgstr "복원"
 
-msgid "completed"
-msgstr "완료"
+msgid "stopping glusterfs"
+msgstr "glusterfs 중지"
 
-msgid "getting brick count"
-msgstr "벽돌 수를 점점"
+msgid "Starting glusterfs"
+msgstr "glusterfs 시작"
 
-msgid "adding"
-msgstr "첨가"
+msgid "No volume information"
+msgstr "어떤 볼륨 정보가 없습니다"
 
 msgid "Creating the joomla database in mysql"
 msgstr "MySQL의 에서 줌라 데이터베이스 작성"
@@ -407,14 +404,14 @@ msgstr "종합 시작"
 msgid "Starting Postfix"
 msgstr "후위 시작"
 
-msgid "Starting Fail2ban"
-msgstr "Fail2ban 시작"
-
 msgid "Starting ClamD"
 msgstr "ClamD 시작"
 
 msgid "Starting MailScanner"
 msgstr "시작 MailScanner"
+
+msgid "Starting Fail2ban"
+msgstr "Fail2ban 시작"
 
 msgid "SOGo has been installed and can be accessed from"
 msgstr "소고 는 설치하고 액세스 할 수 있습니다"
@@ -511,6 +508,9 @@ msgstr "설치 과로사 바탕 화면"
 
 msgid "Please enter your choice for the karoshi and system password."
 msgstr "과로사 및 시스템 암호 에 대한 선택 사항을 입력하십시오."
+
+msgid "The passwords do not match. Please try again."
+msgstr "비밀번호가 일치하지 않습니다. 다시 시도하십시오."
 
 msgid "Configure Network"
 msgstr "네트워크 구성"
@@ -893,8 +893,8 @@ msgstr "삭제하려는 프린터를 선택하십시오."
 msgid "Add a slave UPS"
 msgstr "노예 UPS 추가"
 
-msgid "The UPS driver cannot be blank."
-msgstr "UPS 드라이버는 비워 둘 수 없습니다."
+msgid "The UPS server cannot be blank."
+msgstr "UPS 서버는 비워 둘 수 없습니다."
 
 msgid "The UPS has been added."
 msgstr "UPS 가 추가되었습니다."
@@ -1085,45 +1085,6 @@ msgstr "보기 주"
 msgid "Show open files"
 msgstr "열려있는 파일 보기"
 
-msgid "Add Additional Network Share"
-msgstr "추가 네트워크 공유를 추가"
-
-msgid "You have not entered a folder name."
-msgstr "당신은 폴더 이름을 입력하지 않았습니다."
-
-msgid "You have not entered a group."
-msgstr "당신은 그룹을 입력하지 않았습니다."
-
-msgid "You have not chosen any group permissions."
-msgstr "당신은 어떤 그룹 권한 을 선택 하지 않았습니다."
-
-msgid "You have not chosen any permissions for other users."
-msgstr "다른 사용자 에 대한 권한 을 선택 하지 않았습니다."
-
-msgid "You have not chosen a server name."
-msgstr "당신은 서버 이름 을 선택 하지 않았습니다."
-
-msgid "You have not chosen a server type."
-msgstr "당신은 서버 유형을 선택하지 않은 경우."
-
-msgid "You have not chosen a server master."
-msgstr "당신은 서버 마스터 를 선택하지 않은 경우."
-
-msgid "The folder you have chosen already exists in /home."
-msgstr "이미 선택한폴더 에 / 가정 이 존재한다."
-
-msgid "This share is already declared in the samba configuration file."
-msgstr "이 공유 는 이미 삼바 설정 파일 에 선언되어있다."
-
-msgid "Server"
-msgstr "서버"
-
-msgid "Share"
-msgstr "몫"
-
-msgid "This share has been added."
-msgstr "이 공유 가 추가되었습니다."
-
 msgid "Manage Print Queues"
 msgstr "인쇄 대기열 관리"
 
@@ -1159,6 +1120,60 @@ msgstr "메시지 크기 옵션은 반드시 입력해야합니다."
 
 msgid "The mailbox size option must not be blank."
 msgstr "사서함 크기 옵션은 반드시 입력해야합니다."
+
+msgid "Gluster Volume Control"
+msgstr "Gluster 볼륨 조절"
+
+msgid "Create Gluster Volume"
+msgstr "Gluster 볼륨 작성"
+
+msgid "View Gluster Volumes"
+msgstr "Gluster 볼륨 보기"
+
+msgid "Create Volume"
+msgstr "볼륨 만들기"
+
+msgid "Creating Volume"
+msgstr "만들기 볼륨"
+
+msgid "Add Folder"
+msgstr "폴더 추가"
+
+msgid "Ading Folder"
+msgstr "Ading 폴더"
+
+msgid "Assign Network Share"
+msgstr "네트워크 공유 를 할당"
+
+msgid "Remove Folder"
+msgstr "폴더를 제거"
+
+msgid "You have not entered a correct action."
+msgstr "당신은 올바른 행동을 입력하지 않았습니다."
+
+msgid "You have not entered a volume name."
+msgstr "당신은 볼륨 이름을 입력하지 않았습니다."
+
+msgid "You have not chosen any servers."
+msgstr "당신은 어떤 서버를 선택하지 않은 경우."
+
+msgid "You have to choose at least two servers to create a distributed volume."
+msgstr "당신은 분산 볼륨을 생성 하기 위해 두 개 이상의 서버를 선택해야합니다."
+
+msgid "This volume has already been created."
+msgstr "이 볼륨 은 이미 만들어졌습니다."
+
+msgid "You have not chosen a folder path."
+msgstr "당신은 폴더 경로를 선택하지 않은 경우."
+
+msgid "Gluster Controls"
+msgstr "Gluster 컨트롤"
+
+msgid "Home Folders"
+msgstr "홈 폴더"
+
+msgid "Gluster Volumes"
+msgstr "Gluster 볼륨"
 
 msgid "ZFS Status"
 msgstr "ZFS 상태"
@@ -1337,11 +1352,23 @@ msgstr "리눅스 클라이언트 소프트웨어 패키지"
 msgid "Blank version"
 msgstr "빈 버전"
 
-msgid "The software shown below will either be installed or removed by your linux client computers on boot."
-msgstr "아래의 소프트웨어 중 하나를 설치하거나 부팅 리눅스 클라이언트 컴퓨터에서 제거됩니다."
+msgid "Linux Client Software Controls"
+msgstr "리눅스 클라이언트 소프트웨어 제어"
+
+msgid "Software Controls"
+msgstr "소프트웨어 제어"
+
+msgid "The software shown below will be installed by your linux client computers on boot."
+msgstr "아래의 소프트웨어는 부팅시 리눅스 클라이언트 컴퓨터 에 설치됩니다."
 
 msgid "Add software package"
 msgstr "소프트웨어 패키지를 추가"
+
+msgid "Location"
+msgstr "위치"
+
+msgid "All locations"
+msgstr "모든 지역"
 
 msgid "Software Package"
 msgstr "소프트웨어 패키지"
@@ -1352,14 +1379,8 @@ msgstr "설치"
 msgid "Remove"
 msgstr "제거"
 
-msgid "Install List"
-msgstr "목록 설치"
-
 msgid "Delete"
 msgstr "삭제"
-
-msgid "Remove list"
-msgstr "제거 목록"
 
 msgid "Computer Logs"
 msgstr "컴퓨터 로그"
@@ -1433,9 +1454,6 @@ msgstr "요청 요약"
 msgid "Name"
 msgstr "이름"
 
-msgid "Location"
-msgstr "위치"
-
 msgid "Category"
 msgstr "범주"
 
@@ -1471,6 +1489,9 @@ msgstr "피드백"
 
 msgid "Linux Client Background"
 msgstr "리눅스 클라이언트 배경"
+
+msgid "The UPS driver cannot be blank."
+msgstr "UPS 드라이버는 비워 둘 수 없습니다."
 
 msgid "The UPS port cannot be blank."
 msgstr "UPS 포트는 비워 둘 수 없습니다."
@@ -2489,9 +2510,6 @@ msgstr "보기 디스크 사용 로그"
 msgid "The logview cannot be blank."
 msgstr "LogView의 는 비워 둘 수 없습니다."
 
-msgid "You have not chosen any servers."
-msgstr "당신은 어떤 서버를 선택하지 않은 경우."
-
 msgid "The disk usage logs show the overall usage for each partition on your server."
 msgstr "디스크 사용 로그는 서버의 각 파티션의 전체 사용량을 보여줍니다."
 
@@ -2603,44 +2621,20 @@ msgstr "자산 레지스터로부터 으로 iTALC 목록을 생성"
 msgid "This will generate Italc files from the asset register."
 msgstr "이는 자산 레지스터로부터 으로 iTALC 파일을 생성합니다."
 
-msgid "Linux Client Software Controls"
-msgstr "리눅스 클라이언트 소프트웨어 제어"
-
 msgid "The linux version must not be blank."
 msgstr "리눅스 버전은 반드시 입력해야합니다."
 
-msgid "Choose the linux client version that you want to set the software settings for."
-msgstr "당신이 소프트웨어 설정 을 설정하려면 리눅스 클라이언트 버전을 선택합니다."
+msgid "Software Packages"
+msgstr "소프트웨어 패키지"
 
-msgid "Auto"
-msgstr "자동"
+msgid "Choose the locations that you want to enable updates and software installs for."
+msgstr "업데이트를 사용하려면 소프트웨어 가 설치 위치를 선택합니다."
 
-msgid "Set this to auto to hide the software control dialog from appearing when setting up the clients."
-msgstr "클라이언트를 설정할 때 나타나는 에서 소프트웨어 제어 대화 상자를 숨길 자동 으로 설정합니다."
-
-msgid "Proprietary graphics"
-msgstr "독점 그래픽"
-
-msgid "This will tell the linux clients to install the relevant proprietary graphics driver for the client."
-msgstr "이 클라이언트에 대한 관련 독점 그래픽 드라이버를 설치 리눅스 클라이언트를 말할 것이다."
-
-msgid "Restricted extras"
-msgstr "제한된 엑스트라"
-
-msgid "This will install software that in a few countries licenses may be required."
-msgstr "이 작업은 몇 개국에 라이센스가 필요할 수 있습니다 소프트웨어를 설치합니다."
-
-msgid "Firmware"
-msgstr "펌웨어"
-
-msgid "This will install proprietary firmware."
-msgstr "이 독점 펌웨어를 설치합니다."
-
-msgid "Enable Software install"
+msgid "Enable software install"
 msgstr "설치 소프트웨어 사용"
 
-msgid "This will make the Linux clients install and remove any software in the software install and remove lists on boot up."
-msgstr "이것은 리눅스 클라이언트 설치 및 부팅 해서 목록을 제거 설치하고 소프트웨어에서 소프트웨어를 제거 할 것입니다."
+msgid "This will make the Linux clients install any software in the software install lists on boot up."
+msgstr "이것은 리눅스 클라이언트 소프트웨어의 소프트웨어 부팅 해서 목록을 설치 설치 하게됩니다."
 
 msgid "Enable updates"
 msgstr "업데이트 사용"
@@ -3398,6 +3392,12 @@ msgstr "MySQL의 비밀"
 msgid "Enter in the password for the database."
 msgstr "데이터베이스에 대한 암호를 입력합니다."
 
+msgid "Open Mysql Port"
+msgstr "열기 MySQL의 포트"
+
+msgid "This will open up port 3306 for mysql connections from remote devices."
+msgstr "이 원격 장치 에서 MySQL의 연결 포트 3306 을 엽니 다."
+
 msgid "Clear Web Management Warning Messages"
 msgstr "지우기 웹 관리 경고 메시지"
 
@@ -3515,9 +3515,6 @@ msgstr "짧은 이름 은 비워 둘 수 없습니다."
 msgid "The secret key cannot be blank."
 msgstr "비밀 키 는 비워 둘 수 없습니다."
 
-msgid "The secret keys do not match."
-msgstr "비밀 키 가 일치하지 않습니다."
-
 msgid "The TCPIP address is incorrect."
 msgstr "TCPIP 주소 가 올바르지 않습니다."
 
@@ -3553,6 +3550,9 @@ msgstr "당신은 이 서버에 대한 웹 별칭을 선택하지 않은 경우.
 
 msgid "Setup Owncloud"
 msgstr "설치 Owncloud"
+
+msgid "Owncloud allows you to access and synchronise your data from multiple devices."
+msgstr "Owncloud 는 액세스하고 여러 장치 에서 데이터를 동기화 할 수 있습니다."
 
 msgid "This will setup the Owncloud storage system for your users."
 msgstr "이 뜻을 설정 하여 사용자의 Owncloud 스토리지 시스템."
@@ -3710,9 +3710,6 @@ msgstr "HTTP 없이 메일 도메인 의 선택 에 입력: // WWW. 예 myemaild
 msgid "View Jobs"
 msgstr "보기 채용"
 
-msgid "You have not chosen a share."
-msgstr "당신은 공유를 선택 하지 않았습니다."
-
 msgid "Assign Printers to Locations"
 msgstr "위치 에 프린터 를 할당"
 
@@ -3821,18 +3818,6 @@ msgstr "관리자 는 웹 관리 의 모든 권한 을 가지고 있지만 다�
 msgid "Technicians can access a limited set of controls for day to day running of the system such as changing passwords."
 msgstr "기술자 는 암호 변경 으로 시스템 의 일 을 실행 에 하루 컨트롤 의 제한된 액세스 할 수 있습니다."
 
-msgid "View Additional Network Shares"
-msgstr "추가 네트워크 공유 보기"
-
-msgid "Group Permissions"
-msgstr "그룹 권한"
-
-msgid "Others Permissions"
-msgstr "기타 권한"
-
-msgid "Full Access"
-msgstr "전체 액세스"
-
 msgid "Custom Command"
 msgstr "사용자 지정 명령"
 
@@ -3929,11 +3914,11 @@ msgstr "주요 그룹은 비워 둘 수 없습니다."
 msgid "No other Karoshi servers have been set up."
 msgstr "다른 과로사 서버 가 설정 되지 않았습니다."
 
-msgid "No other Karoshi servers have been enabled as file servers."
-msgstr "다른 과로사 서버는 파일 서버 로 사용 되지 않았다."
+msgid "No other Karoshi servers have been enabled as file servers. You will need to add the file server module to an additional server."
+msgstr "다른 과로사 서버는 파일 서버 로 사용 되지 않았다. 당신은 추가 서버에 파일 서버 모듈을 추가해야합니다."
 
-msgid "IMPORTANT - Please ensure that users are not logged to ensure no data loss."
-msgstr "중요 - 사용자가 데이터 손실을 방지 하기 위해 기록되지 않습니다 있는지 확인하십시오."
+msgid "IMPORTANT - Please ensure that users are not logged to ensure that data is not lost."
+msgstr "중요 - 사용자 데이터가 손실 되지 않도록 하기 위해 로그인하지 않은 있는지 확인하십시오."
 
 msgid "Current Server"
 msgstr "현재 서버"
@@ -3947,8 +3932,8 @@ msgstr "이 새 서버로 기존 사용자 홈 영역을 복사합니다. 전송
 msgid "New Server"
 msgstr "새 서버"
 
-msgid "Choose server"
-msgstr "서버를 선택"
+msgid "Select Server"
+msgstr "서버 선택"
 
 msgid "Web Management Information"
 msgstr "웹 관리 정보"
@@ -4060,9 +4045,6 @@ msgstr "당신이 원하는 기본 우선 순위 를 선택합니다."
 
 msgid "Banned E-mail Domains"
 msgstr "금지 된 전자 메일 도메인"
-
-msgid "Ban E-Mail Domain"
-msgstr "반 전자 메일 도메인"
 
 msgid "Ban Domain"
 msgstr "반 도메인"
@@ -4295,6 +4277,9 @@ msgstr "당신이 파일을 업로드 할 웹 서버를 선택합니다."
 msgid "There are no web servers to upload files to."
 msgstr "파일을 업로드 하는 웹 서버 가 없습니다."
 
+msgid "Choose server"
+msgstr "서버를 선택"
+
 msgid "Setup Joomla Website"
 msgstr "설정 의 Joomla 웹 사이트"
 
@@ -4348,6 +4333,9 @@ msgstr "올바른 분 을 입력하지 않았습니다."
 
 msgid "You have not entered the correct seconds."
 msgstr "올바른 초 를 입력하지 않았습니다."
+
+msgid "Share"
+msgstr "몫"
 
 msgid "Proxy settings have been removed."
 msgstr "프록시 설정이 제거되었습니다."
@@ -4511,8 +4499,8 @@ msgstr "목록에서 UPS 장치를 선택합니다."
 msgid "Choose auto for UPS devices connected via usb."
 msgstr "USB 를 통해 연결된 UPS 장치에 대한 자동 을 선택합니다."
 
-msgid "Add ups"
-msgstr "업 추가"
+msgid "Add UPS"
+msgstr "UPS 추가"
 
 msgid "Allow Roaming Profile"
 msgstr "프로필 로밍 허용"
@@ -4552,6 +4540,9 @@ msgstr "웹 관리 로 변경되었습니다"
 
 msgid "Choose client version"
 msgstr "클라이언트 버전을 선택"
+
+msgid "Choose the linux client version that you want to set the software settings for."
+msgstr "당신이 소프트웨어 설정 을 설정하려면 리눅스 클라이언트 버전을 선택합니다."
 
 msgid "Username or E-mail address"
 msgstr "아이디 또는 이메일 주소"
@@ -4706,6 +4697,9 @@ msgstr "Windows 시작 메뉴 - 선택"
 msgid "The selected start menu has been copied to all of the chosen groups."
 msgstr "선택한 시작 메뉴가 선택된 모든 그룹 에 복사 되었습니다."
 
+msgid "The software shown below will either be installed or removed by your linux client computers on boot."
+msgstr "아래의 소프트웨어 중 하나를 설치하거나 부팅 리눅스 클라이언트 컴퓨터에서 제거됩니다."
+
 msgid "Generate Internet Logs"
 msgstr "인터넷 로그를 생성"
 
@@ -4747,30 +4741,6 @@ msgstr "설치 연맹 제어"
 
 msgid "Warning - this will delete all existing users from this server and import all of the users from your main server."
 msgstr "경고 - 이 이 서버 에서 모든 기존 사용자를 삭제하고 주요 서버에서 모든 사용자 를 가져옵니다."
-
-msgid "This show as information for your clients when they look at the network share."
-msgstr "고객 에 대한 정보 등 이 표시 는 네트워크 공유 를 볼 때."
-
-msgid "Folder Name"
-msgstr "폴더 이름"
-
-msgid "This will create a folder in /home with the name that you specify."
-msgstr "이 사용자가 지정한 이름 에 / 홈폴더를 생성합니다."
-
-msgid "Enter in the name of the group that you want to allow access to the folder."
-msgstr "폴더 에 대한 액세스를 허용 할 그룹 의 이름을 입력합니다."
-
-msgid "Choose the permissions that you want to set for this group for the share."
-msgstr "당신이 공유에 대한 이 그룹 에 설정할 권한을 선택합니다."
-
-msgid "No access"
-msgstr "No access (접속 금지)"
-
-msgid "Choose the permissions that you want to allow for anyone else not in the group."
-msgstr "당신이 없는 그룹의 다른 사람 에 허용 할 권한을 선택합니다."
-
-msgid "Add share"
-msgstr "주 추가"
 
 msgid "Disk drives"
 msgstr "디스크 드라이브"
@@ -4826,14 +4796,14 @@ msgstr "압축 폴더"
 msgid "You need to upload a zip or tar.gz file of your chosen application data folders."
 msgstr "당신은 당신의 선택 응용 프로그램 데이터 폴더의 zip 또는 tar.gz의 파일을 업로드 해야합니다."
 
-msgid "Blank list"
-msgstr "빈 목록"
-
 msgid "Blank action"
 msgstr "빈 조치"
 
 msgid "You have not entered in a software package."
 msgstr "사용자는소프트웨어 패키지에 입력하지."
+
+msgid "You have not entered in a location."
+msgstr "당신은 위치 에 입력 하지 않았습니다."
 
 msgid "You must choose a website to view the logs for."
 msgstr "당신 의 로그 를 볼 수 있는 웹 사이트를 선택해야합니다."
@@ -5135,11 +5105,14 @@ msgstr "보기 자산"
 msgid "View internet logs"
 msgstr "보기 인터넷 로그"
 
-msgid "Home Folders"
-msgstr "홈 폴더"
+msgid "Network Shares"
+msgstr "네트워크 공유"
 
 msgid "This displays the server that hosts the home folders for each group."
 msgstr "이는 각 그룹의 홈 폴더 를 호스팅하는 서버 를 표시합니다."
+
+msgid "Server"
+msgstr "서버"
 
 msgid "Change"
 msgstr "변화"
@@ -5236,9 +5209,6 @@ msgstr "새로운 사용자 요청"
 
 msgid "File Manager"
 msgstr "파일 관리자"
-
-msgid "You have not entered a correct action."
-msgstr "당신은 올바른 행동을 입력하지 않았습니다."
 
 msgid "The owner cannot be blank."
 msgstr "소유자는 비워 둘 수 없습니다."
@@ -5639,6 +5609,24 @@ msgstr "데이터는선택된 그룹의 모든 계정 에 복사 되고있다."
 msgid "There was a problem copying the files to the group."
 msgstr "그룹에 파일을 복사 하는 과정에서 문제가 발생했습니다."
 
+msgid "You have not entered an email address."
+msgstr "당신은 이메일 주소를 입력 하지 않았습니다."
+
+msgid "View Whitelists"
+msgstr "보기 화이트리스트"
+
+msgid "Adding a whitelist will allow emails to be recieved from the alias address without them being checked for spam."
+msgstr "화이트리스트 를 추가하는 것은 그들이 스팸 을 검사 하지 않고 이메일 별칭 주소에서 받았다 될 수 있습니다."
+
+msgid "Add a Whitelist"
+msgstr "화이트리스트 추가"
+
+msgid "These are the email whitelists addresses that are currently active for your email system."
+msgstr "이들은 당신의 이메일 시스템 에 대해 현재 활성화 된 이메일 화이트리스트 의 주소입니다."
+
+msgid "E-Mail Whitelists"
+msgstr "이메일 화이트리스트"
+
 msgid "There is no PPD file available."
 msgstr "사용 가능한 PPD 파일이 없습니다."
 
@@ -5776,6 +5764,15 @@ msgstr "입력 한키 가 너무 깁니다."
 
 msgid "This secret key has been added. Please ensure that it is also added to your wireless access points."
 msgstr "이 비밀 키 가 추가되었습니다. 그것은 또한 당신의 무선 액세스 포인트 에 추가되었는지 확인하십시오."
+
+msgid "Package Cache Control"
+msgstr "패키지 캐시 제어"
+
+msgid "The site must not be blank."
+msgstr "이 사이트는 반드시 입력해야합니다."
+
+msgid "This allows sites to be accessed via squid deb proxy for updating packages on client computers."
+msgstr "이 사이트는 클라이언트 컴퓨터에 패키지를 업데이트하는 오징어 뎁 프록시 를 통해 액세스 할 수 있습니다."
 
 msgid "Enter in the username that you want to apply these settings to."
 msgstr "당신이 이 설정을 적용 할 사용자 이름 을 입력합니다."
@@ -6001,6 +5998,12 @@ msgstr "볼 수있는 완성 된 요청 이 없습니다."
 
 msgid "You have not chosen a backup server."
 msgstr "당신은 백업 서버 를 선택하지 않은 경우."
+
+msgid "The version has not been set."
+msgstr "버전 이 설정 되지 않았다."
+
+msgid "The location has not been set."
+msgstr "위치 가 설정되지 않았습니다."
 
 msgid "An incorrect password has been added for the root samba account on the PDC or it is not responding"
 msgstr "잘못된 암호는 PDC 의 루트 삼바 계정 에 대한 지원이 추가되었습니다 거나 응답하지 않습니다"
@@ -6425,6 +6428,12 @@ msgstr "메인 메뉴"
 msgid "Documentation"
 msgstr "설명서"
 
+msgid "Forum"
+msgstr "포럼"
+
+msgid "IRC"
+msgstr "IRC"
+
 msgid "Helpdesk"
 msgstr "헬프 데스크"
 
@@ -6485,6 +6494,12 @@ msgstr "사용자 프린터 사용"
 msgid "Add User Limit"
 msgstr "사용자 제한 추가"
 
+msgid "Aliases"
+msgstr "별칭"
+
+msgid "Whitelists"
+msgstr "화이트리스트"
+
 msgid "Banned E-Mail domains"
 msgstr "금지 된 전자 메일 도메인"
 
@@ -6514,6 +6529,39 @@ msgstr "이 뜻을 설정 하여 사이트에 대한 Xibo 디지털 사이 니�
 
 msgid "Xibo Domain"
 msgstr "Xibo 도메인"
+
+msgid "You have not entered a folder name."
+msgstr "당신은 폴더 이름을 입력하지 않았습니다."
+
+msgid "You have not entered a group."
+msgstr "당신은 그룹을 입력하지 않았습니다."
+
+msgid "You have not chosen any group permissions."
+msgstr "당신은 어떤 그룹 권한 을 선택 하지 않았습니다."
+
+msgid "You have not chosen a server name."
+msgstr "당신은 서버 이름 을 선택 하지 않았습니다."
+
+msgid "You have not chosen a server type."
+msgstr "당신은 서버 유형을 선택하지 않은 경우."
+
+msgid "You have not chosen a server master."
+msgstr "당신은 서버 마스터 를 선택하지 않은 경우."
+
+msgid "View Network Shares"
+msgstr "보기 네트워크 공유"
+
+msgid "Add Network Share"
+msgstr "네트워크 공유 추가"
+
+msgid "Delete Network Share"
+msgstr "네트워크 공유 를 삭제"
+
+msgid "A folder with this name already exists."
+msgstr "같은 이름의 폴더가 이미 존재합니다."
+
+msgid "This share already exits in samba."
+msgstr "이 공유는 이미 삼바 에 종료됩니다."
 
 msgid "No web sites have been added to the reverse proxy list."
 msgstr "어떠한 웹 사이트는리버스 프록시 리스트에 추가 되지 않았다."
@@ -6578,6 +6626,9 @@ msgstr "솔루션 에CAS 단일 로그인 가입 이 의지 설정."
 msgid "WARNING - An internet connect is required to install this module."
 msgstr "경고 -인터넷 은 이 모듈을 설치하는 데 필요한 연결합니다."
 
+msgid "Ban E-Mail Domain"
+msgstr "반 전자 메일 도메인"
+
 msgid "Banned Domains"
 msgstr "금지 된 도메인"
 
@@ -6610,9 +6661,6 @@ msgstr "당신은 요청 또는 문제 에 입력 하지 않았습니다."
 
 msgid "You have not chosen a department."
 msgstr "당신은 부서 를 선택 하지 않았습니다."
-
-msgid "You have not entered in a location."
-msgstr "당신은 위치 에 입력 하지 않았습니다."
 
 msgid "The search criteria cannot be blank."
 msgstr "검색 기준은 비워 둘 수 없습니다."
@@ -6665,12 +6713,6 @@ msgstr "로그 아웃"
 msgid "Help"
 msgstr "도와주세요"
 
-msgid "Forum"
-msgstr "포럼"
-
-msgid "IRC"
-msgstr "IRC"
-
 msgid "View Completed Requests"
 msgstr "보기 완료 요청"
 
@@ -6704,6 +6746,12 @@ msgstr "별도의 계정을 만듭니다"
 msgid "Servers"
 msgstr "서버"
 
+msgid "ZFS Raid"
+msgstr "ZFS 레이드"
+
+msgid "Software Raid"
+msgstr "소프트웨어 RAID"
+
 msgid "Disk Quotas"
 msgstr "디스크 할당량"
 
@@ -6716,17 +6764,8 @@ msgstr "보기 활성화 파티션"
 msgid "Apply Quota settings"
 msgstr "할당량 설정을 적용합니다"
 
-msgid "ZFS Raid"
-msgstr "ZFS 레이드"
-
-msgid "Software Raid"
-msgstr "소프트웨어 RAID"
-
 msgid "Find Student Files"
 msgstr "학생 파일 찾기"
-
-msgid "Add Network Share"
-msgstr "네트워크 공유 추가"
 
 msgid "Federated File Sync"
 msgstr "연합 파일 동기화"
@@ -6833,8 +6872,11 @@ msgstr "프린터 회계 로그"
 msgid "Use E-Mail relay"
 msgstr "사용 된 전자 메일 릴레이"
 
-msgid "E-Mail Access Controls"
-msgstr "전자 메일 액세스 제어"
+msgid "Access Controls"
+msgstr "액세스 제어"
+
+msgid "Limits"
+msgstr "제한"
 
 msgid "Search E-Mail Logs"
 msgstr "검색 전자 메일 로그"
@@ -6859,6 +6901,9 @@ msgstr "인터넷 로그"
 
 msgid "Update Time"
 msgstr "업데이트 시간"
+
+msgid "Gluster Volume"
+msgstr "Gluster 볼륨"
 
 msgid "Staff"
 msgstr "직원"
@@ -7094,6 +7139,75 @@ msgstr "어떤 오류가이 아카이브에 감지되지."
 msgid "Copying to"
 msgstr "복사하기"
 
+msgid "This show as information for your clients when they look at the network share."
+msgstr "고객 에 대한 정보 등 이 표시 는 네트워크 공유 를 볼 때."
+
+msgid "Folder Name"
+msgstr "폴더 이름"
+
+msgid "This will create a folder in /home with the name that you specify."
+msgstr "이 사용자가 지정한 이름 에 / 홈폴더를 생성합니다."
+
+msgid "Enter in the name of the group that you want to allow access to the folder."
+msgstr "폴더 에 대한 액세스를 허용 할 그룹 의 이름을 입력합니다."
+
+msgid "Full Access"
+msgstr "전체 액세스"
+
+msgid "Choose the permissions that you want to set for this group for the share."
+msgstr "당신이 공유에 대한 이 그룹 에 설정할 권한을 선택합니다."
+
+msgid "Map drive"
+msgstr "지도 드라이브"
+
+msgid "Do not map drive"
+msgstr "드라이브를 매핑 하지 마십시오"
+
+msgid "All Users"
+msgstr "모든 사용자"
+
+msgid "No Access"
+msgstr "권한 없음 없음"
+
+msgid "Add share"
+msgstr "주 추가"
+
+msgid "Network Share"
+msgstr "네트워크 공유"
+
+msgid "Path"
+msgstr "통로"
+
+msgid "This will delete the share definition but will not delete the folder."
+msgstr "이 공유 정의를 삭제 하지만 폴더를 삭제 하지 않습니다."
+
+msgid "Are you sure that you want to delete this share?"
+msgstr "당신은 당신 이 공유 를 삭제 하시겠습니까?"
+
+msgid "Delete Share"
+msgstr "공유 삭제"
+
+msgid "Cancel"
+msgstr "취소"
+
+msgid "Server Path"
+msgstr "서버 경로"
+
+msgid "Groups"
+msgstr "그룹"
+
+msgid "Permissions"
+msgstr "권한"
+
+msgid "Map Drive"
+msgstr "지도 드라이브"
+
+msgid "Read Only"
+msgstr "읽기 전용"
+
+msgid "Yes"
+msgstr "예"
+
 msgid "Boot status"
 msgstr "부팅 상태"
 
@@ -7120,6 +7234,54 @@ msgstr "사용자 편집 제한"
 
 msgid "Edit Group Limit"
 msgstr "그룹 편집 제한"
+
+msgid "Volume"
+msgstr "체적"
+
+msgid "Folder"
+msgstr "폴더"
+
+msgid "This will delete all of the data in the folder."
+msgstr "이것은폴더에모든 데이터를 삭제 한다."
+
+msgid "Are you sure that you want to delete this folder?"
+msgstr "당신은 당신이 이 폴더를 삭제 하시겠습니까?"
+
+msgid "No folders have been added to this volume."
+msgstr "어떤 폴더가 이 볼륨에 추가 되지 않았습니다."
+
+msgid "Copying data to"
+msgstr "로 데이터 복사"
+
+msgid "IMPORTANT - Please ensure that users are not logged in to ensure that data is not lost."
+msgstr "중요 - 사용자가 데이터가 손실 되지 않도록 하기 위해 로그인하지 있는지 확인하십시오."
+
+msgid "Folder Path"
+msgstr "폴더 경로"
+
+msgid "Enter in the full path that you want to add to the gluster volume."
+msgstr "당신이 gluster 볼륨 에 추가 할 전체 경로 에 입력합니다."
+
+msgid "Server data source"
+msgstr "서버 데이터 소스"
+
+msgid "Volume Name"
+msgstr "볼륨 이름"
+
+msgid "Folders"
+msgstr "폴더"
+
+msgid "No folders have been assigned."
+msgstr "어떤 폴더 가 지정 되지 않았습니다."
+
+msgid "Add folder"
+msgstr "폴더 추가"
+
+msgid "Remove folder"
+msgstr "폴더를 제거"
+
+msgid "Assign Home Folders"
+msgstr "홈 폴더 지정"
 
 msgid "Search term"
 msgstr "검색어"
@@ -7313,6 +7475,12 @@ msgstr "이 주 서버와 동일한 영역 에 있어야 이 서버 쇼를위한
 msgid "SSH connection failure"
 msgstr "SSH 연결 실패"
 
+msgid "This server has been re-installed"
+msgstr "이 서버는 다시 설치 한"
+
+msgid "You will need to re-install all of the modules for this server."
+msgstr "당신은 이 서버의 모든 모듈 을 다시 설치해야합니다."
+
 msgid "No Role"
 msgstr "어떤 역할 없습니다"
 
@@ -7373,6 +7541,15 @@ msgstr "예비 제거"
 msgid "This printer does not support accounting."
 msgstr "이 프린터는 회계 를 지원하지 않습니다."
 
+msgid "Address"
+msgstr "주소"
+
+msgid "E-Mail Address or domain"
+msgstr "전자 메일 주소 또는 도메인"
+
+msgid "Enter in the E-Mail address or domain that you want to add to the whitelist."
+msgstr "당신이 화이트리스트 에 추가 할 전자 메일 주소 또는 도메인 을 입력합니다."
+
 msgid "This server does not have the correct authentication set up on it."
 msgstr "이 서버는 에 설정 한 올바른 인증 이 없습니다."
 
@@ -7412,17 +7589,23 @@ msgstr "이 계정의 암호를 변경."
 msgid "Making sure that apache and mysql are running"
 msgstr "아파치 와 MySQL 이 실행되고 있는지 확인하고"
 
-msgid "Setting apache and mysql to start on boot."
-msgstr "아파치 와 MySQL 을 설정하면 부팅시 시작합니다."
+msgid "Setting apache and mysql to start on boot"
+msgstr "아파치 와 MySQL 을 설정하면 부팅시 시작"
 
-msgid "Checking shorewall ports."
-msgstr "shorewall 포트를 확인하고 있습니다."
+msgid "Checking shorewall ports"
+msgstr "shorewall 포트 확인"
 
-msgid "Opening ports 80 and 443."
-msgstr "포트 80 과 443 을 엽니 다."
+msgid "Opening ports 80 and 443"
+msgstr "열기 포트 80 및 443"
 
-msgid "Opening ports 20 and 21."
-msgstr "포트 20 과 21 을 엽니 다."
+msgid "Opening ports 20 and 21"
+msgstr "열기 포트 20과 21"
+
+msgid "Opening port 3306"
+msgstr "열기 포트 3306"
+
+msgid "Closing port 3306"
+msgstr "닫기 포트 3306"
 
 msgid "Creating Database"
 msgstr "만들기 데이터베이스"
@@ -7567,6 +7750,12 @@ msgstr "FTP 서버"
 
 msgid "Distributed FS Server"
 msgstr "분산 FS 서버"
+
+msgid "Dnsmasq service"
+msgstr "하는 dnsmasq 서비스"
+
+msgid "Add in a site that you want to allow for the clients to connect to."
+msgstr "당신은 클라이언트 가 연결을 허용 할 사이트 에 추가합니다."
 
 msgid "Realm"
 msgstr "왕국"
@@ -7952,9 +8141,6 @@ msgstr "여기에 이동?"
 msgid "Copy here?"
 msgstr "여기에 복사?"
 
-msgid "Cancel"
-msgstr "취소"
-
 msgid "This item is protected and cannot be moved or copied."
 msgstr "이 항목은 보호되고 이동하거나 복사 할 수 없습니다."
 
@@ -7976,9 +8162,6 @@ msgstr "권한 설정"
 msgid "Basic Information"
 msgstr "기본 정보"
 
-msgid "Path"
-msgstr "통로"
-
 msgid "Last accessed"
 msgstr "마지막 액세스"
 
@@ -7990,9 +8173,6 @@ msgstr "소유권"
 
 msgid "User"
 msgstr "사용자"
-
-msgid "Permissions"
-msgstr "권한"
 
 msgid "Exec"
 msgstr "Exec에서"

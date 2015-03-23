@@ -114,7 +114,7 @@ chmod 0770 /var/www/html/kanboard/data
 
 LDAPSERVER=127.0.0.1
 #Get ldap server to use
-[ `grep -c -w "kdc" /etc/krb5.conf` -gt 0 ] && LDAPSERVER=`grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | cut -d"=" -f2`
+[ `grep -c -w "kdc" /etc/krb5.conf` -gt 0 ] && LDAPSERVER=`grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | sed -n 1,1p | cut -d"=" -f2`
 
 #CHANGE THIS - needs to point at the correct server.
 sed -i 's/CHANGETHISSERVER/'$LDAPSERVER'/g' /var/www/html/kanboard/config.php
