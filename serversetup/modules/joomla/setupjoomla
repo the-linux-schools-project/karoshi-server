@@ -92,11 +92,11 @@ MYSQLPASS=`sed -n 1,1p /etc/mysql.secret`
 ########################
 #Drop joomla database if exists, create a new one and pipe in the data
 ########################
-mysqladmin -f --password=$MYSQLPASS drop joomla25 1>/dev/null 2>/dev/null
-mysqladmin --password=$MYSQLPASS create joomla25 1>/dev/null
+mysqladmin -f --password=$MYSQLPASS drop joomla 1>/dev/null 2>/dev/null
+mysqladmin --password=$MYSQLPASS create joomla 1>/dev/null
 CONNECT_STATUS=`echo $?`
-mysql --password=$MYSQLPASS joomla25 < /opt/karoshi/serversetup/modules/joomla/joomla.sql
-echo GRANT ALL PRIVILEGES ON joomla25.\* TO "'"joomla_user"'"@"'"localhost"'" IDENTIFIED BY "'"$WBPASS"'"';' > /opt/karoshi/.tempdata/wbperms.sql
+mysql --password=$MYSQLPASS joomla < /opt/karoshi/serversetup/modules/joomla/joomla.sql
+echo GRANT ALL PRIVILEGES ON joomla.\* TO "'"joomla_user"'"@"'"localhost"'" IDENTIFIED BY "'"$WBPASS"'"';' > /opt/karoshi/.tempdata/wbperms.sql
 mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/wbperms.sql
 #rm -f /opt/karoshi/.tempdata/wbperms.sql
 ##########################

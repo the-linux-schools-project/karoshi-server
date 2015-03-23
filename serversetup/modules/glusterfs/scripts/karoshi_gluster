@@ -288,7 +288,7 @@ do
 		#Make sure that peer probe is successfull
 		PCOUNTER=1
 		sleep 1
-		while  [ `gluster peer status | grep -c '$PROBESERVER'` = 0 ]
+		while  [ `gluster peer status | grep -c '$MAINSERVER'` = 0 ]
 		do
 			sleep 1
 			let PCOUNTER=$PCOUNTER+1
