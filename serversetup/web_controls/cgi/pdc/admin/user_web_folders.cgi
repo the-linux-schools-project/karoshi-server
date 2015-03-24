@@ -174,7 +174,9 @@ fi
 echo '</div></div><div id="mobileactionbox">
 '
 else
-echo '<div id="'$DIV_ID'"><div id="titlebox">'
+echo '<div id="'$DIV_ID'">'
+
+[ -z "$GROUP" ] && echo '<div id="titlebox">'
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr>
