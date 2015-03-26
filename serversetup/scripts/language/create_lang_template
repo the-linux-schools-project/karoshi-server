@@ -3,7 +3,8 @@
 
 CREATE_TEMPLATE=no
 CREATEPOFILES=yes
-LANGLIST="ar+cs+da+de+el+es+fr+hi+he+it+ko+nb+nl+pl+pt+ru+sv+zh"
+#LANGLIST="ar+cs+da+de+el+es+fr+hi+he+it+ko+nb+nl+pl+pt+ru+sv+zh"
+LANGLIST="cy"
 
 function createtemplate {
 #Create a karoshi server language template
@@ -15,6 +16,7 @@ sed -i 's/SOME DESCRIPTIVE TITLE./Karoshi Server Language Template/' /opt/karosh
 sed -i 's/Copyright (C) YEAR/Copyright (C) 2014/' /opt/karoshi/serversetup/language/karoshi-server.pot 
 sed -i 's/PACKAGE package/karoshi Server package/' /opt/karoshi/serversetup/language/karoshi-server.pot
 sed -i 's/FIRST AUTHOR <EMAIL@ADDRESS>, YEAR./Paul Sharrad <mpsharrad@karoshi.org.uk>, 2014./' /opt/karoshi/serversetup/language/karoshi-server.pot
+sed -i 's/CHARSET/UTF-8/' /opt/karoshi/serversetup/language/karoshi-server.pot
 }
 
 function translatetxt {

@@ -492,7 +492,7 @@ then
 
 	#Add gluster brick to volume
 	gluster volume add-brick $VOLUME replica $BRICKCOUNT $SERVER:$GLUSTERBASE/$VOLUME force
-	echo "<br>"
+	echo "<br><br>"
 
 	#Mount the drive
 	mount_volume

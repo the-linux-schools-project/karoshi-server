@@ -107,11 +107,21 @@ then
 		#Delete variable
 		sed -i $LINENUMBER'd' /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 	fi
+
+	LINENUMBER2=`grep -n ^"export LC_ALL=" /opt/karoshi/web_controls/user_prefs/$REMOTE_USER | cut -d: -f1`
+	if [ ! -z "$LINENUMBER2" ]
+	then
+		#Delete variable
+		sed -i $LINENUMBER2'd' /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+	fi	
+
 	#Delete empty lines
-	 sed -i '/^$/d' /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+	sed -i '/^$/d' /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 fi
 #Add variable
 echo export LANG=\"$LANGCHOICE\" >> /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+echo export LC_ALL=\"\" >> /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 chmod 0640 /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 chown root.apache_karoshi /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 exit
+

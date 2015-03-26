@@ -57,14 +57,14 @@ END_POINT=3
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = GROUPcheck ]
-then
-let COUNTER=$COUNTER+1
-GROUP=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = GROUPcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		GROUP=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -80,37 +80,37 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that PRIMARYGROUP is not blank
-if [ $GROUP'null' = null ]
+if [ -z "$GROUP" ]
 then
-MESSAGE=$"The primary group cannot be blank."
-show_status
+	MESSAGE=$"The primary group cannot be blank."
+	show_status
 fi
 
-echo '<div id="actionbox"><b>'$"Show all users in a group"' - '$GROUP'</b><br><br>'
+echo '<div id="actionbox3"><div id="titlebox"><b>'$"Show all users in a group"' - '$GROUP'</b><br><br></div><div id="infobox">'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/show_users_in_a_group.cgi | cut -d' ' -f1`
 #Show User info
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$GROUP:" | sudo -H /opt/karoshi/web_controls/exec/show_users_in_a_group
-echo "</div></div></body></html>"
+echo "</div></div></div></body></html>"
 exit

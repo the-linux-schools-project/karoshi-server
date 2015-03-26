@@ -113,7 +113,7 @@ echo '<form action="show_user_info.cgi" target="_blank" method="post"><table cla
 '
 
 function get_ldap_info {
-LDAPDATA=`ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME  | tr -cd "A-Za-z0-9\n=:@"`
+LDAPDATA=`ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME  | tr -cd "A-Za-z0-9\n=:@."`
 UIDNUMBER=`echo -e "$LDAPDATA" | grep ^uidNumber: | cut -d: -f2 | sed 's/^ //g'`
 EMPLOYEENUMBER=`echo -e "$LDAPDATA" | grep ^employeeNumber: | cut -d: -f2 | sed 's/^ //g'`
 MAIL=`echo -e "$LDAPDATA" | grep ^mail: | cut -d: -f2 | sed 's/^ //g'`
@@ -123,7 +123,9 @@ SN=`echo -e "$LDAPDATA" | grep ^sn: | cut -d: -f2 | sed 's/^ //g'`
 GIVENNAME=`echo -e "$LDAPDATA" | grep ^givenName: | cut -d: -f2 | sed 's/^ //g'`
 }
 
-for USERNAME in `getent passwd | grep /$PRIMARYGROUP/ | cut -d: -f1`
+source /opt/karoshi/server_network/group_information/$PRIMARYGROUP
+
+for USERNAME in `getent passwd | grep $HOMEPATH/ | cut -d: -f1`
 do
 	get_ldap_info
 	echo '<tr><td>'$USERNAME'</td><td>'$UIDNUMBER'</td><td>'$EMPLOYEENUMBER'</td><td>'$GIVENNAME'</td><td>'$SN'</td><td>'$MAIL'</td>

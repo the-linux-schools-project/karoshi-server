@@ -82,7 +82,7 @@ echo '</head><body><div id="pagecontainer">'
 if [ $MOBILE = no ]
 then
 DIV_ID=actionbox
-HEIGHT=20
+HEIGHT=25
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -114,6 +114,7 @@ function create_lang_list {
 echo '<select name="___LANGCHOICE___" style="width: 185px; height: '$HEIGHT'px;"><option></option>'
 echo '<option value="ar_AE.UTF-8">العربية</option>
 <option value="cs_CZ.UTF-8">Čeština</option>
+<option value="cy_GB.UTF-8">Cymraeg</option>
 <option value="da_DK.UTF-8">Dansk</option>
 <option value="de_DE.UTF-8">Deutsch</option>
 <option value="el_GR.UTF-8">Eλληνικά</option>

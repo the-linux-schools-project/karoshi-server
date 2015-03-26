@@ -176,7 +176,7 @@ echo '</div></div><div id="mobileactionbox">
 else
 echo '<div id="'$DIV_ID'">'
 
-[ -z "$GROUP" ] && echo '<div id="titlebox">'
+[ ! -z "$GROUP" ] && echo '<div id="titlebox">'
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr>
@@ -193,7 +193,6 @@ fi
 #Show list of groups to check
 if [ -z "$GROUP" ]
 then
-	[ $MOBILE = no ] && echo '</div><div id="infobox">'
 	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 	    <tbody><tr><td style="width: '$WIDTH1'px;">'$"Primary Group"'</td>
 	<td>'
@@ -202,7 +201,7 @@ then
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_web_folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to set the web folder status for."'</span></a></td>
 	</tr></tbody></table><br><br>
 	'
-	[ $MOBILE = no ] && echo '</div></div><div id="submitbox">'
+	[ $MOBILE = no ] && echo '</div><div id="submitbox">'
 	echo '<input value="'$"Submit"'" class="button" type="submit">
 	</div></form></div></body></html>
 	'

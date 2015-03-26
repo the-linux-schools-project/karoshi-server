@@ -89,16 +89,24 @@ fi
 if [ -f /opt/karoshi/web_controls/global_prefs ]
 then
 	LINENUMBER=`grep -n ^"export LANG=" /opt/karoshi/web_controls/global_prefs | cut -d: -f1`
-	if [ $LINENUMBER'null' != null ]
+	if [ ! -z "$LINENUMBER" ]
 	then
 		#Delete variable
 		sed -i $LINENUMBER'd' /opt/karoshi/web_controls/global_prefs
 	fi
+	LINENUMBER2=`grep -n ^"export LC_ALL=" /opt/karoshi/web_controls/global_prefs | cut -d: -f1`
+	if [ ! -z "$LINENUMBER2" ]
+	then
+		#Delete variable
+		sed -i $LINENUMBER2'd' /opt/karoshi/web_controls/global_prefs
+	fi
+
 	#Delete empty lines
 	 sed -i '/^$/d' /opt/karoshi/web_controls/global_prefs
 fi
 #Add variable
 echo export LANG=\"$LANGCHOICE\" >> /opt/karoshi/web_controls/global_prefs
+echo export LC_ALL=\"\" >> /opt/karoshi/web_controls/global_prefs
 chmod 0640 /opt/karoshi/web_controls/global_prefs
 chown root.apache_karoshi /opt/karoshi/web_controls/global_prefs
 exit
