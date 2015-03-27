@@ -111,9 +111,9 @@ function getnetworksettings {
 
 if [ $SCARDCOUNT -gt 1 ]
 then
-	DATA=`yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --field=$"Server name" "$NAMECUSTOM" --field=$"TCPIP" "$TCPIPCUSTOM" --field=$"Netmask" "$NETMASKCUSTOM" --field=$"Name Server" "$NAMESERVERCUSTOM" --field=$"Gateway" "$GATEWAYCUSTOM" --field=$"Bond mode":CB 'mode0!mode1!mode4' --button="gtk-ok"`
+	DATA=`yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --field=$"Server name" "$NAMECUSTOM" --field=$"TCPIP" "$TCPIPCUSTOM" --field=$"Netmask" "$NETMASKCUSTOM" --field=$"DNS Server" "$NAMESERVERCUSTOM" --field=$"Gateway" "$GATEWAYCUSTOM" --field=$"Bond mode":CB 'mode0!mode1!mode4' --button="gtk-ok"`
 else
-	DATA=`yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --field=$"Server name" "$NAMECUSTOM" --field=$"TCPIP" "$TCPIPCUSTOM" --field=$"Netmask" "$NETMASKCUSTOM" --field=$"Name Server" "$NAMESERVERCUSTOM" --field=$"Gateway" "$GATEWAYCUSTOM" --button="gtk-ok" 2>/dev/null`
+	DATA=`yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --field=$"Server name" "$NAMECUSTOM" --field=$"TCPIP" "$TCPIPCUSTOM" --field=$"Netmask" "$NETMASKCUSTOM" --field=$"DNS Server" "$NAMESERVERCUSTOM" --field=$"Gateway" "$GATEWAYCUSTOM" --button="gtk-ok" 2>/dev/null`
 fi
 
 NAMECUSTOM=`echo $DATA | cut -d"|" -f1 | tr -cd 'A-Za-z1-9-' | sed 's/^-//g' | sed 's/-$//g' | tr 'A-Z' 'a-z'`
@@ -134,7 +134,7 @@ function confirmchoice {
 BONDMSG=""
 [ $SCARDCOUNT -gt 1 ] && BONDMSG="\nBond Mode:\t\t$BONDMODE"
 DATA=`yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 250 \
-    --text ''$"Network Settings"' \n\n'$"Server name"':\t\t'$NAMECUSTOM' \n'$"TCPIP"':\t\t\t'$TCPIPCUSTOM' \n'$"Netmask"':\t\t'$NETMASKCUSTOM' \n'$"Name Server"':\t\t'$NAMESERVERCUSTOM' \n'$"Gateway"':\t\t'$GATEWAYCUSTOM' \n'$"Card selection"':\t\t'$CARDSELECTION''$BONDMSG'' 2>/dev/null`
+    --text ''$"Network Settings"' \n\n'$"Server name"':\t\t'$NAMECUSTOM' \n'$"TCPIP"':\t\t\t'$TCPIPCUSTOM' \n'$"Netmask"':\t\t'$NETMASKCUSTOM' \n'$"DNS Server"':\t\t'$NAMESERVERCUSTOM' \n'$"Gateway"':\t\t'$GATEWAYCUSTOM' \n'$"Card selection"':\t\t'$CARDSELECTION''$BONDMSG'' 2>/dev/null`
 CHOICE=$?
 [ $CHOICE = 0 ] && CHOICE=commit
 [ $CHOICE = 1 ] && CHOICE=configure

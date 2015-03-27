@@ -32,6 +32,7 @@
 [ -L /etc/init.d/mailscanner ] && rm -f /etc/init.d/mailscanner
 [ -L /etc/init.d/mon ] && rm -f /etc/init.d/mon
 [ -L /etc/init.d/mysql ] && rm -f /etc/init.d/mysql
+[ -L /etc/init.d/postgresql ] && rm -f /etc/init.d/postgresql
 [ -L /etc/init.d/postfix ] && rm -f /etc/init.d/postfix
 [ -L /etc/init.d/portmap ] && rm -f /etc/init.d/portmap
 [ -L /etc/init.d/rpcbind ] && rm -f /etc/init.d/rpcbind
@@ -66,8 +67,8 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/mailscanner /e
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/mon /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/mysql /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/postfix /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/postgresql /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/rsync /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/samba /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/samba4 /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/shorewall /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/slapd /etc/init.d/
@@ -95,6 +96,7 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/openvpn /etc/i
 #Make sure no scripts have been added to /etc/init for upstart.
 [ `ls /etc/init/cups* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/cups*
 [ `ls /etc/init/mysql* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/mysql*
+[ `ls /etc/init/postgresql* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/postgresql*
 [ `ls /etc/init/smbd* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/smbd*
 [ `ls /etc/init/nmbd* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/nmbd*
 [ `ls /etc/init/squid* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/squid*

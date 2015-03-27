@@ -447,6 +447,7 @@ then
 	for SERVER in `echo $SERVERLIST | sed 's/,/ /g'`
 	do
 		touch /opt/karoshi/server_network/gluster-volumes/$VOLUME/servers/$SERVER
+		echo $"GlusterFS Server""<br>" > /opt/karoshi/server_network/servers/$SERVER/glusterfs_server
 	done
 fi
 
@@ -506,6 +507,30 @@ fi
 if [ $ACTION = restore ]
 then
 	SERVER=$SERVERLIST
+
+	#Dont restore if the volume if it is mounted and running on the server
+	if [ $SERVER = `hostname-fqdn` ]
+	then
+		if [ `mount | grep -c -w $VOLUME` -gt 0 ]
+		then
+			exit
+		fi
+	else
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+		if [ `mount | grep -c -w '$VOLUME'` -gt 0 ]
+		then
+			exit 1
+		else
+			exit 0
+		fi		
+		'
+	fi
+	if [ $? != 0 ]
+	then
+		echo `date`: "karoshi_gluster volume is mounted on $SERVER." >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit
+	fi
+
 	echo '<li>'$SERVER' - '$"Restoring"' '$VOLUME'</li>'
 	#Get list of servers in the gluster volume
 	SERVERLIST=`ls -1 /opt/karoshi/server_network/gluster-volumes/$VOLUME/servers/`

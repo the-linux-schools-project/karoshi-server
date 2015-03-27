@@ -105,16 +105,8 @@ then
 fi
 
 #Create synaptic-warning
-if [ ! -f /usr/bin/synaptic-warning ]
-then
-echo '#!/bin/bash
-yad --title="Synaptic" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width=400 --height=200 --text="Do not use synaptic to update your server.\n\n\Updates can be scheduled in the web management."
-if [ `echo $?` = 0 ]
-then
-synaptic &
-fi' > /usr/bin/synaptic-warning
-chmod 0755 /usr/bin/synaptic-warning
-fi
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/synaptic-warning /usr/bin
+
 [ ! -d /opt/karoshi/karoshi_user/.local/share/applications ] && mkdir -p /opt/karoshi/karoshi_user/.local/share/applications
 cp -f /opt/karoshi/serversetup/all/synaptic/synaptic.desktop /opt/karoshi/karoshi_user/.local/share/applications/
 chown karoshi /opt/karoshi/karoshi_user/.local/share/applications/synaptic.desktop

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+MSG1=$"Do not use synaptic to update your server."
+MSG2=$"Updates can be scheduled in the web management."
+
+TEXTDOMAIN=karoshi-server
+
+yad --title="Synaptic" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width=400 --height=200 --text="$MSG1\n\n$MSG2"
+if [ $? = 0 ]
+then
+	synaptic &
+fi
