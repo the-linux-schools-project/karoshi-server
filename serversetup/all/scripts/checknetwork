@@ -134,7 +134,7 @@ function confirmchoice {
 BONDMSG=""
 [ $SCARDCOUNT -gt 1 ] && BONDMSG="\nBond Mode:\t\t$BONDMODE"
 DATA=`yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 250 \
-    --text ''$"Network Settings"' \n\n'$"Server name"':\t\t'$NAMECUSTOM' \n'$"TCPIP"':\t\t\t'$TCPIPCUSTOM' \n'$"Netmask"':\t\t'$NETMASKCUSTOM' \n'$"DNS Server"':\t\t'$NAMESERVERCUSTOM' \n'$"Gateway"':\t\t'$GATEWAYCUSTOM' \n'$"Card selection"':\t\t'$CARDSELECTION''$BONDMSG'' 2>/dev/null`
+    --text '<span font_weight="bold">'$"Network Settings"'</span>\n\n<span font_weight="bold">'$"Server name"'</span> : '$NAMECUSTOM' \n\n<span font_weight="bold">'$"TCPIP"' : '$TCPIPCUSTOM'</span>\n\n<span font_weight="bold">'$"Netmask"' : </span>'$NETMASKCUSTOM'\n\n<span font_weight="bold">'$"DNS Server"'</span> : '$NAMESERVERCUSTOM'\n\n<span font_weight="bold">'$"Gateway"'</span> : '$GATEWAYCUSTOM'\n\n<span font_weight="bold">'$"Card selection"'</span> : '$CARDSELECTION''$BONDMSG'\n\n' 2>/dev/null`
 CHOICE=$?
 [ $CHOICE = 0 ] && CHOICE=commit
 [ $CHOICE = 1 ] && CHOICE=configure
