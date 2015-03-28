@@ -164,7 +164,7 @@ echo '
 <tr><td style="width: 180px;"><b>'$"Domain"'</b></td><td>'$SAMBADOMAIN'</td></tr>
 <tr><td style="width: 180px;"><b>'$"Realm"'</b></td><td>'$REALM'</td></tr>
 <tr><td style="width: 180px;"><b>'$"Gateway"'</b></td><td>'$DEFAULTGATEWAY'</td></tr>
-<tr><td style="width: 180px;"><b>'$"Name Server"'</b></td><td>'$NAMESERVER'</td></tr>
+<tr><td style="width: 180px;"><b>'$"DNS Server"'</b></td><td>'$NAMESERVER'</td></tr>
 <tr><td style="width: 180px;"><b>'$"NTP Server"'</b></td><td>'$NTPSERVER'</td></tr>
 '
 
@@ -172,7 +172,7 @@ if [ $SHOWDHCP = yes ]
 then
 echo '
 <tr><td valign="bottom" style="width: 180px; height: 40px;"><b>'$"DHCP Settings"'</b></td><td></td></tr>
-<tr><td style="width: 180px;"><b>'$"Name Server"'</b></td><td>'$CURRENTDOMAINSERVERS'</td></tr>
+<tr><td style="width: 180px;"><b>'$"DNS Server"'</b></td><td>'$CURRENTDOMAINSERVERS'</td></tr>
 <tr><td style="width: 180px;"><b>'$"DHCP Range"'</b></td><td>'$STARTADDRESS - $ENDADDRESS'</td></tr>
 '
 fi

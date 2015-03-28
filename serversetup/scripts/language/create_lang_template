@@ -1,14 +1,18 @@
 #!/bin/bash
 
 
-CREATE_TEMPLATE=no
+CREATE_TEMPLATE=yes
 CREATEPOFILES=yes
-#LANGLIST="ar+cs+da+de+el+es+fr+hi+he+it+ko+nb+nl+pl+pt+ru+sv+zh"
-LANGLIST="cy"
+LANGLIST="ar+cs+cy+da+de+el+es+fr+hi+he+it+ko+nb+nl+pl+pt+ru+sv+zh"
+
+APPEND=no
+POTFILE=karoshi-server.pot
+
 
 function createtemplate {
 #Create a karoshi server language template
-[ -f /opt/karoshi/serversetup/language/karoshi-server.pot ] && rm -f /opt/karoshi/serversetup/language/karoshi-server.pot
+[ -f /opt/karoshi/serversetup/language/karoshi-server.pot.old ] && rm -f /opt/karoshi/serversetup/language/karoshi-server.pot.old
+[ -f /opt/karoshi/serversetup/language/karoshi-server.pot ] && mv /opt/karoshi/serversetup/language/karoshi-server.pot /opt/karoshi/serversetup/language/karoshi-server.pot.old
 grep -l -r "TEXTDOMAIN=karoshi-server" /opt/karoshi/serversetup | sed 's/ /\\ /g' | xargs xgettext -w 200 --no-wrap --copyright-holder="Paul Sharrad" --msgid-bugs-address=mpsharrad@karoshi.org.uk --language="bash" --package-name="Karoshi Server" --no-location -o /opt/karoshi/serversetup/language/karoshi-server.pot -L shell 2>/dev/null
 
 #Replace SOME DESCRIPTIVE TITLE.
@@ -17,6 +21,20 @@ sed -i 's/Copyright (C) YEAR/Copyright (C) 2014/' /opt/karoshi/serversetup/langu
 sed -i 's/PACKAGE package/karoshi Server package/' /opt/karoshi/serversetup/language/karoshi-server.pot
 sed -i 's/FIRST AUTHOR <EMAIL@ADDRESS>, YEAR./Paul Sharrad <mpsharrad@karoshi.org.uk>, 2014./' /opt/karoshi/serversetup/language/karoshi-server.pot
 sed -i 's/CHARSET/UTF-8/' /opt/karoshi/serversetup/language/karoshi-server.pot
+
+
+#Check for differences between the old and new versions
+if [ -f /opt/karoshi/serversetup/language/karoshi-server.pot.old ]
+then
+	APPEND=yes
+	POTFILE=karoshi-server.pot.new
+
+	#Get list of phrases to remove from the pot files
+	diff --side-by-side --suppress-common-lines /opt/karoshi/serversetup/language/karoshi-server.pot.old /opt/karoshi/serversetup/language/karoshi-server.pot | sed 's/\t*\t/\t/g' | cut -f1 | sed '/^$/d' > /opt/karoshi/serversetup/language/karoshi-server.pot.remove
+
+	#Get list of phrases to add to the pot files
+	diff --side-by-side --suppress-common-lines /opt/karoshi/serversetup/language/karoshi-server.pot.old /opt/karoshi/serversetup/language/karoshi-server.pot | sed 's/\t*\t/\t/g' | cut -f3 | sed '/^$/d' > /opt/karoshi/serversetup/language/karoshi-server.pot.new
+fi
 }
 
 function translatetxt {
@@ -50,16 +68,48 @@ else
 
 function createpofiles {
 
-rm -f /opt/karoshi/serversetup/language/*.po
+if [ "$APPEND" = no ]
+then
+	rm -f /opt/karoshi/serversetup/language/*.po
 
-#Create header for each language
-for KLANG in `echo $LANGLIST | sed 's/+/ /g'`
-do
-	[ ! -f /opt/karoshi/serversetup/language/$KLANG.po ] && sed -n 1,19p /opt/karoshi/serversetup/language/karoshi-server.pot > /opt/karoshi/serversetup/language/$KLANG.po
-	sed -i 's/Language:/Language: '$KLANG'/g' /opt/karoshi/serversetup/language/$KLANG.po
-done
+	#Create header for each language
+	for KLANG in `echo $LANGLIST | sed 's/+/ /g'`
+	do
+		[ ! -f /opt/karoshi/serversetup/language/$KLANG.po ] && sed -n 1,19p /opt/karoshi/serversetup/language/karoshi-server.pot > /opt/karoshi/serversetup/language/$KLANG.po
+		sed -i 's/Language:/Language: '$KLANG'/g' /opt/karoshi/serversetup/language/$KLANG.po
+	done
+else
+	#Remove any redundant language from the po files.
+	if [ -f /opt/karoshi/serversetup/language/karoshi-server.pot.remove ]
+	then
+		for OLDMSGIDDATA in `grep ^msgid /opt/karoshi/serversetup/language/karoshi-server.pot.remove | sed 's/ /___/g'`
+		do
+			OLDMSGIDTEXT=`echo "$OLDMSGIDDATA" | cut -d'"' -f2 | sed 's/___/ /g'`
+			if [[ ! -z "$OLDMSGIDTEXT" ]]
+			then
+				#Remove String
+				echo Removing language string - "$OLDMSGIDTEXT"
+				for LANGFILE in `ls -1 /opt/karoshi/serversetup/language/*.po`
+				do
+					STARTLINE=""
+					ENDLINE=""
+					echo "Checking $LANGFILE for $OLDMSGIDTEXT"
+					#get line number
+					STARTLINE=`grep -n ^"msgid \"$OLDMSGIDTEXT\"" "$LANGFILE" | cut -d: -f1`
+					if [ ! -z "$STARTLINE" ]
+					then
+						let ENDLINE="$STARTLINE"+2
+						echo Removing lines $STARTLINE - $ENDLINE from $LANGFILE
+						#sed -i '/msgid "'$OLDMSGIDTEXT'"/d' $LANGFILE
+						sed -i ''$STARTLINE','$ENDLINE'd' $LANGFILE
+					fi
+				done
+			fi
+		done
+	fi	
+fi
 
-for MSGIDDATA in `grep ^msgid /opt/karoshi/serversetup/language/karoshi-server.pot | sed 's/ /___/g'`
+for MSGIDDATA in `grep ^msgid /opt/karoshi/serversetup/language/$POTFILE | sed 's/ /___/g'`
 do
 	MSGIDTEXT=`echo $MSGIDDATA | cut -d'"' -f2 | sed 's/___/ /g'`
 	if [[ ! -z "$MSGIDTEXT" ]]
@@ -74,6 +124,13 @@ done
 [ "$CREATE_TEMPLATE" = yes ] && createtemplate
 [ "$CREATEPOFILES" = yes ] && createpofiles
 
+#Tidy up any temporary files
+if [ "$APPEND" = yes ]
+then
+	[ -f /opt/karoshi/serversetup/language/karoshi-server.pot.new ] && rm -f /opt/karoshi/serversetup/language/karoshi-server.pot.new
+	[ -f /opt/karoshi/serversetup/language/karoshi-server.pot.old ] && rm -f /opt/karoshi/serversetup/language/karoshi-server.pot.old
+	[ -f /opt/karoshi/serversetup/language/karoshi-server.pot.remove ] && rm -f /opt/karoshi/serversetup/language/karoshi-server.pot.remove
+fi
 exit
 
 

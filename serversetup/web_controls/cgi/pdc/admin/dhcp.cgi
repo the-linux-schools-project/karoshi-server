@@ -254,14 +254,14 @@ PATH=/usr/local/bin:/usr/bin:/bin:/sbin:/bin
 #Check to see that DOMAINNAMESERVER is not blank
 if [ -z "$DOMAINNAMESERVER" ]
 then
-	MESSAGE=$"Name Server Error"
+	MESSAGE=$"DNS Server Error"
 	show_status
 fi
 IPDATA=$DOMAINNAMESERVER
 check_tcpip
 if [ $INPUTCHECK = fail ]
 then
-	MESSAGE=$"Name Server Error"
+	MESSAGE=$"DNS Server Error"
 	show_status
 fi
 #Check to see that NETBIOSSERVER is not blank
