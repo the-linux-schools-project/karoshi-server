@@ -179,9 +179,9 @@ cp chroot/boot/initrd.img-3.13.**-**-generic image/casper/initrd.gz
 #Copy in isolinux and memtest binaries
 echo -e "\nCopying in isolinux and memtest binaries\n"
 sleep 1	
-cp chroot/usr/lib/syslinux/isolinux.bin image/isolinux/
+cp /usr/lib/syslinux/isolinux.bin image/isolinux/
 cp /boot/memtest86+.bin image/install/memtest
-cp chroot/usr/lib/syslinux/vesamenu.c32 image/isolinux/
+cp /usr/lib/syslinux/vesamenu.c32 image/isolinux/
 
 #Copy in boot splash
 cp -f chroot/opt/karoshi/serversetup/all/backgrounds/bootmenu.png image/isolinux/splash.png

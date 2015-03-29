@@ -110,190 +110,188 @@ DISTROFOLDER=`echo $DISTROCHOICE | sed 's/.iso//g'`
 
 if [ $CONTROL = copy ]
 then
+	DEFAULTISO=no
+	#Copy iso to /home/distributions/iso
+	#Mount iso
 
-#Copy iso to /home/distributions/iso
-#Mount iso
+	[ ! -d /home/distributions/linux_iso ] && mkdir -p /home/distributions/linux_iso
 
-[ ! -d /home/distributions/linux_iso ] && mkdir -p /home/distributions/linux_iso
+	[ -f /home/distributions/linux_iso/"$DISTROCHOICE" ] && rm -f /home/distributions/linux_iso/"$DISTROCHOICE"
+	ln -s /home/itadminshare/distributions/linux/"$DISTROCHOICE" /home/distributions/linux_iso/"$DISTROCHOICE"
+	#Get distribution server
 
-[ -f /home/distributions/linux_iso/"$DISTROCHOICE" ] && rm -f /home/distributions/linux_iso/"$DISTROCHOICE"
-ln -s /home/itadminshare/distributions/linux/"$DISTROCHOICE" /home/distributions/linux_iso/"$DISTROCHOICE"
-#Get distribution server
+	if [ $DISTRIBUTIONSERVER = `hostname-fqdn` ]
+	then
 
-if [ $DISTRIBUTIONSERVER = `hostname-fqdn` ]
-then
+		[ ! -d /media/iso.$$ ] && mkdir -p /media/iso.$$
+		[ -d /home/distributions/linux_distro/$DISTROFOLDER ] && rm -f -R /home/distributions/linux_distro/$DISTROFOLDER
+		mkdir -p /home/distributions/linux_distro/$DISTROFOLDER
+		#Mount iso
+		echo "<li>"$DISTRIBUTIONSERVER - $"Mounting iso""</li><br>"
+		mount /home/distributions/linux_iso/"$DISTROCHOICE" /media/iso.$$ -o loop
+		#Copy files
+		echo "<li>"$DISTRIBUTIONSERVER - $"Copying files out of the iso image""</li>"
+		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+		cp -v -a /media/iso.$$/* /home/distributions/linux_distro/$DISTROFOLDER
+		cp -v -a -f -R /media/iso.$$/.disk /home/distributions/linux_distro/$DISTROFOLDER
+		echo "</pre>"
+		#Unmount iso
+		echo "<li>"$DISTRIBUTIONSERVER - $"Unmounting iso""</li><br>"
+		umount /media/iso.$$
+		rm -f -R /media/iso.$$
+		#Copy out files
+		echo "<li>"$DISTRIBUTIONSERVER - $"Copying out files""</li>"
 
-[ ! -d /media/iso.$$ ] && mkdir -p /media/iso.$$
-[ -d /home/distributions/linux_distro/$DISTROFOLDER ] && rm -f -R /home/distributions/linux_distro/$DISTROFOLDER
-mkdir -p /home/distributions/linux_distro/$DISTROFOLDER
-#Mount iso
-echo "<li>"$DISTRIBUTIONSERVER - $"Mounting iso""</li><br>"
-mount /home/distributions/linux_iso/"$DISTROCHOICE" /media/iso.$$ -o loop
-#Copy files
-echo "<li>"$DISTRIBUTIONSERVER - $"Copying files out of the iso image""</li>"
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-cp -v -a /media/iso.$$/* /home/distributions/linux_distro/$DISTROFOLDER
-cp -v -a -f -R /media/iso.$$/.disk /home/distributions/linux_distro/$DISTROFOLDER
-echo "</pre>"
-#Unmount iso
-echo "<li>"$DISTRIBUTIONSERVER - $"Unmounting iso""</li><br>"
-umount /media/iso.$$
-rm -f -R /media/iso.$$
-#Copy out files
-echo "<li>"$DISTRIBUTIONSERVER - $"Copying out files""</li>"
+		[ -d /home/tftpboot/images/$DISTROFOLDER/ ] && rm -f -R /home/tftpboot/images/$DISTROFOLDER/
+		mkdir -p /home/tftpboot/images/$DISTROFOLDER/
+		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 
-[ -d /home/tftpboot/images/$DISTROFOLDER/ ] && rm -f -R /home/tftpboot/images/$DISTROFOLDER/
-mkdir -p /home/tftpboot/images/$DISTROFOLDER/
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-cp -v -f /home/distributions/linux_distro/$DISTROFOLDER/casper/initrd.* /home/tftpboot/images/$DISTROFOLDER/
-cp -v -f /home/distributions/linux_distro/$DISTROFOLDER/casper/vmlinuz /home/tftpboot/images/$DISTROFOLDER/
-[ ! -f /home/tftpboot/preseed.cfg ] && cp /opt/karoshi/serversetup/modules/distributionserver/tftpboot/images/ubuntu/preseed.cfg /home/tftpboot/
-cp -v -f /home/tftpboot/preseed.cfg /home/distributions/linux_distro/$DISTROFOLDER/casper/
-sed -i "s/CHANGETHISLOCALE/$LANG/" /home/distributions/linux_distro/$DISTROFOLDER/casper/preseed.cfg
+		cp -v -f /home/distributions/linux_distro/$DISTROFOLDER/casper/initrd.* /home/tftpboot/images/$DISTROFOLDER/
 
-
-
-echo "</pre>"
-
-#Find which initrd
-INITRDNAME=`ls /home/tftpboot/images/$DISTROFOLDER/initrd.* | sed -n 1,1p`
-if [ `echo $INITRDNAME | grep -c initrd.lz` -gt 0 ]
-then
-INITRD=initrd.lz
-else
-INITRD=initrd.gz
-fi
-
-DEFAULTISO=no
-[ ! -f /home/tftpboot/default_iso ] && echo DEFAULTIMAGE=notset > /home/tftpboot/default_iso
-if [ "$DEFAULTISO" = yes ]
-then
-echo DEFAULTIMAGE=\"$DISTROFOLDER\" > /home/tftpboot/default_iso
-fi
-source /home/tftpboot/default_iso
-
-#Create boot entry
-[ ! -d /home/tftpboot/menus ] && mkdir -p /home/tftpboot/menus
-
-echo 'LABEL '$DISTROFOLDER'' > /home/tftpboot/menus/$DISTROFOLDER
-echo '	MENU LABEL ^'$DISTROFOLDER'' >> /home/tftpboot/menus/$DISTROFOLDER
-echo '	KERNEL images/'$DISTROFOLDER'/vmlinuz' >> /home/tftpboot/menus/$DISTROFOLDER
-echo '	append	boot=casper automatic-ubiquity netboot=nfs nfsroot='$DISTROSERVERIP':/home/distributions/linux_distro/'$DISTROFOLDER' initrd=images/'$DISTROFOLDER'/'$INITRD' file=/cdrom/casper/preseed.cfg priority=critical ip=dhcp  --' >> /home/tftpboot/menus/$DISTROFOLDER	
+		#Get vmlinuz
+		VMLINUZ=`ls /home/distributions/linux_distro/$DISTROFOLDER/casper/vmlin* | sed -n 1,1p`
+		VMLINUZ=`basename "$VMLINUZ"`
+		cp -v -f /home/distributions/linux_distro/$DISTROFOLDER/casper/$VMLINUZ /home/tftpboot/images/$DISTROFOLDER/
+		[ ! -f /home/tftpboot/preseed.cfg ] && cp /opt/karoshi/serversetup/modules/distributionserver/tftpboot/images/ubuntu/preseed.cfg /home/tftpboot/
+		cp -v -f /home/tftpboot/preseed.cfg /home/distributions/linux_distro/$DISTROFOLDER/casper/
+		sed -i "s/CHANGETHISLOCALE/$LANG/" /home/distributions/linux_distro/$DISTROFOLDER/casper/preseed.cfg
 
 
-TIMEOUT=10
-[ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 1 ] && TIMEOUT=200
 
-[ -f /home/tftpboot/imagelist.cfg ] && rm -f /home/tftpboot/imagelist.cfg
-if [ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 0 ]
-then
-	for MENUITEMS in /home/tftpboot/menus/*
-	do
-		MENUITEM=`basename $MENUITEMS`
-		cat /home/tftpboot/menus/$MENUITEM >> /home/tftpboot/imagelist.cfg
-		echo >> /home/tftpboot/imagelist.cfg
-	done
-fi
+		echo "</pre>"
 
-#Restart nfs server
-echo "<li>"$DISTRIBUTIONSERVER - $"Restarting NFS Server""</li><br>"
-source /opt/karoshi/serversetup/variables/distro
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop
-sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_start
-echo "</pre>"
-else
-scp /opt/karoshi/serversetup/modules/distributionserver/tftpboot/images/ubuntu/preseed.cfg root@$DISTRIBUTIONSERVER:"/opt/karoshi/serversetup/modules/distributionserver/tftpboot/images/ubuntu/preseed.cfg"
-ssh -x -o PasswordAuthentication=no $DISTRIBUTIONSERVER '
-[ ! -d /home/distributions/linux_iso ] && mkdir -p /home/distributions/linux_iso
-[ -f /home/distributions/linux_iso/"'$DISTROCHOICE'" ] && rm -f /home/distributions/linux_iso/"'$DISTROCHOICE'"
-'
-echo '<br><li>'$HOSTNAME' - '$DISTRIBUTIONSERVER' - '$"Copying iso"'</li><br>'
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-rsync -avL /home/distributions/linux_iso/"$DISTROCHOICE" root@$DISTRIBUTIONSERVER:"/home/distributions/linux_iso/" 2>&1
+		#Find which initrd
+		INITRD=`ls /home/tftpboot/images/$DISTROFOLDER/initrd.* | sed -n 1,1p`
+		INITRD=`basename "$INITRD"`
 
-echo "</pre>"
-ssh -x -o PasswordAuthentication=no $DISTRIBUTIONSERVER '
-[ ! -d /media/iso.'$$' ] && mkdir -p /media/iso.'$$'
-[ -d /home/distributions/linux_distro/'$DISTROFOLDER' ] && rm -f -R /home/distributions/linux_distro/'$DISTROFOLDER'
-mkdir -p /home/distributions/linux_distro/'$DISTROFOLDER'
-#Mount iso
-echo "<li>"'$DISTRIBUTIONSERVER' - '$"Mounting iso"'"</li><br>"
-mount /home/distributions/linux_iso/"'$DISTROCHOICE'" /media/iso.'$$' -o loop
-#Copy files
-echo "<li>"'$DISTRIBUTIONSERVER' - '$"Copying files out of the iso image"'"</li>"
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-cp -v -a /media/iso.'$$'/* /home/distributions/linux_distro/'$DISTROFOLDER'
-cp -v -a -f -R /media/iso.'$$'/.disk /home/distributions/linux_distro/'$DISTROFOLDER'
-echo "</pre>"
-#Unmount iso
-echo "<li>"'$DISTRIBUTIONSERVER' - '$"Unmounting iso"'"</li><br>"
-umount /media/iso.'$$'
-rm -f -R /media/iso.'$$'
-#Copy out files
-echo "<li>"'$DISTRIBUTIONSERVER' - '$"Copying out files"'"</li>"
+		[ ! -f /home/tftpboot/default_iso ] && echo DEFAULTIMAGE=notset > /home/tftpboot/default_iso
+		if [ "$DEFAULTISO" = yes ]
+		then
+			echo DEFAULTIMAGE=\"$DISTROFOLDER\" > /home/tftpboot/default_iso
+		fi
+		source /home/tftpboot/default_iso
 
-[ -d /home/tftpboot/images/'$DISTROFOLDER'/ ] && rm -f -R /home/tftpboot/images/'$DISTROFOLDER'/
-mkdir -p /home/tftpboot/images/'$DISTROFOLDER'/
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-cp -v -f /home/distributions/linux_distro/'$DISTROFOLDER'/casper/initrd.* /home/tftpboot/images/'$DISTROFOLDER'/
-cp -v -f /home/distributions/linux_distro/'$DISTROFOLDER'/casper/vmlinuz /home/tftpboot/images/'$DISTROFOLDER'/
-[ ! -f /home/tftpboot/preseed.cfg ] && cp /opt/karoshi/serversetup/modules/distributionserver/tftpboot/images/ubuntu/preseed.cfg /home/tftpboot/
-cp -v -f /home/tftpboot/preseed.cfg /home/distributions/linux_distro/'$DISTROFOLDER'/casper/
-sed -i "s/CHANGETHISLOCALE/$LANG/" /home/distributions/linux_distro/$DISTROFOLDER/casper/preseed.cfg
+		#Create boot entry
+		[ ! -d /home/tftpboot/menus ] && mkdir -p /home/tftpboot/menus
 
-echo "</pre>"
+		echo 'LABEL '$DISTROFOLDER'' > /home/tftpboot/menus/$DISTROFOLDER
+		echo '	MENU LABEL ^'$DISTROFOLDER'' >> /home/tftpboot/menus/$DISTROFOLDER
+		echo '	KERNEL images/'$DISTROFOLDER'/'$VMLINUZ'' >> /home/tftpboot/menus/$DISTROFOLDER
+		echo '	append	boot=casper automatic-ubiquity netboot=nfs nfsroot='$DISTROSERVERIP':/home/distributions/linux_distro/'$DISTROFOLDER' initrd=images/'$DISTROFOLDER'/'$INITRD' file=/cdrom/casper/preseed.cfg priority=critical ip=dhcp  --' >> /home/tftpboot/menus/$DISTROFOLDER	
 
-#Find which initrd
-INITRDNAME=`ls /home/tftpboot/images/'$DISTROFOLDER'/initrd.* | sed -n 1,1p`
-if [ `echo $INITRDNAME | grep -c initrd.lz` -gt 0 ]
-then
-INITRD=initrd.lz
-else
-INITRD=initrd.gz
-fi
 
-[ ! -f /home/tftpboot/default_iso ] && echo DEFAULTIMAGE=notset > /home/tftpboot/default_iso
-if [ '$DEFAULTISO' = yes ]
-then
-echo DEFAULTIMAGE=\"'$DISTROFOLDER'\" > /home/tftpboot/default_iso
-fi
-source /home/tftpboot/default_iso
+		TIMEOUT=10
+		[ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 1 ] && TIMEOUT=200
 
-#Create boot entry
-[ ! -d /home/tftpboot/menus ] && mkdir -p /home/tftpboot/menus
+		[ -f /home/tftpboot/imagelist.cfg ] && rm -f /home/tftpboot/imagelist.cfg
+		if [ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 0 ]
+		then
+			for MENUITEMS in /home/tftpboot/menus/*
+			do
+				MENUITEM=`basename $MENUITEMS`
+				cat /home/tftpboot/menus/$MENUITEM >> /home/tftpboot/imagelist.cfg
+				echo >> /home/tftpboot/imagelist.cfg
+			done
+		fi
 
-echo "LABEL '$DISTROFOLDER'" > /home/tftpboot/menus/'$DISTROFOLDER'
-echo "	MENU LABEL ^'$DISTROFOLDER'" >> /home/tftpboot/menus/'$DISTROFOLDER'
-echo "	KERNEL images/'$DISTROFOLDER'/vmlinuz" >> /home/tftpboot/menus/'$DISTROFOLDER'
-echo "	append	boot=casper automatic-ubiquity netboot=nfs nfsroot='$DISTROSERVERIP':/home/distributions/linux_distro/'$DISTROFOLDER' initrd=images/'$DISTROFOLDER'/$INITRD file=/cdrom/casper/preseed.cfg priority=critical ip=dhcp  --" >> /home/tftpboot/menus/'$DISTROFOLDER'
+		#Restart nfs server
+		echo "<li>"$DISTRIBUTIONSERVER - $"Restarting NFS Server""</li><br>"
+		source /opt/karoshi/serversetup/variables/distro
+		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop
+		sleep 1
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_start
+		echo "</pre>"
+	else
+		scp /opt/karoshi/serversetup/modules/distributionserver/tftpboot/images/ubuntu/preseed.cfg root@$DISTRIBUTIONSERVER:"/opt/karoshi/serversetup/modules/distributionserver/tftpboot/images/ubuntu/preseed.cfg"
+		ssh -x -o PasswordAuthentication=no $DISTRIBUTIONSERVER '
+		[ ! -d /home/distributions/linux_iso ] && mkdir -p /home/distributions/linux_iso
+		[ -f /home/distributions/linux_iso/"'$DISTROCHOICE'" ] && rm -f /home/distributions/linux_iso/"'$DISTROCHOICE'"
+		'
+		echo '<br><li>'$HOSTNAME' - '$DISTRIBUTIONSERVER' - '$"Copying iso"'</li><br>'
+		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+		rsync -avL /home/distributions/linux_iso/"$DISTROCHOICE" root@$DISTRIBUTIONSERVER:"/home/distributions/linux_iso/" 2>&1
 
-TIMEOUT=10
-[ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 1 ] && TIMEOUT=200
+		echo "</pre>"
+		ssh -x -o PasswordAuthentication=no $DISTRIBUTIONSERVER '
+		[ ! -d /media/iso.'$$' ] && mkdir -p /media/iso.'$$'
+		[ -d /home/distributions/linux_distro/'$DISTROFOLDER' ] && rm -f -R /home/distributions/linux_distro/'$DISTROFOLDER'
+		mkdir -p /home/distributions/linux_distro/'$DISTROFOLDER'
+		#Mount iso
+		echo "<li>"'$DISTRIBUTIONSERVER' - '$"Mounting iso"'"</li><br>"
+		mount /home/distributions/linux_iso/"'$DISTROCHOICE'" /media/iso.'$$' -o loop
+		#Copy files
+		echo "<li>"'$DISTRIBUTIONSERVER' - '$"Copying files out of the iso image"'"</li>"
+		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+		cp -v -a /media/iso.'$$'/* /home/distributions/linux_distro/'$DISTROFOLDER'
+		cp -v -a -f -R /media/iso.'$$'/.disk /home/distributions/linux_distro/'$DISTROFOLDER'
+		echo "</pre>"
+		#Unmount iso
+		echo "<li>"'$DISTRIBUTIONSERVER' - '$"Unmounting iso"'"</li><br>"
+		umount /media/iso.'$$'
+		rm -f -R /media/iso.'$$'
+		#Copy out files
+		echo "<li>"'$DISTRIBUTIONSERVER' - '$"Copying out files"'"</li>"
 
-[ -f /home/tftpboot/imagelist.cfg ] && rm -f /home/tftpboot/imagelist.cfg
-if [ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 0 ]
-then
-	for MENUITEMS in /home/tftpboot/menus/*
-	do
-		MENUITEM=`basename $MENUITEMS`
-		cat /home/tftpboot/menus/$MENUITEM >> /home/tftpboot/imagelist.cfg
-		echo >> /home/tftpboot/imagelist.cfg
-	done
-fi
+		[ -d /home/tftpboot/images/'$DISTROFOLDER'/ ] && rm -f -R /home/tftpboot/images/'$DISTROFOLDER'/
+		mkdir -p /home/tftpboot/images/'$DISTROFOLDER'/
+		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+		cp -v -f /home/distributions/linux_distro/'$DISTROFOLDER'/casper/initrd.* /home/tftpboot/images/'$DISTROFOLDER'/
 
-#Restart nfs server
-echo "<li>"'$DISTRIBUTIONSERVER' - '$"Restarting NFS Server"'"</li><br>"
-source /opt/karoshi/serversetup/variables/distro
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop
-sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_start
-echo "</pre>"
-'
+		#Get vmlinuz
+		VMLINUZ=`ls /home/distributions/linux_distro/'$DISTROFOLDER'/casper/vmlin* | sed -n 1,1p`
+		VMLINUZ=`basename "$VMLINUZ"`
+		cp -v -f /home/distributions/linux_distro/'$DISTROFOLDER'/casper/$VMLINUZ /home/tftpboot/images/'$DISTROFOLDER'/
+		[ ! -f /home/tftpboot/preseed.cfg ] && cp /opt/karoshi/serversetup/modules/distributionserver/tftpboot/images/ubuntu/preseed.cfg /home/tftpboot/
+		cp -v -f /home/tftpboot/preseed.cfg /home/distributions/linux_distro/'$DISTROFOLDER'/casper/
+		sed -i "s/CHANGETHISLOCALE/$LANG/" /home/distributions/linux_distro/'$DISTROFOLDER'/casper/preseed.cfg
 
-fi
+		echo "</pre>"
+
+		#Find which initrd
+		INITRD=`ls /home/tftpboot/images/'$DISTROFOLDER'/initrd.* | sed -n 1,1p`
+		INITRD=`basename "$INITRD"`
+
+		[ ! -f /home/tftpboot/default_iso ] && echo DEFAULTIMAGE=notset > /home/tftpboot/default_iso
+		if [ '$DEFAULTISO' = yes ]
+		then
+		echo DEFAULTIMAGE=\"'$DISTROFOLDER'\" > /home/tftpboot/default_iso
+		fi
+		source /home/tftpboot/default_iso
+
+		#Create boot entry
+		[ ! -d /home/tftpboot/menus ] && mkdir -p /home/tftpboot/menus
+
+		echo "LABEL '$DISTROFOLDER'" > /home/tftpboot/menus/'$DISTROFOLDER'
+		echo "	MENU LABEL ^'$DISTROFOLDER'" >> /home/tftpboot/menus/'$DISTROFOLDER'
+		echo "	KERNEL images/'$DISTROFOLDER'/$VMLINUZ" >> /home/tftpboot/menus/'$DISTROFOLDER'
+		echo "	append	boot=casper automatic-ubiquity netboot=nfs nfsroot='$DISTROSERVERIP':/home/distributions/linux_distro/'$DISTROFOLDER' initrd=images/'$DISTROFOLDER'/$INITRD file=/cdrom/casper/preseed.cfg priority=critical ip=dhcp  --" >> /home/tftpboot/menus/'$DISTROFOLDER'
+
+		TIMEOUT=10
+		[ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 1 ] && TIMEOUT=200
+
+		[ -f /home/tftpboot/imagelist.cfg ] && rm -f /home/tftpboot/imagelist.cfg
+		if [ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 0 ]
+		then
+			for MENUITEMS in /home/tftpboot/menus/*
+			do
+				MENUITEM=`basename $MENUITEMS`
+				cat /home/tftpboot/menus/$MENUITEM >> /home/tftpboot/imagelist.cfg
+				echo >> /home/tftpboot/imagelist.cfg
+			done
+		fi
+
+		#Restart nfs server
+		echo "<li>"'$DISTRIBUTIONSERVER' - '$"Restarting NFS Server"'"</li><br>"
+		source /opt/karoshi/serversetup/variables/distro
+		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop
+		sleep 1
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_start
+		echo "</pre>"
+		'
+
+	fi
 fi
 
 if [ $CONTROL = delete ]
@@ -305,8 +303,9 @@ then
 
 if [ $DISTRIBUTIONSERVER = `hostname-fqdn` ]
 then
-[ -d /home/tftpboot/images/$DISTROFOLDER/ ] && rm -f -R /home/tftpboot/images/$DISTROFOLDER/
-[ -e /home/tftpboot/menus/$DISTROFOLDER ] && rm -f /home/tftpboot/menus/$DISTROFOLDER
+[ -d /home/tftpboot/images/"$DISTROFOLDER"/ ] && rm -f -R /home/tftpboot/images/"$DISTROFOLDER"/
+[ -e /home/tftpboot/menus/"$DISTROFOLDER" ] && rm -f /home/tftpboot/menus/"$DISTROFOLDER"
+[ -d /home/distributions/linux_distro/"$DISTROFOLDER" ] && rm -f -R /home/distributions/linux_distro/"$DISTROFOLDER"
 
 TIMEOUT=10
 [ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 1 ] && TIMEOUT=200
@@ -334,8 +333,9 @@ echo "</pre>"
 else
 ssh -x -o PasswordAuthentication=no $DISTRIBUTIONSERVER '
 [ -e /home/distributions/linux_iso/"'$DISTROCHOICE'" ] && rm -f /home/distributions/linux_iso/"'$DISTROCHOICE'"
-[ -d /home/tftpboot/images/'$DISTROFOLDER'/ ] && rm -f -R /home/tftpboot/images/'$DISTROFOLDER'/
-[ -e /home/tftpboot/menus/'$DISTROFOLDER' ] && rm -f  /home/tftpboot/menus/'$DISTROFOLDER'
+[ -d /home/tftpboot/images/"'$DISTROFOLDER'"/ ] && rm -f -R /home/tftpboot/images/"'$DISTROFOLDER'"/
+[ -e /home/tftpboot/menus/"'$DISTROFOLDER'" ] && rm -f  /home/tftpboot/menus/"'$DISTROFOLDER'"
+[ -d /home/distributions/linux_distro/"'$DISTROFOLDER'" ] && rm -f -R /home/distributions/linux_distro/"'$DISTROFOLDER'"
 
 TIMEOUT=10
 [ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 1 ] && TIMEOUT=200
