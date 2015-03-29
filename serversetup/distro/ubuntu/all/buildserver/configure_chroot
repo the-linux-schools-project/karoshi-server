@@ -91,6 +91,10 @@ disable_script /usr/share/ubiquity/apt-setup
 disable_script /usr/lib/ubiquity/user-setup/user-setup-apply
 disable_script /usr/share/initramfs-tools/scripts/casper-bottom/{25adduser,41apt_cdrom}
 
+#Symlink initramfs scripts to try and get plymouth to work on live boot.
+rm -f -R /etc/initramfs-tools/scripts
+ln -s /usr/share/initramfs-tools/scripts/ /etc/initramfs-tools/scripts
+
 #Chroot clean up
 rm /var/lib/dbus/machine-id
 [ -f /sbin/initctl ] && rm /sbin/initctl
