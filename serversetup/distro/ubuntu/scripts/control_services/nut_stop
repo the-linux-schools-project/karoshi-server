@@ -2,11 +2,11 @@
 
 if [ -f /etc/init.d/nut ]
 then
-service nut stop
+	service nut stop
 fi
 
 if [ -f /etc/init.d/nut-server ]
 then
-service nut-server stop
-service nut-client stop
+	service nut-server stop
+	service nut-client stop
 fi

@@ -29,16 +29,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/ups_device_add_cgi
 then
-echo `date`: ups_device_add - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: ups_device_add - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/ups_device_add_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ups_device_add.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $ups_device_add_cgi'check' ]
 then
-echo `date`: ups_device_add - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: ups_device_add - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -47,16 +47,16 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: ups_device_add - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: ups_device_add - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101	
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\-+'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: ups_device_add - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: ups_device_add - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -65,7 +65,7 @@ UPSSERVER=`echo "$DATA" | cut -s -d: -f4 | sed 's/%2C/,/g'`
 UPSMODEL=`echo $UPSSERVER | cut -d, -f2`
 UPSSERVER=`echo $UPSSERVER | cut -d, -f1`
 SERVER=`echo "$DATA" | cut -s -d: -f5`
-DEVICENAME=`echo "$DATA" | cut -s -d: -f6`
+DEVICENAME=`echo "$DATA" | cut -s -d: -f6 | sed 's/%26/\&/g'`
 
 ########################
 #Check data
@@ -75,32 +75,27 @@ then
 echo `date`: ups_device_add - Not called by ups_device_add.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: ups_device_add - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: ups_device_add - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: ups_device_add - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: ups_device_add - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $UPSSERVER'null' = null ]
+if [ -z "$UPSSERVER" ]
 then
-echo `date`: ups_device_add - Blank ups server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: ups_device_add - Blank ups server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: ups_device_add - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: ups_device_add - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-
-#echo UPSSERVER is $UPSSERVER"<br>"
-#echo server is $SERVER"<br>"
-#echo upsmodel is $UPSMODEL"<br>"
-#sleep 5
 
 echo `date`: ups_device_add - adding device on $UPSSERVER to $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
@@ -110,7 +105,7 @@ TEXTDOMAIN=karoshi-server
 
 [ ! -d /opt/karoshi/server_network/ups/master/$UPSSERVER/extra_devices ] && mkdir p /opt/karoshi/server_network/ups/master/$UPSSERVER/extra_devices
 
-touch /opt/karoshi/server_network/ups/master/$UPSSERVER/extra_devices/$DEVICENAME
+touch /opt/karoshi/server_network/ups/master/$UPSSERVER/extra_devices/"$DEVICENAME"
 exit
 
 

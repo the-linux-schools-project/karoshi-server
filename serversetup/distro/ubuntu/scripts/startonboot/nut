@@ -1,17 +1,17 @@
 #!/bin/bash
 #Start nut on boot
 
-#Check whhich sysv script is in use
+#Check which sysv script is in use
 
 if [ -f /etc/init.d/nut ]
 then
-/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status nut on 1>/dev/null 2>/dev/null
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status nut on 1>/dev/null 2>/dev/null
 fi
 
 if [ -f /etc/init.d/nut-server ]
 then
-/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status nut-server on 1>/dev/null 2>/dev/null
-/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status nut-client on 1>/dev/null 2>/dev/null
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status nut-server on 1>/dev/null 2>/dev/null
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status nut-client on 1>/dev/null 2>/dev/null
 fi
 
 

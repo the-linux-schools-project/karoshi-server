@@ -202,7 +202,7 @@ then
 		chmod 0770 /var/run/nut
 	fi
 	upsdrvctl start
-	UPSSTATUS=`echo $?`
+	UPSSTATUS=$?
 	[ $UPSSTATUS != 0 ] && exit 105
 	sleep 1
 	upsdrvctl stop
@@ -216,12 +216,12 @@ else
 		chmod 0770 /var/run/nut
 	fi
 	upsdrvctl start
-	UPSSTATUS=`echo $?`
+	UPSSTATUS=$?
 	[ $UPSSTATUS != 0 ] && exit 105
 	sleep 1
 	upsdrvctl stop
 	'
-	UPSSTATUS=`echo $?`
+	UPSSTATUS=$?
 	[ $UPSSTATUS != 0 ] && exit 105
 fi
 echo "</pre>"
@@ -249,22 +249,8 @@ fi
 ########################
 #Create upsd.users
 ########################
-RANGE=61
-COUNTER=1
-while [ $COUNTER -lt 16 ]
-do
-	row[$COUNTER]=$RANDOM
-	let "row[$COUNTER] %= $RANGE"
-	while [ ${row[$COUNTER]} = 0 ]
-	do
-		row[$COUNTER]=$RANDOM
-		let "row[$COUNTER] %= $RANGE"
-	done
-	CHARACTER[$COUNTER]=`sed -n ${row[$COUNTER]},1p /opt/karoshi/serversetup/pdc/"useful scripts"/.alphabet`
-	let COUNTER=COUNTER+1
-done
 
-RANDOMPASSWORD=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
+RANDOMPASSWORD=`openssl rand -hex 16`
 
 if [ ! -d /opt/karoshi/server_network/ups/master/$SERVER/users ]
 then

@@ -29,16 +29,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/ups_status_cgi
 then
-echo `date`: ups_status - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: ups_status - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/ups_status_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ups_status.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $ups_status_cgi'check' ]
 then
-echo `date`: ups_status - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: ups_status - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -53,10 +53,10 @@ fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\-+'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: ups_status - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: ups_status - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -67,24 +67,24 @@ REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
 then
-echo `date`: ups_status - Not called by ups_status.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: ups_status - Not called by ups_status.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: ups_status - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: ups_status - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: ups_status - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: ups_status - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: ups_status - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: ups_status - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 echo `date`: ups_status by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -123,10 +123,10 @@ BATTRUNTIME=""
 
 if [ $SERVER = `hostname-fqdn` ]
 then
-UPSDATA=`upsc $UPSMODEL`
+	UPSDATA=`upsc $UPSMODEL`
 else
 UPSDATA=`ssh -x -o PasswordAuthentication=no $SERVER '
-upsc '$UPSMODEL'
+	upsc '$UPSMODEL'
 '`
 fi
 
@@ -137,59 +137,62 @@ UPSLOAD=`echo -e "$UPSDATA" | grep -w ups.load: | cut -d: -f2 | sed 's/ //g'`
 UPSTEMP=`echo -e "$UPSDATA" | grep -w battery.temperature: | cut -d: -f2 | sed 's/ //g'`
 BATTERYCHARGE=`echo -e "$UPSDATA" | grep -w battery.charge: | cut -d: -f2 | sed 's/ //g'`
 BATTCHARGEICON=battery-low.png
-if [ BATTERYCHARGE'null' != null ]
+if [ ! -z "$BATTERYCHARGE" ]
 then
-[ $BATTERYCHARGE -ge 40 ] && BATTCHARGEICON=battery-040.png
-[ $BATTERYCHARGE -ge 60 ] && BATTCHARGEICON=battery-060.png
-[ $BATTERYCHARGE -ge 80 ] && BATTCHARGEICON=battery-080.png
-[ $BATTERYCHARGE -ge 100 ] && BATTCHARGEICON=battery-100.png
+	[ $BATTERYCHARGE -ge 40 ] && BATTCHARGEICON=battery-040.png
+	[ $BATTERYCHARGE -ge 60 ] && BATTCHARGEICON=battery-060.png
+	[ $BATTERYCHARGE -ge 80 ] && BATTCHARGEICON=battery-080.png
+	[ $BATTERYCHARGE -ge 100 ] && BATTCHARGEICON=battery-100.png
 fi
 
 STATUSICON=battery_on_battery.png
 STATUS2="Warning"
 if [ `echo $STATUS | grep -c OL` -gt 0 ]
 then
-STATUSICON=battery_on_power.png
-STATUS2=Online
+	STATUSICON=battery_on_power.png
+	STATUS2=Online
 fi
 if [ `echo $STATUS | grep -c OB` -gt 0 ]
 then
-STATUSICON=battery_no_power.png
-STATUS2="On Battery"
+	STATUSICON=battery_no_power.png
+	STATUS2="On Battery"
 fi
 if [ `echo $STATUS | grep -c RB` -gt 0 ]
 then
-STATUSICON=battery_replace.png
-STATUS2="Replace Battery"
+	STATUSICON=battery_replace.png
+	STATUS2="Replace Battery"
 fi
 
 BATTRUNTIME=`echo -e "$UPSDATA" | grep -w battery.runtime: | cut -d: -f2 | sed 's/ //g'`
-let BATTRUNTIME=$BATTRUNTIME/60
-[ $BATTRUNTIME'null' != null ] && BATTRUNTIME=`echo $BATTRUNTIME mins`
-if [ $UPSTEMP'null' != null ]
+if [ ! -z "$BATTRUNTIME" ]
 then
-UPSTEMP=`echo $UPSTEMP "C"`
-else
-UPSTEMP=-
+	let BATTRUNTIME=$BATTRUNTIME/60
+	BATTRUNTIME=`echo "$BATTRUNTIME" mins`
 fi
-if [ $UTILITYV1'null' != null ]
+if [ ! -z "$UPSTEMP" ]
 then
-UTILITYV1=`echo "$UTILITYV1"v`
+	UPSTEMP=`echo $UPSTEMP "C"`
 else
-UTILITYV1=-
+	UPSTEMP=-
 fi
-if [ $UPSLOAD'null' != null ]
+if [ ! -z "$UTILITYV1" ]
 then
-UPSLOAD=`echo $UPSLOAD%`
+	UTILITYV1=`echo "$UTILITYV1"v`
 else
-UPSLOAD=-
+	UTILITYV1=-
 fi
-[ $STATUS'null' = null ] && STATUS2=$"No UPS Data"
-if [ $BATTERYCHARGE'null' = null ]
+if [ ! -z "$UPSLOAD" ]
 then
-BATTERYCHARGE=-
+	UPSLOAD=`echo $UPSLOAD%`
 else
-BATTERYCHARGE=`echo $BATTERYCHARGE%`
+	UPSLOAD=-
+fi
+[ -z "$STATUS" ] && STATUS2=$"No UPS Data"
+if [ -z "$BATTERYCHARGE" ]
+then
+	BATTERYCHARGE=-
+else
+	BATTERYCHARGE=`echo $BATTERYCHARGE%`
 fi
 
 #Show data
@@ -202,59 +205,55 @@ echo '<tr><td style="vertical-align: top;"><b><i>'$SERVER'</i></b></td><td style
 ########################
 for SERVERS in /opt/karoshi/server_network/ups/master/*
 do
-SERVER=`basename $SERVERS`
-#Get UPSMODELS
-for UPSMODELS in /opt/karoshi/server_network/ups/master/$SERVER/drivers/*
-do
-UPSMODEL=`basename $UPSMODELS`
-process_ups_data
+	SERVER=`basename $SERVERS`
+	#Get UPSMODELS
+	for UPSMODELS in /opt/karoshi/server_network/ups/master/$SERVER/drivers/*
+	do
+	UPSMODEL=`basename $UPSMODELS`
+	process_ups_data
+	done
+	#Check for ups slaves
+	if [ -d /opt/karoshi/server_network/ups/slave/$SERVER/users/ ]
+	then
+		for SLAVESERVERS in /opt/karoshi/server_network/ups/slave/$SERVER/users/*
+		do
+		SLAVESERVER=`basename $SLAVESERVERS`
+		#Chech ups status
+		if [ $SLAVESERVER = `hostname-fqdn` ]
+		then
+			upsmon status 1>/dev null 2>/dev/null
+			SLAVESTATUS=$?
+		else
+			ssh -x -o PasswordAuthentication=no $SLAVESERVER '
+			upsmon 1>/dev/null 2>/dev/null
+			SLAVESTATUS=$?
+			exit $SLAVESTATUS
+			'
+			SLAVESTATUS=$?
+		fi
+
+		STATUSICON=battery_on_battery.png
+		STATUS2="Warning"
+		if [ $SLAVESTATUS = 0 ]
+		then
+			STATUSICON=battery_on_power.png
+			STATUS2="Online"
+		fi
+
+		echo '<tr><td style="vertical-align: top;"><div style="margin-left: 40px;">'$SLAVESERVER'</div></td><td style="vertical-align: top;">UPS Slave</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$STATUSICON'"><span>'$SLAVESERVER' - '$STATUS2'</span></a></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td><form action="/cgi-bin/admin/ups_delete.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_SLAVE_SERVERMASTER_'$SERVER'_SERVER_'$SLAVESERVER'_UPSMODEL_'$UPSMODEL'_" type="image" class="images" src="'$DELETEICON'" value=""><span>'$SLAVESERVER' - '$"Delete" $UPSMODEL'</span></form></a></td><td style="vertical-align: top;"><form action="/cgi-bin/admin/ups_restart.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SLAVE_SERVER_'$SLAVESERVER'_" type="image" class="images" src="'$RESTARTICON'" value=""><span>'$SLAVESERVER' - '$"Restart UPS deamon"'</span></form></a></td></tr>'
+	done
+
+	fi
+	#Show other devices
+	if [ -d /opt/karoshi/server_network/ups/master/$SERVER/extra_devices ]
+	then
+		for DEVICES in /opt/karoshi/server_network/ups/master/$SERVER/extra_devices/*
+		do
+			DEVICE=`basename "$DEVICES" | sed 's/+/ /g'`
+			echo '<tr><td style="vertical-align: top;"><div style="margin-left: 40px;">'$DEVICE'</div></td><td style="vertical-align: top;">UPS Device</td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td><form action="/cgi-bin/admin/ups_delete.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_DEVICE_SERVERMASTER_'$SERVER'_SERVER_'$DEVICE'_UPSMODEL_'$UPSMODEL'_" type="image" class="images" src="'$DELETEICON'" value=""><span>'$DEVICE' - '$"Delete" $UPSMODEL'</span></form></a></td><td style="vertical-align: top;"></td></tr>'
+		done
+	fi
 done
-#Check for ups slaves
-if [ -d /opt/karoshi/server_network/ups/slave/$SERVER/users/ ]
-then
-for SLAVESERVERS in /opt/karoshi/server_network/ups/slave/$SERVER/users/*
-do
-SLAVESERVER=`basename $SLAVESERVERS`
-#Chech ups status
-if [ $SLAVESERVER = `hostname-fqdn` ]
-then
-upsmon status 1>/dev null 2>/dev/null
-SLAVESTATUS=`echo $?`
-else
-ssh -x -o PasswordAuthentication=no $SLAVESERVER '
-upsmon 2>/dev/null
-SLAVESTATUS=`echo $?`
-exit $SLAVESTATUS
-'
-SLAVESTATUS=`echo $?`
-fi
-
-STATUSICON=battery_on_battery.png
-STATUS2="Warning"
-if [ $SLAVESTATUS = 0 ]
-then
-STATUSICON=battery_on_power.png
-STATUS2="Online"
-fi
-
-echo '<tr><td style="vertical-align: top;"><div style="margin-left: 40px;">'$SLAVESERVER'</div></td><td style="vertical-align: top;">UPS Slave</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$STATUSICON'"><span>'$SLAVESERVER' - '$STATUS2'</span></a></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td><form action="/cgi-bin/admin/ups_delete.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_SLAVE_SERVERMASTER_'$SERVER'_SERVER_'$SLAVESERVER'_UPSMODEL_'$UPSMODEL'_" type="image" class="images" src="'$DELETEICON'" value=""><span>'$SLAVESERVER' - '$"Delete" $UPSMODEL'</span></form></a></td><td style="vertical-align: top;"><form action="/cgi-bin/admin/ups_restart.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SLAVE_SERVER_'$SLAVESERVER'_" type="image" class="images" src="'$RESTARTICON'" value=""><span>'$SLAVESERVER' - '$"Restart UPS deamon"'</span></form></a></td></tr>'
-
-done
-
-fi
-#Show other devices
-if [ -d /opt/karoshi/server_network/ups/master/$SERVER/extra_devices ]
-then
-for DEVICES in /opt/karoshi/server_network/ups/master/$SERVER/extra_devices/*
-do
-DEVICE=`basename $DEVICES | sed 's/+/ /g'`
-echo '<tr><td style="vertical-align: top;"><div style="margin-left: 40px;">'$DEVICE'</div></td><td style="vertical-align: top;">UPS Device</td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td><form action="/cgi-bin/admin/ups_delete.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_DEVICE_SERVERMASTER_'$SERVER'_SERVER_'$DEVICE'_UPSMODEL_'$UPSMODEL'_" type="image" class="images" src="'$DELETEICON'" value=""><span>'$DEVICE' - '$"Delete" $UPSMODEL'</span></form></a></td><td style="vertical-align: top;"></td></tr>'
-done
-fi
-
-
-done
-
 
 echo "</tbody></table>"
 exit
