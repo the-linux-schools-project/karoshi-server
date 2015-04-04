@@ -30,8 +30,8 @@ LOG_DATE=`date +%F`
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: setupfileserver - incorrect number of arguments."<br>"
-exit 101
+	echo `date`: setupfileserver - incorrect number of arguments."<br>"
+	exit 101
 fi
 read -t 3 DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/'`
@@ -46,8 +46,6 @@ source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/extra_server/software
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
-
-
 
 echo '<b>'$"Setup Internet Proxy Server" - $HOSTNAME'</b><br><br>'
 
@@ -118,18 +116,6 @@ chown -R root.staff /home/internetdata 2>/dev/null
 chown -R root.itadmin /home/multimedia 2>/dev/null
 chmod 0750 -R /home/internetdata 2>/dev/null
 chmod 0775 /home/multimedia 2>/dev/null
-
-#########################
-#Add log entry
-#########################
-echo '##############'setupsquid'##############' >> /opt/karoshi/serversetup/install_log
-date >> /opt/karoshi/serversetup/install_log
-touch /opt/karoshi/serversetup/setuplog
-if [ `grep -c "$"Setup Internet Proxy Server"" /opt/karoshi/serversetup/setuplog` = 0 ]
-then
-	echo setupsquidinternetproxyserver:$"Setup Internet Proxy Server":/opt/karoshi/serversetup/hal/scripts/setupsquidinternetproxyserver >> /opt/karoshi/serversetup/setuplog
-	chmod 0600 /opt/karoshi/serversetup/setuplog
-fi
 
 #########################
 #Stopping Squid and Apache if they are running

@@ -99,17 +99,8 @@ TEXTDOMAIN=karoshi-server
 
 source /opt/karoshi/server_network/domain_information/domain_name
 
-#Create keytab for squid
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:HTTP:squid:$SERVERNAME:proxy:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
-
-PDCIP=`net lookup $HOSTNAME`
-LDAPSTATUS=notset
 if [ $SERVERNAME != `hostname-fqdn` ]
 then
-	PDCIP=`net lookup $HOSTNAME`
-	#Get samba 4 database password
-	LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-
 	#Check that this server has been setup with the correct authentication
 	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:users:" | /opt/karoshi/serversetup/modules/authentication/check_auth
 	if [ $? = 101 ]
@@ -118,7 +109,34 @@ then
 		echo `date`: module_squid - $SERVERNAME does not have the correct authentication "for" this module by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 		exit 101
 	fi
+fi
 
+#Check to see if we can allow more than one proxy server if the main server can shuffle dns entries.
+PROXY_LOADBALANCE=no
+[ `grep -c "dns round robin = yes" /etc/samba/smb.conf` -gt 0 ] && PROXY_LOADBALANCE=yes
+
+#Allow more than one proxy server if the main server can shuffle dns entries.
+if [ "$PROXY_LOADBALANCE" = yes ]
+then
+	[ ! -d /opt/karoshi/server_network/proxyservers ] && mkdir -p /opt/karoshi/server_network/proxyservers
+	[ ! -d /var/lib/samba/netlogon/domain_information/proxy_servers ] && mkdir -p /var/lib/samba/netlogon/domain_information/proxy_servers
+	echo $SERVERNAME > /opt/karoshi/server_network/proxyservers/$SERVERNAME
+	echo $SERVERNAME > /var/lib/samba/netlogon/domain_information/proxy_servers/$SERVERNAME
+fi
+
+#Create dns entries for proxy.realm
+/opt/karoshi/serversetup/modules/squid/scripts/create_proxy_dns_entries
+
+#Create keytab for squid
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:HTTP:squid:$SERVERNAME:proxy:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
+
+#Create keytab for all proxy servers and merge into squid.keytab
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:proxy:HTTP:proxy:proxy:proxy:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
+
+PDCIP=`net lookup $HOSTNAME`
+LDAPSTATUS=notset
+if [ $SERVERNAME != `hostname-fqdn` ]
+then
 	#Copy in module
 	scp -p -r /opt/karoshi/serversetup/modules/squid root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
 	#Copy in fail2ban files
@@ -146,121 +164,20 @@ sed -i 's/INTERNETCTRL=no/INTERNETCTRL=yes/g' /opt/karoshi/server_network/menuse
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
 echo $SERVERNAME > /opt/karoshi/server_network/proxyserver
 
-#Copy in allowed_file_extensions
-[ ! -d /opt/karoshi/server_network/dansguardian ] && mkdir -p /opt/karoshi/server_network/dansguardian
-[ ! -f /opt/karoshi/server_network/dansguardian/allowed_file_extensions ] && cp -f /opt/karoshi/serversetup/modules/squid/allowed_file_extensions /opt/karoshi/server_network/dansguardian/ 
-
-########################
-#Modify prefs.js
-########################
-function modify_prefs.js {
-#Point firefox to proxy server
-
-#Turn off proxy if no proxy has been setup
-sed -i 's/user_pref("network.proxy.type", 0);/user_pref("network.proxy.type", 1);/g' "$PREFSJSPATH"
-#Set http proxy settings
-if [ `grep -c 'user_pref("network.proxy.http",' "$PREFSJSPATH"` -gt 0 ]
-then
-LINE=`grep -n 'user_pref("network.proxy.http",' "$PREFSJSPATH" | cut -d: -f1`
-sed -i $LINE'c''user_pref("network.proxy.http", "'$PROXYSERVER'.internal");' "$PREFSJSPATH"
-else
-echo 'user_pref("network.proxy.http", "'$PROXYSERVER'.internal");' >> "$PREFSJSPATH"
-fi
-#Set ftp proxy settings
-if [ `grep -c 'user_pref("network.proxy.ftp",' "$PREFSJSPATH"` -gt 0 ]
-then
-LINE=`grep -n 'user_pref("network.proxy.ftp",' "$PREFSJSPATH" | cut -d: -f1`
-sed -i $LINE'c''user_pref("network.proxy.ftp", "'$PROXYSERVER'.internal");' "$PREFSJSPATH"
-else
-echo 'user_pref("network.proxy.ftp", "'$PROXYSERVER'.internal");' >> "$PREFSJSPATH"
-fi
-#Set gopher proxy settings
-if [ `grep -c 'user_pref("network.proxy.gopher",' "$PREFSJSPATH"` -gt 0 ]
-then
-LINE=`grep -n 'user_pref("network.proxy.gopher",' "$PREFSJSPATH" | cut -d: -f1`
-sed -i $LINE'c''user_pref("network.proxy.gopher", "'$PROXYSERVER'.internal");' "$PREFSJSPATH"
-else
-echo 'user_pref("network.proxy.gopher", "'$PROXYSERVER'.internal");' >> "$PREFSJSPATH"
-fi
-#Set socks proxy settings
-if [ `grep -c 'user_pref("network.proxy.socks",' "$PREFSJSPATH"` -gt 0 ]
-then
-LINE=`grep -n 'user_pref("network.proxy.socks",' "$PREFSJSPATH" | cut -d: -f1`
-sed -i $LINE'c''user_pref("network.proxy.socks", "'$PROXYSERVER'.internal");' "$PREFSJSPATH"
-else
-echo 'user_pref("network.proxy.socks", "'$PROXYSERVER'.internal");' >> "$PREFSJSPATH"
-fi
-#Set ssl proxy settings
-if [ `grep -c 'user_pref("network.proxy.ssl",' "$PREFSJSPATH"` -gt 0 ]
-then
-LINE=`grep -n 'user_pref("network.proxy.ssl",' "$PREFSJSPATH" | cut -d: -f1`
-sed -i $LINE'c''user_pref("network.proxy.ssl", "'$PROXYSERVER'.internal");' "$PREFSJSPATH"
-else
-echo 'user_pref("network.proxy.ssl", "'$PROXYSERVER'.internal");' >> "$PREFSJSPATH"
-fi
-#Set startpage settings
-if [ `grep -c 'user_pref("browser.startup.homepage",' "$PREFSJSPATH"` -gt 0 ]
-then
-LINE=`grep -n 'user_pref("browser.startup.homepage",' "$PREFSJSPATH" | cut -d: -f1`
-sed -i $LINE'c''user_pref("browser.startup.homepage", "http://'$PROXYSERVER'.internal/index.html");' "$PREFSJSPATH"
-else
-echo 'user_pref("browser.startup.homepage", "http://'$PROXYSERVER'.internal/index.html");' >> "$PREFSJSPATH"
-fi
-
-if [ -f /opt/karoshi/server_network/moodleserver ]
-then
-MOODLESERVER=`sed -n 1,1p /opt/karoshi/server_network/moodleserver`
-#Set clipboard setting for moodle
-if [ `grep -c 'user_pref("capability.policy.allowclipboard.sites",' "$PREFSJSPATH"` -gt 0 ]
-then
-LINE=`grep -n 'user_pref("capability.policy.allowclipboard.sites",' "$PREFSJSPATH" | cut -d: -f1`
-sed -i $LINE'c''user_pref("capability.policy.allowclipboard.sites", "http://'$MOODLESERVER'.internal");' "$PREFSJSPATH"
-else
-echo 'user_pref("capability.policy.allowclipboard.sites", "http://'$MOODLESERVER'.internal");' >> "$PREFSJSPATH"
-fi
-fi
-
-#Set no proxy settings
-NOPROXYSERVERS=`ls /opt/karoshi/server_network/servers/`
-NOPROXYSERVERS=`echo $NOPROXYSERVERS | sed 's/ /, /g'`
-NOPROXYSERVERS2=`ls /opt/karoshi/server_network/servers/`
-NOPROXYSERVERS2=`echo $NOPROXYSERVERS2 | sed 's/ /.internal, /g' | sed 's/$/.internal/g'`
-NOPROXYSERVERS=`echo $NOPROXYSERVERS, $NOPROXYSERVERS2`
-
-if [ `grep -c 'user_pref("network.proxy.no_proxies_on",' "$PREFSJSPATH"` -gt 0 ]
-then
-LINE=`grep -n 'user_pref("network.proxy.no_proxies_on",' "$PREFSJSPATH" | cut -d: -f1`
-sed -i $LINE'c''user_pref("network.proxy.no_proxies_on", "localhost, 127.0.0.1, '"$NOPROXYSERVERS"'");' "$PREFSJSPATH"
-else
-echo 'user_pref("network.proxy.no_proxies_on", "localhost, 127.0.0.1, '"$NOPROXYSERVERS"'");' >> "$PREFSJSPATH"
-fi
-
-}
-
-PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
-
-#Windows clients
-for PROFILE in /home/applications/profiles/*
-do
-unset PREFSJSPATH 
-#Find prefs.js
-PREFSJSPATH=`find $PROFILE/ -name "prefs.js"`
-#Check that PREFSJSPATH has been set
-if [ -n "$PREFSJSPATH" ]
-then
-modify_prefs.js
-fi
-done
-
 #Add in monitoring for the server
 if [ -f /opt/karoshi/server_network/monitoringserver ]
 then
-/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVERNAME
+	/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVERNAME
 fi
 
 #Create info file for linux clients proxy server
-PROXYSERVER=`echo $PROXYSERVER | sed 's/.'$REALM'//g'`
-echo $PROXYSERVER > /var/lib/samba/netlogon/domain_information/proxy_server
-#echo $PROXYSERVER.$REALM > /var/lib/samba/netlogon/domain_information/proxy_server_fqdn
+if [ "$PROXY_LOADBALANCE" = yes ]
+then
+	echo proxy > /var/lib/samba/netlogon/domain_information/proxy_server
+else
+	PROXYSERVER=`echo $PROXYSERVER | sed 's/.'$REALM'//g'`
+	echo $PROXYSERVER > /var/lib/samba/netlogon/domain_information/proxy_server
+fi
 exit
+
 

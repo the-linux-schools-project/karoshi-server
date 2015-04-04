@@ -30,30 +30,30 @@ LOG_DATE=`date +%F`
 
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dg_view_top_sites_cgi
 then
-echo `date`: dg_view_top_sites - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_top_sites - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/dg_view_top_sites_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_top_sites.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $dg_view_top_sites_cgi'check' ]
 then
-echo `date`: dg_view_top_sites - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_top_sites - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/dg_view_top_sites_cgi
 then
-echo `date`: dg_view_top_sites - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_top_sites - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/dg_view_top_sites_cgi
 MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/dg_view_top_sites.cgi | cut -d' ' -f1`
-[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+[ -z "$MD5SUM2" ] && MD5SUM2=not_set
 if [ $MD5SUM2'check' != $dg_view_top_sites_cgi'check' ]
 then
-echo `date`: dg_view_top_sites - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_top_sites - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -62,17 +62,17 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: dg_view_top_sites - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_top_sites - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
 
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: dg_view_top_sites - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_top_sites - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -85,40 +85,40 @@ YEAR=`echo "$DATA" | cut -s -d: -f6`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
 then
-echo `date`: dg_view_top_sites - Not called by dg_view_top_sites.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_top_sites - Not called by dg_view_top_sites.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: dg_view_top_sites - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_top_sites - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: dg_view_top_sites - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_top_sites - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $DAY'null' = null ]
+if [ -z "$DAY" ]
 then
-echo `date`: dg_view_top_sites - Blank day by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: dg_view_top_sites - Blank day by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
-if [ $MONTH'null' = null ]
+if [ -z "$MONTH" ]
 then
-echo `date`: dg_view_top_sites - Blank month by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: dg_view_top_sites - Blank month by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
-if [ $YEAR'null' = null ]
+if [ -z "$YEAR" ]
 then
-echo `date`: dg_view_top_sites - Blank year by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_top_sites - Blank year by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
 then
-echo `date`: dg_view_top_sites - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_top_sites - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 echo `date`: dg_view_top_sites - Viewing logs "for" $DAY-$MONTH-$YEAR by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -126,66 +126,52 @@ echo `date`: dg_view_top_sites - Viewing logs "for" $DAY-$MONTH-$YEAR by $REMOTE
 
 ICON2="/images/submenus/internet/site_log.png"
 
+function create_temp_logfile {
+#Create a temporary log file from all of the servers
+if [ $PROXYSERVER = `hostname-fqdn` ]
+then
+	[ -d /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/allowed ] && du -ab /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/allowed/* | sort -rn | sed -n 1,100p >> /opt/karoshi/.tempdata/topsites.$$
+	[ -d /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/denied ] && du -ab /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/denied/* | sort -rn | sed -n 1,100p >> /opt/karoshi/.tempdata/topsites.$$
+else
+	ssh $PROXYSERVER ' [ -d /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/allowed ] && du -ab /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/allowed/* | sort -rn | sed -n 1,100p' >> /opt/karoshi/.tempdata/topsites.$$
+	ssh $PROXYSERVER ' [ -d /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/denied ] && du -ab /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/denied/* | sort -rn | sed -n 1,100p' >> /opt/karoshi/.tempdata/topsites.$$	
+fi
+}
+
+function viewlogs {
+if [ -f /opt/karoshi/.tempdata/topsites.$$ ]
+then
+	COUNTER=1
+	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>'
+	for TOPSSITES in `cat /opt/karoshi/.tempdata/topsites.$$ | cut -d"/" -f1,9 | sort -snur -k 1 | sed -n 1,100p | cut -d"/" -f2`
+	do
+		TOPSITE=`basename "$TOPSSITES" | sed "s/.tar.gz$//g"`
+
+		echo '<tr><td style="vertical-align: top;">'$COUNTER'</td><td style="vertical-align: top;">'$TOPSITE'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_LOGDATE_'$DAY'-'$MONTH'-'$YEAR'_WEBSITE_'$TOPSITE'_" type="image" class="images" src="'$ICON2'" value=""><span>View log - '$TOPSITE'</span></a></td></tr>'
+		let COUNTER=$COUNTER+1
+	done
+	rm -f /opt/karoshi/.tempdata/topsites.$$
+	echo '</tbody></table><br>'
+else
+	echo $"No logs exist for this date."
+fi
+}
+
 #Get squid server name
 [ ! -f /opt/karoshi/server_network/proxyserver ] && exit 101
-PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
 
-if [ $PROXYSERVER != `hostname-fqdn` ]
+if [ -d /opt/karoshi/server_network/proxyservers/ ]
 then
-ssh -x -o PasswordAuthentication=no $PROXYSERVER '
-#Check to see if a log for this day exists on the date given
+	for PROXYSERVER in `ls -1 /opt/karoshi/server_network/proxyservers`
+	do
+		create_temp_logfile
+	done
+	viewlogs
+else 
+	PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+	create_temp_logfile
+	viewlogs
+fi
 
-[ ! -d /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/allowed ] && exit 102
-#Show sites
-SITEARRAY=( `ls -S /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/allowed | sed -n 1,100p` )
-SITEARRAY_COUNT=`echo ${#SITEARRAY[@]}`
-COUNTER=0
-echo \<table class=\"standard\"\>\<tbody\>
-while [ $COUNTER -lt $SITEARRAY_COUNT ]
-do
-let DISPLAY_COUNT1=$COUNTER+1
-SITE1=`basename ${SITEARRAY[$COUNTER]} | sed "s/.tar.gz$//g"`
-let COUNTER=$COUNTER+1
-let DISPLAY_COUNT2=$COUNTER+1
-SITE2=`basename ${SITEARRAY[$COUNTER]} | sed "s/.tar.gz$//g"`
-if [ $SITE2"null" != null ]
-then
-echo "<tr><td style=\"vertical-align: top;\">$DISPLAY_COUNT1</td><td style=\"vertical-align: top;\"><form action=\"dg_view_site_logs2.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_LOGDATE_'$DAY'-'$MONTH'-'$YEAR'_WEBSITE_$SITE1\_\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>View log - $SITE1</span></a></form></td><td style=\"vertical-align: top;\">$SITE1</td><td style=\"vertical-align: top;\">$DISPLAY_COUNT2</td><td><form action=\"dg_view_site_logs2.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_LOGDATE_'$DAY'-'$MONTH'-'$YEAR'_WEBSITE_$SITE2"_"\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>View log - $SITE2</span></a></form></td><td style=\"vertical-align: top;\">$SITE2</td></tr>"
-else
-echo "<tr><td style=\"vertical-align: top;\">$DISPLAY_COUNT1</td><td><form action=\"dg_view_site_logs2.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_LOGDATE_'$DAY'-'$MONTH'-'$YEAR'_WEBSITE_$SITE1"_"\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>View log - $SITE1</span></a></form></td><td style=\"vertical-align: top;\">$SITE1</td></tr>"
-fi
-let COUNTER=$COUNTER+1
-done
-echo \</tbody\>\</table\>\<br\>
-'
-SSHSTATUS=`echo $?`
-[ $SSHSTATUS = 102 ] && exit 102
-else
-#Check to see if a log for this day exists on the date given
-if [ ! -d /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/allowed ]
-then
-exit 102
-fi
-#Show sites
-SITEARRAY=( `ls -S /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/allowed/ | sed -n 1,100p` )
-SITEARRAY_COUNT=`echo ${#SITEARRAY[@]}`
-COUNTER=0
-echo "<table class=\"standard\"><tbody>"
-while [ $COUNTER -lt $SITEARRAY_COUNT ]
-do
-let DISPLAY_COUNT1=$COUNTER+1
-SITE1=`basename ${SITEARRAY[$COUNTER]} | sed "s/.tar.gz$//g"`
-let COUNTER=$COUNTER+1
-let DISPLAY_COUNT2=$COUNTER+1
-SITE2=`basename ${SITEARRAY[$COUNTER]} | sed "s/.tar.gz$//g"`
-if [ $SITE2"null" != null ]
-then
-echo "<tr><td style=\"vertical-align: top;\">$DISPLAY_COUNT1</td><td style=\"vertical-align: top;\"><form action=\"dg_view_site_logs2.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_LOGDATE_$DAY-$MONTH-$YEAR"_WEBSITE_"$SITE1\_\" type=\"image\" class=\"images\" src=\"$ICON2\" value=\"\"><span>View log - $SITE1</span></a></form></td><td style=\"vertical-align: top;\">$SITE1</td><td style=\"vertical-align: top;\">$DISPLAY_COUNT2</td><td><form action=\"dg_view_site_logs2.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_LOGDATE_$DAY-$MONTH-$YEAR"_"WEBSITE_$SITE2"_"\" type=\"image\" class=\"images\" src=\"$ICON2\" value=\"\"><span>View log - $SITE2</span></a></form></td><td style=\"vertical-align: top;\">$SITE2</td></tr>"
-else
-echo "<tr><td style=\"vertical-align: top;\">$DISPLAY_COUNT1</td><td><form action=\"dg_view_site_logs2.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_LOGDATE_$DAY-$MONTH-$YEAR"_"WEBSITE_$SITE1"_"\" type=\"image\" class=\"images\" src=\"$ICON2\" value=\"\"><span>View log - $SITE1</span></a></form></td><td style=\"vertical-align: top;\">$SITE1</td></tr>"
-fi
-let COUNTER=$COUNTER+1
-done
-echo \</tbody\>\</table\>\<br\>
-fi
 exit
+
