@@ -24,19 +24,35 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+
 echo `date`: dg_reset_rooms - flushing iptables dynamic ruleset on $PROXYSERVER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+
 #Clear all of the room control flags
 [ -d /opt/karoshi/server_network/internet_room_controls/ ] && rm -f -R /opt/karoshi/server_network/internet_room_controls/ 
 
+function clear_rules {
 #Clear iptables rules
 if [ $PROXYSERVER = `hostname-fqdn` ]
 then
-iptables --flush dynamic
+	iptables --flush dynamic
 else
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3  $PROXYSERVER '
-iptables --flush dynamic
-'
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3  $PROXYSERVER '
+	iptables --flush dynamic
+	'
 fi
+}
+
+PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+if [ -d /opt/karoshi/server_network/proxyservers/ ]
+then
+	for PROXYSERVER in `ls -1 /opt/karoshi/server_network/proxyservers`
+	do
+		clear_rules
+	done
+else 
+	clear_rules
+fi
+
 exit
 

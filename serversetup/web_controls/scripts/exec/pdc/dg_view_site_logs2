@@ -170,7 +170,7 @@ else
 	'
 	LOGTYPE=$?
 	[ $LOGTYPE = 105 ] && ssh $PROXYSERVER ' cat /opt/karoshi/logs/internetlogs/"'$LOGDATE'"/sites/allowed/"'$WEBSITE'" ' >> /opt/karoshi/.tempdata/sitelog_allowed.$$
-	[ $LOGTYPE = 106 ] && ssh $PROXYSERVER ' tar -xzOf /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$MACHINES'/'$TCPIP'.tar.gz ' >> /opt/karoshi/.tempdata/sitelog_allowed.$$
+	[ $LOGTYPE = 106 ] && ssh $PROXYSERVER ' tar -xzOf /opt/karoshi/logs/internetlogs/"'$LOGDATE'"/sites/allowed/"'$WEBSITE'".tar.gz ' >> /opt/karoshi/.tempdata/sitelog_allowed.$$
 
 	ssh -x -o PasswordAuthentication=no $PROXYSERVER '
 	LOGTYPE="notset"

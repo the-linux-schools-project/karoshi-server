@@ -30,8 +30,8 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/user_internet_access_cgi
 then
-echo `date`: user_internet_access - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: user_internet_access - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/user_internet_access_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/user_internet_access.cgi | cut -d' ' -f1`
@@ -62,18 +62,19 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: user_internet_access - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: user_internet_access - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-+%'`
+DATA=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-+%'`
 
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
 echo `date`: user_internet_access - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
+
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
@@ -117,8 +118,8 @@ fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
 then
-echo `date`: user_internet_access - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: user_internet_access - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
@@ -155,9 +156,20 @@ STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
 
+function copy_bad_users {
+#Copy badusers.list to all proxy servers
+if [ -d /opt/karoshi/server_network/proxyservers/ ]
+then
+	for PROXYSERVER in `ls -1 /opt/karoshi/server_network/proxyservers`
+	do
+		[ $PROXYSERVER != `hostname-fqdn` ] && scp /etc/squid/badusers.list root@$PROXYSERVER:/etc/squid/
+	done
+else 
+	[ $PROXYSERVER != `hostname-fqdn` ] && scp /etc/squid/badusers.list root@$PROXYSERVER:/etc/squid/
+fi
+}
 
-
-function activate_changes {
+function reload_squid {
 if [ $PROXYSERVER = `hostname-fqdn` ]
 then
 	source /opt/karoshi/serversetup/variables/distro
@@ -170,16 +182,29 @@ ssh -x -o PasswordAuthentication=no $PROXYSERVER '
 fi
 }
 
+function activate_changes {
+
+if [ -d /opt/karoshi/server_network/proxyservers/ ]
+then
+	for PROXYSERVER in `ls -1 /opt/karoshi/server_network/proxyservers`
+	do
+		reload_squid
+	done
+else 
+	reload_squid
+fi
+}
+
 function viewbannedusers {
 
 DATE_INFO=`date +%F`
-[ $DAY'null' = null ] && DAY=`echo $DATE_INFO | cut -d- -f3`
-[ $MONTH'null' = null ] && MONTH=`echo $DATE_INFO | cut -d- -f2`
-[ $YEAR'null' = null ] && YEAR=`echo $DATE_INFO | cut -d- -f1`
+[ -z "$DAY" ] && DAY=`echo $DATE_INFO | cut -d- -f3`
+[ -z "$MONTH" ] && MONTH=`echo $DATE_INFO | cut -d- -f2`
+[ -z "$YEAR" ] && YEAR=`echo $DATE_INFO | cut -d- -f1`
 
 TIME_INFO=`date +%T`
-[ $HOUR'null' = null ] && HOUR=`echo $TIME_INFO | cut -d: -f1`
-[ $MINUTES'null' = null ] && MINUTES=`echo $TIME_INFO | cut -d: -f2`
+[ -z "$HOUR" ] && HOUR=`echo $TIME_INFO | cut -d: -f1`
+[ -z "$MINUTES" ] && MINUTES=`echo $TIME_INFO | cut -d: -f2`
 
 BANLENGTH=7
 
@@ -253,32 +278,21 @@ do
 		fi
 
 		#Ban the user
-		if [ $PROXYSERVER = `hostname-fqdn` ]
+		touch /etc/squid/badusers.list
+		if [ `grep -c -w ^$USERNAME /etc/squid/badusers.list` = 0 ]
 		then
-			touch /etc/squid/badusers.list
-			if [ `grep -c -w ^$USERNAME /etc/squid/badusers.list` = 0 ]
-			then
 			echo $USERNAME >> /etc/squid/badusers.list
 			sort /etc/squid/badusers.list > /etc/squid/badusers.list1
 			mv -f /etc/squid/badusers.list1 /etc/squid/badusers.list
-			fi
-		else
-			ssh -x -o PasswordAuthentication=no $PROXYSERVER '
-			touch /etc/squid/badusers.list
-			if [ `grep -c -w ^'$USERNAME' /etc/squid/badusers.list` = 0 ]
-			then
-			echo '$USERNAME' >> /etc/squid/badusers.list
-			sort /etc/squid/badusers.list > /etc/squid/badusers.list1
-			mv -f /etc/squid/badusers.list1 /etc/squid/badusers.list
-			fi
-			'
 		fi
 	fi
 	let COUNTER=$COUNTER+1
 done
 
-#Copy badusers.list back to the main server
-[ $PROXYSERVER != `hostname-fqdn` ] && scp root@$PROXYSERVER:/etc/squid/badusers.list /etc/squid/
+
+#Copy badusers.list to all proxy servers
+copy_bad_users
+
 #Activate the changes
 activate_changes
 }
@@ -287,37 +301,21 @@ function allowuser {
 USERNAME=$USERNAMES
 echo `date`: user_internet_access - allowing $USERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-if [ $PROXYSERVER = `hostname-fqdn` ]
-then
-	
-	#Remove the username from the list
-	USERLINENUMBER=`grep -n -w ^$USERNAME /etc/squid/badusers.list | cut -d: -f1`
-	[ ! -z "$USERLINENUMBER" ] && sed -i $USERLINENUMBER"d" /etc/squid/badusers.list
-	#Remove the username from the auto ban
-	[ -f /opt/karoshi/logs/banned_user_internet_durations/$USERNAME ] && rm -f /opt/karoshi/logs/banned_user_internet_durations/$USERNAME
-	#Remove blank lines
-	sed -i "/^$/d" /etc/squid/badusers.list
-	#Make sure that the list is not empty
-	SITECOUNT=`cat /etc/squid/badusers.list | wc -l`
-	[ $SITECOUNT = 0 ] && echo sampleuser > /etc/squid/badusers.list
-else
-ssh -x -o PasswordAuthentication=no $PROXYSERVER '
-	USERNAME='$USERNAMES'
-	#Remove the username from the list
-	USERLINENUMBER=`grep -n -w ^$USERNAME /etc/squid/badusers.list | cut -d: -f1`
-	[ ! -z "$USERLINENUMBER" ] && sed -i $USERLINENUMBER"d" /etc/squid/badusers.list
-	#Remove the username from the auto ban
-	[ -f /opt/karoshi/logs/banned_user_internet_durations/$USERNAME ] && rm -f /opt/karoshi/logs/banned_user_internet_durations/$USERNAME
-	#Remove blank lines
-	sed -i "/^$/d" /etc/squid/badusers.list
-	#Make sure that the list is not empty
-	SITECOUNT=`cat /etc/squid/badusers.list | wc -l`
-	[ $SITECOUNT = 0 ] && echo sampleuser > /etc/squid/badusers.list
-'
-fi
 
-#Copy badusers.list back to the main server
-[ $PROXYSERVER != `hostname-fqdn` ] && scp root@$PROXYSERVER:/etc/squid/badusers.list /etc/squid/
+#Remove the username from the list
+USERLINENUMBER=`grep -n -w ^$USERNAME /etc/squid/badusers.list | cut -d: -f1`
+[ ! -z "$USERLINENUMBER" ] && sed -i $USERLINENUMBER"d" /etc/squid/badusers.list
+#Remove the username from the auto ban
+[ -f /opt/karoshi/logs/banned_user_internet_durations/$USERNAME ] && rm -f /opt/karoshi/logs/banned_user_internet_durations/$USERNAME
+#Remove blank lines
+sed -i "/^$/d" /etc/squid/badusers.list
+#Make sure that the list is not empty
+SITECOUNT=`cat /etc/squid/badusers.list | wc -l`
+[ $SITECOUNT = 0 ] && echo sampleuser > /etc/squid/badusers.list
+
+
+#Copy badusers.list to all proxy servers
+copy_bad_users
 
 #Activate the changes
 activate_changes

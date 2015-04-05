@@ -41,7 +41,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -91,22 +91,22 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-TABLECLASS=standard
-ICON1=/images/assets/location.png
+	DIV_ID=actionbox
+	TABLECLASS=standard
+	ICON1=/images/assets/location.png
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
-TABLECLASS=mobilestandard
-ICON1=/images/assets/locationm.png
+	DIV_ID=actionbox2
+	TABLECLASS=mobilestandard
+	ICON1=/images/assets/locationm.png
 fi
 
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
@@ -114,14 +114,14 @@ fi
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Client Internet Controls"'</span>
 <a href="mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">
 '
 else
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tr><td style="vertical-align: top;"><b>'$"Client Internet Controls"' - '$"Location"'</b></td>
 <td valign=top>
 <a href="dg_reset_room_controls_fm.cgi"><input class="button" type="button" name="" value="'$"Reset times"'"></a>
@@ -132,43 +132,40 @@ fi
 
 if [ -f /var/lib/samba/netlogon/locations.txt ]
 then
-LOCATION_COUNT=`cat /var/lib/samba/netlogon/locations.txt | wc -l`
+	LOCATION_COUNT=`cat /var/lib/samba/netlogon/locations.txt | wc -l`
 else
-LOCATION_COUNT=0
+	LOCATION_COUNT=0
 fi
 
 if [ $LOCATION_COUNT != 0 ]
 then
-if [ -d /opt/karoshi/asset_register/locations/ ]
-then
-if [ `ls -1 /opt/karoshi/asset_register/locations/ | wc -l` -gt 0 ]
-then
+	if [ -d /opt/karoshi/asset_register/locations/ ]
+	then
+		if [ `ls -1 /opt/karoshi/asset_register/locations/ | wc -l` -gt 0 ]
+		then
+			ROWCOUNT=6
+			[ $MOBILE = yes ] && ROWCOUNT=3
+			WIDTH=90
+			[ $MOBILE = yes ] && WIDTH=70
 
-ROWCOUNT=6
-[ $MOBILE = yes ] && ROWCOUNT=3
-WIDTH=90
-[ $MOBILE = yes ] && WIDTH=70
+			echo '<form action="dg_room_controls.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+			LOCCOUNTER=1
 
-echo '<form action="dg_room_controls.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
-LOCCOUNTER=1
-
-for LOCATIONS in /opt/karoshi/asset_register/locations/*
-do
-LOCATION=`basename "$LOCATIONS"`
-
-echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Client Internet Controls"'<br>'$LOCATION'</span></a><br>'$LOCATION'</td>'
-[ $LOCCOUNTER = $ROWCOUNT ] && echo '</tr><tr>'
-let LOCCOUNTER=$LOCCOUNTER+1
-[ $LOCCOUNTER -gt $ROWCOUNT ] && LOCCOUNTER=1
-done
-
-echo "</tr></tbody></table></form><br>"
-fi
+			for LOCATIONS in /opt/karoshi/asset_register/locations/*
+			do
+				LOCATION=`basename "$LOCATIONS"`
+				echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Client Internet Controls"'<br>'$LOCATION'</span></a><br>'$LOCATION'</td>'
+				[ $LOCCOUNTER = $ROWCOUNT ] && echo '</tr><tr>'
+				let LOCCOUNTER=$LOCCOUNTER+1
+				[ $LOCCOUNTER -gt $ROWCOUNT ] && LOCCOUNTER=1
+			done
+			echo "</tr></tbody></table></form><br>"
+		fi
+	else
+		echo $"You have not chosen a location."
+	fi
 else
-echo $"You have not chosen a location."8
-fi
-else
-echo $"You have not chosen a location."8
+	echo $"No locations have been created."
 fi
 echo '</div></div></body></html>'
 exit

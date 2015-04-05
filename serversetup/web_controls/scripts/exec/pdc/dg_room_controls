@@ -29,44 +29,44 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dg_room_controls_cgi
 then
-echo `date`: dg_room_controls - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_room_controls - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/dg_room_controls2_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_room_controls2.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $dg_room_controls2_cgi'check' ]
 then
-echo `date`: dg_room_controls - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_room_controls - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/dg_room_controls2_cgi
 then
-echo `date`: dg_room_controls - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_room_controls - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/dg_room_controls2_cgi
 MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/dg_room_controls2.cgi | cut -d' ' -f1`
-[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+[ -z "$MD5SUM2" ] && MD5SUM2=not_set
 if [ $MD5SUM2'check' != $dg_room_controls2_cgi'check' ]
 then
-echo `date`: dg_room_controls - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_room_controls - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/staff_checksums/dg_room_controls2_cgi
 then
-echo `date`: dg_room_controls - No staff MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_room_controls - No staff MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/staff_checksums/dg_room_controls2_cgi
 MD5SUM3=`md5sum /var/www/cgi-bin_karoshi/staff/dg_room_controls2.cgi | cut -d' ' -f1`
-[ $MD5SUM3'null' = null ] && MD5SUM3=not_set
+[ -z "$MD5SUM3" ] && MD5SUM3=not_set
 if [ $MD5SUM3'check' != $dg_room_controls2_cgi'check' ]
 then
-echo `date`: dg_room_controls - Incorrect staff MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_room_controls - Incorrect staff MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -75,16 +75,16 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: dg_room_controls - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_room_controls - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: dg_room_controls - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_room_controls - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -97,33 +97,33 @@ ASSET=`echo "$DATA" | cut -s -d: -f6`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ] && [ $REMOTE_MD5'check' != $MD5SUM3'check' ]
 then
-echo `date`: dg_room_controls - Not called by dg_room_controls.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_room_controls - Not called by dg_room_controls.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: dg_room_controls - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_room_controls - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: dg_room_controls - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_room_controls - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $LOCATION'null' = null ]
+if [ -z "$LOCATION" ]
 then
-echo `date`: dg_room_controls - Blank location by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_room_controls - Blank location by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $ACTION'null' = null ]
+if [ -z "$ACTION" ]
 then
-echo `date`: dg_room_controls - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_room_controls - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $ASSET'null' = null ]
+if [ -z "$ASSET" ]
 then
-echo `date`: dg_room_controls - Blank asset by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_room_controls - Blank asset by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 echo `date`: dg_room_controls - action: $ACTION asset: $ASSET location: $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -134,16 +134,29 @@ PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
 [ ! -d /opt/karoshi/server_network/internet_room_controls/$LOCATION ] && mkdir -p /opt/karoshi/server_network/internet_room_controls/$LOCATION
 [ ! -d /opt/karoshi/server_network/internet_media_room_controls/$LOCATION ] && mkdir -p /opt/karoshi/server_network/internet_media_room_controls/$LOCATION
 
-function activate_changes {
-if [ $PROXYSERVER = `hostname-fqdn` ]
+function reload_squid {
+if [ "$PROXYSERVER" = `hostname-fqdn` ]
 then
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_reload 1>/dev/null
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/squid_reload 1>/dev/null 2>/dev/null
 else
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_reload 1>/dev/null
+ssh -x -o PasswordAuthentication=no $PROXYSERVER '
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/squid_reload 1>/dev/null 2>/dev/null
 '
+fi
+}
+
+function activate_changes {
+
+if [ -d /opt/karoshi/server_network/proxyservers/ ]
+then
+	for PROXYSERVER in `ls -1 /opt/karoshi/server_network/proxyservers`
+	do
+		reload_squid
+	done
+else 
+	reload_squid
 fi
 }
 
@@ -151,210 +164,260 @@ function get_asset_info {
 source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
 }
 
-function allowasset {
-get_asset_info
-if [ $ASSETTYPE = 1 ] || [ $ASSETTYPE = 3 ] || [ $ASSETTYPE = 5 ] || [ $ASSETTYPE = 7 ] || [ $ASSETTYPE = 9 ]
+function remove_firewall_rule {
+if [ "$PROXYSERVER" = `hostname-fqdn` ]
 then
-if [ $PROXYSERVER = `hostname-fqdn` ]
-then
-#Allow tcpip
-if [ $TCPIP1"null" != null ]
-then
-RULECOUNT=`iptables -nL dynamic | grep -c -w $TCPIP1`
-if [ $RULECOUNT -gt 0 ]
-then
-iptables -D dynamic -p tcp --dport 3128 -s $TCPIP1 -j DROP
-fi
-fi
-#Allow mac1
-if [ $MAC1"null" != null ]
-then
-RULECOUNT=`iptables -nL dynamic | grep -i -c -w $MAC1`
-if [ $RULECOUNT -gt 0 ]
-then
-iptables -D dynamic -p tcp --dport 3128 -m mac --mac-source $MAC1 -j DROP
-fi
-fi
+	#Allow tcpip
+	if [ ! -z $TCPIP1 ]
+	then
+		RULECOUNT=`iptables -nL dynamic | grep -c -w $TCPIP1`
+		if [ $RULECOUNT -gt 0 ]
+		then
+			iptables -D dynamic -p tcp --dport 3128 -s $TCPIP1 -j DROP
+		fi
+	fi
+	#Allow mac1
+	if [ ! -z "$MAC1" ]
+	then
+		RULECOUNT=`iptables -nL dynamic | grep -i -c -w $MAC1`
+		if [ $RULECOUNT -gt 0 ]
+		then
+			iptables -D dynamic -p tcp --dport 3128 -m mac --mac-source $MAC1 -j DROP
+		fi
+	fi
 else
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
-#Allow tcpip
-if [ '$TCPIP1'"null" != null ]
-then
-RULECOUNT=`iptables -nL dynamic | grep -c -w '$TCPIP1'`
-if [ $RULECOUNT -gt 0 ]
-then
-iptables -D dynamic -p tcp --dport 3128 -s '$TCPIP1' -j DROP
-fi
-fi
-#Allow mac1
-if [ '$MAC1'"null" != null ]
-then
-RULECOUNT=`iptables -nL dynamic | grep -i -c -w '$MAC1'`
-if [ $RULECOUNT -gt 0 ]
-then
-iptables -D dynamic -p tcp --dport 3128 -m mac --mac-source '$MAC1' -j DROP
-fi
-fi
-'
-fi
-[ -f /opt/karoshi/server_network/internet_room_controls/$LOCATION/$ASSET ] && rm -f /opt/karoshi/server_network/internet_room_controls/$LOCATION/$ASSET
+	#Allow tcpip
+	if [ ! -z "'$TCPIP1'" ]
+	then
+		RULECOUNT=`iptables -nL dynamic | grep -c -w '$TCPIP1'`
+		if [ $RULECOUNT -gt 0 ]
+		then
+			iptables -D dynamic -p tcp --dport 3128 -s '$TCPIP1' -j DROP
+		fi
+	fi
+	#Allow mac1
+	if [ ! -z "'$MAC1'" ]
+	then
+		RULECOUNT=`iptables -nL dynamic | grep -i -c -w '$MAC1'`
+		if [ $RULECOUNT -gt 0 ]
+		then
+			iptables -D dynamic -p tcp --dport 3128 -m mac --mac-source '$MAC1' -j DROP
+		fi
+	fi
+	'
 fi
 }
 
+
+function allowasset {
+get_asset_info
+if [ "$ASSETTYPE" = 1 ] || [ "$ASSETTYPE" = 3 ] || [ "$ASSETTYPE" = 5 ] || [ "$ASSETTYPE" = 7 ] || [ "$ASSETTYPE" = 9 ]
+then
+	if [ -d /opt/karoshi/server_network/proxyservers/ ]
+	then
+		for PROXYSERVER in `ls -1 /opt/karoshi/server_network/proxyservers`
+		do
+			remove_firewall_rule
+		done
+	else 
+		remove_firewall_rule
+	fi
+	[ -f /opt/karoshi/server_network/internet_room_controls/"$LOCATION"/"$ASSET" ] && rm -f /opt/karoshi/server_network/internet_room_controls/"$LOCATION"/"$ASSET"
+fi
+}
+
+function remove_media_asset {
+if [ "$PROXYSERVER" = `hostname-fqdn` ]
+then
+	if [ `grep -c $TCPIP1 /etc/squid/location_tcpip.list` -gt 0 ]
+	then
+		sed -i '/^'$TCPIP1'/d' /etc/squid/location_tcpip.list
+	fi
+else
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
+	if [ `grep -c '$TCPIP1' /etc/squid/location_tcpip.list` -gt 0 ]
+	then
+		sed -i "/^'$TCPIP1'/d" /etc/squid/location_tcpip.list
+	fi
+	'
+fi
+}
+
+
 function allowmediaasset {
 get_asset_info
-if [ $ASSETTYPE = 1 ] || [ $ASSETTYPE = 3 ] || [ $ASSETTYPE = 5 ] || [ $ASSETTYPE = 7 ] || [ $ASSETTYPE = 9 ]
+if [ "$ASSETTYPE" = 1 ] || [ "$ASSETTYPE" = 3 ] || [ "$ASSETTYPE" = 5 ] || [ "$ASSETTYPE" = 7 ] || [ "$ASSETTYPE" = 9 ]
 then
-if [ $PROXYSERVER = `hostname-fqdn` ]
-then
-if [ `grep -c $TCPIP1 /etc/squid/location_tcpip.list` -gt 0 ]
-then
-sed -i '/^'$TCPIP1'/d' /etc/squid/location_tcpip.list
+	if [ -d /opt/karoshi/server_network/proxyservers/ ]
+	then
+		for PROXYSERVER in `ls -1 /opt/karoshi/server_network/proxyservers`
+		do
+			remove_media_asset
+		done
+	else 
+		remove_media_asset
+	fi
+	[ -f /opt/karoshi/server_network/internet_media_room_controls/$LOCATION/$ASSET"_"media ] && rm -f /opt/karoshi/server_network/internet_media_room_controls/"$LOCATION"/"$ASSET""_"media
 fi
+}
+
+function add_firewall_rule {
+if [ "$PROXYSERVER" = `hostname-fqdn` ]
+then
+	BAN_FLAG=no
+	#Ban mac1
+	if [ ! -z "$MAC1" ]
+	then
+	RULECOUNT=`iptables -nL dynamic | grep -i -c -w $MAC1`
+		if [ $RULECOUNT = 0 ]
+		then
+			iptables -A dynamic -p tcp --dport 3128 -m mac --mac-source $MAC1 -j DROP
+			BAN_FLAG=yes
+		fi
+	fi
+	#Ban TCPIP if we dont have the mac address
+	if [ ! -z "$TCPIP1" ] && [ $BAN_FLAG = no ]
+	then
+		RULECOUNT=`iptables -nL dynamic | grep -c -w $TCPIP1`
+		if [ $RULECOUNT = 0 ]
+		then
+			iptables -A dynamic -p tcp --dport 3128 -s $TCPIP1 -j DROP
+			BAN_FLAG=yes
+		fi
+	fi
 else
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
-if [ `grep -c '$TCPIP1' /etc/squid/location_tcpip.list` -gt 0 ]
-then
-sed -i "/^'$TCPIP1'/d" /etc/squid/location_tcpip.list
-fi
-'
-fi
-[ -f /opt/karoshi/server_network/internet_media_room_controls/$LOCATION/$ASSET"_"media ] && rm -f /opt/karoshi/server_network/internet_media_room_controls/$LOCATION/$ASSET"_"media
+	BAN_FLAG=no
+	#Ban mac1
+	if [ ! -z "'$MAC1'" ]
+	then
+		RULECOUNT=`iptables -nL dynamic | grep -i -c -w '$MAC1'`
+		if [ $RULECOUNT = 0 ]
+		then
+			iptables -A dynamic -p tcp --dport 3128 -m mac --mac-source '$MAC1' -j DROP
+			BAN_FLAG=yes
+		fi
+	fi
+	#Ban TCPIP if we dont have the mac address
+	if [ ! -z "'$TCPIP1'" ] && [ $BAN_FLAG = no ]
+	then
+		RULECOUNT=`iptables -nL dynamic | grep -c -w '$TCPIP1'`
+		if [ $RULECOUNT = 0 ]
+		then
+			iptables -A dynamic -p tcp --dport 3128 -s '$TCPIP1' -j DROP
+			BAN_FLAG=yes
+		fi
+	fi
+	'
 fi
 }
 
 function denyasset {
 get_asset_info
-if [ $ASSETTYPE = 1 ] || [ $ASSETTYPE = 3 ] || [ $ASSETTYPE = 5 ] || [ $ASSETTYPE = 7 ] || [ $ASSETTYPE = 9 ]
+if [ "$ASSETTYPE" = 1 ] || [ "$ASSETTYPE" = 3 ] || [ "$ASSETTYPE" = 5 ] || [ "$ASSETTYPE" = 7 ] || [ "$ASSETTYPE" = 9 ]
 then
+	if [ -d /opt/karoshi/server_network/proxyservers/ ]
+	then
+		for PROXYSERVER in `ls -1 /opt/karoshi/server_network/proxyservers`
+		do
+			add_firewall_rule
+		done
+	else 
+		add_firewall_rule
+	fi
+	touch /opt/karoshi/server_network/internet_room_controls/$LOCATION/$ASSET
+fi
+}
+
+function add_media_asset {
 if [ $PROXYSERVER = `hostname-fqdn` ]
 then
-BAN_FLAG=no
-#Ban mac1
-if [ $MAC1"null" != null ]
-then
-RULECOUNT=`iptables -nL dynamic | grep -i -c -w $MAC1`
-if [ $RULECOUNT = 0 ]
-then
-iptables -A dynamic -p tcp --dport 3128 -m mac --mac-source $MAC1 -j DROP
-BAN_FLAG=yes
-fi
-fi
-#Ban TCPIP if we dont have the mac address
-if [ $TCPIP1"null" != null ] && [ $BAN_FLAG = no ]
-then
-RULECOUNT=`iptables -nL dynamic | grep -c -w $TCPIP1`
-if [ $RULECOUNT = 0 ]
-then
-iptables -A dynamic -p tcp --dport 3128 -s $TCPIP1 -j DROP
-BAN_FLAG=yes
-fi
-fi
+	if [ `grep -c ^$TCPIP1 /etc/squid/location_tcpip.list` = 0 ]
+	then
+		echo $TCPIP1 >> /etc/squid/location_tcpip.list
+	fi
 else
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
-BAN_FLAG=no
-#Ban mac1
-if [ '$MAC1'"null" != null ]
-then
-RULECOUNT=`iptables -nL dynamic | grep -i -c -w '$MAC1'`
-if [ $RULECOUNT = 0 ]
-then
-iptables -A dynamic -p tcp --dport 3128 -m mac --mac-source '$MAC1' -j DROP
-BAN_FLAG=yes
-fi
-fi
-#Ban TCPIP if we dont have the mac address
-if [ '$TCPIP1'"null" != null ] && [ $BAN_FLAG = no ]
-then
-RULECOUNT=`iptables -nL dynamic | grep -c -w '$TCPIP1'`
-if [ $RULECOUNT = 0 ]
-then
-iptables -A dynamic -p tcp --dport 3128 -s '$TCPIP1' -j DROP
-BAN_FLAG=yes
-fi
-fi
-'
-fi
-touch /opt/karoshi/server_network/internet_room_controls/$LOCATION/$ASSET
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
+	if [ `grep -c ^'$TCPIP1' /etc/squid/location_tcpip.list` = 0 ]
+	then
+		echo '$TCPIP1' >> /etc/squid/location_tcpip.list
+	fi
+	'
 fi
 }
 
 function denymediaasset {
 get_asset_info
-if [ $ASSETTYPE = 1 ] || [ $ASSETTYPE = 3 ] || [ $ASSETTYPE = 5 ] || [ $ASSETTYPE = 7 ] || [ $ASSETTYPE = 9 ]
+if [ "$ASSETTYPE" = 1 ] || [ "$ASSETTYPE" = 3 ] || [ "$ASSETTYPE" = 5 ] || [ "$ASSETTYPE" = 7 ] || [ "$ASSETTYPE" = 9 ]
 then
-if [ $PROXYSERVER = `hostname-fqdn` ]
-then
-if [ `grep -c ^$TCPIP1 /etc/squid/location_tcpip.list` = 0 ]
-then
-echo $TCPIP1 >> /etc/squid/location_tcpip.list
-fi
-else
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
-if [ `grep -c ^'$TCPIP1' /etc/squid/location_tcpip.list` = 0 ]
-then
-echo '$TCPIP1' >> /etc/squid/location_tcpip.list
-fi
-'
-fi
-touch /opt/karoshi/server_network/internet_media_room_controls/$LOCATION/$ASSET"_"media
+	if [ -d /opt/karoshi/server_network/proxyservers/ ]
+	then
+		for PROXYSERVER in `ls -1 /opt/karoshi/server_network/proxyservers`
+		do
+			add_media_asset
+		done
+	else 
+		add_media_asset
+	fi
+	touch /opt/karoshi/server_network/internet_media_room_controls/"$LOCATION"/"$ASSET""_"media
 fi
 }
 
-if [ $ACTION = deny ]
+if [ "$ACTION" = deny ]
 then
-denyasset
+	denyasset
 fi
 
-if [ $ACTION = denymedia ]
+if [ "$ACTION" = denymedia ]
 then
-denymediaasset
-activate_changes
+	denymediaasset
+	activate_changes
 fi
 
-if [ $ACTION = allow ]
+if [ "$ACTION" = allow ]
 then
-allowasset
+	allowasset
 fi
 
-if [ $ACTION = allowmedia ]
+if [ "$ACTION" = allowmedia ]
 then
-allowmediaasset
-activate_changes
+	allowmediaasset
+	activate_changes
 fi
 
-if [ $ACTION = allowall ] || [ $ACTION = denyall ] || [ $ACTION = allowallmedia ] || [ $ACTION = denyallmedia ]
+if [ "$ACTION" = allowall ] || [ "$ACTION" = denyall ] || [ "$ACTION" = allowallmedia ] || [ "$ACTION" = denyallmedia ]
 then
-if [ -d /opt/karoshi/asset_register/locations/$LOCATION ]
-then
-if [ `ls -1 /opt/karoshi/asset_register/locations/$LOCATION | wc -l` -gt 0 ]
-then
-for ASSETS in /opt/karoshi/asset_register/locations/$LOCATION/*
-do
-ASSET=`basename $ASSETS`
-if [ $ACTION = allowall ]
-then
-allowasset
-fi
-if [ $ACTION = denyall ]
-then
-denyasset
-fi
-if [ $ACTION = allowallmedia ]
-then
-allowmediaasset
-fi
-if [ $ACTION = denyallmedia ]
-then
-denymediaasset
-fi
-done
-fi
-fi
+	if [ -d /opt/karoshi/asset_register/locations/"$LOCATION" ]
+	then
+		if [ `ls -1 /opt/karoshi/asset_register/locations/"$LOCATION" | wc -l` -gt 0 ]
+		then
+			for ASSETS in /opt/karoshi/asset_register/locations/"$LOCATION"/*
+			do
+				ASSET=`basename $ASSETS`
+				if [ "$ACTION" = allowall ]
+				then
+					allowasset
+				fi
+				if [ "$ACTION" = denyall ]
+				then
+					denyasset
+				fi
+				if [ "$ACTION" = allowallmedia ]
+				then
+					allowmediaasset
+				fi
+				if [ "$ACTION" = denyallmedia ]
+				then
+					denymediaasset
+				fi
+			done
+		fi
+	fi
 fi
 
-if [ $ACTION = allowallmedia ] || [ $ACTION = denyallmedia ]
+if [ "$ACTION" = allowallmedia ] || [ "$ACTION" = denyallmedia ]
 then
-activate_changes
+	activate_changes
 fi
 
