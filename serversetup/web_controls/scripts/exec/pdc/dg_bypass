@@ -24,36 +24,36 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dg_bypass_cgi
 then
-echo `date`: dg_bypass - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_bypass - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/dg_bypass_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_bypass.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $dg_bypass_cgi'check' ]
 then
-echo `date`: dg_bypass - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_bypass - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/dg_bypass_cgi
 then
-echo `date`: dg_bypass - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_bypass - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/dg_bypass_cgi
 MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/dg_bypass.cgi | cut -d' ' -f1`
-[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+[ -z "$MD5SUM2" ] && MD5SUM2=not_set
 if [ $MD5SUM2'check' != $dg_bypass_cgi'check' ]
 then
-echo `date`: dg_bypass - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_bypass - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -61,16 +61,16 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: dg_bypass - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_bypass - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-' | sed 's/REPLACEUNDERSCORE/_/g'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: dg_bypass - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_bypass - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -86,175 +86,152 @@ MOBILE=`echo "$DATA" | cut -s -d: -f6`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
 then
-echo `date`: dg_bypass - Not called by dg_bypass.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_bypass - Not called by dg_bypass.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-echo `date`: dg_bypass - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_bypass - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: dg_bypass - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_bypass - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$ACTION" ]
 then
-echo `date`: dg_bypass - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_bypass - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ $ACTION != view ] && [ $ACTION != reallyadd ] && [ $ACTION != delete ]
 then
-echo `date`: dg_bypass - Incorrect action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_bypass - Incorrect action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $ACTION = reallyadd ] || [ $ACTION = delete ]
+if [ "$ACTION" = reallyadd ] || [ "$ACTION" = delete ]
 then
-if [ -z $TCPIP ]
-then
-echo `date`: dg_bypass - Blank tcpip by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	if [ -z "$TCPIP" ]
+	then
+		echo `date`: dg_bypass - Blank tcpip by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
+
+	INPUTCHECK=ok
+	if [ `echo "$TCPIP" | sed 's/\./\n /g'  | sed /^$/d | wc -l` != 4 ]
+	then
+		INPUTCHECK=fail
+	fi
+	#Check that no number is greater than 255
+	HIGHESTNUMBER=`echo "$TCPIP" | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p`
+	if [ $HIGHESTNUMBER -gt 255 ]
+	then
+	INPUTCHECK=fail
+	fi
+
+	if [ "$INPUTCHECK" = fail ]
+	then
+		echo `date`: dg_bypass - Incorrect tcpip by "$REMOTE_USER" from "$REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+		echo $"An incorrect TCPIP address has been entered.""<br><br>"
+		ACTION=view
+	fi
 fi
 
-INPUTCHECK=ok
-if [ `echo $TCPIP | sed 's/\./\n /g'  | sed /^$/d | wc -l` != 4 ]
+if [ `grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
 then
-INPUTCHECK=fail
-fi
-#Check that no number is greater than 255
-HIGHESTNUMBER=`echo $TCPIP | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p`
-if [ $HIGHESTNUMBER -gt 255 ]
-then
-INPUTCHECK=fail
+	echo `date`: dg_bypass - access denied to "$REMOTE_USER" from "$REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $INPUTCHECK = fail ]
+
+function copydata {
+if [ "$PROXYSERVER" != `hostname-fqdn` ]
 then
-echo `date`: dg_bypass - Incorrect tcpip by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $"An incorrect TCPIP address has been entered.""<br><br>"
-ACTION=view
-fi
+	rsync --timeout=30 --dirs --recursive --xattrs --links --compress --delete --times --perms --executability --acls --owner --group "$SOURCEPATH" "$PROXYSERVER":"$TARGETPATH"
+
+	#Reload squid
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_reload 1>/dev/null
+	'
+else
+	#Reload squid
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/squid_reload 1>/dev/null
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
-then
-echo `date`: dg_bypass - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
+}
 
-PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+function datasync {
+if [ -d /opt/karoshi/server_network/proxyservers/ ]
+then
+	for PROXYSERVER in `ls -1 /opt/karoshi/server_network/proxyservers`
+	do
+		copydata
+	done
+else 
+	PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+	copydata
+fi
+}
+
 ICON1=/images/submenus/system/delete.png
 TABLECLASS=standard
-if [ $MOBILE = yes ]
+
+if [ "$MOBILE" = yes ]
 then
-ICON1=/images/submenus/system/deletem.png
-TABLECLASS=mobilestandard
+	ICON1=/images/submenus/system/deletem.png
+	TABLECLASS=mobilestandard
 fi
 
-if [ $PROXYSERVER = `hostname-fqdn` ]
-then
-[ ! -d /etc/dansguardian ] && mkdir -p /etc/dansguardian 
 touch /etc/e2guardian/exceptioniplist
 
-if [ $ACTION = reallyadd ]
+if [ "$ACTION" = reallyadd ]
 then
-if [ `grep -c $TCPIP /etc/e2guardian/exceptioniplist` = 0 ]
-then
-echo $TCPIP >> /etc/e2guardian/exceptioniplist
-fi
-ACTION=view
+	if [ `grep -c "$TCPIP" /etc/e2guardian/exceptioniplist` = 0 ]
+	then
+		echo "$TCPIP" >> /etc/e2guardian/exceptioniplist
+	fi
 fi
 
-if [ $ACTION = delete ]
+if [ "$ACTION" = delete ]
 then
-#Delete entry
-sed -i "s/^$TCPIP//g" /etc/e2guardian/exceptioniplist
-#Remove empty lines
-sed -i '/^$/d' /etc/e2guardian/exceptioniplist
-ACTION=view
+	#Delete entry
+	sed -i "s/^$TCPIP//g" /etc/e2guardian/exceptioniplist
+	#Remove empty lines
+	sed -i '/^$/d' /etc/e2guardian/exceptioniplist
 fi
 
-if [ $ACTION = reallyadd ] || [ $ACTION = delete ]
+if [ "$ACTION" = reallyadd ] || [ "$ACTION" = delete ]
 then
-#Sort list
-sort -h /etc/e2guardian/exceptioniplist > /etc/e2guardian/exceptioniplist.$$
-rm -f /etc/e2guardian/exceptioniplist
-mv /etc/e2guardian/exceptioniplist.$$ /etc/e2guardian/exceptioniplist
-#Reload squid
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_reload
+	#Sort list
+	sort -h /etc/e2guardian/exceptioniplist > /etc/e2guardian/exceptioniplist.$$
+	rm -f /etc/e2guardian/exceptioniplist
+	mv /etc/e2guardian/exceptioniplist.$$ /etc/e2guardian/exceptioniplist
+
+	SOURCEPATH=/etc/e2guardian/exceptioniplist
+	TARGETPATH=/etc/e2guardian
+	datasync
+	ACTION=view
 fi
 
-if [ $ACTION = view ]
+if [ "$ACTION" = view ]
 then
-if [ `grep -v "^#" /etc/e2guardian/exceptioniplist | sed "/^$/d" | wc -l` != 0 ]
-then
-echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\"><b>$"TCPIP Number"</b></td><td><b>$"Delete"</b></td></tr>"
-for tcpipnumber in `grep -v "^#" /etc/e2guardian/exceptioniplist`
-do
-echo "<tr><td>$tcpipnumber</td><td>
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_TCPIP_$tcpipnumber"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$"Delete"<br>$tcpipnumber</span></a>
-</td></tr>"
-done
-echo "</tbody></table>"
+	if [ `grep -v "^#" /etc/e2guardian/exceptioniplist | sed "/^$/d" | wc -l` != 0 ]
+	then
+		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+		<tr><td style="width: 180px;"><b>'$"TCPIP Number"'</b></td><td><b>'$"Delete"'</b></td></tr>'
+		for tcpipnumber in `grep -v "^#" /etc/e2guardian/exceptioniplist`
+		do
+		echo '<tr><td>'$tcpipnumber'</td><td>
+		<a class="info" href="javascript:void(0)"><input name="_ACTION_delete_TCPIP_'$tcpipnumber'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Delete"'<br>'$tcpipnumber'</span></a>
+		</td></tr>'
+		done
+		echo "</tbody></table>"
+	fi
 fi
-fi
-else
-ssh -x -o PasswordAuthentication=no $PROXYSERVER '
-[ ! -d /etc/dansguardian ] && mkdir -p /etc/dansguardian 
-touch /etc/e2guardian/exceptioniplist
-ACTION='$ACTION'
-if [ $ACTION = reallyadd ]
-then
-if [ `grep -c '$TCPIP' /etc/e2guardian/exceptioniplist` = 0 ]
-then
-echo '$TCPIP' >> /etc/e2guardian/exceptioniplist
-fi
-ACTION=view
-fi
-
-if [ $ACTION = delete ]
-then
-#Delete entry
-sed -i "s/^'$TCPIP'//g" /etc/e2guardian/exceptioniplist
-#Remove empty lines
-sed -i "/^$/d" /etc/e2guardian/exceptioniplist
-ACTION=view
-fi
-
-if [ $ACTION = reallyadd ] || [ $ACTION = delete ]
-then
-#Sort list
-sort -h /etc/e2guardian/exceptioniplist > /etc/e2guardian/exceptioniplist.$$
-rm -f /etc/e2guardian/exceptioniplist
-mv /etc/e2guardian/exceptioniplist.$$ /etc/e2guardian/exceptioniplist
-#Reload squid
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_reload
-fi
-
-if [ $ACTION = view ]
-then
-if [ `grep -v "^#" /etc/e2guardian/exceptioniplist | sed "/^$/d" | wc -l` != 0 ]
-then
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\"><b>'$"TCPIP Number"'</b></td><td><b>'$"Delete"'</b></td></tr>"
-for tcpipnumber in `grep -v "^#" /etc/e2guardian/exceptioniplist`
-do
-echo "<tr><td>$tcpipnumber</td><td>
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_TCPIP_$tcpipnumber"_"\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$"Delete"'<br>$tcpipnumber</span></a>
-</td></tr>"
-done
-echo "</tbody></table>"
-fi
-fi
-'
-fi
-
 
 exit
 

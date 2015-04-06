@@ -193,12 +193,12 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 
 if [ $ACTION = reallyadd ]
 then
-passinfo
+	passinfo
 fi
 
 if [ $ACTION = view ] || [ $ACTION = delete ]
 then
-passinfo
+	passinfo
 fi
 
 if [ $ACTION = add ]
