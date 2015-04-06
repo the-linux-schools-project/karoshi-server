@@ -235,6 +235,14 @@ then
 	show_status
 fi
 
+#Check to see that servername is not called proxy
+if [ "$SERVERNAME" = proxy ]
+then
+	MESSAGE=$"The server cannot be called proxy."
+	show_status
+fi
+
+
 #Check to see that password fields are not blank
 if [ -z "$PASSWORD1" ]
 then
@@ -289,7 +297,7 @@ exit
 
 
 #If tcpip is blank check to see that we know the tcpip number
-if [ $TCPIPNUMBER'null' = null ]
+if [ -z "$TCPIPNUMBER" ]
 then
 	host -r -t A $SERVERNAME 1>/dev/null
 	[ $? != 0 ] && get_data

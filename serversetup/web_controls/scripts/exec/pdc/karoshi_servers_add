@@ -24,7 +24,7 @@
 #Website: http://www.karoshi.org.uk
 #Language
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
@@ -35,7 +35,7 @@ then
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/karoshi_servers_add_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/karoshi_servers_add.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $karoshi_servers_add_cgi'check' ]
 then
 	echo `date`: karoshi_servers_add - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE

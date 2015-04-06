@@ -156,6 +156,16 @@ then
 	[ $? = 101 ] && exit 101
 fi
 
+#Sync e2guardian information to the main server if this is the first time a proxy server has been added.
+if [ ! -f /opt/karoshi/server_network/proxyserver ]
+then
+	if [ "$SERVERNAME" != `hostname-fqdn` ]
+	then
+		rsync --timeout=30 --dirs --recursive --xattrs --links --compress --delete --times --perms --executability --acls --owner --group "$SERVERNAME":/etc/e2guardian /etc	
+	fi
+fi
+
+
 #Add role information
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
 echo $"Squid Internet Proxy - port 3128""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/squid

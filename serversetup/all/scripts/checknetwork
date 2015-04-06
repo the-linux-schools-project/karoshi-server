@@ -201,11 +201,17 @@ do
 		getnetworksettings
 
 		#Check that a servername has been entered.
-		if [ -z "$NAMECUSTOM" ]
+		if [ -z "$NAMECUSTOM" ] || [ "$NAMECUSTOM" = proxy ]
 		then
+			if [ -z "$NAMECUSTOM" ]
+			then
 				GETSETTINGS=yes
 				ERRORMSG=$"You have not entered in a server name."
-				inputwarning	
+			else
+				GETSETTINGS=yes
+				ERRORMSG=$"You have not entered in a valid server name."
+			fi
+				inputwarning
 		else 
 			INPUTCHECK=ok
 			IPDATA=$TCPIPCUSTOM
