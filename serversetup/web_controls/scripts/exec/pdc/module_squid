@@ -137,6 +137,12 @@ PDCIP=`net lookup $HOSTNAME`
 LDAPSTATUS=notset
 if [ $SERVERNAME != `hostname-fqdn` ]
 then
+	#Sync e2guardian information to an additional server
+	if [ -f /opt/karoshi/server_network/proxyserver ]
+	then
+		rsync --timeout=30 --dirs --recursive --xattrs --links --compress --delete --times --perms --executability --acls --owner --group /etc/e2guardian "$SERVERNAME":/etc	
+	fi
+
 	#Copy in module
 	scp -p -r /opt/karoshi/serversetup/modules/squid root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
 	#Copy in fail2ban files
@@ -164,7 +170,6 @@ then
 		rsync --timeout=30 --dirs --recursive --xattrs --links --compress --delete --times --perms --executability --acls --owner --group "$SERVERNAME":/etc/e2guardian /etc	
 	fi
 fi
-
 
 #Add role information
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
