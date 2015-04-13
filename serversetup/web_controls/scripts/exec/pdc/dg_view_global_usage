@@ -30,30 +30,30 @@ LOG_DATE=`date +%F`
 
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dg_view_global_usage_cgi
 then
-echo `date`: dg_view_global_usage - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_global_usage - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/dg_view_global_usage_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_global_usage.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $dg_view_global_usage_cgi'check' ]
 then
-echo `date`: dg_view_global_usage - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_global_usage - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/dg_view_global_usage_cgi
 then
-echo `date`: dg_view_global_usage - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_global_usage - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/dg_view_global_usage_cgi
 MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/dg_view_global_usage.cgi | cut -d' ' -f1`
-[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+[ -z "$MD5SUM2" ] && MD5SUM2=not_set
 if [ $MD5SUM2'check' != $dg_view_global_usage_cgi'check' ]
 then
-echo `date`: dg_view_global_usage - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_global_usage - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit 101
 fi
 
 ########################
@@ -62,16 +62,16 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: dg_view_global_usage - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: dg_view_global_usage - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
 exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: dg_view_global_usage - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_global_usage - no data >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -82,83 +82,88 @@ YEAR=`echo "$DATA" | cut -s -d: -f6`
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ] && [ "$REMOTE_MD5"'check' != "$MD5SUM2"'check' ]
 then
-echo `date`: dg_view_global_usage - Not called by dg_view_global_usage.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_global_usage - Not called by dg_view_global_usage.cgi >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit 101
 fi
 
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: dg_view_global_usage - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_global_usage - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: dg_view_global_usage - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_global_usage - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit 101
 fi
-if [ $DAY'null' = null ]
+if [ -z "$DAY" ]
 then
-echo `date`: dg_view_user_logs - Blank day by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: dg_view_user_logs - Blank day by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit
 fi
-if [ $MONTH'null' = null ]
+if [ -z "$MONTH" ]
 then
-echo `date`: dg_view_user_logs - Blank month by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: dg_view_user_logs - Blank month by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit
 fi
-if [ $YEAR'null' = null ]
+if [ -z "$YEAR" ]
 then
-echo `date`: dg_view_user_logs - Blank year by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_user_logs - Blank year by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit 101
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
 then
-echo `date`: dg_view_global_usage - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_global_usage - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit 101
 fi
 
-echo `date`: dg_view_global_usage - Viewing logs "for" $USERNAME  by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-#View logs
+echo `date`: dg_view_global_usage - Viewing logs "for" $USERNAME  by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+
+function viewlogs {
+if [ -f /opt/karoshi/.tempdata/global_user_usage.$$ ]
+then
+	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td style="vertical-align: top;"><b>'$"Global Internet Usage"' '$DAY'-'$MONTH'-'$YEAR'</b></td><td style="vertical-align: top;"><form action="dg_view_top_sites.cgi" method="post"><input name="_DATE_'$DAY'-'$MONTH'-'$YEAR'_" type="submit" class="button" value="'$"Top Sites"'">
+</form></td></tr></tbody></table><br>
+
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: 60px;"><b>'$"View log"'</b></td><td style="width: 90px;"><b>'$"Username"'</b></td><td style="width: 120px;"><b>'$"Hits"'</b></td></tr>'
+sort -t">" -s -k 13 /opt/karoshi/.tempdata/global_user_usage.$$
+	rm -f /opt/karoshi/.tempdata/global_user_usage.$$
+	echo '</tbody></table><br>'
+else
+	echo $"No usage logs exist for this date."
+fi
+}
+
+
+function create_temp_logfile {
+#Create a temporary log file from all of the servers
+if [ "$PROXYSERVER" = `hostname-fqdn` ]
+then
+	[ -f /opt/karoshi/logs/internetlogs/"$DAY"-"$MONTH"-"$YEAR"/global_user_usage ] && cat /opt/karoshi/logs/internetlogs/"$DAY"-"$MONTH"-"$YEAR"/global_user_usage >> /opt/karoshi/.tempdata/global_user_usage.$$
+else
+	ssh "$PROXYSERVER" ' [ -f /opt/karoshi/logs/internetlogs/"'$DAY'"-"'$MONTH'"-"'$YEAR'"/global_user_usage ] && cat /opt/karoshi/logs/internetlogs/"'$DAY'"-"'$MONTH'"-"'$YEAR'"/global_user_usage ' >> /opt/karoshi/.tempdata/global_user_usage.$$
+fi
+}
+
 
 #Get squid server name
 [ ! -f /opt/karoshi/server_network/proxyserver ] && exit 101
-PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
 
-if [ $PROXYSERVER != `hostname-fqdn` ]
+if [ -d /opt/karoshi/server_network/proxyservers/ ]
 then
-ssh -x -o PasswordAuthentication=no $PROXYSERVER '
-#Check to see if a log for this user exists on the date given
-LOGTYPE=NOTSET
-[ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/global_user_usage ] && LOGTYPE=text
-
-[ $LOGTYPE = NOTSET ] && exit 102
-#Create table header
-echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>'$"Global Internet Usage"' '$DAY'-'$MONTH'-'$YEAR'</b></td><td style=\"vertical-align: top;\"><form action=\"dg_view_top_sites.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_DATE_'$DAY'-'$MONTH'-'$YEAR'"_"\" type=\"image\" class=\"images\" src=\"/images/submenus/internet/internet_logs.png\" value=\"\"><span>'$"Top Sites"'</span></a></form></td></tr></tbody></table><br>
-
-<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody><tr><td style=\"width: 60px;\"><b>'$"View log"'</b></td><td style=\"width: 90px;\"><b>'$"Username"'</b></td><td style=\"width: 120px;\"><b>'$"Hits"'</b></td></tr>"
-
-cat /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/global_user_usage
-
-#end table
-echo \<\/tbody\>\<\/table\>\<br\>
-'
-[ `echo $?` = 102 ] && exit 102
-else
-#Check to see if a log for this user exists on the date given
-LOGTYPE=NOTSET
-[ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/global_user_usage ] && LOGTYPE=text
-[ $LOGTYPE = NOTSET ] && exit 102
-#Create table header
-echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr><td style=\"vertical-align: top;\"><b>$"Global Internet Usage" $DAY-$MONTH-$YEAR</b></td><td style=\"vertical-align: top;\"><form action=\"dg_view_top_sites.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_DATE_$DAY-$MONTH-$YEAR"_"\" type=\"image\" class=\"images\" src=\"/images/submenus/internet/internet_logs.png\" value=\"\"><span>$"Top Sites"</span></a></form></td></tr></tbody></table><br>
-
-<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody><tr><td style=\"width: 60px;\"><b>$"View log"</b></td><td style=\"width: 90px;\"><b>$"Username"</b></td><td style=\"width: 120px;\"><b>$"Hits"</b></td></tr>"
-
-cat /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/global_user_usage
-
-#end table
-echo \<\/tbody\>\<\/table\>\<br\>
+	for PROXYSERVER in `ls -1 /opt/karoshi/server_network/proxyservers`
+	do
+		create_temp_logfile
+	done
+	viewlogs
+else 
+	PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+	create_temp_logfile
+	viewlogs
 fi
+
 exit
+

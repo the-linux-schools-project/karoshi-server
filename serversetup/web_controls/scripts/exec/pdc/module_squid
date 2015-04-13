@@ -169,7 +169,7 @@ fi
 #Add role information
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
 echo $"Squid Internet Proxy - port 3128""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/squid
-echo $"Apt Proxy - port 3142""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/apt-cacher-ng
+echo $"Apt Proxy - port 8000""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/squid-deb-proxy
 sed -i 's/INTERNETCTRL=no/INTERNETCTRL=yes/g' /opt/karoshi/server_network/menusettings
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
 echo $SERVERNAME > /opt/karoshi/server_network/proxyserver
