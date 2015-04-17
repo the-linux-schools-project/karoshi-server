@@ -67,7 +67,7 @@ then
 	exit 101
 fi
 
-echo `date`: add_keytab "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: add_keytab "for" $SERVERNAME keyname: $KEYNAME servicename: $SERVICENAME spn_name: $SPN_NAME serviceuser: $SERVICEUSER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 source /opt/karoshi/server_network/domain_information/domain_name
 
@@ -89,15 +89,19 @@ then
 	-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>> /opt/karoshi/serversetup/install_log
 fi
 
-#Add service principle
-samba-tool spn add $KEYNAME/$SPN_NAME karoshi-krb5
+#Add service principle if it doesnt already exist
+if [ `samba-tool spn list karoshi-krb5 | grep -c "$SPN_NAME"` = 0 ]
+then
+	echo `date`: add_keytab - creating keytab >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	samba-tool spn add $KEYNAME/$SPN_NAME karoshi-krb5
+fi
 
 #Export keytab
 [ ! -d opt/karoshi/.tempdata ] && mkdir -p /opt/karoshi/.tempdata
 samba-tool domain exportkeytab /opt/karoshi/.tempdata/$KEYNAME.keytab.$$ --principal=$KEYNAME/$SPN_NAME
 
 #Copy keytab to server
-function copykeytab {
+
 if [ "$SERVERNAME" = `hostname-fqdn` ] 
 then
 	[ ! -d /etc/keytabs ] && mkdir -p /etc/keytabs
@@ -112,51 +116,9 @@ else
 	chmod 0400 /etc/keytabs/'$SERVICENAME'.keytab
 	chown '$SERVICEUSER' /etc/keytabs/'$SERVICENAME'.keytab
 	'
-	scp /opt/karoshi/.tempdata/$KEYNAME.keytab.$$ root@$SERVERNAME:"/etc/keytabs/'$SERVICENAME'.keytab"
-fi
-}
-
-#Custom keytab creation for squid
-if [ "$SERVICENAME" = squid ]
-then
-	if [ -d /opt/karoshi/server_network/proxyservers ]
-	then
-		#Add in entries for all proxy servers
-		for SERVERNAME in `ls -1 /opt/karoshi/server_network/proxyservers`
-		do
-			copykeytab
-		done
-	else
-		copykeytab
-	fi
-fi
-
-#Custom keytab creation for proxy servers
-if [ "$SERVICENAME" = proxy ]
-then
-	#Add in entries for all proxy servers
-	for SERVERNAME in `ls -1 /opt/karoshi/server_network/proxyservers`
-	do
-		copykeytab
-		#Merge Keytabs
-		if [ "$SERVERNAME" = `hostname-fqdn` ]
-		then
-			echo -e "rkt /etc/keytabs/proxy.keytab\nwkt /etc/keytabs/squid.keytab\nexit" | ktutil 1>/dev/null
-		else
-			ssh -x -o PasswordAuthentication=no $SERVERNAME '
-			echo -e "rkt /etc/keytabs/proxy.keytab\nwkt /etc/keytabs/squid.keytab\nexit" | ktutil 1>/dev/null
-			'
-		fi
-	done
-fi
-
-#Standard keytab creation
-if [ "$SERVICENAME" != proxy ] && [ "$SERVICENAME" != squid ]
-then
-	copykeytab
+	scp /opt/karoshi/.tempdata/"$KEYNAME".keytab.$$ root@$SERVERNAME:"/etc/keytabs/'$SERVICENAME'.keytab"
 fi
 
 #Delete keytab file
 rm -f /opt/karoshi/.tempdata/$KEYNAME.keytab.$$
-
 

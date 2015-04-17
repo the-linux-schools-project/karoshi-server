@@ -149,6 +149,7 @@ cp -f -R  /opt/karoshi/serversetup/modules/squid/squidfiles/squid/* /etc/squid
 
 [ -f /var/www/html/index.html ] && mv /var/www/html/index.html /var/www/html/index.html.$$
 cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/webwarning.htm /var/www/html/index.html
+sed -i "s/CHANGETHISSERVERNAME/`hostname-fqdn`/g" /var/www/html/index.html
 
 if [ $SQUIDVER = squid3 ]
 then
