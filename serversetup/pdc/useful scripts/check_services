@@ -4,6 +4,25 @@ source /opt/karoshi/serversetup/variables/distro
 HTMLPATH1=/var/www/html/karoshi_network_status_temp.html
 HTMLPATH2=/var/www/html/karoshi_network_status.html
 
+function disable_proxy_dns_entry {
+if [ -f /opt/karoshi/server_network/proxyservers/"$SERVERNAME" ]
+then
+	[ ! -d /opt/karoshi/server_network/proxyservers_offline ] && mkdir -p /opt/karoshi/server_network/proxyservers_offline
+	mv -f /opt/karoshi/server_network/proxyservers/"$SERVERNAME" /opt/karoshi/server_network/proxyservers_offline/
+	#Re-create proxy.realm dns entry
+	/opt/karoshi/serversetup/modules/squid/scripts/create_proxy_dns_entries
+fi
+}
+
+function enable_proxy_dns_entry {
+if [ -f /opt/karoshi/server_network/proxyservers_offline/"$SERVERNAME" ]
+then
+	mv -f /opt/karoshi/server_network/proxyservers_offline/"$SERVERNAME" /opt/karoshi/server_network/proxyservers
+	#Re-create proxy.realm dns entry
+	/opt/karoshi/serversetup/modules/squid/scripts/create_proxy_dns_entries
+fi
+}
+
 #Create table top
 echo '<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 50%; text-align: center;"><b>Service</b></td><td style="text-align: center;"><b>Status</b></td></tr>' > $HTMLPATH1
@@ -42,8 +61,12 @@ then
 	if [ $E2GUARDIAN = 0 ] && [ $SQUID = 0 ]
 	then
 		STATUS=ok
+		#Enable proxy dns entry
+		enable_proxy_dns_entry
 	else
 		STATUS=fail
+		#Disable proxy dns entry
+		disable_proxy_dns_entry
 	fi
 	SERVICENAME=Internet
 	write_html_entry
@@ -149,6 +172,17 @@ do
 		fi
 	fi
 
+	#Disable proxy dns entry if a proxy server is offline
+	if [ "$ONLINE" = no ] && [ "$PROXYSERVER" = yes ]
+	then
+		disable_proxy_dns_entry
+	fi
+
+	if [ "$ONLINE" = yes ] && [ "$PROXYSERVER" = yes ]
+	then
+		enable_proxy_dns_entry
+	fi	
+
 	APACHE=1
 	CUPS=1
 	DOVECOT=1
@@ -179,6 +213,8 @@ do
 					echo $SERVERNAME: $SERVICE is not running.
 					echo Attempting to start $SERVICE
 					/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/$SERVICE"_"start
+					/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/$SERVICE"_"status 1>/dev/null
+					SERVICESTATUS=$?
 				fi
 				else
 				ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
@@ -190,6 +226,8 @@ do
 						echo '$SERVERNAME:' '$SERVICE' is not running.
 						echo Attempting to start '$SERVICE'
 						/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/'$SERVICE'"_"start
+					/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/'$SERVICE'"_"status 1>/dev/null
+					SERVICESTATUS=$?
 					fi
 					exit $SERVICESTATUS
 				'
@@ -232,16 +270,25 @@ write_html_entry
 #End the html table
 echo '</tbody></table>' >> $HTMLPATH1
 
-#Copy the table to the correct server
-if [ -f /opt/karoshi/server_network/proxyserver ]
+function copy_htmldata {
+if [ $PROXYSERVER = `hostname-fqdn` ]
 then
-	PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
-	if [ $PROXYSERVER = `hostname-fqdn` ]
-	then
-		cp $HTMLPATH1 $HTMLPATH2
-	else
-		scp $HTMLPATH1 root@$PROXYSERVER:/$HTMLPATH2
-	fi
+	cp $HTMLPATH1 $HTMLPATH2
+else
+	scp $HTMLPATH1 root@$PROXYSERVER:/$HTMLPATH2
 fi
+}
+
+if [ -d /opt/karoshi/server_network/proxyservers/ ]
+then
+	for PROXYSERVER in `ls -1 /opt/karoshi/server_network/proxyservers`
+	do
+		copy_htmldata
+	done
+else 
+	PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+	copy_htmldata
+fi
+
 
 exit
