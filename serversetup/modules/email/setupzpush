@@ -127,6 +127,14 @@ sed -i 's/CHANGETHISSERVERNAME/'$HOSTNAME'/g' $SOGoPath/sogoactivesync.conf
 sed -i 's/CHANGETHISLDAPSERVER/'$LDAPSERVER'/g' $SOGoPath/sogoactivesync.conf
 sed -i 's/CHANGETHISBASEDN/'$LDAPBASE'/g' $SOGoPath/sogoactivesync.conf
 
+#Set path to the correct version of sogo - /usr/local/lib or /usr/lib
+
+if [ -f /usr/local/sbin/sogod ]
+then
+	#Assume we are running a compiled version of sogo
+	sed -i 's/\/usr\/lib/\/usr\/local\/lib/g' $SOGoPath/sogoactivesync.conf
+fi
+
 #Modify sogo path
 if [ -d /usr/local/lib/GNUstep ]
 then

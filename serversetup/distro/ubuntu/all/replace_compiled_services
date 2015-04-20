@@ -165,6 +165,22 @@ rm -f -R /usr/local/share/samba
 
 echo ""$HOSTNAME - Installing Samba 4 from linux-schools backports"" 
 
+#Modify smb.conf with dfs and round robin support
+
+if [ `grep -c "\[sysvol\]" /etc/samba/smb.conf` -gt 0 ]
+then
+	if [ `grep -c "\[dfs\]" /etc/samba/smb.conf` = 0 ]
+	then
+		#Add in msdfs and round robin
+		sed -i '/\[global\]/a \\thost msdfs = yes\n\tdns round robin = yes' /etc/samba/smb.conf
+
+		#Add in dfs share
+		sed -i '/\[sysvol\]/i \[dfs\]\n\tpath = /var/lib/samba/dfs\n\tmsdfs root = yes\n\tguest ok = Yes\n\tmsdfs shuffle referrals = yes\n' /etc/samba/smb.conf
+	fi
+fi
+
+[ ! -d /var/lib/samba/dfs ] && mkdir -p /var/lib/samba/dfs
+
 #Install samba4
 apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y install samba
 apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y install libparse-pidl-perl
@@ -214,7 +230,15 @@ then
 	sed -i 's/CHANGETHISKRBPATH/'$HOSTNAME.$REALM'/g' $SOGoPath/SOGo.conf
 	sed -i 's/CHANGETHISSERVERNAME/'$HOSTNAME'/g' $SOGoPath/SOGo.conf
 
+	#Make sure SOGo.conf is not pointing at /usr/local
+	sed -i 's/\/usr\/local\/lib/\/usr\/lib/g' $SOGoPath/SOGo.conf
+
+	#Make sure SOGo.conf is not pointing at /usr/local
+	sed -i 's/\/usr\/local\/lib/\/usr\/lib/g' $SOGoPath/sogoactivesync.conf
 fi
+
+#Set permissions on /etc/sogo
+chown -R root:sogo /etc/sogo
 
 #Copy in revised init.d script
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/sogo /etc/init.d/
@@ -246,6 +270,9 @@ fi
 #Start Apache2 and Sogo
 if [ $RUNSTATUS2 = on ]
 then
+	echo "$HOSTNAME - stopping apache"
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_stop
+	sleep 1
 	echo "$HOSTNAME - starting apache"
 	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_start
 	echo "$HOSTNAME - starting sogo"
