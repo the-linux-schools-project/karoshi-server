@@ -126,61 +126,41 @@ STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
 
-function addsite {
-echo `date`: package_cache_control - adding $FILTERDATA by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+function activate_changes {
 if [ $PROXYSERVER = `hostname-fqdn` ]
 then
-	if [ `grep -c -w "$FILTERDATA" /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default` = 0 ]
-	then
-		echo "$FILTERDATA" >> /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
-		#Sort the data
-		sort /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default > /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default.$$
-		cat /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default.$$ > /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
-		rm -f /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default.$$
-
-		#Restart squid-deb-proxy
-		service squiddebproxy reload 1>/dev/null
-
-	fi
+	#Restart squid-deb-proxy
+	service squiddebproxy reload 1>/dev/null
 else
+	#Copy config file to the server
+	scp /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default root@$PROXYSERVER:/etc/squid-deb-proxy/mirror-dstdomain.acl.d/
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
-	if [ `grep -c -w "'$FILTERDATA'" /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default` = 0 ]
-	then
-		echo "'$FILTERDATA'" >> /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
-		#Sort the data
-		sort /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default > /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default.'$$'
-		cat /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default.'$$' > /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
-		rm -f /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default.'$$'
+	#Restart squid-deb-proxy
+	service squiddebproxy reload 1>/dev/null
+	'	
+fi
+}
 
-		#Restart squid-deb-proxy
-		service squiddebproxy reload 1>/dev/nulll
-	fi
-	'
+function addsite {
+echo `date`: package_cache_control - adding $FILTERDATA by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+if [ `grep -c -w "$FILTERDATA" /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default` = 0 ]
+then
+	echo "$FILTERDATA" >> /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
+	#Sort the data
+	sort /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default > /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default.$$
+	cat /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default.$$ > /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
+	rm -f /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default.$$
 fi
 }
 
 function deletesite {
 echo `date`: package_cache_control - deleting $FILTERDATA by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ $PROXYSERVER = `hostname-fqdn` ]
-then
+
 	LINENUMBER=`grep -n -w ^$FILTERDATA /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default | cut -d: -f1`
 	[ ! -z "$LINENUMBER" ] && sed -i $LINENUMBER"d" /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
 	#Remove blank lines
 	sed -i "/^$/d" /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
-
-	#Restart squid-deb-proxy
-	service squiddebproxy reload 1>/dev/null
-else
-	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
-	LINENUMBER=`grep -n -w ^'$FILTERDATA' /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default | cut -d: -f1`
-	[ ! -z "$LINENUMBER" ] && sed -i $LINENUMBER"d" /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
-	#Remove blank lines
-	sed -i "/^$/d" /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
-
-	#Restart squid-deb-proxy
-	service squiddebproxy reload 1>/dev/null
-	'
-fi
 }
 
 function viewlist {
@@ -193,32 +173,40 @@ echo '<form action="/cgi-bin/admin/package_cache_control.cgi" method="post"><tab
 
 echo '<td><input value="'$"Submit"'" class="button" type="submit"></td></tr></tbody></table><br></form><form action="/cgi-bin/admin/package_cache_control.cgi" method="post">'
 
-if [ $PROXYSERVER = `hostname-fqdn` ]
-then
-	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: '$WIDTH2'px;"><b>'$"Site"'</b></td><td></td></tr>'
 
-	for SITE in `cat /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default | sort`
-	do
-		echo '<tr><td>'$SITE'</td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_delete_FILTERDATA_'$SITE'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Delete"' '$SITE'</span></a></td></tr>'
-	done
-	echo '</tbody></table>'
-else
-	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
-	echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: '$WIDTH1'"px";\"><b>Site</b></td><td></td></tr>"
-	for SITE in `cat /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default | sort`
-	do
-		echo "<tr><td>$SITE</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_FILTERDATA_$SITE"_"\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$"Delete"' $SITE</span></a></td></tr>"
-	done
-	echo "</tbody></table>"
-	'
-fi
-echo '</form>'
+for SITE in `cat /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default | sort`
+do
+	echo '<tr><td>'$SITE'</td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_delete_FILTERDATA_'$SITE'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Delete"' '$SITE'</span></a></td></tr>'
+done
+echo '</tbody></table></form>'
 }
 
-[ "$ACTION" = add ] && addsite
-[ "$ACTION" = delete ] && deletesite
+
+
+if [ "$ACTION" = add ] || [ "$ACTION" = delete ]
+then
+	#Get squid server name
+	[ ! -f /opt/karoshi/server_network/proxyserver ] && exit 101
+
+	if [ -d /opt/karoshi/server_network/proxyservers/ ]
+	then
+		for PROXYSERVER in `ls -1 /opt/karoshi/server_network/proxyservers`
+		do
+			[ "$ACTION" = add ] && addsite
+			[ "$ACTION" = delete ] && deletesite
+			activate_changes
+		done
+	else 
+		PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+		[ "$ACTION" = add ] && addsite
+		[ "$ACTION" = delete ] && deletesite
+		activate_changes
+	fi
+fi
+
 viewlist
 
 exit

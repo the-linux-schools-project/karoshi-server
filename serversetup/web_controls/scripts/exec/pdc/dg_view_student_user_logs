@@ -29,16 +29,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/staff_checksums/dg_view_student_user_logs_cgi
 then
-echo `date`: dg_view_student_user_logs - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_student_user_logs - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/staff_checksums/dg_view_student_user_logs_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/staff/dg_view_student_user_logs.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $dg_view_student_user_logs_cgi'check' ]
 then
-echo `date`: dg_view_student_user_logs - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_student_user_logs - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -47,17 +47,18 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: dg_view_student_user_logs - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_student_user_logs - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: dg_view_student_user_logs - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_student_user_logs - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
+
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
@@ -73,43 +74,43 @@ MOBILE=`echo "$DATA" | cut -s -d: -f9`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: dg_view_student_user_logs - Not called by dg_view_student_user_logs.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_student_user_logs - Not called by dg_view_student_user_logs.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: dg_view_student_user_logs - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_student_user_logs - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: dg_view_student_user_logs - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_student_user_logs - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $USERNAME'null' = null ]
+if [ -z "$USERNAME" ]
 then
-echo `date`: dg_view_student_user_logs - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: dg_view_student_user_logs - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
-if [ $DAY'null' = null ]
+if [ -z "$DAY" ]
 then
-echo `date`: dg_view_student_user_logs - Blank day by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: dg_view_student_user_logs - Blank day by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
-if [ $MONTH'null' = null ]
+if [ -z "$MONTH" ]
 then
-echo `date`: dg_view_student_user_logs - Blank month by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: dg_view_student_user_logs - Blank month by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
-if [ $YEAR'null' = null ]
+if [ -z "$YEAR" ]
 then
-echo `date`: dg_view_student_user_logs - Blank year by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_student_user_logs - Blank year by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $MYUSERNAME'null' = null ]
+if [ -z "$MYUSERNAME" ]
 then
-echo `date`: dg_view_student_user_logs - Blank myusername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_student_user_logs - Blank myusername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 TABLECLASS=standard
@@ -119,56 +120,62 @@ TABLECLASS=standard
 MYPRIGROUP=`id -g -n $MYUSERNAME`
 if [ $MYPRIGROUP != staff ] && [ $MYPRIGROUP != officestaff ] && [ $MYPRIGROUP != itadmin ] && [ $MYPRIGROUP != tech ]
 then
-echo `date`: change_student_password - $MYUSERNAME is not a member of staff from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_student_password - $MYUSERNAME is not a member of staff from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 echo `date`: dg_view_student_user_logs - Viewing logs "for" $USERNAME $DAY-$MONTH-$YEAR by $MYUSERNAME from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-#View logs
+
+function create_temp_logfile {
+#Create a temporary log file from all of the servers
+if [ $PROXYSERVER = `hostname-fqdn` ]
+then
+	LOGTYPE="notset"
+	[ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME ] && LOGTYPE=text
+	[ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME.tar.gz ] && LOGTYPE=archive
+	[ $LOGTYPE = text ] && cat /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME >> /opt/karoshi/.tempdata/$USERNAME.$$
+	[ $LOGTYPE = archive ] && tar -xzOf /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME.tar.gz >> /opt/karoshi/.tempdata/$USERNAME.$$
+else
+	ssh -x -o PasswordAuthentication=no $PROXYSERVER '
+	LOGTYPE="notset"
+	[ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$USERS'/'$USERNAME' ] && LOGTYPE=text
+	[ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$USERS'/'$USERNAME'.tar.gz ] && LOGTYPE=archive
+	[ $LOGTYPE = text ] && exit 105
+	[ $LOGTYPE = archive ] && exit 106
+	'
+	LOGTYPE=$?
+	[ $LOGTYPE = 105 ] && ssh $PROXYSERVER ' cat /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$USERS'/'$USERNAME' ' >> /opt/karoshi/.tempdata/$USERNAME.$$
+	[ $LOGTYPE = 106 ] && ssh $PROXYSERVER ' tar -xzOf /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$USERS'/'$USERNAME'.tar.gz ' >> /opt/karoshi/.tempdata/$USERNAME.$$
+fi
+}
+
+function viewlogs {
+if [ -f /opt/karoshi/.tempdata/$USERNAME.$$ ]
+then
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: '$WIDTH1'px;"><b>'$"Filter"'</b></td><td style="width: '$WIDTH2'px;"><b>'$"Time"'</b></td><td></td><td style="width: '$WIDTH3'px;"><b>'$"Client"'</b></td><td></td><td><b>'$"Website"'</b></td></tr>'
+	sort -t">" -s -k 6 /opt/karoshi/.tempdata/$USERNAME.$$
+	rm -f /opt/karoshi/.tempdata/$USERNAME.$$
+	echo '</tbody></table><br>'
+else
+	echo $"No logs exist for this username."
+fi
+}
 
 #Get squid server name
 [ ! -f /opt/karoshi/server_network/proxyserver ] && exit 101
-PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
 
-if [ $PROXYSERVER != `hostname-fqdn` ]
+if [ -d /opt/karoshi/server_network/proxyservers/ ]
 then
-ssh -x -o PasswordAuthentication=no $PROXYSERVER '
-#Check to see if a log for this user exists on the date given
-LOGTYPE=NOTSET
-[ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/users/'$USERNAME' ] && LOGTYPE=text
-[ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/users/'$USERNAME'.tar.gz ] && LOGTYPE=archive
-[ $LOGTYPE = NOTSET ] && exit 102
-#Create table header
-echo \<b\>'$"Internet Log"' '$USERNAME' '$DAY'-'$MONTH'-'$YEAR'\<\/b\>\<br\>\<br\>
-echo \<table class=\"'$TABLECLASS'\" style=\"text-align: left\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>\<tbody\>
-echo \<tr\>\<td\>\<b\>'$"Filter"'\<\/b\>\</td\>\<td\>\<b\>'$"Time"'\<\/b\>\</td\>\<td\>\<b\>'$"Client"'\<\/b\>\</td\>\<td\>\<b\>'$"Website"'\<\/b\>\</td\>\</tr\>
-if [ $LOGTYPE = text ]
-then
-cat /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/users/'$USERNAME'
-else
-tar -xzOf /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/users/'$USERNAME'.tar.gz
-fi
-#end table
-echo \<\/tbody\>\<\/table\>
-'
-[ `echo $?` = 102 ] && exit 102
-else
-#Check to see if a log for this user exists on the date given
-LOGTYPE=NOTSET
-[ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/users/$USERNAME ] && LOGTYPE=text
-[ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/users/$USERNAME.tar.gz ] && LOGTYPE=archive
-[ $LOGTYPE = NOTSET ] && exit 102
-#Create table header
-echo \<b\>$"Internet Log" $USERNAME $DAY-$MONTH-$YEAR\<\/b\>\<br\>\<br\>
-echo \<table class=\"$TABLECLASS\" style=\"text-align: left\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>\<tbody\>
-echo \<tr\>\<td\>\<b\>$"Filter"\<\/b\>\</td\>\<td\>\<b\>$"Time"\<\/b\>\</td\>\<td\>\<b\>$"Client"\<\/b\>\</td\>\<td\>\<b\>$"Website"\<\/b\>\</td\>\</tr\>
-if [ $LOGTYPE = text ]
-then
-cat /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/users/$USERNAME
-else
-tar -xzOf /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/users/$USERNAME.tar.gz
-fi
-#end table
-echo \<\/tbody\>\<\/table\>
+	for PROXYSERVER in `ls -1 /opt/karoshi/server_network/proxyservers`
+	do
+		create_temp_logfile
+	done
+	viewlogs
+else 
+	PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+	create_temp_logfile
+	viewlogs
 fi
 exit
+

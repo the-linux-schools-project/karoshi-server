@@ -85,6 +85,7 @@ SERVERROLE="domain member"
 if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
 then
 	JOINTYPE=DC
+	[ $AUTHTYPE = rodc ] && JOINTYPE=RODC
 	SERVERROLE="active directory domain controller"
 fi
 
@@ -253,7 +254,7 @@ fi
 #Authtypes adc rodc member users none
 if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ] 
 then
-DCROLE="Additional Domain Controller"
+DCROLE="Domain Controller"
 [ $AUTHTYPE = rodc ] && DCROLE="Read Only Domain Controller"
 
 echo $DCROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/1dc

@@ -1,0 +1,179 @@
+#!/bin/bash
+#setup_web_controls
+#Copyright (C) 2015 Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+
+#########################
+#Add log entry
+#########################
+echo '##############'setup_web_controls'##############' >> /opt/karoshi/serversetup/install_log
+
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+source /opt/karoshi/server_network/domain_information/domain_name
+
+TEXTDOMAIN=karoshi-server
+locale 1>/dev/null
+
+###########################
+#Configure apache_karoshi
+###########################
+
+#Configure a separate apache to run on ports 50001 and 50002 with user apache_karoshi
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/scripts/configure_karoshi_web_management
+#Get School Name
+source /opt/karoshi/server_network/domain_information/domain_name
+
+KAROSHI_SERVER=`hostname`
+
+#Create root ssh folder
+if [ ! -d /root/.ssh ]
+then
+	mkdir /root/.ssh
+	chmod 0700 /root/.ssh
+fi
+
+#Generate sudo
+[ -f /etc/sudoers_karoshi_web_backup ] || cp /etc/sudoers /etc/sudoers_karoshi_web_backup
+/opt/karoshi/serversetup/web_controls/scripts/generate_sudoers
+
+#####################################
+#Ensure that apache_karoshi ports 50001 and 50002 are open in shorewall
+#####################################
+MODCHECK=`grep -c -w 50001,50002 /etc/shorewall/rules`
+
+if [ $MODCHECK = 0 ]
+then
+	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'50001,50002'	'-'#'webmanagementrule /etc/shorewall/rules
+	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+fi
+######################
+#Restart shorewall
+######################
+if [ $MODCHECK = 0 ]
+then
+	/etc/init.d/$SHOREWALLVER restart
+fi
+
+
+#######################
+##Schedule web log rotation
+#######################
+#[ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
+
+#######################
+##Schedule check karoshi updates
+#######################
+#let MINUTES=$(($RANDOM%59))
+#let HOURS=$(($RANDOM%24))
+#echo $MINUTES $HOURS '*' '*' 1-7 /opt/karoshi/web_controls/exec/update_karoshi_get_list > /opt/karoshi/cronjobs/jobs/update_karoshi_get_list.cron
+#######################
+##Schedule increment user bans
+#######################
+#echo 35 23 '*' '*' 1-7 /opt/karoshi/web_controls/increment_user_internet_bans > /opt/karoshi/cronjobs/jobs/increment_user_internet_bans.cron
+#echo 25 23 '*' '*' 1-7 /opt/karoshi/web_controls/increment_user_account_bans > /opt/karoshi/cronjobs/jobs/increment_user_account_bans.cron
+#######################
+##Schedule statistics generation
+#######################
+#echo 0 0 '*' '*' 1-7 /opt/karoshi/web_controls/statistics > /opt/karoshi/cronjobs/jobs/statistics.cron
+#######################
+##Schedule disk checks
+#######################
+#echo 0 7 '*' '*' 1-7 /opt/karoshi/\"useful scripts\"/disk_usage > /opt/karoshi/cronjobs/jobs/disk_usage.cron
+#######################
+##Schedule reboot check
+#######################
+#echo 0 8 '*' '*' 1-7 /opt/karoshi/serversetup/all/scripts/check_reboot > /opt/karoshi/cronjobs/jobs/check_reboot.cron
+#######################
+##Schedule acceptable use authorisations
+#######################
+#[ ! -d /opt/karoshi/"useful scripts" ] && mkdir -p /opt/karoshi/"useful scripts"
+#cp -f /opt/karoshi/serversetup/pdc/"useful scripts"/acceptable_use_authorisations /opt/karoshi/"useful scripts"/
+#echo 0 8 '*' '*' 1-7 /opt/karoshi/\"useful scripts\"/acceptable_use_authorisations > /opt/karoshi/cronjobs/jobs/acceptable_use_authorisations.cron
+##Schedule add_user_offile_servers
+#echo 0 6 '*' '*' 1-7 /opt/karoshi/web_controls/exec/offline_servers > /opt/karoshi/cronjobs/jobs/offline_servers.cron
+
+#######################
+##Enable new backup
+#######################
+#[ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
+#echo 0 20 '*' '*' 1-5  /opt/karoshi/serversetup/all/'"'useful scripts'"'/backup_servers/backup_servers_master > /opt/karoshi/cronjobs/jobs/backup_servers_master.cron
+
+#######################
+##Refresh cron jobs
+#######################
+#/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
+
+###########################
+#Add role
+###########################
+[ ! -d /opt/karoshi/server_network/servers/$HOSTNAME.$REALM ] && mkdir -p /opt/karoshi/server_network/servers/$HOSTNAME.$REALM
+echo "Domain Controller<br>" > /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/1dc
+echo "File Server<br>" > /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/fileserver
+echo "Ldap Server<br>" > /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/ldapserver
+
+[ -f /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/no_role ] && rm -f /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/no_role
+
+###########################
+#Check for updates
+###########################
+if [ ! -d /opt/karoshi/updates ]
+then
+	[ ! -d /opt/karoshi/logs/karoshi_updates ] && mkdir -p /opt/karoshi/logs/karoshi_updates
+	chmod 0700 /opt/karoshi/logs/karoshi_updates
+	[ `ls -1 /opt/karoshi/serversetup/updates/ | wc -l` -gt 0 ] && cp -f /opt/karoshi/serversetup/updates/* /opt/karoshi/logs/karoshi_updates/
+	/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/update_karoshi_get_list
+fi
+
+
+
+############################
+#Configure fail2ban
+############################
+
+if [ ! -d /etc/fail2ban ]
+then
+	if [ -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/scripts/fail2baninstall ]
+	then
+		echo "<li>"Installing fail2ban"</li>"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/scripts/fail2baninstall
+	fi
+fi
+
+if [ -d /etc/fail2ban ]
+then
+	[ ! -d /opt/karoshi/server_network/security/fail2ban ] && mkdir -p /opt/karoshi/server_network/security/fail2ban
+	[ ! -f /opt/karoshi/server_network/security/fail2ban/web_management ] && cp -f /opt/karoshi/serversetup/all/fail2ban/jails/web_management /opt/karoshi/server_network/security/fail2ban/
+	cat /opt/karoshi/server_network/security/fail2ban/* > /etc/fail2ban/jail.local
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_stop
+	sleep 1
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_start
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/fail2ban
+fi
+
+
+#Add in dns record for manage.realm
+
+exit
+

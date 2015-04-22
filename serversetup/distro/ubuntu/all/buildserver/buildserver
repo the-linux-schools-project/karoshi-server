@@ -114,9 +114,15 @@ chmod 0755 /opt/karoshi/karoshi_user/.local/share/applications/synaptic.desktop
 }
 
 function add_repos {
-#Add remastersys mailscanner, monitoriz,yad, and zfs repositories
-echo -e "\nAdding mailscanner, monitorix, yad, and zfs repositories\n"
+#Add sogo remastersys mailscanner, monitoriz,yad, and zfs repositories
+echo -e "\nAdding SOGo, mailscanner, monitorix, yad, and zfs repositories\n"
 sleep 1
+
+UBUNTUVER=trusty
+[ `lsb_release -a 2>/dev/null | grep -c precise` -gt 0 ] && UBUNTUVER=precise
+apt-key adv --keyserver keys.gnupg.net --recv-key 0x810273C4
+add-apt-repository -y "deb http://inverse.ca/ubuntu $UBUNTUVER $UBUNTUVER"
+
 
 #Monitorix
 wget -O - http://apt.izzysoft.de/izzysoft.asc | apt-key add -

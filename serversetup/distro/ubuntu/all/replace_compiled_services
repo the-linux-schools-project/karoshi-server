@@ -28,13 +28,14 @@ RUNSTATUS2=off
 /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/sogo_status
 [ $? = 0 ] && RUNSTATUS2=on
 
-#Remove sogo repository
-if [ `grep -c http://inverse.ca/ubuntu /etc/apt/sources.list` -gt 0 ]
-then
-	#Remove all sope packages
-	apt-get -y remove sope*
-	add-apt-repository -r "http://inverse.ca/ubuntu precise"
-fi
+#Add sogo repository
+UBUNTUVER=trusty
+[ `lsb_release -a 2>/dev/null | grep -c precise` -gt 0 ] && UBUNTUVER=precise
+apt-key adv --keyserver keys.gnupg.net --recv-key 0x810273C4
+add-apt-repository -y "deb http://inverse.ca/ubuntu $UBUNTUVER $UBUNTUVER"
+
+#Remove all sope packages
+apt-get -y remove sope*
 
 #Remove remastersys repository - now defunct
 if [ `grep -c http://www.remastersys.com/ubuntu /etc/apt/sources.list` -gt 0 ]
