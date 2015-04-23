@@ -90,7 +90,7 @@ then
 fi
 
 #Add service principle if it doesnt already exist
-if [ `samba-tool spn list karoshi-krb5 | grep -c "$SPN_NAME"` = 0 ]
+if [ `samba-tool spn list karoshi-krb5 | grep -c "$KEYNAME/$SPN_NAME"` = 0 ]
 then
 	echo `date`: add_keytab - creating keytab >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	samba-tool spn add $KEYNAME/$SPN_NAME karoshi-krb5
