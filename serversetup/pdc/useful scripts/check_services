@@ -4,6 +4,8 @@ source /opt/karoshi/serversetup/variables/distro
 HTMLPATH1=/var/www/html/karoshi_network_status_temp.html
 HTMLPATH2=/var/www/html/karoshi_network_status.html
 
+[ -f "$HTMLPATH1" ] && rm -f "$HTMLPATH1"
+
 function disable_proxy_dns_entry {
 if [ -f /opt/karoshi/server_network/proxyservers/"$SERVERNAME" ]
 then
@@ -23,10 +25,6 @@ then
 fi
 }
 
-#Create table top
-echo '<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 50%; text-align: center;"><b>Service</b></td><td style="text-align: center;"><b>Status</b></td></tr>' > $HTMLPATH1
-
 function write_html_entry {
 
 FILLCOLOUR1="#00C000"
@@ -38,7 +36,9 @@ then
 	FILLCOLOUR2="#DC0003"
 fi
 
-echo '<tr><td style="text-align: center;">'$SERVICENAME'</td><td style="text-align: center;"><div style="margin-left: auto; margin-right: auto; border: 2px solid '$FILLCOLOUR2';padding: 6px 6px;background: '$FILLCOLOUR1';width: 30px;border-radius: 25px;"></div></td></tr>' >> $HTMLPATH1
+SERVERNAME_SHORT=`echo $SERVERNAME | cut -d. -f1`
+
+echo '<tr><td style="text-align: center;">'$SERVERNAME_SHORT'</td><td style="text-align: center;">'$SERVICENAME'</td><td style="text-align: center;"><div style="margin-left: auto; margin-right: auto; border: 2px solid '$FILLCOLOUR2';padding: 6px 6px;background: '$FILLCOLOUR1';width: 30px;border-radius: 25px;"></div></td></tr>' >> $HTMLPATH1
 }
 
 function check_data {
@@ -267,15 +267,20 @@ fi
 write_html_entry
 
 
-#End the html table
-echo '</tbody></table>' >> $HTMLPATH1
+
 
 function copy_htmldata {
-if [ $PROXYSERVER = `hostname-fqdn` ]
+#Create table top
+echo '<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: 25%; text-align: center;"><b>Server</b></td><td style="width: 25%; text-align: center;"><b>Service</b></td><td style="text-align: center;"><b>Status</b></td></tr>' > $HTMLPATH2
+#Sort the html data
+sort -t">" -s -k 4 $HTMLPATH1 >> $HTMLPATH2
+#End the html table
+echo '</tbody></table>' >> $HTMLPATH2
+
+if [ $PROXYSERVER != `hostname-fqdn` ]
 then
-	cp $HTMLPATH1 $HTMLPATH2
-else
-	scp $HTMLPATH1 root@$PROXYSERVER:/$HTMLPATH2
+	scp $HTMLPATH2 root@$PROXYSERVER:/$HTMLPATH2
 fi
 }
 

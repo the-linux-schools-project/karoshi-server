@@ -126,13 +126,13 @@ fi
 
 [ $SEARCHCRITERIA'null' = null ] && SEARCHCRITERIA=ASSIGNED
 #Check to see if there are any new jobs
-if [ ! -d /opt/karoshi/helpdesk/todo/ ]
+if [ ! -d /opt/karoshi/server_network/helpdesk/todo/ ]
 then
 echo $"There are no new requests to view."'</div></div></body></html>'
 exit
 fi
 
-if [ `ls -1 /opt/karoshi/helpdesk/todo/ | wc -l` = 0 ]
+if [ `ls -1 /opt/karoshi/server_network/helpdesk/todo/ | wc -l` = 0 ]
 then
 echo $"There are no new requests to view."'</div></div></body></html>'
 exit
@@ -148,13 +148,13 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 '
 fi
 
-for NEWJOB in `grep -w -l ^$SEARCHCRITERIA /opt/karoshi/helpdesk/todo/*`
+for NEWJOB in `grep -w -l ^$SEARCHCRITERIA /opt/karoshi/server_network/helpdesk/todo/*`
 do
 NEWJOB=`basename $NEWJOB`
 DATE=`echo $NEWJOB | cut -d"." -f1`
 TIME=`date +%H:%M -d @$DATE`
 DATE=`date +%d-%m-%y -d @$DATE`
-source /opt/karoshi/helpdesk/todo/$NEWJOB
+source /opt/karoshi/server_network/helpdesk/todo/$NEWJOB
 NOW=`date +%s`
 let WAITTIME=($NOW-$DATE2)
 if [ $WAITTIME -lt 60 ]

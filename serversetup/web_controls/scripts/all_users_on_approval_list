@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #Create folders for acceptable userlist
-if [ ! -d /opt/karoshi/acceptable_use_authorisations/pending ]
+if [ ! -d /opt/karoshi/server_network/acceptable_use_authorisations/pending ]
 then
-mkdir -p /opt/karoshi/acceptable_use_authorisations/pending
-chmod 0750 -R /opt/karoshi/acceptable_use_authorisations/
-chown -R root.apache_karoshi /opt/karoshi/acceptable_use_authorisations/
+mkdir -p /opt/karoshi/server_network/acceptable_use_authorisations/pending
+chmod 0750 -R /opt/karoshi/server_network/acceptable_use_authorisations/
+chown -R root.apache_karoshi /opt/karoshi/server_network/acceptable_use_authorisations/
 fi
 
 #Create full list of users
@@ -14,7 +14,7 @@ USERLISTCOUNT=`cat /opt/karoshi/.tempdata/userlist.$$ | wc -l`
 
 #Get grace time
 
-[ -f /opt/karoshi/acceptable_use_authorisations/grace_time ] && GRACETIME=`sed -n 1,1p /opt/karoshi/acceptable_use_authorisations/grace_time | tr -cd 0-9`
+[ -f /opt/karoshi/server_network/acceptable_use_authorisations/grace_time ] && GRACETIME=`sed -n 1,1p /opt/karoshi/server_network/acceptable_use_authorisations/grace_time | tr -cd 0-9`
 [ $GRACETIME'null' =  null ] && GRACETIME=14
 
 COUNTER=1
@@ -25,7 +25,7 @@ USERNAME=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/.tempdata/userlist.$$ | cut -
 
 #Add user into the approval list
 echo Adding $USERNAME with grace time $GRACETIME
-echo $GRACETIME,N.A.,N.A.  > /opt/karoshi/acceptable_use_authorisations/pending/$USERNAME
+echo $GRACETIME,N.A.,N.A.  > /opt/karoshi/server_network/acceptable_use_authorisations/pending/$USERNAME
 
 let COUNTER=$COUNTER+1
 done

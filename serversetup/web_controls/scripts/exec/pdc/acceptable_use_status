@@ -81,18 +81,18 @@ then
 	exit 101
 fi
 
-if [ -f /opt/karoshi/acceptable_use_authorisations/grace_time_disabled ]
+if [ -f /opt/karoshi/server_network/acceptable_use_authorisations/grace_time_disabled ]
 then
-	rm -f /opt/karoshi/acceptable_use_authorisations/grace_time_disabled
+	rm -f /opt/karoshi/server_network/acceptable_use_authorisations/grace_time_disabled
 	echo `date`: acceptable_use_status - enabled by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 else
-	if [ ! -d /opt/karoshi/acceptable_use_authorisations ]
+	if [ ! -d /opt/karoshi/server_network/acceptable_use_authorisations ]
 	then
-		mkdir -p /opt/karoshi/acceptable_use_authorisations
-		chmod 0750 /opt/karoshi/acceptable_use_authorisations
-		chown root.apache_karoshi /opt/karoshi/acceptable_use_authorisations
+		mkdir -p /opt/karoshi/server_network/acceptable_use_authorisations
+		chmod 0750 /opt/karoshi/server_network/acceptable_use_authorisations
+		chown root.apache_karoshi /opt/karoshi/server_network/acceptable_use_authorisations
 	fi
-	touch /opt/karoshi/acceptable_use_authorisations/grace_time_disabled
+	touch /opt/karoshi/server_network/acceptable_use_authorisations/grace_time_disabled
 	echo `date`: acceptable_use_status - disabled by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
 exit

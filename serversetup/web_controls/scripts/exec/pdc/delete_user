@@ -351,31 +351,31 @@ fi
 fi
 #Move user infomation from the approved user list to the deleted approved user list
 
-if [ -f /opt/karoshi/acceptable_use_authorisations/approved_users ]
+if [ -f /opt/karoshi/server_network/acceptable_use_authorisations/approved_users ]
 then
-if [ `grep -c -w $DELETEUSER /opt/karoshi/acceptable_use_authorisations/approved_users` != 0 ]
+if [ `grep -c -w $DELETEUSER /opt/karoshi/server_network/acceptable_use_authorisations/approved_users` != 0 ]
 then
-PENDING_USER_DATA=`grep -w $DELETEUSER /opt/karoshi/acceptable_use_authorisations/approved_users`
+PENDING_USER_DATA=`grep -w $DELETEUSER /opt/karoshi/server_network/acceptable_use_authorisations/approved_users`
 CREATION_DATE=`echo $PENDING_USER_DATA | cut -d, -f2`
 PRI_GROUP=`echo $PENDING_USER_DATA | cut -d, -f3`
 USER_CREATOR=`echo $PENDING_USER_DATA | cut -d, -f4`
 USER_AUTHORISOR=`echo $PENDING_USER_DATA | cut -d, -f5`
 AUTH_DATE=`echo $PENDING_USER_DATA | cut -d, -f6`
 #Add data to the deleted user list
-echo $DELETEUSER,$CREATION_DATE,$PRI_GROUP,$USER_CREATOR,$USER_AUTHORISOR,$AUTH_DATE >>  /opt/karoshi/acceptable_use_authorisations/deleted_users
+echo $DELETEUSER,$CREATION_DATE,$PRI_GROUP,$USER_CREATOR,$USER_AUTHORISOR,$AUTH_DATE >>  /opt/karoshi/server_network/acceptable_use_authorisations/deleted_users
 #Delete data
-sed -i '/'$DELETEUSER',/d' /opt/karoshi/acceptable_use_authorisations/approved_users
+sed -i '/'$DELETEUSER',/d' /opt/karoshi/server_network/acceptable_use_authorisations/approved_users
 #Remove any empty lines
-sed -i '/^$/d' /opt/karoshi/acceptable_use_authorisations/approved_users
+sed -i '/^$/d' /opt/karoshi/server_network/acceptable_use_authorisations/approved_users
 fi
 fi
 
 #Delete Acceptable use pending if this user is on a trial account
-if [ -f /opt/karoshi/acceptable_use_authorisations/pending/$DELETEUSER ]
+if [ -f /opt/karoshi/server_network/acceptable_use_authorisations/pending/$DELETEUSER ]
 then
-rm -f /opt/karoshi/acceptable_use_authorisations/pending/$DELETEUSER
+rm -f /opt/karoshi/server_network/acceptable_use_authorisations/pending/$DELETEUSER
 #Clear warning message if needed
-if [ `ls -1 /opt/karoshi/acceptable_use_authorisations/pending | wc -l` -lt 1 ]
+if [ `ls -1 /opt/karoshi/server_network/acceptable_use_authorisations/pending | wc -l` -lt 1 ]
 then
 /opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete acceptable_use_authorisations
 fi

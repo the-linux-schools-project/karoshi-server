@@ -166,37 +166,37 @@ ASSIGNED=`echo $ASSIGNED | sed 's/%0D%0A/ /g' | sed 's/+/ /g' | sed 's/%27//g'  
 PRIORITY=`echo $PRIORITY | sed 's/%0D%0A/ /g' | sed 's/+/ /g' | sed 's/%27//g'  | sed 's/%22//g' | sed 's/%24/$/g'`
 FEEDBACK=`echo $FEEDBACK | sed 's/%0D%0A/ /g' | sed 's/+/ /g' | sed 's/%27//g'  | sed 's/%22//g' | sed 's/%3F/?/g' | sed 's/%2C/,/g' | sed 's/%21/!/g'`
 fi
-[ ! -d /opt/karoshi/helpdesk/log ] && mkdir -p /opt/karoshi/helpdesk/log
+[ ! -d /opt/karoshi/server_network/helpdesk/log ] && mkdir -p /opt/karoshi/server_network/helpdesk/log
 LOG_DATE=`date +%F`
 
 if [ $ACTION = update ]
 then
-echo `date`: Helpdesk - $JOBNAME updated by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/helpdesk/log/$LOG_DATE
+echo `date`: Helpdesk - $JOBNAME updated by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/server_network/helpdesk/log/$LOG_DATE
 #Update request
 #Assigned
-sed -i 9c\ASSIGNED="$ASSIGNED" /opt/karoshi/helpdesk/todo/$JOBNAME
+sed -i 9c\ASSIGNED="$ASSIGNED" /opt/karoshi/server_network/helpdesk/todo/$JOBNAME
 #Priority
-sed -i 10c\PRIORITY='"'"$PRIORITY"'"' /opt/karoshi/helpdesk/todo/$JOBNAME
+sed -i 10c\PRIORITY='"'"$PRIORITY"'"' /opt/karoshi/server_network/helpdesk/todo/$JOBNAME
 #Feedback
-sed -i 11c\FEEDBACK='"'"$FEEDBACK"'"' /opt/karoshi/helpdesk/todo/$JOBNAME
+sed -i 11c\FEEDBACK='"'"$FEEDBACK"'"' /opt/karoshi/server_network/helpdesk/todo/$JOBNAME
 fi
 
 if [ $ACTION = delete ]
 then
-echo `date`: Helpdesk - deleting $JOBNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/helpdesk/log/$LOG_DATE
-[ ! -d /opt/karoshi/helpdesk/deleted ] && mkdir -p /opt/karoshi/helpdesk/deleted
-[ -f /opt/karoshi/helpdesk/todo/$JOBNAME ] && mv /opt/karoshi/helpdesk/todo/$JOBNAME /opt/karoshi/helpdesk/deleted/
+echo `date`: Helpdesk - deleting $JOBNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/server_network/helpdesk/log/$LOG_DATE
+[ ! -d /opt/karoshi/server_network/helpdesk/deleted ] && mkdir -p /opt/karoshi/server_network/helpdesk/deleted
+[ -f /opt/karoshi/server_network/helpdesk/todo/$JOBNAME ] && mv /opt/karoshi/server_network/helpdesk/todo/$JOBNAME /opt/karoshi/server_network/helpdesk/deleted/
 
 fi
 
 if [ $ACTION = completed ]
 then
-echo `date`: Helpdesk - $JOBNAME marked as complete by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/helpdesk/log/$LOG_DATE
-[ ! -d /opt/karoshi/helpdesk/completed ] && mkdir -p /opt/karoshi/helpdesk/completed
-[ -f /opt/karoshi/helpdesk/todo/$JOBNAME ] && mv /opt/karoshi/helpdesk/todo/$JOBNAME /opt/karoshi/helpdesk/completed/
+echo `date`: Helpdesk - $JOBNAME marked as complete by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/server_network/helpdesk/log/$LOG_DATE
+[ ! -d /opt/karoshi/server_network/helpdesk/completed ] && mkdir -p /opt/karoshi/server_network/helpdesk/completed
+[ -f /opt/karoshi/server_network/helpdesk/todo/$JOBNAME ] && mv /opt/karoshi/server_network/helpdesk/todo/$JOBNAME /opt/karoshi/server_network/helpdesk/completed/
 #Add in completion dates
-sed -i 12c\COMPLETEDDATE='"'`date +%d-%m-%y`'"' /opt/karoshi/helpdesk/completed/$JOBNAME
-sed -i 13c\COMPLETEDDATE2='"'`date +%s`'"' /opt/karoshi/helpdesk/completed/$JOBNAME
+sed -i 12c\COMPLETEDDATE='"'`date +%d-%m-%y`'"' /opt/karoshi/server_network/helpdesk/completed/$JOBNAME
+sed -i 13c\COMPLETEDDATE2='"'`date +%s`'"' /opt/karoshi/server_network/helpdesk/completed/$JOBNAME
 fi
 
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:no:" | sudo -H /opt/karoshi/web_controls/exec/helpdesk_warning_message

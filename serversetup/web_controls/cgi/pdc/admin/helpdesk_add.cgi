@@ -216,31 +216,31 @@ CATEGORY=`echo $CATEGORY | sed 's/%24/$/g'`
 ASSETNUMBER=`echo $ASSETNUMBER | sed 's/+/ /g'`
 
 #See if a default person has been declared for assigning jobs to
-[ -f /opt/karoshi/helpdesk/defaultassign ] && ASSIGNED=`sed -n 1,1p /opt/karoshi/helpdesk/defaultassign`
+[ -f /opt/karoshi/server_network/helpdesk/defaultassign ] && ASSIGNED=`sed -n 1,1p /opt/karoshi/server_network/helpdesk/defaultassign`
 
 #See if a default priority has been declared for assigning jobs to
-[ -f /opt/karoshi/helpdesk/defaultpriority ] && PRIORITY=`sed -n 1,1p /opt/karoshi/helpdesk/defaultpriority`
+[ -f /opt/karoshi/server_network/helpdesk/defaultpriority ] && PRIORITY=`sed -n 1,1p /opt/karoshi/server_network/helpdesk/defaultpriority`
 
 #Add request
 REQUESTNAME="`date +%s`.$$"
 
-[ ! -d /opt/karoshi/helpdesk/log ] && mkdir -p /opt/karoshi/helpdesk/log
-[ ! -d /opt/karoshi/helpdesk/todo ] && mkdir -p /opt/karoshi/helpdesk/todo
-echo NAME='"'"$NAME"'"' > /opt/karoshi/helpdesk/todo/$REQUESTNAME
-echo DATE='"'"`date +%d-%m-%y`"'"' >> /opt/karoshi/helpdesk/todo/$REQUESTNAME
-echo DATE2='"'"`date +%s`"'"' >> /opt/karoshi/helpdesk/todo/$REQUESTNAME
-echo LOCATION='"'"$LOCATION" "$ASSETNUMBER"'"' >> /opt/karoshi/helpdesk/todo/$REQUESTNAME
-echo DEPARTMENT="$DEPARTMENT" >> /opt/karoshi/helpdesk/todo/$REQUESTNAME
-echo CATEGORY="$CATEGORY" >> /opt/karoshi/helpdesk/todo/$REQUESTNAME
-echo JOBTITLE='"'"$JOBTITLE"'"' >> /opt/karoshi/helpdesk/todo/$REQUESTNAME
-echo REQUEST='"'"$REQUEST"'"' >> /opt/karoshi/helpdesk/todo/$REQUESTNAME
-echo ASSIGNED='"'"$ASSIGNED"'"' >> /opt/karoshi/helpdesk/todo/$REQUESTNAME
-echo PRIORITY='"'"$PRIORITY"'"' >> /opt/karoshi/helpdesk/todo/$REQUESTNAME
-echo FEEDBACK="" >> /opt/karoshi/helpdesk/todo/$REQUESTNAME
-echo COMPLETEDDATE="" >> /opt/karoshi/helpdesk/todo/$REQUESTNAME
-echo COMPLETEDDATE2="" >> /opt/karoshi/helpdesk/todo/$REQUESTNAME
+[ ! -d /opt/karoshi/server_network/helpdesk/log ] && mkdir -p /opt/karoshi/server_network/helpdesk/log
+[ ! -d /opt/karoshi/server_network/helpdesk/todo ] && mkdir -p /opt/karoshi/server_network/helpdesk/todo
+echo NAME='"'"$NAME"'"' > /opt/karoshi/server_network/helpdesk/todo/$REQUESTNAME
+echo DATE='"'"`date +%d-%m-%y`"'"' >> /opt/karoshi/server_network/helpdesk/todo/$REQUESTNAME
+echo DATE2='"'"`date +%s`"'"' >> /opt/karoshi/server_network/helpdesk/todo/$REQUESTNAME
+echo LOCATION='"'"$LOCATION" "$ASSETNUMBER"'"' >> /opt/karoshi/server_network/helpdesk/todo/$REQUESTNAME
+echo DEPARTMENT="$DEPARTMENT" >> /opt/karoshi/server_network/helpdesk/todo/$REQUESTNAME
+echo CATEGORY="$CATEGORY" >> /opt/karoshi/server_network/helpdesk/todo/$REQUESTNAME
+echo JOBTITLE='"'"$JOBTITLE"'"' >> /opt/karoshi/server_network/helpdesk/todo/$REQUESTNAME
+echo REQUEST='"'"$REQUEST"'"' >> /opt/karoshi/server_network/helpdesk/todo/$REQUESTNAME
+echo ASSIGNED='"'"$ASSIGNED"'"' >> /opt/karoshi/server_network/helpdesk/todo/$REQUESTNAME
+echo PRIORITY='"'"$PRIORITY"'"' >> /opt/karoshi/server_network/helpdesk/todo/$REQUESTNAME
+echo FEEDBACK="" >> /opt/karoshi/server_network/helpdesk/todo/$REQUESTNAME
+echo COMPLETEDDATE="" >> /opt/karoshi/server_network/helpdesk/todo/$REQUESTNAME
+echo COMPLETEDDATE2="" >> /opt/karoshi/server_network/helpdesk/todo/$REQUESTNAME
 LOG_DATE=`date +%F`
-echo `date`: Helpdesk - $REQUESTNAME added by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/helpdesk/log/$LOG_DATE
+echo `date`: Helpdesk - $REQUESTNAME added by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/server_network/helpdesk/log/$LOG_DATE
 
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:yes:" | sudo -H /opt/karoshi/web_controls/exec/helpdesk_warning_message
 

@@ -156,10 +156,10 @@ exit
 fi
 
 #Check to see that the user is not in acceptable use category
-if [ -f /opt/karoshi/acceptable_use_authorisations/pending/$USERNAME ]
+if [ -f /opt/karoshi/server_network/acceptable_use_authorisations/pending/$USERNAME ]
 then
 #Check to see how many days of trial are left
-GRACE_TIME=`sed -n 1,1p /opt/karoshi/acceptable_use_authorisations/pending/$USERNAME cut -d, -f1 | tr -cd 0-9`
+GRACE_TIME=`sed -n 1,1p /opt/karoshi/server_network/acceptable_use_authorisations/pending/$USERNAME | cut -d, -f1 | tr -cd 0-9`
 [ -z "$GRACE_TIME" ] && GRACE_TIME=0
 if [ $GRACE_TIME = 0 ]
 then

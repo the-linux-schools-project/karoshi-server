@@ -116,16 +116,16 @@ fi
 #Add in defaults
 if [ $DEFAULTNAME = NODEFAULTNAME ]
 then
-[ /opt/karoshi/helpdesk/defaultassign ] && rm -f /opt/karoshi/helpdesk/defaultassign
+[ /opt/karoshi/server_network/helpdesk/defaultassign ] && rm -f /opt/karoshi/server_network/helpdesk/defaultassign
 else
-echo $DEFAULTNAME > /opt/karoshi/helpdesk/defaultassign
+echo $DEFAULTNAME > /opt/karoshi/server_network/helpdesk/defaultassign
 fi
 
 if [ $DEFAULTPRIORITY = NODEFAULTPRIORITY ]
 then
-[ /opt/karoshi/helpdesk/defaultpriority ] && rm -f /opt/karoshi/helpdesk/defaultpriority
+[ /opt/karoshi/server_network/helpdesk/defaultpriority ] && rm -f /opt/karoshi/server_network/helpdesk/defaultpriority
 else
-echo $DEFAULTPRIORITY > /opt/karoshi/helpdesk/defaultpriority
+echo $DEFAULTPRIORITY > /opt/karoshi/server_network/helpdesk/defaultpriority
 fi
 
 exit

@@ -64,9 +64,9 @@ echo '<form action="/cgi-bin/admin/helpdesk_set_defaults.cgi" method="post"><div
 <tr><td style="width: 180px;">'$"Default assign jobs"'</td><td>
 <select tabindex= "1" style="width: 200px;" name="_DEFAULTNAME_">'
 
-if [ -f /opt/karoshi/helpdesk/defaultassign ]
+if [ -f /opt/karoshi/server_network/helpdesk/defaultassign ]
 then
-ASSIGNED=`sed -n 1,1p /opt/karoshi/helpdesk/defaultassign`
+ASSIGNED=`sed -n 1,1p /opt/karoshi/server_network/helpdesk/defaultassign`
 echo '<option value="'$ASSIGNED'">'$ASSIGNED'</option>
 '
 else
@@ -84,9 +84,9 @@ done
 echo '</td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the administrator or technician that you want helpdesk tasks to default to."'</span></a></td></tr>
 <tr><td>'$"Default priority"'</td><td><select tabindex= "2" style="width: 200px;" name="_DEFAULTPRIORITY_">'
 
-if [ -f /opt/karoshi/helpdesk/defaultpriority ]
+if [ -f /opt/karoshi/server_network/helpdesk/defaultpriority ]
 then
-PRIORITY=`sed -n 1,1p /opt/karoshi/helpdesk/defaultpriority`
+PRIORITY=`sed -n 1,1p /opt/karoshi/server_network/helpdesk/defaultpriority`
 echo '<option value="'$PRIORITY'">'$PRIORITY'</option>
 '
 else

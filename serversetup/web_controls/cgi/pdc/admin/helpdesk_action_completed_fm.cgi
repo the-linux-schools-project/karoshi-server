@@ -92,7 +92,7 @@ MESSAGE=$"The job name cannot be blank."
 show_status
 fi
 
-if [ ! -f /opt/karoshi/helpdesk/completed/$JOBNAME ]
+if [ ! -f /opt/karoshi/server_network/helpdesk/completed/$JOBNAME ]
 then
 MESSAGE=$"This job does not exist."
 show_status
@@ -103,7 +103,7 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 
 #Get data
-source /opt/karoshi/helpdesk/completed/$JOBNAME
+source /opt/karoshi/server_network/helpdesk/completed/$JOBNAME
 
 #Show job data
 echo '<form action="/cgi-bin/admin/helpdesk_action.cgi" method="post"><div id="actionbox"><b>'$"Help Desk"' - '$"Action Request"'</b><br><br>

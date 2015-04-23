@@ -118,7 +118,7 @@ MESSAGE=$"The job name cannot be blank."
 show_status
 fi
 
-if [ ! -f /opt/karoshi/helpdesk/todo/$JOBNAME ]
+if [ ! -f /opt/karoshi/server_network/helpdesk/todo/$JOBNAME ]
 then
 MESSAGE=$"This job does not exist."
 show_status
@@ -164,7 +164,7 @@ fi
 
 
 #Get data
-source /opt/karoshi/helpdesk/todo/$JOBNAME
+source /opt/karoshi/server_network/helpdesk/todo/$JOBNAME
 
 #Show job data
 

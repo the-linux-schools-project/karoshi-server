@@ -598,26 +598,26 @@ MODCHECK=`grep -c -w 50001,50002 /etc/shorewall/rules`
 
 if [ $MODCHECK = 0 ]
 then
-LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'50001,50002'	'-'#'webmanagementrule /etc/shorewall/rules
-echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'50001,50002'	'-'#'webmanagementrule /etc/shorewall/rules
+	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 fi
 ######################
 #Restart shorewall
 ######################
 if [ $MODCHECK = 0 ]
 then
-/etc/init.d/$SHOREWALLVER restart
+	/etc/init.d/$SHOREWALLVER restart
 fi
 
 ######################
 #Create folders for helpdesk
 ######################
-if [ ! -d /opt/karoshi/helpdesk ]
+if [ ! -d /opt/karoshi/server_network/helpdesk ]
 then
-mkdir /opt/karoshi/helpdesk
-chmod 0750 /opt/karoshi/helpdesk
-chown apache_karoshi.apache_karoshi /opt/karoshi/helpdesk
+	mkdir /opt/karoshi/server_network/helpdesk
+	chmod 0750 /opt/karoshi/server_network/helpdesk
+	chown apache_karoshi.apache_karoshi /opt/karoshi/server_network/helpdesk
 fi
 
 ######################

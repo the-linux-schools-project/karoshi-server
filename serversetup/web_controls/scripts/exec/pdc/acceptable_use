@@ -93,45 +93,45 @@ fi
 if [ $ACTION = disableac ]
 then
 	echo `date`: acceptable_use - disabling acceptable use by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	touch /opt/karoshi/acceptable_use_authorisations/grace_time_disabled
+	touch /opt/karoshi/server_network/acceptable_use_authorisations/grace_time_disabled
 fi
 
 if [ $ACTION = enableac ]
 then
 	echo `date`: acceptable_use - enabling acceptable use by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	[ -f /opt/karoshi/acceptable_use_authorisations/grace_time_disabled ] && rm -f /opt/karoshi/acceptable_use_authorisations/grace_time_disabled
+	[ -f /opt/karoshi/server_network/acceptable_use_authorisations/grace_time_disabled ] && rm -f /opt/karoshi/server_network/acceptable_use_authorisations/grace_time_disabled
 fi
 
 if [ $ACTION = setgracetime ]
 then
 	echo `date`: acceptable_use - setting gracetime to $GRACETIME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	if [ ! -d /opt/karoshi/acceptable_use_authorisations/pending ]
+	if [ ! -d /opt/karoshi/server_network/acceptable_use_authorisations/pending ]
 	then
-		mkdir -p /opt/karoshi/acceptable_use_authorisations/pending
-		chmod 0750 -R /opt/karoshi/acceptable_use_authorisations/
-		chown -R root.apache_karoshi /opt/karoshi/acceptable_use_authorisations/
+		mkdir -p /opt/karoshi/server_network/acceptable_use_authorisations/pending
+		chmod 0750 -R /opt/karoshi/server_network/acceptable_use_authorisations/
+		chown -R root.apache_karoshi /opt/karoshi/server_network/acceptable_use_authorisations/
 	fi
-	echo $GRACETIME > /opt/karoshi/acceptable_use_authorisations/grace_time
+	echo $GRACETIME > /opt/karoshi/server_network/acceptable_use_authorisations/grace_time
 fi
 
 if [ $ACTION = approve ]
 then
 	USERNAMES=`echo $USERNAMES | sed 's/,/ /g'`
-	if [ ! -f /opt/karoshi/acceptable_use_authorisations/approved_users ]
+	if [ ! -f /opt/karoshi/server_network/acceptable_use_authorisations/approved_users ]
 	then
-		touch /opt/karoshi/acceptable_use_authorisations/approved_users
-		chmod 0640 /opt/karoshi/acceptable_use_authorisations/approved_users
-		chown root.apache_karoshi /opt/karoshi/acceptable_use_authorisations/approved_users
+		touch /opt/karoshi/server_network/acceptable_use_authorisations/approved_users
+		chmod 0640 /opt/karoshi/server_network/acceptable_use_authorisations/approved_users
+		chown root.apache_karoshi /opt/karoshi/server_network/acceptable_use_authorisations/approved_users
 	fi
 	for APROVEUSER in $USERNAMES
 	do
 		echo `date`: acceptable_use - approving $APROVEUSER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 		#Get creation data
-		PENDING_USER_DATA=`sed -n 1,1p /opt/karoshi/acceptable_use_authorisations/pending/$APROVEUSER`
+		PENDING_USER_DATA=`sed -n 1,1p /opt/karoshi/server_network/acceptable_use_authorisations/pending/$APROVEUSER`
 		USER_CREATOR=`echo $PENDING_USER_DATA | cut -d, -f2`
 		CREATION_DATE=`echo $PENDING_USER_DATA | cut -d, -f3`
 
-		[ -f /opt/karoshi/acceptable_use_authorisations/pending/$APROVEUSER ] && rm -f /opt/karoshi/acceptable_use_authorisations/pending/$APROVEUSER
+		[ -f /opt/karoshi/server_network/acceptable_use_authorisations/pending/$APROVEUSER ] && rm -f /opt/karoshi/server_network/acceptable_use_authorisations/pending/$APROVEUSER
 		samba-tool user enable $APROVEUSER 1>/dev/null
 
 		#Get the primary group of the user
@@ -139,10 +139,10 @@ then
 		PRI_GROUP=`id -g -n $APROVEUSER`
 
 		#Add to the approved list
-		[ `grep -c -w $APROVEUSER /opt/karoshi/acceptable_use_authorisations/approved_users` = 0 ] && echo $APROVEUSER,$CREATION_DATE,$PRI_GROUP,$USER_CREATOR,$REMOTE_USER,`date +%d-%m-%Y` >> /opt/karoshi/acceptable_use_authorisations/approved_users
+		[ `grep -c -w $APROVEUSER /opt/karoshi/server_network/acceptable_use_authorisations/approved_users` = 0 ] && echo $APROVEUSER,$CREATION_DATE,$PRI_GROUP,$USER_CREATOR,$REMOTE_USER,`date +%d-%m-%Y` >> /opt/karoshi/server_network/acceptable_use_authorisations/approved_users
 	done
 
 	#Check warning messages
-	[ `ls -1 /opt/karoshi/acceptable_use_authorisations/pending | wc -l` -lt 1 ] && /opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete acceptable_use_authorisations
+	[ `ls -1 /opt/karoshi/server_network/acceptable_use_authorisations/pending | wc -l` -lt 1 ] && /opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete acceptable_use_authorisations
 fi
 exit

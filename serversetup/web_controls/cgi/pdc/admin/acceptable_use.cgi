@@ -141,7 +141,7 @@ send_data
 fi
 
 #Check to see if acceptable use is enabled or disabled.
-if [ -f /opt/karoshi/acceptable_use_authorisations/grace_time_disabled ]
+if [ -f /opt/karoshi/server_network/acceptable_use_authorisations/grace_time_disabled ]
 then
 	ACCEPTABLEUSESTATUS=$"Disabled"
 	GRACETIMESTATUSMSG=$"Enable acceptable use"
@@ -156,7 +156,7 @@ else
 	ACTIONMSG=$"Disable"
 fi
 
-[ -f /opt/karoshi/acceptable_use_authorisations/grace_time ] && GRACETIME=`sed -n 1,1p /opt/karoshi/acceptable_use_authorisations/grace_time | tr -cd 0-9` 
+[ -f /opt/karoshi/server_network/acceptable_use_authorisations/grace_time ] && GRACETIME=`sed -n 1,1p /opt/karoshi/server_network/acceptable_use_authorisations/grace_time | tr -cd 0-9` 
 [ -z "$GRACETIME" ] && GRACETIME=14
 
 #Generate navigation bar
@@ -176,14 +176,14 @@ echo '<form action="/cgi-bin/admin/acceptable_use.cgi" name="acceptableuse" meth
 
 #Get list of pending users
 PROCESS_USERS=yes
-if [ ! -d /opt/karoshi/acceptable_use_authorisations/pending ]
+if [ ! -d /opt/karoshi/server_network/acceptable_use_authorisations/pending ]
 then
 	PROCESS_USERS=no
 fi
 
 if [ $PROCESS_USERS = yes ]
 then
-	if [ `ls -1 /opt/karoshi/acceptable_use_authorisations/pending | wc -l` -lt 1 ]
+	if [ `ls -1 /opt/karoshi/server_network/acceptable_use_authorisations/pending | wc -l` -lt 1 ]
 	then
 		PROCESS_USERS=no
 	fi
@@ -198,7 +198,7 @@ then
 	<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 	<tr><td style="vertical-align: top; width: 100px;"><b>'$"Username"'</b></td><td style="vertical-align: top; width: 100px;"><b>'$"Created by"'</b></td><td style="vertical-align: top; width: 100px;"><b>'$"Creation Date"'</b></td><td style="vertical-align: top; width: 150px;"><b>'$"Trial Days Remaining"'</b></td><td style="vertical-align: top; width: 60px;"><b>'$"Approve"'</b></td></tr>
 	'
-	for PENDING_USER_FULL in /opt/karoshi/acceptable_use_authorisations/pending/*
+	for PENDING_USER_FULL in /opt/karoshi/server_network/acceptable_use_authorisations/pending/*
 	do
 		PENDING_USER=`basename $PENDING_USER_FULL`
 		PENDING_USER_DATA=`sed -n 1,1p $PENDING_USER_FULL`

@@ -316,22 +316,22 @@ fi
 ##########################
 #Add in acceptable use notification
 ##########################
-if [ ! -d /opt/karoshi/acceptable_use_authorisations/pending ]
+if [ ! -d /opt/karoshi/server_network/acceptable_use_authorisations/pending ]
 then
-	mkdir -p /opt/karoshi/acceptable_use_authorisations/pending
-	chmod 0750 -R /opt/karoshi/acceptable_use_authorisations/
-	chown -R root:apache_karoshi /opt/karoshi/acceptable_use_authorisations/
+	mkdir -p /opt/karoshi/server_network/acceptable_use_authorisations/pending
+	chmod 0750 -R /opt/karoshi/server_network/acceptable_use_authorisations/
+	chown -R root:apache_karoshi /opt/karoshi/server_network/acceptable_use_authorisations/
 fi
 #Check to see if grace time has been disabled
 GRACE_TIME=yes
-[ -f /opt/karoshi/acceptable_use_authorisations/grace_time_disabled ] && GRACE_TIME=no
+[ -f /opt/karoshi/server_network/acceptable_use_authorisations/grace_time_disabled ] && GRACE_TIME=no
 if [ $GRACE_TIME = yes ]
 then
 #Get default grace time
-[ -f /opt/karoshi/acceptable_use_authorisations/grace_time ] && GRACE_TIMER=`sed -n 1,1p /opt/karoshi/acceptable_use_authorisations/grace_time | tr -cd 0-9`
+[ -f /opt/karoshi/server_network/acceptable_use_authorisations/grace_time ] && GRACE_TIMER=`sed -n 1,1p /opt/karoshi/server_network/acceptable_use_authorisations/grace_time | tr -cd 0-9`
 [ -z "$GRACE_TIMER" ] && GRACE_TIMER=14
 #Add acceptable use
-echo $GRACE_TIMER,$REMOTE_USER,`date +%d-%m-%Y` > /opt/karoshi/acceptable_use_authorisations/pending/$NEWUSERNAME
+echo $GRACE_TIMER,$REMOTE_USER,`date +%d-%m-%Y` > /opt/karoshi/server_network/acceptable_use_authorisations/pending/$NEWUSERNAME
 fi
 
 #Get userid

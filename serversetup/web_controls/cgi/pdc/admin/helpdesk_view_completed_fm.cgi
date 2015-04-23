@@ -80,13 +80,13 @@ done
 echo '<div id="actionbox"><form action="/cgi-bin/admin/helpdesk_view_completed_fm.cgi" method="post"><b>'$"Help Desk"' - '$"Completed Requests"'</b> <a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_ASSIGNED_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_ASSIGNED_"><span>All</span></a></form><br>'
 [ $SEARCHCRITERIA'null' = null ] && SEARCHCRITERIA=ASSIGNED
 #Check to see if there are any completed jobs
-if [ ! -d /opt/karoshi/helpdesk/completed/ ]
+if [ ! -d /opt/karoshi/server_network/helpdesk/completed/ ]
 then
 echo $"There are no completed requests to view."'</div></form></div></body></html>'
 exit
 fi
 
-if [ `ls -1 /opt/karoshi/helpdesk/completed/ | wc -l` = 0 ]
+if [ `ls -1 /opt/karoshi/server_network/helpdesk/completed/ | wc -l` = 0 ]
 then
 echo $"There are no completed requests to view."'</div></form></div></body></html>'
 exit
@@ -95,14 +95,14 @@ fi
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody><tr><td style="width: 90px;"><b>Date</b></td><td style="width: 130px;"><b>'$"Name"'</b></td><td style="width: 140px;"><b>'$"Request Summary"'</b></td><td style="width: 120px;"><b>'$"Location"'</b></td><td style="width: 90px;"><b>'$"Wait Time"'</b></td><td style="width: 90px;"><b>'$"Priority"'</b></td><td style="width: 100px;"><b>'$"Assigned to"'</b></td><td style="width: 30px;"></td><td style="width: 60px;"><b>'$"Action"'</b></td></tr>
 '
-for COMPLETED_JOB in `grep -l $SEARCHCRITERIA /opt/karoshi/helpdesk/completed/*`
+for COMPLETED_JOB in `grep -l $SEARCHCRITERIA /opt/karoshi/server_network/helpdesk/completed/*`
 do
 COMPLETED_JOB=`basename $COMPLETED_JOB`
 DATE=`echo $COMPLETED_JOB | cut -d"." -f1`
 TIME=`date +%H:%M -d @$DATE`
 DATE=`date +%d-%m-%y -d @$DATE`
 
-source /opt/karoshi/helpdesk/completed/$COMPLETED_JOB
+source /opt/karoshi/server_network/helpdesk/completed/$COMPLETED_JOB
 
 let WAITTIME=($COMPLETEDDATE2-$DATE2)
 if [ $WAITTIME -lt 60 ]
