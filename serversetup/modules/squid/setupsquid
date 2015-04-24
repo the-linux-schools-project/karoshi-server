@@ -41,6 +41,7 @@ REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 PDCSERVER=`echo "$DATA" | cut -s -d: -f4`
 PDCIP=`echo "$DATA" | cut -s -d: -f5`
+SYNC_CONFIG=`echo "$DATA" | cut -s -d: -f6`
 
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/extra_server/software
@@ -221,8 +222,12 @@ sed -i 's/REALM/'$REALM'/g' /etc/squid/squid.conf
 #Copy in e2guardian files
 #########################
 
-cp -f -R /opt/karoshi/serversetup/modules/squid/e2guardian /etc
-sed -i 's/YOURSERVER.YOURDOMAIN/'$HOSTNAME.$REALM'/g' /etc/e2guardian/e2guardian.conf
+if [ $SYNC_CONFIG = no ]
+then
+	cp -f -R /opt/karoshi/serversetup/modules/squid/e2guardian /etc
+	sed -i 's/proxy.YOURDOMAIN/proxy.'$REALM'/g' /etc/e2guardian/e2guardian.conf
+fi
+
 cd /etc/e2guardian/
 
 #Install blacklists

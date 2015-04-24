@@ -178,7 +178,7 @@ replace: unixhomedirectory
 unixhomedirectory: '$HOMEPATH'/'$USERNAME'
 -
 replace: profilePath
-profilePath: \\\\'$HOSTNAME'\\applications\profiles\'$NEWPRIGROUP'
+profilePath: \\\\'$HOSTNAME'\\applications\\profiles\\'$NEWPRIGROUP'
 -
 replace: gidNumber
 gidNumber: '$PRIGROUPID'

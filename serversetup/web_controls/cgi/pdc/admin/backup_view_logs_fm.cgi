@@ -79,7 +79,7 @@ then
 	show_status
 fi
 
-if [ `ls -1 /opt/karoshi/server_network/backup_servers/backup_settings` = 0 ]
+if [ `ls -1 /opt/karoshi/server_network/backup_servers/backup_settings | wc -l` = 0 ]
 then
 	MESSAGE=$"No karoshi backup servers have been enabled for ssh."
 	show_status

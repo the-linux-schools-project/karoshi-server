@@ -145,12 +145,17 @@ else
 fi
 
 
+
+
 PDCIP=`net lookup $HOSTNAME`
 LDAPSTATUS=notset
-if [ $SERVERNAME != `hostname-fqdn` ]
+SYNC_CONFIG=no
+[ -f /opt/karoshi/server_network/proxyserver ] && SYNC_CONFIG=yes
+
+if [ "$SERVERNAME" != `hostname-fqdn` ]
 then
 	#Sync e2guardian information to an additional server
-	if [ -f /opt/karoshi/server_network/proxyserver ]
+	if [ "$SYNC_CONFIG" = yes ]
 	then
 		rsync --timeout=30 --dirs --recursive --xattrs --links --compress --delete --times --perms --executability --acls --owner --group /etc/e2guardian "$SERVERNAME":/etc	
 	fi
@@ -165,17 +170,17 @@ then
 	#########################
 
 	ssh -x -o PasswordAuthentication=no $SERVERNAME '
-	echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$HOSTNAME:$PDCIP:$AUTHTYPE:$PASSWORD:' | /opt/karoshi/serversetup/modules/squid/setupsquid
+	echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$HOSTNAME:$PDCIP:$AUTHTYPE:$PASSWORD:$SYNC_CONFIG:' | /opt/karoshi/serversetup/modules/squid/setupsquid
 	'
 	[ $? = 101 ] && exit 101
 
 	else
-		echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$HOSTNAME:$PDCIP:$AUTHTYPE:$PASSWORD: | /opt/karoshi/serversetup/modules/squid/setupsquid
+		echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$HOSTNAME:$PDCIP:$AUTHTYPE:$PASSWORD:$SYNC_CONFIG: | /opt/karoshi/serversetup/modules/squid/setupsquid
 	[ $? = 101 ] && exit 101
 fi
 
 #Sync e2guardian information to the main server if this is the first time a proxy server has been added.
-if [ ! -f /opt/karoshi/server_network/proxyserver ]
+if [ "$SYNC_CONFIG" = no ]
 then
 	if [ "$SERVERNAME" != `hostname-fqdn` ]
 	then
