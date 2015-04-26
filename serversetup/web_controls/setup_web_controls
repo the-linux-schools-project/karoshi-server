@@ -757,6 +757,9 @@ chown root:apache_karoshi /opt/karoshi/web_controls/generate_navbar_all
 cp -f /opt/karoshi/serversetup/web_controls/scripts/generate_navbar_staff /opt/karoshi/web_controls
 chmod 0750 /opt/karoshi/web_controls/generate_navbar_staff
 chown root:apache_karoshi /opt/karoshi/web_controls/generate_navbar_staff
+cp -f /opt/karoshi/serversetup/web_controls/scripts/leasecheck.pl /opt/karoshi/web_controls
+chmod 0750 /opt/karoshi/web_controls/generate_navbar_staff
+chown root:apache_karoshi /opt/karoshi/web_controls/generate_navbar_staff
 
 ###########################
 #Add role

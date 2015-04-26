@@ -181,6 +181,19 @@ do
 	let COUNTER=$COUNTER+1
 done
 
+#Assign _SECONDARYSERVER_
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SECONDARYSERVERcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SECONDARYSERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
 
 
 function show_status {
@@ -377,7 +390,7 @@ fi
 echo '<div id="actionbox"><div class="sectiontitle">'$"Configure DHCP"'</div><br>'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dhcp.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DOMAINNAMESERVER:$NETBIOSSERVER:$ROUTER:$SUBNET:$SUBNETMASK:$STARTADDRESS:$ENDADDRESS:$DEFAULTLEASETIME:$MAXLEASETIME" | sudo -H /opt/karoshi/web_controls/exec/dhcp
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DOMAINNAMESERVER:$NETBIOSSERVER:$ROUTER:$SUBNET:$SUBNETMASK:$STARTADDRESS:$ENDADDRESS:$DEFAULTLEASETIME:$MAXLEASETIME:$SECONDARYSERVER:" | sudo -H /opt/karoshi/web_controls/exec/dhcp
 MESSAGE=$"The DHCP changes have been applied."
 show_status
 exit

@@ -71,7 +71,7 @@ NEWSTARTADDRESS=`echo "$DATA" | cut -s -d: -f9`
 NEWENDADDRESS=`echo "$DATA" | cut -s -d: -f10`
 NEWDEFAULTLEASETIME=`echo "$DATA" | cut -s -d: -f11`
 NEWMAXLEASETIME=`echo "$DATA" | cut -s -d: -f12`
-
+SECONDARYSERVER=`echo "$DATA" | cut -s -d: -f13`
 ########################
 #Check data
 ########################
@@ -181,32 +181,168 @@ echo DEFAULTLEASETIME=$NEWDEFAULTLEASETIME >> /opt/karoshi/server_network/dhcp/d
 echo MAXLEASETIME=$NEWMAXLEASETIME >> /opt/karoshi/server_network/dhcp/dhcp_settings
 
 source /opt/karoshi/server_network/dhcp/dhcp_settings
+source /opt/karoshi/serversetup/variables/distro
+
+#Configure primary and secondary dhcp servers
+if [ ! -z "$SECONDARYSERVER" ]
+then
+	#Get ip addresses of the primary and secondary dhcp servers
+	PRIMARYSERVERIP=`net lookup $HOSTNAME`
+	SECONDARYSERVERIP=`net lookup "$SECONDARYSERVER"`
+	#Create /etc/dhcp/dhcpd_primary.conf
+	echo 'failover peer "failover-partner" { 
+        primary;
+        address '$PRIMARYSERVERIP';
+        port 647;
+        peer address '$SECONDARYSERVERIP'; 
+        peer port 647;
+        max-response-delay 60;
+        max-unacked-updates 10;
+        mclt 3600;
+        split 128;
+        load balance max seconds 3;
+ }
+' > /etc/dhcp/dhcpd_primary.conf
+
+	#Create /etc/dhcp/dhcpd_secondary.conf
+	echo 'failover peer "failover-partner" {
+        secondary;
+        address '$SECONDARYSERVERIP';
+        port 647;
+        peer address '$PRIMARYSERVERIP';
+        peer port 647;
+        max-response-delay 60;
+        max-unacked-updates 10;
+        mclt 3600;
+        load balance max seconds 3;
+ }' > /etc/dhcp/dhcpd_secondary.conf
+fi
 
 #Create dhcpd.conf
-
 DHCPCONFPATH=/etc/dhcp/dhcpd.conf
 echo 'authoritative;' > $DHCPCONFPATH
 echo '	option domain-name-servers '$NEWDOMAINNAMESERVER';' >> $DHCPCONFPATH
 echo '	option routers '$NEWROUTER';' >> $DHCPCONFPATH
 echo '	option subnet-mask '$NEWSUBNETMASK';' >> $DHCPCONFPATH
 echo >> $DHCPCONFPATH
+
+#Add include for dhcp failover
+[ ! -z "$SECONDARYSERVER" ] && echo 'include "/etc/dhcp/dhcpd_primary.conf";'  >> $DHCPCONFPATH
+echo >> $DHCPCONFPATH
+
 echo 'subnet '$NEWSUBNET' netmask '$NEWSUBNETMASK' {' >> $DHCPCONFPATH
 echo '	option netbios-name-servers '$NEWNETBIOSSERVER';' >> $DHCPCONFPATH
 echo '	option netbios-node-type 8;' >> $DHCPCONFPATH
 echo '	option domain-name-servers '$NEWDOMAINNAMESERVER';' >> $DHCPCONFPATH
 echo '	option routers '$NEWROUTER';' >> $DHCPCONFPATH
 echo '	option subnet-mask '$NEWSUBNETMASK';' >> $DHCPCONFPATH
-echo '	range dynamic-bootp '$NEWSTARTADDRESS' '$NEWENDADDRESS';' >> $DHCPCONFPATH
+
+#Add in failover options
+if [ ! -z "$SECONDARYSERVER" ]
+then
+	echo '	pool {
+		failover peer "failover-partner";
+		range '$NEWSTARTADDRESS' '$NEWENDADDRESS';
+       }
+' >> $DHCPCONFPATH
+else
+	echo '	range '$NEWSTARTADDRESS' '$NEWENDADDRESS';' >> $DHCPCONFPATH
+fi
+
 echo '	default-lease-time '$NEWDEFAULTLEASETIME';' >> $DHCPCONFPATH
 echo '	max-lease-time '$NEWMAXLEASETIME';' >> $DHCPCONFPATH
 echo '}' >> $DHCPCONFPATH
 echo >> $DHCPCONFPATH
 echo >> $DHCPCONFPATH
 
-cat /opt/karoshi/server_network/dhcp/dhcp_extra_settings >> $DHCPCONFPATH
+if [ ! -z "$SECONDARYSERVER" ]
+then
+	DHCP_PASS=`openssl rand -hex 16`
+	echo 'omapi-port 7911;
+omapi-key omapi_key;
 
-source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/software
+key omapi_key {
+     algorithm hmac-md5;
+     secret '$DHCP_PASS';
+}
+
+' >> $DHCPCONFPATH
+fi
+
+#Include reservations and client boot config files
+touch /etc/dhcp/dhcpd_reservations.conf
+touch /etc/dhcp/dhcpd_client_boot.conf
+echo 'include "/etc/dhcp/dhcpd_reservations.conf";'  >> $DHCPCONFPATH
+echo 'include "/etc/dhcp/dhcpd_client_boot.conf";'  >> $DHCPCONFPATH
+
+#Configure failover dhcp between servers
+if [ ! -z "$SECONDARYSERVER" ]
+then
+
+	#Check that required ports are open in shorewall on the primary server
+	RESTARTSHOREWALL=no
+	if [ `grep -c dhcp_failover_rule /etc/shorewall/rules` = 0 ]
+	then
+		RESTARTSHOREWALL=yes
+		LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+		sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'647'	'-'#'dhcp_failover_rule /etc/shorewall/rules
+		echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	fi
+	if [ `grep -c dhcp_omapi_failover_rule /etc/shorewall/rules` = 0 ]
+	then
+		RESTARTSHOREWALL=yes
+		LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+		sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'7911'	'-'#'dhcp_omapi_failover_rule /etc/shorewall/rules
+		echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	fi
+
+	if [ "$RESTARTSHOREWALL" = yes ]
+	then
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+	fi
+
+	#Copy dhcp config files to the secondary server
+	scp /etc/dhcp/dhcpd_secondary.conf root@"$SECONDARYSERVER":/etc/dhcp
+	scp /etc/dhcp/dhcpd.conf root@"$SECONDARYSERVER":/etc/dhcp
+	scp /etc/dhcp/dhcpd_client_boot.conf root@"$SECONDARYSERVER":/etc/dhcp
+	scp /etc/dhcp/dhcpd_reservations.conf root@"$SECONDARYSERVER":/etc/dhcp
+
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SECONDARYSERVER '
+	source /opt/karoshi/serversetup/variables/distro
+	RESTARTSHOREWALL=no
+	if [ `grep -c dhcp_failover_rule /etc/shorewall/rules` = 0 ]
+	then
+		RESTARTSHOREWALL=yes
+		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
+		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"647"	"-"#"dhcp_failover_rule /etc/shorewall/rules
+		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	fi
+	if [ `grep -c dhcp_omapi_failover_rule /etc/shorewall/rules` = 0 ]
+	then
+		RESTARTSHOREWALL=yes
+		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
+		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"7911"	"-"#"dhcp_omapi_failover_rule /etc/shorewall/rules
+		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	fi
+
+	if [ "$RESTARTSHOREWALL" = yes ]
+	then
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null	
+	fi
+
+	#Modify dhcp.conf to point to dhcp.conf_secondary
+	sed -i "s/primary/secondary/g" /etc/dhcp/dhcpd.conf
+	#Restart DHCP on the secondary server
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_start 1>/dev/null
+
+	#Start DHCP on boot
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/dhcp
+	'
+
+fi
 
 #Restart DHCP
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_stop 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -217,6 +353,16 @@ source /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/software
 
 #Add role information
 echo $"DHCP Server""<br>" > /opt/karoshi/server_network/servers/`hostname-fqdn`/dhcpserver
+[ -d /opt/karoshi/server_network/dhcp_servers ] && rm -f -R /opt/karoshi/server_network/dhcp_servers
+if [ ! -z "$SECONDARYSERVER" ]
+then
+	echo $"DHCP Server""<br>" > /opt/karoshi/server_network/servers/$SECONDARYSERVER/dhcpserver
+	
+	mkdir /opt/karoshi/server_network/dhcp_servers
+	echo `hostname-fqdn` > /opt/karoshi/server_network/dhcp_servers/`hostname-fqdn`
+	echo $SECONDARYSERVER > /opt/karoshi/server_network/dhcp_servers/$SECONDARYSERVER
+fi
+
 echo `hostname-fqdn` > /opt/karoshi/server_network/dhcpserver
 sed -i 's/DHCPCTRL=no/DHCPCTRL=yes/g' /opt/karoshi/server_network/menusettings
 

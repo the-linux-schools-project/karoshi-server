@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -53,8 +53,6 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-DHCPSERVER=dhcp3-server
-
 echo '<div id="actionbox3"><div id="titlebox">
 
 
@@ -62,57 +60,10 @@ echo '<div id="actionbox3"><div id="titlebox">
 <tr><td style="vertical-align: top; width:180px"><div class="sectiontitle">'$"View DHCP Leases"'</div></td><td style="vertical-align: top;"><a href="dhcp_fm.cgi"><input class="button" type="button" name="" value="'$"Configure DHCP"'"></a></td><td style="vertical-align: top;"><a href="dhcp_reservations.cgi"><input class="button" type="button" name="" value="'$"DHCP Reservations"'"></a></td>
 </tr>
 </tbody></table><br>
-</div><div id="infobox"><br>'
+</div><div id="infobox">'
 
-LEASEPATH=/var/lib/dhcp/dhcpd.leases
-[ -d /var/lib/dhcp3 ] && LEASEPATH=/var/lib/dhcp3/dhcpd.leases
-
-if [ ! -f $LEASEPATH ]
-then
-echo $"No leases have been enabled."
+#Show lease information
+/opt/karoshi/web_controls/leasecheck.pl
 echo '</div></div></body></html>'
 exit
-fi
 
-#Get ipnumbers of leases
-IPNUMBERS=( `grep -w ^lease $LEASEPATH | cut -d' ' -f2` )
-#Get start times
-STARTTIMES=( `grep -w starts $LEASEPATH | cut -d' ' -f5,6 | sed 's/;//g' | sed 's/ /_/g'` )
-#Get end times
-ENDTIMES=( `grep -w ends $LEASEPATH | cut -d' ' -f5,6 | sed 's/;//g' | sed 's/ /_/g'` )
-#Get mac addresses
-MACADDRESSES=( `grep -w hardware $LEASEPATH | cut -d' ' -f5 | sed 's/;//g'` )
-#Get binding state
-BINDINGSTATES=( `grep -w " binding state" $LEASEPATH | cut -d' ' -f 5 | sed 's/;//g'` )
-
-
-LEASECOUNT=${#IPNUMBERS[@]}
-
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tr><td style="width: 120px;"><b>'$"TCPIP Number"'</b></td><td style="width: 170px;"><b>'$"Start Date"'</b></td><td style="width: 170px;"><b>'$"End Date"'</b></td><td style="width: 130px;"><b>'$"Mac Address"'</b></td><td style="width: 80px;"><b>'$"Status"'</b></td></tr>'
-#Show active leases
-COUNTER=0
-while [ $COUNTER -lt $LEASECOUNT ]
-do
-if [ `echo ${BINDINGSTATES[$COUNTER]} | sed 's/ //g'` = active ]
-then
-#Create table
-echo "<tr><td>${IPNUMBERS[$COUNTER]}</td><td>${STARTTIMES[$COUNTER]}</td><td>${ENDTIMES[$COUNTER]}</td><td>${MACADDRESSES[$COUNTER]}</td><td>${BINDINGSTATES[$COUNTER]}</td></tr>"
-fi
-let COUNTER=$COUNTER+1
-done
-
-#Show lapsed leases
-COUNTER=0
-while [ $COUNTER -lt $LEASECOUNT ]
-do
-if [ `echo ${BINDINGSTATES[$COUNTER]} | sed 's/ //g'` = free ]
-then
-#Create table
-echo "<tr><td>${IPNUMBERS[$COUNTER]}</td><td>${STARTTIMES[$COUNTER]}</td><td>${ENDTIMES[$COUNTER]}</td><td>${MACADDRESSES[$COUNTER]}</td><td>${BINDINGSTATES[$COUNTER]}</td></tr>"
-fi
-let COUNTER=$COUNTER+1
-done
-echo '</tbody></table></div></div></body></html>'
-
-exit

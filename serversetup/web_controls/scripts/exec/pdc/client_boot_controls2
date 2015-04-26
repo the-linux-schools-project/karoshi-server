@@ -29,30 +29,30 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/client_boot_controls2_cgi
 then
-echo `date`: client_boot_controls2 - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: client_boot_controls2 - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/client_boot_controls2_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/client_boot_controls2.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $client_boot_controls2_cgi'check' ]
 then
-echo `date`: client_boot_controls2 - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: client_boot_controls2 - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/client_boot_controls2_cgi
 then
-echo `date`: client_boot_controls2 - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: client_boot_controls2 - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/client_boot_controls2_cgi
 MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/client_boot_controls2.cgi | cut -d' ' -f1`
-[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+[ -z "$MD5SUM2" ] && MD5SUM2=not_set
 if [ $MD5SUM2'check' != $client_boot_controls2_cgi'check' ]
 then
-echo `date`: client_boot_controls2 - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: client_boot_controls2 - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -66,10 +66,10 @@ fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: client_boot_controls2 - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: client_boot_controls2 - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -85,49 +85,49 @@ MACADDRESS=`echo "$DATA" | cut -s -d: -f8 | sed 's/%3A/:/g'`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
 then
-echo `date`: client_boot_controls2 - Not called by client_boot_controls2.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: client_boot_controls2 - Not called by client_boot_controls2.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: client_boot_controls2 - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: client_boot_controls2 - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: client_boot_controls2 - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: client_boot_controls2 - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $LOCATION'null' = null ]
+if [ -z "$LOCATION" ]
 then
-echo `date`: client_boot_controls2 - Blank location by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: client_boot_controls2 - Blank location by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $ACTION'null' = null ]
+if [ -z "$ACTION" ]
 then
-echo `date`: client_boot_controls2 - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: client_boot_controls2 - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $ASSET'null' = null ]
+if [ -z "$ASSET" ]
 then
-echo `date`: client_boot_controls2 - Blank asset by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: client_boot_controls2 - Blank asset by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $TCPIP'null' = null ]
+if [ -z "$TCPIP" ]
 then
-echo `date`: client_boot_controls2 - Blank tcpip by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: client_boot_controls2 - Blank tcpip by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $MACADDRESS'null' = null ]
+if [ -z "$MACADDRESS" ]
 then
-echo `date`: client_boot_controls2 - Blank macaddress by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: client_boot_controls2 - Blank macaddress by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
 then
-echo `date`: client_boot_controls2 - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: client_boot_controls2 - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 DISTRIBUTIONSERVER=`sed -n 1,1p /opt/karoshi/server_network/distribution_server`
@@ -143,35 +143,35 @@ then
 		if [ $TCPIP != N.A. ] && [ $MACADDRESS != N.A. ]
 		then
 			echo `date`: client_boot_controls2 - setting asset $ASSET to install $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-			echo $TCPIP,$MACADDRESS, > /opt/karoshi/asset_register/network_install/install/$ASSET
-			[ -f /opt/karoshi/asset_register/network_install/memtest/$ASSET ] && rm -f /opt/karoshi/asset_register/network_install/memtest/$ASSET
+			echo $TCPIP,$MACADDRESS, > /opt/karoshi/server_network/dhcp/network_install/install/$ASSET
+			[ -f /opt/karoshi/server_network/dhcp/asset_register/network_install/memtest/$ASSET ] && rm -f /opt/karoshi/server_network/dhcp/asset_register/network_install/memtest/$ASSET
 		fi
 	fi
 fi
 
 if [ $ACTION = memtest ]
 then
-if [ $TCPIP'null' != null ] && [ $MACADDRESS'null' != null ]
-then 
-if [ $TCPIP != N.A. ] && [ $MACADDRESS != N.A. ]
-then
-echo `date`: client_boot_controls2 - setting asset $ASSET to memtest $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $TCPIP,$MACADDRESS, > /opt/karoshi/asset_register/network_install/memtest/$ASSET
-[ -f /opt/karoshi/asset_register/network_install/install/$ASSET ] && rm -f /opt/karoshi/asset_register/network_install/install/$ASSET
-fi
-fi
+	if [ ! -z "$TCPIP" ] && [ ! -z "$MACADDRESS" ]
+	then 
+		if [ $TCPIP != N.A. ] && [ $MACADDRESS != N.A. ]
+		then
+			echo `date`: client_boot_controls2 - setting asset $ASSET to memtest $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			echo $TCPIP,$MACADDRESS, > /opt/karoshi/server_network/dhcp/asset_register/network_install/memtest/$ASSET
+			[ -f /opt/karoshi/server_network/dhcp/network_install/install/$ASSET ] && rm -f /opt/karoshi/server_network/dhcp/network_install/install/$ASSET
+		fi
+	fi
 fi
 
-if [ $ACTION = wakeonlan ]
+if [ "$ACTION" = wakeonlan ]
 then
-if [ $MACADDRESS'null' != null ]
-then 
-if [ $MACADDRESS != N.A. ]
-then
-echo `date`: client_boot_controls2 - waking up $ASSET on $MACADDRESS by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-wakeonlan $MACADDRESS
-fi
-fi
+	if [ ! -z "$MACADDRESS" ]
+	then 
+		if [ "$MACADDRESS" != N.A. ]
+		then
+			echo `date`: client_boot_controls2 - waking up $ASSET on $MACADDRESS by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			wakeonlan $MACADDRESS
+		fi
+	fi
 fi
 
 if [ $ACTION = wakeonlanall ]
@@ -221,7 +221,7 @@ then
 			do
 				ASSET=`basename $ASSETS`
 				MACADDRESS=`sed -n 8,8p /opt/karoshi/asset_register/locations/$LOCATION/3/$ASSET | cut -d: -f2- | sed 's/ //g'`
-				if [ $MACADDRESS'null' != null ] && [ $MACADDRESS != N.A. ]
+				if [ ! -z "$MACADDRESS" ] && [ "$MACADDRESS" != N.A. ]
 				then
 					echo Waking $MACADDRESS"<br>"
 					wakeonlan $MACADDRESS 1>/dev/null
@@ -239,7 +239,7 @@ then
 			do
 				ASSET=`basename $ASSETS`
 				MACADDRESS=`sed -n 8,8p /opt/karoshi/asset_register/locations/$LOCATION/2/$ASSET | cut -d: -f2- | sed 's/ //g'`
-				if [ $MACADDRESS'null' != null ] && [ $MACADDRESS != N.A. ]
+				if [ ! -z "$MACADDRESS" ] && [ "$MACADDRESS" != N.A. ]
 				then
 				echo Waking $MACADDRESS"<br>"
 				wakeonlan $MACADDRESS 1>/dev/null
@@ -257,7 +257,7 @@ then
 			do
 				ASSET=`basename $ASSETS`
 				MACADDRESS=`sed -n 8,8p /opt/karoshi/asset_register/locations/$LOCATION/5/$ASSET | cut -d: -f2- | sed 's/ //g'`
-				if [ $MACADDRESS'null' != null ] && [ $MACADDRESS != N.A. ]
+				if [ ! -z "$MACADDRESS" != null ] && [ "$MACADDRESS" != N.A. ]
 				then
 					echo Waking $MACADDRESS"<br>"
 					wakenonlan $MACADDRESS 1>/dev/null
@@ -272,34 +272,49 @@ fi
 if [ $ACTION = normal ]
 then
 	echo `date`: client_boot_controls2 - setting asset $ASSET to normal $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	[ -f /opt/karoshi/asset_register/network_install/memtest/$ASSET ] && rm -f /opt/karoshi/asset_register/network_install/memtest/$ASSET
-	[ -f /opt/karoshi/asset_register/network_install/install/$ASSET ] && rm -f /opt/karoshi/asset_register/network_install/install/$ASSET
+	[ -f /opt/karoshi/server_network/dhcp/asset_register/network_install/memtest/$ASSET ] && rm -f /opt/karoshi/server_network/dhcp/asset_register/network_install/memtest/$ASSET
+	[ -f /opt/karoshi/server_network/dhcp/network_install/install/$ASSET ] && rm -f /opt/karoshi/server_network/dhcp/network_install/install/$ASSET
 fi
 
 function restart_dhcp {
+
+#Cat reservation list  into dhcpd.conf
+cat /opt/karoshi/server_network/dhcp/network_boot_list > /etc/dhcp/dhcpd_client_boot.conf
+
 source /opt/karoshi/serversetup/variables/distro
 #Restart DHCP
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_stop 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_start 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+#Sync config file to failover server
+if [ -d /opt/karoshi/server_network/dhcp_servers ]
+then
+	for DHCPSERVER in `ls -1 /opt/karoshi/server_network/dhcp_servers`
+	do
+		if [ "$DHCPSERVER" != `hostname-fqdn` ]
+		then
+			scp /etc/dhcp/dhcpd_client_boot.conf root@$DHCPSERVER:/etc/dhcp/
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $DHCPSERVER '
+			source /opt/karoshi/serversetup/variables/distro
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_stop 1>/dev/null
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_start 1>/dev/null
+			'
+		fi
+	done
+fi
 }
 
 function collate_client_info {
-#Create warning file
-echo -e "#Karoshi DHCP auto configuration.
-#
-#Do not add any configuration below this point." > /opt/karoshi/server_network/dhcp/karoshi_warning
-
-
-echo "#Client_network_install_configuration" > $BOOT_CONTROL_CONFIG
-
-if [ -d /opt/karoshi/asset_register/network_install/install ]
+[ -f "$BOOT_CONTROL_CONFIG" ] && rm -f "$BOOT_CONTROL_CONFIG"
+touch "$BOOT_CONTROL_CONFIG"
+if [ -d /opt/karoshi/server_network/dhcp/network_install/install ]
 then
-	if [ `ls -1 /opt/karoshi/asset_register/network_install/install | wc -l` -gt 0 ]
+	if [ `ls -1 /opt/karoshi/server_network/dhcp/network_install/install | wc -l` -gt 0 ]
 	then
-		for CLIENTS in /opt/karoshi/asset_register/network_install/install/*
+		for CLIENTS in /opt/karoshi/server_network/dhcp/network_install/install/*
 		do
 			CLIENT=`basename $CLIENTS`
-			CLIENT_DATA=`sed -n 1,1p /opt/karoshi/asset_register/network_install/install/$CLIENT`
+			CLIENT_DATA=`sed -n 1,1p /opt/karoshi/server_network/dhcp/network_install/install/$CLIENT`
 			TCPIP=`echo $CLIENT_DATA | cut -d, -f1`
 			MACADDRESS=`echo $CLIENT_DATA | cut -d, -f2`
 
@@ -316,14 +331,14 @@ then
 	fi
 fi
 
-if [ -d /opt/karoshi/asset_register/network_install/memtest ]
+if [ -d /opt/karoshi/server_network/dhcp/asset_register/network_install/memtest ]
 then
-	if [ `ls -1 /opt/karoshi/asset_register/network_install/memtest | wc -l` -gt 0 ]
+	if [ `ls -1 /opt/karoshi/server_network/dhcp/asset_register/network_install/memtest | wc -l` -gt 0 ]
 	then
-		for CLIENTS in /opt/karoshi/asset_register/network_install/memtest/*
+		for CLIENTS in /opt/karoshi/server_network/dhcp/asset_register/network_install/memtest/*
 		do
 			CLIENT=`basename $CLIENTS`
-			CLIENT_DATA=`sed -n 1,1p /opt/karoshi/asset_register/network_install/memtest/$CLIENT`
+			CLIENT_DATA=`sed -n 1,1p /opt/karoshi/server_network/dhcp/asset_register/network_install/memtest/$CLIENT`
 			TCPIP=`echo $CLIENT_DATA | cut -d, -f1`
 			MACADDRESS=`echo $CLIENT_DATA | cut -d, -f2`
 
@@ -340,25 +355,14 @@ then
 	fi
 fi
 
-#Remove existing lines from dhcp config file
-sed -i '/^#Karoshi DHCP auto configuration/,$d' /etc/dhcp/dhcpd.conf
-
-#Add warning message
-[ -f /opt/karoshi/server_network/dhcp/karoshi_warning ] && cat /opt/karoshi/server_network/dhcp/karoshi_warning >> /etc/dhcp/dhcpd.conf
-
-#Cat reservation list  into dhcpd.conf
-[ -f /opt/karoshi/server_network/dhcp/reservation_list ] && cat /opt/karoshi/server_network/dhcp/reservation_list >> /etc/dhcp/dhcpd.conf
-
-#Cat client network boots into the dhcp config file
-[ -f /opt/karoshi/server_network/dhcp/network_boot_list ] && cat /opt/karoshi/server_network/dhcp/network_boot_list >> /etc/dhcp/dhcpd.conf
 }
 
 
 if [ $ACTION = resetall ]
 then
 	echo `date`: client_boot_controls2 - resetting all by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	[ -d /opt/karoshi/asset_register/network_install/memtest/ ] && rm -f /opt/karoshi/asset_register/network_install/memtest/*
-	[ -d /opt/karoshi/asset_register/network_install/install/ ] && rm -f /opt/karoshi/asset_register/network_install/install/*
+	[ -d /opt/karoshi/server_network/dhcp/asset_register/network_install/memtest/ ] && rm -f /opt/karoshi/server_network/dhcp/asset_register/network_install/memtest/*
+	[ -d /opt/karoshi/server_network/dhcp/network_install/install/ ] && rm -f /opt/karoshi/server_network/dhcp/network_install/install/*
 	restart_dhcp
 fi
 
@@ -379,8 +383,8 @@ then
 				if [ $TCPIP1 != N.A. ] && [ $MAC1 != N.A. ]
 				then
 					echo `date`: client_boot_controls2 - setting asset $ASSET to install $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-					echo $TCPIP1,$MAC1, > /opt/karoshi/asset_register/network_install/install/$ASSET
-					[ -f /opt/karoshi/asset_register/network_install/memtest/$ASSET ] && rm -f /opt/karoshi/asset_register/network_install/memtest/$ASSET
+					echo $TCPIP1,$MAC1, > /opt/karoshi/server_network/dhcp/network_install/install/$ASSET
+					[ -f /opt/karoshi/server_network/dhcp/asset_register/network_install/memtest/$ASSET ] && rm -f /opt/karoshi/server_network/dhcp/asset_register/network_install/memtest/$ASSET
 				fi
 			fi
 		fi

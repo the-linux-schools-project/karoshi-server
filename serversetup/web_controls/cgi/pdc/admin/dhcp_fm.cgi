@@ -94,6 +94,9 @@ else
 	MAXLEASETIME=43200
 fi
 
+#Check for a secondary dhcp server
+SECONDARY_DHCP_SERVER=`[ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ ] && ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ | sed -n 1,1p`
+
 echo '
   <table class="standard" style="text-align: left; height: 91px;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
@@ -143,14 +146,22 @@ echo '
 '$"Max Lease Time"'</td>
         <td><input tabindex= "7" value="'$MAXLEASETIME'" name="_MAXLEASETIME_" size="20" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_DHCP"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the maximum lease time in seconds."'</span></a>
-      </td></tr>
-    </tbody>
-  </table><br><br>
-<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</div></div>
-</form>
-</div></body>
-</html>
-'
+      </td></tr>'
+
+#Show secondary DHCP server
+if [ ! -z "$SECONDARY_DHCP_SERVER" ]
+then
+	echo '<tr><td>'$"Secondary DHCP Server"'</td><td>'$SECONDARY_DHCP_SERVER'</td></tr>'
+fi
+
+echo '</tbody></table>'
+
+if [ ! -z "$SECONDARY_DHCP_SERVER" ]
+then
+	echo '<input type="hidden" name="_SECONDARYSERVER_" value="'$SECONDARY_DHCP_SERVER'">'
+fi
+
+echo '<br><br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
+</div></div></form></div></body></html>'
 exit
 
