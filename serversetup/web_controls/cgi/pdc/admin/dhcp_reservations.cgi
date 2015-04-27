@@ -261,7 +261,7 @@ else
 	TABLECLASS=mobilestandard
 fi
 
-echo '<form id="reservervations" name="reservervations" action="/cgi-bin/admin/dhcp_reservations.cgi" name="reservation" method="post">'
+echo '<form id="reservervations" name="reservervations" action="/cgi-bin/admin/dhcp_reservations.cgi" method="post">'
 
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
@@ -341,7 +341,7 @@ echo '<input type="hidden" name="_ACTION_reallyadd_" value="English"><table clas
 
 echo '<br>'
 
-echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div>'
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">'
 }
 
 [ $ACTION = view ] && view_reservations

@@ -140,9 +140,9 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 
 if [ $MOBILE = no ]
 then
-	echo '<td style="width: 120px;"><b>'$"Mac Address"'</b></td><td style="width: 120px;"><b>'$TCPIP'</b></td>'
+	echo '<td style="width: 130px;"><b>'$"Mac Address"'</b></td><td style="width: 100px;"><b>'$TCPIP'</b></td>'
 fi
-echo '<td><b>'$"Boot status"'</b></td></tr>'
+echo '<td style="width: 120px;"><b>'$"Boot status"'</b></td><td style="width: 20px;"></td><td style="width: 20px;"></td></tr>'
 for ASSETS in "/opt/karoshi/asset_register/locations/$LOCATION/"*
 do
 	ASSET=`basename $ASSETS`
@@ -182,22 +182,22 @@ do
 
 	if [ $BOOTSTATUS = normal ]
 	then
-		echo '<td style="width: 100px;">'$"Normal Boot"'</td><td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_install_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Network Install"'</span></a></td>'
+		echo '<td>'$"Normal Boot"'</td><td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_install_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Network Install"'</span></a></td>'
 	fi
 
 	if [ $BOOTSTATUS = memtest ]
 	then
-		echo '<td style="width: 100px;">'$"Memtest"'</td><td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_install_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Network Install"'</span></a></td><td style="width: 20px;"></td>
+		echo '<td>'$"Memtest"'</td><td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_install_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Network Install"'</span></a></td></td>
 
-	<td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_normal_ASSET_'$ASSET'_TCPIP_'$TCPIP'_MACADDRESS_'$"Mac Address"'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Normal Boot"'</span></a></td>'
+	<td><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_normal_ASSET_'$ASSET'_TCPIP_'$TCPIP'_MACADDRESS_'$"Mac Address"'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Normal Boot"'</span></a></td>'
 	fi
 
 	if [ $BOOTSTATUS = install ]
 	then
-		echo '<td style="width: 100px;"><FONT COLOR="#11BE26"><b>'$"Network Install"'</b></font></td><td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_normal_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Normal Boot"'</span></a></td>'
+		echo '<td><FONT COLOR="#11BE26"><b>'$"Network Install"'</b></font></td><td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_normal_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Normal Boot"'</span></a></td>'
 	fi
 
-	echo '<td style="width: 20px;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_wakeonlan_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON4'" value=""><span>'$"Wake on lan"'</span></a></td></tr>'
+	echo '<td><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_wakeonlan_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_" type="image" class="images" src="'$ICON4'" value=""><span>'$"Wake on lan"'</span></a></td></tr>'
 	fi
 done
 echo '</tbody></table><br>'

@@ -204,6 +204,9 @@ fi
 #Make sure the permissions are correct on the key.
 chmod 0600 /var/lib/samba/private/tls/key.pem
 
+#Install smbclient
+apt-get install -y smbclient
+
 #Install openchange
 #echo ""$HOSTNAME - Installing openchange from linux-schools backports""
 #apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y install openchangeserver python-mysqldb python-ocsmanager

@@ -183,6 +183,20 @@ echo MAXLEASETIME=$NEWMAXLEASETIME >> /opt/karoshi/server_network/dhcp/dhcp_sett
 source /opt/karoshi/server_network/dhcp/dhcp_settings
 source /opt/karoshi/serversetup/variables/distro
 
+#Disable dhcp on all additional domain controllers
+if [ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ ]
+then
+	for DSERVER in `ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers`
+	do
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $DSERVER '
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_stop 1>/dev/null
+		#Stop DHCP on boot
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/dhcp
+		'
+	done
+fi
+
 #Configure primary and secondary dhcp servers
 if [ ! -z "$SECONDARYSERVER" ]
 then
@@ -307,7 +321,7 @@ then
 	scp /etc/dhcp/dhcpd.conf root@"$SECONDARYSERVER":/etc/dhcp
 	scp /etc/dhcp/dhcpd_client_boot.conf root@"$SECONDARYSERVER":/etc/dhcp
 	scp /etc/dhcp/dhcpd_reservations.conf root@"$SECONDARYSERVER":/etc/dhcp
-
+	echo `date`: dhcp - $SECONDARYSERVER - restarting dhcp by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SECONDARYSERVER '
 	source /opt/karoshi/serversetup/variables/distro
 	RESTARTSHOREWALL=no
@@ -345,6 +359,7 @@ then
 fi
 
 #Restart DHCP
+echo `date`: dhcp - $HOSTNAME - restarting dhcp by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_stop 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_start 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 [ $? != 0 ] && exit 101

@@ -2,6 +2,10 @@
 #
 #Sourced from: https://gist.github.com/mattpascoe/4348991
 
+#Get user input
+my $userinput;
+$userinput=$ARGV[0];
+
 # Update the path to your lease file below
 use strict;
 use File::Copy;
@@ -112,8 +116,10 @@ foreach $line (@lines){
                 }
         }
         if ($readit && $line=~/^}/){
-                push (@lease_states,"<tr><td>$ip</td><td>$start_date_time</td><td>$end_date_time</td><td>$mac</td><td>$state</td><td>$name</tr>\n");
-                $readit = 0;
+		if ($state eq $userinput){
+			push (@lease_states,"<tr><td>$ip</td><td>$start_date_time</td><td>$end_date_time</td><td>$mac</td><td>$state</td><td>$name</tr>\n");
+        		$readit = 0;
+			}
         }
 }
  
@@ -122,9 +128,12 @@ my $header=("<table class='standard' style='text-align: left;' border='0' cellpa
 
 print "<td style='width: 160px;'>Total leases</td><td>$lease</td></tr>\n";
 print "<tr><td>Total active leases</td><td>$active</td></tr></tbody></table><br>\n";
-print $header;
-print @lease_states;
-print "</tbody></table><br>\n";
+
+if (defined $userinput) {
+	print $header;
+	print @lease_states;
+	print "</tbody></table><br>\n";
+}
 
 sub localize{
 # in format 2010/06/01 22:10:01

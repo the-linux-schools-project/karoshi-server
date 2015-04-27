@@ -50,20 +50,49 @@ echo '
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
 <body><div id="pagecontainer">'
+
+#########################
+#Get data input
+#########################
+TCPIP_ADDR=$REMOTE_ADDR
+DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+#########################
+#Assign data to variables
+#########################
+END_POINT=5
+#Assign OPTION
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = OPTIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		OPTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox3"><div id="titlebox">
-
+echo '<div id="actionbox3"><div id="titlebox"><form action="/cgi-bin/admin/dhcp_view_leases.cgi" method="post">
 
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tr><td style="vertical-align: top; width:180px"><div class="sectiontitle">'$"View DHCP Leases"'</div></td><td style="vertical-align: top;"><a href="dhcp_fm.cgi"><input class="button" type="button" name="" value="'$"Configure DHCP"'"></a></td><td style="vertical-align: top;"><a href="dhcp_reservations.cgi"><input class="button" type="button" name="" value="'$"DHCP Reservations"'"></a></td>
+<td style="vertical-align: top;"><input name="_OPTION_active_" type="submit" class="button" value="'$"Show Active Leases"'"></td>'
+
+#Only show backup leases button if we have a secondary dhcp server
+[ -d /opt/karoshi/server_network/dhcp_servers ] && echo '<td style="vertical-align: top;"><input name="_OPTION_backup_" type="submit" class="button" value="'$"Show Backup Leases"'"></td>'
+
+echo '<td style="vertical-align: top;"><input name="_OPTION_free_" type="submit" class="button" value="'$"Show Free Leases"'"></td>
 </tr>
-</tbody></table><br>
+</tbody></table><br></form>
 </div><div id="infobox">'
 
 #Show lease information
-/opt/karoshi/web_controls/leasecheck.pl
+/opt/karoshi/web_controls/leasecheck.pl $OPTION
 echo '</div></div></body></html>'
 exit
 
