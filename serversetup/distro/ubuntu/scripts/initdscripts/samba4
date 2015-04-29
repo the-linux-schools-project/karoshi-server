@@ -9,6 +9,13 @@
 # Short-Description: start Samba daemons 
 ### END INIT INFO
 
+#Bail out if smb.conf does not exist.
+if [ ! -f /etc/samba/smb.conf ]
+then
+	echo /etc/samba/smb.conf does not exist - exiting now...
+	exit
+fi
+
 #Symlink to /run/samba-cache
 [ ! -d /run/samba-cache ] && mkdir -p /run/samba-cache 
 [ ! -e /run/lock/samba ] && ln -s /run/samba-cache /run/lock/samba

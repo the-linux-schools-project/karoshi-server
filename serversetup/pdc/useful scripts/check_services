@@ -113,11 +113,16 @@ fi
 #Home areas
 if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/fileserver ]
 then
-	if [ $SAMBA != 0 ]
+	if [ $SAMBA = 0 ]
 	then
+		STATUS=ok
+	else
+		STATUS=fail
 		SERVERNAMESHORT=`echo $SERVERNAME | cut -d. -f1`
 		OFFLINEHOMES="$OFFLINEHOMES $SERVERNAMESHORT"
 	fi
+	SERVICENAME="Home Areas"
+	write_html_entry
 fi
 }
 
@@ -253,21 +258,6 @@ do
 	#Create entry for the status
 	check_data
 done
-
-#Check for offline home areas
-if [  -z "$OFFLINEHOMES" ]
-then
-	STATUS=ok
-	SERVICENAME="Home Areas"	
-else
-	OFFLINEHOMES=`echo $OFFLINEHOMES | sed 's/^ //g'`
-	STATUS=fail
-	SERVICENAME="Home Areas $OFFLINEHOMES"
-fi
-write_html_entry
-
-
-
 
 function copy_htmldata {
 #Create table top

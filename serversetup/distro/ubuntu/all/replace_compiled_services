@@ -74,16 +74,19 @@ then
 fi
 
 #Modify /etc/resolv.conf so that we can still get on the internet when samba 4 pdc or adc is stopped.
-if [ `grep -c "[sysvol]" /etc/samba/smb.conf` -gt 0 ]
+if [ -f /etc/samba/smb.conf ]
 then
-	DNSFORDWARDER=`grep "dns forwarder =" /etc/samba/smb.conf | cut -d"=" -f2 | sed 's/ //g'`
-	if [ ! -z "$DNSFORDWARDER" ]
+	if [ `grep -c "\[sysvol\]" /etc/samba/smb.conf` -gt 0 ]
 	then
-		mv /etc/resolv.conf /etc/resolv.conf.$$
-		echo nameserver $DNSFORDWARDER > /etc/resolv.conf
-	else
-		echo "$HOSTNAME - Could not create /etc/resolv.conf"
-		exit 101		
+		DNSFORDWARDER=`grep "dns forwarder =" /etc/samba/smb.conf | cut -d"=" -f2 | sed 's/ //g'`
+		if [ ! -z "$DNSFORDWARDER" ]
+		then
+			mv /etc/resolv.conf /etc/resolv.conf.$$
+			echo nameserver $DNSFORDWARDER > /etc/resolv.conf
+		else
+			echo "$HOSTNAME - Could not create /etc/resolv.conf"
+			exit 101		
+		fi
 	fi
 fi
 

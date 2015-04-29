@@ -230,7 +230,7 @@ echo \<b\>$"Processing update" - $PATCHNAME\</b\>\<br\>\<br\>
 [ $MOBILE = no ] && echo '</div><div id="infobox">'
 #Get information on patch
 PATCHDATALINE=`grep -n ^$PATCHNAME /opt/karoshi/updates/updatelist | cut -d: -f1`
-if [ -z "$PATCHDATALINE" ]
+if [ ! -z "$PATCHDATALINE" ]
 then
 	MD5SUM=`sed -n $PATCHDATALINE,$PATCHDATALINE'p' /opt/karoshi/updates/updatelist | cut -f2`
 	SERVERARRAY=( `sed -n $PATCHDATALINE,$PATCHDATALINE'p' /opt/karoshi/updates/updatelist | cut -f3 | sed 's/,/ /g'` )
