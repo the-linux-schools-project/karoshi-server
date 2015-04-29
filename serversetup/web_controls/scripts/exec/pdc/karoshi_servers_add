@@ -530,7 +530,7 @@ then
 
 		if [ $GLUSTERSTATUS = 0 ]
 		then
-			for FOLDER in /var/lib/samba/netlogon /var/lib/samba/sysvol /var/lib/samba/dfs
+			for FOLDER in /var/lib/samba/netlogon /var/lib/samba/sysvol /var/lib/samba/dfs /home/applications
 			do
 				/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume `hostname-fqdn` "$FOLDER" dc-data "$ACTION"
 				/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume $SERVER.$REALM "$FOLDER" dc-data
@@ -553,7 +553,7 @@ then
 
 #					#Setup web management on the additional server
 #					/opt/karoshi/serversetup/web_controls/setup_web_controls_dc
-				fi
+				#fi
 			done
 		fi
 	#Configure dfs

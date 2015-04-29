@@ -767,7 +767,6 @@ chown root:apache_karoshi /opt/karoshi/web_controls/generate_navbar_staff
 [ ! -d /opt/karoshi/server_network/servers/$HOSTNAME.$REALM ] && mkdir -p /opt/karoshi/server_network/servers/$HOSTNAME.$REALM
 echo $"Domain Controller""<br>" > /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/1dc
 echo $"File Server""<br>" > /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/fileserver
-echo $"Ldap Server""<br>" > /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/ldapserver
 
 [ -f /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/no_role ] && rm -f /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/no_role
 

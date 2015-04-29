@@ -161,6 +161,9 @@ chmod 0644 /etc/postfix/ldap.cf
 sed -i 's/CHANGETHISDN/'$LDAPBASE'/g' /etc/postfix/ldap.cf
 sed -i 's/CHANGETHISLDAPSERVER/'$LDAPSERVER'/g' /etc/postfix/ldap.cf
 
+sed -i 's/CHANGETHISDN/'$LDAPBASE'/g' /etc/postfix/ldap-mail.cf
+sed -i 's/CHANGETHISLDAPSERVER/'$LDAPSERVER'/g' /etc/postfix/ldap-mail.cf
+
 ########################
 #Setup dovecot
 ########################
@@ -468,6 +471,7 @@ APACHESTATUS=`ps -e | grep -c $APACHEVER`
 #Create access file
 touch /etc/postfix/access
 postmap hash:/etc/postfix/access
+postmap /etc/postfix/catchall
 
 #############
 #generate aliases.db in /etc/postfix/

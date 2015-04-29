@@ -7,11 +7,12 @@
 #               (yes)   (yes)   (yes)   (never) (100)
 # ==========================================================================
 smtp      inet  n       -       -       -       -       smtpd
-#submission inet n      -       -       -       -       smtpd
+submission inet n      -       -       -       -       smtpd
 #	-o smtpd_etrn_restrictions=reject
-#	-o smtpd_client_restrictions=permit_sasl_authenticated,reject
-	-o smtpd_client_restrictions=
-	-o smtpd_helo_restrictions=
+	-o smtpd_client_restrictions=permit_sasl_authenticated,reject
+	-o smtpd_tls_security_level=encrypt
+#	-o smtpd_client_restrictions=
+#	-o smtpd_helo_restrictions=
 #smtps    inet  n       -       -       -       -       smtpd
 #  -o smtpd_tls_wrappermode=yes -o smtpd_sasl_auth_enable=yes
 #submission inet n      -       -       -       -       smtpd

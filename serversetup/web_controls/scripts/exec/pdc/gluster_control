@@ -300,7 +300,7 @@ then
 	for SHARES in /opt/karoshi/server_network/network_shares/$SERVER/*
 	do
 		SHARE=`basename $SHARES`
-		if [ "$SHARE" != dfs ] && [ "$SHARE" != netlogon ] && [ "$SHARE" != sysvol ]
+		if [ "$SHARE" != dfs ] && [ "$SHARE" != netlogon ] && [ "$SHARE" != sysvol ] && [ "$SHARE" != applications ]
 		then
 			HOMEPATH=`grep "HOMEPATH=" /opt/karoshi/server_network/network_shares/$SERVER/"$SHARE" | cut -d"=" -f2 | sed 's/"//g'`
 			echo '<option value="'$HOMEPATH'">'$HOMEPATH'</option>'
@@ -315,8 +315,9 @@ then
 	else
 		echo '<tr><td style="vertical-align: top; height: 30px;"></td><td style="vertical-align: top; height: 30px;"></td></tr>'
 	fi
-echo '</tbody></table><br>'
-
+echo '</tbody></table>'
+[ -z "$SERVER" ] && echo ''$"Choose the server that the data is currently on."'<br>'
+echo '<br>'
 	#Show a list of servers to choose from.
 	MOBILE=no
 	/opt/karoshi/web_controls/show_servers $MOBILE servers $"Select Server" addfolder | sed 's/SERVERNAME/SERVER/g'

@@ -27,13 +27,14 @@ CONFFILE=/etc/MailScanner/MailScanner.conf
 
 #Create folders
 [ ! -d /var/run/MailScanner ] && mkdir /var/run/MailScanner
+[ ! -d /var/lock/MailScanner ] && mkdir /var/lock/MailScanner
 [ ! -d /var/lock/subsys/MailScanner ] && mkdir -p /var/lock/subsys/MailScanner
 chown -R postfix:postfix /var/run/MailScanner
 chown -R postfix:postfix /var/lock/subsys/MailScanner
 
 run_mailscanner=0
 run_nice=0
-stopped_lockfile=/var/lock/subsys/MailScanner.off
+stopped_lockfile=/var/lock/MailScanner/MailScanner.off
 
 # Read configuration variable file if it is present
 [ -r /etc/default/$PNAME ] && . /etc/default/$PNAME

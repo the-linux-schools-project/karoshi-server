@@ -1,0 +1,55 @@
+#!/bin/bash
+#Create gluster volume
+if [ ! -d /opt/karoshi/server_network/gluster-volumes/dc-data/ ]
+then
+	#Get a list of all additional domain controllers
+	[ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers ] && INT_SERVERS=`ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers`
+
+	[ -d /opt/karoshi/server_network/zones/dmz/additional_domain_controllers ] && DMZ_SERVERS=`ls -1 /opt/karoshi/server_network/zones/dmz/additional_domain_controllers`
+
+	SERVERS=`echo $INT_SERVERS $DMZ_SERVERS | sed 's/ /,/g' | sed 's/^,//g' | sed 's/$,//g'`
+
+	#Create gluster volume
+	echo "Creating gluster volume dc-data on `hostname-fqdn`,$SERVERS"
+	sleep 2
+	/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster `hostname-fqdn`,"$SERVERS" dc-data create "root" "127.0.0.1"
+	GLUSTERSTATUS=$?
+
+	if [ "$GLUSTERSTATUS" = 0 ]
+	then
+		for FOLDER in /var/lib/samba/netlogon /var/lib/samba/sysvol /var/lib/samba/dfs /home/applications
+		do
+			echo "Populating dc-data for $FOLDER"
+			/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume `hostname-fqdn` "$FOLDER" dc-data copydata
+			for SERVER in `echo $SERVERS | sed 's/,/ /g'`
+			do
+				/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume $SERVER "$FOLDER" dc-data
+			done
+		done
+		#Disable cron rsync script
+		if [ -f /opt/karoshi/cronjobs/jobs/adc_sync.cron ]
+		then
+			rm -f opt/karoshi/cronjobs/jobs/adc_sync.cron
+			/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
+		fi
+
+	#Configure dfs
+		for SHAREPATH in netlogon sysvol
+		do
+			DFSPATH=""
+			for GLUSTERSERVERS in /opt/karoshi/server_network/gluster-volumes/dc-data/servers/*
+			do
+				GLUSTERSERVER=`basename "$GLUSTERSERVERS"`
+				DFSPATH=$DFSPATH,$GLUSTERSERVER\\$SHAREPATH
+			done
+			DFSPATH=`echo $DFSPATH | sed 's/^,//g'`
+			[ -L /var/lib/samba/dfs/$SHAREPATH ] && rm -f /var/lib/samba/dfs/$SHAREPATH
+			ln -s msdfs:"$DFSPATH" /var/lib/samba/dfs/$SHAREPATH
+		done
+	fi
+fi
+
+
+
+
+
