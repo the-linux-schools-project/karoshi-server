@@ -154,13 +154,13 @@ else
 fi
 
 ICON1=/images/warnings/server_fail.png
-
+source /opt/karoshi/server_network/domain_information/domain_name
 #Shutdown this server
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="vertical-align: top; width: 180px; height: 30px;"><b>'$"Server"'</b></td><td style="vertical-align: top;"><b>'$"Shutdown/Reboot"'</b></td></tr>
-<tr><td style="vertical-align: top; width: 180px; height: 30px;">'$HOSTNAME'</td>
+<tr><td style="vertical-align: top; width: 180px; height: 30px;">'$HOSTNAME'.'$REALM'</td>
 <td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON1'"><span>'$"Shutdown/Reboot"2'</span></a></td></tr>
 </tbody></table>'
 sleep 1

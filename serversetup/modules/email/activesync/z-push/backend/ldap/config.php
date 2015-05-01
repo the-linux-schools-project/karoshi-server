@@ -56,5 +56,3 @@ define('LDAP_USER_DN', 'uid=%u,OU=People,CHANGETHISBASEDN');
 
 // LDAP BASE DNS
 define('LDAP_BASE_DNS', 'Contacts:ou=addressbook,uid=%u,CHANGETHISBASEDN'); //Multiple values separator is |
-
-?>

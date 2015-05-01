@@ -24,7 +24,7 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 
 
 ########################
@@ -32,16 +32,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/monitors_view_cgi
 then
-echo `date`: monitors_view - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_view - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/monitors_view_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/monitors_view.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $monitors_view_cgi'check' ]
 then
-echo `date`: monitors_view - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_view - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -50,8 +50,8 @@ fi
 numArgs=$#
 if [ $numArgs != 1 ]
 then
-echo `date`: monitors_view - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_view - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
@@ -63,24 +63,24 @@ ALPHABET2=`echo $ALPHABET | tr 'A-Z' 'a-z'`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: monitors_view - Not called by monitors_view.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_view - Not called by monitors_view.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: monitors_view - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_view - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: monitors_view - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_view - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: monitors_view - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: monitors_view - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
@@ -101,28 +101,26 @@ MONITORCOUNT=`cat /opt/karoshi/.tempdata/monitor_list.$$ | wc -l`
 COUNTER=1
 if [ $MONITORCOUNT -gt 0 ]
 then
-#Show table of sites
-echo '<table class="standard" style="text-align: left; width: 800px; height: 100px;" border="0" cellpadding="2" cellspacing="2">'
-echo '<tbody>
-<tr><td style="width: 180px;"><b>'$"Monitors"'</b></td><td><b>'$"Edit"'</b></td><td><b>'$"Delete"'</b></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Deleting a monitor will stop the monitoring server from monitoring the monitor group."'</span></a></td></tr>'
-while [ $COUNTER -le $MONITORCOUNT ]
-do
-MONITORDATA=`sed -n $COUNTER,$COUNTER"p" /opt/karoshi/.tempdata/monitor_list.$$`
-MONITORNAME=`echo $MONITORDATA | cut -d, -f1`
-FILTERGROUPS=`echo $MONITORDATA | cut -d, -f2`
-MONITOR_SERVICES=`grep service /opt/karoshi/server_network/mon/monitors/$MONITORNAME | sed 's/service//g' |sed 's/$/<br>/g'`
-SERVICE_TCPIPS=`sed -n 4,4p /opt/karoshi/server_network/mon/monitors/$MONITORNAME | cut -d' ' -f3-`
-MONITORNAME=`echo $MONITORNAME | sed 's/_/ /g'`
+	#Show table of sites
+	echo '<table class="standard" style="text-align: left; width: 800px; height: 100px;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	<tr><td style="width: 180px;"><b>'$"Monitors"'</b></td><td><b>'$"Edit"'</b></td><td><b>'$"Delete"'</b></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Deleting a monitor will stop the monitoring server from monitoring the monitor group."'</span></a></td></tr>'
+	while [ $COUNTER -le $MONITORCOUNT ]
+	do
+		MONITORDATA=`sed -n $COUNTER,$COUNTER"p" /opt/karoshi/.tempdata/monitor_list.$$`
+		MONITORNAME=`echo $MONITORDATA | cut -d, -f1`
+		FILTERGROUPS=`echo $MONITORDATA | cut -d, -f2`
+		MONITOR_SERVICES=`grep service /opt/karoshi/server_network/mon/monitors/$MONITORNAME | sed 's/service//g' |sed 's/$/<br>/g'`
+		SERVICE_TCPIPS=`sed -n 4,4p /opt/karoshi/server_network/mon/monitors/$MONITORNAME | cut -d' ' -f3-`
+		MONITORNAME=`echo $MONITORNAME | sed 's/_/ /g'`
 
 
-echo '<tr><td>'$MONITORNAME'</td><td><a class="info" href="javascript:void(0)"><input name="_MONITOR_'$MONITORNAME'_MONITORACTION_edit_" type="image" class="images" src="/images/submenus/system/edit.png" value="_MONITOR_'$MONITORNAME'_MONITORACTION_edit_"><span>'$"Edit function not implemented yet."' - '$MONITORNAME'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="_MONITOR_'$MONITORNAME'_MONITORACTION_delete_" type="image" class="images" src="/images/submenus/system/delete.png" value="_MONITOR_'$MONITORNAME'_MONITORACTION_delete_"><span>'$"Delete"' - '$MONITORNAME'</span></a></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"TCPIP numbers monitored":'<br>'$SERVICE_TCPIPS'<br>'$"Services Monitored":'<br>'$MONITOR_SERVICES'</span></a></td></tr>'
-let COUNTER=$COUNTER+1
-done
-echo "</tbody>"
-echo "</table>"
-rm -f /opt/karoshi/.tempdata/monitor_list.$$
+		echo '<tr><td>'$MONITORNAME'</td><td><a class="info" href="javascript:void(0)"><input name="_MONITOR_'$MONITORNAME'_MONITORACTION_edit_" type="image" class="images" src="/images/submenus/system/edit.png" value="_MONITOR_'$MONITORNAME'_MONITORACTION_edit_"><span>'$"Edit function not implemented yet."' - '$MONITORNAME'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="_MONITOR_'$MONITORNAME'_MONITORACTION_delete_" type="image" class="images" src="/images/submenus/system/delete.png" value="_MONITOR_'$MONITORNAME'_MONITORACTION_delete_"><span>'$"Delete"' - '$MONITORNAME'</span></a></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"TCPIP numbers monitored":'<br>'$SERVICE_TCPIPS'<br>'$"Services Monitored":'<br>'$MONITOR_SERVICES'</span></a></td></tr>'
+		let COUNTER=$COUNTER+1
+	done
+	echo "</tbody></table>"
+	rm -f /opt/karoshi/.tempdata/monitor_list.$$
 else
-rm -f /opt/karoshi/.tempdata/monitor_list.$$
-exit 101
+	rm -f /opt/karoshi/.tempdata/monitor_list.$$
+	exit 101
 fi
 exit

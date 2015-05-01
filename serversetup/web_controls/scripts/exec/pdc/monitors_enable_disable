@@ -24,7 +24,7 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 MD5ERROR="Incorrect MD5 checksum for this patch."
 
 ########################
@@ -120,24 +120,24 @@ fi
 ######################
 if [ ! -f /opt/karoshi/server_network/mon/global ]
 then
-#Make mon global file
-######################
-# global options
-######################
-echo 'cfbasedir   = /etc/mon' > /opt/karoshi/server_network/mon/global
-echo 'pidfile     = /var/run/mon/mon.pid' >> /opt/karoshi/server_network/mon/global
-echo 'statedir    = /var/lib/mon/state.d' >> /opt/karoshi/server_network/mon/global
-echo 'logdir      = /var/lib/mon/log.d' >> /opt/karoshi/server_network/mon/global
-echo 'dtlogfile   = /var/lib/mon/log.d/downtime.log' >> /opt/karoshi/server_network/mon/global
-echo 'alertdir    = /usr/lib/mon/alert.d' >> /opt/karoshi/server_network/mon/global
-echo 'mondir      = /usr/lib/mon/mon.d' >> /opt/karoshi/server_network/mon/global
-echo 'maxprocs    = 20' >> /opt/karoshi/server_network/mon/global
-echo 'histlength  = 100' >> /opt/karoshi/server_network/mon/global
-echo 'randstart   = 60s' >> /opt/karoshi/server_network/mon/global
-echo 'authtype    = pam' >> /opt/karoshi/server_network/mon/global
-echo 'userfile    = /etc/mon/userfile' >> /opt/karoshi/server_network/mon/global
-echo 'dtlogging   = yes' >> /opt/karoshi/server_network/mon/global
-echo  >> /opt/karoshi/server_network/mon/global
+	#Make mon global file
+	######################
+	# global options
+	######################
+	echo 'cfbasedir   = /etc/mon' > /opt/karoshi/server_network/mon/global
+	echo 'pidfile     = /var/run/mon/mon.pid' >> /opt/karoshi/server_network/mon/global
+	echo 'statedir    = /var/lib/mon/state.d' >> /opt/karoshi/server_network/mon/global
+	echo 'logdir      = /var/lib/mon/log.d' >> /opt/karoshi/server_network/mon/global
+	echo 'dtlogfile   = /var/lib/mon/log.d/downtime.log' >> /opt/karoshi/server_network/mon/global
+	echo 'alertdir    = /usr/lib/mon/alert.d' >> /opt/karoshi/server_network/mon/global
+	echo 'mondir      = /usr/lib/mon/mon.d' >> /opt/karoshi/server_network/mon/global
+	echo 'maxprocs    = 20' >> /opt/karoshi/server_network/mon/global
+	echo 'histlength  = 100' >> /opt/karoshi/server_network/mon/global
+	echo 'randstart   = 60s' >> /opt/karoshi/server_network/mon/global
+	echo 'authtype    = pam' >> /opt/karoshi/server_network/mon/global
+	echo 'userfile    = /etc/mon/userfile' >> /opt/karoshi/server_network/mon/global
+	echo 'dtlogging   = yes' >> /opt/karoshi/server_network/mon/global
+	echo  >> /opt/karoshi/server_network/mon/global
 fi
 cat /opt/karoshi/server_network/mon/global /opt/karoshi/server_network/mon/monitors/* > /opt/karoshi/server_network/mon/mon.cf 2>/dev/null
 

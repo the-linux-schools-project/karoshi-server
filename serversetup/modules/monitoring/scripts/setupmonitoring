@@ -89,6 +89,7 @@ cp -f -R "/opt/karoshi/serversetup/web_controls/images" "/var/www/html/"
 cp -f "/opt/karoshi/serversetup/web_controls/scripts/generate_navbar_mon" "/opt/karoshi/web_controls/"
 
 cp -f /opt/karoshi/serversetup/modules/monitoring/mon/alerts/smtp-cli /opt/karoshi/server_network/mon/
+sed -i "s/CHANGEGTHISSERVERNAME/`hostname-fqdn`/g" /opt/karoshi/server_network/mon/smtp-cli
 cp -f /opt/karoshi/serversetup/modules/monitoring/mon/alerts/send_mail.alert /usr/lib/mon/alert.d/
 
 chown root.$APACHEGROUP -R /var/www/html/css

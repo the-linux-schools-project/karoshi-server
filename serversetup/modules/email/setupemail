@@ -471,6 +471,8 @@ APACHESTATUS=`ps -e | grep -c $APACHEVER`
 #Create access file
 touch /etc/postfix/access
 postmap hash:/etc/postfix/access
+cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/email/postfix/ldap-mail.cf /etc/postfix/
+echo "@$REALM root" > /etc/postfix/catchall
 postmap /etc/postfix/catchall
 
 #############

@@ -8,7 +8,7 @@
 * caldav-client-v2.php by xbgmsharp <xbgmsharp@gmail.com>.
 *
 * Copyright Andrew McMillan (original caldav-client-v2.php), Jean-Louis Dupond (cURL code), xbgmsharp (bugfixes)
-* Copyright Thorsten Köster
+* Copyright Thorsten KÃ¶ster
 * License   GNU LGPL version 3 or later (http://www.gnu.org/licenses/lgpl-3.0.txt)
 */
 
@@ -70,6 +70,11 @@ class CalDAVClient {
 	protected $calendar_urls;
 
 	/**
+	* Construct URL
+	*/
+	protected $url;
+
+	/**
 	* The useragent which is send to the caldav server
 	*
 	* @var string
@@ -91,7 +96,6 @@ class CalDAVClient {
 	 */
 	private $curl;
 
-
     private $synctoken = array();
 
 	/**
@@ -102,24 +106,49 @@ class CalDAVClient {
 	* @param string $pass        The password for that user
 	*/
 	function __construct( $caldav_url, $user, $pass ) {
+        $this->url = $caldav_url;
 		$this->user = $user;
 		$this->pass = $pass;
 		$this->auth = $user . ':' . $pass;
 		$this->headers = array();
 
 		$parsed_url = parse_url($caldav_url);
-		if ($parsed_url == FALSE) {
-			ZLog::Write(LOGLEVEL_ERROR, sprintf('Couldn\'t parse URL: %s', $caldav_url));
-		} else
-			$this->server = $parsed_url['scheme'] . '://' . $parsed_url['host'] . ':' . $parsed_url['port'];
-			$this->base_url  = $parsed_url['path'];
-//			$this->base_url .= !empty($parsed_url['query'])    ? '?' . $parsed_url['query']    : '';
-//			$this->base_url .= !empty($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
+		if ($parsed_url === false) {
+			ZLog::Write(LOGLEVEL_ERROR, sprintf("BackendCalDAV->caldav_backend(): Couldn't parse URL: %s", $caldav_url));
+            return;
+		}
 
-			if (substr($this->base_url, -1, 1) !== '/') {
-				$this->base_url = $this->base_url . '/';
-			}
+		$this->server = $parsed_url['scheme'] . '://' . $parsed_url['host'] . ':' . $parsed_url['port'];
+		$this->base_url  = $parsed_url['path'];
+		//ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendCalDAV->caldav_backend(): base_url '%s'", $this->base_url));
+        //$this->base_url .= !empty($parsed_url['query'])    ? '?' . $parsed_url['query']    : '';
+        //$this->base_url .= !empty($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
+
+        if (substr($this->base_url, -1) !== '/') {
+			$this->base_url = $this->base_url . '/';
+		}
 	}
+
+	/**
+     * Checks if the CalDAV server is reachable
+     *
+     * @return  boolean
+     */
+    public function CheckConnection() {
+//         ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendCalDAV->caldav_backend->check_connection"));
+        $result = $this->DoRequest($this->url, 'OPTIONS');
+
+        $status = false;
+        switch($this->httpResponseCode) {
+            case 200:
+            case 207:
+            case 401:
+                $status = true;
+                break;
+        }
+
+        return $status;
+    }
 
 
 	/**
@@ -210,6 +239,7 @@ class CalDAVClient {
 
 		curl_setopt($this->curl, CURLOPT_URL, $url);
 		curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, $method);
+		curl_setopt($this->curl, CURLOPT_CONNECTTIMEOUT, 30); // 30 seconds it's already too big
 
 		if ($content !== null)
 		{
@@ -253,7 +283,7 @@ class CalDAVClient {
 	* @return array The allowed options
 	*/
 	function DoOptionsRequest( $url = null ) {
-		$headers = $this->DoRequest($url, "OPTIONS");
+		$headers = $this->DoRequest($url === null ? $this->url : $url, "OPTIONS");
 		$options_header = preg_replace( '/^.*Allow: ([a-z, ]+)\r?\n.*/is', '$1', $headers );
 		$options = array_flip( preg_split( '/[, ]+/', $options_header ));
 		return $options;
@@ -315,7 +345,6 @@ class CalDAVClient {
 		}
 		if ( !isset($etag) || $etag == '' ) {
 			ZLog::Write(LOGLEVEL_DEBUG, sprintf("No etag in:\n%s\n", $this->httpResponseHeaders));
-			$save_request = $this->httpRequest;
 			$save_response_headers = $this->httpResponseHeaders;
 			$this->DoHEADRequest( $url );
 			if ( preg_match( '{^Etag:\s+"([^"]*)"\s*$}im', $this->httpResponseHeaders, $matches ) ) {
@@ -324,7 +353,6 @@ class CalDAVClient {
 			if ( !isset($etag) || $etag == '' ) {
 				ZLog::Write(LOGLEVEL_DEBUG, sprintf("Still No etag in:\n%s\n", $this->httpResponseHeaders));
 			}
-			$this->httpRequest = $save_request;
 			$this->httpResponseHeaders = $save_response_headers;
 		}
 		return $etag;
@@ -904,8 +932,9 @@ EOFILTER;
             $this->SetCalendar($relative_url);
         }
 
+        $hasToken = !$initial && isset($this->synctoken[$this->calendar_url]);
         if ($support_dav_sync) {
-            $token = ($initial ? "" : $this->synctoken[$this->calendar_url]);
+            $token = ($hasToken ? $this->synctoken[$this->calendar_url] : "");
 
             $body = <<<EOXML
 <?xml version="1.0" encoding="utf-8"?>
@@ -938,12 +967,13 @@ EOXML;
         $this->DoRequest($this->calendar_url, "REPORT", $body, "text/xml");
 
         $report = array();
-        foreach( $this->xmlnodes as $k => $v ) {
-            switch( $v['tag'] ) {
+        foreach ($this->xmlnodes as $k => $v) {
+            switch ($v['tag']) {
                 case 'DAV::response':
-                    if ( $v['type'] == 'open' ) {
+                    if ($v['type'] == 'open') {
                         $response = array();
-                    } elseif ( $v['type'] == 'close' ) {
+                    }
+                    elseif ($v['type'] == 'close') {
                         $report[] = $response;
                     }
                     break;
@@ -966,6 +996,12 @@ EOXML;
                     break;
             }
         }
+
+        // Report sync-token support on initial sync
+        if ($initial && $support_dav_sync && !isset($this->synctoken[$this->calendar_url])) {
+            ZLog::Write(LOGLEVEL_WARN, 'CalDAVClient->GetSync(): no DAV::sync-token received; did you set CALDAV_SUPPORTS_SYNC correctly?');
+        }
+
         return $report;
     }
 

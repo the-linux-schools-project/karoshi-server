@@ -58,6 +58,7 @@
 abstract class Backend implements IBackend {
     protected $permanentStorage;
     protected $stateStorage;
+    protected $originalUsername;
 
     /**
      * Constructor
@@ -215,6 +216,16 @@ abstract class Backend implements IBackend {
         return array('emailaddress' => $username, 'fullname' => $username);
     }
 
+    /**
+     * Returns the username and store of the currently active user
+     *
+     * @access public
+     * @return Array
+     */
+    public function GetCurrentUsername() {
+        return $this->GetUserDetails(Request::GetAuthUser());
+    }
+
     /**----------------------------------------------------------------------------------------------------------
      * Protected methods for BackendStorage
      *
@@ -294,12 +305,24 @@ abstract class Backend implements IBackend {
         }
         if (isset($this->stateStorage)) {
             try {
-                $this->storage_state = ZPush::GetDeviceManager()->GetStateManager()->SetBackendStorage($this->stateStorage, StateManager::BACKENDSTORAGE_STATE);
+                ZPush::GetDeviceManager()->GetStateManager()->SetBackendStorage($this->stateStorage, StateManager::BACKENDSTORAGE_STATE);
             }
             catch (StateNotYetAvailableException $snyae) { }
             catch(StateNotFoundException $snfe) { }
         }
     }
 
+    /**
+     * Sets the username originally specified by the user to connect with Z-Push. This can be different from the
+     * username used for this backend; for example, BackendCombined could have applied a username mapping.
+     *
+     * This information can be used by backends to communicate the right username; for example, calendar events
+     * without an organizer need to supply the original username in order for the device to understand that the
+     * user owns the event.
+     *
+     * @param string $originalUsername The original username
+     */
+    public function SetOriginalUsername($originalUsername) {
+        $this->originalUsername = $originalUsername;
+    }
 }
-?>

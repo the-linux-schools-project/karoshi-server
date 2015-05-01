@@ -126,8 +126,20 @@ fi
 
 echo `date`: dg_view_student_user_logs - Viewing logs "for" $USERNAME $DAY-$MONTH-$YEAR by $MYUSERNAME from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
+#Create table header
+if [ $MOBILE = no ]
+then
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td style="vertical-align: top;\"><b>'$"User Internet Logs"' '$USERNAME' '$DAY'-'$MONTH'-'$YEAR'</b></td></tr></tbody></table><br></div><div id="infobox">'
+else
+	echo '<b>'$"User Internet Logs"' '$USERNAME' '$DAY'-'$MONTH'-'$YEAR'</b><br><br>'
+fi
+
+
 function create_temp_logfile {
 #Create a temporary log file from all of the servers
+
+#Just show short logs
+USERS=users
 if [ $PROXYSERVER = `hostname-fqdn` ]
 then
 	LOGTYPE="notset"
@@ -154,7 +166,7 @@ if [ -f /opt/karoshi/.tempdata/$USERNAME.$$ ]
 then
 	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: '$WIDTH1'px;"><b>'$"Filter"'</b></td><td style="width: '$WIDTH2'px;"><b>'$"Time"'</b></td><td></td><td style="width: '$WIDTH3'px;"><b>'$"Client"'</b></td><td></td><td><b>'$"Website"'</b></td></tr>'
-	sort -t">" -s -k 6 /opt/karoshi/.tempdata/$USERNAME.$$
+	sort -t">" -s -k 6 /opt/karoshi/.tempdata/$USERNAME.$$ | sed 's/<form action="dg_view_site_logs2.cgi" method="post">//g' | sed 's/<form action="dg_view_computer_logs.cgi" method="post">//g' | sed 's/<\/form>//g'
 	rm -f /opt/karoshi/.tempdata/$USERNAME.$$
 	echo '</tbody></table><br>'
 else

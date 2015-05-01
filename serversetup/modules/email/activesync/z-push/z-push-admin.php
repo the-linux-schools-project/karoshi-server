@@ -44,56 +44,8 @@
 * Consult LICENSE file for details
 ************************************************/
 
-include('lib/core/zpushdefs.php');
-include('lib/core/zpush.php');
-include('lib/core/stateobject.php');
-include('lib/core/syncparameters.php');
-include('lib/core/bodypreference.php');
-include('lib/core/contentparameters.php');
-include('lib/core/synccollections.php');
-include('lib/core/zlog.php');
-include('lib/core/statemanager.php');
-include('lib/core/streamer.php');
-include('lib/core/asdevice.php');
-include('lib/core/interprocessdata.php');
-include('lib/core/loopdetection.php');
-include('lib/exceptions/exceptions.php');
-include('lib/utils/utils.php');
-include('lib/utils/zpushadmin.php');
-include('lib/request/request.php');
-include('lib/request/requestprocessor.php');
-include('lib/interface/ibackend.php');
-include('lib/interface/ichanges.php');
-include('lib/interface/iexportchanges.php');
-include('lib/interface/iimportchanges.php');
-include('lib/interface/isearchprovider.php');
-include('lib/interface/istatemachine.php');
-include('lib/syncobjects/syncobject.php');
-include('lib/syncobjects/syncbasebody.php');
-include('lib/syncobjects/syncbaseattachment.php');
-include('lib/syncobjects/syncmailflags.php');
-include('lib/syncobjects/syncrecurrence.php');
-include('lib/syncobjects/syncappointment.php');
-include('lib/syncobjects/syncappointmentexception.php');
-include('lib/syncobjects/syncattachment.php');
-include('lib/syncobjects/syncattendee.php');
-include('lib/syncobjects/syncmeetingrequestrecurrence.php');
-include('lib/syncobjects/syncmeetingrequest.php');
-include('lib/syncobjects/syncmail.php');
-include('lib/syncobjects/syncnote.php');
-include('lib/syncobjects/synccontact.php');
-include('lib/syncobjects/syncfolder.php');
-include('lib/syncobjects/syncprovisioning.php');
-include('lib/syncobjects/synctaskrecurrence.php');
-include('lib/syncobjects/synctask.php');
-include('lib/syncobjects/syncoofmessage.php');
-include('lib/syncobjects/syncoof.php');
-include('lib/syncobjects/syncuserinformation.php');
-include('lib/syncobjects/syncdeviceinformation.php');
-include('lib/syncobjects/syncdevicepassword.php');
-include('lib/syncobjects/syncitemoperationsattachment.php');
-include('config.php');
-include('version.php');
+require_once 'vendor/autoload.php';
+require_once 'config.php';
 
 /**
  * //TODO resync of single folders of a users device
@@ -106,6 +58,7 @@ include('version.php');
     set_include_path(get_include_path() . PATH_SEPARATOR . BASE_PATH_CLI);
     try {
         ZPush::CheckConfig();
+        ZLog::Initialize();
         ZPushAdminCLI::CheckEnv();
         ZPushAdminCLI::CheckOptions();
 
@@ -139,11 +92,14 @@ class ZPushAdminCLI {
     const COMMAND_SHOWLASTSYNC = 8;
     const COMMAND_RESYNCFOLDER = 9;
     const COMMAND_FIXSTATES = 10;
+    const COMMAND_MAP = 11;
+    const COMMAND_UNMAP = 12;
 
     static private $command;
     static private $user = false;
     static private $device = false;
     static private $type = false;
+    static private $backend = false;
     static private $errormessage;
 
     /**
@@ -154,7 +110,10 @@ class ZPushAdminCLI {
      */
     static public function UsageInstructions() {
         return  "Usage:\n\tz-push-admin.php -a ACTION [options]\n\n" .
-                "Parameters:\n\t-a list/wipe/remove/resync/clearloop\n\t[-u] username\n\t[-d] deviceid\n\n" .
+                "Parameters:\n\t-a list/wipe/remove/resync/clearloop/fixstates/map/unmap\n" .
+                "\t[-u] username\n" .
+                "\t[-d] deviceid\n" .
+                "\t[-b] backend\n\n" .
                 "Actions:\n" .
                 "\tlist\t\t\t\t Lists all devices and synchronized users\n" .
                 "\tlist -u USER\t\t\t Lists all devices of user USER\n" .
@@ -174,6 +133,8 @@ class ZPushAdminCLI {
                 "\tclearloop\t\t\t Clears system wide loop detection data\n" .
                 "\tclearloop -d DEVICE -u USER\t Clears all loop detection data of a device DEVICE and an optional user USER\n" .
                 "\tfixstates\t\t\t Checks the states for integrity and fixes potential issues\n" .
+                "\tmap -u USER -b BACKEND -t USER2\t Maps USER for BACKEND to username USER2 (when using 'combined' backend)\n" .
+                "\tunmap -u USER -b BACKEND\t Removes the mapping for USER and BACKEND (when using 'combined' backend)\n" .
                 "\n";
     }
 
@@ -184,8 +145,8 @@ class ZPushAdminCLI {
      * @access public
      */
     static public function CheckEnv() {
-        if (!isset($_SERVER["TERM"]) || !isset($_SERVER["LOGNAME"]))
-            self::$errormessage = "This script should not be called in a browser.";
+        if (php_sapi_name() != "cli")
+            self::$errormessage = sprintf("This script should not be called in a browser. Called from: %s", php_sapi_name());
 
         if (!function_exists("getopt"))
             self::$errormessage = "PHP Function getopt not found. Please check your PHP version and settings.";
@@ -201,7 +162,7 @@ class ZPushAdminCLI {
         if (self::$errormessage)
             return;
 
-        $options = getopt("u:d:a:t:");
+        $options = getopt("u:d:a:t:b:");
 
         // get 'user'
         if (isset($options['u']) && !empty($options['u']))
@@ -227,6 +188,12 @@ class ZPushAdminCLI {
             self::$type = strtolower(trim($options['t']));
         elseif (isset($options['type']) && !empty($options['type']))
             self::$type = strtolower(trim($options['type']));
+
+        // get 'backend'
+        if (isset($options['b']) && !empty($options['b']))
+            self::$backend = strtolower(trim($options['b']));
+        elseif (isset($options['backend']) && !empty($options['backend']))
+            self::$backend = strtolower(trim($options['backend']));
 
         // get a command for the requested action
         switch ($action) {
@@ -294,6 +261,21 @@ class ZPushAdminCLI {
                 self::$command = self::COMMAND_FIXSTATES;
                 break;
 
+            // map users for 'combined' backend
+            case "map":
+                if (self::$user === false || self::$backend === false || self::$type === false)
+                    self::$errormessage = "Not possible to map. User, backend and target user must be specified.";
+                else
+                    self::$command = self::COMMAND_MAP;
+                break;
+
+            // unmap users for 'combined' backend
+            case "unmap":
+                if (self::$user === false || self::$backend === false)
+                    self::$errormessage = "Not possible to unmap. User and backend must be specified.";
+                else
+                    self::$command = self::COMMAND_UNMAP;
+                break;
 
             default:
                 self::UsageInstructions();
@@ -395,6 +377,13 @@ class ZPushAdminCLI {
                 self::CommandFixStates();
                 break;
 
+            case self::COMMAND_MAP:
+                self::CommandMap();
+                break;
+
+            case self::COMMAND_UNMAP:
+                self::CommandUnmap();
+                break;
         }
         echo "\n";
     }
@@ -442,7 +431,7 @@ class ZPushAdminCLI {
             echo "\tno devices found\n";
         else {
             echo "All known devices and users and their last synchronization time\n\n";
-            echo str_pad("Device id", 36). str_pad("Synchronized user", 30)."Last sync time\n";
+            echo str_pad("Device id", 36). str_pad("Synchronized user", 31)."Last sync time\n";
             echo "-----------------------------------------------------------------------------------------------------\n";
         }
 
@@ -450,7 +439,7 @@ class ZPushAdminCLI {
             $users = ZPushAdmin::ListUsers($deviceId);
             foreach ($users as $user) {
                 $device = ZPushAdmin::GetDeviceDetails($deviceId, $user);
-                echo str_pad($deviceId, 36) . str_pad($user, 30). ($device->GetLastSyncTime() ? strftime("%Y-%m-%d %H:%M", $device->GetLastSyncTime()) : "never") . "\n";
+                echo str_pad($deviceId, 36) . str_pad($user, 30) . " " . ($device->GetLastSyncTime() ? strftime("%Y-%m-%d %H:%M", $device->GetLastSyncTime()) : "never") . "\n";
             }
         }
     }
@@ -648,6 +637,12 @@ class ZPushAdminCLI {
     static private function CommandFixStates() {
         echo "Validating and fixing states (this can take some time):\n";
 
+        echo "\tChecking devicedata states: ";
+        if ($stat = ZPushAdmin::FixStatesWrongDevicedata())
+            printf("Devices: fixed %d - ok %d Users: removed %d - ok %d\n",$stat[0], $stat[1], $stat[2], $stat[3]);
+        else
+            echo ZLog::GetLastMessage(LOGLEVEL_ERROR) . "\n";
+
         echo "\tChecking username casings: ";
         if ($stat = ZPushAdmin::FixStatesDifferentUsernameCases())
             printf("Processed: %d - Converted: %d - Removed: %d\n", $stat[0], $stat[1], $stat[2]);
@@ -657,13 +652,39 @@ class ZPushAdminCLI {
         // fixes ZP-339
         echo "\tChecking available devicedata & user linking: ";
         if ($stat = ZPushAdmin::FixStatesDeviceToUserLinking())
-            printf("Processed: %d - Fixed: %d\n", $stat[0], $stat[1]);
+            printf("Unlinked: %d - Linked: %d\n", $stat[0], $stat[1]);
         else
             echo ZLog::GetLastMessage(LOGLEVEL_ERROR) . "\n";
 
         echo "\tChecking for unreferenced (obsolete) state files: ";
         if (($stat = ZPushAdmin::FixStatesUserToStatesLinking()) !== false)
             printf("Processed: %d - Deleted: %d\n",  $stat[0], $stat[1]);
+        else
+            echo ZLog::GetLastMessage(LOGLEVEL_ERROR) . "\n";
+    }
+
+    /**
+     * Maps a username for a specific backend to another username
+     *
+     * @return
+     * @access private
+     */
+    static private function CommandMap() {
+        if (ZPushAdmin::AddUsernameMapping(self::$user, self::$backend, self::$type))
+            printf("Successfully mapped username.\n");
+        else
+            echo ZLog::GetLastMessage(LOGLEVEL_ERROR) . "\n";
+    }
+
+    /**
+     * Deletes the mapping for a username and a specific bakkend
+     *
+     * @return
+     * @access private
+     */
+    static private function CommandUnmap() {
+        if (ZPushAdmin::RemoveUsernameMapping(self::$user, self::$backend))
+            printf("Successfully unmapped username.\n");
         else
             echo ZLog::GetLastMessage(LOGLEVEL_ERROR) . "\n";
     }
@@ -839,6 +860,3 @@ class ZPushAdminCLI {
 
     }
 }
-
-
-?>

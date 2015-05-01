@@ -151,8 +151,8 @@ then
 				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_stop 1>/dev/null
 				sleep 1
 				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_start 1>/dev/null
-				fi
-			else
+			fi
+		else
 			ssh -x -o PasswordAuthentication=no $EMAILSERVER '
 			#Add in server ip to main.cf
 			if [ `grep -c -w '$SERVERIP' /etc/postfix/main.cf` = 0 ]

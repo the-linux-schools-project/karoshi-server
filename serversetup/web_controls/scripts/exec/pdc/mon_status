@@ -24,7 +24,7 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 
 ########################
 #Check md5checksum
@@ -106,21 +106,21 @@ WIDTH2=55
 [ -d /opt/karoshi/server_network/mon ] || mkdir /opt/karoshi/server_network/mon
 if [ -f /opt/karoshi/server_network/monitoringserver ]
 then
-MONITORING_SERVER=`sed -n 1,1p /opt/karoshi/server_network/monitoringserver`
+	MONITORING_SERVER=`sed -n 1,1p /opt/karoshi/server_network/monitoringserver`
 else
-exit 102
+	exit 102
 fi
 
 
 if [ $MOBILE != yes ]
 then
-TABLECLASS=mon
-#Create table
-echo '<br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="1" cellspacing="1"><tbody><tr><td style="vertical-align: top; text-align: left; width: '$WIDTH1'px;"><b>Host Group</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>'$"Monitor"'</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>ping</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>smb</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>http</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>https</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>pop3</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>pop3s</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>imap</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>imaps</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>smtp</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>proxy</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>dns</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>cups</b></td></tr>'
+	TABLECLASS=mon
+	#Create table
+	echo '<br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="1" cellspacing="1"><tbody><tr><td style="vertical-align: top; text-align: left; width: '$WIDTH1'px;"><b>Host Group</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>'$"Monitor"'</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>ping</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>smb</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>http</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>https</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>pop3</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>pop3s</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>imap</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>imaps</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>smtp</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>proxy</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>dns</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>cups</b></td></tr>'
 else
-TABLECLASS=mobilestandard
-#Create table
-echo '<br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="1" cellspacing="1"><tbody><tr><td style="vertical-align: top; text-align: left; width: '$WIDTH1'px;"><b>Host Group</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>'$"Monitor"'</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>'$"Status"'</b></td></tr>'
+	TABLECLASS=mobilestandard
+	#Create table
+	echo '<br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="1" cellspacing="1"><tbody><tr><td style="vertical-align: top; text-align: left; width: '$WIDTH1'px;"><b>Host Group</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>'$"Monitor"'</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>'$"Status"'</b></td></tr>'
 fi
 
 if [ $MONITORING_SERVER = `hostname-fqdn` ]
@@ -156,22 +156,21 @@ fi
 
 if [ -d /opt/karoshi/server_network/mon/monitors_disabled ]
 then
-if [ `ls -1 /opt/karoshi/server_network/mon/monitors_disabled | wc -l` -gt 0 ]
-then
+	if [ `ls -1 /opt/karoshi/server_network/mon/monitors_disabled | wc -l` -gt 0 ]
+	then
+		echo '<br><b>'$"Inactive Monitors"'</b><br><br>
+		<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="1" cellspacing="1"><tbody><tr><td style="width: '$WIDTH1'px;"><b>Host Group</b></td><td style="width: '$WIDTH2'px;"></td></tr>'
 
-echo '<br><b>'$"Inactive Monitors"'</b><br><br>
-<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="1" cellspacing="1"><tbody><tr><td style="width: '$WIDTH1'px;"><b>Host Group</b></td><td style="width: '$WIDTH2'px;"></td></tr>'
+		for MONITORNAME in /opt/karoshi/server_network/mon/monitors_disabled/*
+		do
+		GROUP_NAME=`basename $MONITORNAME`
 
-for MONITORNAME in /opt/karoshi/server_network/mon/monitors_disabled/*
-do
-GROUP_NAME=`basename $MONITORNAME`
-
-echo '<tr><td>'$GROUP_NAME'</td><td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_enable_disable.cgi" name="monitors" method="post">
-<input name="_MONITOR_'$GROUP_NAME'_" type="submit" class="button smallbutton" value="Off">
-</form></td></tr>'
-done
-echo "</tbody></table>"
-fi
+		echo '<tr><td>'$GROUP_NAME'</td><td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_enable_disable.cgi" name="monitors" method="post">
+		<input name="_MONITOR_'$GROUP_NAME'_" type="submit" class="button smallbutton" value="Off">
+		</form></td></tr>'
+		done
+		echo "</tbody></table>"
+	fi
 fi
 exit
 

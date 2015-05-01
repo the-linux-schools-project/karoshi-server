@@ -54,6 +54,84 @@ define('IMAP_PORT', 143);
 // best cross-platform compatibility (see http://php.net/imap_open for options)
 define('IMAP_OPTIONS', '/notls/norsh');
 
+
+// Mark messages as read when moving to Trash.
+//      BE AWARE that you will lose the unread flag, but some mail clients do this so the Trash folder doesn't get boldened
+define('IMAP_AUTOSEEN_ON_DELETE', false);
+
+
+// IMPORTANT: BASIC IMAP FOLDERS [ask your mail admin]
+        // We can have diferent cases (case insensitive):
+        // 1.
+        //      inbox
+        //      sent
+        //      drafts
+        //      trash
+        // 2.
+        //      inbox
+        //      common.sent
+        //      common.drafts
+        //      common.trash
+        // 3.
+        //      common.inbox
+        //      common.sent
+        //      common.drafts
+        //      common.trash
+        // 4.
+        //      common
+        //      common.sent
+        //      common.drafts
+        //      common.trash
+        //
+        // gmail is a special case, where the default folders are under the [gmail] prefix and the folders defined by the user are under INBOX.
+        // This configuration seems to work:
+        //      define('IMAP_FOLDER_PREFIX', '');
+        //      define('IMAP_FOLDER_INBOX', 'INBOX');
+        //      define('IMAP_FOLDER_SENT', '[Gmail]/Sent');
+        //      define('IMAP_FOLDER_DRAFTS', '[Gmail]/Drafts');
+        //      define('IMAP_FOLDER_TRASH', '[Gmail]/Trash');
+        //      define('IMAP_FOLDER_SPAM', '[Gmail]/Spam');
+        //      define('IMAP_FOLDER_ARCHIVE', '[Gmail]/All Mail');
+
+// Since I know you won't configure this, I will raise an error unless you do.
+// When configured set this to true to remove the error
+define('IMAP_FOLDER_CONFIGURED', true);
+
+// Folder prefix is the common part in your names (3, 4)
+define('IMAP_FOLDER_PREFIX', '');
+
+// Inbox will have the preffix preppend (3 & 4 to true)
+define('IMAP_FOLDER_PREFIX_IN_INBOX', false);
+
+// Inbox folder name (case doesn't matter) - (empty in 4)
+define('IMAP_FOLDER_INBOX', 'INBOX');
+
+// Sent folder name (case doesn't matter)
+define('IMAP_FOLDER_SENT', 'SENT');
+
+// Draft folder name (case doesn't matter)
+define('IMAP_FOLDER_DRAFT', 'DRAFTS');
+
+// Trash folder name (case doesn't matter)
+define('IMAP_FOLDER_TRASH', 'TRASH');
+
+// Spam folder name (case doesn't matter). Only showed as special by iOS devices
+define('IMAP_FOLDER_SPAM', 'SPAM');
+
+// Archive folder name (case doesn't matter). Only showed as special by iOS devices
+define('IMAP_FOLDER_ARCHIVE', 'ARCHIVE');
+
+
+
+// forward messages inline (default true - inlined)
+define('IMAP_INLINE_FORWARD', true);
+
+// list of folders we want to exclude from sync. Names, or part of it, separated by |
+// example: dovecot.sieve|archive|spam
+define('IMAP_EXCLUDED_FOLDERS', '');
+
+
+
 // overwrite the "from" header with some value
 // options:
 //        ''              - do nothing, use the From header
@@ -99,29 +177,6 @@ define('IMAP_FROM_LDAP_FROM', '#givenname #sn <#mail>');
 define('IMAP_FROM_LDAP_FULLNAME', '#givenname #sn');
 
 
-// Root folder or prefix in your IMAP server (without the separator). For example, with courier it will be INBOX, and your folder will be INBOX.Sent
-//  You can use the real case
-define('IMAP_FOLDER_ROOT', 'INBOX');
-
-// copy outgoing mail to this folder. If not set z-push will try the default folders
-//  You can use the real case and the full path (INBOX.Sent)
-define('IMAP_FOLDER_SENT', '');
-
-// Draft folder
-//  You can use the real case and the full path (INBOX.Draft)
-define('IMAP_FOLDER_DRAFT', '');
-
-// Trash folder
-//  You can use the real case and the full path (INBOX.Trash)
-define('IMAP_FOLDER_TRASH', '');
-
-// forward messages inline (default true - inlined)
-define('IMAP_INLINE_FORWARD', true);
-
-// list of folders we want to exclude from sync. Names, or part of it, separated by |
-// example: dovecot.sieve|archive|spam
-define('IMAP_EXCLUDED_FOLDERS', '');
-
 
 // Method used for sending mail
 // mail => mail() php function
@@ -136,25 +191,27 @@ $imap_smtp_params = array();
 //      sendmail
 //$imap_smtp_params = array('sendmail_path' => '/usr/bin/sendmail', 'sendmail_args' => '-i');
 //      smtp
-//          "host"          - The server to connect. Default is localhost.
-//          "port"          - The port to connect. Default is 25.
-//          "auth"          - Whether or not to use SMTP authentication. Default is FALSE.
-//          "username"      - The username to use for SMTP authentication. "imap_username" for using the same username as the imap server
-//          "password"      - The password to use for SMTP authentication. "imap_password" for using the same password as the imap server
-//          "localhost"     - The value to give when sending EHLO or HELO. Default is localhost
-//          "timeout"       - The SMTP connection timeout. Default is NULL (no timeout).
-//          "verp"          - Whether to use VERP or not. Default is FALSE.
-//          "debug"         - Whether to enable SMTP debug mode or not. Default is FALSE.
-//          "persist"       - Indicates whether or not the SMTP connection should persist over multiple calls to the send() method.
-//          "pipelining"    - Indicates whether or not the SMTP commands pipelining should be used.
+//          "host"              - The server to connect. Default is localhost.
+//          "port"              - The port to connect. Default is 25.
+//          "auth"              - Whether or not to use SMTP authentication. Default is FALSE.
+//          "username"          - The username to use for SMTP authentication. "imap_username" for using the same username as the imap server
+//          "password"          - The password to use for SMTP authentication. "imap_password" for using the same password as the imap server
+//          "localhost"         - The value to give when sending EHLO or HELO. Default is localhost
+//          "timeout"           - The SMTP connection timeout. Default is NULL (no timeout).
+//          "verp"              - Whether to use VERP or not. Default is FALSE.
+//          "debug"             - Whether to enable SMTP debug mode or not. Default is FALSE.
+//          "persist"           - Indicates whether or not the SMTP connection should persist over multiple calls to the send() method.
+//          "pipelining"        - Indicates whether or not the SMTP commands pipelining should be used.
+//          "verify_peer"       - Require verification of SSL certificate used. Default is TRUE.
+//          "verify_peer_name"  - Require verification of peer name. Default is TRUE.
+//          "allow_self_signed" - Allow self-signed certificates. Requires verify_peer. Default is FALSE.
 //$imap_smtp_params = array('host' => 'localhost', 'port' => 25, 'auth' => false);
 // If you want to use SSL with port 25 or port 465 you must preppend "ssl://" before the hostname or IP of your SMTP server
 // IMPORTANT: To use SSL you must use PHP 5.1 or later, install openssl libs and use ssl:// within the host variable
+// IMPORTANT: To use SSL with PHP 5.6 you should set verify_peer, verify_peer_name and allow_self_signed
 //$imap_smtp_params = array('host' => 'ssl://localhost', 'port' => 465, 'auth' => true, 'username' => 'imap_username', 'password' => 'imap_password');
 
 
 // If you are using IMAP_SMTP_METHOD = mail or sendmail and your sent messages are not correctly displayed you can change this to "\n".
 //   BUT, it doesn't comply with RFC 2822 and will break if using smtp method
 define('MAIL_MIMEPART_CRLF', "\r\n");
-
-?>

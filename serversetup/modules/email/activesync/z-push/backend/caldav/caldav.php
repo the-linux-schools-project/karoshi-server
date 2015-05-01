@@ -46,25 +46,20 @@
 // config file
 require_once("backend/caldav/config.php");
 
-include_once('lib/default/diffbackend/diffbackend.php');
-include_once('include/z_caldav.php');
-include_once('include/z_RTF.php');
-include_once('include/iCalendar.php');
-
 class BackendCalDAV extends BackendDiff {
+    /**
+     * @var CalDAVClient
+     */
     private $_caldav;
     private $_caldav_path;
     private $_collection = array();
-    private $_username;
 
     private $changessinkinit;
     private $sinkdata;
     private $sinkmax;
 
-
     /**
      * Constructor
-     *
      */
     public function BackendCalDAV() {
         if (!function_exists("curl_init")) {
@@ -81,18 +76,16 @@ class BackendCalDAV extends BackendDiff {
      * @see IBackend::Logon()
      */
     public function Logon($username, $domain, $password) {
-        $this->_username = $username;
         $this->_caldav_path = str_replace('%u', $username, CALDAV_PATH);
         $this->_caldav = new CalDAVClient(CALDAV_SERVER . ":" . CALDAV_PORT . $this->_caldav_path, $username, $password);
-        $options = $this->_caldav->DoOptionsRequest();
-        if (isset($options["PROPFIND"])) {
+        if ($connected = $this->_caldav->CheckConnection()) {
             ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendCalDAV->Logon(): User '%s' is authenticated on CalDAV", $username));
-            return true;
         }
         else {
             ZLog::Write(LOGLEVEL_WARN, sprintf("BackendCalDAV->Logon(): User '%s' is not authenticated on CalDAV", $username));
-            return false;
         }
+
+        return $connected;
     }
 
     /**
@@ -700,7 +693,6 @@ class BackendCalDAV extends BackendDiff {
                             $body = Utils::Utf8_truncate($body, $truncsize);
                             $message->bodytruncated = 1;
                         } else {
-                            $body = $body;
                             $message->bodytruncated = 0;
                         }
                         $body = str_replace("\n","\r\n", str_replace("\r","",$body));
@@ -737,6 +729,12 @@ class BackendCalDAV extends BackendDiff {
                 default:
                     ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendCalDAV->_ParseVEventToSyncObject(): '%s' is not yet supported.", $property->Name()));
             }
+        }
+
+        // Workaround #127 - No organizeremail defined
+        if (!isset($message->organizeremail)) {
+            ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendCalDAV->_ParseVEventToSyncObject(): No organizeremail defined, using username"));
+            $message->organizeremail = $this->originalUsername;
         }
 
         $valarm = current($event->GetComponents("VALARM"));
@@ -1017,7 +1015,7 @@ class BackendCalDAV extends BackendDiff {
             //Some phones doesn't send the organizeremail, so we gotto get it somewhere else.
             //Lets use the login here ($username)
             if (!isset($data->organizeremail)) {
-                $vevent->AddProperty("ORGANIZER", sprintf("MAILTO:%s", $this->_username));
+                $vevent->AddProperty("ORGANIZER", sprintf("MAILTO:%s", $this->originalUsername));
             }
             foreach ($data->attendees as $att) {
                 $att_str = sprintf("MAILTO:%s", $att->email);
@@ -1462,5 +1460,3 @@ class BackendCalDAV extends BackendDiff {
         return base64_encode(pack('la64vvvvvvvvla64vvvvvvvvl', 0, '', 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, 0, 0, 0, 0, 0, 0));
     }
 }
-
-?>

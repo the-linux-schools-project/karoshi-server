@@ -91,7 +91,7 @@ class DeviceManager {
         else
             throw new FatalNotImplementedException("Can not proceed without a device id.");
 
-        $this->loopdetection = new LoopDetection();
+        $this->loopdetection = ZPush::GetLoopDetection();
         $this->loopdetection->ProcessLoopDetectionInit();
         $this->loopdetection->ProcessLoopDetectionPreviousConnectionFailed();
 
@@ -427,6 +427,8 @@ class DeviceManager {
             return true;
         }
 
+        if (!is_object($message))
+            throw new Exception("DeviceManager->DoNotStreamMessage(): message isn't an object");
         // message is semantically incorrect
         if (!$message->Check(true)) {
             $this->AnnounceIgnoredMessage($folderid, $id, $message, self::MSG_BROKEN_SEMANTICERR);
@@ -478,7 +480,7 @@ class DeviceManager {
 
         if (defined("SYNC_MAX_ITEMS") && SYNC_MAX_ITEMS < $items) {
             if ($queuedmessages > SYNC_MAX_ITEMS)
-                ZLog::Write(LOGLEVEL_DEBUG, sprintf("DeviceManager->GetWindowSize() overwriting max itmes requested of %d by %d forced in configuration.", $items, SYNC_MAX_ITEMS));
+                ZLog::Write(LOGLEVEL_DEBUG, sprintf("DeviceManager->GetWindowSize() overwriting max items requested of %d by %d forced in configuration.", $items, SYNC_MAX_ITEMS));
             $items = SYNC_MAX_ITEMS;
         }
 
@@ -899,5 +901,3 @@ class DeviceManager {
         return $this->latestFolder;
     }
 }
-
-?>

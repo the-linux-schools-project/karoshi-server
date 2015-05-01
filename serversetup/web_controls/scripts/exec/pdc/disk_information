@@ -206,7 +206,7 @@ PENDINGSECTORS=`echo -e "$EXTRASMARTINFO" | grep Current_Pending_Sector | sed "s
 #Convert capacity to gigabytes
 CAPACITY=`echo "scale=2; $CAPACITYBYTES/1024/1024/1024" | bc`
 DRIVESCALE=GB
-if [ $CAPACITY -gt 1000 ]
+if [[ $CAPACITY > 1000 ]]
 then
 #Covert capacity to terabytes
 CAPACITY=`echo "scale=2; $CAPACITY/1024" | bc`
@@ -232,10 +232,10 @@ echo '<tr><td>'$"Pending Sectors"'</td><td>'$PENDINGSECTORS'</td></tr>'
 fi
 fi
 
-if [ $DISKTEMP -gt 50 ]
+if [[ $DISKTEMP > 50 ]]
 then
 echo '<tr><td><FONT COLOR="red"><b>'$"Disk temperature"'</b></font></td><td><FONT COLOR="red"><b>'$DISKTEMP' <sup>o</sup>C</b></font></td></tr>'
-elif [ $DISKTEMP -gt 40 ]
+elif [[ $DISKTEMP > 40 ]]
 then
 echo '<tr><td><FONT COLOR="orange">'$"Disk temperature"'</font></td><td><FONT COLOR="orange">'$DISKTEMP' <sup>o</sup>C</font></td></tr>'
 else
@@ -365,7 +365,7 @@ PENDINGSECTORS=`echo -e "$EXTRASMARTINFO" | grep Current_Pending_Sector | sed "s
 #Convert capacity to gigabytes
 CAPACITY=`echo "scale=2; $CAPACITYBYTES/1024/1024/1024" | bc`
 DRIVESCALE=GB
-if [ $CAPACITY -gt 1000 ]
+if [[ $CAPACITY > 1000 ]]
 then
 #Covert capacity to terabytes
 CAPACITY=`echo "scale=2; $CAPACITY/1024" | bc`
@@ -391,10 +391,10 @@ echo "<tr><td style=\"width: 180px;\">'$"Pending Sectors"'</td><td>$PENDINGSECTO
 fi
 fi
 
-if [ $DISKTEMP -gt 50 ]
+if [[ $DISKTEMP > 50 ]]
 then
 echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"red\"><b>'$"Disk temperature"'</b></font></td><td><FONT COLOR=\"red\"><b>$DISKTEMP <sup>o</sup>C</b></font></td></tr>"
-elif [ $DISKTEMP -gt 40 ]
+elif [[ $DISKTEMP > 40 ]]
 then
 echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"orange\">'$"Disk temperature"'</font></td><td><FONT COLOR=\"orange\">$DISKTEMP <sup>o</sup>C</font></td></tr>"
 else
@@ -521,15 +521,15 @@ SMARTSTATUS=`smartctl -H $DISK | sed 1,4d`
 EXTRASMARTINFO=`smartctl -a $DISK`
 COLOUR=white
 DISKTEMP=`echo -e "$EXTRASMARTINFO" | grep Temperature_Celsius | sed "s/ * / /g" | cut -d" " -f10`
-[ $DISKTEMP -gt 40 ] && COLOUR=orange
-[ $DISKTEMP -gt 50 ] && COLOUR=red
+[[ $DISKTEMP > 40 ]] && COLOUR=orange
+[[ $DISKTEMP > 50 ]] && COLOUR=red
 SECTORCOLOUR=white
 PENDINGSECTORS=`echo -e "$EXTRASMARTINFO" | grep Current_Pending_Sector | sed "s/ * / /g" | cut -d" " -f10`
 [ $PENDINGSECTORS -gt 0 ] && SECTORCOLOUR=red
 #Convert capacity to gigabytes
 CAPACITY=`echo "scale=0; $CAPACITYBYTES/1024/1024/1024" | bc`
 DRIVESCALE=GB
-if [ $CAPACITY -gt 1000 ]
+if [[ $CAPACITY > 1000 ]]
 then
 #Covert capacity to terabytes
 CAPACITY=`echo "scale=0; $CAPACITY/1024" | bc`
@@ -555,10 +555,10 @@ echo "<tr><td style=\"width: 180px;\">'$"Pending Sectors"'</td><td>$PENDINGSECTO
 fi
 fi
 
-if [ $DISKTEMP -gt 50 ]
+if [[ $DISKTEMP > 50 ]]
 then
 echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"red\"><b>'$"Disk temperature"'</b></font></td><td><FONT COLOR=\"red\"><b>$DISKTEMP <sup>o</sup>C</b></font></td></tr>"
-elif [ $DISKTEMP -gt 40 ]
+elif [[ $DISKTEMP > 40 ]]
 then
 echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"orange\">'$"Disk temperature"'</font></td><td><FONT COLOR=\"orange\">$DISKTEMP <sup>o</sup>C</font></td></tr>"
 else

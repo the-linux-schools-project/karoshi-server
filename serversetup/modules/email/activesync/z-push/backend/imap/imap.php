@@ -45,15 +45,8 @@
 
 // config file
 require_once("backend/imap/config.php");
+
 require_once("backend/imap/mime_encode.php");
-
-include_once('lib/default/diffbackend/diffbackend.php');
-include_once('include/Mail.php');
-include_once('include/mimeDecode.php');
-include_once('include/mimePart.php');
-include_once('include/z_RFC822.php');
-include_once('include/iCalendar.php');
-
 
 class BackendIMAP extends BackendDiff implements ISearchProvider {
     private $wasteID;
@@ -64,7 +57,6 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
     private $username;
     private $password;
     private $domain;
-    private $serverdelimiter;
     private $sinkfolders = array();
     private $sinkstates = array();
     private $changessinkinit = false;
@@ -111,6 +103,9 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
         if (!function_exists("imap_open"))
             throw new FatalException("BackendIMAP(): php-imap module is not installed", 0, null, LOGLEVEL_FATAL);
 
+        if (defined('IMAP_FOLDER_CONFIGURED') && IMAP_FOLDER_CONFIGURED == false)
+            throw new FatalException("BackendIMAP(): You didn't configure your IMAP folder names. Do it before!", 0, null, LOGLEVEL_FATAL);
+
         /* BEGIN fmbiete's contribution r1527, ZP-319 */
         $this->excludedFolders = array();
         if (defined('IMAP_EXCLUDED_FOLDERS') && strlen(IMAP_EXCLUDED_FOLDERS) > 0) {
@@ -128,8 +123,6 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
             $this->username = $username;
             $this->password = $password;
             $this->domain = $domain;
-            // set serverdelimiter
-            $this->serverdelimiter = $this->getServerDelimiter();
             return true;
         }
         else {
@@ -226,18 +219,32 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
         $message = $mobj->decode(array('decode_headers' => false, 'decode_bodies' => true, 'include_bodies' => true, 'charset' => 'utf-8'));
         unset($mobj);
 
+        // We only need the headers TO and FROM decoded so we can validate the addresses
+        $mobj = new Mail_mimeDecode($sm->mime);
+        $message_headers_decoded = $mobj->decode(array('decode_headers' => true, 'decode_bodies' => false, 'include_bodies' => false, 'charset' => 'utf-8'));
+        unset($mobj);
+
         ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->SendMail(): We get the From and To"));
         $Mail_RFC822 = new Mail_RFC822();
 
         $toaddr = "";
         $this->setFromHeaderValue($message->headers);
-        $fromaddr = $this->parseAddr($Mail_RFC822->parseAddressList($message->headers["from"]));
+        $fromaddr = $this->parseAddr($Mail_RFC822->parseAddressList($message_headers_decoded->headers["from"]));
 
-        if (isset($message->headers["to"])) {
-            $toaddr = $this->parseAddr($Mail_RFC822->parseAddressList($message->headers["to"]));
+        if (isset($message_headers_decoded->headers["to"])) {
+            $toaddr = $this->parseAddr($Mail_RFC822->parseAddressList($message_headers_decoded->headers["to"]));
             ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->SendMail(): To defined: %s", $toaddr));
         }
         unset($Mail_RFC822);
+
+        // overwrite CC and BCC with the decoded versions, because we will parse/validate the address in the sending method
+        if (isset($message->headers["cc"])) {
+            $message->headers["cc"] = $message_headers_decoded->headers["cc"];
+        }
+        if (isset($message->headers["bcc"])) {
+            $message->headers["bcc"] = $message_headers_decoded->headers["bcc"];
+        }
+        unset($message_headers_decoded);
 
         $this->setReturnPathValue($message->headers, $fromaddr);
 
@@ -468,7 +475,10 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
         // TODO this could be retrieved from the DeviceFolderCache
         if ($this->wasteID == false) {
             //try to get the waste basket without doing complete hierarchy sync
-            $wastebaskt = @imap_getmailboxes($this->mbox, $this->server, "Trash");
+            $folder_name = IMAP_FOLDER_TRASH;
+            if (defined('IMAP_FOLDER_PREFIX') && strlen(IMAP_FOLDER_PREFIX) > 0)
+                $folder_name = IMAP_FOLDER_PREFIX . $this->getServerDelimiter() . $folder_name;
+            $wastebaskt = @imap_getmailboxes($this->mbox, $this->server, $folder_name);
             if (isset($wastebaskt[0])) {
                 $this->wasteID = $this->convertImapId(substr($wastebaskt[0]->name, strlen($this->server)));
                 return $this->wasteID;
@@ -483,7 +493,6 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
      * Returns the content of the named attachment as stream. The passed attachment identifier is
      * the exact string that is returned in the 'AttName' property of an SyncAttachment.
      * Any information necessary to find the attachment must be encoded in that 'attname' property.
-     * Data is written directly (with print $data;)
      *
      * @param string        $attname
      *
@@ -536,7 +545,6 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
         unset($mobj);
         unset($mail);
 
-        include_once('include/stringstreamwrapper.php');
         $attachment = new SyncItemOperationsAttachment();
         /* BEGIN fmbiete's contribution r1528, ZP-320 */
         $attachment->data = StringStreamWrapper::Open($mparts[$part]->body);
@@ -683,14 +691,32 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
 
                     $fhir = explode($val->delimiter, $imapid);
                     if (count($fhir) > 1) {
-                        $this->getModAndParentNames($fhir, $box["mod"], $imapparent);
-                        $box["parent"] = $this->convertImapId($imapparent);
+                        if (defined('IMAP_FOLDER_PREFIX') && strlen(IMAP_FOLDER_PREFIX) > 0) {
+                            if (strcasecmp($fhir[0], IMAP_FOLDER_PREFIX) == 0) {
+                                // Discard prefix
+                                array_shift($fhir);
+                            }
+                        }
+
+                        if (count($fhir) == 1) {
+                            $box["mod"] = $fhir[0];
+                            $box["parent"] = "0";
+                        }
+                        else {
+                            $this->getModAndParentNames($fhir, $box["mod"], $imapparent);
+                            if ($imapparent === null) {
+                                $box["parent"] = "0";
+                            }
+                            else {
+                                $box["parent"] = $this->convertImapId($imapparent);
+                            }
+                        }
                     }
                     else {
                         $box["mod"] = $imapid;
                         $box["parent"] = "0";
                     }
-                    $folders[]=$box;
+                    $folders[] = $box;
                     /* END fmbiete's contribution r1527, ZP-319 */
                 }
             }
@@ -719,62 +745,66 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
         $imapid = $this->getImapIdFromFolderId($id);
 
         // explode hierarchy
-        $fhir = explode($this->serverdelimiter, $imapid);
+        $fhir = explode($this->getServerDelimiter(), $imapid);
 
-        // compare on lowercase strings
-        $lid = strtolower($imapid);
-// TODO WasteID or SentID could be saved for later ussage
-        if($lid == strtolower(IMAP_FOLDER_ROOT)) {
-            $folder->parentid = "0"; // Root
+        // TODO WasteID or SentID could be saved for later ussage
+        if (strcasecmp($imapid, $this->create_name_folder(IMAP_FOLDER_INBOX)) == 0) {
+            $folder->parentid = "0";
             $folder->displayname = "Inbox";
             $folder->type = SYNC_FOLDER_TYPE_INBOX;
         }
-        // Zarafa IMAP-Gateway outputs
-        else if($lid == "drafts" || $lid == strtolower(IMAP_FOLDER_DRAFT)) {
+        else if (strcasecmp($imapid, $this->create_name_folder(IMAP_FOLDER_DRAFT)) == 0) {
             $folder->parentid = "0";
             $folder->displayname = "Drafts";
             $folder->type = SYNC_FOLDER_TYPE_DRAFTS;
         }
-        else if(($lid == "trash" || $lid == "deleted messages" || $lid == strtolower(IMAP_FOLDER_TRASH)) && ($this->wasteID === false || $this->wasteID == $id)) {
-            $folder->parentid = "0";
-            $folder->displayname = "Trash";
-            $folder->type = SYNC_FOLDER_TYPE_WASTEBASKET;
-            $this->wasteID = $id;
-        }
-        else if($lid == "sent" || $lid == "sent items" || $lid == "sent messages" || $lid == strtolower(IMAP_FOLDER_SENT)) {
+        else if (strcasecmp($imapid, $this->create_name_folder(IMAP_FOLDER_SENT)) == 0) {
             $folder->parentid = "0";
             $folder->displayname = "Sent";
             $folder->type = SYNC_FOLDER_TYPE_SENTMAIL;
             $this->sentID = $id;
         }
-        else if($lid == strtolower(IMAP_FOLDER_ROOT) . $this->serverdelimiter . "drafts" || $lid == strtolower(IMAP_FOLDER_DRAFT)) {
-            $folder->parentid = $this->convertImapId($fhir[0]);
-            $folder->displayname = "Drafts";
-            $folder->type = SYNC_FOLDER_TYPE_DRAFTS;
-        }
-        else if(($lid == strtolower(IMAP_FOLDER_ROOT) . $this->serverdelimiter . "trash" || $lid == strtolower(IMAP_FOLDER_ROOT) . $this->serverdelimiter . "deleted messages" || $lid == strtolower(IMAP_FOLDER_TRASH)) && ($this->wasteID === false || $this->wasteID == $id)) {
-            $folder->parentid = $this->convertImapId($fhir[0]);
+        else if (strcasecmp($imapid, $this->create_name_folder(IMAP_FOLDER_TRASH)) == 0) {
+            $folder->parentid = "0";
             $folder->displayname = "Trash";
             $folder->type = SYNC_FOLDER_TYPE_WASTEBASKET;
             $this->wasteID = $id;
         }
-        else if($lid == strtolower(IMAP_FOLDER_ROOT) . $this->serverdelimiter . "sent" || $lid == strtolower(IMAP_FOLDER_ROOT) . $this->serverdelimiter . "sent messages" || $lid == strtolower(IMAP_FOLDER_SENT)) {
-            $folder->parentid = $this->convertImapId($fhir[0]);
-            $folder->displayname = "Sent";
-            $folder->type = SYNC_FOLDER_TYPE_SENTMAIL;
-            $this->sentID = $id;
+        else if (strcasecmp($imapid, $this->create_name_folder(IMAP_FOLDER_SPAM)) == 0) {
+            $folder->parentid = "0";
+            $folder->displayname = "Junk";
+            $folder->type = SYNC_FOLDER_TYPE_USER_MAIL;
         }
-
-        // define the rest as other-folders
+        else if (strcasecmp($imapid, $this->create_name_folder(IMAP_FOLDER_ARCHIVE)) == 0) {
+            $folder->parentid = "0";
+            $folder->displayname = "Archive";
+            $folder->type = SYNC_FOLDER_TYPE_USER_MAIL;
+        }
         else {
-            if (count($fhir) > 1) {
-                $this->getModAndParentNames($fhir, $folder->displayname, $imapparent);
-                $folder->parentid = $this->convertImapId($imapparent);
-                $folder->displayname = Utils::Utf7_to_utf8(Utils::Utf7_iconv_decode($folder->displayname));
+            if (defined('IMAP_FOLDER_PREFIX') && strlen(IMAP_FOLDER_PREFIX) > 0) {
+                if (strcasecmp($fhir[0], IMAP_FOLDER_PREFIX) == 0) {
+                    // Discard prefix
+                    array_shift($fhir);
+                }
+                else {
+                    ZLog::Write(LOGLEVEL_WARN, sprintf("BackendIMAP->GetFolder('%s'): '%s'; using server delimiter '%s', first part '%s' is not equal to the prefix defined '%s'. Something is wrong with your config.", $id, $imapid, $this->getServerDelimiter(), $fhir[0], IMAP_FOLDER_PREFIX));
+                }
+            }
+
+            if (count($fhir) == 1) {
+                $folder->displayname = Utils::Utf7_to_utf8(Utils::Utf7_iconv_decode($fhir[0]));
+                $folder->parentid = "0";
             }
             else {
-                $folder->displayname = Utils::Utf7_to_utf8(Utils::Utf7_iconv_decode($imapid));
-                $folder->parentid = "0";
+                $this->getModAndParentNames($fhir, $folder->displayname, $imapparent);
+                $folder->displayname = Utils::Utf7_to_utf8(Utils::Utf7_iconv_decode($folder->displayname));
+                if ($imapparent === null) {
+                    ZLog::Write(LOGLEVEL_WARN, sprintf("BackendIMAP->GetFolder('%s'): '%s'; we didn't found a valid parent name for the folder, but we should... contact the developers for further info", $id, $imapid));
+                    $folder->parentid = "0"; // We put the folder as root folder, so we see it
+                }
+                else {
+                    $folder->parentid = $this->convertImapId($imapparent);
+                }
             }
             $folder->type = SYNC_FOLDER_TYPE_USER_MAIL;
         }
@@ -821,29 +851,38 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
     public function ChangeFolder($folderid, $oldid, $displayname, $type){
         ZLog::Write(LOGLEVEL_INFO, sprintf("BackendIMAP->ChangeFolder('%s','%s','%s','%s')", $folderid, $oldid, $displayname, $type));
 
-        // go to parent mailbox
-        $this->imap_reopen_folder($folderid);
-
-        // build name for new mailboxBackendMaildir
-        $displayname = Utils::Utf7_iconv_encode(Utils::Utf8_to_utf7($displayname));
-        $newname = $this->server . $this->getImapIdFromFolderId($folderid) . $this->serverdelimiter . $displayname;
-
-        $csts = false;
         // if $id is set => rename mailbox, otherwise create
         if ($oldid) {
             // rename doesn't work properly with IMAP
             // the activesync client doesn't support a 'changing ID'
             // TODO this would be solved by implementing hex ids (Mantis #459)
-            //$csts = imap_renamemailbox($this->mbox, $this->server . imap_utf7_encode(str_replace(".", $this->serverdelimiter, $oldid)), $newname);
+            //$csts = imap_renamemailbox($this->mbox, $this->server . imap_utf7_encode(str_replace(".", $this->getServerDelimiter(), $oldid)), $newname);
+            ZLog::Write(LOGLEVEL_ERROR, "BackendIMAP->ChangeFolder() : we do not support rename for now");
+            return false;
         }
         else {
-            $csts = @imap_createmailbox($this->mbox, $newname);
+
+            // build name for new mailboxBackendMaildir
+            $displayname = Utils::Utf7_iconv_encode(Utils::Utf8_to_utf7($displayname));
+
+            if ($folderid == "0") {
+                $newimapid = $displayname;
+            }
+            else {
+                $imapid = $this->getImapIdFromFolderId($folderid);
+                $newimapid = $imapid . $this->getServerDelimiter() . $displayname;
+            }
+
+            $csts = imap_createmailbox($this->mbox, $this->server . $newimapid);
+            if ($csts) {
+                imap_subscribe($this->mbox, $this->server . $newimapid);
+                return $this->StatFolder($folderid . $this->getServerDelimiter() . $displayname);
+            }
+            else {
+                ZLog::Write(LOGLEVEL_WARN, "BackendIMAP->ChangeFolder() : mailbox creation failed");
+                return false;
+            }
         }
-        if ($csts) {
-            return $this->StatFolder($folderid . $this->serverdelimiter . $displayname);
-        }
-        else
-            return false;
     }
 
     /**
@@ -858,7 +897,11 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
      *
      */
     public function DeleteFolder($id, $parentid){
-        // TODO implement
+        $imapid = $this->getImapIdFromFolderId($id);
+        if ($imapid) {
+            return imap_deletemailbox($this->mbox, $this->server.$imapid);
+        }
+
         return false;
     }
 
@@ -885,13 +928,17 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
         $sequence = "1:*";
         if ($cutoffdate > 0) {
             $search = @imap_search($this->mbox, "SINCE ". date("d-M-Y", $cutoffdate));
-            if ($search !== false)
-                $sequence = implode(",", $search);
+            if ($search === false) {
+                ZLog::Write(LOGLEVEL_INFO, sprintf("BackendIMAP->GetMessageList('%s','%s'): 0 result for the search or error: %s", $folderid, $cutoffdate, imap_last_error()));
+                return $messages;
+            }
+
+            $sequence = implode(",", $search);
         }
         ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->GetMessageList(): searching with sequence '%s'", $sequence));
         $overviews = @imap_fetch_overview($this->mbox, $sequence);
 
-        if (!$overviews || !is_array($overviews)) {
+        if (!is_array($overviews)) {
             $error = imap_last_error();
             if (strlen($error) > 0 && imap_num_msg($this->mbox) > 0) {
                 ZLog::Write(LOGLEVEL_WARN, sprintf("BackendIMAP->GetMessageList('%s','%s'): Failed to retrieve overview: %s", $folderid, $cutoffdate, imap_last_error()));
@@ -899,26 +946,31 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
             return $messages;
         }
 
-        foreach($overviews as $overview) {
-            $date = "";
-            $vars = get_object_vars($overview);
-            if (array_key_exists( "date", $vars)) {
-                // message is out of range for cutoffdate, ignore it
-                if ($this->cleanupDate($overview->date) < $cutoffdate) continue;
-                $date = $overview->date;
+        foreach ($overviews as $overview) {
+            // Determine the message's date and apply the cutoff; if the overview's ->udate property is
+            // not available, fall back to the "Date:" header as it appears in the email.
+            $date = 0;
+            if (isset($overview->udate)) {
+                $date = $overview->udate;
+            } else if (isset($overview->date)) {
+                $date = $this->cleanupDate($overview->date);
+            }
+            if ($date < $cutoffdate) {
+                // Message is out of range; ignore it
+                continue;
             }
 
             // cut of deleted messages
-            if (array_key_exists("deleted", $vars) && $overview->deleted)
+            if (isset($overview->deleted) && $overview->deleted)
                 continue;
 
-            if (array_key_exists("uid", $vars)) {
+            if (isset($overview->uid)) {
                 $message = array();
                 $message["mod"] = $date;
                 $message["id"] = $overview->uid;
 
                 // 'seen' aka 'read'
-                if(array_key_exists("seen", $vars) && $overview->seen) {
+                if (isset($overview->seen) && $overview->seen) {
                     $message["flags"] = 1;
                 }
                 else {
@@ -926,14 +978,14 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
                 }
 
                 // 'flagged' aka 'FollowUp' aka 'starred'
-                if (array_key_exists("flagged", $vars) && $overview->flagged) {
+                if (isset($overview->flagged) && $overview->flagged) {
                     $message["star"] = 1;
                 }
                 else {
                     $message["star"] = 0;
                 }
 
-                array_push($messages, $message);
+                $messages[] = $message;
             }
         }
         return $messages;
@@ -1288,29 +1340,32 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
      * @return array/boolean
      */
     public function StatMessage($folderid, $id) {
-        ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->StatMessage('%s','%s')", $folderid,  $id));
+        ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->StatMessage('%s','%s')", $folderid, $id));
         $folderImapid = $this->getImapIdFromFolderId($folderid);
 
         $this->imap_reopen_folder($folderImapid);
-        $overview = @imap_fetch_overview( $this->mbox , $id , FT_UID);
+        $overview = @imap_fetch_overview($this->mbox, $id, FT_UID);
 
         if (!$overview) {
-            ZLog::Write(LOGLEVEL_WARN, sprintf("BackendIMAP->StatMessage('%s','%s'): Failed to retrieve overview: %s", $folderid,  $id, imap_last_error()));
+            ZLog::Write(LOGLEVEL_WARN, sprintf("BackendIMAP->StatMessage('%s','%s'): Failed to retrieve overview: %s", $folderid, $id, imap_last_error()));
             return false;
         }
 
-        // check if variables for this overview object are available
-        $vars = get_object_vars($overview[0]);
-
         // without uid it's not a valid message
-        if (! array_key_exists( "uid", $vars)) return false;
+        if (empty($overview[0]->uid)) return false;
 
         $entry = array();
-        $entry["mod"] = (array_key_exists( "date", $vars)) ? $overview[0]->date : "";
+        if (isset($overview[0]->udate)) {
+            $entry["mod"] = $overview[0]->udate;
+        } else if (isset($overview[0]->date)) {
+            $entry["mod"] = $this->cleanupDate($overview[0]->date);
+        } else {
+            $entry["mod"] = 0;
+        }
         $entry["id"] = $overview[0]->uid;
 
         // 'seen' aka 'read'
-        if (array_key_exists("seen", $vars) && $overview[0]->seen) {
+        if (isset($overview[0]->seen) && $overview[0]->seen) {
             $entry["flags"] = 1;
         }
         else {
@@ -1318,7 +1373,7 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
         }
 
         // 'flagged' aka 'FollowUp' aka 'starred'
-        if (array_key_exists("flagged", $vars) && $overview[0]->flagged) {
+        if (isset($overview[0]->flagged) && $overview[0]->flagged) {
             $entry["star"] = 1;
         }
         else {
@@ -1471,7 +1526,6 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
             throw new StatusException(sprintf("BackendIMAP->DeleteMessage(): Message is outside the sync range"), SYNC_STATUS_OBJECTNOTFOUND);
         }
 
-
         return ($s1 && $s2 && $s11);
     }
 
@@ -1528,14 +1582,16 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
 
                 // open new folder
                 $stat = $this->imap_reopen_folder($newfolderImapid);
-                if (! $s1)
+                if (!$stat)
                     throw new StatusException(sprintf("BackendIMAP->MoveMessage('%s','%s','%s'): Error, opening the destination folder: %s", $folderid, $id, $newfolderid, imap_last_error()), SYNC_MOVEITEMSSTATUS_CANNOTMOVE);
 
 
                 // remove all flags
                 $s3 = @imap_clearflag_full($this->mbox, $newid, "\\Seen \\Answered \\Flagged \\Deleted \\Draft", FT_UID);
                 $newflags = "";
-                if ($overview[0]->seen)
+                $move_to_trash = strcasecmp($newfolderImapid, $this->create_name_folder(IMAP_FOLDER_TRASH)) == 0;
+
+                if ($overview[0]->seen || ($move_to_trash && defined('IMAP_AUTOSEEN_ON_DELETE') && IMAP_AUTOSEEN_ON_DELETE == true))
                     $newflags .= "\\Seen";
                 if ($overview[0]->flagged)
                     $newflags .= " \\Flagged";
@@ -1676,6 +1732,37 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
             $email .= "@" . $this->domain;
         }
         return array('emailaddress' => $email, 'fullname' => $this->getDefaultFullNameValue($username));
+    }
+
+
+    /**
+     * Applies settings to and gets informations from the device
+     *
+     * @param SyncObject        $settings (SyncOOF or SyncUserInformation possible)
+     *
+     * @access public
+     * @return SyncObject       $settings
+     */
+    public function Settings($settings) {
+        if ($settings instanceof SyncOOF) {
+            $this->settingsOOF($settings);
+        }
+        else if ($settings instanceof SyncUserInformation) {
+            $this->settingsUserInformation($settings);
+        }
+
+        return $settings;
+    }
+
+
+    /**
+     * Indicates which AS version is supported by the backend.
+     *
+     * @access public
+     * @return string       AS version constant
+     */
+    public function GetSupportedASVersion() {
+        return ZPush::ASV_14;
     }
 
 
@@ -2017,13 +2104,21 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
      * @return string       delimiter
      */
     protected function getServerDelimiter() {
-        $list = @imap_getmailboxes($this->mbox, $this->server, "*");
-        if (is_array($list)) {
-            $val = $list[0];
-
-            return $val->delimiter;
+        $this->InitializePermanentStorage();
+        if (isset($this->permanentStorage->serverdelimiter)) {
+            return $this->permanentStorage->serverdelimiter;
         }
-        return "."; // default "."
+
+        $list = @imap_getmailboxes($this->mbox, $this->server, "*");
+        if (is_array($list) && count($list) > 0) {
+            // get the delimiter from the first folder
+            $delimiter = $list[0]->delimiter;
+            $this->permanentStorage->serverdelimiter = $delimiter;
+        } else {
+            // default
+            $delimiter = ".";
+        }
+        return $delimiter;
     }
 
     /**
@@ -2168,16 +2263,35 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
      * @return
      */
     protected function getModAndParentNames($fhir, &$displayname, &$parent) {
-        // if mod is already set add the previous part to it as it might be a folder which has
-        // delimiter in its name
-        $displayname = (isset($displayname) && strlen($displayname) > 0) ? $displayname = array_pop($fhir).$this->serverdelimiter.$displayname : array_pop($fhir);
-        $parent = implode($this->serverdelimiter, $fhir);
+        // if mod is already set add the previous part to it as it might be a folder which has delimiter in its name
+        $displayname = (isset($displayname) && strlen($displayname) > 0) ? $displayname = array_pop($fhir) . $this->getServerDelimiter() . $displayname : array_pop($fhir);
+        $parent = implode($this->getServerDelimiter(), $fhir);
 
         if (count($fhir) == 1 || $this->checkIfIMAPFolder($parent)) {
             return;
         }
         //recursion magic
         $this->getModAndParentNames($fhir, $displayname, $parent);
+    }
+
+    /**
+     * Prepare the folder name to get the type and parent.
+     *
+     * @param string $folder_name
+     * @return string
+     * @access private
+     */
+    private function create_name_folder($folder_name) {
+        $foldername = $folder_name;
+        // If we have defined a folder prefix, and it's not empty
+        if (defined('IMAP_FOLDER_PREFIX') && IMAP_FOLDER_PREFIX != "") {
+            // If inbox uses prefix or we are not evaluating inbox
+            if (IMAP_FOLDER_PREFIX_IN_INBOX == true || strcasecmp($foldername, IMAP_FOLDER_INBOX) != 0) {
+                $foldername = IMAP_FOLDER_PREFIX . $this->getServerDelimiter() . $foldername;
+            }
+        }
+
+        return $foldername;
     }
 
     /**
@@ -2189,9 +2303,13 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
      * @return boolean
      */
     protected function checkIfIMAPFolder($folderName) {
-        $parent = imap_list($this->mbox, $this->server, $folderName);
-        if ($parent === false) return false;
-        return true;
+        $folder_name = $folderName;
+        if (defined(IMAP_FOLDER_PREFIX) && strlen(IMAP_FOLDER_PREFIX) > 0) {
+            // TODO: We don't care about the inbox exception with the prefix, because we won't check inbox
+            $folder_name = IMAP_FOLDER_PREFIX . $this->getServerDelimiter() . $folder_name;
+        }
+        $list_subfolders = @imap_list($this->mbox, $this->server, $folder_name);
+        return is_array($list_subfolders);
     }
 
     /**
@@ -2201,20 +2319,20 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
      * @param string        $receiveddate   a date as a string
      *
      * @access protected
-     * @return string
+     * @return integer
      */
     protected function cleanupDate($receiveddate) {
         if (is_array($receiveddate)) {
             // Header Date could be repeated in the message, we only check the first
             $receiveddate = $receiveddate[0];
         }
-        $receiveddate = strtotime(preg_replace("/\(.*\)/", "", $receiveddate));
-        if ($receiveddate == false || $receiveddate == -1) {
-            ZLog::Write(LOGLEVEL_DEBUG, "cleanupDate() : Received date is false. Message might be broken.");
+        $receivedtime = strtotime(preg_replace('/\(.*\)/', "", $receiveddate));
+        if ($receivedtime === false || $receivedtime == -1) {
+            ZLog::Write(LOGLEVEL_WARN, sprintf("cleanupDate('%s'): strtotime() failed - message might be broken.", $receiveddate));
             return null;
         }
 
-        return $receiveddate;
+        return $receivedtime;
     }
 
     /**
@@ -2623,7 +2741,8 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
         // Get $tz from first timezone
         $props = $ical->GetPropertiesByPath("VTIMEZONE/TZID");
         if (count($props) > 0) {
-            $tzname = $props[0]->Value();
+            // TimeZones shouldn't have dots
+            $tzname = str_replace(".", "", $props[0]->Value());
             $tz = TimezoneUtil::GetFullTZFromTZName($tzname);
         }
         else {
@@ -2699,41 +2818,31 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
             $headers .= "$k: $v";
         }
 
+        if ($this->sentID == false) {
+            // We don't have sentID loaded, try to find it
+            $folder_name = IMAP_FOLDER_SENT;
+            if (defined('IMAP_FOLDER_SENT') && strlen(IMAP_FOLDER_PREFIX) > 0)
+                $folder_name = IMAP_FOLDER_PREFIX . $this->getServerDelimiter() . $folder_name;
+            $sentfolder = @imap_getmailboxes($this->mbox, $this->server, $folder_name);
+            if (isset($sentfolder[0])) {
+                $this->sentID = $this->convertImapId(substr($sentfolder[0]->name, strlen($this->server)));
+            }
+            else {
+                // We didn't find it, so we will do a full search
+                $this->GetHierarchy();
+            }
+        }
+
         $saved = false;
         if ($this->sentID) {
-            $saved = $this->addSentMessage($this->sentID, $headers, $finalBody);
+            $imapid = $this->getImapIdFromFolderId($this->sentID);
+            $saved = $this->addSentMessage($imapid, $headers, $finalBody);
+            ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->saveSentMessage(): Outgoing mail saved in 'Sent' folder '%s' ['%s']", $imapid, $this->sentID));
         }
-        else if (strlen(IMAP_FOLDER_SENT) > 0) {
-            // try to open the sentfolder
-            if (!$this->imap_reopen_folder(IMAP_FOLDER_SENT, false)) {
-                // if we cannot open it, it mustn't exist, we try to create it.
-                $this->imap_create_folder($this->server . IMAP_FOLDER_SENT);
-            }
-            $saved = $this->addSentMessage(IMAP_FOLDER_SENT, $headers, $finalBody);
-            ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->saveSentMessage(): Outgoing mail saved in configured 'Sent' folder '%s'", IMAP_FOLDER_SENT));
-        }
-        // No Sent folder set, try defaults
         else {
-            ZLog::Write(LOGLEVEL_DEBUG, "BackendIMAP->saveSentMessage(): No Sent mailbox set");
-            if($this->addSentMessage("INBOX.Sent", $headers, $finalBody)) {
-                ZLog::Write(LOGLEVEL_DEBUG, "BackendIMAP->saveSentMessage(): Outgoing mail saved in 'INBOX.Sent'");
-                $saved = true;
-            }
-            else if ($this->addSentMessage("Sent", $headers, $finalBody)) {
-                ZLog::Write(LOGLEVEL_DEBUG, "BackendIMAP->saveSentMessage(): Outgoing mail saved in 'Sent'");
-                $saved = true;
-            }
-            else if ($this->addSentMessage("Sent Items", $headers, $finalBody)) {
-                ZLog::Write(LOGLEVEL_DEBUG, "BackendIMAP->saveSentMessage(): Outgoing mail saved in 'Sent Items'");
-                $saved = true;
-            }
-        }
-
-        unset($headers);
-
-        if (!$saved) {
             ZLog::Write(LOGLEVEL_ERROR, "BackendIMAP->saveSentMessage(): The email could not be saved to Sent Items folder. Check your configuration.");
         }
+        unset($headers);
 
         return $saved;
     }
@@ -2772,6 +2881,7 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
         }
     }
 
+
     /**
      * Set the Return-Path header value if not set
      *
@@ -2788,17 +2898,41 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
     }
 
 
-    /* BEGIN fmbiete's contribution r1528, ZP-320 */
     /**
-     * Indicates which AS version is supported by the backend.
+     * The meta function for out of office settings.
      *
-     * @access public
-     * @return string       AS version constant
+     * @param SyncObject $oof
+     *
+     * @access private
+     * @return void
      */
-    public function GetSupportedASVersion() {
-        return ZPush::ASV_14;
-    }
-    /* END fmbiete's contribution r1528, ZP-320 */
-};
+    private function settingsOOF(&$oof) {
+        //if oof state is set it must be set of oof and get otherwise
+        if (!isset($oof->oofstate)) {
+            $oof->oofstate = SYNC_SETTINGSOOF_DISABLED;
+            $oof->Status = SYNC_SETTINGSSTATUS_SUCCESS;
 
-?>
+            //unset body type for oof in order not to stream it
+            unset($oof->bodytype);
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+
+    /**
+     * Gets the user's email address from server
+     *
+     * @param SyncObject $userinformation
+     *
+     * @access private
+     * @return void
+     */
+    private function settingsUserInformation(&$userinformation) {
+        $userinformation->Status = SYNC_SETTINGSSTATUS_USERINFO_SUCCESS;
+        $userinformation->emailaddresses[] = $this->username;
+        return true;
+    }
+};

@@ -49,9 +49,6 @@
 * Consult LICENSE file for details
 ************************************************/
 
-// default backend
-include_once('lib/default/backend.php');
-
 //include the CombinedBackend's own config file
 require_once("backend/combined/config.php");
 require_once("backend/combined/importer.php");
@@ -59,7 +56,13 @@ require_once("backend/combined/exporter.php");
 
 class BackendCombined extends Backend implements ISearchProvider {
     public $config;
+    /**
+     * @var IBackend[]
+     */
     public $backends;
+    /**
+     * @var IBackend
+     */
     private $activeBackend;
     private $activeBackendID;
     private $numberChangesSink;
@@ -100,6 +103,8 @@ class BackendCombined extends Backend implements ISearchProvider {
             $u = $username;
             $d = $domain;
             $p = $password;
+
+            // Apply mapping from configuration
             if(isset($this->config['backends'][$i]['users'])){
                 if(!isset($this->config['backends'][$i]['users'][$username])){
                     unset($this->backends[$i]);
@@ -112,10 +117,20 @@ class BackendCombined extends Backend implements ISearchProvider {
                 if(isset($this->config['backends'][$i]['users'][$username]['domain']))
                     $d = $this->config['backends'][$i]['users'][$username]['domain'];
             }
-            if($this->backends[$i]->Logon($u, $d, $p) == false){
+
+            // Apply username mapping from state backend
+            if (isset($this->config['usemapping']) && $this->config['usemapping']) {
+                $mappedUsername = ZPush::GetStateMachine()->GetMappedUsername($u, strtolower($this->config['backends'][$i]['name']));
+                if ($mappedUsername !== null) {
+                    $u = $mappedUsername;
+                }
+            }
+
+            if ($this->backends[$i]->Logon($u, $d, $p) == false) {
                 ZLog::Write(LOGLEVEL_DEBUG, sprintf("Combined->Logon() failed on %s ", $this->config['backends'][$i]['name']));
                 return false;
             }
+            $this->backends[$i]->SetOriginalUsername($username);
         }
 
         ZLog::Write(LOGLEVEL_DEBUG, "Combined->Logon() success");
@@ -688,4 +703,3 @@ class BackendCombined extends Backend implements ISearchProvider {
         return false;
     }
 }
-?>
