@@ -27,13 +27,13 @@ then
 			done
 		done
 		#Disable cron rsync script
-		if [ -f /opt/karoshi/cronjobs/jobs/adc_sync.cron ]
+		if [ -f /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/adc_sync.cron ]
 		then
-			rm -f opt/karoshi/cronjobs/jobs/adc_sync.cron
+			rm -f /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/adc_sync.cron
 			/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
 		fi
 
-	#Configure dfs
+		#Configure dfs
 		for SHAREPATH in netlogon sysvol
 		do
 			DFSPATH=""

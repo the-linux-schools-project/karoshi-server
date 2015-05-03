@@ -348,8 +348,8 @@ then
 	fi
 
 	#Add cron job for zpool scrub
-	[ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
-	echo 0 0 '*' '*' 0,2,4 zpool scrub $POOLNAME > /opt/karoshi/cronjobs/jobs/zpool_scrub_$POOLNAME.cron
+	[ -d /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs ] || mkdir -p /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs
+	echo 0 0 '*' '*' 0,2,4 zpool scrub $POOLNAME > /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/zpool_scrub_$POOLNAME.cron
 	/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
 	echo "<br>"
 fi
@@ -538,8 +538,8 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 	fi
 
 	#Add cron job for zpool scrub
-	[ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
-	echo 0 0 "*" "*" 0,2,4 zpool scrub '$POOLNAME' > /opt/karoshi/cronjobs/jobs/zpool_scrub_'$POOLNAME'.cron
+	[ -d /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs ] || mkdir -p /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs
+	echo 0 0 "*" "*" 0,2,4 zpool scrub '$POOLNAME' > /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/zpool_scrub_'$POOLNAME'.cron
 	/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
 	echo "<br>"
 '

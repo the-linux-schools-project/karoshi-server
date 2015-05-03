@@ -33,16 +33,16 @@ LOG_DATE=`date +%F`
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: module_federation_control - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_federation_control - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" = null ]
 then
-echo `date`: module_federation_control - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_federation_control - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
@@ -54,20 +54,20 @@ SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
 #Check data
 ########################
 
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: module_federation_control - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_federation_control - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: module_federation_control - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_federation_control - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-echo `date`: module_federation_control - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_federation_control - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 echo `date`: module_federation_control - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -96,22 +96,22 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/add_user.cgi | cut -d" " -f1`
 USERNAMESTYLE=userstyleS1
 for USERDATA in `echo -e "'$USERLIST'"`
 do
-USERNAME=`echo $USERDATA | cut -d: -f1`
-NAMEDATA=`echo $USERDATA | cut -d: -f5 | sed "s/,//g;" | sed "s/SPACE/ /g"`
-FIRSTNAME=`echo $NAMEDATA | cut -d" " -f1`
-SURNAME=`echo $NAMEDATA | cut -d" " -f2`
-HOMEPATH=`echo $USERDATA | cut -d: -f6 | sed "s/$USERNAME//g"`
-GROUP=`basename $HOMEPATH`
-PASSWORD1=$RANDOM
-#Create user if it does not already exist
-getent passwd $USERNAME 1>/dev/null
+	USERNAME=`echo $USERDATA | cut -d: -f1`
+	NAMEDATA=`echo $USERDATA | cut -d: -f5 | sed "s/,//g;" | sed "s/SPACE/ /g"`
+	FIRSTNAME=`echo $NAMEDATA | cut -d" " -f1`
+	SURNAME=`echo $NAMEDATA | cut -d" " -f2`
+	HOMEPATH=`echo $USERDATA | cut -d: -f6 | sed "s/$USERNAME//g"`
+	GROUP=`basename $HOMEPATH`
+	PASSWORD1=$RANDOM
+	#Create user if it does not already exist
+	getent passwd $USERNAME 1>/dev/null
 
-if [ $? != 0 ]
-then
-echo "<li>"Creating User"</li>""<br>"Username: $USERNAME"<br>"Forename: $FORENAME"<br>"Surname: $SURNAME"<br>"Primary group: $PRIMARYGROUP"<br>"
-#Add user
-echo "'$REMOTE_USER':'$REMOTE_ADDR':$MD5SUM:$FIRSTNAME:$SURNAME:$USERNAME:$PASSWORD1:$GROUP:$USERNAMESTYLE:$ENROLLMENTNUMBER:$REQUESTFILE" | sudo -H /opt/karoshi/web_controls/exec/add_user
-fi
+	if [ $? != 0 ]
+	then
+		echo "<li>"Creating User"</li>""<br>"Username: $USERNAME"<br>"Forename: $FORENAME"<br>"Surname: $SURNAME"<br>"Primary group: $PRIMARYGROUP"<br>"
+		#Add user
+		echo "'$REMOTE_USER':'$REMOTE_ADDR':$MD5SUM:$FIRSTNAME:$SURNAME:$USERNAME:$PASSWORD1:$GROUP:$USERNAMESTYLE:$ENROLLMENTNUMBER:$REQUESTFILE" | sudo -H /opt/karoshi/web_controls/exec/add_user
+	fi
 done
 '
 
@@ -121,33 +121,33 @@ done
 ROAMING_SYNC=yes
 if [ ! -f /opt/karoshi/server_network/windows_roaming_profile_users ]
 then
-ROAMING_SYNC=no
+	ROAMING_SYNC=no
 else
-[ `cat /opt/karoshi/server_network/windows_roaming_profile_users | wc -l` = 0 ] && ROAMING_SYNC=no
+	[ `cat /opt/karoshi/server_network/windows_roaming_profile_users | wc -l` = 0 ] && ROAMING_SYNC=no
 fi
 
 if [ $ROAMING_SYNC = yes ]
 then
-for ROAMING_USER in `cat /opt/karoshi/server_network/windows_roaming_profile_users`
-do
-############################
-#Migrate roaming profile data
-############################
-scp -p -r /var/lib/samba/netlogon/windows_settings/drives/$ROAMING_USER.kix root@$SERVERNAME:/var/lib/samba/netlogon/windows_settings/drives/ 1> /dev/null
-scp -p -r /opt/karoshi/server_network/group_information/$ROAMING_USER root@$SERVERNAME:/opt/karoshi/server_network/group_information/ 1> /dev/null
-scp -p -r /home/applications/profiles/$ROAMING_USER root@$SERVERNAME:/home/applications/profiles/ 1> /dev/null
+	for ROAMING_USER in `cat /opt/karoshi/server_network/windows_roaming_profile_users`
+	do
+		############################
+		#Migrate roaming profile data
+		############################
+		scp -p -r /var/lib/samba/netlogon/windows_settings/drives/$ROAMING_USER.kix root@$SERVERNAME:/var/lib/samba/netlogon/windows_settings/drives/ 1> /dev/null
+		scp -p -r /opt/karoshi/server_network/group_information/$ROAMING_USER root@$SERVERNAME:/opt/karoshi/server_network/group_information/ 1> /dev/null
+		scp -p -r /home/applications/profiles/$ROAMING_USER root@$SERVERNAME:/home/applications/profiles/ 1> /dev/null
 
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-[ ! -f /var/lib/samba/netlogon/windows_settings/security/'$ROAMING_USER'.kix ] && ln -s /var/lib/samba/netlogon/default_roaming.kix /var/lib/samba/netlogon/windows_settings/security/'$ROAMING_USER'.kix
-chown -R '$ROAMING_USER'.itadmin /home/applications/profiles/'$ROAMING_USER'
-sed -i "s/'$HOSTNAME'/$HOSTNAME/g" /var/lib/samba/netlogon/windows_settings/drives/'$ROAMING_USER'.kix
-touch /opt/karoshi/server_network/windows_roaming_profile_users
-if [ `grep -c '$USERNAME' /opt/karoshi/server_network/windows_roaming_profile_users` = 0 ]
-then
-echo '$ROAMING_USER' >> /opt/karoshi/server_network/windows_roaming_profile_users
-fi
-'
-done
+		ssh -x -o PasswordAuthentication=no $SERVERNAME '
+		[ ! -f /var/lib/samba/netlogon/windows_settings/security/'$ROAMING_USER'.kix ] && ln -s /var/lib/samba/netlogon/default_roaming.kix /var/lib/samba/netlogon/windows_settings/security/'$ROAMING_USER'.kix
+		chown -R '$ROAMING_USER'.itadmin /home/applications/profiles/'$ROAMING_USER'
+		sed -i "s/'$HOSTNAME'/$HOSTNAME/g" /var/lib/samba/netlogon/windows_settings/drives/'$ROAMING_USER'.kix
+		touch /opt/karoshi/server_network/windows_roaming_profile_users
+		if [ `grep -c '$USERNAME' /opt/karoshi/server_network/windows_roaming_profile_users` = 0 ]
+		then
+			echo '$ROAMING_USER' >> /opt/karoshi/server_network/windows_roaming_profile_users
+		fi
+		'
+	done
 fi
 
 ############################
@@ -156,41 +156,41 @@ fi
 sed -i 's/FEDERATEDCTL=no/FEDERATEDCTL=yes/g' /opt/karoshi/server_network/menusettings
 
 #Schedule federated password synchronisation
-echo 0,20,40 '*' '*' '*' 1-7 /opt/karoshi/serversetup/modules/federated_server/sync_passwords > /opt/karoshi/cronjobs/jobs/federated_password_sync.cron
+echo 0,20,40 '*' '*' '*' 1-7 /opt/karoshi/serversetup/modules/federated_server/sync_passwords > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/federated_password_sync.cron
 #Schedule federated file synchronisation
-echo 15,45 '*' '*' '*' 1-7 /opt/karoshi/serversetup/modules/federated_server/sync_files > /opt/karoshi/cronjobs/jobs/federated_file_sync.cron
+echo 15,45 '*' '*' '*' 1-7 /opt/karoshi/serversetup/modules/federated_server/sync_files > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/federated_file_sync.cron
 #Schedule federated server network sync
-echo 0 2 '*' '*' 1-7 /opt/karoshi/serversetup/modules/federated_server/sync_server_information  > /opt/karoshi/cronjobs/jobs/federated_server_information_sync.cron
+echo 0 2 '*' '*' 1-7 /opt/karoshi/serversetup/modules/federated_server/sync_server_information  > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/federated_server_information_sync.cron
 
 ########################
 #Copy any missing group information across to federated server
 ########################
 for GROUPFILES in /opt/karoshi/server_network/group_information/*
 do
-GROUPFILE=`basename $GROUPFILES`
-if [ -f /opt/karoshi/server_network/group_information/$GROUPFILE ]
-then
-source /opt/karoshi/server_network/group_information/$GROUPFILE
-#Check to see if file exists on federated server
+	GROUPFILE=`basename $GROUPFILES`
+	if [ -f /opt/karoshi/server_network/group_information/$GROUPFILE ]
+	then
+		source /opt/karoshi/server_network/group_information/$GROUPFILE
+		#Check to see if file exists on federated server
 
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
+		ssh -x -o PasswordAuthentication=no $SERVERNAME '
 
-if [ ! -f /opt/karoshi/server_network/group_information/'$GROUPFILE' ]
-then
-echo SERVER=$HOSTNAME > /opt/karoshi/server_network/group_information/'$GROUPFILE'
-echo HOMEPATH='$HOMEPATH' >> /opt/karoshi/server_network/group_information/'$GROUPFILE'
-echo SUBUNIT='$SUBUNIT' >> /opt/karoshi/server_network/group_information/'$GROUPFILE'
-echo SECONDARYGROUP='$SECONDARYGROUP' >> /opt/karoshi/server_network/group_information/'$GROUPFILE'
-echo YEARSUFFIX='$YEARSUFFIX' >> /opt/karoshi/server_network/group_information/'$GROUPFILE'
-fi
+		if [ ! -f /opt/karoshi/server_network/group_information/'$GROUPFILE' ]
+		then
+			echo SERVER=$HOSTNAME > /opt/karoshi/server_network/group_information/'$GROUPFILE'
+			echo HOMEPATH='$HOMEPATH' >> /opt/karoshi/server_network/group_information/'$GROUPFILE'
+			echo SUBUNIT='$SUBUNIT' >> /opt/karoshi/server_network/group_information/'$GROUPFILE'
+			echo SECONDARYGROUP='$SECONDARYGROUP' >> /opt/karoshi/server_network/group_information/'$GROUPFILE'
+			echo YEARSUFFIX='$YEARSUFFIX' >> /opt/karoshi/server_network/group_information/'$GROUPFILE'
+		fi
 
-#Add group to /var/lib/samba/netlogon/groups.txt
-if [ `grep -c ^'$GROUPFILE', /var/lib/samba/netlogon/groups.txt` = 0 ]
-then
-echo '$GROUPFILE',$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
-fi
-'
-fi
+		#Add group to /var/lib/samba/netlogon/groups.txt
+		if [ `grep -c ^'$GROUPFILE', /var/lib/samba/netlogon/groups.txt` = 0 ]
+		then
+			echo '$GROUPFILE',$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
+		fi
+		'
+	fi
 done
 
 ########################
@@ -199,22 +199,22 @@ done
 echo "<li>"Copying any missing windows profiles"</li>"
 for WINPROFILES in /home/applications/profiles/*
 do
-WINPROFILE=`basename $WINPROFILES`
+	WINPROFILE=`basename $WINPROFILES`
 
-#Check to see if profile exists on federated server
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-[ ! -d /home/applications/profiles/'$WINPROFILE' ] && exit 105
-'
-if [ `echo $?` = 105 ]
-then
-echo "<li>"Copying /home/applications/profiles/$WINPROFILE"<'/li>"
-scp -p -r /home/applications/profiles/$WINPROFILE/ root@$SERVERNAME:/home/applications/profiles/ 1> /dev/null
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-chown root.itadmin /home/applications/profiles/'$WINPROFILE'/
-chmod 0644 /home/applications/profiles/'$WINPROFILE'/
-chmod u+X,g+X,o+X /home/applications/profiles/'$WINPROFILE'/
-'
-fi
+	#Check to see if profile exists on federated server
+	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	[ ! -d /home/applications/profiles/'$WINPROFILE' ] && exit 105
+	'
+	if [ `echo $?` = 105 ]
+	then
+		echo "<li>"Copying /home/applications/profiles/$WINPROFILE"<'/li>"
+		scp -p -r /home/applications/profiles/$WINPROFILE/ root@$SERVERNAME:/home/applications/profiles/ 1> /dev/null
+		ssh -x -o PasswordAuthentication=no $SERVERNAME '
+		chown root.itadmin /home/applications/profiles/'$WINPROFILE'/
+		chmod 0644 /home/applications/profiles/'$WINPROFILE'/
+		chmod u+X,g+X,o+X /home/applications/profiles/'$WINPROFILE'/
+		'
+	fi
 done
 
 ########################

@@ -74,7 +74,7 @@ CHOICE="$?"
 done
 
 #Setup cronjobs common to all servers
-[ ! -d /opt/karoshi/cronjobs/jobs ] && mkdir -p /opt/karoshi/cronjobs/jobs
+[ ! -d /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs ] && mkdir -p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs
 
 if [ "$CHOICE" = 2 ]
 then

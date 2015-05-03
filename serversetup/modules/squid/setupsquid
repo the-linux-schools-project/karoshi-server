@@ -259,18 +259,18 @@ echo '<li>'$"Starting E2Guardian"'</li><br>'
 echo '<li>'$"Starting Apache"'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 
-[ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
+[ -d /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs ] || mkdir -p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs
 
 let MINUTES=$(($RANDOM%59))
 let HOURS=$(($RANDOM%24))
 let DAY=$(($RANDOM%7))
 
-echo 58 23 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/archive_internet_logs > /opt/karoshi/cronjobs/jobs/archive_internet_logs.cron
-echo 50 23 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/e2gupdatefilterlist > /opt/karoshi/cronjobs/jobs/e2gupdatefilterlist.cron
-echo 55 23 '*' '*' '*' /etc/init.d/e2guardian restart > /opt/karoshi/cronjobs/jobs/restart_e2guardian.cron
-echo '*'/5 '*' '*' '*' '*' "nice -n 20" /opt/karoshi/'"'useful scripts'"'/internet_log_gen > /opt/karoshi/cronjobs/jobs/internet_log_gen.cron
-echo 0 5 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/internet_log_compress > /opt/karoshi/cronjobs/jobs/internet_log_compress.cron
-echo $MINUTES $HOURS '*' '*' $DAY /opt/karoshi/serversetup/modules/squid/scripts/downloadblacklists > /opt/karoshi/cronjobs/jobs/downloadblacklists.cron
+echo 58 23 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/archive_internet_logs > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/archive_internet_logs.cron
+echo 50 23 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/e2gupdatefilterlist > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/e2gupdatefilterlist.cron
+echo 55 23 '*' '*' '*' /etc/init.d/e2guardian restart > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/restart_e2guardian.cron
+echo '*'/5 '*' '*' '*' '*' "nice -n 20" /opt/karoshi/'"'useful scripts'"'/internet_log_gen > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/internet_log_gen.cron
+echo 0 5 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/internet_log_compress > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/internet_log_compress.cron
+echo $MINUTES $HOURS '*' '*' $DAY /opt/karoshi/serversetup/modules/squid/scripts/downloadblacklists > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/downloadblacklists.cron
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
 ############################

@@ -318,7 +318,7 @@ fi
 ########################
 if [ $SERVER = `hostname-fqdn` ]
 then
-	source /opt/karoshi/serversetup/variables/distro
+	source /opt/karoshi/serversetup/variables/distroz
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nut_stop 1>/dev/null
 	sleep 1
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nut_start 1>/dev/null
@@ -337,8 +337,8 @@ fi
 ########################
 # Schedule a cron job for web management monitoring
 ########################
-[ ! -d /opt/karoshi/cronjobs/jobs ] && mkdir -p /opt/karoshi/cronjobs/jobs
-echo '0' '5' '*' '*' '*' /opt/karoshi/serversetup/pdc/\"useful scripts\"/ups_check > /opt/karoshi/cronjobs/jobs/ups_check.cron
+[ ! -d /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs ] && mkdir -p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs
+echo '0' '5' '*' '*' '*' /opt/karoshi/serversetup/pdc/\"useful scripts\"/ups_check > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/ups_check.cron
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
 echo '<br>'
 exit

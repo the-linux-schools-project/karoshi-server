@@ -35,7 +35,7 @@ then
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_monitoring_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_monitoring.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $module_monitoring_cgi'check' ]
 then
 	echo `date`: module_monitoring - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -179,9 +179,9 @@ sed -i 's/MONITORINGCTRL=no/MONITORINGCTRL=yes/g' /opt/karoshi/server_network/me
 cp -f /opt/karoshi/serversetup/modules/monitoring/"useful scripts"/monitor_check /opt/karoshi/"useful scripts"/
 chmod 0700 /opt/karoshi/"useful scripts"/monitor_check
 
-[ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
+[ -d /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs ] || mkdir -p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs
 
-echo '*' '*' '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/monitor_check > /opt/karoshi/cronjobs/jobs/monitorcheck.cron
+echo '*' '*' '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/monitor_check > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/monitorcheck.cron
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
 #Add in default monitors for any existing servers on the system

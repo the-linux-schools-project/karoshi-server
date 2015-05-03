@@ -104,7 +104,7 @@ fi
 echo `date`: "Stopping karoshi setup from running at logon" >> /opt/karoshi/serversetup/install_log
 [ -f /opt/karoshi/karoshi_user/.config/autostart/karoshi_setup.desktop ] && rm -f /opt/karoshi/karoshi_user/.config/autostart/karoshi_setup.desktop
 #Schedule disk_usage
-echo 0 1 "*" "*" 6 /opt/karoshi/serversetup/all/\"useful scripts\"/disk_usage > /opt/karoshi/cronjobs/jobs/disk_usage_report.cron
+echo 0 1 "*" "*" 6 /opt/karoshi/serversetup/all/\"useful scripts\"/disk_usage > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/disk_usage_report.cron
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
 
 ##########################

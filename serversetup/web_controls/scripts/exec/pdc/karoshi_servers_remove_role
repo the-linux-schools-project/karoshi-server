@@ -215,9 +215,9 @@ then
 	sed -i 's/ADDUSERCTRL=no/ADDUSERCTRL=yes/g' /opt/karoshi/web_controls/generate_navbar_tech
 	'
 	#Remove password sync cron job
-	if [ -f /opt/karoshi/cronjobs/jobs/federated_password_sync.cron ]
+	if [ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/federated_password_sync.cron ]
 	then
-		rm -f /opt/karoshi/cronjobs/jobs/federated_password_sync.cron
+		rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/federated_password_sync.cron
 		/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
 		echo "<br><br>"
 	fi
@@ -317,13 +317,13 @@ echo "<li>"$SERVERNAME: $"Removing Egroupware.""</li><br>"
 [ -d /var/www/html/egroupware ] && rm -f -R /var/www/html/egroupware
 [ -d /var/www/egroupware-files ] && rm -f -R /var/www/egroupware-files
 
-[ -f /opt/karoshi/cronjobs/jobs/delete_mail.cron ] && rm -f /opt/karoshi/cronjobs/jobs/delete_mail.cron
-[ -f /opt/karoshi/cronjobs/jobs/globaladdressbook.cron ] && rm -f /opt/karoshi/cronjobs/jobs/globaladdressbook.cron
-[ -f /opt/karoshi/cronjobs/jobs/mailboxcheck.cron ] && rm -f /opt/karoshi/cronjobs/jobs/mailboxcheck.cron
-[ -f /opt/karoshi/cronjobs/jobs/mailboxwarn.cron ] && rm -f /opt/karoshi/cronjobs/jobs/mailboxwarn.cron
-[ -f /opt/karoshi/cronjobs/jobs/postfixstats.cron ] && rm -f /opt/karoshi/cronjobs/jobs/postfixstats.cron
-[ -f /opt/karoshi/cronjobs/jobs/tidyrootmail.cron ] && rm -f /opt/karoshi/cronjobs/jobs/tidyrootmail.cron
-[ -f /opt/karoshi/cronjobs/jobs/tidy_squirrelmail_attachments.cron ] && rm -f /opt/karoshi/cronjobs/jobs/tidy_squirrelmail_attachments.cron
+[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/delete_mail.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/delete_mail.cron
+[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/globaladdressbook.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/globaladdressbook.cron
+[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/mailboxcheck.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/mailboxcheck.cron
+[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/mailboxwarn.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/mailboxwarn.cron
+[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/postfixstats.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/postfixstats.cron
+[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/tidyrootmail.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/tidyrootmail.cron
+[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/tidy_squirrelmail_attachments.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/tidy_squirrelmail_attachments.cron
 
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
@@ -347,13 +347,13 @@ echo "<li>"'$SERVERNAME': '$"Removing Egroupware."'"</li><br>"
 [ -d /var/www/html/egroupware ] && rm -f -R /var/www/html/egroupware
 [ -d /var/www/egroupware-files ] && rm -f -R /var/www/egroupware-files
 
-[ -f /opt/karoshi/cronjobs/jobs/delete_mail.cron ] && rm -f /opt/karoshi/cronjobs/jobs/delete_mail.cron
-[ -f /opt/karoshi/cronjobs/jobs/globaladdressbook.cron ] && rm -f /opt/karoshi/cronjobs/jobs/globaladdressbook.cron
-[ -f /opt/karoshi/cronjobs/jobs/mailboxcheck.cron ] && rm -f /opt/karoshi/cronjobs/jobs/mailboxcheck.cron
-[ -f /opt/karoshi/cronjobs/jobs/mailboxwarn.cron ] && rm -f /opt/karoshi/cronjobs/jobs/mailboxwarn.cron
-[ -f /opt/karoshi/cronjobs/jobs/postfixstats.cron ] && rm -f /opt/karoshi/cronjobs/jobs/postfixstats.cron
-[ -f /opt/karoshi/cronjobs/jobs/tidyrootmail.cron ] && rm -f /opt/karoshi/cronjobs/jobs/tidyrootmail.cron
-[ -f /opt/karoshi/cronjobs/jobs/tidy_squirrelmail_attachments.cron ] && rm -f /opt/karoshi/cronjobs/jobs/tidy_squirrelmail_attachments.cron
+[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/delete_mail.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/delete_mail.cron
+[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/globaladdressbook.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/globaladdressbook.cron
+[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/mailboxcheck.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/mailboxcheck.cron
+[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/mailboxwarn.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/mailboxwarn.cron
+[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/postfixstats.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/postfixstats.cron
+[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/tidyrootmail.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/tidyrootmail.cron
+[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/tidy_squirrelmail_attachments.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/tidy_squirrelmail_attachments.cron
 
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
@@ -475,7 +475,7 @@ then
 [ -d /var/www/html/moodle ] && rm -f -R /var/www/html/moodle
 [ -d /var/www/moodle-data ] && rm -f -R /var/www/moodle-data
 
-[ -f /opt/karoshi/cronjobs/jobs/refresh_moodle.cron ] && rm -f /opt/karoshi/cronjobs/jobs/refresh_moodle.cron
+[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/refresh_moodle.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/refresh_moodle.cron
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
 /opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
@@ -487,7 +487,7 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 [ -d /var/www/html/moodle ] && rm -f -R /var/www/html/moodle
 [ -d /var/www/moodle-data ] && rm -f -R /var/www/moodle-data
 
-[ -f /opt/karoshi/cronjobs/jobs/refresh_moodle.cron ] && rm -f /opt/karoshi/cronjobs/jobs/refresh_moodle.cron
+[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/refresh_moodle.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/refresh_moodle.cron
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
 /opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
@@ -609,12 +609,12 @@ then
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/e2guardian
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/squiddebproxy
 
-		[ -f /opt/karoshi/cronjobs/jobs/restart_dansguardian.cron ] && rm -f /opt/karoshi/cronjobs/jobs/restart_dansguardian.cron
-		[ -f /opt/karoshi/cronjobs/jobs/restart_e2guardian.cron ] && rm -f /opt/karoshi/cronjobs/jobs/restart_e2guardian.cron
-		[ -f /opt/karoshi/cronjobs/jobs/internet_log_gen.cron ] && rm -f /opt/karoshi/cronjobs/jobs/internet_log_gen.cron
-		[ -f /opt/karoshi/cronjobs/jobs/internet_log_compress.cron ] && rm -f /opt/karoshi/cronjobs/jobs/internet_log_compress.cron
-		[ -f /opt/karoshi/cronjobs/jobs/dgupdatefilterlist.cron ] && rm -f /opt/karoshi/cronjobs/jobs/dgupdatefilterlist.cron
-		[ -f /opt/karoshi/cronjobs/jobs/archive_internet_logs.cron ] && rm -f /opt/karoshi/cronjobs/jobs/archive_internet_logs.cron
+		[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/restart_dansguardian.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/restart_dansguardian.cron
+		[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/restart_e2guardian.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/restart_e2guardian.cron
+		[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/internet_log_gen.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/internet_log_gen.cron
+		[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/internet_log_compress.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/internet_log_compress.cron
+		[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/dgupdatefilterlist.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/dgupdatefilterlist.cron
+		[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/archive_internet_logs.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/archive_internet_logs.cron
 
 		/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
@@ -629,12 +629,12 @@ then
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/e2guardian
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/squiddebproxy
 
-		[ -f /opt/karoshi/cronjobs/jobs/restart_dansguardian.cron ] && rm -f /opt/karoshi/cronjobs/jobs/restart_dansguardian.cron
-		[ -f /opt/karoshi/cronjobs/jobs/restart_e2guardian.cron ] && rm -f /opt/karoshi/cronjobs/jobs/restart_e2guardian.cron
-		[ -f /opt/karoshi/cronjobs/jobs/internet_log_gen.cron ] && rm -f /opt/karoshi/cronjobs/jobs/internet_log_gen.cron
-		[ -f /opt/karoshi/cronjobs/jobs/internet_log_compress.cron ] && rm -f /opt/karoshi/cronjobs/jobs/internet_log_compress.cron
-		[ -f /opt/karoshi/cronjobs/jobs/dgupdatefilterlist.cron ] && rm -f /opt/karoshi/cronjobs/jobs/dgupdatefilterlist.cron
-		[ -f /opt/karoshi/cronjobs/jobs/archive_internet_logs.cron ] && rm -f /opt/karoshi/cronjobs/jobs/archive_internet_logs.cron
+		[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/restart_dansguardian.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/restart_dansguardian.cron
+		[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/restart_e2guardian.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/restart_e2guardian.cron
+		[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/internet_log_gen.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/internet_log_gen.cron
+		[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/internet_log_compress.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/internet_log_compress.cron
+		[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/dgupdatefilterlist.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/dgupdatefilterlist.cron
+		[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/archive_internet_logs.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/archive_internet_logs.cron
 
 		/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 	'
@@ -667,7 +667,7 @@ then
 
 [ -f /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop ] && rm -f /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop
 
-[ -f /opt/karoshi/cronjobs/jobs/gen_status.cron ] && rm -f /opt/karoshi/cronjobs/jobs/gen_status.cron
+[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/gen_status.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/gen_status.cron
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
 else
@@ -678,7 +678,7 @@ source /opt/karoshi/serversetup/variables/distro
 
 [ -f /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop ] && rm -f /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop
 
-[ -f /opt/karoshi/cronjobs/jobs/gen_status.cron ] && rm -f /opt/karoshi/cronjobs/jobs/gen_status.cron
+[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/gen_status.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/gen_status.cron
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
 '

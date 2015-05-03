@@ -29,8 +29,8 @@ LOG_DATE=`date +%F`
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: setupmoodle - incorrect number of arguments"<br>"
-exit 101
+	echo `date`: setupmoodle - incorrect number of arguments"<br>"
+	exit 101
 fi
 read -t 3 DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/'`
@@ -43,24 +43,24 @@ ALIAS=`echo "$DATA" | cut -s -d: -f5`
 
 if [ -z "$REMOTE_USER" ]
 then
-echo `date`: setupmoodle - Blank remote user"<br>"
-exit 101
+	echo `date`: setupmoodle - Blank remote user"<br>"
+	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: setupmoodle - Blank remote tcpip address"<br>"
-exit 101
+	echo `date`: setupmoodle - Blank remote tcpip address"<br>"
+	exit 101
 fi
 if [ -z "$SERVERNAME" ]
 then
-echo `date`: setupmoodle - Blank servername"<br>"
-exit 101
+	echo `date`: setupmoodle - Blank servername"<br>"
+	exit 101
 fi
 
 if [ -z "$ALIAS" ]
 then
-echo `date`: setupmoodle - Blank alias"<br>"
-exit 101
+	echo `date`: setupmoodle - Blank alias"<br>"
+	exit 101
 fi
 
 [ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
@@ -77,7 +77,7 @@ LDAPSERVER=127.0.0.1
 #Get ldap server to use
 if [ `grep -c -w "kdc" /etc/krb5.conf` -gt 0 ]
 then
-LDAPSERVER=`grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | cut -d"=" -f2 | sed -n 1,1p`
+	LDAPSERVER=`grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | cut -d"=" -f2 | sed -n 1,1p`
 fi
 
 #############################
@@ -118,11 +118,11 @@ fi
 
 if [ $RESTARTAPACHE = yes ]
 then
-#Restart apache
-echo "<li>"Restarting apache to apply kerberos support"</li><br>"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null
-sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
+	#Restart apache
+	echo "<li>"Restarting apache to apply kerberos support"</li><br>"
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null
+	sleep 1
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 fi
 
 #####################
@@ -179,13 +179,13 @@ MYSQLSTATUS=`ps -e | grep -c $MYSQLDVER`
 APACHESTATUS=`ps -e | grep -c $APACHEVER`
 if [ $MYSQLSTATUS = 0 ]
 then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start 1>/dev/null
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start 1>/dev/null
 fi
 if [ $APACHESTATUS = 0 ]
 then
-echo '<li>"'$"Apache was not running"'</li'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
-echo "<br>"
+	echo '<li>"'$"Apache was not running"'</li'
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
+	echo "<br>"
 fi
 
 ##########################
@@ -220,8 +220,8 @@ sed -i $DOMAINLINENO'c'\$CFG-">"wwwroot"    "=" ""'"https://$ALIAS.$REALM/moodle
 ##############################
 #Schedule a refresh job for moodle
 ##############################
-[ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
-echo '*'/5 '*' '*' '*' '*' lynx -dump http://localhost/moodle/admin/cron.php '>' /dev/null > /opt/karoshi/cronjobs/jobs/refresh_moodle.cron
+[ -d /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs ] || mkdir -p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs
+echo '*'/5 '*' '*' '*' '*' lynx -dump http://localhost/moodle/admin/cron.php '>' /dev/null > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/refresh_moodle.cron
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
 
@@ -234,28 +234,28 @@ MODCHECK2=`grep -c -w 443 /etc/shorewall/rules`
 MOD_SHOREWALL=no
 if [ $MODCHECK = 0 ]
 then
-MOD_SHOREWALL=yes
-PORTS="80"
+	MOD_SHOREWALL=yes
+	PORTS="80"
 fi
 
 if [ $MODCHECK2 = 0 ]
 then
-MOD_SHOREWALL=yes
-PORTS="443"
+	MOD_SHOREWALL=yes
+	PORTS="443"
 fi
 
 if [ $MODCHECK = 0 ] && [ $MODCHECK2 = 0 ]
 then
-MOD_SHOREWALL=yes
-PORTS="80,443"
+	MOD_SHOREWALL=yes
+	PORTS="80,443"
 fi
 
 if [ $MOD_SHOREWALL = yes ]
 then
-echo '<li>'$"The following extra ports are being allowed"' - tcp 80,443</li><br>'
-LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'apacherule /etc/shorewall/rules
-echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	echo '<li>'$"The following extra ports are being allowed"' - tcp 80,443</li><br>'
+	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'apacherule /etc/shorewall/rules
+	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 fi
 
 #Copy in export grades
@@ -268,8 +268,8 @@ chmod 0700 /opt/karoshi/"useful scripts"/moodle_export_grades
 if [ $MOD_SHOREWALL = yes ]
 then
 echo '<li>'$"Restarting shorewall"'</li><br>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
 #################################
 #Make sure that mysql and apache are running
@@ -277,12 +277,12 @@ fi
 MYSQLSTATUS=`ps -e | grep -c -w $MYSQLDVER`
 if [ $MYSQLSTATUS = 0 ]
 then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start 1>/dev/null
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start 1>/dev/null
 fi
 APACHESTATUS=`ps -e | grep -c -w $APACHEVER`
 if [ $APACHESTATUS = 0 ]
 then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 fi
 #Clear moodle cache
 sudo -u www-data php /var/www/html/moodle/admin/cli/purge_caches.php

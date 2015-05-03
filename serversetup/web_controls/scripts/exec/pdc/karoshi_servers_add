@@ -592,10 +592,10 @@ if [ -f /opt/karoshi/server_network/upgrade_schedules/servers/$SERVER.$REALM.cro
 then
 
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $TCPIPNUMBER '
-[ ! -d /opt/karoshi/cronjobs/jobs ] && mkdir -p /opt/karoshi/cronjobs/jobs
+[ ! -d /opt/karoshi/server_network/cronjobs/'$SERVER'.'$REALM'/jobs ] && mkdir -p /opt/karoshi/server_network/cronjobs/'$SERVER'.'$REALM'/jobs
 '
 
-scp -o PasswordAuthentication=no /opt/karoshi/server_network/upgrade_schedules/servers/$SERVER.$REALM.cron $SERVER.$REALM:/opt/karoshi/cronjobs/jobs/updateserver.cron 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+scp -o PasswordAuthentication=no /opt/karoshi/server_network/upgrade_schedules/servers/$SERVER.$REALM.cron $SERVER.$REALM:/opt/karoshi/server_network/cronjobs/$SERVER.$REALM/jobs/updateserver.cron 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $TCPIPNUMBER '
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null

@@ -101,8 +101,8 @@ chown root.$APACHEGROUP -R /var/www/cgi-bin/admin
 chmod 0750 /var/www/cgi-bin/admin/monitors_view_logs.cgi
 chmod 0750 /var/www/cgi-bin/admin/monitors_enable_disable.cgi
 
-[ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
-echo "*" "*" "*" "*" "*" /opt/karoshi/\"useful scripts\"/gen_status > /opt/karoshi/cronjobs/jobs/gen_status.cron
+[ -d /opt/karoshi/server_network/cronjobs/`hostname-fqdn` ] || mkdir -p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`
+echo "*" "*" "*" "*" "*" /opt/karoshi/\"useful scripts\"/gen_status > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/gen_status.cron
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
 [ -e /etc/mon/mon_backup.cf ] || cp -f /etc/mon/mon.cf /etc/mon/mon_backup.cf

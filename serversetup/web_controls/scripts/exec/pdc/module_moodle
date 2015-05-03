@@ -271,12 +271,6 @@ install_moodle
 add_role_information
 create_linux_client_icon
 
-#Schedule_moodle_export_grades
-#cp /opt/karoshi/serversetup/modules/moodle/moodle_export_grades /opt/karoshi/"useful scripts"/
-#[ -d /opt/karoshi/cronjobs/jobs ] || mkdir -p /opt/karoshi/cronjobs/jobs
-#echo 0 3 '*' '*' 7 /opt/karoshi/'"'useful scripts'"'/moodle_export_grades > /opt/karoshi/cronjobs/jobs/resetguestaccounts.cron
-#/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
-
 
 ########################
 #Modify prefs.js for windows firefox

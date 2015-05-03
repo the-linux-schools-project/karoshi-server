@@ -24,23 +24,23 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/wake_on_lan_view2_cgi
 then
-echo `date`: wake_on_lan_view2 - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: wake_on_lan_view2 - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/wake_on_lan_view2_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/wake_on_lan_view2.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set1
+[ -z "$MD5SUM" ] && MD5SUM=not_set1
 if [ $MD5SUM'check' != $wake_on_lan_view2_cgi'check' ]
 then
-echo `date`: wake_on_lan_view2 - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: wake_on_lan_view2 - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -48,8 +48,8 @@ fi
 numArgs=$#
 if [ $numArgs != 1 ]
 then
-echo `date`: wake_on_lan_view2 - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: wake_on_lan_view2 - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
@@ -61,91 +61,91 @@ LOCATIONS=( `echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5- | sed 's/:/ /g
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: wake_on_lan_view2 - Not called by wake_on_lan_view2.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: wake_on_lan_view2 - Not called by wake_on_lan_view2.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: wake_on_lan_view2 - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: wake_on_lan_view2 - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: wake_on_lan_view2 - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: wake_on_lan_view2 - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $ACTION'null' = null ]
+if [ -z "$ACTION" ]
 then
-echo `date`: wake_on_lan_view2 - Blank action >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: wake_on_lan_view2 - Blank action >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: wake_on_lan_view2 - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: wake_on_lan_view2 - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $LOCATIONS'null' = null ]
+if [ -z "$LOCATIONS" ]
 then
-echo `date`: wake_on_lan_view2 - No locations by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: wake_on_lan_view2 - No locations by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ $ACTION != enable ] && [ $ACTION != disable ] && [ $ACTION != remove ]
 then
-echo `date`: wake_on_lan_view2 - incorrect action >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: wake_on_lan_view2 - incorrect action >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 LOCATION_COUNT=${#LOCATIONS[@]}
 
 if [ $ACTION = disable ]
 then
-#Disable wake on lan for location
-[ -d /opt/karoshi/cronjobs/wake_on_lan_status ] || mkdir -p /opt/karoshi/cronjobs/wake_on_lan_status
+	#Disable wake on lan for location
+	[ -d /opt/karoshi/server_network/cronjobs/$SERVERNAME/wake_on_lan_status ] || mkdir -p /opt/karoshi/server_network/cronjobs/$SERVERNAME/wake_on_lan_status
 
-COUNTER=0
-while [ $COUNTER -lt $LOCATION_COUNT ]
-do
-LOCATION=`echo ${LOCATIONS[$COUNTER]}`
-echo `date`: wake_on_lan_view2 - Disabling $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-touch /opt/karoshi/cronjobs/wake_on_lan_status/$LOCATION
-let COUNTER=$COUNTER+1
-done
+	COUNTER=0
+	while [ $COUNTER -lt $LOCATION_COUNT ]
+	do
+		LOCATION=`echo ${LOCATIONS[$COUNTER]}`
+		echo `date`: wake_on_lan_view2 - Disabling $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		touch /opt/karoshi/server_network/cronjobs/$SERVERNAME/wake_on_lan_status/$LOCATION
+		let COUNTER=$COUNTER+1
+	done
 fi
 
 if [ $ACTION = enable ]
 then
-COUNTER=0
-while [ $COUNTER -lt $LOCATION_COUNT ]
-do
-LOCATION=`echo ${LOCATIONS[$COUNTER]}`
-echo `date`: wake_on_lan_view2 - Enabling $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-[ -f /opt/karoshi/cronjobs/wake_on_lan_status/$LOCATION ] && rm -f /opt/karoshi/cronjobs/wake_on_lan_status/$LOCATION
-let COUNTER=$COUNTER+1
-done
+	COUNTER=0
+	while [ $COUNTER -lt $LOCATION_COUNT ]
+	do
+		LOCATION=`echo ${LOCATIONS[$COUNTER]}`
+		echo `date`: wake_on_lan_view2 - Enabling $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/wake_on_lan_status/$LOCATION ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/wake_on_lan_status/$LOCATION
+		let COUNTER=$COUNTER+1
+	done
 fi
 
 if [ $ACTION = remove ]
 then
-COUNTER=0
-while [ $COUNTER -lt $LOCATION_COUNT ]
-do
-LOCATION=`echo ${LOCATIONS[$COUNTER]}`
-echo `date`: wake_on_lan_view2 - Removing $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-[ -f /opt/karoshi/cronjobs/wake_on_lan/$LOCATION.cron ] && rm -f /opt/karoshi/cronjobs/wake_on_lan/$LOCATION.cron
-[ -f /opt/karoshi/cronjobs/wake_on_lan_status/$LOCATION ] && rm -f /opt/karoshi/cronjobs/wake_on_lan_status/$LOCATION
-let COUNTER=$COUNTER+1
-done
-#refresh cronjobs
-if [ `ls -1 /opt/karoshi/cronjobs/wake_on_lan/ | wc -l` -gt 0 ]
-then
-cat /opt/karoshi/cronjobs/wake_on_lan/* > /opt/karoshi/cronjobs/jobs/wake_on_lan.cron
-else
-rm -f /opt/karoshi/cronjobs/jobs/wake_on_lan.cron
-fi
-/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null 2>/dev/null
+	COUNTER=0
+	while [ $COUNTER -lt $LOCATION_COUNT ]
+	do
+		LOCATION=`echo ${LOCATIONS[$COUNTER]}`
+		echo `date`: wake_on_lan_view2 - Removing $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/wake_on_lan/$LOCATION.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/wake_on_lan/$LOCATION.cron
+		[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/wake_on_lan_status/$LOCATION ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/wake_on_lan_status/$LOCATION
+		let COUNTER=$COUNTER+1
+	done
+	#refresh cronjobs
+	if [ `ls -1 /opt/karoshi/server_network/cronjobs/$SERVERNAME/wake_on_lan/ | wc -l` -gt 0 ]
+	then
+		cat /opt/karoshi/server_network/cronjobs/$SERVERNAME/wake_on_lan/* > /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/wake_on_lan.cron
+	else
+		rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/wake_on_lan.cron
+	fi
+	/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null 2>/dev/null
 fi
 
 exit

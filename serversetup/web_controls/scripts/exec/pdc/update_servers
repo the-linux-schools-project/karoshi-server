@@ -24,23 +24,23 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/update_servers_cgi
 then
-echo `date`: update_servers - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: update_servers - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/update_servers_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/update_servers.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $update_servers_cgi'check' ]
 then
-echo `date`: update_servers - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: update_servers - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -48,15 +48,15 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: update_servers - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: update_servers - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: update_servers - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: update_servers - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -72,69 +72,69 @@ SERVERMASTER=`echo "$DATA" | cut -s -d: -f9`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: update_servers - Not called by update_servers.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: update_servers - Not called by update_servers.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: update_servers - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: update_servers - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: update_servers - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: update_servers - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: update_servers - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: update_servers - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $DAY'null' = null ]
+if [ -z "$DAY" ]
 then
-echo `date`: update_servers - Blank day by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: update_servers - Blank day by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $HOURS'null' = null ]
+if [ -z "$HOURS" ]
 then
-echo `date`: update_servers - Blank hours by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: update_servers - Blank hours by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $MINUTES'null' = null ]
+if [ -z "$MINUTES" ]
 then
-echo `date`: update_servers - Blank hours by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: update_servers - Blank hours by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-echo `date`: update_servers - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: update_servers - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $SERVERTYPE'null' = null ]
+if [ -z "$SERVERTYPE" ]
 then
-echo `date`: update_servers - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: update_servers - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ $SERVERTYPE = federatedslave ]
 then
-if [ $SERVERMASTER'null' = null ]
-then
-echo `date`: update_servers - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
+	if [ -z "$SERVERMASTER" ]
+	then
+		echo `date`: update_servers - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
 fi
 if [ $DAY != never ]
 then
-echo `date`: update_server - enabling updates "for" $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: update_server - enabling updates "for" $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 else
-echo `date`: update_server - disabling updates "for" $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: update_server - disabling updates "for" $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
 
 
@@ -147,85 +147,85 @@ FOLDER=servers
 [ ! -d /opt/karoshi/server_network/upgrade_schedules/$FOLDER ] && mkdir -p /opt/karoshi/server_network/upgrade_schedules/$FOLDER
 
 #Add in time information
-if [ $DAY != never ]
+if [ "$DAY" != never ]
 then
-[ $DAY = 1 ] && DAY2=$"Monday"
-[ $DAY = 2 ] && DAY2=$"Tuesday"
-[ $DAY = 3 ] && DAY2=$"Wednesday"
-[ $DAY = 4 ] && DAY2=$"Thursday"
-[ $DAY = 5 ] && DAY2=$"Friday"
-[ $DAY = 6 ] && DAY2=$"Saturday"
-[ $DAY = 7 ] && DAY2=$"Sunday"
-[ $DAY = 8 ] && DAY2=$"Every day"
+	[ $DAY = 1 ] && DAY2=$"Monday"
+	[ $DAY = 2 ] && DAY2=$"Tuesday"
+	[ $DAY = 3 ] && DAY2=$"Wednesday"
+	[ $DAY = 4 ] && DAY2=$"Thursday"
+	[ $DAY = 5 ] && DAY2=$"Friday"
+	[ $DAY = 6 ] && DAY2=$"Saturday"
+	[ $DAY = 7 ] && DAY2=$"Sunday"
+	[ $DAY = 8 ] && DAY2=$"Every day"
 
-echo "$DAY2 - $HOURS:$MINUTES" > /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME
+	echo "$DAY2 - $HOURS:$MINUTES" > /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME
 else
-[ -f /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME ] && rm -f /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME
+	[ -f /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME ] && rm -f /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME
 fi
-[ $DAY = 8 ] && DAY=1-7
+[ "$DAY" = 8 ] && DAY=1-7
 }
 
 function scheduleupdate {
 
 #Schedule update on this server
-if [ $SERVERNAME = `hostname-fqdn` ]
+if [ "$SERVERNAME" = `hostname-fqdn` ]
 then
-if [ $DAY != never ]
-then
-[ ! -d /opt/karoshi/cronjobs/jobs ] && mkdir -p /opt/karoshi/cronjobs/jobs
-echo $MINUTES $HOURS '*' '*' $DAY /opt/karoshi/serversetup/all/scripts/updateserver > /opt/karoshi/cronjobs/jobs/updateserver.cron
-echo $MINUTES $HOURS "*" "*" $DAY /opt/karoshi/serversetup/all/scripts/updateserver > /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME.cron
-else
-[ -f /opt/karoshi/cronjobs/jobs/updateserver.cron ] && rm -f /opt/karoshi/cronjobs/jobs/updateserver.cron
-fi
-/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+	if [ "$DAY" != never ]
+	then
+		[ ! -d /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs ] && mkdir -p /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs
+		echo $MINUTES $HOURS '*' '*' $DAY /opt/karoshi/serversetup/all/scripts/updateserver > /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/updateserver.cron
+		echo $MINUTES $HOURS "*" "*" $DAY /opt/karoshi/serversetup/all/scripts/updateserver > /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME.cron
+	else
+		[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/updateserver.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/updateserver.cron
+	fi
+	/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 fi
 
 #Schedule update on network and federated servers
 if [ $SERVERNAME != `hostname-fqdn` ]
 then
-if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
-then
-if [ $DAY != never ]
-then
-echo $MINUTES $HOURS "*" "*" $DAY /opt/karoshi/serversetup/all/scripts/updateserver > /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME.cron
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-[ ! -d /opt/karoshi/cronjobs/jobs ] && mkdir -p /opt/karoshi/cronjobs/jobs
-echo '$MINUTES' '$HOURS' "*" "*" '$DAY' /opt/karoshi/serversetup/all/scripts/updateserver > /opt/karoshi/cronjobs/jobs/updateserver.cron
-/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
-'
-else
-[ -f /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME.cron ] && rm -f /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME.cron
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-[ -f /opt/karoshi/cronjobs/jobs/updateserver.cron ] && rm -f /opt/karoshi/cronjobs/jobs/updateserver.cron
-/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
-'
-fi
-fi
+	if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
+	then
+		if [ $DAY != never ]
+		then
+			echo $MINUTES $HOURS "*" "*" $DAY /opt/karoshi/serversetup/all/scripts/updateserver > /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME.cron
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+			[ ! -d /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs ] && mkdir -p /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs
+			echo '$MINUTES' '$HOURS' "*" "*" '$DAY' /opt/karoshi/serversetup/all/scripts/updateserver > /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/updateserver.cron
+			/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+			'
+		else
+			[ -f /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME.cron ] && rm -f /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME.cron
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+			[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/updateserver.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/updateserver.cron
+			/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+			'
+		fi
+	fi
 fi
 
 #Schedule update on federated slave servers
 if [ $SERVERTYPE = federatedslave ]
 then
-if [ $DAY != never ]
-then
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
-echo `date`: update_server \(federated mode\) - enabling updates for '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
-[ ! -d /opt/karoshi/cronjobs/jobs ] && mkdir -p /opt/karoshi/cronjobs/jobs
-echo '$MINUTES' '$HOURS' "*" "*" '$DAY' /opt/karoshi/serversetup/all/scripts/updateserver > /opt/karoshi/cronjobs/jobs/updateserver.cron
-/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
-'\''
-'
-else
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
-echo `date`: update_server \(federated mode\) - disabling updates for '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
-[ -f /opt/karoshi/cronjobs/jobs/updateserver.cron ] && rm -f /opt/karoshi/cronjobs/jobs/updateserver.cron
-/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
-'\''
-'
-fi
+	if [ $DAY != never ]
+	then
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+		echo `date`: update_server \(federated mode\) - enabling updates for '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
+		[ ! -d /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs ] && mkdir -p /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs
+		echo '$MINUTES' '$HOURS' "*" "*" '$DAY' /opt/karoshi/serversetup/all/scripts/updateserver > /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/updateserver.cron
+		/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+		'\''
+		'
+	else
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+		echo `date`: update_server \(federated mode\) - disabling updates for '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
+		[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/updateserver.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/updateserver.cron
+		/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+		'\''
+		'
+	fi
 fi
 }
 

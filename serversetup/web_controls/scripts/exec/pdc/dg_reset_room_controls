@@ -129,8 +129,8 @@ RESETARRAYCOUNT=${#RESETARRAY[@]}
 
 
 #Schedule revised reset times
-[ ! -d /opt/karoshi/cronjobs/jobs ] && mkdir -p /opt/karoshi/cronjobs/jobs
-[ -f /opt/karoshi/cronjobs/jobs/reset_room_controls.cron ] && rm -f /opt/karoshi/cronjobs/jobs/reset_room_controls.cron
+[ ! -d /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs ] && mkdir -p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs
+[ -f /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/reset_room_controls.cron ] && rm -f /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/reset_room_controls.cron
 
 if [ $RESETARRAYCOUNT -gt 0 ]
 then
@@ -140,7 +140,7 @@ do
 	RESETTIME=${RESETARRAY[$COUNTER]}
 	MINUTES=`echo $RESETTIME | cut -d: -f2`
 	HOURS=`echo $RESETTIME | cut -d: -f1`
-	echo $MINUTES $HOURS "*" "*" "*" /opt/karoshi/web_controls/exec/dg_reset_rooms >> /opt/karoshi/cronjobs/jobs/reset_room_controls.cron
+	echo $MINUTES $HOURS "*" "*" "*" /opt/karoshi/web_controls/exec/dg_reset_rooms >> /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/reset_room_controls.cron
 	let COUNTER=$COUNTER+1
 done
 fi

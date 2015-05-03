@@ -140,7 +140,7 @@ echo $SERVERNAME - $"Enabling quotas for the /home partition - this may take som
 quotacheck -mfcug /home
 quotaon /home
 #Create cron job to schedule auto update of quotas
-echo 0 5 "*" "*" 1,3,5 \( quotaoff /home \; quotacheck /home -gum \; quotaon /home \) > /opt/karoshi/cronjobs/jobs/update_quotas.cron
+echo 0 5 "*" "*" 1,3,5 \( quotaoff /home \; quotacheck /home -gum \; quotaon /home \) > /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/update_quotas.cron
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
 fi
 
@@ -182,7 +182,7 @@ echo '$SERVERNAME' - '$"Enabling quotas for the /home partition - this may take 
 quotacheck -mfcug /home
 quotaon /home
 #Create cron job to schedule auto update of quotas
-echo 0 5 "*" "*" 1,3,5 \( quotaoff /home \; quotacheck /home -gum \; quotaon /home \) > /opt/karoshi/cronjobs/jobs/update_quotas.cron
+echo 0 5 "*" "*" 1,3,5 \( quotaoff /home \; quotacheck /home -gum \; quotaon /home \) > /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/update_quotas.cron
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
 '
 QUOTASTATUS=`echo $?`
@@ -228,7 +228,7 @@ echo '$"Enabling quotas for the /home partition - this may take some time."'\<br
 quotacheck -mfcug /home
 quotaon /home
 #Create cron job to schedule auto update of quotas
-echo 0 5 "*" "*" 1,3,5 \( quotaoff /home \; quotacheck /home -gum \; quotaon /home \) > /opt/karoshi/cronjobs/jobs/update_quotas.cron
+echo 0 5 "*" "*" 1,3,5 \( quotaoff /home \; quotacheck /home -gum \; quotaon /home \) > /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/update_quotas.cron
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
 '\''
 QUOTASTATUS=`echo $?`

@@ -24,23 +24,23 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/update_servers_cgi
 then
-echo `date`: update_servers - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: update_servers - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/update_servers_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/update_servers.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $update_servers_cgi'check' ]
 then
-echo `date`: update_servers - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: update_servers - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -48,15 +48,15 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: update_servers - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: update_servers - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: update_servers - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: update_servers - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -68,48 +68,48 @@ SCHEDULEUPDATES=`echo "$DATA" | cut -s -d: -f4`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: update_servers - Not called by update_servers.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: update_servers - Not called by update_servers.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: update_servers - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: update_servers - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: update_servers - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: update_servers - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: update_servers - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: update_servers - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $SCHEDULEUPDATES'null' = null ]
+if [ -z "$SCHEDULEUPDATES" ]
 then
-echo `date`: update_servers - Blank update option by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: update_servers - Blank update option by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ $SCHEDULEUPDATES != yes ] && [ $SCHEDULEUPDATES != no ] && [ $SCHEDULEUPDATES != viewlogs ]
 then
-echo `date`: update_servers - Incorrect update option by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: update_servers - Incorrect update option by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ $SCHEDULEUPDATES = yes ]
 then
-echo 0 1 "*" "*" "*" /opt/karoshi/serversetup/pdc/\"useful scripts\"updateservers  > /opt/karoshi/cronjobs/jobs/updateserver.cron
-/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
-exit 102
+	echo 0 1 "*" "*" "*" /opt/karoshi/serversetup/pdc/\"useful scripts\"updateservers  > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/updateserver.cron
+	/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+	exit 102
 fi
 if [ $SCHEDULEUPDATES = no ]
 then
-rm -f /opt/karoshi/cronjobs/jobs/updateserver.cron
-/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
-exit 103
+	rm -f /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/updateserver.cron
+	/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+	exit 103
 fi
 
 exit

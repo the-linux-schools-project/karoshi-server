@@ -335,11 +335,11 @@ cp -f /opt/karoshi/serversetup/modules/email/scripts/mailboxcheck /opt/karoshi/"
 #######################
 #Create a cron job to run mailbox size checks
 #######################
-echo 0 1,9,17 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/mailboxcheck > /opt/karoshi/cronjobs/jobs/mailboxcheck.cron
+echo 0 1,9,17 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/mailboxcheck > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/mailboxcheck.cron
 #Create a cron job to run postfix stats
-echo 55 23 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/postfixstats > /opt/karoshi/cronjobs/jobs/postfixstats.cron
+echo 55 23 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/postfixstats > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/postfixstats.cron
 #Create a cron job to delete old Trash and Spam mail
-echo 55 23 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/delete_old_mail > /opt/karoshi/cronjobs/jobs/delete_old_mail.cron
+echo 55 23 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/delete_old_mail > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/delete_old_mail.cron
 
 #######################
 #Refresh cronjobs

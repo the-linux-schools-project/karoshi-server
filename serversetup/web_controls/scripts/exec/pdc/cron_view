@@ -156,126 +156,126 @@ echo '<table class="'$TABLECLASS'" style="text-align: left\;"><tbody><tr><td sty
 
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
-if [ ! -d /opt/karoshi/cronjobs/jobs/ ]
-then
-mkdir /opt/karoshi/cronjobs/jobs/
-chmod 0700 /opt/karoshi/cronjobs/jobs/
-fi
-CRONCOUNT=`ls -1 /opt/karoshi/cronjobs/jobs/*.cron | wc -l`
+	if [ ! -d /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/ ]
+	then
+		mkdir /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/
+		chmod 0700 /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/
+	fi
+	CRONCOUNT=`ls -1 /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/*.cron | wc -l`
 
 
-if [ $CRONCOUNT -gt 0 ]
-then
-for CRON_JOBS in /opt/karoshi/cronjobs/jobs/*.cron
-do
-CRON_NAME=`basename $CRON_JOBS | sed "s/.cron$//g"`
-CRON_DATA=`sed -n 1,1p /opt/karoshi/cronjobs/jobs/$CRON_NAME.cron`
-MINUTES=`echo "$CRON_DATA" | cut -d' ' -f1`
-HOUR=`echo "$CRON_DATA" | cut -d' ' -f2`
-DAY=`echo "$CRON_DATA" | cut -d' ' -f3`
-MONTH=`echo "$CRON_DATA" | cut -d' ' -f4`
-DOFW=`echo "$CRON_DATA" | cut -d' ' -f5`
-COMMAND=`echo "$CRON_DATA" | cut -d' ' -f6-`
+	if [ $CRONCOUNT -gt 0 ]
+	then
+		for CRON_JOBS in /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/*.cron
+		do
+			CRON_NAME=`basename $CRON_JOBS | sed "s/.cron$//g"`
+			CRON_DATA=`sed -n 1,1p /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/$CRON_NAME.cron`
+			MINUTES=`echo "$CRON_DATA" | cut -d' ' -f1`
+			HOUR=`echo "$CRON_DATA" | cut -d' ' -f2`
+			DAY=`echo "$CRON_DATA" | cut -d' ' -f3`
+			MONTH=`echo "$CRON_DATA" | cut -d' ' -f4`
+			DOFW=`echo "$CRON_DATA" | cut -d' ' -f5`
+			COMMAND=`echo "$CRON_DATA" | cut -d' ' -f6-`
 
-SHORTCOMMAND=`echo $COMMAND | sed "s/\/\*/SLASHWILDCARD/g"`
-SHORTCOMMAND=`basename "$SHORTCOMMAND" | sed "s/SLASHWILDCARD/\/\*/g" | sed "s/\"//g"`
-echo '<tr><td>
+			SHORTCOMMAND=`echo $COMMAND | sed "s/\/\*/SLASHWILDCARD/g"`
+			SHORTCOMMAND=`basename "$SHORTCOMMAND" | sed "s/SLASHWILDCARD/\/\*/g" | sed "s/\"//g"`
+			echo '<tr><td>
 
-<a class="info3" href="javascript:void(0)"><img class="images" alt="" src="'$INFOICON'"><span>
-'$Mins' : '$MINUTES'<br>'$"Hour"' : '$HOUR'<br>'$"Weekday"' : '$"Day"'<br>'$"Month"' : '$MONTH'<br>'$"Weekday"' : '$DOFW'<br><br>
-'$"Command"'<br>'$COMMAND'<br><br>
-</span></a></td><td>'$CRON_NAME'</td>
-<td><a class="info" href="javascript:void(0)"><input name="___ACTION___EDIT___JOBNAME___'$CRON_NAME'___SERVERTYPE___network___SERVERNAME___'$SERVERNAME'___" type="image" class="images" src="'$EDITICON'" value=""><span>'$"Edit the scheduled job."'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="___ACTION___DELETE___JOBNAME___'$CRON_NAME'___SERVERTYPE___network___SERVERNAME___'$SERVERNAME'___" type="image" class="images" src="'$DELETEICON'" value=""><span>'$"Delete the scheduled job."'</span></a></td></tr>'
+			<a class="info3" href="javascript:void(0)"><img class="images" alt="" src="'$INFOICON'"><span>
+			'$Mins' : '$MINUTES'<br>'$"Hour"' : '$HOUR'<br>'$"Weekday"' : '$"Day"'<br>'$"Month"' : '$MONTH'<br>'$"Weekday"' : '$DOFW'<br><br>
+			'$"Command"'<br>'$COMMAND'<br><br>
+			</span></a></td><td>'$CRON_NAME'</td>
+			<td><a class="info" href="javascript:void(0)"><input name="___ACTION___EDIT___JOBNAME___'$CRON_NAME'___SERVERTYPE___network___SERVERNAME___'$SERVERNAME'___" type="image" class="images" src="'$EDITICON'" value=""><span>'$"Edit the scheduled job."'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="___ACTION___DELETE___JOBNAME___'$CRON_NAME'___SERVERTYPE___network___SERVERNAME___'$SERVERNAME'___" type="image" class="images" src="'$DELETEICON'" value=""><span>'$"Delete the scheduled job."'</span></a></td></tr>'
 
-done
-else
-echo '<tr><td><b>'$"No Scheduled jobs."'</b></td><td></td><td></td><td></td><td></td><td></td></tr>'
-fi
+		done
+	else
+		echo '<tr><td><b>'$"No Scheduled jobs."'</b></td><td></td><td></td><td></td><td></td><td></td></tr>'
+	fi
 fi
 
 
 if [ $SERVERNAME != `hostname-fqdn` ] && [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
 then
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: cron_view \(federated mode\) - showing cron "jobs" "for" '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-if [ ! -d /opt/karoshi/cronjobs/jobs/ ]
-then
-mkdir /opt/karoshi/cronjobs/jobs/
-chmod 0700 /opt/karoshi/cronjobs/jobs/
-fi
-CRONCOUNT=`ls -1 /opt/karoshi/cronjobs/jobs/*.cron | wc -l`
+	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: cron_view \(federated mode\) - showing cron "jobs" "for" '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+	if [ ! -d /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/ ]
+	then
+		mkdir /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/
+		chmod 0700 /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/
+	fi
+	CRONCOUNT=`ls -1 /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/*.cron | wc -l`
 
-if [ $CRONCOUNT -gt 0 ]
-then
-for CRON_JOBS in /opt/karoshi/cronjobs/jobs/*.cron
-do
-CRON_NAME=`basename $CRON_JOBS | sed "s/.cron$//g"`
-CRON_DATA=`sed -n 1,1p /opt/karoshi/cronjobs/jobs/$CRON_NAME.cron`
-MINUTES=`echo "$CRON_DATA" | cut -d" " -f1`
-HOUR=`echo "$CRON_DATA" | cut -d" " -f2`
-DAY=`echo "$CRON_DATA" | cut -d" " -f3`
-MONTH=`echo "$CRON_DATA" | cut -d" " -f4`
-DOFW=`echo "$CRON_DATA" | cut -d" " -f5`
-COMMAND=`echo "$CRON_DATA" | cut -d" " -f6-`
+	if [ $CRONCOUNT -gt 0 ]
+	then
+		for CRON_JOBS in /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/*.cron
+		do
+			CRON_NAME=`basename $CRON_JOBS | sed "s/.cron$//g"`
+			CRON_DATA=`sed -n 1,1p /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/$CRON_NAME.cron`
+			MINUTES=`echo "$CRON_DATA" | cut -d" " -f1`
+			HOUR=`echo "$CRON_DATA" | cut -d" " -f2`
+			DAY=`echo "$CRON_DATA" | cut -d" " -f3`
+			MONTH=`echo "$CRON_DATA" | cut -d" " -f4`
+			DOFW=`echo "$CRON_DATA" | cut -d" " -f5`
+			COMMAND=`echo "$CRON_DATA" | cut -d" " -f6-`
 
-SHORTCOMMAND=`echo $COMMAND | sed "s/\/\*/SLASHWILDCARD/g"`
-SHORTCOMMAND=`basename "$SHORTCOMMAND" | sed "s/SLASHWILDCARD/\/\*/g" | sed "s/\"//g"`
+			SHORTCOMMAND=`echo $COMMAND | sed "s/\/\*/SLASHWILDCARD/g"`
+			SHORTCOMMAND=`basename "$SHORTCOMMAND" | sed "s/SLASHWILDCARD/\/\*/g" | sed "s/\"//g"`
 
-echo "<tr><td style=\"width: 40px;\">
-<a class=\"info3\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"'$INFOICON'\"><span>
-'$Mins' : $MINUTES<br>'$"Hour"' : $HOUR<br>'$"Weekday"' : $"Day"<br>'$"Month"' : $MONTH<br>'$"Weekday"' : $DOFW<br><br>
-'$"Command"'<br>$COMMAND<br><br>
-</span></a>
-</td><td>$CRON_NAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"___ACTION___EDIT___JOBNAME___"$CRON_NAME"___SERVERTYPE___federated___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\" type=\"image\" class=\"images\" src=\"'$EDITICON'\" value=\"\"><span>'$"Edit the scheduled job."'</span></a></td><td>
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"___ACTION___DELETE___JOBNAME___"$CRON_NAME"___SERVERTYPE___federated___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\" type=\"image\" class=\"images\" src=\"'$DELETEICON'\" value=\"\"><span>'$"Delete the scheduled job."'</span></a></td></tr>"
-done
-else
-echo"<tr><td><b>'$"No Scheduled jobs."'</b></td><td></td><td></td><td></td><td></td><td></td></tr>"
-fi
-' 2>/dev/null
+			echo "<tr><td style=\"width: 40px;\">
+			<a class=\"info3\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"'$INFOICON'\"><span>
+			'$Mins' : $MINUTES<br>'$"Hour"' : $HOUR<br>'$"Weekday"' : $"Day"<br>'$"Month"' : $MONTH<br>'$"Weekday"' : $DOFW<br><br>
+			'$"Command"'<br>$COMMAND<br><br>
+			</span></a>
+			</td><td>$CRON_NAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"___ACTION___EDIT___JOBNAME___"$CRON_NAME"___SERVERTYPE___federated___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\" type=\"image\" class=\"images\" src=\"'$EDITICON'\" value=\"\"><span>'$"Edit the scheduled job."'</span></a></td><td>
+			<a class=\"info\" href=\"javascript:void(0)\"><input name=\"___ACTION___DELETE___JOBNAME___"$CRON_NAME"___SERVERTYPE___federated___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\" type=\"image\" class=\"images\" src=\"'$DELETEICON'\" value=\"\"><span>'$"Delete the scheduled job."'</span></a></td></tr>"
+		done
+	else
+		echo"<tr><td><b>'$"No Scheduled jobs."'</b></td><td></td><td></td><td></td><td></td><td></td></tr>"
+	fi
+	' 2>/dev/null
 fi
 
 if [ $SERVERTYPE = federatedslave ]
 then
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
-echo `date`: cron_view \(federated mode\) - showing cron "jobs" "for" '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
-if [ ! -d /opt/karoshi/cronjobs/jobs/ ]
-then
-mkdir /opt/karoshi/cronjobs/jobs/
-chmod 0700 /opt/karoshi/cronjobs/jobs/
-fi
-CRONCOUNT=`ls -1 /opt/karoshi/cronjobs/jobs/*.cron | wc -l`
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+	echo `date`: cron_view \(federated mode\) - showing cron "jobs" "for" '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
+	if [ ! -d /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/ ]
+	then
+		mkdir /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/
+		chmod 0700 /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/
+	fi
+	CRONCOUNT=`ls -1 /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/*.cron | wc -l`
 
-if [ $CRONCOUNT -gt 0 ]
-then
-for CRON_JOBS in /opt/karoshi/cronjobs/jobs/*.cron
-do
-CRON_NAME=`basename $CRON_JOBS | sed "s/.cron$//g"`
-CRON_DATA=`sed -n 1,1p /opt/karoshi/cronjobs/jobs/$CRON_NAME.cron`
-MINUTES=`echo "$CRON_DATA" | cut -d" " -f1`
-HOUR=`echo "$CRON_DATA" | cut -d" " -f2`
-DAY=`echo "$CRON_DATA" | cut -d" " -f3`
-MONTH=`echo "$CRON_DATA" | cut -d" " -f4`
-DOFW=`echo "$CRON_DATA" | cut -d" " -f5`
-COMMAND=`echo "$CRON_DATA" | cut -d" " -f6-`
+	if [ $CRONCOUNT -gt 0 ]
+	then
+		for CRON_JOBS in /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/*.cron
+		do
+			CRON_NAME=`basename $CRON_JOBS | sed "s/.cron$//g"`
+			CRON_DATA=`sed -n 1,1p /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/$CRON_NAME.cron`
+			MINUTES=`echo "$CRON_DATA" | cut -d" " -f1`
+			HOUR=`echo "$CRON_DATA" | cut -d" " -f2`
+			DAY=`echo "$CRON_DATA" | cut -d" " -f3`
+			MONTH=`echo "$CRON_DATA" | cut -d" " -f4`
+			DOFW=`echo "$CRON_DATA" | cut -d" " -f5`
+			COMMAND=`echo "$CRON_DATA" | cut -d" " -f6-`
 
-SHORTCOMMAND=`echo $COMMAND | sed "s/\/\*/SLASHWILDCARD/g"`
-SHORTCOMMAND=`basename "$SHORTCOMMAND" | sed "s/SLASHWILDCARD/\/\*/g" | sed "s/\"//g"`
+			SHORTCOMMAND=`echo $COMMAND | sed "s/\/\*/SLASHWILDCARD/g"`
+			SHORTCOMMAND=`basename "$SHORTCOMMAND" | sed "s/SLASHWILDCARD/\/\*/g" | sed "s/\"//g"`
 
-echo "<tr><td style=\"width: 40px;\">
-<a class=\"info3\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"'$INFOICON'\"><span>
-'$Mins' : $MINUTES<br>'$"Hour"' : $HOUR<br>'$"Weekday"' : $"Day"<br>'$"Month"' : $MONTH<br>'$"Weekday"' : $DOFW<br><br>
-'$"Command"'<br>$COMMAND<br><br>
-</span></a>
-</td><td>$CRON_NAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"___ACTION___EDIT___JOBNAME___"$CRON_NAME"___SERVERTYPE___federatedslave___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\" type=\"image\" class=\"images\" src=\"'$EDITICON'\" value=\"\"><span>'$"Edit the scheduled job."'</span></a></td><td>
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"___ACTION___DELETE___JOBNAME___"$CRON_NAME"___SERVERTYPE___federatedslave___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\" type=\"image\" class=\"images\" src=\"'$DELETEICON'\" value=\"\"><span>'$"Delete the scheduled job."'</span></a></td></tr>"
-done
-else
-echo"<tr><td><b>'$"No Scheduled jobs."'</b></td><td></td><td></td><td></td><td></td><td></td></tr>"
-fi
-'\''
-' 2>/dev/null
+			echo "<tr><td style=\"width: 40px;\">
+			<a class=\"info3\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"'$INFOICON'\"><span>
+			'$Mins' : $MINUTES<br>'$"Hour"' : $HOUR<br>'$"Weekday"' : $"Day"<br>'$"Month"' : $MONTH<br>'$"Weekday"' : $DOFW<br><br>
+			'$"Command"'<br>$COMMAND<br><br>
+			</span></a>
+			</td><td>$CRON_NAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"___ACTION___EDIT___JOBNAME___"$CRON_NAME"___SERVERTYPE___federatedslave___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\" type=\"image\" class=\"images\" src=\"'$EDITICON'\" value=\"\"><span>'$"Edit the scheduled job."'</span></a></td><td>
+			<a class=\"info\" href=\"javascript:void(0)\"><input name=\"___ACTION___DELETE___JOBNAME___"$CRON_NAME"___SERVERTYPE___federatedslave___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\" type=\"image\" class=\"images\" src=\"'$DELETEICON'\" value=\"\"><span>'$"Delete the scheduled job."'</span></a></td></tr>"
+		done
+	else
+		echo"<tr><td><b>'$"No Scheduled jobs."'</b></td><td></td><td></td><td></td><td></td><td></td></tr>"
+	fi
+	'\''
+	' 2>/dev/null
 fi
 
 echo "</tbody></table><br><br>"

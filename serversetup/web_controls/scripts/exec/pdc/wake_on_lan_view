@@ -29,16 +29,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/wake_on_lan_view_cgi
 then
-echo `date`: wake_on_lan_view - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: wake_on_lan_view - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/wake_on_lan_view_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/wake_on_lan_view.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $wake_on_lan_view_cgi'check' ]
 then
-echo `date`: wake_on_lan_view - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: wake_on_lan_view - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -46,8 +46,8 @@ fi
 numArgs=$#
 if [ $numArgs != 1 ]
 then
-echo `date`: wake_on_lan_view - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: wake_on_lan_view - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
@@ -57,24 +57,24 @@ REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: wake_on_lan_view - Not called by wake_on_lan_view.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: wake_on_lan_view - Not called by wake_on_lan_view.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: wake_on_lan_view - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: wake_on_lan_view - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: wake_on_lan_view - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: wake_on_lan_view - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
 then
-echo `date`: wake_on_lan_view - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: wake_on_lan_view - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ############################
 #Language
@@ -87,38 +87,38 @@ TEXTDOMAIN=karoshi-server
 #######################
 #wake on lan
 #######################
-if [ ! -f /opt/karoshi/cronjobs/jobs/wake_on_lan.cron ]
+if [ ! -f /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/wake_on_lan.cron ]
 then
-echo '<b>'$"There are no locations scheduled for wake on lan."'</b>'
-exit 101
+	echo '<b>'$"There are no locations scheduled for wake on lan."'</b>'
+	exit 101
 fi
-if [ ! -d /opt/karoshi/cronjobs/wake_on_lan ]
+if [ ! -d /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/wake_on_lan ]
 then
-echo '<b>'$"There are no locations scheduled for wake on lan."'</b>'
-exit 101
+	echo '<b>'$"There are no locations scheduled for wake on lan."'</b>'
+	exit 101
 fi
-if [ `ls -1 /opt/karoshi/cronjobs/wake_on_lan/ | wc -l` = 0 ]
+if [ `ls -1 /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/wake_on_lan/ | wc -l` = 0 ]
 then
-echo '<b>'$"There are no locations scheduled for wake on lan."'</b>'
-exit 101
+	echo '<b>'$"There are no locations scheduled for wake on lan."'</b>'
+	exit 101
 fi
 echo '<input value="'$"Submit"'" type="submit"> <input value="'$"Reset"'" type="reset"> <input type="button" onclick="SetAllCheckBoxes('\'selectwol\'', '\'_ENABLE_\'', true);" value="'$"Enable All"'"> <input type="button" onclick="SetAllCheckBoxes('\'selectwol\'', '\'_DISABLE_\'', true);" value="'$"Disable All"'">'
 echo '<table class="standard" style="text-align: left; width: 600px; height: 60px;" border="0" cellpadding="2" cellspacing="2">
 <tbody><tr><td style="width: 220px;"><b>'$"Location"'</b></td><td style="width: 220px;"><b>'$"Time"'</b></td><td style="width: 100px;"><b>'$"Status"'</b></td><td style="width: 100px;"><b>'$"Enable"'</b></td><td style="width: 100px;"><b>'$"Disable"'</b></td><td style="width: 100px;"><b>'$"Remove"'</b></td></tr><tr>'
 
-for LOCATION in /opt/karoshi/cronjobs/wake_on_lan/*
+for LOCATION in /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/wake_on_lan/*
 do
-NAME=`basename $LOCATION | sed 's/.cron//g'`
-TIME=`sed -n 1,1p $LOCATION | cut -d' ' -f1,2`
-MINUTES=`echo $TIME | cut -d' ' -f1`
-HOUR=`echo $TIME | cut -d' ' -f2`
-#Check if wol is disabled for the location
-if [ -f /opt/karoshi/cronjobs/wake_on_lan_status/$NAME ]
-then
-echo '<td>'$NAME'</td><td style="width: 220px;">'$HOUR' : '$MINUTES'</td><td><img alt="" src="/images/submenus/client/wol_disabled.png"></td><td><input name="_ENABLE_" value="'$NAME'" type="checkbox"></td><td><input disabled="_DISABLE_" value="'$NAME'" type="checkbox"></td><td><input name="_REMOVE_" value="'$NAME'" type="checkbox"></td></tr>'
-else
-echo '<td>'$NAME'</td><td style="width: 220px;">'$HOUR' : '$MINUTES'</td><td><img alt="" src="/images/submenus/client/wol_enabled.png"></td><td><input disabled="_ENABLE_" value="'$NAME'" type="checkbox"></td><td><input name="_DISABLE_" value="'$NAME'" type="checkbox"></td><td><input name="_REMOVE_" value="'$NAME'" type="checkbox"></td></tr>'
-fi
+	NAME=`basename $LOCATION | sed 's/.cron//g'`
+	TIME=`sed -n 1,1p $LOCATION | cut -d' ' -f1,2`
+	MINUTES=`echo $TIME | cut -d' ' -f1`
+	HOUR=`echo $TIME | cut -d' ' -f2`
+	#Check if wol is disabled for the location
+	if [ -f /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/wake_on_lan_status/$NAME ]
+	then
+		echo '<td>'$NAME'</td><td style="width: 220px;">'$HOUR' : '$MINUTES'</td><td><img alt="" src="/images/submenus/client/wol_disabled.png"></td><td><input name="_ENABLE_" value="'$NAME'" type="checkbox"></td><td><input disabled="_DISABLE_" value="'$NAME'" type="checkbox"></td><td><input name="_REMOVE_" value="'$NAME'" type="checkbox"></td></tr>'
+	else
+		echo '<td>'$NAME'</td><td style="width: 220px;">'$HOUR' : '$MINUTES'</td><td><img alt="" src="/images/submenus/client/wol_enabled.png"></td><td><input disabled="_ENABLE_" value="'$NAME'" type="checkbox"></td><td><input name="_DISABLE_" value="'$NAME'" type="checkbox"></td><td><input name="_REMOVE_" value="'$NAME'" type="checkbox"></td></tr>'
+	fi
 done
 echo '</tbody></table>'
 echo '<input value="'$"Submit"'" type="submit"> <input value="'$"Reset"'" type="reset"> <input type="button" onclick="SetAllCheckBoxes('\'selectwol\'', '\'_ENABLE_\'', true);" value="'$"Enable All"'"> <input type="button" onclick="SetAllCheckBoxes('\'selectwol\'', '\'_DISABLE_\'', true);" value="'$"Disable All"'">'
