@@ -27,17 +27,17 @@
 ICON1="/images/submenus/file/folder.png"
 ICON2="/images/submenus/file/up.png"
 
-[ ! -d /opt/karoshi/server_network/disk_usage ] && mkdir -p /opt/karoshi/server_network/disk_usage
-[ ! -d /opt/karoshi/server_network/disk_usage/var ] && mkdir -p /opt/karoshi/server_network/disk_usage/var
-[ ! -d /opt/karoshi/server_network/disk_usage/var/lib ] && mkdir -p /opt/karoshi/server_network/disk_usage/var/lib
-[ ! -d /opt/karoshi/server_network/disk_usage/var/lib/samba ] && mkdir -p /opt/karoshi/server_network/disk_usage/var/lib/samba
+[ ! -d /opt/karoshi/server_network/disk_usage/`hostname-fqdn` ] && mkdir -p /opt/karoshi/server_network/disk_usage/`hostname-fqdn`
+[ ! -d /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/var ] && mkdir -p /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/var
+[ ! -d /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/var/lib ] && mkdir -p /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/var/lib
+[ ! -d /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/var/lib/samba ] && mkdir -p /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/var/lib/samba
 
 SCOUNTER=2000
 END=2050
 while [ $SCOUNTER -lt $END ]
 do
-[ ! -d /opt/karoshi/server_network/disk_usage/home/users/students/yr$SCOUNTER ] && mkdir -p /opt/karoshi/server_network/disk_usage/home/users/students/$YRSCOUNTER
-let SCOUNTER=$SCOUNTER+1
+	[ ! -d /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/home/users/students/yr$SCOUNTER ] && mkdir -p /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/home/users/students/$YRSCOUNTER
+	let SCOUNTER=$SCOUNTER+1
 done
 
 
@@ -45,72 +45,71 @@ function generate_data {
 
 if [ $UPLINKS = yes ]
 then
-echo '<a class="info" href="javascript:void(0)"><input name="_CHOICE_'$FOLDERUP'_" type="image" class="images" src="'$ICON2'" value=""><span>'$FOLDERUP'</span></a> <b>'$DISKPATH'</b> <small>'`date +%d-%m-%y`'</small><br><br>' > /opt/karoshi/server_network/disk_usage/"$DISKPATH".html
+	echo '<a class="info" href="javascript:void(0)"><input name="_CHOICE_'$FOLDERUP'_" type="image" class="images" src="'$ICON2'" value=""><span>'$FOLDERUP'</span></a> <b>'$DISKPATH'</b> <small>'`date +%d-%m-%y`'</small><br><br>' > /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/"$DISKPATH".html
 else
-echo "<b>"$DISKPATH"</b> <small>"`date +%d-%m-%y`"</small><br><br>" > /opt/karoshi/server_network/disk_usage/"$DISKPATH".html
+	echo "<b>"$DISKPATH"</b> <small>"`date +%d-%m-%y`"</small><br><br>" > /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/"$DISKPATH".html
 fi
 
 if [ -d "$DISKPATH" ]
 then
-if [ `ls -1 "$DISKPATH" | wc -l` -gt 0 ]
-then
-echo '<div class="BarTable"><table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="2"><tr><td style="vertical-align: top; width: 40px;"></td><td style="vertical-align: top; width: 220px;"><b>Folder</b></td><td style="vertical-align: top; width: 100px;"><b>Size</b></td><td style="vertical-align: top; width: 300px;"></td></tr>' >> /opt/karoshi/server_network/disk_usage/"$DISKPATH".html
+	if [ `ls -1 "$DISKPATH" | wc -l` -gt 0 ]
+	then
+		echo '<div class="BarTable"><table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="2"><tr><td style="vertical-align: top; width: 40px;"></td><td style="vertical-align: top; width: 220px;"><b>Folder</b></td><td style="vertical-align: top; width: 100px;"><b>Size</b></td><td style="vertical-align: top; width: 300px;"></td></tr>' >> /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/"$DISKPATH".html
 
-#echo Processing $DISKPATH
+		#echo Processing $DISKPATH
 
-COUNTER=1
-for FOLDERS in `du --max-depth=0 "$DISKPATH"/* | sort -gr | sed 's/ /___/g' | sed 's/[ \t]/,/g' | sed 's/\/\//\//g'`
-do
-#echo $FOLDERS
-COLOUR=blue
-SUFFIX=KB
-SIZE=`echo "$FOLDERS" | cut -d, -f1`
-FOLDER=`echo "$FOLDERS" | cut -d, -f2 | sed 's/___/ /g'`
-FOLDERSHORT=`basename "$FOLDERS" | sed 's/___/ /g'`
-[ $COUNTER = 1 ] && MAXSIZE=$SIZE
-PERCENT=`echo 'scale=4;'$SIZE'/'$MAXSIZE'*100' | bc | sed 's/^\./0\./g'`
+		COUNTER=1
+		for FOLDERS in `du --max-depth=0 "$DISKPATH"/* | sort -gr | sed 's/ /___/g' | sed 's/[ \t]/,/g' | sed 's/\/\//\//g'`
+		do
+			#echo $FOLDERS
+			COLOUR=blue
+			SUFFIX=KB
+			SIZE=`echo "$FOLDERS" | cut -d, -f1`
+			FOLDER=`echo "$FOLDERS" | cut -d, -f2 | sed 's/___/ /g'`
+			FOLDERSHORT=`basename "$FOLDERS" | sed 's/___/ /g'`
+			[ $COUNTER = 1 ] && MAXSIZE=$SIZE
+			PERCENT=`echo 'scale=4;'$SIZE'/'$MAXSIZE'*100' | bc | sed 's/^\./0\./g'`
 
-#Convert to MB
-if [ $SIZE -gt 1024 ]
-then
-SUFFIX=MB
-let SIZE=$SIZE/1024
-fi
+			#Convert to MB
+			if [ $SIZE -gt 1024 ]
+			then
+				SUFFIX=MB
+				let SIZE=$SIZE/1024
+			fi
 
-#Convert to GB
-if [ $SIZE -gt 1024 ]
-then
-SUFFIX=GB
-let SIZE=$SIZE/1024
-fi
+			#Convert to GB
+			if [ $SIZE -gt 1024 ]
+			then
+				SUFFIX=GB
+				let SIZE=$SIZE/1024
+			fi
 
-SHOWSUBLINKS=no
-if [ $SUBLINKS = yes ]
-then
-SHOWSUBLINKS=yes
-if [ $SUBLINKFOLDERCHECK = yes ]
-then
-if [ `echo "$SUBLINKFOLDERS" | grep -c "$FOLDER"` = 0 ]
-then
-SHOWSUBLINKS=no
-fi
-fi
-fi
+			SHOWSUBLINKS=no
+			if [ $SUBLINKS = yes ]
+			then
+				SHOWSUBLINKS=yes
+				if [ $SUBLINKFOLDERCHECK = yes ]
+				then
+					if [ `echo "$SUBLINKFOLDERS" | grep -c "$FOLDER"` = 0 ]
+					then
+						SHOWSUBLINKS=no
+					fi
+				fi
+			fi
 
-if [ $SHOWSUBLINKS = yes ]
-then
-echo '<tr><td><a class="info" href="javascript:void(0)"><input name="_CHOICE_'$FOLDER'_" type="image" class="images" src="'$ICON1'" value=""><span>'$FOLDERSHORT'</span></a></td><td><div class="BarLabel">'$FOLDERSHORT'</div></td><td>'$SIZE' '$SUFFIX'</td><td class="BarFull"><img src="/images/disk_usage/'$COLOUR'.png" height="12" width="'$PERCENT'%"></td></tr>' >> /opt/karoshi/server_network/disk_usage/"$DISKPATH".html
-fi
+			if [ $SHOWSUBLINKS = yes ]
+			then
+				echo '<tr><td><a class="info" href="javascript:void(0)"><input name="_CHOICE_'$FOLDER'_" type="image" class="images" src="'$ICON1'" value=""><span>'$FOLDERSHORT'</span></a></td><td><div class="BarLabel">'$FOLDERSHORT'</div></td><td>'$SIZE' '$SUFFIX'</td><td class="BarFull"><img src="/images/disk_usage/'$COLOUR'.png" height="12" width="'$PERCENT'%"></td></tr>' >> /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/"$DISKPATH".html
+			fi
 
-if [ $SHOWSUBLINKS = no ]
-then
-echo '<tr><td></td><td><div class="BarLabel">'$FOLDERSHORT'</div></td><td>'$SIZE' '$SUFFIX'</td><td class="BarFull"><img src="/images/disk_usage/'$COLOUR'.png" height="12" width="'$PERCENT'%"></td></tr>' >> /opt/karoshi/server_network/disk_usage/"$DISKPATH".html
-fi
-
-let COUNTER=$COUNTER+1
-done
-echo '</table></div>'  >> /opt/karoshi/server_network/disk_usage/"$DISKPATH".html
-fi
+			if [ $SHOWSUBLINKS = no ]
+			then
+				echo '<tr><td></td><td><div class="BarLabel">'$FOLDERSHORT'</div></td><td>'$SIZE' '$SUFFIX'</td><td class="BarFull"><img src="/images/disk_usage/'$COLOUR'.png" height="12" width="'$PERCENT'%"></td></tr>' >> /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/"$DISKPATH".html
+			fi
+			let COUNTER=$COUNTER+1
+		done
+		echo '</table></div>'  >> /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/"$DISKPATH".html
+	fi
 fi
 }
 
@@ -133,7 +132,7 @@ UPLINKS=yes
 generate_data
 
 
-[ ! -d /opt/karoshi/server_network/disk_usage/usr/share ] && mkdir -p /opt/karoshi/server_network/disk_usage/usr/share
+[ ! -d /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/usr/share ] && mkdir -p /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/usr/share
 DISKPATH=/usr/share
 FOLDERUP=/
 SUBLINKS=no
@@ -239,7 +238,7 @@ SUBLINKFOLDERS=""
 UPLINKS=yes
 generate_data
 
-[ ! -d /opt/karoshi/server_network/disk_usage/var/log ] && mkdir -p /opt/karoshi/server_network/disk_usage/var/log
+[ ! -d /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/var/log ] && mkdir -p /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/var/log
 DISKPATH=/var/log
 FOLDERUP=/var
 SUBLINKS=yes
@@ -299,36 +298,36 @@ generate_data
 
 if [ -d /var/www ]
 then
-[ ! -d /opt/karoshi/server_network/disk_usage/var/www ] && mkdir -p /opt/karoshi/server_network/disk_usage/var/www
-DISKPATH=/var/www
-FOLDERUP=/var
-SUBLINKS=yes
-SUBLINKFOLDERCHECK=yes
-SUBLINKFOLDERS=/var/www/html,/var/www/smbwebclient-data
-UPLINKS=yes
-generate_data
+	[ ! -d /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/var/www ] && mkdir -p /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/var/www
+	DISKPATH=/var/www
+	FOLDERUP=/var
+	SUBLINKS=yes
+	SUBLINKFOLDERCHECK=yes
+	SUBLINKFOLDERS=/var/www/html,/var/www/smbwebclient-data
+	UPLINKS=yes
+	generate_data
 fi
 
 if [ -d /var/www/smbwebclient-data ]
 then
-DISKPATH=/var/www/smbwebclient-data
-FOLDERUP=/var/www
-SUBLINKS=no
-SUBLINKFOLDERCHECK=no
-SUBLINKFOLDERS=""
-UPLINKS=yes
-generate_data
+	DISKPATH=/var/www/smbwebclient-data
+	FOLDERUP=/var/www
+	SUBLINKS=no
+	SUBLINKFOLDERCHECK=no
+	SUBLINKFOLDERS=""
+	UPLINKS=yes
+	generate_data
 fi
 
 if [ -d /var/www/html ]
 then
-DISKPATH=/var/www/html
-FOLDERUP=/var/www
-SUBLINKS=no
-SUBLINKFOLDERCHECK=no
-SUBLINKFOLDERS=""
-UPLINKS=yes
-generate_data
+	DISKPATH=/var/www/html
+	FOLDERUP=/var/www
+	SUBLINKS=no
+	SUBLINKFOLDERCHECK=no
+	SUBLINKFOLDERS=""
+	UPLINKS=yes
+	generate_data
 fi
 
 DISKPATH=/home
@@ -341,222 +340,221 @@ generate_data
 
 if [ -d /home/subjects ]
 then
-[ ! -d /opt/karoshi/server_network/disk_usage/home/subjects ] && mkdir -p /opt/karoshi/server_network/disk_usage/home/subjects
-DISKPATH=/home/subjects
-FOLDERUP=/home
-SUBLINKS=yes
-SUBLINKFOLDERCHECK=no
-SUBLINKFOLDERS=""
-UPLINKS=yes
-generate_data
+	[ ! -d /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/home/subjects ] && mkdir -p /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/home/subjects
+	DISKPATH=/home/subjects
+	FOLDERUP=/home
+	SUBLINKS=yes
+	SUBLINKFOLDERCHECK=no
+	SUBLINKFOLDERS=""
+	UPLINKS=yes
+	generate_data
 
-SUBLINKS=no
-SUBLINKFOLDERCHECK=no
-UPLINKS=yes
-SUBLINKFOLDERS=""
-for DISKPATH in /home/subjects/*
-do
-FOLDERUP=/home/subjects
-generate_data
-done
-
+	SUBLINKS=no
+	SUBLINKFOLDERCHECK=no
+	UPLINKS=yes
+	SUBLINKFOLDERS=""
+	for DISKPATH in /home/subjects/*
+	do
+		FOLDERUP=/home/subjects
+		generate_data
+	done
 fi
 
 if [ -d /home/applications ]
 then
-DISKPATH=/home/applications
-FOLDERUP=/home
-SUBLINKS=yes
-SUBLINKFOLDERCHECK=no
-SUBLINKFOLDERS=""
-UPLINKS=yes
-generate_data
+	DISKPATH=/home/applications
+	FOLDERUP=/home
+	SUBLINKS=yes
+	SUBLINKFOLDERCHECK=no
+	SUBLINKFOLDERS=""
+	UPLINKS=yes
+	generate_data
 fi
 
 if [ -d /home/staffshare ]
 then
-[ ! -d /opt/karoshi/server_network/disk_usage/home/staffshare ] && mkdir -p /opt/karoshi/server_network/disk_usage/home/staffshare
-DISKPATH=/home/staffshare
-FOLDERUP=/home
-SUBLINKS=yes
-SUBLINKFOLDERCHECK=no
-SUBLINKFOLDERS=""
-UPLINKS=yes
-generate_data
+	[ ! -d /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/home/staffshare ] && mkdir -p /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/home/staffshare
+	DISKPATH=/home/staffshare
+	FOLDERUP=/home
+	SUBLINKS=yes
+	SUBLINKFOLDERCHECK=no
+	SUBLINKFOLDERS=""
+	UPLINKS=yes
+	generate_data
 fi
 
 if [ -d /home/itadminshare ]
 then
-[ ! -d /opt/karoshi/server_network/disk_usage/home/itadminshare ] && mkdir -p /opt/karoshi/server_network/disk_usage/home/itadminshare
-DISKPATH=/home/itadminshare
-FOLDERUP=/home
-SUBLINKS=yes
-SUBLINKFOLDERCHECK=no
-SUBLINKFOLDERS=""
-UPLINKS=yes
-generate_data
+	[ ! -d /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/home/itadminshare ] && mkdir -p /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/home/itadminshare
+	DISKPATH=/home/itadminshare
+	FOLDERUP=/home
+	SUBLINKS=yes
+	SUBLINKFOLDERCHECK=no
+	SUBLINKFOLDERS=""
+	UPLINKS=yes
+	generate_data
 fi
 
 if [ -d /home/users ]
 then
-DISKPATH=/home/users
-FOLDERUP=/home
-SUBLINKS=yes
-SUBLINKFOLDERCHECK=yes
-SUBLINKFOLDERS=/home/users/students,/home/users/staff,/home/users/officestaff,/home/users/exams,/home/users/itadminstaff,/home/users/techstaff,/home/users/guests
-UPLINKS=yes
-generate_data
+	DISKPATH=/home/users
+	FOLDERUP=/home
+	SUBLINKS=yes
+	SUBLINKFOLDERCHECK=yes
+	SUBLINKFOLDERS=/home/users/students,/home/users/staff,/home/users/officestaff,/home/users/exams,/home/users/itadminstaff,/home/users/techstaff,/home/users/guests
+	UPLINKS=yes
+	generate_data
 fi
 
 #Exams
 if [ -d /home/users/exams ]
 then
-[ ! -d /opt/karoshi/server_network/disk_usage/home/users/exams ] && mkdir -p /opt/karoshi/server_network/disk_usage/home/users/exams
-DISKPATH=/home/users/exams
-FOLDERUP=/home/users
-SUBLINKS=yes
-SUBLINKFOLDERCHECK=no
-SUBLINKFOLDERS=""
-UPLINKS=yes
-generate_data
+	[ ! -d /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/home/users/exams ] && mkdir -p /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/home/users/exams
+	DISKPATH=/home/users/exams
+	FOLDERUP=/home/users
+	SUBLINKS=yes
+	SUBLINKFOLDERCHECK=no
+	SUBLINKFOLDERS=""
+	UPLINKS=yes
+	generate_data
 
-SUBLINKS=no
-SUBLINKFOLDERCHECK=no
-UPLINKS=yes
-SUBLINKFOLDERS=""
-for DISKPATH in /home/users/exams/*
-do
-FOLDERUP=/home/users/exams
-generate_data
-done
+	SUBLINKS=no
+	SUBLINKFOLDERCHECK=no
+	UPLINKS=yes
+	SUBLINKFOLDERS=""
+	for DISKPATH in /home/users/exams/*
+	do
+		FOLDERUP=/home/users/exams
+		generate_data
+	done
 fi
 
 #Staff
 if [ -d /home/users/staff ]
 then
-[ ! -d /opt/karoshi/server_network/disk_usage/home/users/staff ] && mkdir -p /opt/karoshi/server_network/disk_usage/home/users/staff
-DISKPATH=/home/users/staff
-FOLDERUP=/home/users
-SUBLINKS=yes
-SUBLINKFOLDERCHECK=no
-SUBLINKFOLDERS=""
-UPLINKS=yes
-generate_data
+	[ ! -d /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/home/users/staff ] && mkdir -p /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/home/users/staff
+	DISKPATH=/home/users/staff
+	FOLDERUP=/home/users
+	SUBLINKS=yes
+	SUBLINKFOLDERCHECK=no
+	SUBLINKFOLDERS=""
+	UPLINKS=yes
+	generate_data
 
-SUBLINKS=no
-SUBLINKFOLDERCHECK=no
-UPLINKS=yes
-SUBLINKFOLDERS=""
-for DISKPATH in /home/users/staff/*
-do
-FOLDERUP=/home/users/staff
-generate_data
-done
+	SUBLINKS=no
+	SUBLINKFOLDERCHECK=no
+	UPLINKS=yes
+	SUBLINKFOLDERS=""
+	for DISKPATH in /home/users/staff/*
+	do
+		FOLDERUP=/home/users/staff
+		generate_data
+	done
 fi
 
 #guests
 if [ -d /home/users/guests ]
 then
-[ ! -d /opt/karoshi/server_network/disk_usage/home/users/guests ] && mkdir -p /opt/karoshi/server_network/disk_usage/home/users/guests
-DISKPATH=/home/users/guests
-FOLDERUP=/home/users
-SUBLINKS=yes
-SUBLINKFOLDERCHECK=no
-SUBLINKFOLDERS=""
-UPLINKS=yes
-generate_data
+	[ ! -d /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/home/users/guests ] && mkdir -p /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/home/users/guests
+	DISKPATH=/home/users/guests
+	FOLDERUP=/home/users
+	SUBLINKS=yes
+	SUBLINKFOLDERCHECK=no
+	SUBLINKFOLDERS=""
+	UPLINKS=yes
+	generate_data
 
-SUBLINKS=no
-SUBLINKFOLDERCHECK=no
-UPLINKS=yes
-SUBLINKFOLDERS=""
-for DISKPATH in /home/users/guests/*
-do
-FOLDERUP=/home/users/guests
-generate_data
-done
+	SUBLINKS=no
+	SUBLINKFOLDERCHECK=no
+	UPLINKS=yes
+	SUBLINKFOLDERS=""
+	for DISKPATH in /home/users/guests/*
+	do
+		FOLDERUP=/home/users/guests
+		generate_data
+	done
 fi
 
 #Officestaff
 if [ -d /home/users/officestaff ]
 then
-[ ! -d /opt/karoshi/server_network/disk_usage/home/users/officestaff ] && mkdir -p /opt/karoshi/server_network/disk_usage/home/users/officestaff
-DISKPATH=/home/users/officestaff
-FOLDERUP=/home/users
-SUBLINKS=yes
-SUBLINKFOLDERCHECK=no
-SUBLINKFOLDERS=""
-UPLINKS=yes
-generate_data
+	[ ! -d /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/home/users/officestaff ] && mkdir -p /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/home/users/officestaff
+	DISKPATH=/home/users/officestaff
+	FOLDERUP=/home/users
+	SUBLINKS=yes
+	SUBLINKFOLDERCHECK=no
+	SUBLINKFOLDERS=""
+	UPLINKS=yes
+	generate_data
 
-SUBLINKS=no
-SUBLINKFOLDERCHECK=no
-UPLINKS=yes
-SUBLINKFOLDERS=""
-for DISKPATH in /home/users/officestaff/*
-do
-FOLDERUP=/home/users/officestaff
-generate_data
-done
+	SUBLINKS=no
+	SUBLINKFOLDERCHECK=no
+	UPLINKS=yes
+	SUBLINKFOLDERS=""
+	for DISKPATH in /home/users/officestaff/*
+	do
+		FOLDERUP=/home/users/officestaff
+		generate_data
+	done
 fi
 
 #itadminstaff
 if [ -d /home/users/itadminstaff ]
 then
-[ ! -d /opt/karoshi/server_network/disk_usage/home/users/itadminstaff ] && mkdir -p /opt/karoshi/server_network/disk_usage/home/users/itadminstaff
-DISKPATH=/home/users/itadminstaff
-FOLDERUP=/home/users
-SUBLINKS=yes
-SUBLINKFOLDERCHECK=no
-SUBLINKFOLDERS=""
-UPLINKS=yes
-generate_data
+	[ ! -d /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/home/users/itadminstaff ] && mkdir -p /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/home/users/itadminstaff
+	DISKPATH=/home/users/itadminstaff
+	FOLDERUP=/home/users
+	SUBLINKS=yes
+	SUBLINKFOLDERCHECK=no
+	SUBLINKFOLDERS=""
+	UPLINKS=yes
+	generate_data
 
-SUBLINKS=no
-SUBLINKFOLDERCHECK=no
-UPLINKS=yes
-SUBLINKFOLDERS=""
-for DISKPATH in /home/users/itadminstaff/*
-do
-FOLDERUP=/home/users/itadminstaff
-generate_data
-done
+	SUBLINKS=no
+	SUBLINKFOLDERCHECK=no
+	UPLINKS=yes
+	SUBLINKFOLDERS=""
+	for DISKPATH in /home/users/itadminstaff/*
+	do
+		FOLDERUP=/home/users/itadminstaff
+		generate_data
+	done
 fi
 
 #techstaff
 if [ -d /home/users/techstaff ]
 then
-[ ! -d /opt/karoshi/server_network/disk_usage/home/users/techstaff ] && mkdir -p /opt/karoshi/server_network/disk_usage/home/users/techstaff
-DISKPATH=/home/users/techstaff
-FOLDERUP=/home/users
-SUBLINKS=yes
-SUBLINKFOLDERCHECK=no
-SUBLINKFOLDERS=""
-UPLINKS=yes
-generate_data
+	[ ! -d /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/home/users/techstaff ] && mkdir -p /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/home/users/techstaff
+	DISKPATH=/home/users/techstaff
+	FOLDERUP=/home/users
+	SUBLINKS=yes
+	SUBLINKFOLDERCHECK=no
+	SUBLINKFOLDERS=""
+	UPLINKS=yes
+	generate_data
 
-SUBLINKS=no
-SUBLINKFOLDERCHECK=no
-UPLINKS=yes
-SUBLINKFOLDERS=""
-for DISKPATH in /home/users/techstaff/*
-do
-FOLDERUP=/home/users/techstaff
-generate_data
-done
+	SUBLINKS=no
+	SUBLINKFOLDERCHECK=no
+	UPLINKS=yes
+	SUBLINKFOLDERS=""
+	for DISKPATH in /home/users/techstaff/*
+	do
+		FOLDERUP=/home/users/techstaff
+		generate_data
+	done
 fi
 
 #Students
 if [ -d /home/users/students ]
 then
-[ ! -d /opt/karoshi/server_network/disk_usage/home/users/students ] && mkdir -p /opt/karoshi/server_network/disk_usage/home/users/students
-DISKPATH=/home/users/students
-FOLDERUP=/home/users
-SUBLINKS=yes
-SUBLINKFOLDERCHECK=no
-SUBLINKFOLDERS=""
-UPLINKS=yes
-generate_data
+	[ ! -d /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/home/users/students ] && mkdir -p /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/home/users/students
+	DISKPATH=/home/users/students
+	FOLDERUP=/home/users
+	SUBLINKS=yes
+	SUBLINKFOLDERCHECK=no
+	SUBLINKFOLDERS=""
+	UPLINKS=yes
+	generate_data
 fi
 
 #Students
@@ -564,27 +562,27 @@ SCOUNTER=2000
 END=2050
 while [ $SCOUNTER -le $END ]
 do
-if [ -d /home/users/students/yr$SCOUNTER ]
-then
-DISKPATH=/home/users/students/yr$SCOUNTER
-FOLDERUP=/home/users/students
-SUBLINKS=yes
-SUBLINKFOLDERCHECK=no
-SUBLINKFOLDERS=""
-UPLINKS=yes
-generate_data
+	if [ -d /home/users/students/yr$SCOUNTER ]
+	then
+		DISKPATH=/home/users/students/yr$SCOUNTER
+		FOLDERUP=/home/users/students
+		SUBLINKS=yes
+		SUBLINKFOLDERCHECK=no
+		SUBLINKFOLDERS=""
+		UPLINKS=yes
+		generate_data
 
-SUBLINKS=no
-SUBLINKFOLDERCHECK=no
-UPLINKS=yes
-SUBLINKFOLDERS=""
-[ ! -d /opt/karoshi/server_network/disk_usage/home/users/students/yr$SCOUNTER ] && mkdir -p /opt/karoshi/server_network/disk_usage/home/users/students/yr$SCOUNTER
-for DISKPATH in /home/users/students/yr$SCOUNTER/*
-do
-FOLDERUP=/home/users/students/yr$SCOUNTER
-generate_data
-done
-fi
-let SCOUNTER=$SCOUNTER+1
+		SUBLINKS=no
+		SUBLINKFOLDERCHECK=no
+		UPLINKS=yes
+		SUBLINKFOLDERS=""
+		[ ! -d /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/home/users/students/yr$SCOUNTER ] && mkdir -p /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/home/users/students/yr$SCOUNTER
+		for DISKPATH in /home/users/students/yr$SCOUNTER/*
+		do
+			FOLDERUP=/home/users/students/yr$SCOUNTER
+			generate_data
+		done
+	fi
+	let SCOUNTER=$SCOUNTER+1
 done
 

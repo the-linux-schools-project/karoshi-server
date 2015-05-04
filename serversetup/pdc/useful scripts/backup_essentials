@@ -1,0 +1,31 @@
+#!/bin/bash
+BASE_BACKUP_PATH=/opt/karoshi/server_network/recovery
+BACKUP_PATH="$BASE_BACKUP_PATH"/`hostname-fqdn`
+
+if [ ! -d "$BASE_BACKUP_PATH" ]
+then
+	mkdir -p "$BASE_BACKUP_PATH"
+	chmod 0700 "$BASE_BACKUP_PATH"
+fi
+
+if [ ! -d "$BACKUP_PATH" ]
+then
+	mkdir -p "$BACKUP_PATH"
+	chmod 0700 "$BACKUP_PATH"
+fi
+
+#Backup smb.conf
+cp -f /etc/samba/smb.conf "$BACKUP_PATH"
+
+#Backup ssh keys
+cp -f -r  /root/.ssh "$BACKUP_PATH"
+
+#Backup ssl certs
+if [ ! -d "$BACKUP_PATH"/ssl ]
+then
+	mkdir -p "$BACKUP_PATH"/ssl
+	chmod 0700 "$BACKUP_PATH"/ssl
+fi
+cp -f -r /etc/ssl/webmanagement/ "$BACKUP_PATH"/ssl
+cp -f -r /etc/ssl/root-ca/ "$BACKUP_PATH"/ssl
+

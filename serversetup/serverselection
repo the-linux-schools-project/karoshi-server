@@ -80,11 +80,12 @@ if [ "$CHOICE" = 2 ]
 then
 	#Ask if this is server installation is for education or business use.
 	yad --title $"Linux Schools Server Setup" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 180 \
-   	--button=''$"Education"':1'  --button=''$"Business"':2' --text $"Is this server for education or business use?"
+   	--button=''$"Education"':1'  --button=''$"Business"':2' --button=''$"Restore"':3' --text $"Choose the server install version.""\n\n<span font_weight='bold' foreground='blue'>"$"Education""</span>: "$"Installs with student year groups.""\n\n<span font_weight='bold' foreground='blue'>"$"Business""</span>: "$"Installs without student year groups.""\n\n<span font_weight='bold' foreground='purple'>"$"Restore""</span>: "$"Join this server to an existing additional Karoshi Server that is a domain controller."
 	SCHOICE="$?"
 
 	[ $SCHOICE = 1 ] && INSTALL_TYPE=education
 	[ $SCHOICE = 2 ] && INSTALL_TYPE=business
+	[ $SCHOICE = 3 ] && INSTALL_TYPE=restore
 	
 	[ ! -d /opt/karoshi/server_network ] && mkdir /opt/karoshi/server_network
 

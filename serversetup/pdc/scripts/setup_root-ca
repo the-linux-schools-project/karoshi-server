@@ -15,6 +15,8 @@
 #You should have received a copy of the GNU Affero General Public License
 #along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
 
+#Don't generate a root ca if one already exists 
+
 echo `date`: '##############'setup_root-ca'##############' >> /opt/karoshi/serversetup/install_log
 
 #Copy in revised openssl.cnf
@@ -22,46 +24,50 @@ echo `date`: '##############'setup_root-ca'##############' >> /opt/karoshi/serve
 mv /etc/ssl/openssl.cnf /etc/ssl/openssl.cnf.$$
 cp -f /opt/karoshi/serversetup/distro/ubuntu/all/configfiles/openssl.cnf /etc/ssl/
 
-#Assign variables
-source /opt/karoshi/server_network/domain_information/domain_name
+#Don't generate a root ca if one already exists 
+if [ !-f /etc/ssl/root-ca/cacert.pem ]
+then
+	#Assign variables
+	source /opt/karoshi/server_network/domain_information/domain_name
 
-COUNTRY=`echo $LANG | cut -d_ -f2 | cut -d. -f1`
-STATE=`cat /etc/timezone | cut -d/ -f1`
-CITY=`cat /etc/timezone | cut -d/ -f2`
-NAME=$HOSTNAME
-LOCALNAME=$REALM
-SERVERNAME=$REALM
-EMAILADDRESS=administrator@$REALM
+	COUNTRY=`echo $LANG | cut -d_ -f2 | cut -d. -f1`
+	STATE=`cat /etc/timezone | cut -d/ -f1`
+	CITY=`cat /etc/timezone | cut -d/ -f2`
+	NAME=$HOSTNAME
+	LOCALNAME=$REALM
+	SERVERNAME=$REALM
+	EMAILADDRESS=administrator@$REALM
 
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+	LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 
-#Clear existing certificates
-[ -d /etc/ssl/root-ca ] && rm -f -R /etc/ssl/root-ca
+	#Clear existing certificates
+	[ -d /etc/ssl/root-ca ] && rm -f -R /etc/ssl/root-ca
 
-echo `date`: "Creating roo-ca dirs" >> /opt/karoshi/serversetup/install_log
-#Create root-ca dirs
-[ ! -d /etc/ssl/root-ca ] && mkdir -m 0700 /etc/ssl/root-ca
-[ ! -d /etc/ssl/root-ca/certs ] && mkdir -m 0700 /etc/ssl/root-ca/certs
-[ ! -d /etc/ssl/root-ca/private ] && mkdir -m 0700 /etc/ssl/root-ca/private
-[ ! -d /etc/ssl/root-ca/newcerts ] && mkdir -m 0700 /etc/ssl/root-ca/newcerts
-[ ! -d /etc/ssl/root-ca/crl ] && mkdir -m 0700 /etc/ssl/root-ca/crl
+	echo `date`: "Creating roo-ca dirs" >> /opt/karoshi/serversetup/install_log
+	#Create root-ca dirs
+	[ ! -d /etc/ssl/root-ca ] && mkdir -m 0700 /etc/ssl/root-ca
+	[ ! -d /etc/ssl/root-ca/certs ] && mkdir -m 0700 /etc/ssl/root-ca/certs
+	[ ! -d /etc/ssl/root-ca/private ] && mkdir -m 0700 /etc/ssl/root-ca/private
+	[ ! -d /etc/ssl/root-ca/newcerts ] && mkdir -m 0700 /etc/ssl/root-ca/newcerts
+	[ ! -d /etc/ssl/root-ca/crl ] && mkdir -m 0700 /etc/ssl/root-ca/crl
 
-#Create index file
-touch /etc/ssl/root-ca/index.txt
-[ ! -f /etc/ssl/root-ca/serial ] && echo 01 > /etc/ssl/root-ca/serial
+	#Create index file
+	touch /etc/ssl/root-ca/index.txt
+	[ ! -f /etc/ssl/root-ca/serial ] && echo 01 > /etc/ssl/root-ca/serial
 
-#Generate root-ca key
-echo `date`: "Generating root-ca key" >> /opt/karoshi/serversetup/install_log
-openssl genrsa -des3 -passout pass:$LDAPPASS -out /etc/ssl/root-ca/private/cakey.pem 4096
-chmod 0600 /etc/ssl/root-ca/private/cakey.pem
+	#Generate root-ca key
+	echo `date`: "Generating root-ca key" >> /opt/karoshi/serversetup/install_log
+	openssl genrsa -des3 -passout pass:$LDAPPASS -out /etc/ssl/root-ca/private/cakey.pem 4096
+	chmod 0600 /etc/ssl/root-ca/private/cakey.pem
 
-#Sign key
-echo `date`: "Signing the key to create cacert.pem" >> /opt/karoshi/serversetup/install_log
-echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\n"$LOCALNAME"\n"$SERVERNAME"\n"$EMAILADDRESS"\n"postfix"\n" | openssl req -new -x509 -days 3650 -key /etc/ssl/root-ca/private/cakey.pem -passin pass:$LDAPPASS -out /etc/ssl/root-ca/cacert.pem
+	#Sign key
+	echo `date`: "Signing the key to create cacert.pem" >> /opt/karoshi/serversetup/install_log
+	echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\n"$LOCALNAME"\n"$SERVERNAME"\n"$EMAILADDRESS"\n"postfix"\n" | openssl req -new -x509 -days 3650 -key /etc/ssl/root-ca/private/cakey.pem -passin pass:$LDAPPASS -out /etc/ssl/root-ca/cacert.pem
 
-#Sign key
-echo `date`: "Signing the key to create cacert.p12" >> /opt/karoshi/serversetup/install_log
-echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\n"$LOCALNAME"\n"$SERVERNAME"\n"$EMAILADDRESS"\n"postfix"\n" | openssl req -new -x509 -days 3650 -key /etc/ssl/root-ca/private/cakey.pem -passin pass:$LDAPPASS -out /etc/ssl/root-ca/cacert.p12
+	#Sign key
+	echo `date`: "Signing the key to create cacert.p12" >> /opt/karoshi/serversetup/install_log
+	echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\n"$LOCALNAME"\n"$SERVERNAME"\n"$EMAILADDRESS"\n"postfix"\n" | openssl req -new -x509 -days 3650 -key /etc/ssl/root-ca/private/cakey.pem -passin pass:$LDAPPASS -out /etc/ssl/root-ca/cacert.p12
+fi
 
 #Copy certificate to netlogon for use on client computers
 echo `date`: "Copying the certificate to netlogon for use on client computers" >> /opt/karoshi/serversetup/install_log

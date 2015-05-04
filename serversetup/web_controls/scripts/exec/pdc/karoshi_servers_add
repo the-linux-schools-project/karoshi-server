@@ -536,24 +536,11 @@ then
 				/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume $SERVER.$REALM "$FOLDER" dc-data
 
 #				#Add in web management data to gluster
-#				if [ "$ZONE" = internal ]
-#				then
-#					/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume `hostname-fqdn` /opt/karoshi/server_network dc-data copydata
-#					/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume $SERVER.$REALM /opt/karoshi/server_network dc-data
-#					/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume `hostname-fqdn` /opt/karoshi/web_controls dc-data copydata
-#					/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume $SERVER.$REALM /opt/karoshi/web_controls dc-data
-#					/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume `hostname-fqdn` /var/www/html_karoshi dc-data copydata
-#					/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume $SERVER.$REALM /var/www/html_karoshi dc-data
-#					/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume `hostname-fqdn` /var/www/cgi-bin_karoshi dc-data copydata
-#					/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume $SERVER.$REALM /var/www/cgi-bin_karoshi dc-data
-#					/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume `hostname-fqdn` /etc/ssl dc-data copydata
-#					/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume $SERVER.$REALM /etc/ssl dc-data
-#					/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume `hostname-fqdn` /opt/karoshi/logs dc-data copydata
-#					/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume $SERVER.$REALM /opt/karoshi/logs dc-data
-
-#					#Setup web management on the additional server
-#					/opt/karoshi/serversetup/web_controls/setup_web_controls_dc
-				#fi
+				if [ "$ZONE" = internal ]
+				then
+					/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume `hostname-fqdn` /opt/karoshi/server_network dc-data copydata
+					/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume $SERVER.$REALM /opt/karoshi/server_network dc-data
+				fi
 			done
 		fi
 	#Configure dfs
