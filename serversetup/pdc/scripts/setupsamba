@@ -67,6 +67,24 @@ function show_info {
 yad --title ''$"Setup"' '$"Samba"'' --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 800 --height 230 --tail --no-buttons --text-info 2>/dev/null
 }
 
+function restoredata {
+
+RESTOREPATH=`yad --image="/opt/karoshi/serversetup/essentials/smalllogo2.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --file-selection  --title=''$"Setup"' '$"Samba"'' --width 800 --height 600 --wrap --text '<span font_weight="bold" foreground="red">Restore Configuration Data</span>\n\nThis will restore critical configuration data from a Karoshi configuration backup that you have saved onto a backup media.\n'  2>/dev/null`
+
+RESTORELIST="etc/apache2 etc/cups etc/e2guardian etc/dhcp etc/postfix etc/mdadm etc/samba/smb.conf etc/sogo etc/ssl/webmanagement etc/ssl/root-ca root/.ssh opt/karoshi/web_controls/web_access_admin opt/karoshi/web_controls/web_access_tech opt/karoshi/server_network"
+
+if [ ! -z "$RESTOREPATH" ]
+then
+	#Attempt to restore the data from the archive
+	for RESTOREFILE in $RESTORELIST
+	do
+		tar -xvzf $RESTOREPATH -C / $RESTOREFILE
+		[ $? != 0 ] && yad --image="/opt/karoshi/serversetup/essentials/smalllogo2.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --title=''$"Setup"' '$"Samba"'' --width 300 --height 100 --text '/'$RESTOREFILE' - '$"There was a problem restoring this data"'' --button=Ok
+	done
+	
+fi
+}
+
 function create_resolv.conf {
 #Get forwarding dns server
 DNSFORWARD=`grep dns-nameservers /etc/network/interfaces | cut -d" " -f2 | sed -n 1,1p`
@@ -98,6 +116,15 @@ done
 function getyadpid {
 sleep 1
 YADPID=`ps aux | grep yad | grep '\--tail' | sed 's/ * / /g' | cut -d' ' -f2`
+}
+
+function create_hostname_fqdn {
+#Add in fqdn
+echo $HOSTNAME.$REALM > /etc/hostname-fqdn
+
+#Create hostname-fqdn command
+echo "cat /etc/hostname-fqdn" > /bin/hostname-fqdn
+chmod 0755 /bin/hostname-fqdn
 }
 
 ###############################
@@ -251,13 +278,6 @@ then
 
 	LDAPPASS="$SAMBAROOTPASSWORD1"
 
-	#Add ldap password to /etc/ldap.secret
-	[ -f /etc/ldap.secret ] && rm -f /etc/ldap.secret
-	touch /etc/ldap.secret
-	chmod 0400 /etc/ldap.secret
-	echo $SAMBAROOTPASSWORD1 > /etc/ldap.secret
-
-
 #Get forwarding dns server
 DNSFORWARD=`grep dns-nameservers /etc/network/interfaces | cut -d" " -f2 | sed -n 1,1p`
 create_resolv.conf
@@ -279,123 +299,100 @@ getyadpid
 }
 
 function getjoindomaininfo {
-echo `date`: "Asking the user for the existing domain information" >> /opt/karoshi/serversetup/install_log
-DATA=`yad --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title=''$"Setup"' '$"Samba"'' --width 500 --wrap --text '<span font_weight="bold">'$"Restore Mode"'</span>\n\n'$"This will restore critical data such as users and groups from a domain controller running on your domain."'\n\n'$"Enter the fully qualifed domain name that you want to join."'\n\n'$"The username should be a user that has the permissions to join clients to the domain."'\n\n<span font_weight="bold" foreground="blue">'$"Example"'</span>\n
+DATA=`yad --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title=''$"Setup"' '$"Samba"'' --width 500 --wrap --text '<span font_weight="bold">'$"Join an Existing Domain"'</span>\n\n'$"This will restore users and groups from a domain controller running on your domain."'\n\n'$"Enter the fully qualifed domain name that you want to join."'\n\n'$"The username should be a user that has the permissions to join clients to the domain."'\n\n<span font_weight="bold" foreground="blue">'$"Example"'</span>\n
 <span font_weight="bold">'$"Domain"'</span> : testdomain.example.com\n
 <span font_weight="bold">'$"Username"'</span> : Administrator\n\n'"$ERRORMSG"'
-' --field=$"Domain" --field=$"Username" --field=$"Password":H  --button="gtk-ok" 2>/dev/null`
+' --field=$"Domain" "$REALM" --field=$"DC TCPIP Address" "$DNSTCPIP" --field=$"Username" "$DUSER" --field=$"Password":H "$DPASS" --field=$"SSL Root Password":H "$ROOTPASS" 2>/dev/null`
+EXITSTATUS=$?
 
-REALM=`echo $DATA | cut -d"|" -f1 | tr -cd 'A-Za-z0-9.:/' | tr 'A-Z' 'a-z' | sed 's/^https:\/\///' | sed 's/^http:\/\///' | sed 's/^www.//g'`
-DUSER=`echo $DATA | cut -d"|" -f2 | tr -cd 'A-Za-z0-9.: /' | sed 's/^https:\/\///' | sed 's/^http:\/\///' | sed 's/^www.//g'`
-DPASS=`echo $DATA | cut -d"|" -f3 | tr -cd 'A-Za-z0-9.: /' | sed 's/^https:\/\///' | sed 's/^http:\/\///' | sed 's/^www.//g'`
-}
-
-function getdnsininfo {
-echo `date`: "Asking the user for the existing dns information" >> /opt/karoshi/serversetup/install_log
-DATA=`yad --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title=''$"Setup"' '$"Samba"'' --width 500 --wrap --text '<span font_weight="bold">'$"Restore Mode"'</span>\n\n'$"Enter the TCPIP address of your existing domain controller."'\n\n
-' --field=$"DNS TCPIP Address" --button="gtk-ok" 2>/dev/null`
-
-DNSTCPIP=`echo $DATA | cut -d"|" -f1 | tr -cd '0-9.:/' | sed 's/^https:\/\///' | sed 's/^http:\/\///' | sed 's/^www.//g'`
+REALM=`echo $DATA | cut -d"|" -f1 | tr -cd 'A-Za-z0-9.:/' | tr 'A-Z' 'a-z'`
+DNSTCPIP=`echo $DATA | cut -d"|" -f2 | tr -cd '0-9.: /'`
+DUSER=`echo $DATA | cut -d"|" -f3 | tr -cd 'A-Za-z0-9.: /'`
+DPASS=`echo $DATA | cut -d"|" -f4 | tr -cd 'A-Za-z0-9.: /'`
+ROOTPASS=`echo $DATA | cut -d"|" -f5 | tr -cd 'A-Za-z0-9.:/'`
 }
 
 if [ $INSTALL_TYPE = restore ]
 then
-	#Join this server up to the existing domain
-	#Get and check data
-	while [ -z "$REALM" ] || [ -z "$DUSER" ] || [ -z "$DPASS" ]
-	do
-		getjoindomaininfo
-		ERRORMSG=''$"Error"' - '$"Please enter in the required fields."''
-	done
-	#Check that domain can be resolved via dns
+	JOINSTATUS=1
+	REALM=""
+	DUSER="Administrator"
+	DPASS=""
 	PINGCHECK=fail
-	while [ "$PINGCHECK" = fail ] || [ -z "$DNSTCPIP" ]
+	while [ $JOINSTATUS != 0 ]
 	do
-		getdnsininfo
-		[ ! -z "$DNSTCPIP" ] && echo "nameserver $DNSTCPIP" > /etc/resolv.conf
-		ping -c 1 "$REALM"	1>/dev/null 2>/dev/null
-		[ $? = 0 ] && break
-	done
+		#Join this server up to the existing domain
 
-	#Attempt to join the domain
-	JOINCHECK=fail
-	while [ $JOINCHECK = fail ]
-	do
+		#Get and check data
+		getjoindomaininfo
+		while [ -z "$REALM" ] || [ -z "$DUSER" ] || [ -z "$DPASS" ] || [ -z "$DNSTCPIP" ]
+		do
+			getjoindomaininfo
+			ERRORMSG=''$"Error"' - '$"Please enter in the required fields."''
+		done
+		#Check that domain can be resolved via dns
+		while [ "$PINGCHECK" = fail ] || [ -z "$DNSTCPIP" ]
+		do
+			if [ ! -z "$DNSTCPIP" ]
+			then
+				echo domain "$REALM" > /etc/resolv.conf
+				echo "nameserver $DNSTCPIP" >> /etc/resolv.conf
+			fi
+			dig +time=2 +tries=1 "$REALM"
+			[ $? = 0 ] && break
+			ERRORMSG2=$''$"Error"' - '$"DNS Failure for this TCPIP address."''
+			getjoindomaininfo
+		done
+
+		create_hostname_fqdn
+
+		#Set the fsmo role on the existing domain controller - this must be done before proceeding any further.
+		#Try and ssh to the server and set the role
+		SETFSMO=no
+
+		which sshpass 1>/dev/null
+		if [ $? != 0 ]
+		then
+			#Install ssh pas
+			apt-get update
+			apt-get install -f sshpass
+		fi
+
+		while [ $SETFSMO = no ]
+		do
+			sshpass -p "$ROOTPASS" ssh -o StrictHostKeyChecking=no $DNSTCPIP samba-tool fsmo seize --role=all --force
+			[ $? = 0 ] && break
+			ERRORMSG='<span foreground="red">'$"Root SSL authentication error."'</span>'
+			getjoindomaininfo
+		done
+
+		#Attempt to join the domain
 		#Delete any existing smb.conf
 		[ -f /etc/samba/smb.conf ] && rm -f /etc/samba/smb.conf
 		[ -d /var/lib/samba/private ] && rm -f -R /var/lib/samba/private
-		samba-tool domain join $REALM DC --username=$DUSER --password=$DPASS 2>> /opt/karoshi/serversetup/install_log
-		JOINSTATUS=$?
-		[ $JOINSTATUS = 0 ] && break
-		getjoindomaininfo
+
+		function joindomain {
+		samba-tool domain join $REALM DC --username=$DUSER --password=$DPASS 2>&1
+		[ $? = 0 ] && touch /tmp/join_success
+		getyadpid
+		[ ! -z "$YADPID" ] & kill $YADPID
+		}
+
+		joindomain | show_info
+		[ -f /tmp/join_success ] && JOINSTATUS=0
+		if [ $JOINSTATUS != 0 ]
+		then
+			ERRORMSG=''$"Error"' - '$"Failed to join the domain."''
+		fi
 	done
 
 	create_resolv.conf
 
-	#Add in fqdn
-	echo $HOSTNAME.$REALM > /etc/hostname-fqdn
+	#Restore data from a backup archive.
+	restoredata
 
-	#Create hostname-fqdn command
-	echo "cat /etc/hostname-fqdn" > /bin/hostname-fqdn
-	chmod 0755 /bin/hostname-fqdn
-
-	#Create ssh folder
-	[ ! -d /root/.ssh ] && mkdir /root/.ssh
-	chmod 0700 /root/.ssh
-
-	# Delete ssh known hosts
-	[ -f /root/.ssh/known_hosts ] && rm -f /root/.ssh/known_hosts
-
-	#Restore ssh connections
-	echo "Restoring ssh keys on $DNSTCPIP for $HOSTNAME.$REALM" >> /opt/karoshi/serversetup/install_log
-	/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/activate_ssh_restore $DNSTCPIP "$DPASS" $HOSTNAME.$REALM
-	
-	#Check ssh connection works
-	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $DNSTCPIP '
-	ls 1>/dev/null
-	'
-	if [ $? != 0 ]
-	then
-		#Failed to restore ssh keys
-		echo Failed to restore ssh keys >> /opt/karoshi/serversetup/install_log
-		yad --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title=''$"Setup"' '$"Samba"'' --width 500 --wrap --text '<span font_weight="bold">'$"Restore Mode"'</span>\n\n'$"There was a problem restoring the ssh keys."'\n\n
-'  --button="gtk-ok" 2>/dev/null
-	fi
-	
-	#Restore server_network
-	echo Restoring server_network >> /opt/karoshi/serversetup/install_log
-	[ -d /opt/karoshi/server_network ] && rm -f /opt/karoshi/server_network
-	scp -r root@$DNSTCPIP:/opt/karoshi/server_network/ /opt/karoshi/
-
-	if [ $? != 0 ]
-	then
-		#Failed to restore server_network
-		echo Failed to restore server_network >> /opt/karoshi/serversetup/install_log
-		yad --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title=''$"Setup"' '$"Samba"'' --width 500 --wrap --text '<span font_weight="bold">'$"Restore Mode"'</span>\n\n'$"There was a problem restoring server_network."'\n\n
-'  --button="gtk-ok" 2>/dev/null
-	fi
-
-	#Restore smb.conf
-	echo Restoring smb.conf >> /opt/karoshi/serversetup/install_log
-	if [ -f /opt/karoshi/server_network/recovery/$HOSTNAME.$REALM/smb.conf ]
-	then
-		cp -f /opt/karoshi/server_network/recovery/$HOSTNAME.$REALM/smb.conf /etc/samba/
-	else
-		echo Failed to restore smb.conf >> /opt/karoshi/serversetup/install_log
-	fi
-
-	#Restore web management ssh keys
-	if [ -d /opt/karoshi/server_network/recovery/$HOSTNAME.$REALM/ssl/webmanagement ]
-	then
-		cp -r /opt/karoshi/server_network/recovery/$HOSTNAME.$REALM/ssl/webmanagement /etc/ssl/
-	fi
-
-	#Restore root ca
-	if [ -d /opt/karoshi/server_network/recovery/$HOSTNAME.$REALM/ssl/root-ca ]
-	then
-		cp -r /opt/karoshi/server_network/recovery/$HOSTNAME.$REALM/ssl/root-ca /etc/ssl/
-	fi
-
+	#Remove web management config so that it gets setup corectly later.
+	[ -d /etc/apache2/sites-karoshi-enabled ] && rm -f -R /etc/apache2/sites-karoshi-enabled
 
 	SAMBAROOTPASSWORD1="$DPASS"
 else
@@ -409,6 +406,12 @@ else
 
 	yad --title $"Domain Information" --button="gtk-ok" --geometry=400x100-40+10 --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --text=''$"Your samba domain has now been provisioned."'\n\n'$"You will need this information"' :\n\n'$"Fully qualified domain"'\n'$REALM'\n\n'$"Short domain name"'\n'$SAMBADOMAIN'\n\n'$"Base Dn"'\n'$LDAPBASE'\n' 2>/dev/null &
 fi
+
+#Add ldap password to /etc/ldap.secret
+[ -f /etc/ldap.secret ] && rm -f /etc/ldap.secret
+touch /etc/ldap.secret
+chmod 0400 /etc/ldap.secret
+echo $SAMBAROOTPASSWORD1 > /etc/ldap.secret
 
 #Configure kerberos
 echo `date`: "Configuring Kerberos" >> /opt/karoshi/serversetup/install_log
@@ -1535,12 +1538,8 @@ then
 	allow_anonumous_browse
 	add_organisational_units
 fi
-#Add in fqdn
-echo $HOSTNAME.$REALM > /etc/hostname-fqdn
 
-#Create hostname-fqdn command
-echo "cat /etc/hostname-fqdn" > /bin/hostname-fqdn
-chmod 0755 /bin/hostname-fqdn
+create_hostname_fqdn
 
 #nslcd-user-accounts - not needed using anonymous bind instead
 echo "N.A.:127.0.0.1:N.A.:$HOSTNAME.$REALM:users:internal:" | /opt/karoshi/serversetup/modules/authentication/configure_authentication
@@ -1752,14 +1751,18 @@ then
 	/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts
 fi
 
-if [ $INSTALL_TYPE = restore ]
+if [ "$INSTALL_TYPE" = restore ]
 then
 	#Restore dc-data gluster volume	
 	/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster `hostname-fqdn` dc-data restore
-
-	for FOLDER in /var/lib/samba/netlogon /var/lib/samba/sysvol /var/lib/samba/dfs /home/applications /opt/karoshi/server_network
-	do
-		/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume `hostname-fqdn` "$FOLDER" dc-data
-	done
+	if [ $? = 0 ]
+	then
+		for FOLDER in /var/lib/samba/netlogon /var/lib/samba/sysvol /var/lib/samba/dfs /home/applications /opt/karoshi/server_network
+		do
+			/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume `hostname-fqdn` "$FOLDER" dc-data
+		done
+	fi
+	#Seize ad roles back
+	samba-tool fsmo seize --role=all
 fi
 exit

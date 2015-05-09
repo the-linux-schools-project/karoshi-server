@@ -25,7 +25,7 @@ mv /etc/ssl/openssl.cnf /etc/ssl/openssl.cnf.$$
 cp -f /opt/karoshi/serversetup/distro/ubuntu/all/configfiles/openssl.cnf /etc/ssl/
 
 #Don't generate a root ca if one already exists 
-if [ !-f /etc/ssl/root-ca/cacert.pem ]
+if [ ! -f /etc/ssl/root-ca/cacert.pem ]
 then
 	#Assign variables
 	source /opt/karoshi/server_network/domain_information/domain_name

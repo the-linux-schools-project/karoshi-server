@@ -1,0 +1,213 @@
+#!/bin/bash
+#Copyright (C) 2015 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ -z "$LOG_DATE" ] && exit
+
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/backup_essentials_cgi
+then
+	echo `date`: backup_essentials - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/backup_essentials_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_essentials.cgi | cut -d' ' -f1`
+[ -z "$MD5SUM" ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $backup_essentials_cgi'check' ]
+then
+	echo `date`: backup_essentials - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+	echo `date`: backup_essentials - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ -z "$DATA" ]
+then
+	echo `date`: backup_essentials - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+REMOTE_USER=`echo "$DATA" | cut -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -d: -f3`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+SERVERTYPE=`echo "$DATA" | cut -s -d: -f5`
+SERVERMASTER=`echo "$DATA" | cut -s -d: -f6`
+MOBILE=`echo "$DATA" | cut -s -d: -f7`
+
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+echo `date`: backup_essentials - Not called by backup_essentials.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+then
+	echo `date`: backup_essentials - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+	echo `date`: backup_essentials - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+if [ -z "$SERVERNAME" ]
+then
+	echo `date`: backup_essentials - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$SERVERTYPE" ]
+then
+	echo `date`: backup_essentials - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ $SERVERTYPE = federatedslave ]
+then
+	if [ -z "$SERVERMASTER" ]
+	then
+		echo `date`: backup_essentials - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+	echo `date`: backup_essentials - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+echo `date`: backup_essentials backing up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+############################
+#Language
+############################
+
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
+TEXTDOMAIN=karoshi-server
+
+TABLECLASS=standard
+[ "$MOBILE" = yes ] && TABLECLASS=mobilestandard
+
+BACKUPFOLDERS="/etc/apache2 /etc/cups /etc/e2guardian /etc/dhcp /etc/postfix /etc/mdadm /etc/samba/smb.conf /etc/sogo /etc/ssl/webmanagement /etc/ssl/root-ca /root/.ssh /opt/karoshi/web_controls/web_access_admin /opt/karoshi/web_controls/web_access_tech /opt/karoshi/server_network"
+
+BASE_BACKUP_PATH=/opt/karoshi/backup
+BACKUP_PATH="$BASE_BACKUP_PATH"/"$SERVERNAME"
+SERVERNAME_SHORT=`echo "$SERVERNAME" | cut -d. -f1`
+
+if [ "$SERVERNAME" = `hostname-fqdn` ]
+then
+	if [ ! -d "$BASE_BACKUP_PATH" ]
+	then
+		mkdir -p "$BASE_BACKUP_PATH"
+		chmod 0700 "$BASE_BACKUP_PATH"
+	fi
+
+	if [ ! -d "$BACKUP_PATH" ]
+	then
+		mkdir -p "$BACKUP_PATH"
+		chmod 0700 "$BACKUP_PATH"
+	fi
+
+	#Delete existing archive
+	[ -f $BACKUP_PATH/restore ] && rm -f $BACKUP_PATH/karoshi_backup-$LOG_DATE.tar.gz
+
+	#Create encrypted tar archive for the backup
+	tar czvhf $BACKUP_PATH/karoshi-backup-$SERVERNAME_SHORT-$LOG_DATE.tar.gz $BACKUPFOLDERS 1>/dev/null
+	chmod 0600 $BACKUP_PATH/karoshi-backup-$SERVERNAME_SHORT-$LOG_DATE.tar.gz
+else
+	ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '	
+	if [ ! -d "'$BASE_BACKUP_PATH'" ]
+	then
+		mkdir -p "'$BASE_BACKUP_PATH'"
+		chmod 0700 "'$BASE_BACKUP_PATH'"
+	fi
+
+	if [ ! -d "'$BACKUP_PATH'" ]
+	then
+		mkdir -p "'$BACKUP_PATH'"
+		chmod 0700 "'$BACKUP_PATH'"
+	fi
+
+	#Delete existing archive
+	[ -f '$BACKUP_PATH'/restore ] && rm -f '$BACKUP_PATH'/karoshi_backup-'$LOG_DATE'.tar.gz
+
+	#Create encrypted tar archive for the backup
+	tar czvhf '$BACKUP_PATH'/karoshi-backup-'$SERVERNAME_SHORT'-'$LOG_DATE'.tar.gz '$BACKUPFOLDERS' 1>/dev/null
+	chmod 0600 '$BACKUP_PATH'/karoshi-backup-'$SERVERNAME_SHORT'-'$LOG_DATE'.tar.gz
+	'
+fi
+
+#Make the archive available to download for the admin user.
+[ -d /var/www/html_karoshi/admin/backup_"$REMOTE_USER" ] && rm -f -R /var/www/html_karoshi/admin/backup_"$REMOTE_USER"
+
+mkdir -p /var/www/html_karoshi/admin/backup_"$REMOTE_USER"
+chmod 0750 /var/www/html_karoshi/admin/backup_"$REMOTE_USER"
+chown root:apache_karoshi /var/www/html_karoshi/admin/backup_"$REMOTE_USER"
+
+#Create htaccess for that user only
+echo 'AuthType Basic
+SSLRequireSSL
+ErrorDocument 401 /cgi-bin/access_denied.cgi
+ErrorDocument 403 /cgi-bin/access_forbidden.cgi
+AuthName "Karoshi Web Control"
+AuthUserFile /opt/karoshi/web_controls/web_access_admin
+require user '$REMOTE_USER'' > /var/www/html_karoshi/admin/backup_"$REMOTE_USER"/.htaccess
+
+
+#Copy in archive
+if [ "$SERVERNAME" = `hostname-fqdn` ]
+then
+	cp -f $BACKUP_PATH/karoshi-backup-$SERVERNAME_SHORT-$LOG_DATE.tar.gz /var/www/html_karoshi/admin/backup_"$REMOTE_USER"
+else
+	scp root@$SERVERNAME:$BACKUP_PATH/karoshi-backup-$SERVERNAME_SHORT-$LOG_DATE.tar.gz /var/www/html_karoshi/admin/backup_"$REMOTE_USER"
+fi
+
+chown root:apache_karoshi /var/www/html_karoshi/admin/backup_"$REMOTE_USER"/karoshi-backup-$SERVERNAME_SHORT-$LOG_DATE.tar.gz
+chmod 0750 /var/www/html_karoshi/admin/backup_"$REMOTE_USER"/karoshi-backup-$SERVERNAME_SHORT-$LOG_DATE.tar.gz
+
+#Redirect to the backup folder
+echo '<SCRIPT language="Javascript">
+window.location = "/admin/backup_'$REMOTE_USER'/karoshi-backup-'$SERVERNAME_SHORT-$LOG_DATE'.tar.gz";
+</script>'
+
+#Delete the archive
+sleep 60
+rm -f -R /var/www/html_karoshi/admin/backup_"$REMOTE_USER"
+
+exit
+

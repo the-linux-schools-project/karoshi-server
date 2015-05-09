@@ -20,57 +20,60 @@ function checkstatus {
 EXITSTATUS=`echo $?`
 if [ $EXITSTATUS = 101 ]
 then
-yad --title $"Main Server Setup" $VERSION --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --text=''$"The standard setup has not completed correctly."'' --timeout=3 --no-buttons 2>/dev/null
-exit
+	yad --title $"Main Server Setup" $VERSION --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --text=''$"The standard setup has not completed correctly."'' --timeout=3 --no-buttons 2>/dev/null
+	exit
 fi
 if [ $EXITSTATUS = 103 ]
 then
-exit 103
+	exit 103
 fi
 }
 
 function do_setup {
-echo "1"
-echo '# '$"Checking Network"''
-$BASEINSTALLPATH3/checknetwork pdc 1>>$KAROSHILOG 2>>$KAROSHILOG
-checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
-echo "17"
-echo '# '$"Setup"' '$"Shorewall"''
-$BASEINSTALLPATH/setupshorewall 1>>$KAROSHILOG 2>>$KAROSHILOG
-checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
-echo "34"
-echo '# '$"Setup"' '$"NTP"''
-$BASEINSTALLPATH/setupntp 1>>$KAROSHILOG 2>>$KAROSHILOG
-checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
-echo "51"
-echo '# '$"Setup"' '$"Samba"''
-$BASEINSTALLPATH/setupsamba 1>>$KAROSHILOG 2>>$KAROSHILOG
-checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
-echo "68"
-echo '# '$"Setup"' '$"Root CA for SSL"''
-$BASEINSTALLPATH/setup_root-ca 1>>$KAROSHILOG 2>>$KAROSHILOG
-checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
-echo "85"
-echo '# '$"Setup"' '$"Web Management"''
-$BASEINSTALLPATH2/setup_web_controls interactive 1>>$KAROSHILOG 2>>$KAROSHILOG
-checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
-echo "90"
-echo '# '$"Setup"' '$"Monitorix"''
-/opt/karoshi/serversetup/modules/monitoring/monitorix/setupmonitorix 1>>$KAROSHILOG 2>>$KAROSHILOG
-checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
-echo "95"
-echo '# '$"Setup"' '$"Monitorix Web Management"''
-/opt/karoshi/serversetup/web_controls/scripts/monitorixwebmanagement 1>>$KAROSHILOG 2>>$KAROSHILOG
-checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
-echo "100"
-echo '# '$"Setup"' '$"Karoshi Desktop"''
-$BASEINSTALLPATH/setupkaroshidesktop 1>>$KAROSHILOG 2>>$KAROSHILOG
-#Kill status bar
-killall yad
+	echo "1"
+	echo '# '$"Checking Network"''
+	$BASEINSTALLPATH3/checknetwork pdc 1>>$KAROSHILOG 2>>$KAROSHILOG
+	checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
+	echo "17"
+	echo '# '$"Setup"' '$"Shorewall"''
+	$BASEINSTALLPATH/setupshorewall 1>>$KAROSHILOG 2>>$KAROSHILOG
+	checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
+	echo "34"
+	echo '# '$"Setup"' '$"NTP"''
+	$BASEINSTALLPATH/setupntp 1>>$KAROSHILOG 2>>$KAROSHILOG
+	checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
+	echo "51"
+	echo '# '$"Setup"' '$"Samba"''
+	$BASEINSTALLPATH/setupsamba 1>>$KAROSHILOG 2>>$KAROSHILOG
+	checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
+	echo "68"
+	echo '# '$"Setup"' '$"Root CA for SSL"''
+	$BASEINSTALLPATH/setup_root-ca 1>>$KAROSHILOG 2>>$KAROSHILOG
+	checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
+	echo "85"
+	echo '# '$"Setup"' '$"Web Management"''
+	$BASEINSTALLPATH2/setup_web_controls interactive 1>>$KAROSHILOG 2>>$KAROSHILOG
+	checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
+	echo "90"
+	echo '# '$"Setup"' '$"Monitorix"''
+	/opt/karoshi/serversetup/modules/monitoring/monitorix/setupmonitorix 1>>$KAROSHILOG 2>>$KAROSHILOG
+	checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
+	echo "95"
+	echo '# '$"Setup"' '$"Monitorix Web Management"''
+	/opt/karoshi/serversetup/web_controls/scripts/monitorixwebmanagement 1>>$KAROSHILOG 2>>$KAROSHILOG
+	checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
+	echo "100"
+	echo '# '$"Setup"' '$"Karoshi Desktop"''
+	$BASEINSTALLPATH/setupkaroshidesktop 1>>$KAROSHILOG 2>>$KAROSHILOG
+	#Kill status bar
+	killall yad
 }
 
 do_setup | yad --title $"Main Server Setup" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --geometry=400x100+0+10 --no-buttons --text $"Main Server Setup""\n\n\n$STATUS" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --progress 2>/dev/null
 
 #Create initial disk usage report
 /opt/karoshi/serversetup/all/"useful scripts"/disk_usage
+
+#Backup essential data
+/opt/karoshi/serversetup/pdc/"useful scripts"/backup_essentials
 exit
