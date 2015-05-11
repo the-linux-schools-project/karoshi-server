@@ -123,7 +123,7 @@ TEXTDOMAIN=karoshi-server
 TABLECLASS=standard
 [ "$MOBILE" = yes ] && TABLECLASS=mobilestandard
 
-BACKUPFOLDERS="/etc/apache2 /etc/cups /etc/e2guardian /etc/dhcp /etc/postfix /etc/mdadm /etc/samba/smb.conf /etc/sogo /etc/ssl/webmanagement /etc/ssl/root-ca /root/.ssh /opt/karoshi/web_controls/web_access_admin /opt/karoshi/web_controls/web_access_tech /opt/karoshi/server_network"
+BACKUPFOLDERS="/etc/apache2 /etc/cups /etc/e2guardian /etc/dhcp /etc/postfix /etc/mdadm /etc/samba/smb.conf /etc/sogo /etc/ssl/apache /etc/ssl/webmanagement /etc/ssl/root-ca /root/.ssh /opt/karoshi/web_controls/web_access_admin /opt/karoshi/web_controls/web_access_tech /opt/karoshi/server_network"
 
 BASE_BACKUP_PATH=/opt/karoshi/backup
 BACKUP_PATH="$BASE_BACKUP_PATH"/"$SERVERNAME"

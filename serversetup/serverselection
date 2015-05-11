@@ -69,23 +69,32 @@ while [ -z "$CHOICE" ]
 do
 
 yad --title $"Linux Schools Server Setup" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 180 \
-   --button=''$"Setup the main server"':2'  --button=''$"Setup an extra server"':1' --text $"Choose the type of server you want to install."
+   --button=''$"Setup the main server"':1'  --button=''$"Setup an extra server"':2' --text $"Choose the type of server you want to install."
 CHOICE="$?"
 done
 
 #Setup cronjobs common to all servers
 [ ! -d /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs ] && mkdir -p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs
 
-if [ "$CHOICE" = 2 ]
+if [ "$CHOICE" = 1 ]
 then
-	#Ask if this is server installation is for education or business use.
+	#Ask to install, restore, or join an existing domain
 	yad --title $"Linux Schools Server Setup" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 180 \
-   	--button=''$"Education"':1'  --button=''$"Business"':2' --button=''$"Restore"':3' --text $"Choose the server install version.""\n\n<span font_weight='bold' foreground='blue'>"$"Education""</span>: "$"Installs with student year groups.""\n\n<span font_weight='bold' foreground='blue'>"$"Business""</span>: "$"Installs without student year groups.""\n\n<span font_weight='bold' foreground='purple'>"$"Restore""</span>: "$"Join this server to an existing additional Karoshi Server that is a domain controller."
-	SCHOICE="$?"
+   --button=''$"Install"':3'  --button=''$"Restore"':4'  --button=''$"Join existing domain"':5' --text '<span font_weight="bold" foreground="blue">'$"Install"':</span> '$"Install the main server."'\n\n<span font_weight="bold" foreground="blue">'$"Restore"':</span> '$"Join this server to an existing additional Karoshi Server that is a domain controller."'\n\n<span font_weight="bold" foreground="blue">'$"Join an existing domain"':</span> '$"Join this server to an existing windows domain."''
+	CHOICE=$?
 
-	[ $SCHOICE = 1 ] && INSTALL_TYPE=education
-	[ $SCHOICE = 2 ] && INSTALL_TYPE=business
-	[ $SCHOICE = 3 ] && INSTALL_TYPE=restore
+	if [ "$CHOICE" = 3 ]
+	then
+		#If choice is install, ask if this is server installation is for education or business use.
+		yad --title $"Linux Schools Server Setup" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 180 \
+	   	--button=''$"Education"':6'  --button=''$"Business"':7' --text $"Choose the server install version.""\n\n<span font_weight='bold' foreground='blue'>"$"Education""</span>: "$"Installs with student year groups.""\n\n<span font_weight='bold' foreground='blue'>"$"Business""</span>: "$"Installs without student year groups."
+		CHOICE="$?"
+	fi
+	
+	[ $CHOICE = 4 ] && INSTALL_TYPE=restore
+	[ $CHOICE = 5 ] && INSTALL_TYPE=joindomain
+	[ $CHOICE = 6 ] && INSTALL_TYPE=education
+	[ $CHOICE = 7 ] && INSTALL_TYPE=business
 	
 	[ ! -d /opt/karoshi/server_network ] && mkdir /opt/karoshi/server_network
 
@@ -95,6 +104,6 @@ then
 	/opt/karoshi/serversetup/pdc/scripts/standardsetup 
 fi
 
-[ "$CHOICE" = 1 ] && /opt/karoshi/serversetup/extra_server/scripts/standardsetup
+[ "$CHOICE" = 2 ] && /opt/karoshi/serversetup/extra_server/scripts/standardsetup
 
 exit

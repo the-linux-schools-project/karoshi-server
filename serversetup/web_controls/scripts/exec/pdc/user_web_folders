@@ -126,241 +126,239 @@ source /opt/karoshi/server_network/group_information/$GROUP
 if [ "$SERVER" = `hostname-fqdn` ]
 then
 
-function enablewebhosting {
-chmod 0755 $HOMEPATH
-[ ! -d $HOMEPATH/$USERNAME/public_html ] && mkdir $HOMEPATH/$USERNAME/public_html
-chmod 0700 $HOMEPATH/$USERNAME/public_html
-chown $USERNAME $HOMEPATH/$USERNAME/public_html
-setfacl -m user:www-data:--x $HOMEPATH/$USERNAME
-setfacl -Rm user:www-data:r-x,d:user:www-data:r-x $HOMEPATH/$USERNAME/public_html
-}
+	function enablewebhosting {
+	chmod 0755 $HOMEPATH
+	[ ! -d $HOMEPATH/$USERNAME/public_html ] && mkdir $HOMEPATH/$USERNAME/public_html
+	chmod 0700 $HOMEPATH/$USERNAME/public_html
+	chown $USERNAME $HOMEPATH/$USERNAME/public_html
+	setfacl -m user:www-data:--x $HOMEPATH/$USERNAME
+	setfacl -Rm user:www-data:r-x,d:user:www-data:r-x $HOMEPATH/$USERNAME/public_html
+	}
 
-function disablewebhosting {
-setfacl -x user:www-data $HOMEPATH/$USERNAME
-setfacl -Rx user:www-data,d:user:www-data $HOMEPATH/$USERNAME/public_html
-}
+	function disablewebhosting {
+	setfacl -x user:www-data $HOMEPATH/$USERNAME
+	setfacl -Rx user:www-data,d:user:www-data $HOMEPATH/$USERNAME/public_html
+	}
 
-if [ $USERNAME != all ] && [ $ACTION = enable ]
-#Enable/disable hosting for a user
-then
-	enablewebhosting
-fi
-
-if [ $USERNAME != all ] && [ $ACTION = disable ]
-then
-	disablewebhosting
-fi
-
-if [ $USERNAME = all ] && [ $ACTION = enable ]
-then
-	for USERFOLDER in $HOMEPATH/*
-	do
-		USERNAME=`basename $USERFOLDER`
+	if [ $USERNAME != all ] && [ $ACTION = enable ]
+	#Enable/disable hosting for a user
+	then
 		enablewebhosting
-	done
-fi
+	fi
 
-if [ $USERNAME = all ] && [ $ACTION = disable ]
-then
-	for USERFOLDER in $HOMEPATH/*
-	do
-		USERNAME=`basename $USERFOLDER`
+	if [ $USERNAME != all ] && [ $ACTION = disable ]
+	then
 		disablewebhosting
-	done
-fi
+	fi
+
+	if [ $USERNAME = all ] && [ $ACTION = enable ]
+	then
+		for USERFOLDER in $HOMEPATH/*
+		do
+			USERNAME=`basename $USERFOLDER`
+			enablewebhosting
+		done
+	fi
+
+	if [ $USERNAME = all ] && [ $ACTION = disable ]
+	then
+		for USERFOLDER in $HOMEPATH/*
+		do
+			USERNAME=`basename $USERFOLDER`
+			disablewebhosting
+		done
+	fi
 
 else
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-function enablewebhosting {
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+	function enablewebhosting {
 
-chmod 0755 '$HOMEPATH'
-[ ! -d '$HOMEPATH'/$USERNAME/public_html ] && mkdir '$HOMEPATH'/$USERNAME/public_html
-chmod 0700 '$HOMEPATH'/$USERNAME/public_html
-chown $USERNAME '$HOMEPATH'/$USERNAME/public_html
-setfacl -m user:www-data:--x '$HOMEPATH'/$USERNAME
-setfacl -Rm user:www-data:r-x,d:user:www-data:r-x '$HOMEPATH'/$USERNAME/public_html
-}
+	chmod 0755 '$HOMEPATH'
+	[ ! -d '$HOMEPATH'/$USERNAME/public_html ] && mkdir '$HOMEPATH'/$USERNAME/public_html
+	chmod 0700 '$HOMEPATH'/$USERNAME/public_html
+	chown $USERNAME '$HOMEPATH'/$USERNAME/public_html
+	setfacl -m user:www-data:--x '$HOMEPATH'/$USERNAME
+	setfacl -Rm user:www-data:r-x,d:user:www-data:r-x '$HOMEPATH'/$USERNAME/public_html
+	}
 
-function disablewebhosting {
-setfacl -x user:www-data '$HOMEPATH'/$USERNAME
-setfacl -Rx user:www-data,d:user:www-data '$HOMEPATH'/$USERNAME/public_html
-}
+	function disablewebhosting {
+	setfacl -x user:www-data '$HOMEPATH'/$USERNAME
+	setfacl -Rx user:www-data,d:user:www-data '$HOMEPATH'/$USERNAME/public_html
+	}
 
-if [ '$USERNAME' != all ] && [ '$ACTION' = enable ]
-#Enable/disable hosting for a user
-then
-	USERNAME='$USERNAME'
-	enablewebhosting
-fi
-
-if [ '$USERNAME' != all ] && [ '$ACTION' = disable ]
-then
-	USERNAME='$USERNAME'
-	disablewebhosting
-fi
-
-if [ '$USERNAME' = all ] && [ '$ACTION' = enable ]
-then
-	for USERFOLDER in '$HOMEPATH'/*
-	do
-		USERNAME=`basename $USERFOLDER`
+	if [ '$USERNAME' != all ] && [ '$ACTION' = enable ]
+	#Enable/disable hosting for a user
+	then
+		USERNAME='$USERNAME'
 		enablewebhosting
-	done
-fi
+	fi
 
-if [ '$USERNAME' = all ] && [ '$ACTION' = disable ]
-then
-	for USERFOLDER in '$HOMEPATH'/*
-	do
-		USERNAME=`basename $USERFOLDER`
+	if [ '$USERNAME' != all ] && [ '$ACTION' = disable ]
+	then
+		USERNAME='$USERNAME'
 		disablewebhosting
-	done
-fi
-'
+	fi
+
+	if [ '$USERNAME' = all ] && [ '$ACTION' = enable ]
+	then
+		for USERFOLDER in '$HOMEPATH'/*
+		do
+			USERNAME=`basename $USERFOLDER`
+			enablewebhosting
+		done
+	fi
+
+	if [ '$USERNAME' = all ] && [ '$ACTION' = disable ]
+	then
+		for USERFOLDER in '$HOMEPATH'/*
+		do
+			USERNAME=`basename $USERFOLDER`
+			disablewebhosting
+		done
+	fi
+	'
 fi
 
 if [ $ACTION = enablehosting ]
 then
-#Add server to user web folder list
-touch /var/lib/samba/netlogon/domain_information/user_web_servers
-if [ `grep -c $SERVER /var/lib/samba/netlogon/domain_information/user_web_servers` = 0 ]
-then
-	echo $SERVER >> /var/lib/samba/netlogon/domain_information/user_web_servers
-fi
+	#Add server to user web folder list
+	touch /var/lib/samba/netlogon/domain_information/user_web_servers
+	if [ `grep -c $SERVER /var/lib/samba/netlogon/domain_information/user_web_servers` = 0 ]
+	then
+		echo $SERVER >> /var/lib/samba/netlogon/domain_information/user_web_servers
+	fi
 
-#Enable user web folders
-if [ $SERVER = `hostname-fqdn` ]
-then
-#Make sure suphp is installed
-if [ ! -f /etc/apache2/mods-available/suphp.load ]
-then
-	echo '<li>'$"Updating the repository"'</li><br><br>'
-	sleep 1
-	apt-get update
-	echo '<br><br><li>'$"Installing suphp and suexec"'</li><br><br>'
-	apt-get install -y libapache2-mod-suphp apache2-suexec
-fi
+	#Enable user web folders
+	if [ $SERVER = `hostname-fqdn` ]
+	then
+		#Make sure suphp is installed
+		if [ ! -f /etc/apache2/mods-available/suphp.load ]
+		then
+			echo '<li>'$"Updating the repository"'</li><br><br>'
+			sleep 1
+			apt-get update
+			echo '<br><br><li>'$"Installing suphp and suexec"'</li><br><br>'
+			apt-get install -y libapache2-mod-suphp apache2-suexec
+		fi
 
-#Copy in config files
-cp -f /opt/karoshi/serversetup/modules/user_web_folders/karoshi-userdir.conf /etc/apache2/mods-available/
-cp -f /opt/karoshi/serversetup/modules/user_web_folders/karoshi-userdir.load /etc/apache2/mods-available/
-cp -f /opt/karoshi/serversetup/modules/user_web_folders/suphp.conf /etc/suphp/
+		#Copy in config files
+		cp -f /opt/karoshi/serversetup/modules/user_web_folders/karoshi-userdir.conf /etc/apache2/mods-available/
+		cp -f /opt/karoshi/serversetup/modules/user_web_folders/karoshi-userdir.load /etc/apache2/mods-available/
+		cp -f /opt/karoshi/serversetup/modules/user_web_folders/suphp.conf /etc/suphp/
 
-a2enmod karoshi-userdir 1> /dev/null
-a2enmod suphp 1> /dev/null
-a2enmod suexec 1> /dev/null
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1> /dev/null
-sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1> /dev/null
+		a2enmod karoshi-userdir 1> /dev/null
+		a2enmod suphp 1> /dev/null
+		a2enmod suexec 1> /dev/null
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1> /dev/null
+		sleep 1
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1> /dev/null
 
-#Open shorewall ports
-MODCHECK=`grep -c -w 80 /etc/shorewall/rules`
-MODCHECK2=`grep -c -w 443 /etc/shorewall/rules`
+		#Open shorewall ports
+		MODCHECK=`grep -c -w 80 /etc/shorewall/rules`
+		MODCHECK2=`grep -c -w 443 /etc/shorewall/rules`
 
-if [ `grep -c 80,443 /etc/shorewall/rules` = 0 ]
-then
-	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'80,443'	'-'#'apacherule /etc/shorewall/rules
-	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
-fi
-else
+		if [ `grep -c 80,443 /etc/shorewall/rules` = 0 ]
+		then
+			LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+			sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'80,443'	'-'#'apacherule /etc/shorewall/rules
+			echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+		fi
+	else
+		#Copy in config files
+		scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/modules/user_web_folders $SERVER:/opt/karoshi/serversetup/modules/
 
-#Copy in config files
-scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/modules/user_web_folders $SERVER:/opt/karoshi/serversetup/modules/
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+		#Make sure suphp is installed
+		if [ ! -f /etc/apache2/mods-available/suphp.load ]
+		then
+			echo "<li>"'$"Updating the repository"'"</li><br><br>"
+			sleep 1
+			apt-get update
+			echo "<br><br><li>"'$"Installing suphp and suexec"'"</li><br><br>"
+			apt-get -y install libapache2-mod-suphp apache2-suexec
+		fi
 
+		#Copy in config files
+		cp -f /opt/karoshi/serversetup/modules/user_web_folders/karoshi-userdir.conf /etc/apache2/mods-available/
+		cp -f /opt/karoshi/serversetup/modules/user_web_folders/karoshi-userdir.load /etc/apache2/mods-available/
+		cp -f /opt/karoshi/serversetup/modules/user_web_folders/suphp.conf /etc/suphp/
 
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-#Make sure suphp is installed
-if [ ! -f /etc/apache2/mods-available/suphp.load ]
-then
-	echo "<li>"'$"Updating the repository"'"</li><br><br>"
-	sleep 1
-	apt-get update
-	echo "<br><br><li>"'$"Installing suphp and suexec"'"</li><br><br>"
-	apt-get -y install libapache2-mod-suphp apache2-suexec
-fi
+		a2enmod suphp 1> /dev/null
+		a2enmod karoshi-userdir 1> /dev/null
+		a2enmod suexec 1> /dev/null
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1> /dev/null
+		sleep 1
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1> /dev/null
 
-#Copy in config files
-cp -f /opt/karoshi/serversetup/modules/user_web_folders/karoshi-userdir.conf /etc/apache2/mods-available/
-cp -f /opt/karoshi/serversetup/modules/user_web_folders/karoshi-userdir.load /etc/apache2/mods-available/
-cp -f /opt/karoshi/serversetup/modules/user_web_folders/suphp.conf /etc/suphp/
+		if [ `grep -c 80,443 /etc/shorewall/rules` = 0 ]
+		then
+			LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
+			sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"80,443"	"-"#"apacherule /etc/shorewall/rules
+			echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+		fi
 
-a2enmod suphp 1> /dev/null
-a2enmod karoshi-userdir 1> /dev/null
-a2enmod suexec 1> /dev/null
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1> /dev/null
-sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1> /dev/null
-
-if [ `grep -c 80,443 /etc/shorewall/rules` = 0 ]
-then
-	LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"80,443"	"-"#"apacherule /etc/shorewall/rules
-	echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
-fi
-
-'
-fi
-echo $"User web folders""<br>" > /opt/karoshi/server_network/servers/$SERVER/user_web_folders
-#reload form
-echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/user_web_folders.cgi\" target=\"_top\" name = \"frm\">
-<input type=\"hidden\" name=\"_GROUP_\" value=\"$GROUP\">
-</form>
-<script>
-document.frm.submit();
-</script>"
-exit
+		'
+	fi
+	echo $"User web folders""<br>" > /opt/karoshi/server_network/servers/$SERVER/user_web_folders
+	#reload form
+	echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/user_web_folders.cgi\" target=\"_top\" name = \"frm\">
+	<input type=\"hidden\" name=\"_GROUP_\" value=\"$GROUP\">
+	</form>
+	<script>
+	document.frm.submit();
+	</script>"
+	exit
 fi
 
 if [ $ACTION = disablehosting ]
 then
 
-#Remove server from user web folder list
-touch /var/lib/samba/netlogon/domain_information/user_web_servers
-if [ `grep -c $SERVER /var/lib/samba/netlogon/domain_information/user_web_servers` != 0 ]
-then
-	sed -i 's/'$SERVER'//g' /var/lib/samba/netlogon/domain_information/user_web_servers
-	sed -i '/^[[:space:]]*$/d' /var/lib/samba/netlogon/domain_information/user_web_servers
-fi
+	#Remove server from user web folder list
+	touch /var/lib/samba/netlogon/domain_information/user_web_servers
+	if [ `grep -c $SERVER /var/lib/samba/netlogon/domain_information/user_web_servers` != 0 ]
+	then
+		sed -i 's/'$SERVER'//g' /var/lib/samba/netlogon/domain_information/user_web_servers
+		sed -i '/^[[:space:]]*$/d' /var/lib/samba/netlogon/domain_information/user_web_servers
+	fi
 
-#Disable user web folders
-if [ $SERVER = `hostname-fqdn` ]
-then
-	a2dismod karoshi-userdir 1> /dev/null
-	a2dismod suphp 1> /dev/null
-	a2dismod suexec 1> /dev/null
-	source /opt/karoshi/serversetup/variables/distro
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1> /dev/null
-	sleep 1
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1> /dev/null
-else
-	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-	a2dismod karoshi-userdir 1> /dev/null
-	a2dismod suphp 1> /dev/null
-	a2dismod suexec 1> /dev/null
-	source /opt/karoshi/serversetup/variables/distro
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1> /dev/null
-	sleep 1
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1> /dev/null
-	'
-fi
-rm -f /opt/karoshi/server_network/servers/$SERVER/user_web_folders
+	#Disable user web folders
+	if [ $SERVER = `hostname-fqdn` ]
+	then
+		a2dismod karoshi-userdir 1> /dev/null
+		a2dismod suphp 1> /dev/null
+		a2dismod suexec 1> /dev/null
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1> /dev/null
+		sleep 1
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1> /dev/null
+	else
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+		a2dismod karoshi-userdir 1> /dev/null
+		a2dismod suphp 1> /dev/null
+		a2dismod suexec 1> /dev/null
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1> /dev/null
+		sleep 1
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1> /dev/null
+		'
+	fi
+	rm -f /opt/karoshi/server_network/servers/$SERVER/user_web_folders
 fi
 
 #########################
 #Show user web folder status for a group
 #########################
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	ICON1=/images/submenus/user/web_folder_enabled.png
 	ICON2=/images/submenus/user/web_folder_disabled.png
@@ -394,60 +392,59 @@ echo '<tr><td><b>'$"Primary Group"'</b> '$GROUP'</td><td>
 </td></tr></tbody></table>
 <br>'
 
-[ $MOBILE = no ] && echo '</div><div id="infobox">'
+[ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: '$WIDTH1'px;"><b>'$"Username"'</b></td><td><b>'$"Status"'</b></td></tr>'
 
-if [ $SERVER = `hostname-fqdn` ]
+if [ "$SERVER" = `hostname-fqdn` ]
 then
-	if [ -d $HOMEPATH ]
+	if [ -d "$HOMEPATH" ]
 	then
-		if [ `ls -1 $HOMEPATH | wc -l` -gt 0 ]
+		if [ `ls -1 "$HOMEPATH" | wc -l` -gt 0 ]
 		then
 
-			folders=( $(find "$HOMEPATH" -mindepth 1 -maxdepth 1 -type d) )
+folders=( $(find "$HOMEPATH" -mindepth 1 -maxdepth 1 -type d) )
 
-			sudo -u www-data /bin/bash << ENDOFTEST
-				for folder in ${folders[@]}; do
-					FOLDERACTION=enable
-					STATUSICON=$ICON2
-					MESSAGE=''$"Enable user web folder"''
-					if [[ -r \$folder/public_html ]]; then
-						STATUSICON=$ICON1
-						FOLDERACTION=disable
-						MESSAGE=''$"Disable user web folder"''
-					fi
-					USERNAME=\${folder##*/}
-					echo "<tr><td>\$USERNAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_USERNAME_\$USERNAME"_"GROUP_$GROUP"_"ACTION_\$FOLDERACTION"_"\" type=\"image\" class=\"images\" src=\"\$STATUSICON\" value=\"\"><span>\$MESSAGE<br><br>\$USERNAME</span></a></td></tr>"
-				done
-			ENDOFTEST
+sudo -u www-data /bin/bash << ENDOFTEST
+for folder in ${folders[@]}; do
+FOLDERACTION=enable
+STATUSICON=$ICON2
+MESSAGE=''$"Enable user web folder"''
+if [[ -r \$folder/public_html ]]; then
+STATUSICON=$ICON1
+FOLDERACTION=disable
+MESSAGE=''$"Disable user web folder"''
+fi
+USERNAME=\${folder##*/}
+echo "<tr><td>\$USERNAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_USERNAME_\$USERNAME"_"GROUP_$GROUP"_"ACTION_\$FOLDERACTION"_"\" type=\"image\" class=\"images\" src=\"\$STATUSICON\" value=\"\"><span>\$MESSAGE<br><br>\$USERNAME</span></a></td></tr>"
+done
+ENDOFTEST
 
 		fi
 	fi
 else
-	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
 	if [ -d '$HOMEPATH' ]
 	then
 		if [ `ls -1 '$HOMEPATH' | wc -l` -gt 0 ]
 		then
+folders=( $(find "'$HOMEPATH'" -mindepth 1 -maxdepth 1 -type d) )
 
-			folders=( $(find "'$HOMEPATH'" -mindepth 1 -maxdepth 1 -type d) )
-
-			sudo -u www-data /bin/bash << ENDOFTEST
-				for folder in ${folders[@]}; do
-					FOLDERACTION=enable
-					STATUSICON='$ICON2'
-					MESSAGE="'$"Enable user web folder"'"
-					if [[ -r \$folder/public_html ]]; then
-						STATUSICON='$ICON1'
-						FOLDERACTION=disable
-						MESSAGE="'$"Disable user web folder"'"
-					fi
-					USERNAME=\${folder##*/}
-					echo "<tr><td>\$USERNAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_USERNAME_\$USERNAME"_"GROUP_'$GROUP'"_"ACTION_\$FOLDERACTION"_"\" type=\"image\" class=\"images\" src=\"\$STATUSICON\" value=\"\"><span>\$MESSAGE<br><br>\$USERNAME</span></a></td></tr>"
-				done
-			ENDOFTEST
+sudo -u www-data /bin/bash << ENDOFTEST
+for folder in ${folders[@]}; do
+FOLDERACTION=enable
+STATUSICON='$ICON2'
+MESSAGE="'$"Enable user web folder"'"
+if [[ -r \$folder/public_html ]]; then
+STATUSICON='$ICON1'
+FOLDERACTION=disable
+MESSAGE="'$"Disable user web folder"'"
+fi
+USERNAME=\${folder##*/}
+echo "<tr><td>\$USERNAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_USERNAME_\$USERNAME"_"GROUP_'$GROUP'"_"ACTION_\$FOLDERACTION"_"\" type=\"image\" class=\"images\" src=\"\$STATUSICON\" value=\"\"><span>\$MESSAGE<br><br>\$USERNAME</span></a></td></tr>"
+done
+ENDOFTEST
 
 		fi
 	fi

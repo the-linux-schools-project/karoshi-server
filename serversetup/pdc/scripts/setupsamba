@@ -69,6 +69,8 @@ yad --title ''$"Setup"' '$"Samba"'' --image="/opt/karoshi/serversetup/essentials
 
 function restoredata {
 
+[ -f /etc/samba/smb.conf ] && rm -f /etc/samba/smb.conf
+
 RESTOREPATH=`yad --image="/opt/karoshi/serversetup/essentials/smalllogo2.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --file-selection  --title=''$"Setup"' '$"Samba"'' --width 800 --height 600 --wrap --text '<span font_weight="bold" foreground="red">Restore Configuration Data</span>\n\nThis will restore critical configuration data from a Karoshi configuration backup that you have saved onto a backup media.\n'  2>/dev/null`
 
 RESTORELIST="etc/apache2 etc/cups etc/e2guardian etc/dhcp etc/postfix etc/mdadm etc/samba/smb.conf etc/sogo etc/ssl/webmanagement etc/ssl/root-ca root/.ssh opt/karoshi/web_controls/web_access_admin opt/karoshi/web_controls/web_access_tech opt/karoshi/server_network"
@@ -83,6 +85,13 @@ then
 	done
 	
 fi
+
+#If smb.conf was restored move it so that we can join the domain correctly.
+[ -f /etc/samba/smb.conf ] && mv /etc/samba/smb.conf /etc/samba/smb-karoshi-restore.conf
+
+#Remove web management config so that it gets setup corectly later.
+[ -d /etc/apache2/sites-karoshi-enabled ] && rm -f -R /etc/apache2/sites-karoshi-enabled
+
 }
 
 function create_resolv.conf {
@@ -299,26 +308,41 @@ getyadpid
 }
 
 function getjoindomaininfo {
-DATA=`yad --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title=''$"Setup"' '$"Samba"'' --width 500 --wrap --text '<span font_weight="bold">'$"Join an Existing Domain"'</span>\n\n'$"This will restore users and groups from a domain controller running on your domain."'\n\n'$"Enter the fully qualifed domain name that you want to join."'\n\n'$"The username should be a user that has the permissions to join clients to the domain."'\n\n<span font_weight="bold" foreground="blue">'$"Example"'</span>\n
+
+if [ $SSHNOPASS = yes ]
+then
+	DATA=`yad --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title=''$"Setup"' '$"Samba"'' --width 500 --wrap --text '<span font_weight="bold">'$"Join an Existing Domain"'</span>\n\n'$"This will restore users and groups from a domain controller running on your domain."'\n\n'$"Enter the fully qualifed domain name that you want to join."'\n\n'$"The username should be a user that has the permissions to join clients to the domain."'\n\n<span font_weight="bold" foreground="blue">'$"Example"'</span>\n
+<span font_weight="bold">'$"Domain"'</span> : testdomain.example.com\n
+<span font_weight="bold">'$"Username"'</span> : Administrator\n\n'"$ERRORMSG"'
+' --field=$"Domain" "$REALM" --field=$"DC TCPIP Address" "$DNSTCPIP" --field=$"Username" "$DUSER" --field=$"Password":H 2>/dev/null`
+else
+	DATA=`yad --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title=''$"Setup"' '$"Samba"'' --width 500 --wrap --text '<span font_weight="bold">'$"Join an Existing Domain"'</span>\n\n'$"This will restore users and groups from a domain controller running on your domain."'\n\n'$"Enter the fully qualifed domain name that you want to join."'\n\n'$"The username should be a user that has the permissions to join clients to the domain."'\n\n<span font_weight="bold" foreground="blue">'$"Example"'</span>\n
 <span font_weight="bold">'$"Domain"'</span> : testdomain.example.com\n
 <span font_weight="bold">'$"Username"'</span> : Administrator\n\n'"$ERRORMSG"'
 ' --field=$"Domain" "$REALM" --field=$"DC TCPIP Address" "$DNSTCPIP" --field=$"Username" "$DUSER" --field=$"Password":H "$DPASS" --field=$"SSL Root Password":H "$ROOTPASS" 2>/dev/null`
+fi
+
 EXITSTATUS=$?
 
 REALM=`echo $DATA | cut -d"|" -f1 | tr -cd 'A-Za-z0-9.:/' | tr 'A-Z' 'a-z'`
 DNSTCPIP=`echo $DATA | cut -d"|" -f2 | tr -cd '0-9.: /'`
 DUSER=`echo $DATA | cut -d"|" -f3 | tr -cd 'A-Za-z0-9.: /'`
 DPASS=`echo $DATA | cut -d"|" -f4 | tr -cd 'A-Za-z0-9.: /'`
-ROOTPASS=`echo $DATA | cut -d"|" -f5 | tr -cd 'A-Za-z0-9.:/'`
+[ $SSHNOPASS = no ] && ROOTPASS=`echo $DATA | cut -d"|" -f5 | tr -cd 'A-Za-z0-9.:/'`
 }
 
 if [ $INSTALL_TYPE = restore ]
 then
+
+	#Restore data from a backup archive.
+	restoredata
+
 	JOINSTATUS=1
 	REALM=""
 	DUSER="Administrator"
 	DPASS=""
 	PINGCHECK=fail
+	SSHNOPASS=yes
 	while [ $JOINSTATUS != 0 ]
 	do
 		#Join this server up to the existing domain
@@ -327,8 +351,8 @@ then
 		getjoindomaininfo
 		while [ -z "$REALM" ] || [ -z "$DUSER" ] || [ -z "$DPASS" ] || [ -z "$DNSTCPIP" ]
 		do
+			ERRORMSG='<span foreground="red">'$"Please enter in the required fields."'</span>'
 			getjoindomaininfo
-			ERRORMSG=''$"Error"' - '$"Please enter in the required fields."''
 		done
 		#Check that domain can be resolved via dns
 		while [ "$PINGCHECK" = fail ] || [ -z "$DNSTCPIP" ]
@@ -340,7 +364,7 @@ then
 			fi
 			dig +time=2 +tries=1 "$REALM"
 			[ $? = 0 ] && break
-			ERRORMSG2=$''$"Error"' - '$"DNS Failure for this TCPIP address."''
+			ERRORMSG='<span foreground="red">'$"DNS Failure for this TCPIP address."'</span>'
 			getjoindomaininfo
 		done
 
@@ -350,28 +374,36 @@ then
 		#Try and ssh to the server and set the role
 		SETFSMO=no
 
-		which sshpass 1>/dev/null
+		#Try setting fsmo role with ssh key
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $DNSTCPIP '
+		samba-tool fsmo seize --role=all --force
+		'
 		if [ $? != 0 ]
 		then
-			#Install ssh pas
-			apt-get update
-			apt-get install -f sshpass
+			SSHNOPASS=no
+			which sshpass 1>/dev/null
+			if [ $? != 0 ]
+			then
+				#Install sshpass
+				apt-get update
+				apt-get install -f sshpass
+			fi
+
+			while [ $SETFSMO = no ]
+			do
+				sshpass -p "$ROOTPASS" ssh -o StrictHostKeyChecking=no $DNSTCPIP samba-tool fsmo seize --role=all --force
+				[ $? = 0 ] && break
+				ERRORMSG='<span foreground="red">'$"Root SSL authentication error."'</span>'
+				getjoindomaininfo
+			done
 		fi
-
-		while [ $SETFSMO = no ]
-		do
-			sshpass -p "$ROOTPASS" ssh -o StrictHostKeyChecking=no $DNSTCPIP samba-tool fsmo seize --role=all --force
-			[ $? = 0 ] && break
-			ERRORMSG='<span foreground="red">'$"Root SSL authentication error."'</span>'
-			getjoindomaininfo
-		done
-
 		#Attempt to join the domain
 		#Delete any existing smb.conf
 		[ -f /etc/samba/smb.conf ] && rm -f /etc/samba/smb.conf
 		[ -d /var/lib/samba/private ] && rm -f -R /var/lib/samba/private
 
 		function joindomain {
+		[ -f /tmp/join_success ] && rm -f /tmp/join_success
 		samba-tool domain join $REALM DC --username=$DUSER --password=$DPASS 2>&1
 		[ $? = 0 ] && touch /tmp/join_success
 		getyadpid
@@ -382,17 +414,18 @@ then
 		[ -f /tmp/join_success ] && JOINSTATUS=0
 		if [ $JOINSTATUS != 0 ]
 		then
-			ERRORMSG=''$"Error"' - '$"Failed to join the domain."''
+			ERRORMSG='<span foreground="red">'$"Failed to join the domain."'</span>'
 		fi
 	done
 
 	create_resolv.conf
 
-	#Restore data from a backup archive.
-	restoredata
-
-	#Remove web management config so that it gets setup corectly later.
-	[ -d /etc/apache2/sites-karoshi-enabled ] && rm -f -R /etc/apache2/sites-karoshi-enabled
+	#Move back restored smb.conf if it exists.
+	if [ -f /etc/samba/smb-karoshi-restore.conf ]
+	then
+		[ -f /etc/samba/smb.conf ] && rm -f /etc/samba/smb.conf
+		mv /etc/samba/smb-karoshi-restore.conf /etc/samba/smb.conf
+	fi
 
 	SAMBAROOTPASSWORD1="$DPASS"
 else
@@ -1762,6 +1795,24 @@ then
 			/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume `hostname-fqdn` "$FOLDER" dc-data
 		done
 	fi
+
+	#Flag existing roles on the main server as needed re-installing.
+	if [ -d /opt/karoshi/server_network/servers/`hostname-fqdn` ]
+	then
+		for INFOFILES in /opt/karoshi/server_network/servers/`hostname-fqdn`/*
+		do
+			INFOFILE=`basename $INFOFILES`
+			if [ $INFOFILE != apacheserver ] && [ $INFOFILE != glusterfs_server ] && [ $INFOFILE != 1dc ] && [ $INFOFILE != 2users-groups ]
+			then
+				if [ `grep -c RE-INSTALL /opt/karoshi/server_network/servers/`hostname-fqdn`/$INFOFILE` = 0 ]
+				then
+					sed -i '1i <span class="reinstall"><b>' /opt/karoshi/server_network/servers/`hostname-fqdn`/$INFOFILE
+					echo 'RE-INSTALL MODULE<br></b></span>' >> /opt/karoshi/server_network/servers/`hostname-fqdn`/$INFOFILE
+				fi
+			fi
+		done
+	fi
+
 	#Seize ad roles back
 	samba-tool fsmo seize --role=all
 fi

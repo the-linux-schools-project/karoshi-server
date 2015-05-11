@@ -210,8 +210,9 @@ echo '<div class="sectiontitle">'$"Backup Essential Data"'</div><br></div><div i
 fi
 
 echo $"This will create an archive of configuration files that you can download and store on a memory stick for later use if you have to re-install the server.""<br><br>"
-echo $"This is not a full backup and does not include user data.""<br><br>"
-echo $"This data must be secured in a secure place such as a safe. Do not leave it in an unsecured area under any circumstances.""<br><br>"
+echo "<b>"$"Note:""</b>" $"This is only a backup of the server essential configuration data.""<br><br>"
+echo $"The memory stick must be stored in a secure place such as a safe. Do not leave it in an unsecured area under any circumstances.""<br><br>"
+echo $"You have 60 seconds to save this archive before it is deleted from the server.""<br><br>"
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_essentials.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERNAME:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/backup_essentials
