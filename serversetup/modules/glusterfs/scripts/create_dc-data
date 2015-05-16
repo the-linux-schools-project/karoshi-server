@@ -34,7 +34,7 @@ then
 		fi
 
 		#Configure dfs
-		for SHAREPATH in netlogon sysvol
+		for SHAREPATH in netlogon sysvol applications
 		do
 			DFSPATH=""
 			for GLUSTERSERVERS in /opt/karoshi/server_network/gluster-volumes/dc-data/servers/*

@@ -5,7 +5,7 @@ REALM=internal
 
 #Check for dfs support
 DFS=no
-[ `grep -c "host msdfs = yes" /etc/samba/smb.conf` -gt 0 ] && DFS=yes
+[ -f /var/lib/samba/netlogon/domain_information/dfs_enabled ] && DFS=yes
 
 #Remove all auto generated kix entries.
 for KIXFILES in /var/lib/samba/netlogon/windows_settings/drives/*
@@ -24,17 +24,13 @@ function get_pri_group_number {
 GROUPNUM=`getent group "$GROUPNAME" | cut -d: -f3`
 }
 
-function add_drive_map {
+function add_drive_map_windows {
 #Set paths to shares
 if [ "$DFS" = yes ]
 then
-	CLIENTPATH1=dfs/"$SHARE"
-	SMBSERVER="$REALM"
 	SMBSERVER2='$lserver.$realm'
 	CLIENTPATH2='\dfs\'$SHARE''
 else
-	CLIENTPATH1="$SHARE"
-	SMBSERVER="$SERVER"
 	SMBSERVER2='\\'$SERVER''
 	CLIENTPATH2='\'$SHARE''
 fi
@@ -43,11 +39,6 @@ if [ "$GROUPNAME" = all ]
 then
 	#Add in a drive map for all users
 
-	#Check if line is uniqie and add linux drive map
-	if [ `grep -c '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" uid="1000-5000000" fstype="cifs" />' /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5` = 0 ]
-	then 
-		echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" uid="1000-5000000" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
-	fi
 	#Add windows drive map
 	for KIXFILES in /opt/karoshi/server_network/group_information/*
 	do
@@ -59,24 +50,51 @@ then
 		fi
 	done
 else
-	get_pri_group_number
-	#Check if line is uniqie and add linux drive map
-	if [ `grep -c '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" gid="'$GROUPNUM'" fstype="cifs" />' /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5` = 0 ]
-	then
-		echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" gid="'$GROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
-	fi
 	#Add windows drive map
 	touch /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix
 	if [ `grep -F -c "$CLIENTPATH2" /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix` = 0 ]
 	then
 		echo 'shell "net use * '$SMBSERVER2''$CLIENTPATH2'" ;Karoshi_auto_generated' >> /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix
 	fi
-
 fi
 }
 
+function add_drive_map_linux {
+#Set paths to shares
+if [ "$DFS" = yes ]
+then
+	#Not using dfs for linux clients - mount.cifs does not do dfs failover correctly
+	#CLIENTPATH1=dfs/"$SHARE"
+	#SMBSERVER="$REALM"
+	CLIENTPATH1="$SHARE"
+	SMBSERVER="$SERVER2"
+else
+	CLIENTPATH1="$SHARE"
+	SMBSERVER="$SERVER2"
+fi
+
+if [ "$GROUPNAME" = all ]
+then
+	#Add in a drive map for all users
+
+	#Check if line is uniqie and add linux drive map
+	if [ `grep -c '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" uid="1000-5000000" fstype="cifs" />' /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5` = 0 ]
+	then 
+		echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" uid="1000-5000000" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+	fi
+else
+	get_pri_group_number
+	#Check if line is uniqie and add linux drive map
+	if [ `grep -c '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" gid="'$GROUPNUM'" fstype="cifs" />' /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5` = 0 ]
+	then
+		echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" gid="'$GROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+	fi
+fi
+}
 
 function get_shares {
+MAINSERVER=`hostname-fqdn`
+SERVERLIST="`echo $MAINSERVER` `ls -1 /opt/karoshi/server_network/network_shares/ | sed "s/$MAINSERVER//g"`"
 for SERVERS in /opt/karoshi/server_network/network_shares/*
 do
 	#Get names of servers with network shares
@@ -96,8 +114,19 @@ do
 			DO_MAP=${MAP_DRIVES[$COUNTER]}
 			#echo $SHARE $GROUPNAME $DO_MAP
 			let COUNTER=$COUNTER+1
-			#add_drive_map
-			[ $DO_MAP = 1 ] && add_drive_map
+
+			if [ $DO_MAP = 1 ]
+			then
+				#add_drive_map for windows
+				add_drive_map_windows
+				#Add drive map for linux due to broken dfs in mount.cfs
+				for SERVER2 in $SERVERLIST
+				do
+					add_drive_map_linux
+				done
+
+			fi
+
 		done
 	done
 done
@@ -109,7 +138,21 @@ get_shares
 #Not needed on windows clients - handled by logonform.kix
 if [ "$DFS" = yes ]
 then
-	echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/home" path="dfs/homes/%(USER)" server="'$REALM'" gid="1103" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+	#Mot using dfs
+	#echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/home" path="dfs/homes/%(USER)" server="'$REALM'" uid="1000-5000000" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+
+	#Having to add an entry for each server if the first one connects the second one will fail because it is already mounted.
+	for PRI_GROUPS in /opt/karoshi/server_network/group_information/*
+	do
+		GROUPNAME=`basename $PRI_GROUPS`
+		source /opt/karoshi/server_network/group_information/$GROUPNAME
+		get_pri_group_number
+		for HOMESERVER in `echo $SERVER | sed 's/,/ /g'`
+		do
+			echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/home" path="%(USER)" server="'$HOMESERVER'" gid="'$GROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+		done
+	done
+
 else
 	for PRI_GROUPS in /opt/karoshi/server_network/group_information/*
 	do

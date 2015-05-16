@@ -164,7 +164,7 @@ SHORTNAME=`echo $DATA | cut -d"|" -f3 | tr -cd 'A-Za-z0-9.: /' | sed 's/^https:\
 }
 
 
-if [ $INSTALL_TYPE != restore ]
+if [ "$INSTALL_TYPE" != restore ] && [ "$INSTALL_TYPE" != joindomain_education ] && [ "$INSTALL_TYPE" != joindomain_business ]
 then
 	#Get domain name
 	CHECK_DOMAIN=yes
@@ -271,7 +271,7 @@ then
 fi
 }
 
-if [ $INSTALL_TYPE != restore ]
+if [ "$INSTALL_TYPE" != restore ] && [ "$INSTALL_TYPE" != joindomain_education ] && [ "$INSTALL_TYPE" != joindomain_business ]
 then
 	#get samba root password
 	ROOTPASSWDMSG=`echo $"Please enter the root and administrator password." $"Minimum 8 characters, numbers, upper and lower case letters."`
@@ -287,9 +287,9 @@ then
 
 	LDAPPASS="$SAMBAROOTPASSWORD1"
 
-#Get forwarding dns server
-DNSFORWARD=`grep dns-nameservers /etc/network/interfaces | cut -d" " -f2 | sed -n 1,1p`
-create_resolv.conf
+	#Get forwarding dns server
+	DNSFORWARD=`grep dns-nameservers /etc/network/interfaces | cut -d" " -f2 | sed -n 1,1p`
+	create_resolv.conf
 fi
 
 function provision_samba4 {
@@ -331,11 +331,15 @@ DPASS=`echo $DATA | cut -d"|" -f4 | tr -cd 'A-Za-z0-9.: /'`
 [ $SSHNOPASS = no ] && ROOTPASS=`echo $DATA | cut -d"|" -f5 | tr -cd 'A-Za-z0-9.:/'`
 }
 
-if [ $INSTALL_TYPE = restore ]
+if [ "$INSTALL_TYPE" = restore ] || [ "$INSTALL_TYPE" = joindomain_education ] || [ "$INSTALL_TYPE" = joindomain_business ]
 then
-
-	#Restore data from a backup archive.
-	restoredata
+	if [ "$INSTALL_TYPE" = restore ]
+	then
+		#Restore data from a backup archive.
+		restoredata
+		#Source domain information if available
+		[ -f opt/karoshi/server_network/domain_information/domain_name ] && source /opt/karoshi/server_network/domain_information/domain_name
+	fi
 
 	JOINSTATUS=1
 	REALM=""
@@ -370,32 +374,36 @@ then
 
 		create_hostname_fqdn
 
-		#Set the fsmo role on the existing domain controller - this must be done before proceeding any further.
-		#Try and ssh to the server and set the role
-		SETFSMO=no
 
-		#Try setting fsmo role with ssh key
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $DNSTCPIP '
-		samba-tool fsmo seize --role=all --force
-		'
-		if [ $? != 0 ]
+		if [ "$INSTALL_TYPE" = restore ]
 		then
-			SSHNOPASS=no
-			which sshpass 1>/dev/null
+			#Set the fsmo role on the existing domain controller - this must be done before proceeding any further.
+			#Try and ssh to the server and set the role
+			SETFSMO=no
+
+			#Try setting fsmo role with ssh key
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $DNSTCPIP '
+			samba-tool fsmo seize --role=all --force
+			'
 			if [ $? != 0 ]
 			then
-				#Install sshpass
-				apt-get update
-				apt-get install -f sshpass
-			fi
+				SSHNOPASS=no
+				which sshpass 1>/dev/null
+				if [ $? != 0 ]
+				then
+					#Install sshpass
+					apt-get update
+					apt-get install -f sshpass
+				fi
 
-			while [ $SETFSMO = no ]
-			do
-				sshpass -p "$ROOTPASS" ssh -o StrictHostKeyChecking=no $DNSTCPIP samba-tool fsmo seize --role=all --force
-				[ $? = 0 ] && break
-				ERRORMSG='<span foreground="red">'$"Root SSL authentication error."'</span>'
-				getjoindomaininfo
-			done
+				while [ $SETFSMO = no ]
+				do
+					sshpass -p "$ROOTPASS" ssh -o StrictHostKeyChecking=no $DNSTCPIP samba-tool fsmo seize --role=all --force
+					[ $? = 0 ] && break
+					ERRORMSG='<span foreground="red">'$"Root SSL authentication error."'</span>'
+					getjoindomaininfo
+				done
+			fi
 		fi
 		#Attempt to join the domain
 		#Delete any existing smb.conf
@@ -416,6 +424,7 @@ then
 		then
 			ERRORMSG='<span foreground="red">'$"Failed to join the domain."'</span>'
 		fi
+
 	done
 
 	create_resolv.conf
@@ -426,6 +435,29 @@ then
 		[ -f /etc/samba/smb.conf ] && rm -f /etc/samba/smb.conf
 		mv /etc/samba/smb-karoshi-restore.conf /etc/samba/smb.conf
 	fi
+
+	#Create realm information 
+	
+	WEBADDRESS=$REALM
+	[ `echo $WEBADDRESS | tr -cd '.' | grep -c .` = 0 ] && WEBADDRESS=$WEBADDRESS.internal
+	
+	SAMBADOMAIN=`echo $WEBADDRESS | cut -d. -f1`
+	SAMBADOMAINCAPS=`echo $SAMBADOMAIN | tr 'a-z' 'A-Z'`
+
+	REALMCAPS=`echo $REALM | tr 'a-z' 'A-Z'`
+	LDAPBASE=`echo $REALM | sed 's/\./,DC=/g' | sed 's/^/DC=/g'`
+
+	[ ! -d /opt/karoshi/server_network/domain_information/ ] && mkdir -p /opt/karoshi/server_network/domain_information/
+
+	echo SAMBADOMAIN=\"$SAMBADOMAIN\" > /opt/karoshi/server_network/domain_information/domain_name
+	echo SAMBADOMAINCAPS=\"$SAMBADOMAINCAPS\" >> /opt/karoshi/server_network/domain_information/domain_name
+	echo WEBADDRESS=\"$WEBADDRESS\" >> /opt/karoshi/server_network/domain_information/domain_name
+	echo REALM=\"$WEBADDRESS\" >> /opt/karoshi/server_network/domain_information/domain_name
+	echo REALMCAPS=\"$REALMCAPS\" >> /opt/karoshi/server_network/domain_information/domain_name
+	echo LDAPBASE=\"$LDAPBASE\" >> /opt/karoshi/server_network/domain_information/domain_name
+	echo LONGNAME=\"$LONGNAME\" >> /opt/karoshi/server_network/domain_information/domain_name
+	echo SHORTNAME=\"$SHORTNAME\" >> /opt/karoshi/server_network/domain_information/domain_name
+	echo LINUXCLIENTVER=\"$LINUXCLIENTVERSION\" >> /opt/karoshi/server_network/domain_information/domain_name
 
 	SAMBAROOTPASSWORD1="$DPASS"
 else
@@ -464,7 +496,7 @@ echo '[libdefaults]
 #samba-tool dns zonecreate <server> <reverse-network-ip-part>.in-addr.arpa -U Administrator
 #samba-tool dns add <server> <zone> <host-part> PTR <domain-name> -U Administrator
 
-if [ $INSTALL_TYPE = restore ]
+if [ "$INSTALL_TYPE" = restore ]
 then
 	#Get gluster volume up and running for dc-data
 	
@@ -581,7 +613,7 @@ sleep 1
 #Wait for port 389 on localhost to be available
 check_ldap_port
 
-if [ $INSTALL_TYPE != restore ]
+if [ "$INSTALL_TYPE" != restore ]
 then
 	#Add reverse dns entry
 	echo `date`: "Adding in reverse dns entry" >> /opt/karoshi/serversetup/install_log
@@ -725,7 +757,7 @@ add_organisational_unit
 creategpos
 
 
-if [ $INSTALL_TYPE = education ]
+if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = joindomain_education ]
 then
 	NAME="studentstaff"
 	DESC="Student staff"
@@ -771,7 +803,7 @@ LDAPPATH="OU=other,OU=People,$LDAPBASE"
 add_organisational_unit
 creategpos
 
-if [ $INSTALL_TYPE = education ]
+if [ $INSTALL_TYPE = education ] || [ "$INSTALL_TYPE" = joindomain_education ]
 then
 	NAME="exams"
 	DESC="Exam users"
@@ -828,7 +860,7 @@ gidnumber: $GIDNUMBER
 #function Make the folders and groups
 ##############################
 function makefoldersandgroups {
-if [ $INSTALL_TYPE != restore ]
+if [ "$INSTALL_TYPE" != restore ]
 then
 	echo `date`: "Making folders and groups" >> /opt/karoshi/serversetup/install_log
 
@@ -870,7 +902,7 @@ then
 	add_samba4_group
 
 	#Add education groups
-	if [ $INSTALL_TYPE = education ]
+	if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = joindomain_education ]
 	then
 		echo -e ''$"Adding group"' nonteachingstaff'
 		NEWGROUP=nonteachingstaff
@@ -922,7 +954,7 @@ chmod 0755 /home/users
 chown root.root /home/users
 
 #Add education home areas
-if [ $INSTALL_TYPE = education ]
+if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = joindomain_education ]
 then
 	#Guardian users home areas
 	[ -d /home/users/guardians ] || mkdir /home/users/guardians
@@ -995,7 +1027,7 @@ chmod 0750 /home/users/guestusers
 chown root.guestusers /home/users/guestusers
 chown .guestusers -R /home/users/guestusers
 
-if [ $INSTALL_TYPE != restore ]
+if [ "$INSTALL_TYPE" != restore ]
 then
 	#Applications area - windows profiles
 	echo $"Creating" applications
@@ -1028,7 +1060,7 @@ fi
 echo `date`: "Creating subjects area" >> /opt/karoshi/serversetup/install_log
 
 #Add education home areas
-if [ $INSTALL_TYPE = education ]
+if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = joindomain_education ]
 then
 
 if ! test -d /home/subjects
@@ -1052,7 +1084,7 @@ echo $"Creating" staffshare
 [ -d /home/staffshare ] || mkdir /home/staffshare
 
 #Add education home areas
-if [ $INSTALL_TYPE = education ]
+if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = joindomain_education ]
 then
 	[ -d /home/staffshare/temp ] || mkdir /home/staffshare/temp
 	[ -d /home/staffshare/"useful documents" ] || mkdir /home/staffshare/"useful documents"
@@ -1120,7 +1152,7 @@ chown root.itadmin -R /var/log/karoshilogs
 #############################
 #Copy in netlogon files
 #############################
-if [ $INSTALL_TYPE != restore ]
+if [ "$INSTALL_TYPE" != restore ]
 then
 	echo $"Copying in logon files"
 	echo `date`: "Copying in netlogon files" >> /opt/karoshi/serversetup/install_log
@@ -1521,7 +1553,7 @@ do
 	let COUNTER=COUNTER+1
 done
 
-if [ $INSTALL_TYPE = education ]
+if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = joindomain_education ]
 then
 	#Add exam accounts
 	COUNTER=1
@@ -1551,7 +1583,7 @@ setfacl -Rm u::rwx,g::---,o::---,g:staff:rwx,d:u::rwx,d:g::---,d:o::---,d:g:staf
 setfacl -Rm u::rwx,g::---,o::---,g:officestaff:rwx,d:u::rwx,d:g::---,d:o::---,d:g:officestaff:rwx /home/officeshare
 setfacl -m g:staff:r-x,u::r-x /home/staffshare
 
-if [ $INSTALL_TYPE = education ]
+if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = joindomain_education ]
 then
 	setfacl -Rm u::rwx,g::r-x,o::r-x,g:staff:rwx,d:u::rwx,d:g::r-x,d:o::r-x,d:g:staff:rwx /home/subjects
 	setfacl -m g:staff:r-x,u::r-x /home/subjects
@@ -1578,19 +1610,21 @@ create_hostname_fqdn
 echo "N.A.:127.0.0.1:N.A.:$HOSTNAME.$REALM:users:internal:" | /opt/karoshi/serversetup/modules/authentication/configure_authentication
 makefoldersandgroups
 
-if [ $INSTALL_TYPE != restore ]
+if [ "$INSTALL_TYPE" != restore ]
 then
 	creategpos
 	setfolderpermissions
 	make_default_users
 	make_profiles
 	#Do businesses want google safesearch?
-	[ $INSTALL_TYPE = education ] && /opt/karoshi/serversetup/pdc/"useful scripts"/googlesafesearch add
+	if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = joindomain_education ]
+	then
+		/opt/karoshi/serversetup/pdc/"useful scripts"/googlesafesearch add
+	fi
 fi
 getyadpid
 [ ! -z "$YADPID" ] && kill $YADPID
 }
-
 
 run_functions 2>> /opt/karoshi/serversetup/install_log | show_info
 
@@ -1608,7 +1642,7 @@ echo `date`: "Stopping password aging" >> /opt/karoshi/serversetup/install_log
 chage -M 99999 root
 chage -M 99999 karoshi
 
-if [ $INSTALL_TYPE != restore ]
+if [ "$INSTALL_TYPE" != restore ]
 then
 	#######################
 	#Setup Scheduled Jobs
@@ -1797,17 +1831,18 @@ then
 	fi
 
 	#Flag existing roles on the main server as needed re-installing.
-	if [ -d /opt/karoshi/server_network/servers/`hostname-fqdn` ]
+	SERVERNAME=`hostname-fqdn`
+	if [ -d /opt/karoshi/server_network/servers/"$SERVERNAME" ]
 	then
-		for INFOFILES in /opt/karoshi/server_network/servers/`hostname-fqdn`/*
+		for INFOFILES in /opt/karoshi/server_network/servers/"$SERVERNAME"/*
 		do
 			INFOFILE=`basename $INFOFILES`
 			if [ $INFOFILE != apacheserver ] && [ $INFOFILE != glusterfs_server ] && [ $INFOFILE != 1dc ] && [ $INFOFILE != 2users-groups ]
 			then
-				if [ `grep -c RE-INSTALL /opt/karoshi/server_network/servers/`hostname-fqdn`/$INFOFILE` = 0 ]
+				if [ `grep -c RE-INSTALL /opt/karoshi/server_network/servers/"$SERVERNAME"/$INFOFILE` = 0 ]
 				then
-					sed -i '1i <span class="reinstall"><b>' /opt/karoshi/server_network/servers/`hostname-fqdn`/$INFOFILE
-					echo 'RE-INSTALL MODULE<br></b></span>' >> /opt/karoshi/server_network/servers/`hostname-fqdn`/$INFOFILE
+					sed -i '1i <span class="reinstall"><b>' /opt/karoshi/server_network/servers/"$SERVERNAME"/$INFOFILE
+					echo 'RE-INSTALL MODULE<br></b></span>' >> /opt/karoshi/server_network/servers/"$SERVERNAME"/$INFOFILE
 				fi
 			fi
 		done
