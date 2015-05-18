@@ -282,6 +282,92 @@ then
 	
 		fi
 	fi
+
+	#Add in a samba share if the folder is in /home and a share already exists for this folder on the server that the data is currently on.
+	ADDSMBSHARE=no
+	if [ "$SERVER" = `hostname-fqdn` ]
+	then
+		#Check if the path is in smb.conf or there is an include file
+		if [ `grep -c $FOLDER /etc/samba/smb.conf` -gt 0 ] || [ -f /etc/samba/extra_network_shares/$SERVER/"$FOLDERSHORT".conf ]
+		then
+			ADDSMBSHARE=yes
+		fi
+	else
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+		#Check if the path is in smb.conf or there is an include file
+		if [ `grep -c '$FOLDER' /etc/samba/smb.conf` -gt 0 ] || [ -f /etc/samba/extra_network_shares/'$SERVER'/"'$FOLDERSHORT'".conf ]
+		then
+			exit 102
+		fi
+		'
+		[ $? = 102 ] && ADDSMBSHARE=yes	
+	fi
+
+	if [ "$ADDSMBSHARE" = yes ]
+	then
+		SHARENAME="$FOLDERSHORT"
+		[ $FOLDER = /home/itadminshare ] && SHARENAME=itadmin
+		for GLUSTERSERVER in `ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/`
+		do
+			if [ "$GLUSTERSERVER" != "$SERVER" ]
+			then
+				echo "gluster_control - adding an smb share for $FOLDERSHORT on $GLUSTERSERVER by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+				if [ $GLUSTERSERVER = `hostname-fqdn` ]
+				then
+					#Add data to custom smb.conf
+					[ ! -d /etc/samba/extra_network_shares/$GLUSTERSERVER ] && mkdir -p /etc/samba/extra_network_shares/$GLUSTERSERVER
+					echo "[$SHARENAME]" > /etc/samba/extra_network_shares/$GLUSTERSERVER/"$SHARENAME".conf
+					echo "	path = \"/home/$FOLDERSHORT\"" >> /etc/samba/extra_network_shares/$GLUSTERSERVER/"$SHARENAME".conf
+					echo "	invalid users = root" >> /etc/samba/extra_network_shares/$GLUSTERSERVER/"$SHARENAME".conf
+					echo "	read only = No" >> /etc/samba/extra_network_shares/$GLUSTERSERVER/"$SHARENAME".conf
+					echo "	browseable = Yes" >> /etc/samba/extra_network_shares/$GLUSTERSERVER/"$SHARENAME".conf
+					echo >> /etc/samba/extra_network_shares/$GLUSTERSERVER/"$SHARENAME".conf
+
+					#Add include line to smb.conf
+					if [ `grep -c "$GLUSTERSERVER"/"$SHARENAME".conf /etc/samba/smb.conf` = 0 ]
+					then
+						echo  >> /etc/samba/smb.conf
+						echo include = /etc/samba/extra_network_shares/$GLUSTERSERVER/"$SHARENAME".conf >> /etc/samba/smb.conf
+					fi
+					#Restart samba
+					source /opt/karoshi/serversetup/variables/distro
+					/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
+					sleep 1
+					/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null 2>/dev/null
+				else
+					ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $GLUSTERSERVER '
+					#Add data to custom smb.conf
+					[ ! -d /etc/samba/extra_network_shares/'$GLUSTERSERVER' ] && mkdir -p /etc/samba/extra_network_shares/'$GLUSTERSERVER'
+					echo "['$SHARENAME']" > /etc/samba/extra_network_shares/'$GLUSTERSERVER'/"'$SHARENAME'".conf
+					echo "	path = \"/home/'$FOLDERSHORT'\"" >> /etc/samba/extra_network_shares/'$GLUSTERSERVER'/"'$SHARENAME'".conf
+					echo "	invalid users = root" >> /etc/samba/extra_network_shares/'$GLUSTERSERVER'/"'$SHARENAME'".conf
+					echo "	read only = No" >> /etc/samba/extra_network_shares/'$GLUSTERSERVER'/"'$SHARENAME'".conf
+					echo "	browseable = Yes" >> /etc/samba/extra_network_shares/'$GLUSTERSERVER'/"'$SHARENAME'".conf
+					echo >> /etc/samba/extra_network_shares/'$GLUSTERSERVER'/"'$SHARENAME'".conf
+
+					#Add include line to smb.conf
+					if [ `grep -c "'$GLUSTERSERVER'"/"'$SHARENAME'".conf /etc/samba/smb.conf` = 0 ]
+					then
+						echo  >> /etc/samba/smb.conf
+						echo include = /etc/samba/extra_network_shares/'$GLUSTERSERVER'/"'$SHARENAME'".conf >> /etc/samba/smb.conf
+					fi
+					#Restart samba
+					source /opt/karoshi/serversetup/variables/distro
+					/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
+					sleep 1
+					/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null 2>/dev/null
+					'
+				fi
+				#Add in data file for the share.
+				[ ! -d /opt/karoshi/server_network/network_shares/$GLUSTERSERVER ] && mkdir -p /opt/karoshi/server_network/network_shares/$GLUSTERSERVER
+
+				#Copy in share data from the existing server and edit.
+				cp /opt/karoshi/server_network/network_shares/$SERVER/"$SHARENAME" /opt/karoshi/server_network/network_shares/$GLUSTERSERVER
+				sed -i 's/MAP_DRIVE="1"/MAP_DRIVE="1"/g' /opt/karoshi/server_network/network_shares/$GLUSTERSERVER/"$SHARENAME"
+				sed -i 's/'$SERVER'/'$GLUSTERSERVER'/g' /opt/karoshi/server_network/network_shares/$GLUSTERSERVER/"$SHARENAME"
+			fi
+		done
+	fi
 	reloadpage
 fi
 

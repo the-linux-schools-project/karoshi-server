@@ -250,8 +250,8 @@ else
 <form action="/cgi-bin/admin/gluster_control.cgi" method="post"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="vertical-align: top;"><div class="sectiontitle">Gluster - '$TITLE'</div></td>
 <td><input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$ACTIONMSG'"></td>
-<td><a href="gluster_control.cgi"><input class="button" type="button" name="" value="'$"Gluster Volume Control"'"></a></td>
 <td><a href="home_folders_fm.cgi"><input class="button" type="button" name="" value="'$"Home Folders"'"></a></td>
+<td><a href="samba_shares.cgi"><input class="button" type="button" name="" value="'$"Network Shares"'"></a></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Gluster_Volumes"><img class="images" alt="" src="/images/help/info.png"><span>'$"Gluster Volumes"'</span></a></td></tr></tbody></table></form></div><div id="infobox">'
 fi
 
