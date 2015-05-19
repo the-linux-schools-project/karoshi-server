@@ -92,5 +92,22 @@ fi
 #wake on lan
 #######################
 echo `date`: wake_on_lan_now - waking up $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-/opt/karoshi/"useful scripts"/wol $LOCATION: &
+
+if [ -d /opt/karoshi/asset_register/locations/"$LOCATION" ]
+then
+	if [ `ls -1 /opt/karoshi/asset_register/locations/"$LOCATION" | wc -l` -gt 0 ]
+	then
+		for ASSETS in /opt/karoshi/asset_register/locations/"$LOCATION"/*
+		do
+			ASSET=`basename $ASSETS`
+			MACADDRESS=`sed -n 8,8p /opt/karoshi/asset_register/locations/$LOCATION/$ASSET | cut -d: -f2- | sed 's/ //g' | tr -cd "A-Za-z0-9:"`
+			if [ ! -z "$MACADDRESS" ] && [ $MACADDRESS != N.A. ]
+			then
+				echo $"Waking" "$MACADDRESS""<br>"
+				wakeonlan "$MACADDRESS" 1>/dev/null
+				sleep 1.5
+			fi
+		done
+	fi
+fi
 exit

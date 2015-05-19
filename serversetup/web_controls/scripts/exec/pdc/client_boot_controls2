@@ -136,7 +136,7 @@ SERVERIP=`net lookup $DISTRIBUTIONSERVER`
 BOOT_CONTROL_CONFIG=/opt/karoshi/server_network/dhcp/network_boot_list
 
 
-if [ $ACTION = install ]
+if [ "$ACTION" = install ]
 then
 	if [ ! -z "$TCPIP" ] && [ ! -z "$MACADDRESS" ]
 	then 
@@ -174,102 +174,29 @@ then
 	fi
 fi
 
-if [ $ACTION = wakeonlanall ]
+if [ "$ACTION" = wakeonlanall ]
 then
 
-	if [ -d /opt/karoshi/asset_register/locations/$LOCATION/1 ]
+	if [ -d /opt/karoshi/asset_register/locations/"$LOCATION" ]
 	then
-		if [ `ls -1 /opt/karoshi/asset_register/locations/$LOCATION/1 | wc -l` -gt 0 ]
+		if [ `ls -1 /opt/karoshi/asset_register/locations/"$LOCATION" | wc -l` -gt 0 ]
 		then
-			for ASSETS in /opt/karoshi/asset_register/locations/$LOCATION/1/*
+			for ASSETS in /opt/karoshi/asset_register/locations/"$LOCATION"/*
 			do
 				ASSET=`basename $ASSETS`
-				MACADDRESS=`sed -n 8,8p /opt/karoshi/asset_register/locations/$LOCATION/1/$ASSET | cut -d: -f2- | sed 's/ //g'`
-				if [ $MACADDRESS'null' != null ] && [ $MACADDRESS != N.A. ]
+				MACADDRESS=`sed -n 8,8p /opt/karoshi/asset_register/locations/$LOCATION/$ASSET | cut -d: -f2- | sed 's/ //g' | tr -cd "A-Za-z0-9:"`
+				if [ ! -z "$MACADDRESS" ] && [ $MACADDRESS != N.A. ]
 				then
-					echo Waking $MACADDRESS"<br>"
-					wakeonlan $MACADDRESS 1>/dev/null
+					echo $"Waking" "$MACADDRESS""<br>"
+					wakeonlan "$MACADDRESS" 1>/dev/null
 					sleep 1.5
 				fi
 			done
 		fi
 	fi
-
-	if [ -d /opt/karoshi/asset_register/locations/$LOCATION/2 ]
-	then
-		if [ `ls -1 /opt/karoshi/asset_register/locations/$LOCATION/2 | wc -l` -gt 0 ]
-		then
-			for ASSETS in /opt/karoshi/asset_register/locations/$LOCATION/2/*
-			do
-				ASSET=`basename $ASSETS`
-				MACADDRESS=`sed -n 8,8p /opt/karoshi/asset_register/locations/$LOCATION/2/$ASSET | cut -d: -f2- | sed 's/ //g'`
-				if [ $MACADDRESS'null' != null ] && [ $MACADDRESS != N.A. ]
-				then
-					echo Waking $MACADDRESS"<br>"
-					wakeonlan $MACADDRESS 1>/dev/null
-					sleep 1.5
-				fi
-			done
-		fi
-	fi
-
-	if [ -d /opt/karoshi/asset_register/locations/$LOCATION/3 ]
-	then
-		if [ `ls -1 /opt/karoshi/asset_register/locations/$LOCATION/3 | wc -l` -gt 0 ]
-		then
-			for ASSETS in /opt/karoshi/asset_register/locations/$LOCATION/3/*
-			do
-				ASSET=`basename $ASSETS`
-				MACADDRESS=`sed -n 8,8p /opt/karoshi/asset_register/locations/$LOCATION/3/$ASSET | cut -d: -f2- | sed 's/ //g'`
-				if [ ! -z "$MACADDRESS" ] && [ "$MACADDRESS" != N.A. ]
-				then
-					echo Waking $MACADDRESS"<br>"
-					wakeonlan $MACADDRESS 1>/dev/null
-					sleep 1.5
-				fi
-			done
-		fi
-	fi
-
-	if [ -d /opt/karoshi/asset_register/locations/$LOCATION/4 ]
-	then
-		if [ `ls -1 /opt/karoshi/asset_register/locations/$LOCATION/4 | wc -l` -gt 0 ]
-		then
-			for ASSETS in /opt/karoshi/asset_register/locations/$LOCATION/4/*
-			do
-				ASSET=`basename $ASSETS`
-				MACADDRESS=`sed -n 8,8p /opt/karoshi/asset_register/locations/$LOCATION/2/$ASSET | cut -d: -f2- | sed 's/ //g'`
-				if [ ! -z "$MACADDRESS" ] && [ "$MACADDRESS" != N.A. ]
-				then
-				echo Waking $MACADDRESS"<br>"
-				wakeonlan $MACADDRESS 1>/dev/null
-				sleep 1.5
-				fi
-			done
-		fi
-	fi
-
-	if [ -d /opt/karoshi/asset_register/locations/$LOCATION/5 ]
-	then
-		if [ `ls -1 /opt/karoshi/asset_register/locations/$LOCATON/5 | wc -l` -gt 0 ]
-		then
-			for ASSETS in /opt/karoshi/asset_register/locations/$LOCATION/5/*
-			do
-				ASSET=`basename $ASSETS`
-				MACADDRESS=`sed -n 8,8p /opt/karoshi/asset_register/locations/$LOCATION/5/$ASSET | cut -d: -f2- | sed 's/ //g'`
-				if [ ! -z "$MACADDRESS" != null ] && [ "$MACADDRESS" != N.A. ]
-				then
-					echo Waking $MACADDRESS"<br>"
-					wakenonlan $MACADDRESS 1>/dev/null
-					sleep 1.5
-				fi
-			done
-		fi
-	fi
-
 fi
 
-if [ $ACTION = normal ]
+if [ "$ACTION" = normal ]
 then
 	echo `date`: client_boot_controls2 - setting asset $ASSET to normal $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	[ -f /opt/karoshi/server_network/dhcp/asset_register/network_install/memtest/$ASSET ] && rm -f /opt/karoshi/server_network/dhcp/asset_register/network_install/memtest/$ASSET

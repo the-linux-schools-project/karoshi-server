@@ -108,6 +108,6 @@ MESSAGE=$"There are no locations to schedule."
 show_status
 fi
 echo "</div>"
-echo '<div id="submitbox"><input value="Submit" type="submit"> <input value="Reset" type="reset"></div>'
+echo '<div id="submitbox"><input class="button" value="Submit" type="submit"> <input value="Reset" type="reset"></div>'
 echo '</form></div></body></html>'
 exit
