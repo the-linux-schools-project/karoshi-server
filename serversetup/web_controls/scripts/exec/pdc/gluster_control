@@ -363,7 +363,7 @@ then
 
 				#Copy in share data from the existing server and edit.
 				cp /opt/karoshi/server_network/network_shares/$SERVER/"$SHARENAME" /opt/karoshi/server_network/network_shares/$GLUSTERSERVER
-				sed -i 's/MAP_DRIVE="1"/MAP_DRIVE="1"/g' /opt/karoshi/server_network/network_shares/$GLUSTERSERVER/"$SHARENAME"
+				sed -i 's/MAP_DRIVE="1"/MAP_DRIVE="0"/g' /opt/karoshi/server_network/network_shares/$GLUSTERSERVER/"$SHARENAME"
 				sed -i 's/'$SERVER'/'$GLUSTERSERVER'/g' /opt/karoshi/server_network/network_shares/$GLUSTERSERVER/"$SHARENAME"
 			fi
 		done

@@ -193,7 +193,8 @@ then
 .rautemusik.fm
 .charthits.fm
 .vidstatsx.com
-.sharethis.com" > /etc/squid/location_banned_sites.list
+.sharethis.com
+.translate.google.com" > /etc/squid/location_banned_sites.list
 fi
 
 	cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/errors/en/* /usr/share/squid3/errors/en/

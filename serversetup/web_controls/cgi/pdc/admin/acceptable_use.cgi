@@ -132,12 +132,11 @@ then
 			fi
 		let COUNTER=$COUNTER+1
 	done
-	send_data
 fi
 
 if [ $ACTION = enableac ] || [ $ACTION = disableac ]
 then
-send_data
+	send_data
 fi
 
 #Check to see if acceptable use is enabled or disabled.
@@ -146,14 +145,34 @@ then
 	ACCEPTABLEUSESTATUS=$"Disabled"
 	GRACETIMESTATUSMSG=$"Enable acceptable use"
 	ICON=/images/submenus/user/grace_time_disabled.png
-	ACTION=enableac
+	ACTION2=enableac
 	ACTIONMSG=$"Enable"
 else
 	ACCEPTABLEUSESTATUS=$"Enabled"
 	GRACETIMESTATUSMSG=$"Disable acceptable use"
 	ICON=/images/submenus/user/grace_time_enabled.png
-	ACTION=disableac
+	ACTION2=disableac
 	ACTIONMSG=$"Disable"
+fi
+
+if [ "$ACTION" = resetstatus ]
+then
+	#Assign GROUP
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = GROUPcheck ]
+		then
+			let COUNTER=$COUNTER+1
+			GROUP=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/acceptable_use.cgi | cut -d' ' -f1`
+	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:::$GROUP:" | sudo -H /opt/karoshi/web_controls/exec/acceptable_use	
 fi
 
 [ -f /opt/karoshi/server_network/acceptable_use_authorisations/grace_time ] && GRACETIME=`sed -n 1,1p /opt/karoshi/server_network/acceptable_use_authorisations/grace_time | tr -cd 0-9` 
@@ -161,18 +180,37 @@ fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/acceptable_use.cgi" name="acceptableuse" method="post"><div id="actionbox3"><div id="titlebox">
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+
+echo '<form action="/cgi-bin/admin/acceptable_use.cgi" name="acceptableuse" method="post"><div id="actionbox3"><div id="titlebox">'
+
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="vertical-align: top; width: 150px;"><div class="sectiontitle">'$"Acceptable Use"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Acceptable_Use"><img class="images" alt="" src="/images/help/info.png"><span>'$"The acceptable use policy gives new users a grace period to sign and return an acceptable use policy."' '$"User accounts are automatically disabled once the trial time is ended unless they are authorised."'</span></a></td></tr></tbody></table>
-<br>
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<br>'
+
+if [ "$ACTION" = approve ]
+then
+	send_data
+	#Reload page
+	echo '<script type="text/javascript">
+	window.location = "acceptable_use.cgi";
+	</script>'		
+fi
+
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 200px;">'$"Status"'</td><td>
-<a class="info" href="javascript:void(0)"><input name="_ACTION_'$ACTION'_" type="image" class="images" src="'$ICON'" value="'$ACTION'"><span>'$GRACETIMESTATUSMSG'</span></a>
-</td><td><input name="_ACTION_'$ACTION'_" type="submit" class="button" value="'$ACCEPTABLEUSESTATUS'"></td></tr>
+<a class="info" href="javascript:void(0)"><input name="_ACTION_'$ACTION2'_" type="image" class="images" src="'$ICON'" value="'$ACTION'"><span>'$GRACETIMESTATUSMSG'</span></a>
+</td><td><input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$ACCEPTABLEUSESTATUS'"></td></tr>
 <tr><td>'$"Grace Time"'</td><td><input maxlength="2" size="2" name="_GRACETIME_" value="'$GRACETIME'"></td>
 <td><input name="_ACTION_setgracetime_" type="submit" class="button" value="'$"Set Grace Time"'"></td>
 <td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Acceptable_Use"><img class="images" alt="" src="/images/help/info.png"><span>'$"The grace time is the amount of time a new user is allowed to log into the system before signing and returning the acceptable use policy. This time is set in days."'</span></a></td>
-</tr></tbody></table></div><div id="infobox"><br><br>'
+</tr>
+<tr><td>'$"Reset user acceptable status"'</td><td>'
+
+#Show list of groups to reset the acceptable use grace time for
+/opt/karoshi/web_controls/group_dropdown_list | sed 's/<option><\/option>/<option value="allusers">'$"All Users"'<\/option>/g' | sed 's/200/150/g'
+
+echo '</td><td><input name="_ACTION_resetstatus_" type="submit" class="button" value="'$"Reset"'"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Acceptable_Use"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to reset the acceptable use status for."'</span></a></td>
+</tbody></table></div><div id="infobox"><br><br>'
 
 #Get list of pending users
 PROCESS_USERS=yes
@@ -212,9 +250,11 @@ then
 	echo '</tbody></table>'
 fi
 
-echo '<br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">'
-[ $PROCESS_USERS = yes ] && echo '<input class="button" type="button" onclick="SetAllCheckBoxes('\'acceptableuse\'', '\'_ACTION_approve_USERNAME_\'', true);" value="'$"Select all"'">'
 
+if [ $PROCESS_USERS = yes ]
+then
+	echo '<br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"><input class="button" type="button" onclick="SetAllCheckBoxes('\'acceptableuse\'', '\'_ACTION_approve_USERNAME_\'', true);" value="'$"Select all"'">'
+fi
 
 echo '</div></div></form></div></body></html>'
 exit

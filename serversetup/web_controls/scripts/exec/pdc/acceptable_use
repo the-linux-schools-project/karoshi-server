@@ -65,6 +65,7 @@ REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 ACTION=`echo "$DATA" | cut -s -d: -f4`
 GRACETIME=`echo "$DATA" | cut -s -d: -f5`
 USERNAMES=`echo "$DATA" | cut -s -d: -f6`
+GROUP=`echo "$DATA" | cut -s -d: -f7`
 
 ########################
 #Check data
@@ -88,6 +89,34 @@ if [ -z "$ACTION" ]
 then
 	echo `date`: acceptable_use - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
+fi
+
+if [ $ACTION = resetstatus ]
+then
+	#Check to see if grace time has been disabled
+	GRACE_TIME=yes
+	[ -f /opt/karoshi/server_network/acceptable_use_authorisations/grace_time_disabled ] && GRACE_TIME=no
+	if [ "$GRACE_TIME" = yes ]
+	then
+		[ -z "$GROUP" ] && GROUP=allusers
+		[ -f /opt/karoshi/server_network/acceptable_use_authorisations/grace_time ] && GRACE_TIMER=`sed -n 1,1p /opt/karoshi/server_network/acceptable_use_authorisations/grace_time | tr -cd 0-9`
+		[ -z "$GRACE_TIMER" ] && GRACE_TIMER=14
+
+		echo `date`: "acceptable_use - reseting acceptable use status for $GROUP by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		if [ $GROUP = allusers ]
+		then
+			SEARCH="/home/users/"
+		else
+			SEARCH="/$GROUP/"
+		fi
+		#Reset acceptable use for all users.
+		for USERNAME in `getent passwd | grep "$SEARCH" | cut -d: -f1`
+		do
+			echo "$GRACE_TIMER,$REMOTE_USER,`date +%d-%m-%Y`" > /opt/karoshi/server_network/acceptable_use_authorisations/pending/"$USERNAME"
+		done
+	fi
+	#Generate page warning
+	/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add acceptable_use_authorisations /cgi-bin/admin/acceptable_use.cgi $"Users have yet to sign an acceptable use policy." 1
 fi
 
 if [ $ACTION = disableac ]
@@ -132,6 +161,7 @@ then
 		CREATION_DATE=`echo $PENDING_USER_DATA | cut -d, -f3`
 
 		[ -f /opt/karoshi/server_network/acceptable_use_authorisations/pending/$APROVEUSER ] && rm -f /opt/karoshi/server_network/acceptable_use_authorisations/pending/$APROVEUSER
+		echo ''$"Approving"' '$APROVEUSER'<br>'
 		samba-tool user enable $APROVEUSER 1>/dev/null
 
 		#Get the primary group of the user
