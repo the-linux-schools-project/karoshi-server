@@ -188,13 +188,14 @@ then
 			show_warnings
 		fi
 		#Check to see that the tcpip number has not already been added
-		if [ -f /opt/karoshi/server_network/dhcp/reservations ]
+		if [ -f /etc/dhcp/dhcpd_reservations.conf ]
 		then
-			if [ `grep -R -w "$TCPIPADDRESS" /opt/karoshi/server_network/dhcp/reservations | wc -l` -gt 0 ]
+			#Check tcpip
+			if [ `grep -c "$TCPIPADDRESS;" /etc/dhcp/dhcpd_reservations.conf` -gt 0 ]
 			then
 				ACTION=view
 				MESSAGE=$"This TCPIP address is already in use."
-				show_warnings		
+				show_warnings
 			fi
 		fi
 	fi
@@ -224,13 +225,14 @@ then
 			fi
 		done
 		#Check to see that the mac address has not already been added
-		if [ -f /opt/karoshi/server_network/dhcp/reservations ]
+		if [ -f /etc/dhcp/dhcpd_reservations.conf ]
 		then
-			if [ `grep -R -w "$MACADDRESS" /opt/karoshi/server_network/dhcp/reservations | wc -l` -gt 0 ]
+			#Check tcpip
+			if [ `grep -c "$MACADDRESS;" /etc/dhcp/dhcpd_reservations.conf` -gt 0 ]
 			then
 				ACTION=view
 				MESSAGE=$"This mac address is already in use."
-				show_warnings		
+				show_warnings
 			fi
 		fi
 	fi		

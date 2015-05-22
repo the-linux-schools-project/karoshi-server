@@ -35,7 +35,7 @@ then
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/dhcp_reservations_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dhcp_reservations.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $dhcp_reservations_cgi'check' ]
 	then
 	echo `date`: dhcp_reservations - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -53,7 +53,7 @@ then
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-%'`
+DATA=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-%'`
 if [ -z "$DATA" ]
 then
 	echo `date`: dhcp_reservations - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE

@@ -182,6 +182,7 @@ echo MAXLEASETIME=$NEWMAXLEASETIME >> /opt/karoshi/server_network/dhcp/dhcp_sett
 
 source /opt/karoshi/server_network/dhcp/dhcp_settings
 source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/server_network/domain_information/domain_name
 
 #Disable dhcp on all additional domain controllers
 if [ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ ]
@@ -238,6 +239,7 @@ echo 'authoritative;' > $DHCPCONFPATH
 echo '	option domain-name-servers '$NEWDOMAINNAMESERVER';' >> $DHCPCONFPATH
 echo '	option routers '$NEWROUTER';' >> $DHCPCONFPATH
 echo '	option subnet-mask '$NEWSUBNETMASK';' >> $DHCPCONFPATH
+echo '	option domain-name '$REALM';' >> $DHCPCONFPATH
 echo >> $DHCPCONFPATH
 
 #Add include for dhcp failover
