@@ -86,42 +86,12 @@ then
 	#Mount volume
 	echo '<li>'$SERVER' - '$"mounting"' '$MOUNTBASE/$VOLUME'</li><br>'
 	mount -a
-	#Create mount command
-	echo -e '#!/bin/bash
-	#Check if glusterfs is needed
-	if [ `grep -c gluster /etc/fstab` -gt 0 ]
-	then
-		#Wait for glusterfs to start
-		source /opt/karoshi/serversetup/variables/distro
-		STATUS=1
-		COUNTER=0
-		while [ $STATUS = 1 ] && [ $COUNTER != 120 ]
-		do
-			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_status
-			STATUS=$?
-			sleep 1
-
-			if [ $STATUS = 0 ]
-			then
-				#Make sure gluster mount folders exists
-				for glustervol in `grep -w glusterfs /etc/fstab | grep -v glusterfs- | sed "s/ /,/g"`
-				do
-					glustermount=`echo $glustervol | cut -d, -f2`
-					#Make sure that the folder exists
-					[ ! -d "$glustermount" ] && mkdir -p "$glustermount"
-				done
-				#Hopefully gluster is now started so mount the gluster shares
-				mount -a
-			exit
-			fi
-
-			let COUNTER=$COUNTER+1
-		done
-	fi
-	exit' > /etc/rc2.d/S99mount_gluster_shares
+	#Copy in mount command
+	cp -f /opt/karoshi/serversetup/modules/glusterfs/scripts/S99mount_gluster_shares /etc/rc2.d/
 	chmod 0755 /etc/rc2.d/S99mount_gluster_shares
 
 else
+	scp /opt/karoshi/serversetup/modules/glusterfs/scripts/S99mount_gluster_shares root@$SERVER://opt/karoshi/serversetup/modules/glusterfs/scripts
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 
 	#Create empty folder to mount to 
@@ -138,40 +108,8 @@ else
 	echo "<li>'$SERVER' - '$"mounting"' '$MOUNTBASE'/'$VOLUME'</li><br>"
 	mount -a
 
-	#Create mount command
-	echo -e "#!/bin/bash
-	#Check if glusterfs is needed
-	if [ \`grep -c gluster /etc/fstab\` -gt 0 ]
-	then
-		#Wait for glusterfs to start
-		source /opt/karoshi/serversetup/variables/distro
-		STATUS=1
-		COUNTER=0
-		while [ \$STATUS = 1 ] && [ \$COUNTER != 120 ]
-		do
-			/opt/karoshi/serversetup/distro/\$DISTROCHOICE/scripts/control_services/glusterfs_status
-			STATUS=$?
-			sleep 1
-
-			if [ \$STATUS = 0 ]
-			then
-				#Make sure gluster mount folders exists
-				for glustervol in \`grep -w glusterfs /etc/fstab | grep -v glusterfs- | sed \"s/ /,/g\"\`
-				do
-					glustermount=\`echo \$glustervol | cut -d, -f2\`
-					#Make sure that the folder exists
-					[ ! -d \"\$glustermount\" ] && mkdir -p \"\$glustermount\"
-				done
-
-				#Hopefully gluster is now started so mount the gluster shares
-				mount -a
-				exit
-			fi
-
-			let COUNTER=\$COUNTER+1
-		done
-	fi
-	exit" > /etc/rc2.d/S99mount_gluster_shares
+	#Copy in mount command
+	cp -f /opt/karoshi/serversetup/modules/glusterfs/scripts/S99mount_gluster_shares /etc/rc2.d/
 	chmod 0755 /etc/rc2.d/S99mount_gluster_shares
 	'
 fi

@@ -194,7 +194,7 @@ then
 fi
 
 #This list is used to declare areas that cannot me deleted or moved
-LOCATION_LIST="/ /bin /boot /dev /etc /media /mnt /home /home/applications /home/itadminshare /home/staffshare /home/subjects /home/officeshare /home/users /home/users/guests /home/users/exams /home/users/profileuser /home/users/nonteachingstaff /home/users/studentstaff /home/users/staff /home/users/students /home/users/itadminstaff /home/users/officestaff /home/users/techstaff /initrd /lib /root /opt /opt/karoshi /opt/karoshi/serversetup /opt/karoshi/karoshi_user /usr /usr/bin /proc /sbin /sys /var /var/www /var/www/html /var/www/html_karoshi /var/www/cgi-bin /var/www/cgi-bin_karoshi"
+LOCATION_LIST="/ /bin /boot /dev /etc /media /mnt /home /home/applications /home/itadminshare /home/staffshare /home/subjects /home/officeshare /home/users /home/users/guests /home/users/exams /home/users/profileuser /home/users/nonteachingstaff /home/users/studentstaff /home/users/staff /home/users/students /home/users/itadminstaff /home/users/officestaff /home/users/techstaff /initrd /lib /root /opt /opt/karoshi /opt/karoshi/serversetup /opt/karoshi/karoshi_user /usr /usr/bin /proc /sbin /sys /var /var/www /var/www/html /var/www/html_karoshi /var/www/cgi-bin /var/www/cgi-bin_karoshi /tmp"
 #This list is used to recursivly declare areas that cannot me deleted or moved
 LOCATION_LIST2=( /opt/karoshi/logs /opt/karoshi/web_management /var/www/cgi-bin_karoshi )
 
@@ -525,10 +525,10 @@ TEXTCONTENT=`echo "$TEXTCONTENT" |  sed 's/%2F/\//g' | sed 's/+/ /g' | sed 's/%2
 
 
 function really_delete_item {
-if [ $LOCATION'null' = null ]
+if [ -z "$LOCATION" ]
 then
-echo `date`: file_manager - blank location by "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: file_manager - blank location by "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
 if [ `echo ${LOCATION_LIST[@]:0} | grep -c -w "$LOCATION"` -gt 0 ]
 then
@@ -1086,7 +1086,7 @@ fi
 fi
 
 echo '<br>
-<input name="_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_ACTION_REALLYSETPERMS_" type="submit" class="button" value="'$"Submit"'"> <input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$"Back"'">
+<input name="_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_ACTION_REALLYSETPERMS_" type="submit" class="button" value="'$"Submit"'"> <input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$"Cancel"'">
 '
 }
 
@@ -1398,7 +1398,7 @@ else
 	<tr><td><b>'$"New Name"'</b></td>'
 	[ $MOBILE = yes ] && echo "</tr><tr>" 
 	echo '<td><input name="_NEWFOLDER_" type="text" size="20" value="'$RENAMEFILE'"></td></tr></tbody></table><br>
-	<input name="_ACTION_REALLYRENAME_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$"Rename"'"> <input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$"Back"'"><br>'
+	<input name="_ACTION_REALLYRENAME_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$"Rename"'"> <input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$"Cancel"'"><br>'
 
 fi
 }

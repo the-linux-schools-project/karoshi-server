@@ -170,6 +170,25 @@ POOLNAME=`echo zfs"$MOUNTPOINT" | sed 's/\//-/g'`
 
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
+	SORTGLUSTER=no
+	if [ -d /home/gluster-volumes/ ] && [ "$MOUNTPOINT" = /home ]
+	then
+		SORTGLUSTER=yes
+	fi
+
+	function sort_gluster {
+	#Stop any gluster volumes if the mountpoint is /home
+	for GLUSTERVOL in `ls /home/gluster-volumes/`
+	do
+		if [ "$GLUSTERACTION" = start ]
+		then
+			#Create new volume id otherwise the gluster volume will not start.
+			(vol="$GLUSTERVOL"; brick=/home/gluster-volumes/"$GLUSTERVOL"; setfattr -n  trusted.glusterfs.volume-id -v 0x$(grep volume-id /var/lib/glusterd/vols/$vol/info | cut -d= -f2 | sed 's/-//g') $brick)
+		fi			
+		echo -e "y\n" | gluster volume "$GLUSTERACTION" "$GLUSTERVOL"
+	done
+	}
+
 	if [ $CREATETYPE = create ]
 	then
 		DRIVELIST=`echo $DRIVELIST | sed "s/,/ /g"`
@@ -264,13 +283,22 @@ then
 			done 
 		fi
 
-
 		#Copy data to new array
-		if [ -d $MOUNTPOINT ]
+		if [ -d "$MOUNTPOINT" ]
 		then
+			if [ $SORTGLUSTER = yes ]
+			then
+				GLUSTERACTION=stop
+				sort_gluster
+			fi
 			echo '<br><li>'$"Copying existing data onto the raid."'</b></li>'
 			sleep 2
 			rsync --timeout=30 --verbose --dirs --recursive --links --compress --delete --backup --times --perms --executability --owner --group -o $MOUNTPOINT/ $MOUNTPOINT.$$/
+			
+			#Move existing folder and create a new empty folder
+			mv $MOUNTPOINT $MOUNTPOINT-pre-zfs.$$
+			mkdir $MOUNTPOINT
+
 		fi
 
 		#Remove any existing partitions from fstab
@@ -295,11 +323,27 @@ then
 
 		#Remove temporary mount point
 		[ -d $MOUNTPOINT.$$ ] && rm -f -R $MOUNTPOINT.$$
+
+		if [ "$SORTGLUSTER" = yes ]
+		then
+			GLUSTERACTION=start
+			sort_gluster
+		fi
+
 		echo "</pre>"
 
 		#Mount partition on boot
-		echo mount /$ZPOOLTOPPATH/$POOLNAME/storage $MOUNTPOINT > /etc/rc2.d/S99zfs-mount-$POOLNAME
-		chmod 0700 /etc/rc2.d/S99zfs-mount-$POOLNAME
+		echo '#!/bin/bash
+COUNTER=0
+while [ $COUNTER -le 100 ]
+do
+	mount /'$ZPOOLTOPPATH'/'$POOLNAME'/storage '$MOUNTPOINT'
+	[ $? = 0 ] && exit
+	sleep 1
+	let COUNTER=$COUNTER+1
+done' > /etc/rc2.d/S90zfs-mount-$POOLNAME
+
+		chmod 0700 /etc/rc2.d/S90zfs-mount-$POOLNAME
 
 		#Start services if they were previously running and were stopped to create a raid on /var
 		if [ `echo $MOUNTPOINT | grep -c /var` -gt 0 ]
@@ -320,6 +364,12 @@ then
 	#Restore existing zfs raid
 	if [ $CREATETYPE = restore ]
 	then
+		if [ "$SORTGLUSTER" = yes ]
+		then
+			GLUSTERACTION=stop
+			sort_gluster
+		fi
+
 		zpool import -D -f $POOLNAME
 
 		COUNTER=1
@@ -331,9 +381,26 @@ then
 		done
 
 		mount /$ZPOOLTOPPATH/$POOLNAME/storage $MOUNTPOINT
+
+		if [ "$SORTGLUSTER" = yes ]
+		then
+			GLUSTERACTION=start
+			sort_gluster
+		fi
+
 		#Mount partition on boot
-		echo mount /$ZPOOLTOPPATH/$POOLNAME/storage $MOUNTPOINT > /etc/rc2.d/S99zfs-mount-$POOLNAME
-		chmod 0700 /etc/rc2.d/S99zfs-mount-$POOLNAME
+		echo '#!/bin/bash
+COUNTER=0
+while [ $COUNTER -le 100 ]
+do
+	echo $COUNTER >> /opt/data
+	mount /'$ZPOOLTOPPATH'/'$POOLNAME'/storage '$MOUNTPOINT'
+	[ $? = 0 ] && exit
+	sleep 1
+	let COUNTER=$COUNTER+1
+done' > /etc/rc2.d/S90zfs-mount-$POOLNAME
+
+		chmod 0700 /etc/rc2.d/S90zfs-mount-$POOLNAME
 	fi
 
 	#Reuse existing zfs raid
@@ -357,6 +424,26 @@ fi
 if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ] && [ $SERVERNAME != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
+
+	SORTGLUSTER=no
+	if [ -d /home/gluster-volumes/ ] && [ "'$MOUNTPOINT'" = /home ]
+	then
+		SORTGLUSTER=yes
+	fi
+
+	function sort_gluster {
+	#Stop any gluster volumes if the mountpoint is /home
+	for GLUSTERVOL in `ls /home/gluster-volumes/`
+	do
+		if [ "$GLUSTERACTION" = start ]
+		then
+			#Create new volume id otherwise the gluster volume will not start.
+			(vol="$GLUSTERVOL"; brick=/home/gluster-volumes/"$GLUSTERVOL"; setfattr -n  trusted.glusterfs.volume-id -v 0x$(grep volume-id /var/lib/glusterd/vols/$vol/info | cut -d= -f2 | sed "s/-//g") $brick)
+		fi			
+		echo -e "y\n" | gluster volume "$GLUSTERACTION" "$GLUSTERVOL"
+	done
+	}
+
 	if [ '$CREATETYPE' = create ]
 	then
 		DRIVELIST=`echo '$DRIVELIST' | sed "s/,/ /g"`
@@ -457,9 +544,20 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 		#Copy data to new array
 		if [ -d '$MOUNTPOINT' ]
 		then
+			if [ "$SORTGLUSTER" = yes ]
+			then
+				GLUSTERACTION=stop
+				sort_gluster
+			fi
+
 			echo "<br><li>'$"Copying existing data onto the raid."'</b></li>"
 			sleep 2
 			rsync --timeout=30 --verbose --dirs --recursive --links --compress --delete --backup --times --perms --executability --owner --group -o '$MOUNTPOINT'/ '$MOUNTPOINT'.'$$'/
+
+			#Move existing folder and create a new empty folder
+			mv '$MOUNTPOINT' '$MOUNTPOINT'-pre-zfs.$$
+			mkdir '$MOUNTPOINT'
+
 		fi
 
 		#Remove any existing partitions from fstab
@@ -484,11 +582,26 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 
 		#Remove temporary mount point
 		[ -d '$MOUNTPOINT'.'$$' ] && rm -f -R '$MOUNTPOINT'.'$$'
+
+		if [ "$SORTGLUSTER" = yes ]
+		then
+			GLUSTERACTION=start
+			sort_gluster
+		fi
+
 		echo "</pre>"
 
 		#Mount partition on boot
-		echo mount /'$ZPOOLTOPPATH'/'$POOLNAME'/storage '$MOUNTPOINT' > /etc/rc2.d/S99zfs-mount-'$POOLNAME'
-		chmod 0700 /etc/rc2.d/S99zfs-mount-'$POOLNAME'
+		echo "#!/bin/bash
+COUNTER=0
+while [ \$COUNTER -le 100 ]
+do
+	mount /'$ZPOOLTOPPATH'/'$POOLNAME'/storage '$MOUNTPOINT'
+	[ \$? = 0 ] && exit
+	sleep 1
+	let COUNTER=\$COUNTER+1
+done" > /etc/rc2.d/S90zfs-mount-'$POOLNAME'
+		chmod 0700 /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 
 		#Start services if they were previously running and were stopped to create a raid on /var
 		if [ `echo '$MOUNTPOINT' | grep -c /var` -gt 0 ]
@@ -510,6 +623,12 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 	#Restore existing zfs raid
 	if [ '$CREATETYPE' = restore ]
 	then
+		if [ "$SORTGLUSTER" = yes ]
+		then
+			GLUSTERACTION=stop
+			sort_gluster
+		fi
+
 		zpool import -D -f '$POOLNAME'
 
 		COUNTER=1
@@ -521,9 +640,25 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 		done
 
 		mount /'$ZPOOLTOPPATH'/'$POOLNAME'/storage '$MOUNTPOINT'
+
+		if [ "$SORTGLUSTER" = yes ]
+		then
+			GLUSTERACTION=start
+			sort_gluster
+		fi
+
 		#Mount partition on boot
-		echo mount /'$ZPOOLTOPPATH'/'$POOLNAME'/storage '$MOUNTPOINT' > /etc/rc2.d/S99zfs-mount-'$POOLNAME'
-		chmod 0700 /etc/rc2.d/S99zfs-mount-'$POOLNAME'
+		echo "#!/bin/bash
+COUNTER=0
+while [ \$COUNTER -le 100 ]
+do
+	mount /'$ZPOOLTOPPATH'/'$POOLNAME'/storage '$MOUNTPOINT'
+	[ \$? = 0 ] && exit
+	sleep 1
+	let COUNTER=\$COUNTER+1
+done" > /etc/rc2.d/S90zfs-mount-'$POOLNAME'
+
+		chmod 0700 /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 	fi
 
 	#Reuse existing zfs raid

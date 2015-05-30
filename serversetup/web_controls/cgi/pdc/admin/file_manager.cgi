@@ -246,7 +246,7 @@ fi
 
 if [ "$ACTION" = REALLYSETPERMS ]
 then
-
+	DATA=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\-+*'`
 	END_POINT=42
 	#Assign OWNER
 	COUNTER=2

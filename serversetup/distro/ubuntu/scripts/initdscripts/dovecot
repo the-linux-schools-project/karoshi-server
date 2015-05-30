@@ -27,6 +27,7 @@ DAEMON_ARGS=""
 SCRIPTNAME=/etc/init.d/$NAME
 CONF=/etc/dovecot/${NAME}.conf
 
+#Release the reserved port for this service - this is needed in case glusterfs decides to use ports designated for other services.
 [ -f /etc/reserveports/dovecot ] && /usr/sbin/releaseports dovecot
 
 # Read configuration variable file if it is present

@@ -23,6 +23,7 @@ NAME=Postfix
 TZ=
 unset TZ
 
+#Release the reserved port for this service - this is needed in case glusterfs decides to use ports designated for other services.
 [ -f /etc/reserveports/postfix ] && /usr/sbin/releaseports postfix
 
 # Defaults - don't touch, edit /etc/default/postfix

@@ -13,6 +13,7 @@
 
 ENV="env -i LANG=C PATH=/usr/local/bin:/usr/bin:/bin"
 
+#Release the reserved port for this service - this is needed in case glusterfs decides to use ports designated for other services.
 [ -f /etc/reserveports/apache2 ] && /usr/sbin/releaseports apache2
 
 #[ $(ls -1 /etc/apache2/sites-enabled/ | wc -l | sed -e 's/ *//;') -eq 0 ] && \

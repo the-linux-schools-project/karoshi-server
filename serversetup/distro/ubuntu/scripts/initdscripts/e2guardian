@@ -27,6 +27,7 @@ NAME=e2guardian
 DESC="e2guardian"
 CONFFILELOCATION=/etc/e2guardian/
 
+#Release the reserved port for this service - this is needed in case glusterfs decides to use ports designated for other services.
 [ -f /etc/reserveports/e2guardian ] && /usr/sbin/releaseports e2guardian
 
 #Make sure a configuration variable file is present

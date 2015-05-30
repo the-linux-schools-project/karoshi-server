@@ -21,6 +21,7 @@ LIB=/usr/lib/squid
 PIDFILE=/var/run/$NAME.pid
 SQUID_ARGS="-D -YC"
 
+#Release the reserved port for this service - this is needed in case glusterfs decides to use ports designated for other services.
 [ -f /etc/reserveports/squid ] && /usr/sbin/releaseports squid
 
 [ ! -f /etc/default/squid ] || . /etc/default/squid

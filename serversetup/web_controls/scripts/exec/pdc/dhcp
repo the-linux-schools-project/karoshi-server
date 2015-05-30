@@ -239,7 +239,7 @@ echo 'authoritative;' > $DHCPCONFPATH
 echo '	option domain-name-servers '$NEWDOMAINNAMESERVER';' >> $DHCPCONFPATH
 echo '	option routers '$NEWROUTER';' >> $DHCPCONFPATH
 echo '	option subnet-mask '$NEWSUBNETMASK';' >> $DHCPCONFPATH
-echo '	option domain-name '$REALM';' >> $DHCPCONFPATH
+echo '	option domain-name "'$REALM'";' >> $DHCPCONFPATH
 echo >> $DHCPCONFPATH
 
 #Add include for dhcp failover

@@ -18,6 +18,7 @@ NAME=cupsd
 PIDFILE=/var/run/cups/$NAME.pid
 DESC="Common Unix Printing System"
 
+#Release the reserved port for this service - this is needed in case glusterfs decides to use ports designated for other services.
 [ -f /etc/reserveports/cups ] && /usr/sbin/releaseports cups
 
 unset TMPDIR

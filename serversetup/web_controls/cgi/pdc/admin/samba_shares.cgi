@@ -71,15 +71,15 @@ done
 if [ "$ACTION" = delete ] || [ "$ACTION" = reallydelete ]
 then
 	END_POINT=26
-	#Assign FOLDERNAME
+	#Assign SHARENAME
 	COUNTER=2
 	while [ $COUNTER -le $END_POINT ]
 	do
 		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = FOLDERNAMEcheck ]
+		if [ `echo $DATAHEADER'check'` = SHARENAMEcheck ]
 		then
 			let COUNTER=$COUNTER+1
-			FOLDERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			SHARENAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
 			break
 		fi
 		let COUNTER=$COUNTER+1
@@ -129,9 +129,9 @@ then
 
 fi
 
-if [ "$ACTION" = reallyadd ]
+if [ "$ACTION" = reallyadd ] || [ "$ACTION" = edit ]
 then
-	END_POINT=43
+	END_POINT=47
 	#Assign COMMENT
 	COUNTER=2
 	while [ $COUNTER -le $END_POINT ]
@@ -145,15 +145,28 @@ then
 		fi
 		let COUNTER=$COUNTER+1
 	done
-	#Assign FOLDERNAME
+	#Assign SHARENAME
 	COUNTER=2
 	while [ $COUNTER -le $END_POINT ]
 	do
 		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = FOLDERNAMEcheck ]
+		if [ `echo $DATAHEADER'check'` = SHARENAMEcheck ]
 		then
 			let COUNTER=$COUNTER+1
-			FOLDERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			SHARENAME=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd "0-9A-Za-z"`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+	#Assign SHAREPATH
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = SHAREPATHcheck ]
+		then
+			let COUNTER=$COUNTER+1
+			SHAREPATH=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/%2F/\//g'`
 			break
 		fi
 		let COUNTER=$COUNTER+1
@@ -397,6 +410,20 @@ then
 		fi
 		let COUNTER=$COUNTER+1
 	done
+
+	#Assign DRIVELETTER
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = DRIVELETTERcheck ]
+		then
+			let COUNTER=$COUNTER+1
+			DRIVELETTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
 fi
 
 function show_status {
@@ -413,22 +440,22 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
@@ -436,12 +463,27 @@ fi
 
 if [ "$ACTION" = reallyadd ]
 then
-	#Check to see that FOLDERNAME is not blank
-	if [ -z "$FOLDERNAME" ]
+	#Check to see that SHAREPATH is not blank
+	if [ -z "$SHAREPATH" ]
 	then
 		MESSAGE=$"You have not entered a folder name."
 		show_status
 	fi
+
+	#Check to see that SHARENAME is not blank
+	if [ -z "$SHARENAME" ]
+	then
+		MESSAGE=$"You have not entered a sharename."
+		show_status
+	fi
+
+	#Check that this sharename does not already exist.
+	if [ -f /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME" ]
+	then
+		MESSAGE=''$SHARENAME' - '$"A share with this name already exists."''
+		show_status
+	fi
+
 	#Check to see that GROUP1 is not blank
 	if [ -z "$GROUP1" ]
 	then
@@ -472,6 +514,40 @@ then
 		if [ -z "$SERVERMASTER" ]
 		then
 			MESSAGE=$"You have not chosen a server master."
+			show_status
+		fi
+	fi
+
+	#Check that the SHAREPATH is something sensible.
+
+	#These folders cannot be assigned as network shares.
+	PROTECTEDPATHS="/bin /boot /dev /etc /media /mnt /home /home/applications /home/users /initrd /lib /root /opt/karoshi /usr /proc /sbin /sys /var/lib /var/www /var/www/html /var/www/html_karoshi /var/www/cgi-bin /var/www/cgi-bin_karoshi /tmp /root"
+	#Sub folders in here cannot be assigned as shares.
+	PROTECTEDPATHS2="/usr /boot /bin /etc /lib /sbin /sys /root /dev /tmp"
+
+	#Strip trailing slash for SHAREPATH
+	SHAREPATH=`echo $SHAREPATH | sed 's/\/$//g'`
+	if [ `echo "$PROTECTEDPATHS" | grep -c "$SHAREPATH"` -gt 0 ]
+	then
+		MESSAGE=$"This is a protected path and cannot be added as a share."
+		show_status
+	fi
+
+	for CHECKPATH in $PROTECTEDPATHS2
+	do
+		if [ `echo "$SHAREPATH" | grep -c "$CHECKPATH"` -gt 0 ]
+		then
+			MESSAGE=$"This is a protected path and cannot be added as a share."
+			show_status
+		fi
+	done
+
+	#Check that the network drive letter has not already been allocated to a share.
+	if [ ! -z "$DRIVELETTER" ]
+	then
+		if [ `grep -r -c ^DRIVELETTER="$DRIVELETTER" /opt/karoshi/server_network/network_shares` ]
+		then
+			MESSAGE=$"This drive letter is already in use."
 			show_status
 		fi
 	fi
@@ -529,7 +605,7 @@ echo '<form action="/cgi-bin/admin/samba_shares.cgi" method="post"><table class=
 [ "$MOBILE" = no ] && echo '</div><div id="infobox">' 
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/samba_shares.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$COMMENT:$FOLDERNAME:$GROUP1:$GROUP2:$GROUP3:$GROUP4:$GROUPPERMS1:$GROUPPERMS2:$GROUPPERMS3:$GROUPPERMS4:$ALLPERMS:$MAPDRIVE1:$MAPDRIVE2:$MAPDRIVE3:$MAPDRIVE4:$MAPDRIVEALL:$SERVERNAME:$SERVERTYPE:$MOBILE:$SERVERMASTER:" | sudo -H /opt/karoshi/web_controls/exec/samba_shares
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$COMMENT:$SHARENAME:$SHAREPATH:$GROUP1:$GROUP2:$GROUP3:$GROUP4:$GROUPPERMS1:$GROUPPERMS2:$GROUPPERMS3:$GROUPPERMS4:$ALLPERMS:$MAPDRIVE1:$MAPDRIVE2:$MAPDRIVE3:$MAPDRIVE4:$MAPDRIVEALL:$DRIVELETTER:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/samba_shares
 EXIT_STATUS=$?
 
 if [ $EXIT_STATUS = 102 ]

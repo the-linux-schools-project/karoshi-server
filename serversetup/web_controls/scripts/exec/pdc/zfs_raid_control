@@ -197,7 +197,7 @@ DRIVE=${ALL_DRIVES[$COUNTER]}
 DRIVE_SHORT=`echo $DRIVE | sed "s/\/dev\///g"` 
 
 
-if [ `mount | grep -c $DRIVE` = 0 ] && [ `zpool status | grep -c $DRIVE_SHORT` = 0 ] && [ `cat /proc/mdstat | grep -c $DRIVE_SHORT` = 0 ] || [ `zpool status | grep -w $DRIVE_SHORT | grep -c UNAVAIL` -gt 0 ]
+if [ `mount | grep -c $DRIVE` = 0 ] && [ `zpool status | grep -c -w $DRIVE_SHORT` = 0 ] && [ `cat /proc/mdstat | grep -c $DRIVE_SHORT` = 0 ] || [ `zpool status | grep -w $DRIVE_SHORT | grep -c UNAVAIL` -gt 0 ]
 then
 get_drive_info
 
@@ -205,19 +205,19 @@ get_drive_info
 #Show drive information
 if [ $DRIVE_STATUS = ok ]
 then
-echo '<tr><td style="width: 180px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$DISKICON'"><span>'$DRIVE' - '$DISKSIZE'</span></a> '$"Available Drive"'</td><td style="width: 260px;">'$MAKER $DRIVE_SN'</td><td>'
+echo '<tr><td style="width: 250px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$DISKICON'"><span>'$DRIVE' - '$DISKSIZE'</span></a> '$"Available Drive"'</td><td style="width: 260px;">'$MAKER $DRIVE_SN'</td><td>'
 #Create list of drives in array to replace
 echo '<select name="select"><option value="_POOL_'$POOLNAME'_ACTION_addspare_DRIVE_'$DRIVE'_DRIVE2_notset_">'$"Add spare"'</option>'
 
 for RAIDDISK in $ZPOOLDRIVES
 do
-	RAIDDISK=`echo /dev/$RAIDDISK`
+	#RAIDDISK=`echo /dev/$RAIDDISK`
 	echo '<option value="_POOL_'$POOLNAME'_ACTION_replace_DRIVE_'$DRIVE'_DRIVE2_'$RAIDDISK'_">'$"Replace"' - '$RAIDDISK'</option>'
 done
 
 echo '</select></td><td><a class="info" href="javascript:void(0)"><input name="submit" type="image" class="images" src="'$ICON1'" value=""><span>'$"Add this disk to a raid."'</span></a></td></tr>'
 else
-echo "<tr><td style=\"width: 180px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td></tr>"
+echo "<tr><td style=\"width: 250px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td></tr>"
 fi
 fi
 let COUNTER=$COUNTER+1
@@ -235,7 +235,7 @@ do
 ZPOOLDRIVES=`zpool status $POOLNAME | grep "ONLINE\|SPARE\|OFFLINE\|AVAIL" | sed "s/\\t//g" | sed "s/^ * //g" | cut -d" " -f1 | grep -v "replacing\|state:\|$POOLNAME\|raidz"`
 
 #Show raid information
-MOUNTPOINT=`cat /etc/rc2.d/S99zfs-mount-$POOLNAME | cut -d" " -f3`
+MOUNTPOINT=`grep "mount " /etc/rc2.d/S90zfs-mount-$POOLNAME | cut -d" " -f3`
 ZPOOLINFO=`zpool list $POOLNAME | sed -n 2,2p | sed "s/ * / /g"`
 ZPOOLSTATUS=`zpool status $POOLNAME`
 RAID_SIZE=`df -h | grep $MOUNTPOINT | sed "s/ * / /g" | cut -d" " -f2` 
@@ -245,7 +245,7 @@ RAID_TYPE=`zpool status $POOLNAME | grep raidz | tr -cd "A-Za-z0-9- " | sed "s/^
 
 echo '<b>'$"Raid Information"'</b><br><br>
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$"Raid Name"'</td><td>'$POOLNAME'</td></tr>
+<tr><td style="width: 250px;">'$"Raid Name"'</td><td>'$POOLNAME'</td></tr>
 <tr><td>'$"Raid Type"'</td><td>'$RAID_TYPE'</td></tr>
 <tr><td>'$"Raid Size"'</td><td>'$RAID_SIZE'</td></tr>
 <tr><td>'$"Raid State"'</td><td>'$RAID_STATE'</td></tr>
@@ -259,15 +259,15 @@ for ZPOOLDRIVE in $ZPOOLDRIVES
 	#Get disk status
 	DISKSTATUS=$"Active"
 	SHOWREMOVE=no
-	[ `echo -e "$ZPOOLSTATUS" | grep $ZPOOLDRIVE | grep -c -w OFFLINE` -gt 0 ] && DISKSTATUS=$"Offline"
+	[ `echo -e "$ZPOOLSTATUS" | grep -w $ZPOOLDRIVE | grep -c -w OFFLINE` -gt 0 ] && DISKSTATUS=$"Offline"
 
-	if [ `echo -e "$ZPOOLSTATUS" | grep $ZPOOLDRIVE | grep -c -w AVAIL` -gt 0 ]
+	if [ `echo -e "$ZPOOLSTATUS" | grep -w $ZPOOLDRIVE | grep -c -w AVAIL` -gt 0 ]
 	then
 		DISKSTATUS=$"Spare"
 		SHOWREMOVE=yes
 	fi
 
-	if [ `echo -e "$ZPOOLSTATUS" | grep $ZPOOLDRIVE | grep -c -w UNAVAIL` -gt 0 ]
+	if [ `echo -e "$ZPOOLSTATUS" | grep -w $ZPOOLDRIVE | grep -c -w UNAVAIL` -gt 0 ]
 	then	
 		DISKSTATUS=$"Unavailable"
 		DISKSIZE=$"Unknown"
@@ -276,7 +276,7 @@ for ZPOOLDRIVE in $ZPOOLDRIVES
 	else		
 		get_drive_info
 	fi
-	echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a> "$DRIVE - $DISKSTATUS"</td><td>$MAKER $DRIVE_SN</td>"
+	echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a> "$ZPOOLDRIVE - $DISKSTATUS"</td><td>$MAKER $DRIVE_SN</td>"
 [ $SHOWREMOVE = yes ] && echo "<td>
 <a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERTYPE_$SERVERTYPE"_"SERVERNAME_$SERVERNAME"_"ACTION_removespare_POOL_$POOLNAME"_"DRIVE_$DRIVE"_"DRIVE2_notset"_"\" type=\"image\" class=\"images\" src="$ICON3" value=\"\"><span>"$"Remove spare""</span></a>
 </td>"
@@ -364,7 +364,7 @@ DRIVE=${ALL_DRIVES[$COUNTER]}
 DRIVE_SHORT=`echo $DRIVE | sed "s/\/dev\///g"` 
 
 
-if [ `mount | grep -c $DRIVE` = 0 ] && [ `zpool status | grep -c $DRIVE_SHORT` = 0 ] && [ `cat /proc/mdstat | grep -c $DRIVE_SHORT` = 0 ] || [ `zpool status | grep -w $DRIVE_SHORT | grep -c UNAVAIL` -gt 0 ]
+if [ `mount | grep -c $DRIVE` = 0 ] && [ `zpool status | grep -c -w $DRIVE_SHORT` = 0 ] && [ `cat /proc/mdstat | grep -c $DRIVE_SHORT` = 0 ] || [ `zpool status | grep -w $DRIVE_SHORT | grep -c UNAVAIL` -gt 0 ]
 then
 get_drive_info
 
@@ -372,19 +372,19 @@ get_drive_info
 #Show drive information
 if [ $DRIVE_STATUS = ok ]
 then
-echo "<tr><td style=\"width: 180px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a> '$"Available Drive"'</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>"
+echo "<tr><td style=\"width: 250px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a> '$"Available Drive"'</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>"
 #Create list of drives in array to replace
 echo "<select name=\"select\"><option value=\"_POOL_$POOLNAME"_"ACTION_addspare_DRIVE_$DRIVE"_"DRIVE2_notset_\">'$"Add spare"'</option>"
 
 for RAIDDISK in $ZPOOLDRIVES
 do
-	RAIDDISK=`echo /dev/$RAIDDISK`
+	#RAIDDISK=`echo /dev/$RAIDDISK`
 	echo "<option value="_POOL_$POOLNAME\_ACTION_replace_DRIVE_$DRIVE\_DRIVE2_$RAIDDISK\_">'$"Replace"' - $RAIDDISK</option>"
 done
 
 echo "</select></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"submit\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$"Add this disk to a raid."'</span></a></td></tr>"
 else
-echo "<tr><td style=\"width: 180px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td></tr>"
+echo "<tr><td style=\"width: 250px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td></tr>"
 fi
 fi
 let COUNTER=$COUNTER+1
@@ -402,7 +402,7 @@ do
 ZPOOLDRIVES=`zpool status $POOLNAME | grep "ONLINE\|SPARE\|OFFLINE\|AVAIL" | sed "s/\\t//g" | sed "s/^ * //g" | cut -d" " -f1 | grep -v "replacing\|state:\|$POOLNAME\|raidz"`
 
 #Show raid information
-MOUNTPOINT=`cat /etc/rc2.d/S99zfs-mount-$POOLNAME | cut -d" " -f3`
+MOUNTPOINT=`grep "mount " /etc/rc2.d/S90zfs-mount-$POOLNAME | cut -d" " -f3`
 ZPOOLINFO=`zpool list $POOLNAME | sed -n 2,2p | sed "s/ * / /g"`
 ZPOOLSTATUS=`zpool status $POOLNAME`
 RAID_SIZE=`df -h | grep $MOUNTPOINT | sed "s/ * / /g" | cut -d" " -f2` 
@@ -412,7 +412,7 @@ RAID_TYPE=`zpool status $POOLNAME | grep raidz | tr -cd "A-Za-z0-9- " | sed "s/^
 
 echo "<b>'$"Raid Information"'</b><br><br>
 <table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\">'$"Raid Name"'</td><td>$POOLNAME</td></tr>
+<tr><td style=\"width: 250px;\">'$"Raid Name"'</td><td>$POOLNAME</td></tr>
 <tr><td>'$"Raid Type"'</td><td>$RAID_TYPE</td></tr>
 <tr><td>'$"Raid Size"'</td><td>$RAID_SIZE</td></tr>
 <tr><td>'$"Raid State"'</td><td>$RAID_STATE</td></tr>
@@ -426,15 +426,15 @@ for ZPOOLDRIVE in $ZPOOLDRIVES
 	SHOWREMOVE=no
 	#Get disk status
 	DISKSTATUS=$"Active"
-	[ `echo -e "$ZPOOLSTATUS" | grep $DRIVE | grep -c -w OFFLINE` -gt 0 ] && DISKSTATUS=$"Offline"
+	[ `echo -e "$ZPOOLSTATUS" | grep -w $DRIVE | grep -c -w OFFLINE` -gt 0 ] && DISKSTATUS=$"Offline"
 
-	if [ `echo -e "$ZPOOLSTATUS" | grep $ZPOOLDRIVE | grep -c -w AVAIL` -gt 0 ]
+	if [ `echo -e "$ZPOOLSTATUS" | grep -w $ZPOOLDRIVE | grep -c -w AVAIL` -gt 0 ]
 	then
 		DISKSTATUS=$"Spare"
 		SHOWREMOVE=yes
 	fi
 
-	if [ `echo -e "$ZPOOLSTATUS" | grep $ZPOOLDRIVE | grep -c -w UNAVAIL` -gt 0 ]
+	if [ `echo -e "$ZPOOLSTATUS" | grep -w $ZPOOLDRIVE | grep -c -w UNAVAIL` -gt 0 ]
 	then	
 		DISKSTATUS=$"Unavailable"
 		DISKSIZE=$"Unknown"
@@ -443,7 +443,7 @@ for ZPOOLDRIVE in $ZPOOLDRIVES
 	else		
 		get_drive_info
 	fi
-	echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a> "$DRIVE - $DISKSTATUS"</td><td>$MAKER $DRIVE_SN</td>"
+	echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a> "$ZPOOLDRIVE - $DISKSTATUS"</td><td>$MAKER $DRIVE_SN</td>"
 
 [ $SHOWREMOVE = yes ] && echo "<td>
 <a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_ACTION_removespare_POOL_$POOLNAME"_"DRIVE_$DRIVE"_"DRIVE2_notset"_"\" type=\"image\" class=\"images\" src="'$ICON3'" value=\"\"><span>Remove spare</span></a>

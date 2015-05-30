@@ -20,6 +20,7 @@
 # Modified for openvpn by Alberto Gonzalez Iniesta <agi@inittab.org>
 # Modified for restarting / starting / stopping single tunnels by Richard Mueller <mueller@teamix.net>
 
+#Release the reserved port for this service - this is needed in case glusterfs decides to use ports designated for other services.
 [ -f /etc/reserveports/openvpn ] && /usr/sbin/releaseports openvpn
 
 . /lib/lsb/init-functions

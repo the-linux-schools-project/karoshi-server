@@ -17,6 +17,7 @@ set -e
 set -u
 ${DEBIAN_SCRIPT_DEBUG:+ set -v -x}
 
+#Release the reserved port for this service - this is needed in case glusterfs decides to use ports designated for other services.
 [ -f /etc/reserveports/mysql ] && /usr/sbin/releaseports mysql
 
 test -x /usr/sbin/mysqld || exit 0

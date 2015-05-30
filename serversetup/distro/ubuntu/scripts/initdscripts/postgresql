@@ -19,6 +19,7 @@ set -e
 
 . /usr/share/postgresql-common/init.d-functions
 
+#Release the reserved port for this service - this is needed in case glusterfs decides to use ports designated for other services.
 [ -f /etc/reserveports/postgresql ] && /usr/sbin/releaseports postgresql
 
 # versions can be specified explicitly

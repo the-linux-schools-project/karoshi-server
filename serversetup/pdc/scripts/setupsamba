@@ -1800,7 +1800,7 @@ then
 			fi
 
 			echo SERVER='"'"$SERVERNAME"'"' > /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
-			echo HOMEPATH='"'"$SHAREPATH"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
+			echo SHAREPATH='"'"$SHAREPATH"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
 			echo USERLIST='"'"$NETUSERS"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
 			echo GROUPLIST='"'"$NETGROUPS"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
 			echo GROUPPERMS='"'"$GROUPPERMS"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
