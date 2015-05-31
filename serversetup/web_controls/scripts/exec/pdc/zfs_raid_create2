@@ -170,6 +170,12 @@ POOLNAME=`echo zfs"$MOUNTPOINT" | sed 's/\//-/g'`
 
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
+	#Add cron job for zpool scrub
+	[ -d /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs ] || mkdir -p /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs
+	echo 0 0 '*' '*' 0,2,4 zpool scrub $POOLNAME > /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/zpool_scrub_$POOLNAME.cron
+	/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
+	echo "<br>"
+
 	SORTGLUSTER=no
 	if [ -d /home/gluster-volumes/ ] && [ "$MOUNTPOINT" = /home ]
 	then
@@ -177,16 +183,47 @@ then
 	fi
 
 	function sort_gluster {
-	#Stop any gluster volumes if the mountpoint is /home
+	source /opt/karoshi/serversetup/variables/distro
+	if [ "$GLUSTERACTION" = stop ]
+	then
+		echo '<br><li>'$"Stopping Samba4"'</li>'
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null
+		echo '<br><li>'$"Stopping GlusterFS"'</li>'
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_stop 1>/dev/null
+	fi
+	if [ "$GLUSTERACTION" = start ]
+	then
+		echo '<br><li>'$"Starting GlusterFS"'</li>'
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_start 1>/dev/null
+	fi
 	for GLUSTERVOL in `ls /home/gluster-volumes/`
 	do
+		if [ "$GLUSTERACTION" = stop ]
+		then
+			#Clear out all of the gluster data
+			echo '<br><li>'$"Glusterfs"' - '$"Removing"' '$GLUSTERVOL' - '$"This will be restored after the ZFS array has been created"'</li>'
+			rm -f -R /home/gluster-volumes/"$GLUSTERVOL"
+			mkdir -p /home/gluster-volumes/"$GLUSTERVOL"
+		fi		
+
+
 		if [ "$GLUSTERACTION" = start ]
 		then
 			#Create new volume id otherwise the gluster volume will not start.
 			(vol="$GLUSTERVOL"; brick=/home/gluster-volumes/"$GLUSTERVOL"; setfattr -n  trusted.glusterfs.volume-id -v 0x$(grep volume-id /var/lib/glusterd/vols/$vol/info | cut -d= -f2 | sed 's/-//g') $brick)
+			#Start the gluster volume
+			gluster volume start "$GLUSTERVOL" force
+			#Repair the volume with data from the other server.
+			gluster volume heal "$GLUSTERVOL" full
 		fi			
-		echo -e "y\n" | gluster volume "$GLUSTERACTION" "$GLUSTERVOL"
 	done
+	if [ "$GLUSTERACTION" = start ]
+	then
+		#Mount gluster volume and start samba4
+		mount -a
+		echo '<br><li>'$"Starting Samba4"'</li>'
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null
+	fi
 	}
 
 	if [ $CREATETYPE = create ]
@@ -413,12 +450,6 @@ done' > /etc/rc2.d/S90zfs-mount-$POOLNAME
 <input type=\"hidden\" name=\"_CREATETYPE_\" value=\"reuse\">
 </form><script>document.frm.submit();</script><form>"
 	fi
-
-	#Add cron job for zpool scrub
-	[ -d /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs ] || mkdir -p /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs
-	echo 0 0 '*' '*' 0,2,4 zpool scrub $POOLNAME > /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/zpool_scrub_$POOLNAME.cron
-	/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
-	echo "<br>"
 fi
 
 if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ] && [ $SERVERNAME != `hostname-fqdn` ]
@@ -432,16 +463,47 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 	fi
 
 	function sort_gluster {
-	#Stop any gluster volumes if the mountpoint is /home
+	source /opt/karoshi/serversetup/variables/distro
+	if [ "$GLUSTERACTION" = stop ]
+	then
+		echo "<br><li>'$"Stopping Samba4"'</li>"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null
+		echo "<br><li>'$"Stopping GlusterFS"'</li>"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_stop 1>/dev/null
+	fi
+	if [ "$GLUSTERACTION" = start ]
+	then
+		echo "<br><li>'$"Starting GlusterFS"'</li>"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_start 1>/dev/null
+	fi
 	for GLUSTERVOL in `ls /home/gluster-volumes/`
 	do
+		if [ "$GLUSTERACTION" = stop ]
+		then
+			#Clear out all of the gluster data
+			echo "<br><li>'$"Glusterfs"' - '$"Removing"' '$GLUSTERVOL' - '$"This will be restored after the ZFS array has been created"'</li>"
+			rm -f -R /home/gluster-volumes/"$GLUSTERVOL"
+			mkdir -p /home/gluster-volumes/"$GLUSTERVOL"
+		fi		
+
+
 		if [ "$GLUSTERACTION" = start ]
 		then
-			#Create new volume id otherwise the gluster volume will not start.
 			(vol="$GLUSTERVOL"; brick=/home/gluster-volumes/"$GLUSTERVOL"; setfattr -n  trusted.glusterfs.volume-id -v 0x$(grep volume-id /var/lib/glusterd/vols/$vol/info | cut -d= -f2 | sed "s/-//g") $brick)
+
+			#Start the gluster volume
+			gluster volume start "$GLUSTERVOL" force
+			#Repair the volume with data from the other server.
+			gluster volume heal "$GLUSTERVOL" full
 		fi			
-		echo -e "y\n" | gluster volume "$GLUSTERACTION" "$GLUSTERVOL"
 	done
+	if [ "$GLUSTERACTION" = start ]
+	then
+		#Mount gluster volume and start samba4
+		mount -a
+		echo "<br><li>'$"Starting Samba4"'</li>"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null
+	fi
 	}
 
 	if [ '$CREATETYPE' = create ]

@@ -106,7 +106,7 @@ then
 	echo `date`: samba_shares - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
-if [ $ACTION = reallyadd ]
+if [ $ACTION = reallyadd ] || [ $ACTION = reallyedit ]
 then
 	if [ -z "$SHARENAME" ]
 	then
@@ -174,7 +174,7 @@ WIDTH9=100
 ICON1=/images/submenus/file/edit.png
 ICON2=/images/submenus/file/delete.png
 
-if [ "$ACTION" = reallyadd ]
+if [ "$ACTION" = reallyadd ] || [ $ACTION = reallyedit ]
 then
 	echo `date`: samba_shares - adding $SHARENAME with $SHAREPATH as a share to $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
@@ -253,28 +253,31 @@ then
 			let COUNTER=$COUNTER+1
 			
 		done
-
-		#Add data to custom smb.conf
-		[ ! -d /etc/samba/extra_network_shares/$SERVERNAME ] && mkdir -p /etc/samba/extra_network_shares/$SERVERNAME
-		echo "[$SHARENAME]" > /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
-		echo "	comment = \"$COMMENT\"" >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
-		echo "	path = \"$SHAREPATH\"" >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
-		echo "	invalid users = root" >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
-		echo "	read only = No" >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
-		echo "	browseable = Yes" >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
-		echo >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
-
-		#Add include line to smb.conf
-		if [ `grep -c "$SERVERNAME"/"$SHARENAME".conf /etc/samba/smb.conf` = 0 ]
+		#Check that the share definition does not already exist in smb.conf
+		if [ `grep -c -w "\[$SHARENAME\]" /etc/samba/smb.conf` =  0 ]
 		then
-			echo  >> /etc/samba/smb.conf
-			echo include = /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf >> /etc/samba/smb.conf
+			#Add data to custom smb.conf
+			[ ! -d /etc/samba/extra_network_shares/$SERVERNAME ] && mkdir -p /etc/samba/extra_network_shares/$SERVERNAME
+			echo "[$SHARENAME]" > /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
+			echo "	comment = \"$COMMENT\"" >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
+			echo "	path = \"$SHAREPATH\"" >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
+			echo "	invalid users = root" >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
+			echo "	read only = No" >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
+			echo "	browseable = Yes" >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
+			echo >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
+
+			#Add include line to smb.conf
+			if [ `grep -c "$SERVERNAME"/"$SHARENAME".conf /etc/samba/smb.conf` = 0 ]
+			then
+				echo  >> /etc/samba/smb.conf
+				echo include = /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf >> /etc/samba/smb.conf
+			fi
+			#Restart samba
+			source /opt/karoshi/serversetup/variables/distro
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
+			sleep 1
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null 2>/dev/null
 		fi
-		#Restart samba
-		source /opt/karoshi/serversetup/variables/distro
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
-		sleep 1
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null 2>/dev/null
 	fi
 
 
@@ -309,27 +312,30 @@ then
 			let COUNTER=$COUNTER+1
 			
 		done
-
-		#Add data to custom smb.conf
-		[ ! -d /etc/samba/extra_network_shares/'$SERVERNAME' ] && mkdir -p /etc/samba/extra_network_shares/'$SERVERNAME'
-		echo "['$SHARENAME']" > /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
-		echo "	comment = \"'$COMMENT'\"" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
-		echo "	path = \"'$SHAREPATH'\"" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
-		echo "	invalid users = root" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
-		echo "	read only = No" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
-		echo "	browseable = Yes" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
-		echo >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
-		#Add include to smb.conf
-		if [ `grep -c "'$SERVERNAME'"/"'$SHARENAME'".conf /etc/samba/smb.conf` = 0 ]
+		#Check that the share definition does not already exist in smb.conf
+		if [ `grep -c -w "\['$SHARENAME'\]" /etc/samba/smb.conf` =  0 ]
 		then
-			echo  >> /etc/samba/smb.conf
-			echo include = /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf >> /etc/samba/smb.conf
+			#Add data to custom smb.conf
+			[ ! -d /etc/samba/extra_network_shares/'$SERVERNAME' ] && mkdir -p /etc/samba/extra_network_shares/'$SERVERNAME'
+			echo "['$SHARENAME']" > /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
+			echo "	comment = \"'$COMMENT'\"" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
+			echo "	path = \"'$SHAREPATH'\"" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
+			echo "	invalid users = root" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
+			echo "	read only = No" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
+			echo "	browseable = Yes" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
+			echo >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
+			#Add include to smb.conf
+			if [ `grep -c "'$SERVERNAME'"/"'$SHARENAME'".conf /etc/samba/smb.conf` = 0 ]
+			then
+				echo  >> /etc/samba/smb.conf
+				echo include = /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf >> /etc/samba/smb.conf
+			fi
+			#Restart samba
+			source /opt/karoshi/serversetup/variables/distro
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
+			sleep 1
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null 2>/dev/null
 		fi
-		#Restart samba
-		source /opt/karoshi/serversetup/variables/distro
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
-		sleep 1
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null 2>/dev/null
 		'
 		EXITSTATUS=$?
 		[ $EXITSTATUS != 0 ] && exit $EXITSTATUS
@@ -725,7 +731,7 @@ echo '</tbody></table><br><br>'
 		/opt/karoshi/web_controls/show_servers $MOBILE fileservers $"Add share" none none ____
 	else
 		#Just add submit button for the server.
-		echo '<input name="____SERVERNAME____'$SERVERNAME'____SERVERTYPE____'$SERVERTYPE'____SERVERMASTER____'$SERVERMASTER'____ACTION____reallyadd____" type="submit" class="button" value="'$"Submit"'"> <input name="____SERVERNAME____'$SERVERNAME'____SERVERTYPE____'$SERVERTYPE'____SERVERMASTER____'$SERVERMASTER'____ACTION____view____" type="submit" class="button" value="'$"Cancel"'">'
+		echo '<input name="____SERVERNAME____'$SERVERNAME'____SERVERTYPE____'$SERVERTYPE'____SERVERMASTER____'$SERVERMASTER'____ACTION____reallyedit____" type="submit" class="button" value="'$"Submit"'"> <input name="____SERVERNAME____'$SERVERNAME'____SERVERTYPE____'$SERVERTYPE'____SERVERMASTER____'$SERVERMASTER'____ACTION____view____" type="submit" class="button" value="'$"Cancel"'">'
 	fi
 	echo '</form>'
 fi
@@ -804,6 +810,7 @@ then
 			for NETSHARES in /opt/karoshi/server_network/network_shares/"$SERVER"/*
 			do
 				NETSHARE=`basename "$NETSHARES"`
+				DRIVELETTER=""
 				source /opt/karoshi/server_network/network_shares/"$SERVER"/"$NETSHARE"
 				[ -z "$DRIVELETTER" ] && DRIVELETTER=$"Auto"
 				#Translate the permissions

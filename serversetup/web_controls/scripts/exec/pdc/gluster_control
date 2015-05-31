@@ -388,8 +388,8 @@ then
 		SHARE=`basename $SHARES`
 		if [ "$SHARE" != dfs ] && [ "$SHARE" != netlogon ] && [ "$SHARE" != sysvol ] && [ "$SHARE" != applications ]
 		then
-			HOMEPATH=`grep "HOMEPATH=" /opt/karoshi/server_network/network_shares/$SERVER/"$SHARE" | cut -d"=" -f2 | sed 's/"//g'`
-			echo '<option value="'$HOMEPATH'">'$HOMEPATH'</option>'
+			SHAREPATH=`grep "SHAREPATH=" /opt/karoshi/server_network/network_shares/$SERVER/"$SHARE" | cut -d"=" -f2 | sed 's/"//g'`
+			echo '<option value="'$SHAREPATH'">'$SHAREPATH'</option>'
 		fi
 	done
 	echo '</select></td></tr>'

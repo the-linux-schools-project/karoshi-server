@@ -46,7 +46,7 @@ then
 		touch /var/lib/samba/netlogon/windows_settings/drives/"$KIXFILE".kix
 		if [ `grep -F -c "$CLIENTPATH2" /var/lib/samba/netlogon/windows_settings/drives/"$KIXFILE".kix` = 0 ]
 		then
-			echo 'shell "net use "'$DRIVELETTER'" '$SMBSERVER2''$CLIENTPATH2'" ;Karoshi_auto_generated' >> /var/lib/samba/netlogon/windows_settings/drives/"$KIXFILE".kix
+			echo 'shell "net use '$DRIVELETTER' '$SMBSERVER2''$CLIENTPATH2' /persistent:no" ;Karoshi_auto_generated' >> /var/lib/samba/netlogon/windows_settings/drives/"$KIXFILE".kix
 		fi
 	done
 else
@@ -54,7 +54,7 @@ else
 	touch /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix
 	if [ `grep -F -c "$CLIENTPATH2" /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix` = 0 ]
 	then
-		echo 'shell "net use "'$DRIVELETTER'" '$SMBSERVER2''$CLIENTPATH2'" ;Karoshi_auto_generated' >> /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix
+		echo 'shell "net use '$DRIVELETTER' '$SMBSERVER2''$CLIENTPATH2' /persistent:no" ;Karoshi_auto_generated' >> /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix
 	fi
 fi
 }
@@ -103,10 +103,16 @@ do
 	for SHARES in /opt/karoshi/server_network/network_shares/$SERVER/*
 	do
 		SHARE=`basename $SHARES`
+		DRIVELETTER=""
 		source /opt/karoshi/server_network/network_shares/$SERVER/$SHARE
 		GROUPNAMES=( `echo $GROUPLIST | sed 's/,/ /g'` )
 		MAP_DRIVES=( `echo $MAP_DRIVE | sed 's/,/ /g'` )
-		[ -z "$DRIVELETTER" ] && DRIVELETTER="*"
+		if [ -z "$DRIVELETTER" ]
+		then
+			DRIVELETTER="*"
+		else
+			DRIVELETTER="$DRIVELETTER:"
+		fi
 		GROUPNAMECOUNT=${#GROUPNAMES[*]}
 		COUNTER=0
 		while [ "$COUNTER" -lt "$GROUPNAMECOUNT" ]

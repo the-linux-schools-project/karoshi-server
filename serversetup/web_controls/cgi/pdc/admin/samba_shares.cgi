@@ -50,7 +50,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%' | sed 's/____/QUADRUPLEUNDERSCORE/g' | sed
 #########################
 #Assign data to variables
 #########################
-END_POINT=10
+END_POINT=47
 
 #Assign ACTION
 COUNTER=2
@@ -129,7 +129,7 @@ then
 
 fi
 
-if [ "$ACTION" = reallyadd ] || [ "$ACTION" = edit ]
+if [ "$ACTION" = reallyadd ] || [ "$ACTION" = edit ] || [ "$ACTION" = reallyedit ]
 then
 	END_POINT=47
 	#Assign COMMENT
@@ -461,7 +461,7 @@ fi
 #Check data
 #########################
 
-if [ "$ACTION" = reallyadd ]
+if [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallyedit ]
 then
 	#Check to see that SHAREPATH is not blank
 	if [ -z "$SHAREPATH" ]
@@ -478,10 +478,13 @@ then
 	fi
 
 	#Check that this sharename does not already exist.
-	if [ -f /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME" ]
+	if [ "$ACTION" = reallyadd ]
 	then
-		MESSAGE=''$SHARENAME' - '$"A share with this name already exists."''
-		show_status
+		if [ -f /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME" ]
+		then
+			MESSAGE=''$SHARENAME' - '$"A share with this name already exists."''
+			show_status
+		fi
 	fi
 
 	#Check to see that GROUP1 is not blank
@@ -574,7 +577,7 @@ then
 	[ "$ACTION" = delete ] && TITLETXT=$"Delete Network Share"
 fi
 
-if [ "$ACTION" = view ] || [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallydelete ] 
+if [ "$ACTION" = view ] || [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallydelete ] || [ "$ACTION" = reallyedit ] 
 then
 	ACTION2=add
 	BUTTONTXT=$"Add Network Share"
