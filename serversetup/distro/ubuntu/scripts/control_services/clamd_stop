@@ -1,2 +1,3 @@
 #!/bin/bash
-service clamav-daemon stop
+service clamav-daemon stop 2>&1
+[ "$?" != 0 ] && sleep 5

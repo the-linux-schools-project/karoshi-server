@@ -66,36 +66,17 @@ echo '
 '$"No files have been uploaded to copy to user accounts."'</div></div></body></html>
 '
 else
-echo '
-'$"Please select the group that you want to copy the data to."'
-  <br>
-  <br>
-        <select name="_GROUP_">
-        <option>yr1999</option>
-        <option>yr2000</option>
-        <option>yr2001</option>
-        <option>yr2002</option>
-        <option>yr2003</option>
-        <option>yr2004</option>
-        <option>yr2005</option>
-        <option>yr2006</option>
-        <option>yr2007</option>
-        <option>yr2008</option>
-        <option>yr2009</option>
-        <option>yr2010</option>
-        <option>yr2011</option>
-        <option>yr2012</option>
-        <option>guests</option>
-        <option>staff</option>
-        <option>nonteachingstaff</option>
-        <option>officestaff</option>
-        <option>studentstaff</option>
-        <option>tech</option>
-        <option>itadmin</option>
-        </select>
-  <br>
-  <br>
-  <input value="'$"Submit"'" class="button" type="submit">
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+    <tbody>
+      <tr>
+        <td style="width: 180px;">
+'$"Group"'</td><td>
+'
+/opt/karoshi/web_controls/group_dropdown_list
+echo '<td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=copy_files"><img class="images" alt="" src="/images/help/info.png"><span>'$"Select the group that you want to copy the data to."'</span></a></td></tr>
+</tbody></table>
+<br>
+<input value="'$"Submit"'" class="button" type="submit">
 </form>
 </div>
 </div></body>

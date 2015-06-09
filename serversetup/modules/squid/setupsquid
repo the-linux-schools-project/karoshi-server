@@ -194,6 +194,7 @@ then
 .charthits.fm
 .vidstatsx.com
 .sharethis.com
+.translate.google.co.uk
 .translate.google.com" > /etc/squid/location_banned_sites.list
 fi
 
@@ -310,23 +311,23 @@ MODCHECK=`grep -c -w squid_proxy_rule /etc/shorewall/rules`
 RESTART_SHOREWALL=no
 if [ $MODCHECK = 0 ]
 then
-RESTART_SHOREWALL=yes
-echo '<li>'$"The following extra ports are being allowed" - tcp 3128,3142 udp 3128,8000'</li><br>'
-LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'3128,8000'	'-'#'squid_proxy_rule /etc/shorewall/rules
-echo ACCEPT'	'net'	'fw'	'udp'	'3128,8000'	'-'#'squid_proxy_rule >> /etc/shorewall/rules
-echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	RESTART_SHOREWALL=yes
+	echo '<li>'$"The following extra ports are being allowed" - tcp 3128,3142 udp 3128,8000'</li><br>'
+	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'3128,8000'	'-'#'squid_proxy_rule /etc/shorewall/rules
+	echo ACCEPT'	'net'	'fw'	'udp'	'3128,8000'	'-'#'squid_proxy_rule >> /etc/shorewall/rules
+	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 fi
 
 MODCHECK=`grep -c -w apache_web_server /etc/shorewall/rules`
 
 if [ $MODCHECK = 0 ]
 then
-RESTART_SHOREWALL=yes
-echo '<li>'$"The following extra ports are being allowed" - tcp 80 udp 443'</li><br>'
-LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'80,443'	'-'#'apache_web_server /etc/shorewall/rules
-echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	RESTART_SHOREWALL=yes
+	echo '<li>'$"The following extra ports are being allowed" - tcp 80 udp 443'</li><br>'
+	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'80,443'	'-'#'apache_web_server /etc/shorewall/rules
+	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 fi
 
 ######################

@@ -33,11 +33,25 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/acceptable_use_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/acceptable_use.cgi | cut -d' ' -f1`
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $acceptable_use_cgi'check' ]
+MD5SUM1=`md5sum /var/www/cgi-bin_karoshi/admin/acceptable_use.cgi | cut -d' ' -f1`
+[ -z "$MD5SUM1" ] && MD5SUM1=not_set
+if [ $MD5SUM1'check' != $acceptable_use_cgi'check' ]
 then
 	echo `date`: acceptable_use - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/acceptable_use_cgi
+then
+	echo `date`: acceptable_use - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+source /opt/karoshi/web_controls/checksums/tech_checksums/acceptable_use_cgi
+MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/acceptable_use.cgi | cut -d' ' -f1`
+[ -z "$MD5SUM2" ] && MD5SUM=not_set
+if [ $MD5SUM2'check' != $acceptable_use_cgi'check' ]
+then
+	echo `date`: acceptable_use - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 
@@ -70,7 +84,7 @@ GROUP=`echo "$DATA" | cut -s -d: -f7`
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ $REMOTE_MD5'check' != $MD5SUM1'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
 then
 	echo `date`: acceptable_use - Not called by acceptable_use.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101

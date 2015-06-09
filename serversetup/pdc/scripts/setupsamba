@@ -1236,16 +1236,19 @@ then
 	PRIMARY_GROUP=profilemanagement
 	SUBUNIT=other
 	HOMEPATH=/home/users/
+	SECONDARYGROUP=""
 	make_primary_group_info
 
 	PRIMARY_GROUP=guestusers
 	SUBUNIT=other
 	HOMEPATH=/home/users/guestusers
+	SECONDARYGROUP=""
 	make_primary_group_info
 
 	PRIMARY_GROUP=staff
 	SUBUNIT=personnel
 	HOMEPATH=/home/users/staff
+	SECONDARYGROUP=""
 	make_primary_group_info
 
 	PRIMARY_GROUP=officestaff
@@ -1257,6 +1260,7 @@ then
 	PRIMARY_GROUP=tech
 	SUBUNIT=personnel
 	HOMEPATH=/home/users/techstaff
+	SECONDARYGROUP=""
 	make_primary_group_info
 
 	PRIMARY_GROUP=itadmin
@@ -1270,6 +1274,7 @@ then
 		PRIMARY_GROUP=nonteachingstaff
 		SUBUNIT=personnel
 		HOMEPATH=/home/users/nonteachingstaff
+		SECONDARYGROUP=""
 		make_primary_group_info
 
 		PRIMARY_GROUP=studentstaff
@@ -1281,16 +1286,19 @@ then
 		PRIMARY_GROUP=exams
 		SUBUNIT=other
 		HOMEPATH=/home/users/exams
+		SECONDARYGROUP=""
 		make_primary_group_info
 
 		PRIMARY_GROUP=guardians
 		SUBUNIT=trustees
 		HOMEPATH=/home/users/guardians
+		SECONDARYGROUP=""
 		make_primary_group_info
 
 		PRIMARY_GROUP=governors
 		SUBUNIT=personnel
 		HOMEPATH=/home/users/governors
+		SECONDARYGROUP=""
 		make_primary_group_info
 
 		COUNTER=$STARTYEAR

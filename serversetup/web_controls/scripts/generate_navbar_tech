@@ -54,7 +54,9 @@ echo '<div id="navbar"><span class="preload1"></span>
 
 if [ $ADDUSERCTRL = yes ]
 then
-echo '			<li><a href="/cgi-bin/tech/add_user_fm.cgi">'$"Add User"'</a></li>'
+echo '			<li><a href="/cgi-bin/tech/add_user_fm.cgi">'$"Add User"'</a></li>
+			<li><a href="/cgi-bin/tech/acceptable_use.cgi">'$"Acceptable Use"'</a></li>
+'
 fi
 
 echo '			<li class="mid"><a href="/cgi-bin/tech/change_password_fm.cgi" class="fly">'$"Modify Users"'</a>

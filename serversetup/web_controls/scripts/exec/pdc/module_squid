@@ -170,12 +170,12 @@ then
 	#########################
 
 	ssh -x -o PasswordAuthentication=no $SERVERNAME '
-	echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$HOSTNAME:$PDCIP:$AUTHTYPE:$PASSWORD:$SYNC_CONFIG:' | /opt/karoshi/serversetup/modules/squid/setupsquid
+	echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$HOSTNAME:$PDCIP:$SYNC_CONFIG:' | /opt/karoshi/serversetup/modules/squid/setupsquid
 	'
 	[ $? = 101 ] && exit 101
 
 	else
-		echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$HOSTNAME:$PDCIP:$AUTHTYPE:$PASSWORD:$SYNC_CONFIG: | /opt/karoshi/serversetup/modules/squid/setupsquid
+		echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$HOSTNAME:$PDCIP:$SYNC_CONFIG: | /opt/karoshi/serversetup/modules/squid/setupsquid
 	[ $? = 101 ] && exit 101
 fi
 

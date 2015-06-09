@@ -1,7 +1,9 @@
 #!/bin/bash
 if [ -d /etc/squid3 ]
 then
-service squid3 start
+	service squid3 start 2>&1
+	[ "$?" != 0 ] && sleep 5
 else
-service squid start
+	service squid start 2>&1
+	[ "$?" != 0 ] && sleep 5
 fi

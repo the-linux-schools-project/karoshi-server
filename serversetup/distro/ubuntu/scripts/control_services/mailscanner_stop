@@ -1,5 +1,6 @@
 #!/bin/bash
-service mailscanner stop
+service mailscanner stop 2>&1
+[ "$?" != 0 ] && sleep 5
 
 #Wait for sub processes to stop
 COUNTER=0

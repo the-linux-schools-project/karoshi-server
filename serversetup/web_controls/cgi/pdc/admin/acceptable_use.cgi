@@ -195,6 +195,7 @@ then
 	window.location = "acceptable_use.cgi";
 	</script>'		
 fi
+#Show acceptable use options for admin staff.
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 200px;">'$"Status"'</td><td>

@@ -1,2 +1,3 @@
 #!/bin/bash
-service isc-dhcp-server start
+service isc-dhcp-server start 2>&1
+[ "$?" != 0 ] && sleep 5

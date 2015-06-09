@@ -1,4 +1,4 @@
 #!/bin/bash
-#initctl start tftpd-hpa
-service tftpd-hpa stop
+service tftpd-hpa stop 2>&1
+[ "$?" != 0 ] && sleep 5
 

@@ -1,2 +1,3 @@
 #!/bin/bash
-service cups stop
+service cups stop 2>&1
+[ "$?" != 0 ] && sleep 5

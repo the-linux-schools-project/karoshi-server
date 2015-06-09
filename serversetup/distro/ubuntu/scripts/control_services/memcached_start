@@ -1,2 +1,3 @@
 #!/bin/bash
-service memcached start
+service memcached start 2>&1
+[ "$?" != 0 ] && sleep 5

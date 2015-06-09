@@ -1,4 +1,5 @@
 #!/bin/bash
 #initctl start ssh
-service ssh start
+service ssh start 2>&1
+[ "$?" != 0 ] && sleep 5
 

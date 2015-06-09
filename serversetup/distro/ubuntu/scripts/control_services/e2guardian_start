@@ -1,2 +1,3 @@
 #!/bin/bash
-service e2guardian start
+service e2guardian start 2>&1
+[ "$?" != 0 ] && sleep 5

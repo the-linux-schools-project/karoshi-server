@@ -1,4 +1,4 @@
 #!/bin/bash
-service mysql stop
-#initctl stop mysql
+service mysql stop 2>&1
+[ "$?" != 0 ] && sleep 5
 

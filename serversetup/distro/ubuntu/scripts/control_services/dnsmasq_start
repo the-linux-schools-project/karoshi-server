@@ -1,3 +1,4 @@
 #!/bin/bash
-service dnsmasq start
+service dnsmasq start 2>&1
+[ "$?" != 0 ] && sleep 5
 

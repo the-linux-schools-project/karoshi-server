@@ -1,2 +1,3 @@
 #!/bin/bash
-service ntp stop
+service ntp stop 2>&1
+[ "$?" != 0 ] && sleep 5

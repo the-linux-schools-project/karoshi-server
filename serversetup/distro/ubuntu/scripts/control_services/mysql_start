@@ -1,4 +1,5 @@
 #!/bin/bash
-service mysql start
-#initctl start mysql
+service mysql start 2>&1
+[ "$?" != 0 ] && sleep 5
+
 

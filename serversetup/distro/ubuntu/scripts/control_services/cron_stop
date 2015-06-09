@@ -1,2 +1,3 @@
 #!/bin/bash
-service cron stop
+service cron stop 2>&1
+[ "$?" != 0 ] && sleep 5

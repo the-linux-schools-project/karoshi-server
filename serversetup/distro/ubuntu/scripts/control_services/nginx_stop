@@ -1,2 +1,3 @@
 #!/bin/bash
-service nginx stop
+service nginx stop 2>&1
+[ "$?" != 0 ] && sleep 5

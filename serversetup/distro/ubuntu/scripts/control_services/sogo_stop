@@ -1,2 +1,3 @@
 #!/bin/bash
-service sogo stop
+service sogo stop 2>&1
+[ "$?" != 0 ] && sleep 5

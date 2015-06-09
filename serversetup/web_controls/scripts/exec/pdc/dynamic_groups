@@ -1,0 +1,156 @@
+#!/bin/bash
+LOG_DATE=`date +%F`
+
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dynamic_groups_cgi
+then
+	echo `date`: dynamic_groups - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/dynamic_groups_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dynamic_groups.cgi | cut -d' ' -f1`
+[[ -z "$MD5SUM" ]] && MD5SUM=not_set
+if [[ $MD5SUM'check' != $dynamic_groups_cgi'check' ]]
+then
+	echo `date`: dynamic_groups - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+read DATA
+DATA=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-+ '`
+if [[ -z "$DATA" ]]
+then
+	echo `date`: dynamic_groups - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+APPENDUSERS=`echo "$DATA" | cut -s -d: -f4`
+CSVFILE=`echo "$DATA" | cut -s -d: -f5`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+	echo `date`: dynamic_groups - Not called by dynamic_groups.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+then
+	echo `date`: dynamic_groups - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+	echo `date`: dynamic_groups - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$CSVFILE" ]
+then
+	echo `date`: dynamic_groups - Blank csvfile by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+if [ ! -f  "/var/www/karoshi/dynamic_groups/$CSVFILE" ]
+then
+	echo `date`: dynamic_groups - $CSVFILE is missing by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$CSVFILE" - $"This file does not exist."
+	sleep 3
+	exit 101
+fi
+
+source /opt/karoshi/server_network/domain_information/domain_name
+PROTECTED_GROUPS2="admin karoshi bursar"
+PROTECTED_GROUPS=`ls /opt/karoshi/server_network/group_information`
+PROTECTED_GROUPS="$PROTECTED_GROUPS $PROTECTED_GROUPS2"
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+
+APPENDUSERS=no
+DELETEGROUPS=no
+
+#Folder to store flag file information for dynamic groups
+[ ! -d /opt/karoshi/server_network/group_information_dynamic ] && mkdir -p /opt/karoshi/server_network/group_information_dynamic
+
+#Read in raw data
+for data in `cat "/var/www/karoshi/dynamic_groups/$CSVFILE" | tr -cd 'A-Za-z0-9,-_\n'`
+do
+	#Get username or enrollment number
+	USERIDENTIFIER=`echo $data | cut -d, -f1`
+	USERNAME=""
+	if [ ! -z "$USERIDENTIFIER" ]
+	then
+	#Get a list of groups for the user to be in
+	GROUPLIST=`echo $data | cut -d, -f2-`
+	for group in `echo "$GROUPLIST" | sed 's/,/ /g'`
+	do
+		#Create the group if it does not exist
+		if [ `echo "$PROCESSEDGROUPS" | grep -c $group` = 0 ]
+		then
+			PROCESSEDGROUPS="$group,$PROCESSEDGROUPS"
+			#Create the group
+			getent group "$group" 1>/dev/null
+			if [ $? != 0 ]
+			then
+				echo "<li>"$"Creating group" "$group</li>"
+				echo `date`: groups - creating "$group" by "$REMOTE_USER" from "$REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+				samba-tool group add --groupou="OU=Groups,OU=People" "$group" 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+				#Create flag file
+				echo "$group" > /opt/karoshi/server_network/group_information_dynamic/"$group"
+				#Modify the group with email information
+				GIDNUMBER=`getent group "$group" | cut -d: -f3`
+				echo -e "dn: CN=$group,OU=Groups,OU=People,$LDAPBASE
+changetype: modify
+add: objectclass
+objectclass: posixgroup
+-
+add: displayname
+displayname: "$group"
+-
+add: mail
+mail: $group@$REALM
+-
+add: gidnumber
+gidnumber: $GIDNUMBER
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null
+			fi
+
+			#Get a list of users in the group and remove them
+			if [ "$APPENDUSERS" = no ]
+			then
+			for EXISTING_USER in `samba-tool group listmembers $group`
+			do
+				samba-tool group removemembers $group "$EXISTING_USER" 1>/dev/null
+			done
+			fi
+		fi
+
+		#Check if a username or enrollment number has been entered
+		getent passwd "$USERIDENTIFIER" 1> /dev/null
+		if [ $? = 0 ]
+		then
+			USERNAME="$USERIDENTIFIER"
+		else
+			USERNAME=`ldapsearch -x -D "CN=Administrator,CN=Users,$LDAPBASE" -b "OU=People,$LDAPBASE" -w $LDAPPASS employeeNumber=$USERIDENTIFIER | grep ^cn: | sed 's/cn: //g'`
+		fi
+		#Username exists so add user to the group
+		if [ ! -z "$USERNAME" ]
+		then
+			#Check to see that this is a dynamic group and add in the user.
+			if [ -f /opt/karoshi/server_network/group_information_dynamic/"$group" ]
+			then
+				echo "<li>$USERNAME - "$"adding to group" "$group</li>"
+				echo `date`: groups - adding "$USERNAME" to "$group" by "$REMOTE_USER" from "$REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+				samba-tool group addmembers "$group" "$USERNAME" 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			else
+				echo "<li>$group - "$"This is not a dynamic group""</li>"
+				sleep 1
+			fi
+		fi
+	done
+	fi
+done

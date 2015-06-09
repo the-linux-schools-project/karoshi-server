@@ -29,16 +29,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/groups_cgi
 then
-echo `date`: groups - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: groups - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/groups_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/groups.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $groups_cgi'check' ]
 then
-echo `date`: groups - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: groups - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -53,10 +53,10 @@ fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-,'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: groups - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: groups - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -69,59 +69,82 @@ HOMESERVER=`echo "$DATA" | cut -s -d: -f8`
 CATEGORY=`echo "$DATA" | cut -s -d: -f9`
 SECGROUP=`echo "$DATA" | cut -s -d: -f10`
 EXTRAGROUPS=`echo "$DATA" | cut -s -d: -f11`
+USERNAME=`echo "$DATA" | cut -s -d: -f12`
+MOBILE=`echo "$DATA" | cut -s -d: -f13`
+MOBILE=no
 ########################
 #Check data
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: groups - Not called by groups.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: groups - Not called by groups.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-echo `date`: groups - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: groups - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: groups - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: groups - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$ACTION" ]
 then
-echo `date`: groups - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: groups - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$GROUPNAME" ]
 then
-echo `date`: groups - Blank groupname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: groups - Blank groupname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ -z "$TYPE" ]
 then
-echo `date`: groups - Blank type by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: groups - Blank type by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ $ACTION = reallyadd ] && [ $TYPE = primary ]
 then
-if [ -z "$PROFILE" ]
+	if [ -z "$PROFILE" ]
+	then
+		echo `date`: groups - Blank profile by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
+	if [ -z "$HOMESERVER" ]
+	then
+		echo `date`: groups - Blank home server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
+	if [ -z "$CATEGORY" ]
+	then
+		echo `date`: groups - Blank category by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
+fi
+
+if [ $MOBILE = no ]
 then
-echo `date`: groups - Blank profile by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	TABLECLASS=standard
+	WIDTH1=200
+	WIDTH2=90
+	WIDTH3=300
+	ICON1=/images/submenus/system/delete.png
+	ICON2=/images/submenus/system/edit.png
+	ICON3=/images/submenus/user/users.png
+else
+	TABLECLASS=mobilestandard
+	WIDTH1=120
+	WIDTH2=70
+	WIDTH3=200
+	ICON1=/images/submenus/system/deletem.png
+	ICON2=/images/submenus/system/editm.png
+	ICON3=/images/submenus/user/users.png
 fi
-if [ -z "$HOMESERVER" ]
-then
-echo `date`: groups - Blank home server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
-if [ -z "$CATEGORY" ]
-then
-echo `date`: groups - Blank category by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
-fi
+
 
 ##########################
 #Language
@@ -142,16 +165,40 @@ source /opt/karoshi/server_network/domain_information/domain_name
 FEDERATED_LDAP_SERVERS=no
 if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
 then
-if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
-then
-FEDERATED_LDAP_SERVERS=yes
+	if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
+	then
+		FEDERATED_LDAP_SERVERS=yes
+	fi
 fi
+
+if [ "$ACTION" = removeuser ]
+then
+	echo `date`: groups - "removing "$USERNAME" from $GROUPNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	samba-tool group removemembers "$GROUPNAME" "$USERNAME" 1>/dev/null
+	exit
+fi
+
+
+if [ "$ACTION" = showusers ]
+then
+	echo `date`: groups - "showing all users in group $GROUPNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+      	<tr><td style="width: 180px;"><b>'$"Username"'</b></td><td style="width: 180px;"><b>'$"Full Name"'</b></td><td><b>'$"Remove"'</b></td></tr>'
+	for GROUPMEMBER in `samba-tool group listmembers "$GROUPNAME"`
+	do
+		FULLNAME=`getent passwd "$GROUPMEMBER" | cut -d: -f5 | sed 's/,//g'`
+		echo '<tr><td>'$GROUPMEMBER'</td><td>'$FULLNAME'</td><td>
+<a class="info" href="javascript:void(0)"><input name="____ACTION____removeuser____GROUPNAME____'$GROUPNAME'____USERNAME____'$GROUPMEMBER'____" type="image" class="images" src="'$ICON1'" value=""><span>'$GROUPMEMBER' - '$"remove this user from the group."'</span></a>
+</td></tr>'
+	done
+	echo '</tbody></table>'
+	exit
 fi
 
 if [ $ACTION = editextrargroups ]
 then
-echo `date`: groups - editing $GROUPNAME with extragroups: $EXTRAGROUPS by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-sed -i 's/^SECONDARYGROUP=.*/SECONDARYGROUP='$EXTRAGROUPS'/' /opt/karoshi/server_network/group_information/"$GROUPNAME"
+	echo `date`: groups - editing $GROUPNAME with extragroups: $EXTRAGROUPS by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	sed -i 's/^SECONDARYGROUP=.*/SECONDARYGROUP='$EXTRAGROUPS'/' /opt/karoshi/server_network/group_information/"$GROUPNAME"
 fi
 
 if [ $ACTION = reallyadd ]

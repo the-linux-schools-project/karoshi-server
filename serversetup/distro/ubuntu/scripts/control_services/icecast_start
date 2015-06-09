@@ -1,3 +1,4 @@
 #!/bin/bash
-service icecast2 start
+service icecast2 start 2>&1
+[ "$?" != 0 ] && sleep 5
 

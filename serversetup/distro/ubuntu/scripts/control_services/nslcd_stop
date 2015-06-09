@@ -1,3 +1,4 @@
 #!/bin/bash
-service nslcd stop
+service nslcd stop 2>&1
+[ "$?" != 0 ] && sleep 5
 

@@ -1,0 +1,321 @@
+#!/bin/bash
+#restore_home
+#
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+#This is just the part of setupsamba that creates folders and files in /home
+
+[ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
+
+[ -e /opt/karoshi/serversetup/variables/language ] || /opt/karoshi/serversetup/changelanguage
+[ -e /opt/karoshi/serversetup/variables/distro ] || /opt/karoshi/serversetup/changedistro
+
+source /opt/karoshi/serversetup/variables/language
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/variables/years
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/software
+source /opt/karoshi/server_network/domain_information/domain_name
+
+TEXTDOMAIN=karoshi-server
+locale 1>/dev/null
+
+THISYEAR=`date +%Y`
+GUESTACCOUNTS=30
+TECHACCOUNTS=4
+EXAMACCOUNTS=40
+TRAININGACCOUNTS=30
+DAY=`date +%d`
+MONTH=`date +%m`
+LINUXCLIENTVERSION=karoshi4.3
+
+#Get install type
+INSTALL_TYPE=education
+if [ -f /opt/karoshi/server_network/install_type ]
+then
+	INSTALL_TYPE=`sed -n 1,1p /opt/karoshi/server_network/install_type`
+fi
+
+echo $"Creating home folders"
+#Make top level user area
+chmod 0755 /home
+chown root.root /home
+[ -d /home/users ] || mkdir /home/users
+chmod 0755 /home/users
+chown root.root /home/users
+
+#Add education home areas
+if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = joindomain_education ]
+then
+	#Guardian users home areas
+	[ -d /home/users/guardians ] || mkdir /home/users/guardians
+	chmod 0750 /home/users/guardians
+	chown root.guardians /home/users/guardians
+	chown .guardians -R /home/users/guardians
+
+	#Governor users home areas
+	[ -d /home/users/governors ] || mkdir /home/users/governors
+	chmod 0750 /home/users/governors
+	chown root.governors /home/users/governors
+	chown .governors -R /home/users/governors
+
+	#Non teaching staff users home areas
+	[ -d /home/users/nonteachingstaff ] || mkdir /home/users/nonteachingstaff
+	chmod 0750 /home/users/nonteachingstaff
+	chown root.nonteachingstaff /home/users/nonteachingstaff
+	chown .nonteachingstaff -R /home/users/nonteachingstaff
+
+	#Exam users home area
+	[ -d /home/users/exams ] || mkdir /home/users/exams
+	chmod 0750 /home/users/exams
+	chown root.exams /home/users/exams
+	chown .exams -R /home/users/exams
+
+	#Studentstaff users home areas
+	[ -d /home/users/studentstaff ] || mkdir /home/users/studentstaff
+	chmod 0750 /home/users/studentstaff
+	chown root.studentstaff /home/users/studentstaff
+	chown .studentstaff -R /home/users/studentstaff
+
+	#Student users home areas
+	[ -d /home/users/students ] || mkdir /home/users/students
+	chmod 0755 /home/users/students
+	chown root.root /home/users/students
+	COUNTER=$STARTYEAR
+	while [  $COUNTER -le $ENDYEAR ]; do
+		[ -d /home/users/students/yr$COUNTER ] || mkdir /home/users/students/yr$COUNTER
+		chmod 0750 /home/users/students/yr$COUNTER
+		chown root.yr$COUNTER /home/users/students/yr$COUNTER
+		chown .yr$COUNTER -R /home/users/students/yr$COUNTER
+		let COUNTER=COUNTER+1
+	done
+fi
+
+#Staff users home areas
+[ -d /home/users/staff ] || mkdir /home/users/staff
+chmod 0750 /home/users/staff
+chown root.staff /home/users/staff
+chown .staff -R /home/users/staff
+
+#Office staff users home area
+[ -d /home/users/officestaff ] || mkdir /home/users/officestaff
+chmod 0750 /home/users/officestaff
+chown root.officestaff /home/users/officestaff
+chown .officestaff -R /home/users/officestaff
+#Tech staff users home area
+[ -d /home/users/techstaff ] || mkdir /home/users/techstaff
+chmod 0750 /home/users/techstaff
+chown root.tech /home/users/techstaff
+chown .tech -R /home/users/techstaff
+#Itadmin staff users home area
+[ -d /home/users/itadminstaff ] || mkdir /home/users/itadminstaff
+chmod 0750 /home/users/itadminstaff
+chown root.itadmin /home/users/itadminstaff
+chown .itadmin -R /home/users/itadminstaff
+#Guest users home area
+[ -d /home/users/guestusers ] || mkdir /home/users/guestusers
+chmod 0750 /home/users/guestusers
+chown root.guestusers /home/users/guestusers
+chown .guestusers -R /home/users/guestusers
+
+#Applications area - windows profiles
+[ -d /home/applications ] || mkdir /home/applications
+if ! test -d /home/applications/backgrounds
+then
+	mkdir /home/applications/backgrounds
+	cp /opt/karoshi/serversetup/pdc/backgrounds/* /home/applications/backgrounds/
+	cp /opt/karoshi/serversetup/all/backgrounds/* /home/applications/backgrounds/
+fi
+
+#Extract windows GPOs
+unzip /opt/karoshi/serversetup/pdc/gpos/GPOs.zip -d /home/applications/
+
+chmod 0664 -R /home/applications
+chmod u+X,g+X,o+X -R /home/applications
+chown root.itadmin -R /home/applications
+
+if ! test -d /home/subjects
+then
+	mkdir /home/subjects /home/subjects/"work experience" /home/subjects/art /home/subjects/"business studies" /home/subjects/careers
+	mkdir /home/subjects/childcare /home/subjects/citizenship /home/subjects/drama /home/subjects/english /home/subjects/french
+	mkdir /home/subjects/geography /home/subjects/german /home/subjects/"health and social care" /home/subjects/history
+	mkdir /home/subjects/ict /home/subjects/"leisure and tourism" /home/subjects/literacy /home/subjects/mathematics /home/subjects/"media studies"
+	mkdir /home/subjects/music /home/subjects/olc /home/subjects/"physical education" /home/subjects/science /home/subjects/spanish
+	mkdir /home/subjects/welsh /home/subjects/technology
+fi
+
+chmod 2664 -R /home/subjects
+chmod u+X,g+X,o+X -R  /home/subjects
+chown root.itadmin -R /home/subjects
+
+#Staffshare area
+[ -d /home/staffshare ] || mkdir /home/staffshare
+
+[ -d /home/staffshare/temp ] || mkdir /home/staffshare/temp
+[ -d /home/staffshare/"useful documents" ] || mkdir /home/staffshare/"useful documents"
+[ -d /home/staffshare/smt ] || mkdir /home/staffshare/smt
+[ -d /home/staffshare/"work experience" ] || mkdir /home/staffshare/"work experience"
+[ -d /home/staffshare/art ] || mkdir /home/staffshare/art
+[ -d /home/staffshare/"business studies" ] || mkdir /home/staffshare/"business studies"
+[ -d /home/staffshare/careers ] || mkdir /home/staffshare/careers
+[ -d /home/staffshare/childcare ] || mkdir /home/staffshare/childcare
+[ -d /home/staffshare/citizenship ] || mkdir /home/staffshare/citizenship
+[ -d /home/staffshare/drama ] || mkdir /home/staffshare/drama
+[ -d /home/staffshare/english ] || mkdir /home/staffshare/english
+[ -d /home/staffshare/french ] || mkdir /home/staffshare/french
+[ -d /home/staffshare/geography ] || mkdir /home/staffshare/geography
+[ -d /home/staffshare/german ] || mkdir /home/staffshare/german
+[ -d /home/staffshare/"health and social care" ] || mkdir /home/staffshare/"health and social care"
+[ -d /home/staffshare/history ] || mkdir /home/staffshare/history
+[ -d /home/staffshare/ict ] || mkdir /home/staffshare/ict
+[ -d /home/staffshare/"leisure and tourism" ] || mkdir /home/staffshare/"leisure and tourism"
+[ -d /home/staffshare/literacy ] || mkdir /home/staffshare/literacy
+[ -d /home/staffshare/mathematics ] || mkdir /home/staffshare/mathematics
+[ -d /home/staffshare/"media studies" ] || mkdir /home/staffshare/"media studies"
+[ -d /home/staffshare/music ] || mkdir /home/staffshare/music
+[ -d /home/staffshare/olc ] || mkdir /home/staffshare/olc
+[ -d /home/staffshare/"physical education" ] || mkdir /home/staffshare/"physical education"
+[ -d /home/staffshare/science ] || mkdir /home/staffshare/science
+[ -d /home/staffshare/spanish ] || mkdir /home/staffshare/spanish
+[ -d /home/staffshare/welsh ] || mkdir /home/staffshare/welsh
+[ -d /home/staffshare/technology ] || mkdir /home/staffshare/technology
+
+chmod 2660 -R /home/staffshare
+chmod u+X,g+X /home/staffshare
+chown -R root.itadmin /home/staffshare
+
+#Officeshare area
+echo $"Creating" officeshare
+[ -d /home/officeshare ] || mkdir /home/officeshare
+[ -d /home/officeshare/temp ] || mkdir /home/officeshare/temp
+[ -d /home/officeshare/bursar ] || mkdir /home/officeshare/bursar
+
+chmod 2660 -R /home/officeshare
+chmod u+X,g+X -R /home/officeshare
+chown -R root.officestaff /home/officeshare
+chown root.bursar -R /home/officeshare/bursar
+#Itadminshare area
+echo $"Creating" itadminshare
+[ -d /home/itadminshare ] || mkdir /home/itadminshare
+[ -d /home/itadminshare/"bulk user creation"/"input files" ] || mkdir -p /home/itadminshare/"bulk user creation"/"input files"
+[ -d /home/itadminshare/documentation ] || mkdir /home/itadminshare/documentation
+[ -d /home/itadminshare/temp ] || mkdir /home/itadminshare/temp
+[ -d /home/itadminshare/"user data" ] || mkdir /home/itadminshare/"user data"
+[ -d /home/itadminshare/other ] || mkdir /home/itadminshare/other
+
+chown root.itadmin -R /home/itadminshare
+chmod 0660 -R /home/itadminshare
+chmod u+X,g+X -R /home/itadminshare
+
+echo $"Copying in windows client profiles"
+
+#Extract profiles
+
+[ ! -d /home/applications/profiles ] && mkdir /home/applications/profiles
+
+echo $"Extracting Windows XP Profile"
+tar -zxf /opt/karoshi/serversetup/pdc/profiles/defaultprofile.tar.gz -C /home/applications/profiles/
+echo $"Extracting Windows 7 Profile"
+tar -zxf /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V2.tar.gz -C /home/applications/profiles/
+echo $"Extracting Windows 8.1 Profile"
+tar -zxf /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V4.tar.gz -C /home/applications/profiles/
+
+#We dont have a windows 8.0 profile so make an empty folder for it
+[ ! -d /home/applications/profiles/defaultprofile.V3 ] && mkdir -p /home/applications/profiles/defaultprofile.V3
+
+#Copy in windows icons
+cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Change My Password.url" /home/applications/profiles/defaultprofile/Desktop/
+cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Help Desk.url" /home/applications/profiles/defaultprofile/Desktop/
+cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Karoshi Web Management.url" /home/applications/profiles/defaultprofile/Desktop/
+
+cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Change My Password.url" /home/applications/profiles/defaultprofile.V2/Desktop/
+cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Help Desk.url" /home/applications/profiles/defaultprofile.V2/Desktop/
+cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Karoshi Web Management.url" /home/applications/profiles/defaultprofile.V2/Desktop/
+
+#cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Change My Password.url" /home/applications/profiles/defaultprofile.V3/Desktop/
+#cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Help Desk.url" /home/applications/profiles/defaultprofile.V3/Desktop/
+#cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Karoshi Web Management.url" /home/applications/profiles/defaultprofile.V3/Desktop/
+
+cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Change My Password.url" /home/applications/profiles/defaultprofile.V4/Desktop/
+cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Help Desk.url" /home/applications/profiles/defaultprofile.V4/Desktop/
+cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Karoshi Web Management.url" /home/applications/profiles/defaultprofile.V4/Desktop/
+
+#Point default profile icons to correct realm
+[ -f /home/applications/profiles/defaultprofile/Desktop/"Help Desk.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile/Desktop/"Help Desk.url"
+[ -f /home/applications/profiles/defaultprofile/Desktop/"Change My Password.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile/Desktop/"Change My Password.url"
+[ -f /home/applications/profiles/defaultprofile/Desktop/"Karoshi Web Management.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile/Desktop/"Karoshi Web Management.url"
+
+[ -f /home/applications/profiles/defaultprofile.V2/Desktop/"Help Desk.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V2/Desktop/"Help Desk.url"
+[ -f /home/applications/profiles/defaultprofile.V2/Desktop/"Change My Password.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V2/Desktop/"Change My Password.url"
+[ -f /home/applications/profiles/defaultprofile.V2/Desktop/"Karoshi Web Management.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V2/Desktop/"Karoshi Web Management.url"
+
+[ -f /home/applications/profiles/defaultprofile.V3/Desktop/"Help Desk.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V3/Desktop/"Help Desk.url"
+[ -f /home/applications/profiles/defaultprofile.V3/Desktop/"Change My Password.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V3/Desktop/"Change My Password.url"
+[ -f /home/applications/profiles/defaultprofile.V3/Desktop/"Karoshi Web Management.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V3/Desktop/"Karoshi Web Management.url"
+
+[ -f /home/applications/profiles/defaultprofile.V4/Desktop/"Help Desk.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V4/Desktop/"Help Desk.url"
+[ -f /home/applications/profiles/defaultprofile.V4/Desktop/"Change My Password.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V4/Desktop/"Change My Password.url"
+[ -f /home/applications/profiles/defaultprofile.V4/Desktop/"Karoshi Web Management.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V4/Desktop/"Karoshi Web Management.url"
+
+#Create tech profile
+
+cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/tech
+cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/tech.V2
+cp -f -R /home/applications/profiles/defaultprofile.V3 /home/applications/profiles/tech.V3
+cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/tech.V4
+
+[ ! -d /home/applications/profiles/default_roaming_profile ] && mkdir /home/applications/profiles/default_roaming_profile
+[ ! -d /home/applications/profiles/default_roaming_profile.V2 ] && mkdir /home/applications/profiles/default_roaming_profile.V2
+[ ! -d /home/applications/profiles/default_roaming_profile.V3 ] && mkdir /home/applications/profiles/default_roaming_profile.V3
+[ ! -d /home/applications/profiles/default_roaming_profile.V4 ] && mkdir /home/applications/profiles/default_roaming_profile.V4
+
+chown -R root.itadmin /home/applications/profiles
+chmod 0664 -R /home/applications/profiles
+chmod u+X,g+X,o+X -R /home/applications/profiles
+[ -d /home/applications/Shortcuts ] || cp -R /opt/karoshi/serversetup/pdc/Shortcuts /home/applications
+chown -R root.itadmin /home/applications/Shortcuts
+chmod 0664 -R /home/applications/Shortcuts
+chmod u+X,g+X,o+X -R /home/applications/Shortcuts
+
+[ -d /home/applications/"profile management" ] || mkdir /home/applications/"profile management"
+[ -d /home/applications/"profile management"/"desktop icons" ] || mkdir /home/applications/"profile management"/"desktop icons"
+[ -d /home/applications/"profile management"/"start menu" ] || mkdir /home/applications/"profile management"/"start menu"
+[ -d /home/applications/"profile management"/"new profile" ] || mkdir /home/applications/"profile management"/"new profile"
+chown -R root.itadmin /home/applications/"profile management"
+chmod 0660 -R /home/applications/"profile management"
+chmod u+X,g+X -R /home/applications/"profile management"
+
+[ ! -d /home/applications/cups_print/x64 ] && mkdir -p /home/applications/cups_print/x64
+
+chmod 0775 -R /home/applications/cups_print
+chown root.tech -R /home/applications/cups_print
+
+setfacl -Rm u::rwx,g::---,o::---,g:itadmin:rwx,d:u::rwx,d:g::---,d:o::---,d:g:itadmin:rwx /home/itadminshare
+setfacl -Rm u::rwx,g::---,o::---,g:staff:rwx,d:u::rwx,d:g::---,d:o::---,d:g:staff:rwx /home/staffshare
+setfacl -Rm u::rwx,g::---,o::---,g:officestaff:rwx,d:u::rwx,d:g::---,d:o::---,d:g:officestaff:rwx /home/officeshare
+setfacl -m g:staff:r-x,u::r-x /home/staffshare
+setfacl -Rm u::rwx,g::r-x,o::r-x,g:staff:rwx,d:u::rwx,d:g::r-x,d:o::r-x,d:g:staff:rwx /home/subjects
+setfacl -m g:staff:r-x,u::r-x /home/subjects
+setfacl -bR /home/staffshare/smt
+setfacl -Rm u::rwx,g::---,o::---,g:smt:rwx,d:u::rwx,d:g::---,d:o::---,d:g:smt:rwx /home/staffshare/smt
+setfacl -R -m g:staff:r-x,d:g:staff:r-x /home/users/students
+
+

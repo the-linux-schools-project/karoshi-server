@@ -1,3 +1,4 @@
 #!/bin/bash
-service freeradius stop
+service freeradius stop 2>&1
+[ "$?" != 0 ] && sleep 5
 
