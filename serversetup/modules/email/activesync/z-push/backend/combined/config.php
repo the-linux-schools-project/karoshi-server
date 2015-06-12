@@ -62,14 +62,14 @@ class BackendCombinedConfig {
             //login only succeeds if all backend return true on login
             //sending mail: the mail is sent with first backend that is able to send the mail
             'backends' => array(
+                'i' => array(
+                    'name' => 'BackendIMAP',
+                ),
                 'c' => array(
                     'name' => 'BackendCalDAV',
                 ),
                 'd' => array(
                     'name' => 'BackendCardDAV',
-                ),
-                'i' => array(
-                    'name' => 'BackendIMAP',
                 ),
             ),
             'delimiter' => '/',

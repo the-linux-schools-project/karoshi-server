@@ -61,5 +61,4 @@ define('CALDAV_PERSONAL', 'personal');
 // DAViCal, SOGo and SabreDav support it
 // SabreDav version must be at least 1.9.0, otherwise set this to false
 // Setting this to false will work with most servers, but it will be slower
-define('CALDAV_SUPPORTS_SYNC', false);
-
+define('CALDAV_SUPPORTS_SYNC', true);

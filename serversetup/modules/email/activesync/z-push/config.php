@@ -171,8 +171,8 @@
     define('LOG_SYSLOG_PROGRAM', '[z-push]');
 
 
-
-
+    define('LOG_MEMORY_PROFILER', false);
+    define('LOG_MEMORY_PROFILER_FILE', '/var/log/z-push/memory_profile');
 
 /**********************************************************************************
  *  Mobile settings
@@ -206,7 +206,7 @@
     // Interval in seconds before checking if there are changes on the server when in Ping.
     // It means the highest time span before a change is pushed to a mobile. Set it to
     // a higher value if you have a high load on the server.
-    define('PING_INTERVAL', 600);
+    define('PING_INTERVAL', 300);
 
     // Interval in seconds to force a re-check of potentially missed notifications when
     // using a changes sink. Default are 300 seconds (every 5 min).
@@ -255,8 +255,8 @@
     // in the semantic sanity checks and contacts with larger photos are not synchronized.
     // This limitation is not being followed by the ActiveSync clients which set much bigger
     // contact photos. You can override the default value of the max photo size.
-    // default: 49152 - 48 KB default max photo size in bytes
-    define('SYNC_CONTACTS_MAXPICTURESIZE', 49152);
+    // default: 5242880 - 5 MB default max photo size in bytes
+    define('SYNC_CONTACTS_MAXPICTURESIZE', 5242880);
 
     // Over the WebserviceUsers command it is possible to retrieve a list of all
     // known devices and users on this Z-Push system. The authenticated user needs to have
@@ -272,13 +272,11 @@
     // NOTE: THIS IS AN EXPERIMENTAL FEATURE WHICH COULD PREVENT YOUR MOBILES FROM SYNCHRONIZING.
     define('USE_PARTIAL_FOLDERSYNC', false);
 
-
-
 /**********************************************************************************
  *  Backend settings
  */
     // the backend data provider
-    define('BACKEND_PROVIDER', 'BackendCombined');
+     define('BACKEND_PROVIDER', 'BackendCombined');
 
     // top collector backend class name
     //    Default is: TopCollector

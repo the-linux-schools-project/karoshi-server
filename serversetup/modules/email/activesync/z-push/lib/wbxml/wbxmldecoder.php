@@ -44,6 +44,7 @@
 
 class WBXMLDecoder extends WBXMLDefs {
     private $in;
+    private $inLog;
     private $tagcp = 0;
     private $ungetbuffer;
     private $log = false;
@@ -65,6 +66,7 @@ class WBXMLDecoder extends WBXMLDefs {
         $this->log = defined('WBXML_DEBUG') && WBXML_DEBUG;
 
         $this->in = $input;
+        $this->inLog = StringStreamWrapper::Open("");
 
         $version = $this->getByte();
         if($version != self::VERSION) {
@@ -218,7 +220,7 @@ class WBXMLDecoder extends WBXMLDefs {
      * @return string
      */
     public function GetPlainInputStream() {
-        return $this->inputBuffer.stream_get_contents($this->in);
+        return $this->inputBuffer . stream_get_contents($this->in);
     }
 
     /**
@@ -232,6 +234,19 @@ class WBXMLDecoder extends WBXMLDefs {
     }
 
 
+    /**
+     * Returns the WBXML data read from the stream
+     *
+     * @access public
+     * @return string - base64 encoded wbxml
+     */
+    public function getWBXMLLog() {
+        $out = "";
+        if ($this->inLog) {
+            $out = base64_encode(stream_get_contents($this->inLog, -1,0));
+        }
+        return $out;
+    }
 
     /**----------------------------------------------------------------------------------------------------------
      * Private WBXMLDecoder stuff
@@ -365,9 +380,11 @@ class WBXMLDecoder extends WBXMLDefs {
             $in = fread($this->in, 1);
             //this is faster than ord($in) == 0
             if($in === "\0" || $in === false || $in === "")
-                return $str;
+                break;
             $str .= $in;
         }
+
+        return $str;
     }
 
     /**
@@ -396,8 +413,10 @@ class WBXMLDecoder extends WBXMLDefs {
      */
     private function getByte() {
         $ch = fread($this->in, 1);
-        if(strlen($ch) > 0)
+        if (strlen($ch) > 0) {
+            fwrite($this->inLog, $ch);
             return ord($ch);
+        }
         else
             return;
     }

@@ -174,15 +174,7 @@ class DiffState implements IChanges {
                     $changes[] = $change;
                 }
 
-                if(isset($this->syncstate[$iold]["star"]) && isset($new[$inew]["star"]) && $this->syncstate[$iold]["star"] != $new[$inew]["star"]) {
-                    // Star changed
-                    $change["type"] = "star";
-                    $change["id"] = $new[$inew]["id"];
-                    $change["star"] = $new[$inew]["star"];
-                    $changes[] = $change;
-                }
-
-                if($this->syncstate[$iold]["mod"] != $new[$inew]["mod"]) {
+                if(isset($this->syncstate[$iold]["mod"]) && isset($new[$inew]["mod"]) && $this->syncstate[$iold]["mod"] != $new[$inew]["mod"]) {
                     $change = array();
                     $change["type"] = "change";
                     $change["id"] = $new[$inew]["id"];
@@ -203,7 +195,6 @@ class DiffState implements IChanges {
                 $change = array();
                 $change["type"] = "change";
                 $change["flags"] = SYNC_NEWMESSAGE;
-                $change["star"] = SYNC_NEWMESSAGE;
                 $change["id"] = $new[$inew]["id"];
                 $changes[] = $change;
                 $inew++;
@@ -224,7 +215,6 @@ class DiffState implements IChanges {
             $change = array();
             $change["type"] = "change";
             $change["flags"] = SYNC_NEWMESSAGE;
-            $change["star"] = SYNC_NEWMESSAGE;
             $change["id"] = $new[$inew]["id"];
             $changes[] = $change;
             $inew++;
@@ -257,9 +247,6 @@ class DiffState implements IChanges {
                         case 'flags':
                             $state['flags'] = $change['flags'];
                             return;
-                        case 'star':
-                            $state['star'] = $change['star'];
-                            return;
                         case 'delete':
                             array_splice($this->syncstate, $i, 1);
                             return;
@@ -274,7 +261,7 @@ class DiffState implements IChanges {
         } else {
             $flags = empty($change['flags'])?"<no flags>":$change['flags'];
             $mod = empty($change['mod'])?"<no mod>":$change['mod'];
-            ZLog::Write(LOGLEVEL_WARN, sprintf("updateState: no state modification!!! %s|%s|%s|%s|%s", $type, $change_id, $flags, $star, $mod));
+            ZLog::Write(LOGLEVEL_WARN, sprintf("updateState: no state modification!!! %s|%s|%s|%s", $type, $change_id, $flags, $mod));
         }
     }
 

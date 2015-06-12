@@ -60,6 +60,7 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
     private $sinkfolders = array();
     private $sinkstates = array();
     private $changessinkinit = false;
+    private $folderhierarchy;
     private $excludedFolders;
     private static $mimeTypes = false;
 
@@ -216,12 +217,7 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
 
         ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->SendMail(): We get the new message"));
         $mobj = new Mail_mimeDecode($sm->mime);
-        $message = $mobj->decode(array('decode_headers' => false, 'decode_bodies' => true, 'include_bodies' => true, 'charset' => 'utf-8'));
-        unset($mobj);
-
-        // We only need the headers TO and FROM decoded so we can validate the addresses
-        $mobj = new Mail_mimeDecode($sm->mime);
-        $message_headers_decoded = $mobj->decode(array('decode_headers' => true, 'decode_bodies' => false, 'include_bodies' => false, 'charset' => 'utf-8'));
+        $message = $mobj->decode(array('decode_headers' => true, 'decode_bodies' => true, 'include_bodies' => true, 'charset' => 'utf-8'));
         unset($mobj);
 
         ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->SendMail(): We get the From and To"));
@@ -229,22 +225,21 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
 
         $toaddr = "";
         $this->setFromHeaderValue($message->headers);
-        $fromaddr = $this->parseAddr($Mail_RFC822->parseAddressList($message_headers_decoded->headers["from"]));
+        $fromaddr = $this->parseAddr($Mail_RFC822->parseAddressList($message->headers["from"]));
 
-        if (isset($message_headers_decoded->headers["to"])) {
-            $toaddr = $this->parseAddr($Mail_RFC822->parseAddressList($message_headers_decoded->headers["to"]));
+        if (isset($message->headers["to"])) {
+            $toaddr = $this->parseAddr($Mail_RFC822->parseAddressList($message->headers["to"]));
             ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->SendMail(): To defined: %s", $toaddr));
         }
         unset($Mail_RFC822);
 
         // overwrite CC and BCC with the decoded versions, because we will parse/validate the address in the sending method
         if (isset($message->headers["cc"])) {
-            $message->headers["cc"] = $message_headers_decoded->headers["cc"];
+            $message->headers["cc"] = $message->headers["cc"];
         }
         if (isset($message->headers["bcc"])) {
-            $message->headers["bcc"] = $message_headers_decoded->headers["bcc"];
+            $message->headers["bcc"] = $message->headers["bcc"];
         }
-        unset($message_headers_decoded);
 
         $this->setReturnPathValue($message->headers, $fromaddr);
 
@@ -260,7 +255,7 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
                 throw new StatusException(sprintf("BackendIMAP->SendMail(): Could not getSendArray for SMIME messages"), SYNC_COMMONSTATUS_MAILSUBMISSIONFAILED);
             }
             else {
-                list($recipents, $finalHeaders, $finalBody) = $parts;
+                list($recipients, $finalHeaders, $finalBody) = $parts;
 
                 $this->setFromHeaderValue($finalHeaders);
                 $this->setReturnPathValue($finalHeaders, $fromaddr);
@@ -347,11 +342,13 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
 
         $send = $this->sendMessage($fromaddr, $toaddr, $finalHeaders, $finalBody);
 
-        if (isset($sm->saveinsent)) {
-            $this->saveSentMessage($finalHeaders, $finalBody);
-        }
-        else {
-            ZLog::Write(LOGLEVEL_DEBUG, "BackendIMAP->SendMail(): Not saving in SentFolder");
+        if ($send) {
+            if (isset($sm->saveinsent)) {
+                $this->saveSentMessage($finalHeaders, $finalBody);
+            }
+            else {
+                ZLog::Write(LOGLEVEL_DEBUG, "BackendIMAP->SendMail(): Not saving in SentFolder");
+            }
         }
 
         unset($finalHeaders);
@@ -560,6 +557,67 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
         return $attachment;
     }
 
+
+    /**
+     * Deletes all contents of the specified folder.
+     * This is generally used to empty the trash (wastebasked), but could also be used on any
+     * other folder.
+     *
+     * @param string        $folderid
+     * @param boolean       $includeSubfolders      (opt) also delete sub folders, default true
+     *
+     * @access public
+     * @return boolean
+     * @throws StatusException
+     */
+    public function EmptyFolder($folderid, $includeSubfolders = true) {
+        ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->EmptyFolder('%s', '%s')", $folderid, Utils::PrintAsString($includeSubfolders)));
+
+        $folderImapid = $this->getImapIdFromFolderId($folderid);
+        if ($folderImapid === false) {
+            throw new StatusException(sprintf("BackendIMAP->EmptyFolder('%s','%s'): Error, unable to open folder (no entry id)", $folderid, Utils::PrintAsString($includeSubfolders)), SYNC_ITEMOPERATIONSSTATUS_SERVERERROR);
+        }
+
+        if (!$this->imap_reopen_folder($folderImapid)) {
+            throw new StatusException(sprintf("BackendIMAP->EmptyFolder('%s','%s'): Error, unable to open parent folder (open entry)", $folderid, Utils::PrintAsString($includeSubfolders)), SYNC_ITEMOPERATIONSSTATUS_SERVERERROR);
+        }
+
+        ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->EmptyFolder('%s','%s'): emptying folder", $folderid, Utils::PrintAsString($includeSubfolders)));
+
+        // TODO: make transactional all these deletes: see comment bellow
+        if (@imap_delete($this->mbox, "1:*")) {
+            @imap_expunge($this->mbox);
+
+
+            // An error erasing any subfolder won't return an error to the device, because we should undelete the already expunged messages, and we cannot undelete a folder
+            if ($includeSubfolders) {
+                ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->EmptyFolder('%s','%s'): deleting subfolders", $folderid, Utils::PrintAsString($includeSubfolders)));
+
+                // Find subfolders
+                $subfolders = @imap_getmailboxes($this->mbox, $this->server . $folderImapid, "*");
+                if (is_array($subfolders)) {
+
+                    // delete mailbox and its content
+                    foreach ($subfolders as $val) {
+                        $subname = substr($val->name, strlen($this->server));
+                        if (!@imap_deletemailbox($this->mbox, $val->name)) {
+                            ZLog::Write(LOGLEVEL_ERROR, sprintf("BackendIMAP->EmptyFolder('%s','%s'): Error deleting subfolder %s", $folderid, Utils::PrintAsString($includeSubfolders), $subname));
+                        }
+                    }
+                }
+                else {
+                    ZLog::Write(LOGLEVEL_ERROR, sprintf("BackendIMAP->EmptyFolder('%s','%s'): Error getting subfolder list", $folderid, Utils::PrintAsString($includeSubfolders)));
+                }
+            }
+        }
+        else {
+            throw new StatusException(sprintf("BackendIMAP->EmptyFolder('%s','%s'): Error, imap_delete() failed, the error will show at the logout", $folderid, Utils::PrintAsString($includeSubfolders)), SYNC_ITEMOPERATIONSSTATUS_SERVERERROR);
+        }
+
+        return true;
+    }
+
+
     /**
      * Indicates if the backend has a ChangesSink.
      * A sink is an active notification mechanism which does not need polling.
@@ -586,6 +644,11 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
         ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->ChangesSinkInitialize(): folderid '%s'", $folderid));
 
         $imapid = $this->getImapIdFromFolderId($folderid);
+
+        if (!$this->changessinkinit) {
+            // First folder, store the actual folder structure
+            $this->folderhierarchy = $this->get_folder_list();
+        }
 
         if ($imapid !== false) {
             $this->sinkfolders[] = $imapid;
@@ -618,6 +681,12 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
             return $notifications;
         }
 
+        // Check folder hierarchy and create change
+        if (count(array_diff($this->folderhierarchy, $this->get_folder_list())) > 0) {
+            ZLog::Write(LOGLEVEL_DEBUG, "BackendIMAP->ChangesSink(): Changes in folder hierarchy detected!!");
+             throw new StatusException("BackendIMAP->ChangesSink(): HierarchySync required.", SyncCollections::ERROR_WRONG_HIERARCHY);
+        }
+
         while($stopat > time() && empty($notifications)) {
             foreach ($this->sinkfolders as $i => $imapid) {
                 $this->imap_reopen_folder($imapid);
@@ -639,7 +708,7 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
                     if ($this->sinkstates[$imapid] != $newstate) {
                         $notifications[] = $this->getFolderIdFromImapId($imapid);
                         $this->sinkstates[$imapid] = $newstate;
-                        ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->ChangesSink(): ChangesSink detected!!"));
+                        ZLog::Write(LOGLEVEL_DEBUG, "BackendIMAP->ChangesSink(): ChangesSink detected!!");
                     }
                 }
             }
@@ -666,64 +735,26 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
     public function GetFolderList() {
         $folders = array();
 
-        $list = @imap_getmailboxes($this->mbox, $this->server, "*");
-        if (is_array($list)) {
-            // reverse list to obtain folders in right order
-            $list = array_reverse($list);
-
-            foreach ($list as $val) {
-                /* BEGIN fmbiete's contribution r1527, ZP-319 */
-                // don't return the excluded folders
-                $notExcluded = true;
-                for ($i = 0, $cnt = count($this->excludedFolders); $notExcluded && $i < $cnt; $i++) { // expr1, expr2 modified by mku ZP-329
-                    // fix exclude folders with special chars by mku ZP-329
-                    if (strpos(strtolower($val->name), strtolower(Utils::Utf7_iconv_encode(Utils::Utf8_to_utf7($this->excludedFolders[$i])))) !== false) {
-                        $notExcluded = false;
-                        ZLog::Write(LOGLEVEL_DEBUG, sprintf("Pattern: <%s> found, excluding folder: '%s'", $this->excludedFolders[$i], $val->name)); // sprintf added by mku ZP-329
-                    }
-                }
-
-                if ($notExcluded) {
-                    $box = array();
-                    // cut off serverstring
-                    $imapid = substr($val->name, strlen($this->server));
-                    $box["id"] = $this->convertImapId($imapid);
-
-                    $fhir = explode($val->delimiter, $imapid);
-                    if (count($fhir) > 1) {
-                        if (defined('IMAP_FOLDER_PREFIX') && strlen(IMAP_FOLDER_PREFIX) > 0) {
-                            if (strcasecmp($fhir[0], IMAP_FOLDER_PREFIX) == 0) {
-                                // Discard prefix
-                                array_shift($fhir);
-                            }
-                        }
-
-                        if (count($fhir) == 1) {
-                            $box["mod"] = $fhir[0];
-                            $box["parent"] = "0";
-                        }
-                        else {
-                            $this->getModAndParentNames($fhir, $box["mod"], $imapparent);
-                            if ($imapparent === null) {
-                                $box["parent"] = "0";
-                            }
-                            else {
-                                $box["parent"] = $this->convertImapId($imapparent);
-                            }
-                        }
-                    }
-                    else {
-                        $box["mod"] = $imapid;
-                        $box["parent"] = "0";
-                    }
-                    $folders[] = $box;
-                    /* END fmbiete's contribution r1527, ZP-319 */
+        $list = $this->get_folder_list();
+        foreach ($list as $val) {
+            // don't return the excluded folders
+            $notExcluded = true;
+            for ($i = 0, $cnt = count($this->excludedFolders); $notExcluded && $i < $cnt; $i++) { // expr1, expr2 modified by mku ZP-329
+                // fix exclude folders with special chars by mku ZP-329
+                if (strpos(strtolower($val), strtolower(Utils::Utf7_iconv_encode(Utils::Utf8_to_utf7($this->excludedFolders[$i])))) !== false) {
+                    $notExcluded = false;
+                    ZLog::Write(LOGLEVEL_DEBUG, sprintf("Pattern: <%s> found, excluding folder: '%s'", $this->excludedFolders[$i], $val)); // sprintf added by mku ZP-329
                 }
             }
-        }
-        else {
-            ZLog::Write(LOGLEVEL_WARN, "BackendIMAP->GetFolderList(): imap_list failed: " . imap_last_error());
-            return false;
+
+            if ($notExcluded) {
+                $box = array();
+                // cut off serverstring
+                $imapid = substr($val, strlen($this->server));
+                $box["id"] = $this->convertImapId($imapid);
+
+                $folders[] = $box;
+            }
         }
 
         return $folders;
@@ -1460,40 +1491,6 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
         }
         else {
             throw new StatusException(sprintf("BackendIMAP->SetReadFlag(): Message is outside the sync range"), SYNC_STATUS_OBJECTNOTFOUND);
-        }
-
-        return $status;
-    }
-
-    /**
-     * Changes the 'star' flag of a message on disk
-     *
-     * @param string        $folderid       id of the folder
-     * @param string        $id             id of the message
-     * @param int           $flags          read flag of the message
-     * @param ContentParameters   $contentparameters
-     *
-     * @access public
-     * @return boolean                      status of the operation
-     * @throws StatusException              could throw specific SYNC_STATUS_* exceptions
-     */
-    public function SetStarFlag($folderid, $id, $flags, $contentparameters) {
-        ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->SetStarFlag('%s','%s','%s')", $folderid, $id, $flags));
-
-        $folderImapid = $this->getImapIdFromFolderId($folderid);
-        $this->imap_reopen_folder($folderImapid);
-
-        if ($this->imap_inside_cutoffdate(Utils::GetCutOffDate($contentparameters->GetFilterType()), $id)) {
-            if ($flags == 0) {
-                // set as "UnFlagged" (unstarred)
-                $status = @imap_clearflag_full($this->mbox, $id, "\\Flagged", ST_UID);
-            } else {
-                // set as "Flagged" (starred)
-                $status = @imap_setflag_full($this->mbox, $id, "\\Flagged", ST_UID);
-            }
-        }
-        else {
-            throw new StatusException(sprintf("BackendIMAP->SetStarFlag(): Message is outside the sync range"), SYNC_STATUS_OBJECTNOTFOUND);
         }
 
         return $status;
@@ -2786,9 +2783,29 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
                 }
             }
         }
+
+        if (is_array($toaddr)) {
+            $recipients = $toaddr;
+        }
+        else {
+            $recipients = array($toaddr);
+        }
+
+        // Cc and Bcc headers are sent, but we need to make sure that the recipient list contains them
+        foreach (array("CC", "cc", "Cc", "BCC", "Bcc", "bcc") as $key) {
+            if (!empty($headers[$key])) {
+                if (is_array($headers[$key])) {
+                    $recipients = array_merge($recipients, $headers[$key]);
+                }
+                else {
+                    $recipients[] = $headers[$key];
+                }
+            }
+        }
+
         ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->sendMessage(): SendingMail with %s", $sendingMethod));
-        $mail =& Mail::factory($sendingMethod, $sendingMethod == 'mail' ? '-f '.$fromaddr : $imap_smtp_params);
-        $send = $mail->send($toaddr, $headers, $body);
+        $mail =& Mail::factory($sendingMethod, $sendingMethod == "mail" ? "-f " . $fromaddr : $imap_smtp_params);
+        $send = $mail->send($recipients, $headers, $body);
         ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->sendMessage(): send return value %s", $send));
 
         if ($send !== true) {
@@ -2934,5 +2951,25 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
         $userinformation->Status = SYNC_SETTINGSSTATUS_USERINFO_SUCCESS;
         $userinformation->emailaddresses[] = $this->username;
         return true;
+    }
+
+
+    /**
+     * Gets the folder list
+     *
+     * @access private
+     * @return array
+     */
+    private function get_folder_list() {
+        $folders = array();
+        $list = @imap_getmailboxes($this->mbox, $this->server, "*");
+        if (is_array($list)) {
+            $list = array_reverse($list);
+            foreach ($list as $l) {
+                $folders[] = $l->name;
+            }
+        }
+
+        return $folders;
     }
 };

@@ -131,23 +131,6 @@ class ImportChangesCombined implements IImportChanges {
         return $this->icc->ImportMessageReadFlag($id, $flags);
     }
 
-    /**
-     * Imports a change in 'star' flag
-     * This can never conflict
-     *
-     * @param string        $id
-     * @param int           $flags
-     *
-     * @access public
-     * @return boolean
-     */
-    public function ImportMessageStarFlag($id, $flags) {
-        if (!$this->icc) {
-            ZLog::Write(LOGLEVEL_ERROR, "ImportChangesCombined->ImportMessageReadFlag() icc not configured");
-            return false;
-        }
-        return $this->icc->ImportMessageStarFlag($id, $flags);
-    }
 
     /**
      * Imports a move of a message. This occurs when a user moves an item to another folder
@@ -168,7 +151,15 @@ class ImportChangesCombined implements IImportChanges {
             ZLog::Write(LOGLEVEL_WARN, "ImportChangesCombined->ImportMessageMove() cannot move message between two backends");
             return false;
         }
-        return $this->icc->ImportMessageMove($id, $this->backend->GetBackendFolder($newfolder));
+        $res = $this->icc->ImportMessageMove($id, $this->backend->GetBackendFolder($newfolder));
+
+        if ($res) {
+            //TODO: we should add newid to new folder, instead of a full folder resync
+            ZLog::Write(LOGLEVEL_DEBUG, sprintf("ImportChangesCombined->ImportMessageMove(): Force resync of dest folder (%s)", $newfolder));
+            ZPushAdmin::ResyncFolder(Request::GetAuthUser(), Request::GetDeviceID(), $newfolder);
+        }
+
+        return $res;
     }
 
 
@@ -187,7 +178,7 @@ class ImportChangesCombined implements IImportChanges {
     public function ImportFolderChange($folder) {
         $id = $folder->serverid;
         $parent = $folder->parentid;
-        ZLog::Write(LOGLEVEL_DEBUG, "ImportChangesCombined->ImportFolderChange() ".print_r($folder, 1));
+        ZLog::Write(LOGLEVEL_DEBUG, sprintf("ImportChangesCombined->ImportFolderChange() id: '%s', parent: '%s'", $id, $parent));
         if($parent == '0') {
             if($id) {
                 $backendid = $this->backend->GetBackendId($id);

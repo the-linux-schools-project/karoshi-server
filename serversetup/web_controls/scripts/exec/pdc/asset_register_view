@@ -37,30 +37,30 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/asset_register_view_cgi
 then
-echo `date`: asset_register_view - No Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: asset_register_view - No Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/asset_register_view_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/asset_register_view.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $asset_register_view_cgi'check' ]
 then
-echo `date`: asset_register_view - Incorrect Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: asset_register_view - Incorrect Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/asset_register_view_cgi
 then
-echo `date`: asset_register_view - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: asset_register_view - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/asset_register_view_cgi
 MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/asset_register_view.cgi | cut -d' ' -f1`
-[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+[ -z "$MD5SUM2" ] && MD5SUM2=not_set
 if [ $MD5SUM2'check' != $asset_register_view_cgi'check' ]
 then
-echo `date`: asset_register_view - Incorrect Tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: asset_register_view - Incorrect Tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -68,8 +68,8 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: asset_register_view - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: asset_register_view - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
@@ -90,74 +90,74 @@ ASSETCHOICE=`echo "$DATA" | cut -s -d: -f9`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
 then
-echo `date`: asset_register_view - Not called by asset_register_view.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: asset_register_view - Not called by asset_register_view.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: asset_register_view - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: asset_register_view - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: asset_register_view - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: asset_register_view - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
 then
-echo `date`: asset_register_view - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: asset_register_view - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 
 if [ $MOBILE = yes ]
 then
-TABLECLASS=mobilestandard
-ICON1=/images/assets/locationm.png
-ICON2=/images/assets/editm.png
-ICON3=/images/assets/deletem.png
-ICON4=/images/assets/add_assetm.png
-ICON5=/images/assets/totalsm.png
-ICON6=/images/assets/searchm.png
-ICON7=/images/assets/descriptionsm.png
-ICON8=/images/assets/addescm.png
-ICON9=/images/assets/suppliersm.png
-ICON10=/images/assets/adddescm.png
-ICON11=/images/assets/addsupplierm.png
-ICON12=/images/assets/budgetm.png
-ICON13=/images/assets/addbudgetm.png
-ICON14=/images/assets/moreinfom.png
-ICON15=/images/assets/exportm.png
-ICON16=/images/assets/importm.png
-ICON17=/images/assets/client_logsm.png
-ICON18=/images/assets/qrcodem.png
+	TABLECLASS=mobilestandard
+	ICON1=/images/assets/locationm.png
+	ICON2=/images/assets/editm.png
+	ICON3=/images/assets/deletem.png
+	ICON4=/images/assets/add_assetm.png
+	ICON5=/images/assets/totalsm.png
+	ICON6=/images/assets/searchm.png
+	ICON7=/images/assets/descriptionsm.png
+	ICON8=/images/assets/addescm.png
+	ICON9=/images/assets/suppliersm.png
+	ICON10=/images/assets/adddescm.png
+	ICON11=/images/assets/addsupplierm.png
+	ICON12=/images/assets/budgetm.png
+	ICON13=/images/assets/addbudgetm.png
+	ICON14=/images/assets/moreinfom.png
+	ICON15=/images/assets/exportm.png
+	ICON16=/images/assets/importm.png
+	ICON17=/images/assets/client_logsm.png
+	ICON18=/images/assets/qrcodem.png
 else
-TABLECLASS=standard
-ICON1=/images/assets/location.png
-ICON2=/images/assets/edit.png
-ICON3=/images/assets/delete.png
-ICON4=/images/assets/add_asset.png
-ICON5=/images/assets/totals.png
-ICON6=/images/assets/search.png
-ICON7=/images/assets/descriptions.png
-ICON8=/images/assets/addesc.png
-ICON9=/images/assets/suppliers.png
-ICON10=/images/assets/adddesc.png
-ICON11=/images/assets/addsupplier.png
-ICON12=/images/assets/budget.png
-ICON13=/images/assets/addbudget.png
-ICON14=/images/assets/moreinfo.png
-ICON15=/images/assets/export.png
-ICON16=/images/assets/import.png
-ICON17=/images/assets/client_logs.png
-ICON18=/images/assets/qrcode.png
+	TABLECLASS=standard
+	ICON1=/images/assets/location.png
+	ICON2=/images/assets/edit.png
+	ICON3=/images/assets/delete.png
+	ICON4=/images/assets/add_asset.png
+	ICON5=/images/assets/totals.png
+	ICON6=/images/assets/search.png
+	ICON7=/images/assets/descriptions.png
+	ICON8=/images/assets/addesc.png
+	ICON9=/images/assets/suppliers.png
+	ICON10=/images/assets/adddesc.png
+	ICON11=/images/assets/addsupplier.png
+	ICON12=/images/assets/budget.png
+	ICON13=/images/assets/addbudget.png
+	ICON14=/images/assets/moreinfo.png
+	ICON15=/images/assets/export.png
+	ICON16=/images/assets/import.png
+	ICON17=/images/assets/client_logs.png
+	ICON18=/images/assets/qrcode.png
 fi
 
 
-[ $OPTION'null' = null ] && OPTION=nofilter
+[ -z "$OPTION" ] && OPTION=nofilter
 
-[ $ACTION'null' = null ] && ACTION=view
-[ $LOCATION'null' = null ] && LOCATION=showchoice
+[ -z "$ACTION" ] && ACTION=view
+[ -z "$LOCATION" ] && LOCATION=showchoice
 
 #echo data is $DATA"<br>"
 #echo action is $ACTION"<br>"
@@ -167,14 +167,14 @@ fi
 
 if [ $ACTION = qrcodes ]
 then
-#Load asset_register_show_qrcodes.cgi
-echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/asset_register_show_qrcodes.cgi\" target=\"_top\" name = \"frm\">
-<input type=\"hidden\" name=\"_LOCATION_\" value=\"$LOCATION\">
-</form>
-<script>
-document.frm.submit();
-</script><form>
-"
+	#Load asset_register_show_qrcodes.cgi
+	echo '</form><form METHOD=POST ACTION="asset_register_show_qrcodes.cgi" target="_top" name="frm">
+	<input type="hidden" name="_LOCATION_" value="'$LOCATION'">
+	</form>
+	<script>
+	document.frm.submit();
+	</script><form>
+	'
 fi
 
 function assign_asset_labels {
@@ -182,35 +182,35 @@ ASSETLABEL=$"Curriculum Computer"
 ASSETICON=/images/assets/curriculum_computer.png
 if [ $ASSETTYPE = 2 ]
 then
-ASSETICON=/images/assets/admin_computer.png ; ASSETLABEL=$"Admin Computer"
+	ASSETICON=/images/assets/admin_computer.png ; ASSETLABEL=$"Admin Computer"
 fi
 if [ $ASSETTYPE = 3 ]
 then
-ASSETICON=/images/assets/curriculum_laptop.png ; ASSETLABEL=$"Curriculum Laptop"
+	ASSETICON=/images/assets/curriculum_laptop.png ; ASSETLABEL=$"Curriculum Laptop"
 fi
 if [ $ASSETTYPE = 4 ]
 then
-ASSETICON=/images/assets/admin_laptop.png ; ASSETLABEL=$"Admin Laptop"
+	ASSETICON=/images/assets/admin_laptop.png ; ASSETLABEL=$"Admin Laptop"
 fi
 if [ $ASSETTYPE = 5 ]
 then
-ASSETICON=/images/assets/curriculum_tablet.png ; ASSETLABEL=$"Curriculum Tablet"
+	ASSETICON=/images/assets/curriculum_tablet.png ; ASSETLABEL=$"Curriculum Tablet"
 fi
 if [ $ASSETTYPE = 6 ]
 then
-ASSETICON=/images/assets/admin_tablet.png ; ASSETLABEL=$"Admin Tablet"
+	ASSETICON=/images/assets/admin_tablet.png ; ASSETLABEL=$"Admin Tablet"
 fi
 if [ $ASSETTYPE = 7 ]
 then
-ASSETICON=/images/assets/curriculum_pda.png ; ASSETLABEL=$"Curriculum PDA"
+	ASSETICON=/images/assets/curriculum_pda.png ; ASSETLABEL=$"Curriculum PDA"
 fi
 if [ $ASSETTYPE = 8 ]
 then
-ASSETICON=/images/assets/admin_pda.png ; ASSETLABEL=$"Admin PDA"
+	ASSETICON=/images/assets/admin_pda.png ; ASSETLABEL=$"Admin PDA"
 fi
 if [ $ASSETTYPE = 9 ]
 then
-ASSETICON=/images/assets/curriculum_thinclient.png ; ASSETLABEL=$"Curriculum Thin Client"
+	ASSETICON=/images/assets/curriculum_thinclient.png ; ASSETLABEL=$"Curriculum Thin Client"
 fi
 if [ $ASSETTYPE = 10 ]
 then
@@ -226,11 +226,11 @@ ASSETICON=/images/assets/scanner.png ; ASSETLABEL=$"Scanner"
 fi
 if [ $ASSETTYPE = 13 ]
 then
-ASSETICON=/images/assets/projector.png ; ASSETLABEL=$"Projector"
+	ASSETICON=/images/assets/projector.png ; ASSETLABEL=$"Projector"
 fi
 if [ $ASSETTYPE = 14 ]
 then
-ASSETICON=/images/assets/whiteboard.png ; ASSETLABEL=$"Whiteboard"
+	ASSETICON=/images/assets/whiteboard.png ; ASSETLABEL=$"Whiteboard"
 fi
 if [ $ASSETTYPE = 15 ]
 then
@@ -242,7 +242,7 @@ ASSETICON=/images/assets/network_device.png ; ASSETLABEL=$"Network Device"
 fi
 if [ $ASSETTYPE = 17 ]
 then
-ASSETICON=/images/assets/wireless.png ; ASSETLABEL=$"Wireless Access Point"
+	ASSETICON=/images/assets/wireless.png ; ASSETLABEL=$"Wireless Access Point"
 fi
 if [ $ASSETTYPE = 18 ]
 then
@@ -254,11 +254,11 @@ ASSETICON=/images/assets/monitor.png ; ASSETLABEL=$"Monitor"
 fi
 if [ $ASSETTYPE = 20 ]
 then
-ASSETICON=/images/assets/software.png ; ASSETLABEL=$"Software"
+	ASSETICON=/images/assets/software.png ; ASSETLABEL=$"Software"
 fi
 if [ $ASSETTYPE = 21 ]
 then
-ASSETICON=/images/assets/other.png ; ASSETLABEL=$"Other"
+A	SSETICON=/images/assets/other.png ; ASSETLABEL=$"Other"
 fi
 }
 
@@ -267,53 +267,52 @@ fi
 ##########################
 if [ $ACTION = showlogs ]
 then
+	#Get asset details
+	source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
+	#Redirect to internet logs
+	TODAY=`date +%d-%m-%Y`
 
+	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_computer_logs.cgi | cut -d' ' -f1`
+	#View logs
+	echo '</form><form action="dg_view_computer_logs.cgi" id="foo" method="post">
+	<input name="_TCPIP_'$TCPIP1'_DATE_'$TODAY'_DAYCOUNT_1_" value="" type="hidden">
+	</form>
 
-#Get asset details
-source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
-#Redirect to internet logs
-TODAY=`date +%d-%m-%Y`
-
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_computer_logs.cgi | cut -d' ' -f1`
-#View logs
-echo '</form><form action="dg_view_computer_logs.cgi" id="foo" method="post">
-<input name="_TCPIP_'$TCPIP1'_DATE_'$TODAY'_DAYCOUNT_1_" value="" type="hidden">
-</form>
-
-<script type="text/javascript">
-    function myfunc () {
-        var frm = document.getElementById("foo");
-        frm.submit();
-    }
-    window.onload = myfunc;
-</script>'
-ACTION=view
+	<script type="text/javascript">
+	    function myfunc () {
+		var frm = document.getElementById("foo");
+		frm.submit();
+	    }
+	    window.onload = myfunc;
+	</script>'
+	ACTION=view
 fi
 ##########################
 #Export
 ##########################
 if [ $ACTION = export ]
 then
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Choose Location"'</span></a></td>
-<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_add_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON4'" value=""><span>'$"Add Asset"'</span></a></td>
-<td style="vertical-align: top;"><b>'$"Export Assets"'</b></td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_view_LOCATION_'$LOCATION'_ASSETCHOICE_'$ASSETTYPE'_OPTION_nofilter_" type="image" class="images" src="'$ASSETICON'" value=""><span>'$"Show all assets"'</span></a></td></tr></tbody></table><br><br>'
+	echo '<b>'$"Asset Register"' - '$"Export"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+	<td style="vertical-align: top;"><input name="_ACTION_view_" type="submit" class="button" value="'$"Choose Location"'"></td>
+	<td style="vertical-align: top;"><input name="_ACTION_add_LOCATION_cm2_" type="submit" class="button" value="'$"Add Asset"'"></td>
+	</tr></tbody></table>'
 
-[ $MOBILE != yes ] && echo '</div><div id="infobox">'
+	[ $MOBILE != yes ] && echo '</div><div id="infobox">'
 
-echo '<textarea rows="100" cols="150">'
-echo $"Name",$"Location",$"Type",$"Description",$"Tcpip",$"Mac-address",$"S.N.",$"Purchased",$"Value",$"Supplier",$"Budget",$"Assigned to"
-for LOCATIONS in /opt/karoshi/asset_register/locations/*
-do
-LOCATION=`basename $LOCATIONS`
-for ASSETS in /opt/karoshi/asset_register/locations/$LOCATION/*
-do
-ASSET=`basename $ASSETS`
-source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
-assign_asset_labels
-echo $IDENTITY,$LOCATION,$ASSETLABEL,$DESCRIPTION,$TCPIP1 $TCPIP2 $TCPIP3,$MAC1 $MAC2 $MAC3,$SERIAL,$PURCHASEDATE,$VALUE,$SUPPLIER,$BUDGET,$ASSIGNED
-done
-done
-echo '</textarea>'
+	echo '<textarea rows="100" cols="150">'
+	echo $"Name",$"Location",$"Type",$"Description",$"Tcpip",$"Mac-address",$"S.N.",$"Purchased",$"Value",$"Supplier",$"Budget",$"Assigned to"
+	for LOCATIONS in /opt/karoshi/asset_register/locations/*
+	do
+		LOCATION=`basename $LOCATIONS`
+		for ASSETS in /opt/karoshi/asset_register/locations/$LOCATION/*
+		do
+			ASSET=`basename $ASSETS`
+			source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
+			assign_asset_labels
+			echo $IDENTITY,$LOCATION,$ASSETLABEL,$DESCRIPTION,$TCPIP1 $TCPIP2 $TCPIP3,$MAC1 $MAC2 $MAC3,$SERIAL,$PURCHASEDATE,$VALUE,$SUPPLIER,$BUDGET,$ASSIGNED
+		done
+	done
+	echo '</textarea>'
 fi
 
 ##########################
@@ -321,46 +320,46 @@ fi
 ##########################
 if [ $ACTION = adddesc ]
 then
-echo '<b>'$"Add description"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$"Description"'</td><td><input tabindex= "1" name="_OPTION_" style="width: 200px;" size="20" type="text"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Add in a description that you want to appear in the description drop down list."'</span></a></td></tr></tbody></table><br>
-<input type="image" src="/images/submenus/file/go.gif" name="_ACTION_reallyadddesc_" value="">
-<a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" alt="back" border="0">
-'
+	echo '<b>'$"Add description"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	<tr><td style="width: 180px;">'$"Description"'</td><td><input tabindex= "1" name="_OPTION_" style="width: 200px;" size="20" type="text"></td><td>
+	<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Add in a description that you want to appear in the description drop down list."'</span></a></td></tr></tbody></table><br>
+	<input type="image" src="/images/submenus/file/go.gif" name="_ACTION_reallyadddesc_" value="">
+	<a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" alt="back" border="0">
+	'
 fi
 
 if [ $ACTION = reallyadddesc ]
 then
-echo `date`: asset_register_view - adding description $ASSET by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-#Create folders
-[ ! -d /opt/karoshi/asset_register/descriptions ] && mkdir -p /opt/karoshi/asset_register/descriptions
-#Get Hardwaredesc number
-if [ -f /opt/karoshi/asset_register/.last_desc_number ]
-then
-DESC_NUMBER=`sed -n 1,1p /opt/karoshi/asset_register/.last_desc_number`
-let DESC_NUMBER=$DESC_NUMBER+1
-else
-DESC_NUMBER=1
-fi
-echo $DESC_NUMBER > /opt/karoshi/asset_register/.last_desc_number
-#Convert spaces
-OPTION=`echo $OPTION | sed 's/+/ /g'`
-#Add entry
-echo "$OPTION" > /opt/karoshi/asset_register/descriptions/$DESC_NUMBER
-#Rebuild asset list
-[ -f /opt/karoshi/asset_register/description_list ] && rm -f /opt/karoshi/asset_register/description_list
-for DESCRIPTIONFILES in /opt/karoshi/asset_register/descriptions/*
-do
-DESCRIPTIONFILE=`basename $DESCRIPTIONFILES`
-DESCRIPTION=`cat /opt/karoshi/asset_register/descriptions/$DESCRIPTIONFILE`
-echo '<option value="'$DESCRIPTION'">'$DESCRIPTION'</option>' >> /opt/karoshi/asset_register/description_list
-done
-#Sort description list
-sort /opt/karoshi/asset_register/description_list > /opt/karoshi/asset_register/description_list.$$
-rm -f /opt/karoshi/asset_register/description_list
-mv /opt/karoshi/asset_register/description_list.$$ /opt/karoshi/asset_register/description_list
-ACTION=viewdescriptions
-LOCATION=noset
+	echo `date`: asset_register_view - adding description $ASSET by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		#Create folders
+		[ ! -d /opt/karoshi/asset_register/descriptions ] && mkdir -p /opt/karoshi/asset_register/descriptions
+		#Get Hardwaredesc number
+		if [ -f /opt/karoshi/asset_register/.last_desc_number ]
+		then
+		DESC_NUMBER=`sed -n 1,1p /opt/karoshi/asset_register/.last_desc_number`
+		let DESC_NUMBER=$DESC_NUMBER+1
+	else
+		DESC_NUMBER=1
+	fi
+	echo $DESC_NUMBER > /opt/karoshi/asset_register/.last_desc_number
+	#Convert spaces
+	OPTION=`echo $OPTION | sed 's/+/ /g'`
+	#Add entry
+	echo "$OPTION" > /opt/karoshi/asset_register/descriptions/$DESC_NUMBER
+	#Rebuild asset list
+	[ -f /opt/karoshi/asset_register/description_list ] && rm -f /opt/karoshi/asset_register/description_list
+	for DESCRIPTIONFILES in /opt/karoshi/asset_register/descriptions/*
+	do
+		DESCRIPTIONFILE=`basename $DESCRIPTIONFILES`
+		DESCRIPTION=`cat /opt/karoshi/asset_register/descriptions/$DESCRIPTIONFILE`
+		echo '<option value="'$DESCRIPTION'">'$DESCRIPTION'</option>' >> /opt/karoshi/asset_register/description_list
+	done
+	#Sort description list
+	sort /opt/karoshi/asset_register/description_list > /opt/karoshi/asset_register/description_list.$$
+	rm -f /opt/karoshi/asset_register/description_list
+	mv /opt/karoshi/asset_register/description_list.$$ /opt/karoshi/asset_register/description_list
+	ACTION=viewdescriptions
+	LOCATION=noset
 fi
 
 ##########################
@@ -368,28 +367,28 @@ fi
 ##########################
 if [ $ACTION = deletedescription ]
 then
-if [ -f /opt/karoshi/asset_register/descriptions/$ASSET ]
-then
-#Delete description
-echo `date`: asset_register_view - deleting description $ASSET by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-rm -f /opt/karoshi/asset_register/descriptions/$ASSET
-#Rebuild asset list
-if [ `ls -1 /opt/karoshi/asset_register/descriptions/ | wc -l` -gt 0 ]
-then
-[ -f /opt/karoshi/asset_register/description_list ] && rm -f /opt/karoshi/asset_register/description_list
-for DESCRIPTIONFILES in /opt/karoshi/asset_register/descriptions/*
-do
-DESCRIPTIONFILE=`basename $DESCRIPTIONFILES`
-DESCRIPTION=`cat /opt/karoshi/asset_register/descriptions/$DESCRIPTIONFILE`
-echo '<option value="'$DESCRIPTION'">'$DESCRIPTION'</option>' >> /opt/karoshi/asset_register/description_list
-done
-#Sort description list
-sort /opt/karoshi/asset_register/description_list > /opt/karoshi/asset_register/description_list.$$
-rm -f /opt/karoshi/asset_register/description_list
-mv /opt/karoshi/asset_register/description_list.$$ /opt/karoshi/asset_register/description_list
-fi
-fi
-ACTION=viewdescriptions
+	if [ -f /opt/karoshi/asset_register/descriptions/$ASSET ]
+	then
+		#Delete description
+		echo `date`: asset_register_view - deleting description $ASSET by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		rm -f /opt/karoshi/asset_register/descriptions/$ASSET
+		#Rebuild asset list
+		if [ `ls -1 /opt/karoshi/asset_register/descriptions/ | wc -l` -gt 0 ]
+		then
+			[ -f /opt/karoshi/asset_register/description_list ] && rm -f /opt/karoshi/asset_register/description_list
+			for DESCRIPTIONFILES in /opt/karoshi/asset_register/descriptions/*
+			do
+				DESCRIPTIONFILE=`basename $DESCRIPTIONFILES`
+				DESCRIPTION=`cat /opt/karoshi/asset_register/descriptions/$DESCRIPTIONFILE`
+				echo '<option value="'$DESCRIPTION'">'$DESCRIPTION'</option>' >> /opt/karoshi/asset_register/description_list
+			done
+			#Sort description list
+			sort /opt/karoshi/asset_register/description_list > /opt/karoshi/asset_register/description_list.$$
+			rm -f /opt/karoshi/asset_register/description_list
+			mv /opt/karoshi/asset_register/description_list.$$ /opt/karoshi/asset_register/description_list
+		fi
+	fi
+	ACTION=viewdescriptions
 fi
 
 ##########################
@@ -397,23 +396,23 @@ fi
 ##########################
 if [ $ACTION = viewdescriptions ]
 then
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Choose Location"'</span></a></td>
-<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_adddesc_LOCATION_notset_" type="image" class="images" src="'$ICON10'" value=""><span>'$"Add description"'</span></a></td>
-<td style="vertical-align: top;"><b>'$"View Descriptions"'</b></td></tr></tbody></table><br>'
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Choose Location"'</span></a></td>
+	<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_adddesc_LOCATION_notset_" type="image" class="images" src="'$ICON10'" value=""><span>'$"Add description"'</span></a></td>
+	<td style="vertical-align: top;"><b>'$"View Descriptions"'</b></td></tr></tbody></table><br>'
 
-if [ `ls -1 /opt/karoshi/asset_register/descriptions/ | wc -l` -gt 0 ]
-then
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 20px;"></td><td style="vertical-align: top;"><b>'$"Description"'</b></td></tr>'
+	if [ `ls -1 /opt/karoshi/asset_register/descriptions/ | wc -l` -gt 0 ]
+	then
+		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+		<tr><td style="width: 20px;"></td><td style="vertical-align: top;"><b>'$"Description"'</b></td></tr>'
 
-for DESCRIPTIONFILES in /opt/karoshi/asset_register/descriptions/*
-do
-DESCRIPTIONFILE=`basename $DESCRIPTIONFILES`
-DESCRIPTION=`cat /opt/karoshi/asset_register/descriptions/$DESCRIPTIONFILE`
-echo '<tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_deletedescription_LOCATION_notset_ASSET_'$DESCRIPTIONFILE'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Delete description"'</span></a></td><td>'$DESCRIPTION'</td></tr>'
-done
-echo '</tbody></table>'
-fi
+		for DESCRIPTIONFILES in /opt/karoshi/asset_register/descriptions/*
+		do
+			DESCRIPTIONFILE=`basename $DESCRIPTIONFILES`
+			DESCRIPTION=`cat /opt/karoshi/asset_register/descriptions/$DESCRIPTIONFILE`
+			echo '<tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_deletedescription_LOCATION_notset_ASSET_'$DESCRIPTIONFILE'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Delete description"'</span></a></td><td>'$DESCRIPTION'</td></tr>'
+		done
+		echo '</tbody></table>'
+	fi
 fi
 
 ##########################
@@ -421,48 +420,48 @@ fi
 ##########################
 if [ $ACTION = addsupplier ]
 then
-echo '<b>'$"Add supplier"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$"Supplier"'</td><td><input tabindex= "1" name="_OPTION_" style="width: 200px;" size="20" type="text"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Add in the name of a supplier that you want to be available in the supplier drop down menu."'</span></a></td></tr></tbody></table><br>
-<input type="image" src="/images/submenus/file/go.gif" name="_ACTION_reallyaddsupplier_" value="">
-<a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" alt="back" border="0">
-'
+	echo '<b>'$"Add supplier"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	<tr><td style="width: 180px;">'$"Supplier"'</td><td><input tabindex= "1" name="_OPTION_" style="width: 200px;" size="20" type="text"></td><td>
+	<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Add in the name of a supplier that you want to be available in the supplier drop down menu."'</span></a></td></tr></tbody></table><br>
+	<input type="image" src="/images/submenus/file/go.gif" name="_ACTION_reallyaddsupplier_" value="">
+	<a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" alt="back" border="0">
+	'
 fi
 
 if [ $ACTION = reallyaddsupplier ]
 then
-echo `date`: asset_register_view - adding supplier $ASSET by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-#Create folders
-[ ! -d /opt/karoshi/asset_register/suppliers ] && mkdir -p /opt/karoshi/asset_register/suppliers
-#Get Hardwaredesc number
-if [ -f /opt/karoshi/asset_register/.last_supplier_number ]
-then
-SUP_NUMBER=`sed -n 1,1p /opt/karoshi/asset_register/.last_supplier_number`
-let SUP_NUMBER=$SUP_NUMBER+1
-else
-SUP_NUMBER=1
-fi
-echo $SUP_NUMBER > /opt/karoshi/asset_register/.last_supplier_number
-#Convert spaces
-OPTION=`echo $OPTION | sed 's/+/ /g'`
-#Add entry
-echo "$OPTION" > /opt/karoshi/asset_register/suppliers/$SUP_NUMBER
-#Rebuild supplier list
-[ -f /opt/karoshi/asset_register/supplier_list ] && rm -f /opt/karoshi/asset_register/supplier_list
-for SUPPLIERFILES in /opt/karoshi/asset_register/suppliers/*
-do
-SUPPLIERFILE=`basename $SUPPLIERFILES`
-SUPPLIER=`cat /opt/karoshi/asset_register/suppliers/$SUPPLIERFILE`
-echo '<option value="'$SUPPLIER'">'$SUPPLIER'</option>' >> /opt/karoshi/asset_register/supplier_list
-done
+	echo `date`: asset_register_view - adding supplier $ASSET by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	#Create folders
+	[ ! -d /opt/karoshi/asset_register/suppliers ] && mkdir -p /opt/karoshi/asset_register/suppliers
+	#Get Hardwaredesc number
+	if [ -f /opt/karoshi/asset_register/.last_supplier_number ]
+	then
+		SUP_NUMBER=`sed -n 1,1p /opt/karoshi/asset_register/.last_supplier_number`
+		let SUP_NUMBER=$SUP_NUMBER+1
+	else
+		SUP_NUMBER=1
+	fi
+	echo $SUP_NUMBER > /opt/karoshi/asset_register/.last_supplier_number
+	#Convert spaces
+	OPTION=`echo $OPTION | sed 's/+/ /g'`
+	#Add entry
+	echo "$OPTION" > /opt/karoshi/asset_register/suppliers/$SUP_NUMBER
+	#Rebuild supplier list
+	[ -f /opt/karoshi/asset_register/supplier_list ] && rm -f /opt/karoshi/asset_register/supplier_list
+	for SUPPLIERFILES in /opt/karoshi/asset_register/suppliers/*
+	do
+		SUPPLIERFILE=`basename $SUPPLIERFILES`
+		SUPPLIER=`cat /opt/karoshi/asset_register/suppliers/$SUPPLIERFILE`
+		echo '<option value="'$SUPPLIER'">'$SUPPLIER'</option>' >> /opt/karoshi/asset_register/supplier_list
+	done
 
-#Sort supplier list
-sort /opt/karoshi/asset_register/supplier_list > /opt/karoshi/asset_register/supplier_list.$$
-rm -f /opt/karoshi/asset_register/supplier_list
-mv /opt/karoshi/asset_register/supplier_list.$$ /opt/karoshi/asset_register/supplier_list
+	#Sort supplier list
+	sort /opt/karoshi/asset_register/supplier_list > /opt/karoshi/asset_register/supplier_list.$$
+	rm -f /opt/karoshi/asset_register/supplier_list
+	mv /opt/karoshi/asset_register/supplier_list.$$ /opt/karoshi/asset_register/supplier_list
 
-ACTION=viewsuppliers
-LOCATION=noset
+	ACTION=viewsuppliers
+	LOCATION=noset
 fi
 
 ##########################
@@ -470,28 +469,28 @@ fi
 ##########################
 if [ $ACTION = deletesupplier ]
 then
-if [ -f /opt/karoshi/asset_register/suppliers/$ASSET ]
-then
-#Delete supplier
-echo `date`: asset_register_view - deleting supplier $ASSET by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-rm -f /opt/karoshi/asset_register/suppliers/$ASSET
-#Rebuild supplier list
-if [ `ls -1 /opt/karoshi/asset_register/suppliers/ | wc -l` -gt 0 ]
-then
-[ -f /opt/karoshi/asset_register/supplier_list ] && rm -f /opt/karoshi/asset_register/supplier_list
-for SUPPLIERFILES in /opt/karoshi/asset_register/suppliers/*
-do
-SUPPLIERFILE=`basename $SUPPLIERFILES`
-SUPPLIER=`cat /opt/karoshi/asset_register/suppliers/$SUPPLIERFILE`
-echo '<option value="'$SUPPLIER'">'$SUPPLIER'</option>' >> /opt/karoshi/asset_register/supplier_list
-done
-#Sort supplier list
-sort /opt/karoshi/asset_register/supplier_list > /opt/karoshi/asset_register/supplier_list.$$
-rm -f /opt/karoshi/asset_register/supplier_list
-mv /opt/karoshi/asset_register/supplier_list.$$ /opt/karoshi/asset_register/supplier_list
-fi
-fi
-ACTION=viewsuppliers
+	if [ -f /opt/karoshi/asset_register/suppliers/$ASSET ]
+	then
+		#Delete supplier
+		echo `date`: asset_register_view - deleting supplier $ASSET by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		rm -f /opt/karoshi/asset_register/suppliers/$ASSET
+		#Rebuild supplier list
+		if [ `ls -1 /opt/karoshi/asset_register/suppliers/ | wc -l` -gt 0 ]
+		then
+			[ -f /opt/karoshi/asset_register/supplier_list ] && rm -f /opt/karoshi/asset_register/supplier_list
+			for SUPPLIERFILES in /opt/karoshi/asset_register/suppliers/*
+			do
+				SUPPLIERFILE=`basename $SUPPLIERFILES`
+				SUPPLIER=`cat /opt/karoshi/asset_register/suppliers/$SUPPLIERFILE`
+				echo '<option value="'$SUPPLIER'">'$SUPPLIER'</option>' >> /opt/karoshi/asset_register/supplier_list
+			done
+			#Sort supplier list
+			sort /opt/karoshi/asset_register/supplier_list > /opt/karoshi/asset_register/supplier_list.$$
+			rm -f /opt/karoshi/asset_register/supplier_list
+			mv /opt/karoshi/asset_register/supplier_list.$$ /opt/karoshi/asset_register/supplier_list
+		fi
+	fi
+	ACTION=viewsuppliers
 fi
 
 ##########################
@@ -499,26 +498,26 @@ fi
 ##########################
 if [ $ACTION = viewsuppliers ]
 then
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Choose Location"'</span></a></td>
-<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_addsupplier_LOCATION_notset_" type="image" class="images" src="'$ICON11'" value=""><span>'$"Add supplier"'</span></a></td>
-<td style="vertical-align: top;"><b>'$"View Suppliers"'</b></td></tr></tbody></table><br>'
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Choose Location"'</span></a></td>
+	<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_addsupplier_LOCATION_notset_" type="image" class="images" src="'$ICON11'" value=""><span>'$"Add supplier"'</span></a></td>
+	<td style="vertical-align: top;"><b>'$"View Suppliers"'</b></td></tr></tbody></table><br>'
 
-if [ -d /opt/karoshi/asset_register/suppliers/ ]
-then
-if [ `ls -1 /opt/karoshi/asset_register/suppliers/ | wc -l` -gt 0 ]
-then
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 20px;"></td><td style="vertical-align: top;"><b>'$"Supplier"'</b></td></tr>'
+	if [ -d /opt/karoshi/asset_register/suppliers/ ]
+	then
+		if [ `ls -1 /opt/karoshi/asset_register/suppliers/ | wc -l` -gt 0 ]
+		then
+			echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+			<tr><td style="width: 20px;"></td><td style="vertical-align: top;"><b>'$"Supplier"'</b></td></tr>'
 
-for SUPPLIERFILES in /opt/karoshi/asset_register/suppliers/*
-do
-SUPPLIERFILE=`basename $SUPPLIERFILES`
-SUPPLIER=`cat /opt/karoshi/asset_register/suppliers/$SUPPLIERFILE`
-echo '<tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_deletesupplier_LOCATION_notset_ASSET_'$SUPPLIERFILE'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Delete supplier"'</span></a></td><td>'$SUPPLIER'</td></tr>'
-done
-echo '</tbody></table>'
-fi
-fi
+			for SUPPLIERFILES in /opt/karoshi/asset_register/suppliers/*
+			do
+				SUPPLIERFILE=`basename $SUPPLIERFILES`
+				SUPPLIER=`cat /opt/karoshi/asset_register/suppliers/$SUPPLIERFILE`
+				echo '<tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_deletesupplier_LOCATION_notset_ASSET_'$SUPPLIERFILE'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Delete supplier"'</span></a></td><td>'$SUPPLIER'</td></tr>'
+			done
+			echo '</tbody></table>'
+		fi
+	fi
 fi
 
 ##########################
@@ -526,42 +525,42 @@ fi
 ##########################
 if [ $ACTION = addbudget ]
 then
-echo '<b>'$"Add budget"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$"Budget"'</td><td><input tabindex= "1" name="_OPTION_" style="width: 200px;" size="20" type="text"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Add in the name of a budget that you want to be available in the budget drop down menu."'</span></a></td></tr></tbody></table><br>
-<input type="image" src="/images/submenus/file/go.gif" name="_ACTION_reallyaddbudget_" value="">
-<a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" alt="back" border="0">
-'
+	echo '<b>'$"Add budget"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	<tr><td style="width: 180px;">'$"Budget"'</td><td><input tabindex= "1" name="_OPTION_" style="width: 200px;" size="20" type="text"></td><td>
+	<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Add in the name of a budget that you want to be available in the budget drop down menu."'</span></a></td></tr></tbody></table><br>
+	<input type="image" src="/images/submenus/file/go.gif" name="_ACTION_reallyaddbudget_" value="">
+	<a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" alt="back" border="0">
+	'
 fi
 
 if [ $ACTION = reallyaddbudget ]
 then
-echo `date`: asset_register_view - adding budget $ASSET by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-#Create folders
-[ ! -d /opt/karoshi/asset_register/budgets ] && mkdir -p /opt/karoshi/asset_register/budgets
-#Get budget number
-if [ -f /opt/karoshi/asset_register/.last_budget_number ]
-then
-BUGET_NUMBER=`sed -n 1,1p /opt/karoshi/asset_register/.last_budget_number`
-let BUGET_NUMBER=$BUGET_NUMBER+1
-else
-BUGET_NUMBER=1
-fi
-echo $BUGET_NUMBER > /opt/karoshi/asset_register/.last_budget_number
-#Convert spaces
-OPTION=`echo $OPTION | sed 's/+/ /g'`
-#Add entry
-echo "$OPTION" > /opt/karoshi/asset_register/budgets/$BUGET_NUMBER
-#Rebuild budget list
-[ -f /opt/karoshi/asset_register/budget_list ] && rm -f /opt/karoshi/asset_register/budget_list
-for BUDGETFILES in /opt/karoshi/asset_register/budgets/*
-do
-BUDGETFILE=`basename $BUDGETFILES`
-BUDGET=`cat /opt/karoshi/asset_register/budgets/$BUDGETFILE`
-echo '<option value="'$BUDGET'">'$BUDGET'</option>' >> /opt/karoshi/asset_register/budget_list
-done
-ACTION=viewbudgets
-LOCATION=noset
+	echo `date`: asset_register_view - adding budget $ASSET by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	#Create folders
+	[ ! -d /opt/karoshi/asset_register/budgets ] && mkdir -p /opt/karoshi/asset_register/budgets
+	#Get budget number
+	if [ -f /opt/karoshi/asset_register/.last_budget_number ]
+	then
+		BUGET_NUMBER=`sed -n 1,1p /opt/karoshi/asset_register/.last_budget_number`
+		let BUGET_NUMBER=$BUGET_NUMBER+1
+	else
+		BUGET_NUMBER=1
+	fi
+	echo $BUGET_NUMBER > /opt/karoshi/asset_register/.last_budget_number
+	#Convert spaces
+	OPTION=`echo $OPTION | sed 's/+/ /g'`
+	#Add entry
+	echo "$OPTION" > /opt/karoshi/asset_register/budgets/$BUGET_NUMBER
+	#Rebuild budget list
+	[ -f /opt/karoshi/asset_register/budget_list ] && rm -f /opt/karoshi/asset_register/budget_list
+	for BUDGETFILES in /opt/karoshi/asset_register/budgets/*
+		do
+		BUDGETFILE=`basename $BUDGETFILES`
+		BUDGET=`cat /opt/karoshi/asset_register/budgets/$BUDGETFILE`
+		echo '<option value="'$BUDGET'">'$BUDGET'</option>' >> /opt/karoshi/asset_register/budget_list
+	done
+	ACTION=viewbudgets
+	LOCATION=noset
 fi
 
 ##########################
@@ -569,24 +568,24 @@ fi
 ##########################
 if [ $ACTION = deletebudget ]
 then
-if [ -f /opt/karoshi/asset_register/budgets/$ASSET ]
-then
-#Delete budget
-echo `date`: asset_register_view - deleting budget $ASSET by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-rm -f /opt/karoshi/asset_register/budgets/$ASSET
-#Rebuild budget list
-if [ `ls -1 /opt/karoshi/asset_register/budgets/ | wc -l` -gt 0 ]
-then
-[ -f /opt/karoshi/asset_register/budget_list ] && rm -f /opt/karoshi/asset_register/budget_list
-for BUDGETFILES in /opt/karoshi/asset_register/budgets/*
-do
-BUDGETFILE=`basename $BUDGETFILES`
-BUDGET=`cat /opt/karoshi/asset_register/budgets/$BUDGETFILE`
-echo '<option value="'$BUDGET'">'$BUDGET'</option>' >> /opt/karoshi/asset_register/budget_list
-done
-fi
-fi
-ACTION=viewbudgets
+	if [ -f /opt/karoshi/asset_register/budgets/$ASSET ]
+	then
+		#Delete budget
+		echo `date`: asset_register_view - deleting budget $ASSET by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		rm -f /opt/karoshi/asset_register/budgets/$ASSET
+		#Rebuild budget list
+		if [ `ls -1 /opt/karoshi/asset_register/budgets/ | wc -l` -gt 0 ]
+		then
+			[ -f /opt/karoshi/asset_register/budget_list ] && rm -f /opt/karoshi/asset_register/budget_list
+			for BUDGETFILES in /opt/karoshi/asset_register/budgets/*
+			do
+				BUDGETFILE=`basename $BUDGETFILES`
+				BUDGET=`cat /opt/karoshi/asset_register/budgets/$BUDGETFILE`
+				echo '<option value="'$BUDGET'">'$BUDGET'</option>' >> /opt/karoshi/asset_register/budget_list
+			done
+		fi
+	fi
+	ACTION=viewbudgets
 fi
 
 ##########################
@@ -594,103 +593,103 @@ fi
 ##########################
 if [ $ACTION = viewbudgets ]
 then
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Choose Location"'</span></a></td>
-<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_addbudget_LOCATION_notset_" type="image" class="images" src="'$ICON13'" value=""><span>'$"Add budget"'</span></a></td>
-<td style="vertical-align: top;"><b>'$"View Budgets"'</b></td></tr></tbody></table><br>'
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Choose Location"'</span></a></td>
+	<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_addbudget_LOCATION_notset_" type="image" class="images" src="'$ICON13'" value=""><span>'$"Add budget"'</span></a></td>
+	<td style="vertical-align: top;"><b>'$"View Budgets"'</b></td></tr></tbody></table><br>'
 
-if [ -d /opt/karoshi/asset_register/budgets/ ]
-then
-if [ `ls -1 /opt/karoshi/asset_register/budgets/ | wc -l` -gt 0 ]
-then
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 20px;"></td><td style="vertical-align: top;"><b>'$"Budget"'</b></td></tr>'
+	if [ -d /opt/karoshi/asset_register/budgets/ ]
+	then
+		if [ `ls -1 /opt/karoshi/asset_register/budgets/ | wc -l` -gt 0 ]
+		then
+			echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+			<tr><td style="width: 20px;"></td><td style="vertical-align: top;"><b>'$"Budget"'</b></td></tr>'
 
-for BUDGETFILES in /opt/karoshi/asset_register/budgets/*
-do
-BUDGETFILE=`basename $BUDGETFILES`
-BUDGET=`cat /opt/karoshi/asset_register/budgets/$BUDGETFILE`
-echo '<tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_deletebudget_LOCATION_notset_ASSET_'$BUDGETFILE'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Delete budget"'</span></a></td><td>'$BUDGET'</td></tr>'
-done
-echo '</tbody></table>'
-fi
-fi
+			for BUDGETFILES in /opt/karoshi/asset_register/budgets/*
+			do
+				BUDGETFILE=`basename $BUDGETFILES`
+				BUDGET=`cat /opt/karoshi/asset_register/budgets/$BUDGETFILE`
+				echo '<tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_deletebudget_LOCATION_notset_ASSET_'$BUDGETFILE'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Delete budget"'</span></a></td><td>'$BUDGET'</td></tr>'
+			done
+			echo '</tbody></table>'
+		fi
+	fi
 fi
 
 
 if [ $ACTION = showstats ]
 then
-echo '<b>'$"Statistics"'</b><br><br>'
+	echo '<b>'$"Statistics"'</b><br><br>'
 
-#Stats per room
-for LOCATIONS in /opt/karoshi/asset_register/locations/*
-do
-LOCATION=`basename $LOCATIONS`
-TOTAL1=`grep -h -R ASSETTYPE=\"1\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
-TOTAL2=`grep -h -R ASSETTYPE=\"2\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
-TOTAL3=`grep -h -R ASSETTYPE=\"3\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
-TOTAL4=`grep -h -R ASSETTYPE=\"4\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
-TOTAL5=`grep -h -R ASSETTYPE=\"5\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
-TOTAL6=`grep -h -R ASSETTYPE=\"6\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
-TOTAL7=`grep -h -R ASSETTYPE=\"7\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
-TOTAL8=`grep -h -R ASSETTYPE=\"8\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
-TOTAL9=`grep -h -R ASSETTYPE=\"9\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
-TOTAL10=`grep -h -R ASSETTYPE=\"10\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
-TOTAL11=`grep -h -R ASSETTYPE=\"11\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
-TOTAL12=`grep -h -R ASSETTYPE=\"12\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
-TOTAL13=`grep -h -R ASSETTYPE=\"13\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
-TOTAL14=`grep -h -R ASSETTYPE=\"14\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
-TOTAL15=`grep -h -R ASSETTYPE=\"15\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
-TOTAL16=`grep -h -R ASSETTYPE=\"16\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
-TOTAL17=`grep -h -R ASSETTYPE=\"17\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
-TOTAL18=`grep -h -R ASSETTYPE=\"18\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
-TOTAL19=`grep -h -R ASSETTYPE=\"19\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
-TOTAL20=`grep -h -R ASSETTYPE=\"20\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
-TOTAL21=`grep -h -R ASSETTYPE=\"21\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
+	#Stats per room
+	for LOCATIONS in /opt/karoshi/asset_register/locations/*
+	do
+		LOCATION=`basename $LOCATIONS`
+		TOTAL1=`grep -h -R ASSETTYPE=\"1\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
+		TOTAL2=`grep -h -R ASSETTYPE=\"2\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
+		TOTAL3=`grep -h -R ASSETTYPE=\"3\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
+		TOTAL4=`grep -h -R ASSETTYPE=\"4\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
+		TOTAL5=`grep -h -R ASSETTYPE=\"5\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
+		TOTAL6=`grep -h -R ASSETTYPE=\"6\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
+		TOTAL7=`grep -h -R ASSETTYPE=\"7\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
+		TOTAL8=`grep -h -R ASSETTYPE=\"8\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
+		TOTAL9=`grep -h -R ASSETTYPE=\"9\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
+		TOTAL10=`grep -h -R ASSETTYPE=\"10\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
+		TOTAL11=`grep -h -R ASSETTYPE=\"11\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
+		TOTAL12=`grep -h -R ASSETTYPE=\"12\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
+		TOTAL13=`grep -h -R ASSETTYPE=\"13\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
+		TOTAL14=`grep -h -R ASSETTYPE=\"14\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
+		TOTAL15=`grep -h -R ASSETTYPE=\"15\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
+		TOTAL16=`grep -h -R ASSETTYPE=\"16\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
+		TOTAL17=`grep -h -R ASSETTYPE=\"17\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
+		TOTAL18=`grep -h -R ASSETTYPE=\"18\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
+		TOTAL19=`grep -h -R ASSETTYPE=\"19\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
+		TOTAL20=`grep -h -R ASSETTYPE=\"20\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
+		TOTAL21=`grep -h -R ASSETTYPE=\"21\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
 
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"View Assets"'<br>'$LOCATION'</span></a></td><td><b>'$"Totals" - $LOCATION'</b></td></tr></tbody></table><br>'
+		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"View Assets"'<br>'$LOCATION'</span></a></td><td><b>'$"Totals" - $LOCATION'</b></td></tr></tbody></table><br>'
 
-echo '<table class="'$TABLECLASS'" style="text-align: left; width: 100%;"><tbody>'
-echo '<tr><td>'$"Curriculum Computer"'</td><td>'$TOTAL1'</td><td>'$"Admin Computer"'</td><td>'$TOTAL2'</td><td>'$"Curriculum Laptop"'</td><td>'$TOTAL3'</td><td>'$"Admin Laptop"'</td><td>'$TOTAL4'</td></tr>
-<tr><td>'$"Curriculum Tablet"'</td><td>'$TOTAL5'</td><td>'$"Admin Tablet"'</td><td>'$TOTAL6'</td><td>'$"Curriculum PDA"'</td><td>'$TOTAL7'</td><td>'$"Admin PDA"'</td><td>'$TOTAL8'</td></tr>
-<tr><td>'$"Curriculum Thin Client"'</td><td>'$TOTAL9'</td><td>'$"Admin Thin Client"'</td><td>'$TOTAL10'</td><td>'$"Printer"'</td><td>'$TOTAL11'</td><td>'$"Scanner"'</td><td>'$TOTAL12'</td></tr>
-<tr><td>'$"Projector"'</td><td>'$TOTAL13'</td><td>'$"Whiteboard"'</td><td>'$TOTAL14'</td><td>'$"Network Switch"'</td><td>'$TOTAL15'</td><td>'$"Network Device"'</td><td>'$TOTAL16'</td></tr>
-<tr><td>'$"Wireless Access Point"'</td><td>'$TOTAL17'</td><td>'$"Audio Visual"'</td><td>'$TOTAL18'</td><td>'$"Monitor"'</td><td>'$TOTAL19'</td><td>'$"Software"'</td><td>'$TOTAL20'</td></tr>
-<tr><td>'$"Other"'</td><td>'$TOTAL21'</td></tr>
-</tbody></table><br>'
-done
+		echo '<table class="'$TABLECLASS'" style="text-align: left; width: 100%;"><tbody>'
+		echo '<tr><td>'$"Curriculum Computer"'</td><td>'$TOTAL1'</td><td>'$"Admin Computer"'</td><td>'$TOTAL2'</td><td>'$"Curriculum Laptop"'</td><td>'$TOTAL3'</td><td>'$"Admin Laptop"'</td><td>'$TOTAL4'</td></tr>
+		<tr><td>'$"Curriculum Tablet"'</td><td>'$TOTAL5'</td><td>'$"Admin Tablet"'</td><td>'$TOTAL6'</td><td>'$"Curriculum PDA"'</td><td>'$TOTAL7'</td><td>'$"Admin PDA"'</td><td>'$TOTAL8'</td></tr>
+		<tr><td>'$"Curriculum Thin Client"'</td><td>'$TOTAL9'</td><td>'$"Admin Thin Client"'</td><td>'$TOTAL10'</td><td>'$"Printer"'</td><td>'$TOTAL11'</td><td>'$"Scanner"'</td><td>'$TOTAL12'</td></tr>
+		<tr><td>'$"Projector"'</td><td>'$TOTAL13'</td><td>'$"Whiteboard"'</td><td>'$TOTAL14'</td><td>'$"Network Switch"'</td><td>'$TOTAL15'</td><td>'$"Network Device"'</td><td>'$TOTAL16'</td></tr>
+		<tr><td>'$"Wireless Access Point"'</td><td>'$TOTAL17'</td><td>'$"Audio Visual"'</td><td>'$TOTAL18'</td><td>'$"Monitor"'</td><td>'$TOTAL19'</td><td>'$"Software"'</td><td>'$TOTAL20'</td></tr>
+		<tr><td>'$"Other"'</td><td>'$TOTAL21'</td></tr>
+		</tbody></table><br>'
+	done
 
-#Total stats
-TOTAL1=`grep -h -R ASSETTYPE=\"1\" /opt/karoshi/asset_register/locations/* | wc -l`
-TOTAL2=`grep -h -R ASSETTYPE=\"2\" /opt/karoshi/asset_register/locations/* | wc -l`
-TOTAL3=`grep -h -R ASSETTYPE=\"3\" /opt/karoshi/asset_register/locations/* | wc -l`
-TOTAL4=`grep -h -R ASSETTYPE=\"4\" /opt/karoshi/asset_register/locations/* | wc -l`
-TOTAL5=`grep -h -R ASSETTYPE=\"5\" /opt/karoshi/asset_register/locations/* | wc -l`
-TOTAL6=`grep -h -R ASSETTYPE=\"6\" /opt/karoshi/asset_register/locations/* | wc -l`
-TOTAL7=`grep -h -R ASSETTYPE=\"7\" /opt/karoshi/asset_register/locations/* | wc -l`
-TOTAL8=`grep -h -R ASSETTYPE=\"8\" /opt/karoshi/asset_register/locations/* | wc -l`
-TOTAL9=`grep -h -R ASSETTYPE=\"9\" /opt/karoshi/asset_register/locations/* | wc -l`
-TOTAL10=`grep -h -R ASSETTYPE=\"10\" /opt/karoshi/asset_register/locations/* | wc -l`
-TOTAL11=`grep -h -R ASSETTYPE=\"11\" /opt/karoshi/asset_register/locations/* | wc -l`
-TOTAL12=`grep -h -R ASSETTYPE=\"12\" /opt/karoshi/asset_register/locations/* | wc -l`
-TOTAL13=`grep -h -R ASSETTYPE=\"13\" /opt/karoshi/asset_register/locations/* | wc -l`
-TOTAL14=`grep -h -R ASSETTYPE=\"14\" /opt/karoshi/asset_register/locations/* | wc -l`
-TOTAL15=`grep -h -R ASSETTYPE=\"15\" /opt/karoshi/asset_register/locations/* | wc -l`
-TOTAL16=`grep -h -R ASSETTYPE=\"16\" /opt/karoshi/asset_register/locations/* | wc -l`
-TOTAL17=`grep -h -R ASSETTYPE=\"17\" /opt/karoshi/asset_register/locations/* | wc -l`
-TOTAL18=`grep -h -R ASSETTYPE=\"18\" /opt/karoshi/asset_register/locations/* | wc -l`
-TOTAL19=`grep -h -R ASSETTYPE=\"19\" /opt/karoshi/asset_register/locations/* | wc -l`
-TOTAL20=`grep -h -R ASSETTYPE=\"20\" /opt/karoshi/asset_register/locations/* | wc -l`
-TOTAL21=`grep -h -R ASSETTYPE=\"21\" /opt/karoshi/asset_register/locations/* | wc -l`
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_" type="image" class="images" src="'$ICON1'" value=""><span>'$"View Assets"'</span></a></td><td><b>'$"Totals"'</b></td></tr></tbody></table><br>'
-echo '<table class="'$TABLECLASS'" style="text-align: left; width: 100%;"><tbody>'
-echo "<tr><td>$"Curriculum Computer"</td><td>$TOTAL1</td><td>$"Admin Computer"</td><td>$TOTAL2</td><td>$"Curriculum Laptop"</td><td>$TOTAL3</td><td>$"Admin Laptop"</td><td>$TOTAL4</td></tr>"
-echo "<tr><td>$"Curriculum Tablet"</td><td>$TOTAL5</td><td>$"Admin Tablet"</td><td>$TOTAL6</td><td>$"Curriculum PDA"</td><td>$TOTAL7</td><td>$"Admin PDA"</td><td>$TOTAL8</td></tr>"
-echo "<tr><td>$"Curriculum Thin Client"</td><td>$TOTAL9</td><td>$"Admin Thin Client"</td><td>$TOTAL10</td><td>$"Printer"</td><td>$TOTAL11</td><td>$"Scanner"</td><td>$TOTAL12</td></tr>"
-echo "<tr><td>$"Projector"</td><td>$TOTAL13</td><td>$"Whiteboard"</td><td>$TOTAL14</td><td>$"Network Switch"</td><td>$TOTAL15</td><td>$"Network Device"</td><td>$TOTAL16</td></tr>"
-echo "<tr><td>$"Wireless Access Point"</td><td>$TOTAL17</td><td>$"Audio Visual"</td><td>$TOTAL18</td><td>$"Monitor"</td><td>$TOTAL19</td><td>$"Software"</td><td>$TOTAL20</td></tr>"
-echo "<tr><td>$"Other"</td><td>$TOTAL21</td></tr>"
-echo "</tbody></table><br>"
+	#Total stats
+	TOTAL1=`grep -h -R ASSETTYPE=\"1\" /opt/karoshi/asset_register/locations/* | wc -l`
+	TOTAL2=`grep -h -R ASSETTYPE=\"2\" /opt/karoshi/asset_register/locations/* | wc -l`
+	TOTAL3=`grep -h -R ASSETTYPE=\"3\" /opt/karoshi/asset_register/locations/* | wc -l`
+	TOTAL4=`grep -h -R ASSETTYPE=\"4\" /opt/karoshi/asset_register/locations/* | wc -l`
+	TOTAL5=`grep -h -R ASSETTYPE=\"5\" /opt/karoshi/asset_register/locations/* | wc -l`
+	TOTAL6=`grep -h -R ASSETTYPE=\"6\" /opt/karoshi/asset_register/locations/* | wc -l`
+	TOTAL7=`grep -h -R ASSETTYPE=\"7\" /opt/karoshi/asset_register/locations/* | wc -l`
+	TOTAL8=`grep -h -R ASSETTYPE=\"8\" /opt/karoshi/asset_register/locations/* | wc -l`
+	TOTAL9=`grep -h -R ASSETTYPE=\"9\" /opt/karoshi/asset_register/locations/* | wc -l`
+	TOTAL10=`grep -h -R ASSETTYPE=\"10\" /opt/karoshi/asset_register/locations/* | wc -l`
+	TOTAL11=`grep -h -R ASSETTYPE=\"11\" /opt/karoshi/asset_register/locations/* | wc -l`
+	TOTAL12=`grep -h -R ASSETTYPE=\"12\" /opt/karoshi/asset_register/locations/* | wc -l`
+	TOTAL13=`grep -h -R ASSETTYPE=\"13\" /opt/karoshi/asset_register/locations/* | wc -l`
+	TOTAL14=`grep -h -R ASSETTYPE=\"14\" /opt/karoshi/asset_register/locations/* | wc -l`
+	TOTAL15=`grep -h -R ASSETTYPE=\"15\" /opt/karoshi/asset_register/locations/* | wc -l`
+	TOTAL16=`grep -h -R ASSETTYPE=\"16\" /opt/karoshi/asset_register/locations/* | wc -l`
+	TOTAL17=`grep -h -R ASSETTYPE=\"17\" /opt/karoshi/asset_register/locations/* | wc -l`
+	TOTAL18=`grep -h -R ASSETTYPE=\"18\" /opt/karoshi/asset_register/locations/* | wc -l`
+	TOTAL19=`grep -h -R ASSETTYPE=\"19\" /opt/karoshi/asset_register/locations/* | wc -l`
+	TOTAL20=`grep -h -R ASSETTYPE=\"20\" /opt/karoshi/asset_register/locations/* | wc -l`
+	TOTAL21=`grep -h -R ASSETTYPE=\"21\" /opt/karoshi/asset_register/locations/* | wc -l`
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_" type="image" class="images" src="'$ICON1'" value=""><span>'$"View Assets"'</span></a></td><td><b>'$"Totals"'</b></td></tr></tbody></table><br>'
+	echo '<table class="'$TABLECLASS'" style="text-align: left; width: 100%;"><tbody>'
+	echo "<tr><td>$"Curriculum Computer"</td><td>$TOTAL1</td><td>$"Admin Computer"</td><td>$TOTAL2</td><td>$"Curriculum Laptop"</td><td>$TOTAL3</td><td>$"Admin Laptop"</td><td>$TOTAL4</td></tr>"
+	echo "<tr><td>$"Curriculum Tablet"</td><td>$TOTAL5</td><td>$"Admin Tablet"</td><td>$TOTAL6</td><td>$"Curriculum PDA"</td><td>$TOTAL7</td><td>$"Admin PDA"</td><td>$TOTAL8</td></tr>"
+	echo "<tr><td>$"Curriculum Thin Client"</td><td>$TOTAL9</td><td>$"Admin Thin Client"</td><td>$TOTAL10</td><td>$"Printer"</td><td>$TOTAL11</td><td>$"Scanner"</td><td>$TOTAL12</td></tr>"
+	echo "<tr><td>$"Projector"</td><td>$TOTAL13</td><td>$"Whiteboard"</td><td>$TOTAL14</td><td>$"Network Switch"</td><td>$TOTAL15</td><td>$"Network Device"</td><td>$TOTAL16</td></tr>"
+	echo "<tr><td>$"Wireless Access Point"</td><td>$TOTAL17</td><td>$"Audio Visual"</td><td>$TOTAL18</td><td>$"Monitor"</td><td>$TOTAL19</td><td>$"Software"</td><td>$TOTAL20</td></tr>"
+	echo "<tr><td>$"Other"</td><td>$TOTAL21</td></tr>"
+	echo "</tbody></table><br>"
 fi
 
 ############################
@@ -750,39 +749,38 @@ fi
 ##########################
 if [ $ACTION = delete ]
 then
-if [ $ASSET'null' != null ]
-then
-if [ -f /opt/karoshi/asset_register/locations/$LOCATION/$ASSET ]
-then
-source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
-echo '<b>'$"Delete Assets"'</b><br><br>'
-echo $"Delete" $IDENTITY'<br><br>'$"Are you sure that you want to delete this item?"'<br><br>'
-echo '<input type="image" src="/images/submenus/file/delete.gif" name="_ACTION_reallydelete_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" value="">'
-echo '<a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" alt="back" border="0"></a>'
-else
-echo No data "file" exists "for" this asset.
-fi
-else
-echo no asset set.
-fi
+	if [ ! -z "$ASSET" ]
+	then
+		if [ -f /opt/karoshi/asset_register/locations/$LOCATION/$ASSET ]
+		then
+			source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
+			echo '<b>'$"Delete Assets"'</b><br><br>'
+			echo $"Delete" $IDENTITY'<br><br>'$"Are you sure that you want to delete this item?"'<br><br>'
+			echo '<input name="_ACTION_reallydelete_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="submit" class="button" value="'$"Delete"'"><a href="javascript:history.go(-1)"><input class="button" type="button" name="" value="'$"Cancel"'"></a>'
+		else
+			echo No data "file" exists "for" this asset.
+		fi
+	else
+		echo no asset set.
+	fi
 fi
 
 if [ $ACTION = reallydelete ]
 then
-ACTION=view
-if [ $ASSET'null' != null ]
-then
-if [ -f /opt/karoshi/asset_register/locations/$LOCATION/$ASSET ]
-then
-[ ! -d /opt/karoshi/asset_register/deleted/$LOCATION/ ] && mkdir -p /opt/karoshi/asset_register/deleted/$LOCATION/
-source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
-#Delete entry from netlogon
-[ -f /var/lib/samba/netlogon/clients/$MAC1 ] && rm -f /var/lib/samba/netlogon/clients/$MAC1
-#Move entry to deleted folder
-mv -f /opt/karoshi/asset_register/locations/$LOCATION/$ASSET /opt/karoshi/asset_register/deleted/$LOCATION/
-echo `date`: asset_register_view - deleting $ASSET from $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-fi
-fi
+	ACTION=view
+	if [ ! -z "$ASSET" ]
+	then
+		if [ -f /opt/karoshi/asset_register/locations/$LOCATION/$ASSET ]
+		then
+			[ ! -d /opt/karoshi/asset_register/deleted/$LOCATION/ ] && mkdir -p /opt/karoshi/asset_register/deleted/$LOCATION/
+			source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
+			#Delete entry from netlogon
+			[ -f /var/lib/samba/netlogon/clients/$MAC1 ] && rm -f /var/lib/samba/netlogon/clients/$MAC1
+			#Move entry to deleted folder
+			mv -f /opt/karoshi/asset_register/locations/$LOCATION/$ASSET /opt/karoshi/asset_register/deleted/$LOCATION/
+			echo `date`: asset_register_view - deleting $ASSET from $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		fi
+	fi
 fi
 
 
@@ -790,11 +788,11 @@ function asset_form {
 echo '<input type="image" src="/images/submenus/file/go.gif" name="_ACTION_really'$ACTION'_ASSET_'$ASSET'_" value="">'
 echo '<a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" alt="back" border="0"></a><br><br>'
 echo '<table style="text-align: left;" border="0" cellpadding="2" cellspacing="2" class="'$TABLECLASS'"><tbody>'
-if [ $ACTION = edit ]
+if [ "$ACTION" = edit ]
 then
-echo '<tr><td style="width: 180px;">'$"Asset Number"'</td><td>'$ASSET'</td></tr>'
-else
-echo '<tr><td></td></tr>'
+	echo '<tr><td style="width: 180px;">'$"Asset Number"'</td><td>'$ASSET'</td></tr>'
+	else
+	echo '<tr><td></td></tr>'
 fi
 echo '<tr><td style="width: 180px;">'$"Type"'</td><td>'
 echo '<select name="_ASSETTYPE_" style="width: 200px;" tabindex= "1">'
@@ -830,37 +828,37 @@ echo '<tr><td>'$"Location"'<td><select name="_LOCATION_" style="width: 200px;" t
 COUNTER=1
 if [ -f /var/lib/samba/netlogon/locations.txt ]
 then
-LOCATION_COUNT=`cat /var/lib/samba/netlogon/locations.txt | wc -l`
+	LOCATION_COUNT=`cat /var/lib/samba/netlogon/locations.txt | wc -l`
 else
-LOCATION_COUNT=0
+	LOCATION_COUNT=0
 fi
 while [ $COUNTER -lt $LOCATION_COUNT ]
 do
-LOCATION=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/locations.txt`
-echo '<option value="'$LOCATION'">'$LOCATION'</option>'
-let COUNTER=$COUNTER+1
+	LOCATION=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/locations.txt`
+	echo '<option value="'$LOCATION'">'$LOCATION'</option>'
+	let COUNTER=$COUNTER+1
 done
 echo '</select></td>'
 #Serial Code
 DATE=`date +%d-%m-%y`
 echo '<td>'$"Serial Number"'</td><td><input size="23" style="width: 200px;" value="'$SERIAL'" name="_SERIALKEY_" tabindex= "10"></td></tr>'
-if [ $ACTION = edit ]
+if [ "$ACTION" = edit ]
 then
-#Identity
-echo '<tr><td>'$"Name"'</td><td>
-<input size="23" style="width: 200px;" value="'$IDENTITY'" name="_IDENTITY_" tabindex= "3">
-</td>'
+	#Identity
+	echo '<tr><td>'$"Name"'</td><td>
+	<input size="23" style="width: 200px;" value="'$IDENTITY'" name="_IDENTITY_" tabindex= "3">
+	</td>'
 else
-#os type
-echo '<tr><td>'$"OS Type"'</td><td>
-<select name="_IDENTITY_" style="width: 200px;" tabindex= "3">
+	#os type
+	echo '<tr><td>'$"OS Type"'</td><td>
+	<select name="_IDENTITY_" style="width: 200px;" tabindex= "3">
 	<option value=""></option>
         <option value="lx">Linux</option>
         <option value="mc">Mac</option>
         <option value="wn">Windows</option>
         <option value="or">Other</option>
 	</select>
-</td>'
+	</td>'
 fi
 #Assigned to
 echo '<td>'$"Assigned to"'</td><td><input size="17" name="_ASSIGNED_" value="'$ASSIGNED'" style="width: 200px;" tabindex= "11"></td></tr>'
@@ -908,27 +906,27 @@ echo '</tbody></table><br>'
 ##########################
 #Edit assets
 ##########################
-if [ $ACTION = edit ]
+if [ "$ACTION" = edit ]
 then
-if [ $ASSET'null' != null ]
-then
-if [ -f /opt/karoshi/asset_register/locations/$LOCATION/$ASSET ]
-then
-source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
-echo '<b>'$"Edit Asset"' - '$IDENTITY'</b><br><br>'
-asset_form
-else
-echo No data "file" exists "for" this asset.
-fi
-else
-echo no asset set.
-fi
+	if [ ! -z "$ASSET" ]
+	then
+		if [ -f /opt/karoshi/asset_register/locations/$LOCATION/$ASSET ]
+		then
+			source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
+			echo '<b>'$"Edit Asset"' - '$IDENTITY'</b><br><br>'
+			asset_form
+		else
+			echo No data "file" exists "for" this asset.
+		fi
+	else
+		echo no asset set.
+	fi
 fi
 
 
 function get_asset_data {
 ASSETTYPE=`echo "$DATA" | cut -s -d: -f10 | tr cd '0-9'`
-[ $ASSETTYPE'null' = null ] && ASSETTYPE=21
+[ -z "$ASSETTYPE" ] && ASSETTYPE=21
 TCPIP1=`echo "$DATA" | cut -s -d: -f11`
 TCPIP2=`echo "$DATA" | cut -s -d: -f12`
 TCPIP3=`echo "$DATA" | cut -s -d: -f13`
@@ -971,40 +969,40 @@ echo EXTRAINFO=\""$EXTRAINFO"\" >> "/opt/karoshi/asset_register/locations/$LOCAT
 #Add details to netlogon
 if [ ! -z "$MAC1" ]
 then
-if [ $MAC1 != N.A. ]
-then
-if [ ! -d /var/lib/samba/netlogon/clients ]
-then
-mkdir /var/lib/samba/netlogon/clients
-fi
-CLIENTMAC=`echo $MAC1 | sed 's/://g'`
-echo $IDENTITY > /var/lib/samba/netlogon/clients/"$CLIENTMAC"
-echo $TCPIP1 >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
-echo $LOCATION >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
-fi
+	if [ $MAC1 != N.A. ]
+	then
+		if [ ! -d /var/lib/samba/netlogon/clients ]
+		then
+			mkdir /var/lib/samba/netlogon/clients
+		fi
+	CLIENTMAC=`echo $MAC1 | sed 's/://g'`
+	echo $IDENTITY > /var/lib/samba/netlogon/clients/"$CLIENTMAC"
+	echo $TCPIP1 >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
+	echo $LOCATION >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
+	fi
 fi
 
 if [ ! -z "$MAC2" ]
 then
-if [ $MAC2 != N.A. ]
-then
-CLIENTMAC=`echo $MAC2 | sed 's/://g'`
-echo $IDENTITY > /var/lib/samba/netlogon/clients/"$CLIENTMAC"
-echo $TCPIP2 >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
-echo $LOCATION >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
-fi
+	if [ $MAC2 != N.A. ]
+	then
+		CLIENTMAC=`echo $MAC2 | sed 's/://g'`
+		echo $IDENTITY > /var/lib/samba/netlogon/clients/"$CLIENTMAC"
+		echo $TCPIP2 >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
+		echo $LOCATION >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
+	fi
 fi
 
 
 if [ ! -z "$MAC3" ]
 then
-if [ $MAC3 != N.A. ]
-then
-CLIENTMAC=`echo $MAC3 | sed 's/://g'`
-echo $IDENTITY > /var/lib/samba/netlogon/clients/"$CLIENTMAC"
-echo $TCPIP3 >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
-echo $LOCATION >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
-fi
+	if [ $MAC3 != N.A. ]
+	then
+		CLIENTMAC=`echo $MAC3 | sed 's/://g'`
+		echo $IDENTITY > /var/lib/samba/netlogon/clients/"$CLIENTMAC"
+		echo $TCPIP3 >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
+		echo $LOCATION >> /var/lib/samba/netlogon/clients/"$CLIENTMAC"
+	fi
 fi
 
 if [[ $TCPIP1 ]] && [[ $TCPIP1 != "N.A." ]]; then
@@ -1031,15 +1029,14 @@ fi
 
 #Check for duplicate tcpip and mac addresses
 function check_duplicate_data {
-if [ $SEARCHITEM'null' != null ]
+if [ ! -z "$SEARCHITEM" ]
 then
-if [ `grep -R -h -w $SEARCHITEM /opt/karoshi/asset_register/locations/* | wc -l` -gt 0 ]
-then
-#Show error message and back button.
-echo ''$SEARCHITEM' - '$"This is already in use in the asset register."'<br><br><a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" alt="back" border="0"></a><br><br>'
-
-exit
-fi
+	if [ `grep -R -h -w $SEARCHITEM /opt/karoshi/asset_register/locations/* | wc -l` -gt 0 ]
+	then
+		#Show error message and back button.
+		echo ''$SEARCHITEM' - '$"This is already in use in the asset register."'<br><br><a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" alt="back" border="0"></a><br><br>'
+		exit
+	fi
 fi
 }
 
@@ -1048,19 +1045,19 @@ function get_asset_number {
 #Check that asset register is not locked
 if [ -f /opt/karoshi/asset_register/.asset_lock ]
 then
-echo $"The asset register is locked."
-exit 104
+	echo $"The asset register is locked."
+	exit 104
 else
-#Create lock file
-touch /opt/karoshi/asset_register/.asset_lock
+	#Create lock file
+	touch /opt/karoshi/asset_register/.asset_lock
 fi
 #Get asset number
 if [ -f /opt/karoshi/asset_register/.last_asset_number ]
 then
-ASSET=`sed -n 1,1p /opt/karoshi/asset_register/.last_asset_number`
-let ASSET=$ASSET+1
+	ASSET=`sed -n 1,1p /opt/karoshi/asset_register/.last_asset_number`
+	let ASSET=$ASSET+1
 else
-ASSET=1
+	ASSET=1
 fi
 [ ! -d /opt/karoshi/asset_register ] && mkdir -p /opt/karoshi/asset_register
 echo $ASSET > /opt/karoshi/asset_register/.last_asset_number
@@ -1069,107 +1066,107 @@ echo $ASSET > /opt/karoshi/asset_register/.last_asset_number
 
 if [ $ACTION = reallyadd ]
 then
-#Add asset
-get_asset_data
+	#Add asset
+	get_asset_data
 
-#Check that tcpip and mac addresses are not already in use.
-if [ $TCPIP1'null' != null ]
-then
-SEARCHITEM=$TCPIP1
-check_duplicate_data
-fi
-if [ $TCPIP2'null' != null ]
-then
-SEARCHITEM=$TCPIP2
-check_duplicate_data
-fi
-if [ $TCPIP3'null' != null ]
-then
-SEARCHITEM=$TCPIP3
-check_duplicate_data
-fi
-if [ $MAC1'null' != null ]
-then
-SEARCHITEM=$MAC1
-check_duplicate_data
-fi
-if [ $MAC2'null' != null ]
-then
-SEARCHITEM=$MAC2
-check_duplicate_data
-fi
-if [ $MAC3'null' != null ]
-then
-SEARCHITEM=$MAC3
-check_duplicate_data
-fi
+	#Check that tcpip and mac addresses are not already in use.
+	if [ ! -z "$TCPIP1" ]
+	then
+		SEARCHITEM=$TCPIP1
+		check_duplicate_data
+	fi
+	if [ ! -z "$TCPIP2" ]
+	then
+		SEARCHITEM=$TCPIP2
+		check_duplicate_data
+	fi
+	if [ ! -z "$TCPIP3" ]
+	then
+		SEARCHITEM=$TCPIP3
+		check_duplicate_data
+	fi
+	if [ ! -z "$MAC1" ]
+	then
+		SEARCHITEM=$MAC1
+		check_duplicate_data
+	fi
+	if [ ! -z "$MAC2" ]
+	then
+		SEARCHITEM=$MAC2
+		check_duplicate_data
+	fi
+	if [ ! -z "$MAC3" ]
+	then
+		SEARCHITEM=$MAC3
+		check_duplicate_data
+	fi
 
-get_asset_number
+	get_asset_number
 
-echo `date`: asset_register_view - adding $IDENTITY to $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-write_asset_data
-#Delete lock file
-rm -f /opt/karoshi/asset_register/.asset_lock
-ACTION=view
+	echo `date`: asset_register_view - adding $IDENTITY to $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	write_asset_data
+	#Delete lock file
+	rm -f /opt/karoshi/asset_register/.asset_lock
+	ACTION=view
 fi
 
 if [ $ACTION = reallyedit ]
 then
-ACTION=view
-if [ $ASSET'null' != null ]
-then
-#Edit asset
-get_asset_data
+	ACTION=view
+	if [ ! -z "$ASSET" ]
+	then
+		#Edit asset
+		get_asset_data
 
-echo `date`: asset_register_view - editing $IDENTITY from $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-#Delete asset 
+		echo `date`: asset_register_view - editing $IDENTITY from $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		#Delete asset 
 
-CURRENT_ASSETPATH=`find /opt/karoshi/asset_register/locations -name $ASSET`
+		CURRENT_ASSETPATH=`find /opt/karoshi/asset_register/locations -name $ASSET`
 
-[ -f $CURRENT_ASSETPATH ] && rm -f $CURRENT_ASSETPATH 
+		[ -f $CURRENT_ASSETPATH ] && rm -f $CURRENT_ASSETPATH 
 
-#Check that tcpip and mac addresses are not already in use.
-if [ $TCPIP1'null' != null ]
-then
-SEARCHITEM=$TCPIP1
-check_duplicate_data
-fi
-if [ $TCPIP2'null' != null ]
-then
-SEARCHITEM=$TCPIP2
-check_duplicate_data
-fi
-if [ $TCPIP3'null' != null ]
-then
-SEARCHITEM=$TCPIP3
-check_duplicate_data
-fi
-if [ $MAC1'null' != null ]
-then
-SEARCHITEM=$MAC1
-check_duplicate_data
-fi
-if [ $MAC2'null' != null ]
-then
-SEARCHITEM=$MAC2
-check_duplicate_data
-fi
-if [ $MAC3'null' != null ]
-then
-SEARCHITEM=$MAC3
-check_duplicate_data
-fi
+		#Check that tcpip and mac addresses are not already in use.
+		if [ ! -z "$TCPIP1" ]
+		then
+			SEARCHITEM=$TCPIP1
+			check_duplicate_data
+		fi
+		if [ ! -z "$TCPIP2" ]
+		then
+			SEARCHITEM=$TCPIP2
+			check_duplicate_data
+		fi
+		if [ ! -z "$TCPIP3" ]
+		then
+			SEARCHITEM=$TCPIP3
+			check_duplicate_data
+		fi
+		if [ ! -z "$MAC1" ]
+		then
+			SEARCHITEM=$MAC1
+			check_duplicate_data
+		fi
+		if [ ! -z "$MAC2" ]
+		then
+			SEARCHITEM=$MAC2
+			check_duplicate_data
+		fi
+		if [ ! -z "$MAC3" ]
+		then
+			SEARCHITEM=$MAC3
+			check_duplicate_data
+		fi
 
-#Write asset 
-write_asset_data
+		#Write asset 
+		write_asset_data
 
-fi
+	fi
 fi
 
 if [ $ACTION = add ]
 then
-echo '<b>'$"Add Asset"'</b><br><br>'
-asset_form
+	echo '<b>'$"Add Asset"'</b><br><br>'
+	asset_form
 fi
 
 ############################
@@ -1266,180 +1263,182 @@ fi
 ########################
 if [ $ACTION = search ]
 then
-echo '<b>'$"Search Assets"'</b><br><br>
-<input type="image" src="/images/submenus/file/go.gif" name="_ACTION_reallysearch_LOCATION_notset_" value="">
-<a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" alt="back" border="0"></a><br>
-<table class="'$TABLECLASS'" style="text-align: left; height: 30px;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 200px;">'$"Search"'</td><td><input name="_OPTION_" size="20" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the search criteria. This can be part of the mac address, serial number, purchase date, TCP-IP number etc."'</span></a></td></tr></tbody></table><br>'
+	echo '<b>'$"Search Assets"'</b><br><br>
+	<input type="image" src="/images/submenus/file/go.gif" name="_ACTION_reallysearch_LOCATION_notset_" value="">
+	<a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" alt="back" border="0"></a><br>
+	<table class="'$TABLECLASS'" style="text-align: left; height: 30px;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	<tr><td style="width: 200px;">'$"Search"'</td><td><input name="_OPTION_" size="20" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the search criteria. This can be part of the mac address, serial number, purchase date, TCP-IP number etc."'</span></a></td></tr></tbody></table><br>'
 fi
 
-if [ $ACTION = reallysearch ]
+if [ "$ACTION" = reallysearch ]
 then
-#Convert colons.
-OPTION=`echo $OPTION | sed 's/%3A/:/g'`
+	#Convert colons.
+	OPTION=`echo $OPTION | sed 's/%3A/:/g'`
 
-echo '<b>'$"Search Assets"' - '$OPTION'</b><br><br>'
+	echo '<b>'$"Search Assets"' - '$OPTION'</b><br><br>'
 
-[ $MOBILE != yes ] && echo '</div><div id="infobox">'
+	[ $MOBILE != yes ] && echo '</div><div id="infobox">'
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 60px;">'$"Name"'</td>'
-if [ $MOBILE = no ]
-then
-echo '<td style="width: 180px;">'$"Description"'</td><td style="width: 80px;">'$"Assigned"'</td><td style="width: 60px;">'$"Tcpip"'</td><td style="width: 60px;">'$"Mac-address"'</td><td style="width: 80px;">'$"S.N."'</td><td style="width: 60px;">'$"Purchased"'</td><td style="width: 60px;">'$"Value"'</td><td style="width: 80px;">'$"Supplier"'</td><td style="width: 180px;">'$"Budget"'</td></tr>'
-else
-echo '</tr>'
-fi
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	<tr><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 60px;">'$"Name"'</td>'
+	if [ $MOBILE = no ]
+	then
+		echo '<td style="width: 180px;">'$"Description"'</td><td style="width: 80px;">'$"Assigned"'</td><td style="width: 60px;">'$"Tcpip"'</td><td style="width: 60px;">'$"Mac-address"'</td><td style="width: 80px;">'$"S.N."'</td><td style="width: 60px;">'$"Purchased"'</td><td style="width: 60px;">'$"Value"'</td><td style="width: 80px;">'$"Supplier"'</td><td style="width: 180px;">'$"Budget"'</td></tr>'
+	else
+		echo '</tr>'
+	fi
 
-for ASSETS in `grep -i -l -R $OPTION /opt/karoshi/asset_register/locations/*`
-do
-ASSET=`basename $ASSETS`
-LOCATION=`echo $ASSETS | cut -d"/" -f6`
+	for ASSETS in `grep -i -l -R $OPTION /opt/karoshi/asset_register/locations/*`
+	do
+		ASSET=`basename $ASSETS`
+		LOCATION=`echo $ASSETS | cut -d"/" -f6`
 
-#Get asset information
-source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
-assign_asset_labels
+		#Get asset information
+		source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
+		assign_asset_labels
 
-echo '<tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"View Assets"'<br>'$LOCATION'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_edit_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON2'" value=""><span>'$"Edit"' '$IDENTITY'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_delete_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Delete"' '$IDENTITY'</span></a></td><td style="vertical-align: top;">
+		echo '<tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"View Assets"'<br>'$LOCATION'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_edit_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON2'" value=""><span>'$"Edit"' '$IDENTITY'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_delete_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Delete"' '$IDENTITY'</span></a></td><td style="vertical-align: top;">
 
-<a class="info" href="javascript:void(0)"><input name="_ACTION_view_LOCATION_'$LOCATION'_ASSETCHOICE_'$ASSETTYPE'_OPTION_filter_" type="image" class="images" src="'$ASSETICON'" value=""><span>'$ASSETLABEL'</span></a>
-</td><td style="vertical-align: top;">'
+		<a class="info" href="javascript:void(0)"><input name="_ACTION_view_LOCATION_'$LOCATION'_ASSETCHOICE_'$ASSETTYPE'_OPTION_filter_" type="image" class="images" src="'$ASSETICON'" value=""><span>'$ASSETLABEL'</span></a>
+		</td><td style="vertical-align: top;">'
 
-if [ $ASSETTYPE -le 8 ]
-then
-echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_showlogs_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON17'" value=""><span>Show logs '$IDENTITY'</span></a>'
-fi
+		if [ $ASSETTYPE -le 8 ]
+		then
+			echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_showlogs_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON17'" value=""><span>Show logs '$IDENTITY'</span></a>'
+		fi
 
-echo '</td><td style="vertical-align: top;">'$IDENTITY'</td>'
+		echo '</td><td style="vertical-align: top;">'$IDENTITY'</td>'
 
-if [ $MOBILE = no ]
-then
-echo '<td style="vertical-align: top;">'$DESCRIPTION'</td><td style="vertical-align: top;">'$ASSIGNED'</td><td style="vertical-align: top;">
-'$TCPIP1' '$TCPIP2' '$TCPIP3'</td><td style="vertical-align: top;">'$MAC1' '$MAC2' '$MAC3'</td><td style="vertical-align: top;">'$SERIAL'</td><td style="vertical-align: top;">'$PURCHASEDATE'</td><td style="vertical-align: top;">'$VALUE'</td><td style="vertical-align: top;">'$SUPPLIER'</td><td style="vertical-align: top;">'$BUDGET'</td></tr>'
-else
-echo '</tr>'
-fi
-done
-echo '</tbody></table><br>'
+		if [ $MOBILE = no ]
+		then
+			echo '<td style="vertical-align: top;">'$DESCRIPTION'</td><td style="vertical-align: top;">'$ASSIGNED'</td><td style="vertical-align: top;">
+		'$TCPIP1' '$TCPIP2' '$TCPIP3'</td><td style="vertical-align: top;">'$MAC1' '$MAC2' '$MAC3'</td><td style="vertical-align: top;">'$SERIAL'</td><td style="vertical-align: top;">'$PURCHASEDATE'</td><td style="vertical-align: top;">'$VALUE'</td><td style="vertical-align: top;">'$SUPPLIER'</td><td style="vertical-align: top;">'$BUDGET'</td></tr>'
+		else
+			echo '</tr>'
+		fi
+	done
+	echo '</tbody></table><br>'
 fi
 
 ##########################
 #Import
 ##########################
-if [ $ACTION = import ]
+if [ "$ACTION" = import ]
 then
-echo '<b>Import data</b><br><br>
-<input type="image" src="/images/submenus/file/go.gif" name="_ACTION_reallyimport_" value="">
-<a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" alt="back" border="0"></a><br><br>'
-
-echo ''$"Name"','$"Location"','$"Type"','$"Description"','$"Tcpip"','$"Mac-address"','$"S.N."','$"Purchased"','$"Value"','$"Supplier"','$"Budget"','$"Assigned to"'
-<textarea cols="150" rows="100" name="_LOCATION_notset_IMPORTDATA_"></textarea>
-'
+	echo '<b>'$"Import data"'</b><br><br>
+	<input type="image" src="/images/submenus/file/go.gif" name="_ACTION_reallyimport_" value="">
+	<a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" alt="back" border="0"></a><br><br>
+	'$"Name"','$"Location"','$"Type"','$"Description"','$"Tcpip"','$"Mac-address"','$"S.N."','$"Purchased"','$"Value"','$"Supplier"','$"Budget"','$"Assigned to"'
+	<textarea cols="150" rows="100" name="_LOCATION_notset_IMPORTDATA_"></textarea>
+	'
 fi
 
-if [ $ACTION = reallyimport ]
+if [ "$ACTION" = reallyimport ]
 then
-IMPORTDATA=`echo "$DATA" | cut -s -d: -f25 | sed 's/%2C/,/g' | sed 's/%0D%0A/\n/g'`
-TOTALCOUNT=`echo -e "$IMPORTDATA" | wc -l`
+	IMPORTDATA=`echo "$DATA" | cut -s -d: -f25 | sed 's/%2C/,/g' | sed 's/%0D%0A/\n/g'`
+	TOTALCOUNT=`echo -e "$IMPORTDATA" | wc -l`
 
-echo "<b>"Number of assets to add: $TOTALCOUNT"</b><br><br>"
+	echo "<b>"$"Number of assets to add": $TOTALCOUNT"</b><br><br>"
 
-COUNTER=1
-for DATALINE in `echo -e "$IMPORTDATA"`
-do
-IDENTITY=`echo "$DATALINE" | cut -s -d, -f1 | sed 's/+/ /g' | sed 's/%3A/:/g'`
-LOCATION=`echo "$DATALINE" | cut -s -d, -f2 | sed 's/+//g'`
-ASSETTYPE=`echo "$DATALINE" | cut -s -d, -f3 | tr -cd '0-9'`
-[ $ASSETTYPE'null' = null ] && ASSETTYPE=21
-ASSETTYPE=`echo $ASSETTYPE | sed 's/+/ /g'`
-DESCRIPTION=`echo "$DATALINE" | cut -s -d, -f4 | sed 's/+/ /g' | sed 's/%3A/:/g'`
+	COUNTER=1
+	for DATALINE in `echo -e "$IMPORTDATA"`
+	do
+		IDENTITY=`echo "$DATALINE" | cut -s -d, -f1 | sed 's/+/ /g' | sed 's/%3A/:/g'`
+		LOCATION=`echo "$DATALINE" | cut -s -d, -f2 | sed 's/+//g'`
+		ASSETTYPE=`echo "$DATALINE" | cut -s -d, -f3 | tr -cd '0-9'`
+		[ -z "$ASSETTYPE" ] && ASSETTYPE=21
+		ASSETTYPE=`echo $ASSETTYPE | sed 's/+/ /g'`
+		DESCRIPTION=`echo "$DATALINE" | cut -s -d, -f4 | sed 's/+/ /g' | sed 's/%3A/:/g'`
 
-TCPIPDATA=`echo "$DATALINE" | cut -s -d, -f5`
-TCPIP1=`echo $TCPIPDATA | cut -s -d+ -f1`
-TCPIP2=`echo $TCPIPDATA | cut -s -d+ -f2`
-TCPIP3=`echo $TCPIPDATA | cut -s -d+ -f3`
+		TCPIPDATA=`echo "$DATALINE" | cut -s -d, -f5`
 
-MACDATA=`echo "$DATALINE" | cut -s -d, -f6 | sed 's/+/ /g' | sed 's/%3A/:/g'`
-MAC1=`echo $MACDATA | cut -s -d' ' -f1`
-MAC2=`echo $MACDATA | cut -s -d' ' -f2`
-MAC3=`echo $MACDATA | cut -s -d' ' -f3`
+		TCPIP1=`echo $TCPIPDATA | cut -d'+' -f1`
+		TCPIP2=`echo $TCPIPDATA | cut -s -d'+' -f2`
+		TCPIP3=`echo $TCPIPDATA | cut -s -d'+' -f3`
 
-SERIALKEY=`echo "$DATALINE" | cut -s -d, -f7`
-PURCHASEDATE=`echo "$DATALINE" | cut -s -d, -f8`
-VALUE=`echo "$DATALINE" | cut -s -d, -f9 | sed 's/+/ /g' | sed 's/%A3/\&\#163;/g' | sed 's/%C2&#163;/£/g'`
-SUPPLIER=`echo "$DATALINE" | cut -s -d, -f10 | sed 's/+/ /g' | sed 's/%3A/:/g'`
-BUDGET=`echo "$DATALINE" | cut -s -d, -f11 | sed 's/+/ /g' | sed 's/%3A/:/g'`
-ASSIGNED=`echo "$DATALINE" | cut -s -d, -f12 | sed 's/+/ /g'`
+		MACDATA=`echo "$DATALINE" | cut -s -d, -f6 | sed 's/+/ /g' | sed 's/%3A/:/g'`
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="width: 180px;"><b>'$"Adding Asset"'</b></td><td><b>'$COUNTER'/'$TOTALCOUNT'"</b></td></tr>
-<tr><td>'$"Identity"'</td><td>'$IDENTITY'</td></tr>
-<tr><td>'$"Location"'</td><td>'$LOCATION'</td></tr>
-<tr><td>'$"Type"'</td><td>'$ASSETTYPE'</td></tr>
-<tr><td>'$"Description"'</td><td>'$DESCRIPTION'</td></tr>
-<tr><td>'$TCPIP' 1</td><td>'$TCPIP1'</td></tr>
-<tr><td>'$TCPIP' 2</td><td>'$TCPIP2'</td></tr>
-<tr><td>'$TCPIP' 3</td><td>'$TCPIP3'</td></tr>
-<tr><td>'$"Mac Address"' 1</td><td>'$MAC1'</td></tr>
-<tr><td>'$"Mac Address"' 2</td><td>'$MAC2'</td></tr>
-<tr><td>'$"Mac Address"' 3</td><td>'$MAC3'</td></tr>
-<tr><td>'$"Serial Number"'</td><td>'$SERIALKEY'</td></tr>
-<tr><td>'$"Purchased"'</td><td>'$PURCHASEDATE'</td></tr>
-<tr><td>'$"Value"'</td><td>'$VALUE'</td></tr>
-<tr><td>'$"Supplier"'</td><td>'$SUPPLIER'</td></tr>
-<tr><td>'$"Budget"'</td><td>'$BUDGET'</td></tr>
-<tr><td>'$"Assigned to"'</td><td>'$ASSIGNED'</td></tr>
-</tbody></table><br>
-'
-#######################
-#Make sure that the location exists
-######################
-ROOMCHECK=`grep -c -w $LOCATION /var/lib/samba/netlogon/locations.txt`
-if [ $ROOMCHECK = 0 ]
-then
-#Modify locations.txt
-echo $LOCATION >> /var/lib/samba/netlogon/locations.txt
-sort -f /var/lib/samba/netlogon/locations.txt > /var/lib/samba/netlogon/locations.tmp
-sed -i '/^$/d' /var/lib/samba/netlogon/locations.tmp
-mv -f /var/lib/samba/netlogon/locations.tmp /var/lib/samba/netlogon/locations.txt
-echo >> /var/lib/samba/netlogon/locations.txt
-rm -f /var/lib/samba/netlogon/locations.tmp
+		MAC1=`echo $MACDATA | cut -d' ' -f1`
+		MAC2=`echo $MACDATA | cut -s -d' ' -f2`
+		MAC3=`echo $MACDATA | cut -s -d' ' -f3`
 
-###########################
-#Modify wsetup.kix
-###########################
-KIXLOCATIONLIST=`cat /var/lib/samba/netlogon/locations.txt | tr '\n' ','  | sed 's/,,/,/g' ; echo NoGroup`
-COMBOXBOX1LINENO=`grep -n '$'ComboBox1.List /var/lib/samba/netlogon/kix/WSsetup.kix | cut -d: -f1`
-sed $COMBOXBOX1LINENO'c'\$ComboBox1.List" "=" "$KIXLOCATIONLIST /var/lib/samba/netlogon/kix/WSsetup.kix > /var/lib/samba/netlogon/kix/WSsetup.kix1
-rm -f /var/lib/samba/netlogon/kix/WSsetup.kix
-mv /var/lib/samba/netlogon/kix/WSsetup.kix1 /var/lib/samba/netlogon/kix/WSsetup.kix
-chmod 0644 /var/lib/samba/netlogon/kix/WSsetup.kix
-fi
+		SERIALKEY=`echo "$DATALINE" | cut -s -d, -f7`
+		PURCHASEDATE=`echo "$DATALINE" | cut -s -d, -f8`
+		VALUE=`echo "$DATALINE" | cut -s -d, -f9 | sed 's/+/ /g' | sed 's/%A3/\&\#163;/g' | sed 's/%C2&#163;/£/g'`
+		SUPPLIER=`echo "$DATALINE" | cut -s -d, -f10 | sed 's/+/ /g' | sed 's/%3A/:/g'`
+		BUDGET=`echo "$DATALINE" | cut -s -d, -f11 | sed 's/+/ /g' | sed 's/%3A/:/g'`
+		ASSIGNED=`echo "$DATALINE" | cut -s -d, -f12 | sed 's/+/ /g'`
 
-#########################
-#Add in asset
-#########################
-get_asset_number
-echo `date`: asset_register_view - adding $IDENTITY to $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-write_asset_data
-#Delete lock file
-rm -f /opt/karoshi/asset_register/.asset_lock
+		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+		<tbody><tr><td style="width: 180px;"><b>'$"Adding Asset"'</b></td><td><b>'$COUNTER'/'$TOTALCOUNT'"</b></td></tr>
+		<tr><td>'$"Identity"'</td><td>'$IDENTITY'</td></tr>
+		<tr><td>'$"Location"'</td><td>'$LOCATION'</td></tr>
+		<tr><td>'$"Type"'</td><td>'$ASSETTYPE'</td></tr>
+		<tr><td>'$"Description"'</td><td>'$DESCRIPTION'</td></tr>
+		<tr><td>'$"TCPIP"' 1</td><td>'$TCPIP1'</td></tr>
+		<tr><td>'$"TCPIP"' 2</td><td>'$TCPIP2'</td></tr>
+		<tr><td>'$"TCPIP"' 3</td><td>'$TCPIP3'</td></tr>
+		<tr><td>'$"Mac Address"' 1</td><td>'$MAC1'</td></tr>
+		<tr><td>'$"Mac Address"' 2</td><td>'$MAC2'</td></tr>
+		<tr><td>'$"Mac Address"' 3</td><td>'$MAC3'</td></tr>
+		<tr><td>'$"Serial Number"'</td><td>'$SERIALKEY'</td></tr>
+		<tr><td>'$"Purchased"'</td><td>'$PURCHASEDATE'</td></tr>
+		<tr><td>'$"Value"'</td><td>'$VALUE'</td></tr>
+		<tr><td>'$"Supplier"'</td><td>'$SUPPLIER'</td></tr>
+		<tr><td>'$"Budget"'</td><td>'$BUDGET'</td></tr>
+		<tr><td>'$"Assigned to"'</td><td>'$ASSIGNED'</td></tr>
+		</tbody></table><br>
+		'
 
-let COUNTER=$COUNTER+1
-done
-#Show main page
-#View logs
-echo '</form><form action="asset_register_view.cgi" id="foo" method="post">
-<input name="_LOCATION_showchoice_" value="" type="hidden">
-</form>
+		#######################
+		#Make sure that the location exists
+		######################
+		ROOMCHECK=`grep -c -w "$LOCATION" /var/lib/samba/netlogon/locations.txt`
+		if [ "$ROOMCHECK" = 0 ]
+		then
+			#Modify locations.txt
+			echo $LOCATION >> /var/lib/samba/netlogon/locations.txt
+			sort -f /var/lib/samba/netlogon/locations.txt > /var/lib/samba/netlogon/locations.tmp
+			sed -i '/^$/d' /var/lib/samba/netlogon/locations.tmp
+			mv -f /var/lib/samba/netlogon/locations.tmp /var/lib/samba/netlogon/locations.txt
+			echo >> /var/lib/samba/netlogon/locations.txt
+			rm -f /var/lib/samba/netlogon/locations.tmp
 
-<script type="text/javascript">
-    function myfunc () {
-        var frm = document.getElementById("foo");
-        frm.submit();
-    }
-    window.onload = myfunc;
-</script>'
+			###########################
+			#Modify wsetup.kix
+			###########################
+			KIXLOCATIONLIST=`cat /var/lib/samba/netlogon/locations.txt | tr '\n' ','  | sed 's/,,/,/g' ; echo NoGroup`
+			COMBOXBOX1LINENO=`grep -n '$'ComboBox1.List /var/lib/samba/netlogon/kix/WSsetup.kix | cut -d: -f1`
+			sed $COMBOXBOX1LINENO'c'\$ComboBox1.List" "=" "$KIXLOCATIONLIST /var/lib/samba/netlogon/kix/WSsetup.kix > /var/lib/samba/netlogon/kix/WSsetup.kix1
+			rm -f /var/lib/samba/netlogon/kix/WSsetup.kix
+			mv /var/lib/samba/netlogon/kix/WSsetup.kix1 /var/lib/samba/netlogon/kix/WSsetup.kix
+			chmod 0644 /var/lib/samba/netlogon/kix/WSsetup.kix
+		fi
+
+		#########################
+		#Add in asset
+		#########################
+		get_asset_number
+		echo `date`: asset_register_view - adding $IDENTITY to $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		write_asset_data
+		#Delete lock file
+		rm -f /opt/karoshi/asset_register/.asset_lock
+
+		let COUNTER="$COUNTER"+1
+	done
+	#Show main page
+	#View logs
+	echo '</form><form action="asset_register_view.cgi" id="foo" method="post">
+	<input name="_LOCATION_showchoice_" value="" type="hidden">
+	</form>
+
+	<script type="text/javascript">
+	    function myfunc () {
+		var frm = document.getElementById("foo");
+		frm.submit();
+	    }
+	    window.onload = myfunc;
+	</script>'
 
 fi
 
