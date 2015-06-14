@@ -57,110 +57,111 @@ SMARTWARN=no
 if [ $SERVER = `hostname-fqdn` ]
 then
 
-#Check to see if mdadm is installed
-UPDATEREPOS=yes
-RELOADPAGE=no
-which mdadm 1>/dev/null
-if [ `echo $?` != 0 ]
-then
-RELOADPAGE=yes
-apt-get update
-UPDATEREPOS=no
-apt-get install -y mdadm
-fi
+	#Check to see if mdadm is installed
+	UPDATEREPOS=yes
+	RELOADPAGE=no
+	which mdadm 1>/dev/null
+	if [ $? != 0 ]
+	then
+		RELOADPAGE=yes
+		apt-get update
+		UPDATEREPOS=no
+		apt-get install -y mdadm
+	fi
 
-#Check to see if smartmontools are installed
-which smartctl 1>/dev/null
-if [ `echo $?` != 0 ]
-then
-RELOADPAGE=yes
-if [ $UPDATEREPOS = yes ]
-then
-UPDATEREPOS=no
-apt-get update
-fi
-apt-get install -y smartmontools
-fi
+	#Check to see if smartmontools are installed
+	which smartctl 1>/dev/null
+	if [ $? != 0 ]
+	then
+		RELOADPAGE=yes
+		if [ $UPDATEREPOS = yes ]
+		then
+			UPDATEREPOS=no
+			apt-get update
+		fi
+		apt-get install -y smartmontools
+	fi
 
 
-ALL_DRIVES=( `parted -l -s | grep Disk | sed "s/Error: //g" | sed "s/Disk //g" | grep /dev/sd | cut -d: -f1 | tr -cd "A-Za-z0-9/\n "` )
+	ALL_DRIVES=( `parted -l -s | grep Disk | sed "s/Error: //g" | sed "s/Disk //g" | grep /dev/sd | cut -d: -f1 | tr -cd "A-Za-z0-9/\n "` )
 
-for DRIVE in ${ALL_DRIVES[@]:0}
-do
-if [ `smartctl -l error /dev/$DRIVE | grep -c ^Error` -ge $BAD_SECTOR_WARN ]
-then
-SMARTWARN=yes
-fi
-smartctl -Hc /dev/$DRIVE
-SMARTRESULT=`echo $?`
-[ $SMARTRESULT = 24 ] && SMARTWARN=yes
+	for DRIVE in ${ALL_DRIVES[@]:0}
+	do
+		echo checking $DRIVE
+		if [ `smartctl -l error $DRIVE | grep -c ^Error` -ge $BAD_SECTOR_WARN ]
+		then
+			SMARTWARN=yes
+		fi
+		smartctl -Hc $DRIVE
+		SMARTRESULT=$?
+		[ $SMARTRESULT = 24 ] && SMARTWARN=yes
 
-#Check for pending sector count and hard drive temp
-EXTRASMARTINFO=`smartctl -a $DRIVE`
-PENDINGSECTORS=`echo -e "$EXTRASMARTINFO" | grep Current_Pending_Sector | sed "s/ * / /g" | cut -d" " -f10`
-DISKTEMP=`echo -e "$EXTRASMARTINFO" | grep Temperature_Celsius | sed "s/ * / /g" | cut -d" " -f10`
-[ $PENDINGSECTORS -gt 0 ] && SMARTWARN=yes
-[ $DISKTEMP -gt 50 ] && COLOUR=SMARTWARN=yes
-#[ $SMARTRESULT = 2 ] && SMARTWARN=yes
-done
+		#Check for pending sector count and hard drive temp
+		EXTRASMARTINFO=`smartctl -a $DRIVE`
+		PENDINGSECTORS=`echo -e "$EXTRASMARTINFO" | grep Current_Pending_Sector | sed "s/ * / /g" | cut -d" " -f10`
+		DISKTEMP=`echo -e "$EXTRASMARTINFO" | grep Temperature_Celsius | sed "s/ * / /g" | cut -d" " -f10`
+		[[ $PENDINGSECTORS > 0 ]] && SMARTWARN=yes
+		[[ $DISKTEMP > 50 ]] && COLOUR=SMARTWARN=yes
+		#[ $SMARTRESULT = 2 ] && SMARTWARN=yes
+	done
 
 else
-ssh -x -o PasswordAuthentication=no $SERVER '
+	ssh -x -o PasswordAuthentication=no $SERVER '
 
-#Check to see if mdadm is installed
-UPDATEREPOS=yes
-RELOADPAGE=no
-which mdadm 1>/dev/null
-if [ `echo $?` != 0 ]
-then
-RELOADPAGE=yes
-apt-get update
-echo "</pre>"
-UPDATEREPOS=no
-apt-get install -y mdadm
-fi
+	#Check to see if mdadm is installed
+	UPDATEREPOS=yes
+	RELOADPAGE=no
+	which mdadm 1>/dev/null
+	if [ $? != 0 ]
+	then
+		RELOADPAGE=yes
+		apt-get update
+		echo "</pre>"
+		UPDATEREPOS=no
+		apt-get install -y mdadm
+	fi
 
-#Check to see if smartmontools are installed
-which smartctl 1>/dev/null
-if [ `echo $?` != 0 ]
-then
-RELOADPAGE=yes
-if [ $UPDATEREPOS = yes ]
-then
-UPDATEREPOS=no
-apt-get update
-fi
-apt-get install -y smartmontools
-fi
+	#Check to see if smartmontools are installed
+	which smartctl 1>/dev/null
+	if [ $? != 0 ]
+	then
+		RELOADPAGE=yes
+		if [ $UPDATEREPOS = yes ]
+		then
+			UPDATEREPOS=no
+			apt-get update
+		fi
+		apt-get install -y smartmontools
+	fi
 
-ALL_DRIVES=( `parted -l -s | grep Disk | sed "s/Error: //g" | sed "s/Disk //g" | grep /dev/sd | cut -d: -f1 | tr -cd "A-Za-z0-9/\n "` )
-for DRIVE in ${ALL_DRIVES[@]:0}
-do
-if [ `smartctl -l error /dev/$DRIVE | grep -c ^Error` -ge '$BAD_SECTOR_WARN' ]
-then
-exit 105
-fi
-smartctl -Hc /dev/$DRIVE
-SMARTRESULT=`echo $?`
-[ $SMARTRESULT = 24 ] && exit 105
-#[ $SMARTRESULT = 2 ] && exit 105
+	ALL_DRIVES=( `parted -l -s | grep Disk | sed "s/Error: //g" | sed "s/Disk //g" | grep /dev/sd | cut -d: -f1 | tr -cd "A-Za-z0-9/\n "` )
+	for DRIVE in ${ALL_DRIVES[@]:0}
+	do
+		if [ `smartctl -l error $DRIVE | grep -c ^Error` -ge '$BAD_SECTOR_WARN' ]
+		then
+			exit 105
+		fi
+		smartctl -Hc $DRIVE
+		SMARTRESULT=`echo $?`
+		[ $SMARTRESULT = 24 ] && exit 105
+		#[ $SMARTRESULT = 2 ] && exit 105
 
-#Check for pending sector count and hard drive temp
-EXTRASMARTINFO=`smartctl -a $DRIVE`
-PENDINGSECTORS=`echo -e "$EXTRASMARTINFO" | grep Current_Pending_Sector | sed "s/ * / /g" | cut -d" " -f10`
-DISKTEMP=`echo -e "$EXTRASMARTINFO" | grep Temperature_Celsius | sed "s/ * / /g" | cut -d" " -f10`
-[ $PENDINGSECTORS -gt 0 ] && exit 105
-[ $DISKTEMP -gt 50 ] && exit 105
+		#Check for pending sector count and hard drive temp
+		EXTRASMARTINFO=`smartctl -a $DRIVE`
+		PENDINGSECTORS=`echo -e "$EXTRASMARTINFO" | grep Current_Pending_Sector | sed "s/ * / /g" | cut -d" " -f10`
+		DISKTEMP=`echo -e "$EXTRASMARTINFO" | grep Temperature_Celsius | sed "s/ * / /g" | cut -d" " -f10`
+		[[ $PENDINGSECTORS > 0 ]] && exit 105
+		[[ $DISKTEMP > 50 ]] && exit 105
 
-done
-'
-[ `echo $?` = 105 ] && SMARTWARN=yes
+	done
+	'
+	[ $? = 105 ] && SMARTWARN=yes
 fi
 
 if [ $SMARTWARN = yes ]
 then
-ERRORALERT=`echo "$SERVER - $SMARTWARNMSG"`
-warning_alert3
+	ERRORALERT=`echo "$SERVER - $SMARTWARNMSG"`
+	warning_alert3
 fi
 }
 
@@ -174,160 +175,159 @@ RAIDWARN=no
 ZFSWARN=no
 if [ $SERVER = `hostname-fqdn` ]
 then
-[ ! -d /opt/karoshi/logs/disk_usage/$LOG_DATE ] && mkdir -p /opt/karoshi/logs/disk_usage/$LOG_DATE
-sleep 4 ; killall df 2>/dev/null | df -h -l > /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage.$$
-#Convert data to a table
+	[ ! -d /opt/karoshi/logs/disk_usage/$LOG_DATE ] && mkdir -p /opt/karoshi/logs/disk_usage/$LOG_DATE
+	sleep 4 ; killall df 2>/dev/null | df -h -l > /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage.$$
+	#Convert data to a table
 
-#Replace spaces
-sed -i "s/ * / /g" /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage.$$
-#Process data
-LINE_COUNT=`wc -l /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage.$$ | cut -d' ' -f1`
-COUNTER=1
-echo \<b\>$SERVER `date`\</b\>\<br\> > /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
-echo \<table class=\"standard\" style=\"text-align: left\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>\<tbody\> >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
-echo '<tr><td style="vertical-align: top; width: 180px;"></td><td style="vertical-align: top; width: 50px;"></td><td style="vertical-align: top; width: 50px;"></td><td style="vertical-align: top; width: 50px;"></td><td style="vertical-align: top; width: 50px;"></td><td style="vertical-align: top; width: 100px;"></td></tr>' >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
+	#Replace spaces
+	sed -i "s/ * / /g" /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage.$$
+	#Process data
+	LINE_COUNT=`wc -l /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage.$$ | cut -d' ' -f1`
+	COUNTER=1
+	echo \<b\>$SERVER `date`\</b\>\<br\> > /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
+	echo \<table class=\"standard\" style=\"text-align: left\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>\<tbody\> >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
+	echo '<tr><td style="vertical-align: top; width: 180px;"></td><td style="vertical-align: top; width: 50px;"></td><td style="vertical-align: top; width: 50px;"></td><td style="vertical-align: top; width: 50px;"></td><td style="vertical-align: top; width: 50px;"></td><td style="vertical-align: top; width: 100px;"></td></tr>' >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
 
-while [ $COUNTER -le $LINE_COUNT ]
-do
-LINEDATA=`sed -n $COUNTER,$COUNTER"p" /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage.$$`
-if [ $COUNTER = 1 ]
-then
-LINEDATA=`echo "$LINEDATA" | sed "s/Mounted On/Mounted-On/g" | sed "s/^/\<tr\>\<td\>/g" | sed "s/ /\<\/td\>\<td\>/g" | sed "s/$/\<\/td\>\<\/tr\>/"`
-echo $LINEDATA >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
+	while [ $COUNTER -le $LINE_COUNT ]
+	do
+		LINEDATA=`sed -n $COUNTER,$COUNTER"p" /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage.$$`
+		if [ $COUNTER = 1 ]
+		then
+			LINEDATA=`echo "$LINEDATA" | sed "s/Mounted On/Mounted-On/g" | sed "s/^/\<tr\>\<td\>/g" | sed "s/ /\<\/td\>\<td\>/g" | sed "s/$/\<\/td\>\<\/tr\>/"`
+			echo $LINEDATA >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
+		else
+			USAGE=`echo $LINEDATA | cut -d' ' -f5 | sed "s/\%//g"`
+			#Colour code data red for 95% or over
+			if [ $USAGE -ge 95 ]
+			then
+				LINEDATA=`echo "$LINEDATA" | sed "s/ /\<\/span\>\<\/td\>\<td\>\<span style=\"color: rgb\(255, 0, 0\)\; font-weight: bold\;\"\>/g" | sed "s/^/\<tr\>\<td\>\<span style=\"color: rgb\(255, 0, 0\)\; font-weight: bold\;\"\>/g" | sed "s/$/\<\/span\>\<\/td\>\<\/tr\>/"`
+				echo $LINEDATA >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
+				[ `echo $LINEDATA | grep -c /media` = 0 ] && DISKWARN=yes
+				#Colour code data orange for 85% or over
+			elif [ $USAGE -ge 85 ]
+			then
+				LINEDATA=`echo "$LINEDATA" | sed "s/ /\<\/span\>\<\/td\>\<td\>\<span style=\"color: rgb\(255, 153, 0\)\; font-weight: bold\;\"\>/g" | sed "s/^/\<tr\>\<td\>\<span style=\"color: rgb\(255, 153, 0\)\; font-weight: bold\;\"\>/g" | sed "s/$/\<\/span\>\<\/td\>\<\/tr\>/"`
+			echo $LINEDATA >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
+			else
+				LINEDATA=`echo "$LINEDATA" | sed "s/^/\<tr\>\<td\>/g" | sed "s/ /\<\/td\>\<td\>/g" | sed "s/$/\<\/td\>\<\/tr\>/"`
+				echo "$LINEDATA" >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
+			fi
+		fi
+		let COUNTER=$COUNTER+1
+	done
+	echo \</tbody\>\</table\> >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
+	rm -f /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage.$$
+	#Check software raid status
+	if [ `grep -c ^"#Software raid" /etc/fstab` != 0 ]
+	then
+
+	#Get raid info
+	RAID_UUID=`cat /etc/fstab | grep -A 1 "#Software raid" | sed -n 2,2p | cut -d\" -f2`
+	RAID_DEVICE=`blkid | grep $RAID_UUID | cut -d: -f1`
+
+	mdadm --detail --test $RAID_DEVICE >> /opt/karoshi/logs/disk_usage/$LOG_DATE/raid_status
+	RAIDSTATUS=`echo $?`
+	[ $RAIDSTATUS != 0 ] && RAIDWARN=yes
+	fi
+
+	#Get zfs raid status
+	if [ `zpool status | grep -c $HOSTNAME-data` -gt 0 ]
+	then
+		if [ `zpool status $HOSTNAME-data | grep -c DEGRADED` -gt 0 ]
+		then
+			ZFSWARN=yes
+		fi
+	fi
 else
-USAGE=`echo $LINEDATA | cut -d' ' -f5 | sed "s/\%//g"`
-#Colour code data red for 95% or over
-if [ $USAGE -ge 95 ]
-then
-LINEDATA=`echo "$LINEDATA" | sed "s/ /\<\/span\>\<\/td\>\<td\>\<span style=\"color: rgb\(255, 0, 0\)\; font-weight: bold\;\"\>/g" | sed "s/^/\<tr\>\<td\>\<span style=\"color: rgb\(255, 0, 0\)\; font-weight: bold\;\"\>/g" | sed "s/$/\<\/span\>\<\/td\>\<\/tr\>/"`
-echo $LINEDATA >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
-[ `echo $LINEDATA | grep -c /media` = 0 ] && DISKWARN=yes
-#Colour code data orange for 85% or over
-elif [ $USAGE -ge 85 ]
-then
-LINEDATA=`echo "$LINEDATA" | sed "s/ /\<\/span\>\<\/td\>\<td\>\<span style=\"color: rgb\(255, 153, 0\)\; font-weight: bold\;\"\>/g" | sed "s/^/\<tr\>\<td\>\<span style=\"color: rgb\(255, 153, 0\)\; font-weight: bold\;\"\>/g" | sed "s/$/\<\/span\>\<\/td\>\<\/tr\>/"`
-echo $LINEDATA >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
-else
-LINEDATA=`echo "$LINEDATA" | sed "s/^/\<tr\>\<td\>/g" | sed "s/ /\<\/td\>\<td\>/g" | sed "s/$/\<\/td\>\<\/tr\>/"`
-echo "$LINEDATA" >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
-fi
-fi
-let COUNTER=$COUNTER+1
-done
-echo \</tbody\>\</table\> >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
-rm -f /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage.$$
-#Check software raid status
-if [ `grep -c ^"#Software raid" /etc/fstab` != 0 ]
-then
+	if [ -d /opt/karoshi/server_network/servers/$SERVER ]
+	then
+		ssh -x -o PasswordAuthentication=no $SERVER '
+		[ ! -d /opt/karoshi/logs/disk_usage/'$LOG_DATE' ] && mkdir -p /opt/karoshi/logs/disk_usage/'$LOG_DATE'
+		sleep 4 ; killall df 2>/dev/null | df -h -l > /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage.$$
+		#Convert data to a table
+		DISKWARN=no
+		#Replace spaces
+		sed -i "s/ * / /g" /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage.$$
+		#Process data
+		LINE_COUNT=`wc -l /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage.$$ | cut -d" " -f1`
+		COUNTER=1
+		echo \<b\>'$SERVER' `date`\</b\>\<br\> > /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
+		echo \<table class=\"standard\" style=\"text-align: left\; height: 91px\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>\<tbody\> >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
 
-#Get raid info
-RAID_UUID=`cat /etc/fstab | grep -A 1 "#Software raid" | sed -n 2,2p | cut -d\" -f2`
-RAID_DEVICE=`blkid | grep $RAID_UUID | cut -d: -f1`
+		echo "<tr><td style=\"vertical-align: top; width: 180px;\"></td><td style=\"vertical-align: top; width: 50px;\"></td><td style=\"vertical-align: top; width: 50px;\"></td><td style=\"vertical-align: top; width: 50px;\"></td><td style=\"vertical-align: top; width: 50px;\"></td><td style=\"vertical-align: top; width: 100px;\"></td></tr>" >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
 
-mdadm --detail --test $RAID_DEVICE >> /opt/karoshi/logs/disk_usage/$LOG_DATE/raid_status
-RAIDSTATUS=`echo $?`
-[ $RAIDSTATUS != 0 ] && RAIDWARN=yes
-fi
+		while [ $COUNTER -le $LINE_COUNT ]
+		do
+			LINEDATA=`sed -n $COUNTER,$COUNTER"p" /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage.$$`
+			if [ $COUNTER = 1 ]
+				then
+				LINEDATA=`echo "$LINEDATA" | sed "s/Mounted On/Mounted-On/g" | sed "s/^/\<tr\>\<td\>/g" | sed "s/ /\<\/td\>\<td\>/g" | sed "s/$/\<\/td\>\<\/tr\>/"`
+				echo $LINEDATA >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
+			else
+				USAGE=`echo $LINEDATA | cut -d" " -f5 | sed "s/\%//g"`
+				#Colour code data red for 95% or over
+				if [ $USAGE -ge 95 ]
+				then
+					LINEDATA=`echo "$LINEDATA" | sed "s/ /\<\/span\>\<\/td\>\<td\>\<span style=\"color: rgb\(255, 0, 0\)\; font-weight: bold\;\"\>/g" | sed "s/^/\<tr\>\<td\>\<span style=\"color: rgb\(255, 0, 0\)\; font-weight: bold\;\"\>/g" | sed "s/$/\<\/span\>\<\/td\>\<\/tr\>/"`
+					echo $LINEDATA >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
+					[ `echo $LINEDATA | grep -c /media` = 0 ] && DISKWARN=yes
+					#Colour code data orange for 85% or over
+				elif [ $USAGE -ge 85 ]
+				then
+					LINEDATA=`echo "$LINEDATA" | sed "s/ /\<\/span\>\<\/td\>\<td\>\<span style=\"color: rgb\(255, 153, 0\)\; font-weight: bold\;\"\>/g" | sed "s/^/\<tr\>\<td\>\<span style=\"color: rgb\(255, 153, 0\)\; font-weight: bold\;\"\>/g" | sed "s/$/\<\/span\>\<\/td\>\<\/tr\>/"`
+					echo $LINEDATA >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
+				else
+					LINEDATA=`echo "$LINEDATA" | sed "s/^/\<tr\>\<td\>/g" | sed "s/ /\<\/td\>\<td\>/g" | sed "s/$/\<\/td\>\<\/tr\>/"`
+					echo "$LINEDATA" >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
+				fi
+			fi
+			let COUNTER=$COUNTER+1
+		done
+		echo \</tbody\>\</table\> >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
+		rm -f /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage.$$
+		[ $DISKWARN = yes ] && exit 101
+		'
 
-#Get zfs raid status
-if [ `zpool status | grep -c $HOSTNAME-data` -gt 0 ]
-then
-if [ `zpool status $HOSTNAME-data | grep -c DEGRADED` -gt 0 ]
-then
-ZFSWARN=yes
-fi
-fi
-else
-if [ -d /opt/karoshi/server_network/servers/$SERVER ]
-then
-ssh -x -o PasswordAuthentication=no $SERVER '
-[ ! -d /opt/karoshi/logs/disk_usage/'$LOG_DATE' ] && mkdir -p /opt/karoshi/logs/disk_usage/'$LOG_DATE'
-sleep 4 ; killall df 2>/dev/null | df -h -l > /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage.$$
-#Convert data to a table
-DISKWARN=no
-#Replace spaces
-sed -i "s/ * / /g" /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage.$$
-#Process data
-LINE_COUNT=`wc -l /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage.$$ | cut -d" " -f1`
-COUNTER=1
-echo \<b\>'$SERVER' `date`\</b\>\<br\> > /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
-echo \<table class=\"standard\" style=\"text-align: left\; height: 91px\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"\>\<tbody\> >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
+		[ `echo $?` = 101 ] && DISKWARN=yes
 
-echo "<tr><td style=\"vertical-align: top; width: 180px;\"></td><td style=\"vertical-align: top; width: 50px;\"></td><td style=\"vertical-align: top; width: 50px;\"></td><td style=\"vertical-align: top; width: 50px;\"></td><td style=\"vertical-align: top; width: 50px;\"></td><td style=\"vertical-align: top; width: 100px;\"></td></tr>" >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
+		ssh -x -o PasswordAuthentication=no $SERVER '
+		#Check software raid status
+		RAIDWARN=no
+		if [ `grep -c ^"#Software raid" /etc/fstab` != 0 ]
+		then
 
-while [ $COUNTER -le $LINE_COUNT ]
-do
-LINEDATA=`sed -n $COUNTER,$COUNTER"p" /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage.$$`
-if [ $COUNTER = 1 ]
-then
-LINEDATA=`echo "$LINEDATA" | sed "s/Mounted On/Mounted-On/g" | sed "s/^/\<tr\>\<td\>/g" | sed "s/ /\<\/td\>\<td\>/g" | sed "s/$/\<\/td\>\<\/tr\>/"`
-echo $LINEDATA >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
-else
-USAGE=`echo $LINEDATA | cut -d" " -f5 | sed "s/\%//g"`
-#Colour code data red for 95% or over
-if [ $USAGE -ge 95 ]
-then
-LINEDATA=`echo "$LINEDATA" | sed "s/ /\<\/span\>\<\/td\>\<td\>\<span style=\"color: rgb\(255, 0, 0\)\; font-weight: bold\;\"\>/g" | sed "s/^/\<tr\>\<td\>\<span style=\"color: rgb\(255, 0, 0\)\; font-weight: bold\;\"\>/g" | sed "s/$/\<\/span\>\<\/td\>\<\/tr\>/"`
-echo $LINEDATA >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
-[ `echo $LINEDATA | grep -c /media` = 0 ] && DISKWARN=yes
-#Colour code data orange for 85% or over
-elif [ $USAGE -ge 85 ]
-then
-LINEDATA=`echo "$LINEDATA" | sed "s/ /\<\/span\>\<\/td\>\<td\>\<span style=\"color: rgb\(255, 153, 0\)\; font-weight: bold\;\"\>/g" | sed "s/^/\<tr\>\<td\>\<span style=\"color: rgb\(255, 153, 0\)\; font-weight: bold\;\"\>/g" | sed "s/$/\<\/span\>\<\/td\>\<\/tr\>/"`
-echo $LINEDATA >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
-else
-LINEDATA=`echo "$LINEDATA" | sed "s/^/\<tr\>\<td\>/g" | sed "s/ /\<\/td\>\<td\>/g" | sed "s/$/\<\/td\>\<\/tr\>/"`
-echo "$LINEDATA" >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
-fi
-fi
-let COUNTER=$COUNTER+1
-done
-echo \</tbody\>\</table\> >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
-rm -f /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage.$$
-[ $DISKWARN = yes ] && exit 101
-'
+		#Get raid info
+		RAID_UUID=`cat /etc/fstab | grep -A 1 "#Software raid" | sed -n 2,2p | cut -d\" -f2`
+		RAID_DEVICE=`blkid | grep $RAID_UUID | cut -d: -f1`
 
-[ `echo $?` = 101 ] && DISKWARN=yes
-
-ssh -x -o PasswordAuthentication=no $SERVER '
-#Check software raid status
-RAIDWARN=no
-if [ `grep -c ^"#Software raid" /etc/fstab` != 0 ]
-then
-
-#Get raid info
-RAID_UUID=`cat /etc/fstab | grep -A 1 "#Software raid" | sed -n 2,2p | cut -d\" -f2`
-RAID_DEVICE=`blkid | grep $RAID_UUID | cut -d: -f1`
-
-mdadm --detail --test $RAID_DEVICE >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/raid_status
-RAIDSTATUS=`echo $?`
-[ $RAIDSTATUS != 0 ] && RAIDWARN=yes
-fi
-[ $RAIDWARN = yes ] && exit 102
-'
-[ `echo $?` = 102 ] && RAIDWARN=yes
-else
-echo SSH not enabled "for" $SERVER
-fi
+		mdadm --detail --test $RAID_DEVICE >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/raid_status
+		RAIDSTATUS=`echo $?`
+		[ $RAIDSTATUS != 0 ] && RAIDWARN=yes
+		fi
+		[ $RAIDWARN = yes ] && exit 102
+		'
+		[ `echo $?` = 102 ] && RAIDWARN=yes
+		else
+		echo SSH not enabled "for" $SERVER
+	fi
 fi
 #Warn if over 90% usage
 if [ $DISKWARN = yes ]
 then
-ERRORALERT=`echo "$SERVER - $DISKWARNMSG"`
-warning_alert
-
+	ERRORALERT=`echo "$SERVER - $DISKWARNMSG"`
+	warning_alert
 fi
 #Warn if raid fail
 if [ $RAIDWARN = yes ]
 then
-ERRORALERT=`echo "$SERVER - $RAIDWARNMSG"`
-warning_alert2
+	ERRORALERT=`echo "$SERVER - $RAIDWARNMSG"`
+	warning_alert2
 fi
 #Warn if zfs fail
 if [ $ZFSWARN = yes ]
 then
-ERRORALERT=`echo "$SERVER - ZFS Failure"`
-warning_alert4
+	ERRORALERT=`echo "$SERVER - ZFS Failure"`
+	warning_alert4
 fi
 }
 
@@ -336,8 +336,8 @@ SERVER_COUNT=`echo ${#SERVERS[@]}`
 SERVER_COUNTER=0
 while [ $SERVER_COUNTER -lt $SERVER_COUNT ]
 do
-SERVER=`echo ${SERVERS[$SERVER_COUNTER]}`
-record_disk_usage
-check_smart_data
-let SERVER_COUNTER=$SERVER_COUNTER+1
+	SERVER=`echo ${SERVERS[$SERVER_COUNTER]}`
+	record_disk_usage
+	check_smart_data
+	let SERVER_COUNTER=$SERVER_COUNTER+1
 done

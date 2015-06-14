@@ -97,6 +97,7 @@ echo '        <a href="/cgi-bin/admin/add_user_fm.cgi">'$"Add User"'</a>
 fi
 echo '	<a href="/cgi-bin/admin/change_password_fm.cgi">'$"Change Password"'</a>
 	<a href="/cgi-bin/admin/group_membership_fm.cgi">'$"Group Membership"'</a>
+	<a href="/cgi-bin/admin/groups.cgi">'$"Group Management"'</a>
       </div>
       <div class="collapsed">
         <span>'$"System"'</span>

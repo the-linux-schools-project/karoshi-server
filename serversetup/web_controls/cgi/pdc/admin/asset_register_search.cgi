@@ -96,30 +96,39 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+
+USERSTATUS=notset
+
+#Check if the user is an admin or a tech user
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` -gt 0 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	USERSTATUS=tech
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+#Check if the user is an admin or a tech user
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` -gt 0 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	USERSTATUS=admin
+fi
+
+if [[ "$USERSTATUS" = notset ]]
+then
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 #Check that asset has been set
-if [ -z $ASSET ]
+if [ -z "$ASSET" ]
 then
-MESSAGE=$"You have not entered in an asset number."
-show_status
+	MESSAGE=$"You have not entered in an asset number."
+	show_status
 fi
 
 
@@ -129,8 +138,8 @@ ASSETPATH=`find /opt/karoshi/asset_register/locations -name $ASSET`
 
 if [ -z $ASSETPATH ]
 then
-MESSAGE=$"This asset does not exist in the asset register."
-show_status
+	MESSAGE=$"This asset does not exist in the asset register."
+	show_status
 fi
 
 LOCATION=`echo $ASSETPATH | cut -d"/" -f6`
@@ -140,11 +149,11 @@ if [ $MOBILE = no ]
 then
 TABLECLASS=standard
 #Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+/opt/karoshi/web_controls/generate_navbar_$USERSTATUS
 echo '<div id="actionbox">'
 fi
 
-echo '<form action="/cgi-bin/admin/asset_register_view.cgi" method="post">'
+echo '<form action="/cgi-bin/'$USERSTATUS'/asset_register_view.cgi" method="post">'
 if [ $MOBILE = yes ]
 then
 TABLECLASS=mobilestandard

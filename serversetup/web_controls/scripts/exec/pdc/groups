@@ -71,7 +71,7 @@ SECGROUP=`echo "$DATA" | cut -s -d: -f10`
 EXTRAGROUPS=`echo "$DATA" | cut -s -d: -f11`
 USERNAME=`echo "$DATA" | cut -s -d: -f12`
 MOBILE=`echo "$DATA" | cut -s -d: -f13`
-MOBILE=no
+
 ########################
 #Check data
 ########################
@@ -178,20 +178,37 @@ then
 	exit
 fi
 
+if [ "$ACTION" = adduser ]
+then
+	echo `date`: groups - "adding "$USERNAME" to $GROUPNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	samba-tool group addmembers "$GROUPNAME" "$USERNAME" 1>/dev/null
+	exit
+fi
 
 if [ "$ACTION" = showusers ]
 then
 	echo `date`: groups - "showing all users in group $GROUPNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-      	<tr><td style="width: 180px;"><b>'$"Username"'</b></td><td style="width: 180px;"><b>'$"Full Name"'</b></td><td><b>'$"Remove"'</b></td></tr>'
-	for GROUPMEMBER in `samba-tool group listmembers "$GROUPNAME"`
-	do
-		FULLNAME=`getent passwd "$GROUPMEMBER" | cut -d: -f5 | sed 's/,//g'`
-		echo '<tr><td>'$GROUPMEMBER'</td><td>'$FULLNAME'</td><td>
-<a class="info" href="javascript:void(0)"><input name="____ACTION____removeuser____GROUPNAME____'$GROUPNAME'____USERNAME____'$GROUPMEMBER'____" type="image" class="images" src="'$ICON1'" value=""><span>'$GROUPMEMBER' - '$"remove this user from the group."'</span></a>
-</td></tr>'
-	done
-	echo '</tbody></table>'
+
+	#Show box to add users to the group.
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+      	<tr><td style="width: '$WIDTH1'px;"><b>'$"Add Users"'</b></td></tr><tr><td><b>'$"Username"'</b></td><td><div id="suggestions"></div>
+<input tabindex= "1" style="width: '$WIDTH1'px;" name="____ACTION____adduser____GROUPNAME____'$GROUPNAME'____USERNAME____" 
+ value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td><input value="'$"Submit"'" class="button" type="submit"></td></tr></tbody></table><br><br></form><form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">'
+	#Check how many users there are in the group before showing any users.
+	if [[ `getent group $GROUPNAME | cut -d: -f4- | sed '/^$/d' | sed 's/,/\n/g' | wc -l` > 0 ]]
+	then
+		#Show all users in the group.
+		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	      	<tr><td style="width: '$WIDTH1'px;"><b>'$"Username"'</b></td><td style="width: '$WIDTH1'px;"><b>'$"Full Name"'</b></td><td><b>'$"Remove"'</b></td></tr>'
+		for GROUPMEMBER in `samba-tool group listmembers "$GROUPNAME"`
+		do
+			FULLNAME=`getent passwd "$GROUPMEMBER" | cut -d: -f5 | sed 's/,//g'`
+			echo '<tr><td>'$GROUPMEMBER'</td><td>'$FULLNAME'</td><td>
+	<a class="info" href="javascript:void(0)"><input name="____ACTION____removeuser____GROUPNAME____'$GROUPNAME'____USERNAME____'$GROUPMEMBER'____" type="image" class="images" src="'$ICON1'" value=""><span>'$GROUPMEMBER' - '$"remove this user from the group."'</span></a>
+	</td></tr>'
+		done
+		echo '</tbody></table>'
+	fi
 	exit
 fi
 
