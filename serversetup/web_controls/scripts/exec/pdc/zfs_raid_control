@@ -235,7 +235,12 @@ do
 ZPOOLDRIVES=`zpool status $POOLNAME | grep "ONLINE\|SPARE\|OFFLINE\|AVAIL" | sed "s/\\t//g" | sed "s/^ * //g" | cut -d" " -f1 | grep -v "replacing\|state:\|$POOLNAME\|raidz"`
 
 #Show raid information
-MOUNTPOINT=`grep "mount " /etc/rc2.d/S90zfs-mount-$POOLNAME | cut -d" " -f3`
+if [ -f /etc/rc2.d/S90zfs-mount-$POOLNAME ]
+then
+	MOUNTPOINT=`grep "mount " /etc/rc2.d/S90zfs-mount-$POOLNAME | cut -d" " -f3`
+else
+	MOUNTPOINT=`zfs get mountpoint $POOLNAME | sed -n 2,2p | sed "s/ * / /g" | cut -d" " -f3`
+fi
 ZPOOLINFO=`zpool list $POOLNAME | sed -n 2,2p | sed "s/ * / /g"`
 ZPOOLSTATUS=`zpool status $POOLNAME`
 RAID_SIZE=`df -h | grep $MOUNTPOINT | sed "s/ * / /g" | cut -d" " -f2` 
@@ -402,7 +407,14 @@ do
 ZPOOLDRIVES=`zpool status $POOLNAME | grep "ONLINE\|SPARE\|OFFLINE\|AVAIL" | sed "s/\\t//g" | sed "s/^ * //g" | cut -d" " -f1 | grep -v "replacing\|state:\|$POOLNAME\|raidz"`
 
 #Show raid information
-MOUNTPOINT=`grep "mount " /etc/rc2.d/S90zfs-mount-$POOLNAME | cut -d" " -f3`
+
+if [ -f /etc/rc2.d/S90zfs-mount-$POOLNAME ]
+then
+	MOUNTPOINT=`grep "mount " /etc/rc2.d/S90zfs-mount-$POOLNAME | cut -d" " -f3`
+else
+	MOUNTPOINT=`zfs get mountpoint $POOLNAME | sed -n 2,2p | sed "s/ * / /g" | cut -d" " -f3`
+fi
+
 ZPOOLINFO=`zpool list $POOLNAME | sed -n 2,2p | sed "s/ * / /g"`
 ZPOOLSTATUS=`zpool status $POOLNAME`
 RAID_SIZE=`df -h | grep $MOUNTPOINT | sed "s/ * / /g" | cut -d" " -f2` 

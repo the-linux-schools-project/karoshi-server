@@ -256,45 +256,64 @@ then
 			exit 101
 		fi
 
-		#Get size of zfs raid
-		ZFSSIZEDATA=`zfs list $POOLNAME | sed -n 2,2p | sed "s/ * / /g" | cut -d" " -f3`
-		#Get rid of decimal places
-		ZFSSIZE=`echo $ZFSSIZEDATA | cut -d"." -f1`
-		STORAGEUNIT=`echo $ZFSSIZEDATA | tr -cd "A-Z"`
-		#Convert to gigabytes if reported in terabytes
-		if [ $STORAGEUNIT = T ]
+		#Set and Check for posix acl support
+		zfs set acltype=posixacl "$POOLNAME"
+		if [ $? = 0 ]
 		then
-			STORAGEUNIT=G
-			let ZFSSIZE=$ZFSSIZE*1024
+			POSIXSUPPORT=yes
+		else
+			POSIXSUPPORT=no
 		fi
-		#Create partition on zfs raid
-		zfs create -V $ZFSSIZE$STORAGEUNIT $POOLNAME/storage
-		STATUS=$?
-		#Check zfs partition has been created
-		while [ $STATUS != 0 ]
-		do
-			let ZFSSIZE=$ZFSSIZE-1
+
+		if [ $POSIXSUPPORT = no ]
+		then
+			#Get size of zfs raid
+			ZFSSIZEDATA=`zfs list $POOLNAME | sed -n 2,2p | sed "s/ * / /g" | cut -d" " -f3`
+			#Get rid of decimal places
+			ZFSSIZE=`echo $ZFSSIZEDATA | cut -d"." -f1`
+			STORAGEUNIT=`echo $ZFSSIZEDATA | tr -cd "A-Z"`
+			#Convert to gigabytes if reported in terabytes
+			if [ $STORAGEUNIT = T ]
+			then
+				STORAGEUNIT=G
+				let ZFSSIZE=$ZFSSIZE*1024
+			fi
+			#Create partition on zfs raid
 			zfs create -V $ZFSSIZE$STORAGEUNIT $POOLNAME/storage
 			STATUS=$?
-		done
+			#Check zfs partition has been created
+			while [ $STATUS != 0 ]
+			do
+				let ZFSSIZE=$ZFSSIZE-1
+				zfs create -V $ZFSSIZE$STORAGEUNIT $POOLNAME/storage
+				STATUS=$?
+			done
 
-		echo '<li>'$"Creating ZFS partition"' - '$ZFSSIZE''$STORAGEUNIT'</li>'
+			echo '<li>'$"Creating ZFS partition"' - '$ZFSSIZE''$STORAGEUNIT'</li>'
 
-		COUNTER=1
-		while [ $COUNTER -lt 30 ]
-		do
-			[ -e /$ZPOOLTOPPATH/$POOLNAME/storage ] && break
-			sleep 1
-			let COUNTER=$COUNTER+1
-		done
+			COUNTER=1
+			while [ $COUNTER -lt 30 ]
+			do
+				[ -e /$ZPOOLTOPPATH/$POOLNAME/storage ] && break
+				sleep 1
+				let COUNTER=$COUNTER+1
+			done
 
-		#Format the partition as ext4
-		echo '<li>'$"Formating the partition"' - ext4</li>'
-		mkfs.ext4 /$ZPOOLTOPPATH/$POOLNAME/storage
+			#Format the partition as ext4
+			echo '<li>'$"Formating the partition"' - ext4</li>'
+			mkfs.ext4 /$ZPOOLTOPPATH/$POOLNAME/storage
+		fi
+
 		#Mount partition on a temporary mount point
 		[ ! -d $MOUNTPOINT.$$ ] && mkdir -p $MOUNTPOINT.$$
-		mount /$ZPOOLTOPPATH/$POOLNAME/storage $MOUNTPOINT.$$
 
+		if [ $POSIXSUPPORT = yes ]
+		then
+			zfs set mountpoint=$MOUNTPOINT.$$ $POOLNAME
+			zfs mount $POOLNAME
+		else
+			mount /$ZPOOLTOPPATH/$POOLNAME/storage $MOUNTPOINT.$$
+		fi
 		#Stop services if the mount point is /var
 		if [ `echo $MOUNTPOINT | grep -c /var` -gt 0 ]
 		then
@@ -356,8 +375,14 @@ then
 
 		#Unmount zfs partition and mount as /home
 		umount $MOUNTPOINT.$$
-		mount /$ZPOOLTOPPATH/$POOLNAME/storage $MOUNTPOINT
 
+		if [ $POSIXSUPPORT = yes ]
+		then
+			zfs set mountpoint=$MOUNTPOINT $POOLNAME
+			zfs mount $POOLNAME
+		else
+			mount /$ZPOOLTOPPATH/$POOLNAME/storage $MOUNTPOINT
+		fi
 		#Remove temporary mount point
 		[ -d $MOUNTPOINT.$$ ] && rm -f -R $MOUNTPOINT.$$
 
@@ -370,7 +395,9 @@ then
 		echo "</pre>"
 
 		#Mount partition on boot
-		echo '#!/bin/bash
+		if [ $POSIXSUPPORT = no ]
+		then
+			echo '#!/bin/bash
 COUNTER=0
 while [ $COUNTER -le 100 ]
 do
@@ -380,8 +407,20 @@ do
 	let COUNTER=$COUNTER+1
 done' > /etc/rc2.d/S90zfs-mount-$POOLNAME
 
-		chmod 0700 /etc/rc2.d/S90zfs-mount-$POOLNAME
+			chmod 0700 /etc/rc2.d/S90zfs-mount-$POOLNAME
+		else
+			echo '#!/bin/bash
+COUNTER=0
+while [ $COUNTER -le 100 ]
+do
+	zfs mount -a
+	[ $? = 0 ] && exit
+	sleep 1
+	let COUNTER=$COUNTER+1
+done' > /etc/rc2.d/S90zfs-mount-all
 
+			chmod 0700 /etc/rc2.d/S90zfs-mount-all
+		fi
 		#Start services if they were previously running and were stopped to create a raid on /var
 		if [ `echo $MOUNTPOINT | grep -c /var` -gt 0 ]
 		then
@@ -407,17 +446,33 @@ done' > /etc/rc2.d/S90zfs-mount-$POOLNAME
 			sort_gluster
 		fi
 
-		zpool import -D -f $POOLNAME
+		zpool import -f $POOLNAME
 
-		COUNTER=1
-		while [ $COUNTER -lt 30 ]
-		do
-			[ -e /$ZPOOLTOPPATH/$POOLNAME/storage ] && break
-			sleep 1
-			let COUNTER=$COUNTER+1
-		done
 
-		mount /$ZPOOLTOPPATH/$POOLNAME/storage $MOUNTPOINT
+		#Set and Check for posix acl support
+		zfs set acltype=posixacl "$POOLNAME"
+		if [ $? = 0 ]
+		then
+			POSIXSUPPORT=yes
+		else
+			POSIXSUPPORT=no
+		fi
+
+		if [ $POSIXSUPPORT = no ]
+		then
+			COUNTER=1
+			while [ "$COUNTER" -lt 30 ]
+			do
+				[ -e /"$ZPOOLTOPPATH"/"$POOLNAME"/storage ] && break
+				sleep 1
+				let COUNTER=$COUNTER+1
+			done
+
+			mount /"$ZPOOLTOPPATH"/"$POOLNAME"/storage "$MOUNTPOINT"
+		else
+			zfs set mountpoint="$MOUNTPOINT" "$POOLNAME"
+			#zfs mount "$POOLNAME"
+		fi
 
 		if [ "$SORTGLUSTER" = yes ]
 		then
@@ -425,8 +480,10 @@ done' > /etc/rc2.d/S90zfs-mount-$POOLNAME
 			sort_gluster
 		fi
 
-		#Mount partition on boot
-		echo '#!/bin/bash
+		if [ $POSIXSUPPORT = no ]
+		then
+			#Mount partition on boot
+			echo '#!/bin/bash
 COUNTER=0
 while [ $COUNTER -le 100 ]
 do
@@ -437,7 +494,20 @@ do
 	let COUNTER=$COUNTER+1
 done' > /etc/rc2.d/S90zfs-mount-$POOLNAME
 
-		chmod 0700 /etc/rc2.d/S90zfs-mount-$POOLNAME
+			chmod 0700 /etc/rc2.d/S90zfs-mount-$POOLNAME
+		else
+			echo '#!/bin/bash
+COUNTER=0
+while [ $COUNTER -le 100 ]
+do
+	zfs mount -a
+	[ $? = 0 ] && exit
+	sleep 1
+	let COUNTER=$COUNTER+1
+done' > /etc/rc2.d/S90zfs-mount-all
+
+			chmod 0700 /etc/rc2.d/S90zfs-mount-all
+		fi
 	fi
 
 	#Reuse existing zfs raid
@@ -539,44 +609,64 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 			exit 101
 		fi
 
-		#Get size of zfs raid
-		ZFSSIZEDATA=`zfs list '$POOLNAME' | sed -n 2,2p | sed "s/ * / /g" | cut -d" " -f3`
-		#Get rid of decimal places
-		ZFSSIZE=`echo $ZFSSIZEDATA | cut -d"." -f1`
-		STORAGEUNIT=`echo $ZFSSIZEDATA | tr -cd "A-Z"`
-		#Convert to gigabytes if reported in terabytes
-		if [ $STORAGEUNIT = T ]
+		#Set and Check for posix acl support
+		zfs set acltype=posixacl "'$POOLNAME'"
+		if [ $? = 0 ]
 		then
-			STORAGEUNIT=G
-			let ZFSSIZE=$ZFSSIZE*1024
+			POSIXSUPPORT=yes
+		else
+			POSIXSUPPORT=no
 		fi
-		#Create partition on zfs raid
-		zfs create -V $ZFSSIZE$STORAGEUNIT '$POOLNAME'/storage
-		STATUS=$?
-		#Check zfs partition has been created
-		while [ $STATUS != 0 ]
-		do
-			let ZFSSIZE=$ZFSSIZE-1
+
+		if [ $POSIXSUPPORT = no ]
+		then
+			#Get size of zfs raid
+			ZFSSIZEDATA=`zfs list '$POOLNAME' | sed -n 2,2p | sed "s/ * / /g" | cut -d" " -f3`
+			#Get rid of decimal places
+			ZFSSIZE=`echo $ZFSSIZEDATA | cut -d"." -f1`
+			STORAGEUNIT=`echo $ZFSSIZEDATA | tr -cd "A-Z"`
+			#Convert to gigabytes if reported in terabytes
+			if [ $STORAGEUNIT = T ]
+			then
+				STORAGEUNIT=G
+				let ZFSSIZE=$ZFSSIZE*1024
+			fi
+			#Create partition on zfs raid
 			zfs create -V $ZFSSIZE$STORAGEUNIT '$POOLNAME'/storage
 			STATUS=$?
-		done
+			#Check zfs partition has been created
+			while [ $STATUS != 0 ]
+			do
+				let ZFSSIZE=$ZFSSIZE-1
+				zfs create -V $ZFSSIZE$STORAGEUNIT '$POOLNAME'/storage
+				STATUS=$?
+			done
 
-		echo "<li>'$"Creating ZFS partition"' - '$ZFSSIZE''$STORAGEUNIT'</li>"
+			echo "<li>'$"Creating ZFS partition"' - '$ZFSSIZE''$STORAGEUNIT'</li>"
 
-		COUNTER=1
-		while [ $COUNTER -lt 30 ]
-		do
-			[ -e /'$ZPOOLTOPPATH'/'$POOLNAME'/storage ] && break
-			sleep 1
-			let COUNTER=$COUNTER+1
-		done
+			COUNTER=1
+			while [ $COUNTER -lt 30 ]
+			do
+				[ -e /'$ZPOOLTOPPATH'/'$POOLNAME'/storage ] && break
+				sleep 1
+				let COUNTER=$COUNTER+1
+			done
 
-		#Format the partition as ext4
-		echo "<li>'$"Formating the partition"' - ext4</li>"
-		mkfs.ext4 /'$ZPOOLTOPPATH'/'$POOLNAME'/storage
+			#Format the partition as ext4
+			echo "<li>'$"Formating the partition"' - ext4</li>"
+			mkfs.ext4 /'$ZPOOLTOPPATH'/'$POOLNAME'/storage
+		fi		
+
 		#Mount partition on a temporary mount point
 		[ ! -d '$MOUNTPOINT'.'$$' ] && mkdir -p '$MOUNTPOINT'.'$$'
-		mount /'$ZPOOLTOPPATH'/'$POOLNAME'/storage '$MOUNTPOINT'.'$$'
+
+		if [ $POSIXSUPPORT = yes ]
+		then
+			zfs set mountpoint='$MOUNTPOINT'.'$$' '$POOLNAME'
+			zfs mount '$POOLNAME'
+		else
+			mount /'$ZPOOLTOPPATH'/'$POOLNAME'/storage '$MOUNTPOINT'.'$$'
+		fi
 
 		#Stop services if the mount point is /var
 		if [ `echo '$MOUNTPOINT' | grep -c /var` -gt 0 ]
@@ -638,9 +728,14 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 			sed -i $LINENO"d" /etc/fstab
 		fi
 
-		#Unmount zfs partition and mount as /home
-		umount '$MOUNTPOINT'.'$$'
-		mount /'$ZPOOLTOPPATH'/'$POOLNAME'/storage '$MOUNTPOINT'
+		#Unmount zfs partition and mount as mountpoint.
+		if [ $POSIXSUPPORT = yes ]
+		then
+			zfs set mountpoint='$MOUNTPOINT' '$POOLNAME'
+			zfs mount '$POOLNAME'
+		else
+			mount /'$ZPOOLTOPPATH'/'$POOLNAME'/storage '$MOUNTPOINT'
+		fi
 
 		#Remove temporary mount point
 		[ -d '$MOUNTPOINT'.'$$' ] && rm -f -R '$MOUNTPOINT'.'$$'
@@ -653,8 +748,10 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 
 		echo "</pre>"
 
+		if [ $POSIXSUPPORT = no ]
+		then
 		#Mount partition on boot
-		echo "#!/bin/bash
+			echo "#!/bin/bash
 COUNTER=0
 while [ \$COUNTER -le 100 ]
 do
@@ -663,7 +760,20 @@ do
 	sleep 1
 	let COUNTER=\$COUNTER+1
 done" > /etc/rc2.d/S90zfs-mount-'$POOLNAME'
-		chmod 0700 /etc/rc2.d/S90zfs-mount-'$POOLNAME'
+			chmod 0700 /etc/rc2.d/S90zfs-mount-'$POOLNAME'
+		else
+			echo "#!/bin/bash
+COUNTER=0
+while [ \$COUNTER -le 100 ]
+do
+	zfs mount -a
+	[ \$? = 0 ] && exit
+	sleep 1
+	let COUNTER=\$COUNTER+1
+done" > /etc/rc2.d/S90zfs-mount-all
+
+			chmod 0700 /etc/rc2.d/S90zfs-mount-all
+		fi
 
 		#Start services if they were previously running and were stopped to create a raid on /var
 		if [ `echo '$MOUNTPOINT' | grep -c /var` -gt 0 ]
@@ -691,8 +801,19 @@ done" > /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 			sort_gluster
 		fi
 
-		zpool import -D -f '$POOLNAME'
+		zpool import -f '$POOLNAME'
 
+		#Set and Check for posix acl support
+		zfs set acltype=posixacl "'$POOLNAME'"
+		if [ $? = 0 ]
+		then
+			POSIXSUPPORT=yes
+		else
+			POSIXSUPPORT=no
+		fi
+
+		if [ $POSIXSUPPORT = no ]
+		then
 		COUNTER=1
 		while [ $COUNTER -lt 30 ]
 		do
@@ -703,14 +824,21 @@ done" > /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 
 		mount /'$ZPOOLTOPPATH'/'$POOLNAME'/storage '$MOUNTPOINT'
 
+		else
+			zfs set mountpoint="'$MOUNTPOINT'" "'$POOLNAME'"
+			#zfs mount "$POOLNAME"
+		fi
+
 		if [ "$SORTGLUSTER" = yes ]
 		then
 			GLUSTERACTION=start
 			sort_gluster
 		fi
 
-		#Mount partition on boot
-		echo "#!/bin/bash
+		if [ $POSIXSUPPORT = no ]
+		then
+			#Mount partition on boot
+			echo "#!/bin/bash
 COUNTER=0
 while [ \$COUNTER -le 100 ]
 do
@@ -720,7 +848,20 @@ do
 	let COUNTER=\$COUNTER+1
 done" > /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 
-		chmod 0700 /etc/rc2.d/S90zfs-mount-'$POOLNAME'
+			chmod 0700 /etc/rc2.d/S90zfs-mount-'$POOLNAME'
+		else
+			echo "#!/bin/bash
+COUNTER=0
+while [ \$COUNTER -le 100 ]
+do
+	zfs mount -a
+	[ \$? = 0 ] && exit
+	sleep 1
+	let COUNTER=\$COUNTER+1
+done" > /etc/rc2.d/S90zfs-mount-all
+
+			chmod 0700 /etc/rc2.d/S90zfs-mount-all
+		fi
 	fi
 
 	#Reuse existing zfs raid

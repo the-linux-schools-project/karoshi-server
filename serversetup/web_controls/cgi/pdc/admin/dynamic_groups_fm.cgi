@@ -65,7 +65,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/dynamic_groups_
             <td style="width: 180px;">'$"Upload CSV file"'
             </TD>
             <TD>
-                <INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="35"> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management"><img class="images" alt="" src="/images/help/info.png"><span>'$"CSV Format""<br>"$"username, enrolment number or staff code,group1,group2,group3..."'</span></a>
+                <INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="35"> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management"><img class="images" alt="" src="/images/help/info.png"><span>'$"CSV Format""<br>"$"username or enrolment number or staff code,group1,group2,group3..."'</span></a>
 
             </TD>
         </TR>

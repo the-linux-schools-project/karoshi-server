@@ -134,6 +134,9 @@ do
 	PROXYSERVER=no
 	PRINTSERVER=no
 	DSERVICES=cron
+
+	[ $SERVERNAME = $HOSTNAME ] && DSERVICES=cron,apache2_karoshi
+
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1pdc ] && DSERVICES=$DSERVICES,dns,samba,nslcd
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ] && DSERVICES=$DSERVICES,dns,samba,nslcd
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1domainmember ] && DSERVICES=$DSERVICES,samba,nslcd

@@ -307,6 +307,13 @@ then
 		MESSAGE=$"The username cannot be blank."
 		show_status
 	fi
+	#Check that the username exists
+	getent passwd "$USERNAME" 1>/dev/null
+	if [ $? != 0 ]
+	then
+		MESSAGE=$"This username does not exist."
+		show_status
+	fi
 fi
 
 
@@ -426,7 +433,7 @@ then
 		<td style="vertical-align: top;"><a href="/cgi-bin/admin/copy_files_upload_fm.cgi"><input class="button" type="button" name="" value="'$"Copy Files"'"></a></td>'
 	fi
 else
-	echo '<td style="vertical-align: top;"><input name="____ACTION____view____TYPE____notset____" type="submit" class="button" value="'$"View groups"'"></td>'
+	echo '<td style="vertical-align: top;"><input name="____ACTION____view____TYPE____'$TYPE'____" type="submit" class="button" value="'$"View groups"'"></td>'
 fi
 echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management"><img class="images" alt="" src="/images/help/info.png"><span>'$"This page lets you add and remove groups from your system."'<br><br>'$"Primary groups are used when creating users. All users are assigned to a primary group."'<br><br>'$"Secondary groups can be used when creating sub folders and restricting access to certain groups."'</span></a></td></tr></tbody></table></form>'
 
@@ -452,7 +459,8 @@ echo '<input type="hidden" name="____TYPE____secondary____" value=""><input type
       <tr>
         <td style="width: '$WIDTH3'px;">
 '$"Secondary group"'</td>
-        <td><input name="____GROUPNAME____ style="width: '$WIDTH3'px;" type="text"></td><td>
+        <td><input name="____GROUPNAME____" style="width: '$WIDTH3'px;" type="text">
+</td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management#New_Secondary_Goup"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of a new supplementary group that you want to create."'<br><br>'$"Secondary groups can be used for subfolders in existing shares to restrict access to memebers of the group."'</span></a>
 </td>
       </tr>

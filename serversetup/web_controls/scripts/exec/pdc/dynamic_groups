@@ -56,6 +56,12 @@ then
 	exit 101
 fi
 
+if [ -z "$APPENDUSERS" ]
+then
+	echo `date`: dynamic_groups - blank appendusers option  by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
 if [ ! -f  "/var/www/karoshi/dynamic_groups/$CSVFILE" ]
 then
 	echo `date`: dynamic_groups - $CSVFILE is missing by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -69,9 +75,6 @@ PROTECTED_GROUPS2="admin karoshi bursar"
 PROTECTED_GROUPS=`ls /opt/karoshi/server_network/group_information`
 PROTECTED_GROUPS="$PROTECTED_GROUPS $PROTECTED_GROUPS2"
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-
-APPENDUSERS=no
-DELETEGROUPS=no
 
 #Folder to store flag file information for dynamic groups
 [ ! -d /opt/karoshi/server_network/group_information_dynamic ] && mkdir -p /opt/karoshi/server_network/group_information_dynamic
@@ -124,6 +127,7 @@ gidnumber: $GIDNUMBER
 			then
 			for EXISTING_USER in `samba-tool group listmembers $group`
 			do
+				echo `date`: groups - removing "$EXISTING_USER" from "$group" by "$REMOTE_USER" from "$REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
 				samba-tool group removemembers $group "$EXISTING_USER" 1>/dev/null
 			done
 			fi

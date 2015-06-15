@@ -184,6 +184,10 @@ then
 	if [ $CREATETYPE != reuse ]
 	then
 		IMPORTDATA=`zpool import 2>/dev/null`
+		if [ -z "$IMPORTDATA" ]
+		then
+			false
+		fi
 	else
 		false
 	fi
@@ -193,7 +197,7 @@ then
 	then
 
 		#Get zpool import information
-		IMPORTINFO=`zpool import -D | sed "s/^ * //g"`
+		IMPORTINFO=`zpool import | sed "s/^ * //g"`
 		MOUNTPOINT=`echo -e "$IMPORTINFO" | grep pool: | cut -d: -f2 | sed "s/ zfs-/\//g" | sed "s/-/\//g"`
 		#Count how many raids are available to restore		
 		RCOUNT=`echo -e "$IMPORTINFO" | grep -c pool:`
@@ -368,6 +372,10 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 	if [ '$CREATETYPE' != reuse ]
 	then
 		IMPORTDATA=`zpool import 2>/dev/null`
+		if [ -z "$IMPORTDATA" ]
+		then
+			false
+		fi
 	else
 		false
 	fi
@@ -377,7 +385,7 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 	then
 
 		#Get zpool import information
-		IMPORTINFO=`zpool import -D | sed "s/^ * //g"`
+		IMPORTINFO=`zpool import | sed "s/^ * //g"`
 		MOUNTPOINT=`echo -e "$IMPORTINFO" | grep pool: | cut -d: -f2 | sed "s/ zfs-/\//g" | sed "s/-/\//g"`
 		#Count how many raids are available to restore		
 		RCOUNT=`echo -e "$IMPORTINFO" | grep -c pool:`
