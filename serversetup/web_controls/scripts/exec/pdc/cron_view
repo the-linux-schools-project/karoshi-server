@@ -182,7 +182,7 @@ then
 			echo '<tr><td>
 
 			<a class="info3" href="javascript:void(0)"><img class="images" alt="" src="'$INFOICON'"><span>
-			'$Mins' : '$MINUTES'<br>'$"Hour"' : '$HOUR'<br>'$"Weekday"' : '$"Day"'<br>'$"Month"' : '$MONTH'<br>'$"Weekday"' : '$DOFW'<br><br>
+			'$"Minutes"' : '$MINUTES'<br>'$"Hour"' : '$HOUR'<br>'$"Weekday"' : '$"Day"'<br>'$"Month"' : '$MONTH'<br>'$"Weekday"' : '$DOFW'<br><br>
 			'$"Command"'<br>'$COMMAND'<br><br>
 			</span></a></td><td>'$CRON_NAME'</td>
 			<td><a class="info" href="javascript:void(0)"><input name="___ACTION___EDIT___JOBNAME___'$CRON_NAME'___SERVERTYPE___network___SERVERNAME___'$SERVERNAME'___" type="image" class="images" src="'$EDITICON'" value=""><span>'$"Edit the scheduled job."'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="___ACTION___DELETE___JOBNAME___'$CRON_NAME'___SERVERTYPE___network___SERVERNAME___'$SERVERNAME'___" type="image" class="images" src="'$DELETEICON'" value=""><span>'$"Delete the scheduled job."'</span></a></td></tr>'
@@ -223,7 +223,7 @@ then
 
 			echo "<tr><td style=\"width: 40px;\">
 			<a class=\"info3\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"'$INFOICON'\"><span>
-			'$Mins' : $MINUTES<br>'$"Hour"' : $HOUR<br>'$"Weekday"' : $"Day"<br>'$"Month"' : $MONTH<br>'$"Weekday"' : $DOFW<br><br>
+			'$"Minutes"' : $MINUTES<br>'$"Hour"' : $HOUR<br>'$"Weekday"' : $DAY<br>'$"Month"' : $MONTH<br>'$"Weekday"' : $DOFW<br><br>
 			'$"Command"'<br>$COMMAND<br><br>
 			</span></a>
 			</td><td>$CRON_NAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"___ACTION___EDIT___JOBNAME___"$CRON_NAME"___SERVERTYPE___federated___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\" type=\"image\" class=\"images\" src=\"'$EDITICON'\" value=\"\"><span>'$"Edit the scheduled job."'</span></a></td><td>

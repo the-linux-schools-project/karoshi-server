@@ -82,83 +82,83 @@ END_POINT=16
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = DAYcheck ]
-then
-let COUNTER=$COUNTER+1
-DAY=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = DAYcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		DAY=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign HOURS
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = HOURScheck ]
-then
-let COUNTER=$COUNTER+1
-HOURS=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9'`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = HOURScheck ]
+	then
+		let COUNTER=$COUNTER+1
+		HOURS=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign MINUTES
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = MINUTEScheck ]
-then
-let COUNTER=$COUNTER+1
-MINUTES=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9'`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = MINUTEScheck ]
+	then
+		let COUNTER=$COUNTER+1
+		MINUTES=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign SERVERNAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign SERVERTYPE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERTYPEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERTYPEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign SERVERMASTER
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERMASTERcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERMASTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERMASTERcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERMASTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 echo "Content-type: text/html"
@@ -191,23 +191,23 @@ echo '</head><body><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
+	DIV_ID=actionbox2
 fi
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Update Servers"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">'
-else
+	else
 echo '
 <div class="sectiontitle">'$"Update Servers"'</div><br>'
 fi
@@ -217,102 +217,102 @@ fi
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 
 #Check to see that DAY is not blank
-if [ $DAY'null' = null ]
+if [ -z "$DAY" ]
 then
-MESSAGE=$"You have not chosen a day for the update."
-show_status
+	MESSAGE=$"You have not chosen a day for the update."
+	show_status
 fi
 
 #Check to see that SERVERNAME is not blank
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-MESSAGE=$"The server name cannot be blank."
-show_status
+	MESSAGE=$"The server name cannot be blank."
+	show_status
 fi
 
 #Check to see that SERVERTYPE is not blank
-if [ $SERVERTYPE'null' = null ]
+if [ -z "$SERVERTYPE" ]
 then
-MESSAGE=$"The server type cannot be blank."
-show_status
+	MESSAGE=$"The server type cannot be blank."
+	show_status
 fi
 
 #Check to see that SERVERMASTER is not blank
 if [ $SERVERTYPE = federatedslave ]
 then
-if [ $SERVERMASTER'null' = null ]
-then
-MESSAGE=$"The server master cannot be blank."
-show_status
-fi
+	if [ -z "$SERVERMASTER" ]
+	then
+		MESSAGE=$"The server master cannot be blank."
+		show_status
+	fi
 fi
 
 #Check to see that HOURS is not blank
-if [ $HOURS'null' = null ]
+if [ -z "$HOURS" ]
 then
-MESSAGE=$"update failure."
-show_status
+	MESSAGE=$"update failure."
+	show_status
 fi
 
 #Check to see that MINUTES is not blank
-if [ $MINUTES'null' = null ]
+if [ -z "$MINUTES" ]
 then
-MESSAGE=$"update failure."
-show_status
+	MESSAGE=$"update failure."
+	show_status
 fi
 
 #Check that time is ok
 if [ $MINUTES -gt 59 ]
 then
-MESSAGE=$"Please enter a correct time."
-show_status
+	MESSAGE=$"Please enter a correct time."
+	show_status
 fi
 
 #Check that time is ok
 if [ $MINUTES -lt 0 ]
 then
-MESSAGE=$"Please enter a correct time."
-show_status
+	MESSAGE=$"Please enter a correct time."
+	show_status
 fi
 
 #Check that time is ok
 if [ $HOURS -gt 23 ]
 then
-MESSAGE=$"Please enter a correct time."
-show_status
+	MESSAGE=$"Please enter a correct time."
+	show_status
 fi
 
 #Check that time is ok
 if [ $HOURS -lt 0 ]
 then
-MESSAGE=$"Please enter a correct time."
-show_status
+	MESSAGE=$"Please enter a correct time."
+	show_status
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/update_servers.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DAY:$HOURS:$MINUTES:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:" | sudo -H /opt/karoshi/web_controls/exec/update_servers
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DAY:$HOURS:$MINUTES:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/update_servers
 show_page
 
 echo "</div></div></body></html>"

@@ -67,6 +67,7 @@ MINUTES=`echo "$DATA" | cut -s -d: -f6`
 SERVERNAME=`echo "$DATA" | cut -s -d: -f7`
 SERVERTYPE=`echo "$DATA" | cut -s -d: -f8`
 SERVERMASTER=`echo "$DATA" | cut -s -d: -f9`
+MOBILE=`echo "$DATA" | cut -s -d: -f10`
 ########################
 #Check data
 ########################
@@ -137,7 +138,10 @@ else
 	echo `date`: update_server - disabling updates "for" $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
 
-
+if [ -z "$MOBILE" ]
+then
+	MOBILE=no
+fi
 
 function recordtime {
 FOLDER=servers
@@ -233,107 +237,118 @@ function copyscripts {
 #Copy update scripts to other servers
 if [ $SERVERNAME != `hostname-fqdn` ]
 then
-if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
-then
-scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/updateserver" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
-scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/sysvsupport" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
-scp "/opt/karoshi/serversetup/all/scripts/updateserver" root@$SERVERNAME:"/opt/karoshi/serversetup/all/scripts/"
-scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
-scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
-scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
-scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
-scp -r "/opt/karoshi/serversetup/all/samba4/samba4install" root@$SERVERNAME:"/opt/karoshi/serversetup/all/samba4/"
-fi
+	if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
+	then
+		scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/updateserver" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
+		scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/sysvsupport" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
+		scp "/opt/karoshi/serversetup/all/scripts/updateserver" root@$SERVERNAME:"/opt/karoshi/serversetup/all/scripts/"
+		scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
+		scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
+		scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
+		scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
+		scp -r "/opt/karoshi/serversetup/all/samba4/samba4install" root@$SERVERNAME:"/opt/karoshi/serversetup/all/samba4/"
+	fi
 fi
 
 if [ $SERVERTYPE = federatedslave ]
 then
-scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/updateserver" root@$SERVERMASTER:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
-scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/sysvsupport" root@$SERVERMASTER:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
-scp "/opt/karoshi/serversetup/all/scripts/updateserver" root@$SERVERMASTER:"/opt/karoshi/serversetup/all/scripts/"
-scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts" root@$SERVERMASTER:"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
-scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services" root@$SERVERMASTER:"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
-scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot" root@$SERVERMASTER:"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
-scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot" root@$SERVERMASTER:"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
-scp -r "/opt/karoshi/serversetup/all/samba4/samba4install" root@$SERVERMASTER:"/opt/karoshi/serversetup/all/samba4/"
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
-scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/updateserver" root@'$SERVERNAME':"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
-scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/sysvsupport" root@'$SERVERNAME':"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
-scp "/opt/karoshi/serversetup/all/scripts/updateserver" root@'$SERVERNAME':"/opt/karoshi/serversetup/all/scripts/"
-scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts" root@'$SERVERNAME':"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
-scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services" root@'$SERVERNAME':"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
-scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot" root@'$SERVERNAME':"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
-scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot" root@'$SERVERNAME':"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
-scp -r "/opt/karoshi/serversetup/all/samba4/samba4install" root@'$SERVERNAME':"/opt/karoshi/serversetup/all/samba4/"
-'
+	scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/updateserver" root@$SERVERMASTER:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
+	scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/sysvsupport" root@$SERVERMASTER:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
+	scp "/opt/karoshi/serversetup/all/scripts/updateserver" root@$SERVERMASTER:"/opt/karoshi/serversetup/all/scripts/"
+	scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts" root@$SERVERMASTER:"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
+	scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services" root@$SERVERMASTER:"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
+	scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot" root@$SERVERMASTER:"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
+	scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot" root@$SERVERMASTER:"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
+	scp -r "/opt/karoshi/serversetup/all/samba4/samba4install" root@$SERVERMASTER:"/opt/karoshi/serversetup/all/samba4/"
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+	scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/updateserver" root@'$SERVERNAME':"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
+	scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/sysvsupport" root@'$SERVERNAME':"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
+	scp "/opt/karoshi/serversetup/all/scripts/updateserver" root@'$SERVERNAME':"/opt/karoshi/serversetup/all/scripts/"
+	scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts" root@'$SERVERNAME':"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
+	scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services" root@'$SERVERNAME':"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
+	scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot" root@'$SERVERNAME':"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
+	scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot" root@'$SERVERNAME':"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
+	scp -r "/opt/karoshi/serversetup/all/samba4/samba4install" root@'$SERVERNAME':"/opt/karoshi/serversetup/all/samba4/"
+	'
 fi
 }
 
 #Schedule update for individual computers
 if [ $SERVERNAME != allservers ]
 then
-recordtime
-scheduleupdate
-copyscripts
+	recordtime
+	scheduleupdate
+	copyscripts
 fi
 
 #Auto schedule
 if [ $SERVERNAME = allservers ]
 then
-#Auto schedule network servers
-if [ $SERVERTYPE = network ]
-then
-for SERVERS in /opt/karoshi/server_network/servers/*
-do
-SERVERNAME=`basename $SERVERS`
-if [ $DAY != never ]
-then
-echo '<li>'Scheduling $SERVERNAME:  Time $HOURS:$MINUTES'</li>'
-else
-echo '<li>'$SERVERNAME:  Disabling update'</li>'
-fi
-recordtime
-scheduleupdate
-copyscripts
+	#Auto schedule network servers
+	if [ $SERVERTYPE = network ]
+	then
+		for SERVERS in /opt/karoshi/server_network/servers/*
+		do
+			SERVERNAME=`basename $SERVERS`
+			if [ "$MOBILE" = yes  ]
+			then
+				SERVERNAME_SHORT=`echo "$SERVERNAME" | cut -d. -f1`
+			else
+				SERVERNAME_SHORT="$SERVERNAME"
+			fi
+			if [ $DAY != never ]
+			then
+				echo '<li>'Scheduling $SERVERNAME_SHORT:  Time $HOURS:$MINUTES'</li>'
+			else
+				echo '<li>'$SERVERNAME_SHORT:  Disabling update'</li>'
+			fi
+			recordtime
+			scheduleupdate
+			copyscripts
 
-let MINUTES=$MINUTES+10
-if [ $MINUTES -ge 60 ]
-then
-MINUTES=00
-let HOURS=$HOURS+1
-[ $HOURS -ge 24 ] && HOURS=00
-fi
-done
-fi
+			let MINUTES=$MINUTES+10
+			if [ $MINUTES -ge 60 ]
+			then
+				MINUTES=00
+				let HOURS=$HOURS+1
+				[ $HOURS -ge 24 ] && HOURS=00
+			fi
+		done
+	fi
 
-if [ $SERVERTYPE = federated ]
-then
-for SERVERNAMES in /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/*
-do
-SERVERNAME=`basename $SERVERNAMES`
-[ $SERVERNAME != $SERVERMASTER ] && SERVERTYPE=federatedslave
-if [ $DAY != never ]
-then
-echo '<li>'Scheduling $SERVERNAME: Servermaster $SERVERMASTER Servertype $SERVERTYPE Time $HOURS:$MINUTES'</li>'
-else
-echo '<li>'$SERVERNAME': Disabling update</li>'
-fi
-recordtime
-scheduleupdate
-copyscripts
-SERVERTYPE=federated
-let MINUTES=$MINUTES+10
-if [ $MINUTES -ge 60 ]
-then
-MINUTES=00
-let HOURS=$HOURS+1
-[ $HOURS -ge 24 ] && HOURS=00
-fi
-done
-fi
+	if [ $SERVERTYPE = federated ]
+	then
+		for SERVERNAMES in /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/*
+		do
+			SERVERNAME=`basename $SERVERNAMES`
+			[ $SERVERNAME != $SERVERMASTER ] && SERVERTYPE=federatedslave
 
+			if [ "$MOBILE" = yes  ]
+			then
+				SERVERNAME_SHORT=`echo "$SERVERNAME" | cut -d. -f1`
+			else
+				SERVERNAME_SHORT="$SERVERNAME"
+			fi
 
-#sleep 5
+			if [ $DAY != never ]
+			then
+				echo '<li>'Scheduling $SERVERNAME_SHORT: Servermaster $SERVERMASTER Servertype $SERVERTYPE Time $HOURS:$MINUTES'</li>'
+			else
+				echo '<li>'$SERVERNAME_SHORT': Disabling update</li>'
+			fi
+			recordtime
+			scheduleupdate
+			copyscripts
+			SERVERTYPE=federated
+			let MINUTES=$MINUTES+10
+			if [ $MINUTES -ge 60 ]
+			then
+				MINUTES=00
+				let HOURS=$HOURS+1
+				[ $HOURS -ge 24 ] && HOURS=00
+			fi
+		done
+	fi
 fi
 
 

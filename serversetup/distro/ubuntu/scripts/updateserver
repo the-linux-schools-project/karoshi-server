@@ -224,6 +224,7 @@ NEW_SAMBA_VER=`samba-tool -V`
 RESTART_SAMBA=no
 
 #Check if samba restart is required
+
 if [[ $CURRENT_SAMBA_VER != $NEW_SAMBA_VER ]]
 then
 	RESTART_SAMBA=yes
@@ -250,8 +251,8 @@ then
 	[ $SERVICESTATUS = 1 ] && /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$SERVICENAME"_"start
 	/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/$SERVICENAME
 
-	#Restart samba if it has been updates
-	if [ $RESTART_SAMBA = yes ]
+	#Restart samba if it has been updated
+	if [ $RESTART_SAMBA = yes ] && [ $SERVICENAME = samba ]
 	then
 		echo Restarting samba due to version change >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
 		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$SERVICENAME"_"stop
