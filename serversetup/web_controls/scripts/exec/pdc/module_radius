@@ -94,57 +94,133 @@ echo `date`: module_radius - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
 
-source /opt/karoshi/serversetup/variables/distro
+#Check to see if this is the first time this module has been set up.
+if [ -f /opt/karoshi/server_network/radius_server ]
+then
+	COPYCLIENTS=yes
+else
+	COPYCLIENTS=no
+fi
 
-#Make sure all software is installed
-/opt/karoshi/serversetup/distro/ubuntu/modules/radius/software
+#Create ssl certificate
+if [ ! -d /etc/ssl/radius ]
+then
+	source /opt/karoshi/serversetup/variables/distro
+	echo "$REMOTE_USER:$REMOTE_ADDR:$REALM:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/radiussslcert
+fi
 
 #Create keytab for radius
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:radius:radius:$SERVERNAME:freerad:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
 
-#Create ssl certificate
-echo "$REMOTE_USER:$REMOTE_ADDR:$REALM:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/radiussslcert
-
-#Clear any sample clients
-echo > /etc/freeradius/clients.conf
-
-#Start service
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/radius_start
-#Start on boot
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/radius
-###########################
-#Open shorewall ports
-###########################
-RESTART_SHOREWALL=no
-MODCHECK=`grep -c -w \#radius_server_rule /etc/shorewall/rules`
-if [ $MODCHECK = 0 ]
+if [ $SERVERNAME = `hostname-fqdn` ]
 then
-	RESTART_SHOREWALL=yes
-	echo ''$SHOREWALLMSG - udp 1812,1813'<br><br>'
-	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'udp'	'1812,1813'	'-'#'radius_server_rule /etc/shorewall/rules
-	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
-fi
+	#Make sure all software is installed
+	/opt/karoshi/serversetup/distro/ubuntu/modules/radius/software
 
-######################
-#Restart shorewall
-######################
-if [ $RESTART_SHOREWALL = yes ]
-then
-	echo $"Restarting Shorewall"'<br><br>'
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
-	echo '<br>'
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
-	echo '<br><br>'
-fi
+	if [ $COPYCLIENTS = no ]
+	then	
+		#Clear any sample clients
+		echo > /etc/freeradius/clients.conf
+	fi
 
+	#Start service
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/radius_start
+	#Start on boot
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/radius
+	###########################
+	#Open shorewall ports
+	###########################
+	RESTART_SHOREWALL=no
+	MODCHECK=`grep -c -w \#radius_server_rule /etc/shorewall/rules`
+	if [ $MODCHECK = 0 ]
+	then
+		RESTART_SHOREWALL=yes
+		echo ''$SHOREWALLMSG - udp 1812,1813'<br><br>'
+		LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+		sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'udp'	'1812,1813'	'-'#'radius_server_rule /etc/shorewall/rules
+		echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	fi
+
+	######################
+	#Restart shorewall
+	######################
+	if [ $RESTART_SHOREWALL = yes ]
+	then
+		echo $"Restarting Shorewall"'<br><br>'
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
+		echo '<br>'
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
+		echo '<br><br>'
+	fi
+else
+	#Copy in module
+	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/modules/radius root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/modules/ 1> /dev/null
+
+	#Copy in ssl radius cert
+	scp -p -r /etc/ssl/radius root@$SERVERNAME:/etc/ssl/
+
+	#Copy in existing acccess point information
+	if [ "$COPYCLIENTS" = yes ]
+	then	
+		scp /etc/freeradius/clients.conf root@$SERVERNAME:/etc/freeradius/ 1> /dev/null
+	fi
+
+	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	source /opt/karoshi/serversetup/variables/distro
+
+	#Make sure all software is installed
+	/opt/karoshi/serversetup/distro/ubuntu/modules/radius/software
+
+	#Set permisisons on radius ssl
+	chown freerad /etc/ssl/radius/radius.key
+	chown freerad /etc/ssl/radius/radius.pem
+	chown freerad /etc/ssl/radius/radius.req
+
+	if [ '$COPYCLIENTS' = no ]
+	then	
+		#Clear any sample clients
+		echo > /etc/freeradius/clients.conf
+	fi
+
+	#Start service
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/radius_start
+	#Start on boot
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/radius
+	###########################
+	#Open shorewall ports
+	###########################
+	RESTART_SHOREWALL=no
+	MODCHECK=`grep -c -w \#radius_server_rule /etc/shorewall/rules`
+	if [ $MODCHECK = 0 ]
+	then
+		RESTART_SHOREWALL=yes
+		echo ''$SHOREWALLMSG - udp 1812,1813"<br><br>"
+		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
+		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"udp"	"1812,1813"	"-"#"radius_server_rule /etc/shorewall/rules
+		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	fi
+
+	######################
+	#Restart shorewall
+	######################
+	if [ $RESTART_SHOREWALL = yes ]
+	then
+		echo $"Restarting Shorewall""<br><br>"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
+		echo "<br>"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
+		echo "<br><br>"
+	fi
+	'
+fi
 #Add role information
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
 echo $"Radius Server""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/radiusserver
 echo $SERVERNAME > /opt/karoshi/server_network/radius_server
 sed -i 's/RADIUSCTRL=no/RADIUSCTRL=yes/g' /opt/karoshi/server_network/menusettings
-
+[ ! -d /opt/karoshi/server_network/radius_servers ] && mkdir -p /opt/karoshi/server_network/radius_servers
+echo  $SERVERNAME > /opt/karoshi/server_network/radius_servers/$SERVERNAME
 exit
 
 

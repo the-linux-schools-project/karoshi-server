@@ -64,7 +64,7 @@ REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 ACTION=`echo "$DATA" | cut -s -d: -f4`
-FILTERDATA=`echo "$DATA" | cut -s -d: -f5`
+FILTERDATA=`echo "$DATA" | cut -s -d: -f5 | sed 's/%2F/\//g'`
 MOBILE=`echo "$DATA" | cut -s -d: -f6`
 
 PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
@@ -155,9 +155,9 @@ fi
 }
 
 function deletesite {
-echo `date`: package_cache_control - deleting $FILTERDATA by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: package_cache_control - deleting "$FILTERDATA" by "$REMOTE_USER" from "$REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-	LINENUMBER=`grep -n -w ^$FILTERDATA /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default | cut -d: -f1`
+	LINENUMBER=`grep -n -w ^"$FILTERDATA" /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default | cut -d: -f1`
 	[ ! -z "$LINENUMBER" ] && sed -i $LINENUMBER"d" /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
 	#Remove blank lines
 	sed -i "/^$/d" /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default

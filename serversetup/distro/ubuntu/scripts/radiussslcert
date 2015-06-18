@@ -50,13 +50,13 @@ LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 
 #Clear existing keys
 [ ! -d /etc/ssl/radius ] && mkdir /etc/ssl/radius
-[ -f /etc/ssl/mail/radius.key ] && rm -f /etc/ssl/mail/radius.key
-[ -f /etc/ssl/mail/radius.pem ] && rm -f /etc/ssl/mail/radius.pem
-[ -f /etc/ssl/mail/radius.req ] && rm -f /etc/ssl/mail/radius.req
+[ -f /etc/ssl/radius/radius.key ] && rm -f /etc/ssl/radius/radius.key
+[ -f /etc/ssl/radius/radius.pem ] && rm -f /etc/ssl/radius/radius.pem
+[ -f /etc/ssl/radius/radius.req ] && rm -f /etc/ssl/radius/radius.req
 
 cd /etc/ssl/radius
 
-echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\n"$DOMAIN"\n"$DOMAIN"\n"$EMAILADDRESS"\n"postfix"\n" | openssl req -newkey rsa:4096 -days 3650 -keyout radius.key -nodes -out radius.req
+echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\n"$DOMAIN"\n"$DOMAIN"\n"$EMAILADDRESS"\n"radius"\n" | openssl req -newkey rsa:4096 -days 3650 -keyout radius.key -nodes -out radius.req
 
 chmod 0600 /etc/ssl/radius/radius.key
 chmod 0600 /etc/ssl/radius/radius.req

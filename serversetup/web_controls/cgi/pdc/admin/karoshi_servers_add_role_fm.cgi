@@ -199,11 +199,11 @@ fi
 
 echo '<tr><td style="vertical-align: top; height: 40px;">'$"Radius Server"'</td><td style="vertical-align: top; height: 40px;">'
 
-if [ $SERVERNAME = `hostname-fqdn` ]
+if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ]
 then
 	echo '<form action="/cgi-bin/admin/module_radius_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup a radius server which can be used for your wireless access points."'</span></a></form>'
 else
-	echo '<a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup a radius server which can be used for your wireless access points."'<br><br>'$"This module can only be applied to the main server."'</span></a>'
+	echo '<a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup a radius server which can be used for your wireless access points."'<br><br>'$"This module can only be applied to a domain controller."'</span></a>'
 fi
 echo '</td>'
 

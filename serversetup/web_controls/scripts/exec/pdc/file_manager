@@ -254,7 +254,7 @@ SHOWMOVE=yes
 echo '<input name="_ITEMMOVE_" value="'$ITEMMOVE'" type="hidden">'
 fi
 fi
-if [ $LOCATION"null" = null ]
+if [ -z "$LOCATION" ]
 then
 DISPLOCATION=/
 else
@@ -1651,7 +1651,7 @@ echo '<b>'$"Create folder"'</b><br><br>
 <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 180px;"><b>'$"Current Location"'</b></td>'
 [ $MOBILE = yes ] && echo '</tr><tr>'
-echo '<td>'$LOCATION2'<td></tr>
+echo '<td>'$LOCATION'<td></tr>
 <tr><td><b>'$"Create Folder"'</b></td>'
 [ $MOBILE = yes ] && echo '</tr><tr>'
 echo '<td><input name="_NEWFOLDER_" type="text" size="20"></td></tr></tbody></table><br>
