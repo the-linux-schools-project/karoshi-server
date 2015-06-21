@@ -132,7 +132,7 @@ then
 	#Restart squid-deb-proxy
 	service squiddebproxy reload 1>/dev/null
 else
-	#Copy config file to the server
+	#Copy config file to the main server
 	scp /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default root@$PROXYSERVER:/etc/squid-deb-proxy/mirror-dstdomain.acl.d/
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
 	#Restart squid-deb-proxy

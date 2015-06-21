@@ -1,0 +1,173 @@
+content calendar chrome/calendar/content/calendar/
+content lightning chrome/lightning/content/lightning/
+locale calendar en-US chrome/calendar-en-US/locale/en-US/calendar/
+locale lightning en-US chrome/lightning-en-US/locale/en-US/lightning/
+manifest components/calBackendLoader.manifest
+manifest components/calCompositeCalendar.manifest
+manifest components/calDavCalendar.manifest
+manifest components/calDefaultACLManager.manifest
+manifest components/calICSCalendar.manifest
+manifest components/calImportExportModule.manifest
+manifest components/calItemModule.manifest
+manifest components/calItipEmailTransport.manifest
+manifest components/calItipProtocolHandler.manifest
+manifest components/calMemoryCalendar.manifest
+manifest components/calSleepMonitor.manifest
+manifest components/calStorageCalendar.manifest
+manifest components/calTimezoneService.manifest
+manifest components/calWcapCalendarModule.manifest
+manifest components/interfaces.manifest
+manifest components/lightningTextCalendarConverter.manifest
+overlay about:addons chrome://lightning/content/suite-overlay-addons.xul application={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}
+overlay about:preferences chrome://calendar/content/preferences/alarms.xul
+overlay about:preferences chrome://calendar/content/preferences/categories.xul
+overlay about:preferences chrome://calendar/content/preferences/general.xul
+overlay about:preferences chrome://calendar/content/preferences/views.xul
+overlay about:preferences chrome://lightning/content/messenger-overlay-preferences.xul
+overlay chrome://calendar/content/calendar-properties-dialog.xul chrome://lightning/content/lightning-calendar-properties.xul
+overlay chrome://calendar/content/calendarCreation.xul chrome://lightning/content/lightning-calendar-creation.xul
+overlay chrome://communicator/content/pref/preferences.xul chrome://lightning/content/suite-overlay-preferences.xul application={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}
+overlay chrome://lightning/content/lightning-standalone.xul chrome://lightning/content/messenger-overlay-sidebar.xul
+overlay chrome://lightning/content/messenger-overlay-sidebar.xul chrome://calendar/content/calendar-task-view.xul
+overlay chrome://lightning/content/messenger-overlay-sidebar.xul chrome://calendar/content/calendar-unifinder-todo.xul
+overlay chrome://lightning/content/messenger-overlay-sidebar.xul chrome://calendar/content/calendar-unifinder.xul
+overlay chrome://lightning/content/messenger-overlay-sidebar.xul chrome://calendar/content/today-pane.xul
+overlay chrome://lightning/content/messenger-overlay-sidebar.xul chrome://lightning/content/imip-bar-overlay.xul
+overlay chrome://lightning/content/messenger-overlay-sidebar.xul chrome://lightning/content/suite-overlay-sidebar.xul application={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}
+overlay chrome://messenger/content/messageWindow.xul chrome://lightning/content/imip-bar-overlay.xul
+overlay chrome://messenger/content/messageWindow.xul chrome://lightning/content/messenger-overlay-messageWindow.xul
+overlay chrome://messenger/content/messenger.xul chrome://lightning/content/lightning-migration.xul
+overlay chrome://messenger/content/messenger.xul chrome://lightning/content/messenger-overlay-sidebar.xul
+overlay chrome://messenger/content/msgAccountCentral.xul chrome://lightning/content/messenger-overlay-accountCentral.xul
+overlay chrome://messenger/content/preferences/preferences.xul chrome://calendar/content/preferences/alarms.xul
+overlay chrome://messenger/content/preferences/preferences.xul chrome://calendar/content/preferences/categories.xul
+overlay chrome://messenger/content/preferences/preferences.xul chrome://calendar/content/preferences/general.xul
+overlay chrome://messenger/content/preferences/preferences.xul chrome://calendar/content/preferences/views.xul
+overlay chrome://messenger/content/preferences/preferences.xul chrome://lightning/content/messenger-overlay-preferences.xul
+overlay chrome://mozapps/content/extensions/extensions.xul chrome://lightning/content/suite-overlay-addons.xul application={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}
+override chrome://lightning/skin/accountCentral.css chrome://lightning/skin/suite-accountCentral.css application={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}
+override chrome://messagebody/skin/calendar-event-dialog-attendees.png chrome://calendar/skin/calendar-event-dialog-attendees.png
+override chrome://messagebody/skin/imip.css chrome://lightning/skin/imip.css
+resource calendar .
+skin calendar classic/1.0 chrome/skin/linux/calendar/
+skin calendar classic/1.0 chrome/skin/osx/calendar/ os=Darwin
+skin calendar classic/1.0 chrome/skin/windows/calendar/ os=WINNT
+skin calendar-common classic/1.0 chrome/skin/common/
+skin calendar-windows classic/1.0 chrome/skin/windows/calendar/win-aero/ os=WINNT osversion>=6
+skin calendar-windows classic/1.0 chrome/skin/windows/calendar/win-classic/ os=WINNT osversion<6
+skin lightning classic/1.0 chrome/skin/linux/lightning/
+skin lightning classic/1.0 chrome/skin/osx/lightning/ os=Darwin
+skin lightning classic/1.0 chrome/skin/windows/lightning/ os=WINNT
+skin lightning-common classic/1.0 chrome/skin/lightning-common/
+style chrome://calendar/content/calendar-event-dialog-attendees.xul chrome://calendar-common/skin/dialogs/calendar-event-dialog.css
+style chrome://calendar/content/calendar-event-dialog-attendees.xul chrome://calendar-windows/skin/calendar-event-dialog.css os=WINNT
+style chrome://calendar/content/calendar-event-dialog.xul chrome://calendar-common/skin/dialogs/calendar-event-dialog.css
+style chrome://calendar/content/calendar-event-dialog.xul chrome://calendar-windows/skin/calendar-event-dialog.css os=WINNT
+style chrome://calendar/content/calendar-event-dialog.xul chrome://communicator/skin/communicator.css application={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}
+style chrome://calendar/content/calendar-occurrence-prompt.xul chrome://calendar-windows/skin/calendar.css os=WINNT osversion>=6
+style chrome://global/content/customizeToolbar.xul chrome://calendar-windows/skin/calendar-event-dialog.css os=WINNT
+style chrome://global/content/customizeToolbar.xul chrome://calendar/skin/calendar-event-dialog.css
+style chrome://global/content/customizeToolbar.xul chrome://calendar/skin/calendar-task-view.css
+style chrome://global/content/customizeToolbar.xul chrome://lightning/skin/lightning-toolbar.css
+locale calendar ar chrome/calendar-ar/locale/ar/calendar/
+locale calendar bg chrome/calendar-bg/locale/bg/calendar/
+locale calendar ca chrome/calendar-ca/locale/ca/calendar/
+locale calendar cs chrome/calendar-cs/locale/cs/calendar/
+locale calendar cy chrome/calendar-cy/locale/cy/calendar/
+locale calendar da chrome/calendar-da/locale/da/calendar/
+locale calendar de chrome/calendar-de/locale/de/calendar/
+locale calendar dsb chrome/calendar-dsb/locale/dsb/calendar/
+locale calendar en-GB chrome/calendar-en-GB/locale/en-GB/calendar/
+locale calendar es-AR chrome/calendar-es-AR/locale/es-AR/calendar/
+locale calendar es-ES chrome/calendar-es-ES/locale/es-ES/calendar/
+locale calendar et chrome/calendar-et/locale/et/calendar/
+locale calendar eu chrome/calendar-eu/locale/eu/calendar/
+locale calendar fi chrome/calendar-fi/locale/fi/calendar/
+locale calendar fr chrome/calendar-fr/locale/fr/calendar/
+locale calendar fy-NL chrome/calendar-fy-NL/locale/fy-NL/calendar/
+locale calendar ga-IE chrome/calendar-ga-IE/locale/ga-IE/calendar/
+locale calendar gd chrome/calendar-gd/locale/gd/calendar/
+locale calendar gl chrome/calendar-gl/locale/gl/calendar/
+locale calendar he chrome/calendar-he/locale/he/calendar/
+locale calendar hr chrome/calendar-hr/locale/hr/calendar/
+locale calendar hsb chrome/calendar-hsb/locale/hsb/calendar/
+locale calendar hu chrome/calendar-hu/locale/hu/calendar/
+locale calendar id chrome/calendar-id/locale/id/calendar/
+locale calendar is chrome/calendar-is/locale/is/calendar/
+locale calendar it chrome/calendar-it/locale/it/calendar/
+locale calendar ja chrome/calendar-ja/locale/ja/calendar/
+locale calendar ko chrome/calendar-ko/locale/ko/calendar/
+locale calendar lt chrome/calendar-lt/locale/lt/calendar/
+locale calendar nb-NO chrome/calendar-nb-NO/locale/nb-NO/calendar/
+locale calendar nl chrome/calendar-nl/locale/nl/calendar/
+locale calendar nn-NO chrome/calendar-nn-NO/locale/nn-NO/calendar/
+locale calendar pa-IN chrome/calendar-pa-IN/locale/pa-IN/calendar/
+locale calendar pl chrome/calendar-pl/locale/pl/calendar/
+locale calendar pt-BR chrome/calendar-pt-BR/locale/pt-BR/calendar/
+locale calendar pt-PT chrome/calendar-pt-PT/locale/pt-PT/calendar/
+locale calendar rm chrome/calendar-rm/locale/rm/calendar/
+locale calendar ro chrome/calendar-ro/locale/ro/calendar/
+locale calendar ru chrome/calendar-ru/locale/ru/calendar/
+locale calendar si chrome/calendar-si/locale/si/calendar/
+locale calendar sk chrome/calendar-sk/locale/sk/calendar/
+locale calendar sl chrome/calendar-sl/locale/sl/calendar/
+locale calendar sq chrome/calendar-sq/locale/sq/calendar/
+locale calendar sr chrome/calendar-sr/locale/sr/calendar/
+locale calendar sv-SE chrome/calendar-sv-SE/locale/sv-SE/calendar/
+locale calendar ta-LK chrome/calendar-ta-LK/locale/ta-LK/calendar/
+locale calendar tr chrome/calendar-tr/locale/tr/calendar/
+locale calendar uk chrome/calendar-uk/locale/uk/calendar/
+locale calendar vi chrome/calendar-vi/locale/vi/calendar/
+locale calendar zh-CN chrome/calendar-zh-CN/locale/zh-CN/calendar/
+locale calendar zh-TW chrome/calendar-zh-TW/locale/zh-TW/calendar/
+locale lightning ar chrome/lightning-ar/locale/ar/lightning/
+locale lightning bg chrome/lightning-bg/locale/bg/lightning/
+locale lightning ca chrome/lightning-ca/locale/ca/lightning/
+locale lightning cs chrome/lightning-cs/locale/cs/lightning/
+locale lightning cy chrome/lightning-cy/locale/cy/lightning/
+locale lightning da chrome/lightning-da/locale/da/lightning/
+locale lightning de chrome/lightning-de/locale/de/lightning/
+locale lightning dsb chrome/lightning-dsb/locale/dsb/lightning/
+locale lightning en-GB chrome/lightning-en-GB/locale/en-GB/lightning/
+locale lightning es-AR chrome/lightning-es-AR/locale/es-AR/lightning/
+locale lightning es-ES chrome/lightning-es-ES/locale/es-ES/lightning/
+locale lightning et chrome/lightning-et/locale/et/lightning/
+locale lightning eu chrome/lightning-eu/locale/eu/lightning/
+locale lightning fi chrome/lightning-fi/locale/fi/lightning/
+locale lightning fr chrome/lightning-fr/locale/fr/lightning/
+locale lightning fy-NL chrome/lightning-fy-NL/locale/fy-NL/lightning/
+locale lightning ga-IE chrome/lightning-ga-IE/locale/ga-IE/lightning/
+locale lightning gd chrome/lightning-gd/locale/gd/lightning/
+locale lightning gl chrome/lightning-gl/locale/gl/lightning/
+locale lightning he chrome/lightning-he/locale/he/lightning/
+locale lightning hr chrome/lightning-hr/locale/hr/lightning/
+locale lightning hsb chrome/lightning-hsb/locale/hsb/lightning/
+locale lightning hu chrome/lightning-hu/locale/hu/lightning/
+locale lightning id chrome/lightning-id/locale/id/lightning/
+locale lightning is chrome/lightning-is/locale/is/lightning/
+locale lightning it chrome/lightning-it/locale/it/lightning/
+locale lightning ja chrome/lightning-ja/locale/ja/lightning/
+locale lightning ko chrome/lightning-ko/locale/ko/lightning/
+locale lightning lt chrome/lightning-lt/locale/lt/lightning/
+locale lightning nb-NO chrome/lightning-nb-NO/locale/nb-NO/lightning/
+locale lightning nl chrome/lightning-nl/locale/nl/lightning/
+locale lightning nn-NO chrome/lightning-nn-NO/locale/nn-NO/lightning/
+locale lightning pa-IN chrome/lightning-pa-IN/locale/pa-IN/lightning/
+locale lightning pl chrome/lightning-pl/locale/pl/lightning/
+locale lightning pt-BR chrome/lightning-pt-BR/locale/pt-BR/lightning/
+locale lightning pt-PT chrome/lightning-pt-PT/locale/pt-PT/lightning/
+locale lightning rm chrome/lightning-rm/locale/rm/lightning/
+locale lightning ro chrome/lightning-ro/locale/ro/lightning/
+locale lightning ru chrome/lightning-ru/locale/ru/lightning/
+locale lightning si chrome/lightning-si/locale/si/lightning/
+locale lightning sk chrome/lightning-sk/locale/sk/lightning/
+locale lightning sl chrome/lightning-sl/locale/sl/lightning/
+locale lightning sq chrome/lightning-sq/locale/sq/lightning/
+locale lightning sr chrome/lightning-sr/locale/sr/lightning/
+locale lightning sv-SE chrome/lightning-sv-SE/locale/sv-SE/lightning/
+locale lightning ta-LK chrome/lightning-ta-LK/locale/ta-LK/lightning/
+locale lightning tr chrome/lightning-tr/locale/tr/lightning/
+locale lightning uk chrome/lightning-uk/locale/uk/lightning/
+locale lightning vi chrome/lightning-vi/locale/vi/lightning/
+locale lightning zh-CN chrome/lightning-zh-CN/locale/zh-CN/lightning/
+locale lightning zh-TW chrome/lightning-zh-TW/locale/zh-TW/lightning/

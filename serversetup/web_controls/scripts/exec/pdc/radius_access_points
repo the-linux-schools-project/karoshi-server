@@ -127,30 +127,25 @@ TEXTDOMAIN=karoshi-server
 
 
 function reload_radius {
-	#Reload radius
-	source /opt/karoshi/serversetup/variables/distro
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/radius_stop 1>/dev/null
-	sleep 1
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/radius_start 1>/dev/null
-
-	#Copy data to any other radius servers and restart them
-	if [ -d /opt/karoshi/server_network/radius_servers ]
+for RADIUSSERVER in `ls -1 /opt/karoshi/server_network/radius_servers`
+do
+	if [ $RADIUSSERVER = `hostname-fqdn` ]
 	then
-		for RADIUSSERVER in `ls -1 /opt/karoshi/server_network/radius_servers`
-		do
-			if [ $RADIUSSERVER != `hostname-fqdn` ]
-			then
-				scp -p /etc/freeradius/clients.conf root@$RADIUSSERVER:/etc/freeradius/ 1> /dev/null
-				ssh -x -o PasswordAuthentication=no $RADIUSSERVER '
-				#Reload radius
-				source /opt/karoshi/serversetup/variables/distro
-				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/radius_stop 1>/dev/null
-				sleep 1
-				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/radius_start 1>/dev/null
-				'
-			fi
-		done
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/radius_stop 1>/dev/null
+		sleep 1
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/radius_start 1>/dev/null
+	else
+		scp -p /etc/freeradius/clients.conf root@$RADIUSSERVER:/etc/freeradius/ 1> /dev/null
+		ssh -x -o PasswordAuthentication=no $RADIUSSERVER '
+		#Reload radius
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/radius_stop 1>/dev/null
+		sleep 1
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/radius_start 1>/dev/null
+		'
 	fi
+done
 }
 
 #Show form to add access point

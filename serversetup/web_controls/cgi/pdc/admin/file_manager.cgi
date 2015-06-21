@@ -83,7 +83,7 @@ DATA=`echo "$DATA" | sed 's/*/%99/g'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=30
+END_POINT=45
 #Assign SERVER
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]

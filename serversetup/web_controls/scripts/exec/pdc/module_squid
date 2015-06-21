@@ -184,7 +184,8 @@ if [ "$SYNC_CONFIG" = no ]
 then
 	if [ "$SERVERNAME" != `hostname-fqdn` ]
 	then
-		rsync --timeout=30 --dirs --recursive --xattrs --links --compress --delete --times --perms --executability --acls --owner --group "$SERVERNAME":/etc/e2guardian /etc	
+		rsync --timeout=30 --dirs --recursive --xattrs --links --compress --delete --times --perms --executability --acls --owner --group "$SERVERNAME":/etc/e2guardian /etc
+		rsync --timeout=30 --dirs --recursive --xattrs --links --compress --delete --times --perms --executability --acls --owner --group "$SERVERNAME":/etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default /etc/squid-deb-proxy/mirror-dstdomain.acl.d/
 	fi
 fi
 

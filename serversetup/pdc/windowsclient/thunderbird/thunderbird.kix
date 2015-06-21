@@ -1,0 +1,227 @@
+;Copy in thunderbird profile from netlogon
+COPY "$lserver\netlogon\windows_settings\thunderbird\profile" "c:\Users\%username%\AppData\Roaming\" /s /h
+
+;Create profiles.ini
+
+IF RedirectOutput("c:\Users\%username%\AppData\Roaming\Thunderbird\profiles.ini",1) = 0 
+?'[General]' + @CRLF
+'StartWithLastProfile=1' + @CRLF
+'' + @CRLF
+'[Profile0]' + @CRLF
+'Name=default' + @CRLF
+'IsRelative=1' + @CRLF
+'Path=Profiles/gyjphq7q.default' + @CRLF
+'Default=1' + @CRLF
+?
+ENDIF
+
+;Create prefs.js
+
+IF RedirectOutput("c:\Users\%username%\AppData\Roaming\Thunderbird\Profiles\gyjphq7q.default\prefs.js",1) = 0 
+?'user_pref("app.update.auto", false);' + @CRLF
+'user_pref("app.update.enabled", false);' + @CRLF
+'user_pref("app.update.lastUpdateTime.addon-background-update-timer", 1434836218);' + @CRLF
+'user_pref("app.update.lastUpdateTime.background-update-timer", 0);' + @CRLF
+'user_pref("app.update.lastUpdateTime.blocklist-background-update-timer", 0);' + @CRLF
+'user_pref("app.update.lastUpdateTime.search-engine-update-timer", 1434833854);' + @CRLF
+'user_pref("app.update.migrated.updateDir", true);' + @CRLF
+'user_pref("browser.cache.disk.capacity", 5120);' + @CRLF
+'user_pref("browser.cache.disk.smart_size.enabled", false);' + @CRLF
+'user_pref("browser.cache.disk.smart_size.first_run", false);' + @CRLF
+'user_pref("browser.cache.disk.smart_size.use_old_max", false);' + @CRLF
+'user_pref("browser.search.countryCode", "GB");' + @CRLF
+'user_pref("browser.search.region", "GB");' + @CRLF
+'user_pref("calendar.integration.notify", false);' + @CRLF
+'user_pref("calendar.list.sortOrder", "f3f91a07-cf6d-443e-b060-3b5062252a93");' + @CRLF
+'user_pref("calendar.registry.f3f91a07-cf6d-443e-b060-3b5062252a93.calendar-main-default", true);' + @CRLF
+'user_pref("calendar.registry.f3f91a07-cf6d-443e-b060-3b5062252a93.calendar-main-in-composite", true);' + @CRLF
+'user_pref("calendar.registry.f3f91a07-cf6d-443e-b060-3b5062252a93.name", "Home");' + @CRLF
+'user_pref("calendar.registry.f3f91a07-cf6d-443e-b060-3b5062252a93.type", "storage");' + @CRLF
+'user_pref("calendar.registry.f3f91a07-cf6d-443e-b060-3b5062252a93.uri", "moz-storage-calendar://");' + @CRLF
+'user_pref("calendar.timezone.local", "Europe/London");' + @CRLF
+'user_pref("calendar.ui.version", 1);' + @CRLF
+'user_pref("extensions.blocklist.pingCountVersion", -1);' + @CRLF
+'user_pref("extensions.bootstrappedAddons", "{}");' + @CRLF
+'user_pref("extensions.databaseSchema", 16);' + @CRLF
+'user_pref("extensions.enabledAddons", "%%7Be2fda1a4-762b-4020-b5ad-a41df1933103%%7D:4.0.0.1,lightningcalendartabs%%40jlx.84:1.4,lightningmonthtabs%%40jlx.84:1.9,sogo-connector%%40inverse.ca:31.0.1,sogo-integrator%40inverse.ca:31.0.1,%%7B972ce4c6-7e08-4474-a285-3208198ce6fd%%7D:38.0.1");' + @CRLF
+'user_pref("extensions.getAddons.cache.lastUpdate", 1434836219);' + @CRLF
+'user_pref("extensions.getAddons.databaseSchema", 5);' + @CRLF
+'user_pref("extensions.installedDistroAddon.{e2fda1a4-762b-4020-b5ad-a41df1933103}", true);' + @CRLF
+'user_pref("extensions.lastAppVersion", "38.0.1");' + @CRLF
+'user_pref("extensions.lastPlatformVersion", "38.0.1");' + @CRLF
+'user_pref("extensions.pendingOperations", false);' + @CRLF
+'user_pref("extensions.shownSelectionUI", true);' + @CRLF
+'user_pref("extensions.xpiState", "{\"app-profile\":{\"lightningcalendartabs@@jlx.84\":{\"d\":\"C:\\\\Users\\\\$username\\\\AppData\\\\Roaming\\\\Thunderbird\\\\Profiles\\\\gyjphq7q.default\\\\extensions\\\\lightningcalendartabs@jlx.84.xpi\",\"e\":true,\"v\":\"1.4\",\"st\":1434869264219},\"lightningmonthtabs@@jlx.84\":{\"d\":\"C:\\\\Users\\\\$username\\\\AppData\\\\Roaming\\\\Thunderbird\\\\Profiles\\\\gyjphq7q.default\\\\extensions\\\\lightningmonthtabs@@jlx.84.xpi\",\"e\":true,\"v\":\"1.9\",\"st\":1434869264212},\"sogo-connector@inverse.ca\":{\"d\":\"C:\\\\Users\\\\$username\\\\AppData\\\\Roaming\\\\Thunderbird\\\\Profiles\\\\gyjphq7q.default\\\\extensions\\\\sogo-connector@@inverse.ca.xpi\",\"e\":true,\"v\":\"31.0.1\",\"st\":1434869811586},\"sogo-integrator@@inverse.ca\":{\"d\":\"C:\\\\Users\\\\$username\\\\AppData\\\\Roaming\\\\Thunderbird\\\\Profiles\\\\gyjphq7q.default\\\\extensions\\\\sogo-integrator@@inverse.ca.xpi\",\"e\":true,\"v\":\"31.0.1\",\"st\":1434869811576},\"{e2fda1a4-762b-4020-b5ad-a41df1933103}\":{\"d\":\"C:\\\\Users\\\\$username\\\\AppData\\\\Roaming\\\\Thunderbird\\\\Profiles\\\\gyjphq7q.default\\\\extensions\\\\{e2fda1a4-762b-4020-b5ad-a41df1933103}\",\"e\":true,\"v\":\"4.0.0.1\",\"st\":1434870012008,\"mt\":1434869157949}},\"app-global\":{\"{972ce4c6-7e08-4474-a285-3208198ce6fd}\":{\"d\":\"C:\\\\Program Files (x86)\\\\Mozilla Thunderbird\\\\extensions\\\\{972ce4c6-7e08-4474-a285-3208198ce6fd}\",\"e\":true,\"v\":\"38.0.1\",\"st\":1434789512283,\"mt\":1433790794000}}}");' + @CRLF
+'user_pref("font.name.monospace.el", "Consolas");' + @CRLF
+'user_pref("font.name.monospace.x-cyrillic", "Consolas");' + @CRLF
+'user_pref("font.name.monospace.x-unicode", "Consolas");' + @CRLF
+'user_pref("font.name.monospace.x-western", "Consolas");' + @CRLF
+'user_pref("font.name.sans-serif.el", "Calibri");' + @CRLF
+'user_pref("font.name.sans-serif.x-cyrillic", "Calibri");' + @CRLF
+'user_pref("font.name.sans-serif.x-unicode", "Calibri");' + @CRLF
+'user_pref("font.name.sans-serif.x-western", "Calibri");' + @CRLF
+'user_pref("font.name.serif.el", "Cambria");' + @CRLF
+'user_pref("font.name.serif.x-cyrillic", "Cambria");' + @CRLF
+'user_pref("font.name.serif.x-unicode", "Cambria");' + @CRLF
+'user_pref("font.name.serif.x-western", "Cambria");' + @CRLF
+'user_pref("font.size.fixed.el", 14);' + @CRLF
+'user_pref("font.size.fixed.x-cyrillic", 14);' + @CRLF
+'user_pref("font.size.fixed.x-unicode", 14);' + @CRLF
+'user_pref("font.size.fixed.x-western", 14);' + @CRLF
+'user_pref("font.size.variable.el", 17);' + @CRLF
+'user_pref("font.size.variable.x-cyrillic", 17);' + @CRLF
+'user_pref("font.size.variable.x-unicode", 17);' + @CRLF
+'user_pref("font.size.variable.x-western", 17);' + @CRLF
+'user_pref("mail.ab_remote_content.migrated", 1);' + @CRLF
+'user_pref("mail.account.account1.identities", "id1");' + @CRLF
+'user_pref("mail.account.account1.server", "server2");' + @CRLF
+'user_pref("mail.account.account2.server", "server3");' + @CRLF
+'user_pref("mail.account.lastKey", 2);' + @CRLF
+'user_pref("mail.accountmanager.accounts", "account1,account2");' + @CRLF
+'user_pref("mail.accountmanager.defaultaccount", "account1");' + @CRLF
+'user_pref("mail.accountmanager.localfoldersserver", "server3");' + @CRLF
+'user_pref("mail.append_preconfig_smtpservers.version", 2);' + @CRLF
+'user_pref("mail.attachment.store.version", 1);' + @CRLF
+'user_pref("mail.default_charsets.migrated", 1);' + @CRLF
+'user_pref("mail.folder.views.version", 1);' + @CRLF
+'user_pref("mail.font.windows.version", 2);' + @CRLF
+'user_pref("mail.identity.id1.archive_enabled", false);' + @CRLF
+'user_pref("mail.identity.id1.archive_folder", "imap://$username@@mail.$realm/Archives");' + @CRLF
+'user_pref("mail.identity.id1.draft_folder", "map://$username@@mail.$realm/Drafts");' + @CRLF
+'user_pref("mail.identity.id1.drafts_folder_picker_mode", "0");' + @CRLF
+'user_pref("mail.identity.id1.fcc_folder", "imap://$username@@mail.$realm/Sent");' + @CRLF
+'user_pref("mail.identity.id1.fcc_folder_picker_mode", "0");' + @CRLF
+'user_pref("mail.identity.id1.fullName", "Ian Smith");' + @CRLF
+'user_pref("mail.identity.id1.reply_on_top", 1);' + @CRLF
+'user_pref("mail.identity.id1.sig_bottom", false);' + @CRLF
+'user_pref("mail.identity.id1.smtpServer", "smtp1");' + @CRLF
+'user_pref("mail.identity.id1.stationery_folder", "map://$username@m@ail.$realm/Templates");' + @CRLF
+'user_pref("mail.identity.id1.tmpl_folder_picker_mode", "0");' + @CRLF
+'user_pref("mail.identity.id1.useremail", "$username@@$realm");' + @CRLF
+'user_pref("mail.identity.id1.valid", true);' + @CRLF
+'user_pref("mail.openMessageBehavior.version", 1);' + @CRLF
+'user_pref("mail.preferences.advanced.selectedTabIndex", 0);' + @CRLF
+'user_pref("mail.rights.version", 1);' + @CRLF
+'user_pref("mail.root.imap", "C:\\Users\\$username\\AppData\\Roaming\\Thunderbird\\Profiles\\gyjphq7q.default\\ImapMail");' + @CRLF
+'user_pref("mail.root.imap-rel", "[ProfD]ImapMail");' + @CRLF
+'user_pref("mail.root.none", "C:\\Users\\$username\\AppData\\Roaming\\Thunderbird\\Profiles\\gyjphq7q.default\\Mail");' + @CRLF
+'user_pref("mail.root.none-rel", "[ProfD]Mail");' + @CRLF
+'user_pref("mail.server.server1.authMethod", 5);' + @CRLF
+'user_pref("mail.server.server1.check_new_mail", true);' + @CRLF
+'user_pref("mail.server.server1.hostname", "mail.$realm");' + @CRLF
+'user_pref("mail.server.server1.login_at_startup", true);' + @CRLF
+'user_pref("mail.server.server1.name", "$username@@$realm");' + @CRLF
+'user_pref("mail.server.server1.offline_download", false);' + @CRLF
+'user_pref("mail.server.server1.socketType", 2);' + @CRLF
+'user_pref("mail.server.server1.storeContractID", "<unknown:mozilla.org/msgstore/berkeleystore;1");' + @CRLF
+'user_pref("mail.server.server1.type", "imap");' + @CRLF
+'user_pref("mail.server.server1.userName", "$username");' + @CRLF
+'user_pref("mail.server.server1.using_subscription", false);' + @CRLF
+'user_pref("mail.server.server2.ageLimit", 30);' + @CRLF
+'user_pref("mail.server.server2.applyToFlaggedMessages", false);' + @CRLF
+'user_pref("mail.server.server2.authMethod", 5);' + @CRLF
+'user_pref("mail.server.server2.cacheCapa.acl", false);' + @CRLF
+'user_pref("mail.server.server2.cacheCapa.quota", false);' + @CRLF
+'user_pref("mail.server.server2.check_new_mail", true);' + @CRLF
+'user_pref("mail.server.server2.cleanupBodies", false);' + @CRLF
+'user_pref("mail.server.server2.daysToKeepBodies", 30);' + @CRLF
+'user_pref("mail.server.server2.daysToKeepHdrs", 30);' + @CRLF
+'user_pref("mail.server.server2.directory", "C:\\Users\\$username\\AppData\\Roaming\\Thunderbird\\Profiles\\gyjphq7q.default\\ImapMail\\mail.$realm");' + @CRLF
+'user_pref("mail.server.server2.directory-rel", "[ProfD]ImapMail/mail.$realm");' + @CRLF
+'user_pref("mail.server.server2.downloadByDate", false);' + @CRLF
+'user_pref("mail.server.server2.downloadUnreadOnly", false);' + @CRLF
+'user_pref("mail.server.server2.hostname", "mail.$realm");' + @CRLF
+'user_pref("mail.server.server2.keepUnreadOnly", false);' + @CRLF
+'user_pref("mail.server.server2.login_at_startup", true);' + @CRLF
+'user_pref("mail.server.server2.max_cached_connections", 5);' + @CRLF
+'user_pref("mail.server.server2.name", "$username@@$realm");' + @CRLF
+'user_pref("mail.server.server2.namespace.personal", "\"\"");' + @CRLF
+'user_pref("mail.server.server2.numHdrsToKeep", 2000);' + @CRLF
+'user_pref("mail.server.server2.offline_download", false);' + @CRLF
+'user_pref("mail.server.server2.serverIDResponse", "(\"name\" \"Dovecot\")");' + @CRLF
+'user_pref("mail.server.server2.socketType", 2);' + @CRLF
+'user_pref("mail.server.server2.spamActionTargetAccount", "imap://$username@@mail.$realm");' + @CRLF
+'user_pref("mail.server.server2.spamActionTargetFolder", "imap://$username@@mail.$realm/Junk");' + @CRLF
+'user_pref("mail.server.server2.spamLevel", 0);' + @CRLF
+'user_pref("mail.server.server2.storeContractID", "<unknown:mozilla.org/msgstore/berkeleystore;1");' + @CRLF
+'user_pref("mail.server.server2.timeout", 29);' + @CRLF
+'user_pref("mail.server.server2.type", "imap");' + @CRLF
+'user_pref("mail.server.server2.userName", "$username");' + @CRLF
+'user_pref("mail.server.server3.directory", "C:\\Users\\$username\\AppData\\Roaming\\Thunderbird\\Profiles\\gyjphq7q.default\\Mail\\Local Folders");' + @CRLF
+'user_pref("mail.server.server3.directory-rel", "[ProfD]Mail/Local Folders");' + @CRLF
+'user_pref("mail.server.server3.hostname", "Local Folders");' + @CRLF
+'user_pref("mail.server.server3.name", "Local Folders");' + @CRLF
+'user_pref("mail.server.server3.storeContractID", "<unknown:mozilla.org/msgstore/berkeleystore;1");' + @CRLF
+'user_pref("mail.server.server3.type", "none");' + @CRLF
+'user_pref("mail.server.server3.userName", "nobody");' + @CRLF
+'user_pref("mail.shell.checkDefaultClient", false);' + @CRLF
+'user_pref("mail.smtpserver.smtp1.authMethod", 5);' + @CRLF
+'user_pref("mail.smtpserver.smtp1.hostname", "mail.$realm");' + @CRLF
+'user_pref("mail.smtpserver.smtp1.port", 25);' + @CRLF
+'user_pref("mail.smtpserver.smtp1.try_ssl", 2);' + @CRLF
+'user_pref("mail.smtpserver.smtp1.username", "$username");' + @CRLF
+'user_pref("mail.smtpservers", "smtp1");' + @CRLF
+'user_pref("mail.spam.version", 1);' + @CRLF
+'user_pref("mail.startup.enabledMailCheckOnce", true);' + @CRLF
+'user_pref("mail.taskbar.lastgroupid", "8216C80C92C4E828");' + @CRLF
+'user_pref("mail.ui-rdf.version", 11);' + @CRLF
+'user_pref("mail.winsearch.firstRunDone", true);' + @CRLF
+'user_pref("mailnews.database.global.datastore.id", "e9e9b7ef-1c3d-41f6-880a-81dc184b200");' + @CRLF
+'user_pref("mailnews.quotingPrefs.version", 1);' + @CRLF
+'user_pref("mailnews.start_page.enabled", false);' + @CRLF
+'user_pref("mailnews.start_page_override.mstone", "38.0.1");' + @CRLF
+'user_pref("mailnews.tags.$label1.color", "#FF0000");' + @CRLF
+'user_pref("mailnews.tags.$label1.tag", "Important");' + @CRLF
+'user_pref("mailnews.tags.$label2.color", "#FF9900");' + @CRLF
+'user_pref("mailnews.tags.$label2.tag", "Work");' + @CRLF
+'user_pref("mailnews.tags.$label3.color", "#009900");' + @CRLF
+'user_pref("mailnews.tags.$label3.tag", "Personal");' + @CRLF
+'user_pref("mailnews.tags.$label4.color", "#3333FF");' + @CRLF
+'user_pref("mailnews.tags.$label4.tag", "To Do");' + @CRLF
+'user_pref("mailnews.tags.$label5.color", "#993399");' + @CRLF
+'user_pref("mailnews.tags.$label5.tag", "Later");' + @CRLF
+'user_pref("mailnews.tags.version", 2);' + @CRLF
+'user_pref("mailnews.default_sort_type", 18);' + @CRLF
+'user_pref("mailnews.default_sort_order", 2);' + @CRLF
+'user_pref("network.cookie.prefsMigrated", true);' + @CRLF
+'user_pref("network.negotiate-auth.trusted-uris", "$realm");' + @CRLF
+'user_pref("network.predictor.cleaned-up", true);' + @CRLF
+'user_pref("security.OCSP.enabled", 0);' + @CRLF
+'user_pref("security.default_personal_cert", "Select Automatically");' + @CRLF
+'user_pref("signon.importedFromSqlite", true);' + @CRLF
+'user_pref("spellchecker.dictionary", "en_GB");' + @CRLF
+'user_pref("toolkit.telemetry.previousBuildID", "20150608103712");' + @CRLF
+'user_pref("toolkit.telemetry.prompted", 2);' + @CRLF
+?
+ENDIF 
+
+;Create extensions.json
+
+IF RedirectOutput("c:\Users\%username%\AppData\Roaming\Thunderbird\Profiles\gyjphq7q.default\extensions.json",1) = 0 
+?'{"schemaVersion":16,"addons":[{"id":"lightningcalendartabs@@jlx.84","syncGUID":"9dyRs9F5D3Mc","location":"app-profile","version":"1.4","type":"extension","internalName":null,"updateURL":null,"updateKey":null,"optionsURL":"chrome://lightningcalendartabs/content/options.xul","optionsType":null,"aboutURL":null,"iconURL":null,"icon64URL":null,"defaultLocale":{"name":"Lightning Calendar Tabs","description":"An addon which extends the Lighting calendar views with tabs.","creator":"jlx84","homepageURL":null},"visible":true,"active":true,"userDisabled":false,"appDisabled":false,"descriptor":"C:\\Users\\$username\\AppData\\Roaming\\Thunderbird\\Profiles\\gyjphq7q.default\\extensions\\lightningcalendartabs@@jlx.84.xpi","installDate":1434869264219,"updateDate":1434869264219,"applyBackgroundUpdates":1,"bootstrap":false,"size":43629,"sourceURI":null,"releaseNotesURI":null,"softDisabled":false,"foreignInstall":true,"hasBinaryComponents":false,"strictCompatibility":false,"locales":[],"targetApplications":[{"id":"{3550f703-e582-4d05-9a08-453d09bdfdc6}","minVersion":"5.0","maxVersion":"16.*"}],"targetPlatforms":[],"multiprocessCompatible":false},{"id":"lightningmonthtabs@@jlx.84","syncGUID":"HMsBkzrLcvav","location":"app-profile","version":"1.9","type":"extension","internalName":null,"updateURL":null,"updateKey":null,"optionsURL":"chrome://lightningmonthtabs/content/options.xul","optionsType":null,"aboutURL":null,"iconURL":null,"icon64URL":null,"defaultLocale":{"name":"Lightning Month Tabs","description":"An addon to show month tabs in Lightning calendar","creator":"jlx84","homepageURL":null},"visible":true,"active":true,"userDisabled":false,"appDisabled":false,"descriptor":"C:\\Users\\$username\\AppData\\Roaming\\Thunderbird\\Profiles\\gyjphq7q.default\\extensions\\lightningmonthtabs@@jlx.84.xpi","installDate":1434869264212,"updateDate":1434869264212,"applyBackgroundUpdates":1,"bootstrap":false,"size":13880,"sourceURI":null,"releaseNotesURI":null,"softDisabled":false,"foreignInstall":true,"hasBinaryComponents":false,"strictCompatibility":false,"locales":[],"targetApplications":[{"id":"{3550f703-e582-4d05-9a08-453d09bdfdc6}","minVersion":"5.0","maxVersion":"16.*"}],"targetPlatforms":[],"multiprocessCompatible":false},{"id":"sogo-connector@@inverse.ca","syncGUID":"UC1zuPGef1DH","location":"app-profile","version":"31.0.1","type":"extension","internalName":null,"updateURL":null,"updateKey":null,"optionsURL":null,"optionsType":null,"aboutURL":null,"iconURL":"chrome://sogo-connector/skin/addressbook/sogo.png","icon64URL":null,"defaultLocale":{"name":"Inverse SOGo Connector","description":"A DAV plugin for keeping addressbooks and events in sync","creator":"Inverse <support@@inverse.ca>","homepageURL":"http://sogo.nu/downloads/frontends.html","developers":["Inverse <support@@inverse.ca>"]},"visible":true,"active":true,"userDisabled":false,"appDisabled":false,"descriptor":"C:\\Users\\$username\\AppData\\Roaming\\Thunderbird\\Profiles\\gyjphq7q.default\\extensions\\sogo-connector@@inverse.ca.xpi","installDate":1434869811586,"updateDate":1434869811586,"applyBackgroundUpdates":1,"bootstrap":false,"size":643590,"sourceURI":null,"releaseNotesURI":null,"softDisabled":false,"foreignInstall":true,"hasBinaryComponents":false,"strictCompatibility":false,"locales":[],"targetApplications":[{"id":"{3550f703-e582-4d05-9a08-453d09bdfdc6}","minVersion":"31.0","maxVersion":"31.*"}],"targetPlatforms":[],"multiprocessCompatible":false},{"id":"sogo-integrator@@inverse.ca","syncGUID":"UiozRZynE8Fk","location":"app-profile","version":"31.0.1","type":"extension","internalName":null,"updateURL":null,"updateKey":null,"optionsURL":null,"optionsType":null,"aboutURL":null,"iconURL":"chrome://sogo-integrator/skin/sogo.png","icon64URL":null,"defaultLocale":{"name":"Inverse SOGo Integrator","description":"A SOGo integration plugin for Thunderbird and Lightning","creator":"Inverse <support@@inverse.ca>","homepageURL":null,"developers":["Inverse <support@@inverse.ca>"]},"visible":true,"active":true,"userDisabled":false,"appDisabled":false,"descriptor":"C:\\Users\\$username\\AppData\\Roaming\\Thunderbird\\Profiles\\gyjphq7q.default\\extensions\\sogo-integrator@@inverse.ca.xpi","installDate":1434869811576,"updateDate":1434869811576,"applyBackgroundUpdates":1,"bootstrap":false,"size":285643,"sourceURI":null,"releaseNotesURI":null,"softDisabled":false,"foreignInstall":true,"hasBinaryComponents":false,"strictCompatibility":false,"locales":[],"targetApplications":[{"id":"{3550f703-e582-4d05-9a08-453d09bdfdc6}","minVersion":"31.0","maxVersion":"31.*"}],"targetPlatforms":[],"multiprocessCompatible":false},{"id":"{e2fda1a4-762b-4020-b5ad-a41df1933103}","syncGUID":"CP_mjPG1-kp4","location":"app-profile","version":"4.0.0.1","type":"extension","internalName":null,"updateURL":null,"updateKey":null,"optionsURL":"chrome://messenger/content/preferences/preferences.xul","optionsType":null,"aboutURL":null,"iconURL":"chrome://calendar/skin/cal-icon32.png","icon64URL":null,"defaultLocale":{"name":"Lightning","description":"An integrated calendar for Thunderbird","creator":"Mozilla Calendar Project","homepageURL":"https://www.mozilla.org/projects/calendar/"},"visible":true,"active":true,"userDisabled":false,"appDisabled":false,"descriptor":"C:\\Users\\$username\\AppData\\Roaming\\Thunderbird\\Profiles\\gyjphq7q.default\\extensions\\{e2fda1a4-762b-4020-b5ad-a41df1933103}","installDate":1434870012008,"updateDate":1434870012008,"applyBackgroundUpdates":1,"bootstrap":false,"size":14586639,"sourceURI":null,"releaseNotesURI":null,"softDisabled":false,"foreignInstall":true,"hasBinaryComponents":false,"strictCompatibility":true,"locales":[],"targetApplications":[{"id":"{3550f703-e582-4d05-9a08-453d09bdfdc6}","minVersion":"38.0","maxVersion":"38.*"},{"id":"{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}","minVersion":"2.35","maxVersion":"2.35.*"}],"targetPlatforms":[{"os":"WINNT","abi":"x86-msvc"}],"multiprocessCompatible":false},{"id":"{972ce4c6-7e08-4474-a285-3208198ce6fd}","syncGUID":"H6ZJ9XaXGfoZ","location":"app-global","version":"38.0.1","type":"theme","internalName":"classic/1.0","updateURL":null,"updateKey":null,"optionsURL":null,"optionsType":null,"aboutURL":null,"iconURL":null,"icon64URL":null,"defaultLocale":{"name":"Default","description":"The default theme.","creator":"Mozilla","homepageURL":null,"contributors":["Mozilla Contributors"]},"visible":true,"active":true,"userDisabled":false,"appDisabled":false,"descriptor":"C:\\Program Files (x86)\\Mozilla Thunderbird\\extensions\\{972ce4c6-7e08-4474-a285-3208198ce6fd}","installDate":1434789512283,"updateDate":1434789512283,"applyBackgroundUpdates":1,"skinnable":false,"size":5119,"sourceURI":null,"releaseNotesURI":null,"softDisabled":false,"foreignInstall":false,"hasBinaryComponents":false,"strictCompatibility":true,"locales":[],"targetApplications":[{"id":"{3550f703-e582-4d05-9a08-453d09bdfdc6}","minVersion":"38.0.1","maxVersion":"38.0.1"}],"targetPlatforms":[]}]}'?
+ENDIF 
+
+
+;Create extensions.ini
+
+IF RedirectOutput("c:\Users\%username%\AppData\Roaming\Thunderbird\Profiles\gyjphq7q.default\extensions.ini",1) = 0
+?'[ExtensionDirs]' + @CRLF
+'Extension0=C:\Users\$username\AppData\Roaming\Thunderbird\Profiles\gyjphq7q.default\extensions\lightningcalendartabs@jlx.84.xpi' + @CRLF
+'Extension1=C:\Users\$username\AppData\Roaming\Thunderbird\Profiles\gyjphq7q.default\extensions\lightningmonthtabs@jlx.84.xpi' + @CRLF
+'Extension2=C:\Users\$username\AppData\Roaming\Thunderbird\Profiles\gyjphq7q.default\extensions\sogo-connector@inverse.ca.xpi' + @CRLF
+'Extension3=C:\Users\$username\AppData\Roaming\Thunderbird\Profiles\gyjphq7q.default\extensions\sogo-integrator@inverse.ca.xpi' + @CRLF
+'Extension4=C:\Users\$username\AppData\Roaming\Thunderbird\Profiles\gyjphq7q.default\extensions\{e2fda1a4-762b-4020-b5ad-a41df1933103}' + @CRLF
+'' + @CRLF
+'[ThemeDirs]' + @CRLF
+'Extension0=C:\Program Files (x86)\Mozilla Thunderbird\extensions\{972ce4c6-7e08-4474-a285-3208198ce6fd}' + @CRLF
+'' + @CRLF
+'[MultiprocessIncompatibleExtensions]' + @CRLF
+'Extension0=lightningcalendartabs@jlx.84' + @CRLF
+'Extension1=lightningmonthtabs@jlx.84' + @CRLF
+'Extension2=sogo-connector@inverse.ca' + @CRLF
+'Extension3=sogo-integrator@inverse.ca' + @CRLF
+'Extension4={e2fda1a4-762b-4020-b5ad-a41df1933103}' + @CRLF
+?
+ENDIF 
+
+
