@@ -21,6 +21,8 @@
 
 LOG_DATE=`date +%F`
 
+#Make sure that dkpg doesnt change any config files.
+export DEBIAN_FRONTEND=noninteractive
 
 REMOVE_OLD_KERNELS=no
 INSTALLTYPE=scheduled
@@ -41,7 +43,7 @@ then
 	chmod 0700 /opt/karoshi/logs/server_upgrades/
 fi
 
-CONFIGFILE_ARRAY=( apache,/etc/apache2/apache2.conf cups,/etc/cups/cupsd.conf dhcp,/etc/dhcp/dhcpd.conf dovecot,/etc/dovecot/dovecot.conf e2guardian,/etc/e2guardian/e2guardian.conf fail2ban,/etc/fail2ban/fail2ban.conf mysql,/etc/mysql/my.cnf nslcd,/etc/nslcd.conf ntp,/etc/ntp.conf nut,/etc/nut/nut.conf postfix,/etc/postfix/main.cf postfix,/etc/postfix/master.cf samba,/etc/samba/smb.conf ssh,/etc/ssh/sshd_config squid,/etc/squid/squid.conf )
+CONFIGFILE_ARRAY=( apache,/etc/apache2/apache2.conf cups,/etc/cups/cupsd.conf dhcp,/etc/dhcp/dhcpd.conf dovecot,/etc/dovecot/dovecot.conf e2guardian,/etc/e2guardian/e2guardian.conf fail2ban,/etc/fail2ban/fail2ban.conf mysql,/etc/mysql/my.cnf nslcd,/etc/nslcd.conf ntp,/etc/ntp.conf nssswitch,/etc/nsswitch.conf nut,/etc/nut/nut.conf postfix,/etc/postfix/main.cf postfix,/etc/postfix/master.cf samba,/etc/samba/smb.conf ssh,/etc/ssh/sshd_config squid,/etc/squid/squid.conf )
 
 function backup_config_files {
 #Backup service config files
@@ -52,7 +54,7 @@ do
 	CONFIGFILEDATA=${CONFIGFILE_ARRAY[$COUNTER]}
 	CONFIGPATH=`echo "$CONFIGFILEDATA" | cut -d, -f2`
 
-	[ -f $CONFIGPATH ] && cp -f $CONFIGPATH $CONFIGPATH.$LOG_DATE
+	[ -f "$CONFIGPATH" ] && cp -f "$CONFIGPATH" "$CONFIGPATH.$LOG_DATE.preupdate"
 
 	let COUNTER=$COUNTER+1
 done
@@ -69,31 +71,34 @@ do
 	CONFIGPATH=`echo "$CONFIGFILEDATA" | cut -d, -f2`
 	SERVICENAME=`echo "$CONFIGFILEDATA" | cut -d, -f1`
 
-	if [ -f "$CONFIGPATH" ] && [ -f "$CONFIGPATH.$LOG_DATE" ]
+	if [ -f "$CONFIGPATH" ] && [ -f "$CONFIGPATH.$LOG_DATE.preupdate" ]
 	then
 		#Get md5sum and check against the backup config file
-		if [ `md5sum "$CONFIGPATH" | cut -d" " -f1` != `md5sum "$CONFIGPATH.$LOG_DATE" | cut -d" " -f1` ]
+		if [ `md5sum "$CONFIGPATH" | cut -d" " -f1` != `md5sum "$CONFIGPATH.$LOG_DATE.preupdate" | cut -d" " -f1` ]
 		then
 			echo -e "$HOSTNAME: `date` - $CONFIGPATH has been altered.\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
 			#Copy current config file
-			cp -f "$CONFIGPATH" "$CONFIGPATH.$LOG_DATE.postupdate"
+			cp -f "$CONFIGPATH" "$CONFIGPATH.$LOG_DATE.postupdate" 2>>/opt/karoshi/logs/server_upgrades/$LOG_DATE
 
 			#Restore backed up config file
 			echo -e "$HOSTNAME: `date` - Restoring the original config file.\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
-			echo -e "$HOSTNAME: `date` - Inspect $CONFIGPATH.$LOG_DATE and $CONFIGPATH.$LOG_DATE.postupdate for changes.\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
-			cp -f "$CONFIGPATH.$LOG_DATE" "$CONFIGPATH"
-			#Restart the service if it is running
-			/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$SERVICENAME"_"status
-			if [ $? = 0 ]
+			echo -e "$HOSTNAME: `date` - Inspect $CONFIGPATH.$LOG_DATE.preupdate and $CONFIGPATH.$LOG_DATE.postupdate for changes.\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
+			cp -f "$CONFIGPATH.$LOG_DATE.preupdate" "$CONFIGPATH" 2>>/opt/karoshi/logs/server_upgrades/$LOG_DATE
+			#Restart the service if it is running as long as it is not nsswitch.
+			if [ "$SERVICENAME" != nssswitch ]
 			then
-				echo -e "$HOSTNAME: `date` - Restarting $SERVICENAME.\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
-				/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$SERVICENAME"_"stop
-				sleep 1
-				/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$SERVICENAME"_"start
+				/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$SERVICENAME"_"status
+				if [ $? = 0 ]
+				then
+					echo -e "$HOSTNAME: `date` - Restarting $SERVICENAME.\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
+					/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$SERVICENAME"_"stop
+					sleep 1
+					/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$SERVICENAME"_"start
+				fi
 			fi
 		else
 			#Delete the backed up config files
-			rm -f "$CONFIGPATH.$LOG_DATE"
+			rm -f "$CONFIGPATH.$LOG_DATE.preupdate"
 		fi
 	fi
 	let COUNTER=$COUNTER+1
@@ -130,7 +135,7 @@ CURRENT_SAMBA_VER=`samba-tool -V`
 function check_status {
 STATUS=off
 /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$SERVICENAME"_"status
-[ `echo $?` = 0 ] && STATUS=on
+[ $? = 0 ] && STATUS=on
 
 #Make sure status is correct for ssh
 if [ $SERVICENAME = ssh ]
@@ -237,7 +242,7 @@ function controlservices {
 
 #Check if the service is running.
 /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$SERVICENAME"_"status
-SERVICESTATUS=`echo $?`
+SERVICESTATUS=$?
 
 #Make sure services are stopped if they were not running before the update.
 if [ $STATUS = off ]

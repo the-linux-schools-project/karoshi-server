@@ -253,18 +253,19 @@ echo '			<li class="mid"><a href="/cgi-bin/admin/ntp.cgi" class="fly">'$"Time"'<
 			</li>
 			<li class="mid"><a href="/cgi-bin/admin/backup_essentials_fm.cgi" class="fly">'$"Backup"'</a>
 					<ul>
-						<li><a href="/cgi-bin/admin/backup_essentials_fm.cgi">'$"Backup Essential data"'</a></li>
 '
 if [ $BACKUPCTRL = yes ]
 then
 echo '
+						<li><a href="/cgi-bin/admin/backup_configure_fm.cgi">'$"Configure Backup"'</a></li>
 						<li><a href="/cgi-bin/admin/backup_enable_disable_fm.cgi">'$"Enable - Disable Backup"'</a></li>
 						<li><a href="/cgi-bin/admin/backup_view_logs_fm.cgi">'$"View Backup Logs"'</a></li>
 						<li><a href="/cgi-bin/admin/backup_now_fm.cgi">'$"Run Network Backup Now"'</a></li>
 						<li><a href="/cgi-bin/admin/restore_files_fm.cgi">'$"Restore Files"'</a></li>
 					'
 fi
-echo '					</ul>
+echo '						<li><a href="/cgi-bin/admin/backup_essentials_fm.cgi">'$"Backup Essential data"'</a></li>
+					</ul>
 			</li>
 			<li><a href="/cgi-bin/admin/apply_ssl_certificate_fm.cgi">'$"SSL Certificate"'</a></li>
 			<li><a href="/cgi-bin/admin/ssl_commercial_certs_fm.cgi">'$"Commercial SSL Certificate"'</a></li>

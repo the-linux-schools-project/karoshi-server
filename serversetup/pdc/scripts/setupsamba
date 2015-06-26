@@ -1859,4 +1859,10 @@ then
 	#Seize ad roles back
 	samba-tool fsmo seize --role=all
 fi
+
+#Add in thunderbird support
+/opt/karoshi/serversetup/pdc/windowsclient/thunderbird/configure_thunderbird_windows
+
+
+
 exit

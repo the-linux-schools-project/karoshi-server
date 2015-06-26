@@ -46,7 +46,7 @@ then
 		touch /var/lib/samba/netlogon/windows_settings/drives/"$KIXFILE".kix
 		if [ `grep -F -c "$CLIENTPATH2" /var/lib/samba/netlogon/windows_settings/drives/"$KIXFILE".kix` = 0 ]
 		then
-			echo 'shell "net use '$DRIVELETTER' '$SMBSERVER2''$CLIENTPATH2' /persistent:no" ;Karoshi_auto_generated' >> /var/lib/samba/netlogon/windows_settings/drives/"$KIXFILE".kix
+			echo run '"net use '$DRIVELETTER' '$SMBSERVER2''$CLIENTPATH2' /persistent:no" ;Karoshi_auto_generated' >> /var/lib/samba/netlogon/windows_settings/drives/"$KIXFILE".kix
 		fi
 	done
 else
@@ -54,7 +54,7 @@ else
 	touch /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix
 	if [ `grep -F -c "$CLIENTPATH2" /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix` = 0 ]
 	then
-		echo 'shell "net use '$DRIVELETTER' '$SMBSERVER2''$CLIENTPATH2' /persistent:no" ;Karoshi_auto_generated' >> /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix
+		echo run '"net use '$DRIVELETTER' '$SMBSERVER2''$CLIENTPATH2' /persistent:no" ;Karoshi_auto_generated' >> /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix
 	fi
 fi
 }
