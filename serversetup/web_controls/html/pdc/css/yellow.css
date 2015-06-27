@@ -24,6 +24,17 @@ body {
 	background-color: #FFFFFF;
 }
 
+.button:hover { 
+  color: #FFFFFF;
+  background: #BCBC1B;
+  background-image: -webkit-linear-gradient(top, #BCBC1B, #242405);
+  background-image: -moz-linear-gradient(top, #BCBC1B, #242405);
+  background-image: -ms-linear-gradient(top, #BCBC1B, #242405);
+  background-image: -o-linear-gradient(top, #BCBC1B, #242405);
+  background-image: linear-gradient(to bottom, #BCBC1B, #242405);
+  text-decoration: none;
+ }
+
 table.menu th, table.menu td {
 	color: #ffffff;
 }

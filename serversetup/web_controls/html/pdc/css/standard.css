@@ -258,27 +258,40 @@ a.searchlink:hover
 
 .button
 {
-   border: solid 1px #aaa;
-   border-radius: 10px;
-   -moz-border-radius: 10px;
-   -webkit-border-radius: 10px;
-   background-color: #DEDEDE;
-   font-family: Arial, Times, Georgia, "Times New Roman", Times, serif;
-   color: #2A2A2A;
-   font-size: 11px;
-   min-width: 105px;
-   height: 23px;
-   text-align:center;
-   text-decoration: none;
-   font-weight: bold;
-   margin: 0px 1px 0px 1px;
-   padding: 1px;
-   display: inline-block;
+  min-width: 105px;
+  height: 25px;
+  font-weight: bold;
+  border: solid 1px #aaa;
+  border-radius: 12px;
+  -moz-border-radius: 12px;
+  -webkit-border-radius: 12px;
+  background-color: #EFEFEF;
+  background: #EFEFEF;
+  background-image: -webkit-linear-gradient(top, #EFEFEF, #808080);
+  background-image: -moz-linear-gradient(top, #EFEFEF, #808080);
+  background-image: -ms-linear-gradient(top, #EFEFEF, #808080);
+  background-image: -o-linear-gradient(top, #EFEFEF, #808080);
+  background-image: linear-gradient(to bottom, #EFEFEF, #808080);
+  font-family: Arial, Times, Georgia, "Times New Roman", Times, serif;
+  color: #2A2A2A;
+  font-size: 11px;
+  text-align:center;
+  text-decoration: none;
+  font-weight: bold;
+  margin: 0px 1px 0px 1px;
+  padding: 1px;
+  display: inline-block;
+
 }
-.button:hover { background-color: #585858;
-   		border: solid 1px #6C6C6C;
-		color: #FFFFFF;
-		text-decoration: none;
+.button:hover { 
+  color: #FFFFFF;
+  background: #6A7ACD;
+  background-image: -webkit-linear-gradient(top, #6A7ACD, #101531);
+  background-image: -moz-linear-gradient(top, #6A7ACD, #101531);
+  background-image: -ms-linear-gradient(top, #6A7ACD, #101531);
+  background-image: -o-linear-gradient(top, #6A7ACD, #101531);
+  background-image: linear-gradient(to bottom, #6A7ACD, #101531);
+  text-decoration: none;
  }  
 .smallbutton
 {

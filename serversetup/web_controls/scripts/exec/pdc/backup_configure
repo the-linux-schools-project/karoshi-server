@@ -66,6 +66,8 @@ ACTION=`echo "$DATA" | cut -s -d: -f5`
 BACKUPNAME=`echo "$DATA" | cut -s -d: -f6`
 BACKUPFOLDER=`echo "$DATA" | cut -s -d: -f7 | sed 's/%2F/\//g'`
 DURATION=`echo "$DATA" | cut -s -d: -f8 | tr -cd '0-9'`
+BACKUPSERVER=`echo "$DATA" | cut -s -d: -f9`
+BACKUPSTATUS=`echo "$DATA" | cut -s -d: -f10`
 ########################
 #Check data
 ########################
@@ -104,6 +106,24 @@ then
 	fi
 fi
 
+if [ "$ACTION" = assignbackupserver ]
+then
+	if [ -z "$BACKUPSERVER" ]
+	then
+		echo `date`: backup_configure - Blank backupserver by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi	
+fi
+
+if [ "$ACTION" = setbackupstatus ]
+then
+	if [ -z "$BACKUPSTATUS" ]
+	then
+		echo `date`: backup_configure - Blank backupstatus by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi	
+fi
+
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
 	echo `date`: backup_configure - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -120,6 +140,29 @@ TEXTDOMAIN=karoshi-server
 
 ICON1=/images/submenus/file/edit.png
 ICON2=/images/submenus/file/delete.png
+
+#Set backup status
+if [ "$ACTION" = setbackupstatus ]
+then
+	if [ -f /opt/karoshi/server_network/backup_servers/stop_backup_"$SERVERNAME" ]
+	then
+		echo `date`": backup_configure - enabling $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+		rm -f /opt/karoshi/server_network/backup_servers/stop_backup_"$SERVERNAME"
+	else
+		echo `date`": backup_configure - disabling $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+		touch /opt/karoshi/server_network/backup_servers/stop_backup_"$SERVERNAME"
+	
+	fi
+	ACTION=view
+fi
+
+#Set the backup server
+if [ "$ACTION" = assignbackupserver ]
+then
+	echo `date`: "backup_configure - setting backup server to $BACKUPSERVER for $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	echo "$BACKUPSERVER" > /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backupserver
+	ACTION=view
+fi
 
 if [ "$ACTION" = reallyedit ]
 then
@@ -193,8 +236,51 @@ fi
 
 if [ "$ACTION" = view ]
 then
+	#Get backup server name
+	if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backupserver ]
+	then
+		BACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backupserver`
+	fi
+	
+	#Get backup status
+	BACKUPSTATUS=$"Disable Backup"
+	BACKUPSTATUS2=disable
+	BACKUP_ICON=/images/submenus/system/backup_enabled.png
+	if [ -f /opt/karoshi/server_network/backup_servers/stop_backup_$SERVERNAME ]
+	then
+		BACKUPSTATUS=$"Enable Backup"
+		BACKUP_ICON=/images/submenus/system/backup_disabled.png
+		BACKUPSTATUS2=enable
+	fi
+
+	#Show backup server and backup status
 	echo '<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-    	<tbody><tr><td style="width: 120px;"><b>'$"Backup Name"'</b></td><td style="width: 250px;"><b>'$"Backup Folder"'</b></td><td><b>'$"Days Tracked"'</b></td></tr>'
+	<tr><td style="width: 200px; vertical-align:top"><b>'$"Backup Server"'</b></td><td style="width: 220px;">'
+	#Show current backup server and a list of backup servers to change it to
+	echo '<input type="hidden" name="____ACTION____" value="assignbackupserver">
+	<input type="hidden" name="____SERVERNAME____" value="'$SERVERNAME'">
+	<select style="width: 200px;" name="____BACKUPSERVER____">'
+	if [ ! -z "$BACKUPSERVER" ]
+	then
+		echo '<option value="'$BACKUPSERVER'">'$BACKUPSERVER'</option>
+		<option class="select-dash" disabled="disabled">----------</option>'
+	fi
+	#Show all other backup servers
+	for OTHERBACKUPSERVER in `ls -1 /opt/karoshi/server_network/backup_servers/servers/`
+	do
+		if [ "$OTHERBACKUPSERVER" != "$BACKUPSERVER" ]
+		then
+			echo '<option value="'$OTHERBACKUPSERVER'">'$OTHERBACKUPSERVER'</option>'
+		fi
+	done
+	echo '</select></td><td><input value="'$"Set Backup Server"'" class="button" type="submit"></td></tr></tbody></table></form>
+	<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	<tr><td style="width: 200px; vertical-align:top"><b>'$"Backup Status"'</b></td><td><form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post"><a class="info" href="javascript:void(0)"><input name="____SERVERNAME____'$SERVERNAME'____ACTION____setbackupstatus____BACKUPSTATUS____'$BACKUPSTATUS2'____" type="image" class="images" src="'$BACKUP_ICON'" value=""><span>'$BACKUPSTATUS'</span></a></form></td>
+	</tbody></table></form><br><br>'
+	
+	#Show all folders that are set to be backed up.
+	echo '<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+    	<tbody><tr><td style="width: 200px;"><b>'$"Backup Name"'</b></td><td style="width: 220px;"><b>'$"Backup Folder"'</b></td><td><b>'$"Days Tracked"'</b></td></tr>'
 	for BACKUPDATA in `cat /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders | sed 's/ /REPLACESPACE/g'`
 	do
 		BACKUPFOLDER=`echo "$BACKUPDATA" | cut -d, -f1 | sed 's/REPLACESPACE/ /g'`

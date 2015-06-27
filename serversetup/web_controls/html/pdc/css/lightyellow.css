@@ -28,8 +28,15 @@ body {
 	border-color: #717110;
 }
 
-.button:hover { background-color: #717110;
-   		border: solid 1px #6C6C6C;
+.button:hover { 
+  color: #FFFFFF;
+  background: #CFCF1E;
+  background-image: -webkit-linear-gradient(top, #CFCF1E, #242405);
+  background-image: -moz-linear-gradient(top, #CFCF1E, #242405);
+  background-image: -ms-linear-gradient(top, #CFCF1E, #242405);
+  background-image: -o-linear-gradient(top, #CFCF1E, #242405);
+  background-image: linear-gradient(to bottom, #CFCF1E, #242405);
+  text-decoration: none;
  }
 
 table.menu th, table.menu td {

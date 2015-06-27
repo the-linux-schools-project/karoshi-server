@@ -136,6 +136,40 @@ then
 	fi
 fi
 
+if [ "$ACTION" = assignbackupserver ]
+then
+	#Assign BACKUPSERVER
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = BACKUPSERVERcheck ]
+		then
+			let COUNTER=$COUNTER+1
+			BACKUPSERVER=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+fi
+
+if [ "$ACTION" = setbackupstatus ]
+then
+	#Assign BACKUPSTATUS
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = BACKUPSTATUScheck ]
+		then
+			let COUNTER=$COUNTER+1
+			BACKUPSTATUS=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+fi
+
 #########################
 #Check https access
 #########################
@@ -192,6 +226,24 @@ then
 	fi
 fi
 
+if [ "$ACTION" = assignbackupserver ]
+then
+	if [ -z "$BACKUPSERVER" ]
+	then
+		MESSAGE=$"Blank backup servername."
+		show_status
+	fi
+fi
+
+if [ "$ACTION" = setbackupstatus ]
+then
+	if [ -z "$BACKUPSTATUS" ]
+	then
+		MESSAGE=$"Blank backup status."
+		show_status
+	fi
+fi
+
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox3"><div id="titlebox">
@@ -199,10 +251,12 @@ echo '<div id="actionbox3"><div id="titlebox">
 <a href="/cgi-bin/admin/backup_configure_fm.cgi"><input class="button" type="button" name="" value="'$"Select server"'"></a>
 </td>'
 
-if [ "$ACTION" = view ] || [ "$ACTION" = reallydelete ]
+if [ "$ACTION" = view ] || [ "$ACTION" = reallydelete ] || [ "$ACTION" = assignbackupserver ] || [ "$ACTION" = setbackupstatus ]
 then
 	echo '<td><form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post">
-	<input name="____ACTION____add____SERVERNAME____'$SERVERNAME'____" type="submit" class="button" value="'$"Add Backup"'"></form></td>'
+	<input name="____ACTION____add____SERVERNAME____'$SERVERNAME'____" type="submit" class="button" value="'$"Add Backup"'"></form></td>
+	<td><form action="/cgi-bin/admin/backup_assign_fm.cgi" name="testform" method="post">
+	<input name="_SERVERNAME_'$SERVERNAME'_" type="submit" class="button" value="'$"Change backup Server"'"></form></td>'
 fi
 
 if [ "$ACTION" = edit ] || [ "$ACTION" = add ]
@@ -215,6 +269,6 @@ echo '</tr></tbody></table>
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_configure.cgi | cut -d' ' -f1`
 #View logs
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ACTION:$BACKUPNAME:$BACKUPFOLDER:$DURATION:" | sudo -H /opt/karoshi/web_controls/exec/backup_configure
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ACTION:$BACKUPNAME:$BACKUPFOLDER:$DURATION:$BACKUPSERVER:$BACKUPSTATUS:" | sudo -H /opt/karoshi/web_controls/exec/backup_configure
 echo "</div></div></div></body></html>"
 exit
