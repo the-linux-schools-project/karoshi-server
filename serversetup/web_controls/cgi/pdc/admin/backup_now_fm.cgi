@@ -32,11 +32,12 @@ TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
+MOBILE=no
 
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -87,26 +88,18 @@ exit
 #Check to see that a backup server has been configured
 if [ ! -d /opt/karoshi/server_network/backup_servers/servers ]
 then
-MESSAGE=$"No karoshi backup servers have been enabled for ssh."
-show_status
+	MESSAGE=$"No karoshi backup servers have been enabled for ssh."
+	show_status
 fi
 
 if [ `ls -1 /opt/karoshi/server_network/backup_servers/servers` = 0 ]
 then
-MESSAGE=$"No karoshi backup servers have been enabled for ssh."
-show_status
+	MESSAGE=$"No karoshi backup servers have been enabled for ssh."
+	show_status
 fi
 
-
 #Show list of servers
-SERVERICON="/images/submenus/system/computer.png"
-SERVERICON2="/images/submenus/system/all_computers.png"
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+/opt/karoshi/web_controls/show_servers $MOBILE backups $"Run Network Backup"
 
-for SERVER in /opt/karoshi/server_network/backup_servers/backup_settings/*
-do
-KAROSHISERVER=`basename "$SERVER"`
-echo '<tr><td style="width: 90px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVER_'$KAROSHISERVER'_" type="image" class="images" src="'$SERVERICON'" value="_SERVER_'$KAROSHISERVER'"><span>'$KAROSHISERVER'</span></a><br>'$KAROSHISERVER'</td></tr>'
-done
-echo '</tbody></table></form></div></div></div></body></html>'
+echo '</div></div></form></div></body></html>'
 exit

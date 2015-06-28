@@ -128,5 +128,5 @@ fi
 MOBILE=no
 /opt/karoshi/web_controls/show_servers $MOBILE backupservers $"Select server" backupserver $SERVERNAME
 
-echo '</tbody></table></div></form></div></body></html>'
+echo '</div></form></div></body></html>'
 exit

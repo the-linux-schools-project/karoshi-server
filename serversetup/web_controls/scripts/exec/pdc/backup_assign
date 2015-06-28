@@ -99,7 +99,7 @@ then
 	exit 101
 fi
 
-if [ $BACKUPSERVERR = removebackupoption ]
+if [ "$BACKUPSERVER" = removebackupoption ]
 then
 	echo `date`: backup_assign - removing backup option "for" $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	[ -d /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER ] && rm -f -R /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER
@@ -115,7 +115,7 @@ STYLESHEET=defaultstyle.css
 TEXTDOMAIN=karoshi-server
 
 
-echo `date`: backup_assign - assigning $SERVER to $$BACKUPSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: backup_assign - assigning $SERVER to $BACKUPSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 
 #Enable ssh from the server to the backup server
@@ -202,12 +202,6 @@ then
 	echo /home/staffshare,staffshare,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
 	echo /home/officeshare,officeshare,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
 	echo /home/itadminshare,itadminshare,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2000,yr2000,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2001,yr2001,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2002,yr2002,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2003,yr2003,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2004,yr2004,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2005,yr2005,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
 	echo /home/users/students/yr2006,yr2006,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
 	echo /home/users/students/yr2007,yr2007,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
 	echo /home/users/students/yr2008,yr2008,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders

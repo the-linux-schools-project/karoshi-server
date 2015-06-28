@@ -221,10 +221,21 @@ fi
 
 if [ "$ACTION" = delete ]
 then
-	echo '<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post"><input type="hidden" name="____ACTION____" value="reallydelete"><input type="hidden" name="____BACKUPNAME____" value="'$BACKUPNAME'">
+	#Get data for this backup
+	BACKUPDATA=`grep ",$BACKUPNAME," /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders`
+	BACKUPFOLDER=`echo "$BACKUPDATA" | cut -d, -f1 | sed 's/REPLACESPACE/ /g'`
+	DURATION=`echo "$BACKUPDATA" | cut -d, -f3 | sed 's/REPLACESPACE/ /g'`
+
+	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+    	<tbody><tr><td style="width: 200px;"><b>'$"Backup Name"'</b></td><td style="width: 220px;"><b>'$"Backup Folder"'</b></td><td><b>'$"Days Tracked"'</b></td></tr>
+	<tr><td>'$BACKUPNAME'</td><td>'$BACKUPFOLDER'</td><td>'$DURATION'</td></tr>
+	</tbody></table><br>
+	<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	<tr><td>
+	<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post"><input type="hidden" name="____ACTION____" value="reallydelete"><input type="hidden" name="____BACKUPNAME____" value="'$BACKUPNAME'">
 	<input type="hidden" name="____SERVERNAME____" value="'$SERVERNAME'">
-	'$BACKUPNAME' - '$"Are you sure that you want to delete this backup?"'<br><br>
-	<input value="'$"Submit"'" class="button" type="submit"></form>'
+	<input value="'$"Delete"'" class="button" type="submit"></form></td><td>
+	<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post"><input type="hidden" name="____ACTION____" value="view"><input type="hidden" name="____SERVERNAME____" value="'$SERVERNAME'"><input value="'$"Cancel"'" class="button" type="submit"></form></td></tr></tbody></table>'
 fi
 
 if [ "$ACTION" = reallydelete ]
@@ -253,29 +264,20 @@ then
 		BACKUPSTATUS2=enable
 	fi
 
+	#Get backup time
+	BACKUPTIME=`sed -n 1,1p /opt/karoshi/server_network/cronjobs/"$SERVERNAME"/jobs/backup_servers_master.cron | cut -d" " -f1-2`
+	BACKUPTIME_MINS=`echo $BACKUPTIME | cut -d" " -f1`
+	BACKUPTIME_HOURS=`echo $BACKUPTIME | cut -d" " -f2`
+	
+	#Correct if minutes only has one zero
+	[ "$BACKUPTIME_MINS" = 0 ] && BACKUPTIME_MINS="00"	
+
 	#Show backup server and backup status
 	echo '<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-	<tr><td style="width: 200px; vertical-align:top"><b>'$"Backup Server"'</b></td><td style="width: 220px;">'
-	#Show current backup server and a list of backup servers to change it to
-	echo '<input type="hidden" name="____ACTION____" value="assignbackupserver">
-	<input type="hidden" name="____SERVERNAME____" value="'$SERVERNAME'">
-	<select style="width: 200px;" name="____BACKUPSERVER____">'
-	if [ ! -z "$BACKUPSERVER" ]
-	then
-		echo '<option value="'$BACKUPSERVER'">'$BACKUPSERVER'</option>
-		<option class="select-dash" disabled="disabled">----------</option>'
-	fi
-	#Show all other backup servers
-	for OTHERBACKUPSERVER in `ls -1 /opt/karoshi/server_network/backup_servers/servers/`
-	do
-		if [ "$OTHERBACKUPSERVER" != "$BACKUPSERVER" ]
-		then
-			echo '<option value="'$OTHERBACKUPSERVER'">'$OTHERBACKUPSERVER'</option>'
-		fi
-	done
-	echo '</select></td><td><input value="'$"Set Backup Server"'" class="button" type="submit"></td></tr></tbody></table></form>
-	<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-	<tr><td style="width: 200px; vertical-align:top"><b>'$"Backup Status"'</b></td><td><form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post"><a class="info" href="javascript:void(0)"><input name="____SERVERNAME____'$SERVERNAME'____ACTION____setbackupstatus____BACKUPSTATUS____'$BACKUPSTATUS2'____" type="image" class="images" src="'$BACKUP_ICON'" value=""><span>'$BACKUPSTATUS'</span></a></form></td>
+	<tr><td style="width: 200px; vertical-align:top"><b>'$"Backup Server"'</b></td><td style="width: 220px;">
+'$BACKUPSERVER'</td></tr>
+	<tr><td><b>'$"Backup Time"'</b></td><td>'$BACKUPTIME_HOURS':'$BACKUPTIME_MINS'</td></tr>
+	<tr><td style="vertical-align:top"><b>'$"Backup Status"'</b></td><td><a class="info" href="javascript:void(0)"><input name="____SERVERNAME____'$SERVERNAME'____ACTION____setbackupstatus____BACKUPSTATUS____'$BACKUPSTATUS2'____" type="image" class="images" src="'$BACKUP_ICON'" value=""><span>'$BACKUPSTATUS'</span></a></td></tr>
 	</tbody></table></form><br><br>'
 	
 	#Show all folders that are set to be backed up.

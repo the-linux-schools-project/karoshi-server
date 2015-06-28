@@ -85,12 +85,16 @@ echo '<b>'$"Restore system files and folders"'</b> <a class="info" href="javascr
 
 SERVERLISTARRAY=( `ls -1 /opt/karoshi/server_network/backup_servers/backup_settings/` )
 SERVERLISTCOUNT=${#SERVERLISTARRAY[@]}
-SERVERCOUNTER=1
+SERVERCOUNTER=0
 LINECOUNTER=1
 SERVERICON="/images/submenus/system/computer.png"
 SERVERICON2="/images/submenus/system/all_computers.png"
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: 378px; vertical-align: top; text-align: left;"><b>'$"Server"'</b></td><td style="width: 70px; vertical-align: top; text-align: left;"><b>'$"Restore"'</b></td><td style="width: 378px; vertical-align: top; text-align: left;"><b>'$"Server"'</b></td><td style="width: 70px; vertical-align: top; text-align: left;"><b>'$"Restore"'</b></td></tr><tr>'
-
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: 378px; vertical-align: top; text-align: left;"><b>'$"Server"'</b></td><td style="width: 70px; vertical-align: top; text-align: left;"><b>'$"Restore"'</b></td>'
+if [ "$SERVERLISTCOUNT" -gt 1 ]
+then
+	echo '<td style="width: 378px; vertical-align: top; text-align: left;"><b>'$"Server"'</b></td><td style="width: 70px; vertical-align: top; text-align: left;"><b>'$"Restore"'</b></td>'
+fi
+echo '</tr><tr>'
 
 while [ $SERVERCOUNTER -lt $SERVERLISTCOUNT ]
 do

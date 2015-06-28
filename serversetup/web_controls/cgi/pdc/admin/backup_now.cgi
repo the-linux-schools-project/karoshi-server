@@ -47,15 +47,15 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 #########################
 END_POINT=8
 
-#Assign SERVER
+#Assign SERVERNAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
 	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERcheck ]
+	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		SERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -109,7 +109,7 @@ fi
 #Check data
 #########################
 #Check to see that a server has been chosen
-if [ -z "$SERVER" ]
+if [ -z "$SERVERNAME" ]
 then
 	MESSAGE=$"You must choose a server to backup."
 	show_status
@@ -120,6 +120,6 @@ fi
 echo '<div id="actionbox3"><div id="infobox">'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_now.cgi | cut -d' ' -f1`
 #backup now
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER" | sudo -H /opt/karoshi/web_controls/exec/backup_now
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME" | sudo -H /opt/karoshi/web_controls/exec/backup_now
 echo "</div></div></div></body></html>"
 exit
