@@ -13,60 +13,60 @@ function get_status {
 UPTIMEPID=`pidof -x karoshi-uptime.sh`
 if [ `echo $?` = 0 ]
 then
-STATUSMSG="The karoshi-uptime daemon is running with process ID $UPTIMEPID."
-STATUS=running
+	STATUSMSG="The karoshi-uptime daemon is running with process ID $UPTIMEPID."
+	STATUS=running
 else
-STATUSMSG="The karoshi-uptime daemon is stopped."
-STATUS=stopped
+	STATUSMSG="The karoshi-uptime daemon is stopped."
+	STATUS=stopped
 fi
 }
 
-if [ $PARAM'null' = null ]
+if [ -z "$PARAM" ]
 then
-show_help
-exit
+	show_help
+	exit
 fi
 
 if [ $PARAM != start ] && [ $PARAM != stop ] && [ $PARAM != status ]
 then
-show_help
-exit
+	show_help
+	exit
 fi
 
 #Status
 if [ $PARAM = status ]
 then
-get_status
-echo $STATUSMSG
-exit
+	get_status
+	echo $STATUSMSG
+	exit
 fi
 
 #Stop
 if [ $PARAM = stop ]
 then
-get_status
-if [ $STATUS = running ]
-then
-killall karoshi-uptime.sh
-fi
-get_status
-echo $STATUSMSG
-exit
+	get_status
+	if [ $STATUS = running ]
+	then
+		killall karoshi-uptime.sh
+	fi
+	get_status
+	echo $STATUSMSG
+	exit
 fi
 
 #Start 
 if [ $PARAM = start ]
 then
-get_status
-if [ $STATUS = stopped ]
-then
-echo Starting daemon
-start-stop-daemon --start --background --exec /usr/sbin/karoshi-uptime.sh auto $INTERVAL &
-sleep 0.5
-get_status
-fi
-echo $STATUSMSG
-exit
+	get_status
+	if [ $STATUS = stopped ]
+	then
+		echo Starting daemon
+		start-stop-daemon --start --background --exec /usr/sbin/karoshi-uptime.sh auto $INTERVAL &
+		sleep 0.5
+		get_status
+	fi
+	echo $STATUSMSG
+	exit
 fi
 
 exit
