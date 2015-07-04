@@ -80,8 +80,21 @@ echo '
 		<a href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Main_Page" target="_blank">'$"Documentation"'</a>
 		<a href="http://www.linuxschools.com/forum/" target="_blank">'$"Forum"'</a>
 		<a href="irc_help.cgi" target="_blank">'$"IRC"'</a>
- 	</div>
-       <div class="collapsed">
+ 	</div>'
+
+	#Check for any web management warnings
+	if [ -f /opt/karoshi/web_controls/warnings/summary.txt ]
+	then
+		echo '<div class="expanded">
+        	<span>'$"Warnings"'</span>'
+		for WARNING_FILE in `ls /opt/karoshi/web_controls/warnings/messages/`
+		do
+			cat /opt/karoshi/web_controls/warnings/messages/"$WARNING_FILE"
+		done
+		echo '</div>'
+	fi
+
+       echo '<div class="collapsed">
         <span>'$"Helpdesk"'</span>
         <a href="/cgi-bin/admin/helpdesk_view_fm.cgi">'$"View Requests"'</a>
         <a href="/cgi-bin/admin/helpdesk_add_fm.cgi">'$"Add Request"'</a>
@@ -205,3 +218,8 @@ echo '<div class="a.current">
 </div></div></body></html>
 '
 exit
+
+########################
+#Unique key
+########################
+#7,kpxjxbbF.NOLF1klJSCD4pf

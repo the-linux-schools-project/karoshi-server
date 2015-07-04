@@ -1,0 +1,125 @@
+#!/bin/bash
+#Copyright (C) 2015 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ -z "$LOG_DATE" ] && exit
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/view_logs_cgi
+then
+	echo `date`: view_logs - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/view_logs_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/view_logs.cgi | cut -d' ' -f1`
+[ -z "$MD5SUM" ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $view_logs_cgi'check' ]
+then
+	echo `date`: view_logs - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ "$numArgs" != 0 ]
+then
+	echo `date`: view_logs - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-/'`
+if [ -z "$DATA" ]
+then
+	echo `date`: view_logs - no data >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+MOBILE=`echo "$DATA" | cut -s -d: -f4`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f5`
+LOGFILE=`echo "$DATA" | cut -s -d: -f6`
+TAIL_LENGTH=`echo "$DATA" | cut -s -d: -f7`
+
+########################
+#Check data
+########################
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
+then
+	echo `date`: view_logs - Not called by view_logs.cgi >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+then
+	echo `date`: view_logs - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+	echo `date`: view_logs - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit 101
+fi
+if [ -z "$SERVERNAME" ]
+then
+	echo `date`: view_logs - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+	echo `date`: view_logs - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit 101
+fi
+
+if [ -z "$LOGFILE" ]
+then
+	LOGFILE=/var/log/syslog
+fi
+
+if [ -z "$TAIL_LENGTH" ]
+then
+	TAIL_LENGTH=200
+fi
+
+echo `date`: view_logs - viewing "$LOGFILE" on "$SERVERNAME" by "$REMOTE_USER" from "$REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+
+if [ "$SERVERNAME" = `hostname-fqdn` ]
+then
+	tail -n "$TAIL_LENGTH" "$LOGFILE" | tr -cd "A-Za-z0-9\. _[]():/\n"
+else
+
+	ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
+	tail -n "'$TAIL_LENGTH'" "'$LOGFILE'" | tr -cd "A-Za-z0-9\. _[]():/\n"
+	'
+fi
+echo '</pre>'
+exit
+

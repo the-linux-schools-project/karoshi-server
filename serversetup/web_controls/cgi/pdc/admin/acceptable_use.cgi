@@ -23,6 +23,26 @@
 
 #
 #Website: http://www.karoshi.org.uk
+
+#Detect mobile browser
+MOBILE=no
+source /opt/karoshi/web_controls/detect_mobile_browser
+
+if [ $MOBILE = yes ]
+then
+	TABLECLASS=mobilestandard
+	WIDTH1=100
+	WIDTH2=50
+	WIDTH3=50
+	WIDTH4=100
+else
+	TABLECLASS=standard
+	WIDTH1=200
+	WIDTH2=175
+	WIDTH3=75
+	WIDTH4=150
+fi
+
 ############################
 #Language
 ############################
@@ -64,9 +84,30 @@ function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 			objCheckBoxes[i].checked = CheckValue;
 }
 // -->
-</script>
+</script>'
 
-</head><body onLoad="start()"><div id="pagecontainer">'
+if [ $MOBILE = yes ]
+then
+echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+		/***********************************************
+		* Slashdot Menu script- By DimX
+		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
+		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+		***********************************************/
+	</script>
+	<script type="text/javascript">
+	// <![CDATA[
+	var myMenu;
+	window.onload = function() {
+		myMenu = new SDMenu("my_menu");
+		myMenu.init();
+	};
+	// ]]>
+	</script>'
+fi
+
+echo '<meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body onLoad="start()"><div id="pagecontainer">'
 
 function send_data {
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/acceptable_use.cgi | cut -d' ' -f1`
@@ -179,13 +220,24 @@ fi
 [ -z "$GRACETIME" ] && GRACETIME=14
 
 #Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+if [ $MOBILE = no ]
+then
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
+	echo '<form action="/cgi-bin/admin/acceptable_use.cgi" name="acceptableuse" method="post"><div id="actionbox3"><div id="titlebox">
+	<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	<tr><td style="vertical-align: top; width: 150px;"><div class="sectiontitle">'$"Acceptable Use"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Acceptable_Use"><img class="images" alt="" src="/images/help/info.png"><span>'$"The acceptable use policy gives new users a grace period to sign and return an acceptable use policy."' '$"User accounts are automatically disabled once the trial time is ended unless they are authorised."'</span></a></td></tr></tbody></table>
+	<br>'
 
-echo '<form action="/cgi-bin/admin/acceptable_use.cgi" name="acceptableuse" method="post"><div id="actionbox3"><div id="titlebox">'
-
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="vertical-align: top; width: 150px;"><div class="sectiontitle">'$"Acceptable Use"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Acceptable_Use"><img class="images" alt="" src="/images/help/info.png"><span>'$"The acceptable use policy gives new users a grace period to sign and return an acceptable use policy."' '$"User accounts are automatically disabled once the trial time is ended unless they are authorised."'</span></a></td></tr></tbody></table>
-<br>'
+else
+	#Show back button for mobiles
+	echo '<form action="/cgi-bin/admin/acceptable_use.cgi" name="acceptableuse" method="post"><div style="float: center" id="my_menu" class="sdmenu">
+	<div class="expanded">
+	<span>'$"Acceptable Use"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
+</div></div><div id="mobileactionbox">
+'
+fi
 
 if [ "$ACTION" = approve ]
 then
@@ -197,21 +249,23 @@ then
 fi
 #Show acceptable use options for admin staff.
 
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 200px;">'$"Status"'</td><td>
+echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="width: '$WIDTH1'px;">'$"Status"'</td><td style="width: '$WIDTH2'px;">
 <a class="info" href="javascript:void(0)"><input name="_ACTION_'$ACTION2'_" type="image" class="images" src="'$ICON'" value="'$ACTION'"><span>'$GRACETIMESTATUSMSG'</span></a>
-</td><td><input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$ACCEPTABLEUSESTATUS'"></td></tr>
+</td><td style="width: '$WIDTH3'px;"><input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$ACCEPTABLEUSESTATUS'"></td></tr>
 <tr><td>'$"Grace Time"'</td><td><input maxlength="2" size="2" name="_GRACETIME_" value="'$GRACETIME'"></td>
 <td><input name="_ACTION_setgracetime_" type="submit" class="button" value="'$"Set Grace Time"'"></td>
 <td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Acceptable_Use"><img class="images" alt="" src="/images/help/info.png"><span>'$"The grace time is the amount of time a new user is allowed to log into the system before signing and returning the acceptable use policy. This time is set in days."'</span></a></td>
 </tr>
-<tr><td>'$"Reset user acceptable status"'</td><td>'
+<tr><td>'$"Reset Status"'</td><td>'
 
 #Show list of groups to reset the acceptable use grace time for
-/opt/karoshi/web_controls/group_dropdown_list | sed 's/<option><\/option>/<option value="allusers">'$"All Users"'<\/option>/g' | sed 's/200/150/g'
+/opt/karoshi/web_controls/group_dropdown_list | sed 's/<option><\/option>/<option value="allusers">'$"All Users"'<\/option>/g' | sed 's/200/'$WIDTH4'/g'
 
 echo '</td><td><input name="_ACTION_resetstatus_" type="submit" class="button" value="'$"Reset"'"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Acceptable_Use"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to reset the acceptable use status for."'</span></a></td>
-</tbody></table></div><div id="infobox"><br><br>'
+</tbody></table><br>'
+
+[ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
 #Get list of pending users
 PROCESS_USERS=yes
@@ -230,12 +284,17 @@ fi
 
 if [ $PROCESS_USERS = yes ]
 then
-	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 	<tr><td style="vertical-align: top; width: 150px;"><div class="sectiontitle">'$"Pending Users"'</div></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Acceptable_Use#View_pending_users"><img class="images" alt="" src="/images/help/info.png"><span>'$"The acceptable use policy gives new users a grace period to sign and return an acceptable use policy."' '$"User accounts are automatically disabled once the trial time is ended unless they are authorised."'</span></a></td>
 	</tr></tbody></table><br>
-	<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-	<tr><td style="vertical-align: top; width: 100px;"><b>'$"Username"'</b></td><td style="vertical-align: top; width: 100px;"><b>'$"Created by"'</b></td><td style="vertical-align: top; width: 100px;"><b>'$"Creation Date"'</b></td><td style="vertical-align: top; width: 150px;"><b>'$"Trial Days Remaining"'</b></td><td style="vertical-align: top; width: 60px;"><b>'$"Approve"'</b></td></tr>
+	<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	<tr><td style="vertical-align: top; width: 100px;"><b>'$"Username"'</b></td>'
+	if [ $MOBILE = no ]
+	then
+		echo '<td style="vertical-align: top; width: 100px;"><b>'$"Created by"'</b></td><td style="vertical-align: top; width: 100px;"><b>'$"Creation Date"'</b></td>'
+	fi
+	echo '<td style="vertical-align: top; width: 150px;"><b>'$"Trial Days Remaining"'</b></td><td style="vertical-align: top; width: 60px;"><b>'$"Approve"'</b></td></tr>
 	'
 	for PENDING_USER_FULL in /opt/karoshi/server_network/acceptable_use_authorisations/pending/*
 	do
@@ -245,7 +304,12 @@ then
 		USER_CREATOR=`echo $PENDING_USER_DATA | cut -d, -f2`
 		CREATION_DATE=`echo $PENDING_USER_DATA | cut -d, -f3`
 
-		echo '<tr><td>'$PENDING_USER'</td><td>'$USER_CREATOR'</td><td>'$CREATION_DATE'</td><td>'$DAY_COUNT'</td><td><input name="_ACTION_approve_USERNAME_" value="'$PENDING_USER'" type="checkbox"></td></tr>'
+		echo '<tr><td>'$PENDING_USER'</td>'
+		if [ $MOBILE = no ]
+		then
+			echo '<td>'$USER_CREATOR'</td><td>'$CREATION_DATE'</td>'
+		fi
+		echo '<td>'$DAY_COUNT'</td><td><input name="_ACTION_approve_USERNAME_" value="'$PENDING_USER'" type="checkbox"></td></tr>'
 	done
 
 	echo '</tbody></table>'
@@ -257,5 +321,7 @@ then
 	echo '<br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"><input class="button" type="button" onclick="SetAllCheckBoxes('\'acceptableuse\'', '\'_ACTION_approve_USERNAME_\'', true);" value="'$"Select all"'">'
 fi
 
-echo '</div></div></form></div></body></html>'
+echo '</div>' 
+[ $MOBILE = no ] && echo '</div>'
+echo '</form></div></body></html>'
 exit

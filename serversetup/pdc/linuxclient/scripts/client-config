@@ -48,6 +48,22 @@ IFS=$'\n'
 unset IFS
 
 ####################
+# Configure DNS settings
+####################
+if [[ $(net_addr_type $NETWORKINT) == static ]] && [[ -f /tmp/netlogon/domain_information/dns_servers ]]; then
+	echo "Refreshing DNS servers"
+	dns_servers=()
+	while read -r server; do
+		dns_servers+=( "$server" )
+	done < /tmp/netlogon/domain_information/dns_servers
+	sed -i "s/dns-nameservers .*/dns-nameservers ${dns_servers[*]}/" /etc/network/interfaces
+fi
+
+if [[ -f /tmp/netlogon/domain_information/dfs_enabled ]]; then
+	karoshi-manage-flags set dfs_enabled
+fi
+
+####################
 #Set apt settings through proxy
 ####################
 if [[ $PROXYSERVER ]]; then
@@ -173,7 +189,7 @@ if ! karoshi-manage-flags get no_update_other >/dev/null; then
 fi
 
 #######################
-#Mozilla extensions
+#Mozilla configuration
 #######################
 
 # Mozilla app IDs
@@ -248,7 +264,7 @@ if [[ $MAILSERVER ]]; then
 	mailserver_alias=$(< /tmp/netlogon/domain_information/aliases/"$MAILSERVER")
 
 	#Install SOGo
-	do_xpi_raw sogo-connector /opt/karoshi/linuxclientsetup/config-files/thunderbird/sogo-connector thunderbird
+	do_xpi /opt/karoshi/linuxclientsetup/config-files/thunderbird/sogo-connector-31.0.1.xpi thunderbird
 	do_xpi_raw sogo-integrator /opt/karoshi/linuxclientsetup/config-files/thunderbird/sogo-integrator thunderbird
 	if [[ -d /opt/karoshi/mozilla/extensions/sogo-integrator ]]; then
 		sed -i "s@CHANGETHISTIMEZONE@$timezone@" \
@@ -269,7 +285,7 @@ fi
 
 # Firefox
 #Install Zotero
-do_xpi /opt/karoshi/linuxclientsetup/config-files/firefox/zotero-4.0.22.xpi firefox
+do_xpi /opt/karoshi/linuxclientsetup/config-files/firefox/zotero-4.0.26.2.xpi firefox
 do_xpi /opt/karoshi/linuxclientsetup/config-files/firefox/Zotero-LibreOffice-Plugin-3.5.9.xpi firefox
 unopkg add --shared /opt/karoshi/mozilla/extensions/Zotero-LibreOffice-Plugin-3.5.9/install/Zotero_OpenOffice_Integration.oxt
 
@@ -291,6 +307,78 @@ if [[ -L /usr/lib/firefox/dictionaries ]]; then
 	mkdir /usr/lib/firefox/dictionaries
 	ln -s /usr/share/hunspell/"$machineLang".dic /usr/lib/firefox/dictionaries/"$machineLang".dic
 	ln -s /usr/share/hunspell/"$machineLang".aff /usr/lib/firefox/dictionaries/"$machineLang".aff
+fi
+
+#Lockdown preferences
+firefox_version=`firefox --version | sed 's/^[^0-9]*//'`
+mkdir -p "$KAROSHI_DATA"/firefox
+mkdir -p "$KAROSHI_DATA"/thunderbird
+cat /opt/karoshi/linuxclientsetup/config-files/firefox/prefs.cfg > "$KAROSHI_DATA"/firefox/mozilla.cfg
+cat /opt/karoshi/linuxclientsetup/config-files/thunderbird/prefs.cfg > "$KAROSHI_DATA"/thunderbird/mozilla.cfg
+update-alternatives --install /usr/lib/firefox/mozilla.cfg firefox.mozilla.cfg "$KAROSHI_DATA"/firefox/mozilla.cfg 150
+update-alternatives --install /usr/lib/thunderbird/mozilla.cfg thunderbird.mozilla.cfg "$KAROSHI_DATA"/thunderbird/mozilla.cfg 150
+
+#Proxy server
+if [[ $PROXYSERVER ]]; then
+	cat <<- FOE >> "$KAROSHI_DATA"/firefox/mozilla.cfg
+		pref("network.proxy.http", "$PROXYSERVER.$DNSSUFFIX");
+		pref("network.proxy.http_port", 3128);
+		pref("network.proxy.ssl", "$PROXYSERVER.$DNSSUFFIX");
+		pref("network.proxy.ssl_port", 3128);
+		pref("network.proxy.ftp", "$PROXYSERVER.$DNSSUFFIX");
+		pref("network.proxy.ftp_port", 3128);
+		pref("network.proxy.socks", "$PROXYSERVER.$DNSSUFFIX");
+		pref("network.proxy.socks_port", 3128);
+		pref("network.proxy.gopher", "$PROXYSERVER.$DNSSUFFIX");
+		pref("network.proxy.gopher_port", 3128);
+		pref("network.proxy.type", 1);
+		pref("network.proxy.no_proxies_on", "localhost, 127.0.0.0/8, 192.168.0.0/16, 172.16.0.0/12, 10.0.0.0/8, $DNSSUFFIX, $PDC");
+		lockPref("browser.startup.homepage", "$PROXYSERVER.$DNSSUFFIX");
+	FOE
+	cat <<- FOE >> "$KAROSHI_DATA"/thunderbird/mozilla.cfg
+		pref("network.proxy.http", "$PROXYSERVER.$DNSSUFFIX");
+		pref("network.proxy.http_port", 3128);
+		pref("network.proxy.ssl", "$PROXYSERVER.$DNSSUFFIX");
+		pref("network.proxy.ssl_port", 3128);
+		pref("network.proxy.ftp", "$PROXYSERVER.$DNSSUFFIX");
+		pref("network.proxy.ftp_port", 3128);
+		pref("network.proxy.socks", "$PROXYSERVER.$DNSSUFFIX");
+		pref("network.proxy.socks_port", 3128);
+		pref("network.proxy.gopher", "$PROXYSERVER.$DNSSUFFIX");
+		pref("network.proxy.gopher_port", 3128);
+		pref("network.proxy.type", 1);
+		pref("network.proxy.no_proxies_on", "localhost, 127.0.0.0/8, 192.168.0.0/16, 172.16.0.0/12, 10.0.0.0/8, $DNSSUFFIX, $PDC");
+	FOE
+else
+	#For no proxy, we want the homepage to be about:home
+	cat <<- FOE >> "$KAROSHI_DATA"/firefox/mozilla.cfg
+		lockPref("browser.startup.homepage", "about:home");
+	FOE
+fi
+
+#Setup Kerberos
+cat <<- FOE >> "$KAROSHI_DATA"/firefox/mozilla.cfg
+	pref("network.negotiate-auth.trusted-uris", "$DNSSUFFIX");
+FOE
+cat <<- FOE >> "$KAROSHI_DATA"/thunderbird/mozilla.cfg
+	pref("network.negotiate-auth.trusted-uris", "$DNSSUFFIX");
+FOE
+
+#Set spellchecker language to machine language
+cat <<- FOE >> "$KAROSHI_DATA"/firefox/mozilla.cfg
+	pref("spellchecker.dictionary", "$machineLang");
+FOE
+cat <<- FOE >> "$KAROSHI_DATA"/thunderbird/mozilla.cfg
+	pref("spellchecker.dictionary", "$machineLang");
+FOE
+
+#Give clipboard capability to Moodle and other sites
+if [[ -f /opt/karoshi/allow_clipboard_sites ]]; then
+	cat <<- FOE >> "$KAROSHI_DATA"/firefox/mozilla.cfg
+		pref("capability.policy.allowclipboard.sites", "` < /opt/karoshi/allow_clipboard_sites`");
+		pref("capability.policy.allowclipboard.Clipboard.cutcopy", "allAccess");
+		pref("capability.policy.allowclipboard.Clipboard.paste", "allAccess");
+	FOE
 fi
 
 ###########################
@@ -409,16 +497,35 @@ if ! karoshi-manage-flags get no_update_printers >/dev/null; then
 fi
 
 ############################
-#Update client
+#Software control
 ############################
-#Use update var so that apt-get only updates once
-apt_updated=false
-#Only run if flag file is present
-if [[ -f /tmp/netlogon/linuxclient/$LINUX_VERSION/enable_updates ]]
+software_control_path=/tmp/netlogon/linuxclient/"$LINUX_VERSION"/software/install
+
+karoshi-manage-flags unset system_upgrade
+if [[ -f $software_control_path/all_updates ]] ||
+	( [[ $LOCATION ]] && [[ -f $software_control_path/${LOCATION}_updates ]] )
 then
 	karoshi-manage-flags set system_upgrade
-else
-	karoshi-manage-flags unset system_upgrade
+fi
+
+if [[ ! -d /var/lib/karoshi/software ]]; then
+	mkdir /var/lib/karoshi/software
+fi
+
+karoshi-manage-flags unset software_install
+rm -f /var/lib/karoshi/software/install.list
+
+# If install file does not match known install file, trigger a software install
+function check_install_file {
+	if [[ -f $software_control_path/${1}_install ]]; then
+		karoshi-manage-flags set software_install
+		cat "$software_control_path"/"$1"_software >> /var/lib/karoshi/software/install.list
+	fi
+}
+
+check_install_file all
+if [[ $LOCATION ]]; then
+	check_install_file "$LOCATION"
 fi
 
 ##########################
@@ -481,20 +588,80 @@ fi
 ##########################
 
 #Restrict cron and at to root
-#echo root > /etc/cron.allow
-#echo root > /etc/at.allow
+echo root > /etc/cron.allow
+echo root > /etc/at.allow
 
-#Enable trim support in fstab
+#Optimise fstab for SSD support
 for device in /dev/sd*; do
 	device_uuid=`blkid $device | sed 's@.*UUID="\([^"]*\)".*@\1@'`
 	if [[ $device_uuid ]] && [[ `hdparm -I $device | grep TRIM` ]]; then
-		sed -i "/swap\|discard,noatime/!s@\(UUID=$device_uuid[[:blank:]]\+[^[:blank:]]\+[[:blank:]]\+[^[:blank:]]\+[[:blank:]]\+[^[:blank:]]\+\)@\1,discard,noatime@" /etc/fstab
+		#Add in trim support if the partition is not swap.
+		mount_data=`grep ^UUID=$device_uuid /etc/fstab`
+		
+		if [[ `echo $mount_data | grep -c swap` = 0 ]] &&  [[ `echo $mount_data | grep -c noatime` = 0 ]]; then
+			#Add in noatime option
+			sed '/^UUID='$device_uuid'/s/discard/discard,noatime/g' -i /etc/fstab
+		fi
 	fi
 done
 
-#Restart sssd to fix login problem
-echo "service sssd restart" > /etc/rc2.d/S99restartsssd
-chmod 0755 /etc/rc2.d/S99restartsssd
+
+#Create rc.local to enable trim 
+echo '#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+fstrim /
+exit 0' > /etc/rc.local
+
+chmod 0755 /etc/rc.local
+
+#Disable Cron trim check since this only runs weekly.
+if [[ -f /etc/cron.weekly/fstrim ]]; then
+	rm -f /etc/cron.weekly/fstrim
+fi
+
+[ -f /etc/rc2.d/S99restartsssd ] && rm -f /etc/rc2.d/S99restartsssd
+
+#Configure pam_mkdir.so to run silently to stop the annoying info box when logging in with kdm.
+if [[ `grep -c silent /etc/pam.d/common-session` = 0 ]]
+then
+	sed -i 's/pam_mkhomedir.so umask=0077/pam_mkhomedir.so silent umask=0077/g' /etc/pam.d/common-session
+fi
+
+#Install and configure kdm
+which kdm 1>/dev/null
+if [[ $? != 0 ]]
+then
+	apt-get update
+
+	#Make sure that dkpg doesnt change any config files.
+	export DEBIAN_FRONTEND=noninteractive
+	apt-get install -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" kdm
+	if [[ $? = 0 ]]
+	then
+		#Configure kdm to be the default display manager.
+		echo /usr/bin/kdm > /etc/X11/default-display-manager
+
+		#Remove lightlocker since it does not work with kdm.
+		apt-get remove -y light-locker
+
+
+		#Install xscreensaver for now.
+		apt-get install -y xscreensaver
+
+		#Restart the client
+		shutdown -r now
+	fi
+fi
 
 #Write new variables to file
 updateVariables

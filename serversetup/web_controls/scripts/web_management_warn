@@ -9,7 +9,7 @@ then
 	chown root.apache_karoshi /opt/karoshi/web_controls/warnings/messages
 fi
 
-DATA=`echo $1\|$2\|$3\|$4\|$5 | tr -cd 'a-zA-Z0-9._\-/ |'`
+DATA=`echo $1\|$2\|$3\|$4\|$5 | tr -cd 'a-zA-Z0-9._\-/ |?'`
 ACTION=`echo $DATA | cut -d"|" -f1 | sed 's/ //g'`
 NAME=`echo $DATA | cut -d"|" -f2 | sed 's/ //g'`
 LINK=`echo $DATA | cut -d"|" -f3 | sed 's/ //g'`
@@ -34,15 +34,15 @@ then
 	#echo '<a class="info" target="_blank" href="'$LINK'"><img class="images" alt="" src="/images/warnings/'$IMAGE'"><span>'$DESCRIPTION'</span></a>' > /opt/karoshi/web_controls/warnings/messages/$NAME
 	if [ $LEVEL = 1 ]
 	then
-		echo '<a href="'$LINK'">'$DESCRIPTION'<\/a>' > /opt/karoshi/web_controls/warnings/messages/$NAME
+		echo '<a href="'$LINK'">'$DESCRIPTION'</a>' > /opt/karoshi/web_controls/warnings/messages/$NAME
 	fi
 	if [ $LEVEL = 2 ]
 	then
-		echo '<a href="'$LINK'"><span style="color: orange;"><b>'$DESCRIPTION'<\/b><\/span><\/a>' > /opt/karoshi/web_controls/warnings/messages/$NAME
+		echo '<a href="'$LINK'"><span style="color: orange;"><b>'$DESCRIPTION'</b></span></a>' > /opt/karoshi/web_controls/warnings/messages/$NAME
 	fi
 	if [ $LEVEL = 3 ]
 	then
-		echo '<a href="'$LINK'"><span style="color: red;"><b>'$DESCRIPTION'<\/b><\/span><\/a>' > /opt/karoshi/web_controls/warnings/messages/$NAME
+		echo '<a href="'$LINK'"><span style="color: red;"><b>'$DESCRIPTION'</b></span></a>' > /opt/karoshi/web_controls/warnings/messages/$NAME
 	fi
 fi
 

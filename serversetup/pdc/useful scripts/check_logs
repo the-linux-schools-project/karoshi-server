@@ -8,7 +8,7 @@ function report_problems {
 if [ ! -z "$FAIL_LIST" ]
 then
 	#Add in a warning to the web management.
-	/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add syslog-$SERVERNAME /cgi-bin/admin/update_karoshi_fm.cgi "$SERVERNAME: "$"Syslog Warning"" - ""/var/log/syslog" 3
+	/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add syslog-$SERVERNAME '/cgi-bin/admin/view_logs.cgi?_SERVERNAME_'$SERVERNAME'_LOGFILE_/var/log/syslog' "$SERVERNAME: "$"Warning"" - ""/var/log/syslog" 3
 	echo `date`: check_logs "$SERVERNAME" - Syslog warning >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
 
@@ -20,18 +20,16 @@ do
 	FAIL_LIST=""
 	if [ $SERVERNAME = `hostname-fqdn` ]
 	then
-		#Check to see if the server has booted in the last 5 minutes.
-		UPTIME=`uptime | sed "s/ * / /g" | cut -d" " -f4`
+		#Don't run a check in the first 6 minutes of uptime - there will be a lot of kernel boot messages in syslog.
+
+		#Get uptime in seconds 
+		UPTIME=`cat /proc/uptime | cut -d. -f1`
+
 		DO_CHECK=yes
-		if [ `echo "$UPTIME" | grep -c ":"` = 0 ]
+		#Disable uptime if the server has been up for less than 6 minutes
+		if [ "$UPTIME" -lt 300 ]
 		then
-			#There is no : in the time information so uptime is less than 60 minutes.
-			if [ "$UPTIME" -le 6 ]
-			then
-				#This server has been up for less than 6 minutes so dont check the
-				#logs since there will be loads of kernel messages.
-				DO_CHECK=no
-			fi
+			DO_CHECK=no
 		fi
 
 		if [ $DO_CHECK = yes ]
@@ -63,19 +61,19 @@ do
 		fi
 	else
 		FAIL_LIST=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-		#Check to see if the server has booted in the last 5 minutes.
-		UPTIME=`uptime | sed "s/ * / /g" | cut -d" " -f4`
+
+		#Dont run a check in the first 6 minutes of uptime - there will be a lot of kernel boot messages in syslog.
+
+		#Get uptime in seconds 
+		UPTIME=`cat /proc/uptime | cut -d. -f1`
+
 		DO_CHECK=yes
-		if [ `echo "$UPTIME" | grep -c ":"` = 0 ]
+		#Disable uptime if the server has been up for less than 6 minutes
+		if [ "$UPTIME" -lt 300 ]
 		then
-			#There is no : in the time information so uptime is less than 60 minutes.
-			if [ "$UPTIME" -le 6 ]
-			then
-				#This server has been up for less than 6 minutes so dont check the
-				#logs since there will be loads of kernel messages.
-				DO_CHECK=no
-			fi
+			DO_CHECK=no
 		fi
+
 		if [ $DO_CHECK = yes ]
 		then
 			#Create variables for the last 5 minutes
