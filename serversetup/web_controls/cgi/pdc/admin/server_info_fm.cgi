@@ -41,7 +41,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -99,17 +99,17 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
-TABLECLASS=standard
-WIDTH=180
-HELPICON=/images/help/info.png
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	TABLECLASS=standard
+	WIDTH=180
+	HELPICON=/images/help/info.png
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
-TABLECLASS=mobilestandard
-WIDTH=160
-HELPICON=/images/help/infom.png
+	DIV_ID=actionbox2
+	TABLECLASS=mobilestandard
+	WIDTH=160
+	HELPICON=/images/help/infom.png
 fi
 
 echo '<form action="/cgi-bin/admin/server_info.cgi" name="selectservers" method="post"><b></b>'
@@ -118,13 +118,13 @@ echo '<form action="/cgi-bin/admin/server_info.cgi" name="selectservers" method=
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Server Information"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">'
 else
-echo '<div class="sectiontitle">'$"Server Information"'</div><br>'
+	echo '<div class="sectiontitle">'$"Server Information"'</div><br>'
 fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">

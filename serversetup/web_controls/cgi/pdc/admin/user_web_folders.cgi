@@ -148,6 +148,7 @@ then
 	TABLECLASS=standard
 	WIDTH1=180
 	WIDTH2=200
+	HEIGHT1=25
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -155,6 +156,7 @@ else
 	TABLECLASS=mobilestandard
 	WIDTH1=120
 	WIDTH2=140
+	HEIGHT1=30
 fi
 echo '<form name="myform" action="/cgi-bin/admin/user_web_folders.cgi" method="post">'
 
@@ -163,15 +165,16 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$"User Web Folders"'</span>'
+	<span>'$"User Web Folders"' '$GROUP'</span>' 
 
-if [ -z "$GROUP" ]
-then
-echo '<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>'
-else
-echo '<a href="/cgi-bin/admin/user_web_folders.cgi">'$GROUP'</a>'
-fi
-echo '</div></div><div id="mobileactionbox">
+	if [ -z "$GROUP" ]
+	then
+		echo '<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>'
+	else
+		echo '<a href="/cgi-bin/admin/user_web_folders.cgi">'$"Select Group"'</a>'
+	fi
+
+	echo '</div></div><div id="mobileactionbox">
 '
 else
 echo '<div id="'$DIV_ID'">'
@@ -196,7 +199,7 @@ then
 	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 	    <tbody><tr><td style="width: '$WIDTH1'px;">'$"Primary Group"'</td>
 	<td>'
-	/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: '$WIDTH2'px;">/g'
+	/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: '$WIDTH2'px; height: '$HEIGHT1'px;">/g'
 	echo '</td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_web_folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to set the web folder status for."'</span></a></td>
 	</tr></tbody></table><br><br>

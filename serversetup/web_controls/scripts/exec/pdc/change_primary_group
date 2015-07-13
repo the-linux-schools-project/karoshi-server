@@ -24,36 +24,36 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/change_primary_group_cgi
 then
-echo `date`: change_primary_group - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_primary_group - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/change_primary_group_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/change_primary_group.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $change_primary_group_cgi'check' ]
 then
-echo `date`: change_primary_group - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_primary_group - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/change_primary_group_cgi
 then
-echo `date`: change_primary_group - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_primary_group - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/change_primary_group_cgi
 MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/change_primary_group.cgi | cut -d' ' -f1`
-[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+[ -z "$MD5SUM2" ] && MD5SUM2=not_set
 if [ $MD5SUM2'check' != $change_primary_group_cgi'check' ]
 then
-echo `date`: change_primary_group - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_primary_group - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -61,15 +61,15 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: change_primary_group - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_primary_group - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: change_password - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_password - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -82,39 +82,38 @@ NEWPRIGROUP=`echo "$DATA" | cut -s -d: -f5`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
 then
-echo `date`: change_primary_group - Not called by change_primary_group.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_primary_group - Not called by change_primary_group.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: change_primary_group - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_primary_group - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: change_primary_group - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_primary_group - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $USERNAME'null' = null ]
+if [ -z "$USERNAME" ]
 then
-echo `date`: change_primary_group - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: change_primary_group - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
-if [ $NEWPRIGROUP'null' = null ]
+if [ -z "$NEWPRIGROUP" ]
 then
-echo `date`: change_primary_group - Blank new primary group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_primary_group - Blank new primary group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/admin_users/web_access_tech` != 1 ]
 then
-echo `date`: change_primary_group - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_primary_group - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Change the primary group
 ########################
 echo `date`: change_primary_group - Changing the primary group "for" $USERNAME to $NEWPRIGROUP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
 
 function get_subunit {
 #############################
@@ -123,11 +122,11 @@ function get_subunit {
 SUBUNIT=students
 if [ $PRIMARYGROUP = staff ] || [ $PRIMARYGROUP = itadmin ] || [ $PRIMARYGROUP = officestaff ] || [ $PRIMARYGROUP = tech ] || [ $PRIMARYGROUP = nonteachingstaff ] || [ $PRIMARYGROUP = staff ] || [ $PRIMARYGROUP = studentstaff ]
 then
-SUBUNIT=personnel
+	SUBUNIT=personnel
 fi
 if [ $PRIMARYGROUP = guests ]
 then
-SUBUNIT=other
+	SUBUNIT=other
 fi
 }
 
@@ -138,28 +137,26 @@ PRIMARYGROUP=$CURRENTPRIGROUP
 get_subunit
 CURRENTSUBUNIT=$SUBUNIT
 source /opt/karoshi/server_network/group_information/$CURRENTPRIGROUP
+SERVER=`echo $SERVER | cut -d, -f1`
 CURRENT_SERVER=$SERVER
-if [ $CURRENT_SERVER'null' = null ]
+if [ -z "$CURRENT_SERVER" ]
 then
-echo `date`: change_primary_group - Blank current server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_primary_group - Blank current server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 PRIMARYGROUP=$NEWPRIGROUP
 source /opt/karoshi/server_network/group_information/$NEWPRIGROUP
+SERVER=`echo $SERVER | cut -d, -f1`
 get_subunit
 NEWSUBUNIT=$SUBUNIT
 NEW_SERVER=$SERVER
-if [ $NEW_SERVER'null' = null ]
+if [ -z "$NEW_SERVER" ]
 then
-echo `date`: change_primary_group - Blank new server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_primary_group - Blank new server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-#echo current pri group is $CURRENTPRIGROUP"<br>"
-#echo current sub unit is $CURRENTSUBUNIT"<br>"
-#echo new pri group is $NEWPRIGROUP"<br>"
-#echo new sub unit is $NEWSUBUNIT"<br>"
 
 #Get samba 4 database password
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
@@ -172,100 +169,106 @@ samba-tool group removemembers "$CURRENTPRIGROUP" $USERNAME  1>/dev/null 2>>/opt
 #Add user to new primary group
 samba-tool group addmembers "$NEWPRIGROUP" $USERNAME  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #Set new home path for the user
+
 echo -e 'dn: CN='$USERNAME',OU='$CURRENTPRIGROUP',OU='$SUBUNIT',OU=People,'$LDAPBASE'
 changetype: modify
 replace: unixhomedirectory
 unixhomedirectory: '$HOMEPATH'/'$USERNAME'
 -
 replace: profilePath
-profilePath: \\\\'$HOSTNAME'\\applications\\profiles\\'$NEWPRIGROUP'
+profilePath: \\\\%LOGONSERVER%\\applications\\profiles\\'$NEWPRIGROUP'
+-
+replace: homeDirectory
+homeDirectory: \\\\'$SERVER'\\'$USERNAME'
 -
 replace: gidNumber
 gidNumber: '$PRIGROUPID'
 -
 replace: scriptPath
 scriptPath: logon.bat '$NEWPRIGROUP'
--' | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+-' | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 2>&1
+
+#Move ldap entry
+
+echo -e 'dn: CN='$USERNAME',OU='$CURRENTPRIGROUP',OU='$SUBUNIT',OU=People,'$LDAPBASE'
+changetype: modrdn
+newrdn: CN='$USERNAME'
+deleteoldrdn: 1
+newsuperior: OU='$NEWPRIGROUP',OU='$SUBUNIT',OU=People,'$LDAPBASE'
+' | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 2>&1
+
 
 #Check that home area should still be on the same server
 
-if [ $CURRENT_SERVER = $NEW_SERVER ]
+#User home area is on the main server
+if [ $CURRENT_SERVER = $NEW_SERVER ] && [ $CURRENT_SERVER = `hostname-fqdn` ]
 then
-#Move home area
-if [ -d $CURRENTPATH ]
-then
-mv $CURRENTPATH $HOMEPATH
-chmod 0600 -R $HOMEPATH/$USERNAME
-chmod u+X -R $HOMEPATH/$USERNAME
-chown $USERNAME:$NEWPRIGROUP $HOMEPATH/$USERNAME
-fi
-fi
-############################
-#Change path on other server
-############################
-if [ $CURRENT_SERVER != $NEW_SERVER ]
-then
-ssh -x -o PasswordAuthentication=no $SERVER 'mv '$CURRENTPATH' '$HOMEPATH' ; chmod 0600 -R '$HOMEPATH''/''$USERNAME' ; chmod u+X -R '$HOMEPATH''/''$USERNAME' ; chown -R '$USERNAME':'$PRIMARYGROUP' '$HOMEPATH''/''$USERNAME'' 2>$HOME/.tempdata/ssherrors1
+	#Move home area
+	if [ -d $CURRENTPATH ]
+	then
+		[ ! -d $HOMEPATH ] && mkdir -p $HOMEPATH
+		mv $CURRENTPATH $HOMEPATH
+		chmod 0600 -R $HOMEPATH/$USERNAME
+		chmod u+X -R $HOMEPATH/$USERNAME
+		chown $USERNAME:$NEWPRIGROUP $HOMEPATH/$USERNAME
+	fi
 fi
 
-if [ $CURRENT_SERVER != $NEW_SERVER ]
+#Move the home area to the main server
+if [ $CURRENT_SERVER != `hostname-fqdn` ] && [ $NEW_SERVER = `hostname-fqdn` ]
 then
-#Create temp folder for tar archive
-HOMETEMPFOLDER=`date +%s`
-COUNTER=1
-while [ ! -d /home/$HOMETEMPFOLDER ]
-do
-HOMETEMPFOLDER=`date +%s`
-[ -d /home/$HOMETEMPFOLDER ] || mkdir /home/$HOMETEMPFOLDER
-COUNTER=$COUNTER+1
-if [ $COUNTER = 5 ]
-then
-echo Error creating /home/$HOMETEMPFOLDER
-exit
-fi
-done
-#Tar user folder, copy file to pdc
-if [ $CURRENT_SERVER = `hostname-fqdn` ]
-then
-cd $CURRENTPATH ; cd ../ ; tar -czf $USERNAME.tar.gz $USERNAME ; rm -f -R $USERNAME
-mv $USERNAME.tar.gz /home/$HOMETEMPFOLDER/
-else
-ssh -x -o PasswordAuthentication=no $CURRENT_SERVER 'cd '$CURRENTPATH' ; cd ../ ; tar -czf '$USERNAME'.tar.gz '$USERNAME''
-scp root@$CURRENT_SERVER:/$CURRENTPATH.tar.gz /home/$HOMETEMPFOLDER/
-ssh -x -o PasswordAuthentication=no $CURRENT_SERVER 'cd '$CURRENTPATH' ; cd ../ ; rm -f '$USERNAME'.tar.gz ; rm -f -R '$USERNAME''
+	[ ! -d $HOMEPATH ] && mkdir -p $HOMEPATH
+	scp -r root@$CURRENT_SERVER:/$CURRENTPATH $HOMEPATH
+	chmod 0600 -R $HOMEPATH/$USERNAME
+	chmod u+X -R $HOMEPATH/$USERNAME
+	chown $USERNAME:$NEWPRIGROUP $HOMEPATH/$USERNAME
 fi
 
-#Copy file to new server and extract tar archive
-if [ $NEW_SERVER = `hostname-fqdn` ]
+#Move the home area to an additional file server
+if [ $CURRENT_SERVER = `hostname-fqdn` ] && [ $NEW_SERVER != `hostname-fqdn` ]
 then
-mv /home/$HOMETEMPFOLDER/$USERNAME.tar.gz $HOMEPATH
-cd $HOMEPATH ; tar -xvf $USERNAME.tar.gz ; rm -f $USERNAME.tar.gz ; chown :$NEWPRIGROUP -R $USERNAME
-else
-scp /home/$HOMETEMPFOLDER/$USERNAME.tar.gz root@$NEW_SERVER:/$HOMEPATH/
-ssh -x -o PasswordAuthentication=no $NEW_SERVER 'cd '$HOMEPATH' ; tar -xvf '$USERNAME'.tar.gz ; rm -f '$USERNAME'.tar.gz ; chown :'$NEWPRIGROUP' -R '$USERNAME''
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $NEW_SERVER '
+	[ ! -d '$HOMEPATH' ] && mkdir -p '$HOMEPATH'
+	'
+	scp -r $CURRENTPATH root@$NEW_SERVER:/$HOMEPATH
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $NEW_SERVER '
+	chmod 0600 -R '$HOMEPATH'/'$USERNAME'
+	chmod u+X -R '$HOMEPATH'/'$USERNAME'
+	chown '$USERNAME':'$NEWPRIGROUP' '$HOMEPATH'/'$USERNAME'
+	'
 fi
-#Delete tar temp folder
-rm -f -R /home/$HOMETEMPFOLDER
+
+#Move the home area between additional file servers
+if [ $CURRENT_SERVER != `hostname-fqdn` ] && [ $NEW_SERVER != `hostname-fqdn` ]
+then
+	[ ! -d /opt/karoshi/mount/$CURRENT_SERVER/home ] && mkdir -p /opt/karoshi/mount/$CURRENT_SERVER/home
+	[ ! -d /opt/karoshi/mount/$NEW_SERVER/home ] && mkdir -p /opt/karoshi/mount/$NEW_SERVER/home
+	sshfs root@$CURRENT_SERVER:/home /opt/karoshi/mount/$CURRENT_SERVER/home 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	sshfs root@$NEW_SERVER:/home /opt/karoshi/mount/$NEW_SERVER/home 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group /opt/karoshi/mount/$CURRENTSERVER/$CURRENTPATH /opt/karoshi/mount/$NEWSERVER/$HOMEPATH 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	#Unmount sshfs shares
+	fusermount -u /opt/karoshi/mount/$CURRENT_SERVER/home 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	fusermount -u /opt/karoshi/mount/$NEW_SERVER/home 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
 
 #Move homepath on the email server
-
 if [ -f /opt/karoshi/server_network/emailserver ]
 then
-EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
-if [ $EMAILSERVER != `hostname-fqdn` ]
-then 
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
-if [ -d '$CURRENTPATH' ]
-then
-mv '$CURRENTPATH' '$HOMEPATH'
-chmod 0600 -R '$HOMEPATH'/'$USERNAME'
-chmod u+X -R '$HOMEPATH'/'$USERNAME'
-chown '$USERNAME':'$NEWPRIGROUP' '$HOMEPATH'/'$USERNAME'
-fi
-'
-fi
+	EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+	if [ $EMAILSERVER != `hostname-fqdn` ]
+	then 
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+		if [ -d '$CURRENTPATH' ]
+		then
+			[ ! -d '$HOMEPATH' ] && mkdir -p '$HOMEPATH'
+			mv '$CURRENTPATH' '$HOMEPATH'
+			chmod 0600 -R '$HOMEPATH'/'$USERNAME'
+			chmod u+X -R '$HOMEPATH'/'$USERNAME'
+			chown '$USERNAME':'$NEWPRIGROUP' '$HOMEPATH'/'$USERNAME'
+		fi
+		'
+	fi
 fi
 
 exit $CHANGE_PASS_STATUS
-
+1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE

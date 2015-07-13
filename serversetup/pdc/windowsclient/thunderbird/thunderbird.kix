@@ -25,6 +25,7 @@ ENDIF
 
 IF RedirectOutput("%appdata%\Thunderbird\Profiles\karoshi.default\prefs.js",1) = 0 
 ?'user_pref("app.update.auto", false);' + @CRLF
+'user_pref("layers.acceleration.disabled", true);' + @CRLF
 'user_pref("app.update.enabled", false);' + @CRLF
 'user_pref("app.update.lastUpdateTime.addon-background-update-timer", 1434836218);' + @CRLF
 'user_pref("app.update.lastUpdateTime.background-update-timer", 0);' + @CRLF
@@ -88,6 +89,8 @@ IF RedirectOutput("%appdata%\Thunderbird\Profiles\karoshi.default\prefs.js",1) =
 'user_pref("mail.accountmanager.localfoldersserver", "server3");' + @CRLF
 'user_pref("mail.append_preconfig_smtpservers.version", 2);' + @CRLF
 'user_pref("mail.attachment.store.version", 1);' + @CRLF
+'user_pref("mail.chat.enabled", false);' + @CRLF
+'user_pref("mail.chat.show_desktop_notifications", false);' + @CRLF
 'user_pref("mail.default_charsets.migrated", 1);' + @CRLF
 'user_pref("mail.folder.views.version", 1);' + @CRLF
 'user_pref("mail.font.windows.version", 2);' + @CRLF
@@ -173,6 +176,7 @@ IF RedirectOutput("%appdata%\Thunderbird\Profiles\karoshi.default\prefs.js",1) =
 'user_pref("mail.ui-rdf.version", 11);' + @CRLF
 'user_pref("mail.winsearch.firstRunDone", true);' + @CRLF
 'user_pref("mailnews.database.global.datastore.id", "e9e9b7ef-1c3d-41f6-880a-81dc184b200");' + @CRLF
+'user_pref("mailnews.database.global.indexer.enabled", false);' + @CRLF
 'user_pref("mailnews.quotingPrefs.version", 1);' + @CRLF
 'user_pref("mailnews.start_page.enabled", false);' + @CRLF
 'user_pref("mailnews.start_page_override.mstone", "38.0.1");' + @CRLF

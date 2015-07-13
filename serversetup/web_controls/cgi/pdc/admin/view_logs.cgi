@@ -177,9 +177,10 @@ fi
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
+	SERVERNAME2=`echo $SERVERNAME | cut -d. -f1`
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$"View Logs"' '$SERVERNAME'</span>
+	<span>'$"View Logs"' '$SERVERNAME2'</span>
 	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 	</div></div>
 	<div id="'$DIV_ID'">

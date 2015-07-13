@@ -546,7 +546,7 @@ then
 		<span>'$"File Manager"' '$SERVER2'</span>'
 	if [ $SERVERNAME != notset ]
 	then
-		echo '<a href="/cgi-bin/admin/file_manager.cgi">'$"Choose Server"'</a>'
+		echo '<a href="/cgi-bin/admin/file_manager.cgi">'$"Select Server"'</a>'
 	else
 		echo '<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>'
 	fi

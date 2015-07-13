@@ -101,19 +101,19 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
-TABLECLASS=standard
-WIDTH1=200
-WIDTH2=200
-HEIGHT=20
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	TABLECLASS=standard
+	WIDTH1=200
+	WIDTH2=200
+	HEIGHT=20
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
-TABLECLASS=mobilestandard
-WIDTH1=140
-WIDTH2=160
-HEIGHT=30
+	DIV_ID=actionbox2
+	TABLECLASS=mobilestandard
+	WIDTH1=140
+	WIDTH2=160
+	HEIGHT=30
 fi
 
 echo '<form action="/cgi-bin/admin/cron_add.cgi" method="post">'
@@ -122,19 +122,17 @@ echo '<form action="/cgi-bin/admin/cron_add.cgi" method="post">'
 if [ $MOBILE = yes ]
 then
 
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Schedule Job"'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
+<a href="/cgi-bin/admin/cron_view_fm.cgi">'$"Scheduled Jobs"'</a>
 </div>
 </div><div id="mobileactionbox">
-<input name="" type="submit" class="button" value="'$"Scheduled Jobs"'">
-</form><br>
 '
 
 
 else
-echo '<div id="'$DIV_ID'"><div id="titlebox">
+	echo '<div id="'$DIV_ID'"><div id="titlebox">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr>
 <td style="vertical-align: top;"><div class="sectiontitle">'$"Schedule Job"'</div></td>

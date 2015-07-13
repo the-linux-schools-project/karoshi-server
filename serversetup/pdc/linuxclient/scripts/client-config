@@ -638,30 +638,30 @@ then
 fi
 
 #Install and configure kdm
-which kdm 1>/dev/null
-if [[ $? != 0 ]]
-then
-	apt-get update
+#which kdm 1>/dev/null
+#if [[ $? != 0 ]]
+#then
+#	apt-get update
 
-	#Make sure that dkpg doesnt change any config files.
-	export DEBIAN_FRONTEND=noninteractive
-	apt-get install -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" kdm
-	if [[ $? = 0 ]]
-	then
-		#Configure kdm to be the default display manager.
-		echo /usr/bin/kdm > /etc/X11/default-display-manager
-
-		#Remove lightlocker since it does not work with kdm.
-		apt-get remove -y light-locker
-
-
-		#Install xscreensaver for now.
-		apt-get install -y xscreensaver
-
-		#Restart the client
-		shutdown -r now
-	fi
-fi
+#	#Make sure that dkpg doesnt change any config files.
+#	export DEBIAN_FRONTEND=noninteractive
+#	apt-get install -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" kdm
+#	if [[ $? = 0 ]]
+#	then
+#		#Configure kdm to be the default display manager.
+#		echo /usr/bin/kdm > /etc/X11/default-display-manager
+#
+#		#Remove lightlocker since it does not work with kdm.
+#		apt-get remove -y light-locker
+#
+#
+#		#Install xscreensaver for now.
+#		apt-get install -y xscreensaver
+#
+#		#Restart the client
+#		shutdown -r now
+#	fi
+#fi
 
 #Write new variables to file
 updateVariables

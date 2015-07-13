@@ -91,6 +91,8 @@ echo '
 		do
 			cat /opt/karoshi/web_controls/warnings/messages/"$WARNING_FILE"
 		done
+	#Show remove warnings page
+		echo '<li><a href="/cgi-bin/admin/clear_warnings_fm.cgi">'$"Clear Warning Messages"'</a></li>'	
 		echo '</div>'
 	fi
 
@@ -106,6 +108,7 @@ then
 echo '        <a href="/cgi-bin/admin/add_user_fm.cgi">'$"Add User"'</a>
         <a href="/cgi-bin/admin/delete_user_fm.cgi">'$"Delete User"'</a>
 	<a href="/cgi-bin/admin/change_username_fm.cgi">'$"Change Username"'</a>
+	<a href="/cgi-bin/admin/acceptable_use.cgi">'$"Acceptable Use"'</a></li>
 '
 fi
 echo '	<a href="/cgi-bin/admin/change_password_fm.cgi">'$"Change Password"'</a>

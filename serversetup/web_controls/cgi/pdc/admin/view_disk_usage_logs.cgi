@@ -61,42 +61,42 @@ END_POINT=38
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = DATEcheck ]
-then
-let COUNTER=$COUNTER+1
-DATE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = DATEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		DATE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign LOGVIEW
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = LOGVIEWcheck ]
-then
-let COUNTER=$COUNTER+1
-LOGVIEW=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = LOGVIEWcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		LOGVIEW=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign SERVER
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 echo "Content-type: text/html"
@@ -128,38 +128,38 @@ echo '</head><body><div id="pagecontainer">'
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 
 #Check to see that LOGVIEW is not blank
-if [ $LOGVIEW'null' = null ]
+if [ -z "$LOGVIEW" ]
 then
-MESSAGE=$"The logview cannot be blank."
-show_status
+	MESSAGE=$"The logview cannot be blank."
+	show_status
 fi
 #Check to see that DATE is not blank
-if [ $DATE'null' = null ]
+if [ -z "$DATE" ]
 then
-MESSAGE=$"The date cannot be blank."
-show_status
+	MESSAGE=$"The date cannot be blank."
+	show_status
 fi
 
 
@@ -169,22 +169,22 @@ MONTH=`echo $DATE | cut -d- -f2`
 YEAR=`echo $DATE | cut -d- -f3`
 
 #Check to see that MONTH is not blank
-if [ $MONTH'null' = null ]
+if [ -z "$MONTH" ]
 then
-MESSAGE=$"The date cannot be blank."
-show_status
+	MESSAGE=$"The date cannot be blank."
+	show_status
 fi
 #Check to see that YEAR is not blank
-if [ $YEAR'null' = null ]
+if [ -z "$YEAR" ]
 then
-MESSAGE=$"The date cannot be blank."
-show_status
+	MESSAGE=$"The date cannot be blank."
+	show_status
 fi
 
 if [ $DAY -gt 31 ]
 then
-MESSAGE=$"Incorrect date format."
-show_status
+	MESSAGE=$"Incorrect date format."
+	show_status
 fi
 
 if [ $MONTH -gt 12 ]
@@ -195,25 +195,25 @@ fi
 
 if [ $YEAR -lt 2006 ] || [ $YEAR -gt 3006 ]
 then
-MESSAGE=$"Incorrect date format."
-show_status
+	MESSAGE=$"Incorrect date format."
+	show_status
 fi
 
 #Check to see that server is not blank
-if [ $SERVER'null' = null ]
+if [ -z "$SERVER" ]
 then
-MESSAGE=$"You have not chosen any servers."
-show_status
+	MESSAGE=$"You have not chosen any servers."
+	show_status
 fi
 
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
+	DIV_ID=actionbox2
 fi
 
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
@@ -222,16 +222,16 @@ fi
 if [ $MOBILE = yes ]
 then
 SERVER2=`echo "${SERVER:0:9}" | cut -d. -f1`
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$SERVER2'</span>
-<a href="/cgi-bin/admin/view_disk_usage_logs_fm.cgi">'$"View Disk Usage Logs"'</a>
+	<span>'$"Disk Usage Logs"' - '$SERVER2'</span>
+<a href="/cgi-bin/admin/view_disk_usage_logs_fm.cgi">'$"Select Server"'</a>
 </div></div>
 <div id="mobileactionbox">
 '
 
 else
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
 <td style="vertical-align: top;"><b>'$"View Disk Usage Logs"'</b></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Usage_Logs"><img class="images" alt="" src="/images/help/info.png"><span>'$"The disk usage logs show the overall usage for each partition on your server."'</span></a></td>
 <td style="vertical-align: top;"><a href="view_disk_usage_logs_fm.cgi"><input class="button" type="button" name="" value="'$"Select server"'"></a></td>

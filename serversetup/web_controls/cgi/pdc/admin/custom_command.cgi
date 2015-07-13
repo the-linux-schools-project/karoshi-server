@@ -201,8 +201,8 @@ then
 	SERVERNAME2=`echo "${SERVERNAME:0:9}" | cut -d. -f1`
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$"Custom Command"'</span>
-<a href="/cgi-bin/admin/custom_command_fm.cgi">'$SERVERNAME2'</a>
+	<span>'$"Custom Command"' - '$SERVERNAME2'</span>
+<a href="/cgi-bin/admin/custom_command_fm.cgi">'$"Select Server"'</a>
 </div></div><div id="mobilecontent"><div id="mobileactionbox2">'
 else
 	echo '<b>'$SERVERNAME'</b><br></div><div id="infobox">'

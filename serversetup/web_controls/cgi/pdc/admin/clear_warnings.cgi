@@ -23,15 +23,11 @@
 
 #
 #Website: http://www.karoshi.org.uk
-########################
-#Required input variables
-########################
-#  _FIRSTNAME_
-#  _SURNAME_
-# _USERNAMESTYLE_
-#  _PASSWORD1_  Password used for new user
-#  _PASSWORD2_  Checked against PASSWORD1 for typos.
-#  _GROUP_      This is the primary group for the new user eg yr2000, staff, officestaff.
+
+#Detect mobile browser
+MOBILE=no
+source /opt/karoshi/web_controls/detect_mobile_browser
+[ $MOBILE = yes ] && $DEFAULTPAGE=mobile_menu.cgi
 ##########################
 #Language
 ##########################
@@ -63,22 +59,22 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
@@ -89,8 +85,8 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:" | sudo -H /opt/karoshi/web_controls/ex
 STATUS=`echo $?`
 if [ $STATUS != 0 ]
 then
-[ $STATUS = 101 ] && MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`
-[ $STATUS = 102 ] && MESSAGE=`echo $"There are no warning messages to clear."`
-show_status
+	[ $STATUS = 101 ] && MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`
+	[ $STATUS = 102 ] && MESSAGE=`echo $"There are no warning messages to clear."`
+	show_status
 fi
 exit

@@ -100,7 +100,12 @@ TEXTDOMAIN=karoshi-server
 ICON1=/images/submenus/email/email_flush.png
 ICON2=/images/submenus/email/email_delete.png
 TABLECLASS=standard
-[ $MOBILE = yes ] && TABLECLASS=mobilestandard
+if [ $MOBILE = yes ]
+then
+	TABLECLASS=mobilestandard
+	ICON1=/images/submenus/email/email_flush.png
+	ICON2=/images/submenus/email/email_deletem.png
+fi
 
 #Get mail server
 if [ -f /opt/karoshi/server_network/emailserver ]

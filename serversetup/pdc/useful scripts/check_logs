@@ -10,8 +10,10 @@ then
 	#Add in a warning to the web management.
 	/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add syslog-$SERVERNAME '/cgi-bin/admin/view_logs.cgi?_SERVERNAME_'$SERVERNAME'_LOGFILE_/var/log/syslog' "$SERVERNAME: "$"Warning"" - ""/var/log/syslog" 3
 	echo `date`: check_logs "$SERVERNAME" - Syslog warning >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+else
+	#Delete warning message
+	/opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete syslog-$SERVERNAME
 fi
-
 }
 
 for SERVERNAME in `ls /opt/karoshi/server_network/servers/`

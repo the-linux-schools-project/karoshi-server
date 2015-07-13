@@ -166,6 +166,7 @@ USERID=`getent passwd $CURRENT_USERNAME | cut -d: -f3`
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 source /opt/karoshi/server_network/domain_information/domain_name
 source /opt/karoshi/server_network/group_information/$PRIMARYGROUP
+SERVER=`echo $SERVER | cut -d, -f1`
 
 echo -e 'dn: CN='$CURRENT_USERNAME',OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People,'$LDAPBASE'
 changetype: modify

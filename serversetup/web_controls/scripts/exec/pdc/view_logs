@@ -113,11 +113,11 @@ echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 
 if [ "$SERVERNAME" = `hostname-fqdn` ]
 then
-	tail -n "$TAIL_LENGTH" "$LOGFILE" | tr -cd "A-Za-z0-9\. _[]():/\n"
+	tail -n "$TAIL_LENGTH" "$LOGFILE" | tr -cd "A-Za-z0-9\. _[]():/\n=-" | sed "s/kernel/<span STYLE=\"font-weight: bold; color: red\">kernel<\/span>/g"
 else
 
 	ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
-	tail -n "'$TAIL_LENGTH'" "'$LOGFILE'" | tr -cd "A-Za-z0-9\. _[]():/\n"
+	tail -n "'$TAIL_LENGTH'" "'$LOGFILE'" | tr -cd "A-Za-z0-9\. _[]():/\n=-" | sed "s/kernel/<span STYLE=\"font-weight: bold; color: red\">kernel<\/span>/g"
 	'
 fi
 echo '</pre>'

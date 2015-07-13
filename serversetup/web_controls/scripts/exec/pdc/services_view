@@ -134,77 +134,77 @@ function get_status {
 
 if [ $SERVERTYPE = network ]
 then
-DSERVICES=cron,monitorix
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1pdc ] && DSERVICES=$DSERVICES,dns,samba,nslcd
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ] && DSERVICES=$DSERVICES,dns,samba,nslcd
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1domainmember ] && DSERVICES=$DSERVICES,samba,nslcd
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/2users-groups ] && DSERVICES=$DSERVICES,nslcd
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver ] && DSERVICES=$DSERVICES,apache,mysql
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/casserver ] && DSERVICES=$DSERVICES,apache
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/distributionserver ] && DSERVICES=$DSERVICES,nfs,rpcbind,tftpd
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver ] && DSERVICES=$DSERVICES,apache,mysql,mailscanner,memcached,postfix,dovecot,sogo,clamd
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/homeaccess ] && DSERVICES=$DSERVICES,apache
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/squid ] && DSERVICES=$DSERVICES,apache,e2guardian,squid,squiddebproxy
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/printserver ] && DSERVICES=$DSERVICES,cups,samba
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/radiusserver ] && DSERVICES=$DSERVICES,radius
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ] && DSERVICES=$DSERVICES,nginx
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/monitoring ] && DSERVICES=$DSERVICES,apache,mon
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/dhcpserver ] && DSERVICES=$DSERVICES,dhcp
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/openvpn ] && DSERVICES=$DSERVICES,openvpn
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/userwebhosting ] && DSERVICES=$DSERVICES,apache,mysql,vsftpd
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/user_web_folders ] && DSERVICES=$DSERVICES,apache
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/glusterfs_server ] && DSERVICES=$DSERVICES,glusterfs
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/dnsmasq ] && DSERVICES=$DSERVICES,dnsmasq
+	DSERVICES=cron,monitorix
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1pdc ] && DSERVICES=$DSERVICES,dns,samba,nslcd
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ] && DSERVICES=$DSERVICES,dns,samba,nslcd
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1domainmember ] && DSERVICES=$DSERVICES,samba,nslcd
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/2users-groups ] && DSERVICES=$DSERVICES,nslcd
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver ] && DSERVICES=$DSERVICES,apache,mysql
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/casserver ] && DSERVICES=$DSERVICES,apache
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/distributionserver ] && DSERVICES=$DSERVICES,nfs,rpcbind,tftpd
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver ] && DSERVICES=$DSERVICES,apache,mysql,mailscanner,memcached,postfix,dovecot,sogo,clamd
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/homeaccess ] && DSERVICES=$DSERVICES,apache
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/squid ] && DSERVICES=$DSERVICES,apache,e2guardian,squid,squiddebproxy
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/printserver ] && DSERVICES=$DSERVICES,cups,samba
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/radiusserver ] && DSERVICES=$DSERVICES,radius
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ] && DSERVICES=$DSERVICES,nginx
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/monitoring ] && DSERVICES=$DSERVICES,apache,mon
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/dhcpserver ] && DSERVICES=$DSERVICES,dhcp
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/openvpn ] && DSERVICES=$DSERVICES,openvpn
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/userwebhosting ] && DSERVICES=$DSERVICES,apache,mysql,vsftpd
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/user_web_folders ] && DSERVICES=$DSERVICES,apache
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/glusterfs_server ] && DSERVICES=$DSERVICES,glusterfs
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/dnsmasq ] && DSERVICES=$DSERVICES,dnsmasq
 fi
 
 if [ $SERVERTYPE = federated ]
 then
-DSERVICES=cron,monitorix
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/1pdc ] && DSERVICES=$DSERVICES,dns,samba
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/1dc ] && DSERVICES=$DSERVICES,dns,samba
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/1domainmember ] && DSERVICES=$DSERVICES,samba
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/2users-groups ] && DSERVICES=$DSERVICES,nslcd
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/apacheserver ] && DSERVICES=$DSERVICES,apache,mysql
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/casserver ] && DSERVICES=$DSERVICES,apache
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/distributionserver ] && DSERVICES=$DSERVICES,nfs,rpcbind,tftpd
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/emailserver ] && DSERVICES=$DSERVICES,apache,mysql,memcached,mailscanner,postfix,dovecot,sogo,clamd
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/homeaccess ] && DSERVICES=$DSERVICES,apache
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/squid ] && DSERVICES=$DSERVICES,apache,e2guardian,squid,squiddebproxy
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/printserver ] && DSERVICES=$DSERVICES,cups,samba
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/radiusserver ] && DSERVICES=$DSERVICES,radius
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/reverseproxyserver ] && DSERVICES=$DSERVICES,nginx
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/monitoring ] && DSERVICES=$DSERVICES,apache,mon
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/user_web_folders ] && DSERVICES=$DSERVICES,apache
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/dhcpserver ] && DSERVICES=$DSERVICES,dhcp
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/openvpn ] && DSERVICES=$DSERVICES,openvpn
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/userwebhosting ] && DSERVICES=$DSERVICES,apache,mysql,vsftpd
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/glusterfs_server ] && DSERVICES=$DSERVICES,glusterfs
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/dnsmasq ] && DSERVICES=$DSERVICES,dnsmasq
+	DSERVICES=cron,monitorix
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/1pdc ] && DSERVICES=$DSERVICES,dns,samba
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/1dc ] && DSERVICES=$DSERVICES,dns,samba
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/1domainmember ] && DSERVICES=$DSERVICES,samba
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/2users-groups ] && DSERVICES=$DSERVICES,nslcd
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/apacheserver ] && DSERVICES=$DSERVICES,apache,mysql
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/casserver ] && DSERVICES=$DSERVICES,apache
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/distributionserver ] && DSERVICES=$DSERVICES,nfs,rpcbind,tftpd
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/emailserver ] && DSERVICES=$DSERVICES,apache,mysql,memcached,mailscanner,postfix,dovecot,sogo,clamd
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/homeaccess ] && DSERVICES=$DSERVICES,apache
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/squid ] && DSERVICES=$DSERVICES,apache,e2guardian,squid,squiddebproxy
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/printserver ] && DSERVICES=$DSERVICES,cups,samba
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/radiusserver ] && DSERVICES=$DSERVICES,radius
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/reverseproxyserver ] && DSERVICES=$DSERVICES,nginx
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/monitoring ] && DSERVICES=$DSERVICES,apache,mon
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/user_web_folders ] && DSERVICES=$DSERVICES,apache
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/dhcpserver ] && DSERVICES=$DSERVICES,dhcp
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/openvpn ] && DSERVICES=$DSERVICES,openvpn
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/userwebhosting ] && DSERVICES=$DSERVICES,apache,mysql,vsftpd
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/glusterfs_server ] && DSERVICES=$DSERVICES,glusterfs
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/dnsmasq ] && DSERVICES=$DSERVICES,dnsmasq
 fi
 
 if [ $SERVERTYPE = federatedslave ]
 then
-DSERVICES=cron,monitorix
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/1pdc ] && DSERVICES=$DSERVICES,dns,samba
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/1dc ] && DSERVICES=$DSERVICES,dns,samba
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/1domainmember ] && DSERVICES=$DSERVICES,samba
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/2users-groups ] && DSERVICES=$DSERVICES,nslcd
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/apacheserver ] && DSERVICES=$DSERVICES,apache,mysql
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/casserver ] && DSERVICES=$DSERVICES,apache
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/distributionserver ] && DSERVICES=$DSERVICES,nfs,rpcbind,tftpd
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/emailserver ] && DSERVICES=$DSERVICES,apache,mysql,memcached,mailscanner,postfix,dovecot,sogo,clamd
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/homeaccess ] && DSERVICES=$DSERVICES,apache
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/squid ] && DSERVICES=$DSERVICES,apache,e2guardian,squid,squiddebproxy
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/printserver ] && DSERVICES=$DSERVICES,cups,samba
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/radiusserver ] && DSERVICES=$DSERVICES,radius
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/reverseproxyserver ] && DSERVICES=$DSERVICES,nginx
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/monitoring ] && DSERVICES=$DSERVICES,apache,mon
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/user_web_folders ] && DSERVICES=$DSERVICES,apache
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/dhcpserver ] && DSERVICES=$DSERVICES,dhcp
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/openvpn ] && DSERVICES=$DSERVICES,openvpn
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/userwebhosting ] && DSERVICES=$DSERVICES,apache,mysql,vsftpd
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/glusterfs_server ] && DSERVICES=$DSERVICES,glusterfs
-[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/dnsmasq ] && DSERVICES=$DSERVICES,dnsmasq
+	DSERVICES=cron,monitorix
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/1pdc ] && DSERVICES=$DSERVICES,dns,samba
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/1dc ] && DSERVICES=$DSERVICES,dns,samba
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/1domainmember ] && DSERVICES=$DSERVICES,samba
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/2users-groups ] && DSERVICES=$DSERVICES,nslcd
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/apacheserver ] && DSERVICES=$DSERVICES,apache,mysql
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/casserver ] && DSERVICES=$DSERVICES,apache
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/distributionserver ] && DSERVICES=$DSERVICES,nfs,rpcbind,tftpd
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/emailserver ] && DSERVICES=$DSERVICES,apache,mysql,memcached,mailscanner,postfix,dovecot,sogo,clamd
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/homeaccess ] && DSERVICES=$DSERVICES,apache
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/squid ] && DSERVICES=$DSERVICES,apache,e2guardian,squid,squiddebproxy
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/printserver ] && DSERVICES=$DSERVICES,cups,samba
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/radiusserver ] && DSERVICES=$DSERVICES,radius
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/reverseproxyserver ] && DSERVICES=$DSERVICES,nginx
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/monitoring ] && DSERVICES=$DSERVICES,apache,mon
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/user_web_folders ] && DSERVICES=$DSERVICES,apache
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/dhcpserver ] && DSERVICES=$DSERVICES,dhcp
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/openvpn ] && DSERVICES=$DSERVICES,openvpn
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/userwebhosting ] && DSERVICES=$DSERVICES,apache,mysql,vsftpd
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/glusterfs_server ] && DSERVICES=$DSERVICES,glusterfs
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/dnsmasq ] && DSERVICES=$DSERVICES,dnsmasq
 fi
 
 DSERVICES=`echo -e "$DSERVICES" | sed "s/,/\n/g"`
@@ -222,7 +222,7 @@ echo '<input name="_SERVERNAME_'$SERVERNAME''$ALLSERVERS'_SERVERTYPE_'$SERVERTYP
 DSERVICES2=""
 for SERVICENAME in $DSERVICES
 do
-[ `echo $DSERVICES2 | grep -c $SERVICENAME` = 0 ] && DSERVICES2=$DSERVICES2,$SERVICENAME
+	[ `echo $DSERVICES2 | grep -c -w $SERVICENAME` = 0 ] && DSERVICES2=$DSERVICES2,$SERVICENAME
 done
 DSERVICES=$DSERVICES2
 
@@ -233,153 +233,153 @@ DSERVICES=`echo -e "$DSERVICES" | sed "s/,/\n/g" | sort`
 ALLSERVICES="apache clamd cups cron e2guardian dhcp dns dnsmasq dovecot glusterfs mailscanner memcached mon monitorix mysql nfs nginx nslcd openvpn postfix postgresql radius rpcbind samba sogo squid squiddebproxy vsftpd"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
-function check_status {
-#Check service status
-ACTION=start
-ICON=$ICON2
-MESSAGE=$"start service"
-FONTCOLOR=#FF0000
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/$SERVICENAME"_"status 1>/dev/null
-if [ `echo $?` = 0 ]
-then
-ACTION=stop
-ICON=$ICON1
-MESSAGE=$"stop service"
-FONTCOLOR=#11BE26
-fi
-}
+	function check_status {
+	#Check service status
+	ACTION=start
+	ICON=$ICON2
+	MESSAGE=$"start service"
+	FONTCOLOR=#FF0000
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/$SERVICENAME"_"status 1>/dev/null
+	if [ $? = 0 ]
+	then
+		ACTION=stop
+		ICON=$ICON1
+		MESSAGE=$"stop service"
+		FONTCOLOR=#11BE26
+	fi
+	}
 
-apache=$"Web server"
-clamd=$"Clamav daemon"
-cups=$"Print server"
-cron=$"Schedular"
-e2guardian=$"Internet filtering"
-dhcp=$"DHCP server"
-dns=$"Domain name resolution"
-dovecot=$"Dovecot imap server"
-mailscanner=$"E-mail server"
-memcached=$"Memcache"
-mon=$"Network monitoring"
-monitorix=$"System Monitor"
-mysql=$"Web server database"
-postgresql=$"SQL database server"
-nfs=$"Distribution server"
-nginx=$"Reverse proxy server"
-nslcd=$"Name service daemon"
-openvpn=$"Open VPN service"
-portmap=$"Portmap"
-postfix=$"E-mail server"
-radius=$"Authentication service"
-rpcbind=$"Port Mapper"
-samba=$"File and print server"
-sogo=$"SOGo E-Mail"
-squid=$"Internet proxy server"
-squiddebproxy=$"Squid deb proxy"
-tftpd=$"Distribution server"
-dovecot=$"Dovecot imap server"
-proftpd=$"FTP server"
-vsftpd=$"FTP server"
-glusterfs=$"Distributed FS Server"
-dnsmasq=$"Dnsmasq service"
+	apache=$"Web server"
+	clamd=$"Clamav daemon"
+	cups=$"Print server"
+	cron=$"Schedular"
+	e2guardian=$"Internet filtering"
+	dhcp=$"DHCP server"
+	dns=$"Domain name resolution"
+	dovecot=$"Dovecot imap server"
+	mailscanner=$"E-mail server"
+	memcached=$"Memcache"
+	mon=$"Network monitoring"
+	monitorix=$"System Monitor"
+	mysql=$"Web server database"
+	postgresql=$"SQL database server"
+	nfs=$"Distribution server"
+	nginx=$"Reverse proxy server"
+	nslcd=$"Name service daemon"
+	openvpn=$"Open VPN service"
+	portmap=$"Portmap"
+	postfix=$"E-mail server"
+	radius=$"Authentication service"
+	rpcbind=$"Port Mapper"
+	samba=$"File and print server"
+	sogo=$"SOGo E-Mail"
+	squid=$"Internet proxy server"
+	squiddebproxy=$"Squid deb proxy"
+	tftpd=$"Distribution server"
+	dovecot=$"Dovecot imap server"
+	proftpd=$"FTP server"
+	vsftpd=$"FTP server"
+	glusterfs=$"Distributed FS Server"
+	dnsmasq=$"Dnsmasq service"
 
 
-############################
-#Check suggested services
-############################
-for SERVICENAME in $DSERVICES
-do
-check_status
+	############################
+	#Check suggested services
+	############################
+	for SERVICENAME in $DSERVICES
+	do
+		check_status
 
-#Show service details
-echo "<tr><td><FONT COLOR=\"$FONTCOLOR\"><b>$SERVICENAME</b></font></td><td><FONT COLOR=\"$FONTCOLOR\"><b>${!SERVICENAME}</b></font></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVICE_$SERVICENAME"_"ACTION_$ACTION"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>$SERVICENAME - $MESSAGE</span></a></td></tr>"
-done 
-############################
-#Check all other services
-############################
-for SERVICENAME in $ALLSERVICES
-do
-if [ `echo $DSERVICES | grep -c $SERVICENAME` = 0 ]
-then
-check_status
-echo "<tr><td>$SERVICENAME</td><td>${!SERVICENAME}</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVICE_$SERVICENAME"_"ACTION_$ACTION"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>$SERVICENAME - $MESSAGE</span></a></td></tr>"
-fi
-done
+		#Show service details
+		echo "<tr><td><FONT COLOR=\"$FONTCOLOR\"><b>$SERVICENAME</b></font></td><td><FONT COLOR=\"$FONTCOLOR\"><b>${!SERVICENAME}</b></font></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVICE_$SERVICENAME"_"ACTION_$ACTION"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>$SERVICENAME - $MESSAGE</span></a></td></tr>"
+	done 
+	############################
+	#Check all other services
+	############################
+	for SERVICENAME in $ALLSERVICES
+	do
+		if [ `echo $DSERVICES | grep -c -w $SERVICENAME` = 0 ]
+		then
+			check_status
+			echo "<tr><td>$SERVICENAME</td><td>${!SERVICENAME}</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVICE_$SERVICENAME"_"ACTION_$ACTION"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>$SERVICENAME - $MESSAGE</span></a></td></tr>"
+		fi
+	done
 
 else
-if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
-then
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-apache="'$"Web server"'"
-clamd="'$"Clamav daemon"'"
-cups="'$"Print server"'"
-cron="'$"Schedular"'"
-e2guardian="'$"Internet filtering"'"
-dhcp="'$"DHCP server"'"
-dns="'$"Domain name resolution"'"
-dovecot="'$"Dovecot imap server"'"
-mailscanner="'$"E-mail server"'"
-memcached="'$"Memcache"'"
-mon="'$"Network monitoring"'"
-monitorix="'$"System Monitor"'"
-mysql="'$"Web server database"'"
-postgresql="'$"SQL database server"'"
-nfs="'$"Distribution server"'"
-nginx="'$"Reverse proxy server"'"
-nslcd="'$"Name service daemon"'"
-openvpn="'$"Open VPN service"'"
-portmap="'$"Portmap"'"
-postfix="'$"E-mail server"'"
-radius="'$"Authentication service"'"
-rpcbind="'$"Port Mapper"'"
-samba="'$"File and print server"'"
-sogo="'$"SOGo E-Mail"'"
-squid="'$"Internet proxy server"'"
-squiddebproxy="'$"Squid deb proxy"'"
-tftpd="'$"Distribution server"'"
-dovecot="'$"Dovecot imap server"'"
-proftpd="'$"FTP server"'"
-vsftpd="'$"FTP server"'"
-glusterfs="'$"Distributed FS Server"'"
-dnsmasq="'$"Dnsmasq service"'"
+	if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
+	then
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+		apache="'$"Web server"'"
+		clamd="'$"Clamav daemon"'"
+		cups="'$"Print server"'"
+		cron="'$"Schedular"'"
+		e2guardian="'$"Internet filtering"'"
+		dhcp="'$"DHCP server"'"
+		dns="'$"Domain name resolution"'"
+		dovecot="'$"Dovecot imap server"'"
+		mailscanner="'$"E-mail server"'"
+		memcached="'$"Memcache"'"
+		mon="'$"Network monitoring"'"
+		monitorix="'$"System Monitor"'"
+		mysql="'$"Web server database"'"
+		postgresql="'$"SQL database server"'"
+		nfs="'$"Distribution server"'"
+		nginx="'$"Reverse proxy server"'"
+		nslcd="'$"Name service daemon"'"
+		openvpn="'$"Open VPN service"'"
+		portmap="'$"Portmap"'"
+		postfix="'$"E-mail server"'"
+		radius="'$"Authentication service"'"
+		rpcbind="'$"Port Mapper"'"
+		samba="'$"File and print server"'"
+		sogo="'$"SOGo E-Mail"'"
+		squid="'$"Internet proxy server"'"
+		squiddebproxy="'$"Squid deb proxy"'"
+		tftpd="'$"Distribution server"'"
+		dovecot="'$"Dovecot imap server"'"
+		proftpd="'$"FTP server"'"
+		vsftpd="'$"FTP server"'"
+		glusterfs="'$"Distributed FS Server"'"
+		dnsmasq="'$"Dnsmasq service"'"
 
-source /opt/karoshi/serversetup/variables/distro
-function check_status {
-#Check service status
-ACTION=start
-ICON='$ICON2'
-MESSAGE="'$"start service"'"
-FONTCOLOR=#FF0000
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/$SERVICENAME"_"status 1>/dev/null
-if [ `echo $?` = 0 ]
-then
-ACTION=stop
-ICON='$ICON1'
-MESSAGE="'$"stop service"'"
-FONTCOLOR=#11BE26
-fi
-}
-############################
-#Check suggested services
-############################
-for SERVICENAME in '$DSERVICES'
-do
-check_status
-#Show service details
-echo "<tr><td><FONT COLOR=\"$FONTCOLOR\"><b>$SERVICENAME</b></font></td><td><FONT COLOR=\"$FONTCOLOR\"><b>${!SERVICENAME}</b></font></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVICE_$SERVICENAME"_"ACTION_$ACTION"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>$SERVICENAME - $MESSAGE</span></a></td></tr>"
-done 
-############################
-#Check all other services
-############################
-for SERVICENAME in '$ALLSERVICES'
-do
-if [ `echo '$DSERVICES' | grep -c $SERVICENAME` = 0 ]
-then
-check_status
-echo "<tr><td>$SERVICENAME</td><td>${!SERVICENAME}</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVICE_$SERVICENAME"_"ACTION_$ACTION"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>$SERVICENAME - $MESSAGE</span></a></td></tr>"
-fi
-done
-'
-fi
+		source /opt/karoshi/serversetup/variables/distro
+		function check_status {
+		#Check service status
+		ACTION=start
+		ICON='$ICON2'
+		MESSAGE="'$"start service"'"
+		FONTCOLOR=#FF0000
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/$SERVICENAME"_"status 1>/dev/null
+		if [ $? = 0 ]
+		then
+			ACTION=stop
+			ICON='$ICON1'
+			MESSAGE="'$"stop service"'"
+			FONTCOLOR=#11BE26
+		fi
+		}
+		############################
+		#Check suggested services
+		############################
+		for SERVICENAME in '$DSERVICES'
+		do
+			check_status
+			#Show service details
+			echo "<tr><td><FONT COLOR=\"$FONTCOLOR\"><b>$SERVICENAME</b></font></td><td><FONT COLOR=\"$FONTCOLOR\"><b>${!SERVICENAME}</b></font></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVICE_$SERVICENAME"_"ACTION_$ACTION"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>$SERVICENAME - $MESSAGE</span></a></td></tr>"
+		done 
+		############################
+		#Check all other services
+		############################
+		for SERVICENAME in '$ALLSERVICES'
+		do
+			if [ `echo '$DSERVICES' | grep -c -w $SERVICENAME` = 0 ]
+			then
+				check_status
+				echo "<tr><td>$SERVICENAME</td><td>${!SERVICENAME}</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVICE_$SERVICENAME"_"ACTION_$ACTION"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>$SERVICENAME - $MESSAGE</span></a></td></tr>"
+			fi
+		done
+		'
+	fi
 fi
 
 
