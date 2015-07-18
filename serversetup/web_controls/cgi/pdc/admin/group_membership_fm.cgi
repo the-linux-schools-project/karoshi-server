@@ -121,10 +121,10 @@ else
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
    <tbody>
 	<tr>
-		<td style="width: 180px;">'$"Username"'</td><td><div id="suggestions"></div>
+		<td style="width: 180px; vertical-align: top;">'$"Username"'</td><td><div id="suggestions"></div>
 			<input tabindex= "1" style="width: 200px;" name="____USERNAME____" value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);">
 		</td>
-		<td>
+		<td style="vertical-align: top;">
 			<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Membership"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please enter in the username you want to change the groups for."'</span></a>
 		</td>
         	<td colspan="1" rowspan="8" style="vertical-align: top;">

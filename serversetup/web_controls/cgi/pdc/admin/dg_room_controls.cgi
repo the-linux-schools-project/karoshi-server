@@ -208,7 +208,7 @@ source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
 if [ $ASSETTYPE = 1 ] || [ $ASSETTYPE = 3 ] || [ $ASSETTYPE = 5 ] || [ $ASSETTYPE = 7 ] || [ $ASSETTYPE = 9 ]
 then
 CONTROLMSG=$"Deny access"
-COLOUR=#11BE26
+COLOUR=#096F16
 ACTION=deny
 if [ -f /opt/karoshi/server_network/internet_room_controls/$LOCATION/$ASSET ]
 then
@@ -218,7 +218,7 @@ ACTION=allow
 fi
 
 CONTROLMSG2=$"Deny media access"
-COLOUR2=#11BE26
+COLOUR2=#096F16
 ACTION2=denymedia
 if [ -f /opt/karoshi/server_network/internet_media_room_controls/$LOCATION/$ASSET"_"media ]
 then

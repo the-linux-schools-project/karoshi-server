@@ -131,7 +131,7 @@ fi
 cat /opt/karoshi/server_network/dhcp/reservation_list > /etc/dhcp/dhcpd_reservations.conf
 
 #Restart DHCP
-echo '<li>'$HOSTNAME' - '$"Restarting dhcp"'>/li>'
+echo '<li>'$HOSTNAME' - '$"Restarting dhcp"'</li>'
 echo `date`: cdhcp_reservations - $HOSTNAME - restarting dhcp by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 source /opt/karoshi/serversetup/variables/distro
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_stop 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
