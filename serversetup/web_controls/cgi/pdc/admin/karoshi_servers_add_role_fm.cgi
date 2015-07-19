@@ -292,10 +292,13 @@ echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$"Remote
 
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
-	echo '<form action="/cgi-bin/admin/module_ssh_access_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will allow remote ssh access to your main server. This can also be used to join this server up to another karoshi system so that users created on the master server will also be created here."'</span></a></form>'
+	echo '<form action="/cgi-bin/admin/module_ssh_access_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will allow remote ssh access to your main server. This can also be used to join this server up to another karoshi system so that users created on the master server will also be created here."'</span></a></form></td>'
 else
-	echo '<a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will allow remote ssh access to your main server."' '$"This can also be used to join this server up to another karoshi system so that users created on the master server will also be created here."'</span></a>'
+	echo '<a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will allow remote ssh access to your main server."' '$"This can also be used to join this server up to another karoshi system so that users created on the master server will also be created here."'</span></a></td>'
 fi
+
+
+
 #echo '</td><td style="vertical-align: top; width: 180px; height: 40px;">'$"Shell Access"'</td><td style="vertical-align: top; width: 80px;">'
 
 #if [ $SERVERNAME = `hostname-fqdn` ]
@@ -306,6 +309,18 @@ fi
 #echo '<a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup an embedded shell in the web management."'</span></a>'
 #fi
 #echo '</td>'
+
+echo '<td style="vertical-align: top; width: 180px; height: 40px;">'$"VPN Server"'</td>
+<td style="vertical-align: top; width: 80px;">
+'
+
+if [ $SERVERNAME != `hostname-fqdn` ] && [ -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME ]
+then
+	echo '<form action="/cgi-bin/admin/module_vpn_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup a VPN server for client devices to connect to your network."'</span></a></form>'
+else
+	echo '<a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup a VPN server for client devices to connect to your network."'</span></a>'
+fi
+
 
 if [ -f /opt/karoshi/serversetup/variables/enable_federation_module ]
 then

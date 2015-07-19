@@ -1,0 +1,118 @@
+#!/bin/bash
+
+#Extract sample configuration file
+#gunzip -c /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz > /etc/openvpn/server.conf
+
+#Copy in server.conf
+cp -f /opt/karoshi/serversetup/modules/vpn/server.conf /etc/openvpn/
+
+#Set dns option
+DNSERVER=$(grep nameserver /etc/resolv.conf | sed -n 1,1p | tr -cd "0-9.")
+sed -i 's/CHANGETHISDNS/'$DNSERVER'/g' /etc/openvpn/server.conf
+
+#Enable packet forwarding
+echo 1 > /proc/sys/net/ipv4/ip_forward
+sysctl -p
+
+#Open Shorewall on udp 1194
+if [ $(grep -c -w \#openvpn_client_connect /etc/shorewall/rules) = 0 ]
+then
+	#Configure shorewall to use the tunnel inteface on the vpn server
+	MODCHECK=0
+	if [ `grep -c -w tun+ /etc/shorewall/interfaces` = 0 ]
+	then
+		#Configure shorewall for tunnel
+		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/interfaces | cut -d: -f1`
+		sed -i $LINENUM"c"\net"	"tun+"	"detect /etc/shorewall/interfaces
+		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/interfaces
+	fi
+
+
+	echo ''$"The following extra ports are being allowed" - udp 1194'<br><br>'
+	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'udp'	'1194'	'-'#'openvpn_client_connect /etc/shorewall/rules
+	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+	sleep 1
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+fi
+
+#Create Certificate
+
+#Make storage directory
+[ ! -d /etc/openvpn/easy-rsa/keys ] && mkdir /etc/openvpn/easy-rsa/keys
+
+#Edit prefs in vars
+source /opt/karoshi/server_network/domain_information/domain_name
+COUNTRY=`echo $LANG | cut -d_ -f2 | cut -d. -f1`
+STATE=`cat /etc/timezone | cut -d/ -f1`
+CITY=`cat /etc/timezone | cut -d/ -f2`
+NAME=$HOSTNAME
+LOCALNAME=$REALM
+SERVERNAME=$REALM
+EMAILADDRESS=administrator@$REALM
+
+sed -i '/KEY_COUNTRY=/c\export KEY_COUNTRY="'$COUNTRY'"' /etc/openvpn/easy-rsa/vars
+sed -i '/KEY_PROVINCE=/c\export KEY_PROVINCE="'$STATE'"' /etc/openvpn/easy-rsa/vars
+sed -i '/KEY_CITY=/c\export KEY_CITY="'$CITY'"' /etc/openvpn/easy-rsa/vars
+sed -i '/KEY_ORG=/c\export KEY_ORG="'$REALM'"' /etc/openvpn/easy-rsa/vars
+sed -i '/KEY_EMAIL=/c\export KEY_EMAIL="'$EMAILADDRESS'"' /etc/openvpn/easy-rsa/vars
+sed -i '/KEY_CN=/c\export KEY_CN="'$REALM'"' /etc/openvpn/easy-rsa/vars
+sed -i '/KEY_NAME=/c\export KEY_NAME="'$HOSTNAME'.'$REALM'"' /etc/openvpn/easy-rsa/vars
+sed -i '/KEY_OU=/c\export KEY_OU="'$LDAPBASE'"' /etc/openvpn/easy-rsa/vars
+sed -i '/KEY_SIZE=/c\export KEY_SIZE=2048' /etc/openvpn/easy-rsa/vars
+sed -i '/CA_EXPIRE=/c\export CA_EXPIRE=3650' /etc/openvpn/easy-rsa/vars
+sed -i '/KEY_EXPIRE=/c\export KEY_EXPIRE=3650' /etc/openvpn/easy-rsa/vars
+
+#Generate Diffie Hellmam parameters
+
+if [ ! -f /etc/openvpn/dh2048.pem ]
+then
+	echo '<li>'$"Generating Diffie Hellman parameters - this will take some time."'</li><br>'
+	sleep 3
+	openssl dhparam -out /etc/openvpn/dh2048.pem 2048
+fi
+
+
+if [ ! -f /etc/openvpn/server.key ] || [ ! -f /etc/openvpn/server.crt ]
+then
+	#Clear existing certs
+	cd /etc/openvpn/easy-rsa
+	. ./vars 1>/dev/null
+	./clean-all
+
+	echo '<li>'$"Generating certificate authority and key"'</li><br>'
+
+	echo -e "$COUNTRY\n$STATE\n$CITY\n$REALM\n$REALM\\n$HOSTNAME\n$HOSTNAME.$REALM\n$EMAILADDRESS\n" | ./build-ca 1>/dev/null 2>/dev/null
+
+	OPENVPNPASS=""
+
+	#Squirt data into cert generators
+	function pipe_data {
+	echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$REALM"\n"$REALM"\n"$HOSTNAME.$REALM"\n"$REALM"\n"$EMAILADDRESS"\n"$OPENVPNPASS"\n"Karoshi"\n"
+	sleep 1
+	echo -e ""y"\n"y"\n"
+	}
+
+	pipe_data | ./build-key-server server 1>/dev/null 2>/dev/null
+
+	#Move generated keys
+	cp -f /etc/openvpn/easy-rsa/keys/{server.crt,server.key,ca.crt} /etc/openvpn
+
+	chmod 0400 /etc/openvpn/server.key
+	chmod 0400 /etc/openvpn/server.crt
+
+	#Restart the openvpn server
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/openvpn_stop 1>/dev/null
+	sleep 1
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/openvpn_start 1>/dev/null
+	#Make sure service runs on boot
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/openvpn
+fi
+
+
+
+

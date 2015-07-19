@@ -1,0 +1,128 @@
+#!/bin/bash
+#Copyright (C) 2015 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+
+LOG_DATE=`date +%F`
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [[ -z "$DATA" ]]
+then
+	echo `date`: client_create_cert - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+CLIENTNAME=`echo "$DATA" | cut -s -d: -f4`
+
+if [[ -z $CLIENTNAME ]]
+then
+	echo `date`: client_create_cert - blank client name by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+echo "`date`: client_create_cert - creating openvpn client certificates for $CLIENTNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+#Set certificate variables
+source /opt/karoshi/server_network/domain_information/domain_name
+COUNTRY=`echo $LANG | cut -d_ -f2 | cut -d. -f1`
+STATE=`cat /etc/timezone | cut -d/ -f1`
+CITY=`cat /etc/timezone | cut -d/ -f2`
+NAME=$HOSTNAME
+LOCALNAME=$REALM
+SERVERNAME=$REALM
+EMAILADDRESS=$CLIENTNAME@$REALM
+
+#SSH to the openvpn server to create the certificates
+VPNSERVER=`sed -n 1,1p /opt/karoshi/server_network/vpnserver`
+
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $VPNSERVER '
+cd /etc/openvpn/easy-rsa
+. ./vars
+
+#Squirt data into cert generators
+function pipe_data {
+echo -e "'$COUNTRY'\n'$STATE'\n'$CITY'\n'$REALM'\n'$REALM'\n'$CLIENTNAME'.'$REALM'\n'$REALM'\n'$EMAILADDRESS'\n'$OPENVPNPASS'\n\n"
+sleep 1
+echo -e "y\ny\n"
+}
+
+pipe_data | ./build-key '$CLIENTNAME' 1>/dev/null
+
+
+#Create a unified certificate for the client to use.
+
+if [ ! -d /home/itadminshare/vpn/client_certs ]
+then
+	mkdir -p /home/itadminshare/vpn/client_certs
+	chmod 0700 /home/itadminshare/vpn/client_certs
+fi
+
+echo "client
+dev tun
+proto udp
+remote '$REALM' 1194
+resolv-retry infinite
+nobind
+persist-key
+persist-tun
+ns-cert-type server
+comp-lzo
+verb 3
+" > /home/itadminshare/vpn/client_certs/'$CLIENTNAME'.opvn
+
+echo -e "\n<ca>" >> /home/itadminshare/vpn/client_certs/'$CLIENTNAME'.opvn
+cat /etc/openvpn/easy-rsa/keys/ca.crt >> /home/itadminshare/vpn/client_certs/'$CLIENTNAME'.opvn
+cp -f /etc/openvpn/easy-rsa/keys/ca.crt /home/itadminshare/vpn/client_certs
+echo -e "</ca><cert>" >> /home/itadminshare/vpn/client_certs/'$CLIENTNAME'.opvn
+cat /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.crt >> /home/itadminshare/vpn/client_certs/'$CLIENTNAME'.opvn
+cp -f /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.crt /home/itadminshare/vpn/client_certs/
+rm -f /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.crt
+echo -e "</cert><key>" >> /home/itadminshare/vpn/client_certs/'$CLIENTNAME'.opvn
+cat /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.key >> /home/itadminshare/vpn/client_certs/'$CLIENTNAME'.opvn
+cp -f /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.key /home/itadminshare/vpn/client_certs/
+rm -f /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.key
+echo -e "</key>" >> /home/itadminshare/vpn/client_certs/'$CLIENTNAME'.opvn
+'
+
+#Copy the certificate back to the main server.
+
+if [ ! -d /home/itadminshare/vpn/client_certs ]
+then
+	mkdir -p /home/itadminshare/vpn/client_certs
+	chmod 0750 /home/itadminshare/vpn
+	chown root.itadmin /home/itadminshare/vpn
+	chmod 0750 /home/itadminshare/vpn/client_certs
+	chown root.itadmin /home/itadminshare/vpn/client_certs
+fi
+
+scp root@$VPNSERVER:/home/itadminshare/vpn/client_certs/$CLIENTNAME.opvn /home/itadminshare/vpn/client_certs
+scp root@$VPNSERVER:/home/itadminshare/vpn/client_certs/$CLIENTNAME.crt /home/itadminshare/vpn/client_certs
+scp root@$VPNSERVER:/home/itadminshare/vpn/client_certs/$CLIENTNAME.key /home/itadminshare/vpn/client_certs
+scp root@$VPNSERVER:/home/itadminshare/vpn/client_certs/ca.crt /home/itadminshare/vpn/client_certs
+chmod 0644 /home/itadminshare/vpn/client_certs/$CLIENTNAME.key
+
+exit

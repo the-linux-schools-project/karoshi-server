@@ -176,7 +176,7 @@ then
 	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/monitoring ] && DSERVICES=$DSERVICES,apache,mon
 	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/user_web_folders ] && DSERVICES=$DSERVICES,apache
 	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/dhcpserver ] && DSERVICES=$DSERVICES,dhcp
-	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/openvpn ] && DSERVICES=$DSERVICES,openvpn
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/openvpn ] && DSERVICES=$DSERVICES,openvpn	
 	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/userwebhosting ] && DSERVICES=$DSERVICES,apache,mysql,vsftpd
 	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/glusterfs_server ] && DSERVICES=$DSERVICES,glusterfs
 	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/dnsmasq ] && DSERVICES=$DSERVICES,dnsmasq

@@ -29,126 +29,182 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/email_search_logs_cgi
 then
-echo `date`: email_search_logs - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_search_logs - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/email_search_logs_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_search_logs.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $email_search_logs_cgi'check' ]
 then
-echo `date`: email_search_logs - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_search_logs - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
 #Get variables
 ########################
-numArgs=$#
-if [ $numArgs != 1 ]
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-@'`
+if [[ -z "$DATA" ]]
 then
-echo `date`: email_search_logs - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_search_logs - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-REMOTE_USER=`echo "$*" | tr -cd 'A-Za-z0-9\._:\-%' | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$*" | tr -cd 'A-Za-z0-9\._:\-%' | cut -s -d: -f2`
-REMOTE_MD5=`echo "$*" | tr -cd 'A-Za-z0-9\._:\-%' | cut -s -d: -f3`
-USERNAME=`echo "$*" | tr -cd 'A-Za-z0-9\._:\-%' | cut -s -d: -f4`
+
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+DATE=`echo "$DATA" | cut -s -d: -f4`
+HOURS=`echo "$DATA" | cut -s -d: -f5`
+MINUTES=`echo "$DATA" | cut -s -d: -f6`
+SEARCH1=`echo "$DATA" | cut -s -d: -f7`
+SEARCH2=`echo "$DATA" | cut -s -d: -f8`
+SEARCH3=`echo "$DATA" | cut -s -d: -f9`
+SEARCH4=`echo "$DATA" | cut -s -d: -f10`
 ########################
 #Check data
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: email_search_logs - Not called by email_search_logs.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_search_logs - Not called by email_search_logs.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: email_search_logs - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_search_logs - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: email_search_logs - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_search_logs - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $USERNAME'null' = null ]
+if [ -z "$DATE" ]
 then
-echo `date`: email_search_logs - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
-fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
-then
-echo `date`: email_search_logs - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_search_logs - Blank "date" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
 
-USERNAME=`echo $USERNAME | sed 's/%40/@/g'`
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+	echo `date`: email_search_logs - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+echo `date`: email_search_logs by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
 
-if [ `echo $EMAILSERVER'null' | sed 's/ //g'` = null ] 
-then
-echo `date`: email_search_logs - blank email server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
+DAY=`echo "$DATE" | cut -d"-" -f1`
+MONTH=`echo "$DATE" | cut -d"-" -f2`
+YEAR=`echo "$DATE" | cut -d"-" -f3`
+
+#Convert date to match log style
+[ "$MONTH" = 01 ] && MONTH=Jan
+[ "$MONTH" = 02 ] && MONTH=Feb
+[ "$MONTH" = 03 ] && MONTH=Mar
+[ "$MONTH" = 04 ] && MONTH=Apr
+[ "$MONTH" = 05 ] && MONTH=May
+[ "$MONTH" = 06 ] && MONTH=Jun
+[ "$MONTH" = 07 ] && MONTH=Jul
+[ "$MONTH" = 08 ] && MONTH=Aug
+[ "$MONTH" = 09 ] && MONTH=Sep
+[ "$MONTH" = 10 ] && MONTH=Oct
+[ "$MONTH" = 11 ] && MONTH=Nov
+[ "$MONTH" = 12 ] && MONTH=Dec
 
 echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-if [ $EMAILSERVER != `hostname-fqdn` ]
-then
-ssh -x -o PasswordAuthentication=no $EMAILSERVER '
 
-if [ -f /var/log/mail.info ]
+#Create stage one search criteria
+GREPSEARCH1="$MONTH $DAY"
+if [ ! -z "$HOURS" ]
 then
-echo "<li>"mail.info"</li><br>"
-grep -A 2 '$USERNAME' /var/log/mail.info
+	GREPSEARCH1="$MONTH $DAY $HOURS:"
 fi
 
-if [ -f /var/log/mail.warn ]
+if [ ! -z "$HOURS" ] && [ ! -z "$MINUTES" ]
 then
-echo "<li>"mail.warn"</li><br>"
-grep -A 2 '$USERNAME' /var/log/mail.warn
+	GREPSEARCH1="$MONTH $DAY $HOURS:$MINUTES"
 fi
 
-if [ -f /var/log/mail.err ]
+#Create stage 2 search criteria
+grep 'pattern1\|pattern2'
+GREPSEARCH2=""
+if [ ! -z $EMAILADDR ]
 then
-echo "<li>"mail.err"</li><br>"
-grep -A 2 '$USERNAME' /var/log/mail.err
+	GREPSEARCH2="$EMAILADDR"
 fi
 
-if [ -f /var/log/mail.log ]
+if [ ! -z $SEARCH1 ]
 then
-echo "<li>"mail.log"</li><br>"
-grep -A 2 '$USERNAME' /var/log/mail.log
+	GREPSEARCH2="$GREPSEARCH2\|$SEARCH1"
 fi
 
-'
+if [ ! -z $SEARCH2 ]
+then
+	GREPSEARCH2="$GREPSEARCH2\|$SEARCH2"
+fi
+
+if [ ! -z $SEARCH3 ]
+then
+	GREPSEARCH2="$GREPSEARCH2\|$SEARCH3"
+fi
+
+if [ ! -z $SEARCH4 ]
+then
+	GREPSEARCH2="$GREPSEARCH2\|$SEARCH4"
+fi
+
+GREPSEARCH2=$(echo $GREPSEARCH2 | sed 's/^\\|//g')
+
+if [ $EMAILSERVER = $(hostname-fqdn) ]
+then
+	#Do the search on all mail logs.
+	for MAIL_LOG in $(ls /var/log/mail.*)
+	do
+		#Check if log is compressed or not.
+		if [ $(echo "$MAIL_LOG" | grep -c .gz$) = 0 ]
+		then
+			if [ -z "$GREPSEARCH2" ]
+			then
+				grep  "$GREPSEARCH1" "$MAIL_LOG" | sed "s/<//g" | sed "s/>//g"
+			else
+				grep  "$GREPSEARCH1" "$MAIL_LOG" | grep "$GREPSEARCH2" | sed "s/<//g" | sed "s/>//g"
+			fi
+		else
+			if [ -z "$GREPSEARCH2" ]
+			then
+				zgrep -a "$GREPSEARCH1" "$MAIL_LOG" | sed "s/<//g" | sed "s/>//g"
+			else
+				zgrep -a "$GREPSEARCH1" "$MAIL_LOG" | grep "$GREPSEARCH2" | sed "s/<//g" | sed "s/>//g"
+			fi
+		fi
+	done
 else
-
-if [ -f /var/log/mail.info ]
-then
-echo "<li>"mail.info"</li><br>"
-grep -A 2 $USERNAME /var/log/mail.info
-fi
-
-if [ -f /var/log/mail.warn ]
-then
-echo "<li>"mail.warn"</li><br>"
-grep -A 2 $USERNAME /var/log/mail.warn
-fi
-
-if [ -f /var/log/mail.err ]
-then
-echo "<li>"mail.err"</li><br>"
-grep -A 2 $USERNAME /var/log/mail.err
-fi
-
-if [ -f /var/log/mail.log ]
-then
-echo "<li>"mail.log"</li><br>"
-grep -A 2 $USERNAME /var/log/mail.log
-fi
-
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+	#Do the search on all mail logs.
+	for MAIL_LOG in $(ls /var/log/mail.*)
+	do
+		#Check if log is compressed or not.
+		if [ $(echo "$MAIL_LOG" | grep -c .gz$) = 0 ]
+		then
+			if [ -z "'$GREPSEARCH2'" ]
+			then
+				grep  "'$GREPSEARCH1'" "$MAIL_LOG" | sed "s/<//g" | sed "s/>//g"
+			else
+				grep  "'$GREPSEARCH1'" "$MAIL_LOG" | grep "'$GREPSEARCH2'" | sed "s/<//g" | sed "s/>//g"
+			fi
+		else
+			if [ -z "'$GREPSEARCH2'" ]
+			then
+				zgrep -a "'$GREPSEARCH1'" "'$MAIL_LOG'" | sed "s/<//g" | sed "s/>//g"
+			else
+				zgrep -a "'$GREPSEARCH1'" "'$MAIL_LOG'" | grep "'$GREPSEARCH2'" | sed "s/<//g" | sed "s/>//g"
+			fi
+		fi
+	done
+	'
 fi
 echo '</pre>'
 exit

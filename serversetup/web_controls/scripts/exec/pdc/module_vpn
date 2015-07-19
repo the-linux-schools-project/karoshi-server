@@ -1,0 +1,126 @@
+#!/bin/bash
+#Copyright (C) 2015 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ -z "$LOG_DATE" ] && exit
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/module_vpn_cgi
+then
+	echo `date`: module_vpn - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/module_vpn_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_vpn.cgi | cut -d' ' -f1`
+[ -z "$MD5SUM" ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $module_vpn_cgi'check' ]
+then
+	echo `date`: module_vpn - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+	echo `date`: module_vpn - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
+if [ -z "$DATA" ]
+then
+	echo `date`: module_vpn - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+	echo `date`: module_vpn - Not called by module_vpn.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+then
+	echo `date`: module_vpn - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+	echo `date`: module_vpn - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$SERVERNAME" ]
+then
+	echo `date`: module_vpn - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+echo `date`: module_vpn - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+TEXTDOMAIN=karoshi-server
+
+#Copy in module
+scp -p -r /opt/karoshi/serversetup/modules/vpn root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
+
+#Run module
+echo '<div class="sectiontitle">'$"Setup VPN Server"' - '$SERVERNAME'</div><br>'
+
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:' | /opt/karoshi/serversetup/modules/vpn/setupvpn
+'
+[ `echo $?` = 101 ] && exit 101
+
+##########################
+#Language
+##########################
+
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+TEXTDOMAIN=karoshi-server
+
+echo $SERVERNAME > /opt/karoshi/server_network/vpnserver
+
+echo $"VPN Server""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/openvpn
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
+
+#Add in monitoring for the server
+if [ -f /opt/karoshi/server_network/monitoringserver ]
+then
+	/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVERNAME
+fi
+
