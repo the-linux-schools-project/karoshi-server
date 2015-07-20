@@ -92,11 +92,9 @@ then
 	exit 101
 fi
 
-echo `date`: email_search_logs by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
 EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
 
-DAY=`echo "$DATE" | cut -d"-" -f1`
+DAY=`echo "$DATE" | cut -d"-" -f1 | sed 's/^0/ /g'`
 MONTH=`echo "$DATE" | cut -d"-" -f2`
 YEAR=`echo "$DATE" | cut -d"-" -f3`
 
@@ -129,7 +127,6 @@ then
 fi
 
 #Create stage 2 search criteria
-grep 'pattern1\|pattern2'
 GREPSEARCH2=""
 if [ ! -z $EMAILADDR ]
 then
@@ -158,49 +155,51 @@ fi
 
 GREPSEARCH2=$(echo $GREPSEARCH2 | sed 's/^\\|//g')
 
+echo `date`: "email_search_logs for $GREPSEARCH1 $GREPSEARCH2 by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
 if [ $EMAILSERVER = $(hostname-fqdn) ]
 then
 	#Do the search on all mail logs.
-	for MAIL_LOG in $(ls /var/log/mail.*)
+	for MAIL_LOG in $(ls /var/log/mail.log*)
 	do
 		#Check if log is compressed or not.
 		if [ $(echo "$MAIL_LOG" | grep -c .gz$) = 0 ]
 		then
 			if [ -z "$GREPSEARCH2" ]
 			then
-				grep  "$GREPSEARCH1" "$MAIL_LOG" | sed "s/<//g" | sed "s/>//g"
+				grep  ^"$GREPSEARCH1" "$MAIL_LOG" | sed "s/<//g" | sed "s/>//g"
 			else
-				grep  "$GREPSEARCH1" "$MAIL_LOG" | grep "$GREPSEARCH2" | sed "s/<//g" | sed "s/>//g"
+				grep  ^"$GREPSEARCH1" "$MAIL_LOG" | grep "$GREPSEARCH2" | sed "s/<//g" | sed "s/>//g"
 			fi
 		else
 			if [ -z "$GREPSEARCH2" ]
 			then
-				zgrep -a "$GREPSEARCH1" "$MAIL_LOG" | sed "s/<//g" | sed "s/>//g"
+				zgrep -a ^"$GREPSEARCH1" "$MAIL_LOG" | sed "s/<//g" | sed "s/>//g"
 			else
-				zgrep -a "$GREPSEARCH1" "$MAIL_LOG" | grep "$GREPSEARCH2" | sed "s/<//g" | sed "s/>//g"
+				zgrep -a ^"$GREPSEARCH1" "$MAIL_LOG" | grep "$GREPSEARCH2" | sed "s/<//g" | sed "s/>//g"
 			fi
 		fi
 	done
 else
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
 	#Do the search on all mail logs.
-	for MAIL_LOG in $(ls /var/log/mail.*)
+	for MAIL_LOG in $(ls /var/log/mail.log*)
 	do
 		#Check if log is compressed or not.
 		if [ $(echo "$MAIL_LOG" | grep -c .gz$) = 0 ]
 		then
 			if [ -z "'$GREPSEARCH2'" ]
 			then
-				grep  "'$GREPSEARCH1'" "$MAIL_LOG" | sed "s/<//g" | sed "s/>//g"
+				grep ^"'"$GREPSEARCH1"'" "$MAIL_LOG" | sed "s/<//g" | sed "s/>//g"
 			else
-				grep  "'$GREPSEARCH1'" "$MAIL_LOG" | grep "'$GREPSEARCH2'" | sed "s/<//g" | sed "s/>//g"
+				grep ^"'"$GREPSEARCH1"'" "$MAIL_LOG" | grep "'$GREPSEARCH2'" | sed "s/<//g" | sed "s/>//g"
 			fi
 		else
 			if [ -z "'$GREPSEARCH2'" ]
 			then
-				zgrep -a "'$GREPSEARCH1'" "'$MAIL_LOG'" | sed "s/<//g" | sed "s/>//g"
+				zgrep -a ^"'"$GREPSEARCH1"'" "$MAIL_LOG" | sed "s/<//g" | sed "s/>//g"
 			else
-				zgrep -a "'$GREPSEARCH1'" "'$MAIL_LOG'" | grep "'$GREPSEARCH2'" | sed "s/<//g" | sed "s/>//g"
+				zgrep -a ^"'"$GREPSEARCH1"'" "$MAIL_LOG" | grep "'$GREPSEARCH2'" | sed "s/<//g" | sed "s/>//g"
 			fi
 		fi
 	done
