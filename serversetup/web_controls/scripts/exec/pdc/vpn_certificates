@@ -168,7 +168,7 @@ then
 	if [ $(ls -1 /etc/openvpn/easy-rsa/keys/*.ovpn | wc -l) -gt 0 ]
 	then
 		echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
-		<tbody><tr><td style=\"width: 180px;\"><b>'$"Username"'</b></td><td><b>'$"Certificate Status"'</b></td><td><b>'$"Download Certificate"'</b></td></tr>"
+		<tbody><tr><td style=\"width: 180px;\"><b>'$"Username"'</b></td><td><b>'$"Status"'</b></td><td><b>'$"Download"'</b></td></tr>"
 		for USERNAME in $(ls -1 /etc/openvpn/easy-rsa/keys/*.ovpn)
 		do
 			USERNAME=$(basename $USERNAME | cut -d. -f1)
