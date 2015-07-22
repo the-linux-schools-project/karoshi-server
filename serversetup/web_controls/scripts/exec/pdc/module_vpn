@@ -97,27 +97,26 @@ TEXTDOMAIN=karoshi-server
 #Copy in module
 scp -p -r /opt/karoshi/serversetup/modules/vpn root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
 
-#Run module
-echo '<div class="sectiontitle">'$"Setup VPN Server"' - '$SERVERNAME'</div><br>'
-
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:' | /opt/karoshi/serversetup/modules/vpn/setupvpn
-'
-[ `echo $?` = 101 ] && exit 101
-
-##########################
-#Language
-##########################
-
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
+
+#Run module
+echo '<div class="sectiontitle">'$"Setup a VPN Server"' - '$SERVERNAME'</div><br></div><div id="infobox">'
+
+#Get a list of all of the domain controllers in the internal zone.
+DNSSERVERLIST="`hostname-fqdn` `[ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ ] && ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers/`"
+
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DNSSERVERLIST:' | /opt/karoshi/serversetup/modules/vpn/setupvpn
+'
+[ $? = 101 ] && exit 101
 
 echo $SERVERNAME > /opt/karoshi/server_network/vpnserver
 
 echo $"VPN Server""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/openvpn
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
-
+sed -i 's/VPNCTRL=no/VPNCTRL=yes/g' /opt/karoshi/server_network/menusettings
 #Add in monitoring for the server
 if [ -f /opt/karoshi/server_network/monitoringserver ]
 then

@@ -1,0 +1,192 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ -z "$LOG_DATE" ] && exit
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/vpn_certificates_cgi
+then
+	echo `date`: vpn_certificates - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/vpn_certificates_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/vpn_certificates.cgi | cut -d' ' -f1`
+[ -z "$MD5SUM" ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $vpn_certificates_cgi'check' ]
+then
+	echo `date`: vpn_certificates - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+	echo `date`: vpn_certificates - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\n-+-'`
+if [ -z "$DATA" ]
+then
+	echo `date`: vpn_certificates - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+ACTION=`echo "$DATA" | cut -s -d: -f4`
+USERNAME=`echo "$DATA" | cut -s -d: -f5`
+
+#echo data:$DATA"<br>"
+#sleep 3
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+	echo `date`: vpn_certificates - Not called by vpn_certificates.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+then
+	echo `date`: vpn_certificates - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+	echo `date`: vpn_certificates - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+if [ -z "$ACTION" ]
+then
+	ACTION=view
+fi
+
+ICON1=/images/submenus/system/vpn_cert_enabled.png
+ICON2=/images/submenus/system/vpn_cert_revoked.png
+ICON3=/images/submenus/system/cert.png
+
+function reloadform {
+#Reload form
+echo '<form name="frm" action="/cgi-bin/admin/vpn_certificates.cgi" method="post"><script>
+document.frm.submit();
+</script></form>'
+}
+
+if [ "$ACTION" = downloadcert ]
+then
+	source /opt/karoshi/server_network/domain_information/domain_name
+	echo "$REMOTE_USER:$REMOTE_ADDR:$REMOTE_MD5:$USERNAME:" | sudo -H /opt/karoshi/serversetup/modules/vpn/get_client_cert 1>/dev/null
+
+	#Redirect to the backup folder
+	echo '<SCRIPT language="Javascript">
+	window.location = "/admin/vpn/certs/'$USERNAME'.'$REALM'.zip";
+	</script>'
+
+	#Delete the archive
+	sleep 60
+	rm -f -R /var/www/html_karoshi/admin/vpn/certs/$USERNAME.$REALM.zip
+fi
+
+
+if [ "$ACTION" = reallyrevoke ]
+then
+	echo "$REMOTE_USER:$REMOTE_ADDR:$REMOTE_MD5:$USERNAME:" | sudo -H /opt/karoshi/serversetup/modules/vpn/revoke_client_cert 1>/dev/null
+	reloadform
+fi
+
+if [ "$ACTION" = revoke ]
+then
+	#Show confirmation message.
+	echo '<form action="/cgi-bin/admin/vpn_certificates.cgi" method="post">'$USERNAME' - '$"Are you sure you want to revoke the certificate for this user?"'
+	<input type="hidden" name="_ACTION_" value="reallyrevoke">
+	<input type="hidden" name="_USERNAME_" value="'$USERNAME'">
+	<br><br>
+	<input value="'$"Submit"'" class="button" type="submit"></form>
+	'
+fi
+
+
+if [ "$ACTION" = reallyadd ]
+then
+	echo "$REMOTE_USER:$REMOTE_ADDR:$REMOTE_MD5:$USERNAME:" | sudo -H /opt/karoshi/serversetup/modules/vpn/create_client_cert 1>/dev/null
+	reloadform
+fi
+
+if [ "$ACTION" = add ]
+then
+	#Show form to add certificates
+	echo '<form action="/cgi-bin/admin/vpn_certificates.cgi" method="post"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	<tr><td style="width: 180px;">'$"Username"'</td>
+        <td><div id="suggestions"></div>
+	<input tabindex= "1" style="width: 200px;" name="_USERNAME_" value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td>
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=OpenVPN_Server#Creating_Client_Certificates"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to create a VPN certificate for."'</span></a></td></tr>
+	</tbody></table><br><br>
+	<input type="hidden" name="_ACTION_" value="reallyadd">
+	<input value="'$"Submit"'" class="button" type="submit"></form>
+'
+fi
+
+if [ "$ACTION" = view ]
+then
+	echo '<form action="/cgi-bin/admin/vpn_certificates.cgi" method="post">'
+
+	#SSH to the vpn server to show client certs
+	VPNSERVER=`sed -n 1,1p /opt/karoshi/server_network/vpnserver`
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $VPNSERVER '
+
+	if [ $(ls -1 /etc/openvpn/easy-rsa/keys/*.ovpn | wc -l) -gt 0 ]
+	then
+		echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+		<tbody><tr><td style=\"width: 180px;\"><b>'$"Username"'</b></td><td><b>'$"Certificate Status"'</b></td><td><b>'$"Download Certificate"'</b></td></tr>"
+		for USERNAME in $(ls -1 /etc/openvpn/easy-rsa/keys/*.ovpn)
+		do
+			USERNAME=$(basename $USERNAME | cut -d. -f1)
+			echo "<tr><td>$USERNAME</td><td>"
+
+			if [ -f /etc/openvpn/easy-rsa/keys/$USERNAME.$REALM.revoked ]
+			then
+				#Get revokation date
+				REVODATE=$(cat /etc/openvpn/easy-rsa/keys/$USERNAME.$REALM.revoked)
+				echo "<a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=OpenVPN_Server\"><img class=\"images\" alt=\"\" src=\"'$ICON2'\"><span>$USERNAME<br>'$"This certificate has been revoked."'<br><br>'$REVODATE'</span></a>"
+			else
+				echo "<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_revoke_USERNAME_"$USERNAME"_\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$"Revoke"'<br>$USERNAME</span></a></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_downloadcert_USERNAME_"$USERNAME"_\" type=\"image\" class=\"images\" src=\"'$ICON3'\" value=\"\"><span>'$"Download Certificate"'<br>$USERNAME</span></a>"
+			fi
+
+		done
+		echo "</tbody></table>"
+	fi
+	'
+	echo '</form>'
+fi
+

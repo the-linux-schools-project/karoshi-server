@@ -101,10 +101,13 @@ fi
 echo '
 <form action="/cgi-bin/admin/module_vpn.cgi" method="post">
 <div id="actionbox">
-<div class="sectiontitle">'$"Setup a VPN Server"' - '$SERVERNAME'</div><br>
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr><td style=vertical-align: top;"><div class="sectiontitle">'$"Setup a VPN Server"' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=OpenVPN_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will set up an OpenVPN server for your network."'</span></a>
+</td></tr></tbody></table><br>
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$"Description"'</b><br><br>
-'$"This will set up an OpenVPN server for your network."' '$"This is useful for allowing client devices to connect via the internet."' '$"Once you have added your VPN server you will be able to create client VPN certificates to this server in the web management."'
+'$"This will set up an OpenVPN server for your network."' '$"This is useful for allowing client devices to connect to your network via the internet."' '$"Once you have added your VPN server you will be able to create client VPN certificates in the web management."'
+<br>
 </div>
 <div id="submitbox">
 <input value="'$"Submit"'" class="button" type="submit">

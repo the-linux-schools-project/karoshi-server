@@ -825,6 +825,9 @@ RADIUSCTRL=no
 REVERSEPROXYCTRL=no
 [ -f /opt/karoshi/server_network/reverseproxyserver ] && REVERSEPROXYCTRL=yes
 
+VPNCTRL=no
+[ -f /opt/karoshi/server_network/vpnserver ] && VPNCTRL=yes
+
 WEBCTRL=no
 if [ -d /opt/karoshi/server_network/webservers ]
 then
@@ -854,7 +857,7 @@ echo REVERSEPROXYCTRL=$REVERSEPROXYCTRL >> /opt/karoshi/server_network/menusetti
 echo WEBCTRL=$WEBCTRL >> /opt/karoshi/server_network/menusettings
 echo SHELLCTRL=$SHELLCTRL >> /opt/karoshi/server_network/menusettings
 echo EXAMCTRL=$EXAMCTRL >> /opt/karoshi/server_network/menusettings
-
+echo VPNCTRL=$VPNCTRL >> /opt/karoshi/server_network/menusettings
 ###########################
 #Check for updates
 ###########################

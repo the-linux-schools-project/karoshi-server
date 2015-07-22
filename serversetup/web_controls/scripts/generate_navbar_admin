@@ -276,23 +276,30 @@ echo '						<li><a href="/cgi-bin/admin/backup_essentials_fm.cgi">'$"Backup Esse
 	<li class="top"><a href="/cgi-bin/admin/asset_register_view.cgi" id="infrastucture" class="top_link"><span class="down">'$"Infrastructure"'</span></a>
 		<ul class="sub">
 			<li><a href="/cgi-bin/admin/asset_register_view.cgi">'$"Asset Register"'</a></li>'
+#DHCP
 if [ $DHCPCTRL = yes ]
 then
-echo '			<li><a href="/cgi-bin/admin/dhcp_view_leases.cgi">'$"DHCP"'</a></li>'
+	echo '			<li><a href="/cgi-bin/admin/dhcp_view_leases.cgi">'$"DHCP"'</a></li>'
 fi
 
 echo '<li><a href="/cgi-bin/admin/dnsview_fm.cgi">'$"DNS"'</a></li>'
 echo '<li><a href="/cgi-bin/admin/monitorix_fm.cgi">'$"System Monitoring"'</a></li>'
 
+#VPN
+if [ $VPNCTRL = yes ]
+then
+	echo '<li><a href="/cgi-bin/admin/vpn_certificates.cgi">'$"VPN Certificates"'</a></li>'
+fi
+
 #Monitoring
 if [ $MONITORINGCTRL = yes ]
 then
-echo '			<li><a href="/cgi-bin/admin/mon_status.cgi">'$"Network Monitoring"'</a></li>'
+	echo '			<li><a href="/cgi-bin/admin/mon_status.cgi">'$"Network Monitoring"'</a></li>'
 fi
 echo '						<li><a href="/cgi-bin/admin/ups_status.cgi">'$"UPS"'</a></li>'
 if [ $RADIUSCTRL = yes ]
 then
-echo '			<li><a href="/cgi-bin/admin/radius_access_points.cgi">'$"Radius Access Points"'</a></li>'
+	echo '			<li><a href="/cgi-bin/admin/radius_access_points.cgi">'$"Radius Access Points"'</a></li>'
 fi
 
 echo '		</ul>

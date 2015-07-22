@@ -1,18 +1,51 @@
 #!/bin/bash
+LOG_DATE=`date +%F`
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+	echo `date`: setupvpn - incorrect number of arguments"<br>"
+	exit 101
+fi
+read -t 3 DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/'`
 
-#Extract sample configuration file
-#gunzip -c /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz > /etc/openvpn/server.conf
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+DNSSERVERLIST=`echo "$DATA" | cut -s -d: -f4`
 
 #Copy in server.conf
 cp -f /opt/karoshi/serversetup/modules/vpn/server.conf /etc/openvpn/
 
-#Set dns option
-DNSERVER=$(grep nameserver /etc/resolv.conf | sed -n 1,1p | tr -cd "0-9.")
-sed -i 's/CHANGETHISDNS/'$DNSERVER'/g' /etc/openvpn/server.conf
+#Set dns options
+echo "#Karoshi Domain Controllers - internal zone" >> /etc/openvpn/server.conf
+for DNSSERVER in $DNSSERVERLIST
+do
+	DNSIP=`net lookup "$DNSSERVER"`
+	echo 'push "dhcp-option DNS '$DNSIP'"' >> /etc/openvpn/server.conf
+done
 
 #Enable packet forwarding
 echo 1 > /proc/sys/net/ipv4/ip_forward
-sysctl -p
+sysctl -p 1>/dev/null
+
+#Make this change permanent
+sed -i 's/^#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g' /etc/sysctl.conf
+
+#Get the network adapter
+source /opt/karoshi/serversetup/variables/network_card_info
+
+#Allow traffic to pass through the server.
+iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o $NETWORK_INT -j MASQUERADE
+
+#Add this rule to rc.local
+if [ `grep -c "#openVPN client rule" /etc/rc.local` = 0 ]
+then
+	sed -i '/exit 0/d' /etc/rc.local
+	echo "#openVPN client rule" >> /etc/rc.local
+	echo "iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o $NETWORK_INT -j MASQUERADE" >> /etc/rc.local
+	echo "exit 0" >> /etc/rc.local
+fi
 
 #Open Shorewall on udp 1194
 if [ $(grep -c -w \#openvpn_client_connect /etc/shorewall/rules) = 0 ]
@@ -28,7 +61,7 @@ then
 	fi
 
 
-	echo ''$"The following extra ports are being allowed" - udp 1194'<br><br>'
+	echo '<li>'$"The following extra ports are being allowed" - udp 1194'</li>'
 	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
 	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'udp'	'1194'	'-'#'openvpn_client_connect /etc/shorewall/rules
 	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
@@ -68,11 +101,37 @@ sed -i '/KEY_EXPIRE=/c\export KEY_EXPIRE=3650' /etc/openvpn/easy-rsa/vars
 
 #Generate Diffie Hellmam parameters
 
+function show_elapsed_time {
+echo
+echo '<li>'$"Generating Diffie Hellman parameters - this will take some time."'</li><br>'
+#Wait for command to start
+while [ $(ps aux | grep -c "/etc/openvpn/dh2048.pem") = 1 ]
+do
+	sleep 1
+done
+
+T1=$(date +%s)
+COUNTER=1
+while [ $(ps aux | grep -c "/etc/openvpn/dh2048.pem") -gt 1 ]
+do
+	# Do something here
+	echo "."
+	sleep 0.5
+	let COUNTER=$COUNTER+1
+	if [ $COUNTER = 80 ]
+	then
+		COUNTER=1
+		echo '<br>'
+	fi
+done
+}
+
+
 if [ ! -f /etc/openvpn/dh2048.pem ]
 then
-	echo '<li>'$"Generating Diffie Hellman parameters - this will take some time."'</li><br>'
-	sleep 3
-	openssl dhparam -out /etc/openvpn/dh2048.pem 2048
+	echo '<span style="word-wrap: break-word; width: 500px; font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+	openssl dhparam -out /etc/openvpn/dh2048.pem 2048 | show_elapsed_time
+	echo '</span>'
 fi
 
 
@@ -82,8 +141,6 @@ then
 	cd /etc/openvpn/easy-rsa
 	. ./vars 1>/dev/null
 	./clean-all
-
-	echo '<li>'$"Generating certificate authority and key"'</li><br>'
 
 	echo -e "$COUNTRY\n$STATE\n$CITY\n$REALM\n$REALM\\n$HOSTNAME\n$HOSTNAME.$REALM\n$EMAILADDRESS\n" | ./build-ca 1>/dev/null 2>/dev/null
 
@@ -112,7 +169,5 @@ then
 	#Make sure service runs on boot
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/openvpn
 fi
-
-
-
+exit
 

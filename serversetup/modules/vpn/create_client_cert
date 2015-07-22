@@ -70,16 +70,10 @@ sleep 1
 echo -e "y\ny\n"
 }
 
-pipe_data | ./build-key '$CLIENTNAME' 1>/dev/null
+pipe_data | ./build-key '$CLIENTNAME'.'$REALM' 1>/dev/null
 
 
 #Create a unified certificate for the client to use.
-
-if [ ! -d /home/itadminshare/vpn/client_certs ]
-then
-	mkdir -p /home/itadminshare/vpn/client_certs
-	chmod 0700 /home/itadminshare/vpn/client_certs
-fi
 
 echo "client
 dev tun
@@ -92,37 +86,14 @@ persist-tun
 ns-cert-type server
 comp-lzo
 verb 3
-" > /home/itadminshare/vpn/client_certs/'$CLIENTNAME'.opvn
+" > /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.ovpn
 
-echo -e "\n<ca>" >> /home/itadminshare/vpn/client_certs/'$CLIENTNAME'.opvn
-cat /etc/openvpn/easy-rsa/keys/ca.crt >> /home/itadminshare/vpn/client_certs/'$CLIENTNAME'.opvn
-cp -f /etc/openvpn/easy-rsa/keys/ca.crt /home/itadminshare/vpn/client_certs
-echo -e "</ca><cert>" >> /home/itadminshare/vpn/client_certs/'$CLIENTNAME'.opvn
-cat /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.crt >> /home/itadminshare/vpn/client_certs/'$CLIENTNAME'.opvn
-cp -f /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.crt /home/itadminshare/vpn/client_certs/
-rm -f /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.crt
-echo -e "</cert><key>" >> /home/itadminshare/vpn/client_certs/'$CLIENTNAME'.opvn
-cat /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.key >> /home/itadminshare/vpn/client_certs/'$CLIENTNAME'.opvn
-cp -f /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.key /home/itadminshare/vpn/client_certs/
-rm -f /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.key
-echo -e "</key>" >> /home/itadminshare/vpn/client_certs/'$CLIENTNAME'.opvn
+echo -e "\n<ca>" >> /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.ovpn
+cat /etc/openvpn/easy-rsa/keys/ca.crt >> /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.ovpn
+echo -e "</ca>\n<cert>" >> /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.ovpn
+cat /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.crt >> /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.ovpn
+echo -e "</cert>\n<key>" >> /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.ovpn
+cat /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.key >> /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.ovpn
+echo -e "</key>" >> /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.ovpn
 '
-
-#Copy the certificate back to the main server.
-
-if [ ! -d /home/itadminshare/vpn/client_certs ]
-then
-	mkdir -p /home/itadminshare/vpn/client_certs
-	chmod 0750 /home/itadminshare/vpn
-	chown root.itadmin /home/itadminshare/vpn
-	chmod 0750 /home/itadminshare/vpn/client_certs
-	chown root.itadmin /home/itadminshare/vpn/client_certs
-fi
-
-scp root@$VPNSERVER:/home/itadminshare/vpn/client_certs/$CLIENTNAME.opvn /home/itadminshare/vpn/client_certs
-scp root@$VPNSERVER:/home/itadminshare/vpn/client_certs/$CLIENTNAME.crt /home/itadminshare/vpn/client_certs
-scp root@$VPNSERVER:/home/itadminshare/vpn/client_certs/$CLIENTNAME.key /home/itadminshare/vpn/client_certs
-scp root@$VPNSERVER:/home/itadminshare/vpn/client_certs/ca.crt /home/itadminshare/vpn/client_certs
-chmod 0644 /home/itadminshare/vpn/client_certs/$CLIENTNAME.key
-
 exit

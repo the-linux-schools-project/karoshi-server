@@ -75,7 +75,7 @@ exit
 
 function completed {
 echo '<SCRIPT language="Javascript">'
-echo 'window.location = "/cgi-bin/admin/home_folders_fm.cgi"'
+echo 'window.location = "/cgi-bin/admin/vpn_certificates.cgi"'
 echo '</script>'
 echo "</div></body></html>"
 exit
@@ -92,7 +92,7 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -116,7 +116,7 @@ fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox">'
+echo '<div id="actionbox3"><div id="titlebox">'
 #Join server
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_vpn.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_vpn
@@ -124,10 +124,10 @@ EXEC_STATUS=`echo $?`
 
 if [ $EXEC_STATUS = 101 ]
 then
-MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`
-show_status
+	MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`
+	show_status
 fi
 completed
-echo '</div></div></body></html>'
+echo '</div></div></div></body></html>'
 exit
 
