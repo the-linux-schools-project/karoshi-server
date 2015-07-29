@@ -1,6 +1,9 @@
 #!/bin/bash
 service samba4 start 2>&1
-[ "$?" != 0 ] && sleep 5
+if [ "$?" != 0 ]
+then
+	sleep 5
+fi
 
 #Check to see if this is a pdc or adc
 if [ `grep -w -c sysvol /etc/samba/smb.conf` -gt 0 ]

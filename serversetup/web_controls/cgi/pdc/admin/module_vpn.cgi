@@ -114,6 +114,14 @@ then
 	show_status
 fi
 
+#Check ubuntu version
+
+if [ $(lsb_release -a 2>/dev/null | grep -c precise) -gt 0 ]
+then
+	MESSAGE=$"This module can not run on Karoshi V9."
+	show_status
+fi
+
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox3"><div id="titlebox">'

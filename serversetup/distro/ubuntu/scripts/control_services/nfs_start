@@ -1,5 +1,8 @@
 #!/bin/bash
 #initctl start tftpd-hpa
 service nfs-kernel-server start 2>&1
-[ "$?" != 0 ] && sleep 5
+if [ "$?" != 0 ]
+then
+	sleep 5
+fi
 

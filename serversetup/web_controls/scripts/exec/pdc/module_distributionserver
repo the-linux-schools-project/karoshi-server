@@ -155,15 +155,14 @@ then
 	cp -f /home/tftpboot/stdmenu.cfg /home/tftpboot/ubuntu-installer/i386/boot-screens/
 	rm -f /home/tftpboot/stdmenu.cfg
 
-	echo "<br><li>"Restarting tftpd"</li><br>"
+	echo "<br><li>"Restarting tftpd"</li>"
 
-	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/tftpd_stop
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/tftpd_stop 1>/dev/null
 	sleep 1
-	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/tftpd_start
-
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/tftpd_start 1>/dev/null
 
 	#Start portmap
-	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/rpcbind_start
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/rpcbind_start 1>/dev/null
 	sleep 1
 	#########################
 	#Configure nfs
@@ -178,14 +177,13 @@ then
 	touch /etc/exports
 	if [ `grep -c /home/distributions/linux_distro /etc/exports` = 0 ]
 	then
-		echo '<br><li>'$"Modifying"' /etc/exports</li><br>'
+		echo '<li>'$"Modifying"' /etc/exports</li>'
 		echo "/home/distributions/linux_distro *(fsid=0,insecure,no_root_squash,sync,ro,no_subtree_check)" >> /etc/exports
 	fi
-	echo '<br><li>'$"Restarting"' nfs</li><br>'
-	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nfs_stop
+	echo '<li>'$"Restarting"' nfs</li>'
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nfs_stop 1>/dev/null
 	sleep 1
-	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nfs_start
-
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nfs_start 1>/dev/null
 	#Modify ip
 	sed -i "s/CHANGETHISIP/$DISTROSERVERIP/g" /home/tftpboot/pxelinux.cfg/default
 
@@ -238,11 +236,9 @@ then
 	######################
 	if [ $RESTART_SHOREWALL = yes ]
 	then
-		echo '<br><li>'$"Restarting"' shorewall</li><br>'
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
-		echo "<br>"
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
-		echo "<br><br>"
+		echo '<br><li>'$"Restarting"' shorewall</li>'
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 	fi
 
 	#Ensure services start on boot
@@ -301,12 +297,12 @@ rm -f /home/tftpboot/stdmenu.cfg
 
 echo "<br><li>"Restarting tftpd"</li><br>"
 
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/tftpd_stop
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/tftpd_stop 1>/dev/null
 sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/tftpd_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/tftpd_start 1>/dev/null
 
 #Start portmap
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/rpcbind_start
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/rpcbind_start 1>/dev/null
 sleep 1
 
 #########################
@@ -326,9 +322,9 @@ echo "<br><li>"Modifying /etc/exports"</li><br>"
 echo "/home/distributions/linux_distro *(fsid=0,insecure,no_root_squash,sync,ro,no_subtree_check)" >> /etc/exports
 fi
 echo "<br><li>"Restarting nfs"</li><br>"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop 1>/dev/null
 sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_start 1>/dev/null
 
 #Modify ip
 sed -i "s/CHANGETHISIP/'$DISTROSERVERIP'/g" /home/tftpboot/pxelinux.cfg/default
@@ -383,10 +379,8 @@ fi
 if [ $RESTART_SHOREWALL = yes ]
 then
 echo "<br><li>"'$"Restarting shorewall"'"</li><br>"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
-echo "<br>"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
-echo "<br><br>"
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
 #Ensure services start on boot

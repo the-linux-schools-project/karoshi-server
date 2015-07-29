@@ -7,7 +7,7 @@ then
 	exit 101
 fi
 read -t 3 DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/'`
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/ '`
 
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`

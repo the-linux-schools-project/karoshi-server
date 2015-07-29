@@ -1,13 +1,16 @@
 #!/bin/bash
 service mailscanner stop 2>&1
-[ "$?" != 0 ] && sleep 5
+if [ "$?" != 0 ]
+then
+	sleep 5
+fi
 
 #Wait for sub processes to stop
 COUNTER=0
 while [ $COUNTER -le 10 ]
 do
-sleep 1
-[ `ps -e | grep -c MailScanner` = 0 ] && exit
-let COUNTER=$COUNTER+1
+	sleep 1
+	[ `ps -e | grep -c MailScanner` = 0 ] && exit
+	let COUNTER=$COUNTER+1
 done
 exit

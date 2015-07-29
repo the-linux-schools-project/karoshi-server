@@ -60,7 +60,7 @@ cp -f /etc/openvpn/easy-rsa/keys/crl.pem /etc/openvpn/
 #Enable revocation file in server.conf
 if [ `grep -c "#Verify client keys" /etc/openvpn/server.conf` = 0 ]
 then
-	echo "#Verify client keys" >> /etc/openvpn/server.conf
+	echo -e "\n#Verify client keys" >> /etc/openvpn/server.conf
 	echo "crl-verify /etc/openvpn/crl.pem" >> /etc/openvpn/server.conf
 	#Restart the openvpn server
 	source /opt/karoshi/serversetup/variables/distro

@@ -191,11 +191,125 @@ fi
 ##########################
 if [ $MODULE = distributionserver ]
 then
+
+	if [ $SERVERNAME = `hostname-fqdn` ]
+	then
+		source /opt/karoshi/serversetup/variables/distro
+
+		#Close shorewall ports
+		RESTART_SHOREWALL=no
+		MODCHECK=`grep -c "#tftp_server_rule" /etc/shorewall/rules`
+		if [ $MODCHECK -gt 0 ]
+		then
+			RESTART_SHOREWALL=yes
+			LINENUM=`grep -n "#tftp_server_rule" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p`
+			sed -i $LINENUM"d" /etc/shorewall/rules
+		fi
+
+		MODCHECK=`grep -c "#nfs_server_rule" /etc/shorewall/rules`
+		if [ $MODCHECK -gt 0 ]
+		then
+			RESTART_SHOREWALL=yes
+			LINENUM=`grep -n "#nfs_server_rule" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p`
+			sed -i $LINENUM"d" /etc/shorewall/rules
+		fi
+
+		MODCHECK=`grep -c "#portmap_server_rule" /etc/shorewall/rules`
+		if [ $MODCHECK -gt 0 ]
+		then
+			RESTART_SHOREWALL=yes
+			LINENUM=`grep -n "#portmap_server_rule" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p`
+			sed -i $LINENUM"d" /etc/shorewall/rules
+		fi
+
+		MODCHECK=`grep -c "#mountd_server_rule" /etc/shorewall/rules`
+		if [ $MODCHECK -gt 0 ]
+		then
+			RESTART_SHOREWALL=yes
+			LINENUM=`grep -n "#mountd_server_rule" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p`
+			sed -i $LINENUM"d" /etc/shorewall/rules
+		fi
+
+		#Restart shorewall
+		if [ $RESTART_SHOREWALL = yes ]
+		then
+			echo '<br><li>'$"Restarting"' shorewall</li><br>'
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+			echo "<br>"
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+			echo "<br><br>"
+		fi
+
+		#Stop services
+		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nfs_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/tftpd_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/rpcbind_stop 1>/dev/null
+
+
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/nfs
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/tftpd
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/rpcbind
+	else
+		ssh -x -o PasswordAuthentication=no $SERVERNAME '
+		source /opt/karoshi/serversetup/variables/distro
+
+		#Close shorewall ports
+		RESTART_SHOREWALL=no
+		MODCHECK=`grep -c "#tftp_server_rule" /etc/shorewall/rules`
+		if [ $MODCHECK -gt 0 ]
+		then
+			RESTART_SHOREWALL=yes
+			LINENUM=`grep -n "#tftp_server_rule" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p`
+			sed -i $LINENUM"d" /etc/shorewall/rules
+		fi
+
+		MODCHECK=`grep -c "#nfs_server_rule" /etc/shorewall/rules`
+		if [ $MODCHECK -gt 0 ]
+		then
+			RESTART_SHOREWALL=yes
+			LINENUM=`grep -n "#nfs_server_rule" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p`
+			sed -i $LINENUM"d" /etc/shorewall/rules
+		fi
+
+		MODCHECK=`grep -c "#portmap_server_rule" /etc/shorewall/rules`
+		if [ $MODCHECK -gt 0 ]
+		then
+			RESTART_SHOREWALL=yes
+			LINENUM=`grep -n "#portmap_server_rule" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p`
+			sed -i $LINENUM"d" /etc/shorewall/rules
+		fi
+
+		MODCHECK=`grep -c "#mountd_server_rule" /etc/shorewall/rules`
+		if [ $MODCHECK -gt 0 ]
+		then
+			RESTART_SHOREWALL=yes
+			LINENUM=`grep -n "#mountd_server_rule" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p`
+			sed -i $LINENUM"d" /etc/shorewall/rules
+		fi
+
+		#Restart shorewall
+		if [ $RESTART_SHOREWALL = yes ]
+		then
+			echo "<li>'$"Restarting"' shorewall</li>"
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+		fi
+
+		#Stop services
+		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nfs_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/tftpd_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/rpcbind_stop 1>/dev/null
+
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/nfs 
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/tftpd
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/rpcbind
+		'
+	fi
+
 	echo "<li>"$SERVERNAME: $"Distribution Server" - $"Designation removed.""</li><br>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/distributionserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/distributionserver
 	completed
 fi
-
 
 ##########################
 #Federated Server
@@ -249,13 +363,12 @@ then
 				rm -f $BACKUP_CLIENTS
 				echo '<li>'$BACKUP_CLIENT': '$"Backup disabled"'</li><br>'
 
-				echo `date`: karoshi_servers_remove_role - $"Back"UP_CLIENT backup disabled by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+				echo `date`: karoshi_servers_remove_role - $BACKUP_CLIENT backup disabled by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 			done
 		fi
 	fi
 	completed
 fi
-
 
 ##########################
 #Home Access 
@@ -305,74 +418,116 @@ fi
 ##########################
 if [ $MODULE = emailserver ]
 then
-if [ $SERVERNAME = `hostname-fqdn` ]
-then
-echo "<li>"$SERVERNAME: $"Removing Squirrelmail.""</li><br>"
-[ -d /var/www/html/squirrelmail ] && rm -f -R /var/www/html/squirrelmail
-[ -d /var/www/squirrelmail-attachments ] && rm -f -R /var/www/squirrelmail-attachments
-[ -d /var/www/squirrelmail-data ] && rm -f -R /var/www/squirrelmail-datacalendar_data
-[ -d /var/www/squirrelmail-datacalendar_data ] && rm -f -R /var/www/squirrelmail-datacalendar_data
-[ -f /var/www/global_address_book ] && rm -f /var/www/global_address_book
-echo "<li>"$SERVERNAME: $"Removing Egroupware.""</li><br>"
-[ -d /var/www/html/egroupware ] && rm -f -R /var/www/html/egroupware
-[ -d /var/www/egroupware-files ] && rm -f -R /var/www/egroupware-files
+	if [ $SERVERNAME = `hostname-fqdn` ]
+	then
+		echo "<li>"$SERVERNAME: $"Removing E-Mail Module.""</li><br>"
 
-[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/delete_mail.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/delete_mail.cron
-[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/globaladdressbook.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/globaladdressbook.cron
-[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/mailboxcheck.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/mailboxcheck.cron
-[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/mailboxwarn.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/mailboxwarn.cron
-[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/postfixstats.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/postfixstats.cron
-[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/tidyrootmail.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/tidyrootmail.cron
-[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/tidy_squirrelmail_attachments.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/tidy_squirrelmail_attachments.cron
+		[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/postfixstats.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/postfixstats.cron
+		[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/tidyrootmail.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/tidyrootmail.cron
+		/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
-/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+		echo "<li>"$SERVERNAME: $"E-Mail Server" - $"Stopping Mailscanner""</li><br>"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mailscanner_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/mailscanner
+		[ -f /etc/default/mailscanner ] && echo run_mailscanner=0 >> /etc/default/mailscanner
 
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mailscanner_stop 1>/dev/null
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/mailscanner
+		echo "<li>"$SERVERNAME: $"E-Mail Server" - $"Stopping Postfix""</li><br>"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_stop
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/postfix
 
-#Get root mysql password
-/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
-MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
-mysqladmin -f --password=$MYSQLPASS drop egroupware 1>/dev/null 2>/dev/null
-else
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-source /opt/karoshi/serversetup/variables/distro
-echo "<li>"'$SERVERNAME': '$"Removing Squirrelmail."'"</li><br>"
-[ -d /var/www/html/squirrelmail ] && rm -f -R /var/www/html/squirrelmail
-[ -d /var/www/squirrelmail-attachments ] && rm -f -R /var/www/squirrelmail-attachments
-[ -d /var/www/squirrelmail-data ] && rm -f -R /var/www/squirrelmail-data
-[ -d /var/www/squirrelmail-datacalendar_data ] && rm -f -R /var/www/squirrelmail-datacalendar_data
-[ -f /var/www/global_address_book ] && rm -f /var/www/global_address_book
-echo "<li>"'$SERVERNAME': '$"Removing Egroupware."'"</li><br>"
-[ -d /var/www/html/egroupware ] && rm -f -R /var/www/html/egroupware
-[ -d /var/www/egroupware-files ] && rm -f -R /var/www/egroupware-files
+		echo "<li>"$SERVERNAME: $"E-Mail Server" - $"Stopping Dovecot""</li><br>"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dovecot_stop
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/dovecot
 
-[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/delete_mail.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/delete_mail.cron
-[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/globaladdressbook.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/globaladdressbook.cron
-[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/mailboxcheck.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/mailboxcheck.cron
-[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/mailboxwarn.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/mailboxwarn.cron
-[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/postfixstats.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/postfixstats.cron
-[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/tidyrootmail.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/tidyrootmail.cron
-[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/tidy_squirrelmail_attachments.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/tidy_squirrelmail_attachments.cron
+		echo "<li>"$SERVERNAME: $"E-Mail Server" - $"Stopping Sogo""</li><br>"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/sogo_stop
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/sogo
 
-/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+		echo "<li>"$SERVERNAME: $"E-Mail Server" - $"Stopping Memcached""</li><br>"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/memcached_stop
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/memcached
 
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mailscanner_stop 1>/dev/null
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/mailscanner
-/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
-#Get root mysql password
-MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
-mysqladmin -f --password=$MYSQLPASS drop egroupware 1>/dev/null 2>/dev/null
-'
+		#Get root mysql password
+		MYSQLPASS=$(cat /etc/mysql.secret)
+		mysqladmin -f --password=$MYSQLPASS drop sogo 1>/dev/null 2>/dev/null
+
+		#Change firewall rules to stop email access
+		RESTART_SHOREWALL=no
+		while  [ $(grep -c email_server_rule /etc/shorewall/rules) != 0 ]
+		do
+			LINENUM=`grep -n "#email_server_rule" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p`
+			sed -i $LINENUM"d" /etc/shorewall/rules
+			RESTART_SHOREWALL=yes
+		done
+
+		if [ $RESTART_SHOREWALL = yes ]
+		then
+			#Restart shorewall
+			source /opt/karoshi/serversetup/variables/distro
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
+			sleep 0.5
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
+		fi
+	else
+		ssh -x -o PasswordAuthentication=no $SERVERNAME '
+		source /opt/karoshi/serversetup/variables/distro
+
+		[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/postfixstats.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/postfixstats.cron
+		[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/tidyrootmail.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/tidyrootmail.cron
+		/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+
+		echo "<li>"'$SERVERNAME': '$"E-Mail Server"' - '$"Stopping Mailscanner"'"</li><br>"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mailscanner_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/mailscanner
+		[ -f /etc/default/mailscanner ] && echo run_mailscanner=0 >> /etc/default/mailscanner
+
+		echo "<li>"'$SERVERNAME': '$"E-Mail Server"' - '$"Stopping Postfix"'"</li><br>"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_stop
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/postfix
+
+		echo "<li>"'$SERVERNAME': '$"E-Mail Server"' - '$"Stopping Dovecot"'"</li><br>"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dovecot_stop
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/dovecot
+
+		echo "<li>"'$SERVERNAME': '$"E-Mail Server" - $"Stopping Sogo"'"</li><br>"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/sogo_stop
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/sogo
+
+		echo "<li>"$SERVERNAME: $"E-Mail Server" - $"Stopping Memcached""</li><br>"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/memcached_stop
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/memcached
+
+		#Get root mysql password
+		MYSQLPASS=$(cat /etc/mysql.secret)
+		mysqladmin -f --password=$MYSQLPASS drop sogo 1>/dev/null 2>/dev/null
+
+		#Change firewall rules to stop email access
+		RESTART_SHOREWALL=no
+		while  [ $(grep -c email_server_rule /etc/shorewall/rules) != 0 ]
+		do
+			LINENUM=`grep -n "#email_server_rule" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p`
+			sed -i $LINENUM"d" /etc/shorewall/rules
+			RESTART_SHOREWALL=yes
+		done
+
+		if [ $RESTART_SHOREWALL = yes ]
+		then
+			#Restart shorewall
+			source /opt/karoshi/serversetup/variables/distro
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
+			sleep 0.5
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
+		fi
+
+		'
+	fi
+
+	#Unflag server
+	echo "<li>"$SERVERNAME: $"E-Mail Server" - $"Designation removed.""</li><br>"
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver
+	[ -f /opt/karoshi/server_network/emailserver ] && rm -f /opt/karoshi/server_network/emailserver
+	completed
 fi
-
-#Unflag server
-echo "<li>"$SERVERNAME: $"E-Mail Server" - $"Designation removed.""</li><br>"
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver
-[ -f /opt/karoshi/server_network/emailserver ] && rm -f /opt/karoshi/server_network/emailserver
-completed
-fi
-
 
 ##########################
 #joomlaserver
@@ -442,23 +597,23 @@ fi
 
 if [ $MODULE = remote_ssh ]
 then
-echo "<li>"$SERVERNAME: $"Removing ssh access.""</li><br>"
-#Change firewall rules to stop ssh access
-MODCHECK=`grep -c pdc_ssh_rule /etc/shorewall/rules`
-if [ $MODCHECK != 0 ]
-then
-LINENUM=`grep -n '#pdc_ssh_rule' /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM'd' /etc/shorewall/rules
-#Restart shorewall
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
-sleep 0.5
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
-fi
-#Unflag server
-echo "<li>"$SERVERNAME: $"Remote SSH Access" - $"Designation removed.""</li><br>"
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/remote_ssh ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/remote_ssh
-completed
+	echo "<li>"$SERVERNAME: $"Removing ssh access.""</li><br>"
+	#Change firewall rules to stop ssh access
+	MODCHECK=`grep -c pdc_ssh_rule /etc/shorewall/rules`
+	if [ $MODCHECK != 0 ]
+	then
+		LINENUM=`grep -n '#pdc_ssh_rule' /etc/shorewall/rules | cut -d: -f1`
+		sed -i $LINENUM'd' /etc/shorewall/rules
+		#Restart shorewall
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
+		sleep 0.5
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
+	fi
+	#Unflag server
+	echo "<li>"$SERVERNAME: $"Remote SSH Access" - $"Designation removed.""</li><br>"
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/remote_ssh ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/remote_ssh
+	completed
 fi
 
 
@@ -467,40 +622,70 @@ fi
 #Unflags this server as a moodle server. Deletes all moodle files and the moodle database.
 ##########################
 
-if [ $MODULE = moodleserver ]
+if [ $MODULE = moodle ]
 then
-echo "<li>"$SERVERNAME: $"Removing Moodle.""</li><br>"
-if [ $SERVERNAME = `hostname-fqdn` ]
-then
-[ -d /var/www/html/moodle ] && rm -f -R /var/www/html/moodle
-[ -d /var/www/moodle-data ] && rm -f -R /var/www/moodle-data
+	echo "<li>"$SERVERNAME: $"Removing Moodle.""</li><br>"
+	if [ $SERVERNAME = `hostname-fqdn` ]
+	then
+		[ -d /var/www/html/moodle ] && rm -f -R /var/www/html/moodle
+		[ -d /var/www/moodle-data ] && rm -f -R /var/www/moodle-data
 
-[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/refresh_moodle.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/refresh_moodle.cron
-/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+		[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/refresh_moodle.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/refresh_moodle.cron
+		/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
-/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
-#Get root mysql password
-MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
-mysqladmin -f --password=$MYSQLPASS drop moodle 1>/dev/null 2>/dev/null
-else
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-[ -d /var/www/html/moodle ] && rm -f -R /var/www/html/moodle
-[ -d /var/www/moodle-data ] && rm -f -R /var/www/moodle-data
+		/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
+		#Get root mysql password
+		MYSQLPASS=$(cat /etc/mysql.secret)
+		mysqladmin -f --password=$MYSQLPASS drop moodle 1>/dev/null 2>/dev/null
+	else
+	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+		[ -d /var/www/html/moodle ] && rm -f -R /var/www/html/moodle
+		[ -d /var/www/moodle-data ] && rm -f -R /var/www/moodle-data
 
-[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/refresh_moodle.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/refresh_moodle.cron
-/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+		[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/refresh_moodle.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/refresh_moodle.cron
+		/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
-/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
-#Get root mysql password
-MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
-mysqladmin -f --password=$MYSQLPASS drop moodle 1>/dev/null 2>/dev/null
-'
+		/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
+		#Get root mysql password
+		MYSQLPASS=$(cat /etc/mysql.secret)
+		mysqladmin -f --password=$MYSQLPASS drop moodle 1>/dev/null 2>/dev/null
+		'
+	fi
+	#Unflag server
+	echo "<li>"$SERVERNAME: $"Moodle Server" - $"Designation removed.""</li><br>"
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/moodle ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/moodle
+	[ -f /opt/karoshi/server_network/moodleserver ] && rm -f /opt/karoshi/server_network/moodleserver
+	completed
 fi
-#Unflag server
-echo "<li>"$SERVERNAME: $"Moodle Server" - $"Designation removed.""</li><br>"
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/moodleserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/moodleserver
-[ -f /opt/karoshi/server_network/moodleserver ] && rm -f /opt/karoshi/server_network/moodleserver
-completed
+
+if [ $MODULE = openvpn ]
+then
+	echo "<li>"$SERVERNAME: $"Removing OpenVPN.""</li><br>"
+	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	#Stop openvpn
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/openvpn_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/openvpn
+
+	#Change firewall rules to stop openvpn access
+	MODCHECK=`grep -c openvpn_client_connect /etc/shorewall/rules`
+	if [ $MODCHECK != 0 ]
+	then
+		LINENUM=`grep -n "#openvpn_client_connect" /etc/shorewall/rules | cut -d: -f1`
+		sed -i $LINENUM"d" /etc/shorewall/rules
+		#Restart shorewall
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
+		sleep 0.5
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
+	fi
+	'
+
+	#Unflag server
+	echo "<li>"$SERVERNAME: $"OpenVPN Server" - $"Designation removed.""</li><br>"
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/openvpn ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/openvpn
+	[ -f /opt/karoshi/server_network/vpnserver ] && rm -f /opt/karoshi/server_network/vpnserver
+	completed
 fi
 
 ##########################
@@ -566,30 +751,30 @@ fi
 
 if [ $MODULE = printserver ]
 then
-echo "<li>"$SERVERNAME: $"Removing Print Server.""</li><br>"
-if [ $SERVERNAME = `hostname-fqdn` ]
-then
-#Stop Cups
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/cups_stop 1>/dev/null
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/cups
-else
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-#Stop Cups
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/cups_stop 1>/dev/null
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/cups
-'
-fi
-#Unflag server
-echo "<li>"$SERVERNAME: $"Print Server" - $"Designation removed.""</li><br>"
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/printserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/printserver
-[ -f /opt/karoshi/server_network/printserver ] && rm -f /opt/karoshi/server_network/printserver
+	echo "<li>"$SERVERNAME: $"Removing Print Server.""</li><br>"
+	if [ $SERVERNAME = `hostname-fqdn` ]
+	then
+		#Stop Cups
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/cups_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/cups
+	else
+		ssh -x -o PasswordAuthentication=no $SERVERNAME '
+		#Stop Cups
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/cups_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/cups
+		'
+	fi
+	#Unflag server
+	echo "<li>"$SERVERNAME: $"Print Server" - $"Designation removed.""</li><br>"
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/printserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/printserver
+	[ -f /opt/karoshi/server_network/printserver ] && rm -f /opt/karoshi/server_network/printserver
 
-#Remove printing item from the web management menu
-sed -i 's/PRINTERCTRL=yes/PRINTERCTRL=no/g' /opt/karoshi/web_controls/generate_navbar_admin
-sed -i 's/PRINTERCTRL=yes/PRINTERCTRL=no/g' /opt/karoshi/web_controls/generate_navbar_tech
-sed -i 's/PRINTERCTRL=yes/PRINTERCTRL=no/g' /opt/karoshi/web_controls/generate_navbar_staff
-completed
+	#Remove printing item from the web management menu
+	sed -i 's/PRINTERCTRL=yes/PRINTERCTRL=no/g' /opt/karoshi/web_controls/generate_navbar_admin
+	sed -i 's/PRINTERCTRL=yes/PRINTERCTRL=no/g' /opt/karoshi/web_controls/generate_navbar_tech
+	sed -i 's/PRINTERCTRL=yes/PRINTERCTRL=no/g' /opt/karoshi/web_controls/generate_navbar_staff
+	completed
 fi
 
 ##########################
@@ -700,82 +885,83 @@ fi
 ##########################
 if [ $MODULE = fileserver ]
 then
-echo "<li>"$SERVERNAME: $"Removing File Server.""</li><br>"
+	source /opt/karoshi/server_network/domain_information/domain_name
+	echo "<li>"$SERVERNAME: $"Removing File Server.""</li><br>"
 
-#Change group information
-for GROUPFILES in /opt/karoshi/server_network/group_information/*
-do
-GROUPFILE=`basename $GROUPFILES`
-sed -i 's/'$SERVERNAME'/'$HOSTNAME'/g' /opt/karoshi/server_network/group_information/$GROUPFILE
-done
-#Change drive mapping
-sed -i 's/'$SERVERNAME'/'$HOSTNAME'/g' /var/lib/samba/netlogon/groups.txt
+	#Change group information
+	for GROUPFILES in /opt/karoshi/server_network/group_information/*
+	do
+	GROUPFILE=`basename $GROUPFILES`
+	sed -i 's/'$SERVERNAME'/'$HOSTNAME.$REALM'/g' /opt/karoshi/server_network/group_information/$GROUPFILE
+	done
+	#Change drive mapping
+	/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts
 
-#Unflag server
-echo "<li>"$SERVERNAME: $"File Server" - $"Designation removed.""</li><br>"
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/fileserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/fileserver
-completed
+	#Unflag server
+	echo "<li>"$SERVERNAME: $"File Server" - $"Designation removed.""</li><br>"
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/fileserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/fileserver
+	completed
 fi
 
 
 if [ $MODULE = REMOVESERVER ]
 then
-echo "<li>"$SERVERNAME: $"Removing Server.""</li><br>"
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-source /opt/karoshi/server_network/domain_information/domain_name
+	echo "<li>"$SERVERNAME: $"Removing Server.""</li><br>"
+	LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+	source /opt/karoshi/server_network/domain_information/domain_name
 
-#Remove zone information
-[ -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME
-[ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/zones/dmz/servers/$SERVERNAME
-[ -f /opt/karoshi/server_network/zones/external/servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/zones/external/servers/$SERVERNAME
+	#Remove zone information
+	[ -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME
+	[ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/zones/dmz/servers/$SERVERNAME
+	[ -f /opt/karoshi/server_network/zones/external/servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/zones/external/servers/$SERVERNAME
 
-#Remove alias information
-if [ -f /opt/karoshi/server_network/aliases/$SERVERNAME ]
-then
-ALIAS=`sed -n 1,1p /opt/karoshi/server_network/aliases/$SERVERNAME`
-rm -f /opt/karoshi/server_network/aliases/$SERVERNAME
-[ -f /etc/ssl/apache/$ALIAS.key ] && rm -f /etc/ssl/apache/$ALIAS.key
-[ -f /etc/ssl/apache/$ALIAS.pem ] && rm -f /etc/ssl/apache/$ALIAS.pem
-[ -f /etc/ssl/apache/$ALIAS.req ] && rm -f /etc/ssl/apache/$ALIAS.req
-#Delete alias from dns
-samba-tool dns delete 127.0.0.1 $REALM $ALIAS CNAME $SERVERNAME.$REALM --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-fi
+	#Remove alias information
+	if [ -f /opt/karoshi/server_network/aliases/$SERVERNAME ]
+	then
+		ALIAS=`sed -n 1,1p /opt/karoshi/server_network/aliases/$SERVERNAME`
+		rm -f /opt/karoshi/server_network/aliases/$SERVERNAME
+		[ -f /etc/ssl/apache/$ALIAS.key ] && rm -f /etc/ssl/apache/$ALIAS.key
+		[ -f /etc/ssl/apache/$ALIAS.pem ] && rm -f /etc/ssl/apache/$ALIAS.pem
+		[ -f /etc/ssl/apache/$ALIAS.req ] && rm -f /etc/ssl/apache/$ALIAS.req
+		#Delete alias from dns
+		samba-tool dns delete 127.0.0.1 $REALM $ALIAS CNAME $SERVERNAME.$REALM --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	fi
 
-#Remove entry from dns
-TCPIPNUMBER=`net lookup $SERVERNAME`
-samba-tool dns delete 127.0.0.1 $REALM $SERVERNAME A $TCPIPNUMBER --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	#Remove entry from dns
+	TCPIPNUMBER=`net lookup $SERVERNAME`
+	samba-tool dns delete 127.0.0.1 $REALM $SERVERNAME A $TCPIPNUMBER --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-#Change group information
-for GROUPFILES in /opt/karoshi/server_network/group_information/*
-do
-GROUPFILE=`basename $GROUPFILES`
-sed -i 's/'$SERVERNAME'/'$HOSTNAME'/g' /opt/karoshi/server_network/group_information/$GROUPFILE
-done
-#Change drive mapping
-sed -i 's/'$SERVERNAME'/'$HOSTNAME'/g' /var/lib/samba/netlogon/groups.txt
+	#Change group information
+	for GROUPFILES in /opt/karoshi/server_network/group_information/*
+	do
+	GROUPFILE=`basename $GROUPFILES`
+	sed -i 's/'$SERVERNAME'/'$HOSTNAME.$REALM'/g' /opt/karoshi/server_network/group_information/$GROUPFILE
+	done
+	#Change drive mapping
+	/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts
 
-#Unflag server
-echo "<li>"$SERVERNAME: $"Designation removed.""</li><br>"
-[ -d /opt/karoshi/server_network/servers/$SERVERNAME ] && rm -f -R /opt/karoshi/server_network/servers/$SERVERNAME
-[ -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME
-[ -f /opt/karoshi/server_network/ldap_clients/$SERVERNAME ] && rm -f /opt/karoshi/server_network/ldap_clients/$SERVERNAME
-#Remove backup server
-[ -f /opt/karoshi/server_network/backup_servers/servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/backup_servers/servers/$SERVERNAME
-#Check to see if any other servers are backing up to this server
-if [ -d /opt/karoshi/server_network/backup_servers/backup_settings/ ]
-then
-if [ `grep -l -w $SERVERNAME -R /opt/karoshi/server_network/backup_servers/backup_settings/* | wc -l` -gt 0 ]
-then
-for BACKUP_CLIENTS in `grep -l -w $SERVERNAME -R /opt/karoshi/server_network/backup_servers/backup_settings`
-do
-BACKUP_CLIENT=`echo $BACKUP_CLIENTS | cut -d/ -f7`
-rm -f $BACKUP_CLIENTS
-echo '<li>'$BACKUP_CLIENT': '$"Backup disabled"'</li><br>'
-echo `date`: karoshi_servers_remove_role - $"Back"UP_CLIENT backup disabled by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-done
-fi
-fi
-completed
+	#Unflag server
+	echo "<li>"$SERVERNAME: $"Designation removed.""</li><br>"
+	[ -d /opt/karoshi/server_network/servers/$SERVERNAME ] && rm -f -R /opt/karoshi/server_network/servers/$SERVERNAME
+	[ -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME
+	[ -f /opt/karoshi/server_network/ldap_clients/$SERVERNAME ] && rm -f /opt/karoshi/server_network/ldap_clients/$SERVERNAME
+	#Remove backup server
+	[ -f /opt/karoshi/server_network/backup_servers/servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/backup_servers/servers/$SERVERNAME
+	#Check to see if any other servers are backing up to this server
+	if [ -d /opt/karoshi/server_network/backup_servers/backup_settings/ ]
+	then
+		if [ `grep -l -w $SERVERNAME -R /opt/karoshi/server_network/backup_servers/backup_settings/* | wc -l` -gt 0 ]
+		then
+			for BACKUP_CLIENTS in `grep -l -w $SERVERNAME -R /opt/karoshi/server_network/backup_servers/backup_settings`
+				do
+				BACKUP_CLIENT=`echo $BACKUP_CLIENTS | cut -d/ -f7`
+				rm -f $BACKUP_CLIENTS
+				echo '<li>'$BACKUP_CLIENT': '$"Backup disabled"'</li><br>'
+				echo `date`: karoshi_servers_remove_role - $"Back"UP_CLIENT backup disabled by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			done
+		fi
+	fi
+	completed
 fi
 ##########################
 #ldapserver
@@ -783,20 +969,20 @@ fi
 ##########################
 if [ $MODULE = ldapserver ]
 then
-echo "<li>"$SERVERNAME: $"Removing LDAP Server.""</li><br>"
+	echo "<li>"$SERVERNAME: $"Removing LDAP Server.""</li><br>"
 
-#Unflag server
-echo "<li>"$SERVERNAME: $"Designation removed.""</li><br>"
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/ldapserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/ldapserver
-[ -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME
+	#Unflag server
+	echo "<li>"$SERVERNAME: $"Designation removed.""</li><br>"
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/ldapserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/ldapserver
+	[ -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME
 
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ldap_stop 1>/dev/null
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/ldap
-sed -i "s/files ldap/files/g" /etc/nsswitch.conf
-'
-completed
+	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ldap_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/ldap
+	sed -i "s/files ldap/files/g" /etc/nsswitch.conf
+	'
+	completed
 fi
 
 #Unflag server

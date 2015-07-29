@@ -65,15 +65,15 @@ END_POINT=5
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+	done
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
@@ -85,10 +85,10 @@ exit
 }
 
 #Check to see that servername is not blank
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-MESSAGE=$"The servername cannot be blank."
-show_status
+	MESSAGE=$"The servername cannot be blank."
+	show_status
 fi
 
 ICON=/images/warnings/server.png
@@ -100,133 +100,121 @@ function get_role_name {
 ROLE_NAME=$ROLE_FILE
 ROLE_NAME_STATUS=notset
 CONSEQUENCES=""
-if [ $ROLE_FILE = apachereverseproxyserver ]
-then
-ROLE_NAME=$"Reverse Proxy Server"
-CONSEQUENCES=$"Unflags this server as an Apache reverse proxy server. Disables proxy module and restarts apache."
-ROLE_NAME_STATUS=set
-MODULES=yes
-fi
-if [ $ROLE_FILE = distributionserver ]
-then
-ROLE_NAME=$"Distribution Server"
-ROLE_NAME_STATUS=set
-CONSEQUENCES=$"Unflags this server as a distribution server."
-MODULES=yes
-elif [ $ROLE_FILE = homeaccess ]
-then
-ROLE_NAME=$"Home Access Server"
-ROLE_NAME_STATUS=set
-CONSEQUENCES=$"Unflags this server as a Home Access server and removes the Home Access files."
-MODULES=yes
-elif [ $ROLE_FILE = apacheserver ]
-then
-ROLE_NAME=$"Web Server"
-ROLE_NAME_STATUS=set
-CONSEQUENCES=$"Unflags this server as an Apache server."
-MODULES=yes
-elif [ $ROLE_FILE = backupserver ]
-then
-ROLE_NAME=$"Backup Server"
-ROLE_NAME_STATUS=set
-CONSEQUENCES=$"Unflags this server as a backup server. Stops all backups to this server."
-MODULES=yes
-elif [ $ROLE_FILE = dhcp_server ] && [ $SERVERNAME = `hostname-fqdn` ]
-then
-ROLE_NAME=$"DHCP Server"
-ROLE_NAME_STATUS=set
-CONSEQUENCES=$"Unflags this server as a DHCP server. Stops the dhcp service from running on this server."
-MODULES=yes
-elif [ $ROLE_FILE = emailserver ]
-then
-ROLE_NAME=$"E-Mail Server"
-ROLE_NAME_STATUS=set
-CONSEQUENCES=$"Unflags this server as an E-Mail server. Removes Squirrelmail and egroupware, and stops Mailscanner from running on the server."
-MODULES=yes
-elif [ $SERVERNAME != `hostname-fqdn` ] && [ $ROLE_FILE = fileserver ]
-then
-ROLE_NAME=$"File Server"
-ROLE_NAME_STATUS=set
-CONSEQUENCES=$"Unflags this server as a file server. Re-maps any groups using this server back to the main server."
-MODULES=yes
-elif [ $ROLE_FILE = joomlaserver ]
-then
-ROLE_NAME=$"Joomla"
-ROLE_NAME_STATUS=set
-CONSEQUENCES=$"Unflags this server from using joomla. Deletes all joomla files and the joomla database."
-MODULES=yes
-elif [ $ROLE_FILE = moodleserver ]
-then
-ROLE_NAME=$"Moodle Server"
-ROLE_NAME_STATUS=set
-CONSEQUENCES=$"Unflags this server as a moodle server. Deletes all moodle files and the moodle database."
-MODULES=yes
-elif [ $ROLE_FILE = ocsserver ]
-then
-ROLE_NAME=$"OCS Inventory"
-ROLE_NAME_STATUS=set
-CONSEQUENCES=$"Unflags this server as an OCS server. Deletes all OCS files and the OCS database."
-MODULES=yes
-elif [ $ROLE_FILE = printserver ]
-then
-ROLE_NAME=$"Print Server"
-ROLE_NAME_STATUS=set
-CONSEQUENCES=$"Unflags this server as a print server. Stops cups on the server."
-MODULES=yes
-elif [ $ROLE_FILE = squid ]
-then
-ROLE_NAME=$"Squid Internet Proxy"
-ROLE_NAME_STATUS=set
-CONSEQUENCES=$"Unflags this server as an Internet Proxy server. Stops squid and dansguardian from running on the server."
-MODULES=yes
-elif [ $ROLE_FILE = monitoring ]
-then
-ROLE_NAME=$"Monitor Server"
-ROLE_NAME_STATUS=set
-CONSEQUENCES=$"Unflags this server as a monitor server. Stops mon from running."
-MODULES=yes
-elif [ $ROLE_FILE = remote_ssh ]
-then
-ROLE_NAME=$"Remote SSH Access"
-ROLE_NAME_STATUS=set
-CONSEQUENCES=$"Unflags this server for allowing remote access. Firewall rules changed to stop ssh access to this server."
-MODULES=yes
-elif [ $ROLE_FILE = casserver ]
-then
-ROLE_NAME=$"Ruby CAS Server"
-ROLE_NAME_STATUS=set
-CONSEQUENCES=$"Unflags this server as a CAS single sign on server. Removes the cas link in /var/www/html and deletes the cas database."
-MODULES=yes
-elif [ $ROLE_FILE = radioserver ]
-then
-ROLE_NAME=$"Internet Radio Server"
-ROLE_NAME_STATUS=set
-CONSEQUENCES=$"Unflags this server as a radio server. Stops icecast-server from running on the server."
-MODULES=yes
-elif [ $ROLE_FILE = federated_server ] && [ $SERVERNAME != `hostname-fqdn` ]
-then
-ROLE_NAME=$"Federated Server"
-ROLE_NAME_STATUS=set
-CONSEQUENCES=$"Unflags this server as a federated server. Disables federated password synchronisation. Disables federated file synchronisation. Enables user creation in the webmanagement for this server."
-MODULES=yes
-elif [ $ROLE_FILE = ldapserver ] && [ $SERVERNAME != `hostname-fqdn` ]
-then
-ROLE_NAME=$"Slave LDAP server"
-ROLE_NAME_STATUS=set
-CONSEQUENCES=$"Unflags this server as a slave ldap server. Stops ldap from running and turns of ldap authentication on the server."
-MODULES=yes
-elif [ $ROLE_FILE = no_role ]
-then
-MODULES=yes
-else
-if [ $ROLE_FILE != 1pdc ] && [ $ROLE_FILE != ldapserver ] && [ $ROLE_FILE != fileserver ]
-then
-ROLE_NAME=`echo $ROLE_FILE | sed 's/+/ /g'`
-ROLE_NAME_STATUS=set
-CONSEQUENCES="$ROLE_NAME"
-MODULES=yes
-fi
-fi
+
+
+case "$ROLE_FILE" in
+	apachereverseproxyserver)
+	ROLE_NAME=$"Reverse Proxy Server"
+	CONSEQUENCES=$"Unflags this server as an Apache reverse proxy server. Disables proxy module and restarts apache."
+	ROLE_NAME_STATUS=set
+	MODULES=yes
+	;;
+	distributionserver)
+	ROLE_NAME=$"Distribution Server"
+	ROLE_NAME_STATUS=set
+	CONSEQUENCES=$"Unflags this server as a distribution server."
+	MODULES=yes
+	;;
+	homeaccess)
+	ROLE_NAME=$"Home Access Server"
+	ROLE_NAME_STATUS=set
+	CONSEQUENCES=$"Unflags this server as a Home Access server and removes the Home Access files."
+	MODULES=yes
+	;;
+	apacheserver)
+	ROLE_NAME=$"Web Server"
+	ROLE_NAME_STATUS=set
+	CONSEQUENCES=$"Unflags this server as an Apache server."
+	MODULES=yes
+	;;
+	backupserver)
+	ROLE_NAME=$"Backup Server"
+	ROLE_NAME_STATUS=set
+	CONSEQUENCES=$"Unflags this server as a backup server. Stops all backups to this server."
+	MODULES=yes
+	;;
+	dhcp_server)
+	ROLE_NAME=$"DHCP Server"
+	ROLE_NAME_STATUS=set
+	CONSEQUENCES=$"Unflags this server as a DHCP server. Stops the dhcp service from running on this server."
+	MODULES=yes
+	;;
+	emailserver)
+	ROLE_NAME=$"E-Mail Server"
+	ROLE_NAME_STATUS=set
+	CONSEQUENCES=$"Unflags this server as an E-Mail server. Stops Sogo, Postfix, Dovecot, and Mailscanner from running on the server."
+	MODULES=yes
+	;;
+	fileserver)
+	if [ $SERVERNAME != `hostname-fqdn` ]
+	then
+		ROLE_NAME=$"File Server"
+		ROLE_NAME_STATUS=set
+		CONSEQUENCES=$"Unflags this server as a file server. Re-maps any groups using this server back to the main server."
+		MODULES=yes
+	fi
+	;;
+	joomlaserver)
+	ROLE_NAME=$"Joomla"
+	ROLE_NAME_STATUS=set
+	CONSEQUENCES=$"Unflags this server from using joomla. Deletes all joomla files and the joomla database."
+	MODULES=yes
+	;;
+	moodle)
+	ROLE_NAME=$"Moodle Server"
+	ROLE_NAME_STATUS=set
+	CONSEQUENCES=$"Unflags this server as a moodle server. Deletes all moodle files and the moodle database."
+	MODULES=yes
+	;;
+	ocsserver)
+	ROLE_NAME=$"OCS Inventory"
+	ROLE_NAME_STATUS=set
+	CONSEQUENCES=$"Unflags this server as an OCS server. Deletes all OCS files and the OCS database."
+	MODULES=yes
+	;;
+	printserver)
+	ROLE_NAME=$"Print Server"
+	ROLE_NAME_STATUS=set
+	CONSEQUENCES=$"Unflags this server as a print server. Stops cups on the server."
+	MODULES=yes
+	;;
+	squid)
+	ROLE_NAME=$"Squid Internet Proxy"
+	ROLE_NAME_STATUS=set
+	CONSEQUENCES=$"Unflags this server as an Internet Proxy server. Stops squid and dansguardian from running on the server."
+	MODULES=yes
+	;;
+	monitoring)
+	ROLE_NAME=$"Monitor Server"
+	ROLE_NAME_STATUS=set
+	CONSEQUENCES=$"Unflags this server as a monitor server. Stops mon from running."
+	MODULES=yes
+	;;
+	remote_ssh)
+	ROLE_NAME=$"Remote SSH Access"
+	ROLE_NAME_STATUS=set
+	CONSEQUENCES=$"Unflags this server for allowing remote access. Firewall rules changed to stop ssh access to this server."
+	MODULES=yes
+	;;
+	radioserver)
+	ROLE_NAME=$"Internet Radio Server"
+	ROLE_NAME_STATUS=set
+	CONSEQUENCES=$"Unflags this server as a radio server. Stops icecast-server from running on the server."
+	MODULES=yes
+	;;
+	openvpn)
+	ROLE_NAME=$"OpenVPN Server"
+	ROLE_NAME_STATUS=set
+	CONSEQUENCES=$"Unflags this server as an OpenVPN server. Stops openvpn from running on the server."
+	MODULES=yes
+	;;
+	federated_server)
+	ROLE_NAME=$"Federated Server"
+	ROLE_NAME_STATUS=set
+	CONSEQUENCES=$"Unflags this server as a federated server. Disables federated password synchronisation. Disables federated file synchronisation. Enables user creation in the webmanagement for this server."
+	MODULES=yes
+	;;
+	esac
 }
 
 REMOVE_CODE=`echo ${RANDOM:0:3}`
@@ -237,47 +225,41 @@ echo '
 <form action="/cgi-bin/admin/karoshi_servers_remove_role.cgi" method="post">
 <input name="___FORMCODE___" value="'$REMOVE_CODE'" type="hidden">
 <input name="___SERVERNAME___" value="'$SERVERNAME'" type="hidden">
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>'
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$"Code"'</td>
+<td style="vertical-align: top; text-align: left;"><b>'$REMOVE_CODE'</b></td></tr>
+<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$"Confirm"'</td>
+ <td style="vertical-align: top; text-align: left;"><input tabindex= "2" name="___MODULECODE___" maxlength="3" size="3" type="text"></td><td style="vertical-align: top;">
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the code above to confirm the action that you want to take."'<br><br>'$"Choose the module that you want to remove below."'</span></a></td></tr>
+'
 
 MODULES=no
 
-if [ $SERVERNAME != `hostname-fqdn` ] && [ ! -d /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME ]
-then
-echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$"Remove Server"'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="___MODULE___REMOVESERVER___" type="image" class="images" src="'$ICON'" value=""><span>'$"Removes all designations for this server."'</span></a></td></tr>'
-fi
-
 if [ -d /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME ]
 then
-ROLE_FILE=federated_server
-get_role_name
-if [ $ROLE_NAME_STATUS != notset ]
-then
-echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$ROLE_NAME'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="___MODULE___'$ROLE_FILE'___" type="image" class="images" src="'$ICON'" value=""><span>'$CONSEQUENCES'</span></a></td></tr>'
-fi
+	ROLE_FILE=federated_server
+	get_role_name
+	if [ $ROLE_NAME_STATUS != notset ]
+	then
+	echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$ROLE_NAME'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="___MODULE___'$ROLE_FILE'___" type="image" class="images" src="'$ICON'" value=""><span>'$CONSEQUENCES'</span></a></td></tr>'
+	fi
 else
-for ROLES in /opt/karoshi/server_network/servers/$SERVERNAME/*
-do
-ROLE_FILE=`basename $ROLES`
-get_role_name
+	for ROLES in /opt/karoshi/server_network/servers/$SERVERNAME/*
+	do
+		ROLE_FILE=`basename $ROLES`
+		get_role_name
 
-if [ $ROLE_NAME_STATUS != notset ]
+		if [ $ROLE_NAME_STATUS != notset ] && [ $ROLE_FILE != 1dc ] && [ $ROLE_FILE != 1domainmember ] && [ $ROLE_FILE != 2users-groups ]
+		then
+			echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$ROLE_NAME'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="___MODULE___'$ROLE_FILE'___" type="image" class="images" src="'$ICON'" value=""><span>'$CONSEQUENCES'</span></a></td></tr>'
+		fi
+	done
+fi
+
+if [ $SERVERNAME != `hostname-fqdn` ] && [ ! -d /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME ]
 then
-echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$ROLE_NAME'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="___MODULE___'$ROLE_FILE'___" type="image" class="images" src="'$ICON'" value=""><span>'$CONSEQUENCES'</span></a></td></tr>'
+	echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$"Remove Server"'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="___MODULE___REMOVESERVER___" type="image" class="images" src="'$ICON'" value=""><span>'$"Removes all designations for this server."'</span></a></td></tr>'
 fi
-done
-fi
-if [ $MODULES = yes ]
-then
-echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$"Code"'</td>
-        <td style="vertical-align: top; text-align: left;"><b>'$REMOVE_CODE'</b></td></tr>
-<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$"Confirm"'</td>
-        <td style="vertical-align: top; text-align: left;"><input tabindex= "2" name="___MODULECODE___" maxlength="3" size="3" type="text"></td><td style="vertical-align: top;">
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the code above to confirm the action that you want to take."'</span></a></td></tr>'
-fi
-echo '</tbody></table><br>'
-if [ $MODULES != yes ]
-then
-echo $"No modules can be removed from on this server."
-fi
-echo '</form></div></div></body></html>'
+
+echo '</tbody></table><br></form></div></div></body></html>'
 exit

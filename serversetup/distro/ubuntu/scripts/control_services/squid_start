@@ -2,8 +2,14 @@
 if [ -d /etc/squid3 ]
 then
 	service squid3 start 2>&1
-	[ "$?" != 0 ] && sleep 5
+	if [ "$?" != 0 ]
+	then
+		sleep 5
+	fi
 else
 	service squid start 2>&1
-	[ "$?" != 0 ] && sleep 5
+	if [ "$?" != 0 ]
+	then
+		sleep 5
+	fi
 fi
