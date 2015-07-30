@@ -114,8 +114,8 @@ chmod 0755 /opt/karoshi/karoshi_user/.local/share/applications/synaptic.desktop
 }
 
 function add_repos {
-#Add sogo remastersys mailscanner, monitoriz,yad, and zfs repositories
-echo -e "\nAdding SOGo, mailscanner, monitorix, yad, and zfs repositories\n"
+#Add sogo remastersys, monitoriz,yad, and zfs repositories
+echo -e "\nAdding SOGo, monitorix, yad, and zfs repositories\n"
 sleep 1
 
 UBUNTUVER=trusty
@@ -130,10 +130,6 @@ add-apt-repository -y "deb http://apt.izzysoft.de/ubuntu generic universe"
 
 #Yad
 add-apt-repository -y ppa:webupd8team/y-ppa-manager
-
-#MailScanner
-wget -O - http://apt.baruwa.org/baruwa-apt-keys.gpg | apt-key add -
-add-apt-repository -y "deb http://apt.baruwa.org/ubuntu precise main"
 
 #ZFS
 gpg --keyserver keyserver.ubuntu.com --recv-key 1196ba81f6b0fc61
@@ -278,8 +274,19 @@ function sysvsupport {
 }
 
 function install_mailscanner {
-#MailScanner repository key has expired - temporary fix only.
-apt-get -y install mailscanner --force-yes
+#Install dependencies for mailscanner.
+#Install dependencies
+apt-get install -y gcc g++ cpp zlib1g-dev libgmp3-dev perl bzip2 zip make patch automake libhtml-template-perl linux-headers-`uname -r` build-essential libnewt-dev libusb-dev libconvert-tnef-perl libdbd-sqlite3-perl libfilesys-df-perl libmailtools-perl libmime-tools-perl libmime-perl libnet-cidr-perl libsys-syslog-perl libio-stringy-perl libfile-temp-perl libole-storage-lite-perl libarchive-zip-perl libole-storage-lite-perl libdigest-sha-perl libhtml-tokeparser-simple-perl
+
+MAILSCANNERVER=4.85.2-3
+[ -f /tmp/mailscanner.tar.gz ] && rm -f /tmp/mailscanner.tar.gz
+[ -d /tmp/MailScanner-$MAILSCANNERVER ] && rm -f -R /tmp/MailScanner-$MAILSCANNERVER
+wget https://s3.amazonaws.com/mailscanner/release/v4/deb/MailScanner-$MAILSCANNERVER.deb.tar.gz -O /tmp/mailscanner.tar.gz
+tar -xvzf /tmp/mailscanner.tar.gz -C /tmp
+dpkg -i /tmp/MailScanner-$MAILSCANNERVER/mailscanner-$MAILSCANNERVER-noarch.deb
+#Tidy up
+rm -f /tmp/mailscanner.tar.gz
+rm -f -R /tmp/MailScanner-$MAILSCANNERVER
 }
 
 function install_zfs {
