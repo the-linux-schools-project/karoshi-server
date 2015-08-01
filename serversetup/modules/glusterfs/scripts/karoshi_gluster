@@ -66,7 +66,10 @@ echo `date`: karoshi_gluster serverlist:$SERVERLIST volume:$VOLUME folderpath:$F
 source /opt/karoshi/server_network/domain_information/domain_name
 PORTS=111,24007:24009,49152:49200,34865:34867
 
-echo '<br><br><li><b>'$"Configure"' GlusterFS - '$VOLUME'</b></li><br>'
+if [ $ACTION != removebrick ] && [ $ACTION != removeserver ]
+then
+	echo '<br><br><li><b>'$"Configure"' GlusterFS - '$VOLUME'</b></li><br>'
+fi
 
 function mount_volume {
 if [ "$SERVER" = `hostname-fqdn` ]
@@ -443,6 +446,40 @@ then
 	#Add in gluster information
 	echo GlusterFS Server"<br>" > /opt/karoshi/server_network/servers/$SERVER/glusterfs_server
 	touch /opt/karoshi/server_network/gluster-volumes/$VOLUME/servers/$SERVER
+fi
+
+function removebrick {
+#Get current number of bricks in the volume
+BRICKCOUNT=`ls -1 /opt/karoshi/server_network/gluster-volumes/$VOLUME/servers/ | wc -l`
+let BRICKCOUNT=$BRICKCOUNT-1
+
+#Remove gluster brick from the volume
+echo '<li>'$VOLUME' - '$"removing"' '$SERVER'</li><br>'
+echo -e "y\n" | gluster volume remove-brick $VOLUME replica $BRICKCOUNT $SERVER:$GLUSTERBASE/$VOLUME force 1>/dev/null
+[ -f /opt/karoshi/server_network/gluster-volumes/$VOLUME/servers/$SERVER ] && rm -f /opt/karoshi/server_network/gluster-volumes/$VOLUME/servers/$SERVER
+}
+
+
+
+if [ $ACTION = removebrick ]
+then
+	removebrick
+fi
+
+if [ $ACTION = removeserver ]
+then
+	SERVER=$SERVERLIST
+	#Remove server from all gluster volumes
+	for VOLUME in $(ls -1 /opt/karoshi/server_network/gluster-volumes/)
+	do
+		if [ -f /opt/karoshi/server_network/gluster-volumes/$VOLUME/servers/$SERVER ]
+		then
+			removebrick
+		fi
+	done 
+
+	#Remove server from gluster
+	gluster peer detach $SERVER 1>/dev/null
 fi
 
 #Restore a server to an existing gluster volume.

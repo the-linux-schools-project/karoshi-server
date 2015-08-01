@@ -906,9 +906,24 @@ fi
 
 if [ $MODULE = REMOVESERVER ]
 then
-	echo "<li>"$SERVERNAME: $"Removing Server.""</li><br>"
+	echo "<li>"$SERVERNAME: $"Removing Server""</li><br>"
 	LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 	source /opt/karoshi/server_network/domain_information/domain_name
+
+	#Remove server from gluster
+	/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster $SERVERNAME all removeserver "$REMOTE_USER" "$REMOTE_ADDR"
+
+	/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster berylium.elements.com all removeserver "me" "12345"
+
+	#Check to see if this is a domain controller
+	if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ]
+	then
+		#Demote from dc role in samba4
+		ssh -x -o PasswordAuthentication=no $SERVERNAME '
+		echo "<li>"'$SERVERNAME': '$"Demoting domain controller role"'"</li><br>"
+		samba-tool domain demote --username=Administrator --password='$LDAPPASS'
+		'
+	fi
 
 	#Remove zone information
 	[ -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME

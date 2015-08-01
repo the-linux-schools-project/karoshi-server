@@ -148,8 +148,8 @@ echo '</td>'
 fi
 
 echo '<td style="vertical-align: top;">
-<form action="/cgi-bin/admin/karoshi_servers_remove_role_fm.cgi" method="post">
-<a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVER'_" type="image" class="images" src="'$SERVERICON2'" value="'$SERVER'"><span>'$SERVERSHORT' - '$"Remove a role from this server."'</span></a></form></td>'
+<form action="/cgi-bin/admin/karoshi_servers_remove_role.cgi" method="post">
+<a class="info" href="javascript:void(0)"><input name="___SERVERNAME___'$SERVER'___" type="image" class="images" src="'$SERVERICON2'" value="'$SERVER'"><span>'$SERVERSHORT' - '$"Remove a role from this server."'</span></a></form></td>'
 
 
 echo '<td style="vertical-align: top;">'
