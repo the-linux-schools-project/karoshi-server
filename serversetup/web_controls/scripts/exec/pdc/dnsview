@@ -124,7 +124,7 @@ then
 	WIDTH1=100
 	WIDTH2=100
 	WIDTH3=250
-	HEIGHT=20
+	HEIGHT=25
 	TABLECLASS=standard
 	ICON1=/images/submenus/system/edit.png
 	ICON2=/images/submenus/system/delete.png
@@ -288,11 +288,11 @@ then
 	SERVERICON="/images/submenus/system/computer.png"
 	echo '<form action="/cgi-bin/admin/dnsview.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 	<tbody>
-	<tr><td style="width: 180px;">'$"Name"'</td><td><input tabindex= "1" name="_NAME_'$NAME'-" value="'$NAME'" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name that you want. This can be the name of a server or an alias."'</span></a></td></tr>
-	<tr><td>DNS Entry</td><td><input tabindex= "2" name="_ACTION_reallyedit"_"DNSENTRY_'$DNSENTRY'-" value="'$DNSENTRY'" size="20" style="width: 200px;" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the dns information that you want. This would be a tcpip number for an A record or it would be an alias entry for a CNAME."'</span></a></td></tr>
+	<tr><td style="width: 180px;">'$"Name"'</td><td><input tabindex= "1" name="_NAME_'$NAME'-" value="'$NAME'" style="width: 200px;" size="25" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name that you want. This can be the name of a server or an alias."'</span></a></td></tr>
+	<tr><td>DNS Entry</td><td><input tabindex= "2" name="_ACTION_reallyedit_DNSENTRY_'$DNSENTRY'-" value="'$DNSENTRY'" size="25" style="width: 200px;" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the dns information that you want. This would be a tcpip number for an A record or it would be an alias entry for a CNAME."'</span></a></td></tr>
 	<tr><td style="width: 180px;">DNS Type</td><td>'$DNSTYPE'</td><td><input type = "hidden" name="_DNSTYPE_" value="'$DNSTYPE'"></td></tr>
 	</tbody></table><br><br>
-	<input name="_SERVERTYPE_network_SERVERNAME_$SERVERNAME"_"" type="submit" class="button" value='$"Edit entry"'>
+	<input name="_SERVERTYPE_network_SERVERNAME_'$SERVERNAME'_" type="submit" class="button" value='$"Edit entry"'>
 	</form>
 	'
 fi
@@ -305,9 +305,9 @@ then
 	SERVERICON="/images/submenus/system/computer.png"
 	echo '<form action="/cgi-bin/admin/dnsview.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 	<tbody>
-	<tr><td style="width: '$WIDTH1'px;">'$"Name"'</td><td><input tabindex= "1" name="_NAME_"  style="width: 200px; height: '$HEIGHT'px;" size="20" type="text"></td><td>
+	<tr><td style="width: '$WIDTH1'px;">'$"Name"'</td><td><input tabindex= "1" name="_NAME_"  style="width: 200px; height: '$HEIGHT'px;" size="25" type="text"></td><td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS#Adding_dns_entries"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name that you want. This can be the name of a server or an alias."'</span></a></td></tr>
-	<tr><td>'$"DNS Entry"'</td><td><input tabindex= "2" name="_ACTION_reallyadd_DNSENTRY_" value="'$DNSENTRY'" size="20" style="width: 200px; height: '$HEIGHT'px;" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the dns information that you want. This would be a tcpip number for an A record or it would be an alias entry for a CNAME."'</span></a></td></tr>
+	<tr><td>'$"DNS Entry"'</td><td><input tabindex= "2" name="_ACTION_reallyadd_DNSENTRY_" value="'$DNSENTRY'" size="25" style="width: 200px; height: '$HEIGHT'px;" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the dns information that you want. This would be a tcpip number for an A record or it would be an alias entry for a CNAME."'</span></a></td></tr>
 	<tr><td>'$"DNS Type"'</td><td>'$DNSTYPE'
 	<select name="_DNSTYPE_" style="width: 200px; height: '$HEIGHT'px;">
 	<option value="CNAME">CNAME</option>
@@ -326,7 +326,9 @@ then
 	then
 		#Check that this exact dns entry does not already exist
 		ENTRYCOUNT=`samba-tool dns query 127.0.0.1 $REALM $NAME $DNSTYPE --username=Administrator --password=$LDAPPASS | grep -c $DNSENTRY`
-		if [ "$ENTRYCOUNT" = 0 ]
+		#Make sure that the ip address or cname has not already been added.
+		ENTRYCOUNT2=`samba-tool dns query 127.0.0.1 $REALM $REALM ALL --username=Administrator --password=$LDAPPASS | grep -c $DNSENTRY`
+		if [ "$ENTRYCOUNT" = 0 ] && [ "$ENTRYCOUNT2" = 0 ]
 		then
 			echo `date`: dnsview - adding $NAME $DNSENTRY to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 		samba-tool dns add 127.0.0.1 $REALM $NAME $DNSTYPE $DNSENTRY --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -341,7 +343,7 @@ then
 				sleep 10
 			fi
 		else
-			echo $NAME $DNSENTRY  - $"This entry already exists"
+			echo $NAME $DNSENTRY  - $"This entry already exists."
 			echo `date`: dnsview - $NAME $DNSENTRY - this entry already exists by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 			sleep 3
 			exit 101
@@ -353,12 +355,14 @@ then
 
 		#Check that this exact dns entry does not already exist
 		ENTRYCOUNT=`samba-tool dns query 127.0.0.1 '$REALM' '$NAME' '$DNSTYPE' --username=Administrator --password=$LDAPPASS | grep -c '$DNSENTRY'`
-		if [ "$ENTRYCOUNT" = 0 ]
+		#Make sure that the ip address or cname has not already been added.
+		ENTRYCOUNT2=`samba-tool dns query 127.0.0.1 $REALM $REALM ALL --username=Administrator --password=$LDAPPASS | grep -c '$DNSENTRY'`
+		if [ "$ENTRYCOUNT" = 0 ] && [ "$ENTRYCOUNT2" = 0 ]
 		then
 			echo `date`: dnsview - adding '$NAME' '$DNSENTRY' to the dns records by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
 			samba-tool dns add 127.0.0.1 $REALM '$NAME' '$DNSTYPE' '$DNSENTRY' --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE' 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
 		else
-			echo '$NAME' '$DNSENTRY'  - $"This entry already exists"
+			echo '$NAME' '$DNSENTRY'  - $"This entry already exists."
 			echo `date`: dnsview - '$NAME' '$DNSENTRY' - this entry already exists by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 			sleep 3
 			exit 101
@@ -369,7 +373,6 @@ fi
 
 if [ $ACTION = reallyedit ]
 then
-
 	CURRENTNAME=`echo $NAME | cut -d"-" -f1`
 	NEWNAME=`echo $NAME | cut -d"-" -f2`
 	CURRENTDNSENTRY=`echo $DNSENTRY | cut -d"-" -f1`
@@ -378,33 +381,43 @@ then
 
 	if [ $SERVERNAME = `hostname-fqdn` ]
 	then
+		#Check that this exact dns entry does not already exist
+		ENTRYCOUNT=`samba-tool dns query 127.0.0.1 $REALM $NEWNAME $DNSTYPE --username=Administrator --password=$LDAPPASS | grep -c $NEWDNSENTRY`
+		#Make sure that the ip address or cname has not already been added.
+		ENTRYCOUNT2=`samba-tool dns query 127.0.0.1 $REALM $REALM ALL --username=Administrator --password=$LDAPPASS | grep -c $DNSENTRY`
+		if [ "$ENTRYCOUNT" = 0 ] && [ "$ENTRYCOUNT2" = 0 ]
+		then
+			#Delete current entry
+			echo `date`: dnsview - deleting $CURRENTNAME $CURRENTDNSENTRY from the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			samba-tool dns delete 127.0.0.1 $REALM $CURRENTNAME $DNSTYPE $CURRENTDNSENTRY --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-		#Delete current entry
-		echo `date`: dnsview - deleting $CURRENTNAME $CURRENTDNSENTRY from the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-		samba-tool dns delete 127.0.0.1 $REALM $CURRENTNAME $DNSTYPE $CURRENTDNSENTRY --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			#Add revised entry to samba4 dns
 
-		#Add revised entry to samba4 dns
-
-		echo `date`: dnsview - adding $NEWNAME $NEWDNSENTRY to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-		samba-tool dns add 127.0.0.1 $REALM $NEWNAME $DNSTYPE $NEWDNSENTRY --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			echo `date`: dnsview - adding $NEWNAME $NEWDNSENTRY to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			samba-tool dns add 127.0.0.1 $REALM $NEWNAME $DNSTYPE $NEWDNSENTRY --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		fi
 
 	else
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-
 		LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 		source /opt/karoshi/server_network/domain_information/domain_name
+		#Check that this exact dns entry does not already exist
+		ENTRYCOUNT=`samba-tool dns query 127.0.0.1 $REALM '$NEWNAME' '$DNSTYPE' --username=Administrator --password=$LDAPPASS | grep -c '$NEWDNSENTRY'`
+		#Make sure that the ip address or cname has not already been added.
+		ENTRYCOUNT2=`samba-tool dns query 127.0.0.1 $REALM $REALM ALL --username=Administrator --password=$LDAPPASS | grep -c '$DNSENTRY'`
+		if [ "$ENTRYCOUNT" = 0 ] && [ "$ENTRYCOUNT2" = 0 ]
+		then
+			#Delete current entry
+			echo `date`: dnsview - deleting '$CURRENTNAME' '$CURRENTDNSENTRY' from the dns records by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+			samba-tool dns delete 127.0.0.1 $REALM '$CURRENTNAME' '$DNSTYPE' '$CURRENTDNSENTRY' --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE' 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
 
-		#Delete current entry
-		echo `date`: dnsview - deleting '$CURRENTNAME' '$CURRENTDNSENTRY' from the dns records by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-		samba-tool dns delete 127.0.0.1 $REALM '$CURRENTNAME' '$DNSTYPE' '$CURRENTDNSENTRY' --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE' 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+			#Add revised entry to samba4 dns
 
-		#Add revised entry to samba4 dns
-
-		echo `date`: dnsview - adding '$NEWNAME' '$NEWDNSENTRY' to the dns records by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-		samba-tool dns add 127.0.0.1 $REALM '$NEWNAME' '$DNSTYPE' '$NEWDNSENTRY' --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE' 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-
-		'
+			echo `date`: dnsview - adding '$NEWNAME' '$NEWDNSENTRY' to the dns records by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+			samba-tool dns add 127.0.0.1 $REALM '$NEWNAME' '$DNSTYPE' '$NEWDNSENTRY' --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE' 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
 		fi
+		'
+	fi
 fi
 exit
 

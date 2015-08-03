@@ -42,7 +42,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -75,7 +75,7 @@ function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 
 if [ $MOBILE = yes ]
 then
-echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
@@ -109,21 +109,21 @@ END_POINT=7
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-then
-let COUNTER=$COUNTER+1
-ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
-[ $ACTION'null' = null ] && ACTION=UPDATES
+[ -z "$ACTION" ] && ACTION=UPDATES
 
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox3
 TABLECLASS=standard
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
@@ -131,35 +131,35 @@ else
 DIV_ID=actionbox2
 TABLECLASS=mobilestandard
 fi
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show update list choice
 if [ $ACTION = ALL ]
 then
-UPDATELIST=updatelist_all.html
-ICON=/images/submenus/system/updates.png
-ACTION=UPDATES
-MESSAGE=$"Available updates"
+	UPDATELIST=updatelist_all.html
+	ICON=/images/submenus/system/updates.png
+	ACTION=UPDATES
+	MESSAGE=$"Available updates"
 else
-UPDATELIST=updatelist.html
-ICON=/images/submenus/system/updates_all.png
-ACTION=ALL
-MESSAGE=$"All updates"
+	UPDATELIST=updatelist.html
+	ICON=/images/submenus/system/updates_all.png
+	ACTION=ALL
+	MESSAGE=$"All updates"
 fi
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-MOBILEACTIONBOX=mobileactionbox2
-[ ! -f /opt/karoshi/updates/$UPDATELIST ] && MOBILEACTIONBOX=mobileactionbox
-echo '<div style="float: center" id="my_menu" class="sdmenu">
-	<div class="expanded">
-	<span>'$"Update Web Management"'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
-</div></div><div id="mobilecontent"><div id="'$MOBILEACTIONBOX'">'
+	MOBILEACTIONBOX=mobileactionbox2
+	[ ! -f /opt/karoshi/updates/$UPDATELIST ] && MOBILEACTIONBOX=mobileactionbox
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
+		<div class="expanded">
+		<span>'$"Update Web Management"'</span>
+	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
+	</div></div><div id="mobilecontent"><div id="'$MOBILEACTIONBOX'">'
 else
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
-<td style="vertical-align: top;"><div class="sectiontitle">'$"Update Web Management"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Linux_Schools_Server_System"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows any Linux Schools Server patches that are available."'</span></a></td></tr></tbody></table><br>'
+	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+	<td style="vertical-align: top;"><div class="sectiontitle">'$"Update Web Management"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Linux_Schools_Server_System"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows any Linux Schools Server patches that are available."'</span></a></td></tr></tbody></table><br>'
 fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
@@ -171,21 +171,21 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 <input name="" type="submit" class="button" value="'$"Refresh list"'">
 </form></td></tr></tbody></table>'
 
+[ $MOBILE = no ] && echo '</div><div id="infobox">'
+
 echo '<form action="/cgi-bin/admin/update_karoshi.cgi" name="selectservers" method="post">'
 
 if [ -f /opt/karoshi/updates/$UPDATELIST ]
 then
-if [ $MOBILE = yes ]
-then
-cat /opt/karoshi/updates/$UPDATELIST | sed 's/class="standard"/class="mobilestandard"/g'
-else
-cat /opt/karoshi/updates/$UPDATELIST
-fi
-else
-echo $"No updates are available."'<br>'
+	if [ $MOBILE = yes ]
+	then
+		cat /opt/karoshi/updates/$UPDATELIST | sed 's/class="standard"/class="mobilestandard"/g'
+	else
+		cat /opt/karoshi/updates/$UPDATELIST
+	fi
+	else
+	echo $"No updates are available."'<br>'
 fi
 
-echo '</form></div></div>'
-[ $MOBILE = yes ] && echo '</div>'
-echo '</body></html>'
+echo '</form></div></div></div></body></html>'
 exit

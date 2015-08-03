@@ -41,7 +41,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -92,84 +92,84 @@ END_POINT=17
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign SERVERTYPE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERTYPEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERTYPEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+	done
 
 #Assign ACTION
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-then
-let COUNTER=$COUNTER+1
-ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign NAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = NAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-NAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = NAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		NAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign DNSENTRY
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = DNSENTRYcheck ]
-then
-let COUNTER=$COUNTER+1
-DNSENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = DNSENTRYcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		DNSENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign DNSTYPE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = DNSTYPEcheck ]
-then
-let COUNTER=$COUNTER+1
-DNSTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = DNSTYPEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		DNSTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -197,25 +197,24 @@ exit
 }
 
 #Check to see that SERVERNAME is not blank
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-MESSAGE=$"The servername cannot be blank."
-show_status
+	MESSAGE=$"The servername cannot be blank."
+	show_status
 fi
 
 #Check to see that SERVERTYPE is not blank
-if [ $SERVERTYPE'null' = null ]
+if [ -z "$SERVERTYPE" ]
 then
-MESSAGE=$"The servertype cannot be blank."
-show_status
+	MESSAGE=$"The servertype cannot be blank."
+	show_status
 fi
 
 #Check to see that action is not blank.
-[ $ACTION'null' = null ] && ACTION=view
+[ -z "$ACTION" ] && ACTION=view
 
 #Check to see that linenumber is not blank.
-[ $LINENUMBER'null' = null ] && LINENUMBER=notset
-
+[ -z "$LINENUMBER" ] && LINENUMBER=notset
 
 #Check to see if we have a monitoring server
 MONITORSERVER=no
@@ -225,11 +224,11 @@ MONITORSERVER=no
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
+	DIV_ID=actionbox2
 fi
 
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
@@ -246,9 +245,9 @@ ACTION2=view
 
 if [ $ACTION = view ]
 then
-ALTTITLE=$"Add DNS Entry"
-ACTION2=add
-ICON=/images/submenus/system/dnsaddm.png
+	ALTTITLE=$"Add DNS Entry"
+	ACTION2=add
+	ICON=/images/submenus/system/dnsaddm.png
 fi
 
 SERVERNAME2=`echo "${SERVERNAME:0:9}" | cut -d. -f1`
@@ -256,8 +255,7 @@ SERVERNAME2=`echo "${SERVERNAME:0:9}" | cut -d. -f1`
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"View DNS Entries"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
@@ -268,7 +266,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <br>
 '
 else
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tr><td style="vertical-align: top;"><div class="sectiontitle">'$TITLE' - '$SERVERNAME2'</div></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to view, edit, and delete the local dns entries on your system."'</span></a></td><td style="vertical-align: top;">
 <form action="/cgi-bin/admin/dnsview.cgi" method="post">
 <input name="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_ACTION_'$ACTION2'_" type="submit" class="button" value="'$ALTTITLE'">
@@ -283,12 +281,9 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$ACTION:$NAME:$D
 
 if [ $ACTION = reallyedit ] || [ $ACTION = delete ] || [ $ACTION = reallyadd ]
 then
-show_dns
+	show_dns
 fi
 
-echo '</div>
-</div></body>
-</html>
-'
+echo '</div></div></div></body></html>'
 exit
 

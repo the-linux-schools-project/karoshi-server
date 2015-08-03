@@ -161,9 +161,6 @@ chmod 0644 /etc/postfix/ldap.cf
 sed -i 's/CHANGETHISDN/'$LDAPBASE'/g' /etc/postfix/ldap.cf
 sed -i 's/CHANGETHISLDAPSERVER/'$LDAPSERVER'/g' /etc/postfix/ldap.cf
 
-sed -i 's/CHANGETHISDN/'$LDAPBASE'/g' /etc/postfix/ldap-mail.cf
-sed -i 's/CHANGETHISLDAPSERVER/'$LDAPSERVER'/g' /etc/postfix/ldap-mail.cf
-
 ########################
 #Setup dovecot
 ########################
@@ -471,7 +468,11 @@ APACHESTATUS=`ps -e | grep -c $APACHEVER`
 #Create access file
 touch /etc/postfix/access
 postmap hash:/etc/postfix/access
+
 cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/email/postfix/ldap-mail.cf /etc/postfix/
+sed -i 's/CHANGETHISDN/'$LDAPBASE'/g' /etc/postfix/ldap-mail.cf
+sed -i 's/CHANGETHISLDAPSERVER/'$LDAPSERVER'/g' /etc/postfix/ldap-mail.cf
+
 echo "@$REALM root" > /etc/postfix/catchall
 postmap /etc/postfix/catchall
 
