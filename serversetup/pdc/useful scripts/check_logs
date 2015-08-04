@@ -18,7 +18,7 @@ fi
 
 for SERVERNAME in `ls /opt/karoshi/server_network/servers/`
 do
-	echo `date`: check_logs "$SERVERNAME" - checking syslog >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	#echo `date`: check_logs "$SERVERNAME" - checking syslog >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	FAIL_LIST=""
 	if [ $SERVERNAME = `hostname-fqdn` ]
 	then

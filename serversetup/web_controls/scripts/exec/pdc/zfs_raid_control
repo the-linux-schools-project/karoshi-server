@@ -64,6 +64,7 @@ REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
 SERVERTYPE=`echo "$DATA" | cut -s -d: -f5`
 SERVERMASTER=`echo "$DATA" | cut -s -d: -f6`
+MOBILE=`echo "$DATA" | cut -s -d: -f7`
 ########################
 #Check data
 ########################
@@ -107,6 +108,15 @@ if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
 	echo `date`: zfs_raid_control - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
+fi
+
+[ -z "$MOBILE" ] && MOBILE=no
+
+if [ $MOBILE = no ]
+then
+	WIDTH1=250
+else
+	WIDTH1=150
 fi
 
 ##########################
@@ -205,19 +215,19 @@ get_drive_info
 #Show drive information
 if [ $DRIVE_STATUS = ok ]
 then
-echo '<tr><td style="width: 250px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$DISKICON'"><span>'$DRIVE' - '$DISKSIZE'</span></a> '$"Available Drive"'</td><td style="width: 260px;">'$MAKER $DRIVE_SN'</td><td>'
+	echo '<tr><td style="width: '$WIDTH1'px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$DISKICON'"><span>'$DRIVE' - '$DISKSIZE'</span></a> '$"Available Drive"'</td><td style="width: 260px;">'$MAKER $DRIVE_SN'</td><td>'
 #Create list of drives in array to replace
-echo '<select name="select"><option value="_POOL_'$POOLNAME'_ACTION_addspare_DRIVE_'$DRIVE'_DRIVE2_notset_">'$"Add spare"'</option>'
+	echo '<select name="select"><option value="_POOL_'$POOLNAME'_ACTION_addspare_DRIVE_'$DRIVE'_DRIVE2_notset_">'$"Add spare"'</option>'
 
-for RAIDDISK in $ZPOOLDRIVES
-do
+	for RAIDDISK in $ZPOOLDRIVES
+	do
 	#RAIDDISK=`echo /dev/$RAIDDISK`
 	echo '<option value="_POOL_'$POOLNAME'_ACTION_replace_DRIVE_'$DRIVE'_DRIVE2_'$RAIDDISK'_">'$"Replace"' - '$RAIDDISK'</option>'
 done
 
 echo '</select></td><td><a class="info" href="javascript:void(0)"><input name="submit" type="image" class="images" src="'$ICON1'" value=""><span>'$"Add this disk to a raid."'</span></a></td></tr>'
 else
-echo "<tr><td style=\"width: 250px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td></tr>"
+echo "<tr><td style=\"width: '$WIDTH1'px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td></tr>"
 fi
 fi
 let COUNTER=$COUNTER+1
@@ -250,7 +260,7 @@ RAID_TYPE=`zpool status $POOLNAME | grep raidz | tr -cd "A-Za-z0-9- " | sed "s/^
 
 echo '<b>'$"Raid Information"'</b><br><br>
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 250px;">'$"Raid Name"'</td><td>'$POOLNAME'</td></tr>
+<tr><td style="width: '$WIDTH1'px;">'$"Raid Name"'</td><td>'$POOLNAME'</td></tr>
 <tr><td>'$"Raid Type"'</td><td>'$RAID_TYPE'</td></tr>
 <tr><td>'$"Raid Size"'</td><td>'$RAID_SIZE'</td></tr>
 <tr><td>'$"Raid State"'</td><td>'$RAID_STATE'</td></tr>
@@ -377,7 +387,7 @@ get_drive_info
 #Show drive information
 if [ $DRIVE_STATUS = ok ]
 then
-echo "<tr><td style=\"width: 250px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a> '$"Available Drive"'</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>"
+echo "<tr><td style=\"width: '$WIDTH1'px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a> '$"Available Drive"'</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>"
 #Create list of drives in array to replace
 echo "<select name=\"select\"><option value=\"_POOL_$POOLNAME"_"ACTION_addspare_DRIVE_$DRIVE"_"DRIVE2_notset_\">'$"Add spare"'</option>"
 
@@ -389,7 +399,7 @@ done
 
 echo "</select></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"submit\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$"Add this disk to a raid."'</span></a></td></tr>"
 else
-echo "<tr><td style=\"width: 250px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td></tr>"
+echo "<tr><td style=\"width: '$WIDTH1'px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td></tr>"
 fi
 fi
 let COUNTER=$COUNTER+1
@@ -424,7 +434,7 @@ RAID_TYPE=`zpool status $POOLNAME | grep raidz | tr -cd "A-Za-z0-9- " | sed "s/^
 
 echo "<b>'$"Raid Information"'</b><br><br>
 <table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 250px;\">'$"Raid Name"'</td><td>$POOLNAME</td></tr>
+<tr><td style=\"width: '$WIDTH1'px;\">'$"Raid Name"'</td><td>$POOLNAME</td></tr>
 <tr><td>'$"Raid Type"'</td><td>$RAID_TYPE</td></tr>
 <tr><td>'$"Raid Size"'</td><td>$RAID_SIZE</td></tr>
 <tr><td>'$"Raid State"'</td><td>$RAID_STATE</td></tr>

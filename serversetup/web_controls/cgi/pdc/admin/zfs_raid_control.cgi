@@ -23,12 +23,11 @@
 
 #
 #Website: http://www.karoshi.org.uk
-########################
-#Required input variables
-########################
-#  _SERVER_
-#  _PASSWORD1_  Root Password
-#  _PASSWORD2_  Checked against PASSWORD1 for typos.
+
+#Detect mobile browser
+MOBILE=no
+source /opt/karoshi/web_controls/detect_mobile_browser
+
 ############################
 #Language
 ############################
@@ -50,7 +49,30 @@ exit
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"ZFS Status"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"ZFS Status"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+
+if [ $MOBILE = yes ]
+then
+echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+		/***********************************************
+		* Slashdot Menu script- By DimX
+		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
+		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+		***********************************************/
+	</script>
+	<script type="text/javascript">
+	// <![CDATA[
+	var myMenu;
+	window.onload = function() {
+		myMenu = new SDMenu("my_menu");
+		myMenu.init();
+	};
+	// ]]>
+	</script>'
+fi
+
+echo '</head><body><div id="pagecontainer">'
 
 #########################
 #Get data input
@@ -154,28 +176,26 @@ then
 	fi
 fi
 
-MOBILE=no
-source /opt/karoshi/web_controls/detect_mobile_browser
-
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
 	DIV_ID=actionbox3
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
+	echo '<div id="'$DIV_ID'"><div id="titlebox">'
 else
 	DIV_ID=menubox
 fi
 
-echo '<div id="'$DIV_ID'"><div id="titlebox">'
-
-
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-	<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"'"></a></td>
-	<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"ZFS Status" - $SERVERNAME'</b></a></td></tr></tbody></table>'
+	SHORTSERVERNAME=`echo $SERVERNAME | cut -d. -f1`
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
+	<div class="expanded">
+	<span>'$"ZFS Status"' - '$SHORTSERVERNAME'</span>
+<a href="/cgi-bin/admin/zfs_raid_control_fm.cgi">'$"Select Server"'</a>
+</div></div><div id="mobileactionbox">'
 else
 	echo '
 	<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
@@ -188,7 +208,9 @@ fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/zfs_raid_control.cgi | cut -d' ' -f1`
 echo '<form action="/cgi-bin/admin/zfs_raid_control2.cgi" name="selectservers" method="post">'
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:" | sudo -H /opt/karoshi/web_controls/exec/zfs_raid_control
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/zfs_raid_control
 
-echo "</form></div></div></div></body></html>"
+echo '</form></div></div>'
+[ $MOBILE = no ] && echo '</div>'
+echo '</body></html>'
 exit
