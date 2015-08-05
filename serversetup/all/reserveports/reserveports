@@ -6,8 +6,8 @@ do
 	for portdata in `cat /etc/reserveports/$service`
 	do
 		port=`echo "$portdata" | cut -d, -f1`
-		type=`echo "$portdata" | cut -d, -f2`
-		nc -"$type"lk "$port" </dev/null >/dev/null 2>/dev/null &
+		options=`echo "$portdata" | cut -d, -f2`
+		nc -"$options" "$port" </dev/null >/dev/null 2>/dev/null &
 	done
 done
 exit

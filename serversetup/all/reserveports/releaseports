@@ -17,8 +17,8 @@ fi
 for portdata in `cat /etc/reserveports/$service`
 do
 	port=`echo "$portdata" | cut -d, -f1`
-	type=`echo "$portdata" | cut -d, -f2`
-	processes=`ps aux | grep -w "nc" | grep "$port" | grep "\-$type" | sed 's/ * /,/g' | cut -d, -f2`
+	options=`echo "$portdata" | cut -d, -f2`
+	processes=`ps aux | grep -w "nc" | grep "$port" | grep "\-$options" | sed 's/ * /,/g' | cut -d, -f2`
 	for process in $processes
 	do
 		kill $process

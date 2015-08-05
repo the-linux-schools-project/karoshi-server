@@ -78,7 +78,6 @@ then
 	#Create empty folder to mount to 
 	[ ! -d "$MOUNTBASE"/"$VOLUME" ] && mkdir -p "$MOUNTBASE"/"$VOLUME"
 
-
 	#Add entry to fstab
 	if [ `grep -c ^#glusterfs-$VOLUME /etc/fstab` = 0 ]
 	then
@@ -222,7 +221,6 @@ do
 				exit 101
 			fi
 		done
-		echo main server is $MAINSERVER new server is $NEWSERVER server is $SERVER
 		echo `date`: "karoshi_gluster peer probe $NEWSERVER - $MAINSERVER" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $NEWSERVER '
 		gluster peer probe '"$MAINSERVER"'
@@ -582,6 +580,5 @@ then
 	fi
 	mount_volume
 fi
-
 exit
 
