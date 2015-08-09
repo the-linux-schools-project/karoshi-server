@@ -74,8 +74,8 @@ MOBILE=`echo "$DATA" | cut -s -d: -f8`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: shutdown - Not called by shutdown.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: shutdown - Not called by shutdown.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
@@ -158,111 +158,111 @@ source /opt/karoshi/server_network/domain_information/domain_name
 #Shutdown this server
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="vertical-align: top; width: 180px; height: 30px;"><b>'$"Server"'</b></td><td style="vertical-align: top;"><b>'$"Shutdown/Reboot"'</b></td></tr>
-<tr><td style="vertical-align: top; width: 180px; height: 30px;">'$HOSTNAME'.'$REALM'</td>
-<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON1'"><span>'$"Shutdown/Reboot"2'</span></a></td></tr>
-</tbody></table>'
-sleep 1
-shutdown $SHUTDOWN_OPTION now 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE &
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	<tr><td style="vertical-align: top; width: 180px; height: 30px;"><b>'$"Server"'</b></td><td style="vertical-align: top;"><b>'$"Shutdown/Reboot"'</b></td></tr>
+	<tr><td style="vertical-align: top; width: 180px; height: 30px;">'`hostname-fqdn`'</td>
+	<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON1'"><span>'$"Shutdown/Reboot"2'</span></a></td></tr>
+	</tbody></table>'
+	sleep 1
+	shutdown $SHUTDOWN_OPTION now 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE &
 fi
 
 #Shutdown other server
 if [ $SERVERNAME != `hostname-fqdn` ] && [ $SERVERNAME != allservers ]
 then
-if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
-then
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="vertical-align: top; width: 180px; height: 30px;"><b>'$"Server"'</b></td><td style="vertical-align: top;"><b>'$"Shutdown/Reboot"'</b></td></tr>
-<tr><td style="vertical-align: top; width: 180px; height: 30px;">'$SERVERNAME'</td>
-<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON1'"><span>'$"Shutdown/Reboot"2'</span></a></td></tr>
-</tbody></table>
-'
-ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: shutdown \(federated mode\) '$SHUTDOWN_OPTION' '$SERVERNAME' - by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-shutdown '$SHUTDOWN_OPTION' now &
-' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-fi
-#Shutdown federated slave server
-if [ $SERVERTYPE = federatedslave ]
-then
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="vertical-align: top; width: 180px; height: 30px;"><b>'$"Server"'</b></td><td style="vertical-align: top;"><b>'$"Shutdown/Reboot"'</b></td></tr>
-<tr><td style="vertical-align: top; width: 180px; height: 30px;">'$SERVERNAME'</td>
-<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON1'"><span>'$"Shutdown/Reboot"2'</span></a></td></tr>
-</tbody></table
-'
-ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3  $SERVERMASTER '
-echo `date`: shutdown \(federated mode\) '$SHUTDOWN_OPTION' '$SERVERNAME' - by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
-shutdown '$SHUTDOWN_OPTION' now &
-'\''
-'
-fi
+	if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
+	then
+		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+		<tr><td style="vertical-align: top; width: 180px; height: 30px;"><b>'$"Server"'</b></td><td style="vertical-align: top;"><b>'$"Shutdown/Reboot"'</b></td></tr>
+		<tr><td style="vertical-align: top; width: 180px; height: 30px;">'$SERVERNAME'</td>
+		<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON1'"><span>'$"Shutdown/Reboot"2'</span></a></td></tr>
+		</tbody></table>
+		'
+		ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+		[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: shutdown \(federated mode\) '$SHUTDOWN_OPTION' '$SERVERNAME' - by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+		shutdown '$SHUTDOWN_OPTION' now &
+		' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	fi
+	#Shutdown federated slave server
+	if [ $SERVERTYPE = federatedslave ]
+	then
+		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+		<tr><td style="vertical-align: top; width: 180px; height: 30px;"><b>'$"Server"'</b></td><td style="vertical-align: top;"><b>'$"Shutdown/Reboot"'</b></td></tr>
+		<tr><td style="vertical-align: top; width: 180px; height: 30px;">'$SERVERNAME'</td>
+		<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON1'"><span>'$"Shutdown/Reboot"2'</span></a></td></tr>
+		</tbody></table
+		'
+		ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3  $SERVERMASTER '
+		echo `date`: shutdown \(federated mode\) '$SHUTDOWN_OPTION' '$SERVERNAME' - by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+		ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
+		shutdown '$SHUTDOWN_OPTION' now &
+		'\''
+		'
+	fi
 fi
 
 #Shutdown all servers
 if [ $SERVERNAME = allservers ]
 then
-SERVERCOUNTER=0
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="vertical-align: top; width: 180px; height: 30px;"><b>'$"Server"'</b></td><td style="vertical-align: top;"><b>'$"Shutdown/Reboot"'</b></td></tr>'
-if [ `ls -1 /opt/karoshi/server_network/servers  | wc -l` -gt 0 ]
-then
-for KAROSHISERVER in /opt/karoshi/server_network/servers/*
-do
-KAROSHISERVER=`basename $KAROSHISERVER`
-if [ $KAROSHISERVER != `hostname-fqdn` ]
-then
-let SERVERCOUNTER=$SERVERCOUNTER+1
-echo '<tr><td style="vertical-align: top; width: 180px; height: 30px;">'$KAROSHISERVER'</td>
-<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON1'" /><span>'$"Shutdown/Reboot"2'</span></a></td></tr>'
-ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $KAROSHISERVER 'shutdown '$SHUTDOWN_OPTION' now &' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-fi
-done
-fi
+	SERVERCOUNTER=0
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	<tr><td style="vertical-align: top; width: 180px; height: 30px;"><b>'$"Server"'</b></td><td style="vertical-align: top;"><b>'$"Shutdown/Reboot"'</b></td></tr>'
+	if [ `ls -1 /opt/karoshi/server_network/servers  | wc -l` -gt 0 ]
+	then
+		for KAROSHISERVER in /opt/karoshi/server_network/servers/*
+		do
+			KAROSHISERVER=`basename $KAROSHISERVER`
+			if [ $KAROSHISERVER != `hostname-fqdn` ]
+			then
+				let SERVERCOUNTER=$SERVERCOUNTER+1
+				echo '<tr><td style="vertical-align: top; width: 180px; height: 30px;">'$KAROSHISERVER'</td>
+				<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON1'" /><span>'$"Shutdown/Reboot"2'</span></a></td></tr>'
+				ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $KAROSHISERVER 'shutdown '$SHUTDOWN_OPTION' now &' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			fi
+		done
+	fi
 
-if [ -d /opt/karoshi/server_network/federated_ldap_servers ]
-then
-if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
-then
-for FEDERATED_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
-do
-FEDERATED_SERVER=`basename $FEDERATED_SERVERS`
-for FEDERATED_SLAVE_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/*
-do
-#Shutdown all federated slave servers
-FEDERATED_SLAVE_SERVER=`basename $FEDERATED_SLAVE_SERVERS`
-if [ $FEDERATED_SLAVE_SERVER != $FEDERATED_SERVER ]
-then
-let SERVERCOUNTER=$SERVERCOUNTER+1
-echo '<tr><td style="vertical-align: top; width: 180px; height: 30px;">'$FEDERATED_SLAVE_SERVER'</td>
-<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON1'"><span>'$"Shutdown/Reboot"'</span></a></td></tr>'
-ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 root@$FEDERATED_SERVER '
-echo `date`: shutdown \(federated mode\) '$SHUTDOWN_OPTION' '$SERVERNAME' - by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 '$FEDERATED_SLAVE_SERVER' '\''
-shutdown '$SHUTDOWN_OPTION' now &
-'\''
-'
-fi
-done
-#Shutdown all federated servers
-let SERVERCOUNTER=$SERVERCOUNTER+1
-echo '<tr><td style="vertical-align: top; width: 180px; height: 30px;">'$FEDERATED_SERVER'</td>
-<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON1'"><span>'$"Shutdown/Reboot"'</span></a></td></tr>'
-ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $FEDERATED_SERVER 'shutdown '$SHUTDOWN_OPTION' now &' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-done
-fi
-fi
+	if [ -d /opt/karoshi/server_network/federated_ldap_servers ]
+	then
+		if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
+		then
+			for FEDERATED_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
+			do
+				FEDERATED_SERVER=`basename $FEDERATED_SERVERS`
+				for FEDERATED_SLAVE_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/*
+				do
+					#Shutdown all federated slave servers
+					FEDERATED_SLAVE_SERVER=`basename $FEDERATED_SLAVE_SERVERS`
+					if [ $FEDERATED_SLAVE_SERVER != $FEDERATED_SERVER ]
+					then
+						let SERVERCOUNTER=$SERVERCOUNTER+1
+						echo '<tr><td style="vertical-align: top; width: 180px; height: 30px;">'$FEDERATED_SLAVE_SERVER'</td>
+						<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON1'"><span>'$"Shutdown/Reboot"'</span></a></td></tr>'
+						ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 root@$FEDERATED_SERVER '
+						echo `date`: shutdown \(federated mode\) '$SHUTDOWN_OPTION' '$SERVERNAME' - by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+						ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 '$FEDERATED_SLAVE_SERVER' '\''
+						shutdown '$SHUTDOWN_OPTION' now &
+						'\''
+						'
+					fi
+				done
+				#Shutdown all federated servers
+				let SERVERCOUNTER=$SERVERCOUNTER+1
+				echo '<tr><td style="vertical-align: top; width: 180px; height: 30px;">'$FEDERATED_SERVER'</td>
+				<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON1'"><span>'$"Shutdown/Reboot"'</span></a></td></tr>'
+				ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $FEDERATED_SERVER 'shutdown '$SHUTDOWN_OPTION' now &' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			done
+		fi
+	fi
 
-#Wait if other servers are shutting down first
-if [ $SERVERCOUNTER -gt 0 ]
-then
-sleep 8
-fi
-echo '<tr><td style="vertical-align: top; width: 180px; height: 30px;">'$HOSTNAME'</td>
-<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON1'" /><span>'$"Shutdown/Reboot"'</span></a></td></tr></tbody></table>' 
-shutdown $SHUTDOWN_OPTION now 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE &
+	#Wait if other servers are shutting down first
+	if [ $SERVERCOUNTER -gt 0 ]
+	then
+		sleep 8
+	fi
+	echo '<tr><td style="vertical-align: top; width: 180px; height: 30px;">'$HOSTNAME'</td>
+	<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON1'" /><span>'$"Shutdown/Reboot"'</span></a></td></tr></tbody></table>' 
+	shutdown $SHUTDOWN_OPTION now 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE &
 fi
 exit
 

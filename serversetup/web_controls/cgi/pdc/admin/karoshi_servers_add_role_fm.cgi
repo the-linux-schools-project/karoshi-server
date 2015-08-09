@@ -255,9 +255,16 @@ fi
 
 if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
 then
-	echo '<tr><td style="vertical-align: top; height: 40px;">'$"Kanboard"'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_kanboard_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup Kanboard which is a web based project management system."'</span></a></form></td></tr>'
+	echo '<tr><td style="vertical-align: top; height: 40px;">'$"Kanboard"'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_kanboard_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup Kanboard which is a web based project management system."'</span></a></form></td>'
 else
-	echo '<td style="vertical-align: top; height: 40px;">'$"Kanboard"'</td><td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup Kanboard which is a web based project management system."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span></a></td></tr>'
+	echo '<tr><td style="vertical-align: top; height: 40px;">'$"Kanboard"'</td><td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup Kanboard which is a web based project management system."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span></a></td>'
+fi
+
+if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
+then
+	echo '<td style="vertical-align: top; height: 40px;">'$"Xerte"'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_xerte_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup the Xerte E-Learning development environment for your users."'</span></a></form></td></tr>'
+else
+	echo '<td style="vertical-align: top; height: 40px;">'$"Xerte"'</td><td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup the Xerte E-Learning development environment for your users."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span></a></td></tr>'
 fi
 
 #if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]

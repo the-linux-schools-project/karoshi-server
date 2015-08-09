@@ -490,7 +490,7 @@ if [ $AUTHENTICATION = adc ] || [ $AUTHENTICATION = rodc ]
 then
 	if [ $ZONE = internal ] || [ $ZONE = dmz ]
 	then
-		#Create gluster volume
+		#Create gluster volume for dc-data
 		if [ ! -d /opt/karoshi/server_network/gluster-volumes/dc-data/ ]
 		then
 			#Volume does not exist so create one

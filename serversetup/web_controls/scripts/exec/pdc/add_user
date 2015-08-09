@@ -308,9 +308,9 @@ CREATE_USER_STATUS=`echo $?`
 #Allow new user to join clients to the domain if they are a member of the itadmin or tech groups
 if [ $PRIMARYGROUP = itadmin ] || [ $PRIMARYGROUP = tech ]
 then
-echo `date`: add_user - allowing $NEWUSERNAME to "join" clients to the domain by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-net rpc rights grant -U $NEWUSERNAME%$NEWUSERPASSWORD "$SAMBADOMAIN\Domain Admins" SeMachineAccountPrivilege \
-SePrintOperatorPrivilege SeAddUsersPrivilege SeDiskOperatorPrivilege SeRemoteShutdownPrivilege 1>/dev/null
+	echo `date`: add_user - allowing $NEWUSERNAME to "join" clients to the domain by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	net rpc rights grant -U $NEWUSERNAME%$NEWUSERPASSWORD "$SAMBADOMAIN\Domain Admins" SeMachineAccountPrivilege \
+	SePrintOperatorPrivilege SeAddUsersPrivilege SeDiskOperatorPrivilege SeRemoteShutdownPrivilege 1>/dev/null
 fi
 
 ##########################
@@ -339,15 +339,13 @@ USERID=`getent passwd $NEWUSERNAME | cut -d: -f3`
 
 if [ $SERVER = `hostname-fqdn` ] || [ `echo $SERVER | cut -d. -f2-` = `hostname-fqdn` ]
 then
-######################
-#Create home folder
-######################
+	#Create home folder
 
-[ ! -d $HOMEPATH/$NEWUSERNAME/ ] && mkdir -p $HOMEPATH/$NEWUSERNAME/
-chown -R $NEWUSERNAME:root $HOMEPATH/$NEWUSERNAME/
-chmod -R 0600 $HOMEPATH/$NEWUSERNAME/
-setfacl -m u::rwx,g::---,o::---,m::r-x $HOMEPATH/$NEWUSERNAME/
-[ `echo $HOMEPATH | grep -c students` -gt 0 ] && setfacl -Rm group:staff:r-x,d:group:staff:r-x $HOMEPATH/$NEWUSERNAME/
+	[ ! -d $HOMEPATH/$NEWUSERNAME/ ] && mkdir -p $HOMEPATH/$NEWUSERNAME/
+	chown -R $NEWUSERNAME:root $HOMEPATH/$NEWUSERNAME/
+	chmod -R 0600 $HOMEPATH/$NEWUSERNAME/
+	setfacl -m u::rwx,g::---,o::---,m::r-x $HOMEPATH/$NEWUSERNAME/
+	[ `echo $HOMEPATH | grep -c students` -gt 0 ] && setfacl -Rm group:staff:r-x,d:group:staff:r-x $HOMEPATH/$NEWUSERNAME/
 fi
 
 #Add dfs path
@@ -373,21 +371,21 @@ fi
 ############################
 if [ $SERVER != `hostname-fqdn` ] && [ `echo $SERVER | cut -d. -f2-` != `hostname-fqdn` ]
 then
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-[ ! -d '$HOMEPATH''/''$NEWUSERNAME' ] && mkdir -p '$HOMEPATH''/''$NEWUSERNAME'
-chown -R '$USERID':root '$HOMEPATH''/''$NEWUSERNAME'
-chmod -R 0600 '$HOMEPATH''/''$NEWUSERNAME'
-[ `echo '$HOMEPATH' | grep -c students` -gt 0 ] && setfacl -Rm group:staff:r-x,d:group:staff:r-x '$HOMEPATH'/'$NEWUSERNAME'/
-setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+	[ ! -d '$HOMEPATH''/''$NEWUSERNAME' ] && mkdir -p '$HOMEPATH''/''$NEWUSERNAME'
+	chown -R '$USERID':root '$HOMEPATH''/''$NEWUSERNAME'
+	chmod -R 0600 '$HOMEPATH''/''$NEWUSERNAME'
+	[ `echo '$HOMEPATH' | grep -c students` -gt 0 ] && setfacl -Rm group:staff:r-x,d:group:staff:r-x '$HOMEPATH'/'$NEWUSERNAME'/
+	setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
 '
 SSHSTATUS=$?
-if [ $SSHSTATUS != 0 ]
-then
-echo `date`: add_user - $NEWUSERNAME ssh failure on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $SERVER,fileserver >> /opt/karoshi/server_network/offline_servers/add_users/$NEWUSERNAME
-FAILED_SERVER=yes
-FAILEDSERVERLIST=$FAILEDSERVERLIST,$SERVER
-fi
+	if [ $SSHSTATUS != 0 ]
+	then
+		echo `date`: add_user - $NEWUSERNAME ssh failure on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo $SERVER,fileserver >> /opt/karoshi/server_network/offline_servers/add_users/$NEWUSERNAME
+		FAILED_SERVER=yes
+		FAILEDSERVERLIST=$FAILEDSERVERLIST,$SERVER
+	fi
 fi
 
 ###########################
@@ -618,116 +616,117 @@ done
 fi
 
 #Delete request file if this user has been requested by a member of staff
-if [ $REQUESTFILE'null' != null ]
+if [ ! -z "$REQUESTFILE" ]
 then
-if [ -f /opt/karoshi/user_requests/new_users/$REQUESTFILE ]
-then
-rm -f /opt/karoshi/user_requests/new_users/$REQUESTFILE
-NEWUSERCOUNT=`ls -1 /opt/karoshi/user_requests/new_users/ | wc -l`
-if [ $NEWUSERCOUNT = 0 ]
-then
-#Update warnings
-/opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete request_new_users
-fi
-fi
-fi
-if [ $GRACE_TIME = yes ]
-then
-#Generate page warning
-/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add acceptable_use_authorisations /cgi-bin/admin/acceptable_use.cgi $"Users have yet to sign an acceptable use policy." 1
+	if [ -f /opt/karoshi/user_requests/new_users/$REQUESTFILE ]
+	then
+		rm -f /opt/karoshi/user_requests/new_users/$REQUESTFILE
+		NEWUSERCOUNT=`ls -1 /opt/karoshi/user_requests/new_users/ | wc -l`
+		if [ $NEWUSERCOUNT = 0 ]
+		then
+			#Update warnings
+			/opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete request_new_users
+		fi
+	fi
 fi
 
-if [ $BULKUSERCREATION'null' != null ]
+if [ $GRACE_TIME = yes ]
 then
-if [ ! -d /opt/karoshi/bulk_user_creation/$PRIMARYGROUP ]
-then
-mkdir -p /opt/karoshi/bulk_user_creation/$PRIMARYGROUP
-chmod 0700 /opt/karoshi/bulk_user_creation/$PRIMARYGROUP
+	#Generate page warning
+	/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add acceptable_use_authorisations /cgi-bin/admin/acceptable_use.cgi $"Users have yet to sign an acceptable use policy." 1
 fi
-echo >> /opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt
-echo $FIRSTNAME $SURNAME >> /opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt
-echo Username: $NEWUSERNAME Password: $NEWUSERPASSWORD >> /opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt
-echo >> /opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt
-echo ----------------------------------------------------- >> /opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt
+
+if [ ! -z "$BULKUSERCREATION" ]
+then
+	if [ ! -d /opt/karoshi/bulk_user_creation/$PRIMARYGROUP ]
+	then
+		mkdir -p /opt/karoshi/bulk_user_creation/$PRIMARYGROUP
+		chmod 0700 /opt/karoshi/bulk_user_creation/$PRIMARYGROUP
+	fi
+	echo >> /opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt
+	echo $FIRSTNAME $SURNAME >> /opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt
+	echo Username: $NEWUSERNAME Password: $NEWUSERPASSWORD >> /opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt
+	echo >> /opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt
+	echo ----------------------------------------------------- >> /opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt
 fi
 
 #Show servers that are offline
 
 if [ $FAILED_SERVER = yes ]
 then
-FAILEDSERVERLIST=`echo $FAILEDSERVERLIST | sed 's/^,//g' | sed 's/,/, /g'`
-MESSAGE="The following servers were not online:\n\n$FAILEDSERVERLIST\n\nThe system will automatically attempt to repair this problem at 6.00 am every morning."
-echo '<script type="text/javascript">'
-echo 'alert("'$MESSAGE'");'
-echo '</script>'
-echo "</body></html>"
+	FAILEDSERVERLIST=`echo $FAILEDSERVERLIST | sed 's/^,//g' | sed 's/,/, /g'`
+	MESSAGE="The following servers were not online:\n\n$FAILEDSERVERLIST\n\nThe system will automatically attempt to repair this problem at 6.00 am every morning."
+	echo '<script type="text/javascript">'
+	echo 'alert("'$MESSAGE'");'
+	echo '</script>'
+	echo "</body></html>"
 fi
 
 #Ban email use if needed
 if [ -f /opt/karoshi/server_network/email_restrictions/$PRIMARYGROUP ]
 then
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$NEWUSERNAME:$PRIMARYGROUP:deny:" | sudo -H /opt/karoshi/web_controls/exec/email_access
+	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1`
+	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$NEWUSERNAME:$PRIMARYGROUP:deny:" | sudo -H /opt/karoshi/web_controls/exec/email_access
 fi
 
 #Add in windows profile support
 if [ ! -d /home/applications/profiles/$PRIMARYGROUP ]
 then
-if [ -d /home/applications/profiles/defaultprofile ]
-then
-echo $PRIMARYGROUP - $"Creating an XP profile""<br>"
-cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/$PRIMARYGROUP
-chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP
-chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP
-chmod u+X,g+X,o+X -R /home/applications/profiles/$PRIMARYGROUP
-fi
+	if [ -d /home/applications/profiles/defaultprofile ]
+	then
+		echo $PRIMARYGROUP - $"Creating an XP profile""<br>"
+		cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/$PRIMARYGROUP
+		chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP
+		chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP
+		chmod u+X,g+X,o+X -R /home/applications/profiles/$PRIMARYGROUP
+	fi
 fi
 
 if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V2 ]
 then
-if [ -d /home/applications/profiles/defaultprofile.V2 ]
-then
-echo $PRIMARYGROUP - $"Creating a Windows 7 profile""<br>"
-cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/$PRIMARYGROUP.V2
-chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V2
-chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V2
-chmod u+X,g+X,o+X -R /home/applications/profiles/$PRIMARYGROUP.V2
-fi
+	if [ -d /home/applications/profiles/defaultprofile.V2 ]
+	then
+		echo $PRIMARYGROUP - $"Creating a Windows 7 profile""<br>"
+		cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/$PRIMARYGROUP.V2
+		chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V2
+		chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V2
+		chmod u+X,g+X,o+X -R /home/applications/profiles/$PRIMARYGROUP.V2
+	fi
 fi
 
 if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V3 ]
 then
-if [ -d /home/applications/profiles/defaultprofile.V3 ]
-then
-echo $PRIMARYGROUP - $"Creating a Windows 8.0 profile""<br>"
-cp -f -R /home/applications/profiles/defaultprofile.V3 /home/applications/profiles/$PRIMARYGROUP.V3
-chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V3
-chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V3
-chmod u+X,g+X,o+X -R /home/applications/profiles/$PRIMARYGROUP.V3
-fi
+	if [ -d /home/applications/profiles/defaultprofile.V3 ]
+	then
+		echo $PRIMARYGROUP - $"Creating a Windows 8.0 profile""<br>"
+		cp -f -R /home/applications/profiles/defaultprofile.V3 /home/applications/profiles/$PRIMARYGROUP.V3
+		chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V3
+		chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V3
+		chmod u+X,g+X,o+X -R /home/applications/profiles/$PRIMARYGROUP.V3
+	fi
 fi
 
 if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V4 ]
 then
-if [ -d /home/applications/profiles/defaultprofile.V4 ]
-then
-echo $PRIMARYGROUP - $"Creating a Windows 8.1 profile""<br>"
-cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/$PRIMARYGROUP.V4
-chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V4
-chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V4
-chmod u+X,g+X,o+X -R /home/applications/profiles/$PRIMARYGROUP.V4
-fi
+	if [ -d /home/applications/profiles/defaultprofile.V4 ]
+	then
+		echo $PRIMARYGROUP - $"Creating a Windows 8.1 profile""<br>"
+		cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/$PRIMARYGROUP.V4
+		chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V4
+		chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V4
+		chmod u+X,g+X,o+X -R /home/applications/profiles/$PRIMARYGROUP.V4
+	fi
 fi
 
 if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V5 ]
 then
-if [ -d /home/applications/profiles/defaultprofile.V5 ]
-then
-echo $PRIMARYGROUP - $"Creating a Windows 8.2 profile""<br>"
-cp -f -R /home/applications/profiles/defaultprofile.V5 /home/applications/profiles/$PRIMARYGROUP.V5
-chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V5
-chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V5
-chmod u+X,g+X,o+X -R /home/applications/profiles/$PRIMARYGROUP.V5
-fi
+	if [ -d /home/applications/profiles/defaultprofile.V5 ]
+	then
+		echo $PRIMARYGROUP - $"Creating a Windows 8.2 profile""<br>"
+		cp -f -R /home/applications/profiles/defaultprofile.V5 /home/applications/profiles/$PRIMARYGROUP.V5
+		chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V5
+		chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V5
+		chmod u+X,g+X,o+X -R /home/applications/profiles/$PRIMARYGROUP.V5
+	fi
 fi
 exit $CREATE_USER_STATUS

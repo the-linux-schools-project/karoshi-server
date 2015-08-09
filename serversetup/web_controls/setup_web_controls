@@ -26,14 +26,14 @@
 ###########################
 if [ `echo $1 | tr -cd 'A-Za-z0-9'`null = null ]
 then
-INTERACTIVE_MODE=no
+	INTERACTIVE_MODE=no
 else
-if [ `echo $1 | tr -cd 'A-Za-z0-9'` = interactive ]
-then
-INTERACTIVE_MODE=yes
-else
-INTERACTIVE_MODE=no
-fi
+	if [ `echo $1 | tr -cd 'A-Za-z0-9'` = interactive ]
+	then
+		INTERACTIVE_MODE=yes
+	else
+		INTERACTIVE_MODE=no
+	fi
 fi
 
 #########################
@@ -61,22 +61,24 @@ DEMO_MODE=no
 #Create certificate
 if [ ! -f /etc/ssl/webmanagement/server_web_management.key ]
 then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert_web_management
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert_web_management
 fi
+
 #Configure a separate apache to run on ports 50001 and 50002 with user apache_karoshi
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/scripts/configure_karoshi_web_management
+
+#Create root ssh folder
+if [ ! -d /root/.ssh ]
+then
+	mkdir /root/.ssh
+	chmod 0700 /root/.ssh
+fi
+
 #Get School Name
 source /opt/karoshi/server_network/domain_information/domain_name
 
 KAROSHI_SERVER=`hostname`
 
-
-#Create root ssh folder
-if [ ! -d /root/.ssh ]
-then
-mkdir /root/.ssh
-chmod 0700 /root/.ssh
-fi
 ###########################
 #Ask for email domain - needed for ldap user creation
 ###########################
@@ -196,7 +198,7 @@ source /opt/karoshi/server_network/domain_information/domain_name
 #Create keytab for the web management
 if [ ! -f /etc/keytabs/webmanagement.keytab ]
 then
-echo "root:127.0.0.1:-:$HOSTNAME.$REALM:HTTP:webmanagement:$HOSTNAME.$REALM:apache_karoshi:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
+	echo "root:127.0.0.1:-:$HOSTNAME.$REALM:HTTP:webmanagement:$HOSTNAME.$REALM:apache_karoshi:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
 fi
 ######################
 #Htaccess files
@@ -244,10 +246,10 @@ cp -f /opt/karoshi/serversetup/web_controls/html/pdc/admin/index.html /var/www/h
 #Replace admin with tech paths
 for HTMLPAGE in /var/www/html_karoshi/tech/*;
 do
-if [ $HTMLPAGE != /var/www/html_karoshi/tech/karoshi_template ]
-then
-sed -i 's/\/cgi-bin\/admin/\/cgi-bin\/tech/g' $HTMLPAGE
-fi
+	if [ $HTMLPAGE != /var/www/html_karoshi/tech/karoshi_template ]
+	then
+		sed -i 's/\/cgi-bin\/admin/\/cgi-bin\/tech/g' $HTMLPAGE
+	fi
 done
 #################################
 #Copy in tech cgi scripts
@@ -360,23 +362,23 @@ cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/bulk_user_creation_imp
 #Replace admin with tech paths
 for CGISCRIPT in /var/www/cgi-bin_karoshi/tech/*;
 do
-sed -i 's/\/cgi-bin\/admin/\/cgi-bin\/tech/g' $CGISCRIPT
-sed -i 's/generate_navbar_admin/generate_navbar_tech/g' $CGISCRIPT
+	sed -i 's/\/cgi-bin\/admin/\/cgi-bin\/tech/g' $CGISCRIPT
+	sed -i 's/generate_navbar_admin/generate_navbar_tech/g' $CGISCRIPT
 done
 for CGISCRIPT in /var/www/cgi-bin_karoshi/tech/*;
 do
-sed -i 's/\/opt\/karoshi\/web_controls\/web_access_admin/\/opt\/karoshi\/web_controls\/web_access_tech/g' $CGISCRIPT
+	sed -i 's/\/opt\/karoshi\/web_controls\/web_access_admin/\/opt\/karoshi\/web_controls\/web_access_tech/g' $CGISCRIPT
 done
 
 #Replace admin with staff paths
 for CGISCRIPT in /var/www/cgi-bin_karoshi/staff/*;
 do
-sed -i 's/\/cgi-bin\/admin/\/cgi-bin\/staff/g' $CGISCRIPT
-sed -i 's/generate_navbar_admin/generate_navbar_staff/g' $CGISCRIPT
+	sed -i 's/\/cgi-bin\/admin/\/cgi-bin\/staff/g' $CGISCRIPT
+	sed -i 's/generate_navbar_admin/generate_navbar_staff/g' $CGISCRIPT
 done
 for CGISCRIPT in /var/www/cgi-bin_karoshi/tech/*;
 do
-sed -i 's/\/opt\/karoshi\/web_controls\/web_access_admin/\/opt\/karoshi\/web_controls\/web_access_staff/g' $CGISCRIPT
+	sed -i 's/\/opt\/karoshi\/web_controls\/web_access_admin/\/opt\/karoshi\/web_controls\/web_access_staff/g' $CGISCRIPT
 done
 
 #main menu
@@ -401,44 +403,44 @@ sed -i 's/LDAPBASE/'$LDAPBASE'/g' /var/www/html_karoshi/all/js/ldap.php
 
 if [ -f /opt/karoshi/web_controls/web_admin_restrictions ]
 then
-RESTRICT_COUNT=`cat /opt/karoshi/web_controls/web_admin_restrictions | wc -l`
-COUNTER=1
-if [ $RESTRICT_COUNT -gt 0 ]
-then
-echo Order deny,allow  >> /var/www/html_karoshi/admin/.htaccess
-echo Deny from all >> /var/www/html_karoshi/admin/.htaccess
-echo Order deny,allow  >> /var/www/cgi-bin_karoshi/admin/.htaccess
-echo Deny from all >> /var/www/cgi-bin_karoshi/admin/.htaccess
-while [ $COUNTER -le $RESTRICT_COUNT ]
-do
-TCPIPENTRY=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/web_controls/web_admin_restrictions | cut -d: -f1`
-echo Allow from $TCPIPENTRY >> /var/www/html_karoshi/.htaccess
-echo Allow from $TCPIPENTRY >> /var/www/html_karoshi/admin/.htaccess
-echo Allow from $TCPIPENTRY >> /var/www/cgi-bin_karoshi/admin/.htaccess
-let COUNTER=$COUNTER+1
-done
-fi
+	RESTRICT_COUNT=`cat /opt/karoshi/web_controls/web_admin_restrictions | wc -l`
+	COUNTER=1
+	if [ $RESTRICT_COUNT -gt 0 ]
+	then
+		echo Order deny,allow  >> /var/www/html_karoshi/admin/.htaccess
+		echo Deny from all >> /var/www/html_karoshi/admin/.htaccess
+		echo Order deny,allow  >> /var/www/cgi-bin_karoshi/admin/.htaccess
+		echo Deny from all >> /var/www/cgi-bin_karoshi/admin/.htaccess
+		while [ $COUNTER -le $RESTRICT_COUNT ]
+		do
+			TCPIPENTRY=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/web_controls/web_admin_restrictions | cut -d: -f1`
+			echo Allow from $TCPIPENTRY >> /var/www/html_karoshi/.htaccess
+			echo Allow from $TCPIPENTRY >> /var/www/html_karoshi/admin/.htaccess
+			echo Allow from $TCPIPENTRY >> /var/www/cgi-bin_karoshi/admin/.htaccess
+			let COUNTER=$COUNTER+1
+		done
+	fi
 fi
 
 if [ -f /opt/karoshi/web_controls/web_tech_restrictions ]
 then
-RESTRICT_COUNT=`cat /opt/karoshi/web_controls/web_tech_restrictions | wc -l`
-COUNTER=1
-if [ $RESTRICT_COUNT -gt 0 ]
-then
-echo Order deny,allow  >> /var/www/html_karoshi/tech/.htaccess
-echo Deny from all >> /var/www/html_karoshi/tech/.htaccess
-echo Order deny,allow  >> /var/www/cgi-bin_karoshi/tech/.htaccess
-echo Deny from all >> /var/www/cgi-bin_karoshi/tech/.htaccess
-while [ $COUNTER -le $RESTRICT_COUNT ]
-do
-TCPIPENTRY=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/web_controls/web_tech_restrictions | cut -d: -f1`
-echo Allow from $TCPIPENTRY >> /var/www/html_karoshi/.htaccess
-echo Allow from $TCPIPENTRY >> /var/www/html_karoshi/tech/.htaccess
-echo Allow from $TCPIPENTRY >> /var/www/cgi-bin_karoshi/tech/.htaccess
-let COUNTER=$COUNTER+1
-done
-fi
+	RESTRICT_COUNT=`cat /opt/karoshi/web_controls/web_tech_restrictions | wc -l`
+	COUNTER=1
+	if [ $RESTRICT_COUNT -gt 0 ]
+	then
+		echo Order deny,allow  >> /var/www/html_karoshi/tech/.htaccess
+		echo Deny from all >> /var/www/html_karoshi/tech/.htaccess
+		echo Order deny,allow  >> /var/www/cgi-bin_karoshi/tech/.htaccess
+		echo Deny from all >> /var/www/cgi-bin_karoshi/tech/.htaccess
+		while [ $COUNTER -le $RESTRICT_COUNT ]
+		do
+			TCPIPENTRY=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/web_controls/web_tech_restrictions | cut -d: -f1`
+			echo Allow from $TCPIPENTRY >> /var/www/html_karoshi/.htaccess
+			echo Allow from $TCPIPENTRY >> /var/www/html_karoshi/tech/.htaccess
+			echo Allow from $TCPIPENTRY >> /var/www/cgi-bin_karoshi/tech/.htaccess
+			let COUNTER=$COUNTER+1
+		done
+	fi
 fi
 
 #Copy in version info
@@ -447,7 +449,7 @@ cp -f /opt/karoshi/serversetup/web_controls/version /opt/karoshi/web_controls/ve
 #Copy in backed up user images if they exist
 if [ -d /var/www/user_images.$$ ]
 then
-mv /var/www/user_images.$$ /var/www/html_karoshi/images/user_images
+	mv /var/www/user_images.$$ /var/www/html_karoshi/images/user_images
 fi
 
 chmod 0440 -R /var/www/html_karoshi/
@@ -482,9 +484,9 @@ chmod u+X,g+X,o+X -R /opt/karoshi/serversetup/variables/
 WAITTIME=0.5
 if [ $INTERACTIVE_MODE = yes ]
 then
-install_web_management
+	install_web_management
 else
-install_web_management |
+	install_web_management |
 (
 echo "10%" ; sleep $WAITTIME
 echo "20%" ; sleep $WAITTIME
@@ -504,14 +506,14 @@ chmod 0640 /opt/karoshi/web_controls/web_access_tech
 chown root:apache_karoshi /opt/karoshi/web_controls/web_access_tech
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ]
 then
-CREATE_MANAGEMENT_USER=yes
+	CREATE_MANAGEMENT_USER=yes
 else
-CREATE_MANAGEMENT_USER=no
+	CREATE_MANAGEMENT_USER=no
 fi
 
 if [ $INTERACTIVE_MODE != yes ]
 then
-CREATE_MANAGEMENT_USER=no
+	CREATE_MANAGEMENT_USER=no
 fi
 
 touch /opt/karoshi/web_controls/web_access_admin
@@ -523,67 +525,67 @@ chown root:apache_karoshi /opt/karoshi/web_controls/web_access_admin
 ###########################
 if [ $CREATE_MANAGEMENT_USER = yes ]
 then
-#Get details for new web management user.
-function get_new_user {
-DATA=`yad --title ''$"Setup"' '$"Web Management"'' --image="/opt/karoshi/serversetup/essentials/smalllogo3.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --form --text ''$"You will need to create a web management user to administer the server network."'' --field=$"Username" --field=$"Password":H --field=$"Confirm":H --button=Ok`
-NEWUSERNAME=`echo $DATA | cut -d"|" -f1`
-NEWUSERPASSWORD=`echo $DATA | cut -d"|" -f2`
-CHECKUSERPASSWORD=`echo $DATA | cut -d"|" -f3`
-}
+	#Get details for new web management user.
+	function get_new_user {
+	DATA=`yad --title ''$"Setup"' '$"Web Management"'' --image="/opt/karoshi/serversetup/essentials/smalllogo3.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --form --text ''$"You will need to create a web management user to administer the server network."'' --field=$"Username" --field=$"Password":H --field=$"Confirm":H --button=Ok`
+	NEWUSERNAME=`echo $DATA | cut -d"|" -f1`
+	NEWUSERPASSWORD=`echo $DATA | cut -d"|" -f2`
+	CHECKUSERPASSWORD=`echo $DATA | cut -d"|" -f3`
+	}
 
-function check_user_details {
-DETAILCHECK=ok
-if [ -z "$NEWUSERNAME" ]
-then
-DETAILCHECK=error
-yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo3.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=3  --text=$"The username cannot be blank." --no-buttons
-elif [ -z "$NEWUSERPASSWORD" ] || [ $CHECKUSERPASSWORD'null' = null ]
-then
-DETAILCHECK=error
-yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo3.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=3 --text=$"The password cannot be blank." --no-buttons
-elif [ $NEWUSERPASSWORD != $CHECKUSERPASSWORD ]
-then
-DETAILCHECK=error
-yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo3.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=3 --text=$"The passwords do not match." --no-buttons
-fi
-}
-
-get_new_user
-check_user_details
-while [  $DETAILCHECK = error ]
-do
-get_new_user
-check_user_details
-done
-
-htpasswd -b /opt/karoshi/web_controls/web_access_admin $NEWUSERNAME $NEWUSERPASSWORD
-
-#Copy in user prefs
-if [ -f /opt/karoshi/web_controls/global_prefs ]
-then
-	if [ ! -d /opt/karoshi/web_controls/user_prefs ]
+	function check_user_details {
+	DETAILCHECK=ok
+	if [ -z "$NEWUSERNAME" ]
 	then
-		mkdir /opt/karoshi/web_controls/user_prefs
-		chmod 0750 /opt/karoshi/web_controls/user_prefs
-		chown root.apache_karoshi /opt/karoshi/web_controls/user_prefs
+		DETAILCHECK=error
+		yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo3.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=3  --text=$"The username cannot be blank." --no-buttons
+	elif [ -z "$NEWUSERPASSWORD" ] || [ $CHECKUSERPASSWORD'null' = null ]
+	then
+		DETAILCHECK=error
+		yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo3.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=3 --text=$"The password cannot be blank." --no-buttons
+	elif [ $NEWUSERPASSWORD != $CHECKUSERPASSWORD ]
+	then
+		DETAILCHECK=error
+		yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo3.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=3 --text=$"The passwords do not match." --no-buttons
 	fi
-	cp -f /opt/karoshi/web_controls/global_prefs /opt/karoshi/web_controls/user_prefs/$NEWUSERNAME
-	chmod 0640 /opt/karoshi/web_controls/user_prefs/$NEWUSERNAME
-	chown root.apache_karoshi /opt/karoshi/web_controls/user_prefs/$NEWUSERNAME
-fi
+	}
 
-echo DEFAULTPAGE=setup_wizard.cgi >> /opt/karoshi/web_controls/user_prefs/$NEWUSERNAME
-chown apache_karoshi /opt/karoshi/web_controls/user_prefs/$NEWUSERNAME
+	get_new_user
+	check_user_details
+	while [  $DETAILCHECK = error ]
+	do
+		get_new_user
+		check_user_details
+	done
 
-###########################
-#Add data to admin list
-###########################
-[ ! -f /opt/karoshi/web_controls/remote_management_users ] && ( touch /opt/karoshi/web_controls/remote_management_users ; chmod 0600 /opt/karoshi/web_controls/remote_management_users )
-#Check the remote management user does not already exist.
-if [ `cut -d: -f1 /opt/karoshi/web_controls/remote_management_users | grep -c -w $NEWUSERNAME` = 0 ]
-then
-echo $NEWUSERNAME:::Network_Manager:yes:1 >> /opt/karoshi/web_controls/remote_management_users
-fi
+	htpasswd -b /opt/karoshi/web_controls/web_access_admin $NEWUSERNAME $NEWUSERPASSWORD
+
+	#Copy in user prefs
+	if [ -f /opt/karoshi/web_controls/global_prefs ]
+	then
+		if [ ! -d /opt/karoshi/web_controls/user_prefs ]
+		then
+			mkdir /opt/karoshi/web_controls/user_prefs
+			chmod 0750 /opt/karoshi/web_controls/user_prefs
+			chown root.apache_karoshi /opt/karoshi/web_controls/user_prefs
+		fi
+		cp -f /opt/karoshi/web_controls/global_prefs /opt/karoshi/web_controls/user_prefs/$NEWUSERNAME
+		chmod 0640 /opt/karoshi/web_controls/user_prefs/$NEWUSERNAME
+		chown root.apache_karoshi /opt/karoshi/web_controls/user_prefs/$NEWUSERNAME
+	fi
+
+	echo DEFAULTPAGE=setup_wizard.cgi >> /opt/karoshi/web_controls/user_prefs/$NEWUSERNAME
+	chown apache_karoshi /opt/karoshi/web_controls/user_prefs/$NEWUSERNAME
+
+	###########################
+	#Add data to admin list
+	###########################
+	[ ! -f /opt/karoshi/web_controls/remote_management_users ] && ( touch /opt/karoshi/web_controls/remote_management_users ; chmod 0600 /opt/karoshi/web_controls/remote_management_users )
+	#Check the remote management user does not already exist.
+	if [ `cut -d: -f1 /opt/karoshi/web_controls/remote_management_users | grep -c -w $NEWUSERNAME` = 0 ]
+	then
+		echo $NEWUSERNAME:::Network_Manager:yes:1 >> /opt/karoshi/web_controls/remote_management_users
+	fi
 fi
 
 #Generate sudo
@@ -678,20 +680,20 @@ echo 0 20 '*' '*' 1-5  /opt/karoshi/serversetup/all/'"'useful scripts'"'/backup_
 #Get line number of start of netlogon share+1
 if [ -f /etc/samba/smb.conf ]
 then
-NETLOGONLINENUMBER=`grep -n "path = /var/lib/samba/netlogon" /etc/samba/smb.conf | cut -d: -f1`
-let NETLOGONLINENUMBER=$NETLOGONLINENUMBER+1
-if [ `sed -n $NETLOGONLINENUMBER,$NETLOGONLINENUMBER'p' /etc/samba/smb.conf | grep -c "invalid users = root"` != 0 ]
-then
-#backup smb.conf
-echo "Modifying smb.conf to allow root to gain read only access to the netlogon share."
-echo /etc/samba/smb.conf has been backed up to /etc/samba/smb$$.conf
-cp -f /etc/samba/smb.conf /etc/samba/smb$$.conf
-sed -i $NETLOGONLINENUMBER'd' /etc/samba/smb.conf
-echo Restarting samba
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop
-sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
-fi
+	NETLOGONLINENUMBER=`grep -n "path = /var/lib/samba/netlogon" /etc/samba/smb.conf | cut -d: -f1`
+	let NETLOGONLINENUMBER=$NETLOGONLINENUMBER+1
+	if [ `sed -n $NETLOGONLINENUMBER,$NETLOGONLINENUMBER'p' /etc/samba/smb.conf | grep -c "invalid users = root"` != 0 ]
+	then
+		#backup smb.conf
+		echo "Modifying smb.conf to allow root to gain read only access to the netlogon share."
+		echo /etc/samba/smb.conf has been backed up to /etc/samba/smb$$.conf
+		cp -f /etc/samba/smb.conf /etc/samba/smb$$.conf
+		sed -i $NETLOGONLINENUMBER'd' /etc/samba/smb.conf
+		echo Restarting samba
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop
+		sleep 1
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
+	fi
 fi
 #Start httpd_karoshi if it is not running
 #[ `ps -e | grep -c httpd_karoshi` = 0 ] && service httpd_karoshi start
@@ -716,9 +718,9 @@ chmod u+X,g+X -R /var/www/html_karoshi/admin/phpldapadmin
 #Create temp folder
 if [ ! -d /var/www/html_karoshi/.tempdata/ ]
 then
-mkdir /var/www/html_karoshi/.tempdata/
-chmod 0700 /var/www/html_karoshi/.tempdata/
-chown apache_karoshi /var/www/html_karoshi/.tempdata/
+	mkdir /var/www/html_karoshi/.tempdata/
+	chmod 0700 /var/www/html_karoshi/.tempdata/
+	chown apache_karoshi /var/www/html_karoshi/.tempdata/
 fi
 
 cp -f /opt/karoshi/serversetup/web_controls/scripts/detect_mobile_browser /opt/karoshi/web_controls
@@ -831,10 +833,10 @@ VPNCTRL=no
 WEBCTRL=no
 if [ -d /opt/karoshi/server_network/webservers ]
 then
-if [ `ls -1 /opt/karoshi/server_network/webservers | wc -l` -gt 0 ]
-then
-WEBCTRL=yes
-fi
+	if [ `ls -1 /opt/karoshi/server_network/webservers | wc -l` -gt 0 ]
+	then
+		WEBCTRL=yes
+	fi
 fi
 
 SHELLCTRL=no
@@ -863,10 +865,10 @@ echo VPNCTRL=$VPNCTRL >> /opt/karoshi/server_network/menusettings
 ###########################
 if [ ! -d /opt/karoshi/updates ]
 then
-[ ! -d /opt/karoshi/logs/karoshi_updates ] && mkdir -p /opt/karoshi/logs/karoshi_updates
-chmod 0700 /opt/karoshi/logs/karoshi_updates
-[ `ls -1 /opt/karoshi/serversetup/updates/ | wc -l` -gt 0 ] && cp -f /opt/karoshi/serversetup/updates/* /opt/karoshi/logs/karoshi_updates/
-/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/update_karoshi_get_list
+	[ ! -d /opt/karoshi/logs/karoshi_updates ] && mkdir -p /opt/karoshi/logs/karoshi_updates
+	chmod 0700 /opt/karoshi/logs/karoshi_updates
+	[ `ls -1 /opt/karoshi/serversetup/updates/ | wc -l` -gt 0 ] && cp -f /opt/karoshi/serversetup/updates/* /opt/karoshi/logs/karoshi_updates/
+	/opt/karoshi/serversetup/web_controls/scripts/exec/pdc/update_karoshi_get_list
 fi
 
 ###########################
@@ -874,9 +876,9 @@ fi
 ###########################
 if [ ! -d /opt/karoshi/server_network/web_controls ]
 then
-mkdir -p /opt/karoshi/server_network/web_controls
-chown root:apache_karoshi /opt/karoshi/server_network/web_controls
-chmod 0750 /opt/karoshi/server_network/web_controls
+	mkdir -p /opt/karoshi/server_network/web_controls
+	chown root:apache_karoshi /opt/karoshi/server_network/web_controls
+	chmod 0750 /opt/karoshi/server_network/web_controls
 fi
 touch /opt/karoshi/server_network/web_controls/setup_wizard
 chown apache_karoshi /opt/karoshi/server_network/web_controls/setup_wizard
@@ -886,17 +888,17 @@ chown apache_karoshi /opt/karoshi/server_network/web_controls/setup_wizard
 ###########################
 if [ ! -d /opt/karoshi/server_network/security ]
 then
-mkdir -p /opt/karoshi/server_network/security
+	mkdir -p /opt/karoshi/server_network/security
 fi
 
 if [ ! -f /opt/karoshi/server_network/security/password_settings ]
 then
-echo STAFF_CHARS_AND_NUMBERS=no > /opt/karoshi/server_network/security/password_settings
-echo STAFF_UPPER_AND_LOWER_CASE=no >> /opt/karoshi/server_network/security/password_settings
-echo STAFF_MINPASSLENGTH=6 >> /opt/karoshi/server_network/security/password_settings
-echo STUDENT_CHARS_AND_NUMBERS=no >> /opt/karoshi/server_network/security/password_settings
-echo STUDENT_UPPER_AND_LOWER_CASE=no >> /opt/karoshi/server_network/security/password_settings
-echo STUDENT_MINPASSLENGTH=4 >> /opt/karoshi/server_network/security/password_settings
+	echo STAFF_CHARS_AND_NUMBERS=no > /opt/karoshi/server_network/security/password_settings
+	echo STAFF_UPPER_AND_LOWER_CASE=no >> /opt/karoshi/server_network/security/password_settings
+	echo STAFF_MINPASSLENGTH=6 >> /opt/karoshi/server_network/security/password_settings
+	echo STUDENT_CHARS_AND_NUMBERS=no >> /opt/karoshi/server_network/security/password_settings
+	echo STUDENT_UPPER_AND_LOWER_CASE=no >> /opt/karoshi/server_network/security/password_settings
+	echo STUDENT_MINPASSLENGTH=4 >> /opt/karoshi/server_network/security/password_settings
 fi
 
 ############################
@@ -905,22 +907,22 @@ fi
 
 if [ ! -d /etc/fail2ban ]
 then
-if [ -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/scripts/fail2baninstall ]
-then
-echo "<li>"Installing fail2ban"</li>"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/scripts/fail2baninstall
-fi
+	if [ -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/scripts/fail2baninstall ]
+	then
+		echo "<li>"Installing fail2ban"</li>"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/scripts/fail2baninstall
+	fi
 fi
 
 if [ -d /etc/fail2ban ]
 then
-[ ! -d /opt/karoshi/server_network/security/fail2ban ] && mkdir -p /opt/karoshi/server_network/security/fail2ban
-[ ! -f /opt/karoshi/server_network/security/fail2ban/web_management ] && cp -f /opt/karoshi/serversetup/all/fail2ban/jails/web_management /opt/karoshi/server_network/security/fail2ban/
-cat /opt/karoshi/server_network/security/fail2ban/* > /etc/fail2ban/jail.local
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_stop
-sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_start
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/fail2ban
+	[ ! -d /opt/karoshi/server_network/security/fail2ban ] && mkdir -p /opt/karoshi/server_network/security/fail2ban
+	[ ! -f /opt/karoshi/server_network/security/fail2ban/web_management ] && cp -f /opt/karoshi/serversetup/all/fail2ban/jails/web_management /opt/karoshi/server_network/security/fail2ban/
+	cat /opt/karoshi/server_network/security/fail2ban/* > /etc/fail2ban/jail.local
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_stop
+	sleep 1
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_start
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/fail2ban
 fi
 
 #Link in linux client backgrounds
@@ -933,9 +935,9 @@ ln -s /var/lib/samba/netlogon/linuxclient/backgrounds /var/www/html_karoshi/imag
 TCPIP=`net lookup $HOSTNAME`
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 samba-tool dns query 127.0.0.1 $REALM manage.$REALM CNAME --username=Administrator --password=$LDAPPASS 1>/dev/null 2>/dev/null
-if [ `echo $?` != 0 ]
+if [ $? != 0 ]
 then
-samba-tool dns add 127.0.0.1 $REALM manage CNAME $HOSTNAME.$REALM --username=Administrator --password=$LDAPPASS
+	samba-tool dns add 127.0.0.1 $REALM manage CNAME $HOSTNAME.$REALM --username=Administrator --password=$LDAPPASS
 fi
 
 #Copy in uptime script

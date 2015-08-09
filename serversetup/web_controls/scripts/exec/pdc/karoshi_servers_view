@@ -25,22 +25,22 @@
 #Website: http://www.karoshi.org.uk
 #Language
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/karoshi_servers_view_cgi
 then
-echo `date`: karoshi_servers_view - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: karoshi_servers_view - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/karoshi_servers_view_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/karoshi_servers_view.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $karoshi_servers_view_cgi'check' ]
 then
-echo `date`: karoshi_servers_view - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: karoshi_servers_view - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -48,8 +48,8 @@ fi
 numArgs=$#
 if [ $numArgs != 1 ]
 then
-echo `date`: karoshi_servers_view - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: karoshi_servers_view - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
@@ -59,23 +59,23 @@ REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: karoshi_servers_view - Not called by karoshi_servers_view.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: karoshi_servers_view - Not called by karoshi_servers_view.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: karoshi_servers_view - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: karoshi_servers_view - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: karoshi_servers_view - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: karoshi_servers_view - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: karoshi_servers_view - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: karoshi_servers_view - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ############################
 #Language
@@ -121,16 +121,16 @@ SERVERIP=`net lookup $SERVER`
 
 if [ $SERVER != `hostname-fqdn` ]
 then
-ssh -o PasswordAuthentication=no -o ConnectTimeout=2 $SERVER ls 1>/dev/null
-SSHSTATUS=`echo $?`
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=2 $SERVER ls 1>/dev/null
+	SSHSTATUS=`echo $?`
 else
-SSHSTATUS=0
+	SSHSTATUS=0
 fi
 
 if [ $SSHSTATUS = 0 ]
 then
-SERVERSSHSTATUS=$"SSH is working for this server."
-SERVERICON=/images/warnings/server_ok.png
+	SERVERSSHSTATUS=$"SSH is working for this server."
+		SERVERICON=/images/warnings/server_ok.png
 fi
 
 echo '<tr><td style="background-color:'$FILLCOLOUR'"><td style="vertical-align: top;">'$SERVER'</td><td style="vertical-align: top;">'$SERVERIP'</td><td style="vertical-align: top;">'
@@ -138,13 +138,13 @@ echo '<tr><td style="background-color:'$FILLCOLOUR'"><td style="vertical-align: 
 echo '</td><td style="vertical-align: top;">'
 if [ $SSHSTATUS = 0 ] || [ $SERVER = `hostname-fqdn` ]
 then
-echo '<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
+	echo '<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
 <a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVER'_" type="image" class="images" src="'$SERVERICON'" value="'$SERVER'"><span>'$SERVERSHORT' - '$"Add a role to this server."'</span></a>
 </form>
 </td>
 '
 else
-echo '</td>'
+	echo '</td>'
 fi
 
 echo '<td style="vertical-align: top;">
@@ -167,82 +167,83 @@ echo '</td><td style="vertical-align: top;">'
 #Check backup server status if one has been assigned
 if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backupserver ]
 then
-BACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backupserver`
-BSERVERSHORT=`echo $BACKUPSERVER | cut -d. -f1`
-SERVERBACKUPICON=/images/warnings/server_fail.png
-SERVERBACKUPSSHSTATUS=`echo $"Backup Server" - $BSERVERSHORT. $"SSH failure for this backup server."`
+	BACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backupserver`
+	BSERVERSHORT=`echo $BACKUPSERVER | cut -d. -f1`
+	SERVERBACKUPICON=/images/warnings/server_fail.png
+	SERVERBACKUPSSHSTATUS=`echo $"Backup Server" - $BSERVERSHORT. $"SSH failure for this backup server."`
 
-if [ $SERVER != `hostname-fqdn` ]
-then
-ssh -o PasswordAuthentication=no -o ConnectTimeout=2 $SERVER '
-ssh -o PasswordAuthentication=no -o ConnectTimeout=2 -o ConnectTimeout=2 '$BACKUPSERVER' ls 1>/dev/null
-SSHBACKUPSTATUS=`echo $?`
-exit $SSHBACKUPSTATUS
-'
-else
-ssh -o PasswordAuthentication=no -o ConnectTimeout=2 -o ConnectTimeout=2 $BACKUPSERVER ls 1>/dev/null
-fi
+	if [ $SERVER != `hostname-fqdn` ]
+	then
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=2 $SERVER '
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=2 -o ConnectTimeout=2 '$BACKUPSERVER' ls 1>/dev/null
+	SSHBACKUPSTATUS=`echo $?`
+	exit $SSHBACKUPSTATUS
+	'
+	else
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=2 -o ConnectTimeout=2 $BACKUPSERVER ls 1>/dev/null
+	fi
 
-SSHBACKUPSTATUS=`echo $?`
-if [ $SSHBACKUPSTATUS = 0 ]
-then
-SERVERBACKUPSSHSTATUS=''$"Backup Server"' - '$BSERVERSHORT'.<br><br>'$"SSH is working for this backup server."''
-SERVERBACKUPICON=/images/warnings/server_ok.png
-fi
+	SSHBACKUPSTATUS=`echo $?`
+	if [ $SSHBACKUPSTATUS = 0 ]
+	then
+		SERVERBACKUPSSHSTATUS=''$"Backup Server"' - '$BSERVERSHORT'.<br><br>'$"SSH is working for this backup server."''
+		SERVERBACKUPICON=/images/warnings/server_ok.png
+	fi
 fi
 
 if [ $SSHSTATUS = 0 ]
 then
-echo '<form action="/cgi-bin/admin/backup_assign_fm.cgi" method="post">
+	echo '<form action="/cgi-bin/admin/backup_assign_fm.cgi" method="post">
 <a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVER'_" type="image" class="images" src="'$SERVERBACKUPICON'" value="'$SERVER'"><span>'$SERVERBACKUPSSHSTATUS'</span></a></form>'
 fi
 echo '</td></tr>'
 }
 
 #Show main server
-SERVER=`hostname-fqdn`
+MAINSERVER=$(ls -1 /opt/karoshi/server_network/zones/internal/primary_domain_controller/ | sed -n 1,1p )
+SERVER=$MAINSERVER
 FILLCOLOUR=green
 show_servers
 #Show servers in the internal zone
 if [ -d /opt/karoshi/server_network/zones/internal/servers/ ]
 then
-if [ `ls -1 /opt/karoshi/server_network/zones/internal/servers/ | wc -l` -gt 0 ]
-then
-FILLCOLOUR=green
-for SERVER in /opt/karoshi/server_network/zones/internal/servers/*
-do
-SERVER=`basename $SERVER`
-[ $SERVER != `hostname-fqdn` ] && show_servers
-done
-fi
+	if [ `ls -1 /opt/karoshi/server_network/zones/internal/servers/ | wc -l` -gt 0 ]
+	then
+		FILLCOLOUR=green
+		for SERVER in /opt/karoshi/server_network/zones/internal/servers/*
+		do
+			SERVER=`basename $SERVER`
+			[ $SERVER != $MAINSERVER ] && show_servers
+		done
+	fi
 fi
 
 #Show servers in the dmz zone
 if [ -d /opt/karoshi/server_network/zones/dmz/servers/ ]
 then
-if [ `ls -1 /opt/karoshi/server_network/zones/dmz/servers/ | wc -l` -gt 0 ]
-then
-FILLCOLOUR=orange
-for SERVER in /opt/karoshi/server_network/zones/dmz/servers/*
-do
-SERVER=`basename $SERVER`
-[ $SERVER != `hostname-fqdn` ] && show_servers
-done
-fi
+	if [ `ls -1 /opt/karoshi/server_network/zones/dmz/servers/ | wc -l` -gt 0 ]
+	then
+		FILLCOLOUR=orange
+		for SERVER in /opt/karoshi/server_network/zones/dmz/servers/*
+		do
+			SERVER=`basename $SERVER`
+			[ $SERVER != $MAINSERVER ] && show_servers
+		done
+	fi
 fi
 
 #Show servers in the external zone
 if [ -d /opt/karoshi/server_network/zones/external/servers/ ]
 then
-if [ `ls -1 /opt/karoshi/server_network/zones/external/servers/ | wc -l` -gt 0 ]
-then
-FILLCOLOUR=red
-for SERVER in /opt/karoshi/server_network/zones/external/servers/*
-do
-SERVER=`basename $SERVER`
-[ $SERVER != `hostname-fqdn` ] && show_servers
-done
-fi
+	if [ `ls -1 /opt/karoshi/server_network/zones/external/servers/ | wc -l` -gt 0 ]
+	then
+		FILLCOLOUR=red
+		for SERVER in /opt/karoshi/server_network/zones/external/servers/*
+		do
+			SERVER=`basename $SERVER`
+			[ $SERVER != $MAINSERVER ] && show_servers
+		done
+	fi
 fi
 
 echo '</tbody></table>'

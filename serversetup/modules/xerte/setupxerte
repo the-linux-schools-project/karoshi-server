@@ -1,0 +1,244 @@
+#!/bin/bash
+#Copyright (C) 2015  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#aloughlin@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+########################
+#Get variables
+########################
+LOG_DATE=`date +%F`
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+	echo `date`: setupxerte - incorrect number of arguments"<br>"
+	exit 101
+fi
+read -t 3 DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/'`
+
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+ALIAS=`echo "$DATA" | cut -s -d: -f4`
+
+if [ -z "$REMOTE_USER" ]
+then
+	echo `date`: setupxerte - Blank remote user"<br>"
+	exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+	echo `date`: setupxerte - Blank remote tcpip address"<br>"
+	exit 101
+fi
+
+if [ -z "$ALIAS" ]
+then
+	echo `date`: setupxerte - Blank alias"<br>"
+	exit 101
+fi
+
+[ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
+[ -d /var/www/html ] || mkdir -p /var/www/html
+
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+source /opt/karoshi/server_network/domain_information/domain_name
+
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+TEXTDOMAIN=karoshi-server
+
+LDAPSERVER=127.0.0.1
+#Get ldap server to use
+if [ `grep -c -w "kdc" /etc/krb5.conf` -gt 0 ]
+then
+	LDAPSERVER=`grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | cut -d"=" -f2 | sed -n 1,1p`
+fi
+
+#############################
+#Ensure that apache and mysql are running on boot
+#############################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mysql
+
+#####################
+#Create xerte mysql password for the new database
+#####################
+echo '<li>'$"Creating the xerte database in mysql"'</li><br>'
+
+XERTEPASS=`openssl rand -hex 16`
+
+#############################
+#Make sure that we know the root mysql password
+#############################
+
+/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
+#Get root mysql password
+MYSQLPASS=`sed -n 1,1p /etc/mysql.secret`
+
+#############################
+#create and pipe in the database
+#############################
+
+mysqladmin -f --password=$MYSQLPASS drop xerte 1>/dev/null 2>/dev/null
+sleep 1
+mysqladmin --password=$MYSQLPASS create xerte 1>/dev/null
+sleep 1
+
+echo GRANT ALL PRIVILEGES ON xerte.\* TO "'"xerte_user"'"@"'"localhost"'" IDENTIFIED BY "'"$XERTEPASS"'"';' > /opt/karoshi/.tempdata/mysqlperms.sql
+echo ALTER DATABASE xerte DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci';' >> /opt/karoshi/.tempdata/mysqlperms.sql
+mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/mysqlperms.sql
+rm -f /opt/karoshi/.tempdata/mysqlperms.sql
+
+#Make a backup of xerte.sql
+cp -f /opt/karoshi/serversetup/modules/xerte/xerte.sql /opt/karoshi/serversetup/modules/xerte/xerte2.sql
+
+#Edit xerte2.sql with the correct ldap server.
+THIS_SERVER=$(hostname-fqdn)
+sed -i 's/127.0.0.1/'$LDAPSERVER'/g' /opt/karoshi/serversetup/modules/xerte/xerte2.sql
+sed -i 's/CHANGETHISSERVER/'$THIS_SERVER'/g' /opt/karoshi/serversetup/modules/xerte/xerte2.sql
+
+#Edit xerte2.sql with the correct realm information
+sed -i 's/CHANGETHISLDAPBASE/'$LDAPBASE'/g' /opt/karoshi/serversetup/modules/xerte/xerte2.sql
+
+#Edit xerte2.sql with the correct install path
+sed -i 's/CHANGETHISINSTALLPATH/'$ALIAS'.'$REALM'\/xerte/g' /opt/karoshi/serversetup/modules/xerte/xerte2.sql
+
+#Pipe in xerte database
+mysql --password=$MYSQLPASS xerte < /opt/karoshi/serversetup/modules/xerte/xerte2.sql
+
+###########################
+#make sure that mysql and apache are running
+###########################
+
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/mysql_status
+if [ $? != 0 ]
+then
+	echo '<li>"'$"Starting Mysql"'</li>'
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start 1>/dev/null
+fi
+
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_status
+if [ $? != 0 ]
+then
+	echo '<li>"'$"Starting Apache"'</li>'
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
+	echo "<br>"
+fi
+
+
+###########################
+#Extract xerte
+###########################
+cd /var/www/html/
+echo '<li>'$"Extracting Xerte"'</li><br>'
+[ -d /var/www/html/xerte ] && rm -f -R /var/www/html/xerte
+tar -xzf /opt/karoshi/serversetup/modules/xerte/xerte.tar.gz
+
+echo '<li>'$"Setting permissions"'</li><br>'
+chmod 0660 -R /var/www/html/xerte
+chmod u+X,g+X -R /var/www/html/xerte
+chown -R root.$APACHEGROUP /var/www/html/xerte
+
+################################
+#Modifying database.php for xerte
+################################
+
+PASSWORDLINENO=`grep -n ^'$xerte_toolkits_site->database_password' /var/www/html/xerte/database.php | cut -d: -f1`
+sed -i $PASSWORDLINENO'c''$xerte_toolkits_site->database_password ="'$XERTEPASS'";' /var/www/html/xerte/database.php
+sed -i 's/development = true;/development = false;/g' /var/www/html/xerte/config.php
+
+#####################################
+#Ensure that apache ports are open in shorewall
+#####################################
+MODCHECK=`grep -c -w 80 /etc/shorewall/rules`
+MODCHECK2=`grep -c -w 443 /etc/shorewall/rules`
+
+MOD_SHOREWALL=no
+if [ $MODCHECK = 0 ]
+then
+	MOD_SHOREWALL=yes
+	PORTS="80"
+fi
+
+if [ $MODCHECK2 = 0 ]
+then
+	MOD_SHOREWALL=yes
+	PORTS="443"
+fi
+
+if [ $MODCHECK = 0 ] && [ $MODCHECK2 = 0 ]
+then
+	MOD_SHOREWALL=yes
+	PORTS="80,443"
+fi
+
+if [ $MOD_SHOREWALL = yes ]
+then
+	echo '<li>'$"The following extra ports are being allowed"' - tcp 80,443</li><br>'
+	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'apacherule /etc/shorewall/rules
+	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+fi
+
+######################
+#Restart shorewall
+######################
+if [ $MOD_SHOREWALL = yes ]
+then
+echo '<li>'$"Restarting shorewall"'</li><br>'
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+fi
+#################################
+#Make sure that mysql and apache are running
+#################################
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/mysql_status
+if [ $? != 0 ]
+then
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start 1>/dev/null
+fi
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_status
+if [ $? != 0 ]
+then
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
+fi
+
+
+###########################
+#Show completed message
+###########################
+echo ''$"Xerte has been installed and can be accessed from" - '<a href="https://'$ALIAS.$REALM'/xerte" target="_blank">'$ALIAS.$REALM'/xerte</a><br><br>
+'$"The Xerte management console can be accessed from" - '<a href="https://'$ALIAS.$REALM'/xerte/management.php" target="_blank">'$ALIAS.$REALM'/xerte/management.php</a>
+<br>'$"username":admin - $"password": admin'
+<br><p style="font-weight:bold; font-size:20px;">'$"Please login and change this password immediately."'</p>'$"The admin password can be changed in the server settings section."'<br>'
+exit
+
+
+
+
+
+
+
+
+
+
+
