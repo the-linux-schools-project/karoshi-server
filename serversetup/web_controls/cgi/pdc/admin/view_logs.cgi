@@ -76,12 +76,12 @@ fi
 echo '</head><body onLoad="start()"><div id="pagecontainer">'
 TCPIP_ADDR=$REMOTE_ADDR
 
-DATA=`cat | tr -cd 'A-Za-z0-9\_./' | sed 's/\.\.\///g'`
+DATA=`cat | tr -cd 'A-Za-z0-9\_.-/' | sed 's/\.\.\///g'`
 
 #If we have not received any data via post then try and get it from query_string
 if [ -z "$DATA" ]
 then
-	DATA=`echo $QUERY_STRING | tr -cd 'A-Za-z0-9\_./' | sed 's/\.\.\///g'`
+	DATA=`echo $QUERY_STRING | tr -cd 'A-Za-z0-9\_.-/' | sed 's/\.\.\///g'`
 fi
 
 #########################

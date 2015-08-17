@@ -12,14 +12,15 @@ echo '
 	<option></option>'
 
 #Show all groups in group_information
-
 for GROUPNAMES in /opt/karoshi/server_network/group_information/*
 do
-GROUPNAME=`basename $GROUPNAMES`
-UPPERGROUPNAME=${GROUPNAME^^}
-LABEL=${!UPPERGROUPNAME:+ : ${!UPPERGROUPNAME}}
-echo '<option value="'$GROUPNAME'">'$GROUPNAME"$LABEL"'</option>'
+	GROUPNAME=`basename $GROUPNAMES`
+	UPPERGROUPNAME=${GROUPNAME^^}
+	LABEL=${!UPPERGROUPNAME:+ : ${!UPPERGROUPNAME}}
+	if [ $GROUPNAME != profilemanagement ]
+	then
+		echo '<option value="'$GROUPNAME'">'$GROUPNAME"$LABEL"'</option>'
+	fi
 done
-
 echo '</select>'
 exit

@@ -52,6 +52,10 @@ do
 				if [ "$CHECKCOUNT" -ge "$WARNLIMIT" ]
 				then
 					FAIL_LIST="$FAIL_LIST, $CHECK"
+					#Save syslog data so that it can be viewed later
+					ERRORFILE=$(date +%F-%H:%M:%S)
+					[ ! -d /opt/karoshi/logs/errors ] && mkdir -p /opt/karoshi/logs/errors
+					egrep "${MIN[0]}|${MIN[1]}|${MIN[2]}|${MIN[3]}|${MIN[4]}|${MIN[5]}" "$LOGPATH" > /opt/karoshi/logs/errors/"$ERRORFILE"
 				fi
 			done
 
@@ -94,6 +98,10 @@ do
 				if [ "$CHECKCOUNT" -ge "'$WARNLIMIT'" ]
 				then
 					FAIL_LIST="$FAIL_LIST, $CHECK"
+					#Save syslog data so that it can be viewed later
+					ERRORFILE=$(date +%F-%H:%M:%S)
+					[ ! -d /opt/karoshi/logs/errors ] && mkdir -p /opt/karoshi/logs/errors
+					egrep "${MIN[0]}|${MIN[1]}|${MIN[2]}|${MIN[3]}|${MIN[4]}|${MIN[5]}" "'$LOGPATH'" > /opt/karoshi/logs/errors/"$ERRORFILE"
 				fi
 			done
 

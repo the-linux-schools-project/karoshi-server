@@ -722,7 +722,7 @@ if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V5 ]
 then
 	if [ -d /home/applications/profiles/defaultprofile.V5 ]
 	then
-		echo $PRIMARYGROUP - $"Creating a Windows 8.2 profile""<br>"
+		echo $PRIMARYGROUP - $"Creating a Windows 10 profile""<br>"
 		cp -f -R /home/applications/profiles/defaultprofile.V5 /home/applications/profiles/$PRIMARYGROUP.V5
 		chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V5
 		chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V5

@@ -1357,6 +1357,12 @@ tar -zxf /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V4.tar.gz -C /home
 #We dont have a windows 8.0 profile so make an empty folder for it
 [ ! -d /home/applications/profiles/defaultprofile.V3 ] && mkdir -p /home/applications/profiles/defaultprofile.V3
 
+if [ -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V5.tar.gz ]
+then
+	echo $"Extracting Windows 10 Profile"
+	tar -zxf /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V5.tar.gz -C /home/applications/profiles/
+fi
+
 #Copy in windows icons
 cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Change My Password.url" /home/applications/profiles/defaultprofile/Desktop/
 cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Help Desk.url" /home/applications/profiles/defaultprofile/Desktop/
@@ -1397,11 +1403,16 @@ cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/
 cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/tech.V2
 cp -f -R /home/applications/profiles/defaultprofile.V3 /home/applications/profiles/tech.V3
 cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/tech.V4
+if [ -d  /home/applications/profiles/defaultprofile.V5 ]
+then
+	cp -f -R /home/applications/profiles/defaultprofile.V5 /home/applications/profiles/tech.V5
+fi
 
 [ ! -d /home/applications/profiles/default_roaming_profile ] && mkdir /home/applications/profiles/default_roaming_profile
 [ ! -d /home/applications/profiles/default_roaming_profile.V2 ] && mkdir /home/applications/profiles/default_roaming_profile.V2
 [ ! -d /home/applications/profiles/default_roaming_profile.V3 ] && mkdir /home/applications/profiles/default_roaming_profile.V3
 [ ! -d /home/applications/profiles/default_roaming_profile.V4 ] && mkdir /home/applications/profiles/default_roaming_profile.V4
+[ ! -d /home/applications/profiles/default_roaming_profile.V5 ] && mkdir /home/applications/profiles/default_roaming_profile.V5
 
 echo $"Setting profile permissions"
 chown -R root.itadmin /home/applications/profiles

@@ -124,16 +124,16 @@ fi
 getent passwd $CURRENT_USERNAME 1> /dev/null
 if [ $? != 0 ]
 then
-echo `date`: change_username - $CURRENT_USERNAME does not exist by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_username - $CURRENT_USERNAME does not exist by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 #Make sure new username does not exist
 getent passwd $NEW_USERNAME 1> /dev/null
 if [ $? = 0 ]
 then
-echo `date`: change_username - $NEW_USERNAME already exists by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: change_username - $NEW_USERNAME already exists by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -146,14 +146,14 @@ CURRENTPATH=`getent passwd $CURRENT_USERNAME | cut -d: -f6`
 COUNTER=10
 while [ $COUNTER -ge 1 ]
 do
-PARENTPATH=`echo $CURRENTPATH | cut -d/ -f$COUNTER`
-if [ $PARENTPATH'null' != null ]
-then
-let COUNTER=$COUNTER-1
-PARENTPATH=`echo $CURRENTPATH | cut -d/ -f1-$COUNTER`
-break
-fi
-let COUNTER=$COUNTER-1
+	PARENTPATH=`echo $CURRENTPATH | cut -d/ -f$COUNTER`
+	if [ $PARENTPATH'null' != null ]
+	then
+		let COUNTER=$COUNTER-1
+		PARENTPATH=`echo $CURRENTPATH | cut -d/ -f1-$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER-1
 done
 #Get primary group for user
 PRIMARYGROUP=`id -g -n $CURRENT_USERNAME`
@@ -207,49 +207,67 @@ newsuperior: OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
 #########################
 if [ -d $CURRENTPATH ]
 then
-mv $CURRENTPATH $PARENTPATH/$NEW_USERNAME
-chmod 0600 -R $PARENTPATH/$NEW_USERNAME
-chmod u+X -R $PARENTPATH/$NEW_USERNAME
-chown $USERID:$PRIMARYGROUP -R $PARENTPATH/$NEW_USERNAME
-CHANGE_PASS_STATUS=`echo $?`
+	mv $CURRENTPATH $PARENTPATH/$NEW_USERNAME
+	chmod 0600 -R $PARENTPATH/$NEW_USERNAME
+	chmod u+X -R $PARENTPATH/$NEW_USERNAME
+	chown $USERID:$PRIMARYGROUP -R $PARENTPATH/$NEW_USERNAME
+	CHANGE_PASS_STATUS=`echo $?`
 fi
 if [ $SERVER != `hostname-fqdn` ]
 then
-ssh -x -o PasswordAuthentication=no $SERVER '
-mv '$CURRENTPATH' '$PARENTPATH/$NEW_USERNAME'
-chmod 0600 -R '$PARENTPATH''/''$NEW_USERNAME'
-chmod u+X -R '$PARENTPATH''/''$NEW_USERNAME'
-chown -R '$USERID':'$PRIMARYGROUP' '$PARENTPATH''/''$NEW_USERNAME''
+	ssh -x -o PasswordAuthentication=no $SERVER '
+	mv '$CURRENTPATH' '$PARENTPATH/$NEW_USERNAME'
+	chmod 0600 -R '$PARENTPATH''/''$NEW_USERNAME'
+	chmod u+X -R '$PARENTPATH''/''$NEW_USERNAME'
+	chown -R '$USERID':'$PRIMARYGROUP' '$PARENTPATH''/''$NEW_USERNAME''
 fi
 #########################
 #Move mail
 #########################
 if [ -f /opt/karoshi/server_network/emailserver ]
 then
-EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
-if [ $EMAILSERVER != `hostname-fqdn` ]
-then 
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
-if [ -d /home/users/email/'$CURRENT_USERNAME' ]
-then
-mv /home/users/email/'$CURRENT_USERNAME' /home/users/email/'$NEW_USERNAME'
-chown '$USERID' -R /home/users/email/'$NEW_USERNAME'
+	EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+	if [ $EMAILSERVER != `hostname-fqdn` ]
+	then 
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+		if [ -d /home/users/email/'$CURRENT_USERNAME' ]
+		then
+		mv /home/users/email/'$CURRENT_USERNAME' /home/users/email/'$NEW_USERNAME'
+		chown '$USERID' -R /home/users/email/'$NEW_USERNAME'
+		fi
+		if [ -d '$CURRENTPATH' ]
+		then
+		mv '$CURRENTPATH' '$PARENTPATH/$NEW_USERNAME'
+		chmod 0600 -R '$PARENTPATH''/''$NEW_USERNAME'
+		chmod u+X -R '$PARENTPATH''/''$NEW_USERNAME'
+		chown -R '$USERID':'$PRIMARYGROUP' '$PARENTPATH''/''$NEW_USERNAME'
+		fi
+		'
+		else
+		if [ -d /home/users/email/$CURRENT_USERNAME ]
+		then
+			mv /home/users/email/$CURRENT_USERNAME /home/users/email/$NEW_USERNAME
+			chown $USERID -R /home/users/email/$NEW_USERNAME
+		fi
+	fi
 fi
-if [ -d '$CURRENTPATH' ]
+
+#Add dfs path
+[ -L /var/lib/samba/dfs/homes/$CURRENT_USERNAME ] && rm -f /var/lib/samba/dfs/homes/$CURRENT_USERNAME
+if [ ! -z "$GLUSTERVOL" ]
 then
-mv '$CURRENTPATH' '$PARENTPATH/$NEW_USERNAME'
-chmod 0600 -R '$PARENTPATH''/''$NEW_USERNAME'
-chmod u+X -R '$PARENTPATH''/''$NEW_USERNAME'
-chown -R '$USERID':'$PRIMARYGROUP' '$PARENTPATH''/''$NEW_USERNAME'
-fi
-'
+	DFSPATH=""
+	for GLUSTERSERVERS in /opt/karoshi/server_network/gluster-volumes/"$GLUSTERVOL"/servers/*
+	do
+		GLUSTERSERVER=`basename "$GLUSTERSERVERS"`
+		DFSPATH=$DFSPATH,$GLUSTERSERVER\\$NEW_USERNAME
+	done
+	DFSPATH=`echo $DFSPATH | sed 's/^,//g'`
+	[ -L /var/lib/samba/dfs/$NEW_USERNAME ] && rm -f /var/lib/samba/dfs/homes/$NEW_USERNAME
+	ln -s msdfs:"$DFSPATH" /var/lib/samba/dfs/homes/$NEW_USERNAME
+
 else
-if [ -d /home/users/email/$CURRENT_USERNAME ]
-then
-mv /home/users/email/$CURRENT_USERNAME /home/users/email/$NEW_USERNAME
-chown $USERID -R /home/users/email/$NEW_USERNAME
-fi
-fi
+	ln -s msdfs:$SERVER\\$NEW_USERNAME /var/lib/samba/dfs/homes/$NEW_USERNAME
 fi
 
 exit $CHANGE_PASS_STATUS

@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 THISYEAR=`date +%Y`
 let GROUPSTART=$THISYEAR-8
@@ -86,27 +86,27 @@ WIDTH2=100
 FILECOUNT=0
 if [ -d /var/www/karoshi/win_profile_upload/ ]
 then
-FILECOUNT=`ls -1 /var/www/karoshi/win_profile_upload/ | wc -l`
-FILEDATA=`ls -1 /var/www/karoshi/win_profile_upload/ | sed -n 1,1p`
-FILENAME=`echo "$FILEDATA" | grep '\<zip\>'`
-[ `echo $FILENAME'null' | sed 's/ //g'` = null ] && FILENAME=`echo "$FILEDATA" | grep '\<tar\.gz\>'`
+	FILECOUNT=`ls -1 /var/www/karoshi/win_profile_upload/ | wc -l`
+	FILEDATA=`ls -1 /var/www/karoshi/win_profile_upload/ | sed -n 1,1p`
+	FILENAME=`echo "$FILEDATA" | grep '\<zip\>'`
+	[ `echo $FILENAME'null' | sed 's/ //g'` = null ] && FILENAME=`echo "$FILEDATA" | grep '\<tar\.gz\>'`
 fi
 
 if [ $FILECOUNT != 1 ]
 then
-echo ''$"An incorrect number of files have been uploaded."'</div></div></body></html>'
-exit
+	echo ''$"An incorrect number of files have been uploaded."'</div></div></body></html>'
+	exit
 fi
 
 if [ `echo $FILENAME'null' | sed 's/ //g'` = null ]
 then
-echo ''$"You have not uploaded a zip or tar.gz archive."'</div></div></body></html>'
-exit
+	echo ''$"You have not uploaded a zip or tar.gz archive."'</div></div></body></html>'
+	exit
 else
-FILENAME=`ls -1 /var/www/karoshi/win_profile_upload/ | sed -n 1,1p`
-#Correct spaces
-FILENAME2=`echo $FILENAME | sed 's/ /SPACECORRECT/g'`
-[ -f /var/www/karoshi/win_profile_upload/$FILENAME2 ] || mv /var/www/karoshi/win_profile_upload/"$FILENAME" /var/www/karoshi/win_profile_upload/$FILENAME2
+	FILENAME=`ls -1 /var/www/karoshi/win_profile_upload/ | sed -n 1,1p`
+	#Correct spaces
+	FILENAME2=`echo $FILENAME | sed 's/ /SPACECORRECT/g'`
+	[ -f /var/www/karoshi/win_profile_upload/$FILENAME2 ] || mv /var/www/karoshi/win_profile_upload/"$FILENAME" /var/www/karoshi/win_profile_upload/$FILENAME2
 fi
 #Show list of profiles to choose from
 
@@ -118,6 +118,7 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 <option value="windows7">Windows 7</option>
 <option value="windows8.0">Windows 8.0</option>
 <option value="windows8.1">Windows 8.1</option>
+<option value="windows10">Windows 10</option>
 </select>
 </td></tr>
 </tbody></table>
@@ -133,19 +134,19 @@ echo '
 COUNTER=1
 for GROUPNAMES in /opt/karoshi/server_network/group_information/*
 do
-GROUPNAME=`basename $GROUPNAMES`
-if [ $COUNTER = 1 ]
-then
-echo '<tr>'
-fi
-echo '<td><input name="___PRIGROUP___" value="'$GROUPNAME'" type="checkbox"></td><td>'$GROUPNAME'</td>'
-if [ $COUNTER = 4 ]
-then
-echo '</tr>'
-COUNTER=1
-else
-let COUNTER=$COUNTER+1
-fi
+	GROUPNAME=`basename $GROUPNAMES`
+	if [ $COUNTER = 1 ]
+	then
+		echo '<tr>'
+	fi
+	echo '<td><input name="___PRIGROUP___" value="'$GROUPNAME'" type="checkbox"></td><td>'$GROUPNAME'</td>'
+	if [ $COUNTER = 4 ]
+	then
+		echo '</tr>'
+		COUNTER=1
+	else
+		let COUNTER=$COUNTER+1
+	fi
 done
 
 echo '</tbody></table><br>
