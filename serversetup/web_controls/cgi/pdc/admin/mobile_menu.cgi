@@ -186,6 +186,7 @@ echo '      <div class="collapsed">
 	<a href="/cgi-bin/admin/email_whitelists.cgi">'$"Whitelists"'</a>
 	<a href="/cgi-bin/admin/email_view_banned_domains_fm.cgi">'$"Banned E-Mail domains"'</a>
 	<a href="/cgi-bin/admin/email_limits.cgi">'$"E-Mail limits"'</a>
+	<a href="/cgi-bin/admin/email_authentication.cgi">'$"Authentication Controls"'</a>
 	<a href="/cgi-bin/admin/email_show_queue_fm.cgi">'$"E-Mail queue"'</a>
 	<a href="/cgi-bin/admin/email_statistics_fm.cgi">'$"E-Mail Statistics"'</a>
       </div>'

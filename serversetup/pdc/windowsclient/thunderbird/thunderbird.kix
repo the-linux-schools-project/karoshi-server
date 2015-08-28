@@ -1,5 +1,6 @@
 
 $thunderbird_version="38.2.0"
+$timezone="CHANGETHISTIMEZONE"
 
 ;Copy in thunderbird profile from netlogon
 
@@ -48,7 +49,7 @@ IF RedirectOutput("%appdata%\Thunderbird\Profiles\karoshi.default\prefs.js",1) =
 'user_pref("calendar.registry.f3f91a07-cf6d-443e-b060-3b5062252a93.name", "Home");' + @CRLF
 'user_pref("calendar.registry.f3f91a07-cf6d-443e-b060-3b5062252a93.type", "storage");' + @CRLF
 'user_pref("calendar.registry.f3f91a07-cf6d-443e-b060-3b5062252a93.uri", "moz-storage-calendar://");' + @CRLF
-'user_pref("calendar.timezone.local", "Europe/London");' + @CRLF
+'user_pref("calendar.timezone.local", "$timezone");' + @CRLF
 'user_pref("calendar.ui.version", 1);' + @CRLF
 'user_pref("extensions.blocklist.pingCountVersion", -1);' + @CRLF
 'user_pref("extensions.bootstrappedAddons", "{}");' + @CRLF

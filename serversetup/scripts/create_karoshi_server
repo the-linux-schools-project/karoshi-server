@@ -38,6 +38,11 @@ then
 	echo -e "Installing debootstrap\n"
 	sleep 1
 	apt-get install debootstrap
+	if [ $? != 0 ]
+	then
+		echo -e "There was a problem installing debootstrap - exiting now."
+		exit
+	fi
 fi
 
 echo -e "Making the chroot environment for $KAROSHIVER based on $RELEASE.\n"

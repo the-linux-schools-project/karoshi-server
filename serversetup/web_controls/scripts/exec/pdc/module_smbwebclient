@@ -192,7 +192,7 @@ TEXTDOMAIN=karoshi-server
 
 #Add role information
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
-echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/homeaccess
+echo $"Home Access""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/homeaccess
 echo '<a href="https://'$ALIAS.$REALM':50000/smbwebclient" target="_blank">https://'$ALIAS.$REALM':50000/smbwebclient</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/homeaccess
 #echo $ROLE2"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role

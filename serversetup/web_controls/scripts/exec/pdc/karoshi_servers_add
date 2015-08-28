@@ -380,6 +380,7 @@ scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/$DISTROCHOIC
 scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/initdscripts $TCPIPNUMBER:/opt/karoshi/serversetup/distro/ubuntu/scripts/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 scp -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/sysvsupport $TCPIPNUMBER:/opt/karoshi/serversetup/distro/ubuntu/scripts/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/all/reserveports $SERVER:/opt/karoshi/serversetup/all
+scp -o PasswordAuthentication=no "/opt/karoshi/serversetup/all/useful scripts/refreshcronjobs" root@$SERVER:"/opt/karoshi/serversetup/all/useful\ scripts/"
 
 #Copy in cacert.pem
 scp -r -o PasswordAuthentication=no /etc/ssl/root-ca/cacert.pem $TCPIPNUMBER:/etc/ssl/root-ca/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -407,7 +408,20 @@ fi
 #Reserve ports
 [ -d /etc/reserveports ] && rm -f -R /etc/reserveports
 cp -f -R /opt/karoshi/serversetup/all/reserveports/services /etc/reserveports
-[ -f /usr/sbin/reserveports ] && /usr/sbin/reserveports
+cp -f /opt/karoshi/serversetup/all/reserveports/reserveports /usr/sbin
+cp -f /opt/karoshi/serversetup/all/reserveports/releaseports /usr/sbin
+chmod 0755 /usr/sbin/reserveports
+chmod 0755 /usr/sbin/releaseports
+killall nc
+/usr/sbin/reserveports
+
+#Cron
+[ ! -d /opt/karoshi/server_network/cronjobs/`hostname-fqdn` ] && mkdir -p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`
+if [ -d /opt/karoshi/cronjobs ]
+then
+	cp -f -R /opt/karoshi/cronjobs/* /opt/karoshi/server_network/cronjobs/`hostname-fqdn`
+	rm -f -R /opt/karoshi/cronjobs
+fi
 
 #Uptime
 cp /opt/karoshi/serversetup/scripts/uptime/karoshi-uptime /etc/init.d

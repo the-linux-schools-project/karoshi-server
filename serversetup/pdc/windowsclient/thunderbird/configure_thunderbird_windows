@@ -14,6 +14,9 @@ cp -f -R /opt/karoshi/serversetup/pdc/windowsclient/thunderbird/profile /var/lib
 #Copy thunderbird.kix to netlogon
 cp -f /opt/karoshi/serversetup/pdc/windowsclient/thunderbird/thunderbird.kix /var/lib/samba/netlogon/windows_settings/thunderbird/
 cp -f /opt/karoshi/serversetup/pdc/windowsclient/thunderbird/thunderbird.bat /var/lib/samba/netlogon/windows_settings/thunderbird/
+#Set the timezone
+TIMEZONE=$(cat /etc/timezone)
+sed -i 's%CHANGETHISTIMEZONE%'$TIMEZONE'%g' /var/lib/samba/netlogon/windows_settings/thunderbird/thunderbird.kix
 
 #Add thunderbird.kix to logonform.kix
 
