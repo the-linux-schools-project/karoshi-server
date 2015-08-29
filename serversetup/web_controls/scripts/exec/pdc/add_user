@@ -431,6 +431,13 @@ then
 		#Add in openchange data
 		#openchange_newuser --create $NEWUSERNAME
 	fi
+
+	#Set E-Mail access level if it has been set for the group.
+	if [ ! -z "$EMAIL_LEVEL" ]
+	then
+		MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM2:change:$NEWUSERNAME:$EMAIL_LEVEL:$GROUP:$MOBILE:add_user:" | sudo -H /opt/karoshi/web_controls/exec/email_access
+	fi
 fi
 
 ######################
@@ -729,4 +736,5 @@ then
 		chmod u+X,g+X,o+X -R /home/applications/profiles/$PRIMARYGROUP.V5
 	fi
 fi
+
 exit $CREATE_USER_STATUS

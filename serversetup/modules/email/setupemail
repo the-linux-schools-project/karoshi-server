@@ -476,6 +476,16 @@ sed -i 's/CHANGETHISLDAPSERVER/'$LDAPSERVER'/g' /etc/postfix/ldap-mail.cf
 echo "@$REALM root" > /etc/postfix/catchall
 postmap /etc/postfix/catchall
 
+#Create user access files
+touch /etc/postfix/deny_sending
+touch /etc/postfix/deny_receiving
+touch /etc/postfix/restricted_accounts
+echo "$REALM	OK" > /etc/postfix/restricted_domains
+postmap hash:/etc/postfix/deny_sending
+postmap hash:/etc/postfix/deny_receiving
+postmap hash:/etc/postfix/restricted_accounts
+postmap hash:/etc/postfix/restricted_domains
+
 #############
 #generate aliases.db in /etc/postfix/
 #############

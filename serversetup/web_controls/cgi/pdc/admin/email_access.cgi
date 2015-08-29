@@ -24,6 +24,10 @@
 #
 #Website: http://www.karoshi.org.uk
 
+#Detect mobile browser
+MOBILE=no
+source /opt/karoshi/web_controls/detect_mobile_browser
+
 ##########################
 #Language
 ##########################
@@ -37,80 +41,110 @@ TEXTDOMAIN=karoshi-server
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"E-Mail Access"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"E-Mail Access"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+
+if [ $MOBILE = yes ]
+then
+	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+		/***********************************************
+		* Slashdot Menu script- By DimX
+		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
+		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+		***********************************************/
+	</script>
+	<script type="text/javascript">
+	// <![CDATA[
+	var myMenu;
+	window.onload = function() {
+		myMenu = new SDMenu("my_menu");
+		myMenu.init();
+	};
+	// ]]>
+	</script>'
+fi
+echo '</head><body onLoad="start()"><div id="pagecontainer">'
+
 #########################
 #Get data input
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
 DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+#echo $DATA"<br>"
 #########################
 #Assign data to variables
 #########################
-END_POINT=11
-#Assign EMAILUSER
+END_POINT=15
+#Assign USERSELECT
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = EMAILUSERcheck ]
-then
-let COUNTER=$COUNTER+1
-EMAILUSER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
-#Assign GROUP
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = GROUPcheck ]
-then
-let COUNTER=$COUNTER+1
-GROUP=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = USERSELECTcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		USERSELECT=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign ACTION
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-then
-let COUNTER=$COUNTER+1
-ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
+#Assign ACCESSLEVEL
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = ACCESSLEVELcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		ACCESSLEVEL=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
 
-#Detect mobile browser
-MOBILE=no
-source /opt/karoshi/web_controls/detect_mobile_browser
+#Assign GROUP
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = GROUPcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		GROUP=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
 
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
+	DIV_ID=actionbox2
 fi
-
-echo '<div id="'$DIV_ID'">'
-
-STARTCGI=email_access_fm.cgi
 
 function show_status {
 echo '<script type="text/javascript">'
 echo 'alert("'$MESSAGE'");'
-echo 'window.location = "/cgi-bin/admin/'$STARTCGI'";'
+echo 'window.location = "/cgi-bin/admin/email_access.cgi";'
 echo '</script>'
 echo "</div></div></body></html>"
 exit
@@ -121,78 +155,77 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
-fi
-#########################
-#Check data
-#########################
-#Check to see that EMAILUSER or group is not blank
-if [ $EMAILUSER'null' = null ] && [ $GROUP'null' = null ]
-then
-MESSAGE=$"You need to enter in a username or choose a group."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 #Check that action is not blank
-if [ $ACTION'null' = null ]
+if [ -z "$ACTION" ]
 then
-MESSAGE=$"The action cannot be blank."
-show_status
+	ACTION=getchoice
 fi
 
-#Check that the action has the correct value
-if [ $ACTION != deny ] && [ $ACTION != allow ]
+if [ $ACTION = view ]
 then
-MESSAGE=$"The action does not have the correct value."
-show_status
+	if [ -z $USERSELECT ]
+	then
+		ACTION=getchoice
+	fi
+	#Check to see if the user or the group exists
+	getent group "$USERSELECT" 1>/dev/null
+	if [ $? != 0 ]
+	then
+		getent passwd "$USERSELECT" 1>/dev/null
+		if [ $? != 0 ]
+		then
+			MESSAGE=$"The username or group you have chosen does not exist."
+			show_status
+		fi
+	fi
+fi
+
+#Show back button for mobiles
+if [ $MOBILE = yes ]
+then
+echo '<div style="float: center" id="my_menu" class="sdmenu">
+	<div class="expanded">
+	<span>'$"E-Mail Access"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
+</div></div><div id="mobileactionbox">'
+	if [ "$ACTION" != getchoice ]
+	then
+		echo '<a href="email_access.cgi"><input class="button" type="button" name="" value="'$"Choose User / group"'"></a><br><br>'
+	fi
+else
+	echo '<div id="'$DIV_ID'"><div id="titlebox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr style="height: 30px;">
+<td style="vertical-align: middle;"><div class="sectiontitle">'$"E-Mail Access"'</div></td>
+<td style="vertical-align: middle;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to set the level of access for sending and receiving E-Mails for your users."'<br><br>'$"Full access - allow the user to send and receive E-mails to all domains."'<br><br>'$"Restricted - limit the user to sending and receiving E-Mails from domains on the restricted list. This list defaults to your domain."'<br><br>'$"No Access - the user will not be able to send or receive any E-Mails."'</span></a></td>'
+	if [ "$ACTION" != getchoice ]
+	then
+		echo '<td style="vertical-align: middle;"><a href="email_access.cgi"><input class="button" type="button" name="" value="'$"Choose User / group"'"></a></td>'
+	fi
+	echo '</tr></table><br></div><div id="infobox">'
 fi
 
 
-#Check that the user exists
-if [ $EMAILUSER'null' != null ]
-then
-id -u "$EMAILUSER" 1>/dev/null 2>/dev/null
-if [ `echo $?` != 0 ]
-then
-#User does not exist
-MESSAGE=`echo $EMAILUSER - $"This user does not exist."`
-show_status
-fi
-fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$EMAILUSER:$GROUP:$ACTION:" | sudo -H /opt/karoshi/web_controls/exec/email_access
-
-if [ $EMAILUSER'null' != null ]
-then
-if [ $ACTION = deny ]
-then
-MESSAGE=`echo $EMAILUSER - $"Email use banned for this user."`
-else
-MESSAGE=`echo $EMAILUSER - $"Email use allowed for this user."`
-fi
-else
-if [ $ACTION = deny ]
-then
-MESSAGE=`echo $GROUP - $"Email use banned for this group."`
-else
-MESSAGE=`echo $GROUP - $"Email use allowed for this group."`
-fi
-fi
-show_status
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$USERSELECT:$ACCESSLEVEL:$GROUP:$MOBILE:email_access:" | sudo -H /opt/karoshi/web_controls/exec/email_access
+echo '</div></div></div></body></html>'
 exit
+

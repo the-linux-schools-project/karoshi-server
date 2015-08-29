@@ -7,10 +7,10 @@ biff = no
 # Uncomment the next line to generate "delayed mail" warnings
 #delay_warning_time = 4h
 
-myhostname = mail.testdomain.com
-mydomain = testdomain.com
+myhostname = mail.changethisdomain.com
+mydomain = changethisdomain.com
 myorigin = $mydomain
-masquerade_domains = testdomain.com
+masquerade_domains = changethisdomain.com
 alias_maps = hash:/etc/postfix/aliases, ldap:/etc/postfix/ldap.cf
 alias_database = hash:/etc/postfix/aliases
 #myorigin = /etc/mailname
@@ -58,9 +58,16 @@ smtpd_recipient_restrictions =
 	reject_non_fqdn_recipient,
 	reject_unknown_recipient_domain,
 	reject_unlisted_recipient,
+	check_sender_access hash:/etc/postfix/restricted_accounts,
+	check_sender_access hash:/etc/postfix/deny_sending,
+	check_recipient_access hash:/etc/postfix/restricted_accounts,
+	check_recipient_access hash:/etc/postfix/deny_receiving,
 	permit_mynetworks,
 	permit_sasl_authenticated,
 	reject_unauth_destination
+
+smtpd_restriction_classes = restricted_domains
+restricted_domains = check_recipient_access hash:/etc/postfix/restricted_domains, reject
 
 smtpd_data_restrictions =
 	reject_unauth_pipelining

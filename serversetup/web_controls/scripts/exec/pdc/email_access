@@ -29,16 +29,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/email_access_cgi
 then
-echo `date`: email_access - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_access - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/email_access_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $email_access_cgi'check' ]
 then
-echo `date`: email_access - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_access - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -47,58 +47,62 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: email_access - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_access - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: email_access - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_access - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-EMAILUSER=`echo "$DATA" | cut -s -d: -f4`
-GROUP=`echo "$DATA" | cut -s -d: -f5`
-ACTION=`echo "$DATA" | cut -s -d: -f6`
+ACTION=`echo "$DATA" | cut -s -d: -f4`
+USERSELECT=`echo "$DATA" | cut -s -d: -f5`
+ACCESSLEVEL=`echo "$DATA" | cut -s -d: -f6`
+GROUP=`echo "$DATA" | cut -s -d: -f7`
+MOBILE=`echo "$DATA" | cut -s -d: -f8`
+CALLEDBY=`echo "$DATA" | cut -s -d: -f9`
+
+TABLECLASS=standard
+WIDTH1=180
+WIDTH2=200
+if [ "$MOBILE" = yes ]
+then
+	TABLECLASS=mobilestandard
+	WIDTH1=120
+	WIDTH2=140
+fi
+
 ########################
 #Check data
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: email_access - Not called by email_access.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_access - Not called by email_access.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: email_access - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_access - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: email_access - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
-if [ $EMAILUSER'null' = null ] && [ $GROUP'null' = null ]
-then
-echo `date`: email_access - Blank emailuser or group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
-if [ $ACTION'null' = null ]
-then
-echo `date`: email_access - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_access - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: email_access - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_access - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-[ ! -d /opt/karoshi/server_network/offline_servers ] && mkdir -p /opt/karoshi/server_network/offline_servers
+
 
 ##########################
 #Language
@@ -109,201 +113,340 @@ STYLESHEET=defaultstyle.css
 TEXTDOMAIN=karoshi-server
 
 
-if [ $EMAILUSER'null' != null ]
-then
-MODE=user
-else
-MODE=group
-fi
-
-
 #Get email server details
 if [ ! -f /opt/karoshi/server_network/emailserver ]
 then
-echo `date`: email_access - No email server has been declared by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_access - No email server has been declared by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
+
+source /opt/karoshi/server_network/domain_information/domain_name
 EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
-if [ ! -f /opt/karoshi/server_network/emaildomain ]
-then
-echo `date`: email_access - No email domain has been declared by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
-EMAILDOMAIN=`sed -n 1,1p /opt/karoshi/server_network/emaildomain`
-
-#Flag group has not having email for add user and bulk user creation
-if [ $MODE = group ]
-then
-[ ! -d /opt/karoshi/server_network/email_restrictions ] && mkdir -p /opt/karoshi/server_network/email_restrictions
 
 
-if [ $ACTION = deny ]
+function check_user {
+#Check to see if the userdata is for a user or a group.
+getent group $USERSELECT 1>/dev/null
+if [ $? = 0 ]
 then
-touch /opt/karoshi/server_network/email_restrictions/$GROUP
+	DATATYPE=group
 else
-[ -f /opt/karoshi/server_network/email_restrictions/$GROUP ] && rm -f /opt/karoshi/server_network/email_restrictions/$GROUP
-fi
-#Get path of home areas
-[ -f /opt/karoshi/server_network/group_information/$GROUP ] && source /opt/karoshi/server_network/group_information/$GROUP
-if [ $HOMEPATH'null' = null ]
-then
-echo `date`: email_access - blank homepath by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
-fi
-
-echo `date`: email_access - action $ACTION group $GROUP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-if [ $EMAILSERVER = `hostname-fqdn` ]
-then 
-function email_access {
-
-if [ $ACTION = deny ]
-then
-echo Banning $EMAILUSER"<br>"
-#Ban receiving emails
-if [ `grep -c ^$EMAILUSER@ /etc/postfix/deny_receiving` = 0 ]
-then
-echo $EMAILUSER@$EMAILDOMAIN REJECT >> /etc/postfix/deny_receiving
-fi
-#Ban sending emails
-if [ `grep -c ^$EMAILUSER@ /etc/postfix/deny_sending` = 0 ]
-then
-echo $EMAILUSER@$EMAILDOMAIN allowed_only >> /etc/postfix/deny_sending
-fi
-fi
-if [ $ACTION = allow ]
-then
-echo Allowing $EMAILUSER"<br>"
-#Allow receiving emails
-if [ `grep -c ^$EMAILUSER@ /etc/postfix/deny_receiving` -gt 0 ]
-then
-#Get line number
-LINENUMBER=`grep -n ^$EMAILUSER@ /etc/postfix/deny_receiving | cut -d: -f1`
-#Delete line
-sed -i $LINENUMBER'd' /etc/postfix/deny_receiving
-fi
-#Allow sending emails
-if [ `grep -c ^$EMAILUSER@ /etc/postfix/deny_sending` -gt 0 ]
-then
-#Get line number
-LINENUMBER=`grep -n ^$EMAILUSER@ /etc/postfix/deny_sending | cut -d: -f1`
-#Delete line
-sed -i $LINENUMBER'd' /etc/postfix/deny_sending
-fi
+	DATATYPE=user
 fi
 }
 
-#Make sure files exist
-[ ! -f /etc/postfix/deny_receiving ] && touch /etc/postfix/deny_receiving
-[ ! -f /etc/postfix/deny_sending ] && touch /etc/postfix/deny_sending
+if [ $ACTION = change ]
+then
+	function set_access {
+	echo `date`: "email_access - setting E-Mail level to $ACCESSLEVEL for $USERSELECT by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	if [ $EMAILSERVER = `hostname-fqdn` ]
+	then
+		#Remove the username from all restriction lists and then add into the correct lists as needed.
+		if [ $(grep -c -w ^$USERSELECT /etc/postfix/restricted_accounts) -gt 0 ]
+		then
+			sed -i "/^$USERSELECT@/d" /etc/postfix/restricted_accounts
+		fi
 
-if [ $MODE = user ]
-then
-email_access
-else
-if [ -d $HOMEPATH ]
-then
-if [ `ls -1 $HOMEPATH | wc -l` -gt 0 ]
-then
-for USERS in $HOMEPATH/*
-do
-EMAILUSER=`basename $USERS`
-email_access
-done
-fi
-fi
-fi
-#Get rid of blank lines
-sed -i "/^$/d" /etc/postfix/deny_receiving
-sed -i "/^$/d" /etc/postfix/deny_sending
+		if [ $(grep -c -w ^$USERSELECT /etc/postfix/deny_sending) -gt 0 ]
+		then
+			sed -i "/^$USERSELECT@/d" /etc/postfix/deny_sending
+		fi
 
-#Make sure rules are accessed in main.cf
-if [ `grep -c ^smtpd_recipient_restrictions /etc/postfix/main.cf` = 0 ]
-then
-echo "smtpd_recipient_restrictions = check_recipient_access hash:/etc/postfix/deny_receiving check_sender_access hash:/etc/postfix/deny_sending permit_sasl_authenticated permit_mynetworks reject_unauth_destination" >> /etc/postfix/main.cf
+		if [ $(grep -c -w ^$USERSELECT /etc/postfix/deny_receiving) -gt 0 ]
+		then
+			sed -i "/^$USERSELECT@/d" /etc/postfix/deny_receiving
+		fi
+
+		if [ "$ACCESSLEVEL" = 2 ] || [ "$ACCESSLEVEL" = 4 ] || [ "$ACCESSLEVEL" = 6 ]
+		then
+			#Add the user to the restricted list
+			echo "$USERSELECT@$REALM	restricted_domains" >> /etc/postfix/restricted_accounts
+		fi
+
+		if [ "$ACCESSLEVEL" = 3 ] || [ "$ACCESSLEVEL" = 4 ] || [ "$ACCESSLEVEL" = 7 ]
+		then
+			#Add the user to the deny sending list
+			echo "$USERSELECT@$REALM REJECT" >> /etc/postfix/deny_sending
+		fi
+
+		if [ "$ACCESSLEVEL" = 5 ] || [ "$ACCESSLEVEL" = 6 ] || [ "$ACCESSLEVEL" = 7 ]
+		then
+			#Add the user to the deny receiving list
+			echo "$USERSELECT@$REALM REJECT" >> /etc/postfix/deny_receiving
+		fi
+	
+		#Activate changes
+		postmap /etc/postfix/restricted_accounts
+		postmap /etc/postfix/deny_sending
+		postmap /etc/postfix/deny_receiving
+	else
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+		#Remove the username from all restriction lists and then add into the correct lists as needed.
+		if [ $(grep -c -w ^'$USERSELECT' /etc/postfix/restricted_accounts) -gt 0 ]
+		then
+			sed -i "/^'$USERSELECT'@/d" /etc/postfix/restricted_accounts
+		fi
+
+		if [ $(grep -c -w ^'$USERSELECT' /etc/postfix/deny_sending) -gt 0 ]
+		then
+			sed -i "/^'$USERSELECT'@/d" /etc/postfix/deny_sending
+		fi
+
+		if [ $(grep -c -w ^'$USERSELECT' /etc/postfix/deny_receiving) -gt 0 ]
+		then
+			sed -i "/^'$USERSELECT'@/d" /etc/postfix/deny_receiving
+		fi
+
+		if [ "'$ACCESSLEVEL'" = 2 ] || [ "'$ACCESSLEVEL'" = 4 ] || [ "'$ACCESSLEVEL'" = 6 ]
+		then
+			#Add the user to the restricted list
+			echo "'$USERSELECT'@'$REALM'	restricted_domains" >> /etc/postfix/restricted_accounts
+		fi
+
+		if [ "'$ACCESSLEVEL'" = 3 ] || [ "'$ACCESSLEVEL'" = 4 ] || [ "'$ACCESSLEVEL'" = 7 ]
+		then
+			#Add the user to the deny sending list
+			echo "'$USERSELECT'@'$REALM' REJECT" >> /etc/postfix/deny_sending
+		fi
+
+		if [ "'$ACCESSLEVEL'" = 5 ] || [ "'$ACCESSLEVEL'" = 6 ] || [ "'$ACCESSLEVEL'" = 7 ]
+		then
+			#Add the user to the deny receiving list
+			echo "'$USERSELECT'@'$REALM' REJECT" >> /etc/postfix/deny_receiving
+		fi
+	
+		#Activate changes
+		postmap /etc/postfix/restricted_accounts
+		postmap /etc/postfix/deny_sending
+		postmap /etc/postfix/deny_receiving
+		'
+	fi
+	}
+
+	#Check to see if we are making a change for a user or a group
+	check_user
+	if [ $DATATYPE = user ]
+	then
+		set_access
+	else
+		#Set E-mail level for the group
+		if [ $(grep -c ^EMAIL_LEVEL /opt/karoshi/server_network/group_information/"$USERSELECT") -gt 0 ]
+		then
+			sed -i "/^EMAIL_LEVEL/d" /opt/karoshi/server_network/group_information/"$USERSELECT"	
+		fi
+		echo "EMAIL_LEVEL=$ACCESSLEVEL" >> /opt/karoshi/server_network/group_information/"$USERSELECT"
+
+		#Set access level for the group
+		set_access
+
+		#Get a list of all users in the group
+		source /opt/karoshi/server_network/group_information/"$USERSELECT"
+		for USERNAME in $(getent passwd | grep "$HOMEPATH" | cut -d: -f1)
+		do
+			USERSELECT="$USERNAME"
+			set_access
+		done
+	fi
+
+	#Exit the script if it has been called by add user.
+	if [ $CALLEDBY = add_user ]
+	then
+		exit
+	fi
+
+	#Show the changes
+	if [ ! -z "$GROUP" ]
+	then
+		USERSELECT="$GROUP"
+	fi
+	ACTION=view		
 fi
 
-#Reload postfix
-postmap hash:/etc/postfix/deny_receiving
-postmap hash:/etc/postfix/deny_sending
-service postfix reload
-else
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
-function email_access {
-if [ '$ACTION' = deny ]
+if [ $ACTION = view ]
 then
-echo Banning $EMAILUSER"<br>"
-#Ban receiving emails
-if [ `grep -c  ^$EMAILUSER@ /etc/postfix/deny_receiving` = 0 ]
-then
-echo $EMAILUSER@'$EMAILDOMAIN' REJECT >> /etc/postfix/deny_receiving
-fi
-#Ban sending emails
-if [ `grep -c ^$EMAILUSER@ /etc/postfix/deny_sending` = 0 ]
-then
-echo $EMAILUSER@'$EMAILDOMAIN' allowed_only >> /etc/postfix/deny_sending
-fi
-fi
-if [ '$ACTION' = allow ]
-then
-echo Allowing $EMAILUSER"<br>"
-#Allow receiving emails
-if [ `grep -c ^$EMAILUSER@ /etc/postfix/deny_receiving` -gt 0 ]
-then
-#Get line number
-LINENUMBER=`grep -n ^$EMAILUSER@ /etc/postfix/deny_receiving | cut -d: -f1`
-#Delete line
-sed -i $LINENUMBER\d /etc/postfix/deny_receiving
-fi
-#Allow sending emails
-if [ `grep -c ^$EMAILUSER@ /etc/postfix/deny_sending` -gt 0 ]
-then
-#Get line number
-LINENUMBER=`grep -n ^$EMAILUSER@ /etc/postfix/deny_sending | cut -d: -f1`
-#Delete line
-sed -i $LINENUMBER\d /etc/postfix/deny_sending
-fi
-fi
-}
+	function showdata {
+	echo '<tr><td valign="top">'$USERNAME'</td><td><form id="'$USERNAME'" name="viewdata" action="/cgi-bin/admin/email_access.cgi" method="post"><input type="hidden" name="_ACTION_" value="change"><input type="hidden" name="_USERSELECT_" value="'$USERNAME'"><input type="hidden" name="_GROUP_" value="'$GROUP'">
+	<select name="_ACCESSLEVEL_" style="width: '$WIDTH2'px;" onchange="'$USERNAME'.submit()">
+	<option value="1" '$SELECT1'>'$"Full access"'</option>
+  	<option value="2" '$SELECT2'>'$"Restricted"'</option>
+  	<option value="3" '$SELECT3'>'$"Receive only"'</option>
+	<option value="4" '$SELECT4'>'$"Receive only and restricted"'</option>
+	<option value="5" '$SELECT5'>'$"Send only"'</option>
+	<option value="6" '$SELECT6'>'$"Send only and restricted"'</option>
+  	<option value="7" '$SELECT7'>'$"No access"'</option>
+	</select></form>
+	</td></tr>'
+	}
 
-#Make sure files exist
-[ ! -f /etc/postfix/deny_receiving ] && touch /etc/postfix/deny_receiving
-[ ! -f /etc/postfix/deny_sending ] && touch /etc/postfix/deny_sending
+	#Show the email access status for the selected group or user.
 
-if [ '$MODE' = user ]
-then
-EMAILUSER='$EMAILUSER'
-email_access
-else
+	#Check to see if the data is for a username or a group.
+	check_user
+	GROUP="$USERSELECT"
 
-if [ -d '$HOMEPATH' ]
-then
-if [ `ls -1 '$HOMEPATH' | wc -l` -gt 0 ]
-then
-for USERS in '$HOMEPATH'/*
-do
-EMAILUSER=`basename $USERS`
-email_access
-done
+	if [ $DATATYPE = group ]
+	then
+		source /opt/karoshi/server_network/group_information/"$GROUP"
+		[ -z "$EMAIL_LEVEL" ] && EMAIL_LEVEL=1 
+		[ $EMAIL_LEVEL = 2 ] && SELECT2="selected"
+		[ $EMAIL_LEVEL = 3 ] && SELECT3="selected"
+		[ $EMAIL_LEVEL = 4 ] && SELECT4="selected"
+		[ $EMAIL_LEVEL = 5 ] && SELECT5="selected"
+		[ $EMAIL_LEVEL = 6 ] && SELECT6="selected"
+		[ $EMAIL_LEVEL = 7 ] && SELECT7="selected"
+
+		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	<tr><td style="width: '$WIDTH1'px;"><b>'$"Group"'</b></td><td><b>'$"Change Status"'</b></td></tr>'
+		#Show an option to change the status of all of the users in the group
+		USERNAME=$USERSELECT
+		showdata
+		echo '</tbody></table><br>'
+	fi
+
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	<tr><td style="width: '$WIDTH1'px;"><b>'$"Username"'</b></td><td><b>'$"Status"'</b></td></tr>'
+
+	#Get restricted lists
+
+	if [ $EMAILSERVER = `hostname-fqdn` ]
+	then
+		#Get list of users on the restricted list
+		RESTRICTED_USERS=$(cat /etc/postfix/restricted_accounts | sed "s/	restricted_domains/,/g" | sed "s/@$REALM//g")
+		#Get list of users on the deny_sending list
+		DENIED_SENDING=$(cat /etc/postfix/deny_sending | sed "s/ REJECT/,/g" | sed "s/@$REALM//g")
+		#Get list of users on the deny_receiving list
+		DENIED_RECEIVING=$(cat /etc/postfix/deny_receiving | sed "s/ REJECT/,/g" | sed "s/@$REALM//g")
+	else
+		RESTRICTED_USERS=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+		cat /etc/postfix/restricted_accounts | sed "s/	restricted_domains/,/g" | sed "s/@'$REALM'//g"
+		'`
+		DENIED_SENDING=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+		cat /etc/postfix/deny_sending | sed "s/ REJECT/,/g" | sed "s/@'$REALM'//g"	
+		'`
+		DENIED_RECEIVING=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+		cat /etc/postfix/deny_receiving | sed "s/ REJECT/,/g" | sed "s/'@$REALM'//g"	
+		'`
+	fi
+	
+
+	function getuserstatus {
+	RESTRICTED=no
+	DENYSENDING=no
+	DENYRECEIVING=no
+	SELECT1="selected"
+	SELECT2=""
+	SELECT3=""
+	SELECT4=""
+	SELECT5=""
+	SELECT6=""
+	SELECT7=""
+
+	#Check if the user is on the restricted list
+	if [ $(echo "$RESTRICTED_USERS" | grep -c -w $USERNAME) -gt 0 ]
+	then
+		RESTRICTED=yes
+		SELECT1=""
+		SELECT2="selected"
+		SELECT3=""
+		SELECT4=""
+		SELECT5=""
+		SELECT6=""
+		SELECT7=""
+	fi
+
+	#Check if the user is on the deny_sending list
+	if [ $(echo "$DENIED_SENDING" | grep -c -w $USERNAME) -gt 0 ]
+	then
+		DENYSENDING=yes
+		if [ $RESTRICTED = no ]
+		then
+			SELECT1=""
+			SELECT2=""
+			SELECT3="selected"
+			SELECT4=""
+			SELECT5=""
+			SELECT6=""
+			SELECT7=""
+		else
+			SELECT1=""
+			SELECT2=""
+			SELECT3=""
+			SELECT4="selected"
+			SELECT5=""
+			SELECT6=""
+			SELECT7=""
+		fi
+	fi
+
+	#Check if the user is on the deny_receiving list
+	if [ $(echo "$DENIED_RECEIVING" | grep -c -w $USERNAME) -gt 0 ]
+	then
+		DENYRECEIVING=yes
+		if [ $RESTRICTED = no ] && [ $DENYSENDING = no ]
+		then
+			SELECT1=""
+			SELECT2=""
+			SELECT3=""
+			SELECT4=""
+			SELECT5="selected"
+			SELECT6=""
+			SELECT7=""
+		fi
+		if [ $RESTRICTED = yes ] && [ $DENYSENDING = no ]
+		then
+			SELECT1=""
+			SELECT2=""
+			SELECT3=""
+			SELECT4=""
+			SELECT5=""
+			SELECT6="selected"
+			SELECT7=""
+		fi
+		if [ $DENYSENDING = yes ]
+		then
+			SELECT1=""
+			SELECT2=""
+			SELECT3=""
+			SELECT4=""
+			SELECT5=""
+			SELECT7="selected"
+		fi
+	fi
+
+	
+	}
+
+	if [ $DATATYPE = user ]
+	then
+		USERNAME="$USERSELECT"
+		getuserstatus
+		showdata
+	else
+		#Get a list of all users in the group
+		source /opt/karoshi/server_network/group_information/"$USERSELECT"
+		for USERNAME in $(getent passwd | grep "$HOMEPATH" | cut -d: -f1 | sort)
+		do
+			getuserstatus
+			showdata
+		done
+	fi
+	
+	echo '</tbody></table>'
 fi
-fi
-fi
 
-#Get rid of blank lines
-sed -i "/^$/d" /etc/postfix/deny_receiving
-sed -i "/^$/d" /etc/postfix/deny_sending
-
-#Make sure rules are accessed in main.cf
-if [ `grep -c ^smtpd_recipient_restrictions /etc/postfix/main.cf` = 0 ]
+if [ $ACTION = getchoice ]
 then
-echo "smtpd_recipient_restrictions = check_recipient_access hash:/etc/postfix/deny_receiving check_sender_access hash:/etc/postfix/deny_sending permit_sasl_authenticated permit_mynetworks reject_unauth_destination" >> /etc/postfix/main.cf
-fi
+	#Show the user a choice of username or group to select.
+	echo '<form id="form1" name="combobox" action="/cgi-bin/admin/email_access.cgi" method="post"><input type="hidden" name="_ACTION_" value="view"> <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	<tr><td style="width: '$WIDTH1'px;">'$"Username"' / '$"Group"'</td><td>
+	<input type="text" name="_USERSELECT_" style="width: '$WIDTH2'px;" value="" size="10"></td><td valign="middle"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a username or choose a group from the dropdown list."'</span></a></td></tr>
+<tr><td></td><td><select name="_USERSELECTLIST_" style="width: '$WIDTH2'px;" size="1" onchange="document.combobox._USERSELECT_.value = document.combobox._USERSELECTLIST_.options[document.combobox._USERSELECTLIST_.selectedIndex].value;document.combobox._USERSELECTLIST_.value=&#39;&#39;">
+<option value="" selected="selected"></option>'
 
-#Reload postfix
-postmap hash:/etc/postfix/deny_receiving
-postmap hash:/etc/postfix/deny_sending
-service postfix reload
-'
+/opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_" style="width: 200px;">//g'
+
+
+echo '</td></tr></tbody></table><br><br>
+	<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></form>'
 fi
 

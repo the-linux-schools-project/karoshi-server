@@ -111,7 +111,7 @@ then
 	ICON1=/images/submenus/email/email_delete.png
 	TABLECLASS=standard
 	WIDTH1=150
-	WIDTH2=250
+	WIDTH2=200
 	WIDTH3=200
 else
 	ICON1=/images/submenus/email/email_deletem.png
@@ -134,7 +134,7 @@ then
 		#Edit main.cf
 		if [ $(grep -c -w "$TCPIP" /etc/postfix/main.cf) -gt 0 ]
 		then
-			MYNETWORKS=$(grep ^mynetworks /etc/postfix/main.cf)
+			MYNETWORKS=$(grep ^mynetworks /etc/postfix/main.cf | sed "s/$/ /g")
 			MYNETWORKS=$(echo "$MYNETWORKS" | sed "s/ $TCPIP //g" | sed "s/ //g" | sed "s/,$//g" | sed "s/,,/,/g" | sed "s/,/ , /g")	
 			sed -i "/^mynetworks/c\\$MYNETWORKS" /etc/postfix/main.cf
 
@@ -149,7 +149,7 @@ then
 		#Edit main.cf
 		if [ $(grep -c -w "'$TCPIP'" /etc/postfix/main.cf) -gt 0 ]
 		then
-			MYNETWORKS=$(grep ^mynetworks /etc/postfix/main.cf)
+			MYNETWORKS=$(grep ^mynetworks /etc/postfix/main.cf | sed "s/$/ /g")
 			MYNETWORKS=$(echo "$MYNETWORKS" | sed "s/ '$TCPIP' //g" | sed "s/ //g" | sed "s/,$//g" | sed "s/,,/,/g" | sed "s/,/ , /g")	
 			sed -i "/^mynetworks/c\\$MYNETWORKS" /etc/postfix/main.cf
 

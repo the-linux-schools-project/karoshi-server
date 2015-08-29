@@ -197,24 +197,64 @@ fi
 #######################
 if [ -f /opt/karoshi/server_network/emailserver ]
 then
-EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
-if [ $EMAILSERVER != `hostname-fqdn` ]
-then 
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
-rm -f -R /home/users/email/'$DELETEUSER'
-rm -f -R '$HOMEPATH''/''$DELETEUSER'
-'
-SSHSTATUS=`echo $?`
-if [ $SSHSTATUS != 0 ]
-then
-echo `date`: delete_user - $DELETEUSER ssh failure on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $EMAILSERVER,emailserver,delete >> /opt/karoshi/server_network/offline_servers/delete_users/$DELETEUSER
-FAILED_SERVER=yes
-FAILEDSERVERLIST=$FAILEDSERVERLIST,$SERVER
-fi
-else
-rm -f -R /home/users/email/$DELETEUSER
-fi
+	EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+	if [ $EMAILSERVER != `hostname-fqdn` ]
+	then 
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+		rm -f -R /home/users/email/'$DELETEUSER'
+		rm -f -R '$HOMEPATH''/''$DELETEUSER'
+
+		#Remove the username from all restriction lists.
+		if [ $(grep -c -w ^'$DELETEUSER' /etc/postfix/restricted_accounts) -gt 0 ]
+		then
+			sed -i "/^'$DELETEUSER'@/d" /etc/postfix/restricted_accounts
+			postmap /etc/postfix/restricted_accounts
+		fi
+
+		if [ $(grep -c -w ^'$DELETEUSER' /etc/postfix/deny_sending) -gt 0 ]
+		then
+			sed -i "/^'$DELETEUSER'@/d" /etc/postfix/deny_sending
+			postmap /etc/postfix/deny_sending
+		fi
+
+		if [ $(grep -c -w ^'$DELETEUSER' /etc/postfix/deny_receiving) -gt 0 ]
+		then
+			sed -i "/^'$DELETEUSER'@/d" /etc/postfix/deny_receiving
+			postmap /etc/postfix/deny_receiving
+		fi
+
+		'
+		SSHSTATUS=`echo $?`
+		if [ $SSHSTATUS != 0 ]
+		then
+			echo `date`: delete_user - $DELETEUSER ssh failure on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			echo $EMAILSERVER,emailserver,delete >> /opt/karoshi/server_network/offline_servers/delete_users/$DELETEUSER
+			FAILED_SERVER=yes
+			FAILEDSERVERLIST=$FAILEDSERVERLIST,$SERVER
+		fi
+	else
+		rm -f -R /home/users/email/$DELETEUSER
+
+		#Remove the username from all restriction lists.
+		if [ $(grep -c -w ^$DELETEUSER /etc/postfix/restricted_accounts) -gt 0 ]
+		then
+			sed -i "/^$DELETEUSER@/d" /etc/postfix/restricted_accounts
+			postmap /etc/postfix/restricted_accounts
+		fi
+
+		if [ $(grep -c -w ^$DELETEUSER /etc/postfix/deny_sending) -gt 0 ]
+		then
+			sed -i "/^$DELETEUSER@/d" /etc/postfix/deny_sending
+			postmap /etc/postfix/deny_sending
+		fi
+
+		if [ $(grep -c -w ^$DELETEUSER /etc/postfix/deny_receiving) -gt 0 ]
+		then
+			sed -i "/^$DELETEUSER@/d" /etc/postfix/deny_receiving
+			postmap /etc/postfix/deny_receiving
+		fi
+
+	fi 
 fi
 
 #######################
