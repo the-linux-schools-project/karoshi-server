@@ -206,18 +206,27 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<span>'$"E-Mail Access"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">'
+	if [ "$ACTION" != viewrestrictionlist ]
+	then
+		echo '<form action="/cgi-bin/admin/email_access.cgi" method="post"><input name="_ACTION_viewrestrictionlist_" type="submit" class="button" value="'$"View Restriction List"'"></form>'
+	fi
 	if [ "$ACTION" != getchoice ]
 	then
-		echo '<a href="email_access.cgi"><input class="button" type="button" name="" value="'$"Choose User / group"'"></a><br><br>'
+		echo '<a href="email_access.cgi"><input class="button" type="button" name="" value="'$"Choose User / group"'"></a>'
 	fi
+	echo '<br><br>'
 else
 	echo '<div id="'$DIV_ID'"><div id="titlebox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr style="height: 30px;">
-<td style="vertical-align: middle;"><div class="sectiontitle">'$"E-Mail Access"'</div></td>
-<td style="vertical-align: middle;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to set the level of access for sending and receiving E-Mails for your users."'<br><br>'$"Full access - allow the user to send and receive E-mails to all domains."'<br><br>'$"Restricted - limit the user to sending and receiving E-Mails from domains on the restricted list. This list defaults to your domain."'<br><br>'$"No Access - the user will not be able to send or receive any E-Mails."'</span></a></td>'
+<td style="vertical-align: top;"><div class="sectiontitle">'$"E-Mail Access"'</div></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to set the level of access for sending and receiving E-Mails for your users."'<br><br>'$"Full access - allow the user to send and receive E-mails to all domains."'<br><br>'$"Restricted - limit the user to sending and receiving E-Mails from domains on the restricted list. This list defaults to your domain."'<br><br>'$"No Access - the user will not be able to send or receive any E-Mails."'</span></a></td>'
+	if [ "$ACTION" != viewrestrictionlist ]
+	then
+		echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/email_access.cgi" method="post"><input name="_ACTION_viewrestrictionlist_" type="submit" class="button" value="'$"View Restriction List"'"></form></td>'
+	fi
 	if [ "$ACTION" != getchoice ]
 	then
-		echo '<td style="vertical-align: middle;"><a href="email_access.cgi"><input class="button" type="button" name="" value="'$"Choose User / group"'"></a></td>'
+		echo '<td style="vertical-align: top;"><a href="email_access.cgi"><input class="button" type="button" name="" value="'$"Choose User / group"'"></a></td>'
 	fi
 	echo '</tr></table><br></div><div id="infobox">'
 fi
@@ -226,6 +235,7 @@ fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$USERSELECT:$ACCESSLEVEL:$GROUP:$MOBILE:email_access:" | sudo -H /opt/karoshi/web_controls/exec/email_access
-echo '</div></div></div></body></html>'
+[ $MOBILE = no ] && echo '</div>'
+echo '</div></div></body></html>'
 exit
 

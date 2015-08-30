@@ -474,7 +474,7 @@ sed -i 's/CHANGETHISDN/'$LDAPBASE'/g' /etc/postfix/ldap-mail.cf
 sed -i 's/CHANGETHISLDAPSERVER/'$LDAPSERVER'/g' /etc/postfix/ldap-mail.cf
 
 echo "@$REALM root" > /etc/postfix/catchall
-postmap /etc/postfix/catchall
+postmap hash:/etc/postfix/catchall
 
 #Create user access files
 touch /etc/postfix/deny_sending

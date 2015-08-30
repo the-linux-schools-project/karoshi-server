@@ -69,13 +69,19 @@ MOBILE=`echo "$DATA" | cut -s -d: -f8`
 CALLEDBY=`echo "$DATA" | cut -s -d: -f9`
 
 TABLECLASS=standard
+ICON1=/images/submenus/email/email_delete.png
 WIDTH1=180
 WIDTH2=200
+WIDTH3=180
+HEIGHT1=25
 if [ "$MOBILE" = yes ]
 then
+	ICON1=/images/submenus/email/email_deletem.png
 	TABLECLASS=mobilestandard
 	WIDTH1=120
 	WIDTH2=140
+	WIDTH3=250
+	HEIGHT1=30
 fi
 
 ########################
@@ -135,6 +141,108 @@ else
 fi
 }
 
+if [ $ACTION = addrestricteddomain ]
+then
+	#Make sure the domain is lower case.
+	USERSELECT=$(echo $USERSELECT | tr 'A-Z' 'a-z')
+
+	#Make sure that the entry is a proper domain.
+	if [ $(echo "$USERSELECT" | grep -c "\.") -gt 0 ]
+	then 
+		#Add entry to /etc/postfix/restricted_domains
+		echo `date`: "email_access - adding $USERSELECT to the restriction list by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		if [ $EMAILSERVER = $(hostname-fqdn) ]
+		then
+			if [ $(grep -c -w ^$USERSELECT /etc/postfix/restricted_domains) = 0 ]
+			then
+				echo "$USERSELECT	OK" >> /etc/postfix/restricted_domains
+				#Sort the list
+				sort /etc/postfix/restricted_domains > /etc/postfix/restricted_domains2
+				rm /etc/postfix/restricted_domains
+				mv /etc/postfix/restricted_domains2 /etc/postfix/restricted_domains
+				#Activate the revised file
+				postmap hash:/etc/postfix/restricted_domains
+			fi
+		else
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+			if [ $(grep -c -w ^'$USERSELECT' /etc/postfix/restricted_domains) = 0 ]
+			then
+				echo "'$USERSELECT'	OK" >> /etc/postfix/restricted_domains
+				#Sort the list
+				sort /etc/postfix/restricted_domains > /etc/postfix/restricted_domains2
+				rm /etc/postfix/restricted_domains
+				mv /etc/postfix/restricted_domains2 /etc/postfix/restricted_domains
+				#Activate the revised file
+				postmap hash:/etc/postfix/restricted_domains
+			fi
+			'
+		fi
+	else
+		echo `date`: "email_access - $USERSELECT is not a domain name by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	fi
+	ACTION=viewrestrictionlist
+fi
+
+if [ $ACTION = reallydeleterestricteddomain ]
+then
+	#Delete entry from /etc/postfix/restricted_domains
+	echo `date`: "email_access - deleting $USERSELECT from the restriction list by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	if [ $EMAILSERVER = $(hostname-fqdn) ]
+	then
+		sed -i "/^$USERSELECT	/d" /etc/postfix/restricted_domains
+		postmap hash:/etc/postfix/restricted_domains
+	else
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+		sed -i "/^'$USERSELECT'	/d" /etc/postfix/restricted_domains
+		postmap hash:/etc/postfix/restricted_domains
+		'
+	fi
+	#Show the revised list
+	ACTION=viewrestrictionlist	
+fi
+
+if [ $ACTION = deleterestricteddomain ]
+then
+	#Ask for confirmation before removing the domain from the list.
+	echo '<form action="/cgi-bin/admin/email_access.cgi" method="post"><input type="hidden" name="_ACTION_" value="reallydeleterestricteddomain"><input type="hidden" name="_USERSELECT_" value="'$USERSELECT'">
+	<b>'$"Domain"'</b>: '$USERSELECT'<br><br>
+	'$"Remove this domain from the restriction list?"'<br><br><br>
+	<input value="'$"Submit"'" class="button" type="submit"></form>
+'
+fi
+
+if [ $ACTION = viewrestrictionlist ]
+then
+	#Show add domain
+	echo '<form action="/cgi-bin/admin/email_access.cgi" method="post"><input type="hidden" name="_ACTION_" value="addrestricteddomain"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	<tr><td style="width: '$WIDTH1'px;"><b>'$"Add Domain"'</b></td><td><input type="text" name="_USERSELECT_" style="width: '$WIDTH2'px; height: '$HEIGHT1'px;" value="" size="10"></td><td valign="middle"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a domain that you want to add to the restricted list."'<br><br>'$"Users with restricted E-Mail access can only send and receive E-Mails from domains listed in the restriction list."'</span></a></td></tr></tbody></table><br><input value="'$"Submit"'" class="button" type="submit"></form><br>
+	
+	'
+
+	#Show the contents of /etc/postfix/restricted_domains
+	echo '<form action="/cgi-bin/admin/email_access.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	<tr><td style="width: '$WIDTH3'px;"><b>'$"Allowed Domains"'</b></td><td></td></tr>'
+	if [ $EMAILSERVER = $(hostname-fqdn) ]
+	then
+		RESTRICTED_DOMAIN_LIST=$(cat /etc/postfix/restricted_domains | cut -f1)
+	else
+		RESTRICTED_DOMAIN_LIST=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+		cat /etc/postfix/restricted_domains | cut -f1
+		')
+	fi
+
+	for RESTRICTED_DOMAIN in $RESTRICTED_DOMAIN_LIST
+	do
+		echo "<tr><td>$RESTRICTED_DOMAIN</td>"
+		if [ $RESTRICTED_DOMAIN != $REALM ]
+		then
+			echo '<td><a class="info" href="javascript:void(0)"><input name="_ACTION_deleterestricteddomain_USERSELECT_'$RESTRICTED_DOMAIN'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Delete"'<br>'$FILENAME'</span></a></td>'
+		fi
+		echo "</tr>"
+	done
+	echo '</tbody></table></form>'
+fi
+
 if [ $ACTION = change ]
 then
 	function set_access {
@@ -176,9 +284,9 @@ then
 		fi
 	
 		#Activate changes
-		postmap /etc/postfix/restricted_accounts
-		postmap /etc/postfix/deny_sending
-		postmap /etc/postfix/deny_receiving
+		postmap hash:/etc/postfix/restricted_accounts
+		postmap hash:/etc/postfix/deny_sending
+		postmap hash:/etc/postfix/deny_receiving
 	else
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
 		#Remove the username from all restriction lists and then add into the correct lists as needed.
@@ -216,9 +324,9 @@ then
 		fi
 	
 		#Activate changes
-		postmap /etc/postfix/restricted_accounts
-		postmap /etc/postfix/deny_sending
-		postmap /etc/postfix/deny_receiving
+		postmap hash:/etc/postfix/restricted_accounts
+		postmap hash:/etc/postfix/deny_sending
+		postmap hash:/etc/postfix/deny_receiving
 		'
 	fi
 	}
@@ -266,7 +374,7 @@ if [ $ACTION = view ]
 then
 	function showdata {
 	echo '<tr><td valign="top">'$USERNAME'</td><td><form id="'$USERNAME'" name="viewdata" action="/cgi-bin/admin/email_access.cgi" method="post"><input type="hidden" name="_ACTION_" value="change"><input type="hidden" name="_USERSELECT_" value="'$USERNAME'"><input type="hidden" name="_GROUP_" value="'$GROUP'">
-	<select name="_ACCESSLEVEL_" style="width: '$WIDTH2'px;" onchange="'$USERNAME'.submit()">
+	<select name="_ACCESSLEVEL_" style="width: '$WIDTH2'px; height: '$HEIGHT1'px;" onchange="'$USERNAME'.submit()">
 	<option value="1" '$SELECT1'>'$"Full access"'</option>
   	<option value="2" '$SELECT2'>'$"Restricted"'</option>
   	<option value="3" '$SELECT3'>'$"Receive only"'</option>
@@ -287,6 +395,8 @@ then
 	if [ $DATATYPE = group ]
 	then
 		source /opt/karoshi/server_network/group_information/"$GROUP"
+		GROUPCOUNT=$(getent passwd | grep -c -w "$HOMEPATH")
+
 		[ -z "$EMAIL_LEVEL" ] && EMAIL_LEVEL=1 
 		[ $EMAIL_LEVEL = 2 ] && SELECT2="selected"
 		[ $EMAIL_LEVEL = 3 ] && SELECT3="selected"
@@ -301,6 +411,12 @@ then
 		USERNAME=$USERSELECT
 		showdata
 		echo '</tbody></table><br>'
+	fi
+
+	#If this is for a group then dont show any info is the group is empty
+	if [ $DATATYPE = group ] && [ $GROUPCOUNT = 0 ]
+	then
+		exit
 	fi
 
 	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
@@ -439,9 +555,8 @@ then
 	#Show the user a choice of username or group to select.
 	echo '<form id="form1" name="combobox" action="/cgi-bin/admin/email_access.cgi" method="post"><input type="hidden" name="_ACTION_" value="view"> <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 	<tr><td style="width: '$WIDTH1'px;">'$"Username"' / '$"Group"'</td><td>
-	<input type="text" name="_USERSELECT_" style="width: '$WIDTH2'px;" value="" size="10"></td><td valign="middle"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a username or choose a group from the dropdown list."'</span></a></td></tr>
-<tr><td></td><td><select name="_USERSELECTLIST_" style="width: '$WIDTH2'px;" size="1" onchange="document.combobox._USERSELECT_.value = document.combobox._USERSELECTLIST_.options[document.combobox._USERSELECTLIST_.selectedIndex].value;document.combobox._USERSELECTLIST_.value=&#39;&#39;">
-<option value="" selected="selected"></option>'
+	<input type="text" name="_USERSELECT_" style="width: '$WIDTH2'px; height: '$HEIGHT1'px;" value="" size="10"></td><td valign="middle"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a username or choose a group from the dropdown list."'</span></a></td></tr>
+<tr><td></td><td><select name="_USERSELECTLIST_" style="width: '$WIDTH2'px; height: '$HEIGHT1'px;" size="1" onchange="document.combobox._USERSELECT_.value = document.combobox._USERSELECTLIST_.options[document.combobox._USERSELECTLIST_.selectedIndex].value;document.combobox._USERSELECTLIST_.value=&#39;&#39;">'
 
 /opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_" style="width: 200px;">//g'
 
