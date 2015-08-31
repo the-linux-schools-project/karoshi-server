@@ -231,7 +231,12 @@ then
 		DRIVELIST=`echo $DRIVELIST | sed "s/,/ /g"`
 		#Create the zfs raid
 		echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-		echo '<li>'$"Creating ZFS raid"' z'$PARITY'</li>'
+		if [ $PARITY = 0 ]
+		then
+			echo '<li>'$"Creating ZFS mirror"'</li>'
+		else		
+			echo '<li>'$"Creating ZFS raid"' z'$PARITY'</li>'
+		fi
 		#Check that there is not already a pool created for this zfs raid
 		if [ `zpool status | grep -c -w $POOLNAME` -gt 0 ]
 		then
@@ -239,14 +244,28 @@ then
 			sleep 3
 			exit 101
 		fi
-		if [ ! -z "$SPAREDRIVELIST" ]
-		then
-			SPAREDRIVELIST=`echo $SPAREDRIVELIST | sed "s/,/ /g"`
-			zpool create -o ashift=12 -f $POOLNAME raidz$PARITY $DRIVELIST spare $SPAREDRIVELIST
-		else
-			zpool create -o ashift=12 -f $POOLNAME raidz$PARITY $DRIVELIST
-		fi
 
+		if [ $PARITY = 0 ]
+		then
+			#Create a zfs mirror
+			if [ ! -z "$SPAREDRIVELIST" ]
+			then
+				SPAREDRIVELIST=`echo $SPAREDRIVELIST | sed "s/,/ /g"`
+				zpool create -o ashift=12 -f $POOLNAME mirror $DRIVELIST spare $SPAREDRIVELIST
+			else
+				zpool create -o ashift=12 -f $POOLNAME mirror $DRIVELIST
+			fi
+		else
+			#Create a raidz volume
+			if [ ! -z "$SPAREDRIVELIST" ]
+			then
+				SPAREDRIVELIST=`echo $SPAREDRIVELIST | sed "s/,/ /g"`
+				zpool create -o ashift=12 -f $POOLNAME raidz$PARITY $DRIVELIST spare $SPAREDRIVELIST
+			else
+				zpool create -o ashift=12 -f $POOLNAME raidz$PARITY $DRIVELIST
+			fi
+			
+		fi
 		#Check zfs raid has been created
 		zpool status $POOLNAME
 		if [ $? != 0 ]
@@ -349,7 +368,7 @@ then
 			fi
 			echo '<br><li>'$"Copying existing data onto the raid."'</b></li>'
 			sleep 2
-			rsync --timeout=30 --verbose --dirs --recursive --links --compress --delete --backup --times --perms --executability --owner --group -o $MOUNTPOINT/ $MOUNTPOINT.$$/
+			rsync --timeout=30 --verbose --dirs --recursive --links --compress --delete --backup --times --perms --acls --executability --owner --group -o $MOUNTPOINT/ $MOUNTPOINT.$$/
 			
 			#Move existing folder and create a new empty folder
 			mv $MOUNTPOINT $MOUNTPOINT-pre-zfs.$$
@@ -369,8 +388,7 @@ then
 			cp /etc/fstab /etc/fstab-backup.$$
 
 			#Remove entry from fstab
-			LINENO=`grep -n $MOUNTPOINT /etc/fstab`
-			sed -i $LINENO"d" /etc/fstab
+			sed -i '\%'$MOUNTPOINT'%d' /etc/fstab
 		fi
 
 		#Unmount zfs partition and mount as /home
@@ -581,7 +599,14 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 		DRIVELIST=`echo '$DRIVELIST' | sed "s/,/ /g"`
 		#Create the zfs raid
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-		echo "<li>'$"Creating ZFS raid"' z'$PARITY'</li>"
+
+		if [ '$PARITY' = 0 ]
+		then
+			echo "<li>'$"Creating ZFS mirror"'</li>"
+		else		
+			echo "<li>'$"Creating ZFS raid"' z'$PARITY'</li>"
+		fi
+
 		#Check that there is not already a pool created for this zfs raid
 		if [ `zpool status | grep -c -w '$POOLNAME'` -gt 0 ]
 		then
@@ -591,13 +616,24 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 		fi
 
 
-
-		if [ ! -z "'$SPAREDRIVELIST'" ]
+		if [ '$PARITY' = 0 ]
 		then
-			SPAREDRIVELIST=`echo '$SPAREDRIVELIST' | sed "s/,/ /g"`
-			zpool create -o ashift=12 -f '$POOLNAME' raidz'$PARITY' $DRIVELIST spare $SPAREDRIVELIST
+			#Create a zfs mirror
+			if [ ! -z "'$SPAREDRIVELIST'" ]
+			then
+				SPAREDRIVELIST=`echo '$SPAREDRIVELIST' | sed "s/,/ /g"`
+				zpool create -o ashift=12 -f '$POOLNAME' mirror $DRIVELIST spare $SPAREDRIVELIST
+			else
+				zpool create -o ashift=12 -f '$POOLNAME' mirror $DRIVELIST
+			fi
 		else
-			zpool create -o ashift=12 -f '$POOLNAME' raidz'$PARITY' $DRIVELIST
+			if [ ! -z "'$SPAREDRIVELIST'" ]
+			then
+				SPAREDRIVELIST=`echo '$SPAREDRIVELIST' | sed "s/,/ /g"`
+				zpool create -o ashift=12 -f '$POOLNAME' raidz'$PARITY' $DRIVELIST spare $SPAREDRIVELIST
+			else
+				zpool create -o ashift=12 -f '$POOLNAME' raidz'$PARITY' $DRIVELIST
+			fi
 		fi
 
 		#Check zfs raid has been created
@@ -724,8 +760,7 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 			cp /etc/fstab /etc/fstab-backup.'$$'
 
 			#Remove entry from fstab
-			LINENO=`grep -n '$MOUNTPOINT' /etc/fstab`
-			sed -i $LINENO"d" /etc/fstab
+			sed -i "\%'$MOUNTPOINT'%d" /etc/fstab
 		fi
 
 		#Unmount zfs partition and mount as mountpoint.
