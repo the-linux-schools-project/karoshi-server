@@ -554,8 +554,8 @@ if [ $ACTION = getchoice ]
 then
 	#Show the user a choice of username or group to select.
 	echo '<form id="form1" name="combobox" action="/cgi-bin/admin/email_access.cgi" method="post"><input type="hidden" name="_ACTION_" value="view"> <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-	<tr><td style="width: '$WIDTH1'px;">'$"Username"' / '$"Group"'</td><td>
-	<input type="text" name="_USERSELECT_" style="width: '$WIDTH2'px; height: '$HEIGHT1'px;" value="" size="10"></td><td valign="middle"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a username or choose a group from the dropdown list."'</span></a></td></tr>
+	<tr><td style="width: '$WIDTH1'px;">'$"Username"' / '$"Group"'</td><td><div id="suggestions"></div>
+	<input type="text" name="_USERSELECT_" id="inputString" onkeyup="lookup(this.value);" style="width: '$WIDTH2'px; height: '$HEIGHT1'px;" value="" size="10"></td><td valign="middle"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a username or choose a group from the dropdown list."'</span></a></td></tr>
 <tr><td></td><td><select name="_USERSELECTLIST_" style="width: '$WIDTH2'px; height: '$HEIGHT1'px;" size="1" onchange="document.combobox._USERSELECT_.value = document.combobox._USERSELECTLIST_.options[document.combobox._USERSELECTLIST_.selectedIndex].value;document.combobox._USERSELECTLIST_.value=&#39;&#39;">'
 
 /opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_" style="width: 200px;">//g'
