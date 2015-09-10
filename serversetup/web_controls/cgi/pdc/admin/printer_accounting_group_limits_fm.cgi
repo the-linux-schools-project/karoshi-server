@@ -75,19 +75,19 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-TABLECLASS=standard
-WIDTH=180
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	TABLECLASS=standard
+	WIDTH=180
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
-TABLECLASS=mobilestandard
-WIDTH=110
+	DIV_ID=actionbox2
+	TABLECLASS=mobilestandard
+	WIDTH=110
 fi
 echo '<form name="myform" action="/cgi-bin/admin/printer_accounting_edit_limits_fm.cgi" method="post">'
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -100,23 +100,31 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 '
 else
 echo '<b>'$"Group Printer Limits"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Accounting#Group_Limits"><img class="images" alt="" src="/images/help/info.png"><span>'$"Each Primary Group has a limit set for the amount of printing that each user can do in that group."'<br><br>'$"User limits override group limits."'</span></a>
-<br><br>'
+<br><br></div><div id="infobox">'
 fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: '$WIDTH'px;"><b>'$"Primary Group"'</b></td><td><b>'$"Limit"'</b></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Accounting#Group_Limits"><img class="images" alt="" src="/images/help/info.png"><span>'$"Set the page limits that you want for each user or group."'</span></a></td></tr>'
 
 ICON1=/images/submenus/printer/edit_printer_limits.png
-for NAMES in /opt/karoshi/server_network/printer_accounting/quotas/*_group_quota
+for NAMES in /opt/karoshi/server_network/group_information/*
 do
-NAME1=`basename $NAMES`
-NAME2=`basename $NAMES | cut -d_ -f1`
-LIMIT=`sed -n 1,1p /opt/karoshi/server_network/printer_accounting/quotas/$NAME1`
-echo '<tr><td>'$NAME2'</td><td>'$LIMIT'</td><td>
-<input src="'$ICON1'" name="_NAME_'$NAME1'_LIMIT_'$LIMIT'_TYPE_group_" type="image" value="'$NAME2' - '$"Edit Printer Limit"'">
-</td></tr>'
+	NAME=`basename $NAMES`
+	NAME1="$NAME"_group_quota
+	if [ -f /opt/karoshi/server_network/printer_accounting/quotas/$NAME1 ]
+	then
+		LIMIT=`sed -n 1,1p /opt/karoshi/server_network/printer_accounting/quotas/$NAME1`
+	else
+		LIMIT=""
+	fi
+	echo '<tr><td>'$NAME'</td><td>'$LIMIT'</td><td>
+	<input src="'$ICON1'" name="_NAME_'$NAME1'_LIMIT_'$LIMIT'_TYPE_group_" type="image" value="'$NAME2' - '$"Edit Printer Limit"'">
+	</td></tr>'
 done
-
-echo '</tbody></table><br></div></form></div></body></html>'
+echo '</tbody></table><br></div>'
+[ $MOBILE = no ] && echo '</div>'
+echo '</form></div></body></html>'
 exit
+
+
 

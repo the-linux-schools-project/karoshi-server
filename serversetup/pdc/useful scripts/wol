@@ -64,33 +64,38 @@ fi
 #Wake up any assets with mac addresses
 #####################
 echo `date`: wol - Waking up $LOCATION.  >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-#Asset types to wake up
-ASSET_TYPES=( 1 2 3 4 5 6 9 10 )
-ASSET_TYPE_COUNT=${#ASSET_TYPES[@]}
-COUNTER=0
-while [ $COUNTER -lt $ASSET_TYPE_COUNT ]
-do
-	ASSET_TYPE=${ASSET_TYPES[$COUNTER]}
-	if [ -d /opt/karoshi/asset_register/locations/$LOCATION/$ASSET_TYPE ]
+
+if [ -d /opt/karoshi/asset_register/locations/"$LOCATION" ]
+then
+	if [ `ls -1 /opt/karoshi/asset_register/locations/"$LOCATION" | wc -l` -gt 0 ]
 	then
-		if [ `ls -1 /opt/karoshi/asset_register/locations/$LOCATION/$ASSET_TYPE/ | wc -l` -gt 0 ]
-		then
-			for ASSET in /opt/karoshi/asset_register/locations/$LOCATION/$ASSET_TYPE/*
-			do
-				#Get mac address of asset
-				MACADDRESS=`sed -n 5,5p $ASSET | cut -d: -f2- | sed 's/ //g'`
-				#Check to see if mac address is valid
-				if [ `echo $MACADDRESS | sed 's/:/\n/g'  | sed /^$/d | wc -l` = 6 ]
-				then
-					#Send wakeonlan
-					echo `date +%T` $MACADDRESS >> /opt/karoshi/logs/wake_on_lan/$LOCATION/$LOG_DATE
-					wakeonlan $MACADDRESS
-				fi
-				#Delay to avoid power surges
-				sleep 1
-			done
-		fi
+		for ASSETS in /opt/karoshi/asset_register/locations/"$LOCATION"/*
+		do
+			ASSET=`basename $ASSETS`
+			MAC1=""
+			MAC2=""
+			MAC3=""
+			source /opt/karoshi/asset_register/locations/"$LOCATION"/$ASSET
+			if [ ! -z "$MAC1" ] && [ $MAC1 != N.A. ]
+			then
+				echo $"Waking" "$MAC1"
+				wakeonlan "$MAC1" 1>/dev/null
+				sleep 1.5
+			fi
+			if [ ! -z "$MAC2" ] && [ $MAC2 != N.A. ]
+			then
+				echo $"Waking" "$MAC2"
+				wakeonlan "$MAC2" 1>/dev/null
+				sleep 1.5
+			fi
+			if [ ! -z "$MAC3" ] && [ $MAC3 != N.A. ]
+			then
+				echo $"Waking" "$MAC3"
+				wakeonlan "$MAC3" 1>/dev/null
+				sleep 1.5
+			fi
+		done
 	fi
-	let COUNTER=$COUNTER+1
-done
+fi
+
 exit

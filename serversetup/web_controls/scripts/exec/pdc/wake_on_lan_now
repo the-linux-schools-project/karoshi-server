@@ -100,11 +100,26 @@ then
 		for ASSETS in /opt/karoshi/asset_register/locations/"$LOCATION"/*
 		do
 			ASSET=`basename $ASSETS`
-			MACADDRESS=`sed -n 8,8p /opt/karoshi/asset_register/locations/$LOCATION/$ASSET | cut -d: -f2- | sed 's/ //g' | tr -cd "A-Za-z0-9:"`
-			if [ ! -z "$MACADDRESS" ] && [ $MACADDRESS != N.A. ]
+			MAC1=""
+			MAC2=""
+			MAC3=""
+			source /opt/karoshi/asset_register/locations/"$LOCATION"/$ASSET
+			if [ ! -z "$MAC1" ] && [ $MAC1 != N.A. ]
 			then
-				echo $"Waking" "$MACADDRESS""<br>"
-				wakeonlan "$MACADDRESS" 1>/dev/null
+				echo $"Waking" "$MAC1""<br>"
+				wakeonlan "$MAC1" 1>/dev/null
+				sleep 1.5
+			fi
+			if [ ! -z "$MAC2" ] && [ $MAC2 != N.A. ]
+			then
+				echo $"Waking" "$MAC2""<br>"
+				wakeonlan "$MAC2" 1>/dev/null
+				sleep 1.5
+			fi
+			if [ ! -z "$MAC3" ] && [ $MAC3 != N.A. ]
+			then
+				echo $"Waking" "$MAC3""<br>"
+				wakeonlan "$MAC3" 1>/dev/null
 				sleep 1.5
 			fi
 		done

@@ -42,7 +42,7 @@ TEXTDOMAIN=karoshi-server
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Wake on Lan - Schedule"'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Wake a location"'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -56,21 +56,21 @@ END_POINT=3
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = LOCATIONcheck ]
-then
-let COUNTER=$COUNTER+1
-LOCATION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = LOCATIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		LOCATION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo '</script>'
-echo "</div></body></html>"
+echo "</div></div></body></html>"
 exit
 }
 #########################
@@ -78,32 +78,37 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that LOCATION is not blank
-if [ $LOCATION'null' = null ]
+if [ -z "$LOCATION" ]
 then
-MESSAGE=$"The location cannot be blank."
-show_status
+	MESSAGE=$"The location cannot be blank."
+	show_status
 fi
+
+#Generate navigation bar
+/opt/karoshi/web_controls/generate_navbar_admin
+
+echo '<div id="actionbox3"><div id="titlebox"><b>'$"Wake a location"'</b><br></div><div id="infobox">'
 
 #wake on lan
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/wake_on_lan_now.cgi | cut -d' ' -f1`
@@ -111,9 +116,9 @@ sudo -H /opt/karoshi/web_controls/exec/wake_on_lan_now $REMOTE_USER:$REMOTE_ADDR
 WOLSTATUS=`echo $?`
 if [ $WOLSTATUS = 102 ]
 then
-MESSAGE=$"Wake on lan is disabled for this location."
+	MESSAGE=$"Wake on lan is disabled for this location."
 else
-MESSAGE=`echo $LOCATION  - $"Wake on Lan Schedule completed."2`
+	MESSAGE=`echo $LOCATION  - $"Wake on Lan completed for this location."`
 fi
 show_status
 exit

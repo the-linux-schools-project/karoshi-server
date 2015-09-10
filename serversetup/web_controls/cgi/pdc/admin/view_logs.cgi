@@ -50,7 +50,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"View Log File"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"View Event Logs"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ "$MOBILE" = yes ]
@@ -76,7 +76,7 @@ fi
 echo '</head><body onLoad="start()"><div id="pagecontainer">'
 TCPIP_ADDR=$REMOTE_ADDR
 
-DATA=`cat | tr -cd 'A-Za-z0-9\_.-/' | sed 's/\.\.\///g'`
+DATA=`cat | tr -cd 'A-Za-z0-9\_.-/-%' | sed 's/\.\.\///g'`
 
 #If we have not received any data via post then try and get it from query_string
 if [ -z "$DATA" ]
@@ -88,6 +88,21 @@ fi
 #Assign data to variables
 #########################
 END_POINT=45
+
+#Assign ACTION
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
 #Assign SERVERNAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
@@ -142,25 +157,24 @@ exit
 
 if [ -z "$SERVERNAME" ]
 then
-	MESSAGE=$"Blank Servername."
-	show_status
-
+	SERVERNAME=viewservers
+	SERVERNAME2=""
+else
+	SERVERNAME2="$SERVERNAME"
 fi
 
 if [ -z "$LOGFILE" ]
 then
-	MESSAGE=$"Blank Logfile."
-	show_status
-
-fi
-
-if [ ! -z "$LOGFILE" ]
-then
-	if [ `echo "$LOGFILE" | grep -c ^/var/log` = 0 ]
-	then
-		MESSAGE=$"Incorrect path for the log file."
-		show_status
-	fi 
+	LOGFILE=viewlist
+	LOGFILE2=""
+else
+	LOGFILE2=`echo "$LOGFILE" | sed 's/%3A/:/g'`
+	#Get time and date of the event
+	DAY=$(echo "$LOGFILE2" | cut -d"-" -f3)
+	MONTH=$(echo "$LOGFILE2" | cut -d"-" -f2)
+	YEAR=$(echo "$LOGFILE2" | cut -d"-" -f1)
+	TIME=$(echo "$LOGFILE2" | cut -d"-" -f4)
+	EVENT="$DAY-$MONTH-$YEAR $TIME"
 fi
 
 #Generate navigation bar
@@ -180,18 +194,24 @@ then
 	SERVERNAME2=`echo $SERVERNAME | cut -d. -f1`
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$"View Logs"' '$SERVERNAME2'</span>
+	<span>'$"View Event Logs"' '$SERVERNAME2'</span>
 	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 	</div></div>
 	<div id="'$DIV_ID'">
 	'
-
-	else
-	echo '<div id="'$DIV_ID'"><div id="titlebox"><div class="sectiontitle">'$"View Logs"' '$SERVERNAME' '$LOGFILE'</div></div><div id="infobox">'
+else
+	echo '<div id="'$DIV_ID'"><div id="titlebox"><div class="sectiontitle">'$"View Event Logs"' '$SERVERNAME2' '$EVENT'</div></div><div id="infobox">'
 fi
-
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/view_logs.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$SERVERNAME:$LOGFILE:$TAIL_LENGTH:" | sudo -H /opt/karoshi/web_controls/exec/view_logs
+if [ $SERVERNAME = viewservers ]
+then
+	#Show list of servers
+	echo '<form action="/cgi-bin/admin/view_logs.cgi" method="post">'
+	/opt/karoshi/web_controls/show_servers $MOBILE servers $"View Event Logs" viewlist
+	echo '</form>'
+else
+	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/view_logs.cgi | cut -d' ' -f1`
+	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$SERVERNAME:$ACTION:$LOGFILE:$TAIL_LENGTH:" | sudo -H /opt/karoshi/web_controls/exec/view_logs
+fi
 
 [ $MOBILE = no ] && echo '</div>'
 echo '</div></div></body></html>'

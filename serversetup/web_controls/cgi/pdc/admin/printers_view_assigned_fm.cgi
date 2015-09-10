@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -72,8 +72,9 @@ echo '<form action="/cgi-bin/admin/printers_view_assigned.cgi" method="post"><di
 #Check to see that locations.txt exists
 if [ ! -f /var/lib/samba/netlogon/locations.txt ]
 then
-echo $"No Printers have been assigned to a location."'<br>'
-echo '</div></body></html>'
+	echo $"No Printers have been assigned to a location."'<br>'
+	echo '</div></body></html>'
+	exit
 fi
 COUNTER=`grep -n ^--start-- /var/lib/samba/netlogon/printers.txt | cut -d: -f1`
 let COUNTER=$COUNTER+1
@@ -85,43 +86,43 @@ LASTLOCATION=notset
 #Show locations and printers
 while [ $COUNTER -le $NOOFLINES ]
 do
-DATAENTRY=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/printers.txt`
-#Assign data entry to an array
-if [ $DATAENTRY'null' != null ]
-then
-DATARRAY=( `echo $DATAENTRY | sed 's/,/ /g'` )
-ARRAYCOUNT=${#DATARRAY[@]}
-let ARRAYCOUNT=$ARRAYCOUNT-1
-DEFAULTPRINTER=${DATARRAY[$ARRAYCOUNT]}
-#Show printers
-ARRAYCOUNTER=2
-while [ $ARRAYCOUNTER -lt $ARRAYCOUNT ]
-do
-#Show location 
-[ $LASTLOCATION != ${DATARRAY[0]} ] && echo '<tr><td style="vertical-align: top; height: 15px;"><br></td></tr>'
-echo '<tr><td>'
-[ $LASTLOCATION != ${DATARRAY[0]} ] && echo ${DATARRAY[0]}
-LASTLOCATION=${DATARRAY[0]}
-echo '</td><td>'${DATARRAY[$ARRAYCOUNTER]}'</td>'
-#Show printer actions
-#Set default option
-if [ ${DATARRAY[$ARRAYCOUNTER]} != $DEFAULTPRINTER ]
-then
-echo '<td style="text-align: center;"><a class="info" href="javascript:void(0)"><input name="_PRINTACTION_default:'${DATARRAY[0]}':'${DATARRAY[$ARRAYCOUNTER]}'_" type="image" class="images" src="/images/help/printer_make_default.png" value=""><span>'$"Set Default"'</span></a></td>'
-else
-echo '<td style="text-align: center;">
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/printer_default.png"><span>'$"Default Printer"'</span></a>
-'
-fi
+	DATAENTRY=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/printers.txt`
+	#Assign data entry to an array
+	if [ -z "$DATAENTRY" ]
+	then
+		DATARRAY=( `echo $DATAENTRY | sed 's/,/ /g'` )
+		ARRAYCOUNT=${#DATARRAY[@]}
+		let ARRAYCOUNT=$ARRAYCOUNT-1
+		DEFAULTPRINTER=${DATARRAY[$ARRAYCOUNT]}
+		#Show printers
+		ARRAYCOUNTER=2
+		while [ $ARRAYCOUNTER -lt $ARRAYCOUNT ]
+		do
+			#Show location 
+			[ $LASTLOCATION != ${DATARRAY[0]} ] && echo '<tr><td style="vertical-align: top; height: 15px;"><br></td></tr>'
+			echo '<tr><td>'
+			[ $LASTLOCATION != ${DATARRAY[0]} ] && echo ${DATARRAY[0]}
+			LASTLOCATION=${DATARRAY[0]}
+			echo '</td><td>'${DATARRAY[$ARRAYCOUNTER]}'</td>'
+			#Show printer actions
+			#Set default option
+			if [ ${DATARRAY[$ARRAYCOUNTER]} != $DEFAULTPRINTER ]
+			then
+				echo '<td style="text-align: center;"><a class="info" href="javascript:void(0)"><input name="_PRINTACTION_default:'${DATARRAY[0]}':'${DATARRAY[$ARRAYCOUNTER]}'_" type="image" class="images" src="/images/help/printer_make_default.png" value=""><span>'$"Set Default"'</span></a></td>'
+			else
+				echo '<td style="text-align: center;">
+			<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/printer_default.png"><span>'$"Default Printer"'</span></a>
+			'
+			fi
 
-#Delete option
-echo '<td><a class="info" href="javascript:void(0)"><input name="_PRINTACTION_delete:'${DATARRAY[0]}':'${DATARRAY[$ARRAYCOUNTER]}'_" type="image" class="images" src="/images/help/printer_remove.png" value=""><span>'$"Remove Printer"'</span></a></td></tr>'
-let ARRAYCOUNTER=$ARRAYCOUNTER+1
-done
-#Clear array
-unset DATARRAY
-let COUNTER=$COUNTER+1
-fi
+			#Delete option
+			echo '<td><a class="info" href="javascript:void(0)"><input name="_PRINTACTION_delete:'${DATARRAY[0]}':'${DATARRAY[$ARRAYCOUNTER]}'_" type="image" class="images" src="/images/help/printer_remove.png" value=""><span>'$"Remove Printer"'</span></a></td></tr>'
+			let ARRAYCOUNTER=$ARRAYCOUNTER+1
+		done
+		#Clear array
+		unset DATARRAY
+		let COUNTER=$COUNTER+1
+	fi
 done
 #End table
 echo '</tbody></table></div></form></div></body></html>'

@@ -270,6 +270,7 @@ echo '						<li><a href="/cgi-bin/admin/backup_essentials_fm.cgi">'$"Backup Esse
 			<li><a href="/cgi-bin/admin/apply_ssl_certificate_fm.cgi">'$"SSL Certificate"'</a></li>
 			<li><a href="/cgi-bin/admin/ssl_commercial_certs_fm.cgi">'$"Commercial SSL Certificate"'</a></li>
 			<li><a href="/admin/phpldapadmin/" target="_blank">'$"LDAP Administration"'</a></li>
+			<li><a href="/cgi-bin/admin/view_logs.cgi">'$"Event Logs"'</a></li>
 			<li><a href="/cgi-bin/admin/clear_warnings_fm.cgi">'$"Clear Warning Messages"'</a></li>
 		</ul>
 	</li>
@@ -313,13 +314,7 @@ then
 echo '			<li><a href="/cgi-bin/admin/ocs.cgi" target="_blank">'$"OCS-Inventory"'</a></li>'
 fi
 echo '			<li><a href="/cgi-bin/admin/locations.cgi">'$"Client Locations"'</a></li>
-			<li class="mid"><a href="/cgi-bin/admin/wake_on_lan_add.cgi" class="fly">'$"Wake on Lan"'</a>
-					<ul>
-						<li><a href="/cgi-bin/admin/wake_on_lan_add.cgi">'$"Schedule a location"'</a></li>
-						<li><a href="/cgi-bin/admin/wake_on_lan_now.cgi">'$"Wake up a location now"'</a></li>
-						<li><a href="/cgi-bin/admin/wake_on_lan_view.cgi">'$"View scheduled locations"'</a></li>
-					</ul>
-			</li>
+			<li><a href="/cgi-bin/admin/wake_on_lan_view.cgi">'$"Wake on LAN"'</a></li>
 			<li class="mid"><a href="/cgi-bin/admin/linux_client_choose_background_fm.cgi" class="fly">'$"Linux Client"'</a>
 					<ul>
 						<li><a href="/cgi-bin/admin/linux_client_choose_background_fm.cgi">'$"Linux Client Background"'</a></li>

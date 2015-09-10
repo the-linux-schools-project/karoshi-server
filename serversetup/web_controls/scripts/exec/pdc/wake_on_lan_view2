@@ -103,14 +103,14 @@ LOCATION_COUNT=${#LOCATIONS[@]}
 if [ $ACTION = disable ]
 then
 	#Disable wake on lan for location
-	[ -d /opt/karoshi/server_network/cronjobs/$SERVERNAME/wake_on_lan_status ] || mkdir -p /opt/karoshi/server_network/cronjobs/$SERVERNAME/wake_on_lan_status
+	[ -d /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/wake_on_lan_status ] || mkdir -p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/wake_on_lan_status
 
 	COUNTER=0
 	while [ $COUNTER -lt $LOCATION_COUNT ]
 	do
 		LOCATION=`echo ${LOCATIONS[$COUNTER]}`
 		echo `date`: wake_on_lan_view2 - Disabling $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-		touch /opt/karoshi/server_network/cronjobs/$SERVERNAME/wake_on_lan_status/$LOCATION
+		touch /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/wake_on_lan_status/$LOCATION
 		let COUNTER=$COUNTER+1
 	done
 fi
@@ -122,7 +122,7 @@ then
 	do
 		LOCATION=`echo ${LOCATIONS[$COUNTER]}`
 		echo `date`: wake_on_lan_view2 - Enabling $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-		[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/wake_on_lan_status/$LOCATION ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/wake_on_lan_status/$LOCATION
+		[ -f /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/wake_on_lan_status/$LOCATION ] && rm -f /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/wake_on_lan_status/$LOCATION
 		let COUNTER=$COUNTER+1
 	done
 fi
@@ -134,16 +134,16 @@ then
 	do
 		LOCATION=`echo ${LOCATIONS[$COUNTER]}`
 		echo `date`: wake_on_lan_view2 - Removing $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-		[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/wake_on_lan/$LOCATION.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/wake_on_lan/$LOCATION.cron
-		[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/wake_on_lan_status/$LOCATION ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/wake_on_lan_status/$LOCATION
+		[ -f /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/wake_on_lan/$LOCATION.cron ] && rm -f /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/wake_on_lan/$LOCATION.cron
+		[ -f /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/wake_on_lan_status/$LOCATION ] && rm -f /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/wake_on_lan_status/$LOCATION
 		let COUNTER=$COUNTER+1
 	done
 	#refresh cronjobs
-	if [ `ls -1 /opt/karoshi/server_network/cronjobs/$SERVERNAME/wake_on_lan/ | wc -l` -gt 0 ]
+	if [ $(ls -1 /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/wake_on_lan/ | wc -l) -gt 0 ]
 	then
-		cat /opt/karoshi/server_network/cronjobs/$SERVERNAME/wake_on_lan/* > /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/wake_on_lan.cron
+		cat /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/wake_on_lan/* > /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/wake_on_lan.cron
 	else
-		rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/wake_on_lan.cron
+		rm -f /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/wake_on_lan.cron
 	fi
 	/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null 2>/dev/null
 fi

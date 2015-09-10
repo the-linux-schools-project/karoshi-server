@@ -178,7 +178,7 @@ then
 	then
 		mkdir -p /opt/karoshi/server_network/printer_accounting/quotas
 		chown lp.sys /opt/karoshi/server_network/printer_accounting/quotas
-		chmod 0770 /opt/karoshi/server_network/printer_accounting/quotas
+		chmod 0775 /opt/karoshi/server_network/printer_accounting/quotas
 	fi
 
 	[ ! -f /opt/karoshi/server_network/printer_accounting/quotas/print_quota ] && echo 400 > /opt/karoshi/server_network/printer_accounting/quotas/print_quota
@@ -316,7 +316,7 @@ then
 		then
 			mkdir -p /opt/karoshi/server_network/printer_accounting/quotas
 			chown lp.sys /opt/karoshi/server_network/printer_accounting/quotas
-			chmod 0770 /opt/karoshi/server_network/printer_accounting/quotas
+			chmod 0775 /opt/karoshi/server_network/printer_accounting/quotas
 		fi
 
 		#Create default quota limits

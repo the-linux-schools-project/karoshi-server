@@ -681,7 +681,7 @@ if [ ! -d /home/applications/profiles/$PRIMARYGROUP ]
 then
 	if [ -d /home/applications/profiles/defaultprofile ]
 	then
-		echo $PRIMARYGROUP - $"Creating an XP profile""<br>"
+		echo "<br>"$PRIMARYGROUP - $"Creating an XP profile""<br>"
 		cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/$PRIMARYGROUP
 		chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP
 		chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP
@@ -693,7 +693,7 @@ if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V2 ]
 then
 	if [ -d /home/applications/profiles/defaultprofile.V2 ]
 	then
-		echo $PRIMARYGROUP - $"Creating a Windows 7 profile""<br>"
+		echo "<br>"$PRIMARYGROUP - $"Creating a Windows 7 profile""<br>"
 		cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/$PRIMARYGROUP.V2
 		chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V2
 		chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V2
@@ -705,7 +705,7 @@ if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V3 ]
 then
 	if [ -d /home/applications/profiles/defaultprofile.V3 ]
 	then
-		echo $PRIMARYGROUP - $"Creating a Windows 8.0 profile""<br>"
+		echo "<br>"$PRIMARYGROUP - $"Creating a Windows 8.0 profile""<br>"
 		cp -f -R /home/applications/profiles/defaultprofile.V3 /home/applications/profiles/$PRIMARYGROUP.V3
 		chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V3
 		chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V3
@@ -717,7 +717,7 @@ if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V4 ]
 then
 	if [ -d /home/applications/profiles/defaultprofile.V4 ]
 	then
-		echo $PRIMARYGROUP - $"Creating a Windows 8.1 profile""<br>"
+		echo "<br>"$PRIMARYGROUP - $"Creating a Windows 8.1 profile""<br>"
 		cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/$PRIMARYGROUP.V4
 		chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V4
 		chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V4
@@ -729,7 +729,7 @@ if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V5 ]
 then
 	if [ -d /home/applications/profiles/defaultprofile.V5 ]
 	then
-		echo $PRIMARYGROUP - $"Creating a Windows 10 profile""<br>"
+		echo "<br>"$PRIMARYGROUP - $"Creating a Windows 10 profile""<br>"
 		cp -f -R /home/applications/profiles/defaultprofile.V5 /home/applications/profiles/$PRIMARYGROUP.V5
 		chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V5
 		chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V5

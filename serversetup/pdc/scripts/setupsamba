@@ -1673,7 +1673,7 @@ then
 	echo 1 0 '*' '*' 1-5 /opt/karoshi/'"'useful scripts'"'/resettechaccounts > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/resettechaccounts.cron
 	echo 0 23 '*' '*' 1-5 /opt/karoshi/serversetup/all/'"'useful scripts'"'/backup_servers/samba_backup > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/samba_backup.cron
 	echo '*/30' '*' '*' '*' 1-7 /opt/karoshi/'"'useful scripts'"'/check_services > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/check_services.cron
-	echo '1' '*' '*' '*' 1-7 /opt/karoshi/'"'useful scripts'"'/check_logs > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/check_logs.cron
+	echo '*/30' '*' '*' '*' 1-7 /opt/karoshi/'"'useful scripts'"'/check_logs > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/check_logs.cron
 	/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
 
 	#########################

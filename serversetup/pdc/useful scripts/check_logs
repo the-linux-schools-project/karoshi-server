@@ -8,11 +8,8 @@ function report_problems {
 if [ ! -z "$FAIL_LIST" ]
 then
 	#Add in a warning to the web management.
-	/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add syslog-$SERVERNAME '/cgi-bin/admin/view_logs.cgi?_SERVERNAME_'$SERVERNAME'_LOGFILE_/var/log/syslog' "$SERVERNAME: "$"Warning"" - ""/var/log/syslog" 3
+	/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add syslog-$SERVERNAME '/cgi-bin/admin/view_logs.cgi?_SERVERNAME_'$SERVERNAME'_ACTION_viewlist_' "$SERVERNAME: "$"Warning"" - "$"Event Log" 3
 	echo `date`: check_logs "$SERVERNAME" - Syslog warning >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-else
-	#Delete warning message
-	/opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete syslog-$SERVERNAME
 fi
 }
 
@@ -39,11 +36,10 @@ do
 			#Create variables for the last 5 minutes
 			for (( i = 5; i >=0; i-- ))
 			do
-				MIN[$i]=$(date "+%b %d %R" -d "-$i  min")
+				MIN[$i]="`date "+%b %e %R" -d "-$i  min"`"
 			done
 
-			SYSLOGDATA=`egrep "${MIN[0]}|${MIN[1]}|${MIN[2]}|${MIN[3]}|${MIN[4]}|${MIN[5]}" "$LOGPATH" | cut -d" " -f5`
-
+			SYSLOGDATA=`egrep "${MIN[0]}|${MIN[1]}|${MIN[2]}|${MIN[3]}|${MIN[4]}|${MIN[5]}" "$LOGPATH" | sed 's/ * / /g' | cut -d" " -f5`
 			#Check data
 			CHECK_LIST="kernel nslcd"
 			for CHECK in $CHECK_LIST
@@ -85,10 +81,10 @@ do
 			#Create variables for the last 5 minutes
 			for (( i = 5; i >=0; i-- ))
 			do
-				MIN[$i]=$(date "+%b %d %R" -d "-$i  min")
+				MIN[$i]=$(date "+%b %e %R" -d "-$i  min")
 			done
 
-			SYSLOGDATA=`egrep "${MIN[0]}|${MIN[1]}|${MIN[2]}|${MIN[3]}|${MIN[4]}|${MIN[5]}" "'$LOGPATH'" | cut -d" " -f5`
+			SYSLOGDATA=`egrep "${MIN[0]}|${MIN[1]}|${MIN[2]}|${MIN[3]}|${MIN[4]}|${MIN[5]}" "'$LOGPATH'" | sed "s/ * / /g" | cut -d" " -f5`
 
 			#Check data
 			CHECK_LIST="kernel nslcd"

@@ -23,6 +23,17 @@
 
 #
 #Website: http://www.karoshi.org.uk
+
+#Detect mobile browser
+MOBILE=no
+source /opt/karoshi/web_controls/detect_mobile_browser
+
+TABLECLASS=standard
+if [ "$MOBILE" = yes ]
+then
+	TABLECLASS=mobilestandard
+fi
+
 ############################
 #Language
 ############################
@@ -84,29 +95,36 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/wake_on_lan_view2.cgi" name="selectwol" method="post"><div id="actionbox"><div class="sectiontitle">'$"Wake on Lan - View"'</div><br>'
+echo '<form action="/cgi-bin/admin/wake_on_lan_view2.cgi" name="selectwol" method="post"><div id="actionbox3"><div id="titlebox">
+<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="vertical-align: middle;"><b>'$"Wake on Lan - Scheduled Locations"'</b></td>
+<td><a href="wake_on_lan_add.cgi"><input class="button" type="button" name="" value="'$"Schedule a location"'"></a></td>
+<td><a href="wake_on_lan_now.cgi"><input class="button" type="button" name="" value="'$"Wake a location"'"></a></td>
+<td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Wake_on_LAN"><img class="images" alt="" src="/images/help/info.png"><span>'$"The locations below are scheduled for wake on lan."'</span></a>
+</td></tr></tbody></table><br></div><div id="infobox">'
 #Show scheduled wake on lan locations
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/wake_on_lan_view.cgi | cut -d' ' -f1`
-sudo -H /opt/karoshi/web_controls/exec/wake_on_lan_view $REMOTE_USER:$REMOTE_ADDR:$MD5SUM
-echo '</div></form></div></body></html>'
+sudo -H /opt/karoshi/web_controls/exec/wake_on_lan_view $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:
+echo '</div></div></form></div></body></html>'
 exit

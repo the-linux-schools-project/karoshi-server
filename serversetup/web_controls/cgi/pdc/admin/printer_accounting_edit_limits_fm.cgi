@@ -46,26 +46,26 @@ END_POINT=11
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = NAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-NAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = NAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		NAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign LIMIT
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = LIMITcheck ]
-then
-let COUNTER=$COUNTER+1
-LIMIT=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = LIMITcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		LIMIT=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
 let COUNTER=$COUNTER+1
 done
 
@@ -73,28 +73,28 @@ done
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = GROUPLIMITcheck ]
-then
-let COUNTER=$COUNTER+1
-GROUPLIMIT=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = GROUPLIMITcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		GROUPLIMIT=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign TOTAL
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = TOTALcheck ]
-then
-let COUNTER=$COUNTER+1
-TOTAL=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = TOTALcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		TOTAL=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 TYPE=group
@@ -103,22 +103,22 @@ STARTCGI=printer_accounting_group_limits_fm.cgi
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = TYPEcheck ]
-then
-let COUNTER=$COUNTER+1
-TYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = TYPEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		TYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
-if [ $TYPE'null' != null ]
+if [ -z "$TYPE" ]
 then
-if [ $TYPE = user ]
-then
-STARTCGI=printer_accounting_user_limits_fm.cgi
-fi
+	if [ $TYPE = user ]
+	then
+		STARTCGI=printer_accounting_user_limits_fm.cgi
+	fi
 fi
 
 
@@ -153,29 +153,28 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that NAME is not blank
-if [ $NAME'null' = null ]
+if [ -z "$NAME" ]
 then
-MESSAGE=$"The user or group name cannot be blank."
-show_status
+	MESSAGE=$"The user or group name cannot be blank."
+	show_status
 fi
 #Check to see that LIMIT is not blank
-if [ $LIMIT'null' = null ]
+if [ -z "$LIMIT" ]
 then
-MESSAGE=$"The limit cannot be blank."
-show_status
+	LIMIT=0
 fi
 
 MOBILE=no
@@ -184,22 +183,22 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=menubox
+	DIV_ID=menubox
 fi
 echo '<form name="myform" id="myform" action="/cgi-bin/admin/printer_accounting_edit_limits.cgi" method="post"><div id="'$DIV_ID'">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
+	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
 <tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Edit Printer Limits"'</b></a></td></tr></tbody></table>'
 else
-echo '<b>'$"Edit Printer Limits"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Each Primary Group has a limit set for the amount of printing that each user can do in that group."'<br><br>'$"User limits override group limits."'</span></a><br><br>'
+	echo '<b>'$"Edit Printer Limits"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Each Primary Group has a limit set for the amount of printing that each user can do in that group."'<br><br>'$"User limits override group limits."'</span></a><br><br>'
 fi
 
 echo '
@@ -208,7 +207,7 @@ echo '
 
 if [ $TYPE != userdelete ] && [ $TYPE = user ]
 then
-echo '
+	echo '
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 180px;">'$"Username"'</td><td>'$NAME'</td></tr>
 <tr><td>'$"User Limit"'</td><td>'$LIMIT'</td></tr>
@@ -220,7 +219,7 @@ fi
 
 if [ $TYPE != userdelete ] && [ $TYPE = group ]
 then
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 180px;"><b>'$"User or Primary Group"'</b></td><td><b>'$"Limit"'</b></td></tr>
 <tr><td>'$NAME'</td><td><input maxlength="10" size="10" name="_LIMIT_" value="'$LIMIT'"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Set the page limits that you want for each user or group."'</span></a></td></tr></tbody></table>
 '
@@ -241,7 +240,7 @@ fi
 
 if [ $MOBILE = no ]
 then
-echo '</div><div id="submitbox">'
+	echo '</div><div id="submitbox">'
 fi
 echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div></form></div></body></html>

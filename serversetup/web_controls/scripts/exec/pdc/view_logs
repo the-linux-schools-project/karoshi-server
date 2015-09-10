@@ -53,7 +53,7 @@ then
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-/'`
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+%-/-'`
 if [ -z "$DATA" ]
 then
 	echo `date`: view_logs - no data >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
@@ -64,9 +64,10 @@ REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 MOBILE=`echo "$DATA" | cut -s -d: -f4`
 SERVERNAME=`echo "$DATA" | cut -s -d: -f5`
-LOGFILE=`echo "$DATA" | cut -s -d: -f6`
-TAIL_LENGTH=`echo "$DATA" | cut -s -d: -f7`
-
+ACTION=`echo "$DATA" | cut -s -d: -f6`
+LOGFILE=`echo "$DATA" | cut -s -d: -f7 | sed 's/%3A/:/g'`
+TAIL_LENGTH=`echo "$DATA" | cut -s -d: -f8`
+[ -z "$ACTION" ] && ACTION=viewlist
 ########################
 #Check data
 ########################
@@ -107,19 +108,133 @@ then
 	TAIL_LENGTH=200
 fi
 
-echo `date`: view_logs - viewing "$LOGFILE" on "$SERVERNAME" by "$REMOTE_USER" from "$REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
-
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-
-if [ "$SERVERNAME" = `hostname-fqdn` ]
+WIDTH1=180
+TABLECLASS=standard
+ICON1=/images/submenus/system/edit.png
+ICON2=/images/submenus/system/delete.png
+if [ $MOBILE = yes ]
 then
-	tail -n "$TAIL_LENGTH" "$LOGFILE" | tr -cd "A-Za-z0-9\. _[]():/\n=-" | sed "s/kernel/<span STYLE=\"font-weight: bold; color: red\">kernel<\/span>/g"
-else
-
-	ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
-	tail -n "'$TAIL_LENGTH'" "'$LOGFILE'" | tr -cd "A-Za-z0-9\. _[]():/\n=-" | sed "s/kernel/<span STYLE=\"font-weight: bold; color: red\">kernel<\/span>/g"
-	'
+	TABLECLASS=mobilestandard
+	WIDTH1=120
+	ICON1=/images/submenus/system/editm.png
+	ICON2=/images/submenus/system/deletem.png
 fi
-echo '</pre>'
+
+function show_options {
+#Show options
+echo '<form action="/cgi-bin/admin/view_logs.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td><input name="_ACTION_viewservers_" type="submit" class="button" value="'$"View Servers"'"></td>'
+if [ "$ACTION" != viewlist ]
+then
+	echo '<td><input name="_ACTION_viewlist_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOGFILE_'$LOGFILE'_" type="submit" class="button" value="'$"View Event Logs"'"></td>'
+fi
+if [ "$ACTION" = viewevent ]
+then
+	echo '<td><input name="_ACTION_delete_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOGFILE_'$LOGFILE'_" type="submit" class="button" value="'$"Delete"'"></td>'
+fi
+echo '</tr></tbody></table>
+</form>'
+}
+
+if [ "$ACTION" = delete ]
+then
+	echo `date`: view_logs - deleting "$LOGFILE" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+
+	if [ "$SERVERNAME" = `hostname-fqdn` ]
+	then
+		if [ -f /opt/karoshi/logs/errors/"$LOGFILE" ]
+		then
+			rm -f /opt/karoshi/logs/errors/"$LOGFILE"
+		fi
+	else
+		ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
+		if [ -f /opt/karoshi/logs/errors/"'$LOGFILE'" ]
+		then
+			rm -f /opt/karoshi/logs/errors/"'$LOGFILE'"
+		fi
+		'
+	fi
+	ACTION=viewlist
+fi
+
+if [ "$ACTION" = viewevent ]
+then
+	echo `date`: view_logs - viewing "$LOGFILE" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	show_options
+	if [ "$SERVERNAME" = `hostname-fqdn` ]
+	then
+		if [ -f /opt/karoshi/logs/errors/"$LOGFILE" ]
+		then
+			echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+			cat /opt/karoshi/logs/errors/$LOGFILE | tr -cd "A-Za-z0-9\. _[]():/\n=-" | sed "s/kernel/<span STYLE=\"font-weight: bold; color: red\">kernel<\/span>/g" | sed "s/nslcd/<span STYLE=\"font-weight: bold; color: red\">nslcd<\/span>/g"
+			echo "</pre>"
+		fi
+	else
+		ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
+		if [ -f /opt/karoshi/logs/errors/"'$LOGFILE'" ]
+		then
+			echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+			cat /opt/karoshi/logs/errors/'$LOGFILE' | tr -cd "A-Za-z0-9\. _[]():/\n=-" | sed "s/kernel/<span STYLE=\"font-weight: bold; color: red\">kernel<\/span>/g" | sed "s/nslcd/<span STYLE=\"font-weight: bold; color: red\">nslcd<\/span>/g"
+			echo "</pre>"
+		fi
+		'
+	fi
+	show_options
+fi
+
+if [ "$ACTION" = viewlist ]
+then
+	#Delete warning message
+	/opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete syslog-$SERVERNAME
+
+	show_options
+	#Get a list of event logs for the server
+	if [ "$SERVERNAME" = `hostname-fqdn` ]
+	then
+		LOGCOUNT=$(ls -1 /opt/karoshi/logs/errors | wc -l)
+	else
+		LOGCOUNT=`ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
+		ls -1 /opt/karoshi/logs/errors | wc -l
+		'`
+	fi
+
+	#Show a list of logs
+	if [ "$LOGCOUNT" -gt 0 ]
+	then
+		echo '<form action="/cgi-bin/admin/view_logs.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	    <tbody><tr><td style="width: '$WIDTH1'px;"><b>'$"Date"'</b></td><td><b>'$"Time"'</b></td><td><b>'$"View Log"'</b></td><td><b>'$"Delete"'</b></td></tr>'
+		if [ "$SERVERNAME" = `hostname-fqdn` ]
+		then
+			for EVENT in $(ls -1 /opt/karoshi/logs/errors)
+			do
+				#Get time and date of the event
+				DAY=$(echo $EVENT | cut -d"-" -f3)
+				MONTH=$(echo $EVENT | cut -d"-" -f2)
+				YEAR=$(echo $EVENT | cut -d"-" -f1)
+				TIME=$(echo $EVENT | cut -d"-" -f4)
+
+				echo '<tr><td>'$DAY-$MONTH-$YEAR'</td><td>'$TIME'</td>
+				<td><a class="info" href="javascript:void(0)"><input name="_ACTION_viewevent_SERVERNAME_'$SERVERNAME'_LOGFILE_'$EVENT'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"View"'<br>'$EVENT'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_delete_SERVERNAME_'$SERVERNAME'_LOGFILE_'$EVENT'_" type="image" class="images" src="'$ICON2'" value=""><span>'$"Delete"'<br>'$EVENT'</span></a></td></tr></form>'
+			done
+		else
+			ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
+			for EVENT in $(ls -1 /opt/karoshi/logs/errors)
+			do
+				#Get time and date of the event
+				DAY=$(echo $EVENT | cut -d"-" -f3)
+				MONTH=$(echo $EVENT | cut -d"-" -f2)
+				YEAR=$(echo $EVENT | cut -d"-" -f1)
+				TIME=$(echo $EVENT | cut -d"-" -f4)
+
+				echo "<tr><td>$DAY-$MONTH-$YEAR</td><td>$TIME</td>
+				<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_viewevent_SERVERNAME_'$SERVERNAME'_LOGFILE_$EVENT"_"\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$"View"'<br>$EVENT</span></a></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_SERVERNAME_'$SERVERNAME'_LOGFILE_$EVENT"_"\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>'$"Delete"'<br>$EVENT</span></a></td></tr></form>"
+			done
+			'
+		fi
+	else
+		echo $"No event logs"
+	fi
+fi
+
 exit
 
