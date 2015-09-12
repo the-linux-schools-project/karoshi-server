@@ -241,6 +241,7 @@ fi
 
 if [ "$ACTION" = approve ]
 then
+	[ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 	send_data
 	#Reload page
 	echo '<script type="text/javascript">

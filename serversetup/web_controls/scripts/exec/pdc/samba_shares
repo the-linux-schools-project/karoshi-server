@@ -760,7 +760,7 @@ then
 	else
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 		#Delete out additional samba configuration file.
-		[ -f /etc/samba/extra_network_shares/"'$SERVERNAME'"/"'$FOLDERNAME'".conf ] && rm -f /etc/samba/extra_network_shares/"'$SERVERNAME'"/"'$FOLDERNAME'".conf
+		[ -f /etc/samba/extra_network_shares/"'$SERVERNAME'"/"'$SHARENAME'".conf ] && rm -f /etc/samba/extra_network_shares/"'$SERVERNAME'"/"'$SHARENAME'".conf
 
 		#Delete include line in smb.conf
 		sed -i "/etc\/samba\/extra_network_shares\/'$SERVERNAME'\/'$SHARENAME'.conf/d" /etc/samba/smb.conf

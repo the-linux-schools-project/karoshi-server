@@ -97,80 +97,80 @@ END_POINT=15
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign password1
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = PASSWORD1check ]
-then
-let COUNTER=$COUNTER+1
-PASSWORD1=`echo $DATA | cut -s -d'_' -f$COUNTER`
-ASKIP=yes
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = PASSWORD1check ]
+	then
+		let COUNTER=$COUNTER+1
+		PASSWORD1=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		ASKIP=yes
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign password2
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = PASSWORD2check ]
-then
-let COUNTER=$COUNTER+1
-PASSWORD2=`echo $DATA | cut -s -d'_' -f$COUNTER`
-ASKIP=yes
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = PASSWORD2check ]
+	then
+		let COUNTER=$COUNTER+1
+		PASSWORD2=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		ASKIP=yes
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign AUTHENTICATION
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = AUTHENTICATIONcheck ]
-then
-let COUNTER=$COUNTER+1
-AUTHENTICATION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-ASKIP=yes
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = AUTHENTICATIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		AUTHENTICATION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		ASKIP=yes
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign ZONE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ZONEcheck ]
-then
-let COUNTER=$COUNTER+1
-ZONE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-ASKIP=yes
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = ZONEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		ZONE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		ASKIP=yes
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 if [ ! -z "$AUTHENTICATION" ]
 then
-[ $AUTHENTICATION = adc ] && CHECKED1=checked
-[ $AUTHENTICATION = rodc ] && CHECKED2=checked
-[ $AUTHENTICATION = member ] && CHECKED3=checked
-[ $AUTHENTICATION = users ] && CHECKED4=checked
-[ $AUTHENTICATION = none ] && CHECKED5=checked
+	[ $AUTHENTICATION = adc ] && CHECKED1=checked
+	[ $AUTHENTICATION = rodc ] && CHECKED2=checked
+	[ $AUTHENTICATION = member ] && CHECKED3=checked
+	[ $AUTHENTICATION = users ] && CHECKED4=checked
+	[ $AUTHENTICATION = none ] && CHECKED5=checked
 fi
 
 ZONESELECT1=""
@@ -178,9 +178,9 @@ ZONESELECT2=""
 ZONESELECT3=""
 if [ ! -z "$ZONE" ]
 then
-[ $ZONE = internal ] && ZONESELECT1='selected="selected"'
-[ $ZONE = dmz ] && ZONESELECT2='selected="selected"'
-[ $ZONE = external ] && ZONESELECT3='selected="selected"'
+	[ $ZONE = internal ] && ZONESELECT1='selected="selected"'
+	[ $ZONE = dmz ] && ZONESELECT2='selected="selected"'
+	[ $ZONE = external ] && ZONESELECT3='selected="selected"'
 fi
 
 #Generate navigation bar
@@ -201,7 +201,8 @@ echo '<form id="FormName" action="/cgi-bin/admin/karoshi_servers_add.cgi" method
 <tr><td style="width: 180px;">'$"Server"'</td><td><input tabindex= "1" style="width: 200px;" name="____SERVERNAME____" value="'$SERVERNAME'" size="23" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the server you want to enable ssh for."'</span></a>
 </td></tr><tr><td style="width: 180px;">'$"TCPIP number"'</td><td><input tabindex= "2" style="width: 200px;" name="____TCPIPNUMBER____" size="23" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the tcpip number of the server that you are connecting to."'</span></a>
 </td></tr>
-<tr><td style="width: 180px;">'$"Root Password"'</td><td><input tabindex= "3" style="width: 200px;" name="____PASSWORD1____" value="'$PASSWORD1'" size="23" type="password"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the root password for the server you are setting up ssh for and confirm it in the box below."'</span></a>
+<tr><td style="width: 180px;">'$"Root Password"'</td><td><input tabindex= "3" style="width: 200px;" name="____PASSWORD1____" value="'$PASSWORD1'" size="23" type="password"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the root password for the server you are setting up ssh for and confirm it in the box below."'<br><br>'$"The following special characters are allowed"'<br><br> space !	"	# 	$	%	& 	(	) 	*	+	, 	-	.	/ 	:
+;	<	=	>	?	@ 	[	\	]	^	_	` 	{	|	}	~</span></a>
 </td></tr>
 <tr><td>'$"Confirm Root Password"'</td><td><input tabindex= "4" style="width: 200px;" name="____PASSWORD2____" value="'$PASSWORD2'" size="23" type="password"></td></tr>
 <tr><td style="width: 180px;">Zone</td><td>

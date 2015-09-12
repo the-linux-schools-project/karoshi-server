@@ -164,23 +164,25 @@ chmod 0700 /opt/karoshi/karoshimanagement/admin_file_manager
 ###########################
 echo `date`: "Setting karoshi and root passwords" >> /opt/karoshi/serversetup/install_log
 function getpassword {
-DATA=`yad --image="/opt/karoshi/serversetup/essentials/smalllogo2.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title=$"Setup Karoshi Desktop" --width 400 --wrap --text ''"$PASSWORDMSG"'' --field=$"Password":H --field=$"Confirm":H --button=Ok 2>/dev/null`
-PASSWORD1=`echo $DATA | cut -d"|" -f1`
-PASSWORD2=`echo $DATA | cut -d"|" -f2`
+DATA=`yad --separator=SEPARATOR --image="/opt/karoshi/serversetup/essentials/smalllogo2.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title=$"Setup Karoshi Desktop" --width 400 --wrap --text ''"$PASSWORDMSG"'' --field=$"Password":H --field=$"Confirm":H --button=Ok 2>/dev/null | sed 's/|/REPLACEVERTICALLINE/g' | sed 's/SEPARATOR/|/g'`
+PASSWORD1=`echo "$DATA" | cut -d"|" -f1 | sed 's/REPLACEVERTICALLINE/|/g'`
+PASSWORD2=`echo "$DATA" | cut -d"|" -f2 | sed 's/REPLACEVERTICALLINE/|/g'`
 
-[ $PASSWORD1'null' = null ] && PASSWORD1=notset1
-[ $PASSWORD2'null' = null ] && PASSWORD2=notset2
+[ -z "$PASSWORD1" ] && PASSWORD1=notset1
+[ -z "$PASSWORD2" ] && PASSWORD2=notset2
 }
 
 PASSWORDMSG=$"Please enter your choice for the karoshi and system password."
 getpassword
-while [ $PASSWORD1 != $PASSWORD2 ]
+
+while [ "$PASSWORD1" != "$PASSWORD2" ]
 do
 	PASSWORDMSG=`echo $"The passwords do not match. Please try again."`
 	getpassword
 done
-echo root:$PASSWORD1 | chpasswd
-echo karoshi:$PASSWORD1 | chpasswd
+
+echo root:"$PASSWORD1" | chpasswd
+echo karoshi:"$PASSWORD1" | chpasswd
 
 
 

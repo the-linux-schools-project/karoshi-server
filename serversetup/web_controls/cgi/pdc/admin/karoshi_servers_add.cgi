@@ -214,7 +214,7 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -327,8 +327,8 @@ fi
 echo '<div id="titlebox"><div class="sectiontitle">'$"Add Server"' - '$SERVERNAME'</div><br></div><div id="infobox">'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/karoshi_servers_add.cgi | cut -d' ' -f1`
-sudo -H /opt/karoshi/web_controls/exec/karoshi_servers_add $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$PASSWORD1:$TCPIPNUMBER:$AUTHENTICATION:$ZONE
-EXEC_STATUS=`echo $?`
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$PASSWORD1:$TCPIPNUMBER:$AUTHENTICATION:$ZONE" | sudo -H /opt/karoshi/web_controls/exec/karoshi_servers_add
+EXEC_STATUS=$?
 
 MESSAGE=`echo $SERVERNAME - $"ssh has been enabled."`
 if [ $EXEC_STATUS = 101 ]
