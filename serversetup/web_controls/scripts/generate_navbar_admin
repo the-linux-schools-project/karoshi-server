@@ -115,7 +115,8 @@ echo '<div id="navbar"><span class="preload1"></span>
 
 if [ $ADDUSERCTRL = yes ]
 then
-echo '			<li><a href="/cgi-bin/admin/add_user_fm.cgi">'$"Add User"'</a></li>
+echo '			<li><a href="/cgi-bin/admin/default_user_settings_fm.cgi">'$"Default User Settings"'</a></li>
+			<li><a href="/cgi-bin/admin/add_user_fm.cgi">'$"Add User"'</a></li>
 			<li><a href="/cgi-bin/admin/delete_user_fm.cgi">'$"Delete User"'</a></li>
 			<li><a href="/cgi-bin/admin/acceptable_use.cgi">'$"Acceptable Use"'</a></li>
 '

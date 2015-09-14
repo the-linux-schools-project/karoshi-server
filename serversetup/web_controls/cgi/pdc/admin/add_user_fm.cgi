@@ -50,6 +50,7 @@ then
 	[ $DEFAULTSTYLE = 7 ] && SELECT7='selected="selected"'
 	[ $DEFAULTSTYLE = 8 ] && SELECT8='selected="selected"'
 	[ $DEFAULTSTYLE = 9 ] && SELECT9='selected="selected"'
+	[ $DEFAULTSTYLE = 10 ] && SELECT10='selected="selected"'
 else
 	DEFAULTSTYLE=1
 	SELECT1='selected="selected"'
@@ -150,7 +151,7 @@ if (selectedstyle == "userstyleS10") {
 	var el = document.getElementById("extraoptions1");
 el.innerHTML = "Username";
 	var el = document.getElementById("extraoptions2");
-el.innerHTML = "<input value=\"'$USERNAME'\" name=\"_USERNAME_\" style=\"width: 200px\;\" size=\"20\" type=\"text\">";
+el.innerHTML = "<input tabindex= \"6\" value=\"'$USERNAME'\" name=\"_USERNAME_\" style=\"width: 200px\;\" size=\"20\" type=\"text\">";
 usernameValue = "Enter a username";
 	status10 = "true";
 }
@@ -187,7 +188,7 @@ document.myform._USERNAMESTYLE_.options[8]=new Option("'$"Style"' 9: " + enrollm
 document.myform._USERNAMESTYLE_.options[9]=new Option("'$"Style"' 10: " + usernameValue, "userstyleS10", false, status10);
 }
 </script>
-</head><body onLoad="start()"><div id="pagecontainer">'
+</head><body onLoad="start(); rewriteselect();"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
