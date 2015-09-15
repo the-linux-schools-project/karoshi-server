@@ -188,7 +188,7 @@ document.myform._USERNAMESTYLE_.options[8]=new Option("'$"Style"' 9: " + enrollm
 document.myform._USERNAMESTYLE_.options[9]=new Option("'$"Style"' 10: " + usernameValue, "userstyleS10", false, status10);
 }
 </script>
-</head><body onLoad="start(); rewriteselect();"><div id="pagecontainer">'
+</head><body onLoad="rewriteselect(); start();"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
