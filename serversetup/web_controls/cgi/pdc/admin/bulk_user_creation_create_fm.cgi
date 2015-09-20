@@ -37,24 +37,25 @@ TEXTDOMAIN=karoshi-server
 #Select the default username style
 if [ -f /opt/karoshi/server_network/default_username_style ]
 then
-source /opt/karoshi/server_network/default_username_style
-[ $DEFAULTSTYLE = 1 ] && SELECT1='selected="selected"'
-[ $DEFAULTSTYLE = 2 ] && SELECT2='selected="selected"'
-[ $DEFAULTSTYLE = 3 ] && SELECT3='selected="selected"'
-[ $DEFAULTSTYLE = 4 ] && SELECT4='selected="selected"'
-[ $DEFAULTSTYLE = 5 ] && SELECT5='selected="selected"'
-[ $DEFAULTSTYLE = 6 ] && SELECT6='selected="selected"'
-[ $DEFAULTSTYLE = 7 ] && SELECT7='selected="selected"'
-[ $DEFAULTSTYLE = 8 ] && SELECT8='selected="selected"'
-[ $DEFAULTSTYLE = 9 ] && SELECT9='selected="selected"'
+	source /opt/karoshi/server_network/default_username_style
+	[ $DEFAULTSTYLE = 1 ] && SELECT1='selected="selected"'
+	[ $DEFAULTSTYLE = 2 ] && SELECT2='selected="selected"'
+	[ $DEFAULTSTYLE = 3 ] && SELECT3='selected="selected"'
+	[ $DEFAULTSTYLE = 4 ] && SELECT4='selected="selected"'
+	[ $DEFAULTSTYLE = 5 ] && SELECT5='selected="selected"'
+	[ $DEFAULTSTYLE = 6 ] && SELECT6='selected="selected"'
+	[ $DEFAULTSTYLE = 7 ] && SELECT7='selected="selected"'
+	[ $DEFAULTSTYLE = 8 ] && SELECT8='selected="selected"'
+	[ $DEFAULTSTYLE = 9 ] && SELECT9='selected="selected"'
+	[ $DEFAULTSTYLE = 10 ] && SELECT10='selected="selected"'
 else
-SELECT1='selected="selected"'
+	SELECT1='selected="selected"'
 fi
 
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -72,14 +73,14 @@ echo '
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox"><form action="/cgi-bin/admin/bulk_user_creation_create.cgi" method="post"><div class="sectiontitle">'$"Bulk User Creation"'</div>
   <br>
-'$"Please select the following options to create your users"':<br>
+'$"Select the following options to create your users"':<br>
   <br>'
 
 #Check that this server is not part of a federated setup
 if [ -f /opt/karoshi/server_network/servers/$HOSTNAME/federated_server ]
 then
-echo $"This server is part of a federated system. Users must be created on the main federation server." '</div></div></body></html>'
-exit
+	echo $"This server is part of a federated system. Users must be created on the main federation server." '</div></div></body></html>'
+	exit
 fi
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
@@ -97,6 +98,7 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
         <option value="userstyleS7" '$SELECT7'>'$"Style"' 7: '$"09arnolds"'</option>
         <option value="userstyleS8" '$SELECT8'>'$"Style"' 8: '$"arnolds"'</option>
         <option value="userstyleS9" '$SELECT9'>'$"Style"' 9: '$"Enrollment number as username."'</option>
+	<option value="userstyleS10" '$SELECT10'>'$"Style"' 10: '$"Enter a username"'</option>
 </select></td></tr>
 <tr><td>'$"Primary Group"'</td>
 </td><td>'

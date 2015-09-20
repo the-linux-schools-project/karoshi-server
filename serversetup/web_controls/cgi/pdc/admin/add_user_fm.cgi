@@ -92,12 +92,12 @@ fi
 echo '
 <script type="text/javascript">
 function rewriteselect() {
-document.myform._USERNAMESTYLE_.options.selectedIndex.length=0;
-var firstnameValue = (document.myform._FIRSTNAME_.value).toLowerCase();
-var surnameValue = (document.myform._SURNAME_.value).toLowerCase();
-var enrollmentValue = document.myform._ENROLLMENTNUMBER_.value;
-var yearValue = document.myform._GROUP_.value;
-var selectedstyle = document.myform._USERNAMESTYLE_.value
+document.myform.____USERNAMESTYLE____.options.selectedIndex.length=0;
+var firstnameValue = (document.myform.____FIRSTNAME____.value).toLowerCase();
+var surnameValue = (document.myform.____SURNAME____.value).toLowerCase();
+var enrollmentValue = document.myform.____ENROLLMENTNUMBER____.value;
+var yearValue = document.myform.____GROUP____.value;
+var selectedstyle = document.myform.____USERNAMESTYLE____.value
 var status1 = false;
 var status2 = false;
 var status3 = false;
@@ -151,7 +151,7 @@ if (selectedstyle == "userstyleS10") {
 	var el = document.getElementById("extraoptions1");
 el.innerHTML = "Username";
 	var el = document.getElementById("extraoptions2");
-el.innerHTML = "<input tabindex= \"6\" value=\"'$USERNAME'\" name=\"_USERNAME_\" style=\"width: 200px\;\" size=\"20\" type=\"text\">";
+el.innerHTML = "<input tabindex= \"6\" value=\"'$USERNAME'\" name=\"____USERNAME____\" style=\"width: 200px\;\" size=\"20\" type=\"text\">";
 usernameValue = "Enter a username";
 	status10 = "true";
 }
@@ -176,16 +176,16 @@ if (enrollmentValue == "") {
 
 
 
-document.myform._USERNAMESTYLE_.options[0]=new Option("'$"Style"' 1: " + firstnameValue[0] + surnameValue + yearValue, "userstyleS1", false, status1);
-document.myform._USERNAMESTYLE_.options[1]=new Option("'$"Style"' 2: " + yearValue + firstnameValue[0] + surnameValue, "userstyleS2", false, status2);
-document.myform._USERNAMESTYLE_.options[2]=new Option("'$"Style"' 3: " + surnameValue + firstnameValue[0] + yearValue, "userstyleS3", false, status3);
-document.myform._USERNAMESTYLE_.options[3]=new Option("'$"Style"' 4: " + firstnameValue + "." + surnameValue + yearValue, "userstyleS4", false, status4);
-document.myform._USERNAMESTYLE_.options[4]=new Option("'$"Style"' 5: " + surnameValue + "." + firstnameValue + yearValue, "userstyleS5", false, status5);
-document.myform._USERNAMESTYLE_.options[5]=new Option("'$"Style"' 6: " + yearValue + surnameValue + firstnameValue[0], "userstyleS6", false, status6);
-document.myform._USERNAMESTYLE_.options[6]=new Option("'$"Style"' 7: " + yearValue + firstnameValue + surnameValue[0], "userstyleS7", false, status7);
-document.myform._USERNAMESTYLE_.options[7]=new Option("'$"Style"' 8: " + firstnameValue + surnameValue[0], "userstyleS8", false, status8);
-document.myform._USERNAMESTYLE_.options[8]=new Option("'$"Style"' 9: " + enrollmentValue, "userstyleS9", false, status9);
-document.myform._USERNAMESTYLE_.options[9]=new Option("'$"Style"' 10: " + usernameValue, "userstyleS10", false, status10);
+document.myform.____USERNAMESTYLE____.options[0]=new Option("'$"Style"' 1: " + firstnameValue[0] + surnameValue + yearValue, "userstyleS1", false, status1);
+document.myform.____USERNAMESTYLE____.options[1]=new Option("'$"Style"' 2: " + yearValue + firstnameValue[0] + surnameValue, "userstyleS2", false, status2);
+document.myform.____USERNAMESTYLE____.options[2]=new Option("'$"Style"' 3: " + surnameValue + firstnameValue[0] + yearValue, "userstyleS3", false, status3);
+document.myform.____USERNAMESTYLE____.options[3]=new Option("'$"Style"' 4: " + firstnameValue + "." + surnameValue + yearValue, "userstyleS4", false, status4);
+document.myform.____USERNAMESTYLE____.options[4]=new Option("'$"Style"' 5: " + surnameValue + "." + firstnameValue + yearValue, "userstyleS5", false, status5);
+document.myform.____USERNAMESTYLE____.options[5]=new Option("'$"Style"' 6: " + yearValue + surnameValue + firstnameValue[0], "userstyleS6", false, status6);
+document.myform.____USERNAMESTYLE____.options[6]=new Option("'$"Style"' 7: " + yearValue + firstnameValue + surnameValue[0], "userstyleS7", false, status7);
+document.myform.____USERNAMESTYLE____.options[7]=new Option("'$"Style"' 8: " + firstnameValue + surnameValue[0], "userstyleS8", false, status8);
+document.myform.____USERNAMESTYLE____.options[8]=new Option("'$"Style"' 9: " + enrollmentValue, "userstyleS9", false, status9);
+document.myform.____USERNAMESTYLE____.options[9]=new Option("'$"Style"' 10: " + usernameValue, "userstyleS10", false, status10);
 }
 </script>
 </head><body onLoad="rewriteselect(); start();"><div id="pagecontainer">'
@@ -239,7 +239,7 @@ then
 		SURNAME=`echo $NEW_USER_DATA | cut -d: -f2`
 		GROUP=`echo $NEW_USER_DATA | cut -d: -f3`
 		ENROLLMENTNUMBER=`echo $NEW_USER_DATA | cut -d: -f4`
-		echo '<input name="_REQUESTFILE_" value="'$FILE'" type="hidden">'
+		echo '<input name="____REQUESTFILE____" value="'$FILE'" type="hidden">'
 	fi
 fi
 
@@ -247,26 +247,26 @@ if [ $MOBILE = yes ]
 then
 	echo '<div id="mobileactionbox">'
 	echo ''$"Forename"'<br>
-	<input tabindex= "1" value="'$FORENAME'" name="_FIRSTNAME_" style="width: 200px; height: 30px;" size="20" type="text"><br>
+	<input tabindex= "1" value="'$FORENAME'" name="____FIRSTNAME____" style="width: 200px; height: 30px;" size="20" type="text"><br>
 	'$"Surname"'<br>
-	<input tabindex= "2" value="'$SURNAME'" name="_SURNAME_" style="width: 200px; height: 30px;" size="20" type="text"><br>
+	<input tabindex= "2" value="'$SURNAME'" name="____SURNAME____" style="width: 200px; height: 30px;" size="20" type="text"><br>
 	'$"Password"'<br>
-	<input tabindex= "3" name="_PASSWORD1_" style="width: 200px; height: 30px;" size="20" type="password"><br>
+	<input tabindex= "3" name="____PASSWORD1____" style="width: 200px; height: 30px;" size="20" type="password"><br>
 	'$"Confirm Password"'<br>
-	<input tabindex= "4" name="_PASSWORD2_" style="width: 200px; height: 30px;" size="20" type="password"><br>
+	<input tabindex= "4" name="____PASSWORD2____" style="width: 200px; height: 30px;" size="20" type="password"><br>
 	'$"Enrolment number / staff code"'<br>
 	<input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="_ENROLLMENTNUMBER_" style="width: 200px; height: 30px;" size="20" type="text"><br>
 	'$"Primary group"'<br>
 '
 	if [ -z "$FILE" ]
 	then
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: 200px; height: 30px;" onClick="rewriteselect();">/g'
+		/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: 200px; height: 30px;" onClick="rewriteselect();">/g' | sed 's/_GROUP_/____GROUP____/g'
 	else
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<option><\/option>/<option selected="selected">'$GROUP'<\/option>/g'
+		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<option><\/option>/<option selected="selected">'$GROUP'<\/option>/g' | sed 's/_GROUP_/____GROUP____/g'
 	fi
 	echo '<br>
 	'$"Username style"'<br>
-	  <select name="_USERNAMESTYLE_" style="width: 200px; height: 30px;" onClick="rewriteselect();">
+	  <select name="____USERNAMESTYLE____" style="width: 200px; height: 30px;" onClick="rewriteselect();">
 		<option value="userstyleS1" '$SELECT1'>'$"Style"' 1: '$"auser09"'</option>
 		<option value="userstyleS2" '$SELECT2'>'$"Style"' 2: '$"09auser"'</option>
 		<option value="userstyleS3" '$SELECT3'>'$"Style"' 3: '$"usera09"'</option>
@@ -284,30 +284,31 @@ else
 
 	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 	<tr><td style="width: 180px;">'$"Forename"'</td>
-        <td><input tabindex= "1" value="'$FORENAME'" name="_FIRSTNAME_" style="width: 200px;" size="20" type="text"></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please enter the firstname for this user."'</span></a></td></tr>
+        <td><input tabindex= "1" value="'$FORENAME'" name="____FIRSTNAME____" style="width: 200px;" size="20" type="text"></td>
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the firstname for this user."'</span></a></td></tr>
 	<tr><td>'$"Surname"'</td>
-        <td><input tabindex= "2" value="'$SURNAME'" name="_SURNAME_" style="width: 200px;" size="20" type="text"></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please enter the surname for this user."'</span></a></td></tr>
-	<tr><td>'$"Password"'</td><td><input tabindex= "3" name="_PASSWORD1_" style="width: 200px;" size="20" type="password"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please enter a password and confirm it in the box below."'</span></a></td></tr>
-      <tr><td>'$"Confirm Password"'</td><td><input tabindex= "4" name="_PASSWORD2_" style="width: 200px;" size="20" type="password"></td></tr>
+        <td><input tabindex= "2" value="'$SURNAME'" name="____SURNAME____" style="width: 200px;" size="20" type="text"></td>
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the surname for this user."'</span></a></td></tr>
+	<tr><td>'$"Password"'</td><td><input tabindex= "3" name="____PASSWORD1____" style="width: 200px;" size="20" type="password"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter a password and confirm it in the box below."'<br><br>'$"The following special characters are allowed"'<br><br> space !	"	# 	$	%	& 	(	) 	*	+	, 	-	.	/ 	:
+;	<	=	>	?	@ 	[	\	]	^	_	` 	{	|	}	~</span></a></td></tr>
+      <tr><td>'$"Confirm Password"'</td><td><input tabindex= "4" name="____PASSWORD2____" style="width: 200px;" size="20" type="password"></td></tr>
 	<tr><td>'$"Enrolment number / staff code"'</td>
-        <td><input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="_ENROLLMENTNUMBER_" style="width: 200px;" size="20" type="text"></td>
+        <td><input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="____ENROLLMENTNUMBER____" style="width: 200px;" size="20" type="text"></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Student enrolment number or staff code. This field can be left blank."'</span></a></td></tr>
       <tr><td>'$"Primary group"'</td><td>'
 	if [ -z "$FILE" ]
 	then
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: 200px;" onClick="rewriteselect();">/g'
+		/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: 200px;" onClick="rewriteselect();">/g' | sed 's/_GROUP_/____GROUP____/g'
 	else
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<option><\/option>/<option selected="selected">'$GROUP'<\/option>/g'
+		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<option><\/option>/<option selected="selected">'$GROUP'<\/option>/g' | sed 's/_GROUP_/____GROUP____/g'
 	fi
 
 	echo '</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The groups give different levels of access."' '$"The itadmin group is for the network administrator."' '$"Only members of itadmin and the tech groups gain administrator access to windows computers joined to the domain."'</span></a></td></tr>
 	<tr>
         <td>'$"Username style"'</td>
         <td>
-        <select name="_USERNAMESTYLE_" style="width: 200px;" onClick="rewriteselect();">
+        <select name="____USERNAMESTYLE____" style="width: 200px;" onClick="rewriteselect();">
         <option value="userstyleS1" '$SELECT1'>'$"Style"' 1: '$"auser09"'</option>
         <option value="userstyleS2" '$SELECT2'>'$"Style"' 2: '$"09auser"'</option>
         <option value="userstyleS3" '$SELECT3'>'$"Style"' 3: '$"usera09"'</option>

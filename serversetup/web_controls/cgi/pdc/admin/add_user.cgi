@@ -50,7 +50,7 @@ echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head
 #Get data input
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%*+-' | sed 's/*/%1123/g' | sed 's/____/QUADRUPLEUNDERSCORE/g' | sed 's/_/REPLACEUNDERSCORE/g' | sed 's/QUADRUPLEUNDERSCORE/_/g'`
 #########################
 #Assign data to variables
 #########################
@@ -195,11 +195,11 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=menubox
+	DIV_ID=menubox
 fi
 
 #Show back button for mobiles
@@ -286,6 +286,16 @@ then
 	MESSAGE=$"Incorrect username style."
 	show_status
 fi
+#Check that username is not blank for style 10
+if [ $USERNAMESTYLE = userstyleS10 ]
+then
+	if [ -z "$USERNAME" ]
+	then
+		MESSAGE=$"The username must not be blank."
+		show_status	
+	fi
+fi
+
 COUNTER=""
 #Create username
 DUPLICATECHECK=0
@@ -411,14 +421,14 @@ fi
 if [ $ACTIONUSER = 1 ]
 then
 	echo '<form action="/cgi-bin/admin/add_user.cgi" method="post">
-	<input name="_FIRSTNAME_" value="'$FIRSTNAME'" type="hidden">
-	<input name="_SURNAME_" value="'$SURNAME'" type="hidden">
-	<input name="_PASSWORD1_" value="'$PASSWORD1'" type="hidden">
-	<input name="_PASSWORD2_" value="'$PASSWORD2'" type="hidden">
-	<input name="_GROUP_" value="'$GROUP'" type="hidden">
-	<input name="_USERNAMESTYLE_" value="'$USERNAMESTYLE'" type="hidden">
-	<input name="_USERNAME_" value="'$USERNAME'" type="hidden">
-	<input name="_ENROLLMENTNUMBER_" value="'$ENROLLMENTNUMBER'" type="hidden">
+	<input name="____FIRSTNAME____" value="'$FIRSTNAME'" type="hidden">
+	<input name="____SURNAME____" value="'$SURNAME'" type="hidden">
+	<input name="____PASSWORD1____" value="'$PASSWORD1'" type="hidden">
+	<input name="____PASSWORD2____" value="'$PASSWORD2'" type="hidden">
+	<input name="____GROUP____" value="'$GROUP'" type="hidden">
+	<input name="____USERNAMESTYLE____" value="'$USERNAMESTYLE'" type="hidden">
+	<input name="____USERNAME____" value="'$USERNAME'" type="hidden">
+	<input name="____ENROLLMENTNUMBER____" value="'$ENROLLMENTNUMBER'" type="hidden">
 	'$INITUSERNAME' - '$"This user already exists."'<br><br>'$"Create user"' '$USERNAME'?<br><br>
 	<input value="'$"Submit"'" class="button" type="submit">
 	</form></div></div></body></html>'

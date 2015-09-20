@@ -87,7 +87,10 @@ then
 	exit 101
 fi
 
-echo `date`: module_squid - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+SYNC_CONFIG=no
+[ -f /opt/karoshi/server_network/proxyserver ] && SYNC_CONFIG=yes
+
+echo `date`: "module_squid - Setting up $SERVERNAME sync configuruation $SYNC_CONFIG by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 ########################
 #Language
@@ -144,13 +147,8 @@ else
 	'
 fi
 
-
-
-
 PDCIP=`net lookup $HOSTNAME`
 LDAPSTATUS=notset
-SYNC_CONFIG=no
-[ -f /opt/karoshi/server_network/proxyserver ] && SYNC_CONFIG=yes
 
 if [ "$SERVERNAME" != `hostname-fqdn` ]
 then

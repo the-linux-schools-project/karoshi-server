@@ -474,7 +474,7 @@ do
 done 
 
 #Regenerate filter lists
-/opt/karoshi/"useful scripts"/e2gupdatefilterlist
+/opt/karoshi/serversetup/modules/squid/scripts/e2gupdatefilterlist
 
 #Sync the data to all proxy servers
 SOURCEPATH=/etc/e2guardian
@@ -567,7 +567,7 @@ echo `date`: e2g_filtergroups - removing $FILTERGROUP from filtergroup $FILTERNA
 [ `ls -1 /etc/e2guardian/lists/filtergroups/$FILTERNAME/assigned_groups | wc -l` = 0 ] && rm -f -R /etc/e2guardian/lists/filtergroups/$FILTERNAME/assigned_groups
 
 #Regenerate filter lists
-/opt/karoshi/"useful scripts"/e2gupdatefilterlist
+/opt/karoshi/serversetup/modules/squid/scripts/e2gupdatefilterlist
 
 #Sync the data to all proxy servers
 SOURCEPATH=/etc/e2guardian/lists/filtergroupslist
@@ -602,7 +602,7 @@ do
 done
 
 #Regenerate filter lists
-/opt/karoshi/"useful scripts"/e2gupdatefilterlist
+/opt/karoshi/serversetup/modules/squid/scripts/e2gupdatefilterlist
 
 #Sync the data to all proxy servers
 SOURCEPATH=/etc/e2guardian/lists/filtergroupslist
