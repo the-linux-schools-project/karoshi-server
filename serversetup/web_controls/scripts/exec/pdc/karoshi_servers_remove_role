@@ -827,10 +827,13 @@ then
 	#Unflag server
 	echo "<li>"$SERVERNAME: $"Squid Internet Proxy" - $"Designation removed.""</li><br>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/squid ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/squid
-	[ -f /opt/karoshi/server_network/proxyserver ] && rm -f /opt/karoshi/server_network/proxyserver
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/apt-cacher-ng ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/apt-cacher-ng
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/squid-deb-proxy ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/squid-deb-proxy
 	[ -f /opt/karoshi/server_network/proxyservers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/proxyservers/$SERVERNAME
+	if [ `ls -1  /opt/karoshi/server_network/proxyservers | wc -l` = 0 ]
+	then
+		[ -f /opt/karoshi/server_network/proxyserver ] && rm -f /opt/karoshi/server_network/proxyserver
+	fi
 
 	#Regenerate proxy dns entry.
 	/opt/karoshi/serversetup/modules/squid/scripts/create_proxy_dns_entries

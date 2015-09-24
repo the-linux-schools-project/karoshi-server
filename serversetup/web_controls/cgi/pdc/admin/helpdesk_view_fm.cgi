@@ -88,133 +88,133 @@ END_POINT=7
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SEARCHCRITERIAcheck ]
-then
-let COUNTER=$COUNTER+1
-SEARCHCRITERIA=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/%3D/=/g'`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SEARCHCRITERIAcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SEARCHCRITERIA=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/%3D/=/g'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
-TABLECLASS=standard
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	TABLECLASS=standard
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox
-TABLECLASS=mobilestandard
+	DIV_ID=actionbox
+	TABLECLASS=mobilestandard
 fi
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Help Desk"' - '$"Requests"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">
 <form action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_ASSIGNED_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_ASSIGNED_"><span>All</span></a></form>'
 else
-echo '<b>'$"Help Desk"' - '$"Requests"'</b> </div><div id="infobox"><form action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_ASSIGNED_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_ASSIGNED_"><span>All</span></a></form>'
+	echo '<b>'$"Help Desk"' - '$"Requests"'</b> </div><div id="infobox"><form action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_ASSIGNED_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_ASSIGNED_"><span>All</span></a></form>'
 fi
 
-[ $SEARCHCRITERIA'null' = null ] && SEARCHCRITERIA=ASSIGNED
+[ -z "$SEARCHCRITERIA" ] && SEARCHCRITERIA=ASSIGNED
 #Check to see if there are any new jobs
 if [ ! -d /opt/karoshi/server_network/helpdesk/todo/ ]
 then
-echo $"There are no new requests to view."'</div></div></body></html>'
-exit
+	echo $"There are no new requests to view."'</div></div></body></html>'
+	exit
 fi
 
 if [ `ls -1 /opt/karoshi/server_network/helpdesk/todo/ | wc -l` = 0 ]
 then
-echo $"There are no new requests to view."'</div></div></body></html>'
+	echo $"There are no new requests to view."'</div></div></body></html>'
 exit
 fi
 if [ $MOBILE = yes ]
 then
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody><tr><td style="width: 90px;"><b>Date</b></td><td style="width: 120px;"><b>'$"Location"'</b></td><td style="width: 30px;"></td><td style="width: 60px;"><b>'$"Action"'</b></td></tr>
 '
 else
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody><tr><td style="width: 90px;"><b>Date</b></td><td style="width: 130px;"><b>'$"Name"'</b></td><td style="width: 120px;"><b>'$"Request Summary"'</b></td><td style="width: 120px;"><b>'$"Location"'</b></td><td style="width: 90px;"><b>'$"Wait Time"'</b></td><td style="width: 90px;"><b>'$"Priority"'</b></td><td style="width: 100px;"><b>'$"Assigned to"'</b></td><td style="width: 30px;"></td><td style="width: 60px;"><b>'$"Action"'</b></td></tr>
 '
 fi
 
-for NEWJOB in `grep -w -l ^$SEARCHCRITERIA /opt/karoshi/server_network/helpdesk/todo/*`
+for NEWJOB in `grep -w -l "$SEARCHCRITERIA" /opt/karoshi/server_network/helpdesk/todo/*`
 do
-NEWJOB=`basename $NEWJOB`
-DATE=`echo $NEWJOB | cut -d"." -f1`
-TIME=`date +%H:%M -d @$DATE`
-DATE=`date +%d-%m-%y -d @$DATE`
-source /opt/karoshi/server_network/helpdesk/todo/$NEWJOB
-NOW=`date +%s`
-let WAITTIME=($NOW-$DATE2)
-if [ $WAITTIME -lt 60 ]
-then
-#Show time in seconds
-if [ $WAITTIME = 1 ]
-then 
-WAITTIME=`echo $WAITTIME $"second"`
-else
-WAITTIME=`echo $WAITTIME $"seconds"`
-fi
-else
-#Convert to minutes
-let WAITTIME=$WAITTIME/60
-if [ $WAITTIME -lt 60 ]
-then
-#Show time in minutes
-if [ $WAITTIME = 1 ]
-then
-WAITTIME=`echo $WAITTIME $"minute"`
-else
-WAITTIME=`echo $WAITTIME $"minutes"`
-fi
-else
-#Convert time to hours
-let WAITTIME=$WAITTIME/60
-if [ $WAITTIME -lt 24 ]
-then
-#Show time in hours
-if [ $WAITTIME = 1 ]
-then
-WAITTIME=`echo $WAITTIME $"hour"`
-else
-WAITTIME=`echo $WAITTIME $"hours"`
-fi
-else
-#Covert time to days
-let WAITTIME=$WAITTIME/24
-if [ $WAITTIME = 1 ]
-then
-WAITTIME=`echo $WAITTIME $"day"`
-else
-WAITTIME=`echo $WAITTIME $"days"`
-fi
-fi
-fi
-fi
+	NEWJOB=`basename $NEWJOB`
+	DATE=`echo $NEWJOB | cut -d"." -f1`
+	TIME=`date +%H:%M -d @$DATE`
+	DATE=`date +%d-%m-%y -d @$DATE`
+	source /opt/karoshi/server_network/helpdesk/todo/$NEWJOB
+	NOW=`date +%s`
+	let WAITTIME=($NOW-$DATE2)
+	if [ $WAITTIME -lt 60 ]
+	then
+		#Show time in seconds
+		if [ $WAITTIME = 1 ]
+		then 
+			WAITTIME=`echo $WAITTIME $"second"`
+		else
+			WAITTIME=`echo $WAITTIME $"seconds"`
+		fi
+	else
+		#Convert to minutes
+		let WAITTIME=$WAITTIME/60
+		if [ $WAITTIME -lt 60 ]
+		then
+			#Show time in minutes
+			if [ $WAITTIME = 1 ]
+			then
+				WAITTIME=`echo $WAITTIME $"minute"`
+			else
+				WAITTIME=`echo $WAITTIME $"minutes"`
+			fi
+		else
+		#Convert time to hours
+		let WAITTIME=$WAITTIME/60
+			if [ $WAITTIME -lt 24 ]
+			then
+				#Show time in hours
+				if [ $WAITTIME = 1 ]
+				then
+					WAITTIME=`echo $WAITTIME $"hour"`
+				else
+					WAITTIME=`echo $WAITTIME $"hours"`
+				fi
+			else
+				#Covert time to days
+				let WAITTIME=$WAITTIME/24
+				if [ $WAITTIME = 1 ]
+				then
+					WAITTIME=`echo $WAITTIME $"day"`
+				else
+					WAITTIME=`echo $WAITTIME $"days"`
+				fi
+			fi
+		fi
+	fi
 
-ASSIGNED2=$ASSIGNED
-[ $ASSIGNED2'null' = null ] && ASSIGNED2=$"Not Assigned"
+	ASSIGNED2=$ASSIGNED
+	[ -z "$ASSIGNED2" ] && ASSIGNED2=$"Not Assigned"
 
-if [ $MOBILE = yes ]
-then
-echo '<tr><td style="vertical-align: top;">'$DATE'<br>'$TIME'</td><td style="vertical-align: top;">'$LOCATION'</td><td>
-<form action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_ASSIGNED='$ASSIGNED'_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_ASSIGNED='$ASSIGNED'_"><span>'$ASSIGNED2'</span></a></form></td><td><form action="/cgi-bin/admin/helpdesk_action_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_JOBNAME_'$NEWJOB'_" type="image" class="images" src="/images/submenus/user/helpdesk/action.png" value="_JOBNAME_'$NEWJOB'_">
-<span><b>'$"Name"'</b><br>'$NAME'<br><br><b>'$"Priority"'</b><br>'$PRIORITY'<br><br><b>'$"Location"'</b><br>'$LOCATION'<br><br><b>'$"Request Summary"'</b><br>'$JOBTITLE'</span></a></form></td></tr>'
-else
-echo '<tr><td style="vertical-align: top;">'$DATE'<br>'$TIME'</td><td style="vertical-align: top;">'$NAME'</td><td style="vertical-align: top;">'$JOBTITLE'</td><td style="vertical-align: top;">'$LOCATION'</td><td style="vertical-align: top;">'$WAITTIME'</td><td style="vertical-align: top;">'$PRIORITY'</td><td style="vertical-align: top;">'$ASSIGNED'</td><td>
-<form action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_ASSIGNED='$ASSIGNED'_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_ASSIGNED='$ASSIGNED'_"><span>'$ASSIGNED2'</span></a></form></td><td><form action="/cgi-bin/admin/helpdesk_action_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_JOBNAME_'$NEWJOB'_" type="image" class="images" src="/images/submenus/user/helpdesk/action.png" value="_JOBNAME_'$NEWJOB'_"><span>'$JOBTITLE'</span></a></form></td></tr>'
-fi
+	if [ $MOBILE = yes ]
+	then
+		echo '<tr><td style="vertical-align: top;">'$DATE'<br>'$TIME'</td><td style="vertical-align: top;">'$LOCATION'</td><td>
+	<form action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_'$ASSIGNED'_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_'$ASSIGNED'_"><span>'$ASSIGNED2'</span></a></form></td><td><form action="/cgi-bin/admin/helpdesk_action_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_JOBNAME_'$NEWJOB'_" type="image" class="images" src="/images/submenus/user/helpdesk/action.png" value="_JOBNAME_'$NEWJOB'_">
+	<span><b>'$"Name"'</b><br>'$NAME'<br><br><b>'$"Priority"'</b><br>'$PRIORITY'<br><br><b>'$"Location"'</b><br>'$LOCATION'<br><br><b>'$"Request Summary"'</b><br>'$JOBTITLE'</span></a></form></td></tr>'
+	else
+		echo '<tr><td style="vertical-align: top;">'$DATE'<br>'$TIME'</td><td style="vertical-align: top;">'$NAME'</td><td style="vertical-align: top;">'$JOBTITLE'</td><td style="vertical-align: top;">'$LOCATION'</td><td style="vertical-align: top;">'$WAITTIME'</td><td style="vertical-align: top;">'$PRIORITY'</td><td style="vertical-align: top;">'$ASSIGNED'</td><td>
+	<form action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_'$ASSIGNED'_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_'$ASSIGNED'_"><span>'$ASSIGNED2'</span></a></form></td><td><form action="/cgi-bin/admin/helpdesk_action_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_JOBNAME_'$NEWJOB'_" type="image" class="images" src="/images/submenus/user/helpdesk/action.png" value="_JOBNAME_'$NEWJOB'_"><span>'$JOBTITLE'</span></a></form></td></tr>'
+	fi
 
 done
 [ $MOBILE = no ] && echo '</div>'

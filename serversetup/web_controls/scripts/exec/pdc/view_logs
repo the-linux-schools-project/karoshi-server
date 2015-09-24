@@ -132,6 +132,15 @@ if [ "$ACTION" = viewevent ]
 then
 	echo '<td><input name="_ACTION_delete_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOGFILE_'$LOGFILE'_" type="submit" class="button" value="'$"Delete"'"></td>'
 fi
+if [ "$ACTION" = viewlist ]
+then
+	echo '<td><input name="_ACTION_deleteall_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOGFILE_'$LOGFILE'_" type="submit" class="button" value="'$"Delete All"'"></td>'
+fi
+if [ "$ACTION" = deleteall ]
+then
+	echo '<td><input name="_ACTION_reallydeleteall_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOGFILE_'$LOGFILE'_" type="submit" class="button" value="'$"Confirm Delete All"'"></td>'
+fi
+
 echo '</tr></tbody></table>
 </form>'
 }
@@ -182,6 +191,36 @@ then
 	show_options
 fi
 
+if [ "$ACTION" = reallydeleteall ]
+then
+	echo `date`: view_logs - deleting all stored logs on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	if [ "$SERVERNAME" = `hostname-fqdn` ]
+	then
+		if [ -d /opt/karoshi/logs/errors ]
+		then
+			rm -f -R /opt/karoshi/logs/errors
+			mkdir /opt/karoshi/logs/errors
+			chmod 0700 /opt/karoshi/logs/errors
+		fi
+	else
+		ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
+		if [ -d /opt/karoshi/logs/errors ]
+		then
+			rm -f -R /opt/karoshi/logs/errors
+			mkdir /opt/karoshi/logs/errors
+			chmod 0700 /opt/karoshi/logs/errors
+		fi
+		'
+	fi
+	ACTION=viewlist
+	
+fi
+
+if [ "$ACTION" = deleteall ]
+then
+	show_options
+fi
+
 if [ "$ACTION" = viewlist ]
 then
 	#Delete warning message
@@ -214,7 +253,7 @@ then
 				TIME=$(echo $EVENT | cut -d"-" -f4)
 
 				echo '<tr><td>'$DAY-$MONTH-$YEAR'</td><td>'$TIME'</td>
-				<td><a class="info" href="javascript:void(0)"><input name="_ACTION_viewevent_SERVERNAME_'$SERVERNAME'_LOGFILE_'$EVENT'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"View"'<br>'$EVENT'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_delete_SERVERNAME_'$SERVERNAME'_LOGFILE_'$EVENT'_" type="image" class="images" src="'$ICON2'" value=""><span>'$"Delete"'<br>'$EVENT'</span></a></td></tr></form>'
+				<td><a class="info" href="javascript:void(0)"><input name="_ACTION_viewevent_SERVERNAME_'$SERVERNAME'_LOGFILE_'$EVENT'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"View"'<br>'$EVENT'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_delete_SERVERNAME_'$SERVERNAME'_LOGFILE_'$EVENT'_" type="image" class="images" src="'$ICON2'" value=""><span>'$"Delete"'<br>'$EVENT'</span></a></td></tr>'
 			done
 		else
 			ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
@@ -227,10 +266,11 @@ then
 				TIME=$(echo $EVENT | cut -d"-" -f4)
 
 				echo "<tr><td>$DAY-$MONTH-$YEAR</td><td>$TIME</td>
-				<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_viewevent_SERVERNAME_'$SERVERNAME'_LOGFILE_$EVENT"_"\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$"View"'<br>$EVENT</span></a></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_SERVERNAME_'$SERVERNAME'_LOGFILE_$EVENT"_"\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>'$"Delete"'<br>$EVENT</span></a></td></tr></form>"
+				<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_viewevent_SERVERNAME_'$SERVERNAME'_LOGFILE_$EVENT"_"\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$"View"'<br>$EVENT</span></a></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_SERVERNAME_'$SERVERNAME'_LOGFILE_$EVENT"_"\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>'$"Delete"'<br>$EVENT</span></a></td></tr>"
 			done
 			'
 		fi
+		echo '</tbody></table></form>'
 	else
 		echo $"No event logs"
 	fi

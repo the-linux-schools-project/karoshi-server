@@ -167,6 +167,7 @@ if [ -z "$LOGFILE" ]
 then
 	LOGFILE=viewlist
 	LOGFILE2=""
+	EVENT=""
 else
 	LOGFILE2=`echo "$LOGFILE" | sed 's/%3A/:/g'`
 	#Get time and date of the event
@@ -175,6 +176,11 @@ else
 	YEAR=$(echo "$LOGFILE2" | cut -d"-" -f1)
 	TIME=$(echo "$LOGFILE2" | cut -d"-" -f4)
 	EVENT="$DAY-$MONTH-$YEAR $TIME"
+fi
+
+if [ "$ACTION" != viewevent ]
+then
+	EVENT=""
 fi
 
 #Generate navigation bar
