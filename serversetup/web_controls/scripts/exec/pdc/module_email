@@ -404,6 +404,9 @@ else
 	'
 fi
 
+#Add groups to restricted_accounts and deny_sending
+/opt/karoshi/serversetup/modules/email/scripts/group_email_access
+
 #Add in monitoring for the server
 [ -f /opt/karoshi/server_network/monitoringserver ] && /opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVERNAME
 

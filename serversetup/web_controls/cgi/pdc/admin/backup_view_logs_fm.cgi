@@ -30,7 +30,7 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-DATE_INFO=`date +%F`
+DATE_INFO=`date +%F -d "yesterday"`
 DAY=`echo $DATE_INFO | cut -d- -f3`
 MONTH=`echo $DATE_INFO | cut -d- -f2`
 YEAR=`echo $DATE_INFO | cut -d- -f1`

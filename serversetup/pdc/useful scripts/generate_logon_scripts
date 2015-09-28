@@ -100,42 +100,45 @@ do
 	#Get names of servers with network shares
 	SERVER=`basename $SERVERS`
 	#Get data for network shares
-	for SHARES in /opt/karoshi/server_network/network_shares/$SERVER/*
-	do
-		SHARE=`basename $SHARES`
-		DRIVELETTER=""
-		source /opt/karoshi/server_network/network_shares/$SERVER/$SHARE
-		GROUPNAMES=( `echo $GROUPLIST | sed 's/,/ /g'` )
-		MAP_DRIVES=( `echo $MAP_DRIVE | sed 's/,/ /g'` )
-		if [ -z "$DRIVELETTER" ]
-		then
-			DRIVELETTER="*"
-		else
-			DRIVELETTER="$DRIVELETTER:"
-		fi
-		GROUPNAMECOUNT=${#GROUPNAMES[*]}
-		COUNTER=0
-		while [ "$COUNTER" -lt "$GROUPNAMECOUNT" ]
+	if [ `ls -1 /opt/karoshi/server_network/network_shares/$SERVER/ | wc -l` -gt 0 ]
+	then
+		for SHARES in /opt/karoshi/server_network/network_shares/$SERVER/*
 		do
-			GROUPNAME=${GROUPNAMES[$COUNTER]}
-			DO_MAP=${MAP_DRIVES[$COUNTER]}
-			#echo $SHARE $GROUPNAME $DO_MAP
-			let COUNTER=$COUNTER+1
-
-			if [ $DO_MAP = 1 ]
+			SHARE=`basename $SHARES`
+			DRIVELETTER=""
+			source /opt/karoshi/server_network/network_shares/$SERVER/$SHARE
+			GROUPNAMES=( `echo $GROUPLIST | sed 's/,/ /g'` )
+			MAP_DRIVES=( `echo $MAP_DRIVE | sed 's/,/ /g'` )
+			if [ -z "$DRIVELETTER" ]
 			then
-				#add_drive_map for windows
-				add_drive_map_windows
-				#Add drive map for linux due to broken dfs in mount.cfs
-				for SERVER2 in $SERVERLIST
-				do
-					add_drive_map_linux
-				done
-
+				DRIVELETTER="*"
+			else
+				DRIVELETTER="$DRIVELETTER:"
 			fi
+			GROUPNAMECOUNT=${#GROUPNAMES[*]}
+			COUNTER=0
+			while [ "$COUNTER" -lt "$GROUPNAMECOUNT" ]
+			do
+				GROUPNAME=${GROUPNAMES[$COUNTER]}
+				DO_MAP=${MAP_DRIVES[$COUNTER]}
+				#echo $SHARE $GROUPNAME $DO_MAP
+				let COUNTER=$COUNTER+1
 
+				if [ $DO_MAP = 1 ]
+				then
+					#add_drive_map for windows
+					add_drive_map_windows
+					#Add drive map for linux due to broken dfs in mount.cfs
+					for SERVER2 in $SERVERLIST
+					do
+						add_drive_map_linux
+					done
+
+				fi
+
+			done
 		done
-	done
+	fi
 done
 }
 

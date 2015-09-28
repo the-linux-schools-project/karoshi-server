@@ -1,0 +1,103 @@
+#!/bin/bash
+#Copyright (C) 2015 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+
+LOG_DATE=`date +%F`
+
+#Assume that groups acting as email distribution lists should only be able to receive email from domains on the restriction list and should not be able to send emails.
+
+#Check that the email module has been run
+if [ ! -f /opt/karoshi/server_network/emailserver ]
+then
+	echo `date`: "group_email_access - an email server has not been set up." >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
+fi
+
+#Get email server name
+EMAILSERVER=$(sed -n 1,1p /opt/karoshi/server_network/emailserver)
+
+#Get domain information
+source /opt/karoshi/server_network/domain_information/domain_name
+
+echo `date`: "group_email_access - adding groups to /etc/postfix/deny_sending and /etc/postfix/restricted_accounts on $EMAILSERVER." >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+#Add all groups
+GROUPLIST1=$(ls -1 /opt/karoshi/server_network/group_information/)
+
+if [ -d /opt/karoshi/server_network/group_information_dynamic/ ]
+then
+	GROUPLIST2=$(ls -1 /opt/karoshi/server_network/group_information_dynamic/)	
+fi
+
+GROUPLIST="$GROUPLIST1 $GROUPLIST2"
+
+if [ $(hostname-fqdn) = $EMAILSERVER ]
+then
+	for GROUPNAME in $GROUPLIST
+	do
+		#Add to /etc/postfix/deny_sending
+		if [ $(grep -c ^$GROUPNAME /etc/postfix/deny_sending) = 0 ]
+		then
+			echo "$GROUPNAME@$REALM REJECT" >> /etc/postfix/deny_sending
+		fi
+
+		#Add to /etc/postfix/restricted_accounts
+		if [ $(grep -c ^$GROUPNAME /etc/postfix/restricted_accounts) = 0 ]
+		then
+			echo "$GROUPNAME@$REALM	restricted_domains" >> /etc/postfix/restricted_accounts
+		fi
+	done
+
+	#Update /etc/postfix/deny_sending.db
+	postmap hash:/etc/postfix/deny_sending
+
+	#Update /etc/postfix/restricted_accounts.db
+	postmap hash:/etc/postfix/restricted_accounts
+
+else
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+	for GROUPNAME in '$GROUPLIST'
+	do
+		#Add to /etc/postfix/deny_sending
+		if [ $(grep -c ^$GROUPNAME /etc/postfix/deny_sending) = 0 ]
+		then
+			echo "$GROUPNAME@'$REALM' REJECT" >> /etc/postfix/deny_sending
+		fi
+
+		#Add to /etc/postfix/restricted_accounts
+		if [ $(grep -c ^$GROUPNAME /etc/postfix/restricted_accounts) = 0 ]
+		then
+			echo "$GROUPNAME@'$REALM'	restricted_domains" >> /etc/postfix/restricted_accounts
+		fi
+	done
+
+	#Update /etc/postfix/deny_sending.db
+	postmap hash:/etc/postfix/deny_sending
+
+	#Update /etc/postfix/restricted_accounts.db
+	postmap hash:/etc/postfix/restricted_accounts
+	'
+fi
+

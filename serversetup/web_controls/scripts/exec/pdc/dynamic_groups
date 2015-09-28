@@ -102,6 +102,13 @@ do
 				echo "<li>"$"Creating group" "$group</li>"
 				echo `date`: groups - creating "$group" by "$REMOTE_USER" from "$REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 				samba-tool group add --groupou="OU=Groups,OU=People" "$group" 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+				#Add group to restriction list if an email server has been setup.
+				if [ -f /opt/karoshi/server_network/emailserver ]
+				then
+					MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1`
+					echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:change:$group:4:$group:$MOBILE:dynamic_groups:" | sudo -H /opt/karoshi/web_controls/exec/email_access
+				fi
+
 				#Create flag file
 				echo "$group" > /opt/karoshi/server_network/group_information_dynamic/"$group"
 				#Modify the group with email information

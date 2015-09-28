@@ -356,8 +356,8 @@ then
 		done
 	fi
 
-	#Exit the script if it has been called by add user.
-	if [ $CALLEDBY = add_user ]
+	#Exit the script if it has been called by add user, groups or dynamic_groups.
+	if [ "$CALLEDBY" = "add_user" ] || [ "$CALLEDBY" = "groups" ] || [ "$CALLEDBY" = "dynamic_groups" ]
 	then
 		exit
 	fi
