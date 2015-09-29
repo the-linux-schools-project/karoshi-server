@@ -5,3 +5,13 @@ then
 	sleep 5
 fi
 
+#Check to see if this is a pdc or adc
+if [ `grep -w -c sysvol /etc/samba/smb.conf` -gt 0 ]
+then
+	#Check that all samba4 processes have stopped
+	for PROCESS in $(ps aux | grep "/usr/sbin/samba" | grep -v "grep" | sed "s/ * / /g" | cut -d" " -f2 | tr -cd "0-9\ \n")
+	do
+		echo Stopping $PROCESS
+		kill -9 $PROCESS
+	done
+fi
