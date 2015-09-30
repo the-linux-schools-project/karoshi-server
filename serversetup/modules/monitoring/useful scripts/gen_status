@@ -321,7 +321,7 @@ echo '<tr><td style="vertical-align: top;">'$GROUP_NAME'</td><td style="vertical
 <input name="_MONITOR_'$GROUP_NAME'_" type="submit" class="button smallbutton" value="On">
 </form></td>'  >> /opt/karoshi/server_network/mon/mon_mobile_data_html_temp
 
-echo '<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_GROUPNAME_'$GROUP_NAME'_" type="image" class="images" src="/images/warnings/'$ICON'" value=""><span>'$FAILURELIST'</span></a></td></tr>' >> /opt/karoshi/server_network/mon/mon_mobile_data_html_temp
+echo '<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_GROUPNAME_'$GROUP_NAME'_" type="image" class="images" src="/images/warnings/'$ICON2'" value=""><span>'$FAILURELIST'</span></a></td></tr>' >> /opt/karoshi/server_network/mon/mon_mobile_data_html_temp
 }
 
 function reset_status {
@@ -352,14 +352,22 @@ GROUP_NAME_LAST="non_set"
 GROUP_NAME_NO_SPACES="non_set"
 
 ICON=red.gif
+ICON2=redm.gif
 while [ $COUNTER -le $LINE_COUNT ]
 do
 	LINE_DATA=`echo -e "$MONDATA" | sed -n $COUNTER,$COUNTER'p'`
 	GROUP_NAME=`echo $LINE_DATA | cut -d, -f2`
 	GROUP_NAME_NEXT=`echo -e "$MONDATA" | sed -n $COUNTER2,$COUNTER2'p' | cut -d, -f2`
-	[ $GROUP_NAME = UNTESTED ] && ICON=orange.gif
-	[ $GROUP_NAME = PASSED ] && ICON=green.gif
-
+	if [ $GROUP_NAME = UNTESTED ]
+	then
+		ICON=orange.gif
+		ICON2=orangem.gif
+	fi
+	if [ $GROUP_NAME = PASSED ]
+	then
+		ICON=green.gif
+		ICON2=greenm.gif
+	fi
 	SERVICE_NAME=`echo $LINE_DATA | cut -d, -f3`
 	STATUS=`echo $LINE_DATA | cut -d, -f4`
 	LAST_CHECK=`echo $LINE_DATA | cut -d, -f5`

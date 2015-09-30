@@ -31,18 +31,6 @@ source /opt/karoshi/serversetup/distro/$DISTROCHOICE/extra_server/software
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
 
-#########################
-#Add log entry
-#########################
-touch /opt/karoshi/serversetup/setuplog
-echo '##############'setupmonitoring'##############' >> /opt/karoshi/serversetup/install_log
-date >> /opt/karoshi/serversetup/install_log
-if [ `grep -c "$"Setup Server Monitoring"" /opt/karoshi/serversetup/setuplog` = 0 ]
-then
-	echo setupmonitoring:$"Setup Server Monitoring"://opt/karoshi/serversetup/extra_server/scripts/setupmonitoring >> /opt/karoshi/serversetup/setuplog
-	chmod 0600 /opt/karoshi/serversetup/setuplog
-fi
-
 #############################
 #Check for missing software
 #############################
@@ -101,8 +89,8 @@ chown root.$APACHEGROUP -R /var/www/cgi-bin/admin
 chmod 0750 /var/www/cgi-bin/admin/monitors_view_logs.cgi
 chmod 0750 /var/www/cgi-bin/admin/monitors_enable_disable.cgi
 
-[ -d /opt/karoshi/server_network/cronjobs/`hostname-fqdn` ] || mkdir -p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`
-echo "*" "*" "*" "*" "*" /opt/karoshi/\"useful scripts\"/gen_status > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/gen_status.cron
+[ ! -d /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs ] && mkdir -p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs
+echo "*" "*" "*" "*" "*" /opt/karoshi/\"useful scripts\"/gen_status > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/gen_status.cron
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
 [ -e /etc/mon/mon_backup.cf ] || cp -f /etc/mon/mon.cf /etc/mon/mon_backup.cf

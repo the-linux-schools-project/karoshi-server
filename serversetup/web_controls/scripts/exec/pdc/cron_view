@@ -152,8 +152,6 @@ fi
 #Show cron jobs for pdc
 ##################################
 
-echo '<table class="'$TABLECLASS'" style="text-align: left\;"><tbody><tr><td style="width: 40px;"></td><td style="width: 180px;"><b>'$"Command"'</b></td><td></td><td></td></tr>'
-
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 	if [ ! -d /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/ ]
@@ -166,6 +164,7 @@ then
 
 	if [ $CRONCOUNT -gt 0 ]
 	then
+		echo '<table class="'$TABLECLASS'" style="text-align: left;"><tbody><tr><td style="width: 40px;"></td><td style="width: 180px;"><b>'$"Command"'</b></td><td></td><td></td></tr>'
 		for CRON_JOBS in /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/*.cron
 		do
 			CRON_NAME=`basename $CRON_JOBS | sed "s/.cron$//g"`
@@ -188,9 +187,11 @@ then
 			<td><a class="info" href="javascript:void(0)"><input name="___ACTION___EDIT___JOBNAME___'$CRON_NAME'___SERVERTYPE___network___SERVERNAME___'$SERVERNAME'___" type="image" class="images" src="'$EDITICON'" value=""><span>'$"Edit the scheduled job."'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="___ACTION___DELETE___JOBNAME___'$CRON_NAME'___SERVERTYPE___network___SERVERNAME___'$SERVERNAME'___" type="image" class="images" src="'$DELETEICON'" value=""><span>'$"Delete the scheduled job."'</span></a></td></tr>'
 
 		done
+		echo '</tbody></table>'
 	else
-		echo '<tr><td><b>'$"No Scheduled jobs."'</b></td><td></td><td></td><td></td><td></td><td></td></tr>'
+		echo '<b>'$"No Scheduled jobs."'</b>'
 	fi
+		
 fi
 
 
@@ -207,6 +208,7 @@ then
 
 	if [ $CRONCOUNT -gt 0 ]
 	then
+		echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\"><tbody><tr><td style=\"width: 40px;\"></td><td style=\"width: 180px;\"><b>'$"Command"'</b></td><td></td><td></td></tr>"
 		for CRON_JOBS in /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/*.cron
 		do
 			CRON_NAME=`basename $CRON_JOBS | sed "s/.cron$//g"`
@@ -229,8 +231,9 @@ then
 			</td><td>$CRON_NAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"___ACTION___EDIT___JOBNAME___"$CRON_NAME"___SERVERTYPE___federated___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\" type=\"image\" class=\"images\" src=\"'$EDITICON'\" value=\"\"><span>'$"Edit the scheduled job."'</span></a></td><td>
 			<a class=\"info\" href=\"javascript:void(0)\"><input name=\"___ACTION___DELETE___JOBNAME___"$CRON_NAME"___SERVERTYPE___federated___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\" type=\"image\" class=\"images\" src=\"'$DELETEICON'\" value=\"\"><span>'$"Delete the scheduled job."'</span></a></td></tr>"
 		done
+		echo "</tbody></table>"
 	else
-		echo"<tr><td><b>'$"No Scheduled jobs."'</b></td><td></td><td></td><td></td><td></td><td></td></tr>"
+		echo "<b>'$"No Scheduled jobs."'</b>"
 	fi
 	' 2>/dev/null
 fi
@@ -249,6 +252,7 @@ then
 
 	if [ $CRONCOUNT -gt 0 ]
 	then
+		echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\"><tbody><tr><td style=\"width: 40px;\"></td><td style=\"width: 180px;\"><b>'$"Command"'</b></td><td></td><td></td></tr>"
 		for CRON_JOBS in /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/*.cron
 		do
 			CRON_NAME=`basename $CRON_JOBS | sed "s/.cron$//g"`
@@ -271,13 +275,14 @@ then
 			</td><td>$CRON_NAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"___ACTION___EDIT___JOBNAME___"$CRON_NAME"___SERVERTYPE___federatedslave___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\" type=\"image\" class=\"images\" src=\"'$EDITICON'\" value=\"\"><span>'$"Edit the scheduled job."'</span></a></td><td>
 			<a class=\"info\" href=\"javascript:void(0)\"><input name=\"___ACTION___DELETE___JOBNAME___"$CRON_NAME"___SERVERTYPE___federatedslave___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\" type=\"image\" class=\"images\" src=\"'$DELETEICON'\" value=\"\"><span>'$"Delete the scheduled job."'</span></a></td></tr>"
 		done
+		echo "</tbody></table>"
 	else
-		echo"<tr><td><b>'$"No Scheduled jobs."'</b></td><td></td><td></td><td></td><td></td><td></td></tr>"
+		echo "<b>'$"No Scheduled jobs."'</b>"
 	fi
 	'\''
 	' 2>/dev/null
 fi
 
-echo "</tbody></table><br><br>"
+echo "<br><br>"
 
 exit

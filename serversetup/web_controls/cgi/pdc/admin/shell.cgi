@@ -86,7 +86,7 @@ FILE=`echo $DATA | cut -s -d_ -f3`
 if [ $MOBILE = no ]
 then
 DIV_ID=actionbox
-WIDTH=800
+WIDTH=1200
 HEIGHT=800
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
