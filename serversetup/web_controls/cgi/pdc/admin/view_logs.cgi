@@ -190,7 +190,7 @@ then
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
-	DIV_ID=mobileactionbox2
+	DIV_ID=mobileactionbox
 fi
 
 

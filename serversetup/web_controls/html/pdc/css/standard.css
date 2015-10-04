@@ -4,19 +4,19 @@
 body {
 	font-family: Arial, Times, Georgia, "Times New Roman", Times, serif;
 	font-size: 10pt;
-	background-repeat: repeat-x;
 	margin: 0;
 	height: 100%;
 }
 
 #pagecontainer {
-	padding: 0 5px 0 5px;
+	background-repeat: repeat-x;
 	margin: 0 auto 0 auto;
 	height: 100%;
 	min-width: 1200px;
 	max-width: 1300px;
 	display: flex;
 	flex-direction: column;
+	position: relative;
 }
 
 .reinstall a:link,
@@ -34,8 +34,9 @@ text-decoration: bold
 
 #header {
 	position: relative;
-	margin: 6px 0 0 0;
+	margin: 6px 6px 0 6px;
 	flex: none;
+	height: 65px;
 }
 
 /* SEARCH FORM */
@@ -140,12 +141,14 @@ font-weight: bold;
 
 #actionbox {
 	position: relative;
-        margin: 2px 2px 20px 2px;
-	-moz-border-radius: 15px;
-	border-radius: 15px;
+        margin: 2px 200px 20px 2px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
 	border-style:solid;
 	border-width:3px;
 	padding: 10px;
+	float: right;
+	left: 200px;
 }
 
 #photobox {
@@ -161,18 +164,22 @@ font-weight: bold;
 
 #actionbox2 {
   	font-size : 12pt;
+	left: 200px;
 }
 
 #actionbox3 {
+	position: relative;
 	display: flex;
 	flex: auto;
 	flex-direction: column;
-        margin: 2px 2px 2px 2px;
-	-moz-border-radius: 15px;
-	border-radius: 15px;
+        margin: 2px 200px 2px 2px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
 	border-style:solid;
 	border-width:3px;
-	padding: 10px;	
+	padding: 10px;
+	left: 200px;
+	float: right;
 }
 
 #actionbox4 {
@@ -203,6 +210,8 @@ font-weight: bold;
 
 #submitbox {
         margin: 2px 2px 2px 2px;
+	left: 200px;
+	position: absolute;
 }
 
 #resetbox {
@@ -232,20 +241,27 @@ font-weight: bold;
 
 a.searchlink
 {
+	min-width: 105px;
+	height: 19px;
+	font-weight: bold;
 	border: solid 1px #aaa;
-	border-radius: 10px;
-	-moz-border-radius: 10px;
-	-webkit-border-radius: 10px;
-	background-color: #DEDEDE;
-	color: #2A2A2A;	
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	background-color: #EFEFEF;
+	background: #EFEFEF;
+	background-image: -webkit-linear-gradient(top, #EFEFEF, #808080);
+	background-image: -moz-linear-gradient(top, #EFEFEF, #808080);
+	background-image: -ms-linear-gradient(top, #EFEFEF, #808080);
+	background-image: -o-linear-gradient(top, #EFEFEF, #808080);
+	background-image: linear-gradient(to bottom, #EFEFEF, #808080);
 	font-family: Arial, Times, Georgia, "Times New Roman", Times, serif;
-	font-size: 10pt;
-	width: 250px;
+	color: #2A2A2A;
+	font-size: 11px;
 	text-align:center;
 	text-decoration: none;
-	font-weight: bold;
-	padding: 6px;
-	margin: 2px 2px 2px 2px;
+	padding: 5px 5px 1px 5px;
+	margin: 0px 1px 0px 1px;
 	display: inline-block;
 }
 
@@ -262,9 +278,9 @@ a.searchlink:hover
   height: 25px;
   font-weight: bold;
   border: solid 1px #aaa;
-  border-radius: 12px;
-  -moz-border-radius: 12px;
-  -webkit-border-radius: 12px;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
   background-color: #EFEFEF;
   background: #EFEFEF;
   background-image: -webkit-linear-gradient(top, #EFEFEF, #808080);
@@ -312,7 +328,10 @@ a.searchlink:hover
 
 #navbar {
 	z-index:100;
-	margin: 6px 0px 20px 0px;
+	margin: 3px 0px 20px 0px;
+	width: 200px;
+	float: left;
+	position: absolute;
 }
 
 #mobilebar {
@@ -536,17 +555,14 @@ way to fit your requirements.
 .preload1 {background: url(/images/pro_dropdown_2_default/three_1.gif);}
 .preload2 {background: url(/images/pro_dropdown_2_default/three_1a.gif);}
 
-#nav {padding:0; margin:0; list-style:none; height:38px; background:#30353B url(/images/pro_dropdown_2_default/three_0.gif) repeat-x; position:relative; z-index:500; font-family:arial, verdana, sans-serif;
-   	border-radius: 10px;
-   	-moz-border-radius: 10px;
-   	-webkit-border-radius: 10px;
+#nav {padding:0; margin:0; list-style:none; height:34px; background:#30353B url(/images/pro_dropdown_2_default/three_0.gif) repeat-x; position:relative; z-index:500; font-family:arial, verdana, sans-serif;
+width:170px; -moz-border-radius: 5px; border-radius: 5px;
 }
 #nav li:first-child a {
-   	border-radius: 10px 0 0 10px;
 }
-#nav li.top {display:block; float:left; height:38px;}
-#nav li a.top_link {display:block; float:left; height:35px; line-height:33px; color:#ccc; text-decoration:none; font-size:11px; font-weight:bold; padding:0 0 0 12px; cursor:pointer;background: url(/images/pro_dropdown_2_default/three_0.gif);}
-#nav li a.top_link span {float:left; display:block; padding:0 24px 0 12px; height:35px; background: url(/images/pro_dropdown_2_default/three_0.gif) right top no-repeat;}
+#nav li.top {display:block; float:left; height:38px; }
+#nav li a.top_link {-moz-border-radius: 5px;border-radius: 5px;display:block; float:left; height:35px; line-height:33px; color:#ccc; text-decoration:none; font-size:11px; font-weight:bold; padding:0 0 0 12px;  margin-right: 10px; cursor:pointer;background: url(/images/pro_dropdown_2_default/three_0.gif);}
+#nav li a.top_link span {float:left; display:block; padding:0 24px 0 12px; height:35px; width:140px; background: url(/images/pro_dropdown_2_default/three_0.gif) right top no-repeat; -moz-border-radius: 5px; border-radius: 5px;}
 #nav li a.top_link span.down {float:left; display:block; padding:0 24px 0 12px; height:35px; background: url(/images/pro_dropdown_2_default/three_0a.gif) no-repeat right top;}
 
 #nav li:hover a.top_link {color:#fff; background: url(/images/pro_dropdown_2_default/three_1.gif) no-repeat;}
@@ -554,9 +570,6 @@ way to fit your requirements.
 #nav li:hover a.top_link span.down {background:url(/images/pro_dropdown_2_default/three_1a.gif) no-repeat right top;}
 
 #nav li a.top_link_right { padding:0 4px 0 12px;
-   	border-radius: 10px;
-   	-moz-border-radius: 10px;
-   	-webkit-border-radius: 10px;
 }
 
 #nav li.right { 
@@ -567,7 +580,7 @@ way to fit your requirements.
 #nav li:hover {position:relative; z-index:170;}
 
 #nav li:hover ul.sub
-{left:1px; top:38px; background: #ffffff; padding:3px; border-color: #2E3D8B; border:1px solid #2E3D8B; white-space:nowrap; width:170px; height:auto; z-index:300;}
+{left:190px; top:2px; background: #ffffff; padding:3px; border-color: #2E3D8B; border:1px solid #2E3D8B; white-space:nowrap; width:170px; height:auto; z-index:300; -moz-border-radius: 5px; border-radius: 5px;}
 #nav li:hover ul.sub li
 {display:block; height:20px; position:relative; float:left; width:160px; font-weight:normal;}
 #nav li:hover ul.sub li a
@@ -584,7 +597,7 @@ way to fit your requirements.
 #nav li:hover li:hover li:hover ul,
 #nav li:hover li:hover li:hover li:hover ul,
 #nav li:hover li:hover li:hover li:hover li:hover ul
-{left:167px; top:-4px; background: #ffffff; border-color: #2E3D8B; padding:3px; border:1px solid #2E3D8B; white-space:nowrap; width:170px; z-index:400; height:auto;}
+{left:167px; top:-4px; background: #ffffff; border-color: #2E3D8B; padding:3px; border:1px solid #2E3D8B; white-space:nowrap; width:170px; z-index:400; height:auto; -moz-border-radius: 5px; border-radius: 5px;}
 
 #nav ul, 
 #nav li:hover ul ul,

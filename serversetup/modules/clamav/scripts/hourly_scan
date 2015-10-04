@@ -1,0 +1,34 @@
+
+#!/bin/bash
+
+#Make sure we have a quarantime directory
+[ ! -d /virus ] && mkdir /virus
+
+#Make sure we have a log directory
+[ ! -d /opt/karoshi/logs/clamav ] && mkdir -p /opt/karoshi/logs/clamav
+
+# email subject
+SUBJECT="VIRUS DETECTED ON `hostname`!!!"
+
+# Log location
+LOG=/var/log/clamav/scan.log
+
+#Alert file
+ALERT_FILE=$(date +%F-%H:%M:%S)
+
+check_scan () {
+
+# Check the last set of results. If there are any "Infected" counts that aren't zero, we have a problem.
+if [[ `tail -n 12 ${LOG} | grep Infected | grep -v 0 | wc -l` != 0 ]]
+then
+	#Create warning log
+	tail -n 50 "${LOG}" >> /opt/karoshi/logs/clamav/$ALERT_FILE
+fi
+
+}
+
+find /home -mmin -61 -type f -print0 | xargs -0 -r clamscan --move=/virus --quiet --log=${LOG}
+check_scan
+
+find /home -cmin -61 -type f -print0 | xargs -0 -r clamscan --move=/virus --quiet --log=${LOG}
+check_scan

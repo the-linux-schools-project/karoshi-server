@@ -34,7 +34,7 @@ echo '<div id="header"><img src="/images/small_logo.png" alt="logo" align="top">
 '$"Version"' : '$VERSION'
 </small></small>
 <div id="searchbar"><form name="searchform" action="/cgi-bin/admin/search.cgi" method="post">
-<input name="_SEARCH_" tabindex= "1" style="width: 200px;" size="20" type="text">
+<input name="_SEARCH_" tabindex= "1" style="width: 200px; height: 25px;" size="20" type="text">
 <input name="_SEARCH_" type="submit" class="button" value="Search">
 </form></div>'
 
@@ -97,7 +97,10 @@ if(document.getElementById||document.all){document.write('<div style=\"position:
 echo '</div>'
 
 fi
-echo '<div id="navbar"><span class="preload1"></span>
+echo '</div><div id="navbar">
+
+
+<span class="preload1"></span>
 <span class="preload2"></span>
 
 <ul id="nav">
@@ -463,15 +466,15 @@ echo '		</ul>
 fi
 
 #Show logout
-echo '<li class="top right"><a href="/cgi-bin/admin/logout.cgi" class="top_link top_link_right"><span style="width: 60px;">'$"Logout"'</span></a></li>'
-echo '<li class="top right"><a href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Main_Page" id="Help" class="top_link"><span class="down">'$"Help"'</span></a>
+echo '<li class="top"><a href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Main_Page"  id="Help" class="top_link"><span class="down">'$"Help"'</span></a>
 	<ul class="sub">
 		<li><a href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Main_Page" target="_blank">'$"Documentation"'</a></li>
 		<li><a href="http://www.linuxschools.com/forum/" target="_blank">'$"Forum"'</a></li>
 		<li><a href="irc_help.cgi" target="_blank">'$"IRC"'</a></li>
 	</ul>
-	</li>'
+	</li>
+	<li class="top"><a href="/cgi-bin/admin/logout.cgi" class="top_link"><span>'$"Logout"'</span></a></li>
 
-echo '</ul></div></div>'
+</ul></div>'
 
 exit

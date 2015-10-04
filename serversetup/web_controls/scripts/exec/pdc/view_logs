@@ -174,17 +174,13 @@ then
 	then
 		if [ -f /opt/karoshi/logs/errors/"$LOGFILE" ]
 		then
-			echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-			cat /opt/karoshi/logs/errors/$LOGFILE | tr -cd "A-Za-z0-9\. _[]():/\n=-" | sed "s/kernel/<span STYLE=\"font-weight: bold; color: red\">kernel<\/span>/g" | sed "s/nslcd/<span STYLE=\"font-weight: bold; color: red\">nslcd<\/span>/g"
-			echo "</pre>"
+			cat /opt/karoshi/logs/errors/$LOGFILE | tr -cd "A-Za-z0-9\. _[]():/\n=-" | sed "s/kernel/<span STYLE=\"font-weight: bold; color: red\">kernel<\/span>/g" | sed "s/nslcd/<span STYLE=\"font-weight: bold; color: red\">nslcd<\/span>/g" | sed "s/$/<br>/g"
 		fi
 	else
 		ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
 		if [ -f /opt/karoshi/logs/errors/"'$LOGFILE'" ]
 		then
-			echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-			cat /opt/karoshi/logs/errors/'$LOGFILE' | tr -cd "A-Za-z0-9\. _[]():/\n=-" | sed "s/kernel/<span STYLE=\"font-weight: bold; color: red\">kernel<\/span>/g" | sed "s/nslcd/<span STYLE=\"font-weight: bold; color: red\">nslcd<\/span>/g"
-			echo "</pre>"
+			cat /opt/karoshi/logs/errors/'$LOGFILE' | tr -cd "A-Za-z0-9\. _[]():/\n=-" | sed "s/kernel/<span STYLE=\"font-weight: bold; color: red\">kernel<\/span>/g" | sed "s/nslcd/<span STYLE=\"font-weight: bold; color: red\">nslcd<\/span>/g" | sed "s/$/<br>/g"
 		fi
 		'
 	fi

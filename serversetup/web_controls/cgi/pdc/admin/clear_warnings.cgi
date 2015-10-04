@@ -27,7 +27,7 @@
 #Detect mobile browser
 MOBILE=no
 source /opt/karoshi/web_controls/detect_mobile_browser
-[ $MOBILE = yes ] && $DEFAULTPAGE=mobile_menu.cgi
+[ $MOBILE = yes ] && DEFAULTPAGE=mobile_menu.cgi
 ##########################
 #Language
 ##########################

@@ -243,15 +243,16 @@ then
 		while [ "$COUNTER" -lt "$GROUPNAMECOUNT" ]
 		do
 			PERM="r-x"
+			[ "$GROUP_PERM" = 7 ] && PERM="rwx"
 			GROUPNAME=${GROUPNAMES[$COUNTER]}
-			if [ $GROUPNAME != all ]
+			if [ "$GROUPNAME" = all ]
 			then
+				setfacl -Rm d:u::rwx,g::"$PERM",o::"$PERM" "$SHAREPATH"
+			else
 				GROUP_PERM=${GROUP_PERMS[$COUNTER]}
-				[ "$GROUP_PERM" = 7 ] && PERM="rwx"
-				setfacl -Rm g:$GROUPNAME:"$PERM" "$SHAREPATH"
+				setfacl -Rm g:"$GROUPNAME":"$PERM" "$SHAREPATH"
 			fi
 			let COUNTER=$COUNTER+1
-			
 		done
 		#Check that the share definition does not already exist in smb.conf
 		if [ `grep -c -w "\[$SHARENAME\]" /etc/samba/smb.conf` =  0 ]

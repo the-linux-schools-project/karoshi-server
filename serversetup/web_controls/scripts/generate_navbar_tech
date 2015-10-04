@@ -38,7 +38,7 @@ echo '<div id="header"><img src="/images/small_logo.png" alt="logo" align="top">
 <input name="_SEARCH_" type="submit" class="button" value="Search">
 </form></div>'
 
-echo '<div id="navbar"><span class="preload1"></span>
+echo '</div><div id="navbar"><span class="preload1"></span>
 <span class="preload2"></span>
 
 <ul id="nav">
@@ -172,14 +172,14 @@ echo '	<li class="top"><a href="/cgi-bin/tech/e2g_filtergroups.cgi" id="Internet
 fi
 
 #Show logout
-echo '<li class="top right"><a href="/cgi-bin/admin/logout.cgi" class="top_link top_link_right"><span style="width: 60px;">'$"Logout"'</span></a></li>'
-echo '<li class="top right"><a href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Main_Page" id="Help" class="top_link"><span class="down">'$"Help"'</span></a>
+echo '<li class="top"><a href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Main_Page"  id="Help" class="top_link"><span class="down">'$"Help"'</span></a>
 	<ul class="sub">
 		<li><a href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Main_Page" target="_blank">'$"Documentation"'</a></li>
 		<li><a href="http://www.linuxschools.com/forum/" target="_blank">'$"Forum"'</a></li>
 		<li><a href="irc_help.cgi" target="_blank">'$"IRC"'</a></li>
 	</ul>
-	</li>'
+	</li>
+	<li class="top"><a href="/cgi-bin/admin/logout.cgi" class="top_link"><span>'$"Logout"'</span></a></li>
 
-echo '</ul></div></div>'
+</ul></div>'
 

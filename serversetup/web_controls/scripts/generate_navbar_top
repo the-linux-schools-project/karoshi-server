@@ -34,7 +34,7 @@ echo '<div id="header"><img src="/images/small_logo.png" alt="logo" align="top">
 '$"Version"' : '$VERSION'
 </small></small>'
 
-echo '<div id="navbar"><span class="preload1"></span>
+echo '</div><div id="navbar"><span class="preload1"></span>
 <span class="preload2"></span>
 
 <ul id="nav">
@@ -43,5 +43,5 @@ echo '<div id="navbar"><span class="preload1"></span>
 	<li class="top"><a href="/cgi-bin/tech/redirect.cgi" class="top_link"><span>'$"Technician"'</span></a></li>
 	<li class="top"><a href="/cgi-bin/admin/redirect.cgi" class="top_link"><span>'$"Administrator"'</span></a></li>
 </ul>
-</div></div>
+</div>
 '
