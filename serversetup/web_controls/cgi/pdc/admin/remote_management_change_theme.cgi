@@ -80,15 +80,15 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
-TABLECLASS=standard
-MAXSTYLES=4
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	TABLECLASS=standard
+	MAXSTYLES=3
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=mobileactionbox
-TABLECLASS=mobilestandard
-MAXSTYLES=1
+	DIV_ID=mobileactionbox
+	TABLECLASS=mobilestandard
+	MAXSTYLES=1
 fi
 
 echo '<form action="/cgi-bin/admin/remote_management_change_theme2.cgi" method="post">'
@@ -98,13 +98,13 @@ echo '<form action="/cgi-bin/admin/remote_management_change_theme2.cgi" method="
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Change Theme"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="'$DIV_ID'">'
 else
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
 <td style="vertical-align: top;"><div class="sectiontitle">'$"Change Theme"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Web_Management_Themes"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the theme that you want for the Web Management."'<br><br>'$"This will not affect other web management users."'</span></a></td></tr></tbody></table><br></div><div id="infobox">'
 fi
 
@@ -118,17 +118,17 @@ STYLECOUNT=1
 for THEMES in /var/www/html_karoshi/images/theme_preview/*
 do
 
-STYLESHEETCHOICE=`basename $THEMES | sed 's/.png//g'`
-if [ $STYLESHEETCHOICE != $STYLESHEET ]
-then
-echo '<td style="width: 90px; vertical-align: top; height: 160px; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_THEMECHOICE_'$STYLESHEETCHOICE'_" type="image" class="images" src="/images/theme_preview/'$STYLESHEETCHOICE'.png" value="_THEMECHOICE_'$STYLESHEETCHOICE'_"><span>'$STYLESHEETCHOICE'</span></a></td>'
-let STYLECOUNT=$STYLECOUNT+1
-fi
-if [ $STYLECOUNT -gt $MAXSTYLES ]
-then
-echo '</tr><tr>'
-STYLECOUNT=1
-fi
+	STYLESHEETCHOICE=`basename $THEMES | sed 's/.png//g'`
+	if [ $STYLESHEETCHOICE != $STYLESHEET ]
+	then
+		echo '<td style="width: 90px; vertical-align: top; height: 160px; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_THEMECHOICE_'$STYLESHEETCHOICE'_" type="image" class="images" src="/images/theme_preview/'$STYLESHEETCHOICE'.png " width="330px" value="_THEMECHOICE_'$STYLESHEETCHOICE'_"><span>'$STYLESHEETCHOICE'</span></a></td>'
+		let STYLECOUNT=$STYLECOUNT+1
+	fi
+	if [ $STYLECOUNT -gt $MAXSTYLES ]
+	then
+		echo '</tr><tr>'
+		STYLECOUNT=1
+	fi
 done
 [ $STYLECOUNT = 1 ] && echo "<td></td>"
 echo '</tr></tbody></table></center><br>'

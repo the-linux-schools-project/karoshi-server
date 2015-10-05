@@ -27,13 +27,14 @@
 #Detect mobile browser
 MOBILE=no
 source /opt/karoshi/web_controls/detect_mobile_browser
-[ $MOBILE = yes ] && DEFAULTPAGE=mobile_menu.cgi
+
 ##########################
 #Language
 ##########################
 
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ "$MOBILE" = yes ] && DEFAULTPAGE=mobile_menu.cgi
 TEXTDOMAIN=karoshi-server
 
 ##########################

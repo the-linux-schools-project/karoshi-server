@@ -51,28 +51,28 @@ END_POINT=22
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign DATE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = DATEcheck ]
-then
-let COUNTER=$COUNTER+1
-DATE=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9-'`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = DATEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		DATE=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9-'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -96,14 +96,14 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
@@ -111,15 +111,15 @@ fi
 #Check to see that a SERVERNAME has been chosen
 if [ $SERVERNAME'null' = null ]
 then
-MESSAGE=$"You must choose a server to enable or disable."
-show_status
+	MESSAGE=$"You must choose a server to enable or disable."
+	show_status
 fi
 
 #Check to see that DATE is not blank
-if [ $DATE'null' = null ]
+if [ -z "$DATE" ]
 then
-MESSAGE=$"No karoshi backup servers have been enabled for ssh."
-show_status
+	MESSAGE=$"No karoshi backup servers have been enabled for ssh."
+	show_status
 fi
 
 #Check that date is valid
@@ -128,28 +128,28 @@ MONTH=`echo $DATE | cut -d- -f2`
 YEAR=`echo $DATE | cut -d- -f3`
 
 #Check to see that DAY, MONTH or YEAR is not blank
-if [ $DAY'null' = null ] || [ $MONTH'null' = null ] || [ $YEAR'null' = null ]
+if [ -z "$DAY" ] || [ -z "$MONTH" ] || [ -z "$YEAR" ]
 then
-MESSAGE=$"The date cannot be blank."
-show_status
+	MESSAGE=$"The date cannot be blank."
+	show_status
 fi
 
 if [ $DAY -gt 31 ]
 then
-MESSAGE=$"Incorrect date format."
-show_status
+	MESSAGE=$"Incorrect date format."
+	show_status
 fi
 
 if [ $MONTH -gt 12 ]
 then
-MESSAGE=$"Incorrect date format."
-show_status
+	MESSAGE=$"Incorrect date format."
+	show_status
 fi
 
 if [ $YEAR -lt 2006 ] || [ $YEAR -gt 3006 ]
 then
-MESSAGE=$"Incorrect date format."
-show_status
+	MESSAGE=$"Incorrect date format."
+	show_status
 fi
 
 #Generate navigation bar
