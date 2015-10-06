@@ -241,8 +241,30 @@ do
 	SERVER=`basename $SERVERS`
 	[ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ] && FILLCOLOUR=orange
 	[ $CUSTOM != $SERVER ] && show_server
+
+	BACKUPSTATUS=$"Disable Backup"
+	BACKUP_ICON=/images/submenus/system/backup_enabled.png
+	if [ -f /opt/karoshi/server_network/backup_servers/stop_backup_$SERVER ]
+	then
+		BACKUPSTATUS=$"Enable Backup"
+		BACKUP_ICON=/images/submenus/system/backup_disabled.png
+	fi
 done
 }
+
+function show_backup_status {
+INFOPATH=/opt/karoshi/server_network/servers
+SERVERTYPE=network
+SERVERMASTER=notset
+for SERVERS in /opt/karoshi/server_network/backup_servers/backup_settings/*
+do
+	FILLCOLOUR=green
+	SERVER=`basename $SERVERS`
+	[ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ] && FILLCOLOUR=orange
+	[ $CUSTOM != $SERVER ] && show_server
+done
+}
+
 
 function show_backupservers {
 INFOPATH=/opt/karoshi/server_network/servers

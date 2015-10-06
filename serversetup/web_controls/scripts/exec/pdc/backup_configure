@@ -254,18 +254,18 @@ then
 	fi
 	
 	#Get backup status
-	BACKUPSTATUS=$"Disable Backup"
+	BACKUPSTATUS=$"Enabled"
 	BACKUPSTATUS2=disable
 	BACKUP_ICON=/images/submenus/system/backup_enabled.png
 	if [ -f /opt/karoshi/server_network/backup_servers/stop_backup_$SERVERNAME ]
 	then
-		BACKUPSTATUS=$"Enable Backup"
+		BACKUPSTATUS=$"Disabled"
 		BACKUP_ICON=/images/submenus/system/backup_disabled.png
 		BACKUPSTATUS2=enable
 	fi
 
 	#Get backup time
-	BACKUPTIME=`sed -n 1,1p /opt/karoshi/server_network/cronjobs/"$SERVERNAME"/jobs/backup_servers_master.cron | cut -d" " -f1-2`
+	BACKUPTIME=`sed -n 1,1p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/backup_servers_master.cron | cut -d" " -f1-2`
 	BACKUPTIME_MINS=`echo $BACKUPTIME | cut -d" " -f1`
 	BACKUPTIME_HOURS=`echo $BACKUPTIME | cut -d" " -f2`
 	
@@ -274,10 +274,10 @@ then
 
 	#Show backup server and backup status
 	echo '<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-	<tr><td style="width: 200px; vertical-align:top"><b>'$"Backup Server"'</b></td><td style="width: 220px;">
+	<tr><td style="width: 200px; vertical-align:top"><b>'$"Backup Server"'</b></td><td>
 '$BACKUPSERVER'</td></tr>
 	<tr><td><b>'$"Backup Time"'</b></td><td>'$BACKUPTIME_HOURS':'$BACKUPTIME_MINS'</td></tr>
-	<tr><td style="vertical-align:top"><b>'$"Backup Status"'</b></td><td><a class="info" href="javascript:void(0)"><input name="____SERVERNAME____'$SERVERNAME'____ACTION____setbackupstatus____BACKUPSTATUS____'$BACKUPSTATUS2'____" type="image" class="images" src="'$BACKUP_ICON'" value=""><span>'$BACKUPSTATUS'</span></a></td></tr>
+	<tr><td style="vertical-align:top"><b>'$"Backup Status"'</b></td><td><input name="____SERVERNAME____'$SERVERNAME'____ACTION____setbackupstatus____BACKUPSTATUS____'$BACKUPSTATUS2'____" type="submit" class="button" value="'$BACKUPSTATUS'"></td></tr>
 	</tbody></table></form><br><br>'
 	
 	#Show all folders that are set to be backed up.

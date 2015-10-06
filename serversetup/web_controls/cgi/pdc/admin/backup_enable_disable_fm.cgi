@@ -52,6 +52,14 @@ echo '
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox"><div class="sectiontitle">'$"Enable - Disable Network Backup"'</div><br>'
 
+#Check if any backup servers have been enabled.
+if [ ! -d /opt/karoshi/server_network/backup_servers/backup_settings/ ]
+then
+	echo $"No karoshi backup servers have been enabled."
+	echo '</div></div></body></html>'
+	exit
+fi
+
 echo '<form action="/cgi-bin/admin/backup_enable_disable.cgi" name="selectservers" method="post">'
 
 #Get backup status for this server
@@ -59,16 +67,11 @@ BACKUPSTATUS="Disable Backup"
 BACKUP_ICON=/images/submenus/system/backup_enabled.png
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>'
-echo '<tr><td style="width: 180px;"><b>Server</b></td><td><b>Status</b></td></tr>'
+echo '<tr><td style="width: 180px;"><b>'$"Server"'</b></td><td style="width: 180px;"><b>'$"Backup Server"'</b></td><td><b>'$"Status"'</b></td></tr>'
 
 #Get backup status for the servers
 
-if [ ! -d /opt/karoshi/server_network/backup_servers/backup_settings/ ]
-then
-	echo $"No karoshi backup servers have been enabled."
-	echo '</div></div></body></html>'
-	exit
-fi
+
 
 if [ `ls -1 /opt/karoshi/server_network/backup_servers/backup_settings/ | wc -l` = 0 ]
 then
@@ -80,18 +83,18 @@ fi
 for KAROSHI_SERVERS in /opt/karoshi/server_network/backup_servers/backup_settings/*
 do
 	KAROSHI_SERVER=`basename $KAROSHI_SERVERS`
-	BACKUPSTATUS="Disable Backup"
+	BACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/$KAROSHI_SERVER/backupserver`
+	BACKUPSTATUS=$"Disable Backup"
 	BACKUP_ICON=/images/submenus/system/backup_enabled.png
 	if [ -f /opt/karoshi/server_network/backup_servers/stop_backup_$KAROSHI_SERVER ]
 	then
-		BACKUPSTATUS="Enable Backup"
+		BACKUPSTATUS=$"Enable Backup"
 		BACKUP_ICON=/images/submenus/system/backup_disabled.png
 	fi
-	echo '<tr><td>'$KAROSHI_SERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_'$KAROSHI_SERVER'_" type="image" class="images" src="'$BACKUP_ICON'" value="_'$KAROSHI_SERVER'_"><span>'$"Backup Status"'</span></a></td></tr>'
+	echo '<tr><td>'$KAROSHI_SERVER'</td><td>'$BACKUPSERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_'$KAROSHI_SERVER'_" type="image" class="images" src="'$BACKUP_ICON'" value="_'$KAROSHI_SERVER'_"><span>'$BACKUPSTATUS'</span></a></td></tr>'
 
 done
-echo '</tbody></table><br>
+echo '</tbody></table><br></form>
 </div>
-</form>
-</div></div></body></html>'
+</div></body></html>'
 exit
