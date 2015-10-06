@@ -193,6 +193,8 @@ function add_role_information {
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
 echo ''$"Xerte E-Learning Server"'<br>' > /opt/karoshi/server_network/servers/$SERVERNAME/xerte
 echo '<a href="https://'$ALIAS.$REALM'/xerte" target="_blank">https://'$ALIAS.$REALM'/xerte</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/xerte
+echo '<a href="https://'$ALIAS.$REALM'/xerte/management.php" target="_blank">https://'$ALIAS.$REALM'/xerte/management.php</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/xerte
+
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
 echo $"Apache Web Server""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver
 echo $SERVERNAME > /opt/karoshi/server_network/xerteserver
