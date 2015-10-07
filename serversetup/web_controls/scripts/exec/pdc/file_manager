@@ -1881,14 +1881,14 @@ echo Restoring "$LOCATION" to $HOSTNAME
 #echo 'rsync --dirs --recursive --compress --times --progress --perms --executability --owner --group root@'$SERVERNAME':"'$LOCATION'" "'$RESTOREPATH'"'
 #create restore path if it does not exist
 [ ! -d $RESTOREPATH ] && mkdir -p $RESTOREPATH
-rsync --timeout=30 --dirs --recursive --compress --times --progress --perms --executability --owner --group root@$SERVERNAME:"$LOCATION" "$RESTOREPATH"/
+rsync --timeout=30 --dirs --recursive --compress --times --progress --perms --executability --owner --group --acls root@$SERVERNAME:"$LOCATION" "$RESTOREPATH"/
 
 else
 echo Restoring "$LOCATION" to $RESTORESERVER
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $RESTORESERVER '
 #create restore path if it does not exist
 [ ! -d '$RESTOREPATH' ] && mkdir -p '$RESTOREPATH'
-rsync --timeout=30 --dirs --recursive --compress --times --progress --perms --executability --owner --group root@'$SERVERNAME':"'$LOCATION'" "'$RESTOREPATH'"/
+rsync --timeout=30 --dirs --recursive --compress --times --progress --perms --executability --owner --group --acls root@'$SERVERNAME':"'$LOCATION'" "'$RESTOREPATH'"/
 '
 fi
 echo '</pre>'
