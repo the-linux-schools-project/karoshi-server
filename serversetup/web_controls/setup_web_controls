@@ -86,7 +86,7 @@ KAROSHI_SERVER=`hostname`
 [ ! -f /opt/karoshi/serversetup/variables/maildomain ] && echo $REALM > /opt/karoshi/serversetup/variables/maildomain
 
 [ ! -d /opt/karoshi/server_network/ups ] && mkdir -p /opt/karoshi/server_network/ups
-cp -f /opt/karoshi/serversetup/"Important Information"/ups-model-information.csv /opt/karoshi/server_network/ups/
+cp -f /opt/karoshi/serversetup/essentials/ups-model-information.csv /opt/karoshi/server_network/ups/
 
 [ ! -d /opt/karoshi/server_network/servers ] && mkdir -p /opt/karoshi/server_network/servers
 [ ! -d /opt/karoshi/server_network/servers/$HOSTNAME.$REALM ] && mkdir -p /opt/karoshi/server_network/servers/$HOSTNAME.$REALM
