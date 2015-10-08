@@ -31,16 +31,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/server_info_cgi
 then
-echo `date`: server_info - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: server_info - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/server_info_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/server_info.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set1
+[ -z "$MD5SUM" ] && MD5SUM=not_set1
 if [ $MD5SUM'check' != $server_info_cgi'check' ]
 then
-echo `date`: server_info - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: server_info - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -48,8 +48,8 @@ fi
 numArgs=$#
 if [ $numArgs != 1 ]
 then
-echo `date`: server_info - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: server_info - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
@@ -64,57 +64,57 @@ MOBILE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f8`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: server_info - Not called by server_info.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: server_info - Not called by server_info.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: server_info - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: server_info - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: server_info - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: server_info - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: server_info - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: server_info - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $SERVER'null' = null ]
+if [ -z "$SERVER" ]
 then
-echo `date`: server_info - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: server_info - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $INFO'null' = null ]
+if [ -z "$INFO" ]
 then
-echo `date`: server_info - Blank info by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: server_info - Blank info by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $SERVERTYPE'null' = null ]
+if [ -z "$SERVERTYPE" ]
 then
-echo `date`: server_info - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: server_info - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ $SERVERTYPE != network ] && [ $SERVERTYPE != federated ] && [ $SERVERTYPE != federatedslave ]
 then
-echo `date`: server_info - Incorrect servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: server_info - Incorrect servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ $SERVERTYPE = federatedslave ]
 then
-if [ $SERVERMASTER'null' = null ]
-then
-echo `date`: server_info - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
+	if [ -z "$SERVERMASTER" ]
+	then
+		echo `date`: server_info - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
 fi
 
 ############################
@@ -156,7 +156,7 @@ MODELFAMILY=`echo -e "$SMARTINFO" | grep ^Model | cut -d: -f2 | sed "s/^ * //g"`
 DEVICEMODEL=`echo -e "$SMARTINFO" | grep ^Device | cut -d: -f2 | sed "s/^ * //g"`
 SERIALNO=`echo -e "$SMARTINFO" | grep ^Serial | cut -d: -f2 | sed "s/^ * //g"`
 FIRMWARE=`echo -e "$SMARTINFO" | grep ^Firmware | cut -d: -f2 | sed "s/^ * //g"`
-CAPACITYBYTES=`echo -e "$SMARTINFO" | grep ^User | cut -d: -f2 | sed "s/^ * //g" | tr -cd "0-9"`
+CAPACITYBYTES=`echo -e "$SMARTINFO" | grep ^User | cut -d: -f2 | sed "s/^ * //g" | cut -d" " -f1 | tr -cd "0-9"`
 SMARTENABLED=`echo -e "$SMARTINFO" | grep ^SMART | cut -d: -f2 | sed "s/^ * //g"`
 SMARTSTATUS=`smartctl -H $DISK | sed 1,4d`
 

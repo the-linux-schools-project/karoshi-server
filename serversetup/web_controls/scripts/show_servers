@@ -43,9 +43,10 @@ fi
 if [ $MOBILE = no ]
 then
 	WIDTH1=250
-	WIDTH2=250
+	WIDTH2=350
 	WIDTH3=80
 	WIDTH4=120
+	WIDTH5=80
 	HEIGHT1=50
 	SERVERICON="/images/submenus/system/computer.png"
 	SERVERICON2="/images/submenus/system/all_computers.png"
@@ -55,6 +56,7 @@ else
 	WIDTH2=140
 	WIDTH3=50
 	WIDTH4=100
+	WIDTH5=80
 	HEIGHT1=30
 	SERVERICON="/images/submenus/system/computerm.png"
 	SERVERICON2="/images/submenus/system/all_computersm.png"
@@ -63,9 +65,9 @@ fi
 
 function tabletop {
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="vertical-align: top; width: 10px;"></td><td style="vertical-align: top; width: '$WIDTH1'px;"><b>'$Server'</b></td>'
+<tr><td style="vertical-align: top; width: '$WIDTH1'px;"><b>'$"Server"'</b></td>'
 
-[ $MOBILE = no ] && echo '<td style="vertical-align: top; width: '$WIDTH2'px;"><b>'$Role'</b></td>'
+[ $MOBILE = no ] && echo '<td style="vertical-align: top; width: '$WIDTH5'px;"><b>'$"Zone"'</b></td><td style="vertical-align: top; width: '$WIDTH2'px;"><b>'$"Role"'</b></td>'
 
 if [ $CUSTOM = updateserver ]
 then
@@ -98,11 +100,11 @@ then
 else
 	SERVERNAME=$SERVER
 fi
-echo '<tr><td style="background-color:'$FILLCOLOUR'; height: '$HEIGHT1'px;"></td><td style="vertical-align: top;">'$SERVERNAME'</td>'
+echo '<tr><td style="vertical-align: top;">'$SERVERNAME'</td>'
 
 if [ $MOBILE = no ]
 then
-	echo '<td style="vertical-align: top;">'
+	echo '<td style="vertical-align: top;">'$ZONE'</td><td style="vertical-align: top;">'
 	[ -d "$INFOPATH"/"$SERVER" ] && cat "$INFOPATH"/"$SERVER"/*
 	[ "$GLUSTER" = yes ] && echo "$GLUSTERINFO"
 	echo '</td>'
@@ -149,6 +151,7 @@ FILLCOLOUR=yellow
 SERVERTYPE=network
 INFOPATH=/opt/karoshi/server_network/servers
 SERVER=allservers
+ZONE=$"All"
 show_server
 }
 
@@ -286,6 +289,7 @@ SERVERMASTER=notset
 for SERVERS in /opt/karoshi/server_network/backup_servers/backup_settings/*
 do
 	FILLCOLOUR=green
+	ZONE=$"Internal"
 	SERVER=`basename $SERVERS`
 	[ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ] && FILLCOLOUR=orange
 	[ $CUSTOM != $SERVER ] && show_server
@@ -297,6 +301,7 @@ FILLCOLOUR=green
 INFOPATH=/opt/karoshi/server_network/servers
 SERVERTYPE=network
 SERVERMASTER=notset
+ZONE=$"Internal"
 for SERVERS in /opt/karoshi/server_network/servers/*
 do
 	SERVER=`basename $SERVERS`
@@ -309,6 +314,7 @@ FILLCOLOUR=orange
 INFOPATH=/opt/karoshi/server_network/servers
 SERVERTYPE=network
 SERVERMASTER=notset
+ZONE=$"DMZ"
 if [ -d /opt/karoshi/server_network/zones/dmz/servers/ ]
 then
 	if [ `ls -1 /opt/karoshi/server_network/zones/dmz/servers/ | wc -l` -gt 0 ]
@@ -328,6 +334,7 @@ INFOPATH=/opt/karoshi/server_network/servers
 SERVERTYPE=network
 SERVERMASTER=notset
 SERVER=$MAINSERVER
+ZONE=$"Internal"
 show_server
 }
 
@@ -336,6 +343,7 @@ FILLCOLOUR=green
 INFOPATH=/opt/karoshi/server_network/servers
 SERVERTYPE=network
 SERVERMASTER=notset
+ZONE=$"Internal"
 if [ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ ]
 then
 	if [ `ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ | wc -l` -gt 0 ]
@@ -354,6 +362,7 @@ FILLCOLOUR=orange
 INFOPATH=/opt/karoshi/server_network/servers
 SERVERTYPE=network
 SERVERMASTER=notset
+ZONE=$"DMZ"
 if [ -d /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/ ]
 then
 	if [ `ls -1 /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/ | wc -l` -gt 0 ]
@@ -393,7 +402,9 @@ fi
 #Show internal servers
 if [ $VIEW = all ] || [ $VIEW = internal ] || [ $VIEW = servers ]
 then
+	ZONE=$"Internal"
 	show_internal_servers
+	ZONE=$"DMZ"
 	show_dmz_servers
 fi
 

@@ -107,7 +107,7 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 <td style="vertical-align: top;"><div class="sectiontitle">'$"My Servers"' '$SHORTNAME'</div></td>
 <td style="vertical-align: top;"><a href="karoshi_servers_add_fm.cgi"><input class="button" type="button" name="" value="'$"Add server"'"></a></td>
 </tr></tbody></table></div><div id="infobox">
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top; width: 10px; height: 40px;"></td><td style="vertical-align: top; width: 250px; height: 40px;"><b>'$"Server"'</b></td><td style="vertical-align: top; width: 100px;"><b>'$"TCPIP"'</b></td><td style="vertical-align: top; width: 290px;"><b>'$"Server Roles"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Add role"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Remove role"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Remote Access"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Backup Server"'</b></td></tr>'
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top; width: 250px; height: 40px;"><b>'$"Server"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Zone"'</b></td><td style="vertical-align: top; width: 80px;"><b>'$"TCPIP"'</b></td><td style="vertical-align: top; width: 290px;"><b>'$"Server Roles"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Add role"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Remove role"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Remote Access"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Backup Server"'</b></td></tr>'
 
 
 function show_servers {
@@ -133,7 +133,7 @@ then
 		SERVERICON=/images/warnings/server_ok.png
 fi
 
-echo '<tr><td style="background-color:'$FILLCOLOUR'"><td style="vertical-align: top;">'$SERVER'</td><td style="vertical-align: top;">'$SERVERIP'</td><td style="vertical-align: top;">'
+echo '<tr><td style="vertical-align: top;">'$SERVER'</td><td style="vertical-align: top;">'$ZONE'</td><td style="vertical-align: top;">'$SERVERIP'</td><td style="vertical-align: top;">'
 [ -d /opt/karoshi/server_network/servers/$SERVER ] &&  cat /opt/karoshi/server_network/servers/$SERVER/*
 echo '</td><td style="vertical-align: top;">'
 if [ $SSHSTATUS = 0 ] || [ $SERVER = `hostname-fqdn` ]
@@ -203,6 +203,7 @@ echo '</td></tr>'
 MAINSERVER=$(ls -1 /opt/karoshi/server_network/zones/internal/primary_domain_controller/ | sed -n 1,1p )
 SERVER=$MAINSERVER
 FILLCOLOUR=green
+ZONE=$"Internal"
 show_servers
 #Show servers in the internal zone
 if [ -d /opt/karoshi/server_network/zones/internal/servers/ ]
@@ -224,6 +225,7 @@ then
 	if [ `ls -1 /opt/karoshi/server_network/zones/dmz/servers/ | wc -l` -gt 0 ]
 	then
 		FILLCOLOUR=orange
+		ZONE=$"DMZ"
 		for SERVER in /opt/karoshi/server_network/zones/dmz/servers/*
 		do
 			SERVER=`basename $SERVER`
@@ -238,6 +240,7 @@ then
 	if [ `ls -1 /opt/karoshi/server_network/zones/external/servers/ | wc -l` -gt 0 ]
 	then
 		FILLCOLOUR=red
+		ZONE=$"External"
 		for SERVER in /opt/karoshi/server_network/zones/external/servers/*
 		do
 			SERVER=`basename $SERVER`
