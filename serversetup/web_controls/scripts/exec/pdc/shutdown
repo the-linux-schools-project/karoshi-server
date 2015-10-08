@@ -147,10 +147,10 @@ fi
 if [ $SHUTDOWN_OPTION = shutdown ]
 then
 	SHUTDOWN_OPTION=-h
-	ACTIONMSG2='$"Shutdown in progress"'
+	ACTIONMSG2=$"Shutdown in progress"
 else
 	SHUTDOWN_OPTION=-r
-	ACTIONMSG2='$"Reboot in progress"'
+	ACTIONMSG2=$"Reboot in progress"
 fi
 
 ICON1=/images/warnings/server_fail.png
@@ -161,7 +161,7 @@ then
 	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 	<tr><td style="vertical-align: top; width: 180px; height: 30px;"><b>'$"Server"'</b></td><td style="vertical-align: top;"><b>'$"Shutdown/Reboot"'</b></td></tr>
 	<tr><td style="vertical-align: top; width: 180px; height: 30px;">'`hostname-fqdn`'</td>
-	<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON1'"><span>'$"Shutdown/Reboot"'</span></a></td></tr>
+	<td style="vertical-align: top;">'$ACTIONMSG2'</td></tr>
 	</tbody></table>'
 	sleep 1
 	shutdown $SHUTDOWN_OPTION now 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE &
@@ -175,7 +175,7 @@ then
 		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 		<tr><td style="vertical-align: top; width: 180px; height: 30px;"><b>'$"Server"'</b></td><td style="vertical-align: top;"><b>'$"Shutdown/Reboot"'</b></td></tr>
 		<tr><td style="vertical-align: top; width: 180px; height: 30px;">'$SERVERNAME'</td>
-		<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON1'"><span>'$"Shutdown/Reboot"2'</span></a></td></tr>
+		<td style="vertical-align: top;">'$ACTIONMSG2'</td></tr>
 		</tbody></table>
 		'
 		ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
@@ -189,7 +189,7 @@ then
 		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 		<tr><td style="vertical-align: top; width: 180px; height: 30px;"><b>'$"Server"'</b></td><td style="vertical-align: top;"><b>'$"Shutdown/Reboot"'</b></td></tr>
 		<tr><td style="vertical-align: top; width: 180px; height: 30px;">'$SERVERNAME'</td>
-		<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON1'"><span>'$"Shutdown/Reboot"2'</span></a></td></tr>
+		<td style="vertical-align: top;">'$ACTIONMSG2'</td></tr>
 		</tbody></table
 		'
 		ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3  $SERVERMASTER '
@@ -216,7 +216,7 @@ then
 			then
 				let SERVERCOUNTER=$SERVERCOUNTER+1
 				echo '<tr><td style="vertical-align: top; width: 180px; height: 30px;">'$KAROSHISERVER'</td>
-				<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON1'" /><span>'$"Shutdown/Reboot"2'</span></a></td></tr>'
+				<td style="vertical-align: top;">'$ACTIONMSG2'</td></tr>'
 				ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $KAROSHISERVER 'shutdown '$SHUTDOWN_OPTION' now &' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 			fi
 		done
@@ -249,7 +249,7 @@ then
 				#Shutdown all federated servers
 				let SERVERCOUNTER=$SERVERCOUNTER+1
 				echo '<tr><td style="vertical-align: top; width: 180px; height: 30px;">'$FEDERATED_SERVER'</td>
-				<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON1'"><span>'$"Shutdown/Reboot"'</span></a></td></tr>'
+				<td style="vertical-align: top;">'$ACTIONMSG2'</td></tr>'
 				ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $FEDERATED_SERVER 'shutdown '$SHUTDOWN_OPTION' now &' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 			done
 		fi
@@ -261,7 +261,7 @@ then
 		sleep 8
 	fi
 	echo '<tr><td style="vertical-align: top; width: 180px; height: 30px;">'$HOSTNAME'</td>
-	<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON1'" /><span>'$"Shutdown/Reboot"'</span></a></td></tr></tbody></table>' 
+	<td>'$ACTIONMSG2'</tr></tbody></table>' 
 	shutdown $SHUTDOWN_OPTION now 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE &
 fi
 exit
