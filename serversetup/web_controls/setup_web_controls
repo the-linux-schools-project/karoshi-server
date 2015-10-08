@@ -43,6 +43,21 @@ echo '##############'setup_web_controls'##############' >> /opt/karoshi/serverse
 
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+if [ ! -f /opt/karoshi/server_network/domain_information/domain_name ]
+then
+	if [ ! -d /opt/karoshi/server_network/domain_information ]
+	then	
+		mkdir -p /opt/karoshi/server_network/domain_information
+	fi
+	echo -e 'SAMBADOMAIN=""
+SAMBADOMAINCAPS=""
+WEBADDRESS=".internal"
+REALM="karoshi.test.internal"
+REALM="KAROSHI.TEST.INTERNAL"
+LONGNAME="Karoshi Test Site"
+SHORTNAME="Karoshi"
+' > /opt/karoshi/server_network/domain_information/domain_name
+fi
 source /opt/karoshi/server_network/domain_information/domain_name
 
 TEXTDOMAIN=karoshi-server
@@ -934,6 +949,10 @@ ln -s /var/lib/samba/netlogon/linuxclient/backgrounds /var/www/html_karoshi/imag
 #Add in dns record for manage.realm
 
 TCPIP=`net lookup $HOSTNAME`
+if [ ! -f /etc/ldap.secret ]
+then
+	echo 'ldap secret file' > /etc/ldap.secret
+fi
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 samba-tool dns query 127.0.0.1 $REALM manage.$REALM CNAME --username=Administrator --password=$LDAPPASS 1>/dev/null 2>/dev/null
 if [ $? != 0 ]
