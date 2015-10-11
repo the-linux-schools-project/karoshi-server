@@ -804,10 +804,10 @@ then
 	for SERVERS in /opt/karoshi/server_network/network_shares/*
 	do
 		SERVER=`basename "$SERVERS"`
-		echo '<tr><td style="height:30px" colspan="2"><b>'$SERVER'</b></td></tr>'
 		if [ `ls -1 /opt/karoshi/server_network/network_shares/"$SERVER" | wc -l` -gt 0 ]
 		then
-			echo '<tr><td style="width: '$WIDTH1'px;"><b>'$"Network Share"'</b></td><td style="width: '$WIDTH2'px;"><b>'$"Server Path"'</b></td><td style="width: '$WIDTH3'px;"><b>'$"Groups"'</b></td><td style="width: '$WIDTH4'px;"><b>'$"Permissions"'</b></td><td style="width: '$WIDTH5'px;"><b>'$"Map Drive"'</b></td><td style="vertical-align:top; width: '$WIDTH5'px;"><b>'$"Drive Letter"'</b></td></tr>'
+			echo '<tr><td style="height:30px" colspan="2"><b>'$SERVER'</b></td></tr>
+			<tr><td style="width: '$WIDTH1'px;"><b>'$"Network Share"'</b></td><td style="width: '$WIDTH2'px;"><b>'$"Server Path"'</b></td><td style="width: '$WIDTH3'px;"><b>'$"Groups"'</b></td><td style="width: '$WIDTH4'px;"><b>'$"Permissions"'</b></td><td style="width: '$WIDTH5'px;"><b>'$"Map Drive"'</b></td><td style="vertical-align:top; width: '$WIDTH5'px;"><b>'$"Drive Letter"'</b></td></tr>'
 			for NETSHARES in /opt/karoshi/server_network/network_shares/"$SERVER"/*
 			do
 				NETSHARE=`basename "$NETSHARES"`

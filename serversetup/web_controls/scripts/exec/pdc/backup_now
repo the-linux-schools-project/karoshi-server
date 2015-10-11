@@ -134,10 +134,10 @@ echo `date`: backup_now - $KAROSHI_SERVER by $REMOTE_USER from $REMOTE_ADDR >> /
 
 if [ $KAROSHI_SERVER = `hostname-fqdn` ]
 then
-backup_pdc
+	backup_pdc
 else
-#ssh to other servers to run backup
-backup_other_servers
+	#ssh to other servers to run backup
+	backup_other_servers
 fi
 exit
 

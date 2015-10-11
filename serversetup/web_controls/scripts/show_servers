@@ -160,6 +160,7 @@ FILLCOLOUR=green
 INFOPATH=/opt/karoshi/server_network/servers
 SERVERTYPE=network
 SERVERMASTER=notset
+ZONE=$"Internal"
 for SERVERS in /opt/karoshi/server_network/zones/internal/servers/*
 do
 	SERVER=`basename $SERVERS`
@@ -175,8 +176,13 @@ SERVERMASTER=notset
 for SERVERS in /opt/karoshi/server_network/webservers/*
 do
 	FILLCOLOUR=green
+	ZONE=$"Internal"
 	SERVER=`basename $SERVERS`
-	[ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ] && FILLCOLOUR=orange
+	if [ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ]
+	then	
+		FILLCOLOUR=orange
+		ZONE=$"DMZ"
+	fi
 	show_server
 done
 }
@@ -188,10 +194,15 @@ SERVERMASTER=notset
 for SERVERS in /opt/karoshi/server_network/servers/*
 	do
 	FILLCOLOUR=green
+	ZONE=$"Internal"
 	SERVER=`basename $SERVERS`
 	if [ -f /opt/karoshi/server_network/servers/$SERVER/emailserver ]
 	then
-		[ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ] && FILLCOLOUR=orange
+		if [ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ]
+		then
+			FILLCOLOUR=orange
+			ZONE=$"DMZ"
+		fi
 		show_server
 	fi
 done
@@ -204,6 +215,7 @@ SERVERMASTER=notset
 for SERVERS in /opt/karoshi/server_network/servers/*
 do
 	FILLCOLOUR=green
+	ZONE=$"Internal"
 	SERVER=`basename $SERVERS`
 	[ $CUSTOM != $SERVER ] && [ -f /opt/karoshi/server_network/servers/$SERVER/fileserver ] && show_server
 done
@@ -213,6 +225,7 @@ if [ -d /opt/karoshi/server_network/gluster-volumes/ ]
 then
 	GLUSTER=yes
 	FILLCOLOUR=blue
+	ZONE=$"Gluster"
 	ACTIONMSG="Select Volume"
 	for GLUSTERVOLUMES in /opt/karoshi/server_network/gluster-volumes/*
 	do
@@ -241,8 +254,13 @@ SERVERMASTER=notset
 for SERVERS in /opt/karoshi/server_network/backup_servers/backup_settings/*
 do
 	FILLCOLOUR=green
+	ZONE=$"Internal"
 	SERVER=`basename $SERVERS`
-	[ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ] && FILLCOLOUR=orange
+	if [ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ]
+	then
+		FILLCOLOUR=orange
+		ZONE=$"DMZ"
+	fi
 	[ $CUSTOM != $SERVER ] && show_server
 
 	BACKUPSTATUS=$"Disable Backup"
@@ -262,8 +280,13 @@ SERVERMASTER=notset
 for SERVERS in /opt/karoshi/server_network/backup_servers/backup_settings/*
 do
 	FILLCOLOUR=green
+	ZONE=$"Internal"
 	SERVER=`basename $SERVERS`
-	[ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ] && FILLCOLOUR=orange
+	if [ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ]
+	then
+		FILLCOLOUR=orange
+		ZONE=$"DMZ"
+	fi
 	[ $CUSTOM != $SERVER ] && show_server
 done
 }
@@ -276,8 +299,13 @@ SERVERMASTER=notset
 for SERVERS in /opt/karoshi/server_network/backup_servers/servers/*
 do
 	FILLCOLOUR=green
+	ZONE=$"Internal"
 	SERVER=`basename $SERVERS`
-	[ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ] && FILLCOLOUR=orange
+	if [ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ]
+	then
+		FILLCOLOUR=orange
+		ZONE=$"DMZ"
+	fi
 	[ $CUSTOM != $SERVER ] && show_server
 done
 }
@@ -291,7 +319,11 @@ do
 	FILLCOLOUR=green
 	ZONE=$"Internal"
 	SERVER=`basename $SERVERS`
-	[ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ] && FILLCOLOUR=orange
+	if [ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ]
+	then
+		FILLCOLOUR=orange
+		ZONE=$"Internal"
+	fi
 	[ $CUSTOM != $SERVER ] && show_server
 done
 }

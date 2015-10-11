@@ -61,17 +61,16 @@ STYLESHEET=`echo $STYLESHEET | cut -d. -f1`
 STYLECOUNT=1
 for THEMES in /var/www/html_karoshi/images/theme_preview/*
 do
+	STYLESHEETCHOICE=`basename $THEMES | sed 's/.png//g'`
 
-STYLESHEETCHOICE=`basename $THEMES | sed 's/.png//g'`
+	echo '<td style="width: 90px; vertical-align: top; height: 160px; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_THEMECHOICE_'$STYLESHEETCHOICE'_" type="image" class="images" src="/images/theme_preview/'$STYLESHEETCHOICE'.png" width="330px" value="_THEMECHOICE_'$STYLESHEETCHOICE'_"><span>'$STYLESHEETCHOICE'</span></a></td>'
+	let STYLECOUNT=$STYLECOUNT+1
 
-echo '<td style="width: 90px; vertical-align: top; height: 160px; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_THEMECHOICE_'$STYLESHEETCHOICE'_" type="image" class="images" src="/images/theme_preview/'$STYLESHEETCHOICE'.png" value="_THEMECHOICE_'$STYLESHEETCHOICE'_"><span>'$STYLESHEETCHOICE'</span></a></td>'
-let STYLECOUNT=$STYLECOUNT+1
-
-if [ $STYLECOUNT = 4 ]
-then
-echo '</tr><tr>'
-STYLECOUNT=1
-fi
+	if [ $STYLECOUNT = 4 ]
+	then
+		echo '</tr><tr>'
+		STYLECOUNT=1
+	fi
 done
 [ $STYLECOUNT = 1 ] && echo "<td></td>"
 echo '</tr></tbody></table><br></div></div></form></div></body></html>'

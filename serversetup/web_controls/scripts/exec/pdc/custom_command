@@ -135,7 +135,8 @@ fi
 #Run custom command
 ###########################
 
-echo "$CUSTOMCOMMAND""<br><br><pre>"
+echo ''$CUSTOMCOMMAND'<br><br><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+
 echo `date`: custom_command - running "$CUSTOMCOMMAND" "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 {
@@ -162,6 +163,6 @@ fi
 
 } | sed 's/&/\&amp;/g; s/"/\&quot;/g; s/</\&lt;/g; s/>/\&gt;/g'
 
-echo "</pre>"
+echo "</pre><hr>"
 
 exit
