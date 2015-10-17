@@ -214,8 +214,8 @@ echo $SERVERNAME > /opt/karoshi/server_network/moodleserver
 echo $DOMAINPATH > /opt/karoshi/server_network/moodledomain
 [ ! -d /opt/karoshi/server_network/webservers/ ] && mkdir -p /opt/karoshi/server_network/webservers
 echo $SERVERNAME > /opt/karoshi/server_network/webservers/$SERVERNAME
-sed -i 's/WEBCTRL=no/WEBCTRL=yes/g' /opt/karoshi/server_network/menusettings
-#sed -i 's/MOODLECTRL=no/MOODLECTRL=yes/g' /opt/karoshi/server_network/menusettings
+sed -i 's/WEBCTRL=no/WEBCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
+#sed -i 's/MOODLECTRL=no/MOODLECTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
 }
 
 function check_ports {

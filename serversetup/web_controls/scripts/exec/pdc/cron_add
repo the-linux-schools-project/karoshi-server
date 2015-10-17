@@ -171,7 +171,6 @@ COMMAND=`echo $COMMAND | sed 's/+/ /g' |  sed 's/%3E/\>/g'`
 echo "<br><br>"
 
 echo `date`: cron_add "$COMMAND" to $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo '<b>'$SERVERNAME'</b><br><br>'
 
 #PDC
 if [ $SERVERNAME = `hostname-fqdn` ]
@@ -183,7 +182,7 @@ then
 	fi
 	echo `date`: cron_add - "$MINUTES" "$HOUR" "$DAY" "$MONTH" "$DOFW" "$COMMAND" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	echo "$MINUTES" "$HOUR" "$DAY" "$MONTH" "$DOFW" \""$COMMAND"\" > /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/$COMMANDNAME.cron
-	/opt/karoshi/"useful scripts"/refreshcronjobs
+	/opt/karoshi/"useful scripts"/refreshcronjobs 1>/dev/null
 fi
 
 if [ $SERVERNAME != `hostname-fqdn` ] && [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
@@ -196,7 +195,7 @@ then
 		chmod 0700 /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs
 	fi
 	echo "'$MINUTES'" "'$HOUR'" "'$DAY'" "'$MONTH'" "'$DOFW'" \""'$COMMAND'"\" > /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/'$COMMANDNAME'.cron
-	/opt/karoshi/"useful scripts"/refreshcronjobs
+	/opt/karoshi/"useful scripts"/refreshcronjobs 1>/dev/null
 	' 2>&1
 fi
 

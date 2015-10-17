@@ -384,6 +384,6 @@ echo $"Apache Web Server""<br>" > /opt/karoshi/server_network/servers/$WEBSERVER
 [ -f /opt/karoshi/server_network/servers/$WEBSERVER/no_role ] && rm -f /opt/karoshi/server_network/servers/$WEBSERVER/no_role
 [ ! -d /opt/karoshi/server_network/webservers/ ] && mkdir -p /opt/karoshi/server_network/webservers
 echo $WEBSERVER > /opt/karoshi/server_network/webservers/$WEBSERVER
-sed -i 's/WEBCTRL=no/WEBCTRL=yes/g' /opt/karoshi/server_network/menusettings
+sed -i 's/WEBCTRL=no/WEBCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
 exit
 

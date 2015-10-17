@@ -396,19 +396,19 @@ then
 	echo '<b>'$"Asset Register"' - '$"Descriptions"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
 	<td style="vertical-align: top;"><input name="_ACTION_view_" type="submit" class="button" value="'$"Choose Location"'"></td>
 	<td style="vertical-align: top;"><input name="_ACTION_adddesc_LOCATION_notset_" type="submit" class="button" value="'$"Add Description"'"></td>
-	</tr></tbody></table>'
+	</tr></tbody></table><br>'
 
 
 	if [ `ls -1 /opt/karoshi/asset_register/descriptions/ | wc -l` -gt 0 ]
 	then
-		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-		<tr><td style="width: 20px;"></td><td style="vertical-align: top;"><b>'$"Description"'</b></td></tr>'
+		echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+		<tr><th style="width:400px;"><b>'$"Description"'</b></th><th style="width: 20px;"></th></tr></thead><tbody>'
 
 		for DESCRIPTIONFILES in /opt/karoshi/asset_register/descriptions/*
 		do
 			DESCRIPTIONFILE=`basename $DESCRIPTIONFILES`
 			DESCRIPTION=`cat /opt/karoshi/asset_register/descriptions/$DESCRIPTIONFILE`
-			echo '<tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_deletedescription_LOCATION_notset_ASSET_'$DESCRIPTIONFILE'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Delete description"'</span></a></td><td>'$DESCRIPTION'</td></tr>'
+			echo '<tr><td>'$DESCRIPTION'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_deletedescription_LOCATION_notset_ASSET_'$DESCRIPTIONFILE'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Delete description"'</span></a></td></tr>'
 		done
 		echo '</tbody></table>'
 	fi
@@ -499,20 +499,20 @@ then
 	echo '<b>'$"Asset Register"' - '$"Suppliers"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
 	<td style="vertical-align: top;"><input name="_ACTION_view_" type="submit" class="button" value="'$"Choose Location"'"></td>
 	<td style="vertical-align: top;"><input name="_ACTION_addsupplier_LOCATION_notset_" type="submit" class="button" value="'$"Add Supplier"'"></td>
-	</tr></tbody></table>'
+	</tr></tbody></table><br>'
 
 	if [ -d /opt/karoshi/asset_register/suppliers/ ]
 	then
 		if [ `ls -1 /opt/karoshi/asset_register/suppliers/ | wc -l` -gt 0 ]
 		then
-			echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-			<tr><td style="width: 20px;"></td><td style="vertical-align: top;"><b>'$"Supplier"'</b></td></tr>'
+			echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+			<tr></th><th style="width:400px;"><b>'$"Supplier"'</b></th><th style="width: 20px;"></tr></thead><tbody>'
 
 			for SUPPLIERFILES in /opt/karoshi/asset_register/suppliers/*
 			do
 				SUPPLIERFILE=`basename $SUPPLIERFILES`
 				SUPPLIER=`cat /opt/karoshi/asset_register/suppliers/$SUPPLIERFILE`
-				echo '<tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_deletesupplier_LOCATION_notset_ASSET_'$SUPPLIERFILE'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Delete supplier"'</span></a></td><td>'$SUPPLIER'</td></tr>'
+				echo '<tr><td>'$SUPPLIER'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_deletesupplier_LOCATION_notset_ASSET_'$SUPPLIERFILE'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Delete supplier"'</span></a></td></tr>'
 			done
 			echo '</tbody></table>'
 		fi
@@ -592,20 +592,20 @@ then
 	echo '<b>'$"Asset Register"' - '$"Budgets"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
 	<td style="vertical-align: top;"><input name="_ACTION_view_" type="submit" class="button" value="'$"Choose Location"'"></td>
 	<td style="vertical-align: top;"><input name="_ACTION_addbudget_LOCATION_notset_" type="submit" class="button" value="'$"Add Budget"'"></td>
-	</tr></tbody></table>'
+	</tr></tbody></table><br>'
 
 	if [ -d /opt/karoshi/asset_register/budgets/ ]
 	then
 		if [ `ls -1 /opt/karoshi/asset_register/budgets/ | wc -l` -gt 0 ]
 		then
-			echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-			<tr><td style="width: 20px;"></td><td style="vertical-align: top;"><b>'$"Budget"'</b></td></tr>'
+			echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+			<tr><th style="width:400px;"><b>'$"Budget"'</b></th><th style="width: 20px;"></th></tr></thead><tbody>'
 
 			for BUDGETFILES in /opt/karoshi/asset_register/budgets/*
 			do
 				BUDGETFILE=`basename $BUDGETFILES`
 				BUDGET=`cat /opt/karoshi/asset_register/budgets/$BUDGETFILE`
-				echo '<tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_deletebudget_LOCATION_notset_ASSET_'$BUDGETFILE'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Delete budget"'</span></a></td><td>'$BUDGET'</td></tr>'
+				echo '<tr><td>'$BUDGET'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_deletebudget_LOCATION_notset_ASSET_'$BUDGETFILE'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Delete budget"'</span></a></td></tr>'
 			done
 			echo '</tbody></table>'
 		fi
@@ -679,14 +679,13 @@ then
 	TOTAL20=`grep -h -R ASSETTYPE=\"20\" /opt/karoshi/asset_register/locations/* | wc -l`
 	TOTAL21=`grep -h -R ASSETTYPE=\"21\" /opt/karoshi/asset_register/locations/* | wc -l`
 	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_" type="image" class="images" src="'$ICON1'" value=""><span>'$"View Assets"'</span></a></td><td><b>'$"Totals"'</b></td></tr></tbody></table><br>'
-	echo '<table class="'$TABLECLASS'" style="text-align: left; width: 100%;"><tbody>'
-	echo "<tr><td>$"Curriculum Computer"</td><td>$TOTAL1</td><td>$"Admin Computer"</td><td>$TOTAL2</td><td>$"Curriculum Laptop"</td><td>$TOTAL3</td><td>$"Admin Laptop"</td><td>$TOTAL4</td></tr>"
-	echo "<tr><td>$"Curriculum Tablet"</td><td>$TOTAL5</td><td>$"Admin Tablet"</td><td>$TOTAL6</td><td>$"Curriculum PDA"</td><td>$TOTAL7</td><td>$"Admin PDA"</td><td>$TOTAL8</td></tr>"
-	echo "<tr><td>$"Curriculum Thin Client"</td><td>$TOTAL9</td><td>$"Admin Thin Client"</td><td>$TOTAL10</td><td>$"Printer"</td><td>$TOTAL11</td><td>$"Scanner"</td><td>$TOTAL12</td></tr>"
-	echo "<tr><td>$"Projector"</td><td>$TOTAL13</td><td>$"Whiteboard"</td><td>$TOTAL14</td><td>$"Network Switch"</td><td>$TOTAL15</td><td>$"Network Device"</td><td>$TOTAL16</td></tr>"
-	echo "<tr><td>$"Wireless Access Point"</td><td>$TOTAL17</td><td>$"Audio Visual"</td><td>$TOTAL18</td><td>$"Monitor"</td><td>$TOTAL19</td><td>$"Software"</td><td>$TOTAL20</td></tr>"
-	echo "<tr><td>$"Other"</td><td>$TOTAL21</td></tr>"
-	echo "</tbody></table><br>"
+	echo '<table class="'$TABLECLASS'" style="text-align: left; width: 100%;"><tbody>
+	<tr><td>'$"Curriculum Computer"'</td><td>'$TOTAL1'</td><td>'$"Admin Computer"'</td><td>'$TOTAL2'</td><td>'$"Curriculum Laptop"'</td><td>'$TOTAL3'</td><td>'$"Admin Laptop"'</td><td>'$TOTAL4'</td></tr>
+	<tr><td>'$"Curriculum Tablet"'</td><td>'$TOTAL5'</td><td>'$"Admin Tablet"'</td><td>'$TOTAL6'</td><td>'$"Curriculum PDA"'</td><td>'$TOTAL7'</td><td>'$"Admin PDA"'</td><td>'$TOTAL8'</td></tr>
+	<tr><td>'$"Curriculum Thin Client"'</td><td>'$TOTAL9'</td><td>'$"Admin Thin Client"'</td><td>'$TOTAL10'</td><td>'$"Printer"'</td><td>'$TOTAL11'</td><td>'$"Scanner"'</td><td>'$TOTAL12'</td></tr>
+	<tr><td>'$"Projector"'</td><td>'$TOTAL13'</td><td>'$"Whiteboard"'</td><td>'$TOTAL14'</td><td>'$"Network Switch"'</td><td>'$TOTAL15'</td><td>'$"Network Device"'</td><td>'$TOTAL16'</td></tr>
+	<tr><td>'$"Wireless Access Point"'</td><td>$TOTAL17</td><td>'$"Audio Visual"'</td><td>'$TOTAL18'</td><td>'$"Monitor"'</td><td>'$TOTAL19'</td><td>'$"Software"'</td><td>'$TOTAL20'</td></tr>
+	<tr><td>'$"Other"'</td><td>'$TOTAL21'</td></tr></tbody></table><br>'
 fi
 
 ############################
@@ -1199,7 +1198,7 @@ echo '<b>'$"Asset Register"' - '$LOCATION'</b><br><br><table class="'$TABLECLASS
 echo '<td style="vertical-align: top;"><input name="_ACTION_qrcodes_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$"QR Codes"'"></td>'
 if [ -f /opt/karoshi/server_network/distribution_server ]
 then 
-echo '<td style="vertical-align: top;"></form><form action="client_boot_controls.cgi" id="foo" method="post"><input name="_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$"Client Boot Controls"'"></form><form action="asset_register_view.cgi" id="foo" method="post"></td>'
+	echo '<td style="vertical-align: top;"></form><form action="client_boot_controls.cgi" id="foo" method="post"><input name="_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$"Client Boot Controls"'"></form><form action="asset_register_view.cgi" id="foo" method="post"></td>'
 fi
 echo '</tr></tbody></table>
 '
@@ -1209,16 +1208,17 @@ fi
 
 if [ `ls -1 /opt/karoshi/asset_register/locations/$LOCATION/ | wc -l` -gt 0 ]
 then
-echo '
-<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td>'
+	echo '
+<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+<tr><th style="width: 20px;"></th><th style="width: 20px;"></th><th style="width: 20px;"></th><th style="width: 20px;"></th><th style="width: 20px;"></th>'
 
 if [ $MOBILE = no ]
 then
-echo '<td style="width: 60px;"><b>'$"Name"'</b></td><td style="width: 240px;"><b>'$"Description"'</b></td><td style="width: 100px;"><b>'$"Tcpip"'</b></td><td style="width: 110px;"><b>'$"Mac-address"'</b></td><td style="width: 30px;"><b>'$"S.N."'</b></td></tr>'
+	echo '<th style="width: 60px;"><b>'$"Name"'</b></th><th style="width: 240px;"><b>'$"Description"'</b></th><th style="width: 100px;"><b>'$"Tcpip"'</b></th><th style="width: 110px;"><b>'$"Mac-address"'</b></th><th style="width: 150px;"><b>'$"Serial Number"'</b></th></tr>'
 else
-echo '</tr>'
+	echo '</tr>'
 fi
+echo '</thead><tbody>'
 for ASSETS in /opt/karoshi/asset_register/locations/$LOCATION/*
 do
 ASSET=`basename $ASSETS`

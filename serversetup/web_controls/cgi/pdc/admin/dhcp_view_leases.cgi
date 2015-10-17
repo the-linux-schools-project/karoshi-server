@@ -48,6 +48,15 @@ echo '
   <title>'$"Configure DHCP"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
+<script type="text/javascript" src="/all/js/jquery.js"></script>
+<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script type="text/javascript" id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
 </head>
 <body><div id="pagecontainer">'
 
@@ -93,6 +102,6 @@ echo '<td style="vertical-align: top;"><input name="_OPTION_free_" type="submit"
 
 #Show lease information
 /opt/karoshi/web_controls/leasecheck.pl $OPTION
-echo '</div></div></body></html>'
+echo '</div></div></div></body></html>'
 exit
 

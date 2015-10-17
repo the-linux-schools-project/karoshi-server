@@ -172,7 +172,7 @@ if [ $SERVERNAME = `hostname-fqdn` ]
 then
 	#Add cron job for zpool scrub
 	[ -d /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs ] || mkdir -p /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs
-	echo 0 0 '*' '*' 0,2,4 zpool scrub $POOLNAME > /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/zpool_scrub_$POOLNAME.cron
+	echo 0 0 '*' '*' 6 zpool scrub $POOLNAME > /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/zpool_scrub_$POOLNAME.cron
 	/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
 	echo "<br>"
 
@@ -912,7 +912,7 @@ done" > /etc/rc2.d/S90zfs-mount-all
 
 	#Add cron job for zpool scrub
 	[ -d /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs ] || mkdir -p /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs
-	echo 0 0 "*" "*" 0,2,4 zpool scrub '$POOLNAME' > /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/zpool_scrub_'$POOLNAME'.cron
+	echo 0 0 "*" "*" 6 zpool scrub '$POOLNAME' > /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/zpool_scrub_'$POOLNAME'.cron
 	/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
 	echo "<br>"
 '

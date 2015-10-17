@@ -218,7 +218,7 @@ fi
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
 echo $"Radius Server""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/radiusserver
 echo $SERVERNAME > /opt/karoshi/server_network/radius_server
-sed -i 's/RADIUSCTRL=no/RADIUSCTRL=yes/g' /opt/karoshi/server_network/menusettings
+sed -i 's/RADIUSCTRL=no/RADIUSCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
 [ ! -d /opt/karoshi/server_network/radius_servers ] && mkdir -p /opt/karoshi/server_network/radius_servers
 echo  $SERVERNAME > /opt/karoshi/server_network/radius_servers/$SERVERNAME
 exit

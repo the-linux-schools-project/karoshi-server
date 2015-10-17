@@ -153,7 +153,7 @@ fi
 ############################
 #Modify web management menu
 ############################
-sed -i 's/FEDERATEDCTL=no/FEDERATEDCTL=yes/g' /opt/karoshi/server_network/menusettings
+sed -i 's/FEDERATEDCTL=no/FEDERATEDCTL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
 
 #Schedule federated password synchronisation
 echo 0,20,40 '*' '*' '*' 1-7 /opt/karoshi/serversetup/modules/federated_server/sync_passwords > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/federated_password_sync.cron

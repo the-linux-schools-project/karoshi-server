@@ -158,7 +158,7 @@ echo $"Apache Web Server""<br>" > /opt/karoshi/server_network/servers/$JOOMLASER
 [ ! -d /opt/karoshi/server_network/webservers/ ] && mkdir -p /opt/karoshi/server_network/webservers
 echo $JOOMLASERVER > /opt/karoshi/server_network/webservers/$JOOMLASERVER
 
-sed -i 's/WEBCTRL=no/WEBCTRL=yes/g' /opt/karoshi/server_network/menusettings
+sed -i 's/WEBCTRL=no/WEBCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
 
 #Add in monitoring for the server
 if [ -f /opt/karoshi/server_network/monitoringserver ]

@@ -721,6 +721,7 @@ chmod 0700 /var/www/karoshi
 #########################
 cd /var/www/html_karoshi/admin
 tar -xf /opt/karoshi/serversetup/web_controls/phpldapadmin/phpldapadmin.tar.gz
+cd /
 #Copy in correct config.cfg for samba4
 cp /opt/karoshi/serversetup/web_controls/phpldapadmin/samba4/config.php /var/www/html_karoshi/admin/phpldapadmin/config/config.php
 #Change path for correct realm
@@ -857,24 +858,24 @@ fi
 SHELLCTRL=no
 [ -f /opt/karoshi/server_network/shellserver ] && SHELLCTRL=yes
 
-echo ADDUSERCTRL=$ADDUSERCTRL > /opt/karoshi/server_network/menusettings
-echo BACKUPCTRL=$BACKUPCTRL >> /opt/karoshi/server_network/menusettings
-echo DHCPCTRL=$DHCPCTRL >> /opt/karoshi/server_network/menusettings
-echo DISTROCTRL=$DISTROCTRL >> /opt/karoshi/server_network/menusettings
-echo EMAILCTRL=$EMAILCTRL >> /opt/karoshi/server_network/menusettings
-echo FEDERATEDCTL=$FEDERATEDCTL >> /opt/karoshi/server_network/menusettings
-echo INTERNETCTRL=$INTERNETCTRL >> /opt/karoshi/server_network/menusettings
-echo KSSOCTRL=$KSSOCTRL >> /opt/karoshi/server_network/menusettings
-echo MONITORINGCTRL=$MONITORINGCTRL >> /opt/karoshi/server_network/menusettings
-echo MOODLECTRL=$MOODLECTRL >> /opt/karoshi/server_network/menusettings
-echo OCSCTRL=$OCSCTRL >> /opt/karoshi/server_network/menusettings
-echo PRINTERCTRL=$PRINTERCTRL >> /opt/karoshi/server_network/menusettings
-echo RADIUSCTRL=$RADIUSCTRL >> /opt/karoshi/server_network/menusettings
-echo REVERSEPROXYCTRL=$REVERSEPROXYCTRL >> /opt/karoshi/server_network/menusettings
-echo WEBCTRL=$WEBCTRL >> /opt/karoshi/server_network/menusettings
-echo SHELLCTRL=$SHELLCTRL >> /opt/karoshi/server_network/menusettings
-echo EXAMCTRL=$EXAMCTRL >> /opt/karoshi/server_network/menusettings
-echo VPNCTRL=$VPNCTRL >> /opt/karoshi/server_network/menusettings
+echo ADDUSERCTRL=$ADDUSERCTRL > /opt/karoshi/server_network/web_controls/menusettings
+echo BACKUPCTRL=$BACKUPCTRL >> /opt/karoshi/server_network/web_controls/menusettings
+echo DHCPCTRL=$DHCPCTRL >> /opt/karoshi/server_network/web_controls/menusettings
+echo DISTROCTRL=$DISTROCTRL >> /opt/karoshi/server_network/web_controls/menusettings
+echo EMAILCTRL=$EMAILCTRL >> /opt/karoshi/server_network/web_controls/menusettings
+echo FEDERATEDCTL=$FEDERATEDCTL >> /opt/karoshi/server_network/web_controls/menusettings
+echo INTERNETCTRL=$INTERNETCTRL >> /opt/karoshi/server_network/web_controls/menusettings
+echo KSSOCTRL=$KSSOCTRL >> /opt/karoshi/server_network/web_controls/menusettings
+echo MONITORINGCTRL=$MONITORINGCTRL >> /opt/karoshi/server_network/web_controls/menusettings
+echo MOODLECTRL=$MOODLECTRL >> /opt/karoshi/server_network/web_controls/menusettings
+echo OCSCTRL=$OCSCTRL >> /opt/karoshi/server_network/web_controls/menusettings
+echo PRINTERCTRL=$PRINTERCTRL >> /opt/karoshi/server_network/web_controls/menusettings
+echo RADIUSCTRL=$RADIUSCTRL >> /opt/karoshi/server_network/web_controls/menusettings
+echo REVERSEPROXYCTRL=$REVERSEPROXYCTRL >> /opt/karoshi/server_network/web_controls/menusettings
+echo WEBCTRL=$WEBCTRL >> /opt/karoshi/server_network/web_controls/menusettings
+echo SHELLCTRL=$SHELLCTRL >> /opt/karoshi/server_network/web_controls/menusettings
+echo EXAMCTRL=$EXAMCTRL >> /opt/karoshi/server_network/web_controls/menusettings
+echo VPNCTRL=$VPNCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 ###########################
 #Check for updates
 ###########################

@@ -49,6 +49,32 @@ table.headings th, table.headings td {
 	color: #000000;
 }
 
+table.menu th, table.menu td {
+	color: #000000;
+}
+table.headings th, table.headings td {
+	color: #000000;
+}
+
+table.tablesorter {
+	background-color: #CDCDCD;
+}
+table.tablesorter thead tr th, table.tablesorter tfoot tr th {
+	background-color: #FFF4F8;
+	border: 1px solid #FFF;
+}
+table.tablesorter tbody td {
+	color: #3D3D3D;
+	background-color: #FFF;
+}
+table.tablesorter tbody tr.odd td {
+	background-color:#F0F0F6;
+}
+table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
+background-color: #FF71B9;
+color: #FFFFFF;
+}
+
 A:link {
 	color: #000000;
 }

@@ -141,7 +141,7 @@ gidnumber: $GIDNUMBER
 		fi
 
 		#Check if a username or enrollment number has been entered
-		getent passwd "$USERIDENTIFIER" 1> /dev/null
+		id -u "$USERIDENTIFIER" 1> /dev/null
 		if [ $? = 0 ]
 		then
 			USERNAME="$USERIDENTIFIER"

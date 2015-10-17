@@ -381,7 +381,7 @@ then
 fi
 
 echo `hostname-fqdn` > /opt/karoshi/server_network/dhcpserver
-sed -i 's/DHCPCTRL=no/DHCPCTRL=yes/g' /opt/karoshi/server_network/menusettings
+sed -i 's/DHCPCTRL=no/DHCPCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
 
 exit
 

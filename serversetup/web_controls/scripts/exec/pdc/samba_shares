@@ -243,6 +243,7 @@ then
 		while [ "$COUNTER" -lt "$GROUPNAMECOUNT" ]
 		do
 			PERM="r-x"
+			GROUP_PERM=${GROUP_PERMS[$COUNTER]}
 			[ "$GROUP_PERM" = 7 ] && PERM="rwx"
 			GROUPNAME=${GROUPNAMES[$COUNTER]}
 			if [ "$GROUPNAME" = all ]
@@ -250,7 +251,7 @@ then
 				setfacl -Rm d:u::rwx,g::"$PERM",o::"$PERM" "$SHAREPATH"
 			else
 				GROUP_PERM=${GROUP_PERMS[$COUNTER]}
-				setfacl -Rm g:"$GROUPNAME":"$PERM" "$SHAREPATH"
+				setfacl -Rm d:u::---,d:g::---,d:g:"$GROUPNAME":"$PERM",g:"$GROUPNAME":"$PERM" "$SHAREPATH"
 			fi
 			let COUNTER=$COUNTER+1
 		done
@@ -304,11 +305,13 @@ then
 		do
 			PERM="r-x"
 			GROUPNAME=${GROUPNAMES[$COUNTER]}
-			if [ $GROUPNAME != all ]
+			GROUP_PERM=${GROUP_PERMS[$COUNTER]}
+			[ "$GROUP_PERM" = 7 ] && PERM="rwx"
+			if [ "$GROUPNAME" = all ]
 			then
-				GROUP_PERM=${GROUP_PERMS[$COUNTER]}
-				[ "$GROUP_PERM" = 7 ] && PERM="rwx"
-			setfacl -Rm g:$GROUPNAME:"$PERM" "'$SHAREPATH'"
+				setfacl -Rm d:u::rwx,g::"$PERM",o::"$PERM" "$SHAREPATH"
+			else
+				setfacl -Rm d:u::---,d:g::---,d:g:"$GROUPNAME":"$PERM",g:"$GROUPNAME":"$PERM" "'$SHAREPATH'"
 			fi
 			let COUNTER=$COUNTER+1
 			
@@ -361,11 +364,13 @@ then
 		do
 			PERM="r-x"
 			GROUPNAME=${GROUPNAMES[$COUNTER]}
-			if [ $GROUPNAME != all ]
+			GROUP_PERM=${GROUP_PERMS[$COUNTER]}
+			[ "$GROUP_PERM" = 7 ] && PERM="rwx"
+			if [ "$GROUPNAME" = all ]
 			then
-				GROUP_PERM=${GROUP_PERMS[$COUNTER]}
-				[ "$GROUP_PERM" = 7 ] && PERM="rwx"
-			setfacl -Rm g:$GROUPNAME:"$PERM" "'$SHAREPATH'"
+				setfacl -Rm d:u::rwx,g::"$PERM",o::"$PERM" "$SHAREPATH"
+			else
+				setfacl -Rm d:u::---,d:g::---,d:g:"$GROUPNAME":"$PERM",g:"$GROUPNAME":"$PERM" "'$SHAREPATH'"
 			fi
 			let COUNTER=$COUNTER+1
 			

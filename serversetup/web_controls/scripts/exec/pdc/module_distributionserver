@@ -397,7 +397,7 @@ echo $"Distribution Server""<br>" > /opt/karoshi/server_network/servers/$SERVERN
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
 echo $SERVERNAME > /opt/karoshi/server_network/distribution_server
 
-sed -i 's/DISTROCTRL=no/DISTROCTRL=yes/g' /opt/karoshi/server_network/menusettings
+sed -i 's/DISTROCTRL=no/DISTROCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
 
 #Show completed message
 echo "<br><li>"$TITLE - $"Completed""</li><br>"

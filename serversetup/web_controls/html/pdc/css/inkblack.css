@@ -31,11 +31,51 @@ body {
 	border-color: #1A2650;
 }
 
+.button:hover { 
+  color: #FFFFFF;
+  background: #2A3E84;
+  background-image: -webkit-linear-gradient(top, #2A3E84, #0E152E);
+  background-image: -moz-linear-gradient(top, #2A3E84, #0E152E);
+  background-image: -ms-linear-gradient(top, #2A3E84, #0E152E);
+  background-image: -o-linear-gradient(top, #2A3E84, #0E152E);
+  background-image: linear-gradient(to bottom, #2A3E84, #0E152E);
+  text-decoration: none;
+ }
+
+
 table.menu th, table.menu td {
 	color: #ffffff;
 }
 table.headings th, table.headings td {
 	color: #F5EEFF;
+}
+
+table.tablesorter {
+	background-color: #1A2650;
+}
+table.tablesorter thead tr th, table.tablesorter tfoot tr th {
+	background-color: #111832;
+	border: 1px solid #080B18;
+}
+table.tablesorter thead tr .header {
+	background-image: url(/all/js/jquery.tablesorter/images/bg-white.gif);
+}
+table.tablesorter tbody td {
+	color: #fff;
+	background-color: #000;
+}
+table.tablesorter tbody tr.odd td {
+	background-color:#F0F0F6;
+}
+table.tablesorter thead tr .headerSortUp {
+	background-image: url(/all/js/jquery.tablesorter/images/asc-white.gif);
+}
+table.tablesorter thead tr .headerSortDown {
+	background-image: url(/all/js/jquery.tablesorter/images/desc-white.gif);
+}
+table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
+background-color: #22326C;
+color: #FFFFFF;
 }
 
 A:link {

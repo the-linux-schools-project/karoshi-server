@@ -123,7 +123,7 @@ echo '<a href="http://'$SERVERNAME'/cgi-bin/ksso/ksso_menu.cgi" target="_blank">
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
 echo $SERVERNAME > /opt/karoshi/server_network/kssoserver
 
-sed -i 's/KSSOCTRL=no/KSSOCTRL=yes/g' /opt/karoshi/server_network/menusettings
+sed -i 's/KSSOCTRL=no/KSSOCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
 
 
 exit

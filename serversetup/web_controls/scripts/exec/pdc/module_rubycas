@@ -239,7 +239,7 @@ echo $CASSERVER > /opt/karoshi/server_network/casserver
 [ ! -d /opt/karoshi/server_network/webservers/ ] && mkdir -p /opt/karoshi/server_network/webservers
 echo $CASSERVER > /opt/karoshi/server_network/webservers/$CASSERVER
 
-sed -i 's/WEBCTRL=no/WEBCTRL=yes/g' /opt/karoshi/server_network/menusettings
+sed -i 's/WEBCTRL=no/WEBCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
 
 exit
 

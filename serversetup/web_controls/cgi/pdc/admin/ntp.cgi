@@ -79,7 +79,17 @@ function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 			objCheckBoxes[i].checked = CheckValue;
 }
 // -->
-</script><script src="/all/stuHover.js" type="text/javascript"></script>'
+</script><script src="/all/stuHover.js" type="text/javascript"></script>
+<script type="text/javascript" src="/all/js/jquery.js"></script>
+<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script type="text/javascript" id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
+'
 echo "</head>"
 echo '<body onLoad="start()"><div id="pagecontainer">'
 #########################

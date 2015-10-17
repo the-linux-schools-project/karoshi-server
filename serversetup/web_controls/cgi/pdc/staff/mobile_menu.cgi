@@ -32,7 +32,7 @@
 ##########################
 #Section Control
 ##########################
-source /opt/karoshi/server_network/menusettings
+source /opt/karoshi/server_network/web_controls/menusettings
 
 ############################
 #Language

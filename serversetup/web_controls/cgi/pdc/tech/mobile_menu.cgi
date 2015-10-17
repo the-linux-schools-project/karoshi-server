@@ -31,7 +31,7 @@
 ##########################
 #Section Control
 ##########################
-source /opt/karoshi/server_network/menusettings
+source /opt/karoshi/server_network/web_controls/menusettings
 source /opt/karoshi/web_controls/version
 source /opt/karoshi/server_network/domain_information/domain_name
 

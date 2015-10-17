@@ -84,7 +84,17 @@ function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 			objCheckBoxes[i].checked = CheckValue;
 }
 // -->
-</script>'
+</script>
+<script type="text/javascript" src="/all/js/jquery.js"></script>
+<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script type="text/javascript" id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
+'
 
 if [ $MOBILE = yes ]
 then
@@ -289,13 +299,13 @@ then
 	<tr><td style="vertical-align: top; width: 150px;"><div class="sectiontitle">'$"Pending Users"'</div></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Acceptable_Use#View_pending_users"><img class="images" alt="" src="/images/help/info.png"><span>'$"The acceptable use policy gives new users a grace period to sign and return an acceptable use policy."' '$"User accounts are automatically disabled once the trial time is ended unless they are authorised."'</span></a></td>
 	</tr></tbody></table><br>
-	<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-	<tr><td style="vertical-align: top; width: 100px;"><b>'$"Username"'</b></td>'
+	<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+	<tr><th style="vertical-align: top; width: 100px;"><b>'$"Username"'</b></th>'
 	if [ $MOBILE = no ]
 	then
-		echo '<td style="vertical-align: top; width: 100px;"><b>'$"Created by"'</b></td><td style="vertical-align: top; width: 100px;"><b>'$"Creation Date"'</b></td>'
+		echo '<th style="vertical-align: top; width: 100px;"><b>'$"Created by"'</b></th><th style="vertical-align: top; width: 100px;"><b>'$"Creation Date"'</b></th>'
 	fi
-	echo '<td style="vertical-align: top; width: 150px;"><b>'$"Trial Days Remaining"'</b></td><td style="vertical-align: top; width: 60px;"><b>'$"Approve"'</b></td></tr>
+	echo '<th style="vertical-align: top; width: 150px;"><b>'$"Trial Days Remaining"'</b></th><th style="vertical-align: top; width: 80px;"><b>'$"Approve"'</b></th></tr></thead><tbody>
 	'
 	for PENDING_USER_FULL in /opt/karoshi/server_network/acceptable_use_authorisations/pending/*
 	do

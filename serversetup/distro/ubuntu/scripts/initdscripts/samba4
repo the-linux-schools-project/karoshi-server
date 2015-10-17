@@ -30,184 +30,204 @@ fi
 # Adapted from the Samba 3 packages.
 #
 
+kill_processes () {
+#Last chance to make sure all processes are really stopped.
+#On very rare occasions we have seen samba prcesses left hanging after samba has been stopped.
+#This results in samba refusing to start again so lets check for any processes left after samba has supposed to have stopped and kill them.
+for PROCESS in `ps aux | grep -w "/usr/sbin/$PROC_NAME" | grep -v "grep" | sed "s/ * / /g" | cut -d" " -f2 | tr -cd "0-9\ \n"`
+do
+	echo Stopping $PROCESS
+	kill -9 $PROCESS
+done
+}
 
 #Check if we should be running samba4 or smbd and nmbd
-
-
 if [ `grep -c ^#karoshi_member_server /etc/samba/smb.conf` = 0  ]
 then
 
-PIDDIR=/var/run/samba
-SAMBAPID=$PIDDIR/samba.pid
+	PIDDIR=/var/run/samba
+	SAMBAPID=$PIDDIR/samba.pid
 
-[ -f /var/lib/samba/private/tls/key.pem ] && chmod 0600 /var/lib/samba/private/tls/key.pem
+	[ -f /var/lib/samba/private/tls/key.pem ] && chmod 0600 /var/lib/samba/private/tls/key.pem
 
-# clear conflicting settings from the environment
-unset TMPDIR
+	# clear conflicting settings from the environment
+	unset TMPDIR
 
-# See if the daemon and the config file are there
-test -x $SAMBAPATH/samba -a -r /etc/samba/smb.conf || exit 0
+	# See if the daemon and the config file are there
+	test -x $SAMBAPATH/samba -a -r /etc/samba/smb.conf || exit 0
 
-. /lib/lsb/init-functions
+	. /lib/lsb/init-functions
 
-case "$1" in
-	start)
-		log_daemon_msg "Starting Samba 4 daemon" "samba"
-		# Make sure we have our PIDDIR, even if it's on a tmpfs
-		install -o root -g root -m 755 -d $PIDDIR
+	case "$1" in
+		start)
+			log_daemon_msg "Starting Samba 4 daemon" "samba"
+			# Make sure we have our PIDDIR, even if it's on a tmpfs
+			install -o root -g root -m 755 -d $PIDDIR
 
-		if ! start-stop-daemon --start --quiet --oknodo --exec $SAMBAPATH/samba -- -D; then
-			log_end_msg 1
-			exit 1
-		fi
-
-		log_end_msg 0
-		;;
-	stop)
-		log_daemon_msg "Stopping Samba 4 daemon" "samba"
-
-		start-stop-daemon --stop --quiet --name samba $SAMBAPID
-		# Wait a little and remove stale PID file
-		sleep 1
-		if [ -f $SAMBAPID ] && ! ps h `cat $SAMBAPID` > /dev/null
-		then
-			# Stale PID file (samba was succesfully stopped),
-			# remove it (should be removed by samba itself IMHO.)
-			rm -f $SAMBAPID
-		fi
-
-		log_end_msg 0
-
-		;;
-	restart|force-reload)
-		$0 stop
-		sleep 1
-		$0 start
-		;;
-	*)
-		echo "Usage: /etc/init.d/samba {start|stop|restart|force-reload}"
-		exit 1
-		;;
-esac
-else
-#Running as a member server so start smbd and nmbd
-
-### BEGIN INIT INFO
-# Provides:          samba
-# Required-Start:    $network $local_fs $remote_fs
-# Required-Stop:     $network $local_fs $remote_fs
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
-# Should-Start:      slapd
-# Should-Stop:       slapd
-# Short-Description: start Samba daemons (nmbd and smbd)
-### END INIT INFO
-
-
-# Defaults
-RUN_MODE="daemons"
-
-# Reads config file (will override defaults above)
-[ -r /etc/default/samba ] && . /etc/default/samba
-
-PIDDIR=/var/run/samba
-NMBDPID=$PIDDIR/nmbd.pid
-SMBDPID=$PIDDIR/smbd.pid
-
-# clear conflicting settings from the environment
-unset TMPDIR
-
-# See if the daemons are there
-test -x $SAMBAPATH/nmbd -a -x $SAMBAPATH/smbd || exit 0
-
-. /lib/lsb/init-functions
-
-case "$1" in
-	start)
-		log_daemon_msg "Starting Samba daemons"
-		# Make sure we have our PIDDIR, even if it's on a tmpfs
-		install -o root -g root -m 755 -d $PIDDIR
-
-		NMBD_DISABLED=`testparm -s --parameter-name='disable netbios' 2>/dev/null`
-		if [ "$NMBD_DISABLED" != 'Yes' ]; then
-			log_progress_msg "nmbd"
-			if ! start-stop-daemon --start --quiet --oknodo --exec $SAMBAPATH/nmbd -- -D
-			then
+			if ! start-stop-daemon --start --quiet --oknodo --exec $SAMBAPATH/samba -- -D; then
 				log_end_msg 1
 				exit 1
 			fi
-		fi
 
-		if [ "$RUN_MODE" != "inetd" ]; then
-			log_progress_msg "smbd"
-			if ! start-stop-daemon --start --quiet --oknodo --exec $SAMBAPATH/smbd -- -D; then
-				log_end_msg 1
-				exit 1
-			fi
-		fi
+			log_end_msg 0
+			;;
+		stop)
+			log_daemon_msg "Stopping Samba 4 daemon" "samba"
 
-		log_end_msg 0
-		;;
-	stop)
-		log_daemon_msg "Stopping Samba daemons"
-		log_progress_msg "nmbd"
-
-		start-stop-daemon --stop --quiet --pidfile $NMBDPID
-		# Wait a little and remove stale PID file
-		sleep 1
-		if [ -f $NMBDPID ] && ! ps h `cat $NMBDPID` > /dev/null
-		then
-			# Stale PID file (nmbd was succesfully stopped),
-			# remove it (should be removed by nmbd itself IMHO.)
-			rm -f $NMBDPID
-		fi
-
-		if [ "$RUN_MODE" != "inetd" ]; then
-			log_progress_msg "smbd"
-			start-stop-daemon --stop --quiet --pidfile $SMBDPID
+			start-stop-daemon --stop --quiet --name samba $SAMBAPID
 			# Wait a little and remove stale PID file
 			sleep 1
-			if [ -f $SMBDPID ] && ! ps h `cat $SMBDPID` > /dev/null
+			if [ -f $SAMBAPID ] && ! ps h `cat $SAMBAPID` > /dev/null
+			then
+				# Stale PID file (samba was succesfully stopped),
+				# remove it (should be removed by samba itself IMHO.)
+				rm -f $SAMBAPID
+			fi
+
+			#Check that all samba4 processes have stopped
+			PROC_NAME=samba
+			kill_processes
+
+			log_end_msg 0
+
+			;;
+		restart|force-reload)
+			$0 stop
+			sleep 1
+			$0 start
+			;;
+		*)
+			echo "Usage: /etc/init.d/samba {start|stop|restart|force-reload}"
+			exit 1
+			;;
+	esac
+else
+	#Running as a member server so start smbd and nmbd
+
+	### BEGIN INIT INFO
+	# Provides:          samba
+	# Required-Start:    $network $local_fs $remote_fs
+	# Required-Stop:     $network $local_fs $remote_fs
+	# Default-Start:     2 3 4 5
+	# Default-Stop:      0 1 6
+	# Should-Start:      slapd
+	# Should-Stop:       slapd
+	# Short-Description: start Samba daemons (nmbd and smbd)
+	### END INIT INFO
+
+
+	# Defaults
+	RUN_MODE="daemons"
+
+	# Reads config file (will override defaults above)
+	[ -r /etc/default/samba ] && . /etc/default/samba
+
+	PIDDIR=/var/run/samba
+	NMBDPID=$PIDDIR/nmbd.pid
+	SMBDPID=$PIDDIR/smbd.pid
+
+	# clear conflicting settings from the environment
+	unset TMPDIR
+
+	# See if the daemons are there
+	test -x $SAMBAPATH/nmbd -a -x $SAMBAPATH/smbd || exit 0
+
+	. /lib/lsb/init-functions
+
+	case "$1" in
+		start)
+			log_daemon_msg "Starting Samba daemons"
+			# Make sure we have our PIDDIR, even if it's on a tmpfs
+			install -o root -g root -m 755 -d $PIDDIR
+
+			NMBD_DISABLED=`testparm -s --parameter-name='disable netbios' 2>/dev/null`
+			if [ "$NMBD_DISABLED" != 'Yes' ]; then
+				log_progress_msg "nmbd"
+				if ! start-stop-daemon --start --quiet --oknodo --exec $SAMBAPATH/nmbd -- -D
+				then
+					log_end_msg 1
+					exit 1
+				fi
+			fi
+
+			if [ "$RUN_MODE" != "inetd" ]; then
+				log_progress_msg "smbd"
+				if ! start-stop-daemon --start --quiet --oknodo --exec $SAMBAPATH/smbd -- -D; then
+					log_end_msg 1
+					exit 1
+				fi
+			fi
+
+			log_end_msg 0
+			;;
+		stop)
+			log_daemon_msg "Stopping Samba daemons"
+			log_progress_msg "nmbd"
+
+			start-stop-daemon --stop --quiet --pidfile $NMBDPID
+			# Wait a little and remove stale PID file
+			sleep 1
+			if [ -f $NMBDPID ] && ! ps h `cat $NMBDPID` > /dev/null
 			then
 				# Stale PID file (nmbd was succesfully stopped),
-				# remove it (should be removed by smbd itself IMHO.)
-				rm -f $SMBDPID
+				# remove it (should be removed by nmbd itself IMHO.)
+				rm -f $NMBDPID
 			fi
-		fi
 
-		log_end_msg 0
+			if [ "$RUN_MODE" != "inetd" ]; then
+				log_progress_msg "smbd"
+				start-stop-daemon --stop --quiet --pidfile $SMBDPID
+				# Wait a little and remove stale PID file
+				sleep 1
+				if [ -f $SMBDPID ] && ! ps h `cat $SMBDPID` > /dev/null
+				then
+					# Stale PID file (nmbd was succesfully stopped),
+					# remove it (should be removed by smbd itself IMHO.)
+					rm -f $SMBDPID
+				fi
+			fi
 
-		;;
-	reload)
-		log_daemon_msg "Reloading /etc/samba/smb.conf" "smbd only"
+			#Check that all smbd processes have stopped
+			PROC_NAME=smbd
+			kill_processes
 
-		start-stop-daemon --stop --signal HUP --pidfile $SMBDPID
+			#Check that all nmbd processes have stopped
+			PROC_NAME=nmbd
+			kill_processes
 
-		log_end_msg 0
-		;;
-	restart|force-reload)
-		$0 stop
-		sleep 1
-		$0 start
-		;;
-        status)
-		status="0"
-		NMBD_DISABLED=`testparm -s --parameter-name='disable netbios' 2>/dev/null`
-		if [ "$NMBD_DISABLED" != "Yes" ]; then
-			status_of_proc -p $NMBDPID $SAMBAPATH/nmbd nmbd || status=$?
-		fi
-		if [ "$RUN_MODE" != "inetd" ]; then
-			status_of_proc -p $SMBDPID $SAMBAPATH/smbd smbd || status=$?
-		fi
-		if [ "$NMBD_DISABLED" = "Yes" -a "$RUN_MODE" = "inetd" ]; then
-			status="4"
-		fi
-		exit $status
-		;;
-	*)
-		echo "Usage: /etc/init.d/samba {start|stop|reload|restart|force-reload|status}"
-		exit 1
-		;;
-esac
+			log_end_msg 0
+
+			;;
+		reload)
+			log_daemon_msg "Reloading /etc/samba/smb.conf" "smbd only"
+
+			start-stop-daemon --stop --signal HUP --pidfile $SMBDPID
+
+			log_end_msg 0
+			;;
+		restart|force-reload)
+			$0 stop
+			sleep 1
+			$0 start
+			;;
+		status)
+			status="0"
+			NMBD_DISABLED=`testparm -s --parameter-name='disable netbios' 2>/dev/null`
+			if [ "$NMBD_DISABLED" != "Yes" ]; then
+				status_of_proc -p $NMBDPID $SAMBAPATH/nmbd nmbd || status=$?
+			fi
+			if [ "$RUN_MODE" != "inetd" ]; then
+				status_of_proc -p $SMBDPID $SAMBAPATH/smbd smbd || status=$?
+			fi
+			if [ "$NMBD_DISABLED" = "Yes" -a "$RUN_MODE" = "inetd" ]; then
+				status="4"
+			fi
+			exit $status
+			;;
+		*)
+			echo "Usage: /etc/init.d/samba {start|stop|reload|restart|force-reload|status}"
+			exit 1
+			;;
+	esac
 fi
 exit 0

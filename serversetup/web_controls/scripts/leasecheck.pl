@@ -117,16 +117,16 @@ foreach $line (@lines){
         }
         if ($readit && $line=~/^}/){
 		if ($state eq $userinput){
-			push (@lease_states,"<tr><td>$ip</td><td>$start_date_time</td><td>$end_date_time</td><td>$mac</td><td>$state</td><td>$name</tr>\n");
+			push (@lease_states,"<tr><td>$ip</td><td>$start_date_time</td><td>$end_date_time</td><td>$mac</td><td>$state</td><td>$name</td></tr>\n");
         		$readit = 0;
 			}
         }
 }
- 
-@lease_states=sort (@lease_states);
-my $header=("<table class='standard' style='text-align: left;' border='0' cellpadding='2' cellspacing='2'><tbody>\n<tr><td style='width: 100px;'><b>IP</b></td><td style='width: 140px;'><b>Start Time</b></td><td style='width: 140px;'><b>End Time</b></td><td style='width: 120px;'><b>Mac Address</b></td><td style='width: 60px;'><b>State</b></td><td><b>Hostname</b></td></tr>\n");
 
-print "<td style='width: 160px;'>Total leases</td><td>$lease</td></tr>\n";
+@lease_states=sort (@lease_states);
+my $header=("<table id='myTable' class='tablesorter' style='text-align: left;' border='0' cellpadding='2' cellspacing='2'><thead><tr><th style='width: 120px;'><b>IP</b></th><th style='width: 150px;'><b>Start Time</b></th><th style='width: 150px;'><b>End Time</b></th><th style='width: 140px;'><b>Mac Address</b></th><th style='width: 80px;'><b>State</b></th><th style='width: 210px;'><b>Hostname</b></th></tr></thead><tbody>\n");
+
+print "<tr><td style='width: 160px;'>Total leases</td><td>$lease</td></tr>\n";
 print "<tr><td>Total active leases</td><td>$active</td></tr></tbody></table><br>\n";
 
 if (defined $userinput) {

@@ -103,7 +103,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">'
 else
-echo '<div id="'$DIV_ID'"><b>'$"Reset Room Controls"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Room_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will schedule times when all internet room controls are reset. This could be at the end of each lesson."'</span></a><br><br>'
+echo '<div id="'$DIV_ID'"><b>'$"Reset Room Controls"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Room_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will schedule times when all internet room controls are reset to allow internet access. This could be at the end of each lesson."'</span></a><br><br>'
 fi
 
 ICON1=/images/submenus/internet/reset_room_controls_add.png

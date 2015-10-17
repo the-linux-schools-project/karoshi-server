@@ -121,9 +121,10 @@ MONITORSERVER=no
 
 if [ $MOBILE = no ]
 then
-	WIDTH1=100
+	WIDTH1=150
 	WIDTH2=100
-	WIDTH3=250
+	WIDTH3=300
+	WIDTH4=60
 	HEIGHT=25
 	TABLECLASS=standard
 	ICON1=/images/submenus/system/edit.png
@@ -133,6 +134,7 @@ else
 	WIDTH1=50
 	WIDTH2=50
 	WIDTH3=130
+	WIDTH4=40
 	HEIGHT=30
 	TABLECLASS=mobilestandard
 	ICON1=/images/submenus/system/editm.png
@@ -153,15 +155,15 @@ then
 		DNSINFO=`samba-tool dns query 127.0.0.1 $REALM $REALM ALL -U Administrator --password $LDAPPASS`
 
 		#Create top of table
-		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-		<tr><td style="vertical-align: top; width: '$WIDTH1'px;"><b>'$"DNS Name"'</b></td>'
+		echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+		<tr><th style="width: '$WIDTH1'px;"><b>'$"DNS Name"'</b></th>'
 
-		[ $MOBILE = no ] && echo '<td style="vertical-align: top; width: '$WIDTH2'px;"><b>'$"Type"'</b></td>'
+		[ $MOBILE = no ] && echo '<th style="vertical-align: top; width: '$WIDTH2'px;"><b>'$"Type"'</b></th>'
 
-		echo '<td style="vertical-align: top; width: '$WIDTH3'px;"><b>'$"Entry"'</b></td><td style="vertical-align: top;"><b>'$"Edit"'</b></td><td style="vertical-align: top;"><b>'$"Delete"'</b></td>'
+		echo '<th style="width: '$WIDTH3'px;"><b>'$"Entry"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"Edit"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"Delete"'</b></th>'
 
-		[ $MONITORSERVER = yes ] && echo '<td><b>'$"Monitor"'</b></td>'
-		echo '</tr>'
+		[ $MONITORSERVER = yes ] && echo '<th><b>'$"Monitor"'</b></th>'
+		echo '</tr></thead><tbody>'
 
 		#Get dns entry names
 		for NAME in `echo -e "$DNSINFO" | grep Name= | cut -d= -f2 | cut -d, -f1`

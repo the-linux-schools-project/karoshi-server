@@ -337,23 +337,27 @@ then
 	then
 		set_access
 	else
-		#Set E-mail level for the group
-		if [ $(grep -c ^EMAIL_LEVEL /opt/karoshi/server_network/group_information/"$USERSELECT") -gt 0 ]
-		then
-			sed -i "/^EMAIL_LEVEL/d" /opt/karoshi/server_network/group_information/"$USERSELECT"	
-		fi
-		echo "EMAIL_LEVEL=$ACCESSLEVEL" >> /opt/karoshi/server_network/group_information/"$USERSELECT"
 
 		#Set access level for the group
 		set_access
 
-		#Get a list of all users in the group
-		source /opt/karoshi/server_network/group_information/"$USERSELECT"
-		for USERNAME in $(getent passwd | grep "$HOMEPATH" | cut -d: -f1)
-		do
-			USERSELECT="$USERNAME"
-			set_access
-		done
+		#Get a list of all users in the group only if this is a primary group
+
+		#Set E-mail level for the group
+		if [ -f /opt/karoshi/server_network/group_information/"$USERSELECT" ]
+		then
+			if [ $(grep -c ^EMAIL_LEVEL /opt/karoshi/server_network/group_information/"$USERSELECT") -gt 0 ]
+			then
+				sed -i "/^EMAIL_LEVEL/d" /opt/karoshi/server_network/group_information/"$USERSELECT"	
+			fi
+			echo "EMAIL_LEVEL=$ACCESSLEVEL" >> /opt/karoshi/server_network/group_information/"$USERSELECT"
+			source /opt/karoshi/server_network/group_information/"$USERSELECT"
+			for USERNAME in $(getent passwd | grep "$HOMEPATH" | cut -d: -f1)
+			do
+				USERSELECT="$USERNAME"
+				set_access
+			done
+		fi
 	fi
 
 	#Exit the script if it has been called by add user, groups or dynamic_groups.

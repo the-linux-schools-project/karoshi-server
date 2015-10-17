@@ -402,6 +402,12 @@ then
 		/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts
 	fi
 
+	if [ $TYPE = dynamic ]
+	then
+		#Delete group information
+		[ -f /opt/karoshi/server_network/group_information_dynamic/$GROUPNAME ] && rm -f /opt/karoshi/server_network/group_information_dynamic/$GROUPNAME
+	fi
+
 	if [ $FEDERATED_LDAP_SERVERS = yes ]
 	then
 		for FEDERATEDLDAPSERVERS in /opt/karoshi/server_network/federated_ldap_servers/*

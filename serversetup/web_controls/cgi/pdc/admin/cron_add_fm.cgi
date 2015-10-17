@@ -73,6 +73,15 @@ function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 // -->
 </script>
 <script src="/all/stuHover.js" type="text/javascript"></script>
+<script type="text/javascript" src="/all/js/jquery.js"></script>
+<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script type="text/javascript" id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
@@ -105,7 +114,7 @@ then
 	TABLECLASS=standard
 	WIDTH1=200
 	WIDTH2=200
-	HEIGHT=20
+	HEIGHT=25
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -160,11 +169,11 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 <option value="50">50</option>
 <option value="55">55</option>
 <option value="*">'$"Every minute"'</option>
-<option value="*/5">'$Every' 5 '$Minutes'</option>
-<option value="*/10">'$Every' 10 '$Minutes'</option>
-<option value="*/15">'$Every' 15 '$Minutes'</option>
-<option value="*/20">'$Every' 20 '$Minutes'</option>
-<option value="*/30">'$Every' 30 '$Minutes'</option>
+<option value="*/5">'$"Every"' 5 '$"Minutes"'</option>
+<option value="*/10">'$"Every"' 10 '$"Minutes"'</option>
+<option value="*/15">'$"Every"' 15 '$"Minutes"'</option>
+<option value="*/20">'$"Every"' 20 '$"Minutes"'</option>
+<option value="*/30">'$"Every"' 30 '$"Minutes"'</option>
 </select></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Scheduled_Job"><img class="images" alt="" src="/images/help/info.png"><span>'"$'Choose the minute you want the job to start on.'"'</span></a>
 </td></tr>
@@ -260,15 +269,15 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 <td><select name="___DOFW___" style="width: '$WIDTH2'px; height: '$HEIGHT'px;">
 <option value="1-7">'$"Every day"'</option>
 <option value="1-5">'$"Every week day"'</option>
-<option value="6-7">'$Weekend'</option>
-<option value="1-3-5">'$Monday'-'$Wednesday'-'$Friday'</option>
-<option value="1">'$Monday'</option>
-<option value="2">'$Tuesday'</option>
-<option value="3">'$Wednesday'</option>
-<option value="4">'$Thursday'</option>
-<option value="5">'$Friday'</option>
-<option value="6">'$Saturday'</option>
-<option value="7">'$Sunday'</option>
+<option value="6-7">'$"Weekend"'</option>
+<option value="1-3-5">'$"Monday"'-'$"Wednesday"'-'$"Friday"'</option>
+<option value="1">'$"Monday"'</option>
+<option value="2">'$"Tuesday"'</option>
+<option value="3">'$"Wednesday"'</option>
+<option value="4">'$"Thursday"'</option>
+<option value="5">'$"Friday"'</option>
+<option value="6">'$"Saturday"'</option>
+<option value="7">'$"Sunday"'</option>
 </select></td>
 <td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Scheduled_Job"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the days of the week you want the job to run on."'</span></a>

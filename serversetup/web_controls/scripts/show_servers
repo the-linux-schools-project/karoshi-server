@@ -64,14 +64,14 @@ else
 fi
 
 function tabletop {
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="vertical-align: top; width: '$WIDTH1'px;"><b>'$"Server"'</b></td>'
+echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+<tr><th style="vertical-align: top; width: '$WIDTH1'px;"><b>'$"Server"'</b></th>'
 
-[ $MOBILE = no ] && echo '<td style="vertical-align: top; width: '$WIDTH5'px;"><b>'$"Zone"'</b></td><td style="vertical-align: top; width: '$WIDTH2'px;"><b>'$"Role"'</b></td>'
+[ $MOBILE = no ] && echo '<th style="vertical-align: top; width: '$WIDTH5'px;"><b>'$"Zone"'</b></th><th style="vertical-align: top; width: '$WIDTH2'px;"><b>'$"Role"'</b></th>'
 
 if [ $CUSTOM = updateserver ]
 then
-	echo '<td style="vertical-align: top; text-align: left; width: '$WIDTH4'px;"><b>'$"Update Time"'</b></td>'
+	echo '<th style="vertical-align: top; text-align: left; width: '$WIDTH4'px;"><b>'$"Update Time"'</b></th>'
 fi
 
 if [ $CUSTOM = commercialsslcert ]
@@ -79,13 +79,14 @@ then
 	COMMERCIALSSLSTEP1="Step 1"
 	COMMERCIALSSLSTEP2="Step 2"
 	COMMERCIALSSLSTEP3="Step 3"
-	echo '<td style="vertical-align: top; text-align: left; width: '$WIDTH3'px;"><b>'$COMMERCIALSSLSTEP1'</b></td>
-	<td style="vertical-align: top; text-align: left; width: '$WIDTH3'px;"><b>'$COMMERCIALSSLSTEP2'</b></td>
-	<td style="vertical-align: top; text-align: left; width: '$WIDTH3'px;"><b>'$COMMERCIALSSLSTEP3'</b></td>
+	echo '<th style="vertical-align: top; text-align: left; width: '$WIDTH3'px;"><b>'$COMMERCIALSSLSTEP1'</b></th>
+	<th style="vertical-align: top; text-align: left; width: '$WIDTH3'px;"><b>'$COMMERCIALSSLSTEP2'</b></th>
+	<th style="vertical-align: top; text-align: left; width: '$WIDTH3'px;"><b>'$COMMERCIALSSLSTEP3'</b></th>
 	</tr>'
 else
-	echo '<td style="vertical-align: top; text-align: right; width: '$WIDTH3'px;"></td></tr>'
+	echo '<th style="vertical-align: top; text-align: right; width: '$WIDTH3'px;"></th></tr>'
 fi
+echo '</thead><tbody>'
 }
 
 function tablebottom {
