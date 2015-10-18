@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -48,6 +48,15 @@ echo '
   <title>'$"Home Folders"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
+<script type="text/javascript" src="/all/js/jquery.js"></script>
+<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script type="text/javascript" id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
 
@@ -63,34 +72,34 @@ echo '<form action="/cgi-bin/admin/home_folders.cgi" method="post"><div id="acti
 
 echo '<td><a href="samba_shares.cgi"><input class="button" type="button" style="min-width: 135px;" name="" value="'$"Network Shares"'"></a></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Home_Folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"This displays the server that hosts the home folders for each group."'</span></a></td></tr></tbody></table><br></div><div id="infobox">
-  <table class="standard" style="text-align: left; height: 91px;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 140px;"><b>'$"Primary Group"'</b></td><td style="width: 180px;"><b>'$"Server"'</b></td><td style="width: 180px;"><b>'$"Change"'</b></td><td style="width: 140px;"><b>'$"Primary Group"'</b></td><td style="width: 180px;"><b>'$"Server"'</b></td><td><b>'$"Change"'</b></td></tr>
+  <table id="myTable" class="tablesorter" style="text-align: left; height: 91px;" border="0" cellpadding="2" cellspacing="2"><thead>
+<tr><th style="width: 140px;"><b>'$"Primary Group"'</b></th><th style="width: 180px;"><b>'$"Server"'</b></th><td style="width: 180px;"><b>'$"Change"'</b></td><th style="width: 140px;"><b>'$"Primary Group"'</b></th><th style="width: 180px;"><b>'$"Server"'</b></th><td><b>'$"Change"'</b></td></tr></thead><tbody>
 '
 START_LINE=yes
 ICON1=/images/submenus/system/computer.png
 for PRI_GROUP in /opt/karoshi/server_network/group_information/*
 do
-PRI_GROUP=`basename $PRI_GROUP`
-unset GLUSTERVOL
-source /opt/karoshi/server_network/group_information/$PRI_GROUP
+	PRI_GROUP=`basename $PRI_GROUP`
+	unset GLUSTERVOL
+	source /opt/karoshi/server_network/group_information/$PRI_GROUP
 
-#Check for gluster volume
-[ -z "$GLUSTERVOL" ] && GLUSTERVOL=notset
-if [ -d /opt/karoshi/server_network/gluster-volumes/$GLUSTERVOL ]
-then
-	ICON1=/images/submenus/system/gluster.png
-else
-	ICON1=/images/submenus/system/computer.png
-fi
+	#Check for gluster volume
+	[ -z "$GLUSTERVOL" ] && GLUSTERVOL=notset
+	if [ -d /opt/karoshi/server_network/gluster-volumes/$GLUSTERVOL ]
+	then
+		ICON1=/images/submenus/system/gluster.png
+	else
+		ICON1=/images/submenus/system/computer.png
+	fi
 
-if [ $START_LINE = yes ]
-then
-echo '<tr><td style="vertical-align: top;">'$PRI_GROUP'</td><td style="vertical-align: top;">'`echo $SERVER | sed 's/,/<br>/g'`'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_"><span>'$"Change Server"'<br><br>'$PRI_GROUP'<br><br>'`echo $SERVER | sed 's/,/<br>/g'`'</span></a></td>'
-START_LINE=no
-else
-echo '<td style="vertical-align: top;">'$PRI_GROUP'</td><td style="vertical-align: top;">'`echo $SERVER | sed 's/,/<br>/g'`'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_"><span>'$"Change Server"'<br><br>'$PRI_GROUP'<br><br><br>'`echo $SERVER | sed 's/,/<br>/g'`'</span></a></td></tr>'
-START_LINE=yes
-fi
+	if [ $START_LINE = yes ]
+	then
+		echo '<tr><td style="vertical-align: top;">'$PRI_GROUP'</td><td style="vertical-align: top;">'`echo $SERVER | sed 's/,/<br>/g'`'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_"><span>'$"Change Server"'<br><br>'$PRI_GROUP'<br><br>'`echo $SERVER | sed 's/,/<br>/g'`'</span></a></td>'
+	START_LINE=no
+	else
+		echo '<td style="vertical-align: top;">'$PRI_GROUP'</td><td style="vertical-align: top;">'`echo $SERVER | sed 's/,/<br>/g'`'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_"><span>'$"Change Server"'<br><br>'$PRI_GROUP'<br><br><br>'`echo $SERVER | sed 's/,/<br>/g'`'</span></a></td></tr>'
+	START_LINE=yes
+	fi
 done
 
 echo '</tbody>

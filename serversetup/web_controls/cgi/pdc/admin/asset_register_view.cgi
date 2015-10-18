@@ -54,7 +54,12 @@ echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head
 <script type="text/javascript" id="js">
 $(document).ready(function() 
     { 
-        $("#myTable").tablesorter(); 
+        $("#myTable").tablesorter({
+	headers: {
+	7: { sorter: "ipAddress" },
+	8: { sorter: "MAC" }
+    		}
+		});
     } 
 );
 </script>
@@ -104,7 +109,7 @@ do
 	fi
 	let COUNTER=$COUNTER+1
 done
-[ $ACTION'null' = null ] && ACTION=view
+[ -z "$ACTION" ] && ACTION=view
 #Assign LOCATION
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]

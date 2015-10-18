@@ -53,7 +53,12 @@ echo '
 <script type="text/javascript" id="js">
 $(document).ready(function() 
     { 
-        $("#myTable").tablesorter(); 
+        $("#myTable").tablesorter({
+	headers: {
+	0: { sorter: "ipAddress" },
+	3: { sorter: "MAC" }
+    		}
+		});
     } 
 );
 </script>

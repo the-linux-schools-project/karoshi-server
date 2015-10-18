@@ -242,8 +242,7 @@ echo '<form id="FormName" action="/cgi-bin/admin/karoshi_servers_add.cgi" method
 <p id="usersandgroups" class="hiddenDiv"><b>'$"Suggested modules"':</b> '$"Squid Internet Proxy"', '$"E-Mail Server"', '$"Home Access Server"', '$"Moodle Server"', '$"Web Server"', '$"Joomla"', '$"Distribution Server"'</p>
 <p id="none" class="hiddenDiv"><b>'$"Suggested modules"':</b> '$"Backup Server"', '$"Monitor Server"', '$"Reverse Proxy Server"', '$"Distribution Server"', '$"Web Server"', '$"Joomla"'</p>
 
-</div>
-<div id="submitbox">
+<br><br>
 <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div></div>
 </form>

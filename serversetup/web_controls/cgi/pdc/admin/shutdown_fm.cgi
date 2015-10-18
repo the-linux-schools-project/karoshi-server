@@ -42,7 +42,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -86,7 +86,7 @@ $(document).ready(function()
 
 if [ $MOBILE = yes ]
 then
-echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
@@ -110,17 +110,17 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
-TABLECLASS=standard
-WIDTH=180
-HEIGHT=20
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	TABLECLASS=standard
+	WIDTH=180
+	HEIGHT=20
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
-TABLECLASS=mobilestandard
-WIDTH=160
-HEIGHT=30
+	DIV_ID=actionbox2
+	TABLECLASS=mobilestandard
+	WIDTH=160
+	HEIGHT=30
 fi
 
 echo '<form action="/cgi-bin/admin/shutdown.cgi" name="selectservers" method="post">'

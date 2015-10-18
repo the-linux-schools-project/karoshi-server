@@ -472,7 +472,7 @@ then
 		[ `echo "$SERVERS" | grep -c ","` = 0 ] && echo $"Choose an extra server to create the Gluster volume on."
 		echo '</td></tr>'
 	else
-		echo '<tr><td colspan="2" style="vertical-align: top; height: 40px;">'$"Choose the servers that you want to add to the gluster volume." ''$"You can have more than one gluster volume per server."'</td></tr>'
+		echo '<tr><td></td><td style="vertical-align: top; height: 40px;">'$"Choose the servers that you want to add to the gluster volume."'<br>'$"You can have more than one gluster volume per server."'</td></tr>'
 	fi
 
 echo '</tbody></table><br>'
@@ -494,9 +494,9 @@ if [ "$ACTION" = view ]
 then
 	if [ `ls -1 /opt/karoshi/server_network/gluster-volumes/ | wc -l` -gt 0 ]
 	then
-		echo '<table class="'$TABLECLASS'" style="text-align: left; " border="0" cellpadding="2" cellspacing="2">
-		<tbody>
-		<tr><td style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume"'</b></td><td style="width: '$WIDTH2'px; vertical-align: top;"><b>'$"Servers"'</b></td><td style="width: '$WIDTH3'px; vertical-align: top;"><b>'$"Folders"'</b></tr>'
+		echo '<table id="myTable" class="tablesorter" style="text-align: left; " border="0" cellpadding="2" cellspacing="2">
+		<thead>
+		<tr><th style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume"'</b></th><th style="width: '$WIDTH2'px; vertical-align: top;"><b>'$"Servers"'</b></th><th style="width: '$WIDTH3'px; vertical-align: top;"><b>'$"Folders"'</b></th></tr></thead><tbody>'
 		for VOLUMES in /opt/karoshi/server_network/gluster-volumes/*
 		do
 			#Get data
@@ -525,14 +525,11 @@ then
 			then
 				echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_addfolder_VOLUME_'$VOLUME'_" type="image" class="images" src="/images/submenus/system/gluster_add_folder.png" value=""><span>'$"Add folder"'</span></a> <a class="info" href="javascript:void(0)"><input name="_ACTION_removefolder_VOLUME_'$VOLUME'_" type="image" class="images" src="/images/submenus/system/gluster_remove_folder.png" value=""><span>'$"Remove folder"'</span></a> <a class="info" href="javascript:void(0)"><input name="_ACTION_assignhomefolders_" type="image" class="images" src="/images/submenus/system/gluster_assign_home_folders.png" value=""><span>'$"Assign Home Folders"'</span></a>'
 			fi
-			echo '</td></tr><tr><td style="height: 20px;"></td></tr>'
+			echo '</td></tr>'
 		done
 		echo '</tbody></table>'
 	else
-		echo $"You must have more than one server for a Gluster volume."
-		echo '<SCRIPT language="Javascript">alert("'$"You must have more than one server for a Gluster volume."'")
-		window.location = "karoshi_servers_add_fm.cgi";
-		</script>'
+		echo $"No Gluster volumes have been created."
 	fi
 fi
 

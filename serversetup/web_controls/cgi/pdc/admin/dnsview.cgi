@@ -58,7 +58,11 @@ echo '
 <script type="text/javascript" id="js">
 $(document).ready(function() 
     { 
-        $("#myTable").tablesorter(); 
+        $("#myTable").tablesorter({
+	headers: {
+	2: { sorter: "ipAddress" }
+    		}
+		});
     } 
 );
 </script>

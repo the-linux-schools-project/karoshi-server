@@ -41,7 +41,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -55,7 +55,17 @@ echo '
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Help Desk"' - '$"Requests"'</title><META HTTP-EQUIV="refresh" CONTENT="300">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
-<script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<script src="/all/stuHover.js" type="text/javascript"></script>
+<script type="text/javascript" src="/all/js/jquery.js"></script>
+<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script type="text/javascript" id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
@@ -121,7 +131,7 @@ then
 </div></div><div id="mobileactionbox">
 <form action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_ASSIGNED_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_ASSIGNED_"><span>All</span></a></form>'
 else
-	echo '<b>'$"Help Desk"' - '$"Requests"'</b> </div><div id="infobox"><form action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_ASSIGNED_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_ASSIGNED_"><span>All</span></a></form>'
+	echo '<b>'$"Help Desk"' - '$"Requests"'</b> </div><div id="infobox"><br>'
 fi
 
 [ -z "$SEARCHCRITERIA" ] && SEARCHCRITERIA=ASSIGNED
@@ -139,12 +149,12 @@ exit
 fi
 if [ $MOBILE = yes ]
 then
-	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="width: 90px;"><b>Date</b></td><td style="width: 120px;"><b>'$"Location"'</b></td><td style="width: 30px;"></td><td style="width: 60px;"><b>'$"Action"'</b></td></tr>
+	echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<thead><tr><th style="width: 90px;"><b>'$"Date"'</b></th><th style="width: 120px;"><b>'$"Location"'</b></th><th style="width: 30px;"></th><th style="width: 60px;"><b>'$"Action"'</b></th></tr></thead><tbody>
 '
 else
-	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="width: 90px;"><b>Date</b></td><td style="width: 130px;"><b>'$"Name"'</b></td><td style="width: 120px;"><b>'$"Request Summary"'</b></td><td style="width: 120px;"><b>'$"Location"'</b></td><td style="width: 90px;"><b>'$"Wait Time"'</b></td><td style="width: 90px;"><b>'$"Priority"'</b></td><td style="width: 100px;"><b>'$"Assigned to"'</b></td><td style="width: 30px;"></td><td style="width: 60px;"><b>'$"Action"'</b></td></tr>
+	echo '<table  id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<thead><tr><th style="width: 100px;"><b>'$"Date"'</b></th><th style="width: 130px;"><b>'$"Name"'</b></th><th style="width: 140px;"><b>'$"Request Summary"'</b></th><th style="width: 120px;"><b>'$"Location"'</b></th><th style="width: 90px;"><b>'$"Wait Time"'</b></th><th style="width: 90px;"><b>'$"Priority"'</b></th><th style="width: 100px;"><b>'$"Assigned to"'</b></th><th style="width: 30px;"></th><th style="width: 60px;"><b>'$"Action"'</b></th></tr></thead><tbody>
 '
 fi
 
@@ -206,13 +216,19 @@ do
 	ASSIGNED2=$ASSIGNED
 	[ -z "$ASSIGNED2" ] && ASSIGNED2=$"Not Assigned"
 
+
+	if [ "$SEARCHCRITERIA" != ASSIGNED ]
+	then
+		ASSIGNED=ASSIGNED
+	fi
+
 	if [ $MOBILE = yes ]
 	then
 		echo '<tr><td style="vertical-align: top;">'$DATE'<br>'$TIME'</td><td style="vertical-align: top;">'$LOCATION'</td><td>
 	<form action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_'$ASSIGNED'_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_'$ASSIGNED'_"><span>'$ASSIGNED2'</span></a></form></td><td><form action="/cgi-bin/admin/helpdesk_action_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_JOBNAME_'$NEWJOB'_" type="image" class="images" src="/images/submenus/user/helpdesk/action.png" value="_JOBNAME_'$NEWJOB'_">
 	<span><b>'$"Name"'</b><br>'$NAME'<br><br><b>'$"Priority"'</b><br>'$PRIORITY'<br><br><b>'$"Location"'</b><br>'$LOCATION'<br><br><b>'$"Request Summary"'</b><br>'$JOBTITLE'</span></a></form></td></tr>'
 	else
-		echo '<tr><td style="vertical-align: top;">'$DATE'<br>'$TIME'</td><td style="vertical-align: top;">'$NAME'</td><td style="vertical-align: top;">'$JOBTITLE'</td><td style="vertical-align: top;">'$LOCATION'</td><td style="vertical-align: top;">'$WAITTIME'</td><td style="vertical-align: top;">'$PRIORITY'</td><td style="vertical-align: top;">'$ASSIGNED'</td><td>
+		echo '<tr><td style="vertical-align: top;">'$DATE' '$TIME'</td><td style="vertical-align: top;">'$NAME'</td><td style="vertical-align: top;">'$JOBTITLE'</td><td style="vertical-align: top;">'$LOCATION'</td><td style="vertical-align: top;">'$WAITTIME'</td><td style="vertical-align: top;">'$PRIORITY'</td><td style="vertical-align: top;">'$ASSIGNED2'</td><td>
 	<form action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_'$ASSIGNED'_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_'$ASSIGNED'_"><span>'$ASSIGNED2'</span></a></form></td><td><form action="/cgi-bin/admin/helpdesk_action_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_JOBNAME_'$NEWJOB'_" type="image" class="images" src="/images/submenus/user/helpdesk/action.png" value="_JOBNAME_'$NEWJOB'_"><span>'$JOBTITLE'</span></a></form></td></tr>'
 	fi
 
