@@ -48,7 +48,16 @@ echo "Content-type: text/html"
 echo ""
 echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Group Management"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script type="text/javascript" src="/all/js/jquery.js"></script>
 <script type="text/javascript" src="/all/js/script.js"></script>
-<script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<script src="/all/stuHover.js" type="text/javascript"></script>
+<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script type="text/javascript" id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -534,11 +543,11 @@ then
 	COUNTER=0
 	[ "$TYPE" = notset ] && TYPE=primary
 
-	echo  '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-	<tbody><tr><td style="width: '$WIDTH1'px; vertical-align:top;"><b>'$"Group name"'</b></td>'
+	echo  '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	<thead><tr><th style="width: '$WIDTH1'px; vertical-align:top;"><b>'$"Group name"'</b></th>'
 
 
-	[ $MOBILE = no ] && echo '<td style="width: '$WIDTH2'px; vertical-align:top;"><b>'$"Group id"'</b></td><td style="width: '$WIDTH2'px; vertical-align:top;"><b>'$"User count"'</b></td>'
+	[ $MOBILE = no ] && echo '<th style="width: '$WIDTH2'px; vertical-align:top;"><b>'$"Group id"'</b></th><th style="width: '$WIDTH2'px; vertical-align:top;"><b>'$"User count"'</b></th>'
 
 	echo '<td style="width: '$WIDTH2'px; vertical-align:top;">'
 
@@ -553,8 +562,8 @@ then
 	</select>
 	<noscript><input type="submit" value="Submit"></noscript>'
 
-[ $MOBILE = no ] && echo '</td><td style="width: '$WIDTH3'px; vertical-align:top;"><b>'$"Associated groups"'</b></td>'
-echo '<td style="vertical-align:top;"><b>'$"Members"'</b></td><td style="vertical-align:top;"><b>'$"Delete"'</b></td></tr>'
+[ $MOBILE = no ] && echo '</td><th style="width: '$WIDTH3'px; vertical-align:top;"><b>'$"Associated groups"'</b></th>'
+echo '<th style="vertical-align:top;"><b>'$"Members"'</b></th><th style="vertical-align:top;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
 
 	while [ $COUNTER -lt $GROUPCOUNT ]
 	do

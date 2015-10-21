@@ -156,8 +156,8 @@ echo '<td style="vertical-align: top;">'
 
 if [ $SERVER != `hostname-fqdn` ]
 then
-echo '<form action="/cgi-bin/admin/karoshi_servers_add_fm.cgi" method="post">
-<a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERSHORT'_" type="image" class="images" src="'$SERVERICON'" value="'$SERVER'"><span>'$SERVERSHORT - $SERVERSSHSTATUS'</span></a>
+	echo '<form action="/cgi-bin/admin/karoshi_servers_add_fm.cgi" method="post">
+<a class="info infocenter" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERSHORT'_" type="image" class="images" src="'$SERVERICON'" value="'$SERVER'"><span>'$SERVERSHORT - $SERVERSSHSTATUS'</span></a>
 </form>'
 fi
 
@@ -194,7 +194,7 @@ fi
 if [ $SSHSTATUS = 0 ]
 then
 	echo '<form action="/cgi-bin/admin/backup_assign_fm.cgi" method="post">
-<a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVER'_" type="image" class="images" src="'$SERVERBACKUPICON'" value="'$SERVER'"><span>'$SERVERBACKUPSSHSTATUS'</span></a></form>'
+<a class="info infoleft" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVER'_" type="image" class="images" src="'$SERVERBACKUPICON'" value="'$SERVER'"><span>'$SERVERBACKUPSSHSTATUS'</span></a></form>'
 fi
 echo '</td></tr>'
 }

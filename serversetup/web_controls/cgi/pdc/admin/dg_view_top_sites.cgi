@@ -42,7 +42,21 @@ TEXTDOMAIN=karoshi-server
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Top Sites"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Top Sites"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
+<script type="text/javascript" src="/all/js/jquery.js"></script>
+<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script type="text/javascript" id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter({
+	headers: {
+	2: { sorter: false}
+    		}
+		});
+    } 
+);
+</script>
+</head><body><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox3"><div id="titlebox">'
@@ -60,14 +74,14 @@ END_POINT=5
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = DATEcheck ]
-then
-let COUNTER=$COUNTER+1
-DATE=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9-'`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = DATEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		DATE=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9-'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -83,32 +97,32 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 
 #Check to see that DATE is not blank
-if [ $DATE'null' = null ]
+if [ -z "$DATE" ]
 then
-MESSAGE=$"The date cannot be blank."
-show_status
+	MESSAGE=$"The date cannot be blank."
+	show_status
 fi
 
 DAY=`echo $DATE | cut -d- -f1`
@@ -116,44 +130,44 @@ MONTH=`echo $DATE | cut -d- -f2`
 YEAR=`echo $DATE | cut -d- -f3`
 
 #Check to see that DAY is not blank
-if [ $DAY'null' = null ]
+if [ -z "$DAY" ]
 then
-MESSAGE=$"The date cannot be blank."
-show_status
+	MESSAGE=$"The date cannot be blank."
+	show_status
 fi
 
 #Check to see that MONTH is not blank
-if [ $MONTH'null' = null ]
+if [ -z "$MONTH" ]
 then
-MESSAGE=$"The date cannot be blank."
-show_status
+	MESSAGE=$"The date cannot be blank."
+	show_status
 fi
 
 #Check to see that YEAR is not blank
-if [ $YEAR'null' = null ]
+if [ -z "$YEAR" ]
 then
-MESSAGE=$"The date cannot be blank."
-show_status
+	MESSAGE=$"The date cannot be blank."
+	show_status
 fi
 
 #Check that day is not greater than 31
 if [ $DAY -gt 31 ]
 then
-MESSAGE=$"Date input error."
-show_status
+	MESSAGE=$"Date input error."
+	show_status
 fi
 
 #Check that the month is not greater than 12
 if [ $MONTH -gt 12 ]
 then
-MESSAGE=$"Date input error."
-show_status
+	MESSAGE=$"Date input error."
+	show_status
 fi
 
 if [ $YEAR -lt 2006 ] || [ $YEAR -gt 3006 ]
 then
-MESSAGE=$"The year is not valid."
-show_status
+	MESSAGE=$"The year is not valid."
+	show_status
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_top_sites.cgi | cut -d' ' -f1`
@@ -164,13 +178,13 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DAY:$MONTH:$YEAR:" | sudo -H /opt/karos
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 102 ]
 then
-MESSAGE=`echo $"No log exists for this date."`
-show_status
+	MESSAGE=`echo $"No log exists for this date."`
+	show_status
 fi
 if [ $EXEC_STATUS = 103 ]
 then
-MESSAGE=`echo $"No sites for this search exist in this log."`
-show_status
+	MESSAGE=`echo $"No sites for this search exist in this log."`
+	show_status
 fi
 
 echo '</form></div></div></div></body></html>'

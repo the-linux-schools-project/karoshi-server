@@ -48,7 +48,24 @@ TEXTDOMAIN=karoshi-server
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Site Internet Logs"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Site Internet Logs"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
+<script type="text/javascript" src="/all/js/jquery.js"></script>
+<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script type="text/javascript" id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter({
+	headers: {
+	0: { sorter: false},
+	2: { sorter: false},
+	4: { sorter: false},
+	5: { sorter: "ipAddress" }
+    		}
+		});
+    } 
+);
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -76,12 +93,12 @@ echo '</head><body><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox3"><div id="titlebox">'
+	DIV_ID=actionbox3
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
+	echo '<div id="actionbox3"><div id="titlebox">'
 else
-DIV_ID=actionbox2
+	DIV_ID=actionbox2
 fi
 
 #########################
@@ -97,28 +114,28 @@ END_POINT=9
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = WEBSITEcheck ]
-then
-let COUNTER=$COUNTER+1
-WEBSITE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = WEBSITEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		WEBSITE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign _LOGDATE_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = LOGDATEcheck ]
-then
-let COUNTER=$COUNTER+1
-LOGDATE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = LOGDATEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		LOGDATE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 
@@ -135,38 +152,38 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that WEBSITE is not blank
-if [ $WEBSITE'null' = null ]
+if [ -z "$WEBSITE" ]
 then
-MESSAGE=$"You must choose a website to view the logs for."
-show_status
+	MESSAGE=$"You must choose a website to view the logs for."
+	show_status
 fi
 
 #Check to see that LOGDATE is not blank
-if [ $LOGDATE'null' = null ]
+if [ -z "$LOGDATE" ]
 then
-MESSAGE=$"The log date must not be blank."
-show_status
+	MESSAGE=$"The log date must not be blank."
+	show_status
 fi
 
 #Show back button for mobiles
@@ -187,13 +204,13 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$WEBSITE:$LOGDATE:$MOBILE:" | sudo -H /o
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 102 ]
 then
-MESSAGE=`echo $"No log exists for this date."`
-show_status
+	MESSAGE=`echo $"No log exists for this date."`
+	show_status
 fi
 if [ $EXEC_STATUS = 103 ]
 then
-MESSAGE=`echo $"No sites for this search exist in this log."`
-show_status
+	MESSAGE=`echo $"No sites for this search exist in this log."`
+	show_status
 fi
 
 echo '</div></div></div></body></html>'

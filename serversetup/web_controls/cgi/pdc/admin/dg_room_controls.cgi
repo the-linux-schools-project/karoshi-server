@@ -41,14 +41,29 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Internet Controls"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Internet Controls"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
+<script type="text/javascript" src="/all/js/jquery.js"></script>
+<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script type="text/javascript" id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter({
+	headers: {
+	2: { sorter: "ipAddress" },
+	1: { sorter: "MAC" }
+    		}
+		});
+    } 
+);
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -109,8 +124,8 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$ERRORMSG7
-show_status
+	export MESSAGE=$ERRORMSG7
+	show_status
 fi
 
 #########################
@@ -118,45 +133,45 @@ fi
 #########################
 
 #Check to see that LOCATION is not blank
-if [ $LOCATION'null' = null ]
+if [ -z "$LOCATION" ]
 then
-MESSAGE=$"You have not chosen a location."
-show_status
+	MESSAGE=$"You have not chosen a location."
+	show_status
 fi
 
 
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
-TABLECLASS=standard
-WIDTH=60
-WIDTH2=120
-WIDTH3=120
-TABLETITLE=''$"Client Internet Controls"' - '$LOCATION''
-ICON1=/images/submenus/internet/client_allowed.png
-ICON2=/images/submenus/internet/client_denied.png
-ICON3=/images/assets/location.png
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="'$DIV_ID'"><div id="titlebox"><b>'$TABLETITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Room_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the client computers that you want to allow or deny internet access to."'</span></a><br>'
+	DIV_ID=actionbox3
+	TABLECLASS=standard
+	WIDTH=60
+	WIDTH2=120
+	WIDTH3=120
+	TABLETITLE=''$"Client Internet Controls"' - '$LOCATION''
+	ICON1=/images/submenus/internet/client_allowed.png
+	ICON2=/images/submenus/internet/client_denied.png
+	ICON3=/images/assets/location.png
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
+	echo '<div id="'$DIV_ID'"><div id="titlebox"><b>'$TABLETITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Room_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the client computers that you want to allow or deny internet access to."'</span></a><br>'
 else
-DIV_ID=menubox
-TABLECLASS=mobilestandard
-WIDTH=60
-WIDTH2=90
-WIDTH3=110
-TABLETITLE="$LOCATION"
-ICON1=/images/submenus/internet/client_allowedm.png
-ICON2=/images/submenus/internet/client_deniedm.png
-ICON3=/images/assets/locationm.png
+	DIV_ID=menubox
+	TABLECLASS=mobilestandard
+	WIDTH=60
+	WIDTH2=90
+	WIDTH3=110
+	TABLETITLE="$LOCATION"
+	ICON1=/images/submenus/internet/client_allowedm.png
+	ICON2=/images/submenus/internet/client_deniedm.png
+	ICON3=/images/assets/locationm.png
 
-echo '<div style="float: center" id="my_menu" class="sdmenu">
-	<div class="expanded">
-	<span>'$"Client Internet Controls"'</span>
-<a href="/cgi-bin/admin/dg_room_controls_fm.cgi">'$LOCATION'</a>
-</div></div><div id="mobileactionbox">
-'
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
+		<div class="expanded">
+		<span>'$"Client Internet Controls"'</span>
+	<a href="/cgi-bin/admin/dg_room_controls_fm.cgi">'$LOCATION'</a>
+	</div></div><div id="mobileactionbox">
+	'
 fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
@@ -191,58 +206,57 @@ echo '</tr></table><br>'
 
 if [ -d /opt/karoshi/asset_register/locations/$LOCATION/ ]
 then
-if [ `ls -1 /opt/karoshi/asset_register/locations/$LOCATION/ | wc -l` -gt 0 ]
-then
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="width: '$WIDTH'px;"><b>'$"Asset"'</b></td>'
+	if [ `ls -1 /opt/karoshi/asset_register/locations/$LOCATION/ | wc -l` -gt 0 ]
+	then
+		echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+		<thead><tr><th style="width: '$WIDTH'px;"><b>'$"Asset"'</b></th>'
 
-[ $MOBILE = no ] && echo '<td style="width: '$WIDTH2'px;"><b>'$"Mac-address"'</b></td>'
+		[ $MOBILE = no ] && echo '<th style="width: '$WIDTH2'px;"><b>'$"Mac-address"'</b></th>'
 
-echo '<td style="width: '$WIDTH3'px;"><b>'$"Tcpip"'</b></td><td><b>'$"Action"'</b></td></tr>'
+		echo '<th style="width: '$WIDTH3'px;"><b>'$"Tcpip"'</b></th><th><b>'$"Access"'</b></th><th><b>'$"Media Access"'</b></th></tr></thead><tbody>'
 
-for ASSETS in "/opt/karoshi/asset_register/locations/$LOCATION/"*
-do
-ASSET=`basename $ASSETS`
-source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
-#Only show certain asset types
-if [ $ASSETTYPE = 1 ] || [ $ASSETTYPE = 3 ] || [ $ASSETTYPE = 5 ] || [ $ASSETTYPE = 7 ] || [ $ASSETTYPE = 9 ]
-then
-CONTROLMSG=$"Deny access"
-COLOUR=#096F16
-ACTION=deny
-if [ -f /opt/karoshi/server_network/internet_room_controls/$LOCATION/$ASSET ]
-then
-CONTROLMSG=$"Allow access"
-COLOUR=#FF0000
-ACTION=allow
+		for ASSETS in "/opt/karoshi/asset_register/locations/$LOCATION/"*
+		do
+			ASSET=`basename $ASSETS`
+			source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
+			#Only show certain asset types
+			if [ $ASSETTYPE = 1 ] || [ $ASSETTYPE = 3 ] || [ $ASSETTYPE = 5 ] || [ $ASSETTYPE = 7 ] || [ $ASSETTYPE = 9 ]
+			then
+				CONTROLMSG=$"Deny access"
+				COLOUR=#096F16
+				ACTION=deny
+			if [ -f /opt/karoshi/server_network/internet_room_controls/$LOCATION/$ASSET ]
+			then
+				CONTROLMSG=$"Allow access"
+				COLOUR=#FF0000
+				ACTION=allow
+			fi
+
+			CONTROLMSG2=$"Deny media access"
+			COLOUR2=#096F16
+			ACTION2=denymedia
+			if [ -f /opt/karoshi/server_network/internet_media_room_controls/$LOCATION/$ASSET"_"media ]
+			then
+				CONTROLMSG2=$"Allow media access"
+				COLOUR2=#FF0000
+				ACTION2=allowmedia
+			fi
+
+
+			echo '<tr><td valign="top">'$ASSET'</td>'
+
+			[ $MOBILE = no ] && echo '<td valign="top">'$MAC1'</td><td valign="top">'$TCPIP1'</td>'
+
+			echo '<td valign="top"><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post">
+			<input name="_ACTION_'$ACTION'_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="submit" class="button" style="color:'$COLOUR';" value="'$CONTROLMSG'"></form></td>
+
+			<td valign="top"><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post"><input name="_ACTION_'$ACTION2'_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="submit" class="button" style="color:'$COLOUR2';" value="'$CONTROLMSG2'"></form></td>
+			</tr>
+			'
+			fi
+		done
+	fi
 fi
-
-CONTROLMSG2=$"Deny media access"
-COLOUR2=#096F16
-ACTION2=denymedia
-if [ -f /opt/karoshi/server_network/internet_media_room_controls/$LOCATION/$ASSET"_"media ]
-then
-CONTROLMSG2=$"Allow media access"
-COLOUR2=#FF0000
-ACTION2=allowmedia
-fi
-
-
-echo '<tr><td valign="top">'$ASSET'</td>'
-
-[ $MOBILE = no ] && echo '<td valign="top">'$MAC1'</td><td valign="top">'$TCPIP1'</td>'
-
-echo '<td valign="top"><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post">
-<input name="_ACTION_'$ACTION'_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="submit" class="button" style="color:'$COLOUR';" value="'$CONTROLMSG'"></form></td>
-
-<td valign="top"><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post"><input name="_ACTION_'$ACTION2'_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="submit" class="button" style="color:'$COLOUR2';" value="'$CONTROLMSG2'"></form></td>
-</tr>
-'
-fi
-done
-fi
-fi
-
 echo '</tbody></table></div>'
 [ $MOBILE = no ] && echo '</div>'
 echo '</div></body></html>'

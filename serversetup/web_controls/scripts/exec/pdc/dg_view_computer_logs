@@ -199,8 +199,8 @@ fi
 function viewlogs {
 if [ -f /opt/karoshi/.tempdata/$TCPIP.$$ ]
 then
-	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: '$WIDTH1'px;"><b>'$"Filter"'</b></td><td style="width: '$WIDTH2'px;"><b>'$"Time"'</b></td><td></td><td style="width: '$WIDTH3'px;"><b>'$"Username"'</b></td><td></td><td><b>'$"Website"'</b></td></tr>'
+	echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+<tr><th style="width: '$WIDTH1'px;"><b>'$"Filter"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Time"'</b></th><th></th><th style="width: '$WIDTH3'px;"><b>'$"Username"'</b></th><th></th><th><b>'$"Website"'</b></th></tr></thead><tbody>'
 sort -t">" -s -k 6 /opt/karoshi/.tempdata/$TCPIP.$$
 	rm -f /opt/karoshi/.tempdata/$TCPIP.$$
 	echo '</tbody></table><br>'

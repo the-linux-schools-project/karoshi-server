@@ -142,7 +142,7 @@ function viewlogs {
 if [ -f /opt/karoshi/.tempdata/topsites.$$ ]
 then
 	COUNTER=1
-	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>'
+	echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead><tr><th></th><th><b>'$"Address"'</b></th><th></th></tr></thead><tbody>'
 	for TOPSSITES in `cat /opt/karoshi/.tempdata/topsites.$$ | cut -d"/" -f1,9 | sort -snur -k 1 | sed -n 1,100p | cut -d"/" -f2`
 	do
 		TOPSITE=`basename "$TOPSSITES" | sed "s/.tar.gz$//g"`

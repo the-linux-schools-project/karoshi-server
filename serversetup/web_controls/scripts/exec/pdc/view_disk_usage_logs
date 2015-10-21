@@ -24,22 +24,22 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/view_disk_usage_logs_cgi
 then
-echo `date`: view_disk_usage_logs - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: view_disk_usage_logs - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/view_disk_usage_logs_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/view_disk_usage_logs.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $view_disk_usage_logs_cgi'check' ]
 then
-echo `date`: view_disk_usage_logs - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: view_disk_usage_logs - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -47,8 +47,8 @@ fi
 numArgs=$#
 if [ $numArgs != 1 ]
 then
-echo `date`: view_disk_usage_logs - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: view_disk_usage_logs - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
@@ -64,138 +64,141 @@ MOBILE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f9`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: view_disk_usage_logs - Not called by view_disk_usage_logs.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: view_disk_usage_logs - Not called by view_disk_usage_logs.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: view_disk_usage_logs - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: view_disk_usage_logs - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: view_disk_usage_logs - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: view_disk_usage_logs - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: view_disk_usage_logs - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: view_disk_usage_logs - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $LOGVIEW'null' = null ]
+if [ -z "$LOGVIEW" ]
 then
-echo `date`: view_disk_usage_logs - Blank log view >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
-
-if [ $DAY'null' = null ]
-then
-echo `date`: view_disk_usage_logs - Blank day >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
-if [ $MONTH'null' = null ]
-then
-echo `date`: view_disk_usage_logs - Blank month>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
-if [ $YEAR'null' = null ]
-then
-echo `date`: view_disk_usage_logs - Blank year >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: view_disk_usage_logs - Blank log view >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $KAROSHI_SERVER'null' = null ]
+if [ -z "$DAY" ]
 then
-echo `date`: view_disk_usage_logs - Blank servers >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: view_disk_usage_logs - Blank day >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$MONTH" ]
+then
+	echo `date`: view_disk_usage_logs - Blank month>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$YEAR" ]
+then
+	echo `date`: view_disk_usage_logs - Blank year >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+if [ -z "$KAROSHI_SERVER" ]
+then
+	echo `date`: view_disk_usage_logs - Blank servers >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 echo `date`: view_disk_usage_logs - viewing from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-
-
 if [ $KAROSHI_SERVER = `hostname-fqdn` ]
 then
-if [ $LOGVIEW = month ]
-then
-LOG_LIST=( `ls -1 /opt/karoshi/logs/disk_usage/ | grep $YEAR"[-]"$MONTH"[-]"` )
-LOG_LIST_COUNT=`echo ${#LOG_LIST[@]}`
-LOGCOUNTER=0
-while [ $LOGCOUNTER -lt $LOG_LIST_COUNT ]
-do
-LOG_FILE_NAME=`echo ${LOG_LIST[$LOGCOUNTER]}`
+	if [ $LOGVIEW = month ]
+	then
+		LOG_LIST=( `ls -1 /opt/karoshi/logs/disk_usage/ | grep $YEAR"[-]"$MONTH"[-]"` )
+		LOG_LIST_COUNT=`echo ${#LOG_LIST[@]}`
+		LOGCOUNTER=0
+		while [ $LOGCOUNTER -lt $LOG_LIST_COUNT ]
+		do
+			LOG_FILE_NAME=`echo ${LOG_LIST[$LOGCOUNTER]}`
 
-if [ -f /opt/karoshi/logs/disk_usage/$LOG_FILE_NAME/disk_usage ]
-then
-if [ $MOBILE = yes ]
-then
-cat /opt/karoshi/logs/disk_usage/$LOG_FILE_NAME/disk_usage | sed "s/standard/mobilestandard/g"
-else
-cat /opt/karoshi/logs/disk_usage/$LOG_FILE_NAME/disk_usage
-fi
-fi
-echo "<br>"
-let LOGCOUNTER=$LOGCOUNTER+1
-done
-else
-if [ -f /opt/karoshi/logs/disk_usage/$YEAR-$MONTH-$DAY/disk_usage ]
-then
-if [ $MOBILE = yes ]
-then
-cat /opt/karoshi/logs/disk_usage/$YEAR-$MONTH-$DAY/disk_usage | sed "s/standard/mobilestandard/g"
-else
-cat /opt/karoshi/logs/disk_usage/$YEAR-$MONTH-$DAY/disk_usage
-fi
-echo "<br>"
-else
-echo $KAROSHI_SERVER: $DAY-$MONTH-$YEAR $"No disk log exists for this date."
-echo "<br>"
-fi
-fi
+			if [ -f /opt/karoshi/logs/disk_usage/$LOG_FILE_NAME/disk_usage ]
+			then
+				if [ $MOBILE = yes ]
+				then
+					cat /opt/karoshi/logs/disk_usage/$LOG_FILE_NAME/disk_usage | sed "s/standard/mobilestandard/g"
+				else
+					cat /opt/karoshi/logs/disk_usage/$LOG_FILE_NAME/disk_usage
+				fi
+			fi
+			echo "<br>"
+			let LOGCOUNTER=$LOGCOUNTER+1
+		done
+	else
+		if [ -f /opt/karoshi/logs/disk_usage/$YEAR-$MONTH-$DAY/disk_usage ]
+		then
+			if [ $MOBILE = yes ]
+			then
+				cat /opt/karoshi/logs/disk_usage/$YEAR-$MONTH-$DAY/disk_usage | sed "s/standard/mobilestandard/g"
+			else
+				cat /opt/karoshi/logs/disk_usage/$YEAR-$MONTH-$DAY/disk_usage
+			fi
+			echo "<br>"
+		else
+			echo $KAROSHI_SERVER: $DAY-$MONTH-$YEAR $"No disk log exists for this date."
+			echo "<br>"
+		fi
+	fi
 else
 
-if [ -d /opt/karoshi/server_network/servers/$KAROSHI_SERVER ]
-then
-ssh -x -o PasswordAuthentication=no $KAROSHI_SERVER '
-if [ '$LOGVIEW' = month ]
-then
-LOG_LIST=( `ls -1 /opt/karoshi/logs/disk_usage/ | grep '$YEAR'"[-]"'$MONTH'"[-]"` )
-LOG_LIST_COUNT=`echo ${#LOG_LIST[@]}`
-LOGCOUNTER=0
-while [ $LOGCOUNTER -lt $LOG_LIST_COUNT ]
-do
-LOG_FILE_NAME=`echo ${LOG_LIST[$LOGCOUNTER]}`
-if [ -f /opt/karoshi/logs/disk_usage/$LOG_FILE_NAME/disk_usage ]
-then
-if [ '$MOBILE' = yes ]
-then
-cat /opt/karoshi/logs/disk_usage/$LOG_FILE_NAME/disk_usage | sed "s/standard/mobilestandard/g"
-else
-cat /opt/karoshi/logs/disk_usage/$LOG_FILE_NAME/disk_usage
-fi
-fi
-echo "<br>"
-let LOGCOUNTER=$LOGCOUNTER+1
-done
-else
-if [ -f /opt/karoshi/logs/disk_usage/'$YEAR'-'$MONTH'-'$DAY'/disk_usage ]
-then
-if [ '$MOBILE' = yes ]
-then
-cat /opt/karoshi/logs/disk_usage/'$YEAR'-'$MONTH'-'$DAY'/disk_usage | sed "s/standard/mobilestandard/g"
-else
-cat /opt/karoshi/logs/disk_usage/'$YEAR'-'$MONTH'-'$DAY'/disk_usage
-fi
-echo "<br>"
-else
-echo '$DAY'-'$MONTH'-'$YEAR' '$"No disk log exists for this date."'
-echo "<br>"
-fi
-fi
-' 2>&1
-echo '<br><br>'
-else
-echo $KAROSHI_SERVER: $"SSH is not enabled for this server."'<br><br>'
-fi
+	if [ -d /opt/karoshi/server_network/servers/$KAROSHI_SERVER ]
+	then
+		ssh -x -o PasswordAuthentication=no $KAROSHI_SERVER '
+		if [ '$LOGVIEW' = month ]
+		then
+			LOG_LIST=( `ls -1 /opt/karoshi/logs/disk_usage/ | grep '$YEAR'"[-]"'$MONTH'"[-]"` )
+			LOG_LIST_COUNT=`echo ${#LOG_LIST[@]}`
+			LOGCOUNTER=0
+			while [ $LOGCOUNTER -lt $LOG_LIST_COUNT ]
+			do
+			LOG_FILE_NAME=`echo ${LOG_LIST[$LOGCOUNTER]}`
+			if [ -f /opt/karoshi/logs/disk_usage/$LOG_FILE_NAME/disk_usage ]
+			then
+				if [ '$MOBILE' = yes ]
+				then
+					cat /opt/karoshi/logs/disk_usage/$LOG_FILE_NAME/disk_usage | sed "s/standard/mobilestandard/g"
+				else
+					cat /opt/karoshi/logs/disk_usage/$LOG_FILE_NAME/disk_usage
+				fi
+			fi
+			echo "<br>"
+			let LOGCOUNTER=$LOGCOUNTER+1
+			done
+		else
+			if [ -f /opt/karoshi/logs/disk_usage/'$YEAR'-'$MONTH'-'$DAY'/disk_usage ]
+			then
+				if [ '$MOBILE' = yes ]
+				then
+					cat /opt/karoshi/logs/disk_usage/'$YEAR'-'$MONTH'-'$DAY'/disk_usage | sed "s/standard/mobilestandard/g"
+				else
+					cat /opt/karoshi/logs/disk_usage/'$YEAR'-'$MONTH'-'$DAY'/disk_usage
+				fi
+				echo "<br>"
+			else
+				echo '$DAY'-'$MONTH'-'$YEAR' '$"No disk log exists for this date."'
+				echo "<br>"
+			fi
+		fi
+		' 2>&1
+		echo '<br><br>'
+	else
+		echo $KAROSHI_SERVER: $"SSH is not enabled for this server."'<br><br>'
+	fi
 fi
 
+#Remove any warning messages for the server
+if [ -f /opt/karoshi/web_controls/warnings/messages/disk_usage_"$KAROSHI_SERVER" ]
+then
+	rm -f /opt/karoshi/web_controls/warnings/messages/disk_usage_"$KAROSHI_SERVER"
+fi

@@ -49,7 +49,23 @@ TEXTDOMAIN=karoshi-server
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Computer Logs"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Computer Logs"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
+<script type="text/javascript" src="/all/js/jquery.js"></script>
+<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script type="text/javascript" id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter({
+	headers: {
+	0: { sorter: false},
+	2: { sorter: false},
+	4: { sorter: false}
+    		}
+		});
+    } 
+);
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -77,11 +93,11 @@ echo '</head><body><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
+	DIV_ID=actionbox2
 fi
 
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
@@ -98,54 +114,54 @@ END_POINT=11
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = TCPIPcheck ]
-then
-let COUNTER=$COUNTER+1
-TCPIP=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = TCPIPcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		TCPIP=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign DATE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = DATEcheck ]
-then
-let COUNTER=$COUNTER+1
-DATE=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9-'`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = DATEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		DATE=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9-'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign DAYCOUNT
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = DAYCOUNTcheck ]
-then
-let COUNTER=$COUNTER+1
-DAYCOUNT=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9-'`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = DAYCOUNTcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		DAYCOUNT=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9-'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign DETAILED
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = DETAILEDcheck ]
-then
-let COUNTER=$COUNTER+1
-DETAILED=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = DETAILEDcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		DETAILED=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -169,29 +185,29 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that TPCIP is not blank
-if [ $TCPIP'null' = null ]
+if [ -z "$TCPIP" ]
 then
-MESSAGE=$"The tcpip number must not be blank."
-show_status
+	MESSAGE=$"The tcpip number must not be blank."
+	show_status
 fi
 #Check to see that DATE is not blank
-if [ $DATE'null' = null ]
+if [ -z "$DATE" ]
 then
-MESSAGE=$"The date cannot be blank."
-show_status
+	MESSAGE=$"The date cannot be blank."
+	show_status
 fi
 
 DAY=`echo $DATE | cut -d- -f1`
@@ -199,110 +215,110 @@ MONTH=`echo $DATE | cut -d- -f2`
 YEAR=`echo $DATE | cut -d- -f3`
 
 #Check to see that DAYCOUNT is not blank
-if [ $DAYCOUNT'null' = null ]
+if [ -z "$DAYCOUNT" ]
 then
-DAYCOUNT=1
+	DAYCOUNT=1
 fi
 
 #Check that DAYCOUNT is not greater than 99
 if [ $DAYCOUNT -gt 99 ]
 then
-MESSAGE=$"Your username or password was not correct."
-show_status
+	MESSAGE=$"Your username or password was not correct."
+	show_status
 fi
 
 #Loop round for the number of days to check the log for
 COUNTER=1
 while [ $COUNTER -le $DAYCOUNT ]
 do
-#Check to see that DAY is not blank
-if [ $DAY'null' = null ]
-then
-MESSAGE=$"The date cannot be blank."
-show_status
-fi
+	#Check to see that DAY is not blank
+	if [ -Z "$DAY" ]
+	then
+		MESSAGE=$"The date cannot be blank."
+		show_status
+	fi
 
-#Check to see that MONTH is not blank
-if [ $MONTH'null' = null ]
-then
-MESSAGE=$"The date cannot be blank."
-show_status
-fi
+	#Check to see that MONTH is not blank
+	if [ -z "$MONTH" ]
+	then
+		MESSAGE=$"The date cannot be blank."
+		show_status
+	fi
 
-#Check to see that YEAR is not blank
-if [ $YEAR'null' = null ]
-then
-MESSAGE=$"The date cannot be blank."
-show_status
-fi
+	#Check to see that YEAR is not blank
+	if [ -z "$YEAR" ]
+	then
+		MESSAGE=$"The date cannot be blank."
+		show_status
+	fi
 
-#Check that day is not greater than 31
-if [ $DAY -gt 31 ]
-then
-MESSAGE=$"Date input error."
-show_status
-fi
+	#Check that day is not greater than 31
+	if [ $DAY -gt 31 ]
+	then
+		MESSAGE=$"Date input error."
+		show_status
+	fi
 
-#Check that the month is not greater than 12
-if [ $MONTH -gt 12 ]
-then
-MESSAGE=$"Date input error."
-show_status
-fi
+	#Check that the month is not greater than 12
+	if [ $MONTH -gt 12 ]
+	then
+		MESSAGE=$"Date input error."
+		show_status
+	fi
 
-#Check to see that DETAILED is not blank
-if [ $DETAILED'null' = null ]
-then
-DETAILED=no
-else
-#Check that DETAILED is yes
-if [ $DETAILED != yes ] && [ $DETAILED != no ]
-then
-MESSAGE=$"Incorrect detail value."
-show_status
-fi
-fi
+	#Check to see that DETAILED is not blank
+	if [ -z "$DETAILED" ]
+	then
+		DETAILED=no
+	else
+		#Check that DETAILED is yes
+		if [ $DETAILED != yes ] && [ $DETAILED != no ]
+		then
+			MESSAGE=$"Incorrect detail value."
+		show_status
+		fi
+	fi
 
-if [ $YEAR -lt 2006 ] || [ $YEAR -gt 3006 ]
-then
-MESSAGE=$"The year is not valid."
-show_status
-fi
+	if [ $YEAR -lt 2006 ] || [ $YEAR -gt 3006 ]
+	then
+		MESSAGE=$"The year is not valid."
+		show_status
+	fi
 
 
-#Show back button for mobiles
-if [ $MOBILE = yes ]
-then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
-	<div class="expanded">
-	<span>'$"Computer Logs"'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
-</div></div><div id="mobilecontent"><div id="mobileactionbox2">
-'
-fi
+	#Show back button for mobiles
+	if [ $MOBILE = yes ]
+	then
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
+		<div class="expanded">
+		<span>'$"Computer Logs"'</span>
+	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
+	</div></div><div id="mobilecontent"><div id="mobileactionbox2">
+	'
+	fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_computer_logs.cgi | cut -d' ' -f1`
-#View logs
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$TCPIP:$DAY:$MONTH:$YEAR:$DETAILED:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/dg_view_computer_logs
-EXEC_STATUS=`echo $?`
-if [ $EXEC_STATUS = 101 ]
-then
-MESSAGE=`echo $"There was a problem with this action." $"Internet Logs for"`
-show_status
-fi
-if [ $EXEC_STATUS = 102 ]
-then
-echo $TCPIP $DAY-$MONTH-$YEAR : $"No log for this date."'<br><br>'
-fi
+	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_computer_logs.cgi | cut -d' ' -f1`
+	#View logs
+	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$TCPIP:$DAY:$MONTH:$YEAR:$DETAILED:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/dg_view_computer_logs
+	EXEC_STATUS=`echo $?`
+	if [ $EXEC_STATUS = 101 ]
+	then
+		MESSAGE=`echo $"There was a problem with this action." $"Internet Logs for"`
+		show_status
+	fi
+	if [ $EXEC_STATUS = 102 ]
+	then
+		echo $TCPIP $DAY-$MONTH-$YEAR : $"No log for this date."'<br><br>'
+	fi
 
-# Add one to the day
-DATE=`date +%F -d "$YEAR-$MONTH-$DAY 1 days"`
+	# Add one to the day
+	DATE=`date +%F -d "$YEAR-$MONTH-$DAY 1 days"`
 
-DAY=`echo $DATE | cut -d- -f3`
-MONTH=`echo $DATE | cut -d- -f2`
-YEAR=`echo $DATE | cut -d- -f1`
+	DAY=`echo $DATE | cut -d- -f3`
+	MONTH=`echo $DATE | cut -d- -f2`
+	YEAR=`echo $DATE | cut -d- -f1`
 
-let COUNTER=$COUNTER+1
+	let COUNTER=$COUNTER+1
 done
 echo '</div></div></div></body></html>'
 exit

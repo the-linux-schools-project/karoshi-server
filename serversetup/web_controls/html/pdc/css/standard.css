@@ -403,7 +403,7 @@ a.searchlink:hover
         display:block;
         position:absolute;
         top: 1.5em;
-        left: 3em;
+        left: 2em;
         min-width:15em;
         border:1px solid #3B6694; /* border colour */
         background-color:#ffffff; /* background colour here */
@@ -412,6 +412,14 @@ a.searchlink:hover
         font-size: .8em;
         font-style:italic;
         z-index:30;
+        }
+
+        a.infoleft:hover span{ /*the span will display just on :hover state*/
+        left: -10em;
+        }
+
+        a.infocenter:hover span{ /*the span will display just on :hover state*/
+        left: -3em;
         }
 
 	a.info3{

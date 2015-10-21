@@ -215,8 +215,8 @@ TABLECLASS=standard
 echo '<form name="myform" action="/cgi-bin/admin/services_view2.cgi" method="post">'
 echo '<input name="_SERVERNAME_'$SERVERNAME''$ALLSERVERS'_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_" value="" type="hidden">
 
-<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
-<td style="width: 120px;"><b>'$"Service"'</b></td><td style="width: 180px;"><b>'$"Function"'</b></td><td><b>'$"Status"'</b></td></tr>'
+<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead><tr>
+<th style="width: 120px;"><b>'$"Service"'</b></th><th style="width: 180px;"><b>'$"Function"'</b></th><th><b>'$"Status"'</b></th></tr></thead><tbody>'
 
 #Make sure the list of suggested services is unique
 DSERVICES2=""
